@@ -146,7 +146,13 @@ Change context: {description}
 
 Documentation notes: {doc_impact.notes}
 
-Please update the relevant PRD sections to reflect this change. After updates, summarize what was changed.</task>
+Please update the relevant PRD sections to reflect this change.
+
+After updates:
+1. Summarize what was changed
+2. Return to the implement workflow by running: /implement {item_id}
+
+IMPORTANT: You MUST return to /implement {item_id} after completing the PRD updates so the actual code implementation can proceed.</task>
           </invoke-agent>
         </check>
 
@@ -163,7 +169,13 @@ Change context: {description}
 
 Documentation notes: {doc_impact.notes}
 
-Please update the relevant architecture sections (data model, APIs, security, etc.) to reflect this change. After updates, summarize what was changed.</task>
+Please update the relevant architecture sections (data model, APIs, security, etc.) to reflect this change.
+
+After updates:
+1. Summarize what was changed
+2. Return to the implement workflow by running: /implement {item_id}
+
+IMPORTANT: You MUST return to /implement {item_id} after completing the architecture updates so the actual code implementation can proceed.</task>
           </invoke-agent>
         </check>
 
@@ -180,7 +192,13 @@ Change context: {description}
 
 Documentation notes: {doc_impact.notes}
 
-Please update the relevant UX spec sections (screens, flows, components, etc.) to reflect this change. After updates, summarize what was changed.</task>
+Please update the relevant UX spec sections (screens, flows, components, etc.) to reflect this change.
+
+After updates:
+1. Summarize what was changed
+2. Return to the implement workflow by running: /implement {item_id}
+
+IMPORTANT: You MUST return to /implement {item_id} after completing the UX updates so the actual code implementation can proceed.</task>
           </invoke-agent>
         </check>
 

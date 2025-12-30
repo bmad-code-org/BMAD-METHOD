@@ -78,3 +78,6 @@ bmad-custom-src/
 # Docusaurus / Documentation Build
 .docusaurus/
 build/
+
+# Fork-specific documentation (not committed)
+BUG-TRACKING.md
