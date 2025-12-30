@@ -121,8 +121,16 @@ class ManifestGenerator {
   async getWorkflowsFromPath(basePath, moduleName) {
     const workflows = [];
     const workflowsPath = path.join(basePath, 'workflows');
+    const debug = process.env.BMAD_DEBUG_MANIFEST === 'true';
+
+    if (debug) {
+      console.log(`[DEBUG] Scanning workflows in: ${workflowsPath}`);
+    }
 
     if (!(await fs.pathExists(workflowsPath))) {
+      if (debug) {
+        console.log(`[DEBUG] Workflows path does not exist: ${workflowsPath}`);
+      }
       return workflows;
     }
 
@@ -139,8 +147,13 @@ class ManifestGenerator {
           await findWorkflows(fullPath, newRelativePath);
         } else if (entry.name === 'workflow.yaml' || entry.name === 'workflow.md') {
           // Parse workflow file (both YAML and MD formats)
+          if (debug) {
+            console.log(`[DEBUG] Found workflow file: ${fullPath}`);
+          }
           try {
-            const content = await fs.readFile(fullPath, 'utf8');
+            // Read and normalize line endings (fix Windows CRLF issues)
+            const rawContent = await fs.readFile(fullPath, 'utf8');
+            const content = rawContent.replaceAll('\r\n', '\n').replaceAll('\r', '\n');
 
             let workflow;
             if (entry.name === 'workflow.yaml') {
@@ -150,13 +163,23 @@ class ManifestGenerator {
               // Parse MD workflow with YAML frontmatter
               const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
               if (!frontmatterMatch) {
+                if (debug) {
+                  console.log(`[DEBUG] Skipped (no frontmatter): ${fullPath}`);
+                }
                 continue; // Skip MD files without frontmatter
               }
               workflow = yaml.parse(frontmatterMatch[1]);
             }
 
+            if (debug) {
+              console.log(`[DEBUG] Parsed: name="${workflow.name}", description=${workflow.description ? 'OK' : 'MISSING'}`);
+            }
+
             // Skip template workflows (those with placeholder values)
             if (workflow.name && workflow.name.includes('{') && workflow.name.includes('}')) {
+              if (debug) {
+                console.log(`[DEBUG] Skipped (template placeholder): ${workflow.name}`);
+              }
               continue;
             }
 
@@ -182,6 +205,14 @@ class ManifestGenerator {
                 module: moduleName,
                 path: installPath,
               });
+
+              if (debug) {
+                console.log(`[DEBUG] ✓ Added workflow: ${workflow.name} (${moduleName})`);
+              }
+            } else {
+              if (debug) {
+                console.log(`[DEBUG] Skipped (missing name or description): ${fullPath}`);
+              }
             }
           } catch (error) {
             console.warn(`Warning: Failed to parse workflow at ${fullPath}: ${error.message}`);
@@ -191,6 +222,11 @@ class ManifestGenerator {
     };
 
     await findWorkflows(workflowsPath);
+
+    if (debug) {
+      console.log(`[DEBUG] Total workflows found in ${moduleName}: ${workflows.length}`);
+    }
+
     return workflows;
   }
 
