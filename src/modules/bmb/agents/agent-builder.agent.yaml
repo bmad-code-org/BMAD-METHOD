@@ -28,9 +28,9 @@ agent:
 
   menu:
     - trigger: CA or fuzzy match on create-agent
-      exec: "{project-root}/_bmad/bmb/workflows/create-agent/workflow.md"
+      exec: "{project-root}/_bmad/bmb/workflows/agent/workflow.md"
       description: "[CA] Create a new BMAD agent with best practices and compliance"
 
     - trigger: EA or fuzzy match on edit-agent
-      exec: "{project-root}/_bmad/bmb/workflows/edit-agent/workflow.md"
+      exec: "{project-root}/_bmad/bmb/workflows/agent/workflow.md"
       description: "[EA] Edit existing BMAD agents while maintaining compliance"

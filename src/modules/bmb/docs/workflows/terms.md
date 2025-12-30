@@ -21,7 +21,7 @@ An individual markdown file containing:
 
 - One discrete step of the workflow
 - All rules and context needed for that step
-- Execution guardrails and validation criteria
+- common global rules get repeated and reinforced also in each step file, ensuring even in long workflows the agent remembers important rules and guidelines
 - Content generation guidance
 
 ### step-01-init.md
