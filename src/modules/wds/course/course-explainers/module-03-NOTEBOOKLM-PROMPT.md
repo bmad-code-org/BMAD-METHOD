@@ -30,13 +30,19 @@ Start with The Hesitant Designer expressing their discomfort: "I just want to de
 
 The Strategic Professional responds with empathy: "I get it. I used to feel exactly the same way. But here's what I learned the hard way: skipping alignment and signoff doesn't make you generous - it makes you unprofessional. And ultimately, it hurts the client even more than it hurts you."
 
+The Strategic Professional continues: "This is Module 03 of the Whiteport Design Studio method - WDS for short. And here's why this module exists: we realized through over 10 years of design and IT projects that the foundation you build BEFORE design work often has more impact on the project's success than the design itself. A brilliant design built on misaligned expectations fails. A good design built on solid alignment succeeds."
+
+The Hesitant Designer: "Wait, the foundation is more impactful than the design?"
+
+The Strategic Professional: "Often, yes. If you and your client aren't aligned on what success looks like, if the contract doesn't protect both of you, if expectations are fuzzy - no amount of brilliant design will save that project. That's why WDS includes this module with templates and agent instructions based on years of painful lessons."
+
 The Strategic Professional continues: "In the next 40 minutes, you'll discover something that changes everything: when you genuinely understand what success looks like for your client - when you can clearly specify their desired outcomes - pitching stops feeling like selling and starts feeling like helping. You'll learn when you actually need this (hint: not always), how to ask the questions that reveal what they truly need, and how to create alignment documents and contracts that protect both you and your client. This is about building sustainable, healthy working relationships where everyone wins."
 
 The Hesitant Designer: "Okay, but what's the actual process? What are the steps?"
 
 **The Clear Workflow:**
 
-The Strategic Professional: "Here's the entire workflow from first conversation to project start:
+The Strategic Professional: "Here's the entire WDS workflow for this phase - from first conversation to project start:
 
 1. **Listen** - Discovery meeting with client to understand their goals and what's important for success
 2. **Create** - Build a pitch (alignment document) based on what they told you they need
@@ -47,13 +53,28 @@ The Strategic Professional: "Here's the entire workflow from first conversation 
 7. **Sign** - Both parties sign
 8. **Brief** - Use the pitch and contract as the backbone of your project brief
 
-The pitch and contract aren't throwaway documents - they become the foundation that guides everything that follows."
+The pitch and contract aren't throwaway documents - they become the foundation that guides everything that follows. This is the WDS way: every step builds on the previous one, creating a connected workflow instead of isolated documents."
+
+The Hesitant Designer: "So WDS gives me templates and instructions for each of these steps?"
+
+The Strategic Professional: "Exactly. WDS includes Saga the Analyst - an AI agent with instructions based on over 10 years of design and IT project experience. She guides you through discovery questions, helps you create the pitch, and generates contracts that actually work. You're not figuring this out alone - you have a thinking partner trained on real-world lessons."
 
 ---
 
 ### 2. Understanding Alignment (8 min) - When You Need It (And When You Don't)
 
 The Hesitant Designer asks: "Okay, but do I really need this? Can't I just have a conversation and then start working?"
+
+**WDS Context: The Four Phases**
+
+The Strategic Professional: "Let me give you context. Whiteport Design Studio - WDS - is built on four phases:
+
+1. **Phase 1: Win Client Buy-In** (That's this module - Alignment & Signoff)
+2. **Phase 2: Map Business Goals & User Needs** (Understanding what drives behavior)
+3. **Phase 3: Design Solutions** (The actual design work)
+4. **Phase 4: Deliver to Development** (Specifications and handoff)
+
+We start with Phase 1 because the foundation matters more than most designers realize. Get alignment right, and everything else flows. Skip it, and even brilliant design fails."
 
 **When to Skip This Module:**
 
@@ -232,7 +253,11 @@ The Hesitant Designer asks: "This makes sense. But how do I actually create this
 
 **The 10-Section Alignment Document:**
 
-The Strategic Professional explains: "Saga the Analyst guides you through creating an alignment document with 10 sections. But here's the key - you don't have to fill them in order. Start with what you know, explore what you're unsure about, and iterate until it's complete. And Saga helps you discover what you don't know yet by asking those outcome-focused questions."
+The Strategic Professional explains: "Saga the Analyst - that's the WDS agent for Phase 1 - guides you through creating an alignment document with 10 sections. But here's the key - you don't have to fill them in order. Start with what you know, explore what you're unsure about, and iterate until it's complete. And Saga helps you discover what you don't know yet by asking those outcome-focused questions."
+
+The Hesitant Designer: "Wait, Saga is an AI agent?"
+
+The Strategic Professional: "Yes. WDS includes AI agents trained on over 10 years of design and IT project experience. Saga the Analyst specializes in Phase 1 - helping you understand the business side, ask the right questions, and create documents that actually work. She's your thinking partner, not just a template generator."
 
 The 10 sections:
 
@@ -249,7 +274,7 @@ The 10 sections:
 
 **The Flexible Process:**
 
-The Strategic Professional emphasizes: "Saga doesn't force you through these in order. Instead, Saga asks: 'What do you know? What are you uncertain about? Let's explore together.' You might start with the problem, jump to budget, circle back to objectives. That's fine. The goal is clarity, not rigid structure."
+The Strategic Professional emphasizes: "Saga doesn't force you through these in order. Instead, Saga asks: 'What do you know? What are you uncertain about? Let's explore together.' You might start with the problem, jump to budget, circle back to objectives. That's fine. The goal is clarity, not rigid structure. This flexibility is built into WDS because we learned that every project and every designer thinks differently."
 
 **Extracting from Existing Materials:**
 
@@ -312,7 +337,7 @@ The Strategic Professional explains: "If money is changing hands between differe
 
 **What's in the Contract:**
 
-The Strategic Professional details: "Saga helps you create a contract based on the pitch they already accepted. Here's the key principle: short and concise. Long contracts are hard to understand, and it's easier to hide strange provisions in dense text. Keep it clear and brief."
+The Strategic Professional details: "Saga helps you create a contract based on the pitch they already accepted. Here's the key principle WDS teaches: short and concise. Long contracts are hard to understand, and it's easier to hide strange provisions in dense text. Keep it clear and brief. This comes from years of experience - we've seen designers get trapped by their own overly complex contracts."
 
 Key sections:
 - **Scope of Work** - What's included (and explicitly what's NOT) - reference the accepted pitch
@@ -457,14 +482,18 @@ The Strategic Professional: "Exactly. Clarity serves everyone."
 
 ### 11. Closing - Your Professional Foundation (4 min)
 
-The Strategic Professional brings it home: "You've just learned how to create alignment and protect your projects with clear agreements. This isn't about being pushy or defensive. It's about serving your clients and stakeholders with clarity."
+The Strategic Professional brings it home: "You've just learned Module 03 of Whiteport Design Studio - WDS Phase 1: Win Client Buy-In. This is about creating alignment and protecting your projects with clear agreements. This isn't about being pushy or defensive. It's about serving your clients and stakeholders with clarity."
 
 The Hesitant Designer reflects: "I see it now. Alignment isn't about selling. It's about understanding first - genuinely understanding what they're trying to achieve - and THEN articulating how I can help them get there. And I need to resist the urge to impress them with quick solutions. The carpenter measures twice. The doctor diagnoses first. I understand, take notes, come back with something thoughtful. When I know what success looks like for them, everything gets easier. And contracts aren't about mistrust - they're about protecting the project so it can succeed."
+
+The Strategic Professional: "Exactly. And this is why WDS starts here, in Phase 1, before any design work begins. Because we learned through over 10 years of projects that the foundation you build - the alignment, the understanding, the clear agreements - has more impact on project success than the design itself. Get this right, and everything that follows in Phase 2 through 4 works. Skip it, and even brilliant design fails."
 
 The Strategic Professional: "Exactly. Here's what you now know:"
 
 **What You've Learned:**
 
+- **WDS Phase 1: Win Client Buy-In** - why foundation matters more than most designers realize
+- **The WDS workflow** - Listen → Create → Present → Negotiate → Accept → Contract → Sign → Brief
 - **When you need alignment** (and when to skip it)
 - **The discipline to understand before solving** - carpenter measures twice, doctor diagnoses first
 - **Separate discovery from solution** - don't present in the same meeting
@@ -484,23 +513,25 @@ The Strategic Professional: "Exactly. Here's what you now know:"
 
 The Strategic Professional: "Now, here's what you do. Before you write anything, understand what they need. Have that discovery conversation. Ask those outcome-focused questions. Keep asking until you find the real pain point. Take notes. Confirm understanding. Then STOP. Say 'Let me think about this and come back with a thoughtful proposal.' Don't flood them with solutions in that first meeting."
 
-The Strategic Professional continues: "Then - and only then - work with Saga the Analyst to create your alignment document. Take the time to think it through. The carpenter measures twice before cutting once. The doctor diagnoses before prescribing. You understand before solving."
+The Strategic Professional continues: "Then - and only then - work with Saga the Analyst to create your alignment document. Saga is part of the WDS method - an AI agent trained on over 10 years of project experience. Take the time to think it through. The carpenter measures twice before cutting once. The doctor diagnoses before prescribing. You understand before solving."
 
-The Strategic Professional: "When you come back with that thoughtful proposal, share it. Negotiate. Refine it based on their feedback. Get approval. Formalize it with a contract or signoff document. That's the professional process."
+The Strategic Professional: "When you come back with that thoughtful proposal, share it. Negotiate. Refine it based on their feedback. Get approval. Formalize it with a contract or signoff document. That's the WDS process for Phase 1."
 
-The Strategic Professional continues: "But if you're building something yourself - if you have full autonomy and don't need approval - skip this entirely. Go straight to Module 04: Project Brief and start designing. Don't waste time on alignment when you don't need it."
+The Strategic Professional continues: "But if you're building something yourself - if you have full autonomy and don't need approval - skip this entirely. Go straight to WDS Phase 2: Map Business Goals & User Needs, or even Phase 3 and start designing. Don't waste time on alignment when you don't need it. WDS is flexible - use what serves your situation."
 
 **Building Your Professional Foundation:**
 
 The Strategic Professional emphasizes: "This module is about building your professional foundation. You're learning to operate as a strategic professional, not just a designer who executes orders. You're learning to bridge the gap between idea and execution, between vision and commitment. And it all starts with the discipline to understand deeply before you solve quickly."
 
+The Strategic Professional adds: "This is why Whiteport Design Studio exists - to give you the templates, the agent instructions, and the process that comes from over 10 years of real-world experience. You're not figuring this out alone. You have a method that works."
+
 The Hesitant Designer: "Understand first. Resist the urge to impress with quick solutions. Take time to think. Help second. I'm ready. What's next?"
 
-The Strategic Professional: "Next is Module 04: Project Brief - where you transform that alignment into a detailed blueprint for what you're building. But before you move forward, make sure you have commitment. Don't start detailed work until stakeholders have said yes."
+The Strategic Professional: "Next is WDS Phase 2: Map Business Goals & User Needs - where you understand what drives user behavior. Then Phase 3: Design Solutions - where you transform that alignment into detailed design. Then Phase 4: Deliver to Development - specifications and handoff. But before you move forward, make sure you have commitment. Don't start detailed work until stakeholders have said yes."
 
-The Hesitant Designer: "Discovery meeting first. Understanding deeply. Then proposal. Then alignment. Then design."
+The Hesitant Designer: "Discovery meeting first. Understanding deeply. Then proposal. Then alignment. Then design. The WDS way."
 
-The Strategic Professional: "Exactly. Measure twice, cut once. Diagnose, then prescribe. Now let yourself be known. Have that uncomfortable conversation about money. Define clear scope. Create a contract that protects everyone. But most importantly - take the time to genuinely understand what they need before you propose how to help. That's how professional designers operate."
+The Strategic Professional: "Exactly. Measure twice, cut once. Diagnose, then prescribe. Now let yourself be known. Have that uncomfortable conversation about money. Define clear scope. Create a contract that protects everyone. But most importantly - take the time to genuinely understand what they need before you propose how to help. That's how professional designers operate. That's the WDS method. That's Phase 1 complete."
 
 ---
 
@@ -510,6 +541,10 @@ At the end of the podcast, The Strategic Professional should mention these resou
 
 **Key Concepts:**
 
+- **WDS (Whiteport Design Studio)** - the method containing templates and agent instructions based on 10+ years of experience
+- **WDS Four Phases** - Phase 1: Win Client Buy-In, Phase 2: Map Goals & Needs, Phase 3: Design Solutions, Phase 4: Deliver to Dev
+- **Foundation matters more than design** - why WDS starts with alignment before design work
+- **Saga the Analyst** - WDS AI agent for Phase 1, trained on real-world project experience
 - **Understand before you solve** - the carpenter measures twice, the doctor diagnoses first
 - **Separate discovery from solution** - don't present in the same meeting
 - **Understanding their outcomes first** - the foundation that makes everything easier
@@ -525,7 +560,7 @@ At the end of the podcast, The Strategic Professional should mention these resou
 
 **Next Steps:**
 
-- Complete Module 04: Project Brief
+- Complete WDS Phase 2: Map Business Goals & User Needs
 - Practice pitching with quantified ROI
 - Review your current contracts for scope clarity
 - Set up change order templates
@@ -541,6 +576,9 @@ At the end of the podcast, The Strategic Professional should mention these resou
 
 **Tone:**
 
+- **Emphasize WDS branding** - mention Whiteport Design Studio, the four phases, Saga the Analyst agent
+- **Foundation before design** - stress that alignment matters more than most designers realize
+- **10+ years of experience** - mention the method is based on real-world project lessons
 - Empathetic about discomfort with business/money conversations
 - Transformative about the mindset shift from selling to helping
 - Emphasize the discipline and patience to understand before solving
@@ -556,6 +594,11 @@ At the end of the podcast, The Strategic Professional should mention these resou
 
 **Key messages to emphasize:**
 
+- **WDS (Whiteport Design Studio)** - mention the method name frequently
+- **Four WDS Phases** - Phase 1: Win Buy-In, Phase 2: Map Goals, Phase 3: Design, Phase 4: Deliver
+- **Foundation more impactful than design** - alignment determines project success
+- **Saga the Analyst** - WDS agent trained on 10+ years of project experience
+- **Templates and instructions from real experience** - not theory, but proven practice
 - **The clear workflow** - Listen → Create → Present → Negotiate → Accept → Contract → Sign → Brief
 - **Pitch and contract become project brief backbone** - not throwaway documents
 - **Contract based on accepted pitch** - formalizing what they already agreed to
