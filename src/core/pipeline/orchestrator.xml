@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<task id="pipeline-orchestrator" name="Pipeline Orchestrator" standalone="true">
+  <description>Orchestrate multi-stage agent pipelines with dependency management</description>
+
+  <config>
+    <source>{project-root}/_bmad/core/pipeline/pipeline-config.yaml</source>
+    <pipeline_dir>{project-root}/_bmad-output/pipelines</pipeline_dir>
+  </config>
+
+  <commands>
+    <command name="create" description="Create a new pipeline from template or custom definition"/>
+    <command name="run" description="Execute a pipeline"/>
+    <command name="status" description="Show pipeline status"/>
+    <command name="list" description="List available pipelines and templates"/>
+    <command name="abort" description="Abort a running pipeline"/>
+    <command name="resume" description="Resume a failed/paused pipeline"/>
+  </commands>
+
+  <execution>
+    <!-- PIPELINE CREATE -->
+    <step n="1" goal="Handle create command" condition="command == 'create'">
+      <action>Ask user for pipeline source:
+        1. Use template (show available templates)
+        2. Define custom pipeline
+      </action>
+
+      <check if="user selects template">
+        <action>List templates from config: full_sdlc, quick_flow, analysis_only, design_review, test_suite</action>
+        <action>User selects template</action>
+        <action>Copy template stages to new pipeline definition</action>
+      </check>
+
+      <check if="user defines custom">
+        <action>Ask for pipeline name</action>
+        <action>Ask for stages (agent, parallel, depends_on, outputs)</action>
+        <action>Build pipeline definition</action>
+      </check>
+
+      <action>Generate pipeline_id: "PIPE-{YYYYMMDD}-{name}"</action>
+      <action>Create pipeline file: {pipeline_dir}/{pipeline_id}.yaml</action>
+      <action>Initialize all stages as "pending"</action>
+
+      <output>
+        Pipeline created: {pipeline_id}
+        Stages: {stage_count}
+        Estimated duration: {estimate}
+
+        Run with: PIPELINE run {pipeline_id}
+      </output>
+    </step>
+
+    <!-- PIPELINE RUN -->
+    <step n="2" goal="Handle run command" condition="command == 'run'">
+      <action>Load pipeline from {pipeline_id}.yaml</action>
+      <action>Validate pipeline definition (agents exist, dependencies valid)</action>
+      <action>Set pipeline status to "running"</action>
+      <action>Initialize execution state tracking</action>
+
+      <loop while="pending or queued stages exist">
+        <action>Find stages where:
+          - Status == "pending" AND
+          - All depends_on stages are "completed"
+        </action>
+        <action>Mark found stages as "queued"</action>
+
+        <!-- Execute queued stages -->
+        <action for_each="queued stage">
+          <check if="stage.parallel == true AND multiple queued stages">
+            <action>Launch agents in parallel using Task tool with run_in_background=true</action>
+            <action>Track agent_ids for each stage</action>
+          </check>
+
+          <check if="stage.parallel == false OR single queued stage">
+            <action>Launch agent using Task tool with run_in_background=false</action>
+            <action>Wait for completion</action>
+          </check>
+        </action>
+
+        <!-- Collect results -->
+        <action>For parallel stages: Use TaskOutput to collect results</action>
+        <action>Update stage status based on result (completed/failed)</action>
+        <action>Store outputs in {pipeline_dir}/outputs/{stage_name}/</action>
+
+        <!-- Handle failures -->
+        <check if="stage failed AND error_handling == 'halt'">
+          <action>Mark pipeline as "failed"</action>
+          <action>Mark dependent stages as "skipped"</action>
+          <action>HALT: "Pipeline failed at stage: {stage_name}"</action>
+        </check>
+
+        <check if="stage failed AND error_handling == 'skip_dependents'">
+          <action>Mark dependent stages as "skipped"</action>
+          <action>Continue with non-dependent stages</action>
+        </check>
+
+        <action>Update pipeline file with current state</action>
+      </loop>
+
+      <action>Mark pipeline as "completed"</action>
+      <output>
+        Pipeline completed: {pipeline_id}
+
+        Results:
+        {for each stage}
+        - {stage_name}: {status} ({duration})
+        {end for}
+
+        Outputs saved to: {pipeline_dir}/outputs/
+      </output>
+    </step>
+
+    <!-- PIPELINE STATUS -->
+    <step n="3" goal="Handle status command" condition="command == 'status'">
+      <action>Load pipeline from {pipeline_id}.yaml (or active-pipeline.yaml)</action>
+      <action>Calculate progress percentage</action>
+
+      <output>
+        Pipeline: {pipeline_id}
+        Status: {overall_status}
+        Progress: [{progress_bar}] {percentage}%
+
+        Stages:
+        {for each stage}
+        [{status_icon}] {stage_name}
+            Agents: {agents}
+            Duration: {duration or "pending"}
+            Output: {output_path or "n/a"}
+        {end for}
+
+        {if running}
+        Currently executing: {current_stage}
+        Estimated remaining: {remaining_estimate}
+        {end if}
+      </output>
+    </step>
+
+    <!-- PIPELINE LIST -->
+    <step n="4" goal="Handle list command" condition="command == 'list'">
+      <action>Scan {pipeline_dir} for pipeline files</action>
+      <action>Load templates from config</action>
+
+      <output>
+        Available Templates:
+        {for each template}
+        - {template_name}: {description}
+          Stages: {stage_names}
+        {end for}
+
+        Existing Pipelines:
+        {for each pipeline}
+        - {pipeline_id}: {status} ({created_date})
+        {end for}
+      </output>
+    </step>
+
+    <!-- PIPELINE ABORT -->
+    <step n="5" goal="Handle abort command" condition="command == 'abort'">
+      <action>Load running pipeline</action>
+      <action>Send abort signal to running agents</action>
+      <action>Mark running stages as "aborted"</action>
+      <action>Mark pipeline as "aborted"</action>
+
+      <output>
+        Pipeline {pipeline_id} aborted.
+        Completed stages: {completed_count}
+        Aborted stages: {aborted_count}
+      </output>
+    </step>
+
+    <!-- PIPELINE RESUME -->
+    <step n="6" goal="Handle resume command" condition="command == 'resume'">
+      <action>Load failed/aborted pipeline</action>
+      <action>Identify failed/aborted stages</action>
+      <action>Ask user: Retry failed stages or skip?</action>
+
+      <check if="retry">
+        <action>Reset failed stages to "pending"</action>
+        <action>Continue with run logic</action>
+      </check>
+
+      <check if="skip">
+        <action>Mark failed stages as "skipped"</action>
+        <action>Continue with remaining stages</action>
+      </check>
+    </step>
+  </execution>
+
+  <output>
+    <field name="pipeline_id" description="Pipeline identifier"/>
+    <field name="status" description="Overall pipeline status"/>
+    <field name="stages" description="Array of stage results"/>
+    <field name="outputs" description="Map of output file paths"/>
+  </output>
+</task>

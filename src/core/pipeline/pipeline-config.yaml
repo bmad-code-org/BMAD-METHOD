@@ -1,0 +1,157 @@
+# Pipeline Orchestrator Configuration
+# Enables multi-agent pipelines with parallel and sequential execution
+
+name: pipeline-orchestrator
+version: "1.0.0"
+description: "Orchestrate multi-stage agent pipelines with dependency management"
+
+# Pipeline storage
+pipeline_dir: "{project-root}/_bmad-output/pipelines"
+active_pipeline_file: "{pipeline_dir}/active-pipeline.yaml"
+pipeline_archive_dir: "{pipeline_dir}/archive"
+
+# Execution modes
+execution_modes:
+  sequential:
+    description: "Execute stages one after another"
+    use_when: "Each stage depends on previous output"
+  parallel:
+    description: "Execute independent stages simultaneously"
+    use_when: "Stages have no dependencies on each other"
+  hybrid:
+    description: "Mix of parallel and sequential based on dependencies"
+    use_when: "Complex pipelines with partial dependencies"
+
+# Pipeline templates
+templates:
+  full_sdlc:
+    name: "Full SDLC Pipeline"
+    description: "Complete software development lifecycle"
+    stages:
+      - name: analysis
+        agents: [analyst]
+        parallel: false
+        outputs: [product_brief]
+      - name: requirements
+        agents: [pm]
+        parallel: false
+        depends_on: [analysis]
+        outputs: [prd]
+      - name: design
+        agents: [architect, ux-designer]
+        parallel: true
+        depends_on: [requirements]
+        outputs: [architecture, ux_design]
+      - name: planning
+        agents: [sm]
+        parallel: false
+        depends_on: [design]
+        outputs: [epics_and_stories]
+      - name: implementation
+        agents: [dev]
+        parallel: false
+        depends_on: [planning]
+        outputs: [code, tests]
+      - name: review
+        agents: [tea]
+        parallel: false
+        depends_on: [implementation]
+        outputs: [review_report]
+
+  quick_flow:
+    name: "Quick Flow Pipeline"
+    description: "Rapid development with minimal ceremony"
+    stages:
+      - name: spec
+        agents: [quick-flow-solo-dev]
+        parallel: false
+        outputs: [tech_spec]
+      - name: implement
+        agents: [quick-flow-solo-dev]
+        parallel: false
+        depends_on: [spec]
+        outputs: [code, tests]
+
+  analysis_only:
+    name: "Analysis Pipeline"
+    description: "Product analysis and requirements"
+    stages:
+      - name: research
+        agents: [analyst]
+        parallel: false
+        outputs: [research_findings]
+      - name: brief
+        agents: [analyst]
+        parallel: false
+        depends_on: [research]
+        outputs: [product_brief]
+      - name: requirements
+        agents: [pm]
+        parallel: false
+        depends_on: [brief]
+        outputs: [prd]
+
+  design_review:
+    name: "Design Review Pipeline"
+    description: "Architecture and UX design with review"
+    stages:
+      - name: architecture
+        agents: [architect]
+        parallel: false
+        outputs: [architecture]
+      - name: ux
+        agents: [ux-designer]
+        parallel: false
+        depends_on: [architecture]
+        outputs: [ux_design]
+      - name: review
+        agents: [analyst, pm]
+        parallel: true
+        depends_on: [architecture, ux]
+        outputs: [design_review]
+
+  test_suite:
+    name: "Test Suite Pipeline"
+    description: "Comprehensive testing workflow"
+    stages:
+      - name: test_design
+        agents: [tea]
+        parallel: false
+        outputs: [test_plan]
+      - name: test_impl
+        agents: [tea]
+        parallel: false
+        depends_on: [test_design]
+        outputs: [test_suite]
+      - name: security
+        agents: [tea]
+        parallel: false
+        depends_on: [test_impl]
+        outputs: [security_report]
+      - name: trace
+        agents: [tea]
+        parallel: false
+        depends_on: [test_impl]
+        outputs: [traceability_matrix]
+
+# Stage status values
+status_values:
+  - pending      # Not yet started
+  - queued       # Ready to start (dependencies met)
+  - running      # Currently executing
+  - completed    # Finished successfully
+  - failed       # Finished with errors
+  - skipped      # Skipped (dependency failed)
+  - blocked      # Waiting for dependencies
+
+# Error handling
+error_handling:
+  on_stage_failure: "halt"  # halt, skip_dependents, retry
+  max_retries: 2
+  retry_delay_seconds: 30
+
+# Output management
+output_management:
+  intermediate_outputs_dir: "{pipeline_dir}/outputs"
+  preserve_intermediate: true
+  compress_on_complete: false
