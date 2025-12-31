@@ -221,7 +221,14 @@ Once planning and architecture are complete, you'll move to Phase 4. **Important
 3. Tell the agent: "Run dev-story"
 4. The DEV agent will implement the story and update the sprint status
 
-#### 3.4 Review the Code (Optional but Recommended)
+#### 3.4 Generate Guardrail Tests (Optional)
+
+1. **Start a new chat** with the **TEA agent**
+2. Wait for the menu
+3. Tell the agent: "Run automate"
+4. The TEA agent generates or expands tests to act as guardrails
+
+#### 3.5 Review the Code (Optional but Recommended)
 
 1. **Start a new chat** with the **DEV agent**
 2. Wait for the menu
@@ -234,7 +241,8 @@ For each subsequent story, repeat the cycle using **fresh chats** for each workf
 
 1. **New chat** → SM agent → "Run create-story"
 2. **New chat** → DEV agent → "Run dev-story"
-3. **New chat** → DEV agent → "Run code-review" (optional but recommended)
+3. **New chat** → TEA agent → "Run automate" (optional)
+4. **New chat** → DEV agent → "Run code-review" (optional but recommended)
 
 After completing all stories in an epic:
 
