@@ -21,20 +21,20 @@ BMad does not mandate TEA. There are five valid ways to use it (or skip it). Pic
 3. **Integrated: Greenfield Simple (BMad Method)**
    - Phase 3: system-level `*test-design`, then `*framework` and `*ci`.
    - Phase 4: per-epic `*test-design`, optional `*atdd`, then `*automate` and optional `*test-review`.
-   - Gate: `*trace` Phase 2.
+   - Gate (Phase 2): `*trace`.
 
 4. **Integrated: Brownfield Enterprise**
    - Phase 2: baseline `*trace`.
    - Phase 3: system-level `*test-design`, then `*framework` and `*ci`.
    - Phase 4: per-epic `*test-design` focused on regression and integration risks.
-   - Gate: `*nfr-assess` (if not done earlier) and `*trace` Phase 2.
+   - Gate (Phase 2): `*trace`; `*nfr-assess` (if not done earlier).
    - For brownfield BMad Method, follow the same flow with `*nfr-assess` optional.
 
 5. **Integrated: Greenfield Enterprise**
    - Phase 2: `*nfr-assess`.
    - Phase 3: system-level `*test-design`, then `*framework` and `*ci`.
    - Phase 4: per-epic `*test-design`, plus `*atdd`/`*automate`/`*test-review`.
-   - Gate: `*trace` Phase 2 and archive artifacts as needed.
+   - Gate (Phase 2): `*trace`; archive artifacts as needed.
 
 If you are unsure, default to the integrated path for your track and adjust later.
 

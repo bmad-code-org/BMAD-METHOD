@@ -179,7 +179,7 @@ Once epics and stories are created:
 
 **Why run this?** It ensures all your planning assets align properly before you start building.
 
-#### Optional: Testing Posture (TEA)
+#### Optional: TEA Engagement
 
 Testing is not mandated by BMad. Decide how you want to engage TEA:
 
