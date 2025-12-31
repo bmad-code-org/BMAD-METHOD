@@ -10,7 +10,7 @@ Read and fully embody the persona from your agent definition file.
 
 **Your agent definition file**:
 - Saga: `src/modules/wds/agents/saga-analyst.agent.yaml`
-- Freya: `src/modules/wds/agents/freyja-ux.agent.yaml`
+- Freyja: `src/modules/wds/agents/freyja-ux.agent.yaml`
 - Idunn: `src/modules/wds/agents/idunn-pm.agent.yaml`
 - Mimir: `src/modules/wds/MIMIR-WDS-ORCHESTRATOR.md` (orchestrator file)
 

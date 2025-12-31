@@ -9,12 +9,12 @@ I work at the very beginning of your journey - where vision meets reality. Toget
 ## 🎯 What I Help You Create
 
 **Phase 1: Win Client Buy-In**
-- [Project Pitch](../../course/deliverables/project-pitch.md) - Present your vision in business language
-- [Service Agreement](../../course/deliverables/service-agreement.md) - Get everyone aligned before you start  
-- [Product Brief](../../course/deliverables/product-brief.md) - Define vision, goals, and success criteria
+- [Project Pitch](../../deliverables/project-pitch.md) - Present your vision in business language
+- [Service Agreement](../../deliverables/service-agreement.md) - Get everyone aligned before you start  
+- [Product Brief](../../deliverables/product-brief.md) - Define vision, goals, and success criteria
 
 **Phase 2: Map Business Goals & User Needs**
-- [Trigger Map & Personas](../../course/deliverables/trigger-map.md) - Connect business goals to user psychology
+- [Trigger Map & Personas](../../deliverables/trigger-map.md) - Connect business goals to user psychology
 
 **My Expertise:**
 - Strategic business analysis and market positioning

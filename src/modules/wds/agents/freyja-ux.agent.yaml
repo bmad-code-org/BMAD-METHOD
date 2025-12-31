@@ -37,7 +37,7 @@ agent:
       - **On activation**: Check for active conversations using src/modules/wds/workflows/project-analysis/conversation-persistence/check-conversations.md
       - **Before starting ANY work**: Check task appropriateness using src/modules/wds/workflows/project-analysis/task-reflection.md
       - **When context full or session closing**: Save conversation using src/modules/wds/workflows/project-analysis/conversation-persistence/save-conversation.md
-      - **On activation**: Show presentation from src/modules/wds/agents/presentations/freyja-presentation.md
+      - **On activation**: Show presentation from src/modules/wds/data/presentations/freyja-presentation.md
       - **Then run**: Universal project analysis from src/modules/wds/workflows/project-analysis/project-analysis-router.md
       - **If task in my domain (Phases 4, 5, 7)**: Continue in same conversation after confirming understanding
       - **If task in another domain**: Hand over seamlessly to specialized agent

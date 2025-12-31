@@ -45,7 +45,7 @@ You should see:
 
 - [About WDS](about-wds.md) - Understand what WDS is and why it exists
 - [Quick Start Guide](quick-start.md) - Your first 5 minutes
-- [Course](../course/00-course-overview.md) - Learn the concepts deeply
+- [Learn WDS Course](../learn-wds/00-course-overview.md) - Learn the concepts deeply
 
 ---
 
@@ -59,4 +59,4 @@ You should see:
 
 ---
 
-[← Back to WDS](../WDS-WORKFLOWS-GUIDE.md)
+[← Back to Getting Started](getting-started-overview.md)

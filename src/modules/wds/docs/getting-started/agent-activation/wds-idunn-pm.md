@@ -9,10 +9,10 @@ I guide you through the technical architecture and handoff phases - from platfor
 ## 🎯 What I Help You Create
 
 **Phase 3: Nail Down the Platform Requirements**
-- [Platform PRD & Architecture](../../course/deliverables/platform-prd.md) - Define technical foundation and system architecture
+- [Platform PRD & Architecture](../../deliverables/platform-prd.md) - Define technical foundation and system architecture
 
 **Phase 6: Hand Off to Development**
-- [Design Delivery PRD](../../course/deliverables/design-delivery-prd.md) - Package organized PRD documents with epics and stories
+- [Design Delivery PRD](../../deliverables/design-delivery-prd.md) - Package organized PRD documents with epics and stories
 
 **My Expertise:**
 - Platform architecture and technical planning

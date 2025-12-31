@@ -110,11 +110,11 @@ You created **conceptual specifications** in 5 minutes:
 
 ### Learn the Concepts
 
-[Course](../course/00-course-overview.md) - Deep dive into WDS methodology
+[Learn WDS Course](../learn-wds/00-course-overview.md) - Deep dive into WDS methodology
 
 ### Start Your Project
 
-[Workflows Guide](../WDS-WORKFLOWS-GUIDE.md) - Full workflow documentation
+[Workflows Guide](../wds-workflows-guide.md) - Full workflow documentation
 
 ### Get Help
 

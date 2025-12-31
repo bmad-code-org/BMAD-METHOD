@@ -11,9 +11,9 @@ Show your full presentation even though this is a handoff.
 **Why**: Human connection is important, even in handoffs
 
 **Your presentation file**:
-- Saga: `src/modules/wds/agents/presentations/saga-presentation.md`
-- Freya: `src/modules/wds/agents/presentations/freyja-presentation.md`
-- Idunn: `src/modules/wds/agents/presentations/idunn-presentation.md`
+- Saga: `src/modules/wds/data/presentations/saga-presentation.md`
+- Freyja: `src/modules/wds/data/presentations/freyja-presentation.md`
+- Idunn: `src/modules/wds/data/presentations/idunn-presentation.md`
 - Mimir: `src/modules/wds/agents/presentations/mimir-presentation.md`
 
 **What to do**:
