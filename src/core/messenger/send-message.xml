@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<task id="send-message" name="Send Inter-Agent Message" standalone="false">
+  <description>Send a message between BMAD agents using the messenger system</description>
+
+  <config>
+    <source>{project-root}/_bmad/core/messenger/messenger-config.yaml</source>
+    <queue_file>{project-root}/_bmad-output/messenger/message-queue.yaml</queue_file>
+  </config>
+
+  <parameters>
+    <param name="type" required="true" description="Message type: handoff, review, clarify, escalate, notify, collaborate"/>
+    <param name="from_agent" required="true" description="Sending agent identifier"/>
+    <param name="to_agent" required="false" description="Receiving agent (not needed for escalate)"/>
+    <param name="to_agents" required="false" description="List of receiving agents (for notify/collaborate)"/>
+    <param name="payload" required="true" description="Message payload object"/>
+    <param name="priority" required="false" default="medium" description="Message priority"/>
+  </parameters>
+
+  <execution>
+    <step n="1" goal="Validate message type and required fields">
+      <action>Load messenger config from {config_source}</action>
+      <action>Validate type is one of: handoff, review, clarify, escalate, notify, collaborate</action>
+      <action>Check required_fields for message type are present in payload</action>
+      <action if="validation fails">HALT with validation error message</action>
+    </step>
+
+    <step n="2" goal="Create message object">
+      <action>Generate unique message_id: "MSG-{timestamp}-{random4}"</action>
+      <action>Build message object:
+        ```yaml
+        message_id: "{message_id}"
+        type: "{type}"
+        from: "{from_agent}"
+        to: "{to_agent}" or "{to_agents}"
+        priority: "{priority}"
+        created: "{timestamp}"
+        status: "pending"
+        payload: {payload}
+        ```
+      </action>
+    </step>
+
+    <step n="3" goal="Ensure queue directory exists">
+      <action>Check if {queue_dir} exists</action>
+      <action if="not exists">Create directory {queue_dir}</action>
+    </step>
+
+    <step n="4" goal="Add message to queue">
+      <action>Load existing queue from {queue_file} (or create empty if not exists)</action>
+      <action>Append new message to messages array</action>
+      <action>Sort messages by priority (critical first)</action>
+      <action>Save updated queue to {queue_file}</action>
+    </step>
+
+    <step n="5" goal="Return confirmation">
+      <action>Return message_id and status</action>
+      <output>
+        Message sent successfully.
+        ID: {message_id}
+        Type: {type}
+        From: {from_agent}
+        To: {to_agent}
+        Priority: {priority}
+      </output>
+    </step>
+  </execution>
+
+  <output>
+    <field name="message_id" description="Unique message identifier"/>
+    <field name="status" description="sent | failed"/>
+  </output>
+</task>
