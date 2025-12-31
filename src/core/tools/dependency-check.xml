@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tool id="dependency-check" name="Dependency Checker" standalone="true">
+  <description>Scan project dependencies for outdated packages and known vulnerabilities</description>
+
+  <parameters>
+    <param name="path" required="false" default="." description="Path to project root"/>
+    <param name="output_format" required="false" default="summary" description="Output format: summary, detailed, json"/>
+    <param name="severity_threshold" required="false" default="low" description="Minimum severity to report: low, medium, high, critical"/>
+  </parameters>
+
+  <detection>
+    <package_manager name="npm" files="['package.json', 'package-lock.json']" command="npm audit"/>
+    <package_manager name="yarn" files="['package.json', 'yarn.lock']" command="yarn audit"/>
+    <package_manager name="pnpm" files="['package.json', 'pnpm-lock.yaml']" command="pnpm audit"/>
+    <package_manager name="pip" files="['requirements.txt', 'Pipfile', 'pyproject.toml']" command="pip-audit"/>
+    <package_manager name="poetry" files="['pyproject.toml', 'poetry.lock']" command="poetry audit"/>
+    <package_manager name="go" files="['go.mod', 'go.sum']" command="govulncheck ./..."/>
+    <package_manager name="cargo" files="['Cargo.toml', 'Cargo.lock']" command="cargo audit"/>
+    <package_manager name="composer" files="['composer.json', 'composer.lock']" command="composer audit"/>
+  </detection>
+
+  <execution>
+    <step n="1" goal="Detect package manager">
+      <action>Scan {path} for package manager files</action>
+      <action>Identify primary package manager from detected files</action>
+      <action if="no package manager found">Report: "No supported package manager detected"</action>
+    </step>
+
+    <step n="2" goal="Run dependency audit">
+      <action>Execute audit command for detected package manager</action>
+      <action>Capture stdout and stderr</action>
+      <action>Parse output for vulnerabilities</action>
+    </step>
+
+    <step n="3" goal="Check for outdated packages">
+      <action>Run outdated check command (e.g., npm outdated, pip list --outdated)</action>
+      <action>Parse output for package versions</action>
+    </step>
+
+    <step n="4" goal="Generate report">
+      <action>Filter by severity_threshold</action>
+      <action>Format output according to output_format</action>
+    </step>
+  </execution>
+
+  <output_format name="summary">
+    ```
+    Dependency Check Report
+    =======================
+    Project: {project_name}
+    Package Manager: {package_manager}
+    Date: {date}
+
+    Vulnerabilities:
+    - Critical: {critical_count}
+    - High: {high_count}
+    - Medium: {medium_count}
+    - Low: {low_count}
+
+    Outdated Packages: {outdated_count}
+
+    Top Issues:
+    1. {top_issue_1}
+    2. {top_issue_2}
+    3. {top_issue_3}
+    ```
+  </output_format>
+</tool>
