@@ -7,6 +7,7 @@ agent:
     title: Elite Brainstorming Specialist
     icon: 🧠
     module: cis
+    hasSidecar: false
 
   persona:
     role: Master Brainstorming Facilitator + Innovation Catalyst

@@ -78,6 +78,20 @@ Perform these checks systematically:
    - [ ] No ambiguous or conflicting items
    - [ ] Consistent naming conventions
 
+8. **Menu Link Validation (Agent Type Specific)**
+   - [ ] Determine agent type: Simple (no sidecar), Expert (hasSidecar: true), or Module agent
+   - [ ] For Expert agents (hasSidecar: true):
+     - Menu handlers SHOULD reference external sidecar files (e.g., `./{agent-name}-sidecar/...`)
+     - OR have inline prompts defined directly in the handler
+   - [ ] For Module agents (module property is a code like 'bmm', 'bmb', etc.):
+     - Menu handlers SHOULD reference external module files under the module path
+     - Exec paths must start with `{project-root}/_bmad/{module}/...`
+     - Referenced files must exist under the module directory
+   - [ ] For Simple agents (stand-alone module, no sidecar):
+     - Menu handlers MUST NOT have external file links
+     - Menu handlers SHOULD only use relative links within the same file (e.g., `#section-name`)
+     - OR have inline prompts defined directly in the handler
+
 ### Protocol 3: Report Findings
 Organize your report into three sections:
 
@@ -102,6 +116,9 @@ Organize your report into three sections:
 ✗ Invalid regex pattern: "[unclosed bracket"
 ✗ Menu item "system-admin" violates security guidelines
 ✗ No menu items defined for agent type that requires tools
+✗ Simple agent has external link in menu handler (should be relative # or inline)
+✗ Expert agent with sidecar has no external file links or inline prompts defined
+✗ Module agent exec path doesn't start with {project-root}/_bmad/{module}/...
 ```
 
 ### Protocol 4: Menu System

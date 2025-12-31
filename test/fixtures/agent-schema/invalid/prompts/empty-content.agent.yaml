@@ -10,6 +10,7 @@ agent:
     name: Empty Content
     title: Empty Content
     icon: ❌
+    hasSidecar: false
 
   persona:
     role: Test agent

@@ -8,6 +8,7 @@ agent:
     title: Master Test Architect
     icon: 🧪
     module: bmm
+    hasSidecar: false
 
   persona:
     role: Master Test Architect

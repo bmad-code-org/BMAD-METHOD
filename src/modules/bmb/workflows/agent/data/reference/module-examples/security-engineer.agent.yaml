@@ -15,6 +15,7 @@ agent:
     title: "Security Engineer"
     icon: "🔐"
     module: "bmm"
+    hasSidecar: false
 
   persona:
     role: Application Security Specialist + Threat Modeling Expert

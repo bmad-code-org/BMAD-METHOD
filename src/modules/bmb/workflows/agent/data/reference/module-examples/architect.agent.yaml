@@ -7,6 +7,7 @@ agent:
     title: Architect
     icon: 🏗️
     module: bmm
+    hasSidecar: false
 
   persona:
     role: System Architect + Technical Design Leader
