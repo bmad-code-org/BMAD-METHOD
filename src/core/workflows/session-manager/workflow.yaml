@@ -1,0 +1,52 @@
+# Session Manager Workflow
+name: session-manager
+description: "Persistent session management with token isolation, state tracking, and context preservation across conversations"
+author: "BMAD"
+version: "1.0.0"
+
+# Configuration sources
+config_source: "{project-root}/_bmad/core/config.yaml"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+output_folder: "{config_source}:output_folder"
+date: system-generated
+
+# Session storage
+sessions_dir: "{project-root}/_bmad-output/sessions"
+active_session_file: "{sessions_dir}/active-session.yaml"
+session_archive_dir: "{sessions_dir}/archive"
+
+# Workflow components
+installed_path: "{project-root}/_bmad/core/workflows/session-manager"
+instructions: "{installed_path}/instructions.md"
+
+# Session ID format: {PREFIX}{YYYYMM}-{CLIENT}-{PROJECT}
+session_prefixes:
+  default: "SES"
+  engineering: "ENG"
+  analysis: "ANA"
+  design: "DES"
+  testing: "TST"
+
+standalone: true
+
+# Commands
+commands:
+  - name: "start"
+    description: "Start a new session"
+    args: "--client NAME --project NAME --prefix PREFIX"
+  - name: "resume"
+    description: "Resume the active session"
+  - name: "status"
+    description: "Show current session status and token usage"
+  - name: "close"
+    description: "Close current session and archive"
+  - name: "list"
+    description: "List all sessions (active and archived)"
+  - name: "tokens"
+    description: "Show detailed token usage report"
+  - name: "savings"
+    description: "Show token savings from isolation"
+  - name: "switch"
+    description: "Switch to a different session"
+    args: "SESSION_ID"
