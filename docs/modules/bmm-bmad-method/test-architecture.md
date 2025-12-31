@@ -6,6 +6,38 @@
 - **Mission:** Deliver actionable quality strategies, automation coverage, and gate decisions that scale with project complexity and compliance demands.
 - **Use When:** BMad Method or Enterprise track projects, integration risk is non-trivial, brownfield regression risk exists, or compliance/NFR evidence is required. (Quick Flow projects typically don't require TEA)
 
+## Choose Your TEA Engagement Model
+
+BMad does not mandate TEA. There are five valid ways to use it (or skip it). Pick one intentionally.
+
+1. **No TEA**
+   - Skip all TEA workflows. Use your existing team testing approach.
+
+2. **TEA-only (Standalone)**
+   - Use TEA on a non-BMad project. Bring your own requirements, acceptance criteria, and environments.
+   - Typical sequence: `*test-design` (system or epic) -> `*atdd` and/or `*automate` -> optional `*test-review` -> `*trace` for coverage and gate decisions.
+   - Run `*framework` or `*ci` only if you want TEA to scaffold the harness or pipeline.
+
+3. **Integrated: Greenfield Simple (BMad Method)**
+   - Phase 3: system-level `*test-design`, then `*framework` and `*ci`.
+   - Phase 4: per-epic `*test-design`, optional `*atdd`, then `*automate` and optional `*test-review`.
+   - Gate: `*trace` Phase 2.
+
+4. **Integrated: Brownfield Enterprise**
+   - Phase 2: baseline `*trace`.
+   - Phase 3: system-level `*test-design`, then `*framework` and `*ci`.
+   - Phase 4: per-epic `*test-design` focused on regression and integration risks.
+   - Gate: `*nfr-assess` (if not done earlier) and `*trace` Phase 2.
+   - For brownfield BMad Method, follow the same flow with `*nfr-assess` optional.
+
+5. **Integrated: Greenfield Enterprise**
+   - Phase 2: `*nfr-assess`.
+   - Phase 3: system-level `*test-design`, then `*framework` and `*ci`.
+   - Phase 4: per-epic `*test-design`, plus `*atdd`/`*automate`/`*test-review`.
+   - Gate: `*trace` Phase 2 and archive artifacts as needed.
+
+If you are unsure, default to the integrated path for your track and adjust later.
+
 ## TEA Workflow Lifecycle
 
 TEA integrates into the BMad development lifecycle during Solutioning (Phase 3) and Implementation (Phase 4):

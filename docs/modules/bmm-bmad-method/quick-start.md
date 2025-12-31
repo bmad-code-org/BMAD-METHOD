@@ -179,6 +179,16 @@ Once epics and stories are created:
 
 **Why run this?** It ensures all your planning assets align properly before you start building.
 
+#### Optional: Testing Posture (TEA)
+
+Testing is not mandated by BMad. Decide how you want to engage TEA:
+
+- **No TEA** - Use your existing team testing approach
+- **TEA-only (Standalone)** - Use TEA workflows with your own requirements and environment
+- **TEA-integrated** - Use TEA as part of the BMad Method or Enterprise flow
+
+See the [Test Architect Guide](./test-architecture.md) for the five TEA engagement models and recommended sequences.
+
 #### Context Management Tips
 
 - **Use 200k+ context models** for best results (Claude Sonnet 4.5, GPT-4, etc.)
