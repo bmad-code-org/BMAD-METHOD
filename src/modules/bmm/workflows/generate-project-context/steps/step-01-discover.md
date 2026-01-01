@@ -8,6 +8,7 @@
 - 💬 FOCUS on discovering existing project context and technology stack
 - 🎯 IDENTIFY critical implementation rules that AI agents need
 - ⚠️ ABSOLUTELY NO TIME ESTIMATES - AI development speed has fundamentally changed
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ## EXECUTION PROTOCOLS:
 

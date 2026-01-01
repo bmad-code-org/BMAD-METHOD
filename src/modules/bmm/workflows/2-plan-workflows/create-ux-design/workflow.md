@@ -39,4 +39,5 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
 ## EXECUTION
 
-Load and execute `steps/step-01-init.md` to begin the UX design workflow.
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
+- Load and execute `steps/step-01-init.md` to begin the UX design workflow.

@@ -12,7 +12,7 @@ workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{planning_artifacts}/prd.md'
 
 # Task References
-advancedElicitationTask: '{project-root}/_bmad/core/tasks/advanced-elicitation.xml'
+advancedElicitationTask: '{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml'
 partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 ---
 
@@ -30,6 +30,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - 💬 FOCUS on defining what winning looks like for this product
 - 🎯 COLLABORATIVE discovery, not assumption-based goal setting
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ## EXECUTION PROTOCOLS:
 
@@ -49,7 +50,7 @@ This step will generate content and present choices:
 
 ## PROTOCOL INTEGRATION:
 
-- When 'A' selected: Execute {project-root}/_bmad/core/tasks/advanced-elicitation.xml
+- When 'A' selected: Execute {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml
 - When 'P' selected: Execute {project-root}/_bmad/core/workflows/party-mode/workflow.md
 - PROTOCOLS always return to this step's A/P/C menu
 - User accepts/rejects protocol changes before proceeding
@@ -228,7 +229,7 @@ Show the generated content and present choices:
 
 #### If 'A' (Advanced Elicitation):
 
-- Execute {project-root}/_bmad/core/tasks/advanced-elicitation.xml with the current success criteria content
+- Execute {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml with the current success criteria content
 - Process the enhanced success metrics that come back
 - Ask user: "Accept these improvements to the success criteria? (y/n)"
 - If yes: Update content with improvements, then return to A/P/C menu

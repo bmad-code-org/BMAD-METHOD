@@ -11,6 +11,7 @@
 - 💬 FOCUS on successful workflow completion and implementation handoff
 - 🎯 PROVIDE clear next steps for implementation phase
 - ⚠️ ABSOLUTELY NO TIME ESTIMATES - AI development speed has fundamentally changed
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ## EXECUTION PROTOCOLS:
 

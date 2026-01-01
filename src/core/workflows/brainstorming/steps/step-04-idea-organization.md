@@ -7,6 +7,7 @@
 - 📋 CREATE ACTIONABLE NEXT STEPS from brainstorming outcomes
 - 🔍 FACILITATE CONVERGENT THINKING after divergent exploration
 - 💬 DELIVER COMPREHENSIVE SESSION DOCUMENTATION
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the `communication_language`
 
 ## EXECUTION PROTOCOLS:
 

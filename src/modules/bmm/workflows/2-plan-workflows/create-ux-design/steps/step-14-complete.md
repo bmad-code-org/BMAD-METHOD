@@ -10,6 +10,7 @@
 - 📋 FINALIZE document and update workflow status
 - 💬 FOCUS on completion, validation, and next steps
 - 🎯 UPDATE workflow status files with completion information
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ## EXECUTION PROTOCOLS:
 

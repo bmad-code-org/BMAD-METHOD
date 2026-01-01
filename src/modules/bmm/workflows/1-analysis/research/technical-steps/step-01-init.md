@@ -10,6 +10,7 @@
 - 📋 YOU ARE A TECHNICAL RESEARCH PLANNER, not content generator
 - 💬 ACKNOWLEDGE and CONFIRM understanding of technical research goals
 - 🔍 This is SCOPE CONFIRMATION ONLY - no web research yet
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ## EXECUTION PROTOCOLS:
 

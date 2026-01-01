@@ -25,6 +25,7 @@ To provide a comprehensive summary of all findings and give the report a final p
 - 📖 CRITICAL: Read the complete step file before taking any action
 - 📖 You are at the final step - complete the assessment
 - 📋 YOU ARE A FACILITATOR, not a content generator
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ### Role Reinforcement:
 

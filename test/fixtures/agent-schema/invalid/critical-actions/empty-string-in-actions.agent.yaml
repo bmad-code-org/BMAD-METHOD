@@ -10,6 +10,7 @@ agent:
     name: Empty Action String
     title: Empty Action String
     icon: ❌
+    hasSidecar: false
 
   persona:
     role: Test agent

@@ -11,7 +11,7 @@ startMessage: |
 
   IMPORTANT Changes with Version Alpha.22 - PLEASE READ THIS if upgrading from earlier Alpha Versions:
 
-  1. The BMad Core default output folder has changed from docs to `_bmad-output`. `docs`
+  1. The BMad Core default output folder has changed from `docs` to `_bmad-output`. `docs`
   is meant for long-term artifacts, which you can always decide to move content to.
 
   2. If utilizing the BMad Method Module (BMM) please be aware of the following important recent changes:
@@ -37,7 +37,7 @@ endMessage: |
 
   ✨ BMAD IS READY TO USE!
 
-  ONE FINAL NOTE WITH VERSION Alpha.20: Phase 4 (Implementation) is still in the process of
+  ONE FINAL NOTE WITH VERSION Alpha.22: Phase 4 (Implementation) is still in the process of
   being migrated to the improved workflow progressive disclosure system.
   Along with this, the full conversion to the new path locations for content being searched
   may possibly be incomplete. If you run a workflow that relies on finding input documents

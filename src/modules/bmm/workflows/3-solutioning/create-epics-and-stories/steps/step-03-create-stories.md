@@ -12,7 +12,7 @@ workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{planning_artifacts}/epics.md'
 
 # Task References
-advancedElicitationTask: '{project-root}/_bmad/core/tasks/advanced-elicitation.xml'
+advancedElicitationTask: '{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml'
 partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 # Template References
@@ -33,6 +33,7 @@ To generate all epics with their stories based on the approved epics_list, follo
 - 📖 CRITICAL: Read the complete step file before taking any action
 - 🔄 CRITICAL: Process epics sequentially
 - 📋 YOU ARE A FACILITATOR, not a content generator
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ### Role Reinforcement:
 

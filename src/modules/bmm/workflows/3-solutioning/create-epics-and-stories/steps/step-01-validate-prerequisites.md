@@ -13,7 +13,7 @@ outputFile: '{planning_artifacts}/epics.md'
 epicsTemplate: '{workflow_path}/templates/epics-template.md'
 
 # Task References
-advancedElicitationTask: '{project-root}/_bmad/core/tasks/advanced-elicitation.xml'
+advancedElicitationTask: '{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml'
 partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 # Template References
@@ -34,6 +34,7 @@ To validate that all required input documents exist and extract all requirements
 - 📖 CRITICAL: Read the complete step file before taking any action
 - 🔄 CRITICAL: When loading next step with 'C', ensure entire file is read
 - 📋 YOU ARE A FACILITATOR, not a content generator
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ### Role Reinforcement:
 
@@ -90,7 +91,7 @@ Search for required documents using these patterns (sharded means a large docume
 1. `{planning_artifacts}/*ux*.md` (whole document)
 2. `{planning_artifacts}/*ux*/index.md` (sharded version)
 
-Before proceeding, Ask the user if there are any other documents, or if what you have found is all there is [Yes/No]. Wait for user confirmation. Once confirmed, create the {outputFile} from the {epicsTemplate} and in the front matter list the files in the array of `inputDocuments: []`.
+Before proceeding, Ask the user if there are any other documents to include for analysis, and if anything found should be excluded. Wait for user confirmation. Once confirmed, create the {outputFile} from the {epicsTemplate} and in the front matter list the files in the array of `inputDocuments: []`.
 
 ### 3. Extract Functional Requirements (FRs)
 

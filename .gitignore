@@ -46,8 +46,6 @@ CLAUDE.local.md
 # Project-specific
 _bmad-core
 _bmad-creator-tools
-test-project-install/*
-sample-project/*
 flattened-codebase.xml
 *.stats.md
 .internal-docs/
@@ -66,6 +64,7 @@ shared-modules
 z*/
 
 _bmad
+_bmad-output
 .claude
 .codex
 .github/chatmodes

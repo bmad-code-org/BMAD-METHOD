@@ -25,6 +25,7 @@ outputFile: '{planning_artifacts}/prd.md'
 - 📋 FINALIZE document and update workflow status
 - 💬 FOCUS on completion, next steps, and suggestions
 - 🎯 UPDATE workflow status files with completion information
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ## EXECUTION PROTOCOLS:
 

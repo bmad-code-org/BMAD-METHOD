@@ -17,6 +17,7 @@ wipFile: '{implementation_artifacts}/tech-spec-wip.md'
 - MUST NOT optimize sequence.
 - MUST follow exact instructions.
 - MUST NOT implement anything - just document.
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ## CONTEXT:
 

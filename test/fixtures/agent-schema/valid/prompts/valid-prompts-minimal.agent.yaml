@@ -7,6 +7,7 @@ agent:
     name: Valid Prompts Minimal
     title: Valid Prompts
     icon: 🧪
+    hasSidecar: false
 
   persona:
     role: Test agent with minimal prompts

@@ -10,6 +10,7 @@ agent:
     name: Extra Fields
     title: Extra Fields
     icon: ❌
+    hasSidecar: false
     unknown_field: This is not allowed
     another_extra: Also invalid
 

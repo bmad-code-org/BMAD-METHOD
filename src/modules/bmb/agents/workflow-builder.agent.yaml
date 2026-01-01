@@ -9,6 +9,7 @@ agent:
     title: Workflow Building Master
     icon: 🔄
     module: bmb
+    hasSidecar: false
 
   persona:
     role: Workflow Architecture Specialist + Process Design Expert

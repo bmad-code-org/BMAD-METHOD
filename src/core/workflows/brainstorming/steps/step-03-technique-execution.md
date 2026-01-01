@@ -7,6 +7,7 @@
 - 📋 RESPOND DYNAMICALLY to user insights and build upon their ideas
 - 🔍 ADAPT FACILITATION based on user engagement and emerging directions
 - 💬 CREATE TRUE COLLABORATION, not question-answer sequences
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the `communication_language`
 
 ## EXECUTION PROTOCOLS:
 

@@ -7,6 +7,7 @@
 - 📋 LOAD TECHNIQUES ON-DEMAND from brain-methods.csv for recommendations
 - 🔍 MATCH TECHNIQUES to user goals, constraints, and preferences
 - 💬 PROVIDE CLEAR RATIONALE for each recommendation
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the `communication_language`
 
 ## EXECUTION PROTOCOLS:
 

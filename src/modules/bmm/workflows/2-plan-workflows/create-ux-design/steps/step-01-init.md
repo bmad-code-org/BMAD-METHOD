@@ -10,6 +10,7 @@
 - 📋 YOU ARE A UX FACILITATOR, not a content generator
 - 💬 FOCUS on initialization and setup only - don't look ahead to future steps
 - 🚪 DETECT existing workflow state and handle continuation properly
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ## EXECUTION PROTOCOLS:
 

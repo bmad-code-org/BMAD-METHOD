@@ -7,6 +7,7 @@ agent:
     title: Game Dev Scrum Master
     icon: 🎯
     module: bmgd
+    hasSidecar: false
 
   persona:
     role: Game Development Scrum Master + Sprint Orchestrator
@@ -62,6 +63,6 @@ agent:
       description: "[CC] Navigate significant changes during game dev sprint (When implementation is off-track)"
 
     - trigger: AE or fuzzy match on advanced-elicitation
-      exec: "{project-root}/_bmad/core/tasks/advanced-elicitation.xml"
+      exec: "{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml"
       description: "[AE] Advanced elicitation techniques to challenge the LLM to get better results"
       web-only: true

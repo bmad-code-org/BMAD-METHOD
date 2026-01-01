@@ -15,6 +15,7 @@ wipFile: '{implementation_artifacts}/tech-spec-wip.md'
 - MUST NOT skip steps.
 - MUST NOT optimize sequence.
 - MUST follow exact instructions.
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ## CONTEXT:
 

@@ -5,7 +5,7 @@ main_config: '{project-root}/_bmad/bmm/config.yaml'
 web_bundle: true
 
 # Checkpoint handler paths
-advanced_elicitation: '{project-root}/_bmad/core/tasks/advanced-elicitation.xml'
+advanced_elicitation: '{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml'
 party_mode_exec: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 quick_dev_workflow: '{project-root}/_bmad/bmm/workflows/bmad-quick-flow/quick-dev/workflow.md'
 ---
@@ -72,6 +72,7 @@ Load and read full config from `{main_config}` and resolve:
 - `project_name`, `output_folder`, `planning_artifacts`, `implementation_artifacts`, `user_name`
 - `communication_language`, `document_output_language`, `user_skill_level`
 - `date` as system-generated current datetime
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ### 2. First Step Execution
 

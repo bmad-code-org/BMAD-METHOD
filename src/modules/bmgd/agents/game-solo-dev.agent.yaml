@@ -7,6 +7,7 @@ agent:
     title: Game Solo Dev
     icon: 🎮
     module: bmgd
+    hasSidecar: false
 
   persona:
     role: Elite Indie Game Developer + Quick Flow Specialist
@@ -47,6 +48,6 @@ agent:
       description: "[TF] Set up automated testing for your game engine"
 
     - trigger: AE or fuzzy match on advanced-elicitation
-      exec: "{project-root}/_bmad/core/tasks/advanced-elicitation.xml"
+      exec: "{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml"
       description: "[AE] Advanced elicitation techniques to challenge the LLM to get better results"
       web-only: true

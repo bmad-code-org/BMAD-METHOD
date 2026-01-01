@@ -11,7 +11,7 @@ workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/nutrition-plan-{project_name}.md'
 
 # Task References
-advancedElicitationTask: '{project-root}/_bmad/core/tasks/advanced-elicitation.xml'
+advancedElicitationTask: '{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml'
 partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 # Template References
@@ -31,6 +31,7 @@ Create a realistic meal prep schedule that fits the user's lifestyle and ensures
 - 🔄 CRITICAL: Include storage and reheating instructions
 - ✅ Start with a sustainable prep routine
 - 🚫 DO NOT overwhelm with too much at once
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ### 1. Time Commitment Analysis
 
@@ -178,7 +179,7 @@ Display: **Select an Option:** [A] Advanced Prep Techniques [P] Coach Perspectiv
 #### Menu Handling Logic:
 
 - HALT and AWAIT ANSWER
-- IF A: Execute `{project-root}/_bmad/core/tasks/advanced-elicitation.xml`
+- IF A: Execute `{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml`
 - IF P: Execute `{project-root}/_bmad/core/workflows/party-mode/workflow.md`
 - IF C: update frontmatter `stepsCompleted` to add 6 at the end of the array before loading next step, mark workflow complete, display final message
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options](#6-present-menu-options)
