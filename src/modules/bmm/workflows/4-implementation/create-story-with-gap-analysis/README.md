@@ -38,7 +38,7 @@ Args: "1.9" (epic.story number)
 2. **SCAN codebase systematically** (Glob for files, Read to verify implementation)
 3. Generate gap analysis with verified ✅/❌/⚠️ status
 4. Update story file with truthful checkboxes
-5. Save to docs/sprint-artifacts/
+5. Save to _bmad-output/implementation-artifacts/
 
 ---
 

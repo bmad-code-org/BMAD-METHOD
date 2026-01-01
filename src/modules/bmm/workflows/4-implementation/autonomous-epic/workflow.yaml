@@ -46,6 +46,31 @@ super_dev_pipeline_features:
   quality_gates: "All super-dev-story gates with disciplined execution"
   brownfield_support: "Validates existing code before implementation"
 
+# YOLO MODE CLARIFICATION
+# YOLO mode ONLY means auto-approve prompts (answer "y", "Y", "C", "continue")
+# YOLO mode does NOT mean: skip steps, skip workflows, or produce minimal output
+# ALL steps, workflows, and verifications must still be fully executed
+yolo_clarification:
+  auto_approve_prompts: true
+  skip_steps: false # NEVER - all steps must execute
+  skip_workflows: false # NEVER - invoke-workflow calls must execute
+  skip_verification: false # NEVER - all checks must pass
+  minimal_output: false # NEVER - full quality output required
+
+# STORY QUALITY REQUIREMENTS
+# These settings ensure create-story produces comprehensive story files
+story_quality_requirements:
+  minimum_size_bytes: 4000 # Story files must be at least 4KB
+  enforce_minimum_size: true
+  required_sections:
+    - "## Tasks"
+    - "## Acceptance Criteria"
+    - "## Dev Notes"
+    - "Architecture Constraints"
+    - "Gap Analysis"
+  halt_on_quality_failure: true # Stop processing if story fails quality check
+  verify_file_exists: true # Verify story file was actually created on disk
+
 # TASK-BASED COMPLETION SETTINGS (NEW)
 # These settings ensure stories are truly complete, not just marked as such
 completion_verification:
@@ -68,5 +93,3 @@ completion_verification:
   strict_epic_completion: true
 
 standalone: true
-
-web_bundle: false

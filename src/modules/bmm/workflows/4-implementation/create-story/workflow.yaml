@@ -32,6 +32,21 @@ project_context: "**/project-context.md"
 
 default_output_file: "{story_dir}/{{story_key}}.md"
 
+# STORY QUALITY REQUIREMENTS
+# Ensure comprehensive story files are produced
+story_quality:
+  minimum_size_bytes: 4000 # Story files must be at least 4KB
+  required_sections:
+    - "## Story" # As a / I want / So that
+    - "## Status"
+    - "## Acceptance Criteria" # BDD-style Given/When/Then
+    - "## Tasks" # Actionable tasks with checkboxes
+    - "## Dev Notes" # Technical implementation notes
+    - "## Gap Analysis" # Codebase analysis results
+    - "Architecture Constraints" # From architecture.md
+  output_mode: "comprehensive" # Never produce minimal output
+  yolo_mode_note: "YOLO mode means auto-approve prompts, NOT skip sections or produce minimal output"
+
 # Smart input file references - Simplified for enhanced approach
 # The epics+stories file should contain everything needed with source hints
 input_file_patterns:
@@ -57,5 +72,3 @@ input_file_patterns:
     load_strategy: "SELECTIVE_LOAD" # Only load needed epic
 
 standalone: true
-
-web_bundle: false

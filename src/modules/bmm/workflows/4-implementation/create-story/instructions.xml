@@ -3,6 +3,11 @@
   <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
   <critical>Communicate all responses in {communication_language} and generate all documents in {document_output_language}</critical>
 
+  <critical>🚨 YOLO MODE CLARIFICATION: YOLO mode ONLY means auto-approve prompts (answer "y", "Y", "C", "continue").
+    YOLO mode does NOT mean: skip steps, skip sections, skip analysis, or produce minimal output.
+    ALL steps must be fully executed. ALL sections must be populated. The output file must be COMPREHENSIVE (4KB+ minimum).
+    Skipping steps or producing minimal output in YOLO mode is a CRITICAL FAILURE.</critical>
+
   <critical>🔥 CRITICAL MISSION: You are creating the ULTIMATE story context engine that prevents LLM developer mistakes, omissions or
     disasters! 🔥</critical>
   <critical>Your purpose is NOT to copy from epics - it's to create a comprehensive, optimized story file that gives the DEV agent
@@ -302,6 +307,32 @@
       <action>Save file, preserving ALL comments and structure including STATUS DEFINITIONS</action>
     </check>
 
+    <critical>QUALITY VERIFICATION - Story file must meet minimum requirements before completion</critical>
+    <action>Verify story file was created on disk</action>
+    <check if="story file does not exist on disk">
+      <output>🚫 CRITICAL ERROR: Story file was NOT created at {{story_file}}</output>
+      <output>This is a workflow execution failure. The file must be written to disk.</output>
+      <action>HALT - Story creation failed</action>
+    </check>
+
+    <action>Get file size of {{story_file}}</action>
+    <check if="file size is less than 4000 bytes">
+      <output>🚫 CRITICAL ERROR: Story file is too small ({{file_size}} bytes, minimum 4000 bytes)</output>
+      <output>This indicates the story was not comprehensively created.</output>
+      <output>Required sections: ## Story, ## Acceptance Criteria, ## Tasks, ## Dev Notes, Gap Analysis, Architecture Constraints</output>
+      <action>HALT - Story creation incomplete. Re-run with full analysis.</action>
+    </check>
+
+    <action>Verify required sections exist in story file</action>
+    <check if="missing ## Tasks section">
+      <output>🚫 CRITICAL ERROR: Story file is missing ## Tasks section</output>
+      <action>HALT - Story creation incomplete</action>
+    </check>
+    <check if="missing ## Acceptance Criteria section">
+      <output>🚫 CRITICAL ERROR: Story file is missing ## Acceptance Criteria section</output>
+      <action>HALT - Story creation incomplete</action>
+    </check>
+
     <action>Report completion</action>
     <output>**🎯 BMad Method STORY CREATED, {user_name}!**
 
@@ -309,6 +340,7 @@
       - Story ID: {{story_id}}
       - Story Key: {{story_key}}
       - File: {{story_file}}
+      - File Size: {{file_size}} bytes ✅ (minimum 4000 bytes)
       - Status: ready-for-dev
 
       **What Was Created:**
@@ -316,6 +348,7 @@
       - ✅ Acceptance criteria and success metrics
       - ✅ DRAFT implementation tasks (based on requirements)
       - ✅ Developer context and architecture guardrails
+      - ✅ Quality verification passed
 
       **Next Steps:**
       1. Review the story in {{story_file}}

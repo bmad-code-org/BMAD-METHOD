@@ -8,7 +8,7 @@ Generate complete 7-section story file using verified gap analysis from Step 2.
 ### 1. Load Template
 
 ```bash
-Read: _bmad/custom/workflows/create-story-with-gap-analysis/template.md
+Read: {installed_path}/template.md
 ```
 
 ### 2. Fill Template Variables
@@ -88,7 +88,7 @@ Read: _bmad/custom/workflows/create-story-with-gap-analysis/template.md
 
 **Write filled template:**
 ```bash
-Write: docs/sprint-artifacts/{{epic_num}}-{{story_num}}-{{slug}}.md
+Write: {story_dir}/story-{{epic_num}}.{{story_num}}.md
 [Complete 7-section story with verified gap analysis]
 ```
 
@@ -96,28 +96,28 @@ Write: docs/sprint-artifacts/{{epic_num}}-{{story_num}}-{{slug}}.md
 
 ```bash
 # Check section count
-grep "^## " docs/sprint-artifacts/{{story_file}} | wc -l
+grep "^## " {story_dir}/story-{{epic_num}}.{{story_num}}.md | wc -l
 # Should output: 7
 
 # Check for gap analysis
-grep -q "Gap Analysis.*Current State" docs/sprint-artifacts/{{story_file}}
+grep -q "Gap Analysis.*Current State" {story_dir}/story-{{epic_num}}.{{story_num}}.md
 # Should find it
 
 # Run custom validation
-./scripts/validate-bmad-format.sh docs/sprint-artifacts/{{story_file}}
+./scripts/validate-bmad-format.sh {story_dir}/story-{{epic_num}}.{{story_num}}.md
 # Update script to expect 7 sections + gap analysis subsection
 ```
 
 ### 5. Update Sprint Status
 
 ```bash
-Read: docs/sprint-artifacts/sprint-status.yaml
+Read: {sprint_status}
 
 # Find story entry
 # Update status to "ready-for-dev" if was "backlog"
 # Preserve all comments and structure
 
-Write: docs/sprint-artifacts/sprint-status.yaml
+Write: {sprint_status}
 ```
 
 ### 6. Report Completion
@@ -126,7 +126,7 @@ Write: docs/sprint-artifacts/sprint-status.yaml
 ```
 ✅ Story {{epic_num}}.{{story_num}} Regenerated with Gap Analysis
 
-File: docs/sprint-artifacts/{{story_file}}
+File: {story_dir}/story-{{epic_num}}.{{story_num}}.md
 Sections: 7/7 ✅
 Gap Analysis: VERIFIED with codebase scan
 

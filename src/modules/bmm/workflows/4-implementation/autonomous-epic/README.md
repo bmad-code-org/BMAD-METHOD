@@ -431,10 +431,10 @@ Ready to merge
 
 ```bash
 # In another terminal, watch progress:
-watch -n 10 'cat docs/sprint-artifacts/.autonomous-epic-progress.yaml'
+watch -n 10 'cat _bmad-output/implementation-artifacts/.autonomous-epic-progress.yaml'
 
 # Or tail completion report:
-tail -f docs/sprint-artifacts/epic-2-completion-report.md
+tail -f _bmad-output/implementation-artifacts/epic-2-completion-report.md
 ```
 
 ### 4. Interruption Handling
@@ -630,7 +630,7 @@ Story 3/8: 2-3-password-reset
 
 ```bash
 # Check progress programmatically:
-cat docs/sprint-artifacts/.autonomous-epic-progress.yaml
+cat _bmad-output/implementation-artifacts/.autonomous-epic-progress.yaml
 
 # Example:
 epic_num: 2
@@ -643,7 +643,7 @@ current_story: 2-3-password-reset
 
 ```bash
 # Generated when epic completes:
-cat docs/sprint-artifacts/epic-2-completion-report.md
+cat _bmad-output/implementation-artifacts/epic-2-completion-report.md
 ```
 
 ## Advanced: Batch Epic Processing

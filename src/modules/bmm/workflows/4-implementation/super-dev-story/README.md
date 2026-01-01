@@ -97,7 +97,7 @@ Super-dev-story:
 ### Specify Story
 
 ```bash
-/super-dev-story docs/sprint-artifacts/1-2-auth.md
+/super-dev-story _bmad-output/implementation-artifacts/story-1.2.md
 ```
 
 ### Expected Flow

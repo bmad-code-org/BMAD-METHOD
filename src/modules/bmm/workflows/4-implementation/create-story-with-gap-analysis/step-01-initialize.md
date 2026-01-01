@@ -13,7 +13,7 @@ Which story should I regenerate with gap analysis?
 
 Options:
 1. Provide story number (e.g., "1.9" or "1-9")
-2. Provide story filename (e.g., "1-9-admin-user-service-bridgeid-rbac.md")
+2. Provide story filename (e.g., "story-1.9.md" or legacy "1-9-admin-user-service-bridgeid-rbac.md")
 
 Your choice:
 ```
@@ -21,12 +21,14 @@ Your choice:
 **Parse input:**
 - Extract epic_num (e.g., "1")
 - Extract story_num (e.g., "9")
-- Locate story file: `docs/sprint-artifacts/{epic_num}-{story_num}-*.md`
+- Locate story file: `{story_dir}/story-{epic_num}.{story_num}.md` (fallback: `{story_dir}/{epic_num}-{story_num}-*.md`)
 
 ### 2. Load Existing Story Content
 
 ```bash
-Read: docs/sprint-artifacts/{epic_num}-{story_num}-*.md
+Read: {story_dir}/story-{epic_num}.{story_num}.md
+# If not found, fallback:
+Read: {story_dir}/{epic_num}-{story_num}-*.md
 ```
 
 **Extract from existing story:**
@@ -40,8 +42,7 @@ Read: docs/sprint-artifacts/{epic_num}-{story_num}-*.md
 ### 3. Load Epic Context
 
 ```bash
-Glob: docs/archive/planning-round-1-greenfield/epics/epic-{epic_num}-*.md
-Read: [found epic file]
+Read: {planning_artifacts}/epics.md
 ```
 
 **Extract from epic:**

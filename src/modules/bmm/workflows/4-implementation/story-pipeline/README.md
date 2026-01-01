@@ -137,7 +137,7 @@ If execution stops (context exhaustion, error, manual halt):
 bmad build 1-4 --resume
 
 # The pipeline reads state from:
-# docs/sprint-artifacts/pipeline-state-{story-id}.yaml
+# _bmad-output/implementation-artifacts/pipeline-state-{story-id}.yaml
 ```
 
 Resume automatically:
@@ -213,7 +213,7 @@ steps:
 
 ### Pipeline State File
 
-Created at `docs/sprint-artifacts/pipeline-state-{story-id}.yaml`:
+Created at `_bmad-output/implementation-artifacts/pipeline-state-{story-id}.yaml`:
 
 ```yaml
 story_id: "1-4"
@@ -277,7 +277,7 @@ steps:
    - Acceptance criteria in BDD format (Given/When/Then)
    - Test scenarios for each AC
    - Technical notes
-5. Save to `docs/sprint-artifacts/story-{id}.md`
+5. Save to `_bmad-output/implementation-artifacts/story-{id}.md`
 
 **Quality Gate:** Story file exists with all required sections.
 
@@ -417,7 +417,7 @@ Example issues found in real usage:
 After a complete pipeline run:
 
 ```
-docs/sprint-artifacts/
+_bmad-output/implementation-artifacts/
 ├── story-{id}.md              # Story file with ACs, validation report
 ├── pipeline-state-{id}.yaml   # Execution state and summary
 ├── atdd-checklist-{id}.md     # Test requirements checklist

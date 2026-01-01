@@ -7,6 +7,7 @@ config_source: "{project-root}/_bmad/bmm/config.yaml"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
 date: system-generated
+planning_artifacts: "{config_source}:planning_artifacts"
 implementation_artifacts: "{config_source}:implementation_artifacts"
 output_folder: "{implementation_artifacts}"
 story_dir: "{implementation_artifacts}"
@@ -19,8 +20,8 @@ instructions: "{installed_path}/step-01-initialize.md"
 # Variables and inputs
 variables:
   sprint_status: "{implementation_artifacts}/sprint-status.yaml"
-  epics_file: "{output_folder}/epics.md"
-  prd_file: "{output_folder}/PRD.md"
+  epics_file: "{planning_artifacts}/epics.md"
+  prd_file: "{planning_artifacts}/prd.md"
 
 # Project context
 project_context: "**/project-context.md"

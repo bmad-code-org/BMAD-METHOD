@@ -96,8 +96,8 @@ stories:
 
 ```bash
 git add src/
-git add docs/sprint-artifacts/story-{story_id}.md
-git add docs/sprint-artifacts/sprint-status.yaml
+git add _bmad-output/implementation-artifacts/story-{story_id}.md
+git add _bmad-output/implementation-artifacts/sprint-status.yaml
 git add src/supabase/migrations/
 ```
 
