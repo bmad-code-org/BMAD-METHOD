@@ -1,0 +1,111 @@
+# Whiteport Design Studio Configuration
+
+code: wds
+name: "WDS: Whiteport Design Studio"
+default_selected: false # This module will not be selected by default for new installations
+
+header: "Whiteport Design Studio (WDS) Module"
+subheader: "Configure the settings for the WDS design-first methodology"
+
+# Core config values automatically inherited:
+## user_name
+## communication_language
+## document_output_language
+## output_folder
+## bmad_folder
+## install_user_docs
+## kb_install
+
+project_type:
+  prompt: "What type of project are you working on?"
+  default: "digital_product"
+  result: "{value}"
+  single-select:
+    - value: "digital_product"
+      label: "Digital Product - Web/mobile application or platform"
+    - value: "landing_page"
+      label: "Landing Page - Marketing or campaign page"
+    - value: "website"
+      label: "Website - Multi-page website or portal"
+    - value: "other"
+      label: "Other - Custom or specialized project"
+
+design_system_mode:
+  prompt: "How will you manage design system components?"
+  default: "none"
+  result: "{value}"
+  single-select:
+    - value: "none"
+      label: "No Design System - Page-specific components only"
+    - value: "figma"
+      label: "Custom Figma Design System - Link to Figma components"
+    - value: "component_library"
+      label: "Component Library - Use shadcn/Radix/similar library"
+
+methodology_version:
+  prompt: "Which WDS methodology version would you like to use?"
+  default: "wds-v6"
+  result: "{value}"
+  single-select:
+    - value: "wds-v6"
+      label: "WDS v6 (Recommended) - Modern numbered phases (1-8)"
+    - value: "wps2c-v4"
+      label: "WPS2C v4 (Legacy) - Letter-based phases (A-G)"
+    - value: "custom"
+      label: "Custom - Define your own methodology"
+
+product_languages:
+  prompt: "Which languages will your product support? (Select all that apply)"
+  default: ["en"]
+  required: true
+  result: "{value}"
+  multi-select:
+    - value: "en"
+      label: "English"
+    - value: "sv"
+      label: "Swedish"
+    - value: "no"
+      label: "Norwegian"
+    - value: "da"
+      label: "Danish"
+    - value: "fi"
+      label: "Finnish"
+    - value: "de"
+      label: "German"
+    - value: "es"
+      label: "Spanish"
+    - value: "fr"
+      label: "French"
+    - value: "it"
+      label: "Italian"
+    - value: "pt"
+      label: "Portuguese"
+    - value: "nl"
+      label: "Dutch"
+    - value: "pl"
+      label: "Polish"
+    - value: "ru"
+      label: "Russian"
+    - value: "ja"
+      label: "Japanese"
+    - value: "zh"
+      label: "Chinese"
+    - value: "ko"
+      label: "Korean"
+    - value: "ar"
+      label: "Arabic"
+    - value: "other"
+      label: "Other"
+
+design_experience:
+  prompt: "What is your design experience level?"
+  default: "intermediate"
+  result: "{value}"
+  single-select:
+    - value: "beginner"
+      label: "Beginner - New to UX design, provide detailed guidance"
+    - value: "intermediate"
+      label: "Intermediate - Familiar with design concepts, balanced approach"
+    - value: "expert"
+      label: "Expert - Experienced designer, be direct and efficient"
+

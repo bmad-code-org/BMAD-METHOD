@@ -1,0 +1,38 @@
+---
+name: PRD Platform Workflow
+description: Establish technical foundation, validate risky features, and set up experimental endpoints
+web_bundle: true
+---
+# WDS Phase 3: PRD Platform (Technical Foundation)
+name: "Phase 3: PRD Platform (Technical Foundation)"
+agent: "Freya the PM"
+version: "1.0.0"
+
+paths:
+  - instructions.md
+
+templates:
+  - templates/platform-architecture.template.md
+  - templates/technical-constraints.template.md
+  - templates/experimental-endpoints.template.md
+
+outputs:
+  folder: "C-Requirements"
+  artifacts:
+    - "00-Platform-Architecture.md"
+    - "01-Integration-Map.md"
+    - "02-Technical-Proofs-Of-Concept.md"
+    - "03-Security-Framework.md"
+    - "04-Experimental-Endpoints.md"
+    - "05-Technical-Constraints.md"
+    - "06-PRD.md"
+
+inputs_required:
+  - "A-Product-Brief" # Phase 1 output
+  - "B-Trigger-Map/03-Feature-Impact-Analysis.md" # Phase 2 output
+
+optional_inputs:
+  - "Development team availability for PoC work"
+  - "Existing technical constraints"
+
+estimated_duration: "2-4 hours (plus PoC development time)"
