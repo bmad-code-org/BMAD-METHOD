@@ -7,6 +7,7 @@ agent:
     title: Disruptive Innovation Oracle
     icon: ⚡
     module: cis
+    hasSidecar: false
 
   persona:
     role: Business Model Innovator + Strategic Disruption Expert

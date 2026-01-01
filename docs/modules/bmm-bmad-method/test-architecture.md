@@ -6,6 +6,38 @@
 - **Mission:** Deliver actionable quality strategies, automation coverage, and gate decisions that scale with project complexity and compliance demands.
 - **Use When:** BMad Method or Enterprise track projects, integration risk is non-trivial, brownfield regression risk exists, or compliance/NFR evidence is required. (Quick Flow projects typically don't require TEA)
 
+## Choose Your TEA Engagement Model
+
+BMad does not mandate TEA. There are five valid ways to use it (or skip it). Pick one intentionally.
+
+1. **No TEA**
+   - Skip all TEA workflows. Use your existing team testing approach.
+
+2. **TEA-only (Standalone)**
+   - Use TEA on a non-BMad project. Bring your own requirements, acceptance criteria, and environments.
+   - Typical sequence: `*test-design` (system or epic) -> `*atdd` and/or `*automate` -> optional `*test-review` -> `*trace` for coverage and gate decisions.
+   - Run `*framework` or `*ci` only if you want TEA to scaffold the harness or pipeline.
+
+3. **Integrated: Greenfield - BMad Method (Simple/Standard Work)**
+   - Phase 3: system-level `*test-design`, then `*framework` and `*ci`.
+   - Phase 4: per-epic `*test-design`, optional `*atdd`, then `*automate` and optional `*test-review`.
+   - Gate (Phase 2): `*trace`.
+
+4. **Integrated: Brownfield - BMad Method or Enterprise (Simple or Complex)**
+   - Phase 2: baseline `*trace`.
+   - Phase 3: system-level `*test-design`, then `*framework` and `*ci`.
+   - Phase 4: per-epic `*test-design` focused on regression and integration risks.
+   - Gate (Phase 2): `*trace`; `*nfr-assess` (if not done earlier).
+   - For brownfield BMad Method, follow the same flow with `*nfr-assess` optional.
+
+5. **Integrated: Greenfield - Enterprise Method (Enterprise/Compliance Work)**
+   - Phase 2: `*nfr-assess`.
+   - Phase 3: system-level `*test-design`, then `*framework` and `*ci`.
+   - Phase 4: per-epic `*test-design`, plus `*atdd`/`*automate`/`*test-review`.
+   - Gate (Phase 2): `*trace`; archive artifacts as needed.
+
+If you are unsure, default to the integrated path for your track and adjust later.
+
 ## TEA Workflow Lifecycle
 
 TEA integrates into the BMad development lifecycle during Solutioning (Phase 3) and Implementation (Phase 4):
@@ -16,6 +48,9 @@ graph TB
     subgraph Phase2["<b>Phase 2: PLANNING</b>"]
         PM["<b>PM: *prd (creates PRD with FRs/NFRs)</b>"]
         PlanNote["<b>Business requirements phase</b>"]
+        NFR2["<b>TEA: *nfr-assess (optional, enterprise)</b>"]
+        PM -.-> NFR2
+        NFR2 -.-> PlanNote
         PM -.-> PlanNote
     end
 
@@ -23,8 +58,8 @@ graph TB
         Architecture["<b>Architect: *architecture</b>"]
         EpicsStories["<b>PM/Architect: *create-epics-and-stories</b>"]
         TestDesignSys["<b>TEA: *test-design (system-level)</b>"]
-        Framework["<b>TEA: *framework</b>"]
-        CI["<b>TEA: *ci</b>"]
+        Framework["<b>TEA: *framework (optional if needed)</b>"]
+        CI["<b>TEA: *ci (optional if needed)</b>"]
         GateCheck["<b>Architect: *implementation-readiness</b>"]
         Architecture --> EpicsStories
         Architecture --> TestDesignSys
@@ -174,7 +209,7 @@ npm install -D @seontechnologies/playwright-utils
 
 **Enable during BMAD installation** by answering "Yes" when prompted.
 
-**Supported utilities (11 total):**
+**Supported utilities (10 total):**
 
 - api-request, network-recorder, auth-session, intercept-network-call, recurse
 - log, file-utils, burn-in, network-error-monitor
@@ -429,7 +464,7 @@ Provides fixture-based utilities that integrate into TEA's test generation and r
 
    Benefit: Faster CI feedback, HTTP error detection
 
-**Utilities available** (11 total): api-request, network-recorder, auth-session, intercept-network-call, recurse, log, file-utils, burn-in, network-error-monitor, fixtures-composition
+**Utilities available** (10 total): api-request, network-recorder, auth-session, intercept-network-call, recurse, log, file-utils, burn-in, network-error-monitor, fixtures-composition
 
 **Enable during BMAD installation** by answering "Yes" when prompted, or manually set `tea_use_playwright_utils: true` in `_bmad/bmm/config.yaml`.
 

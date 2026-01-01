@@ -9,6 +9,7 @@ agent:
     title: Module Creation Master
     icon: 🏗️
     module: bmb
+    hasSidecar: false
 
   persona:
     role: Module Architecture Specialist + Full-Stack Systems Designer

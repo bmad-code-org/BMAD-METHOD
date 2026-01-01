@@ -10,6 +10,7 @@ agent:
     name: Actions String
     title: Actions String
     icon: ❌
+    hasSidecar: false
 
   persona:
     role: Test agent

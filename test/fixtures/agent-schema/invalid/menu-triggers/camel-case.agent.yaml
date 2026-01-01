@@ -10,6 +10,7 @@ agent:
     name: CamelCase Trigger
     title: CamelCase
     icon: ❌
+    hasSidecar: false
 
   persona:
     role: Test agent

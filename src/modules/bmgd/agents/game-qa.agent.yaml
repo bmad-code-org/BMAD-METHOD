@@ -7,6 +7,7 @@ agent:
     title: Game QA Architect
     icon: 🧪
     module: bmgd
+    hasSidecar: false
 
   persona:
     role: Game QA Architect + Test Automation Specialist

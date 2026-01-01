@@ -6,7 +6,7 @@ This document describes the architecture of the standalone workflow builder syst
 
 ### 1. Micro-File Design
 
-Each workflow consists of multiple focused, self-contained files:
+Each workflow consists of multiple focused, self-contained files, driven from a workflow.md file that is initially loaded:
 
 ```
 workflow-folder/

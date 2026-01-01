@@ -1,91 +1,95 @@
-# BMad Documentation Index
+# BMAD Documentation
 
-## Core Documentation
+Complete documentation for the BMAD Method.
 
-### Project-Level Docs (Root)
+## Getting Started
 
-- **[README.md](https://github.com/bmad-code-org/BMAD-METHOD/blob/main/README.md)** - Main project overview, feature summary, and module introductions
-- **[CONTRIBUTING.md](https://github.com/bmad-code-org/BMAD-METHOD/blob/main/CONTRIBUTING.md)** - How to contribute, pull request guidelines, code style
-- **[CHANGELOG.md](https://github.com/bmad-code-org/BMAD-METHOD/blob/main/CHANGELOG.md)** - Version history and breaking changes
+### New to BMAD?
+Start with the core concepts to understand how BMAD works:
 
-### Installation & Setup
+- **[Core Concepts](./bmad-core-concepts/)** - Agents, workflows, and modules explained
+- **[Installation Guide](./bmad-core-concepts/installing/)** - Set up BMAD in your project
+- **[Quick Start Guide](./modules/bmm-bmad-method/quick-start)** - Build your first feature
 
-- **[Quick Installation](./installing-bmad.md)** - Add BMad official and custom modules to a project folder.
-- **[v4 to v6 Upgrade Guide](./v4-to-v6-upgrade.md)** - Migration path for v4 users
-- **[Document Sharding Guide](modules/core/document-sharding-guide.md)** - Split large documents
-- **[Bundle Distribution Setup](../tools/docs/BUNDLE_DISTRIBUTION_SETUP.md)** - (temporarily non-functional) Maintainer guide for bundle auto-publishing
+### Upgrading from v4?
+- **[v4 to v6 Upgrade Guide](./bmad-core-concepts/installing/upgrading.md)** - Migration path for v4 users
+
+---
 
 ## Module Documentation
 
-### Core Module Global Entities
-
-- **[Core Module Index](./modules/core/index)** — Shared functionality available to all modules
-  - [Global Core Config](./modules/core/global-core-config.md) — Inheritable configuration impacting all modules and custom content
-  - [Core Workflows](./modules/core/core-workflows.md) — Domain-agnostic workflows usable by any module
-    - [Party Mode](./modules/core/party-mode.md) — Multi-agent conversation orchestration
-    - [Brainstorming](./modules/core/brainstorming.md) — Structured creative sessions with 60+ techniques
-    - [Advanced Elicitation](./modules/core/advanced-elicitation.md) — LLM rethinking with 50+ reasoning methods
-  - [Core Tasks](./modules/core/core-tasks.md) — Common tasks available across modules
-    - [Index Docs](./modules/core/core-tasks.md#index-docs) — Generate directory index files
-    - [Adversarial Review](./modules/core/core-tasks.md#adversarial-review-general) — Critical content review
-    - [Shard Document](./modules/core/core-tasks.md#shard-document) — Split large documents into sections
-
-### BMad Method (BMM) - Software & Game Development
+### BMAD Method (BMM) - Software & Game Development
 
 The flagship module for agile AI-driven development.
 
-- **[BMM Module Index](./modules/bmm-bmad-method/index)** - Module overview, agents, and complete documentation index
-  - [Quick Start Guide](./modules/bmm-bmad-method/quick-start) - Step-by-step guide to building your first project
+- **[BMM Module Index](./modules/bmm-bmad-method/index)** - Module overview, agents, and documentation
+  - [Quick Start Guide](./modules/bmm-bmad-method/quick-start) - Step-by-step guide
   - [Quick Spec Flow](./modules/bmm-bmad-method/quick-spec-flow) - Rapid Level 0-1 development
   - [Brownfield Guide](./modules/bmm-bmad-method/brownfield-guide) - Working with existing codebases
-- **[BMM Workflows Guide](./modules/bmm-bmad-method/index#-workflow-guides)** - **ESSENTIAL READING**
-- **[Test Architect Guide](./modules/bmm-bmad-method/test-architecture)** - Testing strategy and quality assurance
+- **[BMM Workflows Guide](./modules/bmm-bmad-method/index#-workflow-guides)** - Essential reading
 
-### BMad Builder (BMB) - Create Custom Solutions
+### BMAD Builder (BMB) - Create Custom Solutions
 
 Build your own agents, workflows, and modules.
 
 - **[BMB Module Overview](./modules/bmb-bmad-builder/index)** - Module overview and capabilities
-- **[Custom Content Guide](./modules/bmb-bmad-builder/custom-content)** - Design custom agents, workflows, and modules
-- **[How to Install Custom Agents, Workflows and Modules](./modules/bmb-bmad-builder/custom-content-installation.md)** - Share and Install Custom Creations
+- **[Agent Creation Guide](./modules/bmb-bmad-builder/agent-creation-guide.md)** - Create custom agents
+- **[Custom Content Installation](./modules/bmb-bmad-builder/custom-content-installation.md)** - Share and install custom creations
 
 ### Creative Intelligence Suite (CIS) - Innovation & Creativity
 
-- **[CIS Docs](./modules/cis-creative-intelligence-suite/index.md)**
+- **[CIS Documentation](./modules/cis-creative-intelligence-suite/index)**
 
-#### Bmad Game Dev (BMGD)
+### BMAD Game Dev (BMGD)
 
-- [Main Game Dev Module Docs Index](./modules/bmgd-bmad-game-dev/index.md)
+- **[BMGD Documentation](./modules/bmgd-bmad-game-dev/index)** - Game development workflows
 
-AI-powered creative thinking and brainstorming.
+---
 
-- **[CIS Module README](./modules/cis-creative-intelligence-suite/index)** - Module overview and workflows
+## Core Module
+
+### Global Core Entities
+
+- **[Core Module Index](./modules/core/index)** - Shared functionality available to all modules
+  - [Global Core Config](./modules/core/global-core-config.md) - Inheritable configuration
+  - [Core Workflows](./modules/core/core-workflows.md) - Domain-agnostic workflows
+    - [Party Mode](./modules/core/party-mode.md) - Multi-agent conversations
+    - [Brainstorming](./modules/core/brainstorming.md) - Structured creative sessions
+    - [Advanced Elicitation](./modules/core/advanced-elicitation.md) - LLM reasoning techniques
+  - [Core Tasks](./modules/core/core-tasks.md) - Common tasks across modules
+
+---
 
 ## Advanced Topics
 
-### Custom Agents, Workflow and Modules
-- **[Custom Content Installation](modules/bmb-bmad-builder/custom-content-installation.md)** - Install and personalize agents, workflows and modules with the default bmad-method installer!
-- [Agent Customization Guide](./bmad-customization/agent-customization-guide.md) - Customize agent behavior and responses
-- [Workflow Customization Guide](./bmad-customization/workflow-customization-guide.md) - Customize and Optimize workflows with step replacement and hooks (Capability Coming Soon)
+### Customization
+
+- **[BMAD Customization](./bmad-core-concepts/bmad-customization/)** - Modify agents and workflows
+
+### Platform Guides
+
+- **[Web Bundles](./bmad-core-concepts/web-bundles/)** - Use BMAD in Gemini Gems and Custom GPTs
+
+---
 
 ## Recommended Reading Paths
 
-### Path 1: Brand New to BMad (Software Project)
+### Path 1: Brand New to BMAD (Software Project)
 
-1. [README.md](https://github.com/bmad-code-org/BMAD-METHOD/blob/main/README.md) - Understand the vision
-2. [Quick Start Guide](./modules/bmm-bmad-method/quick-start) - Get hands-on
-3. [BMM Module README](./modules/bmm-bmad-method/) - Understand agents
+1. [Core Concepts](./bmad-core-concepts/) - Understand agents and workflows
+2. [Installation Guide](./bmad-core-concepts/installing/) - Set up BMAD
+3. [Quick Start Guide](./modules/bmm-bmad-method/quick-start) - Get hands-on
 4. [BMM Workflows Guide](./modules/bmm-bmad-method/index#-workflow-guides) - Master the methodology
 
 ### Path 2: Game Development Project
 
-1. [README.md](https://github.com/bmad-code-org/BMAD-METHOD/blob/main/README.md) - Understand the vision
-2. [Quick Start Guide](./modules/bmm-bmad-method/quick-start) - Get hands-on
+1. [Core Concepts](./bmad-core-concepts/) - Understand agents and workflows
+2. [Installation Guide](./bmad-core-concepts/installing/) - Set up BMAD
 3. [BMGD Workflows Guide](./modules/bmgd-bmad-game-dev/workflows-guide) - Game-specific workflows
 
 ### Path 3: Upgrading from v4
 
-1. [v4 to v6 Upgrade Guide](./v4-to-v6-upgrade.md) - Understand what changed
+1. [v4 to v6 Upgrade Guide](./bmad-core-concepts/installing/upgrading.md) - Understand what changed
 2. [Quick Start Guide](./modules/bmm-bmad-method/quick-start) - Reorient yourself
 3. [BMM Workflows Guide](./modules/bmm-bmad-method/index#-workflow-guides) - Learn new v6 workflows
 
@@ -95,14 +99,13 @@ AI-powered creative thinking and brainstorming.
 2. [Quick Start Guide](./modules/bmm-bmad-method/quick-start) - Follow the process
 3. [BMM Workflows Guide](./modules/bmm-bmad-method/index#-workflow-guides) - Master the methodology
 
-### Path 5: Building Custom Solutions
+### Path 5: Building Custom Agents
 
-1. [BMB Module Overview](./modules/bmb-bmad-builder/index) - Understand capabilities
-2. [BMB Custom Content Types](./modules/bmb-bmad-builder/custom-content.md) - Understand the different types and whats possible
-3. [BMB Content Installation](./modules/bmb-bmad-builder/custom-content-installation.md) - How to bundle install use and share
-4. More Docs coming soon....
+1. [Core Concepts: Agents](./bmad-core-concepts/agents.md) - Understand Simple vs Expert
+2. [Agent Creation Guide](./modules/bmb-bmad-builder/agent-creation-guide.md) - Build your first agent
+3. [Agent Architecture](./modules/bmb-bmad-builder/index) - Deep technical details
 
-### Path 6: Contributing to BMad
+### Path 6: Contributing to BMAD
 
 1. [CONTRIBUTING.md](https://github.com/bmad-code-org/BMAD-METHOD/blob/main/CONTRIBUTING.md) - Contribution guidelines
 2. Relevant module README - Understand the area you're contributing to

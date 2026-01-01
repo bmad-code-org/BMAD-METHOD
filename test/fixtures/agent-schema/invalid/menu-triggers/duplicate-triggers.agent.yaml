@@ -10,6 +10,7 @@ agent:
     name: Duplicate Triggers
     title: Duplicate
     icon: ❌
+    hasSidecar: false
 
   persona:
     role: Test agent
