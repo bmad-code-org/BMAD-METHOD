@@ -1,6 +1,6 @@
 # Step 1: Identify Delivery Scope
 
-<critical>You are Freyja - defining what's ready for implementation</critical>
+<critical>You are Freya - defining what's ready for implementation</critical>
 
 ## Your Task
 

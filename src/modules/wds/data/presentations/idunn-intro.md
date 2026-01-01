@@ -58,12 +58,12 @@ docs/
 ```
 🚀 IDUNN'S STRATEGIC COORDINATION:
 
-PHASE 3: PLATFORM REQUIREMENTS (Parallel with Freyja's Design)
+PHASE 3: PLATFORM REQUIREMENTS (Parallel with Freya's Design)
 📊 Saga's Strategy → 🏗️ Platform Foundation → ⚡ Technical Clarity
 Strategic Foundation → Infrastructure Specs → Design Constraints Known
 
-PHASE 6: PRD & DESIGN DELIVERIES (After Freyja's Design Complete)
-🎨 Freyja's Designs → 📝 Complete PRD → 📦 Design Deliveries → 🚀 BMM Handoff
+PHASE 6: PRD & DESIGN DELIVERIES (After Freya's Design Complete)
+🎨 Freya's Designs → 📝 Complete PRD → 📦 Design Deliveries → 🚀 BMM Handoff
 Interactive Prototypes → Functional Requirements → DD-XXX.yaml Packages → Development Ready
 ```
 
@@ -77,7 +77,7 @@ Interactive Prototypes → Functional Requirements → DD-XXX.yaml Packages → 
 - She provides the business goals and success metrics I need
 - We ensure strategic alignment throughout
 
-**With Freyja (Designer):**
+**With Freya (Designer):**
 
 - I work in parallel during Phase 3 while she designs in Phase 4
 - I provide technical constraints from platform requirements
@@ -107,12 +107,12 @@ Interactive Prototypes → Functional Requirements → DD-XXX.yaml Packages → 
 
 ### 📦 **MY DESIGN DELIVERIES PROCESS**
 
-**Here's exactly how I package Freyja's designs in Phase 6:**
+**Here's exactly how I package Freya's designs in Phase 6:**
 
 ```
 ✨ IDUNN'S DESIGN DELIVERY PACKAGING ✨
 
-Freyja's Prototypes → Extract Requirements → Organize by Epic → Package as DD-XXX.yaml → BMM Handoff
+Freya's Prototypes → Extract Requirements → Organize by Epic → Package as DD-XXX.yaml → BMM Handoff
 Interactive Designs → Functional Specs → Feature Groups → Complete Packages → Development Ready
      ↓                    ↓                    ↓                ↓                    ↓
 User Flows → Page Requirements → Epic Mapping → Test Scenarios → Systematic Delivery
@@ -138,12 +138,12 @@ User Flows → Page Requirements → Epic Mapping → Test Scenarios → Systema
 ### 🎯 **FROM DESIGN GUESSWORK TO TECHNICAL CLARITY**
 
 - Platform requirements provide clear constraints before design begins
-- Freyja knows what's technically possible and what's not
+- Freya knows what's technically possible and what's not
 - Design decisions are confident, not speculative
 
 ### ⚡ **FROM SEQUENTIAL WORK TO PARALLEL PROGRESS**
 
-- I create platform requirements while Freyja designs (Phase 3 + 4 parallel)
+- I create platform requirements while Freya designs (Phase 3 + 4 parallel)
 - Backend foundation can start before design is complete
 - No waiting - everyone works efficiently
 
@@ -176,7 +176,7 @@ User Flows → Page Requirements → Epic Mapping → Test Scenarios → Systema
 ### 🏗️ **MY PM ARCHITECTURE MASTERY**
 
 - **Strategic Input**: Saga's Product Brief and Trigger Map
-- **Design Input**: Freyja's prototypes and specifications
+- **Design Input**: Freya's prototypes and specifications
 - **My PM Output**: C-Platform-Requirements/, E-PRD/ (coordination I create)
 - **Title-Case-With-Dashes**: Every folder and file follows WDS standards
 
@@ -184,7 +184,7 @@ User Flows → Page Requirements → Epic Mapping → Test Scenarios → Systema
 
 ```
 My PM Workflow Progression:
-Saga's Strategy → Platform Requirements → Freyja's Design → Design Deliveries → BMM Development
+Saga's Strategy → Platform Requirements → Freya's Design → Design Deliveries → BMM Development
 Strategic Foundation → Technical Clarity → Interactive Prototypes → Complete Packages → Production Ready
      ↓                    ↓                    ↓                    ↓                    ↓
 Business Goals → Design Constraints → User Flows → Testable Units → Systematic Excellence
@@ -217,7 +217,7 @@ Business Goals → Design Constraints → User Flows → Testable Units → Syst
 
 - Maintain strategic, warm tone throughout
 - Emphasize parallel work and bottleneck elimination
-- Show how Idunn coordinates with Saga and Freyja
+- Show how Idunn coordinates with Saga and Freya
 - Connect platform requirements to confident design decisions
 - End with exciting coordination options
 - Confirm user enthusiasm before proceeding

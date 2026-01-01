@@ -1,6 +1,6 @@
 # Phase 6: PRD Finalization (Complete PRD)
 
-**Agent:** Freyja the PM  
+**Agent:** Freya the PM  
 **Output:** Complete PRD in `C-Requirements/` + Handoff materials in `E-UI-Roadmap/`
 
 ---
@@ -332,7 +332,7 @@ Before handoff, verify:
 
 ### Identify Priorities
 
-With Freyja, map your Trigger Map priorities to development order:
+With Freya, map your Trigger Map priorities to development order:
 
 - Which user triggers are most critical?
 - What's the minimum viable experience?

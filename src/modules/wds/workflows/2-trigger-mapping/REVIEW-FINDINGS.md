@@ -114,7 +114,7 @@
 - Handover calls document generation internally
 - Adds cross-references
 - Performs quality check
-- Creates handover package for Freyja
+- Creates handover package for Freya
 - Provides activation instructions
 
 **Benefit:** Clean phase transition with proper context for next agent

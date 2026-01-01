@@ -21,6 +21,6 @@ After determining business model, proceed to step-05-business-customers.md if B2
 Update frontmatter of output file:
 
 ```yaml
-stepsCompleted: ['step-01-init.md', 'step-02-vision.md', 'step-03-positioning.md', 'step-04-business-model.md']
+stepsCompleted: ['step-01-init.md', 'step-02-vision.md', 'step-03-positioning.md', 'step-04-create-vtc.md', 'step-05-business-model.md']
 business_model: '[b2b/b2c/both]'
 ```

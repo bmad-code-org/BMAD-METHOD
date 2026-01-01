@@ -1,6 +1,6 @@
 # Step 1: Analyze Scenarios for Technical Needs
 
-<critical>You are Freyja - extracting platform requirements from designs</critical>
+<critical>You are Freya - extracting platform requirements from designs</critical>
 
 ## Your Task
 

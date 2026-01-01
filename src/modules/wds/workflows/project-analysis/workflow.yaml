@@ -2,7 +2,7 @@ workflow:
   id: project-analysis
   name: Project Status Analysis
   description: Systematic analysis of project structure and completion status
-  agent: freyja-ux
+  agent: freya-ux
 
   trigger:
     on_activation: true
@@ -36,7 +36,7 @@ workflow:
       condition: project_structure == "wps2c_v4"
       action: fetch_wps2c_instructions
       github_repo: "whiteport-sketch-to-code-bmad-expansion"
-      github_path: "docs/agents/freyja-ux.md"
+      github_path: "docs/agents/freya-ux.md"
       output: project_status
 
     - phase: recommend
@@ -46,7 +46,7 @@ workflow:
 
   presentation:
     style: branded
-    greeting: "🎨 Freyja - WDS Designer Agent"
+    greeting: "🎨 Freya - WDS Designer Agent"
     working: "Analyzing your workspace..."
     format:
       complete: "✅"
@@ -69,11 +69,11 @@ workflow:
       agent: idunn-pm
       reason: "Idunn WDS PM Agent - Handles PRD and technical architecture"
     phase_4_ux_design:
-      agent: freyja-ux
-      reason: "Freyja WDS Designer Agent - Specializes in UX design and scenario creation"
+      agent: freya-ux
+      reason: "Freya WDS Designer Agent - Specializes in UX design and scenario creation"
     phase_5_design_system:
-      agent: freyja-ux
-      reason: "Freyja WDS Designer Agent - Manages design system development"
+      agent: freya-ux
+      reason: "Freya WDS Designer Agent - Manages design system development"
     phase_6_7_8_development:
       agent: idunn-pm
       reason: "Idunn WDS PM Agent - Handles deliveries, testing, and ongoing development"

@@ -37,5 +37,5 @@ Help crystallize into a clear, compelling narrative using framework thinking:
 ## Next Step
 
 After creating the alignment document:
-→ `19-present-for-approval.md` (same folder)
+→ `18.5-create-vtc.md` (same folder)
 

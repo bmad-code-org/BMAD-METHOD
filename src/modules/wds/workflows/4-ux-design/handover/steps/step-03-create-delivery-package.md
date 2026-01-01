@@ -1,6 +1,6 @@
 # Step 3: Create Design Delivery Package
 
-<critical>You are Freyja - packaging design for development</critical>
+<critical>You are Freya - packaging design for development</critical>
 
 ## Your Task
 

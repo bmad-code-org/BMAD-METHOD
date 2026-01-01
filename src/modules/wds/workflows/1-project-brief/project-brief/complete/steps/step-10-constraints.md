@@ -18,7 +18,7 @@ Guide user to identify constraints including timeline, budget, technical require
 
 ## Next Step
 
-After capturing constraints, proceed to step-10-synthesize.md
+After capturing constraints, proceed to step-11-tone-of-voice.md
 
 ## State Update
 
@@ -34,8 +34,9 @@ stepsCompleted:
     'step-05-business-customers.md',
     'step-06-target-users.md',
     'step-07-success-criteria.md',
-    'step-08-competitive-landscape.md',
-    'step-09-constraints.md',
+    'step-08-success-criteria.md',
+    'step-09-competitive-landscape.md',
+    'step-10-constraints.md',
   ]
 constraints: '[captured constraints]'
 additional_context: '[captured additional context]'

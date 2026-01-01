@@ -8,9 +8,9 @@
 
 Simply reference one of these files in your IDE chat to activate the corresponding WDS agent:
 
-### Freyja - UX/UI Designer 🎨
+### Freya - UX/UI Designer 🎨
 
-**File**: `@wds-freyja-ux.md`  
+**File**: `@wds-freya-ux.md`  
 **Specializes in**: UX Design, Design Systems, Testing  
 **Phases**: 4, 5, 7
 
@@ -30,7 +30,7 @@ Simply reference one of these files in your IDE chat to activate the correspondi
 
 ## How It Works
 
-When you reference one of these files (e.g., `@wds-freyja-ux.md`), the agent will:
+When you reference one of these files (e.g., `@wds-freya-ux.md`), the agent will:
 
 1. **Load their persona** from their agent definition file
 2. **Execute project analysis** using the router workflow
@@ -68,7 +68,7 @@ Each agent focuses on specific WDS phases:
 | Agent       | Primary Phases | Key Expertise                |
 | ----------- | -------------- | ---------------------------- |
 | **Saga**    | 1-2            | Strategy, research, personas |
-| **Freyja**  | 4-5, 7         | Design, prototypes, testing  |
+| **Freya**  | 4-5, 7         | Design, prototypes, testing  |
 | **Idunn**   | 3, 6           | Architecture, delivery, PM   |
 
 If you select a task outside the current agent's domain, they'll seamlessly hand over to the specialist.
@@ -78,12 +78,12 @@ If you select a task outside the current agent's domain, they'll seamlessly hand
 ## Example Usage
 
 ```
-User: @wds-freyja-ux.md help me with my project
+User: @wds-freya-ux.md help me with my project
 
-Freyja:
-🎨 Freyja WDS Designer Agent
+Freya:
+🎨 Freya WDS Designer Agent
 
-I'm Freyja, your UX design partner...
+I'm Freya, your UX design partner...
 
 Analyzing your project...
 

@@ -32,8 +32,9 @@ stepsCompleted:
     'step-03-positioning.md',
     'step-04-business-model.md',
     'step-05-business-customers.md',
-    'step-06-target-users.md',
-    'step-07-success-criteria.md',
+    'step-06-business-customers.md',
+    'step-07-target-users.md',
+    'step-08-success-criteria.md',
   ]
 success_criteria: '[captured success criteria]'
 ```

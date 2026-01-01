@@ -9,7 +9,11 @@
 
 ## Overview
 
-**Page Purpose:** {Brief description of what users accomplish on this page}
+**Page Purpose:** {What job must this page accomplish?}
+
+**Success Criteria:** {How will we know the page succeeded?}
+
+**VTC Reference:** {Link to or brief description of Value Trigger Chain for this page}
 
 **URL/Route:** {url-path}
 
@@ -55,6 +59,9 @@
 **Variant:** {size=large, type=primary, etc.}
 {/if}
 
+**Content Purpose:** {What job must this content do? Be specific.}  
+**Review Criteria:** {How will we know this content succeeded?}
+
 **States:**
 
 - **Default:** {Description and behavior}
@@ -72,6 +79,8 @@
 - **English:** {Text content in English}
 - **{Language2}:** {Text content in second language}
 - **{Language3}:** {Text content in third language}
+
+**Content Rationale:** {Why this specific content? How does it achieve its purpose?}
 
 **Validation:** {If applicable - validation rules}
 
@@ -212,7 +221,24 @@
 
 **Sketches:** {Link to sketch files in Sketches/ folder}  
 **Prototype:** {Link to HTML prototype in Prototype/ folder}  
-**Trigger Map Reference:** {Which personas/drivers this page addresses}
+**VTC Reference:** {Which VTC(s) does this page serve? Link to VTC documents}  
+**Trigger Map Reference:** {Which personas/drivers this page addresses}  
+**Content Strategy:** {Link to content creation workshop outputs or content purpose definitions}
+
+---
+
+## Content Purpose Summary
+
+**Key Content Blocks:**
+
+| Object ID | Purpose | Review Criteria |
+|-----------|---------|-----------------|
+| {object-id-1} | {What this content must do} | {Success measure} |
+| {object-id-2} | {What this content must do} | {Success measure} |
+| {object-id-3} | {What this content must do} | {Success measure} |
+
+**Overall Content Strategy:**
+{Brief explanation of how content on this page works together to achieve page purpose}
 
 ---
 
@@ -220,7 +246,11 @@
 
 Before implementing:
 
+- [ ] Page purpose is clear and testable
+- [ ] VTC reference documented
 - [ ] All Object IDs assigned and documented
+- [ ] Content purposes defined for key elements
+- [ ] Content achieves stated purposes (reviewed)
 - [ ] All states defined and specified
 - [ ] Validation rules clear
 - [ ] Error messages in all languages

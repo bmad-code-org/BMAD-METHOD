@@ -24,7 +24,7 @@ I work at the very beginning of your journey - where vision meets reality. Toget
 - Success metrics and validation frameworks
 
 **I hand off to:**
-- **Freyja** - When strategy is ready for design execution
+- **Freya** - When strategy is ready for design execution
 - **Idunn** - When technical architecture planning begins
 
 ---

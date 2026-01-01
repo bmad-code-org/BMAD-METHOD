@@ -1,13 +1,13 @@
 # Phase 4: UX Design (UX-Sketches & Usage Scenarios)
 
-**Agent:** Freyja the WDS Designer  
+**Agent:** Freya the WDS Designer  
 **Output:** `C-Scenarios/` (or your configured prefix)
 
 ---
 
 ## What This Phase Does
 
-UX Design transforms ideas into detailed visual specifications. Working with Freyja, you conceptualize, sketch, and specify every interaction until your design can be logically explained without gaps.
+UX Design transforms ideas into detailed visual specifications. Working with Freya, you conceptualize, sketch, and specify every interaction until your design can be logically explained without gaps.
 
 **The key insight:** Designs that can be logically explained without gaps are easy to develop. The specification process reveals gaps in your thinking early - when they're easy to address.
 
@@ -27,24 +27,45 @@ For each scenario/page:
 
 ---
 
-## How Freyja the WDS Designer helps you design software
+## How Freya the WDS Designer helps you design software
 
-### 4A: Scenario Exploration
+### 4A: Scenario Initialization & Exploration
 
-**When:** Discovering the Concept, the process, flow screen or component solution together, before sketching begin
+**When:** Starting a new scenario - before sketching begins
 
-Freyja helps you:
+**The Scenario Init Process** (6 steps):
 
+1. Feature selection - Which feature delivers value?
+2. Entry point - Where does user encounter it?
+3. Mental state - How are they feeling?
+4. Mutual success - What's winning for both sides?
+5. Shortest path - Minimum steps to success
+6. **Create VTC** - Crystallize scenario strategy
+
+See: [Scenario Initialization Guide](../workflows/4-ux-design/scenario-init/scenario-init/00-SCENARIO-INIT-GUIDE.md)
+
+**Value Trigger Chain for Each Scenario:**
+
+Each scenario gets its own [VTC](./value-trigger-chain-guide.md) that serves as strategic guidance:
+- Extracted from Trigger Map (if Selection Workshop - 10-15 mins)
+- Created from scratch (if Creation Workshop - 20-30 mins)
+
+The VTC guides every page, every interaction, every word in the scenario.
+
+**Then Exploration:**
+
+Freya helps you:
 - Think through the user's journey
-- Explore content and feature options
+- Explore content and feature options  
 - Consider psychological triggers from your Trigger Map
+- Reference the scenario's VTC for driving forces
 - Arrive at a clear solution ready for sketching
 
 ### 4B: UI Sketch Analysis
 
 **When:** You have a sketch and you need feedback on it
 
-Freyja helps you:
+Freya helps you:
 
 - Analyze what the sketch shows
 - Ask clarifying questions
@@ -54,7 +75,7 @@ Freyja helps you:
 
 **When:** Design is clear, need development-ready specs
 
-Freyja helps you:
+Freya helps you:
 
 - Document every detail systematically
 - Assign Object IDs for testing
@@ -65,7 +86,7 @@ Freyja helps you:
 
 **When:** Specifications complete, and we make the sketch come alive to test the concept
 
-Freyja helps you:
+Freya helps you:
 
 - Create interactive prototypes
 - Test the design in browser
@@ -77,7 +98,7 @@ Freyja helps you:
 
 **When:** Page design is complete, before moving to the next scenario
 
-Freyja helps you:
+Freya helps you:
 
 - Identify what features this page requires
 - Add functional requirements to the PRD
@@ -292,7 +313,7 @@ Your specifications enable:
 
 ## Tips for Great Sessions
 
-**Think out loud with Freyja**
+**Think out loud with Freya**
 
 - Share your reasoning
 - Explore alternatives together
@@ -323,6 +344,25 @@ Your specifications enable:
 ## Example Output
 
 See: `examples/dog-week-patterns/C-Scenarios/` for complete scenario specifications from a real project.
+
+---
+
+## Related Resources
+
+**Method Guides:**
+- [Value Trigger Chain Guide](./value-trigger-chain-guide.md) - Creating VTCs for each scenario
+- [Phase 2: Trigger Mapping Guide](./phase-2-trigger-mapping-guide.md) - Source for VTC extraction
+- [Phase 3: PRD Platform Guide](./phase-3-prd-platform-guide.md) - Technical constraints
+- [Phase 5: Design System Guide](./phase-5-design-system-guide.md) - Component extraction (parallel)
+
+**Strategic Models:**
+- [Customer Awareness Cycle](../models/customer-awareness-cycle.md) - User awareness positioning (used in VTC)
+- [Action Mapping](../models/action-mapping.md) - User actions in scenario steps
+- [Kathy Sierra: Badass Users](../models/kathy-sierra-badass-users.md) - Making users feel capable
+
+**Workflows:**
+- Scenario Initialization: `workflows/4-ux-design/scenario-init/scenario-init/00-SCENARIO-INIT-GUIDE.md`
+- VTC Workshop: `workflows/shared/vtc-workshop/vtc-workshop-guide.md`
 
 ---
 

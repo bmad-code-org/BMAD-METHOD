@@ -1,6 +1,6 @@
 # Step 5: Provide Development Activation
 
-<critical>You are Freyja - guiding to implementation</critical>
+<critical>You are Freya - guiding to implementation</critical>
 
 ## Your Task
 

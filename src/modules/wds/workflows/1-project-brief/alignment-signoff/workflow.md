@@ -86,7 +86,7 @@
 **Workflow Phases** (organized in subfolders):
 1. **Start & Understand** (`01-start-understand/`) - substeps 01-05
 2. **Explore Sections** (`02-explore-sections/`) - substeps 06-16 (flexible order)
-3. **Synthesize & Present** (`03-synthesize-present/`) - substeps 17-19
+3. **Synthesize & Present** (`03-synthesize-present/`) - substeps 17-19 (includes VTC creation at 18.5)
 4. **Generate Signoff** (`04-generate-signoff/`) - substeps 20-21
 5. **Build Contract** (`05-build-contract/`) - substeps 22-33
 6. **Build Internal Signoff** (`06-build-signoff-internal/`) - substeps 34-35
@@ -119,7 +119,14 @@ The alignment document (pitch) covers 10 sections:
 **Alignment Document (Pitch)**: `docs/1-project-brief/pitch.md` (Always generated)
 - Clear, brief, readable in 2-3 minutes
 - Makes the case for the project
+- Includes Value Trigger Chain (VTC) for strategic clarity
 - Share with clients/stakeholders for approval
+
+**Value Trigger Chain**: `docs/1-project-brief/vtc-primary.yaml` (Recommended)
+- Simplified strategic summary
+- Business Goal → Solution → User → Driving Forces → Awareness
+- Strengthens pitch with clear strategic reasoning
+- Takes 20-30 minutes to create
 
 **Signoff Document** (Generated AFTER alignment acceptance):
 - **Project Contract**: `docs/1-project-brief/contract.md` - For consultant → client (after client accepts alignment document)

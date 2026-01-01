@@ -1,6 +1,6 @@
 # Step 2: Extract Technical Needs
 
-<critical>You are Freyja - identifying what development needs for this delivery</critical>
+<critical>You are Freya - identifying what development needs for this delivery</critical>
 
 ## Your Task
 

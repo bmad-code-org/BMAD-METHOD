@@ -6,7 +6,7 @@
 
 **File**: `src/modules/wds/workflows/project-analysis/instructions.md`
 
-**Used by**: ALL WDS agents (Saga, Freyja, Idunn)
+**Used by**: ALL WDS agents (Saga, Freya, Idunn)
 
 **How it works**:
 
@@ -73,7 +73,7 @@
 **All 3 agent files updated**:
 
 - `saga-analyst.agent.yaml`
-- `freyja-ux.agent.yaml`
+- `freya-ux.agent.yaml`
 - `idunn-pm.agent.yaml`
 
 **Each agent now**:
@@ -162,13 +162,13 @@ phases:
     skip_reason: 'Using shadcn/ui component library'
 ```
 
-### **Step 4: User Activates Freyja Later**
+### **Step 4: User Activates Freya Later**
 
 ```
-User: @freyja "Help me design those landing pages"
+User: @freya "Help me design those landing pages"
 ```
 
-### **Step 5: Freyja Reads Outline (Universal Workflow)**
+### **Step 5: Freya Reads Outline (Universal Workflow)**
 
 - <1s: Check for `.wds-project-outline.yaml` ✅
 - <1s: Read methodology (wds-v6) and load instructions
@@ -177,10 +177,10 @@ User: @freyja "Help me design those landing pages"
 
 **Total: <5 seconds**
 
-### **Step 6: Freyja Responds Contextually**
+### **Step 6: Freya Responds Contextually**
 
 ```
-🎨 Freyja WDS Designer Agent
+🎨 Freya WDS Designer Agent
 
 Reading project outline... ✅
 
@@ -264,7 +264,7 @@ Active Phases:
 ### **Updated Files** (6):
 
 1. `agents/saga-analyst.agent.yaml` (initiation + universal workflow)
-2. `agents/freyja-ux.agent.yaml` (universal workflow)
+2. `agents/freya-ux.agent.yaml` (universal workflow)
 3. `agents/idunn-pm.agent.yaml` (universal workflow)
 4. `workflows/project-analysis/workflow.yaml`
 5. `tasks/identify-project-structure.md`

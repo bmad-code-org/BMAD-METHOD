@@ -86,12 +86,12 @@ workflow_status: "{{workflow_items}}"
 #       - proofs-of-concept/
 #   phase_4_ux_design:
 #     status: required
-#     agent: freyja-wds-designer
+#     agent: freya-wds-designer
 #     folder: C-Scenarios/
 #     artifacts: []  # Grows as scenarios are created
 #   phase_5_design_system:
 #     status: conditional  # or skipped
-#     agent: freyja-wds-designer
+#     agent: freya-wds-designer
 #     folder: D-Design-System/
 #     artifacts:
 #       - component-showcase.html

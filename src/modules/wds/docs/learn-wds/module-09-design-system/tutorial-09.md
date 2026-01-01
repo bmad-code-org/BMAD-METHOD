@@ -10,7 +10,7 @@ You've designed several pages. You notice you keep recreating the same buttons, 
 
 **Create a Design System** - extract reusable components once, use them everywhere.
 
-**Your superpower:** Freyja helps you identify patterns, document components, and create a library that scales your design decisions across the entire product.
+**Your superpower:** Freya helps you identify patterns, document components, and create a library that scales your design decisions across the entire product.
 
 **Time:** 45-60 minutes  
 **Prerequisites:** Module 08 completed (At least 2-3 pages designed)  
@@ -22,7 +22,7 @@ You've designed several pages. You notice you keep recreating the same buttons, 
 
 - What a Design System is (and why it saves you time)
 - How to identify reusable patterns in your designs
-- How Freyja extracts components automatically
+- How Freya extracts components automatically
 - How to document components for consistency
 
 ---
@@ -48,9 +48,9 @@ Design System = Your design vocabulary, organized and ready to use
 
 ## What to Expect: The Extraction Process
 
-**Here's how a real session with Freyja looks:**
+**Here's how a real session with Freya looks:**
 
-### Freyja's Opening
+### Freya's Opening
 ```
 Hi! Ready to create your Design System?
 
@@ -64,9 +64,9 @@ This will be collaborative - you're the design expert, I'm the organizer.
 
 ### Example Pattern Recognition
 
-**Freyja Identifies Components:**
+**Freya Identifies Components:**
 ```
-Freyja: "I scanned your 3 pages and found these button patterns:
+Freya: "I scanned your 3 pages and found these button patterns:
 
          Pattern 1 (used 12 times):
          - Blue background (#1e3a5f)
@@ -94,12 +94,12 @@ Freyja: "I scanned your 3 pages and found these button patterns:
 
 You: "Yes! But let's call Pattern 3 'Link Button' instead."
 
-Freyja: "Perfect. Updated! 🎯"
+Freya: "Perfect. Updated! 🎯"
 ```
 
-**Freyja Finds Inconsistencies:**
+**Freya Finds Inconsistencies:**
 ```
-Freyja: "Heads up! I found a slight inconsistency:
+Freya: "Heads up! I found a slight inconsistency:
 
          On Page 1, your primary button uses #1e3a5f (deep blue)
          On Page 3, it uses #1e4a7f (slightly different blue)
@@ -108,19 +108,19 @@ Freyja: "Heads up! I found a slight inconsistency:
 
 You: "Oh! Page 1 is correct - #1e3a5f."
 
-Freyja: "Got it. I'll document #1e3a5f as the brand primary color.
+Freya: "Got it. I'll document #1e3a5f as the brand primary color.
          Should I flag Page 3 for update in the spec?"
 
 You: "Yes please!"
 
-Freyja: "Done. Added to quality check list. ✅"
+Freya: "Done. Added to quality check list. ✅"
 ```
 
-### Example Questions Freyja Asks
+### Example Questions Freya Asks
 
 **About Naming:**
 ```
-Freyja: "I found 3 different card layouts. Help me name them:
+Freya: "I found 3 different card layouts. Help me name them:
 
          Card Type A: Image on top, title, description, CTA button
          Card Type B: Small image left, title and text right
@@ -132,12 +132,12 @@ You: "Type A is a 'Feature Card'
       Type B is a 'Task Card'
       Type C is a 'Capability Card'"
 
-Freyja: "Love it. Those names make sense! Documented. 📝"
+Freya: "Love it. Those names make sense! Documented. 📝"
 ```
 
 **About Design Tokens:**
 ```
-Freyja: "I extracted these colors from your pages:
+Freya: "I extracted these colors from your pages:
 
          Blues: #1e3a5f, #2c4f7c, #3d6399
          Are these:
@@ -148,14 +148,14 @@ You: "#1e3a5f is the main brand blue
       #2c4f7c is hover state
       #3d6399 is... hmm, I'm not sure where that came from"
 
-Freyja: "Found it - Page 2, Benefits section background.
+Freya: "Found it - Page 2, Benefits section background.
          Should that be a separate color called 'Background Blue'?
          Or should it use the main brand blue?"
 
 You: "Ah! It should be a lighter tint for backgrounds. Let's call it
       'Brand Blue Light' and make it consistent."
 
-Freyja: "Perfect! I'll document:
+Freya: "Perfect! I'll document:
          - Brand Blue (#1e3a5f) - primary
          - Brand Blue Hover (#2c4f7c) - interaction
          - Brand Blue Light (#3d6399) - backgrounds
@@ -165,11 +165,11 @@ Freyja: "Perfect! I'll document:
 You: "Yes!"
 ```
 
-### Built-in Guidance from Freyja
+### Built-in Guidance from Freya
 
 **When you're building your first Design System:**
 ```
-Freyja: "This is your first Design System, right?
+Freya: "This is your first Design System, right?
 
          Pro tip: Don't try to document everything perfectly.
          Start with the basics:
@@ -183,12 +183,12 @@ Freyja: "This is your first Design System, right?
 
 You: "Yes! That feels manageable."
 
-Freyja: "Great! Let's start there. We'll keep it simple and practical."
+Freya: "Great! Let's start there. We'll keep it simple and practical."
 ```
 
 **When components are almost the same:**
 ```
-Freyja: "I found two button patterns that are 95% identical:
+Freya: "I found two button patterns that are 95% identical:
 
          Both have:
          - Blue background
@@ -206,13 +206,13 @@ Freyja: "I found two button patterns that are 95% identical:
 You: "One component with variants - 'Button Primary (Regular)' 
       and 'Button Primary (Large)'"
 
-Freyja: "Smart! That keeps your system clean. One component,
+Freya: "Smart! That keeps your system clean. One component,
          two sizes. Documented! 🎯"
 ```
 
 **About Usage Guidelines:**
 ```
-Freyja: "For Button Primary, I'm adding usage guidelines:
+Freya: "For Button Primary, I'm adding usage guidelines:
 
          ✅ Use for primary actions (submit, save, next)
          ✅ Only one per page section
@@ -222,12 +222,12 @@ Freyja: "For Button Primary, I'm adding usage guidelines:
 
 You: "Yes! And add: Button text should be action verbs."
 
-Freyja: "Added! These guidelines will help keep your design consistent."
+Freya: "Added! These guidelines will help keep your design consistent."
 ```
 
-### What Freyja Creates While You Talk
+### What Freya Creates While You Talk
 
-As you review patterns, Freyja is:
+As you review patterns, Freya is:
 - 📋 Cataloging components (buttons, forms, cards)
 - 🎨 Extracting design tokens (colors, spacing, typography)
 - 📏 Documenting variants (sizes, states, types)
@@ -236,7 +236,7 @@ As you review patterns, Freyja is:
 
 **You'll see progress updates:**
 ```
-Freyja: "✅ 5 button components documented
+Freya: "✅ 5 button components documented
          ✅ 8 color tokens extracted
          ✅ 3 card patterns identified
          🔄 Working on form components..."
@@ -248,14 +248,14 @@ Freyja: "✅ 5 button components documented
 ```
 You: "Actually, I think the 'Task Card' should have a checkbox option."
 
-Freyja: "Great catch! Should the checkbox be:
+Freya: "Great catch! Should the checkbox be:
          - Always visible? OR
          - Only on hover? OR
          - A separate variant?"
 
 You: "Separate variant - 'Task Card (Selectable)'"
 
-Freyja: "Perfect. I'll document both variants:
+Freya: "Perfect. I'll document both variants:
          - Task Card (Standard)
          - Task Card (Selectable)
          
@@ -287,10 +287,10 @@ Update brand color → Update 1 component, changes everywhere 🎉
 
 ---
 
-## Step 2: Activate Freyja for Extraction (2 min)
+## Step 2: Activate Freya for Extraction (2 min)
 
 ```
-@freyja
+@freya
 
 I'm ready to create a Design System from my page specifications.
 
@@ -302,13 +302,13 @@ I have these pages designed:
 Please help me extract reusable components.
 ```
 
-**Freyja will analyze** your pages and identify patterns.
+**Freya will analyze** your pages and identify patterns.
 
 ---
 
-## Step 3: Review What Freyja Found (15 min)
+## Step 3: Review What Freya Found (15 min)
 
-Freyja scans your pages and identifies:
+Freya scans your pages and identifies:
 
 ### Components She'll Extract
 - **Buttons:** Primary, Secondary, Text links
@@ -344,7 +344,7 @@ Do these look right? Any I missed?
 
 **Design Tokens** = The atomic values your components use.
 
-Freyja will extract:
+Freya will extract:
 
 ### Colors
 ```
@@ -383,7 +383,7 @@ xl: 32px
 
 ## Step 5: Document Components (15 min)
 
-For each component, Freyja creates documentation:
+For each component, Freya creates documentation:
 
 ### Example: Primary Button
 
@@ -413,13 +413,13 @@ For each component, Freyja creates documentation:
 - Keyboard accessible (Enter/Space)
 - Focus indicator visible
 
-**Freyja documents** all this. You just review and confirm.
+**Freya documents** all this. You just review and confirm.
 
 ---
 
 ## Step 6: Create the Component Library (5 min)
 
-Freyja saves your Design System:
+Freya saves your Design System:
 
 ```
 /docs/5-design-system/
@@ -461,7 +461,7 @@ You write:
 **Content:** "Save Changes"
 ```
 
-**Freyja knows** what "Button Primary" means. Developers know too. Consistency guaranteed.
+**Freya knows** what "Button Primary" means. Developers know too. Consistency guaranteed.
 
 ---
 
@@ -493,7 +493,7 @@ You write:
 
 **You just:**
 - ✅ Designed a few pages naturally
-- ✅ Let Freyja identify patterns
+- ✅ Let Freya identify patterns
 - ✅ Reviewed and confirmed
 - ✅ Named things clearly
 

@@ -1,6 +1,6 @@
 # Phase 3: PRD Platform (Technical Foundation)
 
-**Agent:** Freyja the PM  
+**Agent:** Freya the PM  
 **Output Folder:** `C-Requirements/` (or user's configured prefix)
 
 ---
@@ -47,7 +47,7 @@ Before starting, ensure you have:
 
 ### Step 1: Welcome and Context Review
 
-**Freyja's Role:**
+**Freya's Role:**
 
 Greet the user and explain this phase:
 
@@ -67,7 +67,7 @@ Review available context:
 
 **Goal:** Define the technology stack and infrastructure through systematic discussion.
 
-**Freyja's Approach:**
+**Freya's Approach:**
 
 "Let's establish your technical foundation. I'll walk through each major area, and we'll document your decisions, business rules, and constraints as we go."
 
@@ -199,7 +199,7 @@ Ask systematically:
 
 **Goal:** Systematically identify all external dependencies through intelligent, context-aware discussion.
 
-**Freyja's Approach:**
+**Freya's Approach:**
 
 "Let me review your Product Brief to understand which integrations you'll likely need, then we'll go through each relevant category systematically."
 
@@ -497,7 +497,7 @@ For each feature identified in Step 4:
 
 **Goal:** Systematically define security, authentication, and compliance through detailed discussion.
 
-**Freyja's Approach:**
+**Freya's Approach:**
 
 "Security is critical. Let's go through each security area methodically and document all business rules and requirements."
 
@@ -627,7 +627,7 @@ Ask systematically about all regulatory requirements:
 
 **Goal:** Define comprehensive API contracts through systematic category-by-category discussion.
 
-**Freyja explains:**
+**Freya explains:**
 
 "We're taking an API-first approach. By defining clear service contracts now, we enable backend development to proceed in parallel with UX design. These APIs will serve as the foundation for all future UI work."
 
@@ -719,7 +719,7 @@ For each:
 
 **Goal:** Document database schemas and performance benchmarks.
 
-**Freyja's Approach:**
+**Freya's Approach:**
 
 "Let's formalize the data model and set clear performance expectations."
 
@@ -802,7 +802,7 @@ For each major platform area (auth, integrations, security, etc.):
 
 **Goal:** Recommend platform infrastructure work for BMM to organize into epics and stories, prioritized by Feature Impact Analysis.
 
-**Freyja explains:**
+**Freya explains:**
 
 "Based on all the technical requirements we've documented AND the Feature Impact Analysis from Phase 2, let me suggest how this platform work could be organized for development. We'll prioritize platform work that enables your highest-impact features first."
 
@@ -923,7 +923,7 @@ Create a table:
 
 **Goal:** Create the master PRD that references all Phase 3 work.
 
-**Freyja explains:**
+**Freya explains:**
 
 "The PRD is your single source of truth. It starts here with technical foundation and will grow during Phase 4 as functional requirements are added from UX design."
 
@@ -1039,7 +1039,7 @@ _Coming from Phase 4_
 
 ### Step 12: Summary and Completeness Check
 
-**Freyja congratulates the user:**
+**Freya congratulates the user:**
 
 "Excellent work! We've systematically documented your technical foundation. Let me summarize what we've created:"
 
@@ -1119,7 +1119,7 @@ _Coming from Phase 4_
 
 ## Tips for Great Sessions
 
-### For Freyja the PM:
+### For Freya the PM:
 
 **Validate Early, Often:**
 

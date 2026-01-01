@@ -1,4 +1,4 @@
-# Phase 1: Product Exploration (Product Brief) (Project brief)
+# Phase 1: Product Exploration
 
 **Agent:** Saga the Analyst  
 **Output:** `A-Product-Brief/` (or your configured prefix)
@@ -23,6 +23,15 @@ Your Product Brief includes:
 - **Solution Approach** - The "how" that enables development
 - **Success Criteria** - The "what" that measures progress
 - **Market Positioning** - How you're different (optional: ICP framework)
+- **Value Trigger Chain (VTC)** - Strategic benchmark created after vision and positioning
+
+**The VTC (Step 4):**
+
+After capturing your vision and positioning, you'll create a [Value Trigger Chain](./value-trigger-chain-guide.md) - a strategic summary that serves as a benchmark for all subsequent discovery work. It captures:
+
+- Business Goal → Solution → User → Driving Forces → Customer Awareness
+
+This early VTC ensures all remaining discovery (business model, success criteria, etc.) aligns with your core strategy. If anything contradicts the VTC during discovery, either the VTC needs refinement or the discovery finding doesn't serve your strategy.
 
 ---
 
@@ -147,6 +156,22 @@ The brief becomes the reference point everyone shares.
 ## Example Output
 
 See: `examples/dog-week-patterns/A-Product-Brief/` for a complete Product Brief example from a real project.
+
+---
+
+## Related Resources
+
+**Method Guides:**
+- [Value Trigger Chain Guide](./value-trigger-chain-guide.md) - Creating your strategic benchmark (Step 4)
+- [Phase 2: Trigger Mapping Guide](./phase-2-trigger-mapping-guide.md) - Deep user psychology (next phase)
+
+**Strategic Models:**
+- [Customer Awareness Cycle](../models/customer-awareness-cycle.md) - Understanding user awareness stages (used in VTC)
+- [Golden Circle](../models/golden-circle.md) - WHY, HOW, WHAT framework (useful for vision)
+
+**Workflows:**
+- Product Brief Workflow: `workflows/1-project-brief/project-brief/complete/workflow.md`
+- Pitch & Signoff Workflow: `workflows/1-project-brief/alignment-signoff/workflow.md`
 
 ---
 

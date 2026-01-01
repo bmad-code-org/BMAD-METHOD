@@ -73,7 +73,7 @@ Each step serves the journey. Nothing extra.
 
 ---
 
-## Now You Can Sketch
+## Next Step
 
 With all 5 questions answered, you have:
 
@@ -83,7 +83,9 @@ With all 5 questions answered, you have:
 - ✅ Mutual success (where to end)
 - ✅ Shortest path (how to get there)
 
-**Start sketching each step of the journey.**
+**→ Proceed to [Step 6: Create VTC](06-create-vtc.md)**
+
+Before sketching, crystallize this scenario's strategy into a Value Trigger Chain.
 
 ---
 

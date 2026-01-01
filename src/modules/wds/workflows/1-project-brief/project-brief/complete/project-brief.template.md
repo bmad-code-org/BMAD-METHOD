@@ -82,9 +82,69 @@
 
 ---
 
+## Tone of Voice
+
+**For UI Microcopy & System Messages**
+
+### Tone Attributes
+
+1. **{{tone_attribute_1}}**: {{tone_description_1}}
+2. **{{tone_attribute_2}}**: {{tone_description_2}}
+3. **{{tone_attribute_3}}**: {{tone_description_3}}
+{{#if tone_attribute_4}}4. **{{tone_attribute_4}}**: {{tone_description_4}}{{/if}}
+{{#if tone_attribute_5}}5. **{{tone_attribute_5}}**: {{tone_description_5}}{{/if}}
+
+### Examples
+
+**Error Messages:**
+- ✅ {{tone_example_error_good}}
+- ❌ {{tone_example_error_bad}}
+
+**Button Text:**
+- ✅ {{tone_example_button_good}}
+- ❌ {{tone_example_button_bad}}
+
+**Empty States:**
+- ✅ {{tone_example_empty_good}}
+- ❌ {{tone_example_empty_bad}}
+
+**Success Messages:**
+- ✅ {{tone_example_success_good}}
+- ❌ {{tone_example_success_bad}}
+
+### Guidelines
+
+**Do:**
+{{tone_do_guidelines}}
+
+**Don't:**
+{{tone_dont_guidelines}}
+
+---
+
+*Note: Tone of Voice applies to UI microcopy (labels, buttons, errors, system messages). Strategic content (headlines, feature descriptions, value propositions) uses the Content Creation Workshop based on page-specific purpose and context.*
+
+---
+
 ## Additional Context
 
 {{additional_context}}
+
+---
+
+## Value Trigger Chain
+
+**Strategic Summary** - [View full VTC](./vtc-primary.yaml)
+
+- **Business Goal:** {{vtc_business_goal}}
+- **Solution:** {{vtc_solution}}
+- **User:** {{vtc_user}}
+- **Driving Forces:**
+  - *Wants to:* {{vtc_positive_forces}}
+  - *Wants to avoid:* {{vtc_negative_forces}}
+- **Awareness Journey:** {{vtc_awareness_start}} → {{vtc_awareness_end}}
+
+This VTC provides quick strategic reference and will inform all design decisions.
 
 ---
 

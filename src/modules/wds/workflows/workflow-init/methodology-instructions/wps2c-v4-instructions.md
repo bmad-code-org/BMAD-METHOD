@@ -53,7 +53,7 @@ G-Product-Development/   → Phase G: Ongoing Development (if exists)
 
 ### Phase C: Scenarios (Required)
 
-**Agent**: Freyja WDS Designer Agent  
+**Agent**: Freya WDS Designer Agent  
 **Folder**: `docs/C-Scenarios/`  
 **Deliverables**:
 
@@ -79,7 +79,7 @@ C-Scenarios/
 
 ### Phase D: Design System (Optional)
 
-**Agent**: Freyja WDS Designer Agent  
+**Agent**: Freya WDS Designer Agent  
 **Folder**: `docs/D-Design-System/`  
 **Deliverables**:
 
@@ -107,7 +107,7 @@ C-Scenarios/
 
 ### Phase F: Testing (Optional)
 
-**Agent**: Freyja WDS Designer Agent  
+**Agent**: Freya WDS Designer Agent  
 **Folder**: `docs/F-Testing/` (if exists)  
 **Deliverables**:
 

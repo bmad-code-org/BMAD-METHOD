@@ -435,7 +435,7 @@ vision and technical reality. Idunn helps you think through the platform without
 ```
 Turn sketches into complete specifications with interactive prototypes. Capture not 
 just WHAT it looks like, but WHY you designed it that way. Preserve your design intent 
-from concept to code. Freyja helps you create specifications that developers actually understand and respect.
+from concept to code. Freya helps you create specifications that developers actually understand and respect.
 ```
 
 **Deliverable:** "→ Page Specs & Prototypes"
@@ -443,7 +443,7 @@ from concept to code. Freyja helps you create specifications that developers act
 **Psychology:**
 - **Problem:** Design intent lost in handoff
 - **Outcome:** Specifications developers respect
-- **Agent Help:** Freyja captures WHY, not just WHAT
+- **Agent Help:** Freya captures WHY, not just WHAT
 
 ---
 
@@ -494,7 +494,7 @@ Idunn creates implementation guides that turn your specs into buildable tasks.
 **Description:**
 ```
 Ensure what's built matches what you designed. Catch misinterpretations before they 
-reach users. Create test plans that validate both function and design intent. Freyja 
+reach users. Create test plans that validate both function and design intent. Freya 
 helps you compare implementations to specifications systematically.
 ```
 
@@ -503,7 +503,7 @@ helps you compare implementations to specifications systematically.
 **Psychology:**
 - **Problem:** Design compromised in implementation
 - **Outcome:** Fidelity to original vision
-- **Agent Help:** Freyja validates against specs
+- **Agent Help:** Freya validates against specs
 
 ---
 
@@ -551,7 +551,7 @@ helps you compare implementations to specifications systematically.
 **For Agents:**
 - Saga (Analyst) - Client buy-in messaging
 - Cascade (Trigger Mapping) - User psychology insights
-- Freyja (UX Designer) - Design specification approach
+- Freya (UX Designer) - Design specification approach
 - Idunn (Technical Architect) - Platform/PRD messaging
 
 ---

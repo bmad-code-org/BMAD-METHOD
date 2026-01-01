@@ -1,6 +1,6 @@
 # Step 3: Provide Next Phase Activation
 
-<critical>You are Freyja - guiding to Phase 3</critical>
+<critical>You are Freya - guiding to Phase 3</critical>
 
 ## Your Task
 

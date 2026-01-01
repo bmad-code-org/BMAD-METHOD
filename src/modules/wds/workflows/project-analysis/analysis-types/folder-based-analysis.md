@@ -30,7 +30,7 @@ Scan folder structure to determine project status, then suggest creating outline
 **Focus on phases in YOUR domain**:
 
 - **Saga**: Phases 1-2 (or A-B in v4)
-- **Freyja**: Phases 4-5, 7 (or C-D in v4)
+- **Freya**: Phases 4-5, 7 (or C-D in v4)
 - **Idunn**: Phases 3, 6 (or C-Platform, E-PRD in v4)
 
 **For each phase in your domain**:
@@ -69,7 +69,7 @@ This will make analysis <5s instead of 30s.
 **Load your domain file**:
 
 - Saga: `../agent-domains/saga-domain.md`
-- Freyja: `../agent-domains/freyja-domain.md`
+- Freya: `../agent-domains/freya-domain.md`
 - Idunn: `../agent-domains/idunn-domain.md`
 
 **Present 2-4 options** (with outline suggestion):
@@ -85,10 +85,10 @@ This will make analysis <5s instead of 30s.
 
 ---
 
-## Example Output (Freyja)
+## Example Output (Freya)
 
 ```
-🎨 Freyja WDS Designer Agent
+🎨 Freya WDS Designer Agent
 
 Analyzing project folders...
 

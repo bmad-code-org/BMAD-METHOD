@@ -21,13 +21,13 @@
 ```
 ┌─────────────────────────────────┐
 │  USER ACTIVATES AGENT           │
-│  @freyja / @saga / @idunn       │
+│  @freya / @saga / @idunn       │
 └────────────┬────────────────────┘
              │
              ▼
 ┌─────────────────────────────────┐
 │  STEP 1: Show Presentation      │
-│  → freyja-presentation.md       │
+│  → freya-presentation.md       │
 │  → saga-presentation.md         │
 │  → idunn-presentation.md        │
 └────────────┬────────────────────┘
@@ -108,7 +108,7 @@ project-analysis/
 │   └── unknown-structure-response.md  ← Quick response (Condition E)
 └── agent-domains/                     ← Agent expertise
     ├── saga-domain.md                 ← Phases 1-2
-    ├── freyja-domain.md               ← Phases 4-5, 7
+    ├── freya-domain.md               ← Phases 4-5, 7
     └── idunn-domain.md                ← Phases 3, 6
 ```
 
@@ -186,9 +186,9 @@ E: Unknown Structure?
 
 ---
 
-## 🎨 Example: Freyja Activation
+## 🎨 Example: Freya Activation
 
-**User**: `@freyja help me`
+**User**: `@freya help me`
 
 **Router checks**:
 
@@ -196,7 +196,7 @@ E: Unknown Structure?
 2. Route to: `outline-based-analysis.md`
 3. **STOP** (don't check B, C, D, E)
 
-**Freyja follows outline-based-analysis.md ONLY**:
+**Freya follows outline-based-analysis.md ONLY**:
 
 - Reads outline
 - Presents status
@@ -205,10 +205,10 @@ E: Unknown Structure?
 
 **User**: "I need technical requirements"
 
-**Freyja checks**: `freyja-domain.md`  
+**Freya checks**: `freya-domain.md`  
 → "Technical requirements" = Phase 3 = Idunn's domain
 
-**Freyja uses**: `agent-handoff-guide.md`  
+**Freya uses**: `agent-handoff-guide.md`  
 → Hands over to Idunn seamlessly
 
 **Idunn activates automatically**:

@@ -1,7 +1,7 @@
 # Sketch-First Workflow - Implementation Plan
 
 **Feature**: Intelligent sketch-driven project initialization  
-**Agents**: Mimer (Detection), Freyja (UX), Saga (Brief), Cascade (Trigger Map)  
+**Agents**: Mimer (Detection), Freya (UX), Saga (Brief), Cascade (Trigger Map)  
 **When**: User uploads sketch(es) to repository  
 **Purpose**: Enable designers to start with sketches, build foundation retroactively  
 **Vision**: From "15 wireframes in a folder" → "Complete WDS project with specs & prototypes"
@@ -72,9 +72,9 @@ Mimer: "👋 Hey! I noticed some changes:
 ```
 User: [uploads landing-page.jpg]
 
-Mimer: "I see a sketch! Activating Freyja..."
+Mimer: "I see a sketch! Activating Freya..."
 
-Freyja: "Hi! Let me analyze this sketch...
+Freya: "Hi! Let me analyze this sketch...
          
          🔍 Analysis:
          - Landing page concept
@@ -88,7 +88,7 @@ Freyja: "Hi! Let me analyze this sketch...
 
 User: "A"
 
-Freyja: "Perfect! Since this is a new project, let's
+Freya: "Perfect! Since this is a new project, let's
          build the foundation first.
          
          I'll hand you to Saga for Product Brief,
@@ -99,7 +99,7 @@ Freyja: "Perfect! Since this is a new project, let's
          
          → Product Brief workflow
          → Trigger Mapping workflow (if needed)
-         → Return to Freyja for page specification
+         → Return to Freya for page specification
 ```
 
 **Human confirms:**
@@ -160,7 +160,7 @@ Mimer: "Perfect! Here's the plan:
         → Establish navigation flow
         
         **Phase 3: Specification** (iterative)
-        → Freyja analyzes each sketch
+        → Freya analyzes each sketch
         → You review and refine
         
         **Phase 4: Prototypes** (automatic)
@@ -198,7 +198,7 @@ User: "Begin"
 ```
 User: [uploads landing-page-v2.jpg]
 
-Freyja: "I see we already have specs for Landing Page.
+Freya: "I see we already have specs for Landing Page.
          Let me compare this to version 1...
          
          🔍 **Changes detected:**
@@ -215,7 +215,7 @@ Freyja: "I see we already have specs for Landing Page.
 
 User: "A"
 
-Freyja: "Great! I'll update:
+Freya: "Great! I'll update:
          1. Add search bar specs to Header
          2. Complete Feature Card 3
          3. Generate Footer specifications
@@ -482,7 +482,7 @@ Agent: "I processed 5 sketches automatically:
 
 ### **Now (Week 1-2)**
 1. Passive sketch detection (Mimer)
-2. Single sketch analysis workflow (Freyja)
+2. Single sketch analysis workflow (Freya)
 3. Page init lightweight (navigation setup)
 4. Basic change detection
 
@@ -585,7 +585,7 @@ sketch_workflow:
 ---
 
 **Created**: December 28, 2025  
-**Feature Owner**: Freyja (UX), Mimer (Detection)  
+**Feature Owner**: Freya (UX), Mimer (Detection)  
 **Status**: Planning Complete → Ready for Implementation  
 **Next Step**: Create v1.0 workflows (manual trigger, human-in-loop)
 

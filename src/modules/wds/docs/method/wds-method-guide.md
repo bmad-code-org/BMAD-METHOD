@@ -81,7 +81,7 @@ Connect business goals to user psychology through Trigger Mapping. Discover not 
 ### Phase 3: PRD Platform (Technical Foundation)
 
 **Output:** `C-Requirements/`  
-**Agent:** Freyja the PM
+**Agent:** Freya the PM
 
 Prove your concept works technically - in parallel with design work. Validate platform decisions, create proofs of concept, and set up experimental endpoints.
 
@@ -137,7 +137,7 @@ Build your component library following atomic design principles. This phase is *
 ### Phase 6: PRD Finalization (Complete PRD)
 
 **Output:** Complete PRD in `C-Requirements/` + `E-UI-Roadmap/`  
-**Agent:** Freyja the PM
+**Agent:** Freya the PM
 
 Compile all functional requirements discovered during Phase 4 into a complete, development-ready PRD. This phase runs **continuously** - hand off as soon as you have MVP scope, then update as design progresses.
 
@@ -228,11 +228,11 @@ Saga guides you through discovery and research. She's curious, patient, and help
 - Phase 1: Product Exploration
 - Phase 2: Trigger Mapping
 
-### Freyja the PM ⚔️
+### Freya the PM ⚔️
 
 _"The strategic leader who sees what must be done"_
 
-Freyja helps you define technical requirements and finalize the PRD for development. She balances passion with strategy, knowing when to be fierce and when to be patient.
+Freya helps you define technical requirements and finalize the PRD for development. She balances passion with strategy, knowing when to be fierce and when to be patient.
 
 **Works with you on:**
 

@@ -27,7 +27,7 @@ Each file has ONE job.
 
 ### Presentations
 
-**`agents/presentations/freyja-presentation.md`**
+**`agents/presentations/freya-presentation.md`**
 
 - Shows complete agent introduction
 - Establishes personality
@@ -62,8 +62,8 @@ Each file has ONE job.
 ## How It Works
 
 1. User types: `@wds-freya-ux.md`
-2. Launcher loads: `freyja-ux.agent.yaml` (persona)
-3. Agent shows: `freyja-presentation.md` (full introduction)
+2. Launcher loads: `freya-ux.agent.yaml` (persona)
+3. Agent shows: `freya-presentation.md` (full introduction)
 4. Presentation redirects to: `project-analysis-router.md`
 5. Router checks conditions and routes to ONE analysis file
 6. Analysis presents ALL project work and asks what user wants

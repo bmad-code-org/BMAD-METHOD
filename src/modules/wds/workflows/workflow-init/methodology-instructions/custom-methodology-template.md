@@ -59,7 +59,7 @@ For each phase, define:
 
 ### {{PHASE_NAME}}
 
-**Agent**: Which WDS agent handles this? (Saga/Freyja/Idunn or specify custom)  
+**Agent**: Which WDS agent handles this? (Saga/Freya/Idunn or specify custom)  
 **Folder**: `docs/{{FOLDER_NAME}}/`  
 **Required**: Yes/No  
 **Deliverables**:
@@ -78,7 +78,7 @@ Here's an example custom methodology:
 
 ### Phase 1: Build
 
-**Agent**: Freyja WDS Designer Agent  
+**Agent**: Freya WDS Designer Agent  
 **Folder**: `docs/01-Build/`  
 **Required**: Yes  
 **Deliverables**:
@@ -146,7 +146,7 @@ phases:
   phase_4_ux_design:
     folder: '{{YOUR_DESIGN_FOLDER}}'
     name: '{{YOUR_DESIGN_PHASE_NAME}}'
-    agent: 'freyja-designer'
+    agent: 'freya-designer'
 ```
 
 ---
@@ -161,7 +161,7 @@ Tell agents how to behave with your custom methodology:
 - **Phases owned**: {{PHASE_NAMES}}
 - **Special instructions**: {{CUSTOM_BEHAVIOR}}
 
-### Freyja WDS Designer Agent
+### Freya WDS Designer Agent
 
 - **Responsibilities**: {{LIST_FREYJA_RESPONSIBILITIES}}
 - **Phases owned**: {{PHASE_NAMES}}
@@ -229,7 +229,7 @@ Specify how WDS agents should adapt:
 **Handoffs**:
 
 - When to suggest Saga: {{CONDITIONS}}
-- When to suggest Freyja: {{CONDITIONS}}
+- When to suggest Freya: {{CONDITIONS}}
 - When to suggest Idunn: {{CONDITIONS}}
 
 ---

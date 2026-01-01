@@ -77,7 +77,7 @@ I'll hand over to [Agent Name] now. One moment...
 
 ## Handoff Examples
 
-### Freyja → Saga
+### Freya → Saga
 
 ```
 That's a great next step!
@@ -97,7 +97,7 @@ I'll hand over to Saga now. One moment...
 
 ---
 
-### Freyja → Idunn
+### Freya → Idunn
 
 ```
 That's a great next step!
@@ -117,22 +117,22 @@ I'll hand over to Idunn now. One moment...
 
 ---
 
-### Saga → Freyja
+### Saga → Freya
 
 ```
 That's a great next step!
 
-UX design and scenarios are handled by **Freyja WDS Designer Agent**.
+UX design and scenarios are handled by **Freya WDS Designer Agent**.
 
-Freyja specializes in:
+Freya specializes in:
 - Designing user scenarios
 - Creating interactive prototypes
 - Building design systems
 - Validating implementations
 
-I'll hand over to Freyja now. One moment...
+I'll hand over to Freya now. One moment...
 
-[@freyja-ux.agent.yaml]
+[@freya-ux.agent.yaml]
 ```
 
 ---
@@ -177,22 +177,22 @@ I'll hand over to Saga now. One moment...
 
 ---
 
-### Idunn → Freyja
+### Idunn → Freya
 
 ```
 That's a great next step!
 
-UX design and prototyping are handled by **Freyja WDS Designer Agent**.
+UX design and prototyping are handled by **Freya WDS Designer Agent**.
 
-Freyja specializes in:
+Freya specializes in:
 - User scenario design
 - Interactive prototypes
 - Page specifications
 - Design validation
 
-I'll hand over to Freyja now. One moment...
+I'll hand over to Freya now. One moment...
 
-[@freyja-ux.agent.yaml]
+[@freya-ux.agent.yaml]
 ```
 
 ---
@@ -216,7 +216,7 @@ I'll hand over to Freyja now. One moment...
 **Check your domain file**:
 
 - Saga: `agent-domains/saga-domain.md`
-- Freyja: `agent-domains/freyja-domain.md`
+- Freya: `agent-domains/freya-domain.md`
 - Idunn: `agent-domains/idunn-domain.md`
 
 **Lists "When to Stay" vs "When to Hand Over"**

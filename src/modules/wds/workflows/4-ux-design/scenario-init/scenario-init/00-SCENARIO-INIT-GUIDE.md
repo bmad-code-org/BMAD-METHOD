@@ -17,7 +17,7 @@ This process helps you identify:
 
 ---
 
-## The 5 Questions
+## The 6 Steps
 
 ### [1. What Feature Delivers Value?](01-feature-selection.md)
 
@@ -39,6 +39,10 @@ What does winning look like for both business and user?
 
 Minimum steps from starting point to mutual success
 
+### [6. Create Value Trigger Chain](06-create-vtc.md)
+
+Crystallize scenario strategy before sketching
+
 ---
 
 ## Examples
@@ -59,9 +63,9 @@ Appointment-driven trust-building flow
 
 ## Next Step
 
-Once you have clarity on all 5 questions, **start sketching the journey.**
+Once you have clarity on all 6 steps (including VTC), **start sketching the journey.**
 
-Each sketch serves the path from trigger to mutual success.
+Each sketch serves the path from trigger to mutual success, guided by the VTC.
 
 ---
 

@@ -71,7 +71,7 @@ WDS v6 uses **numbered phases** for clarity and flexibility:
 
 ### Phase 4: UX Design (Required)
 
-**Agent**: Freyja WDS Designer Agent  
+**Agent**: Freya WDS Designer Agent  
 **Folder**: `docs/4-ux-design/`  
 **Deliverables**:
 
@@ -100,7 +100,7 @@ WDS v6 uses **numbered phases** for clarity and flexibility:
 
 ### Phase 5: Design System (Optional)
 
-**Agent**: Freyja WDS Designer Agent  
+**Agent**: Freya WDS Designer Agent  
 **Folder**: `docs/5-design-system/`  
 **Deliverables**:
 
@@ -134,7 +134,7 @@ WDS v6 uses **numbered phases** for clarity and flexibility:
 
 ### Phase 7: Testing (Optional)
 
-**Agent**: Freyja WDS Designer Agent  
+**Agent**: Freya WDS Designer Agent  
 **Folder**: `docs/7-testing/`  
 **Deliverables**:
 

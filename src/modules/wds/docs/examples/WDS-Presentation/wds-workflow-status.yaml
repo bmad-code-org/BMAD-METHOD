@@ -72,7 +72,7 @@ workflow_status:
     
   phase_4_ux_design:
     status: "in-progress"
-    agent: "freyja-wds-designer"
+    agent: "freya-wds-designer"
     folder: "4-scenarios/"
     current_page: "1.1-start-page"
     artifacts:

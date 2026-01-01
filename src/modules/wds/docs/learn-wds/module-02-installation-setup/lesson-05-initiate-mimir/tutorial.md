@@ -25,7 +25,7 @@ Think of Mimir as:
 - Your psychologist when things feel overwhelming
 - Your strategist for project decisions
 
-**Mimir's role:** Assess your needs, understand your skill level, and connect you with the right specialist agents (Freyja, Saga, Idunn) when appropriate.
+**Mimir's role:** Assess your needs, understand your skill level, and connect you with the right specialist agents (Freya, Saga, Idunn) when appropriate.
 
 ---
 

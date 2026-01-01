@@ -1,4 +1,4 @@
-# Freyja WDS Designer Agent - Domain
+# Freya WDS Designer Agent - Domain
 
 **Phases Owned**: 4-5, 7 (UX Design, Design System, Testing)  
 **Expertise**: User experience design, prototyping, design systems, validation
@@ -19,7 +19,7 @@
 **How I receive handoffs:**
 
 ```
-Other Agent: "@freyja User has [context about interface/design need]"
+Other Agent: "@freya User has [context about interface/design need]"
 
 Me: "Thanks [Agent Name]! I can see [what user shared].
      [Natural question to continue conversation]"

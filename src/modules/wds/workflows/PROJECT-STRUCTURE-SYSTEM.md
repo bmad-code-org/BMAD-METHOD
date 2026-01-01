@@ -67,7 +67,7 @@ When any agent starts work, they:
 2. **Extract** `project_structure` section
 3. **Apply** appropriate folder organization rules
 
-**Example - Freyja (UX Designer):**
+**Example - Freya (UX Designer):**
 - Reads config file before greeting user
 - Understands this is "separate pages"
 - Places pages directly in `4-scenarios/` (no scenario subfolders)
@@ -184,7 +184,7 @@ User Input → Workflow Init → wds-workflow-status.yaml → All Agents → Cor
 ### 3. Application - All Phases
 Every agent that needs structure information reads from `wds-workflow-status.yaml`:
 
-**Freyja (UX Designer):**
+**Freya (UX Designer):**
 - **File:** `workflows/4-ux-design/steps/step-01-init.md`
 - **When:** Before greeting user (initialization)
 - **Action:** Reads config, applies folder rules

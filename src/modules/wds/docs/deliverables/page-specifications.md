@@ -21,7 +21,7 @@ Page Specifications are detailed documentation for each page/screen in your prod
 - Strategic rationale for design decisions
 - Interactive prototypes (optional)
 
-**Created by:** Freyja the UX Designer  
+**Created by:** Freya the UX Designer  
 **When:** Phase 5 - After Platform PRD (or in parallel)  
 **Format:** Markdown specifications + sketches/prototypes
 
@@ -75,32 +75,32 @@ Page Specifications are detailed documentation for each page/screen in your prod
 
 ---
 
-## The Dialog with Your Design Partner: Freyja the UX Designer
+## The Dialog with Your Design Partner: Freya the UX Designer
 
 **The Process (iterative, per page):**
 
-Freyja the UX Designer helps you specify each page with precision:
+Freya the UX Designer helps you specify each page with precision:
 
 ```
-Freyja the UX Designer: "I see you've uploaded a sketch. Let me analyze it... 
+Freya the UX Designer: "I see you've uploaded a sketch. Let me analyze it... 
                          This looks like a dashboard homepage. Is that right?"
 
 You: "Yes! It's the first thing users see after login."
 
-Freyja the UX Designer: "Perfect. What's the user's situation when they arrive here?"
+Freya the UX Designer: "Perfect. What's the user's situation when they arrive here?"
 
 You: "They just logged in - they want to see their project status at a glance."
 
-Freyja the UX Designer: "Got it. I can see three sections in your sketch: 
+Freya the UX Designer: "Got it. I can see three sections in your sketch: 
                          header navigation, project cards, and quick actions. 
                          Let me identify the components..."
 
 You: "The project cards need to show status, deadline, and team members."
 
-Freyja the UX Designer: "Excellent detail! Let me document that with Object IDs..."
+Freya the UX Designer: "Excellent detail! Let me document that with Object IDs..."
 ```
 
-As you work together, Freyja the UX Designer creates:
+As you work together, Freya the UX Designer creates:
 - ✅ Complete navigation structure
 - ✅ Page overview with context
 - ✅ Section breakdown with Object IDs
@@ -111,11 +111,11 @@ As you work together, Freyja the UX Designer creates:
 Then you review together:
 
 ```
-Freyja the UX Designer: "Here's your page specification. Does this capture your vision?"
+Freya the UX Designer: "Here's your page specification. Does this capture your vision?"
 
 You: "Add a filter dropdown to the quick actions section."
 
-Freyja the UX Designer: "Added COMP_FILTER_001 to quick actions. ✅ Spec is complete."
+Freya the UX Designer: "Added COMP_FILTER_001 to quick actions. ✅ Spec is complete."
 ```
 
 **Result:** Page specification saved to `/docs/4-scenarios/[page-name]/`
@@ -133,10 +133,10 @@ See the [WDS Presentation Project - Page Specification](../../examples/WDS-Prese
 To start creating Page Specifications:
 
 ```
-@freyja I have a sketch for [Page Name] - let's create the specification.
+@freya I have a sketch for [Page Name] - let's create the specification.
 ```
 
-Or simply upload a sketch image to any agent, and they'll recognize it and activate Freyja automatically.
+Or simply upload a sketch image to any agent, and they'll recognize it and activate Freya automatically.
 
 ---
 

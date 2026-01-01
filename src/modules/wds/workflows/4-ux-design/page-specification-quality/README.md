@@ -50,7 +50,7 @@ Each step focuses on one structural element to ensure nothing is missed.
 
 ## Quick Start
 
-### For Freyja (AI Agent)
+### For Freya (AI Agent)
 
 <action>Load and execute: instructions.md</action>
 

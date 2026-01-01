@@ -40,7 +40,7 @@ phases:
     workflows:
       - id: "ux-design"
         required: true
-        agent: "freyja-wds-designer"
+        agent: "freya-wds-designer"
         command: "ux-design"
         output: "Component specifications and examples"
         note: "Design components through example usage scenarios"
@@ -55,7 +55,7 @@ phases:
     workflows:
       - id: "design-system"
         required: true
-        agent: "freyja-wds-designer"
+        agent: "freya-wds-designer"
         command: "design-system"
         output: "Complete component documentation, HTML showcase"
         note: "The primary deliverable for this path"

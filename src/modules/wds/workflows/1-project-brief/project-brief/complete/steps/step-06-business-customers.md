@@ -22,7 +22,7 @@ Update frontmatter of output file:
 
 ```yaml
 stepsCompleted:
-  ['step-01-init.md', 'step-02-vision.md', 'step-03-positioning.md', 'step-04-business-model.md', 'step-05-business-customers.md']
+  ['step-01-init.md', 'step-02-vision.md', 'step-03-positioning.md', 'step-04-create-vtc.md', 'step-05-business-model.md', 'step-06-business-customers.md']
 business_customer_profile: '[captured business customer profile]'
 buying_roles: '[captured buying roles]'
 ```

@@ -1,6 +1,6 @@
 # Step 2: Create Handover Summary
 
-<critical>You are Freyja - preparing handover package for Idunn</critical>
+<critical>You are Freya - preparing handover package for Idunn</critical>
 
 ## Your Task
 

@@ -189,7 +189,7 @@ flowchart LR
 **Top Priority Features (Must Have MVP):**
 1. Testimonials & Social Proof (Score: 11) 🏆 - ONLY feature scoring HIGH across all three personas
 1. BMad Method Integration (Score: 11) 🏆 - All personas benefit from seamless design-to-dev
-3. End-to-End Workflow Through Agents (Score: 9) - Complete journey told through expert guides (Saga, Freyja, Idunn, Mimir)
+3. End-to-End Workflow Through Agents (Score: 9) - Complete journey told through expert guides (Saga, Freya, Idunn, Mimir)
 3. Conceptual Specifications (Score: 9) - Specs that capture concept + reasoning, making Stina indispensable and Felix happy
 5. Example Projects/Case Studies (Score: 8) - Proof that overcomes "wasting time" fear
 6. Course Modules (Score: 6) - Hand-holding builds Stina's confidence

@@ -50,7 +50,7 @@ src/modules/wds/
 ├── agents/                     # WDS specialized agents
 │   ├── saga-analyst.agent.yaml # Saga - WDS Analyst
 │   ├── idunn-pm.agent.yaml     # Idunn - WDS PM
-│   └── freyja-ux.agent.yaml    # Freyja - WDS Designer
+│   └── freya-ux.agent.yaml    # Freya - WDS Designer
 ├── workflows/                  # Phase-selectable workflows
 ├── data/                       # Standards, frameworks, presentations
 ├── docs/                       # Module documentation (xxx-guide.md)
@@ -121,7 +121,7 @@ WDS introduces **3 specialized design agents** named after Norse mythology:
 | --------------------------- | -------------------------- | -------------------------------------------------------------------- |
 | **Saga the WDS Analyst**    | Business & Product Analyst | Goddess of stories & wisdom - uncovers your business story           |
 | **Idunn the WDS PM**        | Product Manager            | Goddess of renewal & youth - keeps projects vital and thriving       |
-| **Freyja the WDS Designer** | UX/UI Designer             | Goddess of beauty, magic & strategy - creates experiences users love |
+| **Freya the WDS Designer** | UX/UI Designer             | Goddess of beauty, magic & strategy - creates experiences users love |
 
 ---
 
@@ -193,7 +193,7 @@ bmad agent saga-wds-analyst
 bmad agent idunn-wds-pm
 
 # Or begin with UX Design
-bmad agent freyja-wds-designer
+bmad agent freya-wds-designer
 ```
 
 ---
@@ -204,7 +204,7 @@ bmad agent freyja-wds-designer
 
 - ✅ Module folder structure (`src/modules/wds/`)
 - ✅ Installation system (`_module-installer/installer.js`)
-- ✅ All 3 agents converted to v6 YAML (Saga, Idunn, Freyja)
+- ✅ All 3 agents converted to v6 YAML (Saga, Idunn, Freya)
 - ✅ Agent presentations and personas
 - ✅ All 8 phase workflows complete
 - ✅ Team configurations

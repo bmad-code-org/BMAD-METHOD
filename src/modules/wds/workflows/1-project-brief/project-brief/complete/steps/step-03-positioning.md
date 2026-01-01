@@ -22,7 +22,7 @@ Guide user through positioning framework. Ask them to complete the positioning s
 
 ## Next Step
 
-After defining positioning, proceed to step-04-business-model.md
+Load, read full file, and execute: `step-04-create-vtc.md`
 
 ## State Update
 

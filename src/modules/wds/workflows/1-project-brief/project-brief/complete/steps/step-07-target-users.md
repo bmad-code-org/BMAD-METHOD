@@ -31,8 +31,9 @@ stepsCompleted:
     'step-02-vision.md',
     'step-03-positioning.md',
     'step-04-business-model.md',
-    'step-05-business-customers.md',
-    'step-06-target-users.md',
+    'step-05-business-model.md',
+    'step-06-business-customers.md',
+    'step-07-target-users.md',
   ]
 ideal_user_profile: '[captured user profile]'
 secondary_users: '[captured secondary users]'

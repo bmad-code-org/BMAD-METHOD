@@ -63,7 +63,7 @@ config:
 
 ## 3. Phase 4 Agent Reads Config
 
-**Agent:** Freyja (WDS Designer)
+**Agent:** Freya (WDS Designer)
 
 **When starting Phase 4:**
 
@@ -313,7 +313,7 @@ function setLanguage(lang: 'en' | 'se') {
                ▼
 ┌─────────────────────────────────────┐
 │  3. Phase 4: UX Design              │
-│  Freyja agent loads config           │
+│  Freya agent loads config           │
 │  Knows: Specs in EN, Content in     │
 │         EN + SE                     │
 └──────────────┬──────────────────────┘

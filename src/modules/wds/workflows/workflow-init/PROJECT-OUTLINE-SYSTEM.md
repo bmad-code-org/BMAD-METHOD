@@ -74,12 +74,12 @@ started_date: '2024-12-10'
 ```yaml
 status: 'complete'
 completed_date: '2024-12-10'
-completed_by: 'Freyja WDS Designer Agent'
+completed_by: 'Freya WDS Designer Agent'
 artifacts:
   - 'docs/4-ux-design/01-onboarding/*.md'
 ```
 
-**Scenario tracking (Freyja):**
+**Scenario tracking (Freya):**
 
 ```yaml
 scenarios:
@@ -120,7 +120,7 @@ phases:
   phase_4_ux_design:
     active: true
     status: 'in_progress'
-    agent: 'freyja-designer'
+    agent: 'freya-designer'
     intent: |
       User's intentions: "Create 3 core scenarios for MVP"
     scenarios_planned: 3
@@ -142,7 +142,7 @@ scenarios:
 ```yaml
 update_history:
   - date: '2024-12-10'
-    agent: 'freyja-designer'
+    agent: 'freya-designer'
     action: 'completed'
     changes: 'Completed Scenario 01'
 ```
@@ -151,7 +151,7 @@ update_history:
 
 ## Agent Integration
 
-### Freyja (Designer)
+### Freya (Designer)
 
 - Reads outline on activation
 - Adds/updates scenarios as design work progresses

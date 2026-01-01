@@ -1,6 +1,6 @@
 # Phase 4: UX Design Workflow
 
-**Freyja's domain - From sketch to specification**
+**Freya's domain - From sketch to specification**
 
 ---
 

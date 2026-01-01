@@ -84,7 +84,7 @@ async function install(options) {
     logger.log(chalk.cyan('\n📋 Next steps:'));
     logger.log(chalk.dim('  1. Activate Saga (WDS Analyst) to start with Product Brief'));
     logger.log(chalk.dim('  2. Or activate Idunn (WDS PM) for Platform Requirements'));
-    logger.log(chalk.dim('  3. Or activate Freyja (WDS Designer) for UX Design'));
+    logger.log(chalk.dim('  3. Or activate Freya (WDS Designer) for UX Design'));
 
     return true;
   } catch (error) {

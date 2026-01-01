@@ -27,9 +27,25 @@ Complete documentation for Whiteport Design Studio - a design-first methodology 
 - **[Phase 3: PRD Platform](method/phase-3-prd-platform-guide.md)** - Technical foundation
 - **[Phase 4: UX Design](method/phase-4-ux-design-guide.md)** - Scenarios & specifications
 - **[Phase 5: Design System](method/phase-5-design-system-guide.md)** - Component library (optional)
-- **[Phase 6: Integration](method/phase-6-integration-guide.md)** - PRD finalization & handoff
+- **[Phase 6: PRD Finalization](method/phase-6-prd-finalization-guide.md)** - PRD finalization & handoff
 
 **These guides are tool-agnostic** - explaining the methodology regardless of how you apply it.
+
+---
+
+## 🧠 Strategic Design Models
+
+**Foundational frameworks from thought leaders** that inform WDS methodology.
+
+- **[Models Guide](models/models-guide.md)** - Introduction to strategic frameworks
+- **[Customer Awareness Cycle](models/customer-awareness-cycle.md)** - Eugene Schwartz (meet users where they are)
+- **[Impact/Effect Mapping](models/impact-effect-mapping.md)** - Mijo Balic, Ingrid Domingues, Gojko Adzic (strategic connections)
+- **[Golden Circle](models/golden-circle.md)** - Simon Sinek (start with WHY)
+- **[Action Mapping](models/action-mapping.md)** - Cathy Moore (focus on what people DO)
+- **[Kathy Sierra Badass Users](models/kathy-sierra-badass-users.md)** - Kathy Sierra (make users awesome)
+- **[Value Trigger Chain](method/value-trigger-chain-guide.md)** - Whiteport method (lightweight strategic context)
+
+**These are external frameworks** with full attribution to original creators. Our methods build on these giants' shoulders.
 
 ---
 
@@ -46,7 +62,7 @@ Complete documentation for Whiteport Design Studio - a design-first methodology 
 - **[Module 05: Trigger Mapping](learn-wds/module-05-map-triggers-outcomes/)** - Map user psychology
 - **[Module 06+](learn-wds/)** - Continue through all phases
 
-**This course is WDS-specific** - teaching you to use Saga, Freyja, and Idunn agents.
+**This course is WDS-specific** - teaching you to use Saga, Freya, and Idunn agents.
 
 ---
 
@@ -69,24 +85,30 @@ Complete documentation for Whiteport Design Studio - a design-first methodology 
 
 ## 🎨 Examples
 
-**See WDS in action:** Real projects showing complete WDS folder structures.
+**See WDS in action:** Real projects showing complete WDS workflows and documentation.
 
-- **[WDS Presentation](examples/wds-presentation/)** - Marketing website example
-  - Complete docs/ folder structure
+- **[Examples Overview](examples/)** - Browse all examples with descriptions
+- **[WDS Presentation](examples/WDS-Presentation/)** - Marketing landing page project
   - Product brief, trigger map, scenarios
-  - Shows real WDS deliverables
+  - Desktop concept sketches
+  - Benefits-first content strategy
+- **[WDS v6 Conversion](examples/wds-v6-conversion/)** - Meta example using WDS to build WDS
+  - Complete session logs with context preservation
+  - Strategic framework development (CAC, Golden Circle, Kathy Sierra, Action Mapping)
+  - Long-term project management patterns
+  - Agent collaboration workflows
 
-**These are reference implementations** - copy structure for your projects.
+**These are real projects** - not sanitized demos. Copy patterns, adapt structure, learn from decisions.
 
 ---
 
 ## 🤖 Agent Activation
 
-**Using WDS agents:** Quick activation guides for Saga, Freyja, and Idunn.
+**Using WDS agents:** Quick activation guides for Saga, Freya, and Idunn.
 
 - **[Agent Launchers](getting-started/agent-activation/agent-launchers.md)** - Quick reference
 - **[Saga WDS Analyst](getting-started/agent-activation/wds-saga-analyst.md)** - Business analysis
-- **[Freyja WDS Designer](getting-started/agent-activation/wds-freyja-ux.md)** - UX design
+- **[Freya WDS Designer](getting-started/agent-activation/wds-freya-ux.md)** - UX design
 - **[Idunn WDS PM](getting-started/agent-activation/wds-idunn-pm.md)** - Product management
 - **[Mimir Orchestrator](getting-started/agent-activation/wds-mimir.md)** - Workflow coordination
 
@@ -132,18 +154,20 @@ Complete documentation for Whiteport Design Studio - a design-first methodology 
 ```
 docs/
 ├── getting-started/      # Quick start guides (15 min total)
-├── method/               # Tool-agnostic methodology guides
+├── models/               # External strategic frameworks
+├── method/               # Whiteport's methodology guides
 ├── learn-wds/            # WDS-specific course (agent-driven)
 ├── deliverables/         # Specifications for what you create
 ├── examples/             # Real project examples
 └── README.md             # This navigation hub
 ```
 
-**Three clear purposes:**
+**Four clear purposes:**
 
-1. **method/** → "How does the design methodology work?" (universal)
-2. **learn-wds/** → "How do I use WDS agents?" (WDS-specific)
-3. **examples/** → "Show me a real project" (reference implementation)
+1. **models/** → "What are the foundational frameworks?" (external, attributed)
+2. **method/** → "How does WDS methodology work?" (Whiteport instruments)
+3. **learn-wds/** → "How do I use WDS agents?" (WDS-specific)
+4. **examples/** → "Show me a real project" (reference implementation)
 
 ---
 

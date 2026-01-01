@@ -1,6 +1,6 @@
 # Phase 3: PRD Platform (Technical Foundation)
 
-**Agent:** Freyja the PM  
+**Agent:** Freya the PM  
 **Output:** `C-Requirements/` (or your configured prefix)
 
 ---

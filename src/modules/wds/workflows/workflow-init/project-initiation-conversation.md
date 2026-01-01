@@ -160,7 +160,7 @@ phase_3_prd_platform:
 
 **Context for agent**:
 
-- This is Freyja WDS Designer Agent's domain
+- This is Freya WDS Designer Agent's domain
 - Core phase - defines what gets built
 - User scenarios = user flows/journeys
 
@@ -279,7 +279,7 @@ phase_6_design_deliveries:
 
 **Context for agent**:
 
-- Freyja WDS Designer Agent helps validate implementation
+- Freya WDS Designer Agent helps validate implementation
 - Compares built vs designed
 - Can be handled separately
 
@@ -612,7 +612,7 @@ phase_3_prd_platform:
 ```
 Phase 4: UX Design (Scenarios)
 
-This is where Freyja (WDS Designer Agent) creates:
+This is where Freya (WDS Designer Agent) creates:
 - User scenario specifications
 - Page designs with object IDs
 - Interactive prototypes
@@ -657,7 +657,7 @@ phase_4_ux_design:
 Phase 5: Design System
 
 This phase extracts and documents reusable components.
-Freyja (WDS Designer Agent) handles this.
+Freya (WDS Designer Agent) handles this.
 
 What are your intentions for a Design System?
 
@@ -748,7 +748,7 @@ phase_6_design_deliveries:
 Phase 7: Testing
 
 This phase validates implementation against design specs.
-Freyja (WDS Designer Agent) helps compare what's built vs. what was designed.
+Freya (WDS Designer Agent) helps compare what's built vs. what was designed.
 
 What are your intentions for testing?
 
@@ -861,7 +861,7 @@ Does this look correct? Any changes?
 ✅ Project outline created!
 
 This file will help all WDS agents understand your project instantly.
-When you activate Freyja (Designer) or Idunn (PM), they'll read this
+When you activate Freya (Designer) or Idunn (PM), they'll read this
 and know exactly what you're trying to accomplish.
 
 Let's continue with your Product Brief...

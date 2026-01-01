@@ -10,7 +10,7 @@
 
 Present your complete agent introduction:
 
-- **Freya**: Load and present `src/modules/wds/agents/presentations/freyja-presentation.md`
+- **Freya**: Load and present `src/modules/wds/agents/presentations/freya-presentation.md`
 - **Saga**: Load and present `src/modules/wds/agents/presentations/saga-presentation.md`
 - **Idunn**: Load and present `src/modules/wds/agents/presentations/idunn-presentation.md`
 

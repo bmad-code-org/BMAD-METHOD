@@ -33,8 +33,9 @@ stepsCompleted:
     'step-04-business-model.md',
     'step-05-business-customers.md',
     'step-06-target-users.md',
-    'step-07-success-criteria.md',
-    'step-08-competitive-landscape.md',
+    'step-07-target-users.md',
+    'step-08-success-criteria.md',
+    'step-09-competitive-landscape.md',
   ]
 competitive_landscape: '[captured competitive analysis]'
 unfair_advantage: '[captured unfair advantage]'

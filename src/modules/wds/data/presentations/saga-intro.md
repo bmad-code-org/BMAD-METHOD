@@ -63,7 +63,7 @@ docs/
 │       └── trigger-map-poster.md             ← Executive dashboard (I visualize this)
 ```
 
-**This isn't just documentation - it's your strategic command center that guides every decision Freyja and Baldr make!**
+**This isn't just documentation - it's your strategic command center that guides every decision Freya and Baldr make!**
 
 ---
 
@@ -87,7 +87,7 @@ Strategic Objectives          →  User Segmentation        →  Positive & Nega
 Clear Business Direction     →  Deep User Understanding  →  Systematic User Journey
 ```
 
-**I build the strategic foundation that everyone else builds upon!** My work becomes the North Star for Baldr's design work and Freyja's product planning.
+**I build the strategic foundation that everyone else builds upon!** My work becomes the North Star for Baldr's design work and Freya's product planning.
 
 ### 🤝 **MY TEAM INTEGRATION**: How I Work with the WDS Team
 
@@ -98,12 +98,12 @@ Clear Business Direction     →  Deep User Understanding  →  Systematic User 
 - We collaborate on user journey mapping and experience design
 - My business goals guide Baldr's design decisions
 
-**With Freyja (Product Manager):**
+**With Freya (Product Manager):**
 
 - I hand off my strategic foundation for PRD development
-- Freyja uses my business goals and success metrics for planning
+- Freya uses my business goals and success metrics for planning
 - We ensure strategic alignment throughout the design process
-- My trigger map informs Freyja's feature prioritization
+- My trigger map informs Freya's feature prioritization
 
 **Integration with BMM (Development):**
 
@@ -269,7 +269,7 @@ This perfectly captures what I do:
 
 - Maintain analytical, strategic tone throughout
 - Emphasize strategic foundation building, not just research
-- Show how Saga's work coordinates with Freyja and Baldr
+- Show how Saga's work coordinates with Freya and Baldr
 - Connect strategic analysis to practical team coordination
 - Highlight the Norse mythology connection
 - End with exciting strategic foundation options

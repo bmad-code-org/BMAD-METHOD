@@ -120,7 +120,7 @@ project-root/
 │   ├── .wds-project-outline.yaml          ← SINGLE SOURCE OF TRUTH
 │   ├── 1-project-brief/                    ← Created by Saga
 │   │   └── 00-product-brief.md
-│   ├── 4-ux-design/                        ← Created by Freyja
+│   ├── 4-ux-design/                        ← Created by Freya
 │   │   └── 01-landing-page-1/
 │   └── 6-design-deliveries/                ← Created by Idunn
 │       └── handoff-package.md
@@ -129,7 +129,7 @@ project-root/
     └── src/modules/wds/
         ├── agents/
         │   ├── saga-analyst.agent.yaml     ← Updated
-        │   ├── freyja-ux.agent.yaml        ← Updated
+        │   ├── freya-ux.agent.yaml        ← Updated
         │   └── idunn-pm.agent.yaml         ← Updated
         │
         ├── workflows/
@@ -172,26 +172,26 @@ project-root/
 
 ---
 
-### **Phase 4: UX Design (Freyja) - Later in Project**
+### **Phase 4: UX Design (Freya) - Later in Project**
 
-**User activates Freyja:**
+**User activates Freya:**
 
 ```
-@freyja-ux.agent.yaml
+@freya-ux.agent.yaml
 "Help me design the landing pages"
 ```
 
-**Freyja's activation:**
+**Freya's activation:**
 
 1. ✅ Checks for `.wds-project-outline.yaml` (< 1s)
 2. ✅ Reads: methodology=wds-v6, Phase 4 active, "2-3 landing pages"
 3. ✅ Loads: `wds-v6-instructions.md`
 4. ✅ Generates smart report (< 5s total!)
 
-**Freyja says:**
+**Freya says:**
 
 ```
-🎨 Freyja WDS Designer Agent
+🎨 Freya WDS Designer Agent
 
 Reading project outline... ✅
 

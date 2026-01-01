@@ -5,7 +5,7 @@ web_bundle: true
 ---
 # WDS Phase 3: PRD Platform (Technical Foundation)
 name: "Phase 3: PRD Platform (Technical Foundation)"
-agent: "Freyja the PM"
+agent: "Freya the PM"
 version: "1.0.0"
 
 paths:

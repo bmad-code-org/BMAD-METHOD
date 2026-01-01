@@ -45,7 +45,7 @@ Choice [1/2/3/4/5]:</ask>
 
 ### Choice 2: Phase 5 (Design System)
 
-<output>To start Phase 5, activate Freyja (WDS Designer) again and run the Design System workflow.</output>
+<output>To start Phase 5, activate Freya (WDS Designer) again and run the Design System workflow.</output>
 <action>Exit this workflow</action>
 
 ### Choice 3: Phase 6 (PRD Finalization)

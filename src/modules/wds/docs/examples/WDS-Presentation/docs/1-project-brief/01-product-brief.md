@@ -791,7 +791,7 @@ Even with years of consulting experience:
 - **AI ensures** nothing gets lost in translation
 - Your expertise creates richer analysis, delivered faster
 
-#### Freyja the Designer ✨
+#### Freya the Designer ✨
 _"The one who brings clarity through design"_
 
 - **Role:** UX Designer + Design System Expert
@@ -801,7 +801,7 @@ _"The one who brings clarity through design"_
 **How AI Scales Design Excellence:**
 
 Experienced designers benefit from:
-- **You sketch and conceptualize** - Freyja analyzes and structures
+- **You sketch and conceptualize** - Freya analyzes and structures
 - **You make creative decisions** - AI documents them as detailed specifications
 - **You define interactions** - Your design + specifications become implementation-ready super-prompts
 - **You bring design intuition** - AI scales it into comprehensive documentation

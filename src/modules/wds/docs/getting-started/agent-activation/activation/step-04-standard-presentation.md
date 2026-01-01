@@ -10,7 +10,7 @@ Show your full presentation to introduce yourself.
 
 **Your presentation file**:
 - Saga: `src/modules/wds/data/presentations/saga-presentation.md`
-- Freyja: `src/modules/wds/data/presentations/freyja-presentation.md`
+- Freya: `src/modules/wds/data/presentations/freya-presentation.md`
 - Idunn: `src/modules/wds/data/presentations/idunn-presentation.md`
 
 **What to do**:

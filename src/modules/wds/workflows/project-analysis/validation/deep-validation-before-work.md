@@ -194,7 +194,7 @@ Don't start work until resolved
 
 ---
 
-## Example: Freyja Deep Validation
+## Example: Freya Deep Validation
 
 ```
 User: "Continue Scenario 03"

@@ -70,7 +70,7 @@ Three-dimensional social proof creates powerful conversion momentum. This isn't 
 
 **The Story:**
 - **Saga the Analyst** guides Product Brief & Trigger Mapping (strategy & discovery)
-- **Freyja the Designer** guides UX Design & Design System (creative execution)
+- **Freya the Designer** guides UX Design & Design System (creative execution)
 - **Idunn the PM** guides Platform Requirements & PRD (technical planning)
 - **Mimir the Orchestrator** coordinates your entire journey (wise guide)
 
@@ -188,7 +188,7 @@ Mention **Design System**, **GitHub**, and **Community** but don't feature them 
 
 ### **Phase 1 MVP:**
 - BMad Method Integration messaging
-- Workflow told through agents (Saga, Freyja, Idunn, Mimir as guides)
+- Workflow told through agents (Saga, Freya, Idunn, Mimir as guides)
 - Conceptual specifications showcase
 - Dog Week case study (prominent)
 - Testimonials from early adopters (designer + entrepreneur + developer perspectives)

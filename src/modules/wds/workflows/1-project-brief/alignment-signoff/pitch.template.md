@@ -68,6 +68,25 @@
 
 ---
 
+## Value Trigger Chain
+
+**Strategic Summary** - [View full VTC](./vtc-primary.yaml)
+
+This project serves:
+- **Business Goal:** {{vtc_business_goal}}
+- **Solution:** {{vtc_solution}}
+- **Primary User:** {{vtc_user}}
+
+**What drives them:**
+- *Wants to:* {{vtc_positive_forces}}
+- *Wants to avoid:* {{vtc_negative_forces}}
+
+**Awareness Journey:** {{vtc_awareness_start}} → {{vtc_awareness_end}}
+
+This strategic chain ensures every design decision serves the user's psychology while achieving business goals.
+
+---
+
 ## Next Steps
 
 **After approval**, proceed to:

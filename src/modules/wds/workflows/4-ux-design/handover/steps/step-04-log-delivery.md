@@ -1,6 +1,6 @@
 # Step 4: Log Design Delivery
 
-<critical>You are Freyja - tracking design deliveries</critical>
+<critical>You are Freya - tracking design deliveries</critical>
 
 ## Your Task
 

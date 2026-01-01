@@ -95,7 +95,7 @@ phases:
     required: true
     name: "UX Design"
     folder: "4-ux-design" # or "C-Scenarios" for v4
-    agent: "freyja-designer"
+    agent: "freya-designer"
     status: "not_started"
     started_date: null
     completed_date: null
@@ -134,7 +134,7 @@ phases:
     required: false
     name: "Design System"
     folder: "5-design-system" # or "D-Design-System" for v4
-    agent: "freyja-designer"
+    agent: "freya-designer"
     status: "not_started"
     started_date: null
     completed_date: null
@@ -171,7 +171,7 @@ phases:
     required: false
     name: "Testing"
     folder: "7-testing"
-    agent: "freyja-designer"
+    agent: "freya-designer"
     status: "not_started"
     started_date: null
     completed_date: null
@@ -225,7 +225,7 @@ tech_stack:
 
 # Agent Initialization Behavior
 agent_behavior:
-  # When Freyja activates, should she:
+  # When Freya activates, should she:
   skip_inactive_phases: true # Don't report on phases marked active: false
   focus_on_current_phase: true # Emphasize the next active phase
   suggest_phase_handoffs: true # Recommend switching to specialized agents
@@ -262,7 +262,7 @@ update_history:
   #   phase: "phase_1_project_brief"
   #   changes: "Completed Product Brief with stakeholder interviews"
   # - date: "2025-12-12"
-  #   agent: "freyja-designer"
+  #   agent: "freya-designer"
   #   action: "started"
   #   phase: "phase_4_ux_design"
   #   changes: "Started Scenario 01: Customer Onboarding"
@@ -339,7 +339,7 @@ Is this a customer-facing product where understanding user triggers is critical?
 
 ---
 
-## When Starting Scenario Work (Freyja WDS Designer Agent):
+## When Starting Scenario Work (Freya WDS Designer Agent):
 
 Add new scenario to the outline:
 
@@ -359,7 +359,7 @@ scenarios:
 
 ---
 
-## When Completing Scenario Work (Freyja WDS Designer Agent):
+## When Completing Scenario Work (Freya WDS Designer Agent):
 
 Update scenario status:
 
@@ -398,7 +398,7 @@ started_date: "2024-12-10"
 ```yaml
 status: "complete"
 completed_date: "2024-12-10"
-completed_by: "Freyja WDS Designer Agent"
+completed_by: "Freya WDS Designer Agent"
 artifacts:
   - "docs/4-ux-design/01-onboarding/*.md"
 ```
@@ -407,7 +407,7 @@ Add update history entry:
 ```yaml
 update_history:
   - date: "2024-12-10"
-    agent: "freyja-designer"
+    agent: "freya-designer"
     action: "completed"
     phase: "phase_4_ux_design"
     changes: "Completed Scenario 01: 9 pages specified with prototypes"

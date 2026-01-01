@@ -4,7 +4,7 @@
 
 ## Your Task
 
-Provide activation instructions for the UX Designer (Freyja) to begin UX Design.
+Provide activation instructions for the UX Designer (Freya) to begin UX Design.
 
 ---
 
@@ -12,7 +12,7 @@ Provide activation instructions for the UX Designer (Freyja) to begin UX Design.
 
 <output>**Ready to Start UX Design!** 🎨
 
-**To activate the UX Designer (Freyja):**
+**To activate the UX Designer (Freya):**
 
 **In a NEW conversation** (recommended for fresh context), load the UX agent with:
 

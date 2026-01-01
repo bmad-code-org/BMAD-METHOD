@@ -1,4 +1,4 @@
-# Phase 2: Trigger map
+# Phase 2: Trigger Mapping
 
 **Agent:** Saga the Analyst  
 **Output:** `B-Trigger-Map/` (or your configured prefix)
@@ -144,10 +144,44 @@ For each user type:
 
 This reveals:
 
-- **Positive Triggers** - What motivates action
-- **Negative Triggers** - What prevents engagement
+- **Positive Triggers** - What motivates action (wishes, aspirations)
+- **Negative Triggers** - What prevents engagement (fears, frustrations)
 - **Emotional Drivers** - The psychology behind decisions
 - **Behavioral Patterns** - When and why they act
+
+**Understanding Usage Goals vs. Context:**
+
+Usage goals are **contextual** - they activate based on the specific usage situation:
+
+**Example: Golfer at Dubai Golf Resort**
+
+A golfer is a person with many life roles, but in the context of booking a golf range, only their golf-related goals matter:
+
+*Usage goals (in golf booking context):*
+- Wish to improve their swing
+- Wish to enjoy premium facilities
+- Fear of wasting money on low-quality experience
+
+*Other life goals (out of scope):*
+- Their parenting goals don't matter here
+- Their career ambitions are irrelevant
+- Their financial planning is separate
+
+**Why This Matters:**
+
+The same person has different active goals in different contexts. A golf resort's Trigger Map focuses on the usage situation it serves, not the person's entire life.
+
+**Cross-Context Opportunities:**
+
+Sometimes multiple contexts can overlap strategically:
+
+*Example: Golf Resort with Restaurant*
+
+- **Golf Booking Context:** Golfer wants premium experience
+- **Restaurant Context:** Same golfer is now hungry after playing
+- **Value Chain Opportunity:** "35% restaurant booking rate - Provide golfers with free drink - Golfer - Want to feel taken care of / Not leave hungry"
+
+The person is the same, but their **active goals shift** with the context. Smart businesses can create value chains across contexts.
 
 ### Stage 4: Visual Strategy Map (15-20 minutes)
 
@@ -316,6 +350,22 @@ The trigger map becomes the strategic brain of your product.
 ## Example Output
 
 See: `examples/dog-week-patterns/B-Trigger-Map/` for a complete Trigger Map with personas from a real project.
+
+---
+
+## Related Resources
+
+**Method Guides:**
+- [Value Trigger Chain Guide](./value-trigger-chain-guide.md) - Extracting VTCs from Trigger Map
+- [Phase 1: Product Exploration](./phase-1-product-exploration-guide.md) - Strategic foundation (prerequisite)
+- [Phase 4: UX Design Guide](./phase-4-ux-design-guide.md) - Using Trigger Map in scenarios
+
+**Foundational Models:**
+- [Impact/Effect Mapping](../models/impact-effect-mapping.md) - The foundational methodology Trigger Mapping derives from
+- [Customer Awareness Cycle](../models/customer-awareness-cycle.md) - Understanding user awareness stages
+
+**Workflows:**
+- Trigger Mapping Workflow: `workflows/2-trigger-mapping/` (see workflow files)
 
 ---
 

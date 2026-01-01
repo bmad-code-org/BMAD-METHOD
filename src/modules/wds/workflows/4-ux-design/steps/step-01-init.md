@@ -53,7 +53,7 @@ Set up the design session and determine what scenario or page the user wants to 
 
 ## EXECUTION
 
-<output>Hi {user_name}! I'm Freyja, and I'll help you design and specify your user experience.
+<output>Hi {user_name}! I'm Freya, and I'll help you design and specify your user experience.
 
 **UX Design** transforms ideas into detailed visual specifications. We'll work through each scenario, page by page, creating specifications so complete they eliminate guesswork during development.
 

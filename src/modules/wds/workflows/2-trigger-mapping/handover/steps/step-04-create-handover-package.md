@@ -4,7 +4,7 @@
 
 ## Your Task
 
-Create summary package for the UX Designer (Freyja).
+Create summary package for the UX Designer (Freya).
 
 ---
 

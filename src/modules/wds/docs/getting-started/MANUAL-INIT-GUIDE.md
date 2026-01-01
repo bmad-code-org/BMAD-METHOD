@@ -54,7 +54,7 @@ your-project/
 │   └── rules/
 │       └── wds/
 │           ├── agents/
-│           │   ├── freyja-ux.agent.yaml
+│           │   ├── freya-ux.agent.yaml
 │           │   ├── idunn-pm.agent.yaml
 │           │   └── saga-analyst.agent.yaml
 │           ├── workflows/
@@ -79,7 +79,7 @@ your-project/
 3. **Reference the WDS agent** you want to use:
 
 ```
-@wds/agents/freyja-ux    - For UX Design & Prototyping
+@wds/agents/freya-ux    - For UX Design & Prototyping
 @wds/agents/idunn-pm     - For Product Management & Analysis
 @wds/agents/saga-analyst - For Scenario Analysis
 ```
@@ -87,9 +87,9 @@ your-project/
 ### Example Activation
 
 ```
-You: @wds/agents/freyja-ux
+You: @wds/agents/freya-ux
 
-Agent: 🎨 **Freyja - UX Designer**
+Agent: 🎨 **Freya - UX Designer**
 
 I'm ready to help you design user experiences!
 
@@ -148,7 +148,7 @@ Choose a workflow to start:
 
 | Agent | Purpose | Reference |
 |-------|---------|-----------|
-| **Freyja** | UX Design & Prototyping | `@wds/agents/freyja-ux` |
+| **Freya** | UX Design & Prototyping | `@wds/agents/freya-ux` |
 | **Idunn** | Product Management | `@wds/agents/idunn-pm` |
 | **Saga** | Scenario Analysis | `@wds/agents/saga-analyst` |
 
@@ -165,11 +165,11 @@ Choose a workflow to start:
 
 ## Troubleshooting
 
-### ❌ "Can't find @wds/agents/freyja-ux"
+### ❌ "Can't find @wds/agents/freya-ux"
 
 **Solution:** Check that the folder structure matches Step 2. The path should be:
 ```
-.cursor/rules/wds/agents/freyja-ux.agent.yaml
+.cursor/rules/wds/agents/freya-ux.agent.yaml
 ```
 
 ### ❌ "Agent doesn't respond"
@@ -178,7 +178,7 @@ Choose a workflow to start:
 1. Restart Cursor
 2. Try referencing the agent again with a clear question:
    ```
-   @wds/agents/freyja-ux Can you help me create a prototype?
+   @wds/agents/freya-ux Can you help me create a prototype?
    ```
 
 ### ❌ "Workflow not found"
