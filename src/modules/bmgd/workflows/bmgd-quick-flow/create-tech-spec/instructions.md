@@ -27,7 +27,7 @@
 - Existing code to integrate with?
   </action>
 
-<action>Check for existing context in {output_folder} and {sprint_artifacts}</action>
+<action>Check for existing context in {output_folder} and {implementation_artifacts}</action>
 
 <checkpoint title="Problem Understanding">
 [a] Advanced Elicitation  [c] Continue  [p] Party Mode
@@ -113,7 +113,7 @@
 
 </action>
 
-<action>Save to {sprint_artifacts}/tech-spec-{slug}.md</action>
+<action>Save to {implementation_artifacts}/tech-spec-{slug}.md</action>
 
 </step>
 
@@ -123,7 +123,7 @@
 
 <output>**Tech-Spec Complete!** 🎮
 
-Saved to: {sprint_artifacts}/tech-spec-{slug}.md
+Saved to: {implementation_artifacts}/tech-spec-{slug}.md
 
 [a] Advanced Elicitation - refine further
 [b] Begin Development (not recommended - fresh context better)

@@ -13,6 +13,7 @@ Before starting this workflow, verify:
 **Halt only if:** Framework scaffolding is completely missing (run `framework` workflow first)
 
 **Note:** BMad artifacts (story, tech-spec, PRD) are OPTIONAL - workflow can run without them
+**Note:** `automate` generates tests; it does not run `*atdd` or `*test-review`. If ATDD outputs exist, use them as input and avoid duplicate coverage.
 
 ---
 
@@ -421,6 +422,7 @@ Before starting this workflow, verify:
 
 **With atdd Workflow:**
 
+- [ ] ATDD artifacts provided or located (manual handoff; `atdd` not auto-run)
 - [ ] Existing ATDD tests checked (if story had ATDD workflow run)
 - [ ] Expansion beyond ATDD planned (edge cases, negative paths)
 - [ ] No duplicate coverage with ATDD tests

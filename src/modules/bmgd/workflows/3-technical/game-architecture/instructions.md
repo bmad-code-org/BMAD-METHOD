@@ -2,7 +2,7 @@
 
 <workflow name="architecture">
 
-<critical>The workflow execution engine is governed by: {project-root}/\_bmad/core/tasks/workflow.xml</critical>
+<critical>The workflow execution engine is governed by: {project-root}/_bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
 <critical>This workflow uses ADAPTIVE FACILITATION - adjust your communication style based on {user_skill_level}</critical>
 <critical>The goal is ARCHITECTURAL DECISIONS that prevent AI agent conflicts, not detailed implementation specs</critical>
@@ -74,7 +74,7 @@ For Level {{project_level}}, we'll keep the architecture appropriately scoped.
 
 Decision Architecture works from your Product Requirements Document (PRD).
 
-Looking for: _prd_.md, or prd/index.md + files in {output_folder}
+Looking for: `*prd*.md`, or `prd/index.md` + files in {output_folder}
 
 Please run the PRD workflow first to define your requirements.
 
@@ -659,7 +659,7 @@ Enforcement: "All agents MUST follow this pattern"
 
   </check>
 
-<action>Save document to {output_folder}/architecture.md</action>
+<action>Save document to {planning_artifacts}/architecture.md</action>
 
   <check if="standalone_mode != true">
     <action>Load the FULL file: {output_folder}/bmgd-workflow-status.yaml</action>

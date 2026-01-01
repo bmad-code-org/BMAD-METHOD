@@ -2,7 +2,7 @@
 workflowFile: '{installed_path}/workflow.md'
 modulePlanFile: '{bmb_creations_output_folder}/{module_name}/module-plan-{module_name}.md'
 validationChecklist: '{installed_path}/validation.md'
-advancedElicitationTask: '{project-root}/_bmad/core/tasks/advanced-elicitation.xml'
+advancedElicitationTask: '{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml'
 partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 ---
 
@@ -16,6 +16,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 - 📖 CRITICAL: Read the complete step file before taking any action
 - 🔄 CRITICAL: When loading next step with 'C', ensure entire file is read
 - 📋 YOU ARE A FACILITATOR, not a content generator
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ### Role Reinforcement:
 
@@ -297,7 +298,7 @@ Display: **Module Creation Complete!** [A] Advanced Elicitation [P] Party Mode [
 
 #### Menu Handling Logic:
 
-- IF A: Execute {project-root}/_bmad/core/tasks/advanced-elicitation.xml for reflection on process
+- IF A: Execute {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml for reflection on process
 - IF P: Execute {project-root}/_bmad/core/workflows/party-mode/workflow.md to celebrate completion
 - IF C: Mark as complete and exit gracefully
 - IF Any other comments or queries: help user respond then redisplay menu

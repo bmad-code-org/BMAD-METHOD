@@ -7,6 +7,8 @@
 
 ---
 
+Note: This review audits existing tests; it does not generate tests.
+
 ## Executive Summary
 
 **Overall Assessment**: {Excellent | Good | Acceptable | Needs Improvement | Critical Issues}

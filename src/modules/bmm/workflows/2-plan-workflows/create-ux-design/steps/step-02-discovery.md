@@ -10,13 +10,14 @@
 - 📋 YOU ARE A UX FACILITATOR, not a content generator
 - 💬 FOCUS on understanding project context and user needs
 - 🎯 COLLABORATIVE discovery, not assumption-based design
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ## EXECUTION PROTOCOLS:
 
 - 🎯 Show your analysis before taking any action
 - ⚠️ Present A/P/C menu after generating project understanding content
 - 💾 ONLY save when user chooses C (Continue)
-- 📖 Update frontmatter `stepsCompleted: [1, 2]` before loading next step
+- 📖 Update output file frontmatter, adding this step to the end of the list of stepsCompleted.
 - 🚫 FORBIDDEN to load next step until C is selected
 
 ## COLLABORATION MENUS (A/P/C):
@@ -29,8 +30,8 @@ This step will generate content and present choices:
 
 ## PROTOCOL INTEGRATION:
 
-- When 'A' selected: Execute {project-root}/\_bmad/core/tasks/advanced-elicitation.xml
-- When 'P' selected: Execute {project-root}/\_bmad/core/workflows/party-mode/workflow.md
+- When 'A' selected: Execute {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml
+- When 'P' selected: Execute {project-root}/_bmad/core/workflows/party-mode/workflow.md
 - PROTOCOLS always return to this step's A/P/C menu
 - User accepts/rejects protocol changes before proceeding
 
@@ -146,37 +147,19 @@ Show the generated project understanding content and present choices:
 [Show the complete markdown content from step 5]
 
 **What would you like to do?**
-[A] Advanced Elicitation - Let's dive deeper into project understanding
-[P] Party Mode - Bring different perspectives on user needs and challenges
 [C] Continue - Save this to the document and move to core experience definition"
 
 ### 7. Handle Menu Selection
 
-#### If 'A' (Advanced Elicitation):
-
-- Execute {project-root}/\_bmad/core/tasks/advanced-elicitation.xml with the current project understanding content
-- Process the enhanced project insights that come back
-- Ask user: "Accept these improvements to the project understanding? (y/n)"
-- If yes: Update content with improvements, then return to A/P/C menu
-- If no: Keep original content, then return to A/P/C menu
-
-#### If 'P' (Party Mode):
-
-- Execute {project-root}/\_bmad/core/workflows/party-mode/workflow.md with the current project understanding
-- Process the collaborative insights and different perspectives that come back
-- Ask user: "Accept these changes to the project understanding? (y/n)"
-- If yes: Update content with improvements, then return to A/P/C menu
-- If no: Keep original content, then return to A/P/C menu
-
 #### If 'C' (Continue):
 
-- Append the final content to `{output_folder}/ux-design-specification.md`
+- Append the final content to `{planning_artifacts}/ux-design-specification.md`
 - Update frontmatter: `stepsCompleted: [1, 2]`
 - Load `./step-03-core-experience.md`
 
 ## APPEND TO DOCUMENT:
 
-When user selects 'C', append the content directly to the document using the structure from step 5.
+When user selects 'C', append the content directly to the document. Only after the content is saved to document, load `./step-03-core-experience.md` and execute the instructions.
 
 ## SUCCESS METRICS:
 
@@ -204,6 +187,4 @@ When user selects 'C', append the content directly to the document using the str
 
 ## NEXT STEP:
 
-After user selects 'C' and content is saved to document, load `./step-03-core-experience.md` to define the core user experience.
-
-Remember: Do NOT proceed to step-03 until user explicitly selects 'C' from the A/P/C menu and content is saved!
+Remember: Do NOT proceed to step-03 until user explicitly selects 'C' from the menu and content is saved!

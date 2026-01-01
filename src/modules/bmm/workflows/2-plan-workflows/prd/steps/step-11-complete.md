@@ -8,7 +8,7 @@ workflow_path: '{project-root}/_bmad/bmm/workflows/2-plan-workflows/prd'
 # File References
 thisStepFile: '{workflow_path}/steps/step-11-complete.md'
 workflowFile: '{workflow_path}/workflow.md'
-outputFile: '{output_folder}/prd.md'
+outputFile: '{planning_artifacts}/prd.md'
 ---
 
 # Step 11: Workflow Completion
@@ -25,6 +25,7 @@ outputFile: '{output_folder}/prd.md'
 - 📋 FINALIZE document and update workflow status
 - 💬 FOCUS on completion, next steps, and suggestions
 - 🎯 UPDATE workflow status files with completion information
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ## EXECUTION PROTOCOLS:
 
@@ -72,13 +73,13 @@ I've successfully collaborated with you to create a comprehensive Product Requir
 - ✅ Comprehensive Functional Requirements (capability contract)
 - ✅ Non-Functional Requirements for quality attributes
 
-**The complete PRD is now available at:** `{output_folder}/prd.md`
+**The complete PRD is now available at:** `{outputFile}`
 
 This document is now ready to guide UX design, technical architecture, and development planning."
 
 ### 2. Workflow Status Update
 
-Update the main workflow status file:
+Update the main workflow status file if there is one:
 
 - Load `{status_file}` from workflow configuration (if exists)
 - Update workflow_status["prd"] = "{default_output_file}"
@@ -109,7 +110,6 @@ Provide guidance on logical next workflows:
 
 - UX design and architecture can happen in parallel
 - Epics/stories are richer when created after UX/architecture
-- Consider your team's capacity and priorities
 
 **What would be most valuable to tackle next?**
 
@@ -133,24 +133,8 @@ Perform final validation of the PRD:
 
 ### 5. Final Completion Confirmation
 
-Confirm completion with user:
-"**Your PRD for {{project_name}} is now complete and ready for the next phase!**
-
-The document contains everything needed to guide:
-
-- UX/UI design decisions
-- Technical architecture planning
-- Development prioritization and sprint planning
-
-**Ready to continue with:**
-
-- UX design workflow?
-- Architecture workflow?
-- Epic and story creation?
-
-**Or would you like to review the complete PRD first?**
-
-[Workflow Complete]"
+- Confirm completion with user and summarize what you have done.
+- Update frontmatter: add this final step name to the end of the steps completed array.
 
 ## SUCCESS METRICS:
 
@@ -194,27 +178,6 @@ The document contains everything needed to guide:
 - [ ] Frontmatter properly updated
 - [ ] Workflow status file updated
 - [ ] Next steps clearly communicated
-
-## NEXT STEPS GUIDANCE:
-
-**Immediate Options:**
-
-1. **UX Design** - If product has UI components
-2. **Technical Architecture** - System design and technology choices
-3. **Epic Creation** - Break down FRs into implementable stories
-4. **Review** - Validate PRD with stakeholders before proceeding
-
-**Recommended Sequence:**
-For products with UI: UX → Architecture → Epics
-For API/backend products: Architecture → Epics
-Consider team capacity and timeline constraints
-
-## WORKFLOW FINALIZATION:
-
-- Set `lastStep = 11` in document frontmatter
-- Update workflow status file with completion timestamp
-- Provide completion summary to user
-- Do NOT load any additional steps
 
 ## FINAL REMINDER:
 

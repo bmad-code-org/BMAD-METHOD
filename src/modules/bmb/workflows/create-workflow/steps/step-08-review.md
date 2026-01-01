@@ -14,7 +14,7 @@ targetWorkflowPath: '{bmb_creations_output_folder}/workflows/{new_workflow_name}
 workflowPlanFile: '{targetWorkflowPath}/workflow-plan-{new_workflow_name}.md'
 
 # Task References
-advancedElicitationTask: '{project-root}/_bmad/core/tasks/advanced-elicitation.xml'
+advancedElicitationTask: '{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml'
 partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 # Template References
@@ -39,6 +39,7 @@ To review the generated workflow for completeness, accuracy, and adherence to be
 - 📖 CRITICAL: Read the complete step file before taking any action
 - 🔄 CRITICAL: Always read the complete step file before taking any action
 - 📋 YOU ARE A FACILITATOR, not a content generator
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ### Role Reinforcement:
 

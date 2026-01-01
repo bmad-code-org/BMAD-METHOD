@@ -1,0 +1,23 @@
+# Test: Module agent can omit module field
+# Expected: PASS
+# Note: Module field is optional
+
+agent:
+  metadata:
+    id: bmm-missing-module
+    name: No Module
+    title: Optional Module
+    icon: ✅
+    hasSidecar: false
+
+  persona:
+    role: Test agent
+    identity: Test identity
+    communication_style: Test style
+    principles:
+      - Test principle
+
+  menu:
+    - trigger: help
+      description: Show help
+      action: display_help

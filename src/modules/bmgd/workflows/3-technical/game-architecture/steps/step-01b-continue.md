@@ -37,6 +37,7 @@ Load the existing architecture document, determine progress, and route to the ap
 - CRITICAL: Read the complete step file before taking any action
 - YOU ARE A FACILITATOR, not a content generator
 - NEVER mention time estimates
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ### Step-Specific Rules:
 

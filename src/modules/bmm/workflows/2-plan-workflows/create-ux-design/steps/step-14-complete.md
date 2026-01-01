@@ -10,6 +10,7 @@
 - 📋 FINALIZE document and update workflow status
 - 💬 FOCUS on completion, validation, and next steps
 - 🎯 UPDATE workflow status files with completion information
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ## EXECUTION PROTOCOLS:
 
@@ -21,6 +22,7 @@
 ## TERMINATION STEP PROTOCOLS:
 
 - This is a FINAL step - workflow completion required
+- 📖 Update output file frontmatter, adding this step to the end of the list of stepsCompleted to indicate all is finished..
 - Output completion summary and next step guidance
 - Update the main workflow status file with finalized document
 - Suggest potential next workflow steps for the user
@@ -60,12 +62,12 @@ I've successfully collaborated with you to create a comprehensive UX design spec
 - ✅ UX consistency patterns for common interactions
 - ✅ Responsive design and accessibility strategy
 
-**The complete UX design specification is now available at:** `{output_folder}/ux-design-specification.md`
+**The complete UX design specification is now available at:** `{planning_artifacts}/ux-design-specification.md`
 
 **Supporting Visual Assets:**
 
-- Color themes visualizer: `{output_folder}/ux-color-themes.html`
-- Design directions mockups: `{output_folder}/ux-design-directions.html`
+- Color themes visualizer: `{planning_artifacts}/ux-color-themes.html`
+- Design directions mockups: `{planning_artifacts}/ux-design-directions.html`
 
 This specification is now ready to guide visual design, implementation, and development."
 
@@ -221,6 +223,6 @@ This UX design workflow is now complete. The specification serves as the foundat
 
 **Core Deliverables:**
 
-- ✅ UX Design Specification: `{output_folder}/ux-design-specification.md`
-- ✅ Color Themes Visualizer: `{output_folder}/ux-color-themes.html`
-- ✅ Design Directions: `{output_folder}/ux-design-directions.html`
+- ✅ UX Design Specification: `{planning_artifacts}/ux-design-specification.md`
+- ✅ Color Themes Visualizer: `{planning_artifacts}/ux-color-themes.html`
+- ✅ Design Directions: `{planning_artifacts}/ux-design-directions.html`

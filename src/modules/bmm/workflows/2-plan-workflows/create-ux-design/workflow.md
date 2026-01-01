@@ -27,7 +27,7 @@ This uses **micro-file architecture** for disciplined execution:
 
 Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
-- `project_name`, `output_folder`, `user_name`
+- `project_name`, `output_folder`, `planning_artifacts`, `user_name`
 - `communication_language`, `document_output_language`, `user_skill_level`
 - `kb_path`
 - `date` as system-generated current datetime
@@ -36,25 +36,9 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
 - `installed_path` = `{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-ux-design`
 - `template_path` = `{installed_path}/ux-design-template.md`
-- `default_output_file` = `{output_folder}/ux-design-specification.md`
-
-### Output Files
-
-- Color themes: `{output_folder}/ux-color-themes.html`
-- Design directions: `{output_folder}/ux-design-directions.html`
-
-### Input Document Discovery
-
-Discover context documents for UX context (Priority: Analysis folder first, then main folder, then sharded):
-
-- PRD: `{output_folder}/analysis/*prd*.md` or `{output_folder}/*prd*.md` or `{output_folder}/*prd*/**/*.md`
-- Product brief: `{output_folder}/analysis/*brief*.md` or `{output_folder}/*brief*.md` or `{output_folder}/*brief*/**/*.md`
-- Epics: `{output_folder}/analysis/*epic*.md` or `{output_folder}/*epic*.md` or `{output_folder}/*epic*/**/*.md`
-- Research: `{output_folder}/analysis/research/*research*.md` or `{output_folder}/*research*.md` or `{output_folder}/*research*/**/*.md`
-- Brainstorming: `{output_folder}/analysis/brainstorming/*brainstorming*.md` or `{output_folder}/*brainstorming*.md`
-
----
+- `default_output_file` = `{planning_artifacts}/ux-design-specification.md`
 
 ## EXECUTION
 
-Load and execute `steps/step-01-init.md` to begin the UX design workflow.
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
+- Load and execute `steps/step-01-init.md` to begin the UX design workflow.

@@ -11,8 +11,8 @@ communication_language: "{config_source}:communication_language"
 user_skill_level: "{config_source}:user_skill_level"
 document_output_language: "{config_source}:document_output_language"
 date: system-generated
-sprint_artifacts: "{config_source}:sprint_artifacts"
-sprint_status: "{sprint_artifacts}/sprint-status.yaml || {output_folder}/sprint-status.yaml"
+implementation_artifacts: "{config_source}:implementation_artifacts"
+sprint_status: "{implementation_artifacts}/sprint-status.yaml || {output_folder}/sprint-status.yaml"
 
 # Workflow components
 installed_path: "{project-root}/_bmad/bmgd/workflows/4-production/code-review"
@@ -23,7 +23,7 @@ template: false
 variables:
   # Project context
   project_context: "**/project-context.md"
-  story_dir: "{sprint_artifacts}"
+  story_dir: "{implementation_artifacts}"
 
 # Smart input file references - game-specific patterns
 # Priority: Whole document first, then sharded version

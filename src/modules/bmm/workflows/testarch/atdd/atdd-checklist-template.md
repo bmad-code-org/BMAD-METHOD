@@ -290,13 +290,14 @@ test('should do something', async ({ {fixtureName} }) => {
 
 ## Next Steps
 
-1. **Review this checklist** with team in standup or planning
-2. **Run failing tests** to confirm RED phase: `{test_command_all}`
-3. **Begin implementation** using implementation checklist as guide
-4. **Work one test at a time** (red → green for each)
-5. **Share progress** in daily standup
-6. **When all tests pass**, refactor code for quality
-7. **When refactoring complete**, manually update story status to 'done' in sprint-status.yaml
+1. **Share this checklist and failing tests** with the dev workflow (manual handoff)
+2. **Review this checklist** with team in standup or planning
+3. **Run failing tests** to confirm RED phase: `{test_command_all}`
+4. **Begin implementation** using implementation checklist as guide
+5. **Work one test at a time** (red → green for each)
+6. **Share progress** in daily standup
+7. **When all tests pass**, refactor code for quality
+8. **When refactoring complete**, manually update story status to 'done' in sprint-status.yaml
 
 ---
 

@@ -184,6 +184,7 @@ Before starting this workflow, verify:
   - [ ] Red-green-refactor workflow
   - [ ] Execution commands
   - [ ] Next steps for DEV team
+- [ ] Output shared with DEV workflow (manual handoff; not auto-consumed)
 
 ### All Tests Verified to Fail (RED Phase)
 

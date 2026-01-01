@@ -5,6 +5,8 @@
 
 ---
 
+Note: `nfr-assess` evaluates existing evidence; it does not run tests or CI workflows.
+
 ## Prerequisites Validation
 
 - [ ] Implementation is deployed and accessible for evaluation

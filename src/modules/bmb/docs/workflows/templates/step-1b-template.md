@@ -13,7 +13,7 @@ description: 'Handle workflow continuation from previous session'
 
 <!-- Path Definitions -->
 
-workflow\*path: '{project-root}/\_bmad/[module-path]/workflows/[workflow-name]'
+workflow\*path: '{project-root}/_bmad/[module-path]/workflows/[workflow-name]'
 
 # File References (all use {variable} format in file)
 

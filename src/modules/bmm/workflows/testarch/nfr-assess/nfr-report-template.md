@@ -6,6 +6,8 @@
 
 ---
 
+Note: This assessment summarizes existing evidence; it does not run tests or CI workflows.
+
 ## Executive Summary
 
 **Assessment:** {PASS_COUNT} PASS, {CONCERNS_COUNT} CONCERNS, {FAIL_COUNT} FAIL

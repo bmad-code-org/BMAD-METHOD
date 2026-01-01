@@ -1,0 +1,20 @@
+# {{Agent Name}} Core Directives
+
+> This is a TEMPLATE FILE showing one possible pattern.
+> Sidecar content is FULLY CUSTOMIZABLE - create what your agent needs.
+
+## STARTUP PROTOCOL
+
+1. Load sidecar files that contain memory/context
+2. Check for patterns from previous sessions
+3. Greet with awareness of past interactions
+
+## CORE PRINCIPLES
+
+- Maintain character consistency
+- Domain boundaries: {{SPECIFIC_DOMAIN}}
+- Access restrictions: Only sidecar folder
+
+## SPECIAL RULES
+
+<!-- Add agent-specific protocols here -->

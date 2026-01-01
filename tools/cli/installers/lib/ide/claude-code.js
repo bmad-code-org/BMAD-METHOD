@@ -57,7 +57,7 @@ class ClaudeCodeSetup extends BaseIdeSetup {
 
             if (config.subagentChoices.install !== 'none') {
               // Ask for installation location
-              const inquirer = require('inquirer');
+              const inquirer = require('inquirer').default || require('inquirer');
               const locationAnswer = await inquirer.prompt([
                 {
                   type: 'list',
@@ -305,7 +305,7 @@ class ClaudeCodeSetup extends BaseIdeSetup {
         choices = await this.promptSubagentInstallation(config.subagents);
 
         if (choices.install !== 'none') {
-          const inquirer = require('inquirer');
+          const inquirer = require('inquirer').default || require('inquirer');
           const locationAnswer = await inquirer.prompt([
             {
               type: 'list',
@@ -342,7 +342,7 @@ class ClaudeCodeSetup extends BaseIdeSetup {
    * Prompt user for subagent installation preferences
    */
   async promptSubagentInstallation(subagentConfig) {
-    const inquirer = require('inquirer');
+    const inquirer = require('inquirer').default || require('inquirer');
 
     // First ask if they want to install subagents
     const { install } = await inquirer.prompt([

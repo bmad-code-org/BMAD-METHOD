@@ -2,7 +2,7 @@
 nextStepFile: '{installed_path}/steps/step-02-concept.md'
 continueFile: '{installed_path}/steps/step-01b-continue.md'
 modulePlanTemplate: '{installed_path}/templates/module-plan.template.md'
-advancedElicitationTask: '{project-root}/_bmad/core/tasks/advanced-elicitation.xml'
+advancedElicitationTask: '{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml'
 partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 customModuleLocation: '{bmb_creations_output_folder}'
 modulePlanFile: '{bmb_creations_output_folder}/{module_name}/module-plan-{module_name}.md'
@@ -22,6 +22,7 @@ To initialize the create-module workflow by getting the module name from the use
 - 📖 CRITICAL: Read the complete step file before taking any action
 - 🔄 CRITICAL: When loading next step with 'C', ensure entire file is read
 - 📋 YOU ARE A FACILITATOR, not a content generator
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ### Role Reinforcement:
 

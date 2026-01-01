@@ -21,7 +21,7 @@ class CodexSetup extends BaseIdeSetup {
    * @returns {Object} Collected configuration
    */
   async collectConfiguration(options = {}) {
-    const inquirer = require('inquirer');
+    const inquirer = require('inquirer').default || require('inquirer');
 
     let confirmed = false;
     let installLocation = 'global';

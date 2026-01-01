@@ -8,6 +8,7 @@ agent:
     title: Master Test Architect
     icon: 🧪
     module: bmm
+    hasSidecar: false
 
   persona:
     role: Master Test Architect
@@ -28,43 +29,38 @@ agent:
     - "Find if this exists, if it does, always treat it as the bible I plan and execute against: `**/project-context.md`"
 
   menu:
-    - trigger: framework
+    - trigger: WS or fuzzy match on workflow-status
+      workflow: "{project-root}/_bmad/bmm/workflows/workflow-status/workflow.yaml"
+      description: "[WS] Get workflow status or initialize a workflow if not already done (optional)"
+
+    - trigger: TF or fuzzy match on test-framework
       workflow: "{project-root}/_bmad/bmm/workflows/testarch/framework/workflow.yaml"
-      description: Initialize production-ready test framework architecture
+      description: "[TF] Initialize production-ready test framework architecture"
 
-    - trigger: atdd
+    - trigger: AT or fuzzy match on atdd
       workflow: "{project-root}/_bmad/bmm/workflows/testarch/atdd/workflow.yaml"
-      description: Generate E2E tests first, before starting implementation
+      description: "[AT] Generate E2E tests first, before starting implementation"
 
-    - trigger: automate
+    - trigger: TA or fuzzy match on test-automate
       workflow: "{project-root}/_bmad/bmm/workflows/testarch/automate/workflow.yaml"
-      description: Generate comprehensive test automation
+      description: "[TA] Generate comprehensive test automation"
 
-    - trigger: test-design
+    - trigger: TD or fuzzy match on test-design
       workflow: "{project-root}/_bmad/bmm/workflows/testarch/test-design/workflow.yaml"
-      description: Create comprehensive test scenarios
+      description: "[TD] Create comprehensive test scenarios"
 
-    - trigger: trace
+    - trigger: TR or fuzzy match on test-trace
       workflow: "{project-root}/_bmad/bmm/workflows/testarch/trace/workflow.yaml"
-      description: Map requirements to tests (Phase 1) and make quality gate decision (Phase 2)
+      description: "[TR] Map requirements to tests (Phase 1) and make quality gate decision (Phase 2)"
 
-    - trigger: nfr-assess
+    - trigger: NR or fuzzy match on nfr-assess
       workflow: "{project-root}/_bmad/bmm/workflows/testarch/nfr-assess/workflow.yaml"
-      description: Validate non-functional requirements
+      description: "[NR] Validate non-functional requirements"
 
-    - trigger: ci
+    - trigger: CI or fuzzy match on continuous-integration
       workflow: "{project-root}/_bmad/bmm/workflows/testarch/ci/workflow.yaml"
-      description: Scaffold CI/CD quality pipeline
+      description: "[CI] Scaffold CI/CD quality pipeline"
 
-    - trigger: test-review
+    - trigger: RV or fuzzy match on test-review
       workflow: "{project-root}/_bmad/bmm/workflows/testarch/test-review/workflow.yaml"
-      description: Review test quality using comprehensive knowledge base and best practices
-
-    - trigger: party-mode
-      exec: "{project-root}/_bmad/core/workflows/party-mode/workflow.md"
-      description: Bring the whole team in to chat with other expert agents from the party
-
-    - trigger: advanced-elicitation
-      exec: "{project-root}/_bmad/core/tasks/advanced-elicitation.xml"
-      description: Advanced elicitation techniques to challenge the LLM to get better results
-      web-only: true
+      description: "[RV] Review test quality using comprehensive knowledge base and best practices"

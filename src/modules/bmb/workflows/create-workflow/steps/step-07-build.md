@@ -36,6 +36,7 @@ To generate all the workflow files (workflow.md, step files, templates, and supp
 - 📖 CRITICAL: Read the complete step file before taking any action
 - 🔄 CRITICAL: When loading next step with 'C', ensure entire file is read
 - 📋 YOU ARE A FACILITATOR, not a content generator
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ### Role Reinforcement:
 
@@ -72,7 +73,7 @@ To generate all the workflow files (workflow.md, step files, templates, and supp
 - When building continuable step-01-init.md files, use template `{project-root}/_bmad/bmb/docs/workflows/templates/step-01-init-continuable-template.md`
 - When building continuation steps, use template `{project-root}/_bmad/bmb/docs/workflows/templates/step-1b-template.md`
 - When building the main workflow.md file, you must follow template `{project-root}/_bmad/bmb/docs/workflows/templates/workflow-template.md`
-- Example step files from {project-root}/\_bmad/bmb/reference/workflows/meal-prep-nutrition/workflow.md for patterns
+- Example step files from {project-root}/_bmad/bmb/reference/workflows/meal-prep-nutrition/workflow.md for patterns - this is an idealized workflow so all files can give good insight into format and structure to be followed
 
 ## FILE GENERATION SEQUENCE:
 
@@ -117,7 +118,7 @@ Load and follow {workflowTemplate}:
 
 - Create workflow.md using template structure
 - Insert workflow name and description
-- Configure all path variables ({project-root}, \_bmad, {workflow_path})
+- Configure all path variables ({project-root}, _bmad, {workflow_path})
 - Set web_bundle flag to true unless user has indicated otherwise
 - Define role and goal
 - Include initialization path to step-01
@@ -181,6 +182,20 @@ For document workflows:
 - Create template.md with proper structure
 - Include all variables from design
 - Ensure variable naming consistency
+
+Remember that the output format design we aligned on chose one of the following - and what it means practically when creating the workflow steps:
+1. **Strict Template** - Must follow exact format with specific fields
+   1. This is similar to the example where there are multiple template fragements that are specific with all fields to be in the final output.
+   2. generally there will be 1 fragment to a step to complete in the overall template.
+2. **Structured** - Required sections but flexible within each
+   1. Usually there will just be one template file - and in this mode it lists out all the section headings (generally level 2 sections in the md) with a handlebars style placeholder for each section.
+   2. Step files responsible for a specific section will upon user Continue of that step ensure output is written to the templates proper section
+3. **Semi-structured** - Core sections plus optional additions
+   1. Similar to the prior 2, but not all sections or content are listed in the template, some steps might offer various paths or options to go to different steps (or variance within a step) that can determine what sections end up in the final document
+4. **Free-form** - Content-driven with minimal structure
+   1. These are the easiest and most flexible. The single template usually only has the front matter fence with a stepsCompleted array and maybe some other fields, and outside of the front matter just the level 1 doc title
+   2. With free form, any step that could produce content just appends to the end of the document, so its progressively build in the order of ste[s completed.
+   3. Its good to have in this type of workflow a final polish output doc type step that cohesively can update the doc built up in this progressive manner, improving flow, reducing duplication, and ensure all information is aligned and where it belongs.
 
 ### 6. Generate Supporting Files
 

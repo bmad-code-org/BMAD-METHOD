@@ -8,6 +8,7 @@ agent:
     title: Developer Agent
     icon: 💻
     module: bmm
+    hasSidecar: false
 
   persona:
     role: Senior Software Engineer
@@ -38,11 +39,9 @@ agent:
     - trigger: generate-design-system
       workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/generate-design-system/workflow.yaml"
       description: "Generate DEV-Ready design system files from UX specification"
-
-    - trigger: dev-story
+    - trigger: DS or fuzzy match on dev-story
       workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/dev-story/workflow.yaml"
-      description: "Execute Dev Story workflow (full BMM path with sprint-status)"
-
-    - trigger: code-review
+      description: "[DS] Execute Dev Story workflow (full BMM path with sprint-status)"
+    - trigger: CR or fuzzy match on code-review
       workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/code-review/workflow.yaml"
-      description: "Perform a thorough clean context code review (Highly Recommended, use fresh context and different LLM)"
+      description: "[CR] Perform a thorough clean context code review (Highly Recommended, use fresh context and different LLM)"

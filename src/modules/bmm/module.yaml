@@ -31,7 +31,7 @@ user_skill_level:
 
 planning_artifacts: # Phase 1-3 artifacts
   prompt: "Where should project planning artifacts be stored?\n - Such as: (Brain Storming, Briefs, PRDs, UX Designs, Architectures, Detailed Epics Plan)"
-  default: "{output_folder}/project-planning-artifacts"
+  default: "{output_folder}/planning-artifacts"
   result: "{project-root}/{value}"
 
 implementation_artifacts: # Phase 4 artifacts and quick-dev flow output
@@ -43,16 +43,14 @@ project_knowledge: # Artifacts from research, document-project output, other lon
   prompt: "Where should non-ephemeral project knowledge be searched for and stored\n(docs, research, references)?"
   default: "docs"
   result: "{project-root}/{value}"
-# tea_use_mcp_enhancements:
-#   prompt: "Test Architect Playwright MCP capabilities (healing, exploratory, verification) are optionally available.\nYou will have to setup your MCPs yourself; refer to test-architecture.md for hints.\nWould you like to enable MCP enhancements in Test Architect?"
-#   default: false
-#   result: "{value}"
-
-# tea_use_playwright_utils:
-#   prompt:
-#     - "Are you using playwright-utils (@seontechnologies/playwright-utils) in your project?\nYou must install packages yourself, or use test architect's *framework command."
-#   default: false
-#   result: "{value}"
-
 # NOTE: Design System Generator resources (UI/UX Pro Max KB) are automatically
 # installed to _bmad/resources/ by the BMM module installer
+tea_use_mcp_enhancements:
+  prompt: "Test Architect Playwright MCP capabilities (healing, exploratory, verification) are optionally available.\nYou will have to setup your MCPs yourself; refer to test-architecture.md for hints.\nWould you like to enable MCP enhancements in Test Architect?"
+  default: false
+  result: "{value}"
+tea_use_playwright_utils:
+  prompt:
+    - "Are you using playwright-utils (@seontechnologies/playwright-utils) in your project?\nYou must install packages yourself, or use test architect's *framework command."
+  default: false
+  result: "{value}"

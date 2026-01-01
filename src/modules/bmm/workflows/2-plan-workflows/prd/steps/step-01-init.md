@@ -10,7 +10,8 @@ thisStepFile: '{workflow_path}/steps/step-01-init.md'
 nextStepFile: '{workflow_path}/steps/step-02-discovery.md'
 continueStepFile: '{workflow_path}/steps/step-01b-continue.md'
 workflowFile: '{workflow_path}/workflow.md'
-outputFile: '{output_folder}/prd.md'
+outputFile: '{planning_artifacts}/prd.md'
+
 
 # Template References
 prdTemplate: '{workflow_path}/prd-template.md'
@@ -32,6 +33,7 @@ Initialize the PRD workflow by detecting continuation state, discovering input d
 - 📖 CRITICAL: Read the complete step file before taking any action
 - 🔄 CRITICAL: When loading next step with 'C', ensure entire file is read
 - 📋 YOU ARE A FACILITATOR, not a content generator
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ### Role Reinforcement:
 
@@ -51,7 +53,7 @@ Initialize the PRD workflow by detecting continuation state, discovering input d
 
 - 🎯 Show your analysis of current state before taking any action
 - 💾 Initialize document structure and update frontmatter appropriately
-- 📖 Set up frontmatter `stepsCompleted: [1]` before loading next step
+- Update frontmatter: add this step name to the end of the steps completed array (it should be the first entry in the steps array since this is step 1)
 - 🚫 FORBIDDEN to load next step until user selects 'C' (Continue)
 
 ## CONTEXT BOUNDARIES:
@@ -75,7 +77,7 @@ First, check if the output document already exists:
 
 ### 2. Handle Continuation (If Document Exists)
 
-If the document exists and has frontmatter with `stepsCompleted`:
+If the document exists and has frontmatter with `stepsCompleted` BUT `step-11-complete` is NOT in the list, follow the Continuation Protocol since the document is incomplete:
 
 **Continuation Protocol:**
 
@@ -90,58 +92,28 @@ If no document exists or no `stepsCompleted` in frontmatter:
 
 #### A. Input Document Discovery
 
-Discover and load context documents using smart discovery.
+Discover and load context documents using smart discovery. Documents can be in the following locations:
+- {planning_artifacts}/**
+- {output_folder}/**
+- {product_knowledge}/**
+- docs/**
 
-**IMPORTANT: Track document counts as you discover files.**
+Also - when searching - documents can be a single markdown file, or a folder with an index and multiple files. For Example, if searching for `*foo*.md` and not found, also search for a folder called *foo*/index.md (which indicates sharded content)
 
-Initialize counters:
+Try to discover the following:
+- Product Brief (`*brief*.md`)
+- Research Documents (`/*research*.md`)
+- Project Documentation (generally multiple documents might be found for this in the `{product_knowledge}` or `docs` folder.)
+- Project Context (`**/project-context.md`)
 
-```
-briefCount = 0
-researchCount = 0
-brainstormingCount = 0
-projectDocsCount = 0
-```
-
-**Product Brief (Priority: Analysis → Main → Sharded → Whole):**
-
-1. Check analysis folder: `{output_folder}/analysis/*brief*.md`
-2. If no analysis files: Try main folder: `{output_folder}/*brief*.md`
-3. If no main files: Check for sharded brief folder: `{output_folder}/*brief*/**/*.md`
-4. If sharded folder exists: Load EVERY file in that folder completely
-5. Add discovered files to `inputDocuments` frontmatter
-6. **Update briefCount with number of files found**
-
-**Research Documents (Priority: Analysis → Main → Sharded → Whole):**
-
-1. Check analysis folder: `{output_folder}/analysis/research/*research*.md`
-2. If no analysis files: Try main folder: `{output_folder}/*research*.md`
-3. If no main files: Check for sharded research folder: `{output_folder}/*research*/**/*.md`
-4. Load useful research files completely
-5. Add discovered files to `inputDocuments` frontmatter
-6. **Update researchCount with number of files found**
-
-**Brainstorming Documents (Priority: Analysis → Main):**
-
-1. Check analysis folder: `{output_folder}/analysis/brainstorming/*brainstorming*.md`
-2. If no analysis files: Try main folder: `{output_folder}/*brainstorming*.md`
-3. Add discovered files to `inputDocuments` frontmatter
-4. **Update brainstormingCount with number of files found**
-
-**Project Documentation (Existing Projects - Brownfield):**
-
-1. Look for index file: `{output_folder}/index.md`
-2. CRITICAL: Load index.md to understand what project files are available
-3. Read available files from index to understand existing project context
-4. This provides essential context for extending existing project with new PRD
-5. Add discovered files to `inputDocuments` frontmatter
-6. **Update projectDocsCount with number of files found (including index.md)**
+<critical>Confirm what you have found with the user, along with asking if the user wants to provide anything else. Only after this confirmation will you proceed to follow the loading rules</critical>
 
 **Loading Rules:**
 
-- Load ALL discovered files completely (no offset/limit)
-- For sharded folders, load ALL files to get complete picture
-- For existing projects, use index.md as guide to what's relevant
+- Load ALL discovered files completely that the user confirmed or provided (no offset/limit)
+- If there is a project context, whatever is relevant should try to be biased in the remainder of this whole workflow process
+- For sharded folders, load ALL files to get complete picture, using the index first to potentially know the potential of each document
+- index.md is a guide to what's relevant whenever available
 - Track all successfully loaded files in frontmatter `inputDocuments` array
 
 #### B. Create Initial Document
@@ -149,24 +121,7 @@ projectDocsCount = 0
 **Document Setup:**
 
 - Copy the template from `{prdTemplate}` to `{outputFile}`
-- Initialize frontmatter with proper structure including document counts:
-
-```yaml
----
-stepsCompleted: []
-inputDocuments: []
-documentCounts:
-  briefs: { { briefCount } }
-  research: { { researchCount } }
-  brainstorming: { { brainstormingCount } }
-  projectDocs: { { projectDocsCount } }
-workflowType: 'prd'
-lastStep: 0
-project_name: '{{project_name}}'
-user_name: '{{user_name}}'
-date: '{{date}}'
----
-```
+- Initialize frontmatter with proper structure including inputDocuments array.
 
 #### C. Present Initialization Results
 
@@ -202,7 +157,7 @@ Display menu after setup report:
 
 #### Menu Handling Logic:
 
-- IF C: Update frontmatter with `stepsCompleted: [1]`, then load, read entire file, then execute {nextStepFile}
+- IF C: Update frontmatter with `stepsCompleted: [1]`, then load, read entire {nextStepFile}, then execute {nextStepFile}
 - IF user provides additional files: Load them, update inputDocuments and documentCounts, redisplay report
 - IF user asks questions: Answer and redisplay menu
 
@@ -225,7 +180,6 @@ ONLY WHEN [C continue option] is selected and [frontmatter properly updated with
 - Fresh workflow initialized with template and proper frontmatter
 - Input documents discovered and loaded using sharded-first logic
 - All discovered files tracked in frontmatter `inputDocuments`
-- **Document counts stored in frontmatter `documentCounts`**
 - User clearly informed of brownfield vs greenfield status
 - Menu presented and user input handled correctly
 - Frontmatter updated with `stepsCompleted: [1]` before proceeding

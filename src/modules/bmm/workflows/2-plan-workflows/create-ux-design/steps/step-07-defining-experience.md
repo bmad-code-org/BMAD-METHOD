@@ -10,13 +10,14 @@
 - 📋 YOU ARE A UX FACILITATOR, not a content generator
 - 💬 FOCUS on defining the core interaction that defines the product
 - 🎯 COLLABORATIVE discovery, not assumption-based design
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ## EXECUTION PROTOCOLS:
 
 - 🎯 Show your analysis before taking any action
 - ⚠️ Present A/P/C menu after generating defining experience content
 - 💾 ONLY save when user chooses C (Continue)
-- 📖 Update frontmatter `stepsCompleted: [1, 2, 3, 4, 5, 6, 7]` before loading next step
+- 📖 Update output file frontmatter, adding this step to the end of the list of stepsCompleted.
 - 🚫 FORBIDDEN to load next step until C is selected
 
 ## COLLABORATION MENUS (A/P/C):
@@ -29,8 +30,8 @@ This step will generate content and present choices:
 
 ## PROTOCOL INTEGRATION:
 
-- When 'A' selected: Execute {project-root}/\_bmad/core/tasks/advanced-elicitation.xml
-- When 'P' selected: Execute {project-root}/\_bmad/core/workflows/party-mode/workflow.md
+- When 'A' selected: Execute {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml
+- When 'P' selected: Execute {project-root}/_bmad/core/workflows/party-mode/workflow.md
 - PROTOCOLS always return to this step's A/P/C menu
 - User accepts/rejects protocol changes before proceeding
 
@@ -198,7 +199,7 @@ Show the generated defining experience content and present choices:
 
 #### If 'A' (Advanced Elicitation):
 
-- Execute {project-root}/\_bmad/core/tasks/advanced-elicitation.xml with the current defining experience content
+- Execute {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml with the current defining experience content
 - Process the enhanced experience insights that come back
 - Ask user: "Accept these improvements to the defining experience? (y/n)"
 - If yes: Update content with improvements, then return to A/P/C menu
@@ -206,7 +207,7 @@ Show the generated defining experience content and present choices:
 
 #### If 'P' (Party Mode):
 
-- Execute {project-root}/\_bmad/core/workflows/party-mode/workflow.md with the current defining experience
+- Execute {project-root}/_bmad/core/workflows/party-mode/workflow.md with the current defining experience
 - Process the collaborative experience insights that come back
 - Ask user: "Accept these changes to the defining experience? (y/n)"
 - If yes: Update content with improvements, then return to A/P/C menu
@@ -214,8 +215,8 @@ Show the generated defining experience content and present choices:
 
 #### If 'C' (Continue):
 
-- Append the final content to `{output_folder}/ux-design-specification.md`
-- Update frontmatter: `stepsCompleted: [1, 2, 3, 4, 5, 6, 7]`
+- Append the final content to `{planning_artifacts}/ux-design-specification.md`
+- Update frontmatter: append step to end of stepsCompleted array
 - Load `./step-08-visual-foundation.md`
 
 ## APPEND TO DOCUMENT:

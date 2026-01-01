@@ -2,7 +2,7 @@ const path = require('node:path');
 const fs = require('fs-extra');
 const chalk = require('chalk');
 const ora = require('ora');
-const inquirer = require('inquirer');
+const inquirer = require('inquirer').default || require('inquirer');
 const { Detector } = require('./detector');
 const { Manifest } = require('./manifest');
 const { ModuleManager } = require('../modules/manager');
@@ -2140,7 +2140,7 @@ class Installer {
    * Private: Prompt for update action
    */
   async promptUpdateAction() {
-    const inquirer = require('inquirer');
+    const inquirer = require('inquirer').default || require('inquirer');
     return await inquirer.prompt([
       {
         type: 'list',
@@ -2152,90 +2152,59 @@ class Installer {
   }
 
   /**
-   * Handle legacy BMAD v4 migration with automatic backup
-   * @param {string} projectDir - Project directory
-   * @param {Object} legacyV4 - Legacy V4 detection result with offenders array
+   * Handle legacy BMAD v4 detection with simple warning
+   * @param {string} _projectDir - Project directory (unused in simplified version)
+   * @param {Object} _legacyV4 - Legacy V4 detection result (unused in simplified version)
    */
-  async handleLegacyV4Migration(projectDir, legacyV4) {
-    console.log(chalk.yellow.bold('\n⚠️  Legacy BMAD v4 detected'));
-    console.log(chalk.dim('The installer found legacy artefacts in your project.\n'));
+  async handleLegacyV4Migration(_projectDir, _legacyV4) {
+    const inquirer = require('inquirer').default || require('inquirer');
 
-    // Separate _bmad* folders (auto-backup) from other offending paths (manual cleanup)
-    const bmadFolders = legacyV4.offenders.filter((p) => {
-      const name = path.basename(p);
-      return name.startsWith('_bmad'); // Only dot-prefixed folders get auto-backed up
-    });
-    const otherOffenders = legacyV4.offenders.filter((p) => {
-      const name = path.basename(p);
-      return !name.startsWith('_bmad'); // Everything else is manual cleanup
-    });
+    console.log('');
+    console.log(chalk.yellow.bold('⚠️  Legacy BMAD v4 detected'));
+    console.log(chalk.yellow('─'.repeat(80)));
+    console.log(chalk.yellow('Found .bmad-method folder from BMAD v4 installation.'));
+    console.log('');
 
-    const inquirer = require('inquirer');
+    console.log(chalk.dim('Before continuing with installation, we recommend:'));
+    console.log(chalk.dim('  1. Remove the .bmad-method folder, OR'));
+    console.log(chalk.dim('  2. Back it up by renaming it to another name (e.g., bmad-method-backup)'));
+    console.log('');
 
-    // Show warning for other offending paths FIRST
-    if (otherOffenders.length > 0) {
-      console.log(chalk.yellow('⚠️  Recommended cleanup:'));
-      console.log(chalk.dim('It is recommended to remove the following items before proceeding:\n'));
-      for (const p of otherOffenders) console.log(chalk.dim(` - ${p}`));
+    console.log(chalk.dim('If your v4 installation set up rules or commands, you should remove those as well.'));
+    console.log('');
 
-      console.log(chalk.cyan('\nCleanup commands you can copy/paste:'));
-      console.log(chalk.dim('macOS/Linux:'));
-      for (const p of otherOffenders) console.log(chalk.dim(`  rm -rf '${p}'`));
-      console.log(chalk.dim('Windows:'));
-      for (const p of otherOffenders) console.log(chalk.dim(`  rmdir /S /Q "${p}"`));
+    const { proceed } = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'proceed',
+        message: 'What would you like to do?',
+        choices: [
+          {
+            name: 'Exit and clean up manually (recommended)',
+            value: 'exit',
+            short: 'Exit installation',
+          },
+          {
+            name: 'Continue with installation anyway',
+            value: 'continue',
+            short: 'Continue',
+          },
+        ],
+        default: 'exit',
+      },
+    ]);
 
-      const { cleanedUp } = await inquirer.prompt([
-        {
-          type: 'confirm',
-          name: 'cleanedUp',
-          message: 'Have you completed the recommended cleanup? (You can proceed without it, but it is recommended)',
-          default: false,
-        },
-      ]);
-
-      if (cleanedUp) {
-        console.log(chalk.green('✓ Cleanup acknowledged\n'));
-      } else {
-        console.log(chalk.yellow('⚠️  Proceeding without recommended cleanup\n'));
-      }
+    if (proceed === 'exit') {
+      console.log('');
+      console.log(chalk.cyan('Please remove the .bmad-method folder and any v4 rules/commands,'));
+      console.log(chalk.cyan('then run the installer again.'));
+      console.log('');
+      process.exit(0);
     }
 
-    // Handle _bmad* folders with automatic backup
-    if (bmadFolders.length > 0) {
-      console.log(chalk.cyan('The following legacy folders will be moved to v4-backup:'));
-      for (const p of bmadFolders) console.log(chalk.dim(` - ${p}`));
-
-      const { proceed } = await inquirer.prompt([
-        {
-          type: 'confirm',
-          name: 'proceed',
-          message: 'Proceed with backing up legacy v4 folders?',
-          default: true,
-        },
-      ]);
-
-      if (proceed) {
-        const backupDir = path.join(projectDir, 'v4-backup');
-        await fs.ensureDir(backupDir);
-
-        for (const folder of bmadFolders) {
-          const folderName = path.basename(folder);
-          const backupPath = path.join(backupDir, folderName);
-
-          // If backup already exists, add timestamp
-          let finalBackupPath = backupPath;
-          if (await fs.pathExists(backupPath)) {
-            const timestamp = new Date().toISOString().replaceAll(/[:.]/g, '-').split('T')[0];
-            finalBackupPath = path.join(backupDir, `${folderName}-${timestamp}`);
-          }
-
-          await fs.move(folder, finalBackupPath, { overwrite: false });
-          console.log(chalk.green(`✓ Moved ${folderName} to ${path.relative(projectDir, finalBackupPath)}`));
-        }
-      } else {
-        throw new Error('Installation cancelled by user');
-      }
-    }
+    console.log('');
+    console.log(chalk.yellow('⚠️  Proceeding with installation despite legacy v4 folder'));
+    console.log('');
   }
 
   /**
@@ -2469,7 +2438,7 @@ class Installer {
 
     console.log(chalk.yellow(`\n⚠️  Found ${customModulesWithMissingSources.length} custom module(s) with missing sources:`));
 
-    const inquirer = require('inquirer');
+    const inquirer = require('inquirer').default || require('inquirer');
     let keptCount = 0;
     let updatedCount = 0;
     let removedCount = 0;

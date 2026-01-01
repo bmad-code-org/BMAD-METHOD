@@ -8,6 +8,7 @@
 - FOCUS on discovering existing project context and technology stack
 - IDENTIFY critical implementation rules that AI agents need
 - ABSOLUTELY NO TIME ESTIMATES
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ## EXECUTION PROTOCOLS:
 
@@ -43,7 +44,7 @@ Load and analyze project files to identify technologies:
 
 **Architecture Document:**
 
-- Look for `{output_folder}/game-architecture.md` or `{output_folder}/architecture.md`
+- Look for `{output_folder}/game-architecture.md` or `{planning_artifacts}/architecture.md`
 - Extract engine choice with specific version (Unity, Unreal, Godot, custom)
 - Note architectural decisions that affect implementation
 

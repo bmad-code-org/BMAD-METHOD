@@ -6,6 +6,8 @@ Use this checklist to validate that the test quality review workflow completed s
 
 ## Prerequisites
 
+Note: `test-review` is optional and only audits existing tests; it does not generate tests.
+
 ### Test File Discovery
 
 - [ ] Test file(s) identified for review (single/directory/suite scope)

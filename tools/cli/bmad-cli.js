@@ -2,6 +2,24 @@ const { program } = require('commander');
 const path = require('node:path');
 const fs = require('node:fs');
 
+// Fix for stdin issues when running through npm on Windows
+// Ensures keyboard interaction works properly with inquirer prompts
+if (process.stdin.isTTY) {
+  try {
+    process.stdin.resume();
+    process.stdin.setEncoding('utf8');
+
+    // On Windows, explicitly reference the stdin stream to ensure it's properly initialized
+    if (process.platform === 'win32') {
+      process.stdin.on('error', () => {
+        // Ignore stdin errors - they can occur when the terminal is closing
+      });
+    }
+  } catch {
+    // Silently ignore - some environments may not support these operations
+  }
+}
+
 // Load package.json from root for version info
 const packageJson = require('../../package.json');
 

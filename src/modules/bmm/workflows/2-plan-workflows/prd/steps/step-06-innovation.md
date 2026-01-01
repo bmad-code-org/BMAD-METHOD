@@ -9,13 +9,13 @@ workflow_path: '{project-root}/_bmad/bmm/workflows/2-plan-workflows/prd'
 thisStepFile: '{workflow_path}/steps/step-06-innovation.md'
 nextStepFile: '{workflow_path}/steps/step-07-project-type.md'
 workflowFile: '{workflow_path}/workflow.md'
-outputFile: '{output_folder}/prd.md'
+outputFile: '{planning_artifacts}/prd.md'
 
 # Data Files
 projectTypesCSV: '{workflow_path}/project-types.csv'
 
 # Task References
-advancedElicitationTask: '{project-root}/_bmad/core/tasks/advanced-elicitation.xml'
+advancedElicitationTask: '{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml'
 partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 ---
 
@@ -33,6 +33,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - 💬 FOCUS on detecting and exploring innovative aspects of the product
 - 🎯 OPTIONAL STEP: Only proceed if innovation signals are detected
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ## EXECUTION PROTOCOLS:
 
@@ -52,8 +53,8 @@ This step will generate content and present choices:
 
 ## PROTOCOL INTEGRATION:
 
-- When 'A' selected: Execute {project-root}/\_bmad/core/tasks/advanced-elicitation.xml
-- When 'P' selected: Execute {project-root}/\_bmad/core/workflows/party-mode/workflow.md
+- When 'A' selected: Execute {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml
+- When 'P' selected: Execute {project-root}/_bmad/core/workflows/party-mode/workflow.md
 - PROTOCOLS always return to this step's A/P/C menu
 - User accepts/rejects protocol changes before proceeding
 
@@ -186,7 +187,7 @@ Show the generated innovation content and present choices:
 
 #### If 'A' (Advanced Elicitation):
 
-- Execute {project-root}/\_bmad/core/tasks/advanced-elicitation.xml with the current innovation content
+- Execute {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml with the current innovation content
 - Process the enhanced innovation insights that come back
 - Ask user: "Accept these improvements to the innovation analysis? (y/n)"
 - If yes: Update content with improvements, then return to A/P/C menu
@@ -194,7 +195,7 @@ Show the generated innovation content and present choices:
 
 #### If 'P' (Party Mode):
 
-- Execute {project-root}/\_bmad/core/workflows/party-mode/workflow.md with the current innovation content
+- Execute {project-root}/_bmad/core/workflows/party-mode/workflow.md with the current innovation content
 - Process the collaborative innovation exploration and ideation
 - Ask user: "Accept these changes to the innovation analysis? (y/n)"
 - If yes: Update content with improvements, then return to A/P/C menu
@@ -202,8 +203,8 @@ Show the generated innovation content and present choices:
 
 #### If 'C' (Continue):
 
-- Append the final content to `{output_folder}/prd.md`
-- Update frontmatter: `stepsCompleted: [1, 2, 3, 4, 5, 6]`
+- Append the final content to `{outputFile}`
+- Update frontmatter: add this step name to the end of the steps completed array
 - Load `{project-root}/_bmad/bmm/workflows/2-plan-workflows/prd/steps/step-07-project-type.md`
 
 ## NO INNOVATION DETECTED:

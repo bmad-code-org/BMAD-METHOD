@@ -264,7 +264,7 @@ Analyze the visual design with my signature dramatic flair
 menu: # Core interactions - multi: "[CH] Chat with Caravaggio or [SPM] Start Party Mode"
 triggers: - party-mode:
 input: SPM or fuzzy match start party mode
-route: "{project-root}/\_bmad/core/workflows/edit-agent/workflow.md"
+route: "{project-root}/_bmad/core/workflows/edit-agent/workflow.md"
 data: what's being discussed, plus custom party agents if specified
 type: exec - expert-chat:
 input: CH or fuzzy match validate agent

@@ -4,6 +4,39 @@ const { z } = require('zod');
 
 const COMMAND_TARGET_KEYS = ['workflow', 'validate-workflow', 'exec', 'action', 'tmpl', 'data'];
 const TRIGGER_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const COMPOUND_TRIGGER_PATTERN = /^([A-Z]{1,3}) or fuzzy match on ([a-z0-9]+(?:-[a-z0-9]+)*)$/;
+
+/**
+ * Derive the expected shortcut from a kebab-case trigger.
+ * - Single word: first letter (e.g., "help" → "H")
+ * - Multi-word: first letter of first two words (e.g., "tech-spec" → "TS")
+ * @param {string} kebabTrigger The kebab-case trigger name.
+ * @returns {string} The expected uppercase shortcut.
+ */
+function deriveShortcutFromKebab(kebabTrigger) {
+  const words = kebabTrigger.split('-');
+  if (words.length === 1) {
+    return words[0][0].toUpperCase();
+  }
+  return (words[0][0] + words[1][0]).toUpperCase();
+}
+
+/**
+ * Parse and validate a compound trigger string.
+ * Format: "<SHORTCUT> or fuzzy match on <kebab-case>"
+ * @param {string} triggerValue The trigger string to parse.
+ * @returns {{ valid: boolean, shortcut?: string, kebabTrigger?: string, error?: string }}
+ */
+function parseCompoundTrigger(triggerValue) {
+  const match = COMPOUND_TRIGGER_PATTERN.exec(triggerValue);
+  if (!match) {
+    return { valid: false, error: 'invalid compound trigger format' };
+  }
+
+  const [, shortcut, kebabTrigger] = match;
+
+  return { valid: true, shortcut, kebabTrigger };
+}
 
 // Public API ---------------------------------------------------------------
 
@@ -52,8 +85,43 @@ function agentSchema(options = {}) {
           // Handle legacy format with trigger field
           if (item.trigger) {
             const triggerValue = item.trigger;
+            let canonicalTrigger = triggerValue;
 
-            if (!TRIGGER_PATTERN.test(triggerValue)) {
+            // Check if it's a compound trigger (contains " or ")
+            if (triggerValue.includes(' or ')) {
+              const result = parseCompoundTrigger(triggerValue);
+              if (!result.valid) {
+                ctx.addIssue({
+                  code: 'custom',
+                  path: ['agent', 'menu', index, 'trigger'],
+                  message: `agent.menu[].trigger compound format error: ${result.error}`,
+                });
+                return;
+              }
+
+              // Validate that shortcut matches description brackets
+              const descriptionMatch = item.description?.match(/^\[([A-Z]{1,3})\]/);
+              if (!descriptionMatch) {
+                ctx.addIssue({
+                  code: 'custom',
+                  path: ['agent', 'menu', index, 'description'],
+                  message: `agent.menu[].description must start with [SHORTCUT] where SHORTCUT matches the trigger shortcut "${result.shortcut}"`,
+                });
+                return;
+              }
+
+              const descriptionShortcut = descriptionMatch[1];
+              if (descriptionShortcut !== result.shortcut) {
+                ctx.addIssue({
+                  code: 'custom',
+                  path: ['agent', 'menu', index, 'description'],
+                  message: `agent.menu[].description shortcut "[${descriptionShortcut}]" must match trigger shortcut "${result.shortcut}"`,
+                });
+                return;
+              }
+
+              canonicalTrigger = result.kebabTrigger;
+            } else if (!TRIGGER_PATTERN.test(triggerValue)) {
               ctx.addIssue({
                 code: 'custom',
                 path: ['agent', 'menu', index, 'trigger'],
@@ -62,16 +130,16 @@ function agentSchema(options = {}) {
               return;
             }
 
-            if (seenTriggers.has(triggerValue)) {
+            if (seenTriggers.has(canonicalTrigger)) {
               ctx.addIssue({
                 code: 'custom',
                 path: ['agent', 'menu', index, 'trigger'],
-                message: `agent.menu[].trigger duplicates "${triggerValue}" within the same agent`,
+                message: `agent.menu[].trigger duplicates "${canonicalTrigger}" within the same agent`,
               });
               return;
             }
 
-            seenTriggers.add(triggerValue);
+            seenTriggers.add(canonicalTrigger);
           }
           // Handle multi format with triggers array (new format)
           else if (item.triggers && Array.isArray(item.triggers)) {
@@ -150,8 +218,9 @@ function buildAgentSchema(expectedModule) {
 }
 
 /**
- * Validate metadata shape and cross-check module expectation against caller input.
+ * Validate metadata shape.
  * @param {string|null} expectedModule Trimmed module slug or null when core agent metadata is expected.
+ * Note: Module field is optional and can be any value - no validation against path.
  */
 function buildMetadataSchema(expectedModule) {
   const schemaShape = {
@@ -160,37 +229,10 @@ function buildMetadataSchema(expectedModule) {
     title: createNonEmptyString('agent.metadata.title'),
     icon: createNonEmptyString('agent.metadata.icon'),
     module: createNonEmptyString('agent.metadata.module').optional(),
+    hasSidecar: z.boolean(),
   };
 
-  return (
-    z
-      .object(schemaShape)
-      .strict()
-      // Refinement: guard presence and correctness of metadata.module.
-      .superRefine((value, ctx) => {
-        const moduleValue = typeof value.module === 'string' ? value.module.trim() : null;
-
-        if (expectedModule && !moduleValue) {
-          ctx.addIssue({
-            code: 'custom',
-            path: ['module'],
-            message: 'module-scoped agents must declare agent.metadata.module',
-          });
-        } else if (!expectedModule && moduleValue) {
-          ctx.addIssue({
-            code: 'custom',
-            path: ['module'],
-            message: 'core agents must not include agent.metadata.module',
-          });
-        } else if (expectedModule && moduleValue !== expectedModule) {
-          ctx.addIssue({
-            code: 'custom',
-            path: ['module'],
-            message: `agent.metadata.module must equal "${expectedModule}"`,
-          });
-        }
-      })
-  );
+  return z.object(schemaShape).strict();
 }
 
 function buildPersonaSchema() {

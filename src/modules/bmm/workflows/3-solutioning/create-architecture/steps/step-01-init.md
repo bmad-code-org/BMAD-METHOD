@@ -3,7 +3,6 @@
 ## MANDATORY EXECUTION RULES (READ FIRST):
 
 - 🛑 NEVER generate content without user input
-
 - 📖 CRITICAL: ALWAYS read the complete step file before taking any action - partial understanding leads to incomplete decisions
 - 🔄 CRITICAL: When loading next step with 'C', ensure the entire file is read and understood before proceeding
 - ✅ ALWAYS treat this as collaborative discovery between architectural peers
@@ -11,6 +10,7 @@
 - 💬 FOCUS on initialization and setup only - don't look ahead to future steps
 - 🚪 DETECT existing workflow state and handle continuation properly
 - ⚠️ ABSOLUTELY NO TIME ESTIMATES - AI development speed has fundamentally changed
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ## EXECUTION PROTOCOLS:
 
@@ -36,8 +36,8 @@ Initialize the Architecture workflow by detecting continuation state, discoverin
 
 First, check if the output document already exists:
 
-- Look for file at `{output_folder}/architecture.md`
-- If exists, read the complete file including frontmatter
+- Look for existing {planning_artifacts}/`*architecture*.md`
+- If exists, read the complete file(s) including frontmatter
 - If not exists, this is a fresh workflow
 
 ### 2. Handle Continuation (If Document Exists)
@@ -54,57 +54,30 @@ If no document exists or no `stepsCompleted` in frontmatter:
 
 #### A. Input Document Discovery
 
-Discover and load context documents using smart discovery:
+Discover and load context documents using smart discovery. Documents can be in the following locations:
+- {planning_artifacts}/**
+- {output_folder}/**
+- {product_knowledge}/**
+- docs/**
 
-**PRD Document (Priority: Analysis → Main → Sharded → Whole):**
+Also - when searching - documents can be a single markdown file, or a folder with an index and multiple files. For Example, if searching for `*foo*.md` and not found, also search for a folder called *foo*/index.md (which indicates sharded content)
 
-1. Check analysis folder: `{output_folder}/*prd*.md`
-2. If no main files: Check for sharded PRD folder: `{output_folder}/*prd*/**/*.md`
-3. If sharded folder exists: Load EVERY file in that folder completely
-4. Add discovered files to `inputDocuments` frontmatter
+Try to discover the following:
+- Product Brief (`*brief*.md`)
+- Product Requirements Document (`*prd*.md`)
+- UX Design (`*ux-design*.md`) and other
+- Research Documents (`*research*.md`)
+- Project Documentation (generally multiple documents might be found for this in the `{product_knowledge}` or `docs` folder.)
+- Project Context (`**/project-context.md`)
 
-**Epics/Stories Document (Priority: Analysis → Main → Sharded → Whole):**
-
-1. Check analysis folder: `{output_folder}/analysis/*epic*.md`
-2. If no analysis files: Try main folder: `{output_folder}/*epic*.md`
-3. If no main files: Check for sharded epics folder: `{output_folder}/*epic*/**/*.md`
-4. If sharded folder exists: Load EVERY file in that folder completely
-5. Add discovered files to `inputDocuments` frontmatter
-
-**UX Design Specification (Priority: Analysis → Main → Sharded → Whole):**
-
-1. Check folder: `{output_folder}/*ux*.md`
-2. If no main files: Check for sharded UX folder: `{output_folder}/*ux*/**/*.md`
-3. If sharded folder exists: Load EVERY file in that folder completely
-4. Add discovered files to `inputDocuments` frontmatter
-
-**Research Documents (Priority: Analysis → Main):**
-
-1. Check folder: `{output_folder}/research/*research*.md`
-2. If no files: Try folder: `{output_folder}/*research*.md`
-3. Add discovered files to `inputDocuments` frontmatter
-
-**Project Documentation (Existing Projects):**
-
-1. Look for index file: `{output_folder/index.md`
-2. CRITICAL: Load index.md to understand what project files are available
-3. Read available files from index to understand existing project context
-4. This provides essential context for extending existing project with new architecture
-5. Add discovered files to `inputDocuments` frontmatter
-
-**Project Context Rules (Critical for AI Agents):**
-
-1. Check for project context file: `**/project-context.md`
-2. If exists: Load COMPLETE file contents - this contains critical rules for AI agents
-3. Add to frontmatter `hasProjectContext: true` and track file path
-4. Report to user: "Found existing project context with {number_of_rules} agent rules"
-5. This file contains language-specific patterns, testing rules, and implementation guidelines that must be followed
+<critical>Confirm what you have found with the user, along with asking if the user wants to provide anything else. Only after this confirmation will you proceed to follow the loading rules</critical>
 
 **Loading Rules:**
 
-- Load ALL discovered files completely (no offset/limit)
-- For sharded folders, load ALL files to get complete picture
-- For existing projects, use index.md as guide to what's relevant
+- Load ALL discovered files completely that the user confirmed or provided (no offset/limit)
+- If there is a project context, whatever is relevant should try to be biased in the remainder of this whole workflow process
+- For sharded folders, load ALL files to get complete picture, using the index first to potentially know the potential of each document
+- index.md is a guide to what's relevant whenever available
 - Track all successfully loaded files in frontmatter `inputDocuments` array
 
 #### B. Validate Required Inputs
@@ -116,26 +89,13 @@ Before proceeding, verify we have the essential inputs:
 - If no PRD found: "Architecture requires a PRD to work from. Please run the PRD workflow first or provide the PRD file path."
 - Do NOT proceed without PRD
 
-**Other Inputs:**
+**Other Input that might exist:**
 
-- UX Spec: "Provides UI/UX architectural requirements" (Optional)
+- UX Spec: "Provides UI/UX architectural requirements"
 
 #### C. Create Initial Document
 
-Copy the template from `{installed_path}/architecture-decision-template.md` to `{output_folder}/architecture.md`
-Initialize frontmatter with:
-
-```yaml
----
-stepsCompleted: []
-inputDocuments: []
-workflowType: 'architecture'
-lastStep: 0
-project_name: '{{project_name}}'
-user_name: '{{user_name}}'
-date: '{{date}}'
----
-```
+Copy the template from `{installed_path}/architecture-decision-template.md` to `{planning_artifacts}/architecture.md`
 
 #### D. Complete Initialization and Report
 
@@ -143,7 +103,7 @@ Complete setup and report to user:
 
 **Document Setup:**
 
-- Created: `{output_folder}/architecture.md` from template
+- Created: `{planning_artifacts}/architecture.md` from template
 - Initialized frontmatter with workflow state
 
 **Input Documents Discovered:**
@@ -153,7 +113,6 @@ Report what was found:
 **Documents Found:**
 
 - PRD: {number of PRD files loaded or "None found - REQUIRED"}
-- Epics/Stories: {number of epic files loaded or "None found"}
 - UX Design: {number of UX files loaded or "None found"}
 - Research: {number of research files loaded or "None found"}
 - Project docs: {number of project files loaded or "None found"}
@@ -189,6 +148,6 @@ Ready to begin architectural decision making. Do you have any other documents yo
 
 ## NEXT STEP:
 
-After user selects [C] to continue, load `./step-02-context.md` to analyze the project context and begin architectural decision making.
+After user selects [C] to continue, only after ensuring all the template output has been created, then load `./step-02-context.md` to analyze the project context and begin architectural decision making.
 
 Remember: Do NOT proceed to step-02 until user explicitly selects [C] from the menu and setup is confirmed!
