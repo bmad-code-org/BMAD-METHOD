@@ -4,7 +4,7 @@
 
 ```
 ┌─────────────────────────────────────────┐
-│  USER ACTIVATES FREYJA                  │
+│  USER ACTIVATES FREYA                    │
 │  @freya-ux.agent.yaml                  │
 │  "Help me with Dog Week design"         │
 └──────────────┬──────────────────────────┘

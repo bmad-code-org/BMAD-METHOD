@@ -86,6 +86,71 @@ The session logs contain reusable patterns for:
 
 ---
 
+## 📁 What This Example Provides
+
+### 1. Session Logs (`session-logs/`)
+
+**Complete agent dialogs** from the WDS v6 conversion process:
+
+- `session-2025-12-09-micro-steps-concepts.md` - Micro-step architecture development
+- `session-2025-12-31-content-production-workshop.md` - Content creation framework design
+
+**What you'll learn:**
+- How to conduct multi-day strategic workshops with agents
+- Pattern for preserving context across sessions
+- How to iterate on methodology design collaboratively
+- How agents synthesize complex strategic frameworks
+
+---
+
+### 2. Integration Reports
+
+**BMad Integration Analysis:**
+
+- `WDS-BMAD-INTEGRATION-REPORT.md` - Comprehensive module analysis for BMad team
+- `WDS-DEEP-ANALYSIS-SUMMARY.md` - Quick reference of analysis findings
+
+**What you'll learn:**
+- How to prepare a module for external integration
+- Module quality assessment patterns
+- Integration point documentation
+- Handover report structure
+
+---
+
+### 3. Agent Development
+
+**Freya Agent Transformation:**
+
+- `freya-agent-transformation.md` - How we redesigned Freya to embody WDS philosophy
+
+**What you'll learn:**
+- Difference between generic and methodology-specific agents
+- How to embed strategic frameworks into agent identity
+- Writing agent personas that convey philosophy, not just skills
+- First-person vs third-person agent voice
+
+---
+
+### 4. Strategic Framework Development
+
+**Method and Model Guides:**
+
+Development of WDS strategic frameworks:
+- Value Trigger Chain (VTC) methodology
+- Customer Awareness Cycle integration
+- Content Creation Workshop (6-model framework)
+- Content Purpose framework
+- Tone of Voice guidelines
+
+**What you'll learn:**
+- How to research and integrate external strategic models
+- Creating method documentation from first principles
+- Building workshop structures for agents
+- Designing micro-step workflows
+
+---
+
 ## Key Concepts Demonstrated
 
 ### From Session 2025-12-09

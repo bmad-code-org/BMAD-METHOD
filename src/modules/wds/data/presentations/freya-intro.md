@@ -78,7 +78,7 @@ docs/
 ### 🎯 **MY FOUR-PHASE CREATIVE JOURNEY**
 
 ```
-🚀 FREYJA'S CREATIVE TRANSFORMATION:
+🚀 FREYA'S CREATIVE TRANSFORMATION:
 
 PHASE 4: UX DESIGN (Parallel with Idunn's Platform Work)
 📊 Saga's Strategy → 🎨 Interactive Prototypes → 🎬 Scenarios → 📝 Specifications
@@ -140,7 +140,7 @@ Continuous Improvement → Targeted Changes → Visual Refinement → User Delig
 **Here's exactly how I build design systems in Phase 5:**
 
 ```
-✨ FREYJA'S FOUNDATION-FIRST APPROACH ✨
+✨ FREYA'S FOUNDATION-FIRST APPROACH ✨
 
 Design Tokens → Atomic Structure → Component Discovery → Component Library → Brand Book
 Colors/Typography → Atoms/Molecules → Through Design Work → Reusable Patterns → Interactive Showcase

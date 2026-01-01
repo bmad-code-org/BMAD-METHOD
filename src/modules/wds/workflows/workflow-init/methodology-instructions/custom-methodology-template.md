@@ -163,7 +163,7 @@ Tell agents how to behave with your custom methodology:
 
 ### Freya WDS Designer Agent
 
-- **Responsibilities**: {{LIST_FREYJA_RESPONSIBILITIES}}
+- **Responsibilities**: {{LIST_FREYA_RESPONSIBILITIES}}
 - **Phases owned**: {{PHASE_NAMES}}
 - **Special instructions**: {{CUSTOM_BEHAVIOR}}
 
