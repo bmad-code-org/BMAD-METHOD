@@ -380,3 +380,4 @@ graph TD
 
 *Trigger Mapping connects business goals to user psychology. It's the strategic foundation that makes design purposeful.*
 
+
