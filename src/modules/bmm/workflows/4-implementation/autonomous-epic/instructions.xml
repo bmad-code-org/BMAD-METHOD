@@ -184,7 +184,7 @@
       <output>📝 Staying on current branch: {{current_branch}} (parallel epic mode)</output>
     </check>
 
-    <action>Initialize progress tracking file:
+    <action>Initialize progress tracking file at: .autonomous-epic-progress-epic-{{epic_num}}.yaml
       - epic_num
       - started timestamp
       - total_stories
@@ -319,7 +319,7 @@
           </check>
 
           <action>Increment success_count</action>
-          <action>Update progress file</action>
+          <action>Update progress file: .autonomous-epic-progress-epic-{{epic_num}}.yaml</action>
         </try>
 
         <catch>
@@ -332,7 +332,7 @@
       <output>Progress: {{success_count}} ✅ | {{failure_count}} ❌ | {{remaining}} pending</output>
     </loop>
 
-    <action>Update progress file status: complete</action>
+    <action>Update progress file status to complete: .autonomous-epic-progress-epic-{{epic_num}}.yaml</action>
   </step>
 
   <step n="4" goal="Epic completion and reporting">
@@ -382,7 +382,7 @@
       <action>Update sprint-status: epic-{{epic_num}} = "done"</action>
     </check>
 
-    <action>Remove progress file</action>
+    <action>Remove progress file: .autonomous-epic-progress-epic-{{epic_num}}.yaml</action>
   </step>
 
 </workflow>

@@ -265,7 +265,10 @@ Next Steps:
 
 ### Progress File
 
-Autonomous epic maintains state in `.autonomous-epic-progress.yaml`:
+Autonomous epic maintains state in `.autonomous-epic-progress-epic-{{epic_num}}.yaml`:
+
+> **Note:** Each epic gets its own tracking file to support parallel epic processing.
+> For example: `.autonomous-epic-progress-epic-02.yaml` for epic 02.
 
 ```yaml
 epic_num: 2

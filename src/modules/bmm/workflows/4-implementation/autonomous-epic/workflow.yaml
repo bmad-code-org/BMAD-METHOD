@@ -13,7 +13,7 @@ story_dir: "{implementation_artifacts}"
 # Workflow components
 installed_path: "{project-root}/_bmad/bmm/workflows/4-implementation/autonomous-epic"
 instructions: "{installed_path}/instructions.xml"
-progress_file: "{story_dir}/.autonomous-epic-progress.yaml"
+progress_file: "{story_dir}/.autonomous-epic-progress-epic-{epic_num}.yaml"
 
 # Variables
 epic_num: "" # User provides or auto-discover next epic
