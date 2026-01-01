@@ -11,7 +11,6 @@ Execute the complete TDD/ATDD-driven BMAD development cycle for epic: "$ARGUMENT
 ## 🚨 CRITICAL ORCHESTRATION CONSTRAINTS 🚨
 
 **YOU ARE A PURE ORCHESTRATOR - DELEGATION ONLY**
-
 - ❌ NEVER execute workflows directly - you are a pure orchestrator
 - ❌ NEVER use Edit, Write, MultiEdit tools yourself
 - ❌ NEVER implement story tasks or fix code yourself
@@ -20,13 +19,11 @@ Execute the complete TDD/ATDD-driven BMAD development cycle for epic: "$ARGUMENT
 - ✅ Your role is ONLY to: read state, delegate tasks, verify completion, update session
 
 **GUARD RAIL CHECK**: Before ANY action ask yourself:
-
 - "Am I about to do work directly?" → If YES: STOP and delegate via Task instead
 - "Am I using Read/Bash to check state?" → OK to proceed
 - "Am I using Task tool to spawn a subagent?" → Correct approach
 
 **SUBAGENT EXECUTION PATTERN**: Each Task call spawns an independent subagent that:
-
 - Has its own context window (preserves main agent context)
 - Executes autonomously until completion
 - Returns results to the orchestrator
@@ -36,7 +33,6 @@ Execute the complete TDD/ATDD-driven BMAD development cycle for epic: "$ARGUMENT
 ## CRITICAL EXECUTION CONSTRAINTS
 
 **SEQUENTIAL EXECUTION ONLY** - Each phase MUST complete before the next starts:
-
 - Never invoke multiple BMAD workflows in parallel
 - Wait for each Task to complete before proceeding
 - This ensures proper context flow through the 8-phase workflow
@@ -44,27 +40,17 @@ Execute the complete TDD/ATDD-driven BMAD development cycle for epic: "$ARGUMENT
 **MODEL STRATEGY** - Different models for different phases:
 
 | # | Phase | Model | Rationale |
-
-| --- | ------- | ------- | ----------- |
-
+|---|-------|-------|-----------|
 | 1 | create-story | `opus` | Deep understanding for quality story creation |
-
 | 2 | validate-create-story | `sonnet` | Fast feedback loop for validation iterations |
-
 | 3 | testarch-atdd | `opus` | Quality test generation requires deep understanding |
-
 | 4 | dev-story | `sonnet` | Balanced speed/quality for implementation |
-
 | 5 | code-review | `opus` | Thorough adversarial review |
-
 | 6 | testarch-automate | `sonnet` | Iterative test expansion |
-
 | 7 | testarch-test-review | `haiku` | Rule-based quality validation (fast) |
-
 | 8 | testarch-trace | `opus` | Quality gate decision requires careful analysis |
 
 **PURE ORCHESTRATION** - This command:
-
 - Invokes existing BMAD workflows via Task tool with model specifications
 - Reads/writes sprint-status.yaml for state management
 - Never directly modifies story implementation files (workflows do that)
@@ -74,13 +60,11 @@ Execute the complete TDD/ATDD-driven BMAD development cycle for epic: "$ARGUMENT
 ## STEP 1: Parse Arguments
 
 Parse "$ARGUMENTS" to extract:
-
 - **epic_number** (required): First positional argument (e.g., "2" for Epic 2)
 - **--resume**: Continue from last incomplete story/phase
 - **--yolo**: Skip user confirmation pauses between stories
 
 **Validation:**
-
 - epic_number must be a positive integer
 - If no epic_number provided, error with: "Usage: /epic-dev-full <epic-number> [--yolo] [--resume]"
 
@@ -98,8 +82,7 @@ if [[ ! -d "$PROJECT_ROOT/_bmad" ]]; then
   echo "ERROR: Not a BMAD project. Run /bmad:bmm:workflows:workflow-init first."
   exit 1
 fi
-
-```text
+```
 
 Load sprint artifacts path from `_bmad/bmm/config.yaml` (default: `docs/sprint-artifacts`)
 
@@ -110,18 +93,15 @@ Load sprint artifacts path from `_bmad/bmm/config.yaml` (default: `docs/sprint-a
 Read `{sprint_artifacts}/sprint-status.yaml`
 
 If not found:
-
 - Output: "Sprint status file not found. Running sprint-planning workflow first..."
 - Run: `SlashCommand(command="/bmad:bmm:workflows:sprint-planning")`
 
 Find stories for epic {epic_number}:
-
 - Pattern: `{epic_num}-{story_num}-{story_title}`
 - Filter: status NOT "done"
 - Order by story number
 
 If no pending stories:
-
 - Output: "All stories in Epic {epic_num} complete!"
 - HALT
 
@@ -160,8 +140,7 @@ epic_dev_session:
   # Timestamps
   started: "{timestamp}"
   last_updated: "{timestamp}"
-
-```text
+```
 
 **PHASE VALUES:**
 - `starting` - Initial state
@@ -206,60 +185,39 @@ For each pending story:
 
 **Execute when:** `story.status == "backlog"`
 
-```text
-
+```
 Output: "=== [Phase 1/8] Creating story: {story_key} (opus) ==="
 
 Update session:
-
   - phase: "create_story"
   - last_updated: {timestamp}
 
 Write sprint-status.yaml
 
 Task(
-  subagent_type="parallel-executor",
+  subagent_type="epic-story-creator",
   model="opus",
   description="Create story {story_key}",
-  prompt="STORY CREATOR AGENT - Create story: {story_key}
+  prompt="Create story for {story_key}.
 
-**Your Mission:** Create a complete user story file following BMAD conventions.
-
-**Context:**
-- Epic: {epic_num}
+Context:
+- Epic file: {sprint_artifacts}/epic-{epic_num}.md
 - Story key: {story_key}
 - Sprint artifacts: {sprint_artifacts}
 
-**Execution Steps:**
-1. Read the epic file to understand story context: {sprint_artifacts}/epic-{epic_num}.md
-2. Read sprint-status.yaml to confirm story requirements
-3. Execute: SlashCommand(command='/bmad:bmm:workflows:create-story')
-4. When the workflow asks which story, provide: {story_key}
-5. Complete all prompts in the story creation workflow
-6. Verify the story file was created at: {sprint_artifacts}/stories/{story_key}.md
-
-**Success Criteria:**
-- Story file exists with complete acceptance criteria
-- Story has tasks linked to acceptance criteria
-- Story status updated in sprint-status.yaml
-
-**Output:** Report the story file path and confirm creation.
-
-Execute immediately and autonomously. Do not ask for confirmation."
+Execute the BMAD create-story workflow.
+Return ONLY JSON: {story_path, ac_count, task_count, status}"
 )
 
 Verify:
-
 - Story file exists at {sprint_artifacts}/stories/{story_key}.md
 - Story status updated in sprint-status.yaml
 
 Update session:
-
   - phase: "create_complete"
 
 PROCEED TO PHASE 2
-
-```text
+```
 
 ---
 
@@ -269,8 +227,7 @@ PROCEED TO PHASE 2
 
 This phase validates the story file for completeness using tier-based issue classification.
 
-```text
-
+```
 INITIALIZE:
   validation_iteration = session.validation_iteration or 0
   max_validations = 3
@@ -280,7 +237,6 @@ WHILE validation_iteration < max_validations:
   Output: "=== [Phase 2/8] Validation iteration {validation_iteration + 1} for: {story_key} (sonnet) ==="
 
   Update session:
-
     - phase: "validation"
     - validation_iteration: {validation_iteration}
     - last_updated: {timestamp}
@@ -288,44 +244,17 @@ WHILE validation_iteration < max_validations:
   Write sprint-status.yaml
 
   Task(
-    subagent_type="parallel-executor",
+    subagent_type="epic-story-validator",
     model="sonnet",
     description="Validate story {story_key}",
-    prompt="STORY VALIDATOR AGENT - Validate story: {story_key}
+    prompt="Validate story {story_key} (iteration {validation_iteration + 1}).
 
-**Your Mission:** Validate the story file for completeness and quality.
-
-**Context:**
+Context:
 - Story file: {sprint_artifacts}/stories/{story_key}.md
 - Epic: {epic_num}
-- Validation iteration: {validation_iteration + 1}
 
-**Execution Steps:**
-1. Read the story file at {sprint_artifacts}/stories/{story_key}.md
-2. Check each validation criterion:
-   - Story header with proper epic reference
-   - Complete acceptance criteria with BDD format (Given/When/Then)
-   - Tasks linked to acceptance criteria IDs
-   - Dev notes section with architecture references
-   - Testing requirements specified
-   - Prerequisites defined (if applicable)
-3. Categorize each issue by tier
-
-**Tier Definitions:**
-- CRITICAL: Blocking issues (missing story refs, missing ACs, story not in epic)
-- ENHANCEMENT: Should-fix (missing arch citations, vague dev notes)
-- OPTIMIZATION: Nice-to-have (verbose content, formatting)
-
-**Output Format (JSON only):**
-{
-  \"pass_rate\": <0-100>,
-  \"total_issues\": <count>,
-  \"critical_issues\": [{\"id\": \"C1\", \"description\": \"...\", \"section\": \"...\"}],
-  \"enhancement_issues\": [{\"id\": \"E1\", \"description\": \"...\", \"section\": \"...\"}],
-  \"optimization_issues\": [{\"id\": \"O1\", \"description\": \"...\", \"section\": \"...\"}]
-}
-
-Execute immediately and autonomously. Return ONLY the JSON result."
+Check: story header, BDD acceptance criteria, task links, dev notes, testing requirements.
+Return ONLY JSON: {pass_rate, total_issues, critical_issues, enhancement_issues, optimization_issues}"
   )
 
   Parse validation JSON output
@@ -333,7 +262,6 @@ Execute immediately and autonomously. Return ONLY the JSON result."
   IF pass_rate == 100 OR total_issues == 0:
     Output: "Story validation PASSED (100%)"
     Update session:
-
       - phase: "validation_complete"
       - validation_last_pass_rate: 100
     Write sprint-status.yaml
@@ -365,35 +293,22 @@ Execute immediately and autonomously. Return ONLY the JSON result."
     )
 
     IF user_decision == "Fix all" OR user_decision == "Fix critical only":
-      # Apply fixes
+      # Apply fixes - use epic-story-creator since it handles story file creation/modification
       Task(
-        subagent_type="parallel-executor",
+        subagent_type="epic-story-creator",
         model="sonnet",
         description="Fix validation issues for {story_key}",
-        prompt="VALIDATION FIXER AGENT - Fix story: {story_key}
+        prompt="Fix validation issues in story {story_key}.
 
-**Your Mission:** Fix validation issues in the story file.
-
-**Context:**
+Context:
 - Story file: {sprint_artifacts}/stories/{story_key}.md
 - Fix mode: {IF user_decision == 'Fix all': 'ALL ISSUES' ELSE: 'CRITICAL ONLY'}
 
-**Issues to Fix:**
-{IF user_decision == 'Fix all':}
-Fix ALL issues: {all_issues}
-{ELSE:}
-Fix CRITICAL issues only: {critical_issues}
-{END IF}
+Issues to Fix:
+{IF user_decision == 'Fix all': all_issues ELSE: critical_issues}
 
-**Execution Steps:**
-1. Read the story file
-2. For each issue, apply the fix using Edit tool
-3. Preserve existing content - only modify what's needed
-4. Verify each fix was applied correctly
-
-**Output:** Return summary of changes made with section names.
-
-Execute immediately and autonomously. Do not ask for confirmation."
+Apply fixes using Edit tool. Preserve existing content.
+Return ONLY JSON: {fixes_applied, sections_modified}"
       )
       validation_iteration += 1
       CONTINUE loop (re-validate)
@@ -401,7 +316,6 @@ Execute immediately and autonomously. Do not ask for confirmation."
     ELSE IF user_decision == "Skip validation":
       Output: "Skipping remaining validation. Proceeding to ATDD phase..."
       Update session:
-
         - phase: "validation_complete"
       Write sprint-status.yaml
       BREAK from loop
@@ -430,8 +344,7 @@ IF validation_iteration >= max_validations AND pass_rate < 100:
   )
 
   Handle escalation choice accordingly
-
-```text
+```
 
 ---
 
@@ -441,12 +354,10 @@ IF validation_iteration >= max_validations AND pass_rate < 100:
 
 This phase generates FAILING acceptance tests before implementation (TDD RED phase).
 
-```text
-
+```
 Output: "=== [Phase 3/8] TDD RED Phase - Generating acceptance tests: {story_key} (opus) ==="
 
 Update session:
-
   - phase: "testarch_atdd"
   - tdd_phase: "red"
   - last_updated: {timestamp}
@@ -454,59 +365,31 @@ Update session:
 Write sprint-status.yaml
 
 Task(
-  subagent_type="parallel-executor",
+  subagent_type="epic-atdd-writer",  # ISOLATED: No implementation knowledge
   model="opus",
   description="Generate ATDD tests for {story_key}",
-  prompt="ATDD TEST GENERATOR AGENT - Story: {story_key}
+  prompt="Generate ATDD tests for story {story_key} (TDD RED phase).
 
-**Your Mission:** Generate failing acceptance tests (TDD RED phase).
-
-**Context:**
+Context:
 - Story file: {sprint_artifacts}/stories/{story_key}.md
-- TDD Phase: RED (tests MUST fail initially)
-- Test frameworks: Vitest (frontend), pytest (backend)
+- Phase: 3 (ATDD)
 
-**Execution Steps:**
-1. Read the story file to extract acceptance criteria
-2. Execute: SlashCommand(command='/bmad:bmm:workflows:testarch-atdd')
-3. For each acceptance criterion, create test file(s) with:
-   - Given-When-Then structure
-   - Test IDs mapping to ACs (e.g., TEST-AC-1.1.1)
-   - Data factories and fixtures as needed
-4. Verify all tests FAIL (this is expected in RED phase)
-5. Create the ATDD checklist file
-
-**Success Criteria:**
-- All acceptance criteria have corresponding tests
-- All tests are failing (RED state)
-- ATDD checklist file created
-
-**Output Format (JSON):**
-{
-  \"checklist_file\": \"path/to/atdd-checklist.md\",
-  \"tests_created\": <count>,
-  \"test_files\": [\"path/to/test1.ts\", \"path/to/test2.py\"],
-  \"status\": \"red\"
-}
-
-Execute immediately and autonomously."
+CRITICAL: You are isolated from implementation details. Focus ONLY on acceptance criteria.
+Execute /bmad:bmm:workflows:testarch-atdd workflow.
+All tests MUST fail initially (RED state).
+Return ONLY JSON: {checklist_file, tests_created, test_files, acs_covered, status}"
 )
 
 Parse ATDD output
 
 Verify tests are FAILING (optional quick validation):
-
 ```bash
-
 # Run tests to confirm RED state
-
 cd {project_root}
 pnpm test --run 2>&1 | tail -20  # Should show failures
-
-```text
+```
 
 Update session:
-
   - phase: "atdd_complete"
   - atdd_checklist_file: {checklist_file}
   - atdd_tests_count: {tests_created}
@@ -518,8 +401,7 @@ Output: "ATDD tests generated: {tests_created} tests (RED - all failing as expec
 Output: "Checklist: {checklist_file}"
 
 PROCEED TO PHASE 4
-
-```text
+```
 
 ---
 
@@ -529,12 +411,10 @@ PROCEED TO PHASE 4
 
 This phase implements the story to make acceptance tests pass (TDD GREEN phase).
 
-```text
-
+```
 Output: "=== [Phase 4/8] TDD GREEN Phase - Implementing story: {story_key} (sonnet) ==="
 
 Update session:
-
   - phase: "dev_story"
   - tdd_phase: "green"
   - last_updated: {timestamp}
@@ -542,46 +422,27 @@ Update session:
 Write sprint-status.yaml
 
 Task(
-  subagent_type="parallel-executor",
+  subagent_type="epic-implementer",
   model="sonnet",
   description="Implement story {story_key}",
-  prompt="STORY IMPLEMENTER AGENT - Story: {story_key}
+  prompt="Implement story {story_key} (TDD GREEN phase).
 
-**Your Mission:** Implement the story to make all acceptance tests pass (TDD GREEN phase).
-
-**Context:**
+Context:
 - Story file: {sprint_artifacts}/stories/{story_key}.md
 - ATDD checklist: {session.atdd_checklist_file}
 - Tests to pass: {session.atdd_tests_count}
-- TDD Phase: GREEN (make tests pass)
 
-**Execution Steps:**
-1. Read the story file to understand tasks and acceptance criteria
-2. Execute: SlashCommand(command='/bmad:bmm:workflows:dev-story')
-3. Follow the task sequence in the story file EXACTLY
-4. Run tests frequently: pnpm test (frontend) or pytest (backend)
-5. Implement MINIMAL code to make each test pass
-6. After all tests pass, run: pnpm prepush
-7. Verify ALL checks pass
-
-**Success Criteria:**
-- All {session.atdd_tests_count} ATDD tests pass
-- pnpm prepush passes without errors
-- Story status updated to 'review'
-
-**Output:** Report test results and prepush status.
-
-Execute immediately and autonomously. Do not stop until all tests pass."
+Execute /bmad:bmm:workflows:dev-story workflow.
+Make all tests pass. Run pnpm prepush before completing.
+Return ONLY JSON: {tests_passing, tests_total, prepush_status, files_modified, status}"
 )
 
 Verify implementation:
-
 - All ATDD tests passing
 - pnpm prepush passes (or equivalent validation)
 - Story status updated to "review"
 
 Update session:
-
   - phase: "dev_complete"
   - tdd_phase: "complete"
 
@@ -589,9 +450,87 @@ Write sprint-status.yaml
 
 Output: "Implementation complete. All ATDD tests passing (GREEN)."
 
-PROCEED TO PHASE 5
+PROCEED TO VERIFICATION GATE 4.5
+```
 
-```text
+---
+
+### VERIFICATION GATE 4.5: Post-Implementation Test Verification
+
+**Purpose**: Verify all tests still pass after dev-story phase. This prevents regressions from being hidden by JSON-only output.
+
+```
+Output: "=== [Gate 4.5] Verifying test state after implementation ==="
+
+INITIALIZE:
+  verification_iteration = 0
+  max_verification_iterations = 3
+
+WHILE verification_iteration < max_verification_iterations:
+
+  # Orchestrator directly runs tests (not delegated)
+  ```bash
+  cd {project_root}
+  TEST_OUTPUT=$(cd apps/api && uv run pytest tests -q --tb=short 2>&1 || true)
+  ```
+
+  # Check for failures
+  IF TEST_OUTPUT contains "FAILED" OR "failed" OR "ERROR":
+    verification_iteration += 1
+    Output: "VERIFICATION ITERATION {verification_iteration}/{max_verification_iterations}: Tests failing"
+
+    IF verification_iteration < max_verification_iterations:
+      # Ralph-style: Feed failures back to implementer
+      Task(
+        subagent_type="epic-implementer",
+        model="sonnet",
+        description="Fix failing tests (iteration {verification_iteration})",
+        prompt="Fix failing tests for story {story_key} (verification iteration {verification_iteration}).
+
+Test failure output (last 50 lines):
+{TEST_OUTPUT tail -50}
+
+Fix the failing tests. Do NOT modify test files unless absolutely necessary.
+Run tests after fixing. Return JSON: {fixes_applied, tests_passing, status}"
+      )
+    ELSE:
+      # Max iterations reached
+      Output: "ERROR: Max verification iterations ({max_verification_iterations}) reached"
+      Output: "Tests still failing after {max_verification_iterations} fix attempts."
+
+      gate_escalation = AskUserQuestion(
+        question: "Verification gate 4.5 failed after 3 iterations. How to proceed?",
+        header: "Gate 4.5 Failed",
+        options: [
+          {label: "Continue anyway", description: "Proceed to code review with failing tests (risky)"},
+          {label: "Manual fix", description: "Pause for manual intervention"},
+          {label: "Skip story", description: "Mark story as blocked and continue"},
+          {label: "Stop", description: "Save state and exit"}
+        ]
+      )
+
+      Handle gate_escalation accordingly
+      IF gate_escalation == "Continue anyway":
+        BREAK from loop
+      ELSE IF gate_escalation == "Manual fix":
+        Output: "Pausing for manual test fix."
+        Output: "Resume with: /epic-dev-full {epic_num} --resume"
+        HALT
+      ELSE IF gate_escalation == "Skip story":
+        Update session: phase: "error", last_error: "Gate 4.5 failed"
+        CONTINUE to next story
+      ELSE:
+        HALT
+      END IF
+  ELSE:
+    Output: "VERIFICATION GATE 4.5 PASSED: All tests green"
+    BREAK from loop
+  END IF
+
+END WHILE
+
+PROCEED TO PHASE 5
+```
 
 ---
 
@@ -601,8 +540,7 @@ PROCEED TO PHASE 5
 
 This phase performs adversarial code review finding 3-10 specific issues.
 
-```text
-
+```
 INITIALIZE:
   review_iteration = session.review_iteration or 0
   max_reviews = 3
@@ -612,7 +550,6 @@ WHILE review_iteration < max_reviews:
   Output: "=== [Phase 5/8] Code Review iteration {review_iteration + 1}: {story_key} (opus) ==="
 
   Update session:
-
     - phase: "code_review"
     - review_iteration: {review_iteration}
     - last_updated: {timestamp}
@@ -620,39 +557,17 @@ WHILE review_iteration < max_reviews:
   Write sprint-status.yaml
 
   Task(
-    subagent_type="parallel-executor",
+    subagent_type="epic-code-reviewer",
     model="opus",
     description="Code review for {story_key}",
-    prompt="CODE REVIEWER AGENT - Story: {story_key}
+    prompt="Review implementation for {story_key} (iteration {review_iteration + 1}).
 
-**Your Mission:** Perform ADVERSARIAL code review. Find 3-10 specific issues.
-
-**Context:**
+Context:
 - Story file: {sprint_artifacts}/stories/{story_key}.md
-- Review iteration: {review_iteration + 1}
 
-**Execution Steps:**
-1. Read the story file to understand acceptance criteria
-2. Execute: SlashCommand(command='/bmad:bmm:workflows:code-review')
-3. Review ALL implementation code for this story
-4. MANDATE: Find 3-10 specific issues. NEVER say 'looks good'.
-
-**Review Categories:**
-- AC validation: Is each acceptance criterion actually implemented?
-- Task audit: Are all [x] marked tasks actually done?
-- Code quality: Security, performance, error handling, complexity
-- Test quality: Real assertions vs placeholders, coverage
-
-**Output Format (JSON only):**
-{
-  \"total_issues\": <count>,
-  \"high_issues\": [{\"id\": \"H1\", \"description\": \"...\", \"file\": \"...\", \"line\": N}],
-  \"medium_issues\": [{\"id\": \"M1\", \"description\": \"...\", \"file\": \"...\", \"line\": N}],
-  \"low_issues\": [{\"id\": \"L1\", \"description\": \"...\", \"file\": \"...\", \"line\": N}],
-  \"auto_fixable\": true/false
-}
-
-Execute immediately and autonomously. Return ONLY the JSON result."
+Execute /bmad:bmm:workflows:code-review workflow.
+MUST find 3-10 specific issues. NEVER report zero issues.
+Return ONLY JSON: {total_issues, high_issues, medium_issues, low_issues, auto_fixable}"
   )
 
   Parse review JSON output
@@ -674,25 +589,16 @@ Execute immediately and autonomously. Return ONLY the JSON result."
       IF low_decision == "Fix all":
         # Apply low fixes
         Task(
-          subagent_type="parallel-executor",
+          subagent_type="epic-implementer",
           model="sonnet",
           description="Fix low priority review issues for {story_key}",
-          prompt="LOW PRIORITY FIXER AGENT - Story: {story_key}
+          prompt="Fix LOW priority code review issues for {story_key}.
 
-**Your Mission:** Fix all LOW priority code review issues.
-
-**Issues to Fix:**
+Issues to Fix:
 {low_issues}
 
-**Execution Steps:**
-1. For each low priority issue, apply the fix using Edit tool
-2. Verify fixes don't break existing functionality
-3. Run: pnpm prepush
-4. Ensure all tests still pass
-
-**Output:** Report fixes applied and prepush result.
-
-Execute immediately and autonomously."
+Apply fixes using Edit tool. Run pnpm prepush after.
+Return ONLY JSON: {fixes_applied, prepush_status, tests_passing}"
         )
         review_iteration += 1
         CONTINUE loop
@@ -719,28 +625,19 @@ Execute immediately and autonomously."
     Output: "Auto-fixing {high_count + medium_count} HIGH/MEDIUM issues..."
 
     Task(
-      subagent_type="parallel-executor",
+      subagent_type="epic-implementer",
       model="sonnet",
       description="Fix review issues for {story_key}",
-      prompt="CODE FIXER AGENT - Story: {story_key}
+      prompt="Fix HIGH and MEDIUM priority code review issues for {story_key}.
 
-**Your Mission:** Fix HIGH and MEDIUM priority code review issues.
-
-**HIGH PRIORITY (must fix):**
+HIGH PRIORITY (must fix):
 {high_issues}
 
-**MEDIUM PRIORITY (should fix):**
+MEDIUM PRIORITY (should fix):
 {medium_issues}
 
-**Execution Steps:**
-1. For each HIGH issue, apply the fix immediately
-2. For each MEDIUM issue, apply the fix
-3. Run: pnpm prepush
-4. Verify all tests still pass
-
-**Output:** Report fixes applied and test results.
-
-Execute immediately and autonomously. Fix ALL issues listed above."
+Apply all fixes. Run pnpm prepush after.
+Return ONLY JSON: {fixes_applied, prepush_status, tests_passing}"
     )
 
     review_iteration += 1
@@ -760,14 +657,79 @@ IF review_iteration >= max_reviews:
   Handle escalation
 
 Update session:
-
   - phase: "review_complete"
 
 Write sprint-status.yaml
 
-PROCEED TO PHASE 6
+PROCEED TO VERIFICATION GATE 5.5
+```
 
-```text
+---
+
+### VERIFICATION GATE 5.5: Post-Code-Review Test Verification
+
+**Purpose**: Verify all tests still pass after code review fixes. Code review may apply fixes that break tests.
+
+```
+Output: "=== [Gate 5.5] Verifying test state after code review fixes ==="
+
+INITIALIZE:
+  verification_iteration = 0
+  max_verification_iterations = 3
+
+WHILE verification_iteration < max_verification_iterations:
+
+  # Orchestrator directly runs tests (not delegated)
+  ```bash
+  cd {project_root}
+  TEST_OUTPUT=$(cd apps/api && uv run pytest tests -q --tb=short 2>&1 || true)
+  ```
+
+  # Check for failures
+  IF TEST_OUTPUT contains "FAILED" OR "failed" OR "ERROR":
+    verification_iteration += 1
+    Output: "VERIFICATION ITERATION {verification_iteration}/{max_verification_iterations}: Tests failing after code review"
+
+    IF verification_iteration < max_verification_iterations:
+      # Ralph-style: Feed failures back to implementer
+      Task(
+        subagent_type="epic-implementer",
+        model="sonnet",
+        description="Fix post-review test failures (iteration {verification_iteration})",
+        prompt="Fix test failures caused by code review changes for story {story_key} (iteration {verification_iteration}).
+
+Test failure output (last 50 lines):
+{TEST_OUTPUT tail -50}
+
+The code review phase applied fixes that may have broken tests.
+Fix the failing tests without reverting the review improvements.
+Run tests after fixing. Return JSON: {fixes_applied, tests_passing, status}"
+      )
+    ELSE:
+      # Max iterations reached
+      Output: "ERROR: Gate 5.5 - Max verification iterations ({max_verification_iterations}) reached"
+
+      gate_escalation = AskUserQuestion(
+        question: "Verification gate 5.5 failed after 3 iterations. How to proceed?",
+        header: "Gate 5.5 Failed",
+        options: [
+          {label: "Continue anyway", description: "Proceed to test expansion with failing tests (risky)"},
+          {label: "Revert review changes", description: "Revert code review fixes and proceed"},
+          {label: "Manual fix", description: "Pause for manual intervention"},
+          {label: "Stop", description: "Save state and exit"}
+        ]
+      )
+
+      Handle gate_escalation accordingly
+  ELSE:
+    Output: "VERIFICATION GATE 5.5 PASSED: All tests green after code review"
+    BREAK from loop
+  END IF
+
+END WHILE
+
+PROCEED TO PHASE 6
+```
 
 ---
 
@@ -777,62 +739,34 @@ PROCEED TO PHASE 6
 
 This phase expands test coverage beyond the initial ATDD tests.
 
-```text
-
+```
 Output: "=== [Phase 6/8] Expanding test coverage: {story_key} (sonnet) ==="
 
 Update session:
-
   - phase: "testarch_automate"
   - last_updated: {timestamp}
 
 Write sprint-status.yaml
 
 Task(
-  subagent_type="parallel-executor",
+  subagent_type="epic-test-expander",  # ISOLATED: Fresh perspective on coverage gaps
   model="sonnet",
   description="Expand test coverage for {story_key}",
-  prompt="TEST EXPANDER AGENT - Story: {story_key}
+  prompt="Expand test coverage for story {story_key} (Phase 6).
 
-**Your Mission:** Expand test coverage beyond initial ATDD tests.
-
-**Context:**
+Context:
 - Story file: {sprint_artifacts}/stories/{story_key}.md
 - ATDD checklist: {session.atdd_checklist_file}
 
-**Execution Steps:**
-1. Analyze the implementation for this story
-2. Execute: SlashCommand(command='/bmad:bmm:workflows:testarch-automate')
-3. Generate additional tests for:
-   - Edge cases not covered by ATDD tests
-   - Error handling paths
-   - Integration points between components
-   - Unit tests for complex logic
-   - Boundary conditions
-4. Use priority tagging: [P0], [P1], [P2], [P3]
-
-**Priority Definitions:**
-- P0: Critical path tests (must pass)
-- P1: Important scenarios (should pass)
-- P2: Edge cases (good to have)
-- P3: Future-proofing (optional)
-
-**Output Format (JSON):**
-{
-  \"tests_added\": <count>,
-  \"coverage_before\": <percentage>,
-  \"coverage_after\": <percentage>,
-  \"test_files\": [\"path/to/new_test.ts\"],
-  \"by_priority\": {\"P0\": N, \"P1\": N, \"P2\": N, \"P3\": N}
-}
-
-Execute immediately and autonomously."
+CRITICAL: You did NOT write the original tests. Analyze the IMPLEMENTATION for gaps.
+Execute /bmad:bmm:workflows:testarch-automate workflow.
+Add edge cases, error paths, integration tests with priority tagging.
+Return ONLY JSON: {tests_added, coverage_before, coverage_after, test_files, by_priority, gaps_found, status}"
 )
 
 Parse automation output
 
 Update session:
-
   - phase: "automate_complete"
 
 Write sprint-status.yaml
@@ -840,9 +774,79 @@ Write sprint-status.yaml
 Output: "Test automation complete. Added {tests_added} tests."
 Output: "Coverage: {coverage_before}% -> {coverage_after}%"
 
-PROCEED TO PHASE 7
+PROCEED TO VERIFICATION GATE 6.5
+```
 
-```text
+---
+
+### VERIFICATION GATE 6.5: Post-Test-Expansion Verification
+
+**Purpose**: Verify all tests (original + new) pass after test expansion. New tests may conflict with existing implementation.
+
+```
+Output: "=== [Gate 6.5] Verifying test state after test expansion ==="
+
+INITIALIZE:
+  verification_iteration = 0
+  max_verification_iterations = 3
+
+WHILE verification_iteration < max_verification_iterations:
+
+  # Orchestrator directly runs tests (not delegated)
+  ```bash
+  cd {project_root}
+  TEST_OUTPUT=$(cd apps/api && uv run pytest tests -q --tb=short 2>&1 || true)
+  ```
+
+  # Check for failures
+  IF TEST_OUTPUT contains "FAILED" OR "failed" OR "ERROR":
+    verification_iteration += 1
+    Output: "VERIFICATION ITERATION {verification_iteration}/{max_verification_iterations}: Tests failing after expansion"
+
+    IF verification_iteration < max_verification_iterations:
+      # Determine if failure is in NEW tests or EXISTING tests
+      # If new tests fail, they may need adjustment
+      # If existing tests fail, implementation needs fixing
+      Task(
+        subagent_type="epic-implementer",
+        model="sonnet",
+        description="Fix post-expansion test failures (iteration {verification_iteration})",
+        prompt="Fix test failures after test expansion for story {story_key} (iteration {verification_iteration}).
+
+Test failure output (last 50 lines):
+{TEST_OUTPUT tail -50}
+
+Determine if failures are in:
+1. NEW tests (from expansion): May need to adjust test expectations
+2. EXISTING tests (original ATDD): Implementation needs fixing
+
+Fix accordingly. Return JSON: {fixes_applied, new_tests_adjusted, implementation_fixed, tests_passing, status}"
+      )
+    ELSE:
+      # Max iterations reached
+      Output: "ERROR: Gate 6.5 - Max verification iterations ({max_verification_iterations}) reached"
+
+      gate_escalation = AskUserQuestion(
+        question: "Verification gate 6.5 failed after 3 iterations. How to proceed?",
+        header: "Gate 6.5 Failed",
+        options: [
+          {label: "Remove failing new tests", description: "Delete new tests that are blocking progress"},
+          {label: "Continue anyway", description: "Proceed to test review with failing tests"},
+          {label: "Manual fix", description: "Pause for manual intervention"},
+          {label: "Stop", description: "Save state and exit"}
+        ]
+      )
+
+      Handle gate_escalation accordingly
+  ELSE:
+    Output: "VERIFICATION GATE 6.5 PASSED: All tests green after expansion"
+    BREAK from loop
+  END IF
+
+END WHILE
+
+PROCEED TO PHASE 7
+```
 
 ---
 
@@ -852,52 +856,28 @@ PROCEED TO PHASE 7
 
 This phase reviews test quality against best practices.
 
-```text
-
+```
 Output: "=== [Phase 7/8] Reviewing test quality: {story_key} (haiku) ==="
 
 Update session:
-
   - phase: "testarch_test_review"
   - last_updated: {timestamp}
 
 Write sprint-status.yaml
 
 Task(
-  subagent_type="parallel-executor",
+  subagent_type="epic-test-reviewer",  # ISOLATED: Objective quality assessment
   model="haiku",
   description="Review test quality for {story_key}",
-  prompt="TEST QUALITY REVIEWER AGENT - Story: {story_key}
+  prompt="Review test quality for story {story_key} (Phase 7).
 
-**Your Mission:** Review all tests for quality against best practices.
+Context:
+- Story file: {sprint_artifacts}/stories/{story_key}.md
 
-**Execution Steps:**
-1. Find all test files for this story
-2. Execute: SlashCommand(command='/bmad:bmm:workflows:testarch-test-review')
-3. Check each test against quality criteria
-
-**Quality Criteria:**
-- BDD format (Given-When-Then structure)
-- Test ID conventions (traceability to ACs)
-- Priority markers ([P0], [P1], etc.)
-- No hard waits/sleeps (flakiness risk)
-- Deterministic assertions (no random/conditional)
-- Proper isolation and cleanup
-- Explicit assertions (not hidden in helpers)
-- File size limits (<300 lines)
-- Test duration limits (<90 seconds)
-
-**Output Format (JSON):**
-{
-  \"quality_score\": <0-100>,
-  \"tests_reviewed\": <count>,
-  \"issues_found\": [
-    {\"test_file\": \"...\", \"issue\": \"...\", \"severity\": \"high|medium|low\"}
-  ],
-  \"recommendations\": [\"...\"]
-}
-
-Execute immediately and autonomously."
+CRITICAL: You did NOT write these tests. Apply quality criteria objectively.
+Execute /bmad:bmm:workflows:testarch-test-review workflow.
+Check BDD format, test IDs, priority markers, no hard waits, deterministic assertions.
+Return ONLY JSON: {quality_score, grade, tests_reviewed, issues_found, by_category, recommendations, status}"
 )
 
 Parse quality report
@@ -917,38 +897,100 @@ IF quality_score < 80 OR has_high_severity_issues:
 
   IF quality_decision == "Fix issues":
     Task(
-      subagent_type="parallel-executor",
+      subagent_type="epic-test-reviewer",  # Same agent fixes issues it identified
       model="haiku",
       description="Fix test quality issues for {story_key}",
-      prompt="TEST QUALITY FIXER AGENT - Story: {story_key}
+      prompt="Fix test quality issues for story {story_key}.
 
-**Your Mission:** Fix test quality issues.
-
-**Issues to Fix:**
+Issues to Fix:
 {issues_found}
 
-**Execution Steps:**
-1. For each issue, apply the fix using Edit tool
-2. Verify fixes don't break test functionality
-3. Run: pnpm prepush
-4. Ensure all tests still pass
-
-**Output:** Report fixes applied and test results.
-
-Execute immediately and autonomously."
+Apply auto-fixes for: hard waits, missing docstrings, missing priority markers.
+Run tests after fixes to ensure they still pass.
+Return ONLY JSON: {fixes_applied, tests_passing, quality_score, status}"
     )
 
 Update session:
-
   - phase: "test_review_complete"
 
 Write sprint-status.yaml
 
 Output: "Test quality review complete. Score: {quality_score}%"
 
-PROCEED TO PHASE 8
+PROCEED TO VERIFICATION GATE 7.5
+```
 
-```text
+---
+
+### VERIFICATION GATE 7.5: Post-Quality-Review Test Verification
+
+**Purpose**: Verify all tests still pass after quality review fixes. Test refactoring may inadvertently break functionality.
+
+```
+Output: "=== [Gate 7.5] Verifying test state after quality review fixes ==="
+
+INITIALIZE:
+  verification_iteration = 0
+  max_verification_iterations = 3
+
+WHILE verification_iteration < max_verification_iterations:
+
+  # Orchestrator directly runs tests (not delegated)
+  ```bash
+  cd {project_root}
+  TEST_OUTPUT=$(cd apps/api && uv run pytest tests -q --tb=short 2>&1 || true)
+  ```
+
+  # Check for failures
+  IF TEST_OUTPUT contains "FAILED" OR "failed" OR "ERROR":
+    verification_iteration += 1
+    Output: "VERIFICATION ITERATION {verification_iteration}/{max_verification_iterations}: Tests failing after quality fixes"
+
+    IF verification_iteration < max_verification_iterations:
+      # Quality review changes may have altered test behavior
+      Task(
+        subagent_type="epic-implementer",
+        model="sonnet",
+        description="Fix post-quality-review test failures (iteration {verification_iteration})",
+        prompt="Fix test failures after quality review for story {story_key} (iteration {verification_iteration}).
+
+Test failure output (last 50 lines):
+{TEST_OUTPUT tail -50}
+
+Quality review may have:
+1. Refactored test structure
+2. Fixed test naming/IDs
+3. Removed hardcoded waits
+4. Changed assertions
+
+Ensure fixes maintain test intent while passing.
+Return JSON: {fixes_applied, tests_passing, status}"
+      )
+    ELSE:
+      # Max iterations reached
+      Output: "ERROR: Gate 7.5 - Max verification iterations ({max_verification_iterations}) reached"
+
+      gate_escalation = AskUserQuestion(
+        question: "Verification gate 7.5 failed after 3 iterations. How to proceed?",
+        header: "Gate 7.5 Failed",
+        options: [
+          {label: "Revert quality fixes", description: "Revert test quality changes and proceed"},
+          {label: "Continue anyway", description: "Proceed to quality gate with failing tests"},
+          {label: "Manual fix", description: "Pause for manual intervention"},
+          {label: "Stop", description: "Save state and exit"}
+        ]
+      )
+
+      Handle gate_escalation accordingly
+  ELSE:
+    Output: "VERIFICATION GATE 7.5 PASSED: All tests green after quality review"
+    BREAK from loop
+  END IF
+
+END WHILE
+
+PROCEED TO PHASE 8
+```
 
 ---
 
@@ -958,67 +1000,34 @@ PROCEED TO PHASE 8
 
 This phase generates traceability matrix and makes quality gate decision.
 
-```text
-
+```
 Output: "=== [Phase 8/8] Quality Gate Decision: {story_key} (opus) ==="
 
 Update session:
-
   - phase: "testarch_trace"
   - last_updated: {timestamp}
 
 Write sprint-status.yaml
 
 Task(
-  subagent_type="parallel-executor",
+  subagent_type="epic-story-validator",
   model="opus",
   description="Quality gate decision for {story_key}",
-  prompt="QUALITY GATE AGENT - Story: {story_key}
+  prompt="Make quality gate decision for story {story_key} (Phase 8).
 
-**Your Mission:** Generate traceability matrix and make quality gate decision.
-
-**Context:**
+Context:
 - Story file: {sprint_artifacts}/stories/{story_key}.md
 - ATDD checklist: {session.atdd_checklist_file}
 
-**Execution Steps:**
-1. Execute: SlashCommand(command='/bmad:bmm:workflows:testarch-trace')
-2. Map each acceptance criterion to its test(s)
-3. Analyze coverage levels:
-   - P0 coverage (critical paths) - MUST be 100%
-   - P1 coverage (important) - should be >= 90%
-   - Overall coverage - should be >= 80%
-4. Identify gaps (ACs without tests)
-5. Make quality gate decision based on rules
-
-**Gate Decision Rules:**
-- PASS: P0 = 100%, P1 >= 90%, Overall >= 80%
-- CONCERNS: P0 = 100% but P1 < 90% or Overall < 80%
-- FAIL: P0 < 100% OR critical gaps exist
-- WAIVED: Business-approved exception with documented justification
-
-**Output Format (JSON):**
-{
-  \"decision\": \"PASS|CONCERNS|FAIL\",
-  \"p0_coverage\": <percentage>,
-  \"p1_coverage\": <percentage>,
-  \"overall_coverage\": <percentage>,
-  \"traceability_matrix\": [
-    {\"ac_id\": \"AC-1.1.1\", \"tests\": [\"TEST-1\", \"TEST-2\"], \"coverage\": \"FULL|PARTIAL|NONE\"}
-  ],
-  \"gaps\": [{\"ac_id\": \"AC-1.1.3\", \"reason\": \"No test found\"}],
-  \"rationale\": \"Explanation of decision\"
-}
-
-Execute immediately and autonomously."
+Execute /bmad:bmm:workflows:testarch-trace workflow.
+Generate traceability matrix and make gate decision (PASS/CONCERNS/FAIL).
+Return ONLY JSON: {decision, p0_coverage, p1_coverage, overall_coverage, traceability_matrix, gaps, rationale}"
 )
 
 Parse gate decision
 
 # ═══════════════════════════════════════════════════════════════════════════
-
 # QUALITY GATE DECISION HANDLING
-
 # ═══════════════════════════════════════════════════════════════════════════
 
 Output:
@@ -1036,7 +1045,6 @@ IF decision == "PASS":
   Output: "Quality Gate: PASS - Story ready for completion"
 
   Update session:
-
     - phase: "complete"
     - gate_decision: "PASS"
     - p0_coverage: {p0_coverage}
@@ -1050,7 +1058,6 @@ ELSE IF decision == "CONCERNS":
   Output: "Quality Gate: CONCERNS - Minor gaps detected"
 
   Update session:
-
     - phase: "gate_decision"
     - gate_decision: "CONCERNS"
 
@@ -1076,7 +1083,6 @@ ELSE IF decision == "FAIL":
     Output: "  - {gap.ac_id}: {gap.reason}"
 
   Update session:
-
     - phase: "gate_decision"
     - gate_decision: "FAIL"
 
@@ -1109,7 +1115,6 @@ ELSE IF decision == "FAIL":
 
     # Mark as WAIVED
     Update session:
-
       - gate_decision: "WAIVED"
       - waiver_reason: {waiver_info}
 
@@ -1117,8 +1122,7 @@ ELSE IF decision == "FAIL":
 
   ELSE:
     Handle fail_decision accordingly
-
-```text
+```
 
 ---
 
@@ -1126,14 +1130,11 @@ ELSE IF decision == "FAIL":
 
 When user chooses "Loop back to dev" after gate FAIL or CONCERNS:
 
-```text
-
+```
 Output: "Looping back to Phase 4 (dev-story) to address gaps..."
 
 # Reset tracking for phases 4-8
-
 Update session:
-
   - phase: "dev_story"
   - review_iteration: 0
   - gate_iteration: {gate_iteration + 1}
@@ -1142,62 +1143,40 @@ Update session:
 Write sprint-status.yaml
 
 # Provide gap context to dev-story
-
 Task(
-  subagent_type="parallel-executor",
+  subagent_type="epic-implementer",
   model="sonnet",
   description="Fix gaps for {story_key}",
-  prompt="GAP FIXER AGENT - Story: {story_key}
+  prompt="Fix quality gate gaps for story {story_key} (loop-back iteration {gate_iteration + 1}).
 
-**Your Mission:** Fix quality gate gaps and ensure P0 coverage reaches 100%.
-
-**Context:**
+Context:
 - Story file: {sprint_artifacts}/stories/{story_key}.md
 - Previous gate decision: {previous_decision}
-- Loop-back iteration: {gate_iteration + 1}
 
-**GAPS TO ADDRESS:**
+GAPS TO ADDRESS:
 {FOR each gap in gaps:}
-
 - {gap.ac_id}: {gap.reason}
 {END FOR}
 
-**Execution Steps:**
-1. For each gap, add the missing test(s)
-2. Implement any missing functionality for acceptance criteria
-3. Run: pnpm prepush
-4. Verify P0 coverage reaches 100%
-
-**Success Criteria:**
-- All identified gaps have been addressed
-- All tests pass
-- pnpm prepush passes
-
-**Output:** Report gaps fixed and test results.
-
-Execute immediately and autonomously."
+Add missing tests and implement missing functionality.
+Run pnpm prepush. Ensure P0 coverage reaches 100%.
+Return ONLY JSON: {gaps_fixed, tests_added, prepush_status, p0_coverage}"
 )
 
 # Continue through phases 5-8 again
-
 PROCEED TO PHASE 5
-
-```text
+```
 
 ---
 
 ## STEP 6: Story Completion
 
-```text
-
+```
 # Mark story complete
-
 Update sprint-status.yaml:
-
   - story status: "done"
 
 # Clear session state
-
 Clear epic_dev_session (or update for next story)
 
 Output:
@@ -1221,15 +1200,13 @@ IF NOT --yolo AND more_stories_remaining:
 
   IF next_decision == "Stop":
     HALT
-
-```text
+```
 
 ---
 
 ## STEP 7: Epic Completion
 
-```text
-
+```
 Output:
 ════════════════════════════════════════════════════════════════════════════════
 EPIC {epic_num} COMPLETE!
@@ -1239,12 +1216,10 @@ Total phases executed: {count * 8}
 All quality gates: {summary}
 
 Next steps:
-
 - Retrospective: /bmad:bmm:workflows:retrospective
 - Next epic: /epic-dev-full {next_epic_num}
 ════════════════════════════════════════════════════════════════════════════════
-
-```text
+```
 
 ---
 
@@ -1252,8 +1227,7 @@ Next steps:
 
 On any workflow failure:
 
-```text
-
+```
 1. Capture error output
 2. Update session:
    - phase: "error"
@@ -1263,7 +1237,7 @@ On any workflow failure:
 4. Display error with phase context:
    Output: "ERROR in Phase {current_phase}: {error_message}"
 
-1. Offer recovery options:
+5. Offer recovery options:
    error_decision = AskUserQuestion(
      question: "How to handle this error?",
      header: "Error Recovery",
@@ -1275,13 +1249,12 @@ On any workflow failure:
      ]
    )
 
-1. Handle recovery choice:
+6. Handle recovery choice:
    - Retry: Reset phase state, re-execute
    - Skip phase: Only allowed for non-critical phases (6, 7)
    - Skip story: Mark skipped in sprint-status, continue loop
    - Stop: HALT with resume instructions
-
-```text
+```
 
 ---
 

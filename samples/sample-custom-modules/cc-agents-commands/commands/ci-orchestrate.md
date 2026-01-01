@@ -608,6 +608,107 @@ PHASE 2 (Sequential): Import/lint chain
 PHASE 3 (Validation): Run project validation command
 ```
 
+### Refactoring Safety Gate (NEW)
+
+**CRITICAL**: When dispatching to `safe-refactor` agents for file size violations or code restructuring, you MUST use dependency-aware batching.
+
+#### Before Spawning Refactoring Agents
+
+1. **Call dependency-analyzer library** (see `.claude/commands/lib/dependency-analyzer.md`):
+   ```bash
+   # For each file needing refactoring, find test dependencies
+   for FILE in $REFACTOR_FILES; do
+       MODULE_NAME=$(basename "$FILE" .py)
+       TEST_FILES=$(grep -rl "$MODULE_NAME" tests/ --include="test_*.py" 2>/dev/null)
+       echo "  $FILE -> tests: [$TEST_FILES]"
+   done
+   ```
+
+2. **Group files by independent clusters**:
+   - Files sharing test files = SAME cluster (must serialize)
+   - Files with independent tests = SEPARATE clusters (can parallelize)
+
+3. **Apply execution rules**:
+   - **Within shared-test clusters**: Execute files SERIALLY
+   - **Across independent clusters**: Execute in PARALLEL (max 6 total)
+   - **Max concurrent safe-refactor agents**: 6
+
+4. **Use failure-handler on any error** (see `.claude/commands/lib/failure-handler.md`):
+   ```
+   AskUserQuestion(
+     questions=[{
+       "question": "Refactoring of {file} failed. {N} files remain. Continue, abort, or retry?",
+       "header": "Failure",
+       "options": [
+         {"label": "Continue", "description": "Skip failed file"},
+         {"label": "Abort", "description": "Stop all refactoring"},
+         {"label": "Retry", "description": "Try again"}
+       ],
+       "multiSelect": false
+     }]
+   )
+   ```
+
+#### Refactoring Agent Dispatch Template
+
+When dispatching safe-refactor agents, include cluster context:
+
+```
+Task(
+    subagent_type="safe-refactor",
+    description="Safe refactor: {filename}",
+    prompt="Refactor this file using TEST-SAFE workflow:
+    File: {file_path}
+    Current LOC: {loc}
+
+    CLUSTER CONTEXT:
+    - cluster_id: {cluster_id}
+    - parallel_peers: {peer_files_in_same_batch}
+    - test_scope: {test_files_for_this_module}
+    - execution_mode: {parallel|serial}
+
+    MANDATORY WORKFLOW: [standard phases]
+
+    MANDATORY OUTPUT FORMAT - Return ONLY JSON:
+    {
+      \"status\": \"fixed|partial|failed|conflict\",
+      \"cluster_id\": \"{cluster_id}\",
+      \"files_modified\": [...],
+      \"test_files_touched\": [...],
+      \"issues_fixed\": N,
+      \"remaining_issues\": N,
+      \"conflicts_detected\": [],
+      \"summary\": \"...\"
+    }"
+)
+```
+
+#### Prohibited Patterns for Refactoring
+
+**NEVER do this:**
+```
+Task(safe-refactor, file1)  # Spawns agent
+Task(safe-refactor, file2)  # Spawns agent - MAY CONFLICT!
+Task(safe-refactor, file3)  # Spawns agent - MAY CONFLICT!
+```
+
+**ALWAYS do this:**
+```
+# First: Analyze dependencies
+clusters = analyze_dependencies([file1, file2, file3])
+
+# Then: Schedule based on clusters
+for cluster in clusters:
+    if cluster.has_shared_tests:
+        # Serial execution within cluster
+        for file in cluster:
+            result = Task(safe-refactor, file)
+            await result  # WAIT before next
+    else:
+        # Parallel execution (up to 6)
+        Task(safe-refactor, cluster.files)  # All in one batch
+```
+
 **CI SPECIALIZATION ADVANTAGE:**
 - Domain-specific CI expertise for faster resolution
 - Parallel processing of INDEPENDENT CI failures

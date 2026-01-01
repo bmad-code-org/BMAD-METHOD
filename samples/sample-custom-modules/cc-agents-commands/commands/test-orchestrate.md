@@ -501,6 +501,137 @@ PHASE 4 (Validation): Run full test suite to verify all fixes
 
 ---
 
+## STEP 7.6: Test File Modification Safety (NEW)
+
+**CRITICAL**: When multiple test files need modification, apply dependency-aware batching similar to source file refactoring.
+
+### Analyze Test File Dependencies
+
+Before spawning test fixers, identify shared fixtures and conftest dependencies:
+
+```bash
+echo "=== Test Dependency Analysis ==="
+
+# Find all conftest.py files
+CONFTEST_FILES=$(find tests/ -name "conftest.py" 2>/dev/null)
+echo "Shared fixture files: $CONFTEST_FILES"
+
+# For each failing test file, find its fixture dependencies
+for TEST_FILE in $FAILING_TEST_FILES; do
+    # Find imports from conftest
+    FIXTURE_IMPORTS=$(grep -E "^from.*conftest|@pytest.fixture" "$TEST_FILE" 2>/dev/null | head -10)
+
+    # Find shared fixtures used
+    FIXTURES_USED=$(grep -oE "[a-z_]+_fixture|@pytest.fixture" "$TEST_FILE" 2>/dev/null | sort -u)
+
+    echo "  $TEST_FILE -> fixtures: [$FIXTURES_USED]"
+done
+```
+
+### Group Test Files by Shared Fixtures
+
+```bash
+# Files sharing conftest.py fixtures MUST serialize
+# Files with independent fixtures CAN parallelize
+
+# Example output:
+echo "
+Test Cluster A (SERIAL - shared fixtures in tests/conftest.py):
+  - tests/unit/test_user.py
+  - tests/unit/test_auth.py
+
+Test Cluster B (PARALLEL - independent fixtures):
+  - tests/integration/test_api.py
+  - tests/integration/test_database.py
+
+Test Cluster C (SPECIAL - conftest modification needed):
+  - tests/conftest.py (SERIALIZE - blocks all others)
+"
+```
+
+### Execution Rules for Test Modifications
+
+| Scenario | Execution Mode | Reason |
+|----------|----------------|--------|
+| Multiple test files, no shared fixtures | PARALLEL | Safe, independent |
+| Multiple test files, shared fixtures | SERIAL within fixture scope | Fixture state conflicts |
+| conftest.py needs modification | SERIAL (blocks all) | Critical shared state |
+| Same test file reported by multiple fixers | Single agent only | Avoid merge conflicts |
+
+### conftest.py Special Handling
+
+If `conftest.py` needs modification:
+
+1. **Run conftest fixer FIRST** (before any other test fixers)
+2. **Wait for completion** before proceeding
+3. **Re-run baseline tests** to verify fixture changes don't break existing tests
+4. **Then parallelize** remaining independent test fixes
+
+```
+PHASE 1 (First, blocking): conftest.py modification
+   └── WAIT for completion
+
+PHASE 2 (Sequential): Test files sharing modified fixtures
+   └── Run one at a time, verify after each
+
+PHASE 3 (Parallel): Independent test files
+   └── Safe to parallelize
+```
+
+### Failure Handling for Test Modifications
+
+When a test fixer fails:
+
+```
+AskUserQuestion(
+  questions=[{
+    "question": "Test fixer for {test_file} failed: {error}. {N} test files remain. What would you like to do?",
+    "header": "Test Fix Failure",
+    "options": [
+      {"label": "Continue", "description": "Skip this test file, proceed with remaining"},
+      {"label": "Abort", "description": "Stop test fixing, preserve current state"},
+      {"label": "Retry", "description": "Attempt to fix {test_file} again"}
+    ],
+    "multiSelect": false
+  }]
+)
+```
+
+### Test Fixer Dispatch with Scope
+
+Include scope information when dispatching test fixers:
+
+```
+Task(
+    subagent_type="unit-test-fixer",
+    description="Fix unit tests in {test_file}",
+    prompt="Fix failing tests in this file:
+
+    TEST FILE CONTEXT:
+    - file: {test_file}
+    - shared_fixtures: {list of conftest fixtures used}
+    - parallel_peers: {other test files being fixed simultaneously}
+    - conftest_modified: {true|false - was conftest changed this session?}
+
+    SCOPE CONSTRAINTS:
+    - ONLY modify: {test_file}
+    - DO NOT modify: conftest.py (unless explicitly assigned)
+    - DO NOT modify: {parallel_peer_files}
+
+    MANDATORY OUTPUT FORMAT - Return ONLY JSON:
+    {
+      \"status\": \"fixed|partial|failed\",
+      \"test_file\": \"{test_file}\",
+      \"tests_fixed\": N,
+      \"fixtures_modified\": [],
+      \"remaining_failures\": N,
+      \"summary\": \"...\"
+    }"
+)
+```
+
+---
+
 ## STEP 8: PARALLEL AGENT DISPATCH
 
 ### CRITICAL: Launch ALL agents in ONE response with multiple Task calls.

@@ -309,3 +309,156 @@ After all agents complete, provide a summary:
 4. Aggregate changes
 5. Run validation
 ```
+
+---
+
+## REFACTORING-SPECIFIC RULES (NEW)
+
+**CRITICAL**: When routing to `safe-refactor` agents, special rules apply due to test dependencies.
+
+### Mandatory Pre-Analysis
+
+When ANY refactoring work is requested:
+
+1. **ALWAYS call dependency-analyzer first**
+   ```bash
+   # For each file to refactor, find test dependencies
+   for FILE in $REFACTOR_FILES; do
+       MODULE_NAME=$(basename "$FILE" .py)
+       TEST_FILES=$(grep -rl "$MODULE_NAME" tests/ --include="test_*.py" 2>/dev/null)
+       echo "$FILE -> tests: [$TEST_FILES]"
+   done
+   ```
+
+2. **Group files by cluster** (shared deps/tests)
+   - Files sharing test files = SAME cluster
+   - Files with independent tests = SEPARATE clusters
+
+3. **Within cluster with shared tests**: SERIALIZE
+   - Run one safe-refactor agent at a time
+   - Wait for completion before next file
+   - Check result status before proceeding
+
+4. **Across independent clusters**: PARALLELIZE (max 6 total)
+   - Can run multiple clusters simultaneously
+   - Each cluster follows its own serialization rules internally
+
+5. **On any failure**: Invoke failure-handler, await user decision
+   - Continue: Skip failed file
+   - Abort: Stop all refactoring
+   - Retry: Re-attempt (max 2 retries)
+
+### Prohibited Patterns
+
+**NEVER do this:**
+```
+# WRONG: Parallel refactoring without dependency analysis
+Task(safe-refactor, file1)  # Spawns agent
+Task(safe-refactor, file2)  # Spawns agent - MAY CONFLICT!
+Task(safe-refactor, file3)  # Spawns agent - MAY CONFLICT!
+```
+
+Files that share test files will cause:
+- Test pollution (one agent's changes affect another's tests)
+- Race conditions on git stash
+- Corrupted fixtures
+- False positives/negatives in test results
+
+### Required Pattern
+
+**ALWAYS do this:**
+```
+# CORRECT: Dependency-aware scheduling
+
+# First: Analyze dependencies
+clusters = analyze_dependencies([file1, file2, file3])
+
+# Example result:
+# cluster_a (shared tests/test_user.py): [file1, file2]
+# cluster_b (independent): [file3]
+
+# Then: Schedule based on clusters
+for cluster in clusters:
+    if cluster.has_shared_tests:
+        # Serial execution within cluster
+        for file in cluster:
+            result = Task(safe-refactor, file, cluster_context)
+            await result  # WAIT before next
+
+            if result.status == "failed":
+                # Invoke failure handler
+                decision = prompt_user_for_decision()
+                if decision == "abort":
+                    break
+    else:
+        # Parallel execution (up to 6)
+        Task(safe-refactor, cluster.files, cluster_context)
+```
+
+### Cluster Context Parameters
+
+When dispatching safe-refactor agents, MUST include:
+
+```json
+{
+  "cluster_id": "cluster_a",
+  "parallel_peers": ["file2.py", "file3.py"],
+  "test_scope": ["tests/test_user.py"],
+  "execution_mode": "serial|parallel"
+}
+```
+
+### Safe-Refactor Result Handling
+
+Parse agent results to detect conflicts:
+
+```json
+{
+  "status": "fixed|partial|failed|conflict",
+  "cluster_id": "cluster_a",
+  "files_modified": ["..."],
+  "test_files_touched": ["..."],
+  "conflicts_detected": []
+}
+```
+
+| Status | Action |
+|--------|--------|
+| `fixed` | Continue to next file/cluster |
+| `partial` | Log warning, may need follow-up |
+| `failed` | Invoke failure handler (user decision) |
+| `conflict` | Wait and retry after delay |
+
+### Test File Serialization
+
+When refactoring involves test files:
+
+| Scenario | Handling |
+|----------|----------|
+| conftest.py changes | SERIALIZE (blocks ALL other test work) |
+| Shared fixture changes | SERIALIZE within fixture scope |
+| Independent test files | Can parallelize |
+
+### Maximum Concurrent Safe-Refactor Agents
+
+**ABSOLUTE LIMIT: 6 agents at any time**
+
+Even if you have 10 independent clusters, never spawn more than 6 safe-refactor agents simultaneously. This prevents:
+- Resource exhaustion
+- Git lock contention
+- System overload
+
+### Observability
+
+Log all refactoring orchestration decisions:
+
+```json
+{
+  "event": "refactor_cluster_scheduled",
+  "cluster_id": "cluster_a",
+  "files": ["user_service.py", "user_utils.py"],
+  "execution_mode": "serial",
+  "reason": "shared_test_file",
+  "shared_tests": ["tests/test_user.py"]
+}
+```

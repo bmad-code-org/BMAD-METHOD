@@ -1,22 +1,20 @@
 ---
-description: "Finds and runs next test gate"
-prerequisites: "test gates in project"
+description: "Find and run next test gate based on story completion"
 argument-hint: "no arguments needed - auto-detects next gate"
 allowed-tools: ["Bash", "Read"]
 ---
 
 # ⚠️ PROJECT-SPECIFIC COMMAND - Requires test gates infrastructure
+# This command requires:
+# - ~/.claude/lib/testgates_discovery.py (test gate discovery script)
+# - docs/epics.md (or similar) with test gate definitions
+# - user-testing/scripts/ directory with validation scripts
+# - user-testing/reports/ directory for results
+#
+# The file path checks in Step 3.5 are project-specific examples that should be
+# customized for your project's implementation structure.
 
-This command requires:
-
-- ~/.claude/lib/testgates_discovery.py (test gate discovery script)
-- docs/epics.md (or similar) with test gate definitions
-- user-testing/scripts/ directory with validation scripts
-- user-testing/reports/ directory for results
-
-The file path checks in Step 3.5 are project-specific examples that should be customized for your project's implementation structure
-
-## Test Gate Finder & Executor
+# Test Gate Finder & Executor
 
 **Your task**: Find the next test gate to run, show the user what's needed, and execute it if they confirm.
 
@@ -25,17 +23,13 @@ The file path checks in Step 3.5 are project-specific examples that should be cu
 First, check if the required infrastructure exists:
 
 ```bash
-
 # ============================================
-
 # PRE-FLIGHT CHECKS (Infrastructure Validation)
-
 # ============================================
 
 TESTGATES_SCRIPT="$HOME/.claude/lib/testgates_discovery.py"
 
 # Check if discovery script exists
-
 if [[ ! -f "$TESTGATES_SCRIPT" ]]; then
   echo "❌ Test gates discovery script not found"
   echo "   Expected: $TESTGATES_SCRIPT"
@@ -46,7 +40,6 @@ if [[ ! -f "$TESTGATES_SCRIPT" ]]; then
 fi
 
 # Check for epic definition files
-
 EPICS_FILE=""
 for file in "docs/epics.md" "docs/EPICS.md" "docs/test-gates.md" "EPICS.md"; do
   if [[ -f "$file" ]]; then
@@ -63,31 +56,25 @@ if [[ -z "$EPICS_FILE" ]]; then
 fi
 
 # Check for user-testing directory structure
-
 if [[ ! -d "user-testing" ]]; then
   echo "⚠️ No user-testing/ directory found"
   echo "   This command expects user-testing/scripts/ and user-testing/reports/"
   echo "   Creating minimal structure..."
   mkdir -p user-testing/scripts user-testing/reports
 fi
-
-```text
+```
 
 Run the discovery script to get test gate configuration:
 
 ```bash
 python3 "$TESTGATES_SCRIPT" . --format json > /tmp/testgates_config.json 2>/dev/null
-
-```text
+```
 
 If this fails or produces empty output, tell the user:
-
-```text
-
+```
 ❌ Failed to discover test gates from epic definition file
 Make sure docs/epics.md (or similar) exists with story and test gate definitions.
-
-```text
+```
 
 ## Step 2: Check Which Gates Have Already Passed
 
@@ -101,8 +88,7 @@ gates = config.get('test_gates', {})
 for gate_id in sorted(gates.keys()):
     print(gate_id)
 "
-
-```text
+```
 
 For each gate, check if it has passed by looking for a report with "PROCEED":
 
@@ -110,7 +96,6 @@ For each gate, check if it has passed by looking for a report with "PROCEED":
 gate_id="TG-X.Y"  # Replace with actual gate ID
 
 # Check subdirectory first: user-testing/reports/TG-X.Y/
-
 if [ -d "user-testing/reports/$gate_id" ]; then
     report=$(find "user-testing/reports/$gate_id" -name "*report.md" 2>/dev/null | head -1)
     if [ -n "$report" ] && grep -q "PROCEED" "$report" 2>/dev/null; then
@@ -119,15 +104,13 @@ if [ -d "user-testing/reports/$gate_id" ]; then
 fi
 
 # Check main directory: user-testing/reports/TG-X.Y_*_report.md
-
 if [ ! -d "user-testing/reports/$gate_id" ]; then
     report=$(find "user-testing/reports" -maxdepth 1 -name "${gate_id}_*report.md" 2>/dev/null | head -1)
     if [ -n "$report" ] && grep -q "PROCEED" "$report" 2>/dev/null; then
         echo "$gate_id: PASSED"
     fi
 fi
-
-```text
+```
 
 Build a list of passed gates.
 
@@ -153,8 +136,7 @@ print('Name:', gate.get('name', 'Unknown'))
 print('Requires:', ','.join(gate.get('requires', [])))
 print('Script:', gate.get('script', 'N/A'))
 "
-
-```text
+```
 
 ## Step 3.5: Check Story Implementation Status
 
@@ -166,7 +148,6 @@ Before suggesting a test gate, check if the required story is actually implement
 gate_id="TG-X.Y"  # e.g., "TG-2.3"
 
 # Define expected files for each gate (examples)
-
 case "$gate_id" in
   "TG-1.1")
     # Agent Framework - check for strands setup
@@ -213,7 +194,6 @@ case "$gate_id" in
 esac
 
 # Check if files exist
-
 missing_files=()
 for file in "${files[@]}"; do
   if [ ! -f "$file" ]; then
@@ -222,15 +202,13 @@ for file in "${files[@]}"; do
 done
 
 # Output result
-
 if [ ${#missing_files[@]} -gt 0 ]; then
   echo "STORY_NOT_READY"
   printf '%s\n' "${missing_files[@]}"
 else
   echo "STORY_READY"
 fi
-
-```text
+```
 
 **Store the story readiness status** to use in Step 4.
 
@@ -239,9 +217,7 @@ fi
 **Format output like this:**
 
 If some gates already passed:
-
-```text
-
+```
 ================================================================================
 Passed Gates:
   ✅ TG-1.1 - Agent Framework Validation (PASSED)
@@ -249,13 +225,10 @@ Passed Gates:
 
 🎯 Next Test Gate: TG-1.3 - Excel Parser Validation
 ================================================================================
-
-```text
+```
 
 If story is NOT READY (implementation files missing from Step 3.5):
-
-```text
-
+```
 ⏳ Story [X.Y] NOT IMPLEMENTED
 
 Required story: Story [X.Y] - [Story Name]
@@ -270,13 +243,10 @@ Missing implementation files:
 Please complete Story [X.Y] implementation first.
 
 Once complete, run: /usertestgates
-
-```text
+```
 
 If gate is READY (story implemented AND all prerequisite gates passed):
-
-```text
-
+```
 ✅ This gate is READY to run
 
 Prerequisites: All prerequisite test gates have passed
@@ -285,20 +255,16 @@ Story Status: ✅ Story [X.Y] implemented
 Script: user-testing/scripts/TG-1.3_excel_parser_validation.py
 
 Run TG-1.3 now? (Y/N)
-
-```text
+```
 
 If gate is NOT READY (prerequisite gates not passed):
-
-```text
-
+```
 ⏳ Complete these test gates first:
 
   ❌ TG-1.1 - Agent Framework Validation (not passed)
 
 Once complete, run: /usertestgates
-
-```text
+```
 
 ## Step 5: Execute Gate if User Confirms
 
@@ -315,20 +281,17 @@ if grep -q "input(" "$gate_script" 2>/dev/null; then
 else
     echo "NON_INTERACTIVE"
 fi
+```
 
-```text
-
-### For NON-INTERACTIVE Gates
+### For NON-INTERACTIVE Gates:
 
 Run directly:
 
 ```bash
 python3 user-testing/scripts/TG-X.Y_*_validation.py
-
-```text
+```
 
 Show the exit code and interpret:
-
 - Exit 0 → ✅ PROCEED
 - Exit 1 → ⚠️ REFINE
 - Exit 2 → 🚨 ESCALATE
@@ -336,28 +299,24 @@ Show the exit code and interpret:
 
 Check for report in `user-testing/reports/TG-X.Y/` and mention it
 
-### For INTERACTIVE Gates (Agent-Guided Mode)
+### For INTERACTIVE Gates (Agent-Guided Mode):
 
 **Step 5a: Run Parse Phase**
 
 ```bash
 python3 user-testing/scripts/TG-X.Y_*_validation.py --phase=parse
-
-```text
+```
 
 This outputs parsed data to `/tmp/tg-X.Y-parse-results.json`
 
 **Step 5b: Load Parse Results and Collect User Answers**
 
 Load the parse results:
-
 ```bash
 cat /tmp/tg-X.Y-parse-results.json
-
-```text
+```
 
 For TG-1.3 (Excel Parser), the parse results contain:
-
 - `workbooks`: Array of parsed workbook data
 - `total_checks`: Number of validation checks needed (e.g., 30)
 
@@ -371,10 +330,10 @@ For each workbook, you need to ask the user to validate 6 checks. The validation
 6. Data Contract: "Output matches expected JSON schema?"
 
 **For each check:**
-7. Show the user the parsed data (from `/tmp/` or parse results)
-8. Ask: "Check N/30: [description] - How do you assess this? (PASS/FAIL/PARTIAL/N/A)"
-9. Collect: status (PASS/FAIL/PARTIAL/N/A) and optional notes
-10. Store in answers array
+1. Show the user the parsed data (from `/tmp/` or parse results)
+2. Ask: "Check N/30: [description] - How do you assess this? (PASS/FAIL/PARTIAL/N/A)"
+3. Collect: status (PASS/FAIL/PARTIAL/N/A) and optional notes
+4. Store in answers array
 
 **Step 5c: Create Answers JSON**
 
@@ -397,24 +356,20 @@ Create `/tmp/tg-X.Y-answers.json`:
     }
   ]
 }
-
-```text
+```
 
 **Step 5d: Run Report Phase**
 
 ```bash
 python3 user-testing/scripts/TG-X.Y_*_validation.py --phase=report --answers=/tmp/tg-X.Y-answers.json
-
-```text
+```
 
 This generates the final report in `user-testing/reports/TG-X.Y/` with:
-
 - User's validation answers
 - Recommendation (PROCEED/REFINE/ESCALATE)
 - Exit code (0/1/2)
 
 Show the exit code and interpret:
-
 - Exit 0 → ✅ PROCEED
 - Exit 1 → ⚠️ REFINE
 - Exit 2 → 🚨 ESCALATE
@@ -422,9 +377,7 @@ Show the exit code and interpret:
 ## Special Cases
 
 **All gates passed:**
-
-```text
-
+```
 ================================================================================
 🎉 ALL TEST GATES PASSED!
 ================================================================================
@@ -435,16 +388,12 @@ Show the exit code and interpret:
   ✅ TG-4.6 - End-to-End MVP Validation
 
 MVP is complete! 🎉
-
-```text
+```
 
 **No gates found:**
-
-```text
-
+```
 ❌ No test gates configured. Check /tmp/testgates_config.json
-
-```text
+```
 
 ---
 

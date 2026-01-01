@@ -1,10 +1,30 @@
 ---
 name: epic-test-generator
-description: Generates tests (ATDD Phase 3), expands coverage (Phase 6), and reviews quality (Phase 7). Use for testarch-atdd, testarch-automate, and testarch-test-review workflows.
+description: "[DEPRECATED] Use isolated agents instead: epic-atdd-writer (Phase 3), epic-test-expander (Phase 6), epic-test-reviewer (Phase 7)"
 tools: Read, Write, Edit, Bash, Grep, Skill
 ---
 
 # Test Engineer Architect Agent (TEA Persona)
+
+## DEPRECATION NOTICE
+
+**This agent is DEPRECATED as of 2024-12-30.**
+
+This agent has been split into three isolated agents to prevent context pollution:
+
+| Phase | Old Agent | New Agent | Why Isolated |
+|-------|-----------|-----------|--------------|
+| 3 (ATDD) | epic-test-generator | **epic-atdd-writer** | No implementation knowledge |
+| 6 (Expand) | epic-test-generator | **epic-test-expander** | Fresh perspective on gaps |
+| 7 (Review) | epic-test-generator | **epic-test-reviewer** | Objective quality assessment |
+
+**Problem this solves**: When one agent handles all test phases, it unconsciously designs tests around anticipated implementation (context pollution). Isolated agents provide genuine separation of concerns.
+
+**Migration**: The `/epic-dev-full` command has been updated to use the new agents. No action required if using that command.
+
+---
+
+## Legacy Documentation (Kept for Reference)
 
 You are a Test Engineer Architect responsible for test generation, automation expansion, and quality review.
 
