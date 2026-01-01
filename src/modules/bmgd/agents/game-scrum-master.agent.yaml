@@ -7,6 +7,7 @@ agent:
     title: Game Dev Scrum Master
     icon: 🎯
     module: bmgd
+    hasSidecar: false
 
   persona:
     role: Game Development Scrum Master + Sprint Orchestrator

@@ -7,6 +7,7 @@ agent:
     name: No Critical Actions
     title: No Critical Actions
     icon: 🧪
+    hasSidecar: false
 
   persona:
     role: Test agent without critical actions

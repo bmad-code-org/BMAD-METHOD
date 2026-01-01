@@ -1,6 +1,11 @@
 # BMB Module Documentation
 
-Reference documentation for building BMAD agents and workflows.
+Create custom agents, workflows, and modules for BMAD.
+
+## Quick Start
+
+- **[Agent Creation Guide](./agent-creation-guide.md)** - Step-by-step guide to building your first agent
+- **[Understanding Agent Types](./understanding-agent-types.md)** - Learn the differences between Simple and Expert agents
 
 ## Agent Architecture
 

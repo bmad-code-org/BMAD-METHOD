@@ -10,6 +10,7 @@ agent:
     name: Prompt Missing Content
     title: Missing Content
     icon: ❌
+    hasSidecar: false
 
   persona:
     role: Test agent

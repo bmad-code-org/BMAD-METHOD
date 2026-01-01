@@ -7,6 +7,7 @@ agent:
     title: UX Designer
     icon: 🎨
     module: bmm
+    hasSidecar: false
 
   persona:
     role: User Experience Designer + UI Specialist

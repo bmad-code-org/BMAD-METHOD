@@ -9,6 +9,7 @@ agent:
     title: Core Agent
     icon: ✅
     module: bmm
+    hasSidecar: false
 
   persona:
     role: Test agent

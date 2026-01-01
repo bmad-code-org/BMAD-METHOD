@@ -8,6 +8,7 @@ agent:
     name: Malformed Path Test
     title: Malformed Path
     icon: 🧪
+    hasSidecar: false
     # No module field - will be treated as core since path parsing returns null
 
   persona:

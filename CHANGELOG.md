@@ -1,5 +1,161 @@
 # Changelog
 
+## [6.0.0-alpha.22]
+
+**Release: December 31, 2025**
+
+### 🌟 Key Highlights
+
+1. **Unified Agent Workflow**: Create, Edit, and Validate workflows consolidated into single powerful agent workflow with separate step paths
+2. **Agent Knowledge System**: Comprehensive data file architecture with persona properties, validation patterns, and crafting principles
+3. **Deep Language Integration**: All sharded progressive workflows now support language choice at every step
+4. **Core Module Documentation**: Extensive docs for core workflows (brainstorming, party mode, advanced elicitation)
+5. **BMAD Core Concepts**: New documentation structure explaining agents, workflows, modules, and installation
+6. **Tech Spec Sharded**: create-tech-spec workflow converted to sharded format with orient-first pattern
+
+### 🤖 Unified Agent Workflow (Major Feature)
+
+**Consolidated Architecture:**
+
+- **Single Workflow, Three Paths**: Create, Edit, and Validate operations unified under `src/modules/bmb/workflows/agent/`
+- **steps-c/**: Create path with 9 comprehensive steps for building new agents
+- **steps-e/**: Edit path with 10 steps for modifying existing agents
+- **steps-v/**: Validate path for standalone agent validation review
+- **data/**: Centralized knowledge base for all agent-building intel
+
+### 📚 Agent Knowledge System
+
+**Data File Architecture:**
+
+Located in `src/modules/bmb/workflows/agent/data/`:
+
+- **agent-metadata.md** (208 lines) - Complete metadata field reference
+- **agent-menu-patterns.md** (233 lines) - Menu design patterns and best practices
+- **agent-compilation.md** (273 lines) - Compilation process documentation
+- **persona-properties.md** (266 lines) - Persona crafting properties and examples
+- **principles-crafting.md** (292 lines) - Core principles for agent design
+- **critical-actions.md** (120 lines) - Critical action patterns
+- **expert-agent-architecture.md** (236 lines) - Expert agent structure
+- **expert-agent-validation.md** (173 lines) - Expert-specific validation
+- **module-agent-validation.md** (124 lines) - Module-specific validation
+- **simple-agent-architecture.md** (204 lines) - Simple agent structure
+- **simple-agent-validation.md** (132 lines) - Simple agent validation
+- **understanding-agent-types.md** (222 lines) - Agent type comparison
+- **brainstorm-context.md** - Brainstorming guidance
+- **communication-presets.csv** - Communication style presets
+
+**Reference Examples:**
+
+- **reference/module-examples/architect.agent.yaml** - Module agent example
+- **reference/simple-examples/commit-poet.agent.yaml** - Simple agent example
+- **journal-keeper/** - Complete sidecar pattern example
+
+**Templates:**
+
+- **templates/simple-agent.template.md** - Simple agent template
+- **templates/expert-agent-template/expert-agent.template.md** - Expert agent template
+- **templates/expert-agent-sidecar/** - Sidecar templates (instructions, memories)
+
+### 🌍 Deep Language Integration
+
+**Progressive Workflow Language Support:**
+
+- **Every Step Biased**: All sharded progressive workflow steps now include language preference context
+- **260+ Files Updated**: Comprehensive language integration across:
+  - Core workflows (brainstorming, party mode, advanced elicitation)
+  - BMB workflows (create-agent, create-module, create-workflow, edit-workflow, etc.)
+  - BMGD workflows (game-brief, gdd, narrative, game-architecture, etc.)
+  - BMM workflows (research, create-ux-design, prd, create-architecture, etc.)
+- **Tested Languages**: Verified working with Spanish and Pirate Speak
+- **Natural Conversations**: AI agents respond in configured language throughout workflow
+
+### 📖 Core Module Documentation
+
+**New Core Documentation Structure:**
+
+`docs/modules/core/`:
+
+- **index.md** - Core module overview
+- **core-workflows.md** - Core workflow documentation
+- **core-tasks.md** - Core task reference
+- **brainstorming.md** (100 lines) - Brainstorming workflow guide
+- **party-mode.md** (50 lines) - Party mode guide
+- **advanced-elicitation.md** (105 lines) - Advanced elicitation techniques
+- **document-sharding-guide.md** (133 lines) - Sharded workflow format guide
+- **global-core-config.md** - Global core configuration reference
+
+**Advanced Elicitation Moved:**
+
+- **From**: `docs/` root
+- **To**: `src/core/workflows/advanced-elicitation/`
+- **Status**: Now a proper core workflow with methods.csv
+
+### 📚 BMAD Core Concepts Documentation
+
+**New Documentation Structure:**
+
+`docs/bmad-core-concepts/`:
+
+- **index.md** - Core concepts introduction
+- **agents.md** (93 lines) - Understanding agents in BMAD
+- **workflows.md** (89 lines) - Understanding workflows in BMAD
+- **modules.md** (76 lines) - Understanding modules (BMM, BMGD, CIS, BMB, Core)
+- **installing/index.md** (77 lines) - Installation guide
+- **installing/upgrading.md** (144 lines) - Upgrading guide
+- **bmad-customization/index.md** - Customization overview
+- **bmad-customization/agents.md** - Agent customization guide
+- **bmad-customization/workflows.md** (30 lines) - Workflow customization guide
+- **web-bundles/index.md** (34 lines) - Web bundle distribution guide
+
+**Documentation Cleanup:**
+
+- **Removed v4-to-v6-upgrade.md** - Outdated upgrade guide
+- **Removed document-sharding-guide.md** from docs root (moved to core)
+- **Removed web-bundles-gemini-gpt-guide.md** - Consolidated into web-bundles/index.md
+- **Removed getting-started/installation.md** - Migrated to bmad-core-concepts
+- **Removed all ide-info/*.md files** - Consolidated into web-bundles documentation
+
+### 🔧 Create-Tech-Spec Sharded Conversion
+
+**Monolithic to Sharded:**
+
+- **From**: Single `workflow.yaml` with `instructions.md`
+- **To**: Sharded `workflow.md` with individual step files
+- **Pattern**: Orient-first approach (understand before investigating)
+
+### 🔨 Additional Improvements
+
+**Workflow Status Path Fixes:**
+
+- **Corrected Discovery Paths**: workflow-status workflows now properly use planning_artifacts and implementation_artifacts
+- **Updated All Path Files**: enterprise-brownfield, enterprise-greenfield, method-brownfield, method-greenfield
+
+**Documentation Updates:**
+
+- **BMB Agent Creation Guide**: Comprehensive 166-line guide for agent creation
+- **Workflow Vendoring Doc**: New 42-line guide on workflow customization and inheritance
+- **Document Project Reference**: Moved from BMM docs to shared location
+- **Workflows Planning Guide**: New 89-line guide for planning workflows
+
+**BMB Documentation Streamlining:**
+
+- **Removed Redundant Docs**: Eliminated duplicate documentation in `src/modules/bmb/docs/`
+- **Step File Rules**: New 469-line comprehensive guide for step file creation
+- **Agent Docs Moved**: Agent architecture and validation docs moved to workflow data/
+
+**Windows Inquirer Fix:**
+
+- **Another Default Addition**: Additional inquirer default value setting for better Windows multiselection support
+
+**Code Quality:**
+
+- **Removed Old BMM README**: Consolidated module documentation
+- **Removed BMM Troubleshooting**: 661-line doc moved to shared location
+- **Removed Enterprise Agentic Development**: 686-line doc consolidated
+- **Removed Scale Adaptive System**: 618-line doc consolidated
+
+---
+
 ## [6.0.0-alpha.21]
 
 **Release: December 27, 2025**

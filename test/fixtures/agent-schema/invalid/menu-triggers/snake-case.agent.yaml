@@ -10,6 +10,7 @@ agent:
     name: Snake Case Trigger
     title: Snake Case
     icon: ❌
+    hasSidecar: false
 
   persona:
     role: Test agent

@@ -10,6 +10,7 @@ agent:
     name: Extra Test Agent
     title: Extra Test
     icon: 🧪
+    hasSidecar: false
 
   persona:
     role: Test agent

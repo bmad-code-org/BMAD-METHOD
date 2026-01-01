@@ -10,6 +10,7 @@ agent:
     name: Missing Menu
     title: Missing Menu
     icon: ❌
+    hasSidecar: false
 
   persona:
     role: Test agent
