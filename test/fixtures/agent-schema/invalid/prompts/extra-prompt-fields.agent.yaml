@@ -10,6 +10,7 @@ agent:
     name: Extra Prompt Fields
     title: Extra Fields
     icon: ❌
+    hasSidecar: false
 
   persona:
     role: Test agent

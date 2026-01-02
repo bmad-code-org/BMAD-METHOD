@@ -8,6 +8,7 @@ agent:
     title: Product Manager
     icon: 📋
     module: bmm
+    hasSidecar: false
 
   persona:
     role: Product Manager specializing in collaborative PRD creation through user interviews, requirement discovery, and stakeholder alignment.

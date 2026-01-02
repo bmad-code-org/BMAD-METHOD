@@ -38,14 +38,12 @@ Perform these checks systematically:
 1. **Required Fields Existence**
    - [ ] name: Present and non-empty
    - [ ] description: Present and non-empty
-   - [ ] version: Present and follows semantic versioning (X.Y.Z)
    - [ ] category: Present and matches valid category
    - [ ] tags: Present as array, not empty
 
 2. **Format Validation**
    - [ ] name: Uses kebab-case, no spaces
    - [ ] description: 50-200 characters (unless intentionally brief)
-   - [ ] version: Follows semver pattern (e.g., 1.0.0)
    - [ ] tags: Array of lowercase strings with hyphens
    - [ ] category: Matches one of the allowed categories
 
@@ -65,7 +63,6 @@ Organize your report into three sections:
 **PASSING CHECKS** (List what passed)
 ```
 ✓ Required fields present
-✓ Version format valid (1.0.0)
 ✓ Name follows kebab-case convention
 ```
 
@@ -77,8 +74,6 @@ Organize your report into three sections:
 
 **FAILURES** (Blocking issues that must be fixed)
 ```
-✗ Missing required field: version
-✗ Invalid version format: "v1.0" (should be "1.0.0")
 ✗ Category "custom-type" not in allowed list
 ```
 

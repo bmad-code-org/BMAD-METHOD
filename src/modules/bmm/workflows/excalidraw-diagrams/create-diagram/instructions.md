@@ -1,7 +1,7 @@
 # Create Diagram - Workflow Instructions
 
 ```xml
-<critical>The workflow execution engine is governed by: {project_root}/_bmad/core/tasks/workflow.xml</critical>
+<critical>The workflow execution engine is governed by: {project-root}/_bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
 <critical>This workflow creates system architecture diagrams, ERDs, UML diagrams, or general technical diagrams in Excalidraw format.</critical>
 

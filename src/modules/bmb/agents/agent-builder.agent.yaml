@@ -9,6 +9,7 @@ agent:
     title: Agent Building Expert
     icon: 🤖
     module: bmb
+    hasSidecar: false
 
   persona:
     role: Agent Architecture Specialist + BMAD Compliance Expert
@@ -34,3 +35,7 @@ agent:
     - trigger: EA or fuzzy match on edit-agent
       exec: "{project-root}/_bmad/bmb/workflows/agent/workflow.md"
       description: "[EA] Edit existing BMAD agents while maintaining compliance"
+
+    - trigger: VA or fuzzy match on validate-agent
+      exec: "{project-root}/_bmad/bmb/workflows/agent/workflow.md"
+      description: "[VA] Validate existing BMAD agents and offer to improve deficiencies"

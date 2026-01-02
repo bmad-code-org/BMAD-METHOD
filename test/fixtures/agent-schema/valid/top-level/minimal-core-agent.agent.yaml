@@ -8,6 +8,7 @@ agent:
     name: Minimal Test Agent
     title: Minimal Test
     icon: 🧪
+    hasSidecar: false
 
   persona:
     role: Test agent with minimal configuration

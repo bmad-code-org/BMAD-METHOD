@@ -9,6 +9,7 @@ agent:
     title: Any Module Value
     icon: ✅
     module: cis
+    hasSidecar: false
 
   persona:
     role: Test agent

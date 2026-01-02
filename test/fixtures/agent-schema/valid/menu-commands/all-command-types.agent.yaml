@@ -7,6 +7,7 @@ agent:
     name: All Command Types
     title: All Commands
     icon: 🧪
+    hasSidecar: false
 
   persona:
     role: Test agent with all command types

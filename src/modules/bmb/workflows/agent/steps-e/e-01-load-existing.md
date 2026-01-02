@@ -74,6 +74,12 @@ Expected format: `{path-to-agent}/{agent-name}.agent.yaml`"
 
 ### 2. Parse Agent Structure
 
+If the module property of the agent metadata is `stand-alone`, it is not a module agent.
+If the module property of the agent is a module code (like bmm, bmb, etc...) it is a module agent.
+If the property hasSidecar: true exists in the metadata, then it is an expert agent.
+Else it is a simple agent.
+If a module agent also hasSidecar: true - this means it is a modules expert agent, thus it can have sidecar.
+
 **Extract and categorize all agent components:**
 
 ```yaml
@@ -81,6 +87,7 @@ Expected format: `{path-to-agent}/{agent-name}.agent.yaml`"
 - name: {agent-name}
 - description: {agent-description}
 - type: {simple|expert|module}
+- hasSidecar: {true|false}
 - version: {version}
 
 # Persona
@@ -105,7 +112,6 @@ Expected format: `{path-to-agent}/{agent-name}.agent.yaml`"
 ## Agent Analysis: {agent-name}
 
 **Type:** {simple|expert|module}
-**Version:** {version}
 **Status:** ready-for-edit
 
 ### Current Structure:

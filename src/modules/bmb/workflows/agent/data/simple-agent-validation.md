@@ -7,7 +7,8 @@ Validate Simple agents meet BMAD quality standards.
 ## YAML Structure
 
 - [ ] YAML parses without errors
-- [ ] `agent.metadata` includes: `id`, `name`, `title`, `icon`, `module`
+- [ ] `agent.metadata` includes: `id`, `name`, `title`, `icon`, `module`, `hasSidecar`
+- [ ] `agent.metadata.hasSidecar` is `false` (Simple agents don't have sidecars)
 - [ ] `agent.metadata.module` is `stand-alone` or module code (`bmm`, `cis`, `bmgd`, etc.)
 - [ ] `agent.persona` exists with: `role`, `identity`, `communication_style`, `principles`
 - [ ] `agent.menu` exists with at least one item

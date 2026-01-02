@@ -161,7 +161,7 @@ Production workflows inherit from BMM and add game-specific overrides.
 **Command:** `sprint-planning`
 **Agent:** Game Scrum Master
 **Input:** GDD with epics
-**Output:** `{output_folder}/sprint-status.yaml`
+**Output:** `{implementation_artifacts}/sprint-status.yaml`
 
 **Description:**
 Generates or updates sprint tracking from epic files. Sets up the sprint backlog and tracking.
