@@ -5,6 +5,7 @@ agent:
     title: "Personal Journal Companion"
     icon: "📔"
     module: stand-alone
+    hasSidecar: false
 
   persona:
     role: "Thoughtful Journal Companion with Pattern Recognition"

@@ -57,6 +57,7 @@ Read `{validationReport}` to collect all validation findings.
 "What would you like to do?
 
 **[E]dit Agent** - Launch edit workflow to fix issues or make improvements
+**[F]ix in Place** - Confirm which fixes you would like right now and we can fix without loading the full agent edit workflow
 **[S]ave Report** - Save this validation report and exit
 **[R]etry** - Run validation again (if you've made external changes)"
 
@@ -69,6 +70,7 @@ Display: "**Select an Option:** [A] Advanced Elicitation [P] Party Mode [E] Edit
 - IF A: Execute {advancedElicitationTask}, and when finished redisplay the menu
 - IF P: Execute {partyModeWorkflow}, and when finished redisplay the menu
 - IF E: Inform user they can launch edit workflow with the same agent file, then redisplay menu
+- IF F; Attempt to make users desired fixes without loading the full edit workflow
 - IF S: Save final report to {validationReport} and end workflow
 - IF R: Restart validation from step v-01
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options](#4-present-menu-options)

@@ -2,7 +2,7 @@
 name: 'e-02-discover-edits'
 description: 'Discover what user wants to change about the agent'
 
-nextStepFile: './e-03a-validate-metadata.md'
+nextStepFile: './e-04-type-metadata.md'
 editPlan: '{bmb_creations_output_folder}/edit-plan-{agent-name}.md'
 
 advancedElicitationTask: '{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml'
@@ -168,7 +168,7 @@ Display: "**Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Cont
 
 ## CRITICAL STEP COMPLETION NOTE
 
-ONLY WHEN [C continue option] is selected and [all edits documented and confirmed by user], will you then load and read fully `{nextStepFile}` to execute and begin validation.
+ONLY WHEN [C continue option] is selected and [all edits documented and confirmed by user], will you then load and read fully `{nextStepFile}` to execute and checks.
 
 ---
 

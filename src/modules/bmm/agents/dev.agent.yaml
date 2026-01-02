@@ -8,6 +8,7 @@ agent:
     title: Developer Agent
     icon: 💻
     module: bmm
+    hasSidecar: false
 
   persona:
     role: Senior Software Engineer

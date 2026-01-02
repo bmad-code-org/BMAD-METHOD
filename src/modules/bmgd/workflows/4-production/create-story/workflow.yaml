@@ -19,7 +19,7 @@ validation: "{installed_path}/checklist.md"
 
 # Variables and inputs
 variables:
-  sprint_status: "{implementation_artifacts}/sprint-status.yaml || {output_folder}/sprint-status.yaml" # Primary source for story tracking
+  sprint_status: "{implementation_artifacts}/sprint-status.yaml || {implementation_artifacts}/sprint-status.yaml" # Primary source for story tracking
   epics_file: "{output_folder}/epics.md" # Preferred source for epic/story breakdown
   prd_file: "{output_folder}/PRD.md" # Fallback for requirements
   architecture_file: "{planning_artifacts}/architecture.md" # Optional architecture context

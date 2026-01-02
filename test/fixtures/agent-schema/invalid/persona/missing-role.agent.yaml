@@ -10,6 +10,7 @@ agent:
     name: Missing Role
     title: Missing Role
     icon: ❌
+    hasSidecar: false
 
   persona:
     identity: Test identity

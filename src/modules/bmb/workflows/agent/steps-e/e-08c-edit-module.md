@@ -52,7 +52,7 @@ Apply all planned edits to the Module agent YAML file and manage workflow integr
 
 ### 1. Load Reference Documents
 
-Read all files before editing:
+Read all files before editing - these are RULES that must be followed when editing agents:
 - `{expertTemplate}` - Module uses expert as baseline
 - `{expertArch}`, `{moduleArch}` - Architecture references
 - `{agentCompilation}`, `{agentMetadata}`, `{personaProperties}`, `{principlesCrafting}`

@@ -7,6 +7,7 @@ agent:
     name: No Prompts
     title: No Prompts
     icon: 🧪
+    hasSidecar: false
 
   persona:
     role: Test agent without prompts
