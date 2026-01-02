@@ -191,62 +191,136 @@ Generates failing acceptance tests BEFORE implementation following TDD's red-gre
 
 ---
 
-## Step 2: Select Test Levels and Strategy
+## Step 2: Select Test Levels and Strategy (PYRAMID/TROPHY APPROACH)
 
 ### Actions
 
-1. **Analyze Acceptance Criteria**
+1. **CRITICAL - Load Epic Test Strategy (if exists)**
 
-   For each acceptance criterion, determine:
-   - Does it require full user journey? → E2E test
-   - Does it test business logic/API contract? → API test
-   - Does it validate UI component behavior? → Component test
-   - Can it be unit tested? → Unit test
+   **Check if epic has pre-defined test strategy:**
+   - Look for "Test Strategy" or "E2E BDD Test Scenarios" section in epic file
+   - If found: Use those as PRIMARY guidance for which ACs become E2E tests
+   - If not found: Continue with manual analysis below
 
-2. **Apply Test Level Selection Framework**
+2. **Analyze Acceptance Criteria Using Pyramid/Trophy Strategy**
 
-   **Knowledge Base Reference**: `test-levels-framework.md`
+   **CORE PRINCIPLE**: E2E tests are EXPENSIVE - use sparingly only for true integration!
 
-   **E2E (End-to-End)**:
-   - Critical user journeys (login, checkout, core workflow)
-   - Multi-system integration
-   - User-facing acceptance criteria
-   - **Characteristics**: High confidence, slow execution, brittle
+   **Knowledge Base References**:
+   - `test-levels-framework.md`
+   - `bdd-standards.md` (for BDD test structure)
 
-   **API (Integration)**:
-   - Business logic validation
-   - Service contracts
+   For each acceptance criterion, apply this decision tree:
+
+   **QUESTION 1: Is this user-facing (tests behavior from user perspective)?**
+   - NO → Unit test (technical AC, internal logic)
+   - YES → Continue to Question 2
+
+   **QUESTION 2: Does this REQUIRE frontend + backend integration?**
+   - NO → Unit test in frontend OR backend (can be tested in isolation)
+   - YES → Continue to Question 3
+
+   **QUESTION 3: Is this a CRITICAL acceptance test (ship-to-production gate)?**
+   - NO → Consider Playwright test in `frontend/tests/` (frontend integration only)
+   - YES → E2E BDD test in root `tests/` directory
+
+   **STRATEGIC TEST PLACEMENT:**
+
+   **E2E BDD Tests (root `tests/` directory)**:
+   - **ONLY** for true backend + frontend integration
+   - **ONLY** for critical acceptance criteria (if these pass, ship to production)
+   - **REPLACES manual testing** - these are the production gates
+   - User-facing happy paths that cross the full stack
+   - **Characteristics**: Highest confidence, slowest, most brittle
+   - **Target**: 5-10 smoke tests per epic maximum
+
+   **Playwright Tests (`frontend/tests/` directory)**:
+   - Frontend component integration (multiple components working together)
+   - UI workflows that don't need real backend (can use mocked API)
+   - Visual validation and interaction testing
+   - **Characteristics**: Fast, stable, frontend-focused
+   - **Use when**: Testing UI behavior without backend dependency
+
+   **Backend Unit Tests (`backend/tests/` directory)**:
+   - API contract validation
+   - Business logic variations and edge cases
+   - Error handling and negative cases
    - Data transformations
-   - **Characteristics**: Fast feedback, good balance, stable
+   - **Characteristics**: Fastest, most stable
+   - **Use when**: Testing backend logic in isolation
 
-   **Component**:
-   - UI component behavior (buttons, forms, modals)
-   - Interaction testing
-   - Visual regression
+   **Frontend Unit Tests (`frontend/src/components/*/tests/` directory)**:
+   - Component behavior (buttons, forms, modals)
+   - Interaction edge cases
+   - Rendering logic
    - **Characteristics**: Fast, isolated, granular
+   - **Use when**: Testing component logic in isolation
 
-   **Unit**:
-   - Pure business logic
-   - Edge cases
-   - Error handling
-   - **Characteristics**: Fastest, most granular
+3. **Apply BDD Principles to ALL Playwright Tests (E2E AND Frontend)**
 
-3. **Avoid Duplicate Coverage**
+   **CRITICAL**: ALL Playwright tests use Gherkin/BDD format, not just E2E!
 
-   Don't test same behavior at multiple levels unless necessary:
-   - Use E2E for critical happy path only
-   - Use API tests for complex business logic variations
-   - Use component tests for UI interaction edge cases
-   - Use unit tests for pure logic edge cases
+   **Knowledge Base Reference**: `bdd-standards.md`
 
-4. **Prioritize Tests**
+   For ALL Playwright tests (both root `tests/` and `frontend/tests/`):
+   - **MUST use Gherkin format**: Given/When/Then syntax
+   - Follow ONE When per scenario rule
+   - Use declarative language (WHAT user achieves, not HOW UI implements)
+   - Use specific entity names when 2+ entities exist
+   - Separate entry points from sub-flows to prevent combinatorial explosion
+   - **Priority Model**: P0 (smoke) / P1 (entry point) / P2 (sub-flow)
 
-   If test-design document exists, align with priority levels:
-   - P0 scenarios → Must cover in failing tests
-   - P1 scenarios → Should cover if time permits
-   - P2/P3 scenarios → Optional for this iteration
+   **The ONLY difference between root tests/ and frontend/tests/**:
+   - Root `tests/`: Tests against real backend (full stack integration)
+   - `frontend/tests/`: Tests with mocked backend (frontend integration only)
+   - **Both use identical Gherkin/BDD syntax!**
 
-**Decision Point:** Set `primary_level` variable to main test level for this story (typically E2E or API)
+4. **Avoid Duplicate Coverage (CRITICAL)**
+
+   **DO NOT test the same behavior at multiple levels:**
+   - ✅ **CORRECT**: E2E test for critical happy path, unit tests for variations
+   - ❌ **WRONG**: E2E test + API test + component test for same behavior
+
+   **Example - Login Feature:**
+   - **E2E BDD (1 test)**: User logs in with valid credentials → sees dashboard
+   - **Backend Unit (5 tests)**: Invalid password, expired token, account locked, rate limiting, 2FA flow
+   - **Frontend Unit (3 tests)**: Form validation, password visibility toggle, error message display
+
+5. **Categorize and Count**
+
+   **Output test strategy for this story:**
+
+   **E2E BDD Tests (root `tests/`) - Playwright with Gherkin**: {{e2e_count}} scenarios
+   {{for each E2E test identified}}
+   - BDD-E2E-{{X}}: {{description}}
+     - Priority: P0/P1/P2
+     - Format: Gherkin/BDD (Given/When/Then)
+     - Justification: {{why needs full stack integration}}
+   {{end}}
+
+   **Frontend BDD Tests (`frontend/tests/`) - Playwright with Gherkin**: {{playwright_count}} scenarios
+   {{for each frontend integration test}}
+   - FE-BDD-{{Y}}: {{description}}
+   {{end}}
+
+   **Backend Unit Tests**: {{backend_count}} scenarios
+   {{for each backend test}}
+   - BE-Unit-{{Z}}: {{description}}
+   {{end}}
+
+   **Frontend Unit Tests**: {{frontend_count}} scenarios
+   {{for each frontend component test}}
+   - FE-Unit-{{W}}: {{description}}
+   {{end}}
+
+   **VALIDATION CHECK:**
+   - [ ] E2E count is reasonable (not testing every variation at E2E level)
+   - [ ] Variations and edge cases are unit tests
+   - [ ] Each test is at the LOWEST appropriate level (pyramid principle)
+   - [ ] ALL Playwright tests use Gherkin/BDD format (Given/When/Then)
+   - [ ] E2E and Frontend BDD tests follow BDD principles (ONE When, declarative, specific entities)
+
+**Decision Point:** Set `primary_level` variable and test distribution for this story
 
 ---
 

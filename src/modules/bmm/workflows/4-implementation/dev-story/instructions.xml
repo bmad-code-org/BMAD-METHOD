@@ -221,6 +221,66 @@
     </check>
   </step>
 
+  <step n="4.5" goal="Check for E2E BDD Acceptance Tests (Test-First Validation)">
+    <critical>BDD tests should be defined BEFORE implementation (test-first approach)</critical>
+
+    <action>Check if epic has E2E BDD test scenarios defined:
+      - Look in epic file for "E2E BDD Test Scenarios" or "Test Strategy" section
+      - Look for test files in root `tests/` directory matching this story
+      - Check if ATDD workflow was run (look for ATDD checklist file)
+    </action>
+
+    <check if="E2E BDD tests are NOT defined AND story has user-facing acceptance criteria">
+      <output>⚠️ **BDD TESTS NOT DEFINED**
+
+This story has user-facing acceptance criteria but no E2E BDD tests defined.
+
+**RECOMMENDED APPROACH (Test-First):**
+Run `*atdd` workflow to define BDD acceptance tests BEFORE implementation.
+- E2E BDD tests act as acceptance gates (if they pass, ship to production)
+- Tests replace manual testing
+- Following pyramid/trophy strategy prevents test explosion
+
+**OPTIONS:**
+1. **HALT** - Run ATDD workflow first (recommended for test-first approach)
+2. **CONTINUE** - Implement now, add tests during implementation (less ideal)
+3. **SKIP** - Story has no user-facing behavior requiring E2E tests
+
+Choose approach:</output>
+
+      <ask>How would you like to proceed? (1=HALT for ATDD, 2=Continue with implementation, 3=Skip test check)</ask>
+
+      <action>Based on user choice:
+        - Choice 1: HALT with message "Run *atdd workflow from SM or TEA agent to define BDD tests first"
+        - Choice 2: Continue to step 5 (add warning to completion notes about missing BDD tests)
+        - Choice 3: Continue to step 5 (note in completion that story doesn't require E2E tests)
+      </action>
+    </check>
+
+    <check if="E2E BDD tests ARE defined">
+      <output>✅ **E2E BDD TESTS FOUND**
+
+Test-first approach detected! E2E BDD acceptance tests are defined.
+
+**Your implementation will be validated against:**
+- E2E BDD tests in root `tests/` directory (acceptance gates)
+- Unit tests you create during implementation (edge cases, variations)
+
+Proceeding with implementation...
+      </output>
+    </check>
+
+    <check if="story has NO user-facing acceptance criteria">
+      <output>ℹ️ **TECHNICAL STORY - NO E2E TESTS REQUIRED**
+
+This story has only technical acceptance criteria (not user-facing).
+Unit tests will be sufficient for validation.
+
+Proceeding with implementation...
+      </output>
+    </check>
+  </step>
+
   <step n="5" goal="Implement task following red-green-refactor cycle">
     <critical>FOLLOW THE STORY FILE TASKS/SUBTASKS SEQUENCE EXACTLY AS WRITTEN - NO DEVIATION</critical>
 
@@ -252,11 +312,53 @@
     <critical>Do NOT propose to pause for review until Step 9 completion gates are satisfied</critical>
   </step>
 
-  <step n="6" goal="Author comprehensive tests">
+  <step n="6" goal="Author comprehensive tests (Pyramid/Trophy Strategy)">
+    <critical>Follow pyramid/trophy strategy - NOT every test at every level!</critical>
+
+    <action>**Test Strategy (from BDD principles):**
+
+    **CRITICAL: ALL PLAYWRIGHT TESTS USE GHERKIN/BDD FORMAT**
+    - Both root `tests/` and `frontend/tests/` use Playwright with Gherkin
+    - Same BDD principles apply to both (ONE When, declarative, specific entities)
+    - The ONLY difference: E2E uses real backend, frontend uses mocked backend
+
+    **E2E BDD Tests (root `tests/` directory) - Playwright with Gherkin**:
+    - **Format**: Playwright with Gherkin/BDD (Given/When/Then)
+    - ONLY if defined in ATDD workflow (should already exist if needed)
+    - ONLY for user-facing acceptance criteria requiring full stack integration
+    - If you need to add E2E tests, they MUST follow BDD principles:
+      - ONE When per scenario
+      - Declarative language (WHAT user achieves, not HOW UI implements)
+      - Specific entity names when 2+ entities exist
+
+    **Frontend BDD Tests (`frontend/tests/` directory) - Playwright with Gherkin**:
+    - **Format**: Playwright with Gherkin/BDD (Given/When/Then)
+    - Frontend component integration tests
+    - UI workflows that don't need real backend (mocked API)
+    - Visual validation
+
+    **Backend Unit Tests (`backend/tests/` directory)**:
+    - API contract validation (primary focus for backend changes)
+    - Business logic variations and ALL edge cases
+    - Error handling and negative cases
+    - Data transformations
+    - MOST tests should be here for backend work
+
+    **Frontend Unit Tests (`frontend/src/components/*/tests/` directory)**:
+    - Component behavior in isolation
+    - Interaction edge cases
+    - Rendering logic
+    - MOST tests should be here for frontend component work
+
+    **DO NOT test the same behavior at multiple levels!**
+    - ✅ CORRECT: E2E for critical happy path, unit tests for variations
+    - ❌ WRONG: E2E + API + component tests for same behavior
+    </action>
+
     <action>Create unit tests for business logic and core functionality introduced/changed by the task</action>
     <action>Add integration tests for component interactions specified in story requirements</action>
-    <action>Include end-to-end tests for critical user flows when story requirements demand them</action>
-    <action>Cover edge cases and error handling scenarios identified in story Dev Notes</action>
+    <action>ONLY add E2E tests if they were defined in ATDD workflow or story explicitly requires them for critical user flows</action>
+    <action>Cover ALL edge cases and error handling scenarios at unit test level (NOT E2E)</action>
   </step>
 
   <step n="7" goal="Run validations and tests">

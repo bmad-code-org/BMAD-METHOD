@@ -196,6 +196,63 @@ After all stories for an epic are complete:
 - Verify all FRs for the epic are covered
 - Get user confirmation to proceed to next epic
 
+### 4.5 Identify E2E BDD Test Scenarios for Epic
+
+**CRITICAL - TEST STRATEGY PLANNING:**
+
+For each completed epic, analyze which acceptance criteria should become E2E BDD tests vs unit tests using the Pyramid/Trophy Strategy.
+
+**Test Level Decision Tree - Apply to Each AC:**
+
+```
+Is this user-facing?
+├─ NO → Unit Test (technical/internal)
+└─ YES → Does this REQUIRE frontend + backend integration?
+    ├─ NO → Unit Test (can test in isolation)
+    └─ YES → Is this CRITICAL (ship-to-production gate)?
+        ├─ NO → Playwright Test (frontend integration only)
+        └─ YES → E2E BDD Test (root tests/ directory)
+```
+
+**For Each Story's Acceptance Criteria, Categorize:**
+
+1. **User-Facing AC** → Candidate for E2E BDD test
+   - Tests user behavior from frontend through backend
+   - Validates complete user journey
+   - Example: "Given user on login page, When enters valid credentials, Then sees dashboard"
+
+2. **Technical AC** → Unit test only
+   - Tests internal behavior, not user-visible
+   - Can be tested in isolation
+   - Example: "API returns 401 for expired tokens"
+
+3. **Variation/Edge Case** → Unit test preferred
+   - Tests alternative paths or boundaries
+   - Faster to test at unit level
+   - Example: "Password must contain special character"
+
+**Output Test Strategy Summary for Epic:**
+
+After stories are approved, present:
+
+```
+## Epic {N} Test Strategy Summary
+
+**E2E BDD Test Scenarios ({count}):**
+- BDD-E2E-{N}.{M}.{X}: {AC description} - Priority: P0/P1/P2
+
+**Unit Test Coverage ({count}):**
+- Unit-{N}.{M}.{Y}: {AC description} - Test Level: Backend/Frontend
+
+**Coverage Summary:**
+- E2E BDD Tests: {e2e_count} (focus on critical paths)
+- Unit Tests: {unit_count} (variations and technical validation)
+
+**Target:** 5-10 E2E tests per epic maximum
+```
+
+Include this summary in the epic section of {outputFile}.
+
 ### 5. Repeat for All Epics
 
 Continue the process for each epic in the approved list, processing them in order (Epic 1, Epic 2, etc.).

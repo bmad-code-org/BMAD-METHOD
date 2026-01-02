@@ -451,37 +451,80 @@ The workflow auto-detects which mode to use based on project phase.
    - Scenarios are repeatable
    - Scenarios tie back to risk mitigations
 
-2. **Select Appropriate Test Levels**
+2. **Select Appropriate Test Levels (PYRAMID/TROPHY STRATEGY)**
 
-   **Knowledge Base Reference**: `test-levels-framework.md`
+   **Knowledge Base References**:
+   - `test-levels-framework.md`
+   - `bdd-standards.md`
 
-   Map requirements to optimal test levels (avoid duplication):
+   **CRITICAL PRINCIPLE**: E2E tests are EXPENSIVE - use sparingly only for true integration!
 
-   **E2E (End-to-End)**:
-   - Critical user journeys
-   - Multi-system integration
-   - Production-like environment
-   - Highest confidence, slowest execution
+   **Apply this decision tree for EACH test scenario:**
 
-   **API (Integration)**:
-   - Service contracts
-   - Business logic validation
-   - Fast feedback
-   - Good for complex scenarios
+   **QUESTION 1: Is this user-facing (tests behavior from user perspective)?**
+   - NO → Unit test (technical behavior, internal logic)
+   - YES → Continue to Question 2
 
-   **Component**:
-   - UI component behavior
-   - Interaction testing
-   - Visual regression
-   - Fast, isolated
+   **QUESTION 2: Does this REQUIRE frontend + backend integration?**
+   - NO → Unit test in frontend OR backend (can be tested in isolation)
+   - YES → Continue to Question 3
 
-   **Unit**:
-   - Business logic
-   - Edge cases
-   - Error handling
-   - Fastest, most granular
+   **QUESTION 3: Is this a CRITICAL acceptance test (ship-to-production gate)?**
+   - NO → Playwright test in `frontend/tests/` (frontend integration only)
+   - YES → E2E BDD test in root `tests/` directory
 
-   **Avoid duplicate coverage**: Don't test same behavior at multiple levels unless necessary.
+   **STRATEGIC TEST PLACEMENT:**
+
+   **E2E BDD Tests (root `tests/` directory)**:
+   - **ONLY** for true backend + frontend integration
+   - **ONLY** for critical acceptance criteria (if these pass, ship to production)
+   - **REPLACES manual testing** - these are the production gates
+   - User-facing happy paths that cross the full stack
+   - **Characteristics**: Highest confidence, slowest, most brittle
+   - **Target**: 5-10 smoke tests per epic maximum
+   - **BDD Requirements**: Follow ONE When rule, declarative language, specific entities
+
+   **Frontend BDD Tests (`frontend/tests/` directory) - Playwright with Gherkin**:
+   - Frontend component integration (multiple components working together)
+   - UI workflows that don't need real backend (can use mocked API)
+   - Visual validation and interaction testing
+   - **Format**: Playwright with Gherkin/BDD (Given/When/Then)
+   - **Characteristics**: Fast, stable, frontend-focused
+   - **Use when**: Testing UI behavior without backend dependency
+
+   **Backend Unit Tests (`backend/tests/` directory)**:
+   - API contract validation
+   - Business logic variations and edge cases
+   - Error handling and negative cases
+   - Data transformations
+   - **Characteristics**: Fastest, most stable
+   - **Use when**: Testing backend logic in isolation
+
+   **Frontend Unit Tests (`frontend/src/components/*/tests/` directory)**:
+   - Component behavior (buttons, forms, modals)
+   - Interaction edge cases
+   - Rendering logic
+   - **Characteristics**: Fast, isolated, granular
+   - **Use when**: Testing component logic in isolation
+
+   **CRITICAL: ALL PLAYWRIGHT TESTS USE GHERKIN/BDD FORMAT**
+   - Both root `tests/` (E2E) and `frontend/tests/` use Gherkin syntax
+   - The ONLY difference: E2E uses real backend, frontend uses mocked backend
+   - Same BDD principles apply to both: ONE When, declarative, specific entities
+
+   **AVOID DUPLICATE COVERAGE (CRITICAL)**:
+   - ✅ **CORRECT**: E2E for critical happy path, unit tests for variations
+   - ❌ **WRONG**: E2E + API + component tests for same behavior
+
+   **Example - User Registration:**
+   - **E2E BDD (1 test)**: User registers with valid email → receives confirmation → can log in
+   - **Backend Unit (8 tests)**: Duplicate email, invalid format, weak password, rate limiting, email service down, verification token expired, database errors, concurrent registrations
+   - **Frontend Unit (5 tests)**: Form validation, password strength indicator, email format checking, submit button states, error message display
+
+   **Test Distribution Target (Pyramid/Trophy)**:
+   - **E2E BDD** (root tests/): 5-10 tests per epic (critical paths only)
+   - **Frontend BDD** (frontend/tests/): 15-25% of total tests (both use Playwright+Gherkin)
+   - **Unit Tests** (backend + frontend): 70-80% of total tests
 
 3. **Assign Priority Levels**
 

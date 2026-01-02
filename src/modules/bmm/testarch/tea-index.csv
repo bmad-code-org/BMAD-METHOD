@@ -20,6 +20,7 @@ test-priorities,Test Priorities Matrix,"P0–P3 criteria, coverage targets, exec
 test-healing-patterns,Test Healing Patterns,"Common failure patterns and automated fixes","healing,debugging,patterns",knowledge/test-healing-patterns.md
 selector-resilience,Selector Resilience,"Robust selector strategies and debugging techniques","selectors,locators,debugging",knowledge/selector-resilience.md
 timing-debugging,Timing Debugging,"Race condition identification and deterministic wait fixes","timing,async,debugging",knowledge/timing-debugging.md
+bdd-standards,BDD Standards,"Behavior-driven development principles: one-when-per-scenario, declarative style, entity naming, combinatorial explosion prevention, pyramid/trophy test strategy","bdd,test-design,gherkin,architecture",knowledge/bdd-standards.md
 overview,Playwright Utils Overview,"Installation, design principles, fixture patterns","playwright-utils,fixtures",knowledge/overview.md
 api-request,API Request,"Typed HTTP client, schema validation","api,playwright-utils",knowledge/api-request.md
 network-recorder,Network Recorder,"HAR record/playback, CRUD detection","network,playwright-utils",knowledge/network-recorder.md
