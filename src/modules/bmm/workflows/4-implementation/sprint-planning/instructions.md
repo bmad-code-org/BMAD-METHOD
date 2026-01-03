@@ -179,6 +179,38 @@ development_status:
 
 </step>
 
+<step n="6" goal="Update IDE prompt recommendations for implementation phase">
+<action>Read the existing `.vscode/settings.json` and update the `chat.promptFilesRecommendations` object.</action>
+
+**Set to `true` (implementation cycle - "keep going" loop):**
+- `bmd-create-story`
+- `bmd-dev-story`
+- `bmd-code-review`
+- `bmd-retrospective`
+- `bmd-correct-course`
+
+**Set to `false` (setup phase - already completed):**
+- `bmd-workflow-init`
+- `bmd-brainstorm`
+- `bmd-prd`
+- `bmd-ux-design`
+- `bmd-create-architecture`
+- `bmd-epics-stories`
+- `bmd-implementation-readiness`
+- `bmd-sprint-planning`
+
+<action>Inform {user_name}:</action>
+
+**IDE Updated for Implementation Phase**
+
+The "keep going" cycle prompts are now prioritized in VS Code:
+- **@bmd-custom-bmm-sm → *create-story** (prepare a story)
+- **@bmd-custom-bmm-dev → *dev-story** (implement it)
+- **Same chat → *code-review** (review the code)
+- **Repeat!**
+
+</step>
+
 </workflow>
 
 ## Additional Documentation
