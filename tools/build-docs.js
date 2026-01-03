@@ -224,7 +224,7 @@ function generateLlmsFullTxt(outputDir) {
   console.log('  → Generating llms-full.txt...');
 
   const date = new Date().toISOString().split('T')[0];
-  const files = getDocsFromSidebar();
+  const files = getAllMarkdownFiles(outputDir);
 
   const output = [
     '# BMAD Method Documentation (Full)',
@@ -266,32 +266,22 @@ function generateLlmsFullTxt(outputDir) {
   );
 }
 
-function getDocsFromSidebar() {
-  const sidebarsPath = path.join(PROJECT_ROOT, 'website', 'sidebars.js');
+function getAllMarkdownFiles(dir, baseDir = dir) {
+  const files = [];
 
-  try {
-    const sidebarContent = fs.readFileSync(sidebarsPath, 'utf-8');
-    const matches = sidebarContent.matchAll(/'([a-zA-Z0-9\-_/]+)'/g);
-    const files = [];
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const fullPath = path.join(dir, entry.name);
 
-    for (const match of matches) {
-      const docId = match[1];
-      // Skip Docusaurus keywords
-      if (docId.includes('Sidebar') || docId === 'doc' || docId === 'category') {
-        continue;
-      }
-      // Skip category labels (Title Case words without slashes like 'Workflows', 'Reference')
-      if (!docId.includes('/') && /^[A-Z][a-z]/.test(docId)) {
-        continue;
-      }
-      files.push(docId + '.md');
+    if (entry.isDirectory()) {
+      files.push(...getAllMarkdownFiles(fullPath, baseDir));
+    } else if (entry.name.endsWith('.md')) {
+      // Return relative path from baseDir
+      const relativePath = path.relative(baseDir, fullPath);
+      files.push(relativePath);
     }
-
-    return files;
-  } catch {
-    console.log('    Warning: Could not parse sidebars');
-    return [];
   }
+
+  return files;
 }
 
 function shouldExcludeFromLlm(filePath) {
