@@ -2,7 +2,7 @@
 name: 'e-08c-edit-module'
 description: 'Apply edits to Module agent'
 
-nextStepFile: './e-09a-validate-metadata.md'
+nextStepFile: './e-09-celebrate.md'
 editPlan: '{bmb_creations_output_folder}/edit-plan-{agent-name}.md'
 agentFile: '{original-agent-path}'
 agentBackup: '{original-agent-path}.backup'
@@ -48,11 +48,13 @@ Apply all planned edits to the Module agent YAML file and manage workflow integr
 - ✅ Validate YAML and workflow paths
 - ➡️ Auto-advance to next validation step
 
-## Sequence of Instructions:
+## MANDATORY SEQUENCE
+
+**CRITICAL:** Follow this sequence exactly. Do not skip, reorder, or improvise unless user explicitly requests a change.
 
 ### 1. Load Reference Documents
 
-Read all files before editing:
+Read all files before editing - these are RULES that must be followed when editing agents:
 - `{expertTemplate}` - Module uses expert as baseline
 - `{expertArch}`, `{moduleArch}` - Architecture references
 - `{agentCompilation}`, `{agentMetadata}`, `{personaProperties}`, `{principlesCrafting}`
@@ -70,9 +72,10 @@ ALWAYS backup before editing:
 
 ### 4. Apply Edits in Sequence
 
-**Type Conversion to Module:**
-- Update `type: module`
+**Type Conversion TO Module:**
+- Set `module` to module code (e.g., `bmm`, `cis`, `bmgd`, or custom)
 - Add workflow integration paths
+- Optionally set `hasSidecar: true` if complex multi-workflow module
 
 **Workflow Path Management:**
 - Add: `skills: - workflow: {path}`

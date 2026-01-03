@@ -59,7 +59,9 @@ Load the existing agent file, parse its structure, and create an edit plan track
 - Limits: Analysis only, no modifications
 - Dependencies: Agent file must exist and be valid YAML
 
-## Sequence of Instructions (Do not deviate, skip, or optimize)
+## MANDATORY SEQUENCE
+
+**CRITICAL:** Follow this sequence exactly. Do not skip, reorder, or improvise unless user explicitly requests a change.
 
 ### 1. Load Agent File
 
@@ -74,14 +76,20 @@ Expected format: `{path-to-agent}/{agent-name}.agent.yaml`"
 
 ### 2. Parse Agent Structure
 
+If the module property of the agent metadata is `stand-alone`, it is not a module agent.
+If the module property of the agent is a module code (like bmm, bmb, etc...) it is a module agent.
+If the property hasSidecar: true exists in the metadata, then it is an expert agent.
+Else it is a simple agent.
+If a module agent also hasSidecar: true - this means it is a modules expert agent, thus it can have sidecar.
+
 **Extract and categorize all agent components:**
 
 ```yaml
 # Basic Metadata
 - name: {agent-name}
 - description: {agent-description}
-- type: {simple|expert|module}
-- version: {version}
+- module: {stand-alone|bmm|cis|bmgd|custom}
+- hasSidecar: {true|false}
 
 # Persona
 - persona: {full persona text}
@@ -104,8 +112,7 @@ Expected format: `{path-to-agent}/{agent-name}.agent.yaml`"
 ```markdown
 ## Agent Analysis: {agent-name}
 
-**Type:** {simple|expert|module}
-**Version:** {version}
+**Type:** {simple|expert|module}  (derived from module + hasSidecar)
 **Status:** ready-for-edit
 
 ### Current Structure:

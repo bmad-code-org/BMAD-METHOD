@@ -34,11 +34,19 @@ Load the existing agent file and initialize a validation report to track all fin
 - 💾 Create validation report document
 - 🚫 FORBIDDEN to proceed without user confirmation
 
-## Sequence of Instructions:
+## MANDATORY SEQUENCE
+
+**CRITICAL:** Follow this sequence exactly. Do not skip, reorder, or improvise unless user explicitly requests a change.
 
 ### 1. Load Agent File
 
 Read the complete YAML from the agent file path provided by the user.
+If the module property of the agent metadata is stand-alone, it is not a module agent.
+If the module property of the agent is a module code (like bmm, bmb, etc...) it is a module agent.
+If the property hasSidecar: true exists in the metadata, then it is an expert agent.
+Else it is a simple agent.
+
+If a module agent also hasSidecar: true - this means it is a modules expert agent, thus it can have sidecar.
 
 ### 2. Display Agent Summary
 
@@ -46,7 +54,6 @@ Read the complete YAML from the agent file path provided by the user.
 ## Agent to Validate: {agent-name}
 
 **Type:** {simple|expert|module}
-**Version:** {version}
 **File:** {agent-file-path}
 
 ### Current Structure:
@@ -63,7 +70,7 @@ Initialize the validation report:
 ```markdown
 ---
 agentName: '{agent-name}'
-agentType: '{simple|expert|module}'
+agentType: '{simple|expert|module}'  # Derived from module + hasSidecar
 agentFile: '{agent-file-path}'
 validationDate: '{YYYY-MM-DD}'
 stepsCompleted:
@@ -75,8 +82,9 @@ stepsCompleted:
 ## Agent Overview
 
 **Name:** {agent-name}
-**Type:** {simple|expert|module}
-**Version:** {version}
+**Type:** {simple|expert|module}  # Derived from: module + hasSidecar
+**module:** {module-value}
+**hasSidecar:** {true|false}
 **File:** {agent-file-path}
 
 ---
@@ -90,7 +98,7 @@ Write to `{validationReport}`.
 
 ### 4. Present MENU OPTIONS
 
-Display: "**Is this the correct agent to validate?** [A] Advanced Elicitation [P] Party Mode [C] Yes, Begin Validation"
+Display: "**Is this the correct agent to validate and is it identified as the proper type?** [A] Advanced Elicitation [P] Party Mode [C] Yes, Begin Validation"
 
 #### Menu Handling Logic:
 

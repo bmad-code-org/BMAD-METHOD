@@ -229,6 +229,7 @@ function buildMetadataSchema(expectedModule) {
     title: createNonEmptyString('agent.metadata.title'),
     icon: createNonEmptyString('agent.metadata.icon'),
     module: createNonEmptyString('agent.metadata.module').optional(),
+    hasSidecar: z.boolean(),
   };
 
   return z.object(schemaShape).strict();

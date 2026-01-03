@@ -129,7 +129,8 @@ function buildDocusaurusSite(artifactsDir) {
 function copyMainDocs(destDir) {
   console.log('  → Copying main docs...');
   const docsDir = path.join(PROJECT_ROOT, 'docs');
-  copyDirectory(docsDir, destDir, ['modules', 'llms.txt', 'llms-full.txt'], true);
+  // Include modules folder - docs now live in docs/modules/ instead of src/modules/*/docs/
+  copyDirectory(docsDir, destDir, ['llms.txt', 'llms-full.txt'], true);
 }
 
 function copyRootDocs(destDir) {

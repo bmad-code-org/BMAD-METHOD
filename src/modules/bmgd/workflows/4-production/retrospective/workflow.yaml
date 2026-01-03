@@ -54,7 +54,7 @@ input_file_patterns:
     load_strategy: "INDEX_GUIDED"
 
 # Required files
-sprint_status_file: "{implementation_artifacts}/sprint-status.yaml || {output_folder}/sprint-status.yaml"
+sprint_status_file: "{implementation_artifacts}/sprint-status.yaml || {implementation_artifacts}/sprint-status.yaml"
 story_directory: "{implementation_artifacts}"
 retrospectives_folder: "{implementation_artifacts}"
 

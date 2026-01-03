@@ -39,7 +39,7 @@ Agents with a sidecar folder for persistent memory, custom workflows, and restri
 
 ## CRITICAL: Sidecar Path Format
 
-At build/install, sidecar is copied to `{project-root}/_bmad/_memory/{sidecar-folder}/`
+During BMAD INSTALLATION, sidecar folder is copied from the agent location to `{project-root}/_bmad/_memory/{sidecar-folder}/`
 
 **ALL agent YAML references MUST use:**
 

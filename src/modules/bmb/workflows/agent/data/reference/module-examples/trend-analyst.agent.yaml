@@ -15,6 +15,7 @@ agent:
     title: "Trend Analyst"
     icon: "📈"
     module: "cis"
+    hasSidecar: false
 
   persona:
     role: Cultural + Market Trend Intelligence Expert

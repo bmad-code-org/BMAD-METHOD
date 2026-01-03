@@ -12,6 +12,7 @@ agent:
     title: {{agent_title}}
     icon: {{agent_icon}}
     module: {{agent_module}}{{#if agent_module_comment}}  {{!-- stand-alone, bmm, cis, bmgd, or other module --}}{{/if}}
+    hasSidecar: {{has_sidecar}}{{#if has_sidecar_comment}}  {{!-- true if agent has a sidecar folder, false otherwise --}}{{/if}}
 
   persona:
     role: |

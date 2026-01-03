@@ -34,11 +34,13 @@ Validate Module agents meet BMAD quality standards.
 ### Module Agent Can Be Simple OR Expert
 
 **If Simple-structure Module Agent:**
+- [ ] `agent.metadata.hasSidecar` is `false` (no sidecar)
 - [ ] Single .agent.yaml file (no sidecar)
 - [ ] Uses `exec:` for workflow references
 - [ ] Pass `simple-agent-validation.md` first
 
 **If Expert-structure Module Agent:**
+- [ ] `agent.metadata.hasSidecar` is `true` (has sidecar)
 - [ ] Has sidecar folder
 - [ ] Uses `exec:` for workflow references
 - [ ] Sidecar paths use `{project-root}/_bmad/_memory/{sidecar-folder}/` format

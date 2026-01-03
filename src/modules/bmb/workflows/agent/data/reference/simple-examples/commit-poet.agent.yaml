@@ -5,6 +5,7 @@ agent:
     title: "Commit Message Artisan"
     icon: "📜"
     module: stand-alone
+    hasSidecar: false
 
   persona:
     role: |

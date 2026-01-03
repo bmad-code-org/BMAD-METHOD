@@ -1,5 +1,5 @@
 ---
-name: 'step-05-activation'
+name: 'step-06-activation'
 description: 'Plan activation behavior and route to build'
 
 # File References
@@ -30,7 +30,7 @@ Define activation behavior through critical_actions and route to the appropriate
    - These are non-negotiable prerequisites
 
 2. **MUST Determine Route Before Activation Discussion**
-   - Check hasSidecar from plan metadata
+   - Check `module` and `hasSidecar` from plan metadata
    - Determine destination build step FIRST
    - Inform user of routing decision
 
@@ -41,10 +41,12 @@ Define activation behavior through critical_actions and route to the appropriate
 
 4. **MUST Follow Routing Logic Exactly**
    ```yaml
-   # Route determination based on hasSidecar and module
-   hasSidecar: false → step-06-build-simple.md
-   hasSidecar: true + module: "stand-alone" → step-06-build-expert.md
-   hasSidecar: true + module: ≠ "stand-alone" → step-06-build-module.md
+   # Route determination based on module and hasSidecar
+   # Module agents: any module value other than "stand-alone"
+   module ≠ "stand-alone" → step-07c-build-module.md
+   # Stand-alone agents: determined by hasSidecar
+   module = "stand-alone" + hasSidecar: true → step-07b-build-expert.md
+   module = "stand-alone" + hasSidecar: false → step-07a-build-simple.md
    ```
 
 5. **NEVER Skip Documentation**
@@ -129,7 +131,9 @@ routing:
 - Expert agents: Sidecar + stand-alone module
 - Module agents: Sidecar + parent module integration
 
-# EXECUTION SEQUENCE
+## MANDATORY SEQUENCE
+
+**CRITICAL:** Follow this sequence exactly. Do not skip, reorder, or improvise unless user explicitly requests a change.
 
 ## 1. Load Reference Documents
 ```bash

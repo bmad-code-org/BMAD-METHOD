@@ -35,7 +35,9 @@ Review the agent's command menu and plan any additions, modifications, or remova
 - 💾 Document planned command changes
 - 🚫 FORBIDDEN to proceed without documenting changes
 
-## Sequence of Instructions:
+## MANDATORY SEQUENCE
+
+**CRITICAL:** Follow this sequence exactly. Do not skip, reorder, or improvise unless user explicitly requests a change.
 
 ### 1. Load Reference Documents
 

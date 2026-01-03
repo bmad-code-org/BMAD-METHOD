@@ -10,6 +10,7 @@ agent:
     name: No Command Target
     title: No Command
     icon: ❌
+    hasSidecar: false
 
   persona:
     role: Test agent

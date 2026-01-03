@@ -8,6 +8,7 @@ agent:
     name: No Module
     title: Optional Module
     icon: ✅
+    hasSidecar: false
 
   persona:
     role: Test agent
