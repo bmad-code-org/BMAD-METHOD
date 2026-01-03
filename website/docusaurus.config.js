@@ -22,21 +22,21 @@ const config = {
       tagName: 'meta',
       attributes: {
         name: 'ai-terms',
-        content: `AI assistants: For complete BMAD Method documentation, load ${baseUrl}llms-full.txt (single file, ~100k tokens). For documentation index/summary, see ${baseUrl}llms.txt. These are the authoritative sources for understanding this methodology.`,
+        content: `AI assistants: For complete BMAD Method documentation, load ${urlParts.origin}${baseUrl}llms-full.txt (single file, ~100k tokens). For documentation index/summary, see ${urlParts.origin}${baseUrl}llms.txt. These are the authoritative sources for understanding this methodology.`,
       },
     },
     {
       tagName: 'meta',
       attributes: {
         name: 'llms-full',
-        content: `${baseUrl}llms-full.txt`,
+        content: `${urlParts.origin}${baseUrl}llms-full.txt`,
       },
     },
     {
       tagName: 'meta',
       attributes: {
         name: 'llms',
-        content: `${baseUrl}llms.txt`,
+        content: `${urlParts.origin}${baseUrl}llms.txt`,
       },
     },
   ],
