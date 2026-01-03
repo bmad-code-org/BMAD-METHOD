@@ -39,9 +39,10 @@
 }
 
 /* ============================================
-   TYPOGRAPHY
+   TYPOGRAPHY - Clean, readable font stack
    ============================================ */
 :root {
+  --ifm-font-family-base: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --ifm-font-size-base: 100%;
   --ifm-line-height-base: 1.7;
   --ifm-heading-font-weight: 600;
@@ -198,11 +199,96 @@
 }
 
 /* ============================================
+   LAYOUT - Spacing and structure
+   ============================================ */
+
+/* Max-width container for very wide viewports */
+.main-wrapper {
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.navbar__inner {
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.footer__container {
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+/* Remove sidebar border/separator, add spacing instead */
+.theme-doc-sidebar-container {
+  border-right: none !important;
+}
+
+/* Sidebar spacing on larger viewports */
+@media (min-width: 997px) {
+  .theme-doc-sidebar-container {
+    padding-left: 1rem;
+    padding-right: 1.5rem;
+  }
+
+  /* Add left margin to main content area */
+  .docMainContainer_node_modules-\@docusaurus-theme-classic-lib-theme-DocPage-Layout-Main-styles-module {
+    padding-left: 1rem;
+  }
+}
+
+@media (min-width: 1200px) {
+  .theme-doc-sidebar-container {
+    padding-left: 1.5rem;
+    padding-right: 2rem;
+  }
+}
+
+/* Ensure sidebar menu doesn't clip */
+.theme-doc-sidebar-menu {
+  padding-right: 1.5rem;
+}
+
+/* Lighter chevrons/carets */
+.menu__link--sublist-caret::after,
+.menu__caret::before {
+  opacity: 0.4;
+}
+
+.menu__link--sublist-caret:hover::after,
+.menu__caret:hover::before {
+  opacity: 0.6;
+}
+
+/* Add gap between sidebar and content */
+.col.docItemCol_node_modules-\@docusaurus-theme-classic-lib-theme-DocItem-Layout-styles-module {
+  padding-left: 2rem !important;
+}
+
+/* ============================================
    NAVBAR
    ============================================ */
 .navbar {
-  padding: 0.75rem 1rem;
+  padding: 1rem 1.5rem;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Align logo with sidebar content */
+@media (min-width: 997px) {
+  .navbar {
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+  }
+
+  .navbar__brand {
+    margin-right: 2rem;
+  }
+}
+
+@media (min-width: 1200px) {
+  .navbar {
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
 }
 
 .navbar__title {
@@ -412,7 +498,122 @@ blockquote {
   background-color: rgba(96, 165, 250, 0.05);
 }
 
-/* Admonition improvements */
-.admonition {
+/* ============================================
+   ADMONITIONS - Rounded, no left border bar
+   ============================================ */
+.admonition,
+.alert,
+[class*='admonition_'] {
   margin-bottom: 1.5rem;
+  padding: 1.25rem 1.5rem !important;
+  border-radius: 12px !important;
+  border: none !important;
+  border-left: 0 !important;
+  border-left-width: 0 !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.admonition::before,
+.alert::before {
+  display: none !important;
+}
+
+/* Force remove all left border variations */
+.admonition.alert,
+.alert.alert--secondary,
+.alert.alert--success,
+.alert.alert--info,
+.alert.alert--warning,
+.alert.alert--danger,
+[class*='admonition_'][class*='alert_'] {
+  border-left: 0 !important;
+  border-left-width: 0 !important;
+  border-left-style: none !important;
+}
+
+/* Tip admonition */
+.admonition.admonition-tip {
+  background-color: rgba(16, 185, 129, 0.08);
+}
+
+.admonition.admonition-tip .admonition-heading {
+  color: #059669;
+}
+
+[data-theme='dark'] .admonition.admonition-tip {
+  background-color: rgba(16, 185, 129, 0.12);
+}
+
+[data-theme='dark'] .admonition.admonition-tip .admonition-heading {
+  color: #34d399;
+}
+
+/* Info admonition */
+.admonition.admonition-info {
+  background-color: rgba(37, 99, 235, 0.08);
+}
+
+.admonition.admonition-info .admonition-heading {
+  color: #2563eb;
+}
+
+[data-theme='dark'] .admonition.admonition-info {
+  background-color: rgba(96, 165, 250, 0.12);
+}
+
+[data-theme='dark'] .admonition.admonition-info .admonition-heading {
+  color: #60a5fa;
+}
+
+/* Note admonition */
+.admonition.admonition-note {
+  background-color: rgba(107, 114, 128, 0.08);
+}
+
+[data-theme='dark'] .admonition.admonition-note {
+  background-color: rgba(156, 163, 175, 0.1);
+}
+
+/* Warning admonition */
+.admonition.admonition-warning,
+.admonition.admonition-caution {
+  background-color: rgba(245, 158, 11, 0.1);
+}
+
+.admonition.admonition-warning .admonition-heading,
+.admonition.admonition-caution .admonition-heading {
+  color: #d97706;
+}
+
+[data-theme='dark'] .admonition.admonition-warning,
+[data-theme='dark'] .admonition.admonition-caution {
+  background-color: rgba(245, 158, 11, 0.15);
+}
+
+[data-theme='dark'] .admonition.admonition-warning .admonition-heading,
+[data-theme='dark'] .admonition.admonition-caution .admonition-heading {
+  color: #fbbf24;
+}
+
+/* Danger admonition */
+.admonition.admonition-danger {
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+.admonition.admonition-danger .admonition-heading {
+  color: #dc2626;
+}
+
+[data-theme='dark'] .admonition.admonition-danger {
+  background-color: rgba(239, 68, 68, 0.15);
+}
+
+[data-theme='dark'] .admonition.admonition-danger .admonition-heading {
+  color: #f87171;
+}
+
+/* Admonition icon styling */
+.admonition-icon svg {
+  width: 1.25rem;
+  height: 1.25rem;
 }

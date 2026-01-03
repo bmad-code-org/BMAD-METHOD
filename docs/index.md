@@ -4,13 +4,31 @@ sidebar_position: 1
 title: Welcome to BMAD
 ---
 
-# BMAD Method Documentation
+# Welcome to BMAD
 
-> **Build More, Architect Dreams** — An AI-driven agile development framework with specialized agents, guided workflows, and scale-adaptive intelligence.
+BMAD (**B**uild **M**ore, **A**rchitect **D**reams) is an AI-driven development framework that helps you build software faster and smarter. It provides specialized AI agents, guided workflows, and intelligent planning that adapts to your project's complexity—whether you're fixing a bug or building an enterprise platform.
+
+If you're comfortable working with AI coding assistants like Claude, Cursor, or GitHub Copilot, you're ready to get started.
 
 ---
 
-## Choose Your Path
+## New Here? Start with the Quick Start
+
+The fastest way to understand BMAD is to try it. The Quick Start guide walks you through your first project in about 10 minutes.
+
+<a className="button button--primary button--lg" href="/docs/tutorials/getting-started/quick-start-bmm">Get Started with BMAD</a>
+
+<br/>
+
+:::tip Already familiar with AI-assisted development?
+Feel free to skip around. Use the sidebar to jump to any topic, or check out [What Are Agents?](/docs/explanation/core-concepts/what-are-agents) to understand how BMAD organizes its AI personas.
+:::
+
+---
+
+## How to Use These Docs
+
+These docs are organized into four sections based on what you're trying to do:
 
 <div className="row">
   <div className="col col--6 margin-bottom--lg">
@@ -19,10 +37,10 @@ title: Welcome to BMAD
         <h3>Tutorials</h3>
       </div>
       <div className="card__body">
-        <p>Learn BMAD step by step. Start here if you're new.</p>
+        <p><strong>Learning-oriented.</strong> Step-by-step guides that walk you through building something. Start here if you're new to BMAD.</p>
       </div>
       <div className="card__footer">
-        <a className="button button--primary button--block" href="/docs/tutorials">Start Learning</a>
+        <a className="button button--secondary button--block" href="/docs/tutorials">Browse Tutorials</a>
       </div>
     </div>
   </div>
@@ -32,10 +50,10 @@ title: Welcome to BMAD
         <h3>How-To Guides</h3>
       </div>
       <div className="card__body">
-        <p>Solve specific problems. Task-focused, practical guides.</p>
+        <p><strong>Task-oriented.</strong> Practical guides for solving specific problems. "How do I customize an agent?" lives here.</p>
       </div>
       <div className="card__footer">
-        <a className="button button--primary button--block" href="/docs/how-to">Find a Guide</a>
+        <a className="button button--secondary button--block" href="/docs/how-to">Find a Guide</a>
       </div>
     </div>
   </div>
@@ -45,10 +63,10 @@ title: Welcome to BMAD
         <h3>Explanation</h3>
       </div>
       <div className="card__body">
-        <p>Understand the concepts. Why BMAD works the way it does.</p>
+        <p><strong>Understanding-oriented.</strong> Deep dives into concepts and architecture. Read these when you want to know <em>why</em> something works.</p>
       </div>
       <div className="card__footer">
-        <a className="button button--primary button--block" href="/docs/explanation">Explore Concepts</a>
+        <a className="button button--secondary button--block" href="/docs/explanation">Explore Concepts</a>
       </div>
     </div>
   </div>
@@ -58,10 +76,10 @@ title: Welcome to BMAD
         <h3>Reference</h3>
       </div>
       <div className="card__body">
-        <p>Look up details. Agents, workflows, configuration options.</p>
+        <p><strong>Information-oriented.</strong> Technical specifications for agents, workflows, and configuration. Look things up here.</p>
       </div>
       <div className="card__footer">
-        <a className="button button--primary button--block" href="/docs/reference">Browse Reference</a>
+        <a className="button button--secondary button--block" href="/docs/reference">Browse Reference</a>
       </div>
     </div>
   </div>
@@ -69,17 +87,31 @@ title: Welcome to BMAD
 
 ---
 
-## Quick Links
+## What You'll Need
 
-- **New to BMAD?** → [Quick Start Tutorial](/docs/tutorials/getting-started/quick-start-bmm)
-- **Installing?** → [Installation Guide](/docs/how-to/installation)
-- **What are agents?** → [Understanding Agents](/docs/explanation/core-concepts/what-are-agents)
-- **Looking for a workflow?** → [Workflow Reference](/docs/reference/workflows)
+BMAD works with any AI coding assistant that supports custom system prompts or project context. Popular options include:
+
+- **[Claude Code](https://claude.ai/claude-code)** — Anthropic's CLI tool (recommended)
+- **[Cursor](https://cursor.sh)** — AI-first code editor
+- **[Windsurf](https://codeium.com/windsurf)** — Codeium's AI IDE
+- **[Roo Code](https://roocode.com)** — VS Code extension
+
+You should be comfortable with basic software development concepts like version control, project structure, and agile workflows. No prior experience with BMAD-style agent systems is required—that's what these docs are for.
 
 ---
 
-## Community
+## Join the Community
 
-- [Discord](https://discord.gg/gk8jAdXWmj) — Get help, share ideas
-- [GitHub](https://github.com/bmad-code-org/BMAD-METHOD) — Source code, issues
-- [YouTube](https://www.youtube.com/@BMadCode) — Video tutorials
+Get help, share what you're building, or contribute to BMAD:
+
+- **[Discord](https://discord.gg/gk8jAdXWmj)** — Chat with other BMAD users, ask questions, share ideas
+- **[GitHub](https://github.com/bmad-code-org/BMAD-METHOD)** — Source code, issues, and contributions
+- **[YouTube](https://www.youtube.com/@BMadCode)** — Video tutorials and walkthroughs
+
+---
+
+## Next Step
+
+Ready to dive in? Head to the Quick Start to build your first project with BMAD.
+
+<a className="button button--primary button--lg" href="/docs/tutorials/getting-started/quick-start-bmm">Start the Quick Start Tutorial</a>
