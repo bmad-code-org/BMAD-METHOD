@@ -1,0 +1,34 @@
+name: validate-epic-status
+description: "Validate and fix sprint-status.yaml for a single epic. Scans story files for task completion, validates quality (>10KB, proper tasks), checks git commits, updates sprint-status.yaml to match REALITY."
+author: "BMad"
+version: "1.0.0"
+
+# Critical variables from config
+config_source: "{project-root}/_bmad/bmm/config.yaml"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+implementation_artifacts: "{config_source}:implementation_artifacts"
+story_dir: "{implementation_artifacts}"
+
+# Workflow components
+installed_path: "{project-root}/_bmad/bmm/workflows/4-implementation/validate-epic-status"
+instructions: "{installed_path}/instructions.xml"
+
+# Inputs
+variables:
+  epic_num: ""  # User provides (e.g., "19", "16d", "16e")
+  sprint_status_file: "{implementation_artifacts}/sprint-status.yaml"
+  validation_mode: "fix"  # Options: "report-only", "fix", "strict"
+
+# Validation criteria
+validation_rules:
+  min_story_size_kb: 10  # Stories should be >= 10KB
+  min_tasks_required: 5   # Stories should have >= 5 tasks
+  completion_threshold: 90  # 90%+ tasks checked = "done"
+  git_commit_lookback_days: 30  # Search last 30 days for commits
+
+# Output
+default_output_file: "{story_dir}/.epic-{epic_num}-validation-report.md"
+
+standalone: true
+web_bundle: false

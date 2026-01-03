@@ -1,7 +1,7 @@
 name: autonomous-epic
-description: "Autonomous epic processing using super-dev-pipeline - creates and develops all stories with anti-vibe-coding enforcement. Works for greenfield AND brownfield!"
+description: "Autonomous epic processing using super-dev-pipeline - creates and develops all stories in an epic with minimal human intervention. Step-file architecture with smart batching!"
 author: "BMad"
-version: "2.0.0" # Upgraded to use super-dev-pipeline with step-file architecture
+version: "3.0.0" # Upgraded to use super-dev-pipeline (works for both greenfield and brownfield)
 
 # Critical variables from config
 config_source: "{project-root}/_bmad/bmm/config.yaml"
@@ -13,19 +13,18 @@ story_dir: "{implementation_artifacts}"
 # Workflow components
 installed_path: "{project-root}/_bmad/bmm/workflows/4-implementation/autonomous-epic"
 instructions: "{installed_path}/instructions.xml"
-progress_file: "{story_dir}/.autonomous-epic-progress.yaml"
+progress_file: "{story_dir}/.autonomous-epic-{epic_num}-progress.yaml"
 
 # Variables
 epic_num: "" # User provides or auto-discover next epic
 sprint_status: "{implementation_artifacts}/sprint-status.yaml"
 project_context: "**/project-context.md"
+validation_only: false  # NEW: If true, only validate/fix status, don't implement
 
 # Autonomous mode settings
 autonomous_settings:
-  # Use super-dev-pipeline: Step-file architecture that works for BOTH greenfield AND brownfield
-  use_super_dev_pipeline: true # Disciplined execution, no vibe coding
-
-  pipeline_mode: "batch" # Run workflows in batch mode (unattended)
+  use_super_dev_pipeline: true # Use super-dev-pipeline workflow (step-file architecture)
+  pipeline_mode: "batch" # Run super-dev-pipeline in batch mode (unattended)
   halt_on_error: false # Continue even if story fails
   max_retry_per_story: 2 # Retry failed stories
   create_git_commits: true # Commit after each story (handled by super-dev-pipeline)
@@ -34,42 +33,17 @@ autonomous_settings:
 
 # super-dev-pipeline benefits
 super_dev_pipeline_features:
-  token_efficiency: "40-60K per story (vs 100-150K for super-dev-story orchestration)"
-  works_for: "Both greenfield AND brownfield development"
-  anti_vibe_coding: "Step-file architecture prevents deviation at high token counts"
+  token_efficiency: "Step-file architecture prevents context bloat"
+  brownfield_support: "Works with existing codebases (unlike story-pipeline)"
   includes:
-    - "Pre-gap analysis (validates against existing code)"
-    - "Adaptive implementation (TDD for new, refactor for existing)"
-    - "Post-implementation validation (catches false positives)"
-    - "Code review (adversarial, finds 3-10 issues)"
-    - "Completion (targeted commit + push)"
-  quality_gates: "All super-dev-story gates with disciplined execution"
-  brownfield_support: "Validates existing code before implementation"
-
-# YOLO MODE CLARIFICATION
-# YOLO mode ONLY means auto-approve prompts (answer "y", "Y", "C", "continue")
-# YOLO mode does NOT mean: skip steps, skip workflows, or produce minimal output
-# ALL steps, workflows, and verifications must still be fully executed
-yolo_clarification:
-  auto_approve_prompts: true
-  skip_steps: false # NEVER - all steps must execute
-  skip_workflows: false # NEVER - invoke-workflow calls must execute
-  skip_verification: false # NEVER - all checks must pass
-  minimal_output: false # NEVER - full quality output required
-
-# STORY QUALITY REQUIREMENTS
-# These settings ensure create-story produces comprehensive story files
-story_quality_requirements:
-  minimum_size_bytes: 4000 # Story files must be at least 4KB
-  enforce_minimum_size: true
-  required_sections:
-    - "## Tasks"
-    - "## Acceptance Criteria"
-    - "## Dev Notes"
-    - "Architecture Constraints"
-    - "Gap Analysis"
-  halt_on_quality_failure: true # Stop processing if story fails quality check
-  verify_file_exists: true # Verify story file was actually created on disk
+    - "Pre-gap analysis (understand what exists before starting)"
+    - "Smart batching (group related tasks)"
+    - "Implementation (systematic execution)"
+    - "Post-validation (verify changes work)"
+    - "Code review (adversarial, multi-agent)"
+    - "Completion (commit + push)"
+  quality_gates: "Same rigor as story-pipeline, works for brownfield"
+  checkpoint_resume: "Can resume from any step after failure"
 
 # TASK-BASED COMPLETION SETTINGS (NEW)
 # These settings ensure stories are truly complete, not just marked as such
@@ -93,3 +67,5 @@ completion_verification:
   strict_epic_completion: true
 
 standalone: true
+
+web_bundle: false

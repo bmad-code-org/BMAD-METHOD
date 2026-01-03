@@ -3,7 +3,7 @@
   <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
   <critical>Communicate all responses in {communication_language}</critical>
   <critical>🤖 AUTONOMOUS EPIC PROCESSING - Full automation of epic completion!</critical>
-  <critical>This workflow orchestrates create-story and super-dev-story for each story in an epic</critical>
+  <critical>This workflow orchestrates super-dev-pipeline for each story in an epic</critical>
   <critical>TASK-BASED COMPLETION: A story is ONLY complete when it has ZERO unchecked tasks (- [ ])</critical>
 
   <!-- AUTONOMOUS MODE INSTRUCTIONS - READ THESE CAREFULLY -->
@@ -20,83 +20,41 @@
     4. Return to this workflow and continue
   </critical>
 
-  <!-- ═══════════════════════════════════════════════════════════════════════════════ -->
-  <!-- 🚨 CRITICAL: YOLO MODE CLARIFICATION 🚨                                         -->
-  <!-- ═══════════════════════════════════════════════════════════════════════════════ -->
-  <critical>🚨 WHAT YOLO MODE MEANS:
-    - YOLO mode ONLY means: automatically answer "y", "Y", "C", or "continue" to prompts
-    - YOLO mode does NOT mean: skip steps, skip workflows, skip verification, or produce minimal output
-    - YOLO mode does NOT mean: pretend work was done when it wasn't
-    - ALL steps must still be fully executed - just without waiting for user confirmation
-    - ALL invoke-workflow calls must still be fully executed
-    - ALL verification checks must still pass
-  </critical>
-
-  <!-- ═══════════════════════════════════════════════════════════════════════════════ -->
-  <!-- 🚨 ANTI-SKIP SAFEGUARDS - THESE ARE NON-NEGOTIABLE 🚨                           -->
-  <!-- ═══════════════════════════════════════════════════════════════════════════════ -->
-  <critical>🚨 STORY CREATION IS SACRED - YOU MUST ACTUALLY RUN CREATE-STORY:
-    - DO NOT just output "Creating story..." and move on
-    - DO NOT skip the invoke-workflow tag
-    - DO NOT pretend the story was created
-    - You MUST fully execute the create-story workflow with ALL its steps
-    - The story file MUST exist and be verified BEFORE proceeding
-  </critical>
-  <critical>🚨 CREATE-STORY QUALITY REQUIREMENTS:
-    - create-story must analyze epics, PRD, architecture, and UX documents
-    - create-story must produce comprehensive story files (4kb+ minimum)
-    - Tiny story files (under 4kb) indicate the workflow was not properly executed
-    - Story files MUST contain: Tasks/Subtasks, Acceptance Criteria, Dev Notes, Architecture Constraints
-  </critical>
-  <critical>🚨 HARD VERIFICATION REQUIRED AFTER STORY CREATION:
-    - After invoke-workflow for create-story completes, you MUST verify:
-      1. The story file EXISTS on disk (use file read/check)
-      2. The story file is AT LEAST 4000 bytes (use wc -c or file size check)
-      3. The story file contains required sections (Tasks, Acceptance Criteria, Dev Notes)
-    - If ANY verification fails: HALT and report error - do NOT proceed to super-dev-pipeline
-    - Do NOT trust "Story created" output without verification
-  </critical>
-
   <step n="1" goal="Initialize and validate epic">
-    <output>🤖 **Autonomous Epic Processing**
+    <check if="{{validation_only}} == true">
+      <output>🔍 **Epic Status Validation Mode**
 
-      This workflow will automatically:
-      1. Create stories (if backlog) using create-story
-      2. Develop each story using super-dev-pipeline
-      3. **Verify completion** by checking ALL tasks are done (- [x])
-      4. Commit and push after each story (integrated in super-dev-pipeline)
-      5. Generate epic completion report
+This will:
+1. Scan ALL story files for task completion (count checkboxes)
+2. Validate story file quality (>=10KB, proper task lists)
+3. Update sprint-status.yaml to match REALITY (task completion)
+4. Report suspicious stories (poor quality, false positives)
 
-      **super-dev-pipeline includes:**
-      - Pre-gap analysis (validates existing code - critical for brownfield!)
-      - Adaptive implementation (TDD for new, refactor for existing)
-      - **Post-implementation validation** (catches false positives!)
-      - Code review (adversarial, finds 3-10 issues)
-      - Completion (commit + push)
+**NO code will be generated** - validation only.
+      </output>
+    </check>
 
-      **Key Features:**
-      - ✅ Works for greenfield AND brownfield development
-      - ✅ Step-file architecture prevents vibe coding
-      - ✅ Disciplined execution even at high token counts
-      - ✅ All quality gates enforced
+    <check if="{{validation_only}} != true">
+      <output>🤖 **Autonomous Epic Processing**
 
-      🚨 **QUALITY SAFEGUARDS (Non-Negotiable):**
-      - Story files MUST be created via full create-story execution
-      - Story files MUST be at least 4kb (comprehensive, not YOLO'd)
-      - Story files MUST contain: Tasks, Acceptance Criteria, Dev Notes
-      - YOLO mode = auto-approve prompts, NOT skip steps or produce minimal output
-      - Verification happens AFTER each story creation - failures halt processing
+This workflow will automatically:
+1. Develop each story using super-dev-pipeline
+2. **Verify completion** by checking ALL tasks are done (- [x])
+3. Commit and push after each story (integrated in super-dev-pipeline)
+4. Generate epic completion report
 
-      **Key Improvement:** Stories in "review" status with unchecked tasks
-      WILL be processed - we check actual task completion, not just status!
+**super-dev-pipeline includes:**
+- Pre-gap analysis (understand existing code)
+- Smart task batching (group related work)
+- Implementation (systematic execution)
+- **Post-implementation validation** (catches false positives!)
+- Code review (adversarial, multi-agent)
+- Completion (commit + push)
 
-      **Time Estimate:** Varies by epic size
-      - Small epic (3-5 stories): 2-5 hours
-      - Medium epic (6-10 stories): 5-10 hours
-      - Large epic (11+ stories): 10-20 hours
-
-      **Token Usage:** ~40-60K per story (more efficient + brownfield support!)
-    </output>
+**Key Improvement:** Stories in "review" status with unchecked tasks
+WILL be processed - we check actual task completion, not just status!
+      </output>
+    </check>
 
     <check if="{{epic_num}} provided">
       <action>Use provided epic number</action>
@@ -123,10 +81,17 @@
     <!-- TASK-BASED ANALYSIS: Scan actual story files for unchecked tasks -->
     <action>For each story in epic:
       1. Read the story file from {{story_dir}}/{{story_key}}.md
-      2. Count unchecked tasks: grep -c "^- \[ \]" or regex match "- \[ \]"
-      3. Count checked tasks: grep -c "^- \[x\]" or regex match "- \[x\]"
-      4. Categorize story:
-         - "truly_done": status=done AND unchecked_tasks=0
+      2. Check file exists (if missing, mark story as "backlog")
+      3. Check file size (if <10KB, flag as poor quality)
+      4. Count unchecked tasks: grep -c "^- \[ \]" or regex match "- \[ \]"
+      5. Count checked tasks: grep -c "^- \[x\]" or regex match "- \[x\]"
+      6. Count total tasks (unchecked + checked)
+      7. Calculate completion rate: (checked / total * 100)
+      8. Categorize story:
+         - "truly_done": unchecked_tasks=0 AND file_size>=10KB AND total_tasks>=5
+         - "in_progress": unchecked_tasks>0 AND checked_tasks>0
+         - "ready_for_dev": unchecked_tasks=total_tasks (nothing checked yet)
+         - "poor_quality": file_size<10KB OR total_tasks<5 (needs regeneration)
          - "needs_work": unchecked_tasks > 0 (regardless of status)
          - "backlog": status=backlog (file may not exist yet)
     </action>
@@ -156,10 +121,10 @@
 
     <ask>**Proceed with autonomous processing?**
 
-      [Y] Yes - Use super-dev-pipeline (works for greenfield AND brownfield)
+      [Y] Yes - Use super-dev-pipeline (step-file architecture, brownfield-compatible)
       [n] No - Cancel
 
-      Note: super-dev-pipeline uses step-file architecture to prevent vibe coding!
+      Note: super-dev-pipeline uses disciplined step-file execution with smart batching!
     </ask>
 
     <check if="user says Y">
@@ -192,9 +157,6 @@
       - current_story: null
       - status: running
     </action>
-
-    <!-- Keep sprint-status accurate at start -->
-    <action>Update sprint-status: if epic-{{epic_num}} is "backlog" or "contexted", set to "in-progress"</action>
   </step>
 
   <step n="3" goal="Process all stories in epic">
@@ -210,94 +172,60 @@
     <!-- STORY LOOP -->
     <loop foreach="{{stories_needing_work}}">
       <action>Set {{current_story}}</action>
-      <action>Read story file and count unchecked tasks</action>
+      <action>Read story file from {{story_dir}}/{{current_story.key}}.md</action>
 
-      <output>
-        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-        Story {{counter}}/{{work_count}}: {{current_story.key}}
-        Status: {{current_story.status}} | Unchecked Tasks: {{unchecked_count}}
-        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-      </output>
-
-      <!-- ═══════════════════════════════════════════════════════════════════════ -->
-      <!-- CREATE STORY IF BACKLOG - WITH MANDATORY VERIFICATION                   -->
-      <!-- ═══════════════════════════════════════════════════════════════════════ -->
-      <check if="status == 'backlog'">
-        <output>📝 Creating story from epic - THIS REQUIRES FULL WORKFLOW EXECUTION...</output>
-        <output>⚠️ REMINDER: You MUST fully execute create-story, not just output messages!</output>
-
-        <try>
-          <!-- STEP 1: Actually invoke and execute create-story workflow -->
-          <invoke-workflow path="{project-root}/_bmad/bmm/workflows/4-implementation/create-story/workflow.yaml">
-            <input name="story_id" value="{{current_story.key}}" />
-            <note>Create story just-in-time - MUST FULLY EXECUTE ALL STEPS</note>
-            <note>This workflow must load epics, PRD, architecture, UX docs</note>
-            <note>This workflow must produce a comprehensive 4kb+ story file</note>
-          </invoke-workflow>
-
-          <!-- STEP 2: HARD VERIFICATION - Story file must exist -->
-          <action>Set {{expected_story_file}} = {{story_dir}}/story-{{epic_num}}.{{story_num}}.md</action>
-          <action>Check if file exists: {{expected_story_file}}</action>
-          <check if="story file does NOT exist">
-            <output>🚨 CRITICAL ERROR: Story file was NOT created!</output>
-            <output>Expected file: {{expected_story_file}}</output>
-            <output>The create-story workflow did not execute properly.</output>
-            <output>This story CANNOT proceed without a proper story file.</output>
-            <action>Add to failed_stories with reason: "Story file not created"</action>
-            <continue />
-          </check>
-
-          <!-- STEP 3: HARD VERIFICATION - Story file must be at least 4kb -->
-          <action>Get file size of {{expected_story_file}} in bytes</action>
-          <check if="file size < 4000 bytes">
-            <output>🚨 CRITICAL ERROR: Story file is too small ({{file_size}} bytes)!</output>
-            <output>Minimum required: 4000 bytes</output>
-            <output>This indicates create-story was skipped or improperly executed.</output>
-            <output>A proper story file should contain:</output>
-            <output>  - Detailed acceptance criteria</output>
-            <output>  - Comprehensive tasks/subtasks</output>
-            <output>  - Dev notes with architecture constraints</output>
-            <output>  - Source references</output>
-            <output>This story CANNOT proceed with an incomplete story file.</output>
-            <action>Add to failed_stories with reason: "Story file too small - workflow not properly executed"</action>
-            <continue />
-          </check>
-
-          <!-- STEP 4: HARD VERIFICATION - Story file must have required sections -->
-          <action>Read {{expected_story_file}} and check for required sections</action>
-          <check if="file missing '## Tasks' OR '## Acceptance Criteria'">
-            <output>🚨 CRITICAL ERROR: Story file missing required sections!</output>
-            <output>Required sections: Tasks, Acceptance Criteria</output>
-            <output>This story CANNOT proceed without proper structure.</output>
-            <action>Add to failed_stories with reason: "Story file missing required sections"</action>
-            <continue />
-          </check>
-
-          <output>✅ Story created and verified:</output>
-          <output>   - File exists: {{expected_story_file}}</output>
-          <output>   - File size: {{file_size}} bytes (meets 4kb minimum)</output>
-          <output>   - Required sections: present</output>
-          <action>Update sprint-status: set {{current_story.key}} to "ready-for-dev" (if not already)</action>
-        </try>
-
-        <catch>
-          <output>❌ Failed to create story: {{error}}</output>
-          <action>Add to failed_stories with error details</action>
-          <continue />
-        </catch>
+      <check if="file not found">
+        <output>  ❌ Story file missing: {{current_story.key}}.md</output>
+        <action>Mark story as "backlog" in sprint-status.yaml</action>
+        <action>Continue to next story</action>
       </check>
 
-      <!-- DEVELOP STORY WITH SUPER-DEV-PIPELINE (handles both greenfield AND brownfield) -->
-      <check if="{{unchecked_count}} > 0">
-        <action>Update sprint-status: set {{current_story.key}} to "in-progress"</action>
-        <output>💻 Developing story with super-dev-pipeline ({{unchecked_count}} tasks remaining)...</output>
+      <action>Get file size in KB</action>
+      <action>Count unchecked tasks: grep -c "^- \[ \]"</action>
+      <action>Count checked tasks: grep -c "^- \[x\]"</action>
+      <action>Count total tasks</action>
+      <action>Calculate completion_rate = (checked / total * 100)</action>
+
+      <output>
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Story {{counter}}/{{work_count}}: {{current_story.key}}
+Size: {{file_size_kb}}KB | Tasks: {{checked}}/{{total}} ({{completion_rate}}%)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      </output>
+
+      <!-- VALIDATION-ONLY MODE: Just update status, don't implement -->
+      <check if="{{validation_only}} == true">
+        <action>Determine correct status:
+          IF unchecked_tasks == 0 AND file_size >= 10KB AND total_tasks >= 5
+            → correct_status = "done"
+          ELSE IF unchecked_tasks > 0 AND checked_tasks > 0
+            → correct_status = "in-progress"
+          ELSE IF unchecked_tasks == total_tasks
+            → correct_status = "ready-for-dev"
+          ELSE IF file_size < 10KB OR total_tasks < 5
+            → correct_status = "ready-for-dev" (needs regeneration)
+        </action>
+
+        <action>Update story status in sprint-status.yaml to {{correct_status}}</action>
+
+        <check if="file_size < 10KB OR total_tasks < 5">
+          <output>  ⚠️  POOR QUALITY - File too small or missing tasks (needs /create-story regeneration)</output>
+        </check>
+
+        <action>Continue to next story (skip super-dev-pipeline)</action>
+      </check>
+
+      <!-- NORMAL MODE: Run super-dev-pipeline -->
+      <check if="{{validation_only}} != true">
+        <!-- PROCESS STORY WITH SUPER-DEV-PIPELINE -->
+        <check if="{{unchecked_count}} > 0 OR status == 'backlog'">
+          <output>💻 Processing story with super-dev-pipeline ({{unchecked_count}} tasks remaining)...</output>
 
         <try>
           <invoke-workflow path="{project-root}/_bmad/bmm/workflows/4-implementation/super-dev-pipeline/workflow.yaml">
-            <input name="story_id" value="{{current_story.key}}" />
-            <input name="story_file" value="{{current_story_file}}" />
+            <input name="story_file" value="{{story_dir}}/{{current_story.key}}.md" />
             <input name="mode" value="batch" />
-            <note>Step-file execution: pre-gap → implement → post-validate → review → commit</note>
+            <note>Full lifecycle: pre-gap → implement (batched) → post-validate → review → commit</note>
           </invoke-workflow>
 
           <!-- super-dev-pipeline handles verification internally, just check final status -->
@@ -307,10 +235,9 @@
           <action>Re-read story file and count unchecked tasks</action>
 
           <check if="{{remaining_unchecked}} > 0">
-            <output>⚠️ Story still has {{remaining_unchecked}} unchecked tasks after super-dev-pipeline</output>
+            <output>⚠️ Story still has {{remaining_unchecked}} unchecked tasks after pipeline</output>
             <action>Log incomplete tasks for review</action>
             <action>Mark as partial success</action>
-            <action>Update sprint-status: set {{current_story.key}} to "review"</action>
           </check>
 
           <check if="{{remaining_unchecked}} == 0">
@@ -328,6 +255,7 @@
           <action>Increment failure_count</action>
         </catch>
       </check>
+      </check>  <!-- Close validation_only != true check -->
 
       <output>Progress: {{success_count}} ✅ | {{failure_count}} ❌ | {{remaining}} pending</output>
     </loop>

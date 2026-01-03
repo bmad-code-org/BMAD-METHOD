@@ -1,0 +1,338 @@
+<workflow>
+  <critical>The workflow execution engine is governed by: {project-root}/_bmad/core/tasks/workflow.xml</critical>
+  <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
+  <critical>This is the COMPREHENSIVE AUDIT - validates all stories using Haiku agents</critical>
+  <critical>Cost: ~$76 for 511 stories with Haiku (vs $793 with Sonnet)</critical>
+
+  <step n="1" goal="Discover all story files">
+    <action>Find all .md files in {{story_dir}}</action>
+
+    <action>Filter out meta-documents:
+      - Files starting with "EPIC-" (completion reports)
+      - Files starting with "." (progress files)
+      - Files containing: COMPLETION, SUMMARY, REPORT, SESSION-, REVIEW-, README, INDEX
+      - Files like "atdd-checklist-", "gap-analysis-", "review-"
+    </action>
+
+    <check if="{{epic_filter}} provided">
+      <action>Filter to stories matching: {{epic_filter}}-*.md</action>
+    </check>
+
+    <action>Store as {{story_list}}</action>
+    <action>Count {{story_count}}</action>
+
+    <output>🔍 **Comprehensive Story Audit**
+
+{{#if epic_filter}}**Epic Filter:** {{epic_filter}}{{else}}**Scope:** All epics{{/if}}
+**Stories to Validate:** {{story_count}}
+**Agent Model:** Haiku 4.5
+**Batch Size:** {{batch_size}}
+
+**Estimated Cost:** ~${{estimated_cost}} ({{story_count}} × $0.15/story)
+**Estimated Time:** {{estimated_hours}} hours
+
+Starting batch validation...
+    </output>
+  </step>
+
+  <step n="2" goal="Batch validate all stories">
+    <action>Initialize counters:
+      - stories_validated = 0
+      - verified_complete = 0
+      - needs_rework = 0
+      - false_positives = 0
+      - in_progress = 0
+      - total_false_positive_tasks = 0
+      - total_critical_issues = 0
+    </action>
+
+    <action>Split {{story_list}} into batches of {{batch_size}}</action>
+
+    <loop foreach="{{batches}}">
+      <action>Set {{current_batch}} = current batch</action>
+      <action>Set {{batch_number}} = loop index + 1</action>
+
+      <output>
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Batch {{batch_number}}/{{total_batches}} ({{batch_size}} stories)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      </output>
+
+      <!-- Validate each story in batch -->
+      <loop foreach="{{current_batch}}">
+        <action>Set {{story_file}} = current story path</action>
+        <action>Extract {{story_id}} from filename</action>
+
+        <output>{{stories_validated + 1}}/{{story_count}}: Validating {{story_id}}...</output>
+
+        <!-- Invoke validate-story-deep workflow -->
+        <invoke-workflow path="{{validate_story_workflow}}">
+          <input name="story_file" value="{{story_file}}" />
+        </invoke-workflow>
+
+        <action>Parse validation results:
+          - category (VERIFIED_COMPLETE, FALSE_POSITIVE, etc.)
+          - verification_score
+          - false_positive_count
+          - false_negative_count
+          - critical_issues_count
+        </action>
+
+        <action>Store results for {{story_id}}</action>
+        <action>Increment counters based on category</action>
+
+        <output>  → {{category}} (Score: {{verification_score}}/100{{#if false_positives > 0}}, {{false_positives}} false positives{{/if}})</output>
+
+        <action>Increment stories_validated</action>
+      </loop>
+
+      <output>Batch {{batch_number}} complete. {{stories_validated}}/{{story_count}} total validated.</output>
+
+      <!-- Save progress after each batch -->
+      <action>Write progress to {{progress_file}}:
+        - stories_validated
+        - current_batch
+        - results_so_far
+      </action>
+    </loop>
+
+    <output>
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+All Stories Validated
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+**Total Validated:** {{story_count}}
+**Total Tasks Checked:** {{total_tasks_verified}}
+    </output>
+  </step>
+
+  <step n="3" goal="Consolidate results and calculate platform health">
+    <action>Calculate platform-wide metrics:
+      - Overall health score: (verified_complete / story_count) × 100
+      - False positive rate: (false_positive_stories / story_count) × 100
+      - Total rework estimate: false_positive_stories × 3h + needs_rework × 2h
+    </action>
+
+    <action>Group results by epic</action>
+
+    <action>Identify worst offenders (highest false positive rates)</action>
+
+    <output>
+📊 **PLATFORM HEALTH ASSESSMENT**
+
+**Overall Health Score:** {{health_score}}/100
+
+**Story Categories:**
+- ✅ VERIFIED_COMPLETE: {{verified_complete}} ({{verified_complete_pct}}%)
+- ⚠️ NEEDS_REWORK: {{needs_rework}} ({{needs_rework_pct}}%)
+- ❌ FALSE_POSITIVES: {{false_positives}} ({{false_positives_pct}}%)
+- 🔄 IN_PROGRESS: {{in_progress}} ({{in_progress_pct}}%)
+
+**Task-Level Issues:**
+- False positive tasks: {{total_false_positive_tasks}}
+- CRITICAL code quality issues: {{total_critical_issues}}
+
+**Estimated Rework:** {{total_rework_hours}} hours
+
+**Epic Breakdown:**
+{{#each epic_summary}}
+- Epic {{this.epic}}: {{this.health_score}}/100 ({{this.false_positives}} false positives)
+{{/each}}
+
+**Worst Offenders (Most False Positives):**
+{{#each worst_offenders limit=10}}
+- {{this.story_id}}: {{this.false_positive_count}} tasks, score {{this.score}}/100
+{{/each}}
+    </output>
+  </step>
+
+  <step n="4" goal="Generate comprehensive audit report">
+    <template-output>
+# Comprehensive Platform Audit Report
+
+**Generated:** {{date}}
+**Stories Validated:** {{story_count}}
+**Agent Model:** Haiku 4.5
+**Total Cost:** ~${{actual_cost}}
+
+---
+
+## Executive Summary
+
+**Platform Health Score:** {{health_score}}/100
+
+{{#if health_score >= 90}}
+✅ **EXCELLENT** - Platform is production-ready with high confidence
+{{else if health_score >= 75}}
+⚠️ **GOOD** - Minor issues to address, generally solid
+{{else if health_score >= 60}}
+⚠️ **NEEDS WORK** - Significant rework required before production
+{{else}}
+❌ **CRITICAL** - Major quality issues found, not production-ready
+{{/if}}
+
+**Key Findings:**
+- {{verified_complete}} stories verified complete ({{verified_complete_pct}}%)
+- {{false_positives}} stories are false positives ({{false_positives_pct}}%)
+- {{total_false_positive_tasks}} tasks claimed done but not implemented
+- {{total_critical_issues}} CRITICAL code quality issues found
+
+---
+
+## ❌ False Positive Stories ({{false_positives}} total)
+
+**These stories are marked "done" but have significant missing/stubbed code:**
+
+{{#each false_positive_stories}}
+### {{this.story_id}} (Score: {{this.score}}/100)
+
+**Current Status:** {{this.current_status}}
+**Should Be:** in-progress or ready-for-dev
+
+**Missing/Stubbed:**
+{{#each this.false_positive_tasks}}
+- {{this.task}}
+  - {{this.evidence}}
+{{/each}}
+
+**Estimated Fix:** {{this.estimated_hours}}h
+
+---
+{{/each}}
+
+**Total Rework:** {{false_positive_rework_hours}} hours
+
+---
+
+## ⚠️ Stories Needing Rework ({{needs_rework}} total)
+
+{{#each needs_rework_stories}}
+### {{this.story_id}} (Score: {{this.score}}/100)
+
+**Issues:**
+- {{this.false_positive_count}} incomplete tasks
+- {{this.critical_issues}} CRITICAL quality issues
+- {{this.high_issues}} HIGH priority issues
+
+**Top Issues:**
+{{#each this.top_issues limit=5}}
+- {{this}}
+{{/each}}
+
+---
+{{/each}}
+
+**Total Rework:** {{needs_rework_hours}} hours
+
+---
+
+## ✅ Verified Complete Stories ({{verified_complete}} total)
+
+**These stories are production-ready with verified code:**
+
+{{#each verified_complete_stories}}
+- {{this.story_id}} ({{this.score}}/100)
+{{/each}}
+
+---
+
+## 📊 Epic Health Breakdown
+
+{{#each epic_summary}}
+### Epic {{this.epic}}
+
+**Stories:** {{this.total}}
+**Verified Complete:** {{this.verified}} ({{this.verified_pct}}%)
+**False Positives:** {{this.false_positives}}
+**Needs Rework:** {{this.needs_rework}}
+
+**Health Score:** {{this.health_score}}/100
+
+{{#if this.health_score < 70}}
+⚠️ **ATTENTION NEEDED** - This epic has quality issues
+{{/if}}
+
+**Top Issues:**
+{{#each this.top_issues limit=3}}
+- {{this}}
+{{/each}}
+
+---
+{{/each}}
+
+---
+
+## 🎯 Recommended Action Plan
+
+### Phase 1: Fix False Positives (CRITICAL - {{false_positive_rework_hours}}h)
+
+{{#each false_positive_stories limit=20}}
+{{@index + 1}}. **{{this.story_id}}** ({{this.estimated_hours}}h)
+   - {{this.false_positive_count}} tasks to implement
+   - Update status to in-progress
+{{/each}}
+
+{{#if false_positives > 20}}
+... and {{false_positives - 20}} more (see full list above)
+{{/if}}
+
+### Phase 2: Address Rework Items (HIGH - {{needs_rework_hours}}h)
+
+{{#each needs_rework_stories limit=10}}
+{{@index + 1}}. **{{this.story_id}}** ({{this.estimated_hours}}h)
+   - Fix {{this.critical_issues}} CRITICAL issues
+   - Complete {{this.false_positive_count}} tasks
+{{/each}}
+
+### Phase 3: Fix False Negatives (LOW - batch update)
+
+- {{total_false_negative_tasks}} unchecked tasks that are actually complete
+- Can batch update checkboxes (low priority)
+
+---
+
+## 💰 Audit Cost Analysis
+
+**This Validation Run:**
+- Stories validated: {{story_count}}
+- Agent sessions: {{story_count}} (one Haiku agent per story)
+- Tokens used: ~{{tokens_used_millions}}M
+- Cost: ~${{actual_cost}}
+
+**Remediation Cost:**
+- Estimated hours: {{total_rework_hours}}h
+- At AI velocity: {{ai_velocity_days}} days of work
+- Token cost: ~${{remediation_token_cost}}
+
+**Total Investment:** ${{actual_cost}} (audit) + ${{remediation_token_cost}} (fixes) = ${{total_cost}}
+
+---
+
+## 📅 Next Steps
+
+1. **Immediate:** Fix {{false_positives}} false positive stories
+2. **This Week:** Address {{total_critical_issues}} CRITICAL issues
+3. **Next Week:** Rework {{needs_rework}} stories
+4. **Ongoing:** Re-validate fixed stories to confirm
+
+**Commands:**
+```bash
+# Validate specific story
+/validate-story-deep docs/sprint-artifacts/16e-6-ecs-task-definitions-tier3.md
+
+# Validate specific epic
+/validate-all-stories-deep --epic 16e
+
+# Re-run full audit (after fixes)
+/validate-all-stories-deep
+```
+
+---
+
+**Report Generated By:** validate-all-stories-deep workflow
+**Validation Method:** LLM-powered (Haiku 4.5 agents read actual code)
+**Confidence Level:** Very High (code-based verification, not regex patterns)
+    </template-output>
+  </step>
+
+</workflow>

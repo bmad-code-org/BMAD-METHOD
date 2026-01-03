@@ -1,0 +1,30 @@
+name: validate-all-epics
+description: "Validate and fix sprint-status.yaml for ALL epics. Runs validate-epic-status on every epic in parallel, consolidates results, rebuilds accurate sprint-status.yaml."
+author: "BMad"
+version: "1.0.0"
+
+# Critical variables from config
+config_source: "{project-root}/_bmad/bmm/config.yaml"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+implementation_artifacts: "{config_source}:implementation_artifacts"
+story_dir: "{implementation_artifacts}"
+
+# Workflow components
+installed_path: "{project-root}/_bmad/bmm/workflows/4-implementation/validate-all-epics"
+instructions: "{installed_path}/instructions.xml"
+
+# Variables
+variables:
+  sprint_status_file: "{implementation_artifacts}/sprint-status.yaml"
+  validation_mode: "fix"  # Options: "report-only", "fix"
+  parallel_validation: true  # Validate epics in parallel for speed
+
+# Sub-workflow
+validate_epic_workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/validate-epic-status/workflow.yaml"
+
+# Output
+default_output_file: "{story_dir}/.all-epics-validation-report.md"
+
+standalone: true
+web_bundle: false

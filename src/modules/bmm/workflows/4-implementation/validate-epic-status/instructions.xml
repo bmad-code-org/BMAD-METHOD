@@ -1,0 +1,302 @@
+<workflow>
+  <critical>The workflow execution engine is governed by: {project-root}/_bmad/core/tasks/workflow.xml</critical>
+  <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
+  <critical>This is VALIDATION-ONLY mode - NO implementation, only status correction</critical>
+  <critical>Uses same logic as autonomous-epic but READS instead of WRITES code</critical>
+
+  <step n="1" goal="Validate inputs and load epic">
+    <action>Check if {{epic_num}} was provided</action>
+
+    <check if="{{epic_num}} is empty">
+      <ask>Which epic should I validate? (e.g., 19, 16d, 16e, 9b)</ask>
+      <action>Store response as {{epic_num}}</action>
+    </check>
+
+    <action>Load {{sprint_status_file}}</action>
+
+    <check if="file not found">
+      <output>❌ sprint-status.yaml not found at: {{sprint_status_file}}
+
+Run /bmad:bmm:workflows:sprint-planning to create it first.
+      </output>
+      <action>HALT</action>
+    </check>
+
+    <action>Search for epic-{{epic_num}} entry in sprint_status_file</action>
+    <action>Extract all story entries for epic-{{epic_num}} (pattern: {{epic_num}}-*)</action>
+    <action>Count stories found in sprint-status.yaml for this epic</action>
+
+    <output>🔍 **Validating Epic {{epic_num}}**
+
+Found {{story_count}} stories in sprint-status.yaml
+Scanning story files for REALITY check...
+    </output>
+  </step>
+
+  <step n="2" goal="Scan and validate all story files">
+    <critical>This is where we determine TRUTH - not from status fields, but from actual file analysis</critical>
+
+    <action>For each story in epic (from sprint-status.yaml):
+      1. Build story file path: {{story_dir}}/{{story_key}}.md
+      2. Check if file exists
+      3. If exists, read FULL file
+      4. Analyze file content
+    </action>
+
+    <action>For each story file, extract:
+      - File size in KB
+      - Total task count (count all "- [ ]" and "- [x]" lines)
+      - Checked task count (count "- [x]" lines)
+      - Completion rate (checked / total * 100)
+      - Explicit Status: field (if present)
+      - Has proper BMAD structure (12 sections)
+      - Section count (count ## headings)
+    </action>
+
+    <output>📊 **Story File Quality Analysis**
+
+Analyzing {{story_count}} story files...
+    </output>
+
+    <action>For each story, classify quality:
+      VALID:
+        - File size >= 10KB
+        - Total tasks >= 5
+        - Has task list structure
+
+      INVALID:
+        - File size < 10KB (incomplete story)
+        - Total tasks < 5 (not detailed enough)
+        - File missing entirely
+    </action>
+
+    <action>Store results as {{story_quality_map}}</action>
+
+    <output>Quality Summary:
+  Valid stories: {{valid_count}}/{{story_count}}
+  Invalid stories: {{invalid_count}}
+  Missing files: {{missing_count}}
+    </output>
+  </step>
+
+  <step n="3" goal="Cross-reference git commits">
+    <action>Run git log to find commits mentioning epic stories:
+      Command: git log --oneline --since={{git_commit_lookback_days}} days ago
+    </action>
+
+    <action>Parse commit messages for story IDs matching pattern: {{epic_num}}-\d+[a-z]?</action>
+    <action>Build map of story_id → commit_count</action>
+
+    <output>Git Commit Evidence:
+  Stories with commits: {{stories_with_commits_count}}
+  Stories without commits: {{stories_without_commits_count}}
+    </output>
+  </step>
+
+  <step n="4" goal="Check autonomous completion reports">
+    <action>Search {{story_dir}} for files:
+      - .epic-{{epic_num}}-completion-report.md
+      - .autonomous-epic-{{epic_num}}-progress.yaml
+    </action>
+
+    <check if="autonomous report found">
+      <action>Parse completed_stories list from progress file OR
+              Parse ✅ story entries from completion report</action>
+      <action>Store as {{autonomous_completed_stories}}</action>
+
+      <output>📋 Autonomous Report Found:
+  {{autonomous_completed_count}} stories marked complete
+      </output>
+    </check>
+
+    <check if="no autonomous report">
+      <output>ℹ️  No autonomous completion report found (manual epic)</output>
+    </check>
+  </step>
+
+  <step n="5" goal="Infer correct status for each story">
+    <critical>Use MULTIPLE sources of truth, not just Status: field</critical>
+
+    <action>For each story in epic, determine correct status using this logic:</action>
+
+    <logic>
+    Priority 1: Autonomous completion report
+      IF story in autonomous_completed_stories
+      → Status = "done" (VERY HIGH confidence)
+
+    Priority 2: Task completion rate + file quality
+      IF completion_rate >= 90% AND file is VALID (>10KB, >5 tasks)
+      → Status = "done" (HIGH confidence)
+
+      IF completion_rate 50-89% AND file is VALID
+      → Status = "in-progress" (MEDIUM confidence)
+
+      IF completion_rate < 50% AND file is VALID
+      → Status = "ready-for-dev" (MEDIUM confidence)
+
+    Priority 3: Explicit Status: field (if no other evidence)
+      IF Status: field exists AND matches above inferences
+      → Use it (MEDIUM confidence)
+
+      IF Status: field conflicts with task completion
+      → Prefer task completion (tasks are ground truth)
+
+    Priority 4: Git commits (supporting evidence)
+      IF 3+ commits + task completion >=90%
+      → Upgrade confidence to VERY HIGH
+
+      IF 1-2 commits but task completion <50%
+      → Status = "in-progress" (work started but not done)
+
+    Quality Gates:
+      IF file size < 10KB OR total tasks < 5
+      → DOWNGRADE status (can't be "done" if file is incomplete)
+      → Mark as "ready-for-dev" (story needs proper creation)
+      → Flag for regeneration with /create-story
+
+    Missing Files:
+      IF story file doesn't exist
+      → Status = "backlog" (story not created yet)
+    </logic>
+
+    <action>Build map of story_id → inferred_status with evidence and confidence</action>
+
+    <output>📊 **Status Inference Complete**
+
+Stories to update:
+{{#each_story_needing_update}}
+  {{story_id}}:
+    Current: {{current_status_in_yaml}}
+    Inferred: {{inferred_status}}
+    Confidence: {{confidence}}
+    Evidence: {{evidence_summary}}
+    Quality: {{file_size_kb}}KB, {{total_tasks}} tasks, {{completion_rate}}% done
+{{/each}}
+    </output>
+  </step>
+
+  <step n="6" goal="Apply updates or report findings">
+    <check if="{{validation_mode}} == report-only">
+      <output>📝 **REPORT-ONLY MODE** - No changes will be made
+
+Recommendations saved to: {{default_output_file}}
+      </output>
+      <action>Write detailed report to {{default_output_file}}</action>
+      <action>EXIT workflow</action>
+    </check>
+
+    <check if="{{validation_mode}} == fix OR {{validation_mode}} == strict">
+      <output>🔧 **FIX MODE** - Updating sprint-status.yaml...
+
+Backing up to: .sprint-status-backups/
+      </output>
+
+      <action>Create backup of {{sprint_status_file}}</action>
+      <action>For each story needing update:
+        1. Find story entry in development_status section
+        2. Update status to inferred_status
+        3. Add comment: "✅ Validated {{date}} - {{evidence_summary}}"
+        4. Preserve all other content and structure
+      </action>
+
+      <action>Update epic-{{epic_num}} status based on story completion:
+        IF all stories have status "done" AND all are valid files
+        → epic status = "done"
+
+        IF any stories "in-progress" OR "review"
+        → epic status = "in-progress"
+
+        IF all stories "backlog" OR "ready-for-dev"
+        → epic status = "backlog"
+      </action>
+
+      <action>Update last_verified timestamp in header</action>
+      <action>Save {{sprint_status_file}}</action>
+
+      <output>✅ **sprint-status.yaml Updated**
+
+Applied {{updates_count}} story status corrections
+Epic {{epic_num}}: {{old_epic_status}} → {{new_epic_status}}
+
+Backup: {{backup_path}}
+      </output>
+    </check>
+  </step>
+
+  <step n="7" goal="Identify problem stories requiring action">
+    <action>Flag stories with issues:
+      - Missing story files (in sprint-status.yaml but no .md file)
+      - Invalid files (< 10KB or < 5 tasks)
+      - Conflicting evidence (Status: says done, tasks unchecked)
+      - Poor quality (no BMAD sections)
+    </action>
+
+    <output>⚠️  **Problem Stories Requiring Attention:**
+
+{{#if_missing_files}}
+**Missing Files ({{missing_count}}):**
+{{#each_missing}}
+  - {{story_id}}: Referenced in sprint-status.yaml but file not found
+    Action: Run /create-story OR remove from sprint-status.yaml
+{{/each}}
+{{/if}}
+
+{{#if_invalid_quality}}
+**Invalid Quality ({{invalid_count}}):**
+{{#each_invalid}}
+  - {{story_id}}: {{file_size_kb}}KB, {{total_tasks}} tasks
+    Action: Regenerate with /create-story-with-gap-analysis
+{{/each}}
+{{/if}}
+
+{{#if_conflicting_evidence}}
+**Conflicting Evidence ({{conflict_count}}):**
+{{#each_conflict}}
+  - {{story_id}}: Status: says "{{status_field}}" but {{completion_rate}}% tasks checked
+    Action: Manual review recommended
+{{/each}}
+{{/if}}
+    </output>
+  </step>
+
+  <step n="8" goal="Report results and recommendations">
+    <output>
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Epic {{epic_num}} Validation Complete
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+**Epic Status:** {{epic_status}}
+
+**Stories:**
+  Done: {{done_count}}
+  In-Progress: {{in_progress_count}}
+  Review: {{review_count}}
+  Ready-for-Dev: {{ready_count}}
+  Backlog: {{backlog_count}}
+
+**Quality:**
+  Valid: {{valid_count}} (>=10KB, >=5 tasks)
+  Invalid: {{invalid_count}} (poor quality)
+  Missing: {{missing_count}} (file not found)
+
+**Updates Applied:** {{updates_count}}
+
+**Next Steps:**
+{{#if_invalid_count_gt_0}}
+  1. Regenerate {{invalid_count}} invalid stories with /create-story
+{{/if}}
+{{#if_missing_count_gt_0}}
+  2. Create {{missing_count}} missing story files OR remove from sprint-status.yaml
+{{/if}}
+{{#if_done_count_eq_story_count}}
+  3. Epic complete! Consider running /retrospective
+{{/if}}
+{{#if_in_progress_count_gt_0}}
+  3. Continue with in-progress stories: /dev-story {{first_in_progress}}
+{{/if}}
+    </output>
+
+    <output>💾 Detailed report saved to: {{default_output_file}}</output>
+  </step>
+
+</workflow>
