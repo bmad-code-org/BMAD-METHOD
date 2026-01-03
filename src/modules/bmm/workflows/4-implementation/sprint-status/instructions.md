@@ -88,15 +88,31 @@ Enter corrections (e.g., "1=in-progress, 2=backlog") or "skip" to continue witho
 - IF any epic has status in-progress but has no associated stories: warn "in-progress epic has no stories"
   </step>
 
+<step n="2.5" goal="Load bug/feature tracking status (optional)">
+  <action>Check if {bugs_yaml} exists</action>
+  <check if="bugs_yaml exists">
+    <action>Grep for bug-NNN and feature-NNN entries with status field</action>
+    <action>Count items by status: triaged, fixed/implemented (pending verify), verified, closed</action>
+    <action>Identify items needing action:
+      - Items with [IMPLEMENTED] tag → need verification
+      - Items with status "triaged" + workflow "direct-fix" → ready for implementation
+    </action>
+    <action>Store: bugs_pending_verify, bugs_triaged, features_pending_verify, features_triaged</action>
+  </check>
+</step>
+
 <step n="3" goal="Select next action recommendation">
   <action>Pick the next recommended workflow using priority:</action>
   <note>When selecting "first" story: sort by epic number, then story number (e.g., 1-1 before 1-2 before 2-1)</note>
-  1. If any story status == in-progress → recommend `dev-story` for the first in-progress story
-  2. Else if any story status == review → recommend `code-review` for the first review story
-  3. Else if any story status == ready-for-dev → recommend `dev-story`
-  4. Else if any story status == backlog → recommend `create-story`
-  5. Else if any retrospective status == optional → recommend `retrospective`
-  6. Else → All implementation items done; suggest `workflow-status` to plan next phase
+  <note>Bug verification takes priority over new story work to close the feedback loop</note>
+  1. If any bug/feature has [IMPLEMENTED] tag (pending verify) → recommend `verify` for first pending item
+  2. If any story status == in-progress → recommend `dev-story` for the first in-progress story
+  3. Else if any story status == review → recommend `code-review` for the first review story
+  4. Else if any story status == ready-for-dev → recommend `dev-story`
+  5. Else if any bug status == triaged with workflow == direct-fix → recommend `implement` for first triaged bug
+  6. Else if any story status == backlog → recommend `create-story`
+  7. Else if any retrospective status == optional → recommend `retrospective`
+  8. Else → All implementation items done; suggest `workflow-status` to plan next phase
   <action>Store selected recommendation as: next_story_id, next_workflow_id, next_agent (SM/DEV as appropriate)</action>
 </step>
 
@@ -111,6 +127,11 @@ Enter corrections (e.g., "1=in-progress, 2=backlog") or "skip" to continue witho
 **Stories:** backlog {{count_backlog}}, ready-for-dev {{count_ready}}, in-progress {{count_in_progress}}, review {{count_review}}, done {{count_done}}
 
 **Epics:** backlog {{epic_backlog}}, in-progress {{epic_in_progress}}, done {{epic_done}}
+
+{{#if bugs_yaml_exists}}
+**Bugs:** triaged {{bugs_triaged}}, pending-verify {{bugs_pending_verify}}, closed {{bugs_closed}}
+**Features:** triaged {{features_triaged}}, pending-verify {{features_pending_verify}}, complete {{features_complete}}
+{{/if}}
 
 **Next Recommendation:** /bmad:bmm:workflows:{{next_workflow_id}} ({{next_story_id}})
 

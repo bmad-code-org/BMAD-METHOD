@@ -1,0 +1,123 @@
+<task id="{bmad_folder}/core/tasks/sync-bug-tracking.xml" name="Sync Bug Tracking">
+  <objective>Sync bugs.yaml and bugs.md when a story is marked done, updating related bugs to "fixed" and features to "implemented"</objective>
+
+  <description>
+    This task is invoked by workflows (story-done, code-review) after a story is marked done.
+    It searches bugs.yaml for bugs/features linked to the completed story and updates their status.
+    For multi-story features, it only marks "implemented" when ALL linked stories are done.
+  </description>
+
+  <inputs>
+    <input name="story_key" required="true">The story key (e.g., "3-7-checkout-from-club-detail-page")</input>
+    <input name="story_id" required="false">The story ID (e.g., "3.7") - used for related_story matching</input>
+    <input name="bugs_yaml" required="true">Path to bugs.yaml file</input>
+    <input name="bugs_md" required="true">Path to bugs.md file</input>
+    <input name="sprint_status" required="true">Path to sprint-status.yaml file</input>
+    <input name="date" required="true">Current date for timestamps</input>
+  </inputs>
+
+  <outputs>
+    <output name="bugs_updated">List of bug IDs marked as fixed</output>
+    <output name="features_updated">List of feature IDs marked as implemented</output>
+    <output name="features_pending">List of feature IDs with incomplete stories</output>
+  </outputs>
+
+  <flow>
+    <step n="1" goal="Load bugs.yaml and check for existence">
+      <action>Load {bugs_yaml} if it exists</action>
+      <check if="bugs.yaml does not exist">
+        <action>Set bugs_updated = [], features_updated = [], features_pending = []</action>
+        <action>Return early - no bug tracking to sync</action>
+      </check>
+    </step>
+
+    <step n="2" goal="Find matching bugs and features using multiple methods">
+      <action>Initialize: bugs_updated = [], features_updated = [], features_pending = []</action>
+
+      <action>Search for entries matching this story using ALL THREE methods:</action>
+      <action>1. Check sprint-status.yaml for comment "# Source: bugs.yaml/feature-XXX" or "# Source: bugs.yaml/bug-XXX" on the {story_key} line - this is the MOST RELIABLE method</action>
+      <action>2. Check related_story field in bugs.yaml matching {story_id} or {story_key}</action>
+      <action>3. Check sprint_stories arrays in feature_requests for entries containing {story_key}</action>
+
+      <critical>PRIORITY: Use sprint-status comment source if present - it's explicit and unambiguous</critical>
+    </step>
+
+    <step n="3" goal="Update matching bugs">
+      <check if="matching bugs found in bugs section">
+        <action>For each matching bug:</action>
+        <action>- Update status: "triaged" or "routed" or "in-progress" → "fixed"</action>
+        <action>- Set fixed_date: {date}</action>
+        <action>- Set assigned_to: "dev-agent" (if not already set)</action>
+        <action>- Append to notes: "Auto-closed via sync-bug-tracking. Story {story_key} marked done on {date}."</action>
+        <action>- Add bug ID to bugs_updated list</action>
+      </check>
+    </step>
+
+    <step n="4" goal="Update matching features (with multi-story check)">
+      <check if="matching features found in feature_requests section">
+        <action>For each matching feature (via related_story OR sprint_stories):</action>
+
+        <critical>MULTI-STORY FEATURE CHECK: If feature has sprint_stories array with multiple entries:</critical>
+        <action>1. Extract all story keys from sprint_stories (format: "story-key: status")</action>
+        <action>2. Load sprint-status.yaml and check development_status for EACH story</action>
+        <action>3. Only proceed if ALL stories in sprint_stories have status "done" in sprint-status.yaml</action>
+        <action>4. If any story is NOT done, add feature to features_pending and log: "Feature {feature_id} has incomplete stories: {incomplete_list}"</action>
+
+        <check if="ALL sprint_stories are done (or feature has single story that matches)">
+          <action>- Update status: "backlog" or "triaged" or "routed" or "in-progress" → "implemented"</action>
+          <action>- Set implemented_date: {date}</action>
+          <action>- Update sprint_stories entries to reflect done status</action>
+          <action>- Append to notes: "Auto-closed via sync-bug-tracking. Story {story_key} marked done on {date}."</action>
+          <action>- Add feature ID to features_updated list</action>
+        </check>
+      </check>
+    </step>
+
+    <step n="5" goal="Save bugs.yaml updates">
+      <check if="bugs_updated is not empty OR features_updated is not empty">
+        <action>Save updated bugs.yaml, preserving all structure and comments</action>
+      </check>
+    </step>
+
+    <step n="6" goal="Update bugs.md to match">
+      <check if="bugs_updated is not empty OR features_updated is not empty">
+        <action>Load {bugs_md}</action>
+
+        <check if="bugs_updated is not empty">
+          <action>For each bug in bugs_updated:</action>
+          <action>- Find the bug entry in "# Tracked Bugs" section</action>
+          <action>- Move it to "# Fixed Bugs" section</action>
+          <action>- Add [IMPLEMENTED] tag prefix with date: "[IMPLEMENTED] bug-XXX: Title [Fixed: {date}, Verified: pending]"</action>
+        </check>
+
+        <check if="features_updated is not empty">
+          <action>For each feature in features_updated:</action>
+          <action>- Find the feature entry in "# Tracked Feature Requests" section</action>
+          <action>- Move it to "# Implemented Features" section</action>
+          <action>- Add [IMPLEMENTED] tag prefix with date: "[IMPLEMENTED] feature-XXX: Title [Implemented: {date}, Verified: pending]"</action>
+        </check>
+
+        <action>Update statistics section if present</action>
+        <action>Save updated bugs.md</action>
+      </check>
+    </step>
+
+    <step n="7" goal="Return results">
+      <output>
+Bug/Feature Sync Results:
+{{#if bugs_updated}}
+- Bugs marked fixed: {{bugs_updated}}
+{{/if}}
+{{#if features_updated}}
+- Features marked implemented: {{features_updated}}
+{{/if}}
+{{#if features_pending}}
+- Features with incomplete stories (not yet implemented): {{features_pending}}
+{{/if}}
+{{#if no_matches}}
+- No related bugs/features found for story {story_key}
+{{/if}}
+      </output>
+    </step>
+  </flow>
+</task>

@@ -33,6 +33,10 @@ variables:
   epics_location: "{planning_artifacts}" # Directory containing epic*.md files
   epics_pattern: "epic*.md" # Pattern to find epic files
 
+  # Bug tracking integration (optional)
+  bugs_yaml: "{planning_artifacts}/bugs.yaml" # Structured bug/feature metadata
+  bugs_md: "{planning_artifacts}/bugs.md" # Human-readable bug tracking
+
   # Output configuration
   status_file: "{implementation_artifacts}/sprint-status.yaml"
 
