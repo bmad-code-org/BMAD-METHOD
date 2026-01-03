@@ -1,0 +1,79 @@
+workflow:
+  id: project-analysis
+  name: Project Status Analysis
+  description: Systematic analysis of project structure and completion status
+  agent: freya-ux
+
+  trigger:
+    on_activation: true
+    keywords: ["analyze", "status", "where are we", "project overview"]
+
+  phases:
+    - phase: identify
+      name: Identify Project Structure
+      task: identify-project-structure
+      output: project_structure
+      # Detects: v6 (WDS numbered workflows) | v4 (WPS2C letter folders) | unknown
+
+    - phase: analyze_v6
+      name: Analyze WDS v6 Project
+      depends_on: identify
+      condition: project_structure == "wds_v6"
+      tasks:
+        - check-phase-1-project-brief
+        - check-phase-2-trigger-mapping
+        - check-phase-3-prd-platform
+        - check-phase-4-ux-design
+        - check-phase-5-design-system
+        - check-phase-6-design-deliveries
+        - check-phase-7-testing
+        - check-phase-8-ongoing-development
+      output: project_status
+
+    - phase: analyze_v4
+      name: Analyze WPS2C v4 Project
+      depends_on: identify
+      condition: project_structure == "wps2c_v4"
+      action: fetch_wps2c_instructions
+      github_repo: "whiteport-sketch-to-code-bmad-expansion"
+      github_path: "docs/agents/freya-ux.md"
+      output: project_status
+
+    - phase: recommend
+      name: Recommend Next Actions
+      depends_on: analyze
+      output: recommendations
+
+  presentation:
+    style: branded
+    greeting: "🎨 Freya - WDS Designer Agent"
+    working: "Analyzing your workspace..."
+    format:
+      complete: "✅"
+      in_progress: "🔄"
+      not_started: "📋"
+      suggestion: "💡"
+    max_lines: 20
+
+  agent_handoffs:
+    empty_project:
+      agent: saga-analyst
+      reason: "Saga WDS Analyst Agent - Project needs initial Product Brief"
+    phase_1_project_brief:
+      agent: saga-analyst
+      reason: "Saga WDS Analyst Agent - Specializes in stakeholder interviews and requirements"
+    phase_2_trigger_mapping:
+      agent: saga-analyst
+      reason: "Saga WDS Analyst Agent - Specializes in user research and persona development"
+    phase_3_prd_platform:
+      agent: idunn-pm
+      reason: "Idunn WDS PM Agent - Handles PRD and technical architecture"
+    phase_4_ux_design:
+      agent: freya-ux
+      reason: "Freya WDS Designer Agent - Specializes in UX design and scenario creation"
+    phase_5_design_system:
+      agent: freya-ux
+      reason: "Freya WDS Designer Agent - Manages design system development"
+    phase_6_7_8_development:
+      agent: idunn-pm
+      reason: "Idunn WDS PM Agent - Handles deliveries, testing, and ongoing development"

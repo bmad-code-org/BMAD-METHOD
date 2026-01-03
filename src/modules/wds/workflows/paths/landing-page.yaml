@@ -1,0 +1,53 @@
+# WDS Landing Page Path
+# Context + Phases 4, optional 5 - streamlined for simple projects
+
+path_name: "Landing Page"
+path_id: "landing-page"
+description: "Streamlined design for marketing sites, single-page apps, and simple projects"
+
+phases:
+  - phase: 1
+    name: "Project Brief"
+    artifact: "Project Brief"
+    folder_letter: "A"
+    folder_number: "01"
+    folder_name: "Product-Brief"
+    required: true
+    brief_level: "simplified"
+    workflows:
+      - id: "simplified-brief"
+        required: true
+        agent: "saga-analyst"
+        command: "simplified-brief"
+        output: "Simplified brief: scope, challenge, opportunity, goals"
+        note: "5-10 minutes - perfect for simple landing pages"
+
+  - phase: 4
+    name: "UX Design"
+    artifact: "Scenarios"
+    folder_letter: "C"
+    folder_number: "02"
+    folder_name: "Scenarios"
+    required: true
+    workflows:
+      - id: "ux-design"
+        required: true
+        agent: "freya-wds-designer"
+        command: "ux-design"
+        output: "Page specifications, prototypes"
+        note: "Usually just 1-3 pages for landing page projects"
+
+  - phase: 5
+    name: "Design System"
+    artifact: "Component Library"
+    folder_letter: "D"
+    folder_number: "03"
+    folder_name: "Design-System"
+    conditional: "include_design_system"
+    workflows:
+      - id: "design-system"
+        conditional: "include_design_system"
+        agent: "freya-wds-designer"
+        command: "design-system"
+        output: "Component documentation"
+        note: "Optional - skip for truly simple one-off pages"

@@ -1,0 +1,57 @@
+# WDS Phase 2: Trigger Mapping
+name: trigger-mapping
+description: "Map business goals to user psychology through structured workshops"
+author: "Whiteport Design Studio"
+phase: 2
+
+# Based on Effect Mapping by Mijo Balic & Ingrid Domingues (inUse)
+# Adapted by WDS: simplified (no features), enhanced with negative driving forces
+
+# Critical variables from config
+config_source: "{project-root}/{bmad_folder}/wds/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+project_name: "{config_source}:project_name"
+communication_language: "{config_source}:communication_language"
+document_output_language: "{config_source}:document_output_language"
+date: system-generated
+
+# Workflow components
+installed_path: "{project-root}/{bmad_folder}/wds/workflows/2-trigger-mapping"
+instructions: "{installed_path}/instructions.md"
+
+# Workshop micro-workflows
+workshops:
+  business-goals:
+    instructions: "{installed_path}/workshops/1-business-goals/instructions.md"
+    output: "Vision and SMART objectives"
+  target-groups:
+    instructions: "{installed_path}/workshops/2-target-groups/instructions.md"
+    output: "Personas with descriptions"
+  driving-forces:
+    instructions: "{installed_path}/workshops/3-driving-forces/instructions.md"
+    output: "Positive and negative drivers per group"
+  prioritization:
+    instructions: "{installed_path}/workshops/4-prioritization/instructions.md"
+    output: "Ranked groups and drivers"
+  feature-impact:
+    instructions: "{installed_path}/workshops/5-feature-impact/instructions.md"
+    output: "Features scored against priorities"
+
+# Templates
+templates:
+  trigger_map: "{installed_path}/templates/trigger-map.template.md"
+  feature_impact: "{installed_path}/templates/feature-impact.template.md"
+
+# Output configuration
+output_folder_name: "B-Trigger-Map"
+output_files:
+  - "trigger-map.md"
+  - "personas/"
+  - "feature-impact-analysis.md"
+
+# Agent assignment
+primary_agent: "saga-analyst"
+
+standalone: true
+web_bundle: false

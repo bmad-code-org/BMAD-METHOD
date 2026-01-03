@@ -1,0 +1,61 @@
+# WDS Design System Only Path
+# Context + Phases 4, 5 - for building component libraries
+
+path_name: "Design System Only"
+path_id: "design-system-only"
+description: "Build a component library without full product design"
+
+phases:
+  - phase: 1
+    name: "Project Brief"
+    artifact: "Project Brief"
+    folder_letter: "A"
+    folder_number: "01"
+    folder_name: "Product-Brief"
+    required: true
+    brief_options:
+      - level: "simplified"
+        workflows:
+          - id: "simplified-brief"
+            required: true
+            agent: "saga-analyst"
+            command: "simplified-brief"
+            output: "Simplified brief: scope, design principles, target applications"
+            note: "Establish the design system's purpose and constraints"
+      - level: "complete"
+        workflows:
+          - id: "product-exploration"
+            required: true
+            agent: "saga-analyst"
+            command: "product-exploration"
+            output: "Complete Project Brief"
+
+  - phase: 4
+    name: "UX Design"
+    artifact: "Component Designs"
+    folder_letter: "C"
+    folder_number: "02"
+    folder_name: "Scenarios"
+    required: true
+    workflows:
+      - id: "ux-design"
+        required: true
+        agent: "freya-wds-designer"
+        command: "ux-design"
+        output: "Component specifications and examples"
+        note: "Design components through example usage scenarios"
+
+  - phase: 5
+    name: "Design System"
+    artifact: "Component Library"
+    folder_letter: "D"
+    folder_number: "02"
+    folder_name: "Design-System"
+    required: true
+    workflows:
+      - id: "design-system"
+        required: true
+        agent: "freya-wds-designer"
+        command: "design-system"
+        output: "Complete component documentation, HTML showcase"
+        note: "The primary deliverable for this path"
