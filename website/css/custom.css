@@ -1,49 +1,415 @@
 /**
- * BMAD Documentation Custom Styles
+ * BMAD Method Documentation - Custom Styles
+ * Electric Blue theme optimized for dark mode
  */
 
+/* ============================================
+   COLOR PALETTE - Light Mode
+   ============================================ */
 :root {
-  --ifm-color-primary: #0d9488;
-  --ifm-color-primary-dark: #0b847a;
-  --ifm-color-primary-darker: #0a7d73;
-  --ifm-color-primary-darkest: #08665f;
-  --ifm-color-primary-light: #0fa596;
-  --ifm-color-primary-lighter: #10ac9d;
-  --ifm-color-primary-lightest: #14c9b8;
+  --ifm-color-primary: #2563eb;
+  --ifm-color-primary-dark: #1d4ed8;
+  --ifm-color-primary-darker: #1e40af;
+  --ifm-color-primary-darkest: #1e3a8a;
+  --ifm-color-primary-light: #3b82f6;
+  --ifm-color-primary-lighter: #60a5fa;
+  --ifm-color-primary-lightest: #93c5fd;
   --ifm-code-font-size: 95%;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+  --docusaurus-highlighted-code-line-bg: rgba(37, 99, 235, 0.1);
 }
 
+/* ============================================
+   COLOR PALETTE - Dark Mode (Primary Focus)
+   ============================================ */
 [data-theme='dark'] {
-  --ifm-color-primary: #2dd4bf;
-  --ifm-color-primary-dark: #1bc4af;
-  --ifm-color-primary-darker: #1ab9a5;
-  --ifm-color-primary-darkest: #159888;
-  --ifm-color-primary-light: #4adcc9;
-  --ifm-color-primary-lighter: #55dece;
-  --ifm-color-primary-lightest: #7de7db;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+  --ifm-color-primary: #60a5fa;
+  --ifm-color-primary-dark: #3b82f6;
+  --ifm-color-primary-darker: #2563eb;
+  --ifm-color-primary-darkest: #1d4ed8;
+  --ifm-color-primary-light: #93c5fd;
+  --ifm-color-primary-lighter: #bfdbfe;
+  --ifm-color-primary-lightest: #dbeafe;
+  --docusaurus-highlighted-code-line-bg: rgba(96, 165, 250, 0.15);
+
+  /* Dark mode background refinements */
+  --ifm-background-color: #0f172a;
+  --ifm-background-surface-color: #1e293b;
+  --ifm-navbar-background-color: #0f172a;
+  --ifm-footer-background-color: #020617;
 }
 
-/* Navbar styling */
+/* ============================================
+   TYPOGRAPHY
+   ============================================ */
+:root {
+  --ifm-font-size-base: 100%;
+  --ifm-line-height-base: 1.7;
+  --ifm-heading-font-weight: 600;
+  --ifm-font-weight-semibold: 600;
+}
+
+.markdown h1 {
+  margin-bottom: 1.5rem;
+}
+
+.markdown h2 {
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.markdown h3 {
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+}
+
+.markdown p {
+  margin-bottom: 1.25rem;
+}
+
+/* ============================================
+   SIDEBAR & NAVIGATION
+   Clean, React Native-inspired styling
+   ============================================ */
+
+/* Base transition for all sidebar links */
+.menu__link {
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  border-radius: 4px;
+}
+
+/*
+ * LEVEL 1 - Main Diataxis categories (Tutorials, How-To, Explanation, Reference)
+ * Bold headers with generous spacing between sections
+ */
+.theme-doc-sidebar-menu > .menu__list-item {
+  margin-top: 0.75rem;
+}
+
+.theme-doc-sidebar-menu > .menu__list-item:first-child {
+  margin-top: 0;
+}
+
+.theme-doc-sidebar-menu > .menu__list-item > .menu__link,
+.theme-doc-sidebar-menu > .menu__list-item > .menu__link--sublist-caret {
+  font-weight: 700;
+  font-size: 0.9375rem;
+  color: var(--ifm-font-color-base);
+  padding: 0.5rem 0.75rem;
+}
+
+.theme-doc-sidebar-menu > .menu__list-item > .menu__link:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+[data-theme='dark'] .theme-doc-sidebar-menu > .menu__list-item > .menu__link:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/*
+ * Section index files (first item under each category)
+ * Should match category header styling - bold, not smaller
+ */
+.theme-doc-sidebar-menu > .menu__list-item > .menu__list > .menu__list-item:first-child > .menu__link {
+  font-weight: 600;
+  font-size: 0.9375rem;
+  color: var(--ifm-font-color-base);
+  padding: 0.5rem 0.75rem;
+  padding-left: 1.5rem;
+  border-left: 3px solid transparent;
+}
+
+/*
+ * LEVEL 2 - Subcategories (Getting Started, Installation, etc.)
+ * Semi-bold, slightly indented
+ */
+.theme-doc-sidebar-menu > .menu__list-item > .menu__list > .menu__list-item > .menu__link {
+  font-weight: 500;
+  font-size: 0.875rem;
+  color: var(--ifm-color-emphasis-700);
+  padding: 0.375rem 0.75rem;
+  padding-left: 1.5rem;
+  border-left: 3px solid transparent;
+}
+
+.theme-doc-sidebar-menu > .menu__list-item > .menu__list > .menu__list-item > .menu__link:hover {
+  background-color: rgba(0, 0, 0, 0.03);
+  color: var(--ifm-font-color-base);
+}
+
+[data-theme='dark'] .theme-doc-sidebar-menu > .menu__list-item > .menu__list > .menu__list-item > .menu__link {
+  color: var(--ifm-color-emphasis-500);
+}
+
+[data-theme='dark'] .theme-doc-sidebar-menu > .menu__list-item > .menu__list > .menu__list-item > .menu__link:hover {
+  background-color: rgba(255, 255, 255, 0.03);
+  color: var(--ifm-color-emphasis-300);
+}
+
+/*
+ * LEVEL 3+ - Individual docs within subcategories
+ * Regular weight, more indented
+ */
+.theme-doc-sidebar-menu > .menu__list-item > .menu__list > .menu__list-item > .menu__list .menu__link {
+  font-weight: 400;
+  font-size: 0.8125rem;
+  color: var(--ifm-color-emphasis-600);
+  padding: 0.3rem 0.75rem;
+  padding-left: 2.25rem;
+  border-left: 3px solid transparent;
+}
+
+.theme-doc-sidebar-menu > .menu__list-item > .menu__list > .menu__list-item > .menu__list .menu__link:hover {
+  background-color: rgba(0, 0, 0, 0.03);
+  color: var(--ifm-color-emphasis-800);
+}
+
+[data-theme='dark'] .theme-doc-sidebar-menu > .menu__list-item > .menu__list > .menu__list-item > .menu__list .menu__link {
+  color: var(--ifm-color-emphasis-600);
+}
+
+[data-theme='dark'] .theme-doc-sidebar-menu > .menu__list-item > .menu__list > .menu__list-item > .menu__list .menu__link:hover {
+  background-color: rgba(255, 255, 255, 0.03);
+  color: var(--ifm-color-emphasis-400);
+}
+
+/*
+ * ACTIVE STATES - Thin left accent bar like React Native docs
+ */
+.menu__link--active:not(.menu__link--sublist) {
+  background-color: rgba(37, 99, 235, 0.08) !important;
+  color: var(--ifm-color-primary) !important;
+  border-left-color: var(--ifm-color-primary) !important;
+  font-weight: 600 !important;
+}
+
+[data-theme='dark'] .menu__link--active:not(.menu__link--sublist) {
+  background-color: rgba(96, 165, 250, 0.1) !important;
+  color: var(--ifm-color-primary-light) !important;
+  border-left-color: var(--ifm-color-primary-light) !important;
+}
+
+/* Category headers when expanded - subtle indication */
+.theme-doc-sidebar-menu > .menu__list-item > .menu__link--sublist.menu__link--active {
+  color: var(--ifm-font-color-base);
+}
+
+[data-theme='dark'] .theme-doc-sidebar-menu > .menu__list-item > .menu__link--sublist.menu__link--active {
+  color: var(--ifm-color-emphasis-200);
+}
+
+/* ============================================
+   NAVBAR
+   ============================================ */
 .navbar {
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
+  padding: 0.75rem 1rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-/* Footer styling */
-.footer {
-  background-color: var(--ifm-color-primary-darkest);
+.navbar__title {
+  font-weight: 700;
 }
 
-/* Code block improvements */
-.prism-code {
-  font-size: 0.9rem;
+.navbar__link {
+  font-weight: 500;
+  font-size: 0.95rem;
+  padding: 0.5rem 0.875rem;
+  margin: 0 0.125rem;
+  border-radius: 6px;
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
 
-/* Table improvements */
+.navbar__link:hover {
+  color: var(--ifm-color-primary);
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.navbar__link--active {
+  font-weight: 600;
+}
+
+[data-theme='dark'] .navbar {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme='dark'] .navbar__link:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Social icon links */
+.navbar__link--discord,
+.navbar__link--github {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+}
+
+.navbar__link--discord::before,
+.navbar__link--github::before {
+  content: '';
+  width: 24px;
+  height: 24px;
+  display: block;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.navbar__link--discord::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 127.14 96.36'%3E%3Cpath fill='%2364748b' d='M107.7 8.07A105.15 105.15 0 0 0 81.47 0a72.06 72.06 0 0 0-3.36 6.83 97.68 97.68 0 0 0-29.11 0A72.37 72.37 0 0 0 45.64 0a105.89 105.89 0 0 0-26.25 8.09C2.79 32.65-1.71 56.6.54 80.21a105.73 105.73 0 0 0 32.17 16.15 77.7 77.7 0 0 0 6.89-11.11 68.42 68.42 0 0 1-10.85-5.18c.91-.66 1.8-1.34 2.66-2a75.57 75.57 0 0 0 64.32 0c.87.71 1.76 1.39 2.66 2a68.68 68.68 0 0 1-10.87 5.19 77 77 0 0 0 6.89 11.1 105.25 105.25 0 0 0 32.19-16.14c2.64-27.38-4.51-51.11-18.9-72.15ZM42.45 65.69C36.18 65.69 31 60 31 53s5-12.74 11.43-12.74S54 46 53.89 53s-5.05 12.69-11.44 12.69Zm42.24 0C78.41 65.69 73.25 60 73.25 53s5-12.74 11.44-12.74S96.23 46 96.12 53s-5.04 12.69-11.43 12.69Z'/%3E%3C/svg%3E");
+}
+
+.navbar__link--github::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%2364748b' d='M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z'/%3E%3C/svg%3E");
+}
+
+.navbar__link--discord:hover::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 127.14 96.36'%3E%3Cpath fill='%235865F2' d='M107.7 8.07A105.15 105.15 0 0 0 81.47 0a72.06 72.06 0 0 0-3.36 6.83 97.68 97.68 0 0 0-29.11 0A72.37 72.37 0 0 0 45.64 0a105.89 105.89 0 0 0-26.25 8.09C2.79 32.65-1.71 56.6.54 80.21a105.73 105.73 0 0 0 32.17 16.15 77.7 77.7 0 0 0 6.89-11.11 68.42 68.42 0 0 1-10.85-5.18c.91-.66 1.8-1.34 2.66-2a75.57 75.57 0 0 0 64.32 0c.87.71 1.76 1.39 2.66 2a68.68 68.68 0 0 1-10.87 5.19 77 77 0 0 0 6.89 11.1 105.25 105.25 0 0 0 32.19-16.14c2.64-27.38-4.51-51.11-18.9-72.15ZM42.45 65.69C36.18 65.69 31 60 31 53s5-12.74 11.43-12.74S54 46 53.89 53s-5.05 12.69-11.44 12.69Zm42.24 0C78.41 65.69 73.25 60 73.25 53s5-12.74 11.44-12.74S96.23 46 96.12 53s-5.04 12.69-11.43 12.69Z'/%3E%3C/svg%3E");
+}
+
+.navbar__link--github:hover::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%2360a5fa' d='M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z'/%3E%3C/svg%3E");
+}
+
+[data-theme='dark'] .navbar__link--discord::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 127.14 96.36'%3E%3Cpath fill='%2394a3b8' d='M107.7 8.07A105.15 105.15 0 0 0 81.47 0a72.06 72.06 0 0 0-3.36 6.83 97.68 97.68 0 0 0-29.11 0A72.37 72.37 0 0 0 45.64 0a105.89 105.89 0 0 0-26.25 8.09C2.79 32.65-1.71 56.6.54 80.21a105.73 105.73 0 0 0 32.17 16.15 77.7 77.7 0 0 0 6.89-11.11 68.42 68.42 0 0 1-10.85-5.18c.91-.66 1.8-1.34 2.66-2a75.57 75.57 0 0 0 64.32 0c.87.71 1.76 1.39 2.66 2a68.68 68.68 0 0 1-10.87 5.19 77 77 0 0 0 6.89 11.1 105.25 105.25 0 0 0 32.19-16.14c2.64-27.38-4.51-51.11-18.9-72.15ZM42.45 65.69C36.18 65.69 31 60 31 53s5-12.74 11.43-12.74S54 46 53.89 53s-5.05 12.69-11.44 12.69Zm42.24 0C78.41 65.69 73.25 60 73.25 53s5-12.74 11.44-12.74S96.23 46 96.12 53s-5.04 12.69-11.43 12.69Z'/%3E%3C/svg%3E");
+}
+
+[data-theme='dark'] .navbar__link--github::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%2394a3b8' d='M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z'/%3E%3C/svg%3E");
+}
+
+/* ============================================
+   CARDS (Welcome page)
+   ============================================ */
+
+/* Equal height cards */
+.row:has(.card) {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.row:has(.card) > [class*="col"] {
+  display: flex;
+}
+
+.card {
+  border-radius: 12px;
+  border: 2px solid var(--ifm-color-emphasis-300);
+  background-color: var(--ifm-background-color);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.card__body {
+  flex: 1;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  border-color: var(--ifm-color-primary);
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.15);
+}
+
+.card__header h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.card__body {
+  color: var(--ifm-color-emphasis-700);
+}
+
+.card__footer {
+  padding-top: 0;
+}
+
+[data-theme='dark'] .card {
+  background: linear-gradient(
+    145deg,
+    rgba(30, 41, 59, 0.6),
+    rgba(15, 23, 42, 0.8)
+  );
+  border-color: rgba(96, 165, 250, 0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme='dark'] .card:hover {
+  border-color: rgba(96, 165, 250, 0.5);
+  box-shadow:
+    0 8px 32px rgba(96, 165, 250, 0.2),
+    0 0 0 1px rgba(96, 165, 250, 0.1);
+}
+
+[data-theme='dark'] .card__body {
+  color: var(--ifm-color-emphasis-500);
+}
+
+/* ============================================
+   BUTTONS
+   ============================================ */
+.button--primary {
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.button--primary:hover {
+  transform: translateY(-1px);
+}
+
+[data-theme='dark'] .button--primary {
+  background-color: var(--ifm-color-primary-dark);
+}
+
+[data-theme='dark'] .button--primary:hover {
+  background-color: var(--ifm-color-primary);
+}
+
+/* ============================================
+   MISC ENHANCEMENTS
+   ============================================ */
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Better link underlines */
+.markdown a:not(.hash-link) {
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+/* Table styling */
 table {
   display: table;
   width: 100%;
+}
+
+[data-theme='dark'] table {
+  border-color: rgba(96, 165, 250, 0.1);
+}
+
+[data-theme='dark'] table th {
+  background-color: rgba(96, 165, 250, 0.05);
+}
+
+[data-theme='dark'] table tr:nth-child(2n) {
+  background-color: rgba(96, 165, 250, 0.02);
+}
+
+/* Blockquotes */
+blockquote {
+  border-left-color: var(--ifm-color-primary);
+  background-color: rgba(96, 165, 250, 0.05);
+  border-radius: 0 8px 8px 0;
+  padding: 1rem 1.25rem;
+}
+
+[data-theme='dark'] blockquote {
+  background-color: rgba(96, 165, 250, 0.05);
 }
 
 /* Admonition improvements */

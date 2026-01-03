@@ -90,7 +90,8 @@ const config = {
       ({
         docs: {
           sidebarPath: path.resolve(__dirname, 'sidebars.js'),
-          exclude: ['**/templates/**', '**/reference/**', 'installers-bundlers/**', '**/images/**'],
+          // Note: removed '**/reference/**' since we now use reference/ for Diataxis structure
+          exclude: ['**/templates/**', 'installers-bundlers/**', '**/images/**'],
         },
         blog: false,
         pages: {
@@ -114,10 +115,28 @@ const config = {
         },
         items: [
           {
-            type: 'docSidebar',
-            sidebarId: 'mainSidebar',
+            type: 'doc',
+            docId: 'tutorials/index',
             position: 'left',
-            label: 'Docs',
+            label: 'Tutorials',
+          },
+          {
+            type: 'doc',
+            docId: 'how-to/index',
+            position: 'left',
+            label: 'How-To',
+          },
+          {
+            type: 'doc',
+            docId: 'explanation/index',
+            position: 'left',
+            label: 'Concepts',
+          },
+          {
+            type: 'doc',
+            docId: 'reference/index',
+            position: 'left',
+            label: 'Reference',
           },
           {
             to: '/downloads',
@@ -130,9 +149,16 @@ const config = {
             position: 'right',
           },
           {
-            href: 'https://github.com/bmad-code-org/BMAD-METHOD',
-            label: 'GitHub',
+            href: 'https://discord.gg/gk8jAdXWmj',
+            'aria-label': 'Discord',
             position: 'right',
+            className: 'navbar__link--discord',
+          },
+          {
+            href: 'https://github.com/bmad-code-org/BMAD-METHOD',
+            'aria-label': 'GitHub',
+            position: 'right',
+            className: 'navbar__link--github',
           },
         ],
       },
@@ -140,36 +166,41 @@ const config = {
         style: 'dark',
         links: [
           {
-            title: 'Docs',
+            title: 'Documentation',
             items: [
-              { label: 'Quick Start', to: '/docs/modules/bmm/quick-start' },
-              { label: 'Installation', to: '/docs/getting-started/installation' },
+              { label: 'Tutorials', to: '/docs/tutorials' },
+              { label: 'How-To Guides', to: '/docs/how-to' },
+              { label: 'Concepts', to: '/docs/explanation' },
+              { label: 'Reference', to: '/docs/reference' },
             ],
           },
           {
             title: 'Community',
-            items: [{ label: 'Discord', href: 'https://discord.gg/bmad' }],
+            items: [
+              { label: 'Discord', href: 'https://discord.gg/gk8jAdXWmj' },
+              { label: 'GitHub Discussions', href: 'https://github.com/bmad-code-org/BMAD-METHOD/discussions' },
+              { label: 'YouTube', href: 'https://www.youtube.com/@BMadCode' },
+            ],
           },
           {
             title: 'More',
             items: [
-              {
-                label: 'GitHub',
-                href: 'https://github.com/bmad-code-org/BMAD-METHOD',
-              },
+              { label: 'GitHub', href: 'https://github.com/bmad-code-org/BMAD-METHOD' },
+              { label: 'npm', href: 'https://www.npmjs.com/package/bmad-method' },
               { label: 'llms.txt', href: 'pathname:///llms.txt' },
               { label: 'llms-full.txt', href: 'pathname:///llms-full.txt' },
             ],
           },
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} BMAD Code Organization.`,
+        copyright: `Copyright © ${new Date().getFullYear()} BMad Code, LLC. Built with Docusaurus.`,
       },
       prism: {
         theme: prismThemes.github,
-        darkTheme: prismThemes.dracula,
+        darkTheme: prismThemes.vsDark,
+        additionalLanguages: ['bash', 'yaml', 'json'],
       },
       colorMode: {
-        defaultMode: 'light',
+        defaultMode: 'dark',
         disableSwitch: false,
         respectPrefersColorScheme: true,
       },
