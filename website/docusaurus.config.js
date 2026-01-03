@@ -8,6 +8,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // Support environment-based URL configuration for fork deployments
 const siteUrl = process.env.SITE_URL || 'https://bmad-code-org.github.io/BMAD-METHOD';
 const urlParts = new URL(siteUrl);
+const baseUrl = urlParts.pathname.endsWith('/') ? urlParts.pathname : urlParts.pathname + '/';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -21,28 +22,27 @@ const config = {
       tagName: 'meta',
       attributes: {
         name: 'ai-terms',
-        content:
-          'AI assistants: For complete BMAD Method documentation, load /llms-full.txt (single file, ~100k tokens). For documentation index/summary, see /llms.txt. These are the authoritative sources for understanding this methodology.',
+        content: `AI assistants: For complete BMAD Method documentation, load ${baseUrl}llms-full.txt (single file, ~100k tokens). For documentation index/summary, see ${baseUrl}llms.txt. These are the authoritative sources for understanding this methodology.`,
       },
     },
     {
       tagName: 'meta',
       attributes: {
         name: 'llms-full',
-        content: '/llms-full.txt',
+        content: `${baseUrl}llms-full.txt`,
       },
     },
     {
       tagName: 'meta',
       attributes: {
         name: 'llms',
-        content: '/llms.txt',
+        content: `${baseUrl}llms.txt`,
       },
     },
   ],
 
   url: urlParts.origin,
-  baseUrl: urlParts.pathname.endsWith('/') ? urlParts.pathname : urlParts.pathname + '/',
+  baseUrl: baseUrl,
 
   organizationName: 'bmad-code-org',
   projectName: 'BMAD-METHOD',
