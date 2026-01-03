@@ -186,13 +186,13 @@ See: [workflow-status instructions](../workflows/workflow-status/instructions.md
 - When inheriting undocumented codebase
 - Creating onboarding documentation
 
-See: [document-project reference](./workflow-document-project-reference.md)
+See: [document-project reference](../../reference/workflows/index.md)
 
 ## Related Documentation
 
-- [Phase 1: Analysis Workflows](./workflows-analysis.md)
-- [Phase 2: Planning Workflows](./workflows-planning.md)
-- [Phase 3: Solutioning Workflows](./workflows-solutioning.md)
+- [Phase 1: Analysis Workflows](../../how-to/workflows/run-brainstorming-session.md)
+- [Phase 2: Planning Workflows](../../how-to/workflows/create-prd.md)
+- [Phase 3: Solutioning Workflows](../../how-to/workflows/create-architecture.md)
 
 ## Troubleshooting
 

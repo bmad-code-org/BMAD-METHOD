@@ -402,6 +402,6 @@ The `project-context.md` file (if present) serves as the authoritative source fo
 
 ## Next Steps
 
-- **[Quick Start Guide](./quick-start.md)** - Get started with BMGD
-- **[Workflows Guide](./workflows-guide.md)** - Detailed workflow reference
-- **[Game Types Guide](./game-types-guide.md)** - Game type templates
+- **[Quick Start Guide](../../tutorials/getting-started/quick-start-bmgd.md)** - Get started with BMGD
+- **[Workflows Guide](../../reference/workflows/index.md)** - Detailed workflow reference
+- **[Game Types Guide](../../explanation/game-dev/game-types.md)** - Game type templates

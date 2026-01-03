@@ -26,7 +26,7 @@ Quick answers to common questions about the BMad Method Module.
 - Creates the tracking status file
 - Routes you to the correct starting workflow
 
-For experienced users: use the [Quick Reference](./quick-start.md#quick-reference-agent-document-mapping) to go directly to the right agent/workflow.
+For experienced users: use the [Quick Reference](../../tutorials/getting-started/quick-start-bmm.md#quick-reference-agent-document-mapping) to go directly to the right agent/workflow.
 
 ### Q: Why do I need fresh chats for each workflow?
 
@@ -500,7 +500,7 @@ Trust your expertise - BMM supports your decisions.
 
 **For complete documentation:**
 
-👉 **[Party Mode Guide](./party-mode.md)** - How it works, when to use it, example compositions, best practices
+👉 **[Party Mode Guide](../../explanation/features/party-mode.md)** - How it works, when to use it, example compositions, best practices
 
 ---
 
@@ -530,10 +530,10 @@ Please include:
 
 ## Related Documentation
 
-- [Quick Start Guide](./quick-start.md) - Get started with BMM
-- [Glossary](./glossary.md) - Terminology reference
+- [Quick Start Guide](../../tutorials/getting-started/quick-start-bmm.md) - Get started with BMM
+- [Glossary](../../reference/glossary/index.md) - Terminology reference
 - [Scale Adaptive System](./scale-adaptive-system.md) - Understanding levels
-- [Brownfield Guide](./brownfield-guide.md) - Existing codebase workflows
+- [Brownfield Guide](../../tutorials/advanced/brownfield-onboarding.md) - Existing codebase workflows
 
 ---
 

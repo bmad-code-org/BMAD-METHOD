@@ -476,11 +476,11 @@ Track these metrics to ensure Quick Flow effectiveness:
 
 ## Related Documentation
 
-- **[Quick Flow Solo Dev Agent](./quick-flow-solo-dev.md)** - Primary agent for Quick Flow
-- **[Agents Guide](./agents-guide.md)** - Complete agent reference
+- **[Quick Flow Solo Dev Agent](../../reference/agents/barry-quick-flow.md)** - Primary agent for Quick Flow
+- **[Agents Guide](../../explanation/core-concepts/agent-roles.md)** - Complete agent reference
 - **[Scale Adaptive System](./scale-adaptive-system.md)** - Track selection guidance
-- **[Party Mode](./party-mode.md)** - Multi-agent collaboration
-- **[Workflow Implementation](./workflows-implementation.md)** - Implementation details
+- **[Party Mode](../../explanation/features/party-mode.md)** - Multi-agent collaboration
+- **[Workflow Implementation](../../how-to/workflows/run-sprint-planning.md)** - Implementation details
 
 ---
 

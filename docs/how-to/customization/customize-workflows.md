@@ -25,6 +25,6 @@ While workflow customization is in development, you can:
 
 ---
 
-**In the meantime:** Learn how to [create custom workflows](../../modules/bmb-bmad-builder/index) from scratch.
+**In the meantime:** Learn how to [create custom workflows](../../explanation/bmad-builder/index.md) from scratch.
 
 [← Back to Customization](./index.md)

@@ -1,6 +1,6 @@
-# BMM Glossary
+# BMAD Glossary
 
-Comprehensive terminology reference for the BMad Method Module.
+Comprehensive terminology reference for the BMAD Method.
 
 ---
 
@@ -14,10 +14,15 @@ Comprehensive terminology reference for the BMad Method Module.
 - [Status and Tracking](#status-and-tracking)
 - [Project Types](#project-types)
 - [Implementation Terms](#implementation-terms)
+- [Game Development Terms](#game-development-terms)
 
 ---
 
 ## Core Concepts
+
+### BMAD (Build More, Architect Dreams)
+
+AI-driven agile development framework with specialized agents, guided workflows, and scale-adaptive intelligence.
 
 ### BMM (BMad Method Module)
 
@@ -89,7 +94,11 @@ Optional strategic planning document created in Phase 1 (Analysis) that captures
 
 ### GDD (Game Design Document)
 
-Game development equivalent of PRD, created by Game Designer agent for game projects.
+Game development equivalent of PRD, created by Game Designer agent for game projects. Comprehensive document detailing all aspects of game design: mechanics, systems, content, and more.
+
+### Game Brief
+
+Document capturing the game's core vision, pillars, target audience, and scope. Foundation for the GDD.
 
 ---
 
@@ -114,10 +123,6 @@ Architecture design phase. Required for BMad Method and Enterprise Method tracks
 ### Phase 4: Implementation (Required)
 
 Sprint-based development through story-by-story iteration. Uses sprint-planning, create-story, dev-story, code-review, and retrospective workflows.
-
-### Documentation (Prerequisite for Brownfield)
-
-**Conditional prerequisite for brownfield projects.** Creates comprehensive codebase documentation before planning. Only required if existing documentation is insufficient for AI agents. Uses the `document-project` workflow.
 
 ### Quick Spec Flow
 
@@ -153,7 +158,7 @@ Agent responsible for test strategy, quality gates, NFR assessment, and comprehe
 
 ### Technical Writer
 
-Agent specialized in creating and maintaining high-quality technical documentation. Expert in documentation standards, information architecture, and professional technical writing. The agent's internal name is "paige" but is presented as "Technical Writer" to users.
+Agent specialized in creating and maintaining high-quality technical documentation. Expert in documentation standards, information architecture, and professional technical writing.
 
 ### UX Designer
 
@@ -163,13 +168,17 @@ Agent that creates UX design documents, interaction patterns, and visual specifi
 
 Specialized agent for game development projects. Creates game design documents (GDD) and game-specific workflows.
 
+### Game Architect
+
+Agent that designs game system architecture, creates technical architecture for games, and validates game-specific designs.
+
 ### BMad Master
 
 Meta-level orchestrator agent from BMad Core. Facilitates party mode, lists available tasks and workflows, and provides high-level guidance across all modules.
 
 ### Party Mode
 
-Multi-agent collaboration feature where all installed agents (19+ from BMM, CIS, BMB, custom modules) discuss challenges together in real-time. BMad Master orchestrates, selecting 2-3 relevant agents per message for natural cross-talk and debate. Best for strategic decisions, creative brainstorming, cross-functional alignment, and complex problem-solving. See [Party Mode Guide](./party-mode.md).
+Multi-agent collaboration feature where all installed agents discuss challenges together in real-time. BMad Master orchestrates, selecting 2-3 relevant agents per message for natural cross-talk and debate. Best for strategic decisions, creative brainstorming, cross-functional alignment, and complex problem-solving.
 
 ---
 
@@ -190,7 +199,7 @@ backlog → ready-for-dev → in-progress → review → done
 ```
 
 - **backlog** - Story exists in epic but not yet created
-- **ready-for-dev** - Story file created via create-story; validation is optional (run `validate-create-story` for quality check before dev picks it up)
+- **ready-for-dev** - Story file created via create-story; validation is optional
 - **in-progress** - DEV is implementing via dev-story
 - **review** - Implementation complete, awaiting code-review
 - **done** - Completed with DoD met
@@ -247,6 +256,10 @@ Implementation guidance embedded within story files during the create-story work
 
 Workflow that initializes Phase 4 implementation by creating sprint-status.yaml, extracting all epics/stories from planning docs, and setting up tracking infrastructure.
 
+### Sprint
+
+Time-boxed period of development work, typically 1-2 weeks.
+
 ### Gate Check
 
 Validation workflow (implementation-readiness) run before Phase 4 to ensure PRD + Architecture + Epics + UX (optional) are aligned with no gaps or contradictions. Required for BMad Method and Enterprise Method tracks.
@@ -258,6 +271,66 @@ Criteria that must be met before marking a story as done. Typically includes: im
 ### Shard / Sharding
 
 **For runtime LLM optimization only (NOT human docs).** Splitting large planning documents (PRD, epics, architecture) into smaller section-based files to improve workflow efficiency. Phase 1-3 workflows load entire sharded documents transparently. Phase 4 workflows selectively load only needed sections for massive token savings.
+
+---
+
+## Game Development Terms
+
+### Core Fantasy
+
+The emotional experience players seek from your game. What they want to FEEL.
+
+### Core Loop
+
+The fundamental cycle of actions players repeat throughout gameplay. The heart of your game.
+
+### Design Pillar
+
+Core principle that guides all design decisions. Typically 3-5 pillars define a game's identity.
+
+### Game Type
+
+Genre classification that determines which specialized GDD sections are included.
+
+### Narrative Complexity
+
+How central story is to the game experience:
+- **Critical** - Story IS the game (visual novels)
+- **Heavy** - Deep narrative with gameplay (RPGs)
+- **Moderate** - Meaningful story supporting gameplay
+- **Light** - Minimal story, gameplay-focused
+
+### Environmental Storytelling
+
+Narrative communicated through the game world itself—visual details, audio, found documents—rather than explicit dialogue.
+
+### MDA Framework
+
+Mechanics → Dynamics → Aesthetics. Framework for analyzing and designing games.
+
+### Procedural Generation
+
+Algorithmic creation of game content (levels, items, characters) rather than hand-crafted.
+
+### Roguelike
+
+Genre featuring procedural generation, permadeath, and run-based progression.
+
+### Metroidvania
+
+Genre featuring interconnected world exploration with ability-gated progression.
+
+### Meta-Progression
+
+Persistent progression that carries between individual runs or sessions.
+
+### Permadeath
+
+Game mechanic where character death is permanent, typically requiring a new run.
+
+### Player Agency
+
+The degree to which players can make meaningful choices that affect outcomes.
 
 ---
 
@@ -279,10 +352,6 @@ Automatic analysis by workflow-init that uses keyword analysis, complexity indic
 
 Workflow run during Phase 4 when significant changes or issues arise. Analyzes impact, proposes solutions, and routes to appropriate remediation workflows.
 
-### Migration Strategy
-
-Plan for handling changes to existing data, schemas, APIs, or patterns during brownfield development. Critical for ensuring backward compatibility and smooth rollout.
-
 ### Feature Flags
 
 Implementation technique for brownfield projects that allows gradual rollout of new functionality, easy rollback, and A/B testing. Recommended for BMad Method and Enterprise brownfield changes.
@@ -294,13 +363,3 @@ Specific locations where new code connects with existing systems. Must be docume
 ### Convention Detection
 
 Quick Spec Flow feature that automatically detects existing code style, naming conventions, patterns, and frameworks from brownfield codebases, then asks user to confirm before proceeding.
-
----
-
-## Related Documentation
-
-- [Quick Start Guide](./quick-start.md) - Learn BMM basics
-- [Scale Adaptive System](./scale-adaptive-system.md) - Deep dive on tracks and complexity
-- [Brownfield Guide](./brownfield-guide.md) - Working with existing codebases
-- [Quick Spec Flow](./quick-spec-flow.md) - Fast-track for Quick Flow track
-- [FAQ](./faq.md) - Common questions

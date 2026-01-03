@@ -4,7 +4,7 @@ Get BMAD up and running in your project.
 
 ## Upgrading?
 
-If you're upgrading from v4, see the [Upgrade Guide](./upgrading.md).
+If you're upgrading from v4, see the [Upgrade Guide](../../how-to/installation/upgrade-to-v6.md).
 
 ---
 
@@ -60,9 +60,9 @@ your-project/
 
 ## Next Steps
 
-1. **Read the [Quick Start Guide](../../modules/bmm-bmad-method/quick-start)** to build your first feature
+1. **Read the [Quick Start Guide](../../tutorials/getting-started/quick-start-bmm.md)** to build your first feature
 2. **Explore [Workflows](../../modules/bmm-bmad-method/index#-workflow-guides)** to understand the methodology
-3. **Learn about [Agents](../agents.md)** to understand BMAD's core building blocks
+3. **Learn about [Agents](../../explanation/core-concepts/what-are-agents.md)** to understand BMAD's core building blocks
 
 ## Troubleshooting
 

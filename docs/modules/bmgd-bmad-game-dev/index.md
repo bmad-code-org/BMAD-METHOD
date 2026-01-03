@@ -8,7 +8,7 @@ Complete guides for the BMad Game Development Module (BMGD) - AI-powered workflo
 
 **New to BMGD?** Start here:
 
-- **[Quick Start Guide](./quick-start.md)** - Get started building your first game
+- **[Quick Start Guide](../../tutorials/getting-started/quick-start-bmgd.md)** - Get started building your first game
   - Installation and setup
   - Understanding the game development phases
   - Running your first workflows
@@ -22,23 +22,23 @@ Complete guides for the BMad Game Development Module (BMGD) - AI-powered workflo
 
 Understanding how BMGD works:
 
-- **[Agents Guide](./agents-guide.md)** - Complete reference for game development agents
+- **[Agents Guide](../../reference/agents/index.md)** - Complete reference for game development agents
   - Game Designer, Game Developer, Game Architect, Game Scrum Master, Game QA, Game Solo Dev
   - Agent roles and when to use them
   - Agent workflows and menus
 
-- **[Workflows Guide](./workflows-guide.md)** - Complete workflow reference
+- **[Workflows Guide](../../reference/workflows/index.md)** - Complete workflow reference
   - Phase 1: Preproduction (Brainstorm, Game Brief)
   - Phase 2: Design (GDD, Narrative)
   - Phase 3: Technical (Architecture)
   - Phase 4: Production (Sprint-based development)
 
-- **[Game Types Guide](./game-types-guide.md)** - Selecting and using game type templates
+- **[Game Types Guide](../../explanation/game-dev/game-types.md)** - Selecting and using game type templates
   - 24 supported game types
   - Genre-specific GDD sections
   - Hybrid game type handling
 
-- **[Quick-Flow Guide](./quick-flow-guide.md)** - Fast-track workflows for rapid development
+- **[Quick-Flow Guide](../../how-to/workflows/bmgd-quick-flow.md)** - Fast-track workflows for rapid development
   - Quick-Prototype for testing ideas
   - Quick-Dev for flexible implementation
   - When to use quick-flow vs full BMGD
@@ -49,7 +49,7 @@ Understanding how BMGD works:
 
 Essential reference materials:
 
-- **[Glossary](./glossary.md)** - Key game development terminology
+- **[Glossary](../../reference/glossary/index.md)** - Key game development terminology
 
 ---
 
@@ -58,7 +58,7 @@ Essential reference materials:
 ### I need to...
 
 **Start a new game project**
-→ Start with [Quick Start Guide](./quick-start.md)
+→ Start with [Quick Start Guide](../../tutorials/getting-started/quick-start-bmgd.md)
 → Run `brainstorm-game` for ideation
 → Create a Game Brief with `create-brief`
 
@@ -74,7 +74,7 @@ Essential reference materials:
 → Follow the sprint-based development cycle
 
 **Quickly test an idea or implement a feature**
-→ Use [Quick-Flow](./quick-flow-guide.md) for rapid prototyping and development
+→ Use [Quick-Flow](../../how-to/workflows/bmgd-quick-flow.md) for rapid prototyping and development
 → `quick-prototype` to test mechanics, `quick-dev` to implement
 
 **Set up testing and QA**
@@ -84,7 +84,7 @@ Essential reference materials:
 → Plan playtests with `playtest-plan`
 
 **Understand game type templates**
-→ See [Game Types Guide](./game-types-guide.md)
+→ See [Game Types Guide](../../explanation/game-dev/game-types.md)
 
 ---
 
@@ -172,4 +172,4 @@ BMGD Documentation
 
 ---
 
-**Ready to make games?** → [Start with the Quick Start Guide](./quick-start.md)
+**Ready to make games?** → [Start with the Quick Start Guide](../../tutorials/getting-started/quick-start-bmgd.md)
