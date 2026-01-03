@@ -2,7 +2,7 @@
 
 This guide explains how to create and install custom BMAD content including agents, workflows, and modules. Custom content extends BMAD's functionality with specialized tools and workflows that can be shared across projects or teams.
 
-For detailed information about the different types of custom content available, see [Custom Content](modules/bmb-bmad-builder/custom-content.md).
+For detailed information about the different types of custom content available, see [Custom Content Types](../../explanation/bmad-builder/custom-content-types.md).
 
 You can find example custom modules in the `samples/sample-custom-modules/` folder of the repository. Download either of the sample folders to try them out.
 
@@ -57,7 +57,7 @@ For standalone content that isn't part of a cohesive module collection, follow t
    - Add the property `unitary: true` in the module.yaml
      - The `unitary: true` property indicates this is a collection of potentially unrelated items that don't depend on each other
    - Any content you add to this folder should still be nested under workflows and agents - but the key with stand alone content is they do not rely on each other.
-     - Agents do not reference other workflows even if stored in a unitary:true module. But unitary Agents can have their own workflows in their sidecar, or reference workflows as requirements from other modules - with a process known as workflow vendoring. Keep in mind, this will require that the workflow referenced from the other module would need to be available for the end user to install, so its recommended to only vendor workflows from the core module, or official bmm modules (See [Workflow Vendoring, Customization, and Inheritance](workflow-vendoring-customization-inheritance.md)).
+     - Agents do not reference other workflows even if stored in a unitary:true module. But unitary Agents can have their own workflows in their sidecar, or reference workflows as requirements from other modules - with a process known as workflow vendoring. Keep in mind, this will require that the workflow referenced from the other module would need to be available for the end user to install, so its recommended to only vendor workflows from the core module, or official bmm modules.
 
 2. **Folder Structure**
    Organize content in specific named folders:

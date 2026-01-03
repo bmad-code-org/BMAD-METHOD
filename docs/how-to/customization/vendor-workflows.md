@@ -1,4 +1,4 @@
-# Workflow Vendoring, Customization, and Inheritance (Official Support Consing Soon)
+# Workflow Vendoring, Customization, and Inheritance (Official Support Coming Soon))
 
 Vendoring and Inheritance of workflows are 2 ways of sharing or reutilizing workflows - but with some key distinctions and use cases.
 

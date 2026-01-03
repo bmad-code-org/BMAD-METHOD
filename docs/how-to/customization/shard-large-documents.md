@@ -4,21 +4,11 @@ Comprehensive guide to BMad Method's document sharding system for managing large
 
 ## Table of Contents
 
-- [Document Sharding Guide](#document-sharding-guide)
-  - [Table of Contents](#table-of-contents)
-  - [What is Document Sharding?](#what-is-document-sharding)
-    - [Architecture](#architecture)
-  - [When to Use Sharding](#when-to-use-sharding)
-    - [Ideal Candidates](#ideal-candidates)
-  - [How Sharding Works](#how-sharding-works)
-    - [Sharding Process](#sharding-process)
-    - [Workflow Discovery](#workflow-discovery)
-  - [Using the Shard-Doc Tool](#using-the-shard-doc-tool)
-    - [CLI Command](#cli-command)
-    - [Interactive Process](#interactive-process)
-    - [What Gets Created](#what-gets-created)
-  - [Workflow Support](#workflow-support)
-    - [Universal Support](#universal-support)
+- [What is Document Sharding?](#what-is-document-sharding)
+- [When to Use Sharding](#when-to-use-sharding)
+- [How Sharding Works](#how-sharding-works)
+- [Using the Shard-Doc Tool](#using-the-shard-doc-tool)
+- [Workflow Support](#workflow-support)
 
 ## What is Document Sharding?
 

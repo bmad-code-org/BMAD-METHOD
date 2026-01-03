@@ -14,21 +14,17 @@ This flexibility transforms the platform beyond its current capabilities, enabli
 
 ## Categories
 
-- [Custom Content](#custom-content)
-  - [Categories](#categories)
-  - [Custom Stand Alone Modules](#custom-stand-alone-modules)
-  - [Custom Add On Modules](#custom-add-on-modules)
-  - [Custom Global Modules](#custom-global-modules)
-  - [Custom Agents](#custom-agents)
-    - [BMad Tiny Agents](#bmad-tiny-agents)
-    - [Simple and Expert Agents](#simple-and-expert-agents)
-  - [Custom Workflows](#custom-workflows)
+- [Custom Stand Alone Modules](#custom-stand-alone-modules)
+- [Custom Add On Modules](#custom-add-on-modules)
+- [Custom Global Modules](#custom-global-modules)
+- [Custom Agents](#custom-agents)
+- [Custom Workflows](#custom-workflows)
 
 ## Custom Stand Alone Modules
 
 Custom modules range from simple collections of related agents, workflows, and tools designed to work independently, to complex, expansive systems like the BMad Method or even larger applications.
 
-Custom modules are [installable](./custom-content-installation.md) using the standard BMAD method and support advanced features:
+Custom modules are [installable](../../how-to/installation/install-custom-modules.md) using the standard BMAD method and support advanced features:
 
 - Optional user information collection during installation/updates
 - Versioning and upgrade paths

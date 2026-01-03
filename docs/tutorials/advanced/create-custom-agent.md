@@ -53,7 +53,7 @@ my-custom-stuff/
 └── workflows/           # Optional: custom workflows
 ```
 
-See [Custom Content Installation](./custom-content-installation.md) for details.
+See [Custom Content Installation](../../how-to/installation/install-custom-modules.md) for details.
 
 ## Choosing Your Agent Type
 
@@ -144,16 +144,16 @@ If something isn't right:
 
 ### Share
 
-Package your agent as a standalone module (see [Installation Guide](../../bmad-core-concepts/installing/)) and share it with your team or the community.
+Package your agent as a standalone module (see [Installation Guide](../../how-to/installation/index.md)) and share it with your team or the community.
 
 ## Further Reading
 
-- **[Agent Architecture](./index.md)** - Deep technical details on agent types
-- **[Agent Customization](../../bmad-core-concepts/agent-customization/)** - Modify agents without editing core files
-- **[Custom Content Installation](./custom-content-installation.md)** - Package and distribute your agents
+- **[What Are Agents](../../explanation/core-concepts/what-are-agents.md)** - Deep technical details on agent types
+- **[Agent Customization](../../how-to/customization/customize-agents.md)** - Modify agents without editing core files
+- **[Custom Content Installation](../../how-to/installation/install-custom-modules.md)** - Package and distribute your agents
 
 ---
 
 **Ready?** Start the workflow and create your first agent!
 
-[← Back to BMB Documentation](./index.md)
+[← Back to Advanced Tutorials](./index.md)

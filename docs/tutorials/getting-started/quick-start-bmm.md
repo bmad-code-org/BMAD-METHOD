@@ -187,7 +187,7 @@ Testing is not mandated by BMad. Decide how you want to engage TEA:
 - **TEA-only (Standalone)** - Use TEA workflows with your own requirements and environment
 - **TEA-integrated** - Use TEA as part of the BMad Method or Enterprise flow
 
-See the [Test Architect Guide](./test-architecture.md) for the five TEA engagement models and recommended sequences.
+See the [Test Architect Guide](../../explanation/features/tea-overview.md) for the five TEA engagement models and recommended sequences.
 
 #### Context Management Tips
 
@@ -365,7 +365,7 @@ A: Yes, once you learn the flow. Use the Quick Reference in Step 2 to go directl
 
 - **During workflows**: Agents guide you with questions and explanations
 - **Community**: [Discord](https://discord.gg/gk8jAdXWmj) - #general-dev, #bugs-issues
-- **Complete guide**: [BMM Workflow Documentation](./index.md#-workflow-guides)
+- **Complete guide**: [BMM Workflow Documentation](../../reference/workflows/index.md)
 - **YouTube tutorials**: [BMad Code Channel](https://www.youtube.com/@BMadCode)
 
 ---

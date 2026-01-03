@@ -1,6 +1,8 @@
 /**
  * BMAD Method Documentation - Custom Styles
  * Electric Blue theme optimized for dark mode
+ *
+ * NOTE: Layout is left to stock Docusaurus - only visual styling here
  */
 
 /* ============================================
@@ -199,10 +201,8 @@
 }
 
 /* ============================================
-   LAYOUT - Spacing and structure
+   LAYOUT - Only max-width for very wide viewports
    ============================================ */
-
-/* Max-width container for very wide viewports */
 .main-wrapper {
   max-width: 1600px;
   margin: 0 auto;
@@ -218,34 +218,14 @@
   margin: 0 auto;
 }
 
-/* Remove sidebar border/separator, add spacing instead */
+/* Remove sidebar border/separator */
 .theme-doc-sidebar-container {
   border-right: none !important;
 }
 
-/* Sidebar spacing on larger viewports */
-@media (min-width: 997px) {
-  .theme-doc-sidebar-container {
-    padding-left: 1rem;
-    padding-right: 1.5rem;
-  }
-
-  /* Add left margin to main content area */
-  .docMainContainer_node_modules-\@docusaurus-theme-classic-lib-theme-DocPage-Layout-Main-styles-module {
-    padding-left: 1rem;
-  }
-}
-
-@media (min-width: 1200px) {
-  .theme-doc-sidebar-container {
-    padding-left: 1.5rem;
-    padding-right: 2rem;
-  }
-}
-
-/* Ensure sidebar menu doesn't clip */
-.theme-doc-sidebar-menu {
-  padding-right: 1.5rem;
+/* Hide breadcrumbs */
+.theme-doc-breadcrumbs {
+  display: none;
 }
 
 /* Lighter chevrons/carets */
@@ -259,11 +239,6 @@
   opacity: 0.6;
 }
 
-/* Add gap between sidebar and content */
-.col.docItemCol_node_modules-\@docusaurus-theme-classic-lib-theme-DocItem-Layout-styles-module {
-  padding-left: 2rem !important;
-}
-
 /* ============================================
    NAVBAR
    ============================================ */
@@ -272,7 +247,6 @@
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-/* Align logo with sidebar content */
 @media (min-width: 997px) {
   .navbar {
     padding-left: 2.5rem;

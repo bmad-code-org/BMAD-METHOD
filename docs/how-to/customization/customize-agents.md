@@ -203,8 +203,8 @@ memories:
 
 ## Next Steps
 
-- **[Learn about Agents](../agents.md)** - Understand Simple vs Expert agents
+- **[Learn about Agents](../../explanation/core-concepts/what-are-agents.md)** - Understand Simple vs Expert agents
 - **[Agent Creation Guide](../../tutorials/advanced/create-custom-agent.md)** - Build completely custom agents
-- **[BMM Complete Documentation](../../modules/bmm-bmad-method/index)** - Full BMad Method reference
+- **[BMM Complete Documentation](../../explanation/bmm/index.md)** - Full BMad Method reference
 
 [← Back to Customization](./index.md)

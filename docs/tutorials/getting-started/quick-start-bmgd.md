@@ -158,12 +158,12 @@ BMGD provides six specialized agents:
 
 | Agent                 | Icon | When to Use                               |
 | --------------------- | ---- | ----------------------------------------- |
-| **Game Designer**     | 🎲   | Brainstorming, Game Brief, GDD, Narrative |
-| **Game Architect**    | 🏛️   | Architecture, technical decisions         |
-| **Game Developer**    | 🕹️   | Implementation, code reviews              |
-| **Game Scrum Master** | 🎯   | Sprint planning, story management         |
-| **Game QA**           | 🧪   | Test framework, test design, automation   |
-| **Game Solo Dev**     | 🎮   | Quick prototyping, indie development      |
+| **Game Designer**     | 🎲    | Brainstorming, Game Brief, GDD, Narrative |
+| **Game Architect**    | 🏛️    | Architecture, technical decisions         |
+| **Game Developer**    | 🕹️    | Implementation, code reviews              |
+| **Game Scrum Master** | 🎯    | Sprint planning, story management         |
+| **Game QA**           | 🧪    | Test framework, test design, automation   |
+| **Game Solo Dev**     | 🎮    | Quick prototyping, indie development      |
 
 ### Typical Flow
 
@@ -239,11 +239,11 @@ Use `party-mode` to get perspectives from multiple agents when facing complex de
 
 ## Next Steps
 
-- **[Agents Guide](./agents-guide.md)** - Learn about each agent's capabilities
-- **[Workflows Guide](./workflows-guide.md)** - Detailed workflow reference
-- **[Quick-Flow Guide](./quick-flow-guide.md)** - Rapid prototyping and development
-- **[Game Types Guide](./game-types-guide.md)** - Understand game type templates
-- **[Glossary](./glossary.md)** - Game development terminology
+- **[Agents Guide](../../reference/agents/bmgd-agents.md)** - Learn about each agent's capabilities
+- **[Workflows Guide](../../reference/workflows/bmgd-workflows.md)** - Detailed workflow reference
+- **[Quick-Flow Guide](../../how-to/workflows/bmgd-quick-flow.md)** - Rapid prototyping and development
+- **[Game Types Guide](../../explanation/game-dev/game-types.md)** - Understand game type templates
+- **[Glossary](../../reference/glossary/index.md)** - Game development terminology
 
 ---
 

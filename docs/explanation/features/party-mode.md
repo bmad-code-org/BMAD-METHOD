@@ -105,9 +105,9 @@ _(Multiple perspectives reveal the right answer)_
 
 ## Related Documentation
 
-- [Agents Guide](./agents-guide.md) - Complete agent reference
-- [Quick Start Guide](./quick-start.md) - Getting started with BMM
-- [FAQ](./faq.md) - Common questions
+- [Agents Reference](../../reference/agents/index.md) - Complete agent reference
+- [Quick Start Guide](../../tutorials/getting-started/quick-start-bmm.md) - Getting started with BMM
+- [Setup Party Mode](../../how-to/workflows/setup-party-mode.md) - How to use it
 
 ---
 
