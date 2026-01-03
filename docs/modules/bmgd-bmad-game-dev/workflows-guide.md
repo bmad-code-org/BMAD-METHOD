@@ -8,7 +8,7 @@ Complete reference for all BMGD workflows organized by development phase.
 
 BMGD workflows are organized into four phases:
 
-![BMGD Workflow Overview](../../../../docs/modules/bmgd-bmad-game-dev/workflow-overview.jpg)
+![BMGD Workflow Overview](./workflow-overview.jpg)
 
 ---
 
