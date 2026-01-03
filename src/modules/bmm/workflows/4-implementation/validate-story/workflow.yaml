@@ -1,0 +1,29 @@
+name: validate-story
+description: "Deep validation of a single story: verify tasks against codebase, run code quality review, check for regressions. Produces verification report with actionable findings."
+author: "BMad"
+version: "1.0.0"
+
+# Critical variables from config
+config_source: "{project-root}/_bmad/bmm/config.yaml"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+implementation_artifacts: "{config_source}:implementation_artifacts"
+story_dir: "{implementation_artifacts}"
+
+# Workflow components
+installed_path: "{project-root}/_bmad/bmm/workflows/4-implementation/validate-story"
+instructions: "{installed_path}/instructions.xml"
+
+# Input variables
+variables:
+  story_file: "" # Path to story file (e.g., docs/sprint-artifacts/16e-6-ecs-task-definitions-tier3.md)
+  validation_depth: "deep" # Options: "quick" (tasks only), "deep" (tasks + code review), "comprehensive" (tasks + review + integration tests)
+
+# Tools
+task_verification_script: "{project-root}/scripts/lib/task-verification-engine.py"
+
+# Output
+default_output_file: "{story_dir}/.validation-{story_id}-{date}.md"
+
+standalone: true
+web_bundle: false

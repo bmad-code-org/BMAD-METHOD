@@ -1,0 +1,370 @@
+<workflow>
+  <critical>The workflow execution engine is governed by: {project-root}/_bmad/core/tasks/workflow.xml</critical>
+  <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
+  <critical>This uses HAIKU AGENTS to read actual code and verify task completion - NOT regex patterns</critical>
+
+  <step n="1" goal="Load and parse story">
+    <action>Load story file from {{story_file}}</action>
+
+    <check if="file not found">
+      <output>❌ Story file not found: {{story_file}}</output>
+      <action>HALT</action>
+    </check>
+
+    <action>Extract story metadata:
+      - Story ID from filename
+      - Epic number from "Epic:" field
+      - Current status from "Status:" or "**Status:**" field
+      - Files created/modified from Dev Agent Record section
+    </action>
+
+    <action>Extract ALL tasks (pattern: "- [ ]" or "- [x]"):
+      - Parse checkbox state (checked/unchecked)
+      - Extract task text
+      - Count total, checked, unchecked
+    </action>
+
+    <output>📋 **Deep Story Validation: {{story_id}}**
+
+**Epic:** {{epic_num}}
+**Current Status:** {{current_status}}
+**Tasks:** {{checked_count}}/{{total_count}} checked
+**Files Referenced:** {{file_count}}
+
+**Validation Method:** Haiku agents read actual code
+**Cost Estimate:** ~$0.13 for this story
+
+Starting task-by-task verification...
+    </output>
+  </step>
+
+  <step n="2" goal="Verify ALL tasks with single Haiku agent">
+    <critical>Spawn ONE Haiku agent to verify ALL tasks (avoids 50x agent startup overhead!)</critical>
+
+    <output>Spawning Haiku verification agent for {{total_count}} tasks...</output>
+
+    <!-- Spawn SINGLE Haiku agent to verify ALL tasks in this story -->
+    <invoke-task type="Task" model="haiku">
+      <description>Verify all {{total_count}} story tasks</description>
+      <prompt>
+You are verifying ALL tasks for this user story by reading actual code.
+
+**Story:** {{story_id}}
+**Epic:** {{epic_num}}
+**Total Tasks:** {{total_count}}
+
+**Files from Story (Dev Agent Record):**
+{{#each file_list}}
+- {{this}}
+{{/each}}
+
+**Tasks to Verify:**
+
+{{#each task_list}}
+{{@index}}. [{{#if this.checked}}x{{else}} {{/if}}] {{this.text}}
+{{/each}}
+
+---
+
+**Your Job:**
+
+For EACH task above:
+
+1. **Find relevant files** - Use Glob to find files mentioned in task
+2. **Read the files** - Use Read tool to examine actual code
+3. **Verify implementation:**
+   - Is code real or stubs/TODOs?
+   - Is there error handling?
+   - Multi-tenant isolation (dealerId filters)?
+   - Are there tests?
+   - Does it match task description?
+
+4. **Make judgment for each task**
+
+**Output Format - JSON array with one entry per task:**
+
+```json
+{
+  "story_id": "{{story_id}}",
+  "total_tasks": {{total_count}},
+  "tasks": [
+    {
+      "task_number": 0,
+      "task_text": "Implement UserService",
+      "is_checked": true,
+      "actually_complete": false,
+      "confidence": "high",
+      "evidence": "File exists but has 'TODO: Implement findById' on line 45, tests not found",
+      "issues_found": ["Stub implementation", "Missing tests", "No dealerId filter"],
+      "recommendation": "Implement real logic, add tests, add multi-tenant isolation"
+    },
+    {
+      "task_number": 1,
+      "task_text": "Add error handling",
+      "is_checked": true,
+      "actually_complete": true,
+      "confidence": "very_high",
+      "evidence": "Try-catch blocks in UserService.ts:67-89, proper error logging, tests verify error cases",
+      "issues_found": [],
+      "recommendation": "None - task complete"
+    }
+  ]
+}
+```
+
+**Be efficient:** Read files once, verify all tasks, return comprehensive JSON.
+      </prompt>
+      <subagent_type>general-purpose</subagent_type>
+    </invoke-task>
+
+    <action>Parse agent response (extract JSON)</action>
+
+    <action>For each task result:
+      - Determine verification_status (correct/false_positive/false_negative)
+      - Categorize into verified_complete, false_positives, false_negatives lists
+      - Count totals
+    </action>
+
+    <output>
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Task Verification Complete
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+**✅ Verified Complete:** {{verified_complete_count}}
+**❌ False Positives:** {{false_positive_count}} (checked but code missing/poor)
+**⚠️ False Negatives:** {{false_negative_count}} (unchecked but code exists)
+**❓ Uncertain:** {{uncertain_count}}
+
+**Verification Score:** {{verification_score}}/100
+    </output>
+  </step>
+
+  <step n="3" goal="Calculate overall story health">
+    <action>Calculate scores:
+      - Task accuracy: (correct / total) × 100
+      - False positive penalty: false_positive_count × -5
+      - Overall score: max(0, task_accuracy + penalty)
+    </action>
+
+    <action>Determine story category:
+      IF score >= 95 AND false_positives == 0
+        → VERIFIED_COMPLETE
+      ELSE IF score >= 80 AND false_positives <= 2
+        → COMPLETE_WITH_MINOR_ISSUES
+      ELSE IF false_positives > 5 OR score < 50
+        → FALSE_POSITIVE (story claimed done but significant missing code)
+      ELSE IF false_positives > 0
+        → NEEDS_REWORK
+      ELSE
+        → IN_PROGRESS
+    </action>
+
+    <action>Determine recommended status:
+      VERIFIED_COMPLETE → "done"
+      COMPLETE_WITH_MINOR_ISSUES → "review"
+      FALSE_POSITIVE → "in-progress" or "ready-for-dev"
+      NEEDS_REWORK → "in-progress"
+      IN_PROGRESS → "in-progress"
+    </action>
+
+    <output>
+📊 **STORY HEALTH ASSESSMENT**
+
+**Current Status:** {{current_status}}
+**Recommended Status:** {{recommended_status}}
+**Overall Score:** {{overall_score}}/100
+
+**Category:** {{category}}
+
+{{#if category == "VERIFIED_COMPLETE"}}
+✅ **Story is production-ready**
+- All tasks verified complete
+- Code quality confirmed
+- No significant issues found
+{{/if}}
+
+{{#if category == "FALSE_POSITIVE"}}
+❌ **Story claimed done but has significant missing code**
+- {{false_positive_count}} tasks checked but not implemented
+- Verification score: {{overall_score}}/100 (< 50% = false positive)
+- Action: Update status to in-progress, implement missing tasks
+{{/if}}
+
+{{#if category == "NEEDS_REWORK"}}
+⚠️ **Story needs rework before marking complete**
+- {{false_positive_count}} tasks with missing/poor code
+- Issues found in verification
+- Action: Fix issues, re-verify
+{{/if}}
+    </output>
+  </step>
+
+  <step n="4" goal="Generate detailed validation report">
+    <template-output>
+# Story Validation Report: {{story_id}}
+
+**Generated:** {{date}}
+**Validation Method:** LLM-powered deep verification (Haiku 4.5)
+**Overall Score:** {{overall_score}}/100
+**Category:** {{category}}
+
+---
+
+## Summary
+
+**Story:** {{story_id}}
+**Epic:** {{epic_num}}
+**Current Status:** {{current_status}}
+**Recommended Status:** {{recommended_status}}
+
+**Task Verification:**
+- Total: {{total_count}}
+- Checked: {{checked_count}}
+- Verified Complete: {{verified_complete_count}}
+- False Positives: {{false_positive_count}}
+- False Negatives: {{false_negative_count}}
+
+---
+
+## Verification Details
+
+{{#if false_positive_count > 0}}
+### ❌ False Positives (CRITICAL - Code Claims vs Reality)
+
+{{#each false_positives}}
+**Task {{@index + 1}}:** {{this.task}}
+**Claimed:** [x] Complete
+**Reality:** Code missing or stub implementation
+
+**Evidence:**
+{{this.evidence}}
+
+**Issues Found:**
+{{#each this.issues_found}}
+- {{this}}
+{{/each}}
+
+**Recommendation:** {{this.recommendation}}
+
+---
+{{/each}}
+{{/if}}
+
+{{#if false_negative_count > 0}}
+### ⚠️ False Negatives (Unchecked But Working)
+
+{{#each false_negatives}}
+**Task {{@index + 1}}:** {{this.task}}
+**Status:** [ ] Unchecked
+**Reality:** Code exists and working
+
+**Evidence:**
+{{this.evidence}}
+
+**Recommendation:** Mark task as complete [x]
+
+---
+{{/each}}
+{{/if}}
+
+{{#if verified_complete_count > 0}}
+### ✅ Verified Complete Tasks
+
+{{verified_complete_count}} tasks verified with actual code review.
+
+{{#if show_all_verified}}
+{{#each verified_complete}}
+- {{this.task}} ({{this.confidence}} confidence)
+{{/each}}
+{{/if}}
+{{/if}}
+
+---
+
+## Final Verdict
+
+**Overall Score:** {{overall_score}}/100
+
+{{#if category == "VERIFIED_COMPLETE"}}
+✅ **VERIFIED COMPLETE**
+
+This story is production-ready:
+- All {{total_count}} tasks verified complete
+- Code quality confirmed through review
+- No significant issues found
+- Status "done" is accurate
+
+**Action:** None needed - story is solid
+{{/if}}
+
+{{#if category == "FALSE_POSITIVE"}}
+❌ **FALSE POSITIVE - Story NOT Actually Complete**
+
+**Problems:**
+- {{false_positive_count}} tasks checked but code missing/stubbed
+- Verification score: {{overall_score}}/100 (< 50%)
+- Story marked "{{current_status}}" but significant work remains
+
+**Required Actions:**
+1. Update sprint-status.yaml: {{story_id}} → in-progress
+2. Uncheck {{false_positive_count}} false positive tasks
+3. Implement missing code
+4. Re-run validation after implementation
+
+**Estimated Rework:** {{estimated_rework_hours}} hours
+{{/if}}
+
+{{#if category == "NEEDS_REWORK"}}
+⚠️ **NEEDS REWORK**
+
+**Problems:**
+- {{false_positive_count}} tasks with quality issues
+- Some code exists but has problems (TODOs, missing features, poor quality)
+
+**Required Actions:**
+{{#each action_items}}
+- [ ] {{this}}
+{{/each}}
+
+**Estimated Fix Time:** {{estimated_fix_hours}} hours
+{{/if}}
+
+{{#if category == "IN_PROGRESS"}}
+🔄 **IN PROGRESS** (accurate status)
+
+- {{checked_count}}/{{total_count}} tasks complete
+- {{unchecked_count}} tasks remaining
+- Current status reflects reality
+
+**No action needed** - continue implementation
+{{/if}}
+
+---
+
+**Validation Cost:** ~${{validation_cost}}
+**Agent Model:** {{agent_model}}
+**Tasks Verified:** {{total_count}}
+    </template-output>
+  </step>
+
+  <step n="5" goal="Update sprint-status if needed">
+    <check if="{{recommended_status}} != {{current_status}}">
+      <ask>Story status should be updated from "{{current_status}}" to "{{recommended_status}}". Update sprint-status.yaml? (y/n)</ask>
+
+      <check if="user says yes">
+        <action>Update sprint-status.yaml:
+          python3 scripts/lib/sprint-status-updater.py --epic {{epic_num}} --mode fix
+        </action>
+
+        <action>Add validation note to story file Dev Agent Record</action>
+
+        <output>✅ Updated {{story_id}}: {{current_status}} → {{recommended_status}}</output>
+      </check>
+    </check>
+
+    <check if="{{recommended_status}} == {{current_status}}">
+      <output>✅ Story status is accurate - no changes needed</output>
+    </check>
+  </step>
+
+</workflow>

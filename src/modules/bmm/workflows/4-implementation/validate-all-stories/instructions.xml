@@ -1,0 +1,411 @@
+<workflow>
+  <critical>The workflow execution engine is governed by: {project-root}/_bmad/core/tasks/workflow.xml</critical>
+  <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
+  <critical>This is the COMPREHENSIVE AUDIT - validates every story's tasks against actual codebase</critical>
+
+  <step n="1" goal="Discover and categorize stories">
+    <action>Find all story files in {{story_dir}}</action>
+    <action>Filter out meta-documents:
+      - Files starting with "EPIC-" (completion reports)
+      - Files with "COMPLETION", "SUMMARY", "REPORT" in name
+      - Files starting with "." (hidden progress files)
+      - Files like "README", "INDEX", "SESSION-", "REVIEW-"
+    </action>
+
+    <check if="{{epic_filter}} provided">
+      <action>Filter to stories starting with {{epic_filter}}- (e.g., "16e-")</action>
+    </check>
+
+    <action>Store as {{story_list}}</action>
+    <action>Count {{story_count}}</action>
+
+    <output>🔍 **Comprehensive Story Validation**
+
+{{#if epic_filter}}
+**Epic Filter:** {{epic_filter}} only
+{{/if}}
+**Stories to Validate:** {{story_count}}
+**Validation Depth:** {{validation_depth}}
+**Parallel Mode:** {{parallel_validation}}
+
+**Estimated Time:** {{estimated_minutes}} minutes
+**Estimated Cost:** ~${{estimated_cost}} ({{story_count}} × ~$0.50/story)
+
+This will:
+1. Verify all tasks against actual codebase (task-verification-engine.py)
+2. Run code quality reviews on files with issues
+3. Check for regressions and integration failures
+4. Categorize stories: VERIFIED_COMPLETE, NEEDS_REWORK, FALSE_POSITIVE, etc.
+5. Generate comprehensive audit report
+
+Starting validation...
+    </output>
+  </step>
+
+  <step n="2" goal="Run task verification on all stories">
+    <action>Initialize counters:
+      - stories_validated = 0
+      - verified_complete = 0
+      - needs_rework = 0
+      - false_positives = 0
+      - in_progress = 0
+      - total_false_positive_tasks = 0
+      - total_tasks_verified = 0
+    </action>
+
+    <loop foreach="{{story_list}}">
+      <action>Set {{current_story}} = current story file</action>
+      <action>Extract {{story_id}} from filename</action>
+
+      <output>Validating {{counter}}/{{story_count}}: {{story_id}}...</output>
+
+      <!-- Run task verification engine -->
+      <action>Execute: python3 {{task_verification_script}} {{current_story}}</action>
+
+      <action>Parse output:
+        - total_tasks
+        - checked_tasks
+        - false_positives
+        - false_negatives
+        - verification_score
+        - task_details (with evidence)
+      </action>
+
+      <action>Categorize story:
+        IF verification_score >= 95 AND false_positives == 0
+          → category = "VERIFIED_COMPLETE"
+        ELSE IF verification_score >= 80 AND false_positives <= 2
+          → category = "COMPLETE_WITH_MINOR_ISSUES"
+        ELSE IF false_positives > 5 OR verification_score < 50
+          → category = "FALSE_POSITIVE" (claimed done but missing code)
+        ELSE IF verification_score < 80
+          → category = "NEEDS_REWORK"
+        ELSE IF checked_tasks == 0
+          → category = "NOT_STARTED"
+        ELSE
+          → category = "IN_PROGRESS"
+      </action>
+
+      <action>Store result:
+        - story_id
+        - verification_score
+        - category
+        - false_positive_count
+        - false_negative_count
+        - current_status (from sprint-status.yaml)
+        - recommended_status
+      </action>
+
+      <action>Increment counters based on category</action>
+      <action>Add false_positive_count to total</action>
+      <action>Add total_tasks to total_tasks_verified</action>
+
+      <output>  → {{category}} ({{verification_score}}/100, {{false_positives}} false positives)</output>
+    </loop>
+
+    <output>
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Validation Complete
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+**Stories Validated:** {{story_count}}
+**Total Tasks Verified:** {{total_tasks_verified}}
+**Total False Positives:** {{total_false_positive_tasks}}
+    </output>
+  </step>
+
+  <step n="3" goal="Code quality review on problem stories" if="{{validation_depth}} == deep OR comprehensive">
+    <action>Filter stories where:
+      - category = "FALSE_POSITIVE" OR
+      - category = "NEEDS_REWORK" OR
+      - false_positives > 3
+    </action>
+
+    <action>Count {{problem_story_count}}</action>
+
+    <check if="{{problem_story_count}} > 0">
+      <output>
+🛡️ **Code Quality Review**
+
+Found {{problem_story_count}} stories with quality issues.
+Running multi-agent review on files from these stories...
+      </output>
+
+      <loop foreach="{{problem_stories}}">
+        <action>Extract file list from story Dev Agent Record</action>
+
+        <check if="files exist">
+          <action>Run /multi-agent-review on files:
+            - Security audit
+            - Silent failure detection
+            - Architecture compliance
+            - Type safety check
+          </action>
+
+          <action>Categorize review findings by severity</action>
+          <action>Add to story's issue list</action>
+        </check>
+      </loop>
+    </check>
+
+    <check if="{{problem_story_count}} == 0">
+      <output>✅ No problem stories found - all code quality looks good!</output>
+    </check>
+  </step>
+
+  <step n="4" goal="Integration verification" if="{{validation_depth}} == comprehensive">
+    <output>
+🔗 **Integration Verification**
+
+Checking for regressions and broken dependencies...
+    </output>
+
+    <action>For stories marked "VERIFIED_COMPLETE":
+      1. Extract service dependencies from story
+      2. Check if dependent services still exist
+      3. Run integration tests if they exist
+      4. Check for API contract breaking changes
+    </action>
+
+    <action>Detect overlaps:
+      - Multiple stories implementing same feature
+      - Duplicate files created
+      - Conflicting implementations
+    </action>
+
+    <output>
+**Regressions Found:** {{regression_count}}
+**Overlaps Detected:** {{overlap_count}}
+**Integration Tests:** {{integration_tests_run}} ({{integration_tests_passing}} passing)
+    </output>
+  </step>
+
+  <step n="5" goal="Generate comprehensive report">
+    <template-output>
+# Comprehensive Story Validation Report
+
+**Generated:** {{date}}
+**Stories Validated:** {{story_count}}
+**Validation Depth:** {{validation_depth}}
+**Epic Filter:** {{epic_filter}} {{#if_no_filter}}(all epics){{/if}}
+
+---
+
+## Executive Summary
+
+**Overall Health Score:** {{overall_health_score}}/100
+
+**Story Categories:**
+- ✅ **VERIFIED_COMPLETE:** {{verified_complete}} ({{verified_complete_pct}}%)
+- ⚠️ **NEEDS_REWORK:** {{needs_rework}} ({{needs_rework_pct}}%)
+- ❌ **FALSE_POSITIVES:** {{false_positives}} ({{false_positives_pct}}%)
+- 🔄 **IN_PROGRESS:** {{in_progress}} ({{in_progress_pct}}%)
+- 📋 **NOT_STARTED:** {{not_started}} ({{not_started_pct}}%)
+
+**Task Verification:**
+- Total tasks verified: {{total_tasks_verified}}
+- False positive tasks: {{total_false_positive_tasks}} ({{false_positive_rate}}%)
+- False negative tasks: {{total_false_negative_tasks}}
+
+**Code Quality:**
+- CRITICAL issues: {{critical_issues_total}}
+- HIGH issues: {{high_issues_total}}
+- Files reviewed: {{files_reviewed}}
+
+---
+
+## ❌ False Positive Stories (Claimed Done, Not Implemented)
+
+{{#each false_positive_stories}}
+### {{this.story_id}} (Score: {{this.verification_score}}/100)
+
+**Current Status:** {{this.current_status}}
+**Recommended:** in-progress or ready-for-dev
+
+**Issues:**
+{{#each this.false_positive_tasks}}
+- [ ] {{this.task}}
+  - Evidence: {{this.evidence}}
+{{/each}}
+
+**Action Required:**
+- Uncheck {{this.false_positive_count}} tasks
+- Implement missing code
+- Update sprint-status.yaml to in-progress
+{{/each}}
+
+**Total:** {{false_positive_stories_count}} stories
+
+---
+
+## ⚠️ Stories Needing Rework
+
+{{#each needs_rework_stories}}
+### {{this.story_id}} (Score: {{this.verification_score}}/100)
+
+**Issues:**
+- {{this.false_positive_count}} false positive tasks
+- {{this.critical_issue_count}} CRITICAL code quality issues
+- {{this.high_issue_count}} HIGH priority issues
+
+**Recommended:**
+1. Fix CRITICAL issues first
+2. Implement {{this.false_positive_count}} missing tasks
+3. Re-run validation
+{{/each}}
+
+**Total:** {{needs_rework_count}} stories
+
+---
+
+## ✅ Verified Complete Stories
+
+{{#each verified_complete_stories}}
+- {{this.story_id}} ({{this.verification_score}}/100)
+{{/each}}
+
+**Total:** {{verified_complete_count}} stories (production-ready)
+
+---
+
+## 📊 Epic Breakdown
+
+{{#each epic_summary}}
+### Epic {{this.epic_num}}
+
+**Stories:** {{this.total_count}}
+**Verified Complete:** {{this.verified_count}} ({{this.verified_pct}}%)
+**False Positives:** {{this.false_positive_count}}
+**Needs Rework:** {{this.needs_rework_count}}
+
+**Health Score:** {{this.health_score}}/100
+{{/each}}
+
+---
+
+## 🎯 Recommended Actions
+
+### Immediate (CRITICAL)
+
+{{#if false_positive_stories_count > 0}}
+**Fix {{false_positive_stories_count}} False Positive Stories:**
+
+{{#each false_positive_stories limit=10}}
+1. {{this.story_id}}: Update status to in-progress, implement {{this.false_positive_count}} missing tasks
+{{/each}}
+
+{{#if false_positive_stories_count > 10}}
+... and {{false_positive_stories_count - 10}} more (see full list above)
+{{/if}}
+{{/if}}
+
+### Short-term (HIGH Priority)
+
+{{#if needs_rework_count > 0}}
+**Address {{needs_rework_count}} Stories Needing Rework:**
+- Fix {{critical_issues_total}} CRITICAL code quality issues
+- Implement missing tasks
+- Re-validate after fixes
+{{/if}}
+
+### Maintenance (MEDIUM Priority)
+
+{{#if false_negative_count > 0}}
+**Update {{false_negative_count}} False Negative Tasks:**
+- Mark complete (code exists but checkbox unchecked)
+- Low impact, can batch update
+{{/if}}
+
+---
+
+## 💰 Cost Analysis
+
+**Validation Run:**
+- Stories validated: {{story_count}}
+- API tokens used: ~{{tokens_used}}K
+- Cost: ~${{cost}}
+
+**Remediation Estimate:**
+- False positives: {{false_positive_stories_count}} × 3h = {{remediation_hours_fp}}h
+- Needs rework: {{needs_rework_count}} × 2h = {{remediation_hours_rework}}h
+- **Total:** {{total_remediation_hours}}h estimated work
+
+---
+
+## 📅 Next Steps
+
+1. **Fix false positive stories** ({{false_positive_stories_count}} stories)
+2. **Address CRITICAL issues** ({{critical_issues_total}} issues)
+3. **Re-run validation** on fixed stories
+4. **Update sprint-status.yaml** with verified statuses
+5. **Run weekly validation** to prevent future drift
+
+---
+
+**Generated by:** /validate-all-stories workflow
+**Validation Engine:** task-verification-engine.py v2.0
+**Multi-Agent Review:** {{multi_agent_review_enabled}}
+    </template-output>
+  </step>
+
+  <step n="6" goal="Auto-fix if enabled" if="{{fix_mode}} == true">
+    <output>
+🔧 **Auto-Fix Mode Enabled**
+
+Applying automatic fixes:
+1. Update false negative checkboxes (code exists → mark [x])
+2. Update sprint-status.yaml with verified statuses
+3. Add validation scores to story files
+    </output>
+
+    <loop foreach="{{false_negative_tasks_list}}">
+      <action>Update story file: Change [ ] to [x] for verified tasks</action>
+      <output>  ✓ {{story_id}}: Checked {{task_count}} false negative tasks</output>
+    </loop>
+
+    <loop foreach="{{status_updates_list}}">
+      <action>Update sprint-status.yaml using sprint-status-updater.py</action>
+      <output>  ✓ {{story_id}}: {{old_status}} → {{new_status}}</output>
+    </loop>
+
+    <output>
+✅ Auto-fix complete
+  - {{false_negatives_fixed}} tasks checked
+  - {{statuses_updated}} story statuses updated
+    </output>
+  </step>
+
+  <step n="7" goal="Summary and recommendations">
+    <output>
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+COMPREHENSIVE VALIDATION COMPLETE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+**Overall Health:** {{overall_health_score}}/100
+
+{{#if overall_health_score >= 90}}
+✅ **EXCELLENT** - Platform is production-ready
+{{else if overall_health_score >= 75}}
+⚠️ **GOOD** - Minor issues to address before production
+{{else if overall_health_score >= 60}}
+⚠️ **NEEDS WORK** - Significant rework required
+{{else}}
+❌ **CRITICAL** - Major quality issues found
+{{/if}}
+
+**Top Priorities:**
+1. Fix {{false_positive_stories_count}} false positive stories
+2. Address {{critical_issues_total}} CRITICAL code quality issues
+3. Complete {{in_progress_count}} in-progress stories
+4. Re-validate after fixes
+
+**Full Report:** {{default_output_file}}
+**Summary JSON:** {{validation_summary_file}}
+
+**Next Command:**
+  /validate-story <story-id>  # Deep-dive on specific story
+  /validate-all-stories --epic 16e  # Re-validate specific epic
+    </output>
+  </step>
+
+</workflow>

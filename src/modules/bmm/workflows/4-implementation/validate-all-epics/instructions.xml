@@ -1,0 +1,158 @@
+<workflow>
+  <critical>The workflow execution engine is governed by: {project-root}/_bmad/core/tasks/workflow.xml</critical>
+  <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
+  <critical>This validates EVERY epic in the project - comprehensive health check</critical>
+
+  <step n="1" goal="Discover all epics">
+    <action>Load {{sprint_status_file}}</action>
+
+    <check if="file not found">
+      <output>❌ sprint-status.yaml not found
+
+Run /bmad:bmm:workflows:sprint-planning first.
+      </output>
+      <action>HALT</action>
+    </check>
+
+    <action>Parse development_status section</action>
+    <action>Extract all epic keys (entries starting with "epic-")</action>
+    <action>Filter out retrospectives (ending with "-retrospective")</action>
+    <action>Store as {{epic_list}}</action>
+
+    <output>🔍 **Comprehensive Epic Validation**
+
+Found {{epic_count}} epics to validate:
+{{#each epic_list}}
+  - {{this}}
+{{/each}}
+
+Starting validation...
+    </output>
+  </step>
+
+  <step n="2" goal="Validate each epic">
+    <critical>Run validate-epic-status for EACH epic</critical>
+
+    <action>Initialize counters:
+      - total_stories_scanned = 0
+      - total_valid_stories = 0
+      - total_invalid_stories = 0
+      - total_updates_applied = 0
+      - epics_validated = []
+    </action>
+
+    <loop foreach="{{epic_list}}">
+      <action>Set {{current_epic}} = current loop item</action>
+
+      <output>
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Validating {{current_epic}}...
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      </output>
+
+      <!-- Use Python script for validation logic -->
+      <action>Execute validation script:
+        python3 scripts/lib/sprint-status-updater.py --epic {{current_epic}} --mode validate
+      </action>
+
+      <action>Parse script output:
+        - Story count
+        - Valid/invalid/missing counts
+        - Inferred statuses
+        - Updates needed
+      </action>
+
+      <check if="{{validation_mode}} == fix">
+        <action>Execute fix script:
+          python3 scripts/lib/sprint-status-updater.py --epic {{current_epic}} --mode fix
+        </action>
+
+        <action>Count updates applied</action>
+        <action>Add to total_updates_applied</action>
+      </check>
+
+      <action>Store validation results for {{current_epic}}</action>
+      <action>Increment totals</action>
+
+      <output>✓ {{current_epic}}: {{story_count}} stories, {{valid_count}} valid, {{updates_applied}} updates
+      </output>
+    </loop>
+
+    <output>
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+All Epics Validated
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    </output>
+  </step>
+
+  <step n="3" goal="Consolidate and report">
+    <output>
+📊 **COMPREHENSIVE VALIDATION RESULTS**
+
+**Epics Validated:** {{epic_count}}
+
+**Stories Analyzed:** {{total_stories_scanned}}
+  Valid: {{total_valid_stories}} (>=10KB, >=5 tasks)
+  Invalid: {{total_invalid_stories}} (<10KB or <5 tasks)
+  Missing: {{total_missing_files}}
+
+**Updates Applied:** {{total_updates_applied}}
+
+**Epic Status Summary:**
+{{#each_epic_with_status}}
+  {{epic_key}}: {{status}} ({{done_count}}/{{total_count}} done)
+{{/each}}
+
+**Top Issues:**
+{{#if_invalid_stories_exist}}
+  ⚠️  {{total_invalid_stories}} stories need regeneration (/create-story)
+{{/if}}
+{{#if_missing_files_exist}}
+  ⚠️  {{total_missing_files}} story files missing (create or remove from sprint-status.yaml)
+{{/if}}
+{{#if_conflicting_evidence}}
+  ⚠️  {{conflict_count}} stories have conflicting evidence (manual review)
+{{/if}}
+
+**Health Score:** {{health_score}}/100
+  (100 = perfect, all stories valid with correct status)
+    </output>
+
+    <action>Write comprehensive report to {{default_output_file}}</action>
+
+    <output>💾 Full report: {{default_output_file}}</output>
+  </step>
+
+  <step n="4" goal="Provide actionable recommendations">
+    <output>
+🎯 **RECOMMENDED ACTIONS**
+
+{{#if_health_score_lt_80}}
+**Priority 1: Fix Invalid Stories ({{total_invalid_stories}})**
+{{#each_invalid_story}}
+  /create-story-with-gap-analysis  # Regenerate {{story_id}}
+{{/each}}
+{{/if}}
+
+{{#if_missing_files_gt_0}}
+**Priority 2: Create Missing Story Files ({{total_missing_files}})**
+{{#each_missing}}
+  /create-story  # Create {{story_id}}
+{{/each}}
+{{/if}}
+
+{{#if_health_score_gte_80}}
+✅ **Sprint status is healthy!**
+
+Continue with normal development:
+  /sprint-status  # Check what's next
+{{/if}}
+
+**Maintenance:**
+  - Run /validate-all-epics weekly to catch drift
+  - After autonomous work, run validation
+  - Before sprint reviews, validate status accuracy
+    </output>
+  </step>
+
+</workflow>

@@ -529,11 +529,28 @@
     </check>
 
     <check if="story key not found in sprint status">
-      <output>⚠️ Story file updated, but sprint-status update failed: {{story_key}} not found
+      <output>❌ CRITICAL: Story {{story_key}} not found in sprint-status.yaml!
 
-        Story status is set to "review" in file, but sprint-status.yaml may be out of sync.
+        This should NEVER happen - stories must be added during create-story workflow.
+
+        **HALTING** - sprint-status.yaml is out of sync and must be fixed.
       </output>
+      <action>HALT - Cannot proceed without valid sprint tracking</action>
     </check>
+
+    <!-- ENFORCEMENT: Validate sprint-status.yaml was actually updated -->
+    <action>Re-read {sprint_status} file to verify update persisted</action>
+    <action>Confirm {{story_key}} now shows status "review"</action>
+
+    <check if="verification fails">
+      <output>❌ CRITICAL: sprint-status.yaml update failed to persist!
+
+        Status was written but not saved correctly.
+      </output>
+      <action>HALT - File system issue or permission problem</action>
+    </check>
+
+    <output>✅ Verified: sprint-status.yaml updated successfully</output>
 
     <!-- Final validation gates -->
     <action if="any task is incomplete">HALT - Complete remaining tasks before marking ready for review</action>
