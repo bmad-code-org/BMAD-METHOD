@@ -8,7 +8,7 @@ Complete reference for all BMGD workflows organized by development phase.
 
 BMGD workflows are organized into four phases:
 
-![BMGD Workflow Overview](../../../../docs/modules/bmgd-bmad-game-dev/workflow-overview.jpg)
+![BMGD Workflow Overview](./workflow-overview.jpg)
 
 ---
 
@@ -161,7 +161,7 @@ Production workflows inherit from BMM and add game-specific overrides.
 **Command:** `sprint-planning`
 **Agent:** Game Scrum Master
 **Input:** GDD with epics
-**Output:** `{output_folder}/sprint-status.yaml`
+**Output:** `{implementation_artifacts}/sprint-status.yaml`
 
 **Description:**
 Generates or updates sprint tracking from epic files. Sets up the sprint backlog and tracking.

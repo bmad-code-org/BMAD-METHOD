@@ -32,7 +32,9 @@ Display the complete validation report to the user and offer options for fixing 
 - 📊 Display organized summary
 - 💾 Allow user to decide next steps
 
-## Sequence of Instructions:
+## MANDATORY SEQUENCE
+
+**CRITICAL:** Follow this sequence exactly. Do not skip, reorder, or improvise unless user explicitly requests a change.
 
 ### 1. Load Validation Report
 

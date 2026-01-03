@@ -2,7 +2,7 @@
 name: 'e-08b-edit-expert'
 description: 'Apply edits to Expert agent'
 
-nextStepFile: './e-09a-validate-metadata.md'
+nextStepFile: './e-09-celebrate.md'
 editPlan: '{bmb_creations_output_folder}/edit-plan-{agent-name}.md'
 agentFile: '{original-agent-path}'
 agentBackup: '{original-agent-path}.backup'
@@ -48,7 +48,9 @@ Apply all planned edits to the Expert agent YAML file and manage sidecar structu
 - ✅ Validate YAML and sidecar paths
 - ➡️ Auto-advance to next validation step
 
-## Sequence of Instructions:
+## MANDATORY SEQUENCE
+
+**CRITICAL:** Follow this sequence exactly. Do not skip, reorder, or improvise unless user explicitly requests a change.
 
 ### 1. Load Reference Documents
 
@@ -70,10 +72,10 @@ ALWAYS backup before editing:
 
 ### 4. Apply Edits in Sequence
 
-**Type Conversion to Expert:**
-- Update `type: expert`
+**Type Conversion TO Expert:**
+- Set `module: stand-alone` and `hasSidecar: true`
 - Add `metadata.sidecar-folder` if not present
-- Create sidecar directory: `mkdir -p {project-root}/_bmad/_memory/{sidecar-folder}/`
+- Create sidecar directory next to agent.yaml: `{agent-folder}/{agent-name}-sidecar/`
 
 **Sidecar Management:**
 - If changing sidecar-folder: update all critical_actions references

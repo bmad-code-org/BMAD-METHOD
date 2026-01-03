@@ -29,13 +29,17 @@ agent:
 
   menu:
     - trigger: CW or fuzzy match on create-workflow
-      exec: "{project-root}/_bmad/bmb/workflows/create-workflow/workflow.md"
+      exec: "{project-root}/_bmad/bmb/workflows/workflow/workflow.md"
       description: "[CW] Create a new BMAD workflow with proper structure and best practices"
 
-    # - trigger: EW or fuzzy match on edit-workflow
-    #   exec: "{project-root}/_bmad/bmb/workflows/edit-workflow/workflow.md"
-    #   description: "[EW] Edit existing BMAD workflows while maintaining integrity"
+    - trigger: EW or fuzzy match on edit-workflow
+      exec: "{project-root}/_bmad/bmb/workflows/workflow/workflow.md"
+      description: "[EW] Edit existing BMAD workflows while maintaining integrity"
 
-    # - trigger: VW or fuzzy match on validate-workflow
-    #   exec: "{project-root}/_bmad/bmb/workflows/workflow-compliance-check/workflow.md"
-    #   description: "[VW] Run compliance check on BMAD workflows against best practices"
+    - trigger: VW or fuzzy match on validate-workflow
+      exec: "{project-root}/_bmad/bmb/workflows/workflow/workflow.md"
+      description: "[VW] Run validation check on BMAD workflows against best practices"
+
+    - trigger: RW or fuzzy match on convert-or-rework-workflow
+      exec: "{project-root}/_bmad/bmb/workflows/workflow/workflow.md"
+      description: "[RW] Rework a Workflow to a V6 Compliant Version"

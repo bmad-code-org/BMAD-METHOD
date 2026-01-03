@@ -39,7 +39,9 @@ Review critical_actions and route to the appropriate type-specific edit step (Si
 - 💾 Route to appropriate type-specific edit step
 - ➡️ Auto-advance to type-specific edit on [C]
 
-## Sequence of Instructions:
+## MANDATORY SEQUENCE
+
+**CRITICAL:** Follow this sequence exactly. Do not skip, reorder, or improvise unless user explicitly requests a change.
 
 ### 1. Load Reference Documents
 
@@ -56,12 +58,13 @@ If user wants to add/modify critical_actions:
 
 ### 3. Determine Routing
 
-Check `{editPlan}` metadataEdits.typeConversion.to or current agentType:
+Check `{editPlan}` for agent metadata (module and hasSidecar):
 
 ```yaml
-agentType: simple → route to e-08a-edit-simple.md
-agentType: expert → route to e-08b-edit-expert.md
-agentType: module → route to e-08c-edit-module.md
+# Determine agent type from module + hasSidecar combination
+module ≠ "stand-alone" → route to e-08c-edit-module.md
+module = "stand-alone" + hasSidecar: true → route to e-08b-edit-expert.md
+module = "stand-alone" + hasSidecar: false → route to e-08a-edit-simple.md
 ```
 
 ### 4. Document to Edit Plan
@@ -75,7 +78,7 @@ activationEdits:
     modifications: []
 routing:
   destinationEdit: {e-08a|e-08b|e-08c}
-  targetType: {simple|expert|module}
+  sourceType: {simple|expert|module}  # Derived from module + hasSidecar
 ```
 
 ### 5. Present MENU OPTIONS
@@ -86,7 +89,7 @@ Display: "**Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Cont
 
 - IF A: Execute {advancedElicitationTask}, and when finished redisplay the menu
 - IF P: Execute {partyModeWorkflow}, and when finished redisplay the menu
-- IF C: Save to {editPlan}, determine routing based on targetType, then only then load and execute the appropriate type-specific edit step
+- IF C: Save to {editPlan}, determine routing based on module + hasSidecar, then only then load and execute the appropriate type-specific edit step
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options](#5-present-menu-options)
 
 #### EXECUTION RULES:
@@ -99,9 +102,9 @@ Display: "**Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Cont
 
 This is the **ROUTING HUB** for edit flow. ONLY WHEN [C continue option] is selected and [routing determined], load and execute the appropriate type-specific edit step:
 
-- targetType: simple → e-08a-edit-simple.md
-- targetType: expert → e-08b-edit-expert.md
-- targetType: module → e-08c-edit-module.md
+- module ≠ "stand-alone" → e-08c-edit-module.md (Module agent)
+- module = "stand-alone" + hasSidecar: true → e-08b-edit-expert.md (Expert agent)
+- module = "stand-alone" + hasSidecar: false → e-08a-edit-simple.md (Simple agent)
 
 ---
 
