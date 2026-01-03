@@ -10,7 +10,6 @@ wipFile: '{implementation_artifacts}/tech-spec-wip.md'
 # Step 3: Generate Implementation Plan
 
 **Progress: Step 3 of 4** - Next: Review & Finalize
-+**Note:** This step updates the existing tech-spec with the implementation plan; it does not create a new spec.
 
 ## RULES:
 
