@@ -1,0 +1,39 @@
+# API Design Workflow
+name: create-api-spec
+description: "Contract-first API design workflow producing OpenAPI 3.0+ specifications with mock server guidance and client SDK generation recommendations"
+author: "BMAD"
+version: "1.0.0"
+
+# Configuration sources
+config_source: "{project-root}/_bmad/bmm/config.yaml"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+user_skill_level: "{config_source}:user_skill_level"
+document_output_language: "{config_source}:document_output_language"
+planning_artifacts: "{config_source}:planning_artifacts"
+output_folder: "{planning_artifacts}"
+date: system-generated
+
+# Workflow components
+installed_path: "{project-root}/_bmad/bmm/workflows/3-solutioning/create-api-spec"
+instructions: "{installed_path}/instructions.md"
+template: "{installed_path}/openapi.template.yaml"
+checklist: "{installed_path}/api-checklist.md"
+
+# Input references
+prd_doc: "{planning_artifacts}/*prd*.md"
+architecture_doc: "{planning_artifacts}/*architecture*.md"
+project_context: "**/project-context.md"
+
+# Output
+output_file: "{output_folder}/api-spec.yaml"
+output_doc: "{output_folder}/api-design.md"
+
+# API styles supported
+api_styles:
+  - rest      # RESTful API
+  - graphql   # GraphQL schema
+  - grpc      # Protocol Buffers
+  - websocket # WebSocket events
+
+standalone: true

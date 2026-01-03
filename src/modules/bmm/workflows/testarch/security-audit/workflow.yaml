@@ -1,0 +1,40 @@
+# Security Audit Workflow
+name: testarch-security-audit
+description: "Comprehensive security audit covering OWASP Top 10, dependency vulnerabilities, secret detection, and authentication/authorization review"
+author: "BMAD"
+version: "1.0.0"
+
+# Configuration sources
+config_source: "{project-root}/_bmad/bmm/config.yaml"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+user_skill_level: "{config_source}:user_skill_level"
+document_output_language: "{config_source}:document_output_language"
+planning_artifacts: "{config_source}:planning_artifacts"
+implementation_artifacts: "{config_source}:implementation_artifacts"
+output_folder: "{implementation_artifacts}"
+date: system-generated
+
+# Workflow components
+installed_path: "{project-root}/_bmad/bmm/workflows/testarch/security-audit"
+instructions: "{installed_path}/instructions.md"
+checklist: "{installed_path}/owasp-checklist.md"
+report_template: "{installed_path}/security-report.template.md"
+
+# Input references
+architecture_doc: "{planning_artifacts}/*architecture*.md"
+project_context: "**/project-context.md"
+
+# Output
+output_file: "{output_folder}/security-audit-report-{date}.md"
+
+# Audit scope options
+audit_scopes:
+  - full        # Complete security audit
+  - owasp       # OWASP Top 10 focus
+  - deps        # Dependency vulnerabilities only
+  - secrets     # Secret detection only
+  - auth        # Authentication/authorization only
+  - api         # API security only
+
+standalone: true

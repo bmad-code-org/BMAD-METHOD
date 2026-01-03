@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tool id="context-extractor" name="Context Extractor" standalone="true">
+  <description>Extract key context from codebase for AI agent consumption (patterns, conventions, critical files)</description>
+
+  <parameters>
+    <param name="path" required="false" default="." description="Project root path"/>
+    <param name="focus" required="false" default="all" description="Focus area: all, patterns, dependencies, structure, conventions"/>
+    <param name="max_tokens" required="false" default="4000" description="Maximum token budget for output"/>
+  </parameters>
+
+  <extraction_areas>
+    <area name="project_structure">
+      <description>Key directories and their purposes</description>
+      <sources>
+        <source>Directory listing (depth 3)</source>
+        <source>README.md</source>
+        <source>package.json / setup.py / Cargo.toml</source>
+      </sources>
+    </area>
+
+    <area name="coding_patterns">
+      <description>Common patterns used in the codebase</description>
+      <sources>
+        <source>Import patterns</source>
+        <source>Naming conventions</source>
+        <source>Error handling patterns</source>
+        <source>Async patterns</source>
+      </sources>
+    </area>
+
+    <area name="dependencies">
+      <description>Key dependencies and their usage</description>
+      <sources>
+        <source>package.json dependencies</source>
+        <source>Import frequency analysis</source>
+      </sources>
+    </area>
+
+    <area name="conventions">
+      <description>Coding conventions and style</description>
+      <sources>
+        <source>.eslintrc / .prettierrc</source>
+        <source>tsconfig.json / jsconfig.json</source>
+        <source>editorconfig</source>
+        <source>Observed patterns in code</source>
+      </sources>
+    </area>
+
+    <area name="critical_files">
+      <description>Most important files to understand</description>
+      <sources>
+        <source>Entry points (index, main, app)</source>
+        <source>Configuration files</source>
+        <source>Type definitions</source>
+        <source>Shared utilities</source>
+      </sources>
+    </area>
+  </extraction_areas>
+
+  <execution>
+    <step n="1" goal="Scan project structure">
+      <action>List directories up to depth 3</action>
+      <action>Identify key directory patterns (src, lib, tests, etc.)</action>
+      <action>Note technology indicators (package.json, Cargo.toml, etc.)</action>
+    </step>
+
+    <step n="2" goal="Analyze entry points">
+      <action>Find entry files (index.ts, main.py, main.go, etc.)</action>
+      <action>Extract high-level architecture from imports</action>
+    </step>
+
+    <step n="3" goal="Extract conventions">
+      <action>Parse linter/formatter configs</action>
+      <action>Sample 10 representative files for pattern analysis</action>
+      <action>Identify naming conventions (camelCase, snake_case, etc.)</action>
+    </step>
+
+    <step n="4" goal="Analyze dependencies">
+      <action>Extract key dependencies from package manager files</action>
+      <action>Identify most-imported modules</action>
+      <action>Note framework/library choices</action>
+    </step>
+
+    <step n="5" goal="Generate context document">
+      <action>Compile findings within max_tokens budget</action>
+      <action>Prioritize most critical information</action>
+      <action>Format for AI agent consumption</action>
+    </step>
+  </execution>
+
+  <output>
+    ```markdown
+    # Project Context
+
+    ## Technology Stack
+    - Language: {language}
+    - Framework: {framework}
+    - Key Libraries: {libraries}
+
+    ## Project Structure
+    ```
+    {directory_tree}
+    ```
+
+    ## Entry Points
+    {entry_points}
+
+    ## Coding Conventions
+    - Naming: {naming_convention}
+    - Formatting: {formatting_rules}
+    - Imports: {import_pattern}
+
+    ## Key Patterns
+    {patterns}
+
+    ## Critical Files
+    {critical_files}
+
+    ## Dependencies
+    {key_dependencies}
+    ```
+  </output>
+</tool>

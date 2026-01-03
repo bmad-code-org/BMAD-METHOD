@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<task id="receive-message" name="Receive Inter-Agent Message" standalone="false">
+  <description>Receive and process messages from the messenger queue</description>
+
+  <config>
+    <source>{project-root}/_bmad/core/messenger/messenger-config.yaml</source>
+    <queue_file>{project-root}/_bmad-output/messenger/message-queue.yaml</queue_file>
+    <archive_dir>{project-root}/_bmad-output/messenger/archive</archive_dir>
+  </config>
+
+  <parameters>
+    <param name="agent" required="true" description="Agent checking for messages"/>
+    <param name="type_filter" required="false" description="Filter by message type"/>
+    <param name="mark_read" required="false" default="true" description="Mark messages as read"/>
+  </parameters>
+
+  <execution>
+    <step n="1" goal="Load message queue">
+      <action>Load queue from {queue_file}</action>
+      <action if="queue not exists or empty">Return: "No messages in queue"</action>
+    </step>
+
+    <step n="2" goal="Filter messages for agent">
+      <action>Filter messages where:
+        - to == {agent} OR
+        - to_agents contains {agent} OR
+        - to_agents == "all"
+      </action>
+      <action>Filter by status == "pending"</action>
+      <action if="type_filter specified">Filter by type == {type_filter}</action>
+      <action>Sort by priority (critical first), then by created (oldest first)</action>
+    </step>
+
+    <step n="3" goal="Process messages">
+      <action if="no matching messages">Return: "No pending messages for {agent}"</action>
+      <action>For each message:
+        - Display message summary
+        - If mark_read == true, update status to "read"
+      </action>
+    </step>
+
+    <step n="4" goal="Update queue">
+      <action if="mark_read == true">Save updated queue to {queue_file}</action>
+    </step>
+
+    <step n="5" goal="Return messages">
+      <action>Return list of messages with full payloads</action>
+      <output>
+        Messages for {agent}: {count}
+
+        {for each message}
+        ---
+        [{priority}] {type} from {from_agent}
+        ID: {message_id}
+        Received: {created}
+
+        {payload_summary}
+        ---
+        {end for}
+      </output>
+    </step>
+  </execution>
+
+  <output>
+    <field name="messages" description="Array of message objects"/>
+    <field name="count" description="Number of messages"/>
+  </output>
+</task>
