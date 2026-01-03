@@ -11,5 +11,6 @@ Deep-dive tutorials for advanced BMad Method usage.
 
 | Tutorial | Description |
 |----------|-------------|
-| **[Brownfield Onboarding](./brownfield-onboarding.md)** | Integrate BMad into existing projects |
 | **[Create Custom Agent](./create-custom-agent.md)** | Build your own AI agents |
+
+> **Looking for Brownfield Development?** See the [Brownfield Development Guide](../../how-to/brownfield/index.md) in How-To guides.

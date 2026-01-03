@@ -239,7 +239,7 @@ Use `party-mode` to get perspectives from multiple agents when facing complex de
 
 ## Next Steps
 
-- **[Agents Guide](../../reference/agents/bmgd-agents.md)** - Learn about each agent's capabilities
+- **[Agents Guide](../../explanation/game-dev/agents.md)** - Learn about each agent's capabilities
 - **[Workflows Guide](../../reference/workflows/bmgd-workflows.md)** - Detailed workflow reference
 - **[Quick-Flow Guide](../../how-to/workflows/bmgd-quick-flow.md)** - Rapid prototyping and development
 - **[Game Types Guide](../../explanation/game-dev/game-types.md)** - Understand game type templates

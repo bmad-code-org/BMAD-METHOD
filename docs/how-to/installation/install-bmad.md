@@ -136,6 +136,6 @@ npx bmad-method install --verbose
 
 ## Related
 
-- [Installation Tutorial](../../tutorials/getting-started/installation.md) - Getting started
+- [Quick Start Guide](../../tutorials/getting-started/quick-start-bmm.md) - Getting started with BMM
 - [Upgrade to V6](./upgrade-to-v6.md) - Upgrading from previous versions
 - [Install Custom Modules](./install-custom-modules.md) - Adding custom content

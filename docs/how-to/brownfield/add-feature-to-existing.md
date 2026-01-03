@@ -87,6 +87,6 @@ Follow the standard Phase 4 implementation workflows:
 
 ## Related
 
-- [Brownfield Onboarding Tutorial](../../tutorials/advanced/brownfield-onboarding.md)
+- [Brownfield Development Guide](./index.md)
 - [Document Existing Project](./document-existing-project.md)
 - [Quick Fix in Brownfield](./quick-fix-in-brownfield.md)

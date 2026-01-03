@@ -1,11 +1,11 @@
 ---
-sidebar_label: Brownfield Onboarding
-description: Learn how to use BMad Method on existing codebases
+sidebar_label: Brownfield Development
+description: How to use BMad Method on existing codebases
 ---
 
-# Brownfield Development Tutorial
+# Brownfield Development
 
-Learn how to effectively use BMad Method when working on existing projects and legacy codebases.
+How to effectively use BMad Method when working on existing projects and legacy codebases.
 
 ## What is Brownfield Development?
 
@@ -93,11 +93,11 @@ Pay close attention here to prevent reinventing the wheel or making decisions th
 - **[Document Existing Project](../../how-to/brownfield/document-existing-project.md)** - How to document your brownfield codebase
 - **[Add Feature to Existing Project](../../how-to/brownfield/add-feature-to-existing.md)** - Adding new functionality
 - **[Quick Fix in Brownfield](../../how-to/brownfield/quick-fix-in-brownfield.md)** - Bug fixes and ad-hoc changes
-- **[Brownfield FAQ](../../reference/faq/brownfield-faq.md)** - Common questions about brownfield development
+- **[Brownfield FAQ](../../explanation/faq/brownfield-faq.md)** - Common questions about brownfield development
 
 ---
 
 ## Related Documentation
 
-- [Quick Start Guide](../getting-started/quick-start-bmm.md) - Getting started with BMM
+- [Quick Start Guide](../../tutorials/getting-started/quick-start-bmm.md) - Getting started with BMM
 - [Quick Spec Flow](../../explanation/features/quick-flow.md) - Fast path for small changes

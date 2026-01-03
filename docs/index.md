@@ -21,7 +21,7 @@ The fastest way to understand BMAD is to try it. The Quick Start guide walks you
 <br/>
 
 :::tip Already familiar with AI-assisted development?
-Feel free to skip around. Use the sidebar to jump to any topic, or check out [What Are Agents?](/docs/explanation/core-concepts/what-are-agents) to understand how BMAD organizes its AI personas.
+Feel free to skip around. Use the sidebar to jump to any topic, or check out [What Are Agents?](./explanation/core-concepts/what-are-agents.md) to understand how BMAD organizes its AI personas.
 :::
 
 ---

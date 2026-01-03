@@ -284,5 +284,5 @@ If quick-dev keeps expanding scope, stop and create proper stories.
 ## Next Steps
 
 - **[Workflows Guide](../../reference/workflows/bmgd-workflows.md)** - Full workflow reference
-- **[Agents Guide](../../reference/agents/bmgd-agents.md)** - Agent capabilities
+- **[Agents Guide](../../explanation/game-dev/agents.md)** - Agent capabilities
 - **[Quick Start Guide](../../tutorials/getting-started/quick-start-bmgd.md)** - Getting started with BMGD

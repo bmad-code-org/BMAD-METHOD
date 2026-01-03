@@ -81,5 +81,5 @@ Review the documentation for:
 
 ## Related
 
-- [Brownfield Onboarding Tutorial](../../tutorials/advanced/brownfield-onboarding.md)
+- [Brownfield Development Guide](./index.md)
 - [Add Feature to Existing Project](./add-feature-to-existing.md)

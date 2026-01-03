@@ -459,5 +459,5 @@ This means:
 
 - **[Quick Start Guide](../../tutorials/getting-started/quick-start-bmgd.md)** - Get started with BMGD
 - **[Quick-Flow Guide](../../how-to/workflows/bmgd-quick-flow.md)** - Rapid prototyping and development
-- **[Agents Guide](../agents/bmgd-agents.md)** - Agent reference
+- **[Agents Guide](../../explanation/game-dev/agents.md)** - Agent reference
 - **[Game Types Guide](../../explanation/game-dev/game-types.md)** - Game type templates

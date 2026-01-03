@@ -50,7 +50,7 @@ Don't wait until project end - run after each epic for continuous improvement.
 ## Related Documentation
 
 - [Quick Start Guide](../../tutorials/getting-started/quick-start-bmm.md) - Get started with BMM
-- [Glossary](../glossary/index.md) - Terminology reference
+- [Glossary](../../reference/glossary/index.md) - Terminology reference
 
 ---
 

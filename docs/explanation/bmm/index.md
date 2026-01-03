@@ -38,7 +38,7 @@ First know there is the full BMad Method Process and then there is a Quick Flow 
   - Perfect for bug fixes and small features
   - Rapid prototyping with production quality
   - Implementation in minutes, not days
-  - Has a specialized single agent that does all of this: **[Quick Flow Solo Dev Agent](../../reference/agents/barry-quick-flow.md)**
+  - Has a specialized single agent that does all of this: **[Quick Flow Solo Dev Agent](../agents/barry-quick-flow.md)**
 
 - **TEA engagement (optional)** - Choose TEA engagement: none, TEA-only (standalone), or integrated by track. See **[Test Architect Guide](../../explanation/features/tea-overview.md)**.
 
@@ -64,7 +64,7 @@ Complete guide to BMM's AI agent team:
 
 Comprehensive guide for brownfield development:
 
-- **[Brownfield Development Guide](../../tutorials/advanced/brownfield-onboarding.md)** - Complete guide for existing codebases
+- **[Brownfield Development Guide](../../how-to/brownfield/index.md)** - Complete guide for existing codebases
   - Documentation phase strategies
   - Track selection for brownfield
   - Integration with existing patterns
@@ -76,7 +76,7 @@ Comprehensive guide for brownfield development:
 Essential reference materials:
 
 - **[Glossary](../../reference/glossary/index.md)** - Key terminology and concepts
-- **[FAQ](../../reference/faq/index.md)** - Frequently asked questions across all topics
+- **[FAQ](../faq/index.md)** - Frequently asked questions across all topics
 
 ## 🎯 Choose Your Path
 
@@ -86,10 +86,10 @@ Essential reference materials:
 → Start with [Quick Start Guide](../../tutorials/getting-started/quick-start-bmm.md)
 
 **Fix a bug or add small feature**
-→ User the [Quick Flow Solo Dev](../../reference/agents/barry-quick-flow.md) directly with its dedicated stand alone [Quick Bmad Spec Flow](../../explanation/features/quick-flow.md) process
+→ Use the [Quick Flow Solo Dev](../agents/barry-quick-flow.md) directly with its dedicated stand alone [Quick Bmad Spec Flow](../features/quick-flow.md) process
 
 **Work with existing codebase (brownfield)**
-→ Read [Brownfield Development Guide](../../tutorials/advanced/brownfield-onboarding.md)
+→ Read [Brownfield Development Guide](../../how-to/brownfield/index.md)
 → Pay special attention to documentation requirements for brownfield projects
 
 ## 📋 Workflow Guides

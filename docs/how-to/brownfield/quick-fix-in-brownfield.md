@@ -90,6 +90,6 @@ Consider using Quick Flow or full BMad Method when:
 
 ## Related
 
-- [Brownfield Onboarding Tutorial](../../tutorials/advanced/brownfield-onboarding.md)
+- [Brownfield Development Guide](./index.md)
 - [Add Feature to Existing Project](./add-feature-to-existing.md)
 - [Quick Spec Flow](../../explanation/features/quick-flow.md)
