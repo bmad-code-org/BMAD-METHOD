@@ -66,15 +66,9 @@ git diff {first_story_commit}^..HEAD -- {files}
 
 **Include in `{diff_output}`:**
 
-- All modified tracked files
+- All modified tracked files (except files in `{implementation_artifacts}` - asymmetry requires hiding intent)
 - All new files created for this story
 - Full content for new files
-
-**EXCLUDE from `{diff_output}`:**
-
-- The story file itself (`{story_path}`) - CRITICAL for asymmetry
-- `_bmad/`, `_bmad-output/` directories
-- `.cursor/`, `.windsurf/`, `.claude/` directories
 
 ### 2. Invoke Adversarial Review
 
