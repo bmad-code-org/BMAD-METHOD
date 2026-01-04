@@ -22,13 +22,14 @@ nextStepFile: '{workflow_path}/steps/step-05-consolidate-findings.md'
 From previous steps:
 
 - `{story_path}`, `{story_key}`
-- `{git_changed_files}` - Files changed according to git
+- `{file_list}` - Files listed in story's File List section
 - `{context_aware_findings}` - Findings from Phase 1
 
 ---
 
 ## STATE VARIABLE (capture now)
 
+- `{baseline_commit}` - From story file Dev Agent Record
 - `{diff_output}` - Complete diff of changes
 - `{asymmetric_findings}` - Findings from adversarial review
 
@@ -40,29 +41,29 @@ From previous steps:
 
 Build complete diff of all changes for this story.
 
-**Determine diff source:**
+**Step 1a: Read baseline from story file**
 
-If uncommitted changes exist for story files:
+Extract `Baseline Commit` from the story file's Dev Agent Record section.
 
-```bash
-git diff
-git diff --cached
-```
+- If found and not "NO_GIT": use as `{baseline_commit}`
+- If "NO_GIT" or missing: proceed to fallback
 
-If story work is already committed, find story-related commits:
+**Step 1b: Construct diff (with baseline)**
 
-```bash
-# Find commits that reference this story
-git log --oneline --all --grep="{story_key}" --format="%H"
-# Or find recent commits touching story files
-git log --oneline -10 -- {story_file_list}
-```
-
-Then construct diff:
+If `{baseline_commit}` is a valid commit hash:
 
 ```bash
-git diff {first_story_commit}^..HEAD -- {files}
+git diff {baseline_commit} -- ':!{implementation_artifacts}'
 ```
+
+This captures all changes (committed + uncommitted) since dev-story started.
+
+**Step 1c: Fallback (no baseline)**
+
+If no baseline available, review current state of files in `{file_list}`:
+
+- Read each file listed in the story's File List section
+- Review as full file content (not a diff)
 
 **Include in `{diff_output}`:**
 

@@ -219,6 +219,17 @@
       <output>ℹ️ No sprint status file exists - story progress will be tracked in story file only</output>
       <action>Set {{current_sprint_status}} = "no-sprint-tracking"</action>
     </check>
+
+    <!-- Capture baseline commit for code review -->
+    <check if="git is available">
+      <action>Capture current HEAD commit: `git rev-parse HEAD`</action>
+      <action>Store as {{baseline_commit}}</action>
+      <action>Write to story file Dev Agent Record: "**Baseline Commit:** {{baseline_commit}}"</action>
+    </check>
+    <check if="git is NOT available">
+      <action>Set {{baseline_commit}} = "NO_GIT"</action>
+      <action>Write to story file Dev Agent Record: "**Baseline Commit:** NO_GIT"</action>
+    </check>
   </step>
 
   <step n="5" goal="Implement task following red-green-refactor cycle">
