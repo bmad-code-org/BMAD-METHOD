@@ -43,15 +43,14 @@ Review `{git_discrepancies}` and create findings:
 
 | Discrepancy Type | Severity |
 | --- | --- |
-| Files changed but not in story File List | MEDIUM |
-| Story lists files but no git changes | HIGH |
-| Uncommitted changes not documented | MEDIUM |
+| Files changed but not in story File List | Medium |
+| Story lists files but no git changes | High |
+| Uncommitted changes not documented | Medium |
 
-For each discrepancy, add to `{context_aware_findings}`:
+For each discrepancy, add to `{context_aware_findings}` (no IDs yet - assigned after merge):
 
 ```
 {
-  id: "CAF-{n}",
   source: "git-discrepancy",
   severity: "...",
   description: "...",
@@ -66,15 +65,14 @@ For EACH AC in `{acceptance_criteria}`:
 1. Read the AC requirement
 2. Search implementation files in `{comprehensive_file_list}` for evidence
 3. Determine status: IMPLEMENTED, PARTIAL, or MISSING
-4. If PARTIAL or MISSING → add HIGH severity finding
+4. If PARTIAL or MISSING → add High severity finding
 
 Add to `{context_aware_findings}`:
 
 ```
 {
-  id: "CAF-{n}",
   source: "ac-validation",
-  severity: "HIGH",
+  severity: "High",
   description: "AC {id} not fully implemented: {details}",
   evidence: "Expected: {ac}, Found: {what_was_found}"
 }
@@ -86,16 +84,15 @@ For EACH task marked [x] in `{tasks_with_status}`:
 
 1. Read the task description
 2. Search files for evidence it was actually done
-3. **CRITICAL**: If marked [x] but NOT DONE → CRITICAL finding
+3. **Critical**: If marked [x] but NOT DONE → Critical finding
 4. Record specific proof (file:line) if done
 
 Add to `{context_aware_findings}` if false:
 
 ```
 {
-  id: "CAF-{n}",
   source: "task-audit",
-  severity: "CRITICAL",
+  severity: "Critical",
   description: "Task marked complete but not implemented: {task}",
   evidence: "Searched: {files}, Found: no evidence of {expected}"
 }
@@ -137,10 +134,10 @@ Present context-aware findings:
 **Phase 1: Context-Aware Review Complete**
 
 **Findings:** {count}
-- CRITICAL: {count}
-- HIGH: {count}
-- MEDIUM: {count}
-- LOW: {count}
+- Critical: {count}
+- High: {count}
+- Medium: {count}
+- Low: {count}
 
 Proceeding to Phase 2: Adversarial Review...
 ```

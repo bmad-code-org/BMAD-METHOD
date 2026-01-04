@@ -57,53 +57,39 @@ Keep the MORE DETAILED version:
 - If adversarial finding has better technical detail → keep that
 - When in doubt, keep context-aware (has more context)
 
-Mark duplicates as merged:
-
-```
-{
-  id: "CF-{n}",
-  merged_from: ["CAF-3", "AAF-2"],
-  kept_version: "CAF-3",
-  reason: "Context-aware version includes AC reference"
-}
-```
+Note which findings were merged (for transparency in the summary).
 
 ### 3. Normalize Severity
 
-Apply consistent severity scale:
-
-| Severity | Icon | Criteria |
-| --- | --- | --- |
-| CRITICAL | RED | Security vuln, data loss, tasks marked done but not, broken core functionality |
-| HIGH | ORANGE | Missing AC implementation, logic errors, missing critical error handling |
-| MEDIUM | YELLOW | Performance issues, incomplete features, documentation gaps |
-| LOW | GREEN | Code style, minor improvements, suggestions |
+Apply consistent severity scale (Critical, High, Medium, Low).
 
 ### 4. Filter Noise
 
-Review adversarial findings marked as NOISE:
+Review adversarial findings marked as Noise:
 
 - If clearly false positive (e.g., style preference, not actual issue) → exclude
-- If questionable → keep with UNDECIDED validity
-- If context reveals it's actually valid → upgrade to REAL
+- If questionable → keep with Undecided validity
+- If context reveals it's actually valid → upgrade to Real
 
 **Do NOT filter:**
 
-- Any CRITICAL or HIGH severity
+- Any Critical or High severity
 - Any context-aware findings (they have story context)
 
-### 5. Create Consolidated Table
+### 5. Sort and Number Findings
+
+Sort by severity (Critical → High → Medium → Low), then assign IDs: F1, F2, F3, etc.
 
 Build `{consolidated_findings}`:
 
 ```markdown
 | ID | Severity | Source | Description | Location |
 |----|----------|--------|-------------|----------|
-| CF-1 | CRITICAL | task-audit | Task 3 marked [x] but not implemented | src/auth.ts |
-| CF-2 | HIGH | ac-validation | AC2 partially implemented | src/api/*.ts |
-| CF-3 | HIGH | adversarial | Missing error handling in API calls | src/api/client.ts:45 |
-| CF-4 | MEDIUM | git-discrepancy | File changed but not in story | src/utils.ts |
-| CF-5 | LOW | adversarial | Magic number should be constant | src/config.ts:12 |
+| F1 | Critical | task-audit | Task 3 marked [x] but not implemented | src/auth.ts |
+| F2 | High | ac-validation | AC2 partially implemented | src/api/*.ts |
+| F3 | High | adversarial | Missing error handling in API calls | src/api/client.ts:45 |
+| F4 | Medium | git-discrepancy | File changed but not in story | src/utils.ts |
+| F5 | Low | adversarial | Magic number should be constant | src/config.ts:12 |
 ```
 
 ### 6. Present Consolidated Findings
@@ -115,10 +101,10 @@ Build `{consolidated_findings}`:
 
 **Summary:**
 - Total findings: {count}
-- CRITICAL: {count}
-- HIGH: {count}
-- MEDIUM: {count}
-- LOW: {count}
+- Critical: {count}
+- High: {count}
+- Medium: {count}
+- Low: {count}
 
 **Deduplication:** {merged_count} duplicate findings merged
 
@@ -126,16 +112,16 @@ Build `{consolidated_findings}`:
 
 ## Findings by Severity
 
-### CRITICAL (Must Fix)
+### Critical (Must Fix)
 {list critical findings with full details}
 
-### HIGH (Should Fix)
+### High (Should Fix)
 {list high findings with full details}
 
-### MEDIUM (Consider Fixing)
+### Medium (Consider Fixing)
 {list medium findings}
 
-### LOW (Nice to Fix)
+### Low (Nice to Fix)
 {list low findings}
 
 ---

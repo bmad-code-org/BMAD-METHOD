@@ -93,12 +93,11 @@ Capture findings from adversarial review.
 
 Evaluate severity (Critical, High, Medium, Low) and validity (Real, Noise, Undecided).
 
-Create `{asymmetric_findings}` list:
+Add each finding to `{asymmetric_findings}` (no IDs yet - assigned after merge):
 
 ```
 {
-  id: "AAF-{n}",
-  source: "adversarial-review",
+  source: "adversarial",
   severity: "...",
   validity: "...",
   description: "...",
@@ -115,15 +114,15 @@ Present adversarial findings:
 
 **Reviewer Context:** Pure diff review (no story knowledge)
 **Findings:** {count}
-- CRITICAL: {count}
-- HIGH: {count}
-- MEDIUM: {count}
-- LOW: {count}
+- Critical: {count}
+- High: {count}
+- Medium: {count}
+- Low: {count}
 
 **Validity Assessment:**
-- Real issues: {count}
-- Noise/false positives: {count}
-- Needs judgment: {count}
+- Real: {count}
+- Noise: {count}
+- Undecided: {count}
 
 Proceeding to findings consolidation...
 ```
