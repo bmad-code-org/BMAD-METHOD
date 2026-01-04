@@ -36,7 +36,9 @@ Validate the agent's metadata properties against BMAD standards as defined in ag
 - 💾 Append findings to validation report
 - ➡️ Auto-advance to next validation step
 
-## Sequence of Instructions:
+## MANDATORY SEQUENCE
+
+**CRITICAL:** Follow this sequence exactly. Do not skip, reorder, or improvise unless user explicitly requests a change.
 
 ### 1. Load References
 

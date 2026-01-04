@@ -1,5 +1,5 @@
 ---
-name: 'step-04-commands-menu'
+name: 'step-05-commands-menu'
 description: 'Build capabilities and command structure'
 
 # File References
@@ -121,7 +121,9 @@ menu:
 - **User-facing perspective** - triggers should feel natural
 - **Capability alignment** - every command maps to a capability
 
-# EXECUTION SEQUENCE
+## MANDATORY SEQUENCE
+
+**CRITICAL:** Follow this sequence exactly. Do not skip, reorder, or improvise unless user explicitly requests a change.
 
 1. Load agent-menu-patterns.md to understand structure
 2. Review capabilities from agent-plan step 3

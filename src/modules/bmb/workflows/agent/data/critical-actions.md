@@ -31,8 +31,8 @@ critical_actions:
 
 **CRITICAL Path Format:**
 - `{project-root}` = literal text (not replaced)
-- Sidecar copied to `_memory/` at build time
-- Use `{project-root}/_bmad/_memory/{sidecar-folder}/` format
+- Sidecar created next to agent.yaml during BUILD, then copied to `_memory/` during BMAD INSTALLATION
+- Use `{project-root}/_bmad/_memory/{sidecar-folder}/` format for RUNTIME paths in agent YAML
 
 ---
 
