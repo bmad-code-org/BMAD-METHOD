@@ -1,9 +1,10 @@
 ---
-sidebar_label: Getting Started
+sidebar_label: BMad v4
+sidebar_position: 1
 description: Install BMAD and create your first planning document
 ---
 
-# Getting Started with BMAD
+# Getting Started with BMad v4
 
 Learn how to build software with BMAD's AI-powered workflows. By the end of this tutorial, you'll have installed BMAD, initialized a project, and created your first planning document.
 
@@ -126,10 +127,10 @@ Workflows are guided processes that agents run. You tell an agent to run a workf
 
 Based on your project's complexity, BMAD offers three tracks:
 
-| Track           | Best For                                   | Documents Created              |
-| --------------- | ------------------------------------------ | ------------------------------ |
-| **Quick Flow**  | Bug fixes, simple features, clear scope    | Tech-spec only                 |
-| **BMAD Method** | Products, platforms, complex features      | PRD + Architecture + UX        |
+| Track           | Best For                                   | Documents Created                      |
+| --------------- | ------------------------------------------ | -------------------------------------- |
+| **Quick Flow**  | Bug fixes, simple features, clear scope    | Tech-spec only                         |
+| **BMAD Method** | Products, platforms, complex features      | PRD + Architecture + UX                |
 | **Enterprise**  | Compliance, multi-tenant, enterprise needs | PRD + Architecture + Security + DevOps |
 
 ---
@@ -305,11 +306,11 @@ Explore related topics:
 
 Commands you learned in this tutorial:
 
-| Command          | Agent   | Purpose                            |
-| ---------------- | ------- | ---------------------------------- |
-| `*workflow-init` | Analyst | Initialize a new project           |
-| `*prd`           | PM      | Create a Product Requirements Document |
-| `workflow-status`| Any     | Check progress and next steps      |
+| Command           | Agent   | Purpose                                |
+| ----------------- | ------- | -------------------------------------- |
+| `*workflow-init`  | Analyst | Initialize a new project               |
+| `*prd`            | PM      | Create a Product Requirements Document |
+| `workflow-status` | Any     | Check progress and next steps          |
 
 > **Tip**: Agents are flexible with commands. Menu numbers, shortcuts (`*prd`), or natural language ("Let's create a PRD") all work.
 

@@ -1,4 +1,13 @@
-# BMad Method V6 Quick Start Guide
+---
+sidebar_label: BMad v6 (Alpha)
+sidebar_position: 2
+---
+
+# Getting Started with BMad v6 Alpha
+
+:::warning[Alpha Software]
+BMad v6 is currently in **alpha**. Expect breaking changes, incomplete features, and evolving documentation. If you prefer a stable experience, use the [BMad v4 tutorial](./bmad-tutorial.md) instead.
+:::
 
 Get started with BMad Method v6 for your new greenfield project. This guide walks you through building software from scratch using AI-powered workflows.
 

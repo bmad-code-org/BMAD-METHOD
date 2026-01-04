@@ -1,4 +1,9 @@
-# BMGD Quick Start Guide
+---
+sidebar_label: Game Dev Module
+sidebar_position: 3
+---
+
+# Getting started with the BMad Game Developer Module
 
 Get started building games with the BMad Game Development Module.
 

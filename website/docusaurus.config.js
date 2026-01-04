@@ -116,7 +116,7 @@ const config = {
         items: [
           {
             type: 'doc',
-            docId: 'tutorials/index',
+            docId: 'tutorials/getting-started/bmad-tutorial',
             position: 'left',
             label: 'Tutorials',
           },
