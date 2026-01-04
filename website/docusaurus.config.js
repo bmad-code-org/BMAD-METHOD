@@ -122,30 +122,6 @@ const config = {
         },
         items: [
           {
-            type: 'doc',
-            docId: 'tutorials/getting-started/bmad-tutorial',
-            position: 'left',
-            label: 'Tutorials',
-          },
-          {
-            type: 'doc',
-            docId: 'how-to/index',
-            position: 'left',
-            label: 'How-To',
-          },
-          {
-            type: 'doc',
-            docId: 'explanation/index',
-            position: 'left',
-            label: 'Concepts',
-          },
-          {
-            type: 'doc',
-            docId: 'reference/index',
-            position: 'left',
-            label: 'Reference',
-          },
-          {
             to: '/downloads',
             label: 'Downloads',
             position: 'right',

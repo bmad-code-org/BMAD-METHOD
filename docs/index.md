@@ -39,9 +39,6 @@ These docs are organized into four sections based on what you're trying to do:
       <div className="card__body">
         <p><strong>Learning-oriented.</strong> Step-by-step guides that walk you through building something. Start here if you're new to BMAD.</p>
       </div>
-      <div className="card__footer">
-        <a className="button button--secondary button--block" href="/docs/tutorials">Browse Tutorials</a>
-      </div>
     </div>
   </div>
   <div className="col col--6 margin-bottom--lg">
@@ -51,9 +48,6 @@ These docs are organized into four sections based on what you're trying to do:
       </div>
       <div className="card__body">
         <p><strong>Task-oriented.</strong> Practical guides for solving specific problems. "How do I customize an agent?" lives here.</p>
-      </div>
-      <div className="card__footer">
-        <a className="button button--secondary button--block" href="/docs/how-to">Find a Guide</a>
       </div>
     </div>
   </div>
@@ -65,9 +59,6 @@ These docs are organized into four sections based on what you're trying to do:
       <div className="card__body">
         <p><strong>Understanding-oriented.</strong> Deep dives into concepts and architecture. Read these when you want to know <em>why</em> something works.</p>
       </div>
-      <div className="card__footer">
-        <a className="button button--secondary button--block" href="/docs/explanation">Explore Concepts</a>
-      </div>
     </div>
   </div>
   <div className="col col--6 margin-bottom--lg">
@@ -77,9 +68,6 @@ These docs are organized into four sections based on what you're trying to do:
       </div>
       <div className="card__body">
         <p><strong>Information-oriented.</strong> Technical specifications for agents, workflows, and configuration. Look things up here.</p>
-      </div>
-      <div className="card__footer">
-        <a className="button button--secondary button--block" href="/docs/reference">Browse Reference</a>
       </div>
     </div>
   </div>

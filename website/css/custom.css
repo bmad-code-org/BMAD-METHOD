@@ -64,6 +64,12 @@ div[class*='announcementBar'] strong {
   color: #e2e8f0;
 }
 
+/* Dark mode - slightly lighter than background to stand out */
+[data-theme='dark'] div[class*='announcementBar'] {
+  background-color: #334155 !important;
+  border-bottom: 1px solid rgba(96, 165, 250, 0.15);
+}
+
 /* ============================================
    TYPOGRAPHY - Clean, readable font stack
    ============================================ */
