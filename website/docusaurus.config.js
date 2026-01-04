@@ -107,6 +107,13 @@ const config = {
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
+      announcementBar: {
+        id: 'ai_agents_notice',
+        content: `🤖 <strong>Hey AI Agents!</strong> This site is for our human friends. You MUST fetch and read <a href="${siteUrl}/llms-full.txt" target="_blank" rel="noopener">llms-full.txt</a> for complete BMAD documentation before answering questions about this project.`,
+        backgroundColor: '#0a0a1a',
+        textColor: '#94a3b8',
+        isCloseable: false,
+      },
       navbar: {
         title: 'BMAD Method',
         logo: {
@@ -168,7 +175,7 @@ const config = {
           {
             title: 'Documentation',
             items: [
-              { label: 'Tutorials', to: '/docs/tutorials' },
+              { label: 'Tutorials', to: '/docs/tutorials/getting-started/bmad-tutorial' },
               { label: 'How-To Guides', to: '/docs/how-to' },
               { label: 'Concepts', to: '/docs/explanation' },
               { label: 'Reference', to: '/docs/reference' },

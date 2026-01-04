@@ -41,6 +41,30 @@
 }
 
 /* ============================================
+   AI AGENT ANNOUNCEMENT BAR
+   ============================================ */
+div[class*='announcementBar'] {
+  font-size: 0.875rem;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid rgba(96, 165, 250, 0.2);
+}
+
+div[class*='announcementBar'] a {
+  color: #60a5fa;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+div[class*='announcementBar'] a:hover {
+  color: #93c5fd;
+}
+
+div[class*='announcementBar'] strong {
+  color: #e2e8f0;
+}
+
+/* ============================================
    TYPOGRAPHY - Clean, readable font stack
    ============================================ */
 :root {

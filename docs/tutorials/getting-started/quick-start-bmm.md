@@ -5,386 +5,230 @@ sidebar_position: 2
 
 # Getting Started with BMad v6 Alpha
 
+Build software from scratch using AI-powered workflows with specialized agents that guide you through planning, architecture, and implementation.
+
 :::warning[Alpha Software]
-BMad v6 is currently in **alpha**. Expect breaking changes, incomplete features, and evolving documentation. If you prefer a stable experience, use the [BMad v4 tutorial](./bmad-tutorial.md) instead.
+BMad v6 is currently in **alpha**. Expect breaking changes, incomplete features, and evolving documentation. For a stable experience, use the [BMad v4 tutorial](./bmad-tutorial.md) instead.
 :::
 
-Get started with BMad Method v6 for your new greenfield project. This guide walks you through building software from scratch using AI-powered workflows.
+## What You'll Learn
 
-## TL;DR - The Quick Path
+- Install and initialize BMad Method for a new project
+- Choose the right planning track for your project size
+- Progress through phases from requirements to working code
+- Use agents and workflows effectively
 
-1. **Install**: `npx bmad-method@alpha install`
-2. **Initialize**: Load Analyst agent → Run "workflow-init"
-3. **Plan**: Load PM agent to create a PRD
-4. **Plan UX**: Load UX Expert to create a UX-Design if your application will have a UX/UI element
-5. **Architect**: Load Architect agent → Run "create-architecture"
-6. **Epic Plan**: The PM steps back in to help run the create-epics-and-stories
-7. **Build**: Load SM agent → Run workflows for each story → Load DEV agent → Implement
-8. **Always use fresh chats** for each workflow to avoid context issues
+:::tip[Quick Path]
+**Install** → `npx bmad-method@alpha install`
+**Initialize** → Load Analyst agent, run `workflow-init`
+**Plan** → PM creates PRD, Architect creates architecture
+**Build** → SM manages sprints, DEV implements stories
+**Always use fresh chats** for each workflow to avoid context issues.
+:::
 
-## What is BMad Method?
+## Understanding BMad Method
 
-BMad Method (BMM) helps you build software through guided workflows with specialized AI agents. The process follows four phases:
+BMad Method helps you build software through guided workflows with specialized AI agents. The process follows four phases:
 
-1. **Phase 1: Analysis** (Optional) - Brainstorming, Research, Product Brief
-2. **Phase 2: Planning** (Required) - Create your requirements (tech-spec or PRD)
-3. **Phase 3: Solutioning** (Track-dependent) - Design the architecture for BMad Method and Enterprise tracks
-4. **Phase 4: Implementation** (Required) - Build your software Epic by Epic, Story by Story
-
-### Complete Workflow Visualization
+| Phase | Name | What Happens |
+|-------|------|--------------|
+| 1 | Analysis | Brainstorming, research, product brief *(optional)* |
+| 2 | Planning | Create requirements (PRD or tech-spec) |
+| 3 | Solutioning | Design architecture *(BMad Method/Enterprise only)* |
+| 4 | Implementation | Build epic by epic, story by story |
 
 ![BMad Method Workflow - Standard Greenfield](./images/workflow-method-greenfield.svg)
 
-_Complete visual flowchart showing all phases, workflows, agents (color-coded), and decision points for the BMad Method standard greenfield track. Each box is color-coded by the agent responsible for that workflow._
+*Complete visual flowchart showing all phases, workflows, and agents for the standard greenfield track.*
 
 ## Installation
 
 ```bash
-# Install v6 Alpha to your project
 npx bmad-method@alpha install
 ```
 
-The interactive installer will guide you through setup and create a `_bmad/` folder with all agents and workflows.
+The interactive installer guides you through setup and creates a `_bmad/` folder with all agents and workflows.
 
----
+## Step 1: Initialize Your Workflow
 
-## Getting Started
+Load the **Analyst agent** in your IDE, wait for the menu, then tell it to run `workflow-init`.
 
-### Step 1: Initialize Your Workflow
+:::info[How to Load Agents]
+Type `/<agent-name>` in your IDE and use autocomplete. Not sure what's available? Start with `/bmad` to see all agents and workflows.
+:::
 
-1. **Load the Analyst agent** in your IDE - Generally this is done by typing `/<workflow or agent name - allow autocomplete to find the right command>` - if you are unsure, you can just start with /bmad and see all that is available, sorted by agents and workflows.
-2. **Wait for the agent's menu** to appear
-3. **Tell the agent**: "Run workflow-init" or type "\*workflow-init" or select the menu item number
+During initialization, you'll describe your project, whether it's new or existing, and the general complexity. The workflow then recommends a planning track:
 
-#### What happens during workflow-init?
+**Quick Flow** — Fast implementation with tech-spec only. Best for bug fixes, simple features, and clear scope (typically 1-15 stories).
 
-Workflows are interactive processes in V6 that replaced tasks and templates from prior versions. There are many types of workflows, and you can even create your own with the BMad Builder module. For the BMad Method, you'll be interacting with expert-designed workflows crafted to work with you to get the best out of both you and the LLM.
+**BMad Method** — Full planning with PRD, architecture, and optional UX design. Best for products, platforms, and complex features (typically 10-50+ stories).
 
-During workflow-init, you'll describe:
+**Enterprise Method** — Extended planning adding security, DevOps, and test planning. Best for compliance requirements and multi-tenant systems (typically 30+ stories).
 
-- Your project and its goals
-- Whether there's an existing codebase or this is a new project
-- The general size and complexity (you can adjust this later)
+:::note
+Story counts are guidance, not definitions. Choose your track based on planning needs, not story math.
+:::
 
-#### Planning Tracks
+Once you confirm, the workflow creates `bmm-workflow-status.yaml` to track your progress through all phases.
 
-Based on your description, the workflow will suggest a track and let you choose from:
+## Step 2: Work Through Planning Phases
 
-**Three Planning Tracks:**
+After initialization, work through phases 1-3. **Use fresh chats for each workflow** to avoid context limitations.
 
-- **Quick Flow** - Fast implementation (tech-spec only) - bug fixes, simple features, clear scope (typically 1-15 stories)
-- **BMad Method** - Full planning (PRD + Architecture + UX) - products, platforms, complex features (typically 10-50+ stories)
-- **Enterprise Method** - Extended planning (BMad Method + Security/DevOps/Test) - enterprise requirements, compliance, multi-tenant (typically 30+ stories)
+:::tip[Check Your Status]
+Unsure what's next? Load any agent and ask for `workflow-status`. It tells you the next recommended or required workflow.
+:::
 
-**Note**: Story counts are guidance, not definitions. Tracks are chosen based on planning needs, not story math.
+### Phase 1: Analysis (Optional)
 
-#### What gets created?
+All workflows in this phase are optional:
+- **brainstorm-project** — Guided ideation
+- **research** — Market and technical research
+- **product-brief** — Recommended foundation document
 
-Once you confirm your track, the `bmm-workflow-status.yaml` file will be created in your project's docs folder (assuming default install location). This file tracks your progress through all phases.
-
-**Important notes:**
-
-- Every track has different paths through the phases
-- Story counts can still change based on overall complexity as you work
-- For this guide, we'll assume a BMad Method track project
-- This workflow will guide you through Phase 1 (optional), Phase 2 (required), and Phase 3 (required for BMad Method and Enterprise tracks)
-
-### Step 2: Work Through Phases 1-3
-
-After workflow-init completes, you'll work through the planning phases. **Important: Use fresh chats for each workflow to avoid context limitations.**
-
-#### Checking Your Status
-
-If you're unsure what to do next:
-
-1. Load any agent in a new chat
-2. Ask for "workflow-status"
-3. The agent will tell you the next recommended or required workflow
-
-**Example response:**
-
-```
-Phase 1 (Analysis) is entirely optional. All workflows are optional or recommended:
-  - brainstorm-project - optional
-  - research - optional
-  - product-brief - RECOMMENDED (but not required)
-
-The next TRULY REQUIRED step is:
-  - PRD (Product Requirements Document) in Phase 2 - Planning
-  - Agent: pm
-  - Command: prd
-```
-
-#### How to Run Workflows in Phases 1-3
-
-When an agent tells you to run a workflow (like `prd`):
-
-1. **Start a new chat** with the specified agent
-2. **Wait for the menu** to appear
-3. **Tell the agent** to run it using any of these formats:
-   - Type the shorthand: `*prd`
-   - Say it naturally: "Let's create a new PRD"
-   - Select the menu number for "create-prd"
-
-The agents in V6 are very good with fuzzy menu matching!
-
-#### Quick Reference: Agent → Document Mapping
-
-For v4 users or those who prefer to skip workflow-status guidance:
-
-- **Analyst** → Brainstorming, Product Brief
-- **PM** → PRD (BMad Method/Enterprise tracks) OR tech-spec (Quick Flow track)
-- **UX-Designer** → UX Design Document (if UI part of the project)
-- **Architect** → Architecture (BMad Method/Enterprise tracks)
-
-#### Phase 2: Planning - Creating the PRD
+### Phase 2: Planning (Required)
 
 **For BMad Method and Enterprise tracks:**
-
 1. Load the **PM agent** in a new chat
-2. Tell it to run the PRD workflow
-3. Once complete, you'll have:
-   - **PRD.md** - Your Product Requirements Document
+2. Run the PRD workflow
+3. Output: `PRD.md`
 
 **For Quick Flow track:**
+- Use `tech-spec` instead of PRD, then skip to implementation
 
-- Use **tech-spec** instead of PRD (no architecture needed)
+:::info[UX Design (Optional)]
+If your project has a user interface, load the **UX-Designer agent** and run the UX design workflow after creating your PRD.
+:::
 
-#### Phase 2 (Optional): UX Design
+### Phase 3: Solutioning (BMad Method/Enterprise)
 
-If your project has a user interface:
-
-1. Load the **UX-Designer agent** in a new chat
-2. Tell it to run the UX design workflow
-3. After completion, you'll have your UX specification document
-
-#### Phase 3: Architecture
-
-**For BMad Method and Enterprise tracks:**
-
+**Create Architecture**
 1. Load the **Architect agent** in a new chat
-2. Tell it to run the create-architecture workflow
-3. After completion, you'll have your architecture document with technical decisions
+2. Run `create-architecture`
+3. Output: Architecture document with technical decisions
 
-#### Phase 3: Create Epics and Stories (REQUIRED after Architecture)
+**Create Epics and Stories**
 
-**V6 Improvement:** Epics and stories are now created AFTER architecture for better quality!
+:::tip[V6 Improvement]
+Epics and stories are now created *after* architecture. This produces better quality stories because architecture decisions (database, API patterns, tech stack) directly affect how work should be broken down.
+:::
 
 1. Load the **PM agent** in a new chat
-2. Tell it to run "create-epics-and-stories"
-3. This breaks down your PRD's FRs/NFRs into implementable epics and stories
-4. The workflow uses both PRD and Architecture to create technically-informed stories
+2. Run `create-epics-and-stories`
+3. The workflow uses both PRD and Architecture to create technically-informed stories
 
-**Why after architecture?** Architecture decisions (database, API patterns, tech stack) directly affect how stories should be broken down and sequenced.
-
-#### Phase 3: Implementation Readiness Check (Highly Recommended)
-
-Once epics and stories are created:
-
+**Implementation Readiness Check** *(Highly Recommended)*
 1. Load the **Architect agent** in a new chat
-2. Tell it to run "implementation-readiness"
-3. This validates cohesion across all your planning documents (PRD, UX, Architecture, Epics)
-4. This was called the "PO Master Checklist" in v4
+2. Run `implementation-readiness`
+3. Validates cohesion across all planning documents
 
-**Why run this?** It ensures all your planning assets align properly before you start building.
+## Step 3: Build Your Project (Phase 4)
 
-#### Optional: TEA Engagement
+Once planning is complete, move to implementation. **Each workflow should run in a fresh chat.**
 
-Testing is not mandated by BMad. Decide how you want to engage TEA:
+### Initialize Sprint Planning
 
-- **No TEA** - Use your existing team testing approach
-- **TEA-only (Standalone)** - Use TEA workflows with your own requirements and environment
-- **TEA-integrated** - Use TEA as part of the BMad Method or Enterprise flow
+Load the **SM agent** and run `sprint-planning`. This creates `sprint-status.yaml` to track all epics and stories.
 
-See the [Test Architect Guide](../../explanation/features/tea-overview.md) for the five TEA engagement models and recommended sequences.
+### The Build Cycle
 
-#### Context Management Tips
+For each story, repeat this cycle with fresh chats:
 
-- **Use 200k+ context models** for best results (Claude Sonnet 4.5, GPT-4, etc.)
-- **Fresh chat for each workflow** - Brainstorming, Briefs, Research, and PRD generation are all context-intensive
-- **No document sharding needed** - Unlike v4, you don't need to split documents
-- **Web Bundles coming soon** - Will help save LLM tokens for users with limited plans
+| Step | Agent | Workflow | Purpose |
+|------|-------|----------|---------|
+| 1 | SM | `create-story` | Create story file from epic |
+| 2 | DEV | `dev-story` | Implement the story |
+| 3 | TEA | `automate` | Generate guardrail tests *(optional)* |
+| 4 | DEV | `code-review` | Quality validation *(recommended)* |
 
-### Step 3: Start Building (Phase 4 - Implementation)
+After completing all stories in an epic, load the **SM agent** and run `retrospective`.
 
-Once planning and architecture are complete, you'll move to Phase 4. **Important: Each workflow below should be run in a fresh chat to avoid context limitations and hallucinations.**
-
-#### 3.1 Initialize Sprint Planning
-
-1. **Start a new chat** with the **SM (Scrum Master) agent**
-2. Wait for the menu to appear
-3. Tell the agent: "Run sprint-planning"
-4. This creates your `sprint-status.yaml` file that tracks all epics and stories
-
-#### 3.2 Create Your First Story
-
-1. **Start a new chat** with the **SM agent**
-2. Wait for the menu
-3. Tell the agent: "Run create-story"
-4. This creates the story file from the epic
-
-#### 3.3 Implement the Story
-
-1. **Start a new chat** with the **DEV agent**
-2. Wait for the menu
-3. Tell the agent: "Run dev-story"
-4. The DEV agent will implement the story and update the sprint status
-
-#### 3.4 Generate Guardrail Tests (Optional)
-
-1. **Start a new chat** with the **TEA agent**
-2. Wait for the menu
-3. Tell the agent: "Run automate"
-4. The TEA agent generates or expands tests to act as guardrails
-
-#### 3.5 Review the Code (Optional but Recommended)
-
-1. **Start a new chat** with the **DEV agent**
-2. Wait for the menu
-3. Tell the agent: "Run code-review"
-4. The DEV agent performs quality validation (this was called QA in v4)
-
-### Step 4: Keep Going
-
-For each subsequent story, repeat the cycle using **fresh chats** for each workflow:
-
-1. **New chat** → SM agent → "Run create-story"
-2. **New chat** → DEV agent → "Run dev-story"
-3. **New chat** → TEA agent → "Run automate" (optional)
-4. **New chat** → DEV agent → "Run code-review" (optional but recommended)
-
-After completing all stories in an epic:
-
-1. **Start a new chat** with the **SM agent**
-2. Tell the agent: "Run retrospective"
-
-**Why fresh chats?** Context-intensive workflows can cause hallucinations if you keep issuing commands in the same chat. Starting fresh ensures the agent has maximum context capacity for each workflow.
-
----
+:::warning[Why Fresh Chats?]
+Context-intensive workflows can cause hallucinations if you keep issuing commands in the same chat. Starting fresh ensures maximum context capacity.
+:::
 
 ## Understanding the Agents
 
-Each agent is a specialized AI persona:
+| Agent | Role |
+|-------|------|
+| **Analyst** | Initializes workflows and tracks progress |
+| **PM** | Creates requirements and specifications |
+| **UX-Designer** | Designs interfaces and user experience |
+| **Architect** | Designs system architecture |
+| **SM** | Manages sprints and creates stories |
+| **DEV** | Implements code and reviews work |
 
-- **Analyst** - Initializes workflows and tracks progress
-- **PM** - Creates requirements and specifications
-- **UX-Designer** - If your project has a front end - this designer will help produce artifacts, come up with mock updates, and design a great look and feel with you giving it guidance.
-- **Architect** - Designs system architecture
-- **SM (Scrum Master)** - Manages sprints and creates stories
-- **DEV** - Implements code and reviews work
-
-## How Workflows Work
-
-1. **Load an agent** - Open the agent file in your IDE to activate it
-2. **Wait for the menu** - The agent will present its available workflows
-3. **Tell the agent what to run** - Say "Run [workflow-name]"
-4. **Follow the prompts** - The agent guides you through each step
-
-The agent creates documents, asks questions, and helps you make decisions throughout the process.
+:::info[Working with Agents]
+1. Load an agent in your IDE
+2. Wait for the menu to appear
+3. Tell it what to run (natural language, menu number, or `*shortcut`)
+4. Follow the prompts
+:::
 
 ## Project Tracking Files
 
 BMad creates two files to track your progress:
 
-**1. bmm-workflow-status.yaml**
+**bmm-workflow-status.yaml** — Shows which phase you're in and what's next. Created by `workflow-init`, updated automatically as you progress.
 
-- Shows which phase you're in and what's next
-- Created by workflow-init
-- Updated automatically as you progress through phases
+**sprint-status.yaml** — Tracks all epics and stories during implementation. Created by `sprint-planning`, critical for SM and DEV agents to know what to work on.
 
-**2. sprint-status.yaml** (Phase 4 only)
+You don't need to edit these manually—agents update them as you work.
 
-- Tracks all your epics and stories during implementation
-- Critical for SM and DEV agents to know what to work on next
-- Created by sprint-planning workflow
-- Updated automatically as stories progress
+## Quick Reference
 
-**You don't need to edit these manually** - agents update them as you work.
+### Agent → Document Mapping
 
----
+| Agent | Creates |
+|-------|---------|
+| Analyst | Brainstorming notes, Product Brief |
+| PM | PRD (Method/Enterprise) or tech-spec (Quick Flow), Epics & Stories |
+| UX-Designer | UX Design Document |
+| Architect | Architecture Document |
 
-## The Complete Flow Visualized
+### Workflow Commands
 
-```mermaid
-flowchart LR
-    subgraph P1["Phase 1 (Optional)<br/>Analysis"]
-        direction TB
-        A1[Brainstorm]
-        A2[Research]
-        A3[Brief]
-        A4[Analyst]
-        A1 ~~~ A2 ~~~ A3 ~~~ A4
-    end
+Run these by telling the agent naturally, using menu numbers, or typing `*shortcut`:
 
-    subgraph P2["Phase 2 (Required)<br/>Planning"]
-        direction TB
-        B1[Quick Flow:<br/>tech-spec]
-        B2[Method/Enterprise:<br/>PRD]
-        B3[UX opt]
-        B4[PM, UX]
-        B1 ~~~ B2 ~~~ B3 ~~~ B4
-    end
-
-    subgraph P3["Phase 3 (Track-dependent)<br/>Solutioning"]
-        direction TB
-        C1[Method/Enterprise:<br/>architecture]
-        C2[gate-check]
-        C3[Architect]
-        C1 ~~~ C2 ~~~ C3
-    end
-
-    subgraph P4["Phase 4 (Required)<br/>Implementation"]
-        direction TB
-        D1[Per Epic:<br/>epic context]
-        D2[Per Story:<br/>create-story]
-        D3[dev-story]
-        D4[code-review]
-        D5[SM, DEV]
-        D1 ~~~ D2 ~~~ D3 ~~~ D4 ~~~ D5
-    end
-
-    P1 --> P2
-    P2 --> P3
-    P3 --> P4
-
-    style P1 fill:#bbf,stroke:#333,stroke-width:2px,color:#000
-    style P2 fill:#bfb,stroke:#333,stroke-width:2px,color:#000
-    style P3 fill:#ffb,stroke:#333,stroke-width:2px,color:#000
-    style P4 fill:#fbf,stroke:#333,stroke-width:2px,color:#000
-```
+- `workflow-init` — Start a new project
+- `workflow-status` — Check what's next
+- `prd` — Create Product Requirements Document
+- `create-architecture` — Create architecture
+- `create-epics-and-stories` — Break down PRD into epics
+- `sprint-planning` — Initialize sprint tracking
+- `create-story` — Create a story file
+- `dev-story` — Implement a story
+- `code-review` — Review implemented code
 
 ## Common Questions
 
-**Q: Do I always need architecture?**
-A: Only for BMad Method and Enterprise tracks. Quick Flow projects skip straight from tech-spec to implementation.
+**Do I always need architecture?**
+Only for BMad Method and Enterprise tracks. Quick Flow skips from tech-spec to implementation.
 
-**Q: Can I change my plan later?**
-A: Yes! The SM agent has a "correct-course" workflow for handling scope changes.
+**Can I change my plan later?**
+Yes. The SM agent has a `correct-course` workflow for handling scope changes.
 
-**Q: What if I want to brainstorm first?**
-A: Load the Analyst agent and tell it to "Run brainstorm-project" before running workflow-init.
+**What if I want to brainstorm first?**
+Load the Analyst agent and run `brainstorm-project` before `workflow-init`.
 
-**Q: Why do I need fresh chats for each workflow?**
-A: Context-intensive workflows can cause hallucinations if run in sequence. Fresh chats ensure maximum context capacity.
-
-**Q: Can I skip workflow-init and workflow-status?**
-A: Yes, once you learn the flow. Use the Quick Reference in Step 2 to go directly to the workflows you need.
+**Can I skip workflow-init and workflow-status?**
+Yes, once you learn the flow. Use the Quick Reference to go directly to needed workflows.
 
 ## Getting Help
 
-- **During workflows**: Agents guide you with questions and explanations
-- **Community**: [Discord](https://discord.gg/gk8jAdXWmj) - #general-dev, #bugs-issues
-- **Complete guide**: [BMM Workflow Documentation](../../reference/workflows/index.md)
-- **YouTube tutorials**: [BMad Code Channel](https://www.youtube.com/@BMadCode)
-
----
+- **During workflows** — Agents guide you with questions and explanations
+- **Community** — [Discord](https://discord.gg/gk8jAdXWmj) (#general-dev, #bugs-issues)
+- **Documentation** — [BMM Workflow Reference](../../reference/workflows/index.md)
+- **Video tutorials** — [BMad Code YouTube](https://www.youtube.com/@BMadCode)
 
 ## Key Takeaways
 
-✅ **Always use fresh chats** - Load agents in new chats for each workflow to avoid context issues
-✅ **Let workflow-status guide you** - Load any agent and ask for status when unsure what's next
-✅ **Track matters** - Quick Flow uses tech-spec, BMad Method/Enterprise need PRD and architecture
-✅ **Tracking is automatic** - The status files update themselves, no manual editing needed
-✅ **Agents are flexible** - Use menu numbers, shortcuts (\*prd), or natural language
+:::tip[Remember These]
+- **Always use fresh chats** — Load agents in new chats for each workflow
+- **Let workflow-status guide you** — Ask any agent for status when unsure
+- **Track matters** — Quick Flow uses tech-spec; Method/Enterprise need PRD and architecture
+- **Tracking is automatic** — Status files update themselves
+- **Agents are flexible** — Use menu numbers, shortcuts, or natural language
+:::
 
-**Ready to start building?** Install BMad, load the Analyst, run workflow-init, and let the agents guide you!
+Ready to start? Install BMad, load the Analyst, run `workflow-init`, and let the agents guide you.
