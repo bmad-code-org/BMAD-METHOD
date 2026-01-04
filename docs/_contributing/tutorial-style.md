@@ -1,16 +1,30 @@
 # Tutorial Style Guide
 
-Standards for writing tutorials and getting-started guides in BMAD documentation.
+Standards for writing tutorials and getting-started guides in BMad documentation.
 
-## Structure
+## Standard Structure
 
-Every tutorial should follow this flow:
+Every tutorial should follow this structure:
 
-1. **Title + Hook** — What you'll accomplish (1-2 sentences)
-2. **Prerequisites** — Use `:::info[Prerequisites]` if needed
-3. **What You'll Learn** — Brief bullet list of outcomes
-4. **Main Steps** — Numbered phases, minimal nesting
-5. **Summary + Next Steps** — Wrap up, link forward
+```
+1. Title + Hook (1-2 sentences describing the outcome)
+2. Version/Module Notice (info or warning admonition as appropriate)
+3. What You'll Learn (bullet list of outcomes)
+4. Prerequisites (info admonition)
+5. Quick Path (tip admonition - TL;DR summary)
+6. Understanding [Topic] (context before steps - tables for phases/agents)
+7. Installation (if applicable)
+8. Step 1: [First Major Task]
+9. Step 2: [Second Major Task]
+10. Step 3: [Third Major Task]
+11. What You've Accomplished (summary + folder structure if applicable)
+12. Quick Reference (commands table)
+13. Common Questions (FAQ format)
+14. Getting Help (community links)
+15. Key Takeaways (tip admonition - memorable points)
+```
+
+Not all sections are required for every tutorial, but this is the standard flow.
 
 ## Visual Hierarchy
 
@@ -44,7 +58,7 @@ Shortcuts, best practices, "pro tips"
 :::
 
 :::info[Title]
-Context, definitions, examples
+Context, definitions, examples, prerequisites
 :::
 
 :::note
@@ -60,6 +74,17 @@ Critical warnings only — data loss, security issues
 :::
 ```
 
+### Standard Admonition Uses
+
+| Admonition | Standard Use in Tutorials |
+|------------|---------------------------|
+| `:::info[Prerequisites]` | What users need before starting |
+| `:::tip[Quick Path]` | TL;DR summary at top of tutorial |
+| `:::warning[Fresh Chats]` | Context limitation reminders |
+| `:::info[Example]` | Command/response examples |
+| `:::tip[Check Your Status]` | How to verify progress |
+| `:::tip[Remember These]` | Key takeaways at end |
+
 ### Admonition Guidelines
 
 - **Always include a title** for tip, info, and warning
@@ -71,13 +96,13 @@ Critical warnings only — data loss, security issues
 
 ### Budget
 
-- **5-7 `##` sections** maximum per tutorial
+- **8-12 `##` sections** for full tutorials following standard structure
 - **2-3 `###` subsections** per `##` section maximum
 - **Avoid `####` entirely** — use bold text or admonitions instead
 
 ### Naming
 
-- Use action verbs for steps: "Install the CLI", "Configure Your Project"
+- Use action verbs for steps: "Install BMad", "Create Your Plan"
 - Use nouns for reference sections: "Common Questions", "Quick Reference"
 - Keep headers short and scannable
 
@@ -87,7 +112,7 @@ Critical warnings only — data loss, security issues
 
 ```md
 ```bash
-npx bmad-method@alpha install
+npx bmad-method install
 ```
 ```
 
@@ -111,14 +136,42 @@ Run `workflow-status` and the agent will tell you the next recommended workflow.
 ## Tables
 
 Use tables for:
+- Phases and what happens in each
+- Agent roles and when to use them
+- Command references
 - Comparing options
-- Mapping relationships (agent → document)
 - Step sequences with multiple attributes
 
 Keep tables simple:
 - 2-4 columns maximum
 - Short cell content
 - Left-align text, right-align numbers
+
+### Standard Tables
+
+**Phases Table:**
+```md
+| Phase | Name | What Happens |
+|-------|------|--------------|
+| 1 | Analysis | Brainstorm, research *(optional)* |
+| 2 | Planning | Requirements — PRD or tech-spec *(required)* |
+```
+
+**Quick Reference Table:**
+```md
+| Command | Agent | Purpose |
+|---------|-------|---------|
+| `*workflow-init` | Analyst | Initialize a new project |
+| `*prd` | PM | Create Product Requirements Document |
+```
+
+**Build Cycle Table:**
+```md
+| Step | Agent | Workflow | Purpose |
+|------|-------|----------|---------|
+| 1 | SM | `create-story` | Create story file from epic |
+| 2 | DEV | `dev-story` | Implement the story |
+```
 
 ## Lists
 
@@ -134,7 +187,7 @@ Keep tables simple:
 
 ```md
 1. Load the **PM agent** in a new chat
-2. Run the PRD workflow
+2. Run the PRD workflow: `*prd`
 3. Output: `PRD.md`
 ```
 
@@ -177,6 +230,23 @@ Only for BMad Method and Enterprise tracks. Quick Flow skips to implementation.
 Yes. The SM agent has a `correct-course` workflow for handling scope changes.
 ```
 
+## Folder Structure Blocks
+
+Show project structure in "What You've Accomplished":
+
+````md
+Your project now has:
+
+```
+your-project/
+├── _bmad/                         # BMad configuration
+├── _bmad-output/
+│   ├── PRD.md                     # Your requirements document
+│   └── bmm-workflow-status.yaml   # Progress tracking
+└── ...
+```
+````
+
 ## Example: Before and After
 
 ### Before (Noisy)
@@ -204,7 +274,7 @@ Yes. The SM agent has a `correct-course` workflow for handling scope changes.
 ### After (Clean)
 
 ```md
-## Step 1: Initialize Your Workflow
+## Step 1: Initialize Your Project
 
 Load the **Analyst agent** in your IDE, wait for the menu, then run `workflow-init`.
 
@@ -217,12 +287,20 @@ You'll describe your project goals and complexity. The workflow then recommends 
 
 Before submitting a tutorial:
 
-- [ ] Follows the standard structure (hook → learn → steps → summary)
+- [ ] Follows the standard structure
+- [ ] Has version/module notice if applicable
+- [ ] Has "What You'll Learn" section
+- [ ] Has Prerequisites admonition
+- [ ] Has Quick Path TL;DR admonition
 - [ ] No horizontal rules (`---`)
 - [ ] No `####` headers
 - [ ] Admonitions used for callouts (not bold paragraphs)
-- [ ] Tables used for structured data
+- [ ] Tables used for structured data (phases, commands, agents)
 - [ ] Lists are flat (no deep nesting)
-- [ ] 5-7 `##` sections maximum
+- [ ] Has "What You've Accomplished" section
+- [ ] Has Quick Reference table
+- [ ] Has Common Questions section
+- [ ] Has Getting Help section
+- [ ] Has Key Takeaways admonition
 - [ ] All links use descriptive text
 - [ ] Images have alt text and captions

@@ -40,7 +40,7 @@ PRDs are for Level 2-4 projects with multiple features requiring product-level c
 
 ## Related Documentation
 
-- [Quick Start Guide](../../tutorials/getting-started/quick-start-bmm.md) - Get started with BMM
+- [Quick Start Guide](../../tutorials/getting-started/getting-started-bmadv6.md) - Get started with BMM
 - [Glossary](../../reference/glossary/index.md) - Terminology reference
 
 ---

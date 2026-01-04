@@ -151,7 +151,7 @@ const config = {
           {
             title: 'Documentation',
             items: [
-              { label: 'Tutorials', to: '/docs/tutorials/getting-started/bmad-tutorial' },
+              { label: 'Tutorials', to: '/docs/tutorials/getting-started/getting-started-bmadv4' },
               { label: 'How-To Guides', to: '/docs/how-to' },
               { label: 'Concepts', to: '/docs/explanation' },
               { label: 'Reference', to: '/docs/reference' },

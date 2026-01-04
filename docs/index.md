@@ -1,27 +1,28 @@
 ---
 slug: /
 sidebar_position: 1
-title: Welcome to BMAD
+title: Welcome to BMad
 ---
 
-# Welcome to BMAD
+# Welcome to BMad
 
-BMAD (**B**uild **M**ore, **A**rchitect **D**reams) is an AI-driven development framework that helps you build software faster and smarter. It provides specialized AI agents, guided workflows, and intelligent planning that adapts to your project's complexity—whether you're fixing a bug or building an enterprise platform.
+BMad (**B**uild **M**ore, **A**rchitect **D**reams) is an AI-driven development framework that helps you build software faster and smarter. It provides specialized AI agents, guided workflows, and intelligent planning that adapts to your project's complexity—whether you're fixing a bug or building an enterprise platform.
 
 If you're comfortable working with AI coding assistants like Claude, Cursor, or GitHub Copilot, you're ready to get started.
 
 ---
 
-## New Here? Start with the Quick Start
+## New Here? Start with a Tutorial
 
-The fastest way to understand BMAD is to try it. The Quick Start guide walks you through your first project in about 10 minutes.
+The fastest way to understand BMad is to try it. Choose a tutorial to walk through your first project in about 10 minutes.
 
-<a className="button button--primary button--lg" href="/docs/tutorials/getting-started/quick-start-bmm">Get Started with BMAD</a>
+<a className="button button--primary button--lg margin-right--md" href="/docs/tutorials/getting-started/getting-started-bmadv4">Get Started with v4 (Stable)</a>
+<a className="button button--secondary button--lg" href="/docs/tutorials/getting-started/getting-started-bmadv6">Try v6 (Alpha)</a>
 
 <br/>
 
 :::tip Already familiar with AI-assisted development?
-Feel free to skip around. Use the sidebar to jump to any topic, or check out [What Are Agents?](./explanation/core-concepts/what-are-agents.md) to understand how BMAD organizes its AI personas.
+Feel free to skip around. Use the sidebar to jump to any topic, or check out [What Are Agents?](./explanation/core-concepts/what-are-agents.md) to understand how BMad organizes its AI personas.
 :::
 
 ---
@@ -37,7 +38,7 @@ These docs are organized into four sections based on what you're trying to do:
         <h3>Tutorials</h3>
       </div>
       <div className="card__body">
-        <p><strong>Learning-oriented.</strong> Step-by-step guides that walk you through building something. Start here if you're new to BMAD.</p>
+        <p><strong>Learning-oriented.</strong> Step-by-step guides that walk you through building something. Start here if you're new to BMad.</p>
       </div>
     </div>
   </div>
@@ -77,22 +78,22 @@ These docs are organized into four sections based on what you're trying to do:
 
 ## What You'll Need
 
-BMAD works with any AI coding assistant that supports custom system prompts or project context. Popular options include:
+BMad works with any AI coding assistant that supports custom system prompts or project context. Popular options include:
 
 - **[Claude Code](https://claude.ai/claude-code)** — Anthropic's CLI tool (recommended)
 - **[Cursor](https://cursor.sh)** — AI-first code editor
 - **[Windsurf](https://codeium.com/windsurf)** — Codeium's AI IDE
 - **[Roo Code](https://roocode.com)** — VS Code extension
 
-You should be comfortable with basic software development concepts like version control, project structure, and agile workflows. No prior experience with BMAD-style agent systems is required—that's what these docs are for.
+You should be comfortable with basic software development concepts like version control, project structure, and agile workflows. No prior experience with BMad-style agent systems is required—that's what these docs are for.
 
 ---
 
 ## Join the Community
 
-Get help, share what you're building, or contribute to BMAD:
+Get help, share what you're building, or contribute to BMad:
 
-- **[Discord](https://discord.gg/gk8jAdXWmj)** — Chat with other BMAD users, ask questions, share ideas
+- **[Discord](https://discord.gg/gk8jAdXWmj)** — Chat with other BMad users, ask questions, share ideas
 - **[GitHub](https://github.com/bmad-code-org/BMAD-METHOD)** — Source code, issues, and contributions
 - **[YouTube](https://www.youtube.com/@BMadCode)** — Video tutorials and walkthroughs
 
@@ -100,6 +101,7 @@ Get help, share what you're building, or contribute to BMAD:
 
 ## Next Step
 
-Ready to dive in? Head to the Quick Start to build your first project with BMAD.
+Ready to dive in? Pick a tutorial and start building.
 
-<a className="button button--primary button--lg" href="/docs/tutorials/getting-started/quick-start-bmm">Start the Quick Start Tutorial</a>
+<a className="button button--primary button--lg margin-right--md" href="/docs/tutorials/getting-started/getting-started-bmadv4">Get Started with v4 (Stable)</a>
+<a className="button button--secondary button--lg" href="/docs/tutorials/getting-started/getting-started-bmadv6">Try v6 (Alpha)</a>

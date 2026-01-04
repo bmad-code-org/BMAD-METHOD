@@ -8,7 +8,7 @@ Complete guides for the BMad Method Module (BMM) - AI-powered agile development 
 
 **New to BMM?** Start here:
 
-- **[Quick Start Guide](../../tutorials/getting-started/quick-start-bmm.md)** - Step-by-step guide to building your first project
+- **[Quick Start Guide](../../tutorials/getting-started/getting-started-bmadv6.md)** - Step-by-step guide to building your first project
   - Installation and setup
   - Understanding the four phases
   - Running your first workflows
@@ -83,7 +83,7 @@ Essential reference materials:
 ### I need to...
 
 **Build something new (greenfield)**
-→ Start with [Quick Start Guide](../../tutorials/getting-started/quick-start-bmm.md)
+→ Start with [Quick Start Guide](../../tutorials/getting-started/getting-started-bmadv6.md)
 
 **Fix a bug or add small feature**
 → Use the [Quick Flow Solo Dev](../agents/barry-quick-flow.md) directly with its dedicated stand alone [Quick Bmad Spec Flow](../features/quick-flow.md) process
@@ -129,4 +129,4 @@ Comprehensive documentation for all BMM workflows organized by phase:
 - **[GitHub Issues](https://github.com/bmad-code-org/BMAD-METHOD/issues)** - Report bugs or request features
 - **[YouTube Channel](https://www.youtube.com/@BMadCode)** - Video tutorials and walkthroughs
 
-**Ready to begin?** → [Start with the Quick Start Guide](../../tutorials/getting-started/quick-start-bmm.md)
+**Ready to begin?** → [Start with the Quick Start Guide](../../tutorials/getting-started/getting-started-bmadv6.md)

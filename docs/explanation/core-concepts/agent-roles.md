@@ -202,4 +202,4 @@ Fast solo development without handoffs.
 
 - [What Are Agents](./what-are-agents.md) - Foundational concepts
 - [Agent Reference](../../reference/agents/index.md) - Complete command reference
-- [Quick Start Guide](../../tutorials/getting-started/quick-start-bmm.md)
+- [Quick Start Guide](../../tutorials/getting-started/getting-started-bmadv6.md)

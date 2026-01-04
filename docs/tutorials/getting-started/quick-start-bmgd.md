@@ -1,255 +1,263 @@
 ---
 sidebar_label: Game Dev Module
 sidebar_position: 3
+description: Build games with BMad's Game Development Module
 ---
 
-# Getting started with the BMad Game Developer Module
+# Getting Started with BMad Game Development
 
-Get started building games with the BMad Game Development Module.
+Build games faster using AI-powered workflows with specialized game development agents that guide you through preproduction, design, architecture, and implementation.
 
----
+:::info[Module Extension]
+BMGD (BMad Game Development) is a module that extends BMad Method. You'll need BMad installed first—see the [BMad v4 tutorial](./getting-started-bmadv4.md) or [BMad v6 tutorial](./getting-started-bmadv6.md) if you haven't installed it yet.
+:::
 
-## Prerequisites
+## What You'll Learn
 
-Before starting with BMGD, ensure you have:
+- Install and configure the BMGD module
+- Understand game development phases and specialized agents
+- Create a Game Brief and Game Design Document (GDD)
+- Progress from concept to working game code
 
-1. **BMAD-METHOD installed** - Follow the main installation guide
-2. **A game idea** - Even a rough concept is enough to start
-3. **Your preferred AI tool** - Claude Code, Cursor, or web-based chat
+:::info[Prerequisites]
+- **BMad Method installed** — Follow the main installation guide first
+- **A game idea** — Even a rough concept is enough to start
+- **AI-powered IDE** — Claude Code, Cursor, Windsurf, or similar
+:::
 
----
+:::tip[Quick Path]
+**Install** → `npx bmad-method install` (select BMGD module)
+**Preproduction** → Game Designer creates Game Brief
+**Design** → Game Designer creates GDD (and Narrative if story-driven)
+**Technical** → Game Architect creates Architecture
+**Production** → Game SM manages sprints, Game Dev implements
+**Always use fresh chats** for each workflow to avoid context issues.
+:::
+
+## Understanding BMGD
+
+BMGD follows four game development phases with specialized agents for each:
+
+| Phase | Name | What Happens |
+|-------|------|--------------|
+| 1 | Preproduction | Capture game vision, create Game Brief *(optional brainstorming)* |
+| 2 | Design | Detail mechanics, systems, narrative in GDD |
+| 3 | Technical | Plan engine, architecture, technical decisions |
+| 4 | Production | Build game in sprints, story by story |
+
+![BMGD Workflow Overview](./images/workflow-overview.jpg)
+
+*Complete visual flowchart showing all phases, workflows, and agents for game development.*
+
+### Game Development Agents
+
+| Agent | When to Use |
+|-------|-------------|
+| **Game Designer** | Brainstorming, Game Brief, GDD, Narrative |
+| **Game Architect** | Architecture, technical decisions |
+| **Game Developer** | Implementation, code reviews |
+| **Game Scrum Master** | Sprint planning, story management |
+| **Game QA** | Test framework, test design, automation |
+| **Game Solo Dev** | Quick prototyping, indie development |
 
 ## Installation
 
-BMGD is a custom module that extends BMM. Install it using the BMAD installer:
+If you haven't installed BMad yet:
 
 ```bash
-# During installation, select BMGD when prompted for custom modules
-npx bmad-cli install
+npx bmad-method install
+# Select BMGD when prompted for modules
 ```
 
-Or add to an existing installation:
+Or add BMGD to an existing installation:
 
 ```bash
-npx bmad-cli install --add-module bmgd
+npx bmad-method install --add-module bmgd
 ```
 
----
+Verify your installation:
 
-## Understanding the Phases
+```
+your-project/
+├── _bmad/
+│   ├── bmgd/           # Game development module
+│   │   ├── agents/     # Game-specific agents
+│   │   ├── workflows/  # Game-specific workflows
+│   │   └── config.yaml # Module config
+│   ├── bmm/            # Core method module
+│   └── core/           # Core utilities
+├── _bmad-output/       # Generated artifacts (created later)
+└── .claude/            # IDE configuration (if using Claude Code)
+```
 
-BMGD follows four game development phases:
+## Step 1: Create Your Game Brief (Preproduction)
 
-![BMGD Workflow Overview](./workflow-overview.jpg)
+Load the **Game Designer** agent in your IDE, wait for the menu, then start with your game concept.
 
-### Phase 1: Preproduction
-
-**What happens:** Capture your game vision and core concept.
-
-**Workflows:**
-
-- `brainstorm-game` - Guided ideation with game-specific techniques
-- `create-game-brief` - Document vision, market, pillars, and fundamentals
-
-**Output:** Game Brief document
-
-### Phase 2: Design
-
-**What happens:** Detail your game's mechanics, systems, and (optionally) narrative.
-
-**Workflows:**
-
-- `create-gdd` - Create comprehensive Game Design Document
-- `narrative` - Create Narrative Design Document (for story-driven games)
-
-**Output:** GDD (and Narrative Design document if applicable)
-
-### Phase 3: Technical
-
-**What happens:** Plan how you'll build the game.
-
-**Workflows:**
-
-- `create-architecture` - Define engine, systems, patterns, and structure
-
-**Output:** Game Architecture document
-
-### Phase 4: Production
-
-**What happens:** Build your game in sprints.
-
-**Workflows:**
-
-- `sprint-planning` - Plan and track sprints
-- `sprint-status` - View progress and get recommendations
-- `create-story` - Create implementable stories
-- `dev-story` - Implement stories
-- `code-review` - Quality assurance
-- `retrospective` - Learn and improve after epics
-
-**Output:** Working game code
-
----
-
-## Your First Game Project
-
-### Step 1: Start with Brainstorming (Optional)
+### Optional: Brainstorm First
 
 If you have a vague idea and want help developing it:
 
 ```
-You: brainstorm-game
-Agent: [Guides you through game-specific ideation techniques]
+Run brainstorm-game
 ```
 
-### Step 2: Create Your Game Brief
+The agent guides you through game-specific ideation techniques to refine your concept.
 
-Capture your game's core vision:
-
-```
-You: create-game-brief
-Agent: [Walks you through game concept, pillars, market, and fundamentals]
-```
-
-**Output:** `{output_folder}/game-brief.md`
-
-### Step 3: Create Your GDD
-
-Detail your game's design:
+### Create the Game Brief
 
 ```
-You: create-gdd
-Agent: [Guides you through mechanics, systems, and game-type-specific sections]
+Run create-game-brief
 ```
 
-**Output:** `{output_folder}/gdd.md` (or sharded into `{output_folder}/gdd/`)
+The Game Designer walks you through:
+- **Game concept** — Core idea and unique selling points
+- **Design pillars** — The 3-5 principles that guide all decisions
+- **Target market** — Who plays this game?
+- **Fundamentals** — Platform, genre, scope, team size
 
-### Step 4: Add Narrative Design (If Story-Driven)
+When complete, you'll have `game-brief.md` in your `_bmad-output/` folder.
 
-For games with significant story:
+:::warning[Fresh Chats]
+Always start a fresh chat for each workflow. This prevents context limitations from causing issues.
+:::
 
-```
-You: narrative
-Agent: [Facilitates story, characters, world, and dialogue design]
-```
+## Step 2: Design Your Game
 
-**Output:** `{output_folder}/narrative-design.md`
+With your Game Brief complete, detail your game's design.
 
-### Step 5: Create Architecture
+### Create the GDD
 
-Plan your technical implementation:
-
-```
-You: create-architecture
-Agent: [Guides engine selection, system design, and technical decisions]
-```
-
-**Output:** `{output_folder}/game-architecture.md`
-
-### Step 6: Start Building
-
-Begin sprint-based development:
+**Start a fresh chat** with the **Game Designer** agent.
 
 ```
-You: sprint-planning
-Agent: [Sets up sprint tracking and epic management]
+Run create-gdd
 ```
 
----
+The agent guides you through mechanics, systems, and game-type-specific sections. BMGD offers 24 game type templates that provide genre-specific structure.
 
-## Choosing Your Agent
+When complete, you'll have `gdd.md` (or sharded into `gdd/` for large documents).
 
-BMGD provides six specialized agents:
+:::info[Narrative Design (Optional)]
+For story-driven games, start a fresh chat and run `narrative` to create a Narrative Design Document covering story, characters, world, and dialogue.
+:::
 
-| Agent                 | Icon | When to Use                               |
-| --------------------- | ---- | ----------------------------------------- |
-| **Game Designer**     | 🎲    | Brainstorming, Game Brief, GDD, Narrative |
-| **Game Architect**    | 🏛️    | Architecture, technical decisions         |
-| **Game Developer**    | 🕹️    | Implementation, code reviews              |
-| **Game Scrum Master** | 🎯    | Sprint planning, story management         |
-| **Game QA**           | 🧪    | Test framework, test design, automation   |
-| **Game Solo Dev**     | 🎮    | Quick prototyping, indie development      |
+:::tip[Check Your Status]
+Unsure what's next? Load any agent and run `workflow-status`. It tells you the next recommended workflow.
+:::
 
-### Typical Flow
+## Step 3: Plan Your Architecture
 
-1. **Game Designer** (Phases 1-2): Brainstorm → Brief → GDD → Narrative
-2. **Game Architect** (Phase 3): Architecture
-3. **Game Scrum Master** (Phase 4): Sprint planning, story creation
-4. **Game Developer** (Phase 4): Implementation, code reviews
+**Start a fresh chat** with the **Game Architect** agent.
 
----
+```
+Run create-architecture
+```
 
-## Quick Command Reference
+The architect guides you through:
+- **Engine selection** — Unity, Unreal, Godot, custom, etc.
+- **System design** — Core game systems and how they interact
+- **Technical patterns** — Architecture patterns suited to your game
+- **Structure** — Project organization and conventions
 
-### Phase 1: Preproduction
+When complete, you'll have `game-architecture.md`.
 
-- `brainstorm-game` - Ideation session
-- `create-game-brief` - Create Game Brief
+## Step 4: Build Your Game
 
-### Phase 2: Design
+Once planning is complete, move to production. **Each workflow should run in a fresh chat.**
 
-- `create-gdd` - Create GDD
-- `narrative` - Create Narrative Design
+### Initialize Sprint Planning
 
-### Phase 3: Technical
+Load the **Game Scrum Master** agent and run `sprint-planning`. This creates `sprint-status.yaml` to track all epics and stories.
 
-- `create-architecture` - Create Architecture
+### The Build Cycle
 
-### Phase 4: Production
+For each story, repeat this cycle with fresh chats:
 
-- `sprint-planning` - Plan sprints
-- `sprint-status` - View progress and recommendations
-- `create-story` - Create story
-- `dev-story` - Implement story
-- `code-review` - Review code
-- `retrospective` - Team retrospective
-- `correct-course` - Handle sprint changes
+| Step | Agent | Workflow | Purpose |
+|------|-------|----------|---------|
+| 1 | Game SM | `create-story` | Create story file from epic |
+| 2 | Game Dev | `dev-story` | Implement the story |
+| 3 | Game QA | `automate` | Generate tests *(optional)* |
+| 4 | Game Dev | `code-review` | Quality validation *(recommended)* |
 
-### Quick-Flow (Fast-Track)
+After completing all stories in an epic, load the **Game SM** and run `retrospective`.
 
-- `quick-prototype` - Rapid prototyping (IDE only)
-- `quick-dev` - Flexible development (IDE only)
+### Quick Prototyping Alternative
 
-### Utility
+For rapid iteration or indie development, load the **Game Solo Dev** agent:
+- `quick-prototype` — Rapid prototyping
+- `quick-dev` — Flexible development without full sprint structure
 
-- `workflow-status` - Check project status
-- `party-mode` - Multi-agent collaboration
-- `advanced-elicitation` - Deep exploration
+## What You've Accomplished
 
----
+You've learned the foundation of building games with BMad:
 
-## Tips for Success
+- Installed the BMGD module
+- Created a Game Brief capturing your vision
+- Detailed your design in a GDD
+- Planned your technical architecture
+- Understood the build cycle for implementation
 
-### 1. Start Small
+Your project now has:
 
-Begin with a simple game concept. You can always expand later.
+```
+your-project/
+├── _bmad/                         # BMad configuration
+├── _bmad-output/
+│   ├── game-brief.md              # Your game vision
+│   ├── gdd.md                     # Game Design Document
+│   ├── narrative-design.md        # Story design (if applicable)
+│   ├── game-architecture.md       # Technical decisions
+│   ├── epics/                     # Epic and story files
+│   └── sprint-status.yaml         # Sprint tracking
+└── ...
+```
 
-### 2. Use Game Type Templates
+## Quick Reference
 
-When creating your GDD, BMGD offers 24 game type templates that provide genre-specific sections.
+| Command | Agent | Purpose |
+|---------|-------|---------|
+| `*brainstorm-game` | Game Designer | Guided game ideation |
+| `*create-game-brief` | Game Designer | Create Game Brief |
+| `*create-gdd` | Game Designer | Create Game Design Document |
+| `*narrative` | Game Designer | Create Narrative Design |
+| `*create-architecture` | Game Architect | Create game architecture |
+| `*sprint-planning` | Game SM | Initialize sprint tracking |
+| `*create-story` | Game SM | Create a story file |
+| `*dev-story` | Game Dev | Implement a story |
+| `*code-review` | Game Dev | Review implemented code |
+| `*workflow-status` | Any | Check progress and next steps |
 
-### 3. Iterate
+## Common Questions
 
-Documents are living artifacts. Return to update them as your vision evolves.
+**Do I need to create all documents?**
+At minimum, create a Game Brief and GDD. Architecture is highly recommended. Narrative Design is only needed for story-driven games.
 
-### 4. Trust the Process
+**Can I use the Game Solo Dev for everything?**
+Yes, for smaller projects or rapid prototyping. For larger games, the specialized agents provide more thorough guidance.
 
-Each workflow builds on previous outputs. The Game Brief informs the GDD, which informs the Architecture, which informs implementation.
+**What game types are supported?**
+BMGD includes 24 game type templates (RPG, platformer, puzzle, strategy, etc.) that provide genre-specific GDD sections.
 
-### 5. Collaborate with Agents
+**Can I change my design later?**
+Yes. Documents are living artifacts—return to update them as your vision evolves. The SM agent has `correct-course` for scope changes.
 
-Use `party-mode` to get perspectives from multiple agents when facing complex decisions.
+## Getting Help
 
----
+- **During workflows** — Agents guide you with questions and explanations
+- **Community** — [Discord](https://discord.gg/gk8jAdXWmj) (#general-dev, #bugs-issues)
+- **Documentation** — [BMGD Workflow Reference](../../reference/workflows/bmgd-workflows.md)
+- **Video tutorials** — [BMad Code YouTube](https://www.youtube.com/@BMadCode)
 
-## Next Steps
+## Key Takeaways
 
-- **[Agents Guide](../../explanation/game-dev/agents.md)** - Learn about each agent's capabilities
-- **[Workflows Guide](../../reference/workflows/bmgd-workflows.md)** - Detailed workflow reference
-- **[Quick-Flow Guide](../../how-to/workflows/bmgd-quick-flow.md)** - Rapid prototyping and development
-- **[Game Types Guide](../../explanation/game-dev/game-types.md)** - Understand game type templates
-- **[Glossary](../../reference/glossary/index.md)** - Game development terminology
+:::tip[Remember These]
+- **Always use fresh chats** — Load agents in new chats for each workflow
+- **Game Brief first** — It informs everything that follows
+- **Use game type templates** — 24 templates provide genre-specific GDD structure
+- **Documents evolve** — Return to update them as your vision grows
+- **Solo Dev for speed** — Use Game Solo Dev for rapid prototyping
+:::
 
----
-
-**Ready to start?** Chat with the **Game Designer** agent and say `brainstorm-game` or `create-game-brief`!
+Ready to start? Load the **Game Designer** agent and run `create-game-brief` to capture your game vision.

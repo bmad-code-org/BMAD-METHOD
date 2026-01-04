@@ -61,7 +61,7 @@ If status file exists, use workflow-status. If not, use workflow-init.
 
 ## Related Documentation
 
-- [Quick Start Guide](../../tutorials/getting-started/quick-start-bmm.md) - Get started with BMM
+- [Quick Start Guide](../../tutorials/getting-started/getting-started-bmadv6.md) - Get started with BMM
 - [Glossary](../../reference/glossary/index.md) - Terminology reference
 
 ---

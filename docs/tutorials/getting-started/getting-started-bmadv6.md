@@ -1,14 +1,15 @@
 ---
 sidebar_label: BMad v6 (Alpha)
 sidebar_position: 2
+description: Install BMad v6 Alpha and build your first project
 ---
 
 # Getting Started with BMad v6 Alpha
 
-Build software from scratch using AI-powered workflows with specialized agents that guide you through planning, architecture, and implementation.
+Build software faster using AI-powered workflows with specialized agents that guide you through planning, architecture, and implementation.
 
 :::warning[Alpha Software]
-BMad v6 is currently in **alpha**. Expect breaking changes, incomplete features, and evolving documentation. For a stable experience, use the [BMad v4 tutorial](./bmad-tutorial.md) instead.
+BMad v6 is currently in **alpha**. Expect breaking changes, incomplete features, and evolving documentation. For a stable experience, use the [BMad v4 tutorial](./getting-started-bmadv4.md) instead.
 :::
 
 ## What You'll Learn
@@ -18,6 +19,13 @@ BMad v6 is currently in **alpha**. Expect breaking changes, incomplete features,
 - Progress through phases from requirements to working code
 - Use agents and workflows effectively
 
+:::info[Prerequisites]
+- **Node.js 20+** — Required for the installer
+- **Git** — Recommended for version control
+- **AI-powered IDE** — Claude Code, Cursor, Windsurf, or similar
+- **A project idea** — Even a simple one works for learning
+:::
+
 :::tip[Quick Path]
 **Install** → `npx bmad-method@alpha install`
 **Initialize** → Load Analyst agent, run `workflow-init`
@@ -26,9 +34,9 @@ BMad v6 is currently in **alpha**. Expect breaking changes, incomplete features,
 **Always use fresh chats** for each workflow to avoid context issues.
 :::
 
-## Understanding BMad Method
+## Understanding BMad
 
-BMad Method helps you build software through guided workflows with specialized AI agents. The process follows four phases:
+BMad helps you build software through guided workflows with specialized AI agents. The process follows four phases:
 
 | Phase | Name | What Happens |
 |-------|------|--------------|
@@ -41,7 +49,21 @@ BMad Method helps you build software through guided workflows with specialized A
 
 *Complete visual flowchart showing all phases, workflows, and agents for the standard greenfield track.*
 
+Based on your project's complexity, BMad offers three planning tracks:
+
+| Track | Best For | Documents Created |
+|-------|----------|-------------------|
+| **Quick Flow** | Bug fixes, simple features, clear scope (1-15 stories) | Tech-spec only |
+| **BMad Method** | Products, platforms, complex features (10-50+ stories) | PRD + Architecture + UX |
+| **Enterprise** | Compliance, multi-tenant systems (30+ stories) | PRD + Architecture + Security + DevOps |
+
+:::note
+Story counts are guidance, not definitions. Choose your track based on planning needs, not story math.
+:::
+
 ## Installation
+
+Open a terminal in your project directory and run:
 
 ```bash
 npx bmad-method@alpha install
@@ -49,31 +71,43 @@ npx bmad-method@alpha install
 
 The interactive installer guides you through setup and creates a `_bmad/` folder with all agents and workflows.
 
-## Step 1: Initialize Your Workflow
+Verify your installation:
 
-Load the **Analyst agent** in your IDE, wait for the menu, then tell it to run `workflow-init`.
+```
+your-project/
+├── _bmad/
+│   ├── bmm/            # Method module
+│   │   ├── agents/     # Agent files
+│   │   ├── workflows/  # Workflow files
+│   │   └── config.yaml # Module config
+│   └── core/           # Core utilities
+├── _bmad-output/       # Generated artifacts (created later)
+└── .claude/            # IDE configuration (if using Claude Code)
+```
+
+:::tip[Troubleshooting]
+Having issues? See [Install BMad](../../how-to/installation/install-bmad.md) for common solutions.
+:::
+
+## Step 1: Initialize Your Project
+
+Load the **Analyst agent** in your IDE, wait for the menu, then run `workflow-init`.
 
 :::info[How to Load Agents]
 Type `/<agent-name>` in your IDE and use autocomplete. Not sure what's available? Start with `/bmad` to see all agents and workflows.
 :::
 
-During initialization, you'll describe your project, whether it's new or existing, and the general complexity. The workflow then recommends a planning track:
-
-**Quick Flow** — Fast implementation with tech-spec only. Best for bug fixes, simple features, and clear scope (typically 1-15 stories).
-
-**BMad Method** — Full planning with PRD, architecture, and optional UX design. Best for products, platforms, and complex features (typically 10-50+ stories).
-
-**Enterprise Method** — Extended planning adding security, DevOps, and test planning. Best for compliance requirements and multi-tenant systems (typically 30+ stories).
-
-:::note
-Story counts are guidance, not definitions. Choose your track based on planning needs, not story math.
-:::
+The workflow asks you to describe your project, whether it's new or existing, and the general complexity. Based on your description, it recommends a planning track.
 
 Once you confirm, the workflow creates `bmm-workflow-status.yaml` to track your progress through all phases.
 
-## Step 2: Work Through Planning Phases
+:::warning[Fresh Chats]
+Always start a fresh chat for each workflow. This prevents context limitations from causing issues.
+:::
 
-After initialization, work through phases 1-3. **Use fresh chats for each workflow** to avoid context limitations.
+## Step 2: Create Your Plan
+
+After initialization, work through phases 1-3. **Use fresh chats for each workflow.**
 
 :::tip[Check Your Status]
 Unsure what's next? Load any agent and ask for `workflow-status`. It tells you the next recommended or required workflow.
@@ -90,7 +124,7 @@ All workflows in this phase are optional:
 
 **For BMad Method and Enterprise tracks:**
 1. Load the **PM agent** in a new chat
-2. Run the PRD workflow
+2. Run the PRD workflow: `*prd`
 3. Output: `PRD.md`
 
 **For Quick Flow track:**
@@ -122,7 +156,7 @@ Epics and stories are now created *after* architecture. This produces better qua
 2. Run `implementation-readiness`
 3. Validates cohesion across all planning documents
 
-## Step 3: Build Your Project (Phase 4)
+## Step 3: Build Your Project
 
 Once planning is complete, move to implementation. **Each workflow should run in a fresh chat.**
 
@@ -143,62 +177,43 @@ For each story, repeat this cycle with fresh chats:
 
 After completing all stories in an epic, load the **SM agent** and run `retrospective`.
 
-:::warning[Why Fresh Chats?]
-Context-intensive workflows can cause hallucinations if you keep issuing commands in the same chat. Starting fresh ensures maximum context capacity.
-:::
+## What You've Accomplished
 
-## Understanding the Agents
+You've learned the foundation of building with BMad:
 
-| Agent | Role |
-|-------|------|
-| **Analyst** | Initializes workflows and tracks progress |
-| **PM** | Creates requirements and specifications |
-| **UX-Designer** | Designs interfaces and user experience |
-| **Architect** | Designs system architecture |
-| **SM** | Manages sprints and creates stories |
-| **DEV** | Implements code and reviews work |
+- Installed BMad and configured it for your IDE
+- Initialized a project with your chosen planning track
+- Created planning documents (PRD, Architecture, Epics & Stories)
+- Understood the build cycle for implementation
 
-:::info[Working with Agents]
-1. Load an agent in your IDE
-2. Wait for the menu to appear
-3. Tell it what to run (natural language, menu number, or `*shortcut`)
-4. Follow the prompts
-:::
+Your project now has:
 
-## Project Tracking Files
-
-BMad creates two files to track your progress:
-
-**bmm-workflow-status.yaml** — Shows which phase you're in and what's next. Created by `workflow-init`, updated automatically as you progress.
-
-**sprint-status.yaml** — Tracks all epics and stories during implementation. Created by `sprint-planning`, critical for SM and DEV agents to know what to work on.
-
-You don't need to edit these manually—agents update them as you work.
+```
+your-project/
+├── _bmad/                         # BMad configuration
+├── _bmad-output/
+│   ├── PRD.md                     # Your requirements document
+│   ├── architecture.md            # Technical decisions
+│   ├── epics/                     # Epic and story files
+│   ├── bmm-workflow-status.yaml   # Phase progress tracking
+│   └── sprint-status.yaml         # Sprint tracking
+└── ...
+```
 
 ## Quick Reference
 
-### Agent → Document Mapping
-
-| Agent | Creates |
-|-------|---------|
-| Analyst | Brainstorming notes, Product Brief |
-| PM | PRD (Method/Enterprise) or tech-spec (Quick Flow), Epics & Stories |
-| UX-Designer | UX Design Document |
-| Architect | Architecture Document |
-
-### Workflow Commands
-
-Run these by telling the agent naturally, using menu numbers, or typing `*shortcut`:
-
-- `workflow-init` — Start a new project
-- `workflow-status` — Check what's next
-- `prd` — Create Product Requirements Document
-- `create-architecture` — Create architecture
-- `create-epics-and-stories` — Break down PRD into epics
-- `sprint-planning` — Initialize sprint tracking
-- `create-story` — Create a story file
-- `dev-story` — Implement a story
-- `code-review` — Review implemented code
+| Command | Agent | Purpose |
+|---------|-------|---------|
+| `*workflow-init` | Analyst | Initialize a new project |
+| `*workflow-status` | Any | Check progress and next steps |
+| `*prd` | PM | Create Product Requirements Document |
+| `*create-architecture` | Architect | Create architecture document |
+| `*create-epics-and-stories` | PM | Break down PRD into epics |
+| `*implementation-readiness` | Architect | Validate planning cohesion |
+| `*sprint-planning` | SM | Initialize sprint tracking |
+| `*create-story` | SM | Create a story file |
+| `*dev-story` | DEV | Implement a story |
+| `*code-review` | DEV | Review implemented code |
 
 ## Common Questions
 
@@ -228,7 +243,7 @@ Yes, once you learn the flow. Use the Quick Reference to go directly to needed w
 - **Let workflow-status guide you** — Ask any agent for status when unsure
 - **Track matters** — Quick Flow uses tech-spec; Method/Enterprise need PRD and architecture
 - **Tracking is automatic** — Status files update themselves
-- **Agents are flexible** — Use menu numbers, shortcuts, or natural language
+- **Agents are flexible** — Use menu numbers, shortcuts (`*prd`), or natural language
 :::
 
 Ready to start? Install BMad, load the Analyst, run `workflow-init`, and let the agents guide you.

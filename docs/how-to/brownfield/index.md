@@ -99,5 +99,5 @@ Pay close attention here to prevent reinventing the wheel or making decisions th
 
 ## Related Documentation
 
-- [Quick Start Guide](../../tutorials/getting-started/quick-start-bmm.md) - Getting started with BMM
+- [Quick Start Guide](../../tutorials/getting-started/getting-started-bmadv6.md) - Getting started with BMM
 - [Quick Spec Flow](../../explanation/features/quick-flow.md) - Fast path for small changes

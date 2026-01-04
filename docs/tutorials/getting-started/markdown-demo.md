@@ -22,7 +22,7 @@ A comprehensive preview of all markdown elements and styling for light/dark mode
 
 This is a regular paragraph with **bold text**, *italic text*, and ***bold italic text***. Here's some `inline code` as well. You can also use ~~strikethrough~~ text.
 
-This paragraph contains a [link to an external site](https://github.com) and a [link to internal docs](./bmad-tutorial.md).
+This paragraph contains a [link to an external site](https://github.com) and a [link to internal docs](./getting-started-bmadv4.md).
 
 ### Blockquotes
 
@@ -197,15 +197,15 @@ And multiple paragraphs of text.
 ### Links
 
 - [External link](https://github.com/bmad-code-org/BMAD-METHOD)
-- [Internal link](./bmad-tutorial.md)
+- [Internal link](./getting-started-bmadv4.md)
 - [Link with title](https://bmad.dev "BMAD Documentation")
 - Autolink: <https://example.com>
 
 ### Images
 
-![BMAD Logo](/img/logo.svg)
+![BMad Workflow](./images/workflow-method-greenfield.svg)
 
-*Caption: The BMAD logo*
+*Caption: Example workflow diagram*
 
 ## Horizontal Rules
 

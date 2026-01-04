@@ -17,7 +17,7 @@ Quick answers to common questions about getting started with the BMad Method.
 - Creates the tracking status file
 - Routes you to the correct starting workflow
 
-For experienced users: use the [Quick Start Guide](../../tutorials/getting-started/quick-start-bmm.md) to go directly to the right agent/workflow.
+For experienced users: use the [Quick Start Guide](../../tutorials/getting-started/getting-started-bmadv6.md) to go directly to the right agent/workflow.
 
 ## Q: Why do I need fresh chats for each workflow?
 
@@ -59,7 +59,7 @@ Quick workflows like status checks can reuse chats safely.
 
 ## Related Documentation
 
-- [Quick Start Guide](../../tutorials/getting-started/quick-start-bmm.md) - Get started with BMM
+- [Quick Start Guide](../../tutorials/getting-started/getting-started-bmadv6.md) - Get started with BMM
 - [Glossary](../../reference/glossary/index.md) - Terminology reference
 
 ---

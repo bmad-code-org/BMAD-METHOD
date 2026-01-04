@@ -1,44 +1,90 @@
-# Agent Creation Guide
+# Create a Custom Agent
 
-Create your own custom agents using the BMAD Builder workflow.
+Build your own AI agent with a unique personality, specialized commands, and optional persistent memory using the BMad Builder workflow.
 
-## Overview
+:::info[BMB Module]
+This tutorial uses the **BMad Builder (BMB)** module. Make sure you have BMAD installed with the BMB module enabled.
+:::
 
-The BMAD Builder (BMB) module provides an interactive workflow that guides you through creating a custom agent from concept to completion. You define the agent's purpose, personality, capabilities, and menu - then the workflow generates a complete, ready-to-use agent file.
+## What You'll Learn
 
-## Before You Start
+- How to run the `create-agent` workflow
+- Choose between Simple, Expert, and Module agent types
+- Define your agent's persona (role, identity, communication style, principles)
+- Package and install your custom agent
+- Test and iterate on your agent's behavior
 
-**Prerequisites:**
+:::info[Prerequisites]
 - BMAD installed with the BMB module
 - An idea for what you want your agent to do
+- About 15-30 minutes for your first agent
+:::
 
-**Know Before You Go:**
-- What problem should your agent solve?
-- Who will use this agent?
-- What should the agent be able to do?
+:::tip[Quick Path]
+Run `create-agent` workflow → Follow the guided steps → Install your agent module → Test and iterate.
+:::
 
-## Quick Start
+## Understanding Agent Types
 
-### 1. Start the Workflow
+Before creating your agent, understand the three types available:
+
+| Type       | Best For                              | Memory     | Complexity |
+| ---------- | ------------------------------------- | ---------- | ---------- |
+| **Simple** | Focused tasks, quick setup            | None       | Low        |
+| **Expert** | Specialized domains, ongoing projects | Persistent | Medium     |
+| **Module** | Building other agents/workflows       | Persistent | High       |
+
+**Simple Agent** - Use when your task is well-defined and focused. Perfect for single-purpose assistants like commit message generators or code reviewers.
+
+**Expert Agent** - Use when your domain requires specialized knowledge or you need memory across sessions. Great for roles like Security Architect or Documentation Lead.
+
+**Module Agent** - Use when your agent builds other agents or needs deep integration with the module system.
+
+## Step 1: Start the Workflow
 
 In your IDE (Claude Code, Cursor, etc.), invoke the create-agent workflow with the agent-builder agent.
 
-### 2. Follow the Steps
+The workflow guides you through eight steps:
 
-The workflow guides you through:
+| Step                        | What You'll Do                               |
+| --------------------------- | -------------------------------------------- |
+| **Brainstorm** *(optional)* | Explore ideas with creative techniques       |
+| **Discovery**               | Define the agent's purpose and goals         |
+| **Type & Metadata**         | Choose Simple or Expert, name your agent     |
+| **Persona**                 | Craft the agent's personality and principles |
+| **Commands**                | Define what the agent can do                 |
+| **Activation**              | Set up autonomous behaviors *(optional)*     |
+| **Build**                   | Generate the agent file                      |
+| **Validation**              | Review and verify everything works           |
 
-| Step                      | What You'll Do                               |
-| ------------------------- | -------------------------------------------- |
-| **Brainstorm** (optional) | Explore ideas with creative techniques       |
-| **Discovery**             | Define the agent's purpose and goals         |
-| **Type & Metadata**       | Choose Simple or Expert, name your agent     |
-| **Persona**               | Craft the agent's personality and principles |
-| **Commands**              | Define what the agent can do                 |
-| **Activation**            | Set up autonomous behaviors (optional)       |
-| **Build**                 | Generate the agent file                      |
-| **Validation**            | Review and verify everything works           |
+:::tip[Workflow Options]
+At each step, the workflow provides options:
+- **[A] Advanced** - Get deeper insights and reasoning
+- **[P] Party** - Get multiple agent perspectives
+- **[C] Continue** - Move to the next step
+:::
 
-### 3. Install Your Agent
+## Step 2: Define the Persona
+
+Your agent's personality is defined by four fields:
+
+| Field                   | Purpose        | Example                                                           |
+| ----------------------- | -------------- | ----------------------------------------------------------------- |
+| **Role**                | What they do   | "Senior code reviewer who catches bugs and suggests improvements" |
+| **Identity**            | Who they are   | "Friendly but exacting, believes clean code is a craft"           |
+| **Communication Style** | How they speak | "Direct, constructive, explains the 'why' behind suggestions"     |
+| **Principles**          | Why they act   | "Security first, clarity over cleverness, test what you fix"      |
+
+Keep each field focused on its purpose. The role isn't personality; the identity isn't job description.
+
+:::info[Writing Great Principles]
+The first principle should "activate" the agent's expertise:
+
+- **Weak:** "Be helpful and accurate"
+- **Strong:** "Channel decades of security expertise: threat modeling begins with trust boundaries, never trust client input, defense in depth is non-negotiable"
+:::
+
+## Step 3: Install Your Agent
 
 Once created, package your agent for installation:
 
@@ -53,98 +99,60 @@ my-custom-stuff/
 └── workflows/           # Optional: custom workflows
 ```
 
-See [Custom Content Installation](../../how-to/installation/install-custom-modules.md) for details.
+Install using the BMAD installer, then invoke your new agent in your IDE.
 
-## Choosing Your Agent Type
+## What You've Accomplished
 
-The workflow will help you decide, but here's the quick reference:
+You've created a custom AI agent with:
 
-### Choose Simple Agent When:
+- A defined purpose and role in your workflow
+- A unique persona with communication style and principles
+- Custom menu commands for your specific tasks
+- Optional persistent memory for ongoing context
 
-- Task is well-defined and focused
-- Don't need persistent memory
-- Want fast setup and deployment
-- Single-purpose assistant (e.g., commit messages, code review)
+Your project now includes:
 
-**Example:** A "Code Commenter" that reads files and adds helpful comments.
+```
+_bmad/
+├── _config/
+│   └── agents/
+│       └── {your-agent}/        # Your agent customizations
+└── {module}/
+    └── agents/
+        └── {your-agent}/
+            └── {your-agent}.agent.yaml
+```
 
-### Choose Expert Agent When:
+## Quick Reference
 
-- Domain requires specialized knowledge
-- Need persistent memory across sessions
-- Agent coordinates complex workflows
-- Building ongoing project infrastructure
+| Action              | How                                            |
+| ------------------- | ---------------------------------------------- |
+| Start workflow      | `"Run the BMAD Builder create-agent workflow"` |
+| Edit agent directly | Modify `{agent-name}.agent.yaml`               |
+| Edit customization  | Modify `_bmad/_config/agents/{agent-name}`     |
+| Rebuild agent       | `npx bmad-method build <agent-name>`           |
+| Study examples      | Check `src/modules/bmb/reference/agents/`      |
 
-**Example:** A "Security Architect" that remembers your design decisions and maintains security standards across the project.
+## Common Questions
 
-### Choose Module Agent When:
+**Should I start with Simple or Expert?**
+Start with Simple for your first agent. You can always upgrade to Expert later if you need persistent memory.
 
-- Agent builds other agents or workflows
-- Need integration with module system
-- Creating professional tooling
+**How do I add more commands later?**
+Edit the agent YAML directly or use the customization file in `_bmad/_config/agents/`. Then rebuild.
 
-**Example:** A "Team Builder" that helps set up agents for new team members.
+**Can I share my agent with others?**
+Yes. Package your agent as a standalone module and share it with your team or the community.
 
-## The Persona System
-
-Your agent's personality is defined by four fields:
-
-| Field                   | Purpose        | Example                                                           |
-| ----------------------- | -------------- | ----------------------------------------------------------------- |
-| **Role**                | What they do   | "Senior code reviewer who catches bugs and suggests improvements" |
-| **Identity**            | Who they are   | "Friendly but exacting, believes clean code is a craft"           |
-| **Communication Style** | How they speak | "Direct, constructive, explains the 'why' behind suggestions"     |
-| **Principles**          | Why they act   | "Security first, clarity over cleverness, test what you fix"      |
-
-**Key:** Keep each field focused on its purpose. The role isn't personality; the identity isn't job description.
-
-## Tips for Success
-
-### Start Small
-
-Your first agent should solve **one problem well**. You can always add more capabilities later.
-
-### Learn by Example
-
+**Where can I see example agents?**
 Study the reference agents in `src/modules/bmb/reference/agents/`:
-- **Simple:** [commit-poet](https://github.com/bmad-code-org/BMAD-METHOD/tree/main/src/modules/bmb/reference/agents/simple-examples/commit-poet.agent.yaml)
-- **Expert:** [journal-keeper](https://github.com/bmad-code-org/BMAD-METHOD/tree/main/src/modules/bmb/reference/agents/expert-examples/journal-keeper)
+- [commit-poet](https://github.com/bmad-code-org/BMAD-METHOD/tree/main/src/modules/bmb/reference/agents/simple-examples/commit-poet.agent.yaml) (Simple)
+- [journal-keeper](https://github.com/bmad-code-org/BMAD-METHOD/tree/main/src/modules/bmb/reference/agents/expert-examples/journal-keeper) (Expert)
 
-### Write Great Principles
+## Getting Help
 
-The first principle should "activate" the agent's expertise:
-
-❌ **Weak:** "Be helpful and accurate"
-✅ **Strong:** "Channel decades of security expertise: threat modeling begins with trust boundaries, never trust client input, defense in depth is non-negotiable"
-
-### Use the Menu System
-
-The workflow provides options at each step:
-- **[A] Advanced** - Get deeper insights and reasoning
-- **[P] Party** - Get multiple agent perspectives
-- **[C] Continue** - Move to the next step
-
-Use these when you need extra input or creative options.
-
-## After Creation
-
-### Test Your Agent
-
-1. Install your custom module using the BMAD installer
-2. Invoke your new agent in your IDE
-3. Try each menu command
-4. Verify the personality feels right
-
-### Iterate
-
-If something isn't right:
-1. Edit the agent YAML directly, or
-2. Edit the customization file in `_bmad/_config/agents/`
-3. Rebuild using `npx bmad-method build <agent-name>`
-
-### Share
-
-Package your agent as a standalone module (see [Installation Guide](../../how-to/installation/index.md)) and share it with your team or the community.
+- **[Discord Community](https://discord.gg/gk8jAdXWmj)** - Ask in #general-dev or #bugs-issues
+- **[GitHub Issues](https://github.com/bmad-code-org/BMAD-METHOD/issues)** - Report bugs or request features
 
 ## Further Reading
 
@@ -152,8 +160,9 @@ Package your agent as a standalone module (see [Installation Guide](../../how-to
 - **[Agent Customization](../../how-to/customization/customize-agents.md)** - Modify agents without editing core files
 - **[Custom Content Installation](../../how-to/installation/install-custom-modules.md)** - Package and distribute your agents
 
----
-
-**Ready?** Start the workflow and create your first agent!
-
-[← Back to Advanced Tutorials](./index.md)
+:::tip[Key Takeaways]
+- **Start small** - Your first agent should solve one problem well
+- **Persona matters** - Strong principles activate the agent's expertise
+- **Iterate often** - Test your agent and refine based on behavior
+- **Learn from examples** - Study reference agents before building your own
+:::
