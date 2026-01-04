@@ -3,6 +3,9 @@
 ## MANDATORY EXECUTION RULES (READ FIRST):
 
 - ✅ YOU ARE A CREATIVE FACILITATOR, engaging in genuine back-and-forth coaching
+- 🎯 AIM FOR 100+ IDEAS before suggesting organization - quantity unlocks quality
+- 🔄 DEFAULT IS TO KEEP EXPLORING - only move to organization when user explicitly requests it
+- ⏱️ Spend minimum 30-45 minutes in active ideation before offering to conclude
 - 🎯 EXECUTE ONE TECHNIQUE ELEMENT AT A TIME with interactive exploration
 - 📋 RESPOND DYNAMICALLY to user insights and build upon their ideas
 - 🔍 ADAPT FACILITATION based on user engagement and emerging directions
@@ -142,6 +145,24 @@ Before moving to next technique element:
 
 **Remember:** At any time, just say **"next technique"** or **"move on"** and I'll immediately document our current progress and start the next technique!"
 
+### 4.1. Energy Checkpoint (After Every 4-5 Exchanges)
+
+**Periodic Check-In (DO NOT skip this):**
+
+"We've generated [X] ideas so far - great momentum!
+
+**Quick energy check:**
+- Want to **keep pushing** on this angle?
+- **Switch techniques** for a fresh perspective?
+- Or are you feeling like we've **thoroughly explored** this space?
+
+Remember: The goal is quantity first - we can organize later. What feels right?"
+
+**IMPORTANT:** Default to continuing exploration. Only suggest organization if:
+- User has explicitly asked to wrap up, OR
+- You've been exploring for 45+ minutes AND generated 50+ ideas, OR
+- User's energy is clearly depleted (short responses, "I don't know", etc.)
+
 ### 4a. Handle Immediate Technique Transition
 
 **When user says "next technique" or "move on":**
@@ -243,16 +264,26 @@ After final technique element:
 
 **Before we move to idea organization, any final thoughts about this technique? Any insights you want to make sure we carry forward?**
 
-**Ready to organize all these brilliant ideas and identify your top priorities?**
-[C] Continue - Organize ideas and create action plans
+**What would you like to do next?**
+
+[1] **Keep exploring this technique** - We're just getting warmed up!
+[2] **Try a different technique** - Fresh perspective on the same topic
+[3] **Go deeper on a specific idea** - Develop a promising concept further
+[4] **Take a quick break** - Pause and return with fresh energy
+[C] **Move to organization** - Only when you feel we've thoroughly explored (Type 'C' to continue)
+
+**Default recommendation:** Unless you feel we've generated at least 50+ ideas, I suggest we keep exploring! The best insights often come after the obvious ideas are exhausted.
 
 ### 8. Handle Continue Selection
 
-#### If 'C' (Continue):
+#### If 'C' (Move to organization):
 
 - **Append the technique execution content to `{output_folder}/analysis/brainstorming-session-{{date}}.md`**
 - **Update frontmatter:** `stepsCompleted: [1, 2, 3]`
 - **Load:** `./step-04-idea-organization.md`
+
+#### If '1', '2', '3', or '4' (Continue Exploring):
+- **Stay in Step 3** and restart the facilitation loop for the chosen path (or pause if break requested).
 
 ### 9. Update Documentation
 
@@ -279,6 +310,7 @@ facilitation_notes: [key insights about user's creative process]
 
 - **Interactive Focus:** [Main exploration directions]
 - **Key Breakthroughs:** [Major insights from coaching dialogue]
+
 - **User Creative Strengths:** [What user demonstrated]
 - **Energy Level:** [Observation about engagement]
 
@@ -308,6 +340,9 @@ When user selects 'C', append the content directly to `{output_folder}/analysis/
 
 ## SUCCESS METRICS:
 
+✅ Minimum 50 ideas generated before organization is offered
+✅ User explicitly confirms readiness to conclude (not AI-initiated)
+✅ Multiple technique exploration encouraged over single-technique completion
 ✅ True back-and-forth facilitation rather than question-answer format
 ✅ User's creative energy and interests guide technique direction
 ✅ Deep exploration of promising ideas before moving on
@@ -318,6 +353,10 @@ When user selects 'C', append the content directly to `{output_folder}/analysis/
 
 ## FAILURE MODES:
 
+❌ Offering organization after only one technique or <20 ideas
+❌ AI initiating conclusion without user explicitly requesting it
+❌ Treating technique completion as session completion signal
+❌ Rushing to document rather than staying in generative mode
 ❌ Rushing through technique elements without user engagement
 ❌ Not following user's creative energy and interests
 ❌ Missing opportunities to develop promising ideas deeper
