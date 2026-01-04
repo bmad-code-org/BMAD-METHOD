@@ -51,7 +51,11 @@ Use best-effort diff construction:
 
 ### Capture as {diff_output}
 
-Merge all changes into `{diff_output}`.
+**Include in `{diff_output}`:**
+
+- All modified tracked files (except `{tech_spec_path}` if tech-spec mode - asymmetry requires hiding intent)
+- All new files created during this workflow
+- Full content for new files
 
 **Note:** Do NOT `git add` anything - this is read-only inspection.
 
@@ -92,6 +96,7 @@ With findings in hand, load `step-06-resolve-findings.md` for user to choose res
 ## SUCCESS METRICS
 
 - Diff constructed from baseline_commit
+- Tech-spec excluded from diff when in tech-spec mode (information asymmetry)
 - New files included in diff
 - Task invoked with diff as input
 - Findings received
@@ -100,6 +105,7 @@ With findings in hand, load `step-06-resolve-findings.md` for user to choose res
 ## FAILURE MODES
 
 - Missing baseline_commit (can't construct accurate diff)
+- Including tech_spec_path in diff when in tech-spec mode (breaks asymmetry)
 - Not including new untracked files in diff
 - Invoking task without providing diff input
 - Accepting zero findings without questioning

@@ -70,6 +70,8 @@ git diff {first_story_commit}^..HEAD -- {files}
 - All new files created for this story
 - Full content for new files
 
+**Note:** Do NOT `git add` anything - this is read-only inspection.
+
 ### 2. Invoke Adversarial Review
 
 <critical>Use information asymmetry: separate context from review</critical>
