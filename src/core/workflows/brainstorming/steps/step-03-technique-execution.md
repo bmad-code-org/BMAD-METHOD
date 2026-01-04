@@ -266,15 +266,15 @@ After final technique element:
 
 **What would you like to do next?**
 
-[1] **Keep exploring this technique** - We're just getting warmed up!
-[2] **Try a different technique** - Fresh perspective on the same topic
-[3] **Go deeper on a specific idea** - Develop a promising concept further
-[4] **Take a quick break** - Pause and return with fresh energy
-[C] **Move to organization** - Only when you feel we've thoroughly explored (Type 'C' to continue)
+[K] **Keep exploring this technique** - We're just getting warmed up!
+[T] **Try a different technique** - Fresh perspective on the same topic
+[A] **Go deeper on a specific idea** - Develop a promising concept further (Advanced Elicitation)
+[B] **Take a quick break** - Pause and return with fresh energy
+[C] **Move to organization** - Only when you feel we've thoroughly explored
 
 **Default recommendation:** Unless you feel we've generated at least 50+ ideas, I suggest we keep exploring! The best insights often come after the obvious ideas are exhausted.
 
-### 8. Handle Continue Selection
+### 8. Handle Menu Selection
 
 #### If 'C' (Move to organization):
 
@@ -282,7 +282,7 @@ After final technique element:
 - **Update frontmatter:** `stepsCompleted: [1, 2, 3]`
 - **Load:** `./step-04-idea-organization.md`
 
-#### If '1', '2', '3', or '4' (Continue Exploring):
+#### If 'K', 'T', 'A', or 'B' (Continue Exploring):
 - **Stay in Step 3** and restart the facilitation loop for the chosen path (or pause if break requested).
 
 ### 9. Update Documentation
