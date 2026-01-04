@@ -75,44 +75,15 @@ If no baseline available, review current state of files in `{file_list}`:
 
 ### 2. Invoke Adversarial Review
 
-<critical>Use information asymmetry: separate context from review</critical>
-
-**Execution Hierarchy (try in order):**
-
-**Option A: Subagent (Preferred)**
-
-If Task tool available with subagent capability:
+With `{diff_output}` constructed, invoke the review task. If possible, use information asymmetry: run this step, and only it, in a separate subagent or process with read access to the project, but no context except the `{diff_output}`.
 
 ```xml
-<invoke-task subagent="true">
-  Review {diff_output} using {project-root}/_bmad/core/tasks/review-adversarial-general.xml
-</invoke-task>
+<invoke-task>Review {diff_output} using {project-root}/_bmad/core/tasks/review-adversarial-general.xml</invoke-task>
 ```
 
-The subagent:
+**Platform fallback:** If task invocation not available, load the task file and execute its instructions inline, passing `{diff_output}` as the content.
 
-- Has FULL read access to the repository
-- Receives ONLY `{diff_output}` as context
-- Does NOT know story requirements, ACs, or intent
-- Reviews code purely on technical merit
-
-**Option B: CLI Fallback**
-
-If subagent not available but CLI available:
-
-```bash
-# Pipe diff to adversarial review task
-cat {diff_file} | claude --task {adversarial_review_task}
-```
-
-**Option C: Inline Execution**
-
-If neither available, load `review-adversarial-general.xml` and execute inline:
-
-1. Load task file
-2. Adopt adversarial persona
-3. Review `{diff_output}` with zero story context
-4. Generate findings
+The task should: review `{diff_output}` and return a list of findings.
 
 ### 3. Process Adversarial Findings
 
@@ -186,7 +157,7 @@ Proceeding to findings consolidation...
 
 - Diff constructed from correct source (uncommitted or commits)
 - Story file excluded from diff
-- Subagent invoked with proper isolation (or fallback used)
+- Task invoked with diff as input
 - Adversarial review executed
 - Findings captured with severity and validity
 - `{asymmetric_findings}` populated
@@ -198,7 +169,7 @@ Proceeding to findings consolidation...
 - Including story file in diff (breaks asymmetry)
 - Skipping adversarial review entirely
 - Accepting zero findings without halt
-- Not using subagent when available
+- Invoking task without providing diff input
 - Missing severity/validity classification
 - Not storing findings for consolidation
 - No explicit NEXT directive at step completion
