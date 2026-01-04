@@ -79,7 +79,7 @@ The task should: review `{diff_output}` and return a list of findings.
 
 Capture the findings from the task output.
 **If zero findings:** HALT - this is suspicious. Re-analyze or request user guidance.
-Evaluate severity (Critical, High, Medium, Low) and validity (real, noise, undecided).
+Evaluate severity (Critical, High, Medium, Low) and validity (Real, Noise, Undecided).
 DO NOT exclude findings based on severity or validity unless explicitly asked to do so.
 Order findings by severity.
 Number the ordered findings (F1, F2, F3, etc.).

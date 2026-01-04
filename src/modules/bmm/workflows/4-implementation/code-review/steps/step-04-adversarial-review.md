@@ -89,24 +89,9 @@ The task should: review `{diff_output}` and return a list of findings.
 
 Capture findings from adversarial review.
 
-**If zero findings returned:**
+**If zero findings:** HALT - this is suspicious. Re-analyze or ask for guidance.
 
-<critical>HALT - Zero findings is suspicious. Re-analyze or ask for guidance.</critical>
-
-**For each finding:**
-
-Assign severity:
-
-- CRITICAL: Security vulnerabilities, data loss risks
-- HIGH: Logic errors, missing error handling
-- MEDIUM: Performance issues, code smells
-- LOW: Style, documentation
-
-Assign validity:
-
-- REAL: Genuine issue to address
-- NOISE: False positive (explain why)
-- UNDECIDED: Needs human judgment
+Evaluate severity (Critical, High, Medium, Low) and validity (Real, Noise, Undecided).
 
 Create `{asymmetric_findings}` list:
 
