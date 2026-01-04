@@ -201,20 +201,57 @@
 }
 
 /* ============================================
-   LAYOUT - Only max-width for very wide viewports
+   LAYOUT - Fixed width at large viewport, fluid below
    ============================================ */
+:root {
+  --doc-sidebar-width: 266px;
+}
+
 .main-wrapper {
-  max-width: 1600px;
+  max-width: 1400px;
+  width: 1400px;
+  align-self: center;
   margin: 0 auto;
 }
 
+@media (max-width: 1416px) {
+  .main-wrapper {
+    max-width: 100%;
+    width: 100%;
+  }
+}
+
+/* Doc main container accounts for sidebar */
+@media (min-width: 997px) {
+  main[class*='docMainContainer'] {
+    max-width: calc(100% - var(--doc-sidebar-width));
+  }
+}
+
+/* Fix content width resizing based on content length */
+.docMainContainer_node_modules-\@docusaurus-theme-classic-lib-theme-DocPage-Layout-Main-styles-module,
+[class*='docMainContainer'] {
+  min-width: 0; /* Override flexbox default min-width: auto */
+}
+
+article {
+  width: 100%;
+  min-width: 0;
+}
+
+.markdown {
+  min-width: 0;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
 .navbar__inner {
-  max-width: 1600px;
+  max-width: 1400px;
   margin: 0 auto;
 }
 
 .footer__container {
-  max-width: 1600px;
+  max-width: 1400px;
   margin: 0 auto;
 }
 
