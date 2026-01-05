@@ -1,12 +1,12 @@
 ---
-name: 'step-04-adversarial-review'
+name: 'step-03-adversarial-review'
 description: 'Context-independent adversarial diff review via subagent - no story knowledge'
 
-thisStepFile: '{installed_path}/steps/step-04-adversarial-review.md'
-nextStepFile: '{installed_path}/steps/step-05-consolidate-findings.md'
+thisStepFile: '{installed_path}/steps/step-03-adversarial-review.md'
+nextStepFile: '{installed_path}/steps/step-04-context-aware-review.md'
 ---
 
-# Step 4: Adversarial Review (Information Asymmetric)
+# Step 3: Adversarial Review (Information Asymmetric)
 
 **Goal:** Perform context-independent adversarial review of code changes. Reviewer sees ONLY the diff - no story, no ACs, no context about WHY changes were made.
 
@@ -132,7 +132,7 @@ Proceeding to findings consolidation...
 
 **CRITICAL:** When this step completes, explicitly state:
 
-"**NEXT:** Loading `step-05-consolidate-findings.md`"
+"**NEXT:** Loading `step-04-context-aware-review.md`"
 
 ---
 

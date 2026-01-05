@@ -3,7 +3,7 @@ name: 'step-02-build-attack-plan'
 description: 'Extract ACs and tasks, create comprehensive review plan for both phases'
 
 thisStepFile: '{installed_path}/steps/step-02-build-attack-plan.md'
-nextStepFile: '{installed_path}/steps/step-03-context-aware-review.md'
+nextStepFile: '{installed_path}/steps/step-03-adversarial-review.md'
 ---
 
 # Step 2: Build Review Attack Plan
@@ -124,7 +124,7 @@ Proceeding with dual-phase review...
 
 **CRITICAL:** When this step completes, explicitly state:
 
-"**NEXT:** Loading `step-03-context-aware-review.md`"
+"**NEXT:** Loading `step-03-adversarial-review.md`"
 
 ---
 

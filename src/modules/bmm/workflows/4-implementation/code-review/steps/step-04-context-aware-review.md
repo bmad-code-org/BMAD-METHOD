@@ -1,12 +1,12 @@
 ---
-name: 'step-03-context-aware-review'
+name: 'step-04-context-aware-review'
 description: 'Story-aware validation: verify ACs, audit task completion, check git discrepancies'
 
-thisStepFile: '{installed_path}/steps/step-03-context-aware-review.md'
-nextStepFile: '{installed_path}/steps/step-04-adversarial-review.md'
+thisStepFile: '{installed_path}/steps/step-04-context-aware-review.md'
+nextStepFile: '{installed_path}/steps/step-05-consolidate-findings.md'
 ---
 
-# Step 3: Context-Aware Review
+# Step 4: Context-Aware Review
 
 **Goal:** Perform story-aware validation - verify AC implementation, audit task completion, review code quality with full story context.
 
@@ -35,6 +35,12 @@ Initialize `{context_aware_findings}` as empty list.
 ---
 
 ## EXECUTION SEQUENCE
+
+### 0. Load Planning Context (JIT)
+
+Invoke `discover_inputs` protocol to load architecture, UX, and epic documents.
+
+These provide the design context needed to validate AC implementation against system requirements.
 
 ### 1. Git vs Story Discrepancies
 
@@ -149,7 +155,7 @@ Store `{context_aware_findings}` for consolidation in step 5.
 
 **CRITICAL:** When this step completes, explicitly state:
 
-"**NEXT:** Loading `step-04-adversarial-review.md`"
+"**NEXT:** Loading `step-05-consolidate-findings.md`"
 
 ---
 

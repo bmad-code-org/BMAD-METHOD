@@ -2,6 +2,24 @@
 name: code-review
 description: 'Code review for dev-story output. Audits acceptance criteria against implementation, performs adversarial diff review, can auto-fix with approval. A different LLM than the implementer is recommended.'
 web_bundle: false
+
+input_file_patterns:
+  architecture:
+    description: 'System architecture for review context'
+    whole: '{planning_artifacts}/*architecture*.md'
+    sharded: '{planning_artifacts}/*architecture*/*.md'
+    load_strategy: 'FULL_LOAD'
+  ux_design:
+    description: 'UX design specification (if UI review)'
+    whole: '{planning_artifacts}/*ux*.md'
+    sharded: '{planning_artifacts}/*ux*/*.md'
+    load_strategy: 'FULL_LOAD'
+  epics:
+    description: 'Epic containing story being reviewed'
+    whole: '{planning_artifacts}/*epic*.md'
+    sharded_index: '{planning_artifacts}/*epic*/index.md'
+    sharded_single: '{planning_artifacts}/*epic*/epic-{{epic_num}}.md'
+    load_strategy: 'SELECTIVE_LOAD'
 ---
 
 # Code Review Workflow
