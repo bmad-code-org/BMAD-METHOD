@@ -97,14 +97,6 @@ Set `git_discrepancies` with categories:
 
 ---
 
-## NEXT STEP DIRECTIVE
-
-**CRITICAL:** When this step completes, explicitly state:
-
-"**NEXT:** Loading `step-02-build-attack-plan.md`"
-
----
-
 ## COMPLETION CHECKLIST
 
 Before proceeding to the next step, verify ALL of the following:
@@ -118,4 +110,12 @@ Before proceeding to the next step, verify ALL of the following:
 - Explicit NEXT directive provided
 
 **If any criterion is not met:** Report to the user immediately and HALT the workflow.
+
+---
+
+## NEXT STEP DIRECTIVE
+
+**CRITICAL:** When this step completes, explicitly state:
+
+"**NEXT:** Loading `step-02-build-attack-plan.md`"
 
