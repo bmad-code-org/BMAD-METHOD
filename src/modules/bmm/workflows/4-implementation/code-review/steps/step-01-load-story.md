@@ -74,6 +74,8 @@ git diff -M --name-only
 git diff -M --cached --name-only
 ```
 
+If any git command fails: Report the error to user and set `git_changed_files` = NO_GIT.
+
 Compile `git_changed_files` = union of modified, staged, new, deleted, and renamed files.
 
 ### 5. Cross-Reference Story vs Git
