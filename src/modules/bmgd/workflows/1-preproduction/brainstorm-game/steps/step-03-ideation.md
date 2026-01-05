@@ -231,9 +231,9 @@ Here's everything we captured:
 
 **Session Stats:**
 
-- Ideas generated: {{count}}
-- Concepts developed: {{count}}
-- Themes identified: {{count}}
+- Ideas generated: {{idea_count}}
+- Concepts developed: {{concept_count}}
+- Themes identified: {{theme_count}}
 
 **Select an Option:**
 [K] **Keep exploring current technique** - We're just getting warmed up!
