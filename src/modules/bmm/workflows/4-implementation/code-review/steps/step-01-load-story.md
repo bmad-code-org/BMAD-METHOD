@@ -13,6 +13,7 @@ These variables MUST be set in this step and available to all subsequent steps:
 
 - `story_path` - Path to the story file being reviewed
 - `story_key` - Story identifier (e.g., "1-2-user-authentication")
+- `story_content` - Complete, unmodified file content from story_path (loaded in substep 2)
 - `story_file_list` - Files claimed in story's Dev Agent Record → File List
 - `git_changed_files` - Files actually changed according to git
 - `git_discrepancies` - Mismatches between `story_file_list` and `git_changed_files`
@@ -47,8 +48,11 @@ Search for stories with status `review` or `done`. Match by priority:
 
 ### 2. Load Story File
 
-- Read COMPLETE story file from {story_path}
-- Extract `story_key` from filename (e.g., "1-2-user-authentication.md" → "1-2-user-authentication") or story metadata
+**Load file content:**
+Read the complete contents of {story_path} and assign to `story_content` WITHOUT filtering, truncating or summarizing. If {story_path} cannot be read: report the error to the user and HALT the workflow.
+
+**Extract story identifier:**
+Verify the filename ends with `.md` extension. Remove `.md` to get `story_key` (e.g., "1-2-user-authentication.md" → "1-2-user-authentication"). If filename doesn't end with `.md` or the result is empty: report the error to the user and HALT the workflow.
 
 ### 3. Parse Story Sections
 
@@ -121,3 +125,4 @@ Set `git_discrepancies` with categories:
 - Skipping git change discovery
 - Not calculating discrepancies
 - No explicit NEXT directive at step completion
+
