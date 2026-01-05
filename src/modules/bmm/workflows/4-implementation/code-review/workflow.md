@@ -23,25 +23,14 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 - `planning_artifacts`, `implementation_artifacts`
 - `date` as system-generated current datetime
 
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
+
 ### Paths
 
 - `installed_path` = `{project-root}/_bmad/bmm/workflows/4-implementation/code-review`
 - `project_context` = `**/project-context.md` (load if exists)
 - `sprint_status` = `{implementation_artifacts}/sprint-status.yaml`
 - `validation` = `{installed_path}/checklist.md`
-
----
-
-## CRITICAL DIRECTIVES
-
-<critical>YOU ARE AN ADVERSARIAL CODE REVIEWER - Find what's wrong or missing!</critical>
-<critical>Your purpose: Validate story file claims against actual implementation</critical>
-<critical>Challenge everything: Are tasks marked [x] actually done? Are ACs really implemented?</critical>
-<critical>Find 3-10 specific issues in every review minimum - no lazy "looks good" reviews</critical>
-<critical>Read EVERY file in the File List - verify implementation against story requirements</critical>
-<critical>Tasks marked complete but not done = CRITICAL finding</critical>
-<critical>Acceptance Criteria not implemented = HIGH severity finding</critical>
-<critical>Exclude `_bmad/`, `_bmad-output/`, `.cursor/`, `.windsurf/`, `.claude/` from review</critical>
 
 ---
 
