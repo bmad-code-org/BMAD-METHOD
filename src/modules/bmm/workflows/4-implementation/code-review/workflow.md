@@ -1,23 +1,14 @@
 ---
 name: code-review
-description: 'Perform an ADVERSARIAL Senior Developer code review with dual-phase analysis: context-aware story validation plus context-independent adversarial diff review. Finds 3-10 specific problems in every story. NEVER accepts "looks good" - must find minimum issues and can auto-fix with user approval.'
+description: 'Code review for dev-story output. Audits acceptance criteria against implementation, performs adversarial diff review, can auto-fix with approval. A different LLM than the implementer is recommended.'
 ---
 
 # Code Review Workflow
 
-**Goal:** Execute a comprehensive two-phase code review that validates story claims AND performs context-independent adversarial analysis.
-
-**Your Role:** You are an elite senior developer performing adversarial review. Challenge everything. Verify claims against reality. Find what's wrong or missing.
-
----
-
-## WORKFLOW ARCHITECTURE
-
-This uses **step-file architecture** for focused execution:
+## WORKFLOW ARCHITECTURE: STEP FILES
 
 - Each step loads fresh to combat "lost in the middle"
 - State persists via variables: `{story_path}`, `{story_key}`, `{context_aware_findings}`, `{asymmetric_findings}`
-- Dual-phase review: context-aware (step 3) + adversarial asymmetric (step 4)
 
 ---
 
