@@ -170,7 +170,7 @@ Remember: The goal is quantity first - we can organize later. What feels right?"
 
 **IMPORTANT:** Default to continuing exploration. Only suggest organization if:
 - User has explicitly asked to wrap up, OR
-- You've been exploring for 45+ minutes AND generated 50+ ideas, OR
+- You've been exploring for 45+ minutes AND generated 100+ ideas, OR
 - User's energy is clearly depleted (short responses, "I don't know", etc.)
 
 ### 4a. Handle Immediate Technique Transition
@@ -239,13 +239,15 @@ This connects beautifully with what we discovered earlier about _[previous conne
 
 **After Deep Exploration:**
 
-"Let me summarize what we've uncovered in this exploration:
+"Let me summarize what we've uncovered in this exploration using our **IDEA FORMAT TEMPLATE**:
 
 **Key Ideas Generated:**
 
-- **[Idea 1]:** [Context and development]
-- **[Idea 2]:** [How this emerged and evolved]
-- **[Idea 3]:** [User's insight plus your coaching contribution]
+**[Category #X]**: [Mnemonic Title]
+*Concept*: [2-3 sentence description]
+*Novelty*: [What makes this different from obvious solutions]
+
+(Repeat for all ideas generated)
 
 **Creative Breakthrough:** [Most innovative insight from the dialogue]
 
@@ -350,7 +352,7 @@ When user selects 'C', append the content directly to `{output_folder}/analysis/
 
 ## SUCCESS METRICS:
 
-✅ Minimum 50 ideas generated before organization is offered
+✅ Minimum 100 ideas generated before organization is offered
 ✅ User explicitly confirms readiness to conclude (not AI-initiated)
 ✅ Multiple technique exploration encouraged over single-technique completion
 ✅ True back-and-forth facilitation rather than question-answer format

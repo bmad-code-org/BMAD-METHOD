@@ -12,7 +12,7 @@ workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/brainstorming-session-{date}.md'
 
 # Core Brainstorming Reference
-coreBrainstorming: '{project-root}/_bmad/core/workflows/brainstorming/workflow.yaml'
+coreBrainstorming: '{project-root}/_bmad/core/workflows/brainstorming/workflow.md'
 
 # Task References
 advancedElicitationTask: '{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml'
@@ -197,30 +197,16 @@ Your choice:"
 
 ### 7. Generate Ideation Section
 
-Based on all ideas captured, prepare the content:
+Based on all ideas captured, prepare the content using our **IDEA FORMAT TEMPLATE**:
 
 ```markdown
 ## Ideas Generated
 
-### Concept 1: {{concept_name}}
+**[Category #X]**: [Mnemonic Title]
+*Core Loop*: [2-3 sentence description of player action]
+*Novelty*: [What makes this different from generic games]
 
-{{full_concept_description}}
-
-**Core Elements:**
-
-- {{element_1}}
-- {{element_2}}
-
-**Questions to Explore:**
-
-- {{question_1}}
-- {{question_2}}
-
----
-
-### Concept 2: {{concept_name}}
-
-{{repeat_structure}}
+(Repeat for all ideas generated)
 
 ---
 
@@ -231,10 +217,6 @@ Based on all ideas captured, prepare the content:
 ## Promising Combinations
 
 {{combination_ideas}}
-
-## Raw Ideas List
-
-{{all_ideas_bullet_points}}
 ```
 
 ### 8. Present Content and Menu
@@ -260,7 +242,7 @@ Here's everything we captured:
 [P] **Party Mode** - Get multiple perspectives on concepts from other agents
 [C] **Continue to Organization** - Only when you feel we've thoroughly explored (Step 4 of 4)
 
-**Default recommendation:** Unless you feel we've generated at least 50+ ideas, I suggest we keep exploring! The best insights often come after the obvious ideas are exhausted.
+**Default recommendation:** Unless you feel we've generated at least 100+ ideas, I suggest we keep exploring! The best insights often come after the obvious ideas are exhausted.
 
 ### 9. Handle Menu Selection
 
