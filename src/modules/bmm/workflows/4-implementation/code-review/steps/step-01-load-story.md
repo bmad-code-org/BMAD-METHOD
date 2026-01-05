@@ -35,10 +35,10 @@ If input resolves to an existing file:
 
 **Search sprint_status** (if input is not a direct file):
 Search for stories with status `review` or `done`. Match by priority:
-1. Exact story number (e.g., "1-2")
+1. Story number resembles input closely enough (e.g., "1-2" matches "1 2", "1.2", "one dash two", "one two"; "1-32" matches "one thirty two"). Do NOT match if numbers differ (e.g., "1-33" does not match "1-32")
 2. Exact story name/key (e.g., "1-2-user-auth-api")
-3. Story name/title contains input
-4. Story description contains input
+3. Story name/title resembles input closely enough
+4. Story description resembles input closely enough
 
 **Resolution:**
 - **Single match**: Confident. Set `story_path`, proceed to substep 2
