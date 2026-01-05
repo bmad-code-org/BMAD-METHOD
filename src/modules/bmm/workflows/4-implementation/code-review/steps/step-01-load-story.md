@@ -64,7 +64,7 @@ Extract `story_file_list` from the Dev Agent Record → File List section of {st
 
 Check if git repository exists.
 
-**If NOT a git repo:** Set `git_changed_files` = NO_GIT, `git_discrepancies` = NO_GIT. Skip to substep 6.
+**If NOT a git repo:** Set `git_changed_files` = NO_GIT, `git_discrepancies` = NO_GIT. Proceed to substep 5.
 
 **If git repo detected:**
 
