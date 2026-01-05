@@ -2,6 +2,29 @@ name: dev-story
 description: "Execute a story by implementing tasks/subtasks, writing tests, validating, and updating the story file per acceptance criteria"
 author: "BMad"
 
+# Agent Compatibility Documentation
+# This metadata documents workflow assumptions without enforcing runtime behavior
+agent_compatibility:
+  intended_for:
+    - agent: "bmm/dev"
+      reason: "Developer agent with test-driven development expertise and story execution capabilities"
+  assumes_agent_context:
+    persona_attributes:
+      - "Technical implementation skills (coding, testing, debugging)"
+      - "Red-green-refactor TDD workflow understanding"
+      - "Familiarity with story file format and acceptance criteria"
+    critical_actions_expected:
+      - "Loads project-context.md for coding standards and patterns"
+      - "Understands story file structure (Tasks/Subtasks, AC, Dev Notes, File List)"
+    config_dependencies:
+      - "BMM module config at {project-root}/_bmad/bmm/config.yaml"
+      - "implementation_artifacts path containing story files and sprint-status.yaml"
+  not_recommended_for:
+    - agent_types: ["PM", "Analyst", "Architect", "UX Designer"]
+      reason: "Requires active code implementation and test writing capabilities"
+    - agent_types: ["Game Dev (BMGD module)"]
+      reason: "Use bmgd/dev-story workflow instead - different config paths and domain context"
+
 # Critical variables from config
 config_source: "{project-root}/_bmad/bmm/config.yaml"
 output_folder: "{config_source}:output_folder"
