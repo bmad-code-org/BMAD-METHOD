@@ -2,9 +2,8 @@
 name: 'step-03-context-aware-review'
 description: 'Story-aware validation: verify ACs, audit task completion, check git discrepancies'
 
-workflow_path: '{project-root}/_bmad/bmm/workflows/4-implementation/code-review'
-thisStepFile: '{workflow_path}/steps/step-03-context-aware-review.md'
-nextStepFile: '{workflow_path}/steps/step-04-adversarial-review.md'
+thisStepFile: '{installed_path}/steps/step-03-context-aware-review.md'
+nextStepFile: '{installed_path}/steps/step-04-adversarial-review.md'
 ---
 
 # Step 3: Context-Aware Review

@@ -2,9 +2,8 @@
 name: 'step-05-consolidate-findings'
 description: 'Merge and deduplicate findings from both review phases'
 
-workflow_path: '{project-root}/_bmad/bmm/workflows/4-implementation/code-review'
-thisStepFile: '{workflow_path}/steps/step-05-consolidate-findings.md'
-nextStepFile: '{workflow_path}/steps/step-06-resolve-and-update.md'
+thisStepFile: '{installed_path}/steps/step-05-consolidate-findings.md'
+nextStepFile: '{installed_path}/steps/step-06-resolve-and-update.md'
 ---
 
 # Step 5: Consolidate Findings

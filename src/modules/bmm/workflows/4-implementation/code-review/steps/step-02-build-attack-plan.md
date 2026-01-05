@@ -2,9 +2,8 @@
 name: 'step-02-build-attack-plan'
 description: 'Extract ACs and tasks, create comprehensive review plan for both phases'
 
-workflow_path: '{project-root}/_bmad/bmm/workflows/4-implementation/code-review'
-thisStepFile: '{workflow_path}/steps/step-02-build-attack-plan.md'
-nextStepFile: '{workflow_path}/steps/step-03-context-aware-review.md'
+thisStepFile: '{installed_path}/steps/step-02-build-attack-plan.md'
+nextStepFile: '{installed_path}/steps/step-03-context-aware-review.md'
 ---
 
 # Step 2: Build Review Attack Plan

@@ -2,8 +2,7 @@
 name: 'step-06-resolve-and-update'
 description: 'Present findings, fix or create action items, update story and sprint status'
 
-workflow_path: '{project-root}/_bmad/bmm/workflows/4-implementation/code-review'
-thisStepFile: '{workflow_path}/steps/step-06-resolve-and-update.md'
+thisStepFile: '{installed_path}/steps/step-06-resolve-and-update.md'
 ---
 
 # Step 6: Resolve Findings and Update Status

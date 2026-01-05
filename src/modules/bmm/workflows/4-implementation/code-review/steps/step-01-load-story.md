@@ -2,9 +2,8 @@
 name: 'step-01-load-story'
 description: 'Load story file, discover git changes, establish review context'
 
-workflow_path: '{project-root}/_bmad/bmm/workflows/4-implementation/code-review'
-thisStepFile: '{workflow_path}/steps/step-01-load-story.md'
-nextStepFile: '{workflow_path}/steps/step-02-build-attack-plan.md'
+thisStepFile: '{installed_path}/steps/step-01-load-story.md'
+nextStepFile: '{installed_path}/steps/step-02-build-attack-plan.md'
 ---
 
 # Step 1: Load Story and Discover Changes
