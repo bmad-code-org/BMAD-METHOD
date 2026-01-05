@@ -77,7 +77,7 @@ If no baseline available, review current state of files in `{file_list}`:
 With `{diff_output}` constructed, invoke the review task. If possible, use information asymmetry: run this step, and only it, in a separate subagent or process with read access to the project, but no context except the `{diff_output}`.
 
 ```xml
-<invoke-task>Review {diff_output} using {adversarial_review_task}</invoke-task>
+<invoke-task>Review {diff_output} using {project-root}/_bmad/core/tasks/review-adversarial-general.xml</invoke-task>
 ```
 
 **Platform fallback:** If task invocation not available, load the task file and execute its instructions inline, passing `{diff_output}` as the content.

@@ -29,10 +29,6 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 - `sprint_status` = `{implementation_artifacts}/sprint-status.yaml`
 - `validation` = `{installed_path}/checklist.md`
 
-### Related Tasks
-
-- `adversarial_review_task` = `{project-root}/_bmad/core/tasks/review-adversarial-general.xml`
-
 ---
 
 ## CRITICAL DIRECTIVES
