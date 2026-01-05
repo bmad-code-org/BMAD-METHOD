@@ -78,12 +78,21 @@ Compile `git_changed_files` = union of modified, staged, new, deleted, and renam
 
 ### 5. Cross-Reference Story vs Git
 
-Compare {story_file_list} with {git_changed_files}:
+**If {git_changed_files} is empty:**
+
+Ask user: "No git changes detected. Continue anyway?"
+
+- If **no**: HALT the workflow
+- If **yes**: Continue to comparison
+
+**Compare {story_file_list} with {git_changed_files}:**
+
+Exclude git-ignored files from the comparison (run `git check-ignore` if needed).
 
 Set `git_discrepancies` with categories:
 
 - **files_in_git_not_story**: Files changed in git but not in story File List
-- **files_in_story_not_git**: Files in story File List but no git changes
+- **files_in_story_not_git**: Files in story File List but no git changes (excluding git-ignored)
 - **uncommitted_undocumented**: Uncommitted changes not tracked in story
 
 ### 6. Load Project Context
