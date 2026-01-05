@@ -59,4 +59,4 @@ web_bundle:
     - "_bmad/bmgd/workflows/1-preproduction/brainstorm-game/game-context.md"
     - "_bmad/bmgd/workflows/1-preproduction/brainstorm-game/game-brain-methods.csv"
 dependencies:
-  - core_brainstorming: "_bmad/core/workflows/brainstorming/workflow.md"
+  - "_bmad/core/workflows/brainstorming/workflow.md"
