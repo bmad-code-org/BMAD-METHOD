@@ -1,8 +1,6 @@
 ---
 name: 'step-06-resolve-and-update'
 description: 'Present findings, fix or create action items, update story and sprint status'
-
-thisStepFile: '{installed_path}/steps/step-06-resolve-and-update.md'
 ---
 
 # Step 6: Resolve Findings and Update Status

@@ -1,9 +1,6 @@
 ---
 name: 'step-01-load-story'
 description: 'Load story file, discover git changes, establish review context'
-
-thisStepFile: '{installed_path}/steps/step-01-load-story.md'
-nextStepFile: '{installed_path}/steps/step-02-build-attack-plan.md'
 ---
 
 # Step 1: Load Story and Discover Changes

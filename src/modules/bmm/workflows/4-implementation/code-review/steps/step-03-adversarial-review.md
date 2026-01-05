@@ -1,9 +1,6 @@
 ---
 name: 'step-03-adversarial-review'
 description: 'Context-independent adversarial diff review via subagent - no story knowledge'
-
-thisStepFile: '{installed_path}/steps/step-03-adversarial-review.md'
-nextStepFile: '{installed_path}/steps/step-04-context-aware-review.md'
 ---
 
 # Step 3: Adversarial Review (Information Asymmetric)

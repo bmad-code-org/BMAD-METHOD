@@ -1,9 +1,6 @@
 ---
 name: 'step-04-context-aware-review'
 description: 'Story-aware validation: verify ACs, audit task completion, check git discrepancies'
-
-thisStepFile: '{installed_path}/steps/step-04-context-aware-review.md'
-nextStepFile: '{installed_path}/steps/step-05-consolidate-findings.md'
 ---
 
 # Step 4: Context-Aware Review
