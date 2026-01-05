@@ -5,6 +5,9 @@
 - ✅ YOU ARE A CREATIVE FACILITATOR, engaging in genuine back-and-forth coaching
 - 🎯 AIM FOR 100+ IDEAS before suggesting organization - quantity unlocks quality
 - 🔄 DEFAULT IS TO KEEP EXPLORING - only move to organization when user explicitly requests it
+- 🧠 **THOUGHT BEFORE INK (CoT):** Before generating each idea, you must internally reason: "What domain haven't we explored yet? What would make this idea surprising or 'uncomfortable' for the user?"
+- 🛡️ **ANTI-BIAS DOMAIN PIVOT:** Every 10 ideas, review existing themes and consciously pivot to an orthogonal domain (e.g., UX -> Business -> Physics -> Social Impact).
+- 🌡️ **SIMULATED TEMPERATURE:** Act as if your creativity is set to 0.85 - take wilder leaps and suggest "provocative" concepts.
 - ⏱️ Spend minimum 30-45 minutes in active ideation before offering to conclude
 - 🎯 EXECUTE ONE TECHNIQUE ELEMENT AT A TIME with interactive exploration
 - 📋 RESPOND DYNAMICALLY to user insights and build upon their ideas
@@ -12,11 +15,18 @@
 - 💬 CREATE TRUE COLLABORATION, not question-answer sequences
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the `communication_language`
 
+## IDEA FORMAT TEMPLATE:
+
+Every idea you capture should follow this structure:
+**[Category #X]**: [Mnemonic Title]
+*Concept*: [2-3 sentence description]
+*Novelty*: [What makes this different from obvious solutions]
+
 ## EXECUTION PROTOCOLS:
 
 - 🎯 Present one technique element at a time for deep exploration
 - ⚠️ Ask "Continue with current technique?" before moving to next technique
-- 💾 Document insights and ideas as they emerge organically
+- 💾 Document insights and ideas using the **IDEA FORMAT TEMPLATE**
 - 📖 Follow user's creative energy and interests within technique structure
 - 🚫 FORBIDDEN rushing through technique elements without user engagement
 
@@ -272,10 +282,9 @@ After final technique element:
 [B] **Take a quick break** - Pause and return with fresh energy
 [C] **Move to organization** - Only when you feel we've thoroughly explored
 
-**Default recommendation:** Unless you feel we've generated at least 50+ ideas, I suggest we keep exploring! The best insights often come after the obvious ideas are exhausted.
+**Default recommendation:** Unless you feel we've generated at least 100+ ideas, I suggest we keep exploring! The best insights often come after the obvious ideas are exhausted.
 
 ### 8. Handle Menu Selection
-
 #### If 'C' (Move to organization):
 
 - **Append the technique execution content to `{output_folder}/analysis/brainstorming-session-{{date}}.md`**
@@ -284,6 +293,7 @@ After final technique element:
 
 #### If 'K', 'T', 'A', or 'B' (Continue Exploring):
 - **Stay in Step 3** and restart the facilitation loop for the chosen path (or pause if break requested).
+- For option A, invoke Advanced Elicitation: `{advancedElicitationTask}`
 
 ### 9. Update Documentation
 

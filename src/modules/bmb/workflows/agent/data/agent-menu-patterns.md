@@ -214,7 +214,7 @@ menu:
 
   - trigger: BS or fuzzy match on brainstorm
     exec: '{project-root}/_bmad/core/workflows/brainstorming/workflow.md'
-    description: '[BS] Guided brainstorming'
+    description: '[BS] Guided brainstorming [K,T,A,B,C]'
 
   - trigger: CP or fuzzy match on create-prd
     exec: '{project-root}/_bmad/bmm/workflows/create-prd/workflow.md'
