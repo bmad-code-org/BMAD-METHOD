@@ -11,11 +11,11 @@ description: "Compare story's file list against git changes"
 
 These variables MUST be set in this step and available to all subsequent steps:
 
-- `{story_path}` - Path to the story file being reviewed
-- `{story_key}` - Story identifier (e.g., "1-2-user-authentication")
-- `{story_file_list}` - Files claimed in story's Dev Agent Record → File List
-- `{git_changed_files}` - Files actually changed according to git
-- `{git_discrepancies}` - Differences between story claims and git reality
+- `story_path` - Path to the story file being reviewed
+- `story_key` - Story identifier (e.g., "1-2-user-authentication")
+- `story_file_list` - Files claimed in story's Dev Agent Record → File List
+- `git_changed_files` - Files actually changed according to git
+- `git_discrepancies` - Mismatches between `story_file_list` and `git_changed_files`
 
 ---
 
@@ -23,19 +23,32 @@ These variables MUST be set in this step and available to all subsequent steps:
 
 ### 1. Identify Story
 
-**If `{story_path}` provided by user:**
+Ask user: "Which story would you like to review?"
 
-- Use the provided path directly
+**Try input as direct file path first:**
+If input resolves to an existing file:
+  - Verify it's in `sprint_status` with status `review` or `done`
+  - If verified → set `story_path` to that file path
+  - If NOT verified → Warn user the file is not in sprint_status (or wrong status). Ask: "Continue anyway?"
+    - If yes → set `story_path`
+    - If no → return to user prompt (ask "Which story would you like to review?" again)
 
-**If NOT provided:**
+**Search sprint_status** (if input is not a direct file):
+Search for stories with status `review` or `done`. Match by priority:
+1. Exact story number (e.g., "1-2")
+2. Exact story name/key (e.g., "1-2-user-auth-api")
+3. Story name/title contains input
+4. Story description contains input
 
-- Ask user which story file to review
-- Wait for response before proceeding
+**Resolution:**
+- **Single match**: Confident. Set `story_path`, proceed to substep 2
+- **Multiple matches**: Uncertain. Present all candidates to user. Wait for selection. Set `story_path`, proceed to substep 2
+- **No match**: Ask user to clarify or provide the full story path. Return to user prompt (ask "Which story would you like to review?" again)
 
 ### 2. Load Story File
 
-- Read COMPLETE story file from `{story_path}`
-- Extract `{story_key}` from filename (e.g., "1-2-user-authentication.md" → "1-2-user-authentication") or story metadata
+- Read COMPLETE story file from {story_path}
+- Extract `story_key` from filename (e.g., "1-2-user-authentication.md" → "1-2-user-authentication") or story metadata
 
 ### 3. Parse Story Sections
 
@@ -47,13 +60,13 @@ Extract and store:
 - **Dev Agent Record → File List**: Claimed file changes
 - **Change Log**: History of modifications
 
-Set `{story_file_list}` = list of files from Dev Agent Record → File List
+Set `story_file_list` = list of files from Dev Agent Record → File List
 
 ### 4. Discover Git Changes
 
 Check if git repository exists.
 
-**If NOT a git repo:** Set `{git_changed_files}` = NO_GIT, `{git_discrepancies}` = NO_GIT. Skip to substep 6.
+**If NOT a git repo:** Set `git_changed_files` = NO_GIT, `git_discrepancies` = NO_GIT. Skip to substep 6.
 
 **If git repo detected:**
 
@@ -63,13 +76,13 @@ git diff --name-only
 git diff --cached --name-only
 ```
 
-Compile `{git_changed_files}` = union of modified, staged, and new files.
+Compile `git_changed_files` = union of modified, staged, and new files.
 
 ### 5. Cross-Reference Story vs Git
 
-Compare `{story_file_list}` with `{git_changed_files}`:
+Compare {story_file_list} with {git_changed_files}:
 
-Set `{git_discrepancies}` with categories:
+Set `git_discrepancies` with categories:
 
 - **files_in_git_not_story**: Files changed in git but not in story File List
 - **files_in_story_not_git**: Files in story File List but no git changes
@@ -77,7 +90,7 @@ Set `{git_discrepancies}` with categories:
 
 ### 6. Load Project Context
 
-- Load `{project_context}` if exists (`**/project-context.md`) for coding standards
+- Load {project_context} if exists (**/project-context.md) for coding standards
 
 ---
 
@@ -91,19 +104,19 @@ Set `{git_discrepancies}` with categories:
 
 ## SUCCESS METRICS
 
-- `{story_path}` identified and loaded
-- `{story_key}` extracted
+- `story_path` identified and loaded
+- `story_key` extracted
 - All story sections parsed
-- `{story_file_list}` compiled from Dev Agent Record
-- `{git_changed_files}` discovered via git commands
-- `{git_discrepancies}` calculated
-- `{project_context}` loaded if exists
+- `story_file_list` compiled from Dev Agent Record
+- `git_changed_files` discovered via git commands
+- `git_discrepancies` calculated
+- `project_context` loaded if exists
 - Explicit NEXT directive provided
 
 ## FAILURE MODES
 
 - Proceeding without story file loaded
-- Missing `{story_key}` extraction
+- Missing `story_key` extraction
 - Not parsing all story sections
 - Skipping git change discovery
 - Not calculating discrepancies
