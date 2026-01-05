@@ -1,6 +1,7 @@
 ---
 name: code-review
 description: 'Code review for dev-story output. Audits acceptance criteria against implementation, performs adversarial diff review, can auto-fix with approval. A different LLM than the implementer is recommended.'
+web_bundle: false
 ---
 
 # Code Review Workflow
@@ -35,4 +36,4 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
 ## EXECUTION
 
-Load and execute `steps/step-01-load-story.md` to begin the workflow.
+Read and follow `steps/step-01-load-story.md` to begin the workflow.
