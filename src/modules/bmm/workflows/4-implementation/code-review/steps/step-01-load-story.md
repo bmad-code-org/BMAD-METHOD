@@ -54,15 +54,9 @@ Read the complete contents of {story_path} and assign to `story_content` WITHOUT
 **Extract story identifier:**
 Verify the filename ends with `.md` extension. Remove `.md` to get `story_key` (e.g., "1-2-user-authentication.md" → "1-2-user-authentication"). If filename doesn't end with `.md` or the result is empty: report the error to the user and HALT the workflow.
 
-### 3. Parse Story Sections
+### 3. Extract File List from Story
 
-Extract and store:
-
-- **Story**: Title, description, status
-- **Acceptance Criteria**: All ACs with their requirements
-- **Tasks/Subtasks**: All tasks with completion status ([x] vs [ ])
-- **Dev Agent Record → File List**: Claimed file changes
-- **Change Log**: History of modifications
+Extract `story_file_list` from the Dev Agent Record → File List section of the story file.
 
 Set `story_file_list` = list of files from Dev Agent Record → File List
 
@@ -110,7 +104,7 @@ Set `git_discrepancies` with categories:
 
 - `story_path` identified and loaded
 - `story_key` extracted
-- All story sections parsed
+- `story_content` captured completely and unmodified
 - `story_file_list` compiled from Dev Agent Record
 - `git_changed_files` discovered via git commands
 - `git_discrepancies` calculated
@@ -121,7 +115,7 @@ Set `git_discrepancies` with categories:
 
 - Proceeding without story file loaded
 - Missing `story_key` extraction
-- Not parsing all story sections
+- `story_content` incomplete or modified (breaks later steps)
 - Skipping git change discovery
 - Not calculating discrepancies
 - No explicit NEXT directive at step completion
