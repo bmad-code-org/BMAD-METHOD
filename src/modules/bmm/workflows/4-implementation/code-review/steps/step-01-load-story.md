@@ -70,11 +70,11 @@ Check if git repository exists.
 
 ```bash
 git status --porcelain
-git diff --name-only
-git diff --cached --name-only
+git diff -M --name-only
+git diff -M --cached --name-only
 ```
 
-Compile `git_changed_files` = union of modified, staged, and new files.
+Compile `git_changed_files` = union of modified, staged, new, deleted, and renamed files.
 
 ### 5. Cross-Reference Story vs Git
 
