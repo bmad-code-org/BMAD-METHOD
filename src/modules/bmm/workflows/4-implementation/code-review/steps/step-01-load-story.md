@@ -95,10 +95,6 @@ Set `git_discrepancies` with categories:
 - **files_in_story_not_git**: Files in story File List but no git changes (excluding git-ignored)
 - **uncommitted_undocumented**: Uncommitted changes not tracked in story
 
-### 6. Load Project Context
-
-- Load {project_context} if exists (**/project-context.md) for coding standards
-
 ---
 
 ## NEXT STEP DIRECTIVE
@@ -117,7 +113,6 @@ Set `git_discrepancies` with categories:
 - `story_file_list` compiled from Dev Agent Record
 - `git_changed_files` discovered via git commands
 - `git_discrepancies` calculated
-- `project_context` loaded if exists
 - Explicit NEXT directive provided
 
 ## FAILURE MODES
