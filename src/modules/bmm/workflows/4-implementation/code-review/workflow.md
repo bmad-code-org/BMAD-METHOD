@@ -30,7 +30,6 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 - `installed_path` = `{project-root}/_bmad/bmm/workflows/4-implementation/code-review`
 - `project_context` = `**/project-context.md` (load if exists)
 - `sprint_status` = `{implementation_artifacts}/sprint-status.yaml`
-- `validation` = `{installed_path}/checklist.md`
 
 ---
 
