@@ -105,7 +105,9 @@ Set `git_discrepancies` with categories:
 
 ---
 
-## SUCCESS METRICS
+## COMPLETION CHECKLIST
+
+Before proceeding to the next step, verify ALL of the following:
 
 - `story_path` identified and loaded
 - `story_key` extracted
@@ -115,7 +117,5 @@ Set `git_discrepancies` with categories:
 - `git_discrepancies` calculated
 - Explicit NEXT directive provided
 
-## FAILURE MODES
-
-Failure to meet any SUCCESS METRIC constitutes workflow failure.
+**If any item is not met:** Report to the user immediately and HALT the workflow. Do NOT proceed to the next step.
 
