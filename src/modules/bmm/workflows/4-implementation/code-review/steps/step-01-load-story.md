@@ -107,7 +107,6 @@ Before proceeding to the next step, verify ALL of the following:
 - `story_file_list` compiled from Dev Agent Record (or NO_FILE_LIST if not found)
 - `git_changed_files` discovered via git commands (or NO_GIT if not a git repo)
 - `git_discrepancies` calculated
-- Explicit NEXT directive provided
 
 **If any criterion is not met:** Report to the user and HALT the workflow.
 
