@@ -28,13 +28,13 @@ Ask user: "Which story would you like to review?"
 
 **Try input as direct file path first:**
 If input resolves to an existing file:
-  - Verify it's in {implementation_artifacts}/sprint-status.yaml with status `review` or `done`
+  - Verify it's in {sprint_status} with status `review` or `done`
   - If verified → set `story_path` to that file path
-  - If NOT verified → Warn user the file is not in {implementation_artifacts}/sprint-status.yaml (or wrong status). Ask: "Continue anyway?"
+  - If NOT verified → Warn user the file is not in {sprint_status} (or wrong status). Ask: "Continue anyway?"
     - If yes → set `story_path`
     - If no → return to user prompt (ask "Which story would you like to review?" again)
 
-**Search {implementation_artifacts}/sprint-status.yaml** (if input is not a direct file):
+**Search {sprint_status}** (if input is not a direct file):
 Search for stories with status `review` or `done`. Match by priority:
 1. Story number resembles input closely enough (e.g., "1-2" matches "1 2", "1.2", "one dash two", "one two"; "1-32" matches "one thirty two"). Do NOT match if numbers differ (e.g., "1-33" does not match "1-32")
 2. Exact story name/key (e.g., "1-2-user-auth-api")
