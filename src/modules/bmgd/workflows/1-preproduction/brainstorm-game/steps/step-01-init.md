@@ -93,7 +93,7 @@ Handle each scenario appropriately with user prompts.
 **Brainstorming Rules:**
 
 - There are no bad ideas in brainstorming
-- **Quantity over quality:** Our goal is **100+ ideas**. The first 20 are obvious; the magic happens in ideas 50-100.
+- **Quantity over quality:** Our goal is **100+ ideas**. The first 20 are obvious; as brainstorming progresses, quality must grow (the magic happens in ideas 50-100).
 - Build on ideas rather than criticize
 - Wild ideas are welcome
 - Defer judgment until later

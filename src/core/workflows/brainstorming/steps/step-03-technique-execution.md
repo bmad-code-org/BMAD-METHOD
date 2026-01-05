@@ -3,7 +3,7 @@
 ## MANDATORY EXECUTION RULES (READ FIRST):
 
 - ✅ YOU ARE A CREATIVE FACILITATOR, engaging in genuine back-and-forth coaching
-- 🎯 AIM FOR 100+ IDEAS before suggesting organization - quantity unlocks quality
+- 🎯 AIM FOR 100+ IDEAS before suggesting organization - quantity unlocks quality (quality must grow as we progress)
 - 🔄 DEFAULT IS TO KEEP EXPLORING - only move to organization when user explicitly requests it
 - 🧠 **THOUGHT BEFORE INK (CoT):** Before generating each idea, you must internally reason: "What domain haven't we explored yet? What would make this idea surprising or 'uncomfortable' for the user?"
 - 🛡️ **ANTI-BIAS DOMAIN PIVOT:** Every 10 ideas, review existing themes and consciously pivot to an orthogonal domain (e.g., UX -> Business -> Physics -> Social Impact).
@@ -19,8 +19,8 @@
 
 Every idea you capture should follow this structure:
 **[Category #X]**: [Mnemonic Title]
-*Concept*: [2-3 sentence description]
-*Novelty*: [What makes this different from obvious solutions]
+_Concept_: [2-3 sentence description]
+_Novelty_: [What makes this different from obvious solutions]
 
 ## EXECUTION PROTOCOLS:
 
@@ -162,6 +162,7 @@ Before moving to next technique element:
 "We've generated [X] ideas so far - great momentum!
 
 **Quick energy check:**
+
 - Want to **keep pushing** on this angle?
 - **Switch techniques** for a fresh perspective?
 - Or are you feeling like we've **thoroughly explored** this space?
@@ -169,6 +170,7 @@ Before moving to next technique element:
 Remember: The goal is quantity first - we can organize later. What feels right?"
 
 **IMPORTANT:** Default to continuing exploration. Only suggest organization if:
+
 - User has explicitly asked to wrap up, OR
 - You've been exploring for 45+ minutes AND generated 100+ ideas, OR
 - User's energy is clearly depleted (short responses, "I don't know", etc.)
@@ -244,8 +246,8 @@ This connects beautifully with what we discovered earlier about _[previous conne
 **Key Ideas Generated:**
 
 **[Category #X]**: [Mnemonic Title]
-*Concept*: [2-3 sentence description]
-*Novelty*: [What makes this different from obvious solutions]
+_Concept_: [2-3 sentence description]
+_Novelty_: [What makes this different from obvious solutions]
 
 (Repeat for all ideas generated)
 
@@ -287,6 +289,7 @@ After final technique element:
 **Default recommendation:** Unless you feel we've generated at least 100+ ideas, I suggest we keep exploring! The best insights often come after the obvious ideas are exhausted.
 
 ### 8. Handle Menu Selection
+
 #### If 'C' (Move to organization):
 
 - **Append the technique execution content to `{output_folder}/analysis/brainstorming-session-{{date}}.md`**
@@ -294,6 +297,7 @@ After final technique element:
 - **Load:** `./step-04-idea-organization.md`
 
 #### If 'K', 'T', 'A', or 'B' (Continue Exploring):
+
 - **Stay in Step 3** and restart the facilitation loop for the chosen path (or pause if break requested).
 - For option A, invoke Advanced Elicitation: `{advancedElicitationTask}`
 

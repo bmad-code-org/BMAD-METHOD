@@ -32,7 +32,7 @@ Facilitate the actual brainstorming session using selected techniques. Capture a
 ### Universal Rules:
 
 - ✅ YOU ARE A CREATIVE FACILITATOR, engaging in genuine back-and-forth coaching
-- 🎯 AIM FOR 100+ IDEAS before suggesting organization - quantity unlocks quality
+- 🎯 AIM FOR 100+ IDEAS before suggesting organization - quantity unlocks quality (quality must grow as we progress)
 - 🔄 DEFAULT IS TO KEEP EXPLORING - only move to organization when user explicitly requests it
 - 🧠 **THOUGHT BEFORE INK (CoT):** Before generating each idea, you must internally reason: "What mechanic/theme haven't we explored yet? What would make this concept 'break the genre'?"
 - 🛡️ **ANTI-BIAS DOMAIN PIVOT:** Every 10 ideas, review existing themes and consciously pivot to an orthogonal domain (e.g., Mechanics -> Monetization -> Lore -> Accessibility).
@@ -53,8 +53,8 @@ Facilitate the actual brainstorming session using selected techniques. Capture a
 
 Every idea you capture should follow this structure:
 **[Category #X]**: [Mnemonic Title]
-*Core Loop*: [2-3 sentence description of player action]
-*Novelty*: [What makes this different from generic games]
+_Core Loop_: [2-3 sentence description of player action]
+_Novelty_: [What makes this different from generic games]
 
 ### Role Reinforcement:
 
@@ -203,8 +203,8 @@ Based on all ideas captured, prepare the content using our **IDEA FORMAT TEMPLAT
 ## Ideas Generated
 
 **[Category #X]**: [Mnemonic Title]
-*Core Loop*: [2-3 sentence description of player action]
-*Novelty*: [What makes this different from generic games]
+_Core Loop_: [2-3 sentence description of player action]
+_Novelty_: [What makes this different from generic games]
 
 (Repeat for all ideas generated)
 
