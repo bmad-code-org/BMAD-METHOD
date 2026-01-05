@@ -38,7 +38,11 @@ Initialize `{context_aware_findings}` as empty list.
 
 ### 0. Load Planning Context (JIT)
 
-Invoke `discover_inputs` protocol to load architecture, UX, and epic documents.
+Load planning documents for AC validation against system design:
+
+- **Architecture**: `{planning_artifacts}/*architecture*.md` (or sharded: `{planning_artifacts}/*architecture*/*.md`)
+- **UX Design**: `{planning_artifacts}/*ux*.md` (if UI review relevant)
+- **Epic**: `{planning_artifacts}/*epic*/epic-{epic_num}.md` (the epic containing this story)
 
 These provide the design context needed to validate AC implementation against system requirements.
 
