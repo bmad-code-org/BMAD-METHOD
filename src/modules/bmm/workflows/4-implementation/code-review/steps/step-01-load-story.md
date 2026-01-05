@@ -49,7 +49,7 @@ Search for stories with status `review` or `done`. Match by priority:
 ### 2. Load Story File
 
 **Load file content:**
-Read the complete contents of {story_path} and assign to `story_content` WITHOUT filtering, truncating or summarizing. If {story_path} cannot be read: report the error to the user and HALT the workflow.
+Read the complete contents of {story_path} and assign to `story_content` WITHOUT filtering, truncating or summarizing. If {story_path} cannot be read, is empty, or obviously doesn't have the story: report the error to the user and HALT the workflow.
 
 **Extract story identifier:**
 Verify the filename ends with `.md` extension. Remove `.md` to get `story_key` (e.g., "1-2-user-authentication.md" → "1-2-user-authentication"). If filename doesn't end with `.md` or the result is empty: report the error to the user and HALT the workflow.
