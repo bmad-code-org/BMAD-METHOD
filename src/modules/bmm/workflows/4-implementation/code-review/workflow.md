@@ -7,7 +7,8 @@ description: 'Code review for dev-story output. Audits acceptance criteria again
 
 ## WORKFLOW ARCHITECTURE: STEP FILES
 
-- Each step loads fresh to combat "lost in the middle"
+- This file (workflow.md) stays in context throughout
+- Each step file is read just before processing (current step stays at end of context)
 - State persists via variables: `{story_path}`, `{story_key}`, `{context_aware_findings}`, `{asymmetric_findings}`
 
 ---
