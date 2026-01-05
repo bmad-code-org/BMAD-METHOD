@@ -110,17 +110,12 @@ Set `git_discrepancies` with categories:
 - `story_path` identified and loaded
 - `story_key` extracted
 - `story_content` captured completely and unmodified
-- `story_file_list` compiled from Dev Agent Record
-- `git_changed_files` discovered via git commands
+- `story_file_list` compiled from Dev Agent Record (or NO_FILE_LIST if not found)
+- `git_changed_files` discovered via git commands (or NO_GIT if not a git repo)
 - `git_discrepancies` calculated
 - Explicit NEXT directive provided
 
 ## FAILURE MODES
 
-- Proceeding without story file loaded
-- Missing `story_key` extraction
-- `story_content` incomplete or modified (breaks later steps)
-- Skipping git change discovery
-- Not calculating discrepancies
-- No explicit NEXT directive at step completion
+Failure to meet any SUCCESS METRIC constitutes workflow failure.
 
