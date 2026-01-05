@@ -56,9 +56,9 @@ Verify the filename ends with `.md` extension. Remove `.md` to get `story_key` (
 
 ### 3. Extract File List from Story
 
-Extract `story_file_list` from the Dev Agent Record → File List section of the story file.
+Extract `story_file_list` from the Dev Agent Record → File List section of {story_content}.
 
-Set `story_file_list` = list of files from Dev Agent Record → File List
+**If Dev Agent Record or File List section not found:** Report to user and set `story_file_list` = NO_FILE_LIST.
 
 ### 4. Discover Git Changes
 
