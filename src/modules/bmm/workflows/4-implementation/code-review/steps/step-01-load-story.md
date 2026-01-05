@@ -109,7 +109,7 @@ Before proceeding to the next step, verify ALL of the following:
 - `git_discrepancies` calculated
 - Explicit NEXT directive provided
 
-**If any criterion is not met:** Report to the user immediately and HALT the workflow.
+**If any criterion is not met:** Report to the user and HALT the workflow.
 
 ---
 
