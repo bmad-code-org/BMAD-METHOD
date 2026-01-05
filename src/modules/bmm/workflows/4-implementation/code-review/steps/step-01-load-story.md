@@ -1,11 +1,9 @@
 ---
 name: 'step-01-load-story'
-description: 'Load story file, discover git changes, establish review context'
+description: "Compare story's file list against git changes"
 ---
 
 # Step 1: Load Story and Discover Changes
-
-**Goal:** Load story file, extract all sections, discover actual git changes for comparison.
 
 ---
 
@@ -53,9 +51,11 @@ Set `{story_file_list}` = list of files from Dev Agent Record → File List
 
 ### 4. Discover Git Changes
 
-Check if git repository exists:
+Check if git repository exists.
 
-**If Git repo detected:**
+**If NOT a git repo:** Set `{git_changed_files}` = NO_GIT, `{git_discrepancies}` = NO_GIT. Skip to substep 6.
+
+**If git repo detected:**
 
 ```bash
 git status --porcelain
@@ -63,11 +63,7 @@ git diff --name-only
 git diff --cached --name-only
 ```
 
-Compile `{git_changed_files}` = union of modified, staged, and new files
-
-**If NOT a Git repo:**
-
-Set `{git_changed_files}` = "NO_GIT"
+Compile `{git_changed_files}` = union of modified, staged, and new files.
 
 ### 5. Cross-Reference Story vs Git
 
