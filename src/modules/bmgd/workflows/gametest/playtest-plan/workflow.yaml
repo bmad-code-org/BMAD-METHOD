@@ -1,0 +1,59 @@
+# Game QA workflow: playtest-plan
+name: gametest-playtest-plan
+description: "Create structured playtesting sessions for gameplay validation and user feedback"
+author: "BMad"
+
+# Critical variables from config
+config_source: "{project-root}/_bmad/bmgd/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+document_output_language: "{config_source}:document_output_language"
+date: system-generated
+
+# Workflow components
+installed_path: "{project-root}/_bmad/bmgd/workflows/gametest/playtest-plan"
+instructions: "{installed_path}/instructions.md"
+validation: "{installed_path}/checklist.md"
+template: "{installed_path}/playtest-template.md"
+
+# Variables and inputs
+variables:
+  playtest_type: "internal" # internal, external, focused
+  session_duration: 60 # minutes
+  participant_count: 5
+
+# Smart input file references - for understanding game mechanics to test
+input_file_patterns:
+  gdd:
+    description: "Game Design Document for mechanics to validate"
+    whole: "{output_folder}/*gdd*.md"
+    sharded: "{output_folder}/*gdd*/*.md"
+    load_strategy: "FULL_LOAD"
+  game_brief:
+    description: "Game Brief for understanding core pillars"
+    whole: "{output_folder}/*brief*.md"
+    load_strategy: "FULL_LOAD"
+
+# Output configuration
+default_output_file: "{output_folder}/playtest-plan.md"
+
+# Required tools
+required_tools:
+  - read_file
+  - write_file
+  - list_files
+
+tags:
+  - qa
+  - playtesting
+  - user-research
+  - design-validation
+  - feedback
+
+execution_hints:
+  interactive: true
+  autonomous: false
+  iterative: true
+
+web_bundle: false

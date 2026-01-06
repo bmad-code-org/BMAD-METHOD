@@ -1,0 +1,64 @@
+code: bmgd
+name: "BMGD: BMad Game Development"
+header: "BMad Game Development Module"
+subheader: "Configure the settings for the BMad Game Development module"
+default_selected: false
+
+# Variables from Core Config inserted:
+## user_name
+## communication_language
+## document_output_language
+## output_folder
+
+project_name:
+  prompt: "What is the name of your game project?"
+  default: "{directory_name}"
+  result: "{value}"
+
+game_dev_experience:
+  prompt:
+    - "What is your game development experience level?"
+    - "This affects how agents explain concepts in chat."
+  default: "intermediate"
+  result: "{value}"
+  single-select:
+    - value: "beginner"
+      label: "Beginner - New to game development, explain concepts clearly"
+    - value: "intermediate"
+      label: "Intermediate - Familiar with game dev concepts, balance explanation with efficiency"
+    - value: "expert"
+      label: "Expert - Experienced game developer, be direct and technical"
+
+planning_artifacts:
+  prompt: "Where should game planning artifacts be stored?\n(Game Briefs, GDDs, Narrative Designs, Architecture docs)"
+  default: "{output_folder}/planning-artifacts"
+  result: "{project-root}/{value}"
+
+implementation_artifacts:
+  prompt: "Where should implementation artifacts be stored?\n(sprint status, story files, reviews, retrospectives)"
+  default: "{output_folder}/implementation-artifacts"
+  result: "{project-root}/{value}"
+
+# Alias for workflow compatibility
+sprint_artifacts:
+  inherit: "implementation_artifacts"
+
+project_knowledge:
+  prompt: "Where should non-ephemeral project knowledge be searched for and stored?\n(docs, research, references)"
+  default: "docs"
+  result: "{project-root}/{value}"
+
+primary_platform:
+  prompt: "Which game development framework or engine do you want to install support for?"
+  default: ["unity", "unreal", "godot", "other"]
+  required: true
+  result: "{value}"
+  multi-select:
+    - value: "unity"
+      label: "Unity"
+    - value: "unreal"
+      label: "Unreal Engine"
+    - value: "godot"
+      label: "Godot"
+    - value: "other"
+      label: "Custom / Other"

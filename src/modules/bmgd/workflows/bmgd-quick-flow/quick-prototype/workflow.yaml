@@ -1,0 +1,36 @@
+# Quick-Flow: Quick-Prototype (Game Development)
+name: quick-prototype
+description: "Rapid game prototyping - quickly test gameplay ideas, mechanics, or features with minimal setup."
+author: "BMad"
+
+# Config
+config_source: "{project-root}/_bmad/bmgd/config.yaml"
+output_folder: "{config_source}:output_folder"
+implementation_artifacts: "{config_source}:implementation_artifacts"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+user_skill_level: "{config_source}:game_dev_experience"
+date: system-generated
+
+# Project context
+project_context: "**/project-context.md"
+
+# Workflow components
+installed_path: "{project-root}/_bmad/bmgd/workflows/bmgd-quick-flow/quick-prototype"
+instructions: "{installed_path}/instructions.md"
+checklist: "{installed_path}/checklist.md"
+
+# Related workflows
+quick_dev_workflow: "{project-root}/_bmad/bmgd/workflows/bmgd-quick-flow/quick-dev/workflow.yaml"
+party_mode_exec: "{project-root}/_bmad/core/workflows/party-mode/workflow.md"
+advanced_elicitation: "{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml"
+
+# Game-specific references
+gdd_patterns:
+  whole: "{output_folder}/*gdd*.md"
+  sharded: "{output_folder}/*gdd*/*.md"
+architecture_patterns:
+  whole: "{output_folder}/*architecture*.md"
+
+standalone: true
+web_bundle: false

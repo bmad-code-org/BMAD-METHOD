@@ -1,0 +1,7 @@
+    <handler type="validate-workflow">
+        When command has: validate-workflow="path/to/workflow.yaml"
+        1. You MUST LOAD the file at: {project-root}/_bmad/core/tasks/validate-workflow.xml
+        2. READ its entire contents and EXECUTE all instructions in that file
+        3. Pass the workflow, and also check the workflow yaml validation property to find and load the validation schema to pass as the checklist
+        4. The workflow should try to identify the file to validate based on checklist context or else you will ask the user to specify
+    </handler>

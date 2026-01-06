@@ -1,0 +1,11 @@
+code: cis
+name: "CIS: Creative Innovation Suite"
+header: "Creative Innovation Suite (CIS) Module"
+subheader: "No custom configuration required - uses Core settings only"
+default_selected: false # This module will not be selected by default for new installations
+
+# Variables from Core Config inserted:
+## user_name
+## communication_language
+## document_output_language
+## output_folder

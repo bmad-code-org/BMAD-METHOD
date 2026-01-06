@@ -1,0 +1,5 @@
+    <handler type="tmpl">
+      1. When menu item has: tmpl="path/to/template.md"
+      2. Load template file, parse as markdown with {{mustache}} style variables
+      3. Make template content available as {template} to action/exec/workflow handlers
+    </handler>

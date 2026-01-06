@@ -1,0 +1,42 @@
+# markdownlint-cli2 configuration
+# https://github.com/DavidAnson/markdownlint-cli2
+
+ignores:
+  - node_modules/**
+  - test/fixtures/**
+  - CODE_OF_CONDUCT.md
+  - _bmad/**
+  - _bmad*/**
+  - .agent/**
+  - .claude/**
+  - .roo/**
+  - .codex/**
+  - .agentvibes/**
+  - .kiro/**
+  - sample-project/**
+  - test-project-install/**
+  - z*/**
+
+# Rule configuration
+config:
+  # Disable all rules by default
+  default: false
+
+  # Heading levels should increment by one (h1 -> h2 -> h3, not h1 -> h3)
+  MD001: true
+
+  # Duplicate sibling headings (same heading text at same level under same parent)
+  MD024:
+    siblings_only: true
+
+  # Trailing commas in headings (likely typos)
+  MD026:
+    punctuation: ","
+
+  # Bare URLs - may not render as links in all parsers
+  # Should use <url> or [text](url) format
+  MD034: true
+
+  # Spaces inside emphasis markers - breaks rendering
+  # e.g., "* text *" won't render as emphasis
+  MD037: true

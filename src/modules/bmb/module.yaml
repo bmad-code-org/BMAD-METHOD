@@ -1,0 +1,16 @@
+code: bmb
+name: "BMB: BMad Builder - Agent, Workflow and Module Builder"
+header: "BMad Optimized Builder (BoMB) Module Configuration"
+subheader: "Configure the settings for the BoMB Factory!\nThe agent, workflow and module builder for BMad™ "
+default_selected: false # This module will not be selected by default for new installations
+
+# Variables from Core Config inserted:
+## user_name
+## communication_language
+## document_output_language
+## output_folder
+
+bmb_creations_output_folder:
+  prompt: "Where should BoMB generated agents, workflows and modules SOURCE be saved?"
+  default: "{output_folder}/bmb-creations"
+  result: "{project-root}/{value}"

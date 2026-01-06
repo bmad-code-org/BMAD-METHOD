@@ -1,0 +1,40 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+
+language: "en-US"
+early_access: true
+reviews:
+  profile: chill
+  high_level_summary: false # don't post summary until explicitly invoked
+  request_changes_workflow: false
+  review_status: false
+  commit_status: false
+  walkthrough: false
+  poem: false
+  auto_review:
+    enabled: false
+    drafts: true # Can review drafts. Since it's manually triggered, it's fine.
+    auto_incremental_review: false # always review the whole PR, not just new commits
+    base_branches:
+      - main
+  path_filters:
+    - "!**/node_modules/**"
+  path_instructions:
+    - path: "**/*"
+      instructions: |
+        Focus on inconsistencies, contradictions, edge cases and serious issues.
+        Avoid commenting on minor issues such as linting, formatting and style issues.
+        When providing code suggestions, use GitHub's suggestion format:
+        ```suggestion
+        <code changes>
+        ```
+    - path: "**/*.js"
+      instructions: |
+        CLI tooling code. Check for: missing error handling on fs operations,
+        path.join vs string concatenation, proper cleanup in error paths.
+        Flag any process.exit() without error message.
+chat:
+  auto_reply: true # Response to mentions in comments, a la @coderabbit review
+issue_enrichment:
+  auto_enrich:
+    enabled: false # don't auto-comment on issues
+

@@ -1,0 +1,27 @@
+# Quick-Flow: Create Tech-Spec (Game Development)
+name: create-tech-spec
+description: "Conversational spec engineering for games - ask questions, investigate code, produce implementation-ready tech-spec."
+author: "BMad"
+
+# Config
+config_source: "{project-root}/_bmad/bmgd/config.yaml"
+output_folder: "{config_source}:output_folder"
+implementation_artifacts: "{config_source}:implementation_artifacts"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+document_output_language: "{config_source}:document_output_language"
+user_skill_level: "{config_source}:game_dev_experience"
+date: system-generated
+
+# Workflow components
+installed_path: "{project-root}/_bmad/bmgd/workflows/bmgd-quick-flow/create-tech-spec"
+instructions: "{installed_path}/instructions.md"
+
+# Related workflows
+quick_dev_workflow: "{project-root}/_bmad/bmgd/workflows/bmgd-quick-flow/quick-dev/workflow.yaml"
+quick_prototype_workflow: "{project-root}/_bmad/bmgd/workflows/bmgd-quick-flow/quick-prototype/workflow.yaml"
+party_mode_exec: "{project-root}/_bmad/core/workflows/party-mode/workflow.md"
+advanced_elicitation: "{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml"
+
+standalone: true
+web_bundle: false

@@ -1,0 +1,29 @@
+# BMGD Quick Flow - Brownfield
+# Rapid game development for existing projects
+
+method_name: "BMGD Quick Flow"
+track: "quickflow"
+field_type: "brownfield"
+description: "Rapid development and iteration for existing game projects"
+
+phases:
+  - phase: 1
+    name: "Planning"
+    required: true
+    workflows:
+      - id: "create-tech-spec"
+        required: true
+        agent: "game-solo-dev"
+        command: "create-tech-spec"
+        output: "Technical specification"
+        note: "Define changes for existing codebase"
+
+  - phase: 2
+    name: "Development"
+    required: true
+    workflows:
+      - id: "quick-dev"
+        required: true
+        agent: "game-solo-dev"
+        command: "quick-dev"
+        note: "Iterative development - repeat as needed"

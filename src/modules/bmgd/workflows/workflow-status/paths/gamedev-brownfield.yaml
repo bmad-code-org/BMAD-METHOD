@@ -1,0 +1,65 @@
+# BMGD Game Development - Brownfield
+# Game development methodology for existing game projects
+
+method_name: "BMGD Game Development"
+track: "gamedev"
+field_type: "brownfield"
+description: "Game development methodology for existing codebases and projects"
+
+phases:
+  - phase: 0
+    name: "Discovery (Optional)"
+    optional: true
+    note: "User-selected during workflow-init"
+    workflows:
+      - id: "brainstorm-game"
+        optional: true
+        agent: "game-designer"
+        command: "brainstorm-game"
+        included_by: "user_choice"
+        note: "Creative exploration for new features or improvements"
+
+  - phase: 1
+    name: "Design"
+    required: true
+    workflows:
+      - id: "gdd"
+        required: true
+        agent: "game-designer"
+        command: "create-gdd"
+        output: "Game Design Document for new features/systems"
+        note: "Focus on changes and additions to existing game"
+
+      - id: "narrative"
+        conditional: "if_narrative_focused"
+        agent: "game-designer"
+        command: "narrative"
+        note: "For story-driven additions"
+
+  - phase: 2
+    name: "Technical"
+    required: true
+    workflows:
+      - id: "game-architecture"
+        required: true
+        agent: "game-architect"
+        command: "create-architecture"
+        output: "Architecture update document"
+        note: "Focus on integration with existing systems"
+
+      - id: "test-framework"
+        recommended: true
+        agent: "game-qa"
+        command: "test-framework"
+        output: "Testing framework extension"
+        note: "Extend existing tests or set up new framework"
+
+  - phase: 3
+    name: "Production"
+    required: true
+    workflows:
+      - id: "sprint-planning"
+        required: true
+        agent: "game-scrum-master"
+        command: "sprint-planning"
+        note: "Creates sprint plan - subsequent work tracked in sprint-status.yaml"

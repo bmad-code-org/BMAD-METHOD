@@ -1,0 +1,45 @@
+# Quick-Flow: Quick-Dev (Game Development)
+name: quick-dev
+description: "Flexible game development - execute tech-specs, implement features, or refactor code with game-specific considerations."
+author: "BMad"
+
+# Config
+config_source: "{project-root}/_bmad/bmgd/config.yaml"
+output_folder: "{config_source}:output_folder"
+implementation_artifacts: "{config_source}:implementation_artifacts"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+user_skill_level: "{config_source}:game_dev_experience"
+date: system-generated
+
+# Project context
+project_context: "**/project-context.md"
+
+# Workflow components
+installed_path: "{project-root}/_bmad/bmgd/workflows/bmgd-quick-flow/quick-dev"
+instructions: "{installed_path}/instructions.md"
+checklist: "{installed_path}/checklist.md"
+
+# Related workflows
+quick_prototype_workflow: "{project-root}/_bmad/bmgd/workflows/bmgd-quick-flow/quick-prototype/workflow.yaml"
+party_mode_exec: "{project-root}/_bmad/core/workflows/party-mode/workflow.md"
+advanced_elicitation: "{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml"
+
+# Routing resources (lazy-loaded)
+workflow_init: "{project-root}/_bmad/bmgd/workflows/workflow-status/init/workflow.yaml"
+
+# Game-specific input patterns
+input_file_patterns:
+  gdd:
+    description: "Game Design Document"
+    whole: "{output_folder}/*gdd*.md"
+    sharded: "{output_folder}/*gdd*/*.md"
+    load_strategy: "FULL_LOAD"
+  architecture:
+    description: "Game architecture and technical decisions"
+    whole: "{output_folder}/*architecture*.md"
+    sharded: "{output_folder}/*architecture*/*.md"
+    load_strategy: "FULL_LOAD"
+
+standalone: true
+web_bundle: false

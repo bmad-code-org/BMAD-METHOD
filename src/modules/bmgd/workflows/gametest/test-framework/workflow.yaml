@@ -1,0 +1,48 @@
+# Game QA workflow: framework
+name: gametest-framework
+description: "Initialize game test framework architecture for Unity, Unreal Engine, or Godot projects"
+author: "BMad"
+
+# Critical variables from config
+config_source: "{project-root}/_bmad/bmgd/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+document_output_language: "{config_source}:document_output_language"
+date: system-generated
+
+# Workflow components
+installed_path: "{project-root}/_bmad/bmgd/workflows/gametest/test-framework"
+instructions: "{installed_path}/instructions.md"
+validation: "{installed_path}/checklist.md"
+
+# Variables and inputs
+variables:
+  test_dir: "{project-root}/tests" # Root test directory
+  game_engine: "auto" # auto, unity, unreal, godot
+  test_framework: "auto" # auto, gut (godot), unity-test-framework, unreal-automation
+
+# Output configuration
+default_output_file: "{test_dir}/README.md"
+
+# Required tools
+required_tools:
+  - read_file
+  - write_file
+  - create_directory
+  - list_files
+  - search_repo
+
+tags:
+  - qa
+  - setup
+  - game-testing
+  - framework
+  - initialization
+
+execution_hints:
+  interactive: false
+  autonomous: true
+  iterative: true
+
+web_bundle: false

@@ -1,0 +1,17 @@
+id,name,description,tags,fragment_file
+playtesting,Playtesting Fundamentals,"Core principles and methods for playtesting game builds","testing-methods,playtesting,design-validation",knowledge/playtesting.md
+qa-automation,QA Automation,"Automated testing strategies for games including unit and integration tests","automation,unit-tests,integration",knowledge/qa-automation.md
+performance-testing,Performance Testing,"Frame rate profiling and optimization testing strategies","performance,profiling,fps",knowledge/performance-testing.md
+balance-testing,Balance Testing,"Methods for testing game balance and tuning","design-validation,balance,economy",knowledge/balance-testing.md
+compatibility-testing,Compatibility Testing,"Platform and device compatibility testing approaches","compatibility,platforms,hardware",knowledge/compatibility-testing.md
+regression-testing,Regression Testing,"Strategies for catching regressions in game builds","regression,ci,automation",knowledge/regression-testing.md
+unity-testing,Unity Test Framework,"Unity-specific testing with Test Framework, Play Mode, and Edit Mode tests","unity,unit-tests,integration",knowledge/unity-testing.md
+unreal-testing,Unreal Automation,"Unreal Engine automation system, functional tests, and Gauntlet","unreal,automation,gauntlet",knowledge/unreal-testing.md
+godot-testing,Godot GUT Testing,"Godot Unit Test framework patterns and best practices","godot,gut,unit-tests",knowledge/godot-testing.md
+save-testing,Save System Testing,"Strategies for testing save/load systems and data integrity","save-system,data,persistence",knowledge/save-testing.md
+multiplayer-testing,Multiplayer Testing,"Network testing, sync validation, and lag simulation","multiplayer,networking,sync",knowledge/multiplayer-testing.md
+input-testing,Input Testing,"Controller, keyboard, and touch input validation","input,controllers,accessibility",knowledge/input-testing.md
+localization-testing,Localization Testing,"Text, audio, and cultural validation for international releases","localization,i18n,text",knowledge/localization-testing.md
+certification-testing,Platform Certification,"Console TRC/XR requirements and certification testing","certification,console,trc,xr",knowledge/certification-testing.md
+smoke-testing,Smoke Testing,"Critical path validation for build verification","smoke-tests,bvt,ci",knowledge/smoke-testing.md
+test-priorities,Test Priorities Matrix,"P0-P3 criteria, coverage targets, execution ordering for games","prioritization,risk,coverage",knowledge/test-priorities.md

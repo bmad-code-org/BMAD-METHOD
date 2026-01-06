@@ -1,0 +1,31 @@
+# Test: Valid compound triggers
+# Expected: PASS
+
+agent:
+  metadata:
+    id: compound-triggers
+    name: Compound Triggers
+    title: Compound Triggers Test
+    icon: 🧪
+    hasSidecar: false
+
+  persona:
+    role: Test agent with compound triggers
+    identity: I test compound trigger validation.
+    communication_style: Clear
+    principles:
+      - Test compound format
+
+  menu:
+    - trigger: TS or fuzzy match on tech-spec
+      description: "[TS] Two-word compound trigger"
+      action: tech_spec
+    - trigger: DS or fuzzy match on dev-story
+      description: "[DS] Another two-word compound trigger"
+      action: dev_story
+    - trigger: WI or fuzzy match on workflow-init-process
+      description: "[WI] Three-word compound trigger (uses first 2 words for shortcut)"
+      action: workflow_init
+    - trigger: H or fuzzy match on help
+      description: "[H] Single-word compound trigger (1-letter shortcut)"
+      action: help

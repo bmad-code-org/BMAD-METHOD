@@ -1,0 +1,53 @@
+# {module_display_name} Module Configuration
+# This file defines installation questions and module configuration values
+
+code: "${module_name}" # e.g., my-module
+name: "{module_display_name}"
+default_selected: false
+
+# Welcome message shown during installation
+prompt:
+  - "Thank you for choosing {module_display_name}!"
+  - "{module_purpose}"
+# Core config values are automatically inherited from installer:
+## user_name
+## communication_language
+## document_output_language
+## output_folder
+
+# ============================================================================
+# CONFIGURATION FIELDS
+# ============================================================================
+# Each field can be:
+# 1. INTERACTIVE (has 'prompt' - asks user during installation)
+# 2. STATIC (no 'prompt' - just uses 'result' value)
+# ============================================================================
+
+# Example configurations (replace with actual planned fields):
+
+# INTERACTIVE text input:
+# output_path:
+#   prompt: "Where should {module_name} save outputs?"
+#   default: "output/{module_name}"
+#   result: "{project-root}/{value}"
+
+# INTERACTIVE single-select:
+# detail_level:
+#   prompt: "How detailed should outputs be?"
+#   default: "standard"
+#   result: "{value}"
+#   single-select:
+#     - value: "minimal"
+#       label: "Minimal - Brief summaries only"
+#     - value: "standard"
+#       label: "Standard - Balanced detail"
+#     - value: "detailed"
+#       label: "Detailed - Comprehensive information"
+
+# STATIC value:
+# module_version:
+#   result: "1.0.0"
+
+# STATIC path:
+# data_path:
+#   result: "{project-root}/_bmad/{module_name}/data"

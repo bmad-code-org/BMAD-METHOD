@@ -1,0 +1,48 @@
+# Game QA workflow: performance
+name: gametest-performance
+description: "Design performance testing strategy for frame rate, memory, and loading times"
+author: "BMad"
+
+# Critical variables from config
+config_source: "{project-root}/_bmad/bmgd/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+document_output_language: "{config_source}:document_output_language"
+date: system-generated
+
+# Workflow components
+installed_path: "{project-root}/_bmad/bmgd/workflows/gametest/performance"
+instructions: "{installed_path}/instructions.md"
+validation: "{installed_path}/checklist.md"
+template: "{installed_path}/performance-template.md"
+
+# Variables and inputs
+variables:
+  target_fps: 60
+  target_platform: "auto" # auto, pc, console, mobile
+  game_engine: "auto" # auto, unity, unreal, godot
+
+# Output configuration
+default_output_file: "{output_folder}/performance-test-plan.md"
+
+# Required tools
+required_tools:
+  - read_file
+  - write_file
+  - list_files
+  - search_repo
+
+tags:
+  - qa
+  - performance
+  - profiling
+  - optimization
+  - benchmarks
+
+execution_hints:
+  interactive: false
+  autonomous: true
+  iterative: true
+
+web_bundle: false

@@ -1,0 +1,39 @@
+# BMGD Quick Flow - Greenfield
+# Rapid game prototyping and development for new projects
+
+method_name: "BMGD Quick Flow"
+track: "quickflow"
+field_type: "greenfield"
+description: "Rapid prototyping and development for new game projects"
+
+phases:
+  - phase: 0
+    name: "Concept (Optional)"
+    optional: true
+    workflows:
+      - id: "brainstorm-game"
+        optional: true
+        agent: "game-solo-dev"
+        command: "brainstorm-game"
+        included_by: "user_choice"
+
+  - phase: 1
+    name: "Prototype"
+    required: true
+    workflows:
+      - id: "quick-prototype"
+        required: true
+        agent: "game-solo-dev"
+        command: "quick-prototype"
+        output: "Playable prototype"
+        note: "Test core mechanic quickly"
+
+  - phase: 2
+    name: "Development"
+    required: true
+    workflows:
+      - id: "quick-dev"
+        required: true
+        agent: "game-solo-dev"
+        command: "quick-dev"
+        note: "Iterative development - repeat as needed"

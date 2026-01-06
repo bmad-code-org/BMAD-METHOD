@@ -1,0 +1,25 @@
+code: core
+name: "BMad™  Core Module"
+
+header: "BMad™  Core Configuration"
+subheader: "Configure the core settings for your BMad™  installation.\nThese settings will be used across all modules and agents."
+
+user_name:
+  prompt: "What shall the agents call you (TIP: Use a team name if using with a group)?"
+  default: "BMad"
+  result: "{value}"
+
+communication_language:
+  prompt: "Preferred chat language/style? (English, Mandarin, English Pirate, etc...)"
+  default: "English"
+  result: "{value}"
+
+document_output_language:
+  prompt: "Preferred document output language?"
+  default: "English"
+  result: "{value}"
+
+output_folder:
+  prompt: "Where should default output files be saved unless specified in other modules?"
+  default: "_bmad-output"
+  result: "{project-root}/{value}"
