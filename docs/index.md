@@ -2,6 +2,8 @@
 
 Complete documentation for the BMAD Method.
 
+> **Last updated:** Auto-deployment to GitHub Pages configured
+
 ## Getting Started
 
 ### New to BMAD?
