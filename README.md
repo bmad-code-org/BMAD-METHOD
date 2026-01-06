@@ -172,7 +172,7 @@ Each agent brings deep expertise and can be customized to match your team's styl
 
 - **[Quick Start Guide](./docs/modules/bmm-bmad-method/quick-start.md)** - 15-minute introduction
 - **[Complete BMM Documentation](./docs/modules/bmm-bmad-method/index.md)** - All guides and references
-- **[Agent Customization](docs/bmad-customization/agent-customization-guide.md)** - Personalize your agents
+- **[Agent Customization](docs/bmad-core-concepts/bmad-customization/agents.md)** - Personalize your agents
 - **[All Documentation](./docs/index.md)** - Complete documentation index
 
 ### For v4 Users
