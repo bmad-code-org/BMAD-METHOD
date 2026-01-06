@@ -38,7 +38,9 @@ Validate the agent's YAML structure and completeness against BMAD standards as d
 - 💾 Append findings to validation report
 - ➡️ Auto-advance to next validation step
 
-## Sequence of Instructions:
+## MANDATORY SEQUENCE
+
+**CRITICAL:** Follow this sequence exactly. Do not skip, reorder, or improvise unless user explicitly requests a change.
 
 ### 1. Load References
 

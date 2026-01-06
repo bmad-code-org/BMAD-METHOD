@@ -40,6 +40,8 @@ First know there is the full BMad Method Process and then there is a Quick Flow 
   - Implementation in minutes, not days
   - Has a specialized single agent that does all of this: **[Quick Flow Solo Dev Agent](./quick-flow-solo-dev.md)**
 
+- **TEA engagement (optional)** - Choose TEA engagement: none, TEA-only (standalone), or integrated by track. See **[Test Architect Guide](./test-architecture.md)**.
+
 ## 🤖 Agents and Collaboration
 
 Complete guide to BMM's AI agent team:

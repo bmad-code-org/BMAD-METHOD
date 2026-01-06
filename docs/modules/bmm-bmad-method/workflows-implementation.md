@@ -98,8 +98,9 @@ Stories move through these states in the sprint status file:
 
 1. SM runs `create-story`
 2. DEV runs `dev-story`
-3. DEV runs `code-review`
-4. If code review fails: DEV fixes issues in `dev-story`, then re-runs `code-review`
+3. (Optional) TEA runs `*automate` to generate or expand guardrail tests
+4. DEV runs `code-review`
+5. If code review fails: DEV fixes issues in `dev-story`, then re-runs `code-review`
 
 **After Epic Complete:**
 

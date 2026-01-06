@@ -351,9 +351,10 @@
       - ✅ Quality verification passed
 
       **Next Steps:**
-      1. Review the story in {{story_file}}
-      2. Run `dev-story` - will perform gap analysis and refine tasks against actual codebase
-      3. Run `code-review` when implementation complete
+      1. Review the comprehensive story in {{story_file}}
+      2. Run dev agents `dev-story` for optimized implementation
+      3. Run `code-review` when complete (auto-marks done)
+      4. Optional: Run TEA `*automate` after `dev-story` to generate guardrail tests
 
       **Note:** Tasks are DRAFT and will be validated against current codebase when dev-story runs.
     </output>

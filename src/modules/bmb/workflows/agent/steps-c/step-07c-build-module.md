@@ -3,7 +3,7 @@ name: 'step-06-build-module'
 description: 'Generate Module agent YAML from plan'
 
 # File References
-nextStepFile: './step-08a-plan-traceability.md'
+nextStepFile: './step-08-celebrate.md'
 agentPlan: '{bmb_creations_output_folder}/agent-plan-{agent_name}.md'
 agentBuildOutput: '{bmb_creations_output_folder}/{agent-name}/'
 agentYamlOutput: '{bmb_creations_output_folder}/{agent-name}/{agent-name}.agent.yaml'
@@ -205,7 +205,7 @@ Display: "**Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Cont
 
 # CRITICAL STEP COMPLETION NOTE
 
-ONLY WHEN [C continue option] is selected and [complete YAML generated and written to output], will you then load and read fully `{nextStepFile}` to execute and begin validation.
+ONLY WHEN [C continue option] is selected and [complete YAML generated and written to output], will you then load and read fully `{nextStepFile}` to execute and celebrate completion.
 
 **THIS STEP IS COMPLETE WHEN:**
 1. Module agent YAML file exists at agentYamlOutput path

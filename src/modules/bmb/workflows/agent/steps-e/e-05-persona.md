@@ -37,7 +37,9 @@ Review the agent's persona and plan any changes using the four-field persona sys
 - 💾 Document planned persona changes
 - 🚫 FORBIDDEN to proceed without documenting changes
 
-## Sequence of Instructions:
+## MANDATORY SEQUENCE
+
+**CRITICAL:** Follow this sequence exactly. Do not skip, reorder, or improvise unless user explicitly requests a change.
 
 ### 1. Load Reference Documents
 

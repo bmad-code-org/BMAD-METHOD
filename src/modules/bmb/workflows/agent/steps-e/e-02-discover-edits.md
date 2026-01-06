@@ -54,7 +54,9 @@ Conduct targeted discovery to understand exactly what the user wants to change a
 - Limits: Discovery and documentation only, no implementation
 - Dependencies: Agent must be loaded in editPlan
 
-## Sequence of Instructions (Do not deviate, skip, or optimize)
+## MANDATORY SEQUENCE
+
+**CRITICAL:** Follow this sequence exactly. Do not skip, reorder, or improvise unless user explicitly requests a change.
 
 ### 1. Read Edit Plan Context
 

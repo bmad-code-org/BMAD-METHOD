@@ -46,7 +46,9 @@ Optional creative exploration to generate agent ideas through structured brainst
 - Limits: No mandatory brainstorming, no pressure tactics
 - Dependencies: User choice to participate or skip brainstorming
 
-## Sequence of Instructions (Do not deviate, skip, or optimize)
+## MANDATORY SEQUENCE
+
+**CRITICAL:** Follow this sequence exactly. Do not skip, reorder, or improvise unless user explicitly requests a change.
 
 ### 1. Present Brainstorming Opportunity
 

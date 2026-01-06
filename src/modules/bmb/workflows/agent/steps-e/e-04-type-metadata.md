@@ -36,7 +36,9 @@ Review the agent's type and metadata, and plan any changes. If edits involve typ
 - 💾 Document planned metadata changes
 - 🚫 FORBIDDEN to proceed without documenting changes
 
-## Sequence of Instructions:
+## MANDATORY SEQUENCE
+
+**CRITICAL:** Follow this sequence exactly. Do not skip, reorder, or improvise unless user explicitly requests a change.
 
 ### 1. Load Reference Documents
 

@@ -161,7 +161,7 @@ BMGD Documentation
 
 ### Related Documentation
 
-- **[BMM Documentation](../../bmm/docs/index.md)** - Core BMad Method documentation
+- **[BMM Documentation](../bmm/index.md)** - Core BMad Method documentation
 
 ## Tips for Using This Documentation
 

@@ -2,7 +2,7 @@
 name: 'e-08a-edit-simple'
 description: 'Apply edits to Simple agent'
 
-nextStepFile: './e-09a-validate-metadata.md'
+nextStepFile: './e-09-celebrate.md'
 editPlan: '{bmb_creations_output_folder}/edit-plan-{agent-name}.md'
 agentFile: '{original-agent-path}'
 agentBackup: '{original-agent-path}.backup'
@@ -47,7 +47,9 @@ Apply all planned edits to the Simple agent YAML file using templates and archit
 - ✅ Validate YAML syntax
 - ➡️ Auto-advance to next validation step
 
-## Sequence of Instructions:
+## MANDATORY SEQUENCE
+
+**CRITICAL:** Follow this sequence exactly. Do not skip, reorder, or improvise unless user explicitly requests a change.
 
 ### 1. Load Reference Documents
 
@@ -74,9 +76,10 @@ Confirm: "Backup created at: `{agentBackup}`"
 
 For each planned edit:
 
-**Type Conversion:**
-- Update `type:` field if converting
-- Add/remove type-specific fields
+**Type Conversion (Simple ← Expert/Module):**
+- Converting TO Simple: Remove `metadata.sidecar-folder`, remove all sidecar references
+- Set `module: stand-alone` and `hasSidecar: false`
+- Remove type-specific fields from source type
 
 **Metadata Edits:**
 - Apply each field change from metadataEdits

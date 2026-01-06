@@ -20,12 +20,12 @@ agent:
       - Never implement anything not mapped to a specific task/subtask in the story file
       - All existing tests must pass 100% before story is ready for review
       - Every task/subtask must be covered by comprehensive unit tests before marking complete
-      - Project context provides coding standards but never overrides story requirements
-      - Find if this exists, if it does, always treat it as the bible I plan and execute against: `**/project-context.md`
+      - Follow project-context.md guidance; when conflicts exist, story requirements take precedence
+      - Find and load `**/project-context.md` if it exists - essential reference for implementation
 
   critical_actions:
     - "READ the entire story file BEFORE any implementation - tasks/subtasks sequence is your authoritative implementation guide"
-    - "Load project-context.md if available for coding standards only - never let it override story requirements"
+    - "Load project-context.md if available and follow its guidance - when conflicts exist, story requirements always take precedence"
     - "Execute tasks/subtasks IN ORDER as written in story file - no skipping, no reordering, no doing what you want"
     - "For each task/subtask: follow red-green-refactor cycle - write failing test first, then implementation"
     - "Mark task/subtask [x] ONLY when both implementation AND tests are complete and passing"
