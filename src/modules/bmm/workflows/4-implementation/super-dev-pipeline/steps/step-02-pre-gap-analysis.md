@@ -401,7 +401,14 @@ done
 
 **Interactive Mode:**
 
-Display gap analysis report and batching plan:
+Display gap analysis report with conditional batching menu.
+
+**CRITICAL DECISION LOGIC:**
+- If `batchable_count > 0 AND time_saved > 0`: Show batching options
+- If `batchable_count = 0 OR time_saved = 0`: Skip batching options (no benefit)
+
+**When Batching Has Benefit (time_saved > 0):**
+
 ```
 Gap Analysis Complete + Smart Batching Plan
 
@@ -425,11 +432,42 @@ Estimated time: {estimated_hours} hours (with batching)
 [H] Halt pipeline
 ```
 
-**Batch Mode:** Auto-accept changes and batching plan
+**When Batching Has NO Benefit (time_saved = 0):**
 
-### 7. Update Story File with Batching Plan
+```
+Gap Analysis Complete
 
-Add batching plan to story file:
+Task Analysis:
+- {done_count} tasks already complete (will check)
+- {unclear_count} tasks refined to {refined_count} specific tasks
+- {missing_count} new tasks added
+- {needed_count} tasks ready for implementation
+
+Smart Batching Analysis:
+- Batchable patterns detected: 0
+- Tasks requiring individual execution: {work_count}
+- Estimated time savings: none (tasks require individual attention)
+
+Total work: {work_count} tasks
+Estimated time: {estimated_hours} hours
+
+[A] Accept changes
+[E] Edit tasks manually
+[H] Halt pipeline
+```
+
+**Why Skip Batching Option When Benefit = 0:**
+- Reduces decision fatigue
+- Prevents pointless "batch vs no-batch" choice when outcome is identical
+- Cleaner UX when batching isn't applicable
+
+**Batch Mode:** Auto-accept changes (batching plan applied only if benefit > 0)
+
+### 8. Update Story File with Batching Plan (Conditional)
+
+**ONLY add batching plan if `time_saved > 0`.**
+
+If batching has benefit (time_saved > 0), add batching plan to story file:
 
 ```markdown
 ## Smart Batching Plan
@@ -457,7 +495,9 @@ Add batching plan to story file:
 - Savings: {savings} hours
 ```
 
-### 8. Update Pipeline State
+If batching has NO benefit (time_saved = 0), **skip this section entirely** and just add gap analysis results.
+
+### 9. Update Pipeline State
 
 Update state file:
 - Add `2` to `stepsCompleted`
@@ -474,7 +514,7 @@ Update state file:
     tasks_added: {count}
 
   smart_batching:
-    enabled: true
+    enabled: {true if time_saved > 0, false otherwise}
     patterns_detected: {count}
     batchable_tasks: {count}
     individual_tasks: {count}
@@ -483,9 +523,12 @@ Update state file:
     estimated_savings: {hours}
   ```
 
-### 9. Present Summary with Batching Plan
+**Note:** `smart_batching.enabled` is set to `false` when batching has no benefit, preventing unnecessary batching plan generation.
 
-Display:
+### 10. Present Summary (Conditional Format)
+
+**When Batching Has Benefit (time_saved > 0):**
+
 ```
 Pre-Gap Analysis Complete + Smart Batching Plan
 
@@ -505,6 +548,26 @@ Time Estimate:
 - With smart batching: {batched_time} hours ⚡
 - Without batching: {individual_time} hours
 - Time savings: {savings} hours ({savings_percent}% faster!)
+
+Ready for Implementation
+```
+
+**When Batching Has NO Benefit (time_saved = 0):**
+
+```
+Pre-Gap Analysis Complete
+
+Development Type: {greenfield|brownfield|hybrid}
+Work Remaining: {work_count} tasks
+
+Codebase Status:
+- Existing implementations reviewed: {existing_count}
+- New implementations needed: {new_count}
+
+Smart Batching Analysis:
+- Batchable patterns detected: 0
+- Tasks requiring individual execution: {work_count}
+- Estimated time: {estimated_hours} hours
 
 Ready for Implementation
 ```
