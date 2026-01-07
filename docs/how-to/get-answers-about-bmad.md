@@ -69,3 +69,30 @@ Tried the LLM approach and still need help? You now have a much better question 
 If it's clearly a bug in BMAD itself, skip Discord and go straight to GitHub Issues:
 
 **GitHub Issues:** [github.com/bmad-code-org/BMAD-METHOD/issues](https://github.com/bmad-code-org/BMAD-METHOD/issues)
+
+---
+
+*You!*
+        *Stuck*
+             *in the queue—*
+                      *waiting*
+                              *for who?*
+
+*The source*
+        *is there,*
+                *plain to see!*
+
+*Point*
+     *your machine.*
+              *Set it free.*
+
+*It reads.*
+        *It speaks.*
+                *Ask away—*
+
+*Why wait*
+        *for tomorrow*
+                *when you have*
+                        *today?*
+
+*—Claude*
