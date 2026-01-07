@@ -17,5 +17,5 @@ agent:
 
   menu:
     - trigger: BS or fuzzy match on brainstorm
-      workflow: "{project-root}/_bmad/core/workflows/brainstorming/workflow.yaml"
+      workflow: "{project-root}/_bmad/core/workflows/brainstorming/workflow.md"
       description: "[BS] Guide me through Brainstorming any topic"

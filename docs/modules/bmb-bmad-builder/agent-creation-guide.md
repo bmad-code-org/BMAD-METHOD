@@ -11,7 +11,6 @@ The BMAD Builder (BMB) module provides an interactive workflow that guides you t
 **Prerequisites:**
 - BMAD installed with the BMB module
 - An idea for what you want your agent to do
-- About 15-30 minutes for your first agent
 
 **Know Before You Go:**
 - What problem should your agent solve?
@@ -22,28 +21,22 @@ The BMAD Builder (BMB) module provides an interactive workflow that guides you t
 
 ### 1. Start the Workflow
 
-In your IDE (Claude Code, Cursor, etc.), invoke the create-agent workflow:
-
-```
-"Run the BMAD Builder create-agent workflow"
-```
-
-Or trigger it via the BMAD Master menu.
+In your IDE (Claude Code, Cursor, etc.), invoke the create-agent workflow with the agent-builder agent.
 
 ### 2. Follow the Steps
 
 The workflow guides you through:
 
-| Step | What You'll Do |
-|------|----------------|
-| **Brainstorm** (optional) | Explore ideas with creative techniques |
-| **Discovery** | Define the agent's purpose and goals |
-| **Type & Metadata** | Choose Simple or Expert, name your agent |
-| **Persona** | Craft the agent's personality and principles |
-| **Commands** | Define what the agent can do |
-| **Activation** | Set up autonomous behaviors (optional) |
-| **Build** | Generate the agent file |
-| **Validation** | Review and verify everything works |
+| Step                      | What You'll Do                               |
+| ------------------------- | -------------------------------------------- |
+| **Brainstorm** (optional) | Explore ideas with creative techniques       |
+| **Discovery**             | Define the agent's purpose and goals         |
+| **Type & Metadata**       | Choose Simple or Expert, name your agent     |
+| **Persona**               | Craft the agent's personality and principles |
+| **Commands**              | Define what the agent can do                 |
+| **Activation**            | Set up autonomous behaviors (optional)       |
+| **Build**                 | Generate the agent file                      |
+| **Validation**            | Review and verify everything works           |
 
 ### 3. Install Your Agent
 
@@ -96,12 +89,12 @@ The workflow will help you decide, but here's the quick reference:
 
 Your agent's personality is defined by four fields:
 
-| Field | Purpose | Example |
-|-------|---------|---------|
-| **Role** | What they do | "Senior code reviewer who catches bugs and suggests improvements" |
-| **Identity** | Who they are | "Friendly but exacting, believes clean code is a craft" |
-| **Communication Style** | How they speak | "Direct, constructive, explains the 'why' behind suggestions" |
-| **Principles** | Why they act | "Security first, clarity over cleverness, test what you fix" |
+| Field                   | Purpose        | Example                                                           |
+| ----------------------- | -------------- | ----------------------------------------------------------------- |
+| **Role**                | What they do   | "Senior code reviewer who catches bugs and suggests improvements" |
+| **Identity**            | Who they are   | "Friendly but exacting, believes clean code is a craft"           |
+| **Communication Style** | How they speak | "Direct, constructive, explains the 'why' behind suggestions"     |
+| **Principles**          | Why they act   | "Security first, clarity over cleverness, test what you fix"      |
 
 **Key:** Keep each field focused on its purpose. The role isn't personality; the identity isn't job description.
 
