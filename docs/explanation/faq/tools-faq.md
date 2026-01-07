@@ -221,7 +221,7 @@ Trust your expertise - BMM supports your decisions.
 **A:**
 
 1. Search [Complete Documentation](https://github.com/bmad-code-org/BMAD-METHOD/blob/main/README.md) for related topics
-2. Ask in [Discord Community](https://discord.gg/gk8jAdXWmj) (#general-dev)
+2. Ask in [Discord Community](https://discord.gg/gk8jAdXWmj) (#bmad-method-help)
 3. Open a [GitHub Issue](https://github.com/bmad-code-org/BMAD-METHOD/issues)
 4. Watch [YouTube Tutorials](https://www.youtube.com/@BMadCode)
 

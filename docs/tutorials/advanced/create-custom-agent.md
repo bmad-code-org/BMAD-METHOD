@@ -154,7 +154,7 @@ Study the reference agents in `src/modules/bmb/reference/agents/`:
 
 ## Getting Help
 
-- **[Discord Community](https://discord.gg/gk8jAdXWmj)** - Ask in #general-dev or #bugs-issues
+- **[Discord Community](https://discord.gg/gk8jAdXWmj)** - Ask in #bmad-method-help or #report-bugs-and-issues
 - **[GitHub Issues](https://github.com/bmad-code-org/BMAD-METHOD/issues)** - Report bugs or request features
 
 ## Further Reading

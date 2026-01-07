@@ -243,7 +243,7 @@ Yes. Documents are living artifacts—return to update them as your vision evolv
 ## Getting Help
 
 - **During workflows** — Agents guide you with questions and explanations
-- **Community** — [Discord](https://discord.gg/gk8jAdXWmj) (#general-dev, #bugs-issues)
+- **Community** — [Discord](https://discord.gg/gk8jAdXWmj) (#bmad-method-help, #report-bugs-and-issues)
 - **Documentation** — [BMGD Workflow Reference](../../reference/workflows/bmgd-workflows.md)
 - **Video tutorials** — [BMad Code YouTube](https://www.youtube.com/@BMadCode)
 

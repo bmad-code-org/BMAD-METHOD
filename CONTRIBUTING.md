@@ -4,8 +4,9 @@ Thank you for considering contributing to the BMad project! We believe in **Huma
 
 💬 **Discord Community**: Join our [Discord server](https://discord.gg/gk8jAdXWmj) for real-time discussions:
 
-- **#general-dev** - Technical discussions, feature ideas, and development questions
-- **#bugs-issues** - Bug reports and issue discussions
+- **#bmad-development** - Technical discussions and development questions
+- **#suggestions-feedback** - Feature ideas and suggestions
+- **#report-bugs-and-issues** - Bug reports and issue discussions
 
 ## Our Philosophy
 
@@ -56,7 +57,7 @@ Every contribution should strengthen human-AI collaboration. Ask yourself: **"Do
 ### Reporting Bugs
 
 1. **Check existing issues** first to avoid duplicates
-2. **Consider discussing in Discord** (#bugs-issues channel) for quick help
+2. **Consider discussing in Discord** (#report-bugs-and-issues channel) for quick help
 3. **Use the bug report template** when creating a new issue - it guides you through providing:
    - Clear bug description
    - Steps to reproduce
@@ -67,7 +68,7 @@ Every contribution should strengthen human-AI collaboration. Ask yourself: **"Do
 
 ### Suggesting Features or New Modules
 
-1. **Discuss first in Discord** (#general-dev channel) - the feature request template asks if you've done this
+1. **Discuss first in Discord** (#suggestions-feedback channel) - the feature request template asks if you've done this
 2. **Check existing issues and discussions** to avoid duplicates
 3. **Use the feature request template** when creating an issue
 4. **Be specific** about why this feature would benefit the BMad community and strengthen human-AI collaboration
@@ -77,7 +78,7 @@ Every contribution should strengthen human-AI collaboration. Ask yourself: **"Do
 ⚠️ **Required before submitting PRs:**
 
 1. **For bugs**: Check if an issue exists (create one using the bug template if not)
-2. **For features**: Discuss in Discord (#general-dev) AND create a feature request issue
+2. **For features**: Discuss in Discord (#suggestions-feedback) AND create a feature request issue
 3. **For large changes**: Always open an issue first to discuss alignment
 
 Please propose small, granular changes! For large or significant changes, discuss in Discord and open an issue first. This prevents wasted effort on PRs that may not align with planned changes.
@@ -251,8 +252,9 @@ By participating in this project, you agree to abide by our Code of Conduct. We 
 ## Need Help?
 
 - 💬 Join our [Discord Community](https://discord.gg/gk8jAdXWmj):
-  - **#general-dev** - Technical questions and feature discussions
-  - **#bugs-issues** - Get help with bugs before filing issues
+  - **#bmad-development** - Technical questions and discussions
+  - **#suggestions-feedback** - Feature ideas and suggestions
+  - **#report-bugs-and-issues** - Get help with bugs before filing issues
 - 🐛 Report bugs using the [bug report template](https://github.com/bmad-code-org/BMAD-METHOD/issues/new?template=bug_report.md)
 - 💡 Suggest features using the [feature request template](https://github.com/bmad-code-org/BMAD-METHOD/issues/new?template=feature_request.md)
 - 📖 Browse the [GitHub Discussions](https://github.com/bmad-code-org/BMAD-METHOD/discussions)

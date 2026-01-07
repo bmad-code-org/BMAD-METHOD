@@ -231,7 +231,7 @@ Workflows are context-intensive. Reusing chats can cause the AI to hallucinate o
 
 - **During workflows** — Agents guide you with questions and explanations
 - **Check status** — Run `workflow-status` with any agent
-- **Community** — [Discord](https://discord.gg/gk8jAdXWmj) (#general-dev, #bugs-issues)
+- **Community** — [Discord](https://discord.gg/gk8jAdXWmj) (#bmad-method-help, #report-bugs-and-issues)
 - **Video tutorials** — [BMad Code YouTube](https://www.youtube.com/@BMadCode)
 
 ## Key Takeaways

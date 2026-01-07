@@ -230,7 +230,7 @@ Yes, once you learn the flow. Use the Quick Reference to go directly to needed w
 ## Getting Help
 
 - **During workflows** — Agents guide you with questions and explanations
-- **Community** — [Discord](https://discord.gg/gk8jAdXWmj) (#general-dev, #bugs-issues)
+- **Community** — [Discord](https://discord.gg/gk8jAdXWmj) (#bmad-method-help, #report-bugs-and-issues)
 - **Documentation** — [BMM Workflow Reference](../../reference/workflows/index.md)
 - **Video tutorials** — [BMad Code YouTube](https://www.youtube.com/@BMadCode)
 

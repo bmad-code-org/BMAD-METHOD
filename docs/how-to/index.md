@@ -32,3 +32,5 @@ Working with existing codebases.
 ## Troubleshooting
 
 Solutions to common problems.
+
+- [Get Answers About BMAD](./get-answers-about-bmad.md)
