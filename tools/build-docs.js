@@ -2,12 +2,11 @@
  * BMAD Documentation Build Pipeline
  *
  * Consolidates docs from multiple sources, generates LLM-friendly files,
- * creates downloadable bundles, and builds the Docusaurus site.
+ * creates downloadable bundles, and builds the Astro+Starlight site.
  *
  * Build outputs:
- *   build/consolidated/  - Merged docs from all sources
  *   build/artifacts/     - With llms.txt, llms-full.txt, ZIPs
- *   build/site/          - Final Docusaurus output (deployable)
+ *   build/site/          - Final Astro output (deployable)
  */
 
 const { execSync } = require('node:child_process');
@@ -28,17 +27,17 @@ const REPO_URL = 'https://github.com/bmad-code-org/BMAD-METHOD';
 const LLM_MAX_CHARS = 600_000;
 const LLM_WARN_CHARS = 500_000;
 
-const MODULES = ['bmm', 'bmb', 'bmgd', 'cis'];
-
-// No root docs copied - only docs/ folder content goes to site
-// README.md, CHANGELOG.md etc. link to GitHub
-const ROOT_DOCS = [];
-
 const LLM_EXCLUDE_PATTERNS = ['changelog', 'ide-info/', 'v4-to-v6-upgrade', 'downloads/', 'faq'];
 
 // =============================================================================
 // Main Entry Point
-// =============================================================================
+/**
+ * Orchestrates the full BMAD documentation build pipeline.
+ *
+ * Executes the high-level build steps in sequence: prints headers and paths, validates internal
+ * documentation links, cleans the build directory, generates artifacts from the `docs/` folder,
+ * builds the Astro site, and prints a final build summary.
+ */
 
 async function main() {
   console.log();
@@ -48,13 +47,16 @@ async function main() {
   console.log(`Build directory: ${BUILD_DIR}`);
   console.log();
 
+  // Check for broken internal links before building
+  checkDocLinks();
+
   cleanBuildDirectory();
 
-  const consolidatedDir = consolidateDocs();
-  const artifactsDir = await generateArtifacts(consolidatedDir);
-  const siteDir = buildDocusaurusSite(artifactsDir);
+  const docsDir = path.join(PROJECT_ROOT, 'docs');
+  const artifactsDir = await generateArtifacts(docsDir);
+  const siteDir = buildAstroSite();
 
-  printBuildSummary(consolidatedDir, artifactsDir, siteDir);
+  printBuildSummary(docsDir, artifactsDir, siteDir);
 }
 
 main().catch((error) => {
@@ -64,33 +66,25 @@ main().catch((error) => {
 
 // =============================================================================
 // Pipeline Stages
-// =============================================================================
+/**
+ * Generate LLM files and downloadable bundles for the documentation pipeline.
+ *
+ * Creates the build/artifacts directory, writes `llms.txt` and `llms-full.txt` (sourced from the provided docs directory),
+ * and produces download ZIP bundles.
+ *
+ * @param {string} docsDir - Path to the source docs directory containing Markdown files.
+ * @returns {string} Path to the created artifacts directory.
+ */
 
-function consolidateDocs() {
-  printHeader('Consolidating documentation sources');
-
-  const outputDir = path.join(BUILD_DIR, 'consolidated');
-  fs.mkdirSync(outputDir, { recursive: true });
-
-  copyMainDocs(outputDir);
-  copyRootDocs(outputDir);
-  copyModuleDocs(outputDir);
-
-  const mdCount = countMarkdownFiles(outputDir);
-  console.log();
-  console.log(`  \u001B[32m✓\u001B[0m Consolidation complete: ${mdCount} markdown files`);
-
-  return outputDir;
-}
-
-async function generateArtifacts(consolidatedDir) {
+async function generateArtifacts(docsDir) {
   printHeader('Generating LLM files and download bundles');
 
   const outputDir = path.join(BUILD_DIR, 'artifacts');
-  copyDirectory(consolidatedDir, outputDir);
+  fs.mkdirSync(outputDir, { recursive: true });
 
+  // Generate LLM files reading from docs/, output to artifacts/
   generateLlmsTxt(outputDir);
-  generateLlmsFullTxt(outputDir);
+  generateLlmsFullTxt(docsDir, outputDir);
   await generateDownloadBundles(outputDir);
 
   console.log();
@@ -99,82 +93,39 @@ async function generateArtifacts(consolidatedDir) {
   return outputDir;
 }
 
-function buildDocusaurusSite(artifactsDir) {
-  printHeader('Building Docusaurus site');
+/**
+ * Builds the Astro + Starlight site and copies generated artifacts into the site output directory.
+ *
+ * @returns {string} The filesystem path to the built site directory (e.g., build/site).
+ */
+function buildAstroSite() {
+  printHeader('Building Astro + Starlight site');
 
   const siteDir = path.join(BUILD_DIR, 'site');
-  const mainDocs = path.join(PROJECT_ROOT, 'docs');
-  const docsBackup = path.join(BUILD_DIR, 'docs-backup');
+  const artifactsDir = path.join(BUILD_DIR, 'artifacts');
 
-  backupAndReplaceDocs(mainDocs, docsBackup, artifactsDir);
-
-  try {
-    runDocusaurusBuild(siteDir);
-  } finally {
-    restoreDocs(mainDocs, docsBackup);
-  }
-
+  // Build Astro site (outputs to build/site via astro.config.mjs)
+  runAstroBuild();
   copyArtifactsToSite(artifactsDir, siteDir);
 
+  // No longer needed: Inject AI agents banner into every HTML page
+  // injectAgentBanner(siteDir);
+
   console.log();
-  console.log(`  \u001B[32m✓\u001B[0m Docusaurus build complete`);
+  console.log(`  \u001B[32m✓\u001B[0m Astro build complete`);
 
   return siteDir;
 }
 
 // =============================================================================
-// Documentation Consolidation
-// =============================================================================
-
-function copyMainDocs(destDir) {
-  console.log('  → Copying main docs...');
-  const docsDir = path.join(PROJECT_ROOT, 'docs');
-  // Include modules folder - docs now live in docs/modules/ instead of src/modules/*/docs/
-  copyDirectory(docsDir, destDir, ['llms.txt', 'llms-full.txt'], true);
-}
-
-function copyRootDocs(destDir) {
-  console.log('  → Copying root documentation files...');
-
-  for (const doc of ROOT_DOCS) {
-    const srcPath = path.join(PROJECT_ROOT, doc.src);
-    const destPath = path.join(destDir, doc.dest);
-
-    if (fs.existsSync(srcPath)) {
-      let content = fs.readFileSync(srcPath, 'utf-8');
-
-      if (!content.startsWith('---')) {
-        content = `---\ntitle: "${doc.title}"\n---\n\n${content}`;
-      }
-
-      content = transformMarkdownLinks(content);
-      fs.writeFileSync(destPath, content);
-      console.log(`    ${doc.src} → ${doc.dest}`);
-    }
-  }
-}
-
-function copyModuleDocs(destDir) {
-  fs.mkdirSync(path.join(destDir, 'modules'), { recursive: true });
-
-  for (const moduleName of MODULES) {
-    const srcPath = path.join(PROJECT_ROOT, 'src', 'modules', moduleName, 'docs');
-    const moduleDest = path.join(destDir, 'modules', moduleName);
-
-    if (fs.existsSync(srcPath)) {
-      console.log(`  → Copying ${moduleName} docs...`);
-      copyDirectory(srcPath, moduleDest, [], false, moduleName);
-      const count = countMarkdownFiles(moduleDest);
-      console.log(`    ${count} markdown files`);
-    } else {
-      console.log(`  ⚠ WARNING: ${moduleName} docs not found`);
-    }
-  }
-}
-
-// =============================================================================
 // LLM File Generation
-// =============================================================================
+/**
+ * Create a concise llms.txt summary file containing project metadata, core links, and quick navigation entries for LLM consumption.
+ *
+ * Writes the file to `${outputDir}/llms.txt`.
+ *
+ * @param {string} outputDir - Destination directory where `llms.txt` will be written.
+ */
 
 function generateLlmsTxt(outputDir) {
   console.log('  → Generating llms.txt...');
@@ -220,11 +171,18 @@ function generateLlmsTxt(outputDir) {
   console.log(`    Generated llms.txt (${content.length.toLocaleString()} chars)`);
 }
 
-function generateLlmsFullTxt(outputDir) {
+/**
+ * Builds a consolidated llms-full.txt containing all Markdown files under docsDir wrapped in <document path="..."> tags for LLM consumption.
+ *
+ * Writes the generated file to outputDir/llms-full.txt. Files matching LLM_EXCLUDE_PATTERNS are skipped; read errors for individual files are logged. The combined content is validated against configured size thresholds (will exit on overflow and warn if near limit).
+ * @param {string} docsDir - Root directory containing source Markdown files; paths in the output are relative to this directory.
+ * @param {string} outputDir - Directory where llms-full.txt will be written.
+ */
+function generateLlmsFullTxt(docsDir, outputDir) {
   console.log('  → Generating llms-full.txt...');
 
   const date = new Date().toISOString().split('T')[0];
-  const files = getDocsFromSidebar();
+  const files = getAllMarkdownFiles(docsDir);
 
   const output = [
     '# BMAD Method Documentation (Full)',
@@ -244,7 +202,7 @@ function generateLlmsFullTxt(outputDir) {
       continue;
     }
 
-    const fullPath = path.join(outputDir, mdPath);
+    const fullPath = path.join(docsDir, mdPath);
     try {
       const content = readMarkdownContent(fullPath);
       output.push(`<document path="${mdPath}">`, content, '</document>', '');
@@ -266,34 +224,35 @@ function generateLlmsFullTxt(outputDir) {
   );
 }
 
-function getDocsFromSidebar() {
-  const sidebarsPath = path.join(PROJECT_ROOT, 'website', 'sidebars.js');
+/**
+ * Collects all Markdown (.md) files under a directory and returns their paths relative to a base directory.
+ * @param {string} dir - Directory to search for Markdown files.
+ * @param {string} [baseDir=dir] - Base directory used to compute returned relative paths.
+ * @returns {string[]} An array of file paths (relative to `baseDir`) for every `.md` file found under `dir`.
+ */
+function getAllMarkdownFiles(dir, baseDir = dir) {
+  const files = [];
 
-  try {
-    const sidebarContent = fs.readFileSync(sidebarsPath, 'utf-8');
-    const matches = sidebarContent.matchAll(/'([a-zA-Z0-9\-_/]+)'/g);
-    const files = [];
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const fullPath = path.join(dir, entry.name);
 
-    for (const match of matches) {
-      const docId = match[1];
-      // Skip Docusaurus keywords
-      if (docId.includes('Sidebar') || docId === 'doc' || docId === 'category') {
-        continue;
-      }
-      // Skip category labels (Title Case words without slashes like 'Workflows', 'Reference')
-      if (!docId.includes('/') && /^[A-Z][a-z]/.test(docId)) {
-        continue;
-      }
-      files.push(docId + '.md');
+    if (entry.isDirectory()) {
+      files.push(...getAllMarkdownFiles(fullPath, baseDir));
+    } else if (entry.name.endsWith('.md')) {
+      // Return relative path from baseDir
+      const relativePath = path.relative(baseDir, fullPath);
+      files.push(relativePath);
     }
-
-    return files;
-  } catch {
-    console.log('    Warning: Could not parse sidebars');
-    return [];
   }
+
+  return files;
 }
 
+/**
+ * Determine whether a file path matches any configured LLM exclusion pattern.
+ * @param {string} filePath - The file path to test.
+ * @returns {boolean} `true` if the path contains any pattern from LLM_EXCLUDE_PATTERNS, `false` otherwise.
+ */
 function shouldExcludeFromLlm(filePath) {
   return LLM_EXCLUDE_PATTERNS.some((pattern) => filePath.includes(pattern));
 }
@@ -347,6 +306,12 @@ async function generateSourcesBundle(downloadsDir) {
   console.log(`    bmad-sources.zip (${size}M)`);
 }
 
+/**
+ * Create a zip archive of the project's prompts modules and place it in the downloads directory.
+ *
+ * Creates bmad-prompts.zip from src/modules, excluding common unwanted paths, writes it to the provided downloads directory, and logs the resulting file size. If the modules directory does not exist, the function returns without creating a bundle.
+ * @param {string} downloadsDir - Destination directory where bmad-prompts.zip will be written.
+ */
 async function generatePromptsBundle(downloadsDir) {
   const modulesDir = path.join(PROJECT_ROOT, 'src', 'modules');
   if (!fs.existsSync(modulesDir)) return;
@@ -359,39 +324,31 @@ async function generatePromptsBundle(downloadsDir) {
 }
 
 // =============================================================================
-// Docusaurus Build
-// =============================================================================
-
-function backupAndReplaceDocs(mainDocs, backupDir, artifactsDir) {
-  console.log('  → Preparing docs for Docusaurus...');
-
-  if (fs.existsSync(mainDocs)) {
-    copyDirectory(mainDocs, backupDir);
-    fs.rmSync(mainDocs, { recursive: true });
-  }
-
-  copyDirectory(artifactsDir, mainDocs, ['llms.txt', 'llms-full.txt']);
-  removeZipFiles(path.join(mainDocs, 'downloads'));
-}
-
-function runDocusaurusBuild(siteDir) {
-  console.log('  → Running docusaurus build...');
-  execSync('npx docusaurus build --config website/docusaurus.config.js --out-dir ' + siteDir, {
+// Astro Build
+/**
+ * Builds the Astro site to build/site (configured in astro.config.mjs).
+ */
+function runAstroBuild() {
+  console.log('  → Running astro build...');
+  execSync('npx astro build --root website', {
     cwd: PROJECT_ROOT,
     stdio: 'inherit',
+    env: {
+      ...process.env,
+      NODE_OPTIONS: `${process.env.NODE_OPTIONS || ''} --disable-warning=MODULE_TYPELESS_PACKAGE_JSON`.trim(),
+    },
   });
 }
 
-function restoreDocs(mainDocs, backupDir) {
-  console.log('  → Restoring original docs...');
-  fs.rmSync(mainDocs, { recursive: true });
-
-  if (fs.existsSync(backupDir)) {
-    copyDirectory(backupDir, mainDocs);
-    fs.rmSync(backupDir, { recursive: true });
-  }
-}
-
+/**
+ * Copy generated artifact files into the built site directory.
+ *
+ * Copies llms.txt and llms-full.txt from the artifacts directory into the site directory.
+ * If a downloads subdirectory exists under artifacts, copies it into siteDir/downloads.
+ *
+ * @param {string} artifactsDir - Path to the build artifacts directory containing generated files.
+ * @param {string} siteDir - Path to the target site directory where artifacts should be placed.
+ */
 function copyArtifactsToSite(artifactsDir, siteDir) {
   console.log('  → Copying artifacts to site...');
 
@@ -404,28 +361,24 @@ function copyArtifactsToSite(artifactsDir, siteDir) {
   }
 }
 
-function removeZipFiles(dir) {
-  if (!fs.existsSync(dir)) return;
-
-  for (const file of fs.readdirSync(dir)) {
-    if (file.endsWith('.zip')) {
-      fs.unlinkSync(path.join(dir, file));
-    }
-  }
-}
-
 // =============================================================================
 // Build Summary
-// =============================================================================
+/**
+ * Prints a concise end-of-build summary and displays a sample listing of the final site directory.
+ *
+ * @param {string} docsDir - Path to the source documentation directory used for the build.
+ * @param {string} artifactsDir - Path to the directory containing generated artifacts (e.g., llms.txt, downloads).
+ * @param {string} siteDir - Path to the final built site directory whose contents will be listed.
+ */
 
-function printBuildSummary(consolidatedDir, artifactsDir, siteDir) {
+function printBuildSummary(docsDir, artifactsDir, siteDir) {
   console.log();
   printBanner('Build Complete!');
   console.log();
   console.log('Build artifacts:');
-  console.log(`  Consolidated docs: ${consolidatedDir}`);
-  console.log(`  Generated files:   ${artifactsDir}`);
-  console.log(`  Final site:        ${siteDir}`);
+  console.log(`  Source docs:     ${docsDir}`);
+  console.log(`  Generated files: ${artifactsDir}`);
+  console.log(`  Final site:      ${siteDir}`);
   console.log();
   console.log(`Deployable output: ${siteDir}/`);
   console.log();
@@ -449,6 +402,11 @@ function listDirectoryContents(dir) {
   }
 }
 
+/**
+ * Format a byte count into a compact human-readable string using B, K, or M units.
+ * @param {number} bytes - The number of bytes to format.
+ * @returns {string} The formatted size: bytes as `N B` (e.g. `512B`), kilobytes truncated to an integer with `K` (e.g. `2K`), or megabytes with one decimal and `M` (e.g. `1.2M`).
+ */
 function formatFileSize(bytes) {
   if (bytes > 1024 * 1024) {
     return `${(bytes / 1024 / 1024).toFixed(1)}M`;
@@ -459,8 +417,38 @@ function formatFileSize(bytes) {
 }
 
 // =============================================================================
-// File System Utilities
+// Post-build Injection
+/**
+ * Recursively collects all files with the given extension under a directory.
+ *
+ * @param {string} dir - Root directory to search.
+ * @param {string} ext - File extension to match (include the leading dot, e.g. ".md").
+ * @returns {string[]} An array of file paths for files ending with `ext` found under `dir`.
+ */
+
+function getAllFilesByExtension(dir, ext) {
+  const result = [];
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
+
+  for (const entry of entries) {
+    const fullPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      result.push(...getAllFilesByExtension(fullPath, ext));
+    } else if (entry.name.endsWith(ext)) {
+      result.push(fullPath);
+    }
+  }
+
+  return result;
+}
+
 // =============================================================================
+// File System Utilities
+/**
+ * Remove any existing build output and recreate the build directory.
+ *
+ * Ensures the configured BUILD_DIR is empty by deleting it if present and then creating a fresh directory.
+ */
 
 function cleanBuildDirectory() {
   console.log('Cleaning previous build...');
@@ -471,7 +459,15 @@ function cleanBuildDirectory() {
   fs.mkdirSync(BUILD_DIR, { recursive: true });
 }
 
-function copyDirectory(src, dest, exclude = [], transformMd = false, moduleName = null) {
+/**
+ * Recursively copies all files and subdirectories from one directory to another, creating the destination if needed.
+ *
+ * @param {string} src - Path to the source directory to copy from.
+ * @param {string} dest - Path to the destination directory to copy to.
+ * @param {string[]} [exclude=[]] - List of file or directory names (not paths) to skip while copying.
+ * @returns {boolean} `true` if the source existed and copying proceeded, `false` if the source did not exist.
+ */
+function copyDirectory(src, dest, exclude = []) {
   if (!fs.existsSync(src)) return false;
   fs.mkdirSync(dest, { recursive: true });
 
@@ -482,12 +478,7 @@ function copyDirectory(src, dest, exclude = [], transformMd = false, moduleName 
     const destPath = path.join(dest, entry.name);
 
     if (entry.isDirectory()) {
-      copyDirectory(srcPath, destPath, exclude, transformMd, moduleName);
-    } else if (entry.name.endsWith('.md')) {
-      // Always transform markdown links, use module context if provided
-      let content = fs.readFileSync(srcPath, 'utf-8');
-      content = transformMarkdownLinks(content, moduleName);
-      fs.writeFileSync(destPath, content);
+      copyDirectory(srcPath, destPath, exclude);
     } else {
       fs.copyFileSync(srcPath, destPath);
     }
@@ -495,102 +486,13 @@ function copyDirectory(src, dest, exclude = [], transformMd = false, moduleName 
   return true;
 }
 
-function transformMarkdownLinks(content, moduleName = null) {
-  // Transform HTML img src attributes for module docs images
-  content = content.replaceAll(/src="\.\/src\/modules\/([^/]+)\/docs\/images\/([^"]+)"/g, (match, mod, file) => {
-    return `src="./modules/${mod}/images/${file}"`;
-  });
-
-  return content.replaceAll(/\]\(([^)]+)\)/g, (match, url) => {
-    // src/modules/{mod}/docs/{path}.md → ./modules/{mod}/{path}.md
-    // Keeps .md - Docusaurus handles .md → page conversion
-    const docsMatch = url.match(/^\.\.?\/src\/modules\/([^/]+)\/docs\/(.+\.md)$/);
-    if (docsMatch) return `](./modules/${docsMatch[1]}/${docsMatch[2]})`;
-
-    // src/modules/{mod}/docs/ → ./modules/{mod}/
-    const docsDirMatch = url.match(/^\.\.?\/src\/modules\/([^/]+)\/docs\/$/);
-    if (docsDirMatch) return `](./modules/${docsDirMatch[1]}/)`;
-
-    // src/modules/{mod}/docs/images/{file} → ./modules/{mod}/images/{file}
-    const docsImageMatch = url.match(/^\.\.?\/src\/modules\/([^/]+)\/docs\/images\/(.+)$/);
-    if (docsImageMatch) return `](./modules/${docsImageMatch[1]}/images/${docsImageMatch[2]})`;
-
-    // src/modules/{mod}/README.md → GitHub (not in docs folder)
-    const readmeMatch = url.match(/^\.\.?\/src\/modules\/([^/]+)\/README\.md$/i);
-    if (readmeMatch) return `](${REPO_URL}/blob/main/src/modules/${readmeMatch[1]}/README.md)`;
-
-    // src/modules/* (non-docs) → GitHub
-    const srcMatch = url.match(/^\.\.?\/src\/modules\/(.+)$/);
-    if (srcMatch) return `](${REPO_URL}/tree/main/src/modules/${srcMatch[1]})`;
-
-    // Relative paths escaping docs/ folder → GitHub (when module context is known)
-    // e.g., ../workflows/foo/bar.md from within docs/ → src/modules/{mod}/workflows/foo/bar.md
-    if (moduleName) {
-      const relativeEscapeMatch = url.match(/^\.\.\/([^.][^)]+)$/);
-      if (relativeEscapeMatch && !relativeEscapeMatch[1].startsWith('src/')) {
-        const relativePath = relativeEscapeMatch[1];
-        return `](${REPO_URL}/blob/main/src/modules/${moduleName}/${relativePath})`;
-      }
-    }
-
-    // ./docs/{path}.md → ./{path}.md (docs folder contents are at root in build)
-    // Keeps .md - Docusaurus handles .md → page conversion
-    const rootDocsMatch = url.match(/^\.\/docs\/(.+\.md)$/);
-    if (rootDocsMatch) return `](./${rootDocsMatch[1]})`;
-
-    // Root docs → GitHub (not part of docs site)
-    if (url === '../README.md' || url === './README.md' || url === './project-readme') {
-      return `](${REPO_URL}/blob/main/README.md)`;
-    }
-    if (url === '../CHANGELOG.md' || url === './CHANGELOG.md' || url === './changelog') {
-      return `](${REPO_URL}/blob/main/CHANGELOG.md)`;
-    }
-
-    // Root files → GitHub (CONTRIBUTING, LICENSE, CODE_OF_CONDUCT, etc.)
-    const contributingMatch = url.match(/^(\.\.\/)?CONTRIBUTING\.md(#.*)?$/);
-    if (contributingMatch) {
-      const anchor = contributingMatch[2] || '';
-      return `](${REPO_URL}/blob/main/CONTRIBUTING.md${anchor})`;
-    }
-    if (url === 'LICENSE' || url === '../LICENSE') {
-      return `](${REPO_URL}/blob/main/LICENSE)`;
-    }
-    if (url === '.github/CODE_OF_CONDUCT.md' || url === '../.github/CODE_OF_CONDUCT.md') {
-      return `](${REPO_URL}/blob/main/.github/CODE_OF_CONDUCT.md)`;
-    }
-
-    // Other root .md files → GitHub
-    const rootFileMatch = url.match(/^\.\.\/([A-Z][^/]+\.md)$/);
-    if (rootFileMatch) return `](${REPO_URL}/blob/main/${rootFileMatch[1]})`;
-
-    // Cross-module doc links: ../../{mod}/docs/{path}.md → ../{mod}/{path}.md
-    // Fixes path structure but keeps .md (Docusaurus handles .md → page conversion)
-    const crossModuleDocsMatch = url.match(/^\.\.\/\.\.\/([^/]+)\/docs\/(.+\.md)$/);
-    if (crossModuleDocsMatch) return `](../${crossModuleDocsMatch[1]}/${crossModuleDocsMatch[2]})`;
-
-    // Root-level folders (samples/) → GitHub
-    const rootFolderMatch = url.match(/^\.\.\/((samples)\/.*)/);
-    if (rootFolderMatch) return `](${REPO_URL}/blob/main/${rootFolderMatch[1]})`;
-
-    return match;
-  });
-}
-
-function countMarkdownFiles(dir) {
-  let count = 0;
-  if (!fs.existsSync(dir)) return 0;
-
-  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-    const fullPath = path.join(dir, entry.name);
-    if (entry.isDirectory()) {
-      count += countMarkdownFiles(fullPath);
-    } else if (entry.name.endsWith('.md')) {
-      count++;
-    }
-  }
-  return count;
-}
-
+/**
+ * Create a ZIP archive of a directory, optionally excluding entries that match given substrings.
+ * @param {string} sourceDir - Path to the source directory to archive.
+ * @param {string} outputPath - Path to write the resulting ZIP file.
+ * @param {string[]} [exclude=[]] - Array of substrings; any entry whose path includes one of these substrings will be omitted.
+ * @returns {Promise<void>} Resolves when the archive has been fully written and closed, rejects on error.
+ */
 function createZipArchive(sourceDir, outputPath, exclude = []) {
   return new Promise((resolve, reject) => {
     const output = fs.createWriteStream(outputPath);
@@ -624,8 +526,34 @@ function printHeader(title) {
   console.log('└' + '─'.repeat(62) + '┘');
 }
 
+/**
+ * Prints a centered decorative ASCII banner to the console using the provided title.
+ * @param {string} title - Text to display centered inside the banner. */
 function printBanner(title) {
   console.log('╔' + '═'.repeat(62) + '╗');
   console.log(`║${title.padStart(31 + title.length / 2).padEnd(62)}║`);
   console.log('╚' + '═'.repeat(62) + '╝');
+}
+
+// =============================================================================
+// Link Checking
+/**
+ * Verify internal documentation links by running the link-checking script.
+ *
+ * Executes the Node script tools/check-doc-links.js from the project root and
+ * exits the process with code 1 if the check fails.
+ */
+
+function checkDocLinks() {
+  printHeader('Checking documentation links');
+
+  try {
+    execSync('node tools/check-doc-links.js', {
+      cwd: PROJECT_ROOT,
+      stdio: 'inherit',
+    });
+  } catch {
+    console.error('\n  \u001B[31m✗\u001B[0m Link check failed - fix broken links before building\n');
+    process.exit(1);
+  }
 }

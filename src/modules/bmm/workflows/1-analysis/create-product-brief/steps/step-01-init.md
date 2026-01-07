@@ -2,17 +2,12 @@
 name: 'step-01-init'
 description: 'Initialize the product brief workflow by detecting continuation state and setting up the document'
 
-# Path Definitions
-workflow_path: '{project-root}/_bmad/bmm/workflows/1-analysis/create-product-brief'
-
 # File References
-thisStepFile: '{workflow_path}/steps/step-01-init.md'
-nextStepFile: '{workflow_path}/steps/step-02-vision.md'
-workflowFile: '{workflow_path}/workflow.md'
+nextStepFile: './step-02-vision.md'
 outputFile: '{planning_artifacts}/product-brief-{{project_name}}-{{date}}.md'
 
 # Template References
-productBriefTemplate: '{workflow_path}/product-brief.template.md'
+productBriefTemplate: '../product-brief.template.md'
 ---
 
 # Step 1: Product Brief Initialization
@@ -78,7 +73,7 @@ If the document exists and has frontmatter with `stepsCompleted`:
 
 **Continuation Protocol:**
 
-- **STOP immediately** and load `{workflow_path}/steps/step-01b-continue.md`
+- **STOP immediately** and load `./step-01b-continue.md`
 - Do not proceed with any initialization tasks
 - Let step-01b handle all continuation logic
 - This is an auto-proceed situation - no user choice needed

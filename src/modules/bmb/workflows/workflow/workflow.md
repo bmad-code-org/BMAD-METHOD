@@ -1,6 +1,6 @@
 ---
-name: create-workflow
-description: Create structured standalone workflows using markdown-based step architecture (tri-modal: create, validate, edit)
+name: workflow
+description: "Create structured standalone workflows using markdown-based step architecture (tri-modal: create, validate, edit)"
 web_bundle: true
 ---
 
