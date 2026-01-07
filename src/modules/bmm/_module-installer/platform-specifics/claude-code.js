@@ -1,3 +1,5 @@
+const fs = require('fs-extra');
+const path = require('node:path');
 const chalk = require('chalk');
 
 /**
@@ -11,19 +13,57 @@ const chalk = require('chalk');
  * @returns {Promise<boolean>} - Success status
  */
 async function install(options) {
-  const { logger, platformInfo } = options;
-  // projectRoot and config available for future use
+  const { projectRoot, logger, platformInfo } = options;
 
   try {
     const platformName = platformInfo ? platformInfo.name : 'Claude Code';
     logger.log(chalk.cyan(`  BMM-${platformName} Specifics installed`));
 
-    // Add Claude Code specific BMM configurations here
-    // For example:
-    // - Custom command configurations
-    // - Agent party configurations
-    // - Workflow integrations
-    // - Template mappings
+    // Create .claude-commands directory
+    const commandsDir = path.join(projectRoot, '.claude-commands');
+    await fs.ensureDir(commandsDir);
+
+    // Install batch-super-dev slash command
+    const batchSuperDevCommand = `---
+name: batch-super-dev
+description: "Interactive batch selector for super-dev-pipeline - select and process multiple ready-for-dev stories with full quality gates"
+group: implementation
+---
+
+IT IS CRITICAL THAT YOU FOLLOW THESE STEPS - while staying in character as the current agent persona you may have loaded:
+
+<steps CRITICAL="TRUE">
+1. Always LOAD the FULL @_bmad/core/tasks/workflow.xml
+2. READ its entire contents - this is the CORE OS for EXECUTING the specific workflow-config @_bmad/bmm/workflows/4-implementation/batch-super-dev/workflow.yaml
+3. Pass the yaml path _bmad/bmm/workflows/4-implementation/batch-super-dev/workflow.yaml as 'workflow-config' parameter to the workflow.xml instructions
+4. Follow workflow.xml instructions EXACTLY as written to process and follow the specific workflow config and its instructions
+5. Save outputs after EACH section when generating any documents from templates
+</steps>
+`;
+
+    const batchCommandPath = path.join(commandsDir, 'batch-super-dev.md');
+    await fs.writeFile(batchCommandPath, batchSuperDevCommand);
+    logger.log(chalk.green(`    ✓ Created /batch-super-dev command`));
+
+    // Install super-dev-pipeline slash command
+    const superDevPipelineCommand = `---
+description: 'Step-file workflow with anti-vibe-coding enforcement - works for greenfield AND brownfield development'
+---
+
+IT IS CRITICAL THAT YOU FOLLOW THESE STEPS - while staying in character as the current agent persona you may have loaded:
+
+<steps CRITICAL="TRUE">
+1. Always LOAD the FULL @_bmad/core/tasks/workflow.xml
+2. READ its entire contents - this is the CORE OS for EXECUTING the specific workflow-config @_bmad/bmm/workflows/4-implementation/super-dev-pipeline/workflow.yaml
+3. Pass the yaml path _bmad/bmm/workflows/4-implementation/super-dev-pipeline/workflow.yaml as 'workflow-config' parameter to the workflow.xml instructions
+4. Follow workflow.xml instructions EXACTLY as written to process and follow the specific workflow config and its instructions
+5. Save outputs after EACH section when generating any documents from templates
+</steps>
+`;
+
+    const superDevCommandPath = path.join(commandsDir, 'super-dev-pipeline.md');
+    await fs.writeFile(superDevCommandPath, superDevPipelineCommand);
+    logger.log(chalk.green(`    ✓ Created /super-dev-pipeline command`));
 
     return true;
   } catch (error) {

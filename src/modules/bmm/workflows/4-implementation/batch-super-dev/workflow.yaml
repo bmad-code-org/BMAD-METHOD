@@ -1,0 +1,47 @@
+name: batch-super-dev
+description: "Interactive batch selector for super-dev-pipeline - select multiple ready-for-dev stories and process them sequentially with full quality gates. Includes smart story validation and automatic creation/regeneration."
+author: "BMad"
+version: "1.2.0"
+
+# Critical variables from config
+config_source: "{project-root}/_bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+sprint_artifacts: "{config_source}:sprint_artifacts"
+communication_language: "{config_source}:communication_language"
+date: system-generated
+
+# Workflow paths
+installed_path: "{project-root}/_bmad/bmm/workflows/4-implementation/batch-super-dev"
+instructions: "{installed_path}/instructions.md"
+
+# State management
+sprint_status: "{sprint_artifacts}/sprint-status.yaml"
+batch_log: "{sprint_artifacts}/batch-super-dev-{date}.log"
+
+# Variables
+filter_by_epic: "" # Optional: Filter stories by epic number (e.g., "3" for only Epic 3 stories)
+max_stories: 20 # Safety limit - won't process more than this in one batch
+pause_between_stories: 5 # Seconds to pause between stories (allows monitoring, prevents rate limits)
+
+# Super-dev-pipeline invocation settings
+super_dev_settings:
+  mode: "batch" # Always use batch mode for autonomous execution
+  workflow_path: "{project-root}/_bmad/bmm/workflows/4-implementation/super-dev-pipeline"
+
+# Story validation settings (NEW in v1.2.0)
+validation:
+  enabled: true # Validate story files before processing
+  auto_create_missing: false # If true, auto-create without prompting (use with caution)
+  auto_regenerate_invalid: false # If true, auto-regenerate without prompting (use with caution)
+  min_sections: 12 # BMAD format requires all 12 sections
+  min_current_state_words: 100 # Current State must have substantial content
+  require_gap_analysis: true # Current State must have ✅/❌ markers
+  backup_before_regenerate: true # Create .backup file before regenerating
+
+# Execution settings
+execution:
+  continue_on_failure: true # Keep processing remaining stories if one fails
+  display_progress: true # Show running summary after each story
+  save_state: true # Save progress to resume if interrupted
+
+standalone: true
