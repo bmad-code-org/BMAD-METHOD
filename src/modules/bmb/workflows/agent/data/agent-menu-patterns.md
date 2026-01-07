@@ -54,7 +54,7 @@ For module agents referencing external workflow files.
   description: '[CP] Create Product Requirements Document'
 
 - trigger: GB or fuzzy match on brainstorm
-  exec: '{project-root}/_bmad/core/workflows/brainstorming/workflow.yaml'
+  exec: '{project-root}/_bmad/core/workflows/brainstorming/workflow.md'
   description: '[GB] Guided brainstorming session'
 
 # Planned but unimplemented
@@ -112,11 +112,11 @@ menu:
 
 ```yaml
 # ✅ CORRECT
-exec: '{project-root}/_bmad/core/workflows/brainstorming/workflow.yaml'
+exec: '{project-root}/_bmad/core/workflows/brainstorming/workflow.md'
 data: '{project-root}/_data/metrics.csv'
 
 # ❌ WRONG
-exec: '../../../core/workflows/brainstorming/workflow.yaml'
+exec: '../../../core/workflows/brainstorming/workflow.md'
 ```
 
 **Available variables:**
@@ -213,8 +213,8 @@ menu:
     description: '[WI] Initialize workflow path'
 
   - trigger: BS or fuzzy match on brainstorm
-    exec: '{project-root}/_bmad/core/workflows/brainstorming/workflow.yaml'
-    description: '[BS] Guided brainstorming'
+    exec: '{project-root}/_bmad/core/workflows/brainstorming/workflow.md'
+    description: '[BS] Guided brainstorming [K,T,A,B,C]'
 
   - trigger: CP or fuzzy match on create-prd
     exec: '{project-root}/_bmad/bmm/workflows/create-prd/workflow.md'

@@ -24,7 +24,7 @@ agent:
       description: "[TS] Architect a technical spec with implementation-ready stories (Required first step)"
 
     - trigger: QD or fuzzy match on quick-dev
-      workflow: "{project-root}/_bmad/bmm/workflows/bmad-quick-flow/quick-dev/workflow.yaml"
+      workflow: "{project-root}/_bmad/bmm/workflows/bmad-quick-flow/quick-dev/workflow.md"
       description: "[QD] Implement the tech spec end-to-end solo (Core of Quick Flow)"
 
     - trigger: CR or fuzzy match on code-review

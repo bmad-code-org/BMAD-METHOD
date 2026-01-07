@@ -14,7 +14,7 @@ outputFile: '{output_folder}/brainstorming-session-{date}.md'
 # Context Files
 gameContext: '{workflow_path}/game-context.md'
 gameBrainMethods: '{workflow_path}/game-brain-methods.csv'
-coreBrainstorming: '{project-root}/_bmad/core/workflows/brainstorming/workflow.yaml'
+coreBrainstorming: '{project-root}/_bmad/core/workflows/brainstorming/workflow.md'
 ---
 
 # Step 2: Load Context
