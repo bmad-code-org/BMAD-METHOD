@@ -91,6 +91,52 @@ Count:
 - Unchecked tasks: `{unchecked_task_count}`
 - Checked tasks: `{checked_task_count}`
 
+### 4.5 Pre-Flight Bailout Check (NEW v1.3.0)
+
+**Check for early bailout conditions before investing more tokens:**
+
+```
+If total_task_count == 0:
+  Display:
+  ⚠️ EARLY BAILOUT: No Tasks Found
+
+  Story file exists but has no tasks in Tasks/Subtasks section.
+  - Story may be incomplete or malformed
+  - Run create-story or validate-create-story first
+
+  HALT - Nothing to implement
+
+If unchecked_task_count == 0:
+  Display:
+  ✅ EARLY BAILOUT: Story Already Complete
+
+  All {checked_task_count} tasks are already marked complete.
+  - No implementation work required
+  - Story may need status update to "review" or "done"
+
+  {if batch mode: Continue to next story}
+  {if interactive mode: HALT - Story complete}
+
+If story file missing required sections (Tasks, Acceptance Criteria):
+  Display:
+  ⚠️ EARLY BAILOUT: Invalid Story Format
+
+  Story file is missing required sections:
+  - Missing: {missing_sections}
+
+  Run validate-create-story to fix the story format.
+
+  HALT - Cannot proceed with invalid story
+```
+
+**If all bailout checks pass:**
+```
+✅ Pre-flight checks passed
+   - Story valid: {total_task_count} tasks
+   - Work remaining: {unchecked_task_count} unchecked
+   - Ready for implementation
+```
+
 ### 5. Load Project Context
 
 Read `**/project-context.md`:
@@ -101,7 +147,49 @@ Read `**/project-context.md`:
 
 Cache in memory for use across steps.
 
-### 6. Detect Development Mode
+### 6. Apply Complexity Routing (NEW v1.2.0)
+
+**Check complexity_level parameter:**
+- `micro`: Lightweight path - skip pre-gap analysis (step 2) and code review (step 5)
+- `standard`: Full pipeline - all steps
+- `complex`: Full pipeline with warnings
+
+**Determine skip_steps based on complexity:**
+```
+If complexity_level == "micro":
+  skip_steps = [2, 5]
+  pipeline_mode = "lightweight"
+
+  Display:
+  🚀 MICRO COMPLEXITY DETECTED
+
+  Lightweight path enabled:
+  - ⏭️ Skipping Pre-Gap Analysis (low risk)
+  - ⏭️ Skipping Code Review (simple changes)
+  - Estimated token savings: 50-70%
+
+If complexity_level == "complex":
+  skip_steps = []
+  pipeline_mode = "enhanced"
+
+  Display:
+  🔒 COMPLEX STORY DETECTED
+
+  Enhanced validation enabled:
+  - Full pipeline with all quality gates
+  - Consider splitting if story fails
+
+  ⚠️ Warning: This story has high-risk elements.
+  Proceeding with extra attention.
+
+If complexity_level == "standard":
+  skip_steps = []
+  pipeline_mode = "standard"
+```
+
+Store `skip_steps` and `pipeline_mode` in state file.
+
+### 7. Detect Development Mode
 
 **Check File List section in story:**
 
@@ -140,7 +228,7 @@ done
 - `new_count == 0` → **brownfield** (all existing files)
 - Both > 0 → **hybrid** (mix of new and existing)
 
-### 7. Display Initialization Summary
+### 8. Display Initialization Summary
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -150,6 +238,7 @@ done
 Story: {story_title}
 File: {story_file}
 Mode: {mode} (interactive|batch)
+Complexity: {complexity_level} → {pipeline_mode} path
 
 Development Type: {greenfield|brownfield|hybrid}
 - Existing files: {existing_count}
@@ -164,19 +253,23 @@ Tasks:
 
 Pipeline Steps:
 1. ✅ Initialize (current)
-2. ⏳ Pre-Gap Analysis - Validate tasks
+2. {⏭️ SKIP|⏳} Pre-Gap Analysis - Validate tasks {if micro: "(skipped - low risk)"}
 3. ⏳ Implement - {TDD|Refactor|Hybrid}
 4. ⏳ Post-Validation - Verify completion
-5. ⏳ Code Review - Find 3-10 issues
+5. {⏭️ SKIP|⏳} Code Review - Find issues {if micro: "(skipped - simple changes)"}
 6. ⏳ Complete - Commit + push
 7. ⏳ Summary - Audit trail
+
+{if pipeline_mode == "lightweight":
+  🚀 LIGHTWEIGHT PATH: Steps 2 and 5 will be skipped (50-70% token savings)
+}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ⚠️  ANTI-VIBE-CODING ENFORCEMENT ACTIVE
 
 This workflow uses step-file architecture to ensure:
-- ✅ No skipping steps
+- ✅ No skipping steps (except complexity-based routing)
 - ✅ No optimizing sequences
 - ✅ No looking ahead
 - ✅ No vibe coding even at 200K tokens
@@ -186,7 +279,7 @@ You will follow each step file PRECISELY.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
-### 8. Initialize State File
+### 9. Initialize State File
 
 Create state file at `{sprint_artifacts}/super-dev-state-{story_id}.yaml`:
 
@@ -197,9 +290,15 @@ story_file: "{story_file}"
 mode: "{mode}"
 development_type: "{greenfield|brownfield|hybrid}"
 
+# Complexity routing (NEW v1.2.0)
+complexity:
+  level: "{complexity_level}"  # micro | standard | complex
+  pipeline_mode: "{pipeline_mode}"  # lightweight | standard | enhanced
+  skip_steps: {skip_steps}  # e.g., [2, 5] for micro
+
 stepsCompleted: [1]
 lastStep: 1
-currentStep: 2
+currentStep: 2  # Or 3 if step 2 is skipped
 status: "in_progress"
 
 started_at: "{timestamp}"
@@ -220,24 +319,24 @@ steps:
     status: completed
     completed_at: "{timestamp}"
   step-02-pre-gap-analysis:
-    status: pending
+    status: {pending|skipped}  # skipped if complexity == micro
   step-03-implement:
     status: pending
   step-04-post-validation:
     status: pending
   step-05-code-review:
-    status: pending
+    status: {pending|skipped}  # skipped if complexity == micro
   step-06-complete:
     status: pending
   step-07-summary:
     status: pending
 ```
 
-### 9. Display Menu (Interactive) or Proceed (Batch)
+### 10. Display Menu (Interactive) or Proceed (Batch)
 
 **Interactive Mode Menu:**
 ```
-[C] Continue to Pre-Gap Analysis
+[C] Continue to {next step name}
 [H] Halt pipeline
 ```
 
@@ -245,8 +344,18 @@ steps:
 
 ## CRITICAL STEP COMPLETION
 
+**Determine next step based on complexity routing:**
+
+```
+If 2 in skip_steps (micro complexity):
+  nextStepFile = '{workflow_path}/steps/step-03-implement.md'
+  Display: "⏭️ Skipping Pre-Gap Analysis (micro complexity) → Proceeding to Implementation"
+Else:
+  nextStepFile = '{workflow_path}/steps/step-02-pre-gap-analysis.md'
+```
+
 **ONLY WHEN** initialization is complete,
-load and execute `{nextStepFile}` for pre-gap analysis.
+load and execute `{nextStepFile}`.
 
 ---
 

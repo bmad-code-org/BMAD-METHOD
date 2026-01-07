@@ -32,11 +32,12 @@ Implement all unchecked tasks using appropriate methodology:
 
 ### Implementation Principles
 
-- **ONE TASK AT A TIME** - Never batch multiple tasks
-- **RUN TESTS FREQUENTLY** - After each significant change
+- **DEFAULT: ONE TASK AT A TIME** - Execute tasks individually unless smart batching applies
+- **SMART BATCHING EXCEPTION** - Low-risk patterns (package installs, imports) may batch
+- **RUN TESTS FREQUENTLY** - After each task or batch completion
 - **FOLLOW PROJECT PATTERNS** - Never invent new patterns
 - **NO VIBE CODING** - Follow the sequence exactly
-- **VERIFY EACH TASK** - Check works before moving to next
+- **VERIFY BEFORE PROCEEDING** - Confirm success before next task/batch
 
 ### Adaptive Methodology
 

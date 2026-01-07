@@ -338,11 +338,13 @@ All work verified. Proceeding to Code Review...
 
 **Interactive Mode Menu (only if no false positives):**
 ```
-[C] Continue to Code Review
+[C] Continue to {next step based on complexity: Code Review | Complete}
 [V] Run verification again
 [T] Run tests again
 [H] Halt pipeline
 ```
+
+{if micro complexity: "⏭️ Code Review will be skipped (lightweight path)"}
 
 **Batch Mode:**
 - Auto re-run implementation if false positives
@@ -380,12 +382,23 @@ read("{file_path}")
 
 ## CRITICAL STEP COMPLETION
 
-**ONLY WHEN** [all tasks verified AND zero false positives],
-load and execute `{nextStepFile}` for code review.
-
 **IF** [false positives detected],
 load and execute `{prevStepFile}` to complete missing work,
 then RE-RUN this step.
+
+**ONLY WHEN** [all tasks verified AND zero false positives]:
+
+**Determine next step based on complexity routing:**
+
+```
+If 5 in skip_steps (micro complexity):
+  nextStepFile = '{workflow_path}/steps/step-06-complete.md'
+  Display: "⏭️ Skipping Code Review (micro complexity) → Proceeding to Complete"
+Else:
+  nextStepFile = '{workflow_path}/steps/step-05-code-review.md'
+```
+
+Load and execute `{nextStepFile}`.
 
 ---
 

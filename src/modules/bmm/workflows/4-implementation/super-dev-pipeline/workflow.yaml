@@ -1,7 +1,7 @@
 name: super-dev-pipeline
-description: "Step-file architecture with smart batching - works for both greenfield and brownfield development with disciplined execution and intelligent task grouping"
+description: "Step-file architecture with complexity-based routing and smart batching. Micro stories get lightweight path, standard/complex get full quality gates."
 author: "BMad"
-version: "1.1.0" # Added smart batching feature
+version: "1.2.0" # Added complexity-based routing
 
 # Critical variables from config
 config_source: "{project-root}/_bmad/bmm/config.yaml"
@@ -19,6 +19,24 @@ checklists_path: "{installed_path}/checklists"
 # State management
 state_file: "{sprint_artifacts}/super-dev-state-{{story_id}}.yaml"
 audit_trail: "{sprint_artifacts}/audit-super-dev-{{story_id}}-{{date}}.yaml"
+
+# Complexity level (passed from batch-super-dev or set manually)
+# Controls which pipeline steps to execute
+complexity_level: "standard" # micro | standard | complex
+
+# Complexity-based step skipping (NEW v1.2.0)
+complexity_routing:
+  micro:
+    skip_steps: [2, 5] # Skip pre-gap analysis and code review
+    description: "Lightweight path for simple stories (≤3 tasks, low risk)"
+  standard:
+    skip_steps: [] # Full pipeline
+    description: "Normal path with all quality gates"
+  complex:
+    skip_steps: [] # Full pipeline + warnings
+    description: "Enhanced path for high-risk stories"
+    warn_before_start: true
+    suggest_split: true
 
 # Workflow modes
 modes:

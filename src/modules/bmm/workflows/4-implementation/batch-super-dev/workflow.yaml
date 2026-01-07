@@ -1,7 +1,7 @@
 name: batch-super-dev
-description: "Interactive batch selector for super-dev-pipeline - select multiple ready-for-dev stories and process them sequentially with full quality gates. Includes smart story validation and automatic creation/regeneration."
+description: "Interactive batch selector for super-dev-pipeline with complexity-based routing. Micro stories get lightweight path, standard stories get full pipeline, complex stories get enhanced validation."
 author: "BMad"
-version: "1.2.0"
+version: "1.3.0"
 
 # Critical variables from config
 config_source: "{project-root}/_bmad/bmm/config.yaml"
@@ -37,6 +37,29 @@ validation:
   min_current_state_words: 100 # Current State must have substantial content
   require_gap_analysis: true # Current State must have ✅/❌ markers
   backup_before_regenerate: true # Create .backup file before regenerating
+
+# Story complexity scoring (NEW in v1.3.0)
+# Routes stories to appropriate pipeline based on complexity
+complexity:
+  enabled: true
+  thresholds:
+    micro: # Lightweight path: skip gap analysis + code review
+      max_tasks: 3
+      max_files: 5
+      risk_keywords: [] # No high-risk keywords allowed
+    standard: # Normal path: full pipeline
+      max_tasks: 15
+      max_files: 30
+      risk_keywords: ["api", "service", "component", "feature"]
+    complex: # Enhanced path: extra validation, consider splitting
+      min_tasks: 16
+      risk_keywords: ["auth", "security", "migration", "database", "payment", "encryption"]
+
+  # Risk keyword scoring (adds to complexity)
+  risk_weights:
+    high: ["auth", "security", "payment", "encryption", "migration", "database", "schema"]
+    medium: ["api", "integration", "external", "third-party", "cache"]
+    low: ["ui", "style", "config", "docs", "test"]
 
 # Execution settings
 execution:

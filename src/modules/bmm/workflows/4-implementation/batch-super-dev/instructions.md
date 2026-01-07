@@ -215,6 +215,65 @@ Run `/bmad:bmm:workflows:sprint-status` to see status.
   </output>
 </step>
 
+<step n="2.6" goal="Score story complexity for pipeline routing (NEW v1.3.0)">
+  <output>
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📊 SCORING STORY COMPLEXITY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  </output>
+
+  <iterate>For each validated story:</iterate>
+
+  <substep n="2.6a" title="Analyze story complexity">
+    <action>Read story file: {{file_path}}</action>
+
+    <action>Count unchecked tasks ([ ]) in Tasks/Subtasks section → task_count</action>
+    <action>Extract file paths mentioned in tasks → file_count</action>
+    <action>Scan story title and task descriptions for risk keywords</action>
+
+    <action>Calculate complexity score:
+      - Base score = task_count
+      - Add 5 for each HIGH risk keyword (auth, security, payment, migration, database, schema)
+      - Add 2 for each MEDIUM risk keyword (api, integration, external, cache)
+      - Add 0 for LOW risk keywords (ui, style, config, docs, test)
+    </action>
+
+    <action>Assign complexity level:
+      - MICRO: task_count ≤ 3 AND complexity_score ≤ 5 AND no HIGH risk keywords
+      - COMPLEX: task_count ≥ 16 OR complexity_score ≥ 20 OR has HIGH risk keywords
+      - STANDARD: everything else
+    </action>
+
+    <action>Store complexity_level for story: {{story_key}}.complexity = {level, score, task_count, risk_keywords}</action>
+  </substep>
+
+  <action>Group stories by complexity level</action>
+
+  <output>
+📊 **Complexity Analysis Complete**
+
+{{#each complexity_groups}}
+**{{level}} Stories ({{count}}):**
+{{#each stories}}
+  - {{story_key}}: {{task_count}} tasks, score {{score}}{{#if risk_keywords}}, risk: {{risk_keywords}}{{/if}}
+{{/each}}
+{{/each}}
+
+---
+**Pipeline Routing:**
+- 🚀 **MICRO** ({{micro_count}}): Lightweight path - skip gap analysis + code review
+- ⚙️ **STANDARD** ({{standard_count}}): Full pipeline with all quality gates
+- 🔒 **COMPLEX** ({{complex_count}}): Enhanced validation + consider splitting
+
+{{#if complex_count > 0}}
+⚠️ **Warning:** {{complex_count}} complex stories detected. Consider:
+- Breaking into smaller stories before processing
+- Running these separately with extra attention
+{{/if}}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  </output>
+</step>
+
 <step n="3" goal="Get user selection">
   <ask>
 **Select stories to process:**

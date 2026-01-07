@@ -138,6 +138,28 @@
     <critical>🔍 MANDATORY GAP ANALYSIS - Validate draft tasks against actual codebase reality!</critical>
     <note>This step ensures tasks reflect current codebase state, preventing duplicate implementations and missed dependencies.</note>
 
+    <!-- OPTIMIZATION: Skip if gap analysis was recently performed (NEW v1.3.0) -->
+    <check if="story file has 'Gap Analysis' section with ✅/❌ markers">
+      <action>Extract timestamp from Gap Analysis section</action>
+      <check if="gap analysis timestamp is less than 24 hours old">
+        <output>⚡ **Gap Analysis Already Complete** ({{gap_analysis_timestamp}})
+
+          Story was recently validated against codebase. Skipping re-analysis.
+          - What Exists: {{existing_summary}}
+          - What's Missing: {{missing_summary}}
+
+          Proceeding to implementation...
+        </output>
+        <goto step="2" />
+      </check>
+    </check>
+
+    <!-- CHECK FOR SKIP FLAG - Used when invoked from batch-super-dev after validation -->
+    <check if="{{skip_gap_analysis}} == true">
+      <output>⚡ **Skipping Gap Analysis** (story pre-validated by batch-super-dev)</output>
+      <goto step="2" />
+    </check>
+
     <!-- Extract story context for gap analysis -->
     <action>Extract story requirements, acceptance criteria, and draft tasks from story file</action>
     <action>Identify technical areas mentioned in tasks (files, classes, functions, services, components)</action>

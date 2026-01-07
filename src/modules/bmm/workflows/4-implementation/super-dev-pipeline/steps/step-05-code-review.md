@@ -36,6 +36,45 @@ Perform adversarial code review:
 5. Fix all issues
 6. Verify tests still pass
 
+### Multi-Agent Review Enhancement (NEW v1.3.0)
+
+**Check complexity level from state file:**
+
+```
+If complexity_level == "complex":
+  Display:
+  🔒 COMPLEX STORY - Enhanced Review Recommended
+
+  This story involves high-risk changes. Consider using:
+  /multi-agent-review for multi-perspective code review
+
+  Multi-agent review provides:
+  - Architecture review by architect-reviewer agent
+  - Security audit by auditor-security agent
+  - Performance analysis by optimizer-performance agent
+  - Dynamic agent selection based on changed files
+
+  [M] Use multi-agent review (recommended for complex)
+  [S] Use standard adversarial review
+  [B] Use both (most thorough)
+
+If complexity_level == "standard" AND mode == "interactive":
+  Display:
+  ⚙️ STANDARD STORY - Review Options
+
+  [S] Standard adversarial review (default)
+  [M] Multi-agent review (optional enhancement)
+```
+
+**If multi-agent review selected:**
+- Invoke `/multi-agent-review` slash command
+- Capture review findings
+- Merge with standard review categories
+- Continue with issue fixing
+
+**If standard review selected:**
+- Continue with adversarial review below
+
 ## MANDATORY EXECUTION RULES
 
 ### Adversarial Requirements
