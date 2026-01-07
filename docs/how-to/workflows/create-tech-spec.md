@@ -1,9 +1,8 @@
 ---
-sidebar_label: Create Tech Spec
+title: "How to Create a Tech Spec"
 description: How to create a technical specification using Quick Spec Flow
 ---
 
-# How to Create a Tech Spec
 
 Use the `tech-spec` workflow for Quick Flow projects to go directly from idea to implementation-ready specification.
 

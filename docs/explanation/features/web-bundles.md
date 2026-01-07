@@ -1,4 +1,7 @@
-# Web Bundles
+---
+title: "Web Bundles"
+---
+
 
 Use BMAD agents in Gemini Gems and Custom GPTs.
 

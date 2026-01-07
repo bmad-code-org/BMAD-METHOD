@@ -1,4 +1,7 @@
-# Advanced Elicitation
+---
+title: "Advanced Elicitation"
+---
+
 
 **Push the LLM to rethink its work through 50+ reasoning methods—essentially, LLM brainstorming.**
 

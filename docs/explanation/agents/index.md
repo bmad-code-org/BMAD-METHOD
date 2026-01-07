@@ -1,9 +1,8 @@
 ---
-sidebar_label: Agents
+title: "Understanding Agents"
 description: Understanding BMAD agents and their roles
 ---
 
-# Understanding Agents
 
 Comprehensive guides to BMAD's AI agents - their roles, capabilities, and how to work with them effectively.
 

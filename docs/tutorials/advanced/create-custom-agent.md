@@ -1,8 +1,11 @@
-# Create a Custom Agent
+---
+title: "Create a Custom Agent"
+---
+
 
 Build your own AI agent with a unique personality, specialized commands, and optional persistent memory using the BMad Builder workflow.
 
-:::info[BMB Module]
+:::note[BMB Module]
 This tutorial uses the **BMad Builder (BMB)** module. Make sure you have BMAD installed with the BMB module enabled.
 :::
 
@@ -14,7 +17,7 @@ This tutorial uses the **BMad Builder (BMB)** module. Make sure you have BMAD in
 - Package and install your custom agent
 - Test and iterate on your agent's behavior
 
-:::info[Prerequisites]
+:::note[Prerequisites]
 - BMAD installed with the BMB module
 - An idea for what you want your agent to do
 - About 15-30 minutes for your first agent
@@ -77,7 +80,7 @@ Your agent's personality is defined by four fields:
 
 Keep each field focused on its purpose. The role isn't personality; the identity isn't job description.
 
-:::info[Writing Great Principles]
+:::note[Writing Great Principles]
 The first principle should "activate" the agent's expertise:
 
 - **Weak:** "Be helpful and accurate"

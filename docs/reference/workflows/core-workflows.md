@@ -1,4 +1,7 @@
-# Core Workflows
+---
+title: "Core Workflows"
+---
+
 
 Core Workflows are domain-agnostic workflows that can be utilized by any BMAD-compliant module, workflow, or agent. These workflows are installed by default and available at any time.
 

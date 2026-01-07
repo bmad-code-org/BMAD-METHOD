@@ -1,4 +1,7 @@
-# BMGD Workflows Guide
+---
+title: "BMGD Workflows Guide"
+---
+
 
 Complete reference for all BMGD workflows organized by development phase.
 

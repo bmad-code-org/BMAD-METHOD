@@ -1,9 +1,8 @@
 ---
-sidebar_label: Install BMAD
+title: "How to Install BMAD"
 description: Step-by-step guide to installing BMAD in your project
 ---
 
-# How to Install BMAD
 
 Complete guide to installing BMAD in your project.
 
@@ -112,10 +111,8 @@ communication_language: english
 
 Install Node.js 20+:
 ```bash
-# macOS with Homebrew
 brew install node
 
-# Or download from nodejs.org
 ```
 
 ### "Permission denied"

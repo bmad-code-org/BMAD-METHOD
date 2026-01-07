@@ -1,9 +1,8 @@
 ---
-sidebar_label: Add Feature
+title: "How to Add a Feature to an Existing Project"
 description: How to add new features to an existing brownfield project
 ---
 
-# How to Add a Feature to an Existing Project
 
 Add new functionality to your brownfield codebase while respecting existing patterns and architecture.
 

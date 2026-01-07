@@ -1,4 +1,7 @@
-# Workflows
+---
+title: "Workflows"
+---
+
 
 Workflows are like prompts on steroids. They harness the untapped power and control of LLMs through progressive disclosure—breaking complex tasks into focused steps that execute sequentially. Instead of random AI slop where you hope for the best, workflows give you repeatable, reliable, high-quality outputs.
 

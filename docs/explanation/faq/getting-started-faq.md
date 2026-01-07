@@ -1,9 +1,8 @@
 ---
-sidebar_label: Getting Started
+title: "Getting Started FAQ"
 description: Common questions about getting started with the BMad Method
 ---
 
-# Getting Started FAQ
 
 Quick answers to common questions about getting started with the BMad Method.
 

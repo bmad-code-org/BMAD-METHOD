@@ -1,9 +1,8 @@
 ---
-sidebar_label: Create UX Design
+title: "How to Create a UX Design"
 description: How to create UX specifications using the BMad Method
 ---
 
-# How to Create a UX Design
 
 Use the `create-ux-design` workflow to create UX specifications for projects where user experience is a primary differentiator.
 

@@ -1,9 +1,8 @@
 ---
-sidebar_label: Implement Story
+title: "How to Implement a Story"
 description: How to implement a story using the dev-story workflow
 ---
 
-# How to Implement a Story
 
 Use the `dev-story` workflow to implement a story with tests following the architecture and conventions.
 

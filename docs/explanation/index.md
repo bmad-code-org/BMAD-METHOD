@@ -1,4 +1,7 @@
-# Explanation
+---
+title: "Explanation"
+---
+
 
 Understanding-oriented content that explains concepts, architecture, and the reasoning behind BMAD's design.
 

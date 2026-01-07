@@ -1,4 +1,7 @@
-# Core Module Global Inheritable Config
+---
+title: "Core Module Global Inheritable Config"
+---
+
 
 The Core Modules module.yaml file defines configuration values that are useful and unique for all other modules to utilize, and by default all other modules installed will clone the values defined in the core module yaml.config into their own. It is possible for other modules to override these values, but the general intent it to accept the core module values and define their own values as needed, or extend the core values.
 

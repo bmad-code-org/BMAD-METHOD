@@ -1,4 +1,7 @@
-# BMAD Glossary
+---
+title: "BMAD Glossary"
+---
+
 
 Comprehensive terminology reference for the BMAD Method.
 

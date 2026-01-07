@@ -1,9 +1,8 @@
 ---
-sidebar_label: Agents Reference
+title: "Agents Reference"
 description: Complete reference for BMad Method agents and their commands
 ---
 
-# Agents Reference
 
 Quick reference of all BMad Method agents and their available commands.
 

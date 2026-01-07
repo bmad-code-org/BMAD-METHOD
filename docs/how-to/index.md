@@ -1,4 +1,7 @@
-# How-To Guides
+---
+title: "How-To Guides"
+---
+
 
 Task-oriented guides that show you how to accomplish specific goals. Each guide assumes you already understand the basics.
 

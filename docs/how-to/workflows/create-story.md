@@ -1,9 +1,8 @@
 ---
-sidebar_label: Create Story
+title: "How to Create a Story"
 description: How to create implementation-ready stories from epic backlog
 ---
 
-# How to Create a Story
 
 Use the `create-story` workflow to prepare the next story from the epic backlog for implementation.
 
@@ -78,7 +77,6 @@ The create-story workflow pulls from:
 ## Example Output
 
 ```markdown
-# Story 1.2: Email Verification
 
 ## Objective
 Implement email verification flow for new user registrations.

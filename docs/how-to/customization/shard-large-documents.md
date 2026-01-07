@@ -1,4 +1,7 @@
-# Document Sharding Guide
+---
+title: "Document Sharding Guide"
+---
+
 
 Comprehensive guide to BMad Method's document sharding system for managing large planning and architecture documents.
 
@@ -93,7 +96,6 @@ Agent: Sharding PRD.md...
 **index.md structure:**
 
 ```markdown
-# PRD - Index
 
 ## Sections
 

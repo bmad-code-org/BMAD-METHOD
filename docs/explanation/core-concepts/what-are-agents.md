@@ -1,4 +1,7 @@
-# Agents
+---
+title: "Agents"
+---
+
 
 Agents are AI assistants that help you accomplish tasks. Each agent has a unique personality, specialized capabilities, and an interactive menu.
 

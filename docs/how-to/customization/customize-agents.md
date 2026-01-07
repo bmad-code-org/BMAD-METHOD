@@ -1,4 +1,7 @@
-# Agent Customization Guide
+---
+title: "Agent Customization Guide"
+---
+
 
 Customize BMad agents without modifying core files. All customizations persist through updates.
 
@@ -26,10 +29,8 @@ After editing, IT IS CRITICAL to rebuild the agent to apply changes:
 
 ```bash
 npx bmad-method@alpha install # and then select option to compile all agents
-# OR for individual agent only
 npx bmad-method@alpha build <agent-name>
 
-# Examples:
 npx bmad-method@alpha build bmm-dev
 npx bmad-method@alpha build core-bmad-master
 npx bmad-method@alpha build bmm-pm
@@ -119,7 +120,6 @@ prompts:
 **Example 1: Customize Developer Agent for TDD**
 
 ```yaml
-# _bmad/_config/agents/bmm-dev.customize.yaml
 agent:
   metadata:
     name: 'TDD Developer'
@@ -135,7 +135,6 @@ critical_actions:
 **Example 2: Add Custom Deployment Workflow**
 
 ```yaml
-# _bmad/_config/agents/bmm-dev.customize.yaml
 menu:
   - trigger: deploy-staging
     workflow: '{project-root}/_bmad/deploy-staging.yaml'
@@ -148,7 +147,6 @@ menu:
 **Example 3: Multilingual Product Manager**
 
 ```yaml
-# _bmad/_config/agents/bmm-pm.customize.yaml
 persona:
   role: 'Bilingual Product Manager'
   identity: 'Expert in US and LATAM markets'

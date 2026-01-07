@@ -1,4 +1,7 @@
-# BMad v4 to v6 Upgrade Guide
+---
+title: "BMad v4 to v6 Upgrade Guide"
+---
+
 
 ## Overview
 

@@ -1,4 +1,7 @@
-# BMAD Customization
+---
+title: "BMAD Customization"
+---
+
 
 Personalize agents and workflows to match your needs.
 

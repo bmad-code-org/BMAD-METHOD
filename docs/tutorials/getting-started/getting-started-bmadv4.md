@@ -1,14 +1,12 @@
 ---
-sidebar_label: BMad v4
-sidebar_position: 1
+title: "Getting Started with BMad v4"
 description: Install BMad and create your first planning document
 ---
 
-# Getting Started with BMad v4
 
 Build software faster using AI-powered workflows with specialized agents that guide you through planning, architecture, and implementation.
 
-:::info[Stable Release]
+:::note[Stable Release]
 This tutorial covers BMad v4, the current stable release. For the latest features (with potential breaking changes), see the [BMad v6 Alpha tutorial](./getting-started-bmadv6.md).
 :::
 
@@ -19,7 +17,7 @@ This tutorial covers BMad v4, the current stable release. For the latest feature
 - Initialize a project and choose a planning track
 - Create your first requirements document
 
-:::info[Prerequisites]
+:::note[Prerequisites]
 - **Node.js 20+** — Required for the installer
 - **Git** — Recommended for version control
 - **AI-powered IDE** — Claude Code, Cursor, Windsurf, or similar
@@ -109,7 +107,7 @@ Based on your description, the workflow suggests a planning track. For this tuto
 
 Once you confirm, the workflow creates `bmm-workflow-status.yaml` to track your progress.
 
-:::warning[Fresh Chats]
+:::caution[Fresh Chats]
 Always start a fresh chat for each workflow. This prevents context limitations from causing issues.
 :::
 
@@ -143,7 +141,7 @@ The PM agent guides you through:
 
 When complete, you'll have `PRD.md` in your `_bmad-output/` folder.
 
-:::info[UX Design (Optional)]
+:::note[UX Design (Optional)]
 If your project has a user interface, load the **UX-Designer agent** and run the UX design workflow after creating your PRD.
 :::
 

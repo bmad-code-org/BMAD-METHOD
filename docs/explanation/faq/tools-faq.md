@@ -1,9 +1,8 @@
 ---
-sidebar_label: Tools & Advanced
+title: "Tools and Advanced FAQ"
 description: Common questions about tools, IDEs, and advanced topics in the BMad Method
 ---
 
-# Tools and Advanced FAQ
 
 Quick answers to common questions about tools, IDEs, and advanced topics in the BMad Method.
 

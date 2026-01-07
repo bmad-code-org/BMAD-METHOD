@@ -1,4 +1,7 @@
-# Reference
+---
+title: "Reference"
+---
+
 
 Information-oriented documentation for looking up facts, specifications, and details.
 

@@ -1,9 +1,8 @@
 ---
-sidebar_label: Brownfield Development
+title: "Brownfield Development"
 description: How to use BMad Method on existing codebases
 ---
 
-# Brownfield Development
 
 How to effectively use BMad Method when working on existing projects and legacy codebases.
 

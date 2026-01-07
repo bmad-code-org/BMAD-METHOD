@@ -1,14 +1,12 @@
 ---
-sidebar_label: BMad v6 (Alpha)
-sidebar_position: 2
+title: "Getting Started with BMad v6 Alpha"
 description: Install BMad v6 Alpha and build your first project
 ---
 
-# Getting Started with BMad v6 Alpha
 
 Build software faster using AI-powered workflows with specialized agents that guide you through planning, architecture, and implementation.
 
-:::warning[Alpha Software]
+:::caution[Alpha Software]
 BMad v6 is currently in **alpha**. Expect breaking changes, incomplete features, and evolving documentation. For a stable experience, use the [BMad v4 tutorial](./getting-started-bmadv4.md) instead.
 :::
 
@@ -19,7 +17,7 @@ BMad v6 is currently in **alpha**. Expect breaking changes, incomplete features,
 - Progress through phases from requirements to working code
 - Use agents and workflows effectively
 
-:::info[Prerequisites]
+:::note[Prerequisites]
 - **Node.js 20+** — Required for the installer
 - **Git** — Recommended for version control
 - **AI-powered IDE** — Claude Code, Cursor, Windsurf, or similar
@@ -93,7 +91,7 @@ Having issues? See [Install BMad](../../how-to/installation/install-bmad.md) for
 
 Load the **Analyst agent** in your IDE, wait for the menu, then run `workflow-init`.
 
-:::info[How to Load Agents]
+:::note[How to Load Agents]
 Type `/<agent-name>` in your IDE and use autocomplete. Not sure what's available? Start with `/bmad` to see all agents and workflows.
 :::
 
@@ -101,7 +99,7 @@ The workflow asks you to describe your project, whether it's new or existing, an
 
 Once you confirm, the workflow creates `bmm-workflow-status.yaml` to track your progress through all phases.
 
-:::warning[Fresh Chats]
+:::caution[Fresh Chats]
 Always start a fresh chat for each workflow. This prevents context limitations from causing issues.
 :::
 
@@ -130,7 +128,7 @@ All workflows in this phase are optional:
 **For Quick Flow track:**
 - Use `tech-spec` instead of PRD, then skip to implementation
 
-:::info[UX Design (Optional)]
+:::note[UX Design (Optional)]
 If your project has a user interface, load the **UX-Designer agent** and run the UX design workflow after creating your PRD.
 :::
 

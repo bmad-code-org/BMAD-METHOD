@@ -1,9 +1,8 @@
 ---
-sidebar_label: TEA Overview
+title: "Test Architect (TEA) Overview"
 description: Understanding the Test Architect (TEA) agent and its role in BMad Method
 ---
 
-# Test Architect (TEA) Overview
 
 The Test Architect (TEA) is a specialized agent focused on quality strategy, test automation, and release gates in BMad Method projects.
 

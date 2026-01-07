@@ -1,9 +1,8 @@
 ---
-sidebar_label: FAQ
+title: "Frequently Asked Questions"
 description: Frequently asked questions about the BMad Method
 ---
 
-# Frequently Asked Questions
 
 Quick answers to common questions about the BMad Method, organized by topic.
 

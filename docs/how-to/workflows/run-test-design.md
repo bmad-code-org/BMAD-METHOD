@@ -1,9 +1,8 @@
 ---
-sidebar_label: Run Test Design
+title: "How to Run Test Design"
 description: How to create comprehensive test plans using TEA's test-design workflow
 ---
 
-# How to Run Test Design
 
 Use TEA's `*test-design` workflow to create comprehensive test plans with risk assessment and coverage strategies.
 

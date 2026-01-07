@@ -1,32 +1,38 @@
-# Downloads
+---
+title: Downloads
+---
 
 Download BMAD Method resources for offline use, AI training, or integration.
+
+## Source Bundles
+
+| File | Description |
+|------|-------------|
+| **[bmad-sources.zip](/downloads/bmad-sources.zip)** | Complete BMAD source files |
+| **[bmad-prompts.zip](/downloads/bmad-prompts.zip)** | Agent and workflow prompts only |
 
 ## LLM-Optimized Files
 
 These files are designed for AI consumption - perfect for loading into Claude, ChatGPT, or any LLM context window.
 
-| File                                | Description                         | Use Case                   |
-| ----------------------------------- | ----------------------------------- | -------------------------- |
-| **[llms.txt](/llms.txt)**           | Documentation index with summaries  | Quick overview, navigation |
-| **[llms-full.txt](/llms-full.txt)** | Complete documentation concatenated | Full context loading       |
+| File | Description | Use Case |
+|------|-------------|----------|
+| **[llms.txt](/llms.txt)** | Documentation index with summaries | Quick overview, navigation |
+| **[llms-full.txt](/llms-full.txt)** | Complete documentation concatenated | Full context loading |
 
 ### Using with LLMs
 
 **Claude Projects:**
-
 ```
 Upload llms-full.txt as project knowledge
 ```
 
 **ChatGPT:**
-
 ```
 Paste llms.txt for navigation, or sections from llms-full.txt as needed
 ```
 
 **API Usage:**
-
 ```python
 import requests
 docs = requests.get("https://bmad-code-org.github.io/BMAD-METHOD/llms-full.txt").text

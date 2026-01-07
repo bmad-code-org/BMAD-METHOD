@@ -1,9 +1,8 @@
 ---
-sidebar_label: Facilitation Over Generation
+title: "Facilitation Over Generation"
 description: Understanding CIS's facilitation-first approach to creative work
 ---
 
-# Facilitation Over Generation
 
 The Creative Intelligence Suite (CIS) takes a fundamentally different approach from typical AI tools. Instead of generating solutions directly, CIS agents act as master facilitators who guide you to discover insights yourself.
 

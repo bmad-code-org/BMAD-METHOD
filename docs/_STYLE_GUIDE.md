@@ -1,8 +1,15 @@
-# Tutorial Style Guide
+# Documentation Style Guide
 
-Standards for writing tutorials and getting-started guides in BMad documentation.
+Internal guidelines for maintaining consistent, high-quality documentation across the BMAD Method project. This document is not included in the Starlight sidebar — it's for contributors and maintainers, not end users.
 
-## Standard Structure
+## Quick Principles
+
+1. **Clarity over brevity** — Be concise, but never at the cost of understanding
+2. **Consistent structure** — Follow established patterns so readers know what to expect
+3. **Strategic visuals** — Use admonitions, tables, and diagrams purposefully
+4. **Scannable content** — Headers, lists, and callouts help readers find what they need
+
+## Tutorial Structure
 
 Every tutorial should follow this structure:
 
@@ -50,22 +57,18 @@ Not all sections are required for every tutorial, but this is the standard flow.
 
 ## Admonitions
 
-Use Docusaurus admonitions strategically:
+Use Starlight admonitions strategically:
 
 ```md
 :::tip[Title]
 Shortcuts, best practices, "pro tips"
 :::
 
-:::info[Title]
+:::note[Title]
 Context, definitions, examples, prerequisites
 :::
 
-:::note
-Supplementary information (can be collapsed)
-:::
-
-:::warning[Title]
+:::caution[Title]
 Caveats, potential issues, things to watch out for
 :::
 
@@ -78,10 +81,10 @@ Critical warnings only — data loss, security issues
 
 | Admonition | Standard Use in Tutorials |
 |------------|---------------------------|
-| `:::info[Prerequisites]` | What users need before starting |
+| `:::note[Prerequisites]` | What users need before starting |
 | `:::tip[Quick Path]` | TL;DR summary at top of tutorial |
-| `:::warning[Fresh Chats]` | Context limitation reminders |
-| `:::info[Example]` | Command/response examples |
+| `:::caution[Fresh Chats]` | Context limitation reminders |
+| `:::note[Example]` | Command/response examples |
 | `:::tip[Check Your Status]` | How to verify progress |
 | `:::tip[Remember These]` | Key takeaways at end |
 
@@ -128,7 +131,7 @@ Agent: [Response here]
 For command/response examples, use an admonition instead:
 
 ```md
-:::info[Example]
+:::note[Example]
 Run `workflow-status` and the agent will tell you the next recommended workflow.
 :::
 ```
@@ -278,7 +281,7 @@ your-project/
 
 Load the **Analyst agent** in your IDE, wait for the menu, then run `workflow-init`.
 
-:::info[What Happens]
+:::note[What Happens]
 You'll describe your project goals and complexity. The workflow then recommends a planning track.
 :::
 ```

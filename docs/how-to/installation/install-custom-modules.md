@@ -1,4 +1,7 @@
-# Custom Content Installation
+---
+title: "Custom Content Installation"
+---
+
 
 This guide explains how to create and install custom BMAD content including agents, workflows, and modules. Custom content extends BMAD's functionality with specialized tools and workflows that can be shared across projects or teams.
 

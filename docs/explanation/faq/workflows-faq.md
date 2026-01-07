@@ -1,9 +1,8 @@
 ---
-sidebar_label: Workflows
+title: "Workflows FAQ"
 description: Common questions about BMad Method workflows and phases
 ---
 
-# Workflows FAQ
 
 Quick answers to common questions about BMad Method workflows and phases.
 

@@ -1,9 +1,8 @@
 ---
-sidebar_label: Implementation
+title: "Implementation FAQ"
 description: Common questions about implementation in the BMad Method
 ---
 
-# Implementation FAQ
 
 Quick answers to common questions about implementation in the BMad Method.
 

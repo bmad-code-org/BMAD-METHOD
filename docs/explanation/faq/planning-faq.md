@@ -1,9 +1,8 @@
 ---
-sidebar_label: Planning
+title: "Planning Documents FAQ"
 description: Common questions about planning documents in the BMad Method
 ---
 
-# Planning Documents FAQ
 
 Quick answers to common questions about planning documents in the BMad Method.
 

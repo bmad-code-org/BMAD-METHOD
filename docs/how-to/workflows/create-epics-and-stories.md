@@ -1,9 +1,8 @@
 ---
-sidebar_label: Create Epics & Stories
+title: "How to Create Epics and Stories"
 description: How to break PRD requirements into epics and stories using BMad Method
 ---
 
-# How to Create Epics and Stories
 
 Use the `create-epics-and-stories` workflow to transform PRD requirements into bite-sized stories organized into deliverable epics.
 

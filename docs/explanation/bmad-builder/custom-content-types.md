@@ -1,4 +1,7 @@
-# Custom Content
+---
+title: "Custom Content"
+---
+
 
 BMAD supports several categories of officially supported custom content that extend the platform's capabilities. Custom content can be created manually or with the recommended assistance of the BMad Builder (BoMB) Module. The BoMB Agents provides workflows and expertise to plan and build any custom content you can imagine.
 
@@ -14,13 +17,13 @@ This flexibility transforms the platform beyond its current capabilities, enabli
 
 ## Categories
 
-- [Custom Stand Alone Modules](#custom-stand-alone-modules)
-- [Custom Add On Modules](#custom-add-on-modules)
+- [Custom Stand-Alone Modules](#custom-stand-alone-modules)
+- [Custom Add-On Modules](#custom-add-on-modules)
 - [Custom Global Modules](#custom-global-modules)
 - [Custom Agents](#custom-agents)
 - [Custom Workflows](#custom-workflows)
 
-## Custom Stand Alone Modules
+## Custom Stand-Alone Modules
 
 Custom modules range from simple collections of related agents, workflows, and tools designed to work independently, to complex, expansive systems like the BMad Method or even larger applications.
 
@@ -31,9 +34,9 @@ Custom modules are [installable](../../how-to/installation/install-custom-module
 - Custom installer functions with IDE-specific post-installation handling (custom hooks, subagents, or vendor-specific tools)
 - Ability to bundle specific tools such as MCP, skills, execution libraries, and code
 
-## Custom Add On Modules
+## Custom Add-On Modules
 
-Custom Add On Modules contain specific agents, tools, or workflows that expand, modify, or customize another module but cannot exist or install independently. These add-ons provide enhanced functionality while leveraging the base module's existing capabilities.
+Custom Add-On Modules contain specific agents, tools, or workflows that expand, modify, or customize another module but cannot exist or install independently. These add-ons provide enhanced functionality while leveraging the base module's existing capabilities.
 
 Examples include:
 
@@ -41,7 +44,7 @@ Examples include:
 - Framework-specific support for particular use cases
 - Game development expansions that add new genre-specific capabilities without reinventing existing functionality
 
-Add on modules can include:
+Add-on modules can include:
 
 - Custom agents with awareness of the target module
 - Access to existing module workflows
@@ -49,7 +52,7 @@ Add on modules can include:
 
 ## Custom Global Modules
 
-Similar to Custom Stand Alone Modules, but designed to add functionality that applies across all installed content. These modules provide cross-cutting capabilities that enhance the entire BMAD ecosystem.
+Similar to Custom Stand-Alone Modules, but designed to add functionality that applies across all installed content. These modules provide cross-cutting capabilities that enhance the entire BMAD ecosystem.
 
 Examples include:
 

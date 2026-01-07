@@ -1,9 +1,8 @@
 ---
-sidebar_label: BMGD vs BMM
+title: "BMGD vs BMM"
 description: Understanding the differences between BMGD and BMM
 ---
 
-# BMGD vs BMM
 
 BMGD (BMad Game Development) extends BMM (BMad Method) with game-specific capabilities. This page explains the key differences.
 

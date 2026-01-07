@@ -1,9 +1,8 @@
 ---
-sidebar_label: Four Phases
+title: "The Four Phases of BMad Method"
 description: Understanding the four phases of the BMad Method
 ---
 
-# The Four Phases of BMad Method
 
 BMad Method uses a four-phase approach that adapts to project complexity while ensuring consistent quality.
 

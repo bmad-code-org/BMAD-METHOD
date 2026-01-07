@@ -1,9 +1,8 @@
 ---
-sidebar_label: Brownfield
+title: "Brownfield Development FAQ"
 description: Common questions about brownfield development in the BMad Method
 ---
 
-# Brownfield Development FAQ
 
 Quick answers to common questions about brownfield (existing codebase) development in the BMad Method.
 

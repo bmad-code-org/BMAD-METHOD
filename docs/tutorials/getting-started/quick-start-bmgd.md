@@ -1,14 +1,12 @@
 ---
-sidebar_label: Game Dev Module
-sidebar_position: 3
+title: "Getting Started with BMad Game Development"
 description: Build games with BMad's Game Development Module
 ---
 
-# Getting Started with BMad Game Development
 
 Build games faster using AI-powered workflows with specialized game development agents that guide you through preproduction, design, architecture, and implementation.
 
-:::info[Module Extension]
+:::note[Module Extension]
 BMGD (BMad Game Development) is a module that extends BMad Method. You'll need BMad installed first—see the [BMad v4 tutorial](./getting-started-bmadv4.md) or [BMad v6 tutorial](./getting-started-bmadv6.md) if you haven't installed it yet.
 :::
 
@@ -19,7 +17,7 @@ BMGD (BMad Game Development) is a module that extends BMad Method. You'll need B
 - Create a Game Brief and Game Design Document (GDD)
 - Progress from concept to working game code
 
-:::info[Prerequisites]
+:::note[Prerequisites]
 - **BMad Method installed** — Follow the main installation guide first
 - **A game idea** — Even a rough concept is enough to start
 - **AI-powered IDE** — Claude Code, Cursor, Windsurf, or similar
@@ -66,7 +64,6 @@ If you haven't installed BMad yet:
 
 ```bash
 npx bmad-method install
-# Select BMGD when prompted for modules
 ```
 
 Or add BMGD to an existing installation:
@@ -118,7 +115,7 @@ The Game Designer walks you through:
 
 When complete, you'll have `game-brief.md` in your `_bmad-output/` folder.
 
-:::warning[Fresh Chats]
+:::caution[Fresh Chats]
 Always start a fresh chat for each workflow. This prevents context limitations from causing issues.
 :::
 
@@ -138,7 +135,7 @@ The agent guides you through mechanics, systems, and game-type-specific sections
 
 When complete, you'll have `gdd.md` (or sharded into `gdd/` for large documents).
 
-:::info[Narrative Design (Optional)]
+:::note[Narrative Design (Optional)]
 For story-driven games, start a fresh chat and run `narrative` to create a Narrative Design Document covering story, characters, world, and dialogue.
 :::
 

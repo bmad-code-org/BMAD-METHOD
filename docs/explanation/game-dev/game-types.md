@@ -1,4 +1,7 @@
-# BMGD Game Types Guide
+---
+title: "BMGD Game Types Guide"
+---
+
 
 Reference for selecting and using BMGD's 24 supported game type templates.
 

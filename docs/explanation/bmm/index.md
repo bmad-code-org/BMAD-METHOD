@@ -1,4 +1,7 @@
-# BMM Documentation
+---
+title: "BMM Documentation"
+---
+
 
 Complete guides for the BMad Method Module (BMM) - AI-powered agile development workflows that adapt to your project's complexity.
 
@@ -26,10 +29,10 @@ The BMad Method is meant to be adapted and customized to your specific needs. In
 
 First know there is the full BMad Method Process and then there is a Quick Flow for those quicker smaller efforts.
 
-- **[Full Adaptive BMad Method](#-workflow-guides)** - Full planning and scope support through extensive development and testing.
+- **[Full Adaptive BMad Method](#workflow-guides)** - Full planning and scope support through extensive development and testing.
   - Broken down into 4 phases, all of which are comprised of both required and optional phases
     - Phases 1-3 are all about progressive idea development through planning and preparations to build your project.
-    - Phase 4 is the implementation cycle where you will Just In Time (JIT) produce the contextual stories needed for the dev agent based on the extensive planing completed
+    - Phase 4 is the implementation cycle where you will Just In Time (JIT) produce the contextual stories needed for the dev agent based on the extensive planning completed
     - All 4 phases have optional steps in them, depending on how rigorous you want to go with planning, research ideation, validation, testing and traceability.
   - While there is a lot here, know that even this can be distilled down to a simple PRD, Epic and Story list and then jump into the dev cycle. But if that is all you want, you might be better off with the BMad Quick Flow described next
 

@@ -1,4 +1,7 @@
-# Core Module
+---
+title: "Core Module"
+---
+
 
 The Core Module is installed with all installations of BMAD modules and provides common functionality that any module, workflow, or agent can take advantage of.
 

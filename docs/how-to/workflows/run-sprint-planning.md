@@ -1,9 +1,8 @@
 ---
-sidebar_label: Run Sprint Planning
+title: "How to Run Sprint Planning"
 description: How to initialize sprint tracking for implementation
 ---
 
-# How to Run Sprint Planning
 
 Use the `sprint-planning` workflow to initialize the sprint tracking file and organize work for implementation.
 

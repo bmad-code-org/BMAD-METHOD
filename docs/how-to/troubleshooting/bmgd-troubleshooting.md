@@ -1,4 +1,7 @@
-# BMGD Troubleshooting
+---
+title: "BMGD Troubleshooting"
+---
+
 
 Common issues and solutions when using BMGD workflows.
 
@@ -26,7 +29,6 @@ Common issues and solutions when using BMGD workflows.
 Check for `_bmad/bmgd/config.yaml` in your project. If missing, create it:
 
 ```yaml
-# BMGD Configuration
 output_folder: '{project-root}/docs/game-design'
 user_name: 'Your Name'
 communication_language: 'English'

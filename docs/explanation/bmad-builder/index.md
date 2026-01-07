@@ -1,9 +1,8 @@
 ---
-sidebar_label: BMad Builder
+title: "BMad Builder (BMB)"
 description: Create custom agents, workflows, and modules for BMAD
 ---
 
-# BMad Builder (BMB)
 
 Create custom agents, workflows, and modules for BMAD.
 

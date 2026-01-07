@@ -1,9 +1,8 @@
 ---
-sidebar_label: Setup Test Framework
+title: "How to Set Up a Test Framework"
 description: How to set up a production-ready test framework using TEA
 ---
 
-# How to Set Up a Test Framework
 
 Use TEA's `*framework` workflow to scaffold a production-ready test framework for your project.
 

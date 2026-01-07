@@ -1,4 +1,7 @@
-# BMAD Core Concepts
+---
+title: "BMAD Core Concepts"
+---
+
 
 Understanding the fundamental building blocks of the BMAD Method.
 

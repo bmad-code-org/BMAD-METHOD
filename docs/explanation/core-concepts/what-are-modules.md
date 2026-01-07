@@ -1,4 +1,7 @@
-# Modules
+---
+title: "Modules"
+---
+
 
 Modules are organized collections of agents and workflows that solve specific problems or address particular domains.
 

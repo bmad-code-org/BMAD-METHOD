@@ -1,9 +1,8 @@
 ---
-sidebar_label: Create PRD
+title: "How to Create a PRD"
 description: How to create a Product Requirements Document using the BMad Method
 ---
 
-# How to Create a PRD
 
 Use the `prd` workflow to create a strategic Product Requirements Document with Functional Requirements (FRs) and Non-Functional Requirements (NFRs).
 

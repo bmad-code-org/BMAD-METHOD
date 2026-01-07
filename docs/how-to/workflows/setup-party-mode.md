@@ -1,9 +1,8 @@
 ---
-sidebar_label: Setup Party Mode
+title: "How to Set Up Party Mode"
 description: How to set up and use Party Mode for multi-agent collaboration
 ---
 
-# How to Set Up Party Mode
 
 Use Party Mode to orchestrate dynamic multi-agent conversations with your entire BMAD team.
 

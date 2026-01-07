@@ -1,4 +1,7 @@
-# Brainstorming
+---
+title: "Brainstorming"
+---
+
 
 **Facilitate structured creative sessions using 60+ proven ideation techniques.**
 

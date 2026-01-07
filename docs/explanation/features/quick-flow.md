@@ -1,9 +1,8 @@
 ---
-sidebar_label: Quick Flow
+title: "Quick Spec Flow"
 description: Understanding Quick Spec Flow for rapid development in BMad Method
 ---
 
-# Quick Spec Flow
 
 Quick Spec Flow is a streamlined alternative to the full BMad Method for Quick Flow track projects. Instead of going through Product Brief → PRD → Architecture, you go straight to a context-aware technical specification and start coding.
 

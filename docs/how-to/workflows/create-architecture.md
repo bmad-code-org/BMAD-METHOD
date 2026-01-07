@@ -1,9 +1,8 @@
 ---
-sidebar_label: Create Architecture
+title: "How to Create Architecture"
 description: How to create system architecture using the BMad Method
 ---
 
-# How to Create Architecture
 
 Use the `architecture` workflow to make technical decisions explicit and prevent agent conflicts during implementation.
 

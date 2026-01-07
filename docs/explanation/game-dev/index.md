@@ -1,9 +1,8 @@
 ---
-sidebar_label: Game Development
+title: "BMGD - Game Development Module"
 description: AI-powered workflows for game design and development with BMGD
 ---
 
-# BMGD - Game Development Module
 
 Complete guides for the BMad Game Development Module (BMGD) - AI-powered workflows for game design and development that adapt to your project's needs.
 

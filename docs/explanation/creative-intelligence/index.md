@@ -1,9 +1,8 @@
 ---
-sidebar_label: Creative Intelligence
+title: "Creative Intelligence Suite (CIS)"
 description: AI-powered creative facilitation with the Creative Intelligence Suite
 ---
 
-# Creative Intelligence Suite (CIS)
 
 AI-powered creative facilitation transforming strategic thinking through expert coaching across five specialized domains.
 
@@ -71,20 +70,16 @@ Business model disruption:
 ### Direct Workflow
 
 ```bash
-# Start interactive session
 workflow brainstorming
 
-# With context document
 workflow design-thinking --data /path/to/context.md
 ```
 
 ### Agent-Facilitated
 
 ```bash
-# Load agent
 agent cis/brainstorming-coach
 
-# Start workflow
 > *brainstorm
 ```
 

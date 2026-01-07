@@ -1,9 +1,8 @@
 ---
-sidebar_label: Preventing Agent Conflicts
+title: "Preventing Agent Conflicts"
 description: How architecture prevents conflicts when multiple agents implement a system
 ---
 
-# Preventing Agent Conflicts
 
 When multiple AI agents implement different parts of a system, they can make conflicting technical decisions. Architecture documentation prevents this by establishing shared standards.
 

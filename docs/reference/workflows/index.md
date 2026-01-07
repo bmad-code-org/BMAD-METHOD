@@ -1,9 +1,8 @@
 ---
-sidebar_label: Workflows
+title: "Workflows Reference"
 description: Reference documentation for BMad Method workflows
 ---
 
-# Workflows Reference
 
 Complete reference documentation for all BMad Method workflows.
 

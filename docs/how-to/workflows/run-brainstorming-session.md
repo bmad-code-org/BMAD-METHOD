@@ -1,9 +1,8 @@
 ---
-sidebar_label: Run Brainstorming
+title: "How to Run a Brainstorming Session"
 description: How to run a brainstorming session using the BMad Method
 ---
 
-# How to Run a Brainstorming Session
 
 Use the `brainstorm-project` workflow to explore solution approaches through parallel ideation tracks.
 

@@ -1,9 +1,8 @@
 ---
-sidebar_label: Conduct Research
+title: "How to Conduct Research"
 description: How to conduct market, technical, and competitive research using BMad Method
 ---
 
-# How to Conduct Research
 
 Use the `research` workflow to perform comprehensive multi-type research for validating ideas, understanding markets, and making informed decisions.
 

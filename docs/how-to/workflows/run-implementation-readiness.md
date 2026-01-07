@@ -1,9 +1,8 @@
 ---
-sidebar_label: Run Implementation Readiness
+title: "How to Run Implementation Readiness"
 description: How to validate planning and solutioning before implementation
 ---
 
-# How to Run Implementation Readiness
 
 Use the `implementation-readiness` workflow to validate that planning and solutioning are complete and aligned before Phase 4 implementation.
 

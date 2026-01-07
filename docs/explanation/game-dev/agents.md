@@ -1,4 +1,7 @@
-# BMGD Agents Guide
+---
+title: "BMGD Agents Guide"
+---
+
 
 Complete reference for BMGD's six specialized game development agents.
 

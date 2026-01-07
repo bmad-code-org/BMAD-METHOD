@@ -1,9 +1,8 @@
 ---
-sidebar_label: Why Solutioning Matters
+title: "Why Solutioning Matters"
 description: Understanding why the solutioning phase is critical for multi-epic projects
 ---
 
-# Why Solutioning Matters
 
 Phase 3 (Solutioning) translates **what** to build (from Planning) into **how** to build it (technical design). This phase prevents agent conflicts in multi-epic projects by documenting architectural decisions before implementation begins.
 

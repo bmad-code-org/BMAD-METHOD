@@ -1,9 +1,8 @@
 ---
-sidebar_label: Run Code Review
+title: "How to Run Code Review"
 description: How to run code review for quality assurance
 ---
 
-# How to Run Code Review
 
 Use the `code-review` workflow to perform a thorough quality review of implemented code.
 

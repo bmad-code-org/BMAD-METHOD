@@ -1,4 +1,7 @@
-# Core Tasks
+---
+title: "Core Tasks"
+---
+
 
 Core Tasks are reusable task definitions that can be invoked by any BMAD module, workflow, or agent. These tasks provide standardized functionality for common operations.
 

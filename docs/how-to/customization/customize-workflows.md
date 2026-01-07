@@ -1,4 +1,7 @@
-# Workflow Customization Guide
+---
+title: "Workflow Customization Guide"
+---
+
 
 Customize and optimize workflows with step replacement and hooks.
 

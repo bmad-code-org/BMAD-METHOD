@@ -1,4 +1,7 @@
-# Quick Flow Solo Dev Agent (Barry)
+---
+title: "Quick Flow Solo Dev Agent (Barry)"
+---
+
 
 **Agent ID:** `_bmad/bmm/agents/quick-flow-solo-dev.md`
 **Icon:** 🚀

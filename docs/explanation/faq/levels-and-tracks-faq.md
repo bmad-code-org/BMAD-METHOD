@@ -1,9 +1,8 @@
 ---
-sidebar_label: Levels & Tracks
+title: "Levels and Tracks FAQ"
 description: Common questions about choosing the right level for your project
 ---
 
-# Levels and Tracks FAQ
 
 Quick answers to common questions about choosing the right level for your BMad Method project.
 
@@ -14,7 +13,7 @@ Quick answers to common questions about choosing the right level for your BMad M
 **A:** Use workflow-init for automatic detection, or self-assess using these keywords:
 
 - **Level 0:** "fix", "bug", "typo", "small change", "patch" → 1 story
-- **Level 1:** "simple", "basic", "small feature", "add" → 2-10 stories
+- **Level 1:** "simple", "basic", "small feature", "add" → 1-10 stories
 - **Level 2:** "dashboard", "several features", "admin panel" → 5-15 stories
 - **Level 3:** "platform", "integration", "complex", "system" → 12-40 stories
 - **Level 4:** "enterprise", "multi-tenant", "multiple products" → 40+ stories

@@ -1,4 +1,7 @@
-# Party Mode: Multi-Agent Collaboration
+---
+title: "Party Mode: Multi-Agent Collaboration"
+---
+
 
 **Get all your AI agents in one conversation**
 
@@ -36,20 +39,15 @@ Type `/bmad:core:workflows:party-mode` (or `*party-mode` from any agent or at ke
 ## Quick Start
 
 ```bash
-# Trigger party mode
 /bmad:core:workflows:party-mode
 
-# OR from any agent context
 *party-mode
 
-# Super Hack
 
 /bmad:core:workflows:party-mode and include also in the party Santa Clause and Einstein 
 
-# During party
 Ask questions, respond to agents, direct the conversation
 
-# Exit
 Type: exit
 ```
 

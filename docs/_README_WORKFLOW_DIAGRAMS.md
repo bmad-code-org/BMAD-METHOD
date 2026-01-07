@@ -1,4 +1,7 @@
-# Workflow Diagram Maintenance
+---
+title: "Workflow Diagram Maintenance"
+---
+
 
 ## Regenerating SVG from Excalidraw
 

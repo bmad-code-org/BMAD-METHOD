@@ -1,4 +1,7 @@
-# Document Project Workflow - Technical Reference
+---
+title: "Document Project Workflow - Technical Reference"
+---
+
 
 **Module:** BMM (BMAD Method Module)
 

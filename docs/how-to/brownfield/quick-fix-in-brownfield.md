@@ -1,9 +1,8 @@
 ---
-sidebar_label: Quick Fixes
+title: "How to Make Quick Fixes in Brownfield Projects"
 description: How to make quick fixes and ad-hoc changes in brownfield projects
 ---
 
-# How to Make Quick Fixes in Brownfield Projects
 
 Not everything requires the full BMad method or even Quick Flow. For bug fixes, refactorings, or small targeted changes, you can work directly with the agent.
 

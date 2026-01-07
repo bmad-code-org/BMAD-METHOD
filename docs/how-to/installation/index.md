@@ -1,9 +1,8 @@
 ---
-sidebar_label: Installation
+title: "Installation Guides"
 description: How to install and upgrade BMad Method
 ---
 
-# Installation Guides
 
 How-to guides for installing and configuring the BMad Method.
 

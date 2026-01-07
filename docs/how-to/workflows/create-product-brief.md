@@ -1,9 +1,8 @@
 ---
-sidebar_label: Create Product Brief
+title: "How to Create a Product Brief"
 description: How to create a product brief using the BMad Method
 ---
 
-# How to Create a Product Brief
 
 Use the `product-brief` workflow to define product vision and strategy through an interactive process.
 

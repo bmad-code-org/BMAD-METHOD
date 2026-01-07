@@ -1,9 +1,8 @@
 ---
-sidebar_label: Agent Roles
+title: "Agent Roles in BMad Method"
 description: Understanding the different agent roles in BMad Method
 ---
 
-# Agent Roles in BMad Method
 
 BMad Method uses specialized AI agents, each with a distinct role, expertise, and personality. Understanding these roles helps you know which agent to use for each task.
 

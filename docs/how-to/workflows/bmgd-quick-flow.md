@@ -1,4 +1,7 @@
-# BMGD Quick-Flow Guide
+---
+title: "BMGD Quick-Flow Guide"
+---
+
 
 Fast-track workflows for rapid game prototyping and flexible development.
 

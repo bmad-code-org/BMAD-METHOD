@@ -1,9 +1,8 @@
 ---
-sidebar_label: Document Existing Project
+title: "How to Document an Existing Project"
 description: How to document an existing brownfield codebase using BMad Method
 ---
 
-# How to Document an Existing Project
 
 Use the `document-project` workflow to scan your entire codebase and generate comprehensive documentation about its current state.
 
