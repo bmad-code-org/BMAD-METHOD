@@ -485,6 +485,39 @@
       <action>HALT if unable to fix validation failures</action>
     </check>
 
+    <!-- MANDATORY: Update sprint-status.yaml with task-level progress (NEW v1.3.0) -->
+    <check if="{{sprint_status}} file exists AND task was just marked complete">
+      <critical>MUST update sprint-status.yaml after EVERY task completion - not just at story start/end</critical>
+
+      <action>Load the FULL file: {{sprint_status}}</action>
+      <action>Find development_status key matching {{story_key}}</action>
+
+      <action>Count total tasks and checked tasks from story file:
+        - total_tasks = count of all [ ] and [x] in Tasks/Subtasks section (top-level only)
+        - checked_tasks = count of [x] only
+        - progress_pct = (checked_tasks / total_tasks) × 100
+      </action>
+
+      <action>Update sprint-status.yaml entry with inline progress comment:
+        Format: {{story_key}}: in-progress  # {{checked_tasks}}/{{total_tasks}} tasks ({{progress_pct}}%)
+      </action>
+
+      <action>Save file, preserving ALL comments and structure</action>
+
+      <action>Re-read {sprint_status} file to verify update persisted</action>
+
+      <check if="verification fails">
+        <output>❌ CRITICAL: sprint-status.yaml progress update failed!
+
+          Task was completed but sprint status not updated.
+          This violates the continuous tracking requirement.
+        </output>
+        <action>HALT - Cannot proceed without valid progress tracking</action>
+      </check>
+
+      <output>✅ Sprint progress updated: {{story_key}} → {{checked_tasks}}/{{total_tasks}} ({{progress_pct}}%)</output>
+    </check>
+
     <check if="review_continuation == true and {{resolved_review_items}} is not empty">
       <action>Count total resolved review items in this session</action>
       <action>Add Change Log entry: "Addressed code review findings - {{resolved_count}} items resolved (Date: {{date}})"</action>

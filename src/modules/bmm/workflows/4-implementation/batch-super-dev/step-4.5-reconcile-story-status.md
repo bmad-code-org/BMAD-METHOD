@@ -274,12 +274,32 @@ Verify story file accuracy by reconciling:
     </check>
   </substep>
 
-  <substep n="8e" title="Update sprint-status.yaml">
+  <substep n="8e" title="Update sprint-status.yaml with status and progress">
     <check if="sprint-status.yaml needs updating">
       <action>Use Edit tool to update status entry</action>
-      <action>Update comment if needed to reflect completion</action>
+
+      <action>Count tasks from story file:
+        - total_tasks = all top-level tasks
+        - checked_tasks = tasks marked [x]
+        - progress_pct = (checked_tasks / total_tasks) × 100
+      </action>
+
+      <action>Update comment with progress tracking (NEW v1.3.0):
+        If status == "in-progress":
+          Format: {{story_key}}: in-progress  # {{checked_tasks}}/{{total_tasks}} tasks ({{progress_pct}}%)
+
+        If status == "review":
+          Format: {{story_key}}: review  # {{checked_tasks}}/{{total_tasks}} tasks ({{progress_pct}}%) - awaiting review
+
+        If status == "done":
+          Format: {{story_key}}: done  # ✅ COMPLETED: {{brief_summary}}
+      </action>
+
       <example>
       Before: 20-8-...: ready-for-dev  # Story description
+      During: 20-8-...: in-progress  # 3/10 tasks (30%)
+      During: 20-8-...: in-progress  # 7/10 tasks (70%)
+      Review: 20-8-...: review  # 10/10 tasks (100%) - awaiting review
       After:  20-8-...: done  # ✅ COMPLETED: Component + tests + docs
       </example>
     </check>

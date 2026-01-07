@@ -1,7 +1,37 @@
 # How to Validate Sprint Status - Complete Guide
 
 **Created:** 2026-01-02
+**Updated:** 2026-01-07 (v1.3.0 - Continuous Progress Tracking)
 **Purpose:** Ensure sprint-status.yaml and story files reflect REALITY, not fiction
+
+---
+
+## 🆕 Progress Tracking (v1.3.0)
+
+**NEW:** sprint-status.yaml is now updated **after EVERY task completion**, not just at story start/end.
+
+### Progress Format
+
+```yaml
+development_status:
+  1-2-login: in-progress  # 3/10 tasks (30%)
+  1-3-auth: in-progress  # 7/8 tasks (88%)
+  1-4-api: review  # 10/10 tasks (100%) - awaiting review
+  1-5-ui: done  # ✅ COMPLETED: Dashboard + widgets + tests
+```
+
+### Update Frequency
+
+| Event | Status Update | Progress Update |
+|-------|---------------|-----------------|
+| Story starts | `ready-for-dev` → `in-progress` | `# 0/10 tasks (0%)` |
+| Task 1 completes | (no change) | `# 1/10 tasks (10%)` ✅ |
+| Task 2 completes | (no change) | `# 2/10 tasks (20%)` ✅ |
+| ... | ... | ... |
+| Task 10 completes | `in-progress` → `review` | `# 10/10 tasks (100%) - awaiting review` |
+| Review passes | `review` → `done` | `# ✅ COMPLETED: Summary` |
+
+**Enforcement:** dev-story Step 8 now includes CRITICAL enforcement that HALTs if sprint-status.yaml update fails.
 
 ---
 

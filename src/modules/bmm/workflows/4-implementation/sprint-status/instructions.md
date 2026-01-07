@@ -38,7 +38,7 @@ Run `/bmad:bmm:workflows:sprint-planning` to generate it, then rerun sprint-stat
   <action>Parse fields: generated, project, project_key, tracking_system, story_location</action>
   <action>Parse development_status map. Classify keys:</action>
   - Epics: keys starting with "epic-" (and not ending with "-retrospective")
-  - Retrospectives: keys ending with "-retrospective"
+  - Retrospectives: keys ending with "-retrospective")
   - Stories: everything else (e.g., 1-2-login-form)
   <action>Map legacy story status "drafted" → "ready-for-dev"</action>
   <action>Count story statuses: backlog, ready-for-dev, in-progress, review, done</action>
@@ -46,11 +46,24 @@ Run `/bmad:bmm:workflows:sprint-planning` to generate it, then rerun sprint-stat
   <action>Count epic statuses: backlog, in-progress, done</action>
   <action>Count retrospective statuses: optional, done</action>
 
+  <action>Parse inline progress comments (NEW v1.3.0):
+    - Extract task progress from comments: "# X/Y tasks (Z%)"
+    - Extract completion notes from comments: "# ✅ COMPLETED: ..."
+    - Store progress data for display
+  </action>
+
 <action>Validate all statuses against known values:</action>
 
 - Valid story statuses: backlog, ready-for-dev, in-progress, review, done, drafted (legacy)
 - Valid epic statuses: backlog, in-progress, done, contexted (legacy)
 - Valid retrospective statuses: optional, done
+
+<note>Progress comments (NEW v1.3.0): Inline comments now track task completion percentage for in-progress stories</note>
+<example>
+  1-2-login: in-progress  # 7/10 tasks (70%)
+  1-3-auth: review  # 8/8 tasks (100%) - awaiting review
+  1-4-api: done  # ✅ COMPLETED: REST endpoints + validation + tests
+</example>
 
   <check if="any status is unrecognized">
     <output>
@@ -141,11 +154,31 @@ If the command targets a story, set `story_key={{next_story_id}}` when prompted.
   <check if="choice == 2">
     <output>
 ### Stories by Status
-- In Progress: {{stories_in_progress}}
-- Review: {{stories_in_review}}
-- Ready for Dev: {{stories_ready_for_dev}}
-- Backlog: {{stories_backlog}}
-- Done: {{stories_done}}
+
+**In Progress ({{count_in_progress}}):**
+{{#each stories_in_progress}}
+- {{story_key}}: {{status}} {{#if progress}}# {{progress.checked}}/{{progress.total}} ({{progress.pct}}%){{/if}}
+{{/each}}
+
+**Review ({{count_review}}):**
+{{#each stories_in_review}}
+- {{story_key}}: {{status}} {{#if progress}}# {{progress.checked}}/{{progress.total}} ({{progress.pct}}%){{/if}}
+{{/each}}
+
+**Ready for Dev ({{count_ready}}):**
+{{#each stories_ready_for_dev}}
+- {{story_key}}: {{status}}
+{{/each}}
+
+**Backlog ({{count_backlog}}):**
+{{#each stories_backlog}}
+- {{story_key}}: {{status}}
+{{/each}}
+
+**Done ({{count_done}}):**
+{{#each stories_done}}
+- {{story_key}}: {{status}} {{#if completion_note}}# {{completion_note}}{{/if}}
+{{/each}}
     </output>
   </check>
 
