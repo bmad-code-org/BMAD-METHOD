@@ -4,7 +4,45 @@
 
 **Release: January 7, 2026**
 
-Republish of alpha.1 with all changes intact. No functional differences from alpha.1.
+### 🔄 Continuous Sprint-Status Tracking
+
+**NEW:** sprint-status.yaml is now a **real-time progress dashboard** with updates after every task completion.
+
+**Previously:** Updated only at story lifecycle transitions (start → in-progress, end → review)
+**Now:** Updated after EVERY single task with progress percentage
+
+**Progress Format:**
+```yaml
+development_status:
+  1-2-login: in-progress  # 3/10 tasks (30%)
+  1-3-auth: in-progress  # 7/8 tasks (88%)
+  1-4-api: review  # 10/10 tasks (100%) - awaiting review
+  1-5-ui: done  # ✅ COMPLETED: Dashboard + widgets + tests
+```
+
+**Enforcement (CRITICAL + HALT):**
+- dev-story Step 8 now MANDATES sprint-status.yaml update after every task
+- Validates update persisted by re-reading file
+- HALTs if update fails (prevents silent tracking failures)
+- No exceptions - every task completion triggers update
+
+**Benefits:**
+- Immediate visibility into story progress without opening files
+- Detect stalled stories (same % for multiple days)
+- Better sprint planning and resource allocation
+- Real-time dashboard for team coordination
+
+**Backward Compatible:**
+- Old entries without progress comments still work
+- New entries automatically add progress
+- Gradual migration as stories are worked
+
+### Files Modified
+
+- `dev-story/instructions.xml` (BMM + BMGD): Added mandatory task-level updates with CRITICAL enforcement
+- `sprint-status/instructions.md` (BMM + BMGD): Added progress parsing and display
+- `batch-super-dev/step-4.5-reconcile-story-status.md`: Added progress to reconciliation
+- `docs/HOW-TO-VALIDATE-SPRINT-STATUS.md`: Documented new format and update frequency
 
 ---
 
