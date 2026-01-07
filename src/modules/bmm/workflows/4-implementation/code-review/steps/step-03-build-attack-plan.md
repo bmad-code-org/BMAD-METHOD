@@ -1,23 +1,24 @@
 ---
-name: 'step-02-build-attack-plan'
-description: 'Extract ACs and tasks, create comprehensive review plan for both phases'
+name: 'step-03-build-attack-plan'
+description: 'Extract ACs and tasks, create comprehensive review plan for context-aware phase'
 ---
 
-# Step 2: Build Review Attack Plan
+# Step 3: Build Review Attack Plan
 
-**Goal:** Extract all reviewable items from story and create attack plan for both review phases.
+**Goal:** Extract all reviewable items from story and create attack plan for context-aware review phase.
 
 ---
 
 ## AVAILABLE STATE
 
-From previous step:
+From previous steps:
 
 - `{story_path}` - Path to the story file
 - `{story_key}` - Story identifier
 - `{story_file_list}` - Files claimed in story
 - `{git_changed_files}` - Files actually changed (git)
 - `{git_discrepancies}` - Differences between claims and reality
+- `{asymmetric_findings}` - Findings from Phase 1 (adversarial review)
 
 ---
 
@@ -26,7 +27,7 @@ From previous step:
 - `{acceptance_criteria}` - All ACs extracted from story
 - `{tasks_with_status}` - All tasks with their [x] or [ ] status
 - `{comprehensive_file_list}` - Union of story files + git files
-- `{review_attack_plan}` - Structured plan for both phases
+- `{review_attack_plan}` - Structured plan for context-aware phase
 
 ---
 
@@ -82,7 +83,11 @@ Exclude from review:
 Structure the `{review_attack_plan}`:
 
 ```
-PHASE 1: Context-Aware Review (Step 3)
+PHASE 1: Adversarial Review (Step 2) [COMPLETE - {asymmetric_findings} findings]
+├── Fresh code review without story context
+│   └── {asymmetric_findings} items to consolidate
+
+PHASE 2: Context-Aware Review (Step 4)
 ├── Git vs Story Discrepancies
 │   └── {git_discrepancies} items
 ├── AC Validation
@@ -91,12 +96,6 @@ PHASE 1: Context-Aware Review (Step 3)
 │   └── {tasks_with_status} marked [x] to verify
 └── Code Quality Review
     └── {comprehensive_file_list} files to review
-
-PHASE 2: Adversarial Asymmetric Review (Step 4)
-└── Context-independent diff review
-    └── Diff constructed from git changes
-    └── Story file EXCLUDED from reviewer context
-    └── Pure code quality assessment
 ```
 
 ### 5. Preview Attack Plan
@@ -107,12 +106,15 @@ Present to user (brief summary):
 **Review Attack Plan**
 
 **Story:** {story_key}
-**ACs to verify:** {count}
-**Tasks marked complete:** {count}
-**Files to review:** {count}
-**Git discrepancies detected:** {count}
 
-Proceeding with dual-phase review...
+**Phase 1 (Adversarial - Complete):** {asymmetric_findings count} findings from fresh review
+**Phase 2 (Context-Aware - Starting):**
+  - ACs to verify: {count}
+  - Tasks marked complete: {count}
+  - Files to review: {count}
+  - Git discrepancies detected: {count}
+
+Proceeding with context-aware review...
 ```
 
 ---
@@ -121,7 +123,7 @@ Proceeding with dual-phase review...
 
 **CRITICAL:** When this step completes, explicitly state:
 
-"**NEXT:** Loading `step-03-adversarial-review.md`"
+"**NEXT:** Loading `step-04-context-aware-review.md`"
 
 ---
 
@@ -131,7 +133,7 @@ Proceeding with dual-phase review...
 - All tasks extracted with completion status
 - Comprehensive file list built (story + git)
 - Exclusions applied correctly
-- Attack plan structured for both phases
+- Attack plan structured for context-aware phase
 - Summary presented to user
 - Explicit NEXT directive provided
 

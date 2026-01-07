@@ -20,6 +20,7 @@ From previous steps:
 - `{story_file_list}`, `{git_changed_files}`, `{git_discrepancies}`
 - `{acceptance_criteria}`, `{tasks_with_status}`
 - `{comprehensive_file_list}`, `{review_attack_plan}`
+- `{asymmetric_findings}` - From Phase 1 (adversarial review)
 
 ---
 
@@ -132,12 +133,12 @@ Re-examine for:
 
 ---
 
-## PHASE 1 SUMMARY
+## PHASE 2 SUMMARY
 
 Present context-aware findings:
 
 ```
-**Phase 1: Context-Aware Review Complete**
+**Phase 2: Context-Aware Review Complete**
 
 **Findings:** {count}
 - Critical: {count}
@@ -145,7 +146,7 @@ Present context-aware findings:
 - Medium: {count}
 - Low: {count}
 
-Proceeding to Phase 2: Adversarial Review...
+Proceeding to findings consolidation...
 ```
 
 Store `{context_aware_findings}` for consolidation in step 5.

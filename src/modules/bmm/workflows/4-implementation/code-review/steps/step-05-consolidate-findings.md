@@ -5,7 +5,7 @@ description: 'Merge and deduplicate findings from both review phases'
 
 # Step 5: Consolidate Findings
 
-**Goal:** Merge findings from context-aware review (Phase 1) and adversarial review (Phase 2), deduplicate, and present unified findings table.
+**Goal:** Merge findings from adversarial review (Phase 1) and context-aware review (Phase 2), deduplicate, and present unified findings table.
 
 ---
 
@@ -14,8 +14,8 @@ description: 'Merge and deduplicate findings from both review phases'
 From previous steps:
 
 - `{story_path}`, `{story_key}`
-- `{context_aware_findings}` - Findings from Phase 1 (step 3)
-- `{asymmetric_findings}` - Findings from Phase 2 (step 4)
+- `{asymmetric_findings}` - Findings from Phase 1 (step 2 - adversarial review)
+- `{context_aware_findings}` - Findings from Phase 2 (step 4 - context-aware review)
 
 ---
 
@@ -123,8 +123,8 @@ Build `{consolidated_findings}`:
 ---
 
 **Phase Sources:**
-- Context-Aware (Phase 1): {count} findings
-- Adversarial (Phase 2): {count} findings
+- Adversarial (Phase 1): {count} findings
+- Context-Aware (Phase 2): {count} findings
 ```
 
 ---

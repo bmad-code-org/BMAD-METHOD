@@ -1,9 +1,9 @@
 ---
-name: 'step-03-adversarial-review'
-description: 'Context-independent adversarial diff review via subagent - no story knowledge'
+name: 'step-02-adversarial-review'
+description: 'Lean adversarial review - context-independent diff analysis, no story knowledge'
 ---
 
-# Step 3: Adversarial Review (Information Asymmetric)
+# Step 2: Adversarial Review (Information Asymmetric)
 
 **Goal:** Perform context-independent adversarial review of code changes. Reviewer sees ONLY the diff - no story, no ACs, no context about WHY changes were made.
 
@@ -19,13 +19,13 @@ From previous steps:
 
 - `{story_path}`, `{story_key}`
 - `{file_list}` - Files listed in story's File List section
-- `{context_aware_findings}` - Findings from Phase 1
+- `{git_changed_files}` - Files changed according to git
+- `{baseline_commit}` - From story file Dev Agent Record
 
 ---
 
 ## STATE VARIABLE (capture now)
 
-- `{baseline_commit}` - From story file Dev Agent Record
 - `{diff_output}` - Complete diff of changes
 - `{asymmetric_findings}` - Findings from adversarial review
 
@@ -101,12 +101,12 @@ Add each finding to `{asymmetric_findings}` (no IDs yet - assigned after merge):
 }
 ```
 
-### 4. Phase 2 Summary
+### 4. Phase 1 Summary
 
 Present adversarial findings:
 
 ```
-**Phase 2: Adversarial Review Complete**
+**Phase 1: Adversarial Review Complete**
 
 **Reviewer Context:** Pure diff review (no story knowledge)
 **Findings:** {count}
@@ -120,7 +120,7 @@ Present adversarial findings:
 - Noise: {count}
 - Undecided: {count}
 
-Proceeding to findings consolidation...
+Proceeding to attack plan construction...
 ```
 
 ---
@@ -129,7 +129,7 @@ Proceeding to findings consolidation...
 
 **CRITICAL:** When this step completes, explicitly state:
 
-"**NEXT:** Loading `step-04-context-aware-review.md`"
+"**NEXT:** Loading `step-03-build-attack-plan.md`"
 
 ---
 
