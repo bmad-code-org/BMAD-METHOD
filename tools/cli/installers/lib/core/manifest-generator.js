@@ -183,6 +183,14 @@ class ManifestGenerator {
               continue;
             }
 
+            // Skip workflows marked as non-standalone (reference/example workflows)
+            if (workflow.standalone === false) {
+              if (debug) {
+                console.log(`[DEBUG] Skipped (standalone=false): ${workflow.name}`);
+              }
+              continue;
+            }
+
             if (workflow.name && workflow.description) {
               // Build relative path for installation
               const installPath =
@@ -190,7 +198,7 @@ class ManifestGenerator {
                   ? `${this.bmadFolderName}/core/workflows/${relativePath}/${entry.name}`
                   : `${this.bmadFolderName}/${moduleName}/workflows/${relativePath}/${entry.name}`;
 
-              // ALL workflows now generate commands - no standalone property needed
+              // Workflows with standalone: false are filtered out above
               workflows.push({
                 name: workflow.name,
                 description: workflow.description.replaceAll('"', '""'), // Escape quotes for CSV

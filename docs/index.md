@@ -1,111 +1,65 @@
-# BMAD Documentation
+---
+title: Welcome to BMad
+---
 
-Complete documentation for the BMAD Method.
+BMad (**B**uild **M**ore, **A**rchitect **D**reams) is an AI-driven development framework that helps you build software faster and smarter. It provides specialized AI agents, guided workflows, and intelligent planning that adapts to your project's complexity—whether you're fixing a bug or building an enterprise platform.
 
-## Getting Started
-
-### New to BMAD?
-Start with the core concepts to understand how BMAD works:
-
-- **[Core Concepts](./bmad-core-concepts/)** - Agents, workflows, and modules explained
-- **[Installation Guide](./bmad-core-concepts/installing/)** - Set up BMAD in your project
-- **[Quick Start Guide](./modules/bmm-bmad-method/quick-start)** - Build your first feature
-
-### Upgrading from v4?
-- **[v4 to v6 Upgrade Guide](./bmad-core-concepts/installing/upgrading.md)** - Migration path for v4 users
+If you're comfortable working with AI coding assistants like Claude, Cursor, or GitHub Copilot, you're ready to get started.
 
 ---
 
-## Module Documentation
+## New Here? Start with a Tutorial
 
-### BMAD Method (BMM) - Software & Game Development
+The fastest way to understand BMad is to try it. Choose a tutorial to walk through your first project in about 10 minutes.
 
-The flagship module for agile AI-driven development.
+- **[Get Started with v4 (Stable)](./tutorials/getting-started/getting-started-bmadv4.md)** — Production-ready version with battle-tested workflows
+- **[Try v6 (Alpha)](./tutorials/getting-started/getting-started-bmadv6.md)** — Latest features, still in active development
 
-- **[BMM Module Index](./modules/bmm-bmad-method/index)** - Module overview, agents, and documentation
-  - [Quick Start Guide](./modules/bmm-bmad-method/quick-start) - Step-by-step guide
-  - [Quick Spec Flow](./modules/bmm-bmad-method/quick-spec-flow) - Rapid Level 0-1 development
-  - [Brownfield Guide](./modules/bmm-bmad-method/brownfield-guide) - Working with existing codebases
-- **[BMM Workflows Guide](./modules/bmm-bmad-method/index#-workflow-guides)** - Essential reading
-
-### BMAD Builder (BMB) - Create Custom Solutions
-
-Build your own agents, workflows, and modules.
-
-- **[BMB Module Overview](./modules/bmb-bmad-builder/index)** - Module overview and capabilities
-- **[Agent Creation Guide](./modules/bmb-bmad-builder/agent-creation-guide.md)** - Create custom agents
-- **[Custom Content Installation](./modules/bmb-bmad-builder/custom-content-installation.md)** - Share and install custom creations
-
-### Creative Intelligence Suite (CIS) - Innovation & Creativity
-
-- **[CIS Documentation](./modules/cis-creative-intelligence-suite/index)**
-
-### BMAD Game Dev (BMGD)
-
-- **[BMGD Documentation](./modules/bmgd-bmad-game-dev/index)** - Game development workflows
+:::tip[Already familiar with AI-assisted development?]
+Feel free to skip around. Use the sidebar to jump to any topic, or check out [What Are Agents?](./explanation/core-concepts/what-are-agents.md) to understand how BMad organizes its AI personas.
+:::
 
 ---
 
-## Core Module
+## How to Use These Docs
 
-### Global Core Entities
+These docs are organized into four sections based on what you're trying to do:
 
-- **[Core Module Index](./modules/core/index)** - Shared functionality available to all modules
-  - [Global Core Config](./modules/core/global-core-config.md) - Inheritable configuration
-  - [Core Workflows](./modules/core/core-workflows.md) - Domain-agnostic workflows
-    - [Party Mode](./modules/core/party-mode.md) - Multi-agent conversations
-    - [Brainstorming](./modules/core/brainstorming.md) - Structured creative sessions
-    - [Advanced Elicitation](./modules/core/advanced-elicitation.md) - LLM reasoning techniques
-  - [Core Tasks](./modules/core/core-tasks.md) - Common tasks across modules
-
----
-
-## Advanced Topics
-
-### Customization
-
-- **[BMAD Customization](./bmad-core-concepts/bmad-customization/)** - Modify agents and workflows
-
-### Platform Guides
-
-- **[Web Bundles](./bmad-core-concepts/web-bundles/)** - Use BMAD in Gemini Gems and Custom GPTs
+| Section | Purpose |
+|---------|---------|
+| **[Tutorials](./tutorials/index.md)** | Learning-oriented. Step-by-step guides that walk you through building something. Start here if you're new. |
+| **[How-To Guides](./how-to/index.md)** | Task-oriented. Practical guides for solving specific problems. "How do I customize an agent?" lives here. |
+| **[Explanation](./explanation/index.md)** | Understanding-oriented. Deep dives into concepts and architecture. Read when you want to know *why*. |
+| **[Reference](./reference/index.md)** | Information-oriented. Technical specifications for agents, workflows, and configuration. |
 
 ---
 
-## Recommended Reading Paths
+## What You'll Need
 
-### Path 1: Brand New to BMAD (Software Project)
+BMad works with any AI coding assistant that supports custom system prompts or project context. Popular options include:
 
-1. [Core Concepts](./bmad-core-concepts/) - Understand agents and workflows
-2. [Installation Guide](./bmad-core-concepts/installing/) - Set up BMAD
-3. [Quick Start Guide](./modules/bmm-bmad-method/quick-start) - Get hands-on
-4. [BMM Workflows Guide](./modules/bmm-bmad-method/index#-workflow-guides) - Master the methodology
+- **[Claude Code](https://code.claude.com)** — Anthropic's CLI tool (recommended)
+- **[Cursor](https://cursor.sh)** — AI-first code editor
+- **[Windsurf](https://codeium.com/windsurf)** — Codeium's AI IDE
+- **[Roo Code](https://roocode.com)** — VS Code extension
 
-### Path 2: Game Development Project
+You should be comfortable with basic software development concepts like version control, project structure, and agile workflows. No prior experience with BMad-style agent systems is required—that's what these docs are for.
 
-1. [Core Concepts](./bmad-core-concepts/) - Understand agents and workflows
-2. [Installation Guide](./bmad-core-concepts/installing/) - Set up BMAD
-3. [BMGD Workflows Guide](./modules/bmgd-bmad-game-dev/workflows-guide) - Game-specific workflows
+---
 
-### Path 3: Upgrading from v4
+## Join the Community
 
-1. [v4 to v6 Upgrade Guide](./bmad-core-concepts/installing/upgrading.md) - Understand what changed
-2. [Quick Start Guide](./modules/bmm-bmad-method/quick-start) - Reorient yourself
-3. [BMM Workflows Guide](./modules/bmm-bmad-method/index#-workflow-guides) - Learn new v6 workflows
+Get help, share what you're building, or contribute to BMad:
 
-### Path 4: Working with Existing Codebase (Brownfield)
+- **[Discord](https://discord.gg/gk8jAdXWmj)** — Chat with other BMad users, ask questions, share ideas
+- **[GitHub](https://github.com/bmad-code-org/BMAD-METHOD)** — Source code, issues, and contributions
+- **[YouTube](https://www.youtube.com/@BMadCode)** — Video tutorials and walkthroughs
 
-1. [Brownfield Guide](./modules/bmm-bmad-method/brownfield-guide) - Approach for legacy code
-2. [Quick Start Guide](./modules/bmm-bmad-method/quick-start) - Follow the process
-3. [BMM Workflows Guide](./modules/bmm-bmad-method/index#-workflow-guides) - Master the methodology
+---
 
-### Path 5: Building Custom Agents
+## Next Step
 
-1. [Core Concepts: Agents](./bmad-core-concepts/agents.md) - Understand Simple vs Expert
-2. [Agent Creation Guide](./modules/bmb-bmad-builder/agent-creation-guide.md) - Build your first agent
-3. [Agent Architecture](./modules/bmb-bmad-builder/index) - Deep technical details
+Ready to dive in? Pick a tutorial and start building.
 
-### Path 6: Contributing to BMAD
-
-1. [CONTRIBUTING.md](https://github.com/bmad-code-org/BMAD-METHOD/blob/main/CONTRIBUTING.md) - Contribution guidelines
-2. Relevant module README - Understand the area you're contributing to
+- **[Get Started with v4 (Stable)](./tutorials/getting-started/getting-started-bmadv4.md)** — Recommended for production projects
+- **[Try v6 (Alpha)](./tutorials/getting-started/getting-started-bmadv6.md)** — Explore the latest features

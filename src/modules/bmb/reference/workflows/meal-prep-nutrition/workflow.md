@@ -2,6 +2,7 @@
 name: Meal Prep & Nutrition Plan
 description: Creates personalized meal plans through collaborative nutrition planning between an expert facilitator and individual seeking to improve their nutrition habits.
 web_bundle: true
+standalone: false
 ---
 
 # Meal Prep & Nutrition Plan Workflow

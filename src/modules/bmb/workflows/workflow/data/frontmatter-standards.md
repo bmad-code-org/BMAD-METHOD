@@ -8,7 +8,7 @@
 
 1. **Only variables USED in the step** may be in frontmatter
 2. **All file references MUST use `{variable}` format** - no hardcoded paths
-3. **Paths within workflow folder MUST be relative**
+3. **Paths within workflow folder MUST be relative** - NO `workflow_path` variable allowed
 
 ---
 
@@ -48,25 +48,24 @@ description: '[what this step does]'
 ---
 ```
 
-### File References (ONLY if used in this step)
+### File References - ONLY variables used in this step
 ```yaml
 ---
-# File References
-workflow_path: '{project-root}/_bmad/[module]/workflows/[workflow-name]'
-thisStepFile: '{workflow_path}/steps/step-[N]-[name].md'
-nextStepFile: '{workflow_path}/steps/step-[N+1]-[name].md'
-workflowFile: '{workflow_path}/workflow.md'
-outputFile: '{output_folder}/[output-name].md'
+# Step to step (SAME folder) - use ./filename.md
+nextStepFile: './step-02-vision.md'
 
-# Task References (IF USED)
+# Step to template (PARENT folder) - use ../filename.md
+productBriefTemplate: '../product-brief.template.md'
+
+# Step to data (SUBFOLDER) - use ./data/filename.md
+someData: './data/config.csv'
+
+# Output files - use variable
+outputFile: '{planning_artifacts}/product-brief-{{project_name}}-{{date}}.md'
+
+# External references - use {project-root}
 advancedElicitationTask: '{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml'
 partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
-
-# Template References (IF USED)
-someTemplate: '{workflow_path}/templates/[template].md'
-
-# Data References (IF USED)
-someData: '{workflow_path}/data/[data].csv'
 ---
 ```
 
@@ -74,47 +73,100 @@ someData: '{workflow_path}/data/[data].csv'
 
 ## Critical Rule: Unused Variables Forbidden
 
-### ❌ VIOLATION
+### ❌ VIOLATION - Variable defined but never used
 ```yaml
 ---
 outputFile: '{output_folder}/output.md'
-partyModeWorkflow: '{project-root}/.../party-mode/workflow.md'  # ❌ NOT USED!
+thisStepFile: './step-01-init.md'      # ❌ NEVER USED in body
+workflowFile: './workflow.md'           # ❌ NEVER USED in body
 ---
-# Step body never mentions {partyModeWorkflow}
+# Step body never mentions {thisStepFile} or {workflowFile}
 ```
 
-### ✅ CORRECT
+### ✅ CORRECT - Only variables that are used
 ```yaml
 ---
 outputFile: '{output_folder}/output.md'
+nextStepFile: './step-02-foo.md'
 ---
-# Step body uses {outputFile}
+# Step body uses {outputFile} and {nextStepFile}
 ```
 
+**Detection Rule:** For EVERY variable in frontmatter, search the step body for `{variableName}`. If not found, it's a violation.
+
 ---
 
-## Path Rules
+## Path Rules - NO EXCEPTIONS
 
-### 1. Paths Within Workflow Folder = RELATIVE
+### 1. Step to Step (SAME folder) = ./filename.md
 ```yaml
-# ❌ WRONG - absolute for same-folder
-someTemplate: '{project-root}/_bmad/bmb/workflows/my-workflow/templates/template.md'
+# ❌ WRONG
+nextStepFile: '{workflow_path}/steps/step-02.md'
+nextStepFile: '{project-root}/_bmad/bmm/workflows/foo/steps/step-02.md'
 
-# ✅ CORRECT - relative or via workflow_path
+# ✅ CORRECT
+nextStepFile: './step-02-vision.md'
+```
+
+### 2. Step to Template (PARENT folder) = ../filename.md
+```yaml
+# ❌ WRONG
 someTemplate: '{workflow_path}/templates/template.md'
+
+# ✅ CORRECT
+someTemplate: '../template.md'
 ```
 
-### 2. External References = Full Variable Paths
+### 3. Step to Subfolder = ./subfolder/file.md
+```yaml
+# ❌ WRONG
+dataFile: '{workflow_path}/data/config.csv'
+
+# ✅ CORRECT
+dataFile: './data/config.csv'
+```
+
+### 4. External References = {project-root}/...
 ```yaml
 # ✅ CORRECT
 advancedElicitationTask: '{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml'
 ```
 
-### 3. Output Files = Use output_folder Variable
+### 5. Output Files = Use folder variable
 ```yaml
 # ✅ CORRECT
-outputFile: '{output_folder}/workflow-output-{project_name}.md'
+outputFile: '{planning_artifacts}/workflow-output-{project_name}.md'
+outputFile: '{output_folder}/output.md'
 ```
+
+---
+
+## ❌ FORBIDDEN Patterns
+
+These patterns are **NEVER ALLOWED** in workflow step frontmatter:
+
+| Pattern | Why It's Wrong |
+|---------|----------------|
+| `workflow_path: '{project-root}/...'` | Use relative paths instead |
+| `thisStepFile: './step-XX.md'` | Almost never used - remove unless actually referenced |
+| `workflowFile: './workflow.md'` | Almost never used - remove unless actually referenced |
+| `{workflow_path}/steps/...` | Use `./step-XX.md` (same folder) |
+| `{workflow_path}/templates/...` | Use `../template.md` (parent folder) |
+| `{workflow_path}/data/...` | Use `./data/file.md` (subfolder) |
+
+---
+
+## Variable Naming
+
+Use `snake_case` with descriptive prefixes:
+
+| Pattern   | Usage                  | Example                    |
+| --------- | ---------------------- | -------------------------- |
+| `{*_File}`   | File references        | `outputFile`, `nextStepFile`     |
+| `{*_Task}`   | Task references        | `advancedElicitationTask`       |
+| `{*_Workflow}` | Workflow references   | `partyModeWorkflow`            |
+| `{*_Template}` | Templates            | `productBriefTemplate`         |
+| `{*_Data}`    | Data files            | `dietaryData`                 |
 
 ---
 
@@ -127,6 +179,7 @@ Steps can define NEW variables that future steps will use.
 ---
 targetWorkflowPath: '{bmb_creations_output_folder}/workflows/{workflow_name}'
 ---
+# Uses {targetWorkflowPath} in body
 ```
 
 **Step 02 uses:**
@@ -135,6 +188,7 @@ targetWorkflowPath: '{bmb_creations_output_folder}/workflows/{workflow_name}'
 targetWorkflowPath: '{bmb_creations_output_folder}/workflows/{workflow_name}'
 workflowPlanFile: '{targetWorkflowPath}/plan.md'
 ---
+# Uses {targetWorkflowPath} and {workflowPlanFile} in body
 ```
 
 ---
@@ -154,26 +208,18 @@ date: '2025-01-01'
 
 ---
 
-## Variable Naming
-
-Use `snake_case` with descriptive prefixes:
-
-| Pattern   | Usage                  | Example                    |
-| --------- | ---------------------- | -------------------------- |
-| `{*_path}`   | Folder paths           | `workflow_path`, `data_path` |
-| `{*_file}`   | Files                  | `outputFile`, `planFile`     |
-| `{*_template}` | Templates            | `profileTemplate`            |
-| `{*_data}`    | Data files            | `dietaryData`               |
-
----
-
 ## Validation Checklist
 
-For every step frontmatter:
-- [ ] `name` present, kebab-case
+For EVERY step frontmatter, verify:
+
+- [ ] `name` present, kebab-case format
 - [ ] `description` present
-- [ ] All variables in frontmatter ARE used in step body
-- [ ] All file references use `{variable}` format
-- [ ] Paths within workflow folder are relative
+- [ ] Extract ALL variable names from frontmatter (between `---` markers)
+- [ ] For EACH variable, search body: is `{variableName}` present?
+- [ ] If variable NOT in body → ❌ VIOLATION, remove from frontmatter
+- [ ] All step-to-step paths use `./filename.md` format (same folder)
+- [ ] All parent-folder paths use `../filename.md` format
+- [ ] All subfolder paths use `./subfolder/filename.md` format
+- [ ] NO `{workflow_path}` variable exists
 - [ ] External paths use `{project-root}` variable
-- [ ] Module variables only if workflow belongs to that module
+- [ ] Module variables only used if workflow belongs to that module
