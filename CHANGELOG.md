@@ -1,5 +1,13 @@
 # Changelog
 
+## [6.1.0-alpha.2]
+
+**Release: January 7, 2026**
+
+Republish of alpha.1 with all changes intact. No functional differences from alpha.1.
+
+---
+
 ## [6.1.0-alpha.1]
 
 **Release: January 7, 2026**
