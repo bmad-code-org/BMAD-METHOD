@@ -227,21 +227,41 @@ Run `/bmad:bmm:workflows:sprint-status` to see status.
   <substep n="2.6a" title="Analyze story complexity">
     <action>Read story file: {{file_path}}</action>
 
-    <action>Count unchecked tasks ([ ]) in Tasks/Subtasks section → task_count</action>
+    <action>Count unchecked tasks ([ ]) at top level only in Tasks/Subtasks section → task_count
+      (See workflow.yaml complexity.task_counting.method = "top_level_only")
+    </action>
     <action>Extract file paths mentioned in tasks → file_count</action>
-    <action>Scan story title and task descriptions for risk keywords</action>
+    <action>Scan story title and task descriptions for risk keywords using rules from workflow.yaml:
+      - Case insensitive matching (require_word_boundaries: true)
+      - Include keyword variants (e.g., "authentication" matches "auth")
+      - Scan: story_title, task_descriptions, subtask_descriptions
+    </action>
 
     <action>Calculate complexity score:
       - Base score = task_count
-      - Add 5 for each HIGH risk keyword (auth, security, payment, migration, database, schema)
-      - Add 2 for each MEDIUM risk keyword (api, integration, external, cache)
+      - Add 5 for each HIGH risk keyword match (auth, security, payment, migration, database, schema, encryption)
+      - Add 2 for each MEDIUM risk keyword match (api, integration, external, third-party, cache)
       - Add 0 for LOW risk keywords (ui, style, config, docs, test)
+      - Count each keyword only once (no duplicates)
     </action>
 
-    <action>Assign complexity level:
-      - MICRO: task_count ≤ 3 AND complexity_score ≤ 5 AND no HIGH risk keywords
-      - COMPLEX: task_count ≥ 16 OR complexity_score ≥ 20 OR has HIGH risk keywords
-      - STANDARD: everything else
+    <action>Assign complexity level using mutually exclusive decision tree (priority order):
+
+      1. Check COMPLEX first (highest priority):
+         IF (task_count ≥ 16 OR complexity_score ≥ 20 OR has ANY HIGH risk keyword)
+         THEN level = COMPLEX
+
+      2. Else check MICRO (lowest complexity):
+         ELSE IF (task_count ≤ 3 AND complexity_score ≤ 5 AND file_count ≤ 5)
+         THEN level = MICRO
+
+      3. Else default to STANDARD:
+         ELSE level = STANDARD
+
+      This ensures no overlaps:
+      - Story with HIGH keyword → COMPLEX (never MICRO or STANDARD)
+      - Story with 4-15 tasks or >5 files → STANDARD (not MICRO or COMPLEX)
+      - Story with ≤3 tasks, ≤5 files, no HIGH keywords → MICRO
     </action>
 
     <action>Store complexity_level for story: {{story_key}}.complexity = {level, score, task_count, risk_keywords}</action>
@@ -418,7 +438,7 @@ Only the first {{max_stories}} will be processed.</output>
     </output>
 
     <action>Invoke workflow: /bmad:bmm:workflows:super-dev-pipeline</action>
-    <action>Parameters: mode=batch, story_key={{story_key}}</action>
+    <action>Parameters: mode=batch, story_key={{story_key}}, complexity_level={{story_key}}.complexity.level</action>
 
     <check if="super-dev-pipeline succeeded">
       <output>✅ Implementation complete: {{story_key}}</output>
@@ -507,7 +527,7 @@ Spawning Task agents in parallel...
                  CRITICAL INSTRUCTIONS:
                  1. Load workflow.xml: _bmad/core/tasks/workflow.xml
                  2. Load workflow config: _bmad/bmm/workflows/4-implementation/super-dev-pipeline/workflow.yaml
-                 3. Execute in BATCH mode with story_key={{story_key}}
+                 3. Execute in BATCH mode with story_key={{story_key}} and complexity_level={{story_key}}.complexity.level
                  4. Follow all 7 pipeline steps (init, pre-gap, implement, post-validate, code-review, complete, summary)
                  5. Commit changes when complete
                  6. Report final status (done/failed) with file list

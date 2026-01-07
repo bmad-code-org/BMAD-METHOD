@@ -1,7 +1,7 @@
 name: super-dev-pipeline
 description: "Step-file architecture with complexity-based routing and smart batching. Micro stories get lightweight path, standard/complex get full quality gates."
 author: "BMad"
-version: "1.2.0" # Added complexity-based routing
+version: "1.3.0" # Synchronized with batch-super-dev for complexity-based routing
 
 # Critical variables from config
 config_source: "{project-root}/_bmad/bmm/config.yaml"

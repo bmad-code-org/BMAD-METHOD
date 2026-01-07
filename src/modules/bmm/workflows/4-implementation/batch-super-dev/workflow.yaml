@@ -61,6 +61,33 @@ complexity:
     medium: ["api", "integration", "external", "third-party", "cache"]
     low: ["ui", "style", "config", "docs", "test"]
 
+  # Keyword matching configuration (defines how risk keywords are detected)
+  keyword_matching:
+    case_sensitive: false # "AUTH" matches "auth"
+    require_word_boundaries: true # "auth" won't match "author"
+    match_strategy: "exact" # exact word match required (no stemming)
+    scan_locations:
+      - story_title
+      - task_descriptions
+      - subtask_descriptions
+    # Keyword variants (synonyms that map to canonical forms)
+    variants:
+      auth: ["authentication", "authorize", "authorization", "authz", "authn"]
+      database: ["db", "databases", "datastore"]
+      payment: ["payments", "pay", "billing", "checkout"]
+      migration: ["migrations", "migrate"]
+      security: ["secure", "security"]
+      encryption: ["encrypt", "encrypted", "cipher"]
+
+  # Task counting rules
+  task_counting:
+    method: "top_level_only" # Only count [ ] at task level, not subtasks
+    # Options: "top_level_only", "include_subtasks", "weighted"
+    # Example:
+    # - [ ] Parent task       <- counts as 1
+    #   - [ ] Subtask 1       <- ignored
+    #   - [ ] Subtask 2       <- ignored
+
 # Execution settings
 execution:
   continue_on_failure: true # Keep processing remaining stories if one fails
