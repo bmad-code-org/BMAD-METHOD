@@ -7,9 +7,10 @@ This document describes the customizations and enhancements in this fork compare
 This fork extends the official BMAD Method with **production automation workflows** focused on:
 
 - **Quality assurance automation** - Multi-stage validation pipelines
-- **Token efficiency** - 60-70% reduction in token usage per story
+- **Token efficiency** - 50-70% reduction through complexity-based routing
 - **Autonomous processing** - Unattended epic completion
 - **Anti-vibe-coding enforcement** - Mandatory gap analysis and code review
+- **Smart routing** - Micro stories skip unnecessary quality gates
 
 **Stats:** ~26,000+ lines of additions across 122 files
 
@@ -30,6 +31,12 @@ Pre-validation → Development → Post-validation → Code Review → Fixes →
 - Catches partial implementations
 - Finds missed edge cases automatically
 - Runs adversarial code review before human review
+
+**Complexity-Based Routing (v1.3.0):**
+- **MICRO stories** automatically skip steps 2 (pre-gap analysis) and 5 (code review)
+- **STANDARD/COMPLEX stories** use full 7-step pipeline
+- Early bailout checks prevent processing already-complete or invalid stories
+- Token savings: 50-70% for micro stories, 90% for early bailouts
 
 **Location:** `src/modules/bmm/workflows/4-implementation/super-dev-pipeline/`
 
@@ -73,18 +80,38 @@ Interactive batch workflow for processing multiple stories with full quality gat
 
 → Select stories: 1-3,5,7  (or "all")
 → Validates story files (creates missing, regenerates invalid)
+→ Scores complexity for each story (micro/standard/complex)
+→ Routes to appropriate pipeline (lightweight vs full)
 → Processes each with super-dev-pipeline
 → Reconciles story status after each
 → All stories complete! ✅
 ```
 
-**Features (v1.2.0):**
+**Features (v1.3.0):**
+- **Complexity-Based Routing** ⭐ NEW - Smart pipeline selection
+  - **MICRO** (≤3 tasks, low risk): Lightweight path, skips gap analysis + code review (50-70% token savings)
+  - **STANDARD** (4-15 tasks): Full pipeline with all quality gates
+  - **COMPLEX** (≥16 tasks or high-risk): Enhanced validation, suggest splitting
 - **Smart Story Validation** - Checks 12 required BMAD sections
 - **Auto-Creation** - Creates missing story files with codebase gap analysis
 - **Auto-Regeneration** - Regenerates invalid/incomplete stories
 - **Sequential or Parallel** execution modes
 - **Story Reconciliation** - Verifies checkboxes match implementation
 - **Epic filtering** - Process only specific epic's stories
+
+**Complexity Scoring Algorithm:**
+```
+complexity_score = task_count + (high_risk_keywords × 5) + (medium_risk_keywords × 2)
+
+MICRO:    task_count ≤ 3 AND score ≤ 5 AND file_count ≤ 5 AND no HIGH risk keywords
+COMPLEX:  task_count ≥ 16 OR score ≥ 20 OR has HIGH risk keywords (auth, security, payment, etc.)
+STANDARD: everything else
+```
+
+**Risk Keywords:**
+- **HIGH** (5 points): auth, security, payment, encryption, migration, database, schema
+- **MEDIUM** (2 points): api, integration, external, third-party, cache
+- **LOW** (0 points): ui, style, config, docs, test
 
 **Location:** `src/modules/bmm/workflows/4-implementation/batch-super-dev/`
 
@@ -276,6 +303,11 @@ See `PR-DESCRIPTION.md` and `PR-STORY-PIPELINE.md` for prepared PR descriptions.
 **Date:** 2026-01-07
 **Upstream Commit:** `5c766577` (Add CNAME file)
 **Merge Commit:** `9df79392`
+
+**Latest Fork Changes:**
+- **Date:** 2026-01-07
+- **Commit:** `9bdf4894` (Critical complexity routing fixes)
+- **Features:** Complexity-based routing v1.3.0, multi-agent review integration
 
 To sync with upstream:
 ```bash
