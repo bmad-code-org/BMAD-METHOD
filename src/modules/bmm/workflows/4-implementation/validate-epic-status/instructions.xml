@@ -2,7 +2,7 @@
   <critical>The workflow execution engine is governed by: {project-root}/_bmad/core/tasks/workflow.xml</critical>
   <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
   <critical>This is VALIDATION-ONLY mode - NO implementation, only status correction</critical>
-  <critical>Uses same logic as autonomous-epic but READS instead of WRITES code</critical>
+  <critical>Uses same logic as batch-super-dev but READS instead of WRITES code</critical>
 
   <step n="1" goal="Validate inputs and load epic">
     <action>Check if {{epic_num}} was provided</action>
@@ -96,7 +96,7 @@ Analyzing {{story_count}} story files...
   <step n="4" goal="Check autonomous completion reports">
     <action>Search {{story_dir}} for files:
       - .epic-{{epic_num}}-completion-report.md
-      - .autonomous-epic-{{epic_num}}-progress.yaml
+      - .batch-super-dev-{{epic_num}}-progress.yaml
     </action>
 
     <check if="autonomous report found">

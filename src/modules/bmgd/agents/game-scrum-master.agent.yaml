@@ -45,10 +45,6 @@ agent:
       workflow: "{project-root}/_bmad/bmgd/workflows/4-production/gap-analysis/workflow.yaml"
       description: "[GA] Run Gap Analysis - audit story tasks against codebase (useful for sprint health checks)"
 
-    - trigger: AEP or fuzzy match on autonomous-epic
-      workflow: "{project-root}/_bmad/bmgd/workflows/4-production/autonomous-epic/workflow.yaml"
-      description: "[AEP] Autonomous Epic Processing - create and develop all stories in an epic automatically"
-
     - trigger: VS or fuzzy match on validate-story
       validate-workflow: "{project-root}/_bmad/bmgd/workflows/4-production/create-story/workflow.yaml"
       description: "[VS] Validate Story Draft with Independent Review (Highly Recommended)"

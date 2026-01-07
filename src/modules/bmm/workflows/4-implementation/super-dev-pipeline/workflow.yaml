@@ -28,7 +28,7 @@ modes:
     requires_approval: true
     smart_batching: true # User can approve batching plan
   batch:
-    description: "Unattended execution for autonomous-epic"
+    description: "Unattended execution for batch-super-dev"
     checkpoint_on_failure: true
     requires_approval: false
     fail_fast: true

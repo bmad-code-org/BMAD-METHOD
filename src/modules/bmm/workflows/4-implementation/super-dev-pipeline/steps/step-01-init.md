@@ -38,7 +38,7 @@ Initialize the super-dev-pipeline:
 ### 1. Detect Execution Mode
 
 Check if running in batch or interactive mode:
-- Batch mode: Invoked from autonomous-epic
+- Batch mode: Invoked from batch-super-dev
 - Interactive mode: User-initiated
 
 Set `{mode}` variable.

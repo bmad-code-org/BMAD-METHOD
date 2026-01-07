@@ -22,7 +22,7 @@ implementation_artifacts: "{config_source}:implementation_artifacts"
 sprint_status: "{implementation_artifacts}/sprint-status.yaml"
 project_context: "**/project-context.md"
 
-# Autonomous mode settings (passed from parent workflow like autonomous-epic)
+# Autonomous mode settings (passed from parent workflow like batch-super-dev)
 auto_accept_gap_analysis: false # When true, skip gap analysis approval prompt
 
 standalone: true

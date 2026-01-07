@@ -165,7 +165,7 @@ Features:
 - User approval at quality gates
 - Can pause and resume
 
-### Batch Mode (For autonomous-epic)
+### Batch Mode (For batch-super-dev)
 ```bash
 bmad super-dev-pipeline --batch
 ```
@@ -289,4 +289,4 @@ This workflow **prevents vibe coding** through:
 
 ---
 
-**super-dev-pipeline is the best of both worlds for autonomous-epic!**
+**super-dev-pipeline is the best of both worlds for batch-super-dev!**

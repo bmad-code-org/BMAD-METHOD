@@ -61,9 +61,9 @@ Combines the best of both worlds:
 bmad super-dev-pipeline
 ```
 
-### From autonomous-epic
+### From batch-super-dev
 ```bash
-bmad autonomous-epic
+bmad batch-super-dev
 # Automatically uses super-dev-pipeline for each story
 ```
 
@@ -116,7 +116,7 @@ Step-file architecture enforces:
 **Use super-dev-pipeline when:**
 - Working with existing codebase (brownfield)
 - Need vibe-coding prevention
-- Running autonomous-epic
+- Running batch-super-dev
 - Token counts will be high
 - Want disciplined execution
 
