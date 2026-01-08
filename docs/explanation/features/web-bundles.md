@@ -33,5 +33,3 @@ Web bundles package BMad agents as self-contained files that work in Gemini Gems
 - Some quality reduction vs local usage
 - Less convenient than full local installation
 - Limited to agent capabilities (no workflow file access)
-
-[← Back to Core Concepts](../index.md)

@@ -1,14 +1,13 @@
 ---
-title: "Getting Started with BMad v6 Alpha"
-description: Install BMad v6 Alpha and build your first project
+title: "Getting Started with the BMad Method"
+description: Install BMad and build your first project
 ---
 
+**Upgrading from previous versions?** See the [Upgrade Guide](../../how-to/installation/upgrade-to-v6.md) instead.
+
+---
 
 Build software faster using AI-powered workflows with specialized agents that guide you through planning, architecture, and implementation.
-
-:::caution[Alpha Software]
-BMad v6 is currently in **alpha**. Expect breaking changes, incomplete features, and evolving documentation. For a stable experience, use the [BMad v4 tutorial](./getting-started-bmadv4.md) instead.
-:::
 
 ## What You'll Learn
 
@@ -36,12 +35,12 @@ BMad v6 is currently in **alpha**. Expect breaking changes, incomplete features,
 
 BMad helps you build software through guided workflows with specialized AI agents. The process follows four phases:
 
-| Phase | Name | What Happens |
-|-------|------|--------------|
-| 1 | Analysis | Brainstorming, research, product brief *(optional)* |
-| 2 | Planning | Create requirements (PRD or tech-spec) |
-| 3 | Solutioning | Design architecture *(BMad Method/Enterprise only)* |
-| 4 | Implementation | Build epic by epic, story by story |
+| Phase | Name           | What Happens                                        |
+| ----- | -------------- | --------------------------------------------------- |
+| 1     | Analysis       | Brainstorming, research, product brief *(optional)* |
+| 2     | Planning       | Create requirements (PRD or tech-spec)              |
+| 3     | Solutioning    | Design architecture *(BMad Method/Enterprise only)* |
+| 4     | Implementation | Build epic by epic, story by story                  |
 
 ![BMad Method Workflow - Standard Greenfield](./images/workflow-method-greenfield.svg)
 
@@ -49,11 +48,11 @@ BMad helps you build software through guided workflows with specialized AI agent
 
 Based on your project's complexity, BMad offers three planning tracks:
 
-| Track | Best For | Documents Created |
-|-------|----------|-------------------|
-| **Quick Flow** | Bug fixes, simple features, clear scope (1-15 stories) | Tech-spec only |
-| **BMad Method** | Products, platforms, complex features (10-50+ stories) | PRD + Architecture + UX |
-| **Enterprise** | Compliance, multi-tenant systems (30+ stories) | PRD + Architecture + Security + DevOps |
+| Track           | Best For                                               | Documents Created                      |
+| --------------- | ------------------------------------------------------ | -------------------------------------- |
+| **Quick Flow**  | Bug fixes, simple features, clear scope (1-15 stories) | Tech-spec only                         |
+| **BMad Method** | Products, platforms, complex features (10-50+ stories) | PRD + Architecture + UX                |
+| **Enterprise**  | Compliance, multi-tenant systems (30+ stories)         | PRD + Architecture + Security + DevOps |
 
 :::note
 Story counts are guidance, not definitions. Choose your track based on planning needs, not story math.
@@ -166,12 +165,12 @@ Load the **SM agent** and run `sprint-planning`. This creates `sprint-status.yam
 
 For each story, repeat this cycle with fresh chats:
 
-| Step | Agent | Workflow | Purpose |
-|------|-------|----------|---------|
-| 1 | SM | `create-story` | Create story file from epic |
-| 2 | DEV | `dev-story` | Implement the story |
-| 3 | TEA | `automate` | Generate guardrail tests *(optional)* |
-| 4 | DEV | `code-review` | Quality validation *(recommended)* |
+| Step | Agent | Workflow       | Purpose                               |
+| ---- | ----- | -------------- | ------------------------------------- |
+| 1    | SM    | `create-story` | Create story file from epic           |
+| 2    | DEV   | `dev-story`    | Implement the story                   |
+| 3    | TEA   | `automate`     | Generate guardrail tests *(optional)* |
+| 4    | DEV   | `code-review`  | Quality validation *(recommended)*    |
 
 After completing all stories in an epic, load the **SM agent** and run `retrospective`.
 
@@ -200,18 +199,18 @@ your-project/
 
 ## Quick Reference
 
-| Command | Agent | Purpose |
-|---------|-------|---------|
-| `*workflow-init` | Analyst | Initialize a new project |
-| `*workflow-status` | Any | Check progress and next steps |
-| `*prd` | PM | Create Product Requirements Document |
-| `*create-architecture` | Architect | Create architecture document |
-| `*create-epics-and-stories` | PM | Break down PRD into epics |
-| `*implementation-readiness` | Architect | Validate planning cohesion |
-| `*sprint-planning` | SM | Initialize sprint tracking |
-| `*create-story` | SM | Create a story file |
-| `*dev-story` | DEV | Implement a story |
-| `*code-review` | DEV | Review implemented code |
+| Command                     | Agent     | Purpose                              |
+| --------------------------- | --------- | ------------------------------------ |
+| `*workflow-init`            | Analyst   | Initialize a new project             |
+| `*workflow-status`          | Any       | Check progress and next steps        |
+| `*prd`                      | PM        | Create Product Requirements Document |
+| `*create-architecture`      | Architect | Create architecture document         |
+| `*create-epics-and-stories` | PM        | Break down PRD into epics            |
+| `*implementation-readiness` | Architect | Validate planning cohesion           |
+| `*sprint-planning`          | SM        | Initialize sprint tracking           |
+| `*create-story`             | SM        | Create a story file                  |
+| `*dev-story`                | DEV       | Implement a story                    |
+| `*code-review`              | DEV       | Review implemented code              |
 
 ## Common Questions
 

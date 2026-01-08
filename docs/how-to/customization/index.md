@@ -25,5 +25,3 @@ Replace or extend workflow steps to create tailored processes. (Coming soon)
 ---
 
 **Next:** Read the [Agent Customization Guide](./customize-agents.md) to start personalizing your agents.
-
-[← Back to Core Concepts](../index.md)
