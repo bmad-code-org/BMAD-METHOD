@@ -49,3 +49,11 @@ agent:
     - trigger: CC or fuzzy match on correct-course
       workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/correct-course/workflow.yaml"
       description: "[CC] Execute correct-course task (When implementation is off-track)"
+
+    - trigger: RVS or fuzzy match on revalidate-story
+      workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/revalidate-story/workflow.yaml"
+      description: "[RVS] Revalidate Story - clear checkboxes and verify against codebase reality (find gaps and ghost features)"
+
+    - trigger: RVE or fuzzy match on revalidate-epic
+      workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/revalidate-epic/workflow.yaml"
+      description: "[RVE] Revalidate Epic - batch revalidation of all stories with semaphore pattern"

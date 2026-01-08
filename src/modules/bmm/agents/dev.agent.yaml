@@ -55,3 +55,11 @@ agent:
     - trigger: CR or fuzzy match on code-review
       workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/code-review/workflow.yaml"
       description: "[CR] Perform a thorough clean context code review (Highly Recommended, use fresh context and different LLM)"
+
+    - trigger: RVS or fuzzy match on revalidate-story
+      workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/revalidate-story/workflow.yaml"
+      description: "[RVS] Revalidate Story - clear checkboxes and re-verify against codebase (detect ghost features and gaps)"
+
+    - trigger: RVE or fuzzy match on revalidate-epic
+      workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/revalidate-epic/workflow.yaml"
+      description: "[RVE] Revalidate Epic - batch revalidation of all stories in an epic with semaphore pattern"
