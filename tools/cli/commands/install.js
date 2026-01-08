@@ -1,6 +1,5 @@
 const chalk = require('chalk');
 const path = require('node:path');
-const inquirer = require('inquirer').default || require('inquirer');
 const { Installer } = require('../installers/lib/core/installer');
 const { UI } = require('../lib/ui');
 
@@ -72,6 +71,7 @@ module.exports = {
           console.log(chalk.dim('  • ElevenLabs AI (150+ premium voices)'));
           console.log(chalk.dim('  • Piper TTS (50+ free voices)\n'));
 
+          const { default: inquirer } = await import('inquirer');
           await inquirer.prompt([
             {
               type: 'input',
