@@ -102,11 +102,17 @@ function extractAnchors(content) {
 
 /**
  * Resolve a site-relative link to a file path
+ * /docs/how-to/installation/install-bmad.md -> docs/how-to/installation/install-bmad.md
  * /how-to/installation/install-bmad/ -> docs/how-to/installation/install-bmad.md or .../index.md
  */
 function resolveLink(siteRelativePath) {
   // Strip anchor and query
-  const checkPath = siteRelativePath.split('#')[0].split('?')[0];
+  let checkPath = siteRelativePath.split('#')[0].split('?')[0];
+
+  // Strip /docs/ prefix if present (repo-relative links)
+  if (checkPath.startsWith('/docs/')) {
+    checkPath = checkPath.slice(5); // Remove '/docs' but keep leading '/'
+  }
 
   if (checkPath.endsWith('/')) {
     // Could be file.md or directory/index.md
@@ -118,11 +124,11 @@ function resolveLink(siteRelativePath) {
     return null;
   }
 
-  // Direct path
+  // Direct path (e.g., /path/file.md)
   const direct = path.join(DOCS_ROOT, checkPath);
   if (fs.existsSync(direct)) return direct;
 
-  // Try with .md
+  // Try with .md extension
   const withMd = direct + '.md';
   if (fs.existsSync(withMd)) return withMd;
 
