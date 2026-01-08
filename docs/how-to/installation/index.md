@@ -10,6 +10,6 @@ How-to guides for installing and configuring the BMad Method.
 
 | Guide | Description |
 |-------|-------------|
-| **[Install BMad](./install-bmad.md)** | Step-by-step installation instructions |
-| **[Install Custom Modules](./install-custom-modules.md)** | Add custom agents, workflows, and modules |
-| **[Upgrade to v6](./upgrade-to-v6.md)** | Migrate from BMad v4 to v6 |
+| **[Install BMad](/how-to/installation/install-bmad/)** | Step-by-step installation instructions |
+| **[Install Custom Modules](/how-to/installation/install-custom-modules/)** | Add custom agents, workflows, and modules |
+| **[Upgrade to v6](/how-to/installation/upgrade-to-v6/)** | Migrate from BMad v4 to v6 |

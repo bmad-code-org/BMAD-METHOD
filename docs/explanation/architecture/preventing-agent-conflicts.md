@@ -133,6 +133,6 @@ Document written once, never updated
 
 ## Related
 
-- [Why Solutioning Matters](./why-solutioning-matters.md)
-- [Four Phases](./four-phases.md)
-- [Create Architecture](../../how-to/workflows/create-architecture.md)
+- [Why Solutioning Matters](/explanation/architecture/why-solutioning-matters/)
+- [Four Phases](/explanation/architecture/four-phases/)
+- [Create Architecture](/how-to/workflows/create-architecture/)

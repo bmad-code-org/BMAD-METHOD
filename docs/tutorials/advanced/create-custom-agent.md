@@ -159,9 +159,9 @@ Study the reference agents in `src/modules/bmb/reference/agents/`:
 
 ## Further Reading
 
-- **[What Are Agents](../../explanation/core-concepts/what-are-agents.md)** - Deep technical details on agent types
-- **[Agent Customization](../../how-to/customization/customize-agents.md)** - Modify agents without editing core files
-- **[Custom Content Installation](../../how-to/installation/install-custom-modules.md)** - Package and distribute your agents
+- **[What Are Agents](/explanation/core-concepts/what-are-agents/)** - Deep technical details on agent types
+- **[Agent Customization](/how-to/customization/customize-agents/)** - Modify agents without editing core files
+- **[Custom Content Installation](/how-to/installation/install-custom-modules/)** - Package and distribute your agents
 
 :::tip[Key Takeaways]
 - **Start small** - Your first agent should solve one problem well

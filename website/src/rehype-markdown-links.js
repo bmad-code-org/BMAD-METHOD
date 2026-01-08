@@ -1,21 +1,22 @@
 /**
- * Rehype plugin to transform relative markdown file links (.md) to page routes
+ * Rehype plugin to transform markdown file links (.md) to page routes
  *
  * Transforms:
  *   ./path/to/file.md → ./path/to/file/
  *   ./path/index.md → ./path/ (index.md becomes directory root)
  *   ../path/file.md#anchor → ../path/file/#anchor
  *   ./file.md?query=param → ./file/?query=param
+ *   /absolute/path/file.md → /absolute/path/file/
  *
- * Only affects relative links (./,  ../) - absolute and external links are unchanged
+ * Affects relative links (./, ../) and absolute paths (/) - external links are unchanged
  */
 
 import { visit } from 'unist-util-visit';
 
 /**
- * Convert relative Markdown file links (./ or ../) into equivalent page route-style links.
+ * Convert Markdown file links (.md) into equivalent page route-style links.
  *
- * The returned transformer walks the HTML tree and rewrites anchor `href` values that are relative paths pointing to `.md` files. It preserves query strings and hash anchors, rewrites `.../index.md` to the directory root path (`.../`), and rewrites other `.md` file paths by removing the `.md` extension and ensuring a trailing slash. Absolute, external, non-relative, non-string, or links without `.md` are left unchanged.
+ * The returned transformer walks the HTML tree and rewrites anchor `href` values that are relative paths (./, ../) or absolute paths (/) pointing to `.md` files. It preserves query strings and hash anchors, rewrites `.../index.md` to the directory root path (`.../`), and rewrites other `.md` file paths by removing the `.md` extension and ensuring a trailing slash. External links (http://, https://) and non-.md links are left unchanged.
  *
  * @returns {function} A HAST tree transformer that mutates `a` element `href` properties as described.
  */
@@ -34,8 +35,13 @@ export default function rehypeMarkdownLinks() {
         return;
       }
 
-      // Only transform relative paths starting with ./ or ../
-      if (!href.startsWith('./') && !href.startsWith('../')) {
+      // Skip external links (http://, https://, mailto:, etc.)
+      if (href.includes('://') || href.startsWith('mailto:') || href.startsWith('tel:')) {
+        return;
+      }
+
+      // Only transform paths starting with ./, ../, or / (absolute)
+      if (!href.startsWith('./') && !href.startsWith('../') && !href.startsWith('/')) {
         return;
       }
 

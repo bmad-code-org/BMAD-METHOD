@@ -310,11 +310,11 @@ Implement OAuth 2.0 authentication with JWT tokens and role-based access control
 
 ## Related Documentation
 
-- **[Quick Start Guide](../../tutorials/getting-started/getting-started-bmadv6.md)** - Getting started with BMM
-- **[Agents Guide](../../explanation/core-concepts/agent-roles.md)** - Complete agent reference
-- **[Four Phases](../../explanation/architecture/four-phases.md)** - Understanding development tracks
-- **[Workflow Implementation](../../how-to/workflows/run-sprint-planning.md)** - Implementation workflows
-- **[Party Mode](../../explanation/features/party-mode.md)** - Multi-agent collaboration
+- **[Quick Start Guide](/tutorials/getting-started/getting-started-bmadv6/)** - Getting started with BMM
+- **[Agents Guide](/explanation/core-concepts/agent-roles/)** - Complete agent reference
+- **[Four Phases](/explanation/architecture/four-phases/)** - Understanding development tracks
+- **[Workflow Implementation](/how-to/workflows/run-sprint-planning/)** - Implementation workflows
+- **[Party Mode](/explanation/features/party-mode/)** - Multi-agent collaboration
 
 ---
 

@@ -8,10 +8,10 @@ Quick answers to common questions about the BMad Method, organized by topic.
 
 ## Topics
 
-- [Getting Started](./getting-started-faq.md) - Questions about starting with BMM
-- [Levels & Tracks](./levels-and-tracks-faq.md) - Choosing the right level
-- [Workflows](./workflows-faq.md) - Workflow and phase questions
-- [Planning](./planning-faq.md) - Planning document questions
-- [Implementation](./implementation-faq.md) - Implementation questions
-- [Brownfield](./brownfield-faq.md) - Existing codebase questions
-- [Tools & Advanced](./tools-faq.md) - Tools, IDEs, and advanced topics
+- [Getting Started](/explanation/faq/getting-started-faq/) - Questions about starting with BMM
+- [Levels & Tracks](/explanation/faq/levels-and-tracks-faq/) - Choosing the right level
+- [Workflows](/explanation/faq/workflows-faq/) - Workflow and phase questions
+- [Planning](/explanation/faq/planning-faq/) - Planning document questions
+- [Implementation](/explanation/faq/implementation-faq/) - Implementation questions
+- [Brownfield](/explanation/faq/brownfield-faq/) - Existing codebase questions
+- [Tools & Advanced](/explanation/faq/tools-faq/) - Tools, IDEs, and advanced topics

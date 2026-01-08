@@ -9,6 +9,27 @@ Internal guidelines for maintaining consistent, high-quality documentation acros
 3. **Strategic visuals** — Use admonitions, tables, and diagrams purposefully
 4. **Scannable content** — Headers, lists, and callouts help readers find what they need
 
+## Validation Steps
+
+Before submitting documentation changes, run these checks from the repo root:
+
+1. **Fix link format** — Convert relative links (`./`, `../`) to site-relative paths (`/path/`)
+   ```bash
+   npm run docs:fix-links            # Preview changes
+   npm run docs:fix-links -- --write # Apply changes
+   ```
+
+2. **Validate links** — Check all links point to existing files
+   ```bash
+   npm run docs:validate-links            # Preview issues
+   npm run docs:validate-links -- --write # Auto-fix where possible
+   ```
+
+3. **Build the site** — Verify no build errors
+   ```bash
+   npm run docs:build
+   ```
+
 ## Tutorial Structure
 
 Every tutorial should follow this structure:

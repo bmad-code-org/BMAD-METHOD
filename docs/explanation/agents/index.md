@@ -12,17 +12,17 @@ Comprehensive guides to BMAD's AI agents - their roles, capabilities, and how to
 
 ### BMM Agents
 
-- **[Agent Roles](../core-concepts/agent-roles.md)** - Overview of all BMM agent roles and responsibilities
-- **[Quick Flow Solo Dev (Barry)](./barry-quick-flow.md)** - The dedicated agent for rapid development
+- **[Agent Roles](/explanation/core-concepts/agent-roles/)** - Overview of all BMM agent roles and responsibilities
+- **[Quick Flow Solo Dev (Barry)](/explanation/agents/barry-quick-flow/)** - The dedicated agent for rapid development
 
 ### BMGD Agents
 
-- **[Game Development Agents](../game-dev/agents.md)** - Complete guide to BMGD's specialized game dev agents
+- **[Game Development Agents](/explanation/game-dev/agents/)** - Complete guide to BMGD's specialized game dev agents
 
 ---
 
 ## Related
 
-- **[What Are Agents?](../core-concepts/what-are-agents.md)** - Core concept explanation
-- **[Party Mode](../features/party-mode.md)** - Multi-agent collaboration
-- **[Customize Agents](../../how-to/customization/customize-agents.md)** - How to customize agent behavior
+- **[What Are Agents?](/explanation/core-concepts/what-are-agents/)** - Core concept explanation
+- **[Party Mode](/explanation/features/party-mode/)** - Multi-agent collaboration
+- **[Customize Agents](/how-to/customization/customize-agents/)** - How to customize agent behavior

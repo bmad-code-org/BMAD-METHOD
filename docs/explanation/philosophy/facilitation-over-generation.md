@@ -117,5 +117,5 @@ But the core creative work happens through facilitated discovery.
 
 ## Related
 
-- [Creative Intelligence Suite](../creative-intelligence/index.md) - CIS overview
-- [Brainstorming Techniques](../features/brainstorming-techniques.md) - Available techniques
+- [Creative Intelligence Suite](/explanation/creative-intelligence/) - CIS overview
+- [Brainstorming Techniques](/explanation/features/brainstorming-techniques/) - Available techniques

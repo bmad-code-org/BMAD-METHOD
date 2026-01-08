@@ -7,7 +7,7 @@ description: Build games with BMad's Game Development Module
 Build games faster using AI-powered workflows with specialized game development agents that guide you through preproduction, design, architecture, and implementation.
 
 :::note[Module Extension]
-BMGD (BMad Game Development) is a module that extends BMad Method. You'll need BMad installed first—see the [BMad v6 tutorial](./getting-started-bmadv6.md) if you haven't installed it yet.
+BMGD (BMad Game Development) is a module that extends BMad Method. You'll need BMad installed first—see the [BMad v6 tutorial](/tutorials/getting-started/getting-started-bmadv6/) if you haven't installed it yet.
 :::
 
 ## What You'll Learn
@@ -244,7 +244,7 @@ Yes. Documents are living artifacts—return to update them as your vision evolv
 
 - **During workflows** — Agents guide you with questions and explanations
 - **Community** — [Discord](https://discord.gg/gk8jAdXWmj) (#bmad-method-help, #report-bugs-and-issues)
-- **Documentation** — [BMGD Workflow Reference](../../reference/workflows/bmgd-workflows.md)
+- **Documentation** — [BMGD Workflow Reference](/reference/workflows/bmgd-workflows/)
 - **Video tutorials** — [BMad Code YouTube](https://www.youtube.com/@BMadCode)
 
 ## Key Takeaways

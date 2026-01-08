@@ -114,6 +114,6 @@ Implement email verification flow for new user registrations.
 
 ## Related
 
-- [Run Sprint Planning](./run-sprint-planning.md) - Initialize tracking
-- [Implement Story](./implement-story.md) - Next step
-- [Run Code Review](./run-code-review.md) - After implementation
+- [Run Sprint Planning](/how-to/workflows/run-sprint-planning/) - Initialize tracking
+- [Implement Story](/how-to/workflows/implement-story/) - Next step
+- [Run Code Review](/how-to/workflows/run-code-review/) - After implementation

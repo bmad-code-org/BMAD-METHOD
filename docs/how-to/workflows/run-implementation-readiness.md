@@ -157,6 +157,6 @@ E-commerce platform → CONCERNS ⚠️
 
 ## Related
 
-- [Create Architecture](./create-architecture.md) - Architecture workflow
-- [Create Epics and Stories](./create-epics-and-stories.md) - Work breakdown
-- [Run Sprint Planning](./run-sprint-planning.md) - Start implementation
+- [Create Architecture](/how-to/workflows/create-architecture/) - Architecture workflow
+- [Create Epics and Stories](/how-to/workflows/create-epics-and-stories/) - Work breakdown
+- [Run Sprint Planning](/how-to/workflows/run-sprint-planning/) - Start implementation

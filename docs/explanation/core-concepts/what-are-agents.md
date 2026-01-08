@@ -85,12 +85,12 @@ All agents share these building blocks:
 
 ## Creating Custom Agents
 
-BMAD provides the **BMAD Builder (BMB)** module for creating your own agents. See the [Agent Creation Guide](../../tutorials/advanced/create-custom-agent.md) for step-by-step instructions.
+BMAD provides the **BMAD Builder (BMB)** module for creating your own agents. See the [Agent Creation Guide](/tutorials/advanced/create-custom-agent/) for step-by-step instructions.
 
 ## Customizing Existing Agents
 
-You can modify any agent's behavior without editing core files. See [BMAD Customization](../../how-to/customization/index.md) for details. It is critical to never modify an installed agents .md file directly and follow the customization process, this way future updates to the agent or module its part of will continue to be updated and recompiled with the installer tool, and your customizations will still be retained.
+You can modify any agent's behavior without editing core files. See [BMAD Customization](/how-to/customization/) for details. It is critical to never modify an installed agents .md file directly and follow the customization process, this way future updates to the agent or module its part of will continue to be updated and recompiled with the installer tool, and your customizations will still be retained.
 
 ---
 
-**Next:** Learn about [Workflows](./what-are-workflows.md) to see how agents accomplish complex tasks.
+**Next:** Learn about [Workflows](/explanation/core-concepts/what-are-workflows/) to see how agents accomplish complex tasks.

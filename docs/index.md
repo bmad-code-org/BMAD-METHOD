@@ -12,10 +12,10 @@ If you're comfortable working with AI coding assistants like Claude, Cursor, or 
 
 The fastest way to understand BMad is to try it. Choose a tutorial to walk through your first project in about 10 minutes.
 
-- **[Get Started with BMad](./tutorials/getting-started/getting-started-bmadv6.md)** — Latest features, still in active development
+- **[Get Started with BMad](/tutorials/getting-started/getting-started-bmadv6/)** — Latest features, still in active development
 
 :::tip[Already familiar with AI-assisted development?]
-Feel free to skip around. Use the sidebar to jump to any topic, or check out [What Are Agents?](./explanation/core-concepts/what-are-agents.md) to understand how BMad organizes its AI personas.
+Feel free to skip around. Use the sidebar to jump to any topic, or check out [What Are Agents?](/explanation/core-concepts/what-are-agents/) to understand how BMad organizes its AI personas.
 :::
 
 ---
@@ -60,4 +60,4 @@ Get help, share what you're building, or contribute to BMad:
 
 Ready to dive in? Pick a tutorial and start building.
 
-- **[Get Started with BMadv6](./tutorials/getting-started/getting-started-bmadv6.md)** — Explore the latest features
+- **[Get Started with BMad](/tutorials/getting-started/getting-started-bmadv6/)** — Explore the latest features

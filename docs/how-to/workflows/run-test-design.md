@@ -123,6 +123,6 @@ TEA generates a comprehensive test design document.
 
 ## Related
 
-- [TEA Overview](../../explanation/features/tea-overview.md) - Understanding the Test Architect
-- [Setup Test Framework](./setup-test-framework.md) - Setting up testing infrastructure
-- [Create Architecture](./create-architecture.md) - Architecture workflow
+- [TEA Overview](/explanation/features/tea-overview/) - Understanding the Test Architect
+- [Setup Test Framework](/how-to/workflows/setup-test-framework/) - Setting up testing infrastructure
+- [Create Architecture](/how-to/workflows/create-architecture/) - Architecture workflow

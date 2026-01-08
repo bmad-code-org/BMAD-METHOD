@@ -501,6 +501,6 @@ When you select a game type, BMGD adds these GDD sections:
 
 ## Next Steps
 
-- **[Quick Start Guide](../../tutorials/getting-started/quick-start-bmgd.md)** - Get started with BMGD
-- **[Workflows Guide](../../reference/workflows/bmgd-workflows.md)** - GDD workflow details
-- **[Glossary](../../reference/glossary/index.md)** - Game development terminology
+- **[Quick Start Guide](/tutorials/getting-started/quick-start-bmgd/)** - Get started with BMGD
+- **[Workflows Guide](/reference/workflows/bmgd-workflows/)** - GDD workflow details
+- **[Glossary](/reference/glossary/)** - Game development terminology

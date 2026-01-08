@@ -27,7 +27,7 @@ This flexibility transforms the platform beyond its current capabilities, enabli
 
 Custom modules range from simple collections of related agents, workflows, and tools designed to work independently, to complex, expansive systems like the BMad Method or even larger applications.
 
-Custom modules are [installable](../../how-to/installation/install-custom-modules.md) using the standard BMAD method and support advanced features:
+Custom modules are [installable](/how-to/installation/install-custom-modules/) using the standard BMAD method and support advanced features:
 
 - Optional user information collection during installation/updates
 - Versioning and upgrade paths

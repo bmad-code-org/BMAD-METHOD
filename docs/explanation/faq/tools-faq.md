@@ -210,7 +210,7 @@ Trust your expertise - BMM supports your decisions.
 
 **For complete documentation:**
 
-👉 **[Party Mode Guide](../../explanation/features/party-mode.md)** - How it works, when to use it, example compositions, best practices
+👉 **[Party Mode Guide](/explanation/features/party-mode/)** - How it works, when to use it, example compositions, best practices
 
 ---
 
@@ -240,8 +240,8 @@ Please include:
 
 ## Related Documentation
 
-- [Quick Start Guide](../../tutorials/getting-started/getting-started-bmadv6.md) - Get started with BMM
-- [Glossary](../../reference/glossary/index.md) - Terminology reference
+- [Quick Start Guide](/tutorials/getting-started/getting-started-bmadv6/) - Get started with BMM
+- [Glossary](/reference/glossary/) - Terminology reference
 
 ---
 

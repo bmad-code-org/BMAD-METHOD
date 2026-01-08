@@ -71,9 +71,9 @@ BMM respects your choice - it won't force modernization, but it will offer it.
 
 ## Related Documentation
 
-- [Quick Start Guide](../../tutorials/getting-started/getting-started-bmadv6.md) - Get started with BMM
-- [Brownfield Guide](../../how-to/brownfield/index.md) - Existing codebase workflows
-- [Glossary](../../reference/glossary/index.md) - Terminology reference
+- [Quick Start Guide](/tutorials/getting-started/getting-started-bmadv6/) - Get started with BMM
+- [Brownfield Guide](/how-to/brownfield/) - Existing codebase workflows
+- [Glossary](/reference/glossary/) - Terminology reference
 
 ---
 

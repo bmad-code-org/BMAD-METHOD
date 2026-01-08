@@ -8,9 +8,9 @@ Complete reference documentation for all BMad Method workflows.
 
 ## Core Workflows
 
-- [Core Workflows](./core-workflows.md) - Domain-agnostic workflows available to all modules
-- [Document Project](./document-project.md) - Brownfield project documentation workflow
+- [Core Workflows](/reference/workflows/core-workflows/) - Domain-agnostic workflows available to all modules
+- [Document Project](/reference/workflows/document-project/) - Brownfield project documentation workflow
 
 ## Module-Specific Workflows
 
-- [BMGD Workflows](./bmgd-workflows.md) - Game development workflows
+- [BMGD Workflows](/reference/workflows/bmgd-workflows/) - Game development workflows
