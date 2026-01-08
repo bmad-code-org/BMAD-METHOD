@@ -123,27 +123,56 @@ Run `/bmad:bmm:workflows:sprint-status` to see current status.</output>
       <ask>Create story file with gap analysis? (yes/no):</ask>
 
       <check if="response == 'yes'">
-        <output>Creating story {{story_key}} with codebase gap analysis...</output>
-        <action>Invoke workflow: /bmad:bmm:workflows:create-story-with-gap-analysis</action>
-        <action>Parameters: story_key={{story_key}}</action>
+        <output>
+⚠️ STORY CREATION REQUIRES MANUAL WORKFLOW EXECUTION
 
-        <check if="story creation succeeded">
-          <output>✅ Story {{story_key}} created successfully (12/12 sections)</output>
-          <action>Update file_status_icon to ✅</action>
-          <action>Mark story as validated</action>
-        </check>
+**Story:** {{story_key}}
+**Status:** File missing or incomplete
 
-        <check if="story creation failed">
-          <output>❌ Story creation failed: {{story_key}}</output>
-          <action>Mark story for removal from selection</action>
-          <action>Add to skipped_stories list with reason: "Creation failed"</action>
-        </check>
+**Problem:**
+Agents cannot invoke /create-story-with-gap-analysis workflow autonomously.
+This workflow requires:
+- Interactive user prompts
+- Context-heavy codebase scanning
+- Gap analysis decision-making
+
+**Required Action:**
+
+1. **Exit this batch execution:**
+   - Remaining stories will be skipped
+   - Batch will continue with valid stories only
+
+2. **Regenerate story manually:**
+   ```
+   /create-story-with-gap-analysis
+   ```
+   When prompted, provide:
+   - Story key: {{story_key}}
+   - Epic: {epic from parent story}
+   - Scope: {widget list or feature description}
+
+3. **Validate story format:**
+   ```
+   ./scripts/validate-all-stories.sh
+   ```
+   Must show: "✅ All stories ready for batch execution!"
+
+4. **Re-run batch-super-dev:**
+   - Story will now be properly formatted
+   - Can be executed in next batch run
+
+**Skipping story {{story_key}} from current batch execution.**
+        </output>
+
+        <action>Mark story for removal from selection</action>
+        <action>Add to skipped_stories list with reason: "Story creation requires manual workflow (agents cannot invoke /create-story)"</action>
+        <action>Add to manual_actions_required list: "Regenerate {{story_key}} with /create-story-with-gap-analysis"</action>
       </check>
 
       <check if="response == 'no'">
-        <output>⏭️ Skipping story {{story_key}} (file missing)</output>
+        <output>⏭️ Skipping story {{story_key}} (file missing, user declined creation)</output>
         <action>Mark story for removal from selection</action>
-        <action>Add to skipped_stories list with reason: "User declined creation"</action>
+        <action>Add to skipped_stories list with reason: "User declined story creation"</action>
       </check>
     </check>
 
@@ -214,22 +243,51 @@ This story will be SKIPPED.
         <ask>Regenerate story with codebase scan? (yes/no):</ask>
 
         <check if="response == 'yes'">
-          <output>Regenerating story {{story_key}} with gap analysis...</output>
-          <action>Backup existing file to {{file_path}}.backup</action>
-          <action>Invoke workflow: /bmad:bmm:workflows:create-story-with-gap-analysis</action>
-          <action>Parameters: story_key={{story_key}}</action>
+          <output>
+⚠️ STORY REGENERATION REQUIRES MANUAL WORKFLOW EXECUTION
 
-          <check if="regeneration succeeded">
-            <output>✅ Story {{story_key}} regenerated successfully (12/12 sections)</output>
-            <action>Mark story as validated</action>
-          </check>
+**Story:** {{story_key}}
+**Status:** File incomplete or invalid ({{sections_found}}/12 sections)
 
-          <check if="regeneration failed">
-            <output>❌ Regeneration failed, using backup: {{story_key}}</output>
-            <action>Restore from backup</action>
-            <action>Mark story for removal with warning</action>
-            <action>Add to skipped_stories list with reason: "Regeneration failed"</action>
-          </check>
+**Problem:**
+Agents cannot invoke /create-story-with-gap-analysis workflow autonomously.
+Story regeneration requires:
+- Interactive user prompts
+- Context-heavy codebase scanning
+- Gap analysis decision-making
+
+**Required Action:**
+
+1. **Exit this batch execution:**
+   - This story will be skipped
+   - Batch will continue with valid stories only
+
+2. **Backup existing file (optional):**
+   ```
+   cp {{file_path}} {{file_path}}.backup
+   ```
+
+3. **Regenerate story manually:**
+   ```
+   /create-story-with-gap-analysis
+   ```
+   When prompted, provide:
+   - Story key: {{story_key}}
+
+4. **Validate story format:**
+   ```
+   ./scripts/validate-all-stories.sh
+   ```
+
+5. **Re-run batch-super-dev:**
+   - Story will now be properly formatted
+
+**Skipping story {{story_key}} from current batch execution.**
+          </output>
+
+          <action>Mark story for removal from selection</action>
+          <action>Add to skipped_stories list with reason: "Story regeneration requires manual workflow (agents cannot invoke /create-story)"</action>
+          <action>Add to manual_actions_required list: "Regenerate {{story_key}} with /create-story-with-gap-analysis"</action>
         </check>
 
         <check if="response == 'no'">
@@ -834,6 +892,25 @@ Active stories:
 **Manual reconciliation needed:**
 Review these stories to ensure checkboxes and status are accurate.
 Check Dev Agent Record vs Acceptance Criteria/Tasks/DoD sections.
+{{/if}}
+
+{{#if manual_actions_required.length > 0}}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚠️ MANUAL ACTIONS REQUIRED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+**{{manual_actions_required.length}} stories require manual intervention:**
+
+{{#each manual_actions_required}}
+{{@index}}. **{{story_key}}**
+   Action: Regenerate story with proper BMAD format
+   Command: `/create-story-with-gap-analysis`
+{{/each}}
+
+**After completing these actions:**
+1. Validate all stories: `./scripts/validate-all-stories.sh`
+2. Re-run batch-super-dev for these stories
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 {{/if}}
 
 **Next steps:**
