@@ -75,8 +75,43 @@ Run `/bmad:bmm:workflows:sprint-status` to see current status.</output>
 <step n="2" goal="Display available stories with details">
   <action>Read comment field for each story from sprint-status.yaml (text after # on the same line)</action>
 
-  <action>For each story, verify story file exists using multiple naming patterns:</action>
-  <action>Try in order: 1) {sprint_artifacts}/{story_key}.md, 2) {sprint_artifacts}/story-{story_key}.md, 3) {sprint_artifacts}/{story_key_with_dots}.md</action>
+  <action>For each story, verify story file exists using COMPREHENSIVE naming pattern detection:</action>
+
+  <substep n="2a" title="Parse story key to extract epic and story numbers">
+    <action>Parse story_key (e.g., "20-9-megamenu-navigation" or "20-9") to extract:</action>
+    <action>  - epic_num: first number (e.g., "20")</action>
+    <action>  - story_num: second number (e.g., "9")</action>
+    <action>  - optional_suffix: everything after second number (e.g., "-megamenu-navigation" or empty)</action>
+    <example>Input: "20-9-megamenu-navigation" → epic=20, story=9, suffix="-megamenu-navigation"</example>
+    <example>Input: "20-11" → epic=20, story=11, suffix=""</example>
+  </substep>
+
+  <substep n="2b" title="Try multiple file patterns using Glob tool">
+    <action>Use Glob tool to search for files matching these patterns (in priority order):</action>
+
+    <pattern n="1">story-{epic_num}.{story_num}.md</pattern>
+    <example>story-20.9.md (DOT notation, no suffix)</example>
+
+    <pattern n="2">story-{epic_num}.{story_num}*.md</pattern>
+    <example>story-20.9-megamenu-navigation.md (DOT notation WITH suffix - use Glob wildcard)</example>
+
+    <pattern n="3">{epic_num}-{story_num}.md</pattern>
+    <example>20-9.md (HYPHEN notation, no "story-" prefix)</example>
+
+    <pattern n="4">{epic_num}-{story_num}*.md</pattern>
+    <example>20-9-megamenu-navigation.md (HYPHEN notation WITH suffix)</example>
+
+    <pattern n="5">story-{story_key}.md</pattern>
+    <example>story-20-9-megamenu-navigation.md (literal story_key with "story-" prefix)</example>
+
+    <pattern n="6">{story_key}.md</pattern>
+    <example>20-9-megamenu-navigation.md (literal story_key)</example>
+
+    <action>Stop at first match and store file_path</action>
+    <action>If NO match found after all 6 patterns → file_status = ❌ MISSING</action>
+    <action>If match found → file_status = ✅ EXISTS</action>
+  </substep>
+
   <action>Mark stories as: ✅ (file exists), ❌ (file missing), 🔄 (already implemented but not marked done)</action>
 
   <output>
