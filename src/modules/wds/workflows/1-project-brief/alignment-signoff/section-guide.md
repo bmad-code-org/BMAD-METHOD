@@ -8,7 +8,7 @@
 
 ---
 
-### 1. The Realization
+## 1. The Realization
 
 **Framework**: Problem-Agitate-Solve (PAS) - Start here
 
@@ -45,7 +45,7 @@
 
 ---
 
-### 2. Why It Matters
+## 2. Why It Matters
 
 **Framework**: Value Proposition Canvas + Impact - Understanding why this matters and who we help
 
@@ -65,7 +65,7 @@
 
 ---
 
-### 3. How We See It Working
+## 3. How We See It Working
 
 **Questions to explore**:
 - "How do you envision this working?"
@@ -78,7 +78,7 @@
 
 ---
 
-### 4. Paths We Explored
+## 4. Paths We Explored
 
 **Questions to explore**:
 - "What other ways could we approach this?"
@@ -91,7 +91,7 @@
 
 ---
 
-### 5. Recommended Solution
+## 5. Recommended Solution
 
 **Questions to explore**:
 - "Which approach do you prefer?"
@@ -102,7 +102,7 @@
 
 ---
 
-### 6. The Path Forward
+## 6. The Path Forward
 
 **Purpose**: Explain how the work will be done practically - which WDS phases will be used and the workflow approach.
 
@@ -130,7 +130,7 @@
 
 ---
 
-### 7. The Value We'll Create
+## 7. The Value We'll Create
 
 **Framework**: Business Case Framework - What's the return?
 
@@ -157,7 +157,7 @@
 
 ---
 
-### 8. Cost of Inaction
+## 8. Cost of Inaction
 
 **Framework**: Problem-Agitate-Solve (PAS) - Agitate the problem / Business Case Framework
 
@@ -181,7 +181,7 @@
 
 ---
 
-### 9. Our Commitment
+## 9. Our Commitment
 
 **Framework**: Business Case Framework - What are we committing to?
 
@@ -201,7 +201,7 @@
 
 ---
 
-### 10. Summary
+## 10. Summary
 
 **Questions to explore**:
 - "What are the key points?"

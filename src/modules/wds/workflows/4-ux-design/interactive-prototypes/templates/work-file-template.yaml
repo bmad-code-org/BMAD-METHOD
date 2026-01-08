@@ -13,7 +13,7 @@ metadata:
   complexity: "simple | medium | complex"
   estimated_sections: [Number]
   estimated_time: "[X] minutes"
-  
+
   # Device Compatibility
   device_compatibility:
     type: "mobile-only | mobile-tablet | responsive | desktop-only"
@@ -28,10 +28,10 @@ metadata:
       - width: 428
         height: 926
         device: "iPhone 14 Pro Max"
-    breakpoints: []  # For mobile-only, leave empty
+    breakpoints: [] # For mobile-only, leave empty
     touch_optimized: true
     hover_interactions: false
-  
+
   dependencies:
     - "shared/prototype-api.js"
     - "shared/init.js"
@@ -47,18 +47,18 @@ design_tokens:
     primary_hover: "#1d4ed8"
     success: "#10b981"
     error: "#ef4444"
-    
+
   tailwind_config:
     theme_extend:
       colors:
-        '[project-name]':
-          50: '#eff6ff'
-          500: '#2563eb'
-          600: '#1d4ed8'
-          700: '#1e40af'
+        "[project-name]":
+          50: "#eff6ff"
+          500: "#2563eb"
+          600: "#1d4ed8"
+          700: "#1e40af"
       fontFamily:
         sans: "['Inter', 'system-ui', 'sans-serif']"
-  
+
   components_available:
     - "image-crop (components/image-crop.js)"
     - "toast (components/toast.js)"
@@ -92,9 +92,9 @@ demo_data_needed:
     firstName: "[Example]"
     lastName: "[Example]"
     email: "[example@email.com]"
-  
+
   # Add other demo data needs (family, dogs, etc.)
-  
+
   example_submission:
     # Example of completed form data
     field1: "[value]"
@@ -108,12 +108,12 @@ object_ids:
   header:
     - "[page]-header-back"
     - "[page]-header-title"
-  
+
   form_inputs:
     - "[page]-input-[field1]"
     - "[page]-input-[field2]"
     # Add all form fields
-  
+
   actions:
     - "[page]-button-submit"
     # Add all action buttons
@@ -141,7 +141,7 @@ sections:
       - "Mobile viewport (375px) looks correct"
       - "Tailwind styles applied correctly"
     placeholder_message: "🚧 Building the form... Check back in a few minutes!"
-    
+
   - id: "section-2"
     name: "[Section Name]"
     scope: "[What this section adds]"
@@ -156,7 +156,7 @@ sections:
       - "[Test 1]"
       - "[Test 2]"
     placeholder_message: "[What's coming next]"
-    
+
   # Add sections 3-6+ as needed
 
 # ============================================================================
@@ -167,19 +167,19 @@ javascript_functions:
   initialization:
     - "initPage() - Page-specific initialization"
     - "[Other init functions]"
-  
+
   form_handling:
     - "handleSubmit(event) - Form submission"
     - "validateForm() - Validate all fields"
     - "[Other form functions]"
-  
+
   ui_interactions:
     - "[Interaction function 1]"
     - "[Interaction function 2]"
-  
+
   api_calls:
     - "DogWeekAPI.[method]([params])"
-  
+
   feedback:
     - "showToast(message, type)"
     - "setLoadingState(isLoading)"
@@ -200,34 +200,34 @@ navigation:
 
 testing_checklist:
   functionality:
-    - [ ] All form fields work
-    - [ ] Validation shows errors correctly
-    - [ ] Submit button works
-    - [ ] Loading states display
-    - [ ] Success feedback shows
-    - [ ] Error handling works
-    - [ ] Navigation works (back, next)
-    - [ ] Data persists (reload page test)
-  
+    - "[ ] All form fields work"
+    - "[ ] Validation shows errors correctly"
+    - "[ ] Submit button works"
+    - "[ ] Loading states display"
+    - "[ ] Success feedback shows"
+    - "[ ] Error handling works"
+    - "[ ] Navigation works (back, next)"
+    - "[ ] Data persists (reload page test)"
+
   mobile_testing:
-    - [ ] Viewport is correct width
-    - [ ] All tap targets min 44x44px
-    - [ ] Text is readable (min 16px)
-    - [ ] No horizontal scroll
-    - [ ] Touch gestures work (if applicable)
-  
+    - "[ ] Viewport is correct width"
+    - "[ ] All tap targets min 44x44px"
+    - "[ ] Text is readable (min 16px)"
+    - "[ ] No horizontal scroll"
+    - "[ ] Touch gestures work (if applicable)"
+
   code_quality:
-    - [ ] All Object IDs present
-    - [ ] Console logs helpful
-    - [ ] No console errors
-    - [ ] Tailwind classes properly used
-    - [ ] Functions documented
-  
+    - "[ ] All Object IDs present"
+    - "[ ] Console logs helpful"
+    - "[ ] No console errors"
+    - "[ ] Tailwind classes properly used"
+    - "[ ] Functions documented"
+
   accessibility:
-    - [ ] Keyboard navigation works
-    - [ ] Form labels present
-    - [ ] Error messages clear
-    - [ ] Focus states visible
+    - "[ ] Keyboard navigation works"
+    - "[ ] Form labels present"
+    - "[ ] Error messages clear"
+    - "[ ] Focus states visible"
 
 # ============================================================================
 # MIGRATION NOTES (for production)
@@ -262,4 +262,3 @@ definition_of_done:
   - "No console errors"
   - "Code is clean"
   - "Story files document all sections"
-

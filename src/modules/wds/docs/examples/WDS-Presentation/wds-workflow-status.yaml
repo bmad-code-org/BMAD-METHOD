@@ -51,7 +51,7 @@ workflow_status:
       - "01-product-brief.md"
       - "02-content-strategy.md"
     completed_date: "2025-12-24"
-    
+
   phase_2_trigger_mapping:
     status: "complete"
     agent: "cascade-analyst"
@@ -65,11 +65,11 @@ workflow_status:
       - "05-Key-Insights.md"
       - "06-Feature-Impact.md"
     completed_date: "2025-12-27"
-    
+
   phase_3_prd_platform:
     status: "skipped"
     reason: "WordPress delivery - no platform PRD needed"
-    
+
   phase_4_ux_design:
     status: "in-progress"
     agent: "freya-wds-designer"
@@ -79,11 +79,11 @@ workflow_status:
       - "1.1-start-page/1.1-start-page.md"
       - "1.1-start-page/sketches/1-1-start-page-desktop-concept.jpg"
     notes: "Hero section complete, WDS Capabilities section specified, other sections TBD"
-    
+
   phase_5_design_system:
     status: "skipped"
     reason: "Single page project - no design system needed"
-    
+
   phase_6_design_deliveries:
     status: "pending"
     reason: "Awaiting UX design completion"
@@ -108,4 +108,3 @@ current_scenario:
         - "Testimonials Section"
         - "CTA Section"
         - "Footer Section"
-

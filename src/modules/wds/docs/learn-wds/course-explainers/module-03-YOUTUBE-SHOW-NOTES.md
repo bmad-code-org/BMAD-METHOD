@@ -1,7 +1,7 @@
 # YouTube Show Notes: Module 03 - Alignment & Signoff
 
 **Video Link:**  
-https://www.youtube.com/watch?v=TKjOLlU8UCE
+<https://www.youtube.com/watch?v=TKjOLlU8UCE>
 
 **Video Title:**  
 Module 03: Alignment & Signoff - Get Stakeholder Buy-In for Your Design Projects
@@ -58,49 +58,49 @@ _To be added after video production based on transcript_
 
 ### **This Module**
 📖 **Module 03 Overview:** Complete lesson structure  
-https://github.com/whiteport-collective/whiteport-design-studio/blob/main/src/modules/wds/docs/learn-wds/module-03-alignment-signoff/module-03-overview.md
+<https://github.com/whiteport-collective/whiteport-design-studio/blob/main/src/modules/wds/docs/learn-wds/module-03-alignment-signoff/module-03-overview.md>
 
 📖 **Tutorial 03:** Step-by-step hands-on guide  
-https://github.com/whiteport-collective/whiteport-design-studio/blob/main/src/modules/wds/docs/learn-wds/module-03-alignment-signoff/tutorial-03.md
+<https://github.com/whiteport-collective/whiteport-design-studio/blob/main/src/modules/wds/docs/learn-wds/module-03-alignment-signoff/tutorial-03.md>
 
 ### **Deliverable Documentation**
 📖 **Project Pitch:** What it is and how to create it  
-https://github.com/whiteport-collective/whiteport-design-studio/blob/main/src/modules/wds/docs/deliverables/project-pitch.md
+<https://github.com/whiteport-collective/whiteport-design-studio/blob/main/src/modules/wds/docs/deliverables/project-pitch.md>
 
 📖 **Service Agreement:** Contract templates and guidance  
-https://github.com/whiteport-collective/whiteport-design-studio/blob/main/src/modules/wds/docs/deliverables/service-agreement.md
+<https://github.com/whiteport-collective/whiteport-design-studio/blob/main/src/modules/wds/docs/deliverables/service-agreement.md>
 
 ### **WDS Workflows**
 📖 **Alignment & Signoff Workflow:** Complete process guide  
-https://github.com/whiteport-collective/whiteport-design-studio/blob/main/src/modules/wds/workflows/1-project-brief/alignment-signoff/workflow.md
+<https://github.com/whiteport-collective/whiteport-design-studio/blob/main/src/modules/wds/workflows/1-project-brief/alignment-signoff/workflow.md>
 
 ### **Get Started with WDS**
 🌊 **WDS Presentation Page:** Learn about the methodology  
-https://whiteport.com/whiteport-design-studio/
+<https://whiteport.com/whiteport-design-studio/>
 
 🛠️ **Installation Guide:** Download IDE, Install WDS  
-https://github.com/whiteport-collective/whiteport-design-studio/blob/main/src/modules/wds/docs/getting-started/installation.md
+<https://github.com/whiteport-collective/whiteport-design-studio/blob/main/src/modules/wds/docs/getting-started/installation.md>
 
 ### **Community & Support**
 💬 **BMad Discord:** Share alignment documents, ask questions about contracts  
 [Discord invite link]
 
 📖 **GitHub Discussions:** Ask questions, share your journey  
-https://github.com/whiteport-collective/whiteport-design-studio/discussions
+<https://github.com/whiteport-collective/whiteport-design-studio/discussions>
 
 ---
 
 ## 🎓 Course Navigation
 
 **◀️ Previous Module:** Module 02 - Installation & Setup  
-📺 Video: https://www.youtube.com/watch?v=tYifpxFVVks  
-📖 Documentation: https://github.com/whiteport-collective/whiteport-design-studio/blob/main/src/modules/wds/docs/learn-wds/module-02-installation-setup/module-02-overview.md
+📺 Video: <https://www.youtube.com/watch?v=tYifpxFVVks>  
+📖 Documentation: <https://github.com/whiteport-collective/whiteport-design-studio/blob/main/src/modules/wds/docs/learn-wds/module-02-installation-setup/module-02-overview.md>
 
 **▶️ Next Module:** Module 04 - Product Brief (Coming Soon)  
-📖 Documentation: https://github.com/whiteport-collective/whiteport-design-studio/blob/main/src/modules/wds/docs/learn-wds/module-04-product-brief/tutorial-04.md
+📖 Documentation: <https://github.com/whiteport-collective/whiteport-design-studio/blob/main/src/modules/wds/docs/learn-wds/module-04-product-brief/tutorial-04.md>
 
 **📚 Full Course Overview:**  
-https://github.com/whiteport-collective/whiteport-design-studio/blob/main/src/modules/wds/docs/learn-wds/00-course-overview.md
+<https://github.com/whiteport-collective/whiteport-design-studio/blob/main/src/modules/wds/docs/learn-wds/00-course-overview.md>
 
 ---
 

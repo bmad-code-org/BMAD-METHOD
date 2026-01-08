@@ -31,7 +31,7 @@ project_structure:
 delivery:
   format: "{{delivery_format}}" # prd | wordpress | figma | prototype | direct-code | other
   target_platform: "{{target_platform}}" # wordpress | react | vue | html | custom
-  requires_prd: {{requires_prd}} # true | false
+  requires_prd: "{{requires_prd}}" # true | false
   description: "{{delivery_description}}"
   # Examples:
   # - "WordPress page editor code with markup and content sections"
@@ -43,10 +43,10 @@ config:
   folder_prefix: "{{folder_prefix}}" # letters or numbers
   folder_case: "{{folder_case}}" # title or lowercase
   brief_level: "{{brief_level}}" # simplified or complete
-  include_design_system: { { include_design_system } }
+  include_design_system: "{{include_design_system}}"
   component_library: "{{component_library}}"
   specification_language: "{{specification_language}}" # Language for writing specs (EN, SE, etc.)
-  product_languages: { { product_languages } } # Array of languages product supports
+  product_languages: "{{product_languages}}" # Array of languages product supports
 
 # Folder mapping (generated based on config)
 folders:

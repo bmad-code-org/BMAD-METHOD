@@ -13,9 +13,7 @@ const chalk = require('chalk');
  * @param {Object} options.logger - Logger instance for output
  * @returns {Promise<boolean>} - Success status
  */
-async function install(options) {
-  const { projectRoot, config, installedIDEs, logger } = options;
-
+async function install({ projectRoot, installedIDEs, logger }) {
   try {
     logger.log(chalk.blue('🎨 Installing WDS Module...'));
 
@@ -42,11 +40,11 @@ async function install(options) {
 
     for (const folder of wdsFolders) {
       const folderPath = path.join(docsPath, folder);
-      if (!(await fs.pathExists(folderPath))) {
+      if (await fs.pathExists(folderPath)) {
+        logger.log(chalk.dim(`  → ${folder}/ (already exists)`));
+      } else {
         await fs.ensureDir(folderPath);
         logger.log(chalk.dim(`  ✓ ${folder}/`));
-      } else {
-        logger.log(chalk.dim(`  → ${folder}/ (already exists)`));
       }
     }
 

@@ -6,13 +6,13 @@ project:
   description: "{{PROJECT_DESCRIPTION}}"
   wds_version: "6.0"
   created: "{{DATE}}"
-  
+
   # Project Structure - defines folder organization
   structure:
     type: "{{STRUCTURE_TYPE}}" # "landing_page" | "simple_website" | "web_application"
     scenarios: "{{STRUCTURE_SCENARIOS}}" # "single" | "multiple"
     pages: "{{STRUCTURE_PAGES}}" # "single" | "multiple"
-    
+
     # Folder organization pattern
     # landing_page: 4-scenarios/1.1-page-name/
     # simple_website: 4-scenarios/1.1-page/, 4-scenarios/1.2-page/
@@ -20,12 +20,12 @@ project:
 
 # Design System Configuration
 design_system:
-  enabled: { { DESIGN_SYSTEM_ENABLED } } # true | false
+  enabled: "{{DESIGN_SYSTEM_ENABLED}}" # true | false
   mode: "{{DESIGN_SYSTEM_MODE}}" # "none" | "custom" | "library"
 
   # If mode: custom
   figma:
-    enabled: { { FIGMA_ENABLED } } # true | false
+    enabled: "{{FIGMA_ENABLED}}" # true | false
     file_url: "{{FIGMA_URL}}" # Figma file URL (if applicable)
 
   # If mode: library
@@ -39,17 +39,17 @@ sketching:
 
   # If tool: excalidraw
   excalidraw:
-    enabled: { { EXCALIDRAW_ENABLED } } # true | false
+    enabled: "{{EXCALIDRAW_ENABLED}}" # true | false
 
     # Auto-export to PNG/SVG on save
-    auto_export: { { AUTO_EXPORT } } # true | false
+    auto_export: "{{AUTO_EXPORT}}" # true | false
 
     # Load WDS component library
-    use_library: { { USE_LIBRARY } } # true | false
+    use_library: "{{USE_LIBRARY}}" # true | false
 
     # Grid settings
-    grid_size: { { GRID_SIZE } } # pixels (recommended: 20)
-    snap_to_grid: { { SNAP_TO_GRID } } # true | false
+    grid_size: "{{GRID_SIZE}}" # pixels (recommended: 20)
+    snap_to_grid: "{{SNAP_TO_GRID}}" # true | false
 
     # Default theme
     theme: "{{THEME}}" # "light" | "dark"
@@ -69,13 +69,13 @@ output:
 workflow:
   # Phase 4: UX Design
   ux_design:
-    sketch_first: { { SKETCH_FIRST } } # true | false
-    ai_suggestions: { { AI_SUGGESTIONS } } # true | false
+    sketch_first: "{{SKETCH_FIRST}}" # true | false
+    ai_suggestions: "{{AI_SUGGESTIONS}}" # true | false
 
   # Phase 5: Design System
   design_system:
-    auto_extract: { { AUTO_EXTRACT } } # true | false
-    similarity_threshold: { { SIMILARITY_THRESHOLD } } # 0.0-1.0 (recommended: 0.7)
+    auto_extract: "{{AUTO_EXTRACT}}" # true | false
+    similarity_threshold: "{{SIMILARITY_THRESHOLD}}" # 0.0-1.0 (recommended: 0.7)
 
 # Team Configuration
 team:

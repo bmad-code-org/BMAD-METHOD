@@ -1,7 +1,7 @@
 # YouTube Show Notes: Module 00 - Getting Started with WDS
 
 **Video Link:**  
-https://youtu.be/qYPYx01YLUc
+<https://youtu.be/qYPYx01YLUc>
 
 **Video Title:**  
 Getting Started with Whiteport Design Studio - Your Path to Becoming a Linchpin Designer
@@ -61,27 +61,27 @@ _To be added after video production based on transcript_
 
 ### **This Module**
 📖 **Module 00 Overview:** Getting Started Guide  
-https://github.com/whiteport-collective/whiteport-design-studio/blob/main/src/modules/wds/docs/learn-wds/00-course-overview/00-getting-started-overview.md
+<https://github.com/whiteport-collective/whiteport-design-studio/blob/main/src/modules/wds/docs/learn-wds/00-course-overview/00-getting-started-overview.md>
 
 ### **Get Started with WDS**
 🌊 **WDS Presentation Page:** Learn about the methodology  
-https://whiteport.com/whiteport-design-studio/
+<https://whiteport.com/whiteport-design-studio/>
 
 🛠️ **Installation Guide:** Download IDE, Install WDS  
-https://github.com/whiteport-collective/whiteport-design-studio/blob/main/src/modules/wds/docs/getting-started/installation.md
+<https://github.com/whiteport-collective/whiteport-design-studio/blob/main/src/modules/wds/docs/getting-started/installation.md>
 
 📖 **Quick Start:** Get up and running fast  
-https://github.com/whiteport-collective/whiteport-design-studio/blob/main/src/modules/wds/docs/getting-started/quick-start.md
+<https://github.com/whiteport-collective/whiteport-design-studio/blob/main/src/modules/wds/docs/getting-started/quick-start.md>
 
 📖 **About WDS:** Philosophy and approach  
-https://github.com/whiteport-collective/whiteport-design-studio/blob/main/src/modules/wds/docs/getting-started/about-wds.md
+<https://github.com/whiteport-collective/whiteport-design-studio/blob/main/src/modules/wds/docs/getting-started/about-wds.md>
 
 ### **Community & Support**
 💬 **BMad Discord:** Real designers helping each other  
 [Discord invite link]
 
 📖 **GitHub Discussions:** Ask questions, share your journey  
-https://github.com/whiteport-collective/whiteport-design-studio/discussions
+<https://github.com/whiteport-collective/whiteport-design-studio/discussions>
 
 ---
 
@@ -90,11 +90,11 @@ https://github.com/whiteport-collective/whiteport-design-studio/discussions
 **◀️ Previous Module:** _This is the first module_
 
 **▶️ Next Module:** Module 01 - Why WDS Matters  
-📺 Video: https://www.youtube.com/watch?v=Xhw5JB7mpxw  
-📖 Documentation: https://github.com/whiteport-collective/whiteport-design-studio/blob/main/src/modules/wds/docs/learn-wds/module-01-why-wds-matters/module-01-overview.md
+📺 Video: <https://www.youtube.com/watch?v=Xhw5JB7mpxw>  
+📖 Documentation: <https://github.com/whiteport-collective/whiteport-design-studio/blob/main/src/modules/wds/docs/learn-wds/module-01-why-wds-matters/module-01-overview.md>
 
 **📚 Full Course Overview:**  
-https://github.com/whiteport-collective/whiteport-design-studio/blob/main/src/modules/wds/docs/learn-wds/00-course-overview.md
+<https://github.com/whiteport-collective/whiteport-design-studio/blob/main/src/modules/wds/docs/learn-wds/00-course-overview.md>
 
 ---
 

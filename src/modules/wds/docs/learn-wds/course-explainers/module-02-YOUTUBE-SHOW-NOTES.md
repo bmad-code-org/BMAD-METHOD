@@ -1,7 +1,7 @@
 # YouTube Show Notes: Module 02 - Installation & Setup
 
 **Video Link:**  
-https://www.youtube.com/watch?v=tYifpxFVVks
+<https://www.youtube.com/watch?v=tYifpxFVVks>
 
 **Video Title:**  
 Module 02: Installation & Setup - From Zero to WDS-Ready in Under an Hour
@@ -121,44 +121,44 @@ Your 8-phase WDS methodology folders:
 
 ### **This Module**
 📖 **Module 02 Overview:** Complete lesson structure  
-https://github.com/whiteport-collective/whiteport-design-studio/blob/main/src/modules/wds/docs/learn-wds/module-02-installation-setup/module-02-overview.md
+<https://github.com/whiteport-collective/whiteport-design-studio/blob/main/src/modules/wds/docs/learn-wds/module-02-installation-setup/module-02-overview.md>
 
 ### **Get Started with WDS**
 🌊 **WDS Presentation Page:** Learn about the methodology  
-https://whiteport.com/whiteport-design-studio/
+<https://whiteport.com/whiteport-design-studio/>
 
 🛠️ **Installation Guide:** Download IDE, Install WDS  
-https://github.com/whiteport-collective/whiteport-design-studio/blob/main/src/modules/wds/docs/getting-started/installation.md
+<https://github.com/whiteport-collective/whiteport-design-studio/blob/main/src/modules/wds/docs/getting-started/installation.md>
 
 📖 **Quick Start:** Get up and running fast  
-https://github.com/whiteport-collective/whiteport-design-studio/blob/main/src/modules/wds/docs/getting-started/quick-start.md
+<https://github.com/whiteport-collective/whiteport-design-studio/blob/main/src/modules/wds/docs/getting-started/quick-start.md>
 
 ### **Download Links**
-📥 **Download Cursor:** https://cursor.sh  
-📥 **Download VS Code:** https://code.visualstudio.com  
-📥 **GitHub:** https://github.com
+📥 **Download Cursor:** <https://cursor.sh>  
+📥 **Download VS Code:** <https://code.visualstudio.com>  
+📥 **GitHub:** <https://github.com>
 
 ### **Community & Support**
 💬 **BMad Discord:** Real designers helping each other  
 [Discord invite link]
 
 📖 **GitHub Discussions:** Ask questions, share your setup  
-https://github.com/whiteport-collective/whiteport-design-studio/discussions
+<https://github.com/whiteport-collective/whiteport-design-studio/discussions>
 
 ---
 
 ## 🎓 Course Navigation
 
 **◀️ Previous Module:** Module 01 - Why WDS Matters  
-📺 Video: https://www.youtube.com/watch?v=Xhw5JB7mpxw  
-📖 Documentation: https://github.com/whiteport-collective/whiteport-design-studio/blob/main/src/modules/wds/docs/learn-wds/module-01-why-wds-matters/module-01-overview.md
+📺 Video: <https://www.youtube.com/watch?v=Xhw5JB7mpxw>  
+📖 Documentation: <https://github.com/whiteport-collective/whiteport-design-studio/blob/main/src/modules/wds/docs/learn-wds/module-01-why-wds-matters/module-01-overview.md>
 
 **▶️ Next Module:** Module 03 - Alignment & Signoff  
-📺 Video: https://www.youtube.com/watch?v=TKjOLlU8UCE  
-📖 Documentation: https://github.com/whiteport-collective/whiteport-design-studio/blob/main/src/modules/wds/docs/learn-wds/module-03-alignment-signoff/module-03-overview.md
+📺 Video: <https://www.youtube.com/watch?v=TKjOLlU8UCE>  
+📖 Documentation: <https://github.com/whiteport-collective/whiteport-design-studio/blob/main/src/modules/wds/docs/learn-wds/module-03-alignment-signoff/module-03-overview.md>
 
 **📚 Full Course Overview:**  
-https://github.com/whiteport-collective/whiteport-design-studio/blob/main/src/modules/wds/docs/learn-wds/00-course-overview.md
+<https://github.com/whiteport-collective/whiteport-design-studio/blob/main/src/modules/wds/docs/learn-wds/00-course-overview.md>
 
 ---
 

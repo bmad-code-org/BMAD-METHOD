@@ -2,7 +2,7 @@
 
 **Master the complete WDS methodology and become indispensable as a designer in the AI era**
 
-https://www.youtube.com/watch?v=CQ5Aai_r-uo 
+[Watch the Course Introduction Video](https://www.youtube.com/watch?v=CQ5Aai_r-uo)
 
 ---
 
