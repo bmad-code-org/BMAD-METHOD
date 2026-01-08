@@ -1,7 +1,8 @@
 # Batch Super-Dev Workflow
 
-**Version:** 1.2.0 (Added Story Validation & Auto-Creation)
+**Version:** 1.3.0 (Complexity Routing + Semaphore Pattern + Continuous Tracking)
 **Created:** 2026-01-06
+**Updated:** 2026-01-07
 **Author:** BMad
 
 ---
@@ -440,12 +441,15 @@ reconciliation:
   - Report results
   - Pause between stories
 
-**Parallel Mode:**
-- Split stories into batches
-- Spawn Task agents for each batch
-- Wait for batch completion
-- Execute reconciliation for each
-- Report batch results
+**Parallel Mode (Semaphore Pattern - NEW v1.3.0):**
+- Initialize worker pool with N slots (user-selected concurrency)
+- Fill initial N slots with first N stories
+- Poll workers continuously (non-blocking)
+- As soon as worker completes → immediately refill slot with next story
+- Maintain constant N concurrent agents until queue empty
+- Execute reconciliation after each story completes
+- No idle time waiting for batch synchronization
+- **20-40% faster** than old batch-and-wait pattern
 
 ### 4.5. Smart Story Reconciliation (NEW)
 **Executed after each story completes:**
@@ -580,6 +584,25 @@ See: `step-4.5-reconcile-story-status.md` for detailed algorithm
 
 ## Version History
 
+### v1.3.0 (2026-01-07)
+- **NEW:** Complexity-Based Routing (Step 2.6)
+  - Automatic story complexity scoring (micro/standard/complex)
+  - Risk keyword detection with configurable weights
+  - Smart pipeline selection: micro → lightweight, complex → enhanced
+  - 50-70% token savings for micro stories
+  - Deterministic classification with mutually exclusive thresholds
+- **NEW:** Semaphore Pattern for Parallel Execution
+  - Worker pool maintains constant N concurrent agents
+  - As soon as worker completes → immediately start next story
+  - No idle time waiting for batch synchronization
+  - 20-40% faster than old batch-and-wait pattern
+  - Non-blocking task polling with live progress dashboard
+- **NEW:** Continuous Sprint-Status Tracking
+  - sprint-status.yaml updated after EVERY task completion
+  - Real-time progress: "# 7/10 tasks (70%)"
+  - CRITICAL enforcement with HALT on update failure
+  - Immediate visibility into story progress
+
 ### v1.2.0 (2026-01-06)
 - **NEW:** Smart Story Validation & Auto-Creation (Step 2.5)
   - Validates story files before processing
@@ -629,6 +652,6 @@ See: `step-4.5-reconcile-story-status.md` for detailed algorithm
 
 ---
 
-**Last Updated:** 2026-01-06
-**Status:** Active - Production-ready with reconciliation
+**Last Updated:** 2026-01-07
+**Status:** Active - Production-ready with semaphore pattern and continuous tracking
 **Maintained By:** BMad

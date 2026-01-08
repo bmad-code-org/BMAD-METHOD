@@ -543,40 +543,51 @@ Enter number (2-10) or 'all':
   <action>After all stories processed, jump to Step 5 (Summary)</action>
 </step>
 
-<step n="4-Parallel" goal="Parallel processing with Task agents">
+<step n="4-Parallel" goal="Parallel processing with semaphore pattern">
   <output>
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🚀 PARALLEL BATCH PROCESSING STARTED
+🚀 PARALLEL PROCESSING STARTED (Semaphore Pattern)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 **Stories:** {{count}}
-**Mode:** Task agents (autonomous, parallel)
-**Agents in parallel:** {{parallel_count}}
+**Mode:** Task agents (autonomous, continuous)
+**Max concurrent agents:** {{parallel_count}}
 **Continue on failure:** {{continue_on_failure}}
+**Pattern:** Worker pool with {{parallel_count}} slots
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📊 **Semaphore Pattern Benefits:**
+- No idle time between batches
+- Constant {{parallel_count}} agents running
+- As soon as slot frees → next story starts immediately
+- Faster completion (no batch synchronization delays)
   </output>
 
-  <action>Split selected_stories into batches of size parallel_count</action>
-  <action>Example: If 10 stories and parallel_count=4, create batches: [1-4], [5-8], [9-10]</action>
+  <action>Initialize worker pool state:</action>
+  <action>
+    - story_queue = selected_stories (all stories to process)
+    - active_workers = {} (map of worker_id → {story_key, task_id, started_at})
+    - completed_stories = []
+    - failed_stories = []
+    - next_story_index = 0
+    - max_workers = {{parallel_count}}
+  </action>
 
-  <iterate>For each batch of stories:</iterate>
-
-  <substep n="4p-a" title="Spawn Task agents for batch">
+  <substep n="4p-init" title="Fill initial worker slots">
     <output>
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📦 Batch {{batch_index}}/{{total_batches}}: Spawning {{stories_in_batch}} agents
+🔧 Initializing {{max_workers}} worker slots...
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Stories in this batch:
-{{#each stories_in_batch}}
-{{@index}}. {{story_key}}
-{{/each}}
-
-Spawning Task agents in parallel...
     </output>
 
-    <action>For each story in current batch, spawn Task agent with these parameters:</action>
+    <action>Spawn first {{max_workers}} agents (or fewer if less stories):</action>
+
+    <iterate>While next_story_index < min(max_workers, story_queue.length):</iterate>
+
     <action>
-      Task tool parameters:
+      story_key = story_queue[next_story_index]
+      worker_id = next_story_index + 1
+
+      Spawn Task agent:
       - subagent_type: "general-purpose"
       - description: "Implement story {{story_key}}"
       - prompt: "Execute super-dev-pipeline workflow for story {{story_key}}.
@@ -590,32 +601,47 @@ Spawning Task agents in parallel...
                  6. Report final status (done/failed) with file list
 
                  Story file will be auto-resolved from multiple naming conventions."
-      - run_in_background: false (wait for completion to track results)
+      - run_in_background: true (non-blocking - critical for semaphore pattern)
+
+      Store in active_workers[worker_id]:
+        story_key: {{story_key}}
+        task_id: {{returned_task_id}}
+        started_at: {{timestamp}}
+        status: "running"
     </action>
 
-    <action>Store task IDs for this batch: task_ids[]</action>
+    <action>Increment next_story_index</action>
 
+    <output>🚀 Worker {{worker_id}} started: {{story_key}}</output>
+
+    <action>After spawning initial workers:</action>
     <output>
-✅ Spawned {{stories_in_batch}} Task agents
-
-Agents will process stories autonomously with full quality gates:
-- Pre-gap analysis (validate tasks)
-- Implementation (TDD/refactor)
-- Post-validation (verify completion)
-- Code review (find 3-10 issues)
-- Git commit (targeted files only)
-
-{{#if not last_batch}}
-Waiting for this batch to complete before spawning next batch...
-{{/if}}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ {{active_workers.size}} workers active
+📋 {{story_queue.length - next_story_index}} stories queued
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     </output>
+  </substep>
 
-    <action>Wait for all agents in batch to complete</action>
-    <action>Collect results from each agent via TaskOutput</action>
+  <substep n="4p-pool" title="Maintain worker pool until all stories complete">
+    <critical>SEMAPHORE PATTERN: Keep {{max_workers}} agents running continuously</critical>
 
-    <iterate>For each completed agent:</iterate>
-    <check if="agent succeeded">
-      <output>✅ Implementation complete: {{story_key}}</output>
+    <iterate>While active_workers.size > 0 OR next_story_index < story_queue.length:</iterate>
+
+    <action>Poll for completed workers (check task outputs non-blocking):</action>
+
+    <iterate>For each worker_id in active_workers:</iterate>
+
+    <action>Check if worker task completed using TaskOutput(task_id, block=false)</action>
+
+    <check if="worker task is still running">
+      <action>Continue to next worker (don't wait)</action>
+    </check>
+
+    <check if="worker task completed successfully">
+      <action>Get worker details: story_key = active_workers[worker_id].story_key</action>
+
+      <output>✅ Worker {{worker_id}} completed: {{story_key}}</output>
 
       <action>Execute Step 4.5: Smart Story Reconciliation</action>
       <action>Load reconciliation instructions: {installed_path}/step-4.5-reconcile-story-status.md</action>
@@ -623,30 +649,77 @@ Waiting for this batch to complete before spawning next batch...
 
       <check if="reconciliation succeeded">
         <output>✅ COMPLETED: {{story_key}} (reconciled)</output>
-        <action>Increment completed counter</action>
+        <action>Add to completed_stories</action>
       </check>
 
       <check if="reconciliation failed">
         <output>⚠️ WARNING: {{story_key}} completed but reconciliation failed</output>
-        <action>Increment completed counter (implementation was successful)</action>
+        <action>Add to completed_stories (implementation successful)</action>
         <action>Add to reconciliation_warnings: {story_key: {{story_key}}, warning_message: "Reconciliation failed - manual verification needed"}</action>
-        <action>Increment reconciliation_warnings_count</action>
+      </check>
+
+      <action>Remove worker_id from active_workers (free the slot)</action>
+
+      <action>IMMEDIATELY refill slot if stories remain:</action>
+      <check if="next_story_index < story_queue.length">
+        <action>story_key = story_queue[next_story_index]</action>
+
+        <output>🔄 Worker {{worker_id}} refilled: {{story_key}}</output>
+
+        <action>Spawn new Task agent for this worker_id (same parameters as init)</action>
+        <action>Update active_workers[worker_id] with new task_id and story_key</action>
+        <action>Increment next_story_index</action>
       </check>
     </check>
 
-    <check if="agent failed">
-      <output>❌ FAILED: {{story_key}}</output>
-      <action>Increment failed counter</action>
-      <action>Add story_key to failed_stories list</action>
+    <check if="worker task failed">
+      <action>Get worker details: story_key = active_workers[worker_id].story_key</action>
+
+      <output>❌ Worker {{worker_id}} failed: {{story_key}}</output>
+
+      <action>Add to failed_stories</action>
+      <action>Remove worker_id from active_workers (free the slot)</action>
+
+      <check if="continue_on_failure == false">
+        <output>⚠️ Stopping all workers due to failure (continue_on_failure=false)</output>
+        <action>Kill all active workers</action>
+        <action>Clear story_queue</action>
+        <action>Break worker pool loop</action>
+      </check>
+
+      <check if="continue_on_failure == true AND next_story_index < story_queue.length">
+        <action>story_key = story_queue[next_story_index]</action>
+
+        <output>🔄 Worker {{worker_id}} refilled: {{story_key}} (despite previous failure)</output>
+
+        <action>Spawn new Task agent for this worker_id</action>
+        <action>Update active_workers[worker_id] with new task_id and story_key</action>
+        <action>Increment next_story_index</action>
+      </check>
     </check>
 
+    <action>Display live progress every 30 seconds:</action>
     <output>
-**Batch {{batch_index}} Complete:** {{batch_completed}} succeeded, {{batch_failed}} failed
-**Overall Progress:** {{completed}}/{{total_count}} completed
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📊 Live Progress ({{timestamp}})
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ Completed: {{completed_stories.length}}
+❌ Failed: {{failed_stories.length}}
+🔄 Active workers: {{active_workers.size}}
+📋 Queued: {{story_queue.length - next_story_index}}
+
+Active stories:
+{{#each active_workers}}
+  Worker {{@key}}: {{story_key}} (running {{duration}})
+{{/each}}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     </output>
+
+    <action>Sleep 5 seconds before next poll (prevents tight loop)</action>
+
   </substep>
 
-  <action>After all batches processed, jump to Step 5 (Summary)</action>
+  <action>After worker pool drains (all stories processed), jump to Step 5 (Summary)</action>
 </step>
 
 <step n="5" goal="Display batch summary">
