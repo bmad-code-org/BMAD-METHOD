@@ -28,6 +28,10 @@ Thumbs.db
 # BMAD workflow lock files
 .git/bmad-commit.lock
 
+# Exported conversation files
+*-integration.md
+*-integration.txt
+
 # Development tools and configs
 .prettierrc
 

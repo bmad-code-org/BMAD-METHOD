@@ -1,5 +1,126 @@
 # Changelog
 
+## [6.1.0-alpha.4]
+
+**Release: January 7, 2026**
+
+Adds comprehensive story/epic revalidation and ghost feature detection for quality assurance.
+
+### 🔍 Story/Epic Revalidation
+
+**NEW:** Verify checkbox accuracy by re-validating against actual codebase implementation.
+
+**Use Case:** "I'm uncertain about the real status of some stories and epics - would love a re-check"
+
+**Features:**
+- `/revalidate-story` (RVS): Single story verification with optional gap filling
+  - Clears all checkboxes and starts fresh
+  - Verifies each AC/Task/DoD against codebase (Glob/Grep/Read)
+  - Re-checks verified items: ✅ complete, 🔶 partial, ❌ missing
+  - Reports accuracy: before % vs after % (find over/under-reporting)
+  - Optional: Automatically fill missing gaps and commit
+
+- `/revalidate-epic` (RVE): Batch revalidation with semaphore pattern
+  - Revalidates all stories in an epic (parallel workers)
+  - Epic-wide health score and gap summary
+  - Groups stories by completion % (complete/mostly/partial/incomplete)
+
+**Token Costs:**
+- Verify-only: ~30-45K tokens per story
+- Verify-and-fill (20% gaps): ~45-65K tokens
+- vs full re-implementation: ~80-120K tokens
+- **Savings: 40-60%** when gaps <30%
+
+**Usage:**
+```bash
+# Verify single story
+/revalidate-story story_file=path/to/story.md
+
+# Verify and fill gaps
+/revalidate-story story_file=path/to/story.md fill_gaps=true
+
+# Revalidate entire epic
+/revalidate-epic epic_number=2 fill_gaps=true max_concurrent=5
+```
+
+### 👻 Ghost Feature Detector (Reverse Gap Analysis)
+
+**NEW:** Find orphaned code that has no corresponding story documentation.
+
+**Problem:** Vibe-coded features or manual additions that bypassed the story process accumulate as "ghost features" - functionality that works but isn't documented, making the codebase unauditable.
+
+**Features:**
+- `/ghost-features` (GFD): Reverse gap analysis
+  - Scans codebase for: Components, API endpoints, DB tables, Services
+  - Cross-references with ALL stories (File Lists, Tasks, ACs)
+  - Identifies orphans (code with no story)
+  - Classifies by severity: CRITICAL → HIGH → MEDIUM → LOW
+  - Generates backfill story drafts documenting existing code
+  - Proposes epic organization (create Epic-Backfill or distribute)
+
+**Detection Scope:**
+- Components: React/Vue/Angular (**.component.tsx, **/components/**)
+- APIs: Next.js App Router, NestJS, Express routes
+- Database: Prisma schema, TypeORM entities, migrations
+- Services: *.service.ts, business logic modules
+
+**Output:**
+```
+👻 GHOST FEATURES DETECTED
+Total Orphans: 12
+Documentation Coverage: 73%
+
+CRITICAL Orphans (2):
+1. API: POST /api/subscriptions → No story documents this
+
+HIGH Orphans (5):
+2. Component: UserDashboard → Not mentioned in any story
+...
+
+Backfill Stories Created: 8
+```
+
+**Usage:**
+```bash
+# Detect orphans in sprint
+/ghost-features
+
+# Detect in Epic 2 and create backfill stories
+/ghost-features epic_number=2 create_backfill_stories=true
+```
+
+### Files Created
+
+**Revalidation:**
+- `revalidate-story/workflow.yaml` + `instructions.md` (570 lines)
+- `revalidate-epic/workflow.yaml` + `instructions.md` (310 lines)
+
+**Ghost Detection:**
+- `detect-ghost-features/workflow.yaml` + `instructions.md` (685 lines)
+
+**Agent Menus:**
+- `dev.agent.yaml`: Added RVS, RVE triggers
+- `sm.agent.yaml`: Added RVS, RVE, GFD triggers
+
+### Benefits
+
+**Story Quality:**
+- Verify checkbox accuracy (find over-reported completion)
+- Detect missing implementations (find under-reported gaps)
+- Maintain story-code parity
+
+**Codebase Quality:**
+- Document all functionality (no ghost features)
+- Enable accurate sprint planning (know what exists)
+- Make codebase auditable (every feature has story)
+
+**Token Efficiency:**
+- Revalidation cheaper than re-implementation (40-60% savings)
+- Ghost detection prevents duplicate implementations
+- Fill gaps incrementally vs full rewrites
+
+---
+
 ## [6.1.0-alpha.3]
 
 **Release: January 7, 2026**
