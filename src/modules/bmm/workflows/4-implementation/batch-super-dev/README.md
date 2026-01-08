@@ -1,9 +1,76 @@
 # Batch Super-Dev Workflow
 
-**Version:** 1.3.0 (Complexity Routing + Semaphore Pattern + Continuous Tracking)
+**Version:** 1.3.1 (Agent Limitations Documentation)
 **Created:** 2026-01-06
-**Updated:** 2026-01-07
+**Updated:** 2026-01-08
 **Author:** BMad
+
+---
+
+## Critical Prerequisites
+
+> **⚠️ IMPORTANT: Read before running batch-super-dev!**
+
+**BEFORE running batch-super-dev:**
+
+### ✅ 1. All stories must be properly generated
+
+- Run: `/create-story-with-gap-analysis` for each story
+- Do NOT create skeleton/template files manually
+- Validation: `./scripts/validate-all-stories.sh`
+
+**Why:** Agents CANNOT invoke `/create-story-with-gap-analysis` workflow. Story generation requires user interaction and context-heavy codebase scanning.
+
+### ✅ 2. All stories must have 12 BMAD sections
+
+Required sections:
+1. Business Context
+2. Current State
+3. Acceptance Criteria
+4. Tasks/Subtasks
+5. Technical Requirements
+6. Architecture Compliance
+7. Testing Requirements
+8. Dev Agent Guardrails
+9. Definition of Done
+10. References
+11. Dev Agent Record
+12. Change Log
+
+### ✅ 3. All stories must have tasks
+
+- At least 3 unchecked tasks (minimum for valid story)
+- Zero-task stories will be skipped
+- Validation: `grep -c "^- \[ \]" story-file.md`
+
+### Common Failure Mode: Batch Regeneration
+
+**What you might try:**
+```
+1. Create 20 skeleton story files (just headers + widget lists)
+2. Run /batch-super-dev
+3. Expect agents to regenerate them
+```
+
+**What happens:**
+- Agents identify stories are incomplete
+- Agents correctly halt per super-dev-pipeline validation
+- Stories get skipped (not regenerated)
+- You waste time
+
+**Solution:**
+```bash
+# 1. Generate all stories (1-2 days, manual)
+/create-story-with-gap-analysis  # For each story
+
+# 2. Validate (30 seconds, automated)
+./scripts/validate-all-stories.sh
+
+# 3. Execute (4-8 hours, parallel autonomous)
+/batch-super-dev
+```
+
+See: `AGENT-LIMITATIONS.md` for full documentation on what agents can and cannot do.
 
 ---
 
