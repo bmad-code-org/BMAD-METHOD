@@ -196,7 +196,11 @@ function getAnchorsForFile(filePath) {
 async function main() {
   console.log('  → Scanning for broken links and anchors...');
 
-  const files = await glob('**/*.{md,mdx}', { cwd: DOCS_DIR, absolute: true });
+  const files = await glob('**/*.{md,mdx}', {
+    cwd: DOCS_DIR,
+    absolute: true,
+    ignore: ['**/_*/**'], // Ignore underscore directories (archive, planning, etc.)
+  });
   const errors = [];
 
   // Track all resolved paths for duplicate detection
