@@ -137,5 +137,5 @@ Available to all agents:
 
 ## Related
 
-- [Agent Roles](/explanation/core-concepts/agent-roles/) - Understanding agent responsibilities
-- [What Are Agents](/explanation/core-concepts/what-are-agents/) - Foundational concepts
+- [Agent Roles](/docs/explanation/core-concepts/agent-roles.md) - Understanding agent responsibilities
+- [What Are Agents](/docs/explanation/core-concepts/what-are-agents.md) - Foundational concepts

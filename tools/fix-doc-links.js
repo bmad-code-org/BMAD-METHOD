@@ -1,11 +1,13 @@
 /**
  * Fix Documentation Links
  *
- * Converts relative markdown links to site-relative paths.
- * - ./file.md → /current/path/file/
- * - ../other/file.md → /resolved/path/file/
- * - /absolute/file.md → /absolute/file/
- * - index.md → parent directory (e.g., /path/index.md → /path/)
+ * Converts relative markdown links to repo-relative paths with .md extension.
+ * This ensures links work both in GitHub and on the Astro/Starlight site
+ * (the rehype plugin transforms /docs/path/file.md → /path/file/ at build time).
+ *
+ * - ./file.md → /docs/current/path/file.md
+ * - ../other/file.md → /docs/resolved/path/file.md
+ * - /path/file/ → /docs/path/file.md (or /docs/path/file/index.md if it's a directory)
  *
  * Usage:
  *   node tools/fix-doc-links.js           # Dry run (shows what would change)
@@ -18,8 +20,12 @@ const path = require('node:path');
 const DOCS_ROOT = path.resolve(__dirname, '../docs');
 const DRY_RUN = !process.argv.includes('--write');
 
-// Regex to match markdown links: [text](path.md) or [text](path.md#anchor)
-const MARKDOWN_LINK_REGEX = /\[([^\]]*)\]\(([^)]+\.md(?:#[^)]*)?(?:\?[^)]*)?)\)/g;
+// Regex to match markdown links:
+// - [text](path.md) or [text](path.md#anchor) - existing .md links
+// - [text](/path/to/page/) or [text](/path/to/page/#anchor) - site-relative links to convert
+const MARKDOWN_LINK_REGEX = /\[([^\]]*)\]\(([^)]+(?:\.md|\/))(?:#[^)]*)?(?:\?[^)]*)?\)/g;
+// Simpler approach: match all markdown links and filter in the handler
+const ALL_MARKDOWN_LINKS_REGEX = /\[([^\]]*)\]\(([^)]+)\)/g;
 
 /**
  * Get all markdown files in docs directory, excluding _* directories/files
@@ -51,16 +57,21 @@ function getMarkdownFiles(dir) {
 }
 
 /**
- * Convert a markdown link href to site-relative path
+ * Convert a markdown link href to repo-relative path with .md extension
  *
- * @param {string} href - The original href (e.g., "./file.md", "../other/file.md#anchor")
+ * @param {string} href - The original href (e.g., "./file.md", "/path/to/page/", "/path/to/page/#anchor")
  * @param {string} currentFilePath - Absolute path to the file containing this link
- * @returns {string} - Site-relative path (e.g., "/path/to/file/", "/path/to/file/#anchor")
+ * @returns {string|null} - Repo-relative path (e.g., "/docs/path/to/file.md"), or null if shouldn't be converted
  */
-function convertToSiteRelative(href, currentFilePath) {
+function convertToRepoRelative(href, currentFilePath) {
   // Skip external links
-  if (href.includes('://')) {
-    return href;
+  if (href.includes('://') || href.startsWith('mailto:') || href.startsWith('tel:')) {
+    return null;
+  }
+
+  // Skip anchor-only links
+  if (href.startsWith('#')) {
+    return null;
   }
 
   // Extract anchor and query string if present
@@ -90,10 +101,27 @@ function convertToSiteRelative(href, currentFilePath) {
     }
   }
 
+  // Skip non-documentation links (images, external assets, etc.)
+  const ext = path.extname(pathPortion).toLowerCase();
+  if (
+    ext &&
+    ext !== '.md' &&
+    !['.md'].includes(ext) && // Has an extension that's not .md - skip unless it's a trailing slash path
+    !pathPortion.endsWith('/')
+  ) {
+    return null;
+  }
+
+  // Check if original path ends with / (directory reference) BEFORE path.join normalizes it
+  const isDirectoryPath = pathPortion.endsWith('/');
+
   let absolutePath;
 
-  if (pathPortion.startsWith('/')) {
-    // Already site-relative - resolve from docs root
+  if (pathPortion.startsWith('/docs/')) {
+    // Already repo-relative with /docs/ prefix
+    absolutePath = path.join(path.dirname(DOCS_ROOT), pathPortion);
+  } else if (pathPortion.startsWith('/')) {
+    // Site-relative (e.g., /tutorials/getting-started/) - resolve from docs root
     absolutePath = path.join(DOCS_ROOT, pathPortion);
   } else {
     // Relative path (./, ../, or bare filename) - resolve from current file's directory
@@ -101,20 +129,36 @@ function convertToSiteRelative(href, currentFilePath) {
     absolutePath = path.resolve(currentDir, pathPortion);
   }
 
-  // Convert to site-relative path (relative to docs root)
-  let siteRelative = '/' + path.relative(DOCS_ROOT, absolutePath);
+  // Convert to repo-relative path (with /docs/ prefix)
+  let repoRelative = '/docs/' + path.relative(DOCS_ROOT, absolutePath);
 
   // Normalize path separators for Windows
-  siteRelative = siteRelative.split(path.sep).join('/');
+  repoRelative = repoRelative.split(path.sep).join('/');
 
-  // Transform .md to trailing slash
-  if (siteRelative.endsWith('/index.md')) {
-    siteRelative = siteRelative.replace(/\/index\.md$/, '/');
-  } else if (siteRelative.endsWith('.md')) {
-    siteRelative = siteRelative.replace(/\.md$/, '/');
+  // If original path was a directory reference (ended with /), check for index.md or file.md
+  if (isDirectoryPath) {
+    const relativeDir = repoRelative.slice(6); // Remove '/docs/'
+
+    // Handle root path case (relativeDir is empty or just '.')
+    const normalizedDir = relativeDir === '' || relativeDir === '.' ? '' : relativeDir;
+    const indexPath = path.join(DOCS_ROOT, normalizedDir, 'index.md');
+    const filePath = normalizedDir ? path.join(DOCS_ROOT, normalizedDir + '.md') : null;
+
+    if (fs.existsSync(indexPath)) {
+      // Avoid double slash when repoRelative is '/docs/' (root case)
+      repoRelative = repoRelative.endsWith('/') ? repoRelative + 'index.md' : repoRelative + '/index.md';
+    } else if (filePath && fs.existsSync(filePath)) {
+      repoRelative = repoRelative + '.md';
+    } else {
+      // Neither exists - default to index.md and let validation catch it
+      repoRelative = repoRelative.endsWith('/') ? repoRelative + 'index.md' : repoRelative + '/index.md';
+    }
+  } else if (!repoRelative.endsWith('.md')) {
+    // Path doesn't end with .md - add .md
+    repoRelative = repoRelative + '.md';
   }
 
-  return siteRelative + query + anchor;
+  return repoRelative + query + anchor;
 }
 
 /**
@@ -138,13 +182,13 @@ function processFile(filePath) {
   });
 
   // Process links only in non-code-block content
-  contentWithPlaceholders = contentWithPlaceholders.replaceAll(MARKDOWN_LINK_REGEX, (match, linkText, href) => {
-    // Skip external links
-    if (href.includes('://')) {
+  contentWithPlaceholders = contentWithPlaceholders.replaceAll(ALL_MARKDOWN_LINKS_REGEX, (match, linkText, href) => {
+    const newHref = convertToRepoRelative(href, filePath);
+
+    // Skip if conversion returned null (external link, anchor, etc.)
+    if (newHref === null) {
       return match;
     }
-
-    const newHref = convertToSiteRelative(href, filePath);
 
     // Only record as change if actually different
     if (newHref !== href) {
@@ -170,21 +214,16 @@ function processFile(filePath) {
 }
 
 /**
- * Validate that a site-relative link points to an existing file
+ * Validate that a repo-relative link points to an existing file
  */
-function validateLink(siteRelativePath) {
-  // Strip trailing slash and anchor/query
-  const checkPath = siteRelativePath.split('#')[0].split('?')[0];
+function validateLink(repoRelativePath) {
+  // Strip anchor/query
+  const checkPath = repoRelativePath.split('#')[0].split('?')[0];
 
-  if (checkPath.endsWith('/')) {
-    // Could be directory/index.md or file.md that became directory/
-    const asIndex = path.join(DOCS_ROOT, checkPath, 'index.md');
-    const asFile = path.join(DOCS_ROOT, checkPath.slice(0, -1) + '.md');
+  // Remove /docs/ prefix to get path relative to DOCS_ROOT
+  const relativePath = checkPath.startsWith('/docs/') ? checkPath.slice(6) : checkPath.slice(1);
 
-    return fs.existsSync(asIndex) || fs.existsSync(asFile);
-  }
-
-  return fs.existsSync(path.join(DOCS_ROOT, checkPath));
+  return fs.existsSync(path.join(DOCS_ROOT, relativePath));
 }
 
 // Main execution

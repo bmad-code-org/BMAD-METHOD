@@ -9,8 +9,8 @@ Personalize agents and workflows to match your needs.
 
 | Guide | Description |
 |-------|-------------|
-| **[Agent Customization](/how-to/customization/customize-agents/)** | Modify agent behavior without editing core files |
-| **[Workflow Customization](/how-to/customization/customize-workflows/)** | Customize and optimize workflows |
+| **[Agent Customization](/docs/how-to/customization/customize-agents.md)** | Modify agent behavior without editing core files |
+| **[Workflow Customization](/docs/how-to/customization/customize-workflows.md)** | Customize and optimize workflows |
 
 ## Overview
 
@@ -24,4 +24,4 @@ Replace or extend workflow steps to create tailored processes. (Coming soon)
 
 ---
 
-**Next:** Read the [Agent Customization Guide](/how-to/customization/customize-agents/) to start personalizing your agents.
+**Next:** Read the [Agent Customization Guide](/docs/how-to/customization/customize-agents.md) to start personalizing your agents.

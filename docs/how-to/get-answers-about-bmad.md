@@ -45,7 +45,7 @@ Fetch `llms-full.txt` into your session:
 https://bmad-code-org.github.io/BMAD-METHOD/llms-full.txt
 ```
 
-You can also find this and other downloadable resources on the [Downloads page](/downloads).
+You can also find this and other downloadable resources on the [Downloads page](/docs/downloads.md).
 
 :::tip[Verify Surprising Answers]
 LLMs occasionally get things wrong. If an answer seems off, check the source file it referenced or ask on Discord.

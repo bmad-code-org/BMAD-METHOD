@@ -125,6 +125,6 @@ After PRD:
 
 ## Related
 
-- [Create Product Brief](/how-to/workflows/create-product-brief/) - Input for PRD
-- [Create UX Design](/how-to/workflows/create-ux-design/) - Optional UX workflow
-- [Create Architecture](/how-to/workflows/create-architecture/) - Next step after PRD
+- [Create Product Brief](/docs/how-to/workflows/create-product-brief.md) - Input for PRD
+- [Create UX Design](/docs/how-to/workflows/create-ux-design.md) - Optional UX workflow
+- [Create Architecture](/docs/how-to/workflows/create-architecture.md) - Next step after PRD

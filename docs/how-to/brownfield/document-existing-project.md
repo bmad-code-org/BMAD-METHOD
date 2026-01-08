@@ -80,5 +80,5 @@ Review the documentation for:
 
 ## Related
 
-- [Brownfield Development Guide](/how-to/brownfield/)
-- [Add Feature to Existing Project](/how-to/brownfield/add-feature-to-existing/)
+- [Brownfield Development Guide](/docs/how-to/brownfield/index.md)
+- [Add Feature to Existing Project](/docs/how-to/brownfield/add-feature-to-existing.md)

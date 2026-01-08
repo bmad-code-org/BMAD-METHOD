@@ -112,6 +112,6 @@ Planning workflows automatically load the product brief if it exists.
 
 ## Related
 
-- [Run Brainstorming Session](/how-to/workflows/run-brainstorming-session/) - Explore ideas first
-- [Conduct Research](/how-to/workflows/conduct-research/) - Validate ideas
-- [Create PRD](/how-to/workflows/create-prd/) - Next step after product brief
+- [Run Brainstorming Session](/docs/how-to/workflows/run-brainstorming-session.md) - Explore ideas first
+- [Conduct Research](/docs/how-to/workflows/conduct-research.md) - Validate ideas
+- [Create PRD](/docs/how-to/workflows/create-prd.md) - Next step after product brief

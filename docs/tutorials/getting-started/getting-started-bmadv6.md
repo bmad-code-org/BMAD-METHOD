@@ -3,7 +3,7 @@ title: "Getting Started with the BMad Method"
 description: Install BMad and build your first project
 ---
 
-**Upgrading from previous versions?** See the [Upgrade Guide](/how-to/installation/upgrade-to-v6/) instead.
+**Upgrading from previous versions?** See the [Upgrade Guide](/docs/how-to/installation/upgrade-to-v6.md) instead.
 
 ---
 
@@ -83,7 +83,7 @@ your-project/
 ```
 
 :::tip[Troubleshooting]
-Having issues? See [Install BMad](/how-to/installation/install-bmad/) for common solutions.
+Having issues? See [Install BMad](/docs/how-to/installation/install-bmad.md) for common solutions.
 :::
 
 ## Step 1: Initialize Your Project
@@ -230,7 +230,7 @@ Yes, once you learn the flow. Use the Quick Reference to go directly to needed w
 
 - **During workflows** — Agents guide you with questions and explanations
 - **Community** — [Discord](https://discord.gg/gk8jAdXWmj) (#bmad-method-help, #report-bugs-and-issues)
-- **Documentation** — [BMM Workflow Reference](/reference/workflows/)
+- **Documentation** — [BMM Workflow Reference](/docs/reference/workflows/index.md)
 - **Video tutorials** — [BMad Code YouTube](https://www.youtube.com/@BMadCode)
 
 ## Key Takeaways

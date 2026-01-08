@@ -228,7 +228,7 @@ Party mode is a unique multi-agent collaboration feature where ALL your installe
 - Emergent insights from agent interaction
 - Natural collaboration across modules
 
-**For complete documentation:** See the [Party Mode Guide](/explanation/features/party-mode/)
+**For complete documentation:** See the [Party Mode Guide](/docs/explanation/features/party-mode.md)
 
 ## Getting Help
 

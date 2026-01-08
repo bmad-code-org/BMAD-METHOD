@@ -121,6 +121,6 @@ Same as BMad Method with optional extended workflows.
 
 ## Related
 
-- [Why Solutioning Matters](/explanation/architecture/why-solutioning-matters/)
-- [Preventing Agent Conflicts](/explanation/architecture/preventing-agent-conflicts/)
-- [Quick Start Guide](/tutorials/getting-started/getting-started-bmadv6/)
+- [Why Solutioning Matters](/docs/explanation/architecture/why-solutioning-matters.md)
+- [Preventing Agent Conflicts](/docs/explanation/architecture/preventing-agent-conflicts.md)
+- [Quick Start Guide](/docs/tutorials/getting-started/getting-started-bmadv6.md)

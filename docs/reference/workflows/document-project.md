@@ -70,5 +70,5 @@ The workflow can be interrupted and resumed without losing progress:
 
 **Related Documentation:**
 
-- [Brownfield Development Guide](/how-to/brownfield/)
-- [Implementation Workflows](/how-to/workflows/run-sprint-planning/)
+- [Brownfield Development Guide](/docs/how-to/brownfield/index.md)
+- [Implementation Workflows](/docs/how-to/workflows/run-sprint-planning.md)

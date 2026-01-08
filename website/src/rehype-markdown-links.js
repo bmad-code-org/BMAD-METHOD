@@ -6,7 +6,10 @@
  *   ./path/index.md → ./path/ (index.md becomes directory root)
  *   ../path/file.md#anchor → ../path/file/#anchor
  *   ./file.md?query=param → ./file/?query=param
- *   /absolute/path/file.md → /absolute/path/file/
+ *   /docs/absolute/path/file.md → /absolute/path/file/
+ *
+ * For absolute paths starting with /docs/, the /docs prefix is stripped
+ * since the Astro site serves content from the docs directory as the root.
  *
  * Affects relative links (./, ../) and absolute paths (/) - external links are unchanged
  */
@@ -77,6 +80,11 @@ export default function rehypeMarkdownLinks() {
           // starts with #
           anchor = suffix;
         }
+      }
+
+      // Strip /docs/ prefix from absolute paths (repo-relative → site-relative)
+      if (urlPath.startsWith('/docs/')) {
+        urlPath = urlPath.slice(5); // Remove '/docs' prefix, keeping the leading /
       }
 
       // Transform .md to /

@@ -86,6 +86,6 @@ Catching alignment issues in solutioning is 10× faster than discovering them du
 
 ## Related
 
-- [Four Phases](/explanation/architecture/four-phases/) - Overview of all phases
-- [Preventing Agent Conflicts](/explanation/architecture/preventing-agent-conflicts/) - Detailed conflict prevention
-- [Create Architecture](/how-to/workflows/create-architecture/) - How to do it
+- [Four Phases](/docs/explanation/architecture/four-phases.md) - Overview of all phases
+- [Preventing Agent Conflicts](/docs/explanation/architecture/preventing-agent-conflicts.md) - Detailed conflict prevention
+- [Create Architecture](/docs/how-to/workflows/create-architecture.md) - How to do it

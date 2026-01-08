@@ -131,6 +131,6 @@ After creating epics and stories:
 
 ## Related
 
-- [Create Architecture](/how-to/workflows/create-architecture/) - Do this first
-- [Run Implementation Readiness](/how-to/workflows/run-implementation-readiness/) - Gate check
-- [Run Sprint Planning](/how-to/workflows/run-sprint-planning/) - Start implementation
+- [Create Architecture](/docs/how-to/workflows/create-architecture.md) - Do this first
+- [Run Implementation Readiness](/docs/how-to/workflows/run-implementation-readiness.md) - Gate check
+- [Run Sprint Planning](/docs/how-to/workflows/run-sprint-planning.md) - Start implementation

@@ -113,5 +113,5 @@ Type "exit" or "done" to conclude the session. Participating agents will say per
 
 ## Related
 
-- [Party Mode](/explanation/features/party-mode/) - Understanding Party Mode
-- [Agent Roles](/explanation/core-concepts/agent-roles/) - Available agents
+- [Party Mode](/docs/explanation/features/party-mode.md) - Understanding Party Mode
+- [Agent Roles](/docs/explanation/core-concepts/agent-roles.md) - Available agents

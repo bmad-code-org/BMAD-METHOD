@@ -21,7 +21,7 @@ No, once you learn the flow you can go directly to workflows. However, workflow-
 - Creates the tracking status file
 - Routes you to the correct starting workflow
 
-For experienced users: use the [Quick Start Guide](/tutorials/getting-started/getting-started-bmadv6/) to go directly to the right agent/workflow.
+For experienced users: use the [Quick Start Guide](/docs/tutorials/getting-started/getting-started-bmadv6.md) to go directly to the right agent/workflow.
 
 ### Why do I need fresh chats for each workflow?
 

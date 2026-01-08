@@ -214,5 +214,5 @@ Epic/Release Gate → TEA: *nfr-assess, *trace Phase 2 (release decision)
 
 ## Related Documentation
 
-- [Setup Test Framework](/how-to/workflows/setup-test-framework/) - How to set up testing infrastructure
-- [Run Test Design](/how-to/workflows/run-test-design/) - Creating test plans
+- [Setup Test Framework](/docs/how-to/workflows/setup-test-framework.md) - How to set up testing infrastructure
+- [Run Test Design](/docs/how-to/workflows/run-test-design.md) - Creating test plans

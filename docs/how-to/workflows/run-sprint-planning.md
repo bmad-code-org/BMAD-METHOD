@@ -106,6 +106,6 @@ Stories move through these states in the sprint status file:
 
 ## Related
 
-- [Create Story](/how-to/workflows/create-story/) - Prepare stories for implementation
-- [Implement Story](/how-to/workflows/implement-story/) - Dev workflow
-- [Run Code Review](/how-to/workflows/run-code-review/) - Quality assurance
+- [Create Story](/docs/how-to/workflows/create-story.md) - Prepare stories for implementation
+- [Implement Story](/docs/how-to/workflows/implement-story.md) - Dev workflow
+- [Run Code Review](/docs/how-to/workflows/run-code-review.md) - Quality assurance

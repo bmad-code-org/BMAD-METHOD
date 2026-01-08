@@ -125,6 +125,6 @@ After research:
 
 ## Related
 
-- [Run Brainstorming Session](/how-to/workflows/run-brainstorming-session/) - Explore ideas before research
-- [Create Product Brief](/how-to/workflows/create-product-brief/) - Capture strategic vision
-- [Create PRD](/how-to/workflows/create-prd/) - Move to formal planning
+- [Run Brainstorming Session](/docs/how-to/workflows/run-brainstorming-session.md) - Explore ideas before research
+- [Create Product Brief](/docs/how-to/workflows/create-product-brief.md) - Capture strategic vision
+- [Create PRD](/docs/how-to/workflows/create-prd.md) - Move to formal planning

@@ -72,8 +72,8 @@ Custom modules are installed the same way as official modules.
 
 During BMad installation, you choose which modules to install. You can also add or remove modules later by re-running the installer.
 
-See [Installation Guide](/how-to/installation/) for details.
+See [Installation Guide](/docs/how-to/installation/index.md) for details.
 
 ---
 
-**Next:** Read the [Installation Guide](/how-to/installation/) to set up BMad with the modules you need.
+**Next:** Read the [Installation Guide](/docs/how-to/installation/index.md) to set up BMad with the modules you need.

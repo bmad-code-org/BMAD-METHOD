@@ -154,6 +154,6 @@ If your "single change" needs 3+ files, it might be a multi-story feature. Let t
 
 ## Related
 
-- [Quick Flow](/explanation/features/quick-flow/) - Understanding Quick Spec Flow
-- [Implement Story](/how-to/workflows/implement-story/) - After tech spec
-- [Create PRD](/how-to/workflows/create-prd/) - For larger projects needing full BMad Method
+- [Quick Flow](/docs/explanation/features/quick-flow.md) - Understanding Quick Spec Flow
+- [Implement Story](/docs/how-to/workflows/implement-story.md) - After tech spec
+- [Create PRD](/docs/how-to/workflows/create-prd.md) - For larger projects needing full BMad Method
