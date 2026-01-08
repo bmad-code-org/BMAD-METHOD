@@ -98,17 +98,87 @@ Files changed:
 Story: {story_file}
 ```
 
-### 6. Create Commit
+### 6. Create Commit (With Queue for Parallel Mode)
+
+**Check execution mode:**
+```
+If mode == "batch" AND parallel execution:
+  use_commit_queue = true
+Else:
+  use_commit_queue = false
+```
+
+**If use_commit_queue == true:**
 
 ```bash
+# Commit queue with file-based locking
+lock_file=".git/bmad-commit.lock"
+max_wait=300  # 5 minutes
+wait_time=0
+retry_delay=1
+
+while [ $wait_time -lt $max_wait ]; do
+  if [ ! -f "$lock_file" ]; then
+    # Acquire lock
+    echo "locked_by: {{story_key}}
+locked_at: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+worker_id: {{worker_id}}
+pid: $$" > "$lock_file"
+
+    echo "🔒 Commit lock acquired for {{story_key}}"
+
+    # Execute commit
+    git commit -m "$(cat <<'EOF'
+{commit_message}
+EOF
+)"
+
+    commit_result=$?
+
+    # Release lock
+    rm -f "$lock_file"
+    echo "🔓 Lock released"
+
+    if [ $commit_result -eq 0 ]; then
+      git log -1 --oneline
+      break
+    else
+      echo "❌ Commit failed"
+      exit $commit_result
+    fi
+  else
+    # Lock exists, check if stale
+    lock_age=$(( $(date +%s) - $(date -r "$lock_file" +%s) ))
+    if [ $lock_age -gt 300 ]; then
+      echo "⚠️  Stale lock detected (${lock_age}s old) - removing"
+      rm -f "$lock_file"
+      continue
+    fi
+
+    locked_by=$(grep "locked_by:" "$lock_file" | cut -d' ' -f2-)
+    echo "⏳ Waiting for commit lock... (held by $locked_by, ${wait_time}s elapsed)"
+    sleep $retry_delay
+    wait_time=$(( wait_time + retry_delay ))
+    retry_delay=$(( retry_delay < 30 ? retry_delay * 3 / 2 : 30 ))  # Exponential backoff, max 30s
+  fi
+done
+
+if [ $wait_time -ge $max_wait ]; then
+  echo "❌ TIMEOUT: Could not acquire commit lock after 5 minutes"
+  echo "Lock holder: $(cat $lock_file)"
+  exit 1
+fi
+```
+
+**If use_commit_queue == false (sequential mode):**
+
+```bash
+# Direct commit (no queue needed)
 git commit -m "$(cat <<'EOF'
 {commit_message}
 EOF
 )"
-```
 
-Verify commit created:
-```bash
 git log -1 --oneline
 ```
 

@@ -25,6 +25,9 @@ build/*.txt
 .DS_Store
 Thumbs.db
 
+# BMAD workflow lock files
+.git/bmad-commit.lock
+
 # Development tools and configs
 .prettierrc
 

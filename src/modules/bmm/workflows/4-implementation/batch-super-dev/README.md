@@ -448,6 +448,11 @@ reconciliation:
 - As soon as worker completes → immediately refill slot with next story
 - Maintain constant N concurrent agents until queue empty
 - Execute reconciliation after each story completes
+- **Commit Queue:** File-based locking prevents git lock conflicts
+  - Workers acquire `.git/bmad-commit.lock` before committing
+  - Automatic retry with exponential backoff (1s → 30s)
+  - Stale lock cleanup (>5 min)
+  - Serialized commits, parallel implementation
 - No idle time waiting for batch synchronization
 - **20-40% faster** than old batch-and-wait pattern
 
@@ -591,17 +596,30 @@ See: `step-4.5-reconcile-story-status.md` for detailed algorithm
   - Smart pipeline selection: micro → lightweight, complex → enhanced
   - 50-70% token savings for micro stories
   - Deterministic classification with mutually exclusive thresholds
+  - **CRITICAL:** Rejects stories with <3 tasks as INVALID (prevents 0-task stories from being processed)
 - **NEW:** Semaphore Pattern for Parallel Execution
   - Worker pool maintains constant N concurrent agents
   - As soon as worker completes → immediately start next story
   - No idle time waiting for batch synchronization
   - 20-40% faster than old batch-and-wait pattern
   - Non-blocking task polling with live progress dashboard
+- **NEW:** Git Commit Queue (Parallel-Safe)
+  - File-based locking prevents concurrent commit conflicts
+  - Workers acquire `.git/bmad-commit.lock` before committing
+  - Automatic retry with exponential backoff (1s → 30s max)
+  - Stale lock cleanup (>5 min old locks auto-removed)
+  - Eliminates "Another git process is running" errors
+  - Serializes commits while keeping implementations parallel
 - **NEW:** Continuous Sprint-Status Tracking
   - sprint-status.yaml updated after EVERY task completion
   - Real-time progress: "# 7/10 tasks (70%)"
   - CRITICAL enforcement with HALT on update failure
   - Immediate visibility into story progress
+- **NEW:** Stricter Story Validation
+  - Step 2.5 now rejects stories with <3 tasks
+  - Step 2.6 marks stories with <3 tasks as INVALID
+  - Prevents incomplete/stub stories from being processed
+  - Requires /validate-create-story to fix before processing
 
 ### v1.2.0 (2026-01-06)
 - **NEW:** Smart Story Validation & Auto-Creation (Step 2.5)

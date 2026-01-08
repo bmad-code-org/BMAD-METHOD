@@ -168,16 +168,47 @@ Run `/bmad:bmm:workflows:sprint-status` to see current status.</output>
 
       <action>Count sections present: sections_found</action>
       <action>Check Current State content length (word count)</action>
-      <action>Check Acceptance Criteria item count</action>
-      <action>Check Tasks item count</action>
+      <action>Check Acceptance Criteria item count: ac_count</action>
+      <action>Count unchecked tasks ([ ]) in Tasks/Subtasks: task_count</action>
       <action>Look for gap analysis markers (✅/❌) in Current State</action>
 
-      <check if="sections_found < 12 OR Current State < 100 words OR no gap analysis markers">
+      <check if="task_count < 3">
+        <output>
+❌ Story {{story_key}}: INVALID - Insufficient tasks ({{task_count}}/3 minimum)
+
+This story has TOO FEW TASKS to be a valid story (found {{task_count}}, need ≥3).
+
+Analysis:
+- 0 tasks: Story is a stub or empty
+- 1-2 tasks: Too small to represent meaningful feature work
+- ≥3 tasks: Minimum valid (MICRO threshold)
+
+Possible causes:
+- Story file is incomplete/stub
+- Tasks section is empty or malformed
+- Story needs proper task breakdown
+- Story is too small and should be combined with another
+
+Required action:
+- Run /validate-create-story to regenerate with proper task breakdown
+- Or manually add tasks to reach minimum of 3 tasks
+- Or combine this story with a related story
+
+This story will be SKIPPED.
+        </output>
+        <action>Mark story for removal from selection</action>
+        <action>Add to skipped_stories list with reason: "INVALID - Only {{task_count}} tasks (need ≥3)"</action>
+        <goto next iteration />
+      </check>
+
+      <check if="sections_found < 12 OR Current State < 100 words OR no gap analysis markers OR ac_count < 3">
         <output>
 ⚠️ Story {{story_key}}: File incomplete or invalid
    - Sections: {{sections_found}}/12
    {{#if Current State < 100 words}}- Current State: stub ({{word_count}} words, expected ≥100){{/if}}
    {{#if no gap analysis}}- Gap analysis: missing{{/if}}
+   {{#if ac_count < 3}}- Acceptance Criteria: {{ac_count}} items (expected ≥3){{/if}}
+   {{#if task_count < 3}}- Tasks: {{task_count}} items (expected ≥3){{/if}}
         </output>
 
         <ask>Regenerate story with codebase scan? (yes/no):</ask>
@@ -271,6 +302,20 @@ Run `/bmad:bmm:workflows:sprint-status` to see status.
     <action>Count unchecked tasks ([ ]) at top level only in Tasks/Subtasks section → task_count
       (See workflow.yaml complexity.task_counting.method = "top_level_only")
     </action>
+
+    <check if="task_count < 3">
+      <output>
+⚠️ Story {{story_key}}: Cannot score complexity - INSUFFICIENT TASKS ({{task_count}}/3 minimum)
+
+This story was not caught in Step 2.5 validation but has too few tasks.
+It should have been rejected during validation.
+
+Skipping complexity scoring for this story - marking as INVALID.
+      </output>
+      <action>Set {{story_key}}.complexity = {level: "INVALID", score: 0, task_count: {{task_count}}, reason: "Insufficient tasks ({{task_count}}/3 minimum)"}</action>
+      <action>Continue to next story</action>
+    </check>
+
     <action>Extract file paths mentioned in tasks → file_count</action>
     <action>Scan story title and task descriptions for risk keywords using rules from workflow.yaml:
       - Case insensitive matching (require_word_boundaries: true)
@@ -310,6 +355,21 @@ Run `/bmad:bmm:workflows:sprint-status` to see status.
 
   <action>Group stories by complexity level</action>
 
+  <action>Filter out INVALID stories (those with level="INVALID"):</action>
+  <action>For each INVALID story, add to skipped_stories with reason from complexity object</action>
+  <action>Remove INVALID stories from complexity_groups and ready_for_dev_stories</action>
+
+  <check if="any INVALID stories found">
+    <output>
+❌ **Invalid Stories Skipped ({{invalid_count}}):**
+{{#each invalid_stories}}
+  - {{story_key}}: {{reason}}
+{{/each}}
+
+These stories need to be regenerated with /create-story or /validate-create-story before processing.
+    </output>
+  </check>
+
   <output>
 📊 **Complexity Analysis Complete**
 
@@ -333,6 +393,20 @@ Run `/bmad:bmm:workflows:sprint-status` to see status.
 {{/if}}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   </output>
+
+  <check if="all stories are INVALID">
+    <output>
+❌ No valid stories remaining after complexity analysis.
+
+All stories were either:
+- Missing story files (Step 2.5)
+- Invalid/incomplete (Step 2.5)
+- Zero tasks (Step 2.6)
+
+Run /create-story or /validate-create-story to create proper story files, then rerun /batch-super-dev.
+    </output>
+    <action>Exit workflow</action>
+  </check>
 </step>
 
 <step n="3" goal="Get user selection">

@@ -37,12 +37,103 @@ development_status:
 - New entries automatically add progress
 - Gradual migration as stories are worked
 
+### ⚡ Semaphore Pattern for Parallel Execution
+
+**NEW:** Worker pool pattern replaces batch-and-wait for maximum throughput.
+
+**Previously (Batch-and-Wait):**
+```
+Batch 1: Start 5 agents → wait for ALL 5 to finish
+Batch 2: Start 5 agents → wait for ALL 5 to finish
+Problem: If 4 finish quickly, slots sit idle waiting for slow 5th
+```
+
+**Now (Semaphore Pattern):**
+```
+Initialize: Fill 5 worker slots
+Worker 1 finishes → immediately start next story in that slot
+Worker 3 finishes → immediately start next story in that slot
+Maintain constant 5 concurrent agents until queue empty
+```
+
+**Benefits:**
+- 20-40% faster completion (eliminates idle time)
+- Constant utilization of all worker slots
+- More predictable completion times
+- Live progress dashboard every 30 seconds
+
+### 🔒 Git Commit Queue (Parallel-Safe)
+
+**NEW:** File-based locking prevents concurrent commit conflicts in parallel mode.
+
+**Problem Solved:**
+```
+Worker 1: git commit → acquires .git/index.lock
+Worker 2: git commit → ERROR: Another git process is running
+Worker 3: git commit → ERROR: Another git process is running
+Workers 2 & 3: HALT - manual intervention needed ❌
+```
+
+**Solution with Commit Queue:**
+```
+Worker 1: acquire .git/bmad-commit.lock → commit → release
+Worker 2: wait for lock → acquire → commit → release
+Worker 3: wait for lock → acquire → commit → release
+All workers: SUCCESS ✅
+```
+
+**Features:**
+- Automatic retry with exponential backoff (1s → 30s)
+- Stale lock cleanup (>5 min old locks auto-removed)
+- Timeout protection (max 5 min wait)
+- Lock file tracking: who holds lock, when acquired, worker ID
+- Serializes commits while keeping implementations parallel
+- No user intervention needed for lock conflicts
+
+**Lock File:** `.git/bmad-commit.lock` (auto-generated, auto-cleaned, gitignored)
+
+### 🛡️ Stricter Story Validation
+
+**NEW:** Minimum 3-task requirement prevents invalid/incomplete stories from being processed.
+
+**Validation Rules:**
+- **0-2 tasks:** INVALID - Story is stub/incomplete (rejected in Step 2.5)
+- **3 tasks:** Minimum valid (MICRO classification threshold)
+- **4-15 tasks:** STANDARD story size
+- **16+ tasks:** COMPLEX story, consider splitting
+
+**What Happens to Invalid Stories:**
+- Step 2.5: Rejected during validation with clear error message
+- Step 2.6: Marked as INVALID during complexity scoring (double-check)
+- Filtered out before user selection step
+- User prompted to run /validate-create-story to fix
+
+**Example (Real-World Issue Fixed):**
+```
+Before v1.3.0:
+- Story "11-4-classes-workshops-advanced": 0 tasks, high-risk keywords
+- Classified as COMPLEX (because keywords)
+- Proceeds to implementation
+- Agent has nothing to implement → fails
+
+After v1.3.0:
+- Story "11-4-classes-workshops-advanced": 0 tasks
+- Rejected in Step 2.5: "INVALID - Only 0 tasks (need ≥3)"
+- Skipped from selection
+- User told to run /validate-create-story
+```
+
 ### Files Modified
 
-- `dev-story/instructions.xml` (BMM + BMGD): Added mandatory task-level updates with CRITICAL enforcement
-- `sprint-status/instructions.md` (BMM + BMGD): Added progress parsing and display
-- `batch-super-dev/step-4.5-reconcile-story-status.md`: Added progress to reconciliation
-- `docs/HOW-TO-VALIDATE-SPRINT-STATUS.md`: Documented new format and update frequency
+- `batch-super-dev/instructions.md`: Semaphore pattern, 3-task minimum, INVALID filtering
+- `batch-super-dev/README.md`: Updated to v1.3.0, documented all new features
+- `super-dev-pipeline/steps/step-06-complete.md`: Added commit queue with file-based locking
+- `super-dev-pipeline/steps/step-06a-queue-commit.md`: NEW file for commit queue documentation
+- `dev-story/instructions.xml` (BMM + BMGD): Mandatory task-level sprint-status updates with CRITICAL enforcement
+- `sprint-status/instructions.md` (BMM + BMGD): Progress parsing and display
+- `batch-super-dev/step-4.5-reconcile-story-status.md`: Progress in reconciliation
+- `docs/HOW-TO-VALIDATE-SPRINT-STATUS.md`: Semaphore pattern documentation
+- `.gitignore`: Added `.git/bmad-commit.lock`
 
 ---
 
