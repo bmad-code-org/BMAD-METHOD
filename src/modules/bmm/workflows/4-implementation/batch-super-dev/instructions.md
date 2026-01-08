@@ -1,4 +1,45 @@
 # Batch Super-Dev - Interactive Story Selector
+## AKA: "Mend the Gap" 🚇
+
+**Primary Use Case:** Gap analysis and reconciliation workflow
+
+This workflow helps you "mind the gap" between story requirements and codebase reality, then "mend the gap" by building only what's truly missing.
+
+### What This Workflow Does
+
+1. **Scans codebase** to verify what's actually implemented vs what stories claim
+2. **Finds the gap** between story requirements and reality
+3. **Mends the gap** by building ONLY what's truly missing (no duplicate work)
+4. **Updates tracking** to reflect actual completion status (check boxes, sprint-status)
+
+### Common Use Cases
+
+**Reconciliation Mode (Most Common):**
+- Work was done but not properly tracked
+- Stories say "build X" but X is 60-80% already done
+- Need second set of eyes to find real gaps
+- Update story checkboxes to match reality
+
+**Greenfield Mode:**
+- Story says "build X", nothing exists
+- Build 100% from scratch with full quality gates
+
+**Brownfield Mode:**
+- Story says "modify X", X exists
+- Refactor carefully, add only new requirements
+
+### Execution Modes
+
+**Sequential (Recommended for Gap Analysis):**
+- Process stories ONE-BY-ONE in THIS SESSION
+- After each story: verify existing code → build only gaps → check boxes → move to next
+- Easier to monitor, can intervene if issues found
+- Best for reconciliation work
+
+**Parallel (For Greenfield Batch Implementation):**
+- Spawn autonomous Task agents to process stories concurrently
+- Faster completion but harder to monitor
+- Best when stories are independent and greenfield
 
 <critical>The workflow execution engine is governed by: {project-root}/_bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {project-root}/_bmad/bmm/workflows/4-implementation/batch-super-dev/workflow.yaml</critical>
@@ -349,31 +390,47 @@ Only the first {{max_stories}} will be processed.</output>
 </step>
 
 <step n="3.5" goal="Choose execution strategy">
-  <action>Use AskUserQuestion to determine execution mode and parallelization</action>
-
   <ask>
 **How should these stories be processed?**
 
-**Execution Mode:**
-- Sequential: Run stories one-by-one in this session (slower, easier to monitor)
-- Parallel: Spawn Task agents to process stories concurrently (faster, autonomous)
+Options:
+- **sequential**: Run stories one-by-one in this session (slower, easier to monitor)
+- **parallel**: Spawn Task agents to process stories concurrently (faster, autonomous)
 
-**If Parallel, how many agents in parallel?**
-- Conservative: 2 agents (low resource usage, easier debugging)
-- Moderate: 4 agents (balanced performance)
-- Aggressive: All stories at once (fastest, high resource usage)
+Enter: sequential or parallel
   </ask>
 
-  <action>Capture responses: execution_mode, parallel_count</action>
+  <action>Capture response as: execution_mode</action>
 
   <check if="execution_mode == 'sequential'">
     <action>Set parallel_count = 1</action>
     <action>Set use_task_agents = false</action>
+    <output>✅ Sequential mode selected - stories will be processed one-by-one in this session</output>
   </check>
 
   <check if="execution_mode == 'parallel'">
     <action>Set use_task_agents = true</action>
-    <action>If parallel_count == 'all': set parallel_count = count of selected_stories</action>
+
+    <ask>
+**How many agents should run in parallel?**
+
+Options:
+- **2**: Conservative (low resource usage, easier debugging)
+- **4**: Moderate (balanced performance, recommended)
+- **8**: Aggressive (higher throughput)
+- **10**: Maximum (10 agent limit for safety)
+- **all**: Use all stories (max 10 agents)
+
+Enter number (2-10) or 'all':
+    </ask>
+
+    <action>Capture response as: parallel_count</action>
+    <action>If parallel_count == 'all': set parallel_count = min(count of selected_stories, 10)</action>
+    <action>If parallel_count > 10: set parallel_count = 10 (safety limit)</action>
+
+    <check if="parallel_count was capped at 10">
+      <output>⚠️ Requested {{original_count}} agents, capped at 10 (safety limit)</output>
+    </check>
   </check>
 
   <output>
