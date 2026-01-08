@@ -121,7 +121,7 @@ Technical documentation and diagrams.
 - `*validate-doc` - Review documentation against standards
 - `*improve-readme` - Review and improve README files
 - `*explain-concept` - Create clear technical explanations
-- `*standards-guide` - Show BMAD documentation standards
+- `*standards-guide` - Show BMad documentation standards
 
 ---
 

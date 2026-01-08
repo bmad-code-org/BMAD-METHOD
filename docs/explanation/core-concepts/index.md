@@ -1,9 +1,9 @@
 ---
-title: "BMAD Core Concepts"
+title: "BMad Core Concepts"
 ---
 
 
-Understanding the fundamental building blocks of the BMAD Method.
+Understanding the fundamental building blocks of the BMad Method.
 
 ## The Essentials
 
@@ -15,26 +15,26 @@ Understanding the fundamental building blocks of the BMAD Method.
 
 ## Getting Started
 
-### New to BMAD?
-Start here to understand what BMAD is and how it works:
+### New to BMad?
+Start here to understand what BMad is and how it works:
 
 1. **[Agents Guide](/explanation/core-concepts/what-are-agents/)** - Learn about Simple and Expert agents
 2. **[Workflows Guide](/explanation/core-concepts/what-are-workflows/)** - Understand how workflows orchestrate tasks
 3. **[Modules Guide](/explanation/core-concepts/what-are-modules/)** - See how modules organize functionality
 
-### Installing BMAD
+### Installing BMad
 
-- **[Installation Guide](/how-to/installation/)** - Set up BMAD in your project
+- **[Installation Guide](/how-to/installation/)** - Set up BMad in your project
 - **[Upgrading from v4](/how-to/installation/upgrade-to-v6/)** - Migrate from earlier versions
 
 ### Configuration
 
-- **[BMAD Customization](/how-to/customization/)** - Personalize agents and workflows
+- **[BMad Customization](/how-to/customization/)** - Personalize agents and workflows
 
 ### Advanced
 
-- **[Web Bundles](/explanation/features/web-bundles/)** - Use BMAD in Gemini Gems and Custom GPTs
+- **[Web Bundles](/explanation/features/web-bundles/)** - Use BMad in Gemini Gems and Custom GPTs
 
 ---
 
-**Next:** Read the [Agents Guide](/explanation/core-concepts/what-are-agents/) to understand the core building block of BMAD.
+**Next:** Read the [Agents Guide](/explanation/core-concepts/what-are-agents/) to understand the core building block of BMad.

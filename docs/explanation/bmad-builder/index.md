@@ -1,10 +1,10 @@
 ---
 title: "BMad Builder (BMB)"
-description: Create custom agents, workflows, and modules for BMAD
+description: Create custom agents, workflows, and modules for BMad
 ---
 
 
-Create custom agents, workflows, and modules for BMAD.
+Create custom agents, workflows, and modules for BMad.
 
 ---
 

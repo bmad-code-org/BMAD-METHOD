@@ -3,13 +3,13 @@ title: "Core Workflows"
 ---
 
 
-Core Workflows are domain-agnostic workflows that can be utilized by any BMAD-compliant module, workflow, or agent. These workflows are installed by default and available at any time.
+Core Workflows are domain-agnostic workflows that can be utilized by any BMad-compliant module, workflow, or agent. These workflows are installed by default and available at any time.
 
 ## Available Core Workflows
 
 ### [Party Mode](/explanation/features/party-mode/)
 
-Orchestrate dynamic multi-agent conversations with your entire BMAD team. Engage with multiple specialized perspectives simultaneously—each agent maintaining their unique personality, expertise, and communication style.
+Orchestrate dynamic multi-agent conversations with your entire BMad team. Engage with multiple specialized perspectives simultaneously—each agent maintaining their unique personality, expertise, and communication style.
 
 ### [Brainstorming](/explanation/features/brainstorming-techniques/)
 

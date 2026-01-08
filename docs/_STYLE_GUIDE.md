@@ -1,6 +1,6 @@
 # Documentation Style Guide
 
-Internal guidelines for maintaining consistent, high-quality documentation across the BMAD Method project. This document is not included in the Starlight sidebar — it's for contributors and maintainers, not end users.
+Internal guidelines for maintaining consistent, high-quality documentation across the BMad Method project. This document is not included in the Starlight sidebar — it's for contributors and maintainers, not end users.
 
 ## Quick Principles
 

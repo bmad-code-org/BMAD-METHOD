@@ -3,7 +3,7 @@ title: "Document Project Workflow - Technical Reference"
 ---
 
 
-**Module:** BMM (BMAD Method Module)
+**Module:** BMM (BMad Method Module)
 
 ## Purpose
 

@@ -1,5 +1,5 @@
 ---
-title: "BMAD Customization"
+title: "BMad Customization"
 ---
 
 
@@ -14,7 +14,7 @@ Personalize agents and workflows to match your needs.
 
 ## Overview
 
-BMAD provides two main customization approaches:
+BMad provides two main customization approaches:
 
 ### Agent Customization
 Modify any agent's persona, name, capabilities, or menu items using `.customize.yaml` files in `_bmad/_config/agents/`. Your customizations persist through updates.

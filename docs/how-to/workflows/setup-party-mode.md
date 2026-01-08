@@ -4,7 +4,7 @@ description: How to set up and use Party Mode for multi-agent collaboration
 ---
 
 
-Use Party Mode to orchestrate dynamic multi-agent conversations with your entire BMAD team.
+Use Party Mode to orchestrate dynamic multi-agent conversations with your entire BMad team.
 
 ---
 

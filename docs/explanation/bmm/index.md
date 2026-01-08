@@ -36,7 +36,7 @@ First know there is the full BMad Method Process and then there is a Quick Flow 
     - All 4 phases have optional steps in them, depending on how rigorous you want to go with planning, research ideation, validation, testing and traceability.
   - While there is a lot here, know that even this can be distilled down to a simple PRD, Epic and Story list and then jump into the dev cycle. But if that is all you want, you might be better off with the BMad Quick Flow described next
 
-- **[BMAD Quick Flow](/explanation/features/quick-flow/)** - Fast-track development workflow
+- **[BMad Quick Flow](/explanation/features/quick-flow/)** - Fast-track development workflow
   - 3-step process: spec → dev → optional review
   - Perfect for bug fixes and small features
   - Rapid prototyping with production quality

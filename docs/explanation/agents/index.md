@@ -1,10 +1,10 @@
 ---
 title: "Understanding Agents"
-description: Understanding BMAD agents and their roles
+description: Understanding BMad agents and their roles
 ---
 
 
-Comprehensive guides to BMAD's AI agents - their roles, capabilities, and how to work with them effectively.
+Comprehensive guides to BMad's AI agents - their roles, capabilities, and how to work with them effectively.
 
 ---
 
