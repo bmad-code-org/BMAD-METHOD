@@ -61,3 +61,7 @@ agent:
     - trigger: GFD or fuzzy match on ghost-features
       workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/detect-ghost-features/workflow.yaml"
       description: "[GFD] Ghost Feature Detector - find orphaned code with no stories (reverse gap analysis)"
+
+    - trigger: MIG or fuzzy match on migrate
+      workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/migrate-to-github/workflow.yaml"
+      description: "[MIG] Migrate to GitHub Issues - production-grade migration with reliability guarantees"
