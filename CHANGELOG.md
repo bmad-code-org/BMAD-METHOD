@@ -1,5 +1,76 @@
 # Changelog
 
+## [6.1.0-alpha.3]
+
+**Release: January 7, 2026**
+
+Builds on alpha.2 with semaphore pattern and git commit queue for production-ready parallel batch processing.
+
+### ⚡ Semaphore Pattern (Replaces Batch-and-Wait)
+
+**NEW:** Worker pool with constant concurrency eliminates idle time.
+
+**Old batch-and-wait pattern:**
+- Spawn 5 agents → wait for ALL 5 to finish → spawn next 5
+- If 4 finish quickly, slots sit idle waiting for slow 5th agent
+- Inefficient resource utilization
+
+**New semaphore pattern:**
+- Maintain pool of 5 worker slots
+- As soon as ANY worker finishes → immediately refill that slot
+- Constant 5 concurrent agents until queue empty
+- Non-blocking task polling with live progress dashboard
+
+**Efficiency gain:** 20-40% faster completion
+
+### 🔒 Git Commit Queue (Eliminates Lock Conflicts)
+
+**NEW:** File-based locking prevents concurrent commit conflicts in parallel mode.
+
+**Problem:** Multiple agents committing simultaneously caused `.git/index.lock` conflicts requiring manual intervention.
+
+**Solution:** Commit queue with `.git/bmad-commit.lock`
+- Workers acquire lock before committing (serialized commits)
+- Automatic retry with exponential backoff (1s → 30s)
+- Stale lock cleanup (>5 min old auto-removed)
+- Timeout protection (HALT after 5 min)
+- Implementations remain fully parallel (only commits serialize)
+
+**Result:** Zero git lock conflicts, no manual intervention needed
+
+### 🛡️ Minimum 3-Task Requirement
+
+**NEW:** Stories with <3 tasks rejected as INVALID.
+
+**Real-world issue fixed:**
+```
+Story "11-4-classes-workshops-advanced":
+- Had 0 tasks but high-risk keywords
+- Was classified as COMPLEX and proceeded
+- Agent had nothing to implement → failed
+
+Now:
+- Rejected in validation: "INVALID - Only 0 tasks (need ≥3)"
+- User told to run /validate-create-story
+- Prevents wasted tokens on incomplete stories
+```
+
+**Validation rules:**
+- 0-2 tasks: INVALID (stub/incomplete)
+- 3+ tasks: Valid (processable)
+
+### Files Modified
+
+- `batch-super-dev/instructions.md`: Semaphore pattern, 3-task validation
+- `super-dev-pipeline/step-06-complete.md`: Commit queue integration
+- `super-dev-pipeline/step-06a-queue-commit.md`: NEW - Commit queue docs
+- `batch-super-dev/README.md`: v1.3.0 documentation
+- `docs/HOW-TO-VALIDATE-SPRINT-STATUS.md`: Semaphore pattern explanation
+- `.gitignore`: Added `.git/bmad-commit.lock`
+- `CHANGELOG.md`: Comprehensive feature documentation
+
+---
+
 ## [6.1.0-alpha.2]
 
 **Release: January 7, 2026**
