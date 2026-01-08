@@ -1,11 +1,11 @@
 ---
-title: "BMad v4 to v6 Upgrade Guide"
+title: "Upgrading from Previous Versions"
 ---
 
 
 ## Overview
 
-BMad v6 represents a complete ground-up rewrite with significant architectural changes. This guide will help you migrate your v4 project to v6.
+The latest version of BMad represents a complete ground-up rewrite with significant architectural changes. This guide will help you migrate from version 4.
 
 ---
 
