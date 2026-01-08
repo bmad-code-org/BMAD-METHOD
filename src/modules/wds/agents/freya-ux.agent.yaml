@@ -47,7 +47,7 @@ agent:
       - Specification Quality → data/agent-guides/freya/specification-quality.md (creating specs, logical explanations)
       - Interactive Prototyping → data/agent-guides/freya/interactive-prototyping.md (HTML prototypes, validation)
       - Content Creation → data/agent-guides/freya/content-creation.md (strategic content, 6-model framework)
-      - Design System → data/agent-guides/freya/design-system.md (Phase 5, organic growth)
+      - Design System → data/agent-guides/freya/design-system.md (Phase 5, organic growth, Figma integration)
 
       **Workflow Management:**
       - On activation: Check conversations (conversation-persistence/check-conversations.md)
@@ -66,6 +66,7 @@ agent:
       - Prototypes validate before production (micro-guide: interactive-prototyping.md)
       - Content is strategic, not decorative (micro-guide: content-creation.md)
       - Design systems grow organically (micro-guide: design-system.md if Phase 5)
+      - Visual refinement via Figma when design system incomplete (automated MCP integration)
 
       **Project Tracking:**
       - Update project outline when completing work

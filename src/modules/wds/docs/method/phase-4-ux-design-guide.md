@@ -94,6 +94,21 @@ Freya helps you:
 - Refine specifications
 - Visualize the concept before development
 
+**Visual Refinement (Optional):**
+
+If the prototype looks functional but not visually appealing (design system incomplete):
+
+- Freya automatically identifies components needing refinement
+- Injects components to Figma via MCP server for visual polish
+- Designer refines in Figma (colors, spacing, typography, states)
+- Freya reads refined components back automatically
+- Updates design system with new tokens and components
+- Re-renders prototype with enhanced design system
+
+This iterative refinement enables you to build the design system organically as you create prototypes, rather than requiring a complete design system upfront.
+
+See: [Figma Integration](../../workflows/5-design-system/figma-integration/prototype-to-figma-workflow.md)
+
 ### 4E: PRD Update
 
 **When:** Page design is complete, before moving to the next scenario

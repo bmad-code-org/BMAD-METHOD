@@ -166,9 +166,105 @@ Choice [1/2/3]:</ask>
   <output>Perfect! Your prototype validates the design. ✨</output>
 </check>
 
-<output>**Prototype testing complete!**
+<output>**Prototype testing complete!**</output>
 
-Your design is validated and ready for development. Time to extract the functional requirements we discovered. 📋</output>
+<ask>**Visual quality assessment:**
+
+How does the prototype look visually?
+
+1. **Polished** - Design system covers everything, looks great
+2. **Needs refinement** - Works but looks basic, design system incomplete
+3. **Minor tweaks** - Small CSS adjustments needed
+
+Choice [1/2/3]:</ask>
+
+<check if="choice == 2">
+  <output>**Design Refinement Available**
+
+Since your design system is incomplete, I can help refine the visual design using:
+
+1. **Figma MCP** (Recommended) - Automated component extraction with Object ID preservation
+2. **NanoBanana** (Alternative) - AI-powered sketch envisioning (outputs images or code, requires manual interpretation)
+
+Which would you prefer?</output>
+
+  <action>Analyze prototype components and identify gaps in design system</action>
+  
+  <output>I've analyzed the prototype and found:
+
+**Components needing refinement:**
+- {list components missing from design system}
+- {list components with incomplete states/variants}
+
+**Estimated refinement time:** {X} components × 15-30 min each = {Y} hours
+
+This will extend your design system and improve all future prototypes.</output>
+
+  <ask>Would you like me to:
+  1. **Extract to Figma** - I'll inject these components for refinement
+  2. **Continue as-is** - Functional prototype is sufficient for now
+  
+  Choice [1/2]:</ask>
+  
+  <check if="choice == 1">
+    <action>Load and execute `workflows/5-design-system/figma-integration/prototype-to-figma-workflow.md` Phase 2</action>
+    
+    <output>**Injecting components to Figma...**
+
+I'm using the MCP server to inject components directly into your Figma file.
+
+Target page: {scenario-number}-{scenario-name} / {page-number}-{page-name}
+
+{Show injection progress and results}
+
+✓ All components injected successfully!
+
+**Figma link:** {provide link}
+
+**Next steps:**
+1. Open Figma and refine the components
+2. When finished, let me know and I'll read them back
+3. I'll update the design system automatically
+4. We can re-render the prototype with improvements
+
+Take your time with the refinement. I'll be here when you're ready!</output>
+
+    <ask>For now, would you like to:
+    [C] Continue to PRD update (refine Figma later)
+    [W] Wait here until Figma refinement is complete
+    
+    Choice [C/W]:</ask>
+    
+    <check if="choice == W">
+      <output>I'll wait here. Let me know when you've finished refining in Figma.</output>
+      <action>Pause workflow, wait for user notification</action>
+      
+      <ask>Have you finished refining the components in Figma? [Y/N]</ask>
+      
+      <check if="yes">
+        <action>Execute Phase 4 of prototype-to-figma-workflow (read refined components)</action>
+        <output>{Show design token extraction and design system updates}</output>
+        
+        <ask>Would you like me to re-render the prototype with the enhanced design system now? [Y/N]</ask>
+        
+        <check if="yes">
+          <action>Re-render prototype with updated design system</action>
+          <output>✓ Prototype re-rendered with enhanced design system!
+          
+The prototype now looks polished and professional. All components use the refined design tokens.</output>
+        </check>
+      </check>
+    </check>
+  </check>
+</check>
+
+<check if="choice == 3">
+  <ask>What CSS adjustments are needed?</ask>
+  <action>Apply quick CSS fixes to prototype</action>
+  <output>Updated! Test again in your browser. 🔄</output>
+</check>
+
+<output>Your design is validated and ready for development. Time to extract the functional requirements we discovered. 📋</output>
 
 <ask>Ready to proceed to **Step 4E: PRD Update**? [Y/N]</ask>
 

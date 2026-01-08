@@ -59,6 +59,9 @@ Phase 4 transforms sketches and ideas into detailed, developer-ready page specif
 
 - Generate interactive HTML prototype
 - Uses Design System if enabled
+- **Visual refinement option:** Extract to Figma via MCP server if design system incomplete
+- Iterative refinement: Prototype → Figma → Design System → Re-render
+- See: `workflows/5-design-system/figma-integration/prototype-to-figma-workflow.md`
 
 ### 4E: PRD Update
 

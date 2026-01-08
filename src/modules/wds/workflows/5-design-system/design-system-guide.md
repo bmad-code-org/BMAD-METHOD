@@ -236,14 +236,25 @@ For each component:
 - `figma-designer-guide.md` - Step-by-step guide for designers
 - `figma-mcp-integration.md` - Technical MCP integration guide
 - `figma-component-structure.md` - Component organization in Figma (in data/design-system/)
+- `prototype-to-figma-workflow.md` - **NEW:** Extract HTML prototypes to Figma for visual refinement
+- `when-to-extract-decision-guide.md` - **NEW:** Decision framework for prototype extraction
 
-**Workflow:**
+**Workflows:**
 
+**A. Figma → WDS (Existing):**
 1. Designer creates/updates component in Figma
 2. Designer adds WDS component ID to description
 3. MCP reads component via Figma API
 4. Agent generates/updates WDS specification
 5. Designer reviews and confirms
+
+**B. Prototype → Figma → WDS (NEW):**
+1. HTML prototype created (Phase 4D)
+2. Extract to Figma using html.to.design
+3. Designer refines visual design in Figma
+4. Extract design system updates (tokens, components)
+5. Re-render prototype with enhanced design system
+6. Iterate until polished
 
 **Key Features:**
 
@@ -252,6 +263,7 @@ For each component:
 - Variant and state organization
 - Node ID tracking
 - Bidirectional sync workflow
+- **Iterative visual refinement** (prototype → Figma → design system → re-render)
 
 ---
 
@@ -273,6 +285,16 @@ For each component:
 
 ```
 D-Design-System/
+├── 01-Visual-Design/          [Early design exploration - pre-scenario]
+│   ├── mood-boards/           [Visual inspiration, style exploration]
+│   ├── design-concepts/       [NanoBanana outputs, design explorations]
+│   ├── color-exploration/     [Color palette experiments]
+│   └── typography-tests/      [Font pairing and hierarchy tests]
+├── 02-Assets/                 [Final production assets]
+│   ├── logos/                 [Brand logos and variations]
+│   ├── icons/                 [Icon sets]
+│   ├── images/                [Photography, illustrations]
+│   └── graphics/              [Custom graphics and elements]
 ├── components/
 │   ├── button.md              [Component ID: btn-001]
 │   ├── input-field.md         [Component ID: inp-001]

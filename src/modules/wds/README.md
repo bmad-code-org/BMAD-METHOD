@@ -48,8 +48,8 @@ WDS creates an alphabetized folder structure in the user's `docs/` folder:
 1. **Product Exploration** → `A-Product-Brief/`
 2. **User Research** → `B-Trigger-Map/`
 3. **Requirements** → `D-PRD/`
-4. **Conceptual Design** → `C-Scenarios/`
-5. **Component Design** → `D-Design-System/`
+4. **Conceptual Design** → `C-Scenarios/` (with optional Figma visual refinement)
+5. **Component Design** → `D-Design-System/` (grows organically via Figma integration)
 6. **Dev Integration** → `E-UI-Roadmap/`
 
 ## Agents - The Norse Pantheon 🏔️
