@@ -23,7 +23,7 @@ Professional cloud storage + time machine for your project files. Every change i
 
 ### Step 1: Create GitHub Account
 
-1. Go to **https://github.com**
+1. Go to **<https://github.com>**
 2. Click **"Sign up"** (top right)
 3. Enter email, password, username
 
@@ -130,12 +130,12 @@ Your workspace for creating specifications. Like Microsoft Word, but for design 
 **Cursor (Recommended)**
 - Built for AI assistance
 - Perfect for WDS
-- Download: https://cursor.sh
+- Download: <https://cursor.sh>
 
 **VS Code (Alternative)**
 - Industry standard
 - Works great too
-- Download: https://code.visualstudio.com
+- Download: <https://code.visualstudio.com>
 
 **For beginners:** Choose Cursor
 

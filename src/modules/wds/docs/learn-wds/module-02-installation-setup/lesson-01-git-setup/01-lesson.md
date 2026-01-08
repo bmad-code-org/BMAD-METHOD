@@ -23,7 +23,7 @@ Professional cloud storage + time machine for your project files. Every change i
 
 ### Step 1: Sign Up
 
-1. Go to **https://github.com**
+1. Go to **<https://github.com>**
 2. Click **"Sign up"**
 3. Enter email, password, username
 

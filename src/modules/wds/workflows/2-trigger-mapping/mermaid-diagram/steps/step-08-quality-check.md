@@ -150,7 +150,7 @@ Run through this comprehensive checklist to ensure diagram quality:
 
 **Test the diagram:**
 1. Copy complete code
-2. Paste into Mermaid live editor (https://mermaid.live)
+2. Paste into Mermaid live editor (<https://mermaid.live>)
 3. Verify it renders correctly
 4. Check all elements are visible
 5. Confirm styling appears as intended

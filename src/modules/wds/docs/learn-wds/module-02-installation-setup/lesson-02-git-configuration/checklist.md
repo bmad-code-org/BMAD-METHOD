@@ -7,13 +7,13 @@
 ## Choose Approach
 
 - [ ] **Option 1:** Let Cursor handle Git (do nothing - easiest!)
-- [ ] **Option 2:** Use GitHub Desktop (visual) → https://desktop.github.com
+- [ ] **Option 2:** Use GitHub Desktop (visual) → <https://desktop.github.com>
 
 ---
 
 ## If Using GitHub Desktop
 
-- [ ] Download from https://desktop.github.com
+- [ ] Download from <https://desktop.github.com>
 - [ ] Install
 - [ ] Sign in with GitHub account
 - [ ] ✅ Ready for visual cloning

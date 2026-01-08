@@ -6,7 +6,7 @@
 
 ## Create GitHub Account
 
-- [ ] Go to **https://github.com**
+- [ ] Go to **<https://github.com>**
 - [ ] Click **"Sign up"**
 - [ ] Enter email, password, username (professional: `yourname-designer`)
 - [ ] Verify email

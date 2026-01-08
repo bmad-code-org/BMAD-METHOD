@@ -77,7 +77,7 @@ When you try to clone a repository in Lesson 04, Cursor will:
 
 #### Install GitHub Desktop
 
-1. Download from **https://desktop.github.com**
+1. Download from **<https://desktop.github.com>**
 2. Install it (follow standard installer)
 3. Open GitHub Desktop
 4. Sign in with your GitHub account

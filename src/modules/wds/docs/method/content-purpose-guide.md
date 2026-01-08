@@ -257,7 +257,7 @@ Different purposes emphasize different strategic models:
 
 **Model Priorities:** Badass Users ⭐⭐⭐, Action Mapping ⭐⭐⭐
 
-**Content:** "Hmm, that email format doesn't look quite right. Double-check for typos? (We're looking for: name@example.com)"
+**Content:** "Hmm, that email format doesn't look quite right. Double-check for typos? (We're looking for: `name@example.com`)"
 
 **Review:** ✅ Non-judgmental, shows what's wrong, how to fix, example provided
 

@@ -6,8 +6,8 @@
 
 ## Choose IDE
 
-- [ ] **Cursor** (recommended) → https://cursor.sh
-- [ ] **VS Code** (alternative) → https://code.visualstudio.com
+- [ ] **Cursor** (recommended) → <https://cursor.sh>
+- [ ] **VS Code** (alternative) → <https://code.visualstudio.com>
 
 ---
 

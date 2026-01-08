@@ -163,7 +163,7 @@ Clear rules for what fits your tone and what doesn't:
 - "Login failed. Verify your credentials and try again"
 
 **Technical & Precise:**
-- "Invalid email format. Expected: name@domain.com"
+- "Invalid email format. Expected: `name@domain.com`"
 - "Resource not found. Check URL and retry"
 - "Authentication error: Invalid credentials provided"
 

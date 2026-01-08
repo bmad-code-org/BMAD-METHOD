@@ -6,7 +6,7 @@
 
 ## Part 1: GitHub Account
 
-- [ ] Go to **https://github.com**
+- [ ] Go to **<https://github.com>**
 - [ ] Click **"Sign up"**
 - [ ] Enter email, password, username (professional: `yourname-designer`)
 - [ ] Verify email
@@ -51,8 +51,8 @@
 
 ### Choose & Download
 
-- [ ] **Cursor** (recommended) → https://cursor.sh
-- [ ] **VS Code** (alternative) → https://code.visualstudio.com
+- [ ] **Cursor** (recommended) → <https://cursor.sh>
+- [ ] **VS Code** (alternative) → <https://code.visualstudio.com>
 - [ ] Download installer
 
 ### Install

@@ -16,6 +16,13 @@ ignores:
   - sample-project/**
   - test-project-install/**
   - z*/**
+  - src/modules/wds/workflows/4-ux-design/interactive-prototypes/templates/**
+  - src/modules/wds/workflows/5-design-system/operations/**
+  - src/modules/wds/docs/examples/WDS-Presentation/**
+  - src/modules/wds/docs/learn-wds/course-explainers/*NOTEBOOKLM-PROMPT.md
+  - src/modules/wds/docs/method/phase-6-prd-finalization-guide.md
+  - src/modules/wds/workflows/4-ux-design/CONCEPTUAL-SPECIFICATIONS.md
+  - src/modules/wds/workflows/4-ux-design/page-specification-quality/step-06-final-validation.md
 
 # Rule configuration
 config:

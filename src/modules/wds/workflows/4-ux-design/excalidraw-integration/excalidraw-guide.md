@@ -64,7 +64,7 @@ sketching:
 
 **Or use web version:**
 
-- https://excalidraw.com (no installation needed)
+- <https://excalidraw.com> (no installation needed)
 
 ### **3. Load WDS Library (Optional)**
 
@@ -289,9 +289,9 @@ sketching:
 
 **Excalidraw:**
 
-- Website: https://excalidraw.com
-- GitHub: https://github.com/excalidraw/excalidraw
-- Discord: https://discord.gg/UexuTaE
+- Website: <https://excalidraw.com>
+- GitHub: <https://github.com/excalidraw/excalidraw>
+- Discord: <https://discord.gg/UexuTaE>
 
 **WDS:**
 

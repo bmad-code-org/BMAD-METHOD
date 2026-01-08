@@ -163,7 +163,7 @@ NEXT STEPS:
    - Install "Excalidraw Editor"
 
    Option B: Web App
-   - Go to https://excalidraw.com
+   - Go to <https://excalidraw.com>
    - No installation needed
 
 2. Load WDS Component Library (if enabled):
@@ -312,7 +312,7 @@ Having trouble installing Excalidraw?
 FALLBACK OPTIONS:
 
 1. Use web version (no installation):
-   https://excalidraw.com
+   <https://excalidraw.com>
 2. Use different tool temporarily:
    - Paper and pen
    - Figma

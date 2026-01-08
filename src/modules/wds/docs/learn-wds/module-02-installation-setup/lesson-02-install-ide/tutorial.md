@@ -31,7 +31,7 @@ Your workspace for creating specifications. Like Microsoft Word, but for design 
 - Built for AI assistance
 - Modern interface
 - Perfect for WDS
-- **Download:** https://cursor.sh
+- **Download:** <https://cursor.sh>
 
 ### VS Code (Alternative)
 
@@ -39,7 +39,7 @@ Your workspace for creating specifications. Like Microsoft Word, but for design 
 - Industry standard
 - More extensions
 - Works great with WDS too
-- **Download:** https://code.visualstudio.com
+- **Download:** <https://code.visualstudio.com>
 
 **For beginners:** Choose Cursor. It's designed for AI-augmented work.
 
@@ -49,7 +49,7 @@ Your workspace for creating specifications. Like Microsoft Word, but for design 
 
 ### 2.1 Download
 
-1. Go to **https://cursor.sh**
+1. Go to **<https://cursor.sh>**
 2. Click download button for your platform
 3. Wait for download
 
@@ -95,7 +95,7 @@ If you chose VS Code instead:
 
 ### Download and Install
 
-1. Go to **https://code.visualstudio.com**
+1. Go to **<https://code.visualstudio.com>**
 2. Download for your platform
 3. Follow same installation steps as Cursor above
 4. Complete first-launch setup

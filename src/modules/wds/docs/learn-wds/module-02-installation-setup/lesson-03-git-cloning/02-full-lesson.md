@@ -86,7 +86,7 @@ git clone https://github.com/john-designer/dog-walker-app.git
 - You click "Install"
 - Done!
 
-**Alternative:** Use GitHub Desktop (https://desktop.github.com) for visual interface
+**Alternative:** Use GitHub Desktop (<https://desktop.github.com>) for visual interface
 
 ---
 

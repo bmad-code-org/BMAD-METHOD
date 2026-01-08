@@ -20,13 +20,13 @@
 
 - Built for AI assistance
 - Perfect for WDS
-- Download: https://cursor.sh
+- Download: <https://cursor.sh>
 
 ### VS Code (Alternative)
 
 - Industry standard
 - Works great too
-- Download: https://code.visualstudio.com
+- Download: <https://code.visualstudio.com>
 
 **For beginners:** Choose Cursor
 
