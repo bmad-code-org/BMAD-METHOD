@@ -57,3 +57,7 @@ agent:
     - trigger: RVE or fuzzy match on revalidate-epic
       workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/revalidate-epic/workflow.yaml"
       description: "[RVE] Revalidate Epic - batch revalidation of all stories with semaphore pattern"
+
+    - trigger: GFD or fuzzy match on ghost-features
+      workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/detect-ghost-features/workflow.yaml"
+      description: "[GFD] Ghost Feature Detector - find orphaned code with no stories (reverse gap analysis)"
