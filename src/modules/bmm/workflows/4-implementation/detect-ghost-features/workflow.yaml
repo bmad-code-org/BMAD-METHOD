@@ -1,0 +1,56 @@
+name: detect-ghost-features
+description: "Reverse gap analysis: Find functionality in codebase that has no corresponding story (vibe-coded or undocumented features). Propose backfill stories."
+author: "BMad"
+version: "1.0.0" # Who you gonna call? GHOST-FEATURE-BUSTERS! 👻
+
+# Critical variables from config
+config_source: "{project-root}/_bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+sprint_artifacts: "{output_folder}/sprint-artifacts"
+sprint_status: "{output_folder}/sprint-status.yaml"
+
+# Input parameters
+epic_number: "{epic_number}" # Optional: Limit to specific epic (e.g., "2")
+scan_scope: "sprint" # "sprint" | "epic" | "codebase"
+create_backfill_stories: true # Propose backfill stories for orphans
+
+# Detection settings
+detection:
+  scan_for:
+    components: true # React/Vue/Angular components
+    api_endpoints: true # Routes, controllers, handlers
+    database_tables: true # Migrations, schema
+    services: true # Services, modules, utilities
+    models: true # Data models, entities
+    ui_pages: true # Pages, screens, views
+
+  ignore_patterns:
+    - "**/node_modules/**"
+    - "**/dist/**"
+    - "**/build/**"
+    - "**/*.test.*"
+    - "**/*.spec.*"
+    - "**/migrations/**" # Migrations are referenced collectively, not per-story
+
+  # What counts as "documented"?
+  documented_if:
+    mentioned_in_file_list: true # Story File List mentions it
+    mentioned_in_tasks: true # Task description mentions it
+    mentioned_in_acs: true # AC mentions the feature
+    file_committed_in_story_commit: true # Git history shows it in story commit
+
+# Backfill story settings
+backfill:
+  auto_create: false # Require confirmation before creating each
+  add_to_sprint_status: true # Add to sprint as "backlog"
+  mark_as_backfill: true # Add note: "Backfill story documenting existing code"
+  run_gap_analysis: false # Don't run gap (we know it exists)
+  estimate_effort: true # Estimate how complex the feature is
+
+# Output settings
+output:
+  create_report: true # Generate orphaned-features-report.md
+  group_by_category: true # Group by component/api/db/etc
+  suggest_epic_assignment: true # Suggest which epic orphans belong to
+
+standalone: true
