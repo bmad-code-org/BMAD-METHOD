@@ -244,15 +244,32 @@ Instead, break into separate sections or use an admonition for context.
 
 ## FAQ Sections
 
-Format as bold question followed by answer paragraph:
+Use a TOC with jump links, `###` headers for questions, and direct answers:
 
 ```md
-**Do I always need architecture?**
+## Questions
+
+- [Do I always need architecture?](#do-i-always-need-architecture)
+- [Can I change my plan later?](#can-i-change-my-plan-later)
+
+### Do I always need architecture?
+
 Only for BMad Method and Enterprise tracks. Quick Flow skips to implementation.
 
-**Can I change my plan later?**
+### Can I change my plan later?
+
 Yes. The SM agent has a `correct-course` workflow for handling scope changes.
+
+**Have a question not answered here?** Please [open an issue](...) or ask in [Discord](...) so we can add it!
 ```
+
+### FAQ Guidelines
+
+- **TOC at top** — Jump links under `## Questions` for quick navigation
+- **`###` headers** — Questions are scannable and linkable (no `Q:` prefix)
+- **Direct answers** — No `**A:**` prefix, just the answer
+- **No "Related Documentation"** — Sidebar handles navigation; avoid repetitive links
+- **End with CTA** — "Have a question not answered here?" with issue/Discord links
 
 ## Folder Structure Blocks
 
