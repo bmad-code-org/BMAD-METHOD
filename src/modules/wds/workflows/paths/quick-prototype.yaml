@@ -1,0 +1,38 @@
+# WDS Quick Prototype Path
+# Context + Phase 4 - rapid prototyping with context
+
+path_name: "Quick Prototype"
+path_id: "quick-prototype"
+description: "Rapid prototyping with essential context"
+
+phases:
+  - phase: 1
+    name: "Project Brief"
+    artifact: "Project Brief"
+    folder_letter: "A"
+    folder_number: "01"
+    folder_name: "Product-Brief"
+    required: true
+    brief_level: "simplified"
+    workflows:
+      - id: "simplified-brief"
+        required: true
+        agent: "saga-analyst"
+        command: "simplified-brief"
+        output: "Simplified brief: scope, challenge, opportunity, goals"
+        note: "5-10 minutes to establish context for agents"
+
+  - phase: 4
+    name: "UX Design"
+    artifact: "Prototype"
+    folder_letter: "C"
+    folder_number: "02"
+    folder_name: "Scenarios"
+    required: true
+    workflows:
+      - id: "ux-design"
+        required: true
+        agent: "freya-wds-designer"
+        command: "ux-design"
+        output: "Quick specifications and HTML prototypes"
+        note: "Focus on getting something visible fast"

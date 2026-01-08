@@ -1,0 +1,38 @@
+# WDS Digital Strategy Path
+# Phases 1, 2 only - discovery and research without design execution
+
+path_name: "Digital Strategy"
+path_id: "digital-strategy"
+description: "Discovery and strategic planning without design execution"
+
+phases:
+  - phase: 1
+    name: "Project Brief"
+    artifact: "Project Brief"
+    folder_letter: "A"
+    folder_number: "01"
+    folder_name: "Product-Brief"
+    required: true
+    brief_level: "complete"
+    workflows:
+      - id: "product-exploration"
+        required: true
+        agent: "saga-analyst"
+        command: "product-exploration"
+        output: "Complete Project Brief with vision, positioning, success criteria"
+        note: "Deep strategic exploration"
+
+  - phase: 2
+    name: "Trigger Mapping"
+    artifact: "Trigger Map"
+    folder_letter: "B"
+    folder_number: "02"
+    folder_name: "Trigger-Map"
+    required: true
+    workflows:
+      - id: "trigger-mapping"
+        required: true
+        agent: "saga-analyst"
+        command: "trigger-mapping"
+        output: "Trigger Map with personas, business goals, Feature Impact Analysis"
+        note: "Strategic user research and prioritization"

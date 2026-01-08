@@ -1,0 +1,106 @@
+# WDS Workflow Status Template
+# Tracks progress through WDS design methodology
+
+# STATUS DEFINITIONS:
+# ==================
+# Initial Status (before completion):
+#   - required: Must be completed to progress
+#   - optional: Can be completed but not required
+#   - conditional: Required only if certain conditions met
+#   - skipped: Phase not included for this project type
+#
+# Completion Status:
+#   - {file-path}: File created/found (e.g., "docs/A-Product-Brief/product-brief.md")
+#   - complete: Phase finished
+#   - in-progress: Currently working on this phase
+
+# Project information
+generated: "{{generated}}"
+project: "{{project_name}}"
+project_type: "{{project_type}}"
+workflow_path: "{{workflow_path_file}}"
+
+# Project structure (defines folder organization)
+project_structure:
+  type: "{{structure_type}}" # landing_page | simple_website | web_application
+  scenarios: "{{structure_scenarios}}" # single | multiple
+  pages: "{{structure_pages}}" # single | multiple
+  # This determines how scenarios and pages are organized in 4-scenarios/
+
+# Delivery configuration (what gets handed off)
+delivery:
+  format: "{{delivery_format}}" # prd | wordpress | figma | prototype | direct-code | other
+  target_platform: "{{target_platform}}" # wordpress | react | vue | html | custom
+  requires_prd: {{requires_prd}} # true | false
+  description: "{{delivery_description}}"
+  # Examples:
+  # - "WordPress page editor code with markup and content sections"
+  # - "Complete PRD for development team"
+  # - "Interactive Figma prototype"
+
+# Configuration
+config:
+  folder_prefix: "{{folder_prefix}}" # letters or numbers
+  folder_case: "{{folder_case}}" # title or lowercase
+  brief_level: "{{brief_level}}" # simplified or complete
+  include_design_system: { { include_design_system } }
+  component_library: "{{component_library}}"
+  specification_language: "{{specification_language}}" # Language for writing specs (EN, SE, etc.)
+  product_languages: { { product_languages } } # Array of languages product supports
+
+# Folder mapping (generated based on config)
+folders:
+  product_brief: "{{folder_product_brief}}"
+  trigger_map: "{{folder_trigger_map}}"
+  platform_requirements: "{{folder_platform_requirements}}"
+  scenarios: "{{folder_scenarios}}"
+  design_system: "{{folder_design_system}}"
+  prd_finalization: "{{folder_prd_finalization}}"
+
+# Workflow status tracking
+workflow_status: "{{workflow_items}}"
+# Example structure when populated:
+# workflow_status:
+#   phase_1_project_brief:
+#     status: required
+#     agent: saga-analyst
+#     folder: A-Product-Brief/
+#     brief_level: complete  # or simplified
+#     artifacts:
+#       - project-brief.md
+#   phase_2_trigger_mapping:
+#     status: required
+#     agent: saga-analyst
+#     folder: B-Trigger-Map/
+#     artifacts:
+#       - trigger-map.md
+#       - personas/
+#       - feature-impact-analysis.md
+#   phase_3_prd_platform:
+#     status: required
+#     agent: idunn-wds-pm
+#     folder: C-Platform-Requirements/
+#     artifacts:
+#       - platform-architecture.md
+#       - data-model.md
+#       - proofs-of-concept/
+#   phase_4_ux_design:
+#     status: required
+#     agent: freya-wds-designer
+#     folder: C-Scenarios/
+#     artifacts: []  # Grows as scenarios are created
+#   phase_5_design_system:
+#     status: conditional  # or skipped
+#     agent: freya-wds-designer
+#     folder: D-Design-System/
+#     artifacts:
+#       - component-showcase.html
+#       - design-tokens.md
+#   phase_6_prd_finalization:
+#     status: required
+#     agent: idunn-wds-pm
+#     folder: E-PRD-Finalization/
+#     artifacts:
+#       - complete-prd.md
+#       - development-roadmap.md
+

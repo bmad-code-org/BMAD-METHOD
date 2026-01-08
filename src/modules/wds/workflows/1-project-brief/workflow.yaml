@@ -1,0 +1,43 @@
+---
+name: Product Brief Workflow
+description: Establish project context - foundation for all design work
+web_bundle: true
+---
+# WDS Phase 1: Project Brief
+name: project-brief
+author: "Whiteport Design Studio"
+phase: 1
+
+# Critical variables from config
+config_source: "{project-root}/{bmad_folder}/wds/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+project_name: "{config_source}:project_name"
+communication_language: "{config_source}:communication_language"
+document_output_language: "{config_source}:document_output_language"
+date: system-generated
+
+# Brief level from workflow status
+brief_level: "{output_folder}/wds-workflow-status.yaml:config.brief_level"
+
+# Workflow components
+installed_path: "{project-root}/{bmad_folder}/wds/workflows/1-project-brief"
+
+# Route to appropriate workflow based on brief_level
+workflows:
+  simplified:
+    instructions: "{installed_path}/project-brief/simplified/instructions.md"
+    template: "{installed_path}/project-brief/simplified/simplified-brief.template.md"
+  complete:
+    instructions: "{installed_path}/project-brief/complete/workflow.md"
+    template: "{installed_path}/project-brief/complete/project-brief.template.md"
+    steps: "{installed_path}/project-brief/complete/steps"
+
+# Output configuration
+output_file: "{output_folder}/A-Product-Brief/project-brief.md"
+
+# Agent assignment
+primary_agent: "saga-analyst"
+
+standalone: true
+web_bundle: false
