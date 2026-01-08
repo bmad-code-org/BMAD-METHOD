@@ -1,4 +1,4 @@
-# BMAD Method
+# BMad Method
 
 [![Version](https://img.shields.io/npm/v/bmad-method?color=blue&label=version)](https://www.npmjs.com/package/bmad-method)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -7,9 +7,9 @@
 
 **Build More, Architect Dreams** — An AI-driven agile development framework with 21 specialized agents, 50+ guided workflows, and scale-adaptive intelligence that adjusts from bug fixes to enterprise systems.
 
-## Why BMAD?
+## Why BMad?
 
-Traditional AI tools do the thinking for you, producing average results. BMAD agents act as expert collaborators who guide you through structured workflows to bring out your best thinking.
+Traditional AI tools do the thinking for you, producing average results. BMad agents act as expert collaborators who guide you through structured workflows to bring out your best thinking.
 
 - **Scale-Adaptive**: Automatically adjusts planning depth based on project complexity (Level 0-4)
 - **Structured Workflows**: Grounded in agile best practices across analysis, planning, architecture, and implementation
@@ -74,6 +74,6 @@ MIT License — see [LICENSE](LICENSE) for details.
 
 ---
 
-**BMAD** and **BMAD-METHOD** are trademarks of BMad Code, LLC.
+**BMad** and **BMAD-METHOD** are trademarks of BMad Code, LLC.
 
 [![Contributors](https://contrib.rocks/image?repo=bmad-code-org/BMAD-METHOD)](https://github.com/bmad-code-org/BMAD-METHOD/graphs/contributors)
