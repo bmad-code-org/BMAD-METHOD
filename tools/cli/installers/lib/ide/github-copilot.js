@@ -1,7 +1,6 @@
 const path = require('node:path');
 const { BaseIdeSetup } = require('./_base-ide');
 const chalk = require('chalk');
-const inquirer = require('inquirer').default || require('inquirer');
 const { AgentCommandGenerator } = require('./shared/agent-command-generator');
 
 /**
@@ -22,6 +21,7 @@ class GitHubCopilotSetup extends BaseIdeSetup {
    * @returns {Object} Collected configuration
    */
   async collectConfiguration(options = {}) {
+    const { default: inquirer } = await import('inquirer');
     const config = {};
 
     console.log('\n' + chalk.blue('  🔧 VS Code Settings Configuration'));
