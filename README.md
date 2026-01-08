@@ -53,6 +53,10 @@ This analyzes your project and recommends a track:
 - [Getting Started Tutorial](http://docs.bmad-method.org/tutorials/getting-started/getting-started-bmadv6/)
 - [Upgrading from Previous Versions](http://docs.bmad-method.org/how-to/installation/upgrade-to-v6/)
 
+### For v4 Users
+
+- **[v4 Documentation](https://github.com/bmad-code-org/BMAD-METHOD/tree/V4/docs)**
+
 ## Community
 
 - [Discord](https://discord.gg/gk8jAdXWmj) — Get help, share ideas, collaborate
