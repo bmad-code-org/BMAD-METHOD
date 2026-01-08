@@ -6,8 +6,8 @@ description: 'Create a comprehensive shopping list that supports the meal strate
 workflow_path: '{project-root}/_bmad/bmb/reference/workflows/meal-prep-nutrition'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-05-shopping.md'
-nextStepFile: '{workflow_path}/steps/step-06-prep-schedule.md'
+thisStepFile: './step-05-shopping.md'
+nextStepFile: './step-06-prep-schedule.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/nutrition-plan-{project_name}.md'
 

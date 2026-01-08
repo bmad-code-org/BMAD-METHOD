@@ -6,8 +6,8 @@ description: 'Define game pillars, core gameplay loop, and win/loss conditions'
 workflow_path: '{project-root}/_bmad/bmgd/workflows/2-design/gdd'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-05-core-gameplay.md'
-nextStepFile: '{workflow_path}/steps/step-06-mechanics.md'
+thisStepFile: './step-05-core-gameplay.md'
+nextStepFile: './step-06-mechanics.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/gdd.md'
 

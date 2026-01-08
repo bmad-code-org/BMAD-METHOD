@@ -6,7 +6,7 @@ description: "Create a realistic meal prep schedule that fits the user's lifesty
 workflow_path: '{project-root}/_bmad/bmb/reference/workflows/meal-prep-nutrition'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-06-prep-schedule.md'
+thisStepFile: './step-06-prep-schedule.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/nutrition-plan-{project_name}.md'
 

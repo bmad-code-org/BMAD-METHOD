@@ -6,8 +6,8 @@ description: 'Initialize quiz game with mode selection and category choice'
 workflow_path: '{project-root}/_bmad/custom/src/workflows/quiz-master'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-01-init.md'
-nextStepFile: '{workflow_path}/steps/step-02-q1.md'
+thisStepFile: './step-01-init.md'
+nextStepFile: './step-02-q1.md'
 workflowFile: '{workflow_path}/workflow.md'
 csvFile: '{project-root}/BMad-quiz-results.csv'
 csvTemplate: '{workflow_path}/templates/csv-headers.template'
@@ -146,7 +146,7 @@ Display: **Starting your quiz adventure...**
 
 ## CRITICAL STEP COMPLETION NOTE
 
-ONLY WHEN setup is complete (mode selected, category chosen, CSV initialized) will you then load, read fully, and execute `{workflow_path}/steps/step-02-q1.md` to begin the first question.
+ONLY WHEN setup is complete (mode selected, category chosen, CSV initialized) will you then load, read fully, and execute `./step-02-q1.md` to begin the first question.
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 

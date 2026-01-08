@@ -6,8 +6,8 @@ description: 'Define target platforms and target audience for the game'
 workflow_path: '{project-root}/_bmad/bmgd/workflows/2-design/gdd'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-03-platforms.md'
-nextStepFile: '{workflow_path}/steps/step-04-vision.md'
+thisStepFile: './step-03-platforms.md'
+nextStepFile: './step-04-vision.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/gdd.md'
 

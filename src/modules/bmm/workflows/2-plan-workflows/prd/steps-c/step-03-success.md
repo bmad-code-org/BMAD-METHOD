@@ -2,13 +2,8 @@
 name: 'step-03-success'
 description: 'Define comprehensive success criteria covering user, business, and technical success'
 
-# Path Definitions
-workflow_path: '{project-root}/_bmad/bmm/workflows/2-plan-workflows/prd'
-
 # File References
-thisStepFile: '{workflow_path}/steps/step-03-success.md'
-nextStepFile: '{workflow_path}/steps/step-04-journeys.md'
-workflowFile: '{workflow_path}/workflow.md'
+nextStepFile: './step-04-journeys.md'
 outputFile: '{planning_artifacts}/prd.md'
 
 # Task References
@@ -37,23 +32,8 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 - 🎯 Show your analysis before taking any action
 - ⚠️ Present A/P/C menu after generating success criteria content
 - 💾 ONLY save when user chooses C (Continue)
-- 📖 Update frontmatter `stepsCompleted: [1, 2, 3]` before loading next step
+- 📖 Update output file frontmatter, adding this step name to the end of the list of stepsCompleted
 - 🚫 FORBIDDEN to load next step until C is selected
-
-## COLLABORATION MENUS (A/P/C):
-
-This step will generate content and present choices:
-
-- **A (Advanced Elicitation)**: Use discovery protocols to develop deeper insights about success metrics
-- **P (Party Mode)**: Bring multiple perspectives to define comprehensive success criteria
-- **C (Continue)**: Save the content to the document and proceed to next step
-
-## PROTOCOL INTEGRATION:
-
-- When 'A' selected: Execute {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml
-- When 'P' selected: Execute {project-root}/_bmad/core/workflows/party-mode/workflow.md
-- PROTOCOLS always return to this step's A/P/C menu
-- User accepts/rejects protocol changes before proceeding
 
 ## CONTEXT BOUNDARIES:
 
@@ -211,43 +191,30 @@ When saving to document, append these Level 2 and Level 3 sections:
 [Content about future vision based on conversation]
 ```
 
-### 8. Present Content and Menu
+### 8. Present MENU OPTIONS
 
-Show the generated content and present choices:
-"I've drafted our success criteria and scope definition based on our conversation.
+Present the success criteria content for user review, then display menu:
+
+"Based on our conversation, I've drafted success criteria and scope definition.
 
 **Here's what I'll add to the document:**
 
-[Show the complete markdown content from step 7]
+[Show the complete markdown content from section 7]
 
-**What would you like to do?**
-[A] Advanced Elicitation - Let's dive deeper and refine these success metrics
-[P] Party Mode - Bring in different perspectives on success criteria
-[C] Continue - Save success criteria and move to User Journey Mapping (Step 4 of 11)"
+**What would you like to do?**"
 
-### 9. Handle Menu Selection
+Display: "**Select:** [A] Advanced Elicitation [P] Party Mode [C] Continue to User Journey Mapping (Step 4 of 11)"
 
-#### If 'A' (Advanced Elicitation):
+#### Menu Handling Logic:
+- IF A: Execute {advancedElicitationTask} with the current success criteria content, process the enhanced success metrics that come back, ask user "Accept these improvements to the success criteria? (y/n)", if yes update content with improvements then redisplay menu, if no keep original content then redisplay menu
+- IF P: Execute {partyModeWorkflow} with the current success criteria, process the collaborative improvements to metrics and scope, ask user "Accept these changes to the success criteria? (y/n)", if yes update content with improvements then redisplay menu, if no keep original content then redisplay menu
+- IF C: Append the final content to {outputFile}, update frontmatter by adding this step name to the end of the stepsCompleted array, then load, read entire file, then execute {nextStepFile}
+- IF Any other: help user respond, then redisplay menu
 
-- Execute {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml with the current success criteria content
-- Process the enhanced success metrics that come back
-- Ask user: "Accept these improvements to the success criteria? (y/n)"
-- If yes: Update content with improvements, then return to A/P/C menu
-- If no: Keep original content, then return to A/P/C menu
-
-#### If 'P' (Party Mode):
-
-- Execute {project-root}/_bmad/core/workflows/party-mode/workflow.md with the current success criteria
-- Process the collaborative improvements to metrics and scope
-- Ask user: "Accept these changes to the success criteria? (y/n)"
-- If yes: Update content with improvements, then return to A/P/C menu
-- If no: Keep original content, then return to A/P/C menu
-
-#### If 'C' (Continue):
-
-- Append the final content to `{outputFile}`
-- Update frontmatter: add this step to the end of the steps completed array
-- Load `./step-04-journeys.md`
+#### EXECUTION RULES:
+- ALWAYS halt and wait for user input after presenting menu
+- ONLY proceed to next step when user selects 'C'
+- After other menu items execution, return to this menu
 
 ## APPEND TO DOCUMENT:
 

@@ -2,12 +2,7 @@
 name: 'step-11-complete'
 description: 'Complete the PRD workflow, update status files, and suggest next steps'
 
-# Path Definitions
-workflow_path: '{project-root}/_bmad/bmm/workflows/2-plan-workflows/prd'
-
 # File References
-thisStepFile: '{workflow_path}/steps/step-11-complete.md'
-workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{planning_artifacts}/prd.md'
 ---
 

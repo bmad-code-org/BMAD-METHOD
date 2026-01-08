@@ -97,7 +97,7 @@ Copy the template above and replace:
 
 Update the last line of the workflow.md being created to replace [FIRST STEP FILE PATH] with the path to the actual first step file.
 
-Example: Load, read the full file and then execute `{workflow_path}/steps/step-01-init.md` to begin the workflow.
+Example: Load, read the full file and then execute `./step-01-init.md` to begin the workflow.
 
 ### NOTE: You can View a real example of a perfect workflow.md file that was created from this template
 

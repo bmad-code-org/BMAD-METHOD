@@ -6,7 +6,7 @@ description: 'Handle workflow continuation from previous session'
 workflow_path: '{project-root}/_bmad/bmb/reference/workflows/meal-prep-nutrition'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-01b-continue.md'
+thisStepFile: './step-01b-continue.md'
 outputFile: '{output_folder}/nutrition-plan-{project_name}.md'
 ---
 

@@ -6,8 +6,8 @@ description: 'Gather comprehensive user profile information through collaborativ
 workflow_path: '{project-root}/_bmad/bmb/reference/workflows/meal-prep-nutrition'
 
 # File References (all use {variable} format in file)
-thisStepFile: '{workflow_path}/steps/step-02-profile.md'
-nextStepFile: '{workflow_path}/steps/step-03-assessment.md'
+thisStepFile: './step-02-profile.md'
+nextStepFile: './step-03-assessment.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/nutrition-plan-{project_name}.md'
 

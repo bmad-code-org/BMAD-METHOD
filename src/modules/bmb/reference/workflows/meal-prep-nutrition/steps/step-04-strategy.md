@@ -6,9 +6,9 @@ description: 'Design a personalized meal strategy that meets nutritional needs a
 workflow_path: '{project-root}/_bmad/bmb/reference/workflows/meal-prep-nutrition'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-04-strategy.md'
-nextStepFile: '{workflow_path}/steps/step-05-shopping.md'
-alternateNextStepFile: '{workflow_path}/steps/step-06-prep-schedule.md'
+thisStepFile: './step-04-strategy.md'
+nextStepFile: './step-05-shopping.md'
+alternateNextStepFile: './step-06-prep-schedule.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/nutrition-plan-{project_name}.md'
 

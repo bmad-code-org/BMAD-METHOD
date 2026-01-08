@@ -6,8 +6,8 @@ description: 'Define project structure, directory organization, and architectura
 workflow_path: '{project-root}/_bmad/bmgd/workflows/3-technical/game-architecture'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-06-structure.md'
-nextStepFile: '{workflow_path}/steps/step-07-patterns.md'
+thisStepFile: './step-06-structure.md'
+nextStepFile: './step-07-patterns.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/game-architecture.md'
 

@@ -14,14 +14,14 @@
 
 ## Standard Variables (Always Available)
 
-| Variable          | Example Value                          |
-| ----------------- | -------------------------------------- |
-| `{project-root}`  | `/Users/user/dev/BMAD-METHOD`          |
-| `{project_name}`  | `my-project`                            |
-| `{output_folder}` | `/Users/user/dev/BMAD-METHOD/output`    |
-| `{user_name}`     | `Brian`                                 |
-| `{communication_language}` | `english`                       |
-| `{document_output_language}` | `english`                   |
+| Variable                     | Example Value                        |
+| ---------------------------- | ------------------------------------ |
+| `{project-root}`             | `/Users/user/dev/BMAD-METHOD`        |
+| `{project_name}`             | `my-project`                         |
+| `{output_folder}`            | `/Users/user/dev/BMAD-METHOD/output` |
+| `{user_name}`                | `Brian`                              |
+| `{communication_language}`   | `english`                            |
+| `{document_output_language}` | `english`                            |
 
 ---
 
@@ -101,7 +101,7 @@ nextStepFile: './step-02-foo.md'
 ### 1. Step to Step (SAME folder) = ./filename.md
 ```yaml
 # ❌ WRONG
-nextStepFile: '{workflow_path}/steps/step-02.md'
+nextStepFile: './step-02.md'
 nextStepFile: '{project-root}/_bmad/bmm/workflows/foo/steps/step-02.md'
 
 # ✅ CORRECT
@@ -145,14 +145,14 @@ outputFile: '{output_folder}/output.md'
 
 These patterns are **NEVER ALLOWED** in workflow step frontmatter:
 
-| Pattern | Why It's Wrong |
-|---------|----------------|
-| `workflow_path: '{project-root}/...'` | Use relative paths instead |
-| `thisStepFile: './step-XX.md'` | Almost never used - remove unless actually referenced |
-| `workflowFile: './workflow.md'` | Almost never used - remove unless actually referenced |
-| `{workflow_path}/steps/...` | Use `./step-XX.md` (same folder) |
-| `{workflow_path}/templates/...` | Use `../template.md` (parent folder) |
-| `{workflow_path}/data/...` | Use `./data/file.md` (subfolder) |
+| Pattern                               | Why It's Wrong                                        |
+| ------------------------------------- | ----------------------------------------------------- |
+| `workflow_path: '{project-root}/...'` | Use relative paths instead                            |
+| `thisStepFile: './step-XX.md'`        | Almost never used - remove unless actually referenced |
+| `workflowFile: './workflow.md'`       | Almost never used - remove unless actually referenced |
+| `./...`                               | Use `./step-XX.md` (same folder)                      |
+| `{workflow_path}/templates/...`       | Use `../template.md` (parent folder)                  |
+| `{workflow_path}/data/...`            | Use `./data/file.md` (subfolder)                      |
 
 ---
 
@@ -160,13 +160,13 @@ These patterns are **NEVER ALLOWED** in workflow step frontmatter:
 
 Use `snake_case` with descriptive prefixes:
 
-| Pattern   | Usage                  | Example                    |
-| --------- | ---------------------- | -------------------------- |
-| `{*_File}`   | File references        | `outputFile`, `nextStepFile`     |
-| `{*_Task}`   | Task references        | `advancedElicitationTask`       |
-| `{*_Workflow}` | Workflow references   | `partyModeWorkflow`            |
-| `{*_Template}` | Templates            | `productBriefTemplate`         |
-| `{*_Data}`    | Data files            | `dietaryData`                 |
+| Pattern        | Usage               | Example                      |
+| -------------- | ------------------- | ---------------------------- |
+| `{*_File}`     | File references     | `outputFile`, `nextStepFile` |
+| `{*_Task}`     | Task references     | `advancedElicitationTask`    |
+| `{*_Workflow}` | Workflow references | `partyModeWorkflow`          |
+| `{*_Template}` | Templates           | `productBriefTemplate`       |
+| `{*_Data}`     | Data files          | `dietaryData`                |
 
 ---
 

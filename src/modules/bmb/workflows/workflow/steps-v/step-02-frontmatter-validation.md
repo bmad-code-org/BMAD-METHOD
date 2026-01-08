@@ -60,7 +60,7 @@ Load {frontmatterStandards} to understand validation criteria.
 - `workflow_path: '...'` - use relative paths instead
 - `thisStepFile: '...'` - remove unless actually referenced in body
 - `workflowFile: '...'` - remove unless actually referenced in body
-- `{workflow_path}/steps/...` - use `./step-XX.md`
+- `./...` - use `./step-XX.md`
 - `{workflow_path}/templates/...` - use `../template.md`
 
 ### 2. Validate EVERY Step File - Systematic Algorithm
@@ -132,10 +132,10 @@ Create report table:
 ```markdown
 ### Frontmatter Validation Results
 
-| File | Required | All Vars Used | Relative Paths | No Forbidden | Status |
-|------|----------|---------------|----------------|-------------|--------|
-| step-01-init.md | ✅ | ❌ Unused: thisStepFile, workflowFile | ✅ | ✅ | ❌ FAIL |
-| step-02-vision.md | ✅ | ✅ | ✅ | ✅ | ✅ PASS |
+| File              | Required | All Vars Used                        | Relative Paths | No Forbidden | Status |
+| ----------------- | -------- | ------------------------------------ | -------------- | ------------ | ------ |
+| step-01-init.md   | ✅        | ❌ Unused: thisStepFile, workflowFile | ✅              | ✅            | ❌ FAIL |
+| step-02-vision.md | ✅        | ✅                                    | ✅              | ✅            | ✅ PASS |
 ```
 
 ### 4. List All Violations

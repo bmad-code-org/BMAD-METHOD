@@ -2,13 +2,8 @@
 name: 'step-04-journeys'
 description: 'Map ALL user types that interact with the system with narrative story-based journeys'
 
-# Path Definitions
-workflow_path: '{project-root}/_bmad/bmm/workflows/2-plan-workflows/prd'
-
 # File References
-thisStepFile: '{workflow_path}/steps/step-04-journeys.md'
-nextStepFile: '{workflow_path}/steps/step-05-domain.md'
-workflowFile: '{workflow_path}/workflow.md'
+nextStepFile: './step-05-domain.md'
 outputFile: '{planning_artifacts}/prd.md'
 
 # Task References
@@ -37,23 +32,8 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 - 🎯 Show your analysis before taking any action
 - ⚠️ Present A/P/C menu after generating journey content
 - 💾 ONLY save when user chooses C (Continue)
-- 📖 Update frontmatter `stepsCompleted: [1, 2, 3, 4]` before loading next step
+- 📖 Update output file frontmatter, adding this step name to the end of the list of stepsCompleted
 - 🚫 FORBIDDEN to load next step until C is selected
-
-## COLLABORATION MENUS (A/P/C):
-
-This step will generate content and present choices:
-
-- **A (Advanced Elicitation)**: Use discovery protocols to develop deeper journey insights
-- **P (Party Mode)**: Bring multiple perspectives to map comprehensive user journeys
-- **C (Continue)**: Save the content to the document and proceed to next step
-
-## PROTOCOL INTEGRATION:
-
-- When 'A' selected: Execute {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml
-- When 'P' selected: Execute {project-root}/_bmad/core/workflows/party-mode/workflow.md
-- PROTOCOLS always return to this step's A/P/C menu
-- User accepts/rejects protocol changes before proceeding
 
 ## CONTEXT BOUNDARIES:
 
@@ -205,43 +185,30 @@ When saving to document, append these Level 2 and Level 3 sections:
 [Summary of capabilities revealed by journeys based on conversation]
 ```
 
-### 7. Present Content and Menu
+### 7. Present MENU OPTIONS
 
-Show the generated journey content and present choices:
-"I've mapped out the user journeys based on our conversation. Each journey reveals different capabilities needed for {{project_name}}.
+Present the user journey content for review, then display menu:
+
+"Based on our conversation, I've mapped out user journeys. Each journey reveals different capabilities needed for {{project_name}}.
 
 **Here's what I'll add to the document:**
 
-[Show the complete markdown content from step 6]
+[Show the complete markdown content from section 6]
 
-**What would you like to do?**
-[A] Advanced Elicitation - Let's dive deeper into these user journeys
-[P] Party Mode - Bring different perspectives to ensure we have all journeys
-[C] Continue - Save this and move to Domain Requirements (Step 5 of 11)"
+**What would you like to do?**"
 
-### 8. Handle Menu Selection
+Display: "**Select:** [A] Advanced Elicitation [P] Party Mode [C] Continue to Domain Requirements (Step 5 of 11)"
 
-#### If 'A' (Advanced Elicitation):
+#### Menu Handling Logic:
+- IF A: Execute {advancedElicitationTask} with the current journey content, process the enhanced journey insights that come back, ask user "Accept these improvements to the user journeys? (y/n)", if yes update content with improvements then redisplay menu, if no keep original content then redisplay menu
+- IF P: Execute {partyModeWorkflow} with the current journeys, process the collaborative journey improvements and additions, ask user "Accept these changes to the user journeys? (y/n)", if yes update content with improvements then redisplay menu, if no keep original content then redisplay menu
+- IF C: Append the final content to {outputFile}, update frontmatter by adding this step name to the end of the stepsCompleted array, then load, read entire file, then execute {nextStepFile}
+- IF Any other: help user respond, then redisplay menu
 
-- Execute {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml with the current journey content
-- Process the enhanced journey insights that come back
-- Ask user: "Accept these improvements to the user journeys? (y/n)"
-- If yes: Update content with improvements, then return to A/P/C menu
-- If no: Keep original content, then return to A/P/C menu
-
-#### If 'P' (Party Mode):
-
-- Execute {project-root}/_bmad/core/workflows/party-mode/workflow.md with the current journeys
-- Process the collaborative journey improvements and additions
-- Ask user: "Accept these changes to the user journeys? (y/n)"
-- If yes: Update content with improvements, then return to A/P/C menu
-- If no: Keep original content, then return to A/P/C menu
-
-#### If 'C' (Continue):
-
-- Append the final content to `{outputFile}`
-- Update frontmatter: add this step name to the end of the steps completed array
-- Load `{project-root}/_bmad/bmm/workflows/2-plan-workflows/prd/steps/step-05-domain.md` (or determine if step is optional based on domain complexity)
+#### EXECUTION RULES:
+- ALWAYS halt and wait for user input after presenting menu
+- ONLY proceed to next step when user selects 'C'
+- After other menu items execution, return to this menu
 
 ## APPEND TO DOCUMENT:
 

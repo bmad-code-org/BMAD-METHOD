@@ -15,9 +15,9 @@ workflow\*path: '{project-root}/_bmad/[module]/reference/workflows/[workflow-nam
 
 # File References (all use {variable} format in file)
 
-thisStepFile: '{workflow_path}/steps/step-[N]-[short-name].md'
-nextStep{N+1}: '{workflow_path}/steps/step-[N+1]-[next-short-name].md' # Remove for final step or no next step
-altStep{Y}: '{workflow_path}/steps/step-[Y]-[some-other-step].md' # if there is an alternate next story depending on logic
+thisStepFile: './step-[N]-[short-name].md'
+nextStep{N+1}: './step-[N+1]-[next-short-name].md' # Remove for final step or no next step
+altStep{Y}: './step-[Y]-[some-other-step].md' # if there is an alternate next story depending on logic
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/[output-file-name]-{project_name}.md'
 

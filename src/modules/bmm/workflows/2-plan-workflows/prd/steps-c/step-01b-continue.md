@@ -2,12 +2,7 @@
 name: 'step-01b-continue'
 description: 'Resume an interrupted PRD workflow from the last completed step'
 
-# Path Definitions
-workflow_path: '{project-root}/_bmad/bmm/workflows/2-plan-workflows/prd'
-
 # File References
-thisStepFile: '{workflow_path}/steps/step-01b-continue.md'
-workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{planning_artifacts}/prd.md'
 ---
 
@@ -60,10 +55,9 @@ Resume the PRD workflow from where it was left off, ensuring smooth continuation
 **State Assessment:**
 Review the frontmatter to understand:
 
-- `stepsCompleted`: Which steps are already done
-- `lastStep`: The most recently completed step number
+- `stepsCompleted`: Array of completed step filenames
+- Last element of `stepsCompleted` array: The most recently completed step
 - `inputDocuments`: What context was already loaded
-- `documentCounts`: briefs, research, brainstorming, projectDocs counts
 - All other frontmatter variables
 
 ### 2. Restore Context Documents
@@ -74,47 +68,27 @@ Review the frontmatter to understand:
 - This ensures you have full context for continuation
 - Don't discover new documents - only reload what was previously processed
 
-### 3. Present Current Progress
+### 3. Determine Next Step
 
-**Progress Report to User:**
-"Welcome back {{user_name}}! I'm resuming our PRD collaboration for {{project_name}}.
+**Simplified Next Step Logic:**
+1. Get the last element from the `stepsCompleted` array (this is the filename of the last completed step, e.g., "step-03-success.md")
+2. Load that step file and read its frontmatter
+3. Extract the `nextStepFile` value from the frontmatter
+4. That's the next step to load!
 
-**Current Progress:**
+**Example:**
+- If `stepsCompleted = ["step-01-init.md", "step-02-discovery.md", "step-03-success.md"]`
+- Last element is `"step-03-success.md"`
+- Load `step-03-success.md`, read its frontmatter
+- Find `nextStepFile: './step-04-journeys.md'`
+- Next step to load is `./step-04-journeys.md`
 
-- Steps completed: {stepsCompleted}
-- Last worked on: Step {lastStep}
-- Context documents available: {len(inputDocuments)} files
+### 4. Handle Workflow Completion
 
-**Document Status:**
-
-- Current PRD document is ready with all completed sections
-- Ready to continue from where we left off
-
-Does this look right, or do you want to make any adjustments before we proceed?"
-
-### 4. Determine Continuation Path
-
-**Next Step Logic:**
-Based on `lastStep` value, determine which step to load next:
-
-- If `lastStep = 1` → Load `./step-02-discovery.md`
-- If `lastStep = 2` → Load `./step-03-success.md`
-- If `lastStep = 3` → Load `./step-04-journeys.md`
-- If `lastStep = 4` → Load `./step-05-domain.md`
-- If `lastStep = 5` → Load `./step-06-innovation.md`
-- If `lastStep = 6` → Load `./step-07-project-type.md`
-- If `lastStep = 7` → Load `./step-08-scoping.md`
-- If `lastStep = 8` → Load `./step-09-functional.md`
-- If `lastStep = 9` → Load `./step-10-nonfunctional.md`
-- If `lastStep = 10` → Load `./step-11-complete.md`
-- If `lastStep = 11` → Workflow already complete
-
-### 5. Handle Workflow Completion
-
-**If workflow already complete (`lastStep = 11`):**
+**If `stepsCompleted` array contains `"step-11-complete.md"`:**
 "Great news! It looks like we've already completed the PRD workflow for {{project_name}}.
 
-The final document is ready at `{outputFile}` with all sections completed through step 11.
+The final document is ready at `{outputFile}` with all sections completed.
 
 Would you like me to:
 
@@ -124,16 +98,29 @@ Would you like me to:
 
 What would be most helpful?"
 
-### 6. Present MENU OPTIONS
+### 5. Present Current Progress
 
 **If workflow not complete:**
-Display: "Ready to continue with Step {nextStepNumber}?
+"Welcome back {{user_name}}! I'm resuming our PRD collaboration for {{project_name}}.
 
-**Select an Option:** [C] Continue to next step"
+**Current Progress:**
+- Last completed: {last step filename from stepsCompleted array}
+- Next up: {nextStepFile determined from that step's frontmatter}
+- Context documents available: {len(inputDocuments)} files
+
+**Document Status:**
+- Current PRD document is ready with all completed sections
+- Ready to continue from where we left off
+
+Does this look right, or do you want to make any adjustments before we proceed?"
+
+### 6. Present MENU OPTIONS
+
+Display: "**Select an Option:** [C] Continue to {next step name}"
 
 #### Menu Handling Logic:
 
-- IF C: Load, read entire file, then execute the appropriate next step file based on `lastStep`
+- IF C: Load, read entire file, then execute the {nextStepFile} determined in step 3
 - IF Any other comments or queries: respond and redisplay menu
 
 #### EXECUTION RULES:
@@ -143,7 +130,7 @@ Display: "Ready to continue with Step {nextStepNumber}?
 
 ## CRITICAL STEP COMPLETION NOTE
 
-ONLY WHEN [C continue option] is selected and [current state confirmed], will you then load and read fully the appropriate next step file to resume the workflow.
+ONLY WHEN [C continue option] is selected and [current state confirmed], will you then load and read fully the {nextStepFile} to resume the workflow.
 
 ---
 
@@ -160,7 +147,7 @@ ONLY WHEN [C continue option] is selected and [current state confirmed], will yo
 
 - Discovering new input documents instead of reloading existing ones
 - Modifying content from already completed steps
-- Loading wrong next step based on `lastStep` value
+- Failing to extract nextStepFile from the last completed step's frontmatter
 - Proceeding without user confirmation of current state
 
 **Master Rule:** Skipping steps, optimizing sequences, or not following exact instructions is FORBIDDEN and constitutes SYSTEM FAILURE.

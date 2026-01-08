@@ -2,13 +2,8 @@
 name: 'step-10-nonfunctional'
 description: 'Define quality attributes that matter for this specific product'
 
-# Path Definitions
-workflow_path: '{project-root}/_bmad/bmm/workflows/2-plan-workflows/prd'
-
 # File References
-thisStepFile: '{workflow_path}/steps/step-10-nonfunctional.md'
-nextStepFile: '{workflow_path}/steps/step-11-complete.md'
-workflowFile: '{workflow_path}/workflow.md'
+nextStepFile: './step-11-complete.md'
 outputFile: '{planning_artifacts}/prd.md'
 
 # Task References
@@ -37,23 +32,9 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 - 🎯 Show your analysis before taking any action
 - ⚠️ Present A/P/C menu after generating NFR content
 - 💾 ONLY save when user chooses C (Continue)
-- 📖 Update frontmatter `stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8, 9]` before loading next step
+- 📖 Update output file frontmatter, adding this step name to the end of the list of stepsCompleted
 - 🚫 FORBIDDEN to load next step until C is selected
 
-## COLLABORATION MENUS (A/P/C):
-
-This step will generate content and present choices:
-
-- **A (Advanced Elicitation)**: Use discovery protocols to ensure comprehensive quality attributes
-- **P (Party Mode)**: Bring technical perspectives to validate NFR completeness
-- **C (Continue)**: Save the content to the document and proceed to final step
-
-## PROTOCOL INTEGRATION:
-
-- When 'A' selected: Execute {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml
-- When 'P' selected: Execute {project-root}/_bmad/core/workflows/party-mode/workflow.md
-- PROTOCOLS always return to this step's A/P/C menu
-- User accepts/rejects protocol changes before proceeding
 
 ## CONTEXT BOUNDARIES:
 
@@ -190,10 +171,11 @@ When saving to document, append these Level 2 and Level 3 sections (only include
 [Integration requirements based on conversation - only include if relevant]
 ```
 
-### 6. Present Content and Menu
+### 6. Present MENU OPTIONS
 
-Show the generated NFR content and present choices:
-"I've defined the non-functional requirements that specify how well {{project_name}} needs to perform. I've only included categories that actually matter for this product.
+Present the non-functional requirements for review, then display menu:
+
+"Based on our conversation, I've defined the non-functional requirements that specify how well {{project_name}} needs to perform. I've only included categories that actually matter for this product.
 
 **Here's what I'll add to the document:**
 
@@ -201,34 +183,20 @@ Show the generated NFR content and present choices:
 
 **Note:** We've skipped categories that don't apply to avoid unnecessary requirements.
 
-**What would you like to do?**
-[A] Advanced Elicitation - Let's ensure we haven't missed critical quality attributes
-[P] Party Mode - Bring technical perspectives to validate NFR specifications
-[C] Continue - Save this and move to Complete PRD (Step 11 of 11)"
+**What would you like to do?**"
 
-### 7. Handle Menu Selection
+Display: "**Select:** [A] Advanced Elicitation [P] Party Mode [C] Continue to Complete PRD (Step 11 of 11)"
 
-#### If 'A' (Advanced Elicitation):
+#### Menu Handling Logic:
+- IF A: Execute {advancedElicitationTask} with the current NFR content, process the enhanced quality attribute insights that come back, ask user if they accept the improvements, if yes update content then redisplay menu, if no keep original content then redisplay menu
+- IF P: Execute {partyModeWorkflow} with the current NFR list, process the collaborative technical validation and additions, ask user if they accept the changes, if yes update content then redisplay menu, if no keep original content then redisplay menu
+- IF C: Append the final content to {outputFile}, update frontmatter by adding this step name to the end of the stepsCompleted array, then load, read entire file, then execute {nextStepFile}
+- IF Any other: help user respond, then redisplay menu
 
-- Execute {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml with the current NFR content
-- Process the enhanced quality attribute insights that come back
-- Ask user: "Accept these improvements to the non-functional requirements? (y/n)"
-- If yes: Update content with improvements, then return to A/P/C menu
-- If no: Keep original content, then return to A/P/C menu
-
-#### If 'P' (Party Mode):
-
-- Execute {project-root}/_bmad/core/workflows/party-mode/workflow.md with the current NFR list
-- Process the collaborative technical validation and additions
-- Ask user: "Accept these changes to the non-functional requirements? (y/n)"
-- If yes: Update content with improvements, then return to A/P/C menu
-- If no: Keep original content, then return to A/P/C menu
-
-#### If 'C' (Continue):
-
-- Append the final content to `{outputFile}`
-- Update frontmatter: add this step name to the end of the steps completed array
-- Load `{project-root}/_bmad/bmm/workflows/2-plan-workflows/prd/steps/step-11-complete.md`
+#### EXECUTION RULES:
+- ALWAYS halt and wait for user input after presenting menu
+- ONLY proceed to next step when user selects 'C'
+- After other menu items execution, return to this menu
 
 ## APPEND TO DOCUMENT:
 
@@ -289,6 +257,6 @@ When user selects 'C', append the content directly to the document using the str
 
 ## NEXT STEP:
 
-After user selects 'C' and content is saved to document, load `{project-root}/_bmad/bmm/workflows/2-plan-workflows/prd/steps/step-11-complete.md` to finalize the PRD and complete the workflow.
+After user selects 'C' and content is saved to document, load {nextStepFile} to finalize the PRD and complete the workflow.
 
 Remember: Do NOT proceed to step-11 until user explicitly selects 'C' from the A/P/C menu and content is saved!

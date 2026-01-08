@@ -6,12 +6,12 @@ description: 'Initialize the nutrition plan workflow by detecting continuation s
 workflow_path: '{project-root}/_bmad/bmb/reference/workflows/meal-prep-nutrition'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-01-init.md'
-nextStepFile: '{workflow_path}/steps/step-02-profile.md'
+thisStepFile: './step-01-init.md'
+nextStepFile: './step-02-profile.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/nutrition-plan-{project_name}.md'
 templateFile: '{workflow_path}/templates/nutrition-plan.md'
-continueFile: '{workflow_path}/steps/step-01b-continue.md'
+continueFile: './step-01b-continue.md'
 # Template References
 # This step doesn't use content templates, only the main template
 ---

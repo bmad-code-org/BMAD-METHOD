@@ -6,8 +6,8 @@ description: 'Define core gameplay pillars, mechanics, and player experience goa
 workflow_path: '{project-root}/_bmad/bmgd/workflows/1-preproduction/game-brief'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-04-fundamentals.md'
-nextStepFile: '{workflow_path}/steps/step-05-scope.md'
+thisStepFile: './step-04-fundamentals.md'
+nextStepFile: './step-05-scope.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/game-brief.md'
 

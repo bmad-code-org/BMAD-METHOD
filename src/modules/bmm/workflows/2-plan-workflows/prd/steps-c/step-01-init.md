@@ -2,19 +2,13 @@
 name: 'step-01-init'
 description: 'Initialize the PRD workflow by detecting continuation state and setting up the document'
 
-# Path Definitions
-workflow_path: '{project-root}/_bmad/bmm/workflows/2-plan-workflows/prd'
-
 # File References
-thisStepFile: '{workflow_path}/steps/step-01-init.md'
-nextStepFile: '{workflow_path}/steps/step-02-discovery.md'
-continueStepFile: '{workflow_path}/steps/step-01b-continue.md'
-workflowFile: '{workflow_path}/workflow.md'
+nextStepFile: './step-02-discovery.md'
+continueStepFile: './step-01b-continue.md'
 outputFile: '{planning_artifacts}/prd.md'
 
-
-# Template References
-prdTemplate: '{workflow_path}/prd-template.md'
+# Template Reference
+prdTemplate: '../templates/prd-template.md'
 ---
 
 # Step 1: Workflow Initialization
@@ -157,7 +151,7 @@ Display menu after setup report:
 
 #### Menu Handling Logic:
 
-- IF C: Update frontmatter with `stepsCompleted: [1]`, then load, read entire {nextStepFile}, then execute {nextStepFile}
+- IF C: Update output file frontmatter, adding this step name to the end of the list of stepsCompleted, then load, read entire {nextStepFile}, then execute {nextStepFile}
 - IF user provides additional files: Load them, update inputDocuments and documentCounts, redisplay report
 - IF user asks questions: Answer and redisplay menu
 
@@ -168,7 +162,7 @@ Display menu after setup report:
 
 ## CRITICAL STEP COMPLETION NOTE
 
-ONLY WHEN [C continue option] is selected and [frontmatter properly updated with stepsCompleted: [1] and documentCounts], will you then load and read fully `{nextStepFile}` to execute and begin project discovery.
+ONLY WHEN [C continue option] is selected and [frontmatter properly updated with this step added to stepsCompleted and documentCounts], will you then load and read fully `{nextStepFile}` to execute and begin project discovery.
 
 ---
 
@@ -182,7 +176,7 @@ ONLY WHEN [C continue option] is selected and [frontmatter properly updated with
 - All discovered files tracked in frontmatter `inputDocuments`
 - User clearly informed of brownfield vs greenfield status
 - Menu presented and user input handled correctly
-- Frontmatter updated with `stepsCompleted: [1]` before proceeding
+- Frontmatter updated with this step name added to stepsCompleted before proceeding
 
 ### ❌ SYSTEM FAILURE:
 

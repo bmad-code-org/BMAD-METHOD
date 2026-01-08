@@ -6,8 +6,8 @@ description: 'Analyze nutritional requirements, identify restrictions, and calcu
 workflow_path: '{project-root}/_bmad/bmb/reference/workflows/meal-prep-nutrition'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-03-assessment.md'
-nextStepFile: '{workflow_path}/steps/step-04-strategy.md'
+thisStepFile: './step-03-assessment.md'
+nextStepFile: './step-04-strategy.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/nutrition-plan-{project_name}.md'
 

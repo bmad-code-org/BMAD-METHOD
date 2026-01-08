@@ -2,13 +2,8 @@
 name: 'step-08-scoping'
 description: 'Define MVP boundaries and prioritize features across development phases'
 
-# Path Definitions
-workflow_path: '{project-root}/_bmad/bmm/workflows/2-plan-workflows/prd'
-
 # File References
-thisStepFile: '{workflow_path}/steps/step-08-scoping.md'
-nextStepFile: '{workflow_path}/steps/step-09-functional.md'
-workflowFile: '{workflow_path}/workflow.md'
+nextStepFile: './step-09-functional.md'
 outputFile: '{planning_artifacts}/prd.md'
 
 # Task References
@@ -38,23 +33,9 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 - 📚 Review the complete PRD document built so far
 - ⚠️ Present A/P/C menu after generating scoping decisions
 - 💾 ONLY save when user chooses C (Continue)
-- 📖 Update frontmatter `stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8]` before loading next step
+- 📖 Update output file frontmatter, adding this step name to the end of the list of stepsCompleted
 - 🚫 FORBIDDEN to load next step until C is selected
 
-## COLLABORATION MENUS (A/P/C):
-
-This step will generate content and present choices:
-
-- **A (Advanced Elicitation)**: Use discovery protocols to explore innovative scoping approaches
-- **P (Party Mode)**: Bring multiple perspectives to ensure comprehensive scope decisions
-- **C (Continue)**: Save the scoping decisions and proceed to functional requirements
-
-## PROTOCOL INTEGRATION:
-
-- When 'A' selected: Execute {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml
-- When 'P' selected: Execute {project-root}/_bmad/core/workflows/party-mode/workflow.md
-- PROTOCOLS always return to display this step's A/P/C menu after the A or P have completed
-- User accepts/rejects protocol changes before proceeding
 
 ## CONTEXT BOUNDARIES:
 
@@ -225,44 +206,30 @@ Prepare comprehensive scoping section:
 **Resource Risks:** {{contingency_approach}}
 ```
 
-### 7. Present Content and Menu
+### 7. Present MENU OPTIONS
 
-Show the scoping decisions and present choices:
+Present the scoping decisions for review, then display menu:
 
-"I've analyzed your complete PRD and created a strategic scoping plan for {{project_name}}.
+"Based on our conversation, I've analyzed your complete PRD and created a strategic scoping plan for {{project_name}}.
 
 **Here's what I'll add to the document:**
 
 [Show the complete markdown content from step 6]
 
-**What would you like to do?**
-[A] Advanced Elicitation - Explore alternative scoping strategies
-[P] Party Mode - Bring different perspectives on MVP and roadmap decisions
-[C] Continue - Save scoping decisions and move to Functional Requirements (Step 9 of 11)"
+**What would you like to do?**"
 
-### 8. Handle Menu Selection
+Display: "**Select:** [A] Advanced Elicitation [P] Party Mode [C] Continue to Functional Requirements (Step 9 of 11)"
 
-#### If 'A' (Advanced Elicitation):
+#### Menu Handling Logic:
+- IF A: Execute {advancedElicitationTask} with the current scoping analysis, process the enhanced insights that come back, ask user if they accept the improvements, if yes update content then redisplay menu, if no keep original content then redisplay menu
+- IF P: Execute {partyModeWorkflow} with the scoping context, process the collaborative insights on MVP and roadmap decisions, ask user if they accept the changes, if yes update content then redisplay menu, if no keep original content then redisplay menu
+- IF C: Append the final content to {outputFile}, update frontmatter by adding this step name to the end of the stepsCompleted array, then load, read entire file, then execute {nextStepFile}
+- IF Any other: help user respond, then redisplay menu
 
-- Execute {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml with current scoping analysis
-- Process enhanced scoping insights that come back
-- Ask user: "Accept these improvements to the scoping decisions? (y/n)"
-- If yes: Update content, then return to A/P/C menu
-- If no: Keep original content, then return to A/P/C menu
-
-#### If 'P' (Party Mode):
-
-- Execute {project-root}/_bmad/core/workflows/party-mode/workflow.md with scoping context
-- Process collaborative insights on MVP and roadmap decisions
-- Ask user: "Accept these changes to the scoping decisions? (y/n)"
-- If yes: Update content, then return to A/P/C menu
-- If no: Keep original content, then return to A/P/C menu
-
-#### If 'C' (Continue):
-
-- Append the final content to `{outputFile}`
-- Update frontmatter: add this step name to the end of the steps completed array
-- Load `./step-09-functional.md`
+#### EXECUTION RULES:
+- ALWAYS halt and wait for user input after presenting menu
+- ONLY proceed to next step when user selects 'C'
+- After other menu items execution, return to this menu
 
 ## APPEND TO DOCUMENT:
 
@@ -294,6 +261,6 @@ When user selects 'C', append the content directly to the document using the str
 
 ## NEXT STEP:
 
-After user selects 'C' and content is saved to document, load `./step-09-functional.md`.
+After user selects 'C' and content is saved to document, load {nextStepFile}.
 
 Remember: Do NOT proceed to step-09 until user explicitly selects 'C' from the A/P/C menu and content is saved!

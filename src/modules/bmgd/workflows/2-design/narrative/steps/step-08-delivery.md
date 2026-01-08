@@ -6,8 +6,8 @@ description: 'Design narrative delivery methods including cutscenes, in-game sto
 workflow_path: '{project-root}/_bmad/bmgd/workflows/2-design/narrative'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-08-delivery.md'
-nextStepFile: '{workflow_path}/steps/step-09-integration.md'
+thisStepFile: './step-08-delivery.md'
+nextStepFile: './step-09-integration.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/narrative-design.md'
 

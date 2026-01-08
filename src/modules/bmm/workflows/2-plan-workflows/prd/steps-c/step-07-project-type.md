@@ -2,17 +2,12 @@
 name: 'step-07-project-type'
 description: 'Conduct project-type specific discovery using CSV-driven guidance'
 
-# Path Definitions
-workflow_path: '{project-root}/_bmad/bmm/workflows/2-plan-workflows/prd'
-
 # File References
-thisStepFile: '{workflow_path}/steps/step-07-project-type.md'
-nextStepFile: '{workflow_path}/steps/step-08-scoping.md'
-workflowFile: '{workflow_path}/workflow.md'
+nextStepFile: './step-08-scoping.md'
 outputFile: '{planning_artifacts}/prd.md'
 
 # Data Files
-projectTypesCSV: '{workflow_path}/project-types.csv'
+projectTypesCSV: '../data/project-types.csv'
 
 # Task References
 advancedElicitationTask: '{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml'
@@ -40,23 +35,8 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 - 🎯 Show your analysis before taking any action
 - ⚠️ Present A/P/C menu after generating project-type content
 - 💾 ONLY save when user chooses C (Continue)
-- 📖 Update frontmatter `stepsCompleted: [1, 2, 3, 4, 5, 6, 7]` before loading next step
+- 📖 Update output file frontmatter, adding this step name to the end of the list of stepsCompleted
 - 🚫 FORBIDDEN to load next step until C is selected
-
-## COLLABORATION MENUS (A/P/C):
-
-This step will generate content and present choices:
-
-- **A (Advanced Elicitation)**: Use discovery protocols to develop deeper project-type insights
-- **P (Party Mode)**: Bring technical perspectives to explore project-specific requirements
-- **C (Continue)**: Save the content to the document and proceed to next step
-
-## PROTOCOL INTEGRATION:
-
-- When 'A' selected: Execute {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml
-- When 'P' selected: Execute {project-root}/_bmad/core/workflows/party-mode/workflow.md
-- PROTOCOLS always return to this step's A/P/C menu
-- User accepts/rejects protocol changes before proceeding
 
 ## CONTEXT BOUNDARIES:
 
@@ -75,7 +55,7 @@ Conduct project-type specific discovery using CSV-driven guidance to define tech
 
 Load project-type specific configuration:
 
-- Load `{project-root}/_bmad/bmm/workflows/2-plan-workflows/prd/project-types.csv` completely
+- Load `{projectTypesCSV}` completely
 - Find the row where `project_type` matches detected type from step-02
 - Extract these columns:
   - `key_questions` (semicolon-separated list of discovery questions)
@@ -165,47 +145,34 @@ When saving to document, append these Level 2 and Level 3 sections:
 [Implementation specific requirements based on conversation]
 ```
 
-### 6. Present Content and Menu
+### 6. Present MENU OPTIONS
 
-Show the generated project-type content and present choices:
-"I've documented the {project_type}-specific requirements for {{project_name}} based on our conversation and best practices for this type of product.
+Present the project-type content for review, then display menu:
+
+"Based on our conversation and best practices for this product type, I've documented the {project_type}-specific requirements for {{project_name}}.
 
 **Here's what I'll add to the document:**
 
-[Show the complete markdown content from step 5]
+[Show the complete markdown content from section 5]
 
-**What would you like to do?**
-[A] Advanced Elicitation - Let's dive deeper into these technical requirements
-[P] Party Mode - Bring technical expertise perspectives to validate requirements
-[C] Continue - Save this and move to Scoping (Step 8 of 11)"
+**What would you like to do?**"
 
-### 7. Handle Menu Selection
+Display: "**Select:** [A] Advanced Elicitation [P] Party Mode [C] Continue to Scoping (Step 8 of 11)"
 
-#### If 'A' (Advanced Elicitation):
+#### Menu Handling Logic:
+- IF A: Execute {advancedElicitationTask} with the current project-type content, process the enhanced technical insights that come back, ask user "Accept these improvements to the technical requirements? (y/n)", if yes update content with improvements then redisplay menu, if no keep original content then redisplay menu
+- IF P: Execute {partyModeWorkflow} with the current project-type requirements, process the collaborative technical expertise and validation, ask user "Accept these changes to the technical requirements? (y/n)", if yes update content with improvements then redisplay menu, if no keep original content then redisplay menu
+- IF C: Append the final content to {outputFile}, update frontmatter by adding this step name to the end of the stepsCompleted array, then load, read entire file, then execute {nextStepFile}
+- IF Any other: help user respond, then redisplay menu
 
-- Execute {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml with the current project-type content
-- Process the enhanced technical insights that come back
-- Ask user: "Accept these improvements to the technical requirements? (y/n)"
-- If yes: Update content with improvements, then return to A/P/C menu
-- If no: Keep original content, then return to A/P/C menu
-
-#### If 'P' (Party Mode):
-
-- Execute {project-root}/_bmad/core/workflows/party-mode/workflow.md with the current project-type requirements
-- Process the collaborative technical expertise and validation
-- Ask user: "Accept these changes to the technical requirements? (y/n)"
-- If yes: Update content with improvements, then return to A/P/C menu
-- If no: Keep original content, then return to A/P/C menu
-
-#### If 'C' (Continue):
-
-- Append the final content to `{outputFile}`
-- Update frontmatter: add this step name to the end of the steps completed array
-- Load `{project-root}/_bmad/bmm/workflows/2-plan-workflows/prd/steps/step-08-scoping.md`
+#### EXECUTION RULES:
+- ALWAYS halt and wait for user input after presenting menu
+- ONLY proceed to next step when user selects 'C'
+- After other menu items execution, return to this menu
 
 ## APPEND TO DOCUMENT:
 
-When user selects 'C', append the content directly to the document using the structure from step 5.
+When user selects 'C', append the content directly to the document using the structure from previous steps.
 
 ## SUCCESS METRICS:
 
@@ -253,6 +220,6 @@ When user selects 'C', append the content directly to the document using the str
 
 ## NEXT STEP:
 
-After user selects 'C' and content is saved to document, load `{project-root}/_bmad/bmm/workflows/2-plan-workflows/prd/steps/step-08-scoping.md` to define project scope.
+After user selects 'C' and content is saved to document, load `{nextStepFile}` to define project scope.
 
 Remember: Do NOT proceed to step-08 (Scoping) until user explicitly selects 'C' from the A/P/C menu and content is saved!
