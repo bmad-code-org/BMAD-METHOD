@@ -161,7 +161,7 @@ ${launcherContent}
 
     return {
       path: launcherPath,
-      command: `/bmad:custom:agents:${agentName}`,
+      command: `/bmad/custom/agents/${agentName}`,
     };
   }
 }
