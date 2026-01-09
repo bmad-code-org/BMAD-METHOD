@@ -13,8 +13,8 @@ github:
   repo: "{config_source}:github_repo"
 
 # Parameters (can be passed in or prompted)
-document_key: ""       # e.g., "user-auth" for PRD, "2" for Epic
-document_type: ""      # "prd" or "epic" - will auto-detect if empty
+document_key: "" # e.g., "user-auth" for PRD, "2" for Epic
+document_type: "" # "prd" or "epic" - will auto-detect if empty
 
 installed_path: "{project-root}/_bmad/bmm/workflows/1-requirements/crowdsource/submit-feedback"
 instructions: "{installed_path}/instructions.md"

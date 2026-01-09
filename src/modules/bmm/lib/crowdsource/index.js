@@ -24,5 +24,5 @@ module.exports = {
   SignoffManager,
   SIGNOFF_STATUS,
   THRESHOLD_TYPES,
-  DEFAULT_CONFIG
+  DEFAULT_CONFIG,
 };

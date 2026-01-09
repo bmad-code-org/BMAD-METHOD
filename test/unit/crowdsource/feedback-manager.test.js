@@ -16,7 +16,7 @@ import {
   FeedbackManager,
   FEEDBACK_TYPES,
   FEEDBACK_STATUS,
-  PRIORITY_LEVELS
+  PRIORITY_LEVELS,
 } from '../../../src/modules/bmm/lib/crowdsource/feedback-manager.js';
 
 // Create a testable subclass that allows injecting mock implementations
@@ -74,13 +74,7 @@ describe('FeedbackManager', () => {
 
   describe('FEEDBACK_TYPES', () => {
     it('should define all standard feedback types', () => {
-      const expectedTypes = [
-        'clarification',
-        'concern',
-        'suggestion',
-        'addition',
-        'priority'
-      ];
+      const expectedTypes = ['clarification', 'concern', 'suggestion', 'addition', 'priority'];
 
       for (const type of expectedTypes) {
         expect(FEEDBACK_TYPES[type]).toBeDefined();
@@ -137,7 +131,7 @@ describe('FeedbackManager', () => {
     it('should initialize with github config', () => {
       const manager = new FeedbackManager({
         owner: 'test-org',
-        repo: 'test-repo'
+        repo: 'test-repo',
       });
 
       expect(manager.owner).toBe('test-org');
@@ -155,13 +149,13 @@ describe('FeedbackManager', () => {
     beforeEach(() => {
       mockCreateIssue = vi.fn().mockResolvedValue({
         number: 42,
-        html_url: 'https://github.com/test-org/test-repo/issues/42'
+        html_url: 'https://github.com/test-org/test-repo/issues/42',
       });
       mockAddComment = vi.fn().mockResolvedValue({});
 
       manager = new TestableFeedbackManager(
         { owner: 'test-org', repo: 'test-repo' },
-        { createIssue: mockCreateIssue, addComment: mockAddComment }
+        { createIssue: mockCreateIssue, addComment: mockAddComment },
       );
     });
 
@@ -175,7 +169,7 @@ describe('FeedbackManager', () => {
         priority: 'high',
         title: 'Unclear login flow',
         content: 'The login flow description is ambiguous',
-        submittedBy: 'alice'
+        submittedBy: 'alice',
       });
 
       expect(mockCreateIssue).toHaveBeenCalledTimes(1);
@@ -204,7 +198,7 @@ describe('FeedbackManager', () => {
         priority: 'medium',
         title: 'Epic too large',
         content: 'Should be split into smaller epics',
-        submittedBy: 'bob'
+        submittedBy: 'bob',
       });
 
       const createCall = mockCreateIssue.mock.calls[0][0];
@@ -225,7 +219,7 @@ describe('FeedbackManager', () => {
         priority: 'high',
         title: 'Security risk',
         content: 'Missing security consideration',
-        submittedBy: 'security-team'
+        submittedBy: 'security-team',
       });
 
       expect(mockAddComment).toHaveBeenCalledTimes(1);
@@ -249,7 +243,7 @@ describe('FeedbackManager', () => {
         content: 'Need better error messages',
         suggestedChange: 'Add user-friendly error codes',
         rationale: 'Improves debugging for support team',
-        submittedBy: 'dev-lead'
+        submittedBy: 'dev-lead',
       });
 
       const createCall = mockCreateIssue.mock.calls[0][0];
@@ -261,17 +255,19 @@ describe('FeedbackManager', () => {
     });
 
     it('should throw error for unknown feedback type', async () => {
-      await expect(manager.createFeedback({
-        reviewIssueNumber: 100,
-        documentKey: 'prd:test',
-        documentType: 'prd',
-        section: 'Test',
-        feedbackType: 'invalid-type',
-        priority: 'medium',
-        title: 'Test',
-        content: 'Test',
-        submittedBy: 'user'
-      })).rejects.toThrow('Unknown feedback type: invalid-type');
+      await expect(
+        manager.createFeedback({
+          reviewIssueNumber: 100,
+          documentKey: 'prd:test',
+          documentType: 'prd',
+          section: 'Test',
+          feedbackType: 'invalid-type',
+          priority: 'medium',
+          title: 'Test',
+          content: 'Test',
+          submittedBy: 'user',
+        }),
+      ).rejects.toThrow('Unknown feedback type: invalid-type');
     });
 
     it('should default to medium priority when invalid priority provided', async () => {
@@ -284,7 +280,7 @@ describe('FeedbackManager', () => {
         priority: 'invalid',
         title: 'Test',
         content: 'Test',
-        submittedBy: 'user'
+        submittedBy: 'user',
       });
 
       const createCall = mockCreateIssue.mock.calls[0][0];
@@ -301,7 +297,7 @@ describe('FeedbackManager', () => {
         priority: 'low',
         title: 'Test',
         content: 'Test',
-        submittedBy: 'user'
+        submittedBy: 'user',
       });
 
       const createCall = mockCreateIssue.mock.calls[0][0];
@@ -327,25 +323,22 @@ describe('FeedbackManager', () => {
             { name: 'feedback-section:user-stories' },
             { name: 'feedback-type:clarification' },
             { name: 'feedback-status:new' },
-            { name: 'priority:high' }
+            { name: 'priority:high' },
           ],
           user: { login: 'alice' },
           created_at: '2026-01-01T00:00:00Z',
           updated_at: '2026-01-02T00:00:00Z',
-          body: 'Test body'
-        }
+          body: 'Test body',
+        },
       ]);
 
-      manager = new TestableFeedbackManager(
-        { owner: 'test-org', repo: 'test-repo' },
-        { searchIssues: mockSearchIssues }
-      );
+      manager = new TestableFeedbackManager({ owner: 'test-org', repo: 'test-repo' }, { searchIssues: mockSearchIssues });
     });
 
     it('should query feedback with document key filter', async () => {
       await manager.getFeedback({
         documentKey: 'prd:user-auth',
-        documentType: 'prd'
+        documentType: 'prd',
       });
 
       expect(mockSearchIssues).toHaveBeenCalledTimes(1);
@@ -361,7 +354,7 @@ describe('FeedbackManager', () => {
     it('should query feedback with review issue filter', async () => {
       await manager.getFeedback({
         reviewIssueNumber: 100,
-        documentType: 'prd'
+        documentType: 'prd',
       });
 
       const query = mockSearchIssues.mock.calls[0][0];
@@ -371,7 +364,7 @@ describe('FeedbackManager', () => {
     it('should query feedback with status filter', async () => {
       await manager.getFeedback({
         documentType: 'prd',
-        status: 'incorporated'
+        status: 'incorporated',
       });
 
       const query = mockSearchIssues.mock.calls[0][0];
@@ -381,7 +374,7 @@ describe('FeedbackManager', () => {
     it('should query feedback with section filter', async () => {
       await manager.getFeedback({
         documentType: 'epic',
-        section: 'Story Breakdown'
+        section: 'Story Breakdown',
       });
 
       const query = mockSearchIssues.mock.calls[0][0];
@@ -391,7 +384,7 @@ describe('FeedbackManager', () => {
     it('should query feedback with type filter', async () => {
       await manager.getFeedback({
         documentType: 'prd',
-        feedbackType: 'concern'
+        feedbackType: 'concern',
       });
 
       const query = mockSearchIssues.mock.calls[0][0];
@@ -401,7 +394,7 @@ describe('FeedbackManager', () => {
     it('should parse feedback issues correctly', async () => {
       const results = await manager.getFeedback({
         documentType: 'prd',
-        documentKey: 'prd:user-auth'
+        documentKey: 'prd:user-auth',
       });
 
       expect(results).toHaveLength(1);
@@ -413,14 +406,14 @@ describe('FeedbackManager', () => {
         feedbackType: 'clarification',
         status: 'new',
         priority: 'high',
-        submittedBy: 'alice'
+        submittedBy: 'alice',
       });
     });
 
     it('should handle document key with colon', async () => {
       await manager.getFeedback({
         documentKey: 'prd:complex-key',
-        documentType: 'prd'
+        documentType: 'prd',
       });
 
       const query = mockSearchIssues.mock.calls[0][0];
@@ -444,11 +437,11 @@ describe('FeedbackManager', () => {
             { name: 'feedback-section:user-stories' },
             { name: 'feedback-type:clarification' },
             { name: 'feedback-status:new' },
-            { name: 'priority:high' }
+            { name: 'priority:high' },
           ],
           user: { login: 'alice' },
           created_at: '2026-01-01',
-          updated_at: '2026-01-01'
+          updated_at: '2026-01-01',
         },
         {
           number: 2,
@@ -458,11 +451,11 @@ describe('FeedbackManager', () => {
             { name: 'feedback-section:user-stories' },
             { name: 'feedback-type:suggestion' },
             { name: 'feedback-status:new' },
-            { name: 'priority:medium' }
+            { name: 'priority:medium' },
           ],
           user: { login: 'bob' },
           created_at: '2026-01-01',
-          updated_at: '2026-01-01'
+          updated_at: '2026-01-01',
         },
         {
           number: 3,
@@ -472,18 +465,15 @@ describe('FeedbackManager', () => {
             { name: 'feedback-section:fr-3' },
             { name: 'feedback-type:concern' },
             { name: 'feedback-status:new' },
-            { name: 'priority:high' }
+            { name: 'priority:high' },
           ],
           user: { login: 'charlie' },
           created_at: '2026-01-01',
-          updated_at: '2026-01-01'
-        }
+          updated_at: '2026-01-01',
+        },
       ]);
 
-      manager = new TestableFeedbackManager(
-        { owner: 'test-org', repo: 'test-repo' },
-        { searchIssues: mockSearchIssues }
-      );
+      manager = new TestableFeedbackManager({ owner: 'test-org', repo: 'test-repo' }, { searchIssues: mockSearchIssues });
     });
 
     it('should group feedback by section', async () => {
@@ -518,9 +508,9 @@ describe('FeedbackManager', () => {
             { name: 'feedback-section:test' },
             { name: 'feedback-type:clarification' },
             { name: 'feedback-status:new' },
-            { name: 'priority:high' }
+            { name: 'priority:high' },
           ],
-          user: { login: 'alice' }
+          user: { login: 'alice' },
         },
         {
           number: 2,
@@ -530,9 +520,9 @@ describe('FeedbackManager', () => {
             { name: 'feedback-section:test2' },
             { name: 'feedback-type:clarification' },
             { name: 'feedback-status:new' },
-            { name: 'priority:medium' }
+            { name: 'priority:medium' },
           ],
-          user: { login: 'bob' }
+          user: { login: 'bob' },
         },
         {
           number: 3,
@@ -542,16 +532,13 @@ describe('FeedbackManager', () => {
             { name: 'feedback-section:test' },
             { name: 'feedback-type:concern' },
             { name: 'feedback-status:new' },
-            { name: 'priority:high' }
+            { name: 'priority:high' },
           ],
-          user: { login: 'charlie' }
-        }
+          user: { login: 'charlie' },
+        },
       ]);
 
-      manager = new TestableFeedbackManager(
-        { owner: 'test-org', repo: 'test-repo' },
-        { searchIssues: mockSearchIssues }
-      );
+      manager = new TestableFeedbackManager({ owner: 'test-org', repo: 'test-repo' }, { searchIssues: mockSearchIssues });
     });
 
     it('should group feedback by type', async () => {
@@ -579,9 +566,9 @@ describe('FeedbackManager', () => {
             { name: 'feedback-section:fr-5' },
             { name: 'feedback-type:concern' },
             { name: 'feedback-status:new' },
-            { name: 'priority:high' }
+            { name: 'priority:high' },
           ],
-          user: { login: 'security' }
+          user: { login: 'security' },
         },
         {
           number: 2,
@@ -591,16 +578,13 @@ describe('FeedbackManager', () => {
             { name: 'feedback-section:fr-5' },
             { name: 'feedback-type:concern' },
             { name: 'feedback-status:new' },
-            { name: 'priority:medium' }
+            { name: 'priority:medium' },
           ],
-          user: { login: 'ux-team' }
-        }
+          user: { login: 'ux-team' },
+        },
       ]);
 
-      manager = new TestableFeedbackManager(
-        { owner: 'test-org', repo: 'test-repo' },
-        { searchIssues: mockSearchIssues }
-      );
+      manager = new TestableFeedbackManager({ owner: 'test-org', repo: 'test-repo' }, { searchIssues: mockSearchIssues });
 
       const conflicts = await manager.detectConflicts('prd:user-auth', 'prd');
 
@@ -620,9 +604,9 @@ describe('FeedbackManager', () => {
             { name: 'feedback-section:security' },
             { name: 'feedback-type:concern' },
             { name: 'feedback-status:new' },
-            { name: 'priority:high' }
+            { name: 'priority:high' },
           ],
-          user: { login: 'security' }
+          user: { login: 'security' },
         },
         {
           number: 2,
@@ -632,16 +616,13 @@ describe('FeedbackManager', () => {
             { name: 'feedback-section:security' },
             { name: 'feedback-type:suggestion' },
             { name: 'feedback-status:new' },
-            { name: 'priority:medium' }
+            { name: 'priority:medium' },
           ],
-          user: { login: 'dev' }
-        }
+          user: { login: 'dev' },
+        },
       ]);
 
-      manager = new TestableFeedbackManager(
-        { owner: 'test-org', repo: 'test-repo' },
-        { searchIssues: mockSearchIssues }
-      );
+      manager = new TestableFeedbackManager({ owner: 'test-org', repo: 'test-repo' }, { searchIssues: mockSearchIssues });
 
       const conflicts = await manager.detectConflicts('prd:test', 'prd');
 
@@ -659,16 +640,13 @@ describe('FeedbackManager', () => {
             { name: 'feedback-section:fr-1' },
             { name: 'feedback-type:concern' },
             { name: 'feedback-status:new' },
-            { name: 'priority:high' }
+            { name: 'priority:high' },
           ],
-          user: { login: 'user1' }
-        }
+          user: { login: 'user1' },
+        },
       ]);
 
-      manager = new TestableFeedbackManager(
-        { owner: 'test-org', repo: 'test-repo' },
-        { searchIssues: mockSearchIssues }
-      );
+      manager = new TestableFeedbackManager({ owner: 'test-org', repo: 'test-repo' }, { searchIssues: mockSearchIssues });
 
       const conflicts = await manager.detectConflicts('prd:test', 'prd');
 
@@ -685,9 +663,9 @@ describe('FeedbackManager', () => {
             { name: 'feedback-section:fr-1' },
             { name: 'feedback-type:clarification' },
             { name: 'feedback-status:new' },
-            { name: 'priority:medium' }
+            { name: 'priority:medium' },
           ],
-          user: { login: 'user1' }
+          user: { login: 'user1' },
         },
         {
           number: 2,
@@ -697,16 +675,13 @@ describe('FeedbackManager', () => {
             { name: 'feedback-section:fr-1' },
             { name: 'feedback-type:clarification' },
             { name: 'feedback-status:new' },
-            { name: 'priority:low' }
+            { name: 'priority:low' },
           ],
-          user: { login: 'user2' }
-        }
+          user: { login: 'user2' },
+        },
       ]);
 
-      manager = new TestableFeedbackManager(
-        { owner: 'test-org', repo: 'test-repo' },
-        { searchIssues: mockSearchIssues }
-      );
+      manager = new TestableFeedbackManager({ owner: 'test-org', repo: 'test-repo' }, { searchIssues: mockSearchIssues });
 
       const conflicts = await manager.detectConflicts('prd:test', 'prd');
 
@@ -726,11 +701,7 @@ describe('FeedbackManager', () => {
     beforeEach(() => {
       mockGetIssue = vi.fn().mockResolvedValue({
         number: 42,
-        labels: [
-          { name: 'type:prd-feedback' },
-          { name: 'feedback-status:new' },
-          { name: 'priority:high' }
-        ]
+        labels: [{ name: 'type:prd-feedback' }, { name: 'feedback-status:new' }, { name: 'priority:high' }],
       });
       mockUpdateIssue = vi.fn().mockResolvedValue({});
       mockAddComment = vi.fn().mockResolvedValue({});
@@ -742,8 +713,8 @@ describe('FeedbackManager', () => {
           getIssue: mockGetIssue,
           updateIssue: mockUpdateIssue,
           addComment: mockAddComment,
-          closeIssue: mockCloseIssue
-        }
+          closeIssue: mockCloseIssue,
+        },
       );
     });
 
@@ -792,9 +763,7 @@ describe('FeedbackManager', () => {
     });
 
     it('should throw error for unknown status', async () => {
-      await expect(
-        manager.updateFeedbackStatus(42, 'invalid-status')
-      ).rejects.toThrow('Unknown status: invalid-status');
+      await expect(manager.updateFeedbackStatus(42, 'invalid-status')).rejects.toThrow('Unknown status: invalid-status');
     });
 
     it('should return updated status info', async () => {
@@ -802,7 +771,7 @@ describe('FeedbackManager', () => {
 
       expect(result).toEqual({
         feedbackId: 42,
-        status: 'reviewed'
+        status: 'reviewed',
       });
     });
   });
@@ -823,9 +792,9 @@ describe('FeedbackManager', () => {
             { name: 'feedback-section:user-stories' },
             { name: 'feedback-type:clarification' },
             { name: 'feedback-status:new' },
-            { name: 'priority:high' }
+            { name: 'priority:high' },
           ],
-          user: { login: 'alice' }
+          user: { login: 'alice' },
         },
         {
           number: 2,
@@ -835,9 +804,9 @@ describe('FeedbackManager', () => {
             { name: 'feedback-section:user-stories' },
             { name: 'feedback-type:concern' },
             { name: 'feedback-status:reviewed' },
-            { name: 'priority:high' }
+            { name: 'priority:high' },
           ],
-          user: { login: 'bob' }
+          user: { login: 'bob' },
         },
         {
           number: 3,
@@ -847,16 +816,13 @@ describe('FeedbackManager', () => {
             { name: 'feedback-section:fr-3' },
             { name: 'feedback-type:suggestion' },
             { name: 'feedback-status:new' },
-            { name: 'priority:medium' }
+            { name: 'priority:medium' },
           ],
-          user: { login: 'alice' }
-        }
+          user: { login: 'alice' },
+        },
       ]);
 
-      manager = new TestableFeedbackManager(
-        { owner: 'test-org', repo: 'test-repo' },
-        { searchIssues: mockSearchIssues }
-      );
+      manager = new TestableFeedbackManager({ owner: 'test-org', repo: 'test-repo' }, { searchIssues: mockSearchIssues });
     });
 
     it('should calculate total feedback count', async () => {
@@ -871,7 +837,7 @@ describe('FeedbackManager', () => {
       expect(stats.byType).toEqual({
         clarification: 1,
         concern: 1,
-        suggestion: 1
+        suggestion: 1,
       });
     });
 
@@ -880,7 +846,7 @@ describe('FeedbackManager', () => {
 
       expect(stats.byStatus).toEqual({
         new: 2,
-        reviewed: 1
+        reviewed: 1,
       });
     });
 
@@ -889,7 +855,7 @@ describe('FeedbackManager', () => {
 
       expect(stats.bySection).toEqual({
         'user-stories': 2,
-        'fr-3': 1
+        'fr-3': 1,
       });
     });
 
@@ -898,7 +864,7 @@ describe('FeedbackManager', () => {
 
       expect(stats.byPriority).toEqual({
         high: 2,
-        medium: 1
+        medium: 1,
       });
     });
 
@@ -929,7 +895,7 @@ describe('FeedbackManager', () => {
         typeConfig: FEEDBACK_TYPES.clarification,
         priority: 'high',
         content: 'This is unclear',
-        submittedBy: 'alice'
+        submittedBy: 'alice',
       });
 
       expect(body).toContain('# 📋 Feedback: Clarification');
@@ -952,7 +918,7 @@ describe('FeedbackManager', () => {
         priority: 'medium',
         content: 'Could be improved',
         suggestedChange: 'Use async/await pattern',
-        submittedBy: 'bob'
+        submittedBy: 'bob',
       });
 
       expect(body).toContain('## Suggested Change');
@@ -969,7 +935,7 @@ describe('FeedbackManager', () => {
         priority: 'high',
         content: 'Security risk',
         rationale: 'OWASP Top 10 vulnerability',
-        submittedBy: 'security'
+        submittedBy: 'security',
       });
 
       expect(body).toContain('## Context/Rationale');
@@ -993,12 +959,12 @@ describe('FeedbackManager', () => {
           { name: 'feedback-section:user-stories' },
           { name: 'feedback-type:clarification' },
           { name: 'feedback-status:new' },
-          { name: 'priority:high' }
+          { name: 'priority:high' },
         ],
         user: { login: 'alice' },
         created_at: '2026-01-01T00:00:00Z',
         updated_at: '2026-01-02T00:00:00Z',
-        body: 'Test body content'
+        body: 'Test body content',
       };
 
       const parsed = manager._parseFeedbackIssue(issue);
@@ -1014,7 +980,7 @@ describe('FeedbackManager', () => {
         submittedBy: 'alice',
         createdAt: '2026-01-01T00:00:00Z',
         updatedAt: '2026-01-02T00:00:00Z',
-        body: 'Test body content'
+        body: 'Test body content',
       });
     });
 
@@ -1024,7 +990,7 @@ describe('FeedbackManager', () => {
         html_url: 'url',
         title: '⚠️ Feedback: Important concern',
         labels: [],
-        user: null
+        user: null,
       };
 
       const parsed = manager._parseFeedbackIssue(issue);
@@ -1037,7 +1003,7 @@ describe('FeedbackManager', () => {
         html_url: 'url',
         title: 'Feedback: Missing labels',
         labels: [],
-        user: { login: 'user' }
+        user: { login: 'user' },
       };
 
       const parsed = manager._parseFeedbackIssue(issue);
@@ -1076,17 +1042,11 @@ describe('FeedbackManager', () => {
     it('should throw when GitHub methods not implemented', async () => {
       const manager = new FeedbackManager({ owner: 'test', repo: 'test' });
 
-      await expect(manager._createIssue({})).rejects.toThrow(
-        '_createIssue must be implemented by caller via GitHub MCP'
-      );
+      await expect(manager._createIssue({})).rejects.toThrow('_createIssue must be implemented by caller via GitHub MCP');
 
-      await expect(manager._getIssue(1)).rejects.toThrow(
-        '_getIssue must be implemented by caller via GitHub MCP'
-      );
+      await expect(manager._getIssue(1)).rejects.toThrow('_getIssue must be implemented by caller via GitHub MCP');
 
-      await expect(manager._searchIssues('')).rejects.toThrow(
-        '_searchIssues must be implemented by caller via GitHub MCP'
-      );
+      await expect(manager._searchIssues('')).rejects.toThrow('_searchIssues must be implemented by caller via GitHub MCP');
     });
   });
 });

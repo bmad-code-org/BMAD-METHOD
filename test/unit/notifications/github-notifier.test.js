@@ -11,10 +11,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import {
-  GitHubNotifier,
-  NOTIFICATION_TEMPLATES
-} from '../../../src/modules/bmm/lib/notifications/github-notifier.js';
+import { GitHubNotifier, NOTIFICATION_TEMPLATES } from '../../../src/modules/bmm/lib/notifications/github-notifier.js';
 
 describe('GitHubNotifier', () => {
   // ============ NOTIFICATION_TEMPLATES Tests ============
@@ -30,7 +27,7 @@ describe('GitHubNotifier', () => {
         'document_approved',
         'document_blocked',
         'reminder',
-        'deadline_extended'
+        'deadline_extended',
       ];
 
       for (const type of expectedTypes) {
@@ -65,7 +62,7 @@ describe('GitHubNotifier', () => {
       const notifier = new GitHubNotifier({
         owner: 'test-org',
         repo: 'test-repo',
-        github: mockGithub
+        github: mockGithub,
       });
 
       expect(notifier.owner).toBe('test-org');
@@ -83,38 +80,40 @@ describe('GitHubNotifier', () => {
     beforeEach(() => {
       mockGithub = {
         addIssueComment: vi.fn().mockResolvedValue({ id: 123 }),
-        createIssue: vi.fn().mockResolvedValue({ number: 456 })
+        createIssue: vi.fn().mockResolvedValue({ number: 456 }),
       };
 
       notifier = new GitHubNotifier({
         owner: 'test-org',
         repo: 'test-repo',
-        github: mockGithub
+        github: mockGithub,
       });
     });
 
     it('should throw for unknown event type', async () => {
-      await expect(
-        notifier.send('unknown_event', {})
-      ).rejects.toThrow('Unknown notification event type: unknown_event');
+      await expect(notifier.send('unknown_event', {})).rejects.toThrow('Unknown notification event type: unknown_event');
     });
 
     it('should post comment when issueNumber provided', async () => {
-      const result = await notifier.send('feedback_round_opened', {
-        mentions: '@alice @bob',
-        document_type: 'prd',
-        document_key: 'user-auth',
-        version: 1,
-        deadline: '2026-01-15',
-        document_url: 'https://example.com/doc'
-      }, { issueNumber: 100 });
+      const result = await notifier.send(
+        'feedback_round_opened',
+        {
+          mentions: '@alice @bob',
+          document_type: 'prd',
+          document_key: 'user-auth',
+          version: 1,
+          deadline: '2026-01-15',
+          document_url: 'https://example.com/doc',
+        },
+        { issueNumber: 100 },
+      );
 
       expect(mockGithub.addIssueComment).toHaveBeenCalledTimes(1);
       expect(mockGithub.addIssueComment).toHaveBeenCalledWith({
         owner: 'test-org',
         repo: 'test-repo',
         issue_number: 100,
-        body: expect.stringContaining('Feedback Round Open')
+        body: expect.stringContaining('Feedback Round Open'),
       });
 
       expect(result.success).toBe(true);
@@ -124,15 +123,19 @@ describe('GitHubNotifier', () => {
     });
 
     it('should create issue when createIssue option provided', async () => {
-      const result = await notifier.send('document_approved', {
-        document_type: 'prd',
-        document_key: 'user-auth',
-        title: 'User Authentication',
-        version: 2,
-        approval_count: 5,
-        stakeholder_count: 5,
-        document_url: 'https://example.com/doc'
-      }, { createIssue: true, labels: ['notification', 'approved'] });
+      const result = await notifier.send(
+        'document_approved',
+        {
+          document_type: 'prd',
+          document_key: 'user-auth',
+          title: 'User Authentication',
+          version: 2,
+          approval_count: 5,
+          stakeholder_count: 5,
+          document_url: 'https://example.com/doc',
+        },
+        { createIssue: true, labels: ['notification', 'approved'] },
+      );
 
       expect(mockGithub.createIssue).toHaveBeenCalledTimes(1);
       expect(mockGithub.createIssue).toHaveBeenCalledWith({
@@ -140,7 +143,7 @@ describe('GitHubNotifier', () => {
         repo: 'test-repo',
         title: expect.stringContaining('Document Approved'),
         body: expect.stringContaining('User Authentication'),
-        labels: ['notification', 'approved']
+        labels: ['notification', 'approved'],
       });
 
       expect(result.success).toBe(true);
@@ -158,7 +161,7 @@ describe('GitHubNotifier', () => {
         summary: 'Security issue found',
         feedback_issue: 42,
         feedback_url: 'https://example.com/feedback/42',
-        review_issue: 100
+        review_issue: 100,
       });
 
       expect(mockGithub.addIssueComment).toHaveBeenCalledTimes(1);
@@ -171,7 +174,7 @@ describe('GitHubNotifier', () => {
         document_key: 'test',
         old_deadline: '2026-01-10',
         new_deadline: '2026-01-20',
-        document_url: 'https://example.com/doc'
+        document_url: 'https://example.com/doc',
       });
 
       expect(result.success).toBe(true);
@@ -182,15 +185,19 @@ describe('GitHubNotifier', () => {
     it('should handle GitHub API error', async () => {
       mockGithub.addIssueComment.mockRejectedValue(new Error('API rate limit'));
 
-      const result = await notifier.send('reminder', {
-        mentions: '@alice',
-        document_type: 'prd',
-        document_key: 'test',
-        action_needed: 'feedback',
-        deadline: '2026-01-15',
-        time_remaining: '2 days',
-        document_url: 'https://example.com/doc'
-      }, { issueNumber: 100 });
+      const result = await notifier.send(
+        'reminder',
+        {
+          mentions: '@alice',
+          document_type: 'prd',
+          document_key: 'test',
+          action_needed: 'feedback',
+          deadline: '2026-01-15',
+          time_remaining: '2 days',
+          document_url: 'https://example.com/doc',
+        },
+        { issueNumber: 100 },
+      );
 
       expect(result.success).toBe(false);
       expect(result.error).toBe('API rate limit');
@@ -205,13 +212,13 @@ describe('GitHubNotifier', () => {
 
     beforeEach(() => {
       mockGithub = {
-        addIssueComment: vi.fn().mockResolvedValue({ id: 123 })
+        addIssueComment: vi.fn().mockResolvedValue({ id: 123 }),
       };
 
       notifier = new GitHubNotifier({
         owner: 'test-org',
         repo: 'test-repo',
-        github: mockGithub
+        github: mockGithub,
       });
     });
 
@@ -222,7 +229,7 @@ describe('GitHubNotifier', () => {
         action_needed: 'sign-off',
         deadline: '2026-01-15',
         time_remaining: '24 hours',
-        document_url: 'https://example.com/doc'
+        document_url: 'https://example.com/doc',
       });
 
       expect(mockGithub.addIssueComment).toHaveBeenCalledTimes(1);
@@ -242,22 +249,18 @@ describe('GitHubNotifier', () => {
 
     beforeEach(() => {
       mockGithub = {
-        addIssueComment: vi.fn().mockResolvedValue({ id: 123 })
+        addIssueComment: vi.fn().mockResolvedValue({ id: 123 }),
       };
 
       notifier = new GitHubNotifier({
         owner: 'test-org',
         repo: 'test-repo',
-        github: mockGithub
+        github: mockGithub,
       });
     });
 
     it('should format mentions and post message', async () => {
-      await notifier.notifyStakeholders(
-        ['alice', 'bob', 'charlie'],
-        'Please review the updated document',
-        100
-      );
+      await notifier.notifyStakeholders(['alice', 'bob', 'charlie'], 'Please review the updated document', 100);
 
       expect(mockGithub.addIssueComment).toHaveBeenCalledTimes(1);
       const body = mockGithub.addIssueComment.mock.calls[0][0].body;
@@ -276,7 +279,7 @@ describe('GitHubNotifier', () => {
       notifier = new GitHubNotifier({
         owner: 'test',
         repo: 'test',
-        github: {}
+        github: {},
       });
     });
 
@@ -284,7 +287,7 @@ describe('GitHubNotifier', () => {
       const template = 'Hello {{name}}, welcome to {{place}}!';
       const result = notifier._renderTemplate(template, {
         name: 'Alice',
-        place: 'Wonderland'
+        place: 'Wonderland',
       });
 
       expect(result).toBe('Hello Alice, welcome to Wonderland!');
@@ -323,8 +326,8 @@ describe('GitHubNotifier', () => {
       const result = notifier._renderTemplate(template, {
         items: [
           { name: 'a', value: 1 },
-          { name: 'b', value: 2 }
-        ]
+          { name: 'b', value: 2 },
+        ],
       });
 
       expect(result).toBe('Items: a=1; b=2;');
@@ -333,7 +336,7 @@ describe('GitHubNotifier', () => {
     it('should handle each blocks with primitives', () => {
       const template = 'List:{{#each items}} {{this}}{{/each}}';
       const result = notifier._renderTemplate(template, {
-        items: ['apple', 'banana', 'cherry']
+        items: ['apple', 'banana', 'cherry'],
       });
 
       expect(result).toBe('List: apple banana cherry');
@@ -342,7 +345,7 @@ describe('GitHubNotifier', () => {
     it('should handle each with @index', () => {
       const template = '{{#each items}}{{@index}}.{{this}} {{/each}}';
       const result = notifier._renderTemplate(template, {
-        items: ['a', 'b', 'c']
+        items: ['a', 'b', 'c'],
       });
 
       expect(result).toBe('0.a 1.b 2.c ');
@@ -351,7 +354,7 @@ describe('GitHubNotifier', () => {
     it('should handle each with non-array', () => {
       const template = 'Items:{{#each items}} item{{/each}}';
       const result = notifier._renderTemplate(template, {
-        items: 'not an array'
+        items: 'not an array',
       });
 
       expect(result).toBe('Items:');
@@ -381,8 +384,8 @@ Items:
         note: 'Great work!',
         items: [
           { name: 'Item 1', value: 'Value 1' },
-          { name: 'Item 2', value: 'Value 2' }
-        ]
+          { name: 'Item 2', value: 'Value 2' },
+        ],
       });
 
       expect(result).toContain('## Test');
@@ -403,25 +406,29 @@ Items:
     beforeEach(() => {
       mockGithub = {
         addIssueComment: vi.fn().mockResolvedValue({ id: 123 }),
-        createIssue: vi.fn().mockResolvedValue({ number: 456 })
+        createIssue: vi.fn().mockResolvedValue({ number: 456 }),
       };
 
       notifier = new GitHubNotifier({
         owner: 'test-org',
         repo: 'test-repo',
-        github: mockGithub
+        github: mockGithub,
       });
     });
 
     it('should send feedback_round_opened notification', async () => {
-      await notifier.send('feedback_round_opened', {
-        mentions: '@alice @bob @charlie',
-        document_type: 'prd',
-        document_key: 'user-auth',
-        version: 1,
-        deadline: '2026-01-15',
-        document_url: 'https://github.com/org/repo/docs/prd/user-auth.md'
-      }, { issueNumber: 100 });
+      await notifier.send(
+        'feedback_round_opened',
+        {
+          mentions: '@alice @bob @charlie',
+          document_type: 'prd',
+          document_key: 'user-auth',
+          version: 1,
+          deadline: '2026-01-15',
+          document_url: 'https://github.com/org/repo/docs/prd/user-auth.md',
+        },
+        { issueNumber: 100 },
+      );
 
       const body = mockGithub.addIssueComment.mock.calls[0][0].body;
 
@@ -433,18 +440,22 @@ Items:
     });
 
     it('should send signoff_received notification with note', async () => {
-      await notifier.send('signoff_received', {
-        emoji: '✅📝',
-        user: 'security-lead',
-        decision: 'Approved with Note',
-        document_type: 'prd',
-        document_key: 'payments',
-        progress_current: 3,
-        progress_total: 5,
-        note: 'Please update PCI compliance section before implementation',
-        review_issue: 200,
-        review_url: 'https://github.com/org/repo/issues/200'
-      }, { issueNumber: 200 });
+      await notifier.send(
+        'signoff_received',
+        {
+          emoji: '✅📝',
+          user: 'security-lead',
+          decision: 'Approved with Note',
+          document_type: 'prd',
+          document_key: 'payments',
+          progress_current: 3,
+          progress_total: 5,
+          note: 'Please update PCI compliance section before implementation',
+          review_issue: 200,
+          review_url: 'https://github.com/org/repo/issues/200',
+        },
+        { issueNumber: 200 },
+      );
 
       const body = mockGithub.addIssueComment.mock.calls[0][0].body;
 
@@ -456,14 +467,18 @@ Items:
     });
 
     it('should send document_blocked notification', async () => {
-      await notifier.send('document_blocked', {
-        document_type: 'prd',
-        document_key: 'data-migration',
-        user: 'legal',
-        reason: 'GDPR compliance review required before proceeding',
-        feedback_issue: 42,
-        feedback_url: 'https://github.com/org/repo/issues/42'
-      }, { issueNumber: 100 });
+      await notifier.send(
+        'document_blocked',
+        {
+          document_type: 'prd',
+          document_key: 'data-migration',
+          user: 'legal',
+          reason: 'GDPR compliance review required before proceeding',
+          feedback_issue: 42,
+          feedback_url: 'https://github.com/org/repo/issues/42',
+        },
+        { issueNumber: 100 },
+      );
 
       const body = mockGithub.addIssueComment.mock.calls[0][0].body;
 

@@ -11,23 +11,14 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import {
-  EmailNotifier,
-  EMAIL_TEMPLATES
-} from '../../../src/modules/bmm/lib/notifications/email-notifier.js';
+import { EmailNotifier, EMAIL_TEMPLATES } from '../../../src/modules/bmm/lib/notifications/email-notifier.js';
 
 describe('EmailNotifier', () => {
   // ============ EMAIL_TEMPLATES Tests ============
 
   describe('EMAIL_TEMPLATES', () => {
     it('should define all required event types', () => {
-      const expectedTypes = [
-        'feedback_round_opened',
-        'signoff_requested',
-        'document_approved',
-        'document_blocked',
-        'reminder'
-      ];
+      const expectedTypes = ['feedback_round_opened', 'signoff_requested', 'document_approved', 'document_blocked', 'reminder'];
 
       for (const type of expectedTypes) {
         expect(EMAIL_TEMPLATES[type]).toBeDefined();
@@ -93,10 +84,10 @@ describe('EmailNotifier', () => {
         provider: 'smtp',
         smtp: {
           host: 'smtp.example.com',
-          port: 587
+          port: 587,
         },
         fromAddress: 'noreply@example.com',
-        fromName: 'PRD System'
+        fromName: 'PRD System',
       });
 
       expect(notifier.provider).toBe('smtp');
@@ -110,7 +101,7 @@ describe('EmailNotifier', () => {
       const notifier = new EmailNotifier({
         provider: 'sendgrid',
         apiKey: 'SG.xxx',
-        fromAddress: 'noreply@example.com'
+        fromAddress: 'noreply@example.com',
       });
 
       expect(notifier.provider).toBe('sendgrid');
@@ -120,7 +111,7 @@ describe('EmailNotifier', () => {
 
     it('should use default values', () => {
       const notifier = new EmailNotifier({
-        smtp: { host: 'localhost' }
+        smtp: { host: 'localhost' },
       });
 
       expect(notifier.provider).toBe('smtp');
@@ -138,9 +129,9 @@ describe('EmailNotifier', () => {
       const notifier = new EmailNotifier({
         smtp: { host: 'localhost' },
         userEmails: {
-          'alice': 'alice@example.com',
-          'bob': 'bob@example.com'
-        }
+          alice: 'alice@example.com',
+          bob: 'bob@example.com',
+        },
       });
 
       expect(notifier.userEmails['alice']).toBe('alice@example.com');
@@ -153,7 +144,7 @@ describe('EmailNotifier', () => {
   describe('isEnabled', () => {
     it('should return true when SMTP configured', () => {
       const notifier = new EmailNotifier({
-        smtp: { host: 'localhost' }
+        smtp: { host: 'localhost' },
       });
 
       expect(notifier.isEnabled()).toBe(true);
@@ -161,7 +152,7 @@ describe('EmailNotifier', () => {
 
     it('should return true when API key configured', () => {
       const notifier = new EmailNotifier({
-        apiKey: 'xxx'
+        apiKey: 'xxx',
       });
 
       expect(notifier.isEnabled()).toBe(true);
@@ -186,9 +177,9 @@ describe('EmailNotifier', () => {
         smtp: { host: 'localhost', port: 587 },
         fromAddress: 'noreply@example.com',
         userEmails: {
-          'alice': 'alice@example.com',
-          'bob': 'bob@example.com'
-        }
+          alice: 'alice@example.com',
+          bob: 'bob@example.com',
+        },
       });
 
       consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
@@ -204,9 +195,13 @@ describe('EmailNotifier', () => {
     });
 
     it('should return error for unknown event type', async () => {
-      const result = await notifier.send('unknown_event', {}, {
-        recipients: ['test@example.com']
-      });
+      const result = await notifier.send(
+        'unknown_event',
+        {},
+        {
+          recipients: ['test@example.com'],
+        },
+      );
 
       expect(result.success).toBe(false);
       expect(result.error).toContain('Unknown notification event type');
@@ -215,7 +210,7 @@ describe('EmailNotifier', () => {
     it('should return error when no recipients', async () => {
       const result = await notifier.send('feedback_round_opened', {
         document_type: 'prd',
-        document_key: 'test'
+        document_key: 'test',
       });
 
       expect(result.success).toBe(false);
@@ -223,15 +218,19 @@ describe('EmailNotifier', () => {
     });
 
     it('should send email with direct recipients', async () => {
-      const result = await notifier.send('feedback_round_opened', {
-        document_type: 'prd',
-        document_key: 'user-auth',
-        version: 1,
-        deadline: '2026-01-15',
-        document_url: 'https://example.com/doc'
-      }, {
-        recipients: ['direct@example.com']
-      });
+      const result = await notifier.send(
+        'feedback_round_opened',
+        {
+          document_type: 'prd',
+          document_key: 'user-auth',
+          version: 1,
+          deadline: '2026-01-15',
+          document_url: 'https://example.com/doc',
+        },
+        {
+          recipients: ['direct@example.com'],
+        },
+      );
 
       expect(result.success).toBe(true);
       expect(result.channel).toBe('email');
@@ -241,7 +240,7 @@ describe('EmailNotifier', () => {
         expect.stringContaining('[EMAIL]'),
         expect.stringContaining('Feedback Requested'),
         expect.any(String),
-        expect.stringContaining('direct@example.com')
+        expect.stringContaining('direct@example.com'),
       );
     });
 
@@ -252,7 +251,7 @@ describe('EmailNotifier', () => {
         version: 1,
         deadline: '2026-01-15',
         document_url: 'https://example.com/doc',
-        users: ['alice', 'bob']
+        users: ['alice', 'bob'],
       });
 
       expect(result.success).toBe(true);
@@ -262,7 +261,7 @@ describe('EmailNotifier', () => {
         expect.anything(),
         expect.anything(),
         expect.anything(),
-        expect.stringContaining('alice@example.com')
+        expect.stringContaining('alice@example.com'),
       );
     });
 
@@ -275,7 +274,7 @@ describe('EmailNotifier', () => {
         approval_count: 3,
         stakeholder_count: 3,
         document_url: 'https://example.com/doc',
-        users: ['alice', 'unknown-user'] // unknown-user not in mapping
+        users: ['alice', 'unknown-user'], // unknown-user not in mapping
       });
 
       expect(result.success).toBe(true);
@@ -283,21 +282,25 @@ describe('EmailNotifier', () => {
     });
 
     it('should render template with data', async () => {
-      await notifier.send('document_blocked', {
-        document_type: 'prd',
-        document_key: 'payments',
-        user: 'legal',
-        reason: 'Compliance review needed',
-        feedback_url: 'https://example.com/feedback/1'
-      }, {
-        recipients: ['test@example.com']
-      });
+      await notifier.send(
+        'document_blocked',
+        {
+          document_type: 'prd',
+          document_key: 'payments',
+          user: 'legal',
+          reason: 'Compliance review needed',
+          feedback_url: 'https://example.com/feedback/1',
+        },
+        {
+          recipients: ['test@example.com'],
+        },
+      );
 
       expect(consoleSpy).toHaveBeenCalledWith(
         expect.anything(),
         expect.stringContaining('[prd:payments]'),
         expect.anything(),
-        expect.anything()
+        expect.anything(),
       );
     });
   });
@@ -311,7 +314,7 @@ describe('EmailNotifier', () => {
     beforeEach(() => {
       notifier = new EmailNotifier({
         provider: 'smtp',
-        smtp: { host: 'localhost' }
+        smtp: { host: 'localhost' },
       });
 
       consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
@@ -327,11 +330,7 @@ describe('EmailNotifier', () => {
     });
 
     it('should send custom email', async () => {
-      const result = await notifier.sendCustom(
-        ['user1@example.com', 'user2@example.com'],
-        'Custom Subject',
-        'Custom body content'
-      );
+      const result = await notifier.sendCustom(['user1@example.com', 'user2@example.com'], 'Custom Subject', 'Custom body content');
 
       expect(result.success).toBe(true);
       expect(result.recipientCount).toBe(2);
@@ -340,17 +339,12 @@ describe('EmailNotifier', () => {
         expect.anything(),
         expect.stringContaining('Custom Subject'),
         expect.anything(),
-        expect.stringContaining('user1@example.com, user2@example.com')
+        expect.stringContaining('user1@example.com, user2@example.com'),
       );
     });
 
     it('should handle HTML option', async () => {
-      const result = await notifier.sendCustom(
-        ['test@example.com'],
-        'HTML Email',
-        '<h1>Hello</h1>',
-        { html: true }
-      );
+      const result = await notifier.sendCustom(['test@example.com'], 'HTML Email', '<h1>Hello</h1>', { html: true });
 
       expect(result.success).toBe(true);
     });
@@ -365,8 +359,8 @@ describe('EmailNotifier', () => {
       notifier = new EmailNotifier({
         smtp: { host: 'localhost' },
         userEmails: {
-          'existing': 'existing@example.com'
-        }
+          existing: 'existing@example.com',
+        },
       });
     });
 
@@ -404,7 +398,7 @@ describe('EmailNotifier', () => {
       const template = 'Hello {{name}}, your order is {{status}}';
       const result = notifier._renderTemplate(template, {
         name: 'Alice',
-        status: 'complete'
+        status: 'complete',
       });
 
       expect(result).toBe('Hello Alice, your order is complete');
@@ -413,7 +407,7 @@ describe('EmailNotifier', () => {
     it('should keep placeholder when variable not found', () => {
       const template = 'Document: {{document_key}}, Version: {{version}}';
       const result = notifier._renderTemplate(template, {
-        document_key: 'test'
+        document_key: 'test',
       });
 
       expect(result).toBe('Document: test, Version: {{version}}');
@@ -423,7 +417,7 @@ describe('EmailNotifier', () => {
       const template = '<div class="title">{{title}}</div><p>{{content}}</p>';
       const result = notifier._renderTemplate(template, {
         title: 'Welcome',
-        content: 'This is the body'
+        content: 'This is the body',
       });
 
       expect(result).toBe('<div class="title">Welcome</div><p>This is the body</p>');
@@ -442,55 +436,40 @@ describe('EmailNotifier', () => {
     it('should use SMTP provider', async () => {
       const notifier = new EmailNotifier({
         provider: 'smtp',
-        smtp: { host: 'smtp.example.com' }
+        smtp: { host: 'smtp.example.com' },
       });
 
       await notifier.sendCustom(['test@example.com'], 'Test', 'Body');
 
-      expect(consoleSpy).toHaveBeenCalledWith(
-        expect.stringContaining('SMTP'),
-        expect.anything(),
-        expect.anything(),
-        expect.anything()
-      );
+      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('SMTP'), expect.anything(), expect.anything(), expect.anything());
     });
 
     it('should use SendGrid provider', async () => {
       const notifier = new EmailNotifier({
         provider: 'sendgrid',
-        apiKey: 'SG.xxx'
+        apiKey: 'SG.xxx',
       });
 
       await notifier.sendCustom(['test@example.com'], 'Test', 'Body');
 
-      expect(consoleSpy).toHaveBeenCalledWith(
-        expect.stringContaining('SendGrid'),
-        expect.anything(),
-        expect.anything(),
-        expect.anything()
-      );
+      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('SendGrid'), expect.anything(), expect.anything(), expect.anything());
     });
 
     it('should use SES provider', async () => {
       const notifier = new EmailNotifier({
         provider: 'ses',
-        apiKey: 'aws-key'
+        apiKey: 'aws-key',
       });
 
       await notifier.sendCustom(['test@example.com'], 'Test', 'Body');
 
-      expect(consoleSpy).toHaveBeenCalledWith(
-        expect.stringContaining('SES'),
-        expect.anything(),
-        expect.anything(),
-        expect.anything()
-      );
+      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('SES'), expect.anything(), expect.anything(), expect.anything());
     });
 
     it('should throw for unknown provider', async () => {
       const notifier = new EmailNotifier({
         provider: 'unknown-provider',
-        apiKey: 'xxx'
+        apiKey: 'xxx',
       });
 
       const result = await notifier.sendCustom(['test@example.com'], 'Test', 'Body');
@@ -513,10 +492,10 @@ describe('EmailNotifier', () => {
         fromAddress: 'prd-bot@company.com',
         fromName: 'PRD System',
         userEmails: {
-          'po': 'po@company.com',
+          po: 'po@company.com',
           'tech-lead': 'tech@company.com',
-          'security': 'security@company.com'
-        }
+          security: 'security@company.com',
+        },
       });
 
       consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
@@ -530,7 +509,7 @@ describe('EmailNotifier', () => {
         deadline: '2026-01-15',
         document_url: 'https://example.com/doc',
         unsubscribe_url: 'https://example.com/unsubscribe',
-        users: ['po', 'tech-lead', 'security']
+        users: ['po', 'tech-lead', 'security'],
       });
 
       expect(result.success).toBe(true);
@@ -538,16 +517,20 @@ describe('EmailNotifier', () => {
     });
 
     it('should send document_blocked with blocking details', async () => {
-      const result = await notifier.send('document_blocked', {
-        document_type: 'prd',
-        document_key: 'payments-v2',
-        user: 'security',
-        reason: 'PCI DSS compliance verification required before approval',
-        feedback_url: 'https://example.com/issues/42',
-        unsubscribe_url: 'https://example.com/unsubscribe'
-      }, {
-        recipients: ['po@company.com']
-      });
+      const result = await notifier.send(
+        'document_blocked',
+        {
+          document_type: 'prd',
+          document_key: 'payments-v2',
+          user: 'security',
+          reason: 'PCI DSS compliance verification required before approval',
+          feedback_url: 'https://example.com/issues/42',
+          unsubscribe_url: 'https://example.com/unsubscribe',
+        },
+        {
+          recipients: ['po@company.com'],
+        },
+      );
 
       expect(result.success).toBe(true);
 
@@ -556,7 +539,7 @@ describe('EmailNotifier', () => {
         expect.anything(),
         expect.stringContaining('[prd:payments-v2]'),
         expect.anything(),
-        expect.anything()
+        expect.anything(),
       );
     });
 
@@ -569,7 +552,7 @@ describe('EmailNotifier', () => {
         time_remaining: '24 hours',
         document_url: 'https://example.com/doc',
         unsubscribe_url: 'https://example.com/unsubscribe',
-        users: ['tech-lead']
+        users: ['tech-lead'],
       });
 
       expect(result.success).toBe(true);

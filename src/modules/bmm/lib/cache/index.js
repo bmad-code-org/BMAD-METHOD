@@ -40,5 +40,5 @@ module.exports = {
   SyncEngine,
   CACHE_META_FILENAME,
   RETRY_BACKOFF_MS,
-  MAX_RETRIES
+  MAX_RETRIES,
 };

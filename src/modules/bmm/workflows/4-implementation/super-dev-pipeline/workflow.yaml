@@ -20,9 +20,9 @@ github_integration:
     dir: "{output_folder}/cache"
     staleness_minutes: "{config_source}:github_cache_staleness_minutes"
   sync:
-    create_pr: true           # Create PR linking to GitHub Issue
-    update_issue_status: true  # Update issue to in-review
-    add_completion_comment: true  # Add implementation summary to issue
+    create_pr: true # Create PR linking to GitHub Issue
+    update_issue_status: true # Update issue to in-review
+    add_completion_comment: true # Add implementation summary to issue
 
 # Workflow paths
 installed_path: "{project-root}/_bmad/bmm/workflows/4-implementation/super-dev-pipeline"

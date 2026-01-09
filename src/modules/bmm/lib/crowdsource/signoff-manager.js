@@ -11,13 +11,13 @@ const SIGNOFF_STATUS = {
   pending: 'signoff:pending',
   approved: 'signoff:approved',
   approved_with_note: 'signoff:approved-with-note',
-  blocked: 'signoff:blocked'
+  blocked: 'signoff:blocked',
 };
 
 const THRESHOLD_TYPES = {
   count: 'count',
   percentage: 'percentage',
-  required_approvers: 'required_approvers'
+  required_approvers: 'required_approvers',
 };
 
 const DEFAULT_CONFIG = {
@@ -28,7 +28,7 @@ const DEFAULT_CONFIG = {
   optional: [],
   minimum_optional: 0,
   allow_blocks: true,
-  block_threshold: 1
+  block_threshold: 1,
 };
 
 class SignoffManager {
@@ -42,11 +42,11 @@ class SignoffManager {
    */
   async requestSignoff({
     documentKey,
-    documentType,       // 'prd' or 'epic'
+    documentType, // 'prd' or 'epic'
     reviewIssueNumber,
-    stakeholders,       // Array of @usernames
-    deadline,           // ISO date string
-    config = {}         // Sign-off configuration
+    stakeholders, // Array of @usernames
+    deadline, // ISO date string
+    config = {}, // Sign-off configuration
   }) {
     const signoffConfig = { ...DEFAULT_CONFIG, ...config };
 
@@ -54,16 +54,10 @@ class SignoffManager {
     this._validateConfig(signoffConfig, stakeholders);
 
     // Update the review issue to signoff status
-    const labels = [
-      `type:${documentType}-review`,
-      `${documentType}:${documentKey.split(':')[1]}`,
-      'review-status:signoff'
-    ];
+    const labels = [`type:${documentType}-review`, `${documentType}:${documentKey.split(':')[1]}`, 'review-status:signoff'];
 
     // Build stakeholder checklist
-    const checklist = stakeholders.map(user =>
-      `- [ ] @${user.replace('@', '')} - ⏳ Pending`
-    ).join('\n');
+    const checklist = stakeholders.map((user) => `- [ ] @${user.replace('@', '')} - ⏳ Pending`).join('\n');
 
     const body = this._formatSignoffRequestBody({
       documentKey,
@@ -71,7 +65,7 @@ class SignoffManager {
       stakeholders,
       deadline,
       config: signoffConfig,
-      checklist
+      checklist,
     });
 
     // Add comment to review issue
@@ -83,7 +77,7 @@ class SignoffManager {
       stakeholders,
       deadline,
       config: signoffConfig,
-      status: 'signoff_requested'
+      status: 'signoff_requested',
     };
   }
 
@@ -95,9 +89,9 @@ class SignoffManager {
     documentKey,
     documentType,
     user,
-    decision,           // 'approved' | 'approved_with_note' | 'blocked'
-    note = null,        // Optional note or blocking reason
-    feedbackIssueNumber = null  // If blocked, link to feedback issue
+    decision, // 'approved' | 'approved_with_note' | 'blocked'
+    note = null, // Optional note or blocking reason
+    feedbackIssueNumber = null, // If blocked, link to feedback issue
   }) {
     if (!Object.keys(SIGNOFF_STATUS).includes(decision)) {
       throw new Error(`Invalid decision: ${decision}. Must be one of: ${Object.keys(SIGNOFF_STATUS).join(', ')}`);
@@ -128,7 +122,7 @@ class SignoffManager {
       user,
       decision,
       note,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
   }
 
@@ -137,7 +131,7 @@ class SignoffManager {
    */
   async getSignoffs(reviewIssueNumber) {
     const issue = await this._getIssue(reviewIssueNumber);
-    const labels = issue.labels.map(l => l.name);
+    const labels = issue.labels.map((l) => l.name);
 
     // Parse signoff labels: signoff-{user}-{status}
     const signoffs = [];
@@ -147,7 +141,7 @@ class SignoffManager {
         signoffs.push({
           user: match[1],
           status: match[2].replace(/-/g, '_'),
-          label: label
+          label: label,
         });
       }
     }
@@ -159,20 +153,16 @@ class SignoffManager {
    * Calculate sign-off status based on configuration
    */
   calculateStatus(signoffs, stakeholders, config = DEFAULT_CONFIG) {
-    const approvals = signoffs.filter(s =>
-      s.status === 'approved' || s.status === 'approved_with_note'
-    );
-    const blocks = signoffs.filter(s => s.status === 'blocked');
-    const pending = stakeholders.filter(user =>
-      !signoffs.some(s => s.user === user.replace('@', ''))
-    );
+    const approvals = signoffs.filter((s) => s.status === 'approved' || s.status === 'approved_with_note');
+    const blocks = signoffs.filter((s) => s.status === 'blocked');
+    const pending = stakeholders.filter((user) => !signoffs.some((s) => s.user === user.replace('@', '')));
 
     // Check for blockers first
     if (config.allow_blocks && blocks.length >= config.block_threshold) {
       return {
         status: 'blocked',
-        blockers: blocks.map(b => b.user),
-        message: `Blocked by ${blocks.length} stakeholder(s)`
+        blockers: blocks.map((b) => b.user),
+        message: `Blocked by ${blocks.length} stakeholder(s)`,
       };
     }
 
@@ -205,15 +195,11 @@ class SignoffManager {
   getProgressSummary(signoffs, stakeholders, config = DEFAULT_CONFIG) {
     const status = this.calculateStatus(signoffs, stakeholders, config);
 
-    const approvalCount = signoffs.filter(s =>
-      s.status === 'approved' || s.status === 'approved_with_note'
-    ).length;
+    const approvalCount = signoffs.filter((s) => s.status === 'approved' || s.status === 'approved_with_note').length;
 
-    const blockCount = signoffs.filter(s => s.status === 'blocked').length;
+    const blockCount = signoffs.filter((s) => s.status === 'blocked').length;
 
-    const pendingUsers = stakeholders.filter(user =>
-      !signoffs.some(s => s.user === user.replace('@', ''))
-    );
+    const pendingUsers = stakeholders.filter((user) => !signoffs.some((s) => s.user === user.replace('@', '')));
 
     return {
       ...status,
@@ -222,7 +208,7 @@ class SignoffManager {
       blocked_count: blockCount,
       pending_count: pendingUsers.length,
       pending_users: pendingUsers,
-      progress_percent: Math.round((approvalCount / stakeholders.length) * 100)
+      progress_percent: Math.round((approvalCount / stakeholders.length) * 100),
     };
   }
 
@@ -230,9 +216,10 @@ class SignoffManager {
    * Send reminder to pending stakeholders
    */
   async sendReminder(reviewIssueNumber, pendingUsers, deadline) {
-    const mentions = pendingUsers.map(u => `@${u.replace('@', '')}`).join(', ');
+    const mentions = pendingUsers.map((u) => `@${u.replace('@', '')}`).join(', ');
 
-    const comment = `### ⏰ Reminder: Sign-off Needed\n\n` +
+    const comment =
+      `### ⏰ Reminder: Sign-off Needed\n\n` +
       `${mentions}\n\n` +
       `Your sign-off is still pending for this review.\n` +
       `**Deadline:** ${deadline}\n\n` +
@@ -264,16 +251,12 @@ class SignoffManager {
   _validateConfig(config, stakeholders) {
     if (config.threshold_type === THRESHOLD_TYPES.count) {
       if (config.minimum_approvals > stakeholders.length) {
-        throw new Error(
-          `minimum_approvals (${config.minimum_approvals}) cannot exceed stakeholder count (${stakeholders.length})`
-        );
+        throw new Error(`minimum_approvals (${config.minimum_approvals}) cannot exceed stakeholder count (${stakeholders.length})`);
       }
     }
 
     if (config.threshold_type === THRESHOLD_TYPES.required_approvers) {
-      const allRequired = config.required.every(r =>
-        stakeholders.some(s => s.replace('@', '') === r.replace('@', ''))
-      );
+      const allRequired = config.required.every((r) => stakeholders.some((s) => s.replace('@', '') === r.replace('@', '')));
       if (!allRequired) {
         throw new Error('All required approvers must be in stakeholder list');
       }
@@ -289,7 +272,7 @@ class SignoffManager {
       status: 'pending',
       needed: config.minimum_approvals - approvals.length,
       pending_users: pending,
-      message: `Need ${config.minimum_approvals - approvals.length} more approval(s)`
+      message: `Need ${config.minimum_approvals - approvals.length} more approval(s)`,
     };
   }
 
@@ -299,7 +282,7 @@ class SignoffManager {
     if (percent >= config.approval_percentage) {
       return {
         status: 'approved',
-        message: `${Math.round(percent)}% approved (threshold: ${config.approval_percentage}%)`
+        message: `${Math.round(percent)}% approved (threshold: ${config.approval_percentage}%)`,
       };
     }
 
@@ -310,44 +293,38 @@ class SignoffManager {
       needed_percent: config.approval_percentage,
       needed: needed,
       pending_users: pending,
-      message: `${Math.round(percent)}% approved, need ${config.approval_percentage}%`
+      message: `${Math.round(percent)}% approved, need ${config.approval_percentage}%`,
     };
   }
 
   _calculateRequiredApproversStatus(approvals, config, pending) {
-    const approvedUsers = approvals.map(a => a.user);
+    const approvedUsers = approvals.map((a) => a.user);
 
     // Check required approvers
-    const missingRequired = config.required.filter(r =>
-      !approvedUsers.includes(r.replace('@', ''))
-    );
+    const missingRequired = config.required.filter((r) => !approvedUsers.includes(r.replace('@', '')));
 
     if (missingRequired.length > 0) {
       return {
         status: 'pending',
         missing_required: missingRequired,
         pending_users: pending,
-        message: `Waiting for required approvers: ${missingRequired.join(', ')}`
+        message: `Waiting for required approvers: ${missingRequired.join(', ')}`,
       };
     }
 
     // Check optional approvers
-    const optionalApproved = approvals.filter(a =>
-      config.optional.some(o => o.replace('@', '') === a.user)
-    ).length;
+    const optionalApproved = approvals.filter((a) => config.optional.some((o) => o.replace('@', '') === a.user)).length;
 
     if (optionalApproved < config.minimum_optional) {
       const neededOptional = config.minimum_optional - optionalApproved;
-      const pendingOptional = config.optional.filter(o =>
-        !approvedUsers.includes(o.replace('@', ''))
-      );
+      const pendingOptional = config.optional.filter((o) => !approvedUsers.includes(o.replace('@', '')));
 
       return {
         status: 'pending',
         optional_needed: neededOptional,
         pending_optional: pendingOptional,
         pending_users: pending,
-        message: `Need ${neededOptional} more optional approver(s)`
+        message: `Need ${neededOptional} more optional approver(s)`,
       };
     }
 
@@ -356,19 +333,27 @@ class SignoffManager {
 
   _getDecisionEmoji(decision) {
     switch (decision) {
-      case 'approved': return '✅';
-      case 'approved_with_note': return '✅📝';
-      case 'blocked': return '🚫';
-      default: return '⏳';
+      case 'approved':
+        return '✅';
+      case 'approved_with_note':
+        return '✅📝';
+      case 'blocked':
+        return '🚫';
+      default:
+        return '⏳';
     }
   }
 
   _getDecisionText(decision) {
     switch (decision) {
-      case 'approved': return 'Approved';
-      case 'approved_with_note': return 'Approved with Note';
-      case 'blocked': return 'Blocked';
-      default: return 'Pending';
+      case 'approved':
+        return 'Approved';
+      case 'approved_with_note':
+        return 'Approved with Note';
+      case 'blocked':
+        return 'Blocked';
+      default:
+        return 'Pending';
     }
   }
 
@@ -419,12 +404,10 @@ class SignoffManager {
 
     // Get current labels
     const issue = await this._getIssue(issueNumber);
-    const currentLabels = issue.labels.map(l => l.name);
+    const currentLabels = issue.labels.map((l) => l.name);
 
     // Remove any existing signoff label for this user
-    const newLabels = currentLabels.filter(l =>
-      !l.startsWith(`signoff-${normalizedUser}-`)
-    );
+    const newLabels = currentLabels.filter((l) => !l.startsWith(`signoff-${normalizedUser}-`));
 
     // Add new signoff label
     newLabels.push(label);
@@ -453,5 +436,5 @@ module.exports = {
   SignoffManager,
   SIGNOFF_STATUS,
   THRESHOLD_TYPES,
-  DEFAULT_CONFIG
+  DEFAULT_CONFIG,
 };

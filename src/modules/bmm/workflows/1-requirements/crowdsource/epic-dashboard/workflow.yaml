@@ -13,8 +13,8 @@ github:
   repo: "{config_source}:github_repo"
 
 # Optional filter
-epic_key: ""  # Empty for all epics, or specific key for detail view
-source_prd: ""  # Filter by source PRD
+epic_key: "" # Empty for all epics, or specific key for detail view
+source_prd: "" # Filter by source PRD
 
 installed_path: "{project-root}/_bmad/bmm/workflows/1-requirements/crowdsource/epic-dashboard"
 instructions: "{installed_path}/instructions.md"

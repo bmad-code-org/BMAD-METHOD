@@ -13,9 +13,9 @@ github:
   repo: "{config_source}:github_repo"
 
 # Parameters
-source_prd: ""  # PRD key to create epic from
-epic_key: ""    # Optional: override generated epic key
-stakeholders: []  # Override default stakeholders
+source_prd: "" # PRD key to create epic from
+epic_key: "" # Optional: override generated epic key
+stakeholders: [] # Override default stakeholders
 
 installed_path: "{project-root}/_bmad/bmm/workflows/1-requirements/crowdsource/create-epic-draft"
 instructions: "{installed_path}/instructions.md"

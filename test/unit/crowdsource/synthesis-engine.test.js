@@ -11,10 +11,7 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import {
-  SynthesisEngine,
-  SYNTHESIS_PROMPTS
-} from '../../../src/modules/bmm/lib/crowdsource/synthesis-engine.js';
+import { SynthesisEngine, SYNTHESIS_PROMPTS } from '../../../src/modules/bmm/lib/crowdsource/synthesis-engine.js';
 
 describe('SynthesisEngine', () => {
   // ============ SYNTHESIS_PROMPTS Tests ============
@@ -115,8 +112,8 @@ describe('SynthesisEngine', () => {
             feedbackType: 'suggestion',
             priority: 'high',
             submittedBy: 'alice',
-            body: 'Need login flow description'
-          }
+            body: 'Need login flow description',
+          },
         ],
         'fr-3': [
           {
@@ -125,14 +122,14 @@ describe('SynthesisEngine', () => {
             feedbackType: 'concern',
             priority: 'high',
             submittedBy: 'bob',
-            body: 'Session timeout too long'
-          }
-        ]
+            body: 'Session timeout too long',
+          },
+        ],
       };
 
       const originalDocument = {
         'user-stories': 'Current user story text',
-        'fr-3': 'FR-3 original text'
+        'fr-3': 'FR-3 original text',
       };
 
       const analysis = await engine.analyzeFeedback(feedbackBySection, originalDocument);
@@ -145,7 +142,7 @@ describe('SynthesisEngine', () => {
 
     it('should collect conflicts from all sections', async () => {
       const feedbackBySection = {
-        'security': [
+        security: [
           {
             id: 1,
             title: 'Short timeout',
@@ -153,7 +150,7 @@ describe('SynthesisEngine', () => {
             priority: 'high',
             submittedBy: 'security',
             body: 'timeout should be 15 min',
-            suggestedChange: '15 minute timeout'
+            suggestedChange: '15 minute timeout',
           },
           {
             id: 2,
@@ -162,9 +159,9 @@ describe('SynthesisEngine', () => {
             priority: 'medium',
             submittedBy: 'ux',
             body: 'timeout should be 30 min',
-            suggestedChange: '30 minute timeout'
-          }
-        ]
+            suggestedChange: '30 minute timeout',
+          },
+        ],
       };
 
       const analysis = await engine.analyzeFeedback(feedbackBySection, {});
@@ -175,13 +172,11 @@ describe('SynthesisEngine', () => {
 
     it('should generate summary statistics', async () => {
       const feedbackBySection = {
-        'section1': [
+        section1: [
           { id: 1, title: 'FB1', feedbackType: 'clarification', submittedBy: 'user1' },
-          { id: 2, title: 'FB2', feedbackType: 'concern', submittedBy: 'user2' }
+          { id: 2, title: 'FB2', feedbackType: 'concern', submittedBy: 'user2' },
         ],
-        'section2': [
-          { id: 3, title: 'FB3', feedbackType: 'suggestion', submittedBy: 'user3' }
-        ]
+        section2: [{ id: 3, title: 'FB3', feedbackType: 'suggestion', submittedBy: 'user3' }],
       };
 
       const analysis = await engine.analyzeFeedback(feedbackBySection, {});
@@ -205,7 +200,7 @@ describe('SynthesisEngine', () => {
       const feedbackList = [
         { id: 1, feedbackType: 'clarification', title: 'Q1' },
         { id: 2, feedbackType: 'clarification', title: 'Q2' },
-        { id: 3, feedbackType: 'concern', title: 'C1' }
+        { id: 3, feedbackType: 'concern', title: 'C1' },
       ];
 
       const result = await engine._analyzeSection('test-section', feedbackList, '');
@@ -223,8 +218,8 @@ describe('SynthesisEngine', () => {
           feedbackType: 'suggestion',
           priority: 'high',
           suggestedChange: 'Add input validation',
-          submittedBy: 'alice'
-        }
+          submittedBy: 'alice',
+        },
       ];
 
       const result = await engine._analyzeSection('test-section', feedbackList, '');
@@ -251,20 +246,20 @@ describe('SynthesisEngine', () => {
           id: 1,
           title: 'timeout should be shorter',
           body: 'Session timeout configuration',
-          suggestedChange: 'Set to 15 minutes'
+          suggestedChange: 'Set to 15 minutes',
         },
         {
           id: 2,
           title: 'timeout should be longer',
           body: 'Session timeout configuration',
-          suggestedChange: 'Set to 30 minutes'
-        }
+          suggestedChange: 'Set to 30 minutes',
+        },
       ];
 
       const conflicts = engine._identifyConflicts(feedbackList);
 
       expect(conflicts.length).toBeGreaterThan(0);
-      const timeoutConflict = conflicts.find(c => c.topic === 'timeout');
+      const timeoutConflict = conflicts.find((c) => c.topic === 'timeout');
       expect(timeoutConflict).toBeDefined();
       expect(timeoutConflict.feedbackIds).toContain(1);
       expect(timeoutConflict.feedbackIds).toContain(2);
@@ -276,22 +271,21 @@ describe('SynthesisEngine', () => {
           id: 1,
           title: 'auth improvement',
           body: 'Authentication flow',
-          suggestedChange: 'Add OAuth'
+          suggestedChange: 'Add OAuth',
         },
         {
           id: 2,
           title: 'auth needed',
           body: 'Authentication required',
-          suggestedChange: 'Add OAuth'
-        }
+          suggestedChange: 'Add OAuth',
+        },
       ];
 
       const conflicts = engine._identifyConflicts(feedbackList);
 
       // Same suggestion = no conflict
-      const authConflict = conflicts.find(c =>
-        c.feedbackIds.includes(1) && c.feedbackIds.includes(2) &&
-        c.description.includes('Conflicting')
+      const authConflict = conflicts.find(
+        (c) => c.feedbackIds.includes(1) && c.feedbackIds.includes(2) && c.description.includes('Conflicting'),
       );
       expect(authConflict).toBeUndefined();
     });
@@ -302,8 +296,8 @@ describe('SynthesisEngine', () => {
           id: 1,
           title: 'unique topic here',
           body: 'Only one feedback on this',
-          suggestedChange: 'Some change'
-        }
+          suggestedChange: 'Some change',
+        },
       ];
 
       const conflicts = engine._identifyConflicts(feedbackList);
@@ -315,15 +309,15 @@ describe('SynthesisEngine', () => {
         {
           id: 1,
           title: 'question about feature',
-          body: 'What does this do?'
+          body: 'What does this do?',
           // No suggestedChange
         },
         {
           id: 2,
           title: 'another question feature',
-          body: 'How does this work?'
+          body: 'How does this work?',
           // No suggestedChange
-        }
+        },
       ];
 
       // Should not throw, and no conflicts detected (no different suggestions)
@@ -345,12 +339,12 @@ describe('SynthesisEngine', () => {
       const feedbackList = [
         { id: 1, title: 'authentication needs work', feedbackType: 'concern' },
         { id: 2, title: 'authentication is unclear', feedbackType: 'clarification' },
-        { id: 3, title: 'completely different topic', feedbackType: 'suggestion' }
+        { id: 3, title: 'completely different topic', feedbackType: 'suggestion' },
       ];
 
       const themes = engine._identifyThemes(feedbackList);
 
-      const authTheme = themes.find(t => t.keyword === 'authentication');
+      const authTheme = themes.find((t) => t.keyword === 'authentication');
       expect(authTheme).toBeDefined();
       expect(authTheme.count).toBe(2);
       expect(authTheme.feedbackIds).toContain(1);
@@ -360,12 +354,12 @@ describe('SynthesisEngine', () => {
     it('should track feedback types for each theme', () => {
       const feedbackList = [
         { id: 1, title: 'security concern here', feedbackType: 'concern' },
-        { id: 2, title: 'security suggestion', feedbackType: 'suggestion' }
+        { id: 2, title: 'security suggestion', feedbackType: 'suggestion' },
       ];
 
       const themes = engine._identifyThemes(feedbackList);
 
-      const securityTheme = themes.find(t => t.keyword === 'security');
+      const securityTheme = themes.find((t) => t.keyword === 'security');
       expect(securityTheme).toBeDefined();
       expect(securityTheme.types).toContain('concern');
       expect(securityTheme.types).toContain('suggestion');
@@ -376,7 +370,7 @@ describe('SynthesisEngine', () => {
         { id: 1, title: 'rare topic', feedbackType: 'concern' },
         { id: 2, title: 'common topic', feedbackType: 'concern' },
         { id: 3, title: 'common topic again', feedbackType: 'suggestion' },
-        { id: 4, title: 'common topic still', feedbackType: 'clarification' }
+        { id: 4, title: 'common topic still', feedbackType: 'clarification' },
       ];
 
       const themes = engine._identifyThemes(feedbackList);
@@ -393,7 +387,7 @@ describe('SynthesisEngine', () => {
       const feedbackList = [
         { id: 1, title: 'unique topic alpha', feedbackType: 'concern' },
         { id: 2, title: 'unique topic beta', feedbackType: 'suggestion' },
-        { id: 3, title: 'unique topic gamma', feedbackType: 'clarification' }
+        { id: 3, title: 'unique topic gamma', feedbackType: 'clarification' },
       ];
 
       const themes = engine._identifyThemes(feedbackList);
@@ -453,7 +447,7 @@ describe('SynthesisEngine', () => {
       const keywords = engine._extractKeywords('User-authentication, session.timeout!');
 
       // Should normalize punctuation
-      const hasAuth = keywords.some(k => k.includes('auth'));
+      const hasAuth = keywords.some((k) => k.includes('auth'));
       expect(hasAuth).toBe(true);
     });
 
@@ -464,7 +458,8 @@ describe('SynthesisEngine', () => {
     });
 
     it('should limit to 10 keywords', () => {
-      const longText = 'authentication authorization validation configuration implementation documentation optimization visualization serialization deserialization normalization denormalization extra words here';
+      const longText =
+        'authentication authorization validation configuration implementation documentation optimization visualization serialization deserialization normalization denormalization extra words here';
 
       const keywords = engine._extractKeywords(longText);
 
@@ -480,17 +475,13 @@ describe('SynthesisEngine', () => {
 
       const conflict = {
         section: 'FR-5',
-        description: 'Conflicting views on session timeout'
+        description: 'Conflicting views on session timeout',
       };
 
-      const result = engine.generateConflictResolution(
-        conflict,
-        'Session timeout is 30 minutes.',
-        [
-          { user: 'security', position: '15 minutes for security' },
-          { user: 'ux', position: '30 minutes for usability' }
-        ]
-      );
+      const result = engine.generateConflictResolution(conflict, 'Session timeout is 30 minutes.', [
+        { user: 'security', position: '15 minutes for security' },
+        { user: 'ux', position: '30 minutes for usability' },
+      ]);
 
       expect(result.prompt).toContain('FR-5');
       expect(result.prompt).toContain('Session timeout is 30 minutes');
@@ -507,16 +498,12 @@ describe('SynthesisEngine', () => {
 
       const conflict = {
         section: 'Story Breakdown',
-        description: 'Disagreement on story granularity'
+        description: 'Disagreement on story granularity',
       };
 
       // Epic prompts only have grouping and storySplit, not resolution
       expect(() => {
-        engine.generateConflictResolution(
-          conflict,
-          'Epic contains 5 stories',
-          []
-        );
+        engine.generateConflictResolution(conflict, 'Epic contains 5 stories', []);
       }).toThrow();
     });
 
@@ -525,7 +512,7 @@ describe('SynthesisEngine', () => {
 
       const conflict = {
         section: 'New Section',
-        description: 'Need new content'
+        description: 'Need new content',
       };
 
       const result = engine.generateConflictResolution(conflict, null, []);
@@ -548,20 +535,16 @@ describe('SynthesisEngine', () => {
         {
           feedbackType: 'suggestion',
           title: 'Add error handling',
-          suggestedChange: 'Include try-catch blocks'
+          suggestedChange: 'Include try-catch blocks',
         },
         {
           feedbackType: 'addition',
           title: 'Missing validation',
-          suggestedChange: 'Add input validation'
-        }
+          suggestedChange: 'Add input validation',
+        },
       ];
 
-      const prompt = engine.generateMergePrompt(
-        'FR-3',
-        'Original function implementation',
-        approvedFeedback
-      );
+      const prompt = engine.generateMergePrompt('FR-3', 'Original function implementation', approvedFeedback);
 
       expect(prompt).toContain('FR-3');
       expect(prompt).toContain('Original function implementation');
@@ -575,9 +558,9 @@ describe('SynthesisEngine', () => {
       const approvedFeedback = [
         {
           feedbackType: 'concern',
-          title: 'Security risk'
+          title: 'Security risk',
           // No suggestedChange
-        }
+        },
       ];
 
       const prompt = engine.generateMergePrompt('Security', 'Current text', approvedFeedback);
@@ -598,11 +581,9 @@ describe('SynthesisEngine', () => {
         'Authentication epic for user login and session management',
         [
           { key: '2-1', title: 'Login Form' },
-          { key: '2-2', title: 'Session Management' }
+          { key: '2-2', title: 'Session Management' },
         ],
-        [
-          { id: 1, title: 'Story 2-2 too large', suggestedChange: 'Split into 3 stories' }
-        ]
+        [{ id: 1, title: 'Story 2-2 too large', suggestedChange: 'Split into 3 stories' }],
       );
 
       expect(prompt).toContain('epic:2');
@@ -633,11 +614,11 @@ describe('SynthesisEngine', () => {
     it('should calculate total feedback count', () => {
       const analysis = {
         sections: {
-          'section1': { feedbackCount: 3, byType: { concern: 2, suggestion: 1 } },
-          'section2': { feedbackCount: 2, byType: { clarification: 2 } }
+          section1: { feedbackCount: 3, byType: { concern: 2, suggestion: 1 } },
+          section2: { feedbackCount: 2, byType: { clarification: 2 } },
         },
         conflicts: [],
-        suggestedChanges: []
+        suggestedChanges: [],
       };
 
       const summary = engine._generateSummary(analysis);
@@ -648,12 +629,12 @@ describe('SynthesisEngine', () => {
     it('should count sections with feedback', () => {
       const analysis = {
         sections: {
-          'section1': { feedbackCount: 1, byType: {} },
-          'section2': { feedbackCount: 2, byType: {} },
-          'section3': { feedbackCount: 1, byType: {} }
+          section1: { feedbackCount: 1, byType: {} },
+          section2: { feedbackCount: 2, byType: {} },
+          section3: { feedbackCount: 1, byType: {} },
         },
         conflicts: [],
-        suggestedChanges: []
+        suggestedChanges: [],
       };
 
       const summary = engine._generateSummary(analysis);
@@ -664,11 +645,11 @@ describe('SynthesisEngine', () => {
     it('should aggregate feedback by type across sections', () => {
       const analysis = {
         sections: {
-          'section1': { feedbackCount: 2, byType: { concern: 1, suggestion: 1 } },
-          'section2': { feedbackCount: 2, byType: { concern: 1, clarification: 1 } }
+          section1: { feedbackCount: 2, byType: { concern: 1, suggestion: 1 } },
+          section2: { feedbackCount: 2, byType: { concern: 1, clarification: 1 } },
         },
         conflicts: [],
-        suggestedChanges: []
+        suggestedChanges: [],
       };
 
       const summary = engine._generateSummary(analysis);
@@ -682,13 +663,13 @@ describe('SynthesisEngine', () => {
       const analysisWithConflicts = {
         sections: {},
         conflicts: [{ section: 'test', description: 'conflict' }],
-        suggestedChanges: []
+        suggestedChanges: [],
       };
 
       const analysisWithoutConflicts = {
         sections: {},
         conflicts: [],
-        suggestedChanges: []
+        suggestedChanges: [],
       };
 
       expect(engine._generateSummary(analysisWithConflicts).needsAttention).toBe(true);
@@ -699,7 +680,7 @@ describe('SynthesisEngine', () => {
       const analysis = {
         sections: {},
         conflicts: [{ id: 1 }, { id: 2 }],
-        suggestedChanges: [{ id: 1 }, { id: 2 }, { id: 3 }]
+        suggestedChanges: [{ id: 1 }, { id: 2 }, { id: 3 }],
       };
 
       const summary = engine._generateSummary(analysis);
@@ -723,7 +704,7 @@ describe('SynthesisEngine', () => {
         { feedbackType: 'concern' },
         { feedbackType: 'concern' },
         { feedbackType: 'suggestion' },
-        { feedbackType: 'clarification' }
+        { feedbackType: 'clarification' },
       ];
 
       const byType = engine._groupByType(feedbackList);
@@ -755,11 +736,11 @@ describe('SynthesisEngine', () => {
           sectionsWithFeedback: 2,
           conflictCount: 1,
           changeCount: 3,
-          needsAttention: true
+          needsAttention: true,
         },
         sections: {
           'user-stories': { feedbackCount: 3, byType: { concern: 2, suggestion: 1 } },
-          'fr-3': { feedbackCount: 2, byType: { clarification: 2 } }
+          'fr-3': { feedbackCount: 2, byType: { clarification: 2 } },
         },
         conflicts: [
           {
@@ -767,10 +748,10 @@ describe('SynthesisEngine', () => {
             description: 'Timeout conflict',
             stakeholders: [
               { user: 'security', position: '15 min' },
-              { user: 'ux', position: '30 min' }
-            ]
-          }
-        ]
+              { user: 'ux', position: '30 min' },
+            ],
+          },
+        ],
       };
 
       const output = engine.formatForDisplay(analysis);
@@ -794,12 +775,12 @@ describe('SynthesisEngine', () => {
           sectionsWithFeedback: 1,
           conflictCount: 0,
           changeCount: 1,
-          needsAttention: false
+          needsAttention: false,
         },
         sections: {
-          'test': { feedbackCount: 1, byType: { suggestion: 1 } }
+          test: { feedbackCount: 1, byType: { suggestion: 1 } },
         },
-        conflicts: []
+        conflicts: [],
       };
 
       const output = engine.formatForDisplay(analysis);

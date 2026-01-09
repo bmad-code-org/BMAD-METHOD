@@ -13,7 +13,7 @@ github:
   repo: "{config_source}:github_repo"
 
 # PRD creation options
-import_from: ""  # 'scratch', 'existing-prd', 'product-brief'
+import_from: "" # 'scratch', 'existing-prd', 'product-brief'
 
 installed_path: "{project-root}/_bmad/bmm/workflows/1-requirements/crowdsource/create-prd-draft"
 instructions: "{installed_path}/instructions.md"

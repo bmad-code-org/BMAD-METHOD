@@ -17,7 +17,7 @@ epic_key: "" # e.g., "2" for epic 2, empty for all epics
 # Display options
 show_details: false # Show individual story details
 show_burndown: true # Show epic burndown metrics
-show_risks: true    # Highlight at-risk stories
+show_risks: true # Highlight at-risk stories
 
 installed_path: "{project-root}/_bmad/bmm/workflows/po/epic-dashboard"
 instructions: "{installed_path}/instructions.md"

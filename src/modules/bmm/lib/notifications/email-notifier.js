@@ -62,7 +62,7 @@ View Document: {{document_url}}
 
 ---
 PRD Crowdsourcing System
-`
+`,
   },
 
   signoff_requested: {
@@ -143,7 +143,7 @@ Review & Sign Off: {{document_url}}
 
 ---
 PRD Crowdsourcing System
-`
+`,
   },
 
   document_approved: {
@@ -207,7 +207,7 @@ View Approved Document: {{document_url}}
 
 ---
 PRD Crowdsourcing System
-`
+`,
   },
 
   document_blocked: {
@@ -273,7 +273,7 @@ View Blocking Issue: {{feedback_url}}
 
 ---
 PRD Crowdsourcing System
-`
+`,
   },
 
   reminder: {
@@ -339,8 +339,8 @@ Take Action: {{document_url}}
 
 ---
 PRD Crowdsourcing System
-`
-  }
+`,
+  },
 };
 
 class EmailNotifier {
@@ -385,7 +385,7 @@ class EmailNotifier {
       return {
         success: false,
         channel: 'email',
-        error: 'Email notifications not enabled'
+        error: 'Email notifications not enabled',
       };
     }
 
@@ -394,21 +394,21 @@ class EmailNotifier {
       return {
         success: false,
         channel: 'email',
-        error: `Unknown notification event type: ${eventType}`
+        error: `Unknown notification event type: ${eventType}`,
       };
     }
 
     // Get recipient emails
     const recipients = options.recipients || [];
     if (data.users) {
-      recipients.push(...data.users.map(u => this.userEmails[u]).filter(Boolean));
+      recipients.push(...data.users.map((u) => this.userEmails[u]).filter(Boolean));
     }
 
     if (recipients.length === 0) {
       return {
         success: false,
         channel: 'email',
-        error: 'No recipients specified'
+        error: 'No recipients specified',
       };
     }
 
@@ -421,19 +421,19 @@ class EmailNotifier {
         to: recipients,
         subject,
         html,
-        text
+        text,
       });
 
       return {
         success: true,
         channel: 'email',
-        recipientCount: recipients.length
+        recipientCount: recipients.length,
       };
     } catch (error) {
       return {
         success: false,
         channel: 'email',
-        error: error.message
+        error: error.message,
       };
     }
   }
@@ -451,7 +451,7 @@ class EmailNotifier {
       return {
         success: false,
         channel: 'email',
-        error: 'Email notifications not enabled'
+        error: 'Email notifications not enabled',
       };
     }
 
@@ -460,19 +460,19 @@ class EmailNotifier {
         to: recipients,
         subject,
         html: options.html ? body : undefined,
-        text: options.html ? undefined : body
+        text: options.html ? undefined : body,
       });
 
       return {
         success: true,
         channel: 'email',
-        recipientCount: recipients.length
+        recipientCount: recipients.length,
       };
     } catch (error) {
       return {
         success: false,
         channel: 'email',
-        error: error.message
+        error: error.message,
       };
     }
   }
@@ -506,12 +506,12 @@ class EmailNotifier {
     const emailPayload = {
       from: {
         name: this.fromName,
-        address: this.fromAddress
+        address: this.fromAddress,
       },
       to: Array.isArray(to) ? to : [to],
       subject,
       html,
-      text
+      text,
     };
 
     switch (this.provider) {
@@ -574,5 +574,5 @@ class EmailNotifier {
 
 module.exports = {
   EmailNotifier,
-  EMAIL_TEMPLATES
+  EMAIL_TEMPLATES,
 };

@@ -29,7 +29,7 @@ const DEFAULT_STALENESS_THRESHOLD_MINUTES = 5;
 const DOCUMENT_TYPES = {
   story: 'story',
   prd: 'prd',
-  epic: 'epic'
+  epic: 'epic',
 };
 
 /**
@@ -103,7 +103,7 @@ class CacheManager {
       github_repo: this.github.repo || null,
       stories: {},
       prds: {},
-      epics: {}
+      epics: {},
     };
     this.saveMeta(meta);
     return meta;
@@ -179,14 +179,14 @@ class CacheManager {
         content,
         meta: storyMeta,
         isStale: true,
-        warning: `Story cache is stale (>${this.stalenessThresholdMinutes} min old). Sync recommended.`
+        warning: `Story cache is stale (>${this.stalenessThresholdMinutes} min old). Sync recommended.`,
       };
     }
 
     return {
       content,
       meta: storyMeta,
-      isStale
+      isStale,
     };
   }
 
@@ -219,7 +219,7 @@ class CacheManager {
       cache_timestamp: new Date().toISOString(),
       local_hash: contentHash,
       locked_by: storyMeta.locked_by || null,
-      locked_until: storyMeta.locked_until || null
+      locked_until: storyMeta.locked_until || null,
     };
 
     this.saveMeta(meta);
@@ -228,7 +228,7 @@ class CacheManager {
       storyKey,
       path: storyPath,
       hash: contentHash,
-      timestamp: meta.stories[storyKey].cache_timestamp
+      timestamp: meta.stories[storyKey].cache_timestamp,
     };
   }
 
@@ -332,7 +332,7 @@ class CacheManager {
    */
   getStaleStories() {
     const meta = this.loadMeta();
-    return Object.keys(meta.stories).filter(key => this.isStale(key));
+    return Object.keys(meta.stories).filter((key) => this.isStale(key));
   }
 
   /**
@@ -393,7 +393,7 @@ class CacheManager {
     return {
       locked_by: storyMeta.locked_by,
       locked_until: storyMeta.locked_until,
-      expired: false
+      expired: false,
     };
   }
 
@@ -414,7 +414,7 @@ class CacheManager {
           storyKey,
           locked_by: storyMeta.locked_by,
           locked_until: storyMeta.locked_until,
-          expired
+          expired,
         });
       }
     }
@@ -464,7 +464,7 @@ class CacheManager {
     const meta = this.loadMeta();
     const storyCount = Object.keys(meta.stories).length;
     const staleCount = this.getStaleStories().length;
-    const lockedCount = this.getLockedStories().filter(s => !s.expired).length;
+    const lockedCount = this.getLockedStories().filter((s) => !s.expired).length;
 
     let totalSize = 0;
     const storiesDir = path.join(this.cacheDir, 'stories');
@@ -485,7 +485,7 @@ class CacheManager {
       total_size_bytes: totalSize,
       total_size_kb: Math.round(totalSize / 1024),
       last_sync: meta.last_sync,
-      staleness_threshold_minutes: this.stalenessThresholdMinutes
+      staleness_threshold_minutes: this.stalenessThresholdMinutes,
     };
   }
 
@@ -524,7 +524,7 @@ class CacheManager {
         content,
         meta: prdMeta,
         isStale: true,
-        warning: `PRD cache is stale (>${this.stalenessThresholdMinutes} min old). Sync recommended.`
+        warning: `PRD cache is stale (>${this.stalenessThresholdMinutes} min old). Sync recommended.`,
       };
     }
 
@@ -562,7 +562,7 @@ class CacheManager {
       feedback_deadline: prdMeta.feedback_deadline || meta.prds[prdKey]?.feedback_deadline,
       signoff_deadline: prdMeta.signoff_deadline || meta.prds[prdKey]?.signoff_deadline,
       cache_timestamp: new Date().toISOString(),
-      local_hash: contentHash
+      local_hash: contentHash,
     };
 
     this.saveMeta(meta);
@@ -571,7 +571,7 @@ class CacheManager {
       prdKey,
       path: prdPath,
       hash: contentHash,
-      timestamp: meta.prds[prdKey].cache_timestamp
+      timestamp: meta.prds[prdKey].cache_timestamp,
     };
   }
 
@@ -626,9 +626,7 @@ class CacheManager {
     const pendingSignoff = [];
 
     for (const [prdKey, prdMeta] of Object.entries(meta.prds)) {
-      const isStakeholder = prdMeta.stakeholders?.some(s =>
-        s.replace('@', '') === normalizedUser
-      );
+      const isStakeholder = prdMeta.stakeholders?.some((s) => s.replace('@', '') === normalizedUser);
 
       if (!isStakeholder) continue;
 
@@ -693,7 +691,7 @@ class CacheManager {
         content,
         meta: epicMeta,
         isStale: true,
-        warning: `Epic cache is stale (>${this.stalenessThresholdMinutes} min old). Sync recommended.`
+        warning: `Epic cache is stale (>${this.stalenessThresholdMinutes} min old). Sync recommended.`,
       };
     }
 
@@ -733,7 +731,7 @@ class CacheManager {
       stakeholders: epicMeta.stakeholders || meta.epics[epicKey]?.stakeholders || [],
       feedback_deadline: epicMeta.feedback_deadline || meta.epics[epicKey]?.feedback_deadline,
       cache_timestamp: new Date().toISOString(),
-      local_hash: contentHash
+      local_hash: contentHash,
     };
 
     this.saveMeta(meta);
@@ -742,7 +740,7 @@ class CacheManager {
       epicKey,
       path: epicPath,
       hash: contentHash,
-      timestamp: meta.epics[epicKey].cache_timestamp
+      timestamp: meta.epics[epicKey].cache_timestamp,
     };
   }
 
@@ -796,9 +794,7 @@ class CacheManager {
     const pendingFeedback = [];
 
     for (const [epicKey, epicMeta] of Object.entries(meta.epics)) {
-      const isStakeholder = epicMeta.stakeholders?.some(s =>
-        s.replace('@', '') === normalizedUser
-      );
+      const isStakeholder = epicMeta.stakeholders?.some((s) => s.replace('@', '') === normalizedUser);
 
       if (!isStakeholder) continue;
 
@@ -854,7 +850,7 @@ class CacheManager {
   getMyTasks(username) {
     return {
       prds: this.getPrdsNeedingAttention(username),
-      epics: this.getEpicsNeedingAttention(username)
+      epics: this.getEpicsNeedingAttention(username),
     };
   }
 
@@ -910,7 +906,7 @@ class CacheManager {
       epic_count: epicCount,
       epics_by_status: epicsByStatus,
       epic_size_kb: Math.round(epicSize / 1024),
-      total_size_kb: baseStats.total_size_kb + Math.round(prdSize / 1024) + Math.round(epicSize / 1024)
+      total_size_kb: baseStats.total_size_kb + Math.round(prdSize / 1024) + Math.round(epicSize / 1024),
     };
   }
 }

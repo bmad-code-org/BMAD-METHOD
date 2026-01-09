@@ -19,9 +19,7 @@ import path from 'path';
 import os from 'os';
 
 // Import the CacheManager (CommonJS module)
-const { CacheManager, DOCUMENT_TYPES, CACHE_META_FILENAME } = await import(
-  '../../../src/modules/bmm/lib/cache/cache-manager.js'
-);
+const { CacheManager, DOCUMENT_TYPES, CACHE_META_FILENAME } = await import('../../../src/modules/bmm/lib/cache/cache-manager.js');
 
 describe('CacheManager PRD/Epic Extensions', () => {
   let cacheManager;
@@ -34,7 +32,7 @@ describe('CacheManager PRD/Epic Extensions', () => {
     cacheManager = new CacheManager({
       cacheDir: testCacheDir,
       stalenessThresholdMinutes: 5,
-      github: { owner: 'test-org', repo: 'test-repo' }
+      github: { owner: 'test-org', repo: 'test-repo' },
     });
   });
 
@@ -77,18 +75,14 @@ describe('CacheManager PRD/Epic Extensions', () => {
       // Write v1 metadata directly
       const v1Meta = {
         version: '1.0.0',
-        stories: { 'story-1': { github_issue: 10 } }
+        stories: { 'story-1': { github_issue: 10 } },
       };
-      fs.writeFileSync(
-        path.join(testCacheDir, CACHE_META_FILENAME),
-        JSON.stringify(v1Meta),
-        'utf8'
-      );
+      fs.writeFileSync(path.join(testCacheDir, CACHE_META_FILENAME), JSON.stringify(v1Meta), 'utf8');
 
       // Create new manager to trigger migration
       const manager = new CacheManager({
         cacheDir: testCacheDir,
-        github: {}
+        github: {},
       });
 
       const meta = manager.loadMeta();
@@ -105,17 +99,13 @@ describe('CacheManager PRD/Epic Extensions', () => {
         version: '2.0.0',
         prds: { 'existing-prd': { status: 'approved' } },
         epics: { 'existing-epic': { status: 'draft' } },
-        stories: {}
+        stories: {},
       };
-      fs.writeFileSync(
-        path.join(testCacheDir, CACHE_META_FILENAME),
-        JSON.stringify(v2Meta),
-        'utf8'
-      );
+      fs.writeFileSync(path.join(testCacheDir, CACHE_META_FILENAME), JSON.stringify(v2Meta), 'utf8');
 
       const manager = new CacheManager({
         cacheDir: testCacheDir,
-        github: {}
+        github: {},
       });
 
       const meta = manager.loadMeta();
@@ -143,7 +133,7 @@ describe('CacheManager PRD/Epic Extensions', () => {
           version: 1,
           status: 'draft',
           stakeholders: ['@alice', '@bob'],
-          owner: '@sarah'
+          owner: '@sarah',
         };
 
         const result = cacheManager.writePrd('user-auth', content, prdMeta);
@@ -169,7 +159,7 @@ describe('CacheManager PRD/Epic Extensions', () => {
           review_issue: 100,
           version: 2,
           status: 'feedback',
-          stakeholders: ['@alice']
+          stakeholders: ['@alice'],
         });
 
         // Write with partial metadata
@@ -193,7 +183,7 @@ describe('CacheManager PRD/Epic Extensions', () => {
         const content = '# PRD: User Auth';
         cacheManager.writePrd('user-auth', content, {
           version: 1,
-          status: 'draft'
+          status: 'draft',
         });
 
         const result = cacheManager.readPrd('user-auth');
@@ -275,8 +265,8 @@ describe('CacheManager PRD/Epic Extensions', () => {
         const feedbackPrds = cacheManager.getPrdsByStatus('feedback');
 
         expect(feedbackPrds).toHaveLength(2);
-        expect(feedbackPrds.map(p => p.prdKey)).toContain('user-auth');
-        expect(feedbackPrds.map(p => p.prdKey)).toContain('mobile');
+        expect(feedbackPrds.map((p) => p.prdKey)).toContain('user-auth');
+        expect(feedbackPrds.map((p) => p.prdKey)).toContain('mobile');
       });
     });
 
@@ -284,15 +274,15 @@ describe('CacheManager PRD/Epic Extensions', () => {
       it('should find PRDs needing feedback from user', () => {
         cacheManager.writePrd('user-auth', '# PRD 1', {
           status: 'feedback',
-          stakeholders: ['@alice', '@bob']
+          stakeholders: ['@alice', '@bob'],
         });
         cacheManager.writePrd('payments', '# PRD 2', {
           status: 'signoff',
-          stakeholders: ['@alice', '@charlie']
+          stakeholders: ['@alice', '@charlie'],
         });
         cacheManager.writePrd('mobile', '# PRD 3', {
           status: 'feedback',
-          stakeholders: ['@charlie']
+          stakeholders: ['@charlie'],
         });
 
         const tasks = cacheManager.getPrdsNeedingAttention('alice');
@@ -306,7 +296,7 @@ describe('CacheManager PRD/Epic Extensions', () => {
       it('should handle @ prefix in username', () => {
         cacheManager.writePrd('user-auth', '# PRD 1', {
           status: 'feedback',
-          stakeholders: ['alice', 'bob']
+          stakeholders: ['alice', 'bob'],
         });
 
         const tasks = cacheManager.getPrdsNeedingAttention('@alice');
@@ -348,7 +338,7 @@ describe('CacheManager PRD/Epic Extensions', () => {
           prd_key: 'user-auth',
           version: 1,
           status: 'draft',
-          stories: ['2-1-login', '2-2-logout']
+          stories: ['2-1-login', '2-2-logout'],
         };
 
         const result = cacheManager.writeEpic('2', content, epicMeta);
@@ -366,7 +356,7 @@ describe('CacheManager PRD/Epic Extensions', () => {
       it('should track PRD lineage in metadata', () => {
         cacheManager.writeEpic('2', 'Epic content', {
           prd_key: 'user-auth',
-          status: 'draft'
+          status: 'draft',
         });
 
         const meta = cacheManager.loadMeta();
@@ -385,7 +375,7 @@ describe('CacheManager PRD/Epic Extensions', () => {
         cacheManager.writeEpic('2', content, {
           prd_key: 'user-auth',
           version: 1,
-          status: 'draft'
+          status: 'draft',
         });
 
         const result = cacheManager.readEpic('2');
@@ -437,8 +427,8 @@ describe('CacheManager PRD/Epic Extensions', () => {
         const authEpics = cacheManager.getEpicsByPrd('user-auth');
 
         expect(authEpics).toHaveLength(2);
-        expect(authEpics.map(e => e.epicKey)).toContain('1');
-        expect(authEpics.map(e => e.epicKey)).toContain('2');
+        expect(authEpics.map((e) => e.epicKey)).toContain('1');
+        expect(authEpics.map((e) => e.epicKey)).toContain('2');
       });
     });
 
@@ -446,15 +436,15 @@ describe('CacheManager PRD/Epic Extensions', () => {
       it('should find Epics needing feedback from user', () => {
         cacheManager.writeEpic('1', '# Epic 1', {
           status: 'feedback',
-          stakeholders: ['@alice', '@bob']
+          stakeholders: ['@alice', '@bob'],
         });
         cacheManager.writeEpic('2', '# Epic 2', {
           status: 'draft',
-          stakeholders: ['@alice']
+          stakeholders: ['@alice'],
         });
         cacheManager.writeEpic('3', '# Epic 3', {
           status: 'feedback',
-          stakeholders: ['@charlie']
+          stakeholders: ['@charlie'],
         });
 
         const tasks = cacheManager.getEpicsNeedingAttention('alice');
@@ -485,15 +475,15 @@ describe('CacheManager PRD/Epic Extensions', () => {
     it('should return combined PRD and Epic tasks', () => {
       cacheManager.writePrd('user-auth', '# PRD 1', {
         status: 'feedback',
-        stakeholders: ['@alice']
+        stakeholders: ['@alice'],
       });
       cacheManager.writePrd('payments', '# PRD 2', {
         status: 'signoff',
-        stakeholders: ['@alice']
+        stakeholders: ['@alice'],
       });
       cacheManager.writeEpic('2', '# Epic 2', {
         status: 'feedback',
-        stakeholders: ['@alice']
+        stakeholders: ['@alice'],
       });
 
       const tasks = cacheManager.getMyTasks('alice');
@@ -506,7 +496,7 @@ describe('CacheManager PRD/Epic Extensions', () => {
     it('should return empty arrays when user has no tasks', () => {
       cacheManager.writePrd('user-auth', '# PRD 1', {
         status: 'feedback',
-        stakeholders: ['@bob']
+        stakeholders: ['@bob'],
       });
 
       const tasks = cacheManager.getMyTasks('alice');
@@ -534,12 +524,12 @@ describe('CacheManager PRD/Epic Extensions', () => {
       expect(stats.prd_count).toBe(3);
       expect(stats.prds_by_status).toEqual({
         feedback: 2,
-        approved: 1
+        approved: 1,
       });
       expect(stats.epic_count).toBe(2);
       expect(stats.epics_by_status).toEqual({
         approved: 1,
-        draft: 1
+        draft: 1,
       });
       expect(stats.prd_size_kb).toBeGreaterThanOrEqual(0);
       expect(stats.epic_size_kb).toBeGreaterThanOrEqual(0);
@@ -556,7 +546,7 @@ describe('CacheManager PRD/Epic Extensions', () => {
 
     it('should return true for old cache timestamp', () => {
       const oldMeta = {
-        cache_timestamp: '2020-01-01T00:00:00Z'
+        cache_timestamp: '2020-01-01T00:00:00Z',
       };
 
       expect(cacheManager._isDocumentStale(oldMeta)).toBe(true);
@@ -564,7 +554,7 @@ describe('CacheManager PRD/Epic Extensions', () => {
 
     it('should return false for recent cache timestamp', () => {
       const recentMeta = {
-        cache_timestamp: new Date().toISOString()
+        cache_timestamp: new Date().toISOString(),
       };
 
       expect(cacheManager._isDocumentStale(recentMeta)).toBe(false);
@@ -611,7 +601,7 @@ describe('CacheManager PRD/Epic Extensions', () => {
     it('should handle empty stakeholder arrays', () => {
       cacheManager.writePrd('user-auth', '# PRD', {
         status: 'feedback',
-        stakeholders: []
+        stakeholders: [],
       });
 
       const tasks = cacheManager.getPrdsNeedingAttention('alice');

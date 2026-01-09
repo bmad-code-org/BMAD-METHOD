@@ -26,7 +26,7 @@ Please review and provide your feedback by {{deadline}}.
 {{actions}}
 {{/if}}
 
-_Notification from PRD Crowdsourcing System_`
+_Notification from PRD Crowdsourcing System_`,
   },
 
   feedback_submitted: {
@@ -46,7 +46,7 @@ _Notification from PRD Crowdsourcing System_`
 
 [View Feedback #{{feedback_issue}}]({{feedback_url}})
 
-_Notification from PRD Crowdsourcing System_`
+_Notification from PRD Crowdsourcing System_`,
   },
 
   synthesis_complete: {
@@ -67,7 +67,7 @@ _Notification from PRD Crowdsourcing System_`
 
 [View Updated Document]({{document_url}})
 
-_Notification from PRD Crowdsourcing System_`
+_Notification from PRD Crowdsourcing System_`,
   },
 
   signoff_requested: {
@@ -92,7 +92,7 @@ Please review and provide your sign-off decision by {{deadline}}.
 
 [View Document]({{document_url}})
 
-_Notification from PRD Crowdsourcing System_`
+_Notification from PRD Crowdsourcing System_`,
   },
 
   signoff_received: {
@@ -112,7 +112,7 @@ _Notification from PRD Crowdsourcing System_`
 
 [View Review Issue #{{review_issue}}]({{review_url}})
 
-_Notification from PRD Crowdsourcing System_`
+_Notification from PRD Crowdsourcing System_`,
   },
 
   document_approved: {
@@ -130,7 +130,7 @@ All required sign-offs have been received. This document is now approved and rea
 
 [View Approved Document]({{document_url}})
 
-_Notification from PRD Crowdsourcing System_`
+_Notification from PRD Crowdsourcing System_`,
   },
 
   document_blocked: {
@@ -152,7 +152,7 @@ This blocking concern must be resolved before the document can be approved.
 [View Blocking Issue #{{feedback_issue}}]({{feedback_url}})
 {{/if}}
 
-_Notification from PRD Crowdsourcing System_`
+_Notification from PRD Crowdsourcing System_`,
   },
 
   reminder: {
@@ -171,7 +171,7 @@ Please complete your {{action_needed}} by {{deadline}}.
 
 [View Document]({{document_url}})
 
-_Notification from PRD Crowdsourcing System_`
+_Notification from PRD Crowdsourcing System_`,
   },
 
   deadline_extended: {
@@ -190,8 +190,8 @@ _Notification from PRD Crowdsourcing System_`
 
 [View Document]({{document_url}})
 
-_Notification from PRD Crowdsourcing System_`
-  }
+_Notification from PRD Crowdsourcing System_`,
+  },
 };
 
 class GitHubNotifier {
@@ -229,11 +229,7 @@ class GitHubNotifier {
       return await this._postComment(options.issueNumber, message);
     } else if (options.createIssue) {
       // Create a new issue
-      return await this._createIssue(
-        this._renderTemplate(template.subject, data),
-        message,
-        options.labels || []
-      );
+      return await this._createIssue(this._renderTemplate(template.subject, data), message, options.labels || []);
     } else if (data.review_issue) {
       // Default to review issue if available
       return await this._postComment(data.review_issue, message);
@@ -244,7 +240,7 @@ class GitHubNotifier {
       success: true,
       channel: 'github',
       message,
-      note: 'No target issue specified, message returned for manual handling'
+      note: 'No target issue specified, message returned for manual handling',
     };
   }
 
@@ -258,7 +254,7 @@ class GitHubNotifier {
   async sendReminder(issueNumber, users, data) {
     const reminderData = {
       ...data,
-      mentions: users.map(u => `@${u}`).join(' ')
+      mentions: users.map((u) => `@${u}`).join(' '),
     };
 
     return await this.send('reminder', reminderData, { issueNumber });
@@ -272,7 +268,7 @@ class GitHubNotifier {
    * @returns {Object} Notification result
    */
   async notifyStakeholders(users, message, issueNumber) {
-    const mentions = users.map(u => `@${u}`).join(' ');
+    const mentions = users.map((u) => `@${u}`).join(' ');
     const fullMessage = `${mentions}\n\n${message}`;
 
     return await this._postComment(issueNumber, fullMessage);
@@ -288,7 +284,7 @@ class GitHubNotifier {
         owner: this.owner,
         repo: this.repo,
         issue_number: issueNumber,
-        body
+        body,
       });
 
       return {
@@ -296,13 +292,13 @@ class GitHubNotifier {
         channel: 'github',
         type: 'comment',
         issueNumber,
-        commentId: result.id
+        commentId: result.id,
       };
     } catch (error) {
       return {
         success: false,
         channel: 'github',
-        error: error.message
+        error: error.message,
       };
     }
   }
@@ -318,20 +314,20 @@ class GitHubNotifier {
         repo: this.repo,
         title,
         body,
-        labels
+        labels,
       });
 
       return {
         success: true,
         channel: 'github',
         type: 'issue',
-        issueNumber: result.number
+        issueNumber: result.number,
       };
     } catch (error) {
       return {
         success: false,
         channel: 'github',
-        error: error.message
+        error: error.message,
       };
     }
   }
@@ -358,18 +354,20 @@ class GitHubNotifier {
     result = result.replace(/\{\{#each\s+(\w+)\}\}([\s\S]*?)\{\{\/each\}\}/g, (match, key, content) => {
       const arr = data[key];
       if (!Array.isArray(arr)) return '';
-      return arr.map((item, index) => {
-        let itemContent = content;
-        if (typeof item === 'object') {
-          Object.entries(item).forEach(([k, v]) => {
-            itemContent = itemContent.replace(new RegExp(`\\{\\{${k}\\}\\}`, 'g'), String(v));
-          });
-        } else {
-          itemContent = itemContent.replace(/\{\{this\}\}/g, String(item));
-        }
-        itemContent = itemContent.replace(/\{\{@index\}\}/g, String(index));
-        return itemContent;
-      }).join('');
+      return arr
+        .map((item, index) => {
+          let itemContent = content;
+          if (typeof item === 'object') {
+            Object.entries(item).forEach(([k, v]) => {
+              itemContent = itemContent.replace(new RegExp(`\\{\\{${k}\\}\\}`, 'g'), String(v));
+            });
+          } else {
+            itemContent = itemContent.replace(/\{\{this\}\}/g, String(item));
+          }
+          itemContent = itemContent.replace(/\{\{@index\}\}/g, String(index));
+          return itemContent;
+        })
+        .join('');
     });
 
     return result;
@@ -378,5 +376,5 @@ class GitHubNotifier {
 
 module.exports = {
   GitHubNotifier,
-  NOTIFICATION_TEMPLATES
+  NOTIFICATION_TEMPLATES,
 };

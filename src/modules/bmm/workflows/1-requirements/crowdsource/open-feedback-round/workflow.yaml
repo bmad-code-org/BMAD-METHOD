@@ -13,8 +13,8 @@ github:
   repo: "{config_source}:github_repo"
 
 # Parameters (can be passed in or prompted)
-document_key: ""       # e.g., "user-auth" for PRD
-document_type: "prd"   # "prd" or "epic"
+document_key: "" # e.g., "user-auth" for PRD
+document_type: "prd" # "prd" or "epic"
 
 installed_path: "{project-root}/_bmad/bmm/workflows/1-requirements/crowdsource/open-feedback-round"
 instructions: "{installed_path}/instructions.md"

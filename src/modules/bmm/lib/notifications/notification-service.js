@@ -16,48 +16,48 @@ const NOTIFICATION_EVENTS = {
   feedback_round_opened: {
     description: 'PRD/Epic is open for feedback',
     defaultChannels: ['github', 'slack', 'email'],
-    priority: 'normal'
+    priority: 'normal',
   },
   feedback_submitted: {
     description: 'New feedback submitted',
     defaultChannels: ['github', 'slack'],
-    priority: 'normal'
+    priority: 'normal',
   },
   synthesis_complete: {
     description: 'Feedback synthesis completed',
     defaultChannels: ['github', 'slack'],
-    priority: 'normal'
+    priority: 'normal',
   },
   signoff_requested: {
     description: 'Sign-off requested from stakeholders',
     defaultChannels: ['github', 'slack', 'email'],
-    priority: 'high'
+    priority: 'high',
   },
   signoff_received: {
     description: 'Sign-off decision received',
     defaultChannels: ['github', 'slack'],
-    priority: 'normal'
+    priority: 'normal',
   },
   document_approved: {
     description: 'Document fully approved',
     defaultChannels: ['github', 'slack', 'email'],
-    priority: 'high'
+    priority: 'high',
   },
   document_blocked: {
     description: 'Document blocked by stakeholder',
     defaultChannels: ['github', 'slack', 'email'],
-    priority: 'urgent'
+    priority: 'urgent',
   },
   reminder: {
     description: 'Reminder for pending action',
     defaultChannels: ['github', 'slack', 'email'],
-    priority: 'normal'
+    priority: 'normal',
   },
   deadline_extended: {
     description: 'Deadline has been extended',
     defaultChannels: ['github'],
-    priority: 'low'
-  }
+    priority: 'low',
+  },
 };
 
 /**
@@ -67,23 +67,23 @@ const PRIORITY_BEHAVIOR = {
   urgent: {
     retryOnFailure: true,
     maxRetries: 3,
-    allChannels: true // Send on all available channels
+    allChannels: true, // Send on all available channels
   },
   high: {
     retryOnFailure: true,
     maxRetries: 2,
-    allChannels: false
+    allChannels: false,
   },
   normal: {
     retryOnFailure: false,
     maxRetries: 1,
-    allChannels: false
+    allChannels: false,
   },
   low: {
     retryOnFailure: false,
     maxRetries: 1,
-    allChannels: false
-  }
+    allChannels: false,
+  },
 };
 
 class NotificationService {
@@ -97,7 +97,7 @@ class NotificationService {
   constructor(config) {
     // GitHub is always required and enabled
     this.channels = {
-      github: new GitHubNotifier(config.github)
+      github: new GitHubNotifier(config.github),
     };
 
     // Optional channels
@@ -146,7 +146,7 @@ class NotificationService {
     let channels = options.channels || eventConfig.defaultChannels;
 
     // Filter to only available channels
-    channels = channels.filter(ch => this.isChannelAvailable(ch));
+    channels = channels.filter((ch) => this.isChannelAvailable(ch));
 
     // For urgent priority, use all available channels
     const priority = options.priority || eventConfig.priority;
@@ -165,17 +165,17 @@ class NotificationService {
     const results = await Promise.all(
       channels.map(async (channel) => {
         return await this._sendToChannel(channel, eventType, data, options, priorityBehavior);
-      })
+      }),
     );
 
     // Aggregate results
     const aggregated = {
-      success: results.some(r => r.success),
+      success: results.some((r) => r.success),
       eventType,
       results: results.reduce((acc, r) => {
         acc[r.channel] = r;
         return acc;
-      }, {})
+      }, {}),
     };
 
     return aggregated;
@@ -193,9 +193,9 @@ class NotificationService {
     const data = {
       document_type: documentType,
       document_key: documentKey,
-      mentions: users.map(u => `@${u}`).join(' '),
+      mentions: users.map((u) => `@${u}`).join(' '),
       users,
-      ...reminderData
+      ...reminderData,
     };
 
     return await this.notify('reminder', data);
@@ -216,10 +216,10 @@ class NotificationService {
       version: document.version,
       deadline,
       stakeholder_count: stakeholders.length,
-      mentions: stakeholders.map(s => `@${s}`).join(' '),
+      mentions: stakeholders.map((s) => `@${s}`).join(' '),
       users: stakeholders,
       document_url: document.url,
-      review_issue: document.reviewIssue
+      review_issue: document.reviewIssue,
     };
 
     return await this.notify('feedback_round_opened', data);
@@ -241,12 +241,12 @@ class NotificationService {
       summary: feedback.summary || feedback.title,
       feedback_issue: feedback.issueNumber,
       feedback_url: feedback.url,
-      review_issue: document.reviewIssue
+      review_issue: document.reviewIssue,
     };
 
     // Only notify PO (not all stakeholders)
     return await this.notify('feedback_submitted', data, {
-      notifyOnly: [document.owner]
+      notifyOnly: [document.owner],
     });
   }
 
@@ -266,7 +266,7 @@ class NotificationService {
       conflicts_resolved: synthesis.conflictsResolved,
       summary: synthesis.summary,
       document_url: document.url,
-      review_issue: document.reviewIssue
+      review_issue: document.reviewIssue,
     };
 
     return await this.notify('synthesis_complete', data);
@@ -288,11 +288,11 @@ class NotificationService {
       version: document.version,
       deadline,
       approvals_needed: config.minimum_approvals || Math.ceil(stakeholders.length * 0.5),
-      mentions: stakeholders.map(s => `@${s}`).join(' '),
+      mentions: stakeholders.map((s) => `@${s}`).join(' '),
       users: stakeholders,
       document_url: document.url,
       signoff_url: document.signoffUrl,
-      review_issue: document.reviewIssue
+      review_issue: document.reviewIssue,
     };
 
     return await this.notify('signoff_requested', data);
@@ -309,7 +309,7 @@ class NotificationService {
     const emojis = {
       approved: '✅',
       'approved-with-note': '✅📝',
-      blocked: '🚫'
+      blocked: '🚫',
     };
 
     const data = {
@@ -322,7 +322,7 @@ class NotificationService {
       progress_current: progress.current,
       progress_total: progress.total,
       review_issue: document.reviewIssue,
-      review_url: document.reviewUrl
+      review_url: document.reviewUrl,
     };
 
     return await this.notify('signoff_received', data);
@@ -343,7 +343,7 @@ class NotificationService {
       version: document.version,
       approval_count: approvalCount,
       stakeholder_count: stakeholderCount,
-      document_url: document.url
+      document_url: document.url,
     };
 
     return await this.notify('document_approved', data);
@@ -362,7 +362,7 @@ class NotificationService {
       user: block.user,
       reason: block.reason,
       feedback_issue: block.feedbackIssue,
-      feedback_url: block.feedbackUrl
+      feedback_url: block.feedbackUrl,
     };
 
     return await this.notify('document_blocked', data);
@@ -378,7 +378,7 @@ class NotificationService {
       return {
         success: false,
         channel,
-        error: 'Channel not available'
+        error: 'Channel not available',
       };
     }
 
@@ -402,7 +402,7 @@ class NotificationService {
 
       // Wait before retry (exponential backoff)
       if (attempt < maxRetries) {
-        await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, attempt - 1)));
+        await new Promise((resolve) => setTimeout(resolve, 1000 * Math.pow(2, attempt - 1)));
       }
     }
 
@@ -410,7 +410,7 @@ class NotificationService {
       success: false,
       channel,
       error: lastError,
-      attempts: maxRetries
+      attempts: maxRetries,
     };
   }
 }
@@ -418,5 +418,5 @@ class NotificationService {
 module.exports = {
   NotificationService,
   NOTIFICATION_EVENTS,
-  PRIORITY_BEHAVIOR
+  PRIORITY_BEHAVIOR,
 };

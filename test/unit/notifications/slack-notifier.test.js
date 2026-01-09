@@ -11,10 +11,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import {
-  SlackNotifier,
-  SLACK_TEMPLATES
-} from '../../../src/modules/bmm/lib/notifications/slack-notifier.js';
+import { SlackNotifier, SLACK_TEMPLATES } from '../../../src/modules/bmm/lib/notifications/slack-notifier.js';
 
 // Mock global fetch
 global.fetch = vi.fn();
@@ -37,7 +34,7 @@ describe('SlackNotifier', () => {
         'signoff_received',
         'document_approved',
         'document_blocked',
-        'reminder'
+        'reminder',
       ];
 
       for (const type of expectedTypes) {
@@ -54,7 +51,7 @@ describe('SlackNotifier', () => {
         version: 1,
         deadline: '2026-01-15',
         stakeholder_count: 5,
-        document_url: 'https://example.com/doc'
+        document_url: 'https://example.com/doc',
       };
 
       const blocks = SLACK_TEMPLATES.feedback_round_opened.blocks(data);
@@ -63,16 +60,16 @@ describe('SlackNotifier', () => {
       expect(blocks.length).toBeGreaterThan(0);
 
       // Check header block
-      const header = blocks.find(b => b.type === 'header');
+      const header = blocks.find((b) => b.type === 'header');
       expect(header).toBeDefined();
       expect(header.text.text).toContain('Feedback');
 
       // Check section with fields
-      const section = blocks.find(b => b.type === 'section' && b.fields);
+      const section = blocks.find((b) => b.type === 'section' && b.fields);
       expect(section).toBeDefined();
 
       // Check actions block
-      const actions = blocks.find(b => b.type === 'actions');
+      const actions = blocks.find((b) => b.type === 'actions');
       expect(actions).toBeDefined();
       expect(actions.elements[0].url).toBe('https://example.com/doc');
     });
@@ -98,7 +95,7 @@ describe('SlackNotifier', () => {
 
       const title = SLACK_TEMPLATES.signoff_received.title({
         emoji: '✅',
-        user: 'alice'
+        user: 'alice',
       });
 
       expect(title).toContain('✅');
@@ -115,7 +112,7 @@ describe('SlackNotifier', () => {
         progress_current: 2,
         progress_total: 3,
         note: 'Minor concern noted',
-        review_url: 'https://example.com'
+        review_url: 'https://example.com',
       };
 
       const dataWithoutNote = { ...dataWithNote, note: null };
@@ -136,13 +133,11 @@ describe('SlackNotifier', () => {
         feedback_type: 'concern',
         section: 'FR-1',
         summary: longSummary,
-        feedback_url: 'https://example.com'
+        feedback_url: 'https://example.com',
       };
 
       const blocks = SLACK_TEMPLATES.feedback_submitted.blocks(data);
-      const summaryBlock = blocks.find(b =>
-        b.type === 'section' && b.text?.text?.startsWith('>')
-      );
+      const summaryBlock = blocks.find((b) => b.type === 'section' && b.text?.text?.startsWith('>'));
 
       expect(summaryBlock.text.text.length).toBeLessThan(250);
       expect(summaryBlock.text.text).toContain('...');
@@ -155,7 +150,7 @@ describe('SlackNotifier', () => {
     it('should initialize with webhook URL', () => {
       const notifier = new SlackNotifier({
         webhookUrl: 'https://hooks.slack.com/services/xxx',
-        channel: '#prd-updates'
+        channel: '#prd-updates',
       });
 
       expect(notifier.webhookUrl).toBe('https://hooks.slack.com/services/xxx');
@@ -165,7 +160,7 @@ describe('SlackNotifier', () => {
 
     it('should use default values', () => {
       const notifier = new SlackNotifier({
-        webhookUrl: 'https://hooks.slack.com/services/xxx'
+        webhookUrl: 'https://hooks.slack.com/services/xxx',
       });
 
       expect(notifier.username).toBe('PRD Crowdsource Bot');
@@ -184,7 +179,7 @@ describe('SlackNotifier', () => {
   describe('isEnabled', () => {
     it('should return true when webhook configured', () => {
       const notifier = new SlackNotifier({
-        webhookUrl: 'https://hooks.slack.com/services/xxx'
+        webhookUrl: 'https://hooks.slack.com/services/xxx',
       });
 
       expect(notifier.isEnabled()).toBe(true);
@@ -205,7 +200,7 @@ describe('SlackNotifier', () => {
     beforeEach(() => {
       notifier = new SlackNotifier({
         webhookUrl: 'https://hooks.slack.com/services/xxx',
-        channel: '#prd-updates'
+        channel: '#prd-updates',
       });
     });
 
@@ -232,7 +227,7 @@ describe('SlackNotifier', () => {
         version: 1,
         deadline: '2026-01-15',
         stakeholder_count: 5,
-        document_url: 'https://example.com/doc'
+        document_url: 'https://example.com/doc',
       };
 
       const result = await notifier.send('feedback_round_opened', data);
@@ -242,8 +237,8 @@ describe('SlackNotifier', () => {
         'https://hooks.slack.com/services/xxx',
         expect.objectContaining({
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' }
-        })
+          headers: { 'Content-Type': 'application/json' },
+        }),
       );
 
       const payload = JSON.parse(global.fetch.mock.calls[0][1].body);
@@ -262,7 +257,7 @@ describe('SlackNotifier', () => {
       global.fetch.mockResolvedValue({
         ok: false,
         status: 500,
-        statusText: 'Internal Server Error'
+        statusText: 'Internal Server Error',
       });
 
       const result = await notifier.send('document_approved', {
@@ -272,7 +267,7 @@ describe('SlackNotifier', () => {
         version: 1,
         approval_count: 3,
         stakeholder_count: 3,
-        document_url: 'https://example.com'
+        document_url: 'https://example.com',
       });
 
       expect(result.success).toBe(false);
@@ -280,14 +275,18 @@ describe('SlackNotifier', () => {
     });
 
     it('should use custom channel from options', async () => {
-      await notifier.send('reminder', {
-        document_type: 'prd',
-        document_key: 'test',
-        action_needed: 'feedback',
-        deadline: '2026-01-15',
-        time_remaining: '2 days',
-        document_url: 'https://example.com'
-      }, { channel: '#urgent-prd' });
+      await notifier.send(
+        'reminder',
+        {
+          document_type: 'prd',
+          document_key: 'test',
+          action_needed: 'feedback',
+          deadline: '2026-01-15',
+          time_remaining: '2 days',
+          document_url: 'https://example.com',
+        },
+        { channel: '#urgent-prd' },
+      );
 
       const payload = JSON.parse(global.fetch.mock.calls[0][1].body);
       expect(payload.channel).toBe('#urgent-prd');
@@ -302,7 +301,7 @@ describe('SlackNotifier', () => {
     beforeEach(() => {
       notifier = new SlackNotifier({
         webhookUrl: 'https://hooks.slack.com/services/xxx',
-        channel: '#general'
+        channel: '#general',
       });
     });
 
@@ -354,7 +353,7 @@ describe('SlackNotifier', () => {
         webhookUrl: 'https://hooks.slack.com/services/xxx',
         channel: '#default',
         username: 'TestBot',
-        iconEmoji: ':robot:'
+        iconEmoji: ':robot:',
       });
     });
 
@@ -366,7 +365,7 @@ describe('SlackNotifier', () => {
         version: 1,
         deadline: '2026-01-15',
         stakeholder_count: 3,
-        document_url: 'https://example.com'
+        document_url: 'https://example.com',
       };
 
       const payload = notifier._buildPayload(template, data, {});
@@ -388,7 +387,7 @@ describe('SlackNotifier', () => {
         document_key: 'test',
         progress_current: 2,
         progress_total: 5,
-        review_url: 'https://example.com'
+        review_url: 'https://example.com',
       };
 
       const payload = notifier._buildPayload(template, data, {});
@@ -406,7 +405,7 @@ describe('SlackNotifier', () => {
         document_key: 'test',
         progress_current: 3,
         progress_total: 3,
-        review_url: 'https://example.com'
+        review_url: 'https://example.com',
       };
 
       const payload = notifier._buildPayload(template, data, {});
@@ -424,7 +423,7 @@ describe('SlackNotifier', () => {
     beforeEach(() => {
       notifier = new SlackNotifier({
         webhookUrl: 'https://hooks.slack.com/services/xxx',
-        channel: '#prd-notifications'
+        channel: '#prd-notifications',
       });
     });
 
@@ -434,7 +433,7 @@ describe('SlackNotifier', () => {
         document_key: 'payments-v2',
         user: 'legal-team',
         reason: 'Compliance review required',
-        feedback_url: 'https://example.com/feedback/123'
+        feedback_url: 'https://example.com/feedback/123',
       });
 
       const payload = JSON.parse(global.fetch.mock.calls[0][1].body);
@@ -443,9 +442,7 @@ describe('SlackNotifier', () => {
       expect(payload.attachments[0].blocks).toBeInstanceOf(Array);
 
       // Find blocking reason in blocks
-      const reasonBlock = payload.attachments[0].blocks.find(
-        b => b.type === 'section' && b.text?.text?.includes('Compliance')
-      );
+      const reasonBlock = payload.attachments[0].blocks.find((b) => b.type === 'section' && b.text?.text?.includes('Compliance'));
       expect(reasonBlock).toBeDefined();
     });
 
@@ -458,7 +455,7 @@ describe('SlackNotifier', () => {
         feedback_count: 12,
         conflicts_resolved: 3,
         summary: 'Incorporated 12 feedback items including session timeout resolution',
-        document_url: 'https://example.com/doc'
+        document_url: 'https://example.com/doc',
       });
 
       const payload = JSON.parse(global.fetch.mock.calls[0][1].body);

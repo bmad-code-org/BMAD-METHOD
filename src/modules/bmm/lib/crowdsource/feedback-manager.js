@@ -9,62 +9,62 @@ const FEEDBACK_TYPES = {
   clarification: {
     label: 'feedback-type:clarification',
     emoji: '📋',
-    description: 'Something is unclear or needs more detail'
+    description: 'Something is unclear or needs more detail',
   },
   concern: {
     label: 'feedback-type:concern',
     emoji: '⚠️',
-    description: 'Potential issue, risk, or problem'
+    description: 'Potential issue, risk, or problem',
   },
   suggestion: {
     label: 'feedback-type:suggestion',
     emoji: '💡',
-    description: 'Improvement idea or alternative approach'
+    description: 'Improvement idea or alternative approach',
   },
   addition: {
     label: 'feedback-type:addition',
     emoji: '➕',
-    description: 'Missing requirement or feature'
+    description: 'Missing requirement or feature',
   },
   priority: {
     label: 'feedback-type:priority',
     emoji: '🔢',
-    description: 'Disagree with prioritization or ordering'
+    description: 'Disagree with prioritization or ordering',
   },
   // Epic-specific types
   scope: {
     label: 'feedback-type:scope',
     emoji: '📐',
-    description: 'Epic scope is too large or should be split'
+    description: 'Epic scope is too large or should be split',
   },
   dependency: {
     label: 'feedback-type:dependency',
     emoji: '🔗',
-    description: 'Dependency or blocking relationship'
+    description: 'Dependency or blocking relationship',
   },
   technical_risk: {
     label: 'feedback-type:technical-risk',
     emoji: '🔧',
-    description: 'Technical or architectural concern'
+    description: 'Technical or architectural concern',
   },
   story_split: {
     label: 'feedback-type:story-split',
     emoji: '✂️',
-    description: 'Suggest different story breakdown'
-  }
+    description: 'Suggest different story breakdown',
+  },
 };
 
 const FEEDBACK_STATUS = {
   new: 'feedback-status:new',
   reviewed: 'feedback-status:reviewed',
   incorporated: 'feedback-status:incorporated',
-  deferred: 'feedback-status:deferred'
+  deferred: 'feedback-status:deferred',
 };
 
 const PRIORITY_LEVELS = {
   high: 'priority:high',
   medium: 'priority:medium',
-  low: 'priority:low'
+  low: 'priority:low',
 };
 
 class FeedbackManager {
@@ -78,16 +78,16 @@ class FeedbackManager {
    */
   async createFeedback({
     reviewIssueNumber,
-    documentKey,        // prd:user-auth or epic:2
-    documentType,       // 'prd' or 'epic'
-    section,            // e.g., 'User Stories', 'FR-3'
-    feedbackType,       // 'clarification', 'concern', etc.
-    priority,           // 'high', 'medium', 'low'
-    title,              // Brief title
-    content,            // Detailed feedback
-    suggestedChange,    // Optional proposed change
-    rationale,          // Why this matters
-    submittedBy         // @username
+    documentKey, // prd:user-auth or epic:2
+    documentType, // 'prd' or 'epic'
+    section, // e.g., 'User Stories', 'FR-3'
+    feedbackType, // 'clarification', 'concern', etc.
+    priority, // 'high', 'medium', 'low'
+    title, // Brief title
+    content, // Detailed feedback
+    suggestedChange, // Optional proposed change
+    rationale, // Why this matters
+    submittedBy, // @username
   }) {
     const typeConfig = FEEDBACK_TYPES[feedbackType];
     if (!typeConfig) {
@@ -101,7 +101,7 @@ class FeedbackManager {
       `feedback-section:${section.toLowerCase().replace(/\s+/g, '-')}`,
       typeConfig.label,
       FEEDBACK_STATUS.new,
-      PRIORITY_LEVELS[priority] || PRIORITY_LEVELS.medium
+      PRIORITY_LEVELS[priority] || PRIORITY_LEVELS.medium,
     ];
 
     const body = this._formatFeedbackBody({
@@ -114,14 +114,14 @@ class FeedbackManager {
       content,
       suggestedChange,
       rationale,
-      submittedBy
+      submittedBy,
     });
 
     // Create the feedback issue
     const issue = await this._createIssue({
       title: `${typeConfig.emoji} Feedback: ${title}`,
       body,
-      labels
+      labels,
     });
 
     // Add comment to review issue linking to this feedback
@@ -133,7 +133,7 @@ class FeedbackManager {
       documentKey,
       section,
       feedbackType,
-      status: 'new'
+      status: 'new',
     };
   }
 
@@ -141,12 +141,12 @@ class FeedbackManager {
    * Query all feedback for a document or review round
    */
   async getFeedback({
-    documentKey,        // Optional: filter by document
-    reviewIssueNumber,  // Optional: filter by review round
-    documentType,       // 'prd' or 'epic'
-    status,             // Optional: filter by status
-    section,            // Optional: filter by section
-    feedbackType        // Optional: filter by type
+    documentKey, // Optional: filter by document
+    reviewIssueNumber, // Optional: filter by review round
+    documentType, // 'prd' or 'epic'
+    status, // Optional: filter by status
+    section, // Optional: filter by section
+    feedbackType, // Optional: filter by type
   }) {
     let query = `repo:${this.owner}/${this.repo} type:issue is:open`;
     query += ` label:type:${documentType}-feedback`;
@@ -177,7 +177,7 @@ class FeedbackManager {
 
     const results = await this._searchIssues(query);
 
-    return results.map(issue => this._parseFeedbackIssue(issue));
+    return results.map((issue) => this._parseFeedbackIssue(issue));
   }
 
   /**
@@ -225,15 +225,15 @@ class FeedbackManager {
       if (feedbackList.length < 2) continue;
 
       // Check for opposing views on the same topic
-      const concerns = feedbackList.filter(f => f.feedbackType === 'concern');
-      const suggestions = feedbackList.filter(f => f.feedbackType === 'suggestion');
+      const concerns = feedbackList.filter((f) => f.feedbackType === 'concern');
+      const suggestions = feedbackList.filter((f) => f.feedbackType === 'suggestion');
 
       if (concerns.length > 1 || (concerns.length >= 1 && suggestions.length >= 1)) {
         conflicts.push({
           section,
           feedbackItems: feedbackList,
           conflictType: 'multiple_opinions',
-          summary: `${feedbackList.length} stakeholders have input on ${section}`
+          summary: `${feedbackList.length} stakeholders have input on ${section}`,
         });
       }
     }
@@ -252,27 +252,21 @@ class FeedbackManager {
 
     // Get current labels
     const issue = await this._getIssue(feedbackIssueNumber);
-    const currentLabels = issue.labels.map(l => l.name);
+    const currentLabels = issue.labels.map((l) => l.name);
 
     // Remove old status labels, add new one
-    const newLabels = currentLabels
-      .filter(l => !l.startsWith('feedback-status:'))
-      .concat([statusLabel]);
+    const newLabels = currentLabels.filter((l) => !l.startsWith('feedback-status:')).concat([statusLabel]);
 
     await this._updateIssue(feedbackIssueNumber, { labels: newLabels });
 
     // Add resolution comment if provided
     if (resolution) {
-      await this._addComment(feedbackIssueNumber,
-        `**Status Updated: ${newStatus}**\n\n${resolution}`
-      );
+      await this._addComment(feedbackIssueNumber, `**Status Updated: ${newStatus}**\n\n${resolution}`);
     }
 
     // Close issue if incorporated or deferred
     if (newStatus === 'incorporated' || newStatus === 'deferred') {
-      await this._closeIssue(feedbackIssueNumber,
-        newStatus === 'incorporated' ? 'completed' : 'not_planned'
-      );
+      await this._closeIssue(feedbackIssueNumber, newStatus === 'incorporated' ? 'completed' : 'not_planned');
     }
 
     return { feedbackId: feedbackIssueNumber, status: newStatus };
@@ -290,7 +284,7 @@ class FeedbackManager {
       byStatus: {},
       bySection: {},
       byPriority: {},
-      submitters: new Set()
+      submitters: new Set(),
     };
 
     for (const fb of allFeedback) {
@@ -318,7 +312,18 @@ class FeedbackManager {
 
   // ============ Private Methods ============
 
-  _formatFeedbackBody({ reviewIssueNumber, documentKey, section, feedbackType, typeConfig, priority, content, suggestedChange, rationale, submittedBy }) {
+  _formatFeedbackBody({
+    reviewIssueNumber,
+    documentKey,
+    section,
+    feedbackType,
+    typeConfig,
+    priority,
+    content,
+    suggestedChange,
+    rationale,
+    submittedBy,
+  }) {
     let body = `# ${typeConfig.emoji} Feedback: ${feedbackType.charAt(0).toUpperCase() + feedbackType.slice(1)}\n\n`;
     body += `**Review:** #${reviewIssueNumber}\n`;
     body += `**Document:** \`${documentKey}\`\n`;
@@ -343,7 +348,7 @@ class FeedbackManager {
   }
 
   _parseFeedbackIssue(issue) {
-    const labels = issue.labels.map(l => l.name);
+    const labels = issue.labels.map((l) => l.name);
 
     return {
       id: issue.number,
@@ -356,18 +361,19 @@ class FeedbackManager {
       submittedBy: issue.user?.login,
       createdAt: issue.created_at,
       updatedAt: issue.updated_at,
-      body: issue.body
+      body: issue.body,
     };
   }
 
   _extractLabel(labels, prefix) {
-    const label = labels.find(l => l.startsWith(prefix));
+    const label = labels.find((l) => l.startsWith(prefix));
     return label ? label.replace(prefix, '') : null;
   }
 
   async _addLinkComment(reviewIssueNumber, feedbackIssueNumber, title, feedbackType, submittedBy) {
     const typeConfig = FEEDBACK_TYPES[feedbackType];
-    const comment = `${typeConfig.emoji} **New Feedback** from @${submittedBy}\n\n` +
+    const comment =
+      `${typeConfig.emoji} **New Feedback** from @${submittedBy}\n\n` +
       `**${title}** → #${feedbackIssueNumber}\n` +
       `Type: ${feedbackType}`;
 
@@ -410,5 +416,5 @@ module.exports = {
   FeedbackManager,
   FEEDBACK_TYPES,
   FEEDBACK_STATUS,
-  PRIORITY_LEVELS
+  PRIORITY_LEVELS,
 };

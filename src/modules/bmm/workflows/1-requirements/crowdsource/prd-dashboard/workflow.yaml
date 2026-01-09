@@ -13,7 +13,7 @@ github:
   repo: "{config_source}:github_repo"
 
 # Optional filter
-prd_key: ""  # Empty for all PRDs, or specific key for detail view
+prd_key: "" # Empty for all PRDs, or specific key for detail view
 
 installed_path: "{project-root}/_bmad/bmm/workflows/1-requirements/crowdsource/prd-dashboard"
 instructions: "{installed_path}/instructions.md"

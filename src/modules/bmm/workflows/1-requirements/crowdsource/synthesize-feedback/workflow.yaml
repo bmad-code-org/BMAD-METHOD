@@ -14,7 +14,7 @@ github:
 
 # Parameters
 document_key: ""
-document_type: "prd"  # "prd" or "epic"
+document_type: "prd" # "prd" or "epic"
 
 installed_path: "{project-root}/_bmad/bmm/workflows/1-requirements/crowdsource/synthesize-feedback"
 instructions: "{installed_path}/instructions.md"

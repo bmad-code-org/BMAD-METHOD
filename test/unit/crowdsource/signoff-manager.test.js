@@ -16,7 +16,7 @@ import {
   SignoffManager,
   SIGNOFF_STATUS,
   THRESHOLD_TYPES,
-  DEFAULT_CONFIG
+  DEFAULT_CONFIG,
 } from '../../../src/modules/bmm/lib/crowdsource/signoff-manager.js';
 
 // Create a testable subclass that allows injecting mock implementations
@@ -87,7 +87,7 @@ describe('SignoffManager', () => {
     it('should initialize with github config', () => {
       const manager = new SignoffManager({
         owner: 'test-org',
-        repo: 'test-repo'
+        repo: 'test-repo',
       });
 
       expect(manager.owner).toBe('test-org');
@@ -104,10 +104,7 @@ describe('SignoffManager', () => {
     beforeEach(() => {
       mockAddComment = vi.fn().mockResolvedValue({});
 
-      manager = new TestableSignoffManager(
-        { owner: 'test-org', repo: 'test-repo' },
-        { addComment: mockAddComment }
-      );
+      manager = new TestableSignoffManager({ owner: 'test-org', repo: 'test-repo' }, { addComment: mockAddComment });
     });
 
     it('should create sign-off request with stakeholder checklist', async () => {
@@ -116,7 +113,7 @@ describe('SignoffManager', () => {
         documentType: 'prd',
         reviewIssueNumber: 100,
         stakeholders: ['alice', 'bob', 'charlie'],
-        deadline: '2026-01-15'
+        deadline: '2026-01-15',
       });
 
       expect(mockAddComment).toHaveBeenCalledTimes(1);
@@ -145,8 +142,8 @@ describe('SignoffManager', () => {
         deadline: '2026-01-15',
         config: {
           minimum_approvals: 5,
-          block_threshold: 2
-        }
+          block_threshold: 2,
+        },
       });
 
       expect(result.config.minimum_approvals).toBe(5);
@@ -163,7 +160,7 @@ describe('SignoffManager', () => {
         reviewIssueNumber: 100,
         stakeholders: ['alice', 'bob', 'charlie'],
         deadline: '2026-01-15',
-        config: { threshold_type: 'count', minimum_approvals: 2 }
+        config: { threshold_type: 'count', minimum_approvals: 2 },
       });
 
       const comment = mockAddComment.mock.calls[0][1];
@@ -177,7 +174,7 @@ describe('SignoffManager', () => {
         reviewIssueNumber: 100,
         stakeholders: ['alice', 'bob', 'charlie'],
         deadline: '2026-01-15',
-        config: { threshold_type: 'percentage', approval_percentage: 75 }
+        config: { threshold_type: 'percentage', approval_percentage: 75 },
       });
 
       const comment = mockAddComment.mock.calls[0][1];
@@ -195,8 +192,8 @@ describe('SignoffManager', () => {
           threshold_type: 'required_approvers',
           required: ['alice', 'bob'],
           optional: ['charlie', 'dave'],
-          minimum_optional: 1
-        }
+          minimum_optional: 1,
+        },
       });
 
       const comment = mockAddComment.mock.calls[0][1];
@@ -210,7 +207,7 @@ describe('SignoffManager', () => {
         documentType: 'prd',
         reviewIssueNumber: 100,
         stakeholders: ['alice', 'bob'],
-        deadline: '2026-01-15'
+        deadline: '2026-01-15',
       });
 
       const comment = mockAddComment.mock.calls[0][1];
@@ -220,28 +217,32 @@ describe('SignoffManager', () => {
     });
 
     it('should validate count threshold against stakeholder list', async () => {
-      await expect(manager.requestSignoff({
-        documentKey: 'prd:test',
-        documentType: 'prd',
-        reviewIssueNumber: 100,
-        stakeholders: ['alice', 'bob'],
-        deadline: '2026-01-15',
-        config: { threshold_type: 'count', minimum_approvals: 5 }
-      })).rejects.toThrow('minimum_approvals (5) cannot exceed stakeholder count (2)');
+      await expect(
+        manager.requestSignoff({
+          documentKey: 'prd:test',
+          documentType: 'prd',
+          reviewIssueNumber: 100,
+          stakeholders: ['alice', 'bob'],
+          deadline: '2026-01-15',
+          config: { threshold_type: 'count', minimum_approvals: 5 },
+        }),
+      ).rejects.toThrow('minimum_approvals (5) cannot exceed stakeholder count (2)');
     });
 
     it('should validate required approvers are in stakeholder list', async () => {
-      await expect(manager.requestSignoff({
-        documentKey: 'prd:test',
-        documentType: 'prd',
-        reviewIssueNumber: 100,
-        stakeholders: ['alice', 'bob'],
-        deadline: '2026-01-15',
-        config: {
-          threshold_type: 'required_approvers',
-          required: ['alice', 'charlie'] // charlie not in stakeholders
-        }
-      })).rejects.toThrow('All required approvers must be in stakeholder list');
+      await expect(
+        manager.requestSignoff({
+          documentKey: 'prd:test',
+          documentType: 'prd',
+          reviewIssueNumber: 100,
+          stakeholders: ['alice', 'bob'],
+          deadline: '2026-01-15',
+          config: {
+            threshold_type: 'required_approvers',
+            required: ['alice', 'charlie'], // charlie not in stakeholders
+          },
+        }),
+      ).rejects.toThrow('All required approvers must be in stakeholder list');
     });
 
     it('should handle @ prefix in stakeholder names', async () => {
@@ -250,7 +251,7 @@ describe('SignoffManager', () => {
         documentType: 'prd',
         reviewIssueNumber: 100,
         stakeholders: ['@alice', '@bob'],
-        deadline: '2026-01-15'
+        deadline: '2026-01-15',
       });
 
       const comment = mockAddComment.mock.calls[0][1];
@@ -271,7 +272,7 @@ describe('SignoffManager', () => {
     beforeEach(() => {
       mockAddComment = vi.fn().mockResolvedValue({});
       mockGetIssue = vi.fn().mockResolvedValue({
-        labels: [{ name: 'type:prd-review' }, { name: 'review-status:signoff' }]
+        labels: [{ name: 'type:prd-review' }, { name: 'review-status:signoff' }],
       });
       mockUpdateIssue = vi.fn().mockResolvedValue({});
 
@@ -280,8 +281,8 @@ describe('SignoffManager', () => {
         {
           addComment: mockAddComment,
           getIssue: mockGetIssue,
-          updateIssue: mockUpdateIssue
-        }
+          updateIssue: mockUpdateIssue,
+        },
       );
     });
 
@@ -291,7 +292,7 @@ describe('SignoffManager', () => {
         documentKey: 'prd:user-auth',
         documentType: 'prd',
         user: 'alice',
-        decision: 'approved'
+        decision: 'approved',
       });
 
       expect(mockAddComment).toHaveBeenCalledTimes(1);
@@ -313,7 +314,7 @@ describe('SignoffManager', () => {
         documentType: 'prd',
         user: 'bob',
         decision: 'approved_with_note',
-        note: 'Please update docs before implementation'
+        note: 'Please update docs before implementation',
       });
 
       const comment = mockAddComment.mock.calls[0][1];
@@ -331,7 +332,7 @@ describe('SignoffManager', () => {
         user: 'security',
         decision: 'blocked',
         note: 'Security review required',
-        feedbackIssueNumber: 42
+        feedbackIssueNumber: 42,
       });
 
       const comment = mockAddComment.mock.calls[0][1];
@@ -348,7 +349,7 @@ describe('SignoffManager', () => {
         documentKey: 'prd:test',
         documentType: 'prd',
         user: 'alice',
-        decision: 'approved'
+        decision: 'approved',
       });
 
       expect(mockUpdateIssue).toHaveBeenCalledTimes(1);
@@ -362,8 +363,8 @@ describe('SignoffManager', () => {
       mockGetIssue.mockResolvedValue({
         labels: [
           { name: 'type:prd-review' },
-          { name: 'signoff-alice-pending' } // Previous status
-        ]
+          { name: 'signoff-alice-pending' }, // Previous status
+        ],
       });
 
       await manager.submitSignoff({
@@ -371,7 +372,7 @@ describe('SignoffManager', () => {
         documentKey: 'prd:test',
         documentType: 'prd',
         user: 'alice',
-        decision: 'approved'
+        decision: 'approved',
       });
 
       const updateCall = mockUpdateIssue.mock.calls[0];
@@ -386,7 +387,7 @@ describe('SignoffManager', () => {
         documentKey: 'prd:test',
         documentType: 'prd',
         user: '@alice',
-        decision: 'approved'
+        decision: 'approved',
       });
 
       const updateCall = mockUpdateIssue.mock.calls[0];
@@ -394,13 +395,15 @@ describe('SignoffManager', () => {
     });
 
     it('should throw error for invalid decision', async () => {
-      await expect(manager.submitSignoff({
-        reviewIssueNumber: 100,
-        documentKey: 'prd:test',
-        documentType: 'prd',
-        user: 'alice',
-        decision: 'invalid'
-      })).rejects.toThrow('Invalid decision: invalid');
+      await expect(
+        manager.submitSignoff({
+          reviewIssueNumber: 100,
+          documentKey: 'prd:test',
+          documentType: 'prd',
+          user: 'alice',
+          decision: 'invalid',
+        }),
+      ).rejects.toThrow('Invalid decision: invalid');
     });
   });
 
@@ -413,10 +416,7 @@ describe('SignoffManager', () => {
     beforeEach(() => {
       mockGetIssue = vi.fn();
 
-      manager = new TestableSignoffManager(
-        { owner: 'test-org', repo: 'test-repo' },
-        { getIssue: mockGetIssue }
-      );
+      manager = new TestableSignoffManager({ owner: 'test-org', repo: 'test-repo' }, { getIssue: mockGetIssue });
     });
 
     it('should parse signoff labels from issue', async () => {
@@ -426,8 +426,8 @@ describe('SignoffManager', () => {
           { name: 'signoff-alice-approved' },
           { name: 'signoff-bob-approved-with-note' },
           { name: 'signoff-charlie-blocked' },
-          { name: 'signoff-dave-pending' }
-        ]
+          { name: 'signoff-dave-pending' },
+        ],
       });
 
       const signoffs = await manager.getSignoffs(100);
@@ -436,31 +436,28 @@ describe('SignoffManager', () => {
       expect(signoffs).toContainEqual({
         user: 'alice',
         status: 'approved',
-        label: 'signoff-alice-approved'
+        label: 'signoff-alice-approved',
       });
       expect(signoffs).toContainEqual({
         user: 'bob',
         status: 'approved_with_note',
-        label: 'signoff-bob-approved-with-note'
+        label: 'signoff-bob-approved-with-note',
       });
       expect(signoffs).toContainEqual({
         user: 'charlie',
         status: 'blocked',
-        label: 'signoff-charlie-blocked'
+        label: 'signoff-charlie-blocked',
       });
       expect(signoffs).toContainEqual({
         user: 'dave',
         status: 'pending',
-        label: 'signoff-dave-pending'
+        label: 'signoff-dave-pending',
       });
     });
 
     it('should return empty array when no signoff labels', async () => {
       mockGetIssue.mockResolvedValue({
-        labels: [
-          { name: 'type:prd-review' },
-          { name: 'review-status:signoff' }
-        ]
+        labels: [{ name: 'type:prd-review' }, { name: 'review-status:signoff' }],
       });
 
       const signoffs = await manager.getSignoffs(100);
@@ -470,11 +467,7 @@ describe('SignoffManager', () => {
 
     it('should ignore non-signoff labels', async () => {
       mockGetIssue.mockResolvedValue({
-        labels: [
-          { name: 'signoff-alice-approved' },
-          { name: 'priority:high' },
-          { name: 'type:prd-feedback' }
-        ]
+        labels: [{ name: 'signoff-alice-approved' }, { name: 'priority:high' }, { name: 'type:prd-feedback' }],
       });
 
       const signoffs = await manager.getSignoffs(100);
@@ -496,7 +489,7 @@ describe('SignoffManager', () => {
     it('should return approved when minimum approvals reached', () => {
       const signoffs = [
         { user: 'alice', status: 'approved' },
-        { user: 'bob', status: 'approved' }
+        { user: 'bob', status: 'approved' },
       ];
       const stakeholders = ['alice', 'bob', 'charlie'];
       const config = { ...DEFAULT_CONFIG, minimum_approvals: 2 };
@@ -508,9 +501,7 @@ describe('SignoffManager', () => {
     });
 
     it('should return pending when more approvals needed', () => {
-      const signoffs = [
-        { user: 'alice', status: 'approved' }
-      ];
+      const signoffs = [{ user: 'alice', status: 'approved' }];
       const stakeholders = ['alice', 'bob', 'charlie'];
       const config = { ...DEFAULT_CONFIG, minimum_approvals: 2 };
 
@@ -524,7 +515,7 @@ describe('SignoffManager', () => {
     it('should count approved_with_note as approval', () => {
       const signoffs = [
         { user: 'alice', status: 'approved' },
-        { user: 'bob', status: 'approved_with_note' }
+        { user: 'bob', status: 'approved_with_note' },
       ];
       const stakeholders = ['alice', 'bob', 'charlie'];
       const config = { ...DEFAULT_CONFIG, minimum_approvals: 2 };
@@ -537,7 +528,7 @@ describe('SignoffManager', () => {
     it('should return blocked when block threshold reached', () => {
       const signoffs = [
         { user: 'alice', status: 'approved' },
-        { user: 'bob', status: 'blocked' }
+        { user: 'bob', status: 'blocked' },
       ];
       const stakeholders = ['alice', 'bob', 'charlie'];
       const config = { ...DEFAULT_CONFIG, minimum_approvals: 2, block_threshold: 1 };
@@ -552,7 +543,7 @@ describe('SignoffManager', () => {
       const signoffs = [
         { user: 'alice', status: 'approved' },
         { user: 'bob', status: 'approved' },
-        { user: 'charlie', status: 'blocked' }
+        { user: 'charlie', status: 'blocked' },
       ];
       const stakeholders = ['alice', 'bob', 'charlie'];
       const config = { ...DEFAULT_CONFIG, minimum_approvals: 2, allow_blocks: false };
@@ -566,7 +557,7 @@ describe('SignoffManager', () => {
       const signoffs = [
         { user: 'alice', status: 'approved' },
         { user: 'bob', status: 'approved' },
-        { user: 'charlie', status: 'blocked' }
+        { user: 'charlie', status: 'blocked' },
       ];
       const stakeholders = ['alice', 'bob', 'charlie', 'dave'];
       const config = { ...DEFAULT_CONFIG, minimum_approvals: 2, block_threshold: 2 };
@@ -589,13 +580,13 @@ describe('SignoffManager', () => {
     it('should return approved when percentage threshold met', () => {
       const signoffs = [
         { user: 'alice', status: 'approved' },
-        { user: 'bob', status: 'approved' }
+        { user: 'bob', status: 'approved' },
       ];
       const stakeholders = ['alice', 'bob', 'charlie']; // 2/3 = 66.67%
       const config = {
         ...DEFAULT_CONFIG,
         threshold_type: 'percentage',
-        approval_percentage: 66
+        approval_percentage: 66,
       };
 
       const status = manager.calculateStatus(signoffs, stakeholders, config);
@@ -606,14 +597,12 @@ describe('SignoffManager', () => {
     });
 
     it('should return pending when percentage not met', () => {
-      const signoffs = [
-        { user: 'alice', status: 'approved' }
-      ];
+      const signoffs = [{ user: 'alice', status: 'approved' }];
       const stakeholders = ['alice', 'bob', 'charlie', 'dave']; // 1/4 = 25%
       const config = {
         ...DEFAULT_CONFIG,
         threshold_type: 'percentage',
-        approval_percentage: 50
+        approval_percentage: 50,
       };
 
       const status = manager.calculateStatus(signoffs, stakeholders, config);
@@ -627,13 +616,13 @@ describe('SignoffManager', () => {
     it('should calculate correctly for 100% threshold', () => {
       const signoffs = [
         { user: 'alice', status: 'approved' },
-        { user: 'bob', status: 'approved' }
+        { user: 'bob', status: 'approved' },
       ];
       const stakeholders = ['alice', 'bob', 'charlie'];
       const config = {
         ...DEFAULT_CONFIG,
         threshold_type: 'percentage',
-        approval_percentage: 100
+        approval_percentage: 100,
       };
 
       const status = manager.calculateStatus(signoffs, stakeholders, config);
@@ -656,7 +645,7 @@ describe('SignoffManager', () => {
       const signoffs = [
         { user: 'alice', status: 'approved' },
         { user: 'bob', status: 'approved' },
-        { user: 'charlie', status: 'approved' }
+        { user: 'charlie', status: 'approved' },
       ];
       const stakeholders = ['alice', 'bob', 'charlie', 'dave'];
       const config = {
@@ -664,7 +653,7 @@ describe('SignoffManager', () => {
         threshold_type: 'required_approvers',
         required: ['alice', 'bob'],
         optional: ['charlie', 'dave'],
-        minimum_optional: 1
+        minimum_optional: 1,
       };
 
       const status = manager.calculateStatus(signoffs, stakeholders, config);
@@ -676,7 +665,7 @@ describe('SignoffManager', () => {
     it('should return pending when required approver missing', () => {
       const signoffs = [
         { user: 'alice', status: 'approved' },
-        { user: 'charlie', status: 'approved' }
+        { user: 'charlie', status: 'approved' },
       ];
       const stakeholders = ['alice', 'bob', 'charlie', 'dave'];
       const config = {
@@ -684,7 +673,7 @@ describe('SignoffManager', () => {
         threshold_type: 'required_approvers',
         required: ['alice', 'bob'],
         optional: ['charlie', 'dave'],
-        minimum_optional: 1
+        minimum_optional: 1,
       };
 
       const status = manager.calculateStatus(signoffs, stakeholders, config);
@@ -697,7 +686,7 @@ describe('SignoffManager', () => {
     it('should return pending when optional threshold not met', () => {
       const signoffs = [
         { user: 'alice', status: 'approved' },
-        { user: 'bob', status: 'approved' }
+        { user: 'bob', status: 'approved' },
         // No optional approvers
       ];
       const stakeholders = ['alice', 'bob', 'charlie', 'dave'];
@@ -706,7 +695,7 @@ describe('SignoffManager', () => {
         threshold_type: 'required_approvers',
         required: ['alice', 'bob'],
         optional: ['charlie', 'dave'],
-        minimum_optional: 1
+        minimum_optional: 1,
       };
 
       const status = manager.calculateStatus(signoffs, stakeholders, config);
@@ -719,7 +708,7 @@ describe('SignoffManager', () => {
     it('should handle @ prefix in required list', () => {
       const signoffs = [
         { user: 'alice', status: 'approved' },
-        { user: 'bob', status: 'approved' }
+        { user: 'bob', status: 'approved' },
       ];
       const stakeholders = ['@alice', '@bob'];
       const config = {
@@ -727,7 +716,7 @@ describe('SignoffManager', () => {
         threshold_type: 'required_approvers',
         required: ['@alice', '@bob'],
         optional: [],
-        minimum_optional: 0
+        minimum_optional: 0,
       };
 
       const status = manager.calculateStatus(signoffs, stakeholders, config);
@@ -748,25 +737,23 @@ describe('SignoffManager', () => {
     it('should return true when approved', () => {
       const signoffs = [
         { user: 'alice', status: 'approved' },
-        { user: 'bob', status: 'approved' }
+        { user: 'bob', status: 'approved' },
       ];
 
       const approved = manager.isApproved(signoffs, ['alice', 'bob', 'charlie'], {
         ...DEFAULT_CONFIG,
-        minimum_approvals: 2
+        minimum_approvals: 2,
       });
 
       expect(approved).toBe(true);
     });
 
     it('should return false when pending', () => {
-      const signoffs = [
-        { user: 'alice', status: 'approved' }
-      ];
+      const signoffs = [{ user: 'alice', status: 'approved' }];
 
       const approved = manager.isApproved(signoffs, ['alice', 'bob', 'charlie'], {
         ...DEFAULT_CONFIG,
-        minimum_approvals: 2
+        minimum_approvals: 2,
       });
 
       expect(approved).toBe(false);
@@ -775,12 +762,12 @@ describe('SignoffManager', () => {
     it('should return false when blocked', () => {
       const signoffs = [
         { user: 'alice', status: 'approved' },
-        { user: 'bob', status: 'blocked' }
+        { user: 'bob', status: 'blocked' },
       ];
 
       const approved = manager.isApproved(signoffs, ['alice', 'bob'], {
         ...DEFAULT_CONFIG,
-        minimum_approvals: 1
+        minimum_approvals: 1,
       });
 
       expect(approved).toBe(false);
@@ -800,7 +787,7 @@ describe('SignoffManager', () => {
       const signoffs = [
         { user: 'alice', status: 'approved' },
         { user: 'bob', status: 'approved_with_note' },
-        { user: 'charlie', status: 'blocked' }
+        { user: 'charlie', status: 'blocked' },
       ];
       const stakeholders = ['alice', 'bob', 'charlie', 'dave', 'eve'];
 
@@ -818,13 +805,13 @@ describe('SignoffManager', () => {
     it('should include status info from calculateStatus', () => {
       const signoffs = [
         { user: 'alice', status: 'approved' },
-        { user: 'bob', status: 'approved' }
+        { user: 'bob', status: 'approved' },
       ];
       const stakeholders = ['alice', 'bob', 'charlie'];
 
       const summary = manager.getProgressSummary(signoffs, stakeholders, {
         ...DEFAULT_CONFIG,
-        minimum_approvals: 2
+        minimum_approvals: 2,
       });
 
       expect(summary.status).toBe('approved');
@@ -832,9 +819,7 @@ describe('SignoffManager', () => {
     });
 
     it('should handle @ prefix in stakeholder names', () => {
-      const signoffs = [
-        { user: 'alice', status: 'approved' }
-      ];
+      const signoffs = [{ user: 'alice', status: 'approved' }];
       const stakeholders = ['@alice', '@bob'];
 
       const summary = manager.getProgressSummary(signoffs, stakeholders, DEFAULT_CONFIG);
@@ -853,18 +838,11 @@ describe('SignoffManager', () => {
     beforeEach(() => {
       mockAddComment = vi.fn().mockResolvedValue({});
 
-      manager = new TestableSignoffManager(
-        { owner: 'test-org', repo: 'test-repo' },
-        { addComment: mockAddComment }
-      );
+      manager = new TestableSignoffManager({ owner: 'test-org', repo: 'test-repo' }, { addComment: mockAddComment });
     });
 
     it('should send reminder to pending users', async () => {
-      const result = await manager.sendReminder(
-        100,
-        ['alice', 'bob'],
-        '2026-01-15'
-      );
+      const result = await manager.sendReminder(100, ['alice', 'bob'], '2026-01-15');
 
       expect(mockAddComment).toHaveBeenCalledTimes(1);
       const comment = mockAddComment.mock.calls[0][1];
@@ -896,10 +874,7 @@ describe('SignoffManager', () => {
     beforeEach(() => {
       mockAddComment = vi.fn().mockResolvedValue({});
 
-      manager = new TestableSignoffManager(
-        { owner: 'test-org', repo: 'test-repo' },
-        { addComment: mockAddComment }
-      );
+      manager = new TestableSignoffManager({ owner: 'test-org', repo: 'test-repo' }, { addComment: mockAddComment });
     });
 
     it('should post deadline extension comment', async () => {
@@ -978,7 +953,7 @@ describe('SignoffManager', () => {
       const config = {
         threshold_type: 'required_approvers',
         required: ['alice', 'bob'],
-        minimum_optional: 2
+        minimum_optional: 2,
       };
       expect(manager._formatThreshold(config)).toBe('Required: alice, bob + 2 optional');
     });
@@ -995,13 +970,9 @@ describe('SignoffManager', () => {
     it('should throw when GitHub methods not implemented', async () => {
       const manager = new SignoffManager({ owner: 'test', repo: 'test' });
 
-      await expect(manager._getIssue(1)).rejects.toThrow(
-        '_getIssue must be implemented by caller via GitHub MCP'
-      );
+      await expect(manager._getIssue(1)).rejects.toThrow('_getIssue must be implemented by caller via GitHub MCP');
 
-      await expect(manager._addComment(1, 'test')).rejects.toThrow(
-        '_addComment must be implemented by caller via GitHub MCP'
-      );
+      await expect(manager._addComment(1, 'test')).rejects.toThrow('_addComment must be implemented by caller via GitHub MCP');
     });
 
     it('should throw for unknown threshold type in calculateStatus', () => {

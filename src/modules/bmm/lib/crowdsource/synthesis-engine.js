@@ -61,7 +61,7 @@ Generate the updated section text that:
 2. Maintains consistent tone and format
 3. Is clear and actionable
 
-Return the complete updated section text.`
+Return the complete updated section text.`,
   },
 
   epic: {
@@ -103,8 +103,8 @@ Propose an updated story breakdown that:
 Format as JSON with:
 - stories: Array of { key, title, description, tasks_estimate }
 - changes_made: What changed from original
-- rationale: Why this split works better`
-  }
+- rationale: Why this split works better`,
+  },
 };
 
 class SynthesisEngine {
@@ -121,29 +121,29 @@ class SynthesisEngine {
       conflicts: [],
       themes: [],
       suggestedChanges: [],
-      summary: {}
+      summary: {},
     };
 
     for (const [section, feedbackList] of Object.entries(feedbackBySection)) {
-      const sectionAnalysis = await this._analyzeSection(
-        section,
-        feedbackList,
-        originalDocument[section]
-      );
+      const sectionAnalysis = await this._analyzeSection(section, feedbackList, originalDocument[section]);
 
       analysis.sections[section] = sectionAnalysis;
 
       if (sectionAnalysis.conflicts.length > 0) {
-        analysis.conflicts.push(...sectionAnalysis.conflicts.map(c => ({
-          ...c,
-          section
-        })));
+        analysis.conflicts.push(
+          ...sectionAnalysis.conflicts.map((c) => ({
+            ...c,
+            section,
+          })),
+        );
       }
 
-      analysis.suggestedChanges.push(...sectionAnalysis.suggestedChanges.map(c => ({
-        ...c,
-        section
-      })));
+      analysis.suggestedChanges.push(
+        ...sectionAnalysis.suggestedChanges.map((c) => ({
+          ...c,
+          section,
+        })),
+      );
     }
 
     // Generate overall summary
@@ -161,7 +161,7 @@ class SynthesisEngine {
       byType: this._groupByType(feedbackList),
       themes: [],
       conflicts: [],
-      suggestedChanges: []
+      suggestedChanges: [],
     };
 
     // Identify conflicts (multiple feedback on same aspect)
@@ -171,9 +171,7 @@ class SynthesisEngine {
     result.themes = this._identifyThemes(feedbackList);
 
     // Generate suggested changes for non-conflicting feedback
-    const nonConflicting = feedbackList.filter(
-      f => !result.conflicts.some(c => c.feedbackIds.includes(f.id))
-    );
+    const nonConflicting = feedbackList.filter((f) => !result.conflicts.some((c) => c.feedbackIds.includes(f.id)));
 
     for (const feedback of nonConflicting) {
       result.suggestedChanges.push({
@@ -182,7 +180,7 @@ class SynthesisEngine {
         priority: feedback.priority,
         description: feedback.title,
         suggestedChange: feedback.suggestedChange,
-        submittedBy: feedback.submittedBy
+        submittedBy: feedback.submittedBy,
       });
     }
 
@@ -210,13 +208,13 @@ class SynthesisEngine {
       if (items.length < 2) continue;
 
       // Check if they have different suggestions
-      const uniqueSuggestions = new Set(items.map(i => i.suggestedChange).filter(Boolean));
+      const uniqueSuggestions = new Set(items.map((i) => i.suggestedChange).filter(Boolean));
       if (uniqueSuggestions.size > 1) {
         conflicts.push({
           topic,
-          feedbackIds: items.map(i => i.id),
-          stakeholders: items.map(i => ({ user: i.submittedBy, position: i.title })),
-          description: `Conflicting views on ${topic}`
+          feedbackIds: items.map((i) => i.id),
+          stakeholders: items.map((i) => ({ user: i.submittedBy, position: i.title })),
+          description: `Conflicting views on ${topic}`,
         });
       }
     }
@@ -244,10 +242,10 @@ class SynthesisEngine {
 
     // Return themes mentioned by multiple people
     return Object.values(themes)
-      .filter(t => t.count >= 2)
-      .map(t => ({
+      .filter((t) => t.count >= 2)
+      .map((t) => ({
         ...t,
-        types: Array.from(t.types)
+        types: Array.from(t.types),
       }))
       .sort((a, b) => b.count - a.count);
   }
@@ -271,8 +269,8 @@ class SynthesisEngine {
         proposed_text: 'string',
         rationale: 'string',
         trade_offs: 'string[]',
-        confidence: 'high|medium|low'
-      }
+        confidence: 'high|medium|low',
+      },
     };
   }
 
@@ -280,9 +278,9 @@ class SynthesisEngine {
    * Generate merge prompt for incorporating feedback
    */
   generateMergePrompt(section, originalText, approvedFeedback) {
-    const feedbackText = approvedFeedback.map(f =>
-      `- ${f.feedbackType}: ${f.title}\n  Change: ${f.suggestedChange || 'Address the concern'}`
-    ).join('\n\n');
+    const feedbackText = approvedFeedback
+      .map((f) => `- ${f.feedbackType}: ${f.title}\n  Change: ${f.suggestedChange || 'Address the concern'}`)
+      .join('\n\n');
 
     return SYNTHESIS_PROMPTS[this.documentType].merge
       .replace('{{section}}', section)
@@ -309,8 +307,7 @@ class SynthesisEngine {
    * Generate synthesis summary
    */
   _generateSummary(analysis) {
-    const totalFeedback = Object.values(analysis.sections)
-      .reduce((sum, s) => sum + s.feedbackCount, 0);
+    const totalFeedback = Object.values(analysis.sections).reduce((sum, s) => sum + s.feedbackCount, 0);
 
     const allTypes = {};
     for (const section of Object.values(analysis.sections)) {
@@ -326,7 +323,7 @@ class SynthesisEngine {
       themeCount: analysis.themes ? analysis.themes.length : 0,
       changeCount: analysis.suggestedChanges.length,
       feedbackByType: allTypes,
-      needsAttention: analysis.conflicts.length > 0
+      needsAttention: analysis.conflicts.length > 0,
     };
   }
 
@@ -349,20 +346,69 @@ class SynthesisEngine {
 
     // Simple keyword extraction - can be enhanced
     const stopWords = new Set([
-      'the', 'a', 'an', 'is', 'are', 'was', 'were', 'be', 'been',
-      'being', 'have', 'has', 'had', 'do', 'does', 'did', 'will',
-      'would', 'could', 'should', 'may', 'might', 'must', 'shall',
-      'to', 'of', 'in', 'for', 'on', 'with', 'at', 'by', 'from',
-      'this', 'that', 'these', 'those', 'it', 'its', 'and', 'or',
-      'but', 'not', 'no', 'if', 'then', 'else', 'when', 'where',
-      'why', 'how', 'what', 'which', 'who', 'whom', 'whose'
+      'the',
+      'a',
+      'an',
+      'is',
+      'are',
+      'was',
+      'were',
+      'be',
+      'been',
+      'being',
+      'have',
+      'has',
+      'had',
+      'do',
+      'does',
+      'did',
+      'will',
+      'would',
+      'could',
+      'should',
+      'may',
+      'might',
+      'must',
+      'shall',
+      'to',
+      'of',
+      'in',
+      'for',
+      'on',
+      'with',
+      'at',
+      'by',
+      'from',
+      'this',
+      'that',
+      'these',
+      'those',
+      'it',
+      'its',
+      'and',
+      'or',
+      'but',
+      'not',
+      'no',
+      'if',
+      'then',
+      'else',
+      'when',
+      'where',
+      'why',
+      'how',
+      'what',
+      'which',
+      'who',
+      'whom',
+      'whose',
     ]);
 
     return text
       .toLowerCase()
       .replace(/[^\w\s]/g, ' ')
       .split(/\s+/)
-      .filter(word => word.length > 3 && !stopWords.has(word))
+      .filter((word) => word.length > 3 && !stopWords.has(word))
       .slice(0, 10); // Limit to top 10 keywords
   }
 

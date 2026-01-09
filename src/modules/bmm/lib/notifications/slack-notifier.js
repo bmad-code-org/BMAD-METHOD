@@ -12,7 +12,7 @@ const SLACK_TEMPLATES = {
     blocks: (data) => [
       {
         type: 'header',
-        text: { type: 'plain_text', text: '📣 Feedback Round Open', emoji: true }
+        text: { type: 'plain_text', text: '📣 Feedback Round Open', emoji: true },
       },
       {
         type: 'section',
@@ -20,12 +20,12 @@ const SLACK_TEMPLATES = {
           { type: 'mrkdwn', text: `*Document:*\n${data.document_type}:${data.document_key}` },
           { type: 'mrkdwn', text: `*Version:*\nv${data.version}` },
           { type: 'mrkdwn', text: `*Deadline:*\n${data.deadline}` },
-          { type: 'mrkdwn', text: `*Stakeholders:*\n${data.stakeholder_count}` }
-        ]
+          { type: 'mrkdwn', text: `*Stakeholders:*\n${data.stakeholder_count}` },
+        ],
       },
       {
         type: 'section',
-        text: { type: 'mrkdwn', text: `Please review and provide feedback by *${data.deadline}*.` }
+        text: { type: 'mrkdwn', text: `Please review and provide feedback by *${data.deadline}*.` },
       },
       {
         type: 'actions',
@@ -34,11 +34,11 @@ const SLACK_TEMPLATES = {
             type: 'button',
             text: { type: 'plain_text', text: 'View Document', emoji: true },
             url: data.document_url,
-            style: 'primary'
-          }
-        ]
-      }
-    ]
+            style: 'primary',
+          },
+        ],
+      },
+    ],
   },
 
   feedback_submitted: {
@@ -47,7 +47,7 @@ const SLACK_TEMPLATES = {
     blocks: (data) => [
       {
         type: 'header',
-        text: { type: 'plain_text', text: '💬 New Feedback', emoji: true }
+        text: { type: 'plain_text', text: '💬 New Feedback', emoji: true },
       },
       {
         type: 'section',
@@ -55,12 +55,12 @@ const SLACK_TEMPLATES = {
           { type: 'mrkdwn', text: `*From:*\n${data.user}` },
           { type: 'mrkdwn', text: `*Document:*\n${data.document_type}:${data.document_key}` },
           { type: 'mrkdwn', text: `*Type:*\n${data.feedback_type}` },
-          { type: 'mrkdwn', text: `*Section:*\n${data.section}` }
-        ]
+          { type: 'mrkdwn', text: `*Section:*\n${data.section}` },
+        ],
       },
       {
         type: 'section',
-        text: { type: 'mrkdwn', text: `> ${data.summary.substring(0, 200)}${data.summary.length > 200 ? '...' : ''}` }
+        text: { type: 'mrkdwn', text: `> ${data.summary.substring(0, 200)}${data.summary.length > 200 ? '...' : ''}` },
       },
       {
         type: 'actions',
@@ -68,11 +68,11 @@ const SLACK_TEMPLATES = {
           {
             type: 'button',
             text: { type: 'plain_text', text: 'View Feedback', emoji: true },
-            url: data.feedback_url
-          }
-        ]
-      }
-    ]
+            url: data.feedback_url,
+          },
+        ],
+      },
+    ],
   },
 
   synthesis_complete: {
@@ -81,7 +81,7 @@ const SLACK_TEMPLATES = {
     blocks: (data) => [
       {
         type: 'header',
-        text: { type: 'plain_text', text: '🔄 Synthesis Complete', emoji: true }
+        text: { type: 'plain_text', text: '🔄 Synthesis Complete', emoji: true },
       },
       {
         type: 'section',
@@ -89,12 +89,12 @@ const SLACK_TEMPLATES = {
           { type: 'mrkdwn', text: `*Document:*\n${data.document_type}:${data.document_key}` },
           { type: 'mrkdwn', text: `*Version:*\nv${data.old_version} → v${data.new_version}` },
           { type: 'mrkdwn', text: `*Feedback Processed:*\n${data.feedback_count} items` },
-          { type: 'mrkdwn', text: `*Conflicts Resolved:*\n${data.conflicts_resolved || 0}` }
-        ]
+          { type: 'mrkdwn', text: `*Conflicts Resolved:*\n${data.conflicts_resolved || 0}` },
+        ],
       },
       {
         type: 'section',
-        text: { type: 'mrkdwn', text: data.summary.substring(0, 500) }
+        text: { type: 'mrkdwn', text: data.summary.substring(0, 500) },
       },
       {
         type: 'actions',
@@ -103,11 +103,11 @@ const SLACK_TEMPLATES = {
             type: 'button',
             text: { type: 'plain_text', text: 'View Document', emoji: true },
             url: data.document_url,
-            style: 'primary'
-          }
-        ]
-      }
-    ]
+            style: 'primary',
+          },
+        ],
+      },
+    ],
   },
 
   signoff_requested: {
@@ -116,7 +116,7 @@ const SLACK_TEMPLATES = {
     blocks: (data) => [
       {
         type: 'header',
-        text: { type: 'plain_text', text: '✍️ Sign-off Requested', emoji: true }
+        text: { type: 'plain_text', text: '✍️ Sign-off Requested', emoji: true },
       },
       {
         type: 'section',
@@ -124,12 +124,12 @@ const SLACK_TEMPLATES = {
           { type: 'mrkdwn', text: `*Document:*\n${data.document_type}:${data.document_key}` },
           { type: 'mrkdwn', text: `*Version:*\nv${data.version}` },
           { type: 'mrkdwn', text: `*Deadline:*\n${data.deadline}` },
-          { type: 'mrkdwn', text: `*Approvals Needed:*\n${data.approvals_needed}` }
-        ]
+          { type: 'mrkdwn', text: `*Approvals Needed:*\n${data.approvals_needed}` },
+        ],
       },
       {
         type: 'section',
-        text: { type: 'mrkdwn', text: 'Please review and provide your sign-off decision.' }
+        text: { type: 'mrkdwn', text: 'Please review and provide your sign-off decision.' },
       },
       {
         type: 'actions',
@@ -138,25 +138,25 @@ const SLACK_TEMPLATES = {
             type: 'button',
             text: { type: 'plain_text', text: 'View Document', emoji: true },
             url: data.document_url,
-            style: 'primary'
+            style: 'primary',
           },
           {
             type: 'button',
             text: { type: 'plain_text', text: 'Sign Off', emoji: true },
-            url: data.signoff_url
-          }
-        ]
-      }
-    ]
+            url: data.signoff_url,
+          },
+        ],
+      },
+    ],
   },
 
   signoff_received: {
-    color: (data) => data.decision === 'blocked' ? '#dc3545' : '#28a745',
+    color: (data) => (data.decision === 'blocked' ? '#dc3545' : '#28a745'),
     title: (data) => `${data.emoji} Sign-off from ${data.user}`,
     blocks: (data) => [
       {
         type: 'header',
-        text: { type: 'plain_text', text: `${data.emoji} Sign-off Received`, emoji: true }
+        text: { type: 'plain_text', text: `${data.emoji} Sign-off Received`, emoji: true },
       },
       {
         type: 'section',
@@ -164,24 +164,28 @@ const SLACK_TEMPLATES = {
           { type: 'mrkdwn', text: `*From:*\n${data.user}` },
           { type: 'mrkdwn', text: `*Decision:*\n${data.decision}` },
           { type: 'mrkdwn', text: `*Document:*\n${data.document_type}:${data.document_key}` },
-          { type: 'mrkdwn', text: `*Progress:*\n${data.progress_current}/${data.progress_total}` }
-        ]
+          { type: 'mrkdwn', text: `*Progress:*\n${data.progress_current}/${data.progress_total}` },
+        ],
       },
-      ...(data.note ? [{
-        type: 'section',
-        text: { type: 'mrkdwn', text: `*Note:* ${data.note}` }
-      }] : []),
+      ...(data.note
+        ? [
+            {
+              type: 'section',
+              text: { type: 'mrkdwn', text: `*Note:* ${data.note}` },
+            },
+          ]
+        : []),
       {
         type: 'actions',
         elements: [
           {
             type: 'button',
             text: { type: 'plain_text', text: 'View Progress', emoji: true },
-            url: data.review_url
-          }
-        ]
-      }
-    ]
+            url: data.review_url,
+          },
+        ],
+      },
+    ],
   },
 
   document_approved: {
@@ -190,7 +194,7 @@ const SLACK_TEMPLATES = {
     blocks: (data) => [
       {
         type: 'header',
-        text: { type: 'plain_text', text: '✅ Document Approved!', emoji: true }
+        text: { type: 'plain_text', text: '✅ Document Approved!', emoji: true },
       },
       {
         type: 'section',
@@ -198,12 +202,12 @@ const SLACK_TEMPLATES = {
           { type: 'mrkdwn', text: `*Document:*\n${data.document_type}:${data.document_key}` },
           { type: 'mrkdwn', text: `*Title:*\n${data.title}` },
           { type: 'mrkdwn', text: `*Version:*\nv${data.version}` },
-          { type: 'mrkdwn', text: `*Approvals:*\n${data.approval_count}/${data.stakeholder_count}` }
-        ]
+          { type: 'mrkdwn', text: `*Approvals:*\n${data.approval_count}/${data.stakeholder_count}` },
+        ],
       },
       {
         type: 'section',
-        text: { type: 'mrkdwn', text: '🎉 All required sign-offs received. Ready for implementation!' }
+        text: { type: 'mrkdwn', text: '🎉 All required sign-offs received. Ready for implementation!' },
       },
       {
         type: 'actions',
@@ -212,11 +216,11 @@ const SLACK_TEMPLATES = {
             type: 'button',
             text: { type: 'plain_text', text: 'View Document', emoji: true },
             url: data.document_url,
-            style: 'primary'
-          }
-        ]
-      }
-    ]
+            style: 'primary',
+          },
+        ],
+      },
+    ],
   },
 
   document_blocked: {
@@ -225,35 +229,39 @@ const SLACK_TEMPLATES = {
     blocks: (data) => [
       {
         type: 'header',
-        text: { type: 'plain_text', text: '🚫 Document Blocked', emoji: true }
+        text: { type: 'plain_text', text: '🚫 Document Blocked', emoji: true },
       },
       {
         type: 'section',
         fields: [
           { type: 'mrkdwn', text: `*Document:*\n${data.document_type}:${data.document_key}` },
-          { type: 'mrkdwn', text: `*Blocked by:*\n${data.user}` }
-        ]
+          { type: 'mrkdwn', text: `*Blocked by:*\n${data.user}` },
+        ],
       },
       {
         type: 'section',
-        text: { type: 'mrkdwn', text: `*Reason:*\n${data.reason}` }
+        text: { type: 'mrkdwn', text: `*Reason:*\n${data.reason}` },
       },
       {
         type: 'section',
-        text: { type: 'mrkdwn', text: '⚠️ This blocking concern must be resolved before approval.' }
+        text: { type: 'mrkdwn', text: '⚠️ This blocking concern must be resolved before approval.' },
       },
-      ...(data.feedback_url ? [{
-        type: 'actions',
-        elements: [
-          {
-            type: 'button',
-            text: { type: 'plain_text', text: 'View Issue', emoji: true },
-            url: data.feedback_url,
-            style: 'danger'
-          }
-        ]
-      }] : [])
-    ]
+      ...(data.feedback_url
+        ? [
+            {
+              type: 'actions',
+              elements: [
+                {
+                  type: 'button',
+                  text: { type: 'plain_text', text: 'View Issue', emoji: true },
+                  url: data.feedback_url,
+                  style: 'danger',
+                },
+              ],
+            },
+          ]
+        : []),
+    ],
   },
 
   reminder: {
@@ -262,7 +270,7 @@ const SLACK_TEMPLATES = {
     blocks: (data) => [
       {
         type: 'header',
-        text: { type: 'plain_text', text: '⏰ Reminder: Action Needed', emoji: true }
+        text: { type: 'plain_text', text: '⏰ Reminder: Action Needed', emoji: true },
       },
       {
         type: 'section',
@@ -270,12 +278,12 @@ const SLACK_TEMPLATES = {
           { type: 'mrkdwn', text: `*Document:*\n${data.document_type}:${data.document_key}` },
           { type: 'mrkdwn', text: `*Action:*\n${data.action_needed}` },
           { type: 'mrkdwn', text: `*Deadline:*\n${data.deadline}` },
-          { type: 'mrkdwn', text: `*Time Remaining:*\n${data.time_remaining}` }
-        ]
+          { type: 'mrkdwn', text: `*Time Remaining:*\n${data.time_remaining}` },
+        ],
       },
       {
         type: 'section',
-        text: { type: 'mrkdwn', text: `Pending: ${data.pending_users?.join(', ') || 'Unknown'}` }
+        text: { type: 'mrkdwn', text: `Pending: ${data.pending_users?.join(', ') || 'Unknown'}` },
       },
       {
         type: 'actions',
@@ -284,12 +292,12 @@ const SLACK_TEMPLATES = {
             type: 'button',
             text: { type: 'plain_text', text: 'View Document', emoji: true },
             url: data.document_url,
-            style: 'primary'
-          }
-        ]
-      }
-    ]
-  }
+            style: 'primary',
+          },
+        ],
+      },
+    ],
+  },
 };
 
 class SlackNotifier {
@@ -329,7 +337,7 @@ class SlackNotifier {
       return {
         success: false,
         channel: 'slack',
-        error: 'Slack notifications not enabled'
+        error: 'Slack notifications not enabled',
       };
     }
 
@@ -338,7 +346,7 @@ class SlackNotifier {
       return {
         success: false,
         channel: 'slack',
-        error: `Unknown notification event type: ${eventType}`
+        error: `Unknown notification event type: ${eventType}`,
       };
     }
 
@@ -349,13 +357,13 @@ class SlackNotifier {
       return {
         success: true,
         channel: 'slack',
-        eventType
+        eventType,
       };
     } catch (error) {
       return {
         success: false,
         channel: 'slack',
-        error: error.message
+        error: error.message,
       };
     }
   }
@@ -371,7 +379,7 @@ class SlackNotifier {
       return {
         success: false,
         channel: 'slack',
-        error: 'Slack notifications not enabled'
+        error: 'Slack notifications not enabled',
       };
     }
 
@@ -380,20 +388,20 @@ class SlackNotifier {
       channel: options.channel || this.channel,
       username: this.username,
       icon_emoji: this.iconEmoji,
-      ...options
+      ...options,
     };
 
     try {
       await this._sendWebhook(payload);
       return {
         success: true,
-        channel: 'slack'
+        channel: 'slack',
       };
     } catch (error) {
       return {
         success: false,
         channel: 'slack',
-        error: error.message
+        error: error.message,
       };
     }
   }
@@ -403,13 +411,9 @@ class SlackNotifier {
    * @private
    */
   _buildPayload(template, data, options) {
-    const color = typeof template.color === 'function'
-      ? template.color(data)
-      : template.color;
+    const color = typeof template.color === 'function' ? template.color(data) : template.color;
 
-    const title = typeof template.title === 'function'
-      ? template.title(data)
-      : template.title;
+    const title = typeof template.title === 'function' ? template.title(data) : template.title;
 
     const blocks = template.blocks(data);
 
@@ -422,9 +426,9 @@ class SlackNotifier {
         {
           color,
           fallback: title,
-          blocks
-        }
-      ]
+          blocks,
+        },
+      ],
     };
   }
 
@@ -438,9 +442,9 @@ class SlackNotifier {
     const response = await fetch(this.webhookUrl, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify(payload)
+      body: JSON.stringify(payload),
     });
 
     if (!response.ok) {
@@ -453,5 +457,5 @@ class SlackNotifier {
 
 module.exports = {
   SlackNotifier,
-  SLACK_TEMPLATES
+  SLACK_TEMPLATES,
 };

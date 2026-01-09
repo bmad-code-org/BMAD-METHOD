@@ -14,7 +14,7 @@ github:
 
 # Parameters
 epic_key: ""
-feedback_days: 3  # Default deadline in days
+feedback_days: 3 # Default deadline in days
 
 installed_path: "{project-root}/_bmad/bmm/workflows/1-requirements/crowdsource/open-epic-feedback"
 instructions: "{installed_path}/instructions.md"

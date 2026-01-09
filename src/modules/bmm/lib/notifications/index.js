@@ -53,5 +53,5 @@ module.exports = {
   // Templates (for customization)
   GITHUB_TEMPLATES,
   SLACK_TEMPLATES,
-  EMAIL_TEMPLATES
+  EMAIL_TEMPLATES,
 };

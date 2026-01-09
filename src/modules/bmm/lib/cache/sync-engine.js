@@ -45,7 +45,7 @@ class SyncEngine {
    * @private
    */
   async _sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   /**
@@ -78,9 +78,7 @@ class SyncEngine {
    */
   _extractStoryKey(issue) {
     // Look for story: label first
-    const storyLabel = issue.labels?.find(l =>
-      (typeof l === 'string' ? l : l.name)?.startsWith('story:')
-    );
+    const storyLabel = issue.labels?.find((l) => (typeof l === 'string' ? l : l.name)?.startsWith('story:'));
 
     if (storyLabel) {
       const labelName = typeof storyLabel === 'string' ? storyLabel : storyLabel.name;
@@ -130,7 +128,7 @@ class SyncEngine {
    * @private
    */
   _extractStatus(issue) {
-    const statusLabel = issue.labels?.find(l => {
+    const statusLabel = issue.labels?.find((l) => {
       const name = typeof l === 'string' ? l : l.name;
       return name?.startsWith('status:');
     });
@@ -178,7 +176,7 @@ class SyncEngine {
       // Search for updated stories (single API call)
       const searchResult = await this._retryWithBackoff(
         async () => this.githubClient('search_issues', { query }),
-        'Search for updated stories'
+        'Search for updated stories',
       );
 
       const issues = searchResult.items || [];
@@ -212,7 +210,6 @@ class SyncEngine {
       console.log(`✅ Sync complete: ${result.updated.length} updated, ${result.errors.length} errors`);
 
       return result;
-
     } finally {
       this.syncInProgress = false;
     }
@@ -242,10 +239,11 @@ class SyncEngine {
     // Fetch issue if not provided
     if (!issue) {
       const searchResult = await this._retryWithBackoff(
-        async () => this.githubClient('search_issues', {
-          query: `repo:${this.github.owner}/${this.github.repo} label:story:${storyKey}`
-        }),
-        `Fetch story ${storyKey}`
+        async () =>
+          this.githubClient('search_issues', {
+            query: `repo:${this.github.owner}/${this.github.repo} label:story:${storyKey}`,
+          }),
+        `Fetch story ${storyKey}`,
       );
 
       const issues = searchResult.items || [];
@@ -270,7 +268,7 @@ class SyncEngine {
       github_issue: issue.number,
       github_updated_at: issue.updated_at,
       locked_by: issue.assignee?.login || null,
-      locked_until: issue.assignee ? this._calculateLockExpiry() : null
+      locked_until: issue.assignee ? this._calculateLockExpiry() : null,
     });
 
     console.log(`   ✅ ${storyKey} synced (Issue #${issue.number})`);
@@ -302,10 +300,11 @@ class SyncEngine {
 
     // Single API call for all stories in epic
     const searchResult = await this._retryWithBackoff(
-      async () => this.githubClient('search_issues', {
-        query: `repo:${this.github.owner}/${this.github.repo} label:epic:${epicNumber} label:type:story`
-      }),
-      `Pre-fetch Epic ${epicNumber}`
+      async () =>
+        this.githubClient('search_issues', {
+          query: `repo:${this.github.owner}/${this.github.repo} label:epic:${epicNumber} label:type:story`,
+        }),
+      `Pre-fetch Epic ${epicNumber}`,
     );
 
     const issues = searchResult.items || [];
@@ -357,13 +356,14 @@ class SyncEngine {
     // Add comment if provided
     if (update.comment) {
       await this._retryWithBackoff(
-        async () => this.githubClient('add_issue_comment', {
-          owner: this.github.owner,
-          repo: this.github.repo,
-          issue_number: issueNumber,
-          body: update.comment
-        }),
-        `Add comment to issue #${issueNumber}`
+        async () =>
+          this.githubClient('add_issue_comment', {
+            owner: this.github.owner,
+            repo: this.github.repo,
+            issue_number: issueNumber,
+            body: update.comment,
+          }),
+        `Add comment to issue #${issueNumber}`,
       );
     }
 
@@ -374,14 +374,14 @@ class SyncEngine {
         method: 'get',
         owner: this.github.owner,
         repo: this.github.repo,
-        issue_number: issueNumber
+        issue_number: issueNumber,
       });
 
-      let labels = issue.labels?.map(l => typeof l === 'string' ? l : l.name) || [];
+      let labels = issue.labels?.map((l) => (typeof l === 'string' ? l : l.name)) || [];
 
       // Remove labels
       if (update.removeLabels) {
-        labels = labels.filter(l => !update.removeLabels.includes(l));
+        labels = labels.filter((l) => !update.removeLabels.includes(l));
       }
 
       // Add labels
@@ -394,14 +394,15 @@ class SyncEngine {
       }
 
       await this._retryWithBackoff(
-        async () => this.githubClient('issue_write', {
-          method: 'update',
-          owner: this.github.owner,
-          repo: this.github.repo,
-          issue_number: issueNumber,
-          labels
-        }),
-        `Update labels on issue #${issueNumber}`
+        async () =>
+          this.githubClient('issue_write', {
+            method: 'update',
+            owner: this.github.owner,
+            repo: this.github.repo,
+            issue_number: issueNumber,
+            labels,
+          }),
+        `Update labels on issue #${issueNumber}`,
       );
     }
 
@@ -412,7 +413,7 @@ class SyncEngine {
       method: 'get',
       owner: this.github.owner,
       repo: this.github.repo,
-      issue_number: issueNumber
+      issue_number: issueNumber,
     });
 
     console.log(`✅ GitHub issue #${issueNumber} updated and verified`);
@@ -420,7 +421,7 @@ class SyncEngine {
     return {
       storyKey,
       issueNumber,
-      verified: true
+      verified: true,
     };
   }
 
@@ -458,7 +459,7 @@ class SyncEngine {
     if (!storyMeta || !storyMeta.github_issue) {
       // Need to find the issue first
       const searchResult = await this.githubClient('search_issues', {
-        query: `repo:${this.github.owner}/${this.github.repo} label:story:${storyKey}`
+        query: `repo:${this.github.owner}/${this.github.repo} label:story:${storyKey}`,
       });
 
       if (!searchResult.items?.length) {
@@ -472,28 +473,29 @@ class SyncEngine {
 
     // Assign user and update status label
     await this._retryWithBackoff(
-      async () => this.githubClient('issue_write', {
-        method: 'update',
-        owner: this.github.owner,
-        repo: this.github.repo,
-        issue_number: issueNumber,
-        assignees: [username]
-      }),
-      `Assign issue #${issueNumber} to ${username}`
+      async () =>
+        this.githubClient('issue_write', {
+          method: 'update',
+          owner: this.github.owner,
+          repo: this.github.repo,
+          issue_number: issueNumber,
+          assignees: [username],
+        }),
+      `Assign issue #${issueNumber} to ${username}`,
     );
 
     // Update status label to in-progress
     await this.pushToGitHub(storyKey, {
       addLabels: ['status:in-progress'],
       removeLabels: ['status:backlog', 'status:ready-for-dev'],
-      comment: `🔒 **Story locked by @${username}**\n\nLock expires in 8 hours.`
+      comment: `🔒 **Story locked by @${username}**\n\nLock expires in 8 hours.`,
     });
 
     // Update cache
     const lockExpiry = this._calculateLockExpiry();
     this.cache.updateLock(storyKey, {
       locked_by: username,
-      locked_until: lockExpiry
+      locked_until: lockExpiry,
     });
 
     // Verify assignment
@@ -503,10 +505,10 @@ class SyncEngine {
       method: 'get',
       owner: this.github.owner,
       repo: this.github.repo,
-      issue_number: issueNumber
+      issue_number: issueNumber,
     });
 
-    if (!verify.assignees?.some(a => a.login === username)) {
+    if (!verify.assignees?.some((a) => a.login === username)) {
       throw new Error('Assignment verification failed');
     }
 
@@ -516,7 +518,7 @@ class SyncEngine {
       storyKey,
       issueNumber,
       assignee: username,
-      lockExpiry
+      lockExpiry,
     };
   }
 
@@ -539,21 +541,22 @@ class SyncEngine {
 
     // Remove assignees
     await this._retryWithBackoff(
-      async () => this.githubClient('issue_write', {
-        method: 'update',
-        owner: this.github.owner,
-        repo: this.github.repo,
-        issue_number: issueNumber,
-        assignees: []
-      }),
-      `Unassign issue #${issueNumber}`
+      async () =>
+        this.githubClient('issue_write', {
+          method: 'update',
+          owner: this.github.owner,
+          repo: this.github.repo,
+          issue_number: issueNumber,
+          assignees: [],
+        }),
+      `Unassign issue #${issueNumber}`,
     );
 
     // Update status label
     await this.pushToGitHub(storyKey, {
       addLabels: ['status:ready-for-dev'],
       removeLabels: ['status:in-progress'],
-      comment: `🔓 **Story unlocked**${reason ? `\n\nReason: ${reason}` : ''}`
+      comment: `🔓 **Story unlocked**${reason ? `\n\nReason: ${reason}` : ''}`,
     });
 
     // Clear cache lock
@@ -580,13 +583,13 @@ class SyncEngine {
         available: false,
         locked_by: cacheLock.locked_by,
         locked_until: cacheLock.locked_until,
-        source: 'cache'
+        source: 'cache',
       };
     }
 
     // Verify with GitHub (source of truth)
     const searchResult = await this.githubClient('search_issues', {
-      query: `repo:${this.github.owner}/${this.github.repo} label:story:${storyKey}`
+      query: `repo:${this.github.owner}/${this.github.repo} label:story:${storyKey}`,
     });
 
     if (!searchResult.items?.length) {
@@ -599,20 +602,20 @@ class SyncEngine {
       // Update cache with GitHub truth
       this.cache.updateLock(storyKey, {
         locked_by: issue.assignee.login,
-        locked_until: this._calculateLockExpiry()
+        locked_until: this._calculateLockExpiry(),
       });
 
       return {
         available: false,
         locked_by: issue.assignee.login,
         github_issue: issue.number,
-        source: 'github'
+        source: 'github',
       };
     }
 
     return {
       available: true,
-      github_issue: issue.number
+      github_issue: issue.number,
     };
   }
 
@@ -640,17 +643,19 @@ class SyncEngine {
 
     const searchResult = await this._retryWithBackoff(
       async () => this.githubClient('search_issues', { query }),
-      'Search for available stories'
+      'Search for available stories',
     );
 
-    const stories = (searchResult.items || []).map(issue => ({
-      storyKey: this._extractStoryKey(issue),
-      title: issue.title,
-      issueNumber: issue.number,
-      status: this._extractStatus(issue),
-      labels: issue.labels?.map(l => typeof l === 'string' ? l : l.name) || [],
-      url: issue.html_url
-    })).filter(s => s.storyKey); // Filter out any without valid story keys
+    const stories = (searchResult.items || [])
+      .map((issue) => ({
+        storyKey: this._extractStoryKey(issue),
+        title: issue.title,
+        issueNumber: issue.number,
+        status: this._extractStatus(issue),
+        labels: issue.labels?.map((l) => (typeof l === 'string' ? l : l.name)) || [],
+        url: issue.html_url,
+      }))
+      .filter((s) => s.storyKey); // Filter out any without valid story keys
 
     return stories;
   }

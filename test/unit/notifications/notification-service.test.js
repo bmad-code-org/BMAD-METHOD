@@ -13,26 +13,26 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
   NotificationService,
   NOTIFICATION_EVENTS,
-  PRIORITY_BEHAVIOR
+  PRIORITY_BEHAVIOR,
 } from '../../../src/modules/bmm/lib/notifications/notification-service.js';
 
 // Mock the notifier modules
 vi.mock('../../../src/modules/bmm/lib/notifications/github-notifier.js', () => ({
   GitHubNotifier: vi.fn().mockImplementation(() => ({
-    send: vi.fn().mockResolvedValue({ success: true, channel: 'github' })
-  }))
+    send: vi.fn().mockResolvedValue({ success: true, channel: 'github' }),
+  })),
 }));
 
 vi.mock('../../../src/modules/bmm/lib/notifications/slack-notifier.js', () => ({
   SlackNotifier: vi.fn().mockImplementation(() => ({
-    send: vi.fn().mockResolvedValue({ success: true, channel: 'slack' })
-  }))
+    send: vi.fn().mockResolvedValue({ success: true, channel: 'slack' }),
+  })),
 }));
 
 vi.mock('../../../src/modules/bmm/lib/notifications/email-notifier.js', () => ({
   EmailNotifier: vi.fn().mockImplementation(() => ({
-    send: vi.fn().mockResolvedValue({ success: true, channel: 'email' })
-  }))
+    send: vi.fn().mockResolvedValue({ success: true, channel: 'email' }),
+  })),
 }));
 
 describe('NotificationService', () => {
@@ -49,7 +49,7 @@ describe('NotificationService', () => {
         'document_approved',
         'document_blocked',
         'reminder',
-        'deadline_extended'
+        'deadline_extended',
       ];
 
       for (const event of expectedEvents) {
@@ -111,7 +111,7 @@ describe('NotificationService', () => {
   describe('constructor', () => {
     it('should always initialize GitHub channel', () => {
       const service = new NotificationService({
-        github: { owner: 'test', repo: 'test' }
+        github: { owner: 'test', repo: 'test' },
       });
 
       expect(service.channels.github).toBeDefined();
@@ -123,8 +123,8 @@ describe('NotificationService', () => {
         github: { owner: 'test', repo: 'test' },
         slack: {
           enabled: true,
-          webhookUrl: 'https://hooks.slack.com/xxx'
-        }
+          webhookUrl: 'https://hooks.slack.com/xxx',
+        },
       });
 
       expect(service.channels.slack).toBeDefined();
@@ -134,7 +134,7 @@ describe('NotificationService', () => {
     it('should not initialize Slack without webhook', () => {
       const service = new NotificationService({
         github: { owner: 'test', repo: 'test' },
-        slack: { enabled: true } // No webhookUrl
+        slack: { enabled: true }, // No webhookUrl
       });
 
       expect(service.channels.slack).toBeUndefined();
@@ -146,8 +146,8 @@ describe('NotificationService', () => {
         github: { owner: 'test', repo: 'test' },
         email: {
           enabled: true,
-          smtp: { host: 'localhost' }
-        }
+          smtp: { host: 'localhost' },
+        },
       });
 
       expect(service.channels.email).toBeDefined();
@@ -159,8 +159,8 @@ describe('NotificationService', () => {
         github: { owner: 'test', repo: 'test' },
         email: {
           enabled: true,
-          apiKey: 'SG.xxx'
-        }
+          apiKey: 'SG.xxx',
+        },
       });
 
       expect(service.channels.email).toBeDefined();
@@ -169,7 +169,7 @@ describe('NotificationService', () => {
     it('should not initialize Email without config', () => {
       const service = new NotificationService({
         github: { owner: 'test', repo: 'test' },
-        email: { enabled: true } // No smtp or apiKey
+        email: { enabled: true }, // No smtp or apiKey
       });
 
       expect(service.channels.email).toBeUndefined();
@@ -181,7 +181,7 @@ describe('NotificationService', () => {
   describe('getAvailableChannels', () => {
     it('should return only GitHub when minimal config', () => {
       const service = new NotificationService({
-        github: { owner: 'test', repo: 'test' }
+        github: { owner: 'test', repo: 'test' },
       });
 
       expect(service.getAvailableChannels()).toEqual(['github']);
@@ -191,7 +191,7 @@ describe('NotificationService', () => {
       const service = new NotificationService({
         github: { owner: 'test', repo: 'test' },
         slack: { enabled: true, webhookUrl: 'https://xxx' },
-        email: { enabled: true, smtp: { host: 'localhost' } }
+        email: { enabled: true, smtp: { host: 'localhost' } },
       });
 
       const channels = service.getAvailableChannels();
@@ -217,7 +217,7 @@ describe('NotificationService', () => {
       service = new NotificationService({
         github: { owner: 'test', repo: 'test' },
         slack: { enabled: true, webhookUrl: 'https://xxx' },
-        email: { enabled: true, smtp: { host: 'localhost' } }
+        email: { enabled: true, smtp: { host: 'localhost' } },
       });
 
       service.channels.github.send = mockGithubSend;
@@ -226,15 +226,13 @@ describe('NotificationService', () => {
     });
 
     it('should throw for unknown event type', async () => {
-      await expect(
-        service.notify('unknown_event', {})
-      ).rejects.toThrow('Unknown notification event type: unknown_event');
+      await expect(service.notify('unknown_event', {})).rejects.toThrow('Unknown notification event type: unknown_event');
     });
 
     it('should send to default channels for event', async () => {
       await service.notify('feedback_round_opened', {
         document_type: 'prd',
-        document_key: 'test'
+        document_key: 'test',
       });
 
       expect(mockGithubSend).toHaveBeenCalled();
@@ -245,7 +243,7 @@ describe('NotificationService', () => {
     it('should filter to available channels only', async () => {
       // Service with only GitHub
       const minimalService = new NotificationService({
-        github: { owner: 'test', repo: 'test' }
+        github: { owner: 'test', repo: 'test' },
       });
       minimalService.channels.github.send = mockGithubSend;
 
@@ -257,10 +255,14 @@ describe('NotificationService', () => {
     });
 
     it('should always include GitHub as baseline', async () => {
-      await service.notify('feedback_submitted', {
-        document_type: 'prd',
-        document_key: 'test'
-      }, { channels: ['slack'] }); // Explicitly only slack
+      await service.notify(
+        'feedback_submitted',
+        {
+          document_type: 'prd',
+          document_key: 'test',
+        },
+        { channels: ['slack'] },
+      ); // Explicitly only slack
 
       // GitHub should still be included
       expect(mockGithubSend).toHaveBeenCalled();
@@ -272,7 +274,7 @@ describe('NotificationService', () => {
         document_type: 'prd',
         document_key: 'test',
         user: 'security',
-        reason: 'Blocked'
+        reason: 'Blocked',
       });
 
       // document_blocked is urgent, should use all available channels
@@ -282,10 +284,14 @@ describe('NotificationService', () => {
     });
 
     it('should respect custom channels option', async () => {
-      await service.notify('deadline_extended', {
-        document_type: 'prd',
-        document_key: 'test'
-      }, { channels: ['github', 'slack'] });
+      await service.notify(
+        'deadline_extended',
+        {
+          document_type: 'prd',
+          document_key: 'test',
+        },
+        { channels: ['github', 'slack'] },
+      );
 
       expect(mockGithubSend).toHaveBeenCalled();
       expect(mockSlackSend).toHaveBeenCalled();
@@ -295,7 +301,7 @@ describe('NotificationService', () => {
     it('should aggregate results from all channels', async () => {
       const result = await service.notify('signoff_requested', {
         document_type: 'prd',
-        document_key: 'test'
+        document_key: 'test',
       });
 
       expect(result.success).toBe(true);
@@ -334,7 +340,7 @@ describe('NotificationService', () => {
 
     beforeEach(() => {
       service = new NotificationService({
-        github: { owner: 'test', repo: 'test' }
+        github: { owner: 'test', repo: 'test' },
       });
 
       notifySpy = vi.spyOn(service, 'notify').mockResolvedValue({ success: true });
@@ -343,15 +349,18 @@ describe('NotificationService', () => {
     it('should format users as mentions', async () => {
       await service.sendReminder('prd', 'user-auth', ['alice', 'bob'], {
         action_needed: 'feedback',
-        deadline: '2026-01-15'
+        deadline: '2026-01-15',
       });
 
-      expect(notifySpy).toHaveBeenCalledWith('reminder', expect.objectContaining({
-        mentions: '@alice @bob',
-        users: ['alice', 'bob'],
-        document_type: 'prd',
-        document_key: 'user-auth'
-      }));
+      expect(notifySpy).toHaveBeenCalledWith(
+        'reminder',
+        expect.objectContaining({
+          mentions: '@alice @bob',
+          users: ['alice', 'bob'],
+          document_type: 'prd',
+          document_key: 'user-auth',
+        }),
+      );
     });
   });
 
@@ -363,7 +372,7 @@ describe('NotificationService', () => {
 
     beforeEach(() => {
       service = new NotificationService({
-        github: { owner: 'test', repo: 'test' }
+        github: { owner: 'test', repo: 'test' },
       });
 
       notifySpy = vi.spyOn(service, 'notify').mockResolvedValue({ success: true });
@@ -377,24 +386,27 @@ describe('NotificationService', () => {
           title: 'User Authentication',
           version: 1,
           url: 'https://example.com/doc',
-          reviewIssue: 100
+          reviewIssue: 100,
         },
         ['alice', 'bob', 'charlie'],
-        '2026-01-15'
+        '2026-01-15',
       );
 
-      expect(notifySpy).toHaveBeenCalledWith('feedback_round_opened', expect.objectContaining({
-        document_type: 'prd',
-        document_key: 'user-auth',
-        title: 'User Authentication',
-        version: 1,
-        deadline: '2026-01-15',
-        stakeholder_count: 3,
-        mentions: '@alice @bob @charlie',
-        users: ['alice', 'bob', 'charlie'],
-        document_url: 'https://example.com/doc',
-        review_issue: 100
-      }));
+      expect(notifySpy).toHaveBeenCalledWith(
+        'feedback_round_opened',
+        expect.objectContaining({
+          document_type: 'prd',
+          document_key: 'user-auth',
+          title: 'User Authentication',
+          version: 1,
+          deadline: '2026-01-15',
+          stakeholder_count: 3,
+          mentions: '@alice @bob @charlie',
+          users: ['alice', 'bob', 'charlie'],
+          document_url: 'https://example.com/doc',
+          review_issue: 100,
+        }),
+      );
     });
   });
 
@@ -406,7 +418,7 @@ describe('NotificationService', () => {
 
     beforeEach(() => {
       service = new NotificationService({
-        github: { owner: 'test', repo: 'test' }
+        github: { owner: 'test', repo: 'test' },
       });
 
       notifySpy = vi.spyOn(service, 'notify').mockResolvedValue({ success: true });
@@ -420,14 +432,14 @@ describe('NotificationService', () => {
           section: 'FR-3',
           summary: 'Security vulnerability identified',
           issueNumber: 42,
-          url: 'https://example.com/issues/42'
+          url: 'https://example.com/issues/42',
         },
         {
           type: 'prd',
           key: 'payments',
           owner: 'product-owner',
-          reviewIssue: 100
-        }
+          reviewIssue: 100,
+        },
       );
 
       expect(notifySpy).toHaveBeenCalledWith(
@@ -438,11 +450,11 @@ describe('NotificationService', () => {
           user: 'security',
           feedback_type: 'concern',
           section: 'FR-3',
-          feedback_issue: 42
+          feedback_issue: 42,
         }),
         expect.objectContaining({
-          notifyOnly: ['product-owner']
-        })
+          notifyOnly: ['product-owner'],
+        }),
       );
     });
   });
@@ -455,7 +467,7 @@ describe('NotificationService', () => {
 
     beforeEach(() => {
       service = new NotificationService({
-        github: { owner: 'test', repo: 'test' }
+        github: { owner: 'test', repo: 'test' },
       });
 
       notifySpy = vi.spyOn(service, 'notify').mockResolvedValue({ success: true });
@@ -467,26 +479,29 @@ describe('NotificationService', () => {
           type: 'prd',
           key: 'user-auth',
           url: 'https://example.com/doc',
-          reviewIssue: 100
+          reviewIssue: 100,
         },
         {
           oldVersion: 1,
           newVersion: 2,
           feedbackCount: 12,
           conflictsResolved: 3,
-          summary: 'Incorporated security feedback and clarified auth flow'
-        }
+          summary: 'Incorporated security feedback and clarified auth flow',
+        },
       );
 
-      expect(notifySpy).toHaveBeenCalledWith('synthesis_complete', expect.objectContaining({
-        document_type: 'prd',
-        document_key: 'user-auth',
-        old_version: 1,
-        new_version: 2,
-        feedback_count: 12,
-        conflicts_resolved: 3,
-        summary: expect.stringContaining('security feedback')
-      }));
+      expect(notifySpy).toHaveBeenCalledWith(
+        'synthesis_complete',
+        expect.objectContaining({
+          document_type: 'prd',
+          document_key: 'user-auth',
+          old_version: 1,
+          new_version: 2,
+          feedback_count: 12,
+          conflicts_resolved: 3,
+          summary: expect.stringContaining('security feedback'),
+        }),
+      );
     });
   });
 
@@ -498,7 +513,7 @@ describe('NotificationService', () => {
 
     beforeEach(() => {
       service = new NotificationService({
-        github: { owner: 'test', repo: 'test' }
+        github: { owner: 'test', repo: 'test' },
       });
 
       notifySpy = vi.spyOn(service, 'notify').mockResolvedValue({ success: true });
@@ -513,23 +528,26 @@ describe('NotificationService', () => {
           version: 2,
           url: 'https://example.com/doc',
           signoffUrl: 'https://example.com/signoff',
-          reviewIssue: 200
+          reviewIssue: 200,
         },
         ['alice', 'bob', 'charlie'],
         '2026-01-20',
-        { minimum_approvals: 2 }
+        { minimum_approvals: 2 },
       );
 
-      expect(notifySpy).toHaveBeenCalledWith('signoff_requested', expect.objectContaining({
-        document_type: 'prd',
-        document_key: 'payments',
-        title: 'Payments V2',
-        version: 2,
-        deadline: '2026-01-20',
-        approvals_needed: 2,
-        mentions: '@alice @bob @charlie',
-        users: ['alice', 'bob', 'charlie']
-      }));
+      expect(notifySpy).toHaveBeenCalledWith(
+        'signoff_requested',
+        expect.objectContaining({
+          document_type: 'prd',
+          document_key: 'payments',
+          title: 'Payments V2',
+          version: 2,
+          deadline: '2026-01-20',
+          approvals_needed: 2,
+          mentions: '@alice @bob @charlie',
+          users: ['alice', 'bob', 'charlie'],
+        }),
+      );
     });
 
     it('should calculate approvals_needed from stakeholder count when not specified', async () => {
@@ -538,16 +556,19 @@ describe('NotificationService', () => {
           type: 'prd',
           key: 'test',
           title: 'Test',
-          version: 1
+          version: 1,
         },
         ['a', 'b', 'c', 'd', 'e'],
         '2026-01-20',
-        {} // No minimum_approvals
+        {}, // No minimum_approvals
       );
 
-      expect(notifySpy).toHaveBeenCalledWith('signoff_requested', expect.objectContaining({
-        approvals_needed: 3 // ceil(5 * 0.5) = 3
-      }));
+      expect(notifySpy).toHaveBeenCalledWith(
+        'signoff_requested',
+        expect.objectContaining({
+          approvals_needed: 3, // ceil(5 * 0.5) = 3
+        }),
+      );
     });
   });
 
@@ -559,7 +580,7 @@ describe('NotificationService', () => {
 
     beforeEach(() => {
       service = new NotificationService({
-        github: { owner: 'test', repo: 'test' }
+        github: { owner: 'test', repo: 'test' },
       });
 
       notifySpy = vi.spyOn(service, 'notify').mockResolvedValue({ success: true });
@@ -570,26 +591,29 @@ describe('NotificationService', () => {
         {
           user: 'alice',
           decision: 'approved',
-          note: null
+          note: null,
         },
         {
           type: 'prd',
           key: 'test',
           reviewIssue: 100,
-          reviewUrl: 'https://example.com/issues/100'
+          reviewUrl: 'https://example.com/issues/100',
         },
-        { current: 2, total: 3 }
+        { current: 2, total: 3 },
       );
 
-      expect(notifySpy).toHaveBeenCalledWith('signoff_received', expect.objectContaining({
-        document_type: 'prd',
-        document_key: 'test',
-        user: 'alice',
-        decision: 'approved',
-        emoji: '✅',
-        progress_current: 2,
-        progress_total: 3
-      }));
+      expect(notifySpy).toHaveBeenCalledWith(
+        'signoff_received',
+        expect.objectContaining({
+          document_type: 'prd',
+          document_key: 'test',
+          user: 'alice',
+          decision: 'approved',
+          emoji: '✅',
+          progress_current: 2,
+          progress_total: 3,
+        }),
+      );
     });
 
     it('should format blocked signoff with correct emoji', async () => {
@@ -597,21 +621,24 @@ describe('NotificationService', () => {
         {
           user: 'security',
           decision: 'blocked',
-          note: 'Security concern'
+          note: 'Security concern',
         },
         {
           type: 'prd',
           key: 'test',
-          reviewIssue: 100
+          reviewIssue: 100,
         },
-        { current: 1, total: 3 }
+        { current: 1, total: 3 },
       );
 
-      expect(notifySpy).toHaveBeenCalledWith('signoff_received', expect.objectContaining({
-        decision: 'blocked',
-        emoji: '🚫',
-        note: 'Security concern'
-      }));
+      expect(notifySpy).toHaveBeenCalledWith(
+        'signoff_received',
+        expect.objectContaining({
+          decision: 'blocked',
+          emoji: '🚫',
+          note: 'Security concern',
+        }),
+      );
     });
 
     it('should format approved-with-note signoff correctly', async () => {
@@ -619,20 +646,23 @@ describe('NotificationService', () => {
         {
           user: 'bob',
           decision: 'approved-with-note',
-          note: 'Minor concern'
+          note: 'Minor concern',
         },
         {
           type: 'prd',
           key: 'test',
-          reviewIssue: 100
+          reviewIssue: 100,
         },
-        { current: 2, total: 3 }
+        { current: 2, total: 3 },
       );
 
-      expect(notifySpy).toHaveBeenCalledWith('signoff_received', expect.objectContaining({
-        emoji: '✅📝',
-        note: 'Minor concern'
-      }));
+      expect(notifySpy).toHaveBeenCalledWith(
+        'signoff_received',
+        expect.objectContaining({
+          emoji: '✅📝',
+          note: 'Minor concern',
+        }),
+      );
     });
   });
 
@@ -644,7 +674,7 @@ describe('NotificationService', () => {
 
     beforeEach(() => {
       service = new NotificationService({
-        github: { owner: 'test', repo: 'test' }
+        github: { owner: 'test', repo: 'test' },
       });
 
       notifySpy = vi.spyOn(service, 'notify').mockResolvedValue({ success: true });
@@ -657,21 +687,24 @@ describe('NotificationService', () => {
           key: 'user-auth',
           title: 'User Authentication',
           version: 2,
-          url: 'https://example.com/doc'
+          url: 'https://example.com/doc',
         },
         3,
-        3
+        3,
       );
 
-      expect(notifySpy).toHaveBeenCalledWith('document_approved', expect.objectContaining({
-        document_type: 'prd',
-        document_key: 'user-auth',
-        title: 'User Authentication',
-        version: 2,
-        approval_count: 3,
-        stakeholder_count: 3,
-        document_url: 'https://example.com/doc'
-      }));
+      expect(notifySpy).toHaveBeenCalledWith(
+        'document_approved',
+        expect.objectContaining({
+          document_type: 'prd',
+          document_key: 'user-auth',
+          title: 'User Authentication',
+          version: 2,
+          approval_count: 3,
+          stakeholder_count: 3,
+          document_url: 'https://example.com/doc',
+        }),
+      );
     });
   });
 
@@ -683,7 +716,7 @@ describe('NotificationService', () => {
 
     beforeEach(() => {
       service = new NotificationService({
-        github: { owner: 'test', repo: 'test' }
+        github: { owner: 'test', repo: 'test' },
       });
 
       notifySpy = vi.spyOn(service, 'notify').mockResolvedValue({ success: true });
@@ -693,24 +726,27 @@ describe('NotificationService', () => {
       await service.notifyDocumentBlocked(
         {
           type: 'prd',
-          key: 'payments'
+          key: 'payments',
         },
         {
           user: 'legal',
           reason: 'GDPR compliance review required',
           feedbackIssue: 42,
-          feedbackUrl: 'https://example.com/issues/42'
-        }
+          feedbackUrl: 'https://example.com/issues/42',
+        },
       );
 
-      expect(notifySpy).toHaveBeenCalledWith('document_blocked', expect.objectContaining({
-        document_type: 'prd',
-        document_key: 'payments',
-        user: 'legal',
-        reason: 'GDPR compliance review required',
-        feedback_issue: 42,
-        feedback_url: 'https://example.com/issues/42'
-      }));
+      expect(notifySpy).toHaveBeenCalledWith(
+        'document_blocked',
+        expect.objectContaining({
+          document_type: 'prd',
+          document_key: 'payments',
+          user: 'legal',
+          reason: 'GDPR compliance review required',
+          feedback_issue: 42,
+          feedback_url: 'https://example.com/issues/42',
+        }),
+      );
     });
   });
 
@@ -724,7 +760,7 @@ describe('NotificationService', () => {
       mockGithubSend = vi.fn();
 
       service = new NotificationService({
-        github: { owner: 'test', repo: 'test' }
+        github: { owner: 'test', repo: 'test' },
       });
 
       service.channels.github.send = mockGithubSend;
@@ -744,7 +780,7 @@ describe('NotificationService', () => {
         document_type: 'prd',
         document_key: 'test',
         user: 'blocker',
-        reason: 'Issue'
+        reason: 'Issue',
       });
 
       expect(result.success).toBe(true);
@@ -756,7 +792,7 @@ describe('NotificationService', () => {
 
       const result = await service.notify('deadline_extended', {
         document_type: 'prd',
-        document_key: 'test'
+        document_key: 'test',
       });
 
       expect(result.results.github.success).toBe(false);
