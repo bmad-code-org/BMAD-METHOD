@@ -3,8 +3,8 @@ name: 'step-03-menu-validation'
 description: 'Validate menu handling compliance across all step files'
 
 nextStepFile: './step-04-step-type-validation.md'
-targetWorkflowPath: '{bmb_creations_output_folder}/workflows/{new_workflow_name}'
-validationReportFile: '{targetWorkflowPath}/validation-report-{new_workflow_name}.md'
+targetWorkflowPath: '{workflow_folder_path}'
+validationReportFile: '{workflow_folder_path}/validation-report-{datetime}.md'
 menuHandlingStandards: '../data/menu-handling-standards.md'
 ---
 

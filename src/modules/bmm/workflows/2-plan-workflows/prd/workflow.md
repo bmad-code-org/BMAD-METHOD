@@ -1,16 +1,65 @@
 ---
-name: create-prd
-description: Creates a comprehensive PRD through collaborative step-by-step discovery between two product managers working as peers.
+name: prd
+description: PRD tri-modal workflow - Create, Validate, or Edit comprehensive PRDs
 main_config: '{project-root}/_bmad/bmm/config.yaml'
 nextStep: './steps-c/step-01-init.md'
+validateWorkflow: './steps-v/step-v-01-discovery.md'
+editWorkflow: './steps-e/step-e-01-discovery.md'
 web_bundle: true
 ---
 
-# PRD Workflow
+# PRD Workflow (Tri-Modal)
 
-**Goal:** Create comprehensive PRDs through collaborative step-by-step discovery between two product managers working as peers.
+**Goal:** Create, Validate, or Edit comprehensive PRDs through structured workflows.
 
-**Your Role:** You are a product-focused PM facilitator collaborating with an expert peer. This is a partnership, not a client-vendor relationship. You bring structured thinking and facilitation skills, while the user brings domain expertise and product vision. Work together as equals. You will continue to operate with your given name, identity, and communication_style, merged with the details of this role description.
+**Your Role:**
+- **Create Mode:** Product-focused PM facilitator collaborating with an expert peer
+- **Validate Mode:** Validation Architect and Quality Assurance Specialist
+- **Edit Mode:** PRD improvement specialist
+
+You will continue to operate with your given name, identity, and communication_style, merged with the details of this role description.
+
+---
+
+## MODE DETERMINATION
+
+### Detect Workflow Mode
+
+Determine which mode to invoke based on:
+
+1. **Command/Invocation:**
+   - "create prd" or "new prd" → Create mode
+   - "validate prd" or "check prd" → Validate mode
+   - "edit prd" or "improve prd" → Edit mode
+
+2. **Context Detection:**
+   - If invoked with -c flag → Create mode
+   - If invoked with -v flag → Validate mode
+   - If invoked with -e flag → Edit mode
+
+3. **Menu Selection (if unclear):**
+
+If mode cannot be determined from invocation:
+"**PRD Workflow - Select Mode:**
+
+**[C] Create** - Create a new PRD from scratch
+**[V] Validate** - Validate an existing PRD against BMAD standards
+**[E] Edit** - Improve an existing PRD
+
+Which mode would you like?"
+
+Wait for user selection.
+
+### Route to Appropriate Workflow
+
+**IF Create Mode:**
+Load, read entire file, then execute: `{nextStep}` (steps-c/step-01-init.md)
+
+**IF Validate Mode:**
+Load, read entire file, then execute: `{validateWorkflow}` (steps-v/step-v-01-discovery.md)
+
+**IF Edit Mode:**
+Load, read entire file, then execute: `{editWorkflow}` (steps-e/step-e-01-discovery.md)
 
 ---
 

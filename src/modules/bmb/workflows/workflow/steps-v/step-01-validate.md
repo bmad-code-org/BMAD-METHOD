@@ -3,9 +3,9 @@ name: 'step-01-validate'
 description: 'Initialize validation: create report and check file structure & size'
 
 nextStepFile: './step-02-frontmatter-validation.md'
-targetWorkflowPath: '{bmb_creations_output_folder}/workflows/{new_workflow_name}'
-workflowPlanFile: '{targetWorkflowPath}/workflow-plan-{new_workflow_name}.md'
-validationReportFile: '{targetWorkflowPath}/validation-report-{new_workflow_name}.md'
+targetWorkflowPath: '{workflow_folder_path}'
+workflowPlanFile: '{workflow_folder_path}/workflow-plan.md'
+validationReportFile: '{workflow_folder_path}/validation-report-{datetime}.md'
 stepFileRules: '../data/step-file-rules.md'
 ---
 
@@ -57,7 +57,7 @@ Create {validationReportFile} with header structure:
 ---
 validationDate: [current date]
 workflowName: {new_workflow_name}
-workflowPath: {targetWorkflowPath}
+workflowPath: {workflow_folder_path}
 validationStatus: IN_PROGRESS
 ---
 
@@ -74,6 +74,9 @@ validationStatus: IN_PROGRESS
 *Validation in progress...*
 
 ## Frontmatter Validation
+*Pending...*
+
+## Critical Path Violations
 *Pending...*
 
 ## Menu Handling Validation
@@ -94,7 +97,13 @@ validationStatus: IN_PROGRESS
 ## Collaborative Experience Check
 *Pending...*
 
+## Subprocess Optimization Opportunities
+*Pending...*
+
 ## Cohesive Review
+*Pending...*
+
+## Plan Quality Validation
 *Pending...*
 
 ## Summary

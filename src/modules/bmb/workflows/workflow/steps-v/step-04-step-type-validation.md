@@ -3,10 +3,10 @@ name: 'step-04-step-type-validation'
 description: 'Validate that each step follows its correct step type pattern'
 
 nextStepFile: './step-05-output-format-validation.md'
-targetWorkflowPath: '{bmb_creations_output_folder}/workflows/{new_workflow_name}'
-validationReportFile: '{targetWorkflowPath}/validation-report-{new_workflow_name}.md'
+targetWorkflowPath: '{workflow_folder_path}'
+validationReportFile: '{workflow_folder_path}/validation-report-{datetime}.md'
 stepTypePatterns: '../data/step-type-patterns.md'
-workflowPlanFile: '{targetWorkflowPath}/workflow-plan-{new_workflow_name}.md'
+workflowPlanFile: '{workflow_folder_path}/workflow-plan.md'
 ---
 
 # Validation Step 4: Step Type Validation

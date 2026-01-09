@@ -3,10 +3,10 @@ name: 'step-07-instruction-style-check'
 description: 'Check instruction style - intent-based vs prescriptive, appropriate for domain'
 
 nextStepFile: './step-08-collaborative-experience-check.md'
-targetWorkflowPath: '{bmb_creations_output_folder}/workflows/{new_workflow_name}'
-validationReportFile: '{targetWorkflowPath}/validation-report-{new_workflow_name}.md'
+targetWorkflowPath: '{workflow_folder_path}'
+validationReportFile: '{workflow_folder_path}/validation-report-{datetime}.md'
 intentVsPrescriptive: '../data/intent-vs-prescriptive-spectrum.md'
-workflowPlanFile: '{targetWorkflowPath}/workflow-plan-{new_workflow_name}.md'
+workflowPlanFile: '{workflow_folder_path}/workflow-plan.md'
 ---
 
 # Validation Step 7: Instruction Style Check

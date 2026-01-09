@@ -2,9 +2,9 @@
 name: 'step-10-report-complete'
 description: 'Finalize validation report - check for plan file, summarize all findings, present to user'
 
-targetWorkflowPath: '{bmb_creations_output_folder}/workflows/{new_workflow_name}'
-validationReportFile: '{targetWorkflowPath}/validation-report-{new_workflow_name}.md'
-workflowPlanFile: '{targetWorkflowPath}/workflow-plan-{new_workflow_name}.md'
+targetWorkflowPath: '{workflow_folder_path}'
+validationReportFile: '{workflow_folder_path}/validation-report-{datetime}.md'
+workflowPlanFile: '{workflow_folder_path}/workflow-plan.md'
 planValidationStep: './step-11-plan-validation.md'
 ---
 
@@ -38,7 +38,7 @@ To check if a plan file exists (and run plan validation if it does), then summar
 
 ## CONTEXT BOUNDARIES:
 
-- All 9 previous validation steps have completed
+- All 10 previous validation steps have completed
 - Report contains findings from all checks
 - User needs to see summary and decide on changes
 - This step DOES NOT auto-proceed
@@ -77,14 +77,16 @@ At the end of {validationReportFile}, replace "## Summary *Pending...*" with:
 **Validation Steps Completed:**
 1. ✅ File Structure & Size - [PASS/FAIL/WARN]
 2. ✅ Frontmatter Validation - [PASS/FAIL/WARN]
-3. ✅ Menu Handling Validation - [PASS/FAIL/WARN]
-4. ✅ Step Type Validation - [PASS/FAIL/WARN]
-5. ✅ Output Format Validation - [PASS/FAIL/WARN]
-6. ✅ Validation Design Check - [PASS/FAIL/WARN/N/A]
-7. ✅ Instruction Style Check - [PASS/FAIL/WARN]
-8. ✅ Collaborative Experience Check - [PASS/FAIL/WARN]
-9. ✅ Cohesive Review - [EXCELLENT/GOOD/NEEDS WORK/PROBLEMATIC]
-10. ✅ Plan Quality Validation - [FULLY IMPLEMENTED/PARTIALLY/MISSING/N/A]
+3. ✅ Path Violations Check - [PASS/FAIL/WARN]
+4. ✅ Menu Handling Validation - [PASS/FAIL/WARN]
+5. ✅ Step Type Validation - [PASS/FAIL/WARN]
+6. ✅ Output Format Validation - [PASS/FAIL/WARN]
+7. ✅ Validation Design Check - [PASS/FAIL/WARN/N/A]
+8. ✅ Instruction Style Check - [PASS/FAIL/WARN]
+9. ✅ Collaborative Experience Check - [PASS/FAIL/WARN]
+10. ✅ Subprocess Optimization Analysis - [OPPORTUNITIES IDENTIFIED/NONE]
+11. ✅ Cohesive Review - [EXCELLENT/GOOD/NEEDS WORK/PROBLEMATIC]
+12. ✅ Plan Quality Validation - [FULLY IMPLEMENTED/PARTIALLY/MISSING/N/A]
 
 **Issues Summary:**
 
@@ -138,12 +140,14 @@ I've completed extensive validation of your workflow. Here's the summary:"
 |-----------------|--------|
 | File Structure & Size | [emoji] [result] |
 | Frontmatter | [emoji] [result] |
+| Path Violations | [emoji] [result] |
 | Menu Handling | [emoji] [result] |
 | Step Types | [emoji] [result] |
 | Output Format | [emoji] [result] |
 | Validation Design | [emoji] [result or N/A] |
 | Instruction Style | [emoji] [result] |
 | Collaborative Experience | [emoji] [result] |
+| Subprocess Optimization | [emoji] [result] |
 | Cohesive Review | [emoji] [result] |
 | Plan Quality | [emoji] [result or N/A] |
 

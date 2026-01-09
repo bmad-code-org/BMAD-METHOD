@@ -54,35 +54,20 @@ Create compelling narrative user journeys that leverage existing personas from p
 Analyze product brief, research, and brainstorming documents for user personas already defined.
 
 **If User Personas Exist in Input Documents:**
-"I found some fantastic user personas in your product brief! Let me introduce them and see if we need to expand our cast of characters.
-
-**From your brief:**
-{{extracted_personas_from_brief_with_details}}
-
-These are great starting points! Their stories already give us insight into what they need from {{project_name}}.
-
-**Beyond your identified users, who else touches this system?**
-Based on your product type and scope, we might need:
-
-{{suggest_additional_user_types_based_on_project_context}}
-
-What additional user types should we consider for this product?"
+Guide user to build on existing personas:
+- Acknowledge personas found in their product brief
+- Extract key persona details and backstories
+- Leverage existing insights about their needs
+- Prompt to identify additional user types beyond those documented
+- Suggest additional user types based on product context (admins, moderators, support, API consumers, internal ops)
+- Ask what additional user types should be considered
 
 **If No Personas in Input Documents:**
 Start with comprehensive user type discovery:
-"Now that we know what success looks like, let's map out ALL the people who will interact with {{project_name}}.
-
-**Beyond primary users, who else touches this system?**
-Consider:
-
-- End users (the primary focus)
-- Admins - manage users, settings, content
-- Moderators - review flagged content, enforce rules
-- Support staff - help users, investigate issues
-- API consumers - if dev tool or platform
-- Internal ops - analytics, monitoring, billing
-
-What user types should we map for this product?"
+- Guide exploration of ALL people who interact with the system
+- Consider beyond primary users: admins, moderators, support staff, API consumers, internal ops
+- Ask what user types should be mapped for this specific product
+- Ensure comprehensive coverage of all system interactions
 
 ### 2. Create Narrative Story-Based Journeys
 
@@ -91,70 +76,44 @@ For each user type, create compelling narrative journeys that tell their story:
 #### Narrative Journey Creation Process:
 
 **If Using Existing Persona from Input Documents:**
-"Let's tell {{persona_name}}'s story with {{project_name}}.
-
-**Their Story So Far:**
-{{persona_backstory_from_brief}}
-
-**How {{project_name}} Changes Their Life:**
-{{how_product_helps_them}}
-
-Let's craft their journey narrative - where do we meet them in their story, and how does {{project_name}} help them write their next chapter?"
+Guide narrative journey creation:
+- Use persona's existing backstory from brief
+- Explore how the product changes their life/situation
+- Craft journey narrative: where do we meet them, how does product help them write their next chapter?
 
 **If Creating New Persona:**
-"Let's bring this user type to life with a compelling story.
-
-**Creating Their Character:**
-
-- **Name**: Give them a realistic name and personality
-- **Situation**: What's happening in their life/work that creates the need?
-- **Goal**: What do they desperately want to achieve?
-- **Obstacle**: What's standing in their way right now?
-
-**How {{project_name}} Becomes Their Solution:**
-{{how_product_solves_their_story}}
-
-Now let's map their journey narrative."
+Guide persona creation with story framework:
+- Name: realistic name and personality
+- Situation: What's happening in their life/work that creates need?
+- Goal: What do they desperately want to achieve?
+- Obstacle: What's standing in their way?
+- Solution: How does the product solve their story?
 
 **Story-Based Journey Mapping:**
 
-"Let's craft this as a story with our hero (the user) facing challenges and finding solutions through {{project_name}}:
-
-**Story Structure:**
-
-- **Opening Scene**: Where and how do we meet them? What's their current pain?
+Guide narrative journey creation using story structure:
+- **Opening Scene**: Where/how do we meet them? What's their current pain?
 - **Rising Action**: What steps do they take? What do they discover?
-- **Climax**: The critical moment where {{project_name}} delivers real value
+- **Climax**: Critical moment where product delivers real value
 - **Resolution**: How does their situation improve? What's their new reality?
 
-**Use This Narrative Format such as this example:**
-
-```markdown
-**Journey 1: Maria Santos - Reclaiming Her Creative Time**
-Maria is a freelance graphic designer who loves creating beautiful logos but spends hours every week managing client projects, sending invoices, and chasing payments. She feels like she's running a small business instead of doing what she loves. Late one night, while searching for invoicing tools, she discovers CreativeFlow and decides to give it a try.
-
-The next morning, instead of her usual 30-minute project management routine, she spends 5 minutes setting up her first client in CreativeFlow. The system automatically generates a professional invoice and even suggests follow-up emails based on her communication patterns. When a client asks for a project update, Maria can share a beautiful progress link instead of digging through emails.
-
-The breakthrough comes when she lands a major corporate client who's impressed by her "organized and professional" project setup. Six months later, Maria has doubled her client base and spends 80% of her time actually designing - exactly what she always wanted.
-```
+Encourage narrative format with specific user details, emotional journey, and clear before/after contrast
 
 ### 3. Guide Journey Exploration
 
 For each journey, facilitate detailed exploration:
-
-- "What happens at each step specifically?"
-- "What could go wrong here? What's the recovery path?"
-- "What information do they need to see/hear?"
-- "What's their emotional state at each point?"
-- "Where does this journey succeed or fail?"
+- What happens at each step specifically?
+- What could go wrong? What's the recovery path?
+- What information do they need to see/hear?
+- What's their emotional state at each point?
+- Where does this journey succeed or fail?
 
 ### 4. Connect Journeys to Requirements
 
 After each journey, explicitly state:
-"This journey reveals requirements for:
-
-- List specific capability areas (e.g., onboarding, meal planning, admin dashboard)
-- Help user see how different journeys create different feature sets"
+- This journey reveals requirements for specific capability areas
+- Help user see how different journeys create different feature sets
+- Connect journey needs to concrete capabilities (onboarding, dashboards, notifications, etc.)
 
 ### 5. Aim for Comprehensive Coverage
 
@@ -165,7 +124,7 @@ Guide toward complete journey set:
 - **Secondary user** (admin, moderator, support, etc.)
 - **API consumer** (if applicable)
 
-Ask: "Another journey? We should cover [suggest uncovered user type]"
+Ask if additional journeys are needed to cover uncovered user types
 
 ### 6. Generate User Journey Content
 
@@ -188,14 +147,10 @@ When saving to document, append these Level 2 and Level 3 sections:
 ### 7. Present MENU OPTIONS
 
 Present the user journey content for review, then display menu:
-
-"Based on our conversation, I've mapped out user journeys. Each journey reveals different capabilities needed for {{project_name}}.
-
-**Here's what I'll add to the document:**
-
-[Show the complete markdown content from section 6]
-
-**What would you like to do?**"
+- Show the mapped user journeys (using structure from section 6)
+- Highlight how each journey reveals different capabilities
+- Ask if they'd like to refine further, get other perspectives, or proceed
+- Present menu options naturally as part of conversation
 
 Display: "**Select:** [A] Advanced Elicitation [P] Party Mode [C] Continue to Domain Requirements (Step 5 of 11)"
 

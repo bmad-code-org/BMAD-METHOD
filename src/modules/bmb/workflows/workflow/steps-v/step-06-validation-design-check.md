@@ -3,9 +3,9 @@ name: 'step-06-validation-design-check'
 description: 'Check if workflow has proper validation steps that load validation data (if validation is critical)'
 
 nextStepFile: './step-07-instruction-style-check.md'
-targetWorkflowPath: '{bmb_creations_output_folder}/workflows/{new_workflow_name}'
-validationReportFile: '{targetWorkflowPath}/validation-report-{new_workflow_name}.md'
-workflowPlanFile: '{targetWorkflowPath}/workflow-plan-{new_workflow_name}.md'
+targetWorkflowPath: '{workflow_folder_path}'
+validationReportFile: '{workflow_folder_path}/validation-report-{datetime}.md'
+workflowPlanFile: '{workflow_folder_path}/workflow-plan.md'
 trimodalWorkflowStructure: '../data/trimodal-workflow-structure.md'
 ---
 

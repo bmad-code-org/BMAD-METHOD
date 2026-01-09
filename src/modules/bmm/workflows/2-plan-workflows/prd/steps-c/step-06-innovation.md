@@ -64,7 +64,7 @@ Detect and explore innovation patterns in the product, focusing on what makes it
 
 Load innovation signals specific to this project type:
 
-- Load `{project-root}/_bmad/bmm/workflows/2-plan-workflows/prd/project-types.csv` completely
+- Load `{projectTypesCSV}` completely
 - Find the row where `project_type` matches detected type from step-02
 - Extract `innovation_signals` (semicolon-separated list)
 - Extract `web_search_triggers` for potential innovation research
@@ -93,27 +93,22 @@ Match user descriptions against innovation_signals for their project_type:
 ### 3. Initial Innovation Screening
 
 Ask targeted innovation discovery questions:
-"As we explore {{project_name}}, I'm listening for what makes it innovative.
-
-**Innovation Indicators:**
-
-- Are you challenging any existing assumptions about how things work?
-- Are you combining technologies or approaches in new ways?
-- Is there something about this that hasn't been done before?
-
-What aspects of {{project_name}} feel most innovative to you?"
+- Guide exploration of what makes the product innovative
+- Explore if they're challenging existing assumptions
+- Ask about novel combinations of technologies/approaches
+- Identify what hasn't been done before
+- Understand which aspects feel most innovative
 
 ### 4. Deep Innovation Exploration (If Detected)
 
 If innovation signals are found, explore deeply:
 
 #### Innovation Discovery Questions:
-
-- "What makes it unique compared to existing solutions?"
-- "What assumption are you challenging?"
-- "How do we validate it works?"
-- "What's the fallback if it doesn't?"
-- "Has anyone tried this before?"
+- What makes it unique compared to existing solutions?
+- What assumption are you challenging?
+- How do we validate it works?
+- What's the fallback if it doesn't?
+- Has anyone tried this before?
 
 #### Market Context Research:
 
@@ -152,14 +147,10 @@ When saving to document, append these Level 2 and Level 3 sections:
 ### 6. Present MENU OPTIONS (Only if Innovation Detected)
 
 Present the innovation content for review, then display menu:
-
-"Based on our conversation, I've identified innovative aspects of {{project_name}} that differentiate it from existing solutions.
-
-**Here's what I'll add to the document:**
-
-[Show the complete markdown content from section 5]
-
-**What would you like to do?**"
+- Show identified innovative aspects (using structure from section 5)
+- Highlight differentiation from existing solutions
+- Ask if they'd like to refine further, get other perspectives, or proceed
+- Present menu options naturally as part of conversation
 
 Display: "**Select:** [A] Advanced Elicitation [P] Party Mode [C] Continue to Project Type Analysis (Step 7 of 11)"
 
@@ -177,9 +168,9 @@ Display: "**Select:** [A] Advanced Elicitation [P] Party Mode [C] Continue to Pr
 ## NO INNOVATION DETECTED:
 
 If no genuine innovation signals are found after exploration:
-"After exploring {{project_name}}, I don't see clear innovation signals that warrant a dedicated innovation section. This is perfectly fine - many successful products are excellent executions of existing concepts rather than breakthrough innovations.
-
-**What would you like to do?**"
+- Acknowledge that no clear innovation signals were found
+- Note this is fine - many successful products are excellent executions of existing concepts
+- Ask if they'd like to try finding innovative angles or proceed
 
 Display: "**Select:** [A] Advanced Elicitation - Let's try to find innovative angles [C] Continue - Skip innovation section and move to Project Type Analysis (Step 7 of 11)"
 
@@ -221,7 +212,7 @@ When user selects 'C', append the content directly to the document using the str
 
 ## SKIP CONDITIONS:
 
-Skip this step and load `{project-root}/_bmad/bmm/workflows/2-plan-workflows/prd/steps/step-07-project-type.md` if:
+Skip this step and load `{nextStepFile}` if:
 
 - No innovation signals detected in conversation
 - Product is incremental improvement rather than breakthrough
@@ -230,6 +221,6 @@ Skip this step and load `{project-root}/_bmad/bmm/workflows/2-plan-workflows/prd
 
 ## NEXT STEP:
 
-After user selects 'C' and content is saved to document (or step is skipped), load `{project-root}/_bmad/bmm/workflows/2-plan-workflows/prd/steps/step-07-project-type.md`.
+After user selects 'C' and content is saved to document (or step is skipped), load `{nextStepFile}`.
 
 Remember: Do NOT proceed to step-07 until user explicitly selects 'C' from the A/P/C menu (or confirms step skip)!

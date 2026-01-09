@@ -56,38 +56,21 @@ Define comprehensive success criteria that cover user success, business success,
 Analyze product brief, research, and brainstorming documents for success criteria already mentioned.
 
 **If Input Documents Contain Success Criteria:**
-"Looking at your product brief and research, I see some initial success criteria already defined:
-
-**From your brief:**
-{{extracted_success_criteria_from_brief}}
-
-**From research:**
-{{extracted_success_criteria_from_research}}
-
-**From brainstorming:**
-{{extracted_success_criteria_from_brainstorming}}
-
-This gives us a great foundation. Let's refine and expand on these initial thoughts:
-
-**User Success First:**
-Based on what we have, how would you refine these user success indicators:
-
-- {{refined_user_success_from_documents}}
-- Are there other user success metrics we should consider?
-
-**What would make a user say 'this was worth it'** beyond what's already captured?"
+Guide user to refine existing success criteria:
+- Acknowledge what's already documented in their materials
+- Extract key success themes from brief, research, and brainstorming
+- Help user identify gaps and areas for expansion
+- Probe for specific, measurable outcomes: When do users feel delighted/relieved/empowered?
+- Ask about emotional success moments and completion scenarios
+- Explore what "worth it" means beyond what's already captured
 
 **If No Success Criteria in Input Documents:**
-Start with user-centered success:
-"Now that we understand what makes {{project_name}} special, let's define what success looks like.
-
-**User Success First:**
-
-- What would make a user say 'this was worth it'?
-- What's the moment where they realize this solved their problem?
-- After using {{project_name}}, what outcome are they walking away with?
-
-Let's start with the user experience of success."
+Start with user-centered success exploration:
+- Guide conversation toward defining what "worth it" means for users
+- Ask about the moment users realize their problem is solved
+- Explore specific user outcomes and emotional states
+- Identify success "aha!" moments and completion scenarios
+- Focus on user experience of success first
 
 ### 2. Explore User Success Metrics
 
@@ -101,15 +84,11 @@ Listen for specific user outcomes and help make them measurable:
 ### 3. Define Business Success
 
 Transition to business metrics:
-"Now let's look at success from the business perspective.
-
-**Business Success:**
-
-- What does success look like at 3 months? 12 months?
-- Are we measuring revenue, user growth, engagement, something else?
-- What metric would make you say 'this is working'?
-
-Help me understand what success means for your business."
+- Guide conversation to business perspective on success
+- Explore timelines: What does 3-month success look like? 12-month success?
+- Identify key business metrics: revenue, user growth, engagement, or other measures?
+- Ask what specific metric would indicate "this is working"
+- Understand business success from their perspective
 
 ### 4. Challenge Vague Metrics
 
@@ -123,31 +102,25 @@ Push for specificity on business metrics:
 ### 5. Connect to Product Differentiator
 
 Tie success metrics back to what makes the product special:
-"So success means users experience [differentiator] and achieve [outcome]. Does that capture it?"
-
-Adapt success criteria to context:
-
-- Consumer: User love, engagement, retention
-- B2B: ROI, efficiency, adoption
-- Developer tools: Developer experience, community
-- Regulated: Compliance, safety, validation
-- GovTech: Government compliance, accessibility, procurement
+- Connect success criteria to the product's unique differentiator
+- Ensure metrics reflect the specific value proposition
+- Adapt success criteria to domain context:
+  - Consumer: User love, engagement, retention
+  - B2B: ROI, efficiency, adoption
+  - Developer tools: Developer experience, community
+  - Regulated: Compliance, safety, validation
+  - GovTech: Government compliance, accessibility, procurement
 
 ### 6. Smart Scope Negotiation
 
 Guide scope definition through success lens:
-"The Scoping Game:
-
-1. What must work for this to be useful? → MVP
-2. What makes it competitive? → Growth
-3. What's the dream version? → Vision
-
-Challenge scope creep conversationally:
-
-- Could that wait until after launch?
-- Is that essential for proving the concept?
-
-For complex domains, include compliance minimums in MVP."
+- Help user distinguish MVP (must work to be useful) from growth (competitive) and vision (dream)
+- Guide conversation through three scope levels:
+  1. MVP: What's essential for proving the concept?
+  2. Growth: What makes it competitive?
+  3. Vision: What's the dream version?
+- Challenge scope creep conversationally: Could this wait until after launch? Is this essential for MVP?
+- For complex domains: Ensure compliance minimums are included in MVP
 
 ### 7. Generate Success Criteria Content
 
@@ -195,13 +168,9 @@ When saving to document, append these Level 2 and Level 3 sections:
 
 Present the success criteria content for user review, then display menu:
 
-"Based on our conversation, I've drafted success criteria and scope definition.
-
-**Here's what I'll add to the document:**
-
-[Show the complete markdown content from section 7]
-
-**What would you like to do?**"
+- Show the drafted success criteria and scope definition (using structure from section 7)
+- Ask if they'd like to refine further, get other perspectives, or proceed
+- Present menu options naturally as part of the conversation
 
 Display: "**Select:** [A] Advanced Elicitation [P] Party Mode [C] Continue to User Journey Mapping (Step 4 of 11)"
 

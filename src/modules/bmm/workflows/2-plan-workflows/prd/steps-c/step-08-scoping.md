@@ -53,80 +53,46 @@ Conduct comprehensive scoping exercise to define MVP boundaries and prioritize f
 ### 1. Review Current PRD State
 
 Analyze everything documented so far:
-"I've reviewed your complete PRD so far. Here's what we've established:
-
-**Product Vision & Success:**
-{{summary_of_vision_and_success_criteria}}
-
-**User Journeys:** {{number_of_journeys}} mapped with rich narratives
-
-**Domain & Innovation Focus:**
-{{summary_of_domain_requirements_and_innovation}}
-
-**Current Scope Implications:**
-Based on everything we've documented, this looks like it could be:
-
-- [ ] Simple MVP (small team, lean scope)
-- [ ] Medium scope (moderate team, balanced features)
-- [ ] Complex project (large team, comprehensive scope)
-
-Does this initial assessment feel right, or do you see this differently?"
+- Present synthesis of established vision, success criteria, journeys
+- Assess domain and innovation focus
+- Evaluate scope implications: simple MVP, medium, or complex project
+- Ask if initial assessment feels right or if they see it differently
 
 ### 2. Define MVP Strategy
 
 Facilitate strategic MVP decisions:
-
-"Let's think strategically about your launch strategy:
-
-**MVP Philosophy Options:**
-
-1. **Problem-Solving MVP**: Solve the core problem with minimal features
-2. **Experience MVP**: Deliver the key user experience with basic functionality
-3. **Platform MVP**: Build the foundation for future expansion
-4. **Revenue MVP**: Generate early revenue with essential features
-
-**Critical Questions:**
-
-- What's the minimum that would make users say 'this is useful'?
-- What would make investors/partners say 'this has potential'?
-- What's the fastest path to validated learning?
-
-**Which MVP approach feels right for {{project_name}}?**"
+- Explore MVP philosophy options: problem-solving, experience, platform, or revenue MVP
+- Ask critical questions:
+  - What's the minimum that would make users say 'this is useful'?
+  - What would make investors/partners say 'this has potential'?
+  - What's the fastest path to validated learning?
+- Guide toward appropriate MVP approach for their product
 
 ### 3. Scoping Decision Framework
 
 Use structured decision-making for scope:
 
 **Must-Have Analysis:**
-"Let's identify absolute MVP necessities. For each journey and success criterion, ask:
-
-- **Without this, does the product fail?** (Y/N)
-- **Can this be manual initially?** (Y/N)
-- **Is this a deal-breaker for early adopters?** (Y/N)
-
-**Current Document Review:**
-Looking at your user journeys, what are the absolute core experiences that must work?
-
-{{analyze_journeys_for_mvp_essentials}}"
+- Guide identification of absolute MVP necessities
+- For each journey and success criterion, ask:
+  - Without this, does the product fail?
+  - Can this be manual initially?
+  - Is this a deal-breaker for early adopters?
+- Analyze journeys for MVP essentials
 
 **Nice-to-Have Analysis:**
-"Let's also identify what could be added later:
-
-**Post-MVP Enhancements:**
-
-- Features that enhance but aren't essential
-- User types that can be added later
-- Advanced functionality that builds on MVP
-
-**What features could we add in versions 2, 3, etc.?**"
+- Identify what could be added later:
+  - Features that enhance but aren't essential
+  - User types that can be added later
+  - Advanced functionality that builds on MVP
+- Ask what features could be added in versions 2, 3, etc.
 
 ### 4. Progressive Feature Roadmap
 
 Create phased development approach:
-
-"Let's map your features across development phases:
-
-**Phase 1: MVP**
+- Guide mapping of features across development phases
+- Structure as Phase 1 (MVP), Phase 2 (Growth), Phase 3 (Vision)
+- Ensure clear progression and dependencies
 
 - Core user value delivery
 - Essential user journeys
@@ -209,14 +175,10 @@ Prepare comprehensive scoping section:
 ### 7. Present MENU OPTIONS
 
 Present the scoping decisions for review, then display menu:
-
-"Based on our conversation, I've analyzed your complete PRD and created a strategic scoping plan for {{project_name}}.
-
-**Here's what I'll add to the document:**
-
-[Show the complete markdown content from step 6]
-
-**What would you like to do?**"
+- Show strategic scoping plan (using structure from step 6)
+- Highlight MVP boundaries and phased roadmap
+- Ask if they'd like to refine further, get other perspectives, or proceed
+- Present menu options naturally as part of conversation
 
 Display: "**Select:** [A] Advanced Elicitation [P] Party Mode [C] Continue to Functional Requirements (Step 9 of 11)"
 

@@ -93,9 +93,36 @@ Read the frontmatter from `{outputFile}` to get document counts:
 
 ### 2. Load Classification Data
 
-Load classification reference data:
-- Load `{projectTypesCSV}` - project types with detection signals
-- Load `{domainComplexityCSV}` - domain complexity levels
+**Attempt subprocess data lookup:**
+
+**Project Type Lookup:**
+"Your task: Lookup data in {projectTypesCSV}
+
+**Search criteria:**
+- Find row where project_type matches {{detectedProjectType}}
+
+**Return format:**
+Return ONLY the matching row as a YAML-formatted object with these fields:
+project_type, detection_signals
+
+**Do NOT return the entire CSV - only the matching row.**"
+
+**Domain Complexity Lookup:**
+"Your task: Lookup data in {domainComplexityCSV}
+
+**Search criteria:**
+- Find row where domain matches {{detectedDomain}}
+
+**Return format:**
+Return ONLY the matching row as a YAML-formatted object with these fields:
+domain, complexity, typical_concerns, compliance_requirements
+
+**Do NOT return the entire CSV - only the matching row.**"
+
+**Graceful degradation (if Task tool unavailable):**
+- Load the CSV files directly
+- Find the matching rows manually
+- Extract required fields
 - Keep in memory for intelligent classification
 
 ### 3. Begin Discovery Conversation

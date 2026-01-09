@@ -170,18 +170,11 @@ When saving to document, append these Level 2 and Level 3 sections:
 ### 7. Present MENU OPTIONS
 
 Present the functional requirements for review, then display menu:
-
-"Based on our conversation, I've synthesized all our discussions into comprehensive functional requirements. This becomes the capability contract that UX designers, architects, and developers will all work from.
-
-**Here's what I'll add to the document:**
-
-[Show the complete FR list from step 6]
-
-**This is critical because:**
-
-- Every feature we build must trace back to one of these requirements
-- UX designers will ONLY design interactions for these capabilities
-- Architects will ONLY build systems to support these capabilities
+- Show synthesized functional requirements (using structure from step 6)
+- Emphasize this is the capability contract for all downstream work
+- Highlight that every feature must trace back to these requirements
+- Ask if they'd like to refine further, get other perspectives, or proceed
+- Present menu options naturally as part of conversation
 
 **What would you like to do?**"
 

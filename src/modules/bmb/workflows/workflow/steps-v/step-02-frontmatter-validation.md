@@ -2,9 +2,9 @@
 name: 'step-02-frontmatter-validation'
 description: 'Validate frontmatter compliance across all step files'
 
-nextStepFile: './step-03-menu-validation.md'
-targetWorkflowPath: '{bmb_creations_output_folder}/workflows/{new_workflow_name}'
-validationReportFile: '{targetWorkflowPath}/validation-report-{new_workflow_name}.md'
+nextStepFile: './step-02b-path-violations.md'
+targetWorkflowPath: '{workflow_folder_path}'
+validationReportFile: '{workflow_folder_path}/validation-report-{datetime}.md'
 frontmatterStandards: '../data/frontmatter-standards.md'
 ---
 

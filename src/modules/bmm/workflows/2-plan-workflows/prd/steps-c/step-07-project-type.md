@@ -53,11 +53,23 @@ Conduct project-type specific discovery using CSV-driven guidance to define tech
 
 ### 1. Load Project-Type Configuration Data
 
-Load project-type specific configuration:
+**Attempt subprocess data lookup:**
 
-- Load `{projectTypesCSV}` completely
-- Find the row where `project_type` matches detected type from step-02
-- Extract these columns:
+"Your task: Lookup data in {projectTypesCSV}
+
+**Search criteria:**
+- Find row where project_type matches {{projectTypeFromStep02}}
+
+**Return format:**
+Return ONLY the matching row as a YAML-formatted object with these fields:
+project_type, key_questions, required_sections, skip_sections, innovation_signals
+
+**Do NOT return the entire CSV - only the matching row.**"
+
+**Graceful degradation (if Task tool unavailable):**
+- Load the CSV file directly
+- Find the matching row manually
+- Extract required fields:
   - `key_questions` (semicolon-separated list of discovery questions)
   - `required_sections` (semicolon-separated list of sections to document)
   - `skip_sections` (semicolon-separated list of sections to skip)

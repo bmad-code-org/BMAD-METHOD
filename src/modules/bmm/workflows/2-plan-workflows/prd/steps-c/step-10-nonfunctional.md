@@ -3,7 +3,7 @@ name: 'step-10-nonfunctional'
 description: 'Define quality attributes that matter for this specific product'
 
 # File References
-nextStepFile: './step-11-complete.md'
+nextStepFile: './step-11-polish.md'
 outputFile: '{planning_artifacts}/prd.md'
 
 # Task References
@@ -13,7 +13,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 # Step 10: Non-Functional Requirements
 
-**Progress: Step 10 of 11** - Next: Complete PRD
+**Progress: Step 10 of 12** - Next: Polish Document
 
 ## MANDATORY EXECUTION RULES (READ FIRST):
 
@@ -78,56 +78,41 @@ For each relevant category, conduct targeted discovery:
 
 #### Performance NFRs (If relevant):
 
-"Let's talk about performance requirements for {{project_name}}.
-
-**Performance Questions:**
-
+Explore performance requirements:
 - What parts of the system need to be fast for users to be successful?
 - Are there specific response time expectations?
 - What happens if performance is slower than expected?
-- Are there concurrent user scenarios we need to support?"
+- Are there concurrent user scenarios we need to support?
 
 #### Security NFRs (If relevant):
 
-"Security is critical for products that handle sensitive information.
-
-**Security Questions:**
-
+Explore security requirements:
 - What data needs to be protected?
 - Who should have access to what?
 - What are the security risks we need to mitigate?
-- Are there compliance requirements (GDPR, HIPAA, PCI-DSS)?"
+- Are there compliance requirements (GDPR, HIPAA, PCI-DSS)?
 
 #### Scalability NFRs (If relevant):
 
-"Scalability matters if we expect growth or have variable demand.
-
-**Scalability Questions:**
-
+Explore scalability requirements:
 - How many users do we expect initially? Long-term?
 - Are there seasonal or event-based traffic spikes?
-- What happens if we exceed our capacity?"
-- What growth scenarios should we plan for?"
+- What happens if we exceed our capacity?
+- What growth scenarios should we plan for?
 
 #### Accessibility NFRs (If relevant):
 
-"Accessibility ensures the product works for users with disabilities.
-
-**Accessibility Questions:**
-
+Explore accessibility requirements:
 - Are we serving users with visual, hearing, or motor impairments?
 - Are there legal accessibility requirements (WCAG, Section 508)?
-- What accessibility features are most important for our users?"
+- What accessibility features are most important for our users?
 
 #### Integration NFRs (If relevant):
 
-"Integration requirements matter for products that connect to other systems.
-
-**Integration Questions:**
-
+Explore integration requirements:
 - What external systems do we need to connect with?
 - Are there APIs or data formats we must support?
-- How reliable do these integrations need to be?"
+- How reliable do these integrations need to be?
 
 ### 4. Make NFRs Specific and Measurable
 
@@ -174,18 +159,13 @@ When saving to document, append these Level 2 and Level 3 sections (only include
 ### 6. Present MENU OPTIONS
 
 Present the non-functional requirements for review, then display menu:
+- Show defined NFRs (using structure from step 5)
+- Note that only relevant categories were included
+- Emphasize NFRs specify how well the system needs to perform
+- Ask if they'd like to refine further, get other perspectives, or proceed
+- Present menu options naturally as part of conversation
 
-"Based on our conversation, I've defined the non-functional requirements that specify how well {{project_name}} needs to perform. I've only included categories that actually matter for this product.
-
-**Here's what I'll add to the document:**
-
-[Show the complete NFR content from step 5]
-
-**Note:** We've skipped categories that don't apply to avoid unnecessary requirements.
-
-**What would you like to do?**"
-
-Display: "**Select:** [A] Advanced Elicitation [P] Party Mode [C] Continue to Complete PRD (Step 11 of 11)"
+Display: "**Select:** [A] Advanced Elicitation [P] Party Mode [C] Continue to Polish Document (Step 11 of 12)"
 
 #### Menu Handling Logic:
 - IF A: Execute {advancedElicitationTask} with the current NFR content, process the enhanced quality attribute insights that come back, ask user if they accept the improvements, if yes update content then redisplay menu, if no keep original content then redisplay menu

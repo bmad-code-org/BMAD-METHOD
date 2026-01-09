@@ -3,10 +3,10 @@ name: 'step-05-output-format-validation'
 description: 'Validate output format compliance - template type, final polish, step-to-output mapping'
 
 nextStepFile: './step-06-validation-design-check.md'
-targetWorkflowPath: '{bmb_creations_output_folder}/workflows/{new_workflow_name}'
-validationReportFile: '{targetWorkflowPath}/validation-report-{new_workflow_name}.md'
+targetWorkflowPath: '{workflow_folder_path}'
+validationReportFile: '{workflow_folder_path}/validation-report-{datetime}.md'
 outputFormatStandards: '../data/output-format-standards.md'
-workflowPlanFile: '{targetWorkflowPath}/workflow-plan-{new_workflow_name}.md'
+workflowPlanFile: '{workflow_folder_path}/workflow-plan.md'
 ---
 
 # Validation Step 5: Output Format Validation

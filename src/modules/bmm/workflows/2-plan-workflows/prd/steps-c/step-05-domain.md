@@ -90,10 +90,24 @@ Proceed with domain exploration.
 
 ### 2. Load Domain Reference Data
 
-Load `{domainComplexityCSV}` to understand:
-- Typical concerns for this domain
-- Common compliance requirements
-- Technical constraints to consider
+**Attempt subprocess data lookup:**
+
+"Your task: Lookup data in {domainComplexityCSV}
+
+**Search criteria:**
+- Find row where domain matches {{domainFromStep02}}
+
+**Return format:**
+Return ONLY the matching row as a YAML-formatted object with these fields:
+domain, complexity, typical_concerns, compliance_requirements
+
+**Do NOT return the entire CSV - only the matching row.**"
+
+**Graceful degradation (if Task tool unavailable):**
+- Load the CSV file directly
+- Find the matching row manually
+- Extract required fields
+- Understand typical concerns and compliance requirements
 
 ### 3. Explore Domain-Specific Concerns
 
