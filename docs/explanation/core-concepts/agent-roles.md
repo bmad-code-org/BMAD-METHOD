@@ -173,7 +173,7 @@ Fast solo development without handoffs.
 - Code review
 
 **Key Workflows:**
-- `*create-tech-spec`
+- `*quick-spec`
 - `*quick-dev`
 - `*code-review`
 

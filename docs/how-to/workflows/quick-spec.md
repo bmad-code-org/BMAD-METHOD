@@ -1,6 +1,6 @@
 ---
-title: "How to Create a Tech Spec"
-description: How to create a technical specification using Quick Spec Flow
+title: "How to Use Quick Spec"
+description: How to create a technical specification using Quick Spec workflow
 ---
 
 
@@ -35,7 +35,7 @@ Start a fresh chat and load the PM agent (or Quick Flow Solo Dev agent).
 ### 2. Run the Tech Spec Workflow
 
 ```
-*create-tech-spec
+*quick-spec
 ```
 
 Or simply describe what you want to build:

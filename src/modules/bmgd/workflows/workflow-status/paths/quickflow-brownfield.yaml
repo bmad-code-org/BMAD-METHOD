@@ -11,10 +11,10 @@ phases:
     name: "Planning"
     required: true
     workflows:
-      - id: "create-tech-spec"
+      - id: "quick-spec"
         required: true
         agent: "game-solo-dev"
-        command: "create-tech-spec"
+        command: "quick-spec"
         output: "Technical specification"
         note: "Define changes for existing codebase"
 

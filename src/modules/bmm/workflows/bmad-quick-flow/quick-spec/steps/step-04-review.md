@@ -2,7 +2,7 @@
 name: 'step-04-review'
 description: 'Review and finalize the tech-spec'
 
-workflow_path: '{project-root}/_bmad/bmm/workflows/bmad-quick-flow/create-tech-spec'
+workflow_path: '{project-root}/_bmad/bmm/workflows/bmad-quick-flow/quick-spec'
 wipFile: '{implementation_artifacts}/tech-spec-wip.md'
 ---
 

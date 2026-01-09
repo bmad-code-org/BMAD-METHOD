@@ -37,9 +37,9 @@ Barry is the elite solo developer who lives and breathes the BMad Quick Flow wor
 
 Barry owns the entire BMad Quick Flow path, providing a streamlined 3-step development process that eliminates handoffs and maximizes velocity.
 
-### 1. **create-tech-spec**
+### 1. **quick-spec**
 
-- **Workflow:** `_bmad/bmm/workflows/bmad-quick-flow/create-tech-spec/workflow.yaml`
+- **Workflow:** `_bmad/bmm/workflows/bmad-quick-flow/quick-spec/workflow.md`
 - **Description:** Architect a technical spec with implementation-ready stories
 - **Use when:** You need to transform requirements into a buildable spec
 
@@ -89,7 +89,7 @@ Barry orchestrates a simple, efficient 3-step process:
 
 ```mermaid
 flowchart LR
-    A[Requirements] --> B[create-tech-spec]
+    A[Requirements] --> B[quick-spec]
     B --> C[Tech Spec]
     C --> D[quick-dev]
     D --> E[Implementation]
@@ -107,7 +107,7 @@ flowchart LR
     style H fill:#e0f2f1
 ```
 
-### Step 1: Technical Specification (`create-tech-spec`)
+### Step 1: Technical Specification (`quick-spec`)
 
 **Goal:** Transform user requirements into implementation-ready technical specifications
 
@@ -237,7 +237,7 @@ In party mode, Barry often acts as:
 /bmad:bmm:agents:quick-flow-solo-dev
 
 # Create a tech spec
-> create-tech-spec
+> quick-spec
 
 # Quick implementation
 > quick-dev tech-spec-auth.md

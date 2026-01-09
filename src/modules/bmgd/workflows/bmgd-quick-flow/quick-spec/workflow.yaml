@@ -1,5 +1,5 @@
 # Quick-Flow: Create Tech-Spec (Game Development)
-name: create-tech-spec
+name: quick-spec
 description: "Conversational spec engineering for games - ask questions, investigate code, produce implementation-ready tech-spec."
 author: "BMad"
 
@@ -14,7 +14,7 @@ user_skill_level: "{config_source}:game_dev_experience"
 date: system-generated
 
 # Workflow components
-installed_path: "{project-root}/_bmad/bmgd/workflows/bmgd-quick-flow/create-tech-spec"
+installed_path: "{project-root}/_bmad/bmgd/workflows/bmgd-quick-flow/quick-spec"
 instructions: "{installed_path}/instructions.md"
 
 # Related workflows
