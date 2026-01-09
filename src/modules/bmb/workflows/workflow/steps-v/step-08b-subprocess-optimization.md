@@ -72,10 +72,15 @@ Load {subprocessPatterns} in main context
 
 **DO NOT BE LAZY - For EVERY step file, launch a subprocess that:**
 
-1. Loads the step file
-2. Reads entire step to understand operations
-3. Identifies ALL subprocess optimization opportunities
+1. Loads that step file
+2. ALSO loads {subprocessPatterns} to understand all patterns deeply (subprocess needs full context!)
+3. Analyzes the step against each pattern looking for optimization opportunities
 4. Returns specific, actionable suggestions to parent
+
+**Subprocess gets full context:**
+- The step file being analyzed
+- The subprocess-optimization-patterns.md reference (all examples and patterns)
+- Returns only findings to parent (context savings!)
 
 **SUBPROCESS ANALYSIS PATTERN - Check each step file for:**
 

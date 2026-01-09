@@ -174,11 +174,11 @@ If no genuine innovation signals are found after exploration:
 
 Display: "**Select:** [A] Advanced Elicitation - Let's try to find innovative angles [C] Continue - Skip innovation section and move to Project Type Analysis (Step 7 of 11)"
 
-#### Menu Handling Logic:
+### Menu Handling Logic:
 - IF A: Proceed with content generation anyway, then return to menu
 - IF C: Skip this step, then load, read entire file, then execute {nextStepFile}
 
-#### EXECUTION RULES:
+### EXECUTION RULES:
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'
 
