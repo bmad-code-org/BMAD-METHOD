@@ -1,0 +1,5 @@
+name,displayName,description,module,path,standalone
+"dependency-check","Dependency Checker","Scan project dependencies for outdated packages and known vulnerabilities","core","_bmad/core/tools/dependency-check.xml","true"
+"schema-validator","Schema Validator","Validate JSON/YAML files against schemas (JSON Schema, OpenAPI, etc.)","core","_bmad/core/tools/schema-validator.xml","true"
+"code-metrics","Code Metrics","Analyze codebase for size, complexity, and quality metrics","core","_bmad/core/tools/code-metrics.xml","true"
+"context-extractor","Context Extractor","Extract key context from codebase for AI agent consumption","core","_bmad/core/tools/context-extractor.xml","true"

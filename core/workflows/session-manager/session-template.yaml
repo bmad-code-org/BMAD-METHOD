@@ -1,0 +1,81 @@
+# Session Template
+# Copy and customize for new sessions
+
+session_id: "{PREFIX}{YYYYMM}-{CLIENT}-{PROJECT}"
+created: "{timestamp}"
+last_updated: "{timestamp}"
+status: "active"
+
+# Identification
+client: "{CLIENT}"
+project: "{PROJECT}"
+prefix: "{PREFIX}"
+description: ""
+
+# Token tracking
+tokens:
+  initial: 0
+  current: 0
+  peak: 0
+  saved_by_isolation: 0
+  warning_threshold: 120000
+  max_limit: 150000
+
+# Agent tracking
+agents_spawned: []
+# Example entry:
+# - id: "agent-abc123"
+#   type: "analyst"
+#   started: "2025-01-15T10:35:00Z"
+#   completed: "2025-01-15T10:42:00Z"
+#   tokens_used: 32000
+#   output_file: "_bmad-output/temp/analyst-abc123.md"
+#   status: "completed"  # running, completed, failed
+
+# Artifacts produced
+artifacts: []
+# Example entry:
+# - path: "docs/prd.md"
+#   type: "document"
+#   created: "2025-01-15T11:00:00Z"
+#   modified: "2025-01-15T11:30:00Z"
+#   agent: "pm"
+#   description: "Product Requirements Document"
+
+# Progress tracking
+milestones: []
+# Example entry:
+# - name: "Requirements Complete"
+#   target_date: "2025-01-15"
+#   completed: "2025-01-15T11:30:00Z"
+#   notes: "All stakeholder requirements gathered"
+
+# Current work context
+current_focus:
+  epic: ""
+  story: ""
+  task: ""
+  blocker: ""
+
+# Context for resume (AI-generated summary)
+context_summary: |
+  Session initialized. Ready to begin work.
+
+# Decision log
+decisions: []
+# Example entry:
+# - date: "2025-01-15"
+#   decision: "Use PostgreSQL for primary database"
+#   rationale: "Team expertise, ACID compliance needs"
+#   made_by: "architect"
+
+# Session notes
+notes: []
+# Example entry:
+# - timestamp: "2025-01-15T10:30:00Z"
+#   note: "Client prefers OAuth2 over JWT"
+#   source: "user"
+
+# Tags for filtering
+tags: []
+# Example: ["security", "audit", "enterprise"]

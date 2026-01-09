@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<task id="receive-message" name="Receive Inter-Agent Message" standalone="false">
+  <description>Receive and process messages from the messenger queue</description>
+
+  <config>
+    <source>{project-root}/_bmad/core/messenger/messenger-config.yaml</source>
+    <queue_file>{project-root}/_bmad-output/messenger/message-queue.yaml</queue_file>
+    <archive_dir>{project-root}/_bmad-output/messenger/archive</archive_dir>
+  </config>
+
+  <parameters>
+    <param name="agent" required="true" description="Agent checking for messages"/>
+    <param name="type_filter" required="false" description="Filter by message type"/>
+    <param name="mark_read" required="false" default="true" description="Mark messages as read"/>
+  </parameters>
+
+  <execution>
+    <step n="1" goal="Load message queue">
+      <action>Load queue from {queue_file}</action>
+      <action if="queue not exists or empty">
+        Return structured output:
+          messages: []
+          count: 0
+          status_message: "No messages in queue"
+      </action>
+    </step>
+
+    <step n="2" goal="Filter messages for agent">
+      <action>Filter messages where:
+        - to == {agent} OR
+        - to_agents contains {agent} OR
+        - to_agents == "all"
+      </action>
+      <action>Filter by status == "pending"</action>
+      <action if="type_filter specified">Filter by type == {type_filter}</action>
+      <action>Sort by priority (critical first), then by created (oldest first)</action>
+    </step>
+
+    <step n="3" goal="Process and archive messages">
+      <action if="no matching messages">
+        Return structured output:
+          messages: []
+          count: 0
+          status_message: "No pending messages for {agent}"
+      </action>
+      <action>For each message:
+        - Display message summary
+        - If mark_read == true:
+          - Update status to "read"
+          - Append message to archive file at {archive_dir}/{agent}-archive.yaml
+      </action>
+      <note>Archive preserves full message history per agent for audit/replay</note>
+    </step>
+
+    <step n="4" goal="Update queue with locking">
+      <action if="mark_read == true">
+        <substep n="4.1">Acquire exclusive lock on {queue_file}.lock</substep>
+        <substep n="4.2">Re-read {queue_file} to get latest state (another agent may have written)</substep>
+        <substep n="4.3">Merge status changes for processed message IDs into latest state</substep>
+        <substep n="4.4">Write updated queue to {queue_file}.tmp (atomic staging)</substep>
+        <substep n="4.5">Rename {queue_file}.tmp to {queue_file} (atomic replace)</substep>
+        <substep n="4.6">Release exclusive lock on {queue_file}.lock</substep>
+      </action>
+      <note>Lock ensures concurrent agents do not corrupt queue; atomic rename prevents partial writes</note>
+    </step>
+
+    <step n="5" goal="Return messages">
+      <action>Return structured output:
+        messages: [{message_objects}]
+        count: {number_of_messages}
+        status_message: "Messages for {agent}: {count}"
+      </action>
+      <display_format>
+        Messages for {agent}: {count}
+
+        {for each message}
+        ---
+        [{priority}] {type} from {from}
+        ID: {message_id}
+        Received: {created}
+
+        {payload_summary}
+        ---
+        {end for}
+      </display_format>
+      <note>Callers always receive {messages, count, status_message} regardless of path taken</note>
+    </step>
+  </execution>
+
+  <concurrency>
+    <note>Multiple agents may call receive-message concurrently. Implementations MUST:</note>
+    <requirement>Acquire exclusive lock before any write to {queue_file}</requirement>
+    <requirement>Use atomic write (write to temp file, then rename) to prevent corruption</requirement>
+    <requirement>Re-read queue after acquiring lock to avoid lost updates</requirement>
+    <requirement>Release lock promptly after write completes</requirement>
+    <requirement>Archive to {archive_dir} uses per-agent files to minimize lock contention</requirement>
+  </concurrency>
+
+  <output>
+    <field name="messages" description="Array of message objects (empty array if none)"/>
+    <field name="count" description="Number of messages (0 if none)"/>
+    <field name="status_message" required="false" description="Human-readable status for early returns or empty results"/>
+  </output>
+</task>

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<task id="spawn-agent" name="Spawn Isolated Agent" standalone="false">
+  <description>Spawn an agent in an isolated subprocess with token isolation</description>
+
+  <config>
+    <source>{project-root}/_bmad/core/config.yaml</source>
+    <token_config>{project-root}/_bmad/bmm/config.yaml:token_management</token_config>
+    <agent_manifest>{project-root}/_bmad/_config/agent-manifest.csv</agent_manifest>
+    <output_dir>{project-root}/_bmad-output</output_dir>
+  </config>
+
+  <parameters>
+    <param name="agent_type" required="true" description="Type of agent to spawn (analyst, architect, dev, pm, etc.)"/>
+    <param name="task_description" required="true" description="Brief description of the task (3-5 words)"/>
+    <param name="prompt" required="true" description="Full prompt/instructions for the agent"/>
+    <param name="model" required="false" default="sonnet" description="Model to use: sonnet, opus, haiku"/>
+    <param name="run_in_background" required="false" default="false" description="Run agent in background"/>
+    <param name="output_file" required="false" description="Relative path for agent output file; must be under {output_dir} (no ../ traversal or absolute paths outside root allowed)"/>
+    <param name="allow_overwrite" required="false" default="false" description="If true, allow overwriting existing output files; otherwise reject if file exists"/>
+  </parameters>
+
+  <execution>
+    <step n="1" goal="Validate parameters">
+      <action>Verify agent_type is valid (exists in {agent_manifest})</action>
+      <action>Verify prompt is not empty</action>
+      <action>Set default model to "sonnet" if not specified</action>
+
+      <!-- Validate output_file path for safety -->
+      <action if="output_file specified">
+        Validate output_file path:
+        <substep n="1.1">Reject if output_file is an absolute path outside {output_dir}</substep>
+        <substep n="1.2">Reject if output_file contains path traversal sequences (../, ..\, or encoded variants)</substep>
+        <substep n="1.3">Canonicalize path: resolve to absolute path under {output_dir}</substep>
+        <substep n="1.4">Verify canonicalized path starts with {output_dir} (is descendant)</substep>
+        <substep n="1.5">If canonicalized path is not under {output_dir}:
+          HALT with error: "output_file must be under {output_dir}; path traversal not allowed"
+        </substep>
+        <substep n="1.6">If file already exists AND allow_overwrite == false:
+          HALT with error: "output_file already exists; set allow_overwrite=true to overwrite"
+        </substep>
+      </action>
+    </step>
+
+    <step n="2" goal="Prepare agent context">
+      <action>Load agent persona from {agent_manifest} for {agent_type}</action>
+      <action>Load any agent customizations from {output_dir}/../_bmad/_config/agents/{agent_type}/</action>
+      <action>Build base_prompt by combining:
+        - Agent persona and role description
+        - Agent-specific customizations (if any)
+        - User-provided {prompt} parameter
+      </action>
+    </step>
+
+    <step n="3" goal="Configure output handling and construct final_prompt">
+      <action if="output_file specified">Set resolved_output_file = {output_file}</action>
+      <action if="output_file not specified">
+        Set resolved_output_file = {output_dir}/temp/{agent_type}-{timestamp}.md
+      </action>
+      <action>Ensure parent directory of resolved_output_file exists</action>
+      <action>Construct final_prompt by appending to base_prompt:
+        "
+
+        ## Output Instructions
+        Write your complete output to: {resolved_output_file}
+        Return only a brief summary (under 500 words) to this conversation."
+      </action>
+    </step>
+
+    <step n="4" goal="Spawn agent subprocess">
+      <action>Use Task tool with:
+        - description: "{agent_type}: {task_description}"
+        - prompt: {final_prompt}
+        - subagent_type: "general-purpose"
+        - model: {model}
+        - run_in_background: {run_in_background}
+      </action>
+      <note>final_prompt includes persona + task + output instructions with resolved_output_file</note>
+    </step>
+
+    <step n="5" goal="Handle response">
+      <action if="run_in_background == false">Wait for agent completion</action>
+      <action if="run_in_background == true">Return agent_id for later retrieval</action>
+      <action>Return structured output:
+        - status: "success" | "failed" | "running"
+        - agent_id: (if background)
+        - output_file: {resolved_output_file}
+        - summary: (agent's brief response)
+      </action>
+    </step>
+  </execution>
+
+  <output>
+    <field name="status" description="success | failed | running"/>
+    <field name="agent_id" description="ID for background agents"/>
+    <field name="output_file" description="Path to full output"/>
+    <field name="summary" description="Brief summary of agent work"/>
+  </output>
+</task>

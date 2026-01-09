@@ -1,0 +1,162 @@
+# Inter-Agent Messenger Configuration
+# Enables formal handoff protocols between agents
+
+name: inter-agent-messenger
+version: "1.0.0"
+description: "Formal handoff and communication protocols between BMAD agents"
+
+# Message queue location
+queue_dir: "{project-root}/_bmad-output/messenger"
+queue_file: "{queue_dir}/message-queue.yaml"
+archive_dir: "{queue_dir}/archive"
+
+# Message types
+message_types:
+  handoff:
+    description: "Transfer work from one agent to another"
+    required_fields:
+      - from_agent
+      - to_agent
+      - artifact_path
+      - context_summary
+      - next_actions
+    priority: high
+
+  review:
+    description: "Request review of completed work"
+    required_fields:
+      - from_agent
+      - to_agent
+      - artifact_path
+      - review_type
+    priority: medium
+
+  clarify:
+    description: "Request clarification on requirements or decisions"
+    required_fields:
+      - from_agent
+      - to_agent
+      - question
+      - context
+    priority: high
+
+  escalate:
+    description: "Escalate issue to user attention"
+    required_fields:
+      - from_agent
+      - issue
+      - severity
+      - recommendation
+    priority: critical
+
+  notify:
+    description: "Inform other agents of status or decisions"
+    required_fields:
+      - from_agent
+      - to_agents  # Can be list or "all"
+      - message
+    priority: low
+
+  collaborate:
+    description: "Request collaborative input from multiple agents"
+    required_fields:
+      - from_agent
+      - to_agents
+      - topic
+      - deadline
+    priority: medium
+
+# Standard routing rules
+routing:
+  # Phase 1 → Phase 2 handoffs
+  analyst_to_pm:
+    trigger: "Product brief complete"
+    from: analyst
+    to: pm
+    payload:
+      - product_brief_path
+      - key_insights
+      - recommended_priorities
+
+  pm_to_architect:
+    trigger: "PRD complete"
+    from: pm
+    to: architect
+    payload:
+      - prd_path
+      - priority_features
+      - technical_constraints
+      - timeline_expectations
+
+  pm_to_ux:
+    trigger: "PRD complete with UI"
+    from: pm
+    to: ux-designer
+    payload:
+      - prd_path
+      - user_personas
+      - key_user_flows
+
+  # Phase 2 → Phase 3 handoffs
+  architect_to_sm:
+    trigger: "Architecture approved"
+    from: architect
+    to: sm
+    payload:
+      - architecture_path
+      - tech_decisions
+      - component_boundaries
+      - api_contracts
+
+  ux_to_sm:
+    trigger: "UX design complete"
+    from: ux-designer
+    to: sm
+    payload:
+      - ux_design_path
+      - component_library
+      - interaction_patterns
+
+  # Phase 3 → Phase 4 handoffs
+  sm_to_dev:
+    trigger: "Story ready for dev"
+    from: sm
+    to: dev
+    payload:
+      - story_path
+      - acceptance_criteria
+      - technical_notes
+      - dependencies
+
+  dev_to_tea:
+    trigger: "Implementation complete"
+    from: dev
+    to: tea
+    payload:
+      - story_path
+      - files_changed
+      - test_coverage
+      - review_request
+
+  # Review flows
+  tea_to_dev:
+    trigger: "Review complete with issues"
+    from: tea
+    to: dev
+    payload:
+      - review_findings
+      - severity_breakdown
+      - required_actions
+
+# Priority levels
+priorities:
+  critical: 1
+  high: 2
+  medium: 3
+  low: 4
+
+# Message retention
+retention:
+  active_messages_max: 100
+  archive_after_days: 7
+  delete_archived_after_days: 30
