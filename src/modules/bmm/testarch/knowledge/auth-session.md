@@ -2,7 +2,7 @@
 
 ## Principle
 
-Persist authentication tokens to disk and reuse across test runs. Support multiple user identifiers, ephemeral authentication, and worker-specific accounts for parallel execution. Fetch tokens once, use everywhere.
+Persist authentication tokens to disk and reuse across test runs. Support multiple user identifiers, ephemeral authentication, and worker-specific accounts for parallel execution. Fetch tokens once, use everywhere. **Works for both API-only tests and browser tests.**
 
 ## Rationale
 
@@ -22,6 +22,7 @@ The `auth-session` utility provides:
 - **Worker-specific accounts**: Parallel execution with isolated user accounts
 - **Automatic token management**: Checks validity, renews if expired
 - **Flexible provider pattern**: Adapt to any auth system (OAuth2, JWT, custom)
+- **API-first design**: Get tokens for API tests without browser overhead
 
 ## Pattern Examples
 
@@ -244,6 +245,140 @@ test('parallel test 2', async ({ page }) => {
 - Token management automatic per worker
 - Scales to any number of workers
 
+### Example 6: Pure API Authentication (No Browser)
+
+**Context**: Get auth tokens for API-only tests without any browser context.
+
+**Implementation**:
+
+```typescript
+// tests/api/authenticated-api.spec.ts
+import { test, expect } from '@seontechnologies/playwright-utils/fixtures';
+
+test.describe('Authenticated API Tests (No Browser)', () => {
+  let authToken: string;
+
+  test.beforeAll(async ({ request }) => {
+    // Get token via API login - no browser needed!
+    const response = await request.post('/api/auth/login', {
+      data: {
+        email: process.env.TEST_USER_EMAIL,
+        password: process.env.TEST_USER_PASSWORD,
+      },
+    });
+
+    const { token } = await response.json();
+    authToken = token;
+  });
+
+  test('should access protected endpoint', async ({ apiRequest }) => {
+    const { status, body } = await apiRequest({
+      method: 'GET',
+      path: '/api/me',
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+
+    expect(status).toBe(200);
+    expect(body.email).toBe(process.env.TEST_USER_EMAIL);
+  });
+
+  test('should create resource with auth', async ({ apiRequest }) => {
+    const { status, body } = await apiRequest({
+      method: 'POST',
+      path: '/api/orders',
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+      body: {
+        items: [{ productId: 'prod-1', quantity: 2 }],
+      },
+    });
+
+    expect(status).toBe(201);
+    expect(body.id).toBeDefined();
+  });
+});
+```
+
+**Key Points**:
+
+- Token obtained via API login (no browser!)
+- Token reused across all tests in describe block
+- Pure API testing - fast and lightweight
+- No `page` or `context` needed
+
+### Example 7: Service-to-Service Authentication
+
+**Context**: Test microservice authentication patterns (API keys, service tokens, mTLS simulation).
+
+**Implementation**:
+
+```typescript
+// tests/api/service-auth.spec.ts
+import { test, expect } from '@seontechnologies/playwright-utils/fixtures';
+
+test.describe('Service-to-Service Auth', () => {
+  const SERVICE_API_KEY = process.env.SERVICE_API_KEY;
+  const INTERNAL_SERVICE_URL = process.env.INTERNAL_SERVICE_URL;
+
+  test('should authenticate with API key', async ({ apiRequest }) => {
+    const { status, body } = await apiRequest({
+      method: 'GET',
+      path: '/internal/health',
+      baseUrl: INTERNAL_SERVICE_URL,
+      headers: {
+        'X-API-Key': SERVICE_API_KEY,
+      },
+    });
+
+    expect(status).toBe(200);
+    expect(body.status).toBe('healthy');
+  });
+
+  test('should reject invalid API key', async ({ apiRequest }) => {
+    const { status, body } = await apiRequest({
+      method: 'GET',
+      path: '/internal/health',
+      baseUrl: INTERNAL_SERVICE_URL,
+      headers: {
+        'X-API-Key': 'invalid-key',
+      },
+    });
+
+    expect(status).toBe(401);
+    expect(body.code).toBe('INVALID_API_KEY');
+  });
+
+  test('should call downstream service with propagated auth', async ({ apiRequest }) => {
+    // Simulate service calling another service with forwarded auth
+    const { status, body } = await apiRequest({
+      method: 'POST',
+      path: '/internal/aggregate-data',
+      baseUrl: INTERNAL_SERVICE_URL,
+      headers: {
+        'X-API-Key': SERVICE_API_KEY,
+        'X-Request-ID': `test-${Date.now()}`, // Correlation ID
+      },
+      body: {
+        sources: ['users', 'orders', 'inventory'],
+      },
+    });
+
+    expect(status).toBe(200);
+    expect(body.aggregatedFrom).toHaveLength(3);
+  });
+});
+```
+
+**Key Points**:
+
+- API key authentication (no OAuth flow)
+- Test internal/service endpoints
+- Validate auth rejection scenarios
+- Correlation ID for request tracing
+
 ## Custom Auth Provider Pattern
 
 **Context**: Adapt auth-session to your authentication system (OAuth2, JWT, SAML, custom).
@@ -310,6 +445,7 @@ test('authenticated API call', async ({ apiRequest, authToken }) => {
 
 ## Related Fragments
 
+- `api-testing-patterns.md` - Pure API testing patterns (no browser)
 - `overview.md` - Installation and fixture composition
 - `api-request.md` - Authenticated API requests
 - `fixtures-composition.md` - Merging auth with other utilities
