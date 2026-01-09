@@ -76,13 +76,17 @@ function detectGitRepo(projectDir) {
  * @returns {string} The bootstrap prompt content
  */
 function generateBootstrapPrompt(repoInfo, agentPath = 'src/modules/bmm/agents/po.agent.yaml') {
-  const repoRef = repoInfo.isEnterprise
-    ? `${repoInfo.host}/${repoInfo.owner}/${repoInfo.repo}`
-    : `${repoInfo.owner}/${repoInfo.repo}`;
+  // For GitHub Enterprise, note it may require different MCP config
+  const enterpriseNote = repoInfo.isEnterprise
+    ? `
+
+> **Note:** This is a GitHub Enterprise repository (${repoInfo.host}).
+> Ensure your GitHub MCP is configured for this host.`
+    : '';
 
   return `# BMAD Product Owner - Claude Desktop Bootstrap
 
-This prompt is pre-configured for your repository.
+This prompt is pre-configured for your repository.${enterpriseNote}
 
 ---
 
@@ -91,9 +95,17 @@ This prompt is pre-configured for your repository.
 Copy and paste this into Claude Desktop:
 
 \`\`\`
-Load the Product Owner agent from ${repoInfo.fullUrl}
-(path: ${agentPath}) and enter PO mode.
-Show me what needs my attention.
+Use GitHub MCP to fetch and embody the BMAD Product Owner agent.
+
+Fetch the agent file with mcp__github__get_file_contents:
+  owner: ${repoInfo.owner}
+  repo: ${repoInfo.repo}
+  path: ${agentPath}
+
+After reading:
+1. Embody the agent persona (name, role, principles)
+2. Show me available commands
+3. Check what PRDs or tasks need my attention
 \`\`\`
 
 ---
@@ -101,23 +113,23 @@ Show me what needs my attention.
 ## Full Version
 
 \`\`\`
-Fetch and embody the BMAD Product Owner agent.
+I need you to act as the BMAD Product Owner agent.
 
-1. Read the agent definition from GitHub:
-   - Host: ${repoInfo.host}
-   - Repository: ${repoInfo.owner}/${repoInfo.repo}
-   - Path: ${agentPath}
+Step 1: Fetch the agent definition using GitHub MCP
+Use mcp__github__get_file_contents with:
+  owner: ${repoInfo.owner}
+  repo: ${repoInfo.repo}
+  path: ${agentPath}
 
-2. After reading, fully embody this agent:
-   - Adopt the persona (name, role, communication style)
-   - Internalize all principles
-   - Make the menu commands available
+Step 2: Fully embody this agent
+  - Adopt the persona (name: Sarah, role: Product Owner)
+  - Internalize all principles from the file
+  - Make the menu commands available
+  - Use GitHub MCP tools for all GitHub operations
 
-3. Introduce yourself and show the available commands.
+Step 3: Introduce yourself and show available commands
 
-4. Then check: what PRDs or stories need my attention?
-
-Use GitHub MCP tools (mcp__github__*) for all GitHub operations.
+Step 4: Check what PRDs or stories need my attention
 \`\`\`
 
 ---
@@ -127,8 +139,10 @@ Use GitHub MCP tools (mcp__github__*) for all GitHub operations.
 \`\`\`
 I'm a stakeholder who needs to review PRDs and give feedback.
 
-Load the Product Owner agent from ${repoInfo.fullUrl}
-(path: ${agentPath})
+Fetch the Product Owner agent using GitHub MCP:
+  owner: ${repoInfo.owner}
+  repo: ${repoInfo.repo}
+  path: ${agentPath}
 
 Then show me:
 1. What PRDs need my feedback
@@ -143,10 +157,20 @@ I'll mainly use: MT (my tasks), SF (submit feedback), SO (sign off)
 
 | Field | Value |
 |-------|-------|
-| Host | ${repoInfo.host} |
-| Owner | ${repoInfo.owner} |
-| Repo | ${repoInfo.repo} |
+| Owner | \`${repoInfo.owner}\` |
+| Repo | \`${repoInfo.repo}\` |
+| Host | \`${repoInfo.host}\` |
 | Enterprise | ${repoInfo.isEnterprise ? 'Yes' : 'No'} |
+
+---
+
+## GitHub MCP Reference
+
+All operations use these GitHub MCP tools:
+- \`mcp__github__get_file_contents\` - Read files from repo
+- \`mcp__github__search_issues\` - Find PRDs and stories
+- \`mcp__github__issue_write\` - Create/update issues
+- \`mcp__github__add_issue_comment\` - Add feedback
 
 Generated during BMAD installation.
 `;

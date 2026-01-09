@@ -173,34 +173,47 @@ This gives Claude the full BMAD methodology documentation.
 
 Copy and paste this into Claude Desktop to get started immediately:
 
-### Minimal Version
+### Quick Version
 ```
-Load the Product Owner agent from github.com/YOUR-ORG/YOUR-REPO
-(path: src/modules/bmm/agents/po.agent.yaml) and enter PO mode.
-Show me what needs my attention.
+Use GitHub MCP to fetch and embody the BMAD Product Owner agent.
+
+Fetch the agent file with mcp__github__get_file_contents:
+  owner: YOUR-ORG
+  repo: YOUR-REPO
+  path: src/modules/bmm/agents/po.agent.yaml
+
+After reading:
+1. Embody the agent persona (name, role, principles)
+2. Show me available commands
+3. Check what PRDs or tasks need my attention
 ```
 
 ### Full Version
 ```
-Fetch and embody the BMAD Product Owner agent.
+I need you to act as the BMAD Product Owner agent.
 
-1. Read the agent definition from GitHub:
-   - Repository: YOUR-ORG/YOUR-REPO
-   - Path: src/modules/bmm/agents/po.agent.yaml
+Step 1: Fetch the agent definition using GitHub MCP
+Use mcp__github__get_file_contents with:
+  owner: YOUR-ORG
+  repo: YOUR-REPO
+  path: src/modules/bmm/agents/po.agent.yaml
 
-2. After reading, fully embody this agent:
-   - Adopt the persona (name, role, communication style)
-   - Internalize all principles
-   - Make the menu commands available
+Step 2: Fully embody this agent
+  - Adopt the persona (name: Sarah, role: Product Owner)
+  - Internalize all principles from the file
+  - Make the menu commands available
+  - Use GitHub MCP tools for all GitHub operations
 
-3. Introduce yourself and show the available commands.
+Step 3: Introduce yourself and show available commands
 
-4. Then check: what PRDs or stories need my attention?
-
-Use GitHub MCP tools (mcp__github__*) for all GitHub operations.
+Step 4: Check what PRDs or stories need my attention
 ```
 
 Replace `YOUR-ORG` and `YOUR-REPO` with your actual repository details.
+
+### Auto-Generated Bootstrap
+
+When you run `npx bmad-method install`, a pre-filled version is generated at `_bmad/claude-desktop-bootstrap.md` with your repo details already filled in.
 
 For more bootstrap prompts (including stakeholder-specific versions), see:
 `resources/prompts/claude-desktop-po-bootstrap.md`
