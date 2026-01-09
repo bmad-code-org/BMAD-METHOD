@@ -75,6 +75,7 @@ _bmad-output
 
 bmad-custom-src/
 
-# Docusaurus / Documentation Build
-.docusaurus/
+# Astro / Documentation Build
+website/.astro/
+website/dist/
 build/

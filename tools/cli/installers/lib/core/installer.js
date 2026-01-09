@@ -2,7 +2,6 @@ const path = require('node:path');
 const fs = require('fs-extra');
 const chalk = require('chalk');
 const ora = require('ora');
-const inquirer = require('inquirer').default || require('inquirer');
 const { Detector } = require('./detector');
 const { Manifest } = require('./manifest');
 const { ModuleManager } = require('../modules/manager');
@@ -2140,7 +2139,7 @@ class Installer {
    * Private: Prompt for update action
    */
   async promptUpdateAction() {
-    const inquirer = require('inquirer').default || require('inquirer');
+    const { default: inquirer } = await import('inquirer');
     return await inquirer.prompt([
       {
         type: 'list',
@@ -2157,7 +2156,7 @@ class Installer {
    * @param {Object} _legacyV4 - Legacy V4 detection result (unused in simplified version)
    */
   async handleLegacyV4Migration(_projectDir, _legacyV4) {
-    const inquirer = require('inquirer').default || require('inquirer');
+    const { default: inquirer } = await import('inquirer');
 
     console.log('');
     console.log(chalk.yellow.bold('⚠️  Legacy BMAD v4 detected'));
@@ -2438,7 +2437,7 @@ class Installer {
 
     console.log(chalk.yellow(`\n⚠️  Found ${customModulesWithMissingSources.length} custom module(s) with missing sources:`));
 
-    const inquirer = require('inquirer').default || require('inquirer');
+    const { default: inquirer } = await import('inquirer');
     let keptCount = 0;
     let updatedCount = 0;
     let removedCount = 0;

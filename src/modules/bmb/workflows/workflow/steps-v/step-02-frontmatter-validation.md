@@ -12,7 +12,7 @@ frontmatterStandards: '../data/frontmatter-standards.md'
 
 ## STEP GOAL:
 
-To validate that EVERY step file's frontmatter follows the frontmatter standards - correct variables, proper path formatting, no unused variables.
+To validate that EVERY step file's frontmatter follows the frontmatter standards - correct variables, proper relative paths, NO unused variables.
 
 ## MANDATORY EXECUTION RULES (READ FIRST):
 
@@ -39,9 +39,9 @@ To validate that EVERY step file's frontmatter follows the frontmatter standards
 
 ## CONTEXT BOUNDARIES:
 
-- All step files in steps-c/ must be validated
+- All step files in the workflow must be validated
 - Load {frontmatterStandards} for validation criteria
-- Check for: unused variables, hardcoded paths, missing required fields
+- Check for: unused variables, non-relative paths, missing required fields, forbidden patterns
 
 ## MANDATORY SEQUENCE
 
@@ -49,44 +49,81 @@ To validate that EVERY step file's frontmatter follows the frontmatter standards
 
 ### 1. Load Frontmatter Standards
 
-Load {frontmatterStandards} to understand validation criteria:
+Load {frontmatterStandards} to understand validation criteria.
 
-**Golden Rules:**
+**Key Rules:**
 1. Only variables USED in the step may be in frontmatter
 2. All file references MUST use `{variable}` format
-3. Paths within workflow folder MUST be relative
+3. Paths within workflow folder MUST be relative - NO `workflow_path` allowed
 
-**Required Fields:**
-- `name` - must be present, kebab-case
-- `description` - must be present
+**Forbidden Patterns:**
+- `workflow_path: '...'` - use relative paths instead
+- `thisStepFile: '...'` - remove unless actually referenced in body
+- `workflowFile: '...'` - remove unless actually referenced in body
+- `{workflow_path}/steps/...` - use `./step-XX.md`
+- `{workflow_path}/templates/...` - use `../template.md`
 
-### 2. Check EVERY Step File
+### 2. Validate EVERY Step File - Systematic Algorithm
 
-**DO NOT BE LAZY - For EACH file in steps-c/:**
+**DO NOT BE LAZY - For EACH step file:**
 
-1. Load the file
-2. Extract frontmatter
-3. Validate against each rule:
+#### Step 2.1: Extract Frontmatter Variables
 
-**Check 1: Required Fields**
-- ✅ `name` exists and is kebab-case
-- ✅ `description` exists
+```python
+# Algorithm to extract variables from frontmatter:
+1. Find content between first `---` and second `---`
+2. For each line, extract key before `:`
+3. Skip `name`, `description`, and comment lines starting with `#`
+4. Collect all variable names
+```
 
-**Check 2: All Frontmatter Variables Are Used**
-- For each variable in frontmatter, check if it appears in step body
-- ❌ If not used: mark as violation
+Example frontmatter:
+```yaml
+---
+# File References
+nextStepFile: './step-02-vision.md'
+outputFile: '{planning_artifacts}/product-brief-{{project_name}}.md'
+workflow_path: '{project-root}/...'  # ❌ FORBIDDEN
+thisStepFile: './step-01-init.md'     # ❌ Likely unused
+---
+```
 
-**Check 3: No Hardcoded Paths**
-- Check all file references use `{variable}` format
-- ❌ If absolute path found: mark as violation
+Variables extracted: `nextStepFile`, `outputFile`, `workflow_path`, `thisStepFile`
 
-**Check 4: Relative Paths Within Workflow**
-- Paths to same workflow should be relative (`../data/`)
-- ❌ If absolute path for same-folder: mark as violation
+#### Step 2.2: Check Each Variable Is Used
 
-**Check 5: External References Use Full Variable Paths**
-- `{project-root}` variables for external references
-- ✅ Correct: `advancedElicitationTask: '{project-root}/_bmad/core/...'`
+```python
+# Algorithm to check variable usage:
+for each variable in extracted_variables:
+    search_body = "{variableName}"  # with curly braces
+    if search_body NOT found in step body (after frontmatter):
+        MARK_AS_UNUSED(variable)
+```
+
+**Example:**
+- Variable `nextStepFile`: Search body for `{nextStepFile}` → Found in line 166 ✅
+- Variable `thisStepFile`: Search body for `{thisStepFile}` → Not found ❌ VIOLATION
+
+#### Step 2.3: Check Path Formats
+
+For each variable containing a file path:
+
+```python
+# Algorithm to validate paths:
+if path contains "{workflow_path}":
+    MARK_AS_VIOLATION("workflow_path is forbidden - use relative paths")
+
+if path is to another step file:
+    if not path.startswith("./step-"):
+        MARK_AS_VIOLATION("Step-to-step paths must be ./filename.md")
+
+if path is to parent folder template:
+    if not path.startswith("../"):
+        MARK_AS_VIOLATION("Parent folder paths must be ../filename.md")
+
+if path contains "{project-root}" and is internal workflow reference:
+    MARK_AS_VIOLATION("Internal paths must be relative, not project-root")
+```
 
 ### 3. Document Findings
 
@@ -95,27 +132,26 @@ Create report table:
 ```markdown
 ### Frontmatter Validation Results
 
-| File | Required Fields | Variables Used | Relative Paths | Status |
-|------|----------------|----------------|----------------|--------|
-| step-01-init.md | ✅ | ✅ | ✅ | ✅ PASS |
-| step-02-*.md | ✅ | ❌ Unused: partyModeWorkflow | ✅ | ❌ FAIL |
-| step-03-*.md | ❌ Missing description | ✅ | ❌ Hardcoded path | ❌ FAIL |
+| File | Required | All Vars Used | Relative Paths | No Forbidden | Status |
+|------|----------|---------------|----------------|-------------|--------|
+| step-01-init.md | ✅ | ❌ Unused: thisStepFile, workflowFile | ✅ | ✅ | ❌ FAIL |
+| step-02-vision.md | ✅ | ✅ | ✅ | ✅ | ✅ PASS |
 ```
 
-### 4. List Violations
+### 4. List All Violations
+
+For EACH file with violations:
 
 ```markdown
 ### Violations Found
 
-**step-02-[name].md:**
-- Unused variable in frontmatter: `partyModeWorkflow` (not used in step body)
+**step-01-init.md:**
+- ❌ Unused variable: `thisStepFile` (defined but {thisStepFile} never appears in body)
+- ❌ Unused variable: `workflowFile` (defined but {workflowFile} never appears in body)
+- ❌ Forbidden pattern: `workflow_path` variable found (use relative paths instead)
 
-**step-03-[name].md:**
-- Missing required field: `description`
-- Hardcoded path: `someTemplate: '/absolute/path/template.md'` should use relative or variable
-
-**step-05-[name].md:**
-- All checks passed ✅
+**step-02-vision.md:**
+- ✅ All checks passed
 ```
 
 ### 5. Append to Report
@@ -137,8 +173,10 @@ Then immediately load, read entire file, then execute {nextStepFile}.
 
 ### ✅ SUCCESS:
 
-- EVERY step file's frontmatter validated
-- All violations documented
+- EVERY step file's frontmatter validated using systematic algorithm
+- Each variable checked for usage in step body
+- Each path checked for proper relative format
+- All violations documented with specific variable names
 - Findings appended to report
 - Report saved before proceeding
 - Next validation step loaded
@@ -146,8 +184,9 @@ Then immediately load, read entire file, then execute {nextStepFile}.
 ### ❌ SYSTEM FAILURE:
 
 - Not checking every file
-- Skipping frontmatter checks
-- Not documenting violations
+- Not systematically checking each variable for usage
+- Missing forbidden pattern detection
+- Not documenting violations with specific details
 - Not saving report before proceeding
 
-**Master Rule:** Validation is systematic and thorough. DO NOT BE LAZY. Check EVERY file's frontmatter. Auto-proceed through all validation steps.
+**Master Rule:** Validation is systematic and thorough. DO NOT BE LAZY. For EACH variable in frontmatter, verify it's used in the body. For EACH path, verify it's relative. Auto-proceed through all validation steps.

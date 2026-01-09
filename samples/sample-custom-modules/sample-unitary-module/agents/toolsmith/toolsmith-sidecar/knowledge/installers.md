@@ -61,7 +61,7 @@
 | -------------- | -------------- | ------------------------- | ----------------------------- |
 | claude-code    | Claude Code    | .claude/commands/         | .md with frontmatter          |
 | codex          | Codex          | (varies)                  | .md                           |
-| cursor         | Cursor         | .cursor/rules/bmad/       | .mdc with MDC frontmatter     |
+| cursor         | Cursor         | .cursor/commands/bmad/    | .md with YAML frontmatter     |
 | github-copilot | GitHub Copilot | .github/                  | .md                           |
 | opencode       | OpenCode       | .opencode/                | .md                           |
 | windsurf       | Windsurf       | .windsurf/workflows/bmad/ | .md with workflow frontmatter |
