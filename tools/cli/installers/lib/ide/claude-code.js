@@ -13,6 +13,7 @@ const {
   resolveSubagentFiles,
 } = require('./shared/module-injections');
 const { getAgentsFromBmad, getAgentsFromDir } = require('./shared/bmad-artifacts');
+const { detectGitRepo, generateBootstrapPrompt } = require('../utils/git-repo-detector');
 
 /**
  * Claude Code IDE setup handler
@@ -154,6 +155,9 @@ class ClaudeCodeSetup extends BaseIdeSetup {
     // Install BMAD Guide skill to user's Claude skills directory
     await this.installBmadGuideSkill();
 
+    // Detect git repo and generate bootstrap prompt + replace placeholders
+    await this.setupGitHubIntegration(projectDir, bmadDir);
+
     // Generate workflow commands from manifest (if it exists)
     const workflowGen = new WorkflowCommandGenerator(this.bmadFolderName);
     const { artifacts: workflowArtifacts } = await workflowGen.collectWorkflowArtifacts(bmadDir);
@@ -228,6 +232,120 @@ class ClaudeCodeSetup extends BaseIdeSetup {
     } catch (error) {
       console.log(chalk.yellow(`  ⚠ Warning: Could not install BMAD Guide skill: ${error.message}`));
     }
+  }
+
+  /**
+   * Detect git repo and set up GitHub integration
+   * - Generates a pre-filled bootstrap prompt
+   * - Replaces YOUR-ORG/YOUR-REPO placeholders in documentation
+   * @param {string} projectDir - Project directory
+   * @param {string} bmadDir - BMAD installation directory
+   */
+  async setupGitHubIntegration(projectDir, bmadDir) {
+    try {
+      const repoInfo = detectGitRepo(projectDir);
+
+      if (!repoInfo) {
+        console.log(chalk.dim('  Skipping GitHub integration (not a git repo or no remote configured)'));
+        return;
+      }
+
+      console.log(chalk.cyan(`  Detected GitHub repo: ${repoInfo.owner}/${repoInfo.repo}`));
+      if (repoInfo.isEnterprise) {
+        console.log(chalk.dim(`    Enterprise host: ${repoInfo.host}`));
+      }
+
+      // Generate bootstrap prompt file
+      const bootstrapContent = generateBootstrapPrompt(repoInfo);
+      const bootstrapPath = path.join(bmadDir, 'claude-desktop-bootstrap.md');
+      await fs.writeFile(bootstrapPath, bootstrapContent, 'utf8');
+      console.log(chalk.green('  ✓ Generated Claude Desktop bootstrap prompt'));
+      console.log(chalk.dim(`    Location: ${path.relative(projectDir, bootstrapPath)}`));
+
+      // Replace placeholders in documentation files
+      await this.replaceRepoPlaceholders(bmadDir, repoInfo);
+    } catch (error) {
+      console.log(chalk.yellow(`  ⚠ Warning: GitHub integration setup failed: ${error.message}`));
+    }
+  }
+
+  /**
+   * Replace YOUR-ORG/YOUR-REPO placeholders in documentation files
+   * @param {string} bmadDir - BMAD installation directory
+   * @param {Object} repoInfo - Repository info from detectGitRepo
+   */
+  async replaceRepoPlaceholders(bmadDir, repoInfo) {
+    // Patterns to replace
+    const replacements = [
+      { pattern: /YOUR-ORG\/YOUR-REPO/g, replacement: `${repoInfo.owner}/${repoInfo.repo}` },
+      { pattern: /github\.com\/YOUR-ORG\/YOUR-REPO/g, replacement: `${repoInfo.host}/${repoInfo.owner}/${repoInfo.repo}` },
+      { pattern: /YOUR-ORG/g, replacement: repoInfo.owner },
+      { pattern: /YOUR-REPO/g, replacement: repoInfo.repo },
+    ];
+
+    // Find all markdown and yaml files in bmad directory
+    const files = await this.findFilesRecursive(bmadDir, ['.md', '.yaml', '.yml']);
+    let replacedCount = 0;
+
+    for (const filePath of files) {
+      try {
+        let content = await fs.readFile(filePath, 'utf8');
+        let modified = false;
+
+        for (const { pattern, replacement } of replacements) {
+          if (pattern.test(content)) {
+            content = content.replace(pattern, replacement);
+            modified = true;
+          }
+        }
+
+        if (modified) {
+          await fs.writeFile(filePath, content, 'utf8');
+          replacedCount++;
+        }
+      } catch {
+        // Skip files that can't be read/written
+      }
+    }
+
+    if (replacedCount > 0) {
+      console.log(chalk.dim(`    Updated ${replacedCount} files with repo details`));
+    }
+  }
+
+  /**
+   * Recursively find files with specific extensions
+   * @param {string} dir - Directory to search
+   * @param {string[]} extensions - File extensions to match
+   * @returns {string[]} Array of file paths
+   */
+  async findFilesRecursive(dir, extensions) {
+    const files = [];
+
+    try {
+      const entries = await fs.readdir(dir, { withFileTypes: true });
+
+      for (const entry of entries) {
+        const fullPath = path.join(dir, entry.name);
+
+        if (entry.isDirectory()) {
+          // Skip node_modules and hidden directories
+          if (!entry.name.startsWith('.') && entry.name !== 'node_modules') {
+            const subFiles = await this.findFilesRecursive(fullPath, extensions);
+            files.push(...subFiles);
+          }
+        } else if (entry.isFile()) {
+          const ext = path.extname(entry.name).toLowerCase();
+          if (extensions.includes(ext)) {
+            files.push(fullPath);
+          }
+        }
+      }
+    } catch {
+      // Skip directories that can't be read
+    }
+
+    return files;
   }
 
   /**
