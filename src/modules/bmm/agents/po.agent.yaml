@@ -208,7 +208,10 @@ agent:
 
         Both Claude Desktop and Claude Code need GitHub MCP for team features.
 
-        **To add GitHub MCP:**
+        If you already have GitHub MCP configured, skip to Step 2.
+        If your company has an approved GitHub MCP setup, use that instead.
+
+        **To add GitHub MCP manually:**
         1. Open Settings (Cmd/Ctrl + ,)
         2. Go to "Developer" → "Model Context Protocol"
         3. Add the GitHub MCP server:

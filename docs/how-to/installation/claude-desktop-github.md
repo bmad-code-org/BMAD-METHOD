@@ -13,7 +13,9 @@ Use BMAD agents directly in Claude Desktop by reading agent files from GitHub. P
 
 ## Step 1: Configure GitHub MCP
 
-Open Claude Desktop settings and add the GitHub MCP server:
+If you don't already have GitHub MCP configured, follow these steps. If your company has an approved GitHub MCP configuration, use that instead.
+
+**To add GitHub MCP manually:**
 
 1. Go to **Settings** → **Developer** → **Model Context Protocol**
 2. Add this configuration:
