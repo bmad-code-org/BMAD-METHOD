@@ -1,8 +1,8 @@
 ---
-title: Welcome to BMad
+title: Welcome to the BMad Method
 ---
 
-BMad (**B**uild **M**ore, **A**rchitect **D**reams) is an AI-driven development framework that helps you build software faster and smarter. It provides specialized AI agents, guided workflows, and intelligent planning that adapts to your project's complexity—whether you're fixing a bug or building an enterprise platform.
+The BMad Method (**B**reakthrough **M**ethod of **A**gile AI **D**riven Development) is an AI-driven development framework that helps you build software faster and smarter. It provides specialized AI agents, guided workflows, and intelligent planning that adapts to your project's complexity—whether you're fixing a bug or building an enterprise platform.
 
 If you're comfortable working with AI coding assistants like Claude, Cursor, or GitHub Copilot, you're ready to get started.
 
@@ -12,11 +12,10 @@ If you're comfortable working with AI coding assistants like Claude, Cursor, or 
 
 The fastest way to understand BMad is to try it. Choose a tutorial to walk through your first project in about 10 minutes.
 
-- **[Get Started with v4 (Stable)](./tutorials/getting-started/getting-started-bmadv4.md)** — Production-ready version with battle-tested workflows
-- **[Try v6 (Alpha)](./tutorials/getting-started/getting-started-bmadv6.md)** — Latest features, still in active development
+- **[Get Started with BMad](/docs/tutorials/getting-started/getting-started-bmadv6.md)** — Latest features, still in active development
 
 :::tip[Already familiar with AI-assisted development?]
-Feel free to skip around. Use the sidebar to jump to any topic, or check out [What Are Agents?](./explanation/core-concepts/what-are-agents.md) to understand how BMad organizes its AI personas.
+Feel free to skip around. Use the sidebar to jump to any topic, or check out [What Are Agents?](/docs/explanation/core-concepts/what-are-agents.md) to understand how BMad organizes its AI personas.
 :::
 
 ---
@@ -25,12 +24,12 @@ Feel free to skip around. Use the sidebar to jump to any topic, or check out [Wh
 
 These docs are organized into four sections based on what you're trying to do:
 
-| Section | Purpose |
-|---------|---------|
-| **[Tutorials](./tutorials/index.md)** | Learning-oriented. Step-by-step guides that walk you through building something. Start here if you're new. |
-| **[How-To Guides](./how-to/index.md)** | Task-oriented. Practical guides for solving specific problems. "How do I customize an agent?" lives here. |
-| **[Explanation](./explanation/index.md)** | Understanding-oriented. Deep dives into concepts and architecture. Read when you want to know *why*. |
-| **[Reference](./reference/index.md)** | Information-oriented. Technical specifications for agents, workflows, and configuration. |
+| Section           | Purpose                                                                                                    |
+| ----------------- | ---------------------------------------------------------------------------------------------------------- |
+| **Tutorials**     | Learning-oriented. Step-by-step guides that walk you through building something. Start here if you're new. |
+| **How-To Guides** | Task-oriented. Practical guides for solving specific problems. "How do I customize an agent?" lives here.  |
+| **Explanation**   | Understanding-oriented. Deep dives into concepts and architecture. Read when you want to know *why*.       |
+| **Reference**     | Information-oriented. Technical specifications for agents, workflows, and configuration.                   |
 
 ---
 
@@ -61,5 +60,4 @@ Get help, share what you're building, or contribute to BMad:
 
 Ready to dive in? Pick a tutorial and start building.
 
-- **[Get Started with v4 (Stable)](./tutorials/getting-started/getting-started-bmadv4.md)** — Recommended for production projects
-- **[Try v6 (Alpha)](./tutorials/getting-started/getting-started-bmadv6.md)** — Explore the latest features
+- **[Get Started with BMad](/docs/tutorials/getting-started/getting-started-bmadv6.md)** — Explore the latest features

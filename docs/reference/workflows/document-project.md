@@ -3,7 +3,7 @@ title: "Document Project Workflow - Technical Reference"
 ---
 
 
-**Module:** BMM (BMAD Method Module)
+**Module:** BMM (BMad Method Module)
 
 ## Purpose
 
@@ -70,5 +70,5 @@ The workflow can be interrupted and resumed without losing progress:
 
 **Related Documentation:**
 
-- [Brownfield Development Guide](../../how-to/brownfield/index.md)
-- [Implementation Workflows](../../how-to/workflows/run-sprint-planning.md)
+- [Brownfield Development Guide](/docs/how-to/brownfield/index.md)
+- [Implementation Workflows](/docs/how-to/workflows/run-sprint-planning.md)

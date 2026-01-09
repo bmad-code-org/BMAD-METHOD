@@ -7,7 +7,7 @@ description: Build games with BMad's Game Development Module
 Build games faster using AI-powered workflows with specialized game development agents that guide you through preproduction, design, architecture, and implementation.
 
 :::note[Module Extension]
-BMGD (BMad Game Development) is a module that extends BMad Method. You'll need BMad installed first—see the [BMad v4 tutorial](./getting-started-bmadv4.md) or [BMad v6 tutorial](./getting-started-bmadv6.md) if you haven't installed it yet.
+BMGD (BMad Game Development) is a module that extends BMad Method. You'll need BMad installed first—see the [BMad v6 tutorial](/docs/tutorials/getting-started/getting-started-bmadv6.md) if you haven't installed it yet.
 :::
 
 ## What You'll Learn
@@ -36,12 +36,12 @@ BMGD (BMad Game Development) is a module that extends BMad Method. You'll need B
 
 BMGD follows four game development phases with specialized agents for each:
 
-| Phase | Name | What Happens |
-|-------|------|--------------|
-| 1 | Preproduction | Capture game vision, create Game Brief *(optional brainstorming)* |
-| 2 | Design | Detail mechanics, systems, narrative in GDD |
-| 3 | Technical | Plan engine, architecture, technical decisions |
-| 4 | Production | Build game in sprints, story by story |
+| Phase | Name          | What Happens                                                      |
+| ----- | ------------- | ----------------------------------------------------------------- |
+| 1     | Preproduction | Capture game vision, create Game Brief *(optional brainstorming)* |
+| 2     | Design        | Detail mechanics, systems, narrative in GDD                       |
+| 3     | Technical     | Plan engine, architecture, technical decisions                    |
+| 4     | Production    | Build game in sprints, story by story                             |
 
 ![BMGD Workflow Overview](./images/workflow-overview.jpg)
 
@@ -49,14 +49,14 @@ BMGD follows four game development phases with specialized agents for each:
 
 ### Game Development Agents
 
-| Agent | When to Use |
-|-------|-------------|
-| **Game Designer** | Brainstorming, Game Brief, GDD, Narrative |
-| **Game Architect** | Architecture, technical decisions |
-| **Game Developer** | Implementation, code reviews |
-| **Game Scrum Master** | Sprint planning, story management |
-| **Game QA** | Test framework, test design, automation |
-| **Game Solo Dev** | Quick prototyping, indie development |
+| Agent                 | When to Use                               |
+| --------------------- | ----------------------------------------- |
+| **Game Designer**     | Brainstorming, Game Brief, GDD, Narrative |
+| **Game Architect**    | Architecture, technical decisions         |
+| **Game Developer**    | Implementation, code reviews              |
+| **Game Scrum Master** | Sprint planning, story management         |
+| **Game QA**           | Test framework, test design, automation   |
+| **Game Solo Dev**     | Quick prototyping, indie development      |
 
 ## Installation
 
@@ -171,12 +171,12 @@ Load the **Game Scrum Master** agent and run `sprint-planning`. This creates `sp
 
 For each story, repeat this cycle with fresh chats:
 
-| Step | Agent | Workflow | Purpose |
-|------|-------|----------|---------|
-| 1 | Game SM | `create-story` | Create story file from epic |
-| 2 | Game Dev | `dev-story` | Implement the story |
-| 3 | Game QA | `automate` | Generate tests *(optional)* |
-| 4 | Game Dev | `code-review` | Quality validation *(recommended)* |
+| Step | Agent    | Workflow       | Purpose                            |
+| ---- | -------- | -------------- | ---------------------------------- |
+| 1    | Game SM  | `create-story` | Create story file from epic        |
+| 2    | Game Dev | `dev-story`    | Implement the story                |
+| 3    | Game QA  | `automate`     | Generate tests *(optional)*        |
+| 4    | Game Dev | `code-review`  | Quality validation *(recommended)* |
 
 After completing all stories in an epic, load the **Game SM** and run `retrospective`.
 
@@ -213,18 +213,18 @@ your-project/
 
 ## Quick Reference
 
-| Command | Agent | Purpose |
-|---------|-------|---------|
-| `*brainstorm-game` | Game Designer | Guided game ideation |
-| `*create-game-brief` | Game Designer | Create Game Brief |
-| `*create-gdd` | Game Designer | Create Game Design Document |
-| `*narrative` | Game Designer | Create Narrative Design |
-| `*create-architecture` | Game Architect | Create game architecture |
-| `*sprint-planning` | Game SM | Initialize sprint tracking |
-| `*create-story` | Game SM | Create a story file |
-| `*dev-story` | Game Dev | Implement a story |
-| `*code-review` | Game Dev | Review implemented code |
-| `*workflow-status` | Any | Check progress and next steps |
+| Command                | Agent          | Purpose                       |
+| ---------------------- | -------------- | ----------------------------- |
+| `*brainstorm-game`     | Game Designer  | Guided game ideation          |
+| `*create-game-brief`   | Game Designer  | Create Game Brief             |
+| `*create-gdd`          | Game Designer  | Create Game Design Document   |
+| `*narrative`           | Game Designer  | Create Narrative Design       |
+| `*create-architecture` | Game Architect | Create game architecture      |
+| `*sprint-planning`     | Game SM        | Initialize sprint tracking    |
+| `*create-story`        | Game SM        | Create a story file           |
+| `*dev-story`           | Game Dev       | Implement a story             |
+| `*code-review`         | Game Dev       | Review implemented code       |
+| `*workflow-status`     | Any            | Check progress and next steps |
 
 ## Common Questions
 
@@ -244,7 +244,7 @@ Yes. Documents are living artifacts—return to update them as your vision evolv
 
 - **During workflows** — Agents guide you with questions and explanations
 - **Community** — [Discord](https://discord.gg/gk8jAdXWmj) (#bmad-method-help, #report-bugs-and-issues)
-- **Documentation** — [BMGD Workflow Reference](../../reference/workflows/bmgd-workflows.md)
+- **Documentation** — [BMGD Workflow Reference](/docs/reference/workflows/bmgd-workflows.md)
 - **Video tutorials** — [BMad Code YouTube](https://www.youtube.com/@BMadCode)
 
 ## Key Takeaways

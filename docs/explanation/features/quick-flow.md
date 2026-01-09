@@ -164,6 +164,6 @@ Start with Quick Flow, but switch to BMad Method when:
 
 ## Related
 
-- [Create Tech Spec](../../how-to/workflows/create-tech-spec.md) - How to use Quick Flow
-- [Quick Start Guide](../../tutorials/getting-started/getting-started-bmadv6.md) - Getting started
-- [Four Phases](../architecture/four-phases.md) - Understanding the full methodology
+- [Create Tech Spec](/docs/how-to/workflows/create-tech-spec.md) - How to use Quick Flow
+- [Quick Start Guide](/docs/tutorials/getting-started/getting-started-bmadv6.md) - Getting started
+- [Four Phases](/docs/explanation/architecture/four-phases.md) - Understanding the full methodology

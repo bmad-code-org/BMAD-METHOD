@@ -3,7 +3,7 @@ title: "Web Bundles"
 ---
 
 
-Use BMAD agents in Gemini Gems and Custom GPTs.
+Use BMad agents in Gemini Gems and Custom GPTs.
 
 ## Status
 
@@ -25,7 +25,7 @@ Web bundles package BMad agents as self-contained files that work in Gemini Gems
 
 **Perfect for:**
 - Uploading a single file to a Gemini GEM or Custom GPT
-- Using BMAD Method from the Web
+- Using BMad Method from the Web
 - Cost savings (generally lower cost than local usage)
 - Quick sharing of agent configurations
 
@@ -33,5 +33,3 @@ Web bundles package BMad agents as self-contained files that work in Gemini Gems
 - Some quality reduction vs local usage
 - Less convenient than full local installation
 - Limited to agent capabilities (no workflow file access)
-
-[← Back to Core Concepts](../index.md)

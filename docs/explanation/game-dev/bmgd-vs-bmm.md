@@ -145,6 +145,6 @@ This means you get all of BMM's implementation structure plus game-specific enha
 
 ## Related
 
-- [BMGD Overview](./index.md) - Getting started with BMGD
-- [Game Types Guide](./game-types.md) - Understanding game templates
-- [Quick Start BMGD](../../tutorials/getting-started/quick-start-bmgd.md) - Tutorial
+- [BMGD Overview](/docs/explanation/game-dev/index.md) - Getting started with BMGD
+- [Game Types Guide](/docs/explanation/game-dev/game-types.md) - Understanding game templates
+- [Quick Start BMGD](/docs/tutorials/getting-started/quick-start-bmgd.md) - Tutorial

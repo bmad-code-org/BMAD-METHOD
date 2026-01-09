@@ -86,6 +86,6 @@ Follow the standard Phase 4 implementation workflows:
 
 ## Related
 
-- [Brownfield Development Guide](./index.md)
-- [Document Existing Project](./document-existing-project.md)
-- [Quick Fix in Brownfield](./quick-fix-in-brownfield.md)
+- [Brownfield Development Guide](/docs/how-to/brownfield/index.md)
+- [Document Existing Project](/docs/how-to/brownfield/document-existing-project.md)
+- [Quick Fix in Brownfield](/docs/how-to/brownfield/quick-fix-in-brownfield.md)

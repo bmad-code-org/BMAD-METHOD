@@ -117,5 +117,5 @@ CIS workflows integrate with:
 
 ## Related
 
-- [Facilitation Over Generation](../philosophy/facilitation-over-generation.md) - Core philosophy
-- [Brainstorming Techniques](../features/brainstorming-techniques.md) - Technique reference
+- [Facilitation Over Generation](/docs/explanation/philosophy/facilitation-over-generation.md) - Core philosophy
+- [Brainstorming Techniques](/docs/explanation/features/brainstorming-techniques.md) - Technique reference

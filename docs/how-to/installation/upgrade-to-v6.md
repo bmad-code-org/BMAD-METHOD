@@ -1,11 +1,11 @@
 ---
-title: "BMad v4 to v6 Upgrade Guide"
+title: "Upgrading from Previous Versions"
 ---
 
 
 ## Overview
 
-BMad v6 represents a complete ground-up rewrite with significant architectural changes. This guide will help you migrate your v4 project to v6.
+The latest version of BMad represents a complete ground-up rewrite with significant architectural changes. This guide will help you migrate from version 4.
 
 ---
 
@@ -123,7 +123,7 @@ persona:
     - Always upbeat and adventurous
 ```
 
-There is a lot more that is possible with agent customization, which is covered in detail in the [Agent Customization Guide](../customization/customize-agents.md)
+There is a lot more that is possible with agent customization, which is covered in detail in the [Agent Customization Guide](/docs/how-to/customization/customize-agents.md)
 
 CRITICAL NOTE: After you modify the customization file, you need to run the npx installer against your installed location, and choose the option to rebuild all agents, or just do a quick update again. This always builds agents fresh and applies customizations.
 

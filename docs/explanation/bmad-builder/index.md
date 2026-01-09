@@ -1,16 +1,16 @@
 ---
 title: "BMad Builder (BMB)"
-description: Create custom agents, workflows, and modules for BMAD
+description: Create custom agents, workflows, and modules for BMad
 ---
 
 
-Create custom agents, workflows, and modules for BMAD.
+Create custom agents, workflows, and modules for BMad.
 
 ---
 
 ## Quick Start
 
-- **[Agent Creation Guide](../../tutorials/advanced/create-custom-agent.md)** - Step-by-step guide to building your first agent
+- **[Agent Creation Guide](/docs/tutorials/advanced/create-custom-agent.md)** - Step-by-step guide to building your first agent
 
 ---
 
@@ -56,11 +56,11 @@ Production-ready examples available in the BMB reference folder:
 ## Installation Guide
 
 For installing standalone simple and expert agents, see:
-- [Install Custom Modules](../../how-to/installation/install-custom-modules.md)
+- [Install Custom Modules](/docs/how-to/installation/install-custom-modules.md)
 
 ---
 
 ## Related
 
-- [Custom Content Types](./custom-content-types.md) - Understanding content types
-- [Create Custom Agent](../../tutorials/advanced/create-custom-agent.md) - Tutorial
+- [Custom Content Types](/docs/explanation/bmad-builder/custom-content-types.md) - Understanding content types
+- [Create Custom Agent](/docs/tutorials/advanced/create-custom-agent.md) - Tutorial

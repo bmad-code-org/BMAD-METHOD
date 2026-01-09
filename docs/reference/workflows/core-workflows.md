@@ -3,19 +3,19 @@ title: "Core Workflows"
 ---
 
 
-Core Workflows are domain-agnostic workflows that can be utilized by any BMAD-compliant module, workflow, or agent. These workflows are installed by default and available at any time.
+Core Workflows are domain-agnostic workflows that can be utilized by any BMad-compliant module, workflow, or agent. These workflows are installed by default and available at any time.
 
 ## Available Core Workflows
 
-### [Party Mode](../../explanation/features/party-mode.md)
+### [Party Mode](/docs/explanation/features/party-mode.md)
 
-Orchestrate dynamic multi-agent conversations with your entire BMAD team. Engage with multiple specialized perspectives simultaneously—each agent maintaining their unique personality, expertise, and communication style.
+Orchestrate dynamic multi-agent conversations with your entire BMad team. Engage with multiple specialized perspectives simultaneously—each agent maintaining their unique personality, expertise, and communication style.
 
-### [Brainstorming](../../explanation/features/brainstorming-techniques.md)
+### [Brainstorming](/docs/explanation/features/brainstorming-techniques.md)
 
 Facilitate structured creative sessions using 60+ proven ideation techniques. The AI acts as coach and guide, using proven creativity methods to draw out ideas and insights that are already within you.
 
-### [Advanced Elicitation](../../explanation/features/advanced-elicitation.md)
+### [Advanced Elicitation](/docs/explanation/features/advanced-elicitation.md)
 
 Push the LLM to rethink its work through 50+ reasoning methods—the inverse of brainstorming. The LLM applies sophisticated techniques to re-examine and enhance content it has just generated, essentially "LLM brainstorming" to find better approaches and uncover improvements.
 

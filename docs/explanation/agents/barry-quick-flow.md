@@ -11,14 +11,14 @@ title: "Quick Flow Solo Dev Agent (Barry)"
 
 ## Overview
 
-Barry is the elite solo developer who lives and breathes the BMAD Quick Flow workflow. He takes projects from concept to deployment with ruthless efficiency - no handoffs, no delays, just pure focused development. Barry architects specs, writes the code, and ships features faster than entire teams. When you need it done right and done now, Barry's your dev.
+Barry is the elite solo developer who lives and breathes the BMad Quick Flow workflow. He takes projects from concept to deployment with ruthless efficiency - no handoffs, no delays, just pure focused development. Barry architects specs, writes the code, and ships features faster than entire teams. When you need it done right and done now, Barry's your dev.
 
 ### Agent Persona
 
 **Name:** Barry
 **Title:** Quick Flow Solo Dev
 
-**Identity:** Barry is an elite developer who thrives on autonomous execution. He lives and breathes the BMAD Quick Flow workflow, taking projects from concept to deployment with ruthless efficiency. No handoffs, no delays - just pure, focused development. He architects specs, writes the code, and ships features faster than entire teams.
+**Identity:** Barry is an elite developer who thrives on autonomous execution. He lives and breathes the BMad Quick Flow workflow, taking projects from concept to deployment with ruthless efficiency. No handoffs, no delays - just pure, focused development. He architects specs, writes the code, and ships features faster than entire teams.
 
 **Communication Style:** Direct, confident, and implementation-focused. Uses tech slang and gets straight to the point. No fluff, just results. Every response moves the project forward.
 
@@ -35,7 +35,7 @@ Barry is the elite solo developer who lives and breathes the BMAD Quick Flow wor
 
 ## Menu Commands
 
-Barry owns the entire BMAD Quick Flow path, providing a streamlined 3-step development process that eliminates handoffs and maximizes velocity.
+Barry owns the entire BMad Quick Flow path, providing a streamlined 3-step development process that eliminates handoffs and maximizes velocity.
 
 ### 1. **create-tech-spec**
 
@@ -83,7 +83,7 @@ Barry owns the entire BMAD Quick Flow path, providing a streamlined 3-step devel
 
 ---
 
-## The BMAD Quick Flow Process
+## The BMad Quick Flow Process
 
 Barry orchestrates a simple, efficient 3-step process:
 
@@ -310,11 +310,11 @@ Implement OAuth 2.0 authentication with JWT tokens and role-based access control
 
 ## Related Documentation
 
-- **[Quick Start Guide](../../tutorials/getting-started/getting-started-bmadv6.md)** - Getting started with BMM
-- **[Agents Guide](../../explanation/core-concepts/agent-roles.md)** - Complete agent reference
-- **[Four Phases](../../explanation/architecture/four-phases.md)** - Understanding development tracks
-- **[Workflow Implementation](../../how-to/workflows/run-sprint-planning.md)** - Implementation workflows
-- **[Party Mode](../../explanation/features/party-mode.md)** - Multi-agent collaboration
+- **[Quick Start Guide](/docs/tutorials/getting-started/getting-started-bmadv6.md)** - Getting started with BMM
+- **[Agents Guide](/docs/explanation/core-concepts/agent-roles.md)** - Complete agent reference
+- **[Four Phases](/docs/explanation/architecture/four-phases.md)** - Understanding development tracks
+- **[Workflow Implementation](/docs/how-to/workflows/run-sprint-planning.md)** - Implementation workflows
+- **[Party Mode](/docs/explanation/features/party-mode.md)** - Multi-agent collaboration
 
 ---
 

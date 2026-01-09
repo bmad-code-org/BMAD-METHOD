@@ -112,6 +112,6 @@ The UX spec feeds into:
 
 ## Related
 
-- [Create PRD](./create-prd.md) - Create requirements first
-- [Create Architecture](./create-architecture.md) - Technical design
-- [Create Epics and Stories](./create-epics-and-stories.md) - Work breakdown
+- [Create PRD](/docs/how-to/workflows/create-prd.md) - Create requirements first
+- [Create Architecture](/docs/how-to/workflows/create-architecture.md) - Technical design
+- [Create Epics and Stories](/docs/how-to/workflows/create-epics-and-stories.md) - Work breakdown

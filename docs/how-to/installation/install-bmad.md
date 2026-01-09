@@ -1,10 +1,10 @@
 ---
-title: "How to Install BMAD"
-description: Step-by-step guide to installing BMAD in your project
+title: "How to Install BMad"
+description: Step-by-step guide to installing BMad in your project
 ---
 
 
-Complete guide to installing BMAD in your project.
+Complete guide to installing BMad in your project.
 
 ---
 
@@ -26,7 +26,7 @@ npx bmad-method install
 
 ### 2. Choose Installation Location
 
-The installer will ask where to install BMAD files. Options:
+The installer will ask where to install BMad files. Options:
 - Current directory (recommended for new projects)
 - Subdirectory
 - Custom path
@@ -39,7 +39,7 @@ Choose which AI tools you'll be using:
 - Windsurf
 - Other
 
-The installer configures BMAD for your selected tools.
+The installer configures BMad for your selected tools.
 
 ### 4. Choose Modules
 
@@ -133,6 +133,6 @@ npx bmad-method install --verbose
 
 ## Related
 
-- [Quick Start Guide](../../tutorials/getting-started/getting-started-bmadv6.md) - Getting started with BMM
-- [Upgrade to V6](./upgrade-to-v6.md) - Upgrading from previous versions
-- [Install Custom Modules](./install-custom-modules.md) - Adding custom content
+- [Quick Start Guide](/docs/tutorials/getting-started/getting-started-bmadv6.md) - Getting started with BMM
+- [Upgrade to V6](/docs/how-to/installation/upgrade-to-v6.md) - Upgrading from previous versions
+- [Install Custom Modules](/docs/how-to/installation/install-custom-modules.md) - Adding custom content

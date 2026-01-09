@@ -262,7 +262,7 @@ Checks current project status across all phases. Shows completed documents, curr
 
 ## Quick-Flow Workflows
 
-Fast-track workflows that skip full planning phases. See **[Quick-Flow Guide](../../how-to/workflows/bmgd-quick-flow.md)** for detailed usage.
+Fast-track workflows that skip full planning phases. See **[Quick-Flow Guide](/docs/how-to/workflows/bmgd-quick-flow.md)** for detailed usage.
 
 ### Quick-Prototype
 
@@ -460,7 +460,7 @@ This means:
 
 ## Next Steps
 
-- **[Quick Start Guide](../../tutorials/getting-started/quick-start-bmgd.md)** - Get started with BMGD
-- **[Quick-Flow Guide](../../how-to/workflows/bmgd-quick-flow.md)** - Rapid prototyping and development
-- **[Agents Guide](../../explanation/game-dev/agents.md)** - Agent reference
-- **[Game Types Guide](../../explanation/game-dev/game-types.md)** - Game type templates
+- **[Quick Start Guide](/docs/tutorials/getting-started/quick-start-bmgd.md)** - Get started with BMGD
+- **[Quick-Flow Guide](/docs/how-to/workflows/bmgd-quick-flow.md)** - Rapid prototyping and development
+- **[Agents Guide](/docs/explanation/game-dev/agents.md)** - Agent reference
+- **[Game Types Guide](/docs/explanation/game-dev/game-types.md)** - Game type templates

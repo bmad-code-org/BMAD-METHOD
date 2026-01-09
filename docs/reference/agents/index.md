@@ -121,7 +121,7 @@ Technical documentation and diagrams.
 - `*validate-doc` - Review documentation against standards
 - `*improve-readme` - Review and improve README files
 - `*explain-concept` - Create clear technical explanations
-- `*standards-guide` - Show BMAD documentation standards
+- `*standards-guide` - Show BMad documentation standards
 
 ---
 
@@ -137,5 +137,5 @@ Available to all agents:
 
 ## Related
 
-- [Agent Roles](../../explanation/core-concepts/agent-roles.md) - Understanding agent responsibilities
-- [What Are Agents](../../explanation/core-concepts/what-are-agents.md) - Foundational concepts
+- [Agent Roles](/docs/explanation/core-concepts/agent-roles.md) - Understanding agent responsibilities
+- [What Are Agents](/docs/explanation/core-concepts/what-are-agents.md) - Foundational concepts
