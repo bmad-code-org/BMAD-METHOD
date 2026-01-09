@@ -229,7 +229,8 @@ const checkNumberOfTodosInLocalStorage = functionTestStep(
 **Implementation**:
 
 ```typescript
-// playwright/config/dev.config.ts
+// playwright/support/fixtures.ts
+import { test as base } from '@playwright/test';
 import { log, captureTestContext } from '@seontechnologies/playwright-utils';
 
 // Configure file logging globally
@@ -241,9 +242,13 @@ log.configure({
   },
 });
 
-// In your fixtures
-base.beforeEach(async ({}, testInfo) => {
-  captureTestContext(testInfo); // Required for file logging
+// Extend base test with file logging context capture
+export const test = base.extend({
+  // Auto-capture test context for file logging
+  autoTestContext: [async ({}, use, testInfo) => {
+    captureTestContext(testInfo);
+    await use(undefined);
+  }, { auto: true }],
 });
 ```
 
@@ -350,14 +355,14 @@ log.errorSync('Setup failed');
 
 ## Log Levels Guide
 
-| Level     | When to Use                         | Shows in Report      | Shows in Console |
-| --------- | ----------------------------------- | -------------------- | ---------------- |
-| `step`    | Test organization, major actions    | Collapsible steps    | Yes              |
-| `info`    | General information, state changes  | Yes                  | Yes              |
-| `success` | Successful operations               | Yes                  | Yes              |
-| `warning` | Non-critical issues, skipped checks | Yes                  | Yes              |
-| `error`   | Failures, exceptions                | Yes                  | Configurable     |
-| `debug`   | Detailed data, objects              | Yes (attached)       | Configurable     |
+| Level     | When to Use                         | Shows in Report   | Shows in Console |
+| --------- | ----------------------------------- | ----------------- | ---------------- |
+| `step`    | Test organization, major actions    | Collapsible steps | Yes              |
+| `info`    | General information, state changes  | Yes               | Yes              |
+| `success` | Successful operations               | Yes               | Yes              |
+| `warning` | Non-critical issues, skipped checks | Yes               | Yes              |
+| `error`   | Failures, exceptions                | Yes               | Configurable     |
+| `debug`   | Detailed data, objects              | Yes (attached)    | Configurable     |
 
 ## Comparison with console.log
 

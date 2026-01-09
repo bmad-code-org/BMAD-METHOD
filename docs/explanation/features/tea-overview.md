@@ -199,7 +199,7 @@ Epic/Release Gate → TEA: *nfr-assess, *trace Phase 2 (release decision)
 
 TEA uniquely requires:
 
-- **Extensive domain knowledge**: 32 fragments covering test patterns, CI/CD, fixtures, quality practices, and optional playwright-utils integration
+- **Extensive domain knowledge**: 33 fragments covering test patterns, CI/CD, fixtures, quality practices, and optional playwright-utils integration
 - **Cross-cutting concerns**: Domain-specific testing patterns that apply across all BMad projects (vs project-specific artifacts like PRDs/stories)
 - **Optional integrations**: MCP capabilities (exploratory, verification) and playwright-utils support
 
@@ -412,8 +412,8 @@ TEA optionally integrates with `@seontechnologies/playwright-utils`, an open-sou
    Benefit: Advanced patterns without boilerplate
 
 3. `*test-review`:
-   - Default: Reviews against core knowledge base (21 fragments)
-   - **+ playwright-utils**: Reviews against expanded knowledge base (32 fragments: 21 core + 11 playwright-utils)
+   - Default: Reviews against core knowledge base (22 fragments)
+   - **+ playwright-utils**: Reviews against expanded knowledge base (33 fragments: 22 core + 11 playwright-utils)
 
    Benefit: Reviews include fixture composition, auth patterns, network recording best practices
 
@@ -423,7 +423,7 @@ TEA optionally integrates with `@seontechnologies/playwright-utils`, an open-sou
 
    Benefit: Faster CI feedback, HTTP error detection
 
-**Utilities available** (11 total): api-request, network-recorder, auth-session, intercept-network-call, recurse, log, file-utils, burn-in, network-error-monitor, fixtures-composition
+**Utilities available** (10 total): api-request, network-recorder, auth-session, intercept-network-call, recurse, log, file-utils, burn-in, network-error-monitor, fixtures-composition
 
 </details>
 
