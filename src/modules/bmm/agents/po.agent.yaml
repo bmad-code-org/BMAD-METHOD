@@ -193,15 +193,23 @@ agent:
 
         This guide helps you enable team collaboration features.
 
-        ## Step 1: Verify GitHub MCP
+        ## Are You Using Claude Desktop or Claude Code?
 
-        Claude Desktop needs the GitHub MCP server to interact with GitHub Issues.
+        **Claude Desktop (chat app):**
+        - You only need GitHub MCP configured
+        - I can read agent files directly from your GitHub repo
+        - No local BMAD installation required!
 
-        **Check if configured:**
-        I'll try to call the GitHub API. If this fails, you need to set up GitHub MCP.
+        **Claude Code (CLI tool):**
+        - Run `npx bmad-method install` in your project
+        - Then configure GitHub MCP for team features
+
+        ## Step 1: Configure GitHub MCP
+
+        Both Claude Desktop and Claude Code need GitHub MCP for team features.
 
         **To add GitHub MCP:**
-        1. Open Claude Desktop Settings (Cmd/Ctrl + ,)
+        1. Open Settings (Cmd/Ctrl + ,)
         2. Go to "Developer" → "Model Context Protocol"
         3. Add the GitHub MCP server:
            ```json
@@ -219,9 +227,19 @@ agent:
            ```
         4. Create a GitHub token at: https://github.com/settings/tokens
            - Required scopes: `repo`, `issues`, `read:org`
-        5. Restart Claude Desktop
+        5. Restart Claude
 
-        ## Step 2: Enable GitHub Integration in BMAD
+        ## Step 2: For Claude Desktop Users (No Local Install)
+
+        I can load myself directly from your GitHub repo! Just tell me:
+        ```
+        Load the PO agent from github.com/YOUR-ORG/YOUR-REPO
+        at path: src/modules/bmm/agents/po.agent.yaml
+        ```
+
+        Then I'll fetch my full definition and embody the agent persona.
+
+        ## Step 3: For Claude Code Users (Local Install)
 
         Edit `_bmad/bmm/config.yaml`:
 
@@ -232,7 +250,7 @@ agent:
           repo: "your-repo-name"
         ```
 
-        ## Step 3: Configure Notifications (Optional)
+        ## Step 4: Configure Notifications (Optional)
 
         For Slack notifications, add to config.yaml:
         ```yaml
@@ -243,7 +261,7 @@ agent:
             channel: "#prd-updates"
         ```
 
-        ## Step 4: Verify Setup
+        ## Step 5: Verify Setup
 
         Say "my tasks" or `MT` to verify everything works.
 
