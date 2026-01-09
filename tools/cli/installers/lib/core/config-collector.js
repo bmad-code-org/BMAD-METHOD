@@ -2,9 +2,17 @@ const path = require('node:path');
 const fs = require('fs-extra');
 const yaml = require('yaml');
 const chalk = require('chalk');
-const inquirer = require('inquirer').default || require('inquirer');
 const { getProjectRoot, getModulePath } = require('../../../lib/project-root');
 const { CLIUtils } = require('../../../lib/cli-utils');
+
+// Lazy-load inquirer (ESM module) to avoid ERR_REQUIRE_ESM
+let _inquirer = null;
+async function getInquirer() {
+  if (!_inquirer) {
+    _inquirer = (await import('inquirer')).default;
+  }
+  return _inquirer;
+}
 
 class ConfigCollector {
   constructor() {
@@ -175,6 +183,7 @@ class ConfigCollector {
    * @returns {boolean} True if new fields were prompted, false if all fields existed
    */
   async collectModuleConfigQuick(moduleName, projectDir, silentMode = true) {
+    const inquirer = await getInquirer();
     this.currentProjectDir = projectDir;
 
     // Load existing config if not already loaded
@@ -493,6 +502,7 @@ class ConfigCollector {
    * @param {boolean} skipCompletion - Skip showing completion message (for early core collection)
    */
   async collectModuleConfig(moduleName, projectDir, skipLoadExisting = false, skipCompletion = false) {
+    const inquirer = await getInquirer();
     this.currentProjectDir = projectDir;
     // Load existing config if needed and not already loaded
     if (!skipLoadExisting && !this.existingConfig) {
