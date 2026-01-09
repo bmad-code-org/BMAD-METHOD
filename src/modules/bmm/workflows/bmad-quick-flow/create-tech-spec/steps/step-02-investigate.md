@@ -119,7 +119,7 @@ Fill in:
 
 ```
 [a] Advanced Elicitation - explore more context
-[c] Continue - proceed to Generate Spec
+[c] Continue - proceed to Generate Plan
 [p] Party Mode - bring in other experts
 ```
 
