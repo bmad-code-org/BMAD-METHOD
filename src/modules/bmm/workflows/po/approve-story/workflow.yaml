@@ -1,0 +1,21 @@
+name: approve-story
+description: "Product Owner sign-off on completed story - verifies ACs and closes the loop"
+author: "BMad"
+version: "1.0.0"
+
+config_source: "{project-root}/_bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+cache_dir: "{output_folder}/cache"
+implementation_artifacts: "{config_source}:implementation_artifacts"
+sprint_status: "{implementation_artifacts}/sprint-status.yaml"
+
+github:
+  owner: "{config_source}:github_owner"
+  repo: "{config_source}:github_repo"
+
+story_key: "" # Required: Story to approve
+
+installed_path: "{project-root}/_bmad/bmm/workflows/po/approve-story"
+instructions: "{installed_path}/instructions.md"
+
+standalone: true

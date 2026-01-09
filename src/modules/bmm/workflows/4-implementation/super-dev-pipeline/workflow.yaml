@@ -10,6 +10,20 @@ sprint_artifacts: "{config_source}:sprint_artifacts"
 communication_language: "{config_source}:communication_language"
 date: system-generated
 
+# GitHub Enterprise Integration (optional - enables PR creation and issue sync)
+github_integration:
+  enabled: "{config_source}:github_integration_enabled"
+  repository:
+    owner: "{config_source}:github_owner"
+    repo: "{config_source}:github_repo"
+  cache:
+    dir: "{output_folder}/cache"
+    staleness_minutes: "{config_source}:github_cache_staleness_minutes"
+  sync:
+    create_pr: true           # Create PR linking to GitHub Issue
+    update_issue_status: true  # Update issue to in-review
+    add_completion_comment: true  # Add implementation summary to issue
+
 # Workflow paths
 installed_path: "{project-root}/_bmad/bmm/workflows/4-implementation/super-dev-pipeline"
 steps_path: "{installed_path}/steps"
@@ -153,6 +167,14 @@ steps:
     description: "Commit and push changes"
     agent: sm
     quality_gate: false
+
+  - step: "6b"
+    file: "{steps_path}/step-06b-sync-github.md"
+    name: "Sync GitHub"
+    description: "Create PR, update issue status, add completion comment"
+    agent: sm
+    quality_gate: false
+    conditional: "github_integration.enabled == true"
 
   - step: 7
     file: "{steps_path}/step-07-summary.md"

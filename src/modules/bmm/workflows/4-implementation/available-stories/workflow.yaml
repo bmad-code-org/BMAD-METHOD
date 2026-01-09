@@ -1,0 +1,24 @@
+name: available-stories
+description: "List all stories that are unlocked and available for checkout. Helps developers find work without conflicts."
+author: "BMad"
+version: "1.0.0"
+
+# Critical variables from config
+config_source: "{project-root}/_bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+
+# GitHub configuration
+github:
+  owner: "{config_source}:github_integration.repository.owner"
+  repo: "{config_source}:github_integration.repository.repo"
+
+# Filter parameters
+epic: "" # Optional: Filter by epic number (e.g., "2")
+status: "" # Optional: Filter by status (default: ready-for-dev, backlog)
+show_locked: false # Show locked stories too (grayed out)
+
+# Workflow components
+installed_path: "{project-root}/_bmad/bmm/workflows/4-implementation/available-stories"
+instructions: "{installed_path}/instructions.md"
+
+standalone: true

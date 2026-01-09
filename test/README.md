@@ -1,10 +1,35 @@
-# Agent Schema Validation Test Suite
+# BMAD Test Suite
 
-Comprehensive test coverage for the BMAD agent schema validation system.
+Comprehensive test coverage for the BMAD framework including schema validation and module unit tests.
 
 ## Overview
 
-This test suite validates the Zod-based schema validator (`tools/schema/agent.js`) that ensures all `*.agent.yaml` files conform to the BMAD agent specification.
+This test suite includes:
+- **Agent Schema Validation** - Validates `*.agent.yaml` files conform to specification
+- **Crowdsource Library Tests** - FeedbackManager, SynthesisEngine, SignoffManager
+- **Notification Service Tests** - Multi-channel notifications (GitHub, Slack, Email)
+- **Cache Manager Tests** - PRD/Epic extensions for crowdsourcing
+
+## Quick Start
+
+```bash
+# Run all tests
+npm test
+
+# Run with coverage report
+npm run test:coverage
+
+# Run specific test suites
+npx vitest run test/unit/crowdsource/
+npx vitest run test/unit/notifications/
+npx vitest run test/unit/cache/
+```
+
+---
+
+# Agent Schema Validation
+
+Validates the Zod-based schema validator (`tools/schema/agent.js`) that ensures all `*.agent.yaml` files conform to the BMAD agent specification.
 
 ## Test Statistics
 
@@ -293,3 +318,139 @@ All success criteria from the original task have been exceeded:
 - **Validator Implementation**: `tools/schema/agent.js`
 - **CLI Tool**: `tools/validate-agent-schema.js`
 - **Project Guidelines**: `CLAUDE.md`
+
+---
+
+# Module Unit Tests
+
+Unit tests for BMAD library modules using Vitest.
+
+## Test Organization
+
+```
+test/unit/
+├── crowdsource/                    # PRD/Epic crowdsourcing
+│   ├── feedback-manager.test.js    # Feedback creation, querying, conflict detection
+│   ├── synthesis-engine.test.js    # LLM synthesis, theme extraction
+│   └── signoff-manager.test.js     # Sign-off thresholds, approval tracking
+├── notifications/                   # Multi-channel notifications
+│   ├── github-notifier.test.js     # GitHub @mentions, issue comments
+│   ├── slack-notifier.test.js      # Slack webhook integration
+│   ├── email-notifier.test.js      # SMTP, SendGrid, SES providers
+│   └── notification-service.test.js # Orchestration, retry logic
+├── cache/                           # Cache management
+│   └── cache-manager-prd-epic.test.js # PRD/Epic extensions
+├── config/                          # Configuration tests
+├── core/                            # Core functionality
+├── file-ops/                        # File operations
+├── transformations/                 # Data transformations
+└── utils/                           # Utility functions
+```
+
+## Crowdsource Tests
+
+Tests for async stakeholder collaboration on PRDs and Epics:
+
+### FeedbackManager
+- Feedback types and status constants
+- Creating feedback issues with proper labels
+- Querying feedback by section/type/status
+- Conflict detection between stakeholders
+- Statistics aggregation
+
+### SynthesisEngine
+- LLM prompt templates for PRD/Epic synthesis
+- Theme and keyword extraction
+- Conflict identification and resolution
+- Story split prompts for epics
+
+### SignoffManager
+- Three threshold types: count, percentage, required_approvers
+- Approval progress tracking
+- Blocking behavior
+- Deadline management
+
+## Notification Tests
+
+Tests for multi-channel notification delivery:
+
+### Notifiers
+- **GitHub**: Template rendering, issue comments, @mentions
+- **Slack**: Webhook payloads, Block Kit templates, dynamic colors
+- **Email**: HTML/text templates, provider abstraction
+
+### NotificationService
+- Channel orchestration (send to GitHub + Slack + Email)
+- Priority-based behavior (urgent = retry on failure)
+- Convenience methods for all event types
+- Graceful degradation when channels disabled
+
+## Cache Tests
+
+Tests for PRD/Epic extensions to cache-manager:
+
+- Read/write PRD and Epic documents
+- Metadata migration (v1 → v2)
+- Status filtering and updates
+- User task queries (`getMyTasks`, `getPrdsNeedingAttention`)
+- Extended statistics with PRD/Epic counts
+- Atomic file operations
+
+## Running Unit Tests
+
+```bash
+# All unit tests
+npx vitest run test/unit/
+
+# With watch mode
+npx vitest test/unit/
+
+# Specific module
+npx vitest run test/unit/crowdsource/
+npx vitest run test/unit/notifications/
+
+# With coverage
+npx vitest run test/unit/ --coverage
+```
+
+## Test Patterns
+
+### Testable Subclass Pattern
+
+For classes with GitHub MCP dependencies, tests use subclasses that allow mock injection:
+
+```javascript
+class TestableFeedbackManager extends FeedbackManager {
+  constructor(config, mocks = {}) {
+    super(config);
+    this.mocks = mocks;
+  }
+
+  async _createIssue(params) {
+    if (this.mocks.createIssue) return this.mocks.createIssue(params);
+    throw new Error('Mock not provided');
+  }
+}
+```
+
+### Global Fetch Mocking
+
+For Slack/Email tests that use `fetch`:
+
+```javascript
+global.fetch = vi.fn();
+global.fetch.mockResolvedValue({ ok: true });
+```
+
+### Module Mocking
+
+For NotificationService orchestration tests:
+
+```javascript
+vi.mock('../path/to/github-notifier.js', () => ({
+  GitHubNotifier: vi.fn().mockImplementation(() => ({
+    isEnabled: () => true,
+    send: vi.fn().mockResolvedValue({ success: true })
+  }))
+}));
+```

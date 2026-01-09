@@ -1,0 +1,22 @@
+name: dashboard
+description: "View sprint progress dashboard with real-time GitHub data - story status, developer assignments, and blockers"
+author: "BMad"
+version: "1.0.0"
+
+# Critical variables from config
+config_source: "{project-root}/_bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+
+# GitHub configuration
+github:
+  owner: "{config_source}:github_owner"
+  repo: "{config_source}:github_repo"
+
+# Filter parameters
+epic: "" # Optional: Filter by specific epic
+
+# Workflow components
+installed_path: "{project-root}/_bmad/bmm/workflows/po/dashboard"
+instructions: "{installed_path}/instructions.md"
+
+standalone: true

@@ -1,0 +1,22 @@
+name: open-feedback-round
+description: "Open a feedback round for PRD or Epic - creates GitHub coordination issue"
+author: "BMad"
+version: "1.0.0"
+
+config_source: "{project-root}/_bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+cache_dir: "{output_folder}/cache"
+docs_dir: "{project-root}/docs"
+
+github:
+  owner: "{config_source}:github_owner"
+  repo: "{config_source}:github_repo"
+
+# Parameters (can be passed in or prompted)
+document_key: ""       # e.g., "user-auth" for PRD
+document_type: "prd"   # "prd" or "epic"
+
+installed_path: "{project-root}/_bmad/bmm/workflows/1-requirements/crowdsource/open-feedback-round"
+instructions: "{installed_path}/instructions.md"
+
+standalone: true

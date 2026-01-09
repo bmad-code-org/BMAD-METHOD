@@ -1,0 +1,22 @@
+name: open-epic-feedback
+description: "Open feedback round for an epic, focusing on scope, story breakdown, and technical feasibility"
+author: "BMad"
+version: "1.0.0"
+
+config_source: "{project-root}/_bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+cache_dir: "{output_folder}/cache"
+docs_dir: "{project-root}/docs"
+
+github:
+  owner: "{config_source}:github_owner"
+  repo: "{config_source}:github_repo"
+
+# Parameters
+epic_key: ""
+feedback_days: 3  # Default deadline in days
+
+installed_path: "{project-root}/_bmad/bmm/workflows/1-requirements/crowdsource/open-epic-feedback"
+instructions: "{installed_path}/instructions.md"
+
+standalone: true

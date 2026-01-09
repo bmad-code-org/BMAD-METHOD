@@ -1,0 +1,25 @@
+name: new-story
+description: "Create a new story in GitHub Issues with proper BMAD format, labels, and epic assignment"
+author: "BMad"
+version: "1.0.0"
+
+# Critical variables from config
+config_source: "{project-root}/_bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+cache_dir: "{output_folder}/cache"
+implementation_artifacts: "{config_source}:implementation_artifacts"
+sprint_status: "{implementation_artifacts}/sprint-status.yaml"
+
+# GitHub configuration
+github:
+  owner: "{config_source}:github_owner"
+  repo: "{config_source}:github_repo"
+
+# Workflow components
+installed_path: "{project-root}/_bmad/bmm/workflows/po/new-story"
+instructions: "{installed_path}/instructions.md"
+
+# Story template reference
+story_template: "{project-root}/_bmad/bmm/data/story-template.md"
+
+standalone: true

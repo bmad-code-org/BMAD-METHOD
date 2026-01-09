@@ -1,0 +1,32 @@
+name: checkout-story
+description: "Lock a story for development - prevents other developers from working on it. Essential for enterprise team coordination."
+author: "BMad"
+version: "1.0.0"
+
+# Critical variables from config
+config_source: "{project-root}/_bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+cache_dir: "{output_folder}/cache"
+lock_dir: "{project-root}/.bmad/locks"
+
+# GitHub configuration
+github:
+  owner: "{config_source}:github_integration.repository.owner"
+  repo: "{config_source}:github_integration.repository.repo"
+
+# Locking settings
+locking:
+  default_timeout_hours: 8
+  heartbeat_interval_minutes: 30
+  stale_threshold_minutes: 15
+  max_locks_per_user: 3
+
+# Workflow parameters
+story_key: "" # Required: Story to checkout (e.g., "2-5-auth")
+epic_prefetch: true # Pre-fetch all stories in the same epic for context
+
+# Workflow components
+installed_path: "{project-root}/_bmad/bmm/workflows/4-implementation/checkout-story"
+instructions: "{installed_path}/instructions.md"
+
+standalone: true

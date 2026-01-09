@@ -22,6 +22,23 @@ implementation_artifacts: "{config_source}:implementation_artifacts"
 sprint_status: "{implementation_artifacts}/sprint-status.yaml"
 project_context: "**/project-context.md"
 
+# GitHub Integration Settings (Enterprise)
+github_integration:
+  enabled: "{config_source}:github_integration_enabled"
+  repository:
+    owner: "{config_source}:github_owner"
+    repo: "{config_source}:github_repo"
+  cache:
+    dir: "{output_folder}/cache"
+    staleness_minutes: "{config_source}:github_cache_staleness_minutes"
+  locking:
+    timeout_hours: "{config_source}:github_lock_timeout_hours"
+    dir: "{project-root}/.bmad/locks"
+  sync:
+    progress_updates: true # Sync task completion to GitHub
+  permissions:
+    scrum_masters: "{config_source}:github_scrum_masters"
+
 # Autonomous mode settings (passed from parent workflow like batch-super-dev)
 auto_accept_gap_analysis: false # When true, skip gap analysis approval prompt
 

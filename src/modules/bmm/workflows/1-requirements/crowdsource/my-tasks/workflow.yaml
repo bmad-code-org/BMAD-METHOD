@@ -1,0 +1,17 @@
+name: my-tasks
+description: "Unified inbox showing PRDs and Epics needing your feedback or sign-off"
+author: "BMad"
+version: "1.0.0"
+
+config_source: "{project-root}/_bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+cache_dir: "{output_folder}/cache"
+
+github:
+  owner: "{config_source}:github_owner"
+  repo: "{config_source}:github_repo"
+
+installed_path: "{project-root}/_bmad/bmm/workflows/1-requirements/crowdsource/my-tasks"
+instructions: "{installed_path}/instructions.md"
+
+standalone: true

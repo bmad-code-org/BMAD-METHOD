@@ -1,0 +1,30 @@
+name: unlock-story
+description: "Release a story lock, making it available for other developers. Use after completing or abandoning a story."
+author: "BMad"
+version: "1.0.0"
+
+# Critical variables from config
+config_source: "{project-root}/_bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+cache_dir: "{output_folder}/cache"
+lock_dir: "{project-root}/.bmad/locks"
+
+# GitHub configuration
+github:
+  owner: "{config_source}:github_integration.repository.owner"
+  repo: "{config_source}:github_integration.repository.repo"
+
+# Permissions
+permissions:
+  scrum_masters: "{config_source}:github_integration.permissions.scrum_masters"
+
+# Workflow parameters
+story_key: "" # Required: Story to unlock (e.g., "2-5-auth")
+force: false # Scrum Master only: Force unlock of another user's story
+reason: "" # Optional: Reason for unlock (recommended for force unlocks)
+
+# Workflow components
+installed_path: "{project-root}/_bmad/bmm/workflows/4-implementation/unlock-story"
+instructions: "{installed_path}/instructions.md"
+
+standalone: true

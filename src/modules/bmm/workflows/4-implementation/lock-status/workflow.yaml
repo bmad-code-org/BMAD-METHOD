@@ -1,0 +1,28 @@
+name: lock-status
+description: "View current story lock status across the team. Shows who's working on what and identifies stale locks."
+author: "BMad"
+version: "1.0.0"
+
+# Critical variables from config
+config_source: "{project-root}/_bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+
+# GitHub configuration
+github:
+  owner: "{config_source}:github_integration.repository.owner"
+  repo: "{config_source}:github_integration.repository.repo"
+
+# Lock settings
+locking:
+  stale_threshold_minutes: "{config_source}:github_integration.locking.stale_threshold_minutes"
+
+# Filter parameters
+user: "" # Optional: Filter by specific user
+epic: "" # Optional: Filter by epic number
+show_stale: true # Highlight stale locks
+
+# Workflow components
+installed_path: "{project-root}/_bmad/bmm/workflows/4-implementation/lock-status"
+instructions: "{installed_path}/instructions.md"
+
+standalone: true

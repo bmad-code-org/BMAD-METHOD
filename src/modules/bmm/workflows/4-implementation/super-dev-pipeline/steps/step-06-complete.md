@@ -250,8 +250,19 @@ Before proceeding:
 
 ## CRITICAL STEP COMPLETION
 
-**ONLY WHEN** [commit created],
-load and execute `{nextStepFile}` for summary generation.
+**ONLY WHEN** [commit created]:
+
+1. **Check GitHub Integration:**
+   ```
+   IF github_integration.enabled == true:
+     load and execute `{workflow_path}/steps/step-06b-sync-github.md`
+   ELSE:
+     load and execute `{nextStepFile}` for summary generation
+   ```
+
+2. **Continue Pipeline:**
+   - If GitHub sync enabled: Create PR, update issue, then summary
+   - If GitHub sync disabled: Direct to summary generation
 
 ---
 

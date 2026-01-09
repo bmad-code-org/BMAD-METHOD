@@ -382,6 +382,79 @@
   </step>
 
   <step n="4" goal="Mark story in-progress" tag="sprint-status">
+    <!-- GITHUB INTEGRATION: Verify lock before starting -->
+    <check if="{{github_integration.enabled}} == true">
+      <substep n="4a" title="Verify GitHub lock held">
+        <critical>MUST verify lock before each implementation session</critical>
+
+        <action>Check local lock file: {{lock_dir}}/{{story_key}}.lock</action>
+
+        <check if="local lock file does not exist">
+          <output>
+⚠️ No local lock found for story {{story_key}}
+
+You should checkout the story first to acquire a lock:
+  /checkout-story story_key={{story_key}}
+
+Proceeding without lock (single-developer mode)...
+          </output>
+        </check>
+
+        <check if="local lock file exists">
+          <action>Read lock file and verify:</action>
+          <action>  - locked_by matches current user</action>
+          <action>  - timeout_at has not passed</action>
+
+          <check if="lock expired">
+            <output>
+⚠️ Lock expired for story {{story_key}}
+
+Your lock has expired. Re-checkout to refresh:
+  /checkout-story story_key={{story_key}}
+            </output>
+            <action>HALT - Cannot proceed with expired lock</action>
+          </check>
+
+          <check if="locked_by != current_user">
+            <output>
+❌ Lock belongs to different user
+
+Story {{story_key}} is locked by @{{lock_owner}}
+Your user: @{{current_user}}
+
+This should not happen - investigate lock state.
+            </output>
+            <action>HALT - Lock mismatch</action>
+          </check>
+
+          <!-- Verify with GitHub (source of truth) -->
+          <action>Call: mcp__github__search_issues({
+            query: "repo:{{github_owner}}/{{github_repo}} label:story:{{story_key}}"
+          })</action>
+
+          <check if="issue.assignee != current_user">
+            <output>
+❌ LOCK STOLEN
+
+GitHub shows story assigned to @{{issue.assignee.login}}
+Your local lock says @{{current_user}}
+
+The lock was reassigned in GitHub. HALTING.
+
+Options:
+1. Coordinate with @{{issue.assignee.login}}
+2. Ask SM to reassign: /checkout-story story_key={{story_key}}
+            </output>
+            <action>HALT - Lock verification failed</action>
+          </check>
+
+          <!-- Refresh heartbeat -->
+          <action>Update lock file: last_heartbeat = now()</action>
+          <output>✅ Lock verified for @{{current_user}}</output>
+        </check>
+      </substep>
+    </check>
+
     <check if="{{sprint_status}} file exists">
       <action>Load the FULL file: {{sprint_status}}</action>
       <action>Read all development_status entries to find {{story_key}}</action>
@@ -530,6 +603,57 @@
       </check>
 
       <output>✅ Sprint progress updated: {{story_key}} → {{checked_tasks}}/{{total_tasks}} ({{progress_pct}}%)</output>
+    </check>
+
+    <!-- GITHUB INTEGRATION: Sync progress to GitHub Issue (NEW) -->
+    <check if="{{github_integration.enabled}} == true AND {{github_integration.sync.progress_updates}} == true">
+      <substep n="8b" title="Sync progress to GitHub">
+        <action>Load cache metadata to get github_issue number</action>
+        <action>cache_meta = load {{cache_dir}}/.bmad-cache-meta.json</action>
+        <action>issue_number = cache_meta.stories[{{story_key}}].github_issue</action>
+
+        <check if="issue_number exists">
+          <action>SYNC with retry:</action>
+          <action>
+attempt = 0
+max_attempts = 4
+backoffs = [1000, 3000, 9000]
+
+WHILE attempt < max_attempts:
+  TRY:
+    # Add progress comment to GitHub Issue
+    Call: mcp__github__add_issue_comment({
+      owner: {{github_owner}},
+      repo: {{github_repo}},
+      issue_number: {{issue_number}},
+      body: "📊 **Task {{checked_tasks}}/{{total_tasks}} complete** ({{progress_pct}}%)\n\n" +
+            "> {{task_description}}\n\n" +
+            "_Progress synced at {{timestamp}}_"
+    })
+
+    output: "✅ Progress synced to GitHub Issue #{{issue_number}}"
+    BREAK
+
+  CATCH error:
+    attempt++
+    IF attempt < max_attempts:
+      sleep backoffs[attempt - 1]
+      output: "⚠️ GitHub sync retry {{attempt}}/3: {{error}}"
+    ELSE:
+      output: "⚠️ GitHub sync failed (non-blocking): {{error}}"
+      output: "   Progress tracking continues in sprint-status.yaml"
+      # Non-blocking - don't halt for sync failures
+      BREAK
+          </action>
+
+          <!-- Refresh lock heartbeat -->
+          <action>Update lock file: last_heartbeat = now()</action>
+        </check>
+
+        <check if="issue_number does not exist">
+          <output>ℹ️ Story not synced to GitHub - local progress only</output>
+        </check>
+      </substep>
     </check>
 
     <check if="review_continuation == true and {{resolved_review_items}} is not empty">

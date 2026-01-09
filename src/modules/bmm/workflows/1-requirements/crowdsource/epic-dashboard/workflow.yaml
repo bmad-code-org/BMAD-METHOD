@@ -1,0 +1,22 @@
+name: epic-dashboard
+description: "Central visibility hub for tracking all epics with PRD lineage and story breakdown"
+author: "BMad"
+version: "1.0.0"
+
+config_source: "{project-root}/_bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+cache_dir: "{output_folder}/cache"
+docs_dir: "{project-root}/docs"
+
+github:
+  owner: "{config_source}:github_owner"
+  repo: "{config_source}:github_repo"
+
+# Optional filter
+epic_key: ""  # Empty for all epics, or specific key for detail view
+source_prd: ""  # Filter by source PRD
+
+installed_path: "{project-root}/_bmad/bmm/workflows/1-requirements/crowdsource/epic-dashboard"
+instructions: "{installed_path}/instructions.md"
+
+standalone: true

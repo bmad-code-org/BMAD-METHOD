@@ -54,3 +54,44 @@ tea_use_playwright_utils:
     - "Are you using playwright-utils (@seontechnologies/playwright-utils) in your project?\nYou must install packages yourself, or use test architect's *framework command."
   default: false
   result: "{value}"
+
+# GitHub Integration for Enterprise Teams (Phase 1)
+github_integration_enabled:
+  prompt:
+    - "Enable GitHub Integration for enterprise team coordination?"
+    - "This enables story locking, real-time progress sync, and PO workflows."
+    - "Requires: GitHub MCP configured, repository with Issues enabled."
+  default: false
+  result: "{value}"
+
+github_owner:
+  prompt: "GitHub username or organization name for your repository"
+  default: ""
+  result: "{value}"
+  condition: "github_integration_enabled == true"
+
+github_repo:
+  prompt: "GitHub repository name"
+  default: "{project_name}"
+  result: "{value}"
+  condition: "github_integration_enabled == true"
+
+github_lock_timeout_hours:
+  prompt: "Story lock timeout in hours (default: 8 = full workday)"
+  default: 8
+  result: "{value}"
+  condition: "github_integration_enabled == true"
+
+github_cache_staleness_minutes:
+  prompt: "Minutes before cached story is considered stale (default: 5)"
+  default: 5
+  result: "{value}"
+  condition: "github_integration_enabled == true"
+
+github_scrum_masters:
+  prompt:
+    - "GitHub usernames of Scrum Masters (comma-separated)"
+    - "These users can force-unlock stories locked by others."
+  default: ""
+  result: "{value}"
+  condition: "github_integration_enabled == true"

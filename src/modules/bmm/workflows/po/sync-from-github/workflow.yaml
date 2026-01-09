@@ -1,0 +1,21 @@
+name: sync-from-github
+description: "Pull latest changes from GitHub Issues to local cache - ensures local data is current"
+author: "BMad"
+version: "1.0.0"
+
+config_source: "{project-root}/_bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+cache_dir: "{output_folder}/cache"
+
+github:
+  owner: "{config_source}:github_owner"
+  repo: "{config_source}:github_repo"
+
+# Sync options
+full_sync: false # Force full sync instead of incremental
+epic: "" # Optional: Only sync specific epic
+
+installed_path: "{project-root}/_bmad/bmm/workflows/po/sync-from-github"
+instructions: "{installed_path}/instructions.md"
+
+standalone: true

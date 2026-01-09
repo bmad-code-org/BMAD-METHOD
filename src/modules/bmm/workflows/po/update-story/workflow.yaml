@@ -1,0 +1,19 @@
+name: update-story
+description: "Update story ACs, requirements, or details in GitHub Issues with change notification"
+author: "BMad"
+version: "1.0.0"
+
+config_source: "{project-root}/_bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+cache_dir: "{output_folder}/cache"
+
+github:
+  owner: "{config_source}:github_owner"
+  repo: "{config_source}:github_repo"
+
+story_key: "" # Required: Story to update
+
+installed_path: "{project-root}/_bmad/bmm/workflows/po/update-story"
+instructions: "{installed_path}/instructions.md"
+
+standalone: true

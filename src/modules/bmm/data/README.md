@@ -19,6 +19,24 @@ BMAD documentation standards and guidelines. Used by:
 - Various documentation workflows
 - Standards validation and review processes
 
+### `github-integration-config.md`
+
+Configuration guide for enterprise GitHub integration. Documents:
+
+- Story locking and unlock workflows for team coordination
+- Real-time progress sync between local cache and GitHub Issues
+- PRD & Epic crowdsourcing for async stakeholder collaboration
+- Notification channels (GitHub mentions, Slack webhooks, email)
+- Sign-off configuration and threshold types
+- Cache architecture and performance optimization
+
+Used by:
+
+- PO agent for backlog management
+- Stakeholder agent for feedback and sign-off
+- Developer workflows for story checkout/unlock
+- All crowdsourcing workflows (`my-tasks`, `submit-feedback`, etc.)
+
 ## Purpose
 
 Separates module-specific data from core workflow implementations, maintaining clean architecture:

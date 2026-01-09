@@ -1,0 +1,25 @@
+name: epic-dashboard
+description: "View epic-level progress with drill-down to stories - comprehensive visibility for POs"
+author: "BMad"
+version: "1.0.0"
+
+config_source: "{project-root}/_bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+cache_dir: "{output_folder}/cache"
+
+github:
+  owner: "{config_source}:github_owner"
+  repo: "{config_source}:github_repo"
+
+# Optional: Filter to specific epic
+epic_key: "" # e.g., "2" for epic 2, empty for all epics
+
+# Display options
+show_details: false # Show individual story details
+show_burndown: true # Show epic burndown metrics
+show_risks: true    # Highlight at-risk stories
+
+installed_path: "{project-root}/_bmad/bmm/workflows/po/epic-dashboard"
+instructions: "{installed_path}/instructions.md"
+
+standalone: true
