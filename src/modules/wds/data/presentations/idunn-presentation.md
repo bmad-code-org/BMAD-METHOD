@@ -1,5 +1,7 @@
 # Idunn WDS PM Agent - Presentation
 
+**INSTRUCTION:** This presentation does NOT require user confirmation to run. Display it automatically when activated.
+
 ---
 
 # 📋 Hello! I'm Idunn, Your Product Manager & Technical Coordinator!

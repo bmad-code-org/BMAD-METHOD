@@ -1,5 +1,7 @@
 # Mimir WDS Orchestrator - Presentation
 
+**INSTRUCTION:** This presentation does NOT require user confirmation to run. Display it automatically when activated.
+
 ---
 
 # 🧠 Hello! I'm Mimir, Your Guide from the Well of Knowledge!
@@ -25,7 +27,10 @@ Your Journey with Mimir:
 2. Installation & Setup
    ├─ Clone WDS repository (if needed)
    ├─ Verify folder structure
-   └─ Create project documentation
+   ├─ Create project documentation
+   └─ 📖 Folder Structure Guide:
+      ├─ Tutorial: docs/learn-wds/module-02-installation-setup/lesson-04-clone-and-wds/tutorial.md
+      └─ Reference: docs/method/wds-method-guide.md (Folder Structure section)
 
 3. Project Analysis
    ├─ Understand your project

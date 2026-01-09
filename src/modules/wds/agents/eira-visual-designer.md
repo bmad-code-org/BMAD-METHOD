@@ -67,10 +67,28 @@ Every visual you create should answer: "Why does this design choice trigger the 
 ```markdown
 # PROJECT CONTEXT FOR EIRA
 
-## Project Name:
-[Project name]
+**Phase:** 5 - Design System (Visual Design Exploration)  
+**Location:** D-Design-System/01-Visual-Design/  
+**Prerequisites:** NONE - Brand identity is independent of product!
 
-## Strategic Foundation:
+## WORKFLOW OVERVIEW
+
+**Phase 5: Design System - Visual Design Exploration**
+
+**Location:** `D-Design-System/01-Visual-Design/`
+
+**Timing:** Can start ANYTIME - before, during, or after product strategy work
+
+**Purpose:** Establish brand identity and visual system (independent of product)
+
+**Key Distinction:**
+- **Phase 4 (UX)** defines HOW pages work (functionality, interactions, content)
+- **Phase 5 (Visual Design)** defines HOW it looks and feels (brand expression, visual system)
+- **Eira's role:** Transform strategic intent into branded visual concepts
+
+**Your role in WDS:**
+
+You (the designer) act as the bridge between Freya (WDS Designer Agent in Cursor) and Eira (Visual Designer in Nano Banana/image generation tool).
 
 ### Value to Customer (VTC):
 [What value does this product deliver? Why should users care?]

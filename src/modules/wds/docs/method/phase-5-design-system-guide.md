@@ -109,9 +109,18 @@ Notice pattern across pages  →    Extract as reusable component
 
 ### Visual Design Exploration (01-Visual-Design/)
 
-**Early Design Phase - Before Scenarios:**
+**Independent Design Phase - Can Start Anytime:**
 
-Before diving into scenario-specific design, establish your visual direction:
+**Key Insight:** Brand identity and visual design are NOT tied to the product! You can establish your visual identity at any time - before, during, or after product strategy work.
+
+**Purpose:** Establish the visual language that will tie UX to Brand. This is where you define how your brand's personality will be expressed visually across all touchpoints.
+
+**Timing Options:**
+- **Before product work:** Establish brand identity first, then build products around it
+- **Parallel to strategy:** Develop visual identity while defining product strategy
+- **After strategy:** Use strategic insights to inform visual direction
+
+Before diving into scenario-specific design (Phase 4), establish your visual direction:
 
 **Mood Boards:**
 - Collect visual inspiration
@@ -138,10 +147,11 @@ Before diving into scenario-specific design, establish your visual direction:
 - Document font usage guidelines
 
 **When to Use:**
-- At project start (before Phase 4 scenarios)
-- When establishing brand identity
-- When exploring multiple visual directions
+- **AFTER Phase 1 & 2** (Product Brief and Trigger Map must be complete first!)
+- When establishing brand identity (with strategic context)
+- When exploring multiple visual directions (informed by user psychology)
 - Before committing to design tokens
+- Before Phase 4 scenarios (but after strategic foundation)
 
 **Output Location:** `D-Design-System/01-Visual-Design/`
 

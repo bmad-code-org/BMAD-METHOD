@@ -51,10 +51,12 @@ NanoBanana has two integration workflows in WDS:
 
 #### **Workflow A: Early Design Exploration**
 
+**Key Insight:** Brand identity is INDEPENDENT of product! You can establish visual identity anytime - before, during, or after product strategy.
+
 ```
-Phase 5: Visual Design Exploration
+Phase 5: Visual Design Exploration (can happen ANYTIME)
     ↓
-NanoBanana (create assets/inspiration)
+NanoBanana (create brand assets/visual identity)
     ↓
 Save to D-Design-System/01-Visual-Design/
     ↓
@@ -204,11 +206,11 @@ Create/update prototype with refined design
 ### Use NanoBanana for:
 
 **Early Design Exploration:**
-- Custom graphics and icons
-- Design inspiration
-- Exploring visual concepts
-- Creating placeholder assets
-- Brand identity exploration
+- **ANYTIME** - Brand identity is independent of product strategy!
+- When establishing brand identity (can be before, during, or after product work)
+- When exploring multiple visual directions
+- Before committing to design tokens
+- Can happen before Phase 1, parallel to strategy work, or after Phase 4
 
 **Sketch Envisioning (Alternative to Figma):**
 - Converting sketches to visual designs quickly

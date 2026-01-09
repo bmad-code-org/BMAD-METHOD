@@ -11,9 +11,11 @@
 
 Designed complete integration of **Eira** (visual design agent) into WDS workflow. Eira enables AI-powered visual design exploration using image generation models (Nano Banana, DALL-E, Midjourney, etc.) while maintaining strategic alignment with BMad Method principles.
 
-**Key Innovation:** Phase 2.5 "Visual Design Brief" - a creative exploration phase between strategy (Phase 2) and detailed scenarios (Phase 4) where wild visual concepts are generated before locking into detailed specs.
+**Key Innovation:** Phase 5 "Visual Design Exploration" (01-Visual-Design/) - a creative exploration phase that happens AFTER strategy (Phase 1 & 2) but BEFORE detailed scenarios (Phase 4), where wild visual concepts are generated before locking into detailed specs.
 
-**Core Principle:** Strategy → Creative Exploration → Detailed Execution
+**Location:** `D-Design-System/01-Visual-Design/`
+
+**Core Principle:** Strategy (Phase 1 & 2) → Visual Exploration (Phase 5) → Detailed Execution (Phase 4)
 
 ---
 
@@ -48,36 +50,63 @@ Phase 2: Trigger Mapping
 ├─ Psychological triggers
 └─ User context (informs device priorities)
 
-Phase 2.5: Visual Design Brief ← NEW!
+Phase 5: Design System - Visual Design Exploration (BEFORE Phase 4)
+├─ Location: D-Design-System/01-Visual-Design/
 ├─ Strategic document (tool-agnostic)
 ├─ Content concept generation
 ├─ Visual exploration (wild & creative)
 ├─ Direction selection
 └─ Design token extraction
 
-Phase 3: PRD/Platform
+Phase 3: PRD/Platform (Optional)
 ├─ Technical foundation
-└─ Device priorities (informed by Phase 2.5)
+└─ Device priorities (informed by Phase 5 visual direction)
 
 Phase 4: UX Design (Scenarios)
 ├─ Detailed conceptual specs
-├─ High-fidelity mockups (using approved direction)
+├─ High-fidelity mockups (using approved direction from Phase 5)
 ├─ HTML prototypes
 └─ Design system evolution
+
+Phase 5: Design System - Production Assets (DURING/AFTER Phase 4)
+├─ Location: D-Design-System/02-Assets/
+├─ Component extraction
+├─ Final logos and assets
+└─ Design system documentation
 ```
 
 ---
 
-## Phase 2.5: Visual Design Brief (Detailed)
+## Phase 5: Visual Design Exploration (Detailed)
+
+**Location:** `D-Design-System/01-Visual-Design/`
 
 ### Purpose
 
+**Tie UX to Brand and create a visual system.** This phase establishes the visual language that will express your brand's personality across all user experiences.
+
+**Key Distinction:**
+- **Phase 4 (UX)** = How it works (functionality, interactions, content)
+- **Phase 5 (Visual Design)** = How it looks and feels (brand expression, visual system)
+
 **Strategic document** that defines boundaries and direction for visual exploration. Completely **tool-agnostic** - focuses on WHAT to explore, not HOW to generate.
+
+**Timing:** Can happen ANYTIME - visual identity/brand is independent of product strategy. Common scenarios:
+- **Before product:** Establish brand first, build products around it
+- **Parallel:** Develop brand while defining product strategy  
+- **After strategy:** Use strategic insights to inform visual direction
 
 ### Content Structure
 
+**Output Location:** `D-Design-System/01-Visual-Design/visual-design-brief.md`
+
 ```markdown
 # Visual Design Brief: [Project Name]
+
+**Phase:** 5 - Design System (Visual Design Exploration)  
+**Location:** D-Design-System/01-Visual-Design/  
+**Created After:** Phase 1 (Product Brief) and Phase 2 (Trigger Map)  
+**Used In:** Phase 4 (UX Design) for scenario creation
 
 ## Strategic Foundation
 - Value to Customer (VTC)
@@ -109,6 +138,12 @@ For each key page (homepage, features, pricing, etc.):
 ## Success Criteria
 - Evaluation questions
 - Strategic alignment checks
+
+## Output Organization
+- Mood boards → 01-Visual-Design/mood-boards/
+- Design concepts → 01-Visual-Design/design-concepts/
+- Color exploration → 01-Visual-Design/color-exploration/
+- Typography tests → 01-Visual-Design/typography-tests/
 ```
 
 ### Visual Prosperity Standards

@@ -22,6 +22,8 @@ export default [
       'build/**',
       // Website uses ESM/Astro - separate linting ecosystem
       'website/**',
+      // Figma MCP Server - external project with different config
+      'figma-mcp-server/**',
       // Gitignored patterns
       'z*/**', // z-samples, z1, z2, etc.
       '.claude/**',

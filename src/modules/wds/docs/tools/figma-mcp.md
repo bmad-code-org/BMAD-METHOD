@@ -305,6 +305,131 @@ echo "FIGMA_ACCESS_TOKEN=token" > .env
 
 ---
 
+## Windsurf IDE Integration (Official Figma MCP)
+
+### Overview
+
+The official Figma Desktop MCP server provides read-only access to Figma files through Windsurf IDE. This enables AI agents like Freya to directly extract design definitions from Figma without manual copying.
+
+### Prerequisites
+
+- **Figma Account**: Paid account with Dev Mode access
+- **Figma Desktop**: Latest version installed
+- **Windsurf IDE**: With MCP support enabled
+
+### Configuration
+
+**1. MCP Config File**
+
+Location: `~/.codeium/windsurf/mcp_config.json`
+
+```json
+{
+  "mcpServers": {
+    "Figma Desktop": {
+      "serverUrl": "http://127.0.0.1:3845/mcp"
+    }
+  }
+}
+```
+
+**Important**: Use `serverUrl` (not `url`) for HTTP-based MCP servers in Windsurf.
+
+**2. Figma Desktop Setup**
+
+1. Open Figma Desktop with your paid account
+2. The official Figma MCP server runs automatically on port 3845
+3. Open your design file
+4. Select the node/frame you want to extract
+
+**3. Windsurf Configuration**
+
+1. Open Windsurf Settings: `Ctrl+,` (or `Cmd+,` on Mac)
+2. Navigate to: **Tools → Windsurf Settings → MCP Servers**
+3. Click the **refresh button** after modifying `mcp_config.json`
+4. Verify "Figma Desktop" appears as **Enabled**
+
+### Available Tools
+
+The Figma Desktop MCP server provides:
+
+- `get_design_context` - Extract full design context including code, styles, and assets
+- `get_variable_defs` - Get design variable definitions
+- `get_screenshot` - Capture visual screenshot of selected node
+- `get_metadata` - Get structural metadata in XML format
+- `create_design_system_rules` - Generate design system rules
+- `get_figjam` - Extract FigJam board content
+
+### Usage Example
+
+**Extracting Color Definitions:**
+
+1. **In Figma Desktop**: Select the color palette frame
+2. **In Windsurf**: Call the MCP tool:
+
+```
+mcp1_get_design_context(
+  clientLanguages: "markdown",
+  clientFrameworks: "unknown",
+  nodeId: "",  // Empty for currently selected node
+  dirForAssetWrites: "path/to/assets"
+)
+```
+
+3. **Result**: Receives React/Tailwind code with all color values, which can be parsed and converted to design tokens
+
+**Getting Visual Reference:**
+
+```
+mcp1_get_screenshot(
+  clientLanguages: "markdown",
+  clientFrameworks: "unknown",
+  nodeId: ""
+)
+```
+
+### Real-World Success: Dogweek Design System
+
+**Date**: January 9, 2026
+
+Successfully extracted the Dogweek color system from Figma and integrated into project design system:
+
+- **10 Primary Colors**: Brand colors, semantic colors (success, error, info)
+- **7 Gradient Definitions**: For rich visual effects
+- **Typography**: Font family specifications (Fredoka, Liberation Sans)
+
+The extracted data was automatically converted from React/Tailwind format to structured markdown documentation in the Dogweek project.
+
+### Troubleshooting
+
+**Issue: "Nothing is selected"**
+- **Solution**: Select a node in Figma Desktop before calling MCP tools
+
+**Issue: "Path for asset writes required"**
+- **Solution**: Provide `dirForAssetWrites` parameter with absolute path
+
+**Issue: "Failed to initialize server"**
+- **Solution**: 
+  - Ensure Figma Desktop is running
+  - Verify you're logged into a paid account with Dev Mode access
+  - Check that port 3845 is not blocked
+
+**Issue: MCP server not appearing in Windsurf**
+- **Solution**:
+  - Use `serverUrl` instead of `url` in config
+  - Click refresh button in MCP settings
+  - Restart Windsurf completely
+
+### Benefits for WDS Method
+
+1. **Automated Design Token Extraction**: No manual copying of color codes, spacing values, etc.
+2. **Single Source of Truth**: Design definitions come directly from Figma
+3. **Version Control**: Changes in Figma can be re-extracted and documented
+4. **AI Agent Integration**: Freya can reference actual design system values
+5. **Reduced Human Error**: Eliminates transcription mistakes
+
+---
+
 ## Resources
 
 **Documentation:**

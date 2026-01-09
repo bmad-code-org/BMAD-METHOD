@@ -1,127 +1,110 @@
-# WDS Prototype-to-Figma Integration - Summary
+# Figma Integration - Summary
 
-**Date Added:** January 8, 2026  
+**Last Updated:** January 9, 2026  
 **Version:** WDS v6  
-**Status:** Ready for Public Release
+**Status:** Active Development
 
 ---
 
-## What Was Added
+## Overview
 
-This integration completes the WDS design workflow by adding the missing dimension: **visual design creation and refinement**.
+This integration enables bidirectional workflow between code and Figma for design system development and visual refinement.
 
-### New Workflow: Iterative Design Refinement
+### Bidirectional Workflow
 
 ```
-Sketch → Spec → Prototype → Figma (if needed) → Design System → Re-render → Iterate
+Code ⇄ Figma
 ```
 
-**Key Innovation:** Code prototypes serve as functional starting points. When design system is incomplete, extract to Figma for visual refinement, then feed improvements back to design system and re-render.
+**Two Main Workflows:**
+
+1. **Code to Figma (C2F):** Send code implementations to Figma for visual documentation and refinement
+2. **Figma to Code (F2C):** Import design specifications from Figma to generate or update code
+
+**Key Innovation:** Specification-driven approach ensures design-code parity through shared OBJECT IDs, enabling traceability and consistency across both directions.
 
 ---
 
-## New Documentation Files
+## Workshop Structure
 
-### 1. Prototype-to-Figma Workflow
-**File:** `prototype-to-figma-workflow.md`
+### Code to Figma (C2F) Workshop
+**Location:** `code-to-figma/`
 
-**Purpose:** Complete workflow for extracting HTML prototypes to Figma for visual refinement
+**Purpose:** Send code implementations to Figma for design review, documentation, and visual iteration
 
-**Covers:**
-- When and why to extract prototypes
-- Step-by-step extraction process using html.to.design
-- Figma refinement techniques
-- Design system update process
-- Re-rendering with enhanced design system
-- Iteration strategies
-
-**Key Sections:**
-- Phase 1: Identify need for refinement
-- Phase 2: Extract to Figma
-- Phase 3: Refine design
-- Phase 4: Extract design system updates
-- Phase 5: Re-render prototype
-- Phase 6: Iterate or complete
-
----
-
-### 2. When to Extract Decision Guide
-**File:** `when-to-extract-decision-guide.md`
-
-**Purpose:** Help designers make informed decisions about when to extract prototypes to Figma
-
-**Covers:**
-- Decision tree and framework
-- Quick assessment checklist
-- Scenarios and examples
-- Design system maturity levels
-- Cost-benefit analysis
-- Quality thresholds
-- Practical examples
+**Workflow Steps:**
+1. Connection Check - Verify html.to.design MCP server
+2. Identify Type - Determine export scenario (prototype page, design system component, or frontend view)
+3. Prepare Specifications - Find or create OBJECT IDs for proper Figma layer naming
+4. Generate & Validate - Create Figma-compatible HTML with validation
+5. Send to Figma - Execute export and verify success
 
 **Key Features:**
-- Clear decision criteria
-- Red flags to avoid
-- Decision matrix
-- Time investment analysis
-- Priority guidance
+- Specification-driven OBJECT ID naming
+- Three export scenarios with specific ID patterns
+- Automated validation before export
+- Reverse engineering for missing specifications
 
 ---
 
-### 3. Tools Reference
-**File:** `tools-reference.md`
+### Figma to Code (F2C) Workshop
+**Location:** `figma-to-code/`
 
-**Purpose:** Quick reference for design tools used in WDS workflows
+**Status:** Coming Soon
 
-**Covers:**
-- **html.to.design:** HTML → Figma conversion
-- **NanoBanana:** Spec → Code generation (optional)
-- **Area Tag System:** Region mapping for image prototypes
-- **Dev Mode Component:** Object ID extraction
+**Purpose:** Import design specifications from Figma to generate or update code implementations
 
-**Key Sections:**
-- Tool features and capabilities
-- How to use each tool
-- Best practices
-- Limitations
-- Integration workflows
-- Troubleshooting
+**Planned Workflow:**
+1. Connection Check - Verify Figma Desktop MCP server
+2. Select Figma Node - Identify what to import
+3. Extract Design Specs - Get colors, spacing, typography, layout
+4. Generate/Update Code - Create or update components
+5. Verify Implementation - Compare code output to Figma design
 
 ---
 
-## Updated Files
+## Reference Documentation
 
-### 1. Phase 4D Prototype Workflow
-**File:** `workflows/4-ux-design/substeps/4d-prototype.md`
+**Location:** `reference/`
 
-**Changes:**
-- Added visual quality assessment after prototype testing
-- Integrated Figma extraction option
-- References to new workflow documentation
-- Decision points for refinement vs completion
+Supporting documentation for Figma integration workflows:
 
-**New Flow:**
+1. **`figma-designer-guide.md`** - Guide for designers creating components in Figma
+2. **`mcp-server-integration.md`** - MCP server setup and configuration
+3. **`tools-reference.md`** - Reference for Figma MCP tools and parameters
+4. **`when-to-extract-decision-guide.md`** - Decision tree for when to use Figma integration
+5. **`figma-mcp-integration.md`** - Technical documentation about MCP integration
+6. **`prototype-to-figma-workflow.md`** - Iterative refinement workflow documentation
+
+---
+
+## Folder Structure
+
 ```
-Prototype Complete → Visual Assessment → 
-  Option 1: Polished (continue)
-  Option 2: Needs refinement (extract to Figma)
-  Option 3: Minor tweaks (quick CSS fixes)
+figma-integration/
+├── code-to-figma/              # C2F Workshop
+│   ├── workflow.md
+│   └── steps/
+│       ├── step-01-connection-check.md
+│       ├── step-02-identify-export-type.md
+│       ├── step-03-prepare-specifications.md
+│       ├── step-04-generate-validate.md
+│       ├── step-05-execute-export.md
+│       └── [substeps folders]
+│
+├── figma-to-code/              # F2C Workshop (coming soon)
+│   └── README.md
+│
+├── reference/                  # Reference documentation
+│   ├── figma-designer-guide.md
+│   ├── mcp-server-integration.md
+│   ├── tools-reference.md
+│   ├── when-to-extract-decision-guide.md
+│   ├── figma-mcp-integration.md
+│   └── prototype-to-figma-workflow.md
+│
+└── INTEGRATION-SUMMARY.md      # This file
 ```
-
----
-
-### 2. Phase 5 Design System README
-**File:** `workflows/5-design-system/README.md`
-
-**Changes:**
-- Added Prototype → Figma → WDS workflow (Workflow B)
-- Updated Figma Integration section
-- Referenced new documentation files
-- Documented iterative refinement capability
-
-**New Workflows:**
-- Workflow A: Figma → WDS (existing)
-- Workflow B: Prototype → Figma → WDS (new)
 
 ---
 
