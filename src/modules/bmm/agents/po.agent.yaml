@@ -119,3 +119,239 @@ agent:
     - trigger: EDD or fuzzy match on epic-crowdsource-dashboard
       workflow: "{project-root}/_bmad/bmm/workflows/1-requirements/crowdsource/epic-dashboard/workflow.yaml"
       description: "[EDD] Epic Dashboard - view all epics with PRD lineage"
+
+  prompts:
+    - id: getting-started
+      description: "First-time setup and orientation for Product Owners"
+      content: |
+        # 🎯 Welcome, Product Owner!
+
+        I'm Sarah, your PO assistant. I help you manage PRDs, epics, stories, and stakeholder collaboration—all through GitHub Issues.
+
+        ## Prerequisites Check
+
+        Before we start, let's verify you're set up:
+
+        **1. BMAD Installed?**
+        - You should have a `_bmad/` folder in your project
+        - If not, run: `npx bmad-method install`
+
+        **2. GitHub MCP Configured?**
+        - This enables me to read/write GitHub Issues
+        - If not set up, say "setup github" for instructions
+
+        **3. GitHub Integration Enabled?**
+        - Check `_bmad/bmm/config.yaml` for `github_integration_enabled: true`
+        - Without this, PRDs and stories stay local only
+
+        ## Quick Start
+
+        **First, let's see what you have:**
+        - Say `/my-tasks` or `MT` to see what needs your attention
+        - Say `/prd-dashboard` or `PD` to see all PRDs
+
+        ## What I Can Help You Do
+
+        ### 📝 Requirements Management (PRD Crowdsourcing)
+        | Say This | I'll Do This |
+        |----------|--------------|
+        | "Create a new PRD" | Start a PRD draft with guided prompts |
+        | "Open feedback on auth PRD" | Notify stakeholders to review |
+        | "Synthesize feedback" | Use AI to merge all feedback |
+        | "Request sign-off" | Move to approval phase |
+
+        ### 📦 Story Management
+        | Say This | I'll Do This |
+        |----------|--------------|
+        | "Create a story for epic 2" | Generate story with ACs |
+        | "Show sprint dashboard" | See progress and blockers |
+        | "Who's working on what?" | Show story locks |
+
+        ## Team Collaboration Features
+
+        These features require GitHub integration:
+
+        - **PRD Crowdsourcing** - Async feedback from stakeholders
+        - **Epic Crowdsourcing** - Collaborative story breakdown
+        - **Story Locking** - Prevents two devs on same story
+        - **Multi-Channel Notifications** - GitHub, Slack, Email
+
+        ## Your First PRD
+
+        Ready to create your first PRD? Just say:
+        > "Create a new PRD for [your feature]"
+
+        Or type `CP` for the quick command.
+
+        ---
+        *I understand natural language. Just describe what you need!*
+
+    - id: setup-github
+      description: "Configure GitHub integration for team collaboration"
+      content: |
+        # 🔧 GitHub Integration Setup
+
+        This guide helps you enable team collaboration features.
+
+        ## Step 1: Verify GitHub MCP
+
+        Claude Desktop needs the GitHub MCP server to interact with GitHub Issues.
+
+        **Check if configured:**
+        I'll try to call the GitHub API. If this fails, you need to set up GitHub MCP.
+
+        **To add GitHub MCP:**
+        1. Open Claude Desktop Settings (Cmd/Ctrl + ,)
+        2. Go to "Developer" → "Model Context Protocol"
+        3. Add the GitHub MCP server:
+           ```json
+           {
+             "mcpServers": {
+               "github": {
+                 "command": "npx",
+                 "args": ["-y", "@modelcontextprotocol/server-github"],
+                 "env": {
+                   "GITHUB_PERSONAL_ACCESS_TOKEN": "your-token-here"
+                 }
+               }
+             }
+           }
+           ```
+        4. Create a GitHub token at: https://github.com/settings/tokens
+           - Required scopes: `repo`, `issues`, `read:org`
+        5. Restart Claude Desktop
+
+        ## Step 2: Enable GitHub Integration in BMAD
+
+        Edit `_bmad/bmm/config.yaml`:
+
+        ```yaml
+        github_integration_enabled: true
+        github:
+          owner: "your-org-or-username"
+          repo: "your-repo-name"
+        ```
+
+        ## Step 3: Configure Notifications (Optional)
+
+        For Slack notifications, add to config.yaml:
+        ```yaml
+        notifications:
+          slack:
+            enabled: true
+            webhook_url: "https://hooks.slack.com/..."
+            channel: "#prd-updates"
+        ```
+
+        ## Step 4: Verify Setup
+
+        Say "my tasks" or `MT` to verify everything works.
+
+        If you see your GitHub data, you're all set!
+
+        ---
+        *Need help? Ask me to troubleshoot any step.*
+
+    - id: help
+      description: "Show available commands"
+      content: |
+        # 🎯 Product Owner Commands
+
+        ## Getting Started
+        | Command | Description |
+        |---------|-------------|
+        | "getting started" | First-time orientation |
+        | "setup github" | Configure GitHub integration |
+        | "help" | Show this command list |
+
+        ## Requirements & PRDs
+        | Command | Description |
+        |---------|-------------|
+        | `MT` `/my-tasks` | What needs my attention |
+        | `CP` `/create-prd` | Create new PRD draft |
+        | `PD` `/prd-dashboard` | View all PRDs |
+        | `OF` `/open-feedback` | Request stakeholder feedback |
+        | `VF` `/view-feedback` | See all feedback |
+        | `SZ` `/synthesize` | Process feedback with AI |
+        | `RS` `/request-signoff` | Move to approval phase |
+        | `SO` `/signoff` | Submit sign-off decision |
+
+        ## Epics
+        | Command | Description |
+        |---------|-------------|
+        | `CE` `/create-epic` | Create epic from approved PRD |
+        | `OE` `/open-epic-feedback` | Request epic feedback |
+        | `SE` `/synthesize-epic` | Process epic feedback |
+        | `EDD` `/epic-dashboard` | View all epics |
+
+        ## Stories & Sprint
+        | Command | Description |
+        |---------|-------------|
+        | `NS` `/new-story` | Create new story |
+        | `US` `/update-story` | Update story details |
+        | `DS` `/dashboard` | Sprint progress |
+        | `AP` `/approve-story` | Approve completed story |
+        | `AS` `/available-stories` | Stories ready for dev |
+        | `LS` `/lock-status` | Who's working on what |
+        | `MG` `/migrate` | Migrate local stories to GitHub |
+
+        ## Sync
+        | Command | Description |
+        |---------|-------------|
+        | `SY` `/sync` | Sync changes from GitHub |
+
+        ---
+        *All commands work with natural language too!*
+
+    - id: troubleshoot
+      description: "Troubleshoot common issues"
+      content: |
+        # 🔧 Troubleshooting
+
+        ## "GitHub API calls fail"
+
+        **Symptoms:** Commands like `MT` or `PD` show errors
+
+        **Solutions:**
+        1. Verify GitHub MCP is configured in Claude Desktop
+        2. Check your GitHub token hasn't expired
+        3. Ensure token has `repo` and `issues` scopes
+        4. Try: "Can you call mcp__github__get_me?"
+
+        ## "No PRDs or stories found"
+
+        **Possible causes:**
+        - GitHub integration not enabled in config.yaml
+        - Wrong owner/repo in config
+        - No issues with BMAD labels exist yet
+
+        **Check:** Look at `_bmad/bmm/config.yaml` for correct settings
+
+        ## "Stakeholders not getting notifications"
+
+        **Check:**
+        1. GitHub @mentions: Are usernames correct?
+        2. Slack: Is webhook URL valid?
+        3. Email: Is SMTP configured?
+
+        **Test:** Create a test PRD and open feedback
+
+        ## "Story locks not working"
+
+        **Possible causes:**
+        - GitHub integration disabled
+        - Issue labels not set correctly
+        - Cache out of sync
+
+        **Fix:** Run `SY` (sync) to refresh from GitHub
+
+        ## "Can't find BMAD commands"
+
+        **Solution:**
+        1. Verify BMAD is installed: check for `_bmad/` folder
+        2. If missing, run: `npx bmad-method install`
+        3. Choose your IDE during installation
+        4. Start a fresh chat after installation
+
+        ---
+        *Still stuck? Describe your issue and I'll help debug.*
