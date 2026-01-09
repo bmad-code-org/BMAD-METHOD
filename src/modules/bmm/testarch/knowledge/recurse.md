@@ -267,7 +267,8 @@ test('kafka event processed', async ({ recurse, apiRequest }) => {
   const inventoryResult = await recurse(
     () => apiRequest({ method: 'GET', path: '/api/inventory/ABC123' }),
     (res) => {
-      // Inventory should decrease by 2 after consumer processes event
+      // Assumes test fixture seeds inventory at 100; in production tests,
+      // fetch baseline first and assert: expect(res.body.available).toBe(baseline - 2)
       expect(res.body.available).toBeLessThanOrEqual(98);
     },
     {
@@ -328,22 +329,22 @@ test('end-to-end polling', async ({ apiRequest, recurse }) => {
 
 ### RecurseOptions
 
-| Option     | Type                    | Default     | Description                                    |
-| ---------- | ----------------------- | ----------- | ---------------------------------------------- |
-| `timeout`  | `number`                | `30000`     | Maximum time to wait (ms)                      |
-| `interval` | `number`                | `1000`      | Time between polls (ms)                        |
-| `log`      | `string`                | `undefined` | Message logged on each poll                    |
-| `error`    | `string`                | `undefined` | Custom error message for timeout              |
-| `post`     | `(result: T) => R`      | `undefined` | Callback after successful poll                |
-| `delay`    | `number`                | `0`         | Initial delay before first poll (ms)           |
+| Option     | Type               | Default     | Description                          |
+| ---------- | ------------------ | ----------- | ------------------------------------ |
+| `timeout`  | `number`           | `30000`     | Maximum time to wait (ms)            |
+| `interval` | `number`           | `1000`      | Time between polls (ms)              |
+| `log`      | `string`           | `undefined` | Message logged on each poll          |
+| `error`    | `string`           | `undefined` | Custom error message for timeout     |
+| `post`     | `(result: T) => R` | `undefined` | Callback after successful poll       |
+| `delay`    | `number`           | `0`         | Initial delay before first poll (ms) |
 
 ### Error Types
 
-| Error Type             | When Thrown                              | Properties                                   |
-| ---------------------- | ---------------------------------------- | -------------------------------------------- |
-| `RecurseTimeoutError`  | Predicate never passed within timeout    | `lastCommandValue`, `lastPredicateError`     |
-| `RecurseCommandError`  | Command function threw an error          | `cause` (original error)                     |
-| `RecursePredicateError`| Predicate threw (not assertion failure) | `cause` (original error)                     |
+| Error Type              | When Thrown                             | Properties                               |
+| ----------------------- | --------------------------------------- | ---------------------------------------- |
+| `RecurseTimeoutError`   | Predicate never passed within timeout   | `lastCommandValue`, `lastPredicateError` |
+| `RecurseCommandError`   | Command function threw an error         | `cause` (original error)                 |
+| `RecursePredicateError` | Predicate threw (not assertion failure) | `cause` (original error)                 |
 
 ## Comparison with Vanilla Playwright
 

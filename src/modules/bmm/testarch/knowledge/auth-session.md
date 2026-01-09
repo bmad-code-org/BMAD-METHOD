@@ -247,90 +247,152 @@ test('parallel test 2', async ({ page }) => {
 
 ### Example 6: Pure API Authentication (No Browser)
 
-**Context**: Get auth tokens for API-only tests without any browser context.
+**Context**: Get auth tokens for API-only tests using auth-session disk persistence.
 
 **Implementation**:
 
 ```typescript
-// tests/api/authenticated-api.spec.ts
-import { test, expect } from '@seontechnologies/playwright-utils/fixtures';
+// Step 1: Create API-only auth provider (no browser needed)
+// playwright/support/api-auth-provider.ts
+import { type AuthProvider } from '@seontechnologies/playwright-utils/auth-session';
 
-test.describe('Authenticated API Tests (No Browser)', () => {
-  let authToken: string;
+const apiAuthProvider: AuthProvider = {
+  getEnvironment: (options) => options.environment || 'local',
+  getUserIdentifier: (options) => options.userIdentifier || 'api-user',
 
-  test.beforeAll(async ({ request }) => {
-    // Get token via API login - no browser needed!
+  extractToken: (storageState) => {
+    // Token stored in localStorage format for disk persistence
+    const tokenEntry = storageState.origins?.[0]?.localStorage?.find(
+      (item) => item.name === 'auth_token'
+    );
+    return tokenEntry?.value;
+  },
+
+  isTokenExpired: (storageState) => {
+    const expiryEntry = storageState.origins?.[0]?.localStorage?.find(
+      (item) => item.name === 'token_expiry'
+    );
+    if (!expiryEntry) return true;
+    return Date.now() > parseInt(expiryEntry.value, 10);
+  },
+
+  manageAuthToken: async (request, options) => {
+    const email = process.env.TEST_USER_EMAIL;
+    const password = process.env.TEST_USER_PASSWORD;
+
+    if (!email || !password) {
+      throw new Error('TEST_USER_EMAIL and TEST_USER_PASSWORD must be set');
+    }
+
+    // Pure API login - no browser!
     const response = await request.post('/api/auth/login', {
-      data: {
-        email: process.env.TEST_USER_EMAIL,
-        password: process.env.TEST_USER_PASSWORD,
-      },
+      data: { email, password },
     });
 
-    const { token } = await response.json();
-    authToken = token;
+    if (!response.ok()) {
+      throw new Error(`Auth failed: ${response.status()}`);
+    }
+
+    const { token, expiresIn } = await response.json();
+    const expiryTime = Date.now() + expiresIn * 1000;
+
+    // Return storage state format for disk persistence
+    return {
+      cookies: [],
+      origins: [
+        {
+          origin: process.env.API_BASE_URL || 'http://localhost:3000',
+          localStorage: [
+            { name: 'auth_token', value: token },
+            { name: 'token_expiry', value: String(expiryTime) },
+          ],
+        },
+      ],
+    };
+  },
+};
+
+export default apiAuthProvider;
+
+// Step 2: Create auth fixture
+// playwright/support/fixtures.ts
+import { test as base } from '@playwright/test';
+import { createAuthFixtures, setAuthProvider } from '@seontechnologies/playwright-utils/auth-session';
+import apiAuthProvider from './api-auth-provider';
+
+setAuthProvider(apiAuthProvider);
+
+export const test = base.extend(createAuthFixtures());
+
+// Step 3: Use in tests - token persisted to disk!
+// tests/api/authenticated-api.spec.ts
+import { test } from '../support/fixtures';
+import { expect } from '@playwright/test';
+
+test('should access protected endpoint', async ({ authToken, apiRequest }) => {
+  // authToken is automatically loaded from disk or fetched if expired
+  const { status, body } = await apiRequest({
+    method: 'GET',
+    path: '/api/me',
+    headers: { Authorization: `Bearer ${authToken}` },
   });
 
-  test('should access protected endpoint', async ({ apiRequest }) => {
-    const { status, body } = await apiRequest({
-      method: 'GET',
-      path: '/api/me',
-      headers: {
-        Authorization: `Bearer ${authToken}`,
-      },
-    });
+  expect(status).toBe(200);
+});
 
-    expect(status).toBe(200);
-    expect(body.email).toBe(process.env.TEST_USER_EMAIL);
+test('should create resource with auth', async ({ authToken, apiRequest }) => {
+  const { status, body } = await apiRequest({
+    method: 'POST',
+    path: '/api/orders',
+    headers: { Authorization: `Bearer ${authToken}` },
+    body: { items: [{ productId: 'prod-1', quantity: 2 }] },
   });
 
-  test('should create resource with auth', async ({ apiRequest }) => {
-    const { status, body } = await apiRequest({
-      method: 'POST',
-      path: '/api/orders',
-      headers: {
-        Authorization: `Bearer ${authToken}`,
-      },
-      body: {
-        items: [{ productId: 'prod-1', quantity: 2 }],
-      },
-    });
-
-    expect(status).toBe(201);
-    expect(body.id).toBeDefined();
-  });
+  expect(status).toBe(201);
+  expect(body.id).toBeDefined();
 });
 ```
 
 **Key Points**:
 
-- Token obtained via API login (no browser!)
-- Token reused across all tests in describe block
-- Pure API testing - fast and lightweight
-- No `page` or `context` needed
+- Token persisted to disk (not in-memory) - survives test reruns
+- Provider fetches token once, reuses until expired
+- Pure API authentication - no browser context needed
+- `authToken` fixture handles disk read/write automatically
+- Environment variables validated with clear error message
 
 ### Example 7: Service-to-Service Authentication
 
-**Context**: Test microservice authentication patterns (API keys, service tokens, mTLS simulation).
+**Context**: Test microservice authentication patterns (API keys, service tokens) with proper environment validation.
 
 **Implementation**:
 
 ```typescript
 // tests/api/service-auth.spec.ts
-import { test, expect } from '@seontechnologies/playwright-utils/fixtures';
+import { test as base, expect } from '@playwright/test';
+import { test as apiFixture } from '@seontechnologies/playwright-utils/api-request/fixtures';
+import { mergeTests } from '@playwright/test';
+
+// Validate environment variables at module load
+const SERVICE_API_KEY = process.env.SERVICE_API_KEY;
+const INTERNAL_SERVICE_URL = process.env.INTERNAL_SERVICE_URL;
+
+if (!SERVICE_API_KEY) {
+  throw new Error('SERVICE_API_KEY environment variable is required');
+}
+if (!INTERNAL_SERVICE_URL) {
+  throw new Error('INTERNAL_SERVICE_URL environment variable is required');
+}
+
+const test = mergeTests(base, apiFixture);
 
 test.describe('Service-to-Service Auth', () => {
-  const SERVICE_API_KEY = process.env.SERVICE_API_KEY;
-  const INTERNAL_SERVICE_URL = process.env.INTERNAL_SERVICE_URL;
-
   test('should authenticate with API key', async ({ apiRequest }) => {
     const { status, body } = await apiRequest({
       method: 'GET',
       path: '/internal/health',
       baseUrl: INTERNAL_SERVICE_URL,
-      headers: {
-        'X-API-Key': SERVICE_API_KEY,
-      },
+      headers: { 'X-API-Key': SERVICE_API_KEY },
     });
 
     expect(status).toBe(200);
@@ -342,9 +404,7 @@ test.describe('Service-to-Service Auth', () => {
       method: 'GET',
       path: '/internal/health',
       baseUrl: INTERNAL_SERVICE_URL,
-      headers: {
-        'X-API-Key': 'invalid-key',
-      },
+      headers: { 'X-API-Key': 'invalid-key' },
     });
 
     expect(status).toBe(401);
@@ -352,18 +412,15 @@ test.describe('Service-to-Service Auth', () => {
   });
 
   test('should call downstream service with propagated auth', async ({ apiRequest }) => {
-    // Simulate service calling another service with forwarded auth
     const { status, body } = await apiRequest({
       method: 'POST',
       path: '/internal/aggregate-data',
       baseUrl: INTERNAL_SERVICE_URL,
       headers: {
         'X-API-Key': SERVICE_API_KEY,
-        'X-Request-ID': `test-${Date.now()}`, // Correlation ID
+        'X-Request-ID': `test-${Date.now()}`,
       },
-      body: {
-        sources: ['users', 'orders', 'inventory'],
-      },
+      body: { sources: ['users', 'orders', 'inventory'] },
     });
 
     expect(status).toBe(200);
@@ -374,10 +431,13 @@ test.describe('Service-to-Service Auth', () => {
 
 **Key Points**:
 
-- API key authentication (no OAuth flow)
+- Environment variables validated at module load with clear errors
+- API key authentication (simpler than OAuth - no disk persistence needed)
 - Test internal/service endpoints
 - Validate auth rejection scenarios
 - Correlation ID for request tracing
+
+> **Note**: API keys are typically static secrets that don't expire, so disk persistence (auth-session) isn't needed. For rotating service tokens, use the auth-session provider pattern from Example 6.
 
 ## Custom Auth Provider Pattern
 

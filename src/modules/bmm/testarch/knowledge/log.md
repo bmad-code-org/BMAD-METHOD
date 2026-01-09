@@ -196,6 +196,9 @@ class TodoPage {
 ```typescript
 import { functionTestStep } from '@seontechnologies/playwright-utils';
 
+// Define todo items for the test
+const TODO_ITEMS = ['buy groceries', 'pay bills', 'schedule meeting'];
+
 const createDefaultTodos = functionTestStep('Create default todos', async (page: Page) => {
   await log.info('Creating default todos');
   await log.step('step within a functionWrapper');

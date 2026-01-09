@@ -61,10 +61,11 @@ test('should fetch user data', async ({ apiRequest }) => {
 
 ```typescript
 import { test } from '@seontechnologies/playwright-utils/api-request/fixtures';
+import { z } from 'zod';
 
-test('should validate response schema', async ({ apiRequest }) => {
-  // JSON Schema validation
-  const response = await apiRequest({
+// JSON Schema validation
+test('should validate response schema (JSON Schema)', async ({ apiRequest }) => {
+  const { status, body } = await apiRequest({
     method: 'GET',
     path: '/api/users/123',
     validateSchema: {
@@ -78,22 +79,25 @@ test('should validate response schema', async ({ apiRequest }) => {
     },
   });
   // Throws if schema validation fails
+  expect(status).toBe(200);
+});
 
-  // Zod schema validation
-  import { z } from 'zod';
+// Zod schema validation
+const UserSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  email: z.string().email(),
+});
 
-  const UserSchema = z.object({
-    id: z.string(),
-    name: z.string(),
-    email: z.string().email(),
-  });
-
-  const response = await apiRequest({
+test('should validate response schema (Zod)', async ({ apiRequest }) => {
+  const { status, body } = await apiRequest({
     method: 'GET',
     path: '/api/users/123',
     validateSchema: UserSchema,
   });
   // Response body is type-safe AND validated
+  expect(status).toBe(200);
+  expect(body.email).toContain('@');
 });
 ```
 

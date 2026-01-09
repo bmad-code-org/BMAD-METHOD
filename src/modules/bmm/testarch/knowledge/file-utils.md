@@ -279,37 +279,94 @@ expect(headers).toContain('age');
 
 ### CSV Reader Options
 
-| Option         | Type                     | Default | Description                             |
-| -------------- | ------------------------ | ------- | --------------------------------------- |
-| `filePath`     | `string`                 | -       | Path to CSV file (mutually exclusive)   |
-| `content`      | `string \| Buffer`       | -       | Direct content (mutually exclusive)     |
-| `delimiter`    | `string \| 'auto'`       | `','`   | Value separator, auto-detect if 'auto'  |
-| `encoding`     | `string`                 | `'utf8'`| File encoding                           |
-| `parseHeaders` | `boolean`                | `true`  | Use first row as headers                |
-| `trim`         | `boolean`                | `true`  | Trim whitespace from values             |
+| Option         | Type               | Default  | Description                            |
+| -------------- | ------------------ | -------- | -------------------------------------- |
+| `filePath`     | `string`           | -        | Path to CSV file (mutually exclusive)  |
+| `content`      | `string \| Buffer` | -        | Direct content (mutually exclusive)    |
+| `delimiter`    | `string \| 'auto'` | `','`    | Value separator, auto-detect if 'auto' |
+| `encoding`     | `string`           | `'utf8'` | File encoding                          |
+| `parseHeaders` | `boolean`          | `true`   | Use first row as headers               |
+| `trim`         | `boolean`          | `true`   | Trim whitespace from values            |
 
 ### XLSX Reader Options
 
-| Option      | Type     | Description                          |
-| ----------- | -------- | ------------------------------------ |
-| `filePath`  | `string` | Path to XLSX file                    |
-| `sheetName` | `string` | Name of sheet to set as active       |
+| Option      | Type     | Description                    |
+| ----------- | -------- | ------------------------------ |
+| `filePath`  | `string` | Path to XLSX file              |
+| `sheetName` | `string` | Name of sheet to set as active |
 
 ### PDF Reader Options
 
-| Option       | Type      | Default | Description                      |
-| ------------ | --------- | ------- | -------------------------------- |
-| `filePath`   | `string`  | -       | Path to PDF file (required)      |
-| `mergePages` | `boolean` | `true`  | Merge text from all pages        |
-| `maxPages`   | `number`  | -       | Maximum pages to extract         |
-| `debug`      | `boolean` | `false` | Enable debug logging             |
+| Option       | Type      | Default | Description                 |
+| ------------ | --------- | ------- | --------------------------- |
+| `filePath`   | `string`  | -       | Path to PDF file (required) |
+| `mergePages` | `boolean` | `true`  | Merge text from all pages   |
+| `maxPages`   | `number`  | -       | Maximum pages to extract    |
+| `debug`      | `boolean` | `false` | Enable debug logging        |
 
 ### ZIP Reader Options
 
-| Option          | Type     | Description                            |
-| --------------- | -------- | -------------------------------------- |
-| `filePath`      | `string` | Path to ZIP file                       |
-| `fileToExtract` | `string` | Specific file to extract to Buffer     |
+| Option          | Type     | Description                        |
+| --------------- | -------- | ---------------------------------- |
+| `filePath`      | `string` | Path to ZIP file                   |
+| `fileToExtract` | `string` | Specific file to extract to Buffer |
+
+### Return Values
+
+#### CSV Reader Return Value
+
+```typescript
+{
+  content: {
+    data: Array<Array<string | number>>,  // Parsed rows (excludes header row if parseHeaders: true)
+    headers: string[] | null              // Column headers (null if parseHeaders: false)
+  }
+}
+```
+
+#### XLSX Reader Return Value
+
+```typescript
+{
+  content: {
+    worksheets: Array<{
+      name: string,                       // Sheet name
+      rows: Array<Array<any>>,            // All rows including headers
+      headers?: string[]                  // First row as headers (if present)
+    }>
+  }
+}
+```
+
+#### PDF Reader Return Value
+
+```typescript
+{
+  content: string,                        // Extracted text (merged or per-page based on mergePages)
+  pagesCount: number,                     // Total pages in PDF
+  fileName?: string,                      // Original filename if available
+  info?: Record<string, any>              // PDF metadata (author, title, etc.)
+}
+```
+
+> **Note**: When `mergePages: false`, `content` is an array of strings (one per page). When `maxPages` is set, only that many pages are extracted.
+
+#### ZIP Reader Return Value
+
+```typescript
+{
+  content: {
+    entries: Array<{
+      name: string,                       // File/directory path within ZIP
+      size: number,                       // Uncompressed size in bytes
+      isDirectory: boolean                // True for directories
+    }>,
+    extractedFiles: Record<string, Buffer | string>  // Extracted file contents by path
+  }
+}
+```
+
+> **Note**: When `fileToExtract` is specified, only that file appears in `extractedFiles`.
 
 ## Download Cleanup Pattern
 

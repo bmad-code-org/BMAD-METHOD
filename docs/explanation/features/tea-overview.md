@@ -199,7 +199,7 @@ Epic/Release Gate → TEA: *nfr-assess, *trace Phase 2 (release decision)
 
 TEA uniquely requires:
 
-- **Extensive domain knowledge**: 33 fragments covering test patterns, CI/CD, fixtures, quality practices, and optional playwright-utils integration
+- **Extensive domain knowledge**: 30+ fragments covering test patterns, CI/CD, fixtures, quality practices, and optional playwright-utils integration
 - **Cross-cutting concerns**: Domain-specific testing patterns that apply across all BMad projects (vs project-specific artifacts like PRDs/stories)
 - **Optional integrations**: MCP capabilities (exploratory, verification) and playwright-utils support
 
