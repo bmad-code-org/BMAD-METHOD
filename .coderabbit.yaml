@@ -11,8 +11,8 @@ reviews:
   walkthrough: false
   poem: false
   auto_review:
-    enabled: false
-    drafts: true # Can review drafts. Since it's manually triggered, it's fine.
+    enabled: true
+    drafts: false # Don't review drafts automatically
     auto_incremental_review: false # always review the whole PR, not just new commits
     base_branches:
       - main

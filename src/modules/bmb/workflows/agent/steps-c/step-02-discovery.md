@@ -108,7 +108,9 @@ After documentation, present menu:
 - Clear articulation of value proposition
 - Comprehensive capability mapping
 
-# EXECUTION SEQUENCE
+## MANDATORY SEQUENCE
+
+**CRITICAL:** Follow this sequence exactly. Do not skip, reorder, or improvise unless user explicitly requests a change.
 
 1. **Load Previous Context**
    - Check for brainstormContext file

@@ -39,20 +39,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Determine site URL
-        id: site-url
-        run: |
-          if [ "${{ github.repository }}" = "bmad-code-org/BMAD-METHOD" ]; then
-            echo "url=https://bmad-code-org.github.io/BMAD-METHOD" >> $GITHUB_OUTPUT
-          else
-            OWNER="${{ github.repository_owner }}"
-            REPO="${{ github.event.repository.name }}"
-            echo "url=https://${OWNER}.github.io/${REPO}" >> $GITHUB_OUTPUT
-          fi
-
       - name: Build documentation
         env:
-          SITE_URL: ${{ steps.site-url.outputs.url }}
+          # Override site URL from GitHub repo variable if set
+          # Otherwise, astro.config.mjs will compute from GITHUB_REPOSITORY
+          SITE_URL: ${{ vars.SITE_URL }}
         run: npm run docs:build
 
       - name: Upload artifact

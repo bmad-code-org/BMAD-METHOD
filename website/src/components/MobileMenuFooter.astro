@@ -1,0 +1,53 @@
+---
+import LanguageSelect from 'virtual:starlight/components/LanguageSelect';
+import SocialIcons from 'virtual:starlight/components/SocialIcons';
+import ThemeSelect from 'virtual:starlight/components/ThemeSelect';
+import type { Props } from '@astrojs/starlight/props';
+---
+
+<div class="mobile-preferences sl-flex">
+	<div class="sl-flex social-icons">
+		<SocialIcons {...Astro.props} />
+	</div>
+	<nav class="sl-flex nav-links">
+		<a href={`${import.meta.env.BASE_URL}downloads/`}>Downloads</a>
+	</nav>
+	<ThemeSelect {...Astro.props} />
+	<LanguageSelect {...Astro.props} />
+</div>
+
+<style>
+	.social-icons {
+		gap: 1rem;
+		align-items: center;
+		padding-block: 1rem;
+	}
+	.social-icons:empty {
+		display: none;
+	}
+	.mobile-preferences {
+		justify-content: space-between;
+		flex-wrap: wrap;
+		border-top: 1px solid var(--sl-color-gray-6);
+		column-gap: 1rem;
+		padding: 0.5rem 0;
+		align-items: center;
+	}
+	.nav-links {
+		gap: 1rem;
+		align-items: center;
+	}
+	.nav-links a {
+		color: var(--sl-color-white);
+		text-decoration: none;
+		font-size: 0.875rem;
+		font-weight: 500;
+		padding: 0.5rem 0.75rem;
+		border-radius: 4px;
+		transition: color 0.15s ease, background-color 0.15s ease;
+	}
+	.nav-links a:hover {
+		color: var(--sl-color-accent);
+		background-color: rgba(140, 140, 255, 0.1);
+	}
+</style>

@@ -34,7 +34,9 @@ Load the existing agent file and initialize a validation report to track all fin
 - 💾 Create validation report document
 - 🚫 FORBIDDEN to proceed without user confirmation
 
-## Sequence of Instructions:
+## MANDATORY SEQUENCE
+
+**CRITICAL:** Follow this sequence exactly. Do not skip, reorder, or improvise unless user explicitly requests a change.
 
 ### 1. Load Agent File
 
@@ -68,7 +70,7 @@ Initialize the validation report:
 ```markdown
 ---
 agentName: '{agent-name}'
-agentType: '{simple|expert|module}'
+agentType: '{simple|expert|module}'  # Derived from module + hasSidecar
 agentFile: '{agent-file-path}'
 validationDate: '{YYYY-MM-DD}'
 stepsCompleted:
@@ -80,8 +82,9 @@ stepsCompleted:
 ## Agent Overview
 
 **Name:** {agent-name}
-**Type:** {simple|expert|module}
-**Version:** {version}
+**Type:** {simple|expert|module}  # Derived from: module + hasSidecar
+**module:** {module-value}
+**hasSidecar:** {true|false}
 **File:** {agent-file-path}
 
 ---
