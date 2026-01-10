@@ -3,16 +3,38 @@ title: "Tools and Advanced FAQ"
 description: Common questions about tools, IDEs, and advanced topics in the BMad Method
 ---
 
-
 Quick answers to common questions about tools, IDEs, and advanced topics in the BMad Method.
 
----
+## Questions
+
+**Tools and Technical**
+
+- [Why are my Mermaid diagrams not rendering?](#why-are-my-mermaid-diagrams-not-rendering)
+- [Can I use BMM with GitHub Copilot / Cursor / other AI tools?](#can-i-use-bmm-with-github-copilot--cursor--other-ai-tools)
+- [What IDEs/tools support BMM?](#what-idestools-support-bmm)
+- [Can I customize agents?](#can-i-customize-agents)
+- [What happens to my planning docs after implementation?](#what-happens-to-my-planning-docs-after-implementation)
+- [Can I use BMM for non-software projects?](#can-i-use-bmm-for-non-software-projects)
+
+**Advanced**
+
+- [What if my project grows from Level 1 to Level 3?](#what-if-my-project-grows-from-level-1-to-level-3)
+- [Can I mix greenfield and brownfield approaches?](#can-i-mix-greenfield-and-brownfield-approaches)
+- [How do I handle urgent hotfixes during a sprint?](#how-do-i-handle-urgent-hotfixes-during-a-sprint)
+- [What if I disagree with the workflow's recommendations?](#what-if-i-disagree-with-the-workflows-recommendations)
+- [Can multiple developers work on the same BMM project?](#can-multiple-developers-work-on-the-same-bmm-project)
+- [What is party mode and when should I use it?](#what-is-party-mode-and-when-should-i-use-it)
+
+**Getting Help**
+
+- [Where do I get help if my question isn't answered here?](#where-do-i-get-help-if-my-question-isnt-answered-here)
+- [How do I report a bug or request a feature?](#how-do-i-report-a-bug-or-request-a-feature)
 
 ## Tools and Technical
 
-### Q: Why are my Mermaid diagrams not rendering?
+### Why are my Mermaid diagrams not rendering?
 
-**A:** Common issues:
+Common issues:
 
 1. Missing language tag: Use ` ```mermaid` not just ` ``` `
 2. Syntax errors in diagram (validate at mermaid.live)
@@ -20,9 +42,9 @@ Quick answers to common questions about tools, IDEs, and advanced topics in the 
 
 All BMM docs use valid Mermaid syntax that should render in GitHub, VS Code, and most IDEs.
 
-### Q: Can I use BMM with GitHub Copilot / Cursor / other AI tools?
+### Can I use BMM with GitHub Copilot / Cursor / other AI tools?
 
-**A:** Yes! BMM is complementary. BMM handles:
+Yes! BMM is complementary. BMM handles:
 
 - Project planning and structure
 - Workflow orchestration
@@ -38,13 +60,13 @@ Your AI coding assistant handles:
 
 Use them together for best results.
 
-### Q: What IDEs/tools support BMM?
+### What IDEs/tools support BMM?
 
-**A:** BMM requires tools with **agent mode** and access to **high-quality LLM models** that can load and follow complex workflows, then properly implement code changes.
+BMM requires tools with **agent mode** and access to **high-quality LLM models** that can load and follow complex workflows, then properly implement code changes.
 
 **Recommended Tools:**
 
-- **Claude Code** - Best choice
+- **Claude Code** — Best choice
   - Sonnet 4.5 (excellent workflow following, coding, reasoning)
   - Opus (maximum context, complex planning)
   - Native agent mode designed for BMM workflows
@@ -61,22 +83,22 @@ Use them together for best results.
 
 **What Matters:**
 
-1. **Agent mode** - Can load long workflow instructions and maintain context
-2. **High-quality LLM** - Models ranked high on SWE-bench (coding benchmarks)
-3. **Model selection** - Access to Claude Sonnet 4.5, Opus, or GPT-4o class models
-4. **Context capacity** - Can handle large planning documents and codebases
+1. **Agent mode** — Can load long workflow instructions and maintain context
+2. **High-quality LLM** — Models ranked high on SWE-bench (coding benchmarks)
+3. **Model selection** — Access to Claude Sonnet 4.5, Opus, or GPT-4o class models
+4. **Context capacity** — Can handle large planning documents and codebases
 
 **Why model quality matters:** BMM workflows require LLMs that can follow multi-step processes, maintain context across phases, and implement code that adheres to specifications. Tools with weaker models will struggle with workflow adherence and code quality.
 
-### Q: Can I customize agents?
+### Can I customize agents?
 
-**A:** Yes! Agents are installed as markdown files with XML-style content (optimized for LLMs, readable by any model). Create customization files in `_bmad/_config/agents/[agent-name].customize.yaml` to override default behaviors while keeping core functionality intact. See agent documentation for customization options.
+Yes! Agents are installed as markdown files with XML-style content (optimized for LLMs, readable by any model). Create customization files in `_bmad/_config/agents/[agent-name].customize.yaml` to override default behaviors while keeping core functionality intact. See agent documentation for customization options.
 
-**Note:** While source agents in this repo are YAML, they install as `.md` files with XML-style tags - a format any LLM can read and follow.
+**Note:** While source agents in this repo are YAML, they install as `.md` files with XML-style tags — a format any LLM can read and follow.
 
-### Q: What happens to my planning docs after implementation?
+### What happens to my planning docs after implementation?
 
-**A:** Keep them! They serve as:
+Keep them! They serve as:
 
 - Historical record of decisions
 - Onboarding material for new team members
@@ -85,37 +107,35 @@ Use them together for best results.
 
 For enterprise projects (Level 4), consider archiving completed planning artifacts to keep workspace clean.
 
-### Q: Can I use BMM for non-software projects?
+### Can I use BMM for non-software projects?
 
-**A:** BMM is optimized for software development, but the methodology principles (scale-adaptive planning, just-in-time design, context injection) can apply to other complex project types. You'd need to adapt workflows and agents for your domain.
+BMM is optimized for software development, but the methodology principles (scale-adaptive planning, just-in-time design, context injection) can apply to other complex project types. You'd need to adapt workflows and agents for your domain.
 
----
+## Advanced
 
-## Advanced Questions
+### What if my project grows from Level 1 to Level 3?
 
-### Q: What if my project grows from Level 1 to Level 3?
-
-**A:** Totally fine! When you realize scope has grown:
+Totally fine! When you realize scope has grown:
 
 1. Run create-prd to add product-level planning
 2. Run create-architecture for system design
 3. Use existing tech-spec as input for PRD
 4. Continue with updated level
 
-The system is flexible - growth is expected.
+The system is flexible — growth is expected.
 
-### Q: Can I mix greenfield and brownfield approaches?
+### Can I mix greenfield and brownfield approaches?
 
-**A:** Yes! Common scenario: adding new greenfield feature to brownfield codebase. Approach:
+Yes! Common scenario: adding new greenfield feature to brownfield codebase. Approach:
 
 1. Run document-project for brownfield context
 2. Use greenfield workflows for new feature planning
 3. Explicitly document integration points between new and existing
 4. Test integration thoroughly
 
-### Q: How do I handle urgent hotfixes during a sprint?
+### How do I handle urgent hotfixes during a sprint?
 
-**A:** Use correct-course workflow or just:
+Use correct-course workflow or just:
 
 1. Save your current work state
 2. Load PM agent → quick tech-spec for hotfix
@@ -125,25 +145,25 @@ The system is flexible - growth is expected.
 
 Level 0 Quick Spec Flow is perfect for urgent fixes.
 
-### Q: What if I disagree with the workflow's recommendations?
+### What if I disagree with the workflow's recommendations?
 
-**A:** Workflows are guidance, not enforcement. If a workflow recommends something that doesn't make sense for your context:
+Workflows are guidance, not enforcement. If a workflow recommends something that doesn't make sense for your context:
 
 - Explain your reasoning to the agent
 - Ask for alternative approaches
 - Skip the recommendation if you're confident
 - Document why you deviated (for future reference)
 
-Trust your expertise - BMM supports your decisions.
+Trust your expertise — BMM supports your decisions.
 
-### Q: Can multiple developers work on the same BMM project?
+### Can multiple developers work on the same BMM project?
 
-**A:** Yes! But the paradigm is fundamentally different from traditional agile teams.
+Yes! But the paradigm is fundamentally different from traditional agile teams.
 
 **Key Difference:**
 
-- **Traditional:** Multiple devs work on stories within one epic (months)
-- **Agentic:** Each dev owns complete epics (days)
+- **Traditional** — Multiple devs work on stories within one epic (months)
+- **Agentic** — Each dev owns complete epics (days)
 
 **In traditional agile:** A team of 5 devs might spend 2-3 months on a single epic, with each dev owning different stories.
 
@@ -177,9 +197,9 @@ Trust your expertise - BMM supports your decisions.
 - Coordinate at epic boundaries, not story level
 - Use git submodules for BMM in enterprise settings
 
-### Q: What is party mode and when should I use it?
+### What is party mode and when should I use it?
 
-**A:** Party mode is a unique multi-agent collaboration feature where ALL your installed agents (19+ from BMM, CIS, BMB, custom modules) discuss your challenges together in real-time.
+Party mode is a unique multi-agent collaboration feature where ALL your installed agents (19+ from BMM, CIS, BMB, custom modules) discuss your challenges together in real-time.
 
 **How it works:**
 
@@ -197,9 +217,9 @@ Trust your expertise - BMM supports your decisions.
 
 **Example parties:**
 
-- **Product Strategy:** PM + Innovation Strategist (CIS) + Analyst
-- **Technical Design:** Architect + Creative Problem Solver (CIS) + Game Architect
-- **User Experience:** UX Designer + Design Thinking Coach (CIS) + Storyteller (CIS)
+- **Product Strategy** — PM + Innovation Strategist (CIS) + Analyst
+- **Technical Design** — Architect + Creative Problem Solver (CIS) + Game Architect
+- **User Experience** — UX Designer + Design Thinking Coach (CIS) + Storyteller (CIS)
 
 **Why it's powerful:**
 
@@ -208,26 +228,20 @@ Trust your expertise - BMM supports your decisions.
 - Emergent insights from agent interaction
 - Natural collaboration across modules
 
-**For complete documentation:**
-
-👉 **[Party Mode Guide](../../explanation/features/party-mode.md)** - How it works, when to use it, example compositions, best practices
-
----
+**For complete documentation:** See the [Party Mode Guide](/docs/explanation/features/party-mode.md)
 
 ## Getting Help
 
-### Q: Where do I get help if my question isn't answered here?
-
-**A:**
+### Where do I get help if my question isn't answered here?
 
 1. Search [Complete Documentation](https://github.com/bmad-code-org/BMAD-METHOD/blob/main/README.md) for related topics
 2. Ask in [Discord Community](https://discord.gg/gk8jAdXWmj) (#bmad-method-help)
 3. Open a [GitHub Issue](https://github.com/bmad-code-org/BMAD-METHOD/issues)
 4. Watch [YouTube Tutorials](https://www.youtube.com/@BMadCode)
 
-### Q: How do I report a bug or request a feature?
+### How do I report a bug or request a feature?
 
-**A:** Open a GitHub issue at: <https://github.com/bmad-code-org/BMAD-METHOD/issues>
+Open a GitHub issue at: <https://github.com/bmad-code-org/BMAD-METHOD/issues>
 
 Please include:
 
@@ -235,14 +249,5 @@ Please include:
 - Steps to reproduce (for bugs)
 - Expected vs actual behavior
 - Relevant workflow or agent involved
-
----
-
-## Related Documentation
-
-- [Quick Start Guide](../../tutorials/getting-started/getting-started-bmadv6.md) - Get started with BMM
-- [Glossary](../../reference/glossary/index.md) - Terminology reference
-
----
 
 **Have a question not answered here?** Please [open an issue](https://github.com/bmad-code-org/BMAD-METHOD/issues) or ask in [Discord](https://discord.gg/gk8jAdXWmj) so we can add it!

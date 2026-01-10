@@ -122,6 +122,6 @@ A: Split the story and document the change.
 
 ## Related
 
-- [Create Story](./create-story.md) - Prepare the story first
-- [Run Code Review](./run-code-review.md) - After implementation
-- [Run Sprint Planning](./run-sprint-planning.md) - Sprint organization
+- [Create Story](/docs/how-to/workflows/create-story.md) - Prepare the story first
+- [Run Code Review](/docs/how-to/workflows/run-code-review.md) - After implementation
+- [Run Sprint Planning](/docs/how-to/workflows/run-sprint-planning.md) - Sprint organization

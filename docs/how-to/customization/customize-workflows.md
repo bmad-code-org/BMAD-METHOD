@@ -22,12 +22,12 @@ Workflow customization will allow you to:
 
 While workflow customization is in development, you can:
 
-- **Create Custom Workflows** - Use the BMAD Builder to create entirely new workflows
-- **Customize Agents** - Modify agent behavior using [Agent Customization](./customize-agents.md)
+- **Create Custom Workflows** - Use the BMad Builder to create entirely new workflows
+- **Customize Agents** - Modify agent behavior using [Agent Customization](/docs/how-to/customization/customize-agents.md)
 - **Provide Feedback** - Share your workflow customization needs with the community
 
 ---
 
-**In the meantime:** Learn how to [create custom workflows](../../explanation/bmad-builder/index.md) from scratch.
+**In the meantime:** Learn how to [create custom workflows](/docs/explanation/bmad-builder/index.md) from scratch.
 
-[← Back to Customization](./index.md)
+[← Back to Customization](/docs/how-to/customization/index.md)

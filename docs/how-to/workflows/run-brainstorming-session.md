@@ -89,6 +89,6 @@ After brainstorming:
 
 ## Related
 
-- [Conduct Research](./conduct-research.md) - Validate your ideas
-- [Create Product Brief](./create-product-brief.md) - Capture strategic vision
-- [Create PRD](./create-prd.md) - Move to formal planning
+- [Conduct Research](/docs/how-to/workflows/conduct-research.md) - Validate your ideas
+- [Create Product Brief](/docs/how-to/workflows/create-product-brief.md) - Capture strategic vision
+- [Create PRD](/docs/how-to/workflows/create-prd.md) - Move to formal planning

@@ -256,6 +256,6 @@ When reporting issues, include:
 
 ## Next Steps
 
-- **[Quick Start Guide](../../tutorials/getting-started/quick-start-bmgd.md)** - Getting started
-- **[Workflows Guide](../../reference/workflows/index.md)** - Workflow reference
-- **[Glossary](../../reference/glossary/index.md)** - Terminology
+- **[Quick Start Guide](/docs/tutorials/getting-started/quick-start-bmgd.md)** - Getting started
+- **[Workflows Guide](/docs/reference/workflows/index.md)** - Workflow reference
+- **[Glossary](/docs/reference/glossary/index.md)** - Terminology

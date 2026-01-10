@@ -87,22 +87,115 @@ export default defineConfig({
         {
           label: 'Tutorials',
           collapsed: false,
-          autogenerate: { directory: 'tutorials' },
+          items: [
+            {
+              label: 'Getting Started',
+              autogenerate: { directory: 'tutorials/getting-started' },
+            },
+            {
+              label: 'Advanced',
+              autogenerate: { directory: 'tutorials/advanced' },
+            },
+          ],
         },
         {
           label: 'How-To Guides',
           collapsed: true,
-          autogenerate: { directory: 'how-to' },
+          items: [
+            { slug: 'how-to/get-answers-about-bmad' },
+            {
+              label: 'Installation',
+              autogenerate: { directory: 'how-to/installation' },
+            },
+            {
+              label: 'Workflows',
+              autogenerate: { directory: 'how-to/workflows' },
+            },
+            {
+              label: 'Customization',
+              autogenerate: { directory: 'how-to/customization' },
+            },
+            {
+              label: 'Brownfield Development',
+              autogenerate: { directory: 'how-to/brownfield' },
+            },
+            {
+              label: 'Troubleshooting',
+              autogenerate: { directory: 'how-to/troubleshooting' },
+            },
+          ],
         },
         {
           label: 'Explanation',
           collapsed: true,
-          autogenerate: { directory: 'explanation' },
+          items: [
+            {
+              label: 'Core Concepts',
+              autogenerate: { directory: 'explanation/core-concepts' },
+            },
+            {
+              label: 'Architecture',
+              autogenerate: { directory: 'explanation/architecture' },
+            },
+            {
+              label: 'Philosophy',
+              autogenerate: { directory: 'explanation/philosophy' },
+            },
+            {
+              label: 'Features',
+              autogenerate: { directory: 'explanation/features' },
+            },
+            {
+              label: 'Agents',
+              autogenerate: { directory: 'explanation/agents' },
+            },
+            {
+              label: 'BMM',
+              autogenerate: { directory: 'explanation/bmm' },
+            },
+            {
+              label: 'BMad Builder',
+              autogenerate: { directory: 'explanation/bmad-builder' },
+            },
+            {
+              label: 'Game Development',
+              autogenerate: { directory: 'explanation/game-dev' },
+            },
+            {
+              label: 'Creative Intelligence',
+              autogenerate: { directory: 'explanation/creative-intelligence' },
+            },
+            {
+              label: 'Core Module',
+              autogenerate: { directory: 'explanation/core' },
+            },
+            {
+              label: 'FAQ',
+              autogenerate: { directory: 'explanation/faq' },
+            },
+          ],
         },
         {
           label: 'Reference',
           collapsed: true,
-          autogenerate: { directory: 'reference' },
+          items: [
+            {
+              label: 'Agents',
+              autogenerate: { directory: 'reference/agents' },
+            },
+            {
+              label: 'Workflows',
+              autogenerate: { directory: 'reference/workflows' },
+            },
+            {
+              label: 'Configuration',
+              autogenerate: { directory: 'reference/configuration' },
+            },
+            {
+              label: 'Glossary',
+              autogenerate: { directory: 'reference/glossary' },
+            },
+          ],
         },
       ],
 

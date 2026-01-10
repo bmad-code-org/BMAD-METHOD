@@ -12,7 +12,7 @@ Complete guides for the BMad Game Development Module (BMGD) - AI-powered workflo
 
 **New to BMGD?** Start here:
 
-- **[Quick Start Guide](../../tutorials/getting-started/quick-start-bmgd.md)** - Get started building your first game
+- **[Quick Start Guide](/docs/tutorials/getting-started/quick-start-bmgd.md)** - Get started building your first game
   - Installation and setup
   - Understanding the game development phases
   - Running your first workflows
@@ -24,8 +24,8 @@ Complete guides for the BMad Game Development Module (BMGD) - AI-powered workflo
 
 ## Core Documentation
 
-- **[Game Types Guide](./game-types.md)** - Selecting and using game type templates (24 supported types)
-- **[BMGD vs BMM](./bmgd-vs-bmm.md)** - Understanding the differences
+- **[Game Types Guide](/docs/explanation/game-dev/game-types.md)** - Selecting and using game type templates (24 supported types)
+- **[BMGD vs BMM](/docs/explanation/game-dev/bmgd-vs-bmm.md)** - Understanding the differences
 
 ---
 
@@ -58,7 +58,7 @@ BMGD follows four phases aligned with game development:
 ### I need to...
 
 **Start a new game project**
-→ Start with [Quick Start Guide](../../tutorials/getting-started/quick-start-bmgd.md)
+→ Start with [Quick Start Guide](/docs/tutorials/getting-started/quick-start-bmgd.md)
 → Run `brainstorm-game` for ideation
 → Create a Game Brief with `create-brief`
 
@@ -74,12 +74,12 @@ BMGD follows four phases aligned with game development:
 → Follow the sprint-based development cycle
 
 **Quickly test an idea**
-→ Use [Quick-Flow](../../how-to/workflows/bmgd-quick-flow.md) for rapid prototyping
+→ Use [Quick-Flow](/docs/how-to/workflows/bmgd-quick-flow.md) for rapid prototyping
 
 ---
 
 ## Related
 
-- [Game Types Guide](./game-types.md) - Understanding game type templates
-- [BMGD vs BMM](./bmgd-vs-bmm.md) - Comparison with core method
-- [Glossary](../../reference/glossary/index.md) - Terminology reference
+- [Game Types Guide](/docs/explanation/game-dev/game-types.md) - Understanding game type templates
+- [BMGD vs BMM](/docs/explanation/game-dev/bmgd-vs-bmm.md) - Comparison with core method
+- [Glossary](/docs/reference/glossary/index.md) - Terminology reference

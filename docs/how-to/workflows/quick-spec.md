@@ -1,6 +1,6 @@
 ---
-title: "How to Create a Tech Spec"
-description: How to create a technical specification using Quick Spec Flow
+title: "How to Use Quick Spec"
+description: How to create a technical specification using Quick Spec workflow
 ---
 
 
@@ -35,7 +35,7 @@ Start a fresh chat and load the PM agent (or Quick Flow Solo Dev agent).
 ### 2. Run the Tech Spec Workflow
 
 ```
-*create-tech-spec
+*quick-spec
 ```
 
 Or simply describe what you want to build:
@@ -154,6 +154,6 @@ If your "single change" needs 3+ files, it might be a multi-story feature. Let t
 
 ## Related
 
-- [Quick Flow](../../explanation/features/quick-flow.md) - Understanding Quick Spec Flow
-- [Implement Story](./implement-story.md) - After tech spec
-- [Create PRD](./create-prd.md) - For larger projects needing full BMad Method
+- [Quick Flow](/docs/explanation/features/quick-flow.md) - Understanding Quick Spec Flow
+- [Implement Story](/docs/how-to/workflows/implement-story.md) - After tech spec
+- [Create PRD](/docs/how-to/workflows/create-prd.md) - For larger projects needing full BMad Method

@@ -89,6 +89,6 @@ Consider using Quick Flow or full BMad Method when:
 
 ## Related
 
-- [Brownfield Development Guide](./index.md)
-- [Add Feature to Existing Project](./add-feature-to-existing.md)
-- [Quick Spec Flow](../../explanation/features/quick-flow.md)
+- [Brownfield Development Guide](/docs/how-to/brownfield/index.md)
+- [Add Feature to Existing Project](/docs/how-to/brownfield/add-feature-to-existing.md)
+- [Quick Spec Flow](/docs/explanation/features/quick-flow.md)

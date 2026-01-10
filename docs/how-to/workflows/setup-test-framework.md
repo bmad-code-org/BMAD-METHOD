@@ -108,6 +108,6 @@ Configure in your IDE's MCP settings.
 
 ## Related
 
-- [TEA Overview](../../explanation/features/tea-overview.md) - Understanding the Test Architect
-- [Run Test Design](./run-test-design.md) - Creating test plans
-- [Create Architecture](./create-architecture.md) - Architecture workflow
+- [TEA Overview](/docs/explanation/features/tea-overview.md) - Understanding the Test Architect
+- [Run Test Design](/docs/how-to/workflows/run-test-design.md) - Creating test plans
+- [Create Architecture](/docs/how-to/workflows/create-architecture.md) - Architecture workflow

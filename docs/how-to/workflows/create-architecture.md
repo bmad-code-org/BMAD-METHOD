@@ -141,7 +141,7 @@ After architecture:
 
 ## Related
 
-- [Create PRD](./create-prd.md) - Requirements before architecture
-- [Create Epics and Stories](./create-epics-and-stories.md) - Next step
-- [Run Implementation Readiness](./run-implementation-readiness.md) - Gate check
-- [Why Solutioning Matters](../../explanation/architecture/why-solutioning-matters.md)
+- [Create PRD](/docs/how-to/workflows/create-prd.md) - Requirements before architecture
+- [Create Epics and Stories](/docs/how-to/workflows/create-epics-and-stories.md) - Next step
+- [Run Implementation Readiness](/docs/how-to/workflows/run-implementation-readiness.md) - Gate check
+- [Why Solutioning Matters](/docs/explanation/architecture/why-solutioning-matters.md)

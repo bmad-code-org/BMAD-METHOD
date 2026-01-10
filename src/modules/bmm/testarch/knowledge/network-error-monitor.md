@@ -21,6 +21,19 @@ The `network-error-monitor` provides:
 - **Smart opt-out**: Disable for validation tests expecting errors
 - **Deduplication**: Group repeated errors by pattern
 - **Domino effect prevention**: Limit test failures per error pattern
+- **Respects test status**: Won't suppress actual test failures
+
+## Quick Start
+
+```typescript
+import { test } from '@seontechnologies/playwright-utils/network-error-monitor/fixtures';
+
+// That's it! Network monitoring is automatically enabled
+test('my test', async ({ page }) => {
+  await page.goto('/dashboard');
+  // If any HTTP 4xx/5xx errors occur, the test will fail
+});
+```
 
 ## Pattern Examples
 
@@ -38,8 +51,8 @@ test('should load dashboard', async ({ page }) => {
   await page.goto('/dashboard');
   await expect(page.locator('h1')).toContainText('Dashboard');
 
-  // ✅ Passes if no HTTP errors
-  // ❌ Fails if any 4xx/5xx errors detected with clear message:
+  // Passes if no HTTP errors
+  // Fails if any 4xx/5xx errors detected with clear message:
   //    "Network errors detected: 2 request(s) failed"
   //    Failed requests:
   //      GET 500 https://api.example.com/users
@@ -64,13 +77,17 @@ test('should load dashboard', async ({ page }) => {
 import { test } from '@seontechnologies/playwright-utils/network-error-monitor/fixtures';
 
 // Opt-out with annotation
-test('should show error on invalid input', { annotation: [{ type: 'skipNetworkMonitoring' }] }, async ({ page }) => {
-  await page.goto('/form');
-  await page.click('#submit'); // Triggers 400 error
+test(
+  'should show error on invalid input',
+  { annotation: [{ type: 'skipNetworkMonitoring' }] },
+  async ({ page }) => {
+    await page.goto('/form');
+    await page.click('#submit'); // Triggers 400 error
 
-  // Monitoring disabled - test won't fail on 400
-  await expect(page.getByText('Invalid input')).toBeVisible();
-});
+    // Monitoring disabled - test won't fail on 400
+    await expect(page.getByText('Invalid input')).toBeVisible();
+  }
+);
 
 // Or opt-out entire describe block
 test.describe('error handling', { annotation: [{ type: 'skipNetworkMonitoring' }] }, () => {
@@ -91,7 +108,139 @@ test.describe('error handling', { annotation: [{ type: 'skipNetworkMonitoring' }
 - Monitoring still active for other tests
 - Perfect for intentional error scenarios
 
-### Example 3: Integration with Merged Fixtures
+### Example 3: Respects Test Status
+
+**Context**: The monitor respects final test statuses to avoid suppressing important test outcomes.
+
+**Behavior by test status:**
+
+- **`failed`**: Network errors logged as additional context, not thrown
+- **`timedOut`**: Network errors logged as additional context
+- **`skipped`**: Network errors logged, skip status preserved
+- **`interrupted`**: Network errors logged, interrupted status preserved
+- **`passed`**: Network errors throw and fail the test
+
+**Example with test.skip():**
+
+```typescript
+test('feature gated test', async ({ page }) => {
+  const featureEnabled = await checkFeatureFlag();
+  test.skip(!featureEnabled, 'Feature not enabled');
+  // If skipped, network errors won't turn this into a failure
+  await page.goto('/new-feature');
+});
+```
+
+### Example 4: Excluding Legitimate Errors
+
+**Context**: Some endpoints legitimately return 4xx/5xx responses.
+
+**Implementation**:
+
+```typescript
+import { test as base } from '@playwright/test';
+import { createNetworkErrorMonitorFixture } from '@seontechnologies/playwright-utils/network-error-monitor/fixtures';
+
+export const test = base.extend(
+  createNetworkErrorMonitorFixture({
+    excludePatterns: [
+      /email-cluster\/ml-app\/has-active-run/, // ML service returns 404 when no active run
+      /idv\/session-templates\/list/, // IDV service returns 404 when not configured
+      /sentry\.io\/api/, // External Sentry errors should not fail tests
+    ],
+  })
+);
+```
+
+**For merged fixtures:**
+
+```typescript
+import { test as base, mergeTests } from '@playwright/test';
+import { createNetworkErrorMonitorFixture } from '@seontechnologies/playwright-utils/network-error-monitor/fixtures';
+
+const networkErrorMonitor = base.extend(
+  createNetworkErrorMonitorFixture({
+    excludePatterns: [/analytics\.google\.com/, /cdn\.example\.com/],
+  })
+);
+
+export const test = mergeTests(authFixture, networkErrorMonitor);
+```
+
+### Example 5: Preventing Domino Effect
+
+**Context**: One failing endpoint shouldn't fail all tests.
+
+**Implementation**:
+
+```typescript
+import { test as base } from '@playwright/test';
+import { createNetworkErrorMonitorFixture } from '@seontechnologies/playwright-utils/network-error-monitor/fixtures';
+
+const networkErrorMonitor = base.extend(
+  createNetworkErrorMonitorFixture({
+    excludePatterns: [], // Required when using maxTestsPerError
+    maxTestsPerError: 1, // Only first test fails per error pattern, rest just log
+  })
+);
+```
+
+**How it works:**
+
+When `/api/v2/case-management/cases` returns 500:
+
+- **First test** encountering this error: **FAILS** with clear error message
+- **Subsequent tests** encountering same error: **PASSES** but logs warning
+
+Error patterns are grouped by `method + status + base path`:
+
+- `GET /api/v2/case-management/cases/123` -> Pattern: `GET:500:/api/v2/case-management`
+- `GET /api/v2/case-management/quota` -> Pattern: `GET:500:/api/v2/case-management` (same group!)
+- `POST /api/v2/case-management/cases` -> Pattern: `POST:500:/api/v2/case-management` (different group!)
+
+**Why include HTTP method?** A GET 404 vs POST 404 might represent different issues:
+
+- `GET 404 /api/users/123` -> User not found (expected in some tests)
+- `POST 404 /api/users` -> Endpoint doesn't exist (critical error)
+
+**Output for subsequent tests:**
+
+```
+Warning: Network errors detected but not failing test (maxTestsPerError limit reached):
+  GET 500 https://api.example.com/api/v2/case-management/cases
+```
+
+**Recommended configuration:**
+
+```typescript
+createNetworkErrorMonitorFixture({
+  excludePatterns: [...], // Required - known broken endpoints (can be empty [])
+  maxTestsPerError: 1     // Stop domino effect (requires excludePatterns)
+})
+```
+
+**Understanding worker-level state:**
+
+Error pattern counts are stored in worker-level global state:
+
+```typescript
+// test-file-1.spec.ts (runs in Worker 1)
+test('test A', () => {
+  /* triggers GET:500:/api/v2/cases */
+}); // FAILS
+
+// test-file-2.spec.ts (runs later in Worker 1)
+test('test B', () => {
+  /* triggers GET:500:/api/v2/cases */
+}); // PASSES (limit reached)
+
+// test-file-3.spec.ts (runs in Worker 2 - different worker)
+test('test C', () => {
+  /* triggers GET:500:/api/v2/cases */
+}); // FAILS (fresh worker)
+```
+
+### Example 6: Integration with Merged Fixtures
 
 **Context**: Combine network-error-monitor with other utilities.
 
@@ -105,7 +254,7 @@ import { test as networkErrorMonitorFixture } from '@seontechnologies/playwright
 
 export const test = mergeTests(
   authFixture,
-  networkErrorMonitorFixture,
+  networkErrorMonitorFixture
   // Add other fixtures
 );
 
@@ -127,110 +276,94 @@ test('authenticated with monitoring', async ({ page, authToken }) => {
 - Monitoring active automatically
 - No extra setup needed
 
-### Example 4: Domino Effect Prevention
-
-**Context**: One failing endpoint shouldn't fail all tests.
-
-**Implementation**:
-
-```typescript
-// Configuration (internal to utility)
-const config = {
-  maxTestsPerError: 3, // Max 3 tests fail per unique error pattern
-};
-
-// Scenario:
-// Test 1: GET /api/broken → 500 error → Test fails ❌
-// Test 2: GET /api/broken → 500 error → Test fails ❌
-// Test 3: GET /api/broken → 500 error → Test fails ❌
-// Test 4: GET /api/broken → 500 error → Test passes ⚠️ (limit reached, warning logged)
-// Test 5: Different error pattern → Test fails ❌ (new pattern, counter resets)
-```
-
-**Key Points**:
-
-- Limits cascading failures
-- Groups errors by URL + status code pattern
-- Warns when limit reached
-- Prevents flaky backend from failing entire suite
-
-### Example 5: Artifact Structure
+### Example 7: Artifact Structure
 
 **Context**: Debugging failed tests with network error artifacts.
-
-**Implementation**:
 
 When test fails due to network errors, artifact attached:
 
 ```json
-// test-results/my-test/network-errors.json
-{
-  "errors": [
-    {
-      "url": "https://api.example.com/users",
-      "method": "GET",
-      "status": 500,
-      "statusText": "Internal Server Error",
-      "timestamp": "2024-08-13T10:30:45.123Z"
-    },
-    {
-      "url": "https://api.example.com/metrics",
-      "method": "POST",
-      "status": 503,
-      "statusText": "Service Unavailable",
-      "timestamp": "2024-08-13T10:30:46.456Z"
-    }
-  ],
-  "summary": {
-    "totalErrors": 2,
-    "uniquePatterns": 2
+[
+  {
+    "url": "https://api.example.com/users",
+    "status": 500,
+    "method": "GET",
+    "timestamp": "2025-11-10T12:34:56.789Z"
+  },
+  {
+    "url": "https://api.example.com/metrics",
+    "status": 503,
+    "method": "POST",
+    "timestamp": "2025-11-10T12:34:57.123Z"
   }
-}
+]
 ```
 
-**Key Points**:
+## Implementation Details
 
-- JSON artifact per failed test
-- Full error details (URL, method, status, timestamp)
-- Summary statistics
-- Easy debugging with structured data
+### How It Works
 
-## Comparison with Manual Error Checks
+1. **Fixture Extension**: Uses Playwright's `base.extend()` with `auto: true`
+2. **Response Listener**: Attaches `page.on('response')` listener at test start
+3. **Multi-Page Monitoring**: Automatically monitors popups and new tabs via `context.on('page')`
+4. **Error Collection**: Captures 4xx/5xx responses, checking exclusion patterns
+5. **Try/Finally**: Ensures error processing runs even if test fails early
+6. **Status Check**: Only throws errors if test hasn't already reached final status
+7. **Artifact**: Attaches JSON file to test report for debugging
 
-| Manual Approach                                        | network-error-monitor      |
-| ------------------------------------------------------ | -------------------------- |
-| `page.on('response', resp => { if (!resp.ok()) ... })` | Auto-enabled, zero setup   |
-| Check each response manually                           | Automatic for all requests |
-| Custom error tracking logic                            | Built-in deduplication     |
-| No structured artifacts                                | JSON artifacts attached    |
-| Easy to forget                                         | Never miss a backend error |
+### Performance
+
+The monitor has minimal performance impact:
+
+- Event listener overhead: ~0.1ms per response
+- Memory: ~200 bytes per unique error
+- No network delay (observes responses, doesn't intercept them)
+
+## Comparison with Alternatives
+
+| Approach                    | Network Error Monitor | Manual afterEach      |
+| --------------------------- | --------------------- | --------------------- |
+| **Setup Required**          | Zero (auto-enabled)   | Every test file       |
+| **Catches Silent Failures** | Yes                   | Yes (if configured)   |
+| **Structured Artifacts**    | JSON attached         | Custom impl           |
+| **Test Failure Safety**     | Try/finally           | afterEach may not run |
+| **Opt-Out Mechanism**       | Annotation            | Custom logic          |
+| **Status Aware**            | Respects skip/failed  | No                    |
 
 ## When to Use
 
 **Auto-enabled for:**
 
-- ✅ All E2E tests
-- ✅ Integration tests
-- ✅ Any test hitting real APIs
+- All E2E tests
+- Integration tests
+- Any test hitting real APIs
 
 **Opt-out for:**
 
-- ❌ Validation tests (expecting 4xx)
-- ❌ Error handling tests (expecting 5xx)
-- ❌ Offline tests (network-recorder playback)
+- Validation tests (expecting 4xx)
+- Error handling tests (expecting 5xx)
+- Offline tests (network-recorder playback)
 
-## Integration with Framework Setup
+## Troubleshooting
 
-In `*framework` workflow, mention network-error-monitor:
+### Test fails with network errors but I don't see them in my app
+
+The errors might be happening during page load or in background polling. Check the `network-errors.json` artifact in your test report for full details including timestamps.
+
+### False positives from external services
+
+Configure exclusion patterns as shown in the "Excluding Legitimate Errors" section above.
+
+### Network errors not being caught
+
+Ensure you're importing the test from the correct fixture:
 
 ```typescript
-// Add to merged-fixtures.ts
-import { test as networkErrorMonitorFixture } from '@seontechnologies/playwright-utils/network-error-monitor/fixtures';
+// Correct
+import { test } from '@seontechnologies/playwright-utils/network-error-monitor/fixtures';
 
-export const test = mergeTests(
-  // ... other fixtures
-  networkErrorMonitorFixture,
-);
+// Wrong - this won't have network monitoring
+import { test } from '@playwright/test';
 ```
 
 ## Related Fragments
@@ -241,14 +374,14 @@ export const test = mergeTests(
 
 ## Anti-Patterns
 
-**❌ Opting out of monitoring globally:**
+**DON'T opt out of monitoring globally:**
 
 ```typescript
 // Every test skips monitoring
 test.use({ annotation: [{ type: 'skipNetworkMonitoring' }] });
 ```
 
-**✅ Opt-out only for specific error tests:**
+**DO opt-out only for specific error tests:**
 
 ```typescript
 test.describe('error scenarios', { annotation: [{ type: 'skipNetworkMonitoring' }] }, () => {
@@ -256,17 +389,17 @@ test.describe('error scenarios', { annotation: [{ type: 'skipNetworkMonitoring' 
 });
 ```
 
-**❌ Ignoring network error artifacts:**
+**DON'T ignore network error artifacts:**
 
 ```typescript
 // Test fails, artifact shows 500 errors
 // Developer: "Works on my machine" ¯\_(ツ)_/¯
 ```
 
-**✅ Check artifacts for root cause:**
+**DO check artifacts for root cause:**
 
 ```typescript
 // Read network-errors.json artifact
-// Identify failing endpoint: GET /api/users → 500
+// Identify failing endpoint: GET /api/users -> 500
 // Fix backend issue before merging
 ```

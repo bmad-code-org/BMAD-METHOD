@@ -1,10 +1,18 @@
 const chalk = require('chalk');
-const inquirer = require('inquirer').default || require('inquirer');
 const path = require('node:path');
 const os = require('node:os');
 const fs = require('fs-extra');
 const { CLIUtils } = require('./cli-utils');
 const { CustomHandler } = require('../installers/lib/custom/handler');
+
+// Lazy-load inquirer (ESM module) to avoid ERR_REQUIRE_ESM
+let _inquirer = null;
+async function getInquirer() {
+  if (!_inquirer) {
+    _inquirer = (await import('inquirer')).default;
+  }
+  return _inquirer;
+}
 
 /**
  * UI utilities for the installer
@@ -15,6 +23,7 @@ class UI {
    * @returns {Object} Installation configuration
    */
   async promptInstall() {
+    const inquirer = await getInquirer();
     CLIUtils.displayLogo();
 
     // Display version-specific start message from install-messages.yaml
@@ -450,6 +459,7 @@ class UI {
    * @returns {Object} Tool configuration
    */
   async promptToolSelection(projectDir, selectedModules) {
+    const inquirer = await getInquirer();
     // Check for existing configured IDEs - use findBmadDir to detect custom folder names
     const { Detector } = require('../installers/lib/core/detector');
     const { Installer } = require('../installers/lib/core/installer');
@@ -582,6 +592,7 @@ class UI {
    * @returns {Object} Update configuration
    */
   async promptUpdate() {
+    const inquirer = await getInquirer();
     const answers = await inquirer.prompt([
       {
         type: 'confirm',
@@ -606,6 +617,7 @@ class UI {
    * @returns {Array} Selected modules
    */
   async promptModules(modules) {
+    const inquirer = await getInquirer();
     const choices = modules.map((mod) => ({
       name: `${mod.name} - ${mod.description}`,
       value: mod.id,
@@ -637,6 +649,7 @@ class UI {
    * @returns {boolean} User confirmation
    */
   async confirm(message, defaultValue = false) {
+    const inquirer = await getInquirer();
     const { confirmed } = await inquirer.prompt([
       {
         type: 'confirm',
@@ -743,6 +756,7 @@ class UI {
    * @returns {Array} Module choices for inquirer
    */
   async getModuleChoices(installedModuleIds, customContentConfig = null) {
+    const inquirer = await getInquirer();
     const moduleChoices = [];
     const isNewInstallation = installedModuleIds.size === 0;
 
@@ -823,6 +837,7 @@ class UI {
    * @returns {Array} Selected module IDs
    */
   async selectModules(moduleChoices, defaultSelections = []) {
+    const inquirer = await getInquirer();
     const moduleAnswer = await inquirer.prompt([
       {
         type: 'checkbox',
@@ -843,6 +858,7 @@ class UI {
    * @returns {Object} Directory answer from inquirer
    */
   async promptForDirectory() {
+    const inquirer = await getInquirer();
     return await inquirer.prompt([
       {
         type: 'input',
@@ -899,6 +915,7 @@ class UI {
    * @returns {boolean} Whether user confirmed
    */
   async confirmDirectory(directory) {
+    const inquirer = await getInquirer();
     const dirExists = await fs.pathExists(directory);
 
     if (dirExists) {
@@ -1085,6 +1102,7 @@ class UI {
    * - GitHub Issue: paulpreibisch/AgentVibes#36
    */
   async promptAgentVibes(projectDir) {
+    const inquirer = await getInquirer();
     CLIUtils.displaySection('🎤 Voice Features', 'Enable TTS for multi-agent conversations');
 
     // Check if AgentVibes is already installed
@@ -1235,6 +1253,7 @@ class UI {
    * @returns {Object} Custom content configuration
    */
   async promptCustomContentSource() {
+    const inquirer = await getInquirer();
     const customContentConfig = { hasCustomContent: true, sources: [] };
 
     // Keep asking for more sources until user is done
@@ -1372,6 +1391,7 @@ class UI {
    * @returns {Object} Result with selected custom modules and custom content config
    */
   async handleCustomModulesInModifyFlow(directory, selectedModules) {
+    const inquirer = await getInquirer();
     // Get existing installation to find custom modules
     const { existingInstall } = await this.getExistingInstallation(directory);
 
@@ -1566,6 +1586,7 @@ class UI {
    * @returns {Promise<boolean>} True if user wants to proceed, false if they cancel
    */
   async showOldAlphaVersionWarning(installedVersion, currentVersion, bmadFolderName) {
+    const inquirer = await getInquirer();
     const versionInfo = this.checkAlphaVersionAge(installedVersion, currentVersion);
 
     // Also warn if version is unknown or can't be parsed (legacy/unsupported)

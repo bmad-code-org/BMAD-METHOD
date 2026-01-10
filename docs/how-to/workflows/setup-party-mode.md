@@ -4,7 +4,7 @@ description: How to set up and use Party Mode for multi-agent collaboration
 ---
 
 
-Use Party Mode to orchestrate dynamic multi-agent conversations with your entire BMAD team.
+Use Party Mode to orchestrate dynamic multi-agent conversations with your entire BMad team.
 
 ---
 
@@ -113,5 +113,5 @@ Type "exit" or "done" to conclude the session. Participating agents will say per
 
 ## Related
 
-- [Party Mode](../../explanation/features/party-mode.md) - Understanding Party Mode
-- [Agent Roles](../../explanation/core-concepts/agent-roles.md) - Available agents
+- [Party Mode](/docs/explanation/features/party-mode.md) - Understanding Party Mode
+- [Agent Roles](/docs/explanation/core-concepts/agent-roles.md) - Available agents

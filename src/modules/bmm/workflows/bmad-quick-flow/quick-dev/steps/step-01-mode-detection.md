@@ -95,7 +95,7 @@ Present choice:
 **[e] Execute directly** - Start now
 ```
 
-- **[t]:** Direct user to `{create_tech_spec_workflow}`. **EXIT Quick Dev.**
+- **[t]:** Direct user to `{quick_spec_workflow}`. **EXIT Quick Dev.**
 - **[e]:** Ask for any additional guidance, then **NEXT:** Load `step-02-context-gathering.md`
 
 ### Escalation Triggered - Level 0-2
@@ -108,7 +108,7 @@ This looks like a focused feature with multiple components.
 **[e] Execute directly**
 ```
 
-- **[t]:** Direct to `{create_tech_spec_workflow}`. **EXIT Quick Dev.**
+- **[t]:** Direct to `{quick_spec_workflow}`. **EXIT Quick Dev.**
 - **[w]:** Direct to `{workflow_init}`. **EXIT Quick Dev.**
 - **[e]:** Ask for guidance, then **NEXT:** Load `step-02-context-gathering.md`
 
@@ -123,7 +123,7 @@ This sounds like platform/system work.
 ```
 
 - **[w]:** Direct to `{workflow_init}`. **EXIT Quick Dev.**
-- **[t]:** Direct to `{create_tech_spec_workflow}`. **EXIT Quick Dev.**
+- **[t]:** Direct to `{quick_spec_workflow}`. **EXIT Quick Dev.**
 - **[e]:** Ask for guidance, then **NEXT:** Load `step-02-context-gathering.md`
 
 ---

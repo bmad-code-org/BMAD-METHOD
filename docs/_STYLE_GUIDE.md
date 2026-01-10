@@ -1,6 +1,6 @@
 # Documentation Style Guide
 
-Internal guidelines for maintaining consistent, high-quality documentation across the BMAD Method project. This document is not included in the Starlight sidebar — it's for contributors and maintainers, not end users.
+Internal guidelines for maintaining consistent, high-quality documentation across the BMad Method project. This document is not included in the Starlight sidebar — it's for contributors and maintainers, not end users.
 
 ## Quick Principles
 
@@ -8,6 +8,27 @@ Internal guidelines for maintaining consistent, high-quality documentation acros
 2. **Consistent structure** — Follow established patterns so readers know what to expect
 3. **Strategic visuals** — Use admonitions, tables, and diagrams purposefully
 4. **Scannable content** — Headers, lists, and callouts help readers find what they need
+
+## Validation Steps
+
+Before submitting documentation changes, run these checks from the repo root:
+
+1. **Fix link format** — Convert relative links (`./`, `../`) to site-relative paths (`/path/`)
+   ```bash
+   npm run docs:fix-links            # Preview changes
+   npm run docs:fix-links -- --write # Apply changes
+   ```
+
+2. **Validate links** — Check all links point to existing files
+   ```bash
+   npm run docs:validate-links            # Preview issues
+   npm run docs:validate-links -- --write # Auto-fix where possible
+   ```
+
+3. **Build the site** — Verify no build errors
+   ```bash
+   npm run docs:build
+   ```
 
 ## Tutorial Structure
 
@@ -223,15 +244,32 @@ Instead, break into separate sections or use an admonition for context.
 
 ## FAQ Sections
 
-Format as bold question followed by answer paragraph:
+Use a TOC with jump links, `###` headers for questions, and direct answers:
 
 ```md
-**Do I always need architecture?**
+## Questions
+
+- [Do I always need architecture?](#do-i-always-need-architecture)
+- [Can I change my plan later?](#can-i-change-my-plan-later)
+
+### Do I always need architecture?
+
 Only for BMad Method and Enterprise tracks. Quick Flow skips to implementation.
 
-**Can I change my plan later?**
+### Can I change my plan later?
+
 Yes. The SM agent has a `correct-course` workflow for handling scope changes.
+
+**Have a question not answered here?** Please [open an issue](...) or ask in [Discord](...) so we can add it!
 ```
+
+### FAQ Guidelines
+
+- **TOC at top** — Jump links under `## Questions` for quick navigation
+- **`###` headers** — Questions are scannable and linkable (no `Q:` prefix)
+- **Direct answers** — No `**A:**` prefix, just the answer
+- **No "Related Documentation"** — Sidebar handles navigation; avoid repetitive links
+- **End with CTA** — "Have a question not answered here?" with issue/Discord links
 
 ## Folder Structure Blocks
 

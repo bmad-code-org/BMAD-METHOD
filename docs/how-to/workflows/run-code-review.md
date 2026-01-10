@@ -136,6 +136,6 @@ Every story goes through code-review before being marked done. This ensures:
 
 ## Related
 
-- [Implement Story](./implement-story.md) - Before code review
-- [Create Story](./create-story.md) - Move to next story
-- [Run Sprint Planning](./run-sprint-planning.md) - Sprint organization
+- [Implement Story](/docs/how-to/workflows/implement-story.md) - Before code review
+- [Create Story](/docs/how-to/workflows/create-story.md) - Move to next story
+- [Run Sprint Planning](/docs/how-to/workflows/run-sprint-planning.md) - Sprint organization

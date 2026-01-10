@@ -22,13 +22,13 @@ Always installed, provides shared functionality:
 - Core workflows (Party Mode, Advanced Elicitation, Brainstorming)
 - Common tasks (document indexing, sharding, review)
 
-### BMAD Method (BMM)
+### BMad Method (BMM)
 Software and game development:
 - Project planning workflows
 - Implementation agents (Dev, PM, QA, Scrum Master)
 - Testing and architecture guidance
 
-### BMAD Builder (BMB)
+### BMad Builder (BMB)
 Create custom solutions:
 - Agent creation workflows
 - Workflow authoring tools
@@ -40,7 +40,7 @@ Innovation and creativity:
 - Innovation strategy workflows
 - Storytelling and ideation
 
-### BMAD Game Dev (BMGD)
+### BMad Game Dev (BMGD)
 Game development specialization:
 - Game design workflows
 - Narrative development
@@ -53,8 +53,8 @@ Installed modules follow this structure:
 ```
 _bmad/
 ├── core/           # Always present
-├── bmm/            # BMAD Method (if installed)
-├── bmb/            # BMAD Builder (if installed)
+├── bmm/            # BMad Method (if installed)
+├── bmb/            # BMad Builder (if installed)
 ├── cis/            # Creative Intelligence (if installed)
 └── bmgd/           # Game Dev (if installed)
 ```
@@ -70,10 +70,10 @@ Custom modules are installed the same way as official modules.
 
 ## Installing Modules
 
-During BMAD installation, you choose which modules to install. You can also add or remove modules later by re-running the installer.
+During BMad installation, you choose which modules to install. You can also add or remove modules later by re-running the installer.
 
-See [Installation Guide](../../how-to/installation/index.md) for details.
+See [Installation Guide](/docs/how-to/installation/index.md) for details.
 
 ---
 
-**Next:** Read the [Installation Guide](../../how-to/installation/index.md) to set up BMAD with the modules you need.
+**Next:** Read the [Installation Guide](/docs/how-to/installation/index.md) to set up BMad with the modules you need.

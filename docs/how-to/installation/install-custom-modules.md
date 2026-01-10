@@ -3,15 +3,15 @@ title: "Custom Content Installation"
 ---
 
 
-This guide explains how to create and install custom BMAD content including agents, workflows, and modules. Custom content extends BMAD's functionality with specialized tools and workflows that can be shared across projects or teams.
+This guide explains how to create and install custom BMad content including agents, workflows, and modules. Custom content extends BMad's functionality with specialized tools and workflows that can be shared across projects or teams.
 
-For detailed information about the different types of custom content available, see [Custom Content Types](../../explanation/bmad-builder/custom-content-types.md).
+For detailed information about the different types of custom content available, see [Custom Content Types](/docs/explanation/bmad-builder/custom-content-types.md).
 
 You can find example custom modules in the `samples/sample-custom-modules/` folder of the repository. Download either of the sample folders to try them out.
 
 ## Content Types Overview
 
-BMAD Core supports several categories of custom content:
+BMad Core supports several categories of custom content:
 
 - Custom Stand Alone Modules
 - Custom Add On Modules
@@ -100,17 +100,17 @@ Ensure your content follows the proper conventions and includes a `module.yaml` 
 
 ### New Project Installation
 
-When setting up a new BMAD project:
+When setting up a new BMad project:
 
 1. The installer will prompt: `Would you like to install a local custom module (this includes custom agents and workflows also)? (y/N)`
 2. Select 'y' to specify the path to your module folder containing `module.yaml`
 
 ### Existing Project Modification
 
-To add custom content to an existing BMAD project:
+To add custom content to an existing BMad project:
 
 1. Run the installer against your project location
-2. Select `Modify BMAD Installation`
+2. Select `Modify BMad Installation`
 3. Choose the option to add, modify, or update custom modules
 
 ### Upcoming Features
@@ -120,7 +120,7 @@ To add custom content to an existing BMAD project:
 
 ## Quick Updates
 
-When updates to BMAD Core or core modules (BMM, CIS, etc.) become available, the quick update process will:
+When updates to BMad Core or core modules (BMM, CIS, etc.) become available, the quick update process will:
 
 1. Apply available updates to core modules
 2. Recompile all agents with customizations from the `_config/agents` folder

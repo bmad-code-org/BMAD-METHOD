@@ -21,6 +21,20 @@ The `log` utility provides:
 - **Multiple levels**: info, step, success, warning, error, debug
 - **Optional console**: Can disable console output but keep report logs
 
+## Quick Start
+
+```typescript
+import { log } from '@seontechnologies/playwright-utils';
+
+// Basic logging
+await log.info('Starting test');
+await log.step('Test step shown in Playwright UI');
+await log.success('Operation completed');
+await log.warning('Something to note');
+await log.error('Something went wrong');
+await log.debug('Debug information');
+```
+
 ## Pattern Examples
 
 ### Example 1: Basic Logging Levels
@@ -143,41 +157,105 @@ test('organized with steps', async ({ page, apiRequest }) => {
 - Steps visible in Playwright trace viewer
 - Better debugging when tests fail
 
-### Example 4: Conditional Logging
+### Example 4: Test Step Decorators
 
-**Context**: Log different messages based on environment or test conditions.
+**Context**: Create collapsible test steps in Playwright UI using decorators.
+
+**Page Object Methods with @methodTestStep:**
+
+```typescript
+import { methodTestStep } from '@seontechnologies/playwright-utils';
+
+class TodoPage {
+  constructor(private page: Page) {
+    this.name = 'TodoPage';
+  }
+
+  readonly name: string;
+
+  @methodTestStep('Add todo item')
+  async addTodo(text: string) {
+    await log.info(`Adding todo: ${text}`);
+    const newTodo = this.page.getByPlaceholder('What needs to be done?');
+    await newTodo.fill(text);
+    await newTodo.press('Enter');
+    await log.step('step within a decorator');
+    await log.success(`Added todo: ${text}`);
+  }
+
+  @methodTestStep('Get all todos')
+  async getTodos() {
+    await log.info('Getting all todos');
+    return this.page.getByTestId('todo-title');
+  }
+}
+```
+
+**Function Helpers with functionTestStep:**
+
+```typescript
+import { functionTestStep } from '@seontechnologies/playwright-utils';
+
+// Define todo items for the test
+const TODO_ITEMS = ['buy groceries', 'pay bills', 'schedule meeting'];
+
+const createDefaultTodos = functionTestStep('Create default todos', async (page: Page) => {
+  await log.info('Creating default todos');
+  await log.step('step within a functionWrapper');
+  const todoPage = new TodoPage(page);
+
+  for (const item of TODO_ITEMS) {
+    await todoPage.addTodo(item);
+  }
+
+  await log.success('Created all default todos');
+});
+
+const checkNumberOfTodosInLocalStorage = functionTestStep(
+  'Check total todos count fn-step',
+  async (page: Page, expected: number) => {
+    await log.info(`Verifying todo count: ${expected}`);
+    const result = await page.waitForFunction(
+      (e) => JSON.parse(localStorage['react-todos']).length === e,
+      expected
+    );
+    await log.success(`Verified todo count: ${expected}`);
+    return result;
+  }
+);
+```
+
+### Example 5: File Logging
+
+**Context**: Enable file logging for persistent logs.
 
 **Implementation**:
 
 ```typescript
-test('conditional logging', async ({ page }) => {
-  const isCI = process.env.CI === 'true';
+// playwright/support/fixtures.ts
+import { test as base } from '@playwright/test';
+import { log, captureTestContext } from '@seontechnologies/playwright-utils';
 
-  if (isCI) {
-    await log.info('Running in CI environment');
-  } else {
-    await log.debug('Running locally');
-  }
+// Configure file logging globally
+log.configure({
+  fileLogging: {
+    enabled: true,
+    outputDir: 'playwright-logs/organized-logs',
+    forceConsolidated: false, // One file per test
+  },
+});
 
-  const isKafkaWorking = await checkKafkaHealth();
-
-  if (!isKafkaWorking) {
-    await log.warning('Kafka unavailable - skipping event checks');
-  } else {
-    await log.step('Verifying Kafka events');
-    // ... event verification
-  }
+// Extend base test with file logging context capture
+export const test = base.extend({
+  // Auto-capture test context for file logging
+  autoTestContext: [async ({}, use, testInfo) => {
+    captureTestContext(testInfo);
+    await use(undefined);
+  }, { auto: true }],
 });
 ```
 
-**Key Points**:
-
-- Log based on environment
-- Skip logging with conditionals
-- Use appropriate log levels
-- Debug info for local, minimal for CI
-
-### Example 5: Integration with Auth and API
+### Example 6: Integration with Auth and API
 
 **Context**: Log authenticated API requests with tokens (safely).
 
@@ -221,16 +299,73 @@ test('should log auth flow', async ({ authToken, apiRequest }) => {
 - Combine with auth and API utilities
 - Log at appropriate detail level
 
+## Configuration
+
+**Defaults:** console logging enabled, file logging disabled.
+
+```typescript
+// Enable file logging in config
+log.configure({
+  console: true, // default
+  fileLogging: {
+    enabled: true,
+    outputDir: 'playwright-logs',
+    forceConsolidated: false, // One file per test
+  },
+});
+
+// Per-test override
+await log.info('Message', {
+  console: { enabled: false },
+  fileLogging: { enabled: true },
+});
+```
+
+### Environment Variables
+
+```bash
+# Disable all logging
+SILENT=true
+
+# Disable only file logging
+DISABLE_FILE_LOGS=true
+
+# Disable only console logging
+DISABLE_CONSOLE_LOGS=true
+```
+
+### Level Filtering
+
+```typescript
+log.configure({
+  level: 'warning', // Only warning, error levels will show
+});
+
+// Available levels (in priority order):
+// debug < info < step < success < warning < error
+```
+
+### Sync Methods
+
+For non-test contexts (global setup, utility functions):
+
+```typescript
+// Use sync methods when async/await isn't available
+log.infoSync('Initializing configuration');
+log.successSync('Environment configured');
+log.errorSync('Setup failed');
+```
+
 ## Log Levels Guide
 
-| Level     | When to Use                         | Shows in Report      | Shows in Console |
-| --------- | ----------------------------------- | -------------------- | ---------------- |
-| `step`    | Test organization, major actions    | ✅ Collapsible steps | ✅ Yes           |
-| `info`    | General information, state changes  | ✅ Yes               | ✅ Yes           |
-| `success` | Successful operations               | ✅ Yes               | ✅ Yes           |
-| `warning` | Non-critical issues, skipped checks | ✅ Yes               | ✅ Yes           |
-| `error`   | Failures, exceptions                | ✅ Yes               | ✅ Configurable  |
-| `debug`   | Detailed data, objects              | ✅ Yes (attached)    | ✅ Configurable  |
+| Level     | When to Use                         | Shows in Report   | Shows in Console |
+| --------- | ----------------------------------- | ----------------- | ---------------- |
+| `step`    | Test organization, major actions    | Collapsible steps | Yes              |
+| `info`    | General information, state changes  | Yes               | Yes              |
+| `success` | Successful operations               | Yes               | Yes              |
+| `warning` | Non-critical issues, skipped checks | Yes               | Yes              |
+| `error`   | Failures, exceptions                | Yes               | Configurable     |
+| `debug`   | Detailed data, objects              | Yes (attached)    | Configurable     |
 
 ## Comparison with console.log
 
@@ -251,34 +386,34 @@ test('should log auth flow', async ({ authToken, apiRequest }) => {
 
 ## Anti-Patterns
 
-**❌ Logging objects in steps:**
+**DON'T log objects in steps:**
 
 ```typescript
 await log.step({ user: 'test', action: 'create' }); // Shows empty in UI
 ```
 
-**✅ Use strings for steps, objects for debug:**
+**DO use strings for steps, objects for debug:**
 
 ```typescript
 await log.step('Creating user: test'); // Readable in UI
 await log.debug({ user: 'test', action: 'create' }); // Detailed data
 ```
 
-**❌ Logging sensitive data:**
+**DON'T log sensitive data:**
 
 ```typescript
 await log.info(`Password: ${password}`); // Security risk!
 await log.info(`Token: ${authToken}`); // Full token exposed!
 ```
 
-**✅ Use previews or omit sensitive data:**
+**DO use previews or omit sensitive data:**
 
 ```typescript
 await log.info('User authenticated successfully'); // No sensitive data
 await log.debug({ tokenPreview: token.slice(0, 6) + '...' });
 ```
 
-**❌ Excessive logging in loops:**
+**DON'T log excessively in loops:**
 
 ```typescript
 for (const item of items) {
@@ -286,7 +421,7 @@ for (const item of items) {
 }
 ```
 
-**✅ Log summary or use debug level:**
+**DO log summary or use debug level:**
 
 ```typescript
 await log.step(`Processing ${items.length} items`);

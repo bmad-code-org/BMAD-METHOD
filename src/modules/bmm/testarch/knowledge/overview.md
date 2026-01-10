@@ -2,7 +2,7 @@
 
 ## Principle
 
-Use production-ready, fixture-based utilities from `@seontechnologies/playwright-utils` for common Playwright testing patterns. Build test helpers as pure functions first, then wrap in framework-specific fixtures for composability and reuse.
+Use production-ready, fixture-based utilities from `@seontechnologies/playwright-utils` for common Playwright testing patterns. Build test helpers as pure functions first, then wrap in framework-specific fixtures for composability and reuse. **Works equally well for pure API testing (no browser) and UI testing.**
 
 ## Rationale
 
@@ -20,6 +20,7 @@ Writing Playwright utilities from scratch for every project leads to:
 - **Composable fixtures**: Use `mergeTests` to combine utilities
 - **TypeScript support**: Full type safety with generic types
 - **Comprehensive coverage**: API requests, auth, network, logging, file handling, burn-in
+- **Backend-first mentality**: Most utilities work without a browser - pure API/service testing is a first-class use case
 
 ## Installation
 
@@ -37,17 +38,19 @@ npm install -D @seontechnologies/playwright-utils
 
 ### Core Testing Utilities
 
-| Utility                    | Purpose                                    | Test Context  |
-| -------------------------- | ------------------------------------------ | ------------- |
-| **api-request**            | Typed HTTP client with schema validation   | API tests     |
-| **network-recorder**       | HAR record/playback for offline testing    | UI tests      |
-| **auth-session**           | Token persistence, multi-user auth         | Both UI & API |
-| **recurse**                | Cypress-style polling for async conditions | Both UI & API |
-| **intercept-network-call** | Network spy/stub with auto JSON parsing    | UI tests      |
-| **log**                    | Playwright report-integrated logging       | Both UI & API |
-| **file-utils**             | CSV/XLSX/PDF/ZIP reading & validation      | Both UI & API |
-| **burn-in**                | Smart test selection with git diff         | CI/CD         |
-| **network-error-monitor**  | Automatic HTTP 4xx/5xx detection           | UI tests      |
+| Utility                    | Purpose                                              | Test Context       |
+| -------------------------- | ---------------------------------------------------- | ------------------ |
+| **api-request**            | Typed HTTP client with schema validation and retry   | **API/Backend**    |
+| **recurse**                | Polling for async operations, background jobs        | **API/Backend**    |
+| **auth-session**           | Token persistence, multi-user, service-to-service    | **API/Backend/UI** |
+| **log**                    | Playwright report-integrated logging                 | **API/Backend/UI** |
+| **file-utils**             | CSV/XLSX/PDF/ZIP reading & validation                | **API/Backend/UI** |
+| **burn-in**                | Smart test selection with git diff                   | **CI/CD**          |
+| **network-recorder**       | HAR record/playback for offline testing              | UI only            |
+| **intercept-network-call** | Network spy/stub with auto JSON parsing              | UI only            |
+| **network-error-monitor**  | Automatic HTTP 4xx/5xx detection                     | UI only            |
+
+**Note**: 6 of 9 utilities work without a browser. Only 3 are UI-specific (network-recorder, intercept-network-call, network-error-monitor).
 
 ## Design Patterns
 

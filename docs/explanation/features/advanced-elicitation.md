@@ -42,7 +42,7 @@ Based on context, 5 methods are intelligently selected from a library of 50+ tec
 - Each method builds on previous enhancements
 
 ### 4. Party Mode Integration (Optional)
-If Party Mode is active, BMAD agents participate randomly in the elicitation process, adding their unique perspectives to the methods.
+If Party Mode is active, BMad agents participate randomly in the elicitation process, adding their unique perspectives to the methods.
 
 ---
 

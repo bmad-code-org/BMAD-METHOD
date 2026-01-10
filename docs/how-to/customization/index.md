@@ -1,5 +1,5 @@
 ---
-title: "BMAD Customization"
+title: "BMad Customization"
 ---
 
 
@@ -9,12 +9,12 @@ Personalize agents and workflows to match your needs.
 
 | Guide | Description |
 |-------|-------------|
-| **[Agent Customization](./customize-agents.md)** | Modify agent behavior without editing core files |
-| **[Workflow Customization](./customize-workflows.md)** | Customize and optimize workflows |
+| **[Agent Customization](/docs/how-to/customization/customize-agents.md)** | Modify agent behavior without editing core files |
+| **[Workflow Customization](/docs/how-to/customization/customize-workflows.md)** | Customize and optimize workflows |
 
 ## Overview
 
-BMAD provides two main customization approaches:
+BMad provides two main customization approaches:
 
 ### Agent Customization
 Modify any agent's persona, name, capabilities, or menu items using `.customize.yaml` files in `_bmad/_config/agents/`. Your customizations persist through updates.
@@ -24,6 +24,4 @@ Replace or extend workflow steps to create tailored processes. (Coming soon)
 
 ---
 
-**Next:** Read the [Agent Customization Guide](./customize-agents.md) to start personalizing your agents.
-
-[← Back to Core Concepts](../index.md)
+**Next:** Read the [Agent Customization Guide](/docs/how-to/customization/customize-agents.md) to start personalizing your agents.

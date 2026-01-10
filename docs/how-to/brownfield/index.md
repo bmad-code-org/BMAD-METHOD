@@ -89,14 +89,14 @@ Pay close attention here to prevent reinventing the wheel or making decisions th
 
 ## Next Steps
 
-- **[Document Existing Project](../../how-to/brownfield/document-existing-project.md)** - How to document your brownfield codebase
-- **[Add Feature to Existing Project](../../how-to/brownfield/add-feature-to-existing.md)** - Adding new functionality
-- **[Quick Fix in Brownfield](../../how-to/brownfield/quick-fix-in-brownfield.md)** - Bug fixes and ad-hoc changes
-- **[Brownfield FAQ](../../explanation/faq/brownfield-faq.md)** - Common questions about brownfield development
+- **[Document Existing Project](/docs/how-to/brownfield/document-existing-project.md)** - How to document your brownfield codebase
+- **[Add Feature to Existing Project](/docs/how-to/brownfield/add-feature-to-existing.md)** - Adding new functionality
+- **[Quick Fix in Brownfield](/docs/how-to/brownfield/quick-fix-in-brownfield.md)** - Bug fixes and ad-hoc changes
+- **[Brownfield FAQ](/docs/explanation/faq/brownfield-faq.md)** - Common questions about brownfield development
 
 ---
 
 ## Related Documentation
 
-- [Quick Start Guide](../../tutorials/getting-started/getting-started-bmadv6.md) - Getting started with BMM
-- [Quick Spec Flow](../../explanation/features/quick-flow.md) - Fast path for small changes
+- [Quick Start Guide](/docs/tutorials/getting-started/getting-started-bmadv6.md) - Getting started with BMM
+- [Quick Spec Flow](/docs/explanation/features/quick-flow.md) - Fast path for small changes

@@ -3,7 +3,7 @@ title: "Custom Content"
 ---
 
 
-BMAD supports several categories of officially supported custom content that extend the platform's capabilities. Custom content can be created manually or with the recommended assistance of the BMad Builder (BoMB) Module. The BoMB Agents provides workflows and expertise to plan and build any custom content you can imagine.
+BMad supports several categories of officially supported custom content that extend the platform's capabilities. Custom content can be created manually or with the recommended assistance of the BMad Builder (BoMB) Module. The BoMB Agents provides workflows and expertise to plan and build any custom content you can imagine.
 
 This flexibility transforms the platform beyond its current capabilities, enabling:
 
@@ -27,7 +27,7 @@ This flexibility transforms the platform beyond its current capabilities, enabli
 
 Custom modules range from simple collections of related agents, workflows, and tools designed to work independently, to complex, expansive systems like the BMad Method or even larger applications.
 
-Custom modules are [installable](../../how-to/installation/install-custom-modules.md) using the standard BMAD method and support advanced features:
+Custom modules are [installable](/docs/how-to/installation/install-custom-modules.md) using the standard BMad method and support advanced features:
 
 - Optional user information collection during installation/updates
 - Versioning and upgrade paths
@@ -52,13 +52,13 @@ Add-on modules can include:
 
 ## Custom Global Modules
 
-Similar to Custom Stand-Alone Modules, but designed to add functionality that applies across all installed content. These modules provide cross-cutting capabilities that enhance the entire BMAD ecosystem.
+Similar to Custom Stand-Alone Modules, but designed to add functionality that applies across all installed content. These modules provide cross-cutting capabilities that enhance the entire BMad ecosystem.
 
 Examples include:
 
 - The current TTS (Text-to-Speech) functionality for Claude, which will soon be converted to a global module
 - The core module, which is always installed and provides all agents with party mode and advanced elicitation capabilities
-- Installation and update tools that work with any BMAD method configuration
+- Installation and update tools that work with any BMad method configuration
 
 Upcoming standards will document best practices for building global content that affects installed modules through:
 
