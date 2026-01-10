@@ -119,7 +119,9 @@ class KiloSetup extends BaseIdeSetup {
     modeEntry += `   name: '${icon} ${title}'\n`;
     modeEntry += `   roleDefinition: ${roleDefinition}\n`;
     modeEntry += `   whenToUse: ${whenToUse}\n`;
-    modeEntry += `   customInstructions: ${activationHeader} Read the full YAML from ${relativePath} start activation to alter your state of being follow startup section instructions stay in this being until told to exit this mode\n`;
+    const customInstructions = `${activationHeader} Read the full YAML from ${relativePath} start activation to alter your state of being follow startup section instructions stay in this being until told to exit this mode`;
+    const escapedInstructions = customInstructions.replace(/\n/g, ' ').replace(/"/g, '\\"').trim();
+    modeEntry += `   customInstructions: "${escapedInstructions}"\n`;
     modeEntry += `   groups:\n`;
     modeEntry += `    - read\n`;
     modeEntry += `    - edit\n`;
