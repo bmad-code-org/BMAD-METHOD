@@ -2,11 +2,12 @@
 name: 'step-01-validate'
 description: 'Initialize validation: create report and check file structure & size'
 
-parallel-steps: ['./step-02-frontmatter-validation.md', './step-02b-path-violations.md', './step-03-menu-validation.md' './step-04-step-type-validation.md', './step-05-output-format-validation.md', './step-06-validation-design-check.md', './step-07-instruction-style-check.md', './step-08-collaborative-experience-check.md', './step-08b-subprocess-optimization.md', './step-09-cohesive-review.md']
+parallel-steps: ['./step-01b-structure.md', './step-02-frontmatter-validation.md', './step-02b-path-violations.md', './step-03-menu-validation.md' './step-04-step-type-validation.md', './step-05-output-format-validation.md', './step-06-validation-design-check.md', './step-07-instruction-style-check.md', './step-08-collaborative-experience-check.md', './step-08b-subprocess-optimization.md', './step-09-cohesive-review.md']
 nextStep: './step-10-report-complete.md'
 targetWorkflowPath: '{workflow_folder_path}'
 workflowPlanFile: '{workflow_folder_path}/workflow-plan.md'
 validationReportFile: '{workflow_folder_path}/validation-report-{datetime}.md'
+partialValidationFragmentFile: '{workflow_folder_path}/validation-report-{step-name}.md'
 stepFileRules: '../data/step-file-rules.md'
 ---
 
@@ -62,146 +63,36 @@ validationStatus: IN_PROGRESS
 **Validator:** BMAD Workflow Validation System
 **Standards Version:** BMAD Workflow Standards
 
----
+{{TOC}}
 
-## File Structure & Size
+{{#each parallel-steps}}
+## {{title}}
 
-*Validation in progress...*
+{{results}}
 
-## Frontmatter Validation
-*Pending...*
+{{/each}}
 
-## Critical Path Violations
-*Pending...*
-
-## Menu Handling Validation
-*Pending...*
-
-## Step Type Validation
-*Pending...*
-
-## Output Format Validation
-*Pending...*
-
-## Validation Design Check
-*Pending...*
-
-## Instruction Style Check
-*Pending...*
-
-## Collaborative Experience Check
-*Pending...*
-
-## Subprocess Optimization Opportunities
-*Pending...*
-
-## Cohesive Review
-*Pending...*
-
-## Plan Quality Validation
-*Pending...*
-
-## Summary
-*Pending...*
 ```
 
-### 2. Check Folder Structure
+Save the file (without the handlebars output of course) before proceeding.
 
-**Launch a single subprocess that:**
+### 2. Launch Mass Parallelization and consolidate results!
 
-1. Load {stepFileRules} to understand:
-   - File size limits (<200 recommended, 250 max)
-   - Required folder structure
-   - Required files
-2. Lists the entire folder structure using bash commands
-3. Verifies all required folders and files exist
-4. Returns structured findings to parent for aggregation
+Utilizing a subprocess for each step file in {parallel-steps} - complete all of these - with the caveat indication to the subprocess that at the end of the specific step it will not on its own proceed to the nextStep file!
 
-```bash
-# List folder structure
-find {targetWorkflowPath} -type f -name "*.md" | sort
-```
+Critically - instruct that instructions to write out or return results within each subprocess for a step file in the array MUST ensure that it writes it to {partialValidationFragmentFile} file name even though the step file it loads might indicate otherwise!
 
-**Expected structure:**
-```
-{targetWorkflowPath}/
-├── workflow.md
-├── steps*/ potentially more than one folder like this (such as steps-v, steps-c - the folder name is not critical but should make sense)
-│   ├── step-01-init.md
-│   ├── step-01b-continue.md (if continuable)
-│   ├── step-02-*.md
-│   └── ...
-├── */ # any other random files - critical will be later ensure its all used - aside from potential documentation for user later.
-├── data/
-│   └── [as needed]
-└── templates/
-    └── [as needed]
-```
+Once every process has completed - there should be a separate validation file for each given step. Also - each step should return JUST its results and recommendations to you also.
 
-**Check:**
-- ✅ workflow.md exists
-- ✅ step files are in a well organized folder
-- ✅ non step reference files are organized in other folders such as data, templates, or others that make sense for the workflow
-- ✅ Folder names make sense
+### 3. CRITICAL WRITES to the report.
 
-### 4. Check File Sizes
+You MUST now ensure that all results are added to the final cohesive {validationReportFile} following the indicated handlebars sequence - and then after appending each subprocess report to a level 2 section - and the TOC to accurately reflect the documents state using proper markdown linking conventions to the actual heading names you created.
 
-**DO NOT BE LAZY - For EACH step*.md file found, launch a subprocess that:**
+IF a file is missing or empty from a given subprocess - but it did return to you results - you will append those results - ONLY do this if you cannot access the specific steps file produced or it is empty though. IE File from subprocess is primary, results returned from step complete are backup insurance.
 
-1. Loads that step file
-2. Counts lines and checks against size limits
-3. Returns structured findings to parent for aggregation
+### 4. Proceed to Completion Step
 
-**Limits:**
-- < 200 lines: ✅ Good
-- 200-300 lines: ⚠️ Approaching limit
-- > 300 lines: ❌ Exceeds limit
-
-**Subprocess returns:** File name, line count, status (Good/Approaching limit/Exceeds limit), and any issues found.
-
-**Subprocess must either:**
-- Update validation report directly with findings, OR
-- Return structured findings to parent for aggregation into report
-
-**Document findings in validation report:**
-- List all step files checked with their line counts
-- Note any files approaching or exceeding size limits (<200 recommended, 250 max)
-- Check data and reference files for size issues (large files should be sharded or indexed)
-- Identify specific size violations and recommendations
-
-### 5. Verify File Presence
-
-From the design in {workflowPlanFile}, verify:
-- Every step from design has a corresponding file
-- Step files are numbered sequentially
-- No gaps in numbering
-- Final step exists
-
-### 6. Append Findings to Report
-
-Replace the "## File Structure & Size" section in {validationReportFile} with actual findings:
-
-**Document the following:**
-- Folder structure assessment
-- Required files presence check
-- File size analysis results
-- List of any issues found (missing files, extra files, size violations, naming issues)
-- Overall validation status (PASS/FAIL/WARNINGS)
-
-### 7. Save Report
-
-**CRITICAL:** Save the validation report ensuring all placeholder sections also exist
-
-Then immediately load, read entire file, then execute {nextStepFile}.
-
-**Display:**
-"**File Structure, Existance & Size validation complete.** Proceeding to Max Parallelization Validation Mode - Strap in!"
-
-### 8. Launch Mass Parallelization and consolidate results!
-
-Utilizing a subprocess for each step file in {parallel-steps} - complete all of these - with the caveat indication to the subprocess that at the end of the specific step it will not on its own proceed to the nextStep file! Critically - instruct that instructions to write out or return results within each subprocess for a step file in the array MUST ensure that it wrote to the proper template section and also return final results upon subprocess completion.
-
-ONCE ALL HAVE COMPLETED - and all results are written into the validation report (ensure none are left incomplete or empty) then proceed to {nextStep}
+ONLY after ensuring all has been written to the final report, let the user know about the final report that is a consolidation - and they can ignore or remove the smaller files or use them as they like to focus on a specific validation (but its all in the master doc), and then proceed to {nextStep}, ensuring that in the {nextStep} it is focused on the {validationReportFile}
 
 ---
 

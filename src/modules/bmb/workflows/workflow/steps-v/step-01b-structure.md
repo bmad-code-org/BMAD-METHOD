@@ -43,81 +43,17 @@ To create the validation report and check that the workflow has correct file str
 
 **CRITICAL:** Follow this sequence exactly. Do not skip or shortcut.
 
-### 1. Create Validation Report
+### 1. Check Folder Structure
 
-Create {validationReportFile} with header structure:
+**Launch a single subprocess that will do all of the following for items:**
 
-```markdown
----
-validationDate: [current date]
-workflowName: {new_workflow_name}
-workflowPath: {workflow_folder_path}
-validationStatus: IN_PROGRESS
----
-
-# Validation Report: {new_workflow_name}
-
-**Validation Started:** [current date]
-**Validator:** BMAD Workflow Validation System
-**Standards Version:** BMAD Workflow Standards
-
----
-
-## File Structure & Size
-
-*Validation in progress...*
-
-## Frontmatter Validation
-*Pending...*
-
-## Critical Path Violations
-*Pending...*
-
-## Menu Handling Validation
-*Pending...*
-
-## Step Type Validation
-*Pending...*
-
-## Output Format Validation
-*Pending...*
-
-## Validation Design Check
-*Pending...*
-
-## Instruction Style Check
-*Pending...*
-
-## Collaborative Experience Check
-*Pending...*
-
-## Subprocess Optimization Opportunities
-*Pending...*
-
-## Cohesive Review
-*Pending...*
-
-## Plan Quality Validation
-*Pending...*
-
-## Summary
-*Pending...*
-```
-
-### 2. Load File Structure Standards
-
-Load {stepFileRules} to understand:
+1.  Load {stepFileRules} to understand:
 - File size limits (<200 recommended, 250 max)
 - Required folder structure
 - Required files
-
-### 3. Check Folder Structure
-
-**Launch a single subprocess that:**
-
-1. Lists the entire folder structure using bash commands
-2. Verifies all required folders and files exist
-3. Returns structured findings to parent for aggregation
+2. Lists the entire folder structure using bash commands
+3. Verifies all required folders and files exist
+4. Returns structured findings to parent for aggregation
 
 ```bash
 # List folder structure
@@ -156,8 +92,8 @@ find {targetWorkflowPath} -type f -name "*.md" | sort
 
 **Limits:**
 - < 200 lines: ✅ Good
-- 200-250 lines: ⚠️ Approaching limit
-- > 250 lines: ❌ Exceeds limit
+- 200-300 lines: ⚠️ Approaching limit
+- > 300 lines: ❌ Exceeds limit
 
 **Subprocess returns:** File name, line count, status (Good/Approaching limit/Exceeds limit), and any issues found.
 
@@ -179,9 +115,7 @@ From the design in {workflowPlanFile}, verify:
 - No gaps in numbering
 - Final step exists
 
-### 6. Append Findings to Report
-
-Replace the "## File Structure & Size" section in {validationReportFile} with actual findings:
+### 6. Document all findings in a report
 
 **Document the following:**
 - Folder structure assessment
@@ -190,14 +124,11 @@ Replace the "## File Structure & Size" section in {validationReportFile} with ac
 - List of any issues found (missing files, extra files, size violations, naming issues)
 - Overall validation status (PASS/FAIL/WARNINGS)
 
-### 7. Save Report and Auto-Proceed
+### 7. Save Report
 
-**CRITICAL:** Save the validation report BEFORE loading next step.
+**CRITICAL:** Save the validation report BEFORE COMPLETING THIS STEP
 
-Then immediately load, read entire file, then execute {nextStepFile}.
-
-**Display:**
-"**File Structure & Size validation complete.** Proceeding to Frontmatter Validation..."
+**Display:** "**File Structure & Size validation complete.**"
 
 ---
 
