@@ -1,0 +1,23 @@
+# CODEOWNERS for BMAD-METHOD
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+#
+# NOTE: This file controls who gets pinged for PR reviews, not who "owns" what.
+
+# Default - Brian + reviewers team
+* @bmadcode @bmad-code-org/reviewers
+
+# ============================================
+# SPECIFIC AREAS
+# ============================================
+# Note: Specific paths override the default, so @bmadcode is included
+# on all entries below to maintain his review requirement.
+
+# Quick Flow (BMM) - Alex
+src/modules/bmm/workflows/bmad-quick-flow/ @bmadcode @alexeyv
+
+# TEA (Test Engineering Architecture) - Murat
+src/modules/bmm/docs/test-architecture.md @bmadcode @muratkeremozcan
+
+# Documentation - Alex
+docs/ @bmadcode @alexeyv
+website/ @bmadcode @alexeyv
