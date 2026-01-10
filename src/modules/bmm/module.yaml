@@ -45,7 +45,7 @@ project_knowledge: # Artifacts from research, document-project output, other lon
   result: "{project-root}/{value}"
 
 tea_use_mcp_enhancements:
-  prompt: "Test Architect Playwright MCP capabilities (healing, exploratory, verification) are optionally available.\nYou will have to setup your MCPs yourself; refer to test-architecture.md for hints.\nWould you like to enable MCP enhancements in Test Architect?"
+  prompt: "Test Architect Playwright MCP capabilities (healing, exploratory, verification) are optionally available.\nYou will have to setup your MCPs yourself; refer to https://docs.bmad-method.org/explanation/features/tea-overview for configuration examples.\nWould you like to enable MCP enhancements in Test Architect?"
   default: false
   result: "{value}"
 
