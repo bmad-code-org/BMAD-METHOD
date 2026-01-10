@@ -4,10 +4,7 @@ description: 'Complete the PRD workflow, update status files, and suggest next s
 
 # File References
 outputFile: '{planning_artifacts}/prd.md'
-
-# Workflow References
-checkImplementationReadinessWorkflow: '{project-root}/_bmad/bmm/workflows/3-solutioning/check-implementation-readiness/workflow.md'
-createEpicsWorkflow: '{project-root}/_bmad/bmm/workflows/3-solutioning/create-epics-and-stories/workflow.md'
+validationFlow: '../steps-v/step-v-01-discovery.md'
 ---
 
 # Step 12: Workflow Completion
@@ -90,29 +87,29 @@ Offer validation workflows to ensure PRD is ready for implementation:
 
 ### 4. Suggest Next Workflows
 
-Provide guidance on logical next workflows:
+Provide guidance on logical next workflows - strongly suggesting any of these chosen are started in a fresh context with the appropriate agent:
 
 **Typical Next Workflows:**
 
 **Immediate Next Steps:**
 
-1. **Validation First (Recommended):**
-   `workflow check-implementation-readiness`
+1. **PRD Quality Validation First (Recommended):**
+   - execute the `{validationFlow}` workflow if selected or start a new chat with me and select the validate PRD menu item
    - Ensures PRD is complete and ready
    - Identifies any gaps or issues
    - Validates before committing to architecture/design
 
-2. **UX Design:** `workflow create-ux-design` (if UI exists)
+2. **UX Design:** `workflow create-ux-design` with the UX-Designer Agent (if UI exists)
    - User journey insights from step-04 inform interaction design
    - Functional requirements from step-09 define design scope
    - Polish-optimized document provides clear design requirements
 
-3. **Technical Architecture:** `workflow create-architecture`
+3. **Technical Architecture:** `workflow create-architecture` with the Architect Agent
    - Project-type requirements from step-07 guide technical decisions
    - Non-functional requirements from step-10 inform architecture choices
    - Functional requirements define system capabilities
 
-4. **Epic Breakdown:** `workflow create-epics-and-stories`
+4. **Epic Breakdown:** `workflow create-epics-and-stories` with me again - but really recommend first doing a UX if needed and an architecture!
    - Functional requirements from step-09 become epics and stories
    - Scope definition from step-03 guides sprint planning
    - Richer when created after UX/architecture
@@ -176,10 +173,8 @@ Provide guidance on logical next workflows:
 - [ ] Validation options presented
 - [ ] Next steps clearly communicated
 
-## FINAL REMINDER:
+## FINAL REMINDER to give the user:
 
-This workflow is now complete. The polished PRD serves as the foundation for all subsequent product development activities. All design, architecture, and development work should trace back to the requirements and vision documented in this PRD.
-
-**Recommended Next Step:** Consider running `workflow check-implementation-readiness` to validate PRD completeness before proceeding to architecture, UX design, or epic breakdown.
+The polished PRD serves as the foundation for all subsequent product development activities. All design, architecture, and development work should trace back to the requirements and vision documented in this PRD - update it also as needed as you continue planning.
 
 **Congratulations on completing the Product Requirements Document for {{project_name}}!** 🎉
