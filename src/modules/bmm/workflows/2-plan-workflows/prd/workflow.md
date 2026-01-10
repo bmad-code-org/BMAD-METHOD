@@ -53,13 +53,18 @@ Wait for user selection.
 ### Route to Appropriate Workflow
 
 **IF Create Mode:**
+"**Create Mode: Creating a new PRD from scratch.**"
 Load, read entire file, then execute: `{nextStep}` (steps-c/step-01-init.md)
 
 **IF Validate Mode:**
-Load, read entire file, then execute: `{validateWorkflow}` (steps-v/step-v-01-discovery.md)
+"**Validate Mode: Validating an existing PRD against BMAD standards.**"
+Prompt for PRD path: "Which PRD would you like to validate? Please provide the path to the PRD.md file."
+Then load, read entire file, and execute: `{validateWorkflow}` (steps-v/step-v-01-discovery.md)
 
 **IF Edit Mode:**
-Load, read entire file, then execute: `{editWorkflow}` (steps-e/step-e-01-discovery.md)
+"**Edit Mode: Improving an existing PRD.**"
+Prompt for PRD path: "Which PRD would you like to edit? Please provide the path to the PRD.md file."
+Then load, read entire file, and execute: `{editWorkflow}` (steps-e/step-e-01-discovery.md)
 
 ---
 
@@ -98,7 +103,27 @@ This uses **step-file architecture** for disciplined execution:
 
 ## INITIALIZATION SEQUENCE
 
-### 1. Configuration Loading
+### 1. Mode Determination
+
+**Check if mode was specified in the command invocation:**
+
+- If user invoked with "create prd" or "new prd" or "build prd" or "-c" or "--create" → Set mode to **create**
+- If user invoked with "validate prd" or "review prd" or "check prd" or "-v" or "--validate" → Set mode to **validate**
+- If user invoked with "edit prd" or "modify prd" or "improve prd" or "-e" or "--edit" → Set mode to **edit**
+
+**If mode is still unclear, ask user:**
+
+"**PRD Workflow - Select Mode:**
+
+**[C] Create** - Create a new PRD from scratch
+**[V] Validate** - Validate an existing PRD against BMAD standards
+**[E] Edit** - Improve an existing PRD
+
+Which mode would you like?"
+
+Wait for user selection.
+
+### 2. Configuration Loading
 
 Load and read full config from {main_config} and resolve:
 
@@ -106,8 +131,20 @@ Load and read full config from {main_config} and resolve:
 - `communication_language`, `document_output_language`, `user_skill_level`
 - `date` as system-generated current datetime
 
-### 2. First Step EXECUTION
+✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the configured `{communication_language}`.
 
+### 3. Route to Appropriate Workflow
 
-YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the configured `{communication_language}`.
-Load, read the full file and then execute `{nextStep}` to begin the workflow.
+**IF mode == create:**
+"**Create Mode: Creating a new PRD from scratch.**"
+Load, read entire file, then execute `{nextStep}` (steps-c/step-01-init.md)
+
+**IF mode == validate:**
+"**Validate Mode: Validating an existing PRD against BMAD standards.**"
+Prompt for PRD path: "Which PRD would you like to validate? Please provide the path to the PRD.md file."
+Then load, read entire file, and execute `{validateWorkflow}` (steps-v/step-v-01-discovery.md)
+
+**IF mode == edit:**
+"**Edit Mode: Improving an existing PRD.**"
+Prompt for PRD path: "Which PRD would you like to edit? Please provide the path to the PRD.md file."
+Then load, read entire file, and execute `{editWorkflow}` (steps-e/step-e-01-discovery.md)
