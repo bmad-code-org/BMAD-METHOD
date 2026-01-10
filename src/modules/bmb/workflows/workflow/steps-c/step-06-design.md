@@ -67,7 +67,7 @@ To collaboratively design the workflow structure, step sequence, and interaction
 
 ## DESIGN REFERENCE MATERIALS:
 
-When designing, you may load these data standards as needed:
+When designing, you will load these data standards as needed (ideally within subprocesses that can return the relevant insights during the design step):
 
 - {stepTemplate} - Step file structure template
 - {stepTypePatterns} - Templates for different step types (init, middle, branch, validation, final)
@@ -78,8 +78,7 @@ When designing, you may load these data standards as needed:
 - {workflowChainingStandards} - How workflows connect in sequences
 - {trimodalWorkflowStructure} - Tri-modal workflow patterns (if applicable)
 
-Example workflow:
-- `{project-root}/_bmad/bmb/reference/workflows/meal-prep-nutrition/workflow.md`
+Example [Workflow.md](../workflow.md) for reference of a perfect workflow.md with some complex options (not all workflows will offer multiple next step options like this one - most will just auto route right to a step 1 file)
 
 ## MANDATORY SEQUENCE
 

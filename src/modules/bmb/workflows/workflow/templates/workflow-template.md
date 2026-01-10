@@ -99,6 +99,4 @@ Update the last line of the workflow.md being created to replace [FIRST STEP FIL
 
 Example: Load, read the full file and then execute `./step-01-init.md` to begin the workflow.
 
-### NOTE: You can View a real example of a perfect workflow.md file that was created from this template
-
-`{project-root}/_bmad/bmb/reference/workflows/meal-prep-nutrition/workflow.md`
+### NOTE: You can View a real example of a perfect workflow.md file from the one you were executed from `../workflow.md`
