@@ -108,7 +108,10 @@ async function resolveSubagentFiles(handlerBaseDir, subagentConfig, subagentChoi
   const resolved = [];
 
   for (const file of filesToCopy) {
-    const pattern = path.join(sourceDir, '**', file);
+    // Use forward slashes for glob pattern (works on both Windows and Unix)
+    // Convert backslashes to forward slashes for glob compatibility
+    const normalizedSourceDir = sourceDir.replaceAll('\\', '/');
+    const pattern = `${normalizedSourceDir}/**/${file}`;
     const matches = await glob(pattern);
 
     if (matches.length > 0) {
