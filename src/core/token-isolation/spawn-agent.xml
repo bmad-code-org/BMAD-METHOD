@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<task id="spawn-agent" name="Spawn Isolated Agent" standalone="false">
+  <description>Spawn an agent in an isolated subprocess with token isolation</description>
+
+  <config>
+    <source>{project-root}/_bmad/core/config.yaml</source>
+    <token_config>{project-root}/_bmad/bmm/config.yaml:token_management</token_config>
+  </config>
+
+  <parameters>
+    <param name="agent_type" required="true" description="Type of agent to spawn (analyst, architect, dev, pm, etc.)"/>
+    <param name="task_description" required="true" description="Brief description of the task (3-5 words)"/>
+    <param name="prompt" required="true" description="Full prompt/instructions for the agent"/>
+    <param name="model" required="false" default="sonnet" description="Model to use: sonnet, opus, haiku"/>
+    <param name="run_in_background" required="false" default="false" description="Run agent in background"/>
+    <param name="output_file" required="false" description="Path for agent output file"/>
+  </parameters>
+
+  <execution>
+    <step n="1" goal="Validate parameters">
+      <action>Verify agent_type is valid (exists in agent-manifest.csv)</action>
+      <action>Verify prompt is not empty</action>
+      <action>Set default model to sonnet if not specified</action>
+    </step>
+
+    <step n="2" goal="Prepare agent context">
+      <action>Load agent persona from {project-root}/_bmad/_config/agent-manifest.csv</action>
+      <action>Load any agent customizations from {project-root}/_bmad/_config/agents/</action>
+      <action>Construct full agent prompt with persona + task prompt</action>
+    </step>
+
+    <step n="3" goal="Configure output handling">
+      <action if="output_file specified">Use specified output path</action>
+      <action if="output_file not specified">
+        Generate path: {output_folder}/temp/{agent_type}-{timestamp}.md
+      </action>
+      <action>Append output instructions to prompt:
+        "Write your complete output to: {output_file}
+         Return only a brief summary (under 500 words) to this conversation."
+      </action>
+    </step>
+
+    <step n="4" goal="Spawn agent subprocess">
+      <action>Use Task tool with:
+        - description: "{agent_type}: {task_description}"
+        - prompt: {constructed_prompt}
+        - subagent_type: "general-purpose"
+        - model: {model}
+        - run_in_background: {run_in_background}
+      </action>
+    </step>
+
+    <step n="5" goal="Handle response">
+      <action if="run_in_background == false">Wait for agent completion</action>
+      <action if="run_in_background == true">Return agent_id for later retrieval</action>
+      <action>Return summary and output file path to caller</action>
+    </step>
+  </execution>
+
+  <output>
+    <field name="status" description="success | failed | running"/>
+    <field name="agent_id" description="ID for background agents"/>
+    <field name="output_file" description="Path to full output"/>
+    <field name="summary" description="Brief summary of agent work"/>
+  </output>
+</task>

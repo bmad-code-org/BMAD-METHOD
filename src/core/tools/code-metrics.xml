@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tool id="code-metrics" name="Code Metrics Analyzer" standalone="true">
+  <description>Analyze codebase for size, complexity, and quality metrics</description>
+
+  <parameters>
+    <param name="path" required="false" default="." description="Path to analyze"/>
+    <param name="include" required="false" description="File patterns to include (e.g., '*.ts,*.tsx')"/>
+    <param name="exclude" required="false" default="node_modules,dist,build,.git" description="Directories to exclude"/>
+    <param name="output" required="false" default="summary" description="Output format: summary, detailed, json"/>
+  </parameters>
+
+  <metrics>
+    <category name="Size">
+      <metric name="total_files" description="Total number of source files"/>
+      <metric name="total_lines" description="Total lines of code"/>
+      <metric name="lines_of_code" description="Lines of actual code (excluding blanks/comments)"/>
+      <metric name="blank_lines" description="Number of blank lines"/>
+      <metric name="comment_lines" description="Number of comment lines"/>
+    </category>
+
+    <category name="Complexity">
+      <metric name="cyclomatic_complexity" description="Average cyclomatic complexity"/>
+      <metric name="max_complexity" description="Highest complexity in single function"/>
+      <metric name="deep_nesting" description="Functions with nesting > 4 levels"/>
+    </category>
+
+    <category name="Quality">
+      <metric name="duplicate_blocks" description="Detected code duplication"/>
+      <metric name="long_functions" description="Functions > 50 lines"/>
+      <metric name="large_files" description="Files > 500 lines"/>
+      <metric name="todo_count" description="TODO/FIXME comments"/>
+    </category>
+
+    <category name="Structure">
+      <metric name="avg_file_size" description="Average lines per file"/>
+      <metric name="avg_function_size" description="Average lines per function"/>
+      <metric name="dependency_depth" description="Maximum import depth"/>
+    </category>
+  </metrics>
+
+  <execution>
+    <step n="1" goal="Scan codebase">
+      <action>Find all files matching include patterns</action>
+      <action>Exclude directories from exclude list</action>
+      <action>Build file list for analysis</action>
+    </step>
+
+    <step n="2" goal="Count lines">
+      <action>For each file, count total, code, blank, comment lines</action>
+      <action>Aggregate totals by file type</action>
+    </step>
+
+    <step n="3" goal="Analyze complexity">
+      <action>Parse functions/methods in each file</action>
+      <action>Calculate cyclomatic complexity per function</action>
+      <action>Identify deeply nested code blocks</action>
+    </step>
+
+    <step n="4" goal="Quality checks">
+      <action>Detect duplicate code blocks</action>
+      <action>Find long functions (> 50 lines)</action>
+      <action>Find large files (> 500 lines)</action>
+      <action>Count TODO/FIXME comments</action>
+    </step>
+
+    <step n="5" goal="Generate report">
+      <action>Format metrics according to output parameter</action>
+      <action>Include recommendations for concerning metrics</action>
+    </step>
+  </execution>
+
+  <output>
+    ```
+    Code Metrics Report
+    ===================
+    Project: {project_name}
+    Path: {path}
+    Date: {date}
+
+    Size Metrics:
+    - Total Files: {total_files}
+    - Lines of Code: {lines_of_code}
+    - Blank Lines: {blank_lines}
+    - Comment Lines: {comment_lines}
+    - Comment Ratio: {comment_ratio}%
+
+    Complexity Metrics:
+    - Avg Cyclomatic Complexity: {avg_complexity}
+    - Max Complexity: {max_complexity} ({max_complexity_file})
+    - Deep Nesting Issues: {deep_nesting_count}
+
+    Quality Metrics:
+    - Duplicate Code Blocks: {duplicate_count}
+    - Long Functions (>50 lines): {long_functions_count}
+    - Large Files (>500 lines): {large_files_count}
+    - TODO/FIXME Count: {todo_count}
+
+    Structure:
+    - Avg File Size: {avg_file_size} lines
+    - Avg Function Size: {avg_function_size} lines
+
+    Breakdown by Language:
+    {for each language}
+    - {language}: {file_count} files, {line_count} lines
+    {end for}
+
+    Recommendations:
+    {recommendations}
+    ```
+  </output>
+</tool>

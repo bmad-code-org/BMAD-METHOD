@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tool id="schema-validator" name="Schema Validator" standalone="true">
+  <description>Validate JSON/YAML files against schemas (JSON Schema, OpenAPI, etc.)</description>
+
+  <parameters>
+    <param name="file" required="true" description="Path to file to validate"/>
+    <param name="schema" required="false" description="Path to schema file (auto-detect if not provided)"/>
+    <param name="schema_type" required="false" default="auto" description="Schema type: json-schema, openapi, asyncapi, auto"/>
+  </parameters>
+
+  <supported_schemas>
+    <!-- versions attribute: comma-separated tokens; parsers should split on ',' and trim whitespace -->
+    <schema type="json-schema" versions="draft-04,draft-06,draft-07,2019-09,2020-12"/>
+    <schema type="openapi" versions="3.0,3.1"/>
+    <schema type="asyncapi" versions="2.0,2.1,2.2,2.3,2.4,2.5,2.6"/>
+    <schema type="yaml" description="YAML syntax validation"/>
+    <schema type="json" description="JSON syntax validation"/>
+  </supported_schemas>
+
+  <parsing_notes>
+    <note name="versions_attribute">
+      The schema/@versions attribute uses comma-separated version tokens.
+      Parsers MUST split the value on commas and trim whitespace from each token.
+      Example: versions="3.0, 3.1" produces ["3.0", "3.1"]
+    </note>
+  </parsing_notes>
+
+  <execution>
+    <step n="1" goal="Load and parse file">
+      <action>Read file content</action>
+      <action>Detect file format (JSON or YAML)</action>
+      <action>Parse content into object</action>
+      <action if="parse error">Return: "Syntax error: {error_message}"</action>
+    </step>
+
+    <step n="2" goal="Detect schema type">
+      <check if="schema_type == 'auto'">
+        <action>Check for $schema property (JSON Schema)</action>
+        <action>Check for openapi property (OpenAPI)</action>
+        <action>Check for asyncapi property (AsyncAPI)</action>
+        <action>Set detected_type to matched schema type (if any)</action>
+      </check>
+      <check if="schema_type == 'auto' AND no type detected">
+        <action>HALT with error: "Unable to auto-detect schema type; provide schema_type or schema parameter"</action>
+      </check>
+      <check if="schema_type != 'auto'">
+        <action>Validate schema_type is in supported_schemas list</action>
+        <action if="schema_type not supported">
+          HALT with error: "Unsupported schema type '{schema_type}'; supported types: json-schema, openapi, asyncapi, yaml, json"
+        </action>
+      </check>
+    </step>
+
+    <step n="3" goal="Load schema">
+      <check if="schema provided">
+        <action>Verify {schema} file exists</action>
+        <action if="file not found">
+          HALT with error: "Schema file not found: {schema}"
+        </action>
+        <action>Load schema from {schema} path</action>
+        <action if="schema parse error">
+          HALT with error: "Failed to parse schema: {error_message}"
+        </action>
+      </check>
+      <check if="schema not provided AND type detected">
+        <action>Check if built-in meta-schema exists for {schema_type}</action>
+        <action if="no built-in schema available">
+          HALT with error: "No built-in schema available for '{schema_type}'; provide schema parameter"
+        </action>
+        <action>Load built-in meta-schema for {schema_type}</action>
+      </check>
+      <check if="schema not provided AND type not detected">
+        <action>HALT with error: "Cannot load schema: no schema provided and type could not be detected"</action>
+      </check>
+    </step>
+
+    <step n="4" goal="Validate">
+      <action>Run validation against schema</action>
+      <action>Collect all validation errors</action>
+      <action>Format error messages with line numbers (if possible)</action>
+    </step>
+
+    <step n="5" goal="Report">
+      <action if="schema_type is undefined or null">
+        HALT with error: "Cannot generate report: schema type was not determined"
+      </action>
+      <action if="validation did not run (no schema loaded)">
+        HALT with error: "Cannot generate report: validation was not performed (schema not loaded)"
+      </action>
+      <action if="valid">
+        Return structured result:
+          status: "valid"
+          schema_type: {schema_type}
+          message: "Valid {schema_type} document"
+      </action>
+      <action if="invalid">
+        Return structured result:
+          status: "invalid"
+          schema_type: {schema_type}
+          error_count: {error_count}
+          errors: {errors}
+          message: "Validation failed with {error_count} error(s)"
+      </action>
+    </step>
+  </execution>
+
+  <output><![CDATA[
+```
+Schema Validation Report
+========================
+File: {file}
+Schema Type: {schema_type}
+Status: {valid|invalid}
+
+{if errors}
+Errors ({error_count}):
+{for each error}
+- Line {line}: {path}
+  {message}
+{end for}
+{end if}
+
+{if warnings}
+Warnings ({warning_count}):
+{for each warning}
+- {path}: {message}
+{end for}
+{end if}
+```
+]]></output>
+</tool>

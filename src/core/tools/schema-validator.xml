@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tool id="schema-validator" name="Schema Validator" standalone="true">
+  <description>Validate JSON/YAML files against schemas (JSON Schema, OpenAPI, etc.)</description>
+
+  <parameters>
+    <param name="file" required="true" description="Path to file to validate"/>
+    <param name="schema" required="false" description="Path to schema file (auto-detect if not provided)"/>
+    <param name="schema_type" required="false" default="auto" description="Schema type: json-schema, openapi, asyncapi, auto"/>
+  </parameters>
+
+  <supported_schemas>
+    <schema type="json-schema" versions="['draft-04', 'draft-06', 'draft-07', '2019-09', '2020-12']"/>
+    <schema type="openapi" versions="['3.0', '3.1']"/>
+    <schema type="asyncapi" versions="['2.0', '2.1', '2.2', '2.3', '2.4', '2.5', '2.6']"/>
+    <schema type="yaml" description="YAML syntax validation"/>
+    <schema type="json" description="JSON syntax validation"/>
+  </supported_schemas>
+
+  <execution>
+    <step n="1" goal="Load and parse file">
+      <action>Read file content</action>
+      <action>Detect file format (JSON or YAML)</action>
+      <action>Parse content into object</action>
+      <action if="parse error">Return: "Syntax error: {error_message}"</action>
+    </step>
+
+    <step n="2" goal="Detect schema type">
+      <check if="schema_type == 'auto'">
+        <action>Check for $schema property (JSON Schema)</action>
+        <action>Check for openapi property (OpenAPI)</action>
+        <action>Check for asyncapi property (AsyncAPI)</action>
+        <action>Default to json-schema if detected</action>
+      </check>
+    </step>
+
+    <step n="3" goal="Load schema">
+      <check if="schema provided">
+        <action>Load schema from {schema} path</action>
+      </check>
+      <check if="schema not provided AND type detected">
+        <action>Use built-in schema for detected type</action>
+      </check>
+    </step>
+
+    <step n="4" goal="Validate">
+      <action>Run validation against schema</action>
+      <action>Collect all validation errors</action>
+      <action>Format error messages with line numbers (if possible)</action>
+    </step>
+
+    <step n="5" goal="Report">
+      <action if="valid">Return: "Valid {schema_type} document"</action>
+      <action if="invalid">Return: "Validation errors: {errors}"</action>
+    </step>
+  </execution>
+
+  <output>
+    ```
+    Schema Validation Report
+    ========================
+    File: {file}
+    Schema Type: {schema_type}
+    Status: {valid|invalid}
+
+    {if errors}
+    Errors ({error_count}):
+    {for each error}
+    - Line {line}: {path}
+      {message}
+    {end for}
+    {end if}
+
+    {if warnings}
+    Warnings ({warning_count}):
+    {for each warning}
+    - {path}: {message}
+    {end for}
+    {end if}
+    ```
+  </output>
+</tool>

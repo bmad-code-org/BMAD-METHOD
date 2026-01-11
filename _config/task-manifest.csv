@@ -1,0 +1,10 @@
+name,displayName,description,module,path,standalone
+"spawn-agent","Spawn Isolated Agent","Spawn an agent in an isolated subprocess with token isolation","core","_bmad/core/token-isolation/spawn-agent.xml","false"
+"send-message","Send Message","Send an inter-agent message via the messenger system","core","_bmad/core/messenger/send-message.xml","false"
+"receive-message","Receive Message","Receive and process messages from the messenger queue","core","_bmad/core/messenger/receive-message.xml","false"
+"pipeline-orchestrator","Pipeline Orchestrator","Orchestrate multi-stage agent pipelines with dependency management","core","_bmad/core/pipeline/orchestrator.xml","true"
+"index-docs","Index Docs","Generates or updates an index.md of all documents in the specified directory","core","_bmad/core/tasks/index-docs.xml","true"
+"review-adversarial-general","Adversarial Review (General)","Cynically review content and produce findings","core","_bmad/core/tasks/review-adversarial-general.xml","false"
+"shard-doc","Shard Document","Splits large markdown documents into smaller, organized files based on level 2 (default) sections","core","_bmad/core/tasks/shard-doc.xml","false"
+"validate-workflow","Validate Workflow Output","Run a checklist against a document with thorough analysis and produce a validation report","core","_bmad/core/tasks/validate-workflow.xml","false"
+"workflow","Execute Workflow","Execute given workflow by loading its configuration, following instructions, and producing output","core","_bmad/core/tasks/workflow.xml","false"
