@@ -39,9 +39,27 @@ wipFile: '{implementation_artifacts}/tech-spec-wip.md'
 
 - {task_count} tasks to implement
 - {ac_count} acceptance criteria to verify
-- {files_count} files to modify
+- {files_count} files to modify"
 
-Does this capture your intent? Any changes needed?"
+**Present review menu:**
+
+```
+[y] Approve - finalize the spec
+[c] Changes - request modifications
+[q] Questions - ask about any section
+[a] Advanced Elicitation - dig deeper before approving
+[p] Party Mode - get expert feedback before approving
+```
+
+**HALT and wait for user selection.**
+
+#### Menu Handling:
+
+- **[y]**: Proceed to Section 3 (Finalize the Spec)
+- **[c]**: Proceed to Section 2 (Handle Review Feedback), then return here and redisplay menu
+- **[q]**: Answer questions, then redisplay this menu
+- **[a]**: Load and execute `{advanced_elicitation}`, then return here and redisplay menu
+- **[p]**: Load and execute `{party_mode_exec}`, then return here and redisplay menu
 
 ### 2. Handle Review Feedback
 
