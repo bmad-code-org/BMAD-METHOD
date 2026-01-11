@@ -7,6 +7,8 @@
 
 **Build More, Architect Dreams** — An AI-driven agile development framework with 21 specialized agents, 50+ guided workflows, and scale-adaptive intelligence that adjusts from bug fixes to enterprise systems.
 
+**100% free and open source.** No paywalls. No gated content. No gated Discord. We believe in empowering everyone, not just those who can pay.
+
 ## Why BMad?
 
 Traditional AI tools do the thinking for you, producing average results. BMad agents act as expert collaborators who guide you through structured workflows to bring out your best thinking.
@@ -60,9 +62,19 @@ This analyzes your project and recommends a track:
 ## Community
 
 - [Discord](https://discord.gg/gk8jAdXWmj) — Get help, share ideas, collaborate
-- [YouTube](https://www.youtube.com/@BMadCode) — Video tutorials and updates
+- [YouTube](https://www.youtube.com/@BMadCode) — Tutorials, master class, and podcast (launching Feb 2025)
 - [GitHub Issues](https://github.com/bmad-code-org/BMAD-METHOD/issues) — Bug reports and feature requests
 - [Discussions](https://github.com/bmad-code-org/BMAD-METHOD/discussions) — Community conversations
+
+## Support BMad
+
+BMad is free for everyone — and always will be. If you'd like to support development:
+
+- ⭐ [Star us on GitHub](https://github.com/bmad-code-org/BMAD-METHOD/) — Helps others discover BMad
+- 📺 [Subscribe on YouTube](https://www.youtube.com/@BMadCode) — Master class launching Feb 2026
+- ☕ [Buy Me a Coffee](https://buymeacoffee.com/bmad) — Fuel the development
+- 🏢 Corporate sponsorship — DM on Discord
+- 🎤 Speaking & Media — Available for conferences, podcasts, interviews (Discord)
 
 ## Contributing
 
