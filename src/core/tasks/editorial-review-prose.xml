@@ -7,7 +7,7 @@
 
   <inputs>
     <input name="content" required="true" desc="Cohesive unit of text to review (markdown, plain text, or text-heavy XML)" />
-    <input name="target_audience" required="false" default="humans" desc="Target audience: 'humans' (default) for standard editorial, 'llm' for precision focus" />
+    <input name="reader_type" required="false" default="humans" desc="'humans' (default) for standard editorial, 'llm' for precision focus" />
   </inputs>
 
   <llm critical="true">
@@ -39,8 +39,8 @@
     <step n="1" title="Validate Input">
       <action>Check if content is empty or contains fewer than 3 words</action>
       <action if="empty or fewer than 3 words">HALT with error: "Content too short for editorial review (minimum 3 words required)"</action>
-      <action>Validate target_audience is "humans" or "llm" (or not provided, defaulting to "humans")</action>
-      <action if="target_audience is invalid">HALT with error: "Invalid target_audience. Must be 'humans' or 'llm'"</action>
+      <action>Validate reader_type is "humans" or "llm" (or not provided, defaulting to "humans")</action>
+      <action if="reader_type is invalid">HALT with error: "Invalid reader_type. Must be 'humans' or 'llm'"</action>
       <action>Identify content type (markdown, plain text, XML with text)</action>
       <action>Note any code blocks, frontmatter, or structural markup to skip</action>
     </step>
@@ -48,9 +48,9 @@
     <step n="2" title="Analyze Style">
       <action>Analyze the style, tone, and voice of the input text</action>
       <action>Note any intentional stylistic choices to preserve (informal tone, technical jargon, rhetorical patterns)</action>
-      <action>Calibrate review approach based on target_audience parameter</action>
-      <action if="target_audience='llm'">Prioritize: unambiguous references, consistent terminology, explicit structure, no hedging</action>
-      <action if="target_audience='humans'">Prioritize: clarity, flow, readability, natural progression</action>
+      <action>Calibrate review approach based on reader_type parameter</action>
+      <action if="reader_type='llm'">Prioritize: unambiguous references, consistent terminology, explicit structure, no hedging</action>
+      <action if="reader_type='humans'">Prioritize: clarity, flow, readability, natural progression</action>
     </step>
 
     <step n="3" title="Editorial Review" critical="true">
@@ -84,7 +84,7 @@
 
   <halt-conditions>
     <condition>HALT with error if content is empty or fewer than 3 words</condition>
-    <condition>HALT with error if target_audience is not "humans" or "llm"</condition>
+    <condition>HALT with error if reader_type is not "humans" or "llm"</condition>
     <condition>If no issues found after thorough review, output "No editorial issues identified" (this is valid completion, not an error)</condition>
   </halt-conditions>
 
