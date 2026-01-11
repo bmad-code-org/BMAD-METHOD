@@ -33,7 +33,7 @@ agent:
   menu:
     - trigger: WS or fuzzy match on workflow-status
       workflow: "{project-root}/_bmad/bmm/workflows/workflow-status/workflow.yaml"
-      description: "[WS] Get workflow status or initialize a workflow if not already done (optional)"
+      description: "[WS] Start here or resume - show workflow status and next best step"
 
     - trigger: TF or fuzzy match on test-framework
       workflow: "{project-root}/_bmad/bmm/workflows/testarch/framework/workflow.yaml"

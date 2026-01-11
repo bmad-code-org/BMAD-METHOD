@@ -121,6 +121,8 @@ Parse these fields from YAML comments and metadata:
 - {{workflow_name}} ({{agent}}) - {{status}}
   {{/each}}
   {{/if}}
+
+**Tip:** For guardrail tests, run TEA `*automate` after `dev-story`. If you lose context, TEA workflows resume from artifacts in `{{output_folder}}`.
   </output>
   </step>
 
