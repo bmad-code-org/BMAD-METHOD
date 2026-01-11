@@ -6,8 +6,8 @@ description: 'Define development epics and high-level story breakdown'
 workflow_path: '{project-root}/_bmad/bmgd/workflows/2-design/gdd'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-12-epics.md'
-nextStepFile: '{workflow_path}/steps/step-13-metrics.md'
+thisStepFile: './step-12-epics.md'
+nextStepFile: './step-13-metrics.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/gdd.md'
 epicsOutputFile: '{output_folder}/epics.md'

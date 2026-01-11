@@ -6,8 +6,8 @@ description: 'Define technical specifications and requirements'
 workflow_path: '{project-root}/_bmad/bmgd/workflows/2-design/gdd'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-11-technical.md'
-nextStepFile: '{workflow_path}/steps/step-12-epics.md'
+thisStepFile: './step-11-technical.md'
+nextStepFile: './step-12-epics.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/gdd.md'
 

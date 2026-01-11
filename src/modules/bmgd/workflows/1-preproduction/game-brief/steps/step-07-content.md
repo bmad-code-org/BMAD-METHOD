@@ -6,8 +6,8 @@ description: 'Define content framework, art/audio direction, and risk assessment
 workflow_path: '{project-root}/_bmad/bmgd/workflows/1-preproduction/game-brief'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-07-content.md'
-nextStepFile: '{workflow_path}/steps/step-08-complete.md'
+thisStepFile: './step-07-content.md'
+nextStepFile: './step-08-complete.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/game-brief.md'
 

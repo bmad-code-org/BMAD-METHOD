@@ -6,8 +6,8 @@ description: 'Define dialogue style, key conversations, and branching systems'
 workflow_path: '{project-root}/_bmad/bmgd/workflows/2-design/narrative'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-06-dialogue.md'
-nextStepFile: '{workflow_path}/steps/step-07-environmental.md'
+thisStepFile: './step-06-dialogue.md'
+nextStepFile: './step-07-environmental.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/narrative-design.md'
 

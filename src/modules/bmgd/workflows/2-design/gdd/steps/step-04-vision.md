@@ -6,8 +6,8 @@ description: 'Define project goals, context, and unique selling points'
 workflow_path: '{project-root}/_bmad/bmgd/workflows/2-design/gdd'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-04-vision.md'
-nextStepFile: '{workflow_path}/steps/step-05-core-gameplay.md'
+thisStepFile: './step-04-vision.md'
+nextStepFile: './step-05-core-gameplay.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/gdd.md'
 

@@ -6,7 +6,7 @@ description: 'Document out of scope items, capture assumptions, and provide hand
 workflow_path: '{project-root}/_bmad/bmgd/workflows/2-design/gdd'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-14-complete.md'
+thisStepFile: './step-14-complete.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/gdd.md'
 epicsFile: '{output_folder}/epics.md'

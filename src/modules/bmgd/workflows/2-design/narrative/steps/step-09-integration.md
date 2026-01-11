@@ -6,8 +6,8 @@ description: 'Define how narrative integrates with gameplay including gating, ag
 workflow_path: '{project-root}/_bmad/bmgd/workflows/2-design/narrative'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-09-integration.md'
-nextStepFile: '{workflow_path}/steps/step-10-production.md'
+thisStepFile: './step-09-integration.md'
+nextStepFile: './step-10-production.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/narrative-design.md'
 

@@ -6,8 +6,8 @@ description: 'Address cross-cutting concerns that affect all game systems'
 workflow_path: '{project-root}/_bmad/bmgd/workflows/3-technical/game-architecture'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-05-crosscutting.md'
-nextStepFile: '{workflow_path}/steps/step-06-structure.md'
+thisStepFile: './step-05-crosscutting.md'
+nextStepFile: './step-06-structure.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/game-architecture.md'
 

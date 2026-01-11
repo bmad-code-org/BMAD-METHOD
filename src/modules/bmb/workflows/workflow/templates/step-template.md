@@ -15,9 +15,9 @@ workflow\*path: '{project-root}/_bmad/[module]/reference/workflows/[workflow-nam
 
 # File References (all use {variable} format in file)
 
-thisStepFile: '{workflow_path}/steps/step-[N]-[short-name].md'
-nextStep{N+1}: '{workflow_path}/steps/step-[N+1]-[next-short-name].md' # Remove for final step or no next step
-altStep{Y}: '{workflow_path}/steps/step-[Y]-[some-other-step].md' # if there is an alternate next story depending on logic
+thisStepFile: './step-[N]-[short-name].md'
+nextStep{N+1}: './step-[N+1]-[next-short-name].md' # Remove for final step or no next step
+altStep{Y}: './step-[Y]-[some-other-step].md' # if there is an alternate next story depending on logic
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/[output-file-name]-{project_name}.md'
 
@@ -243,7 +243,7 @@ Display: "**Select an Option:** [A] [Continue to Step Foo] [A] [Continue to Step
 
 ### Initialization Step Example
 
-See [step-01-init.md](https://github.com/bmad-code-org/BMAD-METHOD/blob/main/src/modules/bmb/reference/workflows/meal-prep-nutrition/steps/step-01-init.md) for an example of:
+See [step-01-discovery.md](../steps-c/step-01-discovery.md) for an example of:
 
 - Detecting existing workflow state and short circuit to 1b
 - Creating output documents from templates
@@ -252,16 +252,16 @@ See [step-01-init.md](https://github.com/bmad-code-org/BMAD-METHOD/blob/main/src
 
 ### Continuation Step Example
 
-See [step-01b-continue.md](https://github.com/bmad-code-org/BMAD-METHOD/blob/main/src/modules/bmb/reference/workflows/meal-prep-nutrition/steps/step-01b-continue.md) for an example of:
+See [step-01b-continue.md](../steps-c/step-01b-continuation.md) for an example of:
 
-- Handling already-in-progress workflows
-- Detecting completion status
+- Handling already-in-progress workflows that the user now wants to continue progress
+- Detecting completion status (which step was already completed last)
 - Presenting update vs new plan options
-- Seamless workflow resumption
+- Seamless workflow resumption by reviewing existing plan and output thus far that has been recorded and then jumping to the proper step
 
 ### Standard Step with Menu Example
 
-See [step-02-profile.md](https://github.com/bmad-code-org/BMAD-METHOD/blob/main/src/modules/bmb/reference/workflows/meal-prep-nutrition/steps/step-02-profile.md) for an example of:
+See [step-02-classification.md](../steps-c/step-02-classification.md#8-present-menu-options) for an example of:
 
 - Presenting a menu with A/P/C options
 - Forcing halt until user selects 'C' (Continue)
@@ -271,12 +271,12 @@ See [step-02-profile.md](https://github.com/bmad-code-org/BMAD-METHOD/blob/main/
 
 ### Final Step Example
 
-See [step-06-prep-schedule.md](https://github.com/bmad-code-org/BMAD-METHOD/blob/main/src/modules/bmb/reference/workflows/meal-prep-nutrition/steps/step-06-prep-schedule.md) for an example of:
+See [step-11-completion.md](../steps-c/step-11-completion.md) for an example of:
 
 - Completing workflow deliverables
 - Marking workflow as complete in frontmatter
 - Providing final success messages
-- Ending the workflow session gracefully
+- Ending the workflow session gracefully or moving on to a validation workflow if applicable
 
 ## Best Practices
 

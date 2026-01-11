@@ -6,6 +6,10 @@ description: Understanding the Test Architect (TEA) agent and its role in BMad M
 
 The Test Architect (TEA) is a specialized agent focused on quality strategy, test automation, and release gates in BMad Method projects.
 
+:::tip[Design Philosophy]
+TEA was built to solve AI-generated tests that rot in review. For the problem statement and design principles, see [Testing as Engineering](/docs/explanation/philosophy/testing-as-engineering.md). For setup, see [Setup Test Framework](/docs/how-to/workflows/setup-test-framework.md).
+:::
+
 ## Overview
 
 - **Persona:** Murat, Master Test Architect and Quality Advisor focused on risk-based testing, fixture architecture, ATDD, and CI/CD governance.

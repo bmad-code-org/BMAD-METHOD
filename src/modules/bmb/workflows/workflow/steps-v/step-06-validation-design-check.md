@@ -3,9 +3,9 @@ name: 'step-06-validation-design-check'
 description: 'Check if workflow has proper validation steps that load validation data (if validation is critical)'
 
 nextStepFile: './step-07-instruction-style-check.md'
-targetWorkflowPath: '{bmb_creations_output_folder}/workflows/{new_workflow_name}'
-validationReportFile: '{targetWorkflowPath}/validation-report-{new_workflow_name}.md'
-workflowPlanFile: '{targetWorkflowPath}/workflow-plan-{new_workflow_name}.md'
+targetWorkflowPath: '{workflow_folder_path}'
+validationReportFile: '{workflow_folder_path}/validation-report-{datetime}.md'
+workflowPlanFile: '{workflow_folder_path}/workflow-plan.md'
 trimodalWorkflowStructure: '../data/trimodal-workflow-structure.md'
 ---
 
@@ -23,18 +23,20 @@ To check if the workflow has proper validation steps when validation is critical
 - 📖 CRITICAL: Read the complete step file before taking any action
 - 🔄 CRITICAL: When loading next step, ensure entire file is read
 - ✅ Validation does NOT stop for user input - auto-proceed through all validation steps
+- ⚙️ If any instruction references a subprocess, subagent, or tool you do not have access to, you MUST still achieve the outcome in your main context
 
 ### Step-Specific Rules:
 
-- 🎯 Check if workflow needs validation steps
-- 🚫 DO NOT skip any validation step reviews
-- 💬 Append findings to report, then auto-load next step
+- 🎯 Check if workflow needs validation steps - use subprocess optimization (per-file deep analysis for Pattern 2)
+- 🚫 DO NOT skip any validation step reviews - DO NOT BE LAZY
+- 💬 Subprocess must either update validation report directly OR return findings to parent for aggregation
 - 🚪 This is validation - systematic and thorough
 
 ## EXECUTION PROTOCOLS:
 
-- 🎯 Determine if validation is critical for this workflow
-- 💾 Check validation steps exist and are well-designed
+- 🎯 Determine if validation is critical for this workflow - use subprocess optimization when available
+- 💾 Check validation steps exist and are well-designed - launch subprocess for per-file deep analysis (Pattern 2)
+- 💬 Subprocesses must either update validation report OR return findings for parent aggregation
 - 📖 Append findings to validation report
 - 🚫 DO NOT halt for user input - validation runs to completion
 
@@ -67,11 +69,13 @@ From {workflowPlanFile}, check:
 
 ### 2. If Validation Is Critical, Check Validation Steps
 
-**DO NOT BE LAZY - For EACH validation step in the workflow:**
+**DO NOT BE LAZY - For EVERY validation step file, launch a subprocess that:**
 
-1. Find the step (usually named with "validate", "check", "review")
-2. Load the step file
-3. Check for:
+1. Loads that validation step file
+2. Reads and analyzes the step's content deeply (prose, logic, quality, flow, anti-lazy language)
+3. Returns structured analysis findings to parent for aggregation
+
+**SUBPROCESS ANALYSIS PATTERN - Check each validation step file for:**
 
 **Proper Validation Step Design:**
 - ✅ Loads validation data/standards from `data/` folder
@@ -93,7 +97,27 @@ From {workflowPlanFile}, check:
 - ⚠️ For non-critical flows (entertainment, therapy, casual): validation may be inline
 - ❌ ERROR if critical validation is mixed into create steps
 
-### 3. Check Validation Data Files
+**RETURN FORMAT:**
+Return a structured analysis containing:
+- Step file name
+- Proper design checklist (loads data, systematic checks, auto-proceeds, clear criteria, reports findings)
+- Anti-lazy language check (has mandate, mandate text, comprehensive coverage)
+- Critical flow check (location, segregation, independence)
+- Any issues found
+- Overall status (PASS/FAIL/WARN)
+
+**Context savings:** Each subprocess returns analysis (~30 lines), not full step file (~200 lines). Parent gets structured findings, not file contents.
+
+### 3. Aggregate Findings from All Subprocesses
+
+After all validation step files have been analyzed in subprocesses, aggregate findings:
+
+**Process subprocess results:**
+- Compile all structured analysis findings
+- Identify patterns across validation steps
+- Note any critical issues or warnings
+
+### 4. Check Validation Data Files
 
 **If workflow has validation steps:**
 
@@ -103,57 +127,42 @@ From {workflowPlanFile}, check:
    - Markdown files have clear criteria
    - Data is referenced in step frontmatter
 
-### 4. Document Findings
+### 5. Document Findings
 
-```markdown
-### Validation Design Check Results
+**Create/Update "Validation Design Check" section in {validationReportFile} using aggregated subprocess findings:**
 
-**Workflow Requires Validation:** [Yes/No]
+Document the following information:
 
-**Workflow Domain Type:** [Critical/Compliance/Creative/Entertainment/Therapy/Casual]
+**Whether validation is required:** Indicate if this workflow needs validation steps based on its domain type (critical/compliance/safety workflows vs. creative/exploratory ones)
 
-**If Yes:**
+**List of validation steps found:** Provide the names/paths of all validation step files in the workflow
 
-**Validation Steps Found:**
-- [List each validation step]
+**Validation step quality assessment:** For each validation step, document:
+- Whether it loads validation data/standards from the data/ folder
+- Whether it has a systematic check sequence
+- Whether it auto-proceeds through checks (vs. stopping for user input)
+- Whether it includes "DO NOT BE LAZY" or similar anti-lazy language mandates
+- Whether it has clear pass/fail criteria
+- Overall status (PASS/FAIL/WARN)
 
-**Validation Step Quality:**
-| Step | Loads Data | Systematic | Auto-proceed | DO NOT BE LAZY | Criteria | Status |
-|------|-----------|------------|--------------|----------------|----------|--------|
-| step-04-validate.md | ✅ | ✅ | ✅ | ✅ | ✅ Clear | ✅ PASS |
-| step-07-check.md | ❌ | ⚠️ Vague | ❌ User choice each | ❌ | ❌ Unclear | ❌ FAIL |
+**"DO NOT BE LAZY" language presence:** For each validation step, note whether anti-lazy language is present and what it says
 
-**"DO NOT BE LAZY" Language Check:**
-| Step | Has Anti-Lazy Language | Status |
-|------|----------------------|--------|
-| step-04-validate.md | ✅ "DO NOT BE LAZY - LOAD AND REVIEW EVERY FILE" | ✅ PASS |
-| step-07-check.md | ❌ No anti-lazy language found | ⚠️ WARN |
+**Critical flow segregation:** For workflows requiring validation, document:
+- The workflow domain type
+- Whether validation steps are in the steps-v/ folder (tri-modal structure) or inline with create steps
+- Whether this segregation is appropriate for the workflow type
 
-**Critical Flow Check:**
-- Workflow domain: [Critical/Creative/Therapy/etc.]
-- Validation location: [steps-v/ folder / inline with create]
-- For [critical] workflows: Validation is in steps-v/ ✅ / ❌ mixed in create
-- Status: ✅ Properly segregated / ⚠️ Consider segregation / ❌ Should be in steps-v/
+**Validation data files:** List any validation data files found in the data/ folder, or note if they are missing
 
-**Validation Data Files:**
-- [List data files found, or note if missing]
+**Issues identified:** List any problems found with the validation design, missing data files, or quality concerns
 
-**Issues Found:**
-[List issues with validation design]
+**Overall status:** Provide final assessment (PASS/FAIL/WARN/N/A) with reasoning
 
-**If No (Validation Not Required):**
-- Workflow is [creative/exploratory/type]
-- Validation is user's responsibility
-- No validation steps needed ✅
+### 6. Append to Report
 
-**Status:** ✅ PASS / ❌ FAIL / ⚠️ WARNINGS / N/A (not applicable)
-```
+Update {validationReportFile} - replace "## Validation Design Check *Pending...*" with actual findings from subprocess aggregation.
 
-### 5. Append to Report
-
-Update {validationReportFile} - replace "## Validation Design Check *Pending...*" with actual findings.
-
-### 6. Save Report and Auto-Proceed
+### 7. Save Report and Auto-Proceed
 
 **CRITICAL:** Save the validation report BEFORE loading next step.
 
