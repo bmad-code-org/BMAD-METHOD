@@ -2,6 +2,7 @@ const path = require('node:path');
 const { BaseIdeSetup } = require('./_base-ide');
 const chalk = require('chalk');
 const { AgentCommandGenerator } = require('./shared/agent-command-generator');
+const { WorkflowPromptGenerator } = require('./shared/workflow-prompt-generator');
 
 /**
  * GitHub Copilot setup handler
@@ -12,6 +13,7 @@ class GitHubCopilotSetup extends BaseIdeSetup {
     super('github-copilot', 'GitHub Copilot', true); // preferred IDE
     this.configDir = '.github';
     this.agentsDir = 'agents';
+    this.promptsDir = 'prompts';
     this.vscodeDir = '.vscode';
   }
 
@@ -94,14 +96,12 @@ class GitHubCopilotSetup extends BaseIdeSetup {
   async setup(projectDir, bmadDir, options = {}) {
     console.log(chalk.cyan(`Setting up ${this.name}...`));
 
-    // Configure VS Code settings using pre-collected config if available
-    const config = options.preCollectedConfig || {};
-    await this.configureVsCodeSettings(projectDir, { ...options, ...config });
-
     // Create .github/agents directory
     const githubDir = path.join(projectDir, this.configDir);
     const agentsDir = path.join(githubDir, this.agentsDir);
+    const promptsDir = path.join(githubDir, this.promptsDir);
     await this.ensureDir(agentsDir);
+    await this.ensureDir(promptsDir);
 
     // Clean up any existing BMAD files before reinstalling
     await this.cleanup(projectDir);
@@ -117,22 +117,37 @@ class GitHubCopilotSetup extends BaseIdeSetup {
       const agentContent = await this.createAgentContent({ module: artifact.module, name: artifact.name }, content);
 
       // Use bmd- prefix: bmd-custom-{module}-{name}.agent.md
-      const targetPath = path.join(agentsDir, `bmd-custom-${artifact.module}-${artifact.name}.agent.md`);
+      const agentFileName = `bmd-custom-${artifact.module}-${artifact.name}`;
+      const targetPath = path.join(agentsDir, `${agentFileName}.agent.md`);
       await this.writeFile(targetPath, agentContent);
       agentCount++;
 
-      console.log(chalk.green(`  ✓ Created agent: bmd-custom-${artifact.module}-${artifact.name}`));
+      console.log(chalk.green(`  ✓ Created agent: ${agentFileName}`));
     }
+
+    // Generate workflow prompts from config (shared logic)
+    // Each prompt includes nextSteps guidance for the agent to suggest next workflows
+    const promptGen = new WorkflowPromptGenerator();
+    const promptRecommendations = await promptGen.generatePromptFiles(promptsDir, options.selectedModules || []);
+    const promptCount = Object.keys(promptRecommendations).length;
+
+    // Configure VS Code settings using pre-collected config if available
+    const config = options.preCollectedConfig || {};
+    await this.configureVsCodeSettings(projectDir, { ...options, ...config, promptRecommendations });
 
     console.log(chalk.green(`✓ ${this.name} configured:`));
     console.log(chalk.dim(`  - ${agentCount} agents created`));
+    console.log(chalk.dim(`  - ${promptCount} workflow prompts configured`));
     console.log(chalk.dim(`  - Agents directory: ${path.relative(projectDir, agentsDir)}`));
+    console.log(chalk.dim(`  - Prompts directory: ${path.relative(projectDir, promptsDir)}`));
     console.log(chalk.dim(`  - VS Code settings configured`));
     console.log(chalk.dim('\n  Agents available in VS Code Chat view'));
+    console.log(chalk.dim('  Workflow prompts show as new chat starters'));
 
     return {
       success: true,
       agents: agentCount,
+      prompts: promptCount,
       settings: true,
     };
   }
@@ -197,6 +212,11 @@ class GitHubCopilotSetup extends BaseIdeSetup {
         'github.copilot.chat.agent.autoFix': manual.autoFix === undefined ? true : manual.autoFix,
         'chat.tools.autoApprove': manual.autoApprove || false,
       };
+    }
+
+    // Add prompt file recommendations for new chat starters
+    if (options.promptRecommendations && Object.keys(options.promptRecommendations).length > 0) {
+      bmadSettings['chat.promptFilesRecommendations'] = options.promptRecommendations;
     }
 
     // Merge settings (existing take precedence)
@@ -305,6 +325,24 @@ ${cleanContent}
 
       if (removed > 0) {
         console.log(chalk.dim(`  Cleaned up ${removed} existing BMAD agents`));
+      }
+    }
+
+    // Clean up prompts directory
+    const promptsDir = path.join(projectDir, this.configDir, this.promptsDir);
+    if (await fs.pathExists(promptsDir)) {
+      const files = await fs.readdir(promptsDir);
+      let removed = 0;
+
+      for (const file of files) {
+        if (file.startsWith('bmd-') && file.endsWith('.prompt.md')) {
+          await fs.remove(path.join(promptsDir, file));
+          removed++;
+        }
+      }
+
+      if (removed > 0) {
+        console.log(chalk.dim(`  Cleaned up ${removed} existing BMAD prompt files`));
       }
     }
   }
