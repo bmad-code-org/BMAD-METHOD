@@ -79,3 +79,6 @@ bmad-custom-src/
 website/.astro/
 website/dist/
 build/
+
+# Fork-specific documentation (not committed)
+BUG-TRACKING.md

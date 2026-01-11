@@ -1,0 +1,27 @@
+# Story Done Workflow (DEV Agent)
+name: story-done
+description: 'Marks a story as done (DoD complete), updates sprint-status → DONE, and syncs related bugs/features in bugs.yaml/bugs.md to [IMPLEMENTED] status.'
+author: 'BMad'
+
+# Critical variables from config
+config_source: '{project-root}/.bmad/bmm/config.yaml'
+output_folder: '{config_source}:output_folder'
+user_name: '{config_source}:user_name'
+communication_language: '{config_source}:communication_language'
+date: system-generated
+sprint_status: '{output_folder}/sprint-status.yaml'
+
+# Workflow components
+installed_path: '{project-root}/.bmad/bmm/workflows/4-implementation/story-done'
+instructions: '{installed_path}/instructions.md'
+
+# Variables and inputs
+variables:
+  story_dir: '{config_source}:dev_ephemeral_location/stories' # Directory where stories are stored
+  bugs_yaml: '{output_folder}/bugs.yaml' # Bug/feature tracking structured data
+  bugs_md: '{output_folder}/bugs.md' # Bug/feature tracking human-readable log
+
+# Output configuration - no output file, just status updates
+default_output_file: ''
+
+standalone: true
