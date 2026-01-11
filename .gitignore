@@ -10,6 +10,11 @@ package-lock.json
 test-output/*
 coverage/
 
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+
 # Logs
 logs/
 *.log

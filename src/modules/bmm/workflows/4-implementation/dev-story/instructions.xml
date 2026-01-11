@@ -1,5 +1,5 @@
 <workflow>
-  <critical>The workflow execution engine is governed by: {project-root}/_bmad/core/tasks/workflow.xml</critical>
+  <critical>The workflow execution engine is governed by: {project-root}/.bmad/core/tasks/workflow.xml</critical>
   <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
   <critical>Communicate all responses in {communication_language} and language MUST be tailored to {user_skill_level}</critical>
   <critical>Generate all documents in {document_output_language}</critical>
@@ -17,7 +17,7 @@
       <action>Use {{story_path}} directly</action>
       <action>Read COMPLETE story file</action>
       <action>Extract story_key from filename or metadata</action>
-      <goto anchor="task_check" />
+      <goto> anchor with id task_check</goto>
     </check>
 
     <!-- Sprint-based story discovery -->
@@ -40,12 +40,9 @@
 
           **What would you like to do?**
           1. Run `create-story` to create next story from epics with comprehensive context
-          2. Run `*validate-create-story` to improve existing stories before development (recommended quality check)
+          2. Run `*validate-create-story` to improve existing drafted stories before development
           3. Specify a particular story file to develop (provide full path)
           4. Check {{sprint_status}} file to see current sprint status
-
-          💡 **Tip:** Stories in `ready-for-dev` may not have been validated. Consider running `validate-create-story` first for a quality
-          check.
         </output>
         <ask>Choose option [1], [2], [3], or [4], or specify story file path:</ask>
 
@@ -88,7 +85,7 @@
 
           **Available Options:**
           1. Run `create-story` to create next story from epics with comprehensive context
-          2. Run `*validate-create-story` to improve existing stories
+          2. Run `*validate-create-story` to improve existing drafted stories
           3. Specify which story to develop
         </output>
         <ask>What would you like to do? Choose option [1], [2], or [3]:</ask>
@@ -142,6 +139,44 @@
     <action>Load comprehensive context from story file's Dev Notes section</action>
     <action>Extract developer guidance from Dev Notes: architecture requirements, previous learnings, technical specifications</action>
     <action>Use enhanced story context to inform implementation decisions and approaches</action>
+
+    <!-- UX Design Specification Validation -->
+    <action>Search for UX Design Specification file in project (pattern: *ux-design*.md, *ux-spec*.md)</action>
+
+    <check if="UX Design Specification file exists">
+      <action>Parse frontmatter for: componentLibrary, effectsLibrary, referenceSites</action>
+      <action>Check if Component Resources section exists in document body</action>
+
+      <check if="componentLibrary OR effectsLibrary is defined and non-empty">
+        <output>🎨 **UX Design Specification Loaded**
+
+          **Component Resources:**
+          | Category | Value |
+          |----------|-------|
+          | **Base UI Library** | {{componentLibrary}} |
+          | **Effects Library** | {{effectsLibrary}} |
+          | **Reference Sites** | {{referenceSites}} |
+
+          ℹ️ Implementation should follow these UX technology standards.
+        </output>
+      </check>
+
+      <check if="componentLibrary AND effectsLibrary are both empty or missing">
+        <output>⚠️ **UX Design Specification Found but Incomplete**
+
+          The UX Design Specification exists but is missing Component Resources configuration.
+
+          **Recommendation:** Consider running `create-ux-design` workflow to complete the UX specification before development.
+
+          Continuing with development - but UI component choices may not align with UX design intent.
+        </output>
+      </check>
+    </check>
+
+    <check if="UX Design Specification file does NOT exist">
+      <output>ℹ️ No UX Design Specification found. Proceeding without UX component guidance.</output>
+    </check>
+
     <output>✅ **Context Loaded**
       Story and project context available for implementation
     </output>
@@ -325,7 +360,7 @@
     <action>Run the full regression suite (do not skip)</action>
     <action>Confirm File List includes every changed file</action>
     <action>Execute enhanced definition-of-done validation</action>
-    <action>Update the story Status to: "review"</action>
+    <action>Update the story Status to: "Ready for Review"</action>
 
     <!-- Enhanced Definition of Done Validation -->
     <action>Validate definition-of-done checklist with essential requirements:
@@ -349,17 +384,17 @@
       <action>Verify current status is "in-progress" (expected previous state)</action>
       <action>Update development_status[{{story_key}}] = "review"</action>
       <action>Save file, preserving ALL comments and structure including STATUS DEFINITIONS</action>
-      <output>✅ Story status updated to "review" in sprint-status.yaml</output>
+      <output>✅ Story marked Ready for Review in sprint status</output>
     </check>
 
     <check if="{sprint_status} file does NOT exist OR {{current_sprint_status}} == 'no-sprint-tracking'">
-      <output>ℹ️ Story status updated to "review" in story file (no sprint tracking configured)</output>
+      <output>ℹ️ Story marked Ready for Review in story file (no sprint tracking configured)</output>
     </check>
 
     <check if="story key not found in sprint status">
       <output>⚠️ Story file updated, but sprint-status update failed: {{story_key}} not found
 
-        Story status is set to "review" in file, but sprint-status.yaml may be out of sync.
+        Story is marked Ready for Review in file, but sprint-status.yaml may be out of sync.
       </output>
     </check>
 
@@ -376,7 +411,7 @@
 
     <action>Communicate to {user_name} that story implementation is complete and ready for review</action>
     <action>Summarize key accomplishments: story ID, story key, title, key changes made, tests added, files modified</action>
-    <action>Provide the story file path and current status (now "review")</action>
+    <action>Provide the story file path and current status (now "Ready for Review")</action>
 
     <action>Based on {user_skill_level}, ask if user needs any explanations about:
       - What was implemented and how it works
