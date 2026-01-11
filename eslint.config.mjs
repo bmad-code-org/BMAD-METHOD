@@ -81,6 +81,21 @@ export default [
     },
   },
 
+  // Test files using Vitest (ES modules)
+  {
+    files: ['test/unit/**/*.js', 'test/integration/**/*.js', 'test/helpers/**/*.js', 'test/setup.js', 'vitest.config.js'],
+    languageOptions: {
+      sourceType: 'module',
+      ecmaVersion: 'latest',
+    },
+    rules: {
+      // Allow dev dependencies in test files
+      'n/no-unpublished-import': 'off',
+      'unicorn/prefer-module': 'off',
+      'no-unused-vars': 'off',
+    },
+  },
+
   // CLI scripts under tools/** and test/**
   {
     files: ['tools/**/*.js', 'tools/**/*.mjs', 'test/**/*.js'],
