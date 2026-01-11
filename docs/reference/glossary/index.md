@@ -363,6 +363,10 @@ Implementation technique for brownfield projects that allows gradual rollout of 
 
 Specific locations where new code connects with existing systems. Must be documented explicitly in brownfield tech-specs and architectures.
 
+### Context Engineering
+
+Loading domain-specific standards and patterns into AI context automatically, rather than relying on prompts alone. In TEA, this means the `tea-index.csv` manifest loads relevant knowledge fragments so the AI doesn't relearn testing patterns each session. This approach ensures consistent, production-ready outputs regardless of prompt variation.
+
 ### Convention Detection
 
 Quick Spec Flow feature that automatically detects existing code style, naming conventions, patterns, and frameworks from brownfield codebases, then asks user to confirm before proceeding.
