@@ -1,0 +1,71 @@
+# BMAD API Dockerfile
+# Multi-stage build for optimized production image
+
+# Stage 1: Dependencies
+FROM node:20-alpine AS deps
+WORKDIR /app
+
+# Install dependencies needed for native modules
+RUN apk add --no-cache libc6-compat
+
+# Copy package files
+COPY package.json package-lock.json* ./
+COPY apps/api/package.json ./apps/api/
+COPY packages/bmad-core/package.json ./packages/bmad-core/
+
+# Install dependencies
+RUN npm ci --workspace=@bmad/api --workspace=@bmad/core
+
+# Stage 2: Builder
+FROM node:20-alpine AS builder
+WORKDIR /app
+
+# Copy dependencies
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/apps/api/node_modules ./apps/api/node_modules
+COPY --from=deps /app/packages/bmad-core/node_modules ./packages/bmad-core/node_modules
+
+# Copy source
+COPY . .
+
+# Build
+RUN npm run build --workspace=@bmad/core
+RUN npm run build --workspace=@bmad/api
+
+# Stage 3: Runner
+FROM node:20-alpine AS runner
+WORKDIR /app
+
+# Set production environment
+ENV NODE_ENV=production
+ENV PORT=4000
+
+# Create non-root user
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 bmad
+
+# Copy built application
+COPY --from=builder /app/apps/api/dist ./dist
+COPY --from=builder /app/apps/api/package.json ./
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/packages/bmad-core/dist ./packages/bmad-core/dist
+COPY --from=builder /app/packages/bmad-core/package.json ./packages/bmad-core/
+
+# Copy BMAD source for agent definitions
+COPY --from=builder /app/../src ./bmad-src
+
+# Set ownership
+RUN chown -R bmad:nodejs /app
+
+# Switch to non-root user
+USER bmad
+
+# Expose port
+EXPOSE 4000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:4000/health || exit 1
+
+# Start server
+CMD ["node", "dist/index.js"]

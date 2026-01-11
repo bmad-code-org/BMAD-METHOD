@@ -1,0 +1,232 @@
+# BMAD Web - CI/CD Pipeline
+# Automated testing and deployment
+
+name: CI/CD
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'bmad-web/**'
+      - '.github/workflows/deploy.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'bmad-web/**'
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  # ===================
+  # Lint and Type Check
+  # ===================
+  lint:
+    name: Lint & Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: bmad-web/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          cd bmad-web
+          npm ci
+
+      - name: Lint
+        run: |
+          cd bmad-web
+          npm run lint
+
+      - name: Type check
+        run: |
+          cd bmad-web
+          npm run build --workspace=@bmad/core
+          npm run build --workspace=@bmad/ui
+
+  # ===================
+  # Unit Tests
+  # ===================
+  test:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: bmad-web/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          cd bmad-web
+          npm ci
+
+      - name: Run tests
+        run: |
+          cd bmad-web
+          npm test --if-present
+
+  # ===================
+  # Build Check
+  # ===================
+  build:
+    name: Build Check
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: bmad-web/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          cd bmad-web
+          npm ci
+
+      - name: Build packages
+        run: |
+          cd bmad-web
+          npm run build --workspace=@bmad/core
+          npm run build --workspace=@bmad/ui
+
+      - name: Build API
+        run: |
+          cd bmad-web
+          npm run build --workspace=@bmad/api
+
+      - name: Build Web
+        env:
+          NEXT_PUBLIC_API_URL: https://api.example.com
+          NEXT_PUBLIC_WS_URL: wss://api.example.com
+          NEXT_PUBLIC_APP_URL: https://example.com
+        run: |
+          cd bmad-web
+          npm run build --workspace=@bmad/web
+
+  # ===================
+  # Deploy Frontend (Vercel)
+  # ===================
+  deploy-frontend:
+    name: Deploy Frontend
+    runs-on: ubuntu-latest
+    needs: [test, build]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment:
+      name: production
+      url: ${{ steps.deploy.outputs.url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy to Vercel
+        id: deploy
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          working-directory: bmad-web/apps/web
+          vercel-args: '--prod'
+
+      - name: Comment PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '🚀 Frontend deployed to: ${{ steps.deploy.outputs.url }}'
+            })
+
+  # ===================
+  # Deploy Backend (Railway)
+  # ===================
+  deploy-backend:
+    name: Deploy Backend
+    runs-on: ubuntu-latest
+    needs: [test, build]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Railway CLI
+        run: npm i -g @railway/cli
+
+      - name: Deploy to Railway
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          cd bmad-web/apps/api
+          railway up --detach
+
+  # ===================
+  # Deploy Preview (PRs)
+  # ===================
+  deploy-preview:
+    name: Deploy Preview
+    runs-on: ubuntu-latest
+    needs: [lint]
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy Preview to Vercel
+        id: deploy-preview
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          working-directory: bmad-web/apps/web
+
+      - name: Comment PR with Preview URL
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## 🔍 Preview Deployment\n\n**URL:** ${{ steps.deploy-preview.outputs.preview-url }}\n\n_This preview will be updated with each push to this PR._`
+            })
+
+  # ===================
+  # Notify on Failure
+  # ===================
+  notify-failure:
+    name: Notify Failure
+    runs-on: ubuntu-latest
+    needs: [deploy-frontend, deploy-backend]
+    if: failure()
+    steps:
+      - name: Send Slack notification
+        uses: 8398a7/action-slack@v3
+        with:
+          status: failure
+          fields: repo,message,commit,author,action,eventName,ref,workflow
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        if: env.SLACK_WEBHOOK_URL != ''
