@@ -64,6 +64,7 @@ Load and read full config from {project-root}/_bmad/bmb/config.yaml and resolve:
 
 - If user invoked with "create workflow" or "new workflow" or "build workflow" → Set mode to **create**
 - If user invoked with "validate workflow" or "review workflow" or "-v" or "--validate" → Set mode to **validate**
+- If user invoked with "validate workflow MAX-PARALLEL" or "review workflow MAX-PARALLEL" or "-vmax" or "--validate-max" → Set mode to **validate-max-parallel**
 - If user invoked with "edit workflow" or "modify workflow" or "-e" or "--edit" → Set mode to **edit**
 
 **If mode is still unclear, ask user:**
@@ -72,6 +73,7 @@ Load and read full config from {project-root}/_bmad/bmb/config.yaml and resolve:
 
 **[C]reate** - Build a new workflow from scratch
 **[V]alidate** - Review an existing workflow and generate validation report
+**[VMP] Validate Max Parallel** - Review an existing workflow and generate validation report running max steps as possible in parallel
 **[E]dit** - Modify an existing workflow
 
 Please select: [C]reate / [V]alidate / [E]dit"
@@ -97,6 +99,10 @@ Please select: [F]rom scratch / [C]onvert existing"
 **IF mode == validate:**
 Prompt for workflow path: "Which workflow would you like to validate? Please provide the path to the workflow.md file."
 Then load, read completely, and execute `steps-v/step-01-validate.md`
+
+**IF mode == validate-max-parallel:**
+Prompt for workflow path: "Which workflow would you like to validate? Please provide the path to the workflow.md file." validate a subprocess or task agent tool or similar is available
+Then load, read completely, and execute `steps-v/step-01-validate-max-mode.md`
 
 **IF mode == edit:**
 Prompt for workflow path: "Which workflow would you like to edit? Please provide the path to the workflow.md file."

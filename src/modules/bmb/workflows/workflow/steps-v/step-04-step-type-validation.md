@@ -3,10 +3,10 @@ name: 'step-04-step-type-validation'
 description: 'Validate that each step follows its correct step type pattern'
 
 nextStepFile: './step-05-output-format-validation.md'
-targetWorkflowPath: '{bmb_creations_output_folder}/workflows/{new_workflow_name}'
-validationReportFile: '{targetWorkflowPath}/validation-report-{new_workflow_name}.md'
+targetWorkflowPath: '{workflow_folder_path}'
+validationReportFile: '{workflow_folder_path}/validation-report-{datetime}.md'
 stepTypePatterns: '../data/step-type-patterns.md'
-workflowPlanFile: '{targetWorkflowPath}/workflow-plan-{new_workflow_name}.md'
+workflowPlanFile: '{workflow_folder_path}/workflow-plan.md'
 ---
 
 # Validation Step 4: Step Type Validation
@@ -23,19 +23,20 @@ To validate that each step file follows the correct pattern for its step type - 
 - 📖 CRITICAL: Read the complete step file before taking any action
 - 🔄 CRITICAL: When loading next step, ensure entire file is read
 - ✅ Validation does NOT stop for user input - auto-proceed through all validation steps
+- ⚙️ If any instruction references a subprocess, subagent, or tool you do not have access to, you MUST still achieve the outcome in your main context
 
 ### Step-Specific Rules:
 
-- 🎯 Load and validate EVERY step against its type pattern
-- 🚫 DO NOT skip any files or checks
-- 💬 Append findings to report, then auto-load next step
+- 🎯 Load and validate EVERY step against its type pattern - use subprocess optimization (Pattern 2: per-file deep analysis) when available
+- 🚫 DO NOT skip any files or checks - DO NOT BE LAZY
+- 💬 Subprocess must either update validation report directly OR return structured findings to parent for aggregation
 - 🚪 This is validation - systematic and thorough
 
 ## EXECUTION PROTOCOLS:
 
-- 🎯 Load step type patterns first
-- 💾 Check EACH file follows its designated type pattern
-- 📖 Append findings to validation report
+- 🎯 Load step type patterns first (use subprocess for data operations when available)
+- 💾 Check EACH file follows its designated type pattern - use per-file subprocesses for deep analysis when available
+- 📖 Append findings to validation report (subprocess updates report OR returns findings to parent)
 - 🚫 DO NOT halt for user input - validation runs to completion
 
 ## CONTEXT BOUNDARIES:
@@ -50,7 +51,21 @@ To validate that each step file follows the correct pattern for its step type - 
 
 ### 1. Load Step Type Patterns
 
-Load {stepTypePatterns} to understand the pattern for each type:
+**Load {stepTypePatterns} to understand the pattern for each type:**
+
+**If subprocess capability available:**
+```markdown
+Launch a subprocess that:
+1. Loads {stepTypePatterns}
+2. Extracts all pattern definitions deeply
+3. Returns summary of patterns to parent (not full file - saves context)
+```
+
+**If subprocess unavailable:**
+```markdown
+Load {stepTypePatterns} in main context
+# Larger context but still functional - demonstrates graceful fallback
+```
 
 **Step Types:**
 1. **Init (Non-Continuable)** - Auto-proceed, no continuation logic
@@ -66,16 +81,21 @@ Load {stepTypePatterns} to understand the pattern for each type:
 
 ### 2. Check EACH Step Against Its Type
 
-**DO NOT BE LAZY - For EACH file in steps-c/:**
+**DO NOT BE LAZY - For EACH file in steps-c/, launch a subprocess that:**
 
-1. Determine what type this step SHOULD be from:
+1. Determines what type this step SHOULD be from:
    - Step number (01 = init, 01b = continuation, last = final)
    - Design in {workflowPlanFile}
    - Step name pattern
 
-2. Load the step file
+2. Loads the step file
 
-3. Validate it follows the pattern for its type:
+3. Validates it follows the pattern for its type
+
+4. **EITHER** updates the validation report directly with its findings
+5. **OR** returns structured findings to parent for aggregation
+
+**SUBPROCESS ANALYSIS PATTERN - Validate each step file for:**
 
 **For Init Steps:**
 - ✅ Creates output from template (if document-producing)
@@ -114,42 +134,46 @@ Load {stepTypePatterns} to understand the pattern for each type:
 - ✅ Completion message
 - ✅ No next step to load
 
-### 3. Document Findings
+**RETURN FORMAT:**
+Return a concise summary containing:
+- File name analyzed
+- What type the step should be
+- What type it actually is
+- Whether it follows the correct pattern
+- List of any violations found
+- Overall pass/fail status
 
-Create report table:
+**Context savings:** Each subprocess returns only validation findings, not full file contents. Parent receives structured analysis objects instead of 10+ full step files.
 
-```markdown
-### Step Type Validation Results
+### 3. Aggregate Findings and Document
 
-| File | Should Be Type | Follows Pattern | Issues | Status |
-|------|----------------|-----------------|--------|--------|
-| step-01-init.md | Init (Continuable) | ✅ | None | ✅ PASS |
-| step-01b-continue.md | Continuation | ✅ | None | ✅ PASS |
-| step-02-*.md | Middle (Standard) | ✅ | None | ✅ PASS |
-| step-03-*.md | Middle (Simple) | ❌ | Has A/P (should be C-only) | ❌ FAIL |
-| step-04-*.md | Branch | ⚠️ | Missing custom menu letters | ⚠️ WARN |
-| step-N-final.md | Final | ✅ | None | ✅ PASS |
-```
+**After ALL files analyzed, aggregate findings from subprocesses and document results:**
+
+**Document the following in the validation report:**
+
+- Overall summary of step type validation (how many steps checked, pass/fail counts)
+- For each step file:
+  - File name
+  - What type the step should be (based on design, step number, naming)
+  - What type it actually is
+  - Whether it follows the correct pattern for its type
+  - Any violations or issues found
+  - Pass/fail/warning status
+
+**Format:** Create a clear, readable section in the validation report that shows the validation results for each step file.
 
 ### 4. List Violations
 
-```markdown
-### Step Type Violations Found
+**Compile and document all violations found:**
 
-**step-03-[name].md:**
-- Designated as Middle (Simple) but has A/P menu
-- Should have C-only menu
+**Document the following for any violations:**
 
-**step-04-[name].md:**
-- Designated as Branch but missing custom menu letters
-- Handler doesn't route to different steps
+- File name with violation
+- What the violation is (specifically what doesn't match the expected pattern)
+- What should be changed to fix it
+- Severity level (error/warning)
 
-**step-05-[name].md:**
-- Designated as Validation Sequence but has user menu
-- Should auto-proceed
-
-**All other steps:** ✅ Follow their type patterns correctly
-```
+**For files that pass validation:** Briefly note they follow their type patterns correctly.
 
 ### 5. Append to Report
 
@@ -170,11 +194,12 @@ Then immediately load, read entire file, then execute {nextStepFile}.
 
 ### ✅ SUCCESS:
 
-- EVERY step validated against its type pattern
-- All violations documented
-- Findings appended to report
+- EVERY step validated against its type pattern (ideally using per-file subprocess optimization)
+- All violations documented with structured findings
+- Findings aggregated from subprocesses into report
 - Report saved before proceeding
 - Next validation step loaded
+- Context saved: parent receives only findings, not full file contents
 
 ### ❌ SYSTEM FAILURE:
 

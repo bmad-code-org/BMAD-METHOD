@@ -3,10 +3,10 @@ name: 'step-05-output-format-validation'
 description: 'Validate output format compliance - template type, final polish, step-to-output mapping'
 
 nextStepFile: './step-06-validation-design-check.md'
-targetWorkflowPath: '{bmb_creations_output_folder}/workflows/{new_workflow_name}'
-validationReportFile: '{targetWorkflowPath}/validation-report-{new_workflow_name}.md'
+targetWorkflowPath: '{workflow_folder_path}'
+validationReportFile: '{workflow_folder_path}/validation-report-{datetime}.md'
 outputFormatStandards: '../data/output-format-standards.md'
-workflowPlanFile: '{targetWorkflowPath}/workflow-plan-{new_workflow_name}.md'
+workflowPlanFile: '{workflow_folder_path}/workflow-plan.md'
 ---
 
 # Validation Step 5: Output Format Validation
@@ -23,12 +23,13 @@ To validate that the workflow's output format matches the design - correct templ
 - 📖 CRITICAL: Read the complete step file before taking any action
 - 🔄 CRITICAL: When loading next step, ensure entire file is read
 - ✅ Validation does NOT stop for user input - auto-proceed through all validation steps
+- ⚙️ If any instruction references a subprocess, subagent, or tool you do not have access to, you MUST still achieve the outcome in your main context thread
 
 ### Step-Specific Rules:
 
-- 🎯 Validate output format against design specifications
-- 🚫 DO NOT skip any checks
-- 💬 Append findings to report, then auto-load next step
+- 🎯 Validate output format using subprocess optimization - per-file subprocess for step-to-output validation
+- 🚫 DO NOT skip any checks - DO NOT BE LAZY
+- 💬 Subprocess must either update validation report OR return findings to parent for aggregation
 - 🚪 This is validation - systematic and thorough
 
 ## EXECUTION PROTOCOLS:
@@ -36,6 +37,7 @@ To validate that the workflow's output format matches the design - correct templ
 - 🎯 Load output format standards first
 - 💾 Check template type matches design
 - 📖 Check for final polish step if needed
+- 🔍 Use subprocess optimization for step-to-output mapping validation - per-file subprocess for deep analysis
 - 🚫 DO NOT halt for user input - validation runs to completion
 
 ## CONTEXT BOUNDARIES:
@@ -114,11 +116,32 @@ From {workflowPlanFile}, identify:
 
 ### 5. Validate Step-to-Output Mapping
 
-**For EACH step that outputs to document:**
+**DO NOT BE LAZY - For EACH step that outputs to document, launch a subprocess that:**
 
-1. Check the step has `outputFile` in frontmatter
-2. Check the step appends/writes to output before loading next
-3. Check the menu C option saves to output before proceeding
+1. Loads that step file
+2. Analyzes frontmatter for `outputFile` variable
+3. Analyzes step body to verify output is written before loading next step
+4. Checks menu C option saves to output before proceeding
+5. Returns structured findings to parent for aggregation
+
+**SUBPROCESS EXECUTION PATTERN:**
+
+**For EACH step file, launch a subprocess that:**
+1. Loads the step file
+2. Performs deep analysis of output operations (frontmatter, body, menu options)
+3. Returns findings to parent for aggregation
+
+**RETURN FORMAT:**
+Each subprocess should return:
+- Step filename
+- Whether output variable exists in frontmatter
+- Whether output is saved before loading next step
+- Whether menu option C saves to output before proceeding
+- Output order number (if applicable)
+- Any issues found
+- Overall status (PASS/FAIL/WARNING)
+
+**Parent aggregates findings into:**
 
 **Steps should be in ORDER of document appearance:**
 - Step 1 creates doc
@@ -128,36 +151,15 @@ From {workflowPlanFile}, identify:
 
 ### 6. Document Findings
 
-```markdown
-### Output Format Validation Results
+Document your output format validation findings in the validation report. Include:
 
-**Workflow Produces Documents:** [Yes/No]
-
-**Template Type:** [Free-form/Structured/Semi-structured/Strict]
-
-**Template File Check:**
-- Template exists: ✅/❌
-- Matches designed type: ✅/❌
-- Proper frontmatter: ✅/❌
-
-**Final Polish Step:**
-- Required: [Yes/No - based on template type]
-- Present: ✅/❌
-- Loads entire document: ✅/❌
-- Optimizes flow: ✅/❌
-
-**Step-to-Output Mapping:**
-| Step | Has Output Variable | Saves Before Next | Status |
-|------|-------------------|-------------------|--------|
-| step-01-init.md | ✅ | ✅ | ✅ |
-| step-02-*.md | ✅ | ✅ | ✅ |
-| step-03-*.md | ❌ | N/A | ❌ FAIL |
-
-**Issues Found:**
-[List any issues with template, polish step, or mapping]
-
-**Status:** ✅ PASS / ❌ FAIL / ⚠️ WARNINGS
-```
+- **Document Production**: Whether the workflow produces documents and what template type it uses
+- **Template Assessment**: Template file existence, whether it matches the designed type, and frontmatter correctness
+- **Final Polish Evaluation**: Whether a final polish step is required (for free-form workflows) and if present, whether it properly loads the entire document and optimizes flow
+- **Step-to-Output Mapping**: For each step that outputs to the document, document whether it has the output variable in frontmatter, saves output before loading the next step, and properly saves in menu option C
+- **Subprocess Analysis Summary**: Count of total steps analyzed, steps with output, steps saving correctly, and steps with issues
+- **Issues Identified**: List any problems found with template structure, polish step, or output mapping
+- **Overall Status**: Pass, fail, or warning designation
 
 ### 7. Append to Report
 
@@ -180,10 +182,11 @@ Then immediately load, read entire file, then execute {nextStepFile}.
 
 - Template type matches design
 - Final polish step present if needed
-- Step-to-output mapping validated
+- Step-to-output mapping validated via subprocess optimization
 - All findings documented
 - Report saved before proceeding
 - Next validation step loaded
+- Subprocess pattern applied correctly (per-file analysis for step-to-output validation)
 
 ### ❌ SYSTEM FAILURE:
 
@@ -191,5 +194,7 @@ Then immediately load, read entire file, then execute {nextStepFile}.
 - Missing final polish step for free-form
 - Not documenting mapping issues
 - Not saving report before proceeding
+- Not using subprocess optimization for step-to-output validation
+- Loading all step files into parent context instead of per-file subprocess
 
-**Master Rule:** Validation is systematic and thorough. DO NOT BE LAZY. Check template, polish step, and mapping. Auto-proceed through all validation steps.
+**Master Rule:** Validation is systematic and thorough. DO NOT BE LAZY. Check template, polish step, and mapping. Use subprocess optimization for step-to-output validation - per-file subprocess returns analysis, not full content. Auto-proceed through all validation steps.

@@ -6,8 +6,8 @@ description: 'Load game context from brief and determine the game type'
 workflow_path: '{project-root}/_bmad/bmgd/workflows/2-design/gdd'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-02-context.md'
-nextStepFile: '{workflow_path}/steps/step-03-platforms.md'
+thisStepFile: './step-02-context.md'
+nextStepFile: './step-03-platforms.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/gdd.md'
 

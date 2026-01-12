@@ -2,9 +2,9 @@
 name: 'step-10-report-complete'
 description: 'Finalize validation report - check for plan file, summarize all findings, present to user'
 
-targetWorkflowPath: '{bmb_creations_output_folder}/workflows/{new_workflow_name}'
-validationReportFile: '{targetWorkflowPath}/validation-report-{new_workflow_name}.md'
-workflowPlanFile: '{targetWorkflowPath}/workflow-plan-{new_workflow_name}.md'
+targetWorkflowPath: '{workflow_folder_path}'
+validationReportFile: '{workflow_folder_path}/validation-report-{datetime}.md'
+workflowPlanFile: '{workflow_folder_path}/workflow-plan.md'
 planValidationStep: './step-11-plan-validation.md'
 ---
 
@@ -21,6 +21,7 @@ To check if a plan file exists (and run plan validation if it does), then summar
 - 📖 CRITICAL: Read the complete step file before taking any action
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
+- ⚙️ If any instruction references a subprocess, subagent, or tool you do not have access to, you MUST still achieve the outcome in your main context
 
 ### Step-Specific Rules:
 
@@ -38,7 +39,7 @@ To check if a plan file exists (and run plan validation if it does), then summar
 
 ## CONTEXT BOUNDARIES:
 
-- All 9 previous validation steps have completed
+- All 10 previous validation steps have completed
 - Report contains findings from all checks
 - User needs to see summary and decide on changes
 - This step DOES NOT auto-proceed
@@ -64,105 +65,39 @@ After plan validation (if applicable), load {validationReportFile} and read ALL 
 
 ### 3. Create Summary Section
 
-At the end of {validationReportFile}, replace "## Summary *Pending...*" with:
+At the end of {validationReportFile}, replace "## Summary *Pending...*" with a comprehensive summary that includes:
 
-```markdown
-## Summary
+- Validation completion date
+- Overall status assessment (based on all validation steps)
+- List of all validation steps completed with their individual results
+- Summary of critical issues that must be fixed (or note if none found)
+- Summary of warnings that should be addressed (or note if none found)
+- Key strengths identified during validation
+- Overall assessment of workflow quality
+- Recommendation on readiness (ready to use / needs tweaks / needs revision / major rework needed)
+- Suggested next steps for the user
 
-**Validation Completed:** [current date]
+Present this information in a clear, readable format - the exact structure is flexible as long as it covers all these points.
 
-**Overall Status:**
-[Based on all validation steps, determine overall status]
+### 4. Update Report Status
 
-**Validation Steps Completed:**
-1. ✅ File Structure & Size - [PASS/FAIL/WARN]
-2. ✅ Frontmatter Validation - [PASS/FAIL/WARN]
-3. ✅ Menu Handling Validation - [PASS/FAIL/WARN]
-4. ✅ Step Type Validation - [PASS/FAIL/WARN]
-5. ✅ Output Format Validation - [PASS/FAIL/WARN]
-6. ✅ Validation Design Check - [PASS/FAIL/WARN/N/A]
-7. ✅ Instruction Style Check - [PASS/FAIL/WARN]
-8. ✅ Collaborative Experience Check - [PASS/FAIL/WARN]
-9. ✅ Cohesive Review - [EXCELLENT/GOOD/NEEDS WORK/PROBLEMATIC]
-10. ✅ Plan Quality Validation - [FULLY IMPLEMENTED/PARTIALLY/MISSING/N/A]
+Update the frontmatter of {validationReportFile} to set validationStatus to COMPLETE and add the completionDate. Keep existing fields like validationDate, workflowName, and workflowPath unchanged.
 
-**Issues Summary:**
+### 5. Present Summary to User
 
-**Critical Issues (Must Fix):**
-- [List any critical issues from all validation steps]
-- [If none, state: No critical issues found]
+Present a clear summary to the user that includes:
 
-**Warnings (Should Fix):**
-- [List any warnings from all validation steps]
-- [If none, state: No warnings found]
+- Confirmation that validation is complete
+- Overall status of the workflow
+- Quick results overview showing each validation step and its result
+- Count of critical issues and warnings (or note if none found)
+- Recommendation on workflow readiness
+- Path to the full validation report
+- Options for next steps (review detailed findings, make changes, explain results, or other actions)
 
-**Strengths:**
-- [List key strengths identified in validation]
+Present this information in a natural, conversational way - the exact format doesn't matter as long as all this information is clearly communicated.
 
-**Overall Assessment:**
-[Summarize the overall quality of the workflow]
-
-**Recommendation:**
-- [Ready to use / Ready with minor tweaks / Needs revision / Major rework needed]
-
-**Next Steps:**
-- Review the detailed findings above
-- Decide what changes to make
-- Either fix issues directly or use edit workflow (if tri-modal)
-```
-
-### 3. Update Report Status
-
-Update frontmatter of {validationReportFile}:
-
-```yaml
----
-validationDate: [original date]
-completionDate: [current date]
-workflowName: {new_workflow_name}
-workflowPath: {targetWorkflowPath}
-validationStatus: COMPLETE
----
-```
-
-### 4. Present Summary to User
-
-"**✅ Validation Complete!**
-
-I've completed extensive validation of your workflow. Here's the summary:"
-
-**Overall Status:** [Overall status from summary]
-
-**Quick Results:**
-| Validation Step | Result |
-|-----------------|--------|
-| File Structure & Size | [emoji] [result] |
-| Frontmatter | [emoji] [result] |
-| Menu Handling | [emoji] [result] |
-| Step Types | [emoji] [result] |
-| Output Format | [emoji] [result] |
-| Validation Design | [emoji] [result or N/A] |
-| Instruction Style | [emoji] [result] |
-| Collaborative Experience | [emoji] [result] |
-| Cohesive Review | [emoji] [result] |
-| Plan Quality | [emoji] [result or N/A] |
-
-**Issues Found:**
-- **Critical:** [count or "none"]
-- **Warnings:** [count or "none"]
-
-**Recommendation:** [Ready to use / Needs tweaks / Needs revision]
-
-"**The full validation report is available at:**
-`{validationReportFile}`
-
-**Would you like me to:**
-1. Review the detailed findings with you
-2. Make specific changes to address issues
-3. Explain any validation result in detail
-4. Something else"
-
-### 5. Present MENU OPTIONS
+### 6. Present MENU OPTIONS
 
 Display: **Validation Complete! Select an Option:** [R] Review Detailed Findings [F] Fix Issues [X] Exit Validation
 
@@ -178,34 +113,19 @@ Display: **Validation Complete! Select an Option:** [R] Review Detailed Findings
 - IF X: "Validation complete. Your workflow is at: {targetWorkflowPath}. You can make changes and re-run validation anytime."
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options](#5-present-menu-options)
 
-### 6. If User Wants to Fix Issues
+### 7. If User Wants to Fix Issues
 
-**Options for fixing:**
+Explain the available options for fixing issues:
 
-**Option A: Manual Edits**
-- User edits files directly
-- Re-run validation to check fixes
+- Manual edits: User edits files directly, then re-runs validation
+- Guided edits: User specifies what to fix, help create specific edits for user approval
+- Edit workflow: If the workflow has steps-e/, use the edit workflow to make systematic changes
 
-**Option B: Guided Edits**
-- User specifies what to fix
-- Help create specific edits for user approval
-- User applies edits
+The exact format doesn't matter - just ensure the user understands their options for addressing issues.
 
-**Option C: Edit Workflow (if tri-modal)**
-- If workflow has steps-e/, use edit workflow
-- Edit workflow can make systematic changes
+### 8. Update Plan with Validation Status
 
-### 7. Update Plan with Validation Status
-
-Update {workflowPlanFile} frontmatter:
-
-```yaml
----
-validationStatus: COMPLETE
-validationDate: [current date]
-validationReport: {validationReportFile}
----
-```
+If a plan file exists at {workflowPlanFile}, update its frontmatter to include the validation status (COMPLETE), the current validation date, and a reference to the validation report file.
 
 ## CRITICAL STEP COMPLETION NOTE
 

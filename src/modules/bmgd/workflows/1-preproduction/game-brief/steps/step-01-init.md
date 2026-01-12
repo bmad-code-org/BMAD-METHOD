@@ -6,9 +6,9 @@ description: 'Initialize the Game Brief workflow by detecting continuation state
 workflow_path: '{project-root}/_bmad/bmgd/workflows/1-preproduction/game-brief'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-01-init.md'
-nextStepFile: '{workflow_path}/steps/step-02-vision.md'
-continueStepFile: '{workflow_path}/steps/step-01b-continue.md'
+thisStepFile: './step-01-init.md'
+nextStepFile: './step-02-vision.md'
+continueStepFile: './step-01b-continue.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/game-brief.md'
 

@@ -75,7 +75,7 @@ Story implementation and code review.
 Fast solo development without handoffs.
 
 **Commands:**
-- `*create-tech-spec` - Architect technical spec with implementation-ready stories
+- `*quick-spec` - Architect technical spec with implementation-ready stories
 - `*quick-dev` - Implement tech spec end-to-end solo
 - `*code-review` - Review and improve code
 

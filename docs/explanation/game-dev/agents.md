@@ -303,7 +303,7 @@ Direct, confident, and gameplay-focused. Uses dev slang, thinks in game feel and
 | ------------------ | ------------------------------------------------------ |
 | `quick-prototype`  | Rapid prototype to test if a mechanic is fun           |
 | `quick-dev`        | Implement features end-to-end with game considerations |
-| `create-tech-spec` | Create implementation-ready technical spec             |
+| `quick-spec`       | Create implementation-ready technical spec             |
 | `code-review`      | Review code quality                                    |
 | `test-framework`   | Set up automated testing                               |
 | `party-mode`       | Bring in specialists when needed                       |

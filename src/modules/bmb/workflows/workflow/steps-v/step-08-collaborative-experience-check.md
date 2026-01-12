@@ -2,10 +2,10 @@
 name: 'step-08-collaborative-experience-check'
 description: 'Check collaborative quality - does this workflow facilitate well or just interrogate?'
 
-nextStepFile: './step-09-cohesive-review.md'
-targetWorkflowPath: '{bmb_creations_output_folder}/workflows/{new_workflow_name}'
-validationReportFile: '{targetWorkflowPath}/validation-report-{new_workflow_name}.md'
-workflowPlanFile: '{targetWorkflowPath}/workflow-plan-{new_workflow_name}.md'
+nextStepFile: './step-08b-subprocess-optimization.md'
+targetWorkflowPath: '{workflow_folder_path}'
+validationReportFile: '{workflow_folder_path}/validation-report-{datetime}.md'
+workflowPlanFile: '{workflow_folder_path}/workflow-plan.md'
 ---
 
 # Validation Step 8: Collaborative Experience Check

@@ -17,7 +17,7 @@ The Game Solo Dev agent includes:
 
 - `quick-prototype` - Rapid mechanic testing
 - `quick-dev` - Flexible feature implementation
-- `create-tech-spec` - Create implementation-ready specs
+- `quick-spec` - Create implementation-ready specs
 - `code-review` - Quality checks
 - `test-framework` - Automated testing setup
 

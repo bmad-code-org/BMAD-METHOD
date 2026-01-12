@@ -11,7 +11,7 @@ All steps share this skeleton:
 ---
 name: 'step-[N]-[name]'
 description: '[what it does]'
-[file references - ONLY used variables]
+[file references - relative path and only if used in this steps file]
 ---
 
 # Step [N]: [Name]
@@ -76,10 +76,9 @@ description: '[what it does]'
 ---
 name: 'step-01-init'
 description: 'Initialize [workflow]'
-thisStepFile: '{workflow_path}/steps/step-01-init.md'
-nextStepFile: '{workflow_path}/steps/step-02-[name].md'
+nextStepFile: './step-02-[name].md'
 outputFile: '{output_folder}/[output].md'
-templateFile: '{workflow_path}/templates/[template].md'
+templateFile: '../templates/[template].md'
 ---
 ```
 
@@ -97,7 +96,7 @@ templateFile: '{workflow_path}/templates/[template].md'
 
 **Frontmatter:** Add `continueFile` reference
 ```yaml
-continueFile: '{workflow_path}/steps/step-01b-continue.md'
+continueFile: './step-01b-continue.md'
 ```
 
 **Logic:**
@@ -140,7 +139,7 @@ workflowFile: '{workflow_path}/workflow.md'
 ```yaml
 ---
 name: 'step-[N]-[name]'
-nextStepFile: '{workflow_path}/steps/step-[N+1]-[name].md'
+nextStepFile: './step-[N+1]-[name].md'
 outputFile: '{output_folder}/[output].md'
 advancedElicitationTask: '{project-root}/.../advanced-elicitation/workflow.xml'
 partyModeWorkflow: '{project-root}/.../party-mode/workflow.md'
@@ -161,8 +160,8 @@ partyModeWorkflow: '{project-root}/.../party-mode/workflow.md'
 
 **Frontmatter:**
 ```yaml
-nextStepFile: '{workflow_path}/steps/step-[default].md'
-altStepFile: '{workflow_path}/steps/step-[alternate].md'
+nextStepFile: './step-[default].md'
+altStepFile: './step-[alternate].md'
 ```
 
 **Menu:** Custom letters (L/R/etc.) with branching logic
@@ -297,16 +296,16 @@ Mark workflow complete
 
 ## Step Size Guidelines
 
-| Type                     | Recommended | Maximum |
-| ------------------------ | ----------- | ------- |
-| Init                     | < 100       | 150     |
-| Init (with discovery)    | < 150       | 200     |
-| Continuation             | < 150       | 200     |
-| Middle (simple)           | < 150       | 200     |
-| Middle (complex)          | < 200       | 250     |
-| Branch                   | < 150       | 200     |
-| Validation sequence       | < 100       | 150     |
-| Final polish              | < 150       | 200     |
-| Final                    | < 150       | 200     |
+| Type                  | Recommended | Maximum |
+| --------------------- | ----------- | ------- |
+| Init                  | < 100       | 150     |
+| Init (with discovery) | < 150       | 200     |
+| Continuation          | < 150       | 200     |
+| Middle (simple)       | < 150       | 200     |
+| Middle (complex)      | < 200       | 250     |
+| Branch                | < 150       | 200     |
+| Validation sequence   | < 100       | 150     |
+| Final polish          | < 150       | 200     |
+| Final                 | < 150       | 200     |
 
 **If exceeded:** Split into multiple steps or extract to `/data/` files.

@@ -6,7 +6,7 @@ description: 'Validate complete coverage of all requirements and ensure implemen
 workflow_path: '{project-root}/_bmad/bmm/workflows/3-solutioning/create-epics-and-stories'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-04-final-validation.md'
+thisStepFile: './step-04-final-validation.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{planning_artifacts}/epics.md'
 

@@ -6,8 +6,8 @@ description: 'Load game-specific brainstorming context and techniques'
 workflow_path: '{project-root}/_bmad/bmgd/workflows/1-preproduction/brainstorm-game'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-02-context.md'
-nextStepFile: '{workflow_path}/steps/step-03-ideation.md'
+thisStepFile: './step-02-context.md'
+nextStepFile: './step-03-ideation.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/brainstorming-session-{date}.md'
 

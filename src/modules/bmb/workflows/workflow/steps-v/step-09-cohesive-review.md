@@ -3,9 +3,9 @@ name: 'step-09-cohesive-review'
 description: 'Cohesive ultra-think review - overall quality, does this workflow actually facilitate well?'
 
 nextStepFile: './step-10-report-complete.md'
-targetWorkflowPath: '{bmb_creations_output_folder}/workflows/{new_workflow_name}'
-validationReportFile: '{targetWorkflowPath}/validation-report-{new_workflow_name}.md'
-workflowPlanFile: '{targetWorkflowPath}/workflow-plan-{new_workflow_name}.md'
+targetWorkflowPath: '{workflow_folder_path}'
+validationReportFile: '{workflow_folder_path}/validation-report-{datetime}.md'
+workflowPlanFile: '{workflow_folder_path}/workflow-plan.md'
 ---
 
 # Validation Step 9: Cohesive Review
@@ -22,17 +22,21 @@ To perform a cohesive "ultra-think" review of the entire workflow - walk through
 - 📖 CRITICAL: Read the complete step file before taking any action
 - 🔄 CRITICAL: When loading next step, ensure entire file is read
 - ✅ Validation does NOT stop for user input - auto-proceed through all validation steps
+- ⚙️ If any instruction references a subprocess, subagent, or tool you do not have access to, you MUST still achieve the outcome in your main context
 
 ### Step-Specific Rules:
 
-- 🎯 Review the workflow as a cohesive whole
-- 🚫 DO NOT skip any aspect of the review
-- 💬 Think deeply about quality and facilitation
+- 🎯 Review the workflow as a cohesive whole - **NOTE: This step loads ENTIRE workflow for holistic review (different pattern from other validation steps)**
+- 🚫 DO NOT skip any aspect of the review - DO NOT BE LAZY
+- 💬 Subprocess optimization: When available, can use subprocesses to load individual step files and return structured summaries to parent for aggregation
+- 💬 However, since cohesive review requires understanding the COMPLETE workflow as one unit, parent may need full context for proper holistic assessment
 - 🚪 This is the meta-review - overall assessment
 
 ## EXECUTION PROTOCOLS:
 
-- 🎯 Walk through the ENTIRE workflow end-to-end
+- 🎯 Walk through the ENTIRE workflow end-to-end using subprocess optimization when available
+- 💬 When using subprocesses: Each subprocess loads one step file, performs deep analysis, returns structured findings to parent for aggregation
+- 💬 Subprocess must either update validation report directly OR return findings to parent for compilation
 - 💾 Assess overall quality, not just individual components
 - 📖 Think deeply: would this actually work well?
 - 🚫 DO NOT halt for user input - validation runs to completion
@@ -50,12 +54,31 @@ To perform a cohesive "ultra-think" review of the entire workflow - walk through
 
 ### 1. Load the Entire Workflow
 
-**DO NOT BE LAZY - Load EVERY step file:**
+**DO NOT BE LAZY - Load EVERY step file using subprocess optimization when available:**
 
+**SUBPROCESS APPROACH (when available):**
+
+For EACH workflow file (workflow.md + all step files in order), launch a subprocess that:
+1. Loads that single file
+2. Performs deep analysis of content, flow, quality, and connection points
+3. Returns structured findings to parent for holistic aggregation
+
+**Subprocess should return:**
+- File name analyzed
+- Purpose and flow position within the workflow
+- How it connects to previous and next steps
+- Quality indicators and any issues found
+- Voice and tone consistency assessment
+
+**FALLBACK APPROACH (if subprocess unavailable):**
+
+Load workflow.md and EVERY step file in steps-c/ sequentially in main context:
 1. Load workflow.md
 2. Load EVERY step file in steps-c/ in order
 3. Read through each step
 4. Understand the complete flow
+
+**CRITICAL:** Whether using subprocess or main context, you must understand the COMPLETE workflow as one cohesive unit before proceeding to assessment.
 
 ### 2. Walk Through the Workflow Mentally
 
@@ -93,16 +116,9 @@ To perform a cohesive "ultra-think" review of the entire workflow - walk through
 
 ### 4. Assess Overall Quality
 
-**Rate the workflow on:**
+**Evaluate the workflow across key dimensions:**
 
-| Aspect | Rating (1-5) | Notes |
-|--------|-------------|-------|
-| Clear Goal | ⭐⭐⭐⭐⭐ | Is the purpose clear? |
-| Logical Flow | ⭐⭐⭐⭐⭐ | Do steps progress logically? |
-| Facilitation Quality | ⭐⭐⭐⭐⭐ | Does it facilitate well? |
-| User Experience | ⭐⭐⭐⭐⭐ | Would users enjoy this? |
-| Goal Achievement | ⭐⭐⭐⭐⭐ | Does it accomplish what it set out to? |
-| Overall Quality | ⭐⭐⭐⭐⭐ | Total assessment |
+Consider goal clarity, logical flow, facilitation quality, user experience, and goal achievement. Provide an overall quality assessment based on these dimensions.
 
 ### 5. Identify Strengths and Weaknesses
 
@@ -122,80 +138,15 @@ To perform a cohesive "ultra-think" review of the entire workflow - walk through
 
 ### 6. Provide Recommendation
 
-**Overall Assessment:**
-- ✅ **EXCELLENT** - Ready to use, exemplifies best practices
-- ✅ **GOOD** - Solid workflow, minor improvements possible
-- ⚠️ **NEEDS WORK** - Has issues that should be addressed
-- ❌ **PROBLEMATIC** - Major issues, needs significant revision
+**Assess overall workflow readiness:**
 
-**Recommendation:**
-- [Ready for use / Ready with minor tweaks / Needs revision / Major rework needed]
+Determine if the workflow is excellent (ready to use, exemplifies best practices), good (solid with minor improvements possible), needs work (has issues to address), or problematic (major issues requiring significant revision). Provide a clear recommendation on readiness for use.
 
 ### 7. Document Findings
 
-```markdown
-### Cohesive Review Results
+**Document your cohesive review findings in the validation report:**
 
-**Overall Assessment:** [EXCELLENT/GOOD/NEEDS WORK/PROBLEMATIC]
-
-**Quality Ratings:**
-| Aspect | Rating | Notes |
-|--------|--------|-------|
-| Clear Goal | ⭐⭐⭐⭐⭐ | [Notes] |
-| Logical Flow | ⭐⭐⭐⭐⭐ | [Notes] |
-| Facilitation Quality | ⭐⭐⭐⭐⭐ | [Notes] |
-| User Experience | ⭐⭐⭐⭐⭐ | [Notes] |
-| Goal Achievement | ⭐⭐⭐⭐⭐ | [Notes] |
-| **Overall Quality** | **⭐⭐⭐⭐⭐** | [Total assessment] |
-
-**Cohesiveness Analysis:**
-
-**Flow Assessment:**
-- [Describe the overall flow - does it work?]
-- [Are there any jarring transitions?]
-- [Does each step connect to the next?]
-
-**Progression Assessment:**
-- [Does the workflow build toward its goal?]
-- [Is there a clear arc?]
-- [Would a user feel they're making progress?]
-
-**Voice and Tone:**
-- [Is the voice consistent throughout?]
-- [Does the AI persona work well?]
-- [Is the collaboration style appropriate?]
-
-**Strengths:**
-1. [Major strength #1]
-2. [Major strength #2]
-3. [What makes this workflow excellent]
-
-**Weaknesses:**
-1. [Issue #1 that could be improved]
-2. [Issue #2 that could be improved]
-3. [What doesn't work as well]
-
-**Critical Issues (if any):**
-- [List any show-stopper problems]
-- [Or note: No critical issues]
-
-**What Makes This Work Well:**
-- [Describe the excellent elements]
-- [What should other workflows learn from this?]
-
-**What Could Be Improved:**
-- [Specific actionable improvements]
-- [Priority: High/Medium/Low]
-
-**User Experience Forecast:**
-- [How would a user experience this workflow?]
-- [Would they feel: guided/confused/satisfied/frustrated?]
-
-**Recommendation:**
-- [Ready for use / Ready with minor tweaks / Needs revision / Major rework needed]
-
-**Status:** ✅ EXCELLENT / ✅ GOOD / ⚠️ NEEDS WORK / ❌ PROBLEMATIC
-```
+Include your overall assessment (excellent/good/needs work/problematic), quality evaluation across key dimensions, cohesiveness analysis (flow, progression, voice and tone), identified strengths and weaknesses, any critical issues, what makes the workflow work well, what could be improved, user experience forecast, and your recommendation on readiness for use.
 
 ### 8. Append to Report
 

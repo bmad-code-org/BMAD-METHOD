@@ -6,8 +6,8 @@ description: 'Define narrative premise, themes, tone, and story structure'
 workflow_path: '{project-root}/_bmad/bmgd/workflows/2-design/narrative'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-02-foundation.md'
-nextStepFile: '{workflow_path}/steps/step-03-story.md'
+thisStepFile: './step-02-foundation.md'
+nextStepFile: './step-03-story.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/narrative-design.md'
 

@@ -10,7 +10,7 @@ Point an LLM at BMad's source files and ask your question. That's the technique�
 :::note[Example]
 **Q:** "Tell me the fastest way to build something with BMad"
 
-**A:** Use Quick Flow: Run `create-tech-spec` to write a technical specification, then `quick-dev` to implement it—skipping the full planning phases. This gets small features shipped in a single focused session instead of going through the full 4-phase BMM workflow.
+**A:** Use Quick Flow: Run `quick-spec` to write a technical specification, then `quick-dev` to implement it—skipping the full planning phases. This gets small features shipped in a single focused session instead of going through the full 4-phase BMM workflow.
 :::
 
 ## Why This Works

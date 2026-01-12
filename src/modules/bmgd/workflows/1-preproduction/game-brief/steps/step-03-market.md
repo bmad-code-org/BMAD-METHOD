@@ -6,8 +6,8 @@ description: 'Define target audience and market context'
 workflow_path: '{project-root}/_bmad/bmgd/workflows/1-preproduction/game-brief'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-03-market.md'
-nextStepFile: '{workflow_path}/steps/step-04-fundamentals.md'
+thisStepFile: './step-03-market.md'
+nextStepFile: './step-04-fundamentals.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/game-brief.md'
 

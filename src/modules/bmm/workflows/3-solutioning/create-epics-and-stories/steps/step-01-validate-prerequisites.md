@@ -6,8 +6,8 @@ description: 'Validate required documents exist and extract all requirements for
 workflow_path: '{project-root}/_bmad/bmm/workflows/3-solutioning/create-epics-and-stories'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-01-validate-prerequisites.md'
-nextStepFile: '{workflow_path}/steps/step-02-design-epics.md'
+thisStepFile: './step-01-validate-prerequisites.md'
+nextStepFile: './step-02-design-epics.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{planning_artifacts}/epics.md'
 epicsTemplate: '{workflow_path}/templates/epics-template.md'
