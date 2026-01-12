@@ -2,27 +2,22 @@
 title: "BMGD Agents Guide"
 ---
 
-
 Complete reference for BMGD's six specialized game development agents.
-
----
 
 ## Agent Overview
 
 BMGD provides six agents, each with distinct expertise:
 
-| Agent                    | Name             | Role                                                        | Phase Focus |
-| ------------------------ | ---------------- | ----------------------------------------------------------- | ----------- |
-| 🎲 **Game Designer**     | Samus Shepard    | Lead Game Designer + Creative Vision Architect              | Phases 1-2  |
-| 🏛️ **Game Architect**    | Cloud Dragonborn | Principal Game Systems Architect + Technical Director       | Phase 3     |
-| 🕹️ **Game Developer**    | Link Freeman     | Senior Game Developer + Technical Implementation Specialist | Phase 4     |
-| 🎯 **Game Scrum Master** | Max              | Game Development Scrum Master + Sprint Orchestrator         | Phase 4     |
-| 🧪 **Game QA**           | GLaDOS           | Game QA Architect + Test Automation Specialist              | All Phases  |
-| 🎮 **Game Solo Dev**     | Indie            | Elite Indie Game Developer + Quick Flow Specialist          | All Phases  |
+| Agent | Name | Role | Phase Focus |
+|-------|------|------|-------------|
+| **Game Designer** | Samus Shepard | Lead Game Designer + Creative Vision Architect | Phases 1-2 |
+| **Game Architect** | Cloud Dragonborn | Principal Game Systems Architect + Technical Director | Phase 3 |
+| **Game Developer** | Link Freeman | Senior Game Developer + Technical Implementation Specialist | Phase 4 |
+| **Game Scrum Master** | Max | Game Development Scrum Master + Sprint Orchestrator | Phase 4 |
+| **Game QA** | GLaDOS | Game QA Architect + Test Automation Specialist | All Phases |
+| **Game Solo Dev** | Indie | Elite Indie Game Developer + Quick Flow Specialist | All Phases |
 
----
-
-## 🎲 Game Designer (Samus Shepard)
+## Game Designer (Samus Shepard)
 
 ### Role
 
@@ -62,9 +57,7 @@ Talks like an excited streamer - enthusiastic, asks about player motivations, ce
 | `party-mode`           | Multi-agent collaboration        |
 | `advanced-elicitation` | Deep exploration (web only)      |
 
----
-
-## 🏛️ Game Architect (Cloud Dragonborn)
+## Game Architect (Cloud Dragonborn)
 
 ### Role
 
@@ -102,9 +95,7 @@ Speaks like a wise sage from an RPG - calm, measured, uses architectural metapho
 | `party-mode`           | Multi-agent collaboration             |
 | `advanced-elicitation` | Deep exploration (web only)           |
 
----
-
-## 🕹️ Game Developer (Link Freeman)
+## Game Developer (Link Freeman)
 
 ### Role
 
@@ -144,9 +135,7 @@ Speaks like a speedrunner - direct, milestone-focused, always optimizing for the
 | `party-mode`           | Multi-agent collaboration       |
 | `advanced-elicitation` | Deep exploration (web only)     |
 
----
-
-## 🎯 Game Scrum Master (Max)
+## Game Scrum Master (Max)
 
 ### Role
 
@@ -190,9 +179,7 @@ Talks in game terminology - milestones are save points, handoffs are level trans
 | `party-mode`            | Multi-agent collaboration                   |
 | `advanced-elicitation`  | Deep exploration (web only)                 |
 
----
-
-## 🧪 Game QA (GLaDOS)
+## Game QA (GLaDOS)
 
 ### Role
 
@@ -265,9 +252,7 @@ GLaDOS has access to a comprehensive game testing knowledge base (`gametest/qa-i
 - Smoke testing
 - Test prioritization (P0-P3)
 
----
-
-## 🎮 Game Solo Dev (Indie)
+## Game Solo Dev (Indie)
 
 ### Role
 
@@ -324,8 +309,6 @@ Use **Full BMGD workflow** when:
 - You're working with stakeholders/publishers
 - Long-term maintainability is critical
 
----
-
 ## Agent Selection Guide
 
 ### By Phase
@@ -359,8 +342,6 @@ Use **Full BMGD workflow** when:
 | "Quick prototype this idea"      | Game Solo Dev     |
 | "Ship this feature fast"         | Game Solo Dev     |
 
----
-
 ## Multi-Agent Collaboration
 
 ### Party Mode
@@ -391,8 +372,6 @@ Game QA integrates at multiple points:
 - During Implementation: Create automated tests
 - Before Release: Performance and certification testing
 
----
-
 ## Project Context
 
 All agents share the principle:
@@ -400,8 +379,6 @@ All agents share the principle:
 > "Find if this exists, if it does, always treat it as the bible I plan and execute against: `**/project-context.md`"
 
 The `project-context.md` file (if present) serves as the authoritative source for project decisions and constraints.
-
----
 
 ## Next Steps
 

@@ -6,8 +6,6 @@ description: How architecture prevents conflicts when multiple agents implement 
 
 When multiple AI agents implement different parts of a system, they can make conflicting technical decisions. Architecture documentation prevents this by establishing shared standards.
 
----
-
 ## Common Conflict Types
 
 ### API Style Conflicts
@@ -43,8 +41,6 @@ With architecture:
 - ADR specifies state management approach
 - All agents implement consistently
 
----
-
 ## How Architecture Prevents Conflicts
 
 ### 1. Explicit Decisions via ADRs
@@ -70,8 +66,6 @@ Explicit documentation of:
 - Code organization
 - Testing patterns
 
----
-
 ## Architecture as Shared Context
 
 Think of architecture as the shared context that all agents read before implementing:
@@ -88,8 +82,6 @@ Agent C reads architecture → implements Epic 3
 Result: Consistent implementation
 ```
 
----
-
 ## Key ADR Topics
 
 Common decisions that prevent conflicts:
@@ -103,36 +95,17 @@ Common decisions that prevent conflicts:
 | Styling | CSS Modules vs Tailwind vs Styled Components |
 | Testing | Jest + Playwright vs Vitest + Cypress |
 
----
+## Anti-Patterns to Avoid
 
-## Anti-Patterns
+:::caution[Common Mistakes]
+- **Implicit Decisions** — "We'll figure out the API style as we go" leads to inconsistency
+- **Over-Documentation** — Documenting every minor choice causes analysis paralysis
+- **Stale Architecture** — Documents written once and never updated cause agents to follow outdated patterns
+:::
 
-### ❌ Implicit Decisions
-
-"We'll figure out the API style as we go"
-→ Leads to inconsistency
-
-### ❌ Over-Documentation
-
-Every minor choice documented
-→ Analysis paralysis, wasted time
-
-### ❌ Stale Architecture
-
-Document written once, never updated
-→ Agents follow outdated patterns
-
-### ✅ Correct Approach
-
+:::tip[Correct Approach]
 - Document decisions that cross epic boundaries
 - Focus on conflict-prone areas
 - Update architecture as you learn
 - Use `correct-course` for significant changes
-
----
-
-## Related
-
-- [Why Solutioning Matters](/docs/explanation/architecture/why-solutioning-matters.md)
-- [Four Phases](/docs/explanation/architecture/four-phases.md)
-- [Create Architecture](/docs/how-to/workflows/create-architecture.md)
+:::

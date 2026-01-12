@@ -3,10 +3,7 @@ title: "How to Create Architecture"
 description: How to create system architecture using the BMad Method
 ---
 
-
 Use the `architecture` workflow to make technical decisions explicit and prevent agent conflicts during implementation.
-
----
 
 ## When to Use This
 
@@ -16,23 +13,17 @@ Use the `architecture` workflow to make technical decisions explicit and prevent
 - Integration complexity exists
 - Technology choices need alignment
 
----
-
 ## When to Skip This
 
 - Quick Flow (simple changes)
 - BMad Method Simple with straightforward tech stack
 - Single epic with clear technical approach
 
----
-
-## Prerequisites
-
+:::note[Prerequisites]
 - BMad Method installed
 - Architect agent available
 - PRD completed
-
----
+:::
 
 ## Steps
 
@@ -63,25 +54,21 @@ Work with the agent to create Architecture Decision Records (ADRs) for significa
 
 The agent produces a decision-focused architecture document.
 
----
-
 ## What You Get
 
 An `architecture.md` document containing:
 
-1. **Architecture Overview** - System context, principles, style
-2. **System Architecture** - High-level diagram, component interactions
-3. **Data Architecture** - Database design, state management, caching
-4. **API Architecture** - API style (REST/GraphQL/gRPC), auth, versioning
-5. **Frontend Architecture** - Framework, state management, components
-6. **Integration Architecture** - Third-party integrations, messaging
-7. **Security Architecture** - Auth/authorization, data protection
-8. **Deployment Architecture** - CI/CD, environments, monitoring
-9. **ADRs** - Key decisions with context, options, rationale
-10. **FR/NFR-Specific Guidance** - Technical approach per requirement
-11. **Standards and Conventions** - Directory structure, naming, testing
-
----
+1. **Architecture Overview** — System context, principles, style
+2. **System Architecture** — High-level diagram, component interactions
+3. **Data Architecture** — Database design, state management, caching
+4. **API Architecture** — API style (REST/GraphQL/gRPC), auth, versioning
+5. **Frontend Architecture** — Framework, state management, components
+6. **Integration Architecture** — Third-party integrations, messaging
+7. **Security Architecture** — Auth/authorization, data protection
+8. **Deployment Architecture** — CI/CD, environments, monitoring
+9. **ADRs** — Key decisions with context, options, rationale
+10. **FR/NFR-Specific Guidance** — Technical approach per requirement
+11. **Standards and Conventions** — Directory structure, naming, testing
 
 ## ADR Format
 
@@ -110,8 +97,6 @@ An `architecture.md` document containing:
 - Mitigation: Use DataLoader for batching
 ```
 
----
-
 ## Example
 
 E-commerce platform produces:
@@ -119,29 +104,16 @@ E-commerce platform produces:
 - ADRs explaining each choice
 - FR/NFR-specific implementation guidance
 
----
-
 ## Tips
 
-- Focus on decisions that prevent agent conflicts
-- Use ADRs for every significant technology choice
-- Keep it practical - don't over-architect
-- Architecture is living - update as you learn
-
----
+- **Focus on decisions that prevent conflicts** — Multiple agents need alignment
+- **Use ADRs for every significant choice** — Document the "why"
+- **Keep it practical** — Don't over-architect
+- **Architecture is living** — Update as you learn
 
 ## Next Steps
 
 After architecture:
 
-1. **Create Epics and Stories** - Work breakdown informed by architecture
-2. **Implementation Readiness** - Gate check before Phase 4
-
----
-
-## Related
-
-- [Create PRD](/docs/how-to/workflows/create-prd.md) - Requirements before architecture
-- [Create Epics and Stories](/docs/how-to/workflows/create-epics-and-stories.md) - Next step
-- [Run Implementation Readiness](/docs/how-to/workflows/run-implementation-readiness.md) - Gate check
-- [Why Solutioning Matters](/docs/explanation/architecture/why-solutioning-matters.md)
+1. **Create Epics and Stories** — Work breakdown informed by architecture
+2. **Implementation Readiness** — Gate check before Phase 4

@@ -3,10 +3,7 @@ title: "How to Create a Story"
 description: How to create implementation-ready stories from epic backlog
 ---
 
-
 Use the `create-story` workflow to prepare the next story from the epic backlog for implementation.
-
----
 
 ## When to Use This
 
@@ -14,16 +11,12 @@ Use the `create-story` workflow to prepare the next story from the epic backlog 
 - When moving to the next story in an epic
 - After sprint-planning has been run
 
----
-
-## Prerequisites
-
+:::note[Prerequisites]
 - BMad Method installed
 - SM (Scrum Master) agent available
 - Sprint-status.yaml created by sprint-planning
 - Architecture and PRD available for context
-
----
+:::
 
 ## Steps
 
@@ -48,8 +41,6 @@ The agent will:
 
 The agent creates a comprehensive story file ready for development.
 
----
-
 ## What You Get
 
 A `story-[slug].md` file containing:
@@ -61,23 +52,18 @@ A `story-[slug].md` file containing:
 - Dependencies on other stories
 - Definition of Done
 
----
-
 ## Story Content Sources
 
 The create-story workflow pulls from:
 
-- **PRD** - Requirements and acceptance criteria
-- **Architecture** - Technical approach and ADRs
-- **Epic file** - Story context and dependencies
-- **Existing code** - Patterns to follow (brownfield)
-
----
+- **PRD** — Requirements and acceptance criteria
+- **Architecture** — Technical approach and ADRs
+- **Epic file** — Story context and dependencies
+- **Existing code** — Patterns to follow (brownfield)
 
 ## Example Output
 
 ```markdown
-
 ## Objective
 Implement email verification flow for new user registrations.
 
@@ -93,7 +79,7 @@ Implement email verification flow for new user registrations.
 - Follow existing email template patterns in /templates
 
 ## Dependencies
-- Story 1.1 (User Registration) - DONE ✅
+- Story 1.1 (User Registration) - DONE
 
 ## Definition of Done
 - All acceptance criteria pass
@@ -101,19 +87,16 @@ Implement email verification flow for new user registrations.
 - Code review approved
 ```
 
----
-
 ## Tips
 
-- Complete one story before creating the next
-- Ensure dependencies are marked DONE before starting
-- Review technical notes for architecture alignment
-- Use the story file as context for dev-story
+- **Complete one story before creating the next** — Focus on finishing
+- **Ensure dependencies are DONE** — Don't start blocked stories
+- **Review technical notes** — Align with architecture
+- **Use the story file as context** — Pass to dev-story workflow
 
----
+## Next Steps
 
-## Related
+After creating a story:
 
-- [Run Sprint Planning](/docs/how-to/workflows/run-sprint-planning.md) - Initialize tracking
-- [Implement Story](/docs/how-to/workflows/implement-story.md) - Next step
-- [Run Code Review](/docs/how-to/workflows/run-code-review.md) - After implementation
+1. **Implement Story** — Run dev-story with the DEV agent
+2. **Code Review** — Run code-review after implementation

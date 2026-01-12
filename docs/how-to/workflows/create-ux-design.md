@@ -3,10 +3,7 @@ title: "How to Create a UX Design"
 description: How to create UX specifications using the BMad Method
 ---
 
-
 Use the `create-ux-design` workflow to create UX specifications for projects where user experience is a primary differentiator.
-
----
 
 ## When to Use This
 
@@ -16,8 +13,6 @@ Use the `create-ux-design` workflow to create UX specifications for projects whe
 - Design system creation
 - Accessibility-critical experiences
 
----
-
 ## When to Skip This
 
 - Simple CRUD interfaces
@@ -25,15 +20,11 @@ Use the `create-ux-design` workflow to create UX specifications for projects whe
 - Changes to existing screens you're happy with
 - Quick Flow projects
 
----
-
-## Prerequisites
-
+:::note[Prerequisites]
 - BMad Method installed
 - UX Designer agent available
 - PRD completed
-
----
+:::
 
 ## Steps
 
@@ -58,16 +49,14 @@ Point the agent to your PRD and describe:
 
 The workflow uses a collaborative approach:
 
-1. **Visual exploration** - Generate multiple options
-2. **Informed decisions** - Evaluate with user needs
-3. **Collaborative design** - Refine iteratively
-4. **Living documentation** - Evolves with project
+1. **Visual exploration** — Generate multiple options
+2. **Informed decisions** — Evaluate with user needs
+3. **Collaborative design** — Refine iteratively
+4. **Living documentation** — Evolves with project
 
 ### 5. Review the UX Spec
 
 The agent produces comprehensive UX documentation.
-
----
 
 ## What You Get
 
@@ -79,8 +68,6 @@ The `ux-spec.md` document includes:
 - Design system (components, patterns, tokens)
 - Epic breakdown (UX stories)
 
----
-
 ## Example
 
 Dashboard redesign produces:
@@ -90,8 +77,6 @@ Dashboard redesign produces:
 - Responsive grid
 - 3 epics (Layout, Visualization, Accessibility)
 
----
-
 ## Integration
 
 The UX spec feeds into:
@@ -99,19 +84,17 @@ The UX spec feeds into:
 - Epic and story creation
 - Architecture decisions (Phase 3)
 
----
-
 ## Tips
 
-- Focus on user problems, not solutions first
-- Generate multiple options before deciding
-- Consider accessibility from the start
-- Document component reusability
+- **Focus on user problems first** — Solutions come second
+- **Generate multiple options** — Don't settle on the first idea
+- **Consider accessibility from the start** — Not an afterthought
+- **Document component reusability** — Build a system, not just screens
 
----
+## Next Steps
 
-## Related
+After UX design:
 
-- [Create PRD](/docs/how-to/workflows/create-prd.md) - Create requirements first
-- [Create Architecture](/docs/how-to/workflows/create-architecture.md) - Technical design
-- [Create Epics and Stories](/docs/how-to/workflows/create-epics-and-stories.md) - Work breakdown
+1. **Update PRD** — Incorporate UX findings
+2. **Create Architecture** — Technical design informed by UX
+3. **Create Epics and Stories** — Include UX-specific stories

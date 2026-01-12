@@ -3,10 +3,7 @@ title: "How to Run a Brainstorming Session"
 description: How to run a brainstorming session using the BMad Method
 ---
 
-
 Use the `brainstorm-project` workflow to explore solution approaches through parallel ideation tracks.
-
----
 
 ## When to Use This
 
@@ -15,14 +12,10 @@ Use the `brainstorm-project` workflow to explore solution approaches through par
 - See your idea from different angles and viewpoints
 - No idea what you want to build, but want to find some inspiration
 
----
-
-## Prerequisites
-
+:::note[Prerequisites]
 - BMad Method installed
 - Analyst agent available
-
----
+:::
 
 ## Steps
 
@@ -48,16 +41,14 @@ Tell the agent about your project idea, even if it's vague:
 
 The workflow generates solution approaches through parallel ideation tracks:
 
-- **Architecture track** - Technical approaches and patterns
-- **UX track** - User experience possibilities
-- **Integration track** - How it connects with other systems
-- **Value track** - Business value and differentiation
+- **Architecture track** — Technical approaches and patterns
+- **UX track** — User experience possibilities
+- **Integration track** — How it connects with other systems
+- **Value track** — Business value and differentiation
 
 ### 5. Evaluate Options
 
 Review the generated options with rationale for each approach.
-
----
 
 ## What You Get
 
@@ -66,29 +57,17 @@ Review the generated options with rationale for each approach.
 - UX and integration considerations
 - Clear rationale for each direction
 
----
+## Tips
+
+- **Don't worry about having a fully formed idea** — Vague is fine
+- **Let the agent guide exploration** — Follow the prompts
+- **Consider multiple tracks** — Don't settle on the first option
+- **Use outputs as input for product-brief** — Build on brainstorming results
 
 ## Next Steps
 
 After brainstorming:
 
-1. **Research** - Validate ideas with market/technical research
-2. **Product Brief** - Capture strategic vision
-3. **PRD** - Move to formal planning
-
----
-
-## Tips
-
-- Don't worry about having a fully formed idea
-- Let the agent guide the exploration
-- Consider multiple tracks before deciding
-- Use outputs as input for product-brief workflow
-
----
-
-## Related
-
-- [Conduct Research](/docs/how-to/workflows/conduct-research.md) - Validate your ideas
-- [Create Product Brief](/docs/how-to/workflows/create-product-brief.md) - Capture strategic vision
-- [Create PRD](/docs/how-to/workflows/create-prd.md) - Move to formal planning
+1. **Research** — Validate ideas with market/technical research
+2. **Product Brief** — Capture strategic vision
+3. **PRD** — Move to formal planning

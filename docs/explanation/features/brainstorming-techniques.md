@@ -2,14 +2,13 @@
 title: "Brainstorming"
 ---
 
+Facilitate structured creative sessions using 60+ proven ideation techniques.
 
-**Facilitate structured creative sessions using 60+ proven ideation techniques.**
+The Brainstorming workflow is an interactive facilitation system that helps you unlock your own creativity. The AI acts as coach, guide, and creative partner — using proven techniques to draw out ideas and insights that are already within you.
 
-The Brainstorming workflow is an interactive facilitation system that helps you unlock your own creativity. The AI acts as coach, guide, and creative partner—using proven techniques to draw out ideas and insights that are already within you.
-
-**Important:** Every idea comes from you. The workflow creates the conditions for your best thinking to emerge through guided exploration, but you are the source.
-
----
+:::note[Important]
+Every idea comes from you. The workflow creates the conditions for your best thinking to emerge through guided exploration, but you are the source.
+:::
 
 ## When to Use It
 
@@ -18,8 +17,6 @@ The Brainstorming workflow is an interactive facilitation system that helps you 
 - Exploring a problem from completely new angles
 - Systematically developing ideas from raw concepts to actionable plans
 - Team ideation (with collaborative techniques) or personal creative exploration
-
----
 
 ## How It Works
 
@@ -44,8 +41,6 @@ All your generated ideas are organized into themes and prioritized.
 ### 5. Action Planning
 Top ideas get concrete next steps, resource requirements, and success metrics.
 
----
-
 ## What You Get
 
 A comprehensive session document that captures the entire journey:
@@ -57,9 +52,7 @@ A comprehensive session document that captures the entire journey:
 - Prioritized ideas with action plans
 - Session highlights and key breakthroughs
 
-This document becomes a permanent record of your creative process—valuable for future reference, sharing with stakeholders, or continuing the session later.
-
----
+This document becomes a permanent record of your creative process — valuable for future reference, sharing with stakeholders, or continuing the session later.
 
 ## Technique Categories
 
@@ -76,16 +69,12 @@ This document becomes a permanent record of your creative process—valuable for
 | **Cultural** | Traditional knowledge and cross-cultural approaches |
 | **Introspective Delight** | Inner wisdom and authentic exploration |
 
----
-
 ## Key Features
 
 - **Interactive coaching** — Pulls ideas *out* of you, doesn't generate them for you
 - **On-demand loading** — Techniques loaded from a comprehensive library as needed
 - **Session preservation** — Every step, insight, and action plan is documented
 - **Continuation support** — Pause sessions and return later, or extend with additional techniques
-
----
 
 ## Workflow Integration
 

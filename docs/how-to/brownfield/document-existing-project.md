@@ -3,10 +3,7 @@ title: "How to Document an Existing Project"
 description: How to document an existing brownfield codebase using BMad Method
 ---
 
-
 Use the `document-project` workflow to scan your entire codebase and generate comprehensive documentation about its current state.
-
----
 
 ## When to Use This
 
@@ -15,14 +12,10 @@ Use the `document-project` workflow to scan your entire codebase and generate co
 - AI agents need context about existing code patterns
 - Onboarding new team members
 
----
-
-## Prerequisites
-
+:::note[Prerequisites]
 - BMad Method installed in your project
 - Access to the codebase you want to document
-
----
+:::
 
 ## Steps
 
@@ -58,8 +51,6 @@ Review the documentation for:
 - Completeness of architecture description
 - Any missing business rules or intent
 
----
-
 ## What You Get
 
 - **Project overview** - High-level description of what the project does
@@ -68,17 +59,8 @@ Review the documentation for:
 - **Business rules** - Logic extracted from the codebase
 - **Integration points** - External APIs and services
 
----
-
 ## Tips
 
 - Run this before any major brownfield work
 - Keep the documentation updated as the project evolves
 - Use it as input for future PRD creation
-
----
-
-## Related
-
-- [Brownfield Development Guide](/docs/how-to/brownfield/index.md)
-- [Add Feature to Existing Project](/docs/how-to/brownfield/add-feature-to-existing.md)

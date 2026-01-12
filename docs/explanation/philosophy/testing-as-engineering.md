@@ -110,10 +110,3 @@ The three-part stack addresses each gap:
 | No review | TEA `*test-review` audits quality with scoring |
 
 This approach is sometimes called *context engineering*—loading domain-specific standards into AI context automatically rather than relying on prompts alone. TEA's `tea-index.csv` manifest loads relevant knowledge fragments so the AI doesn't relearn testing patterns each session.
-
-## Related
-
-- [TEA Overview](/docs/explanation/features/tea-overview.md) — Workflow details and cheat sheets
-- [Setup Test Framework](/docs/how-to/workflows/setup-test-framework.md) — Implementation guide
-- [The Testing Meta Most Teams Have Not Caught Up To Yet](https://dev.to/muratkeremozcan/the-testing-meta-most-teams-have-not-caught-up-to-yet-5765) — Original article by Murat K Ozcan
-- [Playwright-Utils Repository](https://github.com/seontechnologies/playwright-utils) — Source and documentation

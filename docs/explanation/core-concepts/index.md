@@ -2,7 +2,6 @@
 title: "BMad Core Concepts"
 ---
 
-
 Understanding the fundamental building blocks of the BMad Method.
 
 ## The Essentials
@@ -34,7 +33,3 @@ Start here to understand what BMad is and how it works:
 ### Advanced
 
 - **[Web Bundles](/docs/explanation/features/web-bundles.md)** - Use BMad in Gemini Gems and Custom GPTs
-
----
-
-**Next:** Read the [Agents Guide](/docs/explanation/core-concepts/what-are-agents.md) to understand the core building block of BMad.

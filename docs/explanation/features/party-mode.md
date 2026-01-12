@@ -2,8 +2,7 @@
 title: "Party Mode: Multi-Agent Collaboration"
 ---
 
-
-**Get all your AI agents in one conversation**
+Get all your AI agents in one conversation.
 
 ## What is Party Mode?
 
@@ -20,8 +19,6 @@ Type `/bmad:core:workflows:party-mode` (or `*party-mode` from any agent or at ke
 - **Sprint retrospectives** - Party mode powers the retrospective workflow
 - **Sprint planning** - Multi-agent collaboration for planning sessions
 
----
-
 ## How It Works
 
 **The basics:**
@@ -33,8 +30,6 @@ Type `/bmad:core:workflows:party-mode` (or `*party-mode` from any agent or at ke
 5. Discussion continues until you type "exit" or reach natural conclusion
 
 **That's it.** No complex merging, no runtime magic. Just agents talking.
-
----
 
 ## Quick Start
 
@@ -50,8 +45,6 @@ Ask questions, respond to agents, direct the conversation
 
 Type: exit
 ```
-
----
 
 ## Fun Examples
 
@@ -69,8 +62,6 @@ Type: exit
 
 _(Watch them debate whose fault it really was - it's therapeutic)_
 
----
-
 ### Example 2: Creative Brainstorming
 
 **You:** "How do we make onboarding feel magical instead of boring?"
@@ -84,8 +75,6 @@ _(Watch them debate whose fault it really was - it's therapeutic)_
 **Game Designer:** "Building on that - what if the first 'quest' is actually solving a real user problem? They learn by doing something valuable."
 
 _(Ideas cross-pollinate and evolve)_
-
----
 
 ### Example 3: Technical Decision
 
@@ -101,12 +90,6 @@ _(Ideas cross-pollinate and evolve)_
 
 _(Multiple perspectives reveal the right answer)_
 
-## Related Documentation
-
-- [Agents Reference](/docs/reference/agents/index.md) - Complete agent reference
-- [Quick Start Guide](/docs/tutorials/getting-started/getting-started-bmadv6.md) - Getting started with BMM
-- [Setup Party Mode](/docs/how-to/workflows/setup-party-mode.md) - How to use it
-
----
-
-_Better decisions through diverse perspectives. Welcome to party mode._
+:::tip[Better Decisions]
+Better decisions through diverse perspectives. Welcome to party mode.
+:::

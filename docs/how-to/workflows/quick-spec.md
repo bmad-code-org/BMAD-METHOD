@@ -3,10 +3,7 @@ title: "How to Use Quick Spec"
 description: How to create a technical specification using Quick Spec workflow
 ---
 
-
-Use the `tech-spec` workflow for Quick Flow projects to go directly from idea to implementation-ready specification.
-
----
+Use the `quick-spec` workflow for Quick Flow projects to go directly from idea to implementation-ready specification.
 
 ## When to Use This
 
@@ -16,15 +13,11 @@ Use the `tech-spec` workflow for Quick Flow projects to go directly from idea to
 - Adding to existing brownfield codebase
 - Quick Flow track projects
 
----
-
-## Prerequisites
-
+:::note[Prerequisites]
 - BMad Method installed
 - PM agent or Quick Flow Solo Dev agent available
 - Project directory (can be empty for greenfield)
-
----
+:::
 
 ## Steps
 
@@ -63,12 +56,9 @@ For brownfield projects, the agent will:
 
 The agent generates a comprehensive tech-spec with ready-to-implement stories.
 
----
-
 ## What You Get
 
-### tech-spec.md
-
+**tech-spec.md:**
 - Problem statement and solution
 - Detected framework versions and dependencies
 - Brownfield code patterns (if applicable)
@@ -76,18 +66,11 @@ The agent generates a comprehensive tech-spec with ready-to-implement stories.
 - Specific file paths to modify
 - Complete implementation guidance
 
-### Story Files
+**Story Files:**
+- Single changes: `story-[slug].md`
+- Small features: `epics.md` + `story-[epic-slug]-1.md`, etc.
 
-For single changes:
-- `story-[slug].md` - Single user story ready for development
-
-For small features:
-- `epics.md` - Epic organization
-- `story-[epic-slug]-1.md`, `story-[epic-slug]-2.md`, etc.
-
----
-
-## Example: Bug Fix (Single Change)
+## Example: Bug Fix
 
 **You:** "I want to fix the login validation bug that allows empty passwords"
 
@@ -99,11 +82,7 @@ For small features:
 5. Generates tech-spec.md with specific file paths
 6. Creates story-login-fix.md
 
-**Total time:** 15-30 minutes (mostly implementation)
-
----
-
-## Example: Small Feature (Multi-Story)
+## Example: Small Feature
 
 **You:** "I want to add OAuth social login (Google, GitHub)"
 
@@ -118,10 +97,6 @@ For small features:
    - story-oauth-1.md (Backend OAuth setup)
    - story-oauth-2.md (Frontend login buttons)
 
-**Total time:** 1-3 hours (mostly implementation)
-
----
-
 ## Implementing After Tech Spec
 
 ```bash
@@ -133,27 +108,15 @@ For small features:
 # Then: Load DEV agent and run dev-story for each story
 ```
 
----
-
 ## Tips
 
-### Be Specific in Discovery
+- **Be specific in discovery** — "Fix email validation in UserService to allow plus-addressing" beats "Fix validation bug"
+- **Trust convention detection** — If it detects your patterns correctly, say yes! It's faster than establishing new conventions
+- **Keep single changes atomic** — If your "single change" needs 3+ files, it might be a multi-story feature. Let the workflow guide you
 
-- ✅ "Fix email validation in UserService to allow plus-addressing"
-- ❌ "Fix validation bug"
+## Next Steps
 
-### Trust Convention Detection
+After tech spec:
 
-If it detects your patterns correctly, say yes! It's faster than establishing new conventions.
-
-### Keep Single Changes Atomic
-
-If your "single change" needs 3+ files, it might be a multi-story feature. Let the workflow guide you.
-
----
-
-## Related
-
-- [Quick Flow](/docs/explanation/features/quick-flow.md) - Understanding Quick Spec Flow
-- [Implement Story](/docs/how-to/workflows/implement-story.md) - After tech spec
-- [Create PRD](/docs/how-to/workflows/create-prd.md) - For larger projects needing full BMad Method
+1. **Implement Story** — Run dev-story with the DEV agent
+2. **Sprint Planning** — Optional for multi-story features

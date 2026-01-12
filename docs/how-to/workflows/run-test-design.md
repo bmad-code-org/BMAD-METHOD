@@ -3,10 +3,7 @@ title: "How to Run Test Design"
 description: How to create comprehensive test plans using TEA's test-design workflow
 ---
 
-
 Use TEA's `*test-design` workflow to create comprehensive test plans with risk assessment and coverage strategies.
-
----
 
 ## When to Use This
 
@@ -20,16 +17,12 @@ Use TEA's `*test-design` workflow to create comprehensive test plans with risk a
 - Before implementing stories in the epic
 - To identify epic-specific testing needs
 
----
-
-## Prerequisites
-
+:::note[Prerequisites]
 - BMad Method installed
 - TEA agent available
 - For system-level: Architecture document complete
 - For epic-level: Epic defined with stories
-
----
+:::
 
 ## Steps
 
@@ -47,8 +40,8 @@ Start a fresh chat and load the TEA (Test Architect) agent.
 
 TEA will ask if you want:
 
-- **System-level** - For architecture testability review (Phase 3)
-- **Epic-level** - For epic-specific test planning (Phase 4)
+- **System-level** — For architecture testability review (Phase 3)
+- **Epic-level** — For epic-specific test planning (Phase 4)
 
 ### 4. Provide Context
 
@@ -64,20 +57,16 @@ For epic-level:
 
 TEA generates a comprehensive test design document.
 
----
-
 ## What You Get
 
-### System-Level Output (`test-design-system.md`)
-
+**System-Level Output (`test-design-system.md`):**
 - Testability review of architecture
 - ADR → test mapping
 - Architecturally Significant Requirements (ASRs)
 - Environment needs
 - Test infrastructure recommendations
 
-### Epic-Level Output (`test-design-epic-N.md`)
-
+**Epic-Level Output (`test-design-epic-N.md`):**
 - Risk assessment for the epic
 - Test priorities
 - Coverage plan
@@ -85,44 +74,25 @@ TEA generates a comprehensive test design document.
 - Integration risks
 - Mitigation strategies
 
----
-
 ## Test Design for Different Tracks
 
-### Greenfield - BMad Method
-
-| Stage | Test Design Focus |
-|-------|-------------------|
-| Phase 3 | System-level testability review |
-| Phase 4 | Per-epic risk assessment and test plan |
-
-### Brownfield - BMad Method/Enterprise
-
-| Stage | Test Design Focus |
-|-------|-------------------|
-| Phase 3 | System-level + existing test baseline |
-| Phase 4 | Regression hotspots, integration risks |
-
-### Enterprise
-
-| Stage | Test Design Focus |
-|-------|-------------------|
-| Phase 3 | Compliance-aware testability |
-| Phase 4 | Security/performance/compliance focus |
-
----
+| Track | Phase 3 Focus | Phase 4 Focus |
+|-------|---------------|---------------|
+| **Greenfield** | System-level testability review | Per-epic risk assessment and test plan |
+| **Brownfield** | System-level + existing test baseline | Regression hotspots, integration risks |
+| **Enterprise** | Compliance-aware testability | Security/performance/compliance focus |
 
 ## Tips
 
-- Run system-level test-design right after architecture
-- Run epic-level test-design at the start of each epic
-- Update test design if ADRs change
-- Use the output to guide `*atdd` and `*automate` workflows
+- **Run system-level right after architecture** — Early testability review
+- **Run epic-level at the start of each epic** — Targeted test planning
+- **Update if ADRs change** — Keep test design aligned
+- **Use output to guide other workflows** — Feeds into `*atdd` and `*automate`
 
----
+## Next Steps
 
-## Related
+After test design:
 
-- [TEA Overview](/docs/explanation/features/tea-overview.md) - Understanding the Test Architect
-- [Setup Test Framework](/docs/how-to/workflows/setup-test-framework.md) - Setting up testing infrastructure
-- [Create Architecture](/docs/how-to/workflows/create-architecture.md) - Architecture workflow
+1. **Setup Test Framework** — If not already configured
+2. **Implementation Readiness** — System-level feeds into gate check
+3. **Story Implementation** — Epic-level guides testing during dev

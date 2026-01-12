@@ -3,10 +3,7 @@ title: "How to Set Up Party Mode"
 description: How to set up and use Party Mode for multi-agent collaboration
 ---
 
-
 Use Party Mode to orchestrate dynamic multi-agent conversations with your entire BMad team.
-
----
 
 ## When to Use This
 
@@ -15,14 +12,10 @@ Use Party Mode to orchestrate dynamic multi-agent conversations with your entire
 - Getting comprehensive views across multiple domains
 - Strategic decisions with trade-offs
 
----
-
-## Prerequisites
-
+:::note[Prerequisites]
 - BMad Method installed with multiple agents
 - Any agent loaded that supports party mode
-
----
+:::
 
 ## Steps
 
@@ -62,56 +55,36 @@ The facilitator will:
 
 Type "exit" or "done" to conclude the session. Participating agents will say personalized farewells.
 
----
-
 ## What Happens
 
-1. **Agent Roster** - Party Mode loads your complete agent roster
-2. **Introduction** - Available team members are introduced
-3. **Topic Analysis** - The facilitator analyzes your topic
-4. **Agent Selection** - 2-3 most relevant agents are selected
-5. **Discussion** - Agents respond, reference each other, engage in cross-talk
-6. **Exit** - Session concludes with farewells
-
----
+1. **Agent Roster** — Party Mode loads your complete agent roster
+2. **Introduction** — Available team members are introduced
+3. **Topic Analysis** — The facilitator analyzes your topic
+4. **Agent Selection** — 2-3 most relevant agents are selected
+5. **Discussion** — Agents respond, reference each other, engage in cross-talk
+6. **Exit** — Session concludes with farewells
 
 ## Example Party Compositions
 
-### Product Strategy
-- PM + Innovation Strategist (CIS) + Analyst
-
-### Technical Design
-- Architect + Creative Problem Solver (CIS) + Game Architect
-
-### User Experience
-- UX Designer + Design Thinking Coach (CIS) + Storyteller (CIS)
-
-### Quality Assessment
-- TEA + DEV + Architect
-
----
+| Topic | Typical Agents |
+|-------|---------------|
+| **Product Strategy** | PM + Innovation Strategist (CIS) + Analyst |
+| **Technical Design** | Architect + Creative Problem Solver (CIS) + Game Architect |
+| **User Experience** | UX Designer + Design Thinking Coach (CIS) + Storyteller (CIS) |
+| **Quality Assessment** | TEA + DEV + Architect |
 
 ## Key Features
 
-- **Intelligent agent selection** - Selects based on expertise needed
-- **Authentic personalities** - Each agent maintains their unique voice
-- **Natural cross-talk** - Agents reference and build on each other
-- **Optional TTS** - Voice configurations for each agent
-- **Graceful exit** - Personalized farewells
-
----
+- **Intelligent agent selection** — Selects based on expertise needed
+- **Authentic personalities** — Each agent maintains their unique voice
+- **Natural cross-talk** — Agents reference and build on each other
+- **Optional TTS** — Voice configurations for each agent
+- **Graceful exit** — Personalized farewells
 
 ## Tips
 
-- Be specific about your topic for better agent selection
-- Let the conversation flow naturally
-- Ask follow-up questions to go deeper
-- Take notes on key insights
-- Use for strategic decisions, not routine tasks
-
----
-
-## Related
-
-- [Party Mode](/docs/explanation/features/party-mode.md) - Understanding Party Mode
-- [Agent Roles](/docs/explanation/core-concepts/agent-roles.md) - Available agents
+- **Be specific about your topic** — Better agent selection
+- **Let the conversation flow** — Don't over-direct
+- **Ask follow-up questions** — Go deeper on interesting points
+- **Take notes on key insights** — Capture valuable perspectives
+- **Use for strategic decisions** — Not routine tasks

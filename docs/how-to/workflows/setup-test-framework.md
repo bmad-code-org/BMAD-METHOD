@@ -3,10 +3,7 @@ title: "How to Set Up a Test Framework"
 description: How to set up a production-ready test framework using TEA
 ---
 
-
 Use TEA's `*framework` workflow to scaffold a production-ready test framework for your project.
-
----
 
 ## When to Use This
 
@@ -15,15 +12,11 @@ Use TEA's `*framework` workflow to scaffold a production-ready test framework fo
 - Starting a new project that needs testing infrastructure
 - Phase 3 (Solutioning) after architecture is complete
 
----
-
-## Prerequisites
-
+:::note[Prerequisites]
 - BMad Method installed
 - Architecture completed (or at least tech stack decided)
 - TEA agent available
-
----
+:::
 
 ## Steps
 
@@ -50,13 +43,11 @@ TEA will ask about:
 
 TEA generates:
 
-- **Test scaffold** - Directory structure and config files
-- **Sample specs** - Example tests following best practices
-- **`.env.example`** - Environment variable template
-- **`.nvmrc`** - Node version specification
-- **README updates** - Testing documentation
-
----
+- **Test scaffold** — Directory structure and config files
+- **Sample specs** — Example tests following best practices
+- **`.env.example`** — Environment variable template
+- **`.nvmrc`** — Node version specification
+- **README updates** — Testing documentation
 
 ## What You Get
 
@@ -71,8 +62,6 @@ tests/
 └── README.md
 ```
 
----
-
 ## Optional: Playwright Utils Integration
 
 TEA can integrate with `@seontechnologies/playwright-utils` for advanced fixtures:
@@ -85,29 +74,25 @@ Enable during BMad installation or set `tea_use_playwright_utils: true` in confi
 
 **Utilities available:** api-request, network-recorder, auth-session, intercept-network-call, recurse, log, file-utils, burn-in, network-error-monitor
 
----
-
 ## Optional: MCP Enhancements
 
 TEA can use Playwright MCP servers for enhanced capabilities:
 
-- `playwright` - Browser automation
-- `playwright-test` - Test runner with failure analysis
+- `playwright` — Browser automation
+- `playwright-test` — Test runner with failure analysis
 
 Configure in your IDE's MCP settings.
 
----
-
 ## Tips
 
-- Run `*framework` only once per repository
-- Run after architecture is complete so framework aligns with tech stack
-- Follow up with `*ci` to set up CI/CD pipeline
+- **Run only once per repository** — Framework setup is a one-time operation
+- **Run after architecture is complete** — Framework aligns with tech stack
+- **Follow up with CI setup** — Run `*ci` to configure CI/CD pipeline
 
----
+## Next Steps
 
-## Related
+After test framework setup:
 
-- [TEA Overview](/docs/explanation/features/tea-overview.md) - Understanding the Test Architect
-- [Run Test Design](/docs/how-to/workflows/run-test-design.md) - Creating test plans
-- [Create Architecture](/docs/how-to/workflows/create-architecture.md) - Architecture workflow
+1. **Test Design** — Create test plans for system or epics
+2. **CI Configuration** — Set up automated test runs
+3. **Story Implementation** — Tests are ready for development

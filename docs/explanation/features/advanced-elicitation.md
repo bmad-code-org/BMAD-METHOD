@@ -2,12 +2,9 @@
 title: "Advanced Elicitation"
 ---
 
-
-**Push the LLM to rethink its work through 50+ reasoning methods—essentially, LLM brainstorming.**
+Push the LLM to rethink its work through 50+ reasoning methods — essentially, LLM brainstorming.
 
 Advanced Elicitation is the inverse of Brainstorming. Instead of pulling ideas out of you, the LLM applies sophisticated reasoning techniques to re-examine and enhance content it has just generated. It's the LLM brainstorming with itself to find better approaches, uncover hidden issues, and discover improvements it missed on the first pass.
-
----
 
 ## When to Use It
 
@@ -16,8 +13,6 @@ Advanced Elicitation is the inverse of Brainstorming. Instead of pulling ideas o
 - For high-stakes content where multiple perspectives would strengthen the result
 - To stress-test assumptions, explore edge cases, or find weaknesses in generated plans
 - When you want the LLM to "think again" but with structured reasoning methods
-
----
 
 ## How It Works
 
@@ -44,8 +39,6 @@ Based on context, 5 methods are intelligently selected from a library of 50+ tec
 ### 4. Party Mode Integration (Optional)
 If Party Mode is active, BMad agents participate randomly in the elicitation process, adding their unique perspectives to the methods.
 
----
-
 ## Method Categories
 
 | Category          | Focus                               | Example Methods                                                |
@@ -62,8 +55,6 @@ If Party Mode is active, BMad agents participate randomly in the elicitation pro
 | **Philosophical** | Conceptual clarity                  | Occam's Razor, Ethical Dilemmas                                |
 | **Retrospective** | Reflection and lessons              | Hindsight Reflection, Lessons Learned Extraction               |
 
----
-
 ## Key Features
 
 - **50+ reasoning methods** — Spanning core logic to advanced multi-step reasoning frameworks
@@ -71,8 +62,6 @@ If Party Mode is active, BMad agents participate randomly in the elicitation pro
 - **Iterative enhancement** — Each method builds on previous improvements
 - **User control** — Accept or discard each enhancement before proceeding
 - **Party Mode integration** — Agents can participate when Party Mode is active
-
----
 
 ## Workflow Integration
 
@@ -95,8 +84,6 @@ When called from a workflow:
 ### Example
 
 A specification generation workflow could invoke Advanced Elicitation after producing each major section (requirements, architecture, implementation plan). The workflow would pass the generated section, and Advanced Elicitation would offer methods like "Stakeholder Round Table" to gather diverse perspectives on requirements, or "Red Team vs Blue Team" to stress-test the architecture for vulnerabilities.
-
----
 
 ## Advanced Elicitation vs. Brainstorming
 
