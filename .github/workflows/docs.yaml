@@ -52,6 +52,8 @@ jobs:
           path: build/site
 
   deploy:
+    # Don't run on forked repositories
+    if: github.event.repository.fork != true
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
