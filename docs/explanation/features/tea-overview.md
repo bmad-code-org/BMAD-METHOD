@@ -26,7 +26,7 @@ BMad does not mandate TEA. There are five valid ways to use it (or skip it). Pic
 2. **TEA-only (Standalone)**
    - Use TEA on a non-BMad project. Bring your own requirements, acceptance criteria, and environments.
    - Typical sequence: `*test-design` (system or epic) -> `*atdd` and/or `*automate` -> optional `*test-review` -> `*trace` for coverage and gate decisions.
-   - Run `*framework` or `*ci` only if you want TEA to scaffold the harness or pipeline.
+   - Run `*framework` or `*ci` only if you want TEA to scaffold the harness or pipeline; they work best after you decide the stack/architecture.
 
 3. **Integrated: Greenfield - BMad Method (Simple/Standard Work)**
    - Phase 3: system-level `*test-design`, then `*framework` and `*ci`.
@@ -171,7 +171,7 @@ TEA spans multiple phases (Phase 3, Phase 4, and the release gate). Most BMM age
 | Phase       | TEA Workflows                                             | Frequency        | Purpose                                        |
 | ----------- | --------------------------------------------------------- | ---------------- | ---------------------------------------------- |
 | **Phase 2** | (none)                                                    | -                | Planning phase - PM defines requirements       |
-| **Phase 3** | \*framework, \*ci                                         | Once per project | Set up test infrastructure after architecture |
+| **Phase 3** | \*test-design (system-level), \*framework, \*ci           | Once per project | System testability review and test infrastructure setup |
 | **Phase 4** | \*test-design, \*atdd, \*automate, \*test-review, \*trace | Per epic/story   | Test planning per epic, then per-story testing |
 | **Release** | \*nfr-assess, \*trace (Phase 2: gate)                     | Per epic/release | Go/no-go decision                              |
 
