@@ -1,52 +1,41 @@
 ---
 title: "BMGD Quick-Flow Guide"
+description: Fast-track workflows for rapid game prototyping and flexible development
 ---
 
+Use BMGD Quick-Flow workflows for rapid game prototyping and flexible development when you need to move fast.
 
-Fast-track workflows for rapid game prototyping and flexible development.
-
----
-
-## Game Solo Dev Agent
-
-For dedicated quick-flow development, use the **Game Solo Dev** agent (Indie). This agent is optimized for solo developers and small teams who want to skip the full planning phases and ship fast.
-
-**Switch to Game Solo Dev:** Type `@game-solo-dev` or select the agent from your IDE.
-
-The Game Solo Dev agent includes:
-
-- `quick-prototype` - Rapid mechanic testing
-- `quick-dev` - Flexible feature implementation
-- `quick-spec` - Create implementation-ready specs
-- `code-review` - Quality checks
-- `test-framework` - Automated testing setup
-
----
-
-## Overview
-
-Quick-flow workflows skip the full BMGD planning phases when you need to move fast. Use them for:
+## When to Use This
 
 - Testing a game mechanic idea
 - Implementing a small feature
 - Rapid prototyping before committing to design
 - Bug fixes and tweaks
 
-```
-Full BMGD Flow:
-Brief → GDD → Architecture → Sprint Planning → Stories → Implementation
+## When to Use Full BMGD Instead
 
-Quick-Flow:
-Idea → Quick-Prototype → Quick-Dev → Done
-```
+- Building a major feature or system
+- The scope is unclear or large
+- Multiple team members need alignment
+- The work affects game pillars or core loop
+- You need documentation for future reference
 
----
+:::note[Prerequisites]
+- BMad Method installed with BMGD module
+- Game Solo Dev agent (Indie) or other BMGD agent available
+:::
+
+## Game Solo Dev Agent
+
+For dedicated quick-flow development, use the **Game Solo Dev** agent. This agent is optimized for solo developers and small teams who want to skip the full planning phases.
+
+**Switch to Game Solo Dev:** Type `@game-solo-dev` or select from your IDE.
+
+Includes: `quick-prototype`, `quick-dev`, `quick-spec`, `code-review`, `test-framework`
 
 ## Quick-Prototype
 
-**Command:** `quick-prototype`
-**Agent:** Game Designer, Game Developer
-**Purpose:** Rapidly test gameplay ideas with minimal setup
+Use `quick-prototype` to rapidly test gameplay ideas with minimal setup.
 
 ### When to Use
 
@@ -55,60 +44,31 @@ Idea → Quick-Prototype → Quick-Dev → Done
 - You want to experiment before committing to design
 - You need a proof of concept
 
-### Workflow Steps
+### Steps
 
-1. **Define Scope** - What are you prototyping? (mechanic, feature, system)
-2. **Set Success Criteria** - How will you know if it works?
-3. **Rapid Implementation** - Build the minimum to test the idea
-4. **Playtest and Evaluate** - Does it feel right?
+1. Run `quick-prototype`
+2. Define what you're prototyping (mechanic, feature, system)
+3. Set success criteria (2-3 items)
+4. Build the minimum to test the idea
+5. Playtest and evaluate
 
 ### Prototype Principles
 
-- **Minimum Viable Prototype** - Only what's needed to test the idea
-- **Hardcode First** - Magic numbers are fine, extract later
-- **Skip Edge Cases** - Happy path only for now
-- **Placeholder Everything** - Cubes, debug text, temp sounds
-- **Comment Intent** - Mark what's temporary vs keeper code
-
-### Example Session
-
-```
-You: quick-prototype
-
-Agent: What are you prototyping?
-
-You: I want to test a grappling hook mechanic. Player should be
-     able to aim at surfaces and pull themselves toward the hook point.
-
-Agent: What makes this prototype successful?
-
-You: 1. Aiming feels responsive and intuitive
-     2. The pull movement feels satisfying, not floaty
-     3. Player can chain hooks without awkward pauses
-
-Agent: [Implements minimal grappling hook]
-
-Agent: Prototype complete! Playtest results:
-     - Aiming: Works, consider adding aim assist
-     - Movement: Pull is smooth, might need speed curve
-     - Chaining: Currently has 0.2s delay, feels sluggish
-
-     Next: [d] Develop further | [i] Iterate | [a] Archive
-```
+- **Minimum Viable Prototype** — Only what's needed to test the idea
+- **Hardcode First** — Magic numbers are fine, extract later
+- **Skip Edge Cases** — Happy path only for now
+- **Placeholder Everything** — Cubes, debug text, temp sounds
+- **Comment Intent** — Mark what's temporary vs keeper code
 
 ### After Prototyping
 
-- **Develop** (`d`) - Use `quick-dev` to build production code
-- **Iterate** (`i`) - Adjust and re-test the prototype
-- **Archive** (`a`) - Keep as reference, move on to other ideas
-
----
+- **Develop** (`d`) — Use `quick-dev` to build production code
+- **Iterate** (`i`) — Adjust and re-test the prototype
+- **Archive** (`a`) — Keep as reference, move on to other ideas
 
 ## Quick-Dev
 
-**Command:** `quick-dev`
-**Agent:** Game Developer
-**Purpose:** Flexible development with game-specific considerations
+Use `quick-dev` for flexible development with game-specific considerations.
 
 ### When to Use
 
@@ -120,172 +80,77 @@ Agent: Prototype complete! Playtest results:
 ### Workflow Modes
 
 **Mode A: Tech-Spec Driven**
-
 ```
-You: quick-dev tech-spec-combat.md
-Agent: [Loads spec, extracts tasks, implements]
+quick-dev tech-spec-combat.md
 ```
 
 **Mode B: Direct Instructions**
-
 ```
-You: quick-dev implement double-jump for the player
-Agent: [Evaluates complexity, offers planning options]
+quick-dev implement double-jump for the player
 ```
 
 **Mode C: From Prototype**
-
 ```
-You: quick-dev from the grappling hook prototype
-Agent: [Loads prototype, productionizes code]
+quick-dev from the grappling hook prototype
 ```
 
 ### Game-Specific Checks
 
 Quick-dev includes automatic consideration of:
-
-- **Performance** - No allocations in hot paths, object pooling
-- **Feel** - Input responsiveness, visual/audio feedback
-- **Integration** - Save/load, multiplayer sync, platform testing
-
-### Example Session
-
-```
-You: quick-dev implement enemy patrol behavior
-
-Agent: This looks like a focused feature. Options:
-       [t] Plan first - Create tech-spec (recommended)
-       [r] Prototype first - Test the idea
-       [e] Execute directly
-
-You: e
-
-Agent: Any additional guidance? (patterns, files, constraints)
-
-You: Use the existing AIController base class. Enemies should
-     patrol between waypoints and return if player leaves range.
-
-Agent: [Implements patrol behavior]
-
-Agent: Implementation Complete!
-       Files Modified: EnemyAI.cs, PatrolBehavior.cs
-       Tests: Unit tests added for patrol state machine
-       Performance: No per-frame allocations
-
-       Recommended: Playtest the changes
-```
+- **Performance** — No allocations in hot paths, object pooling
+- **Feel** — Input responsiveness, visual/audio feedback
+- **Integration** — Save/load, multiplayer sync, platform testing
 
 ### Complexity Routing
 
-Quick-dev automatically detects complex requests and offers alternatives:
-
-| Signals                                | Recommendation         |
-| -------------------------------------- | ---------------------- |
-| Single mechanic, bug fix, tweak        | Execute directly       |
+| Signals | Recommendation |
+|---------|----------------|
+| Single mechanic, bug fix, tweak | Execute directly |
 | Multiple systems, performance-critical | Plan first (tech-spec) |
-| Platform/system level work             | Use full BMGD workflow |
-
----
+| Platform/system level work | Use full BMGD workflow |
 
 ## Choosing Between Quick-Flows
 
-| Scenario                | Use                             |
-| ----------------------- | ------------------------------- |
-| "Will this be fun?"     | `quick-prototype`               |
-| "How should this feel?" | `quick-prototype`               |
-| "Build this feature"    | `quick-dev`                     |
-| "Fix this bug"          | `quick-dev`                     |
-| "Test then build"       | `quick-prototype` → `quick-dev` |
+| Scenario | Use |
+|----------|-----|
+| "Will this be fun?" | `quick-prototype` |
+| "How should this feel?" | `quick-prototype` |
+| "Build this feature" | `quick-dev` |
+| "Fix this bug" | `quick-dev` |
+| "Test then build" | `quick-prototype` → `quick-dev` |
 
----
+## Flow Comparison
 
-## Quick-Flow vs Full BMGD
+```
+Full BMGD Flow:
+Brief → GDD → Architecture → Sprint Planning → Stories → Implementation
 
-### Use Quick-Flow When
-
-- The scope is small and well-understood
-- You're experimenting or prototyping
-- You have a clear tech-spec already
-- The work doesn't affect core game systems significantly
-
-### Use Full BMGD When
-
-- Building a major feature or system
-- The scope is unclear or large
-- Multiple team members need alignment
-- The work affects game pillars or core loop
-- You need documentation for future reference
-
----
+Quick-Flow:
+Idea → Quick-Prototype → Quick-Dev → Done
+```
 
 ## Checklists
 
-### Quick-Prototype Checklist
-
-**Before:**
-
+**Quick-Prototype:**
 - [ ] Prototype scope defined
 - [ ] Success criteria established (2-3 items)
-
-**During:**
-
 - [ ] Minimum viable code written
 - [ ] Placeholder assets used
-- [ ] Core functionality testable
-
-**After:**
-
 - [ ] Each criterion evaluated
 - [ ] Decision made (develop/iterate/archive)
 
-### Quick-Dev Checklist
-
-**Before:**
-
+**Quick-Dev:**
 - [ ] Context loaded (spec, prototype, or guidance)
 - [ ] Files to modify identified
-- [ ] Patterns understood
-
-**During:**
-
 - [ ] All tasks completed
 - [ ] No allocations in hot paths
-- [ ] Frame rate maintained
-
-**After:**
-
 - [ ] Game runs without errors
-- [ ] Feature works as specified
 - [ ] Manual playtest completed
 
----
+## Tips
 
-## Tips for Success
-
-### 1. Timebox Prototypes
-
-Set a limit (e.g., 2 hours) for prototyping. If it's not working by then, step back and reconsider.
-
-### 2. Embrace Programmer Art
-
-Prototypes don't need to look good. Focus on feel, not visuals.
-
-### 3. Test on Target Hardware
-
-What feels right on your dev machine might not feel right on target platform.
-
-### 4. Document Learnings
-
-Even failed prototypes teach something. Note what you learned.
-
-### 5. Know When to Graduate
-
-If quick-dev keeps expanding scope, stop and create proper stories.
-
----
-
-## Next Steps
-
-- **[Workflows Guide](/docs/reference/workflows/bmgd-workflows.md)** - Full workflow reference
-- **[Agents Guide](/docs/explanation/game-dev/agents.md)** - Agent capabilities
-- **[Quick Start Guide](/docs/tutorials/getting-started/quick-start-bmgd.md)** - Getting started with BMGD
+- **Timebox prototypes** — Set a limit (e.g., 2 hours). If it's not working, step back
+- **Embrace programmer art** — Focus on feel, not visuals
+- **Test on target hardware** — What feels right on dev machine might not on target
+- **Document learnings** — Even failed prototypes teach something
+- **Know when to graduate** — If quick-dev keeps expanding scope, create proper stories

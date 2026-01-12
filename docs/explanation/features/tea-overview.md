@@ -16,8 +16,6 @@ TEA was built to solve AI-generated tests that rot in review. For the problem st
 - **Mission:** Deliver actionable quality strategies, automation coverage, and gate decisions that scale with project complexity and compliance demands.
 - **Use When:** BMad Method or Enterprise track projects, integration risk is non-trivial, brownfield regression risk exists, or compliance/NFR evidence is required. (Quick Flow projects typically don't require TEA)
 
----
-
 ## Choose Your TEA Engagement Model
 
 BMad does not mandate TEA. There are five valid ways to use it (or skip it). Pick one intentionally.
@@ -49,8 +47,6 @@ BMad does not mandate TEA. There are five valid ways to use it (or skip it). Pic
    - Gate (Phase 2): `*trace`; archive artifacts as needed.
 
 If you are unsure, default to the integrated path for your track and adjust later.
-
----
 
 ## TEA Workflow Lifecycle
 
@@ -153,8 +149,6 @@ Quick Flow track skips Phases 1 and 3.
 BMad Method and Enterprise use all phases based on project needs.
 When an ADR or architecture draft is produced, run `*test-design` in **system-level** mode before the implementation-readiness gate. This ensures the ADR has an attached testability review and ADR → test mapping. Keep the test-design updated if ADRs change.
 
----
-
 ## Why TEA is Different from Other BMM Agents
 
 TEA is the only BMM agent that operates in **multiple phases** (Phase 3 and Phase 4) and has its own **knowledge base architecture**.
@@ -208,9 +202,6 @@ TEA uniquely requires:
 - **Optional integrations**: MCP capabilities (exploratory, verification) and playwright-utils support
 
 This architecture enables TEA to maintain consistent, production-ready testing patterns across all BMad projects while operating across multiple development phases.
-
----
-
 
 ## High-Level Cheat Sheets
 
@@ -366,8 +357,6 @@ These cheat sheets map TEA workflows to the **BMad Method and Enterprise tracks*
 
 </details>
 
----
-
 ## TEA Command Catalog
 
 | Command        | Primary Outputs                                                                               | Notes                                                | With Playwright MCP Enhancements                                                                             |
@@ -380,8 +369,6 @@ These cheat sheets map TEA workflows to the **BMad Method and Enterprise tracks*
 | `*test-review` | Test quality review report with 0-100 score, violations, fixes                                | Reviews tests against knowledge base patterns        | -                                                                                                            |
 | `*nfr-assess`  | NFR assessment report with actions                                                            | Focus on security/performance/reliability            | -                                                                                                            |
 | `*trace`       | Phase 1: Coverage matrix, recommendations. Phase 2: Gate decision (PASS/CONCERNS/FAIL/WAIVED) | Two-phase workflow: traceability + gate decision     | -                                                                                                            |
-
----
 
 ## Playwright Utils Integration
 
@@ -430,8 +417,6 @@ TEA optionally integrates with `@seontechnologies/playwright-utils`, an open-sou
 **Utilities available** (10 total): api-request, network-recorder, auth-session, intercept-network-call, recurse, log, file-utils, burn-in, network-error-monitor, fixtures-composition
 
 </details>
-
----
 
 ## Playwright MCP Enhancements
 
@@ -488,10 +473,3 @@ TEA can leverage Playwright MCP servers to enhance test generation with live bro
    Benefit: Visual failure context, live DOM inspection, root cause discovery
 
 </details>
-
----
-
-## Related Documentation
-
-- [Setup Test Framework](/docs/how-to/workflows/setup-test-framework.md) - How to set up testing infrastructure
-- [Run Test Design](/docs/how-to/workflows/run-test-design.md) - Creating test plans

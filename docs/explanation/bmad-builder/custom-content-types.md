@@ -2,10 +2,13 @@
 title: "Custom Content"
 ---
 
+BMad supports several categories of custom content that extend the platform's capabilities — from simple personal agents to full-featured professional modules.
 
-BMad supports several categories of officially supported custom content that extend the platform's capabilities. Custom content can be created manually or with the recommended assistance of the BMad Builder (BoMB) Module. The BoMB Agents provides workflows and expertise to plan and build any custom content you can imagine.
+:::tip[Recommended Approach]
+Use the BMad Builder (BoMB) Module for guided workflows and expertise when creating custom content.
+:::
 
-This flexibility transforms the platform beyond its current capabilities, enabling:
+This flexibility enables:
 
 - Extensions and add-ons for existing modules (BMad Method, Creative Intelligence Suite)
 - Completely new modules, workflows, templates, and agents outside software engineering
@@ -96,7 +99,9 @@ The distinction between simple and expert agents lies in their structure:
 - When installed, the sidecar folder (`[agentname]-sidecar`) is placed in the user memory location
 - has metadata type: expert
 
+:::note[Key Distinction]
 The key distinction is the presence of a sidecar folder. As web and consumer agent tools evolve to support common memory mechanisms, storage formats, and MCP, the writable memory files will adapt to support these evolving standards.
+:::
 
 Custom agents can be:
 
@@ -117,4 +122,6 @@ A custom workflow created outside of a larger module can still be distributed an
 - Slash commands
 - Manual command/prompt execution when supported by tools
 
+:::tip[Core Concept]
 At its core, a custom workflow is a single or series of prompts designed to achieve a specific outcome.
+:::

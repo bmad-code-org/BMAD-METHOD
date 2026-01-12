@@ -6,16 +6,15 @@ description: Understanding CIS's facilitation-first approach to creative work
 
 The Creative Intelligence Suite (CIS) takes a fundamentally different approach from typical AI tools. Instead of generating solutions directly, CIS agents act as master facilitators who guide you to discover insights yourself.
 
----
-
 ## The Problem with Generation
 
 Traditional AI approaches to creative work:
 
-```
-User: "Give me marketing ideas"
-AI: "Here are 10 marketing ideas..."
-```
+:::note[Generation Example]
+**User:** "Give me marketing ideas"
+
+**AI:** "Here are 10 marketing ideas..."
+:::
 
 This approach:
 - Produces generic, predictable outputs
@@ -23,28 +22,25 @@ This approach:
 - Misses context and nuance
 - Limits creative exploration
 
----
-
 ## The Facilitation Approach
 
 CIS agents use strategic questioning:
 
-```
-User: "I need marketing ideas"
-CIS: "What makes your customers choose you over alternatives?
-      What's the one thing they always mention?"
-User: "They say our support is exceptional"
-CIS: "Interesting! How might you make that exceptional
-      support visible before they become customers?"
-```
+:::note[Facilitation Example]
+**User:** "I need marketing ideas"
+
+**CIS:** "What makes your customers choose you over alternatives? What's the one thing they always mention?"
+
+**User:** "They say our support is exceptional"
+
+**CIS:** "Interesting! How might you make that exceptional support visible before they become customers?"
+:::
 
 This approach:
 - Draws out insights already within you
 - Maintains human ownership of ideas
 - Captures context and nuance
 - Enables deeper creative exploration
-
----
 
 ## Key Principles
 
@@ -85,8 +81,6 @@ Each CIS agent has a distinct personality:
 
 These personas create engaging experiences that maintain creative flow.
 
----
-
 ## When Generation is Appropriate
 
 CIS does generate when appropriate:
@@ -96,8 +90,6 @@ CIS does generate when appropriate:
 - Providing technique examples
 
 But the core creative work happens through facilitated discovery.
-
----
 
 ## Benefits
 
@@ -112,10 +104,3 @@ But the core creative work happens through facilitated discovery.
 - Aligned understanding
 - Documented rationale
 - Stronger buy-in to outcomes
-
----
-
-## Related
-
-- [Creative Intelligence Suite](/docs/explanation/creative-intelligence/index.md) - CIS overview
-- [Brainstorming Techniques](/docs/explanation/features/brainstorming-techniques.md) - Available techniques

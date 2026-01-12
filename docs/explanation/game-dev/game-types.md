@@ -2,16 +2,11 @@
 title: "BMGD Game Types Guide"
 ---
 
-
 Reference for selecting and using BMGD's 24 supported game type templates.
-
----
 
 ## Overview
 
 When creating a GDD, BMGD offers game type templates that provide genre-specific sections. This ensures your design document covers mechanics and systems relevant to your game's genre.
-
----
 
 ## Supported Game Types
 
@@ -30,8 +25,6 @@ Side-scrolling or 3D platforming with combat mechanics. Think Hollow Knight, Cel
 - Level design patterns
 - Boss design
 
----
-
 #### Shooter
 
 **Tags:** shooter, combat, aiming, fps, tps
@@ -46,8 +39,6 @@ Projectile combat with aiming mechanics. Covers FPS, TPS, and arena shooters.
 - Level/arena design
 - Multiplayer considerations
 
----
-
 #### Fighting
 
 **Tags:** fighting, combat, competitive, combos, pvp
@@ -61,8 +52,6 @@ Projectile combat with aiming mechanics. Covers FPS, TPS, and arena shooters.
 - Character movesets
 - Competitive balance
 - Netcode requirements
-
----
 
 ### Strategy & Tactics
 
@@ -80,8 +69,6 @@ Resource management with tactical decisions. RTS, 4X, and grand strategy.
 - Map/scenario design
 - Victory conditions
 
----
-
 #### Turn-Based Tactics
 
 **Tags:** tactics, turn-based, grid, positioning
@@ -96,8 +83,6 @@ Grid-based movement with turn order. XCOM-likes and tactical RPGs.
 - Unit progression
 - Procedural mission generation
 
----
-
 #### Tower Defense
 
 **Tags:** tower-defense, waves, placement, strategy
@@ -111,8 +96,6 @@ Wave-based defense with tower placement.
 - Economy systems
 - Map design patterns
 - Meta-progression
-
----
 
 ### RPG & Progression
 
@@ -130,8 +113,6 @@ Character progression with stats, inventory, and quests.
 - Combat system (action/turn-based)
 - Skill trees and builds
 
----
-
 #### Roguelike
 
 **Tags:** roguelike, procedural, permadeath, runs
@@ -146,8 +127,6 @@ Procedural generation with permadeath and run-based progression.
 - Item/ability synergies
 - Meta-progression systems
 
----
-
 #### Metroidvania
 
 **Tags:** metroidvania, exploration, abilities, interconnected
@@ -161,8 +140,6 @@ Interconnected world with ability gating.
 - Backtracking flow
 - Secret and collectible placement
 - Power-up progression
-
----
 
 ### Narrative & Story
 
@@ -180,8 +157,6 @@ Story-driven exploration and narrative. Point-and-click and narrative adventures
 - Dialogue systems
 - Story branching
 
----
-
 #### Visual Novel
 
 **Tags:** visual-novel, narrative, choices, story
@@ -196,8 +171,6 @@ Narrative choices with branching story.
 - UI/presentation
 - Save/load states
 
----
-
 #### Text-Based
 
 **Tags:** text, parser, interactive-fiction, mud
@@ -211,8 +184,6 @@ Text input/output games. Parser games, choice-based IF, MUDs.
 - Narrative structure
 - Text presentation
 - Save state management
-
----
 
 ### Simulation & Management
 
@@ -230,8 +201,6 @@ Realistic systems with management and building. Includes tycoons and sim games.
 - Building/construction
 - Failure states
 
----
-
 #### Sandbox
 
 **Tags:** sandbox, creative, building, freedom
@@ -245,8 +214,6 @@ Creative freedom with building and minimal objectives.
 - Persistence and saving
 - Sharing/community features
 - Optional objectives
-
----
 
 ### Sports & Racing
 
@@ -264,8 +231,6 @@ Vehicle control with tracks and lap times.
 - Progression/career mode
 - Multiplayer racing
 
----
-
 #### Sports
 
 **Tags:** sports, teams, realistic, physics
@@ -279,8 +244,6 @@ Team-based or individual sports simulation.
 - AI opponent behavior
 - Season/career modes
 - Multiplayer modes
-
----
 
 ### Multiplayer
 
@@ -298,8 +261,6 @@ Multiplayer team battles with hero selection.
 - Matchmaking
 - Economy (gold/items)
 
----
-
 #### Party Game
 
 **Tags:** party, multiplayer, minigames, casual
@@ -313,8 +274,6 @@ Local multiplayer with minigames.
 - Round/game structure
 - Scoring systems
 - Player count flexibility
-
----
 
 ### Horror & Survival
 
@@ -332,8 +291,6 @@ Resource gathering with crafting and persistent threats.
 - Threat systems
 - Base building
 
----
-
 #### Horror
 
 **Tags:** horror, atmosphere, tension, fear
@@ -347,8 +304,6 @@ Atmosphere and tension with limited resources.
 - Sound design
 - Lighting and visibility
 - Enemy/threat design
-
----
 
 ### Casual & Progression
 
@@ -366,8 +321,6 @@ Logic-based challenges and problem-solving.
 - Level structure
 - Scoring/rating
 
----
-
 #### Idle/Incremental
 
 **Tags:** idle, incremental, automation, progression
@@ -382,8 +335,6 @@ Passive progression with upgrades and automation.
 - Number scaling
 - Offline progress
 
----
-
 #### Card Game
 
 **Tags:** card, deck-building, strategy, turns
@@ -397,8 +348,6 @@ Deck building with card mechanics.
 - Mana/resource systems
 - Rarity and collection
 - Competitive balance
-
----
 
 ### Rhythm
 
@@ -415,8 +364,6 @@ Music synchronization with timing-based gameplay.
 - Difficulty levels
 - Music licensing
 - Input methods
-
----
 
 ## Hybrid Game Types
 
@@ -449,8 +396,6 @@ You: It's a roguelike with card game combat
 Agent: I'll include sections for both Roguelike and Card Game...
 ```
 
----
-
 ## Game Type Selection Tips
 
 ### 1. Start with Core Fantasy
@@ -482,8 +427,6 @@ One type should be primary (most gameplay time). Others add flavor:
 - **Primary:** Platformer (core movement and exploration)
 - **Secondary:** Metroidvania (ability gating structure)
 
----
-
 ## GDD Section Mapping
 
 When you select a game type, BMGD adds these GDD sections:
@@ -496,8 +439,6 @@ When you select a game type, BMGD adds these GDD sections:
 | Narrative         | Story Structure, Dialogue, Branching   |
 | Multiplayer       | Matchmaking, Netcode, Balance          |
 | Simulation        | Systems, Economy, AI                   |
-
----
 
 ## Next Steps
 

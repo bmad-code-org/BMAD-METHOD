@@ -2,28 +2,22 @@
 title: "BMM Documentation"
 ---
 
+Complete guides for the BMad Method Module (BMM) — AI-powered agile development workflows that adapt to your project's complexity.
 
-Complete guides for the BMad Method Module (BMM) - AI-powered agile development workflows that adapt to your project's complexity.
+## Getting Started
 
----
-
-## 🚀 Getting Started
+:::tip[Quick Path]
+Install → workflow-init → Follow agent guidance
+:::
 
 **New to BMM?** Start here:
 
-- **[Quick Start Guide](/docs/tutorials/getting-started/getting-started-bmadv6.md)** - Step-by-step guide to building your first project
-  - Installation and setup
-  - Understanding the four phases
-  - Running your first workflows
-  - Agent-based development flow
+| Resource | Description |
+|----------|-------------|
+| **[Quick Start Guide](/docs/tutorials/getting-started/getting-started-bmadv6.md)** | Step-by-step guide to building your first project |
+| **[Complete Workflow Diagram](../../tutorials/getting-started/images/workflow-method-greenfield.svg)** | Visual flowchart showing all phases, agents, and decision points |
 
-**Quick Path:** Install → workflow-init → Follow agent guidance
-
-### 📊 Visual Overview
-
-**[Complete Workflow Diagram](../../tutorials/getting-started/images/workflow-method-greenfield.svg)** - Visual flowchart showing all phases, agents (color-coded), and decision points for the BMad Method standard greenfield track.
-
-## 📖 Core Concepts
+## Core Concepts
 
 The BMad Method is meant to be adapted and customized to your specific needs. In this realm there is no one size fits all - your needs are unique, and BMad Method is meant to support this (and if it does not, can be further customized or extended with new modules).
 
@@ -45,7 +39,7 @@ First know there is the full BMad Method Process and then there is a Quick Flow 
 
 - **TEA engagement (optional)** - Choose TEA engagement: none, TEA-only (standalone), or integrated by track. See **[Test Architect Guide](/docs/explanation/features/tea-overview.md)**.
 
-## 🤖 Agents and Collaboration
+## Agents and Collaboration
 
 Complete guide to BMM's AI agent team:
 
@@ -63,7 +57,7 @@ Complete guide to BMM's AI agent team:
   - Agent customization in party mode
   - Best practices
 
-## 🔧 Working with Existing Code
+## Working with Existing Code
 
 Comprehensive guide for brownfield development:
 
@@ -74,14 +68,14 @@ Comprehensive guide for brownfield development:
   - Phase-by-phase workflow guidance
   - Common scenarios
 
-## 📚 Quick References
+## Quick References
 
 Essential reference materials:
 
 - **[Glossary](/docs/reference/glossary/index.md)** - Key terminology and concepts
 - **[FAQ](/docs/explanation/faq/index.md)** - Frequently asked questions across all topics
 
-## 🎯 Choose Your Path
+## Choose Your Path
 
 ### I need to...
 
@@ -95,7 +89,7 @@ Essential reference materials:
 → Read [Brownfield Development Guide](/docs/how-to/brownfield/index.md)
 → Pay special attention to documentation requirements for brownfield projects
 
-## 📋 Workflow Guides
+## Workflow Guides
 
 Comprehensive documentation for all BMM workflows organized by phase:
 
@@ -124,7 +118,7 @@ Comprehensive documentation for all BMM workflows organized by phase:
   - Test strategy, automation, quality gates
   - TEA agent and test healing
 
-## 🌐 External Resources
+## External Resources
 
 ### Community and Support
 
@@ -132,4 +126,6 @@ Comprehensive documentation for all BMM workflows organized by phase:
 - **[GitHub Issues](https://github.com/bmad-code-org/BMAD-METHOD/issues)** - Report bugs or request features
 - **[YouTube Channel](https://www.youtube.com/@BMadCode)** - Video tutorials and walkthroughs
 
-**Ready to begin?** → [Start with the Quick Start Guide](/docs/tutorials/getting-started/getting-started-bmadv6.md)
+:::tip[Ready to Begin?]
+[Start with the Quick Start Guide](/docs/tutorials/getting-started/getting-started-bmadv6.md)
+:::

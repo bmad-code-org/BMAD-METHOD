@@ -2,12 +2,9 @@
 title: "Workflows"
 ---
 
-
 Workflows are like prompts on steroids. They harness the untapped power and control of LLMs through progressive disclosure—breaking complex tasks into focused steps that execute sequentially. Instead of random AI slop where you hope for the best, workflows give you repeatable, reliable, high-quality outputs.
 
 This guide explains what workflows are, why they're powerful, and how to think about designing them.
-
----
 
 ## What Is a Workflow?
 
@@ -71,9 +68,9 @@ When workflows involve users, they should be **facilitative, not directive**. Th
 
 The AI figures out exact wording and question order based on conversation context. This makes interactions feel natural and responsive rather than robotic and interrogative.
 
-**When to be prescriptive**: Some workflows require exact scripts—medical intake, legal compliance, safety-critical procedures. But these are the exception, not the rule. Default to facilitative intent-based approaches unless compliance or regulation demands otherwise.
-
----
+:::caution[When to Be Prescriptive]
+Some workflows require exact scripts—medical intake, legal compliance, safety-critical procedures. But these are the exception. Default to facilitative intent-based approaches unless compliance or regulation demands otherwise.
+:::
 
 ## Why Workflows Matter
 
@@ -84,8 +81,6 @@ Workflows solve three fundamental problems with AI interactions:
 **Continuity**: Workflows can span multiple sessions. Stop mid-workflow and return later without losing progress—something free-form prompts can't do.
 
 **Quality**: Sequential enforcement prevents shortcuts. The AI must complete each step fully before moving on, ensuring thorough, complete outputs instead of rushed, half-baked results.
-
----
 
 ## How Workflows Work
 
@@ -150,8 +145,6 @@ All BMad planning workflows and the BMB module (will) use this tri-modal pattern
 
 This tri-modal approach gives you the best of both worlds: the creativity and flexibility to build what you need, the quality assurance of validation that can run anytime, and the ability to iterate while staying true to standards that make the artifacts valuable across sessions and team members.
 
----
-
 ## Design Decisions
 
 Before building a workflow, answer these questions:
@@ -166,8 +159,6 @@ Before building a workflow, answer these questions:
 
 **Intent or prescriptive?**: Is this intent-based facilitation (most workflows) or prescriptive compliance (medical, legal, regulated)?
 
----
-
 ## Learning from Examples
 
 The best way to understand workflows is to study real examples. Look at the official BMad modules:
@@ -180,8 +171,6 @@ The best way to understand workflows is to study real examples. Look at the offi
 Study the workflow.md files to understand how each workflow starts. Examine step files to see how instructions are structured. Notice the frontmatter variables, menu handling, and how steps chain together.
 
 Copy patterns that work. Adapt them to your domain. The structure is consistent across all workflows—the content and steps change, but the architecture stays the same.
-
----
 
 ## When to Use Workflows
 
@@ -205,8 +194,6 @@ Modified BMad Workflows
 
 If there's only one thing to do and it can be explained in under about 300 lines - don't bother with step files. Instead, you can still have
 a short single file workflow.md file.
-
----
 
 ## The Bottom Line
 

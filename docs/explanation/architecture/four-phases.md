@@ -6,8 +6,6 @@ description: Understanding the four phases of the BMad Method
 
 BMad Method uses a four-phase approach that adapts to project complexity while ensuring consistent quality.
 
----
-
 ## Phase Overview
 
 | Phase | Name | Purpose | Required? |
@@ -16,8 +14,6 @@ BMad Method uses a four-phase approach that adapts to project complexity while e
 | **Phase 2** | Planning | Requirements definition | Required |
 | **Phase 3** | Solutioning | Technical design | Track-dependent |
 | **Phase 4** | Implementation | Building the software | Required |
-
----
 
 ## Phase 1: Analysis (Optional)
 
@@ -38,8 +34,6 @@ Exploration and discovery workflows that help validate ideas and understand mark
 - Well-defined features
 - Continuing existing work
 
----
-
 ## Phase 2: Planning (Required)
 
 Requirements definition using the scale-adaptive system to match planning depth to project complexity.
@@ -51,8 +45,6 @@ Requirements definition using the scale-adaptive system to match planning depth 
 
 **Key principle:**
 Define **what** to build and **why**. Leave **how** to Phase 3.
-
----
 
 ## Phase 3: Solutioning (Track-Dependent)
 
@@ -73,8 +65,6 @@ Technical architecture and design decisions that prevent agent conflicts during 
 **Key principle:**
 Make technical decisions explicit so all agents implement consistently.
 
----
-
 ## Phase 4: Implementation (Required)
 
 Iterative sprint-based development with story-centric workflow.
@@ -86,10 +76,9 @@ Iterative sprint-based development with story-centric workflow.
 - `code-review` - Quality assurance
 - `retrospective` - Continuous improvement
 
-**Key principle:**
-One story at a time, complete each story's full lifecycle before starting the next.
-
----
+:::tip[Key Principle]
+One story at a time — complete each story's full lifecycle before starting the next.
+:::
 
 ## Phase Flow by Track
 
@@ -116,11 +105,3 @@ Phase 1 → Phase 2 (PRD) → Phase 3 (architecture + extended) → Phase 4 (imp
 ```
 
 Same as BMad Method with optional extended workflows.
-
----
-
-## Related
-
-- [Why Solutioning Matters](/docs/explanation/architecture/why-solutioning-matters.md)
-- [Preventing Agent Conflicts](/docs/explanation/architecture/preventing-agent-conflicts.md)
-- [Quick Start Guide](/docs/tutorials/getting-started/getting-started-bmadv6.md)

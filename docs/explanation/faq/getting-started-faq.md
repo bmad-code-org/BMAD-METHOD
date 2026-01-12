@@ -7,11 +7,16 @@ Quick answers to common questions about getting started with the BMad Method.
 
 ## Questions
 
+- [Why does BMad use so many tokens?](#why-does-bmad-use-so-many-tokens)
 - [Do I always need to run workflow-init?](#do-i-always-need-to-run-workflow-init)
 - [Why do I need fresh chats for each workflow?](#why-do-i-need-fresh-chats-for-each-workflow)
 - [Can I skip workflow-status and just start working?](#can-i-skip-workflow-status-and-just-start-working)
 - [What's the minimum I need to get started?](#whats-the-minimum-i-need-to-get-started)
 - [How do I know if I'm in Phase 1, 2, 3, or 4?](#how-do-i-know-if-im-in-phase-1-2-3-or-4)
+
+### Why does BMad use so many tokens?
+
+BMad is not always the most token efficient approach, and that's by design. The checkpoints, story files, and retrospectives keep you in the loop so you can apply taste, judgment, and accumulated context that no agent has. Fully automated coding loops optimize for code velocity; BMad optimizes for decision quality. If you're building something you'll maintain for years, where user experience matters, where architectural choices compound—that tradeoff pays for itself.
 
 ### Do I always need to run workflow-init?
 

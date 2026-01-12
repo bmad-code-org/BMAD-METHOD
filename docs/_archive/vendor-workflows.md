@@ -1,9 +1,8 @@
 ---
-title: "Workflow Vendoring, Customization, and Inheritance (Official Support Coming Soon)"
+title: "Workflow Vendoring, Customization, and Inheritance"
 ---
 
-
-Vendoring and Inheritance of workflows are 2 ways of sharing or reutilizing workflows - but with some key distinctions and use cases.
+Use workflow vendoring and inheritance to share or reutilize workflows across modules.
 
 ## Workflow Vendoring
 
@@ -24,7 +23,11 @@ From your modules agent definition, you would implement the menu item as follows
 
 At install time, it will clone the workflow and all of its required assets, and the agent that gets built will have an exec to a path installed in its own module. The content gets added to the folder you specify in exec. While it does not have to exactly match the source path, you will want to ensure you are specifying the workflow.md to be in a new location (in other words in this example, dev-story would not already be the path of another custom module workflow that already exists.)
 
-## Workflow Inheritance (Official Support Coming Post Beta)
+## Workflow Inheritance
+
+:::note[Coming Soon]
+Official support for workflow inheritance is coming post beta.
+:::
 
 Workflow Inheritance is a different concept, that allows you to modify or extend existing workflow.
 
@@ -36,7 +39,11 @@ Some possible examples could be:
 - Sprint Planning
 - Collaborative Brainstorming Sessions
 
-## Workflow Customization (Official Support Coming Post Beta)
+## Workflow Customization
+
+:::note[Coming Soon]
+Official support for workflow customization is coming post beta.
+:::
 
 Similar to Workflow Inheritance, Workflow Customization will soon be allowed for certain workflows that are meant to be user customized - similar in process to how agents are customized now.
 

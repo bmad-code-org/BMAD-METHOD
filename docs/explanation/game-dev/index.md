@@ -3,10 +3,7 @@ title: "BMGD - Game Development Module"
 description: AI-powered workflows for game design and development with BMGD
 ---
 
-
-Complete guides for the BMad Game Development Module (BMGD) - AI-powered workflows for game design and development that adapt to your project's needs.
-
----
+Complete guides for the BMad Game Development Module (BMGD) — AI-powered workflows for game design and development that adapt to your project's needs.
 
 ## Getting Started
 
@@ -18,16 +15,14 @@ Complete guides for the BMad Game Development Module (BMGD) - AI-powered workflo
   - Running your first workflows
   - Agent-based development flow
 
-**Quick Path:** Install BMGD module → Game Brief → GDD → Architecture → Build
-
----
+:::tip[Quick Path]
+Install BMGD module → Game Brief → GDD → Architecture → Build
+:::
 
 ## Core Documentation
 
 - **[Game Types Guide](/docs/explanation/game-dev/game-types.md)** - Selecting and using game type templates (24 supported types)
 - **[BMGD vs BMM](/docs/explanation/game-dev/bmgd-vs-bmm.md)** - Understanding the differences
-
----
 
 ## Game Development Phases
 
@@ -51,8 +46,6 @@ BMGD follows four phases aligned with game development:
 - **Testing** - Automated tests, playtesting, performance
 - **Retrospective** - Continuous improvement
 
----
-
 ## Choose Your Path
 
 ### I need to...
@@ -75,11 +68,3 @@ BMGD follows four phases aligned with game development:
 
 **Quickly test an idea**
 → Use [Quick-Flow](/docs/how-to/workflows/bmgd-quick-flow.md) for rapid prototyping
-
----
-
-## Related
-
-- [Game Types Guide](/docs/explanation/game-dev/game-types.md) - Understanding game type templates
-- [BMGD vs BMM](/docs/explanation/game-dev/bmgd-vs-bmm.md) - Comparison with core method
-- [Glossary](/docs/reference/glossary/index.md) - Terminology reference

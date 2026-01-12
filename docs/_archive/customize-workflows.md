@@ -2,12 +2,13 @@
 title: "Workflow Customization Guide"
 ---
 
-
 Customize and optimize workflows with step replacement and hooks.
 
 ## Status
 
-> **Coming Soon:** Workflow customization is an upcoming capability. This guide will be updated when the feature is available.
+:::note[Coming Soon]
+Workflow customization is an upcoming capability. This guide will be updated when the feature is available.
+:::
 
 ## What to Expect
 
@@ -26,8 +27,4 @@ While workflow customization is in development, you can:
 - **Customize Agents** - Modify agent behavior using [Agent Customization](/docs/how-to/customization/customize-agents.md)
 - **Provide Feedback** - Share your workflow customization needs with the community
 
----
-
 **In the meantime:** Learn how to [create custom workflows](/docs/explanation/bmad-builder/index.md) from scratch.
-
-[← Back to Customization](/docs/how-to/customization/index.md)

@@ -3,10 +3,7 @@ title: "How to Conduct Research"
 description: How to conduct market, technical, and competitive research using BMad Method
 ---
 
-
 Use the `research` workflow to perform comprehensive multi-type research for validating ideas, understanding markets, and making informed decisions.
-
----
 
 ## When to Use This
 
@@ -17,14 +14,10 @@ Use the `research` workflow to perform comprehensive multi-type research for val
 - Understanding domain or industry
 - Need deeper AI-assisted research
 
----
-
-## Prerequisites
-
+:::note[Prerequisites]
 - BMad Method installed
 - Analyst agent available
-
----
+:::
 
 ## Steps
 
@@ -42,14 +35,14 @@ Start a fresh chat and load the Analyst agent.
 
 Select the type of research you need:
 
-| Type            | Purpose                                                | Use When                            |
-| --------------- | ------------------------------------------------------ | ----------------------------------- |
-| **market**      | TAM/SAM/SOM, competitive analysis                      | Need market viability validation    |
-| **technical**   | Technology evaluation, ADRs                            | Choosing frameworks/platforms       |
-| **competitive** | Deep competitor analysis                               | Understanding competitive landscape |
-| **user**        | Customer insights, personas, JTBD                      | Need user understanding             |
-| **domain**      | Industry deep dives, trends                            | Understanding domain/industry       |
-| **deep_prompt** | Generate AI research prompts (ChatGPT, Claude, Gemini) | Need deeper AI-assisted research    |
+| Type | Purpose | Use When |
+|------|---------|----------|
+| **market** | TAM/SAM/SOM, competitive analysis | Need market viability validation |
+| **technical** | Technology evaluation, ADRs | Choosing frameworks/platforms |
+| **competitive** | Deep competitor analysis | Understanding competitive landscape |
+| **user** | Customer insights, personas, JTBD | Need user understanding |
+| **domain** | Industry deep dives, trends | Understanding domain/industry |
+| **deep_prompt** | Generate AI research prompts | Need deeper AI-assisted research |
 
 ### 4. Provide Context
 
@@ -63,37 +56,23 @@ Give the agent details about what you're researching:
 
 Choose your depth level:
 
-- **Quick** - Fast overview
-- **Standard** - Balanced depth
-- **Comprehensive** - Deep analysis
-
----
+- **Quick** — Fast overview
+- **Standard** — Balanced depth
+- **Comprehensive** — Deep analysis
 
 ## What You Get
 
-### Market Research Example
+Research output varies by type:
 
-```
-TAM: $50B
-SAM: $5B
-SOM: $50M
+**Market Research:**
+- TAM/SAM/SOM analysis
+- Top competitors
+- Positioning recommendation
 
-Top Competitors:
-- Asana
-- Monday
-- etc.
-
-Positioning Recommendation: ...
-```
-
-### Technical Research Example
-
-Technology evaluation with:
+**Technical Research:**
 - Comparison matrix
 - Trade-off analysis
 - Recommendations with rationale
-
----
 
 ## Key Features
 
@@ -102,29 +81,17 @@ Technology evaluation with:
 - Platform-specific optimization for deep_prompt type
 - Configurable research depth
 
----
+## Tips
+
+- **Use market research early** — Validates new product ideas
+- **Technical research helps architecture** — Inform ADRs with data
+- **Competitive research informs positioning** — Differentiate your product
+- **Domain research for specialized industries** — Fintech, healthcare, etc.
 
 ## Next Steps
 
 After research:
 
-1. **Product Brief** - Capture strategic vision informed by research
-2. **PRD** - Use findings as context for requirements
-3. **Architecture** - Use technical research in ADRs
-
----
-
-## Tips
-
-- Use market research early for new products
-- Technical research helps with architecture decisions
-- Competitive research informs positioning
-- Domain research is valuable for specialized industries
-
----
-
-## Related
-
-- [Run Brainstorming Session](/docs/how-to/workflows/run-brainstorming-session.md) - Explore ideas before research
-- [Create Product Brief](/docs/how-to/workflows/create-product-brief.md) - Capture strategic vision
-- [Create PRD](/docs/how-to/workflows/create-prd.md) - Move to formal planning
+1. **Product Brief** — Capture strategic vision informed by research
+2. **PRD** — Use findings as context for requirements
+3. **Architecture** — Use technical research in ADRs

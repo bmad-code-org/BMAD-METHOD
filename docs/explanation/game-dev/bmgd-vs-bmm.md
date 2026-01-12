@@ -3,10 +3,7 @@ title: "BMGD vs BMM"
 description: Understanding the differences between BMGD and BMM
 ---
 
-
 BMGD (BMad Game Development) extends BMM (BMad Method) with game-specific capabilities. This page explains the key differences.
-
----
 
 ## Quick Comparison
 
@@ -19,8 +16,6 @@ BMGD (BMad Game Development) extends BMM (BMad Method) with game-specific capabi
 | **Narrative**  | N/A                                   | Full narrative workflow                                                  |
 | **Testing**    | Web-focused                           | Engine-specific (Unity, Unreal, Godot)                                   |
 | **Production** | BMM workflows                         | BMM workflows with game overrides                                        |
-
----
 
 ## Agent Differences
 
@@ -46,8 +41,6 @@ BMGD agents understand game-specific concepts like:
 - Engine-specific patterns
 - Playtesting and QA
 
----
-
 ## Planning Documents
 
 ### BMM Planning
@@ -65,8 +58,6 @@ The GDD (Game Design Document) includes:
 - Art and audio direction
 - Genre-specific sections
 
----
-
 ## Game Type Templates
 
 BMGD includes 24 game type templates that auto-configure GDD sections:
@@ -83,8 +74,6 @@ Each template provides:
 - Testing considerations
 - Common pitfalls to avoid
 
----
-
 ## Narrative Support
 
 BMGD includes full narrative workflow for story-driven games:
@@ -96,8 +85,6 @@ BMGD includes full narrative workflow for story-driven games:
 - Dialogue systems
 
 BMM has no equivalent for narrative design.
-
----
 
 ## Testing Differences
 
@@ -113,8 +100,6 @@ BMM has no equivalent for narrative design.
 - Playtest planning
 - Balance validation
 
----
-
 ## Production Workflow
 
 BMGD production workflows **inherit from BMM** and add game-specific:
@@ -124,8 +109,6 @@ BMGD production workflows **inherit from BMM** and add game-specific:
 - Engine-specific considerations
 
 This means you get all of BMM's implementation structure plus game-specific enhancements.
-
----
 
 ## When to Use Each
 
@@ -140,11 +123,3 @@ This means you get all of BMM's implementation structure plus game-specific enha
 - Creating interactive experiences
 - Game prototyping
 - Game jams
-
----
-
-## Related
-
-- [BMGD Overview](/docs/explanation/game-dev/index.md) - Getting started with BMGD
-- [Game Types Guide](/docs/explanation/game-dev/game-types.md) - Understanding game templates
-- [Quick Start BMGD](/docs/tutorials/getting-started/quick-start-bmgd.md) - Tutorial

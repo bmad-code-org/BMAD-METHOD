@@ -3,16 +3,11 @@ title: "Creative Intelligence Suite (CIS)"
 description: AI-powered creative facilitation with the Creative Intelligence Suite
 ---
 
-
 AI-powered creative facilitation transforming strategic thinking through expert coaching across five specialized domains.
-
----
 
 ## Core Capabilities
 
 CIS provides structured creative methodologies through distinctive agent personas who act as master facilitators, drawing out insights through strategic questioning rather than generating solutions directly.
-
----
 
 ## Specialized Agents
 
@@ -21,8 +16,6 @@ CIS provides structured creative methodologies through distinctive agent persona
 - **Dr. Quinn** - Problem Solver (detective-scientist hybrid)
 - **Victor** - Innovation Oracle (bold strategic precision)
 - **Sophia** - Master Storyteller (whimsical narrator)
-
----
 
 ## Interactive Workflows
 
@@ -63,8 +56,6 @@ Business model disruption:
 - Story circles
 - Compelling pitch structures
 
----
-
 ## Quick Start
 
 ### Direct Workflow
@@ -83,8 +74,6 @@ agent cis/brainstorming-coach
 > *brainstorm
 ```
 
----
-
 ## Key Differentiators
 
 - **Facilitation Over Generation** - Guides discovery through questions
@@ -92,8 +81,6 @@ agent cis/brainstorming-coach
 - **Context Integration** - Domain-specific guidance support
 - **Persona-Driven** - Unique communication styles
 - **Rich Method Libraries** - 150+ proven techniques
-
----
 
 ## Integration Points
 
@@ -103,8 +90,6 @@ CIS workflows integrate with:
 - **BMB** - Creative module design
 - **Custom Modules** - Shared creative resource
 
----
-
 ## Best Practices
 
 1. **Set clear objectives** before starting sessions
@@ -113,9 +98,6 @@ CIS workflows integrate with:
 4. **Take breaks** when energy flags
 5. **Document insights** as they emerge
 
----
-
-## Related
-
-- [Facilitation Over Generation](/docs/explanation/philosophy/facilitation-over-generation.md) - Core philosophy
-- [Brainstorming Techniques](/docs/explanation/features/brainstorming-techniques.md) - Technique reference
+:::tip[Learn More]
+See [Facilitation Over Generation](/docs/explanation/philosophy/facilitation-over-generation.md) for the core philosophy behind CIS.
+:::
