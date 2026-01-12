@@ -26,7 +26,7 @@ BMad does not mandate TEA. There are five valid ways to use it (or skip it). Pic
 2. **TEA-only (Standalone)**
    - Use TEA on a non-BMad project. Bring your own requirements, acceptance criteria, and environments.
    - Typical sequence: `*test-design` (system or epic) -> `*atdd` and/or `*automate` -> optional `*test-review` -> `*trace` for coverage and gate decisions.
-   - Run `*framework` or `*ci` only if you want TEA to scaffold the harness or pipeline.
+   - Run `*framework` or `*ci` only if you want TEA to scaffold the harness or pipeline; they work best after you decide the stack/architecture.
 
 3. **Integrated: Greenfield - BMad Method (Simple/Standard Work)**
    - Phase 3: system-level `*test-design`, then `*framework` and `*ci`.
@@ -48,7 +48,28 @@ BMad does not mandate TEA. There are five valid ways to use it (or skip it). Pic
 
 If you are unsure, default to the integrated path for your track and adjust later.
 
+## TEA Command Catalog
+
+| Command        | Primary Outputs                                                                               | Notes                                                | With Playwright MCP Enhancements                                                                             |
+| -------------- | --------------------------------------------------------------------------------------------- | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `*framework`   | Playwright/Cypress scaffold, `.env.example`, `.nvmrc`, sample specs                           | Use when no production-ready harness exists          | -                                                                                                            |
+| `*ci`          | CI workflow, selective test scripts, secrets checklist                                        | Platform-aware (GitHub Actions default)              | -                                                                                                            |
+| `*test-design` | Combined risk assessment, mitigation plan, and coverage strategy                              | Risk scoring + optional exploratory mode             | **+ Exploratory**: Interactive UI discovery with browser automation (uncover actual functionality)           |
+| `*atdd`        | Failing acceptance tests + implementation checklist                                           | TDD red phase + optional recording mode              | **+ Recording**: AI generation verified with live browser (accurate selectors from real DOM)                 |
+| `*automate`    | Prioritized specs, fixtures, README/script updates, DoD summary                               | Optional healing/recording, avoid duplicate coverage | **+ Healing**: Pattern fixes enhanced with visual debugging + **+ Recording**: AI verified with live browser |
+| `*test-review` | Test quality review report with 0-100 score, violations, fixes                                | Reviews tests against knowledge base patterns        | -                                                                                                            |
+| `*nfr-assess`  | NFR assessment report with actions                                                            | Focus on security/performance/reliability            | -                                                                                                            |
+| `*trace`       | Phase 1: Coverage matrix, recommendations. Phase 2: Gate decision (PASS/CONCERNS/FAIL/WAIVED) | Two-phase workflow: traceability + gate decision     | -                                                                                                            |
+
 ## TEA Workflow Lifecycle
+
+**Phase Numbering Note:** BMad uses a 4-phase methodology with optional Phase 1 and a documentation prerequisite:
+
+- **Documentation** (Optional for brownfield): Prerequisite using `*document-project`
+- **Phase 1** (Optional): Discovery/Analysis (`*brainstorm`, `*research`, `*product-brief`)
+- **Phase 2** (Required): Planning (`*prd` creates PRD with FRs/NFRs)
+- **Phase 3** (Track-dependent): Solutioning (`*architecture` → `*test-design` (system-level) → `*create-epics-and-stories` → TEA: `*framework`, `*ci` → `*implementation-readiness`)
+- **Phase 4** (Required): Implementation (`*sprint-planning` → per-epic: `*test-design` → per-story: dev workflows)
 
 TEA integrates into the BMad development lifecycle during Solutioning (Phase 3) and Implementation (Phase 4):
 
@@ -132,62 +153,25 @@ graph TB
     style Waived fill:#9c27b0,stroke:#4a148c,stroke-width:3px,color:#000
 ```
 
-**Phase Numbering Note:** BMad uses a 4-phase methodology with optional Phase 1 and documentation prerequisite:
-
-- **Documentation** (Optional for brownfield): Prerequisite using `*document-project`
-- **Phase 1** (Optional): Discovery/Analysis (`*brainstorm`, `*research`, `*product-brief`)
-- **Phase 2** (Required): Planning (`*prd` creates PRD with FRs/NFRs)
-- **Phase 3** (Track-dependent): Solutioning (`*architecture` → `*test-design` (system-level) → `*create-epics-and-stories` → TEA: `*framework`, `*ci` → `*implementation-readiness`)
-- **Phase 4** (Required): Implementation (`*sprint-planning` → per-epic: `*test-design` → per-story: dev workflows)
-
 **TEA workflows:** `*framework` and `*ci` run once in Phase 3 after architecture. `*test-design` is **dual-mode**:
 
 - **System-level (Phase 3):** Run immediately after architecture/ADR drafting to produce `test-design-system.md` (testability review, ADR → test mapping, Architecturally Significant Requirements (ASRs), environment needs). Feeds the implementation-readiness gate.
 - **Epic-level (Phase 4):** Run per-epic to produce `test-design-epic-N.md` (risk, priorities, coverage plan).
 
-Quick Flow track skips Phases 1 and 3.
+The Quick Flow track skips Phases 1 and 3.
 BMad Method and Enterprise use all phases based on project needs.
 When an ADR or architecture draft is produced, run `*test-design` in **system-level** mode before the implementation-readiness gate. This ensures the ADR has an attached testability review and ADR → test mapping. Keep the test-design updated if ADRs change.
 
-## Why TEA is Different from Other BMM Agents
+## Why TEA Is Different from Other BMM Agents
 
-TEA is the only BMM agent that operates in **multiple phases** (Phase 3 and Phase 4) and has its own **knowledge base architecture**.
-
-### Phase-Specific Agents (Standard Pattern)
-
-Most BMM agents work in a single phase:
-
-- **Phase 1 (Analysis)**: Analyst agent
-- **Phase 2 (Planning)**: PM agent
-- **Phase 3 (Solutioning)**: Architect agent
-- **Phase 4 (Implementation)**: SM, DEV agents
-
-### TEA: Multi-Phase Quality Agent (Unique Pattern)
-
-TEA is **the only agent that operates in multiple phases**:
-
-```
-Phase 1 (Analysis) → [TEA not typically used]
-    ↓
-Phase 2 (Planning) → [PM defines requirements - TEA not active]
-    ↓
-Phase 3 (Solutioning) → TEA: *framework, *ci (test infrastructure AFTER architecture)
-    ↓
-Phase 4 (Implementation) → TEA: *test-design (per epic: "how do I test THIS feature?")
-                        → TEA: *atdd, *automate, *test-review, *trace (per story)
-    ↓
-Epic/Release Gate → TEA: *nfr-assess, *trace Phase 2 (release decision)
-```
+TEA spans multiple phases (Phase 3, Phase 4, and the release gate). Most BMM agents operate in a single phase. That multi-phase role is paired with a dedicated testing knowledge base so standards stay consistent across projects.
 
 ### TEA's 8 Workflows Across Phases
-
-**Standard agents**: 1-3 workflows per phase
-**TEA**: 8 workflows across Phase 3, Phase 4, and Release Gate
 
 | Phase       | TEA Workflows                                             | Frequency        | Purpose                                        |
 | ----------- | --------------------------------------------------------- | ---------------- | ---------------------------------------------- |
 | **Phase 2** | (none)                                                    | -                | Planning phase - PM defines requirements       |
-| **Phase 3** | \*framework, \*ci                                         | Once per project | Setup test infrastructure AFTER architecture   |
+| **Phase 3** | \*test-design (system-level), \*framework, \*ci           | Once per project | System testability review and test infrastructure setup |
 | **Phase 4** | \*test-design, \*atdd, \*automate, \*test-review, \*trace | Per epic/story   | Test planning per epic, then per-story testing |
 | **Release** | \*nfr-assess, \*trace (Phase 2: gate)                     | Per epic/release | Go/no-go decision                              |
 
@@ -197,17 +181,17 @@ Epic/Release Gate → TEA: *nfr-assess, *trace Phase 2 (release decision)
 
 TEA uniquely requires:
 
-- **Extensive domain knowledge**: 30+ fragments covering test patterns, CI/CD, fixtures, quality practices, and optional playwright-utils integration
-- **Cross-cutting concerns**: Domain-specific testing patterns that apply across all BMad projects (vs project-specific artifacts like PRDs/stories)
-- **Optional integrations**: MCP capabilities (exploratory, verification) and playwright-utils support
+- **Extensive domain knowledge**: Test patterns, CI/CD, fixtures, and quality practices
+- **Cross-cutting concerns**: Standards that apply across all BMad projects (not just PRDs or stories)
+- **Optional integrations**: Playwright-utils and MCP enhancements
 
-This architecture enables TEA to maintain consistent, production-ready testing patterns across all BMad projects while operating across multiple development phases.
+This architecture lets TEA maintain consistent, production-ready testing patterns while operating across multiple phases.
 
-## High-Level Cheat Sheets
+## Track Cheat Sheets (Condensed)
 
 These cheat sheets map TEA workflows to the **BMad Method and Enterprise tracks** across the **4-Phase Methodology** (Phase 1: Analysis, Phase 2: Planning, Phase 3: Solutioning, Phase 4: Implementation).
 
-**Note:** Quick Flow projects typically don't require TEA (covered in Overview). These cheat sheets focus on BMad Method and Enterprise tracks where TEA adds value.
+**Note:** The Quick Flow track typically doesn't require TEA (covered in Overview). These cheat sheets focus on BMad Method and Enterprise tracks where TEA adds value.
 
 **Legend for Track Deltas:**
 
@@ -231,39 +215,15 @@ These cheat sheets map TEA workflows to the **BMad Method and Enterprise tracks*
 | **Phase 4**: Story Review  | Execute `*test-review` (optional), re-run `*trace`                | Address recommendations, update code/tests                                          | Quality report, refreshed coverage matrix                  |
 | **Phase 4**: Release Gate  | (Optional) `*test-review` for final audit, Run `*trace` (Phase 2) | Confirm Definition of Done, share release notes                                     | Quality audit, Gate YAML + release summary                 |
 
-<details>
-<summary>Execution Notes</summary>
-
-- Run `*framework` only once per repo or when modern harness support is missing.
-- **Phase 3 (Solutioning)**: After architecture is complete, run `*framework` and `*ci` to setup test infrastructure based on architectural decisions.
-- **Phase 4 starts**: After solutioning is complete, sprint planning loads all epics.
-- **`*test-design` runs per-epic**: At the beginning of working on each epic, run `*test-design` to create a test plan for THAT specific epic/feature. Output: `test-design-epic-N.md`.
-- Use `*atdd` before coding when the team can adopt ATDD; share its checklist with the dev agent.
-- Post-implementation, keep `*trace` current, expand coverage with `*automate`, optionally review test quality with `*test-review`. For release gate, run `*trace` with Phase 2 enabled to get deployment decision.
-- Use `*test-review` after `*atdd` to validate generated tests, after `*automate` to ensure regression quality, or before gate for final audit.
-- Clarification: `*test-review` is optional and only audits existing tests; run it after `*atdd` or `*automate` when you want a quality review, not as a required step.
-- Clarification: `*atdd` outputs are not auto-consumed; share the ATDD doc/tests with the dev workflow. `*trace` does not run `*atdd`—it evaluates existing artifacts for coverage and gate readiness.
-- Clarification: `*ci` is a one-time setup; recommended early (Phase 3 or before feature work), but it can be done later if it was skipped.
-
-</details>
-
-<details>
-<summary>Worked Example – “Nova CRM” Greenfield Feature</summary>
-
-1. **Planning (Phase 2):** Analyst runs `*product-brief`; PM executes `*prd` to produce PRD with FRs/NFRs.
-2. **Solutioning (Phase 3):** Architect completes `*architecture` for the new module; `*create-epics-and-stories` generates epics/stories based on architecture; TEA sets up test infrastructure via `*framework` and `*ci` based on architectural decisions; gate check validates planning completeness.
-3. **Sprint Start (Phase 4):** Scrum Master runs `*sprint-planning` to load all epics into sprint status.
-4. **Epic 1 Planning (Phase 4):** TEA runs `*test-design` to create test plan for Epic 1, producing `test-design-epic-1.md` with risk assessment.
-5. **Story Implementation (Phase 4):** For each story in Epic 1, SM generates story via `*create-story`; TEA optionally runs `*atdd`; Dev implements with guidance from failing tests.
-6. **Post-Dev (Phase 4):** TEA runs `*automate`, optionally `*test-review` to audit test quality, re-runs `*trace` to refresh coverage.
-7. **Release Gate:** TEA runs `*trace` with Phase 2 enabled to generate gate decision.
-
-</details>
+**Key notes:**
+- Run `*framework` and `*ci` once in Phase 3 after architecture.
+- Run `*test-design` per epic in Phase 4; use `*atdd` before dev when helpful.
+- Use `*trace` for gate decisions; `*test-review` is an optional audit.
 
 ### Brownfield - BMad Method or Enterprise (Simple or Complex)
 
 **Planning Tracks:** BMad Method or Enterprise Method
-**Use Case:** Existing codebases - simple additions (BMad Method) or complex enterprise requirements (Enterprise Method)
+**Use Case:** Existing codebases: simple additions (BMad Method) or complex enterprise requirements (Enterprise Method)
 
 **🔄 Brownfield Deltas from Greenfield:**
 
@@ -284,31 +244,10 @@ These cheat sheets map TEA workflows to the **BMad Method and Enterprise tracks*
 | **Phase 4**: Story Review         | Apply `*test-review` (optional), re-run `*trace`, ➕ `*nfr-assess` if needed | Resolve gaps, update docs/tests                                                     | Quality report, refreshed coverage matrix, NFR report                  |
 | **Phase 4**: Release Gate         | (Optional) `*test-review` for final audit, Run `*trace` (Phase 2)           | Capture sign-offs, share release notes                                              | Quality audit, Gate YAML + release summary                             |
 
-<details>
-<summary>Execution Notes</summary>
-
-- Lead with `*trace` during Planning (Phase 2) to baseline existing test coverage before architecture work begins.
-- **Phase 3 (Solutioning)**: After architecture is complete, run `*framework` and `*ci` to modernize test infrastructure. For brownfield, framework may need to integrate with or replace existing test setup.
-- **Phase 4 starts**: After solutioning is complete and sprint planning loads all epics.
-- **`*test-design` runs per-epic**: At the beginning of working on each epic, run `*test-design` to identify regression hotspots, integration risks, and mitigation strategies for THAT specific epic/feature. Output: `test-design-epic-N.md`.
-- Use `*atdd` when stories benefit from ATDD; otherwise proceed to implementation and rely on post-dev automation.
-- After development, expand coverage with `*automate`, optionally review test quality with `*test-review`, re-run `*trace` (Phase 2 for gate decision). Run `*nfr-assess` now if non-functional risks weren't addressed earlier.
-- Use `*test-review` to validate existing brownfield tests or audit new tests before gate.
-
-</details>
-
-<details>
-<summary>Worked Example – “Atlas Payments” Brownfield Story</summary>
-
-1. **Planning (Phase 2):** PM executes `*prd` to create PRD with FRs/NFRs; TEA runs `*trace` to baseline existing coverage.
-2. **Solutioning (Phase 3):** Architect triggers `*architecture` capturing legacy payment flows and integration architecture; `*create-epics-and-stories` generates Epic 1 (Payment Processing) based on architecture; TEA sets up `*framework` and `*ci` based on architectural decisions; gate check validates planning.
-3. **Sprint Start (Phase 4):** Scrum Master runs `*sprint-planning` to load Epic 1 into sprint status.
-4. **Epic 1 Planning (Phase 4):** TEA runs `*test-design` for Epic 1 (Payment Processing), producing `test-design-epic-1.md` that flags settlement edge cases, regression hotspots, and mitigation plans.
-5. **Story Implementation (Phase 4):** For each story in Epic 1, SM generates story via `*create-story`; TEA runs `*atdd` producing failing Playwright specs; Dev implements with guidance from tests and checklist.
-6. **Post-Dev (Phase 4):** TEA applies `*automate`, optionally `*test-review` to audit test quality, re-runs `*trace` to refresh coverage.
-7. **Release Gate:** TEA performs `*nfr-assess` to validate SLAs, runs `*trace` with Phase 2 enabled to generate gate decision (PASS/CONCERNS/FAIL).
-
-</details>
+**Key notes:**
+- Start with `*trace` in Phase 2 to baseline coverage.
+- Focus `*test-design` on regression hotspots and integration risk.
+- Run `*nfr-assess` before the gate if it wasn't done earlier.
 
 ### Greenfield - Enterprise Method (Enterprise/Compliance Work)
 
@@ -332,105 +271,36 @@ These cheat sheets map TEA workflows to the **BMad Method and Enterprise tracks*
 | **Phase 4**: Story Dev     | (Optional) `*atdd`, `*automate`, `*test-review`, `*trace` per story     | SM `*create-story`, DEV implements                                                  | Tests, fixtures, quality reports, coverage matrices                |
 | **Phase 4**: Release Gate  | Final `*test-review` audit, Run `*trace` (Phase 2), 📦 archive artifacts | Capture sign-offs, 📦 compliance evidence                                            | Quality audit, updated assessments, gate YAML, 📦 audit trail       |
 
-<details>
-<summary>Execution Notes</summary>
+**Key notes:**
+- Run `*nfr-assess` early in Phase 2.
+- `*test-design` emphasizes compliance, security, and performance alignment.
+- Archive artifacts at the release gate for audits.
 
-- `*nfr-assess` runs early in Planning (Phase 2) to capture compliance, security, and performance requirements upfront.
-- **Phase 3 (Solutioning)**: After architecture is complete, run `*framework` and `*ci` with enterprise-grade configurations (selective testing, burn-in jobs, caching, notifications).
-- **Phase 4 starts**: After solutioning is complete and sprint planning loads all epics.
-- **`*test-design` runs per-epic**: At the beginning of working on each epic, run `*test-design` to create an enterprise-focused test plan for THAT specific epic, ensuring alignment with security architecture, performance targets, and compliance requirements. Output: `test-design-epic-N.md`.
-- Use `*atdd` for stories when feasible so acceptance tests can lead implementation.
-- Use `*test-review` per story or sprint to maintain quality standards and ensure compliance with testing best practices.
-- Prior to release, rerun coverage (`*trace`, `*automate`), perform final quality audit with `*test-review`, and formalize the decision with `*trace` Phase 2 (gate decision); archive artifacts for compliance audits.
+**Related how-to guides:**
+- [How to Run Test Design](/docs/how-to/workflows/run-test-design.md)
+- [How to Set Up a Test Framework](/docs/how-to/workflows/setup-test-framework.md)
 
-</details>
+## Optional Integrations
 
-<details>
-<summary>Worked Example – “Helios Ledger” Enterprise Release</summary>
+### Playwright Utils (`@seontechnologies/playwright-utils`)
 
-1. **Planning (Phase 2):** Analyst runs `*research` and `*product-brief`; PM completes `*prd` creating PRD with FRs/NFRs; TEA runs `*nfr-assess` to establish NFR targets.
-2. **Solutioning (Phase 3):** Architect completes `*architecture` with enterprise considerations; `*create-epics-and-stories` generates epics/stories based on architecture; TEA sets up `*framework` and `*ci` with enterprise-grade configurations based on architectural decisions; gate check validates planning completeness.
-3. **Sprint Start (Phase 4):** Scrum Master runs `*sprint-planning` to load all epics into sprint status.
-4. **Per-Epic (Phase 4):** For each epic, TEA runs `*test-design` to create epic-specific test plan (e.g., `test-design-epic-1.md`, `test-design-epic-2.md`) with compliance-focused risk assessment.
-5. **Per-Story (Phase 4):** For each story, TEA uses `*atdd`, `*automate`, `*test-review`, and `*trace`; Dev teams iterate on the findings.
-6. **Release Gate:** TEA re-checks coverage, performs final quality audit with `*test-review`, and logs the final gate decision via `*trace` Phase 2, archiving artifacts for compliance.
+Production-ready fixtures and utilities that enhance TEA workflows.
 
-</details>
+- Install: `npm install -D @seontechnologies/playwright-utils`
+> Note: Playwright Utils is enabled via the installer. Only set `tea_use_playwright_utils` in `_bmad/bmm/config.yaml` if you need to override the installer choice.
+- Impacts: `*framework`, `*atdd`, `*automate`, `*test-review`, `*ci`
+- Utilities include: api-request, auth-session, network-recorder, intercept-network-call, recurse, log, file-utils, burn-in, network-error-monitor, fixtures-composition
 
-## TEA Command Catalog
+### Playwright MCP Enhancements
 
-| Command        | Primary Outputs                                                                               | Notes                                                | With Playwright MCP Enhancements                                                                             |
-| -------------- | --------------------------------------------------------------------------------------------- | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| `*framework`   | Playwright/Cypress scaffold, `.env.example`, `.nvmrc`, sample specs                           | Use when no production-ready harness exists          | -                                                                                                            |
-| `*ci`          | CI workflow, selective test scripts, secrets checklist                                        | Platform-aware (GitHub Actions default)              | -                                                                                                            |
-| `*test-design` | Combined risk assessment, mitigation plan, and coverage strategy                              | Risk scoring + optional exploratory mode             | **+ Exploratory**: Interactive UI discovery with browser automation (uncover actual functionality)           |
-| `*atdd`        | Failing acceptance tests + implementation checklist                                           | TDD red phase + optional recording mode              | **+ Recording**: AI generation verified with live browser (accurate selectors from real DOM)                 |
-| `*automate`    | Prioritized specs, fixtures, README/script updates, DoD summary                               | Optional healing/recording, avoid duplicate coverage | **+ Healing**: Pattern fixes enhanced with visual debugging + **+ Recording**: AI verified with live browser |
-| `*test-review` | Test quality review report with 0-100 score, violations, fixes                                | Reviews tests against knowledge base patterns        | -                                                                                                            |
-| `*nfr-assess`  | NFR assessment report with actions                                                            | Focus on security/performance/reliability            | -                                                                                                            |
-| `*trace`       | Phase 1: Coverage matrix, recommendations. Phase 2: Gate decision (PASS/CONCERNS/FAIL/WAIVED) | Two-phase workflow: traceability + gate decision     | -                                                                                                            |
-
-## Playwright Utils Integration
-
-TEA optionally integrates with `@seontechnologies/playwright-utils`, an open-source library providing fixture-based utilities for Playwright tests. This integration enhances TEA's test generation and review workflows with production-ready patterns.
-
-<details>
-<summary><strong>Installation & Configuration</strong></summary>
-
-**Package**: `@seontechnologies/playwright-utils` ([npm](https://www.npmjs.com/package/@seontechnologies/playwright-utils) | [GitHub](https://github.com/seontechnologies/playwright-utils))
-
-**Install**: `npm install -D @seontechnologies/playwright-utils`
-
-**Enable during BMAD installation** by answering "Yes" when prompted, or manually set `tea_use_playwright_utils: true` in `_bmad/bmm/config.yaml`.
-
-**To disable**: Set `tea_use_playwright_utils: false` in `_bmad/bmm/config.yaml`.
-
-</details>
-
-<details>
-<summary><strong>How Playwright Utils Enhances TEA Workflows</strong></summary>
-
-1. `*framework`:
-   - Default: Basic Playwright scaffold
-   - **+ playwright-utils**: Scaffold with api-request, network-recorder, auth-session, burn-in, network-error-monitor fixtures pre-configured
-
-   Benefit: Production-ready patterns from day one
-
-2. `*automate`, `*atdd`:
-   - Default: Standard test patterns
-   - **+ playwright-utils**: Tests using api-request (schema validation), intercept-network-call (mocking), recurse (polling), log (structured logging), file-utils (CSV/PDF)
-
-   Benefit: Advanced patterns without boilerplate
-
-3. `*test-review`:
-   - Default: Reviews against core knowledge base (22 fragments)
-   - **+ playwright-utils**: Reviews against expanded knowledge base (33 fragments: 22 core + 11 playwright-utils)
-
-   Benefit: Reviews include fixture composition, auth patterns, network recording best practices
-
-4. `*ci`:
-   - Default: Standard CI workflow
-   - **+ playwright-utils**: CI workflow with burn-in script (smart test selection) and network-error-monitor integration
-
-   Benefit: Faster CI feedback, HTTP error detection
-
-**Utilities available** (10 total): api-request, network-recorder, auth-session, intercept-network-call, recurse, log, file-utils, burn-in, network-error-monitor, fixtures-composition
-
-</details>
-
-## Playwright MCP Enhancements
-
-TEA can leverage Playwright MCP servers to enhance test generation with live browser verification. MCP provides interactive capabilities on top of TEA's default AI-based approach.
-
-<details>
-<summary><strong>MCP Server Configuration</strong></summary>
+Live browser verification for test design and automation.
 
 **Two Playwright MCP servers** (actively maintained, continuously updated):
 
 - `playwright` - Browser automation (`npx @playwright/mcp@latest`)
 - `playwright-test` - Test runner with failure analysis (`npx playwright run-test-mcp-server`)
 
-**Config example**:
+**Configuration example**:
 
 ```json
 {
@@ -447,29 +317,8 @@ TEA can leverage Playwright MCP servers to enhance test generation with live bro
 }
 ```
 
-**To disable**: Set `tea_use_mcp_enhancements: false` in `_bmad/bmm/config.yaml` OR remove MCPs from IDE config.
+- Helps `*test-design` validate actual UI behavior.
+- Helps `*atdd` and `*automate` verify selectors against the live DOM.
+- Enhances healing with `browser_snapshot`, console, network, and locator tools.
 
-</details>
-
-<details>
-<summary><strong>How MCP Enhances TEA Workflows</strong></summary>
-
-1. `*test-design`:
-   - Default: Analysis + documentation
-   - **+ MCP**: Interactive UI discovery with `browser_navigate`, `browser_click`, `browser_snapshot`, behavior observation
-
-   Benefit: Discover actual functionality, edge cases, undocumented features
-
-2. `*atdd`, `*automate`:
-   - Default: Infers selectors and interactions from requirements and knowledge fragments
-   - **+ MCP**: Generates tests **then** verifies with `generator_setup_page`, `browser_*` tools, validates against live app
-
-   Benefit: Accurate selectors from real DOM, verified behavior, refined test code
-
-3. `*automate` (healing mode):
-   - Default: Pattern-based fixes from error messages + knowledge fragments
-   - **+ MCP**: Pattern fixes **enhanced with** `browser_snapshot`, `browser_console_messages`, `browser_network_requests`, `browser_generate_locator`
-
-   Benefit: Visual failure context, live DOM inspection, root cause discovery
-
-</details>
+**To disable**: set `tea_use_mcp_enhancements: false` in `_bmad/bmm/config.yaml` or remove MCPs from IDE config.
