@@ -23,10 +23,15 @@ BMad does not mandate TEA. There are five valid ways to use it (or skip it). Pic
 1. **No TEA**
    - Skip all TEA workflows. Use your existing team testing approach.
 
-2. **TEA-only (Standalone)**
+2. **TEA Solo (Standalone)**
    - Use TEA on a non-BMad project. Bring your own requirements, acceptance criteria, and environments.
    - Typical sequence: `*test-design` (system or epic) -> `*atdd` and/or `*automate` -> optional `*test-review` -> `*trace` for coverage and gate decisions.
    - Run `*framework` or `*ci` only if you want TEA to scaffold the harness or pipeline; they work best after you decide the stack/architecture.
+
+**TEA Lite (Beginner Approach):**
+   - Simplest way to use TEA - just use `*automate` to test existing features.
+   - Perfect for learning TEA fundamentals in 30 minutes.
+   - See [TEA Lite Quickstart Tutorial](/docs/tutorials/getting-started/tea-lite-quickstart.md).
 
 3. **Integrated: Greenfield - BMad Method (Simple/Standard Work)**
    - Phase 3: system-level `*test-design`, then `*framework` and `*ci`.
@@ -279,6 +284,31 @@ These cheat sheets map TEA workflows to the **BMad Method and Enterprise tracks*
 **Related how-to guides:**
 - [How to Run Test Design](/docs/how-to/workflows/run-test-design.md)
 - [How to Set Up a Test Framework](/docs/how-to/workflows/setup-test-framework.md)
+- [How to Run ATDD](/docs/how-to/workflows/run-atdd.md)
+- [How to Run Automate](/docs/how-to/workflows/run-automate.md)
+- [How to Run Test Review](/docs/how-to/workflows/run-test-review.md)
+- [How to Set Up CI Pipeline](/docs/how-to/workflows/setup-ci.md)
+- [How to Run NFR Assessment](/docs/how-to/workflows/run-nfr-assess.md)
+- [How to Run Trace](/docs/how-to/workflows/run-trace.md)
+
+## Deep Dive Concepts
+
+Want to understand TEA principles and patterns in depth?
+
+**Core Principles:**
+- [Risk-Based Testing](/docs/explanation/tea/risk-based-testing.md) - Probability × impact scoring, P0-P3 priorities
+- [Test Quality Standards](/docs/explanation/tea/test-quality-standards.md) - Definition of Done, determinism, isolation
+- [Knowledge Base System](/docs/explanation/tea/knowledge-base-system.md) - Context engineering with tea-index.csv
+
+**Technical Patterns:**
+- [Fixture Architecture](/docs/explanation/tea/fixture-architecture.md) - Pure function → fixture → composition
+- [Network-First Patterns](/docs/explanation/tea/network-first-patterns.md) - Eliminating flakiness with intercept-before-navigate
+
+**Engagement & Strategy:**
+- [Engagement Models](/docs/explanation/tea/engagement-models.md) - TEA Lite, TEA Solo, TEA Integrated (5 models explained)
+
+**Philosophy:**
+- [Testing as Engineering](/docs/explanation/philosophy/testing-as-engineering.md) - Why TEA exists, problem statement
 
 ## Optional Integrations
 
