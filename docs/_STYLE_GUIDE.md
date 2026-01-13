@@ -392,7 +392,7 @@ Explanation documents answer "What is X?" and "Why does X matter?"
 - [ ] Comparison tables for 3+ options
 - [ ] Diagrams have clear labels
 - [ ] Links to how-to guides for procedural questions
-- [ ] 2-3 admonitions max
+- [ ] 2-3 admonitions max per document (1-2 per section)
 
 ---
 
