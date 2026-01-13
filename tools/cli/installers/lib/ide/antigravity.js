@@ -28,6 +28,21 @@ class AntigravitySetup extends BaseIdeSetup {
   }
 
   /**
+   * Prompt for subagent installation location
+   * @returns {Promise<string>} Selected location ('project' or 'user')
+   */
+  async _promptInstallLocation() {
+    return prompts.select({
+      message: 'Where would you like to install Antigravity subagents?',
+      choices: [
+        { name: 'Project level (.agent/agents/)', value: 'project' },
+        { name: 'User level (~/.agent/agents/)', value: 'user' },
+      ],
+      default: 'project',
+    });
+  }
+
+  /**
    * Collect configuration choices before installation
    * @param {Object} options - Configuration options
    * @returns {Object} Collected configuration
@@ -58,15 +73,7 @@ class AntigravitySetup extends BaseIdeSetup {
             config.subagentChoices = await this.promptSubagentInstallation(injectionConfig.subagents);
 
             if (config.subagentChoices.install !== 'none') {
-              // Ask for installation location
-              config.installLocation = await prompts.select({
-                message: 'Where would you like to install Antigravity subagents?',
-                choices: [
-                  { name: 'Project level (.agent/agents/)', value: 'project' },
-                  { name: 'User level (~/.agent/agents/)', value: 'user' },
-                ],
-                default: 'project',
-              });
+              config.installLocation = await this._promptInstallLocation();
             }
           }
         } catch (error) {
@@ -292,14 +299,7 @@ class AntigravitySetup extends BaseIdeSetup {
         choices = await this.promptSubagentInstallation(config.subagents);
 
         if (choices.install !== 'none') {
-          location = await prompts.select({
-            message: 'Where would you like to install Antigravity subagents?',
-            choices: [
-              { name: 'Project level (.agent/agents/)', value: 'project' },
-              { name: 'User level (~/.agent/agents/)', value: 'user' },
-            ],
-            default: 'project',
-          });
+          location = await this._promptInstallLocation();
         }
       }
 

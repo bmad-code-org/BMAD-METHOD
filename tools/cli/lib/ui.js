@@ -1242,6 +1242,56 @@ class UI {
   }
 
   /**
+   * Validate custom content path synchronously
+   * @param {string} input - User input path
+   * @returns {string|undefined} Error message or undefined if valid
+   */
+  validateCustomContentPathSync(input) {
+    // Allow empty input to cancel
+    if (!input || input.trim() === '') {
+      return; // Allow empty to exit
+    }
+
+    try {
+      // Expand the path
+      const expandedPath = this.expandUserPath(input.trim());
+
+      // Check if path exists
+      if (!fs.pathExistsSync(expandedPath)) {
+        return 'Path does not exist';
+      }
+
+      // Check if it's a directory
+      const stat = fs.statSync(expandedPath);
+      if (!stat.isDirectory()) {
+        return 'Path must be a directory';
+      }
+
+      // Check for module.yaml in the root
+      const moduleYamlPath = path.join(expandedPath, 'module.yaml');
+      if (!fs.pathExistsSync(moduleYamlPath)) {
+        return 'Directory must contain a module.yaml file in the root';
+      }
+
+      // Try to parse the module.yaml to get the module ID
+      try {
+        const yaml = require('yaml');
+        const content = fs.readFileSync(moduleYamlPath, 'utf8');
+        const moduleData = yaml.parse(content);
+        if (!moduleData.code) {
+          return 'module.yaml must contain a "code" field for the module ID';
+        }
+      } catch (error) {
+        return 'Invalid module.yaml file: ' + error.message;
+      }
+
+      return; // Valid
+    } catch (error) {
+      return 'Error validating path: ' + error.message;
+    }
+  }
+
+  /**
    * Prompt user for custom content source location
    * @returns {Object} Custom content configuration
    */
@@ -1273,50 +1323,7 @@ class UI {
         // Use sync validation because @clack/prompts doesn't support async validate
         const inputPath = await prompts.text({
           message: 'Enter the path to your custom content folder (or press Enter to cancel):',
-          validate: (input) => {
-            // Allow empty input to cancel
-            if (!input || input.trim() === '') {
-              return; // Allow empty to exit
-            }
-
-            try {
-              // Expand the path
-              const expandedPath = this.expandUserPath(input.trim());
-
-              // Check if path exists
-              if (!fs.pathExistsSync(expandedPath)) {
-                return 'Path does not exist';
-              }
-
-              // Check if it's a directory
-              const stat = fs.statSync(expandedPath);
-              if (!stat.isDirectory()) {
-                return 'Path must be a directory';
-              }
-
-              // Check for module.yaml in the root
-              const moduleYamlPath = path.join(expandedPath, 'module.yaml');
-              if (!fs.pathExistsSync(moduleYamlPath)) {
-                return 'Directory must contain a module.yaml file in the root';
-              }
-
-              // Try to parse the module.yaml to get the module ID
-              try {
-                const yaml = require('yaml');
-                const content = fs.readFileSync(moduleYamlPath, 'utf8');
-                const moduleData = yaml.parse(content);
-                if (!moduleData.code) {
-                  return 'module.yaml must contain a "code" field for the module ID';
-                }
-              } catch (error) {
-                return 'Invalid module.yaml file: ' + error.message;
-              }
-
-              return; // Valid
-            } catch (error) {
-              return 'Error validating path: ' + error.message;
-            }
-          },
+          validate: (input) => this.validateCustomContentPathSync(input),
         });
 
         // If user pressed Enter without typing anything, exit the loop

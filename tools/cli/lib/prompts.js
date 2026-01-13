@@ -125,25 +125,35 @@ async function select(options) {
 async function multiselect(options) {
   const clack = await getClack();
 
-  // Convert Inquirer-style choices to clack format
-  // Handle both object choices {name, value, hint} and primitive choices (string/number)
-  const clackOptions = options.choices
-    .filter((c) => c.type !== 'separator') // Skip separators
-    .map((choice) => {
-      if (typeof choice === 'string' || typeof choice === 'number') {
-        return { value: choice, label: String(choice) };
-      }
-      return {
-        value: choice.value === undefined ? choice.name : choice.value,
-        label: choice.name || choice.label || String(choice.value),
-        hint: choice.hint || choice.description,
-      };
-    });
+  // Support both clack-native (options) and Inquirer-style (choices) APIs
+  let clackOptions;
+  let initialValues;
 
-  // Find initial values (pre-checked items)
-  const initialValues = options.choices
-    .filter((c) => c.checked && c.type !== 'separator')
-    .map((c) => (c.value === undefined ? c.name : c.value));
+  if (options.options) {
+    // Native clack format: options with label/value
+    clackOptions = options.options;
+    initialValues = options.initialValues || [];
+  } else {
+    // Convert Inquirer-style choices to clack format
+    // Handle both object choices {name, value, hint} and primitive choices (string/number)
+    clackOptions = options.choices
+      .filter((c) => c.type !== 'separator') // Skip separators
+      .map((choice) => {
+        if (typeof choice === 'string' || typeof choice === 'number') {
+          return { value: choice, label: String(choice) };
+        }
+        return {
+          value: choice.value === undefined ? choice.name : choice.value,
+          label: choice.name || choice.label || String(choice.value),
+          hint: choice.hint || choice.description,
+        };
+      });
+
+    // Find initial values (pre-checked items)
+    initialValues = options.choices
+      .filter((c) => c.checked && c.type !== 'separator')
+      .map((c) => (c.value === undefined ? c.name : c.value));
+  }
 
   const result = await clack.multiselect({
     message: options.message,
@@ -310,6 +320,9 @@ async function prompt(questions) {
           validate: validate
             ? (val) => {
                 const result = validate(val, answers);
+                if (result instanceof Promise) {
+                  throw new TypeError('Async validation is not supported by @clack/prompts. Please use synchronous validation.');
+                }
                 return result === true ? undefined : result;
               }
             : undefined,
@@ -350,6 +363,9 @@ async function prompt(questions) {
           validate: validate
             ? (val) => {
                 const result = validate(val, answers);
+                if (result instanceof Promise) {
+                  throw new TypeError('Async validation is not supported by @clack/prompts. Please use synchronous validation.');
+                }
                 return result === true ? undefined : result;
               }
             : undefined,

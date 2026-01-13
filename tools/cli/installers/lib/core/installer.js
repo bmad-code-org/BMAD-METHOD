@@ -2532,20 +2532,20 @@ class Installer {
 
             if (typedConfirm === 'DELETE') {
               // Remove the module from filesystem and manifest
-              const modulePath = path.join(bmadDir, moduleId);
+              const modulePath = path.join(bmadDir, missing.id);
               if (await fs.pathExists(modulePath)) {
                 const fsExtra = require('fs-extra');
                 await fsExtra.remove(modulePath);
                 console.log(chalk.yellow(`  ✓ Deleted module directory: ${path.relative(projectRoot, modulePath)}`));
               }
 
-              await this.manifest.removeModule(bmadDir, moduleId);
-              await this.manifest.removeCustomModule(bmadDir, moduleId);
+              await this.manifest.removeModule(bmadDir, missing.id);
+              await this.manifest.removeCustomModule(bmadDir, missing.id);
               console.log(chalk.yellow(`  ✓ Removed from manifest`));
 
               // Also remove from installedModules list
-              if (installedModules && installedModules.includes(moduleId)) {
-                const index = installedModules.indexOf(moduleId);
+              if (installedModules && installedModules.includes(missing.id)) {
+                const index = installedModules.indexOf(missing.id);
                 if (index !== -1) {
                   installedModules.splice(index, 1);
                 }
@@ -2566,7 +2566,7 @@ class Installer {
         }
         case 'keep': {
           keptCount++;
-          keptModulesWithoutSources.push(moduleId);
+          keptModulesWithoutSources.push(missing.id);
           console.log(chalk.dim(`  Module will be kept as-is`));
 
           break;

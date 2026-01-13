@@ -27,6 +27,21 @@ class ClaudeCodeSetup extends BaseIdeSetup {
   }
 
   /**
+   * Prompt for subagent installation location
+   * @returns {Promise<string>} Selected location ('project' or 'user')
+   */
+  async promptInstallLocation() {
+    return prompts.select({
+      message: 'Where would you like to install Claude Code subagents?',
+      choices: [
+        { name: 'Project level (.claude/agents/)', value: 'project' },
+        { name: 'User level (~/.claude/agents/)', value: 'user' },
+      ],
+      default: 'project',
+    });
+  }
+
+  /**
    * Collect configuration choices before installation
    * @param {Object} options - Configuration options
    * @returns {Object} Collected configuration
@@ -57,15 +72,7 @@ class ClaudeCodeSetup extends BaseIdeSetup {
             config.subagentChoices = await this.promptSubagentInstallation(injectionConfig.subagents);
 
             if (config.subagentChoices.install !== 'none') {
-              // Ask for installation location
-              config.installLocation = await prompts.select({
-                message: 'Where would you like to install Claude Code subagents?',
-                choices: [
-                  { name: 'Project level (.claude/agents/)', value: 'project' },
-                  { name: 'User level (~/.claude/agents/)', value: 'user' },
-                ],
-                default: 'project',
-              });
+              config.installLocation = await this.promptInstallLocation();
             }
           }
         } catch (error) {
@@ -300,14 +307,7 @@ class ClaudeCodeSetup extends BaseIdeSetup {
         choices = await this.promptSubagentInstallation(config.subagents);
 
         if (choices.install !== 'none') {
-          location = await prompts.select({
-            message: 'Where would you like to install Claude Code subagents?',
-            choices: [
-              { name: 'Project level (.claude/agents/)', value: 'project' },
-              { name: 'User level (~/.claude/agents/)', value: 'user' },
-            ],
-            default: 'project',
-          });
+          location = await this.promptInstallLocation();
         }
       }
 
@@ -354,11 +354,11 @@ class ClaudeCodeSetup extends BaseIdeSetup {
 
       const selected = await prompts.multiselect({
         message: 'Select subagents to install:',
-        choices: subagentConfig.files.map((file) => ({
-          name: `${file.replace('.md', '')} - ${subagentInfo[file] || 'Specialized assistant'}`,
+        options: subagentConfig.files.map((file) => ({
+          label: `${file.replace('.md', '')} - ${subagentInfo[file] || 'Specialized assistant'}`,
           value: file,
-          checked: true,
         })),
+        initialValues: subagentConfig.files,
       });
 
       return { install: 'selective', selected };
