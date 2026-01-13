@@ -17,7 +17,7 @@ These rules apply to ALL document types. Violations fail review.
 | No code blocks for non-code | Confusing semantics |
 | No bold paragraphs for callouts | Use admonitions instead |
 | 1-2 admonitions per section max | Overuse creates noise |
-| Descriptions 1-2 sentences max | Longer belongs in dedicated docs |
+| Table cells and long list items (5+) 1-2 sentences max | Walls of text; break into sections or link to details |
 
 ## Visual Hierarchy
 
@@ -37,7 +37,7 @@ These rules apply to ALL document types. Violations fail review.
 - `###` subsections: 2-3 per `##` section max
 - `####`: Never use
 
-Structure templates below show content flow, not 1:1 header mapping. Admonitions and inline elements appear within sections, not as separate headers.
+The structure templates in this guide show content flow, not 1:1 header mapping. Admonitions and inline elements appear within sections, not as separate headers.
 
 ### Header Naming
 
@@ -114,7 +114,7 @@ Critical warnings only — data loss, security issues
 ### Rules
 
 - Always include a title
-- Keep content to 1-3 sentences
+- Keep content to 1-3 sentences (longer rarely needed)
 - Never nest admonitions
 
 ## Tables
@@ -554,16 +554,16 @@ Structure:
 ```md
 ## Questions
 
-- [Question one?](#question-one)
-- [Question two?](#question-two)
+- [Do I always need architecture?](#do-i-always-need-architecture)
+- [Can I change my plan later?](#can-i-change-my-plan-later)
 
-### Question one?
+### Do I always need architecture?
 
-Direct answer without "A:" prefix.
+Only for BMad Method and Enterprise tracks. Quick Flow skips to implementation.
 
-### Question two?
+### Can I change my plan later?
 
-Direct answer.
+Yes. The SM agent has a `correct-course` workflow for handling scope changes.
 
 **Have a question not answered here?** [Open an issue](...) or ask in [Discord](...).
 ```
