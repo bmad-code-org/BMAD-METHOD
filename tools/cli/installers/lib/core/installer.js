@@ -759,6 +759,9 @@ class Installer {
       config.skipIde = toolSelection.skipIde;
       const ideConfigurations = toolSelection.configurations;
 
+      // Add spacing after prompts before installation progress
+      console.log('');
+
       if (spinner.isSpinning) {
         spinner.text = 'Continuing installation...';
       } else {
