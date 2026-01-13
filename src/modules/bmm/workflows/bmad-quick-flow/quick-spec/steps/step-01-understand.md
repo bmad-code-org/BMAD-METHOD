@@ -2,9 +2,9 @@
 name: 'step-01-understand'
 description: 'Analyze the requirement delta between current state and what user wants to build'
 
-workflow_path: '{project-root}/_bmad/bmm/workflows/bmad-quick-flow/quick-spec'
-nextStepFile: '{workflow_path}/steps/step-02-investigate.md'
-skipToStepFile: '{workflow_path}/steps/step-03-generate.md'
+workflow_path: '{project-root}/_bmad/bmm/workflows/bmad-quick-flow/create-tech-spec'
+nextStepFile: './step-02-investigate.md'
+skipToStepFile: './step-03-generate.md'
 templateFile: '{workflow_path}/tech-spec-template.md'
 wipFile: '{implementation_artifacts}/tech-spec-wip.md'
 ---
@@ -59,7 +59,7 @@ a) **Menu Handling:**
   - Jump directly to the appropriate step based on `stepsCompleted`:
     - `[1]` → Load `{nextStepFile}` (Step 2)
     - `[1, 2]` → Load `{skipToStepFile}` (Step 3)
-    - `[1, 2, 3]` → Load `{workflow_path}/steps/step-04-review.md` (Step 4)
+    - `[1, 2, 3]` → Load `./step-04-review.md` (Step 4)
 - **[n] Archive and start fresh:**
   - Rename `{wipFile}` to `{implementation_artifacts}/tech-spec-{slug}-archived-{date}.md`
 

@@ -52,4 +52,4 @@ Load and read full config from {project-root}/_bmad/bmm/config.yaml and resolve:
 
 ### 2. First Step EXECUTION
 
-Load, read the full file and then execute `{workflow_path}/steps/step-01-document-discovery.md` to begin the workflow.
+Load, read the full file and then execute `./step-01-document-discovery.md` to begin the workflow.

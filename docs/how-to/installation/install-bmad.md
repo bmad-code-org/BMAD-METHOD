@@ -3,18 +3,19 @@ title: "How to Install BMad"
 description: Step-by-step guide to installing BMad in your project
 ---
 
+Use the `npx bmad-method install` command to set up BMad in your project with your choice of modules and AI tools.
 
-Complete guide to installing BMad in your project.
+## When to Use This
 
----
+- Starting a new project with BMad
+- Adding BMad to an existing codebase
+- Setting up BMad on a new machine
 
-## Prerequisites
-
+:::note[Prerequisites]
 - **Node.js** 20+ (required for the installer)
 - **Git** (recommended)
 - **AI-powered IDE** (Claude Code, Cursor, Windsurf, or similar)
-
----
+:::
 
 ## Steps
 
@@ -26,7 +27,8 @@ npx bmad-method install
 
 ### 2. Choose Installation Location
 
-The installer will ask where to install BMad files. Options:
+The installer will ask where to install BMad files:
+
 - Current directory (recommended for new projects)
 - Subdirectory
 - Custom path
@@ -34,6 +36,7 @@ The installer will ask where to install BMad files. Options:
 ### 3. Select Your AI Tools
 
 Choose which AI tools you'll be using:
+
 - Claude Code
 - Cursor
 - Windsurf
@@ -54,29 +57,13 @@ Select which modules to install:
 
 ### 5. Add Custom Content (Optional)
 
-If you have custom agents, workflows, or modules:
-- Point to their location
-- The installer will integrate them
+If you have custom agents, workflows, or modules, point to their location and the installer will integrate them.
 
 ### 6. Configure Settings
 
-For each module, either:
-- Accept recommended defaults (faster)
-- Customize settings (more control)
+For each module, either accept recommended defaults (faster) or customize settings (more control).
 
----
-
-## Verify Installation
-
-After installation, verify by:
-
-1. Checking the `_bmad/` directory exists
-2. Loading an agent in your AI tool
-3. Running `*menu` to see available commands
-
----
-
-## Directory Structure
+## What You Get
 
 ```
 your-project/
@@ -91,7 +78,11 @@ your-project/
 └── .claude/            # IDE configuration
 ```
 
----
+## Verify Installation
+
+1. Check the `_bmad/` directory exists
+2. Load an agent in your AI tool
+3. Run `*menu` to see available commands
 
 ## Configuration
 
@@ -103,36 +94,19 @@ user_name: Your Name
 communication_language: english
 ```
 
----
-
 ## Troubleshooting
 
-### "Command not found: npx"
-
-Install Node.js 20+:
+**"Command not found: npx"** — Install Node.js 20+:
 ```bash
 brew install node
-
 ```
 
-### "Permission denied"
-
-Check npm permissions:
+**"Permission denied"** — Check npm permissions:
 ```bash
 npm config set prefix ~/.npm-global
 ```
 
-### Installer hangs
-
-Try running with verbose output:
+**Installer hangs** — Try running with verbose output:
 ```bash
 npx bmad-method install --verbose
 ```
-
----
-
-## Related
-
-- [Quick Start Guide](/docs/tutorials/getting-started/getting-started-bmadv6.md) - Getting started with BMM
-- [Upgrade to V6](/docs/how-to/installation/upgrade-to-v6.md) - Upgrading from previous versions
-- [Install Custom Modules](/docs/how-to/installation/install-custom-modules.md) - Adding custom content

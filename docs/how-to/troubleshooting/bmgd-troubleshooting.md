@@ -2,10 +2,7 @@
 title: "BMGD Troubleshooting"
 ---
 
-
-Common issues and solutions when using BMGD workflows.
-
----
+Use this guide to resolve common issues when using BMGD workflows.
 
 ## Installation Issues
 
@@ -18,8 +15,6 @@ Common issues and solutions when using BMGD workflows.
 1. Verify BMGD was selected during installation
 2. Check `_bmad/bmgd/` folder exists in your project
 3. Re-run installer with `--add-module bmgd`
-
----
 
 ### Config file missing
 
@@ -36,8 +31,6 @@ document_output_language: 'English'
 game_dev_experience: 'intermediate'
 ```
 
----
-
 ## Workflow Issues
 
 ### "GDD not found" in Narrative workflow
@@ -50,8 +43,6 @@ game_dev_experience: 'intermediate'
 2. Check GDD filename contains "gdd" (e.g., `game-gdd.md`, `my-gdd.md`)
 3. If using sharded GDD, verify `{output_folder}/gdd/index.md` exists
 
----
-
 ### Workflow state not persisting
 
 **Symptom:** Returning to a workflow starts from the beginning.
@@ -62,8 +53,6 @@ game_dev_experience: 'intermediate'
 2. Ensure document was saved before ending session
 3. Use "Continue existing" option when re-entering workflow
 
----
-
 ### Wrong game type sections in GDD
 
 **Symptom:** GDD includes irrelevant sections for your game type.
@@ -73,8 +62,6 @@ game_dev_experience: 'intermediate'
 1. Review game type selection at Step 7 of GDD workflow
 2. You can select multiple types for hybrid games
 3. Irrelevant sections can be marked N/A or removed
-
----
 
 ## Agent Issues
 
@@ -88,8 +75,6 @@ game_dev_experience: 'intermediate'
 2. Check exact command spelling (case-sensitive)
 3. Try `workflow-status` to verify agent is loaded correctly
 
----
-
 ### Agent using wrong persona
 
 **Symptom:** Agent responses don't match expected personality.
@@ -99,8 +84,6 @@ game_dev_experience: 'intermediate'
 1. Verify correct agent file is loaded
 2. Check `_bmad/bmgd/agents/` for agent definitions
 3. Start a fresh chat session with the correct agent
-
----
 
 ## Document Issues
 
@@ -114,8 +97,6 @@ game_dev_experience: 'intermediate'
 2. Request specific sections rather than full document
 3. GDD workflow supports automatic sharding for large documents
 
----
-
 ### Template placeholders not replaced
 
 **Symptom:** Output contains `{{placeholder}}` text.
@@ -126,8 +107,6 @@ game_dev_experience: 'intermediate'
 2. Re-run the specific step that generates that section
 3. Manually edit the document to fill in missing values
 
----
-
 ### Frontmatter parsing errors
 
 **Symptom:** YAML errors when loading documents.
@@ -137,8 +116,6 @@ game_dev_experience: 'intermediate'
 1. Validate YAML syntax (proper indentation, quotes around special characters)
 2. Check for tabs vs spaces (YAML requires spaces)
 3. Ensure frontmatter is bounded by `---` markers
-
----
 
 ## Phase 4 (Production) Issues
 
@@ -152,8 +129,6 @@ game_dev_experience: 'intermediate'
 2. Check file permissions on sprint-status.yaml
 3. Verify workflow-install files exist in `_bmad/bmgd/workflows/4-production/`
 
----
-
 ### Story context missing code references
 
 **Symptom:** Generated story context doesn't include relevant code.
@@ -164,8 +139,6 @@ game_dev_experience: 'intermediate'
 2. Check that architecture document references correct file paths
 3. Story may need more specific file references in acceptance criteria
 
----
-
 ### Code review not finding issues
 
 **Symptom:** Code review passes but bugs exist.
@@ -175,8 +148,6 @@ game_dev_experience: 'intermediate'
 1. Code review is AI-assisted, not comprehensive testing
 2. Always run actual tests before marking story done
 3. Consider manual review for critical code paths
-
----
 
 ## Performance Issues
 
@@ -190,8 +161,6 @@ game_dev_experience: 'intermediate'
 2. Keep documents concise (avoid unnecessary detail)
 3. Use sharded documents for large projects
 
----
-
 ### Context limit reached mid-workflow
 
 **Symptom:** Workflow stops or loses context partway through.
@@ -202,8 +171,6 @@ game_dev_experience: 'intermediate'
 2. Break complex sections into multiple sessions
 3. Use step-file architecture (workflows resume from last step)
 
----
-
 ## Common Error Messages
 
 ### "Input file not found"
@@ -212,23 +179,17 @@ game_dev_experience: 'intermediate'
 
 **Fix:** Complete prerequisite workflow first (e.g., Game Brief before GDD).
 
----
-
 ### "Invalid game type"
 
 **Cause:** Selected game type not in supported list.
 
 **Fix:** Check `game-types.csv` for valid type IDs.
 
----
-
 ### "Validation failed"
 
 **Cause:** Document doesn't meet checklist requirements.
 
 **Fix:** Review the validation output and address flagged items.
-
----
 
 ## Getting Help
 
@@ -251,8 +212,6 @@ When reporting issues, include:
 2. Error message (if any)
 3. Relevant document frontmatter
 4. Steps to reproduce
-
----
 
 ## Next Steps
 

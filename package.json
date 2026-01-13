@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "bmad-method",
-  "version": "6.0.0-alpha.22",
+  "version": "6.0.0-alpha.23",
   "description": "Breakthrough Method of Agile AI-driven Development",
   "keywords": [
     "agile",
@@ -101,7 +101,7 @@
     "jest": "^30.0.4",
     "lint-staged": "^16.1.1",
     "markdownlint-cli2": "^0.19.1",
-    "prettier": "^3.5.3",
+    "prettier": "^3.7.4",
     "prettier-plugin-packagejson": "^2.5.19",
     "sharp": "^0.33.5",
     "yaml-eslint-parser": "^1.2.3",

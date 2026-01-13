@@ -2,12 +2,11 @@
 title: "Web Bundles"
 ---
 
-
 Use BMad agents in Gemini Gems and Custom GPTs.
 
-## Status
-
-> **Note:** The Web Bundling Feature is being rebuilt from the ground up. Current v6 bundles may be incomplete or missing functionality.
+:::caution[Status]
+The Web Bundling Feature is being rebuilt from the ground up. Current v6 bundles may be incomplete or missing functionality.
+:::
 
 ## What Are Web Bundles?
 

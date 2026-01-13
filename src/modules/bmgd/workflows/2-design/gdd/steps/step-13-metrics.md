@@ -6,8 +6,8 @@ description: 'Define success metrics for technical and gameplay evaluation'
 workflow_path: '{project-root}/_bmad/bmgd/workflows/2-design/gdd'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-13-metrics.md'
-nextStepFile: '{workflow_path}/steps/step-14-complete.md'
+thisStepFile: './step-13-metrics.md'
+nextStepFile: './step-14-complete.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/gdd.md'
 

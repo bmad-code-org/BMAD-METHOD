@@ -6,8 +6,8 @@ description: 'Define art style and audio direction'
 workflow_path: '{project-root}/_bmad/bmgd/workflows/2-design/gdd'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-10-art-audio.md'
-nextStepFile: '{workflow_path}/steps/step-11-technical.md'
+thisStepFile: './step-10-art-audio.md'
+nextStepFile: './step-11-technical.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/gdd.md'
 

@@ -3,10 +3,7 @@ title: "How to Create Epics and Stories"
 description: How to break PRD requirements into epics and stories using BMad Method
 ---
 
-
 Use the `create-epics-and-stories` workflow to transform PRD requirements into bite-sized stories organized into deliverable epics.
-
----
 
 ## When to Use This
 
@@ -14,27 +11,21 @@ Use the `create-epics-and-stories` workflow to transform PRD requirements into b
 - When PRD contains FRs/NFRs ready for implementation breakdown
 - Before implementation-readiness gate check
 
----
-
-## Prerequisites
-
+:::note[Prerequisites]
 - BMad Method installed
 - PM agent available
 - PRD completed
 - Architecture completed
-
----
+:::
 
 ## Why After Architecture?
 
 This workflow runs AFTER architecture because:
 
-1. **Informed Story Sizing** - Architecture decisions affect story complexity
-2. **Dependency Awareness** - Architecture reveals technical dependencies
-3. **Technical Feasibility** - Stories can be properly scoped knowing the tech stack
-4. **Consistency** - All stories align with documented architectural patterns
-
----
+1. **Informed Story Sizing** — Architecture decisions affect story complexity
+2. **Dependency Awareness** — Architecture reveals technical dependencies
+3. **Technical Feasibility** — Stories can be properly scoped knowing the tech stack
+4. **Consistency** — All stories align with documented architectural patterns
 
 ## Steps
 
@@ -67,8 +58,6 @@ Ensure each story has:
 - Identified dependencies
 - Technical notes from architecture
 
----
-
 ## What You Get
 
 Epic files (one per epic) containing:
@@ -78,8 +67,6 @@ Epic files (one per epic) containing:
 3. **Story priorities** (P0/P1/P2/P3)
 4. **Dependencies between stories**
 5. **Technical notes** referencing architecture decisions
-
----
 
 ## Example
 
@@ -98,39 +85,25 @@ E-commerce PRD with FR-001 (User Registration), FR-002 (Product Catalog) produce
 
 Each story references relevant ADRs from architecture.
 
----
-
 ## Story Priority Levels
 
 | Priority | Meaning |
 |----------|---------|
-| **P0** | Critical - Must have for MVP |
-| **P1** | High - Important for release |
-| **P2** | Medium - Nice to have |
-| **P3** | Low - Future consideration |
-
----
+| **P0** | Critical — Must have for MVP |
+| **P1** | High — Important for release |
+| **P2** | Medium — Nice to have |
+| **P3** | Low — Future consideration |
 
 ## Tips
 
-- Keep stories small enough to complete in a session
-- Ensure acceptance criteria are testable
-- Document dependencies clearly
-- Reference architecture decisions in technical notes
-
----
+- **Keep stories small** — Complete in a single session
+- **Make criteria testable** — Acceptance criteria should be verifiable
+- **Document dependencies clearly** — Know what blocks what
+- **Reference architecture** — Include ADR references in technical notes
 
 ## Next Steps
 
 After creating epics and stories:
 
-1. **Implementation Readiness** - Validate alignment before Phase 4
-2. **Sprint Planning** - Organize work for implementation
-
----
-
-## Related
-
-- [Create Architecture](/docs/how-to/workflows/create-architecture.md) - Do this first
-- [Run Implementation Readiness](/docs/how-to/workflows/run-implementation-readiness.md) - Gate check
-- [Run Sprint Planning](/docs/how-to/workflows/run-sprint-planning.md) - Start implementation
+1. **Implementation Readiness** — Validate alignment before Phase 4
+2. **Sprint Planning** — Organize work for implementation

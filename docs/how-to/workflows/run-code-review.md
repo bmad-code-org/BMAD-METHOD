@@ -3,27 +3,20 @@ title: "How to Run Code Review"
 description: How to run code review for quality assurance
 ---
 
-
 Use the `code-review` workflow to perform a thorough quality review of implemented code.
-
----
 
 ## When to Use This
 
 - After dev-story completes implementation
 - Before marking a story as DONE
-- Every story goes through code review - no exceptions
+- Every story goes through code review — no exceptions
 
----
-
-## Prerequisites
-
+:::note[Prerequisites]
 - BMad Method installed
 - DEV agent available
 - Story implementation complete
 - Tests written and passing
-
----
+:::
 
 ## Steps
 
@@ -55,56 +48,21 @@ If issues are found:
 2. Re-run tests
 3. Run code-review again
 
----
-
 ## What Gets Reviewed
 
-The code review checks:
-
-### Code Quality
-- Clean, readable code
-- Appropriate abstractions
-- No code smells
-- Proper error handling
-
-### Architecture Alignment
-- Follows ADRs and architecture decisions
-- Consistent with existing patterns
-- Proper separation of concerns
-
-### Testing
-- Adequate test coverage
-- Tests are meaningful (not just for coverage)
-- Edge cases handled
-- Tests follow project patterns
-
-### Security
-- No hardcoded secrets
-- Input validation
-- Authentication/authorization proper
-- No common vulnerabilities
-
-### Performance
-- No obvious performance issues
-- Appropriate data structures
-- Efficient queries
-
----
+| Category | Checks |
+|----------|--------|
+| **Code Quality** | Clean code, appropriate abstractions, no code smells, proper error handling |
+| **Architecture Alignment** | Follows ADRs, consistent with patterns, proper separation of concerns |
+| **Testing** | Adequate coverage, meaningful tests, edge cases, follows project patterns |
+| **Security** | No hardcoded secrets, input validation, proper auth, no common vulnerabilities |
+| **Performance** | No obvious issues, appropriate data structures, efficient queries |
 
 ## Review Outcomes
 
-### ✅ Approved
+**Approved** — Code meets quality standards, tests pass. Mark story as DONE in sprint-status.yaml.
 
-- Code meets quality standards
-- Tests pass
-- **Action:** Mark story as DONE in sprint-status.yaml
-
-### 🔧 Changes Requested
-
-- Issues identified that need fixing
-- **Action:** Fix issues in dev-story, then re-run code-review
-
----
+**Changes Requested** — Issues identified that need fixing. Fix issues in dev-story, then re-run code-review.
 
 ## Quality Gates
 
@@ -115,27 +73,17 @@ Every story goes through code-review before being marked done. This ensures:
 - Test coverage
 - Security review
 
----
-
 ## Tips
 
-- Don't skip code review for "simple" changes
-- Address all findings, not just critical ones
-- Use findings as learning opportunities
-- Re-run review after fixes
+- **Don't skip for "simple" changes** — Simple changes can have subtle bugs
+- **Address all findings** — Not just critical ones
+- **Use findings as learning opportunities** — Improve over time
+- **Re-run review after fixes** — Verify issues are resolved
 
----
+## Next Steps
 
-## After Code Review
+After code review:
 
-1. **If approved:** Update sprint-status.yaml to mark story DONE
-2. **If changes requested:** Fix issues and re-run review
-3. **Move to next story:** Run create-story for the next item
-
----
-
-## Related
-
-- [Implement Story](/docs/how-to/workflows/implement-story.md) - Before code review
-- [Create Story](/docs/how-to/workflows/create-story.md) - Move to next story
-- [Run Sprint Planning](/docs/how-to/workflows/run-sprint-planning.md) - Sprint organization
+1. **If approved** — Update sprint-status.yaml to mark story DONE
+2. **If changes requested** — Fix issues and re-run review
+3. **Move to next story** — Run create-story for the next item

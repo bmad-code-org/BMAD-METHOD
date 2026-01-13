@@ -6,8 +6,8 @@ description: 'Discover and evaluate game engine and starter template options'
 workflow_path: '{project-root}/_bmad/bmgd/workflows/3-technical/game-architecture'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-03-starter.md'
-nextStepFile: '{workflow_path}/steps/step-04-decisions.md'
+thisStepFile: './step-03-starter.md'
+nextStepFile: './step-04-decisions.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/game-architecture.md'
 

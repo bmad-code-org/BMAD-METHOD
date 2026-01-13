@@ -6,7 +6,7 @@ description: 'Complete the brainstorming session with summary and next steps'
 workflow_path: '{project-root}/_bmad/bmgd/workflows/1-preproduction/brainstorm-game'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-04-complete.md'
+thisStepFile: './step-04-complete.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/brainstorming-session-{date}.md'
 

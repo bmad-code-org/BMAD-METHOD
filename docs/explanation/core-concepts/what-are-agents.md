@@ -2,7 +2,6 @@
 title: "Agents"
 ---
 
-
 Agents are AI assistants that help you accomplish tasks. Each agent has a unique personality, specialized capabilities, and an interactive menu.
 
 ## Agent Types
@@ -72,6 +71,10 @@ All agents share these building blocks:
 
 ## Which Should You Use?
 
+:::tip[Quick Decision]
+Choose **Simple** for focused, one-off tasks with no memory needs. Choose **Expert** when you need persistent context and complex workflows.
+:::
+
 **Choose Simple when:**
 - You need a task done quickly and reliably
 - The scope is well-defined and won't change much
@@ -90,7 +93,3 @@ BMad provides the **BMad Builder (BMB)** module for creating your own agents. Se
 ## Customizing Existing Agents
 
 You can modify any agent's behavior without editing core files. See [BMad Customization](/docs/how-to/customization/index.md) for details. It is critical to never modify an installed agents .md file directly and follow the customization process, this way future updates to the agent or module its part of will continue to be updated and recompiled with the installer tool, and your customizations will still be retained.
-
----
-
-**Next:** Learn about [Workflows](/docs/explanation/core-concepts/what-are-workflows.md) to see how agents accomplish complex tasks.

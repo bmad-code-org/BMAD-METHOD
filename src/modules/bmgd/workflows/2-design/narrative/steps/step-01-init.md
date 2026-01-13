@@ -6,9 +6,9 @@ description: 'Initialize narrative workflow, load GDD context, and assess narrat
 workflow_path: '{project-root}/_bmad/bmgd/workflows/2-design/narrative'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-01-init.md'
-continueStepFile: '{workflow_path}/steps/step-01b-continue.md'
-nextStepFile: '{workflow_path}/steps/step-02-foundation.md'
+thisStepFile: './step-01-init.md'
+continueStepFile: './step-01b-continue.md'
+nextStepFile: './step-02-foundation.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/narrative-design.md'
 templateFile: '{workflow_path}/templates/narrative-template.md'

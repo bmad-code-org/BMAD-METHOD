@@ -2,7 +2,6 @@
 title: "Modules"
 ---
 
-
 Modules are organized collections of agents and workflows that solve specific problems or address particular domains.
 
 ## What is a Module?
@@ -15,6 +14,10 @@ A module is a self-contained package that includes:
 - **Documentation** - Usage guides and reference
 
 ## Official Modules
+
+:::note[Core is Always Installed]
+The Core module is automatically included with every BMad installation. It provides the foundation that other modules build upon.
+:::
 
 ### Core Module
 Always installed, provides shared functionality:
@@ -73,7 +76,3 @@ Custom modules are installed the same way as official modules.
 During BMad installation, you choose which modules to install. You can also add or remove modules later by re-running the installer.
 
 See [Installation Guide](/docs/how-to/installation/index.md) for details.
-
----
-
-**Next:** Read the [Installation Guide](/docs/how-to/installation/index.md) to set up BMad with the modules you need.

@@ -6,8 +6,8 @@ description: 'Load and understand project context from GDD and supporting docume
 workflow_path: '{project-root}/_bmad/bmgd/workflows/3-technical/game-architecture'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-02-context.md'
-nextStepFile: '{workflow_path}/steps/step-03-starter.md'
+thisStepFile: './step-02-context.md'
+nextStepFile: './step-03-starter.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/game-architecture.md'
 

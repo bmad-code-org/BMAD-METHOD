@@ -2,16 +2,14 @@
 title: "Document Sharding Guide"
 ---
 
+Use the `shard-doc` tool to split large markdown files into smaller, organized files for better context management.
 
-Comprehensive guide to BMad Method's document sharding system for managing large planning and architecture documents.
+## When to Use This
 
-## Table of Contents
-
-- [What is Document Sharding?](#what-is-document-sharding)
-- [When to Use Sharding](#when-to-use-sharding)
-- [How Sharding Works](#how-sharding-works)
-- [Using the Shard-Doc Tool](#using-the-shard-doc-tool)
-- [Workflow Support](#workflow-support)
+- Very large complex PRDs
+- Architecture documents with multiple system layers
+- Epic files with 4+ epics (especially for Phase 4)
+- UX design specs covering multiple subsystems
 
 ## What is Document Sharding?
 
@@ -39,43 +37,15 @@ docs/
     └── ...                         # Additional sections
 ```
 
-## When to Use Sharding
+## Steps
 
-### Ideal Candidates
-
-**Large Multi-Epic Projects:**
-
-- Very large complex PRDs
-- Architecture documents with multiple system layers
-- Epic files with 4+ epics (especially for Phase 4)
-- UX design specs covering multiple subsystems
-
-## How Sharding Works
-
-### Sharding Process
-
-1. **Tool Execution**: Run `npx @kayvan/markdown-tree-parser source.md destination/` - this is abstracted with the core shard-doc task which is installed as a slash command or manual task rule depending on your tools.
-2. **Section Extraction**: Tool splits by level 2 headings
-3. **File Creation**: Each section becomes a separate file
-4. **Index Generation**: `index.md` created with structure and descriptions
-
-### Workflow Discovery
-
-BMad workflows use a **dual discovery system**:
-
-1. **Try whole document first** - Look for `document-name.md`
-2. **Check for sharded version** - Look for `document-name/index.md`
-3. **Priority rule** - Whole document takes precedence if both exist - remove the whole document if you want the sharded to be used instead.
-
-## Using the Shard-Doc Tool
-
-### CLI Command
+### 1. Run the Shard-Doc Tool
 
 ```bash
-/bmad:core:tools:shard-doc 
+/bmad:core:tools:shard-doc
 ```
 
-### Interactive Process
+### 2. Follow the Interactive Process
 
 ```
 Agent: Which document would you like to shard?
@@ -91,7 +61,7 @@ Agent: Sharding PRD.md...
        ✓ Complete!
 ```
 
-### What Gets Created
+## What You Get
 
 **index.md structure:**
 
@@ -113,13 +83,19 @@ Agent: Sharding PRD.md...
 - Preserves all markdown formatting
 - Can be read independently
 
+## How Workflow Discovery Works
+
+BMad workflows use a **dual discovery system**:
+
+1. **Try whole document first** - Look for `document-name.md`
+2. **Check for sharded version** - Look for `document-name/index.md`
+3. **Priority rule** - Whole document takes precedence if both exist - remove the whole document if you want the sharded to be used instead
+
 ## Workflow Support
 
-### Universal Support
+All BMM workflows support both formats:
 
-**All BMM workflows support both formats:**
-
-- ✅ Whole documents
-- ✅ Sharded documents
-- ✅ Automatic detection
-- ✅ Transparent to user
+- Whole documents
+- Sharded documents
+- Automatic detection
+- Transparent to user

@@ -11,6 +11,7 @@ frontmatterStandards: '../data/frontmatter-standards.md'
 menuHandlingStandards: '../data/menu-handling-standards.md'
 outputFormatStandards: '../data/output-format-standards.md'
 csvDataFileStandards: '../data/csv-data-file-standards.md'
+subprocessPatterns: '../data/subprocess-optimization-patterns.md'
 advancedElicitationTask: '{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml'
 partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 ---
@@ -96,6 +97,49 @@ Confirm: "The next step to build is **step-{N}-{name}** which is a [step type]. 
 **Load {menuHandlingStandards}** for menu patterns.
 
 **Load {outputFormatStandards}** if this step outputs to document.
+
+### 2a. Apply Subprocess Optimization (If Designed for This Step)
+
+**Check the approved design from step 6:** Was subprocess optimization identified for this step?
+
+**If YES, apply the appropriate pattern(s):**
+
+Load {subprocessPatterns} and implement the subprocess optimization for this step:
+
+1. **Identify the pattern(s) from the design for this step:**
+   - Pattern 1: Single subprocess for grep/regex across many files
+   - Pattern 2: Per-file subprocess for deep analysis
+   - Pattern 3: Subprocess for data file operations
+   - Pattern 4: Parallel execution of independent operations
+
+2. **Add subprocess-specific Step-Specific Rules to this step:**
+   ```markdown
+   ### Step-Specific Rules:
+   - 🎯 [Brief description of which pattern applies]
+   - 💬 Subprocess must either update report OR return findings to parent
+   - 🚫 DO NOT BE LAZY - [specific guidance if Pattern 2]
+   - ⚙️ TOOL/SUBPROCESS FALLBACK: If subprocess unavailable, perform in main thread
+   ```
+
+3. **Implement subprocess directives in the MANDATORY SEQUENCE:**
+   - Use appropriate subprocess language:
+     - Pattern 1: "Launch a subprocess that runs [command] across all files, returns [results]"
+     - Pattern 2: "DO NOT BE LAZY - For EACH file, launch a subprocess that [analyzes], returns [findings]"
+     - Pattern 3: "Launch a subprocess that loads [data file], performs [operation], returns [results]"
+     - Pattern 4: "Launch subprocesses in parallel that [operations], aggregate results"
+
+4. **Ensure return patterns are specified:**
+   - Subprocess updates report directly OR
+   - Subprocess returns structured findings to parent for aggregation
+
+5. **Verify graceful fallback is documented:**
+   - Universal fallback rule in Universal Rules
+   - Step-specific fallback in Step-Specific Rules
+   - Clear instructions for LLMs without subprocess capability
+
+**If NO subprocess optimization was designed for this step:**
+
+Skip this section and proceed to build the step file.
 
 ### 3. Build the Step File
 

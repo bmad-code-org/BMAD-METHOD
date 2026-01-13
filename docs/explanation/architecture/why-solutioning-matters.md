@@ -6,8 +6,6 @@ description: Understanding why the solutioning phase is critical for multi-epic 
 
 Phase 3 (Solutioning) translates **what** to build (from Planning) into **how** to build it (technical design). This phase prevents agent conflicts in multi-epic projects by documenting architectural decisions before implementation begins.
 
----
-
 ## The Problem Without Solutioning
 
 ```
@@ -18,8 +16,6 @@ Result: Inconsistent API design, integration nightmare
 
 When multiple agents implement different parts of a system without shared architectural guidance, they make independent technical decisions that may conflict.
 
----
-
 ## The Solution With Solutioning
 
 ```
@@ -29,8 +25,6 @@ Result: Consistent implementation, no conflicts
 ```
 
 By documenting technical decisions explicitly, all agents implement consistently and integration becomes straightforward.
-
----
 
 ## Solutioning vs Planning
 
@@ -43,8 +37,6 @@ By documenting technical decisions explicitly, all agents implement consistently
 | Document | PRD (FRs/NFRs)          | Architecture + Epic Files         |
 | Level    | Business logic          | Technical design + Work breakdown |
 
----
-
 ## Key Principle
 
 **Make technical decisions explicit and documented** so all agents implement consistently.
@@ -56,8 +48,6 @@ This prevents:
 - Naming convention mismatches
 - Security approach variations
 
----
-
 ## When Solutioning is Required
 
 | Track | Solutioning Required? |
@@ -67,9 +57,9 @@ This prevents:
 | BMad Method Complex | Yes |
 | Enterprise | Yes |
 
-**Rule of thumb:** If you have multiple epics that could be implemented by different agents, you need solutioning.
-
----
+:::tip[Rule of Thumb]
+If you have multiple epics that could be implemented by different agents, you need solutioning.
+:::
 
 ## The Cost of Skipping
 
@@ -80,12 +70,6 @@ Skipping solutioning on complex projects leads to:
 - **Longer development time** overall
 - **Technical debt** from inconsistent patterns
 
+:::caution[Cost Multiplier]
 Catching alignment issues in solutioning is 10× faster than discovering them during implementation.
-
----
-
-## Related
-
-- [Four Phases](/docs/explanation/architecture/four-phases.md) - Overview of all phases
-- [Preventing Agent Conflicts](/docs/explanation/architecture/preventing-agent-conflicts.md) - Detailed conflict prevention
-- [Create Architecture](/docs/how-to/workflows/create-architecture.md) - How to do it
+:::

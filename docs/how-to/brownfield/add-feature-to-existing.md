@@ -3,10 +3,7 @@ title: "How to Add a Feature to an Existing Project"
 description: How to add new features to an existing brownfield project
 ---
 
-
-Add new functionality to your brownfield codebase while respecting existing patterns and architecture.
-
----
+Use the `workflow-init` workflow to add new functionality to your brownfield codebase while respecting existing patterns and architecture.
 
 ## When to Use This
 
@@ -14,15 +11,11 @@ Add new functionality to your brownfield codebase while respecting existing patt
 - Major enhancements that need proper planning
 - Features that touch multiple parts of the system
 
----
-
-## Prerequisites
-
+:::note[Prerequisites]
 - BMad Method installed
 - Existing project documentation (run `document-project` first if needed)
 - Clear understanding of what you want to build
-
----
+:::
 
 ## Steps
 
@@ -73,19 +66,9 @@ Follow the standard Phase 4 implementation workflows:
 3. `dev-story` - Implement with tests
 4. `code-review` - Quality assurance
 
----
-
 ## Tips
 
 - Always ensure agents read your existing documentation
 - Pay attention to integration points with existing code
 - Follow existing conventions unless deliberately changing them
 - Document why you're adding new patterns (if any)
-
----
-
-## Related
-
-- [Brownfield Development Guide](/docs/how-to/brownfield/index.md)
-- [Document Existing Project](/docs/how-to/brownfield/document-existing-project.md)
-- [Quick Fix in Brownfield](/docs/how-to/brownfield/quick-fix-in-brownfield.md)

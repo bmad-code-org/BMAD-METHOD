@@ -3,10 +3,7 @@ title: "How to Implement a Story"
 description: How to implement a story using the dev-story workflow
 ---
 
-
 Use the `dev-story` workflow to implement a story with tests following the architecture and conventions.
-
----
 
 ## When to Use This
 
@@ -14,16 +11,12 @@ Use the `dev-story` workflow to implement a story with tests following the archi
 - When ready to write code for a story
 - Story dependencies are marked DONE
 
----
-
-## Prerequisites
-
+:::note[Prerequisites]
 - BMad Method installed
 - DEV agent available
 - Story file created by create-story
 - Architecture and tech-spec available for context
-
----
+:::
 
 ## Steps
 
@@ -53,75 +46,52 @@ The DEV agent:
 
 Work with the agent until all acceptance criteria are met.
 
----
-
 ## What Happens
 
 The dev-story workflow:
 
-1. **Reads context** - Story file, architecture, existing patterns
-2. **Plans implementation** - Identifies files to create/modify
-3. **Writes code** - Following conventions and patterns
-4. **Writes tests** - Unit, integration, or E2E as appropriate
-5. **Validates** - Runs tests and checks acceptance criteria
-
----
+1. **Reads context** — Story file, architecture, existing patterns
+2. **Plans implementation** — Identifies files to create/modify
+3. **Writes code** — Following conventions and patterns
+4. **Writes tests** — Unit, integration, or E2E as appropriate
+5. **Validates** — Runs tests and checks acceptance criteria
 
 ## Key Principles
 
-### One Story at a Time
+**One Story at a Time** — Complete each story's full lifecycle before starting the next. This prevents context switching and ensures quality.
 
-Complete each story's full lifecycle before starting the next. This prevents context switching and ensures quality.
+**Follow Architecture** — The DEV agent references ADRs for technology decisions, standards for naming and structure, and existing patterns in the codebase.
 
-### Follow Architecture
-
-The DEV agent references:
-- ADRs for technology decisions
-- Standards for naming and structure
-- Existing patterns in the codebase
-
-### Write Tests
-
-Every story includes appropriate tests:
-- Unit tests for business logic
-- Integration tests for API endpoints
-- E2E tests for critical flows
-
----
+**Write Tests** — Every story includes appropriate tests: unit tests for business logic, integration tests for API endpoints, E2E tests for critical flows.
 
 ## After Implementation
 
-1. **Update sprint-status.yaml** - Mark story as READY FOR REVIEW
-2. **Run code-review** - Quality assurance
-3. **Address feedback** - If code review finds issues
-4. **Mark DONE** - After code review passes
-
----
+1. **Update sprint-status.yaml** — Mark story as READY FOR REVIEW
+2. **Run code-review** — Quality assurance
+3. **Address feedback** — If code review finds issues
+4. **Mark DONE** — After code review passes
 
 ## Tips
 
-- Keep the story file open for reference
-- Ask the agent to explain decisions
-- Run tests frequently during implementation
-- Don't skip tests for "simple" changes
-
----
+- **Keep the story file open** — Reference it during implementation
+- **Ask the agent to explain decisions** — Understand the approach
+- **Run tests frequently** — Catch issues early
+- **Don't skip tests** — Even for "simple" changes
 
 ## Troubleshooting
 
-**Q: Story needs significant changes mid-implementation?**
-A: Run `correct-course` to analyze impact and route appropriately.
+**Story needs significant changes mid-implementation?**
+Run `correct-course` to analyze impact and route appropriately.
 
-**Q: Can I work on multiple stories in parallel?**
-A: Not recommended. Complete one story's full lifecycle first.
+**Can I work on multiple stories in parallel?**
+Not recommended. Complete one story's full lifecycle first.
 
-**Q: What if implementation reveals the story is too large?**
-A: Split the story and document the change.
+**What if implementation reveals the story is too large?**
+Split the story and document the change.
 
----
+## Next Steps
 
-## Related
+After implementing a story:
 
-- [Create Story](/docs/how-to/workflows/create-story.md) - Prepare the story first
-- [Run Code Review](/docs/how-to/workflows/run-code-review.md) - After implementation
-- [Run Sprint Planning](/docs/how-to/workflows/run-sprint-planning.md) - Sprint organization
+1. **Code Review** — Run code-review with the DEV agent
+2. **Create Next Story** — Run create-story with the SM agent

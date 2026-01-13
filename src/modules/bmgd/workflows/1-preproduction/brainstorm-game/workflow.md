@@ -28,7 +28,7 @@ stepsCompleted: [1, 2, 3, ...] # Array of completed step numbers
 To begin, load and execute step-01-init.md:
 
 ```
-{workflow_path}/steps/step-01-init.md
+./step-01-init.md
 ```
 
 ## Critical Rules

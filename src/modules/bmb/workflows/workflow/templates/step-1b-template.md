@@ -17,7 +17,7 @@ workflow\*path: '{project-root}/_bmad/[module-path]/workflows/[workflow-name]'
 
 # File References (all use {variable} format in file)
 
-thisStepFile: '{workflow_path}/steps/step-01b-continue.md'
+thisStepFile: './step-01b-continue.md'
 outputFile: '{output_folder}/[output-file-name]-{project_name}.md'
 workflowFile: '{workflow_path}/workflow.md'
 

@@ -15,6 +15,7 @@ outputFormatStandards: '../data/output-format-standards.md'
 inputDiscoveryStandards: '../data/input-discovery-standards.md'
 workflowChainingStandards: '../data/workflow-chaining-standards.md'
 trimodalWorkflowStructure: '../data/trimodal-workflow-structure.md'
+subprocessPatterns: '../data/subprocess-optimization-patterns.md'
 ---
 
 # Step 6: Workflow Structure Design
@@ -66,7 +67,7 @@ To collaboratively design the workflow structure, step sequence, and interaction
 
 ## DESIGN REFERENCE MATERIALS:
 
-When designing, you may load these data standards as needed:
+When designing, you will load these data standards as needed (ideally within subprocesses that can return the relevant insights during the design step):
 
 - {stepTemplate} - Step file structure template
 - {stepTypePatterns} - Templates for different step types (init, middle, branch, validation, final)
@@ -77,8 +78,7 @@ When designing, you may load these data standards as needed:
 - {workflowChainingStandards} - How workflows connect in sequences
 - {trimodalWorkflowStructure} - Tri-modal workflow patterns (if applicable)
 
-Example workflow:
-- `{project-root}/_bmad/bmb/reference/workflows/meal-prep-nutrition/workflow.md`
+Example [Workflow.md](../workflow.md) for reference of a perfect workflow.md with some complex options (not all workflows will offer multiple next step options like this one - most will just auto route right to a step 1 file)
 
 ## MANDATORY SEQUENCE
 
@@ -174,6 +174,47 @@ Design quality assurance:
 - Are there checkpoints for review?
 - How can users recover from errors?
 - What constitutes successful completion?
+
+### 6a. Subprocess Optimization Design
+
+Load {subprocessPatterns} to understand subprocess optimization patterns that can save context and improve performance during workflow execution.
+
+Ask the user:
+
+"**Should we design this workflow to leverage subprocess optimization patterns?** Consider:
+
+- **Pattern 1 (Grep/Regex):** Will any step search across many files or documents for patterns?
+- **Pattern 2 (Deep Analysis):** Will any step analyze multiple files for prose, logic, quality, or flow?
+- **Pattern 3 (Data Operations):** Will any step load large reference data, knowledge bases, or datasets?
+- **Pattern 4 (Parallel Execution):** Can any validation or analysis checks run in parallel instead of sequentially?
+
+If **YES** to any of these, we should design those steps with subprocess optimization in mind."
+
+**If subprocess optimization is applicable:**
+
+For each step that could benefit from subprocesses:
+- Identify which pattern(s) apply (Pattern 1, 2, 3, or 4)
+- Design what the subprocess should return (findings only, not full content)
+- Plan graceful fallback for LLMs without subprocess capability
+- Document optimization strategy in the build plan
+
+**Example subprocess integration:**
+
+```markdown
+### Step-Specific Rules:
+- 🎯 Analyze X files for Y - use subprocess per file (Pattern 2)
+- 💬 Subprocess returns structured findings, not full content
+- ⚙️ If subprocess unavailable: Perform analysis in main thread
+```
+
+**Document in the plan:**
+
+For each step identified for subprocess optimization, record:
+- Step number and name
+- Pattern type(s) to apply
+- What the subprocess will analyze
+- Expected return structure
+- Fallback approach
 
 ### 7. Special Features Design
 

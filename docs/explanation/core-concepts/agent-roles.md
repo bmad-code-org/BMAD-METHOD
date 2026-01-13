@@ -3,10 +3,7 @@ title: "Agent Roles in BMad Method"
 description: Understanding the different agent roles in BMad Method
 ---
 
-
 BMad Method uses specialized AI agents, each with a distinct role, expertise, and personality. Understanding these roles helps you know which agent to use for each task.
-
----
 
 ## Core Agents Overview
 
@@ -20,8 +17,6 @@ BMad Method uses specialized AI agents, each with a distinct role, expertise, an
 | **TEA** | Test architecture | Phases 3-4 (Cross-phase) |
 | **UX Designer** | User experience | Phase 2-3 |
 | **Quick Flow Solo Dev** | Fast solo development | All phases (Quick Flow) |
-
----
 
 ## Phase 1: Analysis
 
@@ -42,8 +37,6 @@ Business analysis and research specialist.
 - `*document-project`
 
 **When to use:** Starting new projects, exploring ideas, validating market fit, documenting existing codebases.
-
----
 
 ## Phase 2: Planning
 
@@ -80,8 +73,6 @@ User experience and UI design specialist.
 
 **When to use:** When UX is a primary differentiator, complex user workflows, design system creation.
 
----
-
 ## Phase 3: Solutioning
 
 ### Architect (Winston)
@@ -99,8 +90,6 @@ System architecture and technical design expert.
 - `*implementation-readiness`
 
 **When to use:** Multi-epic projects, cross-cutting technical decisions, preventing agent conflicts.
-
----
 
 ## Phase 4: Implementation
 
@@ -138,8 +127,6 @@ Story implementation and code review specialist.
 
 **When to use:** Writing code, implementing stories, reviewing quality.
 
----
-
 ## Cross-Phase Agents
 
 ### TEA (Murat)
@@ -159,8 +146,6 @@ Test architecture and quality strategy expert.
 
 **When to use:** Setting up testing, creating test plans, quality gates.
 
----
-
 ## Quick Flow
 
 ### Quick Flow Solo Dev (Barry)
@@ -179,8 +164,6 @@ Fast solo development without handoffs.
 
 **When to use:** Bug fixes, small features, rapid prototyping.
 
----
-
 ## Choosing the Right Agent
 
 | Task | Agent |
@@ -194,11 +177,3 @@ Fast solo development without handoffs.
 | Writing code | DEV |
 | Setting up tests | TEA |
 | Quick bug fix | Quick Flow Solo Dev |
-
----
-
-## Related
-
-- [What Are Agents](/docs/explanation/core-concepts/what-are-agents.md) - Foundational concepts
-- [Agent Reference](/docs/reference/agents/index.md) - Complete command reference
-- [Quick Start Guide](/docs/tutorials/getting-started/getting-started-bmadv6.md)

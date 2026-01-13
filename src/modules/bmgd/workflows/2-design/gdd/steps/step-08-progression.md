@@ -6,8 +6,8 @@ description: 'Define player progression systems and game balance'
 workflow_path: '{project-root}/_bmad/bmgd/workflows/2-design/gdd'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-08-progression.md'
-nextStepFile: '{workflow_path}/steps/step-09-levels.md'
+thisStepFile: './step-08-progression.md'
+nextStepFile: './step-09-levels.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/gdd.md'
 

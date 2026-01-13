@@ -3,10 +3,7 @@ title: "How to Make Quick Fixes in Brownfield Projects"
 description: How to make quick fixes and ad-hoc changes in brownfield projects
 ---
 
-
-Not everything requires the full BMad method or even Quick Flow. For bug fixes, refactorings, or small targeted changes, you can work directly with the agent.
-
----
+Use the **DEV agent** directly for bug fixes, refactorings, or small targeted changes that don't require the full BMad method or Quick Flow.
 
 ## When to Use This
 
@@ -15,8 +12,6 @@ Not everything requires the full BMad method or even Quick Flow. For bug fixes, 
 - Targeted code improvements
 - Learning about your codebase
 - One-off changes that don't need planning
-
----
 
 ## Steps
 
@@ -54,8 +49,6 @@ The agent will:
 
 Review the changes made and commit when satisfied.
 
----
-
 ## Learning Your Codebase
 
 This approach is also excellent for exploring unfamiliar code:
@@ -74,8 +67,6 @@ LLMs are excellent at interpreting and analyzing code—whether it was AI-genera
 - Understand how things are built
 - Explore unfamiliar parts of the codebase
 
----
-
 ## When to Upgrade to Formal Planning
 
 Consider using Quick Flow or full BMad Method when:
@@ -84,11 +75,3 @@ Consider using Quick Flow or full BMad Method when:
 - You're unsure about the scope
 - The fix keeps growing in complexity
 - You need documentation for the change
-
----
-
-## Related
-
-- [Brownfield Development Guide](/docs/how-to/brownfield/index.md)
-- [Add Feature to Existing Project](/docs/how-to/brownfield/add-feature-to-existing.md)
-- [Quick Spec Flow](/docs/explanation/features/quick-flow.md)

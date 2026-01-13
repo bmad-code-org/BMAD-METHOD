@@ -6,8 +6,8 @@ description: 'Define primary game mechanics and control schemes'
 workflow_path: '{project-root}/_bmad/bmgd/workflows/2-design/gdd'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-06-mechanics.md'
-nextStepFile: '{workflow_path}/steps/step-07-game-type.md'
+thisStepFile: './step-06-mechanics.md'
+nextStepFile: './step-07-game-type.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/gdd.md'
 
