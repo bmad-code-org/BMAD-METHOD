@@ -13,6 +13,7 @@ const {
   resolveSubagentFiles,
 } = require('./shared/module-injections');
 const { getAgentsFromBmad, getAgentsFromDir } = require('./shared/bmad-artifacts');
+const prompts = require('../../../lib/prompts');
 
 /**
  * Claude Code IDE setup handler
@@ -57,20 +58,14 @@ class ClaudeCodeSetup extends BaseIdeSetup {
 
             if (config.subagentChoices.install !== 'none') {
               // Ask for installation location
-              const { default: inquirer } = await import('inquirer');
-              const locationAnswer = await inquirer.prompt([
-                {
-                  type: 'list',
-                  name: 'location',
-                  message: 'Where would you like to install Claude Code subagents?',
-                  choices: [
-                    { name: 'Project level (.claude/agents/)', value: 'project' },
-                    { name: 'User level (~/.claude/agents/)', value: 'user' },
-                  ],
-                  default: 'project',
-                },
-              ]);
-              config.installLocation = locationAnswer.location;
+              config.installLocation = await prompts.select({
+                message: 'Where would you like to install Claude Code subagents?',
+                choices: [
+                  { name: 'Project level (.claude/agents/)', value: 'project' },
+                  { name: 'User level (~/.claude/agents/)', value: 'user' },
+                ],
+                default: 'project',
+              });
             }
           }
         } catch (error) {
@@ -305,20 +300,14 @@ class ClaudeCodeSetup extends BaseIdeSetup {
         choices = await this.promptSubagentInstallation(config.subagents);
 
         if (choices.install !== 'none') {
-          const { default: inquirer } = await import('inquirer');
-          const locationAnswer = await inquirer.prompt([
-            {
-              type: 'list',
-              name: 'location',
-              message: 'Where would you like to install Claude Code subagents?',
-              choices: [
-                { name: 'Project level (.claude/agents/)', value: 'project' },
-                { name: 'User level (~/.claude/agents/)', value: 'user' },
-              ],
-              default: 'project',
-            },
-          ]);
-          location = locationAnswer.location;
+          location = await prompts.select({
+            message: 'Where would you like to install Claude Code subagents?',
+            choices: [
+              { name: 'Project level (.claude/agents/)', value: 'project' },
+              { name: 'User level (~/.claude/agents/)', value: 'user' },
+            ],
+            default: 'project',
+          });
         }
       }
 
@@ -342,22 +331,16 @@ class ClaudeCodeSetup extends BaseIdeSetup {
    * Prompt user for subagent installation preferences
    */
   async promptSubagentInstallation(subagentConfig) {
-    const { default: inquirer } = await import('inquirer');
-
     // First ask if they want to install subagents
-    const { install } = await inquirer.prompt([
-      {
-        type: 'list',
-        name: 'install',
-        message: 'Would you like to install Claude Code subagents for enhanced functionality?',
-        choices: [
-          { name: 'Yes, install all subagents', value: 'all' },
-          { name: 'Yes, let me choose specific subagents', value: 'selective' },
-          { name: 'No, skip subagent installation', value: 'none' },
-        ],
-        default: 'all',
-      },
-    ]);
+    const install = await prompts.select({
+      message: 'Would you like to install Claude Code subagents for enhanced functionality?',
+      choices: [
+        { name: 'Yes, install all subagents', value: 'all' },
+        { name: 'Yes, let me choose specific subagents', value: 'selective' },
+        { name: 'No, skip subagent installation', value: 'none' },
+      ],
+      default: 'all',
+    });
 
     if (install === 'selective') {
       // Show list of available subagents with descriptions
@@ -369,18 +352,14 @@ class ClaudeCodeSetup extends BaseIdeSetup {
         'document-reviewer.md': 'Document quality review',
       };
 
-      const { selected } = await inquirer.prompt([
-        {
-          type: 'checkbox',
-          name: 'selected',
-          message: 'Select subagents to install:',
-          choices: subagentConfig.files.map((file) => ({
-            name: `${file.replace('.md', '')} - ${subagentInfo[file] || 'Specialized assistant'}`,
-            value: file,
-            checked: true,
-          })),
-        },
-      ]);
+      const selected = await prompts.multiselect({
+        message: 'Select subagents to install:',
+        choices: subagentConfig.files.map((file) => ({
+          name: `${file.replace('.md', '')} - ${subagentInfo[file] || 'Specialized assistant'}`,
+          value: file,
+          checked: true,
+        })),
+      });
 
       return { install: 'selective', selected };
     }

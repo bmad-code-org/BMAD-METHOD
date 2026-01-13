@@ -71,14 +71,10 @@ module.exports = {
           console.log(chalk.dim('  • ElevenLabs AI (150+ premium voices)'));
           console.log(chalk.dim('  • Piper TTS (50+ free voices)\n'));
 
-          const { default: inquirer } = await import('inquirer');
-          await inquirer.prompt([
-            {
-              type: 'input',
-              name: 'continue',
-              message: chalk.green('Press Enter to start AgentVibes installer...'),
-            },
-          ]);
+          const prompts = require('../lib/prompts');
+          await prompts.text({
+            message: chalk.green('Press Enter to start AgentVibes installer...'),
+          });
 
           console.log('');
 
