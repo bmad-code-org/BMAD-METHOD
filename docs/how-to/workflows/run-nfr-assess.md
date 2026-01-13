@@ -285,7 +285,7 @@ scenarios: (100.00%) 1 scenario, 500 max VUs, 10m30s max duration
 
 **APM Data:**
 - Tool: Datadog
-- Dashboard: https://app.datadoghq.com/dashboard/abc123
+- Dashboard: <https://app.datadoghq.com/dashboard/abc123>
 
 **Conclusion:** Performance issues identified with mitigation plan. Re-assess after optimization.
 

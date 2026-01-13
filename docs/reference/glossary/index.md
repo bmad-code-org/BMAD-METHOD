@@ -9,7 +9,7 @@ Terminology reference for the BMad Method.
 | Term                      | Definition                                                                                                                                                                        |
 | ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Agent**                 | Specialized AI persona with specific expertise (PM, Architect, SM, DEV, TEA) that guides users through workflows and creates deliverables.                                        |
-| **BMad**                  | Breakthrough Method of Agile AI Driven Development — AI-driven agile framework with specialized agents, guided workflows, and scale-adaptive intelligence.                        |
+| **BMad**                  | Breakthrough Method of Agile AI-Driven Development — AI-driven agile framework with specialized agents, guided workflows, and scale-adaptive intelligence.                        |
 | **BMad Method**           | Complete methodology for AI-assisted software development, encompassing planning, architecture, implementation, and quality assurance workflows that adapt to project complexity. |
 | **BMM**                   | BMad Method Module — core orchestration system providing comprehensive lifecycle management through specialized agents and workflows.                                             |
 | **Scale-Adaptive System** | Intelligent workflow orchestration that adjusts planning depth and documentation requirements based on project needs through three planning tracks.                               |

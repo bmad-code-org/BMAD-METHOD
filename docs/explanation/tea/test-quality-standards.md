@@ -53,9 +53,9 @@ test('user can do stuff', async ({ page }) => {
 
 **Result:** PR review comments: "This test is flaky, please fix" → never merged → test deleted → coverage lost
 
-### The Slop Factory
+### AI-Generated Tests Without Standards
 
-AI-generated tests without quality standards:
+AI-generated tests without quality guardrails:
 
 ```typescript
 // AI generates 50 tests like this:
@@ -74,7 +74,7 @@ test('test2', async ({ page }) => {
 // ... 48 more similar tests
 ```
 
-**Result:** 50 tests, 80% redundant, 90% flaky, 0% trusted by team.
+**Result:** 50 tests, 80% redundant, 90% flaky, 0% trusted by team - low-quality outputs that create maintenance burden.
 
 ## The Solution: TEA's Quality Standards
 
@@ -524,13 +524,13 @@ flowchart LR
 
 ### Score Interpretation
 
-| Score | Interpretation | Action |
-|-------|----------------|--------|
-| **90-100** | Excellent | Production-ready, minimal changes |
-| **80-89** | Good | Minor improvements recommended |
-| **70-79** | Acceptable | Address recommendations before release |
-| **60-69** | Needs Work | Fix critical issues |
-| **< 60** | Critical | Significant refactoring needed |
+| Score      | Interpretation | Action                                 |
+| ---------- | -------------- | -------------------------------------- |
+| **90-100** | Excellent      | Production-ready, minimal changes      |
+| **80-89**  | Good           | Minor improvements recommended         |
+| **70-79**  | Acceptable     | Address recommendations before release |
+| **60-69**  | Needs Work     | Fix critical issues                    |
+| **< 60**   | Critical       | Significant refactoring needed         |
 
 ## Comparison: Good vs Bad Tests
 
@@ -633,7 +633,7 @@ test('should create user with valid data', async ({ apiRequest }) => {
   const { status, body } = await apiRequest({
     method: 'POST',
     path: '/api/users',
-    data: { email: testEmail, name: 'Test User' }
+    body: { email: testEmail, name: 'Test User' }
   });
 
   // Explicit assertions
@@ -652,7 +652,7 @@ test('should create user with valid data', async ({ apiRequest }) => {
 
 ## How TEA Enforces Standards
 
-### During Test Generation (*atdd, *automate)
+### During Test Generation (`*atdd`, `*automate`)
 
 TEA generates tests following standards by default:
 

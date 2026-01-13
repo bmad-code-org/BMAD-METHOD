@@ -591,16 +591,18 @@ test('should display profile page', async ({ page }) => {
 });
 ```
 
-### Optional: Recording Mode
+### Recording Mode Note
 
-If MCP enhancements enabled (`tea_use_mcp_enhancements: true` in config):
+**Recording mode is NOT typically used with ATDD** because ATDD generates tests for features that don't exist yet.
 
-When prompted, select "recording mode" to:
-- Verify selectors against actual UI with live browser
-- Capture network requests in real-time
-- Generate accurate locators from actual DOM
+Use `*automate` with recording mode for existing features instead. See [`*automate`](#automate).
 
-Note: Recording mode assumes feature partially exists (use for refinement).
+**Only use recording mode with ATDD if:**
+- You have skeleton/mockup UI implemented
+- You want to verify selectors before full implementation
+- You're doing UI-first development (rare for TDD)
+
+For typical ATDD (feature doesn't exist), skip recording mode.
 
 ### TDD Workflow
 

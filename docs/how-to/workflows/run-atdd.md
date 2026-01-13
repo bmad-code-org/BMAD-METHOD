@@ -90,7 +90,9 @@ TEA will ask what test levels to generate:
 - E2E tests (browser-based, full user journey)
 - API tests (backend only, faster)
 - Component tests (UI components in isolation)
-- Mix of levels (recommended)
+- Mix of levels
+
+**Recommended approach:** Generate API tests first, then E2E tests (see [API Tests First, E2E Later](#api-tests-first-e2e-later) tip below).
 
 ### Component Testing by Framework
 
@@ -398,16 +400,18 @@ Run `*test-design` before `*atdd` for better results:
 *atdd          # Generate tests based on design
 ```
 
-### Use Recording Mode (Optional)
+### Recording Mode Note
 
-If MCP enhancements are enabled (`tea_use_mcp_enhancements: true` in config):
+**Recording mode is NOT typically used with ATDD** because ATDD generates tests for features that don't exist yet (no UI to record against).
 
-When prompted during `*atdd`, select "recording mode" to:
-- Verify selectors against actual UI with live browser
-- Capture network requests in real-time
-- Generate accurate locators from actual DOM
+If you have a skeleton UI or are refining existing tests, use `*automate` with recording mode instead. See [How to Run Automate](/docs/how-to/workflows/run-automate.md).
 
-See [Enable MCP Enhancements](/docs/how-to/customization/enable-tea-mcp-enhancements.md)
+**Recording mode is only applicable for ATDD in the rare case where:**
+- You have skeleton/mockup UI already implemented
+- You want to verify selector patterns before full implementation
+- You're doing "UI-first" development (unusual for TDD)
+
+For most ATDD workflows, **skip recording mode** - TEA will infer selectors from best practices.
 
 ### Focus on P0/P1 Scenarios
 

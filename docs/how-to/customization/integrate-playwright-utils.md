@@ -20,7 +20,7 @@ A production-ready utility library that provides:
 - Burn-in testing utilities
 - Network error monitoring
 
-**Repository:** https://github.com/seontechnologies/playwright-utils
+**Repository:** [https://github.com/seontechnologies/playwright-utils](https://github.com/seontechnologies/playwright-utils)
 
 **npm Package:** `@seontechnologies/playwright-utils`
 
@@ -133,7 +133,7 @@ test('api test', async ({ apiRequest, log }) => {
 });
 ```
 
-### *atdd and *automate Workflows
+### `*atdd` and `*automate` Workflows
 
 **Without Playwright Utils:**
 ```typescript

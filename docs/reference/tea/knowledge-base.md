@@ -60,7 +60,7 @@ Core patterns for test infrastructure and fixture composition.
 | [playwright-config](../../../src/modules/bmm/testarch/knowledge/playwright-config.md) | Environment switching, timeout standards, artifact outputs | Configuration, environments, CI |
 | [fixtures-composition](../../../src/modules/bmm/testarch/knowledge/fixtures-composition.md) | mergeTests composition patterns for combining utilities | Fixture merging, utility composition |
 
-**Used in:** *framework, *test-design, *atdd, *automate, *test-review
+**Used in:** `*framework`, `*test-design`, `*atdd`, `*automate`, `*test-review`
 
 ---
 
@@ -74,7 +74,7 @@ Patterns for test data generation, authentication, and setup.
 | [email-auth](../../../src/modules/bmm/testarch/knowledge/email-auth.md) | Magic link extraction, state preservation, negative flows | Authentication, email testing |
 | [auth-session](../../../src/modules/bmm/testarch/knowledge/auth-session.md) | Token persistence, multi-user, API/browser authentication | Auth patterns, session management |
 
-**Used in:** *framework, *atdd, *automate, *test-review
+**Used in:** `*framework`, `*atdd`, `*automate`, `*test-review`
 
 ---
 
@@ -89,7 +89,7 @@ Network interception, error handling, and reliability patterns.
 | [error-handling](../../../src/modules/bmm/testarch/knowledge/error-handling.md) | Scoped exception handling, retry validation, telemetry logging | Error patterns, resilience |
 | [network-error-monitor](../../../src/modules/bmm/testarch/knowledge/network-error-monitor.md) | HTTP 4xx/5xx detection for UI tests | Error detection, monitoring |
 
-**Used in:** *atdd, *automate, *test-review
+**Used in:** `*atdd`, `*automate`, `*test-review`
 
 ---
 
@@ -103,7 +103,7 @@ CI/CD patterns, burn-in testing, and selective test execution.
 | [burn-in](../../../src/modules/bmm/testarch/knowledge/burn-in.md) | Smart test selection, git diff for CI optimization | Test selection, performance |
 | [selective-testing](../../../src/modules/bmm/testarch/knowledge/selective-testing.md) | Tag/grep usage, spec filters, diff-based runs | Test filtering, optimization |
 
-**Used in:** *ci, *test-review
+**Used in:** `*ci`, `*test-review`
 
 ---
 
@@ -119,7 +119,7 @@ Test quality standards, test level selection, and TDD patterns.
 | [test-healing-patterns](../../../src/modules/bmm/testarch/knowledge/test-healing-patterns.md) | Common failure patterns and automated fixes | Debugging, healing, fixes |
 | [component-tdd](../../../src/modules/bmm/testarch/knowledge/component-tdd.md) | Red→green→refactor workflow, provider isolation | TDD, component testing |
 
-**Used in:** *test-design, *atdd, *automate, *test-review, *trace
+**Used in:** `*test-design`, `*atdd`, `*automate`, `*test-review`, `*trace`
 
 ---
 
@@ -133,7 +133,7 @@ Risk assessment, governance, and gate decision frameworks.
 | [probability-impact](../../../src/modules/bmm/testarch/knowledge/probability-impact.md) | Probability × impact scale for scoring matrix | Risk scoring, impact analysis |
 | [nfr-criteria](../../../src/modules/bmm/testarch/knowledge/nfr-criteria.md) | Security, performance, reliability, maintainability status | NFRs, compliance, enterprise |
 
-**Used in:** *test-design, *nfr-assess, *trace
+**Used in:** `*test-design`, `*nfr-assess`, `*trace`
 
 ---
 
@@ -147,7 +147,7 @@ Selector resilience, race condition debugging, and visual debugging.
 | [timing-debugging](../../../src/modules/bmm/testarch/knowledge/timing-debugging.md) | Race condition identification and deterministic fixes | Race conditions, timing issues |
 | [visual-debugging](../../../src/modules/bmm/testarch/knowledge/visual-debugging.md) | Trace viewer usage, artifact expectations | Debugging, trace viewer, artifacts |
 
-**Used in:** *atdd, *automate, *test-review
+**Used in:** `*atdd`, `*automate`, `*test-review`
 
 ---
 
@@ -161,7 +161,7 @@ Feature flag testing, contract testing, and API testing patterns.
 | [contract-testing](../../../src/modules/bmm/testarch/knowledge/contract-testing.md) | Pact publishing, provider verification, resilience | Contract testing, Pact |
 | [api-testing-patterns](../../../src/modules/bmm/testarch/knowledge/api-testing-patterns.md) | Pure API patterns without browser | API testing, backend testing |
 
-**Used in:** *test-design, *atdd, *automate
+**Used in:** `*test-design`, `*atdd`, `*automate`
 
 ---
 
@@ -185,9 +185,9 @@ Patterns for using `@seontechnologies/playwright-utils` package (11 utilities).
 
 **Note:** All 11 playwright-utils fragments are in the same `knowledge/` directory as other fragments.
 
-**Used in:** *framework (if `tea_use_playwright_utils: true`), *atdd, *automate, *test-review, *ci
+**Used in:** `*framework` (if `tea_use_playwright_utils: true`), `*atdd`, `*automate`, `*test-review`, `*ci`
 
-**Official Docs:** https://seontechnologies.github.io/playwright-utils/
+**Official Docs:** <https://seontechnologies.github.io/playwright-utils/>
 
 ---
 

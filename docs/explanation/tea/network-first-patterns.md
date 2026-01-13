@@ -324,21 +324,30 @@ await expect(page.locator('.order-confirmation')).toContainText(order.id);
 ### HAR Recording for Offline Testing
 
 **Vanilla Playwright (Manual HAR Handling):**
+
 ```typescript
-test('offline testing', async ({ page, context }) => {
-  // Record mode: Save HAR manually
+// First run: Record mode (saves HAR file)
+test('offline testing - RECORD', async ({ page, context }) => {
+  // Record mode: Save network traffic to HAR
   await context.routeFromHAR('./hars/dashboard.har', {
     url: '**/api/**',
     update: true  // Update HAR file
   });
 
   await page.goto('/dashboard');
+  // All network traffic saved to dashboard.har
+});
 
-  // Playback: Load HAR manually
+// Subsequent runs: Playback mode (uses saved HAR)
+test('offline testing - PLAYBACK', async ({ page, context }) => {
+  // Playback mode: Use saved network traffic
   await context.routeFromHAR('./hars/dashboard.har', {
     url: '**/api/**',
-    update: false  // Use existing HAR
+    update: false  // Use existing HAR, no network calls
   });
+
+  await page.goto('/dashboard');
+  // Uses recorded responses, no backend needed
 });
 ```
 

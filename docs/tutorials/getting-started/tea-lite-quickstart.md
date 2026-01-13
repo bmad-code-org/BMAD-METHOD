@@ -18,7 +18,7 @@ By the end of this 30-minute tutorial, you'll have:
 
 - Node.js installed (v18 or later)
 - 30 minutes of focused time
-- We'll use TodoMVC (https://todomvc.com/examples/react/) as our demo app
+- We'll use TodoMVC (<https://todomvc.com/examples/react/>) as our demo app
 
 ## TEA Approaches Explained
 
@@ -36,7 +36,7 @@ This tutorial focuses on **TEA Lite** - the fastest way to see TEA in action.
 
 We'll test TodoMVC, a standard demo app used across testing documentation.
 
-**Demo App:** https://todomvc.com/examples/react/
+**Demo App:** <https://todomvc.com/examples/react/>
 
 No installation needed - TodoMVC runs in your browser. Open the link above and:
 1. Add a few todos (type and press Enter)
@@ -173,7 +173,7 @@ In your chat with TEA, run:
 ```
 
 **Q: What are you testing?**
-A: "TodoMVC React app at https://todomvc.com/examples/react/ - focus on the test design we just created"
+A: "TodoMVC React app at <https://todomvc.com/examples/react/> - focus on the test design we just created"
 
 **Q: Reference existing docs?**
 A: "Yes, use test-design-epic-1.md"
@@ -452,8 +452,8 @@ use: {
 
 ### Need Help?
 
-- **Documentation:** https://docs.bmad-method.org
-- **GitHub Issues:** https://github.com/bmad-code-org/bmad-method/issues
+- **Documentation:** <https://docs.bmad-method.org>
+- **GitHub Issues:** <https://github.com/bmad-code-org/bmad-method/issues>
 - **Discord:** Join the BMAD community
 
 ---

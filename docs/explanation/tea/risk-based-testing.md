@@ -577,7 +577,7 @@ flowchart TD
 
 ## Reference
 
-- [TEA Command Reference](/docs/reference/tea/commands.md) - *test-design, *nfr-assess, *trace
+- [TEA Command Reference](/docs/reference/tea/commands.md) - `*test-design`, `*nfr-assess`, `*trace`
 - [Knowledge Base Index](/docs/reference/tea/knowledge-base.md) - Risk governance fragments
 - [Glossary](/docs/reference/glossary/index.md#test-architect-tea-concepts) - Risk-based testing term
 

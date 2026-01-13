@@ -21,7 +21,7 @@ Fixture architecture is TEA's pattern for building reusable, testable, and compo
 - Composition happens at fixture level
 - Reusability maximized
 
-#### Fixture Architecture Flow
+### Fixture Architecture Flow
 
 ```mermaid
 %%{init: {'theme':'base', 'themeVariables': { 'fontSize':'14px'}}}%%
@@ -217,11 +217,11 @@ import { test, expect } from '../support/fixtures';
 test('should update profile', async ({ apiRequest, authToken, log }) => {
   log.info('Starting profile update test');
 
-  // Use API request fixture with auth token
+  // Use API request fixture (matches pure function signature)
   const { status, body } = await apiRequest({
     method: 'PATCH',
-    path: '/api/profile',
-    body: { name: 'New Name' },  // 'body' not 'data'
+    url: '/api/profile',  // Pure function uses 'url' (not 'path')
+    data: { name: 'New Name' },  // Pure function uses 'data' (not 'body')
     headers: { Authorization: `Bearer ${authToken}` }
   });
 
@@ -231,6 +231,8 @@ test('should update profile', async ({ apiRequest, authToken, log }) => {
   log.info('Profile updated successfully');
 });
 ```
+
+**Note:** This example uses the vanilla pure function signature (`url`, `data`). Playwright Utils uses different parameter names (`path`, `body`). See [Integrate Playwright Utils](/docs/how-to/customization/integrate-playwright-utils.md) for the utilities API.
 
 **Note:** `authToken` requires auth-session fixture setup with provider configuration. See [auth-session documentation](https://seontechnologies.github.io/playwright-utils/auth-session.html).
 

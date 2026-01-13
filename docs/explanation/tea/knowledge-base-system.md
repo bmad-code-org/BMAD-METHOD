@@ -203,6 +203,7 @@ Benefits it provides
 - [Link to related fragment]
 ```
 
+<!-- markdownlint-disable MD024 -->
 ### Example: test-quality.md Fragment
 
 ```markdown
@@ -246,6 +247,7 @@ await page.waitForTimeout(3000);
 ```
 
 **Total:** 24.5 KB, 12 code examples
+<!-- markdownlint-enable MD024 -->
 
 ## How TEA Uses the Knowledge Base
 
