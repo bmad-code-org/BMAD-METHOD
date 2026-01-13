@@ -835,7 +835,7 @@ class ConfigCollector {
   }
 
   /**
-   * Build an inquirer question from a config item
+   * Build a prompt question from a config item
    * @param {string} moduleName - Module name
    * @param {string} key - Config key
    * @param {Object} item - Config item definition
@@ -997,7 +997,7 @@ class ConfigCollector {
       message: message,
     };
 
-    // Set default - if it's dynamic, use a function that inquirer will evaluate with current answers
+    // Set default - if it's dynamic, use a function that the prompt will evaluate with current answers
     // But if we have an existing value, always use that instead
     if (existingValue !== null && existingValue !== undefined && questionType !== 'list') {
       question.default = existingValue;

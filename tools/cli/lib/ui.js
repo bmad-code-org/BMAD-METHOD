@@ -16,8 +16,8 @@ class Separator {
   type = 'separator';
 }
 
-// Provide a compatible interface
-const inquirer = { Separator };
+// Separator for choice lists (compatible interface)
+const choiceUtils = { Separator };
 
 /**
  * UI utilities for the installer
@@ -448,7 +448,7 @@ class UI {
 
     // First, add previously configured IDEs at the top, marked with ✅
     if (configuredIdes.length > 0) {
-      ideChoices.push(new inquirer.Separator('── Previously Configured ──'));
+      ideChoices.push(new choiceUtils.Separator('── Previously Configured ──'));
       for (const ideValue of configuredIdes) {
         // Skip empty or invalid IDE values
         if (!ideValue || typeof ideValue !== 'string') {
@@ -477,7 +477,7 @@ class UI {
     // Add preferred tools (excluding already processed)
     const remainingPreferred = preferredIdes.filter((ide) => !processedIdes.has(ide.value));
     if (remainingPreferred.length > 0) {
-      ideChoices.push(new inquirer.Separator('── Recommended Tools ──'));
+      ideChoices.push(new choiceUtils.Separator('── Recommended Tools ──'));
       for (const ide of remainingPreferred) {
         ideChoices.push({
           name: `${ide.name} ⭐`,
@@ -491,7 +491,7 @@ class UI {
     // Add other tools (excluding already processed)
     const remainingOther = otherIdes.filter((ide) => !processedIdes.has(ide.value));
     if (remainingOther.length > 0) {
-      ideChoices.push(new inquirer.Separator('── Additional Tools ──'));
+      ideChoices.push(new choiceUtils.Separator('── Additional Tools ──'));
       for (const ide of remainingOther) {
         ideChoices.push({
           name: ide.name,
@@ -685,7 +685,7 @@ class UI {
    * Get module choices for selection
    * @param {Set} installedModuleIds - Currently installed module IDs
    * @param {Object} customContentConfig - Custom content configuration
-   * @returns {Array} Module choices for inquirer
+   * @returns {Array} Module choices for prompt
    */
   async getModuleChoices(installedModuleIds, customContentConfig = null) {
     const moduleChoices = [];
@@ -742,9 +742,9 @@ class UI {
     if (allCustomModules.length > 0) {
       // Add separator for custom content, all custom modules, and official content separator
       moduleChoices.push(
-        new inquirer.Separator('── Custom Content ──'),
+        new choiceUtils.Separator('── Custom Content ──'),
         ...allCustomModules,
-        new inquirer.Separator('── Official Content ──'),
+        new choiceUtils.Separator('── Official Content ──'),
       );
     }
 
@@ -785,7 +785,7 @@ class UI {
 
   /**
    * Prompt for directory selection
-   * @returns {Object} Directory answer from inquirer
+   * @returns {Object} Directory answer from prompt
    */
   async promptForDirectory() {
     // Use sync validation because @clack/prompts doesn't support async validate
@@ -1069,7 +1069,7 @@ class UI {
    * @sideeffects None - pure user input collection, no files written
    * @edgecases Shows warning if user enables TTS but AgentVibes not detected
    * @calledby promptInstall() during installation flow, after core config, before IDE selection
-   * @calls checkAgentVibesInstalled(), inquirer.prompt(), chalk.green/yellow/dim()
+   * @calls checkAgentVibesInstalled(), prompts.select(), chalk.green/yellow/dim()
    *
    * AI NOTE: This prompt is strategically positioned in installation flow:
    * - AFTER core config (user_name, etc)
