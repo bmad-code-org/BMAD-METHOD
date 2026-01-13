@@ -215,8 +215,6 @@ your-project/
 ```
 ````
 
----
-
 ## Document Types
 
 Select document type based on reader goal:
@@ -228,8 +226,6 @@ Select document type based on reader goal:
 | Understand a concept | Explanation |
 | Look up information | Reference |
 | Find term definitions | Glossary |
-
----
 
 ## Tutorial Structure
 
@@ -265,8 +261,6 @@ Tutorials teach complete workflows to new users. Length: 200-400 lines.
 - [ ] Common Questions section present
 - [ ] Getting Help section present
 - [ ] Key Takeaways admonition at end
-
----
 
 ## How-To Structure
 
@@ -306,8 +300,6 @@ Guidelines:
 - [ ] Prerequisites listed
 - [ ] Steps are numbered `###` subsections with action verbs
 - [ ] "What You Get" describes output artifacts
-
----
 
 ## Explanation Structure
 
@@ -395,8 +387,6 @@ Explanation documents answer "What is X?" and "Why does X matter?"
 - [ ] Diagrams have clear labels
 - [ ] Links to how-to guides for procedural questions
 - [ ] 2-3 admonitions max per document (1-2 per section)
-
----
 
 ## Reference Structure
 
@@ -486,8 +476,6 @@ Guidelines:
 - [ ] Links to explanation docs for conceptual depth
 - [ ] 1-2 admonitions max
 
----
-
 ## Glossary Structure
 
 Glossaries provide compact, scannable term definitions.
@@ -559,8 +547,6 @@ Reference category anchor (terms are not headers):
 - [ ] Term names bolded in cells
 - [ ] No "A [term] is..." definitions
 
----
-
 ## FAQ Sections
 
 Structure:
@@ -587,8 +573,6 @@ Rules:
 - `###` headers for questions (no `Q:` prefix)
 - Direct answers (no `**A:**` prefix)
 - End with CTA for unanswered questions
-
----
 
 ## Validation Steps
 
