@@ -37,6 +37,8 @@ These rules apply to ALL document types. Violations fail review.
 - `###` subsections: 2-3 per `##` section max
 - `####`: Never use
 
+Structure templates below show content flow, not 1:1 header mapping. Admonitions and inline elements appear within sections, not as separate headers.
+
 ### Header Naming
 
 | Context | Style | Example |
