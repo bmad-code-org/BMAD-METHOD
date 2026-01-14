@@ -28,7 +28,7 @@ phases:
         exec: "{project-root}/_bmad/core/workflows/brainstorming/workflow.md"
         optional: true
         agent: "analyst"
-        command: "/bmad:bmm:workflows:brainstorming"
+        command: "/bmad:core:workflows:brainstorming"
         included_by: "user_choice"
         note: "Uses core brainstorming workflow with project context template"
       - id: "research"
@@ -53,7 +53,7 @@ phases:
         exec: "{project-root}/_bmad/bmm/workflows/2-plan-workflows/prd/workflow.md"
         required: true
         agent: "pm"
-        command: "/bmad:bmm:workflows:create-prd"
+        command: "/bmad:bmm:workflows:prd"
         output: "Product Requirements Document with FRs and NFRs"
       - id: "create-ux-design"
         conditional: "if_has_ui"
@@ -82,14 +82,14 @@ phases:
         optional: true
         workflow: "{project-root}/_bmad/bmm/workflows/testarch/test-design/workflow.yaml"
         agent: "tea"
-        command: "/bmad:bmm:workflows:test-design"
+        command: "/bmad:bmm:workflows:testarch-test-design"
         output: "System-level testability review"
         note: "Testability assessment before gate check - auto-detects system-level mode"
       - id: "implementation-readiness"
         required: true
         exec: "{project-root}/_bmad/bmm/workflows/3-solutioning/check-implementation-readiness/workflow.md"
         agent: "architect"
-        command: "/bmad:bmm:workflows:implementation-readiness"
+        command: "/bmad:bmm:workflows:check-implementation-readiness"
         note: "Validates PRD + Architecture + Epics + UX (optional)"
   - phase: 4
     name: "Implementation"

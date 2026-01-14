@@ -286,7 +286,7 @@ editWorkflow: './steps-e/step-e-01-discovery.md'
 **1. Agent Menu Registration:**
 - ✅ Registered in PM agent menu
 - ✅ Trigger: `PR` or fuzzy match on `prd`
-- ✅ Command: `/bmad:bmm:workflows:create-prd`
+- ✅ Command: `/bmad:bmm:workflows:prd`
 - ✅ Proper workflow path configuration
 
 **2. External Workflow References:**
