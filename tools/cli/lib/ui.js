@@ -507,7 +507,7 @@ class UI {
     // Loop until user selects at least one tool OR explicitly confirms no tools
     while (!userConfirmedNoTools) {
       selectedIdes = await prompts.multiselect({
-        message: 'Select tools to configure:',
+        message: `Select tools to configure ${chalk.dim('(↑/↓ navigate, SPACE select, ENTER confirm)')}:`,
         choices: ideChoices,
         required: false,
       });
@@ -517,9 +517,11 @@ class UI {
         break;
       }
 
-      // Warn that no tools were selected
+      // Warn that no tools were selected - users often miss the spacebar requirement
       console.log();
       console.log(chalk.red.bold('⚠️  WARNING: No tools were selected!'));
+      console.log(chalk.red('   You must press SPACE to select items, then ENTER to confirm.'));
+      console.log(chalk.red('   Simply highlighting an item does NOT select it.'));
       console.log();
 
       const goBack = await prompts.confirm({
@@ -573,7 +575,7 @@ class UI {
     }));
 
     const selectedModules = await prompts.multiselect({
-      message: 'Select modules to add:',
+      message: `Select modules to add ${chalk.dim('(↑/↓ navigate, SPACE select, ENTER confirm)')}:`,
       choices,
       required: true,
     });
@@ -775,7 +777,7 @@ class UI {
     }));
 
     const selected = await prompts.multiselect({
-      message: 'Select modules to install:',
+      message: `Select modules to install ${chalk.dim('(↑/↓ navigate, SPACE select, ENTER confirm)')}:`,
       choices: choicesWithDefaults,
       required: false,
     });
@@ -1461,7 +1463,7 @@ class UI {
         }));
 
         const keepModules = await prompts.multiselect({
-          message: 'Select custom modules to keep:',
+          message: `Select custom modules to keep ${chalk.dim('(↑/↓ navigate, SPACE select, ENTER confirm)')}:`,
           choices: selectChoices,
           required: false,
         });

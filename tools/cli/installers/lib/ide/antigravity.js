@@ -345,7 +345,7 @@ class AntigravitySetup extends BaseIdeSetup {
       };
 
       const selected = await prompts.multiselect({
-        message: 'Select subagents to install:',
+        message: `Select subagents to install ${chalk.dim('(↑/↓ navigate, SPACE select, ENTER confirm)')}:`,
         choices: subagentConfig.files.map((file) => ({
           name: `${file.replace('.md', '')} - ${subagentInfo[file] || 'Specialized assistant'}`,
           value: file,
