@@ -167,6 +167,30 @@ async function multiselect(options) {
 }
 
 /**
+ * Grouped multi-select prompt for categorized options
+ * @param {Object} options - Prompt options
+ * @param {string} options.message - The question to ask
+ * @param {Object} options.options - Object mapping group names to arrays of choices
+ * @param {Array} [options.initialValues] - Array of initially selected values
+ * @param {boolean} [options.required=false] - Whether at least one must be selected
+ * @param {boolean} [options.selectableGroups=false] - Whether groups can be selected as a whole
+ * @returns {Promise<Array>} Array of selected values
+ */
+async function groupMultiselect(options) {
+  const clack = await getClack();
+
+  const result = await clack.groupMultiselect({
+    message: options.message,
+    options: options.options,
+    initialValues: options.initialValues,
+    required: options.required || false,
+  });
+
+  await handleCancel(result);
+  return result;
+}
+
+/**
  * Confirm prompt (replaces Inquirer 'confirm' type)
  * @param {Object} options - Prompt options
  * @param {string} options.message - The question to ask
@@ -397,6 +421,7 @@ module.exports = {
   spinner,
   select,
   multiselect,
+  groupMultiselect,
   confirm,
   text,
   password,

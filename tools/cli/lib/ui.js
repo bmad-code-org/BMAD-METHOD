@@ -442,13 +442,14 @@ class UI {
     const preferredIdes = ideManager.getPreferredIdes();
     const otherIdes = ideManager.getOtherIdes();
 
-    // Build IDE choices array with separators
-    const ideChoices = [];
+    // Build grouped options object for groupMultiselect
+    const groupedOptions = {};
     const processedIdes = new Set();
+    const initialValues = [];
 
     // First, add previously configured IDEs at the top, marked with ✅
     if (configuredIdes.length > 0) {
-      ideChoices.push(new choiceUtils.Separator('── Previously Configured ──'));
+      const configuredGroup = [];
       for (const ideValue of configuredIdes) {
         // Skip empty or invalid IDE values
         if (!ideValue || typeof ideValue !== 'string') {
@@ -461,44 +462,41 @@ class UI {
         const ide = preferredIde || otherIde;
 
         if (ide) {
-          ideChoices.push({
-            name: `${ide.name} ✅`,
+          configuredGroup.push({
+            label: `${ide.name} ✅`,
             value: ide.value,
-            checked: true, // Previously configured IDEs are checked by default
           });
           processedIdes.add(ide.value);
+          initialValues.push(ide.value); // Pre-select configured IDEs
         } else {
           // Warn about unrecognized IDE (but don't fail)
           console.log(chalk.yellow(`⚠️  Previously configured IDE '${ideValue}' is no longer available`));
         }
+      }
+      if (configuredGroup.length > 0) {
+        groupedOptions['Previously Configured'] = configuredGroup;
       }
     }
 
     // Add preferred tools (excluding already processed)
     const remainingPreferred = preferredIdes.filter((ide) => !processedIdes.has(ide.value));
     if (remainingPreferred.length > 0) {
-      ideChoices.push(new choiceUtils.Separator('── Recommended Tools ──'));
-      for (const ide of remainingPreferred) {
-        ideChoices.push({
-          name: `${ide.name} ⭐`,
-          value: ide.value,
-          checked: false,
-        });
+      groupedOptions['Recommended Tools'] = remainingPreferred.map((ide) => {
         processedIdes.add(ide.value);
-      }
+        return {
+          label: `${ide.name} ⭐`,
+          value: ide.value,
+        };
+      });
     }
 
     // Add other tools (excluding already processed)
     const remainingOther = otherIdes.filter((ide) => !processedIdes.has(ide.value));
     if (remainingOther.length > 0) {
-      ideChoices.push(new choiceUtils.Separator('── Additional Tools ──'));
-      for (const ide of remainingOther) {
-        ideChoices.push({
-          name: ide.name,
-          value: ide.value,
-          checked: false,
-        });
-      }
+      groupedOptions['Additional Tools'] = remainingOther.map((ide) => ({
+        label: ide.name,
+        value: ide.value,
+      }));
     }
 
     let selectedIdes = [];
@@ -506,9 +504,10 @@ class UI {
 
     // Loop until user selects at least one tool OR explicitly confirms no tools
     while (!userConfirmedNoTools) {
-      selectedIdes = await prompts.multiselect({
+      selectedIdes = await prompts.groupMultiselect({
         message: `Select tools to configure ${chalk.dim('(↑/↓ navigate, SPACE select, ENTER confirm)')}:`,
-        choices: ideChoices,
+        options: groupedOptions,
+        initialValues: initialValues.length > 0 ? initialValues : undefined,
         required: false,
       });
 
