@@ -1,0 +1,12 @@
+# Test: Valid module with inherit variable
+# Expected: PASS
+
+code: inherit-mod
+name: Inherit Module
+header: Module With Inherited Variables
+subheader: Uses inherit instead of prompt
+default_selected: false
+
+inherited_var:
+  inherit: other-module.some_var
+

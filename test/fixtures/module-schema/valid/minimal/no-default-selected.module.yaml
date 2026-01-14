@@ -1,0 +1,8 @@
+# Test: Valid module without default_selected (optional for core module)
+# Expected: PASS
+
+code: core-like
+name: Core Module
+header: Core Header
+subheader: Core modules don't need default_selected
+

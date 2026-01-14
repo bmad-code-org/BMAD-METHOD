@@ -1,0 +1,16 @@
+# Test: Variable without prompt or inherit
+# Expected: FAIL
+# Error code: custom
+# Error path: my_variable
+# Error message: my_variable must have a 'prompt' or 'inherit' field
+
+code: test-module
+name: Test Module
+header: Test Header
+subheader: Test Subheader
+default_selected: false
+
+my_variable:
+  required: true
+  result: some result
+

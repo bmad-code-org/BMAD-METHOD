@@ -1,0 +1,31 @@
+# Test: Valid module with single-select and multi-select
+# Expected: PASS
+
+code: select-mod
+name: Select Module
+header: Module With Selects
+subheader: Demonstrates single-select and multi-select
+default_selected: false
+
+environment:
+  prompt: Select your target environment
+  single-select:
+    - value: dev
+      label: Development
+    - value: staging
+      label: Staging
+    - value: prod
+      label: Production
+
+features:
+  prompt:
+    - What features do you want?
+    - You can select multiple options.
+  multi-select:
+    - value: auth
+      label: Authentication
+    - value: api
+      label: REST API
+    - value: db
+      label: Database
+

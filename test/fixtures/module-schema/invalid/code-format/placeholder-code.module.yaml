@@ -1,0 +1,11 @@
+# Test: Code field contains placeholder text (the main bug we're fixing)
+# Expected: FAIL
+# Error code: invalid_string
+# Error path: code
+
+code: "{module_code}"
+name: Test Module
+header: Test Header
+subheader: Test Subheader
+default_selected: false
+
