@@ -50,5 +50,5 @@ agent:
 
     # Core workflows that exist
     - trigger: "BS or fuzzy match on brainstorm"
-      workflow: "{project-root}/_bmad/core/workflows/brainstorming/workflow.yaml"
+      workflow: "{project-root}/_bmad/core/workflows/brainstorming/workflow.md"
       description: "[BS] Brainstorm trend implications"
