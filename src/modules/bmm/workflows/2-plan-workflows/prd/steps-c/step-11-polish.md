@@ -5,7 +5,7 @@ description: 'Optimize and polish the complete PRD document for flow, coherence,
 # File References
 nextStepFile: './step-12-complete.md'
 outputFile: '{planning_artifacts}/prd.md'
-purposeFile: './data/prd-purpose.md'
+purposeFile: '../data/prd-purpose.md'
 
 # Task References
 advancedElicitationTask: '{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml'
