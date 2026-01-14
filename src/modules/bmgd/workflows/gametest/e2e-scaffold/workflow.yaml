@@ -1,0 +1,101 @@
+# E2E Test Infrastructure Scaffold Workflow
+
+workflow:
+  id: e2e-scaffold
+  name: E2E Test Infrastructure Scaffold
+  version: 1.0
+  module: bmgd
+  agent: game-qa
+
+  description: |
+    Scaffold complete E2E testing infrastructure for an existing game project.
+    Creates test fixtures, scenario builders, input simulators, and async
+    assertion utilities tailored to the project's architecture.
+
+  triggers:
+    - "ES"
+    - "e2e-scaffold"
+    - "scaffold e2e"
+    - "e2e infrastructure"
+    - "setup e2e"
+
+  preflight:
+    - "Test framework initialized (run `test-framework` workflow first)"
+    - "Game has identifiable state manager"
+    - "Main gameplay scene exists"
+
+  knowledge_fragments:
+    - "knowledge/e2e-testing.md"
+    - "knowledge/unity-testing.md"
+    - "knowledge/unreal-testing.md"
+    - "knowledge/godot-testing.md"
+
+  inputs:
+    game_state_class:
+      description: "Primary game state manager class name"
+      required: true
+      example: "GameStateManager"
+    
+    main_scene:
+      description: "Scene name where core gameplay occurs"
+      required: true
+      example: "GameScene"
+    
+    input_system:
+      description: "Input system in use"
+      required: false
+      default: "auto-detect"
+      options:
+        - "unity-input-system"
+        - "unity-legacy"
+        - "unreal-enhanced"
+        - "godot-input"
+        - "custom"
+
+  outputs:
+    infrastructure_files:
+      description: "Generated E2E infrastructure classes"
+      files:
+        - "Tests/PlayMode/E2E/Infrastructure/GameE2ETestFixture.cs"
+        - "Tests/PlayMode/E2E/Infrastructure/ScenarioBuilder.cs"
+        - "Tests/PlayMode/E2E/Infrastructure/InputSimulator.cs"
+        - "Tests/PlayMode/E2E/Infrastructure/AsyncAssert.cs"
+    
+    assembly_definition:
+      description: "E2E test assembly configuration"
+      files:
+        - "Tests/PlayMode/E2E/E2E.asmdef"
+    
+    example_test:
+      description: "Working example E2E test"
+      files:
+        - "Tests/PlayMode/E2E/ExampleE2ETest.cs"
+    
+    documentation:
+      description: "E2E testing README"
+      files:
+        - "Tests/PlayMode/E2E/README.md"
+
+  steps:
+    - id: analyze
+      name: "Analyze Game Architecture"
+      instruction_file: "instructions.md#step-1-analyze-game-architecture"
+    
+    - id: scaffold
+      name: "Generate Infrastructure"
+      instruction_file: "instructions.md#step-2-generate-infrastructure"
+    
+    - id: example
+      name: "Generate Example Test"
+      instruction_file: "instructions.md#step-3-generate-example-test"
+    
+    - id: document
+      name: "Generate Documentation"
+      instruction_file: "instructions.md#step-4-generate-documentation"
+    
+    - id: complete
+      name: "Output Summary"
+      instruction_file: "instructions.md#step-5-output-summary"
+
+  validation:
+    checklist: "checklist.md"
