@@ -122,8 +122,6 @@ Tests/PlayMode/E2E/
   "rootNamespace": "{ProjectNamespace}.Tests.E2E",
   "references": [
     "{GameAssemblyName}",
-    "UnityEngine.TestRunner",
-    "UnityEditor.TestRunner",
     "Unity.InputSystem",
     "Unity.InputSystem.TestFramework"
   ],
@@ -132,7 +130,9 @@ Tests/PlayMode/E2E/
   "allowUnsafeCode": false,
   "overrideReferences": true,
   "precompiledReferences": [
-    "nunit.framework.dll"
+    "nunit.framework.dll",
+    "UnityEngine.TestRunner.dll",
+    "UnityEditor.TestRunner.dll"
   ],
   "autoReferenced": false,
   "defineConstraints": [
@@ -474,24 +474,30 @@ namespace {Namespace}.Tests.E2E
         {
             var button = GameObject.Find(buttonName)?
                 .GetComponent<UnityEngine.UI.Button>();
-            
+
             if (button == null)
             {
-                // Try searching in inactive objects
-                var buttons = Resources.FindObjectsOfTypeAll<UnityEngine.UI.Button>();
+                // Search in inactive objects within loaded scenes only
+                var buttons = Object.FindObjectsByType<UnityEngine.UI.Button>(
+                    FindObjectsInactive.Include, FindObjectsSortMode.None);
                 foreach (var b in buttons)
                 {
-                    if (b.name == buttonName)
+                    if (b.name == buttonName && b.gameObject.scene.isLoaded)
                     {
                         button = b;
                         break;
                     }
                 }
             }
-            
-            UnityEngine.Assertions.Assert.IsNotNull(button, 
-                $"Button '{buttonName}' not found");
-            
+
+            UnityEngine.Assertions.Assert.IsNotNull(button,
+                $"Button '{buttonName}' not found in active scenes");
+
+            if (!button.interactable)
+            {
+                Debug.LogWarning($"[InputSimulator] Button '{buttonName}' is not interactable");
+            }
+
             button.onClick.Invoke();
             yield return null;
         }
@@ -697,6 +703,8 @@ namespace {Namespace}.Tests.E2E
         
         /// <summary>
         /// Wait for a value to equal expected.
+        /// Note: For floating-point comparisons, use WaitForValueApprox instead
+        /// to handle precision issues. This method uses exact equality.
         /// </summary>
         public static IEnumerator WaitForValue<T>(
             Func<T> getter,
@@ -709,7 +717,39 @@ namespace {Namespace}.Tests.E2E
                 $"{description} to equal '{expected}' (current: '{getter()}')",
                 timeout);
         }
-        
+
+        /// <summary>
+        /// Wait for a float value within tolerance (handles floating-point precision).
+        /// </summary>
+        public static IEnumerator WaitForValueApprox(
+            Func<float> getter,
+            float expected,
+            string description,
+            float tolerance = 0.0001f,
+            float timeout = 5f)
+        {
+            yield return WaitUntil(
+                () => Mathf.Abs(expected - getter()) < tolerance,
+                $"{description} to equal ~{expected} ±{tolerance} (current: {getter()})",
+                timeout);
+        }
+
+        /// <summary>
+        /// Wait for a double value within tolerance (handles floating-point precision).
+        /// </summary>
+        public static IEnumerator WaitForValueApprox(
+            Func<double> getter,
+            double expected,
+            string description,
+            double tolerance = 0.0001,
+            float timeout = 5f)
+        {
+            yield return WaitUntil(
+                () => Math.Abs(expected - getter()) < tolerance,
+                $"{description} to equal ~{expected} ±{tolerance} (current: {getter()})",
+                timeout);
+        }
+
         /// <summary>
         /// Wait for a value to not equal a specific value.
         /// </summary>
@@ -835,6 +875,8 @@ namespace {Namespace}.Tests.E2E
             Assert.IsNotNull(Scenario, "ScenarioBuilder should be available");
             
             // Verify game is actually ready
+            // NOTE: {IsReadyProperty} is a template placeholder. Replace it with your
+            // game's actual ready-state property (e.g., IsReady, IsInitialized, HasLoaded).
             yield return AsyncAssert.WaitUntil(
                 () => GameState.{IsReadyProperty},
                 "Game should be in ready state");

@@ -472,6 +472,8 @@ public static class AsyncAssert
     
     /// <summary>
     /// Wait for a specific value, with descriptive failure.
+    /// Note: For floating-point comparisons, use WaitForValueApprox instead
+    /// to handle precision issues. This method uses exact equality.
     /// </summary>
     public static IEnumerator WaitForValue<T>(
         Func<T> getter,
@@ -484,7 +486,39 @@ public static class AsyncAssert
             $"{description} to equal {expected} (current: {getter()})",
             timeout);
     }
-    
+
+    /// <summary>
+    /// Wait for a float value within tolerance (handles floating-point precision).
+    /// </summary>
+    public static IEnumerator WaitForValueApprox(
+        Func<float> getter,
+        float expected,
+        string description,
+        float tolerance = 0.0001f,
+        float timeout = 5f)
+    {
+        yield return WaitUntil(
+            () => Mathf.Abs(expected - getter()) < tolerance,
+            $"{description} to equal ~{expected} ±{tolerance} (current: {getter()})",
+            timeout);
+    }
+
+    /// <summary>
+    /// Wait for a double value within tolerance (handles floating-point precision).
+    /// </summary>
+    public static IEnumerator WaitForValueApprox(
+        Func<double> getter,
+        double expected,
+        string description,
+        double tolerance = 0.0001,
+        float timeout = 5f)
+    {
+        yield return WaitUntil(
+            () => Math.Abs(expected - getter()) < tolerance,
+            $"{description} to equal ~{expected} ±{tolerance} (current: {getter()})",
+            timeout);
+    }
+
     /// <summary>
     /// Wait for an event to fire.
     /// </summary>
@@ -642,7 +676,22 @@ public IEnumerator SaveLoad_PreservesGameState()
         "Movement points should be preserved");
     
     // Cleanup
-    System.IO.File.Delete(GameState.GetSavePath(savePath));
+    var savedFilePath = GameState.GetSavePath(savePath);
+    if (System.IO.File.Exists(savedFilePath))
+    {
+        try
+        {
+            System.IO.File.Delete(savedFilePath);
+        }
+        catch (System.IO.IOException ex)
+        {
+            Debug.LogWarning($"[E2E] Failed to delete test save file '{savedFilePath}': {ex.Message}");
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            Debug.LogWarning($"[E2E] Access denied deleting test save file '{savedFilePath}': {ex.Message}");
+        }
+    }
 }
 ```
 
@@ -744,12 +793,17 @@ Tests/
 {
   "name": "E2E",
   "references": [
-    "GameAssembly",
-    "UnityEngine.TestRunner",
-    "UnityEditor.TestRunner"
+    "GameAssembly"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": true,
+  "precompiledReferences": [
+    "nunit.framework.dll",
+    "UnityEngine.TestRunner.dll",
+    "UnityEditor.TestRunner.dll"
+  ],
   "defineConstraints": [
     "UNITY_INCLUDE_TESTS"
   ],
@@ -796,16 +850,18 @@ Capture screenshots and logs on failure:
 [UnityTearDown]
 public IEnumerator CaptureOnFailure()
 {
+    // Yield first to ensure we're on the main thread for screenshot capture
+    yield return null;
+
     if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
     {
         var screenshot = ScreenCapture.CaptureScreenshotAsTexture();
         var bytes = screenshot.EncodeToPNG();
-        var path = $"TestResults/Screenshots/{TestContext.CurrentContext.Test.Name}.png";
-        System.IO.File.WriteAllBytes(path, bytes);
-        
-        Debug.Log($"[E2E FAILURE] Screenshot saved: {path}");
+        var screenshotPath = $"TestResults/Screenshots/{TestContext.CurrentContext.Test.Name}.png";
+        System.IO.File.WriteAllBytes(screenshotPath, bytes);
+
+        Debug.Log($"[E2E FAILURE] Screenshot saved: {screenshotPath}");
     }
-    yield return null;
 }
 ```
 

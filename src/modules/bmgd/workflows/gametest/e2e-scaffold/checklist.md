@@ -67,11 +67,12 @@
 ## Assembly Definition
 
 - [ ] References main game assembly
-- [ ] References UnityEngine.TestRunner
-- [ ] References UnityEditor.TestRunner
 - [ ] References Unity.InputSystem (if applicable)
+- [ ] `overrideReferences` set to true
+- [ ] `precompiledReferences` includes nunit.framework.dll
+- [ ] `precompiledReferences` includes UnityEngine.TestRunner.dll
+- [ ] `precompiledReferences` includes UnityEditor.TestRunner.dll
 - [ ] `UNITY_INCLUDE_TESTS` define constraint set
-- [ ] nunit.framework.dll in precompiled references
 
 ## Verification
 
