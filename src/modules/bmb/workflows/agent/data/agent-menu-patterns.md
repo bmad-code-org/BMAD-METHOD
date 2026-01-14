@@ -209,7 +209,7 @@ menu:
 ```yaml
 menu:
   - trigger: WI or fuzzy match on workflow-init
-    exec: '{project-root}/_bmad/bmm/workflows/workflow-status/workflow.md'
+    exec: '{project-root}/_bmad/bmm/workflows/workflow-status/workflow.yaml'
     description: '[WI] Initialize workflow path'
 
   - trigger: BS or fuzzy match on brainstorm
