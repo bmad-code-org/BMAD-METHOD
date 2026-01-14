@@ -1,0 +1,71 @@
+name: Sync with BMAD-METHOD Upstream
+
+on:
+  schedule:
+    - cron: '0 */12 * * *'  # Every 12 hours (BMAD updates frequently)
+  workflow_dispatch:  # Manual trigger option
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Fork
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+      
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+      
+      - name: Add Upstream and Sync
+        run: |
+          git remote add upstream https://github.com/bmad-code-org/BMAD-METHOD.git
+          git fetch upstream
+          git checkout main
+          
+          # Check if merge will have conflicts
+          if git merge-tree $(git merge-base main upstream/main) main upstream/main | grep -q "^<<<<<<<"; then
+            echo "⚠️ Merge conflicts detected, creating PR instead"
+            BRANCH_NAME="sync-upstream-$(date +%Y%m%d-%H%M%S)"
+            git checkout -b $BRANCH_NAME
+            git merge upstream/main --no-edit || true
+            git push origin $BRANCH_NAME
+            echo "conflict=true" >> $GITHUB_ENV
+            echo "branch=$BRANCH_NAME" >> $GITHUB_ENV
+          else
+            echo "✅ Clean merge, updating main"
+            git merge upstream/main --no-edit
+            git push origin main
+            echo "conflict=false" >> $GITHUB_ENV
+          fi
+      
+      - name: Create PR on Conflict
+        if: env.conflict == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.pulls.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: '🔄 Sync with BMAD-METHOD upstream (requires manual review)',
+              head: process.env.branch,
+              base: 'main',
+              body: `## Upstream Sync with Conflicts
+              
+              Automated sync from [bmad-code-org/BMAD-METHOD](https://github.com/bmad-code-org/BMAD-METHOD) detected merge conflicts.
+              
+              **What happened:**
+              - BMAD-METHOD has new updates
+              - Your fork has changes that conflict with upstream
+              
+              **Next steps:**
+              1. Review the conflicts in this PR
+              2. Resolve conflicts locally or in the GitHub editor
+              3. Merge when ready
+              
+              **Tip:** Consider keeping your customizations in a separate branch to make syncing easier.`
+            });
