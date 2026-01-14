@@ -220,8 +220,8 @@ test('should update profile', async ({ apiRequest, authToken, log }) => {
   // Use API request fixture (matches pure function signature)
   const { status, body } = await apiRequest({
     method: 'PATCH',
-    url: '/api/profile',  // Pure function uses 'url' (not 'path')
-    data: { name: 'New Name' },  // Pure function uses 'data' (not 'body')
+    url: '/api/profile',  
+    data: { name: 'New Name' },  
     headers: { Authorization: `Bearer ${authToken}` }
   });
 

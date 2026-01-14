@@ -594,7 +594,7 @@ Client project 3 (Ad-hoc):
 **When:** Adopt BMad Method, want full integration.
 
 **Steps:**
-1. Install BMad Method (`npx bmad-method@alpha install`)
+1. Install BMad Method (see installation guide)
 2. Run planning workflows (PRD, architecture)
 3. Integrate TEA into Phase 3 (system-level test design)
 4. Follow integrated lifecycle (per epic workflows)
@@ -690,7 +690,7 @@ Each model uses different TEA workflows. See:
 
 **Use-Case Guides:**
 - [Using TEA with Existing Tests](/docs/how-to/brownfield/use-tea-with-existing-tests.md) - Model 5: Brownfield
-- [Running TEA for Enterprise](/docs/how-to/workflows/run-tea-for-enterprise.md) - Enterprise integration
+- [Running TEA for Enterprise](/docs/how-to/enterprise/use-tea-for-enterprise.md) - Enterprise integration
 
 **All Workflow Guides:**
 - [How to Run Test Design](/docs/how-to/workflows/run-test-design.md) - Used in TEA Solo and Integrated

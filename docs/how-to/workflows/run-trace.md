@@ -62,12 +62,12 @@ TEA will ask where requirements are defined.
 
 **Options:**
 
-| Source | Example | Best For |
-|--------|---------|----------|
-| **Story file** | `story-profile-management.md` | Single story coverage |
-| **Test design** | `test-design-epic-1.md` | Epic coverage |
-| **PRD** | `PRD.md` | System-level coverage |
-| **Multiple** | All of the above | Comprehensive analysis |
+| Source          | Example                       | Best For               |
+| --------------- | ----------------------------- | ---------------------- |
+| **Story file**  | `story-profile-management.md` | Single story coverage  |
+| **Test design** | `test-design-epic-1.md`       | Epic coverage          |
+| **PRD**         | `PRD.md`                      | System-level coverage  |
+| **Multiple**    | All of the above              | Comprehensive analysis |
 
 **Example Response:**
 ```
@@ -113,21 +113,21 @@ TEA generates a comprehensive traceability matrix.
 
 ## Coverage Summary
 
-| Metric | Count | Percentage |
-|--------|-------|------------|
-| **Total Requirements** | 15 | 100% |
-| **Full Coverage** | 11 | 73% |
-| **Partial Coverage** | 3 | 20% |
-| **No Coverage** | 1 | 7% |
+| Metric                 | Count | Percentage |
+| ---------------------- | ----- | ---------- |
+| **Total Requirements** | 15    | 100%       |
+| **Full Coverage**      | 11    | 73%        |
+| **Partial Coverage**   | 3     | 20%        |
+| **No Coverage**        | 1     | 7%         |
 
 ### By Priority
 
-| Priority | Total | Covered | Percentage |
-|----------|-------|---------|------------|
-| **P0** | 5 | 5 | 100% ✅ |
-| **P1** | 6 | 5 | 83% ⚠️ |
-| **P2** | 3 | 1 | 33% ⚠️ |
-| **P3** | 1 | 0 | 0% ✅ (acceptable) |
+| Priority | Total | Covered | Percentage        |
+| -------- | ----- | ------- | ----------------- |
+| **P0**   | 5     | 5       | 100% ✅            |
+| **P1**   | 6     | 5       | 83% ⚠️             |
+| **P2**   | 3     | 1       | 33% ⚠️             |
+| **P3**   | 1     | 0       | 0% ✅ (acceptable) |
 
 ---
 
@@ -223,10 +223,10 @@ TEA generates a comprehensive traceability matrix.
 
 ### Critical Gaps (Must Fix Before Release)
 
-| Gap | Requirement | Priority | Risk | Recommendation |
-|-----|-------------|----------|------|----------------|
-| 1 | Bio field not tested | P0 | High | Add E2E + API tests |
-| 2 | Avatar upload not tested | P0 | High | Add E2E + API tests |
+| Gap | Requirement              | Priority | Risk | Recommendation      |
+| --- | ------------------------ | -------- | ---- | ------------------- |
+| 1   | Bio field not tested     | P0       | High | Add E2E + API tests |
+| 2   | Avatar upload not tested | P0       | High | Add E2E + API tests |
 
 **Estimated Effort:** 3 hours
 **Owner:** QA team
@@ -234,9 +234,9 @@ TEA generates a comprehensive traceability matrix.
 
 ### Non-Critical Gaps (Can Defer)
 
-| Gap | Requirement | Priority | Risk | Recommendation |
-|-----|-------------|----------|------|----------------|
-| 3 | Profile export not tested | P2 | Low | Add in v1.3 release |
+| Gap | Requirement               | Priority | Risk | Recommendation      |
+| --- | ------------------------- | -------- | ---- | ------------------- |
+| 3   | Profile export not tested | P2       | Low  | Add in v1.3 release |
 
 **Estimated Effort:** 2 hours
 **Owner:** QA team
@@ -297,7 +297,7 @@ test('should update bio via API', async ({ apiRequest, authToken }) => {
   const { status, body } = await apiRequest({
     method: 'PATCH',
     path: '/api/profile',
-    body: { bio: 'Updated bio' },  // 'body' not 'data'
+    body: { bio: 'Updated bio' },  
     headers: { Authorization: `Bearer ${authToken}` }
   });
 
@@ -442,12 +442,12 @@ TEA makes evidence-based gate decision and writes to separate file.
 
 ## Coverage Analysis
 
-| Priority | Required Coverage | Actual Coverage | Status |
-|----------|------------------|-----------------|--------|
-| **P0** | 100% | 100% | ✅ PASS |
-| **P1** | 90% | 100% | ✅ PASS |
-| **P2** | 50% | 33% | ⚠️ Below (acceptable) |
-| **P3** | 20% | 0% | ✅ PASS (low priority) |
+| Priority | Required Coverage | Actual Coverage | Status                |
+| -------- | ----------------- | --------------- | --------------------- |
+| **P0**   | 100%              | 100%            | ✅ PASS                |
+| **P1**   | 90%               | 100%            | ✅ PASS                |
+| **P2**   | 50%               | 33%             | ⚠️ Below (acceptable)  |
+| **P3**   | 20%               | 0%              | ✅ PASS (low priority) |
 
 **Rationale:**
 - All critical path (P0) requirements fully tested
@@ -456,11 +456,11 @@ TEA makes evidence-based gate decision and writes to separate file.
 
 ## Quality Metrics
 
-| Metric | Threshold | Actual | Status |
-|--------|-----------|--------|--------|
-| P0/P1 Coverage | >95% | 100% | ✅ |
-| Test Quality Score | >80 | 84 | ✅ |
-| NFR Status | PASS | PASS | ✅ |
+| Metric             | Threshold | Actual | Status |
+| ------------------ | --------- | ------ | ------ |
+| P0/P1 Coverage     | >95%      | 100%   | ✅      |
+| Test Quality Score | >80       | 84     | ✅      |
+| NFR Status         | PASS      | PASS   | ✅      |
 
 ## Risks and Mitigations
 
@@ -501,14 +501,14 @@ TEA makes evidence-based gate decision and writes to separate file.
 
 TEA uses deterministic rules when decision_mode = "deterministic":
 
-| P0 Coverage | P1 Coverage | Overall Coverage | Decision |
-|-------------|-------------|------------------|----------|
-| 100% | ≥90% | ≥80% | **PASS** ✅ |
-| 100% | 80-89% | ≥80% | **CONCERNS** ⚠️ |
-| <100% | Any | Any | **FAIL** ❌ |
-| Any | <80% | Any | **FAIL** ❌ |
-| Any | Any | <80% | **FAIL** ❌ |
-| Any | Any | Any | **WAIVED** ⏭️ (with approval) |
+| P0 Coverage | P1 Coverage | Overall Coverage | Decision                     |
+| ----------- | ----------- | ---------------- | ---------------------------- |
+| 100%        | ≥90%        | ≥80%             | **PASS** ✅                   |
+| 100%        | 80-89%      | ≥80%             | **CONCERNS** ⚠️               |
+| <100%       | Any         | Any              | **FAIL** ❌                   |
+| Any         | <80%        | Any              | **FAIL** ❌                   |
+| Any         | Any         | <80%             | **FAIL** ❌                   |
+| Any         | Any         | Any              | **WAIVED** ⏭️ (with approval) |
 
 **Detailed Rules:**
 - **PASS:** P0=100%, P1≥90%, Overall≥80%
@@ -683,12 +683,12 @@ Track improvement over time:
 ```markdown
 ## Coverage Trend
 
-| Date | Epic | P0/P1 Coverage | Quality Score | Status |
-|------|------|----------------|---------------|--------|
-| 2026-01-01 | Baseline | 45% | - | Starting point |
-| 2026-01-08 | Epic 1 | 78% | 72 | Improving |
-| 2026-01-15 | Epic 2 | 92% | 84 | Near target |
-| 2026-01-20 | Epic 3 | 100% | 88 | Ready! |
+| Date       | Epic     | P0/P1 Coverage | Quality Score | Status         |
+| ---------- | -------- | -------------- | ------------- | -------------- |
+| 2026-01-01 | Baseline | 45%            | -             | Starting point |
+| 2026-01-08 | Epic 1   | 78%            | 72            | Improving      |
+| 2026-01-15 | Epic 2   | 92%            | 84            | Near target    |
+| 2026-01-20 | Epic 3   | 100%           | 88            | Ready!         |
 ```
 
 ### Set Coverage Targets by Priority

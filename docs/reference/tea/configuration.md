@@ -15,9 +15,9 @@ Complete reference for all TEA (Test Architect) configuration options.
 
 **Purpose:** Project-specific configuration values for your repository
 
-**Created By:** `npx bmad-method@alpha install` command
+**Created By:** BMad installer
 
-**Status:** Gitignored (not committed to repository)
+**Status:** Typically gitignored (user-specific values)
 
 **Usage:** Edit this file to change TEA behavior in your project
 
@@ -155,17 +155,7 @@ Would you like to enable MCP enhancements in Test Architect?
 }
 ```
 
-**Configuration Location (IDE-Specific):**
-
-**Cursor:**
-```
-~/.cursor/config.json or workspace .cursor/config.json
-```
-
-**VS Code with Claude:**
-```
-~/Library/Application Support/Code/User/globalStorage/saoudrizwan.claude-dev/settings/cline_mcp_settings.json
-```
+**Configuration:** Refer to your AI agent's documentation for MCP server setup instructions.
 
 **Example (Enable):**
 ```yaml
@@ -364,9 +354,9 @@ tea_use_playwright_utils: true
 tea_use_mcp_enhancements: false
 ```
 
-**Individual config (gitignored):**
+**Individual config (typically gitignored):**
 ```yaml
-# _bmad/bmm/config.yaml (gitignored)
+# _bmad/bmm/config.yaml (user adds to .gitignore)
 user_name: John Doe
 user_skill_level: expert
 tea_use_mcp_enhancements: true  # Individual preference
@@ -407,7 +397,7 @@ _bmad/bmm/config.yaml.example    # Template for team
 package.json                      # Dependencies
 ```
 
-**Gitignore:**
+**Recommended for .gitignore:**
 ```
 _bmad/bmm/config.yaml            # User-specific values
 .env                              # Secrets
@@ -420,8 +410,7 @@ _bmad/bmm/config.yaml            # User-specific values
 ```markdown
 ## Setup
 
-1. Install BMad:
-   npx bmad-method@alpha install
+1. Install BMad
 
 2. Copy config template:
    cp _bmad/bmm/config.yaml.example _bmad/bmm/config.yaml
@@ -558,48 +547,48 @@ npx playwright install
 
 ## Configuration Examples
 
-### Minimal Setup (Defaults)
+### Recommended Setup (Full Stack)
 
 ```yaml
 # _bmad/bmm/config.yaml
 project_name: my-project
-user_skill_level: intermediate
+user_skill_level: beginner  # or intermediate/expert
+output_folder: _bmad-output
+tea_use_playwright_utils: true   # Recommended
+tea_use_mcp_enhancements: true   # Recommended
+```
+
+**Why recommended:**
+- Playwright Utils: Production-ready fixtures and utilities
+- MCP enhancements: Live browser verification, visual debugging
+- Together: The three-part stack (see [Testing as Engineering](/docs/explanation/philosophy/testing-as-engineering.md))
+
+**Prerequisites:**
+```bash
+npm install -D @seontechnologies/playwright-utils
+# Configure MCP servers in IDE (see Enable MCP Enhancements guide)
+```
+
+**Best for:** Everyone (beginners learn good patterns from day one)
+
+---
+
+### Minimal Setup (Learning Only)
+
+```yaml
+# _bmad/bmm/config.yaml
+project_name: my-project
 output_folder: _bmad-output
 tea_use_playwright_utils: false
 tea_use_mcp_enhancements: false
 ```
 
 **Best for:**
-- New projects
-- Learning TEA
-- Simple testing needs
+- First-time TEA users (keep it simple initially)
+- Quick experiments
+- Learning basics before adding integrations
 
----
-
-### Advanced Setup (All Features)
-
-```yaml
-# _bmad/bmm/config.yaml
-project_name: enterprise-app
-user_skill_level: expert
-output_folder: docs/testing
-planning_artifacts: docs/planning
-implementation_artifacts: docs/implementation
-project_knowledge: docs
-tea_use_playwright_utils: true
-tea_use_mcp_enhancements: true
-```
-
-**Prerequisites:**
-```bash
-npm install -D @seontechnologies/playwright-utils
-# Configure MCP servers in IDE
-```
-
-**Best for:**
-- Enterprise projects
-- Teams with established testing practices
-- Projects needing advanced TEA features
+**Note:** Can enable integrations later as you learn
 
 ---
 
@@ -622,7 +611,7 @@ output_folder: ../../_bmad-output/web
 # apps/api/_bmad/bmm/config.yaml
 project_name: api-service
 output_folder: ../../_bmad-output/api
-tea_use_playwright_utils: false  # API tests don't need it
+tea_use_playwright_utils: false  # Using vanilla Playwright only
 ```
 
 ---
@@ -642,9 +631,9 @@ planning_artifacts: _bmad-output/planning-artifacts
 implementation_artifacts: _bmad-output/implementation-artifacts
 project_knowledge: docs
 
-# TEA Configuration
-tea_use_playwright_utils: false  # Set true if using @seontechnologies/playwright-utils
-tea_use_mcp_enhancements: false  # Set true if MCP servers configured in IDE
+# TEA Configuration (Recommended: Enable both for full stack)
+tea_use_playwright_utils: true   # Recommended - production-ready utilities
+tea_use_mcp_enhancements: true   # Recommended - live browser verification
 
 # Languages
 communication_language: english
@@ -664,74 +653,6 @@ document_output_language: english
 5. (Optional) Enable playwright-utils:
    npm install -D @seontechnologies/playwright-utils
    Set tea_use_playwright_utils: true
-```
-
----
-
-## FAQ
-
-### When should I enable playwright-utils?
-
-**Enable if:**
-- You're using or planning to use `@seontechnologies/playwright-utils`
-- You want production-ready fixtures and utilities
-- Your team benefits from standardized patterns
-- You need utilities like `apiRequest`, `authSession`, `networkRecorder`
-
-**Skip if:**
-- You're just learning TEA (keep it simple)
-- You have your own fixture library
-- You don't need the utilities
-
-### When should I enable MCP enhancements?
-
-**Enable if:**
-- You want live browser verification during test generation
-- You're debugging complex UI issues
-- You want exploratory mode in `*test-design`
-- You want recording mode in `*atdd` for accurate selectors
-
-**Skip if:**
-- You're new to TEA (adds complexity)
-- You don't have MCP servers configured
-- Your tests work fine without it
-
-### Can I change config after installation?
-
-**Yes!** Edit `_bmad/bmm/config.yaml` anytime.
-
-**Important:** Start fresh chat after config changes (TEA loads config at workflow start).
-
-### Can I have different configs per branch?
-
-**Yes:**
-```bash
-# feature branch
-git checkout feature/new-testing
-# Edit config for experimentation
-vim _bmad/bmm/config.yaml
-
-# main branch
-git checkout main
-# Config reverts to main branch values
-```
-
-Config is gitignored, so each branch can have different values.
-
-### How do I share config with team?
-
-**Use config.yaml.example:**
-```bash
-# Commit template
-cp _bmad/bmm/config.yaml _bmad/bmm/config.yaml.example
-git add _bmad/bmm/config.yaml.example
-git commit -m "docs: add BMad config template"
-```
-
-**Team members copy template:**
-```bash
-cp _bmad/bmm/config.yaml.example _bmad/bmm/config.yaml
-# Edit with their values
 ```
 
 ---

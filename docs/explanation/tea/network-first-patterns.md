@@ -125,6 +125,40 @@ test('should load dashboard data', async ({ page }) => {
 - No fixed timeout (fast when API is fast)
 - Validates API response (catch backend errors)
 
+**With Playwright Utils (Even Cleaner):**
+```typescript
+import { test } from '@seontechnologies/playwright-utils/fixtures';
+import { expect } from '@playwright/test';
+
+test('should load dashboard data', async ({ page, interceptNetworkCall }) => {
+  // Set up interception BEFORE navigation
+  const dashboardCall = interceptNetworkCall({
+    method: 'GET',
+    url: '**/api/dashboard'
+  });
+
+  // Navigate
+  await page.goto('/dashboard');
+
+  // Wait for API response (automatic JSON parsing)
+  const { status, responseJson: data } = await dashboardCall;
+
+  // Validate API response
+  expect(status).toBe(200);
+  expect(data.items).toBeDefined();
+
+  // Assert UI matches API data
+  await expect(page.locator('.data-table')).toBeVisible();
+  await expect(page.locator('.data-table tr')).toHaveCount(data.items.length);
+});
+```
+
+**Playwright Utils Benefits:**
+- Automatic JSON parsing (no `await response.json()`)
+- Returns `{ status, responseJson, requestJson }` structure
+- Cleaner API (no need to check `resp.ok()`)
+- Same intercept-before-navigate pattern
+
 ### Intercept-Before-Navigate Pattern
 
 **Key insight:** Set up wait BEFORE triggering the action.
@@ -196,6 +230,7 @@ sequenceDiagram
 
 ### TEA Generates Network-First Tests
 
+**Vanilla Playwright:**
 ```typescript
 // When you run *atdd or *automate, TEA generates:
 
@@ -218,6 +253,37 @@ test('should create user', async ({ page }) => {
   await expect(page.locator('.success')).toContainText(user.name);
 });
 ```
+
+**With Playwright Utils (if `tea_use_playwright_utils: true`):**
+```typescript
+import { test } from '@seontechnologies/playwright-utils/fixtures';
+import { expect } from '@playwright/test';
+
+test('should create user', async ({ page, interceptNetworkCall }) => {
+  // TEA uses interceptNetworkCall for cleaner interception
+  const createUserCall = interceptNetworkCall({
+    method: 'POST',
+    url: '**/api/users'
+  });
+
+  await page.getByLabel('Name').fill('Test User');
+  await page.getByRole('button', { name: 'Submit' }).click();
+
+  // Wait for response (automatic JSON parsing)
+  const { status, responseJson: user } = await createUserCall;
+
+  // Validate both API and UI
+  expect(status).toBe(201);
+  expect(user.id).toBeDefined();
+  await expect(page.locator('.success')).toContainText(user.name);
+});
+```
+
+**Playwright Utils Benefits:**
+- Automatic JSON parsing (`responseJson` ready to use)
+- No manual `await response.json()`
+- Returns `{ status, responseJson }` structure
+- Cleaner, more readable code
 
 ### TEA Reviews for Hard Waits
 
@@ -252,6 +318,7 @@ await responsePromise;  // ✅
 
 ### Basic Response Wait
 
+**Vanilla Playwright:**
 ```typescript
 // Wait for any successful response
 const promise = page.waitForResponse(resp => resp.ok());
@@ -259,8 +326,23 @@ await page.click('button');
 await promise;
 ```
 
+**With Playwright Utils:**
+```typescript
+import { test } from '@seontechnologies/playwright-utils/fixtures';
+
+test('basic wait', async ({ page, interceptNetworkCall }) => {
+  const responseCall = interceptNetworkCall({ url: '**' });  // Match any
+  await page.click('button');
+  const { status } = await responseCall;
+  expect(status).toBe(200);
+});
+```
+
+---
+
 ### Specific URL Match
 
+**Vanilla Playwright:**
 ```typescript
 // Wait for specific endpoint
 const promise = page.waitForResponse(
@@ -270,8 +352,21 @@ await page.goto('/user/123');
 await promise;
 ```
 
+**With Playwright Utils:**
+```typescript
+test('specific URL', async ({ page, interceptNetworkCall }) => {
+  const userCall = interceptNetworkCall({ url: '**/api/users/123' });
+  await page.goto('/user/123');
+  const { status, responseJson } = await userCall;
+  expect(status).toBe(200);
+});
+```
+
+---
+
 ### Method + Status Match
 
+**Vanilla Playwright:**
 ```typescript
 // Wait for POST that returns 201
 const promise = page.waitForResponse(
@@ -284,8 +379,24 @@ await page.click('button[type="submit"]');
 await promise;
 ```
 
+**With Playwright Utils:**
+```typescript
+test('method and status', async ({ page, interceptNetworkCall }) => {
+  const createCall = interceptNetworkCall({
+    method: 'POST',
+    url: '**/api/users'
+  });
+  await page.click('button[type="submit"]');
+  const { status, responseJson } = await createCall;
+  expect(status).toBe(201);  // Explicit status check
+});
+```
+
+---
+
 ### Multiple Responses
 
+**Vanilla Playwright:**
 ```typescript
 // Wait for multiple API calls
 const [usersResp, postsResp] = await Promise.all([
@@ -298,8 +409,29 @@ const users = await usersResp.json();
 const posts = await postsResp.json();
 ```
 
+**With Playwright Utils:**
+```typescript
+test('multiple responses', async ({ page, interceptNetworkCall }) => {
+  const usersCall = interceptNetworkCall({ url: '**/api/users' });
+  const postsCall = interceptNetworkCall({ url: '**/api/posts' });
+
+  await page.goto('/dashboard');  // Triggers both
+
+  const [{ responseJson: users }, { responseJson: posts }] = await Promise.all([
+    usersCall,
+    postsCall
+  ]);
+
+  expect(users).toBeInstanceOf(Array);
+  expect(posts).toBeInstanceOf(Array);
+});
+```
+
+---
+
 ### Validate Response Data
 
+**Vanilla Playwright:**
 ```typescript
 // Verify API response before asserting UI
 const promise = page.waitForResponse(
@@ -317,6 +449,28 @@ expect(order.total).toBeGreaterThan(0);
 
 // UI validation
 await expect(page.locator('.order-confirmation')).toContainText(order.id);
+```
+
+**With Playwright Utils:**
+```typescript
+test('validate response data', async ({ page, interceptNetworkCall }) => {
+  const checkoutCall = interceptNetworkCall({
+    method: 'POST',
+    url: '**/api/checkout'
+  });
+
+  await page.click('button:has-text("Complete Order")');
+
+  const { status, responseJson: order } = await checkoutCall;
+
+  // Response validation (automatic JSON parsing)
+  expect(status).toBe(200);
+  expect(order.status).toBe('confirmed');
+  expect(order.total).toBeGreaterThan(0);
+
+  // UI validation
+  await expect(page.locator('.order-confirmation')).toContainText(order.id);
+});
 ```
 
 ## Advanced Patterns
@@ -481,6 +635,36 @@ test('dashboard loads data', async ({ page }) => {
 - Validates UI matches API (catch frontend bugs)
 - Works in any environment (local, CI, staging)
 
+**With Playwright Utils (Even Better):**
+```typescript
+import { test } from '@seontechnologies/playwright-utils/fixtures';
+
+test('dashboard loads data', async ({ page, interceptNetworkCall }) => {
+  const dashboardCall = interceptNetworkCall({
+    method: 'GET',
+    url: '**/api/dashboard'
+  });
+
+  await page.goto('/dashboard');
+
+  const { status, responseJson: { items } } = await dashboardCall;
+
+  // Validate API response (automatic JSON parsing)
+  expect(status).toBe(200);
+  expect(items).toHaveLength(5);
+
+  // Validate UI matches API
+  await expect(page.locator('table tr')).toHaveCount(items.length);
+});
+```
+
+**Additional Benefits:**
+- No manual `await response.json()` (automatic parsing)
+- Cleaner destructuring of nested data
+- Consistent API across all network calls
+
+---
+
 ### Form Submission
 
 **Traditional (Flaky):**
@@ -512,6 +696,35 @@ test('form submission', async ({ page }) => {
   await expect(page.locator('.success')).toBeVisible();
 });
 ```
+
+**With Playwright Utils:**
+```typescript
+import { test } from '@seontechnologies/playwright-utils/fixtures';
+
+test('form submission', async ({ page, interceptNetworkCall }) => {
+  const submitCall = interceptNetworkCall({
+    method: 'POST',
+    url: '**/api/submit'
+  });
+
+  await page.getByLabel('Email').fill('test@example.com');
+  await page.getByRole('button', { name: 'Submit' }).click();
+
+  const { status, responseJson: result } = await submitCall;
+
+  // Automatic JSON parsing, no manual await
+  expect(status).toBe(200);
+  expect(result.success).toBe(true);
+  await expect(page.locator('.success')).toBeVisible();
+});
+```
+
+**Progression:**
+- Traditional: Hard waits (flaky)
+- Network-First (Vanilla): waitForResponse (deterministic)
+- Network-First (PW-Utils): interceptNetworkCall (deterministic + cleaner API)
+
+---
 
 ## Common Misconceptions
 
@@ -545,28 +758,56 @@ await page.waitForSelector('.success');  // Then validate UI
 
 ### "Too Much Boilerplate"
 
-**Solution:** Extract to fixtures (see Fixture Architecture)
+**Problem:** `waitForResponse` is verbose, repeated in every test.
 
+**Solution:** Use Playwright Utils `interceptNetworkCall` - built-in fixture that reduces boilerplate.
+
+**Vanilla Playwright (Repetitive):**
 ```typescript
-// Create reusable fixture
-export const test = base.extend({
-  waitForApi: async ({ page }, use) => {
-    await use((urlPattern: string) => {
-      // Returns promise immediately (doesn't await)
-      return page.waitForResponse(
-        resp => resp.url().includes(urlPattern) && resp.ok()
-      );
-    });
-  }
+test('test 1', async ({ page }) => {
+  const promise = page.waitForResponse(
+    resp => resp.url().includes('/api/submit') && resp.ok()
+  );
+  await page.click('button');
+  await promise;
 });
 
-// Use in tests
-test('test', async ({ page, waitForApi }) => {
-  const promise = waitForApi('/api/submit');  // Get promise
-  await page.click('button');  // Trigger action
-  await promise;  // Wait for response
+test('test 2', async ({ page }) => {
+  const promise = page.waitForResponse(
+    resp => resp.url().includes('/api/load') && resp.ok()
+  );
+  await page.click('button');
+  await promise;
+});
+// Repeated pattern in every test
+```
+
+**With Playwright Utils (Cleaner):**
+```typescript
+import { test } from '@seontechnologies/playwright-utils/fixtures';
+
+test('test 1', async ({ page, interceptNetworkCall }) => {
+  const submitCall = interceptNetworkCall({ url: '**/api/submit' });
+  await page.click('button');
+  const { status, responseJson } = await submitCall;
+  expect(status).toBe(200);
+});
+
+test('test 2', async ({ page, interceptNetworkCall }) => {
+  const loadCall = interceptNetworkCall({ url: '**/api/load' });
+  await page.click('button');
+  const { responseJson } = await loadCall;
+  // Automatic JSON parsing, cleaner API
 });
 ```
+
+**Benefits:**
+- Less boilerplate (fixture handles complexity)
+- Automatic JSON parsing
+- Glob pattern matching (`**/api/**`)
+- Consistent API across all tests
+
+See [Integrate Playwright Utils](/docs/how-to/customization/integrate-playwright-utils.md#intercept-network-call) for setup.
 
 ## Technical Implementation
 

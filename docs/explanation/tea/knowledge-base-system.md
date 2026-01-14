@@ -484,22 +484,31 @@ await page.waitForSelector('.success', { timeout: 30000 });
 
 All developers:
 ```typescript
-import { test } from '@seontechnologies/playwright-utils/recurse/fixtures';
+import { test } from '@seontechnologies/playwright-utils/fixtures';
 
-test('job completion', async ({ page, recurse }) => {
-  await page.click('button');
-
-  const result = await recurse({
-    fn: () => apiRequest({ method: 'GET', path: '/api/job/123' }),
-    predicate: (job) => job.status === 'complete',
-    timeout: 30000
+test('job completion', async ({ apiRequest, recurse }) => {
+  // Start async job
+  const { body: job } = await apiRequest({
+    method: 'POST',
+    path: '/api/jobs'
   });
 
-  expect(result.status).toBe('complete');
+  // Poll until complete (correct API: command, predicate, options)
+  const result = await recurse(
+    () => apiRequest({ method: 'GET', path: `/api/jobs/${job.id}` }),
+    (response) => response.body.status === 'completed',  // response.body from apiRequest
+    {
+      timeout: 30000,
+      interval: 2000,
+      log: 'Waiting for job to complete'
+    }
+  );
+
+  expect(result.body.status).toBe('completed');
 });
 ```
 
-**Result:** Consistent pattern, established best practice.
+**Result:** Consistent pattern using correct playwright-utils API (command, predicate, options).
 
 ## Technical Implementation
 
@@ -520,7 +529,7 @@ For details on the knowledge base index, see:
 
 **Overview:**
 - [TEA Overview](/docs/explanation/features/tea-overview.md) - Knowledge base in workflows
-- [Testing as Engineering](/docs/explanation/philosophy/testing-as-engineering.md) - Context engineering philosophy
+- [Testing as Engineering](/docs/explanation/philosophy/testing-as-engineering.md) - **Foundation: Context engineering philosophy** (why knowledge base solves AI test problems)
 
 ## Practical Guides
 

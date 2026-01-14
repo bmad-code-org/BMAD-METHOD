@@ -150,34 +150,40 @@ test('checkout completes', async ({ page }) => {
 });
 ```
 
-**After (With Playwright Utils + Auto Error Detection):**
+**After (With Playwright Utils - Cleaner API):**
 ```typescript
-import { test } from '@seontechnologies/playwright-utils/network-error-monitor/fixtures';
+import { test } from '@seontechnologies/playwright-utils/fixtures';
+import { expect } from '@playwright/test';
 
-// That's it! Just import the fixture - monitoring is automatic
-test('checkout completes', async ({ page }) => {
-  const checkoutPromise = page.waitForResponse(
-    resp => resp.url().includes('/api/checkout') && resp.ok()
-  );
+test('checkout completes', async ({ page, interceptNetworkCall }) => {
+  // Use interceptNetworkCall for cleaner network interception
+  const checkoutCall = interceptNetworkCall({
+    method: 'POST',
+    url: '**/api/checkout'
+  });
 
   await page.click('button[name="checkout"]');
-  const response = await checkoutPromise;
-  const order = await response.json();
 
+  // Wait for response (automatic JSON parsing)
+  const { status, responseJson: order } = await checkoutCall;
+
+  // Validate API response
+  expect(status).toBe(200);
   expect(order.status).toBe('confirmed');
-  await expect(page.locator('.confirmation')).toBeVisible();
 
-  // Zero setup - automatically fails if ANY 4xx/5xx occurred
-  // Error message: "Network errors detected: POST 500 /api/payment"
+  // Validate UI
+  await expect(page.locator('.confirmation')).toBeVisible();
 });
 ```
 
 **Playwright Utils Benefits:**
-- Auto-enabled by fixture import (zero code changes)
-- Catches silent backend errors (500, 503, 504)
-- Test fails even if UI shows cached/stale success message
-- Structured error report in test output
-- No manual error checking needed
+- `interceptNetworkCall` for cleaner network interception
+- Automatic JSON parsing (`responseJson` ready to use)
+- No manual `await response.json()`
+- Glob pattern matching (`**/api/checkout`)
+- Cleaner, more maintainable code
+
+**For automatic error detection,** use `network-error-monitor` fixture separately. See [Integrate Playwright Utils](/docs/how-to/customization/integrate-playwright-utils.md#network-error-monitor).
 
 **Priority 3: P1 Requirements**
 ```
@@ -352,10 +358,10 @@ test.skip('flaky test - needs fixing', async ({ page }) => {
 ```markdown
 # Quarantined Tests
 
-| Test | Reason | Owner | Target Fix Date |
-|------|--------|-------|----------------|
-| checkout.spec.ts:45 | Hard wait causes flakiness | QA Team | 2026-01-20 |
-| profile.spec.ts:28 | Conditional flow control | Dev Team | 2026-01-25 |
+| Test                | Reason                     | Owner    | Target Fix Date |
+| ------------------- | -------------------------- | -------- | --------------- |
+| checkout.spec.ts:45 | Hard wait causes flakiness | QA Team  | 2026-01-20      |
+| profile.spec.ts:28  | Conditional flow control   | Dev Team | 2026-01-25      |
 ```
 
 **Fix systematically:**
@@ -398,12 +404,12 @@ Same process
 ```markdown
 # Test Suite Status
 
-| Directory | Tests | Quality Score | Status | Notes |
-|-----------|-------|---------------|--------|-------|
-| tests/auth/ | 15 | 85/100 | ✅ Modernized | Week 1 cleanup |
-| tests/api/ | 32 | 78/100 | ⚠️ In Progress | Week 2 |
-| tests/e2e/ | 28 | 62/100 | ❌ Legacy | Week 3 planned |
-| tests/integration/ | 12 | 45/100 | ❌ Legacy | Week 4 planned |
+| Directory          | Tests | Quality Score | Status        | Notes          |
+| ------------------ | ----- | ------------- | ------------- | -------------- |
+| tests/auth/        | 15    | 85/100        | ✅ Modernized  | Week 1 cleanup |
+| tests/api/         | 32    | 78/100        | ⚠️ In Progress | Week 2         |
+| tests/e2e/         | 28    | 62/100        | ❌ Legacy      | Week 3 planned |
+| tests/integration/ | 12    | 45/100        | ❌ Legacy      | Week 4 planned |
 
 **Legend:**
 - ✅ Modernized: Quality >80, no critical issues
@@ -465,14 +471,25 @@ Incremental changes = lower risk
 
 **Solution:**
 ```
-1. Run *ci to add selective testing
-2. Run only affected tests on PR
-3. Run full suite nightly
-4. Parallelize with sharding
+1. Configure parallel execution (shard tests across workers)
+2. Add selective testing (run only affected tests on PR)
+3. Run full suite nightly only
+4. Optimize slow tests (remove hard waits, improve selectors)
 
 Before: 4 hours sequential
 After: 15 minutes with sharding + selective testing
 ```
+
+**How `*ci` helps:**
+- Scaffolds CI configuration with parallel sharding examples
+- Provides selective testing script templates
+- Documents burn-in and optimization strategies
+- But YOU configure workers, test selection, and optimization
+
+**With Playwright Utils burn-in:**
+- Smart selective testing based on git diff
+- Volume control (run percentage of affected tests)
+- See [Integrate Playwright Utils](/docs/how-to/customization/integrate-playwright-utils.md#burn-in)
 
 ### "We Have Tests But They Always Fail"
 
@@ -529,43 +546,6 @@ Don't let perfect be the enemy of good
 *nfr-assess - Validate NFRs (if enterprise)
 *trace Phase 2 - Gate decision
 ```
-
-## Success Stories
-
-### Example: E-Commerce Platform
-
-**Starting Point:**
-- 200 E2E tests, 30% passing, 15-minute flakiness
-- No API tests
-- No coverage visibility
-
-**After 3 Months with TEA:**
-- 150 E2E tests (removed duplicates), 95% passing, <1% flakiness
-- 300 API tests added (faster, more reliable)
-- P0 coverage: 100%, P1 coverage: 85%
-- Quality score: 82/100
-
-**How:**
-- Month 1: Baseline + fix top 20 flaky tests
-- Month 2: Add API tests for critical path
-- Month 3: Improve quality + expand P1 coverage
-
-### Example: SaaS Application
-
-**Starting Point:**
-- 50 tests, quality score 48/100
-- Hard waits everywhere
-- Tests take 45 minutes
-
-**After 6 Weeks with TEA:**
-- 120 tests, quality score 78/100
-- No hard waits (network-first patterns)
-- Tests take 8 minutes (parallel execution)
-
-**How:**
-- Week 1-2: Replace hard waits with network-first
-- Week 3-4: Add selective testing + CI parallelization
-- Week 5-6: Generate tests for gaps with *automate
 
 ## Related Guides
 

@@ -18,17 +18,25 @@ MCP (Model Context Protocol) servers enable AI agents to interact with live brow
 
 ## When to Use This
 
+**For UI Testing:**
 - Want exploratory mode in `*test-design` (browser-based UI discovery)
-- Want recording mode in `*atdd` (verify selectors with live browser)
+- Want recording mode in `*atdd` or `*automate` (verify selectors with live browser)
 - Want healing mode in `*automate` (fix tests with visual debugging)
-- Debugging complex UI issues
 - Need accurate selectors from actual DOM
+- Debugging complex UI interactions
+
+**For API Testing:**
+- Want healing mode in `*automate` (analyze failures with trace data)
+- Need to debug test failures (network responses, request/response data, timing)
+- Want to inspect trace files (network traffic, errors, race conditions)
+
+**For Both:**
+- Visual debugging (trace viewer shows network + UI)
+- Test failure analysis (MCP can run tests and extract errors)
+- Understanding complex test failures (network + DOM together)
 
 **Don't use if:**
-- You're new to TEA (adds complexity)
 - You don't have MCP servers configured
-- Your tests work fine without it
-- You're testing APIs only (no UI)
 
 ## Prerequisites
 
@@ -71,13 +79,11 @@ MCP (Model Context Protocol) servers enable AI agents to interact with live brow
 
 Both servers work together to provide full TEA MCP capabilities.
 
-## Installation
+## Setup
 
-### Step 1: Configure MCP Servers in IDE
+### 1. Configure MCP Servers
 
-Add this configuration to your IDE's MCP settings. See [TEA Overview](/docs/explanation/features/tea-overview.md#playwright-mcp-enhancements) for IDE-specific configuration locations.
-
-**MCP Configuration:**
+Add to your IDE's MCP configuration:
 
 ```json
 {
@@ -94,36 +100,20 @@ Add this configuration to your IDE's MCP settings. See [TEA Overview](/docs/expl
 }
 ```
 
-### Step 2: Install Playwright Browsers
+See [TEA Overview](/docs/explanation/features/tea-overview.md#playwright-mcp-enhancements) for IDE-specific config locations.
 
-```bash
-npx playwright install
-```
+### 2. Enable in BMAD
 
-### Step 3: Enable in TEA Config
-
-Edit `_bmad/bmm/config.yaml`:
+Answer "Yes" when prompted during installation, or set in config:
 
 ```yaml
+# _bmad/bmm/config.yaml
 tea_use_mcp_enhancements: true
 ```
 
-### Step 4: Restart IDE
+### 3. Verify MCPs Running
 
-Restart your IDE to load MCP server configuration.
-
-### Step 5: Verify MCP Servers
-
-Check MCP servers are running:
-
-**In Cursor:**
-- Open command palette (Cmd/Ctrl + Shift + P)
-- Search "MCP"
-- Should see "Playwright" and "Playwright Test" servers listed
-
-**In VS Code:**
-- Check Claude extension settings
-- Verify MCP servers are enabled
+Ensure your MCP servers are running in your IDE.
 
 ## How MCP Enhances TEA Workflows
 
@@ -162,16 +152,14 @@ I'll design tests for these interactions."
 
 **Without MCP:**
 - TEA generates selectors from best practices
-- May use `getByRole()` that doesn't match actual app
-- Selectors might need adjustment
+- TEA infers API patterns from documentation
 
-**With MCP:**
-TEA verifies selectors with live browser:
+**With MCP (Recording Mode):**
+
+**For UI Tests:**
 ```
-"Let me verify the login form selectors"
-
-[TEA navigates to /login]
-[Inspects form fields]
+[TEA navigates to /login with live browser]
+[Inspects actual form fields]
 
 "I see:
 - Email input has label 'Email Address' (not 'Email')
@@ -181,47 +169,58 @@ TEA verifies selectors with live browser:
 I'll use these exact selectors."
 ```
 
-**Generated test:**
-```typescript
-await page.getByLabel('Email Address').fill('test@example.com');
-await page.getByLabel('Your Password').fill('password');
-await page.getByRole('button', { name: 'Sign In' }).click();
-// Selectors verified against actual DOM
+**For API Tests:**
+```
+[TEA analyzes trace files from test runs]
+[Inspects network requests/responses]
+
+"I see the API returns:
+- POST /api/login → 200 with { token, userId }
+- Response time: 150ms
+- Required headers: Content-Type, Authorization
+
+I'll validate these in tests."
 ```
 
 **Benefits:**
-- Accurate selectors from real DOM
-- Tests work on first run
-- No trial-and-error selector debugging
+- UI: Accurate selectors from real DOM
+- API: Validated request/response patterns from trace
+- Both: Tests work on first run
 
-### *automate: Healing Mode
+### *automate: Healing + Recording Modes
 
 **Without MCP:**
 - TEA analyzes test code only
 - Suggests fixes based on static analysis
-- Can't verify fixes work
+- Generates tests from documentation/code
 
 **With MCP:**
-TEA uses visual debugging:
+
+**Healing Mode (UI + API):**
 ```
-"This test is failing. Let me debug with trace viewer"
-
 [TEA opens trace file]
-[Analyzes screenshots]
-[Identifies selector changed]
+[Analyzes screenshots + network tab]
 
-"The button selector changed from 'Save' to 'Save Changes'
-I'll update the test and verify it works"
+UI failures: "Button selector changed from 'Save' to 'Save Changes'"
+API failures: "Response structure changed, expected {id} got {userId}"
 
-[TEA makes fix]
-[Runs test with MCP]
-[Confirms test passes]
+[TEA makes fixes]
+[Verifies with trace analysis]
+```
+
+**Recording Mode (UI + API):**
+```
+UI: [Inspects actual DOM, generates verified selectors]
+API: [Analyzes network traffic, validates request/response patterns]
+
+[Generates tests with verified patterns]
+[Tests work on first run]
 ```
 
 **Benefits:**
-- Visual debugging during healing
-- Verified fixes (not guesses)
-- Faster resolution
+- Visual debugging + trace analysis (not just UI)
+- Verified selectors (UI) + network patterns (API)
+- Tests verified against actual application behavior
 
 ## Usage Examples
 
@@ -288,43 +287,6 @@ Fixing selector and verifying...
 [Test passes]
 
 Updated test with corrected selector.
-```
-
-## Configuration Options
-
-### MCP Server Arguments
-
-**Playwright MCP with custom port:**
-```json
-{
-  "mcpServers": {
-    "playwright": {
-      "command": "npx",
-      "args": ["@playwright/mcp@latest", "--port", "3000"]
-    }
-  }
-}
-```
-
-**Playwright Test with specific browser:**
-```json
-{
-  "mcpServers": {
-    "playwright-test": {
-      "command": "npx",
-      "args": ["playwright", "run-test-mcp-server", "--browser", "chromium"]
-    }
-  }
-}
-```
-
-### Environment Variables
-
-```bash
-# .env
-PLAYWRIGHT_BROWSER=chromium     # Browser for MCP
-PLAYWRIGHT_HEADLESS=false       # Show browser during MCP
-PLAYWRIGHT_SLOW_MO=100          # Slow down for visibility
 ```
 
 ## Troubleshooting
@@ -431,107 +393,6 @@ tea_use_mcp_enhancements: true
 
 # For next feature (simple API)
 tea_use_mcp_enhancements: false
-```
-
-## Best Practices
-
-### Use MCP for Complex UIs
-
-**Simple UI (skip MCP):**
-```
-Standard login form with email/password
-TEA can infer selectors without MCP
-```
-
-**Complex UI (use MCP):**
-```
-Multi-step wizard with dynamic fields
-Conditional UI elements
-Third-party components
-Custom form widgets
-```
-
-### Start Without MCP, Enable When Needed
-
-**Learning path:**
-1. Week 1-2: TEA without MCP (learn basics)
-2. Week 3: Enable MCP (explore advanced features)
-3. Week 4+: Use MCP selectively (when it adds value)
-
-### Combine with Playwright Utils
-
-**Powerful combination:**
-```yaml
-tea_use_playwright_utils: true
-tea_use_mcp_enhancements: true
-```
-
-**Benefits:**
-- Playwright Utils provides production-ready utilities
-- MCP verifies utilities work with actual app
-- Best of both worlds
-
-### Use for Test Healing
-
-**Scenario:** Test suite has 50 failing tests after UI update.
-
-**With MCP:**
-```
-*automate (healing mode)
-
-TEA:
-1. Opens trace viewer for each failure
-2. Identifies changed selectors
-3. Updates tests with corrected selectors
-4. Verifies fixes with browser
-5. Provides updated tests
-
-Result: 45/50 tests auto-healed
-```
-
-### Use for New Team Members
-
-**Onboarding:**
-```
-New developer: "I don't know this codebase's UI"
-
-Senior: "Run *test-design with MCP exploratory mode"
-
-TEA explores UI and generates documentation:
-- UI structure discovered
-- Interactive elements mapped
-- Test design created automatically
-```
-
-## Security Considerations
-
-### MCP Servers Have Browser Access
-
-**What MCP can do:**
-- Navigate to any URL
-- Click any element
-- Fill any form
-- Access browser storage
-- Read page content
-
-**Best practices:**
-- Only configure MCP in trusted environments
-- Don't use MCP on production sites (use staging/dev)
-- Review generated tests before running on production
-- Keep MCP config in local files (not committed)
-
-### Protect Credentials
-
-**Don't:**
-```
-"TEA, login with mypassword123"
-# Password visible in chat history
-```
-
-**Do:**
-```
-"TEA, login using credentials from .env"
-# Password loaded from environment, not in chat
 ```
 
 ## Related Guides

@@ -290,137 +290,84 @@ burn-in:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 ```
 
-#### Helper Scripts
+#### Burn-In Testing
 
-TEA generates shell scripts for CI and local development.
-
-**Test Scripts** (`package.json`):
+**Option 1: Classic Burn-In (Playwright Built-In)**
 
 ```json
 {
   "scripts": {
     "test": "playwright test",
-    "test:headed": "playwright test --headed",
-    "test:debug": "playwright test --debug",
-    "test:smoke": "playwright test --grep @smoke",
-    "test:critical": "playwright test --grep @critical",
-    "test:changed": "./scripts/test-changed.sh",
-    "test:burn-in": "./scripts/burn-in.sh",
-    "test:report": "playwright show-report",
-    "ci:local": "./scripts/ci-local.sh"
+    "test:burn-in": "playwright test --repeat-each=5 --retries=0"
   }
 }
 ```
 
-**Selective Testing Script** (`scripts/test-changed.sh`):
+**How it works:**
+- Runs every test 5 times
+- Fails if any iteration fails
+- Detects flakiness before merge
 
-```bash
-#!/bin/bash
-# Run only tests for changed files
+**Use when:** Small test suite, want to run everything multiple times
 
-CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
+---
 
-if echo "$CHANGED_FILES" | grep -q "src/.*\.ts$"; then
-  echo "Running affected tests..."
-  npm run test:e2e -- --grep="$(echo $CHANGED_FILES | sed 's/src\///g' | sed 's/\.ts//g')"
-else
-  echo "No test-affecting changes detected"
-fi
-```
+**Option 2: Smart Burn-In (Playwright Utils)**
 
-**Burn-In Script** (`scripts/burn-in.sh`):
+If `tea_use_playwright_utils: true`:
 
-```bash
-#!/bin/bash
-# Run tests multiple times to detect flakiness
-
-ITERATIONS=${BURN_IN_ITERATIONS:-5}
-FAILURES=0
-
-for i in $(seq 1 $ITERATIONS); do
-  echo "=== Burn-in iteration $i/$ITERATIONS ==="
-
-  if npm test; then
-    echo "✓ Iteration $i passed"
-  else
-    echo "✗ Iteration $i failed"
-    FAILURES=$((FAILURES + 1))
-  fi
-done
-
-if [ $FAILURES -gt 0 ]; then
-  echo "❌ Tests failed in $FAILURES/$ITERATIONS iterations"
-  exit 1
-fi
-
-echo "✅ All $ITERATIONS iterations passed"
-```
-
-**Local CI Mirror Script** (`scripts/ci-local.sh`):
-
-```bash
-#!/bin/bash
-# Mirror CI execution locally for debugging
-
-echo "🔍 Running CI pipeline locally..."
-
-# Lint
-npm run lint || exit 1
-
-# Tests
-npm run test || exit 1
-
-# Burn-in (reduced iterations for local)
-for i in {1..3}; do
-  echo "🔥 Burn-in $i/3"
-  npm test || exit 1
-done
-
-echo "✅ Local CI pipeline passed"
-```
-
-**Make scripts executable:**
-```bash
-chmod +x scripts/*.sh
-```
-
-**Alternative: Smart Burn-In with Playwright Utils**
-
-If `tea_use_playwright_utils: true`, you can use git diff-based burn-in:
-
+**scripts/burn-in-changed.ts:**
 ```typescript
-// scripts/burn-in-changed.ts
 import { runBurnIn } from '@seontechnologies/playwright-utils/burn-in';
 
-async function main() {
-  await runBurnIn({
-    configPath: 'playwright.burn-in.config.ts',
-    baseBranch: 'main'
-  });
-}
-
-main().catch(console.error);
+await runBurnIn({
+  configPath: 'playwright.burn-in.config.ts',
+  baseBranch: 'main'
+});
 ```
 
+**playwright.burn-in.config.ts:**
 ```typescript
-// playwright.burn-in.config.ts
 import type { BurnInConfig } from '@seontechnologies/playwright-utils/burn-in';
 
 const config: BurnInConfig = {
   skipBurnInPatterns: ['**/config/**', '**/*.md', '**/*types*'],
-  burnInTestPercentage: 0.3,  // Run 30% of affected tests
-  burnIn: { repeatEach: 5, retries: 1 }
+  burnInTestPercentage: 0.3,
+  burnIn: { repeatEach: 5, retries: 0 }
 };
 
 export default config;
 ```
 
-**Benefits over shell script:**
-- Only runs tests affected by git changes (faster)
-- Smart filtering (skips config, docs, types)
-- Volume control (run percentage, not all tests)
+**package.json:**
+```json
+{
+  "scripts": {
+    "test:burn-in": "tsx scripts/burn-in-changed.ts"
+  }
+}
+```
 
-**Example:** Changed 1 file → runs 3 affected tests 5 times = 15 runs (not 500 tests × 5 = 2500 runs)
+**How it works:**
+- Git diff analysis (only affected tests)
+- Smart filtering (skip configs, docs, types)
+- Volume control (run 30% of affected tests)
+- Each test runs 5 times
+
+**Use when:** Large test suite, want intelligent selection
+
+---
+
+**Comparison:**
+
+| Feature | Classic Burn-In | Smart Burn-In (PW-Utils) |
+|---------|----------------|--------------------------|
+| Changed 1 file | Runs all 500 tests × 5 = 2500 runs | Runs 3 affected tests × 5 = 15 runs |
+| Config change | Runs all tests | Skips (no tests affected) |
+| Type change | Runs all tests | Skips (no runtime impact) |
+| Setup | Zero config | Requires config file |
+
+**Recommendation:** Start with classic (simple), upgrade to smart (faster) when suite grows.
 
 ### 6. Configure Secrets
 

@@ -107,7 +107,7 @@ test('flaky test', async ({ page }) => {
 });
 ```
 
-**Good Example:**
+**Good Example (Vanilla Playwright):**
 ```typescript
 test('deterministic test', async ({ page }) => {
   const responsePromise = page.waitForResponse(
@@ -126,11 +126,42 @@ test('deterministic test', async ({ page }) => {
 });
 ```
 
-**Why it works:**
+**With Playwright Utils (Even Cleaner):**
+```typescript
+import { test } from '@seontechnologies/playwright-utils/fixtures';
+import { expect } from '@playwright/test';
+
+test('deterministic test', async ({ page, interceptNetworkCall }) => {
+  const submitCall = interceptNetworkCall({
+    method: 'POST',
+    url: '**/api/submit'
+  });
+
+  await page.click('button');
+
+  // Wait for actual response (automatic JSON parsing)
+  const { status, responseJson } = await submitCall;
+  expect(status).toBe(200);
+
+  // Modal should ALWAYS show (make it deterministic)
+  await expect(page.locator('.modal')).toBeVisible();
+  await page.click('.dismiss');
+
+  // Explicit assertion (fails if not visible)
+  await expect(page.locator('.success')).toBeVisible();
+});
+```
+
+**Why both work:**
 - Waits for actual event (network response)
 - No conditionals (behavior is deterministic)
 - Assertions fail loudly (no silent failures)
 - Same result every run (deterministic)
+
+**Playwright Utils additional benefits:**
+- Automatic JSON parsing
+- `{ status, responseJson }` structure (can validate response data)
+- No manual `await response.json()`
 
 ### 2. Isolation (No Dependencies)
 
@@ -152,7 +183,7 @@ test('create user', async ({ apiRequest }) => {
   const { body } = await apiRequest({
     method: 'POST',
     path: '/api/users',
-    body: { email: 'test@example.com' }  // 'body' not 'data' (hard-coded)
+    body: { email: 'test@example.com' }   (hard-coded)
   });
   userId = body.id;  // Store in global
 });
@@ -162,7 +193,7 @@ test('update user', async ({ apiRequest }) => {
   await apiRequest({
     method: 'PATCH',
     path: `/api/users/${userId}`,
-    body: { name: 'Updated' }  // 'body' not 'data'
+    body: { name: 'Updated' }  
   });
   // No cleanup - leaves user in database
 });
@@ -213,7 +244,7 @@ test('should update user profile', async ({ apiRequest }) => {
   const { status: createStatus, body: user } = await apiRequest({
     method: 'POST',
     path: '/api/users',
-    body: { email: testEmail, name: faker.person.fullName() }  // 'body' not 'data'
+    body: { email: testEmail, name: faker.person.fullName() }  
   });
 
   expect(createStatus).toBe(201);
@@ -222,7 +253,7 @@ test('should update user profile', async ({ apiRequest }) => {
   const { status, body: updated } = await apiRequest({
     method: 'PATCH',
     path: `/api/users/${user.id}`,
-    body: { name: 'Updated Name' }  // 'body' not 'data'
+    body: { name: 'Updated Name' }  
   });
 
   expect(status).toBe(200);
@@ -412,7 +443,7 @@ test('slow test', async ({ page }) => {
 
 **Total time:** 3+ minutes (95 seconds wasted on hard waits)
 
-**Good Example:**
+**Good Example (Vanilla Playwright):**
 ```typescript
 // ✅ Fast test (< 10 seconds)
 test('fast test', async ({ page }) => {
@@ -436,7 +467,49 @@ test('fast test', async ({ page }) => {
 });
 ```
 
+**With Playwright Utils:**
+```typescript
+import { test } from '@seontechnologies/playwright-utils/fixtures';
+import { expect } from '@playwright/test';
+
+test('fast test', async ({ page, interceptNetworkCall }) => {
+  // Set up interception
+  const resultCall = interceptNetworkCall({
+    method: 'GET',
+    url: '**/api/result'
+  });
+
+  await page.goto('/');
+
+  // Direct navigation (skip intermediate pages)
+  await page.goto('/page-10');
+
+  // Efficient selector
+  await page.getByRole('button', { name: 'Submit' }).click();
+
+  // Wait for actual response (automatic JSON parsing)
+  const { status, responseJson } = await resultCall;
+
+  expect(status).toBe(200);
+  await expect(page.locator('.result')).toBeVisible();
+
+  // Can also validate response data if needed
+  // expect(responseJson.data).toBeDefined();
+});
+```
+
 **Total time:** < 10 seconds (no wasted waits)
+
+**Both examples achieve:**
+- No hard waits (wait for actual events)
+- Direct navigation (skip unnecessary steps)
+- Efficient selectors (getByRole)
+- Fast execution
+
+**Playwright Utils bonus:**
+- Can validate API response data easily
+- Automatic JSON parsing
+- Cleaner API
 
 ## TEA's Quality Scoring
 
@@ -821,7 +894,7 @@ For detailed test quality patterns, see:
 
 **Use-Case Guides:**
 - [Using TEA with Existing Tests](/docs/how-to/brownfield/use-tea-with-existing-tests.md) - Improve legacy quality
-- [Running TEA for Enterprise](/docs/how-to/workflows/run-tea-for-enterprise.md) - Enterprise quality thresholds
+- [Running TEA for Enterprise](/docs/how-to/enterprise/use-tea-for-enterprise.md) - Enterprise quality thresholds
 
 ## Reference
 

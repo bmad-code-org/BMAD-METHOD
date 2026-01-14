@@ -221,7 +221,7 @@ testWithAuth.describe('Profile API', () => {
     const { status, body } = await apiRequest({
       method: 'PATCH',
       path: '/api/profile',
-      body: { name: 'Updated Name', bio: 'Test bio' },  // 'body' not 'data'
+      body: { name: 'Updated Name', bio: 'Test bio' },  
       headers: { Authorization: `Bearer ${authToken}` }
     }).validateSchema(ProfileSchema);  // Chained validation
 
@@ -233,7 +233,7 @@ testWithAuth.describe('Profile API', () => {
     const { status, body } = await apiRequest({
       method: 'PATCH',
       path: '/api/profile',
-      body: { email: 'invalid-email' },  // 'body' not 'data'
+      body: { email: 'invalid-email' },  
       headers: { Authorization: `Bearer ${authToken}` }
     });
 
@@ -250,57 +250,30 @@ testWithAuth.describe('Profile API', () => {
 - Automatic retry for 5xx errors
 - Less boilerplate (no manual `await response.json()` everywhere)
 
-#### E2E Tests (`tests/e2e/profile-workflow.spec.ts`):
+#### E2E Tests (`tests/e2e/profile.spec.ts`):
 
 ```typescript
 import { test, expect } from '@playwright/test';
 
-test.describe('Profile Management Workflow', () => {
-  test.beforeEach(async ({ page }) => {
-    // Login
-    await page.goto('/login');
-    await page.getByLabel('Email').fill('test@example.com');
-    await page.getByLabel('Password').fill('password123');
-    await page.getByRole('button', { name: 'Sign in' }).click();
+test('should edit profile', async ({ page }) => {
+  // Login
+  await page.goto('/login');
+  await page.getByLabel('Email').fill('test@example.com');
+  await page.getByLabel('Password').fill('password123');
+  await page.getByRole('button', { name: 'Sign in' }).click();
 
-    // Wait for login to complete
-    await expect(page).toHaveURL(/\/dashboard/);
-  });
+  // Edit profile
+  await page.goto('/profile');
+  await page.getByRole('button', { name: 'Edit Profile' }).click();
+  await page.getByLabel('Name').fill('New Name');
+  await page.getByRole('button', { name: 'Save' }).click();
 
-  test('should view and edit profile', async ({ page }) => {
-    // Navigate to profile
-    await page.goto('/profile');
-
-    // Verify profile displays
-    await expect(page.getByText('test@example.com')).toBeVisible();
-
-    // Edit profile
-    await page.getByRole('button', { name: 'Edit Profile' }).click();
-    await page.getByLabel('Name').fill('New Name');
-    await page.getByRole('button', { name: 'Save' }).click();
-
-    // Verify success
-    await expect(page.getByText('Profile updated')).toBeVisible();
-    await expect(page.getByText('New Name')).toBeVisible();
-  });
-
-  test('should show validation errors', async ({ page }) => {
-    await page.goto('/profile');
-    await page.getByRole('button', { name: 'Edit Profile' }).click();
-
-    // Enter invalid email
-    await page.getByLabel('Email').fill('invalid');
-    await page.getByRole('button', { name: 'Save' }).click();
-
-    // Verify error shown
-    await expect(page.getByText('Invalid email format')).toBeVisible();
-
-    // Profile should not be updated
-    await page.reload();
-    await expect(page.getByText('test@example.com')).toBeVisible();
-  });
+  // Verify success
+  await expect(page.getByText('Profile updated')).toBeVisible();
 });
 ```
+
+TEA generates additional tests for validation, edge cases, etc. based on priorities.
 
 #### Fixtures (`tests/support/fixtures/profile.ts`):
 
@@ -504,9 +477,9 @@ Compare against:
 
 TEA supports component testing using framework-appropriate tools:
 
-| Your Framework | Component Testing Tool | Tests Location |
-|----------------|----------------------|----------------|
-| **Cypress** | Cypress Component Testing | `tests/component/` |
+| Your Framework | Component Testing Tool         | Tests Location                            |
+| -------------- | ------------------------------ | ----------------------------------------- |
+| **Cypress**    | Cypress Component Testing      | `tests/component/`                        |
 | **Playwright** | Vitest + React Testing Library | `tests/component/` or `src/**/*.test.tsx` |
 
 **Note:** Component tests use separate tooling from E2E tests:
@@ -568,25 +541,14 @@ Don't duplicate that coverage
 
 TEA will analyze existing tests and only generate new scenarios.
 
-### Use Healing Mode (Optional)
+### MCP Enhancements (Optional)
 
-If MCP enhancements enabled (`tea_use_mcp_enhancements: true`):
+If you have MCP servers configured (`tea_use_mcp_enhancements: true`), TEA can use them during `*automate` for:
 
-When prompted, select "healing mode" to:
-- Fix broken selectors in existing tests
-- Update outdated assertions
-- Enhance with trace viewer insights
+- **Healing mode:** Fix broken selectors, update assertions, enhance with trace analysis
+- **Recording mode:** Verify selectors with live browser, capture network requests
 
-See [Enable MCP Enhancements](/docs/how-to/customization/enable-tea-mcp-enhancements.md)
-
-### Use Recording Mode (Optional)
-
-If MCP enhancements enabled:
-
-When prompted, select "recording mode" to:
-- Verify selectors against live browser
-- Generate accurate locators from actual DOM
-- Capture network requests
+No prompts - TEA uses MCPs automatically when available. See [Enable MCP Enhancements](/docs/how-to/customization/enable-tea-mcp-enhancements.md) for setup.
 
 ### Generate Tests Incrementally
 
@@ -662,21 +624,11 @@ We already have these tests:
 Generate tests for scenarios NOT covered by those files
 ```
 
-### Selectors Are Fragile
+### MCP Enhancements for Better Selectors
 
-**Problem:** E2E tests use brittle CSS selectors.
+If you have MCP servers configured, TEA verifies selectors against live browser. Otherwise, TEA generates accessible selectors (`getByRole`, `getByLabel`) by default.
 
-**Solution:** Request accessible selectors:
-```
-Use accessible locators:
-- getByRole()
-- getByLabel()
-- getByText()
-
-Avoid CSS selectors like .class-name or #id
-```
-
-Or use MCP recording mode for verified selectors.
+Setup: Answer "Yes" to MCPs in BMad installer + configure MCP servers in your IDE. See [Enable MCP Enhancements](/docs/how-to/customization/enable-tea-mcp-enhancements.md).
 
 ## Related Guides
 
@@ -686,6 +638,7 @@ Or use MCP recording mode for verified selectors.
 
 ## Understanding the Concepts
 
+- [Testing as Engineering](/docs/explanation/philosophy/testing-as-engineering.md) - **Why TEA generates quality tests** (foundational)
 - [Risk-Based Testing](/docs/explanation/tea/risk-based-testing.md) - Why prioritize P0 over P3
 - [Test Quality Standards](/docs/explanation/tea/test-quality-standards.md) - What makes tests good
 - [Fixture Architecture](/docs/explanation/tea/fixture-architecture.md) - Reusable test patterns

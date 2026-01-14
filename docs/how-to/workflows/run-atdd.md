@@ -90,17 +90,15 @@ TEA will ask what test levels to generate:
 - E2E tests (browser-based, full user journey)
 - API tests (backend only, faster)
 - Component tests (UI components in isolation)
-- Mix of levels
-
-**Recommended approach:** Generate API tests first, then E2E tests (see [API Tests First, E2E Later](#api-tests-first-e2e-later) tip below).
+- Mix of levels (see [API Tests First, E2E Later](#api-tests-first-e2e-later) tip)
 
 ### Component Testing by Framework
 
 TEA generates component tests using framework-appropriate tools:
 
-| Your Framework | Component Testing Tool |
-|----------------|----------------------|
-| **Cypress** | Cypress Component Testing (*.cy.tsx) |
+| Your Framework | Component Testing Tool                      |
+| -------------- | ------------------------------------------- |
+| **Cypress**    | Cypress Component Testing (*.cy.tsx)        |
 | **Playwright** | Vitest + React Testing Library (*.test.tsx) |
 
 **Example response:**
@@ -190,7 +188,7 @@ test.describe('Profile API', () => {
     const { status, body } = await apiRequest({
       method: 'PATCH',
       path: '/api/profile',
-      body: {  // 'body' not 'data'
+      body: {  
         name: 'Updated Name',
         email: 'updated@example.com'
       }
@@ -205,7 +203,7 @@ test.describe('Profile API', () => {
     const { status, body } = await apiRequest({
       method: 'PATCH',
       path: '/api/profile',
-      body: { email: 'invalid-email' }  // 'body' not 'data'
+      body: { email: 'invalid-email' }  
     });
 
     expect(status).toBe(400);
@@ -226,51 +224,27 @@ test.describe('Profile API', () => {
 ```typescript
 import { test, expect } from '@playwright/test';
 
-test.describe('Profile Page', () => {
-  test.beforeEach(async ({ page }) => {
-    // Login first
-    await page.goto('/login');
-    await page.getByLabel('Email').fill('test@example.com');
-    await page.getByLabel('Password').fill('password123');
-    await page.getByRole('button', { name: 'Sign in' }).click();
-  });
+test('should edit and save profile', async ({ page }) => {
+  // Login first
+  await page.goto('/login');
+  await page.getByLabel('Email').fill('test@example.com');
+  await page.getByLabel('Password').fill('password123');
+  await page.getByRole('button', { name: 'Sign in' }).click();
 
-  test('should display current profile information', async ({ page }) => {
-    await page.goto('/profile');
+  // Navigate to profile
+  await page.goto('/profile');
 
-    await expect(page.getByText('test@example.com')).toBeVisible();
-    await expect(page.getByText('Test User')).toBeVisible();
-  });
+  // Edit profile
+  await page.getByRole('button', { name: 'Edit Profile' }).click();
+  await page.getByLabel('Name').fill('Updated Name');
+  await page.getByRole('button', { name: 'Save' }).click();
 
-  test('should edit and save profile', async ({ page }) => {
-    await page.goto('/profile');
-
-    // Click edit
-    await page.getByRole('button', { name: 'Edit Profile' }).click();
-
-    // Modify fields
-    await page.getByLabel('Name').fill('Updated Name');
-    await page.getByLabel('Email').fill('updated@example.com');
-
-    // Save
-    await page.getByRole('button', { name: 'Save' }).click();
-
-    // Verify success
-    await expect(page.getByText('Profile updated successfully')).toBeVisible();
-    await expect(page.getByText('Updated Name')).toBeVisible();
-  });
-
-  test('should show validation error for invalid email', async ({ page }) => {
-    await page.goto('/profile');
-    await page.getByRole('button', { name: 'Edit Profile' }).click();
-
-    await page.getByLabel('Email').fill('invalid-email');
-    await page.getByRole('button', { name: 'Save' }).click();
-
-    await expect(page.getByText('Invalid email format')).toBeVisible();
-  });
+  // Verify success
+  await expect(page.getByText('Profile updated')).toBeVisible();
 });
 ```
+
+TEA generates additional E2E tests for display, validation errors, etc. based on acceptance criteria.
 
 #### Implementation Checklist
 
@@ -400,18 +374,13 @@ Run `*test-design` before `*atdd` for better results:
 *atdd          # Generate tests based on design
 ```
 
-### Recording Mode Note
+### MCP Enhancements (Optional)
 
-**Recording mode is NOT typically used with ATDD** because ATDD generates tests for features that don't exist yet (no UI to record against).
+If you have MCP servers configured (`tea_use_mcp_enhancements: true`), TEA can use them during `*atdd`.
 
-If you have a skeleton UI or are refining existing tests, use `*automate` with recording mode instead. See [How to Run Automate](/docs/how-to/workflows/run-automate.md).
+**Note:** ATDD is for features that don't exist yet, so recording mode (verify selectors with live UI) only applies if you have skeleton/mockup UI already implemented. For typical ATDD (no UI yet), TEA infers selectors from best practices.
 
-**Recording mode is only applicable for ATDD in the rare case where:**
-- You have skeleton/mockup UI already implemented
-- You want to verify selector patterns before full implementation
-- You're doing "UI-first" development (unusual for TDD)
-
-For most ATDD workflows, **skip recording mode** - TEA will infer selectors from best practices.
+See [Enable MCP Enhancements](/docs/how-to/customization/enable-tea-mcp-enhancements.md) for setup.
 
 ### Focus on P0/P1 Scenarios
 
@@ -444,43 +413,6 @@ TEA generates deterministic tests by default:
 
 Don't modify these patterns - they prevent flakiness!
 
-## Common Issues
-
-### Tests Don't Fail Initially
-
-**Problem:** Tests pass on first run but feature doesn't exist.
-
-**Cause:** Tests are hitting wrong endpoints or checking wrong things.
-
-**Solution:** Review generated tests - ensure they match your feature requirements.
-
-### Too Many Tests Generated
-
-**Problem:** TEA generated 50 tests for a simple feature.
-
-**Cause:** Didn't specify priorities or scope.
-
-**Solution:** Be specific:
-```
-Generate ONLY:
-- P0 scenarios (2-3 tests)
-- Happy path for API
-- One E2E test for full flow
-```
-
-### Selectors Are Fragile
-
-**Problem:** E2E tests use brittle selectors (CSS, XPath).
-
-**Solution:** Use MCP recording mode or specify accessible selectors:
-```
-Use accessible locators:
-- getByRole()
-- getByLabel()
-- getByText()
-Avoid CSS selectors
-```
-
 ## Related Guides
 
 - [How to Run Test Design](/docs/how-to/workflows/run-test-design.md) - Plan before generating
@@ -489,6 +421,7 @@ Avoid CSS selectors
 
 ## Understanding the Concepts
 
+- [Testing as Engineering](/docs/explanation/philosophy/testing-as-engineering.md) - **Why TEA generates quality tests** (foundational)
 - [Risk-Based Testing](/docs/explanation/tea/risk-based-testing.md) - Why P0 vs P3 matters
 - [Test Quality Standards](/docs/explanation/tea/test-quality-standards.md) - What makes tests good
 - [Network-First Patterns](/docs/explanation/tea/network-first-patterns.md) - Avoiding flakiness

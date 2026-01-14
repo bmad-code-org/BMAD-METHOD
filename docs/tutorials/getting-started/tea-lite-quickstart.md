@@ -51,9 +51,7 @@ You've just explored the features we'll test!
 
 ### Install BMad Method
 
-```bash
-npx bmad-method@alpha install
-```
+Install BMad (see installation guide for latest command).
 
 When prompted:
 - **Select modules:** Choose "BMM: BMad Method" (press Space, then Enter)
@@ -272,7 +270,7 @@ test('should mark todo as complete', async ({ page, apiRequest }) => {
   const { status, body: todo } = await apiRequest({
     method: 'POST',
     path: '/api/todos',
-    body: { title: 'Complete tutorial' }  // 'body' not 'data'
+    body: { title: 'Complete tutorial' }  
   });
 
   expect(status).toBe(201);
@@ -393,7 +391,7 @@ See [How to Run ATDD](/docs/how-to/workflows/run-atdd.md) for the TDD approach.
 
 **Explanation** (understanding-oriented):
 - [TEA Overview](/docs/explanation/features/tea-overview.md) - Complete TEA capabilities
-- [Testing as Engineering](/docs/explanation/philosophy/testing-as-engineering.md) - Design philosophy
+- [Testing as Engineering](/docs/explanation/philosophy/testing-as-engineering.md) - **Why TEA exists** (problem + solution)
 - [Risk-Based Testing](/docs/explanation/tea/risk-based-testing.md) - How risk scoring works
 
 **Reference** (quick lookup):
