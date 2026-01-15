@@ -55,16 +55,16 @@ If you are unsure, default to the integrated path for your track and adjust late
 
 ## TEA Command Catalog
 
-| Command        | Primary Outputs                                                                               | Notes                                                | With Playwright MCP Enhancements                                                                             |
-| -------------- | --------------------------------------------------------------------------------------------- | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| `*framework`   | Playwright/Cypress scaffold, `.env.example`, `.nvmrc`, sample specs                           | Use when no production-ready harness exists          | -                                                                                                            |
-| `*ci`          | CI workflow, selective test scripts, secrets checklist                                        | Platform-aware (GitHub Actions default)              | -                                                                                                            |
-| `*test-design` | Combined risk assessment, mitigation plan, and coverage strategy                              | Risk scoring + optional exploratory mode             | **+ Exploratory**: Interactive UI discovery with browser automation (uncover actual functionality)           |
-| `*atdd`        | Failing acceptance tests + implementation checklist                                           | TDD red phase + optional recording mode              | **+ Recording**: UI selectors verified with live browser; API tests benefit from trace analysis                 |
+| Command        | Primary Outputs                                                                               | Notes                                                | With Playwright MCP Enhancements                                                                                                     |
+| -------------- | --------------------------------------------------------------------------------------------- | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `*framework`   | Playwright/Cypress scaffold, `.env.example`, `.nvmrc`, sample specs                           | Use when no production-ready harness exists          | -                                                                                                                                    |
+| `*ci`          | CI workflow, selective test scripts, secrets checklist                                        | Platform-aware (GitHub Actions default)              | -                                                                                                                                    |
+| `*test-design` | Combined risk assessment, mitigation plan, and coverage strategy                              | Risk scoring + optional exploratory mode             | **+ Exploratory**: Interactive UI discovery with browser automation (uncover actual functionality)                                   |
+| `*atdd`        | Failing acceptance tests + implementation checklist                                           | TDD red phase + optional recording mode              | **+ Recording**: UI selectors verified with live browser; API tests benefit from trace analysis                                      |
 | `*automate`    | Prioritized specs, fixtures, README/script updates, DoD summary                               | Optional healing/recording, avoid duplicate coverage | **+ Healing**: Visual debugging + trace analysis for test fixes; **+ Recording**: Verified selectors (UI) + network inspection (API) |
-| `*test-review` | Test quality review report with 0-100 score, violations, fixes                                | Reviews tests against knowledge base patterns        | -                                                                                                            |
-| `*nfr-assess`  | NFR assessment report with actions                                                            | Focus on security/performance/reliability            | -                                                                                                            |
-| `*trace`       | Phase 1: Coverage matrix, recommendations. Phase 2: Gate decision (PASS/CONCERNS/FAIL/WAIVED) | Two-phase workflow: traceability + gate decision     | -                                                                                                            |
+| `*test-review` | Test quality review report with 0-100 score, violations, fixes                                | Reviews tests against knowledge base patterns        | -                                                                                                                                    |
+| `*nfr-assess`  | NFR assessment report with actions                                                            | Focus on security/performance/reliability            | -                                                                                                                                    |
+| `*trace`       | Phase 1: Coverage matrix, recommendations. Phase 2: Gate decision (PASS/CONCERNS/FAIL/WAIVED) | Two-phase workflow: traceability + gate decision     | -                                                                                                                                    |
 
 ## TEA Workflow Lifecycle
 
@@ -173,12 +173,12 @@ TEA spans multiple phases (Phase 3, Phase 4, and the release gate). Most BMM age
 
 ### TEA's 8 Workflows Across Phases
 
-| Phase       | TEA Workflows                                             | Frequency        | Purpose                                        |
-| ----------- | --------------------------------------------------------- | ---------------- | ---------------------------------------------- |
-| **Phase 2** | (none)                                                    | -                | Planning phase - PM defines requirements       |
+| Phase       | TEA Workflows                                             | Frequency        | Purpose                                                 |
+| ----------- | --------------------------------------------------------- | ---------------- | ------------------------------------------------------- |
+| **Phase 2** | (none)                                                    | -                | Planning phase - PM defines requirements                |
 | **Phase 3** | \*test-design (system-level), \*framework, \*ci           | Once per project | System testability review and test infrastructure setup |
-| **Phase 4** | \*test-design, \*atdd, \*automate, \*test-review, \*trace | Per epic/story   | Test planning per epic, then per-story testing |
-| **Release** | \*nfr-assess, \*trace (Phase 2: gate)                     | Per epic/release | Go/no-go decision                              |
+| **Phase 4** | \*test-design, \*atdd, \*automate, \*test-review, \*trace | Per epic/story   | Test planning per epic, then per-story testing          |
+| **Release** | \*nfr-assess, \*trace (Phase 2: gate)                     | Per epic/release | Go/no-go decision                                       |
 
 **Note**: `*trace` is a two-phase workflow: Phase 1 (traceability) + Phase 2 (gate decision). This reduces cognitive load while maintaining natural workflow.
 
@@ -352,3 +352,59 @@ Live browser verification for test design and automation.
 - Enhances healing with `browser_snapshot`, console, network, and locator tools.
 
 **To disable**: set `tea_use_mcp_enhancements: false` in `_bmad/bmm/config.yaml` or remove MCPs from IDE config.
+
+---
+
+## Complete TEA Documentation Navigation
+
+### Start Here
+
+**New to TEA? Start with the tutorial:**
+- [TEA Lite Quickstart Tutorial](/docs/tutorials/getting-started/tea-lite-quickstart.md) - 30-minute beginner guide using TodoMVC
+
+### Workflow Guides (Task-Oriented)
+
+**All 8 TEA workflows with step-by-step instructions:**
+1. [How to Set Up a Test Framework with TEA](/docs/how-to/workflows/setup-test-framework.md) - Scaffold Playwright or Cypress
+2. [How to Set Up CI Pipeline with TEA](/docs/how-to/workflows/setup-ci.md) - Configure CI/CD with selective testing
+3. [How to Run Test Design with TEA](/docs/how-to/workflows/run-test-design.md) - Risk-based test planning (system or epic)
+4. [How to Run ATDD with TEA](/docs/how-to/workflows/run-atdd.md) - Generate failing tests before implementation
+5. [How to Run Automate with TEA](/docs/how-to/workflows/run-automate.md) - Expand test coverage after implementation
+6. [How to Run Test Review with TEA](/docs/how-to/workflows/run-test-review.md) - Audit test quality (0-100 scoring)
+7. [How to Run NFR Assessment with TEA](/docs/how-to/workflows/run-nfr-assess.md) - Validate non-functional requirements
+8. [How to Run Trace with TEA](/docs/how-to/workflows/run-trace.md) - Coverage traceability + gate decisions
+
+### Customization & Integration
+
+**Optional enhancements to TEA workflows:**
+- [Integrate Playwright Utils](/docs/how-to/customization/integrate-playwright-utils.md) - Production-ready fixtures and 9 utilities
+- [Enable TEA MCP Enhancements](/docs/how-to/customization/enable-tea-mcp-enhancements.md) - Live browser verification, visual debugging
+
+### Use-Case Guides
+
+**Specialized guidance for specific contexts:**
+- [Using TEA with Existing Tests (Brownfield)](/docs/how-to/brownfield/use-tea-with-existing-tests.md) - Incremental improvement, regression hotspots, baseline coverage
+- [Running TEA for Enterprise](/docs/how-to/enterprise/use-tea-for-enterprise.md) - Compliance, NFR assessment, audit trails, SOC 2/HIPAA
+
+### Concept Deep Dives (Understanding-Oriented)
+
+**Understand the principles and patterns:**
+- [Risk-Based Testing](/docs/explanation/tea/risk-based-testing.md) - Probability × impact scoring, P0-P3 priorities, mitigation strategies
+- [Test Quality Standards](/docs/explanation/tea/test-quality-standards.md) - Definition of Done, determinism, isolation, explicit assertions
+- [Fixture Architecture](/docs/explanation/tea/fixture-architecture.md) - Pure function → fixture → composition pattern
+- [Network-First Patterns](/docs/explanation/tea/network-first-patterns.md) - Intercept-before-navigate, eliminating flakiness
+- [Knowledge Base System](/docs/explanation/tea/knowledge-base-system.md) - Context engineering with tea-index.csv, 33 fragments
+- [Engagement Models](/docs/explanation/tea/engagement-models.md) - TEA Lite, TEA Solo, TEA Integrated (5 models explained)
+
+### Philosophy & Design
+
+**Why TEA exists and how it works:**
+- [Testing as Engineering](/docs/explanation/philosophy/testing-as-engineering.md) - **Start here to understand WHY** - The problem with AI-generated tests and TEA's three-part solution
+
+### Reference (Quick Lookup)
+
+**Factual information for quick reference:**
+- [TEA Command Reference](/docs/reference/tea/commands.md) - All 8 workflows: inputs, outputs, phases, frequency
+- [TEA Configuration Reference](/docs/reference/tea/configuration.md) - Config options, file locations, setup examples
+- [Knowledge Base Index](/docs/reference/tea/knowledge-base.md) - 33 fragments categorized and explained
+- [Glossary - TEA Section](/docs/reference/glossary/index.md#test-architect-tea-concepts) - 20 TEA-specific terms defined

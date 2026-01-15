@@ -1,5 +1,5 @@
 ---
-title: "How to Run Test Design"
+title: "How to Run Test Design with TEA"
 description: How to create comprehensive test plans using TEA's test-design workflow
 ---
 

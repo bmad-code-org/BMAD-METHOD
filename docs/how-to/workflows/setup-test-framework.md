@@ -1,5 +1,5 @@
 ---
-title: "How to Set Up a Test Framework"
+title: "How to Set Up a Test Framework with TEA"
 description: How to set up a production-ready test framework using TEA
 ---
 
