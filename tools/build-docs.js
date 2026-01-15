@@ -24,10 +24,20 @@ const BUILD_DIR = path.join(PROJECT_ROOT, 'build');
 const SITE_URL = process.env.SITE_URL || 'https://bmad-code-org.github.io/BMAD-METHOD';
 const REPO_URL = 'https://github.com/bmad-code-org/BMAD-METHOD';
 
-const LLM_MAX_CHARS = 700_000;
-const LLM_WARN_CHARS = 600_000;
+const LLM_MAX_CHARS = 600_000;
+const LLM_WARN_CHARS = 500_000;
 
-const LLM_EXCLUDE_PATTERNS = ['changelog', 'ide-info/', 'v4-to-v6-upgrade', 'downloads/', 'faq'];
+const LLM_EXCLUDE_PATTERNS = [
+  'changelog',
+  'ide-info/',
+  'v4-to-v6-upgrade',
+  'downloads/',
+  'faq',
+  '_STYLE_GUIDE.md',
+  '_archive/',
+  'reference/glossary/',
+  'explanation/game-dev/',
+];
 
 // =============================================================================
 // Main Entry Point
