@@ -1,0 +1,186 @@
+<task id="_bmad/core/tasks/sync-skills" name="Sync Skills"
+  description="Syncs workflow/agent manifests to .claude/commands/ for Claude Code skill discovery" webskip="true" standalone="true">
+  <llm critical="true">
+    <i>MANDATORY: Execute ALL steps in the flow section IN EXACT ORDER</i>
+    <i>This task creates .claude/commands/ entry point files for manifest entries missing them</i>
+    <i>Without these files, Claude Code cannot discover BMAD skills</i>
+    <i>Use this after adding custom modules or when skills aren't appearing in Claude Code</i>
+  </llm>
+
+  <parameters>
+    <param name="module" optional="true">Filter to specific module (e.g., "bbp", "bmm"). If omitted, syncs all modules.</param>
+    <param name="dry-run" optional="true">If "true", only report what would be created without writing files.</param>
+  </parameters>
+
+  <context>
+    <problem>
+      When users install new modules by adding files to _bmad/{module}/ and updating manifest CSVs,
+      Claude Code cannot discover these skills because it loads from .claude/commands/, not manifests.
+      Re-running the full installer is overkill for adding a single module.
+    </problem>
+    <solution>
+      This task reads the manifests and generates missing .claude/commands/ entry point files,
+      bridging the gap between manifest registration and Claude Code skill discovery.
+    </solution>
+  </context>
+
+  <flow>
+    <step n="1" title="Read Manifests">
+      <action>Read {project-root}/_bmad/_config/workflow-manifest.csv completely</action>
+      <action>Read {project-root}/_bmad/_config/agent-manifest.csv completely</action>
+      <action>Read {project-root}/_bmad/_config/task-manifest.csv completely (for standalone tasks)</action>
+      <action>Parse CSVs into structured data (name, description, module, path)</action>
+    </step>
+
+    <step n="2" title="Filter by Module (if specified)">
+      <check if="module parameter provided">
+        <action>Filter workflows to only those matching the module</action>
+        <action>Filter agents to only those matching the module</action>
+        <action>Filter tasks to only standalone tasks matching the module</action>
+      </check>
+    </step>
+
+    <step n="3" title="Identify Missing Skill Files">
+      <action>For each workflow entry:</action>
+      <action>  - Compute expected path: .claude/commands/bmad/{module}/workflows/{name}.md</action>
+      <action>  - Check if file exists</action>
+      <action>  - If missing, add to "missing workflows" list</action>
+      <action>For each agent entry:</action>
+      <action>  - Compute expected path: .claude/commands/bmad/{module}/agents/{name}.md</action>
+      <action>  - Check if file exists</action>
+      <action>  - If missing, add to "missing agents" list</action>
+      <action>For each standalone task entry:</action>
+      <action>  - Compute expected path: .claude/commands/bmad/{module}/tasks/{name}.md</action>
+      <action>  - Check if file exists</action>
+      <action>  - If missing, add to "missing tasks" list</action>
+    </step>
+
+    <step n="4" title="Report Findings">
+      <action>Display count of missing workflow skills</action>
+      <action>Display count of missing agent skills</action>
+      <action>Display count of missing task skills</action>
+      <action>List each missing file with its manifest entry</action>
+      <check if="dry-run is true">
+        <action>HALT here - do not create files</action>
+      </check>
+      <check if="no missing files found">
+        <action>Report "All skills are synced" and HALT</action>
+      </check>
+    </step>
+
+    <step n="5" title="Create Missing Workflow Skills">
+      <iterate>For each missing workflow:</iterate>
+      <action>Create directory .claude/commands/bmad/{module}/workflows/ if needed</action>
+      <action>Write skill file using this template:</action>
+      <template name="workflow-skill">
+---
+description: '{description from manifest}'
+---
+
+IT IS CRITICAL THAT YOU FOLLOW THESE STEPS - while staying in character as the current agent persona you may have loaded:
+
+&lt;steps CRITICAL="TRUE"&gt;
+1. Always LOAD the FULL @_bmad/core/tasks/workflow.xml
+2. READ its entire contents - this is the CORE OS for EXECUTING the specific workflow-config @{path from manifest}
+3. Pass the yaml path {path from manifest} as 'workflow-config' parameter to the workflow.xml instructions
+4. Follow workflow.xml instructions EXACTLY as written to process and follow the specific workflow config and its instructions
+5. Save outputs after EACH section when generating any documents from templates
+&lt;/steps&gt;
+      </template>
+    </step>
+
+    <step n="6" title="Create Missing Agent Skills">
+      <iterate>For each missing agent:</iterate>
+      <action>Create directory .claude/commands/bmad/{module}/agents/ if needed</action>
+      <action>Write skill file using this template:</action>
+      <template name="agent-skill">
+---
+name: '{name from manifest}'
+description: '{name} agent'
+---
+
+You must fully embody this agent's persona and follow all activation instructions exactly as specified. NEVER break character until given an exit command.
+
+&lt;agent-activation CRITICAL="TRUE"&gt;
+1. LOAD the FULL agent file from @{path from manifest}
+2. READ its entire contents - this contains the complete agent persona, menu, and instructions
+3. Execute ALL activation steps exactly as written in the agent file
+4. Follow the agent's persona and menu system precisely
+5. Stay in character throughout the session
+&lt;/agent-activation&gt;
+      </template>
+    </step>
+
+    <step n="7" title="Create Missing Task Skills">
+      <iterate>For each missing standalone task:</iterate>
+      <action>Create directory .claude/commands/bmad/{module}/tasks/ if needed</action>
+      <action>Write skill file using this template:</action>
+      <template name="task-skill">
+---
+description: '{description from manifest}'
+---
+
+Execute the {name} task following its complete instructions.
+
+&lt;task-execution CRITICAL="TRUE"&gt;
+1. LOAD the FULL task file from @{path from manifest}
+2. READ its entire contents - this defines the complete task process
+3. Execute ALL steps exactly as written in the task file
+4. Follow any parameters or conditions specified
+&lt;/task-execution&gt;
+      </template>
+    </step>
+
+    <step n="8" title="Report Results">
+      <action>List all created workflow skill files</action>
+      <action>List all created agent skill files</action>
+      <action>List all created task skill files</action>
+      <action>Display: "⚠️ Restart Claude Code for new skills to appear"</action>
+    </step>
+  </flow>
+
+  <halt-conditions critical="true">
+    <i>HALT if _bmad/_config/workflow-manifest.csv does not exist</i>
+    <i>HALT if _bmad/_config/agent-manifest.csv does not exist</i>
+    <i>HALT if dry-run=true after reporting findings</i>
+    <i>HALT if no missing files found</i>
+  </halt-conditions>
+
+  <validation>
+    <i>Verify each created file has valid YAML frontmatter</i>
+    <i>Verify paths in templates resolve correctly relative to project root</i>
+    <i>Do not overwrite existing skill files</i>
+    <i>Use the same templates as the official installer generators</i>
+  </validation>
+
+  <output-example>
+## Sync Skills Report
+
+### Scanning Manifests
+- Workflows: 42 entries
+- Agents: 20 entries
+- Tasks: 6 standalone entries
+
+### Missing Skills Found
+- 7 workflow skills missing (bbp module)
+- 5 agent skills missing (bbp module)
+- 1 task skill missing (bbp module)
+
+### Created Files
+✓ .claude/commands/bmad/bbp/workflows/opus-plan-epic.md
+✓ .claude/commands/bmad/bbp/workflows/sonnet-dev-batch.md
+✓ .claude/commands/bmad/bbp/workflows/sonnet-test-batch.md
+✓ .claude/commands/bmad/bbp/workflows/opus-review-batch.md
+✓ .claude/commands/bmad/bbp/workflows/sonnet-rework-batch.md
+✓ .claude/commands/bmad/bbp/workflows/bbp-status.md
+✓ .claude/commands/bmad/bbp/workflows/bbp-resume.md
+✓ .claude/commands/bmad/bbp/agents/batch-epic-story-writer.md
+✓ .claude/commands/bmad/bbp/agents/batch-dev-story-agent.md
+✓ .claude/commands/bmad/bbp/agents/batch-test-agent.md
+✓ .claude/commands/bmad/bbp/agents/batch-review-agent.md
+✓ .claude/commands/bmad/bbp/agents/batch-rework-agent.md
+✓ .claude/commands/bmad/bbp/tasks/batch-pipeline.md
+
+⚠️ Restart Claude Code for new skills to appear
+  </output-example>
+</task>
