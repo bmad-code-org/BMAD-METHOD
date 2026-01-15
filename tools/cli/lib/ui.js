@@ -4,15 +4,20 @@ const os = require('node:os');
 const fs = require('fs-extra');
 const { CLIUtils } = require('./cli-utils');
 const { CustomHandler } = require('../installers/lib/custom/handler');
+const prompts = require('./prompts');
 
-// Lazy-load inquirer (ESM module) to avoid ERR_REQUIRE_ESM
-let _inquirer = null;
-async function getInquirer() {
-  if (!_inquirer) {
-    _inquirer = (await import('inquirer')).default;
+// Separator class for visual grouping in select/multiselect prompts
+// Note: @clack/prompts doesn't support separators natively, they are filtered out
+class Separator {
+  constructor(text = '────────') {
+    this.line = text;
+    this.name = text;
   }
-  return _inquirer;
+  type = 'separator';
 }
+
+// Separator for choice lists (compatible interface)
+const choiceUtils = { Separator };
 
 /**
  * UI utilities for the installer
@@ -23,7 +28,6 @@ class UI {
    * @returns {Object} Installation configuration
    */
   async promptInstall() {
-    const inquirer = await getInquirer();
     CLIUtils.displayLogo();
 
     // Display version-specific start message from install-messages.yaml
@@ -113,26 +117,20 @@ class UI {
       console.log(chalk.yellow('─'.repeat(80)));
       console.log('');
 
-      const { proceed } = await inquirer.prompt([
-        {
-          type: 'list',
-          name: 'proceed',
-          message: 'What would you like to do?',
-          choices: [
-            {
-              name: 'Cancel and do a fresh install (recommended)',
-              value: 'cancel',
-              short: 'Cancel installation',
-            },
-            {
-              name: 'Proceed anyway (will attempt update, potentially may fail or have unstable behavior)',
-              value: 'proceed',
-              short: 'Proceed with update',
-            },
-          ],
-          default: 'cancel',
-        },
-      ]);
+      const proceed = await prompts.select({
+        message: 'What would you like to do?',
+        choices: [
+          {
+            name: 'Cancel and do a fresh install (recommended)',
+            value: 'cancel',
+          },
+          {
+            name: 'Proceed anyway (will attempt update, potentially may fail or have unstable behavior)',
+            value: 'proceed',
+          },
+        ],
+        default: 'cancel',
+      });
 
       if (proceed === 'cancel') {
         console.log('');
@@ -188,14 +186,10 @@ class UI {
 
       // If Claude Code was selected, ask about TTS
       if (claudeCodeSelected) {
-        const { enableTts } = await inquirer.prompt([
-          {
-            type: 'confirm',
-            name: 'enableTts',
-            message: 'Claude Code supports TTS (Text-to-Speech). Would you like to enable it?',
-            default: false,
-          },
-        ]);
+        const enableTts = await prompts.confirm({
+          message: 'Claude Code supports TTS (Text-to-Speech). Would you like to enable it?',
+          default: false,
+        });
 
         if (enableTts) {
           agentVibesConfig = { enabled: true, alreadyInstalled: false };
@@ -250,18 +244,11 @@ class UI {
       // Common actions
       choices.push({ name: 'Modify BMAD Installation', value: 'update' });
 
-      const promptResult = await inquirer.prompt([
-        {
-          type: 'list',
-          name: 'actionType',
-          message: 'What would you like to do?',
-          choices: choices,
-          default: choices[0].value, // Use the first option as default
-        },
-      ]);
-
-      // Extract actionType from prompt result
-      actionType = promptResult.actionType;
+      actionType = await prompts.select({
+        message: 'What would you like to do?',
+        choices: choices,
+        default: choices[0].value,
+      });
 
       // Handle quick update separately
       if (actionType === 'quick-update') {
@@ -290,14 +277,10 @@ class UI {
         const { installedModuleIds } = await this.getExistingInstallation(confirmedDirectory);
 
         console.log(chalk.dim(`  Found existing modules: ${[...installedModuleIds].join(', ')}`));
-        const { changeModuleSelection } = await inquirer.prompt([
-          {
-            type: 'confirm',
-            name: 'changeModuleSelection',
-            message: 'Modify official module selection (BMad Method, BMad Builder, Creative Innovation Suite)?',
-            default: false,
-          },
-        ]);
+        const changeModuleSelection = await prompts.confirm({
+          message: 'Modify official module selection (BMad Method, BMad Builder, Creative Innovation Suite)?',
+          default: false,
+        });
 
         let selectedModules = [];
         if (changeModuleSelection) {
@@ -310,14 +293,10 @@ class UI {
 
         // After module selection, ask about custom modules
         console.log('');
-        const { changeCustomModules } = await inquirer.prompt([
-          {
-            type: 'confirm',
-            name: 'changeCustomModules',
-            message: 'Modify custom module selection (add, update, or remove custom modules/agents/workflows)?',
-            default: false,
-          },
-        ]);
+        const changeCustomModules = await prompts.confirm({
+          message: 'Modify custom module selection (add, update, or remove custom modules/agents/workflows)?',
+          default: false,
+        });
 
         let customModuleResult = { selectedCustomModules: [], customContentConfig: { hasCustomContent: false } };
         if (changeCustomModules) {
@@ -352,15 +331,10 @@ class UI {
         let enableTts = false;
 
         if (hasClaudeCode) {
-          const { enableTts: enable } = await inquirer.prompt([
-            {
-              type: 'confirm',
-              name: 'enableTts',
-              message: 'Claude Code supports TTS (Text-to-Speech). Would you like to enable it?',
-              default: false,
-            },
-          ]);
-          enableTts = enable;
+          enableTts = await prompts.confirm({
+            message: 'Claude Code supports TTS (Text-to-Speech). Would you like to enable it?',
+            default: false,
+          });
         }
 
         // Core config with existing defaults (ask after TTS)
@@ -385,14 +359,10 @@ class UI {
     const { installedModuleIds } = await this.getExistingInstallation(confirmedDirectory);
 
     // Ask about official modules for new installations
-    const { wantsOfficialModules } = await inquirer.prompt([
-      {
-        type: 'confirm',
-        name: 'wantsOfficialModules',
-        message: 'Will you be installing any official BMad modules (BMad Method, BMad Builder, Creative Innovation Suite)?',
-        default: true,
-      },
-    ]);
+    const wantsOfficialModules = await prompts.confirm({
+      message: 'Will you be installing any official BMad modules (BMad Method, BMad Builder, Creative Innovation Suite)?',
+      default: true,
+    });
 
     let selectedOfficialModules = [];
     if (wantsOfficialModules) {
@@ -401,14 +371,10 @@ class UI {
     }
 
     // Ask about custom content
-    const { wantsCustomContent } = await inquirer.prompt([
-      {
-        type: 'confirm',
-        name: 'wantsCustomContent',
-        message: 'Would you like to install a local custom module (this includes custom agents and workflows also)?',
-        default: false,
-      },
-    ]);
+    const wantsCustomContent = await prompts.confirm({
+      message: 'Would you like to install a local custom module (this includes custom agents and workflows also)?',
+      default: false,
+    });
 
     if (wantsCustomContent) {
       customContentConfig = await this.promptCustomContentSource();
@@ -459,7 +425,6 @@ class UI {
    * @returns {Object} Tool configuration
    */
   async promptToolSelection(projectDir, selectedModules) {
-    const inquirer = await getInquirer();
     // Check for existing configured IDEs - use findBmadDir to detect custom folder names
     const { Detector } = require('../installers/lib/core/detector');
     const { Installer } = require('../installers/lib/core/installer');
@@ -477,13 +442,14 @@ class UI {
     const preferredIdes = ideManager.getPreferredIdes();
     const otherIdes = ideManager.getOtherIdes();
 
-    // Build IDE choices array with separators
-    const ideChoices = [];
+    // Build grouped options object for groupMultiselect
+    const groupedOptions = {};
     const processedIdes = new Set();
+    const initialValues = [];
 
     // First, add previously configured IDEs at the top, marked with ✅
     if (configuredIdes.length > 0) {
-      ideChoices.push(new inquirer.Separator('── Previously Configured ──'));
+      const configuredGroup = [];
       for (const ideValue of configuredIdes) {
         // Skip empty or invalid IDE values
         if (!ideValue || typeof ideValue !== 'string') {
@@ -496,81 +462,71 @@ class UI {
         const ide = preferredIde || otherIde;
 
         if (ide) {
-          ideChoices.push({
-            name: `${ide.name} ✅`,
+          configuredGroup.push({
+            label: `${ide.name} ✅`,
             value: ide.value,
-            checked: true, // Previously configured IDEs are checked by default
           });
           processedIdes.add(ide.value);
+          initialValues.push(ide.value); // Pre-select configured IDEs
         } else {
           // Warn about unrecognized IDE (but don't fail)
           console.log(chalk.yellow(`⚠️  Previously configured IDE '${ideValue}' is no longer available`));
         }
+      }
+      if (configuredGroup.length > 0) {
+        groupedOptions['Previously Configured'] = configuredGroup;
       }
     }
 
     // Add preferred tools (excluding already processed)
     const remainingPreferred = preferredIdes.filter((ide) => !processedIdes.has(ide.value));
     if (remainingPreferred.length > 0) {
-      ideChoices.push(new inquirer.Separator('── Recommended Tools ──'));
-      for (const ide of remainingPreferred) {
-        ideChoices.push({
-          name: `${ide.name} ⭐`,
-          value: ide.value,
-          checked: false,
-        });
+      groupedOptions['Recommended Tools'] = remainingPreferred.map((ide) => {
         processedIdes.add(ide.value);
-      }
+        return {
+          label: `${ide.name} ⭐`,
+          value: ide.value,
+        };
+      });
     }
 
     // Add other tools (excluding already processed)
     const remainingOther = otherIdes.filter((ide) => !processedIdes.has(ide.value));
     if (remainingOther.length > 0) {
-      ideChoices.push(new inquirer.Separator('── Additional Tools ──'));
-      for (const ide of remainingOther) {
-        ideChoices.push({
-          name: ide.name,
-          value: ide.value,
-          checked: false,
-        });
-      }
+      groupedOptions['Additional Tools'] = remainingOther.map((ide) => ({
+        label: ide.name,
+        value: ide.value,
+      }));
     }
 
-    let answers;
+    let selectedIdes = [];
     let userConfirmedNoTools = false;
 
     // Loop until user selects at least one tool OR explicitly confirms no tools
     while (!userConfirmedNoTools) {
-      answers = await inquirer.prompt([
-        {
-          type: 'checkbox',
-          name: 'ides',
-          message: 'Select tools to configure:',
-          choices: ideChoices,
-          pageSize: 30,
-        },
-      ]);
+      selectedIdes = await prompts.groupMultiselect({
+        message: `Select tools to configure ${chalk.dim('(↑/↓ navigate, SPACE select, ENTER confirm)')}:`,
+        options: groupedOptions,
+        initialValues: initialValues.length > 0 ? initialValues : undefined,
+        required: false,
+      });
 
       // If tools were selected, we're done
-      if (answers.ides && answers.ides.length > 0) {
+      if (selectedIdes && selectedIdes.length > 0) {
         break;
       }
 
       // Warn that no tools were selected - users often miss the spacebar requirement
       console.log();
       console.log(chalk.red.bold('⚠️  WARNING: No tools were selected!'));
-      console.log(chalk.red('   You must press SPACEBAR to select items, then ENTER to confirm.'));
+      console.log(chalk.red('   You must press SPACE to select items, then ENTER to confirm.'));
       console.log(chalk.red('   Simply highlighting an item does NOT select it.'));
       console.log();
 
-      const { goBack } = await inquirer.prompt([
-        {
-          type: 'confirm',
-          name: 'goBack',
-          message: chalk.yellow('Would you like to go back and select at least one tool?'),
-          default: true,
-        },
-      ]);
+      const goBack = await prompts.confirm({
+        message: chalk.yellow('Would you like to go back and select at least one tool?'),
+        default: true,
+      });
 
       if (goBack) {
         // Re-display a message before looping back
@@ -582,8 +538,8 @@ class UI {
     }
 
     return {
-      ides: answers.ides || [],
-      skipIde: !answers.ides || answers.ides.length === 0,
+      ides: selectedIdes || [],
+      skipIde: !selectedIdes || selectedIdes.length === 0,
     };
   }
 
@@ -592,23 +548,17 @@ class UI {
    * @returns {Object} Update configuration
    */
   async promptUpdate() {
-    const inquirer = await getInquirer();
-    const answers = await inquirer.prompt([
-      {
-        type: 'confirm',
-        name: 'backupFirst',
-        message: 'Create backup before updating?',
-        default: true,
-      },
-      {
-        type: 'confirm',
-        name: 'preserveCustomizations',
-        message: 'Preserve local customizations?',
-        default: true,
-      },
-    ]);
+    const backupFirst = await prompts.confirm({
+      message: 'Create backup before updating?',
+      default: true,
+    });
 
-    return answers;
+    const preserveCustomizations = await prompts.confirm({
+      message: 'Preserve local customizations?',
+      default: true,
+    });
+
+    return { backupFirst, preserveCustomizations };
   }
 
   /**
@@ -617,27 +567,17 @@ class UI {
    * @returns {Array} Selected modules
    */
   async promptModules(modules) {
-    const inquirer = await getInquirer();
     const choices = modules.map((mod) => ({
       name: `${mod.name} - ${mod.description}`,
       value: mod.id,
       checked: false,
     }));
 
-    const { selectedModules } = await inquirer.prompt([
-      {
-        type: 'checkbox',
-        name: 'selectedModules',
-        message: 'Select modules to add:',
-        choices,
-        validate: (answer) => {
-          if (answer.length === 0) {
-            return 'You must choose at least one module.';
-          }
-          return true;
-        },
-      },
-    ]);
+    const selectedModules = await prompts.multiselect({
+      message: `Select modules to add ${chalk.dim('(↑/↓ navigate, SPACE select, ENTER confirm)')}:`,
+      choices,
+      required: true,
+    });
 
     return selectedModules;
   }
@@ -649,17 +589,10 @@ class UI {
    * @returns {boolean} User confirmation
    */
   async confirm(message, defaultValue = false) {
-    const inquirer = await getInquirer();
-    const { confirmed } = await inquirer.prompt([
-      {
-        type: 'confirm',
-        name: 'confirmed',
-        message,
-        default: defaultValue,
-      },
-    ]);
-
-    return confirmed;
+    return await prompts.confirm({
+      message,
+      default: defaultValue,
+    });
   }
 
   /**
@@ -753,10 +686,9 @@ class UI {
    * Get module choices for selection
    * @param {Set} installedModuleIds - Currently installed module IDs
    * @param {Object} customContentConfig - Custom content configuration
-   * @returns {Array} Module choices for inquirer
+   * @returns {Array} Module choices for prompt
    */
   async getModuleChoices(installedModuleIds, customContentConfig = null) {
-    const inquirer = await getInquirer();
     const moduleChoices = [];
     const isNewInstallation = installedModuleIds.size === 0;
 
@@ -811,9 +743,9 @@ class UI {
     if (allCustomModules.length > 0) {
       // Add separator for custom content, all custom modules, and official content separator
       moduleChoices.push(
-        new inquirer.Separator('── Custom Content ──'),
+        new choiceUtils.Separator('── Custom Content ──'),
         ...allCustomModules,
-        new inquirer.Separator('── Official Content ──'),
+        new choiceUtils.Separator('── Official Content ──'),
       );
     }
 
@@ -837,44 +769,43 @@ class UI {
    * @returns {Array} Selected module IDs
    */
   async selectModules(moduleChoices, defaultSelections = []) {
-    const inquirer = await getInquirer();
-    const moduleAnswer = await inquirer.prompt([
-      {
-        type: 'checkbox',
-        name: 'modules',
-        message: 'Select modules to install:',
-        choices: moduleChoices,
-        default: defaultSelections,
-      },
-    ]);
+    // Mark choices as checked based on defaultSelections
+    const choicesWithDefaults = moduleChoices.map((choice) => ({
+      ...choice,
+      checked: defaultSelections.includes(choice.value),
+    }));
 
-    const selected = moduleAnswer.modules || [];
+    const selected = await prompts.multiselect({
+      message: `Select modules to install ${chalk.dim('(↑/↓ navigate, SPACE select, ENTER confirm)')}:`,
+      choices: choicesWithDefaults,
+      required: false,
+    });
 
-    return selected;
+    return selected || [];
   }
 
   /**
    * Prompt for directory selection
-   * @returns {Object} Directory answer from inquirer
+   * @returns {Object} Directory answer from prompt
    */
   async promptForDirectory() {
-    const inquirer = await getInquirer();
-    return await inquirer.prompt([
-      {
-        type: 'input',
-        name: 'directory',
-        message: `Installation directory:`,
-        default: process.cwd(),
-        validate: async (input) => this.validateDirectory(input),
-        filter: (input) => {
-          // If empty, use the default
-          if (!input || input.trim() === '') {
-            return process.cwd();
-          }
-          return this.expandUserPath(input);
-        },
-      },
-    ]);
+    // Use sync validation because @clack/prompts doesn't support async validate
+    const directory = await prompts.text({
+      message: 'Installation directory:',
+      default: process.cwd(),
+      placeholder: process.cwd(),
+      validate: (input) => this.validateDirectorySync(input),
+    });
+
+    // Apply filter logic
+    let filteredDir = directory;
+    if (!filteredDir || filteredDir.trim() === '') {
+      filteredDir = process.cwd();
+    } else {
+      filteredDir = this.expandUserPath(filteredDir);
+    }
+
+    return { directory: filteredDir };
   }
 
   /**
@@ -915,45 +846,92 @@ class UI {
    * @returns {boolean} Whether user confirmed
    */
   async confirmDirectory(directory) {
-    const inquirer = await getInquirer();
     const dirExists = await fs.pathExists(directory);
 
     if (dirExists) {
-      const confirmAnswer = await inquirer.prompt([
-        {
-          type: 'confirm',
-          name: 'proceed',
-          message: `Install to this directory?`,
-          default: true,
-        },
-      ]);
+      const proceed = await prompts.confirm({
+        message: 'Install to this directory?',
+        default: true,
+      });
 
-      if (!confirmAnswer.proceed) {
+      if (!proceed) {
         console.log(chalk.yellow("\nLet's try again with a different path.\n"));
       }
 
-      return confirmAnswer.proceed;
+      return proceed;
     } else {
       // Ask for confirmation to create the directory
-      const createConfirm = await inquirer.prompt([
-        {
-          type: 'confirm',
-          name: 'create',
-          message: `The directory '${directory}' doesn't exist. Would you like to create it?`,
-          default: false,
-        },
-      ]);
+      const create = await prompts.confirm({
+        message: `The directory '${directory}' doesn't exist. Would you like to create it?`,
+        default: false,
+      });
 
-      if (!createConfirm.create) {
+      if (!create) {
         console.log(chalk.yellow("\nLet's try again with a different path.\n"));
       }
 
-      return createConfirm.create;
+      return create;
     }
   }
 
   /**
-   * Validate directory path for installation
+   * Validate directory path for installation (sync version for clack prompts)
+   * @param {string} input - User input path
+   * @returns {string|undefined} Error message or undefined if valid
+   */
+  validateDirectorySync(input) {
+    // Allow empty input to use the default
+    if (!input || input.trim() === '') {
+      return; // Empty means use default, undefined = valid for clack
+    }
+
+    let expandedPath;
+    try {
+      expandedPath = this.expandUserPath(input.trim());
+    } catch (error) {
+      return error.message;
+    }
+
+    // Check if the path exists
+    const pathExists = fs.pathExistsSync(expandedPath);
+
+    if (!pathExists) {
+      // Find the first existing parent directory
+      const existingParent = this.findExistingParentSync(expandedPath);
+
+      if (!existingParent) {
+        return 'Cannot create directory: no existing parent directory found';
+      }
+
+      // Check if the existing parent is writable
+      try {
+        fs.accessSync(existingParent, fs.constants.W_OK);
+        // Path doesn't exist but can be created - will prompt for confirmation later
+        return;
+      } catch {
+        // Provide a detailed error message explaining both issues
+        return `Directory '${expandedPath}' does not exist and cannot be created: parent directory '${existingParent}' is not writable`;
+      }
+    }
+
+    // If it exists, validate it's a directory and writable
+    const stat = fs.statSync(expandedPath);
+    if (!stat.isDirectory()) {
+      return `Path exists but is not a directory: ${expandedPath}`;
+    }
+
+    // Check write permissions
+    try {
+      fs.accessSync(expandedPath, fs.constants.W_OK);
+    } catch {
+      return `Directory is not writable: ${expandedPath}`;
+    }
+
+    return;
+  }
+
+  /**
+   * Validate directory path for installation (async version)
    * @param {string} input - User input path
    * @returns {string|true} Error message or true if valid
    */
@@ -1009,7 +987,28 @@ class UI {
   }
 
   /**
-   * Find the first existing parent directory
+   * Find the first existing parent directory (sync version)
+   * @param {string} targetPath - The path to check
+   * @returns {string|null} The first existing parent directory, or null if none found
+   */
+  findExistingParentSync(targetPath) {
+    let currentPath = path.resolve(targetPath);
+
+    // Walk up the directory tree until we find an existing directory
+    while (currentPath !== path.dirname(currentPath)) {
+      // Stop at root
+      const parent = path.dirname(currentPath);
+      if (fs.pathExistsSync(parent)) {
+        return parent;
+      }
+      currentPath = parent;
+    }
+
+    return null; // No existing parent found (shouldn't happen in practice)
+  }
+
+  /**
+   * Find the first existing parent directory (async version)
    * @param {string} targetPath - The path to check
    * @returns {string|null} The first existing parent directory, or null if none found
    */
@@ -1071,7 +1070,7 @@ class UI {
    * @sideeffects None - pure user input collection, no files written
    * @edgecases Shows warning if user enables TTS but AgentVibes not detected
    * @calledby promptInstall() during installation flow, after core config, before IDE selection
-   * @calls checkAgentVibesInstalled(), inquirer.prompt(), chalk.green/yellow/dim()
+   * @calls checkAgentVibesInstalled(), prompts.select(), chalk.green/yellow/dim()
    *
    * AI NOTE: This prompt is strategically positioned in installation flow:
    * - AFTER core config (user_name, etc)
@@ -1102,7 +1101,6 @@ class UI {
    * - GitHub Issue: paulpreibisch/AgentVibes#36
    */
   async promptAgentVibes(projectDir) {
-    const inquirer = await getInquirer();
     CLIUtils.displaySection('🎤 Voice Features', 'Enable TTS for multi-agent conversations');
 
     // Check if AgentVibes is already installed
@@ -1114,23 +1112,19 @@ class UI {
       console.log(chalk.dim('  AgentVibes not detected'));
     }
 
-    const answers = await inquirer.prompt([
-      {
-        type: 'confirm',
-        name: 'enableTts',
-        message: 'Enable Agents to Speak Out loud (powered by Agent Vibes? Claude Code only currently)',
-        default: false, // Default to yes - recommended for best experience
-      },
-    ]);
+    const enableTts = await prompts.confirm({
+      message: 'Enable Agents to Speak Out loud (powered by Agent Vibes? Claude Code only currently)',
+      default: false,
+    });
 
-    if (answers.enableTts && !agentVibesInstalled) {
+    if (enableTts && !agentVibesInstalled) {
       console.log(chalk.yellow('\n  ⚠️  AgentVibes not installed'));
       console.log(chalk.dim('  Install AgentVibes separately to enable TTS:'));
       console.log(chalk.dim('  https://github.com/paulpreibisch/AgentVibes\n'));
     }
 
     return {
-      enabled: answers.enableTts,
+      enabled: enableTts,
       alreadyInstalled: agentVibesInstalled,
     };
   }
@@ -1249,29 +1243,74 @@ class UI {
   }
 
   /**
+   * Validate custom content path synchronously
+   * @param {string} input - User input path
+   * @returns {string|undefined} Error message or undefined if valid
+   */
+  validateCustomContentPathSync(input) {
+    // Allow empty input to cancel
+    if (!input || input.trim() === '') {
+      return; // Allow empty to exit
+    }
+
+    try {
+      // Expand the path
+      const expandedPath = this.expandUserPath(input.trim());
+
+      // Check if path exists
+      if (!fs.pathExistsSync(expandedPath)) {
+        return 'Path does not exist';
+      }
+
+      // Check if it's a directory
+      const stat = fs.statSync(expandedPath);
+      if (!stat.isDirectory()) {
+        return 'Path must be a directory';
+      }
+
+      // Check for module.yaml in the root
+      const moduleYamlPath = path.join(expandedPath, 'module.yaml');
+      if (!fs.pathExistsSync(moduleYamlPath)) {
+        return 'Directory must contain a module.yaml file in the root';
+      }
+
+      // Try to parse the module.yaml to get the module ID
+      try {
+        const yaml = require('yaml');
+        const content = fs.readFileSync(moduleYamlPath, 'utf8');
+        const moduleData = yaml.parse(content);
+        if (!moduleData.code) {
+          return 'module.yaml must contain a "code" field for the module ID';
+        }
+      } catch (error) {
+        return 'Invalid module.yaml file: ' + error.message;
+      }
+
+      return; // Valid
+    } catch (error) {
+      return 'Error validating path: ' + error.message;
+    }
+  }
+
+  /**
    * Prompt user for custom content source location
    * @returns {Object} Custom content configuration
    */
   async promptCustomContentSource() {
-    const inquirer = await getInquirer();
     const customContentConfig = { hasCustomContent: true, sources: [] };
 
     // Keep asking for more sources until user is done
     while (true) {
       // First ask if user wants to add another module or continue
       if (customContentConfig.sources.length > 0) {
-        const { action } = await inquirer.prompt([
-          {
-            type: 'list',
-            name: 'action',
-            message: 'Would you like to:',
-            choices: [
-              { name: 'Add another custom module', value: 'add' },
-              { name: 'Continue with installation', value: 'continue' },
-            ],
-            default: 'continue',
-          },
-        ]);
+        const action = await prompts.select({
+          message: 'Would you like to:',
+          choices: [
+            { name: 'Add another custom module', value: 'add' },
+            { name: 'Continue with installation', value: 'continue' },
+          ],
+          default: 'continue',
+        });
 
         if (action === 'continue') {
           break;
@@ -1282,57 +1321,11 @@ class UI {
       let isValid = false;
 
       while (!isValid) {
-        const { path: inputPath } = await inquirer.prompt([
-          {
-            type: 'input',
-            name: 'path',
-            message: 'Enter the path to your custom content folder (or press Enter to cancel):',
-            validate: async (input) => {
-              // Allow empty input to cancel
-              if (!input || input.trim() === '') {
-                return true; // Allow empty to exit
-              }
-
-              try {
-                // Expand the path
-                const expandedPath = this.expandUserPath(input.trim());
-
-                // Check if path exists
-                if (!(await fs.pathExists(expandedPath))) {
-                  return 'Path does not exist';
-                }
-
-                // Check if it's a directory
-                const stat = await fs.stat(expandedPath);
-                if (!stat.isDirectory()) {
-                  return 'Path must be a directory';
-                }
-
-                // Check for module.yaml in the root
-                const moduleYamlPath = path.join(expandedPath, 'module.yaml');
-                if (!(await fs.pathExists(moduleYamlPath))) {
-                  return 'Directory must contain a module.yaml file in the root';
-                }
-
-                // Try to parse the module.yaml to get the module ID
-                try {
-                  const yaml = require('yaml');
-                  const content = await fs.readFile(moduleYamlPath, 'utf8');
-                  const moduleData = yaml.parse(content);
-                  if (!moduleData.code) {
-                    return 'module.yaml must contain a "code" field for the module ID';
-                  }
-                } catch (error) {
-                  return 'Invalid module.yaml file: ' + error.message;
-                }
-
-                return true;
-              } catch (error) {
-                return 'Error validating path: ' + error.message;
-              }
-            },
-          },
-        ]);
+        // Use sync validation because @clack/prompts doesn't support async validate
+        const inputPath = await prompts.text({
+          message: 'Enter the path to your custom content folder (or press Enter to cancel):',
+          validate: (input) => this.validateCustomContentPathSync(input),
+        });
 
         // If user pressed Enter without typing anything, exit the loop
         if (!inputPath || inputPath.trim() === '') {
@@ -1364,14 +1357,10 @@ class UI {
     }
 
     // Ask if user wants to add these to the installation
-    const { shouldInstall } = await inquirer.prompt([
-      {
-        type: 'confirm',
-        name: 'shouldInstall',
-        message: `Install ${customContentConfig.sources.length} custom module(s) now?`,
-        default: true,
-      },
-    ]);
+    const shouldInstall = await prompts.confirm({
+      message: `Install ${customContentConfig.sources.length} custom module(s) now?`,
+      default: true,
+    });
 
     if (shouldInstall) {
       customContentConfig.selected = true;
@@ -1391,7 +1380,6 @@ class UI {
    * @returns {Object} Result with selected custom modules and custom content config
    */
   async handleCustomModulesInModifyFlow(directory, selectedModules) {
-    const inquirer = await getInquirer();
     // Get existing installation to find custom modules
     const { existingInstall } = await this.getExistingInstallation(directory);
 
@@ -1451,16 +1439,11 @@ class UI {
       choices.push({ name: 'Add new custom modules', value: 'add' }, { name: 'Cancel (no custom modules)', value: 'cancel' });
     }
 
-    const { customAction } = await inquirer.prompt([
-      {
-        type: 'list',
-        name: 'customAction',
-        message:
-          cachedCustomModules.length > 0 ? 'What would you like to do with custom modules?' : 'Would you like to add custom modules?',
-        choices: choices,
-        default: cachedCustomModules.length > 0 ? 'keep' : 'add',
-      },
-    ]);
+    const customAction = await prompts.select({
+      message: cachedCustomModules.length > 0 ? 'What would you like to do with custom modules?' : 'Would you like to add custom modules?',
+      choices: choices,
+      default: cachedCustomModules.length > 0 ? 'keep' : 'add',
+    });
 
     switch (customAction) {
       case 'keep': {
@@ -1472,21 +1455,18 @@ class UI {
 
       case 'select': {
         // Let user choose which to keep
-        const choices = cachedCustomModules.map((m) => ({
+        const selectChoices = cachedCustomModules.map((m) => ({
           name: `${m.name} ${chalk.gray(`(${m.id})`)}`,
           value: m.id,
+          checked: m.checked,
         }));
 
-        const { keepModules } = await inquirer.prompt([
-          {
-            type: 'checkbox',
-            name: 'keepModules',
-            message: 'Select custom modules to keep:',
-            choices: choices,
-            default: cachedCustomModules.filter((m) => m.checked).map((m) => m.id),
-          },
-        ]);
-        result.selectedCustomModules = keepModules;
+        const keepModules = await prompts.multiselect({
+          message: `Select custom modules to keep ${chalk.dim('(↑/↓ navigate, SPACE select, ENTER confirm)')}:`,
+          choices: selectChoices,
+          required: false,
+        });
+        result.selectedCustomModules = keepModules || [];
         break;
       }
 
@@ -1586,7 +1566,6 @@ class UI {
    * @returns {Promise<boolean>} True if user wants to proceed, false if they cancel
    */
   async showOldAlphaVersionWarning(installedVersion, currentVersion, bmadFolderName) {
-    const inquirer = await getInquirer();
     const versionInfo = this.checkAlphaVersionAge(installedVersion, currentVersion);
 
     // Also warn if version is unknown or can't be parsed (legacy/unsupported)
@@ -1627,26 +1606,20 @@ class UI {
     console.log(chalk.yellow('─'.repeat(80)));
     console.log('');
 
-    const { proceed } = await inquirer.prompt([
-      {
-        type: 'list',
-        name: 'proceed',
-        message: 'What would you like to do?',
-        choices: [
-          {
-            name: 'Proceed with update anyway (may have issues)',
-            value: 'proceed',
-            short: 'Proceed with update',
-          },
-          {
-            name: 'Cancel (recommended - do a fresh install instead)',
-            value: 'cancel',
-            short: 'Cancel installation',
-          },
-        ],
-        default: 'cancel',
-      },
-    ]);
+    const proceed = await prompts.select({
+      message: 'What would you like to do?',
+      choices: [
+        {
+          name: 'Proceed with update anyway (may have issues)',
+          value: 'proceed',
+        },
+        {
+          name: 'Cancel (recommended - do a fresh install instead)',
+          value: 'cancel',
+        },
+      ],
+      default: 'cancel',
+    });
 
     if (proceed === 'cancel') {
       console.log('');

@@ -16,6 +16,7 @@ const { CLIUtils } = require('../../../lib/cli-utils');
 const { ManifestGenerator } = require('./manifest-generator');
 const { IdeConfigManager } = require('./ide-config-manager');
 const { CustomHandler } = require('../custom/handler');
+const prompts = require('../../../lib/prompts');
 
 // BMAD installation folder name - this is constant and should never change
 const BMAD_FOLDER_NAME = '_bmad';
@@ -757,6 +758,9 @@ class Installer {
       config.ides = toolSelection.ides;
       config.skipIde = toolSelection.skipIde;
       const ideConfigurations = toolSelection.configurations;
+
+      // Add spacing after prompts before installation progress
+      console.log('');
 
       if (spinner.isSpinning) {
         spinner.text = 'Continuing installation...';
@@ -2139,15 +2143,11 @@ class Installer {
    * Private: Prompt for update action
    */
   async promptUpdateAction() {
-    const { default: inquirer } = await import('inquirer');
-    return await inquirer.prompt([
-      {
-        type: 'list',
-        name: 'action',
-        message: 'What would you like to do?',
-        choices: [{ name: 'Update existing installation', value: 'update' }],
-      },
-    ]);
+    const action = await prompts.select({
+      message: 'What would you like to do?',
+      choices: [{ name: 'Update existing installation', value: 'update' }],
+    });
+    return { action };
   }
 
   /**
@@ -2156,8 +2156,6 @@ class Installer {
    * @param {Object} _legacyV4 - Legacy V4 detection result (unused in simplified version)
    */
   async handleLegacyV4Migration(_projectDir, _legacyV4) {
-    const { default: inquirer } = await import('inquirer');
-
     console.log('');
     console.log(chalk.yellow.bold('⚠️  Legacy BMAD v4 detected'));
     console.log(chalk.yellow('─'.repeat(80)));
@@ -2172,26 +2170,22 @@ class Installer {
     console.log(chalk.dim('If your v4 installation set up rules or commands, you should remove those as well.'));
     console.log('');
 
-    const { proceed } = await inquirer.prompt([
-      {
-        type: 'list',
-        name: 'proceed',
-        message: 'What would you like to do?',
-        choices: [
-          {
-            name: 'Exit and clean up manually (recommended)',
-            value: 'exit',
-            short: 'Exit installation',
-          },
-          {
-            name: 'Continue with installation anyway',
-            value: 'continue',
-            short: 'Continue',
-          },
-        ],
-        default: 'exit',
-      },
-    ]);
+    const proceed = await prompts.select({
+      message: 'What would you like to do?',
+      choices: [
+        {
+          name: 'Exit and clean up manually (recommended)',
+          value: 'exit',
+          hint: 'Exit installation',
+        },
+        {
+          name: 'Continue with installation anyway',
+          value: 'continue',
+          hint: 'Continue',
+        },
+      ],
+      default: 'exit',
+    });
 
     if (proceed === 'exit') {
       console.log('');
@@ -2437,7 +2431,6 @@ class Installer {
 
     console.log(chalk.yellow(`\n⚠️  Found ${customModulesWithMissingSources.length} custom module(s) with missing sources:`));
 
-    const { default: inquirer } = await import('inquirer');
     let keptCount = 0;
     let updatedCount = 0;
     let removedCount = 0;
@@ -2451,12 +2444,12 @@ class Installer {
         {
           name: 'Keep installed (will not be processed)',
           value: 'keep',
-          short: 'Keep',
+          hint: 'Keep',
         },
         {
           name: 'Specify new source location',
           value: 'update',
-          short: 'Update',
+          hint: 'Update',
         },
       ];
 
@@ -2465,47 +2458,40 @@ class Installer {
         choices.push({
           name: '⚠️  REMOVE module completely (destructive!)',
           value: 'remove',
-          short: 'Remove',
+          hint: 'Remove',
         });
       }
 
-      const { action } = await inquirer.prompt([
-        {
-          type: 'list',
-          name: 'action',
-          message: `How would you like to handle "${missing.name}"?`,
-          choices,
-        },
-      ]);
+      const action = await prompts.select({
+        message: `How would you like to handle "${missing.name}"?`,
+        choices,
+      });
 
       switch (action) {
         case 'update': {
-          const { newSourcePath } = await inquirer.prompt([
-            {
-              type: 'input',
-              name: 'newSourcePath',
-              message: 'Enter the new path to the custom module:',
-              default: missing.sourcePath,
-              validate: async (input) => {
-                if (!input || input.trim() === '') {
-                  return 'Please enter a path';
-                }
-                const expandedPath = path.resolve(input.trim());
-                if (!(await fs.pathExists(expandedPath))) {
-                  return 'Path does not exist';
-                }
-                // Check if it looks like a valid module
-                const moduleYamlPath = path.join(expandedPath, 'module.yaml');
-                const agentsPath = path.join(expandedPath, 'agents');
-                const workflowsPath = path.join(expandedPath, 'workflows');
+          // Use sync validation because @clack/prompts doesn't support async validate
+          const newSourcePath = await prompts.text({
+            message: 'Enter the new path to the custom module:',
+            default: missing.sourcePath,
+            validate: (input) => {
+              if (!input || input.trim() === '') {
+                return 'Please enter a path';
+              }
+              const expandedPath = path.resolve(input.trim());
+              if (!fs.pathExistsSync(expandedPath)) {
+                return 'Path does not exist';
+              }
+              // Check if it looks like a valid module
+              const moduleYamlPath = path.join(expandedPath, 'module.yaml');
+              const agentsPath = path.join(expandedPath, 'agents');
+              const workflowsPath = path.join(expandedPath, 'workflows');
 
-                if (!(await fs.pathExists(moduleYamlPath)) && !(await fs.pathExists(agentsPath)) && !(await fs.pathExists(workflowsPath))) {
-                  return 'Path does not appear to contain a valid custom module';
-                }
-                return true;
-              },
+              if (!fs.pathExistsSync(moduleYamlPath) && !fs.pathExistsSync(agentsPath) && !fs.pathExistsSync(workflowsPath)) {
+                return 'Path does not appear to contain a valid custom module';
+              }
+              return; // clack expects undefined for valid input
             },
-          ]);
+          });
 
           // Update the source in manifest
           const resolvedPath = path.resolve(newSourcePath.trim());
@@ -2531,46 +2517,38 @@ class Installer {
           console.log(chalk.red.bold(`\n⚠️  WARNING: This will PERMANENTLY DELETE "${missing.name}" and all its files!`));
           console.log(chalk.red(`  Module location: ${path.join(bmadDir, missing.id)}`));
 
-          const { confirm } = await inquirer.prompt([
-            {
-              type: 'confirm',
-              name: 'confirm',
-              message: chalk.red.bold('Are you absolutely sure you want to delete this module?'),
-              default: false,
-            },
-          ]);
+          const confirmDelete = await prompts.confirm({
+            message: chalk.red.bold('Are you absolutely sure you want to delete this module?'),
+            default: false,
+          });
 
-          if (confirm) {
-            const { typedConfirm } = await inquirer.prompt([
-              {
-                type: 'input',
-                name: 'typedConfirm',
-                message: chalk.red.bold('Type "DELETE" to confirm permanent deletion:'),
-                validate: (input) => {
-                  if (input !== 'DELETE') {
-                    return chalk.red('You must type "DELETE" exactly to proceed');
-                  }
-                  return true;
-                },
+          if (confirmDelete) {
+            const typedConfirm = await prompts.text({
+              message: chalk.red.bold('Type "DELETE" to confirm permanent deletion:'),
+              validate: (input) => {
+                if (input !== 'DELETE') {
+                  return chalk.red('You must type "DELETE" exactly to proceed');
+                }
+                return; // clack expects undefined for valid input
               },
-            ]);
+            });
 
             if (typedConfirm === 'DELETE') {
               // Remove the module from filesystem and manifest
-              const modulePath = path.join(bmadDir, moduleId);
+              const modulePath = path.join(bmadDir, missing.id);
               if (await fs.pathExists(modulePath)) {
                 const fsExtra = require('fs-extra');
                 await fsExtra.remove(modulePath);
                 console.log(chalk.yellow(`  ✓ Deleted module directory: ${path.relative(projectRoot, modulePath)}`));
               }
 
-              await this.manifest.removeModule(bmadDir, moduleId);
-              await this.manifest.removeCustomModule(bmadDir, moduleId);
+              await this.manifest.removeModule(bmadDir, missing.id);
+              await this.manifest.removeCustomModule(bmadDir, missing.id);
               console.log(chalk.yellow(`  ✓ Removed from manifest`));
 
               // Also remove from installedModules list
-              if (installedModules && installedModules.includes(moduleId)) {
-                const index = installedModules.indexOf(moduleId);
+              if (installedModules && installedModules.includes(missing.id)) {
+                const index = installedModules.indexOf(missing.id);
                 if (index !== -1) {
                   installedModules.splice(index, 1);
                 }
@@ -2591,7 +2569,7 @@ class Installer {
         }
         case 'keep': {
           keptCount++;
-          keptModulesWithoutSources.push(moduleId);
+          keptModulesWithoutSources.push(missing.id);
           console.log(chalk.dim(`  Module will be kept as-is`));
 
           break;
