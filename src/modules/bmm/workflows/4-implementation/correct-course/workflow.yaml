@@ -13,7 +13,7 @@ implementation_artifacts: "{config_source}:implementation_artifacts"
 planning_artifacts: "{config_source}:planning_artifacts"
 project_knowledge: "{config_source}:project_knowledge"
 output_folder: "{implementation_artifacts}"
-sprint_status: "{implementation_artifacts}/sprint-status.yaml || {output_folder}/sprint-status.yaml"
+sprint_status: "{implementation_artifacts}/sprint-status.yaml"
 
 # Smart input file references - handles both whole docs and sharded docs
 # Priority: Whole document first, then sharded version

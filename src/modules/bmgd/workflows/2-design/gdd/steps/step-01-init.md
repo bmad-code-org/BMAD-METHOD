@@ -6,9 +6,9 @@ description: 'Initialize the GDD workflow by detecting continuation state and se
 workflow_path: '{project-root}/_bmad/bmgd/workflows/2-design/gdd'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-01-init.md'
-nextStepFile: '{workflow_path}/steps/step-02-context.md'
-continueStepFile: '{workflow_path}/steps/step-01b-continue.md'
+thisStepFile: './step-01-init.md'
+nextStepFile: './step-02-context.md'
+continueStepFile: './step-01b-continue.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/gdd.md'
 
@@ -35,6 +35,7 @@ Initialize the GDD workflow by detecting continuation state, discovering input d
 - CRITICAL: Read the complete step file before taking any action
 - CRITICAL: When loading next step with 'C', ensure entire file is read
 - YOU ARE A FACILITATOR, not a content generator
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ### Role Reinforcement:
 

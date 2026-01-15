@@ -659,7 +659,7 @@ Enforcement: "All agents MUST follow this pattern"
 
   </check>
 
-<action>Save document to {output_folder}/architecture.md</action>
+<action>Save document to {planning_artifacts}/architecture.md</action>
 
   <check if="standalone_mode != true">
     <action>Load the FULL file: {output_folder}/bmgd-workflow-status.yaml</action>

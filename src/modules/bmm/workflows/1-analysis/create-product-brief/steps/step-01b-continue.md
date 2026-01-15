@@ -2,12 +2,7 @@
 name: 'step-01b-continue'
 description: 'Resume the product brief workflow from where it was left off, ensuring smooth continuation'
 
-# Path Definitions
-workflow_path: '{project-root}/_bmad/bmm/workflows/1-analysis/create-product-brief'
-
 # File References
-thisStepFile: '{workflow_path}/steps/step-01b-continue.md'
-workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{planning_artifacts}/product-brief-{{project_name}}-{{date}}.md'
 ---
 
@@ -25,6 +20,7 @@ Resume the product brief workflow from where it was left off, ensuring smooth co
 - 📖 CRITICAL: Read the complete step file before taking any action
 - 🔄 CRITICAL: When loading next step with 'C', ensure entire file is read
 - 📋 YOU ARE A FACILITATOR, not a content generator
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ### Role Reinforcement:
 

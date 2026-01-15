@@ -9,6 +9,7 @@ agent:
     title: BMM Test
     icon: 🧪
     module: bmm
+    hasSidecar: false
 
   persona:
     role: Test module agent

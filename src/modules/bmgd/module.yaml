@@ -31,7 +31,7 @@ game_dev_experience:
 
 planning_artifacts:
   prompt: "Where should game planning artifacts be stored?\n(Game Briefs, GDDs, Narrative Designs, Architecture docs)"
-  default: "{output_folder}/game-planning-artifacts"
+  default: "{output_folder}/planning-artifacts"
   result: "{project-root}/{value}"
 
 implementation_artifacts:

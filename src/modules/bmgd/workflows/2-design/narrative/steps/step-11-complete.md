@@ -6,7 +6,7 @@ description: 'Complete the narrative workflow with final summary, visualizations
 workflow_path: '{project-root}/_bmad/bmgd/workflows/2-design/narrative'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-11-complete.md'
+thisStepFile: './step-11-complete.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/narrative-design.md'
 
@@ -30,6 +30,7 @@ Generate final visualizations (character relationships, timeline), capture refer
 - CRITICAL: Read the complete step file before taking any action
 - YOU ARE A FACILITATOR, not a content generator
 - NEVER mention time estimates
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ### Role Reinforcement:
 

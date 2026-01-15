@@ -11,6 +11,7 @@
 - 💬 FOCUS on successful workflow completion and implementation handoff
 - 🎯 PROVIDE clear next steps for implementation phase
 - ⚠️ ABSOLUTELY NO TIME ESTIMATES - AI development speed has fundamentally changed
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ## EXECUTION PROTOCOLS:
 
@@ -116,7 +117,7 @@ Provide specific next steps for implementation:
 
 **Immediate Next Steps:**
 
-1. **Review the complete architecture document** at `{output_folder}/architecture.md`
+1. **Review the complete architecture document** at `{planning_artifacts}/architecture.md`
 2. **Begin with project initialization** using the starter template command documented
 3. **Create first implementation story** for project setup
 4. **Start implementing user stories** following the architectural decisions
@@ -151,7 +152,7 @@ Prepare the final content to append to the document:
 **Architecture Decision Workflow:** COMPLETED ✅
 **Total Steps Completed:** 8
 **Date Completed:** {{current_date}}
-**Document Location:** {output_folder}/architecture.md
+**Document Location:** {planning_artifacts}/architecture.md
 
 ### Final Architecture Deliverables
 
@@ -243,15 +244,15 @@ The chosen starter template and architectural patterns provide a production-read
 
 **Save Final Document:**
 
-- Ensure all content is properly appended to `{output_folder}/architecture.md`
+- Ensure all content is properly appended to `{planning_artifacts}/architecture.md`
 - Update frontmatter with completion status
 - Verify document is complete and coherent
 
 **Workflow Status Update:**
 If not in standalone mode, update workflow status:
 
-- Load `{output_folder}/bmm-workflow-status.yaml`
-- Update workflow_status["create-architecture"] = "{output_folder}/architecture.md"
+- Load `{planning_artifacts}/bmm-workflow-status.yaml`
+- Update workflow_status["create-architecture"] = "{planning_artifacts}/architecture.md"
 - Save file with all structure and comments preserved
 
 ### 6. Present Completion to User
@@ -268,7 +269,7 @@ Your architecture for {{project_name}} is comprehensive, validated, and ready fo
 - Implementation guidance for the development phase
 
 **📍 Where to find it:**
-`{output_folder}/architecture.md`
+`{planning_artifacts}/architecture.md`
 
 **🚀 What's next:**
 

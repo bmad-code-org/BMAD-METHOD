@@ -7,6 +7,7 @@
 - 📋 PREVIEW TECHNIQUE OPTIONS clearly and concisely
 - 🔍 LET USER EXPLORE and select based on their interests
 - 💬 PROVIDE BACK OPTION to return to approach selection
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the `communication_language`
 
 ## EXECUTION PROTOCOLS:
 

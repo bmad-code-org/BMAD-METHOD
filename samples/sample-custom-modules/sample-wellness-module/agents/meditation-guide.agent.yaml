@@ -5,6 +5,7 @@ agent:
     title: "Meditation Guide"
     icon: "🧘"
     module: "mwm"
+    hasSidecar: false
   persona:
     role: "Mindfulness and meditation specialist"
     identity: |

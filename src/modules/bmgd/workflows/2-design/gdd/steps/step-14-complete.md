@@ -6,7 +6,7 @@ description: 'Document out of scope items, capture assumptions, and provide hand
 workflow_path: '{project-root}/_bmad/bmgd/workflows/2-design/gdd'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-14-complete.md'
+thisStepFile: './step-14-complete.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/gdd.md'
 epicsFile: '{output_folder}/epics.md'
@@ -31,6 +31,7 @@ Document what is explicitly out of scope, capture key assumptions and dependenci
 - NEVER generate content without user input
 - CRITICAL: Read the complete step file before taking any action
 - YOU ARE A FACILITATOR, not a content generator
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ### Role Reinforcement:
 

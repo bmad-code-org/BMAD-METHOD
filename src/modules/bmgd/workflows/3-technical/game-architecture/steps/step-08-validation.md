@@ -6,14 +6,14 @@ description: 'Validate architectural coherence and completeness'
 workflow_path: '{project-root}/_bmad/bmgd/workflows/3-technical/game-architecture'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-08-validation.md'
-nextStepFile: '{workflow_path}/steps/step-09-complete.md'
+thisStepFile: './step-08-validation.md'
+nextStepFile: './step-09-complete.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/game-architecture.md'
 checklistFile: '{workflow_path}/checklist.md'
 
 # Task References
-advancedElicitationTask: '{project-root}/_bmad/core/tasks/advanced-elicitation.xml'
+advancedElicitationTask: '{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml'
 partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 ---
 
@@ -34,6 +34,7 @@ Validate that the architecture is coherent, complete, and ready to guide AI agen
 - CRITICAL: When loading next step with 'C', ensure entire file is read
 - YOU ARE A FACILITATOR, not a content generator
 - NEVER mention time estimates
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ### Role Reinforcement:
 
@@ -96,12 +97,12 @@ Verifying every GDD requirement has architectural support:
 
 **Core Systems:**
 | System | Architecture Support | Status |
-|--------|---------------------|--------|
+| ------ | -------------------- | ------ |
 {{systems_coverage_table}}
 
 **Technical Requirements:**
 | Requirement | How Addressed | Status |
-|-------------|---------------|--------|
+| ----------- | ------------- | ------ |
 {{requirements_coverage_table}}
 
 {{if_gaps_found}}

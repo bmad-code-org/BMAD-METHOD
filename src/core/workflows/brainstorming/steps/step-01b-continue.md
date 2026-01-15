@@ -7,6 +7,7 @@
 - 📋 UNDERSTAND PREVIOUS SESSION context and outcomes
 - 🔍 SEAMLESSLY RESUME from where user left off
 - 💬 MAINTAIN CONTINUITY in session flow and rapport
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the `communication_language`
 
 ## EXECUTION PROTOCOLS:
 

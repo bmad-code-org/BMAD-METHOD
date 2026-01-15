@@ -12,7 +12,7 @@ user_skill_level: "{config_source}:user_skill_level"
 document_output_language: "{config_source}:document_output_language"
 date: system-generated
 implementation_artifacts: "{config_source}:implementation_artifacts"
-sprint_status: "{implementation_artifacts}/sprint-status.yaml || {output_folder}/sprint-status.yaml"
+sprint_status: "{implementation_artifacts}/sprint-status.yaml"
 
 # Workflow components
 installed_path: "{project-root}/_bmad/bmgd/workflows/4-production/code-review"

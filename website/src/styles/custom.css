@@ -1,0 +1,483 @@
+/**
+ * BMAD Method Documentation - Custom Styles for Starlight
+ * Electric Blue theme optimized for dark mode
+ *
+ * CSS Variable Mapping:
+ * Docusaurus → Starlight
+ * --ifm-color-primary → --sl-color-accent
+ * --ifm-background-color → --sl-color-bg
+ * --ifm-font-color-base → --sl-color-text
+ */
+
+/* ============================================
+   COLOR PALETTE - Light Mode
+   ============================================ */
+:root {
+  --ai-banner-height: 2.75rem;
+  --sl-nav-height: 6.25rem; /* Base nav height (~3.5rem) + banner height (2.75rem) */
+
+  /* Primary accent colors - purple to match Docusaurus */
+  --sl-color-accent-low: #e0e0ff;
+  --sl-color-accent: #8C8CFF;
+  --sl-color-accent-high: #4141FF;
+
+  /* Text colors */
+  --sl-color-white: #1e293b;
+  --sl-color-gray-1: #334155;
+  --sl-color-gray-2: #475569;
+  --sl-color-gray-3: #64748b;
+  --sl-color-gray-4: #94a3b8;
+  --sl-color-gray-5: #cbd5e1;
+  --sl-color-gray-6: #e2e8f0;
+  --sl-color-black: #f8fafc;
+
+  /* Font settings */
+  --sl-font: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
+    Arial, sans-serif;
+  --sl-text-base: 1rem;
+  --sl-line-height: 1.7;
+
+  /* Code highlighting */
+  --sl-color-bg-inline-code: rgba(140, 140, 255, 0.1);
+}
+
+/* ============================================
+   COLOR PALETTE - Dark Mode (Primary Focus)
+   ============================================ */
+:root[data-theme='dark'] {
+  /* Primary accent colors - purple to match Docusaurus */
+  --sl-color-accent-low: #2a2a5a;
+  --sl-color-accent: #8C8CFF;
+  --sl-color-accent-high: #B9B9FF;
+
+  /* Background colors */
+  --sl-color-bg: #1b1b1d;
+  --sl-color-bg-nav: #1b1b1d;
+  --sl-color-bg-sidebar: #1b1b1d;
+  --sl-color-hairline-light: rgba(140, 140, 255, 0.1);
+  --sl-color-hairline: rgba(140, 140, 255, 0.15);
+
+  /* Text colors */
+  --sl-color-white: #f8fafc;
+  --sl-color-gray-1: #e2e8f0;
+  --sl-color-gray-2: #cbd5e1;
+  --sl-color-gray-3: #94a3b8;
+  --sl-color-gray-4: #64748b;
+  --sl-color-gray-5: #475569;
+  --sl-color-gray-6: #334155;
+  --sl-color-black: #1b1b1d;
+
+  /* Code highlighting */
+  --sl-color-bg-inline-code: rgba(140, 140, 255, 0.15);
+}
+
+/* ============================================
+   TYPOGRAPHY
+   ============================================ */
+.sl-markdown-content h1 {
+  margin-bottom: 1.5rem;
+}
+
+.sl-markdown-content h2 {
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.sl-markdown-content h3 {
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+}
+
+.sl-markdown-content p {
+  margin-bottom: 1.25rem;
+}
+
+/* ============================================
+   SIDEBAR & NAVIGATION
+   Clean styling inspired by React Native docs
+   ============================================ */
+
+/* Base transition for all sidebar links */
+.sidebar-content a {
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease;
+  border-radius: 4px;
+}
+
+/* Top-level sidebar items (Diataxis categories) */
+.sidebar-content > ul > li > details > summary,
+.sidebar-content > ul > li > a {
+  font-weight: 700;
+  font-size: 0.9375rem;
+  padding: 0.5rem 0.75rem;
+}
+
+/* Nested sidebar items */
+.sidebar-content ul ul a {
+  font-weight: 500;
+  font-size: 0.875rem;
+  padding: 0.375rem 0.75rem;
+  padding-left: 1.5rem;
+  border-left: 3px solid transparent;
+}
+
+/* Deep nested items */
+.sidebar-content ul ul ul a {
+  font-weight: 400;
+  font-size: 0.8125rem;
+  padding-left: 2.25rem;
+}
+
+/* Active state - thin left accent bar */
+.sidebar-content a[aria-current='page'] {
+  background-color: rgba(140, 140, 255, 0.08);
+  color: var(--sl-color-accent);
+  border-left-color: var(--sl-color-accent);
+  font-weight: 600;
+}
+
+:root[data-theme='dark'] .sidebar-content a[aria-current='page'] {
+  background-color: rgba(140, 140, 255, 0.1);
+  color: var(--sl-color-accent-high);
+  border-left-color: var(--sl-color-accent);
+}
+
+/* Hover states */
+.sidebar-content a:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+:root[data-theme='dark'] .sidebar-content a:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Section spacing */
+.sidebar-content > ul > li {
+  margin-top: 0.75rem;
+}
+
+.sidebar-content > ul > li:first-child {
+  margin-top: 0;
+}
+
+/* Lighter chevrons/carets */
+.sidebar-content summary::marker,
+.sidebar-content details > summary::after {
+  opacity: 0.4;
+}
+
+.sidebar-content summary:hover::marker,
+.sidebar-content details > summary:hover::after {
+  opacity: 0.6;
+}
+
+/* ============================================
+   LAYOUT - Fixed width at large viewport
+   ============================================ */
+.content-panel {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Main content area */
+main {
+  min-width: 0;
+}
+
+.sl-markdown-content {
+  min-width: 0;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+/* Hide breadcrumbs if desired */
+/* Uncomment to hide:
+nav[aria-label="Breadcrumb"] {
+  display: none;
+}
+*/
+
+/* ============================================
+   NAVBAR
+   ============================================ */
+header.header {
+  padding: 0 !important; /* Remove all padding for full-width banner */
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  height: var(--sl-nav-height) !important;
+  display: flex;
+  flex-direction: column;
+}
+
+header.header .header.sl-flex {
+  padding: 0 1.5rem;
+  height: calc(var(--sl-nav-height) - var(--ai-banner-height));
+  width: 100%;
+}
+
+:root[data-theme='dark'] header.header {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.site-title {
+  font-weight: 700;
+}
+
+/* Logo sizing - constrain to reasonable size */
+.site-title img {
+  height: 2.5rem;
+  width: auto;
+}
+
+/* Social links styling */
+.social-icons a {
+  padding: 0.5rem;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+  border-radius: 6px;
+}
+
+.social-icons a:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+:root[data-theme='dark'] .social-icons a:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* ============================================
+   CARDS
+   ============================================ */
+.card {
+  border-radius: 12px;
+  border: 2px solid var(--sl-color-gray-5);
+  background-color: var(--sl-color-bg);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  border-color: var(--sl-color-accent);
+  box-shadow: 0 8px 24px rgba(140, 140, 255, 0.15);
+}
+
+:root[data-theme='dark'] .card {
+  background: linear-gradient(145deg, rgba(30, 41, 59, 0.6), rgba(15, 23, 42, 0.8));
+  border-color: rgba(140, 140, 255, 0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+:root[data-theme='dark'] .card:hover {
+  border-color: rgba(140, 140, 255, 0.5);
+  box-shadow:
+    0 8px 32px rgba(140, 140, 255, 0.2),
+    0 0 0 1px rgba(140, 140, 255, 0.1);
+}
+
+/* Starlight card grid */
+.sl-link-card {
+  border-radius: 12px;
+  border: 2px solid var(--sl-color-gray-5);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.sl-link-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--sl-color-accent);
+}
+
+:root[data-theme='dark'] .sl-link-card {
+  border-color: rgba(140, 140, 255, 0.2);
+}
+
+:root[data-theme='dark'] .sl-link-card:hover {
+  border-color: rgba(140, 140, 255, 0.5);
+}
+
+/* ============================================
+   BUTTONS
+   ============================================ */
+.sl-flex a[href],
+button {
+  transition:
+    background-color 0.2s ease,
+    transform 0.1s ease;
+}
+
+.sl-flex a[href]:hover,
+button:hover {
+  transform: translateY(-1px);
+}
+
+/* ============================================
+   MISC ENHANCEMENTS
+   ============================================ */
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Better link underlines */
+.sl-markdown-content a:not(.sl-link-card) {
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+/* Table styling */
+table {
+  display: table;
+  width: 100%;
+}
+
+:root[data-theme='dark'] table {
+  border-color: rgba(140, 140, 255, 0.1);
+}
+
+:root[data-theme='dark'] table th {
+  background-color: rgba(140, 140, 255, 0.05);
+}
+
+:root[data-theme='dark'] table tr:nth-child(2n) {
+  background-color: rgba(140, 140, 255, 0.02);
+}
+
+/* Blockquotes */
+blockquote {
+  border-left-color: var(--sl-color-accent);
+  background-color: rgba(140, 140, 255, 0.05);
+  border-radius: 0 8px 8px 0;
+  padding: 1rem 1.25rem;
+}
+
+/* ============================================
+   ADMONITIONS (Starlight Asides)
+   Rounded, no left border bar
+   ============================================ */
+.starlight-aside {
+  margin-bottom: 1.5rem;
+  padding: 1.25rem 1.5rem;
+  border-radius: 12px;
+  border: none;
+  border-left: 0;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+/* Tip aside */
+.starlight-aside--tip {
+  background-color: rgba(16, 185, 129, 0.08);
+}
+
+.starlight-aside--tip .starlight-aside__title {
+  color: #059669;
+}
+
+:root[data-theme='dark'] .starlight-aside--tip {
+  background-color: rgba(16, 185, 129, 0.12);
+}
+
+:root[data-theme='dark'] .starlight-aside--tip .starlight-aside__title {
+  color: #34d399;
+}
+
+/* Note aside */
+.starlight-aside--note {
+  background-color: rgba(140, 140, 255, 0.08);
+}
+
+.starlight-aside--note .starlight-aside__title {
+  color: #8C8CFF;
+}
+
+:root[data-theme='dark'] .starlight-aside--note {
+  background-color: rgba(140, 140, 255, 0.12);
+}
+
+:root[data-theme='dark'] .starlight-aside--note .starlight-aside__title {
+  color: #8C8CFF;
+}
+
+/* Caution aside */
+.starlight-aside--caution {
+  background-color: rgba(245, 158, 11, 0.1);
+}
+
+.starlight-aside--caution .starlight-aside__title {
+  color: #d97706;
+}
+
+:root[data-theme='dark'] .starlight-aside--caution {
+  background-color: rgba(245, 158, 11, 0.15);
+}
+
+:root[data-theme='dark'] .starlight-aside--caution .starlight-aside__title {
+  color: #fbbf24;
+}
+
+/* Danger aside */
+.starlight-aside--danger {
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+.starlight-aside--danger .starlight-aside__title {
+  color: #dc2626;
+}
+
+:root[data-theme='dark'] .starlight-aside--danger {
+  background-color: rgba(239, 68, 68, 0.15);
+}
+
+:root[data-theme='dark'] .starlight-aside--danger .starlight-aside__title {
+  color: #f87171;
+}
+
+/* Aside icon styling */
+.starlight-aside__icon svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* ============================================
+   FOOTER - Minimal styling
+   ============================================ */
+footer {
+  background-color: var(--sl-color-black);
+  border-top: 1px solid var(--sl-color-hairline);
+}
+
+:root[data-theme='dark'] footer {
+  background-color: #020617;
+}
+
+/* ============================================
+   RESPONSIVE ADJUSTMENTS
+   ============================================ */
+@media (max-width: 72rem) {
+  .content-panel {
+    max-width: 100%;
+  }
+}
+
+/* Responsive padding on navbar row only - banner stays full-width */
+@media (min-width: 50rem) {
+  header.header .header.sl-flex {
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+  }
+}
+
+@media (min-width: 72rem) {
+  header.header .header.sl-flex {
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
+}

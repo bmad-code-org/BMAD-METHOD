@@ -3,9 +3,9 @@ name: 'step-01-mode-detection'
 description: 'Determine execution mode (tech-spec vs direct), handle escalation, set state variables'
 
 workflow_path: '{project-root}/_bmad/bmm/workflows/bmad-quick-flow/quick-dev'
-thisStepFile: '{workflow_path}/steps/step-01-mode-detection.md'
-nextStepFile_modeA: '{workflow_path}/steps/step-03-execute.md'
-nextStepFile_modeB: '{workflow_path}/steps/step-02-context-gathering.md'
+thisStepFile: './step-01-mode-detection.md'
+nextStepFile_modeA: './step-03-execute.md'
+nextStepFile_modeB: './step-02-context-gathering.md'
 ---
 
 # Step 1: Mode Detection
@@ -40,7 +40,7 @@ First, check if the project uses Git version control:
 
 ### 2. Load Project Context
 
-Check if `{project_context}` exists (`**/project-context.md`). If found, load it - this is foundational reference for ALL implementation decisions.
+Check if `{project_context}` exists (`**/project-context.md`). If found, load it as a foundational reference for ALL implementation decisions.
 
 ### 3. Parse User Input
 
@@ -95,7 +95,7 @@ Present choice:
 **[e] Execute directly** - Start now
 ```
 
-- **[t]:** Direct user to `{create_tech_spec_workflow}`. **EXIT Quick Dev.**
+- **[t]:** Direct user to `{quick_spec_workflow}`. **EXIT Quick Dev.**
 - **[e]:** Ask for any additional guidance, then **NEXT:** Load `step-02-context-gathering.md`
 
 ### Escalation Triggered - Level 0-2
@@ -108,7 +108,7 @@ This looks like a focused feature with multiple components.
 **[e] Execute directly**
 ```
 
-- **[t]:** Direct to `{create_tech_spec_workflow}`. **EXIT Quick Dev.**
+- **[t]:** Direct to `{quick_spec_workflow}`. **EXIT Quick Dev.**
 - **[w]:** Direct to `{workflow_init}`. **EXIT Quick Dev.**
 - **[e]:** Ask for guidance, then **NEXT:** Load `step-02-context-gathering.md`
 
@@ -123,7 +123,7 @@ This sounds like platform/system work.
 ```
 
 - **[w]:** Direct to `{workflow_init}`. **EXIT Quick Dev.**
-- **[t]:** Direct to `{create_tech_spec_workflow}`. **EXIT Quick Dev.**
+- **[t]:** Direct to `{quick_spec_workflow}`. **EXIT Quick Dev.**
 - **[e]:** Ask for guidance, then **NEXT:** Load `step-02-context-gathering.md`
 
 ---

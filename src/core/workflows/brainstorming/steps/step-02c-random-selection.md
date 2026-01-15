@@ -7,6 +7,7 @@
 - 📋 LOAD TECHNIQUES ON-DEMAND from brain-methods.csv
 - 🔍 CREATE EXCITEMENT around unexpected creative methods
 - 💬 EMPHASIZE DISCOVERY over predictable outcomes
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the `communication_language`
 
 ## EXECUTION PROTOCOLS:
 

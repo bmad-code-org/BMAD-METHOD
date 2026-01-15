@@ -1,6 +1,6 @@
 # Document Project Workflow - Validation Checklist
 
-## Scan Level and Resumability (v1.2.0)
+## Scan Level and Resumability
 
 - [ ] Scan level selection offered (quick/deep/exhaustive) for initial_scan and full_rescan modes
 - [ ] Deep-dive mode automatically uses exhaustive scan (no choice given)
@@ -223,7 +223,7 @@
 
 All items in the following sections must be checked:
 
-- ✓ Scan Level and Resumability (v1.2.0)
+- ✓ Scan Level and Resumability
 - ✓ Write-as-you-go Architecture
 - ✓ Batching Strategy (if deep/exhaustive scan)
 - ✓ Project Detection and Classification

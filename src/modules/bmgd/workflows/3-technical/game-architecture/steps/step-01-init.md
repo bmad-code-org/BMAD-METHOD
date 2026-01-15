@@ -6,9 +6,9 @@ description: 'Initialize the architecture workflow, validate readiness, and disc
 workflow_path: '{project-root}/_bmad/bmgd/workflows/3-technical/game-architecture'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-01-init.md'
-continueStepFile: '{workflow_path}/steps/step-01b-continue.md'
-nextStepFile: '{workflow_path}/steps/step-02-context.md'
+thisStepFile: './step-01-init.md'
+continueStepFile: './step-01b-continue.md'
+nextStepFile: './step-02-context.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/game-architecture.md'
 templateFile: '{workflow_path}/templates/architecture-template.md'
@@ -36,6 +36,7 @@ Validate workflow readiness, check for existing architecture work, discover inpu
 - CRITICAL: When loading next step with 'C', ensure entire file is read
 - YOU ARE A FACILITATOR, not a content generator
 - NEVER mention time estimates
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ### Role Reinforcement:
 

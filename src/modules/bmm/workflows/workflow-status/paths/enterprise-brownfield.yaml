@@ -7,116 +7,97 @@ field_type: "brownfield"
 description: "Enterprise-grade planning for complex brownfield additions with extended requirements"
 
 phases:
-  - prerequisite: true
+  - phase: 0
     name: "Documentation"
     conditional: "if_undocumented"
-    note: "NOT a phase - prerequisite for brownfield without docs (nearly mandatory for enterprise)"
+    note: "Prerequisite for brownfield without docs"
     workflows:
       - id: "document-project"
         required: true
+        workflow: "{project-root}/_bmad/bmm/workflows/document-project/workflow.yaml"
         agent: "analyst"
-        command: "document-project"
+        command: "/bmad:bmm:workflows:document-project"
         output: "Comprehensive project documentation"
-        purpose: "Understand existing codebase - critical for enterprise brownfield"
-
-  - phase: 0
-    name: "Discovery (Required)"
-    required: true
-    note: "Analysis phase required for enterprise projects"
+        purpose: "Understand existing codebase before planning"
+  - phase: 1
+    name: "Analysis (Optional)"
+    optional: true
+    note: "User-selected during workflow-init"
     workflows:
       - id: "brainstorm-project"
+        exec: "{project-root}/_bmad/core/workflows/brainstorming/workflow.md"
         optional: true
         agent: "analyst"
-        command: "brainstorm-project"
+        command: "/bmad:bmm:workflows:brainstorming"
+        included_by: "user_choice"
         note: "Uses core brainstorming workflow with project context template"
-        included_by: "user_choice"
-
       - id: "research"
-        recommended: true
-        agent: "analyst"
-        command: "research"
-        included_by: "user_choice"
-        note: "Highly recommended - compliance, integration, risk research"
-
-      - id: "product-brief"
+        exec: "{project-root}/_bmad/bmm/workflows/1-analysis/research/workflow.md"
         optional: true
         agent: "analyst"
-        command: "product-brief"
+        command: "/bmad:bmm:workflows:research"
         included_by: "user_choice"
-        note: "Optional for brownfield enterprise"
-
-  - phase: 1
+        note: "Can have multiple research workflows"
+      - id: "product-brief"
+        exec: "{project-root}/_bmad/bmm/workflows/1-analysis/create-product-brief/workflow.md"
+        optional: true
+        agent: "analyst"
+        command: "/bmad:bmm:workflows:create-product-brief"
+        included_by: "user_choice"
+        note: "Recommended for greenfield Method projects"
+  - phase: 2
     name: "Planning"
     required: true
     workflows:
       - id: "prd"
+        exec: "{project-root}/_bmad/bmm/workflows/2-plan-workflows/prd/workflow.md"
         required: true
         agent: "pm"
-        command: "prd"
-        output: "Enterprise PRD with compliance requirements"
-        note: "Must address existing system constraints and migration strategy"
-
+        command: "/bmad:bmm:workflows:create-prd"
+        output: "Product Requirements Document with FRs and NFRs"
       - id: "create-ux-design"
-        recommended: true
+        conditional: "if_has_ui"
+        exec: "{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-ux-design/workflow.md"
         agent: "ux-designer"
-        command: "create-ux-design"
-        note: "Recommended - must integrate with existing UX patterns"
-
-  - phase: 2
+        command: "/bmad:bmm:workflows:create-ux-design"
+        note: "Determined after PRD - user/agent decides if needed"
+  - phase: 3
     name: "Solutioning"
     required: true
     workflows:
       - id: "create-architecture"
         required: true
+        exec: "{project-root}/_bmad/bmm/workflows/3-solutioning/create-architecture/workflow.md"
         agent: "architect"
-        command: "create-architecture"
-        output: "Integration architecture with enterprise considerations"
-        note: "Distills brownfield context + adds security/scalability/compliance design"
-
+        command: "/bmad:bmm:workflows:create-architecture"
+        output: "System architecture document"
+        note: "Complete system design for greenfield projects"
       - id: "create-epics-and-stories"
         required: true
+        exec: "{project-root}/_bmad/bmm/workflows/3-solutioning/create-epics-and-stories/workflow.md"
         agent: "pm"
-        command: "create-epics-and-stories"
+        command: "/bmad:bmm:workflows:create-epics-and-stories"
         note: "Required: Break down PRD into implementable epics and stories with full context (PRD + UX + Architecture)"
-
       - id: "test-design"
-        required: true
+        optional: true
+        workflow: "{project-root}/_bmad/bmm/workflows/testarch/test-design/workflow.yaml"
         agent: "tea"
-        command: "test-design"
+        command: "/bmad:bmm:workflows:test-design"
         output: "System-level testability review"
-        note: "Enterprise requires testability validation - auto-detects system-level mode"
-
-      # - id: "create-security-architecture"
-      #   optional: true
-      #   agent: "architect"
-      #   command: "create-security-architecture"
-      #   output: "Security architecture for brownfield integration"
-      #   note: "Future workflow - optional extended enterprise workflow for threat model, auth integration, audit requirements"
-
-      # - id: "create-devops-strategy"
-      #   optional: true
-      #   agent: "architect"
-      #   command: "create-devops-strategy"
-      #   output: "DevOps strategy for brownfield deployment"
-      #   note: "Future workflow - optional extended enterprise workflow for CI/CD integration, deployment strategy, monitoring"
-
-      - id: "validate-architecture"
-        recommended: true
-        agent: "architect"
-        command: "validate-architecture"
-
+        note: "Testability assessment before gate check - auto-detects system-level mode"
       - id: "implementation-readiness"
         required: true
+        exec: "{project-root}/_bmad/bmm/workflows/3-solutioning/check-implementation-readiness/workflow.md"
         agent: "architect"
-        command: "implementation-readiness"
+        command: "/bmad:bmm:workflows:implementation-readiness"
         note: "Validates PRD + Architecture + Epics + UX (optional)"
-
-  - phase: 3
+  - phase: 4
     name: "Implementation"
     required: true
     workflows:
       - id: "sprint-planning"
         required: true
+        workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/sprint-planning/workflow.yaml"
         agent: "sm"
-        command: "sprint-planning"
-        note: "Enterprise brownfield requires careful phasing and feature flags"
+        command: "/bmad:bmm:workflows:sprint-planning"
+        note: "Creates sprint plan - subsequent work tracked there"

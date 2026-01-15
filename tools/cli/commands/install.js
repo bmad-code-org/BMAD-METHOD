@@ -9,9 +9,15 @@ const ui = new UI();
 module.exports = {
   command: 'install',
   description: 'Install BMAD Core agents and tools',
-  options: [],
+  options: [['-d, --debug', 'Enable debug output for manifest generation']],
   action: async (options) => {
     try {
+      // Set debug flag as environment variable for all components
+      if (options.debug) {
+        process.env.BMAD_DEBUG_MANIFEST = 'true';
+        console.log(chalk.cyan('Debug mode enabled\n'));
+      }
+
       const config = await ui.promptInstall();
 
       // Handle cancel
@@ -65,17 +71,9 @@ module.exports = {
           console.log(chalk.dim('  • ElevenLabs AI (150+ premium voices)'));
           console.log(chalk.dim('  • Piper TTS (50+ free voices)\n'));
 
-          const readline = require('node:readline');
-          const rl = readline.createInterface({
-            input: process.stdin,
-            output: process.stdout,
-          });
-
-          await new Promise((resolve) => {
-            rl.question(chalk.green('Press Enter to start AgentVibes installer...'), () => {
-              rl.close();
-              resolve();
-            });
+          const prompts = require('../lib/prompts');
+          await prompts.text({
+            message: chalk.green('Press Enter to start AgentVibes installer...'),
           });
 
           console.log('');

@@ -7,6 +7,7 @@ author: "BMad"
 config_source: "{project-root}/_bmad/bmm/config.yaml"
 output_folder: "{config_source}:output_folder"
 implementation_artifacts: "{config_source}:implementation_artifacts"
+planning_artifacts: "{config_source}:planning_artifacts"
 user_name: "{config_source}:user_name"
 project_name: "{config_source}:project_name"
 communication_language: "{config_source}:communication_language"
@@ -23,7 +24,7 @@ template: "{project-root}/_bmad/bmm/workflows/workflow-status/workflow-status-te
 path_files: "{project-root}/_bmad/bmm/workflows/workflow-status/paths/"
 
 # Output configuration
-default_output_file: "{output_folder}/bmm-workflow-status.yaml"
+default_output_file: "{planning_artifacts}/bmm-workflow-status.yaml"
 
 standalone: true
 web_bundle: false

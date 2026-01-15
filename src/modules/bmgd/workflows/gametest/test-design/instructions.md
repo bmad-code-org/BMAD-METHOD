@@ -91,6 +91,18 @@ Create comprehensive test scenarios for game projects, covering gameplay mechani
 | Performance   | FPS, loading times  | P1       |
 | Accessibility | Assist features     | P1       |
 
+### E2E Journey Testing
+
+**Knowledge Base Reference**: `knowledge/e2e-testing.md`
+
+| Category | Focus | Priority |
+|----------|-------|----------|
+| Core Loop | Complete gameplay cycle | P0 |
+| Turn Lifecycle | Full turn from start to end | P0 |
+| Save/Load Round-trip | Save → quit → load → resume | P0 |
+| Scene Transitions | Menu → Game → Back | P1 |
+| Win/Lose Paths | Victory and defeat conditions | P1 |
+
 ---
 
 ## Step 3: Create Test Scenarios
@@ -153,6 +165,39 @@ SCENARIO: Gameplay Under High Latency
   CATEGORY: multiplayer
 ```
 
+### E2E Scenario Format
+
+For player journey tests, use this extended format:
+```
+E2E SCENARIO: [Player Journey Name]
+  GIVEN [Initial game state - use ScenarioBuilder terms]
+  WHEN [Sequence of player actions]
+  THEN [Observable outcomes]
+  TIMEOUT: [Expected max duration in seconds]
+  PRIORITY: P0/P1
+  CATEGORY: e2e
+  INFRASTRUCTURE: [Required fixtures/builders]
+```
+
+### Example E2E Scenario
+```
+E2E SCENARIO: Complete Combat Encounter
+  GIVEN game loaded with player unit adjacent to enemy
+  AND player unit has full health and actions
+  WHEN player selects unit
+  AND player clicks attack on enemy
+  AND player confirms attack
+  AND attack animation completes
+  AND enemy responds (if alive)
+  THEN enemy health is reduced OR enemy is defeated
+  AND turn state advances appropriately
+  AND UI reflects new state
+  TIMEOUT: 15
+  PRIORITY: P0
+  CATEGORY: e2e
+  INFRASTRUCTURE: ScenarioBuilder, InputSimulator, AsyncAssert
+```
+
 ---
 
 ## Step 4: Prioritize Test Coverage
@@ -161,12 +206,12 @@ SCENARIO: Gameplay Under High Latency
 
 **Knowledge Base Reference**: `knowledge/test-priorities.md`
 
-| Priority | Criteria                     | Coverage Target |
-| -------- | ---------------------------- | --------------- |
-| P0       | Ship blockers, certification | 100% automated  |
-| P1       | Major features, common paths | 80% automated   |
-| P2       | Secondary features           | 60% automated   |
-| P3       | Edge cases, polish           | Manual only     |
+| Priority | Criteria | Unit | Integration | E2E | Manual |
+|----------|----------|------|-------------|-----|--------|
+| P0 | Ship blockers | 100% | 80% | Core flows | Smoke |
+| P1 | Major features | 90% | 70% | Happy paths | Full |
+| P2 | Secondary | 80% | 50% | - | Targeted |
+| P3 | Edge cases | 60% | - | - | As needed |
 
 ### Risk-Based Ordering
 

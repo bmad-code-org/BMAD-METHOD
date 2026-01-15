@@ -56,10 +56,22 @@ platforms:
     description: "Enhanced Cline fork"
 
   rovo:
-    name: "Rovo Dev"
+    name: "Rovo"
     preferred: false
     category: ide
     description: "Atlassian's AI coding assistant"
+
+  rovo-dev:
+    name: "Rovo Dev"
+    preferred: false
+    category: ide
+    description: "Atlassian's Rovo development environment"
+
+  kiro-cli:
+    name: "Kiro CLI"
+    preferred: false
+    category: cli
+    description: "Kiro command-line interface"
 
   github-copilot:
     name: "GitHub Copilot"

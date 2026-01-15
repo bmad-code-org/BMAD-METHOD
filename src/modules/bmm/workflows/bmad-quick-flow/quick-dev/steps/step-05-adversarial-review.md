@@ -3,8 +3,8 @@ name: 'step-05-adversarial-review'
 description: 'Construct diff and invoke adversarial review task'
 
 workflow_path: '{project-root}/_bmad/bmm/workflows/bmad-quick-flow/quick-dev'
-thisStepFile: '{workflow_path}/steps/step-05-adversarial-review.md'
-nextStepFile: '{workflow_path}/steps/step-06-resolve-findings.md'
+thisStepFile: './step-05-adversarial-review.md'
+nextStepFile: './step-06-resolve-findings.md'
 ---
 
 # Step 5: Adversarial Code Review
@@ -79,7 +79,7 @@ Evaluate severity (Critical, High, Medium, Low) and validity (real, noise, undec
 DO NOT exclude findings based on severity or validity unless explicitly asked to do so.
 Order findings by severity.
 Number the ordered findings (F1, F2, F3, etc.).
-If WriteTodos or similar tool is available, turn each finding into a TODO, include ID, severity, validity, and description in the todo; otherwise present findings as a table with columns: ID, Severity, Validity, Description
+If TodoWrite or similar tool is available, turn each finding into a TODO, include ID, severity, validity, and description in the TODO; otherwise present findings as a table with columns: ID, Severity, Validity, Description
 
 ---
 

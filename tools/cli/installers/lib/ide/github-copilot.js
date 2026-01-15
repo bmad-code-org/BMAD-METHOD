@@ -1,8 +1,8 @@
 const path = require('node:path');
 const { BaseIdeSetup } = require('./_base-ide');
 const chalk = require('chalk');
-const inquirer = require('inquirer');
 const { AgentCommandGenerator } = require('./shared/agent-command-generator');
+const prompts = require('../../../lib/prompts');
 
 /**
  * GitHub Copilot setup handler
@@ -27,23 +27,18 @@ class GitHubCopilotSetup extends BaseIdeSetup {
     console.log('\n' + chalk.blue('  🔧 VS Code Settings Configuration'));
     console.log(chalk.dim('  GitHub Copilot works best with specific settings\n'));
 
-    const response = await inquirer.prompt([
-      {
-        type: 'list',
-        name: 'configChoice',
-        message: 'How would you like to configure VS Code settings?',
-        choices: [
-          { name: 'Use recommended defaults (fastest)', value: 'defaults' },
-          { name: 'Configure each setting manually', value: 'manual' },
-          { name: 'Skip settings configuration', value: 'skip' },
-        ],
-        default: 'defaults',
-      },
-    ]);
-    config.vsCodeConfig = response.configChoice;
+    config.vsCodeConfig = await prompts.select({
+      message: 'How would you like to configure VS Code settings?',
+      choices: [
+        { name: 'Use recommended defaults (fastest)', value: 'defaults' },
+        { name: 'Configure each setting manually', value: 'manual' },
+        { name: 'Skip settings configuration', value: 'skip' },
+      ],
+      default: 'defaults',
+    });
 
-    if (response.configChoice === 'manual') {
-      config.manualSettings = await inquirer.prompt([
+    if (config.vsCodeConfig === 'manual') {
+      config.manualSettings = await prompts.prompt([
         {
           type: 'input',
           name: 'maxRequests',
@@ -52,7 +47,8 @@ class GitHubCopilotSetup extends BaseIdeSetup {
           validate: (input) => {
             const num = parseInt(input, 10);
             if (isNaN(num)) return 'Enter a valid number 1-50';
-            return (num >= 1 && num <= 50) || 'Enter 1-50';
+            if (num < 1 || num > 50) return 'Enter a number between 1-50';
+            return true;
           },
         },
         {

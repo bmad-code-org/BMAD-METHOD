@@ -2,7 +2,7 @@
 
 ## Principle
 
-Use typed HTTP client with built-in schema validation and automatic retry for server errors. The utility handles URL resolution, header management, response parsing, and single-line response validation with proper TypeScript support.
+Use typed HTTP client with built-in schema validation and automatic retry for server errors. The utility handles URL resolution, header management, response parsing, and single-line response validation with proper TypeScript support. **Works without a browser** - ideal for pure API/service testing.
 
 ## Rationale
 
@@ -21,6 +21,7 @@ The `apiRequest` utility provides:
 - **Schema validation**: Single-line validation (JSON Schema, Zod, OpenAPI)
 - **URL resolution**: Four-tier strategy (explicit > config > Playwright > direct)
 - **TypeScript generics**: Type-safe response bodies
+- **No browser required**: Pure API testing without browser overhead
 
 ## Pattern Examples
 
@@ -60,10 +61,11 @@ test('should fetch user data', async ({ apiRequest }) => {
 
 ```typescript
 import { test } from '@seontechnologies/playwright-utils/api-request/fixtures';
+import { z } from 'zod';
 
-test('should validate response schema', async ({ apiRequest }) => {
-  // JSON Schema validation
-  const response = await apiRequest({
+// JSON Schema validation
+test('should validate response schema (JSON Schema)', async ({ apiRequest }) => {
+  const { status, body } = await apiRequest({
     method: 'GET',
     path: '/api/users/123',
     validateSchema: {
@@ -77,22 +79,25 @@ test('should validate response schema', async ({ apiRequest }) => {
     },
   });
   // Throws if schema validation fails
+  expect(status).toBe(200);
+});
 
-  // Zod schema validation
-  import { z } from 'zod';
+// Zod schema validation
+const UserSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  email: z.string().email(),
+});
 
-  const UserSchema = z.object({
-    id: z.string(),
-    name: z.string(),
-    email: z.string().email(),
-  });
-
-  const response = await apiRequest({
+test('should validate response schema (Zod)', async ({ apiRequest }) => {
+  const { status, body } = await apiRequest({
     method: 'GET',
     path: '/api/users/123',
     validateSchema: UserSchema,
   });
   // Response body is type-safe AND validated
+  expect(status).toBe(200);
+  expect(body.email).toContain('@');
 });
 ```
 
@@ -236,6 +241,136 @@ test('should poll until job completes', async ({ apiRequest, recurse }) => {
 - `recurse` polls until predicate returns true
 - Composable utilities work together seamlessly
 
+### Example 6: Microservice Testing (Multiple Services)
+
+**Context**: Test interactions between microservices without a browser.
+
+**Implementation**:
+
+```typescript
+import { test, expect } from '@seontechnologies/playwright-utils/fixtures';
+
+const USER_SERVICE = process.env.USER_SERVICE_URL || 'http://localhost:3001';
+const ORDER_SERVICE = process.env.ORDER_SERVICE_URL || 'http://localhost:3002';
+
+test.describe('Microservice Integration', () => {
+  test('should validate cross-service user lookup', async ({ apiRequest }) => {
+    // Create user in user-service
+    const { body: user } = await apiRequest({
+      method: 'POST',
+      path: '/api/users',
+      baseUrl: USER_SERVICE,
+      body: { name: 'Test User', email: 'test@example.com' },
+    });
+
+    // Create order in order-service (validates user via user-service)
+    const { status, body: order } = await apiRequest({
+      method: 'POST',
+      path: '/api/orders',
+      baseUrl: ORDER_SERVICE,
+      body: {
+        userId: user.id,
+        items: [{ productId: 'prod-1', quantity: 2 }],
+      },
+    });
+
+    expect(status).toBe(201);
+    expect(order.userId).toBe(user.id);
+  });
+
+  test('should reject order for invalid user', async ({ apiRequest }) => {
+    const { status, body } = await apiRequest({
+      method: 'POST',
+      path: '/api/orders',
+      baseUrl: ORDER_SERVICE,
+      body: {
+        userId: 'non-existent-user',
+        items: [{ productId: 'prod-1', quantity: 1 }],
+      },
+    });
+
+    expect(status).toBe(400);
+    expect(body.code).toBe('INVALID_USER');
+  });
+});
+```
+
+**Key Points**:
+
+- Test multiple services without browser
+- Use `baseUrl` to target different services
+- Validate cross-service communication
+- Pure API testing - fast and reliable
+
+### Example 7: GraphQL API Testing
+
+**Context**: Test GraphQL endpoints with queries and mutations.
+
+**Implementation**:
+
+```typescript
+test.describe('GraphQL API', () => {
+  const GRAPHQL_ENDPOINT = '/graphql';
+
+  test('should query users via GraphQL', async ({ apiRequest }) => {
+    const query = `
+      query GetUsers($limit: Int) {
+        users(limit: $limit) {
+          id
+          name
+          email
+        }
+      }
+    `;
+
+    const { status, body } = await apiRequest({
+      method: 'POST',
+      path: GRAPHQL_ENDPOINT,
+      body: {
+        query,
+        variables: { limit: 10 },
+      },
+    });
+
+    expect(status).toBe(200);
+    expect(body.errors).toBeUndefined();
+    expect(body.data.users).toHaveLength(10);
+  });
+
+  test('should create user via mutation', async ({ apiRequest }) => {
+    const mutation = `
+      mutation CreateUser($input: CreateUserInput!) {
+        createUser(input: $input) {
+          id
+          name
+        }
+      }
+    `;
+
+    const { status, body } = await apiRequest({
+      method: 'POST',
+      path: GRAPHQL_ENDPOINT,
+      body: {
+        query: mutation,
+        variables: {
+          input: { name: 'GraphQL User', email: 'gql@example.com' },
+        },
+      },
+    });
+
+    expect(status).toBe(200);
+    expect(body.data.createUser.id).toBeDefined();
+  });
+});
+```
+
+**Key Points**:
+
+- GraphQL via POST request
+- Variables in request body
+- Check `body.errors` for GraphQL errors (not status code)
+- Works for queries and mutations
+
 ## Comparison with Vanilla Playwright
 
 | Vanilla Playwright                             | playwright-utils apiRequest                                                        |
@@ -251,11 +386,13 @@ test('should poll until job completes', async ({ apiRequest, recurse }) => {
 
 **Use apiRequest for:**
 
-- ✅ API endpoint testing
-- ✅ Background API calls in UI tests
+- ✅ Pure API/service testing (no browser needed)
+- ✅ Microservice integration testing
+- ✅ GraphQL API testing
 - ✅ Schema validation needs
 - ✅ Tests requiring retry logic
-- ✅ Typed API responses
+- ✅ Background API calls in UI tests
+- ✅ Contract testing support
 
 **Stick with vanilla Playwright for:**
 
@@ -265,11 +402,13 @@ test('should poll until job completes', async ({ apiRequest, recurse }) => {
 
 ## Related Fragments
 
+- `api-testing-patterns.md` - Comprehensive pure API testing patterns
 - `overview.md` - Installation and design principles
 - `auth-session.md` - Authentication token management
 - `recurse.md` - Polling for async operations
 - `fixtures-composition.md` - Combining utilities with mergeTests
 - `log.md` - Logging API requests
+- `contract-testing.md` - Pact contract testing
 
 ## Anti-Patterns
 

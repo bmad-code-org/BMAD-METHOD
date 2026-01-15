@@ -22,7 +22,7 @@ game_context: "{installed_path}/game-context.md"
 game_brain_methods: "{installed_path}/game-brain-methods.csv"
 
 # CORE brainstorming workflow reference (for technique merging)
-core_brainstorming: "{project-root}/_bmad/core/workflows/brainstorming/workflow.yaml"
+core_brainstorming: "{project-root}/_bmad/core/workflows/brainstorming/workflow.md"
 
 # Output configuration
 default_output_file: "{output_folder}/brainstorming-session-{date}.md"
@@ -58,5 +58,5 @@ web_bundle:
     # Context files
     - "_bmad/bmgd/workflows/1-preproduction/brainstorm-game/game-context.md"
     - "_bmad/bmgd/workflows/1-preproduction/brainstorm-game/game-brain-methods.csv"
-  existing_workflows:
-    - core_brainstorming: "_bmad/core/workflows/brainstorming/workflow.yaml"
+dependencies:
+  - "_bmad/core/workflows/brainstorming/workflow.md"

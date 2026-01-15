@@ -20,40 +20,8 @@ async function install(options) {
   try {
     logger.log(chalk.blue('🚀 Installing BMM Module...'));
 
-    // Check and create tech_docs directory if configured
-    if (config['tech_docs']) {
-      // Strip {project-root}/ prefix if present
-      const techDocsConfig = config['tech_docs'].replace('{project-root}/', '');
-      const techDocsPath = path.join(projectRoot, techDocsConfig);
-
-      if (await fs.pathExists(techDocsPath)) {
-        // Check if template exists, add if missing
-        const templateDest = path.join(techDocsPath, 'technical-decisions-template.md');
-        if (!(await fs.pathExists(templateDest))) {
-          const templateSource = path.join(__dirname, 'assets', 'technical-decisions-template.md');
-          if (await fs.pathExists(templateSource)) {
-            await fs.copy(templateSource, templateDest);
-            logger.log(chalk.green('✓ Added technical decisions template to existing directory'));
-          }
-        }
-      } else {
-        logger.log(chalk.yellow(`Creating technical documentation directory: ${techDocsConfig}`));
-        await fs.ensureDir(techDocsPath);
-
-        // Copy technical decisions template
-        const templateSource = path.join(__dirname, 'assets', 'technical-decisions-template.md');
-        const templateDest = path.join(techDocsPath, 'technical-decisions-template.md');
-
-        if (await fs.pathExists(templateSource)) {
-          await fs.copy(templateSource, templateDest, { overwrite: false });
-          logger.log(chalk.green('✓ Added technical decisions template'));
-        }
-      }
-    }
-
     // Create output directory if configured
     if (config['output_folder']) {
-      // Strip {project-root}/ prefix if present
       const outputConfig = config['output_folder'].replace('{project-root}/', '');
       const outputPath = path.join(projectRoot, outputConfig);
       if (!(await fs.pathExists(outputPath))) {
@@ -62,9 +30,7 @@ async function install(options) {
       }
     }
 
-    // Create dev story location if configured
     if (config['implementation_artifacts']) {
-      // Strip {project-root}/ prefix if present
       const storyConfig = config['implementation_artifacts'].replace('{project-root}/', '');
       const storyPath = path.join(projectRoot, storyConfig);
       if (!(await fs.pathExists(storyPath))) {

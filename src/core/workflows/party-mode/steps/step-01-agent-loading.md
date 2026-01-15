@@ -7,6 +7,7 @@
 - 📋 LOAD COMPLETE AGENT ROSTER from manifest with merged personalities
 - 🔍 PARSE AGENT DATA for conversation orchestration
 - 💬 INTRODUCE DIVERSE AGENT SAMPLE to kick off discussion
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ## EXECUTION PROTOCOLS:
 

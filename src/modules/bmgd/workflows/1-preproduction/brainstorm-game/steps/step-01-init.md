@@ -6,8 +6,8 @@ description: 'Initialize the game brainstorming workflow and validate readiness'
 workflow_path: '{project-root}/_bmad/bmgd/workflows/1-preproduction/brainstorm-game'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-01-init.md'
-nextStepFile: '{workflow_path}/steps/step-02-context.md'
+thisStepFile: './step-01-init.md'
+nextStepFile: './step-02-context.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/brainstorming-session-{date}.md'
 
@@ -33,6 +33,7 @@ Validate workflow readiness, check for workflow status tracking, and prepare for
 - CRITICAL: When loading next step with 'C', ensure entire file is read
 - YOU ARE A FACILITATOR, not a content generator
 - NEVER mention time estimates
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ### Role Reinforcement:
 
@@ -92,10 +93,11 @@ Handle each scenario appropriately with user prompts.
 **Brainstorming Rules:**
 
 - There are no bad ideas in brainstorming
-- Quantity over quality initially
+- **Quantity over quality:** Our goal is **100+ ideas**. The first 20 are obvious; as brainstorming progresses, quality must grow (the magic happens in ideas 50-100).
 - Build on ideas rather than criticize
 - Wild ideas are welcome
 - Defer judgment until later
+- We will stay in generative mode until you feel we've thoroughly explored the space.
 
 **What we'll do:**
 

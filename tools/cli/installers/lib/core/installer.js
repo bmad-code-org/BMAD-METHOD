@@ -2,7 +2,6 @@ const path = require('node:path');
 const fs = require('fs-extra');
 const chalk = require('chalk');
 const ora = require('ora');
-const inquirer = require('inquirer');
 const { Detector } = require('./detector');
 const { Manifest } = require('./manifest');
 const { ModuleManager } = require('../modules/manager');
@@ -17,6 +16,7 @@ const { CLIUtils } = require('../../../lib/cli-utils');
 const { ManifestGenerator } = require('./manifest-generator');
 const { IdeConfigManager } = require('./ide-config-manager');
 const { CustomHandler } = require('../custom/handler');
+const prompts = require('../../../lib/prompts');
 
 // BMAD installation folder name - this is constant and should never change
 const BMAD_FOLDER_NAME = '_bmad';
@@ -758,6 +758,9 @@ class Installer {
       config.ides = toolSelection.ides;
       config.skipIde = toolSelection.skipIde;
       const ideConfigurations = toolSelection.configurations;
+
+      // Add spacing after prompts before installation progress
+      console.log('');
 
       if (spinner.isSpinning) {
         spinner.text = 'Continuing installation...';
@@ -2140,102 +2143,61 @@ class Installer {
    * Private: Prompt for update action
    */
   async promptUpdateAction() {
-    const inquirer = require('inquirer');
-    return await inquirer.prompt([
-      {
-        type: 'list',
-        name: 'action',
-        message: 'What would you like to do?',
-        choices: [{ name: 'Update existing installation', value: 'update' }],
-      },
-    ]);
+    const action = await prompts.select({
+      message: 'What would you like to do?',
+      choices: [{ name: 'Update existing installation', value: 'update' }],
+    });
+    return { action };
   }
 
   /**
-   * Handle legacy BMAD v4 migration with automatic backup
-   * @param {string} projectDir - Project directory
-   * @param {Object} legacyV4 - Legacy V4 detection result with offenders array
+   * Handle legacy BMAD v4 detection with simple warning
+   * @param {string} _projectDir - Project directory (unused in simplified version)
+   * @param {Object} _legacyV4 - Legacy V4 detection result (unused in simplified version)
    */
-  async handleLegacyV4Migration(projectDir, legacyV4) {
-    console.log(chalk.yellow.bold('\n⚠️  Legacy BMAD v4 detected'));
-    console.log(chalk.dim('The installer found legacy artefacts in your project.\n'));
+  async handleLegacyV4Migration(_projectDir, _legacyV4) {
+    console.log('');
+    console.log(chalk.yellow.bold('⚠️  Legacy BMAD v4 detected'));
+    console.log(chalk.yellow('─'.repeat(80)));
+    console.log(chalk.yellow('Found .bmad-method folder from BMAD v4 installation.'));
+    console.log('');
 
-    // Separate _bmad* folders (auto-backup) from other offending paths (manual cleanup)
-    const bmadFolders = legacyV4.offenders.filter((p) => {
-      const name = path.basename(p);
-      return name.startsWith('_bmad'); // Only dot-prefixed folders get auto-backed up
-    });
-    const otherOffenders = legacyV4.offenders.filter((p) => {
-      const name = path.basename(p);
-      return !name.startsWith('_bmad'); // Everything else is manual cleanup
-    });
+    console.log(chalk.dim('Before continuing with installation, we recommend:'));
+    console.log(chalk.dim('  1. Remove the .bmad-method folder, OR'));
+    console.log(chalk.dim('  2. Back it up by renaming it to another name (e.g., bmad-method-backup)'));
+    console.log('');
 
-    const inquirer = require('inquirer');
+    console.log(chalk.dim('If your v4 installation set up rules or commands, you should remove those as well.'));
+    console.log('');
 
-    // Show warning for other offending paths FIRST
-    if (otherOffenders.length > 0) {
-      console.log(chalk.yellow('⚠️  Recommended cleanup:'));
-      console.log(chalk.dim('It is recommended to remove the following items before proceeding:\n'));
-      for (const p of otherOffenders) console.log(chalk.dim(` - ${p}`));
-
-      console.log(chalk.cyan('\nCleanup commands you can copy/paste:'));
-      console.log(chalk.dim('macOS/Linux:'));
-      for (const p of otherOffenders) console.log(chalk.dim(`  rm -rf '${p}'`));
-      console.log(chalk.dim('Windows:'));
-      for (const p of otherOffenders) console.log(chalk.dim(`  rmdir /S /Q "${p}"`));
-
-      const { cleanedUp } = await inquirer.prompt([
+    const proceed = await prompts.select({
+      message: 'What would you like to do?',
+      choices: [
         {
-          type: 'confirm',
-          name: 'cleanedUp',
-          message: 'Have you completed the recommended cleanup? (You can proceed without it, but it is recommended)',
-          default: false,
+          name: 'Exit and clean up manually (recommended)',
+          value: 'exit',
+          hint: 'Exit installation',
         },
-      ]);
+        {
+          name: 'Continue with installation anyway',
+          value: 'continue',
+          hint: 'Continue',
+        },
+      ],
+      default: 'exit',
+    });
 
-      if (cleanedUp) {
-        console.log(chalk.green('✓ Cleanup acknowledged\n'));
-      } else {
-        console.log(chalk.yellow('⚠️  Proceeding without recommended cleanup\n'));
-      }
+    if (proceed === 'exit') {
+      console.log('');
+      console.log(chalk.cyan('Please remove the .bmad-method folder and any v4 rules/commands,'));
+      console.log(chalk.cyan('then run the installer again.'));
+      console.log('');
+      process.exit(0);
     }
 
-    // Handle _bmad* folders with automatic backup
-    if (bmadFolders.length > 0) {
-      console.log(chalk.cyan('The following legacy folders will be moved to v4-backup:'));
-      for (const p of bmadFolders) console.log(chalk.dim(` - ${p}`));
-
-      const { proceed } = await inquirer.prompt([
-        {
-          type: 'confirm',
-          name: 'proceed',
-          message: 'Proceed with backing up legacy v4 folders?',
-          default: true,
-        },
-      ]);
-
-      if (proceed) {
-        const backupDir = path.join(projectDir, 'v4-backup');
-        await fs.ensureDir(backupDir);
-
-        for (const folder of bmadFolders) {
-          const folderName = path.basename(folder);
-          const backupPath = path.join(backupDir, folderName);
-
-          // If backup already exists, add timestamp
-          let finalBackupPath = backupPath;
-          if (await fs.pathExists(backupPath)) {
-            const timestamp = new Date().toISOString().replaceAll(/[:.]/g, '-').split('T')[0];
-            finalBackupPath = path.join(backupDir, `${folderName}-${timestamp}`);
-          }
-
-          await fs.move(folder, finalBackupPath, { overwrite: false });
-          console.log(chalk.green(`✓ Moved ${folderName} to ${path.relative(projectDir, finalBackupPath)}`));
-        }
-      } else {
-        throw new Error('Installation cancelled by user');
-      }
-    }
+    console.log('');
+    console.log(chalk.yellow('⚠️  Proceeding with installation despite legacy v4 folder'));
+    console.log('');
   }
 
   /**
@@ -2469,7 +2431,6 @@ class Installer {
 
     console.log(chalk.yellow(`\n⚠️  Found ${customModulesWithMissingSources.length} custom module(s) with missing sources:`));
 
-    const inquirer = require('inquirer');
     let keptCount = 0;
     let updatedCount = 0;
     let removedCount = 0;
@@ -2483,12 +2444,12 @@ class Installer {
         {
           name: 'Keep installed (will not be processed)',
           value: 'keep',
-          short: 'Keep',
+          hint: 'Keep',
         },
         {
           name: 'Specify new source location',
           value: 'update',
-          short: 'Update',
+          hint: 'Update',
         },
       ];
 
@@ -2497,47 +2458,40 @@ class Installer {
         choices.push({
           name: '⚠️  REMOVE module completely (destructive!)',
           value: 'remove',
-          short: 'Remove',
+          hint: 'Remove',
         });
       }
 
-      const { action } = await inquirer.prompt([
-        {
-          type: 'list',
-          name: 'action',
-          message: `How would you like to handle "${missing.name}"?`,
-          choices,
-        },
-      ]);
+      const action = await prompts.select({
+        message: `How would you like to handle "${missing.name}"?`,
+        choices,
+      });
 
       switch (action) {
         case 'update': {
-          const { newSourcePath } = await inquirer.prompt([
-            {
-              type: 'input',
-              name: 'newSourcePath',
-              message: 'Enter the new path to the custom module:',
-              default: missing.sourcePath,
-              validate: async (input) => {
-                if (!input || input.trim() === '') {
-                  return 'Please enter a path';
-                }
-                const expandedPath = path.resolve(input.trim());
-                if (!(await fs.pathExists(expandedPath))) {
-                  return 'Path does not exist';
-                }
-                // Check if it looks like a valid module
-                const moduleYamlPath = path.join(expandedPath, 'module.yaml');
-                const agentsPath = path.join(expandedPath, 'agents');
-                const workflowsPath = path.join(expandedPath, 'workflows');
+          // Use sync validation because @clack/prompts doesn't support async validate
+          const newSourcePath = await prompts.text({
+            message: 'Enter the new path to the custom module:',
+            default: missing.sourcePath,
+            validate: (input) => {
+              if (!input || input.trim() === '') {
+                return 'Please enter a path';
+              }
+              const expandedPath = path.resolve(input.trim());
+              if (!fs.pathExistsSync(expandedPath)) {
+                return 'Path does not exist';
+              }
+              // Check if it looks like a valid module
+              const moduleYamlPath = path.join(expandedPath, 'module.yaml');
+              const agentsPath = path.join(expandedPath, 'agents');
+              const workflowsPath = path.join(expandedPath, 'workflows');
 
-                if (!(await fs.pathExists(moduleYamlPath)) && !(await fs.pathExists(agentsPath)) && !(await fs.pathExists(workflowsPath))) {
-                  return 'Path does not appear to contain a valid custom module';
-                }
-                return true;
-              },
+              if (!fs.pathExistsSync(moduleYamlPath) && !fs.pathExistsSync(agentsPath) && !fs.pathExistsSync(workflowsPath)) {
+                return 'Path does not appear to contain a valid custom module';
+              }
+              return; // clack expects undefined for valid input
             },
-          ]);
+          });
 
           // Update the source in manifest
           const resolvedPath = path.resolve(newSourcePath.trim());
@@ -2563,46 +2517,38 @@ class Installer {
           console.log(chalk.red.bold(`\n⚠️  WARNING: This will PERMANENTLY DELETE "${missing.name}" and all its files!`));
           console.log(chalk.red(`  Module location: ${path.join(bmadDir, missing.id)}`));
 
-          const { confirm } = await inquirer.prompt([
-            {
-              type: 'confirm',
-              name: 'confirm',
-              message: chalk.red.bold('Are you absolutely sure you want to delete this module?'),
-              default: false,
-            },
-          ]);
+          const confirmDelete = await prompts.confirm({
+            message: chalk.red.bold('Are you absolutely sure you want to delete this module?'),
+            default: false,
+          });
 
-          if (confirm) {
-            const { typedConfirm } = await inquirer.prompt([
-              {
-                type: 'input',
-                name: 'typedConfirm',
-                message: chalk.red.bold('Type "DELETE" to confirm permanent deletion:'),
-                validate: (input) => {
-                  if (input !== 'DELETE') {
-                    return chalk.red('You must type "DELETE" exactly to proceed');
-                  }
-                  return true;
-                },
+          if (confirmDelete) {
+            const typedConfirm = await prompts.text({
+              message: chalk.red.bold('Type "DELETE" to confirm permanent deletion:'),
+              validate: (input) => {
+                if (input !== 'DELETE') {
+                  return chalk.red('You must type "DELETE" exactly to proceed');
+                }
+                return; // clack expects undefined for valid input
               },
-            ]);
+            });
 
             if (typedConfirm === 'DELETE') {
               // Remove the module from filesystem and manifest
-              const modulePath = path.join(bmadDir, moduleId);
+              const modulePath = path.join(bmadDir, missing.id);
               if (await fs.pathExists(modulePath)) {
                 const fsExtra = require('fs-extra');
                 await fsExtra.remove(modulePath);
                 console.log(chalk.yellow(`  ✓ Deleted module directory: ${path.relative(projectRoot, modulePath)}`));
               }
 
-              await this.manifest.removeModule(bmadDir, moduleId);
-              await this.manifest.removeCustomModule(bmadDir, moduleId);
+              await this.manifest.removeModule(bmadDir, missing.id);
+              await this.manifest.removeCustomModule(bmadDir, missing.id);
               console.log(chalk.yellow(`  ✓ Removed from manifest`));
 
               // Also remove from installedModules list
-              if (installedModules && installedModules.includes(moduleId)) {
-                const index = installedModules.indexOf(moduleId);
+              if (installedModules && installedModules.includes(missing.id)) {
+                const index = installedModules.indexOf(missing.id);
                 if (index !== -1) {
                   installedModules.splice(index, 1);
                 }
@@ -2623,7 +2569,7 @@ class Installer {
         }
         case 'keep': {
           keptCount++;
-          keptModulesWithoutSources.push(moduleId);
+          keptModulesWithoutSources.push(missing.id);
           console.log(chalk.dim(`  Module will be kept as-is`));
 
           break;

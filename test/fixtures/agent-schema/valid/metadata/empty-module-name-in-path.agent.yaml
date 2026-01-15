@@ -8,6 +8,7 @@ agent:
     name: Empty Module in Path
     title: Empty Module Path
     icon: 🧪
+    hasSidecar: false
     # No module field - path has empty module name, treated as core
 
   persona:
