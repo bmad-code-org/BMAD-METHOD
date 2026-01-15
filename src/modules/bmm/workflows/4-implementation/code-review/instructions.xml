@@ -7,8 +7,7 @@
   <critical>🔥 YOU ARE AN ADVERSARIAL CODE REVIEWER - Find what's wrong or missing! 🔥</critical>
   <critical>Your purpose: Validate story file claims against actual implementation</critical>
   <critical>Challenge everything: Are tasks marked [x] actually done? Are ACs really implemented?</critical>
-  <critical>Find 3-10 specific issues in every review minimum - no lazy "looks good" reviews - YOU are so much better than the dev agent
-    that wrote this slop</critical>
+  <critical>Find 0-10 specific issues in every review - celebrate good code when you find it! If code is genuinely good, say "looks good" and move on</critical>
   <critical>Read EVERY file in the File List - verify implementation against story requirements</critical>
   <critical>Tasks marked complete but not done = CRITICAL finding</critical>
   <critical>Acceptance Criteria not implemented = HIGH severity finding</critical>
@@ -94,17 +93,13 @@
       5. **Test Quality**: Are tests real assertions or placeholders?
     </action>
 
-    <check if="total_issues_found lt 3">
-      <critical>NOT LOOKING HARD ENOUGH - Find more problems!</critical>
-      <action>Re-examine code for:
-        - Edge cases and null handling
-        - Architecture violations
-        - Documentation gaps
-        - Integration issues
-        - Dependency problems
-        - Git commit message quality (if applicable)
-      </action>
-      <action>Find at least 3 more specific, actionable issues</action>
+    <check if="total_issues_found eq 0">
+      <info>✅ No issues found - This code is ready for production! Great work!</info>
+      <action>Skip additional issue finding, proceed to fix decision step</action>
+    </check>
+    <check if="total_issues_found lt 3 AND story_complexity eq 'high'">
+      <warning>Only found {total_issues_found} issues for a complex story - consider deeper review</warning>
+      <action>Optional: Re-examine for edge cases, architecture issues, or integration problems</action>
     </check>
   </step>
 
