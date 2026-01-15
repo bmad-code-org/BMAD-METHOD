@@ -266,7 +266,7 @@ async function main() {
 
   if (testFiles.length === 0) {
     console.log(`${colors.yellow}⚠️  No test fixtures found${colors.reset}`);
-    process.exit(0);
+    process.exit(1);
   }
 
   console.log(`Found ${colors.cyan}${testFiles.length}${colors.reset} test fixture(s)\n`);
