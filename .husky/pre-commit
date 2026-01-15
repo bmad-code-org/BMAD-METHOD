@@ -5,3 +5,5 @@ npx --no-install lint-staged
 
 # Validate everything
 npm test
+npm run docs:validate-links
+npm run docs:build

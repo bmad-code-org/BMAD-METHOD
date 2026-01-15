@@ -250,7 +250,7 @@ Risk scores inform test priorities (but aren't the only factor):
 - **Test Levels:** E2E smoke test only
 - **Example:** Theme customization, experimental features
 
-**Note:** Priorities consider risk scores plus business context (usage frequency, user impact, etc.). See [Test Priorities Matrix](/docs/reference/tea/knowledge-base.md#test-priorities-matrix) for complete criteria.
+**Note:** Priorities consider risk scores plus business context (usage frequency, user impact, etc.). See [Test Priorities Matrix](/docs/reference/tea/knowledge-base.md#quality-standards) for complete criteria.
 
 ### 3. Mitigation Plans
 

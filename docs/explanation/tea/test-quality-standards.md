@@ -866,8 +866,8 @@ test('should work with optional button', async ({ page }) => {
 ## Technical Implementation
 
 For detailed test quality patterns, see:
-- [Test Quality Fragment](/docs/reference/tea/knowledge-base.md#test-quality)
-- [Test Levels Framework Fragment](/docs/reference/tea/knowledge-base.md#test-levels-framework)
+- [Test Quality Fragment](/docs/reference/tea/knowledge-base.md#quality-standards)
+- [Test Levels Framework Fragment](/docs/reference/tea/knowledge-base.md#quality-standards)
 - [Complete Knowledge Base Index](/docs/reference/tea/knowledge-base.md)
 
 ## Related Concepts

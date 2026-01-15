@@ -69,6 +69,27 @@ jobs:
       - name: markdownlint
         run: npm run lint:md
 
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate documentation links
+        run: npm run docs:validate-links
+
+      - name: Build documentation
+        run: npm run docs:build
+
   validate:
     runs-on: ubuntu-latest
     steps:
