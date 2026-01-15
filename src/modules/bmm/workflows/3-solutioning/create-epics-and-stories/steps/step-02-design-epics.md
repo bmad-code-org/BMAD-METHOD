@@ -6,8 +6,8 @@ description: 'Design and approve the epics_list that will organize all requireme
 workflow_path: '{project-root}/_bmad/bmm/workflows/3-solutioning/create-epics-and-stories'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-02-design-epics.md'
-nextStepFile: '{workflow_path}/steps/step-03-create-stories.md'
+thisStepFile: './step-02-design-epics.md'
+nextStepFile: './step-03-create-stories.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{planning_artifacts}/epics.md'
 

@@ -6,7 +6,7 @@ description: 'Define success criteria and complete the game brief with handoff g
 workflow_path: '{project-root}/_bmad/bmgd/workflows/1-preproduction/game-brief'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-08-complete.md'
+thisStepFile: './step-08-complete.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/game-brief.md'
 

@@ -6,8 +6,8 @@ description: 'Facilitate collaborative architectural decision making for game sy
 workflow_path: '{project-root}/_bmad/bmgd/workflows/3-technical/game-architecture'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-04-decisions.md'
-nextStepFile: '{workflow_path}/steps/step-05-crosscutting.md'
+thisStepFile: './step-04-decisions.md'
+nextStepFile: './step-05-crosscutting.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/game-architecture.md'
 

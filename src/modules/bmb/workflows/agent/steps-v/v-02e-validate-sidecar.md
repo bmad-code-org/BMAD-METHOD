@@ -38,7 +38,9 @@ Validate the agent's sidecar structure (if Expert type) against BMAD standards a
 - 💾 Append findings to validation report
 - ➡️ Auto-advance to summary step
 
-## Sequence of Instructions:
+## MANDATORY SEQUENCE
+
+**CRITICAL:** Follow this sequence exactly. Do not skip, reorder, or improvise unless user explicitly requests a change.
 
 ### 1. Load References
 
@@ -46,7 +48,7 @@ Read `{expertValidation}`, `{criticalActions}`, `{validationReport}`, and `{agen
 
 ### 2. Conditional Validation
 
-**IF agentType == expert OR (agentType == module AND hasSidecar == true):**
+**IF (module = "stand-alone" AND hasSidecar = true) OR (module ≠ "stand-alone" AND hasSidecar = true):**
 Perform these checks systematically - validate EVERY rule specified in expertValidation.md:
 
 #### A. Sidecar Folder Validation
@@ -87,7 +89,7 @@ For each sidecar path reference in agent YAML:
 - [ ] No unreferenced files (files present but not referenced)
 - [ ] File structure matches expert agent requirements
 
-**IF agentType is Simple (no sidecar):**
+**IF (module = "stand-alone" AND hasSidecar = false):**
 - [ ] Mark sidecar validation as N/A
 - [ ] Confirm no sidecar-folder path in metadata
 - [ ] Confirm no sidecar references in menu handlers
@@ -122,7 +124,7 @@ Append to `{validationReport}`:
 {List of blocking issues that must be fixed}
 
 *N/A (for Simple agents):*
-N/A - Agent is Simple type (hasSidecar: false, no sidecar required)
+N/A - Agent is Simple type (module = "stand-alone" + hasSidecar: false, no sidecar required)
 ```
 
 ### 4. Auto-Advance

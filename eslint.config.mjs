@@ -18,9 +18,9 @@ export default [
       'test/fixtures/**/*.yaml',
       '_bmad/**',
       '_bmad*/**',
-      // Docusaurus build artifacts
-      '.docusaurus/**',
+      // Build output
       'build/**',
+      // Website uses ESM/Astro - separate linting ecosystem
       'website/**',
       // Gitignored patterns
       'z*/**', // z-samples, z1, z2, etc.

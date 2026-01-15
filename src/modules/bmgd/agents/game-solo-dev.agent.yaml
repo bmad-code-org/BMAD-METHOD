@@ -36,7 +36,7 @@ agent:
       description: "[QD] Implement features end-to-end solo with game-specific considerations"
 
     - trigger: TS or fuzzy match on tech-spec
-      workflow: "{project-root}/_bmad/bmgd/workflows/bmgd-quick-flow/create-tech-spec/workflow.yaml"
+      workflow: "{project-root}/_bmad/bmgd/workflows/bmgd-quick-flow/quick-spec/workflow.yaml"
       description: "[TS] Architect a technical spec with implementation-ready stories"
 
     - trigger: CR or fuzzy match on code-review

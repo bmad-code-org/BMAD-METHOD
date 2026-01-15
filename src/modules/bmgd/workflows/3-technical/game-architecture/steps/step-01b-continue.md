@@ -6,19 +6,19 @@ description: 'Continue an existing architecture workflow from where it left off'
 workflow_path: '{project-root}/_bmad/bmgd/workflows/3-technical/game-architecture'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-01b-continue.md'
+thisStepFile: './step-01b-continue.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/game-architecture.md'
 
 # Step Files (for routing)
-step02: '{workflow_path}/steps/step-02-context.md'
-step03: '{workflow_path}/steps/step-03-starter.md'
-step04: '{workflow_path}/steps/step-04-decisions.md'
-step05: '{workflow_path}/steps/step-05-crosscutting.md'
-step06: '{workflow_path}/steps/step-06-structure.md'
-step07: '{workflow_path}/steps/step-07-patterns.md'
-step08: '{workflow_path}/steps/step-08-validation.md'
-step09: '{workflow_path}/steps/step-09-complete.md'
+step02: './step-02-context.md'
+step03: './step-03-starter.md'
+step04: './step-04-decisions.md'
+step05: './step-05-crosscutting.md'
+step06: './step-06-structure.md'
+step07: './step-07-patterns.md'
+step08: './step-08-validation.md'
+step09: './step-09-complete.md'
 ---
 
 # Step 1b: Continue Existing Architecture

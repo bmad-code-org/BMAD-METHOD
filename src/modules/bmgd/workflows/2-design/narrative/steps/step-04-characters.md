@@ -6,8 +6,8 @@ description: 'Develop all characters including protagonists, antagonists, suppor
 workflow_path: '{project-root}/_bmad/bmgd/workflows/2-design/narrative'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-04-characters.md'
-nextStepFile: '{workflow_path}/steps/step-05-world.md'
+thisStepFile: './step-04-characters.md'
+nextStepFile: './step-05-world.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/narrative-design.md'
 

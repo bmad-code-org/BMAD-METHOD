@@ -6,8 +6,8 @@ description: 'Build the world including setting, history, factions, and key loca
 workflow_path: '{project-root}/_bmad/bmgd/workflows/2-design/narrative'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-05-world.md'
-nextStepFile: '{workflow_path}/steps/step-06-dialogue.md'
+thisStepFile: './step-05-world.md'
+nextStepFile: './step-06-dialogue.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/narrative-design.md'
 

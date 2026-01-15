@@ -15,3 +15,4 @@ localization-testing,Localization Testing,"Text, audio, and cultural validation 
 certification-testing,Platform Certification,"Console TRC/XR requirements and certification testing","certification,console,trc,xr",knowledge/certification-testing.md
 smoke-testing,Smoke Testing,"Critical path validation for build verification","smoke-tests,bvt,ci",knowledge/smoke-testing.md
 test-priorities,Test Priorities Matrix,"P0-P3 criteria, coverage targets, execution ordering for games","prioritization,risk,coverage",knowledge/test-priorities.md
+e2e-testing,End-to-End Testing,"Complete player journey testing with infrastructure patterns and async utilities","e2e,integration,player-journeys,scenarios,infrastructure",knowledge/e2e-testing.md

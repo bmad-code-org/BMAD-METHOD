@@ -209,6 +209,87 @@ func test_{feature}_integration():
     # Cleanup
     scene.queue_free()
 ```
+### E2E Journey Tests
+
+**Knowledge Base Reference**: `knowledge/e2e-testing.md`
+```csharp
+public class {Feature}E2ETests : GameE2ETestFixture
+{
+    [UnityTest]
+    public IEnumerator {JourneyName}_Succeeds()
+    {
+        // GIVEN
+        yield return Scenario
+            .{SetupMethod1}()
+            .{SetupMethod2}()
+            .Build();
+        
+        // WHEN
+        yield return Input.{Action1}();
+        yield return AsyncAssert.WaitUntil(
+            () => {Condition1}, "{Description1}");
+        yield return Input.{Action2}();
+        
+        // THEN
+        yield return AsyncAssert.WaitUntil(
+            () => {FinalCondition}, "{FinalDescription}");
+        Assert.{Assertion}({expected}, {actual});
+    }
+}
+```
+
+
+## Step 3.5: Generate E2E Infrastructure
+
+Before generating E2E tests, scaffold the required infrastructure.
+
+### Infrastructure Checklist
+
+1. **Test Fixture Base Class**
+   - Scene loading/unloading
+   - Game ready state waiting
+   - Common service access
+   - Cleanup guarantees
+
+2. **Scenario Builder**
+   - Fluent API for game state configuration
+   - Domain-specific methods (e.g., `WithUnit`, `OnTurn`)
+   - Yields for state propagation
+
+3. **Input Simulator**
+   - Click/drag abstractions
+   - Button press simulation
+   - Keyboard input queuing
+
+4. **Async Assertions**
+   - `WaitUntil` with timeout and message
+   - `WaitForEvent` for event-driven flows
+   - `WaitForState` for state machine transitions
+
+### Generation Template
+```csharp
+// GameE2ETestFixture.cs
+public abstract class GameE2ETestFixture
+{
+    protected {GameStateClass} GameState;
+    protected {InputSimulatorClass} Input;
+    protected {ScenarioBuilderClass} Scenario;
+    
+    [UnitySetUp]
+    public IEnumerator BaseSetUp()
+    {
+        yield return LoadScene("{main_scene}");
+        GameState = Object.FindFirstObjectByType<{GameStateClass}>();
+        Input = new {InputSimulatorClass}();
+        Scenario = new {ScenarioBuilderClass}(GameState);
+        yield return WaitForReady();
+    }
+    
+    // ... (fill from e2e-testing.md patterns)
+}
+```
+
+**After scaffolding infrastructure, proceed to generate actual E2E tests.**
 
 ---
 

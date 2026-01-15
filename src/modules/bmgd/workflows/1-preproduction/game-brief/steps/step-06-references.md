@@ -6,8 +6,8 @@ description: 'Define inspiration games, competitive analysis, and key differenti
 workflow_path: '{project-root}/_bmad/bmgd/workflows/1-preproduction/game-brief'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-06-references.md'
-nextStepFile: '{workflow_path}/steps/step-07-content.md'
+thisStepFile: './step-06-references.md'
+nextStepFile: './step-07-content.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/game-brief.md'
 

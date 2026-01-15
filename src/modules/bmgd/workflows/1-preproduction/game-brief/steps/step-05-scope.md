@@ -6,8 +6,8 @@ description: 'Define project scope including platforms, constraints, and resourc
 workflow_path: '{project-root}/_bmad/bmgd/workflows/1-preproduction/game-brief'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-05-scope.md'
-nextStepFile: '{workflow_path}/steps/step-06-references.md'
+thisStepFile: './step-05-scope.md'
+nextStepFile: './step-06-references.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/game-brief.md'
 

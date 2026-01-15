@@ -1,5 +1,5 @@
 ---
-name: 'step-02-type-metadata'
+name: 'step-03-type-metadata'
 description: 'Determine agent type and define metadata'
 
 # File References
@@ -27,7 +27,7 @@ Determine the agent's classification (Simple/Expert/Module) and define all manda
 # MANDATORY EXECUTION RULES
 
 ## Universal Rules
-- ALWAYS use `{agent-language}` for all conversational text
+- ALWAYS use `{communication_language}` for all conversational text
 - MAINTAIN step boundaries - complete THIS step only
 - DOCUMENT all decisions to agent plan file
 - HONOR user's creative control throughout
@@ -125,7 +125,9 @@ Present structured options:
 
 ---
 
-# INSTRUCTION SEQUENCE
+## MANDATORY SEQUENCE
+
+**CRITICAL:** Follow this sequence exactly. Do not skip, reorder, or improvise unless user explicitly requests a change.
 
 ## 1. Load Documentation
 Read and internalize:
@@ -134,7 +136,7 @@ Read and internalize:
 - Keep examples accessible for reference
 
 ## 2. Purpose Discovery Conversation
-Engage user with questions in `{agent-language}`:
+Engage user with questions in `{communication_language}`:
 - "What is the primary function this agent will perform?"
 - "How complex are the tasks this agent will handle?"
 - "Will this agent need to manage workflows or other agents?"

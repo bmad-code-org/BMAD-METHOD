@@ -128,7 +128,7 @@ module.exports = { NewIdeSetup };
 | IDE            | Config Pattern            | File Extension |
 | -------------- | ------------------------- | -------------- |
 | Claude Code    | .claude/commands/bmad/    | .md            |
-| Cursor         | .cursor/rules/bmad/       | .mdc           |
+| Cursor         | .cursor/commands/bmad/    | .md            |
 | Windsurf       | .windsurf/workflows/bmad/ | .md            |
 | GitHub Copilot | .github/                  | .md            |
 

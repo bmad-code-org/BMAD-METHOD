@@ -59,7 +59,9 @@ Load the existing agent file, parse its structure, and create an edit plan track
 - Limits: Analysis only, no modifications
 - Dependencies: Agent file must exist and be valid YAML
 
-## Sequence of Instructions (Do not deviate, skip, or optimize)
+## MANDATORY SEQUENCE
+
+**CRITICAL:** Follow this sequence exactly. Do not skip, reorder, or improvise unless user explicitly requests a change.
 
 ### 1. Load Agent File
 
@@ -86,9 +88,8 @@ If a module agent also hasSidecar: true - this means it is a modules expert agen
 # Basic Metadata
 - name: {agent-name}
 - description: {agent-description}
-- type: {simple|expert|module}
+- module: {stand-alone|bmm|cis|bmgd|custom}
 - hasSidecar: {true|false}
-- version: {version}
 
 # Persona
 - persona: {full persona text}
@@ -111,7 +112,7 @@ If a module agent also hasSidecar: true - this means it is a modules expert agen
 ```markdown
 ## Agent Analysis: {agent-name}
 
-**Type:** {simple|expert|module}
+**Type:** {simple|expert|module}  (derived from module + hasSidecar)
 **Status:** ready-for-edit
 
 ### Current Structure:

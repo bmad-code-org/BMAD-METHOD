@@ -6,8 +6,8 @@ description: 'Define the core game vision including name, concept, pitch, and vi
 workflow_path: '{project-root}/_bmad/bmgd/workflows/1-preproduction/game-brief'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-02-vision.md'
-nextStepFile: '{workflow_path}/steps/step-03-market.md'
+thisStepFile: './step-02-vision.md'
+nextStepFile: './step-03-market.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/game-brief.md'
 

@@ -6,9 +6,9 @@ description: 'Question 1 - Level 1 difficulty'
 workflow_path: '{project-root}/_bmad/custom/src/workflows/quiz-master'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-02-q1.md'
-nextStepFile: '{workflow_path}/steps/step-03-q2.md'
-resultsStepFile: '{workflow_path}/steps/step-12-results.md'
+thisStepFile: './step-02-q1.md'
+nextStepFile: './step-03-q2.md'
+resultsStepFile: './step-12-results.md'
 workflowFile: '{workflow_path}/workflow.md'
 csvFile: '{project-root}/BMad-quiz-results.csv'
 # Task References

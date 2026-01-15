@@ -6,8 +6,8 @@ description: 'Define major story beats and narrative pacing'
 workflow_path: '{project-root}/_bmad/bmgd/workflows/2-design/narrative'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-03-story.md'
-nextStepFile: '{workflow_path}/steps/step-04-characters.md'
+thisStepFile: './step-03-story.md'
+nextStepFile: './step-04-characters.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/narrative-design.md'
 

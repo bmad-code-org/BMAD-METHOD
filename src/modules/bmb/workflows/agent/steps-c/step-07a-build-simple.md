@@ -1,9 +1,9 @@
 ---
-name: 'step-06-build-simple'
+name: 'step-07a-build-simple'
 description: 'Generate Simple agent YAML from plan'
 
 # File References
-nextStepFile: './step-08a-plan-traceability.md'
+nextStepFile: './step-08-celebrate.md'
 agentPlan: '{bmb_creations_output_folder}/agent-plan-{agent_name}.md'
 agentBuildOutput: '{bmb_creations_output_folder}/{agent-name}.agent.yaml'
 
@@ -60,7 +60,9 @@ Assemble the agent plan content into a Simple agent YAML configuration using the
 - Template placeholders (replace with actual content)
 - Comments or notes in final YAML
 
-## EXECUTION SEQUENCE
+## MANDATORY SEQUENCE
+
+**CRITICAL:** Follow this sequence exactly. Do not skip, reorder, or improvise unless user explicitly requests a change.
 
 ### 1. Load Template and Architecture Files
 
@@ -141,7 +143,7 @@ Display: "**Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Cont
 ### 6. Route Based on User Choice
 
 **If user chooses "one-at-a-time":**
-- Proceed to `nextStepFile` (step-07a-plan-traceability.md)
+- Proceed to `nextStepFile` (step-08-celebrate.md)
 - Continue through each validation step sequentially
 - Allow review between each validation
 
@@ -153,7 +155,7 @@ Display: "**Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Cont
 
 ## CRITICAL STEP COMPLETION NOTE
 
-ONLY WHEN [C continue option] is selected and [complete YAML generated and written to output], will you then load and read fully `{nextStepFile}` to execute and begin validation.
+ONLY WHEN [C continue option] is selected and [complete YAML generated and written to output], will you then load and read fully `{nextStepFile}` to execute and celebrate completion.
 
 ## SUCCESS METRICS
 
