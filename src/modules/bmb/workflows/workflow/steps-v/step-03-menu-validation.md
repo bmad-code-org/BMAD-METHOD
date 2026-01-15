@@ -3,8 +3,8 @@ name: 'step-03-menu-validation'
 description: 'Validate menu handling compliance across all step files'
 
 nextStepFile: './step-04-step-type-validation.md'
-targetWorkflowPath: '{bmb_creations_output_folder}/workflows/{new_workflow_name}'
-validationReportFile: '{targetWorkflowPath}/validation-report-{new_workflow_name}.md'
+targetWorkflowPath: '{workflow_folder_path}'
+validationReportFile: '{workflow_folder_path}/validation-report-{datetime}.md'
 menuHandlingStandards: '../data/menu-handling-standards.md'
 ---
 
@@ -22,19 +22,20 @@ To validate that EVERY step file's menus follow the menu handling standards - pr
 - 📖 CRITICAL: Read the complete step file before taking any action
 - 🔄 CRITICAL: When loading next step, ensure entire file is read
 - ✅ Validation does NOT stop for user input - auto-proceed through all validation steps
+- ⚙️ If any instruction references a subprocess, subagent, or tool you do not have access to, you MUST still achieve the outcome in your main context
 
 ### Step-Specific Rules:
 
-- 🎯 Load and validate EVERY step file's menus
-- 🚫 DO NOT skip any files or checks
-- 💬 Append findings to report, then auto-load next step
-- 🚪 This is validation - systematic and thorough
+- 🎯 Validate EVERY step file's menus using subprocess optimization - per-file deep analysis pattern (Pattern 2)
+- 🚫 DO NOT skip any files or checks - DO NOT BE LAZY
+- 💬 Subprocess must either update validation report directly OR return structured findings to parent for aggregation
+- 🚪 This is validation - systematic and thorough, leveraging per-file subprocess for menu structure analysis
 
 ## EXECUTION PROTOCOLS:
 
 - 🎯 Load menu standards first
-- 💾 Check EVERY file's menu structure
-- 📖 Append findings to validation report
+- 💾 Check EVERY file's menu structure using subprocess optimization when available - per-file deep analysis for menu structure validation
+- 📖 Append findings to validation report (subprocesses either update report OR return findings for parent aggregation)
 - 🚫 DO NOT halt for user input - validation runs to completion
 
 ## CONTEXT BOUNDARIES:
@@ -64,11 +65,15 @@ Load {menuHandlingStandards} to understand validation criteria:
 
 ### 2. Check EVERY Step File
 
-**DO NOT BE LAZY - For EACH file in steps-c/:**
+**DO NOT BE LAZY - For EVERY file in steps-c/, launch a subprocess that:**
 
-1. Load the file
-2. Find the menu section (if present)
-3. Validate against each rule:
+1. Loads that step file
+2. Loads {menuHandlingStandards} to understand validation criteria
+3. Validates menu structure deeply (handler section, execution rules, A/P appropriateness, reserved letter compliance)
+4. **EITHER** updates validation report directly with findings
+5. **OR** returns structured validation findings to parent for aggregation
+
+**SUBPROCESS VALIDATION PATTERN - Each subprocess checks for:**
 
 **Check 1: Handler Section Exists**
 - ✅ Handler section immediately follows Display
@@ -92,39 +97,35 @@ Load {menuHandlingStandards} to understand validation criteria:
 - Validation sequences should auto-proceed, not have menus
 - ❌ If A/P in wrong place: mark as violation
 
-### 3. Document Findings
+**RETURN FORMAT:**
+Each subprocess should return validation findings for its assigned file including:
+- File name
+- Whether a menu is present
+- Results of all 5 checks (handler section, execution rules, redisplay menu, C sequence, A/P appropriateness)
+- List of any violations found
+- Overall status (PASS/FAIL/WARN)
 
-Create report table:
+**Context savings estimate:** Each subprocess returns structured findings vs full file content. Parent aggregates all findings into final report table.
 
-```markdown
-### Menu Handling Validation Results
+### 3. Aggregate Findings and Document Results
 
-| File | Has Menu | Handler Section | Exec Rules | A/P Appropriate | Status |
-|------|----------|----------------|------------|-----------------|--------|
-| step-01-init.md | ✅ (C-only) | ✅ | ✅ | N/A | ✅ PASS |
-| step-02-*.md | ✅ (A/P/C) | ✅ | ✅ | ✅ | ✅ PASS |
-| step-03-*.md | ✅ (C-only) | ❌ Missing | ⚠️ Incomplete | N/A | ❌ FAIL |
-| step-04-*.md | ❌ No menu | N/A | N/A | Should have A/P/C | ⚠️ WARN |
-```
+After ALL files have been validated (either via subprocess or main context), document the menu handling validation results in the validation report, including:
+
+- Overall assessment of menu handling compliance across all step files
+- Summary of files checked and their menu status
+- Files that passed all menu validation checks
+- Files with warnings or issues that need attention
+- Files that failed validation with specific violations
 
 ### 4. List Violations
 
-```markdown
-### Menu Violations Found
+Compile and document all violations found during validation, organizing them by file and providing clear descriptions of each issue, such as:
 
-**step-03-[name].md:**
-- Missing handler section after menu display
-- EXECUTION RULES section incomplete
-
-**step-04-[name].md:**
-- No menu found - this is a collaborative content step, should have A/P/C menu
-
-**step-05-[name].md:**
-- A/P options don't specify "redisplay menu" after execution
-
-**step-06-[name].md:**
-- All checks passed ✅
-```
+- Missing handler sections
+- Incomplete execution rules
+- Improper A/P usage
+- Missing redisplay menu instructions
+- Any other menu handling standard violations
 
 ### 5. Append to Report
 
@@ -145,9 +146,10 @@ Then immediately load, read entire file, then execute {nextStepFile}.
 
 ### ✅ SUCCESS:
 
-- EVERY step file's menus validated
-- All violations documented
-- Findings appended to report
+- Menu standards loaded and understood
+- EVERY step file's menus validated via subprocess (per-file deep analysis) OR main context
+- All violations documented across handler sections, execution rules, A/P appropriateness
+- Findings aggregated into validation report (subprocesses either updated report OR returned findings)
 - Report saved before proceeding
 - Next validation step loaded
 
@@ -157,5 +159,6 @@ Then immediately load, read entire file, then execute {nextStepFile}.
 - Skipping menu structure checks
 - Not documenting violations
 - Not saving report before proceeding
+- Loading full file contents into parent context instead of using subprocess analysis
 
-**Master Rule:** Validation is systematic and thorough. DO NOT BE LAZY. Check EVERY file's menus. Auto-proceed through all validation steps.
+**Master Rule:** Validation is systematic and thorough. DO NOT BE LAZY. Use subprocess optimization (Pattern 2) - each file in its own subprocess for deep menu structure analysis. Subprocess returns only findings to parent. Auto-proceed through all validation steps.

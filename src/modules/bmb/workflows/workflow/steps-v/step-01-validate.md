@@ -3,9 +3,9 @@ name: 'step-01-validate'
 description: 'Initialize validation: create report and check file structure & size'
 
 nextStepFile: './step-02-frontmatter-validation.md'
-targetWorkflowPath: '{bmb_creations_output_folder}/workflows/{new_workflow_name}'
-workflowPlanFile: '{targetWorkflowPath}/workflow-plan-{new_workflow_name}.md'
-validationReportFile: '{targetWorkflowPath}/validation-report-{new_workflow_name}.md'
+targetWorkflowPath: '{workflow_folder_path}'
+workflowPlanFile: '{workflow_folder_path}/workflow-plan.md'
+validationReportFile: '{workflow_folder_path}/validation-report-{datetime}.md'
 stepFileRules: '../data/step-file-rules.md'
 ---
 
@@ -23,27 +23,21 @@ To create the validation report and check that the workflow has correct file str
 - 📖 CRITICAL: Read the complete step file before taking any action
 - 🔄 CRITICAL: When loading next step, ensure entire file is read
 - ✅ Validation does NOT stop for user input - auto-proceed through all validation steps
+- ⚙️ If any instruction references a subprocess, subagent, or tool you do not have access to, you MUST still achieve the outcome in your main context
 
 ### Step-Specific Rules:
 
-- 🎯 Create validation report with header structure
-- 🚫 DO NOT skip checking any file
-- 💬 Append findings to report, then auto-load next step
+- 🎯 Create validation report with header structure using subprocess optimization when available
+- 🚫 DO NOT skip checking any file - DO NOT BE LAZY
+- 💬 Subprocess must either update validation report directly OR return structured findings to parent for aggregation
 - 🚪 This is validation - systematic and thorough
 
 ## EXECUTION PROTOCOLS:
 
-- 🎯 Load and check EVERY file in the workflow
-- 💾 Append findings to validation report
+- 🎯 Load and check EVERY file in the workflow using subprocess optimization when available - single subprocess for bash/grep operations, separate subprocess per file for size analysis
+- 💾 Subprocesses must either update validation report OR return findings for parent aggregation
 - 📖 Save report before loading next validation step
 - 🚫 DO NOT halt for user input - validation runs to completion
-
-## CONTEXT BOUNDARIES:
-
-- Workflow has been built in steps-c/
-- Check the entire folder structure
-- Verify all required files exist
-- Check file sizes against limits
 
 ## MANDATORY SEQUENCE
 
@@ -57,7 +51,7 @@ Create {validationReportFile} with header structure:
 ---
 validationDate: [current date]
 workflowName: {new_workflow_name}
-workflowPath: {targetWorkflowPath}
+workflowPath: {workflow_folder_path}
 validationStatus: IN_PROGRESS
 ---
 
@@ -74,6 +68,9 @@ validationStatus: IN_PROGRESS
 *Validation in progress...*
 
 ## Frontmatter Validation
+*Pending...*
+
+## Critical Path Violations
 *Pending...*
 
 ## Menu Handling Validation
@@ -94,7 +91,13 @@ validationStatus: IN_PROGRESS
 ## Collaborative Experience Check
 *Pending...*
 
+## Subprocess Optimization Opportunities
+*Pending...*
+
 ## Cohesive Review
+*Pending...*
+
+## Plan Quality Validation
 *Pending...*
 
 ## Summary
@@ -110,19 +113,27 @@ Load {stepFileRules} to understand:
 
 ### 3. Check Folder Structure
 
-**DO NOT BE LAZY - List EVERY folder and file:**
+**Launch a single subprocess that:**
 
-Use bash commands to list the entire structure:
+1. Lists the entire folder structure using bash commands
+2. Verifies all required folders and files exist
+3. Returns structured findings to parent for aggregation
+
+```bash
+# List folder structure
+find {targetWorkflowPath} -type f -name "*.md" | sort
+```
+
+**Expected structure:**
 ```
 {targetWorkflowPath}/
 ├── workflow.md
-├── steps-c/
+├── steps*/ potentially more than one folder like this (such as steps-v, steps-c - the folder name is not critical but should make sense)
 │   ├── step-01-init.md
 │   ├── step-01b-continue.md (if continuable)
 │   ├── step-02-*.md
 │   └── ...
-├── steps-v/
-│   └── [this validation]
+├── */ # any other random files - critical will be later ensure its all used - aside from potential documentation for user later.
 ├── data/
 │   └── [as needed]
 └── templates/
@@ -131,53 +142,34 @@ Use bash commands to list the entire structure:
 
 **Check:**
 - ✅ workflow.md exists
-- ✅ steps-c/ folder exists with all step files
-- ✅ data/ folder exists (may be empty)
-- ✅ templates/ folder exists (may be empty)
-- ✅ No unexpected files
-- ✅ Folder names follow conventions
+- ✅ step files are in a well organized folder
+- ✅ non step reference files are organized in other folders such as data, templates, or others that make sense for the workflow
+- ✅ Folder names make sense
 
 ### 4. Check File Sizes
 
-**DO NOT BE LAZY - Check EVERY step file:**
+**DO NOT BE LAZY - For EACH step file in steps-c/, launch a subprocess that:**
 
-For each file in `steps-c/`:
-1. Read the file
-2. Count lines
-3. Check against limits:
-   - < 200 lines: ✅ Good
-   - 200-250 lines: ⚠️ Approaching limit
-   - > 250 lines: ❌ Exceeds limit
+1. Loads that step file
+2. Counts lines and checks against size limits
+3. Returns structured findings to parent for aggregation
 
-**Check for Large Data Files:**
+**Limits:**
+- < 200 lines: ✅ Good
+- 200-250 lines: ⚠️ Approaching limit
+- > 250 lines: ❌ Exceeds limit
 
-For each file in `data/` folder:
-1. Check file size in lines
-2. If > 500 lines: ⚠️ WARNING - Large data file detected
-3. If > 1000 lines: ❌ ERROR - Data file too large for direct loading
+**Subprocess returns:** File name, line count, status (Good/Approaching limit/Exceeds limit), and any issues found.
 
-**For large data files, recommend:**
-- Create an index/csv/yaml so LLM knows what's available and can load specific sections
-- Use sharding technique (core module has sharding tool) to split large files
-- Consider if all data is needed or if lookup/reference pattern would work better
+**Subprocess must either:**
+- Update validation report directly with findings, OR
+- Return structured findings to parent for aggregation into report
 
-**Report format:**
-```markdown
-### File Size Check
-
-| File | Lines | Status |
-|------|-------|--------|
-| step-01-init.md | 180 | ✅ Good |
-| step-02-*.md | 245 | ⚠️ Approaching limit |
-| step-03-*.md | 267 | ❌ Exceeds limit - should split |
-
-### Data File Size Check
-
-| Data File | Lines | Status |
-|-----------|-------|--------|
-| reference-data.csv | 150 | ✅ Good |
-| large-data.md | 2500 | ❌ Too large - use sharding or create index |
-```
+**Document findings in validation report:**
+- List all step files checked with their line counts
+- Note any files approaching or exceeding size limits (<200 recommended, 250 max)
+- Check data and reference files for size issues (large files should be sharded or indexed)
+- Identify specific size violations and recommendations
 
 ### 5. Verify File Presence
 
@@ -191,28 +183,12 @@ From the design in {workflowPlanFile}, verify:
 
 Replace the "## File Structure & Size" section in {validationReportFile} with actual findings:
 
-```markdown
-## File Structure & Size
-
-### Folder Structure
-[Report findings - is structure correct?]
-
-### Files Present
-[Report findings - are all required files present?]
-
-### File Size Check
-[Table as shown above]
-
-### Issues Found
-[List any issues:
-- Missing files
-- Extra files
-- Size violations
-- Naming convention violations]
-
-### Status
-✅ PASS / ❌ FAIL / ⚠️ WARNINGS
-```
+**Document the following:**
+- Folder structure assessment
+- Required files presence check
+- File size analysis results
+- List of any issues found (missing files, extra files, size violations, naming issues)
+- Overall validation status (PASS/FAIL/WARNINGS)
 
 ### 7. Save Report and Auto-Proceed
 

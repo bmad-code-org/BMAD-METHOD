@@ -1,14 +1,28 @@
 ---
-title: "Core Module Global Inheritable Config"
+title: "Global Inheritable Config"
 ---
 
+Configuration values defined in the Core Module that all other modules inherit by default.
 
-The Core Modules module.yaml file defines configuration values that are useful and unique for all other modules to utilize, and by default all other modules installed will clone the values defined in the core module yaml.config into their own. It is possible for other modules to override these values, but the general intent it to accept the core module values and define their own values as needed, or extend the core values.
+## Core Config Values
 
-Currently, the core module.yaml config will define (asking the user upon installation, and recording to the core module config.yaml):
-- `user_name`: string (defaults to the system defined user name)
-- `communication_language`: string (defaults to english)
-- `document_output_language`: string (defaults to english)
-- `output_folder`: string (default `_bmad-output`)
+These values are set during installation and recorded to the core `module.yaml`:
 
-An example of extending one of these values, in the BMad Method module.yaml it defines a planning_artifacts config, which will default to `default: "{output_folder}/planning-artifacts"` thus whatever the output_folder will be, this extended versions default will use the value from this core module and append a new folder onto it. The user can choose to replace this without utilizing the output_folder from the core if they so chose.
+| Config Key | Default | Description |
+|------------|---------|-------------|
+| `user_name` | System username | User's display name |
+| `communication_language` | `english` | Language for agent communication |
+| `document_output_language` | `english` | Language for generated documents |
+| `output_folder` | `_bmad-output` | Directory for workflow outputs |
+
+## Inheritance Behavior
+
+All installed modules automatically clone these values into their own config. Modules can:
+
+- **Accept defaults** — Use core values as-is (recommended)
+- **Override values** — Replace with module-specific settings
+- **Extend values** — Build on core values with additional paths
+
+:::tip[Extending Config]
+Use `{output_folder}` to reference the core value. Example: BMad Method defines `planning_artifacts` as `{output_folder}/planning-artifacts`, automatically inheriting whatever output folder the user configured.
+:::

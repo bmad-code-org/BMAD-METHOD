@@ -6,8 +6,8 @@ description: 'Process game-type specific sections from the loaded game type guid
 workflow_path: '{project-root}/_bmad/bmgd/workflows/2-design/gdd'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-07-game-type.md'
-nextStepFile: '{workflow_path}/steps/step-08-progression.md'
+thisStepFile: './step-07-game-type.md'
+nextStepFile: './step-08-progression.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/gdd.md'
 

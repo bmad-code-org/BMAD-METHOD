@@ -2,12 +2,9 @@
 title: "Workflows"
 ---
 
-
 Workflows are like prompts on steroids. They harness the untapped power and control of LLMs through progressive disclosure—breaking complex tasks into focused steps that execute sequentially. Instead of random AI slop where you hope for the best, workflows give you repeatable, reliable, high-quality outputs.
 
 This guide explains what workflows are, why they're powerful, and how to think about designing them.
-
----
 
 ## What Is a Workflow?
 
@@ -71,9 +68,9 @@ When workflows involve users, they should be **facilitative, not directive**. Th
 
 The AI figures out exact wording and question order based on conversation context. This makes interactions feel natural and responsive rather than robotic and interrogative.
 
-**When to be prescriptive**: Some workflows require exact scripts—medical intake, legal compliance, safety-critical procedures. But these are the exception, not the rule. Default to facilitative intent-based approaches unless compliance or regulation demands otherwise.
-
----
+:::caution[When to Be Prescriptive]
+Some workflows require exact scripts—medical intake, legal compliance, safety-critical procedures. But these are the exception. Default to facilitative intent-based approaches unless compliance or regulation demands otherwise.
+:::
 
 ## Why Workflows Matter
 
@@ -84,8 +81,6 @@ Workflows solve three fundamental problems with AI interactions:
 **Continuity**: Workflows can span multiple sessions. Stop mid-workflow and return later without losing progress—something free-form prompts can't do.
 
 **Quality**: Sequential enforcement prevents shortcuts. The AI must complete each step fully before moving on, ensuring thorough, complete outputs instead of rushed, half-baked results.
-
----
 
 ## How Workflows Work
 
@@ -138,19 +133,17 @@ Each workflow checks for required inputs from prior workflows, validates they're
 
 ### The Tri-Modal Pattern
 
-For critical workflows that produce important artifacts, BMAD uses a tri-modal structure: Create, Validate, and Edit. Each mode is a separate workflow path that can run independently or flow into the others.
+For critical workflows that produce important artifacts, BMad uses a tri-modal structure: Create, Validate, and Edit. Each mode is a separate workflow path that can run independently or flow into the others.
 
-**Create mode** builds new artifacts from scratch. But here's where it gets interesting: create mode can also function as a conversion tool. Feed it a non-compliant document—something that doesn't follow BMAD standards—and it will extract the essential content and rebuild it as a compliant artifact. This means you can bring in existing work and automatically upgrade it to follow proper patterns.
+**Create mode** builds new artifacts from scratch. But here's where it gets interesting: create mode can also function as a conversion tool. Feed it a non-compliant document—something that doesn't follow BMad standards—and it will extract the essential content and rebuild it as a compliant artifact. This means you can bring in existing work and automatically upgrade it to follow proper patterns.
 
 **Validate mode** runs standalone and checks artifacts against standards. Because it's separate, you can run validation whenever you want—immediately after creation, weeks later when things have changed, or even using a different LLM entirely. It's like having a quality assurance checkpoint that's always available but never forced.
 
 **Edit mode** modifies existing artifacts while enforcing standards. As you update documents to reflect changing requirements or new understanding, edit mode ensures you don't accidentally drift away from the patterns that make the artifacts useful. It checks compliance as you work and can route back to create mode if it detects something that needs full conversion.
 
-All BMAD planning workflows and the BMB module (will) use this tri-modal pattern. The pristine example is the workflow workflow in BMB—it creates workflow specifications, validates them against standards, and lets you edit them while maintaining compliance. You can study that workflow to see the pattern in action.
+All BMad planning workflows and the BMB module (will) use this tri-modal pattern. The pristine example is the workflow workflow in BMB—it creates workflow specifications, validates them against standards, and lets you edit them while maintaining compliance. You can study that workflow to see the pattern in action.
 
 This tri-modal approach gives you the best of both worlds: the creativity and flexibility to build what you need, the quality assurance of validation that can run anytime, and the ability to iterate while staying true to standards that make the artifacts valuable across sessions and team members.
-
----
 
 ## Design Decisions
 
@@ -166,11 +159,9 @@ Before building a workflow, answer these questions:
 
 **Intent or prescriptive?**: Is this intent-based facilitation (most workflows) or prescriptive compliance (medical, legal, regulated)?
 
----
-
 ## Learning from Examples
 
-The best way to understand workflows is to study real examples. Look at the official BMAD modules:
+The best way to understand workflows is to study real examples. Look at the official BMad modules:
 
 - **BMB (Module Builder)**: Workflow and agent creation workflows
 - **BMM (Business Method Module)**: Complete software development pipeline from brainstorming through sprint planning
@@ -180,8 +171,6 @@ The best way to understand workflows is to study real examples. Look at the offi
 Study the workflow.md files to understand how each workflow starts. Examine step files to see how instructions are structured. Notice the frontmatter variables, menu handling, and how steps chain together.
 
 Copy patterns that work. Adapt them to your domain. The structure is consistent across all workflows—the content and steps change, but the architecture stays the same.
-
----
 
 ## When to Use Workflows
 
@@ -205,8 +194,6 @@ Modified BMad Workflows
 
 If there's only one thing to do and it can be explained in under about 300 lines - don't bother with step files. Instead, you can still have
 a short single file workflow.md file.
-
----
 
 ## The Bottom Line
 

@@ -6,8 +6,8 @@ description: 'Execute the brainstorming session with game-specific techniques'
 workflow_path: '{project-root}/_bmad/bmgd/workflows/1-preproduction/brainstorm-game'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-03-ideation.md'
-nextStepFile: '{workflow_path}/steps/step-04-complete.md'
+thisStepFile: './step-03-ideation.md'
+nextStepFile: './step-04-complete.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/brainstorming-session-{date}.md'
 

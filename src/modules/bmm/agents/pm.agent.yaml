@@ -26,9 +26,17 @@ agent:
       workflow: "{project-root}/_bmad/bmm/workflows/workflow-status/workflow.yaml"
       description: "[WS] Get workflow status or initialize a workflow if not already done (optional)"
 
-    - trigger: PR or fuzzy match on prd
+    - trigger: CP or fuzzy match on create-prd
       exec: "{project-root}/_bmad/bmm/workflows/2-plan-workflows/prd/workflow.md"
-      description: "[PR] Create Product Requirements Document (PRD) (Required for BMad Method flow)"
+      description: "[CP] Create Product Requirements Document (PRD)"
+
+    - trigger: VP or fuzzy match on validate-prd
+      exec: "{project-root}/_bmad/bmm/workflows/2-plan-workflows/prd/workflow.md"
+      description: "[VP] Validate a Product Requirements Document (PRD)"
+
+    - trigger: EP or fuzzy match on edit-prd
+      exec: "{project-root}/_bmad/bmm/workflows/2-plan-workflows/prd/workflow.md"
+      description: "[EP] Edit a Product Requirements Document (PRD)"
 
     - trigger: ES or fuzzy match on epics-stories
       exec: "{project-root}/_bmad/bmm/workflows/3-solutioning/create-epics-and-stories/workflow.md"

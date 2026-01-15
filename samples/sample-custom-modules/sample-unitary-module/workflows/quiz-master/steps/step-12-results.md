@@ -6,8 +6,8 @@ description: 'Final results and celebration'
 workflow_path: '{project-root}/_bmad/custom/src/workflows/quiz-master'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-12-results.md'
-initStepFile: '{workflow_path}/steps/step-01-init.md'
+thisStepFile: './step-12-results.md'
+initStepFile: './step-01-init.md'
 workflowFile: '{workflow_path}/workflow.md'
 csvFile: '{project-root}/BMad-quiz-results.csv'
 # Task References

@@ -3,7 +3,7 @@ const path = require('node:path');
 const fs = require('node:fs');
 
 // Fix for stdin issues when running through npm on Windows
-// Ensures keyboard interaction works properly with inquirer prompts
+// Ensures keyboard interaction works properly with CLI prompts
 if (process.stdin.isTTY) {
   try {
     process.stdin.resume();

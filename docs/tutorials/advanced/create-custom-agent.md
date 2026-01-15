@@ -6,7 +6,7 @@ title: "Create a Custom Agent"
 Build your own AI agent with a unique personality, specialized commands, and optional persistent memory using the BMad Builder workflow.
 
 :::note[BMB Module]
-This tutorial uses the **BMad Builder (BMB)** module. Make sure you have BMAD installed with the BMB module enabled.
+This tutorial uses the **BMad Builder (BMB)** module. Make sure you have BMad installed with the BMB module enabled.
 :::
 
 ## What You'll Learn
@@ -18,7 +18,7 @@ This tutorial uses the **BMad Builder (BMB)** module. Make sure you have BMAD in
 - Test and iterate on your agent's behavior
 
 :::note[Prerequisites]
-- BMAD installed with the BMB module
+- BMad installed with the BMB module
 - An idea for what you want your agent to do
 - About 15-30 minutes for your first agent
 :::
@@ -102,7 +102,7 @@ my-custom-stuff/
 └── workflows/           # Optional: custom workflows
 ```
 
-Install using the BMAD installer, then invoke your new agent in your IDE.
+Install using the BMad installer, then invoke your new agent in your IDE.
 
 ## What You've Accomplished
 
@@ -130,7 +130,7 @@ _bmad/
 
 | Action              | How                                            |
 | ------------------- | ---------------------------------------------- |
-| Start workflow      | `"Run the BMAD Builder create-agent workflow"` |
+| Start workflow      | `"Run the BMad Builder create-agent workflow"` |
 | Edit agent directly | Modify `{agent-name}.agent.yaml`               |
 | Edit customization  | Modify `_bmad/_config/agents/{agent-name}`     |
 | Rebuild agent       | `npx bmad-method build <agent-name>`           |
@@ -159,9 +159,9 @@ Study the reference agents in `src/modules/bmb/reference/agents/`:
 
 ## Further Reading
 
-- **[What Are Agents](../../explanation/core-concepts/what-are-agents.md)** - Deep technical details on agent types
-- **[Agent Customization](../../how-to/customization/customize-agents.md)** - Modify agents without editing core files
-- **[Custom Content Installation](../../how-to/installation/install-custom-modules.md)** - Package and distribute your agents
+- **[What Are Agents](/docs/explanation/core-concepts/what-are-agents.md)** - Deep technical details on agent types
+- **[Agent Customization](/docs/how-to/customization/customize-agents.md)** - Modify agents without editing core files
+- **[Custom Content Installation](/docs/how-to/installation/install-custom-modules.md)** - Package and distribute your agents
 
 :::tip[Key Takeaways]
 - **Start small** - Your first agent should solve one problem well

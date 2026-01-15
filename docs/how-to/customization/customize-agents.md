@@ -2,8 +2,14 @@
 title: "Agent Customization Guide"
 ---
 
+Use `.customize.yaml` files to customize BMad agents without modifying core files. All customizations persist through updates.
 
-Customize BMad agents without modifying core files. All customizations persist through updates.
+## When to Use This
+
+- Change agent names or personas
+- Add project-specific memories or context
+- Add custom menu items and workflows
+- Define critical actions for consistent behavior
 
 ## Quick Start
 
@@ -201,8 +207,6 @@ memories:
 
 ## Next Steps
 
-- **[Learn about Agents](../../explanation/core-concepts/what-are-agents.md)** - Understand Simple vs Expert agents
-- **[Agent Creation Guide](../../tutorials/advanced/create-custom-agent.md)** - Build completely custom agents
-- **[BMM Complete Documentation](../../explanation/bmm/index.md)** - Full BMad Method reference
-
-[← Back to Customization](./index.md)
+- **[Learn about Agents](/docs/explanation/core-concepts/what-are-agents.md)** - Understand Simple vs Expert agents
+- **[Agent Creation Guide](/docs/tutorials/advanced/create-custom-agent.md)** - Build completely custom agents
+- **[BMM Complete Documentation](/docs/explanation/bmm/index.md)** - Full BMad Method reference

@@ -4,15 +4,7 @@ const yaml = require('yaml');
 const chalk = require('chalk');
 const { getProjectRoot, getModulePath } = require('../../../lib/project-root');
 const { CLIUtils } = require('../../../lib/cli-utils');
-
-// Lazy-load inquirer (ESM module) to avoid ERR_REQUIRE_ESM
-let _inquirer = null;
-async function getInquirer() {
-  if (!_inquirer) {
-    _inquirer = (await import('inquirer')).default;
-  }
-  return _inquirer;
-}
+const prompts = require('../../../lib/prompts');
 
 class ConfigCollector {
   constructor() {
@@ -183,7 +175,6 @@ class ConfigCollector {
    * @returns {boolean} True if new fields were prompted, false if all fields existed
    */
   async collectModuleConfigQuick(moduleName, projectDir, silentMode = true) {
-    const inquirer = await getInquirer();
     this.currentProjectDir = projectDir;
 
     // Load existing config if not already loaded
@@ -359,7 +350,7 @@ class ConfigCollector {
         // Only show header if we actually have questions
         CLIUtils.displayModuleConfigHeader(moduleName, moduleConfig.header, moduleConfig.subheader);
         console.log(); // Line break before questions
-        const promptedAnswers = await inquirer.prompt(questions);
+        const promptedAnswers = await prompts.prompt(questions);
 
         // Merge prompted answers with static answers
         Object.assign(allAnswers, promptedAnswers);
@@ -502,7 +493,6 @@ class ConfigCollector {
    * @param {boolean} skipCompletion - Skip showing completion message (for early core collection)
    */
   async collectModuleConfig(moduleName, projectDir, skipLoadExisting = false, skipCompletion = false) {
-    const inquirer = await getInquirer();
     this.currentProjectDir = projectDir;
     // Load existing config if needed and not already loaded
     if (!skipLoadExisting && !this.existingConfig) {
@@ -597,7 +587,7 @@ class ConfigCollector {
       console.log(chalk.cyan('?') + ' ' + chalk.magenta(moduleDisplayName));
       let customize = true;
       if (moduleName !== 'core') {
-        const customizeAnswer = await inquirer.prompt([
+        const customizeAnswer = await prompts.prompt([
           {
             type: 'confirm',
             name: 'customize',
@@ -614,7 +604,7 @@ class ConfigCollector {
 
         if (questionsWithoutDefaults.length > 0) {
           console.log(chalk.dim(`\n  Asking required questions for ${moduleName.toUpperCase()}...`));
-          const promptedAnswers = await inquirer.prompt(questionsWithoutDefaults);
+          const promptedAnswers = await prompts.prompt(questionsWithoutDefaults);
           Object.assign(allAnswers, promptedAnswers);
         }
 
@@ -628,7 +618,7 @@ class ConfigCollector {
           allAnswers[question.name] = question.default;
         }
       } else {
-        const promptedAnswers = await inquirer.prompt(questions);
+        const promptedAnswers = await prompts.prompt(questions);
         Object.assign(allAnswers, promptedAnswers);
       }
     }
@@ -750,7 +740,7 @@ class ConfigCollector {
         console.log(chalk.cyan('?') + ' ' + chalk.magenta(moduleDisplayName));
 
         // Ask user if they want to accept defaults or customize on the next line
-        const { customize } = await inquirer.prompt([
+        const { customize } = await prompts.prompt([
           {
             type: 'confirm',
             name: 'customize',
@@ -845,7 +835,7 @@ class ConfigCollector {
   }
 
   /**
-   * Build an inquirer question from a config item
+   * Build a prompt question from a config item
    * @param {string} moduleName - Module name
    * @param {string} key - Config key
    * @param {Object} item - Config item definition
@@ -1007,7 +997,7 @@ class ConfigCollector {
       message: message,
     };
 
-    // Set default - if it's dynamic, use a function that inquirer will evaluate with current answers
+    // Set default - if it's dynamic, use a function that the prompt will evaluate with current answers
     // But if we have an existing value, always use that instead
     if (existingValue !== null && existingValue !== undefined && questionType !== 'list') {
       question.default = existingValue;

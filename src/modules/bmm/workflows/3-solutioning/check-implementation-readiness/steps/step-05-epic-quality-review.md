@@ -6,8 +6,8 @@ description: 'Validate epics and stories against create-epics-and-stories best p
 workflow_path: '{project-root}/_bmad/bmm/workflows/3-solutioning/implementation-readiness'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-05-epic-quality-review.md'
-nextStepFile: '{workflow_path}/steps/step-06-final-assessment.md'
+thisStepFile: './step-05-epic-quality-review.md'
+nextStepFile: './step-06-final-assessment.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{planning_artifacts}/implementation-readiness-report-{{date}}.md'
 epicsBestPractices: '{project-root}/_bmad/bmm/workflows/3-solutioning/create-epics-and-stories'

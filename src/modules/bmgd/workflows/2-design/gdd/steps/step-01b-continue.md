@@ -6,7 +6,7 @@ description: 'Resume an interrupted GDD workflow from the last completed step'
 workflow_path: '{project-root}/_bmad/bmgd/workflows/2-design/gdd'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-01b-continue.md'
+thisStepFile: './step-01b-continue.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/gdd.md'
 ---

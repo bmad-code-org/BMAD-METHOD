@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "bmad-method",
-  "version": "6.0.0-alpha.22",
+  "version": "6.0.0-alpha.23",
   "description": "Breakthrough Method of Agile AI-driven Development",
   "keywords": [
     "agile",
@@ -27,9 +27,10 @@
     "bmad:install": "node tools/cli/bmad-cli.js install",
     "bundle": "node tools/cli/bundlers/bundle-web.js all",
     "docs:build": "node tools/build-docs.js",
-    "docs:check-links": "node tools/check-doc-links.js",
     "docs:dev": "astro dev --root website",
+    "docs:fix-links": "node tools/fix-doc-links.js",
     "docs:preview": "astro preview --root website",
+    "docs:validate-links": "node tools/validate-doc-links.js",
     "flatten": "node tools/flattener/main.js",
     "format:check": "prettier --check \"**/*.{js,cjs,mjs,json,yaml}\"",
     "format:fix": "prettier --write \"**/*.{js,cjs,mjs,json,yaml}\"",
@@ -66,6 +67,7 @@
     ]
   },
   "dependencies": {
+    "@clack/prompts": "^0.11.0",
     "@kayvan/markdown-tree-parser": "^1.6.1",
     "boxen": "^5.1.2",
     "chalk": "^4.1.2",
@@ -76,7 +78,6 @@
     "fs-extra": "^11.3.0",
     "glob": "^11.0.3",
     "ignore": "^7.0.5",
-    "inquirer": "^9.3.8",
     "js-yaml": "^4.1.0",
     "ora": "^5.4.1",
     "semver": "^7.6.3",
@@ -100,7 +101,7 @@
     "jest": "^30.0.4",
     "lint-staged": "^16.1.1",
     "markdownlint-cli2": "^0.19.1",
-    "prettier": "^3.5.3",
+    "prettier": "^3.7.4",
     "prettier-plugin-packagejson": "^2.5.19",
     "sharp": "^0.33.5",
     "yaml-eslint-parser": "^1.2.3",

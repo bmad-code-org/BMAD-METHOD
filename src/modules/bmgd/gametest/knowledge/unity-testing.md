@@ -381,3 +381,17 @@ test:
 | NullReferenceException | Missing Setup      | Ensure [SetUp] initializes all fields      |
 | Tests hang             | Infinite coroutine | Add timeout or max iterations              |
 | Flaky physics tests    | Timing dependent   | Use WaitForFixedUpdate, increase tolerance |
+
+## End-to-End Testing
+
+For comprehensive E2E testing patterns, infrastructure scaffolding, and 
+scenario builders, see **knowledge/e2e-testing.md**.
+
+### Quick E2E Checklist for Unity
+
+- [ ] Create `GameE2ETestFixture` base class
+- [ ] Implement `ScenarioBuilder` for your game's domain
+- [ ] Create `InputSimulator` wrapping Input System
+- [ ] Add `AsyncAssert` utilities
+- [ ] Organize E2E tests under `Tests/PlayMode/E2E/`
+- [ ] Configure separate CI job for E2E suite

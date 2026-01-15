@@ -2,23 +2,24 @@
 title: "Quick Flow Solo Dev Agent (Barry)"
 ---
 
+Barry is the elite solo developer who takes projects from concept to deployment with ruthless efficiency — no handoffs, no delays, just pure focused development.
 
-**Agent ID:** `_bmad/bmm/agents/quick-flow-solo-dev.md`
-**Icon:** 🚀
-**Module:** BMM
-
----
+:::note[Agent Info]
+- **Agent ID:** `_bmad/bmm/agents/quick-flow-solo-dev.md`
+- **Icon:** 🚀
+- **Module:** BMM
+:::
 
 ## Overview
 
-Barry is the elite solo developer who lives and breathes the BMAD Quick Flow workflow. He takes projects from concept to deployment with ruthless efficiency - no handoffs, no delays, just pure focused development. Barry architects specs, writes the code, and ships features faster than entire teams. When you need it done right and done now, Barry's your dev.
+Barry is the elite solo developer who lives and breathes the BMad Quick Flow workflow. He takes projects from concept to deployment with ruthless efficiency - no handoffs, no delays, just pure focused development. Barry architects specs, writes the code, and ships features faster than entire teams. When you need it done right and done now, Barry's your dev.
 
 ### Agent Persona
 
 **Name:** Barry
 **Title:** Quick Flow Solo Dev
 
-**Identity:** Barry is an elite developer who thrives on autonomous execution. He lives and breathes the BMAD Quick Flow workflow, taking projects from concept to deployment with ruthless efficiency. No handoffs, no delays - just pure, focused development. He architects specs, writes the code, and ships features faster than entire teams.
+**Identity:** Barry is an elite developer who thrives on autonomous execution. He lives and breathes the BMad Quick Flow workflow, taking projects from concept to deployment with ruthless efficiency. No handoffs, no delays - just pure, focused development. He architects specs, writes the code, and ships features faster than entire teams.
 
 **Communication Style:** Direct, confident, and implementation-focused. Uses tech slang and gets straight to the point. No fluff, just results. Every response moves the project forward.
 
@@ -31,15 +32,13 @@ Barry is the elite solo developer who lives and breathes the BMAD Quick Flow wor
 - Documentation happens alongside development, not after
 - Ship early, ship often
 
----
-
 ## Menu Commands
 
-Barry owns the entire BMAD Quick Flow path, providing a streamlined 3-step development process that eliminates handoffs and maximizes velocity.
+Barry owns the entire BMad Quick Flow path, providing a streamlined 3-step development process that eliminates handoffs and maximizes velocity.
 
-### 1. **create-tech-spec**
+### 1. **quick-spec**
 
-- **Workflow:** `_bmad/bmm/workflows/bmad-quick-flow/create-tech-spec/workflow.yaml`
+- **Workflow:** `_bmad/bmm/workflows/bmad-quick-flow/quick-spec/workflow.md`
 - **Description:** Architect a technical spec with implementation-ready stories
 - **Use when:** You need to transform requirements into a buildable spec
 
@@ -61,8 +60,6 @@ Barry owns the entire BMAD Quick Flow path, providing a streamlined 3-step devel
 - **Description:** Bring in other experts when I need specialized backup
 - **Use when:** You need collaborative problem-solving or specialized expertise
 
----
-
 ## When to Use Barry
 
 ### Ideal Scenarios
@@ -81,15 +78,13 @@ Barry owns the entire BMAD Quick Flow path, providing a streamlined 3-step devel
 - **Proof of Concepts** - Rapid prototyping with production-quality code
 - **Performance Optimizations** - System improvements and scalability work
 
----
-
-## The BMAD Quick Flow Process
+## The BMad Quick Flow Process
 
 Barry orchestrates a simple, efficient 3-step process:
 
 ```mermaid
 flowchart LR
-    A[Requirements] --> B[create-tech-spec]
+    A[Requirements] --> B[quick-spec]
     B --> C[Tech Spec]
     C --> D[quick-dev]
     D --> E[Implementation]
@@ -107,7 +102,7 @@ flowchart LR
     style H fill:#e0f2f1
 ```
 
-### Step 1: Technical Specification (`create-tech-spec`)
+### Step 1: Technical Specification (`quick-spec`)
 
 **Goal:** Transform user requirements into implementation-ready technical specifications
 
@@ -180,8 +175,6 @@ flowchart LR
 - Security considerations
 - Maintainability and documentation
 
----
-
 ## Collaboration with Other Agents
 
 ### Natural Partnerships
@@ -200,8 +193,6 @@ In party mode, Barry often acts as:
 - **Implementation Expert** - Providing coding insights
 - **Performance Optimizer** - Ensuring scalable solutions
 - **Code Review Authority** - Validating technical approaches
-
----
 
 ## Tips for Working with Barry
 
@@ -228,8 +219,6 @@ In party mode, Barry often acts as:
 4. **Over-planning** - I excel at rapid, pragmatic development
 5. **Not Using Party Mode** - Missing collaborative insights for complex problems
 
----
-
 ## Example Workflow
 
 ```bash
@@ -237,7 +226,7 @@ In party mode, Barry often acts as:
 /bmad:bmm:agents:quick-flow-solo-dev
 
 # Create a tech spec
-> create-tech-spec
+> quick-spec
 
 # Quick implementation
 > quick-dev tech-spec-auth.md
@@ -306,35 +295,34 @@ Implement OAuth 2.0 authentication with JWT tokens and role-based access control
 - [ ] Given admin role, when accessing admin endpoint, then allow access
 ```
 
----
+## Common Questions
 
-## Related Documentation
+- [When should I use Barry vs other agents?](#when-should-i-use-barry-vs-other-agents)
+- [Is the code review step mandatory?](#is-the-code-review-step-mandatory)
+- [Can I skip the tech spec step?](#can-i-skip-the-tech-spec-step)
+- [How does Barry differ from the Dev agent?](#how-does-barry-differ-from-the-dev-agent)
+- [Can Barry handle enterprise-scale projects?](#can-barry-handle-enterprise-scale-projects)
 
-- **[Quick Start Guide](../../tutorials/getting-started/getting-started-bmadv6.md)** - Getting started with BMM
-- **[Agents Guide](../../explanation/core-concepts/agent-roles.md)** - Complete agent reference
-- **[Four Phases](../../explanation/architecture/four-phases.md)** - Understanding development tracks
-- **[Workflow Implementation](../../how-to/workflows/run-sprint-planning.md)** - Implementation workflows
-- **[Party Mode](../../explanation/features/party-mode.md)** - Multi-agent collaboration
+### When should I use Barry vs other agents?
 
----
+Use Barry for Quick Flow development (small to medium features), rapid prototyping, or when you need elite solo development. For large, complex projects requiring full team collaboration, consider the full BMad Method with specialized agents.
 
-## Frequently Asked Questions
+### Is the code review step mandatory?
 
-**Q: When should I use Barry vs other agents?**
-A: Use Barry for Quick Flow development (small to medium features), rapid prototyping, or when you need elite solo development. For large, complex projects requiring full team collaboration, consider the full BMad Method with specialized agents.
+No, it's optional but highly recommended for critical features, team projects, or when learning best practices.
 
-**Q: Is the code review step mandatory?**
-A: No, it's optional but highly recommended for critical features, team projects, or when learning best practices.
+### Can I skip the tech spec step?
 
-**Q: Can I skip the tech spec step?**
-A: Yes, the quick-dev workflow accepts direct instructions. However, tech specs are recommended for complex features or team collaboration.
+Yes, the quick-dev workflow accepts direct instructions. However, tech specs are recommended for complex features or team collaboration.
 
-**Q: How does Barry differ from the Dev agent?**
-A: Barry handles the complete Quick Flow process (spec → dev → review) with elite architectural expertise, while the Dev agent specializes in pure implementation tasks. Barry is your autonomous end-to-end solution.
+### How does Barry differ from the Dev agent?
 
-**Q: Can Barry handle enterprise-scale projects?**
-A: For enterprise-scale projects requiring full team collaboration, consider using the Enterprise Method track. Barry is optimized for rapid delivery in the Quick Flow track where solo execution wins.
+Barry handles the complete Quick Flow process (spec → dev → review) with elite architectural expertise, while the Dev agent specializes in pure implementation tasks. Barry is your autonomous end-to-end solution.
 
----
+### Can Barry handle enterprise-scale projects?
 
-**Ready to ship some code?** → Start with `/bmad:bmm:agents:quick-flow-solo-dev`
+For enterprise-scale projects requiring full team collaboration, consider using the Enterprise Method track. Barry is optimized for rapid delivery in the Quick Flow track where solo execution wins.
+
+:::tip[Ready to Ship?]
+Start with `/bmad:bmm:agents:quick-flow-solo-dev`
+:::

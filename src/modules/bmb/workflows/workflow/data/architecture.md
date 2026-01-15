@@ -91,8 +91,8 @@ workflow.md → step-01-init.md (detects existing) → step-01b-continue.md → 
 ### Standard (All Workflows)
 ```yaml
 workflow_path: '{project-root}/_bmad/[module]/workflows/[name]'
-thisStepFile: '{workflow_path}/steps/step-[N]-[name].md'
-nextStepFile: '{workflow_path}/steps/step-[N+1]-[name].md'
+thisStepFile: './step-[N]-[name].md'
+nextStepFile: './step-[N+1]-[name].md'
 outputFile: '{output_folder}/[output].md'
 ```
 
