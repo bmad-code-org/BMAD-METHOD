@@ -34,6 +34,7 @@
     "flatten": "node tools/flattener/main.js",
     "format:check": "prettier --check \"**/*.{js,cjs,mjs,json,yaml}\"",
     "format:fix": "prettier --write \"**/*.{js,cjs,mjs,json,yaml}\"",
+    "format:fix:staged": "prettier --write",
     "install:bmad": "node tools/cli/bmad-cli.js install",
     "lint": "eslint . --ext .js,.cjs,.mjs,.yaml --max-warnings=0",
     "lint:fix": "eslint . --ext .js,.cjs,.mjs,.yaml --fix",
@@ -53,14 +54,14 @@
   "lint-staged": {
     "*.{js,cjs,mjs}": [
       "npm run lint:fix",
-      "npm run format:fix"
+      "npm run format:fix:staged"
     ],
     "*.yaml": [
       "eslint --fix",
-      "npm run format:fix"
+      "npm run format:fix:staged"
     ],
     "*.json": [
-      "npm run format:fix"
+      "npm run format:fix:staged"
     ],
     "*.md": [
       "markdownlint-cli2"
