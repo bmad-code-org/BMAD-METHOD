@@ -106,7 +106,6 @@ workflow_completed: true
 
 - Clear any active conversation state
 - Reset agent selection cache
-- Finalize TTS session cleanup
 - Mark party mode workflow as completed
 
 ### 6. Exit Workflow
@@ -122,7 +121,6 @@ Thank you for using BMAD Party Mode for collaborative multi-agent discussions!"
 ✅ Satisfying agent farewells generated in authentic character voices
 ✅ Session highlights and contributions acknowledged meaningfully
 ✅ Positive and appreciative closure atmosphere maintained
-✅ TTS integration working for farewell messages
 ✅ Frontmatter properly updated with workflow completion
 ✅ All workflow state cleaned up appropriately
 ✅ User left with positive impression of collaborative experience

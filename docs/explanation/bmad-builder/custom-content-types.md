@@ -20,10 +20,13 @@ This flexibility enables:
 
 ## Categories
 
+- [Categories](#categories)
 - [Custom Stand-Alone Modules](#custom-stand-alone-modules)
 - [Custom Add-On Modules](#custom-add-on-modules)
 - [Custom Global Modules](#custom-global-modules)
 - [Custom Agents](#custom-agents)
+  - [BMad Tiny Agents](#bmad-tiny-agents)
+  - [Simple and Expert Agents](#simple-and-expert-agents)
 - [Custom Workflows](#custom-workflows)
 
 ## Custom Stand-Alone Modules
@@ -59,7 +62,6 @@ Similar to Custom Stand-Alone Modules, but designed to add functionality that ap
 
 Examples include:
 
-- The current TTS (Text-to-Speech) functionality for Claude, which will soon be converted to a global module
 - The core module, which is always installed and provides all agents with party mode and advanced elicitation capabilities
 - Installation and update tools that work with any BMad method configuration
 

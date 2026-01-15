@@ -66,19 +66,18 @@ Type "exit" or "done" to conclude the session. Participating agents will say per
 
 ## Example Party Compositions
 
-| Topic | Typical Agents |
-|-------|---------------|
-| **Product Strategy** | PM + Innovation Strategist (CIS) + Analyst |
-| **Technical Design** | Architect + Creative Problem Solver (CIS) + Game Architect |
-| **User Experience** | UX Designer + Design Thinking Coach (CIS) + Storyteller (CIS) |
-| **Quality Assessment** | TEA + DEV + Architect |
+| Topic                  | Typical Agents                                                |
+| ---------------------- | ------------------------------------------------------------- |
+| **Product Strategy**   | PM + Innovation Strategist (CIS) + Analyst                    |
+| **Technical Design**   | Architect + Creative Problem Solver (CIS) + Game Architect    |
+| **User Experience**    | UX Designer + Design Thinking Coach (CIS) + Storyteller (CIS) |
+| **Quality Assessment** | TEA + DEV + Architect                                         |
 
 ## Key Features
 
 - **Intelligent agent selection** — Selects based on expertise needed
 - **Authentic personalities** — Each agent maintains their unique voice
 - **Natural cross-talk** — Agents reference and build on each other
-- **Optional TTS** — Voice configurations for each agent
 - **Graceful exit** — Personalized farewells
 
 ## Tips
