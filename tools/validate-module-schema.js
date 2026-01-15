@@ -45,14 +45,14 @@ async function main(customProjectRoot) {
 
   // Validate each file
   for (const filePath of moduleFiles) {
-    const relativePath = path.relative(process.cwd(), filePath);
+    const relativePath = path.relative(project_root, filePath).replaceAll('\\', '/');
 
     try {
       const fileContent = fs.readFileSync(filePath, 'utf8');
       const moduleData = yaml.parse(fileContent);
 
-      // Convert absolute path to relative src/ path for context
-      const srcRelativePath = relativePath.startsWith('src/') ? relativePath : path.relative(project_root, filePath).replaceAll('\\', '/');
+      // Ensure path starts with src/ for core module detection
+      const srcRelativePath = relativePath.startsWith('src/') ? relativePath : `src/${relativePath}`;
 
       const result = validateModuleFile(srcRelativePath, moduleData);
 

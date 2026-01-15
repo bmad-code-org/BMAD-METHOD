@@ -163,10 +163,10 @@ function validateError(error, expectation) {
  * @returns {{passed: boolean, message: string}}
  */
 function runTest(filePath) {
-  const metadata = parseTestMetadata(filePath);
-  const { shouldPass, errorExpectation } = metadata;
-
   try {
+    const metadata = parseTestMetadata(filePath);
+    const { shouldPass, errorExpectation } = metadata;
+
     const fileContent = fs.readFileSync(filePath, 'utf8');
     let moduleData;
 
@@ -195,7 +195,13 @@ function runTest(filePath) {
     }
 
     if (!result.success && !shouldPass) {
-      const actualError = result.error.issues[0];
+      const actualError = result.error?.issues?.[0];
+      if (!actualError) {
+        return {
+          passed: false,
+          message: 'Expected validation error issues, but validator returned none',
+        };
+      }
 
       if (errorExpectation) {
         const validation = validateError(actualError, errorExpectation);
@@ -215,7 +221,7 @@ function runTest(filePath) {
 
       return {
         passed: true,
-        message: `Got expected validation error: ${actualError?.message}`,
+        message: `Got expected validation error: ${actualError.message}`,
       };
     }
 
@@ -229,7 +235,7 @@ function runTest(filePath) {
     if (!result.success && shouldPass) {
       return {
         passed: false,
-        message: `Expected validation to PASS but it FAILED: ${result.error.issues[0]?.message}`,
+        message: `Expected validation to PASS but it FAILED: ${result.error?.issues?.[0]?.message ?? 'Unknown error'}`,
       };
     }
 

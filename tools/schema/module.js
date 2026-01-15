@@ -9,12 +9,13 @@ const MODULE_CODE_PATTERN = /^[a-z][a-z0-9-]{1,19}$/;
 /**
  * Validate a module YAML payload against the schema.
  *
- * @param {string} filePath Path to the module file (for consistency with other validators).
+ * @param {string} filePath Path to the module file (used to detect core vs non-core modules).
  * @param {unknown} moduleYaml Parsed YAML content.
  * @returns {import('zod').SafeParseReturnType<unknown, unknown>} SafeParse result.
  */
 function validateModuleFile(filePath, moduleYaml) {
-  const schema = moduleSchema();
+  const isCoreModule = typeof filePath === 'string' && filePath.replaceAll('\\', '/').includes('src/core/');
+  const schema = moduleSchema({ isCoreModule });
   return schema.safeParse(moduleYaml);
 }
 
@@ -24,9 +25,11 @@ module.exports = { validateModuleFile };
 
 /**
  * Build the Zod schema for validating a module.yaml file.
+ * @param {{isCoreModule?: boolean}} options - Options for schema validation.
  * @returns {import('zod').ZodSchema} Configured Zod schema instance.
  */
-function moduleSchema() {
+function moduleSchema(options) {
+  const { isCoreModule = false } = options ?? {};
   return z
     .object({
       // Required fields
@@ -36,17 +39,24 @@ function moduleSchema() {
       name: createNonEmptyString('module.name'),
       header: createNonEmptyString('module.header'),
       subheader: createNonEmptyString('module.subheader'),
-      // default_selected is optional for core module, required for others
-      // Core module doesn't need this as it's always included
+      // default_selected is optional for core module, required for non-core modules
       default_selected: z.boolean().optional(),
 
       // Optional fields
       type: createNonEmptyString('module.type').optional(),
       global: z.boolean().optional(),
     })
-    .strict()
     .passthrough()
     .superRefine((value, ctx) => {
+      // Enforce default_selected for non-core modules
+      if (!isCoreModule && !('default_selected' in value)) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['default_selected'],
+          message: 'module.default_selected is required for non-core modules',
+        });
+      }
+
       // Validate any additional keys as variable definitions
       const reservedKeys = new Set(['code', 'name', 'header', 'subheader', 'default_selected', 'type', 'global']);
 
@@ -57,7 +67,7 @@ function moduleSchema() {
 
         const variableValue = value[key];
 
-        // Skip if it's a comment (starts with #) or null/undefined
+        // Skip if null/undefined
         if (variableValue === null || variableValue === undefined) {
           continue;
         }
@@ -87,8 +97,16 @@ function validateVariableDefinition(variableName, variableValue) {
     return { valid: false, error: `${variableName} must be an object with variable definition properties` };
   }
 
+  const hasInherit = 'inherit' in variableValue;
+  const hasPrompt = 'prompt' in variableValue;
+
+  // Enforce mutual exclusivity: inherit and prompt cannot coexist
+  if (hasInherit && hasPrompt) {
+    return { valid: false, error: `${variableName} must not define both 'inherit' and 'prompt'` };
+  }
+
   // Check for inherit alias - if present, it's the only required field
-  if ('inherit' in variableValue) {
+  if (hasInherit) {
     if (typeof variableValue.inherit !== 'string' || variableValue.inherit.trim().length === 0) {
       return { valid: false, error: `${variableName}.inherit must be a non-empty string` };
     }
@@ -96,7 +114,7 @@ function validateVariableDefinition(variableName, variableValue) {
   }
 
   // Otherwise, prompt is required
-  if (!('prompt' in variableValue)) {
+  if (!hasPrompt) {
     return { valid: false, error: `${variableName} must have a 'prompt' or 'inherit' field` };
   }
 
@@ -119,8 +137,15 @@ function validateVariableDefinition(variableName, variableValue) {
     return { valid: false, error: `${variableName}.prompt must be a string or array of strings` };
   }
 
+  // Enforce mutual exclusivity: single-select and multi-select cannot coexist
+  const hasSingle = 'single-select' in variableValue;
+  const hasMulti = 'multi-select' in variableValue;
+  if (hasSingle && hasMulti) {
+    return { valid: false, error: `${variableName} must not define both 'single-select' and 'multi-select'` };
+  }
+
   // Validate optional single-select
-  if ('single-select' in variableValue) {
+  if (hasSingle) {
     const selectResult = validateSelectOptions(variableName, 'single-select', variableValue['single-select']);
     if (!selectResult.valid) {
       return selectResult;
@@ -128,7 +153,7 @@ function validateVariableDefinition(variableName, variableValue) {
   }
 
   // Validate optional multi-select
-  if ('multi-select' in variableValue) {
+  if (hasMulti) {
     const selectResult = validateSelectOptions(variableName, 'multi-select', variableValue['multi-select']);
     if (!selectResult.valid) {
       return selectResult;
