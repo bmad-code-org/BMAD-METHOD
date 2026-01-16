@@ -1,0 +1,33 @@
+# This file allows these modules under bmad-code-org to also be installed with the bmad method installer, while
+# allowing us to keep the source of these projects in separate repos.
+
+modules:
+  bmad-creative-intelligence-suite:
+    url: https://github.com/bmad-code-org/bmad-module-creative-intelligence-suite
+    module-definition: src/module.yaml
+    code: cis
+    name: "CIS: Creative Innovation Suite"
+    header: "CIS: Creative Innovation Suite"
+    subheader: "Unleash your creativity with the BMad CIS!"
+    description: ""
+    defaultSelected: false
+
+  bmad-game-dev-studio:
+    url: https://github.com/bmad-code-org/bmad-module-game-dev-studio.git
+    module-definition: src/module.yaml
+    code: BGDS
+    name: "BGDS: BMad Game Dev Suite"
+    header: "BGDS: BMad Game Dev Suite"
+    subheader: "Explore and create the groundwork for your game ideas with the BMad Game Dev suite!"
+    description: "Very similar to the BMad Method - but a focus on the slightly different needs of Game Development - with multiple platforms and game type specifics included to explore"
+    defaultSelected: false
+
+  # bmad-whiteport-design-system:
+  #   url: https://github.com/bmad-code-org/bmad-method-wds-expansion
+  #   module-definition: src/module.yaml
+  #   code: WDS
+  #   name: "WDS: Whiteport UX Design System"
+  #   header: "WDS: Whiteport UX Design System"
+  #   subheader: "Professional Designer UX Design Module Expansion to the BMad MEthod"
+  #   description: "Experienced UX Designers can leverage the WDS with or without the BMad Method to harness their existing skills and tools (such as figma) while also utilizing an industry leading design framework."
+  #   defaultSelected: false

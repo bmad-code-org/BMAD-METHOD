@@ -9,7 +9,7 @@ Use the `npx bmad-method install` command to set up BMad in your project with yo
 
 - Starting a new project with BMad
 - Adding BMad to an existing codebase
-- Setting up BMad on a new machine
+- Update the existing BMad Installation
 
 :::note[Prerequisites]
 - **Node.js** 20+ (required for the installer)
@@ -29,8 +29,7 @@ npx bmad-method install
 
 The installer will ask where to install BMad files:
 
-- Current directory (recommended for new projects)
-- Subdirectory
+- Current directory (recommended for new projects if you created the directory yourself and ran from within the directory)
 - Custom path
 
 ### 3. Select Your AI Tools
@@ -40,20 +39,20 @@ Choose which AI tools you'll be using:
 - Claude Code
 - Cursor
 - Windsurf
-- Other
+-  Many others to choose from
 
-The installer configures BMad for your selected tools.
+The installer configures BMad for your selected tools by setting up commands that will call the ui.
 
 ### 4. Choose Modules
 
 Select which modules to install:
 
-| Module | Purpose |
-|--------|---------|
-| **BMM** | Core methodology for software development |
-| **BMGD** | Game development workflows |
-| **CIS** | Creative intelligence and facilitation |
-| **BMB** | Building custom agents and workflows |
+| Module   | Purpose                                   |
+| -------- | ----------------------------------------- |
+| **BMM**  | Core methodology for software development |
+| **BMGD** | Game development workflows                |
+| **CIS**  | Creative intelligence and facilitation    |
+| **BMB**  | Building custom agents and workflows      |
 
 ### 5. Add Custom Content (Optional)
 
@@ -82,11 +81,11 @@ your-project/
 
 1. Check the `_bmad/` directory exists
 2. Load an agent in your AI tool
-3. Run `*menu` to see available commands
+3. Run `/workflow-init`  which will autocomplete to the full command to see available commands
 
 ## Configuration
 
-Edit `_bmad/[module]/config.yaml` to customize:
+Edit `_bmad/[module]/config.yaml` to customize. For example these could be changed:
 
 ```yaml
 output_folder: ./_bmad-output

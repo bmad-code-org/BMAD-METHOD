@@ -696,10 +696,6 @@ class ConfigCollector {
                   for (const mod of Object.keys(this.collectedConfig)) {
                     if (mod !== '_meta' && this.collectedConfig[mod] && this.collectedConfig[mod][configKey]) {
                       configValue = this.collectedConfig[mod][configKey];
-                      // Extract just the value part if it's a result template
-                      if (typeof configValue === 'string' && configValue.includes('{project-root}/')) {
-                        configValue = configValue.replace('{project-root}/', '');
-                      }
                       break;
                     }
                   }
@@ -813,10 +809,6 @@ class ConfigCollector {
         for (const mod of Object.keys(this.collectedConfig)) {
           if (mod !== '_meta' && this.collectedConfig[mod] && this.collectedConfig[mod][configKey]) {
             configValue = this.collectedConfig[mod][configKey];
-            // Remove {project-root}/ prefix if present for cleaner display
-            if (typeof configValue === 'string' && configValue.includes('{project-root}/')) {
-              configValue = configValue.replace('{project-root}/', '');
-            }
             break;
           }
         }

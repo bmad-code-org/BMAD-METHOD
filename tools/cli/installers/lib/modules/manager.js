@@ -5,6 +5,7 @@ const chalk = require('chalk');
 const { XmlHandler } = require('../../../lib/xml-handler');
 const { getProjectRoot, getSourcePath, getModulePath } = require('../../../lib/project-root');
 const { filterCustomizationData } = require('../../../lib/agent/compiler');
+const { ExternalModuleManager } = require('./external-manager');
 
 /**
  * Manages the installation, updating, and removal of BMAD modules.
@@ -29,6 +30,7 @@ class ModuleManager {
     this.xmlHandler = new XmlHandler();
     this.bmadFolderName = 'bmad'; // Default, can be overridden
     this.customModulePaths = new Map(); // Initialize custom module paths
+    this.externalModuleManager = new ExternalModuleManager(); // For external official modules
   }
 
   /**
@@ -365,7 +367,136 @@ class ModuleManager {
       }
     }
 
+    // Check external official modules
+    const externalSource = await this.findExternalModuleSource(moduleCode);
+    if (externalSource) {
+      return externalSource;
+    }
+
     return null;
+  }
+
+  /**
+   * Check if a module is an external official module
+   * @param {string} moduleCode - Code of the module to check
+   * @returns {boolean} True if the module is external
+   */
+  async isExternalModule(moduleCode) {
+    return await this.externalModuleManager.hasModule(moduleCode);
+  }
+
+  /**
+   * Get the cache directory for external modules
+   * @returns {string} Path to the external modules cache directory
+   */
+  getExternalCacheDir() {
+    const os = require('node:os');
+    const cacheDir = path.join(os.homedir(), '.bmad', 'cache', 'external-modules');
+    return cacheDir;
+  }
+
+  /**
+   * Clone an external module repository to cache
+   * @param {string} moduleCode - Code of the external module
+   * @returns {string} Path to the cloned repository
+   */
+  async cloneExternalModule(moduleCode) {
+    const { execSync } = require('node:child_process');
+    const moduleInfo = await this.externalModuleManager.getModuleByCode(moduleCode);
+
+    if (!moduleInfo) {
+      throw new Error(`External module '${moduleCode}' not found in external-official-modules.yaml`);
+    }
+
+    const cacheDir = this.getExternalCacheDir();
+    const moduleCacheDir = path.join(cacheDir, moduleCode);
+
+    // Create cache directory if it doesn't exist
+    await fs.ensureDir(cacheDir);
+
+    // Check if already cloned
+    if (await fs.pathExists(moduleCacheDir)) {
+      // Try to update if it's a git repo
+      try {
+        execSync('git fetch --depth 1', { cwd: moduleCacheDir, stdio: 'pipe' });
+        execSync('git checkout -f', { cwd: moduleCacheDir, stdio: 'pipe' });
+        execSync('git pull --ff-only', { cwd: moduleCacheDir, stdio: 'pipe' });
+      } catch {
+        // If update fails, remove and re-clone
+        await fs.remove(moduleCacheDir);
+      }
+    }
+
+    // Clone if not exists or was removed
+    if (!(await fs.pathExists(moduleCacheDir))) {
+      console.log(chalk.dim(`  Cloning external module: ${moduleInfo.name}`));
+      try {
+        execSync(`git clone --depth 1 "${moduleInfo.url}" "${moduleCacheDir}"`, {
+          stdio: 'pipe',
+        });
+      } catch (error) {
+        throw new Error(`Failed to clone external module '${moduleCode}': ${error.message}`);
+      }
+    }
+
+    // Install dependencies if package.json exists
+    const packageJsonPath = path.join(moduleCacheDir, 'package.json');
+    const nodeModulesPath = path.join(moduleCacheDir, 'node_modules');
+    if (await fs.pathExists(packageJsonPath)) {
+      // Install if node_modules doesn't exist, or if package.json is newer (dependencies changed)
+      const needsInstall = !(await fs.pathExists(nodeModulesPath));
+      let packageJsonNewer = false;
+
+      if (!needsInstall) {
+        // Check if package.json is newer than node_modules
+        try {
+          const packageStats = await fs.stat(packageJsonPath);
+          const nodeModulesStats = await fs.stat(nodeModulesPath);
+          packageJsonNewer = packageStats.mtime > nodeModulesStats.mtime;
+        } catch {
+          // If stat fails, assume we need to install
+          packageJsonNewer = true;
+        }
+      }
+
+      if (needsInstall || packageJsonNewer) {
+        console.log(chalk.dim(`  Installing dependencies for ${moduleInfo.name}...`));
+        try {
+          execSync('npm install --production --no-audit --no-fund --prefer-offline --no-progress', {
+            cwd: moduleCacheDir,
+            stdio: 'inherit',
+            timeout: 120_000, // 2 minute timeout
+          });
+        } catch (error) {
+          console.warn(chalk.yellow(`  Warning: Failed to install dependencies for ${moduleInfo.name}: ${error.message}`));
+        }
+      }
+    }
+
+    return moduleCacheDir;
+  }
+
+  /**
+   * Find the source path for an external module
+   * @param {string} moduleCode - Code of the external module
+   * @returns {string|null} Path to the module source or null if not found
+   */
+  async findExternalModuleSource(moduleCode) {
+    const moduleInfo = await this.externalModuleManager.getModuleByCode(moduleCode);
+
+    if (!moduleInfo) {
+      return null;
+    }
+
+    // Clone the external module repo
+    const cloneDir = await this.cloneExternalModule(moduleCode);
+
+    // The module-definition specifies the path to module.yaml relative to repo root
+    // We need to return the directory containing module.yaml
+    const moduleDefinitionPath = moduleInfo.moduleDefinition; // e.g., 'src/module.yaml'
+    const moduleDir = path.dirname(path.join(cloneDir, moduleDefinitionPath));
+
+    return moduleDir;
   }
 
   /**
