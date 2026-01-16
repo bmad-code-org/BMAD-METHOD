@@ -662,7 +662,7 @@ Assess categories incrementally, not all at once.
 
 - [How to Run Trace](/docs/how-to/workflows/run-trace.md) - Gate decision complements NFR
 - [How to Run Test Review](/docs/how-to/workflows/run-test-review.md) - Quality complements NFR
-- [Run TEA for Enterprise](/docs/how-to/enterprise/use-tea-for-enterprise.md) - Enterprise workflow
+- [Run TEA for Enterprise](/docs/how-to/brownfield/use-tea-for-enterprise.md) - Enterprise workflow
 
 ## Understanding the Concepts
 

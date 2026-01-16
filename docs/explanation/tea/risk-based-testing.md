@@ -573,7 +573,7 @@ flowchart TD
 - [How to Run NFR Assessment](/docs/how-to/workflows/run-nfr-assess.md) - NFR risk assessment
 
 **Use-Case Guides:**
-- [Running TEA for Enterprise](/docs/how-to/enterprise/use-tea-for-enterprise.md) - Enterprise risk management
+- [Running TEA for Enterprise](/docs/how-to/brownfield/use-tea-for-enterprise.md) - Enterprise risk management
 
 ## Reference
 

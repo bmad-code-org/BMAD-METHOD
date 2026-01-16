@@ -384,7 +384,7 @@ Live browser verification for test design and automation.
 
 **Specialized guidance for specific contexts:**
 - [Using TEA with Existing Tests (Brownfield)](/docs/how-to/brownfield/use-tea-with-existing-tests.md) - Incremental improvement, regression hotspots, baseline coverage
-- [Running TEA for Enterprise](/docs/how-to/enterprise/use-tea-for-enterprise.md) - Compliance, NFR assessment, audit trails, SOC 2/HIPAA
+- [Running TEA for Enterprise](/docs/how-to/brownfield/use-tea-for-enterprise.md) - Compliance, NFR assessment, audit trails, SOC 2/HIPAA
 
 ### Concept Deep Dives (Understanding-Oriented)
 

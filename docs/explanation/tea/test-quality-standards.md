@@ -894,7 +894,7 @@ For detailed test quality patterns, see:
 
 **Use-Case Guides:**
 - [Using TEA with Existing Tests](/docs/how-to/brownfield/use-tea-with-existing-tests.md) - Improve legacy quality
-- [Running TEA for Enterprise](/docs/how-to/enterprise/use-tea-for-enterprise.md) - Enterprise quality thresholds
+- [Running TEA for Enterprise](/docs/how-to/brownfield/use-tea-for-enterprise.md) - Enterprise quality thresholds
 
 ## Reference
 
