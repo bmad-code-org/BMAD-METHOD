@@ -10,6 +10,7 @@ permissions:
 
 jobs:
   bundle-and-publish:
+    if: ${{ false }} # Temporarily disabled while web bundles are paused.
     runs-on: ubuntu-latest
     steps:
       - name: Checkout BMAD-METHOD
