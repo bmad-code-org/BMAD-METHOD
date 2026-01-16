@@ -120,6 +120,10 @@ export default defineConfig({
               autogenerate: { directory: 'how-to/brownfield' },
             },
             {
+              label: 'Enterprise',
+              autogenerate: { directory: 'how-to/enterprise' },
+            },
+            {
               label: 'Troubleshooting',
               autogenerate: { directory: 'how-to/troubleshooting' },
             },
@@ -144,6 +148,10 @@ export default defineConfig({
             {
               label: 'Features',
               autogenerate: { directory: 'explanation/features' },
+            },
+            {
+              label: 'TEA (Test Architect)',
+              autogenerate: { directory: 'explanation/tea' },
             },
             {
               label: 'Agents',
@@ -190,6 +198,10 @@ export default defineConfig({
             {
               label: 'Configuration',
               autogenerate: { directory: 'reference/configuration' },
+            },
+            {
+              label: 'TEA (Test Architect)',
+              autogenerate: { directory: 'reference/tea' },
             },
             {
               label: 'Glossary',
