@@ -58,7 +58,7 @@ When prompted:
 - **Planning artifacts folder:** Keep default
 - **Implementation artifacts folder:** Keep default
 - **Project knowledge folder:** Keep default
-- **Enable TEA Playwright MCP enhancements?** Choose "No" for now (we'll explore this later)
+- **Enable TEA Playwright Model Context Protocol (MCP) enhancements?** Choose "No" for now (we'll explore this later)
 - **Using playwright-utils?** Choose "No" for now (we'll explore this later)
 
 BMad is now installed! You'll see a `_bmad/` folder in your project.
@@ -90,9 +90,9 @@ A: "We're testing a React web application (TodoMVC)"
 A: "Playwright"
 
 **Q: Testing scope?**
-A: "E2E testing for web application"
+A: "End-to-end (E2E) testing for a web application"
 
-**Q: CI/CD platform?**
+**Q: Continuous integration/continuous deployment (CI/CD) platform?**
 A: "GitHub Actions" (or your preference)
 
 TEA will generate:
@@ -127,7 +127,7 @@ In your chat with TEA, run:
 A: "Epic-level - I want to test TodoMVC's basic functionality"
 
 **Q: What feature are you testing?**
-A: "TodoMVC's core CRUD operations - creating, completing, and deleting todos"
+A: "TodoMVC's core operations - creating, completing, and deleting todos"
 
 **Q: Any specific risks or concerns?**
 A: "We want to ensure the filter buttons (All, Active, Completed) work correctly"
@@ -358,8 +358,8 @@ This tutorial used `*automate` to generate tests for **existing features** (test
 - Want to add test coverage
 - Tests should pass on first run
 
-**When to use `*atdd`:**
-- Feature doesn't exist yet (TDD workflow)
+**When to use `*atdd` (Acceptance Test-Driven Development):**
+- Feature doesn't exist yet (Test-Driven Development workflow)
 - Want failing tests BEFORE implementation
 - Following red → green → refactor cycle
 
@@ -397,7 +397,7 @@ See [TEA Overview](/docs/explanation/features/tea-overview.md) for engagement mo
 ### Go Full TEA Integrated
 
 Want the complete quality operating model? Try TEA Integrated with BMad Method:
-- Phase 2: Planning with NFR assessment
+- Phase 2: Planning with non-functional requirements (NFR) assessment
 - Phase 3: Architecture testability review
 - Phase 4: Per-epic test design → ATDD → automate
 - Release Gate: Coverage traceability and gate decisions
