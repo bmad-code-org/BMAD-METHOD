@@ -1,11 +1,9 @@
 ---
-title: "Getting Started with TEA (Test Architect) - TEA Lite"
-description: Learn TEA fundamentals by generating and running tests for an existing demo app in 30 minutes
+title: "Getting Started with Test Architect"
+description: Learn Test Architect fundamentals by generating and running tests for an existing demo app in 30 minutes
 ---
 
-# Getting Started with TEA (Test Architect) - TEA Lite
-
-Welcome! **TEA Lite** is the simplest way to get started with TEA - just use `*automate` to generate tests for existing features. Perfect for beginners who want to learn TEA fundamentals quickly.
+Welcome! **Test Architect (TEA) Lite** is the simplest way to get started with TEA - just use `*automate` to generate tests for existing features. Perfect for beginners who want to learn TEA fundamentals quickly.
 
 ## What You'll Build
 
@@ -14,11 +12,15 @@ By the end of this 30-minute tutorial, you'll have:
 - Your first risk-based test plan
 - Passing tests for an existing demo app feature
 
-## Prerequisites
-
+:::note[Prerequisites]
 - Node.js installed (v18 or later)
 - 30 minutes of focused time
 - We'll use TodoMVC (<https://todomvc.com/examples/react/>) as our demo app
+:::
+
+:::tip[Quick Path]
+Load TEA (`*tea`) → scaffold framework (`*framework`) → create test plan (`*test-design`) → generate tests (`*automate`) → run with `npx playwright test`.
+:::
 
 ## TEA Approaches Explained
 
@@ -29,8 +31,6 @@ Before we start, understand the three ways to use TEA:
 - **TEA Integrated**: Full BMad Method with all TEA workflows across phases
 
 This tutorial focuses on **TEA Lite** - the fastest way to see TEA in action.
-
----
 
 ## Step 0: Setup (2 minutes)
 
@@ -44,8 +44,6 @@ No installation needed - TodoMVC runs in your browser. Open the link above and:
 3. Try the "All", "Active", "Completed" filters
 
 You've just explored the features we'll test!
-
----
 
 ## Step 1: Install BMad and Scaffold Framework (10 minutes)
 
@@ -113,8 +111,6 @@ npx playwright install
 
 You now have a production-ready test framework!
 
----
-
 ## Step 2: Your First Test Design (5 minutes)
 
 Test design is where TEA shines - risk-based planning before writing tests.
@@ -155,8 +151,6 @@ TEA will analyze and create `test-design-epic-1.md` with:
    - Suggested test structure
 
 **Review the test design file** - notice how TEA provides a systematic approach to what needs testing and why.
-
----
 
 ## Step 3: Generate Tests for Existing Features (5 minutes)
 
@@ -288,8 +282,6 @@ test('should mark todo as complete', async ({ page, apiRequest }) => {
 
 See [Integrate Playwright Utils](/docs/how-to/customization/integrate-playwright-utils.md) to enable this.
 
----
-
 ## Step 4: Run and Validate (5 minutes)
 
 Time to see your tests in action!
@@ -334,16 +326,18 @@ You used **TEA Lite** to:
 
 All in 30 minutes!
 
----
-
 ## What You Learned
 
 Congratulations! You've completed the TEA Lite tutorial. You learned:
 
-### TEA Workflows
-- `*framework` - Scaffold test infrastructure
-- `*test-design` - Risk-based test planning
-- `*automate` - Generate tests for existing features
+### Quick Reference
+
+| Command        | Purpose                              |
+| -------------- | ------------------------------------ |
+| `*tea`         | Load the TEA agent                   |
+| `*framework`   | Scaffold test infrastructure         |
+| `*test-design` | Risk-based test planning             |
+| `*automate`    | Generate tests for existing features |
 
 ### TEA Principles
 - **Risk-based testing** - Depth scales with impact (P0 vs P3)
@@ -351,15 +345,9 @@ Congratulations! You've completed the TEA Lite tutorial. You learned:
 - **Network-first patterns** - Tests wait for actual responses (no hard waits)
 - **Production-ready from day one** - Not toy examples
 
-### Key Takeaway
-
-TEA Lite (just `*automate`) is perfect for:
-- Beginners learning TEA fundamentals
-- Testing existing applications
-- Quick test coverage expansion
-- Teams wanting fast results
-
----
+:::tip[Key Takeaway]
+TEA Lite (just `*automate`) is perfect for beginners learning TEA fundamentals, testing existing applications, quick test coverage expansion, and teams wanting fast results.
+:::
 
 ## Understanding ATDD vs Automate
 
@@ -376,8 +364,6 @@ This tutorial used `*automate` to generate tests for **existing features** (test
 - Following red → green → refactor cycle
 
 See [How to Run ATDD](/docs/how-to/workflows/run-atdd.md) for the TDD approach.
-
----
 
 ## Next Steps
 
@@ -418,14 +404,15 @@ Want the complete quality operating model? Try TEA Integrated with BMad Method:
 
 See [BMad Method Documentation](/) for the full workflow.
 
----
+## Common Questions
 
-## Troubleshooting
+- [Why can't my tests find elements?](#why-cant-my-tests-find-elements)
+- [How do I fix network timeouts?](#how-do-i-fix-network-timeouts)
 
-### Tests Failing?
+### Why can't my tests find elements?
 
-**Problem:** Tests can't find elements
-**Solution:** TodoMVC doesn't use test IDs or accessible roles consistently. The selectors in this tutorial use CSS classes that match TodoMVC's actual structure:
+TodoMVC doesn't use test IDs or accessible roles consistently. The selectors in this tutorial use CSS classes that match TodoMVC's actual structure:
+
 ```typescript
 // TodoMVC uses these CSS classes:
 page.locator('.new-todo')      // Input field
@@ -438,26 +425,20 @@ page.getByRole('listitem')
 page.getByRole('checkbox')
 ```
 
-**Note:** In production code, use accessible selectors (`getByRole`, `getByLabel`, `getByText`) for better resilience. TodoMVC is used here for learning, not as a selector best practice example.
+In production code, use accessible selectors (`getByRole`, `getByLabel`, `getByText`) for better resilience. TodoMVC is used here for learning, not as a selector best practice example.
 
-**Problem:** Network timeout
-**Solution:** Increase timeout in `playwright.config.ts`:
+### How do I fix network timeouts?
+
+Increase timeout in `playwright.config.ts`:
+
 ```typescript
 use: {
   timeout: 30000, // 30 seconds
 }
 ```
 
-### Need Help?
+## Getting Help
 
 - **Documentation:** <https://docs.bmad-method.org>
 - **GitHub Issues:** <https://github.com/bmad-code-org/bmad-method/issues>
 - **Discord:** Join the BMAD community
-
----
-
-## Feedback
-
-Found this tutorial helpful? Have suggestions? Open an issue on GitHub!
-
-Generated with [BMad Method](https://bmad-method.org) - TEA (Test Architect)
