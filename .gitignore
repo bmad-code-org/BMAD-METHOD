@@ -54,6 +54,7 @@ tools/template-test-generator/test-scenarios/
 
 # Bundler temporary files and generated bundles
 .bundler-temp/
+web-bundles/
 
 # Generated web bundles (built by CI, not committed)
 src/modules/bmm/sub-modules/
