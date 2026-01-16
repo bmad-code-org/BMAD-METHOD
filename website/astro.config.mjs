@@ -120,10 +120,6 @@ export default defineConfig({
               autogenerate: { directory: 'how-to/brownfield' },
             },
             {
-              label: 'Enterprise',
-              autogenerate: { directory: 'how-to/enterprise' },
-            },
-            {
               label: 'Troubleshooting',
               autogenerate: { directory: 'how-to/troubleshooting' },
             },
