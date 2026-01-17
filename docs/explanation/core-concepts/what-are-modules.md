@@ -13,7 +13,7 @@ A module is a self-contained package that includes:
 - **Configuration** - Module-specific settings
 - **Documentation** - Usage guides and reference
 
-## Official Modules
+## Official BMad Method and Builder Modules
 
 :::note[Core is Always Installed]
 The Core module is automatically included with every BMad installation. It provides the foundation that other modules build upon.
@@ -37,17 +37,24 @@ Create custom solutions:
 - Workflow authoring tools
 - Module scaffolding
 
+## Additional Official BMad Modules
+
+These are officially maintained modules by BMad but have their own repo's and docs.
+These give a good idea also of what can be done with the BMad builder and creating your own custom modules.
+
 ### Creative Intelligence Suite (CIS)
 Innovation and creativity:
 - Creative thinking techniques
 - Innovation strategy workflows
 - Storytelling and ideation
+- [Available Here](https://github.com/bmad-code-org/bmad-module-creative-intelligence-suite)
 
 ### BMad Game Dev (BMGD)
 Game development specialization:
 - Game design workflows
 - Narrative development
 - Performance testing frameworks
+- [Available Here](https://github.com/bmad-code-org/bmad-module-game-dev-studio)
 
 ## Module Structure
 

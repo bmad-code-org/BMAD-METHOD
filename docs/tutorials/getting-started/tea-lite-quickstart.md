@@ -1,11 +1,9 @@
 ---
-title: "Getting Started with TEA (Test Architect) - TEA Lite"
-description: Learn TEA fundamentals by generating and running tests for an existing demo app in 30 minutes
+title: "Getting Started with Test Architect"
+description: Learn Test Architect fundamentals by generating and running tests for an existing demo app in 30 minutes
 ---
 
-# Getting Started with TEA (Test Architect) - TEA Lite
-
-Welcome! **TEA Lite** is the simplest way to get started with TEA - just use `*automate` to generate tests for existing features. Perfect for beginners who want to learn TEA fundamentals quickly.
+Welcome! **Test Architect (TEA) Lite** is the simplest way to get started with TEA - just use `*automate` to generate tests for existing features. Perfect for beginners who want to learn TEA fundamentals quickly.
 
 ## What You'll Build
 
@@ -14,11 +12,17 @@ By the end of this 30-minute tutorial, you'll have:
 - Your first risk-based test plan
 - Passing tests for an existing demo app feature
 
-## Prerequisites
-
+:::note[Prerequisites]
 - Node.js installed (v18 or later)
 - 30 minutes of focused time
-- We'll use TodoMVC (<https://todomvc.com/examples/react/>) as our demo app
+
+- We'll use TodoMVC (<https://todomvc.com/examples/react/dist/>) as our demo app
+:::
+
+:::tip[Quick Path]
+Load TEA (`*tea`) → scaffold framework (`*framework`) → create test plan (`*test-design`) → generate tests (`*automate`) → run with `npx playwright test`.
+:::
+
 
 ## TEA Approaches Explained
 
@@ -30,13 +34,11 @@ Before we start, understand the three ways to use TEA:
 
 This tutorial focuses on **TEA Lite** - the fastest way to see TEA in action.
 
----
-
 ## Step 0: Setup (2 minutes)
 
 We'll test TodoMVC, a standard demo app used across testing documentation.
 
-**Demo App:** <https://todomvc.com/examples/react/>
+**Demo App:** <https://todomvc.com/examples/react/dist/>
 
 No installation needed - TodoMVC runs in your browser. Open the link above and:
 1. Add a few todos (type and press Enter)
@@ -44,8 +46,6 @@ No installation needed - TodoMVC runs in your browser. Open the link above and:
 3. Try the "All", "Active", "Completed" filters
 
 You've just explored the features we'll test!
-
----
 
 ## Step 1: Install BMad and Scaffold Framework (10 minutes)
 
@@ -60,7 +60,7 @@ When prompted:
 - **Planning artifacts folder:** Keep default
 - **Implementation artifacts folder:** Keep default
 - **Project knowledge folder:** Keep default
-- **Enable TEA Playwright MCP enhancements?** Choose "No" for now (we'll explore this later)
+- **Enable TEA Playwright Model Context Protocol (MCP) enhancements?** Choose "No" for now (we'll explore this later)
 - **Using playwright-utils?** Choose "No" for now (we'll explore this later)
 
 BMad is now installed! You'll see a `_bmad/` folder in your project.
@@ -92,9 +92,9 @@ A: "We're testing a React web application (TodoMVC)"
 A: "Playwright"
 
 **Q: Testing scope?**
-A: "E2E testing for web application"
+A: "End-to-end (E2E) testing for a web application"
 
-**Q: CI/CD platform?**
+**Q: Continuous integration/continuous deployment (CI/CD) platform?**
 A: "GitHub Actions" (or your preference)
 
 TEA will generate:
@@ -113,8 +113,6 @@ npx playwright install
 
 You now have a production-ready test framework!
 
----
-
 ## Step 2: Your First Test Design (5 minutes)
 
 Test design is where TEA shines - risk-based planning before writing tests.
@@ -131,7 +129,7 @@ In your chat with TEA, run:
 A: "Epic-level - I want to test TodoMVC's basic functionality"
 
 **Q: What feature are you testing?**
-A: "TodoMVC's core CRUD operations - creating, completing, and deleting todos"
+A: "TodoMVC's core operations - creating, completing, and deleting todos"
 
 **Q: Any specific risks or concerns?**
 A: "We want to ensure the filter buttons (All, Active, Completed) work correctly"
@@ -156,8 +154,6 @@ TEA will analyze and create `test-design-epic-1.md` with:
 
 **Review the test design file** - notice how TEA provides a systematic approach to what needs testing and why.
 
----
-
 ## Step 3: Generate Tests for Existing Features (5 minutes)
 
 Now the magic happens - TEA generates tests based on your test design.
@@ -171,7 +167,7 @@ In your chat with TEA, run:
 ```
 
 **Q: What are you testing?**
-A: "TodoMVC React app at <https://todomvc.com/examples/react/> - focus on the test design we just created"
+A: "TodoMVC React app at <https://todomvc.com/examples/react/dist/> - focus on the test design we just created"
 
 **Q: Reference existing docs?**
 A: "Yes, use test-design-epic-1.md"
@@ -187,7 +183,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('TodoMVC - Core Functionality', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('https://todomvc.com/examples/react/');
+    await page.goto('https://todomvc.com/examples/react/dist/');
   });
 
   test('should create a new todo', async ({ page }) => {
@@ -288,8 +284,6 @@ test('should mark todo as complete', async ({ page, apiRequest }) => {
 
 See [Integrate Playwright Utils](/docs/how-to/customization/integrate-playwright-utils.md) to enable this.
 
----
-
 ## Step 4: Run and Validate (5 minutes)
 
 Time to see your tests in action!
@@ -334,16 +328,18 @@ You used **TEA Lite** to:
 
 All in 30 minutes!
 
----
-
 ## What You Learned
 
 Congratulations! You've completed the TEA Lite tutorial. You learned:
 
-### TEA Workflows
-- `*framework` - Scaffold test infrastructure
-- `*test-design` - Risk-based test planning
-- `*automate` - Generate tests for existing features
+### Quick Reference
+
+| Command        | Purpose                              |
+| -------------- | ------------------------------------ |
+| `*tea`         | Load the TEA agent                   |
+| `*framework`   | Scaffold test infrastructure         |
+| `*test-design` | Risk-based test planning             |
+| `*automate`    | Generate tests for existing features |
 
 ### TEA Principles
 - **Risk-based testing** - Depth scales with impact (P0 vs P3)
@@ -351,15 +347,9 @@ Congratulations! You've completed the TEA Lite tutorial. You learned:
 - **Network-first patterns** - Tests wait for actual responses (no hard waits)
 - **Production-ready from day one** - Not toy examples
 
-### Key Takeaway
-
-TEA Lite (just `*automate`) is perfect for:
-- Beginners learning TEA fundamentals
-- Testing existing applications
-- Quick test coverage expansion
-- Teams wanting fast results
-
----
+:::tip[Key Takeaway]
+TEA Lite (just `*automate`) is perfect for beginners learning TEA fundamentals, testing existing applications, quick test coverage expansion, and teams wanting fast results.
+:::
 
 ## Understanding ATDD vs Automate
 
@@ -370,14 +360,12 @@ This tutorial used `*automate` to generate tests for **existing features** (test
 - Want to add test coverage
 - Tests should pass on first run
 
-**When to use `*atdd`:**
-- Feature doesn't exist yet (TDD workflow)
+**When to use `*atdd` (Acceptance Test-Driven Development):**
+- Feature doesn't exist yet (Test-Driven Development workflow)
 - Want failing tests BEFORE implementation
 - Following red → green → refactor cycle
 
-See [How to Run ATDD](/docs/how-to/workflows/run-atdd.md) for the TDD approach.
-
----
+See [How to Run ATDD](/docs/how-to/workflows/run-atdd.md) for the test-drive development (TDD) approach.
 
 ## Next Steps
 
@@ -411,21 +399,22 @@ See [TEA Overview](/docs/explanation/features/tea-overview.md) for engagement mo
 ### Go Full TEA Integrated
 
 Want the complete quality operating model? Try TEA Integrated with BMad Method:
-- Phase 2: Planning with NFR assessment
+- Phase 2: Planning with non-functional requirements (NFR) assessment
 - Phase 3: Architecture testability review
 - Phase 4: Per-epic test design → ATDD → automate
 - Release Gate: Coverage traceability and gate decisions
 
 See [BMad Method Documentation](/) for the full workflow.
 
----
+## Common Questions
 
-## Troubleshooting
+- [Why can't my tests find elements?](#why-cant-my-tests-find-elements)
+- [How do I fix network timeouts?](#how-do-i-fix-network-timeouts)
 
-### Tests Failing?
+### Why can't my tests find elements?
 
-**Problem:** Tests can't find elements
-**Solution:** TodoMVC doesn't use test IDs or accessible roles consistently. The selectors in this tutorial use CSS classes that match TodoMVC's actual structure:
+TodoMVC doesn't use test IDs or accessible roles consistently. The selectors in this tutorial use CSS classes that match TodoMVC's actual structure:
+
 ```typescript
 // TodoMVC uses these CSS classes:
 page.locator('.new-todo')      // Input field
@@ -438,26 +427,20 @@ page.getByRole('listitem')
 page.getByRole('checkbox')
 ```
 
-**Note:** In production code, use accessible selectors (`getByRole`, `getByLabel`, `getByText`) for better resilience. TodoMVC is used here for learning, not as a selector best practice example.
+In production code, use accessible selectors (`getByRole`, `getByLabel`, `getByText`) for better resilience. TodoMVC is used here for learning, not as a selector best practice example.
 
-**Problem:** Network timeout
-**Solution:** Increase timeout in `playwright.config.ts`:
+### How do I fix network timeouts?
+
+Increase timeout in `playwright.config.ts`:
+
 ```typescript
 use: {
   timeout: 30000, // 30 seconds
 }
 ```
 
-### Need Help?
+## Getting Help
 
 - **Documentation:** <https://docs.bmad-method.org>
 - **GitHub Issues:** <https://github.com/bmad-code-org/bmad-method/issues>
 - **Discord:** Join the BMAD community
-
----
-
-## Feedback
-
-Found this tutorial helpful? Have suggestions? Open an issue on GitHub!
-
-Generated with [BMad Method](https://bmad-method.org) - TEA (Test Architect)
