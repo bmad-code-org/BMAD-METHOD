@@ -7,11 +7,10 @@ Comprehensive guides to BMad's AI agents — their roles, capabilities, and how 
 
 ## Agent Guides
 
-| Agent | Description |
-|-------|-------------|
-| **[Agent Roles](/docs/explanation/core-concepts/agent-roles.md)** | Overview of all BMM agent roles and responsibilities |
-| **[Quick Flow Solo Dev (Barry)](/docs/explanation/agents/barry-quick-flow.md)** | The dedicated agent for rapid development |
-| **[Game Development Agents](/docs/explanation/game-dev/agents.md)** | Complete guide to BMGD's specialized game dev agents |
+| Agent                                                                           | Description                                          |
+| ------------------------------------------------------------------------------- | ---------------------------------------------------- |
+| **[Agent Roles](/docs/explanation/core-concepts/agent-roles.md)**               | Overview of all BMM agent roles and responsibilities |
+| **[Quick Flow Solo Dev (Barry)](/docs/explanation/agents/barry-quick-flow.md)** | The dedicated agent for rapid development            |
 
 ## Getting Started
 

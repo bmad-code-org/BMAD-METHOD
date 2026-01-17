@@ -31,7 +31,7 @@ class DependencyResolver {
     const modulesToProcess = new Set(['core', ...selectedModules]);
 
     // First pass: collect all explicitly selected files
-    const primaryFiles = await this.collectPrimaryFiles(bmadDir, modulesToProcess);
+    const primaryFiles = await this.collectPrimaryFiles(bmadDir, modulesToProcess, options);
 
     // Second pass: parse and resolve dependencies
     const allDependencies = await this.parseDependencies(primaryFiles);
@@ -66,10 +66,16 @@ class DependencyResolver {
   /**
    * Collect primary files from selected modules
    */
-  async collectPrimaryFiles(bmadDir, modules) {
+  async collectPrimaryFiles(bmadDir, modules, options = {}) {
     const files = [];
+    const { moduleManager } = options;
 
     for (const module of modules) {
+      // Skip external modules - they're installed from cache, not from source
+      if (moduleManager && (await moduleManager.isExternalModule(module))) {
+        continue;
+      }
+
       // Handle both source (src/) and installed (bmad/) directory structures
       let moduleDir;
 
