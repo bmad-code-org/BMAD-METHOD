@@ -363,7 +363,7 @@ This tutorial used `*automate` to generate tests for **existing features** (test
 - Want failing tests BEFORE implementation
 - Following red → green → refactor cycle
 
-See [How to Run ATDD](/docs/how-to/workflows/run-atdd.md) for the TDD approach.
+See [How to Run ATDD](/docs/how-to/workflows/run-atdd.md) for the test-drive development (TDD) approach.
 
 ## Next Steps
 
