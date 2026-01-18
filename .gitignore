@@ -61,6 +61,7 @@ _bmad-output
 .claude
 .codex
 .github/chatmodes
+.github/agents
 .agent
 .agentvibes/
 .kiro/
