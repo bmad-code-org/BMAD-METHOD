@@ -2,8 +2,6 @@
 title: Welcome to the BMad Method
 ---
 
-![BMad Method](/img/banner-bmad-method2.png)
-
 The BMad Method (**B**reakthrough **M**ethod of **A**gile AI **D**riven Development) is an AI-driven development framework that helps you build software faster and smarter. It provides specialized AI agents, guided workflows, and intelligent planning that adapts to your project's complexity—whether you're fixing a bug or building an enterprise platform.
 
 If you're comfortable working with AI coding assistants like Claude, Cursor, or GitHub Copilot, you're ready to get started.

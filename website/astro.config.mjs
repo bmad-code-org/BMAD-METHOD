@@ -38,7 +38,7 @@ export default defineConfig({
       tagline: 'AI-driven agile development with specialized agents and workflows that scale from bug fixes to enterprise platforms.',
 
       logo: {
-        src: './public/img/bmad-wordmark.png',
+        src: './public/img/banner-bmad-method2.png',
         alt: 'BMAD Method',
         replacesTitle: true,
       },
