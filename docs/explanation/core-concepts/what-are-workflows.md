@@ -163,7 +163,7 @@ Before building a workflow, answer these questions:
 
 The best way to understand workflows is to study real examples. Look at the official BMad modules:
 
-- **BMB (Module Builder)**: Workflow and agent creation workflows
+- **BMB (Module Builder)**: Module, Workflow and Agent creation workflows
 - **BMM (Business Method Module)**: Complete software development pipeline from brainstorming through sprint planning
 - **BMGD (Game Development Module)**: Game design briefs, narratives, architecture
 - **CIS (Creativity, Innovation, Strategy)**: Brainstorming, design thinking, storytelling, innovation strategy

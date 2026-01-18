@@ -83,7 +83,7 @@ If you're using TEA Solo or don't have BMad artifacts:
 
 **What are you testing?**
 ```
-TodoMVC React application at https://todomvc.com/examples/react/
+TodoMVC React application at https://todomvc.com/examples/react/dist/
 Features: Create todos, mark as complete, filter by status, delete todos
 ```
 

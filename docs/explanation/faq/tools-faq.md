@@ -9,21 +9,45 @@ Quick answers to common questions about tools, IDEs, and advanced topics in the 
 
 **Tools and Technical**
 
-- [Why are my Mermaid diagrams not rendering?](#why-are-my-mermaid-diagrams-not-rendering)
-- [Can I use BMM with GitHub Copilot / Cursor / other AI tools?](#can-i-use-bmm-with-github-copilot--cursor--other-ai-tools)
-- [What IDEs/tools support BMM?](#what-idestools-support-bmm)
-- [Can I customize agents?](#can-i-customize-agents)
-- [What happens to my planning docs after implementation?](#what-happens-to-my-planning-docs-after-implementation)
-- [Can I use BMM for non-software projects?](#can-i-use-bmm-for-non-software-projects)
+- [Questions](#questions)
+- [Tools and Technical](#tools-and-technical)
+  - [Why are my Mermaid diagrams not rendering?](#why-are-my-mermaid-diagrams-not-rendering)
+  - [Can I use BMM with GitHub Copilot / Cursor / other AI tools?](#can-i-use-bmm-with-github-copilot--cursor--other-ai-tools)
+  - [What IDEs/tools support BMM?](#what-idestools-support-bmm)
+  - [Can I customize agents?](#can-i-customize-agents)
+  - [What happens to my planning docs after implementation?](#what-happens-to-my-planning-docs-after-implementation)
+  - [Can I use BMM for non-software projects?](#can-i-use-bmm-for-non-software-projects)
+- [Advanced](#advanced)
+  - [What if my project grows from Level 1 to Level 3?](#what-if-my-project-grows-from-level-1-to-level-3)
+  - [Can I mix greenfield and brownfield approaches?](#can-i-mix-greenfield-and-brownfield-approaches)
+  - [How do I handle urgent hotfixes during a sprint?](#how-do-i-handle-urgent-hotfixes-during-a-sprint)
+  - [What if I disagree with the workflow's recommendations?](#what-if-i-disagree-with-the-workflows-recommendations)
+  - [Can multiple developers work on the same BMM project?](#can-multiple-developers-work-on-the-same-bmm-project)
+  - [What is party mode and when should I use it?](#what-is-party-mode-and-when-should-i-use-it)
+- [Getting Help](#getting-help)
+  - [Where do I get help if my question isn't answered here?](#where-do-i-get-help-if-my-question-isnt-answered-here)
+  - [How do I report a bug or request a feature?](#how-do-i-report-a-bug-or-request-a-feature)
 
 **Advanced**
 
-- [What if my project grows from Level 1 to Level 3?](#what-if-my-project-grows-from-level-1-to-level-3)
-- [Can I mix greenfield and brownfield approaches?](#can-i-mix-greenfield-and-brownfield-approaches)
-- [How do I handle urgent hotfixes during a sprint?](#how-do-i-handle-urgent-hotfixes-during-a-sprint)
-- [What if I disagree with the workflow's recommendations?](#what-if-i-disagree-with-the-workflows-recommendations)
-- [Can multiple developers work on the same BMM project?](#can-multiple-developers-work-on-the-same-bmm-project)
-- [What is party mode and when should I use it?](#what-is-party-mode-and-when-should-i-use-it)
+- [Questions](#questions)
+- [Tools and Technical](#tools-and-technical)
+  - [Why are my Mermaid diagrams not rendering?](#why-are-my-mermaid-diagrams-not-rendering)
+  - [Can I use BMM with GitHub Copilot / Cursor / other AI tools?](#can-i-use-bmm-with-github-copilot--cursor--other-ai-tools)
+  - [What IDEs/tools support BMM?](#what-idestools-support-bmm)
+  - [Can I customize agents?](#can-i-customize-agents)
+  - [What happens to my planning docs after implementation?](#what-happens-to-my-planning-docs-after-implementation)
+  - [Can I use BMM for non-software projects?](#can-i-use-bmm-for-non-software-projects)
+- [Advanced](#advanced)
+  - [What if my project grows from Level 1 to Level 3?](#what-if-my-project-grows-from-level-1-to-level-3)
+  - [Can I mix greenfield and brownfield approaches?](#can-i-mix-greenfield-and-brownfield-approaches)
+  - [How do I handle urgent hotfixes during a sprint?](#how-do-i-handle-urgent-hotfixes-during-a-sprint)
+  - [What if I disagree with the workflow's recommendations?](#what-if-i-disagree-with-the-workflows-recommendations)
+  - [Can multiple developers work on the same BMM project?](#can-multiple-developers-work-on-the-same-bmm-project)
+  - [What is party mode and when should I use it?](#what-is-party-mode-and-when-should-i-use-it)
+- [Getting Help](#getting-help)
+  - [Where do I get help if my question isn't answered here?](#where-do-i-get-help-if-my-question-isnt-answered-here)
+  - [How do I report a bug or request a feature?](#how-do-i-report-a-bug-or-request-a-feature)
 
 **Getting Help**
 
@@ -199,11 +223,11 @@ Yes! But the paradigm is fundamentally different from traditional agile teams.
 
 ### What is party mode and when should I use it?
 
-Party mode is a unique multi-agent collaboration feature where ALL your installed agents (19+ from BMM, CIS, BMB, custom modules) discuss your challenges together in real-time.
+Party mode is a unique multi-agent collaboration feature where ALL your installed modules agents discuss your challenges together in real-time or have some fun with any topic you have in mind.
 
 **How it works:**
 
-1. Run `/bmad:core:workflows:party-mode` (or `*party-mode` from any agent)
+1. Run `/bmad:core:workflows:party-mode` (or `PM or fuzzy match on party-mode` from any agent)
 2. Introduce your topic
 3. BMad Master selects 2-3 most relevant agents per message
 4. Agents cross-talk, debate, and build on each other's ideas

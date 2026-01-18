@@ -48,39 +48,39 @@ class AntigravitySetup extends BaseIdeSetup {
    * @returns {Object} Collected configuration
    */
   async collectConfiguration(options = {}) {
-    const config = {
-      subagentChoices: null,
-      installLocation: null,
-    };
+    // const config = {
+    //   subagentChoices: null,
+    //   installLocation: null,
+    // };
 
-    const sourceModulesPath = getSourcePath('modules');
-    const modules = options.selectedModules || [];
+    // const sourceModulesPath = getSourcePath('modules');
+    // const modules = options.selectedModules || [];
 
-    for (const moduleName of modules) {
-      // Check for Antigravity sub-module injection config in SOURCE directory
-      const injectionConfigPath = path.join(sourceModulesPath, moduleName, 'sub-modules', 'antigravity', 'injections.yaml');
+    // for (const moduleName of modules) {
+    // // Check for Antigravity sub-module injection config in SOURCE directory
+    // const injectionConfigPath = path.join(sourceModulesPath, moduleName, 'sub-modules', 'antigravity', 'injections.yaml');
 
-      if (await this.exists(injectionConfigPath)) {
-        const yaml = require('yaml');
+    // if (await this.exists(injectionConfigPath)) {
+    //   const yaml = require('yaml');
 
-        try {
-          // Load injection configuration
-          const configContent = await fs.readFile(injectionConfigPath, 'utf8');
-          const injectionConfig = yaml.parse(configContent);
+    //   try {
+    //     // Load injection configuration
+    //     const configContent = await fs.readFile(injectionConfigPath, 'utf8');
+    //     const injectionConfig = yaml.parse(configContent);
 
-          // Ask about subagents if they exist and we haven't asked yet
-          if (injectionConfig.subagents && !config.subagentChoices) {
-            config.subagentChoices = await this.promptSubagentInstallation(injectionConfig.subagents);
+    //     // Ask about subagents if they exist and we haven't asked yet
+    //     if (injectionConfig.subagents && !config.subagentChoices) {
+    //       config.subagentChoices = await this.promptSubagentInstallation(injectionConfig.subagents);
 
-            if (config.subagentChoices.install !== 'none') {
-              config.installLocation = await this._promptInstallLocation();
-            }
-          }
-        } catch (error) {
-          console.log(chalk.yellow(`  Warning: Failed to process ${moduleName} features: ${error.message}`));
-        }
-      }
-    }
+    //       if (config.subagentChoices.install !== 'none') {
+    //         config.installLocation = await this._promptInstallLocation();
+    //       }
+    //     }
+    //   } catch (error) {
+    //     console.log(chalk.yellow(`  Warning: Failed to process ${moduleName} features: ${error.message}`));
+    //   }
+    // }
+    // }
 
     return config;
   }
@@ -295,13 +295,13 @@ class AntigravitySetup extends BaseIdeSetup {
         console.log(chalk.cyan(`\nConfiguring ${moduleName} ${handler} features...`));
       }
 
-      if (interactive && config.subagents && !choices) {
-        choices = await this.promptSubagentInstallation(config.subagents);
+      // if (interactive && config.subagents && !choices) {
+      //   choices = await this.promptSubagentInstallation(config.subagents);
 
-        if (choices.install !== 'none') {
-          location = await this._promptInstallLocation();
-        }
-      }
+      //   if (choices.install !== 'none') {
+      //     location = await this._promptInstallLocation();
+      //   }
+      // }
 
       if (config.injections && choices && choices.install !== 'none') {
         for (const injection of config.injections) {

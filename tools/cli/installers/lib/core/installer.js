@@ -444,12 +444,85 @@ class Installer {
           config._isUpdate = true;
           config._existingInstall = existingInstall;
 
+          // Detect modules that were previously installed but are NOT in the new selection (to be removed)
+          const previouslyInstalledModules = new Set(existingInstall.modules.map((m) => m.id));
+          const newlySelectedModules = new Set(config.modules || []);
+
+          // Find modules to remove (installed but not in new selection)
+          // Exclude 'core' from being removable
+          const modulesToRemove = [...previouslyInstalledModules].filter((m) => !newlySelectedModules.has(m) && m !== 'core');
+
+          // If there are modules to remove, ask for confirmation
+          if (modulesToRemove.length > 0) {
+            const prompts = require('../../../lib/prompts');
+            spinner.stop();
+
+            console.log('');
+            console.log(chalk.yellow.bold('⚠️  Modules to be removed:'));
+            for (const moduleId of modulesToRemove) {
+              const moduleInfo = existingInstall.modules.find((m) => m.id === moduleId);
+              const displayName = moduleInfo?.name || moduleId;
+              const modulePath = path.join(bmadDir, moduleId);
+              console.log(chalk.red(`  - ${displayName} (${modulePath})`));
+            }
+            console.log('');
+
+            const confirmRemoval = await prompts.confirm({
+              message: `Remove ${modulesToRemove.length} module(s) from BMAD installation?`,
+              default: false,
+            });
+
+            if (confirmRemoval) {
+              // Remove module folders
+              for (const moduleId of modulesToRemove) {
+                const modulePath = path.join(bmadDir, moduleId);
+                try {
+                  if (await fs.pathExists(modulePath)) {
+                    await fs.remove(modulePath);
+                    console.log(chalk.dim(`  ✓ Removed: ${moduleId}`));
+                  }
+                } catch (error) {
+                  console.warn(chalk.yellow(`  Warning: Failed to remove ${moduleId}: ${error.message}`));
+                }
+              }
+              console.log(chalk.green(`  ✓ Removed ${modulesToRemove.length} module(s)`));
+            } else {
+              console.log(chalk.dim('  → Module removal cancelled'));
+              // Add the modules back to the selection since user cancelled removal
+              for (const moduleId of modulesToRemove) {
+                if (!config.modules) config.modules = [];
+                config.modules.push(moduleId);
+              }
+            }
+
+            spinner.start('Preparing update...');
+          }
+
           // Detect custom and modified files BEFORE updating (compare current files vs files-manifest.csv)
           const existingFilesManifest = await this.readFilesManifest(bmadDir);
           const { customFiles, modifiedFiles } = await this.detectCustomFiles(bmadDir, existingFilesManifest);
 
           config._customFiles = customFiles;
           config._modifiedFiles = modifiedFiles;
+
+          // Preserve existing core configuration during updates
+          // Read the current core config.yaml to maintain user's settings
+          const coreConfigPath = path.join(bmadDir, 'core', 'config.yaml');
+          if ((await fs.pathExists(coreConfigPath)) && (!config.coreConfig || Object.keys(config.coreConfig).length === 0)) {
+            try {
+              const yaml = require('yaml');
+              const coreConfigContent = await fs.readFile(coreConfigPath, 'utf8');
+              const existingCoreConfig = yaml.parse(coreConfigContent);
+
+              // Store in config.coreConfig so it's preserved through the installation
+              config.coreConfig = existingCoreConfig;
+
+              // Also store in configCollector for use during config collection
+              this.configCollector.collectedConfig.core = existingCoreConfig;
+            } catch (error) {
+              console.warn(chalk.yellow(`Warning: Could not read existing core config: ${error.message}`));
+            }
+          }
 
           // Also check cache directory for custom modules (like quick update does)
           const cacheDir = path.join(bmadDir, '_config', 'custom');
@@ -462,6 +535,13 @@ class Installer {
 
                 // Skip if we already have this module from manifest
                 if (customModulePaths.has(moduleId)) {
+                  continue;
+                }
+
+                // Check if this is an external official module - skip cache for those
+                const isExternal = await this.moduleManager.isExternalModule(moduleId);
+                if (isExternal) {
+                  // External modules are handled via cloneExternalModule, not from cache
                   continue;
                 }
 
@@ -537,6 +617,13 @@ class Installer {
 
               // Skip if we already have this module from manifest
               if (customModulePaths.has(moduleId)) {
+                continue;
+              }
+
+              // Check if this is an external official module - skip cache for those
+              const isExternal = await this.moduleManager.isExternalModule(moduleId);
+              if (isExternal) {
+                // External modules are handled via cloneExternalModule, not from cache
                 continue;
               }
 
@@ -1163,6 +1250,13 @@ class Installer {
               continue;
             }
 
+            // Check if this is an external official module - skip cache for those
+            const isExternal = await this.moduleManager.isExternalModule(moduleId);
+            if (isExternal) {
+              // External modules are handled via cloneExternalModule, not from cache
+              continue;
+            }
+
             const cachedPath = path.join(cacheDir, moduleId);
 
             // Check if this is actually a custom module (has module.yaml)
@@ -1746,6 +1840,13 @@ class Installer {
               continue;
             }
 
+            // Check if this is an external official module - skip cache for those
+            const isExternal = await this.moduleManager.isExternalModule(moduleId);
+            if (isExternal) {
+              // External modules are handled via cloneExternalModule, not from cache
+              continue;
+            }
+
             const cachedPath = path.join(cacheDir, moduleId);
 
             // Check if this is actually a custom module (has module.yaml)
@@ -1769,6 +1870,23 @@ class Installer {
       // Get available modules (what we have source for)
       const availableModulesData = await this.moduleManager.listAvailable();
       const availableModules = [...availableModulesData.modules, ...availableModulesData.customModules];
+
+      // Add external official modules to available modules
+      // These can always be obtained by cloning from their remote URLs
+      const { ExternalModuleManager } = require('../modules/external-manager');
+      const externalManager = new ExternalModuleManager();
+      const externalModules = await externalManager.listAvailable();
+      for (const externalModule of externalModules) {
+        // Only add if not already in the list and is installed
+        if (installedModules.includes(externalModule.code) && !availableModules.some((m) => m.id === externalModule.code)) {
+          availableModules.push({
+            id: externalModule.code,
+            name: externalModule.name,
+            isExternal: true,
+            fromExternal: true,
+          });
+        }
+      }
 
       // Add custom modules from manifest if their sources exist
       for (const [moduleId, customModule] of customModuleSources) {
@@ -1949,6 +2067,12 @@ class Installer {
 
             // Check if this is actually a custom module
             if (await fs.pathExists(moduleYamlPath)) {
+              // Check if this is an external official module - skip cache for those
+              const isExternal = await this.moduleManager.isExternalModule(moduleId);
+              if (isExternal) {
+                // External modules are handled via cloneExternalModule, not from cache
+                continue;
+              }
               customModuleSources.set(moduleId, cachedPath);
             }
           }

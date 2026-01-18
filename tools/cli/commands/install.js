@@ -31,7 +31,7 @@ module.exports = {
       if (config.actionType === 'quick-update') {
         const result = await installer.quickUpdate(config);
         console.log(chalk.green('\n✨ Quick update complete!'));
-        console.log(chalk.cyan(`Updated ${result.moduleCount} modules with preserved settings`));
+        console.log(chalk.cyan(`Updated ${result.moduleCount} modules with preserved settings (${result.modules.join(', ')})`));
 
         // Display version-specific end message
         const { MessageLoader } = require('../installers/lib/message-loader');

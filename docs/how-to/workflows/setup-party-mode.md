@@ -66,12 +66,12 @@ Type "exit" or "done" to conclude the session. Participating agents will say per
 
 ## Example Party Compositions
 
-| Topic                  | Typical Agents                                                |
-| ---------------------- | ------------------------------------------------------------- |
-| **Product Strategy**   | PM + Innovation Strategist (CIS) + Analyst                    |
-| **Technical Design**   | Architect + Creative Problem Solver (CIS) + Game Architect    |
-| **User Experience**    | UX Designer + Design Thinking Coach (CIS) + Storyteller (CIS) |
-| **Quality Assessment** | TEA + DEV + Architect                                         |
+| Topic                  | Typical Agents                                        |
+| ---------------------- | ----------------------------------------------------- |
+| **Product Strategy**   | PM + Innovation Strategist + Analyst                  |
+| **Technical Design**   | Architect + Creative Problem Solver  + Game Architect |
+| **User Experience**    | UX Designer + Design Thinking Coach  + Storyteller    |
+| **Quality Assessment** | TEA + DEV + Architect                                 |
 
 ## Key Features
 

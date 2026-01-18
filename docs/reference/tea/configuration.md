@@ -293,7 +293,7 @@ TEA workflows may use environment variables for test configuration.
 **Playwright:**
 ```bash
 # .env
-BASE_URL=https://todomvc.com/examples/react/
+BASE_URL=https://todomvc.com/examples/react/dist/
 API_BASE_URL=https://api.example.com
 TEST_USER_EMAIL=test@example.com
 TEST_USER_PASSWORD=password123

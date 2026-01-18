@@ -41,48 +41,48 @@ class ClaudeCodeSetup extends BaseIdeSetup {
     });
   }
 
-  /**
-   * Collect configuration choices before installation
-   * @param {Object} options - Configuration options
-   * @returns {Object} Collected configuration
-   */
-  async collectConfiguration(options = {}) {
-    const config = {
-      subagentChoices: null,
-      installLocation: null,
-    };
+  // /**
+  //  * Collect configuration choices before installation
+  //  * @param {Object} options - Configuration options
+  //  * @returns {Object} Collected configuration
+  //  */
+  // async collectConfiguration(options = {}) {
+  //   const config = {
+  //     subagentChoices: null,
+  //     installLocation: null,
+  //   };
 
-    const sourceModulesPath = getSourcePath('modules');
-    const modules = options.selectedModules || [];
+  //   const sourceModulesPath = getSourcePath('modules');
+  //   const modules = options.selectedModules || [];
 
-    for (const moduleName of modules) {
-      // Check for Claude Code sub-module injection config in SOURCE directory
-      const injectionConfigPath = path.join(sourceModulesPath, moduleName, 'sub-modules', 'claude-code', 'injections.yaml');
+  //   for (const moduleName of modules) {
+  //     // Check for Claude Code sub-module injection config in SOURCE directory
+  //     const injectionConfigPath = path.join(sourceModulesPath, moduleName, 'sub-modules', 'claude-code', 'injections.yaml');
 
-      if (await this.exists(injectionConfigPath)) {
-        const yaml = require('yaml');
+  //     if (await this.exists(injectionConfigPath)) {
+  //       const yaml = require('yaml');
 
-        try {
-          // Load injection configuration
-          const configContent = await fs.readFile(injectionConfigPath, 'utf8');
-          const injectionConfig = yaml.parse(configContent);
+  //       try {
+  //         // Load injection configuration
+  //         const configContent = await fs.readFile(injectionConfigPath, 'utf8');
+  //         const injectionConfig = yaml.parse(configContent);
 
-          // Ask about subagents if they exist and we haven't asked yet
-          if (injectionConfig.subagents && !config.subagentChoices) {
-            config.subagentChoices = await this.promptSubagentInstallation(injectionConfig.subagents);
+  //         // Ask about subagents if they exist and we haven't asked yet
+  //         if (injectionConfig.subagents && !config.subagentChoices) {
+  //           config.subagentChoices = await this.promptSubagentInstallation(injectionConfig.subagents);
 
-            if (config.subagentChoices.install !== 'none') {
-              config.installLocation = await this.promptInstallLocation();
-            }
-          }
-        } catch (error) {
-          console.log(chalk.yellow(`  Warning: Failed to process ${moduleName} features: ${error.message}`));
-        }
-      }
-    }
+  //           if (config.subagentChoices.install !== 'none') {
+  //             config.installLocation = await this.promptInstallLocation();
+  //           }
+  //         }
+  //       } catch (error) {
+  //         console.log(chalk.yellow(`  Warning: Failed to process ${moduleName} features: ${error.message}`));
+  //       }
+  //     }
+  //   }
 
-    return config;
-  }
+  //   return config;
+  // }
 
   /**
    * Cleanup old BMAD installation before reinstalling
@@ -304,11 +304,10 @@ class ClaudeCodeSetup extends BaseIdeSetup {
       }
 
       if (interactive && config.subagents && !choices) {
-        choices = await this.promptSubagentInstallation(config.subagents);
-
-        if (choices.install !== 'none') {
-          location = await this.promptInstallLocation();
-        }
+        // choices = await this.promptSubagentInstallation(config.subagents);
+        // if (choices.install !== 'none') {
+        //   location = await this.promptInstallLocation();
+        // }
       }
 
       if (config.injections && choices && choices.install !== 'none') {
