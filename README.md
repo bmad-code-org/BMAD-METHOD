@@ -1,4 +1,4 @@
-![BMad Method](banner-bmad-method.png)
+![BMad Method](banner-bmad-method2.png)
 
 [![Version](https://img.shields.io/npm/v/bmad-method?color=blue&label=version)](https://www.npmjs.com/package/bmad-method)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
