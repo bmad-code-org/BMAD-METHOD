@@ -253,6 +253,15 @@
 </check-item>
 
 <check-item id="6.4">
+<prompt>Update sprint-status.yaml to reflect approved epic changes</prompt>
+<action>If epics were added: Add new epic entries with status 'backlog'</action>
+<action>If epics were removed: Remove corresponding entries</action>
+<action>If epics were renumbered: Update epic IDs and story references</action>
+<action>If stories were added/removed: Update story entries within affected epics</action>
+<status>[ ] Done / [ ] N/A / [ ] Action-needed</status>
+</check-item>
+
+<check-item id="6.5">
 <prompt>Confirm next steps and handoff plan</prompt>
 <action>Review handoff responsibilities with user</action>
 <action>Ensure all stakeholders understand their roles</action>
