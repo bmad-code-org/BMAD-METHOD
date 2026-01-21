@@ -285,6 +285,7 @@ function buildMenuItemSchema() {
       'ide-only': z.boolean().optional(),
       'web-only': z.boolean().optional(),
       discussion: z.boolean().optional(),
+      scope_required: z.boolean().optional(),
     })
     .strict()
     .superRefine((value, ctx) => {
@@ -408,6 +409,7 @@ function buildMenuItemSchema() {
         )
         .min(1, { message: 'agent.menu[].triggers must have at least one trigger' }),
       discussion: z.boolean().optional(),
+      scope_required: z.boolean().optional(),
     })
     .strict()
     .superRefine((value, ctx) => {

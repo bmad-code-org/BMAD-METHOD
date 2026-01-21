@@ -1,5 +1,20 @@
 #!/usr/bin/env sh
 
+# =============================================================================
+# Call .githooks/pre-commit first (if exists)
+# =============================================================================
+if [ -x ".githooks/pre-commit" ]; then
+  .githooks/pre-commit "$@"
+  GITHOOKS_EXIT=$?
+  if [ $GITHOOKS_EXIT -ne 0 ]; then
+    exit $GITHOOKS_EXIT
+  fi
+fi
+
+# =============================================================================
+# Husky-specific: lint-staged and tests
+# =============================================================================
+
 # Auto-fix changed files and stage them
 npx --no-install lint-staged
 
@@ -10,11 +25,11 @@ npm test
 if command -v rg >/dev/null 2>&1; then
   if git diff --cached --name-only | rg -q '^docs/'; then
     npm run docs:validate-links
-		npm run docs:build
+    npm run docs:build
   fi
 else
   if git diff --cached --name-only | grep -Eq '^docs/'; then
     npm run docs:validate-links
-		npm run docs:build
+    npm run docs:build
   fi
 fi

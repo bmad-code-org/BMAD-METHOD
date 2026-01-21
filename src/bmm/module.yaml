@@ -28,15 +28,35 @@ user_skill_level:
     - value: "expert"
       label: "Expert - Be direct and technical"
 
+# Scope variable - populated at runtime by workflow.xml Step 0
+# When running multi-scope workflows, this is set to the active scope ID
+# When empty, paths fall back to non-scoped structure for backward compatibility
+scope:
+  default: ""
+  result: "{value}"
+  runtime: true # Indicates this is resolved at runtime, not during install
+
+# Scope-aware path helper - resolves to output_folder/scope or just output_folder
+scope_path:
+  default: "{output_folder}"
+  result: "{value}"
+  runtime: true # Updated at runtime when scope is active
+
 planning_artifacts: # Phase 1-3 artifacts
   prompt: "Where should planning artifacts be stored? (Brainstorming, Briefs, PRDs, UX Designs, Architecture, Epics)"
-  default: "{output_folder}/planning-artifacts"
+  default: "{scope_path}/planning-artifacts"
   result: "{project-root}/{value}"
 
 implementation_artifacts: # Phase 4 artifacts and quick-dev flow output
   prompt: "Where should implementation artifacts be stored? (Sprint status, stories, reviews, retrospectives, Quick Flow output)"
-  default: "{output_folder}/implementation-artifacts"
+  default: "{scope_path}/implementation-artifacts"
   result: "{project-root}/{value}"
+
+# Scope-specific test directory
+scope_tests:
+  default: "{scope_path}/tests"
+  result: "{project-root}/{value}"
+  runtime: true
 
 project_knowledge: # Artifacts from research, document-project output, other long lived accurate knowledge
   prompt: "Where should long-term project knowledge be stored? (docs, research, references)"

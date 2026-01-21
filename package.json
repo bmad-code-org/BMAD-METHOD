@@ -1,6 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
-  "name": "bmad-method",
+  "name": "bmad-fh",
   "version": "6.0.0-alpha.23",
   "description": "Breakthrough Method of Agile AI-driven Development",
   "keywords": [
@@ -14,14 +14,13 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bmad-code-org/BMAD-METHOD.git"
+    "url": "git+https://github.com/fairyhunter13/BMAD-METHOD.git"
   },
   "license": "MIT",
   "author": "Brian (BMad) Madison",
   "main": "tools/cli/bmad-cli.js",
   "bin": {
-    "bmad": "tools/bmad-npx-wrapper.js",
-    "bmad-method": "tools/bmad-npx-wrapper.js"
+    "bmad-fh": "tools/bmad-npx-wrapper.js"
   },
   "scripts": {
     "bmad:install": "node tools/cli/bmad-cli.js install",
@@ -45,7 +44,8 @@
     "release:minor": "gh workflow run \"Manual Release\" -f version_bump=minor",
     "release:patch": "gh workflow run \"Manual Release\" -f version_bump=patch",
     "release:watch": "gh run watch",
-    "test": "npm run test:schemas && npm run test:install && npm run validate:schemas && npm run lint && npm run lint:md && npm run format:check",
+    "test": "npm run test:schemas && npm run test:install && npm run test:cli-args && npm run validate:schemas && npm run lint && npm run lint:md && npm run format:check",
+    "test:cli-args": "node test/test-cli-arguments.js",
     "test:coverage": "c8 --reporter=text --reporter=html npm run test:schemas",
     "test:install": "node test/test-installation-components.js",
     "test:schemas": "node test/test-agent-schema.js",

@@ -23,3 +23,31 @@ output_folder:
   prompt: "Where should output files be saved?"
   default: "_bmad-output"
   result: "{project-root}/{value}"
+
+# Scope System Configuration
+# These settings control the multi-scope parallel artifact system
+scope_settings:
+  header: "Scope System Settings"
+  subheader: "Configure multi-scope artifact isolation"
+
+  allow_adhoc_scopes:
+    prompt: "Allow creating scopes on-demand during workflows?"
+    default: true
+    result: "{value}"
+
+  isolation_mode:
+    prompt: "Scope isolation mode"
+    default: "strict"
+    result: "{value}"
+    single-select:
+      - value: "strict"
+        label: "Strict - Block cross-scope writes, require explicit sync"
+      - value: "warn"
+        label: "Warn - Allow cross-scope writes with warnings"
+      - value: "permissive"
+        label: "Permissive - Allow all operations (not recommended)"
+
+  shared_path:
+    prompt: "Where should shared knowledge artifacts be stored?"
+    default: "{output_folder}/_shared"
+    result: "{project-root}/{value}"

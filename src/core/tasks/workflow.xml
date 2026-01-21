@@ -17,6 +17,48 @@
   </WORKFLOW-RULES>
 
   <flow>
+    <step n="0" title="Initialize Scope Context" critical="true">
+      <objective>Resolve and load scope context before workflow execution</objective>
+      
+      <substep n="0a" title="Check for Scope Requirement">
+        <action>Scan workflow.yaml for {scope} variable in any path or variable</action>
+        <action>If found, mark workflow as scope-required</action>
+        <note>Scope-required workflows need an active scope to resolve paths correctly</note>
+      </substep>
+      
+      <substep n="0b" title="Resolve Scope" if="scope-required">
+        <priority-order>
+          <source n="1">Explicit --scope argument from command invocation</source>
+          <source n="2">Session context from .bmad-scope file in project root</source>
+          <source n="3">BMAD_SCOPE environment variable</source>
+          <source n="4">Prompt user to select or create scope</source>
+        </priority-order>
+        <action>If no scope resolved, ask user:</action>
+        <ask>This workflow requires a scope. Select existing scope or create new one.</ask>
+        <action>Store resolved scope as {scope} variable for path resolution</action>
+      </substep>
+      
+      <substep n="0c" title="Load Scope Context">
+        <check if="scope is set">
+          <action>Load scope configuration from {project-root}/_bmad/_config/scopes.yaml</action>
+          <action>Validate scope exists and is active</action>
+          <action>Resolve scope paths:
+            - {scope_path} = {output_folder}/{scope}
+            - {scope_planning} = {scope_path}/planning-artifacts
+            - {scope_implementation} = {scope_path}/implementation-artifacts
+            - {scope_tests} = {scope_path}/tests
+          </action>
+          <action>Load global project context: {output_folder}/_shared/project-context.md</action>
+          <action>Load scope project context if exists: {scope_path}/project-context.md</action>
+          <action>Merge contexts: scope extends global</action>
+          <action>Check for pending dependency updates and notify user if any</action>
+        </check>
+        <check if="no scope (scope-optional workflow)">
+          <action>Continue without scope context, use legacy paths</action>
+        </check>
+      </substep>
+    </step>
+
     <step n="1" title="Load and Initialize Workflow">
       <substep n="1a" title="Load Configuration and Resolve Variables">
         <action>Read workflow.yaml from provided path</action>

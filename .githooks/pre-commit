@@ -1,0 +1,63 @@
+#!/bin/bash
+# .githooks/pre-commit
+# Git hook for BMAD-METHOD contributors to enforce clean commit practices
+#
+# This hook ensures:
+# 1. No direct commits to main
+# 2. Provides guidance on amend workflow
+
+set -e
+
+# Color codes for output
+RED='\033[0;31m'
+YELLOW='\033[1;33m'
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Configuration
+MAIN_BRANCH="main"
+
+# Get current branch
+CURRENT_BRANCH=$(git branch --show-current)
+
+# 1. Block commits to main
+if [ "$CURRENT_BRANCH" = "$MAIN_BRANCH" ]; then
+    echo -e "${RED}❌ ERROR: Direct commits to '$MAIN_BRANCH' are not allowed!${NC}"
+    echo ""
+    echo -e "${YELLOW}The main branch should only be updated by syncing with upstream.${NC}"
+    echo -e "${YELLOW}To work on changes:${NC}"
+    echo -e "  1. Create a feature branch: git checkout -b feat/your-feature"
+    echo -e "  2. Make your changes"
+    echo -e "  3. Commit: git commit -m 'feat: your feature description'"
+    echo -e "  4. Push: git push -u origin feat/your-feature"
+    exit 1
+fi
+
+# 2. Check if this is an amend
+if [ -f ".git/COMMIT_EDITMSG" ]; then
+    # Get the count of commits ahead of main
+    COMMIT_COUNT=$(git rev-list --count "${MAIN_BRANCH}..${CURRENT_BRANCH}" 2>/dev/null || echo "0")
+    
+    # If we have exactly 1 commit and user is making another commit (not amending),
+    # suggest using amend instead
+    if [ "$COMMIT_COUNT" -eq 1 ] && [ -z "$GIT_REFLOG_ACTION" ]; then
+        # Check if this is likely a new commit (not an amend)
+        # by seeing if the commit message is being edited
+        if ! git diff --cached --quiet; then
+            echo -e "${BLUE}[pre-commit] Info: You have 1 commit on this branch${NC}"
+            echo -e "${YELLOW}💡 Tip: Consider using 'git commit --amend' to update your existing commit${NC}"
+            echo -e "${YELLOW}   This maintains the single-commit-per-branch workflow.${NC}"
+            echo ""
+            echo -e "${YELLOW}To amend:${NC}"
+            echo -e "  git add <your-files>"
+            echo -e "  git commit --amend"
+            echo ""
+            echo -e "${YELLOW}Proceeding with new commit...${NC}"
+            # This is just a helpful tip, not blocking
+        fi
+    fi
+fi
+
+echo -e "${GREEN}✓ Pre-commit checks passed${NC}"
+exit 0

@@ -1,0 +1,129 @@
+#!/bin/bash
+# .githooks/post-checkout
+# Git hook for BMAD-METHOD contributors to provide sync reminders
+#
+# This hook provides helpful reminders when:
+# 1. Switching to main branch
+# 2. Switching from main to feature branch
+# 3. Creating new branches
+
+# Color codes for output
+RED='\033[0;31m'
+YELLOW='\033[1;33m'
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Configuration
+UPSTREAM_REMOTE="upstream"
+MAIN_BRANCH="main"
+
+# Arguments passed by git
+# $1: ref of previous HEAD
+# $2: ref of new HEAD
+# $3: flag indicating branch checkout (1) or file checkout (0)
+PREV_HEAD=$1
+NEW_HEAD=$2
+BRANCH_CHECKOUT=$3
+
+# Only run for branch checkouts, not file checkouts
+if [ "$BRANCH_CHECKOUT" != "1" ]; then
+    exit 0
+fi
+
+# Get branch names
+NEW_BRANCH=$(git branch --show-current)
+PREV_BRANCH=$(git reflog -1 | grep -oP 'moving from \K[^ ]+' || echo "")
+
+# Skip if we couldn't determine branches
+if [ -z "$NEW_BRANCH" ]; then
+    exit 0
+fi
+
+echo -e "${BLUE}[post-checkout] Switched to branch: $NEW_BRANCH${NC}"
+
+# Check if upstream remote exists
+HAS_UPSTREAM=false
+if git remote | grep -q "^${UPSTREAM_REMOTE}$"; then
+    HAS_UPSTREAM=true
+fi
+
+# Case 1: Switched TO main branch
+if [ "$NEW_BRANCH" = "$MAIN_BRANCH" ]; then
+    echo ""
+    if [ "$HAS_UPSTREAM" = true ]; then
+        # Check if main is behind upstream
+        git fetch "$UPSTREAM_REMOTE" --quiet 2>/dev/null || true
+        LOCAL_MAIN=$(git rev-parse "$MAIN_BRANCH" 2>/dev/null || echo "")
+        UPSTREAM_MAIN=$(git rev-parse "${UPSTREAM_REMOTE}/${MAIN_BRANCH}" 2>/dev/null || echo "")
+        
+        if [ -n "$LOCAL_MAIN" ] && [ -n "$UPSTREAM_MAIN" ]; then
+            if [ "$LOCAL_MAIN" != "$UPSTREAM_MAIN" ]; then
+                if git merge-base --is-ancestor "$LOCAL_MAIN" "$UPSTREAM_MAIN"; then
+                    echo -e "${YELLOW}💡 Your local '$MAIN_BRANCH' is behind upstream${NC}"
+                    echo -e "${YELLOW}   Sync with: git pull $UPSTREAM_REMOTE $MAIN_BRANCH${NC}"
+                elif ! git merge-base --is-ancestor "$UPSTREAM_MAIN" "$LOCAL_MAIN"; then
+                    echo -e "${RED}⚠️  Your local '$MAIN_BRANCH' has diverged from upstream${NC}"
+                    echo -e "${YELLOW}   Reset with: git reset --hard $UPSTREAM_REMOTE/$MAIN_BRANCH${NC}"
+                else
+                    echo -e "${GREEN}✓ Your local '$MAIN_BRANCH' is synced with upstream${NC}"
+                fi
+            else
+                echo -e "${GREEN}✓ Your local '$MAIN_BRANCH' is synced with upstream${NC}"
+            fi
+        fi
+    else
+        echo -e "${YELLOW}💡 Tip: Add upstream remote for easier syncing:${NC}"
+        echo -e "   git remote add $UPSTREAM_REMOTE git@github.com:bmad-code-org/BMAD-METHOD.git"
+    fi
+    echo ""
+fi
+
+# Case 2: Switched FROM main to feature branch
+if [ "$PREV_BRANCH" = "$MAIN_BRANCH" ] && [ "$NEW_BRANCH" != "$MAIN_BRANCH" ]; then
+    echo ""
+    if [ "$HAS_UPSTREAM" = true ]; then
+        # Check if current branch is based on latest main
+        MERGE_BASE=$(git merge-base "$NEW_BRANCH" "$MAIN_BRANCH" 2>/dev/null || echo "")
+        MAIN_HEAD=$(git rev-parse "$MAIN_BRANCH" 2>/dev/null || echo "")
+        
+        if [ -n "$MERGE_BASE" ] && [ -n "$MAIN_HEAD" ] && [ "$MERGE_BASE" != "$MAIN_HEAD" ]; then
+            echo -e "${YELLOW}💡 This branch may need rebasing on latest '$MAIN_BRANCH'${NC}"
+            echo -e "   Rebase with: git rebase $MAIN_BRANCH"
+        fi
+    fi
+    
+    # Remind about single-commit workflow
+    COMMIT_COUNT=$(git rev-list --count "${MAIN_BRANCH}..${NEW_BRANCH}" 2>/dev/null || echo "0")
+    if [ "$COMMIT_COUNT" -gt 1 ]; then
+        echo -e "${YELLOW}💡 This branch has $COMMIT_COUNT commits${NC}"
+        echo -e "${YELLOW}   Remember to maintain single-commit workflow before pushing${NC}"
+        echo -e "   Squash with: git reset --soft $MAIN_BRANCH && git commit"
+    fi
+    echo ""
+fi
+
+# Case 3: Creating a new branch (both refs are the same)
+if [ "$PREV_HEAD" = "$NEW_HEAD" ] && [ "$PREV_BRANCH" != "$NEW_BRANCH" ]; then
+    echo ""
+    echo -e "${GREEN}✓ New branch created: $NEW_BRANCH${NC}"
+    echo -e "${BLUE}💡 Remember the single-commit workflow:${NC}"
+    echo -e "   1. Make your changes"
+    echo -e "   2. Commit once: git commit -m 'feat: description'"
+    echo -e "   3. Update with: git commit --amend (not new commits)"
+    echo -e "   4. Push with: git push --force-with-lease"
+    echo ""
+fi
+
+# General reminder for feature branches (not main)
+if [ "$NEW_BRANCH" != "$MAIN_BRANCH" ]; then
+    # Check if hooks are configured
+    CURRENT_HOOKS_PATH=$(git config core.hooksPath || echo "")
+    if [ "$CURRENT_HOOKS_PATH" != ".githooks" ]; then
+        echo -e "${YELLOW}💡 Tip: Enable git hooks with:${NC}"
+        echo -e "   git config core.hooksPath .githooks"
+        echo ""
+    fi
+fi
+
+exit 0

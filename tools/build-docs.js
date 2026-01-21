@@ -36,6 +36,7 @@ const LLM_EXCLUDE_PATTERNS = [
   'v4-to-v6-upgrade',
   'downloads/',
   'faq',
+  'plans/', // Internal planning docs, not user-facing
   'reference/glossary/',
   'explanation/game-dev/',
   // Note: Files/dirs starting with _ (like _STYLE_GUIDE.md, _archive/) are excluded in shouldExcludeFromLlm()

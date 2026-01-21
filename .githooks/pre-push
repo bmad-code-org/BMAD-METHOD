@@ -1,0 +1,135 @@
+#!/bin/bash
+# .githooks/pre-push
+# Git hook for BMAD-METHOD contributors to enforce clean git workflow
+#
+# This hook ensures:
+# 1. Upstream remote is configured
+# 2. No direct pushes to main
+# 3. Local main is synced with upstream
+# 4. Branch is rebased on main
+# 5. Single-commit-per-branch workflow
+
+set -e
+
+# Color codes for output
+RED='\033[0;31m'
+YELLOW='\033[1;33m'
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Configuration
+UPSTREAM_REMOTE="upstream"
+UPSTREAM_URL="git@github.com:bmad-code-org/BMAD-METHOD.git"
+MAIN_BRANCH="main"
+
+echo -e "${BLUE}[pre-push] Running pre-push checks...${NC}"
+
+# Get current branch
+CURRENT_BRANCH=$(git branch --show-current)
+
+# Read push details from stdin (remote and url)
+while read local_ref local_sha remote_ref remote_sha; do
+    # Extract branch name from ref
+    if [[ "$remote_ref" =~ refs/heads/(.+) ]]; then
+        PUSH_BRANCH="${BASH_REMATCH[1]}"
+    else
+        continue
+    fi
+    
+    # 1. Block direct push to main
+    if [ "$PUSH_BRANCH" = "$MAIN_BRANCH" ]; then
+        echo -e "${RED}❌ ERROR: Direct push to '$MAIN_BRANCH' is not allowed!${NC}"
+        echo -e "${YELLOW}The main branch should only be updated by syncing with upstream.${NC}"
+        echo -e "${YELLOW}To update main, run:${NC}"
+        echo -e "  git checkout main && git pull upstream main"
+        exit 1
+    fi
+done
+
+# 2. Ensure upstream remote exists
+if ! git remote | grep -q "^${UPSTREAM_REMOTE}$"; then
+    echo -e "${RED}❌ ERROR: Upstream remote '${UPSTREAM_REMOTE}' not configured!${NC}"
+    echo -e "${YELLOW}Add it with:${NC}"
+    echo -e "  git remote add ${UPSTREAM_REMOTE} ${UPSTREAM_URL}"
+    exit 1
+fi
+
+# Verify upstream URL
+CURRENT_UPSTREAM=$(git remote get-url "$UPSTREAM_REMOTE" 2>/dev/null || echo "")
+if [[ "$CURRENT_UPSTREAM" != *"bmad-code-org/BMAD-METHOD"* ]]; then
+    echo -e "${YELLOW}⚠️  WARNING: Upstream remote doesn't point to bmad-code-org/BMAD-METHOD${NC}"
+    echo -e "${YELLOW}Current: $CURRENT_UPSTREAM${NC}"
+    echo -e "${YELLOW}Expected: ${UPSTREAM_URL}${NC}"
+fi
+
+# 3. Fetch upstream
+echo -e "${BLUE}Fetching upstream...${NC}"
+if ! git fetch "$UPSTREAM_REMOTE" --quiet 2>/dev/null; then
+    echo -e "${RED}❌ ERROR: Failed to fetch from upstream${NC}"
+    echo -e "${YELLOW}Check your network connection and SSH keys${NC}"
+    exit 1
+fi
+
+# 4. Check if local main is synced with upstream
+LOCAL_MAIN=$(git rev-parse "$MAIN_BRANCH" 2>/dev/null || echo "")
+UPSTREAM_MAIN=$(git rev-parse "${UPSTREAM_REMOTE}/${MAIN_BRANCH}" 2>/dev/null || echo "")
+
+if [ -n "$LOCAL_MAIN" ] && [ -n "$UPSTREAM_MAIN" ] && [ "$LOCAL_MAIN" != "$UPSTREAM_MAIN" ]; then
+    # Check if local main is behind
+    if git merge-base --is-ancestor "$LOCAL_MAIN" "$UPSTREAM_MAIN"; then
+        echo -e "${YELLOW}⚠️  WARNING: Your local '$MAIN_BRANCH' is behind upstream${NC}"
+        echo -e "${YELLOW}Sync it with:${NC}"
+        echo -e "  git checkout $MAIN_BRANCH && git pull $UPSTREAM_REMOTE $MAIN_BRANCH"
+        echo -e "${YELLOW}Then rebase your branch:${NC}"
+        echo -e "  git checkout $CURRENT_BRANCH && git rebase $MAIN_BRANCH"
+        echo ""
+        # This is a warning, not blocking (allows push but warns)
+    elif ! git merge-base --is-ancestor "$UPSTREAM_MAIN" "$LOCAL_MAIN"; then
+        echo -e "${RED}❌ ERROR: Your local '$MAIN_BRANCH' has diverged from upstream${NC}"
+        echo -e "${YELLOW}Reset it with:${NC}"
+        echo -e "  git checkout $MAIN_BRANCH"
+        echo -e "  git reset --hard $UPSTREAM_REMOTE/$MAIN_BRANCH"
+        exit 1
+    fi
+fi
+
+# 5. Check branch is rebased on main
+MERGE_BASE=$(git merge-base "$CURRENT_BRANCH" "$MAIN_BRANCH")
+MAIN_HEAD=$(git rev-parse "$MAIN_BRANCH")
+
+if [ "$MERGE_BASE" != "$MAIN_HEAD" ]; then
+    echo -e "${RED}❌ ERROR: Branch '$CURRENT_BRANCH' is not rebased on latest '$MAIN_BRANCH'${NC}"
+    echo -e "${YELLOW}Rebase with:${NC}"
+    echo -e "  git rebase $MAIN_BRANCH"
+    exit 1
+fi
+
+# 6. Enforce single commit rule
+COMMIT_COUNT=$(git rev-list --count "${MAIN_BRANCH}..${CURRENT_BRANCH}")
+
+if [ "$COMMIT_COUNT" -eq 0 ]; then
+    echo -e "${RED}❌ ERROR: No commits to push (branch is at same state as $MAIN_BRANCH)${NC}"
+    exit 1
+elif [ "$COMMIT_COUNT" -gt 1 ]; then
+    echo -e "${RED}❌ ERROR: Too many commits! Found $COMMIT_COUNT commits, expected exactly 1${NC}"
+    echo -e "${YELLOW}This repo uses a single-commit-per-branch workflow.${NC}"
+    echo ""
+    echo -e "${YELLOW}Option 1: Squash all commits into one:${NC}"
+    echo -e "  git reset --soft $MAIN_BRANCH"
+    echo -e "  git commit -m 'feat: your feature description'"
+    echo ""
+    echo -e "${YELLOW}Option 2: Amend existing commits:${NC}"
+    echo -e "  git add <modified-files>"
+    echo -e "  git commit --amend --no-edit"
+    echo ""
+    echo -e "${YELLOW}Then force push with:${NC}"
+    echo -e "  git push --force-with-lease"
+    exit 1
+fi
+
+echo -e "${GREEN}✓ All pre-push checks passed!${NC}"
+echo -e "${GREEN}✓ Upstream is configured and synced${NC}"
+echo -e "${GREEN}✓ Branch is rebased on main${NC}"
+echo -e "${GREEN}✓ Single commit workflow maintained ($COMMIT_COUNT commit)${NC}"
+exit 0

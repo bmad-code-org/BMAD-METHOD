@@ -1,0 +1,68 @@
+name: Publish
+
+on:
+  push:
+    branches:
+      - feat/multi-artifact-support
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          cache: npm
+          registry-url: https://registry.npmjs.org
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Set version with commit hash
+        id: version
+        run: |
+          BASE_VERSION=$(node -p "require('./package.json').version")
+          SHORT_SHA=$(git rev-parse --short HEAD)
+          NEW_VERSION="${BASE_VERSION}.${SHORT_SHA}"
+          npm version "${NEW_VERSION}" --no-git-tag-version
+          echo "version=${NEW_VERSION}" >> $GITHUB_OUTPUT
+
+      - name: Publish to NPM
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          echo "Checking if bmad-fh@${VERSION} already exists..."
+
+          # Check if version already exists on npm
+          if npm view "bmad-fh@${VERSION}" version 2>/dev/null; then
+            echo "Version ${VERSION} already exists on npm, skipping publish"
+            echo "SKIPPED=true" >> $GITHUB_ENV
+          else
+            echo "Publishing bmad-fh@${VERSION}"
+            npm publish --ignore-scripts
+            echo "SKIPPED=false" >> $GITHUB_ENV
+          fi
+
+      - name: Summary
+        run: |
+          if [ "$SKIPPED" = "true" ]; then
+            echo "## Skipped - bmad-fh@${{ steps.version.outputs.version }} already exists" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "## Published bmad-fh@${{ steps.version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Installation" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
+          echo "npx bmad-fh install" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY

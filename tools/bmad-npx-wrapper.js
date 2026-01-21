@@ -5,7 +5,7 @@
  * This file ensures proper execution when run via npx from GitHub or npm registry
  */
 
-const { execSync } = require('node:child_process');
+const { spawnSync } = require('node:child_process');
 const path = require('node:path');
 const fs = require('node:fs');
 
@@ -25,10 +25,20 @@ if (isNpxExecution) {
 
   try {
     // Execute CLI from user's working directory (process.cwd()), not npm cache
-    execSync(`node "${bmadCliPath}" ${args.join(' ')}`, {
+    // Use spawnSync with array args to preserve argument boundaries
+    // (args.join(' ') would break arguments containing spaces)
+    const result = spawnSync('node', [bmadCliPath, ...args], {
       stdio: 'inherit',
       cwd: process.cwd(), // This preserves the user's working directory
     });
+
+    if (result.error) {
+      throw result.error;
+    }
+
+    if (result.status !== 0) {
+      process.exit(result.status || 1);
+    }
   } catch (error) {
     process.exit(error.status || 1);
   }

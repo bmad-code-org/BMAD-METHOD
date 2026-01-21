@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+
+# Delegate to .githooks/pre-push for comprehensive checks
+# (upstream sync, rebase check, single-commit enforcement)
+
+if [ -x ".githooks/pre-push" ]; then
+  .githooks/pre-push "$@"
+else
+  echo "Warning: .githooks/pre-push not found, skipping custom checks"
+fi

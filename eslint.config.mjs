@@ -81,9 +81,9 @@ export default [
     },
   },
 
-  // CLI scripts under tools/** and test/**
+  // CLI scripts under tools/**, test/**, and src/core/lib/**
   {
-    files: ['tools/**/*.js', 'tools/**/*.mjs', 'test/**/*.js'],
+    files: ['tools/**/*.js', 'tools/**/*.mjs', 'test/**/*.js', 'src/core/lib/**/*.js'],
     rules: {
       // Allow CommonJS patterns for Node CLI scripts
       'unicorn/prefer-module': 'off',

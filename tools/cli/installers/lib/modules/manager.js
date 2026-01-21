@@ -416,7 +416,9 @@ class ModuleManager {
       if (needsDependencyInstall || wasNewClone || nodeModulesMissing) {
         const installSpinner = ora(`Installing dependencies for ${moduleInfo.name}...`).start();
         try {
-          execSync('npm install --production --no-audit --no-fund --prefer-offline --no-progress', {
+          // Remove lockfile first - it may reference devDeps that don't exist
+          execSync('rm -f package-lock.json', { cwd: moduleCacheDir, stdio: 'pipe' });
+          execSync('npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund --prefer-offline --no-progress', {
             cwd: moduleCacheDir,
             stdio: 'pipe',
             timeout: 120_000, // 2 minute timeout
@@ -441,7 +443,9 @@ class ModuleManager {
         if (packageJsonNewer) {
           const installSpinner = ora(`Installing dependencies for ${moduleInfo.name}...`).start();
           try {
-            execSync('npm install --production --no-audit --no-fund --prefer-offline --no-progress', {
+            // Remove lockfile first - it may reference devDeps that don't exist
+            execSync('rm -f package-lock.json', { cwd: moduleCacheDir, stdio: 'pipe' });
+            execSync('npm install --omit=dev --ignore-scripts --no-package-lock --no-audit --no-fund --prefer-offline --no-progress', {
               cwd: moduleCacheDir,
               stdio: 'pipe',
               timeout: 120_000, // 2 minute timeout
