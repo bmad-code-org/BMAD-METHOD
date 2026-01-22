@@ -27,9 +27,12 @@ The workflow auto-detects which mode to use based on project phase.
 TEA test-design workflow supports TWO modes, detected automatically:
 
 1. **Check User Intent Explicitly (Priority 1)**
-   - Did user provide PRD + ADR? → **System-Level Mode**
-   - Did user provide Epic + Stories? → **Epic-Level Mode**
-   - If user intent is clear, use that mode regardless of file structure
+
+   **Deterministic Rules:**
+   - User provided **PRD+ADR only** (no Epic+Stories) → **System-Level Mode**
+   - User provided **Epic+Stories only** (no PRD+ADR) → **Epic-Level Mode**
+   - User provided **BOTH PRD+ADR AND Epic+Stories** → **Prefer System-Level Mode** (architecture review comes first in Phase 3, then epic planning in Phase 4). If mode preference is unclear, ask user: "Should I create (A) System-level test design (PRD + ADR → Architecture doc + QA doc) or (B) Epic-level test design (Epic → Single test plan)?"
+   - If user intent is clear from context, use that mode regardless of file structure
 
 2. **Fallback to File-Based Detection (Priority 2 - BMad-Integrated)**
    - Check for `{implementation_artifacts}/sprint-status.yaml`
@@ -102,7 +105,7 @@ TEA test-design workflow supports TWO modes, detected automatically:
 
 3. **Load Knowledge Base Fragments (System-Level)**
 
-   **Critical:** Consult `{project-root}/_bmad/bmm/testarch/tea-index.csv` to load:
+   **Critical:** Consult `src/bmm/testarch/tea-index.csv` to load:
    - `adr-quality-readiness-checklist.md` - 8-category 29-criteria NFR framework (testability, security, scalability, DR, QoS, deployability, etc.)
    - `test-levels-framework.md` - Test levels strategy guidance
    - `risk-governance.md` - Testability risk identification
@@ -136,7 +139,7 @@ TEA test-design workflow supports TWO modes, detected automatically:
 
 4. **Load Knowledge Base Fragments (Epic-Level)**
 
-   **Critical:** Consult `{project-root}/_bmad/bmm/testarch/tea-index.csv` to load:
+   **Critical:** Consult `src/bmm/testarch/tea-index.csv` to load:
    - `risk-governance.md` - Risk classification framework (6 categories: TECH, SEC, PERF, DATA, BUS, OPS), automated scoring, gate decision engine, owner tracking (625 lines, 4 examples)
    - `probability-impact.md` - Risk scoring methodology (probability × impact matrix, automated classification, dynamic re-assessment, gate integration, 604 lines, 4 examples)
    - `test-levels-framework.md` - Test level selection guidance (E2E vs API vs Component vs Unit with decision matrix, characteristics, when to use each, 467 lines, 4 examples)
@@ -284,7 +287,7 @@ TEA test-design workflow supports TWO modes, detected automatically:
 
    ### 🚨 R-001: Multi-Tenant Isolation (Score: 9)
 
-   **Test Coverage:** 8 P0 tests (see [QA doc - Multi-Tenant Isolation](test-design-qa.md#multi-tenant-isolation-8-tests---security-critical) for detailed scenarios)
+   **Test Coverage:** 8 P0 tests (see [QA doc - Multi-Tenant Isolation](test-design-qa.md#multi-tenant-isolation-8-tests-security-critical) for detailed scenarios)
 
    ---
 
@@ -293,8 +296,8 @@ TEA test-design workflow supports TWO modes, detected automatically:
    ## Testability Assessment
 
    **Prerequisites from Architecture Doc:**
-   - [ ] R-001: Multi-tenant isolation validated (see [Architecture doc R-001](test-design-architecture.md#-r-001-multi-tenant-isolation-score-9) for mitigation plan)
-   - [ ] R-002: Test customer provisioned (see [Architecture doc 🚨 BLOCKERS](test-design-architecture.md#-blockers---team-must-decide-cant-proceed-without))
+   - [ ] R-001: Multi-tenant isolation validated (see [Architecture doc R-001](test-design-architecture.md#r-001-multi-tenant-isolation-score-9) for mitigation plan)
+   - [ ] R-002: Test customer provisioned (see [Architecture doc 🚨 BLOCKERS](test-design-architecture.md#blockers---team-must-decide-cant-proceed-without))
 
    ## Sprint 0 Setup Requirements
 
@@ -304,7 +307,7 @@ TEA test-design workflow supports TWO modes, detected automatically:
    **Key Points:**
    - Use relative links: `[Link Text](test-design-qa.md#section-anchor)`
    - Anchor format: lowercase, hyphens for spaces, remove emojis/special chars
-   - Example anchor: `### 🚨 R-001: Title` → `#-r-001-title`
+   - Example anchor: `### 🚨 R-001: Title` → `#r-001-title`
 
    ❌ **DON'T put long code examples in Architecture doc:**
    - Example: 50+ lines of test implementation

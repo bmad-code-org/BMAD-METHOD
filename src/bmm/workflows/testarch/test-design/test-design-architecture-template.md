@@ -83,7 +83,7 @@
 |---------|----------|-------------|-------------|--------|-------|------------|-------|----------|
 | **{R-ID}** | **{CAT}** | {Description} | {1-3} | {1-3} | **{Score}** | {Mitigation strategy} | {Owner} | {Date} |
 
-#### Medium-Priority Risks (Score 3-4)
+#### Medium-Priority Risks (Score 3-5)
 
 | Risk ID | Category | Description | Probability | Impact | Score | Mitigation | Owner |
 |---------|----------|-------------|-------------|--------|-------|------------|-------|

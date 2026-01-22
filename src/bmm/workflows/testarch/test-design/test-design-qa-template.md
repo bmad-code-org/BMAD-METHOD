@@ -286,15 +286,14 @@ Verify these blockers are resolved before test development:
 
 | NFR Category | Status | Evidence Status | Blocker | Next Action |
 |--------------|--------|-----------------|---------|-------------|
-| **Security** | {Status} | {Evidence} | {Sprint} | {Action} |
-| **Performance** | {Status} | {Evidence} | {Sprint} | {Action} |
-| **Reliability** | {Status} | {Evidence} | {Sprint} | {Action} |
-| **Data Integrity** | {Status} | {Evidence} | {Sprint} | {Action} |
-| **Scalability** | {Status} | {Evidence} | {Sprint} | {Action} |
+| **Testability & Automation** | {Status} | {Evidence} | {Sprint} | {Action} |
+| **Test Data Strategy** | {Status} | {Evidence} | {Sprint} | {Action} |
+| **Scalability & Availability** | {Status} | {Evidence} | {Sprint} | {Action} |
 | **Disaster Recovery** | {Status} | {Evidence} | {Sprint} | {Action} |
-| **Monitorability** | {Status} | {Evidence} | {Sprint} | {Action} |
+| **Security** | {Status} | {Evidence} | {Sprint} | {Action} |
+| **Monitorability, Debuggability & Manageability** | {Status} | {Evidence} | {Sprint} | {Action} |
+| **QoS & QoE** | {Status} | {Evidence} | {Sprint} | {Action} |
 | **Deployability** | {Status} | {Evidence} | {Sprint} | {Action} |
-| **Maintainability** | PASS | Test design complete (~{N} scenarios) | None | Proceed with implementation |
 
 **Total:** {N} PASS, {N} CONCERNS across {N} categories
 
