@@ -35,7 +35,7 @@ test.describe('Selector Hierarchy Best Practices', () => {
 
     // ✅ Best: Dedicated test attribute (survives all UI changes)
     await page.getByTestId('email-input').fill('user@example.com');
-    await page.getByTestId('password-input').fill('password123');
+    await page.getByTestId('password-input').fill(env.goodpassword);
     await page.getByTestId('login-button').click();
 
     await expect(page.getByTestId('welcome-message')).toBeVisible();
@@ -52,7 +52,7 @@ test.describe('Selector Hierarchy Best Practices', () => {
 
     // ✅ Good: Semantic HTML roles (benefits accessibility + tests)
     await page.getByRole('textbox', { name: 'Email' }).fill('user@example.com');
-    await page.getByRole('textbox', { name: 'Password' }).fill('password123');
+    await page.getByRole('textbox', { name: 'Password' }).fill(env.goodpassword);
     await page.getByRole('button', { name: 'Sign In' }).click();
 
     await expect(page.getByRole('heading', { name: 'Welcome' })).toBeVisible();

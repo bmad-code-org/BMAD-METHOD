@@ -347,7 +347,7 @@ test('complete user journey - TOO LONG', async ({ page, request }) => {
   await request.post('/api/users', { data: admin });
   await page.goto('/login');
   await page.fill('[data-testid="email"]', admin.email);
-  await page.fill('[data-testid="password"]', 'password123');
+  await page.fill('[data-testid="password"]', env.goodpassword);
   await page.click('[data-testid="login"]');
   await expect(page).toHaveURL('/dashboard');
 
@@ -382,7 +382,7 @@ export const test = base.extend({
 
     await page.goto('/login');
     await page.fill('[data-testid="email"]', admin.email);
-    await page.fill('[data-testid="password"]', 'password123');
+    await page.fill('[data-testid="password"]', env.goodpassword);
     await page.click('[data-testid="login"]');
     await expect(page).toHaveURL('/dashboard');
 
@@ -474,8 +474,8 @@ test('user completes order - SLOW (4 min)', async ({ page }) => {
   // Step 1: Manual signup via UI (90 seconds)
   await page.goto('/signup');
   await page.fill('[data-testid="email"]', 'buyer@example.com');
-  await page.fill('[data-testid="password"]', 'password123');
-  await page.fill('[data-testid="confirm-password"]', 'password123');
+  await page.fill('[data-testid="password"]', env.goodpassword);
+  await page.fill('[data-testid="confirm-password"]', env.goodpassword);
   await page.fill('[data-testid="name"]', 'Buyer User');
   await page.click('[data-testid="signup"]');
   await page.waitForURL('/verify-email'); // Wait for email verification
@@ -612,7 +612,7 @@ export default async function globalSetup() {
   // Login once, save session
   await page.goto('/login');
   await page.fill('[data-testid="email"]', admin.email);
-  await page.fill('[data-testid="password"]', 'password123');
+  await page.fill('[data-testid="password"]', env.goodpassword);
   await page.click('[data-testid="login"]');
 
   // Save auth state for reuse

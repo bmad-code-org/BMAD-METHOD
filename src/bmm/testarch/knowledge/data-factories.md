@@ -280,7 +280,7 @@ beforeEach(() => {
 test('user can login', async ({ page }) => {
   await page.goto('/login');
   await page.fill('[data-testid="email"]', 'test@test.com'); // Hardcoded
-  await page.fill('[data-testid="password"]', 'password123'); // Hardcoded
+  await page.fill('[data-testid="password"]', env.goodpassword); // Hardcoded
   await page.click('[data-testid="submit"]');
 
   // What if this user already exists? Test fails in parallel runs.

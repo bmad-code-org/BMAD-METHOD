@@ -381,7 +381,7 @@ test('complete user flow', async ({ page }) => {
 test('should register new user', async ({ page }) => {
   await page.goto('/register');
   await page.fill('#email', 'test@example.com');
-  await page.fill('#password', 'password123');
+  await page.fill('#password', env.goodpassword);
   await page.click('button[type="submit"]');
 
   await expect(page).toHaveURL('/welcome');
@@ -653,7 +653,7 @@ test('should login with valid credentials and redirect to dashboard', async ({ p
 
   await page.goto('/login');
   await page.getByLabel('Email').fill('test@example.com');
-  await page.getByLabel('Password').fill('password123');
+  await page.getByLabel('Password').fill(env.goodpassword);
   await page.getByRole('button', { name: 'Sign in' }).click();
 
   // Wait for actual API response

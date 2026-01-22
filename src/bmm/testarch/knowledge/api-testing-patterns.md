@@ -679,7 +679,7 @@ test.describe('Authenticated API Tests', () => {
   });
 
   test('should reject expired token', async ({ apiRequest }) => {
-    const expiredToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'; // Expired token
+    const expiredToken = env.expiredtoken; // Expired token
 
     const { status, body } = await apiRequest({
       method: 'GET',

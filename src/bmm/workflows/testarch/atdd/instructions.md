@@ -428,7 +428,7 @@ Generates failing acceptance tests BEFORE implementation following TDD's red-gre
        const user = await createUser();
        await page.goto('/login');
        await page.fill('[data-testid="email"]', user.email);
-       await page.fill('[data-testid="password"]', 'password123');
+       await page.fill('[data-testid="password"]', env.goodpassword);
        await page.click('[data-testid="login-button"]');
        await page.waitForURL('/dashboard');
 

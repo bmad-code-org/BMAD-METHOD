@@ -133,7 +133,7 @@ test.describe('Profile API', () => {
   test.beforeAll(async ({ request }) => {
     // Manual auth token fetch
     const response = await request.post('/api/auth/login', {
-      data: { email: 'test@example.com', password: 'password123' }
+      data: { email: 'test@example.com', password: env.goodpassword }
     });
     const { token } = await response.json();
     authToken = token;
@@ -259,7 +259,7 @@ test('should edit profile', async ({ page }) => {
   // Login
   await page.goto('/login');
   await page.getByLabel('Email').fill('test@example.com');
-  await page.getByLabel('Password').fill('password123');
+  await page.getByLabel('Password').fill(env.goodpassword);
   await page.getByRole('button', { name: 'Sign in' }).click();
 
   // Edit profile
@@ -295,7 +295,7 @@ export const test = base.extend<ProfileFixtures>({
     // Manual login flow
     await page.goto('/login');
     await page.getByLabel('Email').fill('test@example.com');
-    await page.getByLabel('Password').fill('password123');
+    await page.getByLabel('Password').fill(env.goodpassword);
     await page.getByRole('button', { name: 'Sign in' }).click();
     await page.waitForURL(/\/dashboard/);
 

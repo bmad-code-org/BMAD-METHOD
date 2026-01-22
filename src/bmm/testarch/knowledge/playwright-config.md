@@ -626,7 +626,7 @@ async function globalSetup(config: FullConfig) {
   // Perform authentication
   await page.goto('http://localhost:3000/login');
   await page.fill('[data-testid="email"]', 'test@example.com');
-  await page.fill('[data-testid="password"]', 'password123');
+  await page.fill('[data-testid="password"]', env.goodpassword);
   await page.click('[data-testid="login-button"]');
 
   // Wait for authentication to complete

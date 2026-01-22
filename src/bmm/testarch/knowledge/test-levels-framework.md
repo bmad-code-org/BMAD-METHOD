@@ -175,7 +175,7 @@ test.describe('Checkout Flow', () => {
     // Step 1: Login
     await page.goto('/login');
     await page.fill('[data-testid="email"]', user.email);
-    await page.fill('[data-testid="password"]', 'password123');
+    await page.fill('[data-testid="password"]', env.goodpassword);
     await page.click('[data-testid="login-button"]');
     await loginPromise;
 

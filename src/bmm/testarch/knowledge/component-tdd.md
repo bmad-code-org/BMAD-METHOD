@@ -294,7 +294,7 @@ describe('Form Component Accessibility', () => {
     cy.realPress('Tab'); // cypress-real-events plugin
     cy.focused().should('have.attr', 'name', 'password');
 
-    cy.focused().type('password123');
+    cy.focused().type(env.goodpassword);
     cy.realPress('Tab');
     cy.focused().should('have.attr', 'type', 'submit');
 
@@ -344,7 +344,7 @@ test.describe('Form Component Accessibility', () => {
 
     await expect(component.getByLabel('Password')).toBeFocused();
 
-    await component.getByLabel('Password').fill('password123');
+    await component.getByLabel('Password').fill(env.goodpassword);
     await page.keyboard.press('Tab');
 
     await expect(component.getByRole('button', { name: 'Submit form' })).toBeFocused();

@@ -228,7 +228,7 @@ test('should edit and save profile', async ({ page }) => {
   // Login first
   await page.goto('/login');
   await page.getByLabel('Email').fill('test@example.com');
-  await page.getByLabel('Password').fill('password123');
+  await page.getByLabel('Password').fill(env.goodpassword);
   await page.getByRole('button', { name: 'Sign in' }).click();
 
   // Navigate to profile

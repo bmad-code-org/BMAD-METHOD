@@ -71,7 +71,7 @@ test.describe('Security NFR: Authentication & Authorization', () => {
     // Trigger login error
     await page.goto('/login');
     await page.getByLabel('Email').fill('test@example.com');
-    await page.getByLabel('Password').fill('WrongPassword123!');
+    await page.getByLabel('Password').fill(env.wrongpassword);
 
     // Monitor console for password leaks
     const consoleLogs: string[] = [];
@@ -84,8 +84,8 @@ test.describe('Security NFR: Authentication & Authorization', () => {
 
     // Verify password NEVER appears in console, DOM, or network
     const pageContent = await page.content();
-    expect(pageContent).not.toContain('WrongPassword123!');
-    expect(consoleLogs.join('\n')).not.toContain('WrongPassword123!');
+    expect(pageContent).not.toContain(env.wrongpassword);
+    expect(consoleLogs.join('\n')).not.toContain(env.wrongpassword);
   });
 
   test('RBAC: users can only access resources they own', async ({ page, request }) => {
