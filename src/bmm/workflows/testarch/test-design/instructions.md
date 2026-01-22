@@ -22,28 +22,61 @@ The workflow auto-detects which mode to use based on project phase.
 
 **Critical:** Determine mode before proceeding.
 
-### Mode Detection
+### Mode Detection (Flexible for Standalone Use)
 
-1. **Check for sprint-status.yaml**
-   - If `{implementation_artifacts}/sprint-status.yaml` exists → **Epic-Level Mode** (Phase 4)
-   - If NOT exists → Check workflow status
+TEA test-design workflow supports TWO modes, detected automatically:
 
-2. **Mode-Specific Requirements**
+1. **Check User Intent Explicitly (Priority 1)**
+   - Did user provide PRD + ADR? → **System-Level Mode**
+   - Did user provide Epic + Stories? → **Epic-Level Mode**
+   - If user intent is clear, use that mode regardless of file structure
 
-   **System-Level Mode (Phase 3 - Testability Review):**
-   - ✅ Architecture document exists (architecture.md or tech-spec)
-   - ✅ PRD exists with functional and non-functional requirements
-   - ✅ Epics documented (epics.md)
-   - ⚠️ Output: `{output_folder}/test-design-system.md`
+2. **Fallback to File-Based Detection (Priority 2 - BMad-Integrated)**
+   - Check for `{implementation_artifacts}/sprint-status.yaml`
+   - If exists → **Epic-Level Mode** (Phase 4, single document output)
+   - If NOT exists → **System-Level Mode** (Phase 3, TWO document outputs)
 
-   **Epic-Level Mode (Phase 4 - Per-Epic Planning):**
-   - ✅ Story markdown with acceptance criteria available
-   - ✅ PRD or epic documentation exists for context
-   - ✅ Architecture documents available (optional but recommended)
-   - ✅ Requirements are clear and testable
-   - ⚠️ Output: `{output_folder}/test-design-epic-{epic_num}.md`
+3. **If Ambiguous, ASK USER (Priority 3)**
+   - "I see you have [PRD/ADR/Epic/Stories]. Should I create:
+     - (A) System-level test design (PRD + ADR → Architecture doc + QA doc)?
+     - (B) Epic-level test design (Epic → Single test plan)?"
 
-**Halt Condition:** If mode cannot be determined or required files missing, HALT and notify user with missing prerequisites.
+**Mode Descriptions:**
+
+**System-Level Mode (PRD + ADR Input)**
+- **When to use:** Early in project (Phase 3 Solutioning), architecture being designed
+- **Input:** PRD, ADR, architecture.md (optional)
+- **Output:** TWO documents
+  - `test-design-architecture.md` (for Architecture/Dev teams)
+  - `test-design-qa.md` (for QA team)
+- **Focus:** Testability assessment, ASRs, NFR requirements, Sprint 0 setup
+
+**Epic-Level Mode (Epic + Stories Input)**
+- **When to use:** During implementation (Phase 4), per-epic planning
+- **Input:** Epic, Stories, tech-specs (optional)
+- **Output:** ONE document
+  - `test-design-epic-{N}.md` (combined risk assessment + test plan)
+- **Focus:** Risk assessment, coverage plan, execution order, quality gates
+
+**Key Insight: TEA Works Standalone OR Integrated**
+
+**Standalone (No BMad artifacts):**
+- User provides PRD + ADR → System-Level Mode
+- User provides Epic description → Epic-Level Mode
+- TEA doesn't mandate full BMad workflow
+
+**BMad-Integrated (Full workflow):**
+- BMad creates `sprint-status.yaml` → Automatic Epic-Level detection
+- BMad creates PRD, ADR, architecture.md → Automatic System-Level detection
+- TEA leverages BMad artifacts for richer context
+
+**Message to User:**
+> You don't need to follow full BMad methodology to use TEA test-design.
+> Just provide PRD + ADR for system-level, or Epic for epic-level.
+> TEA will auto-detect and produce appropriate documents.
+
+**Halt Condition:** If mode cannot be determined AND user intent unclear AND required files missing, HALT and notify user:
+- "Please provide either: (A) PRD + ADR for system-level test design, OR (B) Epic + Stories for epic-level test design"
 
 ---
 
@@ -70,7 +103,7 @@ The workflow auto-detects which mode to use based on project phase.
 3. **Load Knowledge Base Fragments (System-Level)**
 
    **Critical:** Consult `{project-root}/_bmad/bmm/testarch/tea-index.csv` to load:
-   - `nfr-criteria.md` - NFR validation approach (security, performance, reliability, maintainability)
+   - `adr-quality-readiness-checklist.md` - 8-category 29-criteria NFR framework (testability, security, scalability, DR, QoS, deployability, etc.)
    - `test-levels-framework.md` - Test levels strategy guidance
    - `risk-governance.md` - Testability risk identification
    - `test-quality.md` - Quality standards and Definition of Done
@@ -91,7 +124,7 @@ The workflow auto-detects which mode to use based on project phase.
 2. **Load Architecture Context**
    - Read architecture.md for system design
    - Read tech-spec for implementation details
-   - Read test-design-system.md (if exists from Phase 3)
+   - Read test-design-architecture.md and test-design-qa.md (if exist from Phase 3 system-level test design)
    - Identify technical constraints and dependencies
    - Note integration points and external systems
 
@@ -173,50 +206,128 @@ The workflow auto-detects which mode to use based on project phase.
 
    **Critical:** If testability concerns are blockers (e.g., "Architecture makes performance testing impossible"), document as CONCERNS or FAIL recommendation for gate check.
 
-6. **Output System-Level Test Design**
+6. **Output System-Level Test Design (TWO Documents)**
 
-   Write to `{output_folder}/test-design-system.md` containing:
+   **IMPORTANT:** System-level mode produces TWO documents instead of one:
+
+   **Document 1: test-design-architecture.md** (for Architecture/Dev teams)
+   - Purpose: Architectural concerns, testability gaps, NFR requirements
+   - Audience: Architects, Backend Devs, Frontend Devs, DevOps, Security Engineers
+   - Focus: What architecture must deliver for testability
+   - Template: `test-design-architecture-template.md`
+
+   **Document 2: test-design-qa.md** (for QA team)
+   - Purpose: Test execution recipe, coverage plan, Sprint 0 setup
+   - Audience: QA Engineers, Test Automation Engineers, QA Leads
+   - Focus: How QA will execute tests
+   - Template: `test-design-qa-template.md`
+
+   **Standard Structures (REQUIRED):**
+
+   **test-design-architecture.md sections (in this order):**
+   1. Executive Summary (scope, business context, architecture, risk summary)
+   2. Quick Guide (🚨 BLOCKERS / ⚠️ HIGH PRIORITY / 📋 INFO ONLY)
+   3. Risk Assessment (high/medium/low-priority risks with scoring)
+   4. Testability Concerns and Architectural Gaps (if system has constraints)
+   5. Risk Mitigation Plans (detailed for high-priority risks ≥6)
+   6. Assumptions and Dependencies
+
+   **test-design-qa.md sections (in this order):**
+   1. Quick Reference for QA (Before You Start, Execution Order, Need Help)
+   2. System Architecture Summary (brief overview)
+   3. Test Environment Requirements (MOVE UP - section 3, NOT buried at end)
+   4. Testability Assessment (lightweight prerequisites checklist)
+   5. Test Levels Strategy (unit/integration/E2E split with rationale)
+   6. Test Coverage Plan (P0/P1/P2/P3 with detailed scenarios + checkboxes)
+   7. Sprint 0 Setup Requirements (blockers, infrastructure, environments)
+   8. NFR Readiness Summary (reference to Architecture doc)
+
+   **Content Guidelines:**
+
+   **Architecture doc (DO):**
+   - ✅ Risk scoring visible (Probability × Impact = Score)
+   - ✅ Clear ownership (each blocker/ASR has owner + timeline)
+   - ✅ Testability requirements (what architecture must support)
+   - ✅ Mitigation plans (for each high-risk item ≥6)
+   - ✅ Short code examples (5-10 lines max showing what to support)
+
+   **Architecture doc (DON'T):**
+   - ❌ NO long test code examples (belongs in QA doc)
+   - ❌ NO test scenario checklists (belongs in QA doc)
+   - ❌ NO implementation details (how QA will test)
+
+   **QA doc (DO):**
+   - ✅ Test scenario recipes (clear P0/P1/P2/P3 with checkboxes)
+   - ✅ Environment setup (Sprint 0 checklist with blockers)
+   - ✅ Tool setup (factories, fixtures, frameworks)
+   - ✅ Cross-references to Architecture doc (not duplication)
+
+   **QA doc (DON'T):**
+   - ❌ NO architectural theory (just reference Architecture doc)
+   - ❌ NO ASR explanations (link to Architecture doc instead)
+   - ❌ NO duplicate risk assessments (reference Architecture doc)
+
+   **Anti-Patterns to Avoid (Cross-Document Redundancy):**
+
+   ❌ **DON'T duplicate OAuth requirements:**
+   - Architecture doc: Explain OAuth 2.1 flow in detail
+   - QA doc: Re-explain why OAuth 2.1 is required
+
+   ✅ **DO cross-reference instead:**
+   - Architecture doc: "ASR-1: OAuth 2.1 required (see QA doc for 12 test scenarios)"
+   - QA doc: "OAuth tests: 12 P0 scenarios (see Architecture doc R-001 for risk details)"
+
+   **Markdown Cross-Reference Syntax Examples:**
 
    ```markdown
-   # System-Level Test Design
+   # In test-design-architecture.md
+
+   ### 🚨 R-001: Multi-Tenant Isolation (Score: 9)
+
+   **Test Coverage:** 8 P0 tests (see [QA doc - Multi-Tenant Isolation](test-design-qa.md#multi-tenant-isolation-8-tests---security-critical) for detailed scenarios)
+
+   ---
+
+   # In test-design-qa.md
 
    ## Testability Assessment
 
-   - Controllability: [PASS/CONCERNS/FAIL with details]
-   - Observability: [PASS/CONCERNS/FAIL with details]
-   - Reliability: [PASS/CONCERNS/FAIL with details]
+   **Prerequisites from Architecture Doc:**
+   - [ ] R-001: Multi-tenant isolation validated (see [Architecture doc R-001](test-design-architecture.md#-r-001-multi-tenant-isolation-score-9) for mitigation plan)
+   - [ ] R-002: Test customer provisioned (see [Architecture doc 🚨 BLOCKERS](test-design-architecture.md#-blockers---team-must-decide-cant-proceed-without))
 
-   ## Architecturally Significant Requirements (ASRs)
+   ## Sprint 0 Setup Requirements
 
-   [Risk-scored quality requirements]
-
-   ## Test Levels Strategy
-
-   - Unit: [X%] - [Rationale]
-   - Integration: [Y%] - [Rationale]
-   - E2E: [Z%] - [Rationale]
-
-   ## NFR Testing Approach
-
-   - Security: [Approach with tools]
-   - Performance: [Approach with tools]
-   - Reliability: [Approach with tools]
-   - Maintainability: [Approach with tools]
-
-   ## Test Environment Requirements
-
-   [Infrastructure needs based on deployment architecture]
-
-   ## Testability Concerns (if any)
-
-   [Blockers or concerns that should inform solutioning gate check]
-
-   ## Recommendations for Sprint 0
-
-   [Specific actions for *framework and *ci workflows]
+   **Source:** See [Architecture doc "Quick Guide"](test-design-architecture.md#quick-guide) for detailed mitigation plans
    ```
 
-**After System-Level Mode:** Skip to Step 4 (Generate Deliverables) - Steps 2-3 are epic-level only.
+   **Key Points:**
+   - Use relative links: `[Link Text](test-design-qa.md#section-anchor)`
+   - Anchor format: lowercase, hyphens for spaces, remove emojis/special chars
+   - Example anchor: `### 🚨 R-001: Title` → `#-r-001-title`
+
+   ❌ **DON'T put long code examples in Architecture doc:**
+   - Example: 50+ lines of test implementation
+
+   ✅ **DO keep examples SHORT in Architecture doc:**
+   - Example: 5-10 lines max showing what architecture must support
+   - Full implementation goes in QA doc
+
+   ❌ **DON'T repeat same note 10+ times:**
+   - Example: "Pessimistic timing until R-005 fixed" on every P0/P1/P2 section
+
+   ✅ **DO consolidate repeated notes:**
+   - Single timing note at top
+   - Reference briefly throughout: "(pessimistic)"
+
+   **Write Both Documents:**
+   - Use `test-design-architecture-template.md` for Architecture doc
+   - Use `test-design-qa-template.md` for QA doc
+   - Follow standard structures defined above
+   - Cross-reference between docs (no duplication)
+   - Validate against checklist.md (System-Level Mode section)
+
+**After System-Level Mode:** Workflow COMPLETE. System-level outputs (test-design-architecture.md + test-design-qa.md) are written in this step. Steps 2-4 are epic-level only - do NOT execute them in system-level mode.
 
 ---
 

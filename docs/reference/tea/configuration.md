@@ -197,7 +197,7 @@ output_folder: _bmad-output
 ```
 
 **TEA Output Files:**
-- `test-design-system.md` (from *test-design system-level)
+- `test-design-architecture.md` + `test-design-qa.md` (from *test-design system-level - TWO documents)
 - `test-design-epic-N.md` (from *test-design epic-level)
 - `test-review.md` (from *test-review)
 - `traceability-matrix.md` (from *trace Phase 1)

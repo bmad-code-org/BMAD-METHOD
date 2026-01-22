@@ -15,6 +15,9 @@ date: system-generated
 installed_path: "{project-root}/_bmad/bmm/workflows/testarch/test-design"
 instructions: "{installed_path}/instructions.md"
 validation: "{installed_path}/checklist.md"
+# Note: Template selection is mode-based (see instructions.md Step 1.5):
+#   - System-level: test-design-architecture-template.md + test-design-qa-template.md
+#   - Epic-level: test-design-template.md (unchanged)
 template: "{installed_path}/test-design-template.md"
 
 # Variables and inputs
@@ -26,13 +29,25 @@ variables:
 # Note: Actual output file determined dynamically based on mode detection
 # Declared outputs for new workflow format
 outputs:
-  - id: system-level
-    description: "System-level testability review (Phase 3)"
-    path: "{output_folder}/test-design-system.md"
+  # System-Level Mode (Phase 3) - TWO documents
+  - id: test-design-architecture
+    description: "System-level test architecture: Architectural concerns, testability gaps, NFR requirements for Architecture/Dev teams"
+    path: "{output_folder}/test-design-architecture.md"
+    mode: system-level
+    audience: architecture
+
+  - id: test-design-qa
+    description: "System-level test design: Test execution recipe, coverage plan, Sprint 0 setup for QA team"
+    path: "{output_folder}/test-design-qa.md"
+    mode: system-level
+    audience: qa
+
+  # Epic-Level Mode (Phase 4) - ONE document (unchanged)
   - id: epic-level
     description: "Epic-level test plan (Phase 4)"
     path: "{output_folder}/test-design-epic-{epic_num}.md"
-default_output_file: "{output_folder}/test-design-epic-{epic_num}.md"
+    mode: epic-level
+# Note: No default_output_file - mode detection determines which outputs to write
 
 # Required tools
 required_tools:

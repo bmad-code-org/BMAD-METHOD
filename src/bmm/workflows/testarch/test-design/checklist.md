@@ -1,10 +1,17 @@
 # Test Design and Risk Assessment - Validation Checklist
 
-## Prerequisites
+## Prerequisites (Mode-Dependent)
 
+**System-Level Mode (Phase 3):**
+- [ ] PRD exists with functional and non-functional requirements
+- [ ] ADR (Architecture Decision Record) exists
+- [ ] Architecture document available (architecture.md or tech-spec)
+- [ ] Requirements are testable and unambiguous
+
+**Epic-Level Mode (Phase 4):**
 - [ ] Story markdown with clear acceptance criteria exists
 - [ ] PRD or epic documentation available
-- [ ] Architecture documents available (optional)
+- [ ] Architecture documents available (test-design-architecture.md + test-design-qa.md from Phase 3, if exists)
 - [ ] Requirements are testable and unambiguous
 
 ## Process Steps
@@ -157,6 +164,80 @@
 - [ ] Risk assessment informs `gate` workflow criteria
 - [ ] Integrates with `ci` workflow execution order
 
+## System-Level Mode: Two-Document Validation
+
+**When in system-level mode (PRD + ADR input), validate BOTH documents:**
+
+### test-design-architecture.md
+
+- [ ] **Purpose statement** at top (serves as contract with Architecture team)
+- [ ] **Executive Summary** with scope, business context, architecture decisions, risk summary
+- [ ] **Quick Guide** section with three tiers:
+  - [ ] 🚨 BLOCKERS - Team Must Decide (Sprint 0 critical path items)
+  - [ ] ⚠️ HIGH PRIORITY - Team Should Validate (recommendations for approval)
+  - [ ] 📋 INFO ONLY - Solutions Provided (no decisions needed)
+- [ ] **Risk Assessment** section
+  - [ ] Total risks identified count
+  - [ ] High-priority risks table (score ≥6) with all columns: Risk ID, Category, Description, Probability, Impact, Score, Mitigation, Owner, Timeline
+  - [ ] Medium and low-priority risks tables
+  - [ ] Risk category legend included
+- [ ] **Testability Concerns** section (if system has architectural constraints)
+  - [ ] Blockers to fast feedback table
+  - [ ] Explanation of why standard CI/CD may not apply (if applicable)
+  - [ ] Tiered testing strategy table (if forced by architecture)
+  - [ ] Architectural improvements needed (or acknowledgment system supports testing well)
+- [ ] **Risk Mitigation Plans** for all high-priority risks (≥6)
+  - [ ] Each plan has: Strategy (numbered steps), Owner, Timeline, Status, Verification
+- [ ] **Assumptions and Dependencies** section
+  - [ ] Assumptions list (numbered)
+  - [ ] Dependencies list with required dates
+  - [ ] Risks to plan with impact and contingency
+- [ ] **NO test implementation code** (long examples belong in QA doc)
+- [ ] **NO test scenario checklists** (belong in QA doc)
+- [ ] **Cross-references to QA doc** where appropriate
+
+### test-design-qa.md
+
+- [ ] **Purpose statement** at top (execution recipe for QA team)
+- [ ] **Quick Reference for QA** section
+  - [ ] Before You Start checklist
+  - [ ] Test Execution Order
+  - [ ] Need Help? guidance
+- [ ] **System Architecture Summary** (brief overview of services and data flow)
+- [ ] **Test Environment Requirements** in early section (section 1-3, NOT buried at end)
+  - [ ] Table with Local/Dev/Staging environments
+  - [ ] Key principles listed (shared DB, randomization, parallel-safe, self-cleaning, shift-left)
+  - [ ] Code example provided
+- [ ] **Testability Assessment** with prerequisites checklist
+  - [ ] References Architecture doc blockers (not duplication)
+- [ ] **Test Levels Strategy** with unit/integration/E2E split
+  - [ ] System type identified
+  - [ ] Recommended split percentages with rationale
+  - [ ] Test count summary (P0/P1/P2/P3 totals)
+- [ ] **Test Coverage Plan** with P0/P1/P2/P3 sections
+  - [ ] Each priority has: Execution details, Purpose, Criteria, Test Count
+  - [ ] Detailed test scenarios WITH CHECKBOXES
+  - [ ] Coverage table with columns: Requirement | Test Level | Risk Link | Test Count | Owner | Notes
+- [ ] **Sprint 0 Setup Requirements**
+  - [ ] Architecture/Backend blockers listed with cross-references to Architecture doc
+  - [ ] QA Test Infrastructure section (factories, fixtures)
+  - [ ] Test Environments section (Local, CI/CD, Staging, Production)
+  - [ ] Sprint 0 NFR Gates checklist
+  - [ ] Sprint 1 Items clearly separated
+- [ ] **NFR Readiness Summary** (reference to Architecture doc, not duplication)
+  - [ ] Table with NFR categories, status, evidence, blocker, next action
+- [ ] **Cross-references to Architecture doc** (not duplication)
+- [ ] **NO architectural theory** (just reference Architecture doc)
+
+### Cross-Document Consistency
+
+- [ ] Both documents reference same risks by ID (R-001, R-002, etc.)
+- [ ] Both documents use consistent priority levels (P0, P1, P2, P3)
+- [ ] Both documents reference same Sprint 0 blockers
+- [ ] No duplicate content (cross-reference instead)
+- [ ] Dates and authors match across documents
+- [ ] ADR and PRD references consistent
+
 ## Completion Criteria
 
 **All must be true:**
@@ -166,7 +247,9 @@
 - [ ] All output validations passed
 - [ ] All quality checks passed
 - [ ] All integration points verified
-- [ ] Output file complete and well-formatted
+- [ ] Output file(s) complete and well-formatted
+- [ ] **System-level mode:** Both documents validated (if applicable)
+- [ ] **Epic-level mode:** Single document validated (if applicable)
 - [ ] Team review scheduled (if required)
 
 ## Post-Workflow Actions

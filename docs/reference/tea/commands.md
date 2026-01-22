@@ -72,17 +72,39 @@ Quick reference for all 8 TEA (Test Architect) workflows. For detailed step-by-s
 **Frequency:** Once (system), per epic (epic-level)
 
 **Modes:**
-- **System-level:** Architecture testability review
-- **Epic-level:** Per-epic risk assessment
+- **System-level:** Architecture testability review (TWO documents)
+- **Epic-level:** Per-epic risk assessment (ONE document)
 
 **Key Inputs:**
-- Architecture/epic, requirements, ADRs
+- System-level: Architecture, PRD, ADRs
+- Epic-level: Epic, stories, acceptance criteria
 
 **Key Outputs:**
-- `test-design-system.md` or `test-design-epic-N.md`
-- Risk assessment (probability × impact scores)
-- Test priorities (P0-P3)
-- Coverage strategy
+
+**System-Level (TWO Documents):**
+- `test-design-architecture.md` - For Architecture/Dev teams
+  - Quick Guide (🚨 BLOCKERS / ⚠️ HIGH PRIORITY / 📋 INFO ONLY)
+  - Risk assessment with scoring
+  - Testability concerns and gaps
+  - Mitigation plans
+- `test-design-qa.md` - For QA team
+  - Test execution recipe
+  - Coverage plan (P0/P1/P2/P3 with checkboxes)
+  - Sprint 0 setup requirements
+  - NFR readiness summary
+
+**Epic-Level (ONE Document):**
+- `test-design-epic-N.md`
+  - Risk assessment (probability × impact scores)
+  - Test priorities (P0-P3)
+  - Coverage strategy
+  - Mitigation plans
+
+**Why Two Documents for System-Level?**
+- Architecture teams scan blockers in <5 min
+- QA teams have actionable test recipes
+- No redundancy (cross-references instead)
+- Clear separation (what to deliver vs how to test)
 
 **MCP Enhancement:** Exploratory mode (live browser UI discovery)
 

@@ -114,10 +114,9 @@ Focus areas:
 - Performance requirements (SLA: P99 <200ms)
 - Compliance (HIPAA PHI handling, audit logging)
 
-Output: test-design-system.md with:
-- Security testing strategy
-- Compliance requirement → test mapping
-- Performance testing plan
+Output: TWO documents (system-level):
+- `test-design-architecture.md`: Security gaps, compliance requirements, performance SLOs for Architecture team
+- `test-design-qa.md`: Security testing strategy, compliance test mapping, performance testing plan for QA team
 - Audit logging validation
 ```
 

@@ -15,7 +15,7 @@ By the end of this 30-minute tutorial, you'll have:
 :::note[Prerequisites]
 - Node.js installed (v20 or later)
 - 30 minutes of focused time
-- We'll use TodoMVC (<https://todomvc.com/examples/react/>) as our demo app
+- We'll use TodoMVC (<https://todomvc.com/examples/react/dist/>) as our demo app
 :::
 
 :::tip[Quick Path]
