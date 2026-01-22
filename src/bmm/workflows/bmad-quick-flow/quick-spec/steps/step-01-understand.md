@@ -2,7 +2,7 @@
 name: 'step-01-understand'
 description: 'Analyze the requirement delta between current state and what user wants to build'
 
-workflow_path: '{project-root}/_bmad/bmm/workflows/bmad-quick-flow/create-tech-spec'
+workflow_path: '{project-root}/_bmad/bmm/workflows/bmad-quick-flow/quick-spec'
 nextStepFile: './step-02-investigate.md'
 skipToStepFile: './step-03-generate.md'
 templateFile: '{workflow_path}/tech-spec-template.md'
