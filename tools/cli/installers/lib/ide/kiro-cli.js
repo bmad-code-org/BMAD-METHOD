@@ -25,7 +25,7 @@ class KiroCliSetup extends BaseIdeSetup {
       // Remove existing BMad agents
       const files = await fs.readdir(bmadAgentsDir);
       for (const file of files) {
-        if (file.startsWith('bmad-') || file.includes('bmad')) {
+        if (file.startsWith('bmad')) {
           await fs.remove(path.join(bmadAgentsDir, file));
         }
       }

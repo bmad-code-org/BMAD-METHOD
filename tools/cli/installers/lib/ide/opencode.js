@@ -185,7 +185,7 @@ class OpenCodeSetup extends BaseIdeSetup {
     if (await fs.pathExists(agentsDir)) {
       const files = await fs.readdir(agentsDir);
       for (const file of files) {
-        if (file.startsWith('bmad-') && file.endsWith('.md')) {
+        if (file.startsWith('bmad') && file.endsWith('.md')) {
           await fs.remove(path.join(agentsDir, file));
           removed++;
         }
@@ -196,7 +196,7 @@ class OpenCodeSetup extends BaseIdeSetup {
     if (await fs.pathExists(commandsDir)) {
       const files = await fs.readdir(commandsDir);
       for (const file of files) {
-        if (file.startsWith('bmad-') && file.endsWith('.md')) {
+        if (file.startsWith('bmad') && file.endsWith('.md')) {
           await fs.remove(path.join(commandsDir, file));
           removed++;
         }

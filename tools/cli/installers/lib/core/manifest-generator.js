@@ -534,18 +534,71 @@ class ManifestGenerator {
 
   /**
    * Write main manifest as YAML with installation info only
+   * Fetches fresh version info for all modules
    * @returns {string} Path to the manifest file
    */
   async writeMainManifest(cfgDir) {
     const manifestPath = path.join(cfgDir, 'manifest.yaml');
 
+    // Read existing manifest to preserve install date
+    let existingInstallDate = null;
+    const existingModulesMap = new Map();
+
+    if (await fs.pathExists(manifestPath)) {
+      try {
+        const existingContent = await fs.readFile(manifestPath, 'utf8');
+        const existingManifest = yaml.parse(existingContent);
+
+        // Preserve original install date
+        if (existingManifest.installation?.installDate) {
+          existingInstallDate = existingManifest.installation.installDate;
+        }
+
+        // Build map of existing modules for quick lookup
+        if (existingManifest.modules && Array.isArray(existingManifest.modules)) {
+          for (const m of existingManifest.modules) {
+            if (typeof m === 'object' && m.name) {
+              existingModulesMap.set(m.name, m);
+            } else if (typeof m === 'string') {
+              existingModulesMap.set(m, { installDate: existingInstallDate });
+            }
+          }
+        }
+      } catch {
+        // If we can't read existing manifest, continue with defaults
+      }
+    }
+
+    // Fetch fresh version info for all modules
+    const { Manifest } = require('./manifest');
+    const manifestObj = new Manifest();
+    const updatedModules = [];
+
+    for (const moduleName of this.modules) {
+      // Get fresh version info from source
+      const versionInfo = await manifestObj.getModuleVersionInfo(moduleName, this.bmadDir);
+
+      // Get existing install date if available
+      const existing = existingModulesMap.get(moduleName);
+
+      updatedModules.push({
+        name: moduleName,
+        version: versionInfo.version,
+        installDate: existing?.installDate || new Date().toISOString(),
+        lastUpdated: new Date().toISOString(),
+        source: versionInfo.source,
+        npmPackage: versionInfo.npmPackage,
+        repoUrl: versionInfo.repoUrl,
+      });
+    }
+
     const manifest = {
       installation: {
         version: packageJson.version,
-        installDate: new Date().toISOString(),
+        installDate: existingInstallDate || new Date().toISOString(),
         lastUpdated: new Date().toISOString(),
       },
-      modules: this.modules, // Include ALL modules (standard and custom)
+      modules: updatedModules,
       ides: this.selectedIdes,
     };
 

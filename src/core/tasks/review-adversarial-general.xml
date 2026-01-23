@@ -6,6 +6,8 @@
 
   <inputs>
     <input name="content" desc="Content to review - diff, spec, story, doc, or any artifact" />
+    <input name="also_consider" required="false"
+      desc="Optional areas to keep in mind during review alongside normal adversarial analysis" />
   </inputs>
 
   <llm critical="true">

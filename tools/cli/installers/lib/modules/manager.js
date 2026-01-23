@@ -371,9 +371,9 @@ class ModuleManager {
       const fetchSpinner = ora(`Fetching ${moduleInfo.name}...`).start();
       try {
         const currentRef = execSync('git rev-parse HEAD', { cwd: moduleCacheDir, stdio: 'pipe' }).toString().trim();
-        execSync('git fetch --depth 1', { cwd: moduleCacheDir, stdio: 'pipe' });
-        execSync('git checkout -f', { cwd: moduleCacheDir, stdio: 'pipe' });
-        execSync('git pull --ff-only', { cwd: moduleCacheDir, stdio: 'pipe' });
+        // Fetch and reset to remote - works better with shallow clones than pull
+        execSync('git fetch origin --depth 1', { cwd: moduleCacheDir, stdio: 'pipe' });
+        execSync('git reset --hard origin/HEAD', { cwd: moduleCacheDir, stdio: 'pipe' });
         const newRef = execSync('git rev-parse HEAD', { cwd: moduleCacheDir, stdio: 'pipe' }).toString().trim();
 
         fetchSpinner.succeed(`Fetched ${moduleInfo.name}`);
@@ -555,10 +555,23 @@ class ModuleManager {
       await this.runModuleInstaller(moduleName, bmadDir, options);
     }
 
+    // Capture version info for manifest
+    const { Manifest } = require('../core/manifest');
+    const manifestObj = new Manifest();
+    const versionInfo = await manifestObj.getModuleVersionInfo(moduleName, bmadDir, sourcePath);
+
+    await manifestObj.addModule(bmadDir, moduleName, {
+      version: versionInfo.version,
+      source: versionInfo.source,
+      npmPackage: versionInfo.npmPackage,
+      repoUrl: versionInfo.repoUrl,
+    });
+
     return {
       success: true,
       module: moduleName,
       path: targetPath,
+      versionInfo,
     };
   }
 
