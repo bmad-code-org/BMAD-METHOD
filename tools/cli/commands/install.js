@@ -9,7 +9,10 @@ const ui = new UI();
 module.exports = {
   command: 'install',
   description: 'Install BMAD Core agents and tools',
-  options: [['-d, --debug', 'Enable debug output for manifest generation']],
+  options: [
+    ['-d, --debug', 'Enable debug output for manifest generation'],
+    ['-D, --directory <path>', 'Target project directory (skips interactive prompt)'],
+  ],
   action: async (options) => {
     try {
       // Set debug flag as environment variable for all components
@@ -18,7 +21,7 @@ module.exports = {
         console.log(chalk.cyan('Debug mode enabled\n'));
       }
 
-      const config = await ui.promptInstall();
+      const config = await ui.promptInstall(options);
 
       // Handle cancel
       if (config.actionType === 'cancel') {

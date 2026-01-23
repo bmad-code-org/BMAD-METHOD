@@ -26,9 +26,10 @@ const choiceUtils = { Separator };
 class UI {
   /**
    * Prompt for installation configuration
+   * @param {Object} options - CLI options object (may contain directory property)
    * @returns {Object} Installation configuration
    */
-  async promptInstall() {
+  async promptInstall(options = {}) {
     CLIUtils.displayLogo();
 
     // Display version-specific start message from install-messages.yaml
@@ -36,7 +37,7 @@ class UI {
     const messageLoader = new MessageLoader();
     messageLoader.displayStartMessage();
 
-    const confirmedDirectory = await this.getConfirmedDirectory();
+    const confirmedDirectory = await this.getConfirmedDirectory(options);
 
     // Preflight: Check for legacy BMAD v4 footprints immediately after getting directory
     const { Detector } = require('../installers/lib/core/detector');
@@ -506,9 +507,23 @@ class UI {
 
   /**
    * Get confirmed directory from user
+   * @param {Object} options - CLI options object (may contain directory property)
    * @returns {string} Confirmed directory path
    */
-  async getConfirmedDirectory() {
+  async getConfirmedDirectory(options = {}) {
+    // If directory provided via CLI, validate and return it
+    if (options.directory) {
+      const expandedPath = this.expandUserPath(options.directory);
+      const validationError = this.validateDirectorySync(expandedPath);
+      if (validationError) {
+        throw new Error(`Invalid directory: ${validationError}`);
+      }
+      await this.displayDirectoryInfo(expandedPath);
+      // Skip confirmation for CLI-provided directories
+      return expandedPath;
+    }
+
+    // Existing interactive prompt logic
     let confirmedDirectory = null;
     while (!confirmedDirectory) {
       const directoryAnswer = await this.promptForDirectory();
