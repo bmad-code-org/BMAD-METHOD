@@ -54,6 +54,7 @@ class ExternalModuleManager {
         description: moduleConfig.description || '',
         defaultSelected: moduleConfig.defaultSelected === true,
         type: moduleConfig.type || 'community', // bmad-org or community
+        npmPackage: moduleConfig.npmPackage || null, // Include npm package name
         isExternal: true,
       });
     }
@@ -95,6 +96,7 @@ class ExternalModuleManager {
       description: moduleConfig.description || '',
       defaultSelected: moduleConfig.defaultSelected === true,
       type: moduleConfig.type || 'community', // bmad-org or community
+      npmPackage: moduleConfig.npmPackage || null, // Include npm package name
       isExternal: true,
     };
   }

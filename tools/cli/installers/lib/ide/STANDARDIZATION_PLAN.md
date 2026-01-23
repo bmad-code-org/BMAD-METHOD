@@ -2,9 +2,9 @@
 
 ## Overview
 
-Standardize IDE installers to use **flat file naming** and centralize duplicated code in shared utilities.
+Standardize IDE installers to use **flat file naming** with **underscores** (Windows-compatible) and centralize duplicated code in shared utilities.
 
-**Key Rule: Only folder-based IDEs convert to colon format. IDEs already using dashes keep using dashes.**
+**Key Rule: All IDEs use underscore format for Windows compatibility (colons don't work on Windows).**
 
 ## Current State Analysis
 
@@ -15,10 +15,10 @@ Standardize IDE installers to use **flat file naming** and centralize duplicated
 | **claude-code** | Hierarchical | `.claude/commands/bmad/{module}/agents/{name}.md` |
 | **cursor** | Hierarchical | `.cursor/commands/bmad/{module}/agents/{name}.md` |
 | **crush** | Hierarchical | `.crush/commands/bmad/{module}/agents/{name}.md` |
-| **antigravity** | Flattened (dashes) | `.agent/workflows/bmad-module-agents-name.md` |
-| **codex** | Flattened (dashes) | `~/.codex/prompts/bmad-module-agents-name.md` |
-| **cline** | Flattened (dashes) | `.clinerules/workflows/bmad-module-type-name.md` |
-| **roo** | Flattened (dashes) | `.roo/commands/bmad-{module}-agent-{name}.md` |
+| **antigravity** | Flattened (underscores) | `.agent/workflows/bmad_module_agents_name.md` |
+| **codex** | Flattened (underscores) | `~/.codex/prompts/bmad_module_agents_name.md` |
+| **cline** | Flattened (underscores) | `.clinerules/workflows/bmad_module_type_name.md` |
+| **roo** | Flattened (underscores) | `.roo/commands/bmad_module_agent_name.md` |
 | **auggie** | Hybrid | `.augment/commands/bmad/agents/{module}-{name}.md` |
 | **iflow** | Hybrid | `.iflow/commands/bmad/agents/{module}-{name}.md` |
 | **trae** | Different (rules) | `.trae/rules/bmad-agent-{module}-{name}.md` |
@@ -40,35 +40,24 @@ All currently create artifacts with **nested relative paths** like `{module}/age
 
 ## Target Standardization
 
-### For Folder-Based IDEs (convert to colon format)
+### For All IDEs (underscore format - Windows-compatible)
 
-**IDEs affected:** claude-code, cursor, crush
+**IDEs affected:** claude-code, cursor, crush, antigravity, codex, cline, roo
 
 ```
-Format: bmad:{module}:{type}:{name}.md
+Format: bmad_{module}_{type}_{name}.md
 
 Examples:
-- Agent:      bmad:bmm:agents:pm.md
-- Agent:      bmad:core:agents:dev.md
-- Workflow:   bmad:bmm:workflows:correct-course.md
-- Task:       bmad:bmm:tasks:bmad-help.md
-- Tool:       bmad:core:tools:code-review.md
-- Custom:     bmad:custom:agents:fred-commit-poet.md
+- Agent:      bmad_bmm_agents_pm.md
+- Agent:      bmad_core_agents_dev.md
+- Workflow:   bmad_bmm_workflows_correct-course.md
+- Task:       bmad_bmm_tasks_bmad-help.md
+- Tool:       bmad_core_tools_code-review.md
+- Custom:     bmad_custom_agents_fred-commit-poet.md
 ```
 
-### For Already-Flat IDEs (keep using dashes)
-
-**IDEs affected:** antigravity, codex, cline, roo
-
-```
-Format: bmad-{module}-{type}-{name}.md
-
-Examples:
-- Agent:      bmad-bmm-agents-pm.md
-- Workflow:   bmad-bmm-workflows-correct-course.md
-- Task:       bmad-bmm-tasks-bmad-help.md
-- Custom:     bmad-custom-agents-fred-commit-poet.md
-```
+**Note:** Type segments (agents, workflows, tasks, tools) are filtered out from names:
+- `bmm/agents/pm.md` → `bmad_bmm_pm.md` (not `bmad_bmm_agents_pm.md`)
 
 ### For Hybrid IDEs (keep as-is)
 
@@ -88,57 +77,50 @@ These use `{module}-{name}.md` format within subdirectories - keep as-is.
 
 ```javascript
 /**
- * Convert hierarchical path to flat colon-separated name (for folder-based IDEs)
+ * Convert hierarchical path to flat underscore-separated name (Windows-compatible)
  * @param {string} module - Module name (e.g., 'bmm', 'core')
- * @param {string} type - Artifact type ('agents', 'workflows', 'tasks', 'tools')
+ * @param {string} type - Artifact type ('agents', 'workflows', 'tasks', 'tools') - filtered out
  * @param {string} name - Artifact name (e.g., 'pm', 'correct-course')
- * @returns {string} Flat filename like 'bmad:bmm:agents:pm.md'
+ * @returns {string} Flat filename like 'bmad_bmm_pm.md'
  */
-function toColonName(module, type, name) {
-  return `bmad:${module}:${type}:${name}.md`;
+function toUnderscoreName(module, type, name) {
+  return `bmad_${module}_${name}.md`;
 }
 
 /**
- * Convert relative path to flat colon-separated name (for folder-based IDEs)
+ * Convert relative path to flat underscore-separated name (Windows-compatible)
  * @param {string} relativePath - Path like 'bmm/agents/pm.md'
- * @returns {string} Flat filename like 'bmad:bmm:agents:pm.md'
+ * @returns {string} Flat filename like 'bmad_bmm_pm.md'
  */
-function toColonPath(relativePath) {
+function toUnderscorePath(relativePath) {
   const withoutExt = relativePath.replace('.md', '');
   const parts = withoutExt.split(/[\/\\]/);
-  return `bmad:${parts.join(':')}.md`;
+  // Filter out type segments (agents, workflows, tasks, tools)
+  const filtered = parts.filter((p) => !TYPE_SEGMENTS.includes(p));
+  return `bmad_${filtered.join('_')}.md`;
 }
 
 /**
- * Convert hierarchical path to flat dash-separated name (for flat IDEs)
- * @param {string} relativePath - Path like 'bmm/agents/pm.md'
- * @returns {string} Flat filename like 'bmad-bmm-agents-pm.md'
- */
-function toDashPath(relativePath) {
-  const withoutExt = relativePath.replace('.md', '');
-  const parts = withoutExt.split(/[\/\\]/);
-  return `bmad-${parts.join('-')}.md`;
-}
-
-/**
- * Create custom agent colon name
+ * Create custom agent underscore name
  * @param {string} agentName - Custom agent name
- * @returns {string} Flat filename like 'bmad:custom:agents:fred-commit-poet.md'
+ * @returns {string} Flat filename like 'bmad_custom_fred-commit-poet.md'
  */
-function customAgentColonName(agentName) {
-  return `bmad:custom:agents:${agentName}.md`;
+function customAgentUnderscoreName(agentName) {
+  return `bmad_custom_${agentName}.md`;
 }
 
-/**
- * Create custom agent dash name
- * @param {string} agentName - Custom agent name
- * @returns {string} Flat filename like 'bmad-custom-agents-fred-commit-poet.md'
- */
-function customAgentDashName(agentName) {
-  return `bmad-custom-agents-${agentName}.md`;
-}
+// Backward compatibility aliases
+const toColonName = toUnderscoreName;
+const toColonPath = toUnderscorePath;
+const toDashPath = toUnderscorePath;
+const customAgentColonName = customAgentUnderscoreName;
+const customAgentDashName = customAgentUnderscoreName;
 
 module.exports = {
+  toUnderscoreName,
+  toUnderscorePath,
+  customAgentUnderscoreName,
+  // Backward compatibility
   toColonName,
   toColonPath,
   toDashPath,
@@ -157,34 +139,26 @@ module.exports = {
 **Changes:**
 1. Import path utilities
 2. Change `relativePath` to use flat format
-3. Add method `writeColonArtifacts()` for folder-based IDEs
-4. Add method `writeDashArtifacts()` for flat IDEs
+3. Add method `writeColonArtifacts()` for folder-based IDEs (uses underscore)
+4. Add method `writeDashArtifacts()` for flat IDEs (uses underscore)
 
-### Phase 3: Update Folder-Based IDEs
+### Phase 3: Update All IDEs
 
 **Files to modify:**
 - `claude-code.js`
 - `cursor.js`
 - `crush.js`
-
-**Changes:**
-1. Import `toColonPath`, `customAgentColonName` from path-utils
-2. Change from hierarchical to flat colon naming
-3. Update cleanup to handle flat structure
-
-### Phase 4: Update Flat IDEs
-
-**Files to modify:**
 - `antigravity.js`
 - `codex.js`
 - `cline.js`
 - `roo.js`
 
 **Changes:**
-1. Import `toDashPath`, `customAgentDashName` from path-utils
-2. Replace local `flattenFilename()` with shared `toDashPath()`
+1. Import utilities from path-utils
+2. Change from hierarchical to flat underscore naming
+3. Update cleanup to handle flat structure (`startsWith('bmad')`)
 
-### Phase 5: Update Base Class
+### Phase 4: Update Base Class
 
 **File:** `_base-ide.js`
 
@@ -195,24 +169,23 @@ module.exports = {
 ## Migration Checklist
 
 ### New Files
-- [ ] Create `shared/path-utils.js`
+- [x] Create `shared/path-utils.js`
 
-### Folder-Based IDEs (convert to colon format)
-- [ ] Update `shared/agent-command-generator.js` - add `writeColonArtifacts()`
-- [ ] Update `shared/task-tool-command-generator.js` - add `writeColonArtifacts()`
-- [ ] Update `shared/workflow-command-generator.js` - add `writeColonArtifacts()`
-- [ ] Update `claude-code.js` - convert to colon format
-- [ ] Update `cursor.js` - convert to colon format
-- [ ] Update `crush.js` - convert to colon format
+### All IDEs (convert to underscore format)
+- [x] Update `shared/agent-command-generator.js` - update for underscore
+- [x] Update `shared/task-tool-command-generator.js` - update for underscore
+- [x] Update `shared/workflow-command-generator.js` - update for underscore
+- [x] Update `claude-code.js` - convert to underscore format
+- [x] Update `cursor.js` - convert to underscore format
+- [x] Update `crush.js` - convert to underscore format
+- [ ] Update `antigravity.js` - use underscore format
+- [ ] Update `codex.js` - use underscore format
+- [ ] Update `cline.js` - use underscore format
+- [ ] Update `roo.js` - use underscore format
 
-### Flat IDEs (standardize dash format)
-- [ ] Update `shared/agent-command-generator.js` - add `writeDashArtifacts()`
-- [ ] Update `shared/task-tool-command-generator.js` - add `writeDashArtifacts()`
-- [ ] Update `shared/workflow-command-generator.js` - add `writeDashArtifacts()`
-- [ ] Update `antigravity.js` - use shared `toDashPath()`
-- [ ] Update `codex.js` - use shared `toDashPath()`
-- [ ] Update `cline.js` - use shared `toDashPath()`
-- [ ] Update `roo.js` - use shared `toDashPath()`
+### CSV Command Files
+- [x] Update `src/core/module-help.csv` - change colons to underscores
+- [x] Update `src/bmm/module-help.csv` - change colons to underscores
 
 ### Base Class
 - [ ] Update `_base-ide.js` - add deprecation notice
@@ -228,7 +201,8 @@ module.exports = {
 
 ## Notes
 
-1. **Keep segments**: agents, workflows, tasks, tools all become part of the flat name
-2. **Colon vs Dash**: Colons for folder-based IDEs converting to flat, dashes for already-flat IDEs
+1. **Filter type segments**: agents, workflows, tasks, tools are filtered out from flat names
+2. **Underscore format**: Universal underscore format for Windows compatibility
 3. **Custom agents**: Follow the same pattern as regular agents
-4. **Backward compatibility**: Cleanup will remove old folder structure
+4. **Backward compatibility**: Old function names kept as aliases
+5. **Cleanup**: Will remove old `bmad:` format files on next install

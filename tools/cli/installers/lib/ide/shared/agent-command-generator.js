@@ -94,8 +94,8 @@ class AgentCommandGenerator {
   }
 
   /**
-   * Write agent launcher artifacts using COLON format (for folder-based IDEs)
-   * Creates flat files like: bmad:bmm:pm.md
+   * Write agent launcher artifacts using underscore format (Windows-compatible)
+   * Creates flat files like: bmad_bmm_pm.md
    *
    * @param {string} baseCommandsDir - Base commands directory for the IDE
    * @param {Array} artifacts - Agent launcher artifacts
@@ -106,7 +106,7 @@ class AgentCommandGenerator {
 
     for (const artifact of artifacts) {
       if (artifact.type === 'agent-launcher') {
-        // Convert relativePath to colon format: bmm/agents/pm.md → bmad:bmm:pm.md
+        // Convert relativePath to underscore format: bmm/agents/pm.md → bmad_bmm_pm.md
         const flatName = toColonPath(artifact.relativePath);
         const launcherPath = path.join(baseCommandsDir, flatName);
         await fs.ensureDir(path.dirname(launcherPath));
@@ -119,8 +119,8 @@ class AgentCommandGenerator {
   }
 
   /**
-   * Write agent launcher artifacts using DASH format (for flat IDEs)
-   * Creates flat files like: bmad-bmm-pm.md
+   * Write agent launcher artifacts using underscore format (Windows-compatible)
+   * Creates flat files like: bmad_bmm_pm.md
    *
    * @param {string} baseCommandsDir - Base commands directory for the IDE
    * @param {Array} artifacts - Agent launcher artifacts
@@ -131,7 +131,7 @@ class AgentCommandGenerator {
 
     for (const artifact of artifacts) {
       if (artifact.type === 'agent-launcher') {
-        // Convert relativePath to dash format: bmm/agents/pm.md → bmad-bmm-pm.md
+        // Convert relativePath to underscore format: bmm/agents/pm.md → bmad_bmm_pm.md
         const flatName = toDashPath(artifact.relativePath);
         const launcherPath = path.join(baseCommandsDir, flatName);
         await fs.ensureDir(path.dirname(launcherPath));
@@ -144,18 +144,18 @@ class AgentCommandGenerator {
   }
 
   /**
-   * Get the custom agent name in colon format
+   * Get the custom agent name in underscore format (Windows-compatible)
    * @param {string} agentName - Custom agent name
-   * @returns {string} Colon-formatted filename
+   * @returns {string} Underscore-formatted filename
    */
   getCustomAgentColonName(agentName) {
     return customAgentColonName(agentName);
   }
 
   /**
-   * Get the custom agent name in dash format
+   * Get the custom agent name in underscore format (Windows-compatible)
    * @param {string} agentName - Custom agent name
-   * @returns {string} Dash-formatted filename
+   * @returns {string} Underscore-formatted filename
    */
   getCustomAgentDashName(agentName) {
     return customAgentDashName(agentName);

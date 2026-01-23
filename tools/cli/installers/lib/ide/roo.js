@@ -36,7 +36,7 @@ class RooSetup extends BaseIdeSetup {
     let skippedCount = 0;
 
     for (const artifact of agentArtifacts) {
-      // Use shared toDashPath to get consistent naming: bmad-bmm-name.md
+      // Use shared toDashPath to get consistent naming: bmad_bmm_name.md
       const commandName = toDashPath(artifact.relativePath).replace('.md', '');
       const commandPath = path.join(rooCommandsDir, `${commandName}.md`);
 
@@ -169,7 +169,7 @@ class RooSetup extends BaseIdeSetup {
       let removedCount = 0;
 
       for (const file of files) {
-        if (file.startsWith('bmad-') && file.endsWith('.md')) {
+        if (file.startsWith('bmad') && file.endsWith('.md')) {
           await fs.remove(path.join(rooCommandsDir, file));
           removedCount++;
         }
@@ -192,7 +192,7 @@ class RooSetup extends BaseIdeSetup {
       let removedCount = 0;
 
       for (const line of lines) {
-        if (/^\s*- slug: bmad-/.test(line)) {
+        if (/^\s*- slug: bmad/.test(line)) {
           skipMode = true;
           removedCount++;
         } else if (skipMode && /^\s*- slug: /.test(line)) {
@@ -224,7 +224,7 @@ class RooSetup extends BaseIdeSetup {
     const rooCommandsDir = path.join(projectDir, this.configDir, this.commandsDir);
     await this.ensureDir(rooCommandsDir);
 
-    // Use dash format: bmad-custom-agents-fred-commit-poet.md
+    // Use underscore format: bmad_custom_fred-commit-poet.md
     const commandName = customAgentDashName(agentName).replace('.md', '');
     const commandPath = path.join(rooCommandsDir, `${commandName}.md`);
 

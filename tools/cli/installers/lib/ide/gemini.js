@@ -86,7 +86,7 @@ class GeminiSetup extends BaseIdeSetup {
       await this.writeFile(tomlPath, tomlContent);
       agentCount++;
 
-      console.log(chalk.green(`  ✓ Added agent: /bmad:agents:${artifact.module}:${artifact.name}`));
+      console.log(chalk.green(`  ✓ Added agent: /bmad_agents_${artifact.module}_${artifact.name}`));
     }
 
     // Install tasks as TOML files with bmad- prefix (flat structure)
@@ -100,7 +100,7 @@ class GeminiSetup extends BaseIdeSetup {
       await this.writeFile(tomlPath, tomlContent);
       taskCount++;
 
-      console.log(chalk.green(`  ✓ Added task: /bmad:tasks:${task.module}:${task.name}`));
+      console.log(chalk.green(`  ✓ Added task: /bmad_tasks_${task.module}_${task.name}`));
     }
 
     // Install workflows as TOML files with bmad- prefix (flat structure)
@@ -116,7 +116,7 @@ class GeminiSetup extends BaseIdeSetup {
         await this.writeFile(tomlPath, tomlContent);
         workflowCount++;
 
-        console.log(chalk.green(`  ✓ Added workflow: /bmad:workflows:${artifact.module}:${workflowName}`));
+        console.log(chalk.green(`  ✓ Added workflow: /bmad_workflows_${artifact.module}_${workflowName}`));
       }
     }
 
@@ -125,9 +125,9 @@ class GeminiSetup extends BaseIdeSetup {
     console.log(chalk.dim(`  - ${taskCount} tasks configured`));
     console.log(chalk.dim(`  - ${workflowCount} workflows configured`));
     console.log(chalk.dim(`  - Commands directory: ${path.relative(projectDir, commandsDir)}`));
-    console.log(chalk.dim(`  - Agent activation: /bmad:agents:{agent-name}`));
-    console.log(chalk.dim(`  - Task activation: /bmad:tasks:{task-name}`));
-    console.log(chalk.dim(`  - Workflow activation: /bmad:workflows:{workflow-name}`));
+    console.log(chalk.dim(`  - Agent activation: /bmad_agents_{agent-name}`));
+    console.log(chalk.dim(`  - Task activation: /bmad_tasks_{task-name}`));
+    console.log(chalk.dim(`  - Workflow activation: /bmad_workflows_{workflow-name}`));
 
     return {
       success: true,
@@ -233,12 +233,12 @@ ${contentWithoutFrontmatter}
     const commandsDir = path.join(projectDir, this.configDir, this.commandsDir);
 
     if (await fs.pathExists(commandsDir)) {
-      // Only remove files that start with bmad- prefix
+      // Remove any bmad* files (cleans up old bmad- and bmad: formats)
       const files = await fs.readdir(commandsDir);
       let removed = 0;
 
       for (const file of files) {
-        if (file.startsWith('bmad-') && file.endsWith('.toml')) {
+        if (file.startsWith('bmad') && file.endsWith('.toml')) {
           await fs.remove(path.join(commandsDir, file));
           removed++;
         }
