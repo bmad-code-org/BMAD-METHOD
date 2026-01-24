@@ -172,9 +172,9 @@ b) **HALT and wait for user selection.**
 
 #### Menu Handling:
 
-- **[a]**: Load and execute `{advanced_elicitation}`, then return here and redisplay menu
-- **[c]**: Load and execute `{nextStepFile}` (Map Technical Constraints)
-- **[p]**: Load and execute `{party_mode_exec}`, then return here and redisplay menu
+- **[a]**: Read fully and follow: `{advanced_elicitation}`, then return here and redisplay menu
+- **[c]**: Read fully and follow: `{nextStepFile}` (Map Technical Constraints)
+- **[p]**: Read fully and follow: `{party_mode_exec}`, then return here and redisplay menu
 
 ---
 

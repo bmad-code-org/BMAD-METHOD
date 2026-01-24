@@ -204,7 +204,7 @@ Display: "**Change Plan Approved**
 
 **Proceeding to edit step...**"
 
-Load and execute {nextStepFile} (step-e-03-edit.md)
+Read fully and follow: {nextStepFile} (step-e-03-edit.md)
 
 ### 7. Present MENU OPTIONS (If User Wants Discussion)
 
@@ -219,8 +219,8 @@ Load and execute {nextStepFile} (step-e-03-edit.md)
 
 #### Menu Handling Logic:
 
-- IF A: Execute {advancedElicitationTask}, then return to discussion
-- IF P: Execute {partyModeWorkflow}, then return to discussion
+- IF A: Read fully and follow: {advancedElicitationTask}, then return to discussion
+- IF P: Read fully and follow: {partyModeWorkflow}, then return to discussion
 - IF C: Document approval, then load {nextStepFile}
 - IF Any other: discuss, then redisplay menu
 

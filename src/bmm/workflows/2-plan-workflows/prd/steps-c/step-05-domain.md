@@ -154,9 +154,9 @@ Acknowledge the domain and explore what makes it complex:
 Display: "**Select:** [A] Advanced Elicitation [P] Party Mode [C] Continue - Save and Proceed to Innovation (Step 6 of 13)"
 
 #### Menu Handling Logic:
-- IF A: Execute {advancedElicitationTask}, and when finished redisplay the menu
-- IF P: Execute {partyModeWorkflow}, and when finished redisplay the menu
-- IF C: Save content to {outputFile}, update frontmatter, then load, read entire file, then execute {nextStepFile}
+- IF A: Read fully and follow: {advancedElicitationTask}, and when finished redisplay the menu
+- IF P: Read fully and follow: {partyModeWorkflow}, and when finished redisplay the menu
+- IF C: Save content to {outputFile}, update frontmatter, then read fully and follow: {nextStepFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options](#n-present-menu-options)
 
 #### EXECUTION RULES:
@@ -178,7 +178,7 @@ If step was skipped, append nothing and proceed.
 
 ## CRITICAL STEP COMPLETION NOTE
 
-ONLY WHEN [C continue option] is selected and [content saved or skipped], will you then load and read fully `{nextStepFile}` to explore innovation.
+ONLY WHEN [C continue option] is selected and [content saved or skipped], will you then read fully and follow: `{nextStepFile}` to explore innovation.
 
 ---
 

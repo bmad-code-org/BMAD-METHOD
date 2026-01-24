@@ -125,7 +125,7 @@ Display: "Ready to continue with Step {nextStepNumber}: {nextStepTitle}?
 
 #### Menu Handling Logic:
 
-- IF C: Load, read entire file, then execute the appropriate next step file based on `lastStep`
+- IF C: Read fully and follow the appropriate next step file based on `lastStep`
 - IF Any other comments or queries: respond and redisplay menu
 
 #### EXECUTION RULES:
@@ -136,7 +136,7 @@ Display: "Ready to continue with Step {nextStepNumber}: {nextStepTitle}?
 
 ## CRITICAL STEP COMPLETION NOTE
 
-ONLY WHEN [C continue option] is selected and [current state confirmed], will you then load and read fully the appropriate next step file to resume the workflow.
+ONLY WHEN [C continue option] is selected and [current state confirmed], will you then read fully and follow the appropriate next step file to resume the workflow.
 
 ---
 

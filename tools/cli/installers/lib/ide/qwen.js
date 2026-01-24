@@ -74,7 +74,7 @@ class QwenSetup extends BaseIdeSetup {
       await this.writeFile(targetPath, tomlContent);
 
       agentCount++;
-      console.log(chalk.green(`  ✓ Added agent: /bmad:${artifact.module}:agents:${artifact.name}`));
+      console.log(chalk.green(`  ✓ Added agent: /bmad_${artifact.module}_agents_${artifact.name}`));
     }
 
     // Create TOML files for each task
@@ -90,7 +90,7 @@ class QwenSetup extends BaseIdeSetup {
       await this.writeFile(targetPath, content);
 
       taskCount++;
-      console.log(chalk.green(`  ✓ Added task: /bmad:${task.module}:tasks:${task.name}`));
+      console.log(chalk.green(`  ✓ Added task: /bmad_${task.module}_tasks_${task.name}`));
     }
 
     // Create TOML files for each tool
@@ -106,7 +106,7 @@ class QwenSetup extends BaseIdeSetup {
       await this.writeFile(targetPath, content);
 
       toolCount++;
-      console.log(chalk.green(`  ✓ Added tool: /bmad:${tool.module}:tools:${tool.name}`));
+      console.log(chalk.green(`  ✓ Added tool: /bmad_${tool.module}_tools_${tool.name}`));
     }
 
     // Create TOML files for each workflow
@@ -122,7 +122,7 @@ class QwenSetup extends BaseIdeSetup {
       await this.writeFile(targetPath, content);
 
       workflowCount++;
-      console.log(chalk.green(`  ✓ Added workflow: /bmad:${workflow.module}:workflows:${workflow.name}`));
+      console.log(chalk.green(`  ✓ Added workflow: /bmad_${workflow.module}_workflows_${workflow.name}`));
     }
 
     console.log(chalk.green(`✓ ${this.name} configured:`));

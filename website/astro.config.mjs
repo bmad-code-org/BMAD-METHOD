@@ -213,7 +213,7 @@ export default defineConfig({
       credits: false,
 
       // Pagination
-      pagination: true,
+      pagination: false,
 
       // Custom components
       components: {

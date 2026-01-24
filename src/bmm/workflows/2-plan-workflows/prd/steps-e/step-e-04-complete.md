@@ -120,14 +120,14 @@ Display:
   - Display: "This will run all 13 validation checks on the updated PRD."
   - Display: "Preparing to validate: {prd_file_path}"
   - Display: "**Proceeding to validation...**"
-  - Load, read entire file, then execute {validationWorkflow} (steps-v/step-v-01-discovery.md)
+  - Read fully and follow: {validationWorkflow} (steps-v/step-v-01-discovery.md)
   - Note: This hands off to the validation workflow which will run its complete 13-step process
 
 - **IF E (Edit More):**
   - Display: "**Additional Edits**"
   - Ask: "What additional edits would you like to make?"
   - Accept input, then display: "**Returning to edit step...**"
-  - Load and execute step-e-03-edit.md again
+  - Read fully and follow: step-e-03-edit.md again
 
 - **IF S (Summary):**
   - Display detailed summary including:

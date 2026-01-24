@@ -240,8 +240,8 @@ When running any workflow:
   }
 
   /**
-   * Write workflow command artifacts using COLON format (for folder-based IDEs)
-   * Creates flat files like: bmad:bmm:correct-course.md
+   * Write workflow command artifacts using underscore format (Windows-compatible)
+   * Creates flat files like: bmad_bmm_correct-course.md
    *
    * @param {string} baseCommandsDir - Base commands directory for the IDE
    * @param {Array} artifacts - Workflow artifacts
@@ -252,7 +252,7 @@ When running any workflow:
 
     for (const artifact of artifacts) {
       if (artifact.type === 'workflow-command') {
-        // Convert relativePath to colon format: bmm/workflows/correct-course.md → bmad:bmm:correct-course.md
+        // Convert relativePath to underscore format: bmm/workflows/correct-course.md → bmad_bmm_correct-course.md
         const flatName = toColonPath(artifact.relativePath);
         const commandPath = path.join(baseCommandsDir, flatName);
         await fs.ensureDir(path.dirname(commandPath));
@@ -265,8 +265,8 @@ When running any workflow:
   }
 
   /**
-   * Write workflow command artifacts using DASH format (for flat IDEs)
-   * Creates flat files like: bmad-bmm-correct-course.md
+   * Write workflow command artifacts using underscore format (Windows-compatible)
+   * Creates flat files like: bmad_bmm_correct-course.md
    *
    * @param {string} baseCommandsDir - Base commands directory for the IDE
    * @param {Array} artifacts - Workflow artifacts
@@ -277,7 +277,7 @@ When running any workflow:
 
     for (const artifact of artifacts) {
       if (artifact.type === 'workflow-command') {
-        // Convert relativePath to dash format: bmm/workflows/correct-course.md → bmad-bmm-correct-course.md
+        // Convert relativePath to underscore format: bmm/workflows/correct-course.md → bmad_bmm_correct-course.md
         const flatName = toDashPath(artifact.relativePath);
         const commandPath = path.join(baseCommandsDir, flatName);
         await fs.ensureDir(path.dirname(commandPath));

@@ -58,8 +58,8 @@ wipFile: '{implementation_artifacts}/tech-spec-wip.md'
 - **[y]**: Proceed to Section 3 (Finalize the Spec)
 - **[c]**: Proceed to Section 2 (Handle Review Feedback), then return here and redisplay menu
 - **[q]**: Answer questions, then redisplay this menu
-- **[a]**: Load and execute `{advanced_elicitation}`, then return here and redisplay menu
-- **[p]**: Load and execute `{party_mode_exec}`, then return here and redisplay menu
+- **[a]**: Read fully and follow: `{advanced_elicitation}`, then return here and redisplay menu
+- **[p]**: Read fully and follow: `{party_mode_exec}`, then return here and redisplay menu
 
 ### 2. Handle Review Feedback
 
@@ -137,15 +137,15 @@ b) **HALT and wait for user selection.**
 
 #### Menu Handling:
 
-- **[a]**: Load and execute `{advanced_elicitation}`, then return here and redisplay menu
-- **[b]**: Load and execute `{quick_dev_workflow}` with the final spec file (warn: fresh context is better)
+- **[a]**: Read fully and follow: `{advanced_elicitation}`, then return here and redisplay menu
+- **[b]**: Read fully and follow: `{quick_dev_workflow}` with the final spec file (warn: fresh context is better)
 - **[d]**: Exit workflow - display final confirmation and path to spec
-- **[p]**: Load and execute `{party_mode_exec}`, then return here and redisplay menu
+- **[p]**: Read fully and follow: `{party_mode_exec}`, then return here and redisplay menu
 - **[r]**: Execute Adversarial Review:
     1. **Invoke Adversarial Review Task**:
        > With `{finalFile}` constructed, invoke the review task. If possible, use information asymmetry: run this task, and only it, in a separate subagent or process with read access to the project, but no context except the `{finalFile}`.
        <invoke-task>Review {finalFile} using {project-root}/_bmad/core/tasks/review-adversarial-general.xml</invoke-task>
-       > **Platform fallback:** If task invocation not available, load the task file and execute its instructions inline, passing `{finalFile}` as the content.
+       > **Platform fallback:** If task invocation not available, load the task file and follow its instructions inline, passing `{finalFile}` as the content.
        > The task should: review `{finalFile}` and return a list of findings.
 
     2. **Process Findings**:

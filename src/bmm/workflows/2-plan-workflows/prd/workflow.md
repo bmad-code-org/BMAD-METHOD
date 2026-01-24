@@ -54,17 +54,17 @@ Wait for user selection.
 
 **IF Create Mode:**
 "**Create Mode: Creating a new PRD from scratch.**"
-Load, read entire file, then execute: `{nextStep}` (steps-c/step-01-init.md)
+Read fully and follow: `{nextStep}` (steps-c/step-01-init.md)
 
 **IF Validate Mode:**
 "**Validate Mode: Validating an existing PRD against BMAD standards.**"
 Prompt for PRD path: "Which PRD would you like to validate? Please provide the path to the PRD.md file."
-Then load, read entire file, and execute: `{validateWorkflow}` (steps-v/step-v-01-discovery.md)
+Then read fully and follow: `{validateWorkflow}` (steps-v/step-v-01-discovery.md)
 
 **IF Edit Mode:**
 "**Edit Mode: Improving an existing PRD.**"
 Prompt for PRD path: "Which PRD would you like to edit? Please provide the path to the PRD.md file."
-Then load, read entire file, and execute: `{editWorkflow}` (steps-e/step-e-01-discovery.md)
+Then read fully and follow: `{editWorkflow}` (steps-e/step-e-01-discovery.md)
 
 ---
 
@@ -87,7 +87,7 @@ This uses **step-file architecture** for disciplined execution:
 3. **WAIT FOR INPUT**: If a menu is presented, halt and wait for user selection
 4. **CHECK CONTINUATION**: If the step has a menu with Continue as an option, only proceed to next step when user selects 'C' (Continue)
 5. **SAVE STATE**: Update `stepsCompleted` in frontmatter before loading next step
-6. **LOAD NEXT**: When directed, load, read entire file, then execute the next step file
+6. **LOAD NEXT**: When directed, read fully and follow the next step file
 
 ### Critical Rules (NO EXCEPTIONS)
 
@@ -137,14 +137,14 @@ Load and read full config from {main_config} and resolve:
 
 **IF mode == create:**
 "**Create Mode: Creating a new PRD from scratch.**"
-Load, read entire file, then execute `{nextStep}` (steps-c/step-01-init.md)
+Read fully and follow: `{nextStep}` (steps-c/step-01-init.md)
 
 **IF mode == validate:**
 "**Validate Mode: Validating an existing PRD against BMAD standards.**"
 Prompt for PRD path: "Which PRD would you like to validate? Please provide the path to the PRD.md file."
-Then load, read entire file, and execute `{validateWorkflow}` (steps-v/step-v-01-discovery.md)
+Then read fully and follow: `{validateWorkflow}` (steps-v/step-v-01-discovery.md)
 
 **IF mode == edit:**
 "**Edit Mode: Improving an existing PRD.**"
 Prompt for PRD path: "Which PRD would you like to edit? Please provide the path to the PRD.md file."
-Then load, read entire file, and execute `{editWorkflow}` (steps-e/step-e-01-discovery.md)
+Then read fully and follow: `{editWorkflow}` (steps-e/step-e-01-discovery.md)

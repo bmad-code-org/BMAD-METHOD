@@ -80,23 +80,29 @@
 - [ ] Owners assigned where applicable
 - [ ] No duplicate coverage (same behavior at multiple levels)
 
-### Execution Order
+### Execution Strategy
 
-- [ ] Smoke tests defined (<5 min target)
-- [ ] P0 tests listed (<10 min target)
-- [ ] P1 tests listed (<30 min target)
-- [ ] P2/P3 tests listed (<60 min target)
-- [ ] Order optimizes for fast feedback
+**CRITICAL: Keep execution strategy simple, avoid redundancy**
+
+- [ ] **Simple structure**: PR / Nightly / Weekly (NOT complex smoke/P0/P1/P2 tiers)
+- [ ] **PR execution**: All functional tests unless significant infrastructure overhead
+- [ ] **Nightly/Weekly**: Only performance, chaos, long-running, manual tests
+- [ ] **No redundancy**: Don't re-list all tests (already in coverage plan)
+- [ ] **Philosophy stated**: "Run everything in PRs if <15 min, defer only if expensive/long"
+- [ ] **Playwright parallelization noted**: 100s of tests in 10-15 min
 
 ### Resource Estimates
 
-- [ ] P0 hours calculated (count × 2 hours)
-- [ ] P1 hours calculated (count × 1 hour)
-- [ ] P2 hours calculated (count × 0.5 hours)
-- [ ] P3 hours calculated (count × 0.25 hours)
-- [ ] Total hours summed
-- [ ] Days estimate provided (hours / 8)
-- [ ] Estimates include setup time
+**CRITICAL: Use intervals/ranges, NOT exact numbers**
+
+- [ ] P0 effort provided as interval range (e.g., "~25-40 hours" NOT "36 hours")
+- [ ] P1 effort provided as interval range (e.g., "~20-35 hours" NOT "27 hours")
+- [ ] P2 effort provided as interval range (e.g., "~10-30 hours" NOT "15.5 hours")
+- [ ] P3 effort provided as interval range (e.g., "~2-5 hours" NOT "2.5 hours")
+- [ ] Total effort provided as interval range (e.g., "~55-110 hours" NOT "81 hours")
+- [ ] Timeline provided as week range (e.g., "~1.5-3 weeks" NOT "11 days")
+- [ ] Estimates include setup time and account for complexity variations
+- [ ] **No false precision**: Avoid exact calculations like "18 tests × 2 hours = 36 hours"
 
 ### Quality Gate Criteria
 
@@ -126,11 +132,16 @@
 
 ### Priority Assignment Accuracy
 
-- [ ] P0: Truly blocks core functionality
-- [ ] P0: High-risk (score ≥6)
-- [ ] P0: No workaround exists
-- [ ] P1: Important but not blocking
-- [ ] P2/P3: Nice-to-have or edge cases
+**CRITICAL: Priority classification is separate from execution timing**
+
+- [ ] **Priority sections (P0/P1/P2/P3) do NOT include execution context** (e.g., no "Run on every commit" in headers)
+- [ ] **Priority sections have only "Criteria" and "Purpose"** (no "Execution:" field)
+- [ ] **Execution Strategy section** is separate and handles timing based on infrastructure overhead
+- [ ] P0: Truly blocks core functionality + High-risk (≥6) + No workaround
+- [ ] P1: Important features + Medium-risk (3-4) + Common workflows
+- [ ] P2: Secondary features + Low-risk (1-2) + Edge cases
+- [ ] P3: Nice-to-have + Exploratory + Benchmarks
+- [ ] **Note at top of Test Coverage Plan**: Clarifies P0/P1/P2/P3 = priority/risk, NOT execution timing
 
 ### Test Level Selection
 
@@ -176,58 +187,90 @@
   - [ ] 🚨 BLOCKERS - Team Must Decide (Sprint 0 critical path items)
   - [ ] ⚠️ HIGH PRIORITY - Team Should Validate (recommendations for approval)
   - [ ] 📋 INFO ONLY - Solutions Provided (no decisions needed)
-- [ ] **Risk Assessment** section
+- [ ] **Risk Assessment** section - **ACTIONABLE**
   - [ ] Total risks identified count
   - [ ] High-priority risks table (score ≥6) with all columns: Risk ID, Category, Description, Probability, Impact, Score, Mitigation, Owner, Timeline
   - [ ] Medium and low-priority risks tables
   - [ ] Risk category legend included
-- [ ] **Testability Concerns** section (if system has architectural constraints)
-  - [ ] Blockers to fast feedback table
-  - [ ] Explanation of why standard CI/CD may not apply (if applicable)
-  - [ ] Tiered testing strategy table (if forced by architecture)
-  - [ ] Architectural improvements needed (or acknowledgment system supports testing well)
+- [ ] **Testability Concerns and Architectural Gaps** section - **ACTIONABLE**
+  - [ ] **Sub-section: 🚨 ACTIONABLE CONCERNS** at TOP
+    - [ ] Blockers to Fast Feedback table (WHAT architecture must provide)
+    - [ ] Architectural Improvements Needed (WHAT must be changed)
+    - [ ] Each concern has: Owner, Timeline, Impact
+  - [ ] **Sub-section: Testability Assessment Summary** at BOTTOM (FYI)
+    - [ ] What Works Well (passing items)
+    - [ ] Accepted Trade-offs (no action required)
+    - [ ] This section only included if worth mentioning; otherwise omitted
 - [ ] **Risk Mitigation Plans** for all high-priority risks (≥6)
   - [ ] Each plan has: Strategy (numbered steps), Owner, Timeline, Status, Verification
+  - [ ] **Only Backend/DevOps/Arch/Security mitigations** (production code changes)
+  - [ ] QA-owned mitigations belong in QA doc instead
 - [ ] **Assumptions and Dependencies** section
+  - [ ] **Architectural assumptions only** (SLO targets, replication lag, system design)
   - [ ] Assumptions list (numbered)
   - [ ] Dependencies list with required dates
   - [ ] Risks to plan with impact and contingency
+  - [ ] QA execution assumptions belong in QA doc instead
 - [ ] **NO test implementation code** (long examples belong in QA doc)
+- [ ] **NO test scripts** (no Playwright test(...) blocks, no assertions, no test setup code)
+- [ ] **NO NFR test examples** (NFR sections describe WHAT to test, not HOW to test)
 - [ ] **NO test scenario checklists** (belong in QA doc)
-- [ ] **Cross-references to QA doc** where appropriate
+- [ ] **NO bloat or repetition** (consolidate repeated notes, avoid over-explanation)
+- [ ] **Cross-references to QA doc** where appropriate (instead of duplication)
+- [ ] **RECIPE SECTIONS NOT IN ARCHITECTURE DOC:**
+  - [ ] NO "Test Levels Strategy" section (unit/integration/E2E split belongs in QA doc only)
+  - [ ] NO "NFR Testing Approach" section with detailed test procedures (belongs in QA doc only)
+  - [ ] NO "Test Environment Requirements" section (belongs in QA doc only)
+  - [ ] NO "Recommendations for Sprint 0" section with test framework setup (belongs in QA doc only)
+  - [ ] NO "Quality Gate Criteria" section (pass rates, coverage targets belong in QA doc only)
+  - [ ] NO "Tool Selection" section (Playwright, k6, etc. belongs in QA doc only)
 
 ### test-design-qa.md
 
-- [ ] **Purpose statement** at top (execution recipe for QA team)
-- [ ] **Quick Reference for QA** section
-  - [ ] Before You Start checklist
-  - [ ] Test Execution Order
-  - [ ] Need Help? guidance
-- [ ] **System Architecture Summary** (brief overview of services and data flow)
-- [ ] **Test Environment Requirements** in early section (section 1-3, NOT buried at end)
-  - [ ] Table with Local/Dev/Staging environments
-  - [ ] Key principles listed (shared DB, randomization, parallel-safe, self-cleaning, shift-left)
-  - [ ] Code example provided
-- [ ] **Testability Assessment** with prerequisites checklist
-  - [ ] References Architecture doc blockers (not duplication)
-- [ ] **Test Levels Strategy** with unit/integration/E2E split
-  - [ ] System type identified
-  - [ ] Recommended split percentages with rationale
-  - [ ] Test count summary (P0/P1/P2/P3 totals)
+**NEW STRUCTURE (streamlined from 375 to ~287 lines):**
+
+- [ ] **Purpose statement** at top (test execution recipe)
+- [ ] **Executive Summary** with risk summary and coverage summary
+- [ ] **Dependencies & Test Blockers** section in POSITION 2 (right after Executive Summary)
+  - [ ] Backend/Architecture dependencies listed (what QA needs from other teams)
+  - [ ] QA infrastructure setup listed (factories, fixtures, environments)
+  - [ ] Code example with playwright-utils if config.tea_use_playwright_utils is true
+  - [ ] Test from '@seontechnologies/playwright-utils/api-request/fixtures'
+  - [ ] Expect from '@playwright/test' (playwright-utils does not re-export expect)
+  - [ ] Code examples include assertions (no unused imports)
+- [ ] **Risk Assessment** section (brief, references Architecture doc)
+  - [ ] High-priority risks table
+  - [ ] Medium/low-priority risks table
+  - [ ] Each risk shows "QA Test Coverage" column (how QA validates)
 - [ ] **Test Coverage Plan** with P0/P1/P2/P3 sections
-  - [ ] Each priority has: Execution details, Purpose, Criteria, Test Count
-  - [ ] Detailed test scenarios WITH CHECKBOXES
-  - [ ] Coverage table with columns: Requirement | Test Level | Risk Link | Test Count | Owner | Notes
-- [ ] **Sprint 0 Setup Requirements**
-  - [ ] Architecture/Backend blockers listed with cross-references to Architecture doc
-  - [ ] QA Test Infrastructure section (factories, fixtures)
-  - [ ] Test Environments section (Local, CI/CD, Staging, Production)
-  - [ ] Sprint 0 NFR Gates checklist
-  - [ ] Sprint 1 Items clearly separated
-- [ ] **NFR Readiness Summary** (reference to Architecture doc, not duplication)
-  - [ ] Table with NFR categories, status, evidence, blocker, next action
-- [ ] **Cross-references to Architecture doc** (not duplication)
-- [ ] **NO architectural theory** (just reference Architecture doc)
+  - [ ] Priority sections have ONLY "Criteria" (no execution context)
+  - [ ] Note at top: "P0/P1/P2/P3 = priority, NOT execution timing"
+  - [ ] Test tables with columns: Test ID | Requirement | Test Level | Risk Link | Notes
+- [ ] **Execution Strategy** section (organized by TOOL TYPE)
+  - [ ] Every PR: Playwright tests (~10-15 min)
+  - [ ] Nightly: k6 performance tests (~30-60 min)
+  - [ ] Weekly: Chaos & long-running (~hours)
+  - [ ] Philosophy: "Run everything in PRs unless expensive/long-running"
+- [ ] **QA Effort Estimate** section (QA effort ONLY)
+  - [ ] Interval-based estimates (e.g., "~1-2 weeks" NOT "36 hours")
+  - [ ] NO DevOps, Backend, Data Eng, Finance effort
+  - [ ] NO Sprint breakdowns (too prescriptive)
+- [ ] **Appendix A: Code Examples & Tagging**
+- [ ] **Appendix B: Knowledge Base References**
+
+**REMOVED SECTIONS (bloat):**
+- [ ] ❌ NO Quick Reference section (bloat)
+- [ ] ❌ NO System Architecture Summary (bloat)
+- [ ] ❌ NO Test Environment Requirements as separate section (integrated into Dependencies)
+- [ ] ❌ NO Testability Assessment section (bloat - covered in Dependencies)
+- [ ] ❌ NO Test Levels Strategy section (bloat - obvious from test scenarios)
+- [ ] ❌ NO NFR Readiness Summary (bloat)
+- [ ] ❌ NO Quality Gate Criteria section (teams decide for themselves)
+- [ ] ❌ NO Follow-on Workflows section (bloat - BMAD commands self-explanatory)
+- [ ] ❌ NO Approval section (unnecessary formality)
+- [ ] ❌ NO Infrastructure/DevOps/Finance effort tables (out of scope)
+- [ ] ❌ NO Sprint 0/1/2/3 breakdown tables (too prescriptive)
+- [ ] ❌ NO Next Steps section (bloat)
 
 ### Cross-Document Consistency
 
@@ -237,6 +280,40 @@
 - [ ] No duplicate content (cross-reference instead)
 - [ ] Dates and authors match across documents
 - [ ] ADR and PRD references consistent
+
+### Document Quality (Anti-Bloat Check)
+
+**CRITICAL: Check for bloat and repetition across BOTH documents**
+
+- [ ] **No repeated notes 10+ times** (e.g., "Timing is pessimistic until R-005 fixed" on every section)
+- [ ] **Repeated information consolidated** (write once at top, reference briefly if needed)
+- [ ] **No excessive detail** that doesn't add value (obvious concepts, redundant examples)
+- [ ] **Focus on unique/critical info** (only document what's different from standard practice)
+- [ ] **Architecture doc**: Concerns-focused, NOT implementation-focused
+- [ ] **QA doc**: Implementation-focused, NOT theory-focused
+- [ ] **Clear separation**: Architecture = WHAT and WHY, QA = HOW
+- [ ] **Professional tone**: No AI slop markers
+  - [ ] Avoid excessive ✅/❌ emojis (use sparingly, only when adding clarity)
+  - [ ] Avoid "absolutely", "excellent", "fantastic", overly enthusiastic language
+  - [ ] Write professionally and directly
+- [ ] **Architecture doc length**: Target ~150-200 lines max (focus on actionable concerns only)
+- [ ] **QA doc length**: Keep concise, remove bloat sections
+
+### Architecture Doc Structure (Actionable-First Principle)
+
+**CRITICAL: Validate structure follows actionable-first, FYI-last principle**
+
+- [ ] **Actionable sections at TOP:**
+  - [ ] Quick Guide (🚨 BLOCKERS first, then ⚠️ HIGH PRIORITY, then 📋 INFO ONLY last)
+  - [ ] Risk Assessment (high-priority risks ≥6 at top)
+  - [ ] Testability Concerns (concerns/blockers at top, passing items at bottom)
+  - [ ] Risk Mitigation Plans (for high-priority risks ≥6)
+- [ ] **FYI sections at BOTTOM:**
+  - [ ] Testability Assessment Summary (what works well - only if worth mentioning)
+  - [ ] Assumptions and Dependencies
+- [ ] **ASRs categorized correctly:**
+  - [ ] Actionable ASRs included in 🚨 or ⚠️ sections
+  - [ ] FYI ASRs included in 📋 section or omitted if obvious
 
 ## Completion Criteria
 
@@ -295,9 +372,20 @@ If workflow fails:
 
 - **Solution**: Use test pyramid - E2E for critical paths only
 
-**Issue**: Resource estimates too high
+**Issue**: Resource estimates too high or too precise
 
-- **Solution**: Invest in fixtures/factories to reduce per-test setup time
+- **Solution**:
+  - Invest in fixtures/factories to reduce per-test setup time
+  - Use interval ranges (e.g., "~55-110 hours") instead of exact numbers (e.g., "81 hours")
+  - Widen intervals if high uncertainty exists
+
+**Issue**: Execution order section too complex or redundant
+
+- **Solution**:
+  - Default: Run everything in PRs (<15 min with Playwright parallelization)
+  - Only defer to nightly/weekly if expensive (k6, chaos, 4+ hour tests)
+  - Don't create smoke/P0/P1/P2/P3 tier structure
+  - Don't re-list all tests (already in coverage plan)
 
 ### Best Practices
 
@@ -305,7 +393,9 @@ If workflow fails:
 - High-priority risks (≥6) require immediate mitigation
 - P0 tests should cover <10% of total scenarios
 - Avoid testing same behavior at multiple levels
-- Include smoke tests (P0 subset) for fast feedback
+- **Use interval-based estimates** (e.g., "~25-40 hours") instead of exact numbers to avoid false precision and provide flexibility
+- **Keep execution strategy simple**: Default to "run everything in PRs" (<15 min with Playwright), only defer if expensive/long-running
+- **Avoid execution order redundancy**: Don't create complex tier structures or re-list tests
 
 ---
 

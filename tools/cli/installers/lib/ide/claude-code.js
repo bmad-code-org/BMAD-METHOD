@@ -92,12 +92,12 @@ class ClaudeCodeSetup extends BaseIdeSetup {
   async cleanup(projectDir) {
     const commandsDir = path.join(projectDir, this.configDir, this.commandsDir);
 
-    // Remove any bmad:* files from the commands directory
+    // Remove any bmad* files from the commands directory (cleans up old bmad: and bmad- formats)
     if (await fs.pathExists(commandsDir)) {
       const entries = await fs.readdir(commandsDir);
       let removedCount = 0;
       for (const entry of entries) {
-        if (entry.startsWith('bmad:')) {
+        if (entry.startsWith('bmad')) {
           await fs.remove(path.join(commandsDir, entry));
           removedCount++;
         }
@@ -151,16 +151,16 @@ class ClaudeCodeSetup extends BaseIdeSetup {
     const commandsDir = path.join(claudeDir, this.commandsDir);
     await this.ensureDir(commandsDir);
 
-    // Use colon format: files written directly to commands dir (no bmad subfolder)
-    // Creates: .claude/commands/bmad:bmm:pm.md
+    // Use underscore format: files written directly to commands dir (no bmad subfolder)
+    // Creates: .claude/commands/bmad_bmm_pm.md
 
     // Generate agent launchers using AgentCommandGenerator
     // This creates small launcher files that reference the actual agents in _bmad/
     const agentGen = new AgentCommandGenerator(this.bmadFolderName);
     const { artifacts: agentArtifacts, counts: agentCounts } = await agentGen.collectAgentArtifacts(bmadDir, options.selectedModules || []);
 
-    // Write agent launcher files using flat colon naming
-    // Creates files like: bmad:bmm:pm.md
+    // Write agent launcher files using flat underscore naming
+    // Creates files like: bmad_bmm_pm.md
     const agentCount = await agentGen.writeColonArtifacts(commandsDir, agentArtifacts);
 
     // Process Claude Code specific injections for installed modules
@@ -182,8 +182,8 @@ class ClaudeCodeSetup extends BaseIdeSetup {
     const workflowGen = new WorkflowCommandGenerator(this.bmadFolderName);
     const { artifacts: workflowArtifacts } = await workflowGen.collectWorkflowArtifacts(bmadDir);
 
-    // Write workflow-command artifacts using flat colon naming
-    // Creates files like: bmad:bmm:correct-course.md
+    // Write workflow-command artifacts using flat underscore naming
+    // Creates files like: bmad_bmm_correct-course.md
     const workflowCommandCount = await workflowGen.writeColonArtifacts(commandsDir, workflowArtifacts);
 
     // Generate task and tool commands from manifests (if they exist)
@@ -490,7 +490,7 @@ You must fully embody this agent's persona and follow all activation instruction
 </agent-activation>
 `;
 
-    // Use colon format: bmad:custom:agents:fred-commit-poet.md
+    // Use underscore format: bmad_custom_fred-commit-poet.md
     // Written directly to commands dir (no bmad subfolder)
     const launcherName = customAgentColonName(agentName);
     const launcherPath = path.join(commandsDir, launcherName);
