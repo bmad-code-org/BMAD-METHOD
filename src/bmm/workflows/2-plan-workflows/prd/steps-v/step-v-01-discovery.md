@@ -187,9 +187,9 @@ Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Conti
 
 #### Menu Handling Logic:
 
-- IF A: Execute {advancedElicitationTask}, and when finished redisplay the menu
-- IF P: Execute {partyModeWorkflow}, and when finished redisplay the menu
-- IF C: Load, read entire file, then execute {nextStepFile} to begin format detection
+- IF A: Read fully and follow: {advancedElicitationTask}, and when finished redisplay the menu
+- IF P: Read fully and follow: {partyModeWorkflow}, and when finished redisplay the menu
+- IF C: Read fully and follow: {nextStepFile} to begin format detection
 - IF user provides additional document: Load it, update report, redisplay summary
 - IF Any other: help user, then redisplay menu
 

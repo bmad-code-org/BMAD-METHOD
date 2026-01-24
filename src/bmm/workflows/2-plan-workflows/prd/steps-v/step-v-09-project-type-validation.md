@@ -234,7 +234,7 @@ Compliance: {score}%
 
 **Proceeding to next validation check...**"
 
-Immediately load and execute {nextStepFile} (step-v-10-smart-validation.md)
+Without delay, read fully and follow: {nextStepFile} (step-v-10-smart-validation.md)
 
 ---
 

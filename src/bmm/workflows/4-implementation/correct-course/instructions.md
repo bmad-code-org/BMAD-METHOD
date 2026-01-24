@@ -33,7 +33,7 @@
 </step>
 
 <step n="2" goal="Execute Change Analysis Checklist">
-  <action>Load and execute the systematic analysis from: {checklist}</action>
+  <action>Read fully and follow the systematic analysis from: {checklist}</action>
   <action>Work through each checklist section interactively with the user</action>
   <action>Record status for each checklist item:</action>
     - [x] Done - Item completed successfully
