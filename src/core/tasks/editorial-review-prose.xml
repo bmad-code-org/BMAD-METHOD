@@ -7,6 +7,10 @@
 
   <inputs>
     <input name="content" required="true" desc="Cohesive unit of text to review (markdown, plain text, or text-heavy XML)" />
+    <input name="style_guide" required="false"
+      desc="Project-specific style guide. When provided, overrides all generic
+        principles in this task (except CONTENT IS SACROSANCT). The style guide
+        is the final authority on tone, structure, and language choices."/>
     <input name="reader_type" required="false" default="humans" desc="'humans' (default) for standard editorial, 'llm' for precision focus" />
   </inputs>
 
@@ -32,7 +36,11 @@
       <i>No conflicts: Merge overlapping fixes into single entries</i>
       <i>Respect author voice: Preserve intentional stylistic choices</i>
     </principles>
-
+    <i critical="true">STYLE GUIDE OVERRIDE: If a style_guide input is provided,
+      it overrides ALL generic principles in this task (including the Microsoft
+      Writing Style Guide baseline and reader_type-specific priorities). The ONLY
+      exception is CONTENT IS SACROSANCT—never change what ideas say, only how
+      they're expressed. When style guide conflicts with this task, style guide wins.</i>
   </llm>
 
   <flow>
@@ -54,6 +62,7 @@
     </step>
 
     <step n="3" title="Editorial Review" critical="true">
+      <action if="style_guide provided">Consult style_guide now and note its key requirements—these override default principles for this review</action>
       <action>Review all prose sections (skip code blocks, frontmatter, structural markup)</action>
       <action>Identify communication issues that impede comprehension</action>
       <action>For each issue, determine the minimal fix that achieves clarity</action>
