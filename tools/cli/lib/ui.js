@@ -1586,6 +1586,131 @@ class UI {
 
     return proceed === 'proceed';
   }
+
+  /**
+   * Display module versions with update availability
+   * @param {Array} modules - Array of module info objects with version info
+   * @param {Array} availableUpdates - Array of available updates
+   */
+  displayModuleVersions(modules, availableUpdates = []) {
+    console.log('');
+    console.log(chalk.cyan.bold('📦 Module Versions'));
+    console.log(chalk.gray('─'.repeat(80)));
+
+    // Group modules by source
+    const builtIn = modules.filter((m) => m.source === 'built-in');
+    const external = modules.filter((m) => m.source === 'external');
+    const custom = modules.filter((m) => m.source === 'custom');
+    const unknown = modules.filter((m) => m.source === 'unknown');
+
+    const displayGroup = (group, title) => {
+      if (group.length === 0) return;
+
+      console.log(chalk.yellow(`\n${title}`));
+      for (const module of group) {
+        const updateInfo = availableUpdates.find((u) => u.name === module.name);
+        const versionDisplay = module.version || chalk.gray('unknown');
+
+        if (updateInfo) {
+          console.log(
+            `  ${chalk.cyan(module.name.padEnd(20))} ${versionDisplay} → ${chalk.green(updateInfo.latestVersion)} ${chalk.green('↑')}`,
+          );
+        } else {
+          console.log(`  ${chalk.cyan(module.name.padEnd(20))} ${versionDisplay} ${chalk.gray('✓')}`);
+        }
+      }
+    };
+
+    displayGroup(builtIn, 'Built-in Modules');
+    displayGroup(external, 'External Modules (Official)');
+    displayGroup(custom, 'Custom Modules');
+    displayGroup(unknown, 'Other Modules');
+
+    console.log('');
+  }
+
+  /**
+   * Prompt user to select which modules to update
+   * @param {Array} availableUpdates - Array of available updates
+   * @returns {Array} Selected module names to update
+   */
+  async promptUpdateSelection(availableUpdates) {
+    if (availableUpdates.length === 0) {
+      return [];
+    }
+
+    console.log('');
+    console.log(chalk.cyan.bold('🔄 Available Updates'));
+    console.log(chalk.gray('─'.repeat(80)));
+
+    const choices = availableUpdates.map((update) => ({
+      name: `${update.name} ${chalk.dim(`(v${update.installedVersion} → v${update.latestVersion})`)}`,
+      value: update.name,
+      checked: true, // Default to selecting all updates
+    }));
+
+    // Add "Update All" and "Cancel" options
+    const action = await prompts.select({
+      message: 'How would you like to proceed?',
+      choices: [
+        { name: 'Update all available modules', value: 'all' },
+        { name: 'Select specific modules to update', value: 'select' },
+        { name: 'Skip updates for now', value: 'skip' },
+      ],
+      default: 'all',
+    });
+
+    if (action === 'all') {
+      return availableUpdates.map((u) => u.name);
+    }
+
+    if (action === 'skip') {
+      return [];
+    }
+
+    // Allow specific selection
+    const selected = await prompts.multiselect({
+      message: `Select modules to update ${chalk.dim('(↑/↓ navigates, SPACE toggles, ENTER to confirm)')}:`,
+      choices: choices,
+      required: true,
+    });
+
+    return selected || [];
+  }
+
+  /**
+   * Display status of all installed modules
+   * @param {Object} statusData - Status data with modules, installation info, and available updates
+   */
+  displayStatus(statusData) {
+    const { installation, modules, availableUpdates, bmadDir } = statusData;
+
+    console.log('');
+    console.log(chalk.cyan.bold('📋 BMAD Status'));
+    console.log(chalk.gray('─'.repeat(80)));
+
+    // Installation info
+    console.log(chalk.yellow('\nInstallation'));
+    console.log(`  ${chalk.gray('Version:'.padEnd(20))} ${installation.version || chalk.gray('unknown')}`);
+    console.log(`  ${chalk.gray('Location:'.padEnd(20))} ${bmadDir}`);
+    console.log(`  ${chalk.gray('Installed:'.padEnd(20))} ${new Date(installation.installDate).toLocaleDateString()}`);
+    console.log(
+      `  ${chalk.gray('Last Updated:'.padEnd(20))} ${installation.lastUpdated ? new Date(installation.lastUpdated).toLocaleDateString() : chalk.gray('unknown')}`,
+    );
+
+    // Module versions
+    this.displayModuleVersions(modules, availableUpdates);
+
+    // Update summary
+    if (availableUpdates.length > 0) {
+      console.log(chalk.yellow.bold(`\n⚠️  ${availableUpdates.length} update(s) available`));
+      console.log(chalk.dim(`  Run 'bmad install' and select "Quick Update" to update`));
+    } else {
+      console.log(chalk.green.bold('\n✓ All modules are up to date'));
+    }
+
+    console.log('');
+  }
 }
 
 module.exports = { UI };

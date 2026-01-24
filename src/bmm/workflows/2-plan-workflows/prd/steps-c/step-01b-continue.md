@@ -120,7 +120,7 @@ Display: "**Select an Option:** [C] Continue to {next step name}"
 
 #### Menu Handling Logic:
 
-- IF C: Load, read entire file, then execute the {nextStepFile} determined in step 3
+- IF C: Read fully and follow the {nextStepFile} determined in step 3
 - IF Any other comments or queries: respond and redisplay menu
 
 #### EXECUTION RULES:
@@ -130,7 +130,7 @@ Display: "**Select an Option:** [C] Continue to {next step name}"
 
 ## CRITICAL STEP COMPLETION NOTE
 
-ONLY WHEN [C continue option] is selected and [current state confirmed], will you then load and read fully the {nextStepFile} to resume the workflow.
+ONLY WHEN [C continue option] is selected and [current state confirmed], will you then read fully and follow: {nextStepFile} to resume the workflow.
 
 ---
 

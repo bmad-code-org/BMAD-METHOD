@@ -117,8 +117,8 @@ Follow all instructions in the ${type} file exactly as written.
   }
 
   /**
-   * Generate task and tool commands using COLON format (for folder-based IDEs)
-   * Creates flat files like: bmad:bmm:bmad-help.md
+   * Generate task and tool commands using underscore format (Windows-compatible)
+   * Creates flat files like: bmad_bmm_bmad-help.md
    *
    * @param {string} projectDir - Project directory
    * @param {string} bmadDir - BMAD installation directory
@@ -138,7 +138,7 @@ Follow all instructions in the ${type} file exactly as written.
     // Generate command files for tasks
     for (const task of standaloneTasks) {
       const commandContent = this.generateCommandContent(task, 'task');
-      // Use colon format: bmad:bmm:name.md
+      // Use underscore format: bmad_bmm_name.md
       const flatName = toColonName(task.module, 'tasks', task.name);
       const commandPath = path.join(baseCommandsDir, flatName);
       await fs.ensureDir(path.dirname(commandPath));
@@ -149,7 +149,7 @@ Follow all instructions in the ${type} file exactly as written.
     // Generate command files for tools
     for (const tool of standaloneTools) {
       const commandContent = this.generateCommandContent(tool, 'tool');
-      // Use colon format: bmad:bmm:name.md
+      // Use underscore format: bmad_bmm_name.md
       const flatName = toColonName(tool.module, 'tools', tool.name);
       const commandPath = path.join(baseCommandsDir, flatName);
       await fs.ensureDir(path.dirname(commandPath));
@@ -165,8 +165,8 @@ Follow all instructions in the ${type} file exactly as written.
   }
 
   /**
-   * Generate task and tool commands using DASH format (for flat IDEs)
-   * Creates flat files like: bmad-bmm-bmad-help.md
+   * Generate task and tool commands using underscore format (Windows-compatible)
+   * Creates flat files like: bmad_bmm_bmad-help.md
    *
    * @param {string} projectDir - Project directory
    * @param {string} bmadDir - BMAD installation directory
@@ -186,7 +186,7 @@ Follow all instructions in the ${type} file exactly as written.
     // Generate command files for tasks
     for (const task of standaloneTasks) {
       const commandContent = this.generateCommandContent(task, 'task');
-      // Use dash format: bmad-bmm-name.md
+      // Use underscore format: bmad_bmm_name.md
       const flatName = toDashPath(`${task.module}/tasks/${task.name}.md`);
       const commandPath = path.join(baseCommandsDir, flatName);
       await fs.ensureDir(path.dirname(commandPath));
@@ -197,7 +197,7 @@ Follow all instructions in the ${type} file exactly as written.
     // Generate command files for tools
     for (const tool of standaloneTools) {
       const commandContent = this.generateCommandContent(tool, 'tool');
-      // Use dash format: bmad-bmm-name.md
+      // Use underscore format: bmad_bmm_name.md
       const flatName = toDashPath(`${tool.module}/tools/${tool.name}.md`);
       const commandPath = path.join(baseCommandsDir, flatName);
       await fs.ensureDir(path.dirname(commandPath));
@@ -213,8 +213,8 @@ Follow all instructions in the ${type} file exactly as written.
   }
 
   /**
-   * Write task/tool artifacts using COLON format (for folder-based IDEs)
-   * Creates flat files like: bmad:bmm:bmad-help.md
+   * Write task/tool artifacts using underscore format (Windows-compatible)
+   * Creates flat files like: bmad_bmm_bmad-help.md
    *
    * @param {string} baseCommandsDir - Base commands directory for the IDE
    * @param {Array} artifacts - Task/tool artifacts with relativePath
@@ -226,7 +226,7 @@ Follow all instructions in the ${type} file exactly as written.
     for (const artifact of artifacts) {
       if (artifact.type === 'task' || artifact.type === 'tool') {
         const commandContent = this.generateCommandContent(artifact, artifact.type);
-        // Use colon format: bmad:module:name.md
+        // Use underscore format: bmad_module_name.md
         const flatName = toColonPath(artifact.relativePath);
         const commandPath = path.join(baseCommandsDir, flatName);
         await fs.ensureDir(path.dirname(commandPath));
@@ -239,8 +239,8 @@ Follow all instructions in the ${type} file exactly as written.
   }
 
   /**
-   * Write task/tool artifacts using DASH format (for flat IDEs)
-   * Creates flat files like: bmad-bmm-bmad-help.md
+   * Write task/tool artifacts using underscore format (Windows-compatible)
+   * Creates flat files like: bmad_bmm_bmad-help.md
    *
    * @param {string} baseCommandsDir - Base commands directory for the IDE
    * @param {Array} artifacts - Task/tool artifacts with relativePath
@@ -252,7 +252,7 @@ Follow all instructions in the ${type} file exactly as written.
     for (const artifact of artifacts) {
       if (artifact.type === 'task' || artifact.type === 'tool') {
         const commandContent = this.generateCommandContent(artifact, artifact.type);
-        // Use dash format: bmad-module-name.md
+        // Use underscore format: bmad_module_name.md
         const flatName = toDashPath(artifact.relativePath);
         const commandPath = path.join(baseCommandsDir, flatName);
         await fs.ensureDir(path.dirname(commandPath));

@@ -189,7 +189,7 @@ Display: "**Edit Requirements Understood**
 
 **Proceeding to deep review and analysis...**"
 
-Load and execute next step (step-e-02-review.md)
+Read fully and follow: next step (step-e-02-review.md)
 
 **IF PRD is Legacy (Non-Standard) AND no validation report:**
 
@@ -216,7 +216,7 @@ Present MENU OPTIONS below for user selection
 
 #### Menu Handling Logic:
 
-- IF C (Convert): Load, read entire file, then execute {altStepFile} (step-e-01b-legacy-conversion.md)
+- IF C (Convert): Read fully and follow: {altStepFile} (step-e-01b-legacy-conversion.md)
 - IF E (Edit As-Is): Display "Proceeding with edits..." then load next step
 - IF X (Exit): Display summary and exit
 - IF Any other: help user, then redisplay menu

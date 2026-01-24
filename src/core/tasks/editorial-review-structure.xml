@@ -5,7 +5,7 @@
   name="Editorial Review - Structure"
   description="Structural editor that proposes cuts, reorganization,
     and simplification while preserving comprehension"
-  standalone="false">
+  standalone="true">
   <objective>Review document structure and propose substantive changes
     to improve clarity and flow-run this BEFORE copy editing</objective>
   <inputs>

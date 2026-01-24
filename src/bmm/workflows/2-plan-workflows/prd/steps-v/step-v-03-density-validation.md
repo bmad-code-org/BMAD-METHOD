@@ -148,7 +148,7 @@ Severity: {Critical/Warning/Pass}
 
 **Proceeding to next validation check...**"
 
-Immediately load and execute {nextStepFile} (step-v-04-brief-coverage-validation.md)
+Without delay, read fully and follow: {nextStepFile} (step-v-04-brief-coverage-validation.md)
 
 ---
 

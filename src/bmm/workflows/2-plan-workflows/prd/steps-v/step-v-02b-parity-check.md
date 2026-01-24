@@ -180,7 +180,7 @@ Your PRD is missing {count} of 6 core BMAD PRD sections. The overall effort to r
 
 #### Menu Handling Logic:
 
-- IF C (Continue): Display "Proceeding with validation..." then load, read entire file, then execute {nextStepFile}
+- IF C (Continue): Display "Proceeding with validation..." then read fully and follow: {nextStepFile}
 - IF E (Exit): Display parity summary and exit validation
 - IF S (Save): Confirm saved, display summary, exit
 - IF Any other: help user respond, then redisplay menu

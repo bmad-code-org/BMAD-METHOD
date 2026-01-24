@@ -275,7 +275,7 @@ ${cleanContent}
       let removed = 0;
 
       for (const file of files) {
-        if (file.startsWith('bmad-') && file.endsWith('.chatmode.md')) {
+        if (file.startsWith('bmad') && file.endsWith('.chatmode.md')) {
           await fs.remove(path.join(chatmodesDir, file));
           removed++;
         }

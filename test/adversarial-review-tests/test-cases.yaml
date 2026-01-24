@@ -1,0 +1,103 @@
+# Test Cases for review-adversarial-general.xml with also_consider input
+#
+# Purpose: Evaluate how the optional also_consider input influences review findings
+# Content: All tests use sample-content.md (User Authentication API docs)
+#
+# To run: Manually invoke the task with each configuration and compare outputs
+
+test_cases:
+  # BASELINE - No also_consider
+  - id: TC01
+    name: "Baseline - no also_consider"
+    description: "Control test with no also_consider input"
+    also_consider: null
+    expected_behavior: "Generic adversarial findings across all aspects"
+
+  # DOCUMENTATION-FOCUSED
+  - id: TC02
+    name: "Documentation - reader confusion"
+    description: "Nudge toward documentation UX issues"
+    also_consider:
+      - What would confuse a first-time reader?
+      - What questions are left unanswered?
+      - What could be interpreted multiple ways?
+      - What jargon is unexplained?
+    expected_behavior: "More findings about clarity, completeness, reader experience"
+
+  - id: TC03
+    name: "Documentation - examples and usage"
+    description: "Nudge toward practical usage gaps"
+    also_consider:
+      - Missing code examples
+      - Unclear usage patterns
+      - Edge cases not documented
+    expected_behavior: "More findings about practical application gaps"
+
+  # SECURITY-FOCUSED
+  - id: TC04
+    name: "Security review"
+    description: "Nudge toward security concerns"
+    also_consider:
+      - Authentication vulnerabilities
+      - Token handling issues
+      - Input validation gaps
+      - Information disclosure risks
+    expected_behavior: "More security-related findings"
+
+  # API DESIGN-FOCUSED
+  - id: TC05
+    name: "API design"
+    description: "Nudge toward API design best practices"
+    also_consider:
+      - REST conventions not followed
+      - Inconsistent response formats
+      - Missing pagination or filtering
+      - Versioning concerns
+    expected_behavior: "More API design pattern findings"
+
+  # SINGLE ITEM
+  - id: TC06
+    name: "Single item - error handling"
+    description: "Test with just one also_consider item"
+    also_consider:
+      - Error handling completeness
+    expected_behavior: "Some emphasis on error handling while still covering other areas"
+
+  # BROAD/VAGUE
+  - id: TC07
+    name: "Broad items"
+    description: "Test with vague also_consider items"
+    also_consider:
+      - Quality issues
+      - Things that seem off
+    expected_behavior: "Minimal change from baseline - items too vague to steer"
+
+  # VERY SPECIFIC
+  - id: TC08
+    name: "Very specific items"
+    description: "Test with highly specific also_consider items"
+    also_consider:
+      - Is the JWT token expiration documented?
+      - Are refresh token mechanics explained?
+      - What happens on concurrent sessions?
+    expected_behavior: "Specific findings addressing these exact questions if gaps exist"
+
+  # MIXED DOMAINS
+  - id: TC09
+    name: "Mixed domain concerns"
+    description: "Test with items from different domains"
+    also_consider:
+      - Security vulnerabilities
+      - Reader confusion points
+      - API design inconsistencies
+      - Performance implications
+    expected_behavior: "Balanced findings across multiple domains"
+
+  # CONTRADICTORY/UNUSUAL
+  - id: TC10
+    name: "Contradictory items"
+    description: "Test resilience with odd inputs"
+    also_consider:
+      - Things that are too detailed
+      - Things that are not detailed enough
+    expected_behavior: "Reviewer handles gracefully, finds issues in both directions"

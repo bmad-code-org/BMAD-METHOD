@@ -127,8 +127,8 @@ class AntigravitySetup extends BaseIdeSetup {
     const { artifacts: agentArtifacts, counts: agentCounts } = await agentGen.collectAgentArtifacts(bmadDir, options.selectedModules || []);
 
     // Write agent launcher files with FLATTENED naming using shared utility
-    // Antigravity ignores directory structure, so we flatten to: bmad-module-name.md
-    // This creates slash commands like /bmad-bmm-dev instead of /dev
+    // Antigravity ignores directory structure, so we flatten to: bmad_module_name.md
+    // This creates slash commands like /bmad_bmm_dev instead of /dev
     const agentCount = await agentGen.writeDashArtifacts(bmadWorkflowsDir, agentArtifacts);
 
     // Process Antigravity specific injections for installed modules
@@ -167,7 +167,7 @@ class AntigravitySetup extends BaseIdeSetup {
       );
     }
     console.log(chalk.dim(`  - Workflows directory: ${path.relative(projectDir, bmadWorkflowsDir)}`));
-    console.log(chalk.yellow(`\n  Note: Antigravity uses flattened slash commands (e.g., /bmad-module-agents-name)`));
+    console.log(chalk.yellow(`\n  Note: Antigravity uses flattened slash commands (e.g., /bmad_module_agents_name)`));
 
     return {
       success: true,
@@ -455,7 +455,7 @@ usage: |
 
 ⚠️ **IMPORTANT**: Run @${agentPath} to load the complete agent before using this launcher!`;
 
-    // Use dash format: bmad-custom-agents-fred-commit-poet.md
+    // Use underscore format: bmad_custom_fred-commit-poet.md
     const fileName = customAgentDashName(agentName);
     const launcherPath = path.join(bmadWorkflowsDir, fileName);
 

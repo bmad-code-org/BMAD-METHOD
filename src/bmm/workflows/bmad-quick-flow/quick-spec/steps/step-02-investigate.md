@@ -127,9 +127,9 @@ Fill in:
 
 #### Menu Handling:
 
-- **[a]**: Load and execute `{advanced_elicitation}`, then return here and redisplay menu
-- **[c]**: Verify frontmatter updated with `stepsCompleted: [1, 2]`, then load and execute `{nextStepFile}`
-- **[p]**: Load and execute `{party_mode_exec}`, then return here and redisplay menu
+- **[a]**: Read fully and follow: `{advanced_elicitation}`, then return here and redisplay menu
+- **[c]**: Verify frontmatter updated with `stepsCompleted: [1, 2]`, then read fully and follow: `{nextStepFile}`
+- **[p]**: Read fully and follow: `{party_mode_exec}`, then return here and redisplay menu
 
 ---
 
