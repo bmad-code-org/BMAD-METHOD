@@ -85,7 +85,7 @@ If TodoWrite or similar tool is available, turn each finding into a TODO, includ
 
 ## NEXT STEP
 
-With findings in hand, load `step-06-resolve-findings.md` for user to choose resolution approach.
+With findings in hand, read fully and follow: `step-06-resolve-findings.md` for user to choose resolution approach.
 
 ---
 

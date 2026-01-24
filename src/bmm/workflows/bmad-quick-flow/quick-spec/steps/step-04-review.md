@@ -43,23 +43,24 @@ wipFile: '{implementation_artifacts}/tech-spec-wip.md'
 
 **Present review menu:**
 
-```
-[y] Approve - finalize the spec
-[c] Changes - request modifications
-[q] Questions - ask about any section
-[a] Advanced Elicitation - dig deeper before approving
-[p] Party Mode - get expert feedback before approving
-```
+Display: "**Select:** [Y] Approve [C] Changes [Q] Questions [A] Advanced Elicitation [P] Party Mode"
 
 **HALT and wait for user selection.**
 
-#### Menu Handling:
+#### Menu Handling Logic:
 
-- **[y]**: Proceed to Section 3 (Finalize the Spec)
-- **[c]**: Proceed to Section 2 (Handle Review Feedback), then return here and redisplay menu
-- **[q]**: Answer questions, then redisplay this menu
-- **[a]**: Read fully and follow: `{advanced_elicitation}`, then return here and redisplay menu
-- **[p]**: Read fully and follow: `{party_mode_exec}`, then return here and redisplay menu
+- IF Y: Proceed to Section 3 (Finalize the Spec)
+- IF C: Proceed to Section 2 (Handle Review Feedback), then return here and redisplay menu
+- IF Q: Answer questions, then redisplay this menu
+- IF A: Read fully and follow: `{advanced_elicitation}` with current spec content, process enhanced insights, ask user "Accept improvements? (y/n)", if yes update spec then redisplay menu, if no keep original then redisplay menu
+- IF P: Read fully and follow: `{party_mode_exec}` with current spec content, process collaborative insights, ask user "Accept changes? (y/n)", if yes update spec then redisplay menu, if no keep original then redisplay menu
+- IF Any other comments or queries: respond helpfully then redisplay menu
+
+#### EXECUTION RULES:
+
+- ALWAYS halt and wait for user input after presenting menu
+- ONLY proceed to finalize when user selects 'Y'
+- After other menu items execution, return to this menu
 
 ### 2. Handle Review Feedback
 
@@ -114,11 +115,11 @@ Saved to: {finalFile}
 
 **Next Steps:**
 
-[a] Advanced Elicitation - refine further
-[r] Adversarial Review - critique of the spec (highly recommended)
-[b] Begin Development - start implementing now (not recommended)
-[d] Done - exit workflow
-[p] Party Mode - get expert feedback before dev
+[A] Advanced Elicitation - refine further
+[R] Adversarial Review - critique of the spec (highly recommended)
+[B] Begin Development - start implementing now (not recommended)
+[D] Done - exit workflow
+[P] Party Mode - get expert feedback before dev
 
 ---
 
@@ -135,14 +136,23 @@ This ensures the dev agent has clean context focused solely on implementation.
 
 b) **HALT and wait for user selection.**
 
-#### Menu Handling:
+#### Menu Handling Logic:
 
-- **[a]**: Read fully and follow: `{advanced_elicitation}`, then return here and redisplay menu
-- **[b]**: Read fully and follow: `{quick_dev_workflow}` with the final spec file (warn: fresh context is better)
-- **[d]**: Exit workflow - display final confirmation and path to spec
-- **[p]**: Read fully and follow: `{party_mode_exec}`, then return here and redisplay menu
-- **[r]**: Execute Adversarial Review:
-    1. **Invoke Adversarial Review Task**:
+- IF A: Read fully and follow: `{advanced_elicitation}` with current spec content, process enhanced insights, ask user "Accept improvements? (y/n)", if yes update spec then redisplay menu, if no keep original then redisplay menu
+- IF B: Load and execute `{quick_dev_workflow}` with the final spec file (warn: fresh context is better)
+- IF D: Exit workflow - display final confirmation and path to spec
+- IF P: Read fully and follow: `{party_mode_exec}` with current spec content, process collaborative insights, ask user "Accept changes? (y/n)", if yes update spec then redisplay menu, if no keep original then redisplay menu
+- IF R: Execute Adversarial Review (see below)
+- IF Any other comments or queries: respond helpfully then redisplay menu
+
+#### EXECUTION RULES:
+
+- ALWAYS halt and wait for user input after presenting menu
+- After A, P, or R execution, return to this menu
+
+#### Adversarial Review [R] Process:
+
+1. **Invoke Adversarial Review Task**:
        > With `{finalFile}` constructed, invoke the review task. If possible, use information asymmetry: run this task, and only it, in a separate subagent or process with read access to the project, but no context except the `{finalFile}`.
        <invoke-task>Review {finalFile} using {project-root}/_bmad/core/tasks/review-adversarial-general.xml</invoke-task>
        > **Platform fallback:** If task invocation not available, load the task file and follow its instructions inline, passing `{finalFile}` as the content.
@@ -161,7 +171,7 @@ b) **HALT and wait for user selection.**
 
 ### 5. Exit Workflow
 
-**When user selects [d]:**
+**When user selects [D]:**
 
 "**All done!** Your tech-spec is ready at:
 

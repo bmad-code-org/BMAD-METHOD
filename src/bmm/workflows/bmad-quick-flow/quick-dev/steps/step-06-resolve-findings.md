@@ -25,15 +25,24 @@ From previous steps:
 
 ## RESOLUTION OPTIONS
 
-Present choice to user:
+Present: "How would you like to handle these findings?"
 
-```
-How would you like to handle these findings?
+Display:
 
 **[1] Walk through** - Discuss each finding individually
 **[2] Auto-fix** - Automatically fix issues classified as "real"
 **[3] Skip** - Acknowledge and proceed to commit
-```
+
+### Menu Handling Logic:
+
+- IF 1: Execute OPTION 1 (Walk Through) below
+- IF 2: Execute OPTION 2 (Auto-fix) below
+- IF 3: Execute OPTION 3 (Skip) below
+
+### EXECUTION RULES:
+
+- ALWAYS halt and wait for user input after presenting menu
+- ONLY proceed when user makes a selection
 
 ---
 
