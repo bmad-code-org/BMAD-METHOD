@@ -5,7 +5,7 @@
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen)](https://nodejs.org)
 [![Discord](https://img.shields.io/badge/Discord-Join%20Community-7289da?logo=discord&logoColor=white)](https://discord.gg/gk8jAdXWmj)
 
-**Build More, Architect Dreams** — An AI-driven agile development framework with 21 specialized agents, 50+ guided workflows, and scale-adaptive intelligence that adjusts from bug fixes to enterprise systems.
+**Breakthrough Method of Agile AI Driven Development** — An AI-driven agile development framework with 21 specialized agents, 50+ guided workflows, and scale-adaptive intelligence that adjusts from bug fixes to enterprise systems.
 
 **100% free and open source.** No paywalls. No gated content. No gated Discord. We believe in empowering everyone, not just those who can pay.
 
@@ -16,6 +16,7 @@ Traditional AI tools do the thinking for you, producing average results. BMad ag
 - **Scale-Adaptive**: Automatically adjusts planning depth based on project complexity (Level 0-4)
 - **Structured Workflows**: Grounded in agile best practices across analysis, planning, architecture, and implementation
 - **Specialized Agents**: 12+ domain experts (PM, Architect, Developer, UX, Scrum Master, and more)
+- **Party Mode**: Bring multiple agent personas into one session to plan, troubleshoot, or discuss your project collaboratively
 - **Complete Lifecycle**: From brainstorming to deployment, with just-in-time documentation
 
 ## Quick Start
@@ -26,34 +27,43 @@ Traditional AI tools do the thinking for you, producing average results. BMad ag
 npx bmad-method@alpha install
 ```
 
-Follow the installer prompts to configure your project.
+Follow the installer prompts, then open your AI IDE (Claude Code, Cursor, Windsurf, etc.) in the project folder.
 
-Once you have installed BMad to a folder, launch your tool of choice from where you installed BMad. (We really like Claude Code and Cursor - but there are any that work great with BMad!)
+> **Not sure what to do?** Run `/bmad-help` — it tells you exactly what's next and what's optional. You can also ask it questions like `/bmad-help How should I build a web app for XYZ?`
 
-Then its simple as running the command: `/bmad-help` if you do not know what to do. Depending on which modules you have installed, you will have different choices.
+The workflows below show the fastest path to working code. You can also load agents directly for a more structured process, extensive planning, or to learn about agile development practices — the agents guide you with menus, explanations, and elicitation at each step.
 
-To make the help more applicable you can even run the `/bmad-help What do you suggest I do to get started building a brand new web application for XYZ`.
+### Simple Path (Quick Flow)
 
-The results from BMad Help will be able to suggest and constantly guide you on what to do next - along with the workflows upon completion also making suggestions on what to do next.
+Bug fixes, small features, clear scope — 3 commands:
 
-This analyzes your project and recommends a track:
+1. `/quick-spec` — analyzes your codebase and produces a tech-spec with stories
+2. `/dev-story` — implements each story
+3. `/code-review` — validates quality
 
-| Track           | Best For                  | Time to First Story Coding |
-| --------------- | ------------------------- | -------------------------- |
-| **Quick Flow**  | Bug fixes, small features | ~10-30 minutes             |
-| **BMad Method** | Products and platforms    | ~30 minutes - 2 hours      |
-| **Enterprise**  | Compliance-heavy systems  | ~1-3 hours                 |
+### Full Planning Path (BMad Method)
+
+Products, platforms, complex features — structured planning then build:
+
+1. `/product-brief` — define problem, users, and MVP scope
+2. `/create-prd` — full requirements with personas, metrics, and risks
+3. `/create-architecture` — technical decisions and system design
+4. `/create-epics-and-stories` — break work into prioritized stories
+5. `/sprint-planning` — initialize sprint tracking
+6. **Repeat per story:** `/create-story` → `/dev-story` → `/code-review`
+
+Every step tells you what's next. Optional phases (brainstorming, research, UX design) are available when you need them — ask `/bmad-help` anytime. For a detailed walkthrough, see the [Getting Started Tutorial](http://docs.bmad-method.org/tutorials/getting-started/getting-started-bmadv6/).
 
 ## Modules
 
 BMad Method extends with official modules for specialized domains. Modules are available during installation and can be added to your project at any time.
 
-| Module | GitHub | NPM | Purpose |
-|--------|--------|-----|---------|
-| **BMad Method (BMM)** | [bmad-code-org/BMAD-METHOD](https://github.com/bmad-code-org/BMAD-METHOD) | [bmad-method](https://www.npmjs.com/package/bmad-method) | Core framework with 34+ workflows across 4 development phases |
-| **BMad Builder (BMB)** | [bmad-code-org/bmad-builder](https://github.com/bmad-code-org/bmad-builder) | [bmad-builder](https://www.npmjs.com/package/bmad-builder) | Create custom BMad agents, workflows, and domain-specific modules |
-| **Game Dev Studio (BMGD)** | [bmad-code-org/bmad-module-game-dev-studio](https://github.com/bmad-code-org/bmad-module-game-dev-studio) | [bmad-game-dev-studio](https://www.npmjs.com/package/bmad-game-dev-studio) | Game development workflows for Unity, Unreal, and Godot |
-| **Creative Intelligence Suite (CIS)** | [bmad-code-org/bmad-module-creative-intelligence-suite](https://github.com/bmad-code-org/bmad-module-creative-intelligence-suite) | [bmad-creative-intelligence-suite](https://www.npmjs.com/package/bmad-creative-intelligence-suite) | Innovation, brainstorming, design thinking, and problem-solving |
+| Module                                | GitHub                                                                                                                            | NPM                                                                                                | Purpose                                                           |
+| ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| **BMad Method (BMM)**                 | [bmad-code-org/BMAD-METHOD](https://github.com/bmad-code-org/BMAD-METHOD)                                                         | [bmad-method](https://www.npmjs.com/package/bmad-method)                                           | Core framework with 34+ workflows across 4 development phases     |
+| **BMad Builder (BMB)**                | [bmad-code-org/bmad-builder](https://github.com/bmad-code-org/bmad-builder)                                                       | [bmad-builder](https://www.npmjs.com/package/bmad-builder)                                         | Create custom BMad agents, workflows, and domain-specific modules |
+| **Game Dev Studio (BMGD)**            | [bmad-code-org/bmad-module-game-dev-studio](https://github.com/bmad-code-org/bmad-module-game-dev-studio)                         | [bmad-game-dev-studio](https://www.npmjs.com/package/bmad-game-dev-studio)                         | Game development workflows for Unity, Unreal, and Godot           |
+| **Creative Intelligence Suite (CIS)** | [bmad-code-org/bmad-module-creative-intelligence-suite](https://github.com/bmad-code-org/bmad-module-creative-intelligence-suite) | [bmad-creative-intelligence-suite](https://www.npmjs.com/package/bmad-creative-intelligence-suite) | Innovation, brainstorming, design thinking, and problem-solving   |
 
 ## Documentation
 

@@ -227,7 +227,7 @@
 
 ### test-design-qa.md
 
-**NEW STRUCTURE (streamlined from 375 to ~287 lines):**
+**REQUIRED SECTIONS:**
 
 - [ ] **Purpose statement** at top (test execution recipe)
 - [ ] **Executive Summary** with risk summary and coverage summary
@@ -258,19 +258,19 @@
 - [ ] **Appendix A: Code Examples & Tagging**
 - [ ] **Appendix B: Knowledge Base References**
 
-**REMOVED SECTIONS (bloat):**
-- [ ] ❌ NO Quick Reference section (bloat)
-- [ ] ❌ NO System Architecture Summary (bloat)
-- [ ] ❌ NO Test Environment Requirements as separate section (integrated into Dependencies)
-- [ ] ❌ NO Testability Assessment section (bloat - covered in Dependencies)
-- [ ] ❌ NO Test Levels Strategy section (bloat - obvious from test scenarios)
-- [ ] ❌ NO NFR Readiness Summary (bloat)
+**DON'T INCLUDE (bloat):**
+- [ ] ❌ NO Quick Reference section
+- [ ] ❌ NO System Architecture Summary
+- [ ] ❌ NO Test Environment Requirements as separate section (integrate into Dependencies)
+- [ ] ❌ NO Testability Assessment section (covered in Dependencies)
+- [ ] ❌ NO Test Levels Strategy section (obvious from test scenarios)
+- [ ] ❌ NO NFR Readiness Summary
 - [ ] ❌ NO Quality Gate Criteria section (teams decide for themselves)
-- [ ] ❌ NO Follow-on Workflows section (bloat - BMAD commands self-explanatory)
-- [ ] ❌ NO Approval section (unnecessary formality)
+- [ ] ❌ NO Follow-on Workflows section (BMAD commands self-explanatory)
+- [ ] ❌ NO Approval section
 - [ ] ❌ NO Infrastructure/DevOps/Finance effort tables (out of scope)
-- [ ] ❌ NO Sprint 0/1/2/3 breakdown tables (too prescriptive)
-- [ ] ❌ NO Next Steps section (bloat)
+- [ ] ❌ NO Sprint 0/1/2/3 breakdown tables
+- [ ] ❌ NO Next Steps section
 
 ### Cross-Document Consistency
 

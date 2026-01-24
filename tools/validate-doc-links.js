@@ -27,6 +27,9 @@ const LINK_REGEX = /\[([^\]]*)\]\((\/[^)]+)\)/g;
 // File extensions that are static assets, not markdown docs
 const STATIC_ASSET_EXTENSIONS = ['.zip', '.txt', '.pdf', '.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp', '.ico'];
 
+// Custom Astro page routes (not part of the docs content collection)
+const CUSTOM_PAGE_ROUTES = new Set(['/workflow-guide']);
+
 // Regex to extract headings for anchor validation
 const HEADING_PATTERN = /^#{1,6}\s+(.+)$/gm;
 
@@ -207,6 +210,11 @@ function processFile(filePath) {
     // Skip static asset links (zip, txt, images, etc.)
     const linkLower = linkPath.toLowerCase();
     if (STATIC_ASSET_EXTENSIONS.some((ext) => linkLower.endsWith(ext))) {
+      continue;
+    }
+
+    // Skip custom Astro page routes
+    if (CUSTOM_PAGE_ROUTES.has(linkPath)) {
       continue;
     }
 
