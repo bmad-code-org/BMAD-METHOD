@@ -185,9 +185,9 @@ Present the project classification for review, then display menu:
 Display: "**Select:** [A] Advanced Elicitation [P] Party Mode [C] Continue to Product Vision (Step 2b of 13)"
 
 #### Menu Handling Logic:
-- IF A: Execute {advancedElicitationTask} with the current classification, process the enhanced insights that come back, ask user if they accept the improvements, if yes update classification then redisplay menu, if no keep original classification then redisplay menu
-- IF P: Execute {partyModeWorkflow} with the current classification, process the collaborative insights, ask user if they accept the changes, if yes update classification then redisplay menu, if no keep original classification then redisplay menu
-- IF C: Save classification to {outputFile} frontmatter, add this step name to the end of stepsCompleted array, then load, read entire file, then execute {nextStepFile}
+- IF A: Read fully and follow: {advancedElicitationTask} with the current classification, process the enhanced insights that come back, ask user if they accept the improvements, if yes update classification then redisplay menu, if no keep original classification then redisplay menu
+- IF P: Read fully and follow: {partyModeWorkflow} with the current classification, process the collaborative insights, ask user if they accept the changes, if yes update classification then redisplay menu, if no keep original classification then redisplay menu
+- IF C: Save classification to {outputFile} frontmatter, add this step name to the end of stepsCompleted array, then read fully and follow: {nextStepFile}
 - IF Any other: help user respond, then redisplay menu
 
 #### EXECUTION RULES:
@@ -197,7 +197,7 @@ Display: "**Select:** [A] Advanced Elicitation [P] Party Mode [C] Continue to Pr
 
 ## CRITICAL STEP COMPLETION NOTE
 
-ONLY WHEN [C continue option] is selected and [classification saved to frontmatter], will you then load and read fully `{nextStepFile}` to explore product vision.
+ONLY WHEN [C continue option] is selected and [classification saved to frontmatter], will you then read fully and follow: `{nextStepFile}` to explore product vision.
 
 ---
 

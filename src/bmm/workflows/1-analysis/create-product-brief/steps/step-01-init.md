@@ -141,7 +141,7 @@ Display: "**Proceeding to product vision discovery...**"
 
 #### Menu Handling Logic:
 
-- After setup report is presented, immediately load, read entire file, then execute {nextStepFile}
+- After setup report is presented, without delay, read fully and follow: {nextStepFile}
 
 #### EXECUTION RULES:
 
@@ -150,7 +150,7 @@ Display: "**Proceeding to product vision discovery...**"
 
 ## CRITICAL STEP COMPLETION NOTE
 
-ONLY WHEN [setup completion is achieved and frontmatter properly updated], will you then load and read fully `{nextStepFile}` to execute and begin product vision discovery.
+ONLY WHEN [setup completion is achieved and frontmatter properly updated], will you then read fully and follow: `{nextStepFile}` to begin product vision discovery.
 
 ---
 

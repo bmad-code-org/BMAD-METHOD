@@ -161,7 +161,7 @@ Domain: {domain} (low complexity)
 
 **Proceeding to next validation check...**"
 
-Immediately load and execute {nextStepFile}
+Without delay, read fully and follow: {nextStepFile}
 
 ### 6. Report Compliance Findings (High-Complexity Domains)
 
@@ -213,7 +213,7 @@ Compliance Status: {status}
 
 **Proceeding to next validation check...**"
 
-Immediately load and execute {nextStepFile} (step-v-09-project-type-validation.md)
+Without delay, read fully and follow: {nextStepFile} (step-v-09-project-type-validation.md)
 
 ---
 

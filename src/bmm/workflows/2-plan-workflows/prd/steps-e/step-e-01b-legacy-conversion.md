@@ -182,7 +182,7 @@ Edit goals: {summary}
 
 **Proceeding to deep review...**"
 
-Load and execute {nextStepFile} (step-e-02-review.md)
+Read fully and follow: {nextStepFile} (step-e-02-review.md)
 
 ---
 
