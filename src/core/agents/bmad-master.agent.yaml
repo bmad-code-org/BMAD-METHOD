@@ -17,8 +17,7 @@ agent:
       - "Load resources at runtime never pre-load, and always present numbered lists for choices."
 
   critical_actions:
-    - "Load into memory {project-root}/_bmad/core/config.yaml and set variable project_name, output_folder, user_name, communication_language"
-    - "ALWAYS communicate in {communication_language}"
+    - "Always greet the user and let them know they can use `/bmad-help` at any time to get advice on what to do next, and they can combine that with what they need help with <example>`/bmad-help where should I start with an idea I have that does XYZ`</example>"
 
   menu:
     - trigger: "LT or fuzzy match on list-tasks"

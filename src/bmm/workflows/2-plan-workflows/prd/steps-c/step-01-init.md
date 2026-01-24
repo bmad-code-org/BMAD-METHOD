@@ -151,7 +151,7 @@ Display menu after setup report:
 
 #### Menu Handling Logic:
 
-- IF C: Update output file frontmatter, adding this step name to the end of the list of stepsCompleted, then load, read entire {nextStepFile}, then execute {nextStepFile}
+- IF C: Update output file frontmatter, adding this step name to the end of the list of stepsCompleted, then read fully and follow: {nextStepFile}
 - IF user provides additional files: Load them, update inputDocuments and documentCounts, redisplay report
 - IF user asks questions: Answer and redisplay menu
 
@@ -162,7 +162,7 @@ Display menu after setup report:
 
 ## CRITICAL STEP COMPLETION NOTE
 
-ONLY WHEN [C continue option] is selected and [frontmatter properly updated with this step added to stepsCompleted and documentCounts], will you then load and read fully `{nextStepFile}` to execute and begin project discovery.
+ONLY WHEN [C continue option] is selected and [frontmatter properly updated with this step added to stepsCompleted and documentCounts], will you then read fully and follow: `{nextStepFile}` to begin project discovery.
 
 ---
 

@@ -5,37 +5,49 @@
  * - Underscore format (bmad_module_name.md) - Windows-compatible universal format
  */
 
-// Type segments to filter out from paths
-const TYPE_SEGMENTS = ['agents', 'workflows', 'tasks', 'tools'];
+// Type segments - agents are included in naming, others are filtered out
+const TYPE_SEGMENTS = ['workflows', 'tasks', 'tools'];
+const AGENT_SEGMENT = 'agents';
 
 /**
  * Convert hierarchical path to flat underscore-separated name
- * Converts: 'bmm/agents/pm.md' → 'bmad_bmm_pm.md'
- * Converts: 'bmm/workflows/correct-course.md' → 'bmad_bmm_correct-course.md'
+ * Converts: 'bmm', 'agents', 'pm' → 'bmad_bmm_agent_pm.md'
+ * Converts: 'bmm', 'workflows', 'correct-course' → 'bmad_bmm_correct-course.md'
+ * Converts: 'core', 'agents', 'brainstorming' → 'bmad_agent_brainstorming.md' (core items skip module prefix)
  *
  * @param {string} module - Module name (e.g., 'bmm', 'core')
- * @param {string} type - Artifact type ('agents', 'workflows', 'tasks', 'tools') - filtered out
- * @param {string} name - Artifact name (e.g., 'pm', 'correct-course')
- * @returns {string} Flat filename like 'bmad_bmm_pm.md'
+ * @param {string} type - Artifact type ('agents', 'workflows', 'tasks', 'tools')
+ * @param {string} name - Artifact name (e.g., 'pm', 'brainstorming')
+ * @returns {string} Flat filename like 'bmad_bmm_agent_pm.md' or 'bmad_bmm_correct-course.md'
  */
 function toUnderscoreName(module, type, name) {
-  return `bmad_${module}_${name}.md`;
+  const isAgent = type === AGENT_SEGMENT;
+  // For core module, skip the module prefix: use 'bmad_name.md' instead of 'bmad_core_name.md'
+  if (module === 'core') {
+    return isAgent ? `bmad_agent_${name}.md` : `bmad_${name}.md`;
+  }
+  return isAgent ? `bmad_${module}_agent_${name}.md` : `bmad_${module}_${name}.md`;
 }
 
 /**
  * Convert relative path to flat underscore-separated name
- * Converts: 'bmm/agents/pm.md' → 'bmad_bmm_pm.md'
+ * Converts: 'bmm/agents/pm.md' → 'bmad_bmm_agent_pm.md'
  * Converts: 'bmm/workflows/correct-course.md' → 'bmad_bmm_correct-course.md'
+ * Converts: 'core/agents/brainstorming.md' → 'bmad_agent_brainstorming.md' (core items skip module prefix)
  *
  * @param {string} relativePath - Path like 'bmm/agents/pm.md'
- * @returns {string} Flat filename like 'bmad_bmm_pm.md'
+ * @returns {string} Flat filename like 'bmad_bmm_agent_pm.md' or 'bmad_brainstorming.md'
  */
 function toUnderscorePath(relativePath) {
   const withoutExt = relativePath.replace('.md', '');
   const parts = withoutExt.split(/[/\\]/);
-  // Filter out type segments (agents, workflows, tasks, tools)
-  const filtered = parts.filter((p) => !TYPE_SEGMENTS.includes(p));
-  return `bmad_${filtered.join('_')}.md`;
+
+  const module = parts[0];
+  const type = parts[1];
+  const name = parts.slice(2).join('_');
+
+  // Use toUnderscoreName for consistency
+  return toUnderscoreName(module, type, name);
 }
 
 /**
@@ -60,7 +72,10 @@ function isUnderscoreFormat(filename) {
 
 /**
  * Extract parts from an underscore-formatted filename
- * Parses: 'bmad_bmm_pm.md' → { prefix: 'bmad', module: 'bmm', name: 'pm' }
+ * Parses: 'bmad_bmm_agent_pm.md' → { prefix: 'bmad', module: 'bmm', type: 'agents', name: 'pm' }
+ * Parses: 'bmad_bmm_correct-course.md' → { prefix: 'bmad', module: 'bmm', type: 'workflows', name: 'correct-course' }
+ * Parses: 'bmad_agent_brainstorming.md' → { prefix: 'bmad', module: 'core', type: 'agents', name: 'brainstorming' } (core agents)
+ * Parses: 'bmad_brainstorming.md' → { prefix: 'bmad', module: 'core', type: 'workflows', name: 'brainstorming' } (core workflows)
  *
  * @param {string} filename - Underscore-formatted filename
  * @returns {Object|null} Parsed parts or null if invalid format
@@ -69,14 +84,52 @@ function parseUnderscoreName(filename) {
   const withoutExt = filename.replace('.md', '');
   const parts = withoutExt.split('_');
 
-  if (parts.length < 3 || parts[0] !== 'bmad') {
+  if (parts.length < 2 || parts[0] !== 'bmad') {
     return null;
   }
 
+  // Check if this is an agent file (has 'agent' as one of the parts)
+  const agentIndex = parts.indexOf('agent');
+
+  if (agentIndex !== -1) {
+    // This is an agent file
+    // Format: bmad_agent_name (core) or bmad_module_agent_name
+    if (agentIndex === 1) {
+      // Core agent: bmad_agent_name
+      return {
+        prefix: parts[0],
+        module: 'core',
+        type: 'agents',
+        name: parts.slice(agentIndex + 1).join('_'),
+      };
+    } else {
+      // Module agent: bmad_module_agent_name
+      return {
+        prefix: parts[0],
+        module: parts[1],
+        type: 'agents',
+        name: parts.slice(agentIndex + 1).join('_'),
+      };
+    }
+  }
+
+  // Not an agent file - must be a workflow/tool/task
+  // If only 2 parts (bmad_name), it's a core workflow/tool/task
+  if (parts.length === 2) {
+    return {
+      prefix: parts[0],
+      module: 'core',
+      type: 'workflows', // Default to workflows for non-agent core items
+      name: parts[1],
+    };
+  }
+
+  // Otherwise, it's a module workflow/tool/task (bmad_module_name)
   return {
     prefix: parts[0],
     module: parts[1],
-    name: parts.slice(2).join('_'), // Handle names that might contain underscores
+    type: 'workflows', // Default to workflows for non-agent module items
+    name: parts.slice(2).join('_'),
   };
 }
 
@@ -108,4 +161,5 @@ module.exports = {
   parseColonName,
   parseDashName,
   TYPE_SEGMENTS,
+  AGENT_SEGMENT,
 };
