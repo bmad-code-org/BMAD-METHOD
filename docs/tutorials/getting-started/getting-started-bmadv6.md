@@ -42,9 +42,7 @@ BMad helps you build software through guided workflows with specialized AI agent
 | 3     | Solutioning    | Design architecture *(BMad Method/Enterprise only)* |
 | 4     | Implementation | Build epic by epic, story by story                  |
 
-![BMad Method Workflow - Standard Greenfield](./images/workflow-method-greenfield.svg)
-
-*Complete visual flowchart showing all phases, workflows, and agents for the standard greenfield track.*
+**[Open the Interactive Workflow Guide](/workflow-guide)** to explore phases, agents, and outputs for your chosen track.
 
 Based on your project's complexity, BMad offers three planning tracks:
 
