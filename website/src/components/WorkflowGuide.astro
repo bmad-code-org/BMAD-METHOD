@@ -2,188 +2,160 @@
 ---
 
 <div class="workflow-guide not-content">
+  <div class="help-callout">
+    <code>/bmad-help</code>
+    <span>Run this anytime to see what to do next — or ask it a question like <em>"what should I do to build a web app?"</em></span>
+  </div>
+
+  <p class="agents-note">Loading agents is optional. If your IDE supports slash commands, you can run workflows directly.</p>
+
   <div class="track-selector">
-    <h2>Select Your Track</h2>
     <div class="track-buttons">
       <button class="track-btn" data-track="quick">
         <span class="track-label">Quick Flow</span>
-        <span class="track-desc">Bug fixes, small features, clear scope</span>
+        <span class="track-desc">Bug fixes, small features</span>
       </button>
       <button class="track-btn" data-track="method">
         <span class="track-label">BMad Method</span>
-        <span class="track-desc">Products, platforms, complex features</span>
+        <span class="track-desc">Products, platforms</span>
       </button>
       <button class="track-btn" data-track="enterprise">
         <span class="track-label">Enterprise</span>
-        <span class="track-desc">Compliance, multi-tenant, large-scale</span>
+        <span class="track-desc">Compliance, large-scale</span>
       </button>
     </div>
   </div>
 
-  <div class="phases-container" data-state="no-track">
-    <p class="choose-prompt">Choose a track above to see the recommended workflow.</p>
+  <div class="flow-container" data-state="no-track">
+    <p class="choose-prompt">Select a track above to see the workflow.</p>
 
-    <!-- Phase 1: Analysis -->
-    <div class="phase-card" data-phase="1" data-quick="optional" data-method="optional" data-enterprise="optional">
-      <button class="phase-header">
-        <span class="phase-badge">1</span>
-        <span class="phase-title">Analysis</span>
-        <span class="phase-status"></span>
-        <span class="phase-arrow">&#9662;</span>
-      </button>
-      <div class="phase-body">
-        <p class="phase-description">Explore and validate your idea before committing to a plan. Use these workflows when starting fresh or when requirements are unclear.</p>
-        <div class="workflow-list">
-          <div class="workflow-item" data-quick="optional" data-method="optional" data-enterprise="optional">
-            <div class="wf-top">
-              <span class="wf-agent">Agent: Analyst</span>
-              <code class="wf-command">brainstorm-project</code>
-            </div>
-            <p class="wf-desc">A guided ideation session that takes your project idea and uses 60+ techniques to create <strong>brainstorm notes</strong>.</p>
-          </div>
-          <div class="workflow-item" data-quick="optional" data-method="optional" data-enterprise="optional">
-            <div class="wf-top">
-              <span class="wf-agent">Agent: Analyst</span>
-              <code class="wf-command">research</code>
-            </div>
-            <p class="wf-desc">Conducts market, technical, or competitive research on your questions and produces a structured <strong>research document</strong>.</p>
-          </div>
-          <div class="workflow-item" data-quick="optional" data-method="recommended" data-enterprise="recommended">
-            <div class="wf-top">
-              <span class="wf-agent">Agent: Analyst</span>
-              <code class="wf-command">product-brief</code>
+    <div class="flow-list">
+      <!-- Phase 1: Analysis -->
+      <div class="phase-label">Analysis</div>
 
-            </div>
-            <p class="wf-desc">Combines your brainstorm and research notes into a strategic foundation document — <strong>product-brief.md</strong> — covering problem statement, target users, and MVP scope.</p>
-          </div>
+      <div class="flow-row" data-quick="optional" data-method="optional" data-enterprise="optional">
+        <code class="flow-cmd">/brainstorm-project</code>
+        <span class="flow-agent">Analyst</span>
+        <span class="flow-status"></span>
+        <p class="flow-desc">Guided ideation using 60+ techniques to explore your project idea and create brainstorm notes.</p>
+      </div>
+      <div class="flow-arrow" data-quick="optional" data-method="optional" data-enterprise="optional">&#x2193;</div>
+
+      <div class="flow-row" data-quick="optional" data-method="optional" data-enterprise="optional">
+        <code class="flow-cmd">/research</code>
+        <span class="flow-agent">Analyst</span>
+        <span class="flow-status"></span>
+        <p class="flow-desc">Market, technical, or competitive research producing a structured research document.</p>
+      </div>
+      <div class="flow-arrow" data-quick="optional" data-method="optional" data-enterprise="optional">&#x2193;</div>
+
+      <div class="flow-row" data-quick="optional" data-method="optional" data-enterprise="optional">
+        <code class="flow-cmd">/product-brief</code>
+        <span class="flow-agent">Analyst</span>
+        <span class="flow-status"></span>
+        <p class="flow-desc">Combines brainstorm and research into a foundation document covering problem, users, and MVP scope.</p>
+      </div>
+      <div class="flow-arrow" data-quick="optional" data-method="required" data-enterprise="required">&#x2193;</div>
+
+      <!-- Phase 2: Planning -->
+      <div class="phase-label">Planning</div>
+
+      <div class="flow-row" data-quick="required" data-method="skip" data-enterprise="skip">
+        <code class="flow-cmd">/quick-spec</code>
+        <span class="flow-agent">Barry</span>
+        <span class="flow-status"></span>
+        <p class="flow-desc">Analyzes your codebase, auto-detects stack, and produces tech-spec.md with implementation-ready story files.</p>
+      </div>
+      <div class="flow-arrow" data-quick="required" data-method="skip" data-enterprise="skip">&#x2193;</div>
+
+      <div class="flow-row" data-quick="skip" data-method="required" data-enterprise="required">
+        <code class="flow-cmd">/create-prd</code>
+        <span class="flow-agent">PM</span>
+        <span class="flow-status"></span>
+        <p class="flow-desc">Creates PRD.md with user personas, requirements, success metrics, and risks.</p>
+      </div>
+      <div class="flow-arrow" data-quick="skip" data-method="required" data-enterprise="required">&#x2193;</div>
+
+      <div class="flow-row" data-quick="optional" data-method="optional" data-enterprise="optional">
+        <code class="flow-cmd">/create-ux-design</code>
+        <span class="flow-agent">UX Designer</span>
+        <span class="flow-status"></span>
+        <p class="flow-desc">Creates ux-design.md with user journeys, wireframes, and a design system.</p>
+      </div>
+      <div class="flow-arrow" data-quick="required" data-method="required" data-enterprise="required">&#x2193;</div>
+
+      <!-- Phase 3: Solutioning -->
+      <div class="phase-label" data-quick="skip" data-method="required" data-enterprise="required">Solutioning</div>
+
+      <div class="flow-row" data-quick="skip" data-method="required" data-enterprise="required">
+        <code class="flow-cmd">/create-architecture</code>
+        <span class="flow-agent">Architect</span>
+        <span class="flow-status"></span>
+        <p class="flow-desc">Designs system architecture with ADRs covering data, API, security, and deployment decisions.</p>
+      </div>
+      <div class="flow-arrow" data-quick="skip" data-method="required" data-enterprise="required">&#x2193;</div>
+
+      <div class="flow-row" data-quick="skip" data-method="required" data-enterprise="required">
+        <code class="flow-cmd">/create-epics-and-stories</code>
+        <span class="flow-agent">PM</span>
+        <span class="flow-status"></span>
+        <p class="flow-desc">Breaks PRD and architecture into epic files with prioritized, technically-informed stories.</p>
+      </div>
+      <div class="flow-arrow" data-quick="skip" data-method="required" data-enterprise="required">&#x2193;</div>
+
+      <div class="flow-row" data-quick="skip" data-method="optional" data-enterprise="required">
+        <code class="flow-cmd">/implementation-readiness</code>
+        <span class="flow-agent">Architect</span>
+        <span class="flow-status"></span>
+        <p class="flow-desc">Validates cohesion across all planning documents to confirm you're ready to build.</p>
+      </div>
+      <div class="flow-arrow" data-quick="skip" data-method="required" data-enterprise="required">&#x2193;</div>
+
+      <!-- Phase 4: Implementation -->
+      <div class="phase-label">Implementation</div>
+
+      <div class="flow-row" data-quick="skip" data-method="required" data-enterprise="required">
+        <code class="flow-cmd">/sprint-planning</code>
+        <span class="flow-agent">SM</span>
+        <span class="flow-status"></span>
+        <p class="flow-desc">Initializes sprint-status.yaml to track all stories through development. Run once.</p>
+      </div>
+      <div class="flow-arrow" data-quick="skip" data-method="required" data-enterprise="required">&#x2193;</div>
+
+      <!-- Dev loop -->
+      <div class="dev-loop" data-quick="required" data-method="required" data-enterprise="required">
+        <span class="loop-label">&#x21bb; Repeat for each story</span>
+
+        <div class="flow-row" data-quick="skip" data-method="required" data-enterprise="required">
+          <code class="flow-cmd">/create-story</code>
+          <span class="flow-agent">SM</span>
+          <span class="flow-status"></span>
+          <p class="flow-desc">Prepares a story file with full context and acceptance criteria from the epic.</p>
+        </div>
+        <div class="flow-arrow" data-quick="required" data-method="required" data-enterprise="required">&#x2193;</div>
+
+        <div class="flow-row" data-quick="required" data-method="required" data-enterprise="required">
+          <code class="flow-cmd">/dev-story</code>
+          <span class="flow-agent">DEV</span>
+          <span class="flow-status"></span>
+          <p class="flow-desc">Implements production code and tests following architecture patterns.</p>
+        </div>
+        <div class="flow-arrow" data-quick="required" data-method="required" data-enterprise="required">&#x2193;</div>
+
+        <div class="flow-row" data-quick="optional" data-method="required" data-enterprise="required">
+          <code class="flow-cmd">/code-review</code>
+          <span class="flow-agent">DEV</span>
+          <span class="flow-status"></span>
+          <p class="flow-desc">Reviews code for quality, architecture alignment, tests, and security.</p>
         </div>
       </div>
-    </div>
+      <div class="flow-arrow" data-quick="skip" data-method="optional" data-enterprise="optional">&#x2193;</div>
 
-    <!-- Phase 2: Planning -->
-    <div class="phase-card" data-phase="2" data-quick="required" data-method="required" data-enterprise="required">
-      <button class="phase-header">
-        <span class="phase-badge">2</span>
-        <span class="phase-title">Planning</span>
-        <span class="phase-status"></span>
-        <span class="phase-arrow">&#9662;</span>
-      </button>
-      <div class="phase-body">
-        <p class="phase-description">Define what to build and why. Your track determines the planning workflow — Quick Flow uses a streamlined tech-spec, while BMad Method and Enterprise create a full PRD.</p>
-        <div class="workflow-list">
-          <div class="workflow-item" data-quick="required" data-method="skip" data-enterprise="skip">
-            <div class="wf-top">
-              <span class="wf-agent">Agent: Barry (Solo Dev)</span>
-              <code class="wf-command">quick-spec</code>
-            </div>
-            <p class="wf-desc">Analyzes your project context and codebase, auto-detects your stack, and produces <strong>tech-spec.md</strong> with implementation-ready <strong>story files</strong> in one step.</p>
-          </div>
-          <div class="workflow-item" data-quick="skip" data-method="required" data-enterprise="required">
-            <div class="wf-top">
-              <span class="wf-agent">Agent: PM</span>
-              <code class="wf-command">create-prd</code>
-            </div>
-            <p class="wf-desc">Uses your product brief (if available) to create <strong>PRD.md</strong> with user personas, requirements, success metrics, and risks.</p>
-          </div>
-          <div class="workflow-item" data-quick="optional" data-method="optional" data-enterprise="optional">
-            <div class="wf-top">
-              <span class="wf-agent">Agent: UX Designer</span>
-              <code class="wf-command">create-ux-design</code>
-
-            </div>
-            <p class="wf-desc">Uses your PRD or tech-spec to create <strong>ux-design.md</strong> with user journeys, wireframes, and a design system.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Phase 3: Solutioning -->
-    <div class="phase-card" data-phase="3" data-quick="skip" data-method="required" data-enterprise="required">
-      <button class="phase-header">
-        <span class="phase-badge">3</span>
-        <span class="phase-title">Solutioning</span>
-        <span class="phase-status"></span>
-        <span class="phase-arrow">&#9662;</span>
-      </button>
-      <div class="phase-body">
-        <p class="phase-description">Make technical decisions explicit, then break work into epics and stories informed by those decisions. Architecture must come before story creation.</p>
-        <div class="workflow-list">
-          <div class="workflow-item" data-quick="skip" data-method="required" data-enterprise="required">
-            <div class="wf-top">
-              <span class="wf-agent">Agent: Architect</span>
-              <code class="wf-command">create-architecture</code>
-            </div>
-            <p class="wf-desc">Uses your PRD to design the system architecture, producing <strong>architecture.md</strong> with ADRs covering data, API, security, and deployment decisions.</p>
-          </div>
-          <div class="workflow-item" data-quick="skip" data-method="required" data-enterprise="required">
-            <div class="wf-top">
-              <span class="wf-agent">Agent: PM</span>
-              <code class="wf-command">create-epics-and-stories</code>
-            </div>
-            <p class="wf-desc">Combines your PRD and architecture to break work into <strong>epic files</strong> with prioritized, technically-informed stories.</p>
-          </div>
-          <div class="workflow-item" data-quick="skip" data-method="recommended" data-enterprise="required">
-            <div class="wf-top">
-              <span class="wf-agent">Agent: Architect</span>
-              <code class="wf-command">implementation-readiness</code>
-
-            </div>
-            <p class="wf-desc">Reviews all Phase 2-3 outputs to validate cohesion and produces a <strong>gate check report</strong> confirming you're ready to build.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Phase 4: Implementation -->
-    <div class="phase-card" data-phase="4" data-quick="required" data-method="required" data-enterprise="required">
-      <button class="phase-header">
-        <span class="phase-badge">4</span>
-        <span class="phase-title">Implementation</span>
-        <span class="phase-status"></span>
-        <span class="phase-arrow">&#9662;</span>
-      </button>
-      <div class="phase-body">
-        <p class="phase-description">Build one story at a time through a repeating cycle. Complete each story's full lifecycle (dev + review) before starting the next. Use a fresh chat for each workflow run.</p>
-        <div class="workflow-list">
-          <div class="workflow-item" data-quick="skip" data-method="required" data-enterprise="required">
-            <div class="wf-top">
-              <span class="wf-agent">Agent: SM</span>
-              <code class="wf-command">sprint-planning</code>
-            </div>
-            <p class="wf-desc">Uses your epic files to initialize <strong>sprint-status.yaml</strong>, which tracks all stories through development. Run once before starting.</p>
-          </div>
-          <div class="dev-loop" data-quick="active" data-method="active" data-enterprise="active">
-            <span class="loop-label">&#x21bb; Repeat for each story</span>
-            <div class="workflow-item" data-quick="skip" data-method="required" data-enterprise="required">
-              <div class="wf-top">
-                <span class="wf-agent">Agent: SM</span>
-                <code class="wf-command">create-story</code>
-              </div>
-              <p class="wf-desc">Uses the epic and sprint-status to prepare a <strong>story-[slug].md</strong> file with full context and acceptance criteria, ready for development.</p>
-            </div>
-            <div class="workflow-item" data-quick="required" data-method="required" data-enterprise="required">
-              <div class="wf-top">
-                <span class="wf-agent">Agent: DEV</span>
-                <code class="wf-command">dev-story</code>
-              </div>
-              <p class="wf-desc">Uses the story file and architecture to implement <strong>production code and tests</strong> following established patterns.</p>
-            </div>
-            <div class="workflow-item" data-quick="required" data-method="required" data-enterprise="required">
-              <div class="wf-top">
-                <span class="wf-agent">Agent: DEV</span>
-                <code class="wf-command">code-review</code>
-              </div>
-              <p class="wf-desc">Reviews your implemented code for quality, architecture alignment, tests, and security, producing a <strong>review report</strong>.</p>
-            </div>
-          </div>
-          <div class="workflow-item" data-quick="skip" data-method="recommended" data-enterprise="recommended">
-            <div class="wf-top">
-              <span class="wf-agent">Agent: SM</span>
-              <code class="wf-command">epic-retrospective</code>
-            </div>
-            <p class="wf-desc">Reviews the completed epic to capture team learnings and create <strong>retrospective notes</strong> for improving the next epic.</p>
-          </div>
-        </div>
+      <div class="flow-row" data-quick="skip" data-method="optional" data-enterprise="optional">
+        <code class="flow-cmd">/epic-retrospective</code>
+        <span class="flow-agent">SM</span>
+        <span class="flow-status"></span>
+        <p class="flow-desc">Captures learnings from a completed epic to improve the next one.</p>
       </div>
     </div>
   </div>
@@ -191,19 +163,45 @@
 
 <style>
   .workflow-guide {
-    max-width: 44rem;
+    max-width: 36rem;
     margin: 0 auto;
   }
 
-  .track-selector {
-    margin-bottom: 1.5rem;
+  .help-callout {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--sl-color-accent);
+    border-radius: 0.5rem;
+    background: var(--sl-color-accent-low);
+    margin-bottom: 1rem;
   }
 
-  .track-selector h2 {
-    font-size: 1rem;
+  .help-callout code {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--sl-color-accent-high);
+    white-space: nowrap;
+    background: none;
+    padding: 0;
+  }
+
+  .help-callout span {
+    font-size: 0.85rem;
     color: var(--sl-color-gray-2);
-    margin-bottom: 0.6rem;
-    font-weight: 500;
+    line-height: 1.4;
+  }
+
+  .agents-note {
+    font-size: 0.8rem;
+    color: var(--sl-color-gray-3);
+    margin-bottom: 1rem;
+    font-style: italic;
+  }
+
+  .track-selector {
+    margin-bottom: 1.25rem;
   }
 
   .track-buttons {
@@ -215,7 +213,7 @@
   .track-btn {
     width: 100%;
     box-sizing: border-box;
-    padding: 0.6rem 0.75rem;
+    padding: 0.5rem 0.6rem;
     border: 1px solid var(--sl-color-gray-5);
     border-radius: 0.4rem;
     background: transparent;
@@ -224,7 +222,7 @@
     transition: border-color 0.15s ease, background-color 0.15s ease;
     display: flex;
     flex-direction: column;
-    gap: 0.15rem;
+    gap: 0.1rem;
   }
 
   .track-btn:hover {
@@ -238,20 +236,20 @@
 
   .track-label {
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: var(--sl-color-white);
   }
 
   .track-desc {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     color: var(--sl-color-gray-3);
   }
 
-  .phases-container[data-state="no-track"] .phase-card {
+  .flow-container[data-state="no-track"] .flow-list {
     display: none;
   }
 
-  .phases-container[data-state="no-track"] .choose-prompt {
+  .flow-container[data-state="no-track"] .choose-prompt {
     display: block;
   }
 
@@ -263,178 +261,60 @@
     padding: 1.5rem 0;
   }
 
-  .phases-container {
+  .flow-list {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    align-items: stretch;
   }
 
-  .phase-card {
-    border: 1px solid var(--sl-color-gray-5);
-    border-radius: 0.4rem;
-    overflow: hidden;
-    transition: opacity 0.2s ease, border-color 0.2s ease;
-  }
-
-  .phase-card[data-visibility="active"] {
-    border-color: var(--sl-color-accent);
-  }
-
-  .phase-card[data-visibility="optional"] {
-    border-color: var(--sl-color-accent);
-  }
-
-  .phase-card[data-visibility="skip"] {
-    opacity: 0.35;
-    pointer-events: none;
-  }
-
-  .phase-card[data-visibility="skip"] .phase-title {
-    text-decoration: line-through;
-  }
-
-  .phase-header {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    padding: 0.6rem 0.75rem;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    text-align: left;
-  }
-
-  .phase-card[data-visibility="skip"] .phase-header {
-    cursor: default;
-  }
-
-  .phase-badge {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 1.5rem;
-    height: 1.5rem;
-    border-radius: 50%;
-    background: var(--sl-color-accent-low);
-    color: var(--sl-color-accent-high);
-    font-weight: 700;
-    font-size: 0.75rem;
-    flex-shrink: 0;
-  }
-
-  .phase-card[data-visibility="active"] .phase-badge,
-  .phase-card[data-visibility="optional"] .phase-badge {
-    background: var(--sl-color-accent);
-    color: var(--sl-color-white);
-  }
-
-  .phase-title {
-    font-weight: 600;
-    font-size: 0.95rem;
-    color: var(--sl-color-white);
-    flex-grow: 1;
-  }
-
-  .phase-status {
+  .phase-label {
     font-size: 0.65rem;
-    padding: 0.1rem 0.4rem;
-    border-radius: 1rem;
-    font-weight: 500;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.03em;
-  }
-
-  .phase-status[data-status="required"] {
-    background: rgba(140, 140, 255, 0.15);
-    color: var(--sl-color-accent-high);
-  }
-
-  .phase-status[data-status="optional"] {
-    background: rgba(140, 140, 255, 0.08);
+    letter-spacing: 0.06em;
     color: var(--sl-color-gray-3);
+    margin-top: 0.75rem;
+    margin-bottom: 0.3rem;
+    padding-left: 0.25rem;
   }
 
-  .phase-status[data-status="recommended"] {
-    background: rgba(140, 140, 255, 0.15);
-    color: var(--sl-color-accent-high);
+  .phase-label:first-child {
+    margin-top: 0;
   }
 
-  .phase-status[data-status="skip"] {
-    background: transparent;
-    color: var(--sl-color-gray-4);
-  }
-
-  .phase-arrow {
-    color: var(--sl-color-gray-3);
-    font-size: 1.1rem;
-    transition: transform 0.15s ease;
-  }
-
-  .phase-card.expanded .phase-arrow {
-    transform: rotate(180deg);
-  }
-
-  .phase-body {
-    display: none;
-    padding: 0 0.75rem 0.75rem;
-  }
-
-  .phase-card.expanded .phase-body {
-    display: block;
-  }
-
-  .phase-description {
-    font-size: 0.85rem;
-    color: var(--sl-color-gray-3);
-    margin-bottom: 0.6rem;
-    line-height: 1.4;
-  }
-
-  .workflow-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
-  }
-
-  .workflow-item {
-    padding: 0.5rem 0.6rem;
-    border-radius: 0.3rem;
-    border: 1px solid var(--sl-color-gray-4);
-  }
-
-  .workflow-item[data-visibility="skip"] {
+  .phase-label[data-visibility="skip"] {
     display: none;
   }
 
-  .dev-loop {
-    border: 1px dashed var(--sl-color-accent);
-    border-radius: 0.4rem;
-    padding: 0.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
-    position: relative;
-  }
-
-  .loop-label {
-    font-size: 0.7rem;
-    font-weight: 600;
-    color: var(--sl-color-accent-high);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-  }
-
-  .wf-top {
-    display: flex;
+  .flow-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
     align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 0.25rem;
+    gap: 0.75rem;
+    padding: 0.4rem 0.6rem;
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 0.3rem;
+    transition: opacity 0.15s ease, border-color 0.15s ease;
   }
 
-  .wf-agent {
-    font-size: 0.75rem;
+  .flow-row[data-visibility="active"] {
+    border-color: var(--sl-color-gray-4);
+  }
+
+  .flow-row[data-visibility="skip"] {
+    display: none;
+  }
+
+  .flow-cmd {
+    font-size: 0.9rem;
     font-weight: 600;
+    color: var(--sl-color-white);
+    background: none;
+    padding: 0;
+  }
+
+  .flow-agent {
+    font-size: 0.75rem;
     color: var(--sl-color-accent-high);
     background: var(--sl-color-accent-low);
     padding: 0.1rem 0.4rem;
@@ -442,37 +322,81 @@
     white-space: nowrap;
   }
 
-  .wf-command {
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: var(--sl-color-white);
-    background: none;
-    padding: 0;
+  .flow-status {
+    font-size: 0.65rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    min-width: 4rem;
+    text-align: right;
   }
 
-  .wf-command::before {
-    content: 'Run: ';
-    font-weight: 400;
+  .flow-status[data-status="required"] {
+    color: var(--sl-color-accent-high);
+  }
+
+  .flow-status[data-status="optional"] {
     color: var(--sl-color-gray-3);
-    font-family: inherit;
   }
 
+  .flow-status[data-status="recommended"] {
+    color: var(--sl-color-accent-high);
+  }
 
-  .wf-desc {
-    font-size: 0.8rem;
-    color: var(--sl-color-gray-2);
+  .flow-desc {
+    grid-column: 1 / -1;
+    font-size: 0.75rem;
+    color: var(--sl-color-gray-3);
     line-height: 1.4;
-    margin: 0;
+    margin: 0.1rem 0 0;
   }
 
-  .wf-desc strong {
-    color: var(--sl-color-gray-1);
+  .flow-arrow {
+    text-align: center;
+    font-size: 1rem;
+    color: var(--sl-color-gray-4);
+    line-height: 1;
+    padding: 0.15rem 0;
+  }
+
+  .flow-arrow[data-visibility="skip"] {
+    display: none;
+  }
+
+  .dev-loop {
+    border: 1px dashed var(--sl-color-accent);
+    border-radius: 0.4rem;
+    padding: 0.4rem 0.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .dev-loop[data-visibility="skip"] {
+    display: none;
+  }
+
+  .dev-loop .flow-row {
+    border-color: var(--sl-color-gray-5);
+  }
+
+  .loop-label {
+    font-size: 0.65rem;
     font-weight: 600;
+    color: var(--sl-color-accent-high);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.3rem;
   }
 
   @media (max-width: 30rem) {
     .track-buttons {
       grid-template-columns: 1fr;
+    }
+
+    .help-callout {
+      flex-direction: column;
+      gap: 0.4rem;
     }
   }
 </style>
@@ -483,8 +407,8 @@
     if (!guide) return;
 
     const trackBtns = guide.querySelectorAll('.track-btn');
-    const phasesContainer = guide.querySelector('.phases-container');
-    const phaseCards = guide.querySelectorAll('.phase-card');
+    const flowContainer = guide.querySelector('.flow-container');
+    const allElements = guide.querySelectorAll('[data-quick]');
 
     trackBtns.forEach((btn) => {
       btn.addEventListener('click', () => {
@@ -493,35 +417,24 @@
         trackBtns.forEach((b) => b.classList.remove('active'));
         btn.classList.add('active');
 
-        phasesContainer.setAttribute('data-state', 'has-track');
+        flowContainer.setAttribute('data-state', 'has-track');
 
-        phaseCards.forEach((card) => {
-          const status = card.getAttribute(`data-${track}`);
-          const visibility = status === 'required' || status === 'recommended' ? 'active' : status;
-          card.setAttribute('data-visibility', visibility);
-
-          const statusBadge = card.querySelector('.phase-status');
-          statusBadge.setAttribute('data-status', status);
-          statusBadge.textContent = status;
+        allElements.forEach((el) => {
+          const status = el.getAttribute(`data-${track}`);
 
           if (status === 'skip') {
-            card.classList.remove('expanded');
+            el.setAttribute('data-visibility', 'skip');
+          } else {
+            el.setAttribute('data-visibility', 'active');
           }
 
-          const workflowItems = card.querySelectorAll('.workflow-item');
-          workflowItems.forEach((item) => {
-            const itemStatus = item.getAttribute(`data-${track}`);
-            item.setAttribute('data-visibility', itemStatus === 'skip' ? 'skip' : 'active');
-          });
+          // Update status text for flow rows
+          const statusEl = el.querySelector('.flow-status');
+          if (statusEl) {
+            statusEl.setAttribute('data-status', status);
+            statusEl.textContent = status === 'skip' ? '' : status;
+          }
         });
-      });
-    });
-
-    phaseCards.forEach((card) => {
-      const header = card.querySelector('.phase-header');
-      header.addEventListener('click', () => {
-        if (card.getAttribute('data-visibility') === 'skip') return;
-        card.classList.toggle('expanded');
       });
     });
   }
