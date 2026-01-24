@@ -149,39 +149,37 @@
             <div class="wf-top">
               <span class="wf-agent">Agent: SM</span>
               <code class="wf-command">sprint-planning</code>
-
             </div>
             <p class="wf-desc">Uses your epic files to initialize <strong>sprint-status.yaml</strong>, which tracks all stories through development. Run once before starting.</p>
           </div>
-          <div class="workflow-item" data-quick="skip" data-method="required" data-enterprise="required">
-            <div class="wf-top">
-              <span class="wf-agent">Agent: SM</span>
-              <code class="wf-command">create-story</code>
-
+          <div class="dev-loop" data-quick="active" data-method="active" data-enterprise="active">
+            <span class="loop-label">&#x21bb; Repeat for each story</span>
+            <div class="workflow-item" data-quick="skip" data-method="required" data-enterprise="required">
+              <div class="wf-top">
+                <span class="wf-agent">Agent: SM</span>
+                <code class="wf-command">create-story</code>
+              </div>
+              <p class="wf-desc">Uses the epic and sprint-status to prepare a <strong>story-[slug].md</strong> file with full context and acceptance criteria, ready for development.</p>
             </div>
-            <p class="wf-desc">Uses the epic and sprint-status to prepare a <strong>story-[slug].md</strong> file with full context and acceptance criteria, ready for development.</p>
-          </div>
-          <div class="workflow-item" data-quick="required" data-method="required" data-enterprise="required">
-            <div class="wf-top">
-              <span class="wf-agent">Agent: DEV</span>
-              <code class="wf-command">dev-story</code>
-
+            <div class="workflow-item" data-quick="required" data-method="required" data-enterprise="required">
+              <div class="wf-top">
+                <span class="wf-agent">Agent: DEV</span>
+                <code class="wf-command">dev-story</code>
+              </div>
+              <p class="wf-desc">Uses the story file and architecture to implement <strong>production code and tests</strong> following established patterns.</p>
             </div>
-            <p class="wf-desc">Uses the story file and architecture to implement <strong>production code and tests</strong> following established patterns.</p>
-          </div>
-          <div class="workflow-item" data-quick="required" data-method="required" data-enterprise="required">
-            <div class="wf-top">
-              <span class="wf-agent">Agent: DEV</span>
-              <code class="wf-command">code-review</code>
-
+            <div class="workflow-item" data-quick="required" data-method="required" data-enterprise="required">
+              <div class="wf-top">
+                <span class="wf-agent">Agent: DEV</span>
+                <code class="wf-command">code-review</code>
+              </div>
+              <p class="wf-desc">Reviews your implemented code for quality, architecture alignment, tests, and security, producing a <strong>review report</strong>.</p>
             </div>
-            <p class="wf-desc">Reviews your implemented code for quality, architecture alignment, tests, and security, producing a <strong>review report</strong>.</p>
           </div>
           <div class="workflow-item" data-quick="skip" data-method="recommended" data-enterprise="recommended">
             <div class="wf-top">
               <span class="wf-agent">Agent: SM</span>
               <code class="wf-command">epic-retrospective</code>
-
             </div>
             <p class="wf-desc">Reviews the completed epic to capture team learnings and create <strong>retrospective notes</strong> for improving the next epic.</p>
           </div>
@@ -407,6 +405,24 @@
 
   .workflow-item[data-visibility="skip"] {
     display: none;
+  }
+
+  .dev-loop {
+    border: 1px dashed var(--sl-color-accent);
+    border-radius: 0.4rem;
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    position: relative;
+  }
+
+  .loop-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--sl-color-accent-high);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
   }
 
   .wf-top {
