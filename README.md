@@ -26,23 +26,30 @@ Traditional AI tools do the thinking for you, producing average results. BMad ag
 npx bmad-method@alpha install
 ```
 
-Follow the installer prompts to configure your project.
+Follow the installer prompts, then open your AI IDE (Claude Code, Cursor, Windsurf, etc.) in the project folder.
 
-Once you have installed BMad to a folder, launch your tool of choice from where you installed BMad. (We really like Claude Code and Cursor - but there are any that work great with BMad!)
+> **Not sure what to do?** Run `/bmad-help` — it tells you exactly what's next and what's optional. You can also ask it questions like `/bmad-help How should I build a web app for XYZ?`
 
-Then its simple as running the command: `/bmad-help` if you do not know what to do. Depending on which modules you have installed, you will have different choices.
+### Simple Path (Quick Flow)
 
-To make the help more applicable you can even run the `/bmad-help What do you suggest I do to get started building a brand new web application for XYZ`.
+Bug fixes, small features, clear scope — 3 commands:
 
-The results from BMad Help will be able to suggest and constantly guide you on what to do next - along with the workflows upon completion also making suggestions on what to do next.
+1. `/quick-spec` — analyzes your codebase and produces a tech-spec with stories
+2. `/dev-story` — implements each story
+3. `/code-review` — validates quality
 
-This analyzes your project and recommends a track:
+### Full Planning Path (BMad Method)
 
-| Track           | Best For                  | Time to First Story Coding |
-| --------------- | ------------------------- | -------------------------- |
-| **Quick Flow**  | Bug fixes, small features | ~10-30 minutes             |
-| **BMad Method** | Products and platforms    | ~30 minutes - 2 hours      |
-| **Enterprise**  | Compliance-heavy systems  | ~1-3 hours                 |
+Products, platforms, complex features — structured planning then build:
+
+1. `/product-brief` — define problem, users, and MVP scope
+2. `/create-prd` — full requirements with personas, metrics, and risks
+3. `/create-architecture` — technical decisions and system design
+4. `/create-epics-and-stories` — break work into prioritized stories
+5. `/sprint-planning` — initialize sprint tracking
+6. **Repeat per story:** `/create-story` → `/dev-story` → `/code-review`
+
+Every step tells you what's next. Optional phases (brainstorming, research, UX design) are available when you need them — ask `/bmad-help` anytime.
 
 ## Modules
 
