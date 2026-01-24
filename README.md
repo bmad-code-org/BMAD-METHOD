@@ -5,7 +5,7 @@
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen)](https://nodejs.org)
 [![Discord](https://img.shields.io/badge/Discord-Join%20Community-7289da?logo=discord&logoColor=white)](https://discord.gg/gk8jAdXWmj)
 
-**Build More, Architect Dreams** — An AI-driven agile development framework with 21 specialized agents, 50+ guided workflows, and scale-adaptive intelligence that adjusts from bug fixes to enterprise systems.
+**Breakthrough Method of Agile AI Driven Development** — An AI-driven agile development framework with 21 specialized agents, 50+ guided workflows, and scale-adaptive intelligence that adjusts from bug fixes to enterprise systems.
 
 **100% free and open source.** No paywalls. No gated content. No gated Discord. We believe in empowering everyone, not just those who can pay.
 
@@ -58,12 +58,12 @@ Every step tells you what's next. Optional phases (brainstorming, research, UX d
 
 BMad Method extends with official modules for specialized domains. Modules are available during installation and can be added to your project at any time.
 
-| Module | GitHub | NPM | Purpose |
-|--------|--------|-----|---------|
-| **BMad Method (BMM)** | [bmad-code-org/BMAD-METHOD](https://github.com/bmad-code-org/BMAD-METHOD) | [bmad-method](https://www.npmjs.com/package/bmad-method) | Core framework with 34+ workflows across 4 development phases |
-| **BMad Builder (BMB)** | [bmad-code-org/bmad-builder](https://github.com/bmad-code-org/bmad-builder) | [bmad-builder](https://www.npmjs.com/package/bmad-builder) | Create custom BMad agents, workflows, and domain-specific modules |
-| **Game Dev Studio (BMGD)** | [bmad-code-org/bmad-module-game-dev-studio](https://github.com/bmad-code-org/bmad-module-game-dev-studio) | [bmad-game-dev-studio](https://www.npmjs.com/package/bmad-game-dev-studio) | Game development workflows for Unity, Unreal, and Godot |
-| **Creative Intelligence Suite (CIS)** | [bmad-code-org/bmad-module-creative-intelligence-suite](https://github.com/bmad-code-org/bmad-module-creative-intelligence-suite) | [bmad-creative-intelligence-suite](https://www.npmjs.com/package/bmad-creative-intelligence-suite) | Innovation, brainstorming, design thinking, and problem-solving |
+| Module                                | GitHub                                                                                                                            | NPM                                                                                                | Purpose                                                           |
+| ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| **BMad Method (BMM)**                 | [bmad-code-org/BMAD-METHOD](https://github.com/bmad-code-org/BMAD-METHOD)                                                         | [bmad-method](https://www.npmjs.com/package/bmad-method)                                           | Core framework with 34+ workflows across 4 development phases     |
+| **BMad Builder (BMB)**                | [bmad-code-org/bmad-builder](https://github.com/bmad-code-org/bmad-builder)                                                       | [bmad-builder](https://www.npmjs.com/package/bmad-builder)                                         | Create custom BMad agents, workflows, and domain-specific modules |
+| **Game Dev Studio (BMGD)**            | [bmad-code-org/bmad-module-game-dev-studio](https://github.com/bmad-code-org/bmad-module-game-dev-studio)                         | [bmad-game-dev-studio](https://www.npmjs.com/package/bmad-game-dev-studio)                         | Game development workflows for Unity, Unreal, and Godot           |
+| **Creative Intelligence Suite (CIS)** | [bmad-code-org/bmad-module-creative-intelligence-suite](https://github.com/bmad-code-org/bmad-module-creative-intelligence-suite) | [bmad-creative-intelligence-suite](https://www.npmjs.com/package/bmad-creative-intelligence-suite) | Innovation, brainstorming, design thinking, and problem-solving   |
 
 ## Documentation
 
