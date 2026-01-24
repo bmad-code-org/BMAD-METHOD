@@ -84,6 +84,8 @@ your-project/
 Having issues? See [Install BMad](/docs/how-to/installation/install-bmad.md) for common solutions.
 :::
 
+Open your AI IDE in the project folder. From here, you can run `/bmad-help` anytime to see what to do next — or ask it a question like `/bmad-help How should I build a web app for XYZ?`
+
 ## Step 1: Initialize Your Project
 
 Load the **Analyst agent** in your IDE, wait for the menu, then run `workflow-init`.

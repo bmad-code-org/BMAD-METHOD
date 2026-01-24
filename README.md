@@ -16,6 +16,7 @@ Traditional AI tools do the thinking for you, producing average results. BMad ag
 - **Scale-Adaptive**: Automatically adjusts planning depth based on project complexity (Level 0-4)
 - **Structured Workflows**: Grounded in agile best practices across analysis, planning, architecture, and implementation
 - **Specialized Agents**: 12+ domain experts (PM, Architect, Developer, UX, Scrum Master, and more)
+- **Party Mode**: Bring multiple agent personas into one session to plan, troubleshoot, or discuss your project collaboratively
 - **Complete Lifecycle**: From brainstorming to deployment, with just-in-time documentation
 
 ## Quick Start
@@ -29,6 +30,8 @@ npx bmad-method@alpha install
 Follow the installer prompts, then open your AI IDE (Claude Code, Cursor, Windsurf, etc.) in the project folder.
 
 > **Not sure what to do?** Run `/bmad-help` — it tells you exactly what's next and what's optional. You can also ask it questions like `/bmad-help How should I build a web app for XYZ?`
+
+The workflows below show the fastest path to working code. You can also load agents directly for a more structured process, extensive planning, or to learn about agile development practices — the agents guide you with menus, explanations, and elicitation at each step.
 
 ### Simple Path (Quick Flow)
 
