@@ -1,0 +1,47 @@
+# Peers Advisory Group Module Configuration
+# Version: 1.0.0
+# For BMAD-METHOD framework
+
+code: pag
+name: "Peers Advisory Group"
+description: "A structured advisory consultation module that helps users deeply analyze complex decision-making problems through multi-round questioning and feedback from top business leaders (Buffett, Gates, Musk, Jobs)."
+default_selected: false
+unitary: true
+
+# Configuration prompts
+default_advisors:
+  prompt: "Use default advisor panel (Buffett, Gates, Musk, Jobs)?"
+  default: "yes"
+  result: "{value}"
+  single-select:
+    - value: "yes"
+      label: "Yes - Use the classic four-person panel"
+    - value: "custom"
+      label: "No - I want to customize advisors"
+
+session_output_folder:
+  prompt: "Where should advisory session records be saved?"
+  default: "{output_folder}/advisory-sessions"
+  result: "{project-root}/{value}"
+
+communication_language:
+  prompt: "Session communication language?"
+  default: "en-US"
+  result: "{value}"
+  single-select:
+    - value: "en-US"
+      label: "English"
+    - value: "zh-CN"
+      label: "Chinese (中文)"
+
+generate_magazine_report:
+  prompt: "Auto-generate magazine-style report after session?"
+  default: "ask"
+  result: "{value}"
+  single-select:
+    - value: "yes"
+      label: "Yes - Always generate"
+    - value: "no"
+      label: "No - Never generate"
+    - value: "ask"
+      label: "Ask me each time"
