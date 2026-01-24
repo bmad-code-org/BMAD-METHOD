@@ -52,7 +52,7 @@ Products, platforms, complex features — structured planning then build:
 5. `/sprint-planning` — initialize sprint tracking
 6. **Repeat per story:** `/create-story` → `/dev-story` → `/code-review`
 
-Every step tells you what's next. Optional phases (brainstorming, research, UX design) are available when you need them — ask `/bmad-help` anytime.
+Every step tells you what's next. Optional phases (brainstorming, research, UX design) are available when you need them — ask `/bmad-help` anytime. For a detailed walkthrough, see the [Getting Started Tutorial](http://docs.bmad-method.org/tutorials/getting-started/getting-started-bmadv6/).
 
 ## Modules
 
