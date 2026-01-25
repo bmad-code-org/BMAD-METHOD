@@ -43,14 +43,14 @@ wipFile: '{implementation_artifacts}/tech-spec-wip.md'
 
 **Present review menu:**
 
-Display: "**Select:** [Y] Approve [C] Changes [Q] Questions [A] Advanced Elicitation [P] Party Mode"
+Display: "**Select:** [C] Continue [E] Edit [Q] Questions [A] Advanced Elicitation [P] Party Mode"
 
 **HALT and wait for user selection.**
 
 #### Menu Handling Logic:
 
-- IF Y: Proceed to Section 3 (Finalize the Spec)
-- IF C: Proceed to Section 2 (Handle Review Feedback), then return here and redisplay menu
+- IF C: Proceed to Section 3 (Finalize the Spec)
+- IF E: Proceed to Section 2 (Handle Review Feedback), then return here and redisplay menu
 - IF Q: Answer questions, then redisplay this menu
 - IF A: Read fully and follow: `{advanced_elicitation}` with current spec content, process enhanced insights, ask user "Accept improvements? (y/n)", if yes update spec then redisplay menu, if no keep original then redisplay menu
 - IF P: Read fully and follow: `{party_mode_exec}` with current spec content, process collaborative insights, ask user "Accept changes? (y/n)", if yes update spec then redisplay menu, if no keep original then redisplay menu
@@ -59,7 +59,7 @@ Display: "**Select:** [Y] Approve [C] Changes [Q] Questions [A] Advanced Elicita
 #### EXECUTION RULES:
 
 - ALWAYS halt and wait for user input after presenting menu
-- ONLY proceed to finalize when user selects 'Y'
+- ONLY proceed to finalize when user selects 'C'
 - After other menu items execution, return to this menu
 
 ### 2. Handle Review Feedback
