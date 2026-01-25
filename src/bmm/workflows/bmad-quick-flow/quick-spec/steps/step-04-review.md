@@ -115,11 +115,11 @@ Saved to: {finalFile}
 
 **Next Steps:**
 
-[D] Done - exit workflow
-[B] Begin Development - start implementing now (not recommended)
 [A] Advanced Elicitation - refine further
+[R] Adversarial Review - critique of the spec (highly recommended)
+[B] Begin Development - start implementing now (not recommended)
+[D] Done - exit workflow
 [P] Party Mode - get expert feedback before dev
-[R] Adversarial Review again - critique of the spec (highly recommended)
 
 ---
 
@@ -138,9 +138,9 @@ b) **HALT and wait for user selection.**
 
 #### Menu Handling Logic:
 
-- IF D: Exit workflow - display final confirmation and path to spec
-- IF B: Load and execute `{quick_dev_workflow}` with the final spec file (warn: fresh context is better)
 - IF A: Read fully and follow: `{advanced_elicitation}` with current spec content, process enhanced insights, ask user "Accept improvements? (y/n)", if yes update spec then redisplay menu, if no keep original then redisplay menu
+- IF B: Load and execute `{quick_dev_workflow}` with the final spec file (warn: fresh context is better)
+- IF D: Exit workflow - display final confirmation and path to spec
 - IF P: Read fully and follow: `{party_mode_exec}` with current spec content, process collaborative insights, ask user "Accept changes? (y/n)", if yes update spec then redisplay menu, if no keep original then redisplay menu
 - IF R: Execute Adversarial Review (see below)
 - IF Any other comments or queries: respond helpfully then redisplay menu

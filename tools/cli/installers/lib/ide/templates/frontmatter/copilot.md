@@ -1,4 +1,0 @@
----
-description: "{{description}}"
-tools: {{tools}}
----

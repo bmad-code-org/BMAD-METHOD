@@ -44,26 +44,9 @@ async function getAgentsFromBmad(bmadDir, selectedModules = []) {
 
         if (content.includes('localskip="true"')) continue;
 
-        // Extract description from YAML frontmatter if present
-        let description = null;
-        let agentName = file.replace('.md', '');
-        const frontmatterMatch = content.match(/^---\s*\n([\s\S]*?)\n---\s*\n/);
-        if (frontmatterMatch) {
-          const descMatch = frontmatterMatch[1].match(/description:\s*"([^"]+)"/);
-          if (descMatch) {
-            description = descMatch[1];
-          }
-          const nameMatch = frontmatterMatch[1].match(/name:\s*"([^"]+)"/);
-          if (nameMatch) {
-            agentName = nameMatch[1];
-          }
-        }
-
         agents.push({
           path: filePath,
-          name: agentName,
-          displayName: agentName,
-          description: description,
+          name: file.replace('.md', ''),
           module: 'standalone', // Mark as standalone agent
         });
       }
@@ -131,26 +114,9 @@ async function getAgentsFromDir(dirPath, moduleName, relativePath = '') {
         continue;
       }
 
-      // Extract description from YAML frontmatter if present
-      let description = null;
-      const frontmatterMatch = content.match(/^---\s*\n([\s\S]*?)\n---\s*\n/);
-      if (frontmatterMatch) {
-        const descMatch = frontmatterMatch[1].match(/description:\s*"([^"]+)"/);
-        if (descMatch) {
-          description = descMatch[1];
-        }
-        // Also extract name from frontmatter if available
-        const nameMatch = frontmatterMatch[1].match(/name:\s*"([^"]+)"/);
-        if (nameMatch) {
-          entry.name = `${nameMatch[1]}.md`;
-        }
-      }
-
       agents.push({
         path: fullPath,
         name: entry.name.replace('.md', ''),
-        displayName: entry.name.replace('.md', ''),
-        description: description,
         module: moduleName,
         relativePath: newRelativePath, // Keep the .md extension for the full path
       });

@@ -1,5 +1,6 @@
 const path = require('node:path');
 const fs = require('fs-extra');
+const chalk = require('chalk');
 const { toColonPath, toDashPath, customAgentColonName, customAgentDashName } = require('./path-utils');
 
 /**
@@ -32,10 +33,8 @@ class AgentCommandGenerator {
       const agentPathInModule = agent.relativePath || `${agent.name}.md`;
       artifacts.push({
         type: 'agent-launcher',
-        name: agent.name,
-        displayName: agent.displayName || agent.name,
-        description: agent.description,
         module: agent.module,
+        name: agent.name,
         relativePath: path.join(agent.module, 'agents', agentPathInModule),
         content: launcherContent,
         sourcePath: agent.path,
@@ -66,8 +65,9 @@ class AgentCommandGenerator {
       .replaceAll('{{name}}', agent.name)
       .replaceAll('{{module}}', agent.module)
       .replaceAll('{{path}}', agentPathInModule)
-      .replaceAll('{{relativePath}}', path.join(agent.module, 'agents', agentPathInModule))
-      .replaceAll('{{description}}', agent.description || `${agent.name} agent`);
+      .replaceAll('{{description}}', agent.description || `${agent.name} agent`)
+      .replaceAll('_bmad', this.bmadFolderName)
+      .replaceAll('_bmad', '_bmad');
   }
 
   /**
@@ -109,7 +109,7 @@ class AgentCommandGenerator {
         // Convert relativePath to underscore format: bmm/agents/pm.md → bmad_bmm_pm.md
         const flatName = toColonPath(artifact.relativePath);
         const launcherPath = path.join(baseCommandsDir, flatName);
-        await fs.ensureDir(baseCommandsDir);
+        await fs.ensureDir(path.dirname(launcherPath));
         await fs.writeFile(launcherPath, artifact.content);
         writtenCount++;
       }
@@ -119,8 +119,8 @@ class AgentCommandGenerator {
   }
 
   /**
-   * Write agent launcher artifacts using dash format
-   * Creates flat files like: bmad-bmm-agent-pm.md
+   * Write agent launcher artifacts using underscore format (Windows-compatible)
+   * Creates flat files like: bmad_bmm_pm.md
    *
    * @param {string} baseCommandsDir - Base commands directory for the IDE
    * @param {Array} artifacts - Agent launcher artifacts
@@ -131,10 +131,10 @@ class AgentCommandGenerator {
 
     for (const artifact of artifacts) {
       if (artifact.type === 'agent-launcher') {
-        // Convert relativePath to dash format: bmm/agents/pm.md → bmad-bmm-agent-pm.md
+        // Convert relativePath to underscore format: bmm/agents/pm.md → bmad_bmm_pm.md
         const flatName = toDashPath(artifact.relativePath);
         const launcherPath = path.join(baseCommandsDir, flatName);
-        await fs.ensureDir(baseCommandsDir);
+        await fs.ensureDir(path.dirname(launcherPath));
         await fs.writeFile(launcherPath, artifact.content);
         writtenCount++;
       }

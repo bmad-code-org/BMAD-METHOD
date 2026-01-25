@@ -3,6 +3,7 @@ import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 import sitemap from '@astrojs/sitemap';
 import rehypeMarkdownLinks from './src/rehype-markdown-links.js';
+import rehypeBasePaths from './src/rehype-base-paths.js';
 import { getSiteUrl } from './src/lib/site-url.js';
 
 const siteUrl = getSiteUrl();
@@ -28,7 +29,10 @@ export default defineConfig({
   },
 
   markdown: {
-    rehypePlugins: [rehypeMarkdownLinks],
+    rehypePlugins: [
+      [rehypeMarkdownLinks, { base: basePath }],
+      [rehypeBasePaths, { base: basePath }],
+    ],
   },
 
   integrations: [
@@ -89,121 +93,55 @@ export default defineConfig({
         {
           label: 'Tutorials',
           collapsed: false,
-          items: [
-            {
-              label: 'Getting Started',
-              autogenerate: { directory: 'tutorials/getting-started' },
-            },
-            {
-              label: 'Advanced',
-              autogenerate: { directory: 'tutorials/advanced' },
-            },
-          ],
+          autogenerate: { directory: 'tutorials' },
         },
         {
           label: 'How-To Guides',
           collapsed: true,
-          items: [
-            { slug: 'how-to/get-answers-about-bmad' },
-            {
-              label: 'Installation',
-              autogenerate: { directory: 'how-to/installation' },
-            },
-            {
-              label: 'Workflows',
-              autogenerate: { directory: 'how-to/workflows' },
-            },
-            {
-              label: 'Customization',
-              autogenerate: { directory: 'how-to/customization' },
-            },
-            {
-              label: 'Brownfield Development',
-              autogenerate: { directory: 'how-to/brownfield' },
-            },
-            {
-              label: 'Troubleshooting',
-              autogenerate: { directory: 'how-to/troubleshooting' },
-            },
-          ],
+          autogenerate: { directory: 'how-to' },
         },
         {
           label: 'Explanation',
           collapsed: true,
-          items: [
-            {
-              label: 'Core Concepts',
-              autogenerate: { directory: 'explanation/core-concepts' },
-            },
-            {
-              label: 'Architecture',
-              autogenerate: { directory: 'explanation/architecture' },
-            },
-            {
-              label: 'Philosophy',
-              autogenerate: { directory: 'explanation/philosophy' },
-            },
-            {
-              label: 'Features',
-              autogenerate: { directory: 'explanation/features' },
-            },
-            {
-              label: 'TEA (Test Architect)',
-              autogenerate: { directory: 'explanation/tea' },
-            },
-            {
-              label: 'Agents',
-              autogenerate: { directory: 'explanation/agents' },
-            },
-            {
-              label: 'BMM',
-              autogenerate: { directory: 'explanation/bmm' },
-            },
-            {
-              label: 'BMad Builder',
-              autogenerate: { directory: 'explanation/bmad-builder' },
-            },
-            {
-              label: 'Game Development',
-              autogenerate: { directory: 'explanation/game-dev' },
-            },
-            {
-              label: 'Creative Intelligence',
-              autogenerate: { directory: 'explanation/creative-intelligence' },
-            },
-            {
-              label: 'Core Module',
-              autogenerate: { directory: 'explanation/core' },
-            },
-            {
-              label: 'FAQ',
-              autogenerate: { directory: 'explanation/faq' },
-            },
-          ],
+          autogenerate: { directory: 'explanation' },
         },
         {
           label: 'Reference',
           collapsed: true,
+          autogenerate: { directory: 'reference' },
+        },
+        {
+          label: 'TEA - Testing in BMAD',
+          collapsed: true,
           items: [
             {
-              label: 'Agents',
-              autogenerate: { directory: 'reference/agents' },
+              label: 'Tutorials',
+              autogenerate: { directory: 'tea/tutorials' },
             },
             {
-              label: 'Workflows',
-              autogenerate: { directory: 'reference/workflows' },
+              label: 'How-To Guides',
+              items: [
+                {
+                  label: 'Workflows',
+                  autogenerate: { directory: 'tea/how-to/workflows' },
+                },
+                {
+                  label: 'Customization',
+                  autogenerate: { directory: 'tea/how-to/customization' },
+                },
+                {
+                  label: 'Brownfield',
+                  autogenerate: { directory: 'tea/how-to/brownfield' },
+                },
+              ],
             },
             {
-              label: 'Configuration',
-              autogenerate: { directory: 'reference/configuration' },
+              label: 'Explanation',
+              autogenerate: { directory: 'tea/explanation' },
             },
             {
-              label: 'TEA (Test Architect)',
-              autogenerate: { directory: 'reference/tea' },
-            },
-            {
-              label: 'Glossary',
-              autogenerate: { directory: 'reference/glossary' },
+              label: 'Reference',
+              autogenerate: { directory: 'tea/reference' },
             },
           ],
         },
@@ -214,6 +152,9 @@ export default defineConfig({
 
       // Pagination
       pagination: false,
+
+      // Use our docs/404.md instead of Starlight's built-in 404
+      disable404Route: true,
 
       // Custom components
       components: {

@@ -14,10 +14,44 @@ class WorkflowCommandGenerator {
   }
 
   /**
-   * REMOVED: Old generateWorkflowCommands method that created nested structure.
-   * This was hardcoded to .claude/commands/bmad and caused bugs.
-   * Use collectWorkflowArtifacts() + writeColonArtifacts/writeDashArtifacts() instead.
+   * Generate workflow commands from the manifest CSV
+   * @param {string} projectDir - Project directory
+   * @param {string} bmadDir - BMAD installation directory
    */
+  async generateWorkflowCommands(projectDir, bmadDir) {
+    const workflows = await this.loadWorkflowManifest(bmadDir);
+
+    if (!workflows) {
+      console.log(chalk.yellow('Workflow manifest not found. Skipping command generation.'));
+      return { generated: 0 };
+    }
+
+    // ALL workflows now generate commands - no standalone filtering
+    const allWorkflows = workflows;
+
+    // Base commands directory
+    const baseCommandsDir = path.join(projectDir, '.claude', 'commands', 'bmad');
+
+    let generatedCount = 0;
+
+    // Generate a command file for each workflow, organized by module
+    for (const workflow of allWorkflows) {
+      const moduleWorkflowsDir = path.join(baseCommandsDir, workflow.module, 'workflows');
+      await fs.ensureDir(moduleWorkflowsDir);
+
+      const commandContent = await this.generateCommandContent(workflow, bmadDir);
+      const commandPath = path.join(moduleWorkflowsDir, `${workflow.name}.md`);
+
+      await fs.writeFile(commandPath, commandContent);
+      generatedCount++;
+    }
+
+    // Also create a workflow launcher README in each module
+    const groupedWorkflows = this.groupWorkflowsByModule(allWorkflows);
+    await this.createModuleWorkflowLaunchers(baseCommandsDir, groupedWorkflows);
+
+    return { generated: generatedCount };
+  }
 
   async collectWorkflowArtifacts(bmadDir) {
     const workflows = await this.loadWorkflowManifest(bmadDir);
@@ -35,9 +69,6 @@ class WorkflowCommandGenerator {
       const commandContent = await this.generateCommandContent(workflow, bmadDir);
       artifacts.push({
         type: 'workflow-command',
-        name: workflow.name,
-        displayName: workflow.displayName || workflow.name,
-        description: workflow.description,
         module: workflow.module,
         relativePath: path.join(workflow.module, 'workflows', `${workflow.name}.md`),
         content: commandContent,

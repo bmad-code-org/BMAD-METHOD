@@ -1,0 +1,191 @@
+const path = require('node:path');
+const fs = require('fs-extra');
+const { BaseIdeSetup } = require('./_base-ide');
+const chalk = require('chalk');
+const { AgentCommandGenerator } = require('./shared/agent-command-generator');
+const { WorkflowCommandGenerator } = require('./shared/workflow-command-generator');
+
+/**
+ * iFlow CLI setup handler
+ * Creates commands in .iflow/commands/ directory structure
+ */
+class IFlowSetup extends BaseIdeSetup {
+  constructor() {
+    super('iflow', 'iFlow CLI');
+    this.configDir = '.iflow';
+    this.commandsDir = 'commands';
+  }
+
+  /**
+   * Setup iFlow CLI configuration
+   * @param {string} projectDir - Project directory
+   * @param {string} bmadDir - BMAD installation directory
+   * @param {Object} options - Setup options
+   */
+  async setup(projectDir, bmadDir, options = {}) {
+    console.log(chalk.cyan(`Setting up ${this.name}...`));
+
+    // Create .iflow/commands/bmad directory structure
+    const iflowDir = path.join(projectDir, this.configDir);
+    const commandsDir = path.join(iflowDir, this.commandsDir, 'bmad');
+    const agentsDir = path.join(commandsDir, 'agents');
+    const tasksDir = path.join(commandsDir, 'tasks');
+    const workflowsDir = path.join(commandsDir, 'workflows');
+
+    await this.ensureDir(agentsDir);
+    await this.ensureDir(tasksDir);
+    await this.ensureDir(workflowsDir);
+
+    // Generate agent launchers
+    const agentGen = new AgentCommandGenerator(this.bmadFolderName);
+    const { artifacts: agentArtifacts } = await agentGen.collectAgentArtifacts(bmadDir, options.selectedModules || []);
+
+    // Setup agents as commands
+    let agentCount = 0;
+    for (const artifact of agentArtifacts) {
+      const commandContent = await this.createAgentCommand(artifact);
+
+      const targetPath = path.join(agentsDir, `${artifact.module}-${artifact.name}.md`);
+      await this.writeFile(targetPath, commandContent);
+      agentCount++;
+    }
+
+    // Get tasks and workflows (ALL workflows now generate commands)
+    const tasks = await this.getTasks(bmadDir);
+
+    // Get ALL workflows using the new workflow command generator
+    const workflowGenerator = new WorkflowCommandGenerator(this.bmadFolderName);
+    const { artifacts: workflowArtifacts, counts: workflowCounts } = await workflowGenerator.collectWorkflowArtifacts(bmadDir);
+
+    // Setup tasks as commands
+    let taskCount = 0;
+    for (const task of tasks) {
+      const content = await this.readFile(task.path);
+      const commandContent = this.createTaskCommand(task, content);
+
+      const targetPath = path.join(tasksDir, `${task.module}-${task.name}.md`);
+      await this.writeFile(targetPath, commandContent);
+      taskCount++;
+    }
+
+    // Setup workflows as commands (already generated)
+    let workflowCount = 0;
+    for (const artifact of workflowArtifacts) {
+      if (artifact.type === 'workflow-command') {
+        const targetPath = path.join(workflowsDir, `${artifact.module}-${path.basename(artifact.relativePath, '.md')}.md`);
+        await this.writeFile(targetPath, artifact.content);
+        workflowCount++;
+      }
+    }
+
+    console.log(chalk.green(`✓ ${this.name} configured:`));
+    console.log(chalk.dim(`  - ${agentCount} agent commands created`));
+    console.log(chalk.dim(`  - ${taskCount} task commands created`));
+    console.log(chalk.dim(`  - ${workflowCount} workflow commands created`));
+    console.log(chalk.dim(`  - Commands directory: ${path.relative(projectDir, commandsDir)}`));
+
+    return {
+      success: true,
+      agents: agentCount,
+      tasks: taskCount,
+      workflows: workflowCount,
+    };
+  }
+
+  /**
+   * Create agent command content
+   */
+  async createAgentCommand(artifact) {
+    // The launcher content is already complete - just return it as-is
+    return artifact.content;
+  }
+
+  /**
+   * Create task command content
+   */
+  createTaskCommand(task, content) {
+    // Extract task name
+    const nameMatch = content.match(/<name>([^<]+)<\/name>/);
+    const taskName = nameMatch ? nameMatch[1] : this.formatTitle(task.name);
+
+    let commandContent = `# /task-${task.name} Command
+
+When this command is used, execute the following task:
+
+## ${taskName} Task
+
+${content}
+
+## Usage
+
+This command executes the ${taskName} task from the BMAD ${task.module.toUpperCase()} module.
+
+## Module
+
+Part of the BMAD ${task.module.toUpperCase()} module.
+`;
+
+    return commandContent;
+  }
+
+  /**
+   * Cleanup iFlow configuration
+   */
+  async cleanup(projectDir) {
+    const fs = require('fs-extra');
+    const bmadCommandsDir = path.join(projectDir, this.configDir, this.commandsDir, 'bmad');
+
+    if (await fs.pathExists(bmadCommandsDir)) {
+      await fs.remove(bmadCommandsDir);
+      console.log(chalk.dim(`Removed BMAD commands from iFlow CLI`));
+    }
+  }
+
+  /**
+   * Install a custom agent launcher for iFlow
+   * @param {string} projectDir - Project directory
+   * @param {string} agentName - Agent name (e.g., "fred-commit-poet")
+   * @param {string} agentPath - Path to compiled agent (relative to project root)
+   * @param {Object} metadata - Agent metadata
+   * @returns {Object} Installation result
+   */
+  async installCustomAgentLauncher(projectDir, agentName, agentPath, metadata) {
+    const iflowDir = path.join(projectDir, this.configDir);
+    const bmadCommandsDir = path.join(iflowDir, this.commandsDir, 'bmad');
+
+    // Create .iflow/commands/bmad directory if it doesn't exist
+    await fs.ensureDir(bmadCommandsDir);
+
+    // Create custom agent launcher
+    const launcherContent = `# ${agentName} Custom Agent
+
+**⚠️ IMPORTANT**: Run @${agentPath} first to load the complete agent!
+
+This is a launcher for the custom BMAD agent "${agentName}".
+
+## Usage
+1. First run: \`${agentPath}\` to load the complete agent
+2. Then use this command to activate ${agentName}
+
+The agent will follow the persona and instructions from the main agent file.
+
+---
+
+*Generated by BMAD Method*`;
+
+    const fileName = `custom-${agentName.toLowerCase()}.md`;
+    const launcherPath = path.join(bmadCommandsDir, fileName);
+
+    // Write the launcher file
+    await fs.writeFile(launcherPath, launcherContent, 'utf8');
+
+    return {
+      ide: 'iflow',
+      path: path.relative(projectDir, launcherPath),
+      command: agentName,
+      type: 'custom-agent-launcher',
+    };
+  }
+}
+
+module.exports = { IFlowSetup };

@@ -1,0 +1,157 @@
+# BMAD Platform Codes Configuration
+# Central configuration for all platform/IDE codes used in the BMAD system
+#
+# This file defines the standardized platform codes that are used throughout
+# the installation system to identify different platforms (IDEs, tools, etc.)
+#
+# Format:
+#   code: Platform identifier used internally
+#   name: Display name shown to users
+#   preferred: Whether this platform is shown as a recommended option on install
+#   category: Type of platform (ide, tool, service, etc.)
+
+platforms:
+  # Recommended Platforms
+  claude-code:
+    name: "Claude Code"
+    preferred: true
+    category: cli
+    description: "Anthropic's official CLI for Claude"
+
+  windsurf:
+    name: "Windsurf"
+    preferred: true
+    category: ide
+    description: "AI-powered IDE with cascade flows"
+
+  cursor:
+    name: "Cursor"
+    preferred: true
+    category: ide
+    description: "AI-first code editor"
+
+  # Other IDEs and Tools
+  cline:
+    name: "Cline"
+    preferred: false
+    category: ide
+    description: "AI coding assistant"
+
+  opencode:
+    name: "OpenCode"
+    preferred: false
+    category: ide
+    description: "OpenCode terminal coding assistant"
+
+  auggie:
+    name: "Auggie"
+    preferred: false
+    category: cli
+    description: "AI development tool"
+
+  roo:
+    name: "Roo Cline"
+    preferred: false
+    category: ide
+    description: "Enhanced Cline fork"
+
+  rovo:
+    name: "Rovo"
+    preferred: false
+    category: ide
+    description: "Atlassian's AI coding assistant"
+
+  rovo-dev:
+    name: "Rovo Dev"
+    preferred: false
+    category: ide
+    description: "Atlassian's Rovo development environment"
+
+  kiro-cli:
+    name: "Kiro CLI"
+    preferred: false
+    category: cli
+    description: "Kiro command-line interface"
+
+  github-copilot:
+    name: "GitHub Copilot"
+    preferred: false
+    category: ide
+    description: "GitHub's AI pair programmer"
+
+  codex:
+    name: "Codex"
+    preferred: false
+    category: cli
+    description: "OpenAI Codex integration"
+
+  qwen:
+    name: "QwenCoder"
+    preferred: false
+    category: ide
+    description: "Qwen AI coding assistant"
+
+  gemini:
+    name: "Gemini CLI"
+    preferred: false
+    category: cli
+    description: "Google's CLI for Gemini"
+
+  iflow:
+    name: "iFlow"
+    preferred: false
+    category: ide
+    description: "AI workflow automation"
+
+  kilo:
+    name: "KiloCoder"
+    preferred: false
+    category: ide
+    description: "AI coding platform"
+
+  crush:
+    name: "Crush"
+    preferred: false
+    category: ide
+    description: "AI development assistant"
+
+  antigravity:
+    name: "Google Antigravity"
+    preferred: false
+    category: ide
+    description: "Google's AI development environment"
+
+  trae:
+    name: "Trae"
+    preferred: false
+    category: ide
+    description: "AI coding tool"
+
+# Platform categories
+categories:
+  ide:
+    name: "Integrated Development Environment"
+    description: "Full-featured code editors with AI assistance"
+
+  cli:
+    name: "Command Line Interface"
+    description: "Terminal-based tools"
+
+  tool:
+    name: "Development Tool"
+    description: "Standalone development utilities"
+
+  service:
+    name: "Cloud Service"
+    description: "Cloud-based development platforms"
+
+  extension:
+    name: "Editor Extension"
+    description: "Plugins for existing editors"
+
+# Naming conventions and rules
+conventions:
+  code_format: "lowercase-kebab-case"
+  name_format: "Title Case"
+  max_code_length: 20
+  allowed_characters: "a-z0-9-"

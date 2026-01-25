@@ -1,4 +1,0 @@
-description = "{{description}}"
-prompt = """
-{{content}}
-"""

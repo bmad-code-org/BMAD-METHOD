@@ -9,7 +9,7 @@ const { getProjectRoot } = require('./project-root');
  */
 class PlatformCodes {
   constructor() {
-    this.configPath = path.join(getProjectRoot(), 'tools/cli/installers/lib/ide/platform-codes.yaml');
+    this.configPath = path.join(getProjectRoot(), 'tools', 'platform-codes.yaml');
     this.loadConfig();
   }
 

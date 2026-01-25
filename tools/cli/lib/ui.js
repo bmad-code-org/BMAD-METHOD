@@ -363,8 +363,8 @@ class UI {
     const { IdeManager } = require('../installers/lib/ide/manager');
     const ideManager = new IdeManager();
 
-    const preferredIdes = await ideManager.getPreferredIdes();
-    const otherIdes = await ideManager.getOtherIdes();
+    const preferredIdes = ideManager.getPreferredIdes();
+    const otherIdes = ideManager.getOtherIdes();
 
     // Build grouped options object for groupMultiselect
     const groupedOptions = {};
