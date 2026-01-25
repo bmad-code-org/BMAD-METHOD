@@ -1,0 +1,216 @@
+# BMAD Platform Codes Configuration
+# Central configuration for all platform/IDE codes used in the BMAD system
+#
+# This file defines the standardized platform codes that are used throughout
+# the installation system to identify different platforms (IDEs, tools, etc.)
+#
+# Format:
+#   code: Platform identifier used internally (key)
+#   name: Display name shown to users
+#   preferred: Whether this platform is shown as a recommended option on install
+#   category: Type of platform (ide, cli, tool, service, etc.)
+#   installer: Installation configuration (optional)
+#     frontmatter_template: Path to frontmatter template file (relative to templates/frontmatter/)
+#     If not specified, uses 'common-yaml.md' default
+
+platforms:
+  antigravity:
+    name: "Google Antigravity"
+    preferred: false
+    category: ide
+    description: "Google's AI development environment"
+    installer:
+      target_dir: .antigravity/commands
+      frontmatter_template: common-yaml.md
+
+  auggie:
+    name: "Auggie"
+    preferred: false
+    category: cli
+    description: "AI development tool"
+    installer:
+      target_dir: .augment/commands
+      frontmatter_template: common-yaml.md
+
+  cline:
+    name: "Cline"
+    preferred: false
+    category: ide
+    description: "AI coding assistant"
+    installer:
+      target_dir: .cline/commands
+      frontmatter_template: none # No frontmatter, content as-is
+
+  claude-code:
+    name: "Claude Code"
+    preferred: true
+    category: cli
+    description: "Anthropic's official CLI for Claude"
+    installer:
+      target_dir: .claude/commands
+      frontmatter_template: common-yaml.md
+
+  crush:
+    name: "Crush"
+    preferred: false
+    category: ide
+    description: "AI development assistant"
+    installer:
+      target_dir: .crush/commands
+      frontmatter_template: common-yaml.md
+
+  cursor:
+    name: "Cursor"
+    preferred: true
+    category: ide
+    description: "AI-first code editor"
+    installer:
+      target_dir: .cursor/commands
+      frontmatter_template: common-yaml.md
+
+  gemini:
+    name: "Gemini CLI"
+    preferred: false
+    category: cli
+    description: "Google's CLI for Gemini"
+    installer:
+      target_dir: .gemini/commands
+      file_extension: .toml
+      frontmatter_template: common-toml.md
+
+  github-copilot:
+    name: "GitHub Copilot"
+    preferred: true
+    category: ide
+    description: "GitHub's AI pair programmer"
+    installer:
+      targets:
+        - dir: .github/agents
+          frontmatter_template: copilot-agent.md
+          artifact_types: [agents]
+        - dir: .github/prompts
+          frontmatter_template: copilot.md
+          artifact_types: [workflows, tasks, tools]
+      has_vscode_settings: true
+
+  iflow:
+    name: "iFlow"
+    preferred: false
+    category: ide
+    description: "AI workflow automation"
+    installer:
+      target_dir: .iflow/commands
+      frontmatter_template: common-yaml.md
+
+  kilo:
+    name: "KiloCoder"
+    preferred: false
+    category: ide
+    description: "AI coding platform"
+    # Kilo has custom installer (.kilocodemodes YAML format) - not config-driven
+
+  kiro-cli:
+    name: "Kiro CLI"
+    preferred: false
+    category: cli
+    description: "Kiro command-line interface"
+    # Kiro CLI has custom installer (YAML->JSON conversion) - not config-driven
+
+  opencode:
+    name: "OpenCode"
+    preferred: false
+    category: ide
+    description: "OpenCode terminal coding assistant"
+    installer:
+      targets:
+        - dir: .opencode/agent
+          frontmatter_template: opencode-agent.md
+          artifact_types: [agents]
+        - dir: .opencode/command
+          frontmatter_template: opencode.md
+          artifact_types: [workflows, tasks, tools]
+
+  qwen:
+    name: "QwenCoder"
+    preferred: false
+    category: ide
+    description: "Qwen AI coding assistant"
+    installer:
+      target_dir: .qwen/commands
+      file_extension: .toml
+      frontmatter_template: common-toml.md
+
+  roo:
+    name: "Roo Code"
+    preferred: false
+    category: ide
+    description: "Enhanced Cline fork"
+    installer:
+      target_dir: .roo/commands
+      frontmatter_template: roo.md
+      skip_existing: true
+
+  rovo-dev:
+    name: "Rovo Dev"
+    preferred: false
+    category: ide
+    description: "Atlassian's Rovo development environment"
+    installer:
+      target_dir: .rovo-dev/commands
+      frontmatter_template: common-yaml.md
+
+  trae:
+    name: "Trae"
+    preferred: false
+    category: ide
+    description: "AI coding tool"
+    installer:
+      target_dir: .trae/rules
+      frontmatter_template: trae.md
+
+  windsurf:
+    name: "Windsurf"
+    preferred: true
+    category: ide
+    description: "AI-powered IDE with cascade flows"
+    installer:
+      target_dir: .windsurf/workflows
+      frontmatter_template: windsurf.md
+
+# Platform categories
+categories:
+  ide:
+    name: "Integrated Development Environment"
+    description: "Full-featured code editors with AI assistance"
+
+  cli:
+    name: "Command Line Interface"
+    description: "Terminal-based tools"
+
+  tool:
+    name: "Development Tool"
+    description: "Standalone development utilities"
+
+  service:
+    name: "Cloud Service"
+    description: "Cloud-based development platforms"
+
+  extension:
+    name: "Editor Extension"
+    description: "Plugins for existing editors"
+
+# Naming conventions and rules
+conventions:
+  code_format: "lowercase-kebab-case"
+  name_format: "Title Case"
+  max_code_length: 20
+  allowed_characters: "a-z0-9-"
+
+  # New universal file naming standard
+  file_naming:
+    agent: "bmad-{module}-{name}.agent.md"
+    workflow: "bmad-{module}-{name}.workflow.md"
+    task: "bmad-{module}-{name}.task.md"
+    tool: "bmad-{module}-{name}.tool.md"
+    example_agent: "bmad-cis-storymaster.agent.md"
+    example_workflow: "bmad-bmm-plan-project.workflow.md"

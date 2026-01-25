@@ -1,0 +1,4 @@
+description = "{{description}}"
+prompt = """
+{{content}}
+"""
