@@ -10,16 +10,10 @@ If you're comfortable working with AI coding assistants like Claude, Cursor, or 
 
 ## New Here? Start with a Tutorial
 
-The fastest way to understand BMad is to try it. Choose a tutorial to walk through your first project in about 10 minutes.
+The fastest way to understand BMad is to try it.
 
-- **[Get Started with BMad](/docs/tutorials/getting-started/getting-started-bmadv6.md)** — Latest features, still in active development
-- **[Workflow Guide](/workflow-guide)** — A simple visual overview of the various BMad tracks that get you going quickly.
-
-:::tip[Already familiar with AI-assisted development?]
-Feel free to skip around. Use the sidebar to jump to any topic, or check out [What Are Agents?](/docs/explanation/core-concepts/what-are-agents.md) to understand how BMad organizes its AI personas.
-:::
-
----
+- **[Get Started with BMad](/docs/tutorials/getting-started.md)** — Install and understand how BMad works
+- **[Workflow Map](/docs/reference/workflow-map.md)** — Visual overview of BMM phases, workflows, and context management.
 
 ## How to Use These Docs
 
@@ -59,6 +53,4 @@ Get help, share what you're building, or contribute to BMad:
 
 ## Next Step
 
-Ready to dive in? Pick a tutorial and start building.
-
-- **[Get Started with BMad](/docs/tutorials/getting-started/getting-started-bmadv6.md)** — Explore the latest features
+Ready to dive in? **[Get Started with BMad](/docs/tutorials/getting-started.md)** and build your first project.

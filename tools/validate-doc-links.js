@@ -28,7 +28,7 @@ const LINK_REGEX = /\[([^\]]*)\]\((\/[^)]+)\)/g;
 const STATIC_ASSET_EXTENSIONS = ['.zip', '.txt', '.pdf', '.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp', '.ico'];
 
 // Custom Astro page routes (not part of the docs content collection)
-const CUSTOM_PAGE_ROUTES = new Set(['/workflow-guide']);
+const CUSTOM_PAGE_ROUTES = new Set([]);
 
 // Regex to extract headings for anchor validation
 const HEADING_PATTERN = /^#{1,6}\s+(.+)$/gm;
