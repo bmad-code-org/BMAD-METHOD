@@ -5,7 +5,10 @@ const chalk = require('chalk');
 const { BaseIdeSetup } = require('./_base-ide');
 const { WorkflowCommandGenerator } = require('./shared/workflow-command-generator');
 const { AgentCommandGenerator } = require('./shared/agent-command-generator');
+const { TaskToolCommandGenerator } = require('./shared/task-tool-command-generator');
 const { getTasksFromBmad } = require('./shared/bmad-artifacts');
+const { toDashPath, customAgentDashName } = require('./shared/path-utils');
+const prompts = require('../../../lib/prompts');
 
 /**
  * Codex setup handler (CLI mode)
@@ -21,32 +24,24 @@ class CodexSetup extends BaseIdeSetup {
    * @returns {Object} Collected configuration
    */
   async collectConfiguration(options = {}) {
-    const { default: inquirer } = await import('inquirer');
-
     let confirmed = false;
     let installLocation = 'global';
 
     while (!confirmed) {
-      const { location } = await inquirer.prompt([
-        {
-          type: 'list',
-          name: 'location',
-          message: 'Where would you like to install Codex CLI prompts?',
-          choices: [
-            {
-              name: 'Global - Simple for single project ' + '(~/.codex/prompts, but references THIS project only)',
-              value: 'global',
-            },
-            {
-              name: `Project-specific - Recommended for real work (requires CODEX_HOME=<project-dir>${path.sep}.codex)`,
-              value: 'project',
-            },
-          ],
-          default: 'global',
-        },
-      ]);
-
-      installLocation = location;
+      installLocation = await prompts.select({
+        message: 'Where would you like to install Codex CLI prompts?',
+        choices: [
+          {
+            name: 'Global - Simple for single project ' + '(~/.codex/prompts, but references THIS project only)',
+            value: 'global',
+          },
+          {
+            name: `Project-specific - Recommended for real work (requires CODEX_HOME=<project-dir>${path.sep}.codex)`,
+            value: 'project',
+          },
+        ],
+        default: 'global',
+      });
 
       // Display detailed instructions for the chosen option
       console.log('');
@@ -57,16 +52,10 @@ class CodexSetup extends BaseIdeSetup {
       }
 
       // Confirm the choice
-      const { proceed } = await inquirer.prompt([
-        {
-          type: 'confirm',
-          name: 'proceed',
-          message: 'Proceed with this installation option?',
-          default: true,
-        },
-      ]);
-
-      confirmed = proceed;
+      confirmed = await prompts.confirm({
+        message: 'Proceed with this installation option?',
+        default: true,
+      });
 
       if (!confirmed) {
         console.log(chalk.yellow("\n  Let's choose a different installation option.\n"));
@@ -96,7 +85,41 @@ class CodexSetup extends BaseIdeSetup {
     const destDir = this.getCodexPromptDir(projectDir, installLocation);
     await fs.ensureDir(destDir);
     await this.clearOldBmadFiles(destDir);
-    const written = await this.flattenAndWriteArtifacts(artifacts, destDir);
+
+    // Collect artifacts and write using underscore format
+    const agentGen = new AgentCommandGenerator(this.bmadFolderName);
+    const { artifacts: agentArtifacts } = await agentGen.collectAgentArtifacts(bmadDir, options.selectedModules || []);
+    const agentCount = await agentGen.writeDashArtifacts(destDir, agentArtifacts);
+
+    const tasks = await getTasksFromBmad(bmadDir, options.selectedModules || []);
+    const taskArtifacts = [];
+    for (const task of tasks) {
+      const content = await this.readAndProcessWithProject(
+        task.path,
+        {
+          module: task.module,
+          name: task.name,
+        },
+        projectDir,
+      );
+      taskArtifacts.push({
+        type: 'task',
+        module: task.module,
+        sourcePath: task.path,
+        relativePath: path.join(task.module, 'tasks', `${task.name}.md`),
+        content,
+      });
+    }
+
+    const workflowGenerator = new WorkflowCommandGenerator(this.bmadFolderName);
+    const { artifacts: workflowArtifacts } = await workflowGenerator.collectWorkflowArtifacts(bmadDir);
+    const workflowCount = await workflowGenerator.writeDashArtifacts(destDir, workflowArtifacts);
+
+    // Also write tasks using underscore format
+    const ttGen = new TaskToolCommandGenerator();
+    const tasksWritten = await ttGen.writeDashArtifacts(destDir, taskArtifacts);
+
+    const written = agentCount + workflowCount + tasksWritten;
 
     console.log(chalk.green(`✓ ${this.name} configured:`));
     console.log(chalk.dim(`  - Mode: CLI`));
@@ -132,7 +155,7 @@ class CodexSetup extends BaseIdeSetup {
     // Check global location
     if (await fs.pathExists(globalDir)) {
       const entries = await fs.readdir(globalDir);
-      if (entries.some((entry) => entry.startsWith('bmad-'))) {
+      if (entries.some((entry) => entry.startsWith('bmad'))) {
         return true;
       }
     }
@@ -140,7 +163,7 @@ class CodexSetup extends BaseIdeSetup {
     // Check project-specific location
     if (await fs.pathExists(projectSpecificDir)) {
       const entries = await fs.readdir(projectSpecificDir);
-      if (entries.some((entry) => entry.startsWith('bmad-'))) {
+      if (entries.some((entry) => entry.startsWith('bmad'))) {
         return true;
       }
     }
@@ -233,7 +256,7 @@ class CodexSetup extends BaseIdeSetup {
     const entries = await fs.readdir(destDir);
 
     for (const entry of entries) {
-      if (!entry.startsWith('bmad-')) {
+      if (!entry.startsWith('bmad')) {
         continue;
       }
 
@@ -269,7 +292,7 @@ class CodexSetup extends BaseIdeSetup {
       chalk.dim("  To use with other projects, you'd need to copy the _bmad dir"),
       '',
       chalk.green('  ✓ You can now use /commands in Codex CLI'),
-      chalk.dim('    Example: /bmad-bmm-agents-pm'),
+      chalk.dim('    Example: /bmad_bmm_pm'),
       chalk.dim('    Type / to see all available commands'),
       '',
       chalk.bold.cyan('═'.repeat(70)),
@@ -374,7 +397,8 @@ You must fully embody this agent's persona and follow all activation instruction
 </agent-activation>
 `;
 
-    const fileName = `bmad-custom-agents-${agentName}.md`;
+    // Use underscore format: bmad_custom_fred-commit-poet.md
+    const fileName = customAgentDashName(agentName);
     const launcherPath = path.join(destDir, fileName);
     await fs.writeFile(launcherPath, launcherContent, 'utf8');
 

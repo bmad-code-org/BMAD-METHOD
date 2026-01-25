@@ -2,6 +2,7 @@ const path = require('node:path');
 const { BaseIdeSetup } = require('./_base-ide');
 const chalk = require('chalk');
 const { AgentCommandGenerator } = require('./shared/agent-command-generator');
+const { toDashPath, customAgentDashName } = require('./shared/path-utils');
 
 /**
  * Roo IDE setup handler
@@ -35,7 +36,8 @@ class RooSetup extends BaseIdeSetup {
     let skippedCount = 0;
 
     for (const artifact of agentArtifacts) {
-      const commandName = `bmad-${artifact.module}-agent-${artifact.name}`;
+      // Use shared toDashPath to get consistent naming: bmad_bmm_name.md
+      const commandName = toDashPath(artifact.relativePath).replace('.md', '');
       const commandPath = path.join(rooCommandsDir, `${commandName}.md`);
 
       // Skip if already exists
@@ -71,7 +73,7 @@ class RooSetup extends BaseIdeSetup {
     if (skippedCount > 0) {
       console.log(chalk.dim(`  - ${skippedCount} commands skipped (already exist)`));
     }
-    console.log(chalk.dim(`  - Commands directory: ${this.configDir}/${this.commandsDir}/bmad/`));
+    console.log(chalk.dim(`  - Commands directory: ${this.configDir}/${this.commandsDir}/`));
     console.log(chalk.dim(`  Commands will be available when you open this project in Roo Code`));
 
     return {
@@ -167,7 +169,7 @@ class RooSetup extends BaseIdeSetup {
       let removedCount = 0;
 
       for (const file of files) {
-        if (file.startsWith('bmad-') && file.endsWith('.md')) {
+        if (file.startsWith('bmad') && file.endsWith('.md')) {
           await fs.remove(path.join(rooCommandsDir, file));
           removedCount++;
         }
@@ -190,7 +192,7 @@ class RooSetup extends BaseIdeSetup {
       let removedCount = 0;
 
       for (const line of lines) {
-        if (/^\s*- slug: bmad-/.test(line)) {
+        if (/^\s*- slug: bmad/.test(line)) {
           skipMode = true;
           removedCount++;
         } else if (skipMode && /^\s*- slug: /.test(line)) {
@@ -222,7 +224,8 @@ class RooSetup extends BaseIdeSetup {
     const rooCommandsDir = path.join(projectDir, this.configDir, this.commandsDir);
     await this.ensureDir(rooCommandsDir);
 
-    const commandName = `bmad-custom-agent-${agentName.toLowerCase()}`;
+    // Use underscore format: bmad_custom_fred-commit-poet.md
+    const commandName = customAgentDashName(agentName).replace('.md', '');
     const commandPath = path.join(rooCommandsDir, `${commandName}.md`);
 
     // Check if command already exists

@@ -1,8 +1,0 @@
-code: bmad-custom
-name: "BMAD-Custom: Sample Stand Alone Custom Agents and Workflows"
-default_selected: true
-type: unitary
-# Variables from Core Config inserted:
-## user_name
-## communication_language
-## output_folder

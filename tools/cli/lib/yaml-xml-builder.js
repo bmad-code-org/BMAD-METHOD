@@ -512,12 +512,14 @@ class YamlXmlBuilder {
 
     // Extract module from path (e.g., /path/to/modules/bmm/agents/pm.yaml -> bmm)
     // or /path/to/bmad/bmm/agents/pm.yaml -> bmm
+    // or /path/to/src/bmm/agents/pm.yaml -> bmm
     let module = 'core'; // default to core
     const pathParts = agentYamlPath.split(path.sep);
 
     // Look for module indicators in the path
     const modulesIndex = pathParts.indexOf('modules');
     const bmadIndex = pathParts.indexOf('bmad');
+    const srcIndex = pathParts.indexOf('src');
 
     if (modulesIndex !== -1 && pathParts[modulesIndex + 1]) {
       // Path contains /modules/{module}/
@@ -527,6 +529,12 @@ class YamlXmlBuilder {
       const potentialModule = pathParts[bmadIndex + 1];
       // Check if it's a known module, not 'agents' or '_config'
       if (['bmm', 'bmb', 'cis', 'core'].includes(potentialModule)) {
+        module = potentialModule;
+      }
+    } else if (srcIndex !== -1 && pathParts[srcIndex + 1]) {
+      // Path contains /src/{module}/ (bmm and core are directly under src/)
+      const potentialModule = pathParts[srcIndex + 1];
+      if (potentialModule === 'bmm' || potentialModule === 'core') {
         module = potentialModule;
       }
     }

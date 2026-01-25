@@ -45,7 +45,7 @@ Load config from `{project-root}/_bmad/core/config.yaml` and resolve:
 - `installed_path` = `{project-root}/_bmad/core/workflows/brainstorming`
 - `template_path` = `{installed_path}/template.md`
 - `brain_techniques_path` = `{installed_path}/brain-methods.csv`
-- `default_output_file` = `{output_folder}/analysis/brainstorming-session-{{date}}.md`
+- `default_output_file` = `{output_folder}/brainstorming/brainstorming-session-{{date}}.md`
 - `context_file` = Optional context file path from workflow invocation for project-specific guidance
 - `advancedElicitationTask` = `{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml`
 
@@ -53,6 +53,6 @@ Load config from `{project-root}/_bmad/core/config.yaml` and resolve:
 
 ## EXECUTION
 
-Load and execute `steps/step-01-session-setup.md` to begin the workflow.
+Read fully and follow: `steps/step-01-session-setup.md` to begin the workflow.
 
 **Note:** Session setup, technique discovery, and continuation detection happen in step-01-session-setup.md.

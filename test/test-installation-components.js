@@ -62,7 +62,7 @@ async function runTests() {
 
   try {
     const builder = new YamlXmlBuilder();
-    const pmAgentPath = path.join(projectRoot, 'src/modules/bmm/agents/pm.agent.yaml');
+    const pmAgentPath = path.join(projectRoot, 'src/bmm/agents/pm.agent.yaml');
 
     // Create temp output path
     const tempOutput = path.join(__dirname, 'temp-pm-agent.md');
@@ -164,7 +164,7 @@ async function runTests() {
 
   try {
     const builder = new YamlXmlBuilder();
-    const teaAgentPath = path.join(projectRoot, 'src/modules/bmm/agents/tea.agent.yaml');
+    const teaAgentPath = path.join(projectRoot, 'src/bmm/agents/tea.agent.yaml');
     const tempOutput = path.join(__dirname, 'temp-tea-agent.md');
 
     try {

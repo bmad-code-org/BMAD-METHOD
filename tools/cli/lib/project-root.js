@@ -55,10 +55,16 @@ function getSourcePath(...segments) {
 
 /**
  * Get path to a module's directory
+ * bmm is a built-in module directly under src/
+ * core is also directly under src/
+ * All other modules are stored remote
  */
 function getModulePath(moduleName, ...segments) {
   if (moduleName === 'core') {
     return getSourcePath('core', ...segments);
+  }
+  if (moduleName === 'bmm') {
+    return getSourcePath('bmm', ...segments);
   }
   return getSourcePath('modules', moduleName, ...segments);
 }

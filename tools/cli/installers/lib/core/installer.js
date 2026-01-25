@@ -16,6 +16,7 @@ const { CLIUtils } = require('../../../lib/cli-utils');
 const { ManifestGenerator } = require('./manifest-generator');
 const { IdeConfigManager } = require('./ide-config-manager');
 const { CustomHandler } = require('../custom/handler');
+const prompts = require('../../../lib/prompts');
 
 // BMAD installation folder name - this is constant and should never change
 const BMAD_FOLDER_NAME = '_bmad';
@@ -33,7 +34,6 @@ class Installer {
     this.configCollector = new ConfigCollector();
     this.ideConfigManager = new IdeConfigManager();
     this.installedFiles = new Set(); // Track all installed files
-    this.ttsInjectedFiles = []; // Track files with TTS injection applied
     this.bmadFolderName = BMAD_FOLDER_NAME;
   }
 
@@ -68,7 +68,7 @@ class Installer {
   /**
    * @function copyFileWithPlaceholderReplacement
    * @intent Copy files from BMAD source to installation directory with dynamic content transformation
-   * @why Enables installation-time customization: _bmad replacement + optional AgentVibes TTS injection
+   * @why Enables installation-time customization: _bmad replacement
    * @param {string} sourcePath - Absolute path to source file in BMAD repository
    * @param {string} targetPath - Absolute path to destination file in user's project
    * @param {string} bmadFolderName - User's chosen bmad folder name (default: 'bmad')
@@ -76,24 +76,9 @@ class Installer {
    * @sideeffects Writes transformed file to targetPath, creates parent directories if needed
    * @edgecases Binary files bypass transformation, falls back to raw copy if UTF-8 read fails
    * @calledby installCore(), installModule(), IDE installers during file vendoring
-   * @calls processTTSInjectionPoints(), fs.readFile(), fs.writeFile(), fs.copy()
+   * @calls fs.readFile(), fs.writeFile(), fs.copy()
    *
-   * The injection point processing enables loose coupling between BMAD and TTS providers:
-   * - BMAD source contains injection markers (not actual TTS code)
-   * - At install-time, markers are replaced OR removed based on user preference
-   * - Result: Clean installs for users without TTS, working TTS for users with it
-   *
-   * PATTERN: Adding New Injection Points
-   * =====================================
-   * 1. Add HTML comment marker in BMAD source file:
-   *    <!-- TTS_INJECTION:feature-name -->
-   *
-   * 2. Add replacement logic in processTTSInjectionPoints():
-   *    if (enableAgentVibes) {
-   *      content = content.replace(/<!-- TTS_INJECTION:feature-name -->/g, 'actual code');
-   *    } else {
-   *      content = content.replace(/<!-- TTS_INJECTION:feature-name -->\n?/g, '');
-   *    }
+
    *
    * 3. Document marker in instructions.md (if applicable)
    */
@@ -108,9 +93,6 @@ class Installer {
         // Read the file content
         let content = await fs.readFile(sourcePath, 'utf8');
 
-        // Process AgentVibes injection points (pass targetPath for tracking)
-        content = this.processTTSInjectionPoints(content, targetPath);
-
         // Write to target with replaced content
         await fs.ensureDir(path.dirname(targetPath));
         await fs.writeFile(targetPath, content, 'utf8');
@@ -122,116 +104,6 @@ class Installer {
       // Binary file or other file type - just copy directly
       await fs.copy(sourcePath, targetPath, { overwrite: true });
     }
-  }
-
-  /**
-   * @function processTTSInjectionPoints
-   * @intent Transform TTS injection markers based on user's installation choice
-   * @why Enables optional TTS integration without tight coupling between BMAD and TTS providers
-   * @param {string} content - Raw file content containing potential injection markers
-   * @returns {string} Transformed content with markers replaced (if enabled) or stripped (if disabled)
-   * @sideeffects None - pure transformation function
-   * @edgecases Returns content unchanged if no markers present, safe to call on all files
-   * @calledby copyFileWithPlaceholderReplacement() during every file copy operation
-   * @calls String.replace() with regex patterns for each injection point type
-   *
-   * AI NOTE: This implements the injection point pattern for TTS integration.
-   * Key architectural decisions:
-   *
-   * 1. **Why Injection Points vs Direct Integration?**
-   *    - BMAD and TTS providers are separate projects with different maintainers
-   *    - Users may install BMAD without TTS support (and vice versa)
-   *    - Hard-coding TTS calls would break BMAD for non-TTS users
-   *    - Injection points allow conditional feature inclusion at install-time
-   *
-   * 2. **How It Works:**
-   *    - BMAD source contains markers: <!-- TTS_INJECTION:feature-name -->
-   *    - During installation, user is prompted: "Enable AgentVibes TTS?"
-   *    - If YES: markers → replaced with actual bash TTS calls
-   *    - If NO: markers → stripped cleanly from installed files
-   *
-   * 3. **State Management:**
-   *    - this.enableAgentVibes set in install() method from config.enableAgentVibes
-   *    - config.enableAgentVibes comes from ui.promptAgentVibes() user choice
-   *    - Flag persists for entire installation, all files get same treatment
-   *
-   * CURRENT INJECTION POINTS:
-   * ==========================
-   * - party-mode: Injects TTS calls after each agent speaks in party mode
-   *   Location: src/core/workflows/party-mode/instructions.md
-   *   Marker: <!-- TTS_INJECTION:party-mode -->
-   *   Replacement: Bash call to .claude/hooks/bmad-speak.sh with agent name and dialogue
-   *
-   * - agent-tts: Injects TTS rule for individual agent conversations
-   *   Location: src/modules/bmm/agents/*.md (all agent files)
-   *   Marker: <!-- TTS_INJECTION:agent-tts -->
-   *   Replacement: Rule instructing agent to call bmad-speak.sh with agent ID and response
-   *
-   * ADDING NEW INJECTION POINTS:
-   * =============================
-   * 1. Add new case in this function:
-   *    content = content.replace(
-   *      /<!-- TTS_INJECTION:new-feature -->/g,
-   *      `code to inject when enabled`
-   *    );
-   *
-   * 2. Add marker to BMAD source file at injection location
-   *
-   * 3. Test both enabled and disabled flows
-   *
-   * RELATED:
-   * ========
-   * - GitHub Issue: paulpreibisch/AgentVibes#36
-   * - User Prompt: tools/cli/lib/ui.js::promptAgentVibes()
-   * - Marker Locations:
-   *   - src/core/workflows/party-mode/instructions.md:101
-   *   - src/modules/bmm/agents/*.md (rules sections)
-   * - TTS Hook: .claude/hooks/bmad-speak.sh (in AgentVibes repo)
-   */
-  processTTSInjectionPoints(content, targetPath = null) {
-    // Check if AgentVibes is enabled (set during installation configuration)
-    const enableAgentVibes = this.enableAgentVibes || false;
-
-    // Check if content contains any TTS injection markers
-    const hasPartyMode = content.includes('<!-- TTS_INJECTION:party-mode -->');
-    const hasAgentTTS = content.includes('<!-- TTS_INJECTION:agent-tts -->');
-
-    if (enableAgentVibes) {
-      // Replace party-mode injection marker with actual TTS call
-      // Use single quotes to prevent shell expansion of special chars like !
-      content = content.replaceAll(
-        '<!-- TTS_INJECTION:party-mode -->',
-        `<critical>IMPORTANT: Always use PROJECT hooks (.claude/hooks/), NEVER global hooks (~/.claude/hooks/)</critical>
-
-        If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
-         - Use Bash tool: \`.claude/hooks/bmad-speak.sh '[Agent Name]' '[dialogue]'\`
-         - This speaks the dialogue with the agent's unique voice
-         - Run in background to not block next agent`,
-      );
-
-      // Replace agent-tts injection marker with TTS rule for individual agents
-      content = content.replaceAll(
-        '<!-- TTS_INJECTION:agent-tts -->',
-        `- When responding to user messages, speak your responses using TTS:
-          Call: \`.claude/hooks/bmad-speak.sh '{agent-id}' '{response-text}'\` after each response
-          Replace {agent-id} with YOUR agent ID from <agent id="..."> tag at top of this file
-          Replace {response-text} with the text you just output to the user
-          IMPORTANT: Use single quotes as shown - do NOT escape special characters like ! or $ inside single quotes
-          Run in background (&) to avoid blocking`,
-      );
-
-      // Track files that had TTS injection applied
-      if (targetPath && (hasPartyMode || hasAgentTTS)) {
-        const injectionType = hasPartyMode ? 'party-mode' : 'agent-tts';
-        this.ttsInjectedFiles.push({ path: targetPath, type: injectionType });
-      }
-    } else {
-      // Strip injection markers cleanly when AgentVibes is disabled
-      content = content.replaceAll(/<!-- TTS_INJECTION:party-mode -->\n?/g, '');
-      content = content.replaceAll(/<!-- TTS_INJECTION:agent-tts -->\n?/g, '');
-    }
-
-    return content;
   }
 
   /**
@@ -250,7 +122,7 @@ class Installer {
       // Fallback: prompt for tool selection (backwards compatibility)
       const { UI } = require('../../../lib/ui');
       const ui = new UI();
-      toolConfig = await ui.promptToolSelection(projectDir, selectedModules);
+      toolConfig = await ui.promptToolSelection(projectDir);
     } else {
       // IDEs were already selected during initial prompts
       toolConfig = {
@@ -509,9 +381,6 @@ class Installer {
       }
     }
 
-    // Store AgentVibes configuration for injection point processing
-    this.enableAgentVibes = config.enableAgentVibes || false;
-
     // Set bmad folder name on module manager and IDE manager for placeholder replacement
     this.moduleManager.setBmadFolderName(BMAD_FOLDER_NAME);
     this.moduleManager.setCoreConfig(moduleConfigs.core || {});
@@ -575,12 +444,85 @@ class Installer {
           config._isUpdate = true;
           config._existingInstall = existingInstall;
 
+          // Detect modules that were previously installed but are NOT in the new selection (to be removed)
+          const previouslyInstalledModules = new Set(existingInstall.modules.map((m) => m.id));
+          const newlySelectedModules = new Set(config.modules || []);
+
+          // Find modules to remove (installed but not in new selection)
+          // Exclude 'core' from being removable
+          const modulesToRemove = [...previouslyInstalledModules].filter((m) => !newlySelectedModules.has(m) && m !== 'core');
+
+          // If there are modules to remove, ask for confirmation
+          if (modulesToRemove.length > 0) {
+            const prompts = require('../../../lib/prompts');
+            spinner.stop();
+
+            console.log('');
+            console.log(chalk.yellow.bold('⚠️  Modules to be removed:'));
+            for (const moduleId of modulesToRemove) {
+              const moduleInfo = existingInstall.modules.find((m) => m.id === moduleId);
+              const displayName = moduleInfo?.name || moduleId;
+              const modulePath = path.join(bmadDir, moduleId);
+              console.log(chalk.red(`  - ${displayName} (${modulePath})`));
+            }
+            console.log('');
+
+            const confirmRemoval = await prompts.confirm({
+              message: `Remove ${modulesToRemove.length} module(s) from BMAD installation?`,
+              default: false,
+            });
+
+            if (confirmRemoval) {
+              // Remove module folders
+              for (const moduleId of modulesToRemove) {
+                const modulePath = path.join(bmadDir, moduleId);
+                try {
+                  if (await fs.pathExists(modulePath)) {
+                    await fs.remove(modulePath);
+                    console.log(chalk.dim(`  ✓ Removed: ${moduleId}`));
+                  }
+                } catch (error) {
+                  console.warn(chalk.yellow(`  Warning: Failed to remove ${moduleId}: ${error.message}`));
+                }
+              }
+              console.log(chalk.green(`  ✓ Removed ${modulesToRemove.length} module(s)`));
+            } else {
+              console.log(chalk.dim('  → Module removal cancelled'));
+              // Add the modules back to the selection since user cancelled removal
+              for (const moduleId of modulesToRemove) {
+                if (!config.modules) config.modules = [];
+                config.modules.push(moduleId);
+              }
+            }
+
+            spinner.start('Preparing update...');
+          }
+
           // Detect custom and modified files BEFORE updating (compare current files vs files-manifest.csv)
           const existingFilesManifest = await this.readFilesManifest(bmadDir);
           const { customFiles, modifiedFiles } = await this.detectCustomFiles(bmadDir, existingFilesManifest);
 
           config._customFiles = customFiles;
           config._modifiedFiles = modifiedFiles;
+
+          // Preserve existing core configuration during updates
+          // Read the current core config.yaml to maintain user's settings
+          const coreConfigPath = path.join(bmadDir, 'core', 'config.yaml');
+          if ((await fs.pathExists(coreConfigPath)) && (!config.coreConfig || Object.keys(config.coreConfig).length === 0)) {
+            try {
+              const yaml = require('yaml');
+              const coreConfigContent = await fs.readFile(coreConfigPath, 'utf8');
+              const existingCoreConfig = yaml.parse(coreConfigContent);
+
+              // Store in config.coreConfig so it's preserved through the installation
+              config.coreConfig = existingCoreConfig;
+
+              // Also store in configCollector for use during config collection
+              this.configCollector.collectedConfig.core = existingCoreConfig;
+            } catch (error) {
+              console.warn(chalk.yellow(`Warning: Could not read existing core config: ${error.message}`));
+            }
+          }
 
           // Also check cache directory for custom modules (like quick update does)
           const cacheDir = path.join(bmadDir, '_config', 'custom');
@@ -593,6 +535,13 @@ class Installer {
 
                 // Skip if we already have this module from manifest
                 if (customModulePaths.has(moduleId)) {
+                  continue;
+                }
+
+                // Check if this is an external official module - skip cache for those
+                const isExternal = await this.moduleManager.isExternalModule(moduleId);
+                if (isExternal) {
+                  // External modules are handled via cloneExternalModule, not from cache
                   continue;
                 }
 
@@ -668,6 +617,13 @@ class Installer {
 
               // Skip if we already have this module from manifest
               if (customModulePaths.has(moduleId)) {
+                continue;
+              }
+
+              // Check if this is an external official module - skip cache for those
+              const isExternal = await this.moduleManager.isExternalModule(moduleId);
+              if (isExternal) {
+                // External modules are handled via cloneExternalModule, not from cache
                 continue;
               }
 
@@ -757,6 +713,9 @@ class Installer {
       config.ides = toolSelection.ides;
       config.skipIde = toolSelection.skipIde;
       const ideConfigurations = toolSelection.configurations;
+
+      // Add spacing after prompts before installation progress
+      console.log('');
 
       if (spinner.isSpinning) {
         spinner.text = 'Continuing installation...';
@@ -1016,6 +975,7 @@ class Installer {
       this.installedFiles.add(path.join(cfgDir, 'task-manifest.csv'));
 
       // Generate CSV manifests for workflows, agents, tasks AND ALL FILES with hashes BEFORE IDE setup
+      // This must happen BEFORE mergeModuleHelpCatalogs because it depends on agent-manifest.csv
       spinner.start('Generating workflow and agent manifests...');
       const manifestGen = new ManifestGenerator();
 
@@ -1047,6 +1007,12 @@ class Installer {
       spinner.succeed(
         `Manifests generated: ${manifestStats.workflows} workflows, ${manifestStats.agents} agents, ${manifestStats.tasks} tasks, ${manifestStats.tools} tools, ${manifestStats.files} files`,
       );
+
+      // Merge all module-help.csv files into bmad-help.csv
+      // This must happen AFTER generateManifests because it depends on agent-manifest.csv
+      spinner.start('Generating workflow help catalog...');
+      await this.mergeModuleHelpCatalogs(bmadDir);
+      spinner.succeed('Workflow help catalog generated');
 
       // Configure IDEs and copy documentation
       if (!config.skipIde && config.ides && config.ides.length > 0) {
@@ -1230,8 +1196,6 @@ class Installer {
         modules: config.modules,
         ides: config.ides,
         customFiles: customFiles.length > 0 ? customFiles : undefined,
-        ttsInjectedFiles: this.enableAgentVibes && this.ttsInjectedFiles.length > 0 ? this.ttsInjectedFiles : undefined,
-        agentVibesEnabled: this.enableAgentVibes || false,
       });
 
       return {
@@ -1239,7 +1203,6 @@ class Installer {
         path: bmadDir,
         modules: config.modules,
         ides: config.ides,
-        needsAgentVibes: this.enableAgentVibes && !config.agentVibesInstalled,
         projectDir: projectDir,
       };
     } catch (error) {
@@ -1291,6 +1254,13 @@ class Installer {
 
             // Skip if we already have this module
             if (customModuleSources.has(moduleId)) {
+              continue;
+            }
+
+            // Check if this is an external official module - skip cache for those
+            const isExternal = await this.moduleManager.isExternalModule(moduleId);
+            if (isExternal) {
+              // External modules are handled via cloneExternalModule, not from cache
               continue;
             }
 
@@ -1404,6 +1374,240 @@ class Installer {
   /**
    * Private: Create directory structure
    */
+  /**
+   * Merge all module-help.csv files into a single bmad-help.csv
+   * Scans all installed modules for module-help.csv and merges them
+   * Enriches agent info from agent-manifest.csv
+   * Output is written to _bmad/_config/bmad-help.csv
+   * @param {string} bmadDir - BMAD installation directory
+   */
+  async mergeModuleHelpCatalogs(bmadDir) {
+    const allRows = [];
+    const headerRow =
+      'module,phase,name,code,sequence,workflow-file,command,required,agent-name,agent-command,agent-display-name,agent-title,options,description,output-location,outputs';
+
+    // Load agent manifest for agent info lookup
+    const agentManifestPath = path.join(bmadDir, '_config', 'agent-manifest.csv');
+    const agentInfo = new Map(); // agent-name -> {command, displayName, title+icon}
+
+    if (await fs.pathExists(agentManifestPath)) {
+      const manifestContent = await fs.readFile(agentManifestPath, 'utf8');
+      const lines = manifestContent.split('\n').filter((line) => line.trim());
+
+      for (const line of lines) {
+        if (line.startsWith('name,')) continue; // Skip header
+
+        const cols = line.split(',');
+        if (cols.length >= 4) {
+          const agentName = cols[0].replaceAll('"', '').trim();
+          const displayName = cols[1].replaceAll('"', '').trim();
+          const title = cols[2].replaceAll('"', '').trim();
+          const icon = cols[3].replaceAll('"', '').trim();
+          const module = cols[10] ? cols[10].replaceAll('"', '').trim() : '';
+
+          // Build agent command: bmad:module:agent:name
+          const agentCommand = module ? `bmad:${module}:agent:${agentName}` : `bmad:agent:${agentName}`;
+
+          agentInfo.set(agentName, {
+            command: agentCommand,
+            displayName: displayName || agentName,
+            title: icon && title ? `${icon} ${title}` : title || agentName,
+          });
+        }
+      }
+    }
+
+    // Get all installed module directories
+    const entries = await fs.readdir(bmadDir, { withFileTypes: true });
+    const installedModules = entries
+      .filter((entry) => entry.isDirectory() && entry.name !== '_config' && entry.name !== 'docs' && entry.name !== '_memory')
+      .map((entry) => entry.name);
+
+    // Add core module to scan (it's installed at root level as _config, but we check src/core)
+    const coreModulePath = getSourcePath('core');
+    const modulePaths = new Map();
+
+    // Map all module source paths
+    if (await fs.pathExists(coreModulePath)) {
+      modulePaths.set('core', coreModulePath);
+    }
+
+    // Map installed module paths
+    for (const moduleName of installedModules) {
+      const modulePath = path.join(bmadDir, moduleName);
+      modulePaths.set(moduleName, modulePath);
+    }
+
+    // Scan each module for module-help.csv
+    for (const [moduleName, modulePath] of modulePaths) {
+      const helpFilePath = path.join(modulePath, 'module-help.csv');
+
+      if (await fs.pathExists(helpFilePath)) {
+        try {
+          const content = await fs.readFile(helpFilePath, 'utf8');
+          const lines = content.split('\n').filter((line) => line.trim() && !line.startsWith('#'));
+
+          for (const line of lines) {
+            // Skip header row
+            if (line.startsWith('module,')) {
+              continue;
+            }
+
+            // Parse the line - handle quoted fields with commas
+            const columns = this.parseCSVLine(line);
+            if (columns.length >= 12) {
+              // Map old schema to new schema
+              // Old: module,phase,name,code,sequence,workflow-file,command,required,agent,options,description,output-location,outputs
+              // New: module,phase,name,code,sequence,workflow-file,command,required,agent-name,agent-command,agent-display-name,agent-title,options,description,output-location,outputs
+
+              const [
+                module,
+                phase,
+                name,
+                code,
+                sequence,
+                workflowFile,
+                command,
+                required,
+                agentName,
+                options,
+                description,
+                outputLocation,
+                outputs,
+              ] = columns;
+
+              // If module column is empty, set it to this module's name (except for core which stays empty for universal tools)
+              const finalModule = (!module || module.trim() === '') && moduleName !== 'core' ? moduleName : module || '';
+
+              // Lookup agent info
+              const cleanAgentName = agentName ? agentName.trim() : '';
+              const agentData = agentInfo.get(cleanAgentName) || { command: '', displayName: '', title: '' };
+
+              // Build new row with agent info
+              const newRow = [
+                finalModule,
+                phase || '',
+                name || '',
+                code || '',
+                sequence || '',
+                workflowFile || '',
+                command || '',
+                required || 'false',
+                cleanAgentName,
+                agentData.command,
+                agentData.displayName,
+                agentData.title,
+                options || '',
+                description || '',
+                outputLocation || '',
+                outputs || '',
+              ];
+
+              allRows.push(newRow.map((c) => this.escapeCSVField(c)).join(','));
+            }
+          }
+
+          if (process.env.BMAD_VERBOSE_INSTALL === 'true') {
+            console.log(chalk.dim(`  Merged module-help from: ${moduleName}`));
+          }
+        } catch (error) {
+          console.warn(chalk.yellow(`  Warning: Failed to read module-help.csv from ${moduleName}:`, error.message));
+        }
+      }
+    }
+
+    // Sort by module, then phase, then sequence
+    allRows.sort((a, b) => {
+      const colsA = this.parseCSVLine(a);
+      const colsB = this.parseCSVLine(b);
+
+      // Module comparison (empty module/universal tools come first)
+      const moduleA = (colsA[0] || '').toLowerCase();
+      const moduleB = (colsB[0] || '').toLowerCase();
+      if (moduleA !== moduleB) {
+        return moduleA.localeCompare(moduleB);
+      }
+
+      // Phase comparison
+      const phaseA = colsA[1] || '';
+      const phaseB = colsB[1] || '';
+      if (phaseA !== phaseB) {
+        return phaseA.localeCompare(phaseB);
+      }
+
+      // Sequence comparison
+      const seqA = parseInt(colsA[4] || '0', 10);
+      const seqB = parseInt(colsB[4] || '0', 10);
+      return seqA - seqB;
+    });
+
+    // Write merged catalog
+    const outputDir = path.join(bmadDir, '_config');
+    await fs.ensureDir(outputDir);
+    const outputPath = path.join(outputDir, 'bmad-help.csv');
+
+    const mergedContent = [headerRow, ...allRows].join('\n');
+    await fs.writeFile(outputPath, mergedContent, 'utf8');
+
+    // Track the installed file
+    this.installedFiles.add(outputPath);
+
+    if (process.env.BMAD_VERBOSE_INSTALL === 'true') {
+      console.log(chalk.dim(`  Generated bmad-help.csv: ${allRows.length} workflows`));
+    }
+  }
+
+  /**
+   * Parse a CSV line, handling quoted fields
+   * @param {string} line - CSV line to parse
+   * @returns {Array} Array of field values
+   */
+  parseCSVLine(line) {
+    const result = [];
+    let current = '';
+    let inQuotes = false;
+
+    for (let i = 0; i < line.length; i++) {
+      const char = line[i];
+      const nextChar = line[i + 1];
+
+      if (char === '"') {
+        if (inQuotes && nextChar === '"') {
+          // Escaped quote
+          current += '"';
+          i++; // Skip next quote
+        } else {
+          // Toggle quote mode
+          inQuotes = !inQuotes;
+        }
+      } else if (char === ',' && !inQuotes) {
+        result.push(current);
+        current = '';
+      } else {
+        current += char;
+      }
+    }
+    result.push(current);
+    return result;
+  }
+
+  /**
+   * Escape a CSV field if it contains special characters
+   * @param {string} field - Field value to escape
+   * @returns {string} Escaped field
+   */
+  escapeCSVField(field) {
+    if (field === null || field === undefined) {
+      return '';
+    }
+    const str = String(field);
+    // If field contains comma, quote, or newline, wrap in quotes and escape inner quotes
+    if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+      return `"${str.replaceAll('"', '""')}"`;
+    }
+    return str;
+  }
+
   async createDirectoryStructure(bmadDir) {
     await fs.ensureDir(bmadDir);
     await fs.ensureDir(path.join(bmadDir, '_config'));
@@ -1877,6 +2081,13 @@ class Installer {
               continue;
             }
 
+            // Check if this is an external official module - skip cache for those
+            const isExternal = await this.moduleManager.isExternalModule(moduleId);
+            if (isExternal) {
+              // External modules are handled via cloneExternalModule, not from cache
+              continue;
+            }
+
             const cachedPath = path.join(cacheDir, moduleId);
 
             // Check if this is actually a custom module (has module.yaml)
@@ -1900,6 +2111,23 @@ class Installer {
       // Get available modules (what we have source for)
       const availableModulesData = await this.moduleManager.listAvailable();
       const availableModules = [...availableModulesData.modules, ...availableModulesData.customModules];
+
+      // Add external official modules to available modules
+      // These can always be obtained by cloning from their remote URLs
+      const { ExternalModuleManager } = require('../modules/external-manager');
+      const externalManager = new ExternalModuleManager();
+      const externalModules = await externalManager.listAvailable();
+      for (const externalModule of externalModules) {
+        // Only add if not already in the list and is installed
+        if (installedModules.includes(externalModule.code) && !availableModules.some((m) => m.id === externalModule.code)) {
+          availableModules.push({
+            id: externalModule.code,
+            name: externalModule.name,
+            isExternal: true,
+            fromExternal: true,
+          });
+        }
+      }
 
       // Add custom modules from manifest if their sources exist
       for (const [moduleId, customModule] of customModuleSources) {
@@ -2080,6 +2308,12 @@ class Installer {
 
             // Check if this is actually a custom module
             if (await fs.pathExists(moduleYamlPath)) {
+              // Check if this is an external official module - skip cache for those
+              const isExternal = await this.moduleManager.isExternalModule(moduleId);
+              if (isExternal) {
+                // External modules are handled via cloneExternalModule, not from cache
+                continue;
+              }
               customModuleSources.set(moduleId, cachedPath);
             }
           }
@@ -2139,15 +2373,11 @@ class Installer {
    * Private: Prompt for update action
    */
   async promptUpdateAction() {
-    const { default: inquirer } = await import('inquirer');
-    return await inquirer.prompt([
-      {
-        type: 'list',
-        name: 'action',
-        message: 'What would you like to do?',
-        choices: [{ name: 'Update existing installation', value: 'update' }],
-      },
-    ]);
+    const action = await prompts.select({
+      message: 'What would you like to do?',
+      choices: [{ name: 'Update existing installation', value: 'update' }],
+    });
+    return { action };
   }
 
   /**
@@ -2156,8 +2386,6 @@ class Installer {
    * @param {Object} _legacyV4 - Legacy V4 detection result (unused in simplified version)
    */
   async handleLegacyV4Migration(_projectDir, _legacyV4) {
-    const { default: inquirer } = await import('inquirer');
-
     console.log('');
     console.log(chalk.yellow.bold('⚠️  Legacy BMAD v4 detected'));
     console.log(chalk.yellow('─'.repeat(80)));
@@ -2172,26 +2400,22 @@ class Installer {
     console.log(chalk.dim('If your v4 installation set up rules or commands, you should remove those as well.'));
     console.log('');
 
-    const { proceed } = await inquirer.prompt([
-      {
-        type: 'list',
-        name: 'proceed',
-        message: 'What would you like to do?',
-        choices: [
-          {
-            name: 'Exit and clean up manually (recommended)',
-            value: 'exit',
-            short: 'Exit installation',
-          },
-          {
-            name: 'Continue with installation anyway',
-            value: 'continue',
-            short: 'Continue',
-          },
-        ],
-        default: 'exit',
-      },
-    ]);
+    const proceed = await prompts.select({
+      message: 'What would you like to do?',
+      choices: [
+        {
+          name: 'Exit and clean up manually (recommended)',
+          value: 'exit',
+          hint: 'Exit installation',
+        },
+        {
+          name: 'Continue with installation anyway',
+          value: 'continue',
+          hint: 'Continue',
+        },
+      ],
+      default: 'exit',
+    });
 
     if (proceed === 'exit') {
       console.log('');
@@ -2437,7 +2661,6 @@ class Installer {
 
     console.log(chalk.yellow(`\n⚠️  Found ${customModulesWithMissingSources.length} custom module(s) with missing sources:`));
 
-    const { default: inquirer } = await import('inquirer');
     let keptCount = 0;
     let updatedCount = 0;
     let removedCount = 0;
@@ -2451,12 +2674,12 @@ class Installer {
         {
           name: 'Keep installed (will not be processed)',
           value: 'keep',
-          short: 'Keep',
+          hint: 'Keep',
         },
         {
           name: 'Specify new source location',
           value: 'update',
-          short: 'Update',
+          hint: 'Update',
         },
       ];
 
@@ -2465,47 +2688,40 @@ class Installer {
         choices.push({
           name: '⚠️  REMOVE module completely (destructive!)',
           value: 'remove',
-          short: 'Remove',
+          hint: 'Remove',
         });
       }
 
-      const { action } = await inquirer.prompt([
-        {
-          type: 'list',
-          name: 'action',
-          message: `How would you like to handle "${missing.name}"?`,
-          choices,
-        },
-      ]);
+      const action = await prompts.select({
+        message: `How would you like to handle "${missing.name}"?`,
+        choices,
+      });
 
       switch (action) {
         case 'update': {
-          const { newSourcePath } = await inquirer.prompt([
-            {
-              type: 'input',
-              name: 'newSourcePath',
-              message: 'Enter the new path to the custom module:',
-              default: missing.sourcePath,
-              validate: async (input) => {
-                if (!input || input.trim() === '') {
-                  return 'Please enter a path';
-                }
-                const expandedPath = path.resolve(input.trim());
-                if (!(await fs.pathExists(expandedPath))) {
-                  return 'Path does not exist';
-                }
-                // Check if it looks like a valid module
-                const moduleYamlPath = path.join(expandedPath, 'module.yaml');
-                const agentsPath = path.join(expandedPath, 'agents');
-                const workflowsPath = path.join(expandedPath, 'workflows');
+          // Use sync validation because @clack/prompts doesn't support async validate
+          const newSourcePath = await prompts.text({
+            message: 'Enter the new path to the custom module:',
+            default: missing.sourcePath,
+            validate: (input) => {
+              if (!input || input.trim() === '') {
+                return 'Please enter a path';
+              }
+              const expandedPath = path.resolve(input.trim());
+              if (!fs.pathExistsSync(expandedPath)) {
+                return 'Path does not exist';
+              }
+              // Check if it looks like a valid module
+              const moduleYamlPath = path.join(expandedPath, 'module.yaml');
+              const agentsPath = path.join(expandedPath, 'agents');
+              const workflowsPath = path.join(expandedPath, 'workflows');
 
-                if (!(await fs.pathExists(moduleYamlPath)) && !(await fs.pathExists(agentsPath)) && !(await fs.pathExists(workflowsPath))) {
-                  return 'Path does not appear to contain a valid custom module';
-                }
-                return true;
-              },
+              if (!fs.pathExistsSync(moduleYamlPath) && !fs.pathExistsSync(agentsPath) && !fs.pathExistsSync(workflowsPath)) {
+                return 'Path does not appear to contain a valid custom module';
+              }
+              return; // clack expects undefined for valid input
             },
-          ]);
+          });
 
           // Update the source in manifest
           const resolvedPath = path.resolve(newSourcePath.trim());
@@ -2531,46 +2747,38 @@ class Installer {
           console.log(chalk.red.bold(`\n⚠️  WARNING: This will PERMANENTLY DELETE "${missing.name}" and all its files!`));
           console.log(chalk.red(`  Module location: ${path.join(bmadDir, missing.id)}`));
 
-          const { confirm } = await inquirer.prompt([
-            {
-              type: 'confirm',
-              name: 'confirm',
-              message: chalk.red.bold('Are you absolutely sure you want to delete this module?'),
-              default: false,
-            },
-          ]);
+          const confirmDelete = await prompts.confirm({
+            message: chalk.red.bold('Are you absolutely sure you want to delete this module?'),
+            default: false,
+          });
 
-          if (confirm) {
-            const { typedConfirm } = await inquirer.prompt([
-              {
-                type: 'input',
-                name: 'typedConfirm',
-                message: chalk.red.bold('Type "DELETE" to confirm permanent deletion:'),
-                validate: (input) => {
-                  if (input !== 'DELETE') {
-                    return chalk.red('You must type "DELETE" exactly to proceed');
-                  }
-                  return true;
-                },
+          if (confirmDelete) {
+            const typedConfirm = await prompts.text({
+              message: chalk.red.bold('Type "DELETE" to confirm permanent deletion:'),
+              validate: (input) => {
+                if (input !== 'DELETE') {
+                  return chalk.red('You must type "DELETE" exactly to proceed');
+                }
+                return; // clack expects undefined for valid input
               },
-            ]);
+            });
 
             if (typedConfirm === 'DELETE') {
               // Remove the module from filesystem and manifest
-              const modulePath = path.join(bmadDir, moduleId);
+              const modulePath = path.join(bmadDir, missing.id);
               if (await fs.pathExists(modulePath)) {
                 const fsExtra = require('fs-extra');
                 await fsExtra.remove(modulePath);
                 console.log(chalk.yellow(`  ✓ Deleted module directory: ${path.relative(projectRoot, modulePath)}`));
               }
 
-              await this.manifest.removeModule(bmadDir, moduleId);
-              await this.manifest.removeCustomModule(bmadDir, moduleId);
+              await this.manifest.removeModule(bmadDir, missing.id);
+              await this.manifest.removeCustomModule(bmadDir, missing.id);
               console.log(chalk.yellow(`  ✓ Removed from manifest`));
 
               // Also remove from installedModules list
-              if (installedModules && installedModules.includes(moduleId)) {
-                const index = installedModules.indexOf(moduleId);
+              if (installedModules && installedModules.includes(missing.id)) {
+                const index = installedModules.indexOf(missing.id);
                 if (index !== -1) {
                   installedModules.splice(index, 1);
                 }
@@ -2591,7 +2799,7 @@ class Installer {
         }
         case 'keep': {
           keptCount++;
-          keptModulesWithoutSources.push(moduleId);
+          keptModulesWithoutSources.push(missing.id);
           console.log(chalk.dim(`  Module will be kept as-is`));
 
           break;

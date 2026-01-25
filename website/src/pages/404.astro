@@ -1,0 +1,11 @@
+---
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import { getEntry } from 'astro:content';
+
+const entry = await getEntry('docs', '404');
+const { Content } = await entry.render();
+---
+
+<StarlightPage frontmatter={{ title: entry.data.title, template: entry.data.template }}>
+  <Content />
+</StarlightPage>

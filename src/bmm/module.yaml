@@ -1,0 +1,44 @@
+code: bmm
+name: "BMad Method Agile-AI Driven-Development"
+description: "AI-driven agile development framework"
+default_selected: true # This module will be selected by default for new installations
+
+# Variables from Core Config inserted:
+## user_name
+## communication_language
+## document_output_language
+## output_folder
+
+project_name:
+  prompt: "What is your project called?"
+  default: "{directory_name}"
+  result: "{value}"
+
+user_skill_level:
+  prompt:
+    - "What is your development experience level?"
+    - "This affects how agents explain concepts in chat."
+  default: "intermediate"
+  result: "{value}"
+  single-select:
+    - value: "beginner"
+      label: "Beginner - Explain things clearly"
+    - value: "intermediate"
+      label: "Intermediate - Balance detail with speed"
+    - value: "expert"
+      label: "Expert - Be direct and technical"
+
+planning_artifacts: # Phase 1-3 artifacts
+  prompt: "Where should planning artifacts be stored? (Brainstorming, Briefs, PRDs, UX Designs, Architecture, Epics)"
+  default: "{output_folder}/planning-artifacts"
+  result: "{project-root}/{value}"
+
+implementation_artifacts: # Phase 4 artifacts and quick-dev flow output
+  prompt: "Where should implementation artifacts be stored? (Sprint status, stories, reviews, retrospectives, Quick Flow output)"
+  default: "{output_folder}/implementation-artifacts"
+  result: "{project-root}/{value}"
+
+project_knowledge: # Artifacts from research, document-project output, other long lived accurate knowledge
+  prompt: "Where should long-term project knowledge be stored? (docs, research, references)"
+  default: "docs"
+  result: "{project-root}/{value}"

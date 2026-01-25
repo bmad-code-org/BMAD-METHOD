@@ -35,7 +35,7 @@ Load existing document and analyze current state:
 
 **Document Analysis:**
 
-- Read existing `{output_folder}/analysis/brainstorming-session-{{date}}.md`
+- Read existing `{output_folder}/brainstorming/brainstorming-session-{{date}}.md`
 - Examine frontmatter for `stepsCompleted`, `session_topic`, `session_goals`
 - Review content to understand session progress and outcomes
 - Identify current stage and next logical steps

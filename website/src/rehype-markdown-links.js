@@ -1,25 +1,36 @@
 /**
- * Rehype plugin to transform relative markdown file links (.md) to page routes
+ * Rehype plugin to transform markdown file links (.md) to page routes
  *
  * Transforms:
  *   ./path/to/file.md → ./path/to/file/
  *   ./path/index.md → ./path/ (index.md becomes directory root)
  *   ../path/file.md#anchor → ../path/file/#anchor
  *   ./file.md?query=param → ./file/?query=param
+ *   /docs/absolute/path/file.md → {base}/absolute/path/file/
  *
- * Only affects relative links (./,  ../) - absolute and external links are unchanged
+ * For absolute paths starting with /docs/, the /docs prefix is stripped
+ * since the Astro site serves content from the docs directory as the root.
+ * The base path is prepended to absolute paths for subdirectory deployments.
+ *
+ * Affects relative links (./, ../) and absolute paths (/) - external links are unchanged
  */
 
 import { visit } from 'unist-util-visit';
 
 /**
- * Convert relative Markdown file links (./ or ../) into equivalent page route-style links.
+ * Convert Markdown file links (.md) into equivalent page route-style links.
  *
- * The returned transformer walks the HTML tree and rewrites anchor `href` values that are relative paths pointing to `.md` files. It preserves query strings and hash anchors, rewrites `.../index.md` to the directory root path (`.../`), and rewrites other `.md` file paths by removing the `.md` extension and ensuring a trailing slash. Absolute, external, non-relative, non-string, or links without `.md` are left unchanged.
+ * The returned transformer walks the HTML tree and rewrites anchor `href` values that are relative paths (./, ../) or absolute paths (/) pointing to `.md` files. It preserves query strings and hash anchors, rewrites `.../index.md` to the directory root path (`.../`), and rewrites other `.md` file paths by removing the `.md` extension and ensuring a trailing slash. External links (http://, https://) and non-.md links are left unchanged.
  *
+ * @param {Object} options - Plugin options
+ * @param {string} options.base - The base path to prepend to absolute URLs (e.g., '/BMAD-METHOD/')
  * @returns {function} A HAST tree transformer that mutates `a` element `href` properties as described.
  */
-export default function rehypeMarkdownLinks() {
+export default function rehypeMarkdownLinks(options = {}) {
+  const base = options.base || '/';
+  // Normalize base: ensure it ends with / and doesn't have double slashes
+  const normalizedBase = base === '/' ? '' : base.endsWith('/') ? base.slice(0, -1) : base;
+
   return (tree) => {
     visit(tree, 'element', (node) => {
       // Only process anchor tags with href
@@ -34,8 +45,13 @@ export default function rehypeMarkdownLinks() {
         return;
       }
 
-      // Only transform relative paths starting with ./ or ../
-      if (!href.startsWith('./') && !href.startsWith('../')) {
+      // Skip external links (http://, https://, mailto:, etc.)
+      if (href.includes('://') || href.startsWith('mailto:') || href.startsWith('tel:')) {
+        return;
+      }
+
+      // Only transform paths starting with ./, ../, or / (absolute)
+      if (!href.startsWith('./') && !href.startsWith('../') && !href.startsWith('/')) {
         return;
       }
 
@@ -73,12 +89,25 @@ export default function rehypeMarkdownLinks() {
         }
       }
 
+      // Track if this was an absolute path (for base path prepending)
+      const isAbsolute = urlPath.startsWith('/');
+
+      // Strip /docs/ prefix from absolute paths (repo-relative → site-relative)
+      if (urlPath.startsWith('/docs/')) {
+        urlPath = urlPath.slice(5); // Remove '/docs' prefix, keeping the leading /
+      }
+
       // Transform .md to /
       // Special case: index.md → directory root (e.g., ./tutorials/index.md → ./tutorials/)
       if (urlPath.endsWith('/index.md')) {
         urlPath = urlPath.replace(/\/index\.md$/, '/');
       } else {
         urlPath = urlPath.replace(/\.md$/, '/');
+      }
+
+      // Prepend base path to absolute URLs for subdirectory deployments
+      if (isAbsolute && normalizedBase) {
+        urlPath = normalizedBase + urlPath;
       }
 
       // Reconstruct the href

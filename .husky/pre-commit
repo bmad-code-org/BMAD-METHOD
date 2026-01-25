@@ -5,3 +5,16 @@ npx --no-install lint-staged
 
 # Validate everything
 npm test
+
+# Validate docs links only when docs change
+if command -v rg >/dev/null 2>&1; then
+  if git diff --cached --name-only | rg -q '^docs/'; then
+    npm run docs:validate-links
+		npm run docs:build
+  fi
+else
+  if git diff --cached --name-only | grep -Eq '^docs/'; then
+    npm run docs:validate-links
+		npm run docs:build
+  fi
+fi

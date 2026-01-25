@@ -253,14 +253,14 @@ Provide final session wrap-up and forward guidance:
 
 #### If [C] Complete:
 
-- **Append the final session content to `{output_folder}/analysis/brainstorming-session-{{date}}.md`**
+- **Append the final session content to `{output_folder}/brainstorming/brainstorming-session-{{date}}.md`**
 - Update frontmatter: `stepsCompleted: [1, 2, 3, 4]`
 - Set `session_active: false` and `workflow_completed: true`
 - Complete workflow with positive closure message
 
 ## APPEND TO DOCUMENT:
 
-When user selects 'C', append the content directly to `{output_folder}/analysis/brainstorming-session-{{date}}.md` using the structure from step 7.
+When user selects 'C', append the content directly to `{output_folder}/brainstorming/brainstorming-session-{{date}}.md` using the structure from step 7.
 
 ## SUCCESS METRICS:
 

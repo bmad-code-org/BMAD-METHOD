@@ -1,6 +1,6 @@
 # Test: Malformed module path (no slash after module name) treated as core
 # Expected: PASS - malformed path returns null, treated as core agent
-# Path context: src/modules/bmm
+# Path context: src/bmm
 
 agent:
   metadata:

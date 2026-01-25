@@ -23,9 +23,9 @@ agent:
     - trigger: DS or fuzzy match on dev-story
       description: "[DS] Another two-word compound trigger"
       action: dev_story
-    - trigger: WI or fuzzy match on workflow-init-process
+    - trigger: WI or fuzzy match on three-name-thing
       description: "[WI] Three-word compound trigger (uses first 2 words for shortcut)"
-      action: workflow_init
+      action: three_name_thing
     - trigger: H or fuzzy match on help
       description: "[H] Single-word compound trigger (1-letter shortcut)"
       action: help

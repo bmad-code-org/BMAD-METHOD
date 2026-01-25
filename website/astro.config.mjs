@@ -3,6 +3,7 @@ import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 import sitemap from '@astrojs/sitemap';
 import rehypeMarkdownLinks from './src/rehype-markdown-links.js';
+import rehypeBasePaths from './src/rehype-base-paths.js';
 import { getSiteUrl } from './src/lib/site-url.js';
 
 const siteUrl = getSiteUrl();
@@ -28,7 +29,10 @@ export default defineConfig({
   },
 
   markdown: {
-    rehypePlugins: [rehypeMarkdownLinks],
+    rehypePlugins: [
+      [rehypeMarkdownLinks, { base: basePath }],
+      [rehypeBasePaths, { base: basePath }],
+    ],
   },
 
   integrations: [
@@ -38,8 +42,10 @@ export default defineConfig({
       tagline: 'AI-driven agile development with specialized agents and workflows that scale from bug fixes to enterprise platforms.',
 
       logo: {
-        src: './public/img/logo.svg',
-        alt: 'BMAD Logo',
+        light: './public/img/bmad-light.png',
+        dark: './public/img/bmad-dark.png',
+        alt: 'BMAD Method',
+        replacesTitle: true,
       },
       favicon: '/favicon.ico',
 
@@ -104,13 +110,51 @@ export default defineConfig({
           collapsed: true,
           autogenerate: { directory: 'reference' },
         },
+        {
+          label: 'TEA - Testing in BMAD',
+          collapsed: true,
+          items: [
+            {
+              label: 'Tutorials',
+              autogenerate: { directory: 'tea/tutorials' },
+            },
+            {
+              label: 'How-To Guides',
+              items: [
+                {
+                  label: 'Workflows',
+                  autogenerate: { directory: 'tea/how-to/workflows' },
+                },
+                {
+                  label: 'Customization',
+                  autogenerate: { directory: 'tea/how-to/customization' },
+                },
+                {
+                  label: 'Brownfield',
+                  autogenerate: { directory: 'tea/how-to/brownfield' },
+                },
+              ],
+            },
+            {
+              label: 'Explanation',
+              autogenerate: { directory: 'tea/explanation' },
+            },
+            {
+              label: 'Reference',
+              autogenerate: { directory: 'tea/reference' },
+            },
+          ],
+        },
       ],
 
       // Credits in footer
       credits: false,
 
       // Pagination
-      pagination: true,
+      pagination: false,
+
+      // Use our docs/404.md instead of Starlight's built-in 404
+      disable404Route: true,
 
       // Custom components
       components: {
