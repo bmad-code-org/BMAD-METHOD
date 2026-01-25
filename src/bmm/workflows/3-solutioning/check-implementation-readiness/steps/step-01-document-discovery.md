@@ -3,7 +3,7 @@ name: 'step-01-document-discovery'
 description: 'Discover and inventory all project documents, handling duplicates and organizing file structure'
 
 # Path Definitions
-workflow_path: '{project-root}/_bmad/bmm/workflows/3-solutioning/implementation-readiness'
+workflow_path: '{project-root}/_bmad/bmm/workflows/3-solutioning/check-implementation-readiness'
 
 # File References
 thisStepFile: './step-01-document-discovery.md'
