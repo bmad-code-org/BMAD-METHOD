@@ -1,9 +1,10 @@
 ---
 name: 'step-01-init'
-description: 'Initialize pipeline, load story, detect development mode'
+description: 'Initialize pipeline, load story (auto-create if needed), detect development mode'
 
 # Path Definitions
 workflow_path: '{project-root}/_bmad/bmm/workflows/4-implementation/super-dev-pipeline'
+create_story_workflow: '{project-root}/_bmad/bmm/workflows/4-implementation/create-story-with-gap-analysis'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-01-init.md'
@@ -28,7 +29,7 @@ Initialize the super-dev-pipeline:
 
 ### Initialization Principles
 
-- **STORY MUST EXIST** - This workflow does NOT create stories
+- **AUTO-CREATE IF NEEDED** - If story is missing or incomplete, auto-invoke /create-story-with-gap-analysis (NEW v1.4.0)
 - **READ COMPLETELY** - Load all context before proceeding
 - **DETECT MODE** - Determine if greenfield or brownfield
 - **NO ASSUMPTIONS** - Verify all files and paths
@@ -54,7 +55,7 @@ Set `{mode}` variable.
 story_file = {sprint_artifacts}/story-{story_id}.md
 ```
 
-### 3. Verify Story Exists
+### 3. Verify Story Exists (Auto-Create if Missing - NEW v1.4.0)
 
 ```bash
 # Check if story file exists
@@ -63,12 +64,20 @@ test -f "{story_file}"
 
 **If story does NOT exist:**
 ```
-❌ ERROR: Story file not found at {story_file}
+⚠️ Story file not found at {story_file}
 
-super-dev-pipeline requires an existing story file.
-Use create-story or story-pipeline to create new stories.
+🔄 AUTO-CREATING: Invoking /create-story-with-gap-analysis...
+```
 
-HALT
+<invoke-workflow path="{create_story_workflow}/workflow.yaml">
+  <input name="story_id">{story_id}</input>
+  <input name="epic_num">{epic_num}</input>
+  <input name="story_num">{story_num}</input>
+</invoke-workflow>
+
+After workflow completes, verify story was created:
+```bash
+test -f "{story_file}" && echo "✅ Story created successfully" || echo "❌ Story creation failed - HALT"
 ```
 
 **If story exists:**
@@ -91,21 +100,26 @@ Count:
 - Unchecked tasks: `{unchecked_task_count}`
 - Checked tasks: `{checked_task_count}`
 
-### 4.5 Pre-Flight Bailout Check (NEW v1.3.0)
+### 4.5 Pre-Flight Check & Auto-Regenerate (UPDATED v1.4.0)
 
-**Check for early bailout conditions before investing more tokens:**
+**Check story quality and auto-regenerate if insufficient:**
 
 ```
 If total_task_count == 0:
   Display:
-  ⚠️ EARLY BAILOUT: No Tasks Found
+  ⚠️ Story has no tasks - needs gap analysis
 
-  Story file exists but has no tasks in Tasks/Subtasks section.
-  - Story may be incomplete or malformed
-  - Run create-story or validate-create-story first
+  🔄 AUTO-REGENERATING: Invoking /create-story-with-gap-analysis...
+```
+  <invoke-workflow path="{create_story_workflow}/workflow.yaml">
+    <input name="story_id">{story_id}</input>
+    <input name="story_file">{story_file}</input>
+    <input name="regenerate">true</input>
+  </invoke-workflow>
 
-  HALT - Nothing to implement
+  Then re-load story and continue.
 
+```
 If unchecked_task_count == 0:
   Display:
   ✅ EARLY BAILOUT: Story Already Complete
@@ -119,17 +133,19 @@ If unchecked_task_count == 0:
 
 If story file missing required sections (Tasks, Acceptance Criteria):
   Display:
-  ⚠️ EARLY BAILOUT: Invalid Story Format
+  ⚠️ Story missing required sections: {missing_sections}
 
-  Story file is missing required sections:
-  - Missing: {missing_sections}
-
-  Run validate-create-story to fix the story format.
-
-  HALT - Cannot proceed with invalid story
+  🔄 AUTO-REGENERATING: Invoking /create-story-with-gap-analysis...
 ```
+  <invoke-workflow path="{create_story_workflow}/workflow.yaml">
+    <input name="story_id">{story_id}</input>
+    <input name="story_file">{story_file}</input>
+    <input name="regenerate">true</input>
+  </invoke-workflow>
 
-**If all bailout checks pass:**
+  Then re-load story and continue.
+
+**If all checks pass:**
 ```
 ✅ Pre-flight checks passed
    - Story valid: {total_task_count} tasks

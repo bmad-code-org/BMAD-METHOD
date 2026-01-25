@@ -1,7 +1,7 @@
 name: super-dev-pipeline
-description: "Step-file architecture with complexity-based routing and smart batching. Micro stories get lightweight path, standard/complex get full quality gates."
+description: "Step-file architecture with complexity-based routing, smart batching, and auto-story-creation. Micro stories get lightweight path, standard/complex get full quality gates."
 author: "BMad"
-version: "1.3.0" # Synchronized with batch-super-dev for complexity-based routing
+version: "1.4.0" # Added auto-create story via /create-story-with-gap-analysis when story missing or incomplete
 
 # Critical variables from config
 config_source: "{project-root}/_bmad/bmm/config.yaml"
@@ -19,6 +19,16 @@ checklists_path: "{installed_path}/checklists"
 # State management
 state_file: "{sprint_artifacts}/super-dev-state-{{story_id}}.yaml"
 audit_trail: "{sprint_artifacts}/audit-super-dev-{{story_id}}-{{date}}.yaml"
+
+# Auto-create story settings (NEW v1.4.0)
+# When story is missing or lacks proper context, auto-invoke /create-story-with-gap-analysis
+auto_create_story:
+  enabled: true # Set to false to revert to old HALT behavior
+  create_story_workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/create-story-with-gap-analysis"
+  triggers:
+    - story_not_found # Story file doesn't exist
+    - no_tasks # Story exists but has no tasks
+    - missing_sections # Story missing required sections (Tasks, Acceptance Criteria)
 
 # Complexity level (passed from batch-super-dev or set manually)
 # Controls which pipeline steps to execute
