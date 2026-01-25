@@ -108,54 +108,51 @@
 
 ### Testability Concerns and Architectural Gaps
 
-**IMPORTANT**: {If system has constraints, explain them. If standard CI/CD achievable, state that.}
+**🚨 ACTIONABLE CONCERNS - Architecture Team Must Address**
 
-#### Blockers to Fast Feedback
+{If system has critical testability concerns, list them here. If architecture supports testing well, state "No critical testability concerns identified" and skip to Testability Assessment Summary}
 
-| Blocker | Impact | Current Mitigation | Ideal Solution |
-|---------|--------|-------------------|----------------|
-| **{Blocker name}** | {Impact description} | {How we're working around it} | {What architecture should provide} |
+#### 1. Blockers to Fast Feedback (WHAT WE NEED FROM ARCHITECTURE)
 
-#### Why This Matters
+| Concern | Impact | What Architecture Must Provide | Owner | Timeline |
+|---------|--------|--------------------------------|-------|----------|
+| **{Concern name}** | {Impact on testing} | {Specific architectural change needed} | {Team} | {Sprint} |
 
-**Standard CI/CD expectations:**
-- Full test suite on every commit (~5-15 min feedback)
-- Parallel test execution (isolated test data per worker)
-- Ephemeral test environments (spin up → test → tear down)
-- Fast feedback loop (devs stay in flow state)
+**Example:**
+- **No API for test data seeding** → Cannot parallelize tests → Provide POST /test/seed endpoint (Backend, Sprint 0)
 
-**Current reality for {Feature}:**
-- {Actual situation - what's different from standard}
+#### 2. Architectural Improvements Needed (WHAT SHOULD BE CHANGED)
 
-#### Tiered Testing Strategy
-
-{If forced by architecture, explain. If standard approach works, state that.}
-
-| Tier | When | Duration | Coverage | Why Not Full Suite? |
-|------|------|----------|----------|---------------------|
-| **Smoke** | Every commit | <5 min | {N} tests | Fast feedback, catch build-breaking changes |
-| **P0** | Every commit | ~{X} min | ~{N} tests | Critical paths, security-critical flows |
-| **P1** | PR to main | ~{X} min | ~{N} tests | Important features, algorithm accuracy |
-| **P2/P3** | Nightly | ~{X} min | ~{N} tests | Edge cases, performance, NFR |
-
-**Note**: {Any timing assumptions or constraints}
-
-#### Architectural Improvements Needed
-
-{If system has technical debt affecting testing, list improvements. If architecture supports testing well, acknowledge that.}
+{List specific improvements that would make the system more testable}
 
 1. **{Improvement name}**
-   - {What to change}
-   - **Impact**: {How it improves testing}
+   - **Current problem**: {What's wrong}
+   - **Required change**: {What architecture must do}
+   - **Impact if not fixed**: {Consequences}
+   - **Owner**: {Team}
+   - **Timeline**: {Sprint}
 
-#### Acceptance of Trade-offs
+---
 
-For {Feature} Phase 1, the team accepts:
-- **{Trade-off 1}** ({Reasoning})
-- **{Trade-off 2}** ({Reasoning})
-- ⚠️ **{Known limitation}** ({Why acceptable for now})
+### Testability Assessment Summary
 
-This is {**technical debt** OR **acceptable for Phase 1**} that should be {revisited post-GA OR maintained as-is}.
+**📊 CURRENT STATE - FYI**
+
+{Only include this section if there are passing items worth mentioning. Otherwise omit.}
+
+#### What Works Well
+
+- ✅ {Passing item 1} (e.g., "API-first design supports parallel test execution")
+- ✅ {Passing item 2} (e.g., "Feature flags enable test isolation")
+- ✅ {Passing item 3}
+
+#### Accepted Trade-offs (No Action Required)
+
+For {Feature} Phase 1, the following trade-offs are acceptable:
+- **{Trade-off 1}** - {Why acceptable for now}
+- **{Trade-off 2}** - {Why acceptable for now}
+
+{This is technical debt OR acceptable for Phase 1} that {should be revisited post-GA OR maintained as-is}
 
 ---
 

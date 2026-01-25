@@ -201,7 +201,7 @@ Total Violations: {count} ({severity})
 
 **Proceeding to next validation check...**"
 
-Immediately load and execute {nextStepFile} (step-v-06-traceability-validation.md)
+Without delay, read fully and follow: {nextStepFile} (step-v-06-traceability-validation.md)
 
 ---
 

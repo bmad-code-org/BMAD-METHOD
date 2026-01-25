@@ -175,9 +175,9 @@ Present the success criteria content for user review, then display menu:
 Display: "**Select:** [A] Advanced Elicitation [P] Party Mode [C] Continue to User Journey Mapping (Step 4 of 11)"
 
 #### Menu Handling Logic:
-- IF A: Execute {advancedElicitationTask} with the current success criteria content, process the enhanced success metrics that come back, ask user "Accept these improvements to the success criteria? (y/n)", if yes update content with improvements then redisplay menu, if no keep original content then redisplay menu
-- IF P: Execute {partyModeWorkflow} with the current success criteria, process the collaborative improvements to metrics and scope, ask user "Accept these changes to the success criteria? (y/n)", if yes update content with improvements then redisplay menu, if no keep original content then redisplay menu
-- IF C: Append the final content to {outputFile}, update frontmatter by adding this step name to the end of the stepsCompleted array, then load, read entire file, then execute {nextStepFile}
+- IF A: Read fully and follow: {advancedElicitationTask} with the current success criteria content, process the enhanced success metrics that come back, ask user "Accept these improvements to the success criteria? (y/n)", if yes update content with improvements then redisplay menu, if no keep original content then redisplay menu
+- IF P: Read fully and follow: {partyModeWorkflow} with the current success criteria, process the collaborative improvements to metrics and scope, ask user "Accept these changes to the success criteria? (y/n)", if yes update content with improvements then redisplay menu, if no keep original content then redisplay menu
+- IF C: Append the final content to {outputFile}, update frontmatter by adding this step name to the end of the stepsCompleted array, then read fully and follow: {nextStepFile}
 - IF Any other: help user respond, then redisplay menu
 
 #### EXECUTION RULES:

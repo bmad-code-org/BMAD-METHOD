@@ -76,7 +76,7 @@ Display: "**Product Brief Coverage: Skipped** (No Product Brief provided)
 
 **Proceeding to next validation check...**"
 
-Immediately load and execute {nextStepFile}
+Without delay, read fully and follow: {nextStepFile}
 
 **IF Product Brief exists:** Continue to step 2 below
 
@@ -186,7 +186,7 @@ Overall Coverage: {assessment}
 
 **Proceeding to next validation check...**"
 
-Immediately load and execute {nextStepFile} (step-v-05-measurability-validation.md)
+Without delay, read fully and follow: {nextStepFile} (step-v-05-measurability-validation.md)
 
 ---
 

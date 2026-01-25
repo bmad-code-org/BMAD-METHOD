@@ -229,12 +229,12 @@ Display: `**Confirm the Requirements are complete and correct to [C] continue:**
 
 #### Menu Handling Logic:
 
-- IF C: Save all to {outputFile}, update frontmatter, only then load, read entire file, then execute {nextStepFile}
+- IF C: Save all to {outputFile}, update frontmatter, then read fully and follow: {nextStepFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options](#10-present-menu-options)
 
 ## CRITICAL STEP COMPLETION NOTE
 
-ONLY WHEN C is selected and all requirements are saved to document and frontmatter is updated, will you then load, read entire file, then execute {nextStepFile} to execute and begin epic design step.
+ONLY WHEN C is selected and all requirements are saved to document and frontmatter is updated, will you then read fully and follow: {nextStepFile} to begin epic design step.
 
 ---
 

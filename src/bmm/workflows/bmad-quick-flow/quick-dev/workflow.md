@@ -47,4 +47,4 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
 ## EXECUTION
 
-Load and execute `steps/step-01-mode-detection.md` to begin the workflow.
+Read fully and follow: `steps/step-01-mode-detection.md` to begin the workflow.

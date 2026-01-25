@@ -52,7 +52,7 @@ Analyze the user's input to determine mode:
 - Load the spec, extract tasks/context/AC
 - Set `{execution_mode}` = "tech-spec"
 - Set `{tech_spec_path}` = provided path
-- **NEXT:** Load `step-03-execute.md`
+- **NEXT:** Read fully and follow: `step-03-execute.md`
 
 **Mode B: Direct Instructions**
 
@@ -88,43 +88,63 @@ Use holistic judgment, not mechanical keyword matching.
 
 ### No Escalation (simple request)
 
-Present choice:
+Display: "**Select:** [T] Plan first (tech-spec) [E] Execute directly"
 
-```
-**[t] Plan first** - Create tech-spec then implement
-**[e] Execute directly** - Start now
-```
+#### Menu Handling Logic:
 
-- **[t]:** Direct user to `{quick_spec_workflow}`. **EXIT Quick Dev.**
-- **[e]:** Ask for any additional guidance, then **NEXT:** Load `step-02-context-gathering.md`
+- IF T: Direct user to `{quick_spec_workflow}`. **EXIT Quick Dev.**
+- IF E: Ask for any additional guidance, then **NEXT:** Read fully and follow: `step-02-context-gathering.md`
+
+#### EXECUTION RULES:
+
+- ALWAYS halt and wait for user input after presenting menu
+- ONLY proceed when user makes a selection
+
+---
 
 ### Escalation Triggered - Level 0-2
 
-```
-This looks like a focused feature with multiple components.
+Present: "This looks like a focused feature with multiple components."
 
-**[t] Create tech-spec first** (recommended)
-**[w] Seems bigger than quick-dev** - Recommend the Full BMad Flow PRD Process
-**[e] Execute directly**
-```
+Display:
 
-- **[t]:** Direct to `{quick_spec_workflow}`. **EXIT Quick Dev.**
-- **[w]:** Direct user to run the PRD workflow instead. **EXIT Quick Dev.**
-- **[e]:** Ask for guidance, then **NEXT:** Load `step-02-context-gathering.md`
+**[T] Create tech-spec first** (recommended)
+**[W] Seems bigger than quick-dev** - Recommend the Full BMad Flow PRD Process
+**[E] Execute directly**
+
+#### Menu Handling Logic:
+
+- IF T: Direct to `{quick_spec_workflow}`. **EXIT Quick Dev.**
+- IF W: Direct user to run the PRD workflow instead. **EXIT Quick Dev.**
+- IF E: Ask for guidance, then **NEXT:** Read fully and follow: `step-02-context-gathering.md`
+
+#### EXECUTION RULES:
+
+- ALWAYS halt and wait for user input after presenting menu
+- ONLY proceed when user makes a selection
+
+---
 
 ### Escalation Triggered - Level 3+
 
-```
-This sounds like platform/system work.
+Present: "This sounds like platform/system work."
 
-**[w] Start BMad Method** (recommended)
-**[t] Create tech-spec** (lighter planning)
-**[e] Execute directly** - feeling lucky
-```
+Display:
 
-- **[t]:** Direct to `{quick_spec_workflow}`. **EXIT Quick Dev.**
-- **[w]:** Direct user to run the PRD workflow instead. **EXIT Quick Dev.**
-- **[e]:** Ask for guidance, then **NEXT:** Load `step-02-context-gathering.md`
+**[W] Start BMad Method** (recommended)
+**[T] Create tech-spec** (lighter planning)
+**[E] Execute directly** - feeling lucky
+
+#### Menu Handling Logic:
+
+- IF T: Direct to `{quick_spec_workflow}`. **EXIT Quick Dev.**
+- IF W: Direct user to run the PRD workflow instead. **EXIT Quick Dev.**
+- IF E: Ask for guidance, then **NEXT:** Read fully and follow: `step-02-context-gathering.md`
+
+#### EXECUTION RULES:
+
+- ALWAYS halt and wait for user input after presenting menu
+- ONLY proceed when user makes a selection
 
 ---
 
@@ -132,9 +152,9 @@ This sounds like platform/system work.
 
 **CRITICAL:** When this step completes, explicitly state which step to load:
 
-- Mode A (tech-spec): "**NEXT:** Loading `step-03-execute.md`"
-- Mode B (direct, [e] selected): "**NEXT:** Loading `step-02-context-gathering.md`"
-- Escalation ([t] or [w]): "**EXITING Quick Dev.** Follow the directed workflow."
+- Mode A (tech-spec): "**NEXT:** read fully and follow: `step-03-execute.md`"
+- Mode B (direct, [E] selected): "**NEXT:** Read fully and follow: `step-02-context-gathering.md`"
+- Escalation ([T] or [W]): "**EXITING Quick Dev.** Follow the directed workflow."
 
 ---
 

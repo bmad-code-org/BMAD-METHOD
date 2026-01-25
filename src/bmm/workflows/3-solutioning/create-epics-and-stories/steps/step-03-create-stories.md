@@ -231,9 +231,9 @@ Display: "**Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Cont
 
 #### Menu Handling Logic:
 
-- IF A: Execute {advancedElicitationTask}
-- IF P: Execute {partyModeWorkflow}
-- IF C: Save content to {outputFile}, update frontmatter, then only then load, read entire file, then execute {nextStepFile}
+- IF A: Read fully and follow: {advancedElicitationTask}
+- IF P: Read fully and follow: {partyModeWorkflow}
+- IF C: Save content to {outputFile}, update frontmatter, then read fully and follow: {nextStepFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options](#7-present-final-menu-options)
 
 #### EXECUTION RULES:
@@ -245,7 +245,7 @@ Display: "**Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Cont
 
 ## CRITICAL STEP COMPLETION NOTE
 
-ONLY WHEN [C continue option] is selected and [all epics and stories saved to document following the template structure exactly], will you then load and read fully `{nextStepFile}` to execute and begin final validation phase.
+ONLY WHEN [C continue option] is selected and [all epics and stories saved to document following the template structure exactly], will you then read fully and follow: `{nextStepFile}` to begin final validation phase.
 
 ---
 

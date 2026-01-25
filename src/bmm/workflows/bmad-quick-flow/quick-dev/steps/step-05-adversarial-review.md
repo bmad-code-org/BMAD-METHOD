@@ -65,7 +65,7 @@ With `{diff_output}` constructed, invoke the review task. If possible, use infor
 <invoke-task>Review {diff_output} using {project-root}/_bmad/core/tasks/review-adversarial-general.xml</invoke-task>
 ```
 
-**Platform fallback:** If task invocation not available, load the task file and execute its instructions inline, passing `{diff_output}` as the content.
+**Platform fallback:** If task invocation not available, load the task file and follow its instructions inline, passing `{diff_output}` as the content.
 
 The task should: review `{diff_output}` and return a list of findings.
 
@@ -85,7 +85,7 @@ If TodoWrite or similar tool is available, turn each finding into a TODO, includ
 
 ## NEXT STEP
 
-With findings in hand, load `step-06-resolve-findings.md` for user to choose resolution approach.
+With findings in hand, read fully and follow: `step-06-resolve-findings.md` for user to choose resolution approach.
 
 ---
 

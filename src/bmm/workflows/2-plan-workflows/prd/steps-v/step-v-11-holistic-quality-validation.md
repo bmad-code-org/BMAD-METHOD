@@ -66,7 +66,7 @@ Assess the PRD as a cohesive, compelling document - evaluating document flow, du
 
 "Perform holistic quality assessment on this PRD using multi-perspective evaluation:
 
-**Load and execute Advanced Elicitation workflow:**
+**Read fully and follow the Advanced Elicitation workflow:**
 {advancedElicitationTask}
 
 **Evaluate the PRD from these perspectives:**
@@ -232,7 +232,7 @@ Overall Rating: {rating}/5 - {label}
 
 **Proceeding to final validation checks...**"
 
-Immediately load and execute {nextStepFile} (step-v-12-completeness-validation.md)
+Without delay, read fully and follow: {nextStepFile} (step-v-12-completeness-validation.md)
 
 ---
 

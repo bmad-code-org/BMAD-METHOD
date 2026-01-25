@@ -136,7 +136,7 @@ Check for exit conditions before continuing:
 
 #### If 'E' (Exit Party Mode):
 
-- Load read and execute: `./step-03-graceful-exit.md`
+- Read fully and follow: `./step-03-graceful-exit.md`
 
 ## SUCCESS METRICS:
 

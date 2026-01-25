@@ -47,9 +47,9 @@ This uses **step-file architecture** for disciplined execution:
 1. **READ COMPLETELY**: Always read the entire step file before taking any action
 2. **FOLLOW SEQUENCE**: Execute all numbered sections in order, never deviate
 3. **WAIT FOR INPUT**: If a menu is presented, halt and wait for user selection
-4. **CHECK CONTINUATION**: Only proceed to next step when user selects [c] (Continue)
+4. **CHECK CONTINUATION**: Only proceed to next step when user selects [C] (Continue)
 5. **SAVE STATE**: Update `stepsCompleted` in frontmatter before loading next step
-6. **LOAD NEXT**: When directed, load and read entire next step file, then execute
+6. **LOAD NEXT**: When directed, read fully and follow the next step file
 
 ### Critical Rules (NO EXCEPTIONS)
 
@@ -76,4 +76,4 @@ Load and read full config from `{main_config}` and resolve:
 
 ### 2. First Step Execution
 
-Load, read the full file, and then execute `steps/step-01-understand.md` to begin the workflow.
+Read fully and follow: `steps/step-01-understand.md` to begin the workflow.
