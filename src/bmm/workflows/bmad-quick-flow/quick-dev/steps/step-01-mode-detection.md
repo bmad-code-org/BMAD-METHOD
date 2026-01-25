@@ -88,11 +88,11 @@ Use holistic judgment, not mechanical keyword matching.
 
 ### No Escalation (simple request)
 
-Display: "**Select:** [T] Plan first (tech-spec) [E] Execute directly"
+Display: "**Select:** [P] Plan first (tech-spec) [E] Execute directly"
 
 #### Menu Handling Logic:
 
-- IF T: Direct user to `{quick_spec_workflow}`. **EXIT Quick Dev.**
+- IF P: Direct user to `{quick_spec_workflow}`. **EXIT Quick Dev.**
 - IF E: Ask for any additional guidance, then **NEXT:** Read fully and follow: `step-02-context-gathering.md`
 
 #### EXECUTION RULES:
@@ -108,13 +108,13 @@ Present: "This looks like a focused feature with multiple components."
 
 Display:
 
-**[T] Create tech-spec first** (recommended)
+**[P] Plan first (tech-spec)** (recommended)
 **[W] Seems bigger than quick-dev** - Recommend the Full BMad Flow PRD Process
 **[E] Execute directly**
 
 #### Menu Handling Logic:
 
-- IF T: Direct to `{quick_spec_workflow}`. **EXIT Quick Dev.**
+- IF P: Direct to `{quick_spec_workflow}`. **EXIT Quick Dev.**
 - IF W: Direct user to run the PRD workflow instead. **EXIT Quick Dev.**
 - IF E: Ask for guidance, then **NEXT:** Read fully and follow: `step-02-context-gathering.md`
 
@@ -132,12 +132,12 @@ Present: "This sounds like platform/system work."
 Display:
 
 **[W] Start BMad Method** (recommended)
-**[T] Create tech-spec** (lighter planning)
+**[P] Plan first (tech-spec)** (lighter planning)
 **[E] Execute directly** - feeling lucky
 
 #### Menu Handling Logic:
 
-- IF T: Direct to `{quick_spec_workflow}`. **EXIT Quick Dev.**
+- IF P: Direct to `{quick_spec_workflow}`. **EXIT Quick Dev.**
 - IF W: Direct user to run the PRD workflow instead. **EXIT Quick Dev.**
 - IF E: Ask for guidance, then **NEXT:** Read fully and follow: `step-02-context-gathering.md`
 
@@ -154,7 +154,7 @@ Display:
 
 - Mode A (tech-spec): "**NEXT:** read fully and follow: `step-03-execute.md`"
 - Mode B (direct, [E] selected): "**NEXT:** Read fully and follow: `step-02-context-gathering.md`"
-- Escalation ([T] or [W]): "**EXITING Quick Dev.** Follow the directed workflow."
+- Escalation ([P] or [W]): "**EXITING Quick Dev.** Follow the directed workflow."
 
 ---
 
