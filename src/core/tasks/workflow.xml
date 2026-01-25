@@ -19,7 +19,8 @@
   <flow>
     <step n="1" title="Load and Initialize Workflow">
       <substep n="1a" title="Load Configuration and Resolve Variables">
-        <action>Read workflow.yaml from provided path</action>
+        <action>Locate workflow config file from provided path: check for workflow.md first (preferred), then workflow.yaml (legacy). If neither exists, halt with error. Store resolved path in variable: {workflow_config_file}</action>
+        <action>Read {workflow_config_file}</action>
         <mandate>Load config_source (REQUIRED for all modules)</mandate>
         <phase n="1">Load external config from config_source path</phase>
         <phase n="2">Resolve all {config_source}: references with values from config</phase>
@@ -81,7 +82,7 @@
               <action>Continue to next step</action>
             </if>
             <if response="p">
-              <action>Start the party-mode workflow {project-root}/_bmad/core/workflows/party-mode/workflow.yaml</action>
+              <action>Start the party-mode workflow {project-root}/_bmad/core/workflows/party-mode/workflow.md</action>
             </if>
             <if
               response="y">
@@ -138,11 +139,11 @@
     <protocol name="discover_inputs" desc="Smart file discovery and loading based on input_file_patterns">
       <objective>Intelligently load project files (whole or sharded) based on workflow's input_file_patterns configuration</objective>
 
-      <critical>Only execute if workflow.yaml contains input_file_patterns section</critical>
+      <critical>Only execute if {workflow_config_file} contains input_file_patterns section</critical>
 
       <flow>
         <step n="1" title="Parse Input File Patterns">
-          <action>Read input_file_patterns from loaded workflow.yaml</action>
+          <action>Read input_file_patterns from {workflow_config_file}</action>
           <action>For each pattern group (prd, architecture, epics, etc.), note the load_strategy if present</action>
         </step>
 
@@ -226,7 +227,7 @@
       • This is the complete workflow execution engine
       • You MUST Follow instructions exactly as written
       • The workflow execution engine is governed by: {project-root}/_bmad/core/tasks/workflow.xml
-      • You MUST have already loaded and processed: {installed_path}/workflow.yaml
+      • You MUST have already loaded and processed {workflow_config_file}
       • This workflow uses INTENT-DRIVEN PLANNING - adapt organically to product type and context
       • YOU ARE FACILITATING A CONVERSATION With a user to produce a final document step by step. The whole process is meant to be
       collaborative helping the user flesh out their ideas. Do not rush or optimize and skip any section.
