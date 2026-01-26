@@ -675,24 +675,59 @@ Gap analysis will happen just-in-time during implementation (Step 2 of super-dev
     </check>
   </check>
 
+  <output>🚀 Spawning {{needs_creation.length}} parallel agents for story creation...</output>
+
+  <action>Spawn Task agents in PARALLEL (send all Task calls in SINGLE message):</action>
+
   <iterate>For each story in needs_creation:</iterate>
 
-  <substep n="2.7a" title="Create individual story file">
-    <output>📝 Creating story {{@index}}/{{needs_creation.length}}: {{story_key}}...</output>
+  <substep n="2.7a" title="Spawn story creation agent">
+    <action>
+      Task tool call:
+      - subagent_type: "general-purpose"
+      - description: "Create story {{story_key}}"
+      - prompt: "Create basic story file for {{story_key}}.
 
-    <action>Invoke workflow: /bmad_bmm_create-story</action>
-    <action>Parameters:
-      - story_key: {{story_key}}
-      - epic_num: {{epic_num}}
-      - mode: batch (auto-approve, minimal prompts)
+                 INSTRUCTIONS:
+                 1. Read epic description from docs/epics.md (Epic {{epic_num}})
+                 2. Read PRD requirements (docs/prd-art-collective-tenants.md)
+                 3. Read architecture (docs/architecture-space-rentals.md)
+                 4. Extract FRs for this story from PRD
+                 5. Break down into 3-7 tasks with subtasks
+                 6. Create story file at: docs/sprint-artifacts/{{story_key}}.md
+                 7. Use template from: _bmad/bmm/workflows/4-implementation/create-story/template.md
+                 8. NO gap analysis (defer to implementation)
+                 9. Commit story file when complete
+                 10. Report: story file path
+
+                 Mode: batch (lightweight, no codebase scanning)"
+      - Store returned agent_id for tracking
     </action>
+  </substep>
 
-    <check if="story creation succeeded">
+  <output>
+⏳ Waiting for {{needs_creation.length}} parallel agents to complete...
+
+Story creation agents:
+{{#each needs_creation}}
+  - Agent {{@index}}: {{story_key}}
+{{/each}}
+  </output>
+
+  <action>Wait for ALL agents to complete (blocking)</action>
+
+  <iterate>Check each agent output:</iterate>
+
+  <substep n="2.7b" title="Verify story creation results">
+    <action>Parse agent output for {{story_key}}</action>
+
+    <check if="agent succeeded AND story file exists">
       <output>✅ Story created: {{story_key}}</output>
+      <action>Verify file exists at docs/sprint-artifacts/{{story_key}}.md</action>
       <action>Mark story.needs_story_creation = false</action>
     </check>
 
-    <check if="story creation failed">
+    <check if="agent failed OR story file missing">
       <output>❌ Failed to create story: {{story_key}}</output>
       <action>Add to failed_creations list</action>
       <action>Remove from selected_stories</action>
