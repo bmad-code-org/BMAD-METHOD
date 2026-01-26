@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BMad Method Workflow Map</title>
+    <style>
+        :root {
+            --analysis: #0ea5e9;
+            --planning: #22c55e;
+            --solutioning: #eab308;
+            --implementation: #ef4444;
+            --quickflow: #64748b;
+            --bg: #0f172a;
+            --card: #1e293b;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --success: #10b981;
+            --arrow: #f59e0b;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.4;
+            padding: 12px;
+        }
+        .header { text-align: center; margin-bottom: 16px; }
+        .header-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: linear-gradient(135deg, var(--analysis), var(--planning));
+            padding: 4px 12px; border-radius: 20px;
+            font-size: 0.75rem; font-weight: 600; margin-bottom: 8px;
+        }
+        h1 { font-size: 1.5rem; font-weight: 700; }
+        .subtitle { color: var(--text-muted); font-size: 0.8rem; }
+
+        .flow-legend {
+            background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 8px; padding: 8px 12px; margin-bottom: 16px; text-align: center;
+            font-size: 0.7rem; color: var(--arrow);
+        }
+
+        .flow-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .phase {
+            background: var(--card);
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            border-top: 3px solid;
+        }
+        .phase.analysis { border-top-color: var(--analysis); }
+        .phase.planning { border-top-color: var(--planning); }
+        .phase.solutioning { border-top-color: var(--solutioning); }
+        .phase.implementation { border-top-color: var(--implementation); }
+
+        .phase-header { padding: 10px 12px 8px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+        .phase-num { width: 22px; height: 22px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; }
+        .analysis .phase-num { background: var(--analysis); }
+        .planning .phase-num { background: var(--planning); }
+        .solutioning .phase-num { background: var(--solutioning); color: #000; }
+        .implementation .phase-num { background: var(--implementation); }
+        .phase-title { font-size: 0.95rem; font-weight: 700; }
+        .phase-opt { font-size: 0.6rem; padding: 2px 6px; border-radius: 4px; background: rgba(14, 165, 233, 0.2); color: #7dd3fc; }
+
+        .workflows { padding: 8px 10px; }
+
+        .workflow {
+            background: rgba(255,255,255,0.03); border-radius: 6px;
+            padding: 8px; margin-bottom: 6px;
+            font-size: 0.7rem;
+        }
+        .workflow-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 4px;
+        }
+        .workflow-name {
+            font-family: monospace; color: var(--success);
+            background: rgba(16, 185, 129, 0.1); padding: 2px 6px;
+            border-radius: 3px; font-size: 0.65rem;
+        }
+        .workflow-meta { display: flex; justify-content: space-between; align-items: center; }
+        .agent { display: flex; align-items: center; gap: 4px; }
+        .agent-icon { width: 14px; height: 14px; border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 0.55rem; font-weight: 700; }
+        .agent-icon.mary { background: linear-gradient(135deg, #f472b6, #ec4899); }
+        .agent-icon.john { background: linear-gradient(135deg, #60a5fa, #3b82f6); }
+        .agent-icon.sally { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #000; }
+        .agent-icon.winston { background: linear-gradient(135deg, #a78bfa, #8b5cf6); }
+        .agent-icon.bob { background: linear-gradient(135deg, #34d399, #10b981); color: #000; }
+        .agent-icon.amelia { background: linear-gradient(135deg, #fb7185, #ef4444); }
+        .agent-icon.barry { background: linear-gradient(135deg, #94a3b8, #64748b); }
+        .agent-name { font-size: 0.65rem; }
+        .output { color: var(--success); font-family: monospace; font-size: 0.6rem; }
+        .badge { font-size: 0.55rem; padding: 1px 4px; border-radius: 3px; }
+        .badge.opt { background: rgba(251,191,36,0.15); color: #fbbf24; }
+        .badge.iffy { background: rgba(168,85,247,0.15); color: #a855f7; }
+        .badge.adhoc { background: rgba(59,130,246,0.15); color: #3b82f6; }
+
+        .arrow { display: flex; align-items: center; justify-content: center; color: var(--arrow); font-size: 0.9rem; margin: 6px 0; }
+
+        .decision { background: linear-gradient(135deg, #a855f7, #9333ea); padding: 4px 8px; border-radius: 4px; text-align: center; font-size: 0.65rem; font-weight: 600; margin: 6px 0; }
+
+        .quickflow {
+            background: rgba(100, 116, 139, 0.2); border: 2px dashed var(--quickflow);
+            border-radius: 10px; padding: 12px; margin-bottom: 16px;
+        }
+        .quickflow-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+        .quickflow-header h2 { font-size: 0.95rem; }
+        .quickflow-header span { font-size: 0.7rem; color: var(--text-muted); }
+        .quickflow-body { display: flex; align-items: center; gap: 12px; }
+        .quickflow-item { flex: 1; background: rgba(255,255,255,0.03); border-radius: 8px; padding: 10px; }
+        .quickflow-item code { font-family: monospace; color: var(--success); background: rgba(16, 185, 129, 0.1); padding: 2px 6px; border-radius: 3px; font-size: 0.7rem; }
+
+        .context { background: rgba(14, 165, 233, 0.08); border-radius: 10px; padding: 12px; font-size: 0.75rem; }
+        .context-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-weight: 600; }
+        .context-items { display: flex; flex-wrap: wrap; gap: 6px; }
+        .context-items code { font-family: monospace; color: var(--success); background: rgba(16, 185, 129, 0.1); padding: 2px 5px; border-radius: 3px; font-size: 0.65rem; }
+        .context-items span { color: var(--text-muted); }
+
+        .legend { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; font-size: 0.7rem; margin-top: 12px; }
+        .legend-item { display: flex; align-items: center; gap: 4px; }
+        .legend-dot { width: 12px; height: 3px; border-radius: 2px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-badge">⚡ Workflow Map V6</div>
+        <h1>BMad Method</h1>
+        <p class="subtitle">Context engineering for AI-powered development</p>
+    </div>
+
+    <div class="flow-legend">→ arrows show artifact flow between workflows</div>
+
+    <div class="flow-grid">
+        <!-- Phase 1: Analysis -->
+        <div class="phase analysis">
+            <div class="phase-header">
+                <div class="phase-num">1</div>
+                <div class="phase-title">Analysis</div>
+                <span class="phase-opt">Optional</span>
+            </div>
+            <div class="workflows">
+                <div class="workflow">
+                    <div class="workflow-header">
+                        <span class="workflow-name">brainstorm</span>
+                        <span class="badge opt">opt</span>
+                    </div>
+                    <div class="workflow-meta">
+                        <div class="agent"><div class="agent-icon mary">M</div><span class="agent-name">Mary</span></div>
+                        <span class="output">brainstorming-report.md</span>
+                    </div>
+                </div>
+                <div class="workflow">
+                    <div class="workflow-header">
+                        <span class="workflow-name">research</span>
+                        <span class="badge opt">opt</span>
+                    </div>
+                    <div class="workflow-meta">
+                        <div class="agent"><div class="agent-icon mary">M</div><span class="agent-name">Mary</span></div>
+                        <span class="output">findings</span>
+                    </div>
+                </div>
+                <div class="workflow">
+                    <div class="workflow-header">
+                        <span class="workflow-name">create-product-brief</span>
+                    </div>
+                    <div class="workflow-meta">
+                        <div class="agent"><div class="agent-icon mary">M</div><span class="agent-name">Mary</span></div>
+                        <span class="output">product-brief.md →</span>
+                    </div>
+                </div>
+            </div>
+            <div class="arrow">→</div>
+        </div>
+
+        <!-- Phase 2: Planning -->
+        <div class="phase planning">
+            <div class="phase-header">
+                <div class="phase-num">2</div>
+                <div class="phase-title">Planning</div>
+            </div>
+            <div class="workflows">
+                <div class="workflow">
+                    <div class="workflow-header">
+                        <span class="workflow-name">create-prd</span>
+                    </div>
+                    <div class="workflow-meta">
+                        <div class="agent"><div class="agent-icon john">J</div><span class="agent-name">John</span></div>
+                        <span class="output">PRD.md →</span>
+                    </div>
+                </div>
+                <div class="decision">Has UI?</div>
+                <div class="workflow">
+                    <div class="workflow-header">
+                        <span class="workflow-name">create-ux-design</span>
+                        <span class="badge iffy">if yes</span>
+                    </div>
+                    <div class="workflow-meta">
+                        <div class="agent"><div class="agent-icon sally">S</div><span class="agent-name">Sally</span></div>
+                        <span class="output">ux-spec.md →</span>
+                    </div>
+                </div>
+            </div>
+            <div class="arrow">→</div>
+        </div>
+
+        <!-- Phase 3: Solutioning -->
+        <div class="phase solutioning">
+            <div class="phase-header">
+                <div class="phase-num">3</div>
+                <div class="phase-title">Solutioning</div>
+            </div>
+            <div class="workflows">
+                <div class="workflow">
+                    <div class="workflow-header">
+                        <span class="workflow-name">create-architecture</span>
+                    </div>
+                    <div class="workflow-meta">
+                        <div class="agent"><div class="agent-icon winston">W</div><span class="agent-name">Winston</span></div>
+                        <span class="output">architecture.md →</span>
+                    </div>
+                </div>
+                <div class="workflow">
+                    <div class="workflow-header">
+                        <span class="workflow-name">create-epics-and-stories</span>
+                    </div>
+                    <div class="workflow-meta">
+                        <div class="agent"><div class="agent-icon john">J</div><span class="agent-name">John</span></div>
+                        <span class="output">epics.md →</span>
+                    </div>
+                </div>
+                <div class="workflow">
+                    <div class="workflow-header">
+                        <span class="workflow-name">check-implementation-readiness</span>
+                    </div>
+                    <div class="workflow-meta">
+                        <div class="agent"><div class="agent-icon john">J</div><span class="agent-name">John</span></div>
+                        <span class="output">gate check</span>
+                    </div>
+                </div>
+            </div>
+            <div class="arrow">→</div>
+        </div>
+
+        <!-- Phase 4: Implementation -->
+        <div class="phase implementation">
+            <div class="phase-header">
+                <div class="phase-num">4</div>
+                <div class="phase-title">Implementation</div>
+            </div>
+            <div class="workflows">
+                <div class="workflow">
+                    <div class="workflow-header">
+                        <span class="workflow-name">sprint-planning</span>
+                    </div>
+                    <div class="workflow-meta">
+                        <div class="agent"><div class="agent-icon bob">B</div><span class="agent-name">Bob</span></div>
+                        <span class="output">sprint-status.yaml →</span>
+                    </div>
+                </div>
+                <div class="workflow">
+                    <div class="workflow-header">
+                        <span class="workflow-name">create-story</span>
+                    </div>
+                    <div class="workflow-meta">
+                        <div class="agent"><div class="agent-icon bob">B</div><span class="agent-name">Bob</span></div>
+                        <span class="output">story-[slug].md →</span>
+                    </div>
+                </div>
+                <div class="workflow">
+                    <div class="workflow-header">
+                        <span class="workflow-name">dev-story</span>
+                    </div>
+                    <div class="workflow-meta">
+                        <div class="agent"><div class="agent-icon amelia">A</div><span class="agent-name">Amelia</span></div>
+                        <span class="output">code →</span>
+                    </div>
+                </div>
+                <div class="workflow">
+                    <div class="workflow-header">
+                        <span class="workflow-name">code-review</span>
+                    </div>
+                    <div class="workflow-meta">
+                        <div class="agent"><div class="agent-icon amelia">A</div><span class="agent-name">Amelia</span></div>
+                        <span class="output">approve</span>
+                    </div>
+                </div>
+                <div class="workflow">
+                    <div class="workflow-header">
+                        <span class="workflow-name">correct-course</span>
+                        <span class="badge adhoc">ad-hoc</span>
+                    </div>
+                    <div class="workflow-meta">
+                        <div class="agent"><div class="agent-icon john">J</div><span class="agent-name">John</span></div>
+                        <span class="output">updated plan</span>
+                    </div>
+                </div>
+                <div class="workflow">
+                    <div class="workflow-header">
+                        <span class="workflow-name">retrospective</span>
+                        <span class="badge adhoc">per epic</span>
+                    </div>
+                    <div class="workflow-meta">
+                        <div class="agent"><div class="agent-icon bob">B</div><span class="agent-name">Bob</span></div>
+                        <span class="output">lessons</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="quickflow">
+        <div class="quickflow-header">
+            <span>⚡</span>
+            <div>
+                <h2>Quick Flow (Parallel Track)</h2>
+                <span>For small, well-understood changes — skip phases 1-3</span>
+            </div>
+        </div>
+        <div class="quickflow-body">
+            <div class="quickflow-item">
+                <div class="agent"><div class="agent-icon barry">B</div><span class="agent-name">Barry</span></div>
+                <code>quick-spec</code>
+                <div style="font-size: 0.65rem; color: var(--text-muted); margin-top: 4px;">→ tech-spec.md</div>
+            </div>
+            <span style="color: var(--arrow); font-size: 1.2rem;">→</span>
+            <div class="quickflow-item">
+                <div class="agent"><div class="agent-icon barry">B</div><span class="agent-name">Barry</span></div>
+                <code>quick-dev</code>
+                <div style="font-size: 0.65rem; color: var(--text-muted); margin-top: 4px;">→ working code</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="context">
+        <div class="context-header">📚 Context Flow</div>
+        <p style="margin-bottom: 8px; color: var(--text-muted);">Each document becomes context for the next phase.</p>
+        <div class="context-items">
+            <span><code>create-story</code> <span>loads epics, PRD, architecture, UX</span></span>
+            <span><code>dev-story</code> <span>loads story file</span></span>
+            <span><code>code-review</code> <span>loads architecture, story</span></span>
+            <span><code>quick-dev</code> <span>loads tech-spec</span></span>
+        </div>
+    </div>
+
+    <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background: var(--analysis);"></div>Analysis</div>
+        <div class="legend-item"><div class="legend-dot" style="background: var(--planning);"></div>Planning</div>
+        <div class="legend-item"><div class="legend-dot" style="background: var(--solutioning);"></div>Solutioning</div>
+        <div class="legend-item"><div class="legend-dot" style="background: var(--implementation);"></div>Implementation</div>
+        <div class="legend-item"><div class="legend-dot" style="background: var(--quickflow);"></div>Quick Flow</div>
+    </div>
+</body>
+</html>

@@ -1,418 +1,92 @@
 # Changelog
 
-## [6.1.0-alpha.23]
+## [6.0.0-Beta.0]
 
-**Release: January 25, 2026**
+**Release: January 2026 - Alpha to Beta Transition**
 
-Merged with upstream 6.0.0-alpha.23 and added comprehensive story/epic revalidation and ghost feature detection for quality assurance.
+### 🎉 Beta Release
 
-### 🔍 Story/Epic Revalidation
+- **Transition from Alpha to Beta**: BMad Method is now in Beta! This marks a significant milestone in the framework's development
+- **NPM Default Tag**: Beta versions are now published with the `latest` tag, making `npx bmad-method` serve the beta version by default
 
-**NEW:** Verify checkbox accuracy by re-validating against actual codebase implementation.
+### 🌟 Key Highlights
 
-**Use Case:** "I'm uncertain about the real status of some stories and epics - would love a re-check"
+1. **bmad-help**: Revolutionary AI-powered guidance system replaces the alpha workflow-init and workflow tracking — introduces full AI intelligence to guide users through workflows, commands, and project context
+2. **Module Ecosystem Expansion**: bmad-builder, CIS (Creative Intelligence Suite), and Game Dev Studio moved to separate repositories for focused development
+3. **Installer Consolidation**: Unified installer architecture with standardized command naming (`bmad-dash-case.md` or `bmad-*-agent-*.md`)
+4. **Windows Compatibility**: Complete migration from Inquirer.js to @clack/prompts for reliable cross-platform support
 
-**Features:**
-- `/revalidate-story` (RVS): Single story verification with optional gap filling
-  - Clears all checkboxes and starts fresh
-  - Verifies each AC/Task/DoD against codebase (Glob/Grep/Read)
-  - Re-checks verified items: ✅ complete, 🔶 partial, ❌ missing
-  - Reports accuracy: before % vs after % (find over/under-reporting)
-  - Optional: Automatically fill missing gaps and commit
+### 🚀 Major Features
 
-- `/revalidate-epic` (RVE): Batch revalidation with semaphore pattern
-  - Revalidates all stories in an epic (parallel workers)
-  - Epic-wide health score and gap summary
-  - Groups stories by completion % (complete/mostly/partial/incomplete)
+**bmad-help - Intelligent Guidance System:**
 
-**Token Costs:**
-- Verify-only: ~30-45K tokens per story
-- Verify-and-fill (20% gaps): ~45-65K tokens
-- vs full re-implementation: ~80-120K tokens
-- **Savings: 40-60%** when gaps <30%
+- **Replaces**: workflow-init and legacy workflow tracking
+- **AI-Powered**: Full context awareness of installed modules, workflows, agents, and commands
+- **Dynamic Discovery**: Automatically catalogs all available workflows from installed modules
+- **Intelligent Routing**: Guides users to the right workflow or agent based on their goal
+- **IDE Integration**: Generates proper IDE command files for all discovered workflows
 
-**Usage:**
-```bash
-# Verify single story
-/revalidate-story story_file=path/to/story.md
+**Module Restructuring:**
 
-# Verify and fill gaps
-/revalidate-story story_file=path/to/story.md fill_gaps=true
+| Module                                | Status                                            | New Location                                            |
+| ------------------------------------- | ------------------------------------------------- | ------------------------------------------------------- |
+| **bmad-builder**                      | Near beta, with docs and walkthroughs coming soon | `bmad-code-org/bmad-builder`                            |
+| **CIS** (Creative Intelligence Suite) | Published as npm package                          | `bmad-code-org/bmad-module-creative-intelligence-suite` |
+| **Game Dev Studio**                   | Published as npm package                          | `bmad-code-org/bmad-module-game-dev-studio`             |
 
-# Revalidate entire epic
-/revalidate-epic epic_number=2 fill_gaps=true max_concurrent=5
-```
+### 🔧 Installer & CLI Improvements
 
-### 👻 Ghost Feature Detector (Reverse Gap Analysis)
+**UnifiedInstaller Architecture:**
 
-**NEW:** Find orphaned code that has no corresponding story documentation.
+- All IDE installers now use a common `UnifiedInstaller` class
+- Standardized command naming conventions:
+  - Workflows: `bmad-module-workflow-name.md`
+  - Agents: `bmad-module-agent-name.md`
+  - Tasks: `bmad-task-name.md`
+  - Tools: `bmad-tool-name.md`
+- External module installation from npm with progress indicators
+- Module removal on unselect with confirmation
 
-**Problem:** Vibe-coded features or manual additions that bypassed the story process accumulate as "ghost features" - functionality that works but isn't documented, making the codebase unauditable.
+**Windows Compatibility Fix:**
 
-**Features:**
-- `/ghost-features` (GFD): Reverse gap analysis
-  - Scans codebase for: Components, API endpoints, DB tables, Services
-  - Cross-references with ALL stories (File Lists, Tasks, ACs)
-  - Identifies orphans (code with no story)
-  - Classifies by severity: CRITICAL → HIGH → MEDIUM → LOW
-  - Generates backfill story drafts documenting existing code
-  - Proposes epic organization (create Epic-Backfill or distribute)
+- Replaced Inquirer.js with @clack/prompts to fix arrow key navigation issues on Windows
+- All 91 installer workflows migrated to new prompt system
 
-**Detection Scope:**
-- Components: React/Vue/Angular (**.component.tsx, **/components/**)
-- APIs: Next.js App Router, NestJS, Express routes
-- Database: Prisma schema, TypeORM entities, migrations
-- Services: *.service.ts, business logic modules
+### 📚 Documentation Updates
 
-**Output:**
-```
-👻 GHOST FEATURES DETECTED
-Total Orphans: 12
-Documentation Coverage: 73%
+**Significant docsite improvements:**
 
-CRITICAL Orphans (2):
-1. API: POST /api/subscriptions → No story documents this
+- Interactive workflow guide page (`/workflow-guide`) with track selector
+- TEA documentation restructured using Diátaxis framework (25 docs)
+- Style guide optimized for LLM readers (367 lines, down from 767)
+- Glossary rewritten using table format (123 lines, down from 373)
+- README overhaul with numbered command flows and prominent `/bmad-help` callout
+- New workflow map diagram with interactive HTML
+- New editorial review tasks for document quality
+- E2E testing methodology for Game Dev Studio
 
-HIGH Orphans (5):
-2. Component: UserDashboard → Not mentioned in any story
-...
+More documentation updates coming soon.
 
-Backfill Stories Created: 8
-```
+### 🐛 Bug Fixes
 
-**Usage:**
-```bash
-# Detect orphans in sprint
-/ghost-features
+- Fixed TodoMVC URL references to include `/dist/` path
+- Fixed glob pattern normalization for Windows compatibility
+- Fixed YAML indentation in kilo.js customInstructions field
+- Fixed stale path references in check-implementation-readiness workflow
+- Fixed sprint-status.yaml sync in correct-course workflow
+- Fixed web bundler entry point reference
+- Fixed mergeModuleHelpCatalogs ordering after generateManifests
 
-# Detect in Epic 2 and create backfill stories
-/ghost-features epic_number=2 create_backfill_stories=true
-```
+### 📊 Statistics
 
-### Files Created
-
-**Revalidation:**
-- `revalidate-story/workflow.yaml` + `instructions.md` (570 lines)
-- `revalidate-epic/workflow.yaml` + `instructions.md` (310 lines)
-
-**Ghost Detection:**
-- `detect-ghost-features/workflow.yaml` + `instructions.md` (685 lines)
-
-**Agent Menus:**
-- `dev.agent.yaml`: Added RVS, RVE triggers
-- `sm.agent.yaml`: Added RVS, RVE, GFD triggers
-
-### Benefits
-
-**Story Quality:**
-- Verify checkbox accuracy (find over-reported completion)
-- Detect missing implementations (find under-reported gaps)
-- Maintain story-code parity
-
-**Codebase Quality:**
-- Document all functionality (no ghost features)
-- Enable accurate sprint planning (know what exists)
-- Make codebase auditable (every feature has story)
-
-**Token Efficiency:**
-- Revalidation cheaper than re-implementation (40-60% savings)
-- Ghost detection prevents duplicate implementations
-- Fill gaps incrementally vs full rewrites
+- **91 commits** since alpha.23
+- **969 files changed** (+23,716 / -91,509 lines)
+- **Net reduction of ~67,793 lines** through cleanup and consolidation
+- **3 major modules** moved to separate repositories
+- **Complete installer refactor** for standardization
 
 ---
 
-## [6.1.0-alpha.3]
-
-**Release: January 7, 2026**
-
-Builds on alpha.2 with semaphore pattern and git commit queue for production-ready parallel batch processing.
-
-### ⚡ Semaphore Pattern (Replaces Batch-and-Wait)
-
-**NEW:** Worker pool with constant concurrency eliminates idle time.
-
-**Old batch-and-wait pattern:**
-- Spawn 5 agents → wait for ALL 5 to finish → spawn next 5
-- If 4 finish quickly, slots sit idle waiting for slow 5th agent
-- Inefficient resource utilization
-
-**New semaphore pattern:**
-- Maintain pool of 5 worker slots
-- As soon as ANY worker finishes → immediately refill that slot
-- Constant 5 concurrent agents until queue empty
-- Non-blocking task polling with live progress dashboard
-
-**Efficiency gain:** 20-40% faster completion
-
-### 🔒 Git Commit Queue (Eliminates Lock Conflicts)
-
-**NEW:** File-based locking prevents concurrent commit conflicts in parallel mode.
-
-**Problem:** Multiple agents committing simultaneously caused `.git/index.lock` conflicts requiring manual intervention.
-
-**Solution:** Commit queue with `.git/bmad-commit.lock`
-- Workers acquire lock before committing (serialized commits)
-- Automatic retry with exponential backoff (1s → 30s)
-- Stale lock cleanup (>5 min old auto-removed)
-- Timeout protection (HALT after 5 min)
-- Implementations remain fully parallel (only commits serialize)
-
-**Result:** Zero git lock conflicts, no manual intervention needed
-
-### 🛡️ Minimum 3-Task Requirement
-
-**NEW:** Stories with <3 tasks rejected as INVALID.
-
-**Real-world issue fixed:**
-```
-Story "11-4-classes-workshops-advanced":
-- Had 0 tasks but high-risk keywords
-- Was classified as COMPLEX and proceeded
-- Agent had nothing to implement → failed
-
-Now:
-- Rejected in validation: "INVALID - Only 0 tasks (need ≥3)"
-- User told to run /validate-create-story
-- Prevents wasted tokens on incomplete stories
-```
-
-**Validation rules:**
-- 0-2 tasks: INVALID (stub/incomplete)
-- 3+ tasks: Valid (processable)
-
-### Files Modified
-
-- `batch-super-dev/instructions.md`: Semaphore pattern, 3-task validation
-- `super-dev-pipeline/step-06-complete.md`: Commit queue integration
-- `super-dev-pipeline/step-06a-queue-commit.md`: NEW - Commit queue docs
-- `batch-super-dev/README.md`: v1.3.0 documentation
-- `docs/HOW-TO-VALIDATE-SPRINT-STATUS.md`: Semaphore pattern explanation
-- `.gitignore`: Added `.git/bmad-commit.lock`
-- `CHANGELOG.md`: Comprehensive feature documentation
-
----
-
-## [6.1.0-alpha.2]
-
-**Release: January 7, 2026**
-
-### 🔄 Continuous Sprint-Status Tracking
-
-**NEW:** sprint-status.yaml is now a **real-time progress dashboard** with updates after every task completion.
-
-**Previously:** Updated only at story lifecycle transitions (start → in-progress, end → review)
-**Now:** Updated after EVERY single task with progress percentage
-
-**Progress Format:**
-```yaml
-development_status:
-  1-2-login: in-progress  # 3/10 tasks (30%)
-  1-3-auth: in-progress  # 7/8 tasks (88%)
-  1-4-api: review  # 10/10 tasks (100%) - awaiting review
-  1-5-ui: done  # ✅ COMPLETED: Dashboard + widgets + tests
-```
-
-**Enforcement (CRITICAL + HALT):**
-- dev-story Step 8 now MANDATES sprint-status.yaml update after every task
-- Validates update persisted by re-reading file
-- HALTs if update fails (prevents silent tracking failures)
-- No exceptions - every task completion triggers update
-
-**Benefits:**
-- Immediate visibility into story progress without opening files
-- Detect stalled stories (same % for multiple days)
-- Better sprint planning and resource allocation
-- Real-time dashboard for team coordination
-
-**Backward Compatible:**
-- Old entries without progress comments still work
-- New entries automatically add progress
-- Gradual migration as stories are worked
-
-### ⚡ Semaphore Pattern for Parallel Execution
-
-**NEW:** Worker pool pattern replaces batch-and-wait for maximum throughput.
-
-**Previously (Batch-and-Wait):**
-```
-Batch 1: Start 5 agents → wait for ALL 5 to finish
-Batch 2: Start 5 agents → wait for ALL 5 to finish
-Problem: If 4 finish quickly, slots sit idle waiting for slow 5th
-```
-
-**Now (Semaphore Pattern):**
-```
-Initialize: Fill 5 worker slots
-Worker 1 finishes → immediately start next story in that slot
-Worker 3 finishes → immediately start next story in that slot
-Maintain constant 5 concurrent agents until queue empty
-```
-
-**Benefits:**
-- 20-40% faster completion (eliminates idle time)
-- Constant utilization of all worker slots
-- More predictable completion times
-- Live progress dashboard every 30 seconds
-
-### 🔒 Git Commit Queue (Parallel-Safe)
-
-**NEW:** File-based locking prevents concurrent commit conflicts in parallel mode.
-
-**Problem Solved:**
-```
-Worker 1: git commit → acquires .git/index.lock
-Worker 2: git commit → ERROR: Another git process is running
-Worker 3: git commit → ERROR: Another git process is running
-Workers 2 & 3: HALT - manual intervention needed ❌
-```
-
-**Solution with Commit Queue:**
-```
-Worker 1: acquire .git/bmad-commit.lock → commit → release
-Worker 2: wait for lock → acquire → commit → release
-Worker 3: wait for lock → acquire → commit → release
-All workers: SUCCESS ✅
-```
-
-**Features:**
-- Automatic retry with exponential backoff (1s → 30s)
-- Stale lock cleanup (>5 min old locks auto-removed)
-- Timeout protection (max 5 min wait)
-- Lock file tracking: who holds lock, when acquired, worker ID
-- Serializes commits while keeping implementations parallel
-- No user intervention needed for lock conflicts
-
-**Lock File:** `.git/bmad-commit.lock` (auto-generated, auto-cleaned, gitignored)
-
-### 🛡️ Stricter Story Validation
-
-**NEW:** Minimum 3-task requirement prevents invalid/incomplete stories from being processed.
-
-**Validation Rules:**
-- **0-2 tasks:** INVALID - Story is stub/incomplete (rejected in Step 2.5)
-- **3 tasks:** Minimum valid (MICRO classification threshold)
-- **4-15 tasks:** STANDARD story size
-- **16+ tasks:** COMPLEX story, consider splitting
-
-**What Happens to Invalid Stories:**
-- Step 2.5: Rejected during validation with clear error message
-- Step 2.6: Marked as INVALID during complexity scoring (double-check)
-- Filtered out before user selection step
-- User prompted to run /validate-create-story to fix
-
-**Example (Real-World Issue Fixed):**
-```
-Before v1.3.0:
-- Story "11-4-classes-workshops-advanced": 0 tasks, high-risk keywords
-- Classified as COMPLEX (because keywords)
-- Proceeds to implementation
-- Agent has nothing to implement → fails
-
-After v1.3.0:
-- Story "11-4-classes-workshops-advanced": 0 tasks
-- Rejected in Step 2.5: "INVALID - Only 0 tasks (need ≥3)"
-- Skipped from selection
-- User told to run /validate-create-story
-```
-
-### Files Modified
-
-- `batch-super-dev/instructions.md`: Semaphore pattern, 3-task minimum, INVALID filtering
-- `batch-super-dev/README.md`: Updated to v1.3.0, documented all new features
-- `super-dev-pipeline/steps/step-06-complete.md`: Added commit queue with file-based locking
-- `super-dev-pipeline/steps/step-06a-queue-commit.md`: NEW file for commit queue documentation
-- `dev-story/instructions.xml` (BMM + BMGD): Mandatory task-level sprint-status updates with CRITICAL enforcement
-- `sprint-status/instructions.md` (BMM + BMGD): Progress parsing and display
-- `batch-super-dev/step-4.5-reconcile-story-status.md`: Progress in reconciliation
-- `docs/HOW-TO-VALIDATE-SPRINT-STATUS.md`: Semaphore pattern documentation
-- `.gitignore`: Added `.git/bmad-commit.lock`
-
----
-
-## [6.1.0-alpha.1]
-
-**Release: January 7, 2026**
-
-### 🚀 Key Highlights
-
-1. **Complexity-Based Routing**: Intelligent story classification system (micro/standard/complex) with automatic pipeline selection
-2. **Token Optimization**: 50-70% reduction for micro stories, 90% for early bailouts
-3. **Smart Quality Gates**: Micro stories skip unnecessary validation steps while maintaining quality for complex work
-4. **Multi-Agent Review Integration**: Enhanced code review for high-risk stories
-5. **Critical Bug Fixes**: Resolved 6 critical issues discovered through multi-agent review
-
-### ⚡ Complexity-Based Routing (v1.3.0)
-
-**batch-super-dev Enhancements:**
-- Automatic complexity scoring for all stories before processing
-- Risk keyword detection with configurable weights (HIGH: 5pts, MEDIUM: 2pts, LOW: 0pts)
-- Three-tier classification: MICRO (≤3 tasks, low risk) | STANDARD (4-15 tasks) | COMPLEX (≥16 tasks or high-risk)
-- Deterministic keyword matching with word boundaries and variants
-- File count validation (≤5 files for MICRO classification)
-
-**super-dev-pipeline Optimizations:**
-- MICRO stories automatically skip steps 2 (pre-gap analysis) and 5 (code review)
-- Early bailout checks for already-complete or invalid stories
-- Complexity-aware routing propagated through sequential and parallel execution
-- Multi-agent review recommendations for COMPLEX stories
-
-**Token Savings:**
-- MICRO stories: 50-70% reduction (skip 2 of 7 steps)
-- Early bailouts: 90% reduction (invalid/complete stories exit immediately)
-- Gap analysis caching: Skip re-analysis if performed within 24 hours
-
-### 🛠️ Critical Fixes
-
-**Parameter Propagation (CRITICAL):**
-- Fixed missing `complexity_level` parameter in workflow invocations
-- Without this fix, complexity routing was completely non-functional
-- Updated both sequential (step 4-Sequential) and parallel (step 4-Parallel) execution paths
-
-**Keyword Matching Rules:**
-- Defined explicit matching algorithm in `workflow.yaml`
-- Case-insensitive matching with word boundary requirements
-- Keyword variants mapped to canonical forms (e.g., "authentication" → "auth")
-- Scan locations explicitly specified: story_title, task_descriptions, subtask_descriptions
-
-**Threshold Decision Tree:**
-- Rewrote overlapping conditions to be mutually exclusive
-- Priority order: COMPLEX → MICRO → STANDARD (eliminates ambiguity)
-- Stories can no longer match multiple categories simultaneously
-
-**Task Counting Method:**
-- Documented method: "top_level_only" (subtasks not counted)
-- Prevents scoring inconsistencies across different implementations
-
-**max_files Implementation:**
-- Added `file_count ≤ 5` check to MICRO classification
-- Previously collected but never validated (dead code)
-
-**Version Synchronization:**
-- Aligned super-dev-pipeline to v1.3.0 (was v1.2.0)
-- Consistent versioning across batch-super-dev and super-dev-pipeline
-
-### 📝 Documentation Updates
-
-- Updated README-changes.md with v1.3.0 feature documentation
-- Complexity scoring algorithm fully documented
-- Risk keyword system explained with examples
-- Token savings breakdown by story type
-
-### 🧪 Validation
-
-- Multi-agent code review completed (40 issues identified, all critical issues resolved)
-- All schema tests passing (52/52)
-- All installation tests passing (13/13)
-- All agent validations passing (24/24)
-- Zero linting errors, zero formatting errors
-
-### 📦 Files Changed
-
-- 14 files modified across workflows and documentation
-- ~605 lines added implementing complexity routing
-- 3 workflow YAML configurations updated
-- 5 markdown step files enhanced
-- 2 XML instruction files optimized
 ## [6.0.0-alpha.23]
 
 **Release: January 11, 2026**

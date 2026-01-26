@@ -6,17 +6,17 @@ This project adheres to the [Google Developer Documentation Style Guide](https:/
 
 ## Project-Specific Rules
 
-| Rule | Specification |
-|------|---------------|
-| No horizontal rules (`---`) | Fragments reading flow |
-| No `####` headers | Use bold text or admonitions instead |
-| No "Related" or "Next:" sections | Sidebar handles navigation |
-| No deeply nested lists | Break into sections instead |
-| No code blocks for non-code | Use admonitions for dialogue examples |
-| No bold paragraphs for callouts | Use admonitions instead |
-| 1-2 admonitions per section max | Tutorials allow 3-4 per major section |
-| Table cells / list items | 1-2 sentences max |
-| Header budget | 8-12 `##` per doc; 2-3 `###` per section |
+| Rule                             | Specification                            |
+| -------------------------------- | ---------------------------------------- |
+| No horizontal rules (`---`)      | Fragments reading flow                   |
+| No `####` headers                | Use bold text or admonitions instead     |
+| No "Related" or "Next:" sections | Sidebar handles navigation               |
+| No deeply nested lists           | Break into sections instead              |
+| No code blocks for non-code      | Use admonitions for dialogue examples    |
+| No bold paragraphs for callouts  | Use admonitions instead                  |
+| 1-2 admonitions per section max  | Tutorials allow 3-4 per major section    |
+| Table cells / list items         | 1-2 sentences max                        |
+| Header budget                    | 8-12 `##` per doc; 2-3 `###` per section |
 
 ## Admonitions (Starlight Syntax)
 
@@ -40,31 +40,31 @@ Critical warnings only — data loss, security issues
 
 ### Standard Uses
 
-| Admonition | Use For |
-|------------|---------|
-| `:::note[Prerequisites]` | Dependencies before starting |
-| `:::tip[Quick Path]` | TL;DR summary at document top |
-| `:::caution[Important]` | Critical caveats |
-| `:::note[Example]` | Command/response examples |
+| Admonition               | Use For                       |
+| ------------------------ | ----------------------------- |
+| `:::note[Prerequisites]` | Dependencies before starting  |
+| `:::tip[Quick Path]`     | TL;DR summary at document top |
+| `:::caution[Important]`  | Critical caveats              |
+| `:::note[Example]`       | Command/response examples     |
 
 ## Standard Table Formats
 
 **Phases:**
 
 ```md
-| Phase | Name | What Happens |
-|-------|------|--------------|
-| 1 | Analysis | Brainstorm, research *(optional)* |
-| 2 | Planning | Requirements — PRD or tech-spec *(required)* |
+| Phase | Name     | What Happens                                 |
+| ----- | -------- | -------------------------------------------- |
+| 1     | Analysis | Brainstorm, research *(optional)*            |
+| 2     | Planning | Requirements — PRD or tech-spec *(required)* |
 ```
 
 **Commands:**
 
 ```md
-| Command | Agent | Purpose |
-|---------|-------|---------|
-| `*workflow-init` | Analyst | Initialize a new project |
-| `*prd` | PM | Create Product Requirements Document |
+| Command      | Agent   | Purpose                              |
+| ------------ | ------- | ------------------------------------ |
+| `brainstorm` | Analyst | Brainstorm a new project             |
+| `prd`        | PM      | Create Product Requirements Document |
 ```
 
 ## Folder Structure Blocks
@@ -141,13 +141,13 @@ your-project/
 
 ### Types
 
-| Type | Example |
-|------|---------|
-| **Index/Landing** | `core-concepts/index.md` |
-| **Concept** | `what-are-agents.md` |
-| **Feature** | `quick-flow.md` |
-| **Philosophy** | `why-solutioning-matters.md` |
-| **FAQ** | `brownfield-faq.md` |
+| Type              | Example                      |
+| ----------------- | ---------------------------- |
+| **Index/Landing** | `core-concepts/index.md`     |
+| **Concept**       | `what-are-agents.md`         |
+| **Feature**       | `quick-flow.md`              |
+| **Philosophy**    | `why-solutioning-matters.md` |
+| **FAQ**           | `brownfield-faq.md`          |
 
 ### General Template
 
@@ -217,14 +217,14 @@ your-project/
 
 ### Types
 
-| Type | Example |
-|------|---------|
-| **Index/Landing** | `workflows/index.md` |
-| **Catalog** | `agents/index.md` |
-| **Deep-Dive** | `document-project.md` |
-| **Configuration** | `core-tasks.md` |
-| **Glossary** | `glossary/index.md` |
-| **Comprehensive** | `bmgd-workflows.md` |
+| Type              | Example               |
+| ----------------- | --------------------- |
+| **Index/Landing** | `workflows/index.md`  |
+| **Catalog**       | `agents/index.md`     |
+| **Deep-Dive**     | `document-project.md` |
+| **Configuration** | `core-tasks.md`       |
+| **Glossary**      | `glossary/index.md`   |
+| **Comprehensive** | `bmgd-workflows.md`   |
 
 ### Reference Index Pages
 
@@ -303,19 +303,19 @@ Starlight generates right-side "On this page" navigation from headers:
 ```md
 ## Category Name
 
-| Term | Definition |
-|------|------------|
-| **Agent** | Specialized AI persona with specific expertise that guides users through workflows. |
+| Term         | Definition                                                                               |
+| ------------ | ---------------------------------------------------------------------------------------- |
+| **Agent**    | Specialized AI persona with specific expertise that guides users through workflows.      |
 | **Workflow** | Multi-step guided process that orchestrates AI agent activities to produce deliverables. |
 ```
 
 ### Definition Rules
 
-| Do | Don't |
-|----|-------|
+| Do                            | Don't                                       |
+| ----------------------------- | ------------------------------------------- |
 | Start with what it IS or DOES | Start with "This is..." or "A [term] is..." |
-| Keep to 1-2 sentences | Write multi-paragraph explanations |
-| Bold term name in cell | Use plain text for terms |
+| Keep to 1-2 sentences         | Write multi-paragraph explanations          |
+| Bold term name in cell        | Use plain text for terms                    |
 
 ### Context Markers
 

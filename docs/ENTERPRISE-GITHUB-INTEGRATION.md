@@ -1,3 +1,8 @@
+---
+title: Enterprise BMAD - GitHub Issues Integration Plan
+description: Complete plan for transforming BMAD into an enterprise-scale team collaboration system with GitHub Issues integration
+---
+
 # Enterprise BMAD: Complete GitHub Issues Integration Plan
 
 **Vision**: Transform BMAD into "the killer feature for using BMAD across an Enterprise team at scale effectively and without constantly stepping on each other's toes"

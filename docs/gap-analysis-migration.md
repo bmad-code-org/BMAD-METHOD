@@ -1,3 +1,8 @@
+---
+title: Gap Analysis Migration Guide
+description: Migration guide for existing BMAD users transitioning to automatic gap analysis in v6
+---
+
 # Gap Analysis Migration Guide
 
 ## Quick Start

@@ -1,3 +1,8 @@
+---
+title: Gap Analysis - Codebase-Reality Task Validation
+description: Critical feature ensuring story tasks accurately reflect current codebase state by scanning projects before development
+---
+
 # Gap Analysis: Codebase-Reality Task Validation
 
 ## Overview

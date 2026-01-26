@@ -1,3 +1,8 @@
+---
+title: How to Validate Sprint Status - Complete Guide
+description: Ensure sprint-status.yaml and story files reflect reality through systematic validation
+---
+
 # How to Validate Sprint Status - Complete Guide
 
 **Created:** 2026-01-02

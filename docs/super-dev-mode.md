@@ -1,3 +1,8 @@
+---
+title: Super-Dev Mode - Comprehensive Quality Workflow
+description: Multi-stage validation workflow ensuring stories are truly complete through pre-validation, development, post-validation, and code review
+---
+
 # Super-Dev Mode: Comprehensive Quality Workflow
 
 ## TL;DR

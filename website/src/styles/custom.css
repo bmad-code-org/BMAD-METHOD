@@ -16,6 +16,9 @@
   --ai-banner-height: 2.75rem;
   --sl-nav-height: 6.25rem; /* Base nav height (~3.5rem) + banner height (2.75rem) */
 
+  /* Full-width content - override Starlight's default 45rem/67.5rem */
+  --sl-content-width: 100%;
+
   /* Primary accent colors - purple to match Docusaurus */
   --sl-color-accent-low: #e0e0ff;
   --sl-color-accent: #8C8CFF;
@@ -45,6 +48,9 @@
    COLOR PALETTE - Dark Mode (Primary Focus)
    ============================================ */
 :root[data-theme='dark'] {
+  /* Full-width content - override Starlight's default */
+  --sl-content-width: 100%;
+
   /* Primary accent colors - purple to match Docusaurus */
   --sl-color-accent-low: #2a2a5a;
   --sl-color-accent: #8C8CFF;
@@ -174,11 +180,20 @@
 }
 
 /* ============================================
-   LAYOUT - Fixed width at large viewport
+   LAYOUT - Full width content
    ============================================ */
 .content-panel {
-  max-width: 1400px;
+  width: 100%;
   margin: 0 auto;
+}
+
+/* Full-width workflow diagram iframe */
+.sl-markdown-content > iframe:first-child {
+  width: 100vw !important;
+  margin-left: calc(50% - 50vw);
+  border-radius: 0 !important;
+  border-left: none !important;
+  border-right: none !important;
 }
 
 /* Main content area */
