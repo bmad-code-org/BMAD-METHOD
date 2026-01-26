@@ -1,8 +1,8 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@jonahschulte/bmad-method",
-  "version": "6.1.0-alpha.23",
-  "description": "Breakthrough Method of Agile AI-driven Development (Enhanced with complexity-based routing and smart batching)",
+  "version": "6.2.0-alpha.23",
+  "description": "Breakthrough Method of Agile AI-driven Development (Enhanced with hospital-grade quality, TDD, and intelligent multi-agent review)",
   "keywords": [
     "agile",
     "ai",
