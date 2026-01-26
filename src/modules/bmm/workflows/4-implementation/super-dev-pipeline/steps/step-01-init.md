@@ -44,52 +44,83 @@ Check if running in batch or interactive mode:
 
 Set `{mode}` variable.
 
-### 2. Resolve Story File Path
+### 2. Resolve Story File Path (CANONICAL FORMAT ONLY)
+
+<critical>🚨 ONE CANONICAL NAMING FORMAT - NO VARIATIONS ALLOWED</critical>
+
+**Canonical Format:** `{epic}-{story_num}-{slug}.md`
+
+**Examples:**
+- 1-1-multi-tenant-data-isolation-security.md
+- 18-1-charge-model-state-machine.md
+- 20-3-payment-dashboard.md
 
 **From input parameters:**
-- `story_id`: e.g., "1-4"
-- `story_file`: Full path to story file
+- `story_key`: Full key like "18-1-charge-model-state-machine"
+- `story_file`: Full path (if explicitly provided)
 
 **If story_file not provided:**
+
+```bash
+sprint_artifacts="{sprint_artifacts}"
+story_key="{story_key}"  # e.g., "18-1-charge-model-state-machine"
+
+# CANONICAL PATH (only one pattern):
+story_file="${sprint_artifacts}/${story_key}.md"
+
+# Example: /path/to/docs/sprint-artifacts/18-1-charge-model-state-machine.md
 ```
-story_file = {sprint_artifacts}/story-{story_id}.md
-```
+
+**NO FALLBACKS. NO ALTERNATIVES. ONE FORMAT.**
 
 ### 3. Verify Story Exists (Auto-Create if Missing - NEW v1.4.0)
 
+### 3. Verify Story File Exists (Auto-Fix Wrong Names)
+
 ```bash
-# Check if story file exists
-test -f "{story_file}"
-```
+# Check if canonical file exists
+if [ ! -f "$story_file" ]; then
+  echo "⚠️ Canonical file not found: $story_file"
+  echo ""
+  echo "🔍 Searching for wrong-named versions..."
 
-**If story does NOT exist:**
-```
-⚠️ Story file not found at {story_file}
+  # Check for common wrong patterns
+  wrong_patterns=(
+    "${sprint_artifacts}/story-${story_key}.md"  # story- prefix (legacy)
+    "${sprint_artifacts}/${epic_num}.${story_num}-*.md"  # dot notation
+  )
 
-🔄 AUTO-CREATING: Invoking /create-story-with-gap-analysis...
-```
+  found_wrong=""
+  for wrong_pattern in "${wrong_patterns[@]}"; do
+    if ls $wrong_pattern 2>/dev/null | head -1 | read wrong_file; then
+      found_wrong="$wrong_file"
+      break
+    fi
+  done
 
-<invoke-workflow path="{create_story_workflow}/workflow.yaml">
-  <input name="story_id">{story_id}</input>
-  <input name="epic_num">{epic_num}</input>
-  <input name="story_num">{story_num}</input>
-</invoke-workflow>
+  if [ -n "$found_wrong" ]; then
+    echo "✅ Found wrong-named file: $found_wrong"
+    echo "🔧 AUTO-RENAMING to canonical format: $story_file"
 
-After workflow completes, verify story was created:
-```bash
-test -f "{story_file}" && echo "✅ Story created successfully" || echo "❌ Story creation failed - HALT"
-```
+    mv "$found_wrong" "$story_file"
 
-**If story was created, set flag for smart gap analysis:**
-```yaml
-# Set state flag to skip redundant gap analysis in step 2
-story_just_created: true
-gap_analysis_completed: true # Already done in create-story-with-gap-analysis
-```
+    if [ -f "$story_file" ]; then
+      echo "✅ Renamed successfully"
+    else
+      echo "❌ Rename failed - HALT"
+      exit 1
+    fi
+  else
+    echo "❌ No story file found (canonical OR wrong names)"
+    echo ""
+    echo "**STORY FILE REQUIRED - CANNOT VIBE CODE**"
+    echo ""
+    echo "Creating story file now..."
+    # Invoke create-story workflow
+  fi
+fi
 
-**If story exists:**
-```
-✅ Story file found: {story_file}
+echo "✅ Story file verified: $story_file"
 ```
 
 ### 4. Load Story File

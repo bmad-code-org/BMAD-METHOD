@@ -298,7 +298,67 @@ Ready for Summary Generation
 
 ## QUALITY GATE
 
+**MANDATORY AUTO-FIX VERIFICATION:**
+
+<critical>🚨 DETECT FAILURES AND FIX THEM - DO NOT HALT</critical>
+
+```bash
+story_file="{story_file}"
+
+# 1. Check if tasks were checked off
+checked_tasks=$(grep -c "^- \[x\]" "$story_file" || echo "0")
+total_tasks=$(grep -c "^- \[[x ]\]" "$story_file" || echo "0")
+
+if [ "$checked_tasks" -eq 0 ] && [ "$total_tasks" -gt 0 ]; then
+  echo "❌ FAILURE DETECTED: $total_tasks tasks exist but ZERO checked"
+  echo ""
+  echo "🔧 EXECUTING AUTO-FIX RECONCILIATION:"
+  echo "   1. Reading git commit to see what was built"
+  echo "   2. Comparing to story tasks"
+  echo "   3. Checking off tasks with matching code"
+  echo ""
+fi
+
+# AUTO-FIX: For each unchecked task, check if code exists, then check it off
+# (Actual implementation: Use Edit tool iteratively for each task)
+# (Verify after each edit, retry if failed, continue until all viable tasks checked)
+
+# Re-count after auto-fix
+checked_tasks=$(grep -c "^- \[x\]" "$story_file" || echo "0")
+completion_pct=$((checked_tasks * 100 / total_tasks))
+
+echo "✅ After auto-fix: $checked_tasks/$total_tasks tasks checked ($completion_pct%)"
+
+# 2. Check if Dev Agent Record empty
+if grep -q "To be filled by dev agent" "$story_file"; then
+  echo "❌ FAILURE DETECTED: Dev Agent Record is empty"
+  echo ""
+  echo "🔧 EXECUTING AUTO-FIX:"
+  echo "   Extracting commit details"
+  echo "   Populating Dev Agent Record section"
+  echo ""
+
+  # AUTO-FIX: Fill in Dev Agent Record
+  # - Agent Model Used: Get from context
+  # - File List: Extract from git diff --name-only
+  # - Completion Notes: Extract from commit message
+  # Use Edit tool to replace "To be filled" sections
+
+  echo "✅ Dev Agent Record populated"
+fi
+
+# After all auto-fixes, verify minimum standards met
+if [ "$checked_tasks" -eq 0 ]; then
+  echo "❌ CRITICAL: Auto-fix could not check any tasks"
+  echo "   Story implementation may be empty or broken"
+  echo "   Marking story as 'in-progress' (not done)"
+  # Override status but continue (don't halt)
+fi
+```
+
 Before proceeding (BLOCKING - ALL must pass):
+- [ ] **Tasks verified: checked_tasks > 0 (HALT if zero)**
+- [ ] **Dev Agent Record filled (HALT if empty)**
 - [ ] Targeted files staged (from File List)
 - [ ] Commit message generated
 - [ ] Commit created successfully

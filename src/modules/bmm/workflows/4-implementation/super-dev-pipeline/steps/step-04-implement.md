@@ -219,18 +219,59 @@ npm test -- --run && npm run lint
 
 **D. If Validation Succeeds:**
 ```
-✅ Batch Complete
+✅ Batch Complete - All {task_count} tasks executed successfully!
+```
 
-All {task_count} tasks in batch executed successfully!
+<critical>🚨 AUTO-FIX: CHECK OFF ALL BATCH TASKS WITH RETRY LOGIC</critical>
 
-Marking all tasks complete:
-- [x] {task_1}
-- [x] {task_2}
-- [x] {task_3}
-...
+**For EACH task in batch:**
+
+```
+FOR task_text IN [task_1, task_2, task_3, ...]:
+
+  ATTEMPT 1: Use Edit tool to check off task
+    Read story file
+    Find line: "- [ ] {task_text}"
+    Edit to: "- [x] {task_text}"
+
+  VERIFY:
+    Re-read story file
+    Check if "- [x] {task_text}" exists
+
+  IF FAILED:
+    ATTEMPT 2: Retry with exact line matching
+      Read story file with line numbers
+      Find exact line text (with spacing/indentation)
+      Edit with exact old_string match
+      Verify again
+
+  IF FAILED:
+    ATTEMPT 3: Write entire section
+      Read full Tasks section
+      Update all batch task checkboxes to [x]
+      Write back to story file
+      Verify again
+
+  IF STILL FAILED:
+    ❌ CRITICAL: Cannot check off task after 3 attempts
+    Log diagnostic info:
+      - Task text we're trying to check
+      - What Edit tool is matching against
+      - Edit tool error messages
+    HALT - Fundamental tool failure
+
+  SUCCESS:
+    ✅ Task checked: {task_text}
+    Continue to next task in batch
+
+END FOR
+
+✅ All {task_count} batch tasks verified checked
+```
+
+**Guarantee:** Every task gets 3 attempts to check off. Only HALT if all methods exhausted.
 
 Time: {actual_time} minutes
-```
 
 **E. If Validation Fails:**
 ```
@@ -360,10 +401,56 @@ After implementing task, verify:
 - [ ] No TypeScript errors
 - [ ] Follows project patterns
 
-**Mark task complete in story file:**
-```markdown
-- [x] {task_description}
+**MANDATORY: Mark task complete in story file:**
+
+<critical>🚨 AUTO-FIX ENFORCEMENT - CHECK OFF TASK OR RETRY UNTIL SUCCESS</critical>
+
 ```
+STEP 1: Attempt to check off task using Edit tool
+
+Read current task line from story file
+Use Edit tool to change: "- [ ] {task_text}" → "- [x] {task_text}"
+
+STEP 2: VERIFY checkbox was updated (MANDATORY)
+
+Re-read story file
+Count checked tasks for this specific task
+
+IF VERIFICATION FAILS:
+  ❌ Edit tool failed to check off task
+
+  RETRY LOGIC:
+  1. Read story file again (get latest content)
+  2. Find exact task line (with line numbers)
+  3. Use Edit tool with EXACT old_string (including indentation, spacing)
+  4. Update to [x]
+  5. Verify again
+
+  IF RETRY FAILS:
+    ❌ Still not checked after retry
+
+    DIAGNOSTIC:
+    - Show actual line from story file
+    - Show what Edit tool tried to match
+    - Show error message from Edit tool
+
+    THEN: Use Write tool to rewrite entire story file with task checked
+
+    THEN: Verify AGAIN
+
+    IF STILL FAILS:
+      HALT - Something is fundamentally broken, cannot continue
+
+STEP 3: Confirmation
+
+✅ Task checkbox verified: {task_text}
+
+Story file updated: {checked_count} tasks now complete
+```
+
+**Auto-fix loop:** Try Edit → Verify → Retry Edit → Verify → Write file → Verify → HALT only if all methods fail
+
+**Maximum 3 attempts before HALT.**
 
 **Update state file with progress.**
 
@@ -459,7 +546,50 @@ Ready for Post-Validation
 
 ## QUALITY GATE
 
-Before proceeding:
+**MANDATORY PRE-FLIGHT CHECKS (with verification code):**
+
+### 1. Verify Files Match Story File List
+
+```bash
+# Extract expected files from story File List section
+story_file="{story_file}"
+
+# Check each file in File List exists
+missing_files=0
+while IFS= read -r file_line; do
+  if [[ "$file_line" =~ ^-[[:space:]]+(.*\.ts|.*\.tsx|.*\.sql)$ ]]; then
+    expected_file="${BASH_REMATCH[1]}"
+    if [ ! -f "$expected_file" ]; then
+      echo "❌ MISSING FILE: $expected_file (specified in File List)"
+      missing_files=$((missing_files + 1))
+    fi
+  fi
+done < <(sed -n '/## File List/,/##/p' "$story_file")
+
+if [ "$missing_files" -gt 0 ]; then
+  echo ""
+  echo "❌ CRITICAL: $missing_files files from File List not created"
+  echo "This means you built DIFFERENT code than the story specified."
+  echo ""
+  echo "HALTING - Implementation does not match story."
+  exit 1
+fi
+```
+
+### 2. Verify Tasks Match Implementation
+
+```bash
+# For each task, verify corresponding code exists
+# Example: Task says "Create validateStateTransition function"
+#          Verify: grep "function validateStateTransition" billing-service.ts
+
+# This requires reading tasks and checking file contents
+# Implementation: Read each task checkbox text, extract expected artifact (function/model/file)
+#                Check if that artifact exists in the codebase
+```
+
+### 3. Standard Quality Checks
+
 - [ ] All unchecked tasks completed
 - [ ] All tests pass
 - [ ] Lint clean
@@ -470,8 +600,73 @@ Before proceeding:
 
 ## CRITICAL STEP COMPLETION
 
-**ONLY WHEN** [all tasks complete AND all tests pass AND lint clean AND build succeeds],
-load and execute `{nextStepFile}` for post-validation.
+**MANDATORY VERIFICATION BEFORE PROCEEDING:**
+
+<critical>🚨 FINAL TASK AUDIT - AUTO-FIX MISSING CHECKBOXES</critical>
+
+**Execute verification with auto-fix retry:**
+
+```bash
+story_file="{story_file}"
+
+# Count checked vs total tasks
+checked_tasks=$(grep -c "^- \[x\]" "$story_file" || echo "0")
+total_tasks=$(grep -c "^- \[[x ]\]" "$story_file" || echo "0")
+
+if [ "$checked_tasks" -eq 0 ] && [ "$total_tasks" -gt 0 ]; then
+  echo "❌ CRITICAL: ZERO tasks checked but $total_tasks tasks exist"
+  echo ""
+  echo "This means you FAILED to update the story file during implementation."
+  echo ""
+  echo "ATTEMPTING AUTO-FIX:"
+  echo "Reading story file to find what should be checked..."
+
+  # Extract all task lines
+  # For each task that has corresponding code (from File List or tests)
+  # Use Edit tool to check it off
+  # Re-verify after each edit
+
+  # After auto-fix attempts:
+  checked_tasks=$(grep -c "^- \[x\]" "$story_file" || echo "0")
+
+  if [ "$checked_tasks" -eq 0 ]; then
+    echo ""
+    echo "❌ AUTO-FIX FAILED: Still zero tasks checked"
+    echo ""
+    echo "YOU MUST manually review story file and check off completed tasks."
+    echo "HALTING - Cannot proceed with broken task tracking."
+    exit 1
+  else
+    echo "✅ AUTO-FIX SUCCESS: $checked_tasks tasks now checked"
+  fi
+fi
+
+completion_pct=$((checked_tasks * 100 / total_tasks))
+
+if [ "$completion_pct" -lt 80 ]; then
+  echo "⚠️ WARNING: Only $completion_pct% complete ($checked_tasks/$total_tasks)"
+  echo ""
+  echo "ATTEMPTING TO IDENTIFY MISSING TASKS:"
+  # Read unchecked tasks
+  # For each unchecked task, check if code exists
+  # If code exists, auto-check the task
+  # If code missing, report which tasks are genuinely incomplete
+fi
+
+echo "✅ Final verification: $checked_tasks/$total_tasks tasks checked ($completion_pct%)"
+```
+
+**ONLY WHEN:**
+- [x] Tasks verified: checked_tasks > 0 (HALT if zero)
+- [x] Completion ≥ 80% (WARN if lower, allow continuation with warning)
+- [x] All tests pass
+- [x] Lint clean
+- [x] Build succeeds
+- [x] No TypeScript errors
+
+**THEN** load and execute `{nextStepFile}` for post-validation.
+
+**IF VERIFICATION FAILS:** HALT workflow, do not proceed to Step 5.
 
 ---
 

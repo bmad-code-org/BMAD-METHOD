@@ -94,30 +94,40 @@ Run `/bmad_bmm_sprint-status` to see current status.</output>
     <example>Input: "20-11" → epic=20, story=11, suffix=""</example>
   </substep>
 
-  <substep n="2b" title="Try multiple file patterns using Glob tool">
-    <action>Use Glob tool to search for files matching these patterns (in priority order):</action>
+  <substep n="2b" title="Check for story file using CANONICAL format only">
+    <critical>🚨 ONE CANONICAL FORMAT - NO VARIATIONS</critical>
 
-    <pattern n="1">story-{epic_num}.{story_num}.md</pattern>
-    <example>story-20.9.md (DOT notation, no suffix)</example>
+    <action>CANONICAL FORMAT: {story_key}.md</action>
+    <example>20-9-megamenu-navigation.md (epic-story-slug, NO prefix)</example>
+    <example>18-1-charge-model-state-machine.md (epic-story-slug, NO prefix)</example>
 
-    <pattern n="2">story-{epic_num}.{story_num}*.md</pattern>
-    <example>story-20.9-megamenu-navigation.md (DOT notation WITH suffix - use Glob wildcard)</example>
+    <action>Check if file exists: {sprint_artifacts}/{story_key}.md</action>
 
-    <pattern n="3">{epic_num}-{story_num}.md</pattern>
-    <example>20-9.md (HYPHEN notation, no "story-" prefix)</example>
+    <check if="file exists">
+      <action>Set file_status = ✅ EXISTS</action>
+      <action>Store file_path = {sprint_artifacts}/{story_key}.md</action>
+    </check>
 
-    <pattern n="4">{epic_num}-{story_num}*.md</pattern>
-    <example>20-9-megamenu-navigation.md (HYPHEN notation WITH suffix)</example>
+    <check if="file does NOT exist">
+      <action>Set file_status = ❌ MISSING</action>
 
-    <pattern n="5">story-{story_key}.md</pattern>
-    <example>story-20-9-megamenu-navigation.md (literal story_key with "story-" prefix)</example>
+      <action>Check for legacy wrong-named files:</action>
+      <action>  Search for: story-{story_key}.md (wrong - has "story-" prefix)</action>
 
-    <pattern n="6">{story_key}.md</pattern>
-    <example>20-9-megamenu-navigation.md (literal story_key)</example>
+      <check if="found wrong-named file">
+        <output>⚠️ Found legacy file: story-{story_key}.md</output>
+        <output>🔧 AUTO-RENAMING to canonical: {story_key}.md</output>
 
-    <action>Stop at first match and store file_path</action>
-    <action>If NO match found after all 6 patterns → file_status = ❌ MISSING</action>
-    <action>If match found → file_status = ✅ EXISTS</action>
+        <action>Rename: mv story-{story_key}.md {story_key}.md</action>
+        <action>Verify rename worked</action>
+        <action>Set file_status = ✅ EXISTS (after rename)</action>
+        <action>Store file_path = {sprint_artifacts}/{story_key}.md</action>
+      </check>
+
+      <check if="no file found (canonical OR legacy)">
+        <action>file_status = ❌ MISSING (genuinely missing)</action>
+      </check>
+    </check>
   </substep>
 
   <action>Mark stories as: ✅ (file exists), ❌ (file missing), 🔄 (already implemented but not marked done)</action>
@@ -1116,8 +1126,73 @@ Wave {{wave_num}} complete: {{completed_in_wave}} succeeded, {{failed_in_wave}} 
       <action>Load reconciliation instructions: {installed_path}/step-4.5-reconcile-story-status.md</action>
       <action>Execute reconciliation with story_key={{story_key}}</action>
 
-      <check if="reconciliation succeeded">
-        <output>✅ COMPLETED: {{story_key}} (reconciled)</output>
+      <critical>🚨 AUTO-FIX RECONCILIATION - MAKE IT RIGHT NOW</critical>
+      <action>Verify reconciliation by checking story file:</action>
+      <action>  1. Re-read story file: {{story_file_path}}</action>
+      <action>  2. Count checked tasks: grep -c "^\- \[x\]" {{story_file_path}}</action>
+      <action>  3. Count total tasks: grep -c "^\- \[.\]" {{story_file_path}}</action>
+      <action>  4. Verify Dev Agent Record filled</action>
+
+      <check if="checked_tasks == 0 OR dev_agent_record_empty">
+        <output>
+❌ Story {{story_key}}: Agent failed to update story file
+
+Checked tasks: {{checked_tasks}}/{{total_tasks}}
+Dev Agent Record: {{empty/filled}}
+
+🔧 EXECUTING IMMEDIATE AUTO-FIX RECONCILIATION...
+        </output>
+
+        <action>AUTO-FIX STEPS:</action>
+        <action>1. Read the agent's git commit for this story</action>
+        <action>2. Extract files created/modified from commit</action>
+        <action>3. Read story Tasks section</action>
+        <action>4. For each task:</action>
+        <action>   - Check if task mentions a file from the commit</action>
+        <action>   - Check if task mentions a function that exists in those files</action>
+        <action>   - If yes: Use Edit tool to check off task (- [ ] → - [x])</action>
+        <action>   - Verify edit worked with grep</action>
+        <action>   - If edit failed: Retry with exact line match</action>
+        <action>   - If still failed: Log and continue to next task</action>
+        <action>5. Fill in Dev Agent Record:</action>
+        <action>   - Agent Model: Extract from state file</action>
+        <action>   - File List: From git diff --name-only</action>
+        <action>   - Completion Notes: From commit message</action>
+        <action>   - Use Edit tool to replace placeholder text</action>
+        <action>6. Verify auto-fix worked:</action>
+        <action>   - Re-count checked tasks</action>
+        <action>   - Verify Dev Agent Record no longer empty</action>
+
+        <check if="auto_fix_succeeded AND checked_tasks > 0">
+          <output>✅ AUTO-FIX SUCCESS: {{checked_tasks}}/{{total_tasks}} tasks now checked</output>
+          <action>Continue with story as completed</action>
+        </check>
+
+        <check if="auto_fix_failed OR checked_tasks still == 0">
+          <output>⚠️ AUTO-FIX PARTIAL: Only {{checked_tasks}}/{{total_tasks}} tasks reconciled</output>
+          <action>Mark story as "review" (not done) in sprint-status</action>
+          <action>Add detailed warning to reconciliation_warnings</action>
+          <action>Continue (do not halt entire batch)</action>
+        </check>
+      </check>
+
+      <check if="task_completion_pct < 80">
+        <output>
+⚠️ WARNING: Story {{story_key}} - LOW TASK COMPLETION
+
+Only {{checked_tasks}}/{{total_tasks}} tasks checked ({{task_completion_pct}}%).
+
+This suggests incomplete implementation. Cannot mark as "done".
+Marking as "in-progress" instead.
+        </output>
+        <action>Override story status to "in-progress"</action>
+        <action>Override sprint-status to "in-progress"</action>
+        <action>Add to reconciliation_warnings</action>
+      </check>
+
+      <check if="reconciliation succeeded AND checked_tasks > 0 AND dev_agent_record_filled">
+        <output>✅ COMPLETED: {{story_key}} (reconciled and verified)</output>
+        <output>  Tasks: {{checked_tasks}}/{{total_tasks}} ({{task_completion_pct}}%)</output>
         <action>Increment completed counter</action>
 
         <check if="execution_mode == 'interactive_checkpoint'">
@@ -1317,15 +1392,62 @@ Press [C] to continue or [P] to pause:
       <action>Load reconciliation instructions: {installed_path}/step-4.5-reconcile-story-status.md</action>
       <action>Execute reconciliation with story_key={{story_key}}</action>
 
-      <check if="reconciliation succeeded">
-        <output>✅ COMPLETED: {{story_key}} (reconciled)</output>
+      <critical>🚨 MANDATORY RECONCILIATION AUTO-FIX - MAKE IT RIGHT</critical>
+      <action>Verify reconciliation by checking story file:</action>
+      <action>  1. Re-read story file: {{story_file_path}}</action>
+      <action>  2. Count checked tasks vs total tasks</action>
+      <action>  3. Check Dev Agent Record filled</action>
+
+      <check if="checked_tasks == 0 OR dev_agent_record_empty">
+        <output>
+❌ Story {{story_key}}: Agent FAILED to update story file
+
+Checked tasks: {{checked_tasks}}/{{total_tasks}}
+Dev Agent Record: {{dev_agent_record_status}}
+
+🔧 EXECUTING AUTO-FIX RECONCILIATION...
+        </output>
+
+        <action>AUTO-FIX PROCEDURE:</action>
+        <action>1. Read agent's commit to see what files were created/modified</action>
+        <action>2. Read story Tasks section to see what was supposed to be built</action>
+        <action>3. For each task, check if corresponding code exists in commit</action>
+        <action>4. If code exists, check off the task using Edit tool</action>
+        <action>5. Fill in Dev Agent Record with commit details</action>
+        <action>6. Verify fixes worked (re-count checked tasks)</action>
+
+        <check if="auto_fix_succeeded AND checked_tasks > 0">
+          <output>✅ AUTO-FIX SUCCESS: {{checked_tasks}}/{{total_tasks}} tasks now checked</output>
+          <action>Continue with story completion</action>
+        </check>
+
+        <check if="auto_fix_failed OR checked_tasks still == 0">
+          <output>
+❌ AUTO-FIX FAILED: Cannot reconcile story {{story_key}}
+
+After auto-fix attempts:
+- Checked tasks: {{checked_tasks}}/{{total_tasks}}
+- Dev Agent Record: {{dev_agent_record_status}}
+
+**Agent produced code but story file cannot be updated.**
+
+Marking story as "in-progress" (not done) and continuing with warnings.
+          </output>
+          <action>Override story status to "in-progress"</action>
+          <action>Add to reconciliation_warnings with detailed diagnostic</action>
+          <action>Continue (do NOT kill workers)</action>
+        </check>
+      </check>
+
+      <check if="reconciliation succeeded AND checked_tasks > 0 AND dev_agent_record_filled">
+        <output>✅ COMPLETED: {{story_key}} (reconciled and verified)</output>
+        <output>  Tasks: {{checked_tasks}}/{{total_tasks}} ({{task_completion_pct}}%)</output>
         <action>Add to completed_stories</action>
       </check>
 
-      <check if="reconciliation failed">
-        <output>⚠️ WARNING: {{story_key}} completed but reconciliation failed</output>
-        <action>Add to completed_stories (implementation successful)</action>
-        <action>Add to reconciliation_warnings: {story_key: {{story_key}}, warning_message: "Reconciliation failed - manual verification needed"}</action>
+      <check if="task_completion_pct < 80">
+        <output>⚠️ WARNING: {{story_key}} - Low completion ({{task_completion_pct}}%)</output>
+        <action>Add to reconciliation_warnings: {story_key: {{story_key}}, warning_message: "Only {{task_completion_pct}}% tasks checked - manual verification needed"}</action>
       </check>
 
       <action>Remove worker_id from active_workers (free the slot)</action>

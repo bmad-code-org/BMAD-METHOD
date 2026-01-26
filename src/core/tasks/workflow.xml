@@ -99,7 +99,29 @@
 
     <step n="3" title="Completion">
       <check>Confirm document saved to output path</check>
-      <action>Report workflow completion</action>
+
+      <critical>🚨 FILENAME VALIDATION - CANONICAL FORMAT ENFORCEMENT</critical>
+      <action>Verify output filename matches expected pattern from workflow.yaml</action>
+      <action>
+        Expected: {default_output_file} (from workflow.yaml)
+        Actual: {file_actually_created}
+
+        If filenames don't match:
+          ❌ CRITICAL: Agent created file with WRONG name
+
+          Expected: {default_output_file}
+          Got: {file_actually_created}
+
+          Auto-fix: Rename file to canonical format
+          ```bash
+          mv "{file_actually_created}" "{default_output_file}"
+          ```
+
+          Verify rename worked:
+          test -f "{default_output_file}" || (echo "Rename failed - HALT" && exit 1)
+      </action>
+
+      <action>Report workflow completion with verified filename</action>
     </step>
   </flow>
 

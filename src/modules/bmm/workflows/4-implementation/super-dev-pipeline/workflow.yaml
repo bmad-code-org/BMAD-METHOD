@@ -256,7 +256,7 @@ quality_gates:
 input_file_patterns:
   story:
     description: "Story file being developed"
-    pattern: "{sprint_artifacts}/story-*.md"
+    pattern: "{sprint_artifacts}/*.md" # CANONICAL: epic-story-slug.md (NO "story-" prefix)
     load_strategy: "FULL_LOAD"
     cache: true
 

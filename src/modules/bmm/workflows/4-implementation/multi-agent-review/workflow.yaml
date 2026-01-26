@@ -15,7 +15,7 @@ instructions: "{installed_path}/instructions.md"
 
 # Input parameters
 story_id: "{story_id}" # Required
-story_file: "{sprint_artifacts}/story-{story_id}.md"
+story_file: "{sprint_artifacts}/{story_id}.md" # CANONICAL FORMAT: epic-story-slug.md (NO "story-" prefix)
 base_branch: "main" # Optional: branch to compare against
 complexity_level: "standard" # micro | standard | complex (passed from super-dev-pipeline)
 
@@ -55,4 +55,3 @@ review_settings:
 review_report: "{sprint_artifacts}/review-{story_id}-multi-agent.md"
 
 standalone: true
-web_bundle: false
