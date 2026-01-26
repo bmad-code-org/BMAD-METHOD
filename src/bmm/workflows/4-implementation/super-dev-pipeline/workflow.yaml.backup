@@ -1,0 +1,218 @@
+name: super-dev-pipeline
+description: "Step-file architecture with complexity-based routing, smart batching, and auto-story-creation. Micro stories get lightweight path, standard/complex get full quality gates."
+author: "BMad"
+version: "1.4.0" # Added auto-create story via /create-story-with-gap-analysis when story missing or incomplete
+
+# Critical variables from config
+config_source: "{project-root}/_bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+sprint_artifacts: "{config_source}:sprint_artifacts"
+communication_language: "{config_source}:communication_language"
+date: system-generated
+
+# Workflow paths
+installed_path: "{project-root}/_bmad/bmm/workflows/4-implementation/super-dev-pipeline"
+steps_path: "{installed_path}/steps"
+templates_path: "{installed_path}/templates"
+checklists_path: "{installed_path}/checklists"
+
+# State management
+state_file: "{sprint_artifacts}/super-dev-state-{{story_id}}.yaml"
+audit_trail: "{sprint_artifacts}/audit-super-dev-{{story_id}}-{{date}}.yaml"
+
+# Auto-create story settings (NEW v1.4.0)
+# When story is missing or lacks proper context, auto-invoke /create-story-with-gap-analysis
+auto_create_story:
+  enabled: true # Set to false to revert to old HALT behavior
+  create_story_workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/create-story-with-gap-analysis"
+  triggers:
+    - story_not_found # Story file doesn't exist
+    - no_tasks # Story exists but has no tasks
+    - missing_sections # Story missing required sections (Tasks, Acceptance Criteria)
+
+# Complexity level (passed from batch-super-dev or set manually)
+# Controls which pipeline steps to execute
+complexity_level: "standard" # micro | standard | complex
+
+# Complexity-based step skipping (NEW v1.2.0)
+complexity_routing:
+  micro:
+    skip_steps: [2, 5] # Skip pre-gap analysis and code review
+    description: "Lightweight path for simple stories (≤3 tasks, low risk)"
+  standard:
+    skip_steps: [] # Full pipeline
+    description: "Normal path with all quality gates"
+  complex:
+    skip_steps: [] # Full pipeline + warnings
+    description: "Enhanced path for high-risk stories"
+    warn_before_start: true
+    suggest_split: true
+
+# Workflow modes
+modes:
+  interactive:
+    description: "Human-in-the-loop with menu navigation between steps"
+    checkpoint_on_failure: true
+    requires_approval: true
+    smart_batching: true # User can approve batching plan
+  batch:
+    description: "Unattended execution for batch-super-dev"
+    checkpoint_on_failure: true
+    requires_approval: false
+    fail_fast: true
+    smart_batching: true # Auto-enabled for efficiency
+
+# Smart batching configuration
+smart_batching:
+  enabled: true
+  detect_patterns: true
+  default_to_safe: true # When uncertain, execute individually
+  min_batch_size: 3 # Minimum tasks to form a batch
+  fallback_on_failure: true # Revert to individual if batch fails
+
+  # Batchable pattern definitions
+  batchable_patterns:
+    - pattern: "package_installation"
+      keywords: ["Add", "package.json", "npm install", "dependency"]
+      risk_level: "low"
+      validation: "npm install && npm run build"
+
+    - pattern: "module_registration"
+      keywords: ["Import", "Module", "app.module", "register"]
+      risk_level: "low"
+      validation: "tsc --noEmit"
+
+    - pattern: "code_deletion"
+      keywords: ["Delete", "Remove", "rm ", "unlink"]
+      risk_level: "low"
+      validation: "npm test && npm run build"
+
+    - pattern: "import_update"
+      keywords: ["Update import", "Change import", "import from"]
+      risk_level: "low"
+      validation: "npm run build"
+
+  # Non-batchable pattern definitions (always execute individually)
+  individual_patterns:
+    - pattern: "business_logic"
+      keywords: ["circuit breaker", "fallback", "caching for", "strategy"]
+      risk_level: "medium"
+
+    - pattern: "security"
+      keywords: ["auth", "permission", "security", "encrypt"]
+      risk_level: "high"
+
+    - pattern: "data_migration"
+      keywords: ["migration", "schema", "ALTER TABLE", "database"]
+      risk_level: "high"
+
+# Agent role definitions (loaded once, switched as needed)
+agents:
+  dev:
+    name: "Developer"
+    persona: "{project-root}/_bmad/bmm/agents/dev.md"
+    description: "Pre-gap, implementation, post-validation, code review"
+    used_in_steps: [2, 3, 4, 5]
+  sm:
+    name: "Scrum Master"
+    persona: "{project-root}/_bmad/bmm/agents/sm.md"
+    description: "Story completion and status"
+    used_in_steps: [6]
+
+# Step file definitions
+steps:
+  - step: 1
+    file: "{steps_path}/step-01-init.md"
+    name: "Initialize"
+    description: "Load story context and detect development mode"
+    agent: null
+    quality_gate: false
+
+  - step: 2
+    file: "{steps_path}/step-02-pre-gap-analysis.md"
+    name: "Pre-Gap Analysis"
+    description: "Validate tasks against codebase (critical for brownfield)"
+    agent: dev
+    quality_gate: true
+
+  - step: 3
+    file: "{steps_path}/step-03-implement.md"
+    name: "Implement"
+    description: "Adaptive implementation (TDD for new, refactor for existing)"
+    agent: dev
+    quality_gate: true
+
+  - step: 4
+    file: "{steps_path}/step-04-post-validation.md"
+    name: "Post-Validation"
+    description: "Verify completed tasks against codebase reality"
+    agent: dev
+    quality_gate: true
+    iterative: true # May re-invoke step 3 if gaps found
+
+  - step: 5
+    file: "{steps_path}/step-05-code-review.md"
+    name: "Code Review"
+    description: "Adversarial code review finding 3-10 issues"
+    agent: dev
+    quality_gate: true
+
+  - step: 6
+    file: "{steps_path}/step-06-complete.md"
+    name: "Complete"
+    description: "Commit and push changes"
+    agent: sm
+    quality_gate: false
+
+  - step: 7
+    file: "{steps_path}/step-07-summary.md"
+    name: "Summary"
+    description: "Generate audit trail"
+    agent: null
+    quality_gate: false
+
+# Quality gates
+quality_gates:
+  pre_gap_analysis:
+    step: 2
+    criteria:
+      - "All tasks validated or refined"
+      - "No missing context"
+      - "Implementation path clear"
+
+  implementation:
+    step: 3
+    criteria:
+      - "All tasks completed"
+      - "Tests pass"
+      - "Code follows project patterns"
+
+  post_validation:
+    step: 4
+    criteria:
+      - "All completed tasks verified against codebase"
+      - "Zero false positives remaining"
+      - "Files/functions/tests actually exist"
+
+  code_review:
+    step: 5
+    criteria:
+      - "3-10 specific issues identified"
+      - "All issues resolved or documented"
+      - "Security review complete"
+
+# Document loading strategies
+input_file_patterns:
+  story:
+    description: "Story file being developed"
+    pattern: "{sprint_artifacts}/story-*.md"
+    load_strategy: "FULL_LOAD"
+    cache: true
+
+  project_context:
+    description: "Critical rules and patterns"
+    pattern: "**/project-context.md"
+    load_strategy: "FULL_LOAD"
+    cache: true
+
+standalone: true

@@ -1,0 +1,58 @@
+name: multi-agent-review
+description: "Smart multi-agent code review with dynamic agent selection based on changed code. Uses multiple specialized AI agents to review different aspects: architecture, security, performance, testing, and code quality."
+author: "BMad"
+version: "1.0.0"
+
+# Critical variables from config
+config_source: "{project-root}/_bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+sprint_artifacts: "{config_source}:sprint_artifacts"
+communication_language: "{config_source}:communication_language"
+
+# Workflow components
+installed_path: "{project-root}/_bmad/bmm/workflows/4-implementation/multi-agent-review"
+instructions: "{installed_path}/instructions.md"
+
+# Input parameters
+story_id: "{story_id}" # Required
+story_file: "{sprint_artifacts}/story-{story_id}.md"
+base_branch: "main" # Optional: branch to compare against
+complexity_level: "standard" # micro | standard | complex (passed from super-dev-pipeline)
+
+# Complexity-based agent selection (NEW v1.0.0)
+# Cost-effective review depth based on story RISK and technical complexity
+# Complexity determined by batch-super-dev based on: risk keywords, architectural impact, security concerns
+complexity_routing:
+  micro:
+    agent_count: 2
+    agents: ["security", "code_quality"]
+    description: "Quick sanity check for low-risk stories"
+    examples: ["UI tweaks", "text changes", "simple CRUD", "documentation"]
+    cost_multiplier: 1x
+
+  standard:
+    agent_count: 4
+    agents: ["security", "code_quality", "architecture", "testing"]
+    description: "Balanced multi-perspective review for medium-risk changes"
+    examples: ["API endpoints", "business logic", "data validation", "component refactors"]
+    cost_multiplier: 2x
+
+  complex:
+    agent_count: 6
+    agents: ["security", "code_quality", "architecture", "testing", "performance", "domain_expert"]
+    description: "Comprehensive review for high-risk/high-complexity changes"
+    examples: ["auth/security", "payments", "data migration", "architecture changes", "performance-critical", "complex algorithms"]
+    cost_multiplier: 3x
+
+# Review settings
+review_settings:
+  fresh_context_required: true # CRITICAL: Review in new session for unbiased perspective
+  agents_to_use: "complexity_based" # complexity_based | all | custom
+  generate_report: true
+  auto_fix_suggested: false # Set to true to automatically apply suggested fixes
+
+# Output
+review_report: "{sprint_artifacts}/review-{story_id}-multi-agent.md"
+
+standalone: true
+web_bundle: false

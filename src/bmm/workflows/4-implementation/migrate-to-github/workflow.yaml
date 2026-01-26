@@ -1,0 +1,62 @@
+name: migrate-to-github
+description: "Production-grade migration of BMAD stories from local files to GitHub Issues with comprehensive reliability guarantees"
+author: "BMad"
+version: "1.0.0"
+
+# Critical variables
+config_source: "{project-root}/_bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+sprint_artifacts: "{output_folder}/sprint-artifacts"
+sprint_status: "{output_folder}/sprint-status.yaml"
+
+# GitHub configuration
+github:
+  owner: "{github_owner}" # Required: GitHub username or org
+  repo: "{github_repo}" # Required: Repository name
+  # Token comes from MCP GitHub server config (already authenticated)
+
+# Migration mode
+mode: "dry-run" # "dry-run" | "execute" | "verify" | "rollback"
+# SAFETY: Defaults to dry-run - must explicitly choose execute
+
+# Migration scope
+scope:
+  include_epics: true # Create milestone for each epic
+  include_stories: true # Create issue for each story
+  filter_by_epic: null # Optional: Only migrate Epic N (e.g., "2")
+  filter_by_status: null # Optional: Only migrate stories with status (e.g., "backlog")
+
+# Migration strategy
+strategy:
+  check_existing: true # Search for existing issues before creating (prevents duplicates)
+  update_existing: true # If issue exists, update it (false = skip)
+  create_missing: true # Create issues for stories without issues
+
+  # Label strategy
+  label_prefix: "story:" # Prefix for story labels (e.g., "story:2-5-auth")
+  use_type_labels: true # Add "type:story", "type:epic"
+  use_status_labels: true # Add "status:backlog", "status:in-progress", etc.
+  use_complexity_labels: true # Add "complexity:micro", etc.
+  use_epic_labels: true # Add "epic:2", "epic:3", etc.
+
+# Reliability settings
+reliability:
+  verify_after_create: true # Read back issue to verify creation succeeded
+  retry_on_failure: true # Retry failed operations
+  max_retries: 3
+  retry_backoff_ms: [1000, 3000, 9000] # Exponential backoff
+  halt_on_critical_error: true # Stop migration if critical error occurs
+  save_state_after_each: true # Save progress after each story (crash-safe)
+  create_rollback_manifest: true # Track created issues for rollback
+
+# State tracking
+state_file: "{output_folder}/migration-state.yaml"
+# Tracks: stories_migrated, issues_created, last_story, can_resume
+
+# Output
+output:
+  create_migration_report: true
+  report_path: "{output_folder}/migration-report-{timestamp}.md"
+  log_level: "verbose" # "quiet" | "normal" | "verbose"
+
+standalone: true
