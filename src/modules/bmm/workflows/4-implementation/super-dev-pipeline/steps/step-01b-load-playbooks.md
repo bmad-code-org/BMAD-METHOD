@@ -1,297 +1,355 @@
-# Step 1b: Load Applicable Playbooks (Automated Learning)
+# Step 1b: Load Applicable Playbooks (Agent Reasoning)
 
-**Goal:** Automatically load relevant playbooks and learnings before implementation starts
-
----
-
-## What This Step Does
-
-Before writing any code, check if previous work has created playbooks/patterns that apply to this story. This creates a **positive feedback loop** where agents get smarter with each story.
+**Goal:** Agent reads playbook index, understands story requirements, decides which playbooks to load
 
 ---
 
-## Execution
+## Process
 
-### 1. Analyze Story for Keywords
+### 1. Read Playbook Index
 
-**Extract topics from story:**
-
-```bash
-story_file="{story_file}"
-
-# Extract keywords from:
-# - Story title
-# - Task descriptions
-# - Technical Requirements section
-# - Architecture Compliance section
-
-keywords=$(grep -E "^### Task|^## Technical|^## Architecture" "$story_file" | \
-  grep -oiE "(prisma|stripe|auth|cron|queue|state machine|billing|payment|migration|api|database|email|notification|cache|redis|s3)" | \
-  sort -u | tr '\n' ',' | sed 's/,$//')
-
-echo "📚 Story keywords: $keywords"
-```
-
-**Common keyword categories:**
-- **Technology:** Database ORM, payment processor, cache, storage, infrastructure
-- **Domain:** Business logic areas (determined by your project)
-- **Pattern:** Architecture patterns (state machine, cron, queue, api, etc.)
-
-### 2. Check for Existing Playbooks
-
-**Search playbook directory:**
+**Load the playbook manifest:**
 
 ```bash
-playbook_dir="{project-root}/docs/playbooks"
+playbook_index="{project-root}/docs/playbooks/index.md"
 
-if [ ! -d "$playbook_dir" ]; then
-  echo "📚 No playbooks directory found - will create after implementation"
-  playbooks_loaded=0
-  skip_to_step_2=true
+if [ ! -f "$playbook_index" ]; then
+  echo "📚 No playbook index found - skipping (will create after first story)"
+  exit 0
 fi
-
-# For each keyword, check if playbook exists
-applicable_playbooks=()
-
-for keyword in $(echo "$keywords" | tr ',' ' '); do
-  playbook_file="${playbook_dir}/${keyword}-playbook.md"
-
-  if [ -f "$playbook_file" ]; then
-    echo "✅ Found playbook: ${keyword}-playbook.md"
-    applicable_playbooks+=("$playbook_file")
-  fi
-done
-
-echo "📚 Applicable playbooks: ${#applicable_playbooks[@]}"
 ```
 
-### 3. Load Playbooks (If Found)
-
-**For each applicable playbook:**
-
-```
-Read playbook file
-
-Extract sections:
-  - ## Best Practices
-  - ## Common Pitfalls
-  - ## Code Patterns
-  - ## Lessons Learned
-  - ## Do's and Don'ts
-
-Store in context for use during implementation
-```
-
-**Example:**
+**Index format:**
 
 ```markdown
-📚 Loaded: {technology}-playbook.md
+# Playbook Index
 
-Best Practices:
-- {Practice learned from previous implementations}
-- {Pattern that worked successfully}
-- {Standard established across stories}
+## Available Playbooks
 
-Common Pitfalls:
-- {Mistake that was made and fixed}
-- {Issue encountered and resolved}
-- {Edge case discovered}
+### billing-playbook.md
+**Topics:** Charge creation, payment processing, idempotency, Stripe integration
+**Stories:** 18-1, 18-3, 19-4
+**Patterns:** 8 code patterns, 5 pitfalls documented
+**Last Updated:** 2026-01-26
 
-Code Patterns:
-- {Reusable pattern with code example}
-- {Configuration approach}
-- {Testing strategy}
+### state-machine-playbook.md
+**Topics:** State transitions, validation rules, invalid state handling
+**Stories:** 18-1, 17-8, 6-1
+**Patterns:** 4 code patterns, 3 pitfalls documented
+**Last Updated:** 2026-01-25
+
+### database-migration-playbook.md
+**Topics:** Prisma migrations, enum handling, transaction splitting, year validation
+**Stories:** 18-1, 17-5, 17-1
+**Patterns:** 6 code patterns, 8 pitfalls documented
+**Last Updated:** 2026-01-26
 ```
 
-### 4. Request Additional Context (If Needed)
+### 2. Read Story Requirements
 
-**If no playbooks found but keywords detected:**
-
-```
-🔍 No existing playbooks for: {keywords}
-
-Checking for project-level guidance...
-```
-
-**Use /get-playbook to request specific guidance:**
+**Understand what this story is about:**
 
 ```bash
-# For each keyword without playbook
-for keyword in $keywords_without_playbooks; do
-  echo "📖 Requesting playbook: $keyword"
+# Read from story file:
+# - Story description (user story)
+# - Acceptance criteria (what to build)
+# - Tasks section (how to build it)
+# - Technical Requirements (constraints)
 
-  # Invoke /get-playbook with keyword
-  # This searches docs/, pulls from project context, creates on-demand playbook
+story_description=$(sed -n '/^## Story/,/^##/p' "$story_file" | head -20)
+tasks=$(sed -n '/^## Tasks/,/^##/p' "$story_file" | head -50)
+technical_reqs=$(sed -n '/^## Technical Requirements/,/^##/p' "$story_file" | head -30)
+```
 
-  # If guidance found, cache for future use
+### 3. Agent Decides Which Playbooks to Load
+
+**Reasoning prompt to agent:**
+
+```
+You are about to implement Story {story_key}.
+
+Story Description:
+{story_description}
+
+Tasks Overview:
+{first 10 tasks from story}
+
+Technical Requirements:
+{technical_requirements}
+
+---
+
+Available Playbooks:
+
+1. billing-playbook.md
+   Topics: Charge creation, payment processing, idempotency, Stripe integration
+   Patterns: 8 | Pitfalls: 5
+
+2. state-machine-playbook.md
+   Topics: State transitions, validation rules, invalid state handling
+   Patterns: 4 | Pitfalls: 3
+
+3. database-migration-playbook.md
+   Topics: Prisma migrations, enum handling, transaction splitting
+   Patterns: 6 | Pitfalls: 8
+
+4. queue-playbook.md
+   Topics: SQS integration, message processing, retry logic
+   Patterns: 5 | Pitfalls: 4
+
+---
+
+QUESTION: Which playbooks (if any) are relevant to this story's implementation?
+
+Consider:
+- What technologies will you use? (database, payment, queue, etc.)
+- What patterns are needed? (state machine, cron, idempotency, etc.)
+- What challenges might you face? (migrations, async processing, etc.)
+
+Respond with:
+- Playbook filenames to load (0-3 playbooks maximum)
+- Brief reason why each is relevant
+
+Example response:
+"Load: billing-playbook.md (story involves charge creation), state-machine-playbook.md (implementing status transitions)"
+```
+
+### 4. Load Selected Playbooks
+
+**Based on agent's decision:**
+
+```bash
+# Agent responded: "Load billing-playbook.md, state-machine-playbook.md"
+
+for playbook in $selected_playbooks; do
+  playbook_path="${playbook_dir}/${playbook}"
+
+  echo "📖 Loading: $playbook"
+
+  # Read playbook file
+  # Extract and present:
+  # - Top 5 Best Practices
+  # - Top 3 Common Pitfalls
+  # - Most recent Code Pattern
+  # (Not entire file - keep it focused)
+
+  echo "✅ Loaded: $playbook"
 done
 ```
 
-### 5. Display Loaded Context
+### 5. Present to Agent
 
-**Output to agent:**
-
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📚 APPLICABLE LEARNINGS LOADED
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Story: {story_key}
-Keywords: {keywords}
-
-Playbooks Loaded: {count}
-1. prisma-playbook.md - Database schema best practices
-2. state-machine-playbook.md - State transition patterns
-3. billing-playbook.md - Payment processing learnings
-
-Key Guidance:
-✅ Use 2026 in migration names (not 2025)
-✅ Split enum add + use into 2 migrations
-✅ Test state transitions exhaustively
-✅ Idempotency keys for all charges
-✅ Never hardcode payment amounts
-
-These learnings come from previous story implementations.
-Use them to avoid repeating past mistakes.
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
-
----
-
-## Integration Points
-
-**This step runs:**
-- After Step 1 (Init) - story file loaded
-- Before Step 2 (Gap Analysis) - context ready
-- Before Step 3 (Write Tests) - patterns available
-- Before Step 4 (Implement) - guidance active
-
-**Feeds into:**
-- Step 2: Gap analysis sees playbook patterns
-- Step 3: Test patterns from playbooks
-- Step 4: Implementation follows playbook best practices
-- Step 7: Code review compares against playbook standards
-
----
-
-## File Structure
-
-```
-docs/
-  playbooks/
-    prisma-playbook.md        # Prisma best practices
-    stripe-playbook.md        # Stripe integration patterns
-    auth-playbook.md          # Authentication learnings
-    state-machine-playbook.md # State machine patterns
-    cron-playbook.md          # Cron job patterns
-    billing-playbook.md       # Billing/payment learnings
-    migration-playbook.md     # Database migration rules
-```
-
----
-
-## Playbook Template
+**Concise, actionable format:**
 
 ```markdown
-# {Technology/Domain} Playbook
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📚 APPLICABLE PLAYBOOKS LOADED (2)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-**Last Updated:** {date}
-**Source Stories:** {story-keys that contributed learnings}
+**1. billing-playbook.md**
 
-## Best Practices
+🎯 Top Practices:
+- Generate idempotency keys: `charge-{agreementId}-{period}-{type}`
+- Use Decimal for money: `amount Decimal @db.Decimal(10, 2)`
+- Validate before creating: Check agreement exists, amount > 0
 
-1. {Practice from successful implementations}
-2. {Pattern that worked well}
-3. {Standard we always follow}
+⚠️ Pitfalls to Avoid:
+- Don't create duplicate charges (use idempotency key unique constraint)
+- Don't hardcode amounts (pull from agreement.monthlyRent)
 
-## Common Pitfalls
-
-❌ {Mistake that was made}
-✅ {How to avoid it}
-
-❌ {Another mistake}
-✅ {Correct approach}
-
-## Code Patterns
-
-**Pattern: {Name}**
+💡 Recent Pattern (Story 18-1):
 ```typescript
-// Code example from actual implementation
-// Story: {story-key}
+export async function createCharge(input: CreateChargeInput) {
+  const idempotencyKey = generateIdempotencyKey(...)
+
+  // Check for existing charge first
+  const existing = await prisma.charge.findUnique({
+    where: { idempotencyKey }
+  })
+  if (existing) return existing
+
+  // Create new charge
+  return prisma.charge.create({...})
+}
 ```
 
-**When to use:** {Context}
-**When NOT to use:** {Anti-pattern}
+**2. state-machine-playbook.md**
 
-## Lessons Learned
+🎯 Top Practices:
+- Define STATE_TRANSITIONS map with all valid paths
+- Validate before transition: `if (!isValidTransition()) throw error`
+- Log all state changes for audit trail
 
-**Story {story-key}:**
-- Learned: {Insight}
-- Applied: {How we changed approach}
-- Result: {Outcome}
+⚠️ Pitfalls to Avoid:
+- Don't allow arbitrary transitions (use validation map)
+- Don't forget to update related entities (e.g., space status)
 
-## Do's and Don'ts
+💡 Recent Pattern (Story 17-8):
+```typescript
+const STATE_TRANSITIONS = {
+  ACTIVE: ['TERMINATING', 'TERMINATED'],
+  TERMINATING: ['TERMINATED'],
+  // ...
+}
 
-**DO:**
-- {Positive practice}
-- {What works}
+function isValidTransition(from, to) {
+  return STATE_TRANSITIONS[from]?.includes(to) ?? false
+}
+```
 
-**DON'T:**
-- {What to avoid}
-- {Anti-pattern}
-
-## References
-
-- Story implementations: {list of story-keys}
-- Architecture docs: {relevant docs}
-- External resources: {links}
+Apply these learnings to Story {story_key}.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
 ---
 
-## Benefits
+## Why This is Better Than Keyword Matching
 
-**Positive Feedback Loop:**
-1. Story 18-1 implements Prisma migration → Learns "use 2026 in names"
-2. Story 18-1 complete → Extracts pattern → Saves to prisma-playbook.md
-3. Story 18-2 starts → Loads prisma-playbook.md → Applies learning
-4. Story 18-2 implements correctly first time (no year mistake)
+**Keyword Matching (Dumb):**
+```
+Story mentions "billing" → Load billing-playbook.md
+Story mentions "payment" → Load payment-playbook.md
+```
+- Doesn't understand context
+- Might load irrelevant playbooks
+- Might miss relevant playbooks (different words, same concept)
 
-**Cumulative Intelligence:**
-- Epic 1: Creates foundational playbooks
-- Epic 2: Builds on Epic 1 playbooks, adds new learnings
-- Epic 18: Has 17 epics worth of learnings available
-- Gets smarter with every story
-
-**Prevents Repeated Mistakes:**
-- Migration year mistakes (happened multiple times)
-- Enum transaction limitations (PostgreSQL gotcha)
-- Story file naming inconsistencies (just experienced!)
-- Missing checkbox updates (just fixed!)
-
----
-
-## Auto-Load Triggers
-
-**Automatic playbook loading based on story content:**
-
-| Story Contains | Auto-Load Playbooks |
-|----------------|---------------------|
-| Database ORM keywords | database-orm-playbook.md, migration-playbook.md |
-| Payment keywords | payment-playbook.md, billing-playbook.md |
-| Auth keywords | auth-playbook.md, security-playbook.md |
-| Scheduling keywords | cron-playbook.md, scheduling-playbook.md |
-| Queue/async keywords | queue-playbook.md, async-playbook.md |
-| State machine keywords | state-machine-playbook.md |
-| Email/notification keywords | email-playbook.md, notification-playbook.md |
-
-**Note:** Playbook names are derived from keywords found in your story files.
-The system adapts to your project's technology stack.
+**Agent Reasoning (Smart):**
+```
+Agent reads: "Create charge model with state machine"
+Agent sees playbooks: billing, state-machine, queue, auth
+Agent decides: "This is about billing + state transitions"
+Agent loads: billing-playbook.md, state-machine-playbook.md
+Agent skips: queue-playbook.md (not relevant), auth-playbook.md (not needed)
+```
+- Understands what the story is actually about
+- Makes intelligent decisions
+- Loads only relevant playbooks
+- Can connect concepts (charge creation = billing)
 
 ---
 
-## Next Step
+## Step 12: Extract Learnings (Self-Reflection)
 
-When complete, continue to Step 2 (Pre-Gap Analysis) with loaded playbooks in context.
+### Agent Self-Reflection Prompt
 
-**Next:** `{workflow_path}/steps/step-02-pre-gap-analysis.md`
+**After implementation completes, ask agent:**
+
+```
+You just completed Story {story_key}.
+
+Implementation Summary:
+- Files created: {file_list}
+- Tests written: {test_count}
+- Code review findings: {issue_count} issues (all fixed)
+- Commit: {commit_hash}
+
+---
+
+SELF-REFLECTION:
+
+1. What went well during this implementation?
+   - What patterns or approaches worked effectively?
+   - What code is worth reusing in future stories?
+
+2. What problems did you encounter?
+   - What mistakes did you make?
+   - What errors occurred?
+   - How did you fix them?
+
+3. What would you do differently next time?
+   - What prevention checks would catch these issues earlier?
+   - What validation would help?
+
+4. Which playbooks should be updated?
+   - Look at the technologies/patterns you used
+   - Which playbooks (if any) helped you?
+   - Which playbooks should exist but don't?
+
+Respond with:
+- Patterns to add/update (with code examples)
+- Pitfalls to document (with prevention)
+- Playbooks to create/update (by name)
+```
+
+### Based on Agent Response, Update Playbooks
+
+**Agent responds:**
+
+```
+Went well:
+- Idempotency key pattern prevented duplicate charges
+- State machine validation caught invalid transitions
+
+Problems:
+- Initially forgot to update space status on agreement termination
+- Enum transaction error (tried to add + use in one migration)
+
+Do differently:
+- Add checklist: "After state change, check related entities"
+- Always split enum additions into separate migrations
+
+Playbooks to update:
+- billing-playbook.md: Add idempotency pattern
+- state-machine-playbook.md: Add "check related entities" reminder
+- database-migration-playbook.md: Add enum transaction pitfall
+```
+
+**Then execute updates:**
+
+```bash
+# For each playbook to update
+# 1. Read current playbook
+# 2. Append new entry to appropriate section
+# 3. Update frontmatter (source_stories, pattern_count, last_updated)
+# 4. Write updated playbook
+# 5. Commit with message: "docs: update {playbook} from Story {story_key} learnings"
+```
+
+---
+
+## Playbook Index Maintenance
+
+**Auto-update index when playbooks change:**
+
+```bash
+# After Step 12 updates playbooks, regenerate index
+
+cat > docs/playbooks/index.md <<EOF
+# Playbook Index
+
+Last Updated: $(date +%Y-%m-%d)
+Total Playbooks: $(ls -1 docs/playbooks/*-playbook.md | wc -l | tr -d ' ')
+
+## Available Playbooks
+
+EOF
+
+# For each playbook
+for playbook in docs/playbooks/*-playbook.md; do
+  basename=$(basename "$playbook")
+
+  # Extract frontmatter
+  topics=$(grep "^keywords:" "$playbook" | cut -d: -f2)
+  stories=$(grep "^source_stories:" "$playbook" | cut -d: -f2)
+  pattern_count=$(grep "^pattern_count:" "$playbook" | cut -d: -f2)
+  last_updated=$(grep "^last_updated:" "$playbook" | cut -d: -f2)
+
+  # Generate index entry
+  cat >> docs/playbooks/index.md <<ENTRY
+
+### $basename
+**Topics:** $topics
+**Stories:** $stories
+**Patterns:** $pattern_count patterns documented
+**Last Updated:** $last_updated
+ENTRY
+done
+
+git add docs/playbooks/index.md
+git commit -m "docs: update playbook index (${playbook_count} playbooks)"
+```
+
+---
+
+**Key Difference:** Agent READS index, UNDERSTANDS story, DECIDES which playbooks are relevant. Not dumb keyword matching.

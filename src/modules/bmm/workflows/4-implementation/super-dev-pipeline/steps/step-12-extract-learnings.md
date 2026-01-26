@@ -1,254 +1,276 @@
-# Step 12: Extract Learnings & Update Playbooks (Automated Feedback Loop)
+# Step 12: Extract Learnings & Update Playbooks (Agent Self-Reflection)
 
-**Goal:** Extract patterns from completed implementation and save to playbooks for future stories
-
----
-
-## What This Step Does
-
-After successful implementation, analyze what was built and extract:
-- Patterns that worked well
-- Mistakes that were made and fixed
-- Code examples worth reusing
-- Best practices discovered
-
-Save these to playbooks so future stories benefit from this learning.
+**Goal:** Agent reflects on what was learned during implementation and updates playbooks for future stories
 
 ---
 
-## Execution
+## Process
 
-### 1. Analyze Implementation
+### 1. Verify Story Quality (Skip if Low Quality)
 
-**Review what was built:**
+**Only extract from successful, clean implementations:**
+
+```bash
+story_file="{story_file}"
+
+# Check task completion
+checked_tasks=$(grep -c "^- \[x\]" "$story_file" || echo "0")
+total_tasks=$(grep -c "^- \[[x ]\]" "$story_file" || echo "0")
+
+if [ "$total_tasks" -eq 0 ]; then
+  echo "⏭️  No tasks in story - skipping learning extraction"
+  exit 0
+fi
+
+completion_pct=$((checked_tasks * 100 / total_tasks))
+
+if [ "$completion_pct" -lt 80 ]; then
+  echo "⏭️  Story only $completion_pct% complete - skipping extraction"
+  echo "    (Only extract learnings from successful implementations)"
+  exit 0
+fi
+
+echo "✅ Story completion: $completion_pct% - proceeding with extraction"
+```
+
+### 2. Gather Implementation Context
+
+**Collect facts about what was built:**
 
 ```bash
 story_key="{story_key}"
 
 # Get commit for this story
-commit_hash=$(git log --oneline --grep="$story_key" -i | head -1 | cut -d' ' -f1)
+commit_hash=$(git log --oneline --all --grep="$story_key" -i | head -1 | awk '{print $1}')
 
 if [ -z "$commit_hash" ]; then
-  echo "⚠️ No commit found for $story_key - skipping learning extraction"
+  echo "⚠️ No commit found for $story_key - skipping"
   exit 0
 fi
 
-# Get files changed
+# Extract implementation details
 files_changed=$(git diff-tree --no-commit-id --name-only -r "$commit_hash")
+file_count=$(echo "$files_changed" | wc -l | tr -d ' ')
+commit_message=$(git show --no-patch --format="%s" "$commit_hash")
 
-echo "📊 Analyzing implementation:"
-echo "  Story: $story_key"
-echo "  Commit: $commit_hash"
-echo "  Files: $(echo "$files_changed" | wc -l | tr -d ' ')"
-```
-
-### 2. Extract Applicable Keywords
-
-**From story file and code:**
-
-```bash
-# Extract from story title, tasks, and file paths
-keywords=$(cat "{story_file}" | \
-  grep -oiE "(prisma|stripe|auth|cron|queue|state.machine|billing|payment|migration|api|database|email|notification|terraform|sqs)" | \
-  sort -u)
-
-# Also extract from file paths
-tech_keywords=$(echo "$files_changed" | \
-  grep -oiE "(billing|payment|auth|email|queue|cron|migration)" | \
-  sort -u)
-
-all_keywords=$(echo -e "$keywords\n$tech_keywords" | sort -u | tr '\n' ',' | sed 's/,$//')
-
-echo "🔑 Keywords for playbook matching: $all_keywords"
-```
-
-### 3. Check Code Review Findings
-
-**If code review was executed, extract learnings:**
-
-```bash
-review_file="docs/sprint-artifacts/review-${story_key}.md"
+# Check for code review
+review_file="{sprint_artifacts}/review-${story_key}.md"
+has_review=false
+critical_issues=0
+high_issues=0
 
 if [ -f "$review_file" ]; then
-  echo "📝 Code review exists - extracting learnings"
-
-  # Extract issues that were fixed
-  critical_issues=$(grep -A 3 "CRITICAL" "$review_file" || echo "none")
-  high_issues=$(grep -A 3 "HIGH" "$review_file" || echo "none")
-
-  # These become "Common Pitfalls" in playbooks
+  has_review=true
+  critical_issues=$(grep -c "CRITICAL" "$review_file" || echo "0")
+  high_issues=$(grep -c "HIGH" "$review_file" || echo "0")
 fi
+
+echo "📊 Implementation Context:"
+echo "  Commit: $commit_hash"
+echo "  Files: $file_count"
+echo "  Code Review: $has_review ($critical_issues critical, $high_issues high)"
 ```
 
-### 4. Identify Reusable Patterns
+### 3. Agent Self-Reflection
 
-**Parse code for patterns worth saving:**
+**Present context and ask agent to reflect:**
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🤔 STORY COMPLETION SELF-REFLECTION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+You just completed Story {story_key} ({completion_pct}% complete).
+
+Implementation Summary:
+- Files created/modified: {file_count} files
+- Commit: {commit_hash}
+- Commit message: {commit_message}
+- Code review: {critical_issues} critical, {high_issues} high issues (all fixed)
+
+Files Changed:
+{files_changed}
+
+---
+
+SELF-REFLECTION QUESTIONS:
+
+1. **What Patterns Emerged?**
+   - Did you create any reusable functions/utilities?
+   - Are there code patterns worth documenting for future stories?
+   - What file structures or naming conventions worked well?
+
+2. **What Mistakes Were Made?**
+   - What errors did you encounter during implementation?
+   - What did code review catch?
+   - What would have prevented these issues?
+
+3. **What Was Learned?**
+   - What surprised you about this implementation?
+   - What assumptions were wrong?
+   - What would you do differently next time?
+
+4. **Technology/Domain Insights?**
+   - What technologies were used? (database ORM, payment API, queue, etc.)
+   - What business domain? (billing, auth, notification, etc.)
+   - What architectural patterns? (state machine, cron, idempotency, etc.)
+
+---
+
+RESPOND WITH STRUCTURED LEARNINGS:
+
+Format your response as:
+
+**PATTERNS TO SAVE:**
+```
+Pattern: {Name}
+Technology: {tech}
+Code Example: {10-20 lines from your implementation}
+When to Use: {specific scenario}
+File: {source file path}
+```
+
+**PITFALLS TO DOCUMENT:**
+```
+Mistake: {What went wrong}
+Error: {Exact error message if applicable}
+Fix: {How you resolved it}
+Prevention: {Code/check to avoid in future}
+Technology: {tech where this applies}
+```
+
+**BEST PRACTICES:**
+```
+Practice: {Specific action}
+Reason: {Why it works}
+Example: {Command or code snippet}
+Technology: {tech where this applies}
+```
+
+**PLAYBOOKS TO UPDATE:**
+- {playbook-name}: {what to add}
+- {playbook-name}: {what to update}
+
+Be specific. Include actual code from your implementation, not made-up examples.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+### 4. Parse Agent Response
+
+**Extract structured learnings from agent's self-reflection:**
 
 ```bash
-# Look for:
-# - Well-structured functions (with JSDoc, error handling, tests)
-# - Reusable utilities
-# - Configuration patterns
-# - Test fixtures
+# Agent response will contain sections:
+# - PATTERNS TO SAVE
+# - PITFALLS TO DOCUMENT
+# - BEST PRACTICES
+# - PLAYBOOKS TO UPDATE
 
-# Example patterns to extract:
-patterns_found=()
-
-# State machine pattern
-if echo "$files_changed" | grep -q "state.*machine"; then
-  patterns_found+=("state-machine")
-fi
-
-# Cron pattern
-if echo "$files_changed" | grep -q "cron"; then
-  patterns_found+=("cron-job")
-fi
-
-# Migration pattern
-if echo "$files_changed" | grep -q "migration"; then
-  patterns_found+=("database-migration")
-fi
-
-echo "🎯 Patterns identified: ${patterns_found[@]}"
+# Parse each section
+patterns=$(extract_section "PATTERNS TO SAVE" from agent response)
+pitfalls=$(extract_section "PITFALLS TO DOCUMENT" from agent response)
+practices=$(extract_section "BEST PRACTICES" from agent response)
+playbooks_to_update=$(extract_section "PLAYBOOKS TO UPDATE" from agent response)
 ```
 
 ### 5. Update or Create Playbooks
 
-**For each keyword/pattern:**
+**For each playbook the agent identified:**
 
 ```bash
 playbook_dir="{project-root}/docs/playbooks"
 mkdir -p "$playbook_dir"
 
-for keyword in $(echo "$all_keywords" | tr ',' ' '); do
-  playbook_file="${playbook_dir}/${keyword}-playbook.md"
+for playbook_update in $playbooks_to_update; do
+  # Parse: "billing-playbook.md: Add idempotency pattern"
+  playbook_name=$(echo "$playbook_update" | cut -d: -f1 | tr -d ' ')
+  update_description=$(echo "$playbook_update" | cut -d: -f2-)
 
-  if [ -f "$playbook_file" ]; then
-    echo "📖 Updating existing playbook: ${keyword}-playbook.md"
-    action="update"
-  else
-    echo "📝 Creating new playbook: ${keyword}-playbook.md"
-    action="create"
+  playbook_path="${playbook_dir}/${playbook_name}"
+
+  if [ ! -f "$playbook_path" ]; then
+    # Create new playbook from template
+    create_playbook_from_template "$playbook_name" "$story_key"
   fi
 
-  # Extract learnings specific to this keyword
-  # Append to playbook
+  # Append learnings to appropriate sections
+  update_playbook_section "$playbook_path" "Best Practices" "$practices"
+  update_playbook_section "$playbook_path" "Common Pitfalls" "$pitfalls"
+  update_playbook_section "$playbook_path" "Code Patterns" "$patterns"
+
+  # Update frontmatter
+  update_frontmatter "$playbook_path" "$story_key"
+
+  echo "✅ Updated: $playbook_name"
 done
 ```
 
-### 6. Extract Specific Learnings
+### 6. Update Playbook Index
 
-**What to extract:**
+**Regenerate index.md:**
 
-#### A. Best Practices (from successful implementation)
+```bash
+generate_playbook_index() {
+  index_file="${playbook_dir}/index.md"
 
-```
-IF story completed with:
-  - All tests passing
-  - Code review found zero critical issues
-  - Clean implementation (no major refactors needed)
+  cat > "$index_file" <<EOF
+# Playbook Index
 
-THEN extract:
-  - Code patterns used
-  - File structure choices
-  - Testing approaches
-  - Configuration patterns
-```
+**Last Updated:** $(date +%Y-%m-%d)
+**Total Playbooks:** $(ls -1 ${playbook_dir}/*-playbook.md 2>/dev/null | wc -l | tr -d ' ')
 
-**Example extraction:**
+## Available Playbooks
 
-```markdown
-## Best Practices
+EOF
 
-**Story {story-key} ({story-title}):**
-✅ {Successful pattern used}
-✅ {Approach that worked well}
-✅ {Quality standard met}
-✅ {Test coverage achieved}
+  # For each playbook, extract summary
+  for playbook in ${playbook_dir}/*-playbook.md; do
+    if [ ! -f "$playbook" ]; then continue; fi
 
-**Lesson:** {Key insight from implementation}
-**Pattern:** See {file-path}:{function-name}()
-```
+    basename=$(basename "$playbook")
 
-#### B. Common Pitfalls (from mistakes/fixes)
+    # Extract from frontmatter
+    topics=$(sed -n '/^---$/,/^---$/p' "$playbook" | grep "^keywords:" | cut -d: -f2- | tr -d '[]')
+    stories=$(sed -n '/^---$/,/^---$/p' "$playbook" | grep "^source_stories:" | cut -d: -f2- | tr -d '[]')
+    pattern_count=$(sed -n '/^---$/,/^---$/p' "$playbook" | grep "^pattern_count:" | cut -d: -f2 | tr -d ' ')
+    last_updated=$(sed -n '/^---$/,/^---$/p' "$playbook" | grep "^last_updated:" | cut -d: -f2 | tr -d ' ')
 
-```
-IF code review found issues, OR
-   Implementation required fixes, OR
-   Tests failed initially
+    # Append to index
+    cat >> "$index_file" <<ENTRY
 
-THEN extract:
-  - What went wrong
-  - How it was fixed
-  - How to avoid next time
-```
+### $basename
+**Topics:** $topics
+**Stories:** $stories
+**Patterns:** $pattern_count patterns documented
+**Last Updated:** $last_updated
+ENTRY
+  done
 
-**Example extraction:**
-
-```markdown
-## Common Pitfalls
-
-❌ **Story {story-key}: {Mistake description}**
-- Problem: {What went wrong}
-- Error: {Error message if applicable}
-- Root cause: {Why it happened}
-- Fix: {How it was resolved}
-- Prevention: {How to avoid in future}
-
-❌ **Story {story-key}: {Another mistake}**
-- Problem: {Issue encountered}
-- Fix: {Solution applied}
-- Prevention: {Best practice going forward}
-```
-
-#### C. Code Patterns (reusable snippets)
-
-```
-IF implementation created reusable code:
-  - Helper functions
-  - Type definitions
-  - Test utilities
-  - Configuration patterns
-
-THEN extract code snippets with documentation
-```
-
-**Example extraction:**
-
-```markdown
-## Code Patterns
-
-### Pattern: Idempotency Key Generation
-
-```typescript
-// Source: Story 18-1, lib/billing/billing-service.ts
-export function generateIdempotencyKey(
-  agreementId: string,
-  billingPeriod: string,
-  chargeType: ChargeType
-): string {
-  return `charge-${agreementId}-${billingPeriod}-${chargeType}`;
+  echo "✅ Index updated: $(ls -1 ${playbook_dir}/*-playbook.md 2>/dev/null | wc -l | tr -d ' ') playbooks"
 }
-```
-
-**When to use:** Preventing duplicate charge creation
-**Why it works:** Deterministic key based on unique identifiers
-**Tests:** See __tests__/lib/billing/billing-service.test.ts:47
 ```
 
 ### 7. Commit Playbook Updates
 
-**If playbooks were created/updated:**
+**Commit all changes:**
 
 ```bash
-git add docs/playbooks/*.md
+playbooks_updated=$(git diff --name-only docs/playbooks/ | wc -l | tr -d ' ')
 
-git commit -m "docs: update playbooks from Story ${story_key} learnings
+if [ "$playbooks_updated" -gt 0 ]; then
+  git add docs/playbooks/*.md
 
-Added/updated:
+  git commit -m "docs: update playbooks from Story ${story_key} learnings
+
+Updated/created:
 $(git diff --cached --name-only docs/playbooks/ | sed 's/^/- /')
 
 Learnings from successful implementation of ${story_key}."
+
+  echo "✅ Committed: $playbooks_updated playbook updates"
+else
+  echo "ℹ️  No playbook changes to commit"
+fi
 ```
 
 ---
@@ -257,150 +279,129 @@ Learnings from successful implementation of ${story_key}."
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-✅ LEARNINGS EXTRACTED
+✅ LEARNINGS EXTRACTED FROM STORY {story_key}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Playbooks Updated: {count}
-- prisma-playbook.md (added migration year validation)
-- state-machine-playbook.md (added transition validation pattern)
-- billing-playbook.md (added idempotency key pattern)
+- billing-playbook.md (added idempotency pattern)
+- state-machine-playbook.md (added entity update reminder)
+- database-migration-playbook.md (added enum pitfall)
 
-Patterns Extracted: {count}
+Patterns Documented: {count}
 - Idempotency key generation
-- State machine validation
-- Decimal field serialization
+- State transition validation
+- Related entity updates
 
-Common Pitfalls Documented: {count}
-- Migration year sorting issue
-- Enum transaction limitation
+Pitfalls Documented: {count}
+- Enum transaction limitation (PostgreSQL)
+- Forgotten entity updates on state changes
 
-These learnings will benefit future stories!
+Index Updated: docs/playbooks/index.md
+- Now tracks {total_playbooks} playbooks
+- {total_patterns} patterns documented
+- Ready for next story to benefit
+
+Future stories about billing, state machines, or migrations will
+automatically load these learnings in Step 1b.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
 ---
 
-## Feedback Loop
+## Helper Functions
 
-```
-Story N Implementation
-  ↓
-Extract Learnings (Step 12)
-  ↓
-Update Playbooks
-  ↓
-Commit Playbooks
-  ↓
-Story N+1 Starts
-  ↓
-Load Playbooks (Step 1b) ← Gets Story N's learnings!
-  ↓
-Implement with Knowledge
-  ↓
-Repeat
-```
-
-**Result:** Each story is smarter than the last.
-
----
-
-## Skill Integration
-
-**Use existing /extract-patterns skill:**
+### create_playbook_from_template
 
 ```bash
-# After implementation completes
-/extract-patterns story-key={story_key} output-dir=docs/playbooks/
+create_playbook_from_template() {
+  playbook_name="$1"
+  story_key="$2"
 
-# This extracts:
-# - Code patterns
-# - Test patterns
-# - Configuration patterns
-# Saves to playbooks directory
-```
+  # Extract technology/domain from filename
+  # Example: billing-playbook.md → technology: billing
+  tech_or_domain=$(echo "$playbook_name" | sed 's/-playbook\.md$//')
 
-**Use /get-playbook for on-demand guidance:**
-
-```bash
-# During Step 1b if no playbook exists
-/get-playbook topic=prisma-migrations
-
-# Searches project docs for guidance
-# Creates playbook if patterns found
-```
-
-**Use /get-more-context for comprehensive dives:**
-
-```bash
-# For complex stories (COMPLEX complexity level)
-/get-more-context topic=stripe-integration
-
-# Loads comprehensive documentation
-# More detailed than playbook
-# Used for high-stakes implementations
-```
-
+  cat > "${playbook_dir}/${playbook_name}" <<EOF
+---
+technology: ${tech_or_domain}
+keywords: [${tech_or_domain}]
+source_stories: [${story_key}]
+last_updated: $(date +%Y-%m-%d)
+pattern_count: 0
+pitfall_count: 0
+practice_count: 0
 ---
 
-## Configuration
+# ${tech_or_domain^} Playbook
 
-**In super-dev-pipeline/workflow.yaml:**
+**Created from:** Story ${story_key}
 
-```yaml
-learning_feedback:
-  enabled: true  # Enable automatic playbook loading/saving
-  playbook_dir: "{project-root}/docs/playbooks"
+## Best Practices
 
-  # When to extract learnings
-  extract_triggers:
-    - on_success: true  # Extract after successful completion
-    - on_code_review: true  # Extract from review findings
-    - on_complex: true  # Always extract from COMPLEX stories
+## Common Pitfalls
 
-  # When to load playbooks
-  load_triggers:
-    - on_init: true  # Load at Step 1b
-    - keywords_required: 1  # Minimum keywords to trigger
+## Code Patterns
+
+## Lessons Learned
+EOF
+
+  echo "📝 Created new playbook: $playbook_name"
+}
 ```
 
----
+### update_playbook_section
 
-## Step Sequence Update
+```bash
+update_playbook_section() {
+  playbook_file="$1"
+  section_name="$2"  # "Best Practices", "Common Pitfalls", "Code Patterns"
+  new_content="$3"
 
-**Before (without learning loop):**
-1. Init
-2. Gap Analysis
-3. Write Tests
-4. Implement
-...
-11. Summary
+  if [ -z "$new_content" ]; then
+    return 0  # Nothing to add
+  fi
 
-**After (with learning loop):**
-1. Init
-**1b. Load Playbooks** ← NEW (loads previous learnings)
-2. Gap Analysis (informed by playbooks)
-3. Write Tests (uses test patterns from playbooks)
-4. Implement (follows playbook best practices)
-...
-11. Summary
-**12. Extract Learnings** ← NEW (saves for next story)
+  # Find section in file
+  # Append new content
+  # Use Edit tool for surgical update
+
+  echo "✏️  Updated section: $section_name in $(basename "$playbook_file")"
+}
+```
+
+### update_frontmatter
+
+```bash
+update_frontmatter() {
+  playbook_file="$1"
+  story_key="$2"
+
+  # Update source_stories list (append if not already present)
+  # Increment pattern_count / pitfall_count / practice_count
+  # Update last_updated to today
+
+  # Use Edit tool to update frontmatter
+
+  echo "✏️  Updated frontmatter in $(basename "$playbook_file")"
+}
+```
 
 ---
 
 ## Success Criteria
 
-**Step 1b succeeds when:**
-- [x] Keywords extracted from story
-- [x] Existing playbooks checked
-- [x] Applicable playbooks loaded (or noted as missing)
-- [x] Context ready for implementation
-
 **Step 12 succeeds when:**
-- [x] Learnings extracted from implementation
+- [x] Agent provided self-reflection
+- [x] Learnings extracted and categorized
 - [x] Playbooks updated or created
-- [x] Patterns documented with code examples
-- [x] Playbooks committed to git
+- [x] Index regenerated
+- [x] Changes committed to git
+
+**Step 12 can be skipped when:**
+- Story completion < 80%
+- No commit found
+- Agent reflection yields no learnings
 
 ---
 
-**Next:** Continue to Step 2 (Pre-Gap Analysis) with loaded playbook context.
+**Next:** Workflow complete. Story finished with learnings extracted for future benefit.
