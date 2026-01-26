@@ -1,6 +1,7 @@
 code: bmm
 name: "BMad Method Agile-AI Driven-Development"
-description: "AI-driven agile development framework"
+header: "AI-driven agile development framework"
+subheader: "Configure the BMad Method module for AI-powered agile project development"
 default_selected: true # This module will be selected by default for new installations
 
 # Variables from Core Config inserted:
