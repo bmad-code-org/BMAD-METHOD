@@ -820,26 +820,130 @@ QUALITY OVER SPEED: Taking time to ensure correctness.
     <action>Set quality_multiplier = 1.5</action>
   </check>
 
+  <substep n="3.1" title="Automatic Dependency Analysis (from GSD)">
+    <output>
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📊 ANALYZING STORY DEPENDENCIES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    </output>
+
+    <iterate>For each selected story:</iterate>
+
+    <action>Read story file Tasks section</action>
+    <action>Analyze task descriptions for dependencies on other selected stories:</action>
+    <action>
+      Dependency detection rules:
+      - Look for mentions of other story keys (e.g., "18-1", "18-2")
+      - Look for phrases like "requires", "depends on", "needs", "after"
+      - Look for file paths that other stories create
+      - Look for models/services that other stories define
+    </action>
+
+    <action>Build dependency map:
+      story_key: {
+        depends_on: [list of story keys this depends on],
+        blocks: [list of story keys that depend on this]
+      }
+    </action>
+
+    <action>Compute waves using topological sort:</action>
+    <action>
+      Wave 1: Stories with no dependencies (can start immediately)
+      Wave 2: Stories that only depend on Wave 1
+      Wave 3: Stories that depend on Wave 2
+      ...
+    </action>
+
+    <output>
+📊 **Dependency Analysis Complete**
+
+{{#each waves}}
+**Wave {{@index}}** ({{count}} stories):
+{{#each stories}}
+  - {{story_key}}{{#if depends_on}} [depends on: {{depends_on}}]{{/if}}
+{{/each}}
+{{/each}}
+
+**Execution Strategy:**
+{{#if waves.length == 1}}
+✅ All stories are independent - can run fully in parallel
+{{else}}
+⚙️ Dependencies detected - wave-based execution recommended
+- Wave 1: {{wave_1_count}} stories (parallel)
+- Total waves: {{waves.length}}
+- Sequential time: {{total_time_sequential}}
+- Wave-based time: {{total_time_waves}} ({{time_savings}}% faster)
+{{/if}}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    </output>
+  </substep>
+
   <ask>
-**How should these stories be processed?**
+**Choose execution strategy:**
 
-Options:
-- **sequential**: Run stories one-by-one in this session (slower, easier to monitor)
-- **parallel**: Spawn Task agents to process stories concurrently (faster, autonomous)
+{{#if waves.length > 1}}
+[W] WAVE-BASED PARALLEL (Recommended)
+    - Respects dependencies between stories
+    - Runs independent stories in parallel within each wave
+    - Wave 1: {{wave_1_stories}} → Wave 2: {{wave_2_stories}} → ...
+    - Estimated time: {{wave_time}} ({{savings}}% faster than sequential)
+    - Safer than full parallel (honors dependencies)
+{{/if}}
 
-Enter: sequential or parallel
+[S] SEQUENTIAL
+    - Process stories one-by-one in this session
+    - Easier to monitor and debug
+    - Estimated time: {{sequential_time}}
+    - Best for: When you want full control
+
+{{#if waves.length == 1}}
+[P] FULL PARALLEL (All {{count}} stories)
+    - All stories independent, no dependencies
+    - Spawn {{count}} agents concurrently
+    - Estimated time: {{parallel_time}} ({{savings}}% faster)
+{{else}}
+[P] FULL PARALLEL (Ignore dependencies - RISKY)
+    - Spawn all {{count}} agents concurrently
+    - ⚠️ May fail if stories depend on each other
+    - Use only if you're certain dependencies are wrong
+{{/if}}
+
+Enter: {{#if waves.length > 1}}w{{/if}}/s/p
   </ask>
 
-  <action>Capture response as: execution_mode</action>
+  <action>Capture response as: execution_strategy</action>
 
-  <check if="execution_mode == 'sequential'">
+  <check if="execution_strategy == 'w' OR execution_strategy == 'W'">
+    <action>Set execution_mode = "wave_based"</action>
+    <action>Set use_task_agents = true</action>
+    <action>Set wave_execution = true</action>
+    <output>
+✅ Wave-Based Parallel Execution Selected
+
+Execution plan:
+{{#each waves}}
+Wave {{@index}}: {{count}} stories{{#if @index > 0}} (after Wave {{@index - 1}} completes){{/if}}
+{{#each stories}}
+  - {{story_key}}
+{{/each}}
+{{/each}}
+
+Estimated time: {{wave_time}} ({{savings}}% faster than sequential)
+    </output>
+  </check>
+
+  <check if="execution_strategy == 's' OR execution_strategy == 'S'">
+    <action>Set execution_mode = "sequential"</action>
     <action>Set parallel_count = 1</action>
     <action>Set use_task_agents = false</action>
+    <action>Set wave_execution = false</action>
     <output>✅ Sequential mode selected - stories will be processed one-by-one in this session</output>
   </check>
 
-  <check if="execution_mode == 'parallel'">
+  <check if="execution_strategy == 'p' OR execution_strategy == 'P'">
+    <action>Set execution_mode = "full_parallel"</action>
     <action>Set use_task_agents = true</action>
+    <action>Set wave_execution = false</action>
 
     <ask>
 **How many agents should run in parallel?**
@@ -895,13 +999,91 @@ Enter number (2-10) or 'all':
   <action>Initialize counters: completed=0, failed=0, failed_stories=[], reconciliation_warnings=[], reconciliation_warnings_count=0</action>
   <action>Set start_time = current timestamp</action>
 
-  <check if="use_task_agents == true">
-    <action>Jump to Step 4-Parallel (Task Agent execution)</action>
+  <check if="wave_execution == true">
+    <action>Jump to Step 4-Wave (Wave-based execution)</action>
+  </check>
+
+  <check if="use_task_agents == true AND wave_execution == false">
+    <action>Jump to Step 4-Parallel (Full parallel execution)</action>
   </check>
 
   <check if="use_task_agents == false">
     <action>Continue to Step 4-Sequential (In-session execution)</action>
   </check>
+</step>
+
+<step n="4-Wave" goal="Wave-based parallel execution">
+  <output>
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🚀 WAVE-BASED PARALLEL PROCESSING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**Stories:** {{count}}
+**Mode:** Wave-based (respects dependencies)
+**Waves:** {{waves.length}}
+**Continue on failure:** {{continue_on_failure}}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  </output>
+
+  <iterate>For each wave in sequence:</iterate>
+
+  <substep n="4w-a" title="Execute wave">
+    <output>
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📦 Wave {{wave_num}}/{{waves.length}} ({{stories_in_wave}} stories)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+{{#each stories_in_wave}}
+  - {{story_key}}
+{{/each}}
+
+Spawning {{stories_in_wave.length}} parallel agents...
+    </output>
+
+    <action>Spawn Task agents in PARALLEL (send all in single message):</action>
+
+    <iterate>For each story in this wave:</iterate>
+
+    <action>
+      Task tool:
+      - subagent_type: "general-purpose"
+      - description: "Implement story {{story_key}}"
+      - prompt: "Execute super-dev-pipeline for story {{story_key}}.
+
+                 Story file: docs/sprint-artifacts/{{story_key}}.md
+                 Complexity: {{complexity_level}}
+                 Mode: batch, wave {{wave_num}}
+
+                 Follow all 11 steps, commit when complete, report status."
+      - Store agent_id
+    </action>
+
+    <action>Wait for ALL agents in this wave to complete</action>
+
+    <iterate>For each completed agent in wave:</iterate>
+
+    <check if="agent succeeded">
+      <output>✅ Wave {{wave_num}} - Story complete: {{story_key}}</output>
+      <action>Increment completed counter</action>
+      <action>Execute Step 4.5: Reconciliation</action>
+    </check>
+
+    <check if="agent failed">
+      <output>❌ Wave {{wave_num}} - Story failed: {{story_key}}</output>
+      <action>Increment failed counter</action>
+      <action>Add to failed_stories list</action>
+
+      <check if="continue_on_failure == false">
+        <output>⚠️ Stopping all waves due to failure</output>
+        <action>Jump to Step 5 (Summary)</action>
+      </check>
+    </check>
+
+    <output>
+Wave {{wave_num}} complete: {{completed_in_wave}} succeeded, {{failed_in_wave}} failed
+    </output>
+  </substep>
+
+  <action>After all waves processed, jump to Step 5 (Summary)</action>
 </step>
 
 <step n="4-Sequential" goal="Sequential processing in current session">
