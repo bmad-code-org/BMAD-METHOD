@@ -10,6 +10,8 @@ thisStepFile: '{workflow_path}/steps/step-11-summary.md'
 stateFile: '{state_file}'
 storyFile: '{story_file}'
 auditTrail: '{audit_trail}'
+nextStepFile: '{workflow_path}/steps/step-12-extract-learnings.md'
+
 
 # Role
 role: null

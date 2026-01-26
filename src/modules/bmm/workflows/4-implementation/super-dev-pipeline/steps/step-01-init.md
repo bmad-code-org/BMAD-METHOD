@@ -8,7 +8,7 @@ create_story_workflow: '{project-root}/_bmad/bmm/workflows/4-implementation/crea
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-01-init.md'
-nextStepFile: '{workflow_path}/steps/step-02-pre-gap-analysis.md'
+nextStepFile: '{workflow_path}/steps/step-01b-load-playbooks.md'
 
 # Role
 role: null  # No agent role yet

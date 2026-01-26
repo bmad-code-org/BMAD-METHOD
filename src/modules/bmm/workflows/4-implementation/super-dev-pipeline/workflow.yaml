@@ -78,6 +78,56 @@ smart_batching:
   min_batch_size: 3 # Minimum tasks to form a batch
   fallback_on_failure: true # Revert to individual if batch fails
 
+# Automated learning feedback loop (NEW v1.6.0)
+learning_feedback:
+  enabled: true # Enable automatic playbook loading/saving
+  playbook_dir: "{project-root}/docs/playbooks"
+
+  # Step 1b: Load existing playbooks before implementation
+  load_playbooks:
+    enabled: true
+    step: "step-01b-load-playbooks.md"
+    triggers:
+      - keywords_detected: 1 # Load if any keywords found in story
+      - complex_story: true # Always load for COMPLEX stories
+
+  # Step 12: Extract learnings after implementation
+  extract_learnings:
+    enabled: true
+    step: "step-12-extract-learnings.md"
+    triggers:
+      - on_success: true # Extract after successful completion
+      - on_code_review: true # Extract from review findings
+      - on_complex: true # Always extract from COMPLEX stories
+      - skip_if_failed: true # Don't extract from failed implementations
+
+  # Keyword extraction
+  keywords:
+    auto_detect: true
+    sources:
+      - story_title
+      - task_descriptions
+      - file_paths
+      - technical_requirements
+    common_keywords:
+      - prisma
+      - stripe
+      - auth
+      - cron
+      - queue
+      - state machine
+      - billing
+      - payment
+      - migration
+      - api
+      - database
+      - email
+      - notification
+      - terraform
+      - sqs
+      - redis
+      - s3
+
   # Batchable pattern definitions
   batchable_patterns:
     - pattern: "package_installation"
