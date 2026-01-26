@@ -49,6 +49,10 @@ agent:
       workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/code-review/workflow.yaml"
       description: "[CR] Code Review: Initiate a comprehensive code review across multiple quality facets. For best results, use a fresh context and a different quality LLM if available"
 
+    - trigger: MAR or fuzzy match on multi-agent-review
+      workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/multi-agent-review/workflow.yaml"
+      description: "[MAR] Multi-Agent Review - fresh context review with smart agent selection (2-6 agents based on story risk)"
+
     - trigger: RVS or fuzzy match on revalidate-story
       workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/revalidate-story/workflow.yaml"
       description: "[RVS] Revalidate Story - clear checkboxes and re-verify against codebase (detect ghost features and gaps)"

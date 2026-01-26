@@ -80,6 +80,13 @@ After workflow completes, verify story was created:
 test -f "{story_file}" && echo "✅ Story created successfully" || echo "❌ Story creation failed - HALT"
 ```
 
+**If story was created, set flag for smart gap analysis:**
+```yaml
+# Set state flag to skip redundant gap analysis in step 2
+story_just_created: true
+gap_analysis_completed: true # Already done in create-story-with-gap-analysis
+```
+
 **If story exists:**
 ```
 ✅ Story file found: {story_file}
@@ -117,6 +124,10 @@ If total_task_count == 0:
     <input name="regenerate">true</input>
   </invoke-workflow>
 
+  # Set flag for smart gap analysis (v1.5.0)
+  story_just_created: true
+  gap_analysis_completed: true
+
   Then re-load story and continue.
 
 ```
@@ -142,6 +153,10 @@ If story file missing required sections (Tasks, Acceptance Criteria):
     <input name="story_file">{story_file}</input>
     <input name="regenerate">true</input>
   </invoke-workflow>
+
+  # Set flag for smart gap analysis (v1.5.0)
+  story_just_created: true
+  gap_analysis_completed: true
 
   Then re-load story and continue.
 

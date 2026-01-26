@@ -1,19 +1,21 @@
 ---
-name: 'step-06-complete'
-description: 'Commit and push story changes with targeted file list'
+name: 'step-10-complete'
+description: 'Complete story with MANDATORY sprint-status.yaml update and verification'
 
 # Path Definitions
 workflow_path: '{project-root}/_bmad/bmm/workflows/4-implementation/super-dev-pipeline'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-06-complete.md'
-nextStepFile: '{workflow_path}/steps/step-07-summary.md'
+thisStepFile: '{workflow_path}/steps/step-10-complete.md'
+nextStepFile: '{workflow_path}/steps/step-11-summary.md'
+stateFile: '{state_file}'
+sprint_status: '{sprint_artifacts}/sprint-status.yaml'
 
 # Role Switch
 role: sm
 ---
 
-# Step 6: Complete Story
+# Step 10: Complete Story (v1.5.0: Mandatory Status Update)
 
 ## ROLE SWITCH
 
@@ -23,13 +25,15 @@ You are now completing the story and preparing changes for git commit.
 
 ## STEP GOAL
 
-Complete the story with safety checks:
+Complete the story with safety checks and MANDATORY status updates:
 1. Extract file list from story
 2. Stage only story-related files
 3. Generate commit message
 4. Create commit
 5. Push to remote (if configured)
-6. Update story status
+6. Update story file status to "done"
+7. **UPDATE sprint-status.yaml (MANDATORY - NO EXCEPTIONS)**
+8. **VERIFY sprint-status.yaml update persisted (CRITICAL)**
 
 ## MANDATORY EXECUTION RULES
 
@@ -200,12 +204,64 @@ git push
 You can push manually when ready
 ```
 
-### 8. Update Story Status
+### 8. Update Story Status (File + Sprint-Status)
+
+**CRITICAL: Two-location update with verification**
+
+#### 8.1: Update Story File
 
 Update story file frontmatter:
 ```yaml
-status: review  # Ready for human review
+status: done  # Story completed (v1.5.0: changed from "review" to "done")
+completed_date: {date}
 ```
+
+#### 8.2: Update sprint-status.yaml (MANDATORY - NO EXCEPTIONS)
+
+**This is CRITICAL and CANNOT be skipped.**
+
+```bash
+# Read current sprint-status.yaml
+sprint_status_file="{sprint_artifacts}/sprint-status.yaml"
+story_key="{story_id}"
+
+# Update development_status section
+# Change status from whatever it was to "done"
+
+development_status:
+  {story_id}: done  # ✅ COMPLETED: {story_title}
+```
+
+**Implementation:**
+```bash
+# Read current status
+current_status=$(grep "^\s*{story_id}:" "$sprint_status_file" | awk '{print $2}')
+
+# Update to done
+sed -i'' "s/^\s*{story_id}:.*/  {story_id}: done  # ✅ COMPLETED: {story_title}/" "$sprint_status_file"
+
+echo "✅ Updated sprint-status.yaml: {story_id} → done"
+```
+
+#### 8.3: Verify Update Persisted (CRITICAL)
+
+```bash
+# Re-read sprint-status.yaml to verify change
+verification=$(grep "^\s*{story_id}:" "$sprint_status_file" | awk '{print $2}')
+
+if [ "$verification" != "done" ]; then
+  echo "❌ CRITICAL: sprint-status.yaml update FAILED!"
+  echo "Expected: done"
+  echo "Got: $verification"
+  echo ""
+  echo "HALTING pipeline - status update is MANDATORY"
+  exit 1
+fi
+
+echo "✅ Verified: sprint-status.yaml correctly updated"
+```
+
+**NO EXCEPTIONS:** If verification fails, pipeline MUST HALT.
 
 ### 9. Update Pipeline State
 
@@ -242,11 +298,15 @@ Ready for Summary Generation
 
 ## QUALITY GATE
 
-Before proceeding:
+Before proceeding (BLOCKING - ALL must pass):
 - [ ] Targeted files staged (from File List)
 - [ ] Commit message generated
 - [ ] Commit created successfully
-- [ ] Story status updated to "review"
+- [ ] Story file status updated to "done"
+- [ ] **sprint-status.yaml updated to "done" (MANDATORY)**
+- [ ] **sprint-status.yaml update VERIFIED (CRITICAL)**
+
+**If ANY check fails, pipeline MUST HALT.**
 
 ## CRITICAL STEP COMPLETION
 

@@ -1,21 +1,23 @@
 ---
-name: 'step-05-code-review'
-description: 'Adversarial code review finding 3-10 specific issues'
+name: 'step-07-code-review'
+description: 'Multi-agent code review with fresh context and variable agent count'
 
 # Path Definitions
 workflow_path: '{project-root}/_bmad/bmm/workflows/4-implementation/super-dev-pipeline'
+multi_agent_review_workflow: '{project-root}/_bmad/bmm/workflows/4-implementation/multi-agent-review'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-05-code-review.md'
-nextStepFile: '{workflow_path}/steps/step-06-complete.md'
-checklist: '{workflow_path}/checklists/code-review.md'
+thisStepFile: '{workflow_path}/steps/step-07-code-review.md'
+nextStepFile: '{workflow_path}/steps/step-08-review-analysis.md'
+stateFile: '{state_file}'
+reviewReport: '{sprint_artifacts}/review-{story_id}.md'
 
 # Role (continue as dev, but reviewer mindset)
 role: dev
-requires_fresh_context: true  # In batch mode, checkpoint here for unbiased review
+requires_fresh_context: true  # CRITICAL: Review MUST happen in fresh context
 ---
 
-# Step 6: Code Review
+# Step 7: Code Review (Multi-Agent with Fresh Context)
 
 ## ROLE CONTINUATION - ADVERSARIAL MODE
 
@@ -36,44 +38,46 @@ Perform adversarial code review:
 5. Fix all issues
 6. Verify tests still pass
 
-### Multi-Agent Review Enhancement (NEW v1.3.0)
+### Multi-Agent Review with Fresh Context (NEW v1.5.0)
 
-**Check complexity level from state file:**
+**All reviews now use multi-agent approach with variable agent counts based on risk.**
+
+**CRITICAL: Review in FRESH CONTEXT (unbiased perspective)**
 
 ```
-If complexity_level == "complex":
-  Display:
-  🔒 COMPLEX STORY - Enhanced Review Recommended
+⚠️ CHECKPOINT: Starting fresh review session
 
-  This story involves high-risk changes. Consider using:
-  /multi-agent-review for multi-perspective code review
+Multi-agent review will run in NEW context to avoid bias from implementation.
 
-  Multi-agent review provides:
-  - Architecture review by architect-reviewer agent
-  - Security audit by auditor-security agent
-  - Performance analysis by optimizer-performance agent
-  - Dynamic agent selection based on changed files
+Agent count based on complexity level:
+- MICRO: 2 agents (Security + Code Quality)
+- STANDARD: 4 agents (+ Architecture + Testing)
+- COMPLEX: 6 agents (+ Performance + Domain Expert)
 
-  [M] Use multi-agent review (recommended for complex)
-  [S] Use standard adversarial review
-  [B] Use both (most thorough)
-
-If complexity_level == "standard" AND mode == "interactive":
-  Display:
-  ⚙️ STANDARD STORY - Review Options
-
-  [S] Standard adversarial review (default)
-  [M] Multi-agent review (optional enhancement)
+Smart agent selection analyzes changed files to select most relevant reviewers.
 ```
 
-**If multi-agent review selected:**
-- Invoke `/multi-agent-review` slash command
-- Capture review findings
-- Merge with standard review categories
-- Continue with issue fixing
+**Invoke multi-agent-review workflow:**
 
-**If standard review selected:**
-- Continue with adversarial review below
+```xml
+<invoke-workflow path="{project-root}/_bmad/bmm/workflows/4-implementation/multi-agent-review/workflow.yaml">
+  <input name="story_id">{story_id}</input>
+  <input name="complexity_level">{complexity_level}</input>
+  <input name="fresh_context">true</input>
+</invoke-workflow>
+```
+
+**The multi-agent-review workflow will:**
+1. Create fresh context (new session, unbiased)
+2. Analyze changed files
+3. Select appropriate agents based on code changes
+4. Run parallel reviews from multiple perspectives
+5. Aggregate findings with severity ratings
+6. Return comprehensive review report
+
+**After review completes:**
+- Review report saved to: `{sprint_artifacts}/review-{story_id}.md`
+- Proceed to step 8 (Review Analysis) to categorize findings
 
 ## MANDATORY EXECUTION RULES
 

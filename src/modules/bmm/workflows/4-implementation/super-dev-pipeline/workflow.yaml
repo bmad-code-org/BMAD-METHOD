@@ -1,7 +1,7 @@
 name: super-dev-pipeline
-description: "Step-file architecture with complexity-based routing, smart batching, and auto-story-creation. Micro stories get lightweight path, standard/complex get full quality gates."
+description: "Complete a-k workflow: test-first development, smart gap analysis, quality gates, intelligent multi-agent review, and mandatory status updates. Risk-based complexity routing with variable agent counts."
 author: "BMad"
-version: "1.4.0" # Added auto-create story via /create-story-with-gap-analysis when story missing or incomplete
+version: "1.5.0" # Complete a-k workflow with TDD, quality gates, multi-agent review, and mandatory sprint-status updates
 
 # Critical variables from config
 config_source: "{project-root}/_bmad/bmm/config.yaml"
@@ -34,17 +34,25 @@ auto_create_story:
 # Controls which pipeline steps to execute
 complexity_level: "standard" # micro | standard | complex
 
-# Complexity-based step skipping (NEW v1.2.0)
+# Risk-based complexity routing (UPDATED v1.5.0)
+# Complexity determined by RISK level, not task count
+# Risk keywords: auth, security, payment, file handling, architecture changes
 complexity_routing:
   micro:
-    skip_steps: [2, 5] # Skip pre-gap analysis and code review
-    description: "Lightweight path for simple stories (≤3 tasks, low risk)"
+    skip_steps: [3, 7, 8, 9] # Skip write-tests, code-review, review-analysis, fix-issues
+    description: "Lightweight path for low-risk stories (UI tweaks, text, simple CRUD)"
+    multi_agent_count: 2
+    examples: ["UI tweaks", "text changes", "simple CRUD", "documentation"]
   standard:
     skip_steps: [] # Full pipeline
-    description: "Normal path with all quality gates"
+    description: "Balanced path for medium-risk stories (APIs, business logic)"
+    multi_agent_count: 4
+    examples: ["API endpoints", "business logic", "data validation"]
   complex:
-    skip_steps: [] # Full pipeline + warnings
-    description: "Enhanced path for high-risk stories"
+    skip_steps: [] # Full pipeline + comprehensive review
+    description: "Comprehensive path for high-risk stories (auth, payments, security)"
+    multi_agent_count: 6
+    examples: ["auth/security", "payments", "file handling", "architecture changes"]
     warn_before_start: true
     suggest_split: true
 
@@ -111,63 +119,106 @@ agents:
   dev:
     name: "Developer"
     persona: "{project-root}/_bmad/bmm/agents/dev.md"
-    description: "Pre-gap, implementation, post-validation, code review"
-    used_in_steps: [2, 3, 4, 5]
+    description: "Gap analysis, write tests, implementation, validation, review, fixes"
+    used_in_steps: [2, 3, 4, 5, 6, 7, 8, 9]
   sm:
     name: "Scrum Master"
     persona: "{project-root}/_bmad/bmm/agents/sm.md"
-    description: "Story completion and status"
-    used_in_steps: [6]
+    description: "Story completion, status updates, sprint-status.yaml management"
+    used_in_steps: [10]
 
-# Step file definitions
+# Step file definitions (NEW v1.5.0: 11-step a-k workflow)
 steps:
   - step: 1
     file: "{steps_path}/step-01-init.md"
-    name: "Initialize"
-    description: "Load story context and detect development mode"
+    name: "Init + Validate Story"
+    description: "Load, validate, auto-create if needed (a-c)"
     agent: null
     quality_gate: false
+    auto_create_story: true
 
   - step: 2
-    file: "{steps_path}/step-02-pre-gap-analysis.md"
-    name: "Pre-Gap Analysis"
-    description: "Validate tasks against codebase (critical for brownfield)"
+    file: "{steps_path}/step-02-smart-gap-analysis.md"
+    name: "Smart Gap Analysis"
+    description: "Gap analysis (skip if just created story) (d)"
     agent: dev
     quality_gate: true
+    skip_if_story_just_created: true
 
   - step: 3
-    file: "{steps_path}/step-03-implement.md"
-    name: "Implement"
-    description: "Adaptive implementation (TDD for new, refactor for existing)"
+    file: "{steps_path}/step-03-write-tests.md"
+    name: "Write Tests (TDD)"
+    description: "Write tests before implementation (e)"
     agent: dev
-    quality_gate: true
+    quality_gate: false
+    test_driven: true
 
   - step: 4
-    file: "{steps_path}/step-04-post-validation.md"
-    name: "Post-Validation"
-    description: "Verify completed tasks against codebase reality"
+    file: "{steps_path}/step-04-implement.md"
+    name: "Implement"
+    description: "Run dev-story implementation (f)"
     agent: dev
     quality_gate: true
-    iterative: true # May re-invoke step 3 if gaps found
 
   - step: 5
-    file: "{steps_path}/step-05-code-review.md"
+    file: "{steps_path}/step-05-post-validation.md"
+    name: "Post-Validation"
+    description: "Verify work actually implemented (g)"
+    agent: dev
+    quality_gate: true
+    iterative: true
+
+  - step: 6
+    file: "{steps_path}/step-06-run-quality-checks.md"
+    name: "Quality Checks"
+    description: "Tests, type check, linter - fix all (h)"
+    agent: dev
+    quality_gate: true
+    blocking: true
+    required_checks:
+      - tests_passing
+      - type_check_passing
+      - lint_passing
+      - coverage_threshold
+
+  - step: 7
+    file: "{steps_path}/step-07-code-review.md"
     name: "Code Review"
-    description: "Adversarial code review finding 3-10 issues"
+    description: "Multi-agent review with fresh context (i)"
+    agent: dev
+    quality_gate: true
+    requires_fresh_context: true
+    multi_agent_review: true
+    variable_agent_count: true
+
+  - step: 8
+    file: "{steps_path}/step-08-review-analysis.md"
+    name: "Review Analysis"
+    description: "Analyze findings - reject gold plating (j)"
+    agent: dev
+    quality_gate: false
+    critical_thinking: true
+
+  - step: 9
+    file: "{steps_path}/step-09-fix-issues.md"
+    name: "Fix Issues"
+    description: "Implement MUST FIX and SHOULD FIX items"
     agent: dev
     quality_gate: true
 
-  - step: 6
-    file: "{steps_path}/step-06-complete.md"
-    name: "Complete"
-    description: "Commit and push changes"
+  - step: 10
+    file: "{steps_path}/step-10-complete.md"
+    name: "Complete + Update Status"
+    description: "Mark done, update sprint-status.yaml (k)"
     agent: sm
-    quality_gate: false
+    quality_gate: true
+    mandatory_sprint_status_update: true
+    verify_status_update: true
 
-  - step: 7
-    file: "{steps_path}/step-07-summary.md"
+  - step: 11
+    file: "{steps_path}/step-11-summary.md"
     name: "Summary"
-    description: "Generate audit trail"
+    description: "Generate comprehensive audit trail"
     agent: null
     quality_gate: false
 

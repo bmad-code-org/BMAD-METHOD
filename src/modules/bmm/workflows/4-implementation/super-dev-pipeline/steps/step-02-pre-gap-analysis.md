@@ -1,20 +1,21 @@
 ---
-name: 'step-02-pre-gap-analysis'
-description: 'Validate tasks against codebase reality - critical for brownfield development'
+name: 'step-02-smart-gap-analysis'
+description: 'Smart gap analysis - skip if story just created with gap analysis in step 1'
 
 # Path Definitions
 workflow_path: '{project-root}/_bmad/bmm/workflows/4-implementation/super-dev-pipeline'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-02-pre-gap-analysis.md'
-nextStepFile: '{workflow_path}/steps/step-03-implement.md'
+thisStepFile: '{workflow_path}/steps/step-02-smart-gap-analysis.md'
+stateFile: '{state_file}'
+nextStepFile: '{workflow_path}/steps/step-03-write-tests.md'
 
 # Role Switch
 role: dev
 agentFile: '{project-root}/_bmad/bmm/agents/dev.md'
 ---
 
-# Step 2: Pre-Gap Analysis
+# Step 2: Smart Gap Analysis
 
 ## ROLE SWITCH
 
@@ -43,6 +44,29 @@ Validate all story tasks against the actual codebase:
 - **BROWNFIELD AWARE** - Check for existing implementations
 
 ## EXECUTION SEQUENCE
+
+### 0. Smart Gap Analysis Check (NEW v1.5.0)
+
+**Check if gap analysis already performed in step 1:**
+
+```yaml
+# Read state from step 1
+Read {stateFile}
+
+If story_just_created == true:
+  Display:
+  ✅ GAP ANALYSIS SKIPPED
+
+  Story was just created via /create-story-with-gap-analysis in step 1.
+  Gap analysis already performed as part of story creation.
+
+  Skipping redundant gap analysis.
+  Proceeding directly to test writing (step 3).
+
+  Exit step 2
+```
+
+**If story was NOT just created, proceed with gap analysis below.**
 
 ### 1. Load Story Tasks
 

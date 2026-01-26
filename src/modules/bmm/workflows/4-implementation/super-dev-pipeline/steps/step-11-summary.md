@@ -1,18 +1,21 @@
 ---
-name: 'step-07-summary'
-description: 'Generate audit trail and pipeline summary'
+name: 'step-11-summary'
+description: 'Generate comprehensive audit trail and pipeline summary'
 
 # Path Definitions
 workflow_path: '{project-root}/_bmad/bmm/workflows/4-implementation/super-dev-pipeline'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-07-summary.md'
+thisStepFile: '{workflow_path}/steps/step-11-summary.md'
+stateFile: '{state_file}'
+storyFile: '{story_file}'
+auditTrail: '{audit_trail}'
 
 # Role
 role: null
 ---
 
-# Step 7: Pipeline Summary
+# Step 11: Pipeline Summary
 
 ## STEP GOAL
 

@@ -54,3 +54,7 @@ agent:
     - trigger: MIG or fuzzy match on migrate
       workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/migrate-to-github/workflow.yaml"
       description: "[MIG] Migrate to GitHub Issues - production-grade migration with reliability guarantees"
+
+    - trigger: MAR or fuzzy match on multi-agent-review
+      workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/multi-agent-review/workflow.yaml"
+      description: "[MAR] Multi-Agent Review - fresh context code review with smart agent selection (2-6 agents based on risk)"
