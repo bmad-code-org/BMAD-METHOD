@@ -79,19 +79,38 @@ class DependencyResolver {
       // Handle both source (src/) and installed (bmad/) directory structures
       let moduleDir;
 
-      // Check if this is a source directory (has 'src' subdirectory)
-      const srcDir = path.join(bmadDir, 'src');
-      if (await fs.pathExists(srcDir)) {
-        // Source directory structure: src/core or src/bmm
+      // Check if bmadDir itself IS the src directory (test scenario)
+      // or if it contains a src subdirectory (production scenario)
+      const hasSrcSubdir = await fs.pathExists(path.join(bmadDir, 'src'));
+      const hasModulesSubdir = await fs.pathExists(path.join(bmadDir, 'modules'));
+
+      if (hasModulesSubdir) {
+        // bmadDir is already the src directory (e.g., /path/to/src)
+        // Structure: bmadDir/core or bmadDir/modules/bmm
+        if (module === 'core') {
+          moduleDir = path.join(bmadDir, 'core');
+        } else if (module === 'bmm') {
+          moduleDir = path.join(bmadDir, 'modules', 'bmm');
+        } else {
+          moduleDir = path.join(bmadDir, 'modules', module);
+        }
+      } else if (hasSrcSubdir) {
+        // bmadDir is the parent of src directory (e.g., /path/to/BMAD-METHOD)
+        // Structure: bmadDir/src/core or bmadDir/src/modules/bmm
+        const srcDir = path.join(bmadDir, 'src');
         if (module === 'core') {
           moduleDir = path.join(srcDir, 'core');
         } else if (module === 'bmm') {
-          moduleDir = path.join(srcDir, 'bmm');
+          moduleDir = path.join(srcDir, 'modules', 'bmm');
+        } else {
+          moduleDir = path.join(srcDir, 'modules', module);
         }
       }
 
-      if (!(await fs.pathExists(moduleDir))) {
-        console.warn(chalk.yellow(`Module directory not found: ${moduleDir}`));
+      if (!moduleDir || !(await fs.pathExists(moduleDir))) {
+        if (options.verbose) {
+          console.warn(chalk.yellow(`Module directory not found: ${moduleDir || module}`));
+        }
         continue;
       }
 
@@ -626,15 +645,26 @@ class DependencyResolver {
       // Get relative path correctly based on module structure
       let moduleBase;
 
-      // Check if file is in source directory structure
-      if (file.includes('/src/core/') || file.includes('/src/bmm/')) {
+      // Detect if bmadDir itself IS the src directory (test scenario)
+      const bmadDirIsSrc = file.includes('/core/') || file.includes('/modules/');
+      const hasSrcInPath = file.includes('/src/core/') || file.includes('/src/modules/');
+
+      if (hasSrcInPath) {
+        // bmadDir is parent of src (production: /path/to/BMAD-METHOD)
         if (module === 'core') {
           moduleBase = path.join(bmadDir, 'src', 'core');
         } else if (module === 'bmm') {
-          moduleBase = path.join(bmadDir, 'src', 'bmm');
+          moduleBase = path.join(bmadDir, 'src', 'modules', 'bmm');
+        } else {
+          moduleBase = path.join(bmadDir, 'src', 'modules', module);
         }
       } else {
-        moduleBase = module === 'core' ? path.join(bmadDir, 'core') : path.join(bmadDir, 'modules', module);
+        // bmadDir IS the src directory (test: tmpDir/src)
+        if (module === 'core') {
+          moduleBase = path.join(bmadDir, 'core');
+        } else {
+          moduleBase = path.join(bmadDir, 'modules', module);
+        }
       }
 
       const relative = path.relative(moduleBase, file);
@@ -642,9 +672,16 @@ class DependencyResolver {
       if (relative.startsWith('agents/') || file.includes('/agents/')) {
         organized[module].agents.push(file);
       } else if (relative.startsWith('tasks/') || file.includes('/tasks/')) {
-        organized[module].tasks.push(file);
+        // Exclude brain-tech data files from tasks
+        if (relative.includes('brain-tech/') && relative.endsWith('.csv')) {
+          organized[module].data.push(file);
+        } else {
+          organized[module].tasks.push(file);
+        }
       } else if (relative.startsWith('tools/') || file.includes('/tools/')) {
         organized[module].tools.push(file);
+      } else if (relative.startsWith('templates/') || file.includes('/templates/')) {
+        organized[module].templates.push(file);
       } else if (relative.includes('data/')) {
         organized[module].data.push(file);
       } else {

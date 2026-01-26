@@ -399,7 +399,7 @@ multi-agent-review (step 1):
 **Remote:** `origin` (jschulte/BMAD-METHOD)
 **Branch:** `feature/super-dev-pipeline-v1.5.0-hospital-grade`
 **Status:** Pushed ✅
-**PR Link:** https://github.com/jschulte/BMAD-METHOD/pull/new/feature/super-dev-pipeline-v1.5.0-hospital-grade
+**PR Link:** <https://github.com/jschulte/BMAD-METHOD/pull/new/feature/super-dev-pipeline-v1.5.0-hospital-grade>
 
 ---
 

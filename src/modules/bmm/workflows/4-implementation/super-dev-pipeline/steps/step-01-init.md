@@ -124,7 +124,7 @@ If total_task_count == 0:
     <input name="regenerate">true</input>
   </invoke-workflow>
 
-  # Set flag for smart gap analysis (v1.5.0)
+  # Story created - skip redundant gap analysis
   story_just_created: true
   gap_analysis_completed: true
 
@@ -154,7 +154,7 @@ If story file missing required sections (Tasks, Acceptance Criteria):
     <input name="regenerate">true</input>
   </invoke-workflow>
 
-  # Set flag for smart gap analysis (v1.5.0)
+  # Story regenerated - mark flags to skip duplicate gap analysis
   story_just_created: true
   gap_analysis_completed: true
 
@@ -168,7 +168,7 @@ If story file missing required sections (Tasks, Acceptance Criteria):
    - Ready for implementation
 ```
 
-### 5. Load Project Context
+## 5. Load Project Context
 
 Read `**/project-context.md`:
 - Tech stack
