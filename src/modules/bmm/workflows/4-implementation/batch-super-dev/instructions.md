@@ -44,7 +44,85 @@ This workflow helps you "mind the gap" between story requirements and codebase r
 <critical>The workflow execution engine is governed by: {project-root}/_bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {project-root}/_bmad/bmm/workflows/4-implementation/batch-super-dev/workflow.yaml</critical>
 
+<critical>⚕️ HOSPITAL-GRADE CODE STANDARDS ⚕️</critical>
+<critical>This code may be used in healthcare settings where LIVES ARE AT STAKE.</critical>
+<critical>Every line of code must meet hospital-grade reliability standards.</critical>
+<critical>QUALITY >> SPEED. Take 5 hours to do it right, not 1 hour to do it poorly.</critical>
+
 <workflow>
+
+<step n="0" goal="Select Execution Mode (Interactive vs Fully Autonomous)">
+  <action>Present execution mode options to user</action>
+
+  <output>
+╔═══════════════════════════════════════════════════════════════════╗
+║  BATCH SUPER-DEV: Execution Mode Selection                        ║
+╚═══════════════════════════════════════════════════════════════════╝
+
+⚕️ HOSPITAL-GRADE CODE STANDARDS ACTIVE ⚕️
+Lives are at stake. All code must meet safety-critical reliability standards.
+
+Choose execution mode:
+
+[I] INTERACTIVE CHECKPOINT MODE (Recommended for oversight)
+    - After each story completes, pause for your review
+    - You approve before proceeding to next story
+    - Allows course correction if issues detected
+    - Best for: Critical features, new team members, complex epics
+
+[A] FULLY AUTONOMOUS MODE (Maximum quality, zero interaction)
+    - Process all selected stories without pausing
+    - ENHANCED quality standards (even more rigorous than interactive)
+    - Hospital-grade code verification at every step
+    - NO shortcuts, NO skimping, NO corner-cutting
+    - Best for: Well-defined stories, experienced implementation
+
+⚠️  AUTONOMOUS MODE = HIGHER QUALITY, NOT LOWER
+In autonomous mode, quality standards are ENHANCED because there's no
+human oversight in the loop. Every decision is double-checked.
+
+QUALITY >> DURATION. We prioritize correctness over speed.
+
+Which mode? [I/A]:
+  </output>
+
+  <action>Read user input</action>
+
+  <check if="user selects 'I' or 'i'">
+    <action>Set execution_mode = "interactive_checkpoint"</action>
+    <output>
+✅ Interactive Checkpoint Mode Selected
+
+After each story implementation:
+- Full quality report displayed
+- You approve before next story begins
+- Allows real-time oversight and intervention
+    </output>
+  </check>
+
+  <check if="user selects 'A' or 'a'">
+    <action>Set execution_mode = "fully_autonomous"</action>
+    <output>
+⚕️ Fully Autonomous Mode Selected - HOSPITAL-GRADE STANDARDS ENFORCED
+
+Quality enhancements for autonomous mode:
+✅ Double validation at each step
+✅ Comprehensive error checking
+✅ Detailed audit trail generation
+✅ Zero-tolerance for shortcuts
+✅ Hospital-grade code verification
+
+Processing will continue until ALL selected stories complete.
+NO human interaction required until completion.
+
+QUALITY OVER SPEED: Taking time to ensure correctness.
+    </output>
+    <action>Activate hospital_grade_mode = true</action>
+    <action>Set quality_multiplier = 1.5</action>
+  </check>
+
+  <action>Store execution_mode for use in subsequent steps</action>
+</step>
 
 <step n="1" goal="Load and parse sprint-status.yaml">
   <action>Read {sprint_status} file</action>
@@ -674,6 +752,64 @@ Enter number (2-10) or 'all':
       <check if="reconciliation succeeded">
         <output>✅ COMPLETED: {{story_key}} (reconciled)</output>
         <action>Increment completed counter</action>
+
+        <check if="execution_mode == 'interactive_checkpoint'">
+          <action>PAUSE FOR USER REVIEW</action>
+          <output>
+╔═══════════════════════════════════════════════════════════════════╗
+║  INTERACTIVE CHECKPOINT: Story {{story_key}} Complete             ║
+╚═══════════════════════════════════════════════════════════════════╝
+
+✅ Story {{story_key}} successfully implemented and reconciled
+
+Quality Summary:
+- All tests passing
+- Type checks passing
+- Linter passing
+- Code review completed
+- Sprint status updated
+
+Remaining stories: {{remaining}}
+
+Options:
+[C] Continue to next story
+[R] Review implementation details
+[P] Pause batch (exit workflow)
+
+Your choice [C/R/P]:
+          </output>
+
+          <action>Read user input</action>
+
+          <check if="user selects 'C' or 'c'">
+            <output>✅ Continuing to next story...</output>
+          </check>
+
+          <check if="user selects 'R' or 'r'">
+            <output>📋 Implementation Details for {{story_key}}</output>
+            <action>Display story file, test results, review findings</action>
+            <output>
+Press [C] to continue or [P] to pause:
+            </output>
+            <action>Read user input</action>
+            <check if="user selects 'C' or 'c'">
+              <output>✅ Continuing to next story...</output>
+            </check>
+            <check if="user selects 'P' or 'p'">
+              <output>⏸️  Batch paused. Run batch-super-dev again to continue with remaining stories.</output>
+              <action>Jump to Step 5 (Summary)</action>
+            </check>
+          </check>
+
+          <check if="user selects 'P' or 'p'">
+            <output>⏸️  Batch paused. Run batch-super-dev again to continue with remaining stories.</output>
+            <action>Jump to Step 5 (Summary)</action>
+          </check>
+        </check>
+
+        <check if="execution_mode == 'fully_autonomous'">
+          <output>✅ {{story_key}} complete. Automatically continuing to next story (autonomous mode)...</output>
+        </check>
       </check>
 
       <check if="reconciliation failed">

@@ -1,19 +1,19 @@
 ---
-name: 'step-03-implement'
-description: 'Adaptive implementation - TDD for greenfield, refactor for brownfield, no vibe coding'
+name: 'step-04-implement'
+description: 'HOSPITAL-GRADE implementation - safety-critical code with comprehensive testing'
 
 # Path Definitions
 workflow_path: '{project-root}/_bmad/bmm/workflows/4-implementation/super-dev-pipeline'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-03-implement.md'
-nextStepFile: '{workflow_path}/steps/step-04-post-validation.md'
+thisStepFile: '{workflow_path}/steps/step-04-implement.md'
+nextStepFile: '{workflow_path}/steps/step-05-post-validation.md'
 
 # Role Continue
 role: dev
 ---
 
-# Step 3: Implement Story
+# Step 4: Implement Story (Hospital-Grade Quality)
 
 ## ROLE CONTINUATION
 
@@ -27,6 +27,46 @@ Implement all unchecked tasks using appropriate methodology:
 1. **Greenfield**: TDD approach (write tests first, then implement)
 2. **Brownfield**: Refactor approach (understand existing, modify carefully)
 3. **Hybrid**: Mix both approaches as appropriate per task
+
+## ⚕️ HOSPITAL-GRADE CODE STANDARDS ⚕️
+
+**CRITICAL: Lives May Depend on This Code**
+
+This code may be used in healthcare/safety-critical environments.
+Every line must meet hospital-grade reliability standards.
+
+### Safety-Critical Quality Requirements:
+
+✅ **CORRECTNESS OVER SPEED**
+   - Take 5 hours to do it right, not 1 hour to do it poorly
+   - Double-check ALL logic, especially edge cases
+   - ZERO tolerance for shortcuts or "good enough"
+
+✅ **DEFENSIVE PROGRAMMING**
+   - Validate ALL inputs (never trust external data)
+   - Handle ALL error cases explicitly
+   - Fail safely (graceful degradation, never silent failures)
+
+✅ **COMPREHENSIVE TESTING**
+   - Test happy path AND all edge cases
+   - Test error handling (what happens when things fail?)
+   - Test boundary conditions (min/max values, empty/null)
+
+✅ **CODE CLARITY**
+   - Prefer readability over cleverness
+   - Comment WHY, not what (code shows what, comments explain why)
+   - No magic numbers (use named constants)
+
+✅ **ROBUST ERROR HANDLING**
+   - Never swallow errors silently
+   - Log errors with context (what, when, why)
+   - Provide actionable error messages
+
+⚠️ **WHEN IN DOUBT: ASK, DON'T GUESS**
+   If you're uncertain about a requirement, HALT and ask for clarification.
+   Guessing in safety-critical code is UNACCEPTABLE.
+
+---
 
 ## MANDATORY EXECUTION RULES
 
