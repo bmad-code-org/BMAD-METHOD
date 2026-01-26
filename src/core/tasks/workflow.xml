@@ -18,45 +18,58 @@
 
   <llm critical="ABSOLUTE">
     <mandate>🚨 WORKFLOW EXECUTION ENFORCEMENT 🚨</mandate>
-    <mandate>YOU ARE FORBIDDEN FROM EXECUTING THIS WORKFLOW DIRECTLY</mandate>
-    <mandate>YOU MUST DELEGATE TO workflow-executor TASK AGENT</mandate>
 
     <enforcement>
-      IF you are reading this file directly (not as a Task agent):
-        HALT IMMEDIATELY
+      <check type="invocation_source">
+        IF this workflow was invoked by USER via slash command (e.g., /bmad_bmm_batch-super-dev):
+          ✅ ALLOWED in main context
+          Reason: User-initiated workflows need interactive prompts
+          Continue execution below
 
-        Display to user:
-        ❌ WORKFLOW EXECUTION VIOLATION DETECTED
+        ELSE IF this workflow was invoked by ANOTHER WORKFLOW (internal call):
+          ❌ FORBIDDEN in main context
+          MUST delegate to workflow-executor Task agent
 
-        You attempted to execute workflow: {workflow_path}
+          Display to user:
+          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+          🔄 Delegating workflow to fresh context agent...
+          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-        This is FORBIDDEN. Workflows MUST be executed by workflow-executor Task agent.
+          Workflow: {workflow_name}
+          Reason: Internal workflow calls use Task agents (fresh context)
 
-        Correct action:
-        <Task>
-          subagent_type: general-purpose
-          description: Execute {workflow_name}
-          prompt: |
-            You are the workflow-executor agent.
+          Spawning workflow-executor agent...
+          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-            LOAD EVERYTHING FIRST:
-            1. Read: {workflow_path}/workflow.yaml
-            2. Read: ALL files in {workflow_path}/steps/
-            3. Read: _bmad/core/tasks/workflow.xml
-            4. Read: Story file
-            5. Read: Project context
+          Then spawn:
+          <Task>
+            subagent_type: general-purpose
+            description: Execute {workflow_name}
+            prompt: |
+              You are the workflow-executor agent.
 
-            THEN execute workflow following workflow.xml EXACTLY.
+              Execute workflow: {workflow_path}
 
-            When step says invoke-workflow → Use Skill tool
-            When step says spawn agents → Use Task tool
-            When step has quality_gate → Verify before proceeding
+              LOAD ALL CONTEXT FIRST:
+              1. Read: {workflow_path}/workflow.yaml
+              2. Read: ALL files in {workflow_path}/steps/
+              3. Read: _bmad/core/tasks/workflow.xml
+              4. Read: Story file (if applicable)
+              5. Read: Project context
 
-            Record evidence after EVERY step.
-            Report back when ALL steps complete.
-        </Task>
+              THEN execute following workflow.xml rules EXACTLY.
 
-        STOPPING EXECUTION - Spawn the agent above.
+              Report when complete.
+          </Task>
+
+          HALT - Let Task agent handle workflow.
+      </check>
+
+      <detection>
+        How to detect invocation source:
+        - Slash command: User message contains "/bmad_" or conversation has <command-name> tag
+        - Internal call: No slash command, invoked from within another workflow step
+      </detection>
     </enforcement>
   </llm>
 
