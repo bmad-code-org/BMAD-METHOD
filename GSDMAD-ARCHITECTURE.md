@@ -8,7 +8,7 @@
 
 ## The Vision
 
-**BMAD** excels at structure, tracking, and hospital-grade quality standards.
+**BMAD** excels at structure, tracking, and comprehensive quality standards.
 **GSD** excels at smart execution, parallelization, and getting shit done fast.
 
 **GSDMAD** takes the best of both:
@@ -23,7 +23,7 @@
 2. **Smart parallelization** - Run independent work concurrently, sequential only when needed
 3. **Separation of concerns** - Different agents for implementation, validation, review
 4. **Checkpoint-aware routing** - Autonomous segments in subagents, decisions in main
-5. **Hospital-grade quality** - Lives may be at stake, quality >> speed
+5. **Comprehensive quality** - Lives may be at stake, quality >> speed
 
 ---
 
@@ -454,7 +454,7 @@ agents:
 - ✅ Comprehensive story tracking
 - ✅ Sprint artifacts and status management
 - ✅ Gap analysis and reconciliation
-- ✅ Hospital-grade quality standards
+- ✅ Comprehensive quality standards
 - ✅ Multi-tenant patterns
 
 **From GSD:**
