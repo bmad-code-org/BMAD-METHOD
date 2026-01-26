@@ -17,60 +17,48 @@
   </WORKFLOW-RULES>
 
   <llm critical="ABSOLUTE">
-    <mandate>🚨 WORKFLOW EXECUTION ENFORCEMENT 🚨</mandate>
+    <mandate>🚨 WORKFLOW EXECUTION CONTEXT ENFORCEMENT 🚨</mandate>
 
-    <enforcement>
-      <check type="invocation_source">
-        IF this workflow was invoked by USER via slash command (e.g., /bmad_bmm_batch-super-dev):
-          ✅ ALLOWED in main context
-          Reason: User-initiated workflows need interactive prompts
-          Continue execution below
+    <check name="interactive_workflow_exemption">
+      CHECK if this conversation has a <command-name> tag (e.g., <command-name>/bmad_bmm_batch-super-dev</command-name>)
 
-        ELSE IF this workflow was invoked by ANOTHER WORKFLOW (internal call):
-          ❌ FORBIDDEN in main context
-          MUST delegate to workflow-executor Task agent
+      IF <command-name> tag exists:
+        ✅ This is a USER-INITIATED slash command
+        ✅ EXEMPTED from Task agent delegation
+        ✅ Continue execution in main context
 
-          Display to user:
-          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-          🔄 Delegating workflow to fresh context agent...
-          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        Reason: Interactive workflows need user prompts and responses.
+        Task agents cannot interact with users.
 
-          Workflow: {workflow_name}
-          Reason: Internal workflow calls use Task agents (fresh context)
+        Proceed to Step 1 below.
+    </check>
 
-          Spawning workflow-executor agent...
-          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    <check name="internal_workflow_delegation" critical="true">
+      IF NO <command-name> tag found:
+        ❌ This is an INTERNAL workflow call (invoked by another workflow)
+        ❌ FORBIDDEN in main context
+        ✅ MUST delegate to workflow-executor Task agent
 
-          Then spawn:
-          <Task>
-            subagent_type: general-purpose
-            description: Execute {workflow_name}
-            prompt: |
-              You are the workflow-executor agent.
+        Why: Internal calls should use fresh context to prevent degradation.
 
-              Execute workflow: {workflow_path}
+        Action:
+        1. Display brief message to user:
+           "🔄 Delegating {workflow_name} to fresh context agent..."
 
-              LOAD ALL CONTEXT FIRST:
-              1. Read: {workflow_path}/workflow.yaml
-              2. Read: ALL files in {workflow_path}/steps/
-              3. Read: _bmad/core/tasks/workflow.xml
-              4. Read: Story file (if applicable)
-              5. Read: Project context
+        2. Spawn Task agent:
+           <Task>
+             subagent_type: general-purpose
+             description: Execute {workflow_name}
+             prompt: |
+               Execute workflow: {workflow_path}
 
-              THEN execute following workflow.xml rules EXACTLY.
+               Load all required files first, then execute following workflow.xml.
+           </Task>
 
-              Report when complete.
-          </Task>
+        3. HALT - Task agent handles workflow
 
-          HALT - Let Task agent handle workflow.
-      </check>
-
-      <detection>
-        How to detect invocation source:
-        - Slash command: User message contains "/bmad_" or conversation has <command-name> tag
-        - Internal call: No slash command, invoked from within another workflow step
-      </detection>
-    </enforcement>
+        DO NOT proceed to Step 1.
+    </check>
   </llm>
 
   <flow>
