@@ -298,62 +298,40 @@ Ready for Summary Generation
 
 ## QUALITY GATE
 
-**MANDATORY AUTO-FIX VERIFICATION:**
-
-<critical>🚨 DETECT FAILURES AND FIX THEM - DO NOT HALT</critical>
+**MANDATORY VERIFICATION CHECKS (with enforcement code):**
 
 ```bash
 story_file="{story_file}"
 
-# 1. Check if tasks were checked off
+# 1. Verify tasks were checked off during implementation
 checked_tasks=$(grep -c "^- \[x\]" "$story_file" || echo "0")
 total_tasks=$(grep -c "^- \[[x ]\]" "$story_file" || echo "0")
 
 if [ "$checked_tasks" -eq 0 ] && [ "$total_tasks" -gt 0 ]; then
-  echo "❌ FAILURE DETECTED: $total_tasks tasks exist but ZERO checked"
+  echo "❌ CRITICAL FAILURE: Story has $total_tasks tasks but ZERO are checked"
   echo ""
-  echo "🔧 EXECUTING AUTO-FIX RECONCILIATION:"
-  echo "   1. Reading git commit to see what was built"
-  echo "   2. Comparing to story tasks"
-  echo "   3. Checking off tasks with matching code"
+  echo "This means Step 4 (Implementation) did NOT update the story file."
+  echo "The agent implemented code but never checked off tasks."
   echo ""
+  echo "HALTING - Cannot mark story complete with unchecked tasks."
+  exit 1
 fi
 
-# AUTO-FIX: For each unchecked task, check if code exists, then check it off
-# (Actual implementation: Use Edit tool iteratively for each task)
-# (Verify after each edit, retry if failed, continue until all viable tasks checked)
-
-# Re-count after auto-fix
-checked_tasks=$(grep -c "^- \[x\]" "$story_file" || echo "0")
 completion_pct=$((checked_tasks * 100 / total_tasks))
+echo "✅ Task completion verified: $checked_tasks/$total_tasks ($completion_pct%)"
 
-echo "✅ After auto-fix: $checked_tasks/$total_tasks tasks checked ($completion_pct%)"
-
-# 2. Check if Dev Agent Record empty
+# 2. Verify Dev Agent Record was filled in
 if grep -q "To be filled by dev agent" "$story_file"; then
-  echo "❌ FAILURE DETECTED: Dev Agent Record is empty"
+  echo "❌ CRITICAL FAILURE: Dev Agent Record is empty"
   echo ""
-  echo "🔧 EXECUTING AUTO-FIX:"
-  echo "   Extracting commit details"
-  echo "   Populating Dev Agent Record section"
+  echo "The '## Dev Agent Record' section was not filled in."
+  echo "This means the agent did not document what was built."
   echo ""
-
-  # AUTO-FIX: Fill in Dev Agent Record
-  # - Agent Model Used: Get from context
-  # - File List: Extract from git diff --name-only
-  # - Completion Notes: Extract from commit message
-  # Use Edit tool to replace "To be filled" sections
-
-  echo "✅ Dev Agent Record populated"
+  echo "HALTING - Cannot complete without documentation."
+  exit 1
 fi
 
-# After all auto-fixes, verify minimum standards met
-if [ "$checked_tasks" -eq 0 ]; then
-  echo "❌ CRITICAL: Auto-fix could not check any tasks"
-  echo "   Story implementation may be empty or broken"
-  echo "   Marking story as 'in-progress' (not done)"
-  # Override status but continue (don't halt)
-fi
+echo "✅ Dev Agent Record verified: Documentation present"
 ```
 
 Before proceeding (BLOCKING - ALL must pass):

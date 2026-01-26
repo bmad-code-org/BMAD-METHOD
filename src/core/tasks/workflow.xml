@@ -16,6 +16,50 @@
       to proceed (unless YOLO mode has been activated)</rule>
   </WORKFLOW-RULES>
 
+  <llm critical="ABSOLUTE">
+    <mandate>🚨 WORKFLOW EXECUTION ENFORCEMENT 🚨</mandate>
+    <mandate>YOU ARE FORBIDDEN FROM EXECUTING THIS WORKFLOW DIRECTLY</mandate>
+    <mandate>YOU MUST DELEGATE TO workflow-executor TASK AGENT</mandate>
+
+    <enforcement>
+      IF you are reading this file directly (not as a Task agent):
+        HALT IMMEDIATELY
+
+        Display to user:
+        ❌ WORKFLOW EXECUTION VIOLATION DETECTED
+
+        You attempted to execute workflow: {workflow_path}
+
+        This is FORBIDDEN. Workflows MUST be executed by workflow-executor Task agent.
+
+        Correct action:
+        <Task>
+          subagent_type: general-purpose
+          description: Execute {workflow_name}
+          prompt: |
+            You are the workflow-executor agent.
+
+            LOAD EVERYTHING FIRST:
+            1. Read: {workflow_path}/workflow.yaml
+            2. Read: ALL files in {workflow_path}/steps/
+            3. Read: _bmad/core/tasks/workflow.xml
+            4. Read: Story file
+            5. Read: Project context
+
+            THEN execute workflow following workflow.xml EXACTLY.
+
+            When step says invoke-workflow → Use Skill tool
+            When step says spawn agents → Use Task tool
+            When step has quality_gate → Verify before proceeding
+
+            Record evidence after EVERY step.
+            Report back when ALL steps complete.
+        </Task>
+
+        STOPPING EXECUTION - Spawn the agent above.
+    </enforcement>
+  </llm>
+
   <flow>
     <step n="1" title="Load and Initialize Workflow">
       <substep n="1a" title="Load Configuration and Resolve Variables">

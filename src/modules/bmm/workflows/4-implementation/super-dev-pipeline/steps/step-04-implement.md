@@ -222,54 +222,31 @@ npm test -- --run && npm run lint
 ✅ Batch Complete - All {task_count} tasks executed successfully!
 ```
 
-<critical>🚨 AUTO-FIX: CHECK OFF ALL BATCH TASKS WITH RETRY LOGIC</critical>
+<critical>🚨 MANDATORY: CHECK OFF ALL BATCH TASKS IMMEDIATELY</critical>
 
-**For EACH task in batch:**
+**For EACH task in the batch, execute this verification:**
 
-```
-FOR task_text IN [task_1, task_2, task_3, ...]:
+```bash
+story_file="{story_file}"
 
-  ATTEMPT 1: Use Edit tool to check off task
-    Read story file
-    Find line: "- [ ] {task_text}"
-    Edit to: "- [x] {task_text}"
+# For each task in batch
+for task_text in "{task_1}" "{task_2}" "{task_3}"; do
+  # Use Edit tool to change: "- [ ] $task_text" → "- [x] $task_text"
 
-  VERIFY:
-    Re-read story file
-    Check if "- [x] {task_text}" exists
+  # VERIFY checkbox was updated
+  if ! grep -q "^\- \[x\].*${task_text}" "$story_file"; then
+    echo "❌ CRITICAL FAILURE: Batch task NOT checked: $task_text"
+    echo ""
+    echo "YOU MUST use Edit tool to check off ALL batch tasks."
+    echo "HALTING Step 4."
+    exit 1
+  fi
+done
 
-  IF FAILED:
-    ATTEMPT 2: Retry with exact line matching
-      Read story file with line numbers
-      Find exact line text (with spacing/indentation)
-      Edit with exact old_string match
-      Verify again
-
-  IF FAILED:
-    ATTEMPT 3: Write entire section
-      Read full Tasks section
-      Update all batch task checkboxes to [x]
-      Write back to story file
-      Verify again
-
-  IF STILL FAILED:
-    ❌ CRITICAL: Cannot check off task after 3 attempts
-    Log diagnostic info:
-      - Task text we're trying to check
-      - What Edit tool is matching against
-      - Edit tool error messages
-    HALT - Fundamental tool failure
-
-  SUCCESS:
-    ✅ Task checked: {task_text}
-    Continue to next task in batch
-
-END FOR
-
-✅ All {task_count} batch tasks verified checked
+echo "✅ All {task_count} batch tasks verified checked"
 ```
 
-**Guarantee:** Every task gets 3 attempts to check off. Only HALT if all methods exhausted.
+**IF VERIFICATION FAILS:** HALT immediately. Batch is not complete until all checkboxes verified.
 
 Time: {actual_time} minutes
 
@@ -403,54 +380,34 @@ After implementing task, verify:
 
 **MANDATORY: Mark task complete in story file:**
 
-<critical>🚨 AUTO-FIX ENFORCEMENT - CHECK OFF TASK OR RETRY UNTIL SUCCESS</critical>
+<critical>🚨 YOU MUST CHECK OFF THIS TASK IMMEDIATELY - NO EXCEPTIONS</critical>
 
-```
-STEP 1: Attempt to check off task using Edit tool
+```bash
+# 1. Find the exact task line in story file
+story_file="{story_file}"
+task_text="{current_task_description}"  # e.g., "1.1: Add ChargeType enum"
 
-Read current task line from story file
-Use Edit tool to change: "- [ ] {task_text}" → "- [x] {task_text}"
+# 2. Update checkbox from [ ] to [x]
+# Use Edit tool to change the specific task line
+# Example: "- [ ] 1.1: Add ChargeType enum" → "- [x] 1.1: Add ChargeType enum"
 
-STEP 2: VERIFY checkbox was updated (MANDATORY)
+# 3. VERIFY the checkbox was actually updated
+if ! grep -q "^\- \[x\].*${task_text}" "$story_file"; then
+  echo "❌ CRITICAL FAILURE: Task checkbox was NOT checked"
+  echo "Task: $task_text"
+  echo "Story file: $story_file"
+  echo ""
+  echo "YOU MUST use the Edit tool to check off this task."
+  echo "The workflow CANNOT continue until this task is marked complete."
+  echo ""
+  echo "HALTING Step 4."
+  exit 1
+fi
 
-Re-read story file
-Count checked tasks for this specific task
-
-IF VERIFICATION FAILS:
-  ❌ Edit tool failed to check off task
-
-  RETRY LOGIC:
-  1. Read story file again (get latest content)
-  2. Find exact task line (with line numbers)
-  3. Use Edit tool with EXACT old_string (including indentation, spacing)
-  4. Update to [x]
-  5. Verify again
-
-  IF RETRY FAILS:
-    ❌ Still not checked after retry
-
-    DIAGNOSTIC:
-    - Show actual line from story file
-    - Show what Edit tool tried to match
-    - Show error message from Edit tool
-
-    THEN: Use Write tool to rewrite entire story file with task checked
-
-    THEN: Verify AGAIN
-
-    IF STILL FAILS:
-      HALT - Something is fundamentally broken, cannot continue
-
-STEP 3: Confirmation
-
-✅ Task checkbox verified: {task_text}
-
-Story file updated: {checked_count} tasks now complete
+echo "✅ Task checkbox verified: $task_text"
 ```
 
-**Auto-fix loop:** Try Edit → Verify → Retry Edit → Verify → Write file → Verify → HALT only if all methods fail
-
-**Maximum 3 attempts before HALT.**
+**IF VERIFICATION FAILS:** HALT immediately. Do not proceed to next task.
 
 **Update state file with progress.**
 
@@ -602,58 +559,36 @@ fi
 
 **MANDATORY VERIFICATION BEFORE PROCEEDING:**
 
-<critical>🚨 FINAL TASK AUDIT - AUTO-FIX MISSING CHECKBOXES</critical>
+<critical>🚨 TASK COMPLETION VERIFICATION - WORKFLOW WILL HALT IF FAILED</critical>
 
-**Execute verification with auto-fix retry:**
+**Execute these verification checks (NO EXCEPTIONS):**
 
 ```bash
+# 1. Count checked vs total tasks in story file
 story_file="{story_file}"
-
-# Count checked vs total tasks
 checked_tasks=$(grep -c "^- \[x\]" "$story_file" || echo "0")
 total_tasks=$(grep -c "^- \[[x ]\]" "$story_file" || echo "0")
 
-if [ "$checked_tasks" -eq 0 ] && [ "$total_tasks" -gt 0 ]; then
-  echo "❌ CRITICAL: ZERO tasks checked but $total_tasks tasks exist"
+if [ "$checked_tasks" -eq 0 ]; then
+  echo "❌ CRITICAL FAILURE: ZERO tasks checked in story file"
+  echo "Story: $story_file"
+  echo "Total tasks: $total_tasks"
   echo ""
-  echo "This means you FAILED to update the story file during implementation."
+  echo "This means implementation DID NOT update the story file."
+  echo "This is a WORKFLOW EXECUTION FAILURE."
   echo ""
-  echo "ATTEMPTING AUTO-FIX:"
-  echo "Reading story file to find what should be checked..."
-
-  # Extract all task lines
-  # For each task that has corresponding code (from File List or tests)
-  # Use Edit tool to check it off
-  # Re-verify after each edit
-
-  # After auto-fix attempts:
-  checked_tasks=$(grep -c "^- \[x\]" "$story_file" || echo "0")
-
-  if [ "$checked_tasks" -eq 0 ]; then
-    echo ""
-    echo "❌ AUTO-FIX FAILED: Still zero tasks checked"
-    echo ""
-    echo "YOU MUST manually review story file and check off completed tasks."
-    echo "HALTING - Cannot proceed with broken task tracking."
-    exit 1
-  else
-    echo "✅ AUTO-FIX SUCCESS: $checked_tasks tasks now checked"
-  fi
+  echo "HALTING - Step 4 cannot complete."
+  exit 1
 fi
 
 completion_pct=$((checked_tasks * 100 / total_tasks))
 
 if [ "$completion_pct" -lt 80 ]; then
-  echo "⚠️ WARNING: Only $completion_pct% complete ($checked_tasks/$total_tasks)"
-  echo ""
-  echo "ATTEMPTING TO IDENTIFY MISSING TASKS:"
-  # Read unchecked tasks
-  # For each unchecked task, check if code exists
-  # If code exists, auto-check the task
-  # If code missing, report which tasks are genuinely incomplete
+  echo "⚠️ WARNING: Only $completion_pct% tasks checked ($checked_tasks/$total_tasks)"
+  echo "Implementation may be incomplete."
 fi
 
-echo "✅ Final verification: $checked_tasks/$total_tasks tasks checked ($completion_pct%)"
+echo "✅ Task verification: $checked_tasks/$total_tasks tasks checked ($completion_pct%)"
 ```
 
 **ONLY WHEN:**
