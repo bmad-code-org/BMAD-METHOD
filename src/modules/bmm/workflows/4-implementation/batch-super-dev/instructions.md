@@ -166,69 +166,22 @@ Run `/bmad_bmm_sprint-status` to see current status.</output>
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   </output>
 
-  <iterate>For each story in ready_for_dev_stories:</iterate>
+  <iterate>For each story in available_stories (ready_for_dev + backlog):</iterate>
 
   <substep n="2.5a" title="Check story file existence and validity">
     <action>Check if story file exists (already done in Step 2)</action>
 
     <check if="file_status_icon == '❌' (file missing)">
-      <output>
-📝 Story {{story_key}}: File missing
-      </output>
-
-      <ask>Create story file with gap analysis? (yes/no):</ask>
-
-      <check if="response == 'yes'">
-        <output>
-⚠️ STORY CREATION REQUIRES MANUAL WORKFLOW EXECUTION
-
-**Story:** {{story_key}}
-**Status:** File missing or incomplete
-
-**Problem:**
-Agents cannot invoke /create-story-with-gap-analysis workflow autonomously.
-This workflow requires:
-- Interactive user prompts
-- Context-heavy codebase scanning
-- Gap analysis decision-making
-
-**Required Action:**
-
-1. **Exit this batch execution:**
-   - Remaining stories will be skipped
-   - Batch will continue with valid stories only
-
-2. **Regenerate story manually:**
-   ```
-   /create-story-with-gap-analysis
-   ```
-   When prompted, provide:
-   - Story key: {{story_key}}
-   - Epic: {epic from parent story}
-   - Scope: {widget list or feature description}
-
-3. **Validate story format:**
-   ```
-   ./scripts/validate-all-stories.sh
-   ```
-   Must show: "✅ All stories ready for batch execution!"
-
-4. **Re-run batch-super-dev:**
-   - Story will now be properly formatted
-   - Can be executed in next batch run
-
-**Skipping story {{story_key}} from current batch execution.**
-        </output>
-
-        <action>Mark story for removal from selection</action>
-        <action>Add to skipped_stories list with reason: "Story creation requires manual workflow (agents cannot invoke /create-story)"</action>
-        <action>Add to manual_actions_required list: "Regenerate {{story_key}} with /create-story-with-gap-analysis"</action>
+      <check if="story status is BACKLOG">
+        <output>📝 Story {{story_key}}: BACKLOG - no story file yet (will create during implementation)</output>
+        <action>Mark story as needs_story_creation = true</action>
+        <action>Mark story as validated (will create story in Step 4 before implementing)</action>
       </check>
 
-      <check if="response == 'no'">
-        <output>⏭️ Skipping story {{story_key}} (file missing, user declined creation)</output>
+      <check if="story status is ready-for-dev">
+        <output>❌ Story {{story_key}}: File MISSING but status is ready-for-dev</output>
         <action>Mark story for removal from selection</action>
-        <action>Add to skipped_stories list with reason: "User declined story creation"</action>
+        <action>Add to skipped_stories list with reason: "Story file missing (status ready-for-dev but no file)"</action>
       </check>
     </check>
 
