@@ -1,0 +1,39 @@
+name: multi-agent-review
+description: "Smart multi-agent code review with dynamic agent selection based on changed code. Uses multiple specialized AI agents to review different aspects: architecture, security, performance, testing, and code quality."
+author: "BMad"
+version: "1.0.0"
+
+# Critical variables from config
+config_source: "{project-root}/_bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+sprint_artifacts: "{config_source}:sprint_artifacts"
+communication_language: "{config_source}:communication_language"
+
+# Workflow components
+installed_path: "{project-root}/_bmad/bmm/workflows/4-implementation/multi-agent-review"
+instructions: "{installed_path}/instructions.md"
+
+# Input parameters
+story_id: "{story_id}" # Required
+story_file: "{sprint_artifacts}/story-{story_id}.md"
+base_branch: "main" # Optional: branch to compare against
+
+# Review settings
+review_settings:
+  agents_to_use: "auto" # auto | all | custom
+  focus_areas:
+    - architecture
+    - security
+    - performance
+    - testing
+    - code_quality
+  minimum_agents: 3
+  maximum_agents: 5
+  generate_report: true
+  auto_fix_suggested: false # Set to true to automatically apply suggested fixes
+
+# Output
+review_report: "{sprint_artifacts}/review-{story_id}-multi-agent.md"
+
+standalone: true
+web_bundle: false
