@@ -51,86 +51,14 @@ This workflow helps you "mind the gap" between story requirements and codebase r
 
 <workflow>
 
-<step n="0" goal="Select Execution Mode (Interactive vs Fully Autonomous)">
-  <action>Present execution mode options to user</action>
-
-  <output>
-╔═══════════════════════════════════════════════════════════════════╗
-║  BATCH SUPER-DEV: Execution Mode Selection                        ║
-╚═══════════════════════════════════════════════════════════════════╝
-
-⚕️ HOSPITAL-GRADE CODE STANDARDS ACTIVE ⚕️
-Lives are at stake. All code must meet safety-critical reliability standards.
-
-Choose execution mode:
-
-[I] INTERACTIVE CHECKPOINT MODE (Recommended for oversight)
-    - After each story completes, pause for your review
-    - You approve before proceeding to next story
-    - Allows course correction if issues detected
-    - Best for: Critical features, new team members, complex epics
-
-[A] FULLY AUTONOMOUS MODE (Maximum quality, zero interaction)
-    - Process all selected stories without pausing
-    - ENHANCED quality standards (even more rigorous than interactive)
-    - Hospital-grade code verification at every step
-    - NO shortcuts, NO skimping, NO corner-cutting
-    - Best for: Well-defined stories, experienced implementation
-
-⚠️  AUTONOMOUS MODE = HIGHER QUALITY, NOT LOWER
-In autonomous mode, quality standards are ENHANCED because there's no
-human oversight in the loop. Every decision is double-checked.
-
-QUALITY >> DURATION. We prioritize correctness over speed.
-
-Which mode? [I/A]:
-  </output>
-
-  <action>Read user input</action>
-
-  <check if="user selects 'I' or 'i'">
-    <action>Set execution_mode = "interactive_checkpoint"</action>
-    <output>
-✅ Interactive Checkpoint Mode Selected
-
-After each story implementation:
-- Full quality report displayed
-- You approve before next story begins
-- Allows real-time oversight and intervention
-    </output>
-  </check>
-
-  <check if="user selects 'A' or 'a'">
-    <action>Set execution_mode = "fully_autonomous"</action>
-    <output>
-⚕️ Fully Autonomous Mode Selected - HOSPITAL-GRADE STANDARDS ENFORCED
-
-Quality enhancements for autonomous mode:
-✅ Double validation at each step
-✅ Comprehensive error checking
-✅ Detailed audit trail generation
-✅ Zero-tolerance for shortcuts
-✅ Hospital-grade code verification
-
-Processing will continue until ALL selected stories complete.
-NO human interaction required until completion.
-
-QUALITY OVER SPEED: Taking time to ensure correctness.
-    </output>
-    <action>Activate hospital_grade_mode = true</action>
-    <action>Set quality_multiplier = 1.5</action>
-  </check>
-
-  <action>Store execution_mode for use in subsequent steps</action>
-</step>
-
-<step n="1" goal="Load and parse sprint-status.yaml">
+<step n="0" goal="Load and parse sprint-status.yaml">
   <action>Read {sprint_status} file</action>
   <action>Parse metadata: project, project_key, tracking_system</action>
   <action>Parse development_status map</action>
 
-  <action>Filter stories with status = "ready-for-dev"</action>
+  <action>Filter stories with status = "ready-for-dev" OR "backlog"</action>
   <action>Exclude entries that are epics (keys starting with "epic-") or retrospectives (keys ending with "-retrospective")</action>
+  <action>Group by status: ready_for_dev_stories, backlog_stories</action>
 
   <check if="filter_by_epic is not empty">
     <action>Further filter stories to only include those starting with "{filter_by_epic}-"</action>
@@ -140,17 +68,19 @@ QUALITY OVER SPEED: Taking time to ensure correctness.
   <action>Sort filtered stories by epic number, then story number (e.g., 1-1, 1-2, 2-1, 3-1)</action>
   <action>Store as: ready_for_dev_stories (list of story keys)</action>
 
-  <check if="ready_for_dev_stories is empty">
-    <output>✅ No ready-for-dev stories found.
+  <check if="ready_for_dev_stories is empty AND backlog_stories is empty">
+    <output>✅ No available stories found (ready-for-dev or backlog).
 
 All stories are either in-progress, review, or done!
 
-Run `/bmad:bmm:workflows:sprint-status` to see current status.</output>
+Run `/bmad_bmm_sprint-status` to see current status.</output>
     <action>Exit workflow</action>
   </check>
+
+  <action>Combine both lists: available_stories = ready_for_dev_stories + backlog_stories</action>
 </step>
 
-<step n="2" goal="Display available stories with details">
+<step n="1" goal="Display available stories with details">
   <action>Read comment field for each story from sprint-status.yaml (text after # on the same line)</action>
 
   <action>For each story, verify story file exists using COMPREHENSIVE naming pattern detection:</action>
@@ -193,30 +123,43 @@ Run `/bmad:bmm:workflows:sprint-status` to see current status.</output>
   <action>Mark stories as: ✅ (file exists), ❌ (file missing), 🔄 (already implemented but not marked done)</action>
 
   <output>
-## 📦 Ready-for-Dev Stories ({{count}})
+## 📦 Available Stories ({{count}})
 
 {{#if filter_by_epic}}
 **Filtered by Epic {{filter_by_epic}}**
 {{/if}}
 
+{{#if ready_for_dev_stories.length > 0}}
+### Ready for Dev ({{ready_for_dev_stories.length}})
 {{#each ready_for_dev_stories}}
-{{@index}}. **{{key}}** {{file_status_icon}}
+{{@index}}. **{{key}}** {{file_status_icon}} {{sprint_status}}
    {{#if comment}}→ {{comment}}{{/if}}
    {{#if file_path}}   File: {{file_path}}{{/if}}
 {{/each}}
+{{/if}}
+
+{{#if backlog_stories.length > 0}}
+### Backlog ({{backlog_stories.length}})
+{{#each backlog_stories}}
+{{@index}}. **{{key}}** {{file_status_icon}} [BACKLOG]
+   {{#if comment}}→ {{comment}}{{/if}}
+   {{#if file_path}}   File: {{file_path}}{{else}}   Needs story creation{{/if}}
+{{/each}}
+{{/if}}
 
 ---
 **Legend:**
 - ✅ Story file exists, ready to implement
 - 🔄 Already implemented, just needs status update
 - ❌ Story file missing, needs creation first
+- [BACKLOG] Story needs gap analysis before implementation
 
 **Total:** {{count}} stories available
 **Max batch size:** {{max_stories}} stories
   </output>
 </step>
 
-<step n="2.5" goal="Validate and create/regenerate stories as needed">
+<step n="1.5" goal="Validate and create/regenerate stories as needed">
   <output>
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🔍 VALIDATING STORY FILES
@@ -458,7 +401,7 @@ Run `/bmad:bmm:workflows:sprint-status` to see status.
   </output>
 </step>
 
-<step n="2.6" goal="Score story complexity for pipeline routing (NEW v1.3.0)">
+<step n="1.6" goal="Score story complexity for pipeline routing (NEW v1.3.0)">
   <output>
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📊 SCORING STORY COMPLEXITY
@@ -580,7 +523,7 @@ Run /create-story or /validate-create-story to create proper story files, then r
   </check>
 </step>
 
-<step n="3" goal="Get user selection">
+<step n="2" goal="Get user selection">
   <ask>
 **Select stories to process:**
 
@@ -627,14 +570,83 @@ Only the first {{max_stories}} will be processed.</output>
 ## 📋 Selected Stories ({{count}})
 
 {{#each selected_stories}}
-{{@index}}. {{key}}
+{{@index}}. {{key}} {{#if is_backlog}}[BACKLOG - needs story creation]{{/if}}
 {{/each}}
 
 **Estimated time:** {{count}} stories × 30-60 min/story = {{estimated_hours}} hours
   </output>
 </step>
 
-<step n="3.5" goal="Choose execution strategy">
+<step n="3" goal="Choose execution mode and strategy">
+  <output>
+╔═══════════════════════════════════════════════════════════════════╗
+║  BATCH SUPER-DEV: Execution Mode Selection                        ║
+╚═══════════════════════════════════════════════════════════════════╝
+
+⚕️ HOSPITAL-GRADE CODE STANDARDS ACTIVE ⚕️
+Lives are at stake. All code must meet safety-critical reliability standards.
+  </output>
+
+  <ask>
+**Choose execution mode:**
+
+[I] INTERACTIVE CHECKPOINT MODE (Recommended for oversight)
+    - After each story completes, pause for your review
+    - You approve before proceeding to next story
+    - Allows course correction if issues detected
+    - Best for: Critical features, new team members, complex epics
+
+[A] FULLY AUTONOMOUS MODE (Maximum quality, zero interaction)
+    - Process all selected stories without pausing
+    - ENHANCED quality standards (even more rigorous than interactive)
+    - Hospital-grade code verification at every step
+    - NO shortcuts, NO skimping, NO corner-cutting
+    - Best for: Well-defined stories, experienced implementation
+
+⚠️  AUTONOMOUS MODE = HIGHER QUALITY, NOT LOWER
+In autonomous mode, quality standards are ENHANCED because there's no
+human oversight in the loop. Every decision is double-checked.
+
+QUALITY >> DURATION. We prioritize correctness over speed.
+
+Which mode? [I/A]:
+  </ask>
+
+  <action>Read user input</action>
+
+  <check if="user selects 'I' or 'i'">
+    <action>Set execution_mode = "interactive_checkpoint"</action>
+    <output>
+✅ Interactive Checkpoint Mode Selected
+
+After each story implementation:
+- Full quality report displayed
+- You approve before next story begins
+- Allows real-time oversight and intervention
+    </output>
+  </check>
+
+  <check if="user selects 'A' or 'a'">
+    <action>Set execution_mode = "fully_autonomous"</action>
+    <output>
+⚕️ Fully Autonomous Mode Selected - HOSPITAL-GRADE STANDARDS ENFORCED
+
+Quality enhancements for autonomous mode:
+✅ Double validation at each step
+✅ Comprehensive error checking
+✅ Detailed audit trail generation
+✅ Zero-tolerance for shortcuts
+✅ Hospital-grade code verification
+
+Processing will continue until ALL selected stories complete.
+NO human interaction required until completion.
+
+QUALITY OVER SPEED: Taking time to ensure correctness.
+    </output>
+    <action>Activate hospital_grade_mode = true</action>
+    <action>Set quality_multiplier = 1.5</action>
+  </check>
+
   <ask>
 **How should these stories be processed?**
 
@@ -738,6 +750,22 @@ Enter number (2-10) or 'all':
 📦 Story {{current_index}}/{{total_count}}: {{story_key}}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     </output>
+
+    <check if="story is BACKLOG status AND story file missing or invalid">
+      <output>📝 Story {{story_key}} is in BACKLOG - creating story file with gap analysis...</output>
+
+      <action>Invoke workflow: /bmad:bmm:workflows:create-story-with-gap-analysis</action>
+      <action>Parameters: story_key={{story_key}}, epic={{epic_num}}</action>
+
+      <check if="story creation failed">
+        <output>❌ FAILED: Could not create story {{story_key}}</output>
+        <action>Increment failed counter</action>
+        <action>Add story_key to failed_stories list</action>
+        <action>Continue to next story if continue_on_failure==true</action>
+      </check>
+
+      <output>✅ Story file created: {{story_key}}</output>
+    </check>
 
     <action>Invoke workflow: /bmad:bmm:workflows:super-dev-pipeline</action>
     <action>Parameters: mode=batch, story_key={{story_key}}, complexity_level={{story_key}}.complexity.level</action>
