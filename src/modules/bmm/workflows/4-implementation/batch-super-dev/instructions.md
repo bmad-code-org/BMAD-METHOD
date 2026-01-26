@@ -736,24 +736,16 @@ Lives are at stake. All code must meet safety-critical reliability standards.
   <ask>
 **Choose execution mode:**
 
-[I] INTERACTIVE CHECKPOINT MODE (Recommended for oversight)
+[I] INTERACTIVE CHECKPOINT MODE
     - After each story completes, pause for your review
     - You approve before proceeding to next story
     - Allows course correction if issues detected
-    - Best for: Critical features, new team members, complex epics
+    - Best for: When you want to monitor progress
 
-[A] FULLY AUTONOMOUS MODE (Maximum quality, zero interaction)
+[A] FULLY AUTONOMOUS MODE
     - Process all selected stories without pausing
-    - ENHANCED quality standards (even more rigorous than interactive)
-    - Hospital-grade code verification at every step
-    - NO shortcuts, NO skimping, NO corner-cutting
-    - Best for: Well-defined stories, experienced implementation
-
-⚠️  AUTONOMOUS MODE = HIGHER QUALITY, NOT LOWER
-In autonomous mode, quality standards are ENHANCED because there's no
-human oversight in the loop. Every decision is double-checked.
-
-QUALITY >> DURATION. We prioritize correctness over speed.
+    - No human interaction until completion
+    - Best for: When stories are well-defined and you trust the process
 
 Which mode? [I/A]:
   </ask>
