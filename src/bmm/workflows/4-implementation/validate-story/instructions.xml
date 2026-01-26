@@ -1,0 +1,395 @@
+<workflow>
+  <critical>The workflow execution engine is governed by: {project-root}/_bmad/core/tasks/workflow.xml</critical>
+  <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
+  <critical>This performs DEEP validation - not just checkbox counting, but verifying code actually exists and works</critical>
+
+  <step n="1" goal="Load and parse story file">
+    <action>Load story file from {{story_file}}</action>
+
+    <check if="file not found">
+      <output>❌ Story file not found: {{story_file}}
+
+Please provide a valid story file path.
+      </output>
+      <action>HALT</action>
+    </check>
+
+    <action>Extract story metadata:
+      - Story ID (from filename)
+      - Epic number
+      - Current status from Status: field
+      - Priority
+      - Estimated effort
+    </action>
+
+    <action>Extract all tasks:
+      - Pattern: "- [ ]" or "- [x]"
+      - Count total tasks
+      - Count checked tasks
+      - Count unchecked tasks
+      - Calculate completion percentage
+    </action>
+
+    <action>Extract file references from Dev Agent Record:
+      - Files created
+      - Files modified
+      - Files deleted
+    </action>
+
+    <output>📋 **Story Validation: {{story_id}}**
+
+**Epic:** {{epic_num}}
+**Current Status:** {{current_status}}
+**Tasks:** {{checked_count}}/{{total_count}} complete ({{completion_pct}}%)
+**Files Referenced:** {{file_count}}
+
+Starting deep validation...
+    </output>
+  </step>
+
+  <step n="2" goal="Task-based verification (Deep)">
+    <critical>Use task-verification-engine.py for DEEP verification (not just file existence)</critical>
+
+    <action>For each task in story:
+      1. Extract task text
+      2. Note if checked [x] or unchecked [ ]
+      3. Pass to task-verification-engine.py
+      4. Receive verification result with:
+         - should_be_checked: true/false
+         - confidence: very high/high/medium/low
+         - evidence: list of findings
+         - verification_status: correct/false_positive/false_negative/uncertain
+    </action>
+
+    <action>Categorize tasks by verification status:
+      - ✅ CORRECT: Checkbox matches reality
+      - ❌ FALSE POSITIVE: Checked but code missing/stubbed
+      - ⚠️ FALSE NEGATIVE: Unchecked but code exists
+      - ❓ UNCERTAIN: Cannot verify (low confidence)
+    </action>
+
+    <action>Calculate verification score:
+      - (correct_tasks / total_tasks) × 100
+      - Penalize false positives heavily (-5 points each)
+      - Penalize false negatives lightly (-2 points each)
+    </action>
+
+    <output>
+🔍 **Task Verification Results**
+
+**Total Tasks:** {{total_count}}
+
+**✅ CORRECT:** {{correct_count}} tasks (checkbox matches reality)
+**❌ FALSE POSITIVES:** {{false_positive_count}} tasks (checked but code missing/stubbed)
+**⚠️ FALSE NEGATIVES:** {{false_negative_count}} tasks (unchecked but code exists)
+**❓ UNCERTAIN:** {{uncertain_count}} tasks (cannot verify)
+
+**Verification Score:** {{verification_score}}/100
+
+{{#if false_positive_count > 0}}
+### ❌ False Positives (CRITICAL - Code Claims vs Reality)
+
+{{#each false_positives}}
+**Task:** {{this.task}}
+**Claimed:** [x] Complete
+**Reality:** {{this.evidence}}
+**Action Required:** {{this.recommended_action}}
+{{/each}}
+{{/if}}
+
+{{#if false_negative_count > 0}}
+### ⚠️ False Negatives (Unchecked but Working)
+
+{{#each false_negatives}}
+**Task:** {{this.task}}
+**Status:** [ ] Unchecked
+**Reality:** {{this.evidence}}
+**Recommendation:** Mark as complete [x]
+{{/each}}
+{{/if}}
+    </output>
+  </step>
+
+  <step n="3" goal="Code quality review" if="{{validation_depth}} == deep OR comprehensive">
+    <action>Extract all files from Dev Agent Record file list</action>
+
+    <check if="no files listed">
+      <output>⚠️ No files listed in Dev Agent Record - cannot perform code review</output>
+      <action>Skip to step 4</action>
+    </check>
+
+    <action>For each file:
+      1. Check if file exists
+      2. Read file content
+      3. Check for quality issues:
+         - TODO/FIXME comments without GitHub issues
+         - any types in TypeScript
+         - Hardcoded values (siteId, dealerId, API keys)
+         - Missing error handling
+         - Missing multi-tenant isolation (dealerId filters)
+         - Missing audit logging on mutations
+         - Security vulnerabilities (SQL injection, XSS)
+    </action>
+
+    <action>Run multi-agent review if files exist:
+      - Security audit
+      - Silent failure detection
+      - Architecture compliance
+      - Performance analysis
+    </action>
+
+    <action>Categorize issues by severity:
+      - CRITICAL: Security, data loss, breaking changes
+      - HIGH: Missing features, poor quality, technical debt
+      - MEDIUM: Code smells, minor violations
+      - LOW: Style issues, nice-to-haves
+    </action>
+
+    <output>
+🛡️ **Code Quality Review**
+
+**Files Reviewed:** {{files_reviewed}}
+**Files Missing:** {{files_missing}}
+
+**Issues Found:** {{total_issues}}
+  CRITICAL: {{critical_count}}
+  HIGH: {{high_count}}
+  MEDIUM: {{medium_count}}
+  LOW: {{low_count}}
+
+{{#if critical_count > 0}}
+### 🚨 CRITICAL Issues (Must Fix)
+
+{{#each critical_issues}}
+**File:** {{this.file}}
+**Issue:** {{this.description}}
+**Impact:** {{this.impact}}
+**Fix:** {{this.recommended_fix}}
+{{/each}}
+{{/if}}
+
+{{#if high_count > 0}}
+### ⚠️ HIGH Priority Issues
+
+{{#each high_issues}}
+**File:** {{this.file}}
+**Issue:** {{this.description}}
+{{/each}}
+{{/if}}
+
+**Code Quality Score:** {{quality_score}}/100
+    </output>
+  </step>
+
+  <step n="4" goal="Integration verification" if="{{validation_depth}} == comprehensive">
+    <action>Extract dependencies from story:
+      - Services called
+      - APIs consumed
+      - Database tables used
+      - Cache keys accessed
+    </action>
+
+    <action>For each dependency:
+      1. Check if dependency still exists
+      2. Check if API contract is still valid
+      3. Run integration tests if they exist
+      4. Check for breaking changes in dependent stories
+    </action>
+
+    <output>
+🔗 **Integration Verification**
+
+**Dependencies Checked:** {{dependency_count}}
+
+{{#if broken_integrations}}
+### ❌ Broken Integrations
+
+{{#each broken_integrations}}
+**Dependency:** {{this.name}}
+**Issue:** {{this.problem}}
+**Likely Cause:** {{this.cause}}
+**Fix:** {{this.fix}}
+{{/each}}
+{{/if}}
+
+{{#if all_integrations_ok}}
+✅ All integrations verified working
+{{/if}}
+    </output>
+  </step>
+
+  <step n="5" goal="Determine final story status">
+    <action>Calculate overall story health:
+      - Task verification score (0-100)
+      - Code quality score (0-100)
+      - Integration score (0-100)
+      - Overall score = weighted average
+    </action>
+
+    <action>Determine recommended status:
+      IF verification_score >= 95 AND quality_score >= 90 AND no CRITICAL issues
+        → VERIFIED_COMPLETE
+      ELSE IF verification_score >= 80 AND quality_score >= 70
+        → COMPLETE_WITH_ISSUES (document issues)
+      ELSE IF false_positives > 0 OR critical_issues > 0
+        → NEEDS_REWORK (code missing or broken)
+      ELSE IF verification_score < 50
+        → FALSE_POSITIVE (claimed done but not implemented)
+      ELSE
+        → IN_PROGRESS (partially complete)
+    </action>
+
+    <output>
+📊 **FINAL VERDICT**
+
+**Story:** {{story_id}}
+**Current Status:** {{current_status}}
+**Recommended Status:** {{recommended_status}}
+
+**Scores:**
+  Task Verification: {{verification_score}}/100
+  Code Quality: {{quality_score}}/100
+  Integration: {{integration_score}}/100
+  **Overall: {{overall_score}}/100**
+
+**Confidence:** {{confidence_level}}
+
+{{#if recommended_status != current_status}}
+### ⚠️ Status Change Recommended
+
+**Current:** {{current_status}}
+**Should Be:** {{recommended_status}}
+
+**Reason:**
+{{status_change_reason}}
+{{/if}}
+    </output>
+  </step>
+
+  <step n="6" goal="Generate actionable report">
+    <template-output>
+# Story Validation Report: {{story_id}}
+
+**Validation Date:** {{date}}
+**Validation Depth:** {{validation_depth}}
+**Overall Score:** {{overall_score}}/100
+
+---
+
+## Summary
+
+**Story:** {{story_id}} - {{story_title}}
+**Epic:** {{epic_num}}
+**Current Status:** {{current_status}}
+**Recommended Status:** {{recommended_status}}
+
+**Task Completion:** {{checked_count}}/{{total_count}} ({{completion_pct}}%)
+**Verification Score:** {{verification_score}}/100
+**Code Quality Score:** {{quality_score}}/100
+
+---
+
+## Task Verification Details
+
+{{task_verification_output}}
+
+---
+
+## Code Quality Review
+
+{{code_quality_output}}
+
+---
+
+## Integration Verification
+
+{{integration_output}}
+
+---
+
+## Recommended Actions
+
+{{#if critical_issues}}
+### Priority 1: Fix Critical Issues (BLOCKING)
+{{#each critical_issues}}
+- [ ] {{this.file}}: {{this.description}}
+{{/each}}
+{{/if}}
+
+{{#if false_positives}}
+### Priority 2: Fix False Positives (Code Claims vs Reality)
+{{#each false_positives}}
+- [ ] {{this.task}} - {{this.evidence}}
+{{/each}}
+{{/if}}
+
+{{#if high_issues}}
+### Priority 3: Address High Priority Issues
+{{#each high_issues}}
+- [ ] {{this.file}}: {{this.description}}
+{{/each}}
+{{/if}}
+
+{{#if false_negatives}}
+### Priority 4: Update Task Checkboxes (Low Impact)
+{{#each false_negatives}}
+- [ ] Mark complete: {{this.task}}
+{{/each}}
+{{/if}}
+
+---
+
+## Next Steps
+
+{{#if recommended_status == "VERIFIED_COMPLETE"}}
+✅ **Story is verified complete and production-ready**
+- Update sprint-status.yaml: {{story_id}} = done
+- No further action required
+{{/if}}
+
+{{#if recommended_status == "NEEDS_REWORK"}}
+⚠️ **Story requires rework before marking complete**
+- Fix {{critical_count}} CRITICAL issues
+- Address {{false_positive_count}} false positive tasks
+- Re-run validation after fixes
+{{/if}}
+
+{{#if recommended_status == "FALSE_POSITIVE"}}
+❌ **Story is marked done but not actually implemented**
+- Verification score: {{verification_score}}/100 (< 50%)
+- Update sprint-status.yaml: {{story_id}} = in-progress or ready-for-dev
+- Implement missing tasks before claiming done
+{{/if}}
+
+---
+
+**Generated by:** /validate-story workflow
+**Validation Engine:** task-verification-engine.py v2.0
+    </template-output>
+  </step>
+
+  <step n="7" goal="Update story file and sprint-status">
+    <ask>Apply recommended status change to sprint-status.yaml? (y/n)</ask>
+
+    <check if="user says yes">
+      <action>Update sprint-status.yaml:
+        - Use sprint-status-updater.py
+        - Update {{story_id}} to {{recommended_status}}
+        - Add comment: "Validated {{date}}, score {{overall_score}}/100"
+      </action>
+
+      <action>Update story file:
+        - Add validation report link to Dev Agent Record
+        - Add validation score to completion notes
+        - Update Status: field if changed
+      </action>
+
+      <output>✅ Updated {{story_id}} status: {{current_status}} → {{recommended_status}}</output>
+    </check>
+
+    <check if="user says no">
+      <output>ℹ️ Status not updated. Validation report saved for reference.</output>
+    </check>
+  </step>
+
+</workflow>

@@ -1,0 +1,39 @@
+name: create-story-with-gap-analysis
+description: "Create/regenerate story with SYSTEMATIC codebase gap analysis using verified file scanning (Glob/Read tools)"
+author: "Jonah Schulte"
+
+# Critical variables from config
+config_source: "{project-root}/_bmad/bmm/config.yaml"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+date: system-generated
+planning_artifacts: "{config_source}:planning_artifacts"
+implementation_artifacts: "{config_source}:implementation_artifacts"
+output_folder: "{implementation_artifacts}"
+story_dir: "{implementation_artifacts}"
+
+# Workflow components
+installed_path: "{project-root}/_bmad/bmm/workflows/4-implementation/create-story-with-gap-analysis"
+template: "{installed_path}/template.md"
+instructions: "{installed_path}/step-01-initialize.md"
+
+# Variables and inputs
+variables:
+  sprint_status: "{implementation_artifacts}/sprint-status.yaml"
+  epics_file: "{planning_artifacts}/epics.md"
+  prd_file: "{planning_artifacts}/prd.md"
+
+# Project context
+project_context: "**/project-context.md"
+
+default_output_file: "{story_dir}/{{story_key}}.md"
+
+# Workflow steps (processed in order)
+steps:
+  - step-01-initialize.md
+  - step-02-codebase-scan.md
+  - step-03-generate-story.md
+
+standalone: true
+
+web_bundle: false

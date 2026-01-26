@@ -1,0 +1,36 @@
+name: validate-all-stories
+description: "Comprehensive audit of ALL stories: verify tasks against codebase, run code quality reviews, check integrations. The bulletproof audit for production readiness."
+author: "BMad"
+version: "1.0.0"
+
+# Critical variables from config
+config_source: "{project-root}/_bmad/bmm/config.yaml"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+implementation_artifacts: "{config_source}:implementation_artifacts"
+story_dir: "{implementation_artifacts}"
+
+# Workflow components
+installed_path: "{project-root}/_bmad/bmm/workflows/4-implementation/validate-all-stories"
+instructions: "{installed_path}/instructions.xml"
+
+# Input variables
+variables:
+  validation_depth: "deep" # Options: "quick" (tasks only), "deep" (tasks + review), "comprehensive" (full integration)
+  parallel_validation: true # Run story validations in parallel for speed
+  fix_mode: false # If true, auto-fix false negatives and update statuses
+  epic_filter: "" # Optional: Only validate stories from specific epic (e.g., "16e")
+
+# Tools
+task_verification_script: "{project-root}/scripts/lib/task-verification-engine.py"
+sprint_status_updater: "{project-root}/scripts/lib/sprint-status-updater.py"
+
+# Sub-workflow
+validate_story_workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/validate-story/workflow.yaml"
+
+# Output
+default_output_file: "{story_dir}/.comprehensive-validation-report-{date}.md"
+validation_summary_file: "{story_dir}/.validation-summary-{date}.json"
+
+standalone: true
+web_bundle: false

@@ -1,0 +1,549 @@
+<workflow>
+  <critical>The workflow execution engine is governed by: {project-root}/_bmad/core/tasks/workflow.xml</critical>
+  <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
+  <critical>Communicate all responses in {communication_language}</critical>
+  <critical>📝 PUSH-ALL - Stage, commit, and push changes with comprehensive safety validation</critical>
+
+  <!-- TARGETED vs ALL FILES MODE -->
+  <critical>⚡ PARALLEL AGENT MODE: When {{target_files}} is provided:
+    - ONLY stage and commit the specified files
+    - Do NOT use `git add .` or `git add -A`
+    - Use `git add [specific files]` instead
+    - This prevents committing work from other parallel agents
+  </critical>
+  <critical>📋 ALL FILES MODE: When {{target_files}} is empty:
+    - Stage ALL changes with `git add .`
+    - Original behavior for single-agent execution
+  </critical>
+
+  <step n="1" goal="Analyze repository changes">
+    <output>🔄 **Analyzing Repository Changes**
+
+      Scanning for changes to commit and push...
+    </output>
+
+    <!-- ANALYZE CHANGES PHASE -->
+    <action>Run git commands in parallel:</action>
+    <action>- git status - Show modified/added/deleted/untracked files</action>
+    <action>- git diff --stat - Show change statistics</action>
+    <action>- git log -1 --oneline - Show recent commit for message style</action>
+    <action>- git branch --show-current - Confirm current branch</action>
+
+    <action>Parse git status output to identify:
+      - Modified files
+      - Added files
+      - Deleted files
+      - Untracked files
+      - Total insertion/deletion counts
+    </action>
+
+    <check if="no changes detected">
+      <output>ℹ️ **No Changes to Commit**
+
+        Working directory is clean.
+        Nothing to push.
+      </output>
+      <action>HALT - No work to do</action>
+    </check>
+  </step>
+
+  <step n="2" goal="Safety validation">
+    <critical>🔒 SAFETY CHECKS - Validate changes before committing</critical>
+
+    <action>Scan all changed files for dangerous patterns:</action>
+
+    **Secret Detection:**
+    <action>Check for files matching secret patterns:
+      - .env*, *.key, *.pem, credentials.json, secrets.yaml
+      - id_rsa, *.p12, *.pfx, *.cer
+      - Any file containing: _API_KEY=, _SECRET=, _TOKEN= with real values (not placeholders)
+    </action>
+
+    <action>Validate API keys are placeholders only:</action>
+    <action>✅ Acceptable placeholders:
+      - API_KEY=your-api-key-here
+      - SECRET=placeholder
+      - TOKEN=xxx
+      - API_KEY=${{YOUR_KEY}}
+      - SECRET_KEY=&lt;your-key&gt;
+    </action>
+
+    <action>❌ BLOCK real keys:
+      - OPENAI_API_KEY=sk-proj-xxxxx (real OpenAI key)
+      - AWS_SECRET_KEY=AKIA... (real AWS key)
+      - STRIPE_API_KEY=sk_live_... (real Stripe key)
+      - Any key with recognizable provider prefix + actual value
+    </action>
+
+    **File Size Check:**
+    <action>Check for files >10MB without Git LFS configuration</action>
+
+    **Build Artifacts:**
+    <action>Check for unwanted directories/files that should be gitignored:
+      - node_modules/, dist/, build/, .next/, __pycache__/, *.pyc, .venv/
+      - .DS_Store, Thumbs.db, *.swp, *.tmp, *.log (in root)
+      - *.class, target/, bin/ (Java)
+      - vendor/ (unless dependency managed)
+    </action>
+
+    **Git State:**
+    <action>Verify:
+      - .gitignore exists and properly configured
+      - No unresolved merge conflicts
+      - Git repository initialized
+    </action>
+
+    <!-- SAFETY DECISION -->
+    <check if="secrets detected OR real API keys found">
+      <output>🚨 **DANGER: Secrets Detected!**
+
+        The following sensitive data was found:
+        {{list_detected_secrets_with_files}}
+
+        ❌ **BLOCKED:** Cannot commit secrets to version control.
+
+        **Actions Required:**
+        1. Move secrets to .env file (add to .gitignore)
+        2. Use environment variables: process.env.API_KEY
+        3. Remove secrets from tracked files: git rm --cached [file]
+        4. Update code to load from environment
+
+        **Example:**
+        ```
+        // Before (UNSAFE):
+        const apiKey = 'sk-proj-xxxxx';
+
+        // After (SAFE):
+        const apiKey = process.env.OPENAI_API_KEY;
+        ```
+
+        Halting workflow for safety.
+      </output>
+      <action>HALT - Cannot proceed with secrets</action>
+    </check>
+
+    <check if="large files detected without Git LFS">
+      <output>⚠️ **Warning: Large Files Detected**
+
+        Files >10MB found:
+        {{list_large_files_with_sizes}}
+
+        **Recommendation:** Set up Git LFS
+        ```
+        git lfs install
+        git lfs track "*.{file_extension}"
+        git add .gitattributes
+        ```
+      </output>
+
+      <ask>Proceed with large files anyway? [y/n]:</ask>
+
+      <check if="user says n">
+        <output>Halting. Please configure Git LFS first.</output>
+        <action>HALT</action>
+      </check>
+    </check>
+
+    <check if="build artifacts detected">
+      <output>⚠️ **Warning: Build Artifacts Detected**
+
+        These files should be in .gitignore:
+        {{list_build_artifacts}}
+
+        **Update .gitignore:**
+        ```
+        node_modules/
+        dist/
+        build/
+        .DS_Store
+        ```
+      </output>
+
+      <ask>Commit build artifacts anyway? [y/n]:</ask>
+
+      <check if="user says n">
+        <output>Halting. Update .gitignore and git rm --cached [files]</output>
+        <action>HALT</action>
+      </check>
+    </check>
+
+    <check if="current branch is main or master">
+      <output>⚠️ **Warning: Pushing to {{branch_name}}**
+
+        You're committing directly to {{branch_name}}.
+
+        **Recommendation:** Use feature branch workflow:
+        1. git checkout -b feature/my-changes
+        2. Make and commit changes
+        3. git push -u origin feature/my-changes
+        4. Create PR for review
+      </output>
+
+      <ask>Push directly to {{branch_name}}? [y/n]:</ask>
+
+      <check if="user says n">
+        <output>Halting. Create a feature branch instead.</output>
+        <action>HALT</action>
+      </check>
+    </check>
+
+    <output>✅ **Safety Checks Passed**
+
+      All validations completed successfully.
+    </output>
+  </step>
+
+  <step n="3" goal="Present summary and get confirmation">
+    <output>
+      📊 **Changes Summary**
+
+      **Files:**
+      - Modified: {{modified_count}}
+      - Added: {{added_count}}
+      - Deleted: {{deleted_count}}
+      - Untracked: {{untracked_count}}
+      **Total:** {{total_file_count}} files
+
+      **Changes:**
+      - Insertions: +{{insertion_count}} lines
+      - Deletions: -{{deletion_count}} lines
+
+      **Safety:**
+      {{if_all_safe}}
+      ✅ No secrets detected
+      ✅ No large files (or approved)
+      ✅ No build artifacts (or approved)
+      ✅ .gitignore configured
+      {{endif}}
+
+      {{if_warnings_approved}}
+      ⚠️ Warnings acknowledged and approved
+      {{endif}}
+
+      **Git:**
+      - Branch: {{current_branch}}
+      - Remote: origin/{{current_branch}}
+      - Last commit: {{last_commit_message}}
+
+      ---
+
+      **I will execute:**
+      1. `git add .` - Stage all changes
+      2. `git commit -m "[generated message]"` - Create commit
+      3. `git push` - Push to remote
+
+    </output>
+
+    <ask>**Proceed with commit and push?**
+
+      Options:
+      [yes] - Proceed with commit and push
+      [no] - Cancel (leave changes unstaged)
+      [review] - Show detailed diff first
+    </ask>
+
+    <check if="user says review">
+      <action>Execute: git diff --stat</action>
+      <action>Execute: git diff | head -100 (show first 100 lines of changes)</action>
+      <output>
+        {{diff_output}}
+
+        (Use 'git diff' to see full changes)
+      </output>
+      <ask>After reviewing, proceed with commit and push? [yes/no]:</ask>
+    </check>
+
+    <check if="user says no">
+      <output>❌ **Push-All Cancelled**
+
+        Changes remain unstaged. No git operations performed.
+
+        You can:
+        - Review changes: git status, git diff
+        - Commit manually: git add [files] && git commit
+        - Discard changes: git checkout -- [files]
+      </output>
+      <action>HALT - User cancelled</action>
+    </check>
+  </step>
+
+  <step n="4" goal="Stage changes">
+    <!-- TARGETED MODE: Only stage specified files -->
+    <check if="{{target_files}} is provided and not empty">
+      <output>📎 **Targeted Commit Mode** (parallel agent safe)
+
+        Staging only files from this story/task:
+        {{target_files}}
+      </output>
+      <action>Execute: git add {{target_files}}</action>
+      <action>Execute: git status</action>
+      <output>✅ **Targeted Files Staged**
+
+        Ready for commit ({{target_file_count}} files):
+        {{list_staged_files}}
+
+        Note: Other uncommitted changes in repo are NOT included.
+      </output>
+    </check>
+
+    <!-- ALL FILES MODE: Original behavior -->
+    <check if="{{target_files}} is empty or not provided">
+      <action>Execute: git add .</action>
+      <action>Execute: git status</action>
+      <output>✅ **All Changes Staged**
+
+        Ready for commit:
+        {{list_staged_files}}
+      </output>
+    </check>
+  </step>
+
+  <step n="5" goal="Generate commit message">
+    <critical>📝 COMMIT MESSAGE - Generate conventional commit format</critical>
+
+    <action>Analyze changes to determine commit type:</action>
+    <action>- feat: New features (new files with functionality)</action>
+    <action>- fix: Bug fixes (fixing broken functionality)</action>
+    <action>- docs: Documentation only (*.md, comments)</action>
+    <action>- style: Formatting, missing semicolons (no code change)</action>
+    <action>- refactor: Code restructuring (no feature/fix)</action>
+    <action>- test: Adding/updating tests</action>
+    <action>- chore: Tooling, configs, dependencies</action>
+    <action>- perf: Performance improvements</action>
+
+    <action>Determine scope (optional):
+      - Component/feature name if changes focused on one area
+      - Omit if changes span multiple areas
+    </action>
+
+    <action>Generate message summary (max 72 chars):
+      - Use imperative mood: "add feature" not "added feature"
+      - Lowercase except proper nouns
+      - No period at end
+    </action>
+
+    <action>Generate message body (if changes >5 files):
+      - List key changes as bullet points
+      - Max 3-5 bullets
+      - Keep concise
+    </action>
+
+    <action>Reference recent commits for style consistency</action>
+
+    <output>📝 **Generated Commit Message:**
+
+      ```
+      {{generated_commit_message}}
+      ```
+
+      Based on:
+      - {{commit_type}} commit type
+      - {{file_count}} files changed
+      - {{change_summary}}
+    </output>
+
+    <ask>**Use this commit message?**
+
+      Options:
+      [yes] - Use generated message
+      [edit] - Let me write custom message
+      [cancel] - Cancel push-all (leave staged)
+    </ask>
+
+    <check if="user says edit">
+      <ask>Enter your commit message (use conventional commit format if possible):</ask>
+      <action>Store user input as {{commit_message}}</action>
+      <output>✅ Using custom commit message</output>
+    </check>
+
+    <check if="user says cancel">
+      <output>❌ Push-all cancelled
+
+        Changes remain staged.
+        Run: git reset to unstage
+      </output>
+      <action>HALT</action>
+    </check>
+
+    <check if="user says yes">
+      <action>Use {{generated_commit_message}} as {{commit_message}}</action>
+    </check>
+  </step>
+
+  <step n="6" goal="Commit changes">
+    <action>Execute git commit with heredoc for multi-line message safety:
+      git commit -m "$(cat &lt;&lt;'EOF'
+{{commit_message}}
+EOF
+)"
+    </action>
+
+    <check if="commit fails">
+      <output>❌ **Commit Failed**
+
+        Error: {{commit_error}}
+
+        **Common Causes:**
+        - Pre-commit hooks failing (linting, tests)
+        - Missing git config (user.name, user.email)
+        - Locked files or permissions
+        - Empty commit (no actual changes)
+
+        **Fix and try again:**
+        - Check pre-commit output
+        - Set git config: git config user.name "Your Name"
+        - Verify file permissions
+      </output>
+      <action>HALT - Fix errors before proceeding</action>
+    </check>
+
+    <action>Parse commit output for hash</action>
+    <output>✅ **Commit Created**
+
+      Commit: {{commit_hash}}
+      Message: {{commit_subject}}
+    </output>
+  </step>
+
+  <step n="7" goal="Push to remote">
+    <output>🚀 **Pushing to Remote**
+
+      Pushing {{current_branch}} to origin...
+    </output>
+
+    <action>Execute: git push</action>
+
+    <!-- HANDLE COMMON PUSH FAILURES -->
+    <check if="push fails with rejected (non-fast-forward)">
+      <output>⚠️ **Push Rejected - Remote Has New Commits**
+
+        Remote branch has commits you don't have locally.
+        Attempting to rebase and retry...
+      </output>
+
+      <action>Execute: git pull --rebase</action>
+
+      <check if="rebase has conflicts">
+        <output>❌ **Merge Conflicts During Rebase**
+
+          Conflicts found:
+          {{list_conflicted_files}}
+
+          **Manual resolution required:**
+          1. Resolve conflicts in listed files
+          2. git add [resolved files]
+          3. git rebase --continue
+          4. git push
+
+          Halting for manual conflict resolution.
+        </output>
+        <action>HALT - Resolve conflicts manually</action>
+      </check>
+
+      <action>Execute: git push</action>
+    </check>
+
+    <check if="push fails with no upstream branch">
+      <output>ℹ️ **No Upstream Branch Set**
+
+        First push to origin for this branch.
+        Setting upstream...
+      </output>
+
+      <action>Execute: git push -u origin {{current_branch}}</action>
+    </check>
+
+    <check if="push fails with protected branch">
+      <output>❌ **Push to Protected Branch Blocked**
+
+        Branch {{current_branch}} is protected on remote.
+
+        **Use PR workflow instead:**
+        1. Ensure you're on a feature branch
+        2. Push feature branch: git push -u origin feature-branch
+        3. Create PR for review
+
+        Changes are committed locally but not pushed.
+      </output>
+      <action>HALT - Use PR workflow for protected branches</action>
+    </check>
+
+    <check if="push fails with authentication">
+      <output>❌ **Authentication Failed**
+
+        Git push requires authentication.
+
+        **Fix authentication:**
+        - GitHub: Set up SSH key or Personal Access Token
+        - Check: git remote -v (verify remote URL)
+        - Docs: https://docs.github.com/authentication
+
+        Changes are committed locally but not pushed.
+      </output>
+      <action>HALT - Fix authentication</action>
+    </check>
+
+    <check if="push fails with other error">
+      <output>❌ **Push Failed**
+
+        Error: {{push_error}}
+
+        Your changes are committed locally but not pushed to remote.
+
+        **Troubleshoot:**
+        - Check network connection
+        - Verify remote exists: git remote -v
+        - Check permissions on remote repository
+        - Try manual push: git push
+
+        Halting for manual resolution.
+      </output>
+      <action>HALT - Manual push required</action>
+    </check>
+
+    <!-- SUCCESS -->
+    <check if="push succeeds">
+      <output>✅ **Successfully Pushed to Remote!**
+
+        **Commit:** {{commit_hash}} - {{commit_subject}}
+        **Branch:** {{current_branch}} → origin/{{current_branch}}
+        **Files changed:** {{file_count}} (+{{insertions}}, -{{deletions}})
+
+        ---
+
+        Your changes are now on the remote repository.
+      </output>
+
+      <action>Execute: git log -1 --oneline --decorate</action>
+      <output>
+        **Latest commit:** {{git_log_output}}
+      </output>
+    </check>
+  </step>
+
+  <step n="8" goal="Completion summary">
+    <output>🎉 **Push-All Complete, {user_name}!**
+
+      **Summary:**
+      - ✅ {{file_count}} files committed
+      - ✅ Pushed to origin/{{current_branch}}
+      - ✅ All safety checks passed
+
+      **Commit Details:**
+      - Hash: {{commit_hash}}
+      - Message: {{commit_subject}}
+      - Changes: +{{insertions}}, -{{deletions}}
+
+      **Next Steps:**
+      - Verify on remote (GitHub/GitLab/etc)
+      - Create PR if working on feature branch
+      - Notify team if appropriate
+
+      **Git State:**
+      - Working directory: clean
+      - Branch: {{current_branch}}
+      - In sync with remote
+    </output>
+  </step>
+
+</workflow>
