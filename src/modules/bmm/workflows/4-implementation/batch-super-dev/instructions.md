@@ -577,6 +577,118 @@ Only the first {{max_stories}} will be processed.</output>
   </output>
 </step>
 
+<step n="2.5" goal="Implementation Readiness Check">
+  <output>
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔍 IMPLEMENTATION READINESS CHECK
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Validating selected stories for quality and completeness...
+  </output>
+
+  <iterate>For each selected story:</iterate>
+
+  <substep n="2.5a" title="Validate story quality">
+    <action>Read story file: {{story_file_path}}</action>
+
+    <check if="story file missing">
+      <check if="story status is BACKLOG">
+        <output>⚠️  {{story_key}}: No story file (BACKLOG) - will create during execution</output>
+        <action>Mark story as needs_creation</action>
+        <action>Continue to next story</action>
+      </check>
+
+      <check if="story status is ready-for-dev">
+        <output>❌ {{story_key}}: Story file MISSING but status is ready-for-dev (inconsistent state)</output>
+        <action>Add to validation_failures list</action>
+        <action>Continue to next story</action>
+      </check>
+    </check>
+
+    <check if="story file exists">
+      <action>Validate story completeness:
+        - Count sections (need 12)
+        - Check Current State word count (need ≥100)
+        - Check gap analysis markers (✅/❌)
+        - Count Acceptance Criteria (need ≥3)
+        - Count unchecked tasks (need ≥3)
+      </action>
+
+      <check if="task_count < 3">
+        <output>❌ {{story_key}}: INSUFFICIENT TASKS ({{task_count}}/3 minimum)</output>
+        <action>Add to validation_failures: "{{story_key}}: Only {{task_count}} tasks"</action>
+      </check>
+
+      <check if="sections_found < 12 OR missing gap analysis OR ac_count < 3">
+        <output>⚠️  {{story_key}}: Story incomplete ({{sections_found}}/12 sections{{#if !gap_analysis}}, no gap analysis{{/if}})</output>
+        <action>Add to validation_warnings: "{{story_key}}: Needs regeneration"</action>
+      </check>
+
+      <check if="all validations pass">
+        <output>✅ {{story_key}}: Valid and ready</output>
+        <action>Add to validated_stories list</action>
+      </check>
+    </check>
+  </substep>
+
+  <check if="validation_failures.length > 0">
+    <output>
+❌ **Validation Failures ({{validation_failures.length}}):**
+
+{{#each validation_failures}}
+  - {{this}}
+{{/each}}
+
+These stories CANNOT be processed. Options:
+1. Remove them from selection
+2. Fix them manually
+3. Cancel batch execution
+    </output>
+
+    <ask>Remove failed stories and continue? (yes/no):</ask>
+
+    <check if="response == 'yes'">
+      <action>Remove validation_failures from selected_stories</action>
+      <output>✅ Removed {{validation_failures.length}} invalid stories. Continuing with {{selected_stories.length}} valid stories.</output>
+    </check>
+
+    <check if="response == 'no'">
+      <output>❌ Batch processing cancelled. Please fix story validation issues first.</output>
+      <action>Exit workflow</action>
+    </check>
+  </check>
+
+  <check if="validation_warnings.length > 0">
+    <output>
+⚠️  **Validation Warnings ({{validation_warnings.length}}):**
+
+{{#each validation_warnings}}
+  - {{this}}
+{{/each}}
+
+These stories have quality issues but can still be processed.
+Recommend regenerating with /create-story-with-gap-analysis for better quality.
+    </output>
+
+    <ask>Continue with these stories anyway? (yes/no):</ask>
+
+    <check if="response == 'no'">
+      <output>❌ Batch processing cancelled.</output>
+      <action>Exit workflow</action>
+    </check>
+  </check>
+
+  <output>
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ Implementation Readiness: PASS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**Validated:** {{validated_stories.length}} stories
+**Needs Creation:** {{needs_creation.length}} stories (BACKLOG)
+**Quality:** All stories meet minimum standards
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  </output>
+</step>
+
 <step n="3" goal="Choose execution mode and strategy">
   <output>
 ╔═══════════════════════════════════════════════════════════════════╗
