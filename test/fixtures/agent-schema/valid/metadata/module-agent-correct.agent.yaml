@@ -1,6 +1,6 @@
 # Test: Valid module agent with correct module field
 # Expected: PASS
-# Path context: src/modules/bmm/agents/module-agent-correct.agent.yaml
+# Path context: src/bmm/agents/module-agent-correct.agent.yaml
 
 agent:
   metadata:

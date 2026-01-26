@@ -209,7 +209,7 @@ function runTest(filePath) {
         // Valid metadata tests: check if filename suggests module or core
         const filename = path.basename(filePath);
         if (filename.includes('module')) {
-          validationPath = 'src/modules/bmm/agents/test.agent.yaml';
+          validationPath = 'src/bmm/agents/test.agent.yaml';
         } else {
           validationPath = 'src/core/agents/test.agent.yaml';
         }
@@ -217,7 +217,7 @@ function runTest(filePath) {
         // Invalid metadata tests: derive from filename
         const filename = path.basename(filePath);
         if (filename.includes('module') || filename.includes('wrong-module')) {
-          validationPath = 'src/modules/bmm/agents/test.agent.yaml';
+          validationPath = 'src/bmm/agents/test.agent.yaml';
         } else if (filename.includes('core')) {
           validationPath = 'src/core/agents/test.agent.yaml';
         } else {

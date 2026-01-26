@@ -31,7 +31,7 @@ module.exports = {
       if (config.actionType === 'quick-update') {
         const result = await installer.quickUpdate(config);
         console.log(chalk.green('\n✨ Quick update complete!'));
-        console.log(chalk.cyan(`Updated ${result.moduleCount} modules with preserved settings`));
+        console.log(chalk.cyan(`Updated ${result.moduleCount} modules with preserved settings (${result.modules.join(', ')})`));
 
         // Display version-specific end message
         const { MessageLoader } = require('../installers/lib/message-loader');
@@ -62,44 +62,6 @@ module.exports = {
 
       // Check if installation succeeded
       if (result && result.success) {
-        // Run AgentVibes installer if needed
-        if (result.needsAgentVibes) {
-          // Add some spacing before AgentVibes setup
-          console.log('');
-          console.log(chalk.magenta('🎙️  AgentVibes TTS Setup'));
-          console.log(chalk.cyan('AgentVibes provides voice synthesis for BMAD agents with:'));
-          console.log(chalk.dim('  • ElevenLabs AI (150+ premium voices)'));
-          console.log(chalk.dim('  • Piper TTS (50+ free voices)\n'));
-
-          const { default: inquirer } = await import('inquirer');
-          await inquirer.prompt([
-            {
-              type: 'input',
-              name: 'continue',
-              message: chalk.green('Press Enter to start AgentVibes installer...'),
-            },
-          ]);
-
-          console.log('');
-
-          // Run AgentVibes installer
-          const { execSync } = require('node:child_process');
-          try {
-            execSync('npx agentvibes@latest install', {
-              cwd: result.projectDir,
-              stdio: 'inherit',
-              shell: true,
-            });
-            console.log(chalk.green('\n✓ AgentVibes installation complete'));
-            console.log(chalk.cyan('\n✨ BMAD with TTS is ready to use!'));
-          } catch {
-            console.log(chalk.yellow('\n⚠ AgentVibes installation was interrupted or failed'));
-            console.log(chalk.cyan('You can run it manually later with:'));
-            console.log(chalk.green(`  cd ${result.projectDir}`));
-            console.log(chalk.green('  npx agentvibes install\n'));
-          }
-        }
-
         // Display version-specific end message from install-messages.yaml
         const { MessageLoader } = require('../installers/lib/message-loader');
         const messageLoader = new MessageLoader();

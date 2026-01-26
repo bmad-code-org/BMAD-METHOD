@@ -24,10 +24,22 @@ const BUILD_DIR = path.join(PROJECT_ROOT, 'build');
 const SITE_URL = process.env.SITE_URL || 'https://bmad-code-org.github.io/BMAD-METHOD';
 const REPO_URL = 'https://github.com/bmad-code-org/BMAD-METHOD';
 
+// DO NOT CHANGE THESE VALUES!
+// llms-full.txt is consumed by AI agents as context. Most LLMs have ~200k token limits.
+// 600k chars ≈ 150k tokens (safe margin). Exceeding this breaks AI agent functionality.
 const LLM_MAX_CHARS = 600_000;
 const LLM_WARN_CHARS = 500_000;
 
-const LLM_EXCLUDE_PATTERNS = ['changelog', 'ide-info/', 'v4-to-v6-upgrade', 'downloads/', 'faq'];
+const LLM_EXCLUDE_PATTERNS = [
+  'changelog',
+  'ide-info/',
+  'v4-to-v6-upgrade',
+  'downloads/',
+  'faq',
+  'reference/glossary/',
+  'explanation/game-dev/',
+  // Note: Files/dirs starting with _ (like _STYLE_GUIDE.md, _archive/) are excluded in shouldExcludeFromLlm()
+];
 
 // =============================================================================
 // Main Entry Point
@@ -250,10 +262,17 @@ function getAllMarkdownFiles(dir, baseDir = dir) {
 
 /**
  * Determine whether a file path matches any configured LLM exclusion pattern.
+ * Also excludes any files or directories starting with underscore.
  * @param {string} filePath - The file path to test.
- * @returns {boolean} `true` if the path contains any pattern from LLM_EXCLUDE_PATTERNS, `false` otherwise.
+ * @returns {boolean} `true` if excluded, `false` otherwise.
  */
 function shouldExcludeFromLlm(filePath) {
+  // Exclude if ANY path component starts with underscore
+  // (e.g., _STYLE_GUIDE.md, _archive/file.md, dir/_STYLE_GUIDE.md)
+  const pathParts = filePath.split(path.sep);
+  if (pathParts.some((part) => part.startsWith('_'))) return true;
+
+  // Check configured patterns
   return LLM_EXCLUDE_PATTERNS.some((pattern) => filePath.includes(pattern));
 }
 
@@ -335,7 +354,6 @@ function runAstroBuild() {
     stdio: 'inherit',
     env: {
       ...process.env,
-      NODE_OPTIONS: `${process.env.NODE_OPTIONS || ''} --disable-warning=MODULE_TYPELESS_PACKAGE_JSON`.trim(),
     },
   });
 }

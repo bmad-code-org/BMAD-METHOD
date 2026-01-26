@@ -1,0 +1,44 @@
+# This file allows these modules under bmad-code-org to also be installed with the bmad method installer, while
+# allowing us to keep the source of these projects in separate repos.
+
+modules:
+  bmad-builder:
+    url: https://github.com/bmad-code-org/bmad-builder
+    module-definition: src/module.yaml
+    code: bmb
+    name: "BMad Builder"
+    description: "Agent, Workflow and Module Builder"
+    defaultSelected: false
+    type: bmad-org
+    npmPackage: bmad-builder
+
+  bmad-creative-intelligence-suite:
+    url: https://github.com/bmad-code-org/bmad-module-creative-intelligence-suite
+    module-definition: src/module.yaml
+    code: cis
+    name: "BMad Creative Innovation Suite"
+    description: "Creative tools for writing, brainstorming, and more"
+    defaultSelected: false
+    type: bmad-org
+    npmPackage: bmad-creative-intelligence-suite
+
+  bmad-game-dev-studio:
+    url: https://github.com/bmad-code-org/bmad-module-game-dev-studio.git
+    module-definition: src/module.yaml
+    code: gds
+    name: "BMad Game Dev Suite"
+    description: "Game development agents and workflows"
+    defaultSelected: false
+    type: bmad-org
+    npmPackage: bmad-game-dev-studio
+
+# TODO: Enable once fixes applied:
+
+# whiteport-design-system:
+#   url: https://github.com/bmad-code-org/bmad-method-wds-expansion
+#   module-definition: src/module.yaml
+#   code: WDS
+#   name: "Whiteport UX Design System"
+#   description: "UX design framework with Figma integration"
+#   defaultSelected: false
+#   type: community

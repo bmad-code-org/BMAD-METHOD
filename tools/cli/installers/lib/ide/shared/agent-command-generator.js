@@ -1,6 +1,7 @@
 const path = require('node:path');
 const fs = require('fs-extra');
 const chalk = require('chalk');
+const { toColonPath, toDashPath, customAgentColonName, customAgentDashName } = require('./path-utils');
 
 /**
  * Generates launcher command files for each agent
@@ -90,6 +91,74 @@ class AgentCommandGenerator {
     }
 
     return writtenCount;
+  }
+
+  /**
+   * Write agent launcher artifacts using underscore format (Windows-compatible)
+   * Creates flat files like: bmad_bmm_pm.md
+   *
+   * @param {string} baseCommandsDir - Base commands directory for the IDE
+   * @param {Array} artifacts - Agent launcher artifacts
+   * @returns {number} Count of launchers written
+   */
+  async writeColonArtifacts(baseCommandsDir, artifacts) {
+    let writtenCount = 0;
+
+    for (const artifact of artifacts) {
+      if (artifact.type === 'agent-launcher') {
+        // Convert relativePath to underscore format: bmm/agents/pm.md → bmad_bmm_pm.md
+        const flatName = toColonPath(artifact.relativePath);
+        const launcherPath = path.join(baseCommandsDir, flatName);
+        await fs.ensureDir(path.dirname(launcherPath));
+        await fs.writeFile(launcherPath, artifact.content);
+        writtenCount++;
+      }
+    }
+
+    return writtenCount;
+  }
+
+  /**
+   * Write agent launcher artifacts using underscore format (Windows-compatible)
+   * Creates flat files like: bmad_bmm_pm.md
+   *
+   * @param {string} baseCommandsDir - Base commands directory for the IDE
+   * @param {Array} artifacts - Agent launcher artifacts
+   * @returns {number} Count of launchers written
+   */
+  async writeDashArtifacts(baseCommandsDir, artifacts) {
+    let writtenCount = 0;
+
+    for (const artifact of artifacts) {
+      if (artifact.type === 'agent-launcher') {
+        // Convert relativePath to underscore format: bmm/agents/pm.md → bmad_bmm_pm.md
+        const flatName = toDashPath(artifact.relativePath);
+        const launcherPath = path.join(baseCommandsDir, flatName);
+        await fs.ensureDir(path.dirname(launcherPath));
+        await fs.writeFile(launcherPath, artifact.content);
+        writtenCount++;
+      }
+    }
+
+    return writtenCount;
+  }
+
+  /**
+   * Get the custom agent name in underscore format (Windows-compatible)
+   * @param {string} agentName - Custom agent name
+   * @returns {string} Underscore-formatted filename
+   */
+  getCustomAgentColonName(agentName) {
+    return customAgentColonName(agentName);
+  }
+
+  /**
+   * Get the custom agent name in underscore format (Windows-compatible)
+   * @param {string} agentName - Custom agent name
+   * @returns {string} Underscore-formatted filename
+   */
+  getCustomAgentDashName(agentName) {
+    return customAgentDashName(agentName);
   }
 }
 

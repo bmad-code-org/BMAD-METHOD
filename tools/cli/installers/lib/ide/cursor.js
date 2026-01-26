@@ -4,6 +4,7 @@ const chalk = require('chalk');
 const { AgentCommandGenerator } = require('./shared/agent-command-generator');
 const { WorkflowCommandGenerator } = require('./shared/workflow-command-generator');
 const { TaskToolCommandGenerator } = require('./shared/task-tool-command-generator');
+const { customAgentColonName } = require('./shared/path-utils');
 
 /**
  * Cursor IDE setup handler
@@ -22,16 +23,21 @@ class CursorSetup extends BaseIdeSetup {
    */
   async cleanup(projectDir) {
     const fs = require('fs-extra');
-    const bmadRulesDir = path.join(projectDir, this.configDir, this.rulesDir, 'bmad');
-    const bmadCommandsDir = path.join(projectDir, this.configDir, this.commandsDir, 'bmad');
+    const commandsDir = path.join(projectDir, this.configDir, this.commandsDir);
 
-    if (await fs.pathExists(bmadRulesDir)) {
-      await fs.remove(bmadRulesDir);
-      console.log(chalk.dim(`  Removed old BMAD rules from ${this.name}`));
+    // Remove any bmad* files from the commands directory (cleans up old bmad: and bmad- formats)
+    if (await fs.pathExists(commandsDir)) {
+      const entries = await fs.readdir(commandsDir);
+      for (const entry of entries) {
+        if (entry.startsWith('bmad')) {
+          await fs.remove(path.join(commandsDir, entry));
+        }
+      }
     }
-
-    if (await fs.pathExists(bmadCommandsDir)) {
-      await fs.remove(bmadCommandsDir);
+    // Also remove legacy bmad folder if it exists
+    const bmadFolder = path.join(commandsDir, 'bmad');
+    if (await fs.pathExists(bmadFolder)) {
+      await fs.remove(bmadFolder);
       console.log(chalk.dim(`  Removed old BMAD commands from ${this.name}`));
     }
   }
@@ -51,49 +57,31 @@ class CursorSetup extends BaseIdeSetup {
     // Create .cursor/commands directory structure
     const cursorDir = path.join(projectDir, this.configDir);
     const commandsDir = path.join(cursorDir, this.commandsDir);
-    const bmadCommandsDir = path.join(commandsDir, 'bmad');
+    await this.ensureDir(commandsDir);
 
-    await this.ensureDir(bmadCommandsDir);
+    // Use underscore format: files written directly to commands dir (no bmad subfolder)
+    // Creates: .cursor/commands/bmad_bmm_pm.md
 
     // Generate agent launchers using AgentCommandGenerator
     // This creates small launcher files that reference the actual agents in _bmad/
     const agentGen = new AgentCommandGenerator(this.bmadFolderName);
     const { artifacts: agentArtifacts, counts: agentCounts } = await agentGen.collectAgentArtifacts(bmadDir, options.selectedModules || []);
 
-    // Create directories for each module
-    const modules = new Set();
-    for (const artifact of agentArtifacts) {
-      modules.add(artifact.module);
-    }
-
-    for (const module of modules) {
-      await this.ensureDir(path.join(bmadCommandsDir, module));
-      await this.ensureDir(path.join(bmadCommandsDir, module, 'agents'));
-    }
-
-    // Write agent launcher files
-    const agentCount = await agentGen.writeAgentLaunchers(bmadCommandsDir, agentArtifacts);
+    // Write agent launcher files using flat underscore naming
+    // Creates files like: bmad_bmm_pm.md
+    const agentCount = await agentGen.writeColonArtifacts(commandsDir, agentArtifacts);
 
     // Generate workflow commands from manifest (if it exists)
     const workflowGen = new WorkflowCommandGenerator(this.bmadFolderName);
     const { artifacts: workflowArtifacts } = await workflowGen.collectWorkflowArtifacts(bmadDir);
 
-    // Write only workflow-command artifacts, skip workflow-launcher READMEs
-    let workflowCommandCount = 0;
-    for (const artifact of workflowArtifacts) {
-      if (artifact.type === 'workflow-command') {
-        const moduleWorkflowsDir = path.join(bmadCommandsDir, artifact.module, 'workflows');
-        await this.ensureDir(moduleWorkflowsDir);
-        const commandPath = path.join(moduleWorkflowsDir, path.basename(artifact.relativePath));
-        await this.writeFile(commandPath, artifact.content);
-        workflowCommandCount++;
-      }
-      // Skip workflow-launcher READMEs as they would be treated as slash commands
-    }
+    // Write workflow-command artifacts using flat underscore naming
+    // Creates files like: bmad_bmm_correct-course.md
+    const workflowCommandCount = await workflowGen.writeColonArtifacts(commandsDir, workflowArtifacts);
 
     // Generate task and tool commands from manifests (if they exist)
     const taskToolGen = new TaskToolCommandGenerator();
-    const taskToolResult = await taskToolGen.generateTaskToolCommands(projectDir, bmadDir, bmadCommandsDir);
+    const taskToolResult = await taskToolGen.generateColonTaskToolCommands(projectDir, bmadDir, commandsDir);
 
     console.log(chalk.green(`✓ ${this.name} configured:`));
     console.log(chalk.dim(`  - ${agentCount} agents installed`));
@@ -107,7 +95,7 @@ class CursorSetup extends BaseIdeSetup {
         ),
       );
     }
-    console.log(chalk.dim(`  - Commands directory: ${path.relative(projectDir, bmadCommandsDir)}`));
+    console.log(chalk.dim(`  - Commands directory: ${path.relative(projectDir, commandsDir)}`));
 
     return {
       success: true,
@@ -127,13 +115,13 @@ class CursorSetup extends BaseIdeSetup {
    * @returns {Object|null} Info about created command
    */
   async installCustomAgentLauncher(projectDir, agentName, agentPath, metadata) {
-    const customAgentsDir = path.join(projectDir, this.configDir, this.commandsDir, 'bmad', 'custom', 'agents');
+    const commandsDir = path.join(projectDir, this.configDir, this.commandsDir);
 
     if (!(await this.exists(path.join(projectDir, this.configDir)))) {
       return null; // IDE not configured for this project
     }
 
-    await this.ensureDir(customAgentsDir);
+    await this.ensureDir(commandsDir);
 
     const launcherContent = `You must fully embody this agent's persona and follow all activation instructions exactly as specified. NEVER break character until given an exit command.
 
@@ -156,12 +144,15 @@ description: '${agentName} agent'
 ${launcherContent}
 `;
 
-    const launcherPath = path.join(customAgentsDir, `${agentName}.md`);
+    // Use underscore format: bmad_custom_fred-commit-poet.md
+    // Written directly to commands dir (no bmad subfolder)
+    const launcherName = customAgentColonName(agentName);
+    const launcherPath = path.join(commandsDir, launcherName);
     await this.writeFile(launcherPath, commandContent);
 
     return {
       path: launcherPath,
-      command: `/bmad/custom/agents/${agentName}`,
+      command: `/${launcherName.replace('.md', '')}`,
     };
   }
 }

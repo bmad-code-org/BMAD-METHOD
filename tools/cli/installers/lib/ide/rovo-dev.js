@@ -37,7 +37,7 @@ class RovoDevSetup extends BaseIdeSetup {
     const subagentsDir = path.join(rovoDevDir, this.subagentsDir);
     if (await fs.pathExists(subagentsDir)) {
       const entries = await fs.readdir(subagentsDir);
-      const bmadFiles = entries.filter((file) => file.startsWith('bmad-') && file.endsWith('.md'));
+      const bmadFiles = entries.filter((file) => file.startsWith('bmad') && file.endsWith('.md'));
 
       for (const file of bmadFiles) {
         await fs.remove(path.join(subagentsDir, file));
@@ -48,7 +48,7 @@ class RovoDevSetup extends BaseIdeSetup {
     const workflowsDir = path.join(rovoDevDir, this.workflowsDir);
     if (await fs.pathExists(workflowsDir)) {
       const entries = await fs.readdir(workflowsDir);
-      const bmadFiles = entries.filter((file) => file.startsWith('bmad-') && file.endsWith('.md'));
+      const bmadFiles = entries.filter((file) => file.startsWith('bmad') && file.endsWith('.md'));
 
       for (const file of bmadFiles) {
         await fs.remove(path.join(workflowsDir, file));
@@ -59,7 +59,7 @@ class RovoDevSetup extends BaseIdeSetup {
     const referencesDir = path.join(rovoDevDir, this.referencesDir);
     if (await fs.pathExists(referencesDir)) {
       const entries = await fs.readdir(referencesDir);
-      const bmadFiles = entries.filter((file) => file.startsWith('bmad-') && file.endsWith('.md'));
+      const bmadFiles = entries.filter((file) => file.startsWith('bmad') && file.endsWith('.md'));
 
       for (const file of bmadFiles) {
         await fs.remove(path.join(referencesDir, file));
@@ -249,7 +249,7 @@ class RovoDevSetup extends BaseIdeSetup {
     if (await fs.pathExists(subagentsDir)) {
       try {
         const entries = await fs.readdir(subagentsDir);
-        if (entries.some((entry) => entry.startsWith('bmad-') && entry.endsWith('.md'))) {
+        if (entries.some((entry) => entry.startsWith('bmad') && entry.endsWith('.md'))) {
           return true;
         }
       } catch {
@@ -262,7 +262,7 @@ class RovoDevSetup extends BaseIdeSetup {
     if (await fs.pathExists(workflowsDir)) {
       try {
         const entries = await fs.readdir(workflowsDir);
-        if (entries.some((entry) => entry.startsWith('bmad-') && entry.endsWith('.md'))) {
+        if (entries.some((entry) => entry.startsWith('bmad') && entry.endsWith('.md'))) {
           return true;
         }
       } catch {
@@ -275,7 +275,7 @@ class RovoDevSetup extends BaseIdeSetup {
     if (await fs.pathExists(referencesDir)) {
       try {
         const entries = await fs.readdir(referencesDir);
-        if (entries.some((entry) => entry.startsWith('bmad-') && entry.endsWith('.md'))) {
+        if (entries.some((entry) => entry.startsWith('bmad') && entry.endsWith('.md'))) {
           return true;
         }
       } catch {

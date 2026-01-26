@@ -222,6 +222,8 @@ header.header .header.sl-flex {
 
 .site-title {
   font-weight: 700;
+  margin-left: 0;
+  padding-left: 0;
 }
 
 /* Logo sizing - constrain to reasonable size */
@@ -470,14 +472,14 @@ footer {
 /* Responsive padding on navbar row only - banner stays full-width */
 @media (min-width: 50rem) {
   header.header .header.sl-flex {
-    padding-left: 2.5rem;
+    padding-left: 1rem;
     padding-right: 2.5rem;
   }
 }
 
 @media (min-width: 72rem) {
   header.header .header.sl-flex {
-    padding-left: 3rem;
+    padding-left: 1rem;
     padding-right: 3rem;
   }
 }

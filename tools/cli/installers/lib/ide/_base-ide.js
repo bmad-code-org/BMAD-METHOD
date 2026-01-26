@@ -619,6 +619,7 @@ class BaseIdeSetup {
 
   /**
    * Flatten a relative path to a single filename for flat slash command naming
+   * @deprecated Use toColonPath() or toDashPath() from shared/path-utils.js instead
    * Example: 'module/agents/name.md' -> 'bmad-module-agents-name.md'
    * Used by IDEs that ignore directory structure for slash commands (e.g., Antigravity, Codex)
    * @param {string} relativePath - Relative path to flatten

@@ -1,5 +1,8 @@
 blank_issues_enabled: false
 contact_links:
-  - name: Discord Community Support
+  - name: 📚 Documentation
+    url: http://docs.bmad-method.org
+    about: Check the docs first — tutorials, guides, and reference
+  - name: 💬 Discord Community
     url: https://discord.gg/gk8jAdXWmj
-    about: Please join our Discord server for general questions and community discussion before opening an issue.
+    about: Join for questions, discussion, and help before opening an issue

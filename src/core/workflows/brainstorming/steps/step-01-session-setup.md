@@ -33,7 +33,7 @@ Initialize the brainstorming workflow by detecting continuation state and settin
 
 First, check if the output document already exists:
 
-- Look for file at `{output_folder}/analysis/brainstorming-session-{{date}}.md`
+- Look for file at `{output_folder}/brainstorming/brainstorming-session-{{date}}.md`
 - If exists, read the complete file including frontmatter
 - If not exists, this is a fresh workflow
 
@@ -55,10 +55,10 @@ Create the brainstorming session document:
 
 ```bash
 # Create directory if needed
-mkdir -p "$(dirname "{output_folder}/analysis/brainstorming-session-{{date}}.md")"
+mkdir -p "$(dirname "{output_folder}/brainstorming/brainstorming-session-{{date}}.md")"
 
 # Initialize from template
-cp "{template_path}" "{output_folder}/analysis/brainstorming-session-{{date}}.md"
+cp "{template_path}" "{output_folder}/brainstorming/brainstorming-session-{{date}}.md"
 ```
 
 #### B. Context File Check and Loading
@@ -134,7 +134,7 @@ _[Content based on conversation about session parameters and facilitator approac
 
 ## APPEND TO DOCUMENT:
 
-When user selects approach, append the session overview content directly to `{output_folder}/analysis/brainstorming-session-{{date}}.md` using the structure from above.
+When user selects approach, append the session overview content directly to `{output_folder}/brainstorming/brainstorming-session-{{date}}.md` using the structure from above.
 
 ### E. Continue to Technique Selection
 
@@ -152,7 +152,7 @@ Which approach appeals to you most? (Enter 1-4)"
 
 #### When user selects approach number:
 
-- **Append initial session overview to `{output_folder}/analysis/brainstorming-session-{{date}}.md`**
+- **Append initial session overview to `{output_folder}/brainstorming/brainstorming-session-{{date}}.md`**
 - **Update frontmatter:** `stepsCompleted: [1]`, `selected_approach: '[selected approach]'`
 - **Load the appropriate step-02 file** based on selection
 

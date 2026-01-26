@@ -13,6 +13,8 @@ const {
   resolveSubagentFiles,
 } = require('./shared/module-injections');
 const { getAgentsFromBmad, getAgentsFromDir } = require('./shared/bmad-artifacts');
+const { toDashPath, customAgentDashName } = require('./shared/path-utils');
+const prompts = require('../../../lib/prompts');
 
 /**
  * Google Antigravity IDE setup handler
@@ -27,58 +29,59 @@ class AntigravitySetup extends BaseIdeSetup {
   }
 
   /**
+   * Prompt for subagent installation location
+   * @returns {Promise<string>} Selected location ('project' or 'user')
+   */
+  async _promptInstallLocation() {
+    return prompts.select({
+      message: 'Where would you like to install Antigravity subagents?',
+      choices: [
+        { name: 'Project level (.agent/agents/)', value: 'project' },
+        { name: 'User level (~/.agent/agents/)', value: 'user' },
+      ],
+      default: 'project',
+    });
+  }
+
+  /**
    * Collect configuration choices before installation
    * @param {Object} options - Configuration options
    * @returns {Object} Collected configuration
    */
   async collectConfiguration(options = {}) {
-    const config = {
-      subagentChoices: null,
-      installLocation: null,
-    };
+    // const config = {
+    //   subagentChoices: null,
+    //   installLocation: null,
+    // };
 
-    const sourceModulesPath = getSourcePath('modules');
-    const modules = options.selectedModules || [];
+    // const sourceModulesPath = getSourcePath('modules');
+    // const modules = options.selectedModules || [];
 
-    for (const moduleName of modules) {
-      // Check for Antigravity sub-module injection config in SOURCE directory
-      const injectionConfigPath = path.join(sourceModulesPath, moduleName, 'sub-modules', 'antigravity', 'injections.yaml');
+    // for (const moduleName of modules) {
+    // // Check for Antigravity sub-module injection config in SOURCE directory
+    // const injectionConfigPath = path.join(sourceModulesPath, moduleName, 'sub-modules', 'antigravity', 'injections.yaml');
 
-      if (await this.exists(injectionConfigPath)) {
-        const yaml = require('yaml');
+    // if (await this.exists(injectionConfigPath)) {
+    //   const yaml = require('yaml');
 
-        try {
-          // Load injection configuration
-          const configContent = await fs.readFile(injectionConfigPath, 'utf8');
-          const injectionConfig = yaml.parse(configContent);
+    //   try {
+    //     // Load injection configuration
+    //     const configContent = await fs.readFile(injectionConfigPath, 'utf8');
+    //     const injectionConfig = yaml.parse(configContent);
 
-          // Ask about subagents if they exist and we haven't asked yet
-          if (injectionConfig.subagents && !config.subagentChoices) {
-            config.subagentChoices = await this.promptSubagentInstallation(injectionConfig.subagents);
+    //     // Ask about subagents if they exist and we haven't asked yet
+    //     if (injectionConfig.subagents && !config.subagentChoices) {
+    //       config.subagentChoices = await this.promptSubagentInstallation(injectionConfig.subagents);
 
-            if (config.subagentChoices.install !== 'none') {
-              // Ask for installation location
-              const { default: inquirer } = await import('inquirer');
-              const locationAnswer = await inquirer.prompt([
-                {
-                  type: 'list',
-                  name: 'location',
-                  message: 'Where would you like to install Antigravity subagents?',
-                  choices: [
-                    { name: 'Project level (.agent/agents/)', value: 'project' },
-                    { name: 'User level (~/.agent/agents/)', value: 'user' },
-                  ],
-                  default: 'project',
-                },
-              ]);
-              config.installLocation = locationAnswer.location;
-            }
-          }
-        } catch (error) {
-          console.log(chalk.yellow(`  Warning: Failed to process ${moduleName} features: ${error.message}`));
-        }
-      }
-    }
+    //       if (config.subagentChoices.install !== 'none') {
+    //         config.installLocation = await this._promptInstallLocation();
+    //       }
+    //     }
+    //   } catch (error) {
+    //     console.log(chalk.yellow(`  Warning: Failed to process ${moduleName} features: ${error.message}`));
+    //   }
+    // }
+    // }
 
     return config;
   }
@@ -123,16 +126,10 @@ class AntigravitySetup extends BaseIdeSetup {
     const agentGen = new AgentCommandGenerator(this.bmadFolderName);
     const { artifacts: agentArtifacts, counts: agentCounts } = await agentGen.collectAgentArtifacts(bmadDir, options.selectedModules || []);
 
-    // Write agent launcher files with FLATTENED naming
-    // Antigravity ignores directory structure, so we flatten to: bmad-module-agents-name.md
-    // This creates slash commands like /bmad-bmm-agents-dev instead of /dev
-    let agentCount = 0;
-    for (const artifact of agentArtifacts) {
-      const flattenedName = this.flattenFilename(artifact.relativePath);
-      const targetPath = path.join(bmadWorkflowsDir, flattenedName);
-      await this.writeFile(targetPath, artifact.content);
-      agentCount++;
-    }
+    // Write agent launcher files with FLATTENED naming using shared utility
+    // Antigravity ignores directory structure, so we flatten to: bmad_module_name.md
+    // This creates slash commands like /bmad_bmm_dev instead of /dev
+    const agentCount = await agentGen.writeDashArtifacts(bmadWorkflowsDir, agentArtifacts);
 
     // Process Antigravity specific injections for installed modules
     // Use pre-collected configuration if available, or skip if already configured
@@ -150,16 +147,8 @@ class AntigravitySetup extends BaseIdeSetup {
     const workflowGen = new WorkflowCommandGenerator(this.bmadFolderName);
     const { artifacts: workflowArtifacts } = await workflowGen.collectWorkflowArtifacts(bmadDir);
 
-    // Write workflow-command artifacts with FLATTENED naming
-    let workflowCommandCount = 0;
-    for (const artifact of workflowArtifacts) {
-      if (artifact.type === 'workflow-command') {
-        const flattenedName = this.flattenFilename(artifact.relativePath);
-        const targetPath = path.join(bmadWorkflowsDir, flattenedName);
-        await this.writeFile(targetPath, artifact.content);
-        workflowCommandCount++;
-      }
-    }
+    // Write workflow-command artifacts with FLATTENED naming using shared utility
+    const workflowCommandCount = await workflowGen.writeDashArtifacts(bmadWorkflowsDir, workflowArtifacts);
 
     // Generate task and tool commands from manifests (if they exist)
     const taskToolGen = new TaskToolCommandGenerator();
@@ -178,7 +167,7 @@ class AntigravitySetup extends BaseIdeSetup {
       );
     }
     console.log(chalk.dim(`  - Workflows directory: ${path.relative(projectDir, bmadWorkflowsDir)}`));
-    console.log(chalk.yellow(`\n  Note: Antigravity uses flattened slash commands (e.g., /bmad-module-agents-name)`));
+    console.log(chalk.yellow(`\n  Note: Antigravity uses flattened slash commands (e.g., /bmad_module_agents_name)`));
 
     return {
       success: true,
@@ -293,26 +282,13 @@ class AntigravitySetup extends BaseIdeSetup {
         console.log(chalk.cyan(`\nConfiguring ${moduleName} ${handler} features...`));
       }
 
-      if (interactive && config.subagents && !choices) {
-        choices = await this.promptSubagentInstallation(config.subagents);
+      // if (interactive && config.subagents && !choices) {
+      //   choices = await this.promptSubagentInstallation(config.subagents);
 
-        if (choices.install !== 'none') {
-          const { default: inquirer } = await import('inquirer');
-          const locationAnswer = await inquirer.prompt([
-            {
-              type: 'list',
-              name: 'location',
-              message: 'Where would you like to install Antigravity subagents?',
-              choices: [
-                { name: 'Project level (.agent/agents/)', value: 'project' },
-                { name: 'User level (~/.agent/agents/)', value: 'user' },
-              ],
-              default: 'project',
-            },
-          ]);
-          location = locationAnswer.location;
-        }
-      }
+      //   if (choices.install !== 'none') {
+      //     location = await this._promptInstallLocation();
+      //   }
+      // }
 
       if (config.injections && choices && choices.install !== 'none') {
         for (const injection of config.injections) {
@@ -334,22 +310,16 @@ class AntigravitySetup extends BaseIdeSetup {
    * Prompt user for subagent installation preferences
    */
   async promptSubagentInstallation(subagentConfig) {
-    const { default: inquirer } = await import('inquirer');
-
     // First ask if they want to install subagents
-    const { install } = await inquirer.prompt([
-      {
-        type: 'list',
-        name: 'install',
-        message: 'Would you like to install Antigravity subagents for enhanced functionality?',
-        choices: [
-          { name: 'Yes, install all subagents', value: 'all' },
-          { name: 'Yes, let me choose specific subagents', value: 'selective' },
-          { name: 'No, skip subagent installation', value: 'none' },
-        ],
-        default: 'all',
-      },
-    ]);
+    const install = await prompts.select({
+      message: 'Would you like to install Antigravity subagents for enhanced functionality?',
+      choices: [
+        { name: 'Yes, install all subagents', value: 'all' },
+        { name: 'Yes, let me choose specific subagents', value: 'selective' },
+        { name: 'No, skip subagent installation', value: 'none' },
+      ],
+      default: 'all',
+    });
 
     if (install === 'selective') {
       // Show list of available subagents with descriptions
@@ -361,18 +331,14 @@ class AntigravitySetup extends BaseIdeSetup {
         'document-reviewer.md': 'Document quality review',
       };
 
-      const { selected } = await inquirer.prompt([
-        {
-          type: 'checkbox',
-          name: 'selected',
-          message: 'Select subagents to install:',
-          choices: subagentConfig.files.map((file) => ({
-            name: `${file.replace('.md', '')} - ${subagentInfo[file] || 'Specialized assistant'}`,
-            value: file,
-            checked: true,
-          })),
-        },
-      ]);
+      const selected = await prompts.multiselect({
+        message: `Select subagents to install ${chalk.dim('(↑/↓ navigates multiselect, SPACE toggles, A to toggles All, ENTER confirm)')}:`,
+        choices: subagentConfig.files.map((file) => ({
+          name: `${file.replace('.md', '')} - ${subagentInfo[file] || 'Specialized assistant'}`,
+          value: file,
+          checked: true,
+        })),
+      });
 
       return { install: 'selective', selected };
     }
@@ -489,7 +455,8 @@ usage: |
 
 ⚠️ **IMPORTANT**: Run @${agentPath} to load the complete agent before using this launcher!`;
 
-    const fileName = `bmad-custom-agents-${agentName}.md`;
+    // Use underscore format: bmad_custom_fred-commit-poet.md
+    const fileName = customAgentDashName(agentName);
     const launcherPath = path.join(bmadWorkflowsDir, fileName);
 
     // Write the launcher file
@@ -498,7 +465,7 @@ usage: |
     return {
       ide: 'antigravity',
       path: path.relative(projectDir, launcherPath),
-      command: `/${agentName}`,
+      command: `/${fileName.replace('.md', '')}`,
       type: 'custom-agent-launcher',
     };
   }

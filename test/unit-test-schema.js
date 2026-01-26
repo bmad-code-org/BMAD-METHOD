@@ -15,7 +15,7 @@ let failed = 0;
 // This tests line 213: slashIndex === -1
 console.log('Test 1: Malformed module path (no slash after module name)');
 try {
-  const result = validateAgentFile('src/modules/bmm', {
+  const result = validateAgentFile('src/bmm', {
     agent: {
       metadata: {
         id: 'test',
@@ -50,7 +50,7 @@ console.log('');
 // This tests line 222: trimmed.length > 0
 console.log('Test 2: Module agent with empty string in module field');
 try {
-  const result = validateAgentFile('src/modules/bmm/agents/test.agent.yaml', {
+  const result = validateAgentFile('src/bmm/agents/test.agent.yaml', {
     agent: {
       metadata: {
         id: 'test',

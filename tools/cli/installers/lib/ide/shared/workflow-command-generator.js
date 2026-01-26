@@ -2,6 +2,7 @@ const path = require('node:path');
 const fs = require('fs-extra');
 const csv = require('csv-parse/sync');
 const chalk = require('chalk');
+const { toColonPath, toDashPath, customAgentColonName, customAgentDashName } = require('./path-utils');
 
 /**
  * Generates command files for each workflow in the manifest
@@ -108,15 +109,16 @@ class WorkflowCommandGenerator {
     const template = await fs.readFile(templatePath, 'utf8');
 
     // Convert source path to installed path
-    // From: /Users/.../src/modules/bmm/workflows/.../workflow.yaml
+    // From: /Users/.../src/bmm/workflows/.../workflow.yaml
     // To: {project-root}/_bmad/bmm/workflows/.../workflow.yaml
     let workflowPath = workflow.path;
 
     // Extract the relative path from source
-    if (workflowPath.includes('/src/modules/')) {
-      const match = workflowPath.match(/\/src\/modules\/(.+)/);
+    if (workflowPath.includes('/src/bmm/')) {
+      // bmm is directly under src/
+      const match = workflowPath.match(/\/src\/bmm\/(.+)/);
       if (match) {
-        workflowPath = `${this.bmadFolderName}/${match[1]}`;
+        workflowPath = `${this.bmadFolderName}/bmm/${match[1]}`;
       }
     } else if (workflowPath.includes('/src/core/')) {
       const match = workflowPath.match(/\/src\/core\/(.+)/);
@@ -208,19 +210,19 @@ When running any workflow:
   transformWorkflowPath(workflowPath) {
     let transformed = workflowPath;
 
-    if (workflowPath.includes('/src/modules/')) {
-      const match = workflowPath.match(/\/src\/modules\/(.+)/);
+    if (workflowPath.includes('/src/bmm/')) {
+      const match = workflowPath.match(/\/src\/bmm\/(.+)/);
       if (match) {
-        transformed = `{project-root}/${this.bmadFolderName}/${match[1]}`;
+        transformed = `{project-root}/${this.bmadFolderName}/bmm/${match[1]}`;
+      } else if (workflowPath.includes('/src/core/')) {
+        const match = workflowPath.match(/\/src\/core\/(.+)/);
+        if (match) {
+          transformed = `{project-root}/${this.bmadFolderName}/core/${match[1]}`;
+        }
       }
-    } else if (workflowPath.includes('/src/core/')) {
-      const match = workflowPath.match(/\/src\/core\/(.+)/);
-      if (match) {
-        transformed = `{project-root}/${this.bmadFolderName}/core/${match[1]}`;
-      }
-    }
 
-    return transformed;
+      return transformed;
+    }
   }
 
   async loadWorkflowManifest(bmadDir) {
@@ -235,6 +237,56 @@ When running any workflow:
       columns: true,
       skip_empty_lines: true,
     });
+  }
+
+  /**
+   * Write workflow command artifacts using underscore format (Windows-compatible)
+   * Creates flat files like: bmad_bmm_correct-course.md
+   *
+   * @param {string} baseCommandsDir - Base commands directory for the IDE
+   * @param {Array} artifacts - Workflow artifacts
+   * @returns {number} Count of commands written
+   */
+  async writeColonArtifacts(baseCommandsDir, artifacts) {
+    let writtenCount = 0;
+
+    for (const artifact of artifacts) {
+      if (artifact.type === 'workflow-command') {
+        // Convert relativePath to underscore format: bmm/workflows/correct-course.md → bmad_bmm_correct-course.md
+        const flatName = toColonPath(artifact.relativePath);
+        const commandPath = path.join(baseCommandsDir, flatName);
+        await fs.ensureDir(path.dirname(commandPath));
+        await fs.writeFile(commandPath, artifact.content);
+        writtenCount++;
+      }
+    }
+
+    return writtenCount;
+  }
+
+  /**
+   * Write workflow command artifacts using underscore format (Windows-compatible)
+   * Creates flat files like: bmad_bmm_correct-course.md
+   *
+   * @param {string} baseCommandsDir - Base commands directory for the IDE
+   * @param {Array} artifacts - Workflow artifacts
+   * @returns {number} Count of commands written
+   */
+  async writeDashArtifacts(baseCommandsDir, artifacts) {
+    let writtenCount = 0;
+
+    for (const artifact of artifacts) {
+      if (artifact.type === 'workflow-command') {
+        // Convert relativePath to underscore format: bmm/workflows/correct-course.md → bmad_bmm_correct-course.md
+        const flatName = toDashPath(artifact.relativePath);
+        const commandPath = path.join(baseCommandsDir, flatName);
+        await fs.ensureDir(path.dirname(commandPath));
+        await fs.writeFile(commandPath, artifact.content);
+        writtenCount++;
+      }
+    }
+
+    return writtenCount;
   }
 }
 

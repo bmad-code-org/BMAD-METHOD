@@ -1,0 +1,9 @@
+module,phase,name,code,sequence,workflow-file,command,required,agent,options,description,output-location,outputs
+core,,Brainstorming,BS,20,_bmad/core/workflows/brainstorming/workflow.md,bmad_brainstorming,false,analyst,,Facilitate interactive brainstorming sessions using diverse creative techniques and ideation methods,{output_folder}/brainstorming/brainstorming-session-{{date}}.md,,
+core,,Party Mode,PM,30,_bmad/core/workflows/party-mode/workflow.md,bmad_party-mode,false,party-mode facilitator,,Orchestrates group discussions between all installed BMAD agents enabling natural multi-agent conversations,,
+core,,bmad-help,BH,40,_bmad/core/tasks/help.md,bmad_help,false,system,,Get unstuck by showing what workflow steps come next or answering questions about what to do in the BMad Method,,
+core,,Index Docs,ID,50,_bmad/core/tasks/index-docs.xml,bmad_index-docs,false,llm,,Generates or updates an index.md of all documents in the specified directory,,
+core,,Shard Document,SD,70,_bmad/core/tasks/shard-doc.xml,bmad_shard-doc,false,llm,,Splits large markdown documents into smaller organized files based on level 2 sections,,
+core,,Editorial Review - Prose,EP,80,_bmad/core/tasks/editorial-review-prose.xml,bmad_editorial-review-prose,false,llm,reader_type,Clinical copy-editor that reviews text for communication issues,,"three-column markdown table with suggested fixes",
+core,,Editorial Review - Structure,ES,90,_bmad/core/tasks/editorial-review-structure.xml,bmad_editorial-review-structure,false,llm,,Structural editor that proposes cuts reorganization and simplification while preserving comprehension,,
+core,,Adversarial Review (General),AR,100,_bmad/core/tasks/review-adversarial-general.xml,bmad_review-adversarial-general,false,llm,,Cynically review content and produce findings,,

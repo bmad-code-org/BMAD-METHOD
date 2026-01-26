@@ -246,12 +246,12 @@ Part of the BMAD ${workflow.module.toUpperCase()} module.
     const rulesPath = path.join(projectDir, this.configDir, this.rulesDir);
 
     if (await fs.pathExists(rulesPath)) {
-      // Only remove files that start with bmad- prefix
+      // Remove any bmad* files (cleans up old bmad- and bmad: formats)
       const files = await fs.readdir(rulesPath);
       let removed = 0;
 
       for (const file of files) {
-        if (file.startsWith('bmad-') && file.endsWith('.md')) {
+        if (file.startsWith('bmad') && file.endsWith('.md')) {
           await fs.remove(path.join(rulesPath, file));
           removed++;
         }

@@ -454,7 +454,7 @@ function buildMenuItemSchema() {
 }
 
 /**
- * Derive the expected module slug from a file path residing under src/modules/<module>/agents/.
+ * Derive the expected module slug from a file path residing under src/<module>/agents/.
  * @param {string} filePath Absolute or relative agent path.
  * @returns {string|null} Module slug if identifiable, otherwise null.
  */
@@ -463,7 +463,7 @@ function deriveModuleFromPath(filePath) {
   assert(typeof filePath === 'string', 'validateAgentFile expects filePath to be a string');
   assert(filePath.startsWith('src/'), 'validateAgentFile expects filePath to start with "src/"');
 
-  const marker = 'src/modules/';
+  const marker = 'src/';
   if (!filePath.startsWith(marker)) {
     return null;
   }

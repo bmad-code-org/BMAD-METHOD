@@ -3,41 +3,38 @@ title: "How to Get Answers About BMad"
 description: Use an LLM to quickly answer your own BMad questions
 ---
 
-Point an LLM at BMad's source files and ask your question. That's the technique—the rest of this guide shows you how.
+Use your AI tool to get answers about BMad by pointing it at the source files.
 
-## See It Work
+## When to Use This
 
-:::note[Example]
-**Q:** "Tell me the fastest way to build something with BMad"
+- You have a question about how BMad works
+- You want to understand a specific agent or workflow
+- You need quick answers without waiting for Discord
 
-**A:** Use Quick Flow: Run `quick-spec` to write a technical specification, then `quick-dev` to implement it—skipping the full planning phases. This gets small features shipped in a single focused session instead of going through the full 4-phase BMM workflow.
+:::note[Prerequisites]
+An AI tool (Claude Code, Cursor, ChatGPT, Claude.ai, etc.) and either BMad installed in your project or access to the GitHub repo.
 :::
 
-## Why This Works
+## Steps
 
-BMad's prompts are written in plain English, not code. The `_bmad` folder contains readable instructions, workflows, and agent definitions—exactly what LLMs are good at processing. You're not asking the LLM to guess; you're giving it the actual source material.
-
-## How to Do It
-
-### What Each Source Gives You
+### 1. Choose Your Source
 
 | Source | Best For | Examples |
 |--------|----------|----------|
-| **`_bmad` folder** (installed) | How BMad works in detail—agents, workflows, prompts | "What does the PM agent do?" "How does the PRD workflow work?" |
-| **Full GitHub repo** (cloned) | Why things are the way they are—history, installer, architecture | "Why is the installer structured this way?" "What changed in v6?" |
-| **`llms-full.txt`** | Quick overview from documentation perspective | "Explain BMad's four phases" "What's the difference between levels?" |
+| **`_bmad` folder** | How BMad works—agents, workflows, prompts | "What does the PM agent do?" |
+| **Full GitHub repo** | History, installer, architecture | "What changed in v6?" |
+| **`llms-full.txt`** | Quick overview from docs | "Explain BMad's four phases" |
 
-:::note[What's `_bmad`?]
-The `_bmad` folder is created when you install BMad. It contains all the agent definitions, workflows, and prompts. If you don't have this folder yet, you haven't installed BMad—see the "clone the repo" option below.
-:::
+The `_bmad` folder is created when you install BMad. If you don't have it yet, clone the repo instead.
 
-### If Your AI Can Read Files (Claude Code, Cursor, etc.)
+### 2. Point Your AI at the Source
 
-**BMad installed:** Point your LLM at the `_bmad` folder and ask directly.
+**If your AI can read files (Claude Code, Cursor, etc.):**
 
-**Want deeper context:** Clone the [full repo](https://github.com/bmad-code-org/BMAD-METHOD) for git history and installer details.
+- **BMad installed:** Point at the `_bmad` folder and ask directly
+- **Want deeper context:** Clone the [full repo](https://github.com/bmad-code-org/BMAD-METHOD)
 
-### If You Use ChatGPT or Claude.ai
+**If you use ChatGPT or Claude.ai:**
 
 Fetch `llms-full.txt` into your session:
 
@@ -45,11 +42,24 @@ Fetch `llms-full.txt` into your session:
 https://bmad-code-org.github.io/BMAD-METHOD/llms-full.txt
 ```
 
-You can also find this and other downloadable resources on the [Downloads page](/docs/downloads.md).
+See the [Downloads page](/docs/downloads.md) for other downloadable resources.
 
-:::tip[Verify Surprising Answers]
-LLMs occasionally get things wrong. If an answer seems off, check the source file it referenced or ask on Discord.
+### 3. Ask Your Question
+
+:::note[Example]
+**Q:** "Tell me the fastest way to build something with BMad"
+
+**A:** Use Quick Flow: Run `quick-spec` to write a technical specification, then `quick-dev` to implement it—skipping the full planning phases.
 :::
+
+## What You Get
+
+Direct answers about BMad—how agents work, what workflows do, why things are structured the way they are—without waiting for someone else to respond.
+
+## Tips
+
+- **Verify surprising answers** — LLMs occasionally get things wrong. Check the source file or ask on Discord.
+- **Be specific** — "What does step 3 of the PRD workflow do?" beats "How does PRD work?"
 
 ## Still Stuck?
 
@@ -64,13 +74,7 @@ Tried the LLM approach and still need help? You now have a much better question 
 
 **Discord:** [discord.gg/gk8jAdXWmj](https://discord.gg/gk8jAdXWmj)
 
-## Found a Bug?
-
-If it's clearly a bug in BMad itself, skip Discord and go straight to GitHub Issues:
-
-**GitHub Issues:** [github.com/bmad-code-org/BMAD-METHOD/issues](https://github.com/bmad-code-org/BMAD-METHOD/issues)
-
----
+**GitHub Issues:** [github.com/bmad-code-org/BMAD-METHOD/issues](https://github.com/bmad-code-org/BMAD-METHOD/issues) (for clear bugs)
 
 *You!*
         *Stuck*

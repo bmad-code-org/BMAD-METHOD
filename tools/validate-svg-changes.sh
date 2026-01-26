@@ -10,7 +10,7 @@
 
 set -e
 
-SVG_FILE="${1:-src/modules/bmm/docs/images/workflow-method-greenfield.svg}"
+SVG_FILE="${1:-src/bmm/docs/images/workflow-method-greenfield.svg}"
 TMP_DIR="/tmp/svg-validation-$$"
 
 echo "🎨 Visual SVG Validation"

@@ -13,6 +13,8 @@ const {
   resolveSubagentFiles,
 } = require('./shared/module-injections');
 const { getAgentsFromBmad, getAgentsFromDir } = require('./shared/bmad-artifacts');
+const { customAgentColonName } = require('./shared/path-utils');
+const prompts = require('../../../lib/prompts');
 
 /**
  * Claude Code IDE setup handler
@@ -26,72 +28,106 @@ class ClaudeCodeSetup extends BaseIdeSetup {
   }
 
   /**
-   * Collect configuration choices before installation
-   * @param {Object} options - Configuration options
-   * @returns {Object} Collected configuration
+   * Prompt for subagent installation location
+   * @returns {Promise<string>} Selected location ('project' or 'user')
    */
-  async collectConfiguration(options = {}) {
-    const config = {
-      subagentChoices: null,
-      installLocation: null,
-    };
-
-    const sourceModulesPath = getSourcePath('modules');
-    const modules = options.selectedModules || [];
-
-    for (const moduleName of modules) {
-      // Check for Claude Code sub-module injection config in SOURCE directory
-      const injectionConfigPath = path.join(sourceModulesPath, moduleName, 'sub-modules', 'claude-code', 'injections.yaml');
-
-      if (await this.exists(injectionConfigPath)) {
-        const yaml = require('yaml');
-
-        try {
-          // Load injection configuration
-          const configContent = await fs.readFile(injectionConfigPath, 'utf8');
-          const injectionConfig = yaml.parse(configContent);
-
-          // Ask about subagents if they exist and we haven't asked yet
-          if (injectionConfig.subagents && !config.subagentChoices) {
-            config.subagentChoices = await this.promptSubagentInstallation(injectionConfig.subagents);
-
-            if (config.subagentChoices.install !== 'none') {
-              // Ask for installation location
-              const { default: inquirer } = await import('inquirer');
-              const locationAnswer = await inquirer.prompt([
-                {
-                  type: 'list',
-                  name: 'location',
-                  message: 'Where would you like to install Claude Code subagents?',
-                  choices: [
-                    { name: 'Project level (.claude/agents/)', value: 'project' },
-                    { name: 'User level (~/.claude/agents/)', value: 'user' },
-                  ],
-                  default: 'project',
-                },
-              ]);
-              config.installLocation = locationAnswer.location;
-            }
-          }
-        } catch (error) {
-          console.log(chalk.yellow(`  Warning: Failed to process ${moduleName} features: ${error.message}`));
-        }
-      }
-    }
-
-    return config;
+  async promptInstallLocation() {
+    return prompts.select({
+      message: 'Where would you like to install Claude Code subagents?',
+      choices: [
+        { name: 'Project level (.claude/agents/)', value: 'project' },
+        { name: 'User level (~/.claude/agents/)', value: 'user' },
+      ],
+      default: 'project',
+    });
   }
+
+  // /**
+  //  * Collect configuration choices before installation
+  //  * @param {Object} options - Configuration options
+  //  * @returns {Object} Collected configuration
+  //  */
+  // async collectConfiguration(options = {}) {
+  //   const config = {
+  //     subagentChoices: null,
+  //     installLocation: null,
+  //   };
+
+  //   const sourceModulesPath = getSourcePath('modules');
+  //   const modules = options.selectedModules || [];
+
+  //   for (const moduleName of modules) {
+  //     // Check for Claude Code sub-module injection config in SOURCE directory
+  //     const injectionConfigPath = path.join(sourceModulesPath, moduleName, 'sub-modules', 'claude-code', 'injections.yaml');
+
+  //     if (await this.exists(injectionConfigPath)) {
+  //       const yaml = require('yaml');
+
+  //       try {
+  //         // Load injection configuration
+  //         const configContent = await fs.readFile(injectionConfigPath, 'utf8');
+  //         const injectionConfig = yaml.parse(configContent);
+
+  //         // Ask about subagents if they exist and we haven't asked yet
+  //         if (injectionConfig.subagents && !config.subagentChoices) {
+  //           config.subagentChoices = await this.promptSubagentInstallation(injectionConfig.subagents);
+
+  //           if (config.subagentChoices.install !== 'none') {
+  //             config.installLocation = await this.promptInstallLocation();
+  //           }
+  //         }
+  //       } catch (error) {
+  //         console.log(chalk.yellow(`  Warning: Failed to process ${moduleName} features: ${error.message}`));
+  //       }
+  //     }
+  //   }
+
+  //   return config;
+  // }
 
   /**
    * Cleanup old BMAD installation before reinstalling
    * @param {string} projectDir - Project directory
    */
   async cleanup(projectDir) {
-    const bmadCommandsDir = path.join(projectDir, this.configDir, this.commandsDir, 'bmad');
+    const commandsDir = path.join(projectDir, this.configDir, this.commandsDir);
 
-    if (await fs.pathExists(bmadCommandsDir)) {
-      await fs.remove(bmadCommandsDir);
-      console.log(chalk.dim(`  Removed old BMAD commands from ${this.name}`));
+    // Remove any bmad* files from the commands directory (cleans up old bmad: and bmad- formats)
+    if (await fs.pathExists(commandsDir)) {
+      const entries = await fs.readdir(commandsDir);
+      let removedCount = 0;
+      for (const entry of entries) {
+        if (entry.startsWith('bmad')) {
+          await fs.remove(path.join(commandsDir, entry));
+          removedCount++;
+        }
+      }
+      // Also remove legacy bmad folder if it exists
+      const bmadFolder = path.join(commandsDir, 'bmad');
+      if (await fs.pathExists(bmadFolder)) {
+        await fs.remove(bmadFolder);
+        console.log(chalk.dim(`  Removed old BMAD commands from ${this.name}`));
+      }
+    }
+  }
+
+  /**
+   * Clean up legacy folder structure (module/type/name.md) if it exists
+   * This can be called after migration to remove old nested directories
+   * @param {string} projectDir - Project directory
+   */
+  async cleanupLegacyFolders(projectDir) {
+    const commandsDir = path.join(projectDir, this.configDir, this.commandsDir);
+
+    if (!(await fs.pathExists(commandsDir))) {
+      return;
+    }
+
+    // Remove legacy bmad folder if it exists
+    const bmadFolder = path.join(commandsDir, 'bmad');
+    if (await fs.pathExists(bmadFolder)) {
+      await fs.remove(bmadFolder);
+      console.log(chalk.dim(`  Removed legacy bmad folder from ${this.name}`));
     }
   }
 
@@ -113,28 +149,19 @@ class ClaudeCodeSetup extends BaseIdeSetup {
     // Create .claude/commands directory structure
     const claudeDir = path.join(projectDir, this.configDir);
     const commandsDir = path.join(claudeDir, this.commandsDir);
-    const bmadCommandsDir = path.join(commandsDir, 'bmad');
+    await this.ensureDir(commandsDir);
 
-    await this.ensureDir(bmadCommandsDir);
+    // Use underscore format: files written directly to commands dir (no bmad subfolder)
+    // Creates: .claude/commands/bmad_bmm_pm.md
 
     // Generate agent launchers using AgentCommandGenerator
     // This creates small launcher files that reference the actual agents in _bmad/
     const agentGen = new AgentCommandGenerator(this.bmadFolderName);
     const { artifacts: agentArtifacts, counts: agentCounts } = await agentGen.collectAgentArtifacts(bmadDir, options.selectedModules || []);
 
-    // Create directories for each module
-    const modules = new Set();
-    for (const artifact of agentArtifacts) {
-      modules.add(artifact.module);
-    }
-
-    for (const module of modules) {
-      await this.ensureDir(path.join(bmadCommandsDir, module));
-      await this.ensureDir(path.join(bmadCommandsDir, module, 'agents'));
-    }
-
-    // Write agent launcher files
-    const agentCount = await agentGen.writeAgentLaunchers(bmadCommandsDir, agentArtifacts);
+    // Write agent launcher files using flat underscore naming
+    // Creates files like: bmad_bmm_pm.md
+    const agentCount = await agentGen.writeColonArtifacts(commandsDir, agentArtifacts);
 
     // Process Claude Code specific injections for installed modules
     // Use pre-collected configuration if available, or skip if already configured
@@ -155,22 +182,13 @@ class ClaudeCodeSetup extends BaseIdeSetup {
     const workflowGen = new WorkflowCommandGenerator(this.bmadFolderName);
     const { artifacts: workflowArtifacts } = await workflowGen.collectWorkflowArtifacts(bmadDir);
 
-    // Write only workflow-command artifacts, skip workflow-launcher READMEs
-    let workflowCommandCount = 0;
-    for (const artifact of workflowArtifacts) {
-      if (artifact.type === 'workflow-command') {
-        const moduleWorkflowsDir = path.join(bmadCommandsDir, artifact.module, 'workflows');
-        await this.ensureDir(moduleWorkflowsDir);
-        const commandPath = path.join(moduleWorkflowsDir, path.basename(artifact.relativePath));
-        await this.writeFile(commandPath, artifact.content);
-        workflowCommandCount++;
-      }
-      // Skip workflow-launcher READMEs as they would be treated as slash commands
-    }
+    // Write workflow-command artifacts using flat underscore naming
+    // Creates files like: bmad_bmm_correct-course.md
+    const workflowCommandCount = await workflowGen.writeColonArtifacts(commandsDir, workflowArtifacts);
 
     // Generate task and tool commands from manifests (if they exist)
     const taskToolGen = new TaskToolCommandGenerator();
-    const taskToolResult = await taskToolGen.generateTaskToolCommands(projectDir, bmadDir);
+    const taskToolResult = await taskToolGen.generateColonTaskToolCommands(projectDir, bmadDir, commandsDir);
 
     console.log(chalk.green(`✓ ${this.name} configured:`));
     console.log(chalk.dim(`  - ${agentCount} agents installed`));
@@ -184,7 +202,7 @@ class ClaudeCodeSetup extends BaseIdeSetup {
         ),
       );
     }
-    console.log(chalk.dim(`  - Commands directory: ${path.relative(projectDir, bmadCommandsDir)}`));
+    console.log(chalk.dim(`  - Commands directory: ${path.relative(projectDir, commandsDir)}`));
 
     return {
       success: true,
@@ -302,24 +320,10 @@ class ClaudeCodeSetup extends BaseIdeSetup {
       }
 
       if (interactive && config.subagents && !choices) {
-        choices = await this.promptSubagentInstallation(config.subagents);
-
-        if (choices.install !== 'none') {
-          const { default: inquirer } = await import('inquirer');
-          const locationAnswer = await inquirer.prompt([
-            {
-              type: 'list',
-              name: 'location',
-              message: 'Where would you like to install Claude Code subagents?',
-              choices: [
-                { name: 'Project level (.claude/agents/)', value: 'project' },
-                { name: 'User level (~/.claude/agents/)', value: 'user' },
-              ],
-              default: 'project',
-            },
-          ]);
-          location = locationAnswer.location;
-        }
+        // choices = await this.promptSubagentInstallation(config.subagents);
+        // if (choices.install !== 'none') {
+        //   location = await this.promptInstallLocation();
+        // }
       }
 
       if (config.injections && choices && choices.install !== 'none') {
@@ -342,22 +346,16 @@ class ClaudeCodeSetup extends BaseIdeSetup {
    * Prompt user for subagent installation preferences
    */
   async promptSubagentInstallation(subagentConfig) {
-    const { default: inquirer } = await import('inquirer');
-
     // First ask if they want to install subagents
-    const { install } = await inquirer.prompt([
-      {
-        type: 'list',
-        name: 'install',
-        message: 'Would you like to install Claude Code subagents for enhanced functionality?',
-        choices: [
-          { name: 'Yes, install all subagents', value: 'all' },
-          { name: 'Yes, let me choose specific subagents', value: 'selective' },
-          { name: 'No, skip subagent installation', value: 'none' },
-        ],
-        default: 'all',
-      },
-    ]);
+    const install = await prompts.select({
+      message: 'Would you like to install Claude Code subagents for enhanced functionality?',
+      choices: [
+        { name: 'Yes, install all subagents', value: 'all' },
+        { name: 'Yes, let me choose specific subagents', value: 'selective' },
+        { name: 'No, skip subagent installation', value: 'none' },
+      ],
+      default: 'all',
+    });
 
     if (install === 'selective') {
       // Show list of available subagents with descriptions
@@ -369,18 +367,14 @@ class ClaudeCodeSetup extends BaseIdeSetup {
         'document-reviewer.md': 'Document quality review',
       };
 
-      const { selected } = await inquirer.prompt([
-        {
-          type: 'checkbox',
-          name: 'selected',
-          message: 'Select subagents to install:',
-          choices: subagentConfig.files.map((file) => ({
-            name: `${file.replace('.md', '')} - ${subagentInfo[file] || 'Specialized assistant'}`,
-            value: file,
-            checked: true,
-          })),
-        },
-      ]);
+      const selected = await prompts.multiselect({
+        message: `Select subagents to install ${chalk.dim('(↑/↓ navigates multiselect, SPACE toggles, A to toggles All, ENTER confirm)')}:`,
+        options: subagentConfig.files.map((file) => ({
+          label: `${file.replace('.md', '')} - ${subagentInfo[file] || 'Specialized assistant'}`,
+          value: file,
+        })),
+        initialValues: subagentConfig.files,
+      });
 
       return { install: 'selective', selected };
     }
@@ -471,13 +465,13 @@ class ClaudeCodeSetup extends BaseIdeSetup {
    * @returns {Object|null} Info about created command
    */
   async installCustomAgentLauncher(projectDir, agentName, agentPath, metadata) {
-    const customAgentsDir = path.join(projectDir, this.configDir, this.commandsDir, 'bmad', 'custom', 'agents');
+    const commandsDir = path.join(projectDir, this.configDir, this.commandsDir);
 
     if (!(await this.exists(path.join(projectDir, this.configDir)))) {
       return null; // IDE not configured for this project
     }
 
-    await this.ensureDir(customAgentsDir);
+    await this.ensureDir(commandsDir);
 
     const launcherContent = `---
 name: '${agentName}'
@@ -496,12 +490,15 @@ You must fully embody this agent's persona and follow all activation instruction
 </agent-activation>
 `;
 
-    const launcherPath = path.join(customAgentsDir, `${agentName}.md`);
+    // Use underscore format: bmad_custom_fred-commit-poet.md
+    // Written directly to commands dir (no bmad subfolder)
+    const launcherName = customAgentColonName(agentName);
+    const launcherPath = path.join(commandsDir, launcherName);
     await this.writeFile(launcherPath, launcherContent);
 
     return {
       path: launcherPath,
-      command: `/bmad:custom:agents:${agentName}`,
+      command: `/${launcherName.replace('.md', '')}`,
     };
   }
 }

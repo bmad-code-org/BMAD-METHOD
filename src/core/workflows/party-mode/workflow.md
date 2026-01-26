@@ -178,18 +178,6 @@ If conversation naturally concludes:
 
 ---
 
-## TTS INTEGRATION
-
-Party mode includes Text-to-Speech for each agent response:
-
-**TTS Protocol:**
-
-- Trigger TTS immediately after each agent's text response
-- Use agent's merged voice configuration from manifest
-- Format: `Bash: .claude/hooks/bmad-speak.sh "[Agent Name]" "[Their response]"`
-
----
-
 ## MODERATION NOTES
 
 **Quality Control:**
