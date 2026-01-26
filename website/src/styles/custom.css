@@ -181,6 +181,15 @@
   margin: 0 auto;
 }
 
+/* Full-width workflow diagram iframe */
+.sl-markdown-content > iframe:first-child {
+  width: 100vw !important;
+  margin-left: calc(50% - 50vw);
+  border-radius: 0 !important;
+  border-left: none !important;
+  border-right: none !important;
+}
+
 /* Main content area */
 main {
   min-width: 0;
