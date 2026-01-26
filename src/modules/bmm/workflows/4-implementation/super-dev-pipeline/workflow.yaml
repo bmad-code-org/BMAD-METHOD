@@ -1,7 +1,7 @@
 name: super-dev-pipeline
-description: "Complete a-k workflow: test-first development, smart gap analysis, quality gates, intelligent multi-agent review, and mandatory status updates. Risk-based complexity routing with variable agent counts."
+description: "Complete a-k workflow: test-first development, smart gap analysis, quality gates, intelligent multi-agent review, mandatory status updates, and automated learning feedback loop. Risk-based complexity routing with cumulative intelligence."
 author: "BMad"
-version: "1.5.0" # Complete a-k workflow with TDD, quality gates, multi-agent review, and mandatory sprint-status updates
+version: "1.6.0" # Adds learning feedback loop (Step 1b load playbooks, Step 12 extract learnings)
 
 # Critical variables from config
 config_source: "{project-root}/_bmad/bmm/config.yaml"
