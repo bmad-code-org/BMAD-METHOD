@@ -1,19 +1,51 @@
 # Multi-Agent Code Review
 
-**Purpose:** Perform comprehensive code review using multiple specialized AI agents, each focusing on different quality aspects.
+**Purpose:** Perform unbiased code review using multiple specialized AI agents in FRESH CONTEXT, with agent count based on story complexity.
 
 ## Overview
 
-Unlike traditional single-reviewer code review, multi-agent review leverages multiple specialized agents:
-- **Architecture Agent**: Reviews system design, patterns, and structure
+**Key Principle: FRESH CONTEXT**
+- Review happens in NEW session (not the agent that wrote the code)
+- Prevents bias from implementation decisions
+- Provides truly independent perspective
+
+**Variable Agent Count by Complexity:**
+- **MICRO** (2 agents): Security + Code Quality - Quick sanity check
+- **STANDARD** (4 agents): + Architecture + Testing - Balanced review
+- **COMPLEX** (6 agents): + Performance + Domain Expert - Comprehensive analysis
+
+**Available Specialized Agents:**
 - **Security Agent**: Identifies vulnerabilities and security risks
-- **Performance Agent**: Analyzes efficiency and optimization opportunities
-- **Testing Agent**: Evaluates test coverage and quality
 - **Code Quality Agent**: Reviews style, maintainability, and best practices
+- **Architecture Agent**: Reviews system design, patterns, and structure
+- **Testing Agent**: Evaluates test coverage and quality
+- **Performance Agent**: Analyzes efficiency and optimization opportunities
+- **Domain Expert**: Validates business logic and domain constraints
 
 ## Workflow
 
-### Step 1: Load Story Context
+### Step 1: Determine Agent Count
+
+Based on {complexity_level}:
+
+```
+If complexity_level == "micro":
+  agent_count = 2
+  agents = ["security", "code_quality"]
+  Display: 🔍 MICRO Review (2 agents: Security + Code Quality)
+
+Else if complexity_level == "standard":
+  agent_count = 4
+  agents = ["security", "code_quality", "architecture", "testing"]
+  Display: 📋 STANDARD Review (4 agents: Multi-perspective)
+
+Else if complexity_level == "complex":
+  agent_count = 6
+  agents = ["security", "code_quality", "architecture", "testing", "performance", "domain_expert"]
+  Display: 🔬 COMPLEX Review (6 agents: Comprehensive analysis)
+```
+
+### Step 2: Load Story Context
 
 ```bash
 # Read story file
@@ -27,21 +59,37 @@ Read the story file to understand:
 - Tasks and subtasks
 - File list
 
-### Step 2: Invoke Multi-Agent Review Skill
+### Step 3: Invoke Multi-Agent Review Skill (Fresh Context + Smart Agent Selection)
+
+**CRITICAL:** This review MUST happen in a FRESH CONTEXT (new session, different agent).
+
+**Smart Agent Selection:**
+- Skill analyzes changed files and selects MOST RELEVANT agents
+- Touching payments code? → Add financial-security agent
+- Touching auth code? → Add auth-security agent
+- Touching file uploads? → Add file-security agent
+- Touching performance-critical code? → Add performance agent
+- Agent count determined by complexity, but agents chosen by code analysis
 
 ```xml
 <invoke-skill skill="multi-agent-review">
   <parameter name="story_id">{story_id}</parameter>
   <parameter name="base_branch">{base_branch}</parameter>
+  <parameter name="max_agents">{agent_count}</parameter>
+  <parameter name="agent_selection">smart</parameter>
+  <parameter name="fresh_context">true</parameter>
 </invoke-skill>
 ```
 
 The skill will:
-1. Analyze changed files in the story
-2. Select appropriate agents based on code changes
-3. Run parallel reviews from multiple perspectives
-4. Aggregate findings with severity ratings
-5. Return comprehensive review report
+1. Create fresh context (unbiased review session)
+2. Analyze changed files in the story
+3. Detect code categories (auth, payments, file handling, etc.)
+4. Select {agent_count} MOST RELEVANT specialized agents
+5. Run parallel reviews from selected agents
+6. Each agent reviews from their expertise perspective
+7. Aggregate findings with severity ratings
+8. Return comprehensive review report
 
 ### Step 3: Save Review Report
 
