@@ -1,5 +1,92 @@
 # Changelog
 
+## [6.0.0-Beta.0]
+
+**Release: January 2026 - Alpha to Beta Transition**
+
+### 🎉 Beta Release
+
+- **Transition from Alpha to Beta**: BMad Method is now in Beta! This marks a significant milestone in the framework's development
+- **NPM Default Tag**: Beta versions are now published with the `latest` tag, making `npx bmad-method` serve the beta version by default
+
+### 🌟 Key Highlights
+
+1. **bmad-help**: Revolutionary AI-powered guidance system replaces the alpha workflow-init and workflow tracking — introduces full AI intelligence to guide users through workflows, commands, and project context
+2. **Module Ecosystem Expansion**: bmad-builder, CIS (Creative Intelligence Suite), and Game Dev Studio moved to separate repositories for focused development
+3. **Installer Consolidation**: Unified installer architecture with standardized command naming (`bmad-dash-case.md` or `bmad-*-agent-*.md`)
+4. **Windows Compatibility**: Complete migration from Inquirer.js to @clack/prompts for reliable cross-platform support
+
+### 🚀 Major Features
+
+**bmad-help - Intelligent Guidance System:**
+
+- **Replaces**: workflow-init and legacy workflow tracking
+- **AI-Powered**: Full context awareness of installed modules, workflows, agents, and commands
+- **Dynamic Discovery**: Automatically catalogs all available workflows from installed modules
+- **Intelligent Routing**: Guides users to the right workflow or agent based on their goal
+- **IDE Integration**: Generates proper IDE command files for all discovered workflows
+
+**Module Restructuring:**
+
+| Module                                | Status                                            | New Location                                            |
+| ------------------------------------- | ------------------------------------------------- | ------------------------------------------------------- |
+| **bmad-builder**                      | Near beta, with docs and walkthroughs coming soon | `bmad-code-org/bmad-builder`                            |
+| **CIS** (Creative Intelligence Suite) | Published as npm package                          | `bmad-code-org/bmad-module-creative-intelligence-suite` |
+| **Game Dev Studio**                   | Published as npm package                          | `bmad-code-org/bmad-module-game-dev-studio`             |
+
+### 🔧 Installer & CLI Improvements
+
+**UnifiedInstaller Architecture:**
+
+- All IDE installers now use a common `UnifiedInstaller` class
+- Standardized command naming conventions:
+  - Workflows: `bmad-module-workflow-name.md`
+  - Agents: `bmad-module-agent-name.md`
+  - Tasks: `bmad-task-name.md`
+  - Tools: `bmad-tool-name.md`
+- External module installation from npm with progress indicators
+- Module removal on unselect with confirmation
+
+**Windows Compatibility Fix:**
+
+- Replaced Inquirer.js with @clack/prompts to fix arrow key navigation issues on Windows
+- All 91 installer workflows migrated to new prompt system
+
+### 📚 Documentation Updates
+
+**Significant docsite improvements:**
+
+- Interactive workflow guide page (`/workflow-guide`) with track selector
+- TEA documentation restructured using Diátaxis framework (25 docs)
+- Style guide optimized for LLM readers (367 lines, down from 767)
+- Glossary rewritten using table format (123 lines, down from 373)
+- README overhaul with numbered command flows and prominent `/bmad-help` callout
+- New workflow map diagram with interactive HTML
+- New editorial review tasks for document quality
+- E2E testing methodology for Game Dev Studio
+
+More documentation updates coming soon.
+
+### 🐛 Bug Fixes
+
+- Fixed TodoMVC URL references to include `/dist/` path
+- Fixed glob pattern normalization for Windows compatibility
+- Fixed YAML indentation in kilo.js customInstructions field
+- Fixed stale path references in check-implementation-readiness workflow
+- Fixed sprint-status.yaml sync in correct-course workflow
+- Fixed web bundler entry point reference
+- Fixed mergeModuleHelpCatalogs ordering after generateManifests
+
+### 📊 Statistics
+
+- **91 commits** since alpha.23
+- **969 files changed** (+23,716 / -91,509 lines)
+- **Net reduction of ~67,793 lines** through cleanup and consolidation
+- **3 major modules** moved to separate repositories
+- **Complete installer refactor** for standardization
+
+---
+
 ## [6.0.0-alpha.23]
 
 **Release: January 11, 2026**

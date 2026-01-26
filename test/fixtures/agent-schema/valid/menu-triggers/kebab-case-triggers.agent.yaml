@@ -23,7 +23,7 @@ agent:
     - trigger: list-tasks
       description: Two word trigger
       action: list_tasks
-    - trigger: workflow-init-process
+    - trigger: three-word-process
       description: Three word trigger
       action: init_workflow
     - trigger: test123

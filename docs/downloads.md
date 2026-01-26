@@ -8,19 +8,19 @@ Download BMad Method resources for offline use, AI training, or integration.
 
 Download these from the `downloads/` folder on the documentation site.
 
-| File | Description |
-|------|-------------|
-| `bmad-sources.zip` | Complete BMad source files |
+| File               | Description                     |
+| ------------------ | ------------------------------- |
+| `bmad-sources.zip` | Complete BMad source files      |
 | `bmad-prompts.zip` | Agent and workflow prompts only |
 
 ## LLM-Optimized Files
 
 These files are designed for AI consumption - perfect for loading into Claude, ChatGPT, or any LLM context window. See [API Access](#api-access) below for URLs.
 
-| File | Description | Use Case |
-|------|-------------|----------|
-| `llms.txt` | Documentation index with summaries | Quick overview, navigation |
-| `llms-full.txt` | Complete documentation concatenated | Full context loading |
+| File            | Description                         | Use Case                   |
+| --------------- | ----------------------------------- | -------------------------- |
+| `llms.txt`      | Documentation index with summaries  | Quick overview, navigation |
+| `llms-full.txt` | Complete documentation concatenated | Full context loading       |
 
 ### Using with LLMs
 
@@ -44,7 +44,7 @@ docs = requests.get("https://bmad-code-org.github.io/BMAD-METHOD/llms-full.txt")
 ## Installation Options
 
 ```bash
-npx bmad-method@alpha install
+npx bmad-method install
 ```
 
 [More details](/docs/how-to/install-bmad.md)

@@ -39,6 +39,18 @@ export default function rehypeBasePaths(options = {}) {
         }
       }
 
+      // Process iframe tags with src attribute
+      if (node.tagName === 'iframe' && node.properties?.src) {
+        const src = node.properties.src;
+
+        if (typeof src === 'string' && src.startsWith('/') && !src.startsWith('//')) {
+          // Don't transform if already has the base path
+          if (normalizedBase !== '/' && !src.startsWith(normalizedBase)) {
+            node.properties.src = normalizedBase + src.slice(1);
+          }
+        }
+      }
+
       // Process anchor tags with href attribute
       if (node.tagName === 'a' && node.properties?.href) {
         const href = node.properties.href;

@@ -11,31 +11,38 @@
 
 ## Why BMad?
 
-Traditional AI tools do the thinking for you, producing average results. BMad agents act as expert collaborators who guide you through structured workflows to bring out your best thinking.
+Traditional AI tools do the thinking for you, producing average results. BMad agents and facilitated workflow act as expert collaborators who guide you through a structured process to bring out your best thinking in partnership with the AI.
 
-- **Scale-Adaptive**: Automatically adjusts planning depth based on project complexity (Level 0-4)
+- **AI Intelligent Help**: Brand new for beta - AI assisted help will guide you from the beginning to the end - just ask for `/bmad-help` after you have installed BMad to your project
+- **Scale-Domain-Adaptive**: Automatically adjusts planning depth and needs based on project complexity, domain and type - a SaaS Mobile Dating App has different planning needs from a diagnostic medical system, BMad adapts and helps you along the way
 - **Structured Workflows**: Grounded in agile best practices across analysis, planning, architecture, and implementation
 - **Specialized Agents**: 12+ domain experts (PM, Architect, Developer, UX, Scrum Master, and more)
-- **Party Mode**: Bring multiple agent personas into one session to plan, troubleshoot, or discuss your project collaboratively
-- **Complete Lifecycle**: From brainstorming to deployment, with just-in-time documentation
+- **Party Mode**: Bring multiple agent personas into one session to plan, troubleshoot, or discuss your project collaboratively, multiple perspectives with maximum fun
+- **Complete Lifecycle**: From brainstorming to deployment, BMad is there with you every step of the way
 
 ## Quick Start
 
 **Prerequisites**: [Node.js](https://nodejs.org) v20+
 
 ```bash
-npx bmad-method@alpha install
+npx bmad-method install
 ```
 
 Follow the installer prompts, then open your AI IDE (Claude Code, Cursor, Windsurf, etc.) in the project folder.
 
-> **Not sure what to do?** Run `/bmad-help` — it tells you exactly what's next and what's optional. You can also ask it questions like `/bmad-help How should I build a web app for XYZ?`
+> **Not sure what to do?** Run `/bmad-help` — it tells you exactly what's next and what's optional. You can also ask it questions like:
+
+ - `/bmad-help How should I build a web app for for my TShirt Business that can scale to millions?`
+ - `/bmad-help I just finished the architecture, I am not sure what to do next`
+
+And the amazing this is BMad Help evolves depending on what modules you install also!
+ - `/bmad-help Im interested in really exploring creative ways to demo BMad at work, what do you recommend to help plan a great slide deck and compelling narrative?`, and if you have the Creative Intelligence Suite installed, it will offer you different or complimentary advice than if you just have BMad Method Module installed!
 
 The workflows below show the fastest path to working code. You can also load agents directly for a more structured process, extensive planning, or to learn about agile development practices — the agents guide you with menus, explanations, and elicitation at each step.
 
 ### Simple Path (Quick Flow)
 
-Bug fixes, small features, clear scope — 3 commands:
+Bug fixes, small features, clear scope — 3 commands - 1 Optional Agent:
 
 1. `/quick-spec` — analyzes your codebase and produces a tech-spec with stories
 2. `/dev-story` — implements each story
@@ -56,7 +63,7 @@ Every step tells you what's next. Optional phases (brainstorming, research, UX d
 
 ## Modules
 
-BMad Method extends with official modules for specialized domains. Modules are available during installation and can be added to your project at any time.
+BMad Method extends with official modules for specialized domains. Modules are available during installation and can be added to your project at any time. After the V6 beta period these will also be available as Plugins and Granular Skills.
 
 | Module                                | GitHub                                                                                                                            | NPM                                                                                                | Purpose                                                           |
 | ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
@@ -64,6 +71,8 @@ BMad Method extends with official modules for specialized domains. Modules are a
 | **BMad Builder (BMB)**                | [bmad-code-org/bmad-builder](https://github.com/bmad-code-org/bmad-builder)                                                       | [bmad-builder](https://www.npmjs.com/package/bmad-builder)                                         | Create custom BMad agents, workflows, and domain-specific modules |
 | **Game Dev Studio (BMGD)**            | [bmad-code-org/bmad-module-game-dev-studio](https://github.com/bmad-code-org/bmad-module-game-dev-studio)                         | [bmad-game-dev-studio](https://www.npmjs.com/package/bmad-game-dev-studio)                         | Game development workflows for Unity, Unreal, and Godot           |
 | **Creative Intelligence Suite (CIS)** | [bmad-code-org/bmad-module-creative-intelligence-suite](https://github.com/bmad-code-org/bmad-module-creative-intelligence-suite) | [bmad-creative-intelligence-suite](https://www.npmjs.com/package/bmad-creative-intelligence-suite) | Innovation, brainstorming, design thinking, and problem-solving   |
+
+* More modules are coming in the next 2 weeks from BMad Official, and a community marketplace for the installer also will be coming with the final V6 release!
 
 ## Documentation
 
@@ -79,7 +88,7 @@ BMad Method extends with official modules for specialized domains. Modules are a
 ## Community
 
 - [Discord](https://discord.gg/gk8jAdXWmj) — Get help, share ideas, collaborate
-- [YouTube](https://www.youtube.com/@BMadCode) — Tutorials, master class, and podcast (launching Feb 2025)
+- [Subscribe on YouTube](https://www.youtube.com/@BMadCode) — Tutorials, master class, and podcast (launching Feb 2025)
 - [GitHub Issues](https://github.com/bmad-code-org/BMAD-METHOD/issues) — Bug reports and feature requests
 - [Discussions](https://github.com/bmad-code-org/BMAD-METHOD/discussions) — Community conversations
 
@@ -87,11 +96,10 @@ BMad Method extends with official modules for specialized domains. Modules are a
 
 BMad is free for everyone — and always will be. If you'd like to support development:
 
-- ⭐ [Star us on GitHub](https://github.com/bmad-code-org/BMAD-METHOD/) — Helps others discover BMad
-- 📺 [Subscribe on YouTube](https://www.youtube.com/@BMadCode) — Master class launching Feb 2026
+- ⭐ Please click the star project icon at near the top right of this page
 - ☕ [Buy Me a Coffee](https://buymeacoffee.com/bmad) — Fuel the development
 - 🏢 Corporate sponsorship — DM on Discord
-- 🎤 Speaking & Media — Available for conferences, podcasts, interviews (Discord)
+- 🎤 Speaking & Media — Available for conferences, podcasts, interviews (BM on Discord)
 
 ## Contributing
 

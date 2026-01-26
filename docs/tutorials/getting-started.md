@@ -20,7 +20,7 @@ Build software faster using AI-powered workflows with specialized agents that gu
 :::
 
 :::tip[Quick Path]
-**Install** → `npx bmad-method@alpha install`
+**Install** → `npx bmad-method install`
 **Plan** → PM creates PRD, Architect creates architecture
 **Build** → SM manages sprints, DEV implements stories
 **Fresh chats** for each workflow to avoid context issues.
@@ -56,7 +56,7 @@ Story counts are guidance, not definitions. Choose your track based on planning 
 Open a terminal in your project directory and run:
 
 ```bash
-npx bmad-method@alpha install
+npx bmad-method install
 ```
 
 When prompted to select modules, choose **BMad Method**.
@@ -130,11 +130,11 @@ Load the **SM agent** and run `sprint-planning`. This creates `sprint-status.yam
 
 For each story, repeat this cycle with fresh chats:
 
-| Step | Agent | Workflow       | Purpose                               |
-| ---- | ----- | -------------- | ------------------------------------- |
-| 1    | SM    | `create-story` | Create story file from epic           |
-| 2    | DEV   | `dev-story`    | Implement the story                   |
-| 3    | DEV   | `code-review`  | Quality validation *(recommended)*    |
+| Step | Agent | Workflow       | Purpose                            |
+| ---- | ----- | -------------- | ---------------------------------- |
+| 1    | SM    | `create-story` | Create story file from epic        |
+| 2    | DEV   | `dev-story`    | Implement the story                |
+| 3    | DEV   | `code-review`  | Quality validation *(recommended)* |
 
 After completing all stories in an epic, load the **SM agent** and run `retrospective`.
 
@@ -162,17 +162,17 @@ your-project/
 
 ## Quick Reference
 
-| Workflow                           | Agent     | Purpose                              |
-| ---------------------------------- | --------- | ------------------------------------ |
-| `help`                             | Any       | Get guidance on what to do next      |
-| `prd`                              | PM        | Create Product Requirements Document |
-| `create-architecture`              | Architect | Create architecture document         |
-| `create-epics-and-stories`         | PM        | Break down PRD into epics            |
-| `check-implementation-readiness`   | Architect | Validate planning cohesion           |
-| `sprint-planning`                  | SM        | Initialize sprint tracking           |
-| `create-story`                     | SM        | Create a story file                  |
-| `dev-story`                        | DEV       | Implement a story                    |
-| `code-review`                      | DEV       | Review implemented code              |
+| Workflow                         | Agent     | Purpose                              |
+| -------------------------------- | --------- | ------------------------------------ |
+| `help`                           | Any       | Get guidance on what to do next      |
+| `prd`                            | PM        | Create Product Requirements Document |
+| `create-architecture`            | Architect | Create architecture document         |
+| `create-epics-and-stories`       | PM        | Break down PRD into epics            |
+| `check-implementation-readiness` | Architect | Validate planning cohesion           |
+| `sprint-planning`                | SM        | Initialize sprint tracking           |
+| `create-story`                   | SM        | Create a story file                  |
+| `dev-story`                      | DEV       | Implement a story                    |
+| `code-review`                    | DEV       | Review implemented code              |
 
 ## Common Questions
 

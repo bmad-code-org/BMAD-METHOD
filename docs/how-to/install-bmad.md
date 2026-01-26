@@ -22,7 +22,7 @@ Use the `npx bmad-method install` command to set up BMad in your project with yo
 ### 1. Run the Installer
 
 ```bash
-npx bmad-method@alpha install
+npx bmad-method install
 ```
 
 ### 2. Choose Installation Location
@@ -67,13 +67,6 @@ your-project/
 ## Verify Installation
 
 Run the `help` workflow (`/bmad-help` on most platforms) to verify everything works and see what to do next.
-
-## Living on the Edge
-
-**Latest pre-release (alpha/beta):**
-```bash
-npx bmad-method@alpha install
-```
 
 **Latest from main branch:**
 ```bash
