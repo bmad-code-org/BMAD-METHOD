@@ -173,9 +173,10 @@ Run `/bmad_bmm_sprint-status` to see current status.</output>
 
     <check if="file_status_icon == '❌' (file missing)">
       <check if="story status is BACKLOG">
-        <output>📝 Story {{story_key}}: BACKLOG - no story file yet (will create during implementation)</output>
+        <output>📝 Story {{story_key}}: BACKLOG - will create basic story file</output>
         <action>Mark story as needs_story_creation = true</action>
-        <action>Mark story as validated (will create story in Step 4 before implementing)</action>
+        <action>Mark story.creation_workflow = "/create-story" (lightweight, no gap analysis)</action>
+        <action>Mark story as validated (will create in next step)</action>
       </check>
 
       <check if="story status is ready-for-dev">
@@ -642,6 +643,86 @@ Recommend regenerating with /create-story-with-gap-analysis for better quality.
   </output>
 </step>
 
+<step n="2.7" goal="Batch create story files for backlog stories">
+  <check if="needs_creation.length == 0">
+    <output>✅ All stories have files - skipping story creation</output>
+    <action>Jump to Step 3</action>
+  </check>
+
+  <output>
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📝 BATCH STORY CREATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+{{needs_creation.length}} stories need creation (BACKLOG status):
+{{#each needs_creation}}
+  - {{story_key}}
+{{/each}}
+
+These will be created using /create-story (lightweight, no gap analysis).
+Gap analysis will happen just-in-time during implementation (Step 2 of super-dev-pipeline).
+  </output>
+
+  <ask>Create these {{needs_creation.length}} story files now? (yes/no):</ask>
+
+  <check if="response != 'yes'">
+    <output>⏭️  Skipping story creation. These stories will be removed from batch.</output>
+    <action>Remove needs_creation stories from selected_stories</action>
+
+    <check if="selected_stories.length == 0">
+      <output>❌ No stories remaining after removing backlog stories. Exiting.</output>
+      <action>Exit workflow</action>
+    </check>
+  </check>
+
+  <iterate>For each story in needs_creation:</iterate>
+
+  <substep n="2.7a" title="Create individual story file">
+    <output>📝 Creating story {{@index}}/{{needs_creation.length}}: {{story_key}}...</output>
+
+    <action>Invoke workflow: /bmad_bmm_create-story</action>
+    <action>Parameters:
+      - story_key: {{story_key}}
+      - epic_num: {{epic_num}}
+      - mode: batch (auto-approve, minimal prompts)
+    </action>
+
+    <check if="story creation succeeded">
+      <output>✅ Story created: {{story_key}}</output>
+      <action>Mark story.needs_story_creation = false</action>
+    </check>
+
+    <check if="story creation failed">
+      <output>❌ Failed to create story: {{story_key}}</output>
+      <action>Add to failed_creations list</action>
+      <action>Remove from selected_stories</action>
+    </check>
+  </substep>
+
+  <check if="failed_creations.length > 0">
+    <output>
+⚠️  {{failed_creations.length}} stories failed creation:
+{{#each failed_creations}}
+  - {{this}}
+{{/each}}
+
+These will be skipped in batch execution.
+    </output>
+  </check>
+
+  <output>
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ Story Creation Complete
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**Created:** {{needs_creation.length - failed_creations.length}} stories
+**Failed:** {{failed_creations.length}} stories
+**Ready for implementation:** {{selected_stories.length}} stories
+
+Note: Gap analysis will happen just-in-time during implementation.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  </output>
+</step>
+
 <step n="3" goal="Choose execution mode and strategy">
   <output>
 ╔═══════════════════════════════════════════════════════════════════╗
@@ -815,22 +896,6 @@ Enter number (2-10) or 'all':
 📦 Story {{current_index}}/{{total_count}}: {{story_key}}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     </output>
-
-    <check if="story is BACKLOG status AND story file missing or invalid">
-      <output>📝 Story {{story_key}} is in BACKLOG - creating story file with gap analysis...</output>
-
-      <action>Invoke workflow: /bmad:bmm:workflows:create-story-with-gap-analysis</action>
-      <action>Parameters: story_key={{story_key}}, epic={{epic_num}}</action>
-
-      <check if="story creation failed">
-        <output>❌ FAILED: Could not create story {{story_key}}</output>
-        <action>Increment failed counter</action>
-        <action>Add story_key to failed_stories list</action>
-        <action>Continue to next story if continue_on_failure==true</action>
-      </check>
-
-      <output>✅ Story file created: {{story_key}}</output>
-    </check>
 
     <action>Invoke workflow: /bmad:bmm:workflows:super-dev-pipeline</action>
     <action>Parameters: mode=batch, story_key={{story_key}}, complexity_level={{story_key}}.complexity.level</action>
