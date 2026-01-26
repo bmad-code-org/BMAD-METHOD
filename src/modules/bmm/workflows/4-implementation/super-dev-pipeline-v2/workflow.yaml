@@ -1,0 +1,121 @@
+name: super-dev-pipeline-v2
+description: "Multi-agent pipeline with wave-based execution, independent validation, and adversarial code review (GSDMAD)"
+author: "BMAD Method + GSD"
+version: "2.0.0"
+
+# Execution mode
+execution_mode: "multi_agent" # multi_agent | single_agent (fallback)
+
+# Critical variables from config
+config_source: "{project-root}/_bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+sprint_artifacts: "{config_source}:sprint_artifacts"
+communication_language: "{config_source}:communication_language"
+date: system-generated
+
+# Workflow paths
+installed_path: "{project-root}/_bmad/bmm/workflows/4-implementation/super-dev-pipeline-v2"
+agents_path: "{installed_path}/agents"
+steps_path: "{installed_path}/steps"
+
+# Agent tracking (from GSD)
+agent_history: "{sprint_artifacts}/agent-history.json"
+current_agent_id: "{sprint_artifacts}/current-agent-id.txt"
+
+# State management
+state_file: "{sprint_artifacts}/super-dev-state-{{story_id}}.yaml"
+audit_trail: "{sprint_artifacts}/audit-super-dev-{{story_id}}-{{date}}.yaml"
+
+# Multi-agent configuration
+agents:
+  builder:
+    description: "Implementation agent - writes code and tests"
+    steps: [1, 2, 3, 4]
+    subagent_type: "general-purpose"
+    prompt_file: "{agents_path}/builder.md"
+    trust_level: "low" # Assumes agent will cut corners
+    timeout: 3600 # 1 hour
+
+  inspector:
+    description: "Validation agent - independent verification"
+    steps: [5, 6]
+    subagent_type: "general-purpose"
+    prompt_file: "{agents_path}/inspector.md"
+    fresh_context: true # No knowledge of builder agent
+    trust_level: "medium" # No conflict of interest
+    timeout: 1800 # 30 minutes
+
+  reviewer:
+    description: "Adversarial code review - finds problems"
+    steps: [7]
+    subagent_type: "multi-agent-review" # Spawns multiple reviewers
+    prompt_file: "{agents_path}/reviewer.md"
+    fresh_context: true
+    adversarial: true # Goal: find issues
+    trust_level: "high" # Wants to find problems
+    timeout: 1800 # 30 minutes
+    review_agent_count:
+      micro: 2
+      standard: 4
+      complex: 6
+
+  fixer:
+    description: "Issue resolution - fixes critical/high issues"
+    steps: [8, 9]
+    subagent_type: "general-purpose"
+    prompt_file: "{agents_path}/fixer.md"
+    trust_level: "medium" # Incentive to minimize work
+    timeout: 2400 # 40 minutes
+
+# Complexity level (determines which steps to execute)
+complexity_level: "standard" # micro | standard | complex
+
+# Complexity routing
+complexity_routing:
+  micro:
+    skip_agents: ["reviewer"] # Skip code review for micro stories
+    description: "Lightweight path for low-risk stories"
+    examples: ["UI tweaks", "text changes", "simple CRUD"]
+
+  standard:
+    skip_agents: [] # Full pipeline
+    description: "Balanced path for medium-risk stories"
+    examples: ["API endpoints", "business logic"]
+
+  complex:
+    skip_agents: [] # Full pipeline + enhanced review
+    description: "Enhanced validation for high-risk stories"
+    examples: ["Auth", "payments", "security", "migrations"]
+    review_focus: ["security", "performance", "architecture"]
+
+# Final verification checklist (main orchestrator)
+final_verification:
+  enabled: true
+  checks:
+    - name: "git_commits"
+      command: "git log --oneline -3 | grep {{story_key}}"
+      failure_message: "No commit found for {{story_key}}"
+
+    - name: "story_checkboxes"
+      command: |
+        before=$(git show HEAD~1:{{story_file}} | grep -c '^- \[x\]')
+        after=$(grep -c '^- \[x\]' {{story_file}})
+        [ $after -gt $before ]
+      failure_message: "Story checkboxes not updated"
+
+    - name: "sprint_status"
+      command: "git diff HEAD~1 {{sprint_status}} | grep '{{story_key}}'"
+      failure_message: "Sprint status not updated"
+
+    - name: "tests_passed"
+      # Parse agent output for test evidence
+      validation: "inspector_output must contain 'PASS' or test count"
+      failure_message: "No test evidence in validation output"
+
+# Backward compatibility
+fallback_to_v1:
+  enabled: true
+  condition: "execution_mode == 'single_agent'"
+  workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/super-dev-pipeline"
+
+standalone: true
