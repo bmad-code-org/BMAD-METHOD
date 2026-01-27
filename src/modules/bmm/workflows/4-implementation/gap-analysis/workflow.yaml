@@ -11,7 +11,7 @@ story_dir: "{implementation_artifacts}"
 
 # Workflow components
 installed_path: "{project-root}/_bmad/bmm/workflows/4-implementation/gap-analysis"
-instructions: "{installed_path}/instructions.xml"
+instructions: "{installed_path}/workflow.md"
 
 # Variables
 story_file: "" # User provides story file path or auto-discover

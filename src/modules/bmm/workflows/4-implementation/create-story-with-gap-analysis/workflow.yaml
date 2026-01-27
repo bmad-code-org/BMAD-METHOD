@@ -14,10 +14,9 @@ story_dir: "{implementation_artifacts}"
 
 # Workflow components
 installed_path: "{project-root}/_bmad/bmm/workflows/4-implementation/create-story-with-gap-analysis"
-template: "{installed_path}/template.md"
-instructions: "{installed_path}/step-01-initialize.md"
+instructions: "{installed_path}/workflow.md"
 
-# Variables and inputs
+# Variables
 variables:
   sprint_status: "{implementation_artifacts}/sprint-status.yaml"
   epics_file: "{planning_artifacts}/epics.md"
@@ -27,12 +26,6 @@ variables:
 project_context: "**/project-context.md"
 
 default_output_file: "{story_dir}/{{story_key}}.md"
-
-# Workflow steps (processed in order)
-steps:
-  - step-01-initialize.md
-  - step-02-codebase-scan.md
-  - step-03-generate-story.md
 
 standalone: true
 

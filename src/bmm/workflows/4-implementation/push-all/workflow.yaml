@@ -9,7 +9,7 @@ communication_language: "{config_source}:communication_language"
 
 # Workflow components
 installed_path: "{project-root}/_bmad/bmm/workflows/4-implementation/push-all"
-instructions: "{installed_path}/instructions.xml"
+instructions: "{installed_path}/workflow.md"
 
 # Target files to commit (for parallel agent execution)
 # When empty/not provided: commits ALL changes (original behavior)
