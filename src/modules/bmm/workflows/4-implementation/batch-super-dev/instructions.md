@@ -1301,53 +1301,127 @@ Spawning Task agent...
       <action>Load reconciliation instructions: {installed_path}/step-4.5-reconcile-story-status.md</action>
       <action>Execute reconciliation with story_key={{story_key}}</action>
 
-      <critical>🚨 AUTO-FIX RECONCILIATION - MAKE IT RIGHT NOW</critical>
-      <action>Verify reconciliation by checking story file:</action>
-      <action>  1. Re-read story file: {{story_file_path}}</action>
-      <action>  2. Count checked tasks: grep -c "^\- \[x\]" {{story_file_path}}</action>
-      <action>  3. Count total tasks: grep -c "^\- \[.\]" {{story_file_path}}</action>
-      <action>  4. Verify Dev Agent Record filled</action>
+      <critical>🚨 MANDATORY STORY FILE VERIFICATION - YOU MUST RUN THESE BASH COMMANDS</critical>
 
-      <check if="checked_tasks == 0 OR dev_agent_record_empty">
+      <action>STEP 1: Run bash verification commands (REQUIRED):</action>
+
+      <bash_required>
+# Get story file path from story_key
+STORY_FILE="docs/sprint-artifacts/{{story_key}}.md"
+
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "🔍 VERIFYING STORY FILE: {{story_key}}"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+# Check 1: Count checked tasks
+CHECKED_COUNT=$(grep -c "^- \[x\]" "$STORY_FILE" 2>/dev/null || echo "0")
+TOTAL_COUNT=$(grep -c "^- \[.\]" "$STORY_FILE" 2>/dev/null || echo "0")
+echo "Checked tasks: $CHECKED_COUNT/$TOTAL_COUNT"
+
+# Check 2: Verify Dev Agent Record filled
+RECORD_FILLED=$(grep -A 20 "^### Dev Agent Record" "$STORY_FILE" 2>/dev/null | grep -c "Claude Sonnet" || echo "0")
+echo "Dev Agent Record filled: $RECORD_FILLED"
+
+# Store results for conditional logic
+echo "$CHECKED_COUNT" > /tmp/checked_count.txt
+echo "$RECORD_FILLED" > /tmp/record_filled.txt
+      </bash_required>
+
+      <action>STEP 2: Read bash results and decide:</action>
+
+      <check if="checked_count == 0 OR record_filled == 0">
         <output>
-❌ Story {{story_key}}: Agent failed to update story file
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+❌ STORY FILE VERIFICATION FAILED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Checked tasks: {{checked_tasks}}/{{total_tasks}}
-Dev Agent Record: {{empty/filled}}
+Story: {{story_key}}
+Checked tasks: {{checked_count}}/{{total_count}}
+Dev Agent Record: {{#if record_filled > 0}}FILLED{{else}}EMPTY{{/if}}
 
-🔧 EXECUTING IMMEDIATE AUTO-FIX RECONCILIATION...
+🚨 The agent DID NOT update the story file.
+
+YOU (the main orchestrator) must fix this NOW.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
         </output>
 
-        <action>AUTO-FIX STEPS:</action>
-        <action>1. Read the agent's git commit for this story</action>
-        <action>2. Extract files created/modified from commit</action>
-        <action>3. Read story Tasks section</action>
-        <action>4. For each task:</action>
-        <action>   - Check if task mentions a file from the commit</action>
-        <action>   - Check if task mentions a function that exists in those files</action>
-        <action>   - If yes: Use Edit tool to check off task (- [ ] → - [x])</action>
-        <action>   - Verify edit worked with grep</action>
-        <action>   - If edit failed: Retry with exact line match</action>
-        <action>   - If still failed: Log and continue to next task</action>
-        <action>5. Fill in Dev Agent Record:</action>
-        <action>   - Agent Model: Extract from state file</action>
-        <action>   - File List: From git diff --name-only</action>
-        <action>   - Completion Notes: From commit message</action>
-        <action>   - Use Edit tool to replace placeholder text</action>
-        <action>6. Verify auto-fix worked:</action>
-        <action>   - Re-count checked tasks</action>
-        <action>   - Verify Dev Agent Record no longer empty</action>
+        <critical>MANDATORY AUTO-FIX - MAIN ORCHESTRATOR MUST EXECUTE THIS</critical>
 
-        <check if="auto_fix_succeeded AND checked_tasks > 0">
-          <output>✅ AUTO-FIX SUCCESS: {{checked_tasks}}/{{total_tasks}} tasks now checked</output>
+        <action>AUTO-FIX PROCEDURE (YOU MUST DO THIS):</action>
+
+        <bash_required>
+# Step 1: Get commit for this story
+COMMIT_SHA=$(git log -1 --grep="{{story_key}}" --pretty=format:"%H" 2>/dev/null)
+if [ -z "$COMMIT_SHA" ]; then
+  # Try finding by story key pattern
+  COMMIT_SHA=$(git log -5 --pretty=format:"%H %s" | grep -i "{{story_key}}" | head -1 | cut -d' ' -f1)
+fi
+
+echo "Found commit: $COMMIT_SHA"
+
+# Step 2: Get files changed
+git diff ${COMMIT_SHA}~1 $COMMIT_SHA --name-only | grep -v "test/" | grep -v "__tests__"
+        </bash_required>
+
+        <action>Step 3: Read story file to get Tasks section:</action>
+        <read_required>docs/sprint-artifacts/{{story_key}}.md</read_required>
+
+        <action>Step 4: For EACH task in Tasks section:</action>
+        <iterate>For each line starting with "- [ ]":</iterate>
+
+        <action>
+          - Extract task description
+          - Check if git diff contains related file/function
+          - If YES: Use Edit tool to change "- [ ]" to "- [x]"
+          - Verify edit: Run bash grep to confirm checkbox is now checked
+        </action>
+
+        <action>Step 5: Fill Dev Agent Record using Edit tool:</action>
+        <action>
+          - Find "### Dev Agent Record" section
+          - Replace with actual data:
+            * Agent Model: Claude Sonnet 4.5 (multi-agent pipeline)
+            * Date: {{current_date}}
+            * Files: {{files_from_git_diff}}
+            * Notes: {{from_commit_message}}
+        </action>
+
+        <action>Step 6: Re-run verification bash commands:</action>
+
+        <bash_required>
+CHECKED_COUNT=$(grep -c "^- \[x\]" "$STORY_FILE")
+RECORD_FILLED=$(grep -A 20 "^### Dev Agent Record" "$STORY_FILE" | grep -c "Claude Sonnet")
+
+echo "After auto-fix:"
+echo "  Checked tasks: $CHECKED_COUNT"
+echo "  Dev Agent Record: $RECORD_FILLED"
+
+if [ "$CHECKED_COUNT" -eq 0 ]; then
+  echo "❌ AUTO-FIX FAILED: Story file still not updated"
+  exit 1
+fi
+
+echo "✅ AUTO-FIX SUCCESS"
+        </bash_required>
+
+        <check if="auto_fix_bash_exit_code == 0">
+          <output>✅ AUTO-FIX SUCCESS: Story file now updated ({{checked_count}} tasks checked)</output>
           <action>Continue with story as completed</action>
         </check>
 
-        <check if="auto_fix_failed OR checked_tasks still == 0">
-          <output>⚠️ AUTO-FIX PARTIAL: Only {{checked_tasks}}/{{total_tasks}} tasks reconciled</output>
-          <action>Mark story as "review" (not done) in sprint-status</action>
-          <action>Add detailed warning to reconciliation_warnings</action>
-          <action>Continue (do not halt entire batch)</action>
+        <check if="auto_fix_bash_exit_code != 0">
+          <output>
+❌ AUTO-FIX FAILED: Cannot reconcile story {{story_key}}
+
+After multiple fix attempts, story file still shows:
+- Checked tasks: {{checked_count}}
+- Dev Agent Record: {{record_status}}
+
+Marking story as "in-progress" (not done).
+          </output>
+          <action>Update sprint-status to "in-progress" instead of "done"</action>
+          <action>Add to failed_stories list</action>
+          <action>Continue to next story (if continue_on_failure)</action>
         </check>
       </check>
 
