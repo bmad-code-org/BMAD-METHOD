@@ -7,7 +7,7 @@ description: Implementation of enforcement-based workflow patterns to fix reliab
 
 **Date:** 2026-01-27
 **Status:** ✅ Complete
-**Version:** 6.1.0-Beta.1
+**Version:** 6.1.0-Beta.2
 
 ## Summary
 

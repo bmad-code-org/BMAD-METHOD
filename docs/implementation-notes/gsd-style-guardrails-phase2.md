@@ -7,7 +7,7 @@ description: Pattern extraction and explicit step enumeration for maintainabilit
 
 **Date:** 2026-01-27
 **Status:** ✅ Complete
-**Version:** 6.1.0-Beta.1
+**Version:** 6.1.0-Beta.2
 
 ## Summary
 
