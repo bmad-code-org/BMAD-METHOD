@@ -32,6 +32,16 @@ modules:
     type: bmad-org
     npmPackage: bmad-game-dev-studio
 
+  bmad-method-test-architecture-enterprise:
+    url: https://github.com/bmad-code-org/bmad-method-test-architecture-enterprise
+    module-definition: src/module.yaml
+    code: tea
+    name: "Test Architect"
+    description: "Master Test Architect for quality strategy, test automation, and release gates"
+    defaultSelected: false
+    type: bmad-org
+    npmPackage: bmad-method-test-architecture-enterprise
+
 # TODO: Enable once fixes applied:
 
 # whiteport-design-system:
