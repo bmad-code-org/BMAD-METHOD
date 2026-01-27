@@ -1,4 +1,5 @@
 ---
+name: '{{module}}_{{name}}'
 description: '{{description}}'
 ---
 
