@@ -1,522 +1,396 @@
-# Super-Dev-Pipeline v2.1 - Multi-Agent Architecture
+# Super-Dev-Pipeline v3.0 - Unified Workflow
 
-**Version:** 2.1.0
-**Architecture:** GSDMAD (GSD + BMAD)
-**Philosophy:** Agents do creative work, orchestrator does bookkeeping
+<purpose>
+Implement a story using 4 independent agents with orchestrator-driven reconciliation.
+Each agent has single responsibility. No agent validates its own work.
+Orchestrator handles bookkeeping (story file updates, verification).
+</purpose>
 
----
+<philosophy>
+**Agents do creative work. Orchestrator does bookkeeping.**
 
-## Overview
+- Builder implements (creative)
+- Inspector validates (verification)
+- Reviewer finds issues (adversarial)
+- Fixer resolves issues (creative)
+- Orchestrator reconciles story file (mechanical)
 
-This workflow implements a story using **4 independent agents** with orchestrator-driven reconciliation.
+Trust but verify. Fresh context per phase. Adversarial review.
+</philosophy>
 
-**Key Innovation:**
-- Each agent has single responsibility and fresh context
-- No agent validates its own work
-- **Orchestrator does bookkeeping** (story file updates, verification) - not agents
+<config>
+name: super-dev-pipeline
+version: 3.0.0
+execution_mode: multi_agent
 
----
+agents:
+  builder: {steps: 1-4, trust: low, timeout: 60min}
+  inspector: {steps: 5-6, trust: medium, fresh_context: true, timeout: 30min}
+  reviewer: {steps: 7, trust: high, adversarial: true, timeout: 30min}
+  fixer: {steps: 8-9, trust: medium, timeout: 40min}
 
-## Execution Flow
+complexity_routing:
+  micro: {skip: [reviewer], description: "Low-risk stories"}
+  standard: {skip: [], description: "Normal stories"}
+  complex: {skip: [], enhanced_review: true, description: "High-risk stories"}
+</config>
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│ Main Orchestrator (Claude)                                  │
-│ - Loads story                                               │
-│ - Spawns agents sequentially                                │
-│ - Verifies each phase                                       │
-│ - DOES RECONCILIATION DIRECTLY (not via agent)             │
-│ - Final quality gate                                        │
-└─────────────────────────────────────────────────────────────┘
-         │
-         ├──> Phase 1: Builder (Steps 1-4) [AGENT]
-         │    - Load story, analyze gaps
-         │    - Write tests (TDD)
-         │    - Implement code
-         │    - Report what was built (NO VALIDATION)
-         │
-         ├──> Phase 2: Inspector (Steps 5-6) [AGENT]
-         │    - Fresh context, no Builder knowledge
-         │    - Verify files exist
-         │    - Run tests independently
-         │    - Run quality checks
-         │    - PASS or FAIL verdict
-         │
-         ├──> Phase 3: Reviewer (Step 7) [AGENT]
-         │    - Fresh context, adversarial stance
-         │    - Find security vulnerabilities
-         │    - Find performance problems
-         │    - Find logic bugs
-         │    - Report issues with severity
-         │
-         ├──> Phase 4: Fixer (Steps 8-9) [AGENT]
-         │    - Fix CRITICAL issues (all)
-         │    - Fix HIGH issues (all)
-         │    - Fix MEDIUM issues (if time)
-         │    - Skip LOW issues (gold-plating)
-         │    - Commit code changes
-         │
-         ├──> Phase 5: Reconciliation (Step 10) [ORCHESTRATOR] 🔧
-         │    - Orchestrator uses Bash/Read/Edit tools directly
-         │    - Check off completed tasks in story file
-         │    - Fill Dev Agent Record with details
-         │    - Verify updates with bash commands
-         │    - BLOCKER if verification fails
-         │
-         └──> Final Verification [ORCHESTRATOR]
-              - Check git commits exist
-              - Check story checkboxes updated (count > 0)
-              - Check Dev Agent Record filled
-              - Check sprint-status updated
-              - Check tests passed
-              - Mark COMPLETE or FAILED
+<execution_context>
+@patterns/hospital-grade.md
+@patterns/agent-completion.md
+</execution_context>
+
+<process>
+
+<step name="load_story" priority="first">
+Load and validate the story file.
+
+```bash
+STORY_FILE="docs/sprint-artifacts/{{story_key}}.md"
+[ -f "$STORY_FILE" ] || { echo "ERROR: Story file not found"; exit 1; }
 ```
 
----
+Use Read tool on the story file. Parse:
+- Complexity level (micro/standard/complex)
+- Task count
+- Acceptance criteria count
 
-## Agent Spawning Instructions
+Determine which agents to spawn based on complexity routing.
+</step>
 
-### Phase 1: Spawn Builder
+<step name="spawn_builder">
+**Phase 1: Builder Agent (Steps 1-4)**
 
-```javascript
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔨 PHASE 1: BUILDER
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+Spawn Builder agent:
+
+```
 Task({
   subagent_type: "general-purpose",
   description: "Implement story {{story_key}}",
   prompt: `
-    You are the BUILDER agent for story {{story_key}}.
+You are the BUILDER agent for story {{story_key}}.
 
-    Load and execute: {agents_path}/builder.md
+<execution_context>
+@patterns/hospital-grade.md
+@patterns/tdd.md
+@patterns/agent-completion.md
+</execution_context>
 
-    Story file: {{story_file}}
+<context>
+Story: [inline story file content]
+</context>
 
-    Complete Steps 1-4:
-    1. Init - Load story
-    2. Pre-Gap - Analyze what exists
-    3. Write Tests - TDD approach
-    4. Implement - Write production code
+<objective>
+Implement the story requirements:
+1. Load and understand requirements
+2. Analyze what exists vs needed
+3. Write tests first (TDD)
+4. Implement production code
+</objective>
 
-    DO NOT:
-    - Validate your work
-    - Review your code
-    - Update checkboxes
-    - Commit changes
+<constraints>
+- DO NOT validate your own work
+- DO NOT review your code
+- DO NOT update story checkboxes
+- DO NOT commit changes
+</constraints>
 
-    Just build it and report what you created.
-  `
-});
+<success_criteria>
+- [ ] Tests written for all requirements
+- [ ] Production code implements tests
+- [ ] Return ## AGENT COMPLETE with file lists
+</success_criteria>
+`
+})
 ```
 
-**Wait for Builder to complete. Store agent_id in agent-history.json.**
+**Wait for completion. Parse structured output.**
 
-### Phase 2: Spawn Inspector
+Verify files exist:
+```bash
+# For each file in "Files Created" and "Files Modified":
+[ -f "$file" ] || echo "MISSING: $file"
+```
 
-```javascript
+If files missing or status FAILED: halt pipeline.
+</step>
+
+<step name="spawn_inspector">
+**Phase 2: Inspector Agent (Steps 5-6)**
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔍 PHASE 2: INSPECTOR
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+Spawn Inspector agent with **fresh context** (no Builder knowledge):
+
+```
 Task({
   subagent_type: "general-purpose",
   description: "Validate story {{story_key}} implementation",
   prompt: `
-    You are the INSPECTOR agent for story {{story_key}}.
+You are the INSPECTOR agent for story {{story_key}}.
 
-    Load and execute: {agents_path}/inspector.md
+<execution_context>
+@patterns/verification.md
+@patterns/hospital-grade.md
+@patterns/agent-completion.md
+</execution_context>
 
-    Story file: {{story_file}}
+<context>
+Story: [inline story file content]
+</context>
 
-    You have NO KNOWLEDGE of what the Builder did.
+<objective>
+Independently verify the implementation:
+1. Verify files exist and have content
+2. Run type-check, lint, build
+3. Run tests yourself
+4. Give honest PASS/FAIL verdict
+</objective>
 
-    Complete Steps 5-6:
-    5. Post-Validation - Verify files exist and have content
-    6. Quality Checks - Run type-check, lint, build, tests
+<constraints>
+- You have NO KNOWLEDGE of what Builder did
+- Run all checks yourself
+- Don't trust any claims
+</constraints>
 
-    Run all checks yourself. Don't trust Builder claims.
-
-    Output: PASS or FAIL verdict with evidence.
-  `
-});
+<success_criteria>
+- [ ] All files verified to exist
+- [ ] Type check passes (0 errors)
+- [ ] Lint passes (0 warnings)
+- [ ] Tests pass
+- [ ] Return ## AGENT COMPLETE with evidence
+</success_criteria>
+`
+})
 ```
 
-**Wait for Inspector to complete. If FAIL, halt pipeline.**
+**Wait for completion. Parse verdict.**
 
-### Phase 3: Spawn Reviewer
+If FAIL: halt pipeline, report specific failures.
+</step>
 
-```javascript
+<step name="spawn_reviewer" if="complexity != micro">
+**Phase 3: Reviewer Agent (Step 7)**
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔎 PHASE 3: REVIEWER
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+Spawn Reviewer agent with **adversarial stance**:
+
+```
 Task({
-  subagent_type: "bmad_bmm_multi-agent-review",
-  description: "Adversarial review of story {{story_key}}",
+  subagent_type: "general-purpose",
+  description: "Review story {{story_key}} code",
   prompt: `
-    You are the ADVERSARIAL REVIEWER for story {{story_key}}.
+You are the ADVERSARIAL REVIEWER for story {{story_key}}.
 
-    Load and execute: {agents_path}/reviewer.md
+<execution_context>
+@patterns/security-checklist.md
+@patterns/hospital-grade.md
+@patterns/agent-completion.md
+</execution_context>
 
-    Story file: {{story_file}}
-    Complexity: {{complexity_level}}
+<context>
+Story: [inline story file content]
+</context>
 
-    Your goal is to FIND PROBLEMS.
+<objective>
+Find problems. Be critical. Look for:
+- Security vulnerabilities (CRITICAL)
+- Logic bugs and edge cases (HIGH)
+- Performance issues (MEDIUM)
+- Code style issues (LOW)
+</objective>
 
-    Complete Step 7:
-    7. Code Review - Find security, performance, logic issues
+<constraints>
+- Your goal is to FIND ISSUES
+- Don't rubber-stamp
+- Be thorough
+</constraints>
 
-    Be critical. Look for flaws.
-
-    Output: List of issues with severity ratings.
-  `
-});
+<success_criteria>
+- [ ] All new files reviewed
+- [ ] Security checks completed
+- [ ] Issues categorized by severity
+- [ ] Return ## AGENT COMPLETE with issue list
+</success_criteria>
+`
+})
 ```
 
-**Wait for Reviewer to complete. Parse issues by severity.**
+**Wait for completion. Parse issue counts.**
+</step>
 
-### Phase 4: Spawn Fixer
+<step name="spawn_fixer">
+**Phase 4: Fixer Agent (Steps 8-9)**
 
-```javascript
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔧 PHASE 4: FIXER
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+Spawn Fixer agent:
+
+```
 Task({
   subagent_type: "general-purpose",
   description: "Fix issues in story {{story_key}}",
   prompt: `
-    You are the FIXER agent for story {{story_key}}.
+You are the FIXER agent for story {{story_key}}.
 
-    Load and execute: {agents_path}/fixer.md
+<execution_context>
+@patterns/hospital-grade.md
+@patterns/agent-completion.md
+</execution_context>
 
-    Story file: {{story_file}}
-    Review issues: {{review_findings}}
+<context>
+Story: [inline story file content]
+Review issues: [inline reviewer findings]
+</context>
 
-    Complete Steps 8-9:
-    8. Review Analysis - Categorize issues, filter gold-plating
-    9. Fix Issues - Fix CRITICAL/HIGH, consider MEDIUM, skip LOW
+<objective>
+Fix CRITICAL and HIGH issues:
+1. Fix ALL CRITICAL issues (security)
+2. Fix ALL HIGH issues (bugs)
+3. Fix MEDIUM if time allows
+4. Skip LOW (gold-plating)
+5. Commit with descriptive message
+</objective>
 
-    After fixing:
-    - Update story checkboxes
-    - Update sprint-status.yaml
-    - Commit with descriptive message
+<constraints>
+- DO NOT skip CRITICAL issues
+- DO NOT update story checkboxes (orchestrator does this)
+- DO NOT update sprint-status (orchestrator does this)
+</constraints>
 
-    Output: Fix summary with git commit hash.
-  `
-});
+<success_criteria>
+- [ ] All CRITICAL fixed
+- [ ] All HIGH fixed
+- [ ] Tests still pass
+- [ ] Git commit created
+- [ ] Return ## AGENT COMPLETE with fix summary
+</success_criteria>
+`
+})
 ```
 
-**Wait for Fixer to complete.**
+**Wait for completion. Parse commit hash and fix counts.**
+</step>
 
-### Phase 5: Orchestrator Reconciliation (MANDATORY)
+<step name="reconcile_story">
+**Phase 5: Orchestrator Reconciliation**
 
-🚨 **THIS PHASE IS MANDATORY. ORCHESTRATOR DOES THIS DIRECTLY. NO AGENT SPAWN.** 🚨
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔧 PHASE 5: RECONCILIATION (Orchestrator)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
 
-**Why orchestrator, not agent?** Agents ignore instructions. The orchestrator has the context
-and can use tools directly. This is bookkeeping work, not creative work.
-
-**YOU (the orchestrator) must execute these commands directly:**
+**YOU (orchestrator) do this directly. No agent spawn.**
 
 **Step 5.1: Get what was built**
 ```bash
-# Get commit for this story
-COMMIT_INFO=$(git log -5 --oneline | grep "{{story_key}}" | head -1)
-echo "Commit: $COMMIT_INFO"
-
-# Get files changed (production code only)
-FILES_CHANGED=$(git diff HEAD~1 --name-only | grep -v "__tests__" | grep -v "\.test\." | grep -v "\.spec\.")
-echo "Files changed:"
-echo "$FILES_CHANGED"
+git log -3 --oneline | grep "{{story_key}}"
+git diff HEAD~1 --name-only | head -20
 ```
 
-**Step 5.2: Read story file tasks**
-Use Read tool: `{{story_file}}`
-
-Find the Tasks section and identify which tasks relate to the files changed.
+**Step 5.2: Read story file**
+Use Read tool: `docs/sprint-artifacts/{{story_key}}.md`
 
 **Step 5.3: Check off completed tasks**
-Use Edit tool for EACH task that was completed:
+For each task related to files changed, use Edit tool:
 ```
-old_string: "- [ ] Task description here"
-new_string: "- [x] Task description here"
+old_string: "- [ ] Task description"
+new_string: "- [x] Task description"
 ```
 
 **Step 5.4: Fill Dev Agent Record**
-Use Edit tool to update the Dev Agent Record section:
-```
-old_string: "### Dev Agent Record
-- **Agent Model Used:** [Not set]
-- **Implementation Date:** [Not set]
-- **Files Created/Modified:** [Not set]
-- **Tests Added:** [Not set]
-- **Completion Notes:** [Not set]"
+Use Edit tool to update Dev Agent Record section with:
+- Agent Model: Claude Sonnet 4 (multi-agent pipeline)
+- Implementation Date: {{date}}
+- Files Created/Modified: [list from git diff]
+- Tests Added: [count from Inspector]
+- Completion Notes: [brief summary]
 
-new_string: "### Dev Agent Record
-- **Agent Model Used:** Claude Sonnet 4 (multi-agent: Builder + Inspector + Reviewer + Fixer)
-- **Implementation Date:** {{date}}
-- **Files Created/Modified:**
-  {{#each files_changed}}
-  - {{this}}
-  {{/each}}
-- **Tests Added:** [count from Inspector report]
-- **Completion Notes:** [brief summary of what was implemented]"
-```
-
-**Step 5.5: Verify updates (BLOCKER)**
+**Step 5.5: Verify updates**
 ```bash
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "🔍 RECONCILIATION VERIFICATION"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-
-# Count checked tasks
-CHECKED=$(grep -c "^- \[x\]" {{story_file}})
-echo "Checked tasks: $CHECKED"
-
+CHECKED=$(grep -c "^- \[x\]" docs/sprint-artifacts/{{story_key}}.md)
 if [ "$CHECKED" -eq 0 ]; then
   echo "❌ BLOCKER: Zero checked tasks"
-  echo "Go back to Step 5.3 and check off tasks"
   exit 1
 fi
-
-# Verify Dev Agent Record
-RECORD=$(grep -A 5 "### Dev Agent Record" {{story_file}} | grep -c "Implementation Date:")
-if [ "$RECORD" -eq 0 ]; then
-  echo "❌ BLOCKER: Dev Agent Record not filled"
-  echo "Go back to Step 5.4 and fill it"
-  exit 1
-fi
-
-echo "✅ Reconciliation verified: $CHECKED tasks checked"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "✅ Verified: $CHECKED tasks checked"
 ```
 
-**If verification fails:** DO NOT proceed. Fix immediately using Edit tool, then re-verify.
+If verification fails: fix using Edit, then re-verify.
+</step>
 
----
-
-## Final Verification (Main Orchestrator)
-
-🚨 **CRITICAL: This verification is MANDATORY. DO NOT skip.** 🚨
-
-**After all agents complete (including Reconciler), YOU (the main orchestrator) must:**
-
-1. **Use the Bash tool** to run these commands
-2. **Read the output** to see if verification passed
-3. **If verification fails**, use Edit and Bash tools to fix it NOW
-4. **Do not proceed** until verification passes
-
-**COMMAND TO RUN WITH BASH TOOL:**
+<step name="final_verification">
+**Final Quality Gate**
 
 ```bash
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "🔍 FINAL VERIFICATION (MANDATORY)"
+echo "🔍 FINAL VERIFICATION"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
-# 1. Check git commits exist
-echo "Checking git commits..."
-git log --oneline -3 | grep "{{story_key}}"
-if [ $? -ne 0 ]; then
-  echo "❌ FAILED: No commit found for {{story_key}}"
-  echo "The Fixer agent did not commit changes."
-  exit 1
-fi
+# 1. Git commit exists
+git log --oneline -3 | grep "{{story_key}}" || { echo "❌ No commit"; exit 1; }
 echo "✅ Git commit found"
 
-# 2. Check story file has checked tasks (ABSOLUTE BLOCKER)
-echo "Checking story file updates..."
-CHECKED_COUNT=$(grep -c '^- \[x\]' {{story_file}})
-echo "Checked tasks: $CHECKED_COUNT"
+# 2. Story tasks checked
+CHECKED=$(grep -c "^- \[x\]" docs/sprint-artifacts/{{story_key}}.md)
+[ "$CHECKED" -gt 0 ] || { echo "❌ No tasks checked"; exit 1; }
+echo "✅ $CHECKED tasks checked"
 
-if [ "$CHECKED_COUNT" -eq 0 ]; then
-  echo ""
-  echo "❌ BLOCKER: Story file has ZERO checked tasks"
-  echo ""
-  echo "This means the Fixer agent did NOT update the story file."
-  echo "The story CANNOT be marked complete without checked tasks."
-  echo ""
-  echo "You must:"
-  echo "  1. Read the git commit to see what was built"
-  echo "  2. Read the story Tasks section"
-  echo "  3. Use Edit tool to check off completed tasks"
-  echo "  4. Fill in Dev Agent Record"
-  echo "  5. Verify with grep"
-  echo "  6. Re-run this verification"
-  echo ""
-  exit 1
-fi
-echo "✅ Story file has $CHECKED_COUNT checked tasks"
-
-# 3. Check Dev Agent Record filled
-echo "Checking Dev Agent Record..."
-RECORD_FILLED=$(grep -A 20 "^### Dev Agent Record" {{story_file}} | grep -c "Agent Model")
-if [ "$RECORD_FILLED" -eq 0 ]; then
-  echo "❌ BLOCKER: Dev Agent Record NOT filled"
-  echo "The Fixer agent did not document what was built."
-  exit 1
-fi
+# 3. Dev Agent Record filled
+grep -A 3 "### Dev Agent Record" docs/sprint-artifacts/{{story_key}}.md | grep -q "202" || { echo "❌ Record not filled"; exit 1; }
 echo "✅ Dev Agent Record filled"
 
-# 4. Check sprint-status updated
-echo "Checking sprint-status..."
-git diff HEAD~1 {{sprint_status}} | grep "{{story_key}}"
-if [ $? -ne 0 ]; then
-  echo "❌ FAILED: Sprint status not updated for {{story_key}}"
-  exit 1
-fi
-echo "✅ Sprint status updated"
-
-# 5. Check test evidence (optional - may have test failures)
-echo "Checking test evidence..."
-if [ -f "inspector_output.txt" ]; then
-  grep -E "PASS|tests.*passing" inspector_output.txt && echo "✅ Tests passing"
-fi
-
 echo ""
+echo "✅ STORY COMPLETE"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "✅ STORY COMPLETE - All verifications passed"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 ```
 
-**IF VERIFICATION FAILS:**
-- DO NOT mark story as "done"
-- DO NOT proceed to next story
-- FIX the failure immediately
-- Re-run verification until it passes
+**Update sprint-status.yaml:**
+Use Edit tool to change story status from `ready-for-dev` to `done`.
+</step>
 
----
+</process>
 
-## Benefits Over Single-Agent
+<failure_handling>
+**Builder fails:** Don't spawn Inspector. Report failure.
+**Inspector fails:** Don't spawn Reviewer. Report specific failures.
+**Reviewer finds CRITICAL:** Fixer must fix (not optional).
+**Fixer fails:** Report unfixed issues. Manual intervention needed.
+**Reconciliation fails:** Fix using Edit tool. Re-verify.
+</failure_handling>
 
-### Separation of Concerns
-- Builder doesn't validate own work
-- Inspector has no incentive to lie
-- Reviewer approaches with fresh eyes
-- Fixer can't skip issues
+<complexity_routing>
+| Complexity | Agents | Notes |
+|------------|--------|-------|
+| micro | Builder → Inspector → Fixer | Skip Reviewer (low risk) |
+| standard | Builder → Inspector → Reviewer → Fixer | Full pipeline |
+| complex | Builder → Inspector → Reviewer (enhanced) → Fixer | Extra scrutiny |
+</complexity_routing>
 
-### Fresh Context Each Phase
-- Each agent starts at 0% context
-- No accumulated fatigue
-- No degraded quality
-- Honest reporting
-
-### Adversarial Review
-- Reviewer WANTS to find issues
-- Not defensive about the code
-- More thorough than self-review
-
-### Honest Verification
-- Inspector runs tests independently
-- Main orchestrator verifies everything
-- Can't fake completion
-
----
-
-## Complexity Routing
-
-**MICRO stories:**
-- Skip Reviewer (low risk)
-- 2 agents: Builder → Inspector → Fixer
-
-**STANDARD stories:**
-- Full pipeline
-- 4 agents: Builder → Inspector → Reviewer → Fixer
-
-**COMPLEX stories:**
-- Enhanced review (6 reviewers instead of 4)
-- Full pipeline + extra scrutiny
-- 4 agents: Builder → Inspector → Reviewer (enhanced) → Fixer
-
----
-
-## Agent Tracking
-
-Track all agents in `agent-history.json`:
-
-```json
-{
-  "version": "1.0",
-  "max_entries": 50,
-  "entries": [
-    {
-      "agent_id": "abc123",
-      "story_key": "17-10",
-      "phase": "builder",
-      "steps": [1,2,3,4],
-      "timestamp": "2026-01-25T21:00:00Z",
-      "status": "completed",
-      "completion_timestamp": "2026-01-25T21:15:00Z"
-    },
-    {
-      "agent_id": "def456",
-      "story_key": "17-10",
-      "phase": "inspector",
-      "steps": [5,6],
-      "timestamp": "2026-01-25T21:16:00Z",
-      "status": "completed",
-      "completion_timestamp": "2026-01-25T21:20:00Z"
-    }
-  ]
-}
-```
-
-**Benefits:**
-- Resume interrupted sessions
-- Track agent performance
-- Debug failed pipelines
-- Audit trail
-
----
-
-## Error Handling
-
-**If Builder fails:**
-- Don't spawn Inspector
-- Report failure to user
-- Option to resume or retry
-
-**If Inspector fails:**
-- Don't spawn Reviewer
-- Report specific failures
-- Resume Builder to fix issues
-
-**If Reviewer finds CRITICAL issues:**
-- Must spawn Fixer (not optional)
-- Cannot mark story complete until fixed
-
-**If Fixer fails:**
-- Report unfixed issues
-- Cannot mark story complete
-- Manual intervention required
-
----
-
-## Comparison: v1.x vs v2.0
-
-| Aspect | v1.x (Single-Agent) | v2.0 (Multi-Agent) |
-|--------|--------------------|--------------------|
-| Agents | 1 | 4 |
-| Validation | Self (conflict of interest) | Independent (no conflict) |
-| Code Review | Self-review | Adversarial (fresh eyes) |
-| Honesty | Low (can lie) | High (verified) |
-| Context | Degrades over 11 steps | Fresh each phase |
-| Catches Issues | Low | High |
-| Completion Accuracy | ~60% (agents lie) | ~95% (verified) |
-
----
-
-## Migration from v1.x
-
-**Backward Compatibility:**
-```yaml
-execution_mode: "single_agent"  # Use v1.x
-execution_mode: "multi_agent"   # Use v2.0 (new)
-```
-
-**Gradual Rollout:**
-1. Week 1: Test v2.0 on 3-5 stories
-2. Week 2: Make v2.0 default for new stories
-3. Week 3: Migrate existing stories to v2.0
-4. Week 4: Deprecate v1.x
-
----
-
-## Hospital-Grade Standards
-
-⚕️ **Lives May Be at Stake**
-
-- Independent validation catches errors
-- Adversarial review finds security flaws
-- Multiple checkpoints prevent shortcuts
-- Final verification prevents false completion
-
-**QUALITY >> SPEED**
-
----
-
-**Key Takeaway:** Don't trust a single agent to build, validate, review, and commit its own work. Use independent agents with fresh context at each phase.
+<success_criteria>
+- [ ] All agents completed successfully
+- [ ] Git commit exists for story
+- [ ] Story file has checked tasks (count > 0)
+- [ ] Dev Agent Record filled
+- [ ] Sprint status updated to "done"
+</success_criteria>
