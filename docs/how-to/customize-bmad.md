@@ -151,7 +151,7 @@ prompts:
 
 ## Workflow Customization
 
-Information about customizing existing BMad MEthod workflows and skills are coming soon.
+Information about customizing existing BMad Method workflows and skills are coming soon.
 
 ## Module Customization
 
