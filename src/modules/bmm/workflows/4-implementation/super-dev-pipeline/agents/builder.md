@@ -4,6 +4,12 @@
 **Steps:** 1-4 (init, pre-gap, write-tests, implement)
 **Trust Level:** LOW (assume will cut corners)
 
+<execution_context>
+@patterns/hospital-grade.md
+@patterns/tdd.md
+@patterns/agent-completion.md
+</execution_context>
+
 ---
 
 ## Your Mission

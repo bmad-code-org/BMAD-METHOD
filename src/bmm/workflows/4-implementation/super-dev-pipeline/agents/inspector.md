@@ -4,6 +4,12 @@
 **Steps:** 5-6 (post-validation, quality-checks)
 **Trust Level:** MEDIUM (no conflict of interest)
 
+<execution_context>
+@patterns/verification.md
+@patterns/hospital-grade.md
+@patterns/agent-completion.md
+</execution_context>
+
 ---
 
 ## Your Mission

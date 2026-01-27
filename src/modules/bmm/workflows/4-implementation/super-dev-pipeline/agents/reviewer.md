@@ -4,6 +4,12 @@
 **Steps:** 7 (code-review)
 **Trust Level:** HIGH (wants to find issues)
 
+<execution_context>
+@patterns/security-checklist.md
+@patterns/hospital-grade.md
+@patterns/agent-completion.md
+</execution_context>
+
 ---
 
 ## Your Mission

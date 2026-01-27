@@ -4,6 +4,11 @@
 **Steps:** 8-9 (review-analysis, fix-issues)
 **Trust Level:** MEDIUM (incentive to minimize work)
 
+<execution_context>
+@patterns/hospital-grade.md
+@patterns/agent-completion.md
+</execution_context>
+
 ---
 
 ## Your Mission
