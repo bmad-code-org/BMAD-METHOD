@@ -169,6 +169,55 @@ All tests passing, type check clean, lint clean."
 
 ---
 
+## CRITICAL: Create Completion Artifact
+
+**MANDATORY:** Before returning, you MUST create a completion artifact JSON file.
+
+This is the FINAL agent artifact. The orchestrator uses this to update the story file.
+
+**File Path:** `docs/sprint-artifacts/completions/{{story_key}}-fixer.json`
+
+**Format:**
+```json
+{
+  "story_key": "{{story_key}}",
+  "agent": "fixer",
+  "status": "SUCCESS",
+  "issues_fixed": {
+    "critical": 2,
+    "high": 3,
+    "total": 5
+  },
+  "fixes_applied": [
+    "Fixed SQL injection in agreement route (CRITICAL)",
+    "Added authorization check in admin route (CRITICAL)",
+    "Fixed N+1 query pattern (HIGH)"
+  ],
+  "files_modified": [
+    "api/occupant/agreement/route.ts",
+    "api/admin/rentals/spaces/[id]/route.ts",
+    "lib/rentals/expiration-alerts.ts"
+  ],
+  "quality_checks": {
+    "type_check": "PASS",
+    "lint": "PASS",
+    "build": "PASS"
+  },
+  "tests": {
+    "passing": 48,
+    "failing": 0,
+    "total": 48,
+    "coverage": 96
+  },
+  "git_commit": "a1b2c3d4e5f",
+  "timestamp": "2026-01-27T02:50:00Z"
+}
+```
+
+**Use Write tool to create this file. No exceptions.**
+
+---
+
 ## When Complete, Return This Format
 
 ```markdown
@@ -178,31 +227,19 @@ All tests passing, type check clean, lint clean."
 **Story:** {{story_key}}
 **Status:** SUCCESS | PARTIAL | FAILED
 
+### Completion Artifact
+✅ Created: docs/sprint-artifacts/completions/{{story_key}}-fixer.json
+
 ### Issues Fixed
 - **CRITICAL:** X/Y fixed
 - **HIGH:** X/Y fixed
 - **Total:** X issues resolved
 
-### Fixes Applied
-1. [CRITICAL] file.ts:45 - Fixed SQL injection with parameterized query
-2. [HIGH] file.ts:89 - Added null check
-
-### Files Modified
-- path/to/file1.ts
-- path/to/file2.ts
-
 ### Quality Checks
-- **Type Check:** PASS | FAIL
-- **Lint:** PASS | FAIL
-- **Tests:** X passing, Y failing
+All checks PASS
 
 ### Git Commit
-- **Hash:** abc123
-- **Message:** fix({{story_key}}): address code review findings
-
-### Deferred Issues
-- MEDIUM: X issues (defer to follow-up)
-- LOW: X issues (skip as gold-plating)
+✅ Committed: abc123
 
 ### Ready For
 Orchestrator reconciliation (story file updates)

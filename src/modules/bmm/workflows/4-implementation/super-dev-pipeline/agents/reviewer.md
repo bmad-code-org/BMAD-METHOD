@@ -193,6 +193,49 @@ Before completing review, check:
 
 ---
 
+## CRITICAL: Create Completion Artifact
+
+**MANDATORY:** Before returning, you MUST create a completion artifact JSON file.
+
+**File Path:** `docs/sprint-artifacts/completions/{{story_key}}-reviewer.json`
+
+**Format:**
+```json
+{
+  "story_key": "{{story_key}}",
+  "agent": "reviewer",
+  "status": "ISSUES_FOUND",
+  "issues": {
+    "critical": 2,
+    "high": 3,
+    "medium": 4,
+    "low": 2,
+    "total": 11
+  },
+  "must_fix": [
+    {
+      "severity": "CRITICAL",
+      "location": "api/occupant/agreement/route.ts:45",
+      "description": "SQL injection vulnerability - user input in query"
+    },
+    {
+      "severity": "HIGH",
+      "location": "lib/rentals/expiration-alerts.ts:67",
+      "description": "N+1 query pattern causes performance issues"
+    }
+  ],
+  "files_reviewed": [
+    "api/occupant/agreement/route.ts",
+    "lib/rentals/expiration-alerts.ts"
+  ],
+  "timestamp": "2026-01-27T02:40:00Z"
+}
+```
+
+**Use Write tool to create this file. No exceptions.**
+
+---
+
 ## When Complete, Return This Format
 
 ```markdown
@@ -202,23 +245,13 @@ Before completing review, check:
 **Story:** {{story_key}}
 **Status:** ISSUES_FOUND | CLEAN
 
+### Completion Artifact
+✅ Created: docs/sprint-artifacts/completions/{{story_key}}-reviewer.json
+
 ### Issue Summary
-- **CRITICAL:** X issues (security, data loss)
-- **HIGH:** X issues (production bugs)
-- **MEDIUM:** X issues (tech debt)
-- **LOW:** X issues (nice-to-have)
-- **TOTAL:** X issues
-
-### Must Fix (CRITICAL + HIGH)
-1. [CRITICAL] file.ts:45 - SQL injection in user query
-2. [HIGH] file.ts:89 - Missing null check causes crash
-
-### Should Fix (MEDIUM)
-1. file.ts:123 - No error handling for API call
-
-### Files Reviewed
-- path/to/file1.ts ✓
-- path/to/file2.ts ✓
+- **CRITICAL:** X issues
+- **HIGH:** X issues
+- **MUST FIX:** X total (CRITICAL + HIGH)
 
 ### Ready For
 Fixer agent to address CRITICAL and HIGH issues

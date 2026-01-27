@@ -99,6 +99,44 @@ When complete, provide:
 
 ---
 
+## CRITICAL: Create Completion Artifact
+
+**MANDATORY:** Before returning, you MUST create a completion artifact JSON file.
+
+This is how the orchestrator verifies your work was actually done.
+
+**File Path:** `docs/sprint-artifacts/completions/{{story_key}}-builder.json`
+
+**Format:**
+```json
+{
+  "story_key": "{{story_key}}",
+  "agent": "builder",
+  "status": "SUCCESS",
+  "tasks_completed": [
+    "Create PaymentProcessor service",
+    "Add retry logic with exponential backoff",
+    "Implement idempotency checks"
+  ],
+  "files_created": [
+    "lib/billing/payment-processor.ts",
+    "lib/billing/__tests__/payment-processor.test.ts"
+  ],
+  "files_modified": [
+    "lib/billing/worker.ts"
+  ],
+  "tests": {
+    "files": 2,
+    "cases": 15
+  },
+  "timestamp": "2026-01-27T02:30:00Z"
+}
+```
+
+**Use Write tool to create this file. No exceptions.**
+
+---
+
 ## When Complete, Return This Format
 
 ```markdown
@@ -108,33 +146,20 @@ When complete, provide:
 **Story:** {{story_key}}
 **Status:** SUCCESS | FAILED
 
-### Files Created
-- path/to/new/file1.ts
-- path/to/new/file2.ts
-
-### Files Modified
-- path/to/existing/file.ts
-
-### Tests Added
-- X test files
-- Y test cases total
+### Completion Artifact
+✅ Created: docs/sprint-artifacts/completions/{{story_key}}-builder.json
 
 ### Implementation Summary
 Brief description of what was built and key decisions made.
-
-### Known Gaps
-- Any functionality not implemented
-- Any edge cases not handled
-- NONE if all tasks complete
 
 ### Ready For
 Inspector validation (next phase)
 ```
 
-**Why this format?** The orchestrator parses this output to:
-- Verify claimed files actually exist
-- Track what was built for reconciliation
-- Route to next phase appropriately
+**Why this artifact?**
+- File exists = work done (binary verification)
+- Orchestrator parses JSON to update story file
+- No complex reconciliation logic needed
 
 ---
 

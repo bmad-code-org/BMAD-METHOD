@@ -156,6 +156,41 @@ Cannot proceed to code review until these are fixed.
 
 ---
 
+## CRITICAL: Create Completion Artifact
+
+**MANDATORY:** Before returning, you MUST create a completion artifact JSON file.
+
+**File Path:** `docs/sprint-artifacts/completions/{{story_key}}-inspector.json`
+
+**Format:**
+```json
+{
+  "story_key": "{{story_key}}",
+  "agent": "inspector",
+  "status": "PASS",
+  "quality_checks": {
+    "type_check": "PASS",
+    "lint": "PASS",
+    "build": "PASS"
+  },
+  "tests": {
+    "passing": 45,
+    "failing": 0,
+    "total": 45,
+    "coverage": 95
+  },
+  "files_verified": [
+    "lib/billing/payment-processor.ts",
+    "lib/billing/__tests__/payment-processor.test.ts"
+  ],
+  "timestamp": "2026-01-27T02:35:00Z"
+}
+```
+
+**Use Write tool to create this file. No exceptions.**
+
+---
+
 ## When Complete, Return This Format
 
 ```markdown
@@ -165,20 +200,14 @@ Cannot proceed to code review until these are fixed.
 **Story:** {{story_key}}
 **Status:** PASS | FAIL
 
-### Evidence
-- **Type Check:** PASS (0 errors) | FAIL (X errors)
-- **Lint:** PASS (0 warnings) | FAIL (X warnings)
-- **Build:** PASS | FAIL
-- **Tests:** X passing, Y failing, Z% coverage
+### Completion Artifact
+✅ Created: docs/sprint-artifacts/completions/{{story_key}}-inspector.json
 
-### Files Verified
-- path/to/file1.ts ✓
-- path/to/file2.ts ✓
-- path/to/missing.ts ✗ (NOT FOUND)
-
-### Failures (if FAIL status)
-1. Specific failure with file:line reference
-2. Another specific failure
+### Evidence Summary
+- Type Check: PASS/FAIL
+- Lint: PASS/FAIL
+- Build: PASS/FAIL
+- Tests: X passing, Y failing
 
 ### Ready For
 - If PASS: Reviewer (next phase)
