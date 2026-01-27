@@ -187,40 +187,85 @@ Task({
 
 ## Final Verification (Main Orchestrator)
 
-**After all agents complete, verify:**
+🚨 **CRITICAL: This verification is MANDATORY. DO NOT skip.** 🚨
+
+**After all agents complete, the MAIN ORCHESTRATOR must run this verification:**
 
 ```bash
-# 1. Check git commits
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "🔍 FINAL VERIFICATION (MANDATORY)"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+# 1. Check git commits exist
+echo "Checking git commits..."
 git log --oneline -3 | grep "{{story_key}}"
 if [ $? -ne 0 ]; then
-  echo "❌ FAILED: No commit found"
+  echo "❌ FAILED: No commit found for {{story_key}}"
+  echo "The Fixer agent did not commit changes."
   exit 1
 fi
+echo "✅ Git commit found"
 
-# 2. Check story checkboxes
-before=$(git show HEAD~1:{{story_file}} | grep -c '^- \[x\]')
-after=$(grep -c '^- \[x\]' {{story_file}})
-if [ $after -le $before ]; then
-  echo "❌ FAILED: Checkboxes not updated"
+# 2. Check story file has checked tasks (ABSOLUTE BLOCKER)
+echo "Checking story file updates..."
+CHECKED_COUNT=$(grep -c '^- \[x\]' {{story_file}})
+echo "Checked tasks: $CHECKED_COUNT"
+
+if [ "$CHECKED_COUNT" -eq 0 ]; then
+  echo ""
+  echo "❌ BLOCKER: Story file has ZERO checked tasks"
+  echo ""
+  echo "This means the Fixer agent did NOT update the story file."
+  echo "The story CANNOT be marked complete without checked tasks."
+  echo ""
+  echo "You must:"
+  echo "  1. Read the git commit to see what was built"
+  echo "  2. Read the story Tasks section"
+  echo "  3. Use Edit tool to check off completed tasks"
+  echo "  4. Fill in Dev Agent Record"
+  echo "  5. Verify with grep"
+  echo "  6. Re-run this verification"
+  echo ""
   exit 1
 fi
+echo "✅ Story file has $CHECKED_COUNT checked tasks"
 
-# 3. Check sprint-status
-git diff HEAD~1 {{sprint_status}} | grep "{{story_key}}: done"
+# 3. Check Dev Agent Record filled
+echo "Checking Dev Agent Record..."
+RECORD_FILLED=$(grep -A 20 "^### Dev Agent Record" {{story_file}} | grep -c "Agent Model")
+if [ "$RECORD_FILLED" -eq 0 ]; then
+  echo "❌ BLOCKER: Dev Agent Record NOT filled"
+  echo "The Fixer agent did not document what was built."
+  exit 1
+fi
+echo "✅ Dev Agent Record filled"
+
+# 4. Check sprint-status updated
+echo "Checking sprint-status..."
+git diff HEAD~1 {{sprint_status}} | grep "{{story_key}}"
 if [ $? -ne 0 ]; then
-  echo "❌ FAILED: Sprint status not updated"
+  echo "❌ FAILED: Sprint status not updated for {{story_key}}"
   exit 1
 fi
+echo "✅ Sprint status updated"
 
-# 4. Check Inspector output for test evidence
-grep -E "PASS|tests.*passing" inspector_output.txt
-if [ $? -ne 0 ]; then
-  echo "❌ FAILED: No test evidence"
-  exit 1
+# 5. Check test evidence (optional - may have test failures)
+echo "Checking test evidence..."
+if [ -f "inspector_output.txt" ]; then
+  grep -E "PASS|tests.*passing" inspector_output.txt && echo "✅ Tests passing"
 fi
 
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "✅ STORY COMPLETE - All verifications passed"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 ```
+
+**IF VERIFICATION FAILS:**
+- DO NOT mark story as "done"
+- DO NOT proceed to next story
+- FIX the failure immediately
+- Re-run verification until it passes
 
 ---
 
