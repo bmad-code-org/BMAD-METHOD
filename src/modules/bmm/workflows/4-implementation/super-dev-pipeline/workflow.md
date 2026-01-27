@@ -50,12 +50,19 @@ This workflow implements a story using **4 independent agents** with external va
          │    - Fix HIGH issues (all)
          │    - Fix MEDIUM issues (if time)
          │    - Skip LOW issues (gold-plating)
-         │    - Update story + sprint-status
-         │    - Commit changes
+         │    - Commit code changes
+         │
+         ├──> Phase 5: Reconciler (Step 10) 🚨 MANDATORY
+         │    - Read git commit to see what was built
+         │    - Check off completed tasks in story file
+         │    - Fill Dev Agent Record with details
+         │    - VERIFY updates with bash commands
+         │    - BLOCKER: Exit 1 if verification fails
          │
          └──> Final Verification (Main)
               - Check git commits exist
-              - Check story checkboxes updated
+              - Check story checkboxes updated (count > 0)
+              - Check Dev Agent Record filled
               - Check sprint-status updated
               - Check tests passed
               - Mark COMPLETE or FAILED
@@ -182,6 +189,53 @@ Task({
 ```
 
 **Wait for Fixer to complete.**
+
+### Phase 5: Spawn Reconciler (MANDATORY)
+
+🚨 **THIS PHASE IS MANDATORY. ALWAYS RUN. CANNOT BE SKIPPED.** 🚨
+
+```javascript
+Task({
+  subagent_type: "general-purpose",
+  description: "Reconcile story {{story_key}}",
+  prompt: `
+    You are the RECONCILER agent for story {{story_key}}.
+
+    Load and execute: {agents_path}/reconciler.md
+
+    Story file: {{story_file}}
+    Story key: {{story_key}}
+
+    Complete Step 10 - Story Reconciliation:
+
+    Your ONLY job:
+    1. Read git commit to see what was built
+    2. Check off completed tasks in story file (Edit tool)
+    3. Fill Dev Agent Record with files/dates/notes
+    4. Verify updates worked (bash grep commands)
+    5. Exit 1 if verification fails
+
+    DO NOT:
+    - Write code
+    - Fix bugs
+    - Run tests
+    - Do anything except update the story file
+
+    This is the LAST step. The story cannot be marked complete
+    without your verification passing.
+
+    Output: Reconciliation summary with checked task count.
+  `
+});
+```
+
+**Wait for Reconciler to complete. Verification MUST pass.**
+
+**If Reconciler verification fails (exit 1):**
+- DO NOT proceed
+- DO NOT mark story complete
+- Fix the reconciliation immediately
+- Re-run Reconciler until it passes
 
 ---
 
