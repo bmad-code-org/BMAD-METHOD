@@ -67,10 +67,26 @@ class WorkflowCommandGenerator {
 
     for (const workflow of allWorkflows) {
       const commandContent = await this.generateCommandContent(workflow, bmadDir);
+      // Calculate the relative workflow path (e.g., bmm/workflows/4-implementation/sprint-planning/workflow.yaml)
+      let workflowRelPath = workflow.path;
+      // Remove _bmad/ prefix if present to get relative path from project root
+      // Handle both absolute paths (/path/to/_bmad/...) and relative paths (_bmad/...)
+      if (workflowRelPath.includes('_bmad/')) {
+        const parts = workflowRelPath.split(/_bmad\//);
+        if (parts.length > 1) {
+          workflowRelPath = parts.slice(1).join('/');
+        }
+      }
+      // Determine if this is a YAML workflow
+      const isYamlWorkflow = workflow.path.endsWith('.yaml') || workflow.path.endsWith('.yml');
       artifacts.push({
         type: 'workflow-command',
+        isYamlWorkflow: isYamlWorkflow, // For template selection
+        name: workflow.name,
+        description: workflow.description || `${workflow.name} workflow`,
         module: workflow.module,
         relativePath: path.join(workflow.module, 'workflows', `${workflow.name}.md`),
+        workflowPath: workflowRelPath, // Relative path to actual workflow file
         content: commandContent,
         sourcePath: workflow.path,
       });
@@ -240,8 +256,8 @@ When running any workflow:
   }
 
   /**
-   * Write workflow command artifacts using COLON format (for folder-based IDEs)
-   * Creates flat files like: bmad:bmm:correct-course.md
+   * Write workflow command artifacts using underscore format (Windows-compatible)
+   * Creates flat files like: bmad_bmm_correct-course.md
    *
    * @param {string} baseCommandsDir - Base commands directory for the IDE
    * @param {Array} artifacts - Workflow artifacts
@@ -252,7 +268,7 @@ When running any workflow:
 
     for (const artifact of artifacts) {
       if (artifact.type === 'workflow-command') {
-        // Convert relativePath to colon format: bmm/workflows/correct-course.md → bmad:bmm:correct-course.md
+        // Convert relativePath to underscore format: bmm/workflows/correct-course.md → bmad_bmm_correct-course.md
         const flatName = toColonPath(artifact.relativePath);
         const commandPath = path.join(baseCommandsDir, flatName);
         await fs.ensureDir(path.dirname(commandPath));
@@ -265,8 +281,10 @@ When running any workflow:
   }
 
   /**
-   * Write workflow command artifacts using DASH format (for flat IDEs)
+   * Write workflow command artifacts using dash format (NEW STANDARD)
    * Creates flat files like: bmad-bmm-correct-course.md
+   *
+   * Note: Workflows do NOT have .agent.md suffix - only agents do.
    *
    * @param {string} baseCommandsDir - Base commands directory for the IDE
    * @param {Array} artifacts - Workflow artifacts

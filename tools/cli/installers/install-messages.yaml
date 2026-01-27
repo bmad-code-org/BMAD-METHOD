@@ -6,24 +6,24 @@
 startMessage: |
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-  ⭐ IMPORTANT: Version Alpha.23 Changes
+  🎉 BETA IS HERE! Welcome to BMad Method V6 Beta!
 
-  If your current version is older than Alpha.21, you'll need a fresh install:
-    - Remove .bmad folder and reinstall
-    - Only needed during final push to beta (ETA January 18th)
+  We've officially graduated from Alpha! This milestone represents:
+    - 50+ workflows covering the full development lifecycle
+    - Stability - we will still be adding and evolving and optimizing, 
+      but anticipate no massive breaking changes
+    - Groundwork in place for customization and community modules
 
   📚 New Docs Site: http://docs.bmad-method.org/
-    - Tons of guides and articles coming soon!
+    - High quality tutorials, guided walkthrough, and articles coming soon!
     - Everything is free. No paywalls. No gated content.
     - Knowledge should be shared, not sold.
-
-  📺 YouTube Master Class & Podcast launching February 1st!
 
   💡 Love BMad? Please star us on GitHub & subscribe on YouTube!
     - GitHub: https://github.com/bmad-code-org/BMAD-METHOD/
     - YouTube: https://www.youtube.com/@BMadCode
 
-  Latest updates: https://github.com/bmad-code-org/BMAD-METHOD/blob/main/CHANGELOG.md
+  Latest updates: https://github.com/bmad-code-org/BMAD-METHOD/CHANGELOG.md
 
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -31,13 +31,14 @@ startMessage: |
 endMessage: |
   ════════════════════════════════════════════════════════════════════════════════
 
-  ✨ BMAD IS READY! Beta is just days away! Thank you for your support!
+  ✨ BMAD V6 BETA IS INSTALLED! Thank you for being part of this journey!
 
   🌟 BMad is 100% free and open source.
     - No gated Discord. No paywalls.
     - We believe in empowering everyone, not just those who can pay.
 
   🙏 SUPPORT BMAD DEVELOPMENT:
+    - During the Beta, please give us feedback and raise issues on GitHub!
     - Donate: https://buymeacoffee.com/bmad
     - Corporate Sponsorship available - DM on Discord
 
@@ -48,7 +49,7 @@ endMessage: |
 
   📚 RESOURCES:
     - Docs: http://docs.bmad-method.org/ (bookmark it!)
-    - Changelog: https://github.com/bmad-code-org/BMAD-METHOD/blob/main/CHANGELOG.md
+    - Changelog: https://github.com/bmad-code-org/BMAD-METHOD/CHANGELOG.md
 
   ⭐⭐⭐ HELP US GROW:
     - Star us on GitHub: https://github.com/bmad-code-org/BMAD-METHOD/

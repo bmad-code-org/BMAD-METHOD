@@ -10,6 +10,7 @@ modules:
     description: "Agent, Workflow and Module Builder"
     defaultSelected: false
     type: bmad-org
+    npmPackage: bmad-builder
 
   bmad-creative-intelligence-suite:
     url: https://github.com/bmad-code-org/bmad-module-creative-intelligence-suite
@@ -19,6 +20,7 @@ modules:
     description: "Creative tools for writing, brainstorming, and more"
     defaultSelected: false
     type: bmad-org
+    npmPackage: bmad-creative-intelligence-suite
 
   bmad-game-dev-studio:
     url: https://github.com/bmad-code-org/bmad-module-game-dev-studio.git
@@ -28,6 +30,7 @@ modules:
     description: "Game development agents and workflows"
     defaultSelected: false
     type: bmad-org
+    npmPackage: bmad-game-dev-studio
 
 # TODO: Enable once fixes applied:
 

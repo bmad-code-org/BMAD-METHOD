@@ -86,7 +86,7 @@ class CodexSetup extends BaseIdeSetup {
     await fs.ensureDir(destDir);
     await this.clearOldBmadFiles(destDir);
 
-    // Collect artifacts and write using DASH format
+    // Collect artifacts and write using underscore format
     const agentGen = new AgentCommandGenerator(this.bmadFolderName);
     const { artifacts: agentArtifacts } = await agentGen.collectAgentArtifacts(bmadDir, options.selectedModules || []);
     const agentCount = await agentGen.writeDashArtifacts(destDir, agentArtifacts);
@@ -115,7 +115,7 @@ class CodexSetup extends BaseIdeSetup {
     const { artifacts: workflowArtifacts } = await workflowGenerator.collectWorkflowArtifacts(bmadDir);
     const workflowCount = await workflowGenerator.writeDashArtifacts(destDir, workflowArtifacts);
 
-    // Also write tasks using dash format
+    // Also write tasks using underscore format
     const ttGen = new TaskToolCommandGenerator();
     const tasksWritten = await ttGen.writeDashArtifacts(destDir, taskArtifacts);
 
@@ -154,17 +154,25 @@ class CodexSetup extends BaseIdeSetup {
 
     // Check global location
     if (await fs.pathExists(globalDir)) {
-      const entries = await fs.readdir(globalDir);
-      if (entries.some((entry) => entry.startsWith('bmad-'))) {
-        return true;
+      try {
+        const entries = await fs.readdir(globalDir);
+        if (entries && entries.some((entry) => entry && typeof entry === 'string' && entry.startsWith('bmad'))) {
+          return true;
+        }
+      } catch {
+        // Ignore errors
       }
     }
 
     // Check project-specific location
     if (await fs.pathExists(projectSpecificDir)) {
-      const entries = await fs.readdir(projectSpecificDir);
-      if (entries.some((entry) => entry.startsWith('bmad-'))) {
-        return true;
+      try {
+        const entries = await fs.readdir(projectSpecificDir);
+        if (entries && entries.some((entry) => entry && typeof entry === 'string' && entry.startsWith('bmad'))) {
+          return true;
+        }
+      } catch {
+        // Ignore errors
       }
     }
 
@@ -253,19 +261,39 @@ class CodexSetup extends BaseIdeSetup {
       return;
     }
 
-    const entries = await fs.readdir(destDir);
+    let entries;
+    try {
+      entries = await fs.readdir(destDir);
+    } catch (error) {
+      // Directory exists but can't be read - skip cleanup
+      console.warn(chalk.yellow(`Warning: Could not read directory ${destDir}: ${error.message}`));
+      return;
+    }
+
+    if (!entries || !Array.isArray(entries)) {
+      return;
+    }
 
     for (const entry of entries) {
-      if (!entry.startsWith('bmad-')) {
+      // Skip non-strings or undefined entries
+      if (!entry || typeof entry !== 'string') {
+        continue;
+      }
+      if (!entry.startsWith('bmad')) {
         continue;
       }
 
       const entryPath = path.join(destDir, entry);
-      const stat = await fs.stat(entryPath);
-      if (stat.isFile()) {
-        await fs.remove(entryPath);
-      } else if (stat.isDirectory()) {
-        await fs.remove(entryPath);
+      try {
+        const stat = await fs.stat(entryPath);
+        if (stat.isFile()) {
+          await fs.remove(entryPath);
+        } else if (stat.isDirectory()) {
+          await fs.remove(entryPath);
+        }
+      } catch (error) {
+        // Skip files that can't be processed
+        console.warn(chalk.dim(`  Skipping ${entry}: ${error.message}`));
       }
     }
   }
@@ -292,7 +320,7 @@ class CodexSetup extends BaseIdeSetup {
       chalk.dim("  To use with other projects, you'd need to copy the _bmad dir"),
       '',
       chalk.green('  ✓ You can now use /commands in Codex CLI'),
-      chalk.dim('    Example: /bmad-bmm-pm'),
+      chalk.dim('    Example: /bmad_bmm_pm'),
       chalk.dim('    Type / to see all available commands'),
       '',
       chalk.bold.cyan('═'.repeat(70)),
@@ -397,7 +425,7 @@ You must fully embody this agent's persona and follow all activation instruction
 </agent-activation>
 `;
 
-    // Use dash format: bmad-custom-agents-fred-commit-poet.md
+    // Use underscore format: bmad_custom_fred-commit-poet.md
     const fileName = customAgentDashName(agentName);
     const launcherPath = path.join(destDir, fileName);
     await fs.writeFile(launcherPath, launcherContent, 'utf8');

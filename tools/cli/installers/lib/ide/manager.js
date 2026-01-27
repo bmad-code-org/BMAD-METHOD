@@ -5,11 +5,15 @@ const chalk = require('chalk');
 /**
  * IDE Manager - handles IDE-specific setup
  * Dynamically discovers and loads IDE handlers
+ *
+ * Loading strategy:
+ * 1. Custom installer files (codex.js, kilo.js, kiro-cli.js) - for platforms with unique installation logic
+ * 2. Config-driven handlers (from platform-codes.yaml) - for standard IDE installation patterns
  */
 class IdeManager {
   constructor() {
     this.handlers = new Map();
-    this.loadHandlers();
+    this._initialized = false;
     this.bmadFolderName = 'bmad'; // Default, can be overridden
   }
 
@@ -28,53 +32,76 @@ class IdeManager {
   }
 
   /**
-   * Dynamically load all IDE handlers from directory
+   * Ensure handlers are loaded (lazy loading)
    */
-  loadHandlers() {
+  async ensureInitialized() {
+    if (!this._initialized) {
+      await this.loadHandlers();
+      this._initialized = true;
+    }
+  }
+
+  /**
+   * Dynamically load all IDE handlers
+   * 1. Load custom installer files first (codex.js, kilo.js, kiro-cli.js)
+   * 2. Load config-driven handlers from platform-codes.yaml
+   */
+  async loadHandlers() {
+    // Load custom installer files
+    this.loadCustomInstallerFiles();
+
+    // Load config-driven handlers from platform-codes.yaml
+    await this.loadConfigDrivenHandlers();
+  }
+
+  /**
+   * Load custom installer files (unique installation logic)
+   * These files have special installation patterns that don't fit the config-driven model
+   */
+  loadCustomInstallerFiles() {
     const ideDir = __dirname;
+    const customFiles = ['codex.js', 'kilo.js', 'kiro-cli.js'];
 
-    try {
-      // Get all JS files in the IDE directory
-      const files = fs.readdirSync(ideDir).filter((file) => {
-        // Skip base class, manager, utility files (starting with _), and helper modules
-        return (
-          file.endsWith('.js') &&
-          !file.startsWith('_') &&
-          file !== 'manager.js' &&
-          file !== 'workflow-command-generator.js' &&
-          file !== 'task-tool-command-generator.js'
-        );
-      });
+    for (const file of customFiles) {
+      const filePath = path.join(ideDir, file);
+      if (!fs.existsSync(filePath)) continue;
 
-      // Sort alphabetically for consistent ordering
-      files.sort();
+      try {
+        const HandlerModule = require(filePath);
+        const HandlerClass = HandlerModule.default || Object.values(HandlerModule)[0];
 
-      for (const file of files) {
-        const moduleName = path.basename(file, '.js');
-
-        try {
-          const modulePath = path.join(ideDir, file);
-          const HandlerModule = require(modulePath);
-
-          // Get the first exported class (handles various export styles)
-          const HandlerClass = HandlerModule.default || HandlerModule[Object.keys(HandlerModule)[0]];
-
-          if (HandlerClass) {
-            const instance = new HandlerClass();
-            // Use the name property from the instance (set in constructor)
-            // Only add if the instance has a valid name
-            if (instance.name && typeof instance.name === 'string') {
-              this.handlers.set(instance.name, instance);
-            } else {
-              console.log(chalk.yellow(`  Warning: ${moduleName} handler missing valid 'name' property`));
-            }
+        if (HandlerClass) {
+          const instance = new HandlerClass();
+          if (instance.name && typeof instance.name === 'string') {
+            this.handlers.set(instance.name, instance);
           }
-        } catch (error) {
-          console.log(chalk.yellow(`  Warning: Could not load ${moduleName}: ${error.message}`));
         }
+      } catch (error) {
+        console.log(chalk.yellow(`  Warning: Could not load ${file}: ${error.message}`));
       }
-    } catch (error) {
-      console.error(chalk.red('Failed to load IDE handlers:'), error.message);
+    }
+  }
+
+  /**
+   * Load config-driven handlers from platform-codes.yaml
+   * This creates ConfigDrivenIdeSetup instances for platforms with installer config
+   */
+  async loadConfigDrivenHandlers() {
+    const { loadPlatformCodes } = require('./platform-codes');
+    const platformConfig = await loadPlatformCodes();
+
+    const { ConfigDrivenIdeSetup } = require('./_config-driven');
+
+    for (const [platformCode, platformInfo] of Object.entries(platformConfig.platforms)) {
+      // Skip if already loaded by custom installer
+      if (this.handlers.has(platformCode)) continue;
+
+      // Skip if no installer config (platform may not need installation)
+      if (!platformInfo.installer) continue;
+
+      const handler = new ConfigDrivenIdeSetup(platformCode, platformInfo);
+      handler.setBmadFolderName(this.bmadFolderName);
+      this.handlers.set(platformCode, handler);
     }
   }
 

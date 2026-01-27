@@ -81,7 +81,7 @@ class UI {
       hasLegacyCfg = bmadResult.hasLegacyCfg;
     }
 
-    // Handle legacy .bmad or _cfg folder - these are very old (more than 2 versions behind)
+    // Handle legacy .bmad or _cfg folder - these are very old (v4 or alpha)
     // Show version warning instead of offering conversion
     if (hasLegacyBmadFolder || hasLegacyCfg) {
       console.log('');
@@ -92,9 +92,8 @@ class UI {
           'Found a ".bmad"/"bmad" folder, or a legacy "_cfg" folder under the bmad folder - this is from a old BMAD version that is out of date for automatic upgrade, manual intervention required.',
         ),
       );
-      console.log(chalk.yellow('This version is more than 2 alpha versions behind current.'));
+      console.log(chalk.yellow('You have a legacy version installed (v4 or alpha).'));
       console.log('');
-      console.log(chalk.dim('For stability, we only support updates from the previous 2 alpha versions.'));
       console.log(chalk.dim('Legacy installations may have compatibility issues.'));
       console.log('');
       console.log(chalk.dim('For the best experience, we strongly recommend:'));
@@ -188,8 +187,8 @@ class UI {
       const currentVersion = require(packageJsonPath).version;
       const installedVersion = existingInstall.version || 'unknown';
 
-      // Check if version is too old and warn user
-      const shouldProceed = await this.showOldAlphaVersionWarning(installedVersion, currentVersion, path.basename(bmadDir));
+      // Check if version is pre beta
+      const shouldProceed = await this.showLegacyVersionWarning(installedVersion, currentVersion, path.basename(bmadDir));
 
       // If user chose to cancel, exit the installer
       if (!shouldProceed) {
@@ -362,6 +361,7 @@ class UI {
     // Get IDE manager to fetch available IDEs dynamically
     const { IdeManager } = require('../installers/lib/ide/manager');
     const ideManager = new IdeManager();
+    await ideManager.ensureInitialized(); // IMPORTANT: Must initialize before getting IDEs
 
     const preferredIdes = ideManager.getPreferredIdes();
     const otherIdes = ideManager.getOtherIdes();
@@ -1456,96 +1456,40 @@ class UI {
   }
 
   /**
-   * Parse alpha version string (e.g., "6.0.0-Alpha.20")
-   * @param {string} version - Version string
-   * @returns {Object|null} Object with alphaNumber and fullVersion, or null if invalid
-   */
-  parseAlphaVersion(version) {
-    if (!version || version === 'unknown') {
-      return null;
-    }
-
-    // Remove 'v' prefix if present
-    const cleanVersion = version.toString().replace(/^v/i, '');
-
-    // Match alpha version pattern: X.Y.Z-Alpha.N (case-insensitive)
-    const match = cleanVersion.match(/[\d.]+-Alpha\.(\d+)/i);
-
-    if (!match) {
-      return null;
-    }
-
-    return {
-      alphaNumber: parseInt(match[1], 10),
-      fullVersion: cleanVersion,
-    };
-  }
-
-  /**
-   * Check if installed version is more than 2 alpha versions behind current
+   * Check if installed version is a legacy version that needs fresh install
    * @param {string} installedVersion - The installed version
-   * @param {string} currentVersion - The current version
-   * @returns {Object} Object with { isOldVersion, versionDiff, shouldWarn, installed, current }
+   * @returns {boolean} True if legacy (v4 or any alpha)
    */
-  checkAlphaVersionAge(installedVersion, currentVersion) {
-    const installed = this.parseAlphaVersion(installedVersion);
-    const current = this.parseAlphaVersion(currentVersion);
-
-    // If we can't parse either version, don't warn
-    if (!installed || !current) {
-      return { isOldVersion: false, versionDiff: 0, shouldWarn: false };
+  isLegacyVersion(installedVersion) {
+    if (!installedVersion || installedVersion === 'unknown') {
+      return true; // Treat unknown as legacy for safety
     }
-
-    // Calculate alpha version difference
-    const versionDiff = current.alphaNumber - installed.alphaNumber;
-
-    // Consider it old if more than 2 versions behind
-    const isOldVersion = versionDiff > 2;
-
-    return {
-      isOldVersion,
-      versionDiff,
-      shouldWarn: isOldVersion,
-      installed: installed.fullVersion,
-      current: current.fullVersion,
-      installedAlpha: installed.alphaNumber,
-      currentAlpha: current.alphaNumber,
-    };
+    // Check if version string contains -alpha or -Alpha (any v6 alpha)
+    return /-alpha\./i.test(installedVersion);
   }
 
   /**
-   * Show warning for old alpha version and ask if user wants to proceed
+   * Show warning for legacy version (v4 or alpha) and ask if user wants to proceed
    * @param {string} installedVersion - The installed version
    * @param {string} currentVersion - The current version
    * @param {string} bmadFolderName - Name of the BMAD folder
    * @returns {Promise<boolean>} True if user wants to proceed, false if they cancel
    */
-  async showOldAlphaVersionWarning(installedVersion, currentVersion, bmadFolderName) {
-    const versionInfo = this.checkAlphaVersionAge(installedVersion, currentVersion);
-
-    // Also warn if version is unknown or can't be parsed (legacy/unsupported)
-    const isUnknownVersion = installedVersion === 'unknown' || !versionInfo.installed;
-
-    if (!versionInfo.shouldWarn && !isUnknownVersion) {
-      return true; // Not old, proceed
+  async showLegacyVersionWarning(installedVersion, currentVersion, bmadFolderName) {
+    if (!this.isLegacyVersion(installedVersion)) {
+      return true; // Not legacy, proceed
     }
 
     console.log('');
     console.log(chalk.yellow.bold('⚠️  VERSION WARNING'));
     console.log(chalk.yellow('─'.repeat(80)));
 
-    if (isUnknownVersion) {
+    if (installedVersion === 'unknown') {
       console.log(chalk.yellow('Unable to detect your installed BMAD version.'));
       console.log(chalk.yellow('This appears to be a legacy or unsupported installation.'));
-      console.log('');
-      console.log(chalk.dim('For stability, we only support updates from the previous 2 alpha versions.'));
-      console.log(chalk.dim('Legacy installations may have compatibility issues.'));
     } else {
-      console.log(chalk.yellow(`You are updating from ${versionInfo.installed} to ${versionInfo.current}.`));
-      console.log(chalk.yellow(`This is ${versionInfo.versionDiff} alpha versions behind.`));
-      console.log('');
-      console.log(chalk.dim(`For stability, we only support updates from the previous 2 alpha versions`));
-      console.log(chalk.dim(`(Alpha.${versionInfo.currentAlpha - 2} through Alpha.${versionInfo.currentAlpha - 1}).`));
+      console.log(chalk.yellow(`You are updating from ${installedVersion} to ${currentVersion}.`));
+      console.log(chalk.yellow('You have a legacy version installed (v4 or alpha).'));
     }
 
     console.log('');
@@ -1585,6 +1529,131 @@ class UI {
     }
 
     return proceed === 'proceed';
+  }
+
+  /**
+   * Display module versions with update availability
+   * @param {Array} modules - Array of module info objects with version info
+   * @param {Array} availableUpdates - Array of available updates
+   */
+  displayModuleVersions(modules, availableUpdates = []) {
+    console.log('');
+    console.log(chalk.cyan.bold('📦 Module Versions'));
+    console.log(chalk.gray('─'.repeat(80)));
+
+    // Group modules by source
+    const builtIn = modules.filter((m) => m.source === 'built-in');
+    const external = modules.filter((m) => m.source === 'external');
+    const custom = modules.filter((m) => m.source === 'custom');
+    const unknown = modules.filter((m) => m.source === 'unknown');
+
+    const displayGroup = (group, title) => {
+      if (group.length === 0) return;
+
+      console.log(chalk.yellow(`\n${title}`));
+      for (const module of group) {
+        const updateInfo = availableUpdates.find((u) => u.name === module.name);
+        const versionDisplay = module.version || chalk.gray('unknown');
+
+        if (updateInfo) {
+          console.log(
+            `  ${chalk.cyan(module.name.padEnd(20))} ${versionDisplay} → ${chalk.green(updateInfo.latestVersion)} ${chalk.green('↑')}`,
+          );
+        } else {
+          console.log(`  ${chalk.cyan(module.name.padEnd(20))} ${versionDisplay} ${chalk.gray('✓')}`);
+        }
+      }
+    };
+
+    displayGroup(builtIn, 'Built-in Modules');
+    displayGroup(external, 'External Modules (Official)');
+    displayGroup(custom, 'Custom Modules');
+    displayGroup(unknown, 'Other Modules');
+
+    console.log('');
+  }
+
+  /**
+   * Prompt user to select which modules to update
+   * @param {Array} availableUpdates - Array of available updates
+   * @returns {Array} Selected module names to update
+   */
+  async promptUpdateSelection(availableUpdates) {
+    if (availableUpdates.length === 0) {
+      return [];
+    }
+
+    console.log('');
+    console.log(chalk.cyan.bold('🔄 Available Updates'));
+    console.log(chalk.gray('─'.repeat(80)));
+
+    const choices = availableUpdates.map((update) => ({
+      name: `${update.name} ${chalk.dim(`(v${update.installedVersion} → v${update.latestVersion})`)}`,
+      value: update.name,
+      checked: true, // Default to selecting all updates
+    }));
+
+    // Add "Update All" and "Cancel" options
+    const action = await prompts.select({
+      message: 'How would you like to proceed?',
+      choices: [
+        { name: 'Update all available modules', value: 'all' },
+        { name: 'Select specific modules to update', value: 'select' },
+        { name: 'Skip updates for now', value: 'skip' },
+      ],
+      default: 'all',
+    });
+
+    if (action === 'all') {
+      return availableUpdates.map((u) => u.name);
+    }
+
+    if (action === 'skip') {
+      return [];
+    }
+
+    // Allow specific selection
+    const selected = await prompts.multiselect({
+      message: `Select modules to update ${chalk.dim('(↑/↓ navigates, SPACE toggles, ENTER to confirm)')}:`,
+      choices: choices,
+      required: true,
+    });
+
+    return selected || [];
+  }
+
+  /**
+   * Display status of all installed modules
+   * @param {Object} statusData - Status data with modules, installation info, and available updates
+   */
+  displayStatus(statusData) {
+    const { installation, modules, availableUpdates, bmadDir } = statusData;
+
+    console.log('');
+    console.log(chalk.cyan.bold('📋 BMAD Status'));
+    console.log(chalk.gray('─'.repeat(80)));
+
+    // Installation info
+    console.log(chalk.yellow('\nInstallation'));
+    console.log(`  ${chalk.gray('Version:'.padEnd(20))} ${installation.version || chalk.gray('unknown')}`);
+    console.log(`  ${chalk.gray('Location:'.padEnd(20))} ${bmadDir}`);
+    console.log(`  ${chalk.gray('Installed:'.padEnd(20))} ${new Date(installation.installDate).toLocaleDateString()}`);
+    console.log(
+      `  ${chalk.gray('Last Updated:'.padEnd(20))} ${installation.lastUpdated ? new Date(installation.lastUpdated).toLocaleDateString() : chalk.gray('unknown')}`,
+    );
+
+    // Module versions
+    this.displayModuleVersions(modules, availableUpdates);
+
+    // Update summary
+    if (availableUpdates.length > 0) {
+      console.log(chalk.yellow.bold(`\n⚠️  ${availableUpdates.length} update(s) available`));
+      console.log(chalk.dim(`  Run 'bmad install' and select "Quick Update" to update`));
+    } else {
+      console.log(chalk.green.bold('\n✓ All modules are up to date'));
+    }
+
+    console.log('');
   }
 }
 

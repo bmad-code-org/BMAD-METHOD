@@ -161,56 +161,39 @@ class Installer {
     }
 
     if (!toolConfig.skipIde && toolConfig.ides && toolConfig.ides.length > 0) {
+      // Ensure IDE manager is initialized
+      await this.ideManager.ensureInitialized();
+
       // Determine which IDEs are newly selected (not previously configured)
       const newlySelectedIdes = toolConfig.ides.filter((ide) => !previouslyConfiguredIdes.includes(ide));
 
       if (newlySelectedIdes.length > 0) {
         console.log('\n'); // Add spacing before IDE questions
 
+        // Collect configuration for IDEs that support it
         for (const ide of newlySelectedIdes) {
-          // List of IDEs that have interactive prompts
-          //TODO: Why is this here, hardcoding this list here is bad, fix me!
-          const needsPrompts = ['claude-code', 'github-copilot', 'roo', 'cline', 'auggie', 'codex', 'qwen', 'gemini', 'rovo-dev'].includes(
-            ide,
-          );
+          try {
+            const handler = this.ideManager.handlers.get(ide);
 
-          if (needsPrompts) {
-            // Get IDE handler and collect configuration
-            try {
-              // Dynamically load the IDE setup module
-              const ideModule = require(`../ide/${ide}`);
-
-              // Get the setup class (handle different export formats)
-              let SetupClass;
-              const className =
-                ide
-                  .split('-')
-                  .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-                  .join('') + 'Setup';
-
-              if (ideModule[className]) {
-                SetupClass = ideModule[className];
-              } else if (ideModule.default) {
-                SetupClass = ideModule.default;
-              } else {
-                continue;
-              }
-
-              const ideSetup = new SetupClass();
-
-              // Check if this IDE has a collectConfiguration method
-              if (typeof ideSetup.collectConfiguration === 'function') {
-                console.log(chalk.cyan(`\nConfiguring ${ide}...`));
-                ideConfigurations[ide] = await ideSetup.collectConfiguration({
-                  selectedModules: selectedModules || [],
-                  projectDir,
-                  bmadDir,
-                });
-              }
-            } catch {
-              // IDE doesn't have a setup file or collectConfiguration method
-              console.warn(chalk.yellow(`Warning: Could not load configuration for ${ide}`));
+            if (!handler) {
+              console.warn(chalk.yellow(`Warning: IDE '${ide}' handler not found`));
+              continue;
             }
+
+            // Check if this IDE handler has a collectConfiguration method
+            // (custom installers like Codex, Kilo, Kiro-cli may have this)
+            if (typeof handler.collectConfiguration === 'function') {
+              console.log(chalk.cyan(`\nConfiguring ${ide}...`));
+              ideConfigurations[ide] = await handler.collectConfiguration({
+                selectedModules: selectedModules || [],
+                projectDir,
+                bmadDir,
+              });
+            }
+            // Most config-driven IDEs don't need configuration - silently skip
+          } catch (error) {
+            // IDE doesn't support configuration or has an error
+            console.warn(chalk.yellow(`Warning: Could not load configuration for ${ide}: ${error.message}`));
           }
         }
       }
@@ -1016,6 +999,9 @@ class Installer {
 
       // Configure IDEs and copy documentation
       if (!config.skipIde && config.ides && config.ides.length > 0) {
+        // Ensure IDE manager is initialized (handlers may not be loaded in quick update flow)
+        await this.ideManager.ensureInitialized();
+
         // Filter out any undefined/null values from the IDE list
         const validIdes = config.ides.filter((ide) => ide && typeof ide === 'string');
 

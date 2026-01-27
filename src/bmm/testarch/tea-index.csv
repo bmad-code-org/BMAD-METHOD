@@ -32,3 +32,4 @@ burn-in,Burn-in Runner,"Smart test selection, git diff for CI optimization","ci,
 network-error-monitor,Network Error Monitor,"HTTP 4xx/5xx detection for UI tests","monitoring,playwright-utils,ui",knowledge/network-error-monitor.md
 fixtures-composition,Fixtures Composition,"mergeTests composition patterns for combining utilities","fixtures,playwright-utils",knowledge/fixtures-composition.md
 api-testing-patterns,API Testing Patterns,"Pure API test patterns without browser: service testing, microservices, GraphQL","api,backend,service-testing,api-testing,microservices,graphql,no-browser",knowledge/api-testing-patterns.md
+adr-quality-readiness-checklist,ADR Quality Readiness Checklist,"8-category 29-criteria framework for ADR testability and NFR assessment","nfr,testability,adr,quality,assessment,checklist",knowledge/adr-quality-readiness-checklist.md

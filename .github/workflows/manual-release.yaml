@@ -6,11 +6,11 @@ on:
       version_bump:
         description: Version bump type
         required: true
-        default: alpha
+        default: beta
         type: choice
         options:
-          - alpha
           - beta
+          - alpha
           - patch
           - minor
           - major
@@ -158,9 +158,12 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           VERSION="${{ steps.version.outputs.new_version }}"
-          if [[ "$VERSION" == *"alpha"* ]] || [[ "$VERSION" == *"beta"* ]]; then
-            echo "Publishing prerelease version with --tag alpha"
+          if [[ "$VERSION" == *"alpha"* ]]; then
+            echo "Publishing alpha prerelease version with --tag alpha"
             npm publish --tag alpha
+          elif [[ "$VERSION" == *"beta"* ]]; then
+            echo "Publishing beta prerelease version with --tag latest"
+            npm publish --tag latest
           else
             echo "Publishing stable version with --tag latest"
             npm publish --tag latest

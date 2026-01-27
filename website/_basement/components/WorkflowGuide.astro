@@ -1,0 +1,444 @@
+---
+---
+
+<div class="workflow-guide not-content">
+  <div class="help-callout">
+    <code>/bmad-help</code>
+    <span>Run this anytime to see what to do next — or ask it a question like <em>"what should I do to build a web app?"</em></span>
+  </div>
+
+  <p class="agents-note">Loading agents is optional. If your IDE supports slash commands, you can run workflows directly.</p>
+
+  <div class="track-selector">
+    <div class="track-buttons">
+      <button class="track-btn" data-track="quick">
+        <span class="track-label">Quick Flow</span>
+        <span class="track-desc">Bug fixes, small features</span>
+      </button>
+      <button class="track-btn" data-track="method">
+        <span class="track-label">BMad Method</span>
+        <span class="track-desc">Products, platforms</span>
+      </button>
+      <button class="track-btn" data-track="enterprise">
+        <span class="track-label">Enterprise</span>
+        <span class="track-desc">Compliance, large-scale</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="flow-container" data-state="no-track">
+    <p class="choose-prompt">Select a track above to see the workflow.</p>
+
+    <div class="flow-list">
+      <!-- Phase 1: Analysis -->
+      <div class="phase-label">Analysis</div>
+
+      <div class="flow-row" data-quick="optional" data-method="optional" data-enterprise="optional">
+        <code class="flow-cmd">/brainstorm-project</code>
+        <span class="flow-agent">Analyst</span>
+        <span class="flow-status"></span>
+        <p class="flow-desc">Guided ideation using 60+ techniques to explore your project idea and create brainstorm notes.</p>
+      </div>
+      <div class="flow-arrow" data-quick="optional" data-method="optional" data-enterprise="optional">&#x2193;</div>
+
+      <div class="flow-row" data-quick="optional" data-method="optional" data-enterprise="optional">
+        <code class="flow-cmd">/research</code>
+        <span class="flow-agent">Analyst</span>
+        <span class="flow-status"></span>
+        <p class="flow-desc">Market, technical, or competitive research producing a structured research document.</p>
+      </div>
+      <div class="flow-arrow" data-quick="optional" data-method="optional" data-enterprise="optional">&#x2193;</div>
+
+      <div class="flow-row" data-quick="optional" data-method="optional" data-enterprise="optional">
+        <code class="flow-cmd">/product-brief</code>
+        <span class="flow-agent">Analyst</span>
+        <span class="flow-status"></span>
+        <p class="flow-desc">Combines brainstorm and research into a foundation document covering problem, users, and MVP scope.</p>
+      </div>
+      <div class="flow-arrow" data-quick="optional" data-method="required" data-enterprise="required">&#x2193;</div>
+
+      <!-- Phase 2: Planning -->
+      <div class="phase-label">Planning</div>
+
+      <div class="flow-row" data-quick="required" data-method="skip" data-enterprise="skip">
+        <code class="flow-cmd">/quick-spec</code>
+        <span class="flow-agent">Barry</span>
+        <span class="flow-status"></span>
+        <p class="flow-desc">Analyzes your codebase, auto-detects stack, and produces tech-spec.md with implementation-ready story files.</p>
+      </div>
+      <div class="flow-arrow" data-quick="required" data-method="skip" data-enterprise="skip">&#x2193;</div>
+
+      <div class="flow-row" data-quick="skip" data-method="required" data-enterprise="required">
+        <code class="flow-cmd">/create-prd</code>
+        <span class="flow-agent">PM</span>
+        <span class="flow-status"></span>
+        <p class="flow-desc">Creates PRD.md with user personas, requirements, success metrics, and risks.</p>
+      </div>
+      <div class="flow-arrow" data-quick="skip" data-method="required" data-enterprise="required">&#x2193;</div>
+
+      <div class="flow-row" data-quick="optional" data-method="optional" data-enterprise="optional">
+        <code class="flow-cmd">/create-ux-design</code>
+        <span class="flow-agent">UX Designer</span>
+        <span class="flow-status"></span>
+        <p class="flow-desc">Creates ux-design.md with user journeys, wireframes, and a design system.</p>
+      </div>
+      <div class="flow-arrow" data-quick="required" data-method="required" data-enterprise="required">&#x2193;</div>
+
+      <!-- Phase 3: Solutioning -->
+      <div class="phase-label" data-quick="skip" data-method="required" data-enterprise="required">Solutioning</div>
+
+      <div class="flow-row" data-quick="skip" data-method="required" data-enterprise="required">
+        <code class="flow-cmd">/create-architecture</code>
+        <span class="flow-agent">Architect</span>
+        <span class="flow-status"></span>
+        <p class="flow-desc">Designs system architecture with ADRs covering data, API, security, and deployment decisions.</p>
+      </div>
+      <div class="flow-arrow" data-quick="skip" data-method="required" data-enterprise="required">&#x2193;</div>
+
+      <div class="flow-row" data-quick="skip" data-method="required" data-enterprise="required">
+        <code class="flow-cmd">/create-epics-and-stories</code>
+        <span class="flow-agent">PM</span>
+        <span class="flow-status"></span>
+        <p class="flow-desc">Breaks PRD and architecture into epic files with prioritized, technically-informed stories.</p>
+      </div>
+      <div class="flow-arrow" data-quick="skip" data-method="required" data-enterprise="required">&#x2193;</div>
+
+      <div class="flow-row" data-quick="skip" data-method="optional" data-enterprise="required">
+        <code class="flow-cmd">/implementation-readiness</code>
+        <span class="flow-agent">Architect</span>
+        <span class="flow-status"></span>
+        <p class="flow-desc">Validates cohesion across all planning documents to confirm you're ready to build.</p>
+      </div>
+      <div class="flow-arrow" data-quick="skip" data-method="required" data-enterprise="required">&#x2193;</div>
+
+      <!-- Phase 4: Implementation -->
+      <div class="phase-label">Implementation</div>
+
+      <div class="flow-row" data-quick="skip" data-method="required" data-enterprise="required">
+        <code class="flow-cmd">/sprint-planning</code>
+        <span class="flow-agent">SM</span>
+        <span class="flow-status"></span>
+        <p class="flow-desc">Initializes sprint-status.yaml to track all stories through development. Run once.</p>
+      </div>
+      <div class="flow-arrow" data-quick="skip" data-method="required" data-enterprise="required">&#x2193;</div>
+
+      <!-- Dev loop -->
+      <div class="dev-loop" data-quick="required" data-method="required" data-enterprise="required">
+        <span class="loop-label">&#x21bb; Repeat for each story</span>
+
+        <div class="flow-row" data-quick="skip" data-method="required" data-enterprise="required">
+          <code class="flow-cmd">/create-story</code>
+          <span class="flow-agent">SM</span>
+          <span class="flow-status"></span>
+          <p class="flow-desc">Prepares a story file with full context and acceptance criteria from the epic.</p>
+        </div>
+        <div class="flow-arrow" data-quick="required" data-method="required" data-enterprise="required">&#x2193;</div>
+
+        <div class="flow-row" data-quick="required" data-method="required" data-enterprise="required">
+          <code class="flow-cmd">/dev-story</code>
+          <span class="flow-agent">DEV</span>
+          <span class="flow-status"></span>
+          <p class="flow-desc">Implements production code and tests following architecture patterns.</p>
+        </div>
+        <div class="flow-arrow" data-quick="required" data-method="required" data-enterprise="required">&#x2193;</div>
+
+        <div class="flow-row" data-quick="optional" data-method="required" data-enterprise="required">
+          <code class="flow-cmd">/code-review</code>
+          <span class="flow-agent">DEV</span>
+          <span class="flow-status"></span>
+          <p class="flow-desc">Reviews code for quality, architecture alignment, tests, and security.</p>
+        </div>
+      </div>
+      <div class="flow-arrow" data-quick="skip" data-method="optional" data-enterprise="optional">&#x2193;</div>
+
+      <div class="flow-row" data-quick="skip" data-method="optional" data-enterprise="optional">
+        <code class="flow-cmd">/epic-retrospective</code>
+        <span class="flow-agent">SM</span>
+        <span class="flow-status"></span>
+        <p class="flow-desc">Captures learnings from a completed epic to improve the next one.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .workflow-guide {
+    max-width: 36rem;
+    margin: 0 auto;
+  }
+
+  .help-callout {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--sl-color-accent);
+    border-radius: 0.5rem;
+    background: var(--sl-color-accent-low);
+    margin-bottom: 1rem;
+  }
+
+  .help-callout code {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--sl-color-accent-high);
+    white-space: nowrap;
+    background: none;
+    padding: 0;
+  }
+
+  .help-callout span {
+    font-size: 0.85rem;
+    color: var(--sl-color-gray-2);
+    line-height: 1.4;
+  }
+
+  .agents-note {
+    font-size: 0.8rem;
+    color: var(--sl-color-gray-3);
+    margin-bottom: 1rem;
+    font-style: italic;
+  }
+
+  .track-selector {
+    margin-bottom: 1.25rem;
+  }
+
+  .track-buttons {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+
+  .track-btn {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.5rem 0.6rem;
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 0.4rem;
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+  }
+
+  .track-btn:hover {
+    border-color: var(--sl-color-accent);
+  }
+
+  .track-btn.active {
+    border-color: var(--sl-color-accent);
+    background: var(--sl-color-accent-low);
+  }
+
+  .track-label {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--sl-color-white);
+  }
+
+  .track-desc {
+    font-size: 0.7rem;
+    color: var(--sl-color-gray-3);
+  }
+
+  .flow-container[data-state="no-track"] .flow-list {
+    display: none;
+  }
+
+  .flow-container[data-state="no-track"] .choose-prompt {
+    display: block;
+  }
+
+  .choose-prompt {
+    display: none;
+    color: var(--sl-color-gray-3);
+    font-style: italic;
+    text-align: center;
+    padding: 1.5rem 0;
+  }
+
+  .flow-list {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .phase-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--sl-color-gray-3);
+    margin-top: 0.75rem;
+    margin-bottom: 0.3rem;
+    padding-left: 0.25rem;
+  }
+
+  .phase-label:first-child {
+    margin-top: 0;
+  }
+
+  .phase-label[data-visibility="skip"] {
+    display: none;
+  }
+
+  .flow-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.4rem 0.6rem;
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 0.3rem;
+    transition: opacity 0.15s ease, border-color 0.15s ease;
+  }
+
+  .flow-row[data-visibility="active"] {
+    border-color: var(--sl-color-gray-4);
+  }
+
+  .flow-row[data-visibility="skip"] {
+    display: none;
+  }
+
+  .flow-cmd {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--sl-color-white);
+    background: none;
+    padding: 0;
+  }
+
+  .flow-agent {
+    font-size: 0.75rem;
+    color: var(--sl-color-accent-high);
+    background: var(--sl-color-accent-low);
+    padding: 0.1rem 0.4rem;
+    border-radius: 0.2rem;
+    white-space: nowrap;
+  }
+
+  .flow-status {
+    font-size: 0.65rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    min-width: 4rem;
+    text-align: right;
+  }
+
+  .flow-status[data-status="required"] {
+    color: var(--sl-color-accent-high);
+  }
+
+  .flow-status[data-status="optional"] {
+    color: var(--sl-color-gray-3);
+  }
+
+  .flow-status[data-status="recommended"] {
+    color: var(--sl-color-accent-high);
+  }
+
+  .flow-desc {
+    grid-column: 1 / -1;
+    font-size: 0.75rem;
+    color: var(--sl-color-gray-3);
+    line-height: 1.4;
+    margin: 0.1rem 0 0;
+  }
+
+  .flow-arrow {
+    text-align: center;
+    font-size: 1rem;
+    color: var(--sl-color-gray-4);
+    line-height: 1;
+    padding: 0.15rem 0;
+  }
+
+  .flow-arrow[data-visibility="skip"] {
+    display: none;
+  }
+
+  .dev-loop {
+    border: 1px dashed var(--sl-color-accent);
+    border-radius: 0.4rem;
+    padding: 0.4rem 0.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .dev-loop[data-visibility="skip"] {
+    display: none;
+  }
+
+  .dev-loop .flow-row {
+    border-color: var(--sl-color-gray-5);
+  }
+
+  .loop-label {
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: var(--sl-color-accent-high);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.3rem;
+  }
+
+  @media (max-width: 30rem) {
+    .track-buttons {
+      grid-template-columns: 1fr;
+    }
+
+    .help-callout {
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+  }
+</style>
+
+<script>
+  function initWorkflowGuide() {
+    const guide = document.querySelector('.workflow-guide');
+    if (!guide) return;
+
+    const trackBtns = guide.querySelectorAll('.track-btn');
+    const flowContainer = guide.querySelector('.flow-container');
+    const allElements = guide.querySelectorAll('[data-quick]');
+
+    trackBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const track = btn.getAttribute('data-track');
+
+        trackBtns.forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        flowContainer.setAttribute('data-state', 'has-track');
+
+        allElements.forEach((el) => {
+          const status = el.getAttribute(`data-${track}`);
+
+          if (status === 'skip') {
+            el.setAttribute('data-visibility', 'skip');
+          } else {
+            el.setAttribute('data-visibility', 'active');
+          }
+
+          // Update status text for flow rows
+          const statusEl = el.querySelector('.flow-status');
+          if (statusEl) {
+            statusEl.setAttribute('data-status', status);
+            statusEl.textContent = status === 'skip' ? '' : status;
+          }
+        });
+      });
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', initWorkflowGuide);
+  document.addEventListener('astro:page-load', initWorkflowGuide);
+</script>

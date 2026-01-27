@@ -86,6 +86,11 @@ async function getAgentsFromDir(dirPath, moduleName, relativePath = '') {
   const entries = await fs.readdir(dirPath, { withFileTypes: true });
 
   for (const entry of entries) {
+    // Skip if entry.name is undefined or not a string
+    if (!entry.name || typeof entry.name !== 'string') {
+      continue;
+    }
+
     const fullPath = path.join(dirPath, entry.name);
     const newRelativePath = relativePath ? `${relativePath}/${entry.name}` : entry.name;
 

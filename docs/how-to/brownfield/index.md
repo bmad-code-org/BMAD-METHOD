@@ -36,9 +36,11 @@ Your `docs/` folder should contain succinct, well-organized documentation that a
 
 For complex projects, consider using the `document-project` workflow. It offers runtime variants that will scan your entire project and document its actual current state.
 
-## Step 3: Initialize for Brownfield Work
+## Step 3: Get Help
 
-Run `workflow-init`. It should recognize you are in an existing project. If not, explicitly clarify that this is brownfield development for a new feature.
+Get help to know what to do next based on your unique needs
+
+Run `bmad-help` to get guidance when you are not sure what to do next.
 
 ### Choosing Your Approach
 
@@ -76,9 +78,7 @@ When doing architecture, ensure the architect:
 
 Pay close attention here to prevent reinventing the wheel or making decisions that misalign with your existing architecture.
 
-## Next Steps
+## More Information
 
-- **[Document Existing Project](/docs/how-to/brownfield/document-existing-project.md)** - How to document your brownfield codebase
-- **[Add Feature to Existing Project](/docs/how-to/brownfield/add-feature-to-existing.md)** - Adding new functionality
 - **[Quick Fix in Brownfield](/docs/how-to/brownfield/quick-fix-in-brownfield.md)** - Bug fixes and ad-hoc changes
-- **[Brownfield FAQ](/docs/explanation/faq/brownfield-faq.md)** - Common questions about brownfield development
+- **[Brownfield FAQ](/docs/explanation/brownfield-faq.md)** - Common questions about brownfield development

@@ -3,11 +3,11 @@ title: "How to Get Answers About BMad"
 description: Use an LLM to quickly answer your own BMad questions
 ---
 
-Use your AI tool to get answers about BMad by pointing it at the source files.
+If you have successfully installed BMad and the BMad Method (+ other modules as needed) - the first step in getting answers is `/bmad-help`. This will answer upwards of 80% of all questions and is available to you in the IDE as you are working.
 
 ## When to Use This
 
-- You have a question about how BMad works
+- You have a question about how BMad works or what to do next with BMad
 - You want to understand a specific agent or workflow
 - You need quick answers without waiting for Discord
 
@@ -19,11 +19,11 @@ An AI tool (Claude Code, Cursor, ChatGPT, Claude.ai, etc.) and either BMad insta
 
 ### 1. Choose Your Source
 
-| Source | Best For | Examples |
-|--------|----------|----------|
-| **`_bmad` folder** | How BMad works—agents, workflows, prompts | "What does the PM agent do?" |
-| **Full GitHub repo** | History, installer, architecture | "What changed in v6?" |
-| **`llms-full.txt`** | Quick overview from docs | "Explain BMad's four phases" |
+| Source               | Best For                                  | Examples                     |
+| -------------------- | ----------------------------------------- | ---------------------------- |
+| **`_bmad` folder**   | How BMad works—agents, workflows, prompts | "What does the PM agent do?" |
+| **Full GitHub repo** | History, installer, architecture          | "What changed in v6?"        |
+| **`llms-full.txt`**  | Quick overview from docs                  | "Explain BMad's four phases" |
 
 The `_bmad` folder is created when you install BMad. If you don't have it yet, clone the repo instead.
 
@@ -65,12 +65,12 @@ Direct answers about BMad—how agents work, what workflows do, why things are s
 
 Tried the LLM approach and still need help? You now have a much better question to ask.
 
-| Channel | Use For |
-|---------|---------|
-| `#bmad-method-help` | Quick questions (real-time chat) |
-| `help-requests` forum | Detailed questions (searchable, persistent) |
-| `#suggestions-feedback` | Ideas and feature requests |
-| `#report-bugs-and-issues` | Bug reports |
+| Channel                   | Use For                                     |
+| ------------------------- | ------------------------------------------- |
+| `#bmad-method-help`       | Quick questions (real-time chat)            |
+| `help-requests` forum     | Detailed questions (searchable, persistent) |
+| `#suggestions-feedback`   | Ideas and feature requests                  |
+| `#report-bugs-and-issues` | Bug reports                                 |
 
 **Discord:** [discord.gg/gk8jAdXWmj](https://discord.gg/gk8jAdXWmj)
 

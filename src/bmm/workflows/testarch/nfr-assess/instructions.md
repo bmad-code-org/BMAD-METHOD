@@ -51,7 +51,7 @@ This workflow performs a comprehensive assessment of non-functional requirements
 **Actions:**
 
 1. Load relevant knowledge fragments from `{project-root}/_bmad/bmm/testarch/tea-index.csv`:
-   - `nfr-criteria.md` - Non-functional requirements criteria and thresholds (security, performance, reliability, maintainability with code examples, 658 lines, 4 examples)
+   - `adr-quality-readiness-checklist.md` - 8-category 29-criteria NFR framework (testability, test data, scalability, DR, security, monitorability, QoS/QoE, deployability, ~450 lines)
    - `ci-burn-in.md` - CI/CD burn-in patterns for reliability validation (10-iteration detection, sharding, selective execution, 678 lines, 4 examples)
    - `test-quality.md` - Test quality expectations for maintainability (deterministic, isolated, explicit assertions, length/time limits, 658 lines, 5 examples)
    - `playwright-config.md` - Performance configuration patterns: parallelization, timeout standards, artifact output (722 lines, 5 examples)
@@ -75,13 +75,17 @@ This workflow performs a comprehensive assessment of non-functional requirements
 
 **Actions:**
 
-1. Determine which NFR categories to assess (default: performance, security, reliability, maintainability):
-   - **Performance**: Response time, throughput, resource usage
-   - **Security**: Authentication, authorization, data protection, vulnerability scanning
-   - **Reliability**: Error handling, recovery, availability, fault tolerance
-   - **Maintainability**: Code quality, test coverage, documentation, technical debt
+1. Determine which NFR categories to assess using ADR Quality Readiness Checklist (8 standard categories):
+   - **1. Testability & Automation**: Isolation, headless interaction, state control, sample requests (4 criteria)
+   - **2. Test Data Strategy**: Segregation, generation, teardown (3 criteria)
+   - **3. Scalability & Availability**: Statelessness, bottlenecks, SLA definitions, circuit breakers (4 criteria)
+   - **4. Disaster Recovery**: RTO/RPO, failover, backups (3 criteria)
+   - **5. Security**: AuthN/AuthZ, encryption, secrets, input validation (4 criteria)
+   - **6. Monitorability, Debuggability & Manageability**: Tracing, logs, metrics, config (4 criteria)
+   - **7. QoS & QoE**: Latency, throttling, perceived performance, degradation (4 criteria)
+   - **8. Deployability**: Zero downtime, backward compatibility, rollback (3 criteria)
 
-2. Add custom NFR categories if specified (e.g., accessibility, internationalization, compliance)
+2. Add custom NFR categories if specified (e.g., accessibility, internationalization, compliance) beyond the 8 standard categories
 
 3. Gather thresholds for each NFR:
    - From tech-spec.md (primary source)

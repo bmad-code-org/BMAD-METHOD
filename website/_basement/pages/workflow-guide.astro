@@ -1,0 +1,17 @@
+---
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import WorkflowGuide from '../components/WorkflowGuide.astro';
+---
+
+<StarlightPage
+  frontmatter={{
+    title: 'Workflow Guide',
+    description: 'Interactive guide to the BMad Method workflow — choose your track and see the recommended phases, agents, and outputs.',
+    tableOfContents: false,
+  }}
+>
+  <p>
+    This interactive guide helps you understand which workflows to run, which agents to use, and what outputs to expect at each phase. Select your project's track to see the relevant path.
+  </p>
+  <WorkflowGuide />
+</StarlightPage>

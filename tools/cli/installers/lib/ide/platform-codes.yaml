@@ -1,0 +1,241 @@
+# BMAD Platform Codes Configuration
+# Central configuration for all platform/IDE codes used in the BMAD system
+#
+# This file defines:
+# 1. Platform metadata (name, preferred status, category, description)
+# 2. Installer configuration (target directories, templates, artifact types)
+#
+# Format:
+#   code: Platform identifier used internally
+#   name: Display name shown to users
+#   preferred: Whether this platform is shown as a recommended option on install
+#   category: Type of platform (ide, cli, tool, service)
+#   description: Brief description of the platform
+#   installer: Installation configuration (optional - omit for custom installers)
+
+platforms:
+  # ============================================================================
+  # CLI Tools
+  # ============================================================================
+
+  claude-code:
+    name: "Claude Code"
+    preferred: true
+    category: cli
+    description: "Anthropic's official CLI for Claude"
+    installer:
+      target_dir: .claude/commands
+      template_type: default
+
+  auggie:
+    name: "Auggie"
+    preferred: false
+    category: cli
+    description: "AI development tool"
+    installer:
+      target_dir: .augment/commands
+      template_type: default
+
+  gemini:
+    name: "Gemini CLI"
+    preferred: false
+    category: cli
+    description: "Google's CLI for Gemini"
+    installer:
+      target_dir: .gemini/commands
+      template_type: gemini
+
+  # ============================================================================
+  # IDEs
+  # ============================================================================
+
+  cursor:
+    name: "Cursor"
+    preferred: true
+    category: ide
+    description: "AI-first code editor"
+    installer:
+      target_dir: .cursor/commands
+      template_type: default
+
+  windsurf:
+    name: "Windsurf"
+    preferred: true
+    category: ide
+    description: "AI-powered IDE with cascade flows"
+    installer:
+      target_dir: .windsurf/workflows
+      template_type: windsurf
+
+  cline:
+    name: "Cline"
+    preferred: false
+    category: ide
+    description: "AI coding assistant"
+    installer:
+      target_dir: .clinerules/workflows
+      template_type: windsurf
+
+  roo:
+    name: "Roo Cline"
+    preferred: false
+    category: ide
+    description: "Enhanced Cline fork"
+    installer:
+      target_dir: .roo/commands
+      template_type: default
+
+  github-copilot:
+    name: "GitHub Copilot"
+    preferred: false
+    category: ide
+    description: "GitHub's AI pair programmer"
+    installer:
+      targets:
+        - target_dir: .github/agents
+          template_type: copilot_agents
+          artifact_types: [agents]
+        - target_dir: .vscode
+          template_type: vscode_settings
+          artifact_types: []
+
+  opencode:
+    name: "OpenCode"
+    preferred: false
+    category: ide
+    description: "OpenCode terminal coding assistant"
+    installer:
+      target_dir: .opencode/command
+      template_type: opencode
+
+  crush:
+    name: "Crush"
+    preferred: false
+    category: ide
+    description: "AI development assistant"
+    installer:
+      target_dir: .crush/commands
+      template_type: default
+
+  iflow:
+    name: "iFlow"
+    preferred: false
+    category: ide
+    description: "AI workflow automation"
+    installer:
+      target_dir: .iflow/commands
+      template_type: default
+
+  qwen:
+    name: "QwenCoder"
+    preferred: false
+    category: ide
+    description: "Qwen AI coding assistant"
+    installer:
+      target_dir: .qwen/commands
+      template_type: default
+
+  rovo-dev:
+    name: "Rovo Dev"
+    preferred: false
+    category: ide
+    description: "Atlassian's Rovo development environment"
+    installer:
+      target_dir: .rovodev/workflows
+      template_type: rovodev
+
+  trae:
+    name: "Trae"
+    preferred: false
+    category: ide
+    description: "AI coding tool"
+    installer:
+      target_dir: .trae/rules
+      template_type: trae
+
+  antigravity:
+    name: "Google Antigravity"
+    preferred: false
+    category: ide
+    description: "Google's AI development environment"
+    installer:
+      target_dir: .agent/workflows
+      template_type: antigravity
+      # Note: Antigravity uses .agent/workflows/ directory (not .antigravity/)
+
+  # ============================================================================
+  # Custom Installers (no installer config - use custom file)
+  # These have unique installation logic that doesn't fit the config-driven model
+  # ============================================================================
+
+  codex:
+    name: "Codex"
+    preferred: false
+    category: cli
+    description: "OpenAI Codex integration"
+    # No installer config - uses custom codex.js
+
+  kilo:
+    name: "KiloCoder"
+    preferred: false
+    category: ide
+    description: "AI coding platform"
+    # No installer config - uses custom kilo.js (creates .kilocodemodes file)
+
+  kiro-cli:
+    name: "Kiro CLI"
+    preferred: false
+    category: cli
+    description: "Kiro command-line interface"
+    # No installer config - uses custom kiro-cli.js (YAML→JSON conversion)
+
+# ============================================================================
+# Installer Config Schema
+# ============================================================================
+#
+# installer:
+#   target_dir: string                    # Directory where artifacts are installed
+#   template_type: string                 # Default template type to use
+#   header_template: string (optional)    # Override for header/frontmatter template
+#   body_template: string (optional)      # Override for body/content template
+#   targets: array (optional)             # For multi-target installations
+#     - target_dir: string
+#       template_type: string
+#       artifact_types: [agents, workflows, tasks, tools]
+#   artifact_types: array (optional)      # Filter which artifacts to install (default: all)
+#   skip_existing: boolean (optional)     # Skip files that already exist (default: false)
+
+# ============================================================================
+# Platform Categories
+# ============================================================================
+
+categories:
+  ide:
+    name: "Integrated Development Environment"
+    description: "Full-featured code editors with AI assistance"
+
+  cli:
+    name: "Command Line Interface"
+    description: "Terminal-based tools"
+
+  tool:
+    name: "Development Tool"
+    description: "Standalone development utilities"
+
+  service:
+    name: "Cloud Service"
+    description: "Cloud-based development platforms"
+
+  extension:
+    name: "Editor Extension"
+    description: "Plugins for existing editors"
+
+# ============================================================================
+# Naming Conventions and Rules
+# ============================================================================
+
+conventions:
+  code_format: "lowercase-kebab-case"
+  name_format: "Title Case"
+  max_code_length: 20
+  allowed_characters: "a-z0-9-"

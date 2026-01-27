@@ -114,7 +114,7 @@ stepsCompleted: [1, 2, 3]
 ---
 ```
 
-c) **Load and execute `{nextStepFile}` (Step 4)**
+c) **Read fully and follow: `{nextStepFile}` (Step 4)**
 
 ## REQUIRED OUTPUTS:
 

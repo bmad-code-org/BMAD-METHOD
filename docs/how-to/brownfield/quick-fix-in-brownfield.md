@@ -7,11 +7,10 @@ Use the **DEV agent** directly for bug fixes, refactorings, or small targeted ch
 
 ## When to Use This
 
-- Bug fixes
-- Small refactorings
-- Targeted code improvements
+- Simple bug fixes
+- Small refactorings and changes that don't need extensive ideation, planning, or architectural shifts
+- Larger refactorings or improvement with built in tool planning and execution mode combination, or better yet use quick flow
 - Learning about your codebase
-- One-off changes that don't need planning
 
 ## Steps
 
@@ -20,7 +19,7 @@ Use the **DEV agent** directly for bug fixes, refactorings, or small targeted ch
 For quick fixes, you can use:
 
 - **DEV agent** - For implementation-focused work
-- **Quick Flow Solo Dev** - For slightly larger changes that still need a tech-spec
+- **Quick Flow Solo Dev** - For slightly larger changes that still need a quick-spec to keep the agent aligned to planning and standards
 
 ### 2. Describe the Change
 
@@ -61,7 +60,7 @@ Explain how the authentication system works in this codebase
 Show me where error handling happens in the API layer
 ```
 
-LLMs are excellent at interpreting and analyzing code—whether it was AI-generated or not. Use the agent to:
+LLMs are excellent at interpreting and analyzing code, whether it was AI-generated or not. Use the agent to:
 
 - Learn about your project
 - Understand how things are built
