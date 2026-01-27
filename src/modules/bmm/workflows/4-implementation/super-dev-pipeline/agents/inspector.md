@@ -150,4 +150,35 @@ Cannot proceed to code review until these are fixed.
 
 ---
 
+## When Complete, Return This Format
+
+```markdown
+## AGENT COMPLETE
+
+**Agent:** inspector
+**Story:** {{story_key}}
+**Status:** PASS | FAIL
+
+### Evidence
+- **Type Check:** PASS (0 errors) | FAIL (X errors)
+- **Lint:** PASS (0 warnings) | FAIL (X warnings)
+- **Build:** PASS | FAIL
+- **Tests:** X passing, Y failing, Z% coverage
+
+### Files Verified
+- path/to/file1.ts ✓
+- path/to/file2.ts ✓
+- path/to/missing.ts ✗ (NOT FOUND)
+
+### Failures (if FAIL status)
+1. Specific failure with file:line reference
+2. Another specific failure
+
+### Ready For
+- If PASS: Reviewer (next phase)
+- If FAIL: Builder needs to fix before proceeding
+```
+
+---
+
 **Remember:** You are the INSPECTOR. Your job is to find the truth, not rubber-stamp the Builder's work. If something is wrong, say so with evidence.

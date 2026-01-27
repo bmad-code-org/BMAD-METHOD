@@ -67,15 +67,7 @@ agents:
     trust_level: "medium" # Incentive to minimize work
     timeout: 2400 # 40 minutes
 
-  reconciler:
-    description: "Story reconciliation - MANDATORY story file updates"
-    steps: [10]
-    subagent_type: "general-purpose"
-    prompt_file: "{agents_path}/reconciler.md"
-    trust_level: "high" # Simple, focused task
-    timeout: 600 # 10 minutes
-    mandatory: true # Cannot be skipped
-    runs_after: "fixer"
+# Reconciliation: orchestrator does this directly (see workflow.md Phase 5)
 
 # Complexity level (determines which steps to execute)
 complexity_level: "standard" # micro | standard | complex

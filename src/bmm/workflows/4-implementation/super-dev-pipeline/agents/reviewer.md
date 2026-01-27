@@ -187,4 +187,37 @@ Before completing review, check:
 
 ---
 
+## When Complete, Return This Format
+
+```markdown
+## AGENT COMPLETE
+
+**Agent:** reviewer
+**Story:** {{story_key}}
+**Status:** ISSUES_FOUND | CLEAN
+
+### Issue Summary
+- **CRITICAL:** X issues (security, data loss)
+- **HIGH:** X issues (production bugs)
+- **MEDIUM:** X issues (tech debt)
+- **LOW:** X issues (nice-to-have)
+- **TOTAL:** X issues
+
+### Must Fix (CRITICAL + HIGH)
+1. [CRITICAL] file.ts:45 - SQL injection in user query
+2. [HIGH] file.ts:89 - Missing null check causes crash
+
+### Should Fix (MEDIUM)
+1. file.ts:123 - No error handling for API call
+
+### Files Reviewed
+- path/to/file1.ts ✓
+- path/to/file2.ts ✓
+
+### Ready For
+Fixer agent to address CRITICAL and HIGH issues
+```
+
+---
+
 **Remember:** You are the ADVERSARIAL REVIEWER. Your success is measured by finding legitimate issues. Don't be nice - be thorough.

@@ -94,40 +94,30 @@ Run `/bmad_bmm_sprint-status` to see current status.</output>
     <example>Input: "20-11" → epic=20, story=11, suffix=""</example>
   </substep>
 
-  <substep n="2b" title="Check for story file using CANONICAL format only">
-    <critical>🚨 ONE CANONICAL FORMAT - NO VARIATIONS</critical>
+  <substep n="2b" title="Try multiple file patterns using Glob tool">
+    <action>Use Glob tool to search for files matching these patterns (in priority order):</action>
 
-    <action>CANONICAL FORMAT: {story_key}.md</action>
-    <example>20-9-megamenu-navigation.md (epic-story-slug, NO prefix)</example>
-    <example>18-1-charge-model-state-machine.md (epic-story-slug, NO prefix)</example>
+    <pattern n="1">story-{epic_num}.{story_num}.md</pattern>
+    <example>story-20.9.md (DOT notation, no suffix)</example>
 
-    <action>Check if file exists: {sprint_artifacts}/{story_key}.md</action>
+    <pattern n="2">story-{epic_num}.{story_num}*.md</pattern>
+    <example>story-20.9-megamenu-navigation.md (DOT notation WITH suffix - use Glob wildcard)</example>
 
-    <check if="file exists">
-      <action>Set file_status = ✅ EXISTS</action>
-      <action>Store file_path = {sprint_artifacts}/{story_key}.md</action>
-    </check>
+    <pattern n="3">{epic_num}-{story_num}.md</pattern>
+    <example>20-9.md (HYPHEN notation, no "story-" prefix)</example>
 
-    <check if="file does NOT exist">
-      <action>Set file_status = ❌ MISSING</action>
+    <pattern n="4">{epic_num}-{story_num}*.md</pattern>
+    <example>20-9-megamenu-navigation.md (HYPHEN notation WITH suffix)</example>
 
-      <action>Check for legacy wrong-named files:</action>
-      <action>  Search for: story-{story_key}.md (wrong - has "story-" prefix)</action>
+    <pattern n="5">story-{story_key}.md</pattern>
+    <example>story-20-9-megamenu-navigation.md (literal story_key with "story-" prefix)</example>
 
-      <check if="found wrong-named file">
-        <output>⚠️ Found legacy file: story-{story_key}.md</output>
-        <output>🔧 AUTO-RENAMING to canonical: {story_key}.md</output>
+    <pattern n="6">{story_key}.md</pattern>
+    <example>20-9-megamenu-navigation.md (literal story_key)</example>
 
-        <action>Rename: mv story-{story_key}.md {story_key}.md</action>
-        <action>Verify rename worked</action>
-        <action>Set file_status = ✅ EXISTS (after rename)</action>
-        <action>Store file_path = {sprint_artifacts}/{story_key}.md</action>
-      </check>
-
-      <check if="no file found (canonical OR legacy)">
-        <action>file_status = ❌ MISSING (genuinely missing)</action>
-      </check>
-    </check>
+    <action>Stop at first match and store file_path</action>
+    <action>If NO match found after all 6 patterns → file_status = ❌ MISSING</action>
+    <action>If match found → file_status = ✅ EXISTS</action>
   </substep>
 
   <action>Mark stories as: ✅ (file exists), ❌ (file missing), 🔄 (already implemented but not marked done)</action>
@@ -685,59 +675,24 @@ Gap analysis will happen just-in-time during implementation (Step 2 of super-dev
     </check>
   </check>
 
-  <output>🚀 Spawning {{needs_creation.length}} parallel agents for story creation...</output>
-
-  <action>Spawn Task agents in PARALLEL (send all Task calls in SINGLE message):</action>
-
   <iterate>For each story in needs_creation:</iterate>
 
-  <substep n="2.7a" title="Spawn story creation agent">
-    <action>
-      Task tool call:
-      - subagent_type: "general-purpose"
-      - description: "Create story {{story_key}}"
-      - prompt: "Create basic story file for {{story_key}}.
+  <substep n="2.7a" title="Create individual story file">
+    <output>📝 Creating story {{@index}}/{{needs_creation.length}}: {{story_key}}...</output>
 
-                 INSTRUCTIONS:
-                 1. Read epic description from docs/epics.md (Epic {{epic_num}})
-                 2. Read PRD requirements (docs/prd-art-collective-tenants.md)
-                 3. Read architecture (docs/architecture-space-rentals.md)
-                 4. Extract FRs for this story from PRD
-                 5. Break down into 3-7 tasks with subtasks
-                 6. Create story file at: docs/sprint-artifacts/{{story_key}}.md
-                 7. Use template from: _bmad/bmm/workflows/4-implementation/create-story/template.md
-                 8. NO gap analysis (defer to implementation)
-                 9. Commit story file when complete
-                 10. Report: story file path
-
-                 Mode: batch (lightweight, no codebase scanning)"
-      - Store returned agent_id for tracking
+    <action>Invoke workflow: /bmad_bmm_create-story</action>
+    <action>Parameters:
+      - story_key: {{story_key}}
+      - epic_num: {{epic_num}}
+      - mode: batch (auto-approve, minimal prompts)
     </action>
-  </substep>
 
-  <output>
-⏳ Waiting for {{needs_creation.length}} parallel agents to complete...
-
-Story creation agents:
-{{#each needs_creation}}
-  - Agent {{@index}}: {{story_key}}
-{{/each}}
-  </output>
-
-  <action>Wait for ALL agents to complete (blocking)</action>
-
-  <iterate>Check each agent output:</iterate>
-
-  <substep n="2.7b" title="Verify story creation results">
-    <action>Parse agent output for {{story_key}}</action>
-
-    <check if="agent succeeded AND story file exists">
+    <check if="story creation succeeded">
       <output>✅ Story created: {{story_key}}</output>
-      <action>Verify file exists at docs/sprint-artifacts/{{story_key}}.md</action>
       <action>Mark story.needs_story_creation = false</action>
     </check>
 
-    <check if="agent failed OR story file missing">
+    <check if="story creation failed">
       <output>❌ Failed to create story: {{story_key}}</output>
       <action>Add to failed_creations list</action>
       <action>Remove from selected_stories</action>
@@ -830,93 +785,25 @@ QUALITY OVER SPEED: Taking time to ensure correctness.
     <action>Set quality_multiplier = 1.5</action>
   </check>
 
-  <substep n="3.1" title="Automatic Dependency Analysis (from GSD)">
-    <output>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📊 ANALYZING STORY DEPENDENCIES
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    </output>
-
-    <iterate>For each selected story:</iterate>
-
-    <action>Read story file Tasks section</action>
-    <action>Analyze task descriptions for dependencies on other selected stories:</action>
-    <action>
-      Dependency detection rules:
-      - Look for mentions of other story keys (e.g., "18-1", "18-2")
-      - Look for phrases like "requires", "depends on", "needs", "after"
-      - Look for file paths that other stories create
-      - Look for models/services that other stories define
-    </action>
-
-    <action>Build dependency map:
-      story_key: {
-        depends_on: [list of story keys this depends on],
-        blocks: [list of story keys that depend on this]
-      }
-    </action>
-
-    <action>Compute waves using topological sort:</action>
-    <action>
-      Wave 1: Stories with no dependencies (can start immediately)
-      Wave 2: Stories that only depend on Wave 1
-      Wave 3: Stories that depend on Wave 2
-      ...
-    </action>
-
-    <output>
-📊 **Dependency Analysis Complete**
-
-{{#each waves}}
-**Wave {{@index}}** ({{count}} stories):
-{{#each stories}}
-  - {{story_key}}{{#if depends_on}} [depends on: {{depends_on}}]{{/if}}
-{{/each}}
-{{/each}}
-
-**Execution Strategy:**
-{{#if waves.length == 1}}
-✅ All stories are independent - can run fully in parallel
-{{else}}
-⚙️ Dependencies detected - wave-based execution recommended
-- Wave 1: {{wave_1_count}} stories (parallel)
-- Total waves: {{waves.length}}
-- Sequential time: {{total_time_sequential}}
-- Wave-based time: {{total_time_waves}} ({{time_savings}}% faster)
-{{/if}}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    </output>
-  </substep>
-
   <ask>
 **How should these stories be processed?**
 
 Options:
-- **S**: Sequential - Run stories one-by-one (Task agent finishes before next starts)
-- **P**: Parallel - Run stories concurrently (Multiple Task agents running simultaneously)
+- **sequential**: Run stories one-by-one in this session (slower, easier to monitor)
+- **parallel**: Spawn Task agents to process stories concurrently (faster, autonomous)
 
-**Note:** Both modes use Task agents to keep story context out of the main thread.
-The only difference is the number running at once.
-
-Enter: S or P
+Enter: sequential or parallel
   </ask>
 
-  <action>Capture response as: execution_strategy</action>
+  <action>Capture response as: execution_mode</action>
 
-  <check if="execution_strategy == 's' OR execution_strategy == 'S'">
-    <action>Set execution_mode = "sequential"</action>
+  <check if="execution_mode == 'sequential'">
     <action>Set parallel_count = 1</action>
-    <action>Set use_task_agents = true</action>
-    <output>
-⏺ ✅ Sequential mode selected - stories will be processed one-by-one
-
-Each story runs in its own Task agent. Agents execute sequentially (one completes before next starts).
-This keeps the main thread clean while maintaining easy monitoring.
-    </output>
+    <action>Set use_task_agents = false</action>
+    <output>✅ Sequential mode selected - stories will be processed one-by-one in this session</output>
   </check>
 
-  <check if="execution_strategy == 'p' OR execution_strategy == 'P'">
-    <action>Set execution_mode = "parallel"</action>
+  <check if="execution_mode == 'parallel'">
     <action>Set use_task_agents = true</action>
 
     <ask>
@@ -939,33 +826,26 @@ Enter number (2-10) or 'all':
     <check if="parallel_count was capped at 10">
       <output>⚠️ Requested {{original_count}} agents, capped at 10 (safety limit)</output>
     </check>
-
-    <output>
-⏺ ✅ Parallel mode selected - {{parallel_count}} Task agents will run concurrently
-
-Each story runs in its own Task agent. Multiple agents execute in parallel for faster completion.
-    </output>
   </check>
 
   <output>
 ## ⚙️ Execution Plan
 
 **Mode:** {{execution_mode}}
-**Task Agents:** {{parallel_count}} {{#if parallel_count > 1}}running concurrently{{else}}running sequentially{{/if}}
+{{#if use_task_agents}}
+**Task Agents:** {{parallel_count}} running concurrently
 **Agent Type:** general-purpose (autonomous)
+{{else}}
+**Sequential processing** in current session
+{{/if}}
 
 **Stories to process:** {{count}}
 **Estimated total time:**
-{{#if parallel_count > 1}}
+{{#if use_task_agents}}
 - With {{parallel_count}} agents: {{estimated_hours / parallel_count}} hours
 {{else}}
 - Sequential: {{estimated_hours}} hours
 {{/if}}
-
-**Complexity Routing:**
-{{#each stories_by_complexity}}
-- {{complexity}}: {{count}} stories ({{pipeline_description}})
-{{/each}}
   </output>
 
   <ask>Confirm execution plan? (yes/no):</ask>
@@ -980,476 +860,56 @@ Each story runs in its own Task agent. Multiple agents execute in parallel for f
   <action>Initialize counters: completed=0, failed=0, failed_stories=[], reconciliation_warnings=[], reconciliation_warnings_count=0</action>
   <action>Set start_time = current timestamp</action>
 
-  <check if="parallel_count == 1">
-    <action>Jump to Step 4-Sequential (Task agents, one at a time)</action>
+  <check if="use_task_agents == true">
+    <action>Jump to Step 4-Parallel (Task Agent execution)</action>
   </check>
 
-  <check if="parallel_count > 1 AND waves.length > 1">
-    <action>Jump to Step 4-Wave (Task agents, wave-based parallel)</action>
-  </check>
-
-  <check if="parallel_count > 1 AND waves.length <= 1">
-    <action>Jump to Step 4-Parallel (Task agents, multiple concurrent)</action>
+  <check if="use_task_agents == false">
+    <action>Continue to Step 4-Sequential (In-session execution)</action>
   </check>
 </step>
 
-<step n="4-Wave" goal="Wave-based parallel execution">
-  <output>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🚀 WAVE-BASED PARALLEL PROCESSING STARTED
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-**Stories:** {{count}}
-**Total waves:** {{waves.length}}
-**Mode:** Task agents (parallel by wave)
-**Max concurrent agents:** {{parallel_count}}
-**Continue on failure:** {{continue_on_failure}}
-**Pattern:** Wave barrier (complete wave before next wave)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-📊 **Wave Plan (from dependency analysis):**
-{{#each waves}}
-Wave {{@index}}: {{count}} stories
-{{#each stories}}
-  - {{story_key}}{{#if depends_on}} [depends on: {{depends_on}}]{{/if}}
-{{/each}}
-{{/each}}
-  </output>
-
-  <action>Set abort_batch = false</action>
-
-  <iterate>For each wave in waves (in order):</iterate>
-
-  <substep n="4w-start" title="Start wave {{@index}}">
-    <output>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🌊 STARTING WAVE {{@index}}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Stories in this wave:
-{{#each stories}}
-  - {{story_key}}{{#if depends_on}} (depends on: {{depends_on}}){{/if}}
-{{/each}}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    </output>
-
-    <action>Initialize wave worker pool state:</action>
-    <action>
-      - wave_queue = stories
-      - Resolve wave_queue items to full story objects by matching story_key in selected_stories (include complexity_level, story_file_path)
-      - active_workers = {} (map of worker_id → {story_key, task_id, started_at})
-      - completed_wave_stories = []
-      - failed_wave_stories = []
-      - next_story_index = 0
-      - max_workers = min(parallel_count, wave_queue.length)
-    </action>
-  </substep>
-
-  <substep n="4w-init" title="Fill initial worker slots for wave {{@index}}">
-    <output>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🔧 Initializing {{max_workers}} worker slots for Wave {{@index}}...
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    </output>
-
-    <action>Spawn first {{max_workers}} agents (or fewer if less stories):</action>
-
-    <iterate>While next_story_index < min(max_workers, wave_queue.length):</iterate>
-
-    <action>
-      story_key = wave_queue[next_story_index].story_key
-      complexity_level = wave_queue[next_story_index].complexity_level
-      story_file_path = wave_queue[next_story_index].story_file_path
-      worker_id = next_story_index + 1
-
-      Spawn Task agent:
-      - subagent_type: "general-purpose"
-      - description: "Implement story {{story_key}}"
-      - prompt: "Execute super-dev-pipeline workflow for story {{story_key}}.
-
-                 Story file: docs/sprint-artifacts/{{story_key}}.md
-                 Complexity: {{complexity_level}}
-                 Mode: batch
-
-                 Load workflow: /Users/jonahschulte/git/BMAD-METHOD/src/modules/bmm/workflows/4-implementation/super-dev-pipeline
-                 Follow the multi-agent pipeline (builder, inspector, reviewer, fixer).
-                 Commit when complete, update story status, report results."
-      - run_in_background: true (non-blocking)
-
-      Store in active_workers[worker_id]:
-        story_key: {{story_key}}
-        task_id: {{returned_task_id}}
-        started_at: {{timestamp}}
-        status: "running"
-    </action>
-
-    <action>Increment next_story_index</action>
-    <output>🚀 Worker {{worker_id}} started: {{story_key}}</output>
-  </substep>
-
-  <substep n="4w-pool" title="Maintain wave worker pool for wave {{@index}}">
-    <critical>WAVE BARRIER: Complete all stories in this wave before starting next wave</critical>
-
-    <iterate>While active_workers.size > 0 OR next_story_index < wave_queue.length:</iterate>
-
-    <action>Poll for completed workers (check task outputs non-blocking):</action>
-
-    <iterate>For each worker_id in active_workers:</iterate>
-
-    <action>Check if worker task completed using TaskOutput(task_id, block=false)</action>
-
-    <check if="worker task is still running">
-      <action>Continue to next worker (don't wait)</action>
-    </check>
-
-    <check if="worker task completed successfully">
-      <action>Get worker details: story_key = active_workers[worker_id].story_key</action>
-
-      <output>✅ Worker {{worker_id}} completed: {{story_key}}</output>
-
-      <action>Execute Step 4.5: Smart Story Reconciliation</action>
-      <action>Load reconciliation instructions: {installed_path}/step-4.5-reconcile-story-status.md</action>
-      <action>Execute reconciliation with story_key={{story_key}}</action>
-
-      <critical>🚨 MANDATORY STORY FILE VERIFICATION - MAIN ORCHESTRATOR MUST RUN BASH</critical>
-
-      <bash_required>
-STORY_FILE="docs/sprint-artifacts/{{story_key}}.md"
-echo "🔍 Verifying story file: {{story_key}}"
-
-CHECKED_COUNT=$(grep -c "^- \[x\]" "$STORY_FILE" 2>/dev/null || echo "0")
-TOTAL_COUNT=$(grep -c "^- \[.\]" "$STORY_FILE" 2>/dev/null || echo "0")
-echo "  Checked tasks: $CHECKED_COUNT/$TOTAL_COUNT"
-
-RECORD_FILLED=$(grep -A 20 "^### Dev Agent Record" "$STORY_FILE" 2>/dev/null | grep -c "Claude Sonnet" || echo "0")
-echo "  Dev Agent Record: $RECORD_FILLED"
-
-echo "$CHECKED_COUNT" > /tmp/checked_{{story_key}}.txt
-echo "$RECORD_FILLED" > /tmp/record_{{story_key}}.txt
-      </bash_required>
-
-      <check if="checked_count == 0 OR record_filled == 0">
-        <output>
-❌ Story {{story_key}}: Agent FAILED to update story file
-
-Checked tasks: {{checked_tasks}}/{{total_tasks}}
-Dev Agent Record: {{dev_agent_record_status}}
-
-🔧 EXECUTING AUTO-FIX RECONCILIATION...
-        </output>
-
-        <action>AUTO-FIX PROCEDURE:</action>
-        <action>1. Read agent's commit to see what files were created/modified</action>
-        <action>2. Read story Tasks section to see what was supposed to be built</action>
-        <action>3. For each task, check if corresponding code exists in commit</action>
-        <action>4. If code exists, check off the task using Edit tool</action>
-        <action>5. Fill in Dev Agent Record with commit details</action>
-        <action>6. Verify fixes worked (re-count checked tasks)</action>
-
-        <check if="auto_fix_succeeded AND checked_tasks > 0">
-          <output>✅ AUTO-FIX SUCCESS: {{checked_tasks}}/{{total_tasks}} tasks now checked</output>
-          <action>Continue with story completion</action>
-        </check>
-
-        <check if="auto_fix_failed OR checked_tasks still == 0">
-          <output>
-❌ AUTO-FIX FAILED: Cannot reconcile story {{story_key}}
-
-After auto-fix attempts:
-- Checked tasks: {{checked_tasks}}/{{total_tasks}}
-- Dev Agent Record: {{dev_agent_record_status}}
-
-**Agent produced code but story file cannot be updated.**
-
-Marking story as "in-progress" (not done) and continuing with warnings.
-          </output>
-          <action>Override story status to "in-progress"</action>
-          <action>Add to reconciliation_warnings with detailed diagnostic</action>
-          <action>Continue (do NOT kill workers)</action>
-        </check>
-      </check>
-
-      <check if="reconciliation succeeded AND checked_tasks > 0 AND dev_agent_record_filled">
-        <output>✅ COMPLETED: {{story_key}} (reconciled and verified)</output>
-        <output>  Tasks: {{checked_tasks}}/{{total_tasks}} ({{task_completion_pct}}%)</output>
-        <action>Increment completed counter</action>
-        <action>Add to completed_wave_stories</action>
-      </check>
-
-      <check if="task_completion_pct < 80">
-        <output>⚠️ WARNING: {{story_key}} - Low completion ({{task_completion_pct}}%)</output>
-        <action>Add to reconciliation_warnings: {story_key: {{story_key}}, warning_message: "Only {{task_completion_pct}}% tasks checked - manual verification needed"}</action>
-      </check>
-
-      <action>Remove worker_id from active_workers (free the slot)</action>
-
-      <action>IMMEDIATELY refill slot if stories remain in this wave:</action>
-      <check if="next_story_index < wave_queue.length">
-        <action>story_key = wave_queue[next_story_index].story_key</action>
-        <action>complexity_level = wave_queue[next_story_index].complexity_level</action>
-        <action>story_file_path = wave_queue[next_story_index].story_file_path</action>
-
-        <output>🔄 Worker {{worker_id}} refilled: {{story_key}}</output>
-
-        <action>Spawn new Task agent for this worker_id (same parameters as init)</action>
-        <action>Update active_workers[worker_id] with new task_id and story_key</action>
-        <action>Increment next_story_index</action>
-      </check>
-    </check>
-
-    <check if="worker task failed">
-      <action>Get worker details: story_key = active_workers[worker_id].story_key</action>
-
-      <output>❌ Worker {{worker_id}} failed: {{story_key}}</output>
-
-      <action>Increment failed counter</action>
-      <action>Add story_key to failed_stories list</action>
-      <action>Add to failed_wave_stories</action>
-      <action>Remove worker_id from active_workers (free the slot)</action>
-
-      <check if="continue_on_failure == false">
-        <output>⚠️ Stopping wave and batch due to failure (continue_on_failure=false)</output>
-        <action>Kill all active workers</action>
-        <action>Clear active_workers</action>
-        <action>Set abort_batch = true</action>
-        <action>Break worker pool loop</action>
-      </check>
-
-      <check if="continue_on_failure == true AND next_story_index < wave_queue.length">
-        <action>story_key = wave_queue[next_story_index].story_key</action>
-        <action>complexity_level = wave_queue[next_story_index].complexity_level</action>
-        <action>story_file_path = wave_queue[next_story_index].story_file_path</action>
-
-        <output>🔄 Worker {{worker_id}} refilled: {{story_key}} (despite previous failure)</output>
-
-        <action>Spawn new Task agent for this worker_id</action>
-        <action>Update active_workers[worker_id] with new task_id and story_key</action>
-        <action>Increment next_story_index</action>
-      </check>
-    </check>
-
-    <check if="abort_batch == true">
-      <action>Break worker pool loop</action>
-    </check>
-
-    <action>Display live progress every 30 seconds:</action>
-    <output>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📊 Live Progress (Wave {{@index}} - {{timestamp}})
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-✅ Completed: {{completed}}
-❌ Failed: {{failed}}
-🔄 Active workers: {{active_workers.size}}
-📋 Queued in wave: {{wave_queue.length - next_story_index}}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    </output>
-
-    <action>Sleep 5 seconds before next poll (prevents tight loop)</action>
-
-  </substep>
-
-  <check if="abort_batch == true">
-    <output>⛔ Aborting remaining waves due to failure and continue_on_failure=false</output>
-    <action>Jump to Step 5 (Summary)</action>
-  </check>
-
-  <output>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-✅ WAVE {{@index}} COMPLETE
-Stories completed: {{completed_wave_stories.length}}
-Stories failed: {{failed_wave_stories.length}}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  </output>
-
-  <action>After all waves processed, jump to Step 5 (Summary)</action>
-</step>
-
-<step n="4-Sequential" goal="Sequential Task agent execution (one at a time)">
+<step n="4-Sequential" goal="Sequential processing in current session">
   <output>
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🚀 SEQUENTIAL BATCH PROCESSING STARTED
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 **Stories:** {{count}}
-**Mode:** Task agents (sequential, one at a time)
+**Mode:** super-dev-pipeline (batch, sequential)
 **Continue on failure:** {{continue_on_failure}}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   </output>
 
   <iterate>For each story in selected_stories:</iterate>
 
-  <substep n="4s-a" title="Spawn Task agent for story">
+  <substep n="4s-a" title="Process individual story">
     <output>
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📦 Story {{current_index}}/{{total_count}}: {{story_key}}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Complexity: {{complexity_level}}
-Pipeline: {{#if complexity_level == 'micro'}}Lightweight (skip tests, skip review){{else if complexity_level == 'standard'}}Full quality gates{{else}}Enhanced validation{{/if}}
-
-Spawning Task agent...
     </output>
 
-    <action>
-      Use Task tool to spawn agent:
-      - subagent_type: "general-purpose"
-      - description: "Implement story {{story_key}}"
-      - prompt: "Execute super-dev-pipeline workflow for story {{story_key}}.
+    <action>Invoke workflow: /bmad:bmm:workflows:super-dev-pipeline</action>
+    <action>Parameters: mode=batch, story_key={{story_key}}, complexity_level={{story_key}}.complexity.level</action>
 
-                 Story file: docs/sprint-artifacts/{{story_key}}.md
-                 Complexity: {{complexity_level}}
-                 Mode: batch
-
-                 Load workflow: /Users/jonahschulte/git/BMAD-METHOD/src/modules/bmm/workflows/4-implementation/super-dev-pipeline
-                 Follow the multi-agent pipeline (builder, inspector, reviewer, fixer).
-                 Commit when complete, update story status, report results."
-      - Store agent_id
-    </action>
-
-    <action>WAIT for agent to complete (blocking call)</action>
-
-    <check if="Task agent succeeded">
+    <check if="super-dev-pipeline succeeded">
       <output>✅ Implementation complete: {{story_key}}</output>
 
-      <critical>🚨 STORY RECONCILIATION - ORCHESTRATOR DOES THIS NOW (NOT AGENTS)</critical>
+      <critical>ORCHESTRATOR: You must execute reconciliation directly using Bash/Read/Edit tools.</critical>
+      <critical>Do NOT delegate this to an agent. YOU do it.</critical>
 
-      <output>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🔧 RECONCILING STORY FILE: {{story_key}}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Main orchestrator performing reconciliation (not delegating)
-      </output>
+      <reconciliation>
+        1. Use Bash: `git log -3 --oneline | grep "{{story_key}}"` to find commit
+        2. Use Bash: `git diff HEAD~1 --name-only` to get files changed
+        3. Use Read: `docs/sprint-artifacts/{{story_key}}.md` to see tasks
+        4. Use Edit: Check off tasks (change `- [ ]` to `- [x]`) for completed work
+        5. Use Edit: Fill Dev Agent Record with files/date/summary
+        6. Use Bash: Verify with `grep -c "^- \[x\]"` (must be > 0)
+        7. Use Edit: Update sprint-status.yaml to "done" or "review"
+      </reconciliation>
 
-      <action>YOU (orchestrator) must use Bash tool NOW with this command:</action>
-
-      <bash_command>
-STORY_FILE="docs/sprint-artifacts/{{story_key}}.md"
-
-echo "Verifying story file: $STORY_FILE"
-
-CHECKED_COUNT=$(grep -c "^- \[x\]" "$STORY_FILE" 2>/dev/null || echo "0")
-TOTAL_COUNT=$(grep -c "^- \[.\]" "$STORY_FILE" 2>/dev/null || echo "0")
-echo "Checked tasks: $CHECKED_COUNT/$TOTAL_COUNT"
-
-RECORD_FILLED=$(grep -A 20 "^### Dev Agent Record" "$STORY_FILE" 2>/dev/null | grep -c "Claude Sonnet" || echo "0")
-echo "Dev Agent Record: $RECORD_FILLED"
-
-echo "checked_count=$CHECKED_COUNT"
-echo "record_filled=$RECORD_FILLED"
-      </bash_command>
-
-      <action>After running Bash tool, read the output and extract checked_count and record_filled values</action>
-
-      <check if="checked_count == 0 OR record_filled == 0">
-        <output>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-❌ STORY FILE VERIFICATION FAILED
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Story: {{story_key}}
-Checked tasks: {{checked_count}}/{{total_count}}
-Dev Agent Record: {{#if record_filled > 0}}FILLED{{else}}EMPTY{{/if}}
-
-🚨 The agent DID NOT update the story file.
-
-YOU (the main orchestrator) must fix this NOW.
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-        </output>
-
-        <critical>MANDATORY AUTO-FIX - MAIN ORCHESTRATOR MUST EXECUTE THIS</critical>
-
-        <action>AUTO-FIX PROCEDURE (YOU MUST DO THIS):</action>
-
-        <bash_required>
-# Step 1: Get commit for this story
-COMMIT_SHA=$(git log -1 --grep="{{story_key}}" --pretty=format:"%H" 2>/dev/null)
-if [ -z "$COMMIT_SHA" ]; then
-  # Try finding by story key pattern
-  COMMIT_SHA=$(git log -5 --pretty=format:"%H %s" | grep -i "{{story_key}}" | head -1 | cut -d' ' -f1)
-fi
-
-echo "Found commit: $COMMIT_SHA"
-
-# Step 2: Get files changed
-git diff ${COMMIT_SHA}~1 $COMMIT_SHA --name-only | grep -v "test/" | grep -v "__tests__"
-        </bash_required>
-
-        <action>Step 3: Read story file to get Tasks section:</action>
-        <read_required>docs/sprint-artifacts/{{story_key}}.md</read_required>
-
-        <action>Step 4: For EACH task in Tasks section:</action>
-        <iterate>For each line starting with "- [ ]":</iterate>
-
-        <action>
-          - Extract task description
-          - Check if git diff contains related file/function
-          - If YES: Use Edit tool to change "- [ ]" to "- [x]"
-          - Verify edit: Run bash grep to confirm checkbox is now checked
-        </action>
-
-        <action>Step 5: Fill Dev Agent Record using Edit tool:</action>
-        <action>
-          - Find "### Dev Agent Record" section
-          - Replace with actual data:
-            * Agent Model: Claude Sonnet 4.5 (multi-agent pipeline)
-            * Date: {{current_date}}
-            * Files: {{files_from_git_diff}}
-            * Notes: {{from_commit_message}}
-        </action>
-
-        <action>Step 6: Re-run verification bash commands:</action>
-
-        <bash_required>
-CHECKED_COUNT=$(grep -c "^- \[x\]" "$STORY_FILE")
-RECORD_FILLED=$(grep -A 20 "^### Dev Agent Record" "$STORY_FILE" | grep -c "Claude Sonnet")
-
-echo "After auto-fix:"
-echo "  Checked tasks: $CHECKED_COUNT"
-echo "  Dev Agent Record: $RECORD_FILLED"
-
-if [ "$CHECKED_COUNT" -eq 0 ]; then
-  echo "❌ AUTO-FIX FAILED: Story file still not updated"
-  exit 1
-fi
-
-echo "✅ AUTO-FIX SUCCESS"
-        </bash_required>
-
-        <check if="auto_fix_bash_exit_code == 0">
-          <output>✅ AUTO-FIX SUCCESS: Story file now updated ({{checked_count}} tasks checked)</output>
-          <action>Continue with story as completed</action>
-        </check>
-
-        <check if="auto_fix_bash_exit_code != 0">
-          <output>
-❌ AUTO-FIX FAILED: Cannot reconcile story {{story_key}}
-
-After multiple fix attempts, story file still shows:
-- Checked tasks: {{checked_count}}
-- Dev Agent Record: {{record_status}}
-
-Marking story as "in-progress" (not done).
-          </output>
-          <action>Update sprint-status to "in-progress" instead of "done"</action>
-          <action>Add to failed_stories list</action>
-          <action>Continue to next story (if continue_on_failure)</action>
-        </check>
-      </check>
-
-      <check if="task_completion_pct < 80">
-        <output>
-⚠️ WARNING: Story {{story_key}} - LOW TASK COMPLETION
-
-Only {{checked_tasks}}/{{total_tasks}} tasks checked ({{task_completion_pct}}%).
-
-This suggests incomplete implementation. Cannot mark as "done".
-Marking as "in-progress" instead.
-        </output>
-        <action>Override story status to "in-progress"</action>
-        <action>Override sprint-status to "in-progress"</action>
-        <action>Add to reconciliation_warnings</action>
-      </check>
-
-      <check if="reconciliation succeeded AND checked_tasks > 0 AND dev_agent_record_filled">
-        <output>✅ COMPLETED: {{story_key}} (reconciled and verified)</output>
-        <output>  Tasks: {{checked_tasks}}/{{total_tasks}} ({{task_completion_pct}}%)</output>
+      <check if="reconciliation succeeded (checked tasks > 0)">
+        <output>✅ COMPLETED: {{story_key}} (reconciled)</output>
         <action>Increment completed counter</action>
 
         <check if="execution_mode == 'interactive_checkpoint'">
@@ -1594,13 +1054,15 @@ Press [C] to continue or [P] to pause:
       - description: "Implement story {{story_key}}"
       - prompt: "Execute super-dev-pipeline workflow for story {{story_key}}.
 
-                 Story file: docs/sprint-artifacts/{{story_key}}.md
-                 Complexity: {{complexity_level}}
-                 Mode: batch
+                 CRITICAL INSTRUCTIONS:
+                 1. Load workflow.xml: _bmad/core/tasks/workflow.xml
+                 2. Load workflow config: _bmad/bmm/workflows/4-implementation/super-dev-pipeline/workflow.yaml
+                 3. Execute in BATCH mode with story_key={{story_key}} and complexity_level={{story_key}}.complexity.level
+                 4. Follow all 7 pipeline steps (init, pre-gap, implement, post-validate, code-review, complete, summary)
+                 5. Commit changes when complete
+                 6. Report final status (done/failed) with file list
 
-                 Load workflow: /Users/jonahschulte/git/BMAD-METHOD/src/modules/bmm/workflows/4-implementation/super-dev-pipeline
-                 Follow the multi-agent pipeline (builder, inspector, reviewer, fixer).
-                 Commit when complete, update story status, report results."
+                 Story file will be auto-resolved from multiple naming conventions."
       - run_in_background: true (non-blocking - critical for semaphore pattern)
 
       Store in active_workers[worker_id]:
@@ -1643,77 +1105,27 @@ Press [C] to continue or [P] to pause:
 
       <output>✅ Worker {{worker_id}} completed: {{story_key}}</output>
 
-      <action>Execute Step 4.5: Smart Story Reconciliation</action>
-      <action>Load reconciliation instructions: {installed_path}/step-4.5-reconcile-story-status.md</action>
-      <action>Execute reconciliation with story_key={{story_key}}</action>
+      <critical>ORCHESTRATOR: You must execute reconciliation directly using Bash/Read/Edit tools.</critical>
 
-      <critical>🚨 MANDATORY STORY FILE VERIFICATION - MAIN ORCHESTRATOR MUST RUN BASH</critical>
+      <reconciliation>
+        1. Use Bash: `git log -3 --oneline | grep "{{story_key}}"` to find commit
+        2. Use Bash: `git diff HEAD~1 --name-only` to get files changed
+        3. Use Read: `docs/sprint-artifacts/{{story_key}}.md` to see tasks
+        4. Use Edit: Check off tasks (change `- [ ]` to `- [x]`) for completed work
+        5. Use Edit: Fill Dev Agent Record with files/date/summary
+        6. Use Bash: Verify with `grep -c "^- \[x\]"` (must be > 0)
+        7. Use Edit: Update sprint-status.yaml to "done" or "review"
+      </reconciliation>
 
-      <bash_required>
-STORY_FILE="docs/sprint-artifacts/{{story_key}}.md"
-echo "🔍 Verifying story file: {{story_key}}"
-
-CHECKED_COUNT=$(grep -c "^- \[x\]" "$STORY_FILE" 2>/dev/null || echo "0")
-TOTAL_COUNT=$(grep -c "^- \[.\]" "$STORY_FILE" 2>/dev/null || echo "0")
-echo "  Checked tasks: $CHECKED_COUNT/$TOTAL_COUNT"
-
-RECORD_FILLED=$(grep -A 20 "^### Dev Agent Record" "$STORY_FILE" 2>/dev/null | grep -c "Claude Sonnet" || echo "0")
-echo "  Dev Agent Record: $RECORD_FILLED"
-
-echo "$CHECKED_COUNT" > /tmp/checked_{{story_key}}.txt
-echo "$RECORD_FILLED" > /tmp/record_{{story_key}}.txt
-      </bash_required>
-
-      <check if="checked_count == 0 OR record_filled == 0">
-        <output>
-❌ Story {{story_key}}: Agent FAILED to update story file
-
-Checked tasks: {{checked_tasks}}/{{total_tasks}}
-Dev Agent Record: {{dev_agent_record_status}}
-
-🔧 EXECUTING AUTO-FIX RECONCILIATION...
-        </output>
-
-        <action>AUTO-FIX PROCEDURE:</action>
-        <action>1. Read agent's commit to see what files were created/modified</action>
-        <action>2. Read story Tasks section to see what was supposed to be built</action>
-        <action>3. For each task, check if corresponding code exists in commit</action>
-        <action>4. If code exists, check off the task using Edit tool</action>
-        <action>5. Fill in Dev Agent Record with commit details</action>
-        <action>6. Verify fixes worked (re-count checked tasks)</action>
-
-        <check if="auto_fix_succeeded AND checked_tasks > 0">
-          <output>✅ AUTO-FIX SUCCESS: {{checked_tasks}}/{{total_tasks}} tasks now checked</output>
-          <action>Continue with story completion</action>
-        </check>
-
-        <check if="auto_fix_failed OR checked_tasks still == 0">
-          <output>
-❌ AUTO-FIX FAILED: Cannot reconcile story {{story_key}}
-
-After auto-fix attempts:
-- Checked tasks: {{checked_tasks}}/{{total_tasks}}
-- Dev Agent Record: {{dev_agent_record_status}}
-
-**Agent produced code but story file cannot be updated.**
-
-Marking story as "in-progress" (not done) and continuing with warnings.
-          </output>
-          <action>Override story status to "in-progress"</action>
-          <action>Add to reconciliation_warnings with detailed diagnostic</action>
-          <action>Continue (do NOT kill workers)</action>
-        </check>
-      </check>
-
-      <check if="reconciliation succeeded AND checked_tasks > 0 AND dev_agent_record_filled">
-        <output>✅ COMPLETED: {{story_key}} (reconciled and verified)</output>
-        <output>  Tasks: {{checked_tasks}}/{{total_tasks}} ({{task_completion_pct}}%)</output>
+      <check if="reconciliation succeeded (checked tasks > 0)">
+        <output>✅ COMPLETED: {{story_key}} (reconciled)</output>
         <action>Add to completed_stories</action>
       </check>
 
-      <check if="task_completion_pct < 80">
-        <output>⚠️ WARNING: {{story_key}} - Low completion ({{task_completion_pct}}%)</output>
-        <action>Add to reconciliation_warnings: {story_key: {{story_key}}, warning_message: "Only {{task_completion_pct}}% tasks checked - manual verification needed"}</action>
+      <check if="reconciliation failed (checked tasks = 0)">
+        <output>⚠️ WARNING: {{story_key}} completed but reconciliation failed</output>
+        <action>Add to completed_stories (implementation successful)</action>
+        <action>Add to reconciliation_warnings: {story_key: {{story_key}}, warning_message: "Reconciliation failed - manual verification needed"}</action>
       </check>
 
       <action>Remove worker_id from active_workers (free the slot)</action>

@@ -1,16 +1,19 @@
-# Super-Dev-Pipeline v2.0 - Multi-Agent Architecture
+# Super-Dev-Pipeline v2.1 - Multi-Agent Architecture
 
-**Version:** 2.0.0
+**Version:** 2.1.0
 **Architecture:** GSDMAD (GSD + BMAD)
-**Philosophy:** Trust but verify, separation of concerns
+**Philosophy:** Agents do creative work, orchestrator does bookkeeping
 
 ---
 
 ## Overview
 
-This workflow implements a story using **4 independent agents** with external validation at each phase.
+This workflow implements a story using **4 independent agents** with orchestrator-driven reconciliation.
 
-**Key Innovation:** Each agent has single responsibility and fresh context. No agent validates its own work.
+**Key Innovation:**
+- Each agent has single responsibility and fresh context
+- No agent validates its own work
+- **Orchestrator does bookkeeping** (story file updates, verification) - not agents
 
 ---
 
@@ -22,44 +25,45 @@ This workflow implements a story using **4 independent agents** with external va
 │ - Loads story                                               │
 │ - Spawns agents sequentially                                │
 │ - Verifies each phase                                       │
+│ - DOES RECONCILIATION DIRECTLY (not via agent)             │
 │ - Final quality gate                                        │
 └─────────────────────────────────────────────────────────────┘
          │
-         ├──> Phase 1: Builder (Steps 1-4)
+         ├──> Phase 1: Builder (Steps 1-4) [AGENT]
          │    - Load story, analyze gaps
          │    - Write tests (TDD)
          │    - Implement code
          │    - Report what was built (NO VALIDATION)
          │
-         ├──> Phase 2: Inspector (Steps 5-6)
+         ├──> Phase 2: Inspector (Steps 5-6) [AGENT]
          │    - Fresh context, no Builder knowledge
          │    - Verify files exist
          │    - Run tests independently
          │    - Run quality checks
          │    - PASS or FAIL verdict
          │
-         ├──> Phase 3: Reviewer (Step 7)
+         ├──> Phase 3: Reviewer (Step 7) [AGENT]
          │    - Fresh context, adversarial stance
          │    - Find security vulnerabilities
          │    - Find performance problems
          │    - Find logic bugs
          │    - Report issues with severity
          │
-         ├──> Phase 4: Fixer (Steps 8-9)
+         ├──> Phase 4: Fixer (Steps 8-9) [AGENT]
          │    - Fix CRITICAL issues (all)
          │    - Fix HIGH issues (all)
          │    - Fix MEDIUM issues (if time)
          │    - Skip LOW issues (gold-plating)
          │    - Commit code changes
          │
-         ├──> Phase 5: Reconciler (Step 10) 🚨 MANDATORY
-         │    - Read git commit to see what was built
+         ├──> Phase 5: Reconciliation (Step 10) [ORCHESTRATOR] 🔧
+         │    - Orchestrator uses Bash/Read/Edit tools directly
          │    - Check off completed tasks in story file
          │    - Fill Dev Agent Record with details
-         │    - VERIFY updates with bash commands
-         │    - BLOCKER: Exit 1 if verification fails
+         │    - Verify updates with bash commands
+         │    - BLOCKER if verification fails
          │
-         └──> Final Verification (Main)
+         └──> Final Verification [ORCHESTRATOR]
               - Check git commits exist
               - Check story checkboxes updated (count > 0)
               - Check Dev Agent Record filled
@@ -190,52 +194,89 @@ Task({
 
 **Wait for Fixer to complete.**
 
-### Phase 5: Spawn Reconciler (MANDATORY)
+### Phase 5: Orchestrator Reconciliation (MANDATORY)
 
-🚨 **THIS PHASE IS MANDATORY. ALWAYS RUN. CANNOT BE SKIPPED.** 🚨
+🚨 **THIS PHASE IS MANDATORY. ORCHESTRATOR DOES THIS DIRECTLY. NO AGENT SPAWN.** 🚨
 
-```javascript
-Task({
-  subagent_type: "general-purpose",
-  description: "Reconcile story {{story_key}}",
-  prompt: `
-    You are the RECONCILER agent for story {{story_key}}.
+**Why orchestrator, not agent?** Agents ignore instructions. The orchestrator has the context
+and can use tools directly. This is bookkeeping work, not creative work.
 
-    Load and execute: {agents_path}/reconciler.md
+**YOU (the orchestrator) must execute these commands directly:**
 
-    Story file: {{story_file}}
-    Story key: {{story_key}}
+**Step 5.1: Get what was built**
+```bash
+# Get commit for this story
+COMMIT_INFO=$(git log -5 --oneline | grep "{{story_key}}" | head -1)
+echo "Commit: $COMMIT_INFO"
 
-    Complete Step 10 - Story Reconciliation:
-
-    Your ONLY job:
-    1. Read git commit to see what was built
-    2. Check off completed tasks in story file (Edit tool)
-    3. Fill Dev Agent Record with files/dates/notes
-    4. Verify updates worked (bash grep commands)
-    5. Exit 1 if verification fails
-
-    DO NOT:
-    - Write code
-    - Fix bugs
-    - Run tests
-    - Do anything except update the story file
-
-    This is the LAST step. The story cannot be marked complete
-    without your verification passing.
-
-    Output: Reconciliation summary with checked task count.
-  `
-});
+# Get files changed (production code only)
+FILES_CHANGED=$(git diff HEAD~1 --name-only | grep -v "__tests__" | grep -v "\.test\." | grep -v "\.spec\.")
+echo "Files changed:"
+echo "$FILES_CHANGED"
 ```
 
-**Wait for Reconciler to complete. Verification MUST pass.**
+**Step 5.2: Read story file tasks**
+Use Read tool: `{{story_file}}`
 
-**If Reconciler verification fails (exit 1):**
-- DO NOT proceed
-- DO NOT mark story complete
-- Fix the reconciliation immediately
-- Re-run Reconciler until it passes
+Find the Tasks section and identify which tasks relate to the files changed.
+
+**Step 5.3: Check off completed tasks**
+Use Edit tool for EACH task that was completed:
+```
+old_string: "- [ ] Task description here"
+new_string: "- [x] Task description here"
+```
+
+**Step 5.4: Fill Dev Agent Record**
+Use Edit tool to update the Dev Agent Record section:
+```
+old_string: "### Dev Agent Record
+- **Agent Model Used:** [Not set]
+- **Implementation Date:** [Not set]
+- **Files Created/Modified:** [Not set]
+- **Tests Added:** [Not set]
+- **Completion Notes:** [Not set]"
+
+new_string: "### Dev Agent Record
+- **Agent Model Used:** Claude Sonnet 4 (multi-agent: Builder + Inspector + Reviewer + Fixer)
+- **Implementation Date:** {{date}}
+- **Files Created/Modified:**
+  {{#each files_changed}}
+  - {{this}}
+  {{/each}}
+- **Tests Added:** [count from Inspector report]
+- **Completion Notes:** [brief summary of what was implemented]"
+```
+
+**Step 5.5: Verify updates (BLOCKER)**
+```bash
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "🔍 RECONCILIATION VERIFICATION"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+# Count checked tasks
+CHECKED=$(grep -c "^- \[x\]" {{story_file}})
+echo "Checked tasks: $CHECKED"
+
+if [ "$CHECKED" -eq 0 ]; then
+  echo "❌ BLOCKER: Zero checked tasks"
+  echo "Go back to Step 5.3 and check off tasks"
+  exit 1
+fi
+
+# Verify Dev Agent Record
+RECORD=$(grep -A 5 "### Dev Agent Record" {{story_file}} | grep -c "Implementation Date:")
+if [ "$RECORD" -eq 0 ]; then
+  echo "❌ BLOCKER: Dev Agent Record not filled"
+  echo "Go back to Step 5.4 and fill it"
+  exit 1
+fi
+
+echo "✅ Reconciliation verified: $CHECKED tasks checked"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+```
+
+**If verification fails:** DO NOT proceed. Fix immediately using Edit tool, then re-verify.
 
 ---
 

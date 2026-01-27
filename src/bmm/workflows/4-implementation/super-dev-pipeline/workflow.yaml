@@ -67,6 +67,8 @@ agents:
     trust_level: "medium" # Incentive to minimize work
     timeout: 2400 # 40 minutes
 
+# Reconciliation: orchestrator does this directly (see workflow.md Phase 5)
+
 # Complexity level (determines which steps to execute)
 complexity_level: "standard" # micro | standard | complex
 

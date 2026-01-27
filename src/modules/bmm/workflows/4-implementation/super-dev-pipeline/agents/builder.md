@@ -93,4 +93,43 @@ When complete, provide:
 
 ---
 
+## When Complete, Return This Format
+
+```markdown
+## AGENT COMPLETE
+
+**Agent:** builder
+**Story:** {{story_key}}
+**Status:** SUCCESS | FAILED
+
+### Files Created
+- path/to/new/file1.ts
+- path/to/new/file2.ts
+
+### Files Modified
+- path/to/existing/file.ts
+
+### Tests Added
+- X test files
+- Y test cases total
+
+### Implementation Summary
+Brief description of what was built and key decisions made.
+
+### Known Gaps
+- Any functionality not implemented
+- Any edge cases not handled
+- NONE if all tasks complete
+
+### Ready For
+Inspector validation (next phase)
+```
+
+**Why this format?** The orchestrator parses this output to:
+- Verify claimed files actually exist
+- Track what was built for reconciliation
+- Route to next phase appropriately
+
+---
+
 **Remember:** You are the BUILDER. Build it well, but don't validate or review your own work. Other agents will do that with fresh eyes.

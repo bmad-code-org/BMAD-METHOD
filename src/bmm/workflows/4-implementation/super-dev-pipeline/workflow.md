@@ -1,15 +1,19 @@
-# Super-Dev Pipeline - Multi-Agent Architecture
+# Super-Dev-Pipeline v2.1 - Multi-Agent Architecture
 
+**Version:** 2.1.0
 **Architecture:** GSDMAD (GSD + BMAD)
-**Philosophy:** Trust but verify, separation of concerns
+**Philosophy:** Agents do creative work, orchestrator does bookkeeping
 
 ---
 
 ## Overview
 
-This workflow implements a story using **4 independent agents** with external validation at each phase.
+This workflow implements a story using **4 independent agents** with orchestrator-driven reconciliation.
 
-**Key Innovation:** Each agent has single responsibility and fresh context. No agent validates its own work.
+**Key Innovation:**
+- Each agent has single responsibility and fresh context
+- No agent validates its own work
+- **Orchestrator does bookkeeping** (story file updates, verification) - not agents
 
 ---
 
@@ -21,40 +25,48 @@ This workflow implements a story using **4 independent agents** with external va
 │ - Loads story                                               │
 │ - Spawns agents sequentially                                │
 │ - Verifies each phase                                       │
+│ - DOES RECONCILIATION DIRECTLY (not via agent)             │
 │ - Final quality gate                                        │
 └─────────────────────────────────────────────────────────────┘
          │
-         ├──> Phase 1: Builder (Steps 1-4)
+         ├──> Phase 1: Builder (Steps 1-4) [AGENT]
          │    - Load story, analyze gaps
          │    - Write tests (TDD)
          │    - Implement code
          │    - Report what was built (NO VALIDATION)
          │
-         ├──> Phase 2: Inspector (Steps 5-6)
+         ├──> Phase 2: Inspector (Steps 5-6) [AGENT]
          │    - Fresh context, no Builder knowledge
          │    - Verify files exist
          │    - Run tests independently
          │    - Run quality checks
          │    - PASS or FAIL verdict
          │
-         ├──> Phase 3: Reviewer (Step 7)
+         ├──> Phase 3: Reviewer (Step 7) [AGENT]
          │    - Fresh context, adversarial stance
          │    - Find security vulnerabilities
          │    - Find performance problems
          │    - Find logic bugs
          │    - Report issues with severity
          │
-         ├──> Phase 4: Fixer (Steps 8-9)
+         ├──> Phase 4: Fixer (Steps 8-9) [AGENT]
          │    - Fix CRITICAL issues (all)
          │    - Fix HIGH issues (all)
          │    - Fix MEDIUM issues (if time)
          │    - Skip LOW issues (gold-plating)
-         │    - Update story + sprint-status
-         │    - Commit changes
+         │    - Commit code changes
          │
-         └──> Final Verification (Main)
+         ├──> Phase 5: Reconciliation (Step 10) [ORCHESTRATOR] 🔧
+         │    - Orchestrator uses Bash/Read/Edit tools directly
+         │    - Check off completed tasks in story file
+         │    - Fill Dev Agent Record with details
+         │    - Verify updates with bash commands
+         │    - BLOCKER if verification fails
+         │
+         └──> Final Verification [ORCHESTRATOR]
               - Check git commits exist
-              - Check story checkboxes updated
+              - Check story checkboxes updated (count > 0)
+              - Check Dev Agent Record filled
               - Check sprint-status updated
               - Check tests passed
               - Mark COMPLETE or FAILED
@@ -182,44 +194,180 @@ Task({
 
 **Wait for Fixer to complete.**
 
+### Phase 5: Orchestrator Reconciliation (MANDATORY)
+
+🚨 **THIS PHASE IS MANDATORY. ORCHESTRATOR DOES THIS DIRECTLY. NO AGENT SPAWN.** 🚨
+
+**Why orchestrator, not agent?** Agents ignore instructions. The orchestrator has the context
+and can use tools directly. This is bookkeeping work, not creative work.
+
+**YOU (the orchestrator) must execute these commands directly:**
+
+**Step 5.1: Get what was built**
+```bash
+# Get commit for this story
+COMMIT_INFO=$(git log -5 --oneline | grep "{{story_key}}" | head -1)
+echo "Commit: $COMMIT_INFO"
+
+# Get files changed (production code only)
+FILES_CHANGED=$(git diff HEAD~1 --name-only | grep -v "__tests__" | grep -v "\.test\." | grep -v "\.spec\.")
+echo "Files changed:"
+echo "$FILES_CHANGED"
+```
+
+**Step 5.2: Read story file tasks**
+Use Read tool: `{{story_file}}`
+
+Find the Tasks section and identify which tasks relate to the files changed.
+
+**Step 5.3: Check off completed tasks**
+Use Edit tool for EACH task that was completed:
+```
+old_string: "- [ ] Task description here"
+new_string: "- [x] Task description here"
+```
+
+**Step 5.4: Fill Dev Agent Record**
+Use Edit tool to update the Dev Agent Record section:
+```
+old_string: "### Dev Agent Record
+- **Agent Model Used:** [Not set]
+- **Implementation Date:** [Not set]
+- **Files Created/Modified:** [Not set]
+- **Tests Added:** [Not set]
+- **Completion Notes:** [Not set]"
+
+new_string: "### Dev Agent Record
+- **Agent Model Used:** Claude Sonnet 4 (multi-agent: Builder + Inspector + Reviewer + Fixer)
+- **Implementation Date:** {{date}}
+- **Files Created/Modified:**
+  {{#each files_changed}}
+  - {{this}}
+  {{/each}}
+- **Tests Added:** [count from Inspector report]
+- **Completion Notes:** [brief summary of what was implemented]"
+```
+
+**Step 5.5: Verify updates (BLOCKER)**
+```bash
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "🔍 RECONCILIATION VERIFICATION"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+# Count checked tasks
+CHECKED=$(grep -c "^- \[x\]" {{story_file}})
+echo "Checked tasks: $CHECKED"
+
+if [ "$CHECKED" -eq 0 ]; then
+  echo "❌ BLOCKER: Zero checked tasks"
+  echo "Go back to Step 5.3 and check off tasks"
+  exit 1
+fi
+
+# Verify Dev Agent Record
+RECORD=$(grep -A 5 "### Dev Agent Record" {{story_file}} | grep -c "Implementation Date:")
+if [ "$RECORD" -eq 0 ]; then
+  echo "❌ BLOCKER: Dev Agent Record not filled"
+  echo "Go back to Step 5.4 and fill it"
+  exit 1
+fi
+
+echo "✅ Reconciliation verified: $CHECKED tasks checked"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+```
+
+**If verification fails:** DO NOT proceed. Fix immediately using Edit tool, then re-verify.
+
 ---
 
 ## Final Verification (Main Orchestrator)
 
-**After all agents complete, verify:**
+🚨 **CRITICAL: This verification is MANDATORY. DO NOT skip.** 🚨
+
+**After all agents complete (including Reconciler), YOU (the main orchestrator) must:**
+
+1. **Use the Bash tool** to run these commands
+2. **Read the output** to see if verification passed
+3. **If verification fails**, use Edit and Bash tools to fix it NOW
+4. **Do not proceed** until verification passes
+
+**COMMAND TO RUN WITH BASH TOOL:**
 
 ```bash
-# 1. Check git commits
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "🔍 FINAL VERIFICATION (MANDATORY)"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+# 1. Check git commits exist
+echo "Checking git commits..."
 git log --oneline -3 | grep "{{story_key}}"
 if [ $? -ne 0 ]; then
-  echo "❌ FAILED: No commit found"
+  echo "❌ FAILED: No commit found for {{story_key}}"
+  echo "The Fixer agent did not commit changes."
   exit 1
 fi
+echo "✅ Git commit found"
 
-# 2. Check story checkboxes
-before=$(git show HEAD~1:{{story_file}} | grep -c '^- \[x\]')
-after=$(grep -c '^- \[x\]' {{story_file}})
-if [ $after -le $before ]; then
-  echo "❌ FAILED: Checkboxes not updated"
+# 2. Check story file has checked tasks (ABSOLUTE BLOCKER)
+echo "Checking story file updates..."
+CHECKED_COUNT=$(grep -c '^- \[x\]' {{story_file}})
+echo "Checked tasks: $CHECKED_COUNT"
+
+if [ "$CHECKED_COUNT" -eq 0 ]; then
+  echo ""
+  echo "❌ BLOCKER: Story file has ZERO checked tasks"
+  echo ""
+  echo "This means the Fixer agent did NOT update the story file."
+  echo "The story CANNOT be marked complete without checked tasks."
+  echo ""
+  echo "You must:"
+  echo "  1. Read the git commit to see what was built"
+  echo "  2. Read the story Tasks section"
+  echo "  3. Use Edit tool to check off completed tasks"
+  echo "  4. Fill in Dev Agent Record"
+  echo "  5. Verify with grep"
+  echo "  6. Re-run this verification"
+  echo ""
   exit 1
 fi
+echo "✅ Story file has $CHECKED_COUNT checked tasks"
 
-# 3. Check sprint-status
-git diff HEAD~1 {{sprint_status}} | grep "{{story_key}}: done"
+# 3. Check Dev Agent Record filled
+echo "Checking Dev Agent Record..."
+RECORD_FILLED=$(grep -A 20 "^### Dev Agent Record" {{story_file}} | grep -c "Agent Model")
+if [ "$RECORD_FILLED" -eq 0 ]; then
+  echo "❌ BLOCKER: Dev Agent Record NOT filled"
+  echo "The Fixer agent did not document what was built."
+  exit 1
+fi
+echo "✅ Dev Agent Record filled"
+
+# 4. Check sprint-status updated
+echo "Checking sprint-status..."
+git diff HEAD~1 {{sprint_status}} | grep "{{story_key}}"
 if [ $? -ne 0 ]; then
-  echo "❌ FAILED: Sprint status not updated"
+  echo "❌ FAILED: Sprint status not updated for {{story_key}}"
   exit 1
 fi
+echo "✅ Sprint status updated"
 
-# 4. Check Inspector output for test evidence
-grep -E "PASS|tests.*passing" inspector_output.txt
-if [ $? -ne 0 ]; then
-  echo "❌ FAILED: No test evidence"
-  exit 1
+# 5. Check test evidence (optional - may have test failures)
+echo "Checking test evidence..."
+if [ -f "inspector_output.txt" ]; then
+  grep -E "PASS|tests.*passing" inspector_output.txt && echo "✅ Tests passing"
 fi
 
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "✅ STORY COMPLETE - All verifications passed"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 ```
+
+**IF VERIFICATION FAILS:**
+- DO NOT mark story as "done"
+- DO NOT proceed to next story
+- FIX the failure immediately
+- Re-run verification until it passes
 
 ---
 

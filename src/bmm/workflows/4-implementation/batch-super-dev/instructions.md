@@ -895,11 +895,20 @@ Enter number (2-10) or 'all':
     <check if="super-dev-pipeline succeeded">
       <output>✅ Implementation complete: {{story_key}}</output>
 
-      <action>Execute Step 4.5: Smart Story Reconciliation</action>
-      <action>Load reconciliation instructions: {installed_path}/step-4.5-reconcile-story-status.md</action>
-      <action>Execute reconciliation with story_key={{story_key}}</action>
+      <critical>ORCHESTRATOR: You must execute reconciliation directly using Bash/Read/Edit tools.</critical>
+      <critical>Do NOT delegate this to an agent. YOU do it.</critical>
 
-      <check if="reconciliation succeeded">
+      <reconciliation>
+        1. Use Bash: `git log -3 --oneline | grep "{{story_key}}"` to find commit
+        2. Use Bash: `git diff HEAD~1 --name-only` to get files changed
+        3. Use Read: `docs/sprint-artifacts/{{story_key}}.md` to see tasks
+        4. Use Edit: Check off tasks (change `- [ ]` to `- [x]`) for completed work
+        5. Use Edit: Fill Dev Agent Record with files/date/summary
+        6. Use Bash: Verify with `grep -c "^- \[x\]"` (must be > 0)
+        7. Use Edit: Update sprint-status.yaml to "done" or "review"
+      </reconciliation>
+
+      <check if="reconciliation succeeded (checked tasks > 0)">
         <output>✅ COMPLETED: {{story_key}} (reconciled)</output>
         <action>Increment completed counter</action>
 
@@ -1096,16 +1105,24 @@ Press [C] to continue or [P] to pause:
 
       <output>✅ Worker {{worker_id}} completed: {{story_key}}</output>
 
-      <action>Execute Step 4.5: Smart Story Reconciliation</action>
-      <action>Load reconciliation instructions: {installed_path}/step-4.5-reconcile-story-status.md</action>
-      <action>Execute reconciliation with story_key={{story_key}}</action>
+      <critical>ORCHESTRATOR: You must execute reconciliation directly using Bash/Read/Edit tools.</critical>
 
-      <check if="reconciliation succeeded">
+      <reconciliation>
+        1. Use Bash: `git log -3 --oneline | grep "{{story_key}}"` to find commit
+        2. Use Bash: `git diff HEAD~1 --name-only` to get files changed
+        3. Use Read: `docs/sprint-artifacts/{{story_key}}.md` to see tasks
+        4. Use Edit: Check off tasks (change `- [ ]` to `- [x]`) for completed work
+        5. Use Edit: Fill Dev Agent Record with files/date/summary
+        6. Use Bash: Verify with `grep -c "^- \[x\]"` (must be > 0)
+        7. Use Edit: Update sprint-status.yaml to "done" or "review"
+      </reconciliation>
+
+      <check if="reconciliation succeeded (checked tasks > 0)">
         <output>✅ COMPLETED: {{story_key}} (reconciled)</output>
         <action>Add to completed_stories</action>
       </check>
 
-      <check if="reconciliation failed">
+      <check if="reconciliation failed (checked tasks = 0)">
         <output>⚠️ WARNING: {{story_key}} completed but reconciliation failed</output>
         <action>Add to completed_stories (implementation successful)</action>
         <action>Add to reconciliation_warnings: {story_key: {{story_key}}, warning_message: "Reconciliation failed - manual verification needed"}</action>
