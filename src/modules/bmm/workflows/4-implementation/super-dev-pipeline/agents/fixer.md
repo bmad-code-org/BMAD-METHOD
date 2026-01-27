@@ -79,22 +79,118 @@ low_issues: [#10, #11]  # SKIP (gold-plating)
 
 ## After Fixing Issues
 
-### 1. Update Story File
+### 1. Update Story File (MANDATORY)
 
-**Mark completed tasks:**
+**THIS STEP IS MANDATORY. DO NOT SKIP.**
+
+**Step 1a: Identify what was built**
 ```bash
-# Update checkboxes in story file
-# Change [ ] to [x] for completed tasks
+# Get list of files changed in latest commit
+git diff HEAD~1 --name-only
+
+# Get commit message
+git log -1 --pretty=%B
+```
+
+**Step 1b: Read story Tasks section**
+```bash
+# Find the Tasks section in story file
+grep -A 100 "^## Tasks" docs/sprint-artifacts/{{story_key}}.md | grep "^- \["
+```
+
+**Step 1c: Check off completed tasks**
+
+For EACH task in the Tasks section:
+1. Read the task description
+2. Check if related files/functions exist in git diff
+3. If code for that task exists, use Edit tool to change `- [ ]` to `- [x]`
+4. Verify edit worked with grep
+
+**Example:**
+```bash
+# Task says: "Create RetryScheduler service"
+# Check if file exists in commit:
+git diff HEAD~1 --name-only | grep -i retry
+# Result: lib/billing/retry-scheduler.ts
+
+# Use Edit tool to check off task:
+# Find exact line: grep -n "RetryScheduler" docs/sprint-artifacts/{{story_key}}.md
+# Edit: Change "- [ ] Create RetryScheduler service" → "- [x] Create RetryScheduler service"
+
+# Verify:
+grep "^\- \[x\].*RetryScheduler" docs/sprint-artifacts/{{story_key}}.md
+# Should return the checked line
+```
+
+**Step 1d: Fill Dev Agent Record**
+
+Find the Dev Agent Record section and fill it in:
+```markdown
+### Dev Agent Record
+- **Agent Model Used:** Claude Sonnet 4.5 (multi-agent pipeline: Builder + Inspector + Reviewer + Fixer)
+- **Implementation Date:** 2026-01-26
+- **Files Created/Modified:**
+  - lib/billing/retry-scheduler.ts
+  - lib/billing/payment-processor.ts
+  - lib/billing/worker.ts
+  - [list ALL files from git diff]
+- **Tests Added:**
+  - lib/billing/__tests__/retry-scheduler.test.ts
+  - lib/billing/__tests__/payment-processor.test.ts
+  - lib/billing/__tests__/worker.test.ts
+- **Completion Notes:**
+  - Implemented exponential backoff retry logic
+  - Added payment processor with Stripe integration
+  - Created worker with queue processing
+  - Fixed 8 CRITICAL/HIGH code review findings
+  - All production code passing type-check and lint
+```
+
+**Step 1e: Verify story file was updated**
+```bash
+# Count checked tasks
+grep -c "^\- \[x\]" docs/sprint-artifacts/{{story_key}}.md
+
+# Verify Dev Agent Record filled
+grep -A 20 "^### Dev Agent Record" docs/sprint-artifacts/{{story_key}}.md | grep -c "Agent Model"
+
+# If count is 0, STOP and fix it. DO NOT PROCEED to commit.
 ```
 
 ### 2. Update Sprint Status
 
 **Update sprint-status.yaml:**
 ```yaml
-17-10-occupant-agreement-view: done  # was: ready-for-dev
+{{story_key}}: done  # was: ready-for-dev
 ```
 
-### 3. Commit Changes
+### 3. Pre-Commit Verification (BLOCKER)
+
+**BEFORE YOU COMMIT, VERIFY STORY FILE WAS UPDATED:**
+
+```bash
+# Check 1: Count checked tasks (must be > 0)
+CHECKED_COUNT=$(grep -c "^\- \[x\]" docs/sprint-artifacts/{{story_key}}.md)
+echo "Checked tasks: $CHECKED_COUNT"
+
+# Check 2: Verify Dev Agent Record filled (must be 1)
+RECORD_FILLED=$(grep -A 20 "^### Dev Agent Record" docs/sprint-artifacts/{{story_key}}.md | grep -c "Agent Model")
+echo "Dev Agent Record filled: $RECORD_FILLED"
+
+# BLOCKER: If either check fails, STOP
+if [ "$CHECKED_COUNT" -eq 0 ] || [ "$RECORD_FILLED" -eq 0 ]; then
+  echo "❌ BLOCKER: Story file NOT updated"
+  echo "You MUST update the story file before committing."
+  echo "Go back to Step 1 and complete the story reconciliation."
+  exit 1
+fi
+
+echo "✅ Story file verification passed"
+```
+
+### 4. Commit Changes
+
+**Only proceed if Step 3 verification passed:**
 
 ```bash
 git add .
@@ -151,10 +247,19 @@ All tests passing, type check clean, lint clean."
 - ✅ Build: PASS
 - ✅ Tests: 48/48 passing (96% coverage)
 
+**Story File Updates (MANDATORY):**
+- ✅ Tasks checked off: X/Y tasks marked complete
+- ✅ Dev Agent Record filled with files and notes
+- ✅ Verified with grep (counts > 0)
+
 **Git:**
 - ✅ Commit created: a1b2c3d
-- ✅ Story checkboxes updated
-- ✅ Sprint status updated
+- ✅ Sprint status updated to "done"
+
+**Pre-Commit Verification:**
+- ✅ Checked tasks count: X (must be > 0)
+- ✅ Dev Agent Record filled: YES (must be 1)
+- ✅ BLOCKER passed
 
 **Story Status:** COMPLETE
 ```
