@@ -19,7 +19,7 @@ Orchestrator coordinates. Agents do implementation. Orchestrator does reconcilia
 
 <config>
 name: batch-super-dev
-version: 3.0.0
+version: 3.1.0
 
 modes:
   sequential: {description: "Process one-by-one in this session", recommended_for: "gap analysis"}
@@ -29,6 +29,9 @@ complexity_routing:
   micro: {max_tasks: 3, max_files: 5, skip_review: true}
   standard: {max_tasks: 15, max_files: 30, full_pipeline: true}
   complex: {min_tasks: 16, keywords: [auth, security, payment, migration], enhanced_review: true}
+
+defaults:
+  auto_create_missing: true  # Automatically create missing story files using greenfield workflow
 </config>
 
 <execution_context>
@@ -89,7 +92,7 @@ Legend: ✅ ready | ❌ missing | 🔄 done but not tracked
 For each story with existing file:
 1. Read story file
 2. Check for 12 BMAD sections (Business Context, Acceptance Criteria, Tasks, etc.)
-3. If invalid: mark for regeneration or skip
+3. If invalid: mark for regeneration
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -97,7 +100,7 @@ For each story with existing file:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
-Skip stories with missing files (status ready-for-dev but no file).
+**Note:** Stories with missing files will be auto-created in the execution step.
 </step>
 
 <step name="score_complexity">
@@ -188,29 +191,16 @@ echo "🔍 Checking prerequisites..."
 **Check 1: Story file exists?**
 ```bash
 if [ ! -f "$STORY_FILE" ]; then
-  echo "⚠️  Creating story file..."
+  echo "⚠️  Creating greenfield story (no gap analysis)..."
 fi
 ```
 
-If missing, auto-create:
+If missing, auto-create using greenfield workflow:
 - Use Skill tool: `/bmad_bmm_create-story {{story_key}}`
 - Verify created: `[ -f "$STORY_FILE" ]`
 
-**Check 2: Gap analysis complete?**
 ```bash
-GAP_COUNT=$(grep -c "^✅\|^❌" "$STORY_FILE" || echo "0")
-
-if [ "$GAP_COUNT" -eq 0 ]; then
-  echo "⚠️  Running gap analysis..."
-fi
-```
-
-If missing, auto-run:
-- Use Skill tool: `/bmad_bmm_gap-analysis {{story_key}}`
-- Verify markers: `GAP_COUNT=$(grep -c "^✅\|^❌" "$STORY_FILE")`
-
-```bash
-echo "✅ Prerequisites satisfied ($GAP_COUNT gaps analyzed)"
+echo "✅ Prerequisites satisfied"
 ```
 
 **Step B: Invoke super-dev-pipeline**

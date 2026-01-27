@@ -19,7 +19,7 @@ Orchestrator coordinates. Agents do implementation. Orchestrator does reconcilia
 
 <config>
 name: batch-super-dev
-version: 3.0.0
+version: 3.1.0
 
 modes:
   sequential: {description: "Process one-by-one in this session", recommended_for: "gap analysis"}
@@ -29,6 +29,9 @@ complexity_routing:
   micro: {max_tasks: 3, max_files: 5, skip_review: true}
   standard: {max_tasks: 15, max_files: 30, full_pipeline: true}
   complex: {min_tasks: 16, keywords: [auth, security, payment, migration], enhanced_review: true}
+
+defaults:
+  auto_create_missing: true  # Automatically create missing story files using greenfield workflow
 </config>
 
 <execution_context>
@@ -89,7 +92,7 @@ Legend: ✅ ready | ❌ missing | 🔄 done but not tracked
 For each story with existing file:
 1. Read story file
 2. Check for 12 BMAD sections (Business Context, Acceptance Criteria, Tasks, etc.)
-3. If invalid: mark for regeneration or skip
+3. If invalid: mark for regeneration
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -97,7 +100,7 @@ For each story with existing file:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
-Skip stories with missing files (status ready-for-dev but no file).
+**Note:** Stories with missing files will be auto-created in the execution step.
 </step>
 
 <step name="score_complexity">
@@ -172,51 +175,100 @@ For parallel: proceed to `execute_parallel`
 
 For each selected story:
 
-**Step A: Invoke super-dev-pipeline**
+**Step A: Auto-Fix Prerequisites**
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📦 Story {{index}}/{{total}}: {{story_key}}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
+```bash
+STORY_FILE="docs/sprint-artifacts/{{story_key}}.md"
+
+echo "🔍 Checking prerequisites..."
+```
+
+**Check 1: Story file exists?**
+```bash
+if [ ! -f "$STORY_FILE" ]; then
+  echo "⚠️  Creating greenfield story (no gap analysis)..."
+fi
+```
+
+If missing, auto-create using greenfield workflow:
+- Use Skill tool: `/bmad_bmm_create-story {{story_key}}`
+- Verify created: `[ -f "$STORY_FILE" ]`
+
+```bash
+echo "✅ Prerequisites satisfied"
+```
+
+**Step B: Invoke super-dev-pipeline**
+
 Use super-dev-pipeline workflow with:
 - mode: batch
 - story_key: {{story_key}}
 - complexity_level: {{complexity}}
 
-**Step B: Reconcile (orchestrator does this directly)**
+**Step C: Reconcile Using Completion Artifacts (orchestrator does this directly)**
 
 After super-dev-pipeline completes:
 
-1. Get what was built:
+**C1. Load Fixer completion artifact:**
 ```bash
-git log -3 --oneline | grep "{{story_key}}"
-git diff HEAD~1 --name-only | head -20
+FIXER_COMPLETION="docs/sprint-artifacts/completions/{{story_key}}-fixer.json"
+
+if [ ! -f "$FIXER_COMPLETION" ]; then
+  echo "❌ WARNING: No completion artifact, using fallback"
+  # Fallback to git diff if completion artifact missing
+else
+  echo "✅ Using completion artifact"
+fi
 ```
 
-2. Read story file, check off tasks:
-```
-Use Edit tool: "- [ ]" → "- [x]" for completed tasks
+Use Read tool on: `docs/sprint-artifacts/completions/{{story_key}}-fixer.json`
+
+**C2. Parse completion data:**
+Extract from JSON:
+- files_created and files_modified arrays
+- git_commit hash
+- quality_checks results
+- tests counts
+- fixes_applied list
+
+**C3. Read story file:**
+Use Read tool: `docs/sprint-artifacts/{{story_key}}.md`
+
+**C4. Check off completed tasks:**
+For each task:
+- Match task to files in completion artifact
+- If file was created/modified: check off task
+- Use Edit tool: `"- [ ]"` → `"- [x]"`
+
+**C5. Fill Dev Agent Record:**
+Use Edit tool with data from completion.json:
+```markdown
+### Dev Agent Record
+**Implementation Date:** {{timestamp from json}}
+**Agent Model:** Claude Sonnet 4.5 (multi-agent pipeline)
+**Git Commit:** {{git_commit from json}}
+
+**Files:** {{files_created + files_modified from json}}
+**Tests:** {{tests.passing}}/{{tests.total}} passing ({{tests.coverage}}%)
+**Issues Fixed:** {{issues_fixed.total}} issues
 ```
 
-3. Fill Dev Agent Record:
-```
-Use Edit tool to add implementation date, files, notes
-```
-
-4. Verify:
+**C6. Verify updates:**
 ```bash
 CHECKED=$(grep -c "^- \[x\]" "$STORY_FILE")
-[ "$CHECKED" -gt 0 ] || { echo "❌ BLOCKER: Zero tasks checked"; exit 1; }
+[ "$CHECKED" -gt 0 ] || { echo "❌ Zero tasks checked"; exit 1; }
 echo "✅ Reconciled: $CHECKED tasks"
 ```
 
-5. Update sprint-status.yaml:
-```
-Use Edit tool: "{{story_key}}: ready-for-dev" → "{{story_key}}: done"
-```
+**C7. Update sprint-status.yaml:**
+Use Edit tool: `"{{story_key}}: ready-for-dev"` → `"{{story_key}}: done"`
 
-**Step C: Next story or complete**
+**Step D: Next story or complete**
 - If more stories: continue loop
 - If complete: proceed to `summary`
 </step>
