@@ -195,14 +195,16 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
     if (header_template || body_template) {
       const content = await this.loadSplitTemplates(templateType, artifactType, header_template, body_template);
       // Allow config to override extension, default to .md
-      return { content, extension: config.extension || '.md' };
+      const ext = config.extension || '.md';
+      const normalizedExt = ext.startsWith('.') ? ext : `.${ext}`;
+      return { content, extension: normalizedExt };
     }
 
     // Load combined template - try multiple extensions
     // If artifactType is empty, templateType already contains full name (e.g., 'gemini-workflow-yaml')
     const templateBaseName = artifactType ? `${templateType}-${artifactType}` : templateType;
     const templateDir = path.join(__dirname, 'templates', 'combined');
-    const extensions = ['.md', '.toml', '.yaml'];
+    const extensions = ['.md', '.toml', '.yaml', '.yml'];
 
     for (const ext of extensions) {
       const templatePath = path.join(templateDir, templateBaseName + ext);
