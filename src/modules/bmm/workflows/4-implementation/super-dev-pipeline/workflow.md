@@ -42,6 +42,60 @@ complexity_routing:
 
 <process>
 
+<verification_checklist>
+## Implementation Execution Checklist
+
+**Story {{story_key}} requires these exact steps (cannot skip):**
+
+### Prerequisites (Auto-Fixed)
+- [ ] **Step 0.1:** Story file exists (auto-create if missing)
+- [ ] **Step 0.2:** Gap analysis complete (auto-run if missing)
+
+### Phase 1: Builder (Steps 1-4)
+- [ ] **Step 1.1:** Builder agent spawned
+- [ ] **Step 1.2:** Builder creates completion artifact
+- [ ] **Step 1.3:** Verify artifact exists (file check)
+- [ ] **Step 1.4:** Verify claimed files exist
+
+### Phase 2: Inspector (Steps 5-6)
+- [ ] **Step 2.1:** Inspector agent spawned (fresh context)
+- [ ] **Step 2.2:** Inspector runs all quality checks
+- [ ] **Step 2.3:** Inspector creates completion artifact
+- [ ] **Step 2.4:** Verify PASS verdict
+
+### Phase 3: Reviewer (Step 7) [Skip if micro complexity]
+- [ ] **Step 3.1:** Reviewer agent spawned (adversarial)
+- [ ] **Step 3.2:** Reviewer finds issues
+- [ ] **Step 3.3:** Reviewer creates completion artifact
+- [ ] **Step 3.4:** Categorize issues (CRITICAL/HIGH/MEDIUM/LOW)
+
+### Phase 4: Fixer (Steps 8-9)
+- [ ] **Step 4.1:** Fixer agent spawned
+- [ ] **Step 4.2:** Fixer resolves CRITICAL + HIGH issues
+- [ ] **Step 4.3:** Fixer creates completion artifact
+- [ ] **Step 4.4:** Fixer commits changes
+- [ ] **Step 4.5:** Verify git commit exists
+
+### Phase 5: Reconciliation (Orchestrator)
+- [ ] **Step 5.1:** Load Fixer completion artifact
+- [ ] **Step 5.2:** Parse JSON for structured data
+- [ ] **Step 5.3:** Update story file tasks (check off completed)
+- [ ] **Step 5.4:** Fill Dev Agent Record
+- [ ] **Step 5.5:** Verify story file updated (bash check)
+
+### Final Verification
+- [ ] **Step 6.1:** Git commit exists for story
+- [ ] **Step 6.2:** Story has checked tasks (count > 0)
+- [ ] **Step 6.3:** Dev Agent Record filled
+- [ ] **Step 6.4:** Sprint status updated to "done"
+
+**If any step fails:**
+- HALT immediately
+- Report which step failed
+- Fix before proceeding
+- Cannot skip steps
+</verification_checklist>
+
 <step name="ensure_prerequisites" priority="first">
 **AUTO-FIX MISSING PREREQUISITES**
 

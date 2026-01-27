@@ -1,122 +1,340 @@
 # Security Review Checklist
 
-<overview>
-Security vulnerabilities are CRITICAL issues. A single vulnerability can expose user data, enable account takeover, or cause financial loss.
+**Philosophy:** Security issues are CRITICAL. No exceptions.
 
-**Principle:** Assume all input is malicious. Validate everything.
-</overview>
+This checklist helps identify common security vulnerabilities in code reviews.
 
-<owasp_top_10>
-## OWASP Top 10 Checks
+## CRITICAL Security Issues
 
-### 1. Injection
-```bash
-# Check for SQL injection
-grep -E "SELECT.*\+|INSERT.*\+|UPDATE.*\+|DELETE.*\+" . -r
-grep -E '\$\{.*\}.*query|\`.*\$\{' . -r
+These MUST be fixed. No story ships with these issues.
 
-# Check for command injection
-grep -E "exec\(|spawn\(|system\(" . -r
+### 1. SQL Injection
+
+**Look for:**
+```javascript
+// ❌ BAD: User input in query string
+const query = `SELECT * FROM users WHERE id = '${userId}'`;
+const query = "SELECT * FROM users WHERE id = '" + userId + "'";
 ```
 
-**Fix:** Use parameterized queries, never string concatenation.
+**Fix with:**
+```javascript
+// ✅ GOOD: Parameterized queries
+const query = db.prepare('SELECT * FROM users WHERE id = ?');
+query.get(userId);
 
-### 2. Broken Authentication
-```bash
-# Check for hardcoded credentials
-grep -E "password.*=.*['\"]|api.?key.*=.*['\"]|secret.*=.*['\"]" . -r -i
-
-# Check for weak session handling
-grep -E "localStorage.*token|sessionStorage.*password" . -r
+// ✅ GOOD: ORM/Query builder
+const user = await prisma.user.findUnique({ where: { id: userId } });
 ```
 
-**Fix:** Use secure session management, never store secrets in code.
+### 2. XSS (Cross-Site Scripting)
 
-### 3. Sensitive Data Exposure
-```bash
-# Check for PII logging
-grep -E "console\.(log|info|debug).*password|log.*email|log.*ssn" . -r -i
-
-# Check for unencrypted transmission
-grep -E "http://(?!localhost)" . -r
+**Look for:**
+```javascript
+// ❌ BAD: Unsanitized user input in HTML
+element.innerHTML = userInput;
+document.write(userInput);
 ```
 
-**Fix:** Never log sensitive data, always use HTTPS.
+**Fix with:**
+```javascript
+// ✅ GOOD: Use textContent or sanitize
+element.textContent = userInput;
 
-### 4. XML External Entities (XXE)
-```bash
-# Check for unsafe XML parsing
-grep -E "parseXML|DOMParser|xml2js" . -r
+// ✅ GOOD: Use framework's built-in escaping
+<div>{userInput}</div> // React automatically escapes
 ```
 
-**Fix:** Disable external entity processing.
+### 3. Authentication Bypass
 
-### 5. Broken Access Control
-```bash
-# Check for missing auth checks
-grep -E "export.*function.*(GET|POST|PUT|DELETE)" . -r | head -20
-# Then verify each has auth check
+**Look for:**
+```javascript
+// ❌ BAD: No auth check
+app.get('/api/admin/users', async (req, res) => {
+  const users = await getUsers();
+  res.json(users);
+});
 ```
 
-**Fix:** Every endpoint must verify user has permission.
-
-### 6. Security Misconfiguration
-```bash
-# Check for debug mode in prod
-grep -E "debug.*true|NODE_ENV.*development" . -r
-
-# Check for default credentials
-grep -E "admin.*admin|password.*password|123456" . -r
+**Fix with:**
+```javascript
+// ✅ GOOD: Require auth
+app.get('/api/admin/users', requireAuth, async (req, res) => {
+  const users = await getUsers();
+  res.json(users);
+});
 ```
 
-**Fix:** Secure configuration, no defaults.
+### 4. Authorization Gaps
 
-### 7. Cross-Site Scripting (XSS)
-```bash
-# Check for innerHTML usage
-grep -E "innerHTML|dangerouslySetInnerHTML" . -r
-
-# Check for unescaped output
-grep -E "\$\{.*\}.*<|<.*\$\{" . -r
+**Look for:**
+```javascript
+// ❌ BAD: No ownership check
+app.delete('/api/orders/:id', async (req, res) => {
+  await deleteOrder(req.params.id);
+  res.json({ success: true });
+});
 ```
 
-**Fix:** Always escape user input, use safe rendering.
-
-### 8. Insecure Deserialization
-```bash
-# Check for unsafe JSON parsing
-grep -E "JSON\.parse\(.*req\." . -r
-grep -E "eval\(|Function\(" . -r
+**Fix with:**
+```javascript
+// ✅ GOOD: Verify user owns resource
+app.delete('/api/orders/:id', async (req, res) => {
+  const order = await getOrder(req.params.id);
+  
+  if (order.userId !== req.user.id) {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
+  
+  await deleteOrder(req.params.id);
+  res.json({ success: true });
+});
 ```
 
-**Fix:** Validate structure before parsing.
+### 5. Hardcoded Secrets
 
-### 9. Using Components with Known Vulnerabilities
+**Look for:**
+```javascript
+// ❌ BAD: Secrets in code
+const API_KEY = 'sk-1234567890abcdef';
+const DB_PASSWORD = 'MyP@ssw0rd123';
+```
+
+**Fix with:**
+```javascript
+// ✅ GOOD: Environment variables
+const API_KEY = process.env.API_KEY;
+const DB_PASSWORD = process.env.DB_PASSWORD;
+
+// ✅ GOOD: Secrets manager
+const API_KEY = await secretsManager.get('API_KEY');
+```
+
+### 6. Insecure Direct Object Reference (IDOR)
+
+**Look for:**
+```javascript
+// ❌ BAD: Use user-supplied ID without validation
+app.get('/api/documents/:id', async (req, res) => {
+  const doc = await getDocument(req.params.id);
+  res.json(doc);
+});
+```
+
+**Fix with:**
+```javascript
+// ✅ GOOD: Verify access
+app.get('/api/documents/:id', async (req, res) => {
+  const doc = await getDocument(req.params.id);
+  
+  // Check user has permission to view this document
+  if (!await userCanAccessDocument(req.user.id, doc.id)) {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
+  
+  res.json(doc);
+});
+```
+
+## HIGH Security Issues
+
+These should be fixed before shipping.
+
+### 7. Missing Input Validation
+
+**Look for:**
+```javascript
+// ❌ BAD: No validation
+app.post('/api/users', async (req, res) => {
+  await createUser(req.body);
+  res.json({ success: true });
+});
+```
+
+**Fix with:**
+```javascript
+// ✅ GOOD: Validate input
+app.post('/api/users', async (req, res) => {
+  const schema = z.object({
+    email: z.string().email(),
+    age: z.number().min(18).max(120)
+  });
+  
+  try {
+    const data = schema.parse(req.body);
+    await createUser(data);
+    res.json({ success: true });
+  } catch (error) {
+    res.status(400).json({ error: error.errors });
+  }
+});
+```
+
+### 8. Sensitive Data Exposure
+
+**Look for:**
+```javascript
+// ❌ BAD: Exposing sensitive fields
+const user = await getUser(userId);
+res.json(user); // Contains password hash, SSN, etc.
+```
+
+**Fix with:**
+```javascript
+// ✅ GOOD: Select only safe fields
+const user = await getUser(userId);
+res.json({
+  id: user.id,
+  name: user.name,
+  email: user.email
+  // Don't include: password, ssn, etc.
+});
+```
+
+### 9. Missing Rate Limiting
+
+**Look for:**
+```javascript
+// ❌ BAD: No rate limit
+app.post('/api/login', async (req, res) => {
+  const user = await authenticate(req.body);
+  res.json({ token: user.token });
+});
+```
+
+**Fix with:**
+```javascript
+// ✅ GOOD: Rate limit sensitive endpoints
+app.post('/api/login', 
+  rateLimit({ max: 5, windowMs: 60000 }), // 5 attempts per minute
+  async (req, res) => {
+    const user = await authenticate(req.body);
+    res.json({ token: user.token });
+  }
+);
+```
+
+### 10. Insecure Randomness
+
+**Look for:**
+```javascript
+// ❌ BAD: Using Math.random() for tokens
+const token = Math.random().toString(36);
+```
+
+**Fix with:**
+```javascript
+// ✅ GOOD: Cryptographically secure random
+const crypto = require('crypto');
+const token = crypto.randomBytes(32).toString('hex');
+```
+
+## MEDIUM Security Issues
+
+These improve security but aren't critical.
+
+### 11. Missing HTTPS
+
+**Look for:**
+```javascript
+// ❌ BAD: HTTP only
+app.listen(3000);
+```
+
+**Fix with:**
+```javascript
+// ✅ GOOD: Force HTTPS in production
+if (process.env.NODE_ENV === 'production') {
+  app.use((req, res, next) => {
+    if (req.header('x-forwarded-proto') !== 'https') {
+      res.redirect(`https://${req.header('host')}${req.url}`);
+    } else {
+      next();
+    }
+  });
+}
+```
+
+### 12. Missing Security Headers
+
+**Look for:**
+```javascript
+// ❌ BAD: No security headers
+app.use(express.json());
+```
+
+**Fix with:**
+```javascript
+// ✅ GOOD: Add security headers
+app.use(helmet()); // Adds multiple security headers
+```
+
+### 13. Verbose Error Messages
+
+**Look for:**
+```javascript
+// ❌ BAD: Exposing stack traces
+app.use((error, req, res, next) => {
+  res.status(500).json({ error: error.stack });
+});
+```
+
+**Fix with:**
+```javascript
+// ✅ GOOD: Generic error message
+app.use((error, req, res, next) => {
+  console.error(error); // Log internally
+  res.status(500).json({ error: 'Internal server error' });
+});
+```
+
+## Review Process
+
+### Step 1: Automated Checks
+
+Run security scanners:
 ```bash
-# Check for outdated dependencies
+# Check for known vulnerabilities
 npm audit
+
+# Static analysis
+npx eslint-plugin-security
+
+# Secrets detection
+git secrets --scan
 ```
 
-**Fix:** Keep dependencies updated, monitor CVEs.
+### Step 2: Manual Review
 
-### 10. Insufficient Logging
-```bash
-# Check for security event logging
-grep -E "log.*(login|auth|permission|access)" . -r
+Use this checklist to review:
+- [ ] SQL injection vulnerabilities
+- [ ] XSS vulnerabilities
+- [ ] Authentication bypasses
+- [ ] Authorization gaps
+- [ ] Hardcoded secrets
+- [ ] IDOR vulnerabilities
+- [ ] Missing input validation
+- [ ] Sensitive data exposure
+- [ ] Missing rate limiting
+- [ ] Insecure randomness
+
+### Step 3: Document Findings
+
+For each issue found:
+```markdown
+**Issue #1: SQL Injection Vulnerability**
+- **Location:** api/users/route.ts:45
+- **Severity:** CRITICAL
+- **Problem:** User input concatenated into query
+- **Code:**
+  ```typescript
+  const query = `SELECT * FROM users WHERE id = '${userId}'`
+  ```
+- **Fix:** Use parameterized queries with Prisma
 ```
 
-**Fix:** Log security events with context.
-</owasp_top_10>
+## Remember
 
-<severity_ratings>
-## Severity Ratings
+**Security issues are CRITICAL. They MUST be fixed.**
 
-| Severity | Impact | Examples |
-|----------|--------|----------|
-| CRITICAL | Data breach, account takeover | SQL injection, auth bypass |
-| HIGH | Service disruption, data corruption | Logic flaws, N+1 queries |
-| MEDIUM | Technical debt, maintainability | Missing validation, tight coupling |
-| LOW | Code style, nice-to-have | Naming, documentation |
-
-**CRITICAL and HIGH must be fixed before merge.**
-</severity_ratings>
+Don't let security issues slide because "we'll fix it later." Fix them now.

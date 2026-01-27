@@ -1,111 +1,75 @@
-# Hospital-Grade Code Standards
+# Hospital-Grade Quality Standards
 
-<overview>
-This code may be deployed in healthcare, financial, or safety-critical contexts where failures have serious consequences. Every line of code must meet hospital-grade reliability standards.
+**Philosophy:** Quality >> Speed
 
-**Principle:** Quality >> Speed. Take 5 hours to do it right, not 1 hour to do it poorly.
-</overview>
+This pattern ensures code meets production-grade standards regardless of story complexity.
 
-<mindset>
-## Think Like a Hospital Engineer
+## Core Principles
 
-Before writing any code, ask:
-- What happens if this fails at 3 AM?
-- What happens if input is malformed?
-- What happens if a dependency is unavailable?
-- What happens if this runs with 10x expected load?
-- Would I trust this code with patient data?
+1. **Take time to do it right**
+   - Don't rush implementations
+   - Consider edge cases
+   - Handle errors properly
 
-If you can't answer confidently, add safeguards.
-</mindset>
+2. **No shortcuts**
+   - Don't skip error handling
+   - Don't leave TODO comments
+   - Don't use `any` types
+   - Don't hardcode values
 
-<required_practices>
-## Non-Negotiable Practices
+3. **Production-ready from day one**
+   - All code deployable immediately
+   - No "we'll fix it later"
+   - No technical debt by design
 
-**Error Handling:**
-- Every external call wrapped in try/catch
-- Meaningful error messages (not just "Error occurred")
-- Graceful degradation when possible
-- Errors logged with context (user, action, timestamp)
+## Quality Checklist
 
-**Input Validation:**
-- Never trust user input
-- Validate at system boundaries
-- Use schema validation (zod, joi, etc.)
-- Sanitize before database operations
+### Code Quality
+- [ ] All functions have clear, single responsibility
+- [ ] Error handling for all failure paths
+- [ ] Input validation at system boundaries
+- [ ] No magic numbers or hardcoded strings
+- [ ] Type safety (no `any`, proper generics)
 
-**Type Safety:**
-- No `any` types (TypeScript)
-- Explicit return types on functions
-- Null checks before property access
-- Union types for known variants
+### Testing
+- [ ] Unit tests for business logic
+- [ ] Integration tests for API endpoints
+- [ ] Edge cases covered
+- [ ] Error cases covered
+- [ ] 90%+ coverage target
 
-**Authentication/Authorization:**
-- Every endpoint checks auth
-- Every data access checks ownership
-- No security through obscurity
-- Principle of least privilege
-</required_practices>
+### Security
+- [ ] No SQL injection vulnerabilities
+- [ ] No XSS vulnerabilities
+- [ ] Authentication/authorization checks
+- [ ] Input sanitization
+- [ ] No secrets in code
 
-<forbidden>
-## Forbidden Patterns
+### Performance
+- [ ] No N+1 query patterns
+- [ ] Appropriate database indexes
+- [ ] Efficient algorithms (avoid O(n²) where possible)
+- [ ] Resource cleanup (connections, files)
 
-**Never do these:**
-```typescript
-// BAD: Swallowed errors
-try { doThing() } catch (e) { }
+### Maintainability
+- [ ] Code follows project patterns
+- [ ] Self-documenting code (clear names)
+- [ ] Comments only where logic isn't obvious
+- [ ] Consistent formatting
+- [ ] DRY (Don't Repeat Yourself)
 
-// BAD: any type
-function process(data: any) { }
+## Red Flags
 
-// BAD: No null check
-const name = user.profile.name
+**Immediate rejection criteria:**
+- ❌ Security vulnerabilities
+- ❌ Data loss scenarios
+- ❌ Production bugs
+- ❌ Missing error handling
+- ❌ Skipped tests
+- ❌ Hardcoded secrets
 
-// BAD: String concatenation in queries
-const query = `SELECT * FROM users WHERE id = '${id}'`
+## Hospital-Grade Mindset
 
-// BAD: Hardcoded secrets
-const apiKey = "sk_live_abc123"
+> "If this code ran a medical device, would I trust it with my family's life?"
 
-// BAD: TODO comments left in production
-// TODO: implement validation
-
-// BAD: Console.log debugging
-console.log("got here")
-```
-</forbidden>
-
-<quality_gates>
-## Quality Gates (All Must Pass)
-
-Before code is considered complete:
-
-```bash
-# Type check - zero errors
-npm run type-check
-
-# Lint - zero errors, zero warnings
-npm run lint
-
-# Tests - all passing
-npm test
-
-# Build - succeeds
-npm run build
-```
-
-If any gate fails, code is not done.
-</quality_gates>
-
-<verification>
-## Verification Checklist
-
-- [ ] All error paths handled
-- [ ] Input validated at boundaries
-- [ ] No `any` types
-- [ ] No hardcoded secrets
-- [ ] No TODO/FIXME in production code
-- [ ] Tests cover happy path AND error paths
-- [ ] Auth checks on all protected routes
-- [ ] Logging for debugging without exposing PII
-</verification>
+If the answer is no, it's not hospital-grade. Fix it.
