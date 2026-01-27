@@ -15,10 +15,10 @@ instructions: "{installed_path}/workflow.md"
 
 # Input variables
 variables:
-  scope: "story"      # story | epic | all
-  target: ""          # story_file path OR epic_number (depends on scope)
-  depth: "quick"      # quick | deep (deep uses Haiku agents)
-  fix_mode: false     # If true, auto-fix false negatives and update statuses
+  scope: "story" # story | epic | all
+  target: "" # story_file path OR epic_number (depends on scope)
+  depth: "quick" # quick | deep (deep uses Haiku agents)
+  fix_mode: false # If true, auto-fix false negatives and update statuses
 
 # Deep validation settings
 deep_validation:
