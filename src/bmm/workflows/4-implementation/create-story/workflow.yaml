@@ -1,0 +1,33 @@
+name: create-story
+description: "Create story for greenfield features with zero existing implementation (no codebase scanning)"
+author: "Jonah Schulte"
+
+# Critical variables from config
+config_source: "{project-root}/_bmad/bmm/config.yaml"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+date: system-generated
+planning_artifacts: "{config_source}:planning_artifacts"
+implementation_artifacts: "{config_source}:implementation_artifacts"
+output_folder: "{implementation_artifacts}"
+story_dir: "{implementation_artifacts}"
+
+# Workflow components
+installed_path: "{project-root}/_bmad/bmm/workflows/4-implementation/create-story"
+instructions: "{installed_path}/workflow.md"
+
+# Variables
+variables:
+  sprint_status: "{implementation_artifacts}/sprint-status.yaml"
+  epics_file: "{planning_artifacts}/epics.md"
+  prd_file: "{planning_artifacts}/prd.md"
+  architecture_file: "{planning_artifacts}/architecture.md"
+
+# Project context
+project_context: "**/project-context.md"
+
+default_output_file: "{story_dir}/{{story_key}}.md"
+
+standalone: true
+
+web_bundle: false
