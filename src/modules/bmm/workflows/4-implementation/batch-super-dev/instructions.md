@@ -1308,37 +1308,34 @@ Spawning Task agent...
     <check if="Task agent succeeded">
       <output>✅ Implementation complete: {{story_key}}</output>
 
-      <action>Execute Step 4.5: Smart Story Reconciliation</action>
-      <action>Load reconciliation instructions: {installed_path}/step-4.5-reconcile-story-status.md</action>
-      <action>Execute reconciliation with story_key={{story_key}}</action>
+      <critical>🚨 STORY RECONCILIATION - ORCHESTRATOR DOES THIS NOW (NOT AGENTS)</critical>
 
-      <critical>🚨 MANDATORY STORY FILE VERIFICATION - YOU MUST RUN THESE BASH COMMANDS</critical>
+      <output>
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔧 RECONCILING STORY FILE: {{story_key}}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Main orchestrator performing reconciliation (not delegating)
+      </output>
 
-      <action>STEP 1: Run bash verification commands (REQUIRED):</action>
+      <action>YOU (orchestrator) must use Bash tool NOW with this command:</action>
 
-      <bash_required>
-# Get story file path from story_key
+      <bash_command>
 STORY_FILE="docs/sprint-artifacts/{{story_key}}.md"
 
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "🔍 VERIFYING STORY FILE: {{story_key}}"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "Verifying story file: $STORY_FILE"
 
-# Check 1: Count checked tasks
 CHECKED_COUNT=$(grep -c "^- \[x\]" "$STORY_FILE" 2>/dev/null || echo "0")
 TOTAL_COUNT=$(grep -c "^- \[.\]" "$STORY_FILE" 2>/dev/null || echo "0")
 echo "Checked tasks: $CHECKED_COUNT/$TOTAL_COUNT"
 
-# Check 2: Verify Dev Agent Record filled
 RECORD_FILLED=$(grep -A 20 "^### Dev Agent Record" "$STORY_FILE" 2>/dev/null | grep -c "Claude Sonnet" || echo "0")
-echo "Dev Agent Record filled: $RECORD_FILLED"
+echo "Dev Agent Record: $RECORD_FILLED"
 
-# Store results for conditional logic
-echo "$CHECKED_COUNT" > /tmp/checked_count.txt
-echo "$RECORD_FILLED" > /tmp/record_filled.txt
-      </bash_required>
+echo "checked_count=$CHECKED_COUNT"
+echo "record_filled=$RECORD_FILLED"
+      </bash_command>
 
-      <action>STEP 2: Read bash results and decide:</action>
+      <action>After running Bash tool, read the output and extract checked_count and record_filled values</action>
 
       <check if="checked_count == 0 OR record_filled == 0">
         <output>

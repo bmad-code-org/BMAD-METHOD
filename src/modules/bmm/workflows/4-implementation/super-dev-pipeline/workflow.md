@@ -243,7 +243,14 @@ Task({
 
 🚨 **CRITICAL: This verification is MANDATORY. DO NOT skip.** 🚨
 
-**After all agents complete, the MAIN ORCHESTRATOR must run this verification:**
+**After all agents complete (including Reconciler), YOU (the main orchestrator) must:**
+
+1. **Use the Bash tool** to run these commands
+2. **Read the output** to see if verification passed
+3. **If verification fails**, use Edit and Bash tools to fix it NOW
+4. **Do not proceed** until verification passes
+
+**COMMAND TO RUN WITH BASH TOOL:**
 
 ```bash
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
