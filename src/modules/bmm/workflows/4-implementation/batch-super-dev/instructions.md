@@ -1109,13 +1109,24 @@ Stories in this wave:
       <action>Load reconciliation instructions: {installed_path}/step-4.5-reconcile-story-status.md</action>
       <action>Execute reconciliation with story_key={{story_key}}</action>
 
-      <critical>🚨 MANDATORY RECONCILIATION AUTO-FIX - MAKE IT RIGHT</critical>
-      <action>Verify reconciliation by checking story file:</action>
-      <action>  1. Re-read story file: {{story_file_path}}</action>
-      <action>  2. Count checked tasks vs total tasks</action>
-      <action>  3. Check Dev Agent Record filled</action>
+      <critical>🚨 MANDATORY STORY FILE VERIFICATION - MAIN ORCHESTRATOR MUST RUN BASH</critical>
 
-      <check if="checked_tasks == 0 OR dev_agent_record_empty">
+      <bash_required>
+STORY_FILE="docs/sprint-artifacts/{{story_key}}.md"
+echo "🔍 Verifying story file: {{story_key}}"
+
+CHECKED_COUNT=$(grep -c "^- \[x\]" "$STORY_FILE" 2>/dev/null || echo "0")
+TOTAL_COUNT=$(grep -c "^- \[.\]" "$STORY_FILE" 2>/dev/null || echo "0")
+echo "  Checked tasks: $CHECKED_COUNT/$TOTAL_COUNT"
+
+RECORD_FILLED=$(grep -A 20 "^### Dev Agent Record" "$STORY_FILE" 2>/dev/null | grep -c "Claude Sonnet" || echo "0")
+echo "  Dev Agent Record: $RECORD_FILLED"
+
+echo "$CHECKED_COUNT" > /tmp/checked_{{story_key}}.txt
+echo "$RECORD_FILLED" > /tmp/record_{{story_key}}.txt
+      </bash_required>
+
+      <check if="checked_count == 0 OR record_filled == 0">
         <output>
 ❌ Story {{story_key}}: Agent FAILED to update story file
 
@@ -1639,13 +1650,24 @@ Press [C] to continue or [P] to pause:
       <action>Load reconciliation instructions: {installed_path}/step-4.5-reconcile-story-status.md</action>
       <action>Execute reconciliation with story_key={{story_key}}</action>
 
-      <critical>🚨 MANDATORY RECONCILIATION AUTO-FIX - MAKE IT RIGHT</critical>
-      <action>Verify reconciliation by checking story file:</action>
-      <action>  1. Re-read story file: {{story_file_path}}</action>
-      <action>  2. Count checked tasks vs total tasks</action>
-      <action>  3. Check Dev Agent Record filled</action>
+      <critical>🚨 MANDATORY STORY FILE VERIFICATION - MAIN ORCHESTRATOR MUST RUN BASH</critical>
 
-      <check if="checked_tasks == 0 OR dev_agent_record_empty">
+      <bash_required>
+STORY_FILE="docs/sprint-artifacts/{{story_key}}.md"
+echo "🔍 Verifying story file: {{story_key}}"
+
+CHECKED_COUNT=$(grep -c "^- \[x\]" "$STORY_FILE" 2>/dev/null || echo "0")
+TOTAL_COUNT=$(grep -c "^- \[.\]" "$STORY_FILE" 2>/dev/null || echo "0")
+echo "  Checked tasks: $CHECKED_COUNT/$TOTAL_COUNT"
+
+RECORD_FILLED=$(grep -A 20 "^### Dev Agent Record" "$STORY_FILE" 2>/dev/null | grep -c "Claude Sonnet" || echo "0")
+echo "  Dev Agent Record: $RECORD_FILLED"
+
+echo "$CHECKED_COUNT" > /tmp/checked_{{story_key}}.txt
+echo "$RECORD_FILLED" > /tmp/record_{{story_key}}.txt
+      </bash_required>
+
+      <check if="checked_count == 0 OR record_filled == 0">
         <output>
 ❌ Story {{story_key}}: Agent FAILED to update story file
 
