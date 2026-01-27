@@ -1,5 +1,58 @@
 # Changelog
 
+## [6.1.0-Beta.1]
+
+**Release: January 2026 - Unified Workflow Architecture**
+
+### 🎯 Major Refactor: GSD-Style Unified Workflows
+
+Complete refactor of all Phase 4 implementation workflows from verbose XML/multi-file format to streamlined GSD-style unified markdown.
+
+**Philosophy Change:**
+- **Simpler is better**: LLMs work better with clear, semantic instructions vs complex XML
+- **Single-file workflows**: `workflow.md` replaces `instructions.xml` + step files
+- **Semantic tags**: `<purpose>`, `<philosophy>`, `<config>`, `<process>`, `<step>`
+- **Pattern references**: `@patterns/verification.md` for shared context
+- **Orchestrator-driven**: Orchestrator does bookkeeping, agents do creative work
+
+### 🔧 Workflows Converted
+
+**Phase 4 Implementation (14 workflows unified):**
+- `validate` - Consolidated 6 separate validation workflows into 1 with parameters
+- `gap-analysis` - Verify story tasks against codebase
+- `push-all` - Safe git staging/commit/push with secret detection
+- `super-dev-story` - Dev pipeline with validation and review gates
+- `create-story-with-gap-analysis` - Regenerate story with verified codebase scan
+- `batch-super-dev` - Parallel story execution pipeline
+- `super-dev-pipeline` - Full orchestration workflow
+- `story-pipeline` - Story lifecycle management
+- `multi-agent-review` - Parallel code review with specialized agents
+- `recover-sprint-status` - Rebuild sprint-status.yaml from artifacts
+- `revalidate-story` - Clear and re-verify story checkboxes
+- `revalidate-epic` - Batch revalidation for epic stories
+- `detect-ghost-features` - Find undocumented code
+- `migrate-to-github` - Export stories to GitHub Issues
+
+**Patterns Library (5 shared patterns):**
+- `verification.md` - Evidence-based checkbox verification
+- `hospital-grade.md` - Production reliability standards
+- `structured-output.md` - Agent return format contracts
+- `parallel-execution.md` - Multi-agent coordination
+- `context-loading.md` - Efficient context management
+
+### 📊 Impact
+
+- **Net reduction: ~15,000+ lines** of verbose XML/instructions
+- **Simpler mental model**: One file per workflow
+- **Better LLM comprehension**: Semantic tags over complex nesting
+- **Easier maintenance**: Patterns shared across workflows
+
+### 🔄 Migration Notes
+
+Existing installations will automatically use the new workflow format. No user action required.
+
+---
+
 ## [6.0.0-Beta.0]
 
 **Release: January 2026 - Alpha to Beta Transition**

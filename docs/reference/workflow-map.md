@@ -46,7 +46,9 @@ Decide how to build it and break work into stories.
 
 ## Phase 4: Implementation
 
-Build it, one story at a time.
+Build it, one story at a time. All implementation workflows use a unified GSD-style format with semantic tags (`<purpose>`, `<philosophy>`, `<config>`, `<process>`, `<step>`) and shared patterns for consistency.
+
+### Core Development
 
 | Workflow          | Purpose                                | Produces                      |
 | ----------------- | -------------------------------------- | ----------------------------- |
@@ -56,6 +58,31 @@ Build it, one story at a time.
 | `code-review`     | Validate implementation quality        | Approved or changes requested |
 | `correct-course`  | Handle significant mid-sprint changes  | Updated plan or re-routing    |
 | `retrospective`   | Review after epic completion           | Lessons learned               |
+
+### Quality & Validation
+
+| Workflow          | Purpose                                   | Produces                    |
+| ----------------- | ----------------------------------------- | --------------------------- |
+| `validate`        | Unified validation (story/epic/all, quick/deep) | Validation report with categories |
+| `gap-analysis`    | Verify story checkboxes against codebase  | Accuracy report, optional fixes |
+| `revalidate-story`| Clear and re-verify all checkboxes        | Updated story with evidence |
+| `multi-agent-review` | Parallel code review with specialists  | Combined review verdict     |
+
+### Pipelines & Automation
+
+| Workflow             | Purpose                                    | Produces                     |
+| -------------------- | ------------------------------------------ | ---------------------------- |
+| `super-dev-story`    | Dev + validation + review + push pipeline  | Production-ready code        |
+| `batch-super-dev`    | Parallel execution of multiple stories     | Multiple stories completed   |
+| `push-all`           | Safe git staging/commit/push with checks   | Committed and pushed changes |
+
+### Maintenance & Recovery
+
+| Workflow                  | Purpose                              | Produces                   |
+| ------------------------- | ------------------------------------ | -------------------------- |
+| `recover-sprint-status`   | Rebuild sprint-status from artifacts | Reconstructed status file  |
+| `detect-ghost-features`   | Find undocumented code               | Orphan report, backfill stories |
+| `migrate-to-github`       | Export stories to GitHub Issues      | GitHub Issues with labels  |
 
 ## Quick Flow (Parallel Track)
 
