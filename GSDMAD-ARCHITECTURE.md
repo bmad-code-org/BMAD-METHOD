@@ -394,7 +394,7 @@ validation:
     fixer: {steps: [8,9]}
 ```
 
-### Enhanced: `super-dev-pipeline-v2.md`
+### Enhanced: `super-dev-pipeline.md`
 ```yaml
 execution_mode: "multi_agent" # single_agent | multi_agent
 
@@ -488,7 +488,7 @@ agents:
 ---
 
 **Next Steps:**
-1. Create `super-dev-pipeline-v2/` directory
+1. Create `super-dev-pipeline/` directory
 2. Write agent prompt files
 3. Update `batch-super-dev` for wave execution
 4. Test on Epic 17 stories

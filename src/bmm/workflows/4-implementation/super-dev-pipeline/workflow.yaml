@@ -1,4 +1,4 @@
-name: super-dev-pipeline-v2
+name: super-dev-pipeline
 description: "Multi-agent pipeline with wave-based execution, independent validation, and adversarial code review (GSDMAD)"
 author: "BMAD Method + GSD"
 version: "2.0.0"
@@ -14,7 +14,7 @@ communication_language: "{config_source}:communication_language"
 date: system-generated
 
 # Workflow paths
-installed_path: "{project-root}/_bmad/bmm/workflows/4-implementation/super-dev-pipeline-v2"
+installed_path: "{project-root}/_bmad/bmm/workflows/4-implementation/super-dev-pipeline"
 agents_path: "{installed_path}/agents"
 steps_path: "{installed_path}/steps"
 

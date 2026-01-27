@@ -11,7 +11,7 @@
 ### Workflows Without Tests:
 1. **batch-super-dev** - Interactive story selector
 2. **super-dev-pipeline** - Story implementation pipeline
-3. **super-dev-pipeline-v2** - Multi-agent pipeline
+3. **super-dev-pipeline** - Multi-agent pipeline
 4. **create-story** - Lightweight story creation
 5. **create-story-with-gap-analysis** - Story with codebase scan
 
@@ -34,7 +34,7 @@
 - [ ] Sprint-status updates
 - [ ] Commit creation
 
-**super-dev-pipeline-v2:**
+**super-dev-pipeline:**
 - [ ] Multi-agent spawning (builder, inspector, reviewer, fixer)
 - [ ] Fresh context per agent
 - [ ] Independent validation

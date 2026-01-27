@@ -889,71 +889,35 @@ QUALITY OVER SPEED: Taking time to ensure correctness.
   </substep>
 
   <ask>
-**Choose execution strategy:**
+**How should these stories be processed?**
 
-{{#if waves.length > 1}}
-[W] WAVE-BASED PARALLEL (Recommended)
-    - Respects dependencies between stories
-    - Runs independent stories in parallel within each wave
-    - Wave 1: {{wave_1_stories}} → Wave 2: {{wave_2_stories}} → ...
-    - Estimated time: {{wave_time}} ({{savings}}% faster than sequential)
-    - Safer than full parallel (honors dependencies)
-{{/if}}
+Options:
+- **S**: Sequential - Run stories one-by-one (Task agent finishes before next starts)
+- **P**: Parallel - Run stories concurrently (Multiple Task agents running simultaneously)
 
-[S] SEQUENTIAL
-    - Process stories one-by-one in this session
-    - Easier to monitor and debug
-    - Estimated time: {{sequential_time}}
-    - Best for: When you want full control
+**Note:** Both modes use Task agents to keep story context out of the main thread.
+The only difference is the number running at once.
 
-{{#if waves.length == 1}}
-[P] FULL PARALLEL (All {{count}} stories)
-    - All stories independent, no dependencies
-    - Spawn {{count}} agents concurrently
-    - Estimated time: {{parallel_time}} ({{savings}}% faster)
-{{else}}
-[P] FULL PARALLEL (Ignore dependencies - RISKY)
-    - Spawn all {{count}} agents concurrently
-    - ⚠️ May fail if stories depend on each other
-    - Use only if you're certain dependencies are wrong
-{{/if}}
-
-Enter: {{#if waves.length > 1}}w{{/if}}/s/p
+Enter: S or P
   </ask>
 
   <action>Capture response as: execution_strategy</action>
 
-  <check if="execution_strategy == 'w' OR execution_strategy == 'W'">
-    <action>Set execution_mode = "wave_based"</action>
-    <action>Set use_task_agents = true</action>
-    <action>Set wave_execution = true</action>
-    <output>
-✅ Wave-Based Parallel Execution Selected
-
-Execution plan:
-{{#each waves}}
-Wave {{@index}}: {{count}} stories{{#if @index > 0}} (after Wave {{@index - 1}} completes){{/if}}
-{{#each stories}}
-  - {{story_key}}
-{{/each}}
-{{/each}}
-
-Estimated time: {{wave_time}} ({{savings}}% faster than sequential)
-    </output>
-  </check>
-
   <check if="execution_strategy == 's' OR execution_strategy == 'S'">
     <action>Set execution_mode = "sequential"</action>
     <action>Set parallel_count = 1</action>
-    <action>Set use_task_agents = false</action>
-    <action>Set wave_execution = false</action>
-    <output>✅ Sequential mode selected - stories will be processed one-by-one in this session</output>
+    <action>Set use_task_agents = true</action>
+    <output>
+⏺ ✅ Sequential mode selected - stories will be processed one-by-one
+
+Each story runs in its own Task agent. Agents execute sequentially (one completes before next starts).
+This keeps the main thread clean while maintaining easy monitoring.
+    </output>
   </check>
 
   <check if="execution_strategy == 'p' OR execution_strategy == 'P'">
-    <action>Set execution_mode = "full_parallel"</action>
+    <action>Set execution_mode = "parallel"</action>
     <action>Set use_task_agents = true</action>
-    <action>Set wave_execution = false</action>
 
     <ask>
 **How many agents should run in parallel?**
@@ -975,26 +939,33 @@ Enter number (2-10) or 'all':
     <check if="parallel_count was capped at 10">
       <output>⚠️ Requested {{original_count}} agents, capped at 10 (safety limit)</output>
     </check>
+
+    <output>
+⏺ ✅ Parallel mode selected - {{parallel_count}} Task agents will run concurrently
+
+Each story runs in its own Task agent. Multiple agents execute in parallel for faster completion.
+    </output>
   </check>
 
   <output>
 ## ⚙️ Execution Plan
 
 **Mode:** {{execution_mode}}
-{{#if use_task_agents}}
-**Task Agents:** {{parallel_count}} running concurrently
+**Task Agents:** {{parallel_count}} {{#if parallel_count > 1}}running concurrently{{else}}running sequentially{{/if}}
 **Agent Type:** general-purpose (autonomous)
-{{else}}
-**Sequential processing** in current session
-{{/if}}
 
 **Stories to process:** {{count}}
 **Estimated total time:**
-{{#if use_task_agents}}
+{{#if parallel_count > 1}}
 - With {{parallel_count}} agents: {{estimated_hours / parallel_count}} hours
 {{else}}
 - Sequential: {{estimated_hours}} hours
 {{/if}}
+
+**Complexity Routing:**
+{{#each stories_by_complexity}}
+- {{complexity}}: {{count}} stories ({{pipeline_description}})
+{{/each}}
   </output>
 
   <ask>Confirm execution plan? (yes/no):</ask>
@@ -1009,16 +980,16 @@ Enter number (2-10) or 'all':
   <action>Initialize counters: completed=0, failed=0, failed_stories=[], reconciliation_warnings=[], reconciliation_warnings_count=0</action>
   <action>Set start_time = current timestamp</action>
 
-  <check if="wave_execution == true">
-    <action>Jump to Step 4-Wave (Wave-based execution)</action>
+  <check if="parallel_count == 1">
+    <action>Jump to Step 4-Sequential (Task agents, one at a time)</action>
   </check>
 
-  <check if="use_task_agents == true AND wave_execution == false">
-    <action>Jump to Step 4-Parallel (Full parallel execution)</action>
+  <check if="parallel_count > 1 AND waves.length > 1">
+    <action>Jump to Step 4-Wave (Task agents, wave-based parallel)</action>
   </check>
 
-  <check if="use_task_agents == false">
-    <action>Continue to Step 4-Sequential (In-session execution)</action>
+  <check if="parallel_count > 1 AND waves.length <= 1">
+    <action>Jump to Step 4-Parallel (Task agents, multiple concurrent)</action>
   </check>
 </step>
 
@@ -1028,98 +999,302 @@ Enter number (2-10) or 'all':
 🚀 WAVE-BASED PARALLEL PROCESSING STARTED
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 **Stories:** {{count}}
-**Mode:** Wave-based (respects dependencies)
-**Waves:** {{waves.length}}
+**Total waves:** {{waves.length}}
+**Mode:** Task agents (parallel by wave)
+**Max concurrent agents:** {{parallel_count}}
 **Continue on failure:** {{continue_on_failure}}
+**Pattern:** Wave barrier (complete wave before next wave)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📊 **Wave Plan (from dependency analysis):**
+{{#each waves}}
+Wave {{@index}}: {{count}} stories
+{{#each stories}}
+  - {{story_key}}{{#if depends_on}} [depends on: {{depends_on}}]{{/if}}
+{{/each}}
+{{/each}}
   </output>
 
-  <iterate>For each wave in sequence:</iterate>
+  <action>Set abort_batch = false</action>
 
-  <substep n="4w-a" title="Execute wave">
+  <iterate>For each wave in waves (in order):</iterate>
+
+  <substep n="4w-start" title="Start wave {{@index}}">
     <output>
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📦 Wave {{wave_num}}/{{waves.length}} ({{stories_in_wave}} stories)
+🌊 STARTING WAVE {{@index}}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-{{#each stories_in_wave}}
-  - {{story_key}}
+Stories in this wave:
+{{#each stories}}
+  - {{story_key}}{{#if depends_on}} (depends on: {{depends_on}}){{/if}}
 {{/each}}
-
-Spawning {{stories_in_wave.length}} parallel agents...
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     </output>
 
-    <action>Spawn Task agents in PARALLEL (send all in single message):</action>
+    <action>Initialize wave worker pool state:</action>
+    <action>
+      - wave_queue = stories
+      - Resolve wave_queue items to full story objects by matching story_key in selected_stories (include complexity_level, story_file_path)
+      - active_workers = {} (map of worker_id → {story_key, task_id, started_at})
+      - completed_wave_stories = []
+      - failed_wave_stories = []
+      - next_story_index = 0
+      - max_workers = min(parallel_count, wave_queue.length)
+    </action>
+  </substep>
 
-    <iterate>For each story in this wave:</iterate>
+  <substep n="4w-init" title="Fill initial worker slots for wave {{@index}}">
+    <output>
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔧 Initializing {{max_workers}} worker slots for Wave {{@index}}...
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    </output>
+
+    <action>Spawn first {{max_workers}} agents (or fewer if less stories):</action>
+
+    <iterate>While next_story_index < min(max_workers, wave_queue.length):</iterate>
 
     <action>
-      Task tool:
+      story_key = wave_queue[next_story_index].story_key
+      complexity_level = wave_queue[next_story_index].complexity_level
+      story_file_path = wave_queue[next_story_index].story_file_path
+      worker_id = next_story_index + 1
+
+      Spawn Task agent:
       - subagent_type: "general-purpose"
       - description: "Implement story {{story_key}}"
-      - prompt: "Execute super-dev-pipeline for story {{story_key}}.
+      - prompt: "Execute super-dev-pipeline workflow for story {{story_key}}.
 
                  Story file: docs/sprint-artifacts/{{story_key}}.md
                  Complexity: {{complexity_level}}
-                 Mode: batch, wave {{wave_num}}
+                 Mode: batch
 
-                 Follow all 11 steps, commit when complete, report status."
-      - Store agent_id
+                 Load workflow: /Users/jonahschulte/git/BMAD-METHOD/src/modules/bmm/workflows/4-implementation/super-dev-pipeline
+                 Follow the multi-agent pipeline (builder, inspector, reviewer, fixer).
+                 Commit when complete, update story status, report results."
+      - run_in_background: true (non-blocking)
+
+      Store in active_workers[worker_id]:
+        story_key: {{story_key}}
+        task_id: {{returned_task_id}}
+        started_at: {{timestamp}}
+        status: "running"
     </action>
 
-    <action>Wait for ALL agents in this wave to complete</action>
+    <action>Increment next_story_index</action>
+    <output>🚀 Worker {{worker_id}} started: {{story_key}}</output>
+  </substep>
 
-    <iterate>For each completed agent in wave:</iterate>
+  <substep n="4w-pool" title="Maintain wave worker pool for wave {{@index}}">
+    <critical>WAVE BARRIER: Complete all stories in this wave before starting next wave</critical>
 
-    <check if="agent succeeded">
-      <output>✅ Wave {{wave_num}} - Story complete: {{story_key}}</output>
-      <action>Increment completed counter</action>
-      <action>Execute Step 4.5: Reconciliation</action>
+    <iterate>While active_workers.size > 0 OR next_story_index < wave_queue.length:</iterate>
+
+    <action>Poll for completed workers (check task outputs non-blocking):</action>
+
+    <iterate>For each worker_id in active_workers:</iterate>
+
+    <action>Check if worker task completed using TaskOutput(task_id, block=false)</action>
+
+    <check if="worker task is still running">
+      <action>Continue to next worker (don't wait)</action>
     </check>
 
-    <check if="agent failed">
-      <output>❌ Wave {{wave_num}} - Story failed: {{story_key}}</output>
-      <action>Increment failed counter</action>
-      <action>Add to failed_stories list</action>
+    <check if="worker task completed successfully">
+      <action>Get worker details: story_key = active_workers[worker_id].story_key</action>
 
-      <check if="continue_on_failure == false">
-        <output>⚠️ Stopping all waves due to failure</output>
-        <action>Jump to Step 5 (Summary)</action>
+      <output>✅ Worker {{worker_id}} completed: {{story_key}}</output>
+
+      <action>Execute Step 4.5: Smart Story Reconciliation</action>
+      <action>Load reconciliation instructions: {installed_path}/step-4.5-reconcile-story-status.md</action>
+      <action>Execute reconciliation with story_key={{story_key}}</action>
+
+      <critical>🚨 MANDATORY RECONCILIATION AUTO-FIX - MAKE IT RIGHT</critical>
+      <action>Verify reconciliation by checking story file:</action>
+      <action>  1. Re-read story file: {{story_file_path}}</action>
+      <action>  2. Count checked tasks vs total tasks</action>
+      <action>  3. Check Dev Agent Record filled</action>
+
+      <check if="checked_tasks == 0 OR dev_agent_record_empty">
+        <output>
+❌ Story {{story_key}}: Agent FAILED to update story file
+
+Checked tasks: {{checked_tasks}}/{{total_tasks}}
+Dev Agent Record: {{dev_agent_record_status}}
+
+🔧 EXECUTING AUTO-FIX RECONCILIATION...
+        </output>
+
+        <action>AUTO-FIX PROCEDURE:</action>
+        <action>1. Read agent's commit to see what files were created/modified</action>
+        <action>2. Read story Tasks section to see what was supposed to be built</action>
+        <action>3. For each task, check if corresponding code exists in commit</action>
+        <action>4. If code exists, check off the task using Edit tool</action>
+        <action>5. Fill in Dev Agent Record with commit details</action>
+        <action>6. Verify fixes worked (re-count checked tasks)</action>
+
+        <check if="auto_fix_succeeded AND checked_tasks > 0">
+          <output>✅ AUTO-FIX SUCCESS: {{checked_tasks}}/{{total_tasks}} tasks now checked</output>
+          <action>Continue with story completion</action>
+        </check>
+
+        <check if="auto_fix_failed OR checked_tasks still == 0">
+          <output>
+❌ AUTO-FIX FAILED: Cannot reconcile story {{story_key}}
+
+After auto-fix attempts:
+- Checked tasks: {{checked_tasks}}/{{total_tasks}}
+- Dev Agent Record: {{dev_agent_record_status}}
+
+**Agent produced code but story file cannot be updated.**
+
+Marking story as "in-progress" (not done) and continuing with warnings.
+          </output>
+          <action>Override story status to "in-progress"</action>
+          <action>Add to reconciliation_warnings with detailed diagnostic</action>
+          <action>Continue (do NOT kill workers)</action>
+        </check>
+      </check>
+
+      <check if="reconciliation succeeded AND checked_tasks > 0 AND dev_agent_record_filled">
+        <output>✅ COMPLETED: {{story_key}} (reconciled and verified)</output>
+        <output>  Tasks: {{checked_tasks}}/{{total_tasks}} ({{task_completion_pct}}%)</output>
+        <action>Increment completed counter</action>
+        <action>Add to completed_wave_stories</action>
+      </check>
+
+      <check if="task_completion_pct < 80">
+        <output>⚠️ WARNING: {{story_key}} - Low completion ({{task_completion_pct}}%)</output>
+        <action>Add to reconciliation_warnings: {story_key: {{story_key}}, warning_message: "Only {{task_completion_pct}}% tasks checked - manual verification needed"}</action>
+      </check>
+
+      <action>Remove worker_id from active_workers (free the slot)</action>
+
+      <action>IMMEDIATELY refill slot if stories remain in this wave:</action>
+      <check if="next_story_index < wave_queue.length">
+        <action>story_key = wave_queue[next_story_index].story_key</action>
+        <action>complexity_level = wave_queue[next_story_index].complexity_level</action>
+        <action>story_file_path = wave_queue[next_story_index].story_file_path</action>
+
+        <output>🔄 Worker {{worker_id}} refilled: {{story_key}}</output>
+
+        <action>Spawn new Task agent for this worker_id (same parameters as init)</action>
+        <action>Update active_workers[worker_id] with new task_id and story_key</action>
+        <action>Increment next_story_index</action>
       </check>
     </check>
 
+    <check if="worker task failed">
+      <action>Get worker details: story_key = active_workers[worker_id].story_key</action>
+
+      <output>❌ Worker {{worker_id}} failed: {{story_key}}</output>
+
+      <action>Increment failed counter</action>
+      <action>Add story_key to failed_stories list</action>
+      <action>Add to failed_wave_stories</action>
+      <action>Remove worker_id from active_workers (free the slot)</action>
+
+      <check if="continue_on_failure == false">
+        <output>⚠️ Stopping wave and batch due to failure (continue_on_failure=false)</output>
+        <action>Kill all active workers</action>
+        <action>Clear active_workers</action>
+        <action>Set abort_batch = true</action>
+        <action>Break worker pool loop</action>
+      </check>
+
+      <check if="continue_on_failure == true AND next_story_index < wave_queue.length">
+        <action>story_key = wave_queue[next_story_index].story_key</action>
+        <action>complexity_level = wave_queue[next_story_index].complexity_level</action>
+        <action>story_file_path = wave_queue[next_story_index].story_file_path</action>
+
+        <output>🔄 Worker {{worker_id}} refilled: {{story_key}} (despite previous failure)</output>
+
+        <action>Spawn new Task agent for this worker_id</action>
+        <action>Update active_workers[worker_id] with new task_id and story_key</action>
+        <action>Increment next_story_index</action>
+      </check>
+    </check>
+
+    <check if="abort_batch == true">
+      <action>Break worker pool loop</action>
+    </check>
+
+    <action>Display live progress every 30 seconds:</action>
     <output>
-Wave {{wave_num}} complete: {{completed_in_wave}} succeeded, {{failed_in_wave}} failed
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📊 Live Progress (Wave {{@index}} - {{timestamp}})
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ Completed: {{completed}}
+❌ Failed: {{failed}}
+🔄 Active workers: {{active_workers.size}}
+📋 Queued in wave: {{wave_queue.length - next_story_index}}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     </output>
+
+    <action>Sleep 5 seconds before next poll (prevents tight loop)</action>
+
   </substep>
+
+  <check if="abort_batch == true">
+    <output>⛔ Aborting remaining waves due to failure and continue_on_failure=false</output>
+    <action>Jump to Step 5 (Summary)</action>
+  </check>
+
+  <output>
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ WAVE {{@index}} COMPLETE
+Stories completed: {{completed_wave_stories.length}}
+Stories failed: {{failed_wave_stories.length}}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  </output>
 
   <action>After all waves processed, jump to Step 5 (Summary)</action>
 </step>
 
-<step n="4-Sequential" goal="Sequential processing in current session">
+<step n="4-Sequential" goal="Sequential Task agent execution (one at a time)">
   <output>
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🚀 SEQUENTIAL BATCH PROCESSING STARTED
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 **Stories:** {{count}}
-**Mode:** super-dev-pipeline (batch, sequential)
+**Mode:** Task agents (sequential, one at a time)
 **Continue on failure:** {{continue_on_failure}}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   </output>
 
   <iterate>For each story in selected_stories:</iterate>
 
-  <substep n="4s-a" title="Process individual story">
+  <substep n="4s-a" title="Spawn Task agent for story">
     <output>
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📦 Story {{current_index}}/{{total_count}}: {{story_key}}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Complexity: {{complexity_level}}
+Pipeline: {{#if complexity_level == 'micro'}}Lightweight (skip tests, skip review){{else if complexity_level == 'standard'}}Full quality gates{{else}}Enhanced validation{{/if}}
+
+Spawning Task agent...
     </output>
 
-    <action>Invoke workflow: /bmad:bmm:workflows:super-dev-pipeline</action>
-    <action>Parameters: mode=batch, story_key={{story_key}}, complexity_level={{story_key}}.complexity.level</action>
+    <action>
+      Use Task tool to spawn agent:
+      - subagent_type: "general-purpose"
+      - description: "Implement story {{story_key}}"
+      - prompt: "Execute super-dev-pipeline workflow for story {{story_key}}.
 
-    <check if="super-dev-pipeline succeeded">
+                 Story file: docs/sprint-artifacts/{{story_key}}.md
+                 Complexity: {{complexity_level}}
+                 Mode: batch
+
+                 Load workflow: /Users/jonahschulte/git/BMAD-METHOD/src/modules/bmm/workflows/4-implementation/super-dev-pipeline
+                 Follow the multi-agent pipeline (builder, inspector, reviewer, fixer).
+                 Commit when complete, update story status, report results."
+      - Store agent_id
+    </action>
+
+    <action>WAIT for agent to complete (blocking call)</action>
+
+    <check if="Task agent succeeded">
       <output>✅ Implementation complete: {{story_key}}</output>
 
       <action>Execute Step 4.5: Smart Story Reconciliation</action>
@@ -1337,15 +1512,13 @@ Press [C] to continue or [P] to pause:
       - description: "Implement story {{story_key}}"
       - prompt: "Execute super-dev-pipeline workflow for story {{story_key}}.
 
-                 CRITICAL INSTRUCTIONS:
-                 1. Load workflow.xml: _bmad/core/tasks/workflow.xml
-                 2. Load workflow config: _bmad/bmm/workflows/4-implementation/super-dev-pipeline/workflow.yaml
-                 3. Execute in BATCH mode with story_key={{story_key}} and complexity_level={{story_key}}.complexity.level
-                 4. Follow all 7 pipeline steps (init, pre-gap, implement, post-validate, code-review, complete, summary)
-                 5. Commit changes when complete
-                 6. Report final status (done/failed) with file list
+                 Story file: docs/sprint-artifacts/{{story_key}}.md
+                 Complexity: {{complexity_level}}
+                 Mode: batch
 
-                 Story file will be auto-resolved from multiple naming conventions."
+                 Load workflow: /Users/jonahschulte/git/BMAD-METHOD/src/modules/bmm/workflows/4-implementation/super-dev-pipeline
+                 Follow the multi-agent pipeline (builder, inspector, reviewer, fixer).
+                 Commit when complete, update story status, report results."
       - run_in_background: true (non-blocking - critical for semaphore pattern)
 
       Store in active_workers[worker_id]:

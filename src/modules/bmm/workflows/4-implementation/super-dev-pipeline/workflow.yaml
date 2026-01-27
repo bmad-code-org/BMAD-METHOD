@@ -1,7 +1,10 @@
 name: super-dev-pipeline
-description: "Complete a-k workflow: test-first development, smart gap analysis, quality gates, intelligent multi-agent review, mandatory status updates, and automated learning feedback loop. Risk-based complexity routing with cumulative intelligence."
-author: "BMad"
-version: "1.6.0" # Adds learning feedback loop (Step 1b load playbooks, Step 12 extract learnings)
+description: "Multi-agent pipeline with wave-based execution, independent validation, and adversarial code review (GSDMAD)"
+author: "BMAD Method + GSD"
+version: "2.0.0"
+
+# Execution mode
+execution_mode: "multi_agent" # multi_agent | single_agent (fallback)
 
 # Critical variables from config
 config_source: "{project-root}/_bmad/bmm/config.yaml"
@@ -12,308 +15,107 @@ date: system-generated
 
 # Workflow paths
 installed_path: "{project-root}/_bmad/bmm/workflows/4-implementation/super-dev-pipeline"
+agents_path: "{installed_path}/agents"
 steps_path: "{installed_path}/steps"
-templates_path: "{installed_path}/templates"
-checklists_path: "{installed_path}/checklists"
+
+# Agent tracking (from GSD)
+agent_history: "{sprint_artifacts}/agent-history.json"
+current_agent_id: "{sprint_artifacts}/current-agent-id.txt"
 
 # State management
 state_file: "{sprint_artifacts}/super-dev-state-{{story_id}}.yaml"
 audit_trail: "{sprint_artifacts}/audit-super-dev-{{story_id}}-{{date}}.yaml"
 
-# Auto-create story settings (NEW v1.4.0)
-# When story is missing or lacks proper context, auto-invoke /create-story-with-gap-analysis
-auto_create_story:
-  enabled: true # Set to false to revert to old HALT behavior
-  create_story_workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/create-story-with-gap-analysis"
-  triggers:
-    - story_not_found # Story file doesn't exist
-    - no_tasks # Story exists but has no tasks
-    - missing_sections # Story missing required sections (Tasks, Acceptance Criteria)
+# Multi-agent configuration
+agents:
+  builder:
+    description: "Implementation agent - writes code and tests"
+    steps: [1, 2, 3, 4]
+    subagent_type: "general-purpose"
+    prompt_file: "{agents_path}/builder.md"
+    trust_level: "low" # Assumes agent will cut corners
+    timeout: 3600 # 1 hour
 
-# Complexity level (passed from batch-super-dev or set manually)
-# Controls which pipeline steps to execute
+  inspector:
+    description: "Validation agent - independent verification"
+    steps: [5, 6]
+    subagent_type: "general-purpose"
+    prompt_file: "{agents_path}/inspector.md"
+    fresh_context: true # No knowledge of builder agent
+    trust_level: "medium" # No conflict of interest
+    timeout: 1800 # 30 minutes
+
+  reviewer:
+    description: "Adversarial code review - finds problems"
+    steps: [7]
+    subagent_type: "multi-agent-review" # Spawns multiple reviewers
+    prompt_file: "{agents_path}/reviewer.md"
+    fresh_context: true
+    adversarial: true # Goal: find issues
+    trust_level: "high" # Wants to find problems
+    timeout: 1800 # 30 minutes
+    review_agent_count:
+      micro: 2
+      standard: 4
+      complex: 6
+
+  fixer:
+    description: "Issue resolution - fixes critical/high issues"
+    steps: [8, 9]
+    subagent_type: "general-purpose"
+    prompt_file: "{agents_path}/fixer.md"
+    trust_level: "medium" # Incentive to minimize work
+    timeout: 2400 # 40 minutes
+
+# Complexity level (determines which steps to execute)
 complexity_level: "standard" # micro | standard | complex
 
-# Risk-based complexity routing (UPDATED v1.5.0)
-# Complexity determined by RISK level, not task count
-# Risk keywords: auth, security, payment, file handling, architecture changes
+# Complexity routing
 complexity_routing:
   micro:
-    skip_steps: [3, 7, 8, 9] # Skip write-tests, code-review, review-analysis, fix-issues
-    description: "Lightweight path for low-risk stories (UI tweaks, text, simple CRUD)"
-    multi_agent_count: 2
-    examples: ["UI tweaks", "text changes", "simple CRUD", "documentation"]
+    skip_agents: ["reviewer"] # Skip code review for micro stories
+    description: "Lightweight path for low-risk stories"
+    examples: ["UI tweaks", "text changes", "simple CRUD"]
+
   standard:
-    skip_steps: [] # Full pipeline
-    description: "Balanced path for medium-risk stories (APIs, business logic)"
-    multi_agent_count: 4
-    examples: ["API endpoints", "business logic", "data validation"]
+    skip_agents: [] # Full pipeline
+    description: "Balanced path for medium-risk stories"
+    examples: ["API endpoints", "business logic"]
+
   complex:
-    skip_steps: [] # Full pipeline + comprehensive review
-    description: "Comprehensive path for high-risk stories (auth, payments, security)"
-    multi_agent_count: 6
-    examples: ["auth/security", "payments", "file handling", "architecture changes"]
-    warn_before_start: true
-    suggest_split: true
+    skip_agents: [] # Full pipeline + enhanced review
+    description: "Enhanced validation for high-risk stories"
+    examples: ["Auth", "payments", "security", "migrations"]
+    review_focus: ["security", "performance", "architecture"]
 
-# Workflow modes
-modes:
-  interactive:
-    description: "Human-in-the-loop with menu navigation between steps"
-    checkpoint_on_failure: true
-    requires_approval: true
-    smart_batching: true # User can approve batching plan
-  batch:
-    description: "Unattended execution for batch-super-dev"
-    checkpoint_on_failure: true
-    requires_approval: false
-    fail_fast: true
-    smart_batching: true # Auto-enabled for efficiency
-
-# Smart batching configuration
-smart_batching:
+# Final verification checklist (main orchestrator)
+final_verification:
   enabled: true
-  detect_patterns: true
-  default_to_safe: true # When uncertain, execute individually
-  min_batch_size: 3 # Minimum tasks to form a batch
-  fallback_on_failure: true # Revert to individual if batch fails
+  checks:
+    - name: "git_commits"
+      command: "git log --oneline -3 | grep {{story_key}}"
+      failure_message: "No commit found for {{story_key}}"
 
-# Automated learning feedback loop (NEW v1.6.0)
-learning_feedback:
-  enabled: true # Enable automatic playbook loading/saving
-  playbook_dir: "{project-root}/docs/playbooks"
+    - name: "story_checkboxes"
+      command: |
+        before=$(git show HEAD~1:{{story_file}} | grep -c '^- \[x\]')
+        after=$(grep -c '^- \[x\]' {{story_file}})
+        [ $after -gt $before ]
+      failure_message: "Story checkboxes not updated"
 
-  # Step 1b: Load existing playbooks before implementation
-  load_playbooks:
-    enabled: true
-    step: "step-01b-load-playbooks.md"
-    triggers:
-      - keywords_detected: 1 # Load if any keywords found in story
-      - complex_story: true # Always load for COMPLEX stories
+    - name: "sprint_status"
+      command: "git diff HEAD~1 {{sprint_status}} | grep '{{story_key}}'"
+      failure_message: "Sprint status not updated"
 
-  # Step 12: Extract learnings after implementation
-  extract_learnings:
-    enabled: true
-    step: "step-12-extract-learnings.md"
-    triggers:
-      - on_success: true # Extract after successful completion
-      - on_code_review: true # Extract from review findings
-      - on_complex: true # Always extract from COMPLEX stories
-      - skip_if_failed: true # Don't extract from failed implementations
+    - name: "tests_passed"
+      # Parse agent output for test evidence
+      validation: "inspector_output must contain 'PASS' or test count"
+      failure_message: "No test evidence in validation output"
 
-  # Keyword extraction
-  keywords:
-    auto_detect: true
-    sources:
-      - story_title
-      - task_descriptions
-      - file_paths
-      - technical_requirements
-    common_keywords:
-      - prisma
-      - stripe
-      - auth
-      - cron
-      - queue
-      - state machine
-      - billing
-      - payment
-      - migration
-      - api
-      - database
-      - email
-      - notification
-      - terraform
-      - sqs
-      - redis
-      - s3
-
-  # Batchable pattern definitions
-  batchable_patterns:
-    - pattern: "package_installation"
-      keywords: ["Add", "package.json", "npm install", "dependency"]
-      risk_level: "low"
-      validation: "npm install && npm run build"
-
-    - pattern: "module_registration"
-      keywords: ["Import", "Module", "app.module", "register"]
-      risk_level: "low"
-      validation: "tsc --noEmit"
-
-    - pattern: "code_deletion"
-      keywords: ["Delete", "Remove", "rm ", "unlink"]
-      risk_level: "low"
-      validation: "npm test && npm run build"
-
-    - pattern: "import_update"
-      keywords: ["Update import", "Change import", "import from"]
-      risk_level: "low"
-      validation: "npm run build"
-
-  # Non-batchable pattern definitions (always execute individually)
-  individual_patterns:
-    - pattern: "business_logic"
-      keywords: ["circuit breaker", "fallback", "caching for", "strategy"]
-      risk_level: "medium"
-
-    - pattern: "security"
-      keywords: ["auth", "permission", "security", "encrypt"]
-      risk_level: "high"
-
-    - pattern: "data_migration"
-      keywords: ["migration", "schema", "ALTER TABLE", "database"]
-      risk_level: "high"
-
-# Agent role definitions (loaded once, switched as needed)
-agents:
-  dev:
-    name: "Developer"
-    persona: "{project-root}/_bmad/bmm/agents/dev.md"
-    description: "Gap analysis, write tests, implementation, validation, review, fixes"
-    used_in_steps: [2, 3, 4, 5, 6, 7, 8, 9]
-  sm:
-    name: "Scrum Master"
-    persona: "{project-root}/_bmad/bmm/agents/sm.md"
-    description: "Story completion, status updates, sprint-status.yaml management"
-    used_in_steps: [10]
-
-# Step file definitions (NEW v1.5.0: 11-step a-k workflow)
-steps:
-  - step: 1
-    file: "{steps_path}/step-01-init.md"
-    name: "Init + Validate Story"
-    description: "Load, validate, auto-create if needed (a-c)"
-    agent: null
-    quality_gate: false
-    auto_create_story: true
-
-  - step: 2
-    file: "{steps_path}/step-02-smart-gap-analysis.md"
-    name: "Smart Gap Analysis"
-    description: "Gap analysis (skip if just created story) (d)"
-    agent: dev
-    quality_gate: true
-    skip_if_story_just_created: true
-
-  - step: 3
-    file: "{steps_path}/step-03-write-tests.md"
-    name: "Write Tests (TDD)"
-    description: "Write tests before implementation (e)"
-    agent: dev
-    quality_gate: false
-    test_driven: true
-
-  - step: 4
-    file: "{steps_path}/step-04-implement.md"
-    name: "Implement"
-    description: "Run dev-story implementation (f)"
-    agent: dev
-    quality_gate: true
-
-  - step: 5
-    file: "{steps_path}/step-05-post-validation.md"
-    name: "Post-Validation"
-    description: "Verify work actually implemented (g)"
-    agent: dev
-    quality_gate: true
-    iterative: true
-
-  - step: 6
-    file: "{steps_path}/step-06-run-quality-checks.md"
-    name: "Quality Checks"
-    description: "Tests, type check, linter - fix all (h)"
-    agent: dev
-    quality_gate: true
-    blocking: true
-    required_checks:
-      - tests_passing
-      - type_check_passing
-      - lint_passing
-      - coverage_threshold
-
-  - step: 7
-    file: "{steps_path}/step-07-code-review.md"
-    name: "Code Review"
-    description: "Multi-agent review with fresh context (i)"
-    agent: dev
-    quality_gate: true
-    requires_fresh_context: true
-    multi_agent_review: true
-    variable_agent_count: true
-
-  - step: 8
-    file: "{steps_path}/step-08-review-analysis.md"
-    name: "Review Analysis"
-    description: "Analyze findings - reject gold plating (j)"
-    agent: dev
-    quality_gate: false
-    critical_thinking: true
-
-  - step: 9
-    file: "{steps_path}/step-09-fix-issues.md"
-    name: "Fix Issues"
-    description: "Implement MUST FIX and SHOULD FIX items"
-    agent: dev
-    quality_gate: true
-
-  - step: 10
-    file: "{steps_path}/step-10-complete.md"
-    name: "Complete + Update Status"
-    description: "Mark done, update sprint-status.yaml (k)"
-    agent: sm
-    quality_gate: true
-    mandatory_sprint_status_update: true
-    verify_status_update: true
-
-  - step: 11
-    file: "{steps_path}/step-11-summary.md"
-    name: "Summary"
-    description: "Generate comprehensive audit trail"
-    agent: null
-    quality_gate: false
-
-# Quality gates
-quality_gates:
-  pre_gap_analysis:
-    step: 2
-    criteria:
-      - "All tasks validated or refined"
-      - "No missing context"
-      - "Implementation path clear"
-
-  implementation:
-    step: 3
-    criteria:
-      - "All tasks completed"
-      - "Tests pass"
-      - "Code follows project patterns"
-
-  post_validation:
-    step: 4
-    criteria:
-      - "All completed tasks verified against codebase"
-      - "Zero false positives remaining"
-      - "Files/functions/tests actually exist"
-
-  code_review:
-    step: 5
-    criteria:
-      - "3-10 specific issues identified"
-      - "All issues resolved or documented"
-      - "Security review complete"
-
-# Document loading strategies
-input_file_patterns:
-  story:
-    description: "Story file being developed"
-    pattern: "{sprint_artifacts}/*.md" # CANONICAL: epic-story-slug.md (NO "story-" prefix)
-    load_strategy: "FULL_LOAD"
-    cache: true
-
-  project_context:
-    description: "Critical rules and patterns"
-    pattern: "**/project-context.md"
-    load_strategy: "FULL_LOAD"
-    cache: true
+# Backward compatibility
+fallback_to_v1:
+  enabled: true
+  condition: "execution_mode == 'single_agent'"
+  workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/super-dev-pipeline"
 
 standalone: true
