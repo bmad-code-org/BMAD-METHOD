@@ -158,30 +158,30 @@ async function runTests() {
   console.log('');
 
   // ============================================================
-  // Test 5: SDET Agent Compilation
+  // Test 5: QA Agent Compilation
   // ============================================================
-  console.log(`${colors.yellow}Test Suite 5: SDET Agent Compilation${colors.reset}\n`);
+  console.log(`${colors.yellow}Test Suite 5: QA Agent Compilation${colors.reset}\n`);
 
   try {
     const builder = new YamlXmlBuilder();
-    const sdetAgentPath = path.join(projectRoot, 'src/bmm/agents/quinn.agent.yaml');
-    const tempOutput = path.join(__dirname, 'temp-sdet-agent.md');
+    const qaAgentPath = path.join(projectRoot, 'src/bmm/agents/quinn.agent.yaml');
+    const tempOutput = path.join(__dirname, 'temp-qa-agent.md');
 
     try {
-      const result = await builder.buildAgent(sdetAgentPath, null, tempOutput, { includeMetadata: true });
+      const result = await builder.buildAgent(qaAgentPath, null, tempOutput, { includeMetadata: true });
       const compiled = await fs.readFile(tempOutput, 'utf8');
 
-      assert(compiled.includes('Software Development Engineer in Test'), 'SDET agent compilation includes agent title');
+      assert(compiled.includes('QA Engineer'), 'QA agent compilation includes agent title');
 
-      assert(compiled.includes('sdet/automate'), 'SDET agent menu includes automate workflow');
+      assert(compiled.includes('qa/automate'), 'QA agent menu includes automate workflow');
 
       // Cleanup
       await fs.remove(tempOutput);
     } catch (error) {
-      assert(false, 'SDET agent compiles successfully', error.message);
+      assert(false, 'QA agent compiles successfully', error.message);
     }
   } catch (error) {
-    assert(false, 'SDET compilation test setup', error.message);
+    assert(false, 'QA compilation test setup', error.message);
   }
 
   console.log('');

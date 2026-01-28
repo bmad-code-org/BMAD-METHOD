@@ -1,5 +1,5 @@
-# Quinn SDET workflow: Quick Automate
-name: sdet-quick-automate
+# Quinn QA workflow: Automate
+name: qa-automate
 description: "Generate tests quickly for existing features using standard test patterns"
 author: "BMad"
 
@@ -13,7 +13,7 @@ document_output_language: "{config_source}:document_output_language"
 date: system-generated
 
 # Workflow components
-installed_path: "{project-root}/_bmad/bmm/workflows/sdet/automate"
+installed_path: "{project-root}/_bmad/bmm/workflows/qa/automate"
 instructions: "{installed_path}/instructions.md"
 validation: "{installed_path}/checklist.md"
 template: false
@@ -38,10 +38,8 @@ required_tools:
 
 tags:
   - qa
-  - sdet
   - automation
   - testing
-  - coverage
 
 execution_hints:
   interactive: false

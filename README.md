@@ -79,12 +79,12 @@ BMad Method extends with official modules for specialized domains. Modules are a
 
 BMad provides two testing options to fit your needs:
 
-### Quinn (SDET) - Built-in
+### Quinn (QA) - Built-in
 
 **Quick test automation for rapid coverage**
 
 - ✅ **Always available** in BMM module (no separate install)
-- ✅ **Simple**: One workflow (`QA` - Quick Automate)
+- ✅ **Simple**: One workflow (`QA` - Automate)
 - ✅ **Beginner-friendly**: Standard test framework patterns
 - ✅ **Fast**: Generate tests and ship
 

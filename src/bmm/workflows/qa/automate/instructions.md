@@ -1,4 +1,4 @@
-# Quinn SDET - Quick Automate
+# Quinn QA - Automate
 
 **Goal**: Generate tests quickly for existing features using standard test patterns.
 
