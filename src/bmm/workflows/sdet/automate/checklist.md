@@ -4,14 +4,14 @@
 
 - [ ] API tests generated (if applicable)
 - [ ] E2E tests generated (if UI exists)
-- [ ] Tests use standard Playwright APIs
+- [ ] Tests use standard test framework APIs
 - [ ] Tests cover happy path
 - [ ] Tests cover 1-2 critical error cases
 
 ## Test Quality
 
 - [ ] All generated tests run successfully
-- [ ] Tests use proper locators (getByRole, getByText, getByLabel)
+- [ ] Tests use proper locators (semantic, accessible)
 - [ ] Tests have clear descriptions
 - [ ] No hardcoded waits or sleeps
 - [ ] Tests are independent (no order dependency)
@@ -24,11 +24,7 @@
 
 ## Validation
 
-Run the tests:
-
-```bash
-npx playwright test
-```
+Run the tests using your project's test command.
 
 **Expected**: All tests pass ✅
 

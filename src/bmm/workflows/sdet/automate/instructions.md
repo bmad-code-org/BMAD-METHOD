@@ -1,6 +1,8 @@
 # Quinn SDET - Quick Automate
 
-**Goal**: Generate tests quickly for existing features using standard Playwright patterns.
+**Goal**: Generate tests quickly for existing features using standard test patterns.
+
+**Scope**: This workflow only generates tests. It does **not** perform code review or story validation (use Code Review `CR` for that).
 
 ## Instructions
 
@@ -14,54 +16,27 @@ Ask user what to test:
 
 ### Step 2: Generate API Tests (if applicable)
 
-For API endpoints/services:
+For API endpoints/services, generate tests that:
 
-```typescript
-import { test, expect } from '@playwright/test';
-
-test('API endpoint returns success', async ({ request }) => {
-  const response = await request.get('/api/endpoint');
-  expect(response.status()).toBe(200);
-  const data = await response.json();
-  expect(data).toHaveProperty('expectedField');
-});
-```
-
-**Patterns:**
-
-- Use `request` fixture for API testing
 - Test status codes (200, 400, 404, 500)
 - Validate response structure
-- Test happy path + 1-2 error cases
+- Cover happy path + 1-2 error cases
+- Use project's existing test framework patterns
 
 ### Step 3: Generate E2E Tests (if UI exists)
 
-For UI features:
+For UI features, generate tests that:
 
-```typescript
-import { test, expect } from '@playwright/test';
-
-test('user can complete main workflow', async ({ page }) => {
-  await page.goto('/feature');
-  await page.getByRole('button', { name: 'Submit' }).click();
-  await expect(page.getByText('Success')).toBeVisible();
-});
-```
-
-**Patterns:**
-
-- Use standard Playwright locators: `getByRole`, `getByText`, `getByLabel`
+- Test user workflows end-to-end
+- Use semantic locators (roles, labels, text)
 - Focus on user interactions (clicks, form fills, navigation)
-- Assert visible outcomes (text appears, navigation happens)
-- Keep tests linear and simple (no complex fixture setups)
+- Assert visible outcomes
+- Keep tests linear and simple
+- Follow project's existing test patterns
 
 ### Step 4: Run Tests
 
-Execute tests to verify they pass:
-
-```bash
-npx playwright test
-```
+Execute tests to verify they pass (use project's test command).
 
 If failures occur, fix them immediately.
 
@@ -93,7 +68,7 @@ Output markdown summary:
 
 **Do:**
 
-- Use standard Playwright APIs only
+- Use standard test framework APIs
 - Focus on happy path + critical errors
 - Write readable, maintainable tests
 - Run tests to verify they pass
@@ -101,10 +76,8 @@ Output markdown summary:
 **Avoid:**
 
 - Complex fixture composition
-- Network interception (unless necessary)
-- Data factories (use inline test data)
 - Over-engineering
-- Custom utilities
+- Unnecessary abstractions
 
 **For Advanced Features:**
 
@@ -114,7 +87,7 @@ If the project needs:
 - Test design planning
 - Quality gates and NFR assessment
 - Comprehensive coverage analysis
-- Playwright Utils integration
+- Advanced testing patterns and utilities
 
 → **Install Test Architect (TEA) module**: <https://bmad-code-org.github.io/bmad-method-test-architecture-enterprise/>
 

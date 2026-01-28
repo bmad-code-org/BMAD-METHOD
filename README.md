@@ -85,9 +85,8 @@ BMad provides two testing options to fit your needs:
 
 - ✅ **Always available** in BMM module (no separate install)
 - ✅ **Simple**: One workflow (`QA` - Quick Automate)
-- ✅ **Beginner-friendly**: Standard Playwright patterns
+- ✅ **Beginner-friendly**: Standard test framework patterns
 - ✅ **Fast**: Generate tests and ship
-- 📖 [Quinn Documentation](http://docs.bmad-method.org/reference/quinn-sdet)
 
 **Use Quinn for:** Small projects, quick coverage, standard patterns
 

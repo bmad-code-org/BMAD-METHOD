@@ -1,6 +1,6 @@
 # Quinn SDET workflow: Quick Automate
 name: sdet-quick-automate
-description: "Generate tests quickly for existing features using standard Playwright patterns"
+description: "Generate tests quickly for existing features using standard test patterns"
 author: "BMad"
 
 # Critical variables from config
@@ -41,7 +41,7 @@ tags:
   - sdet
   - automation
   - testing
-  - playwright
+  - coverage
 
 execution_hints:
   interactive: false
