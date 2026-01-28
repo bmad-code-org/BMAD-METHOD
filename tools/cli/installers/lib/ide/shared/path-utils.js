@@ -48,6 +48,7 @@ function toDashName(module, type, name) {
  * Converts: 'bmm/agents/pm.md' → 'bmad-bmm-pm.agent.md'
  * Converts: 'bmm/workflows/correct-course.md' → 'bmad-bmm-correct-course.md'
  * Converts: 'core/agents/brainstorming.md' → 'bmad-brainstorming.agent.md' (core items skip module prefix)
+ * Converts: 'bmm/agents/tech-writer/tech-writer.md' → 'bmad-bmm-tech-writer.agent.md' (deduplicates matching folder/file)
  *
  * @param {string} relativePath - Path like 'bmm/agents/pm.md'
  * @returns {string} Flat filename like 'bmad-bmm-pm.agent.md' or 'bmad-brainstorming.md'
@@ -58,12 +59,28 @@ function toDashPath(relativePath) {
     return 'bmad-unknown.md';
   }
 
-  const withoutExt = relativePath.replace('.md', '');
+  // Handle both .md and .yaml extensions
+  const withoutExt = relativePath.replace(/\.(md|yaml)$/, '');
   const parts = withoutExt.split(/[/\\]/);
 
   const module = parts[0];
   const type = parts[1];
-  const name = parts.slice(2).join('-');
+
+  // Get name parts (everything after module/type)
+  let nameParts = parts.slice(2);
+
+  // Deduplicate when folder name matches filename
+  // e.g., ['tech-writer', 'tech-writer'] → ['tech-writer']
+  // This prevents redundant skill names like 'bmad-bmm-tech-writer-tech-writer'
+  // Fixes: https://github.com/bmad-code-org/BMAD-METHOD/issues/1422
+  if (nameParts.length >= 2) {
+    const lastTwo = nameParts.slice(-2);
+    if (lastTwo[0] === lastTwo[1]) {
+      nameParts = [...nameParts.slice(0, -2), lastTwo[0]];
+    }
+  }
+
+  const name = nameParts.join('-');
 
   return toDashName(module, type, name);
 }
