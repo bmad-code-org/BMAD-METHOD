@@ -35,7 +35,7 @@ wipFile: '{implementation_artifacts}/tech-spec-wip.md'
 
 [Display the complete spec content - all sections]
 
-"**Quick Summary:**
+**Quick Summary:**
 
 - {task_count} tasks to implement
 - {ac_count} acceptance criteria to verify
