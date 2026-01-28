@@ -39,7 +39,7 @@ wipFile: '{implementation_artifacts}/tech-spec-wip.md'
 
 - {task_count} tasks to implement
 - {ac_count} acceptance criteria to verify
-- {files_count} files to modify"
+- {files_count} files to modify
 
 **Present review menu:**
 
