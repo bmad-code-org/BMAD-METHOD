@@ -3,7 +3,7 @@ name: 'step-04-atdd'
 description: 'Generate failing acceptance tests before implementation (RED phase)'
 
 # Path Definitions
-workflow_path: '{project-root}/_bmad/bmm/workflows/4-implementation/story-pipeline'
+workflow_path: '{project-root}/_bmad/bmm/workflows/4-implementation/story-dev-only'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-04-atdd.md'

@@ -9,9 +9,9 @@
 
 ## Critical Prerequisites
 
-> **⚠️ IMPORTANT: Read before running batch-super-dev!**
+> **⚠️ IMPORTANT: Read before running batch-stories!**
 
-**BEFORE running batch-super-dev:**
+**BEFORE running batch-stories:**
 
 ### ✅ 1. All stories must be properly generated
 
@@ -48,13 +48,13 @@ Required sections:
 **What you might try:**
 ```
 1. Create 20 skeleton story files (just headers + widget lists)
-2. Run /batch-super-dev
+2. Run /batch-stories
 3. Expect agents to regenerate them
 ```
 
 **What happens:**
 - Agents identify stories are incomplete
-- Agents correctly halt per super-dev-pipeline validation
+- Agents correctly halt per story-full-pipeline validation
 - Stories get skipped (not regenerated)
 - You waste time
 
@@ -67,7 +67,7 @@ Required sections:
 ./scripts/validate-all-stories.sh
 
 # 3. Execute (4-8 hours, parallel autonomous)
-/batch-super-dev
+/batch-stories
 ```
 
 See: `AGENT-LIMITATIONS.md` for full documentation on what agents can and cannot do.
@@ -76,7 +76,7 @@ See: `AGENT-LIMITATIONS.md` for full documentation on what agents can and cannot
 
 ## Overview
 
-Interactive batch workflow for processing multiple `ready-for-dev` stories sequentially or in parallel using the super-dev-pipeline with full quality gates.
+Interactive batch workflow for processing multiple `ready-for-dev` stories sequentially or in parallel using the story-full-pipeline with full quality gates.
 
 **New in v1.2.0:** Smart Story Validation & Auto-Creation - validates story files, creates missing stories, regenerates invalid ones automatically.
 **New in v1.1.0:** Smart Story Reconciliation - automatically verifies story accuracy after each implementation.
@@ -107,7 +107,7 @@ Interactive batch workflow for processing multiple `ready-for-dev` stories seque
    - **Parallel:** Spawn Task agents to process stories concurrently (faster, autonomous)
    - Configurable parallelism: 2, 4, or all stories at once
 
-4. **Full Quality Gates** (from super-dev-pipeline)
+4. **Full Quality Gates** (from story-full-pipeline)
    - Pre-gap analysis (validate story completeness)
    - Test-driven implementation
    - Post-validation (verify requirements met)
@@ -150,7 +150,7 @@ Before v1.2.0:
 ```
 User: "Process stories 3.1, 3.2, 3.3, 3.4"
 Workflow: "Story 3.3 file missing - please create it first"
-User: Ctrl+C → /create-story → /batch-super-dev again
+User: Ctrl+C → /create-story → /batch-stories again
 ```
 
 After v1.2.0:
@@ -232,7 +232,7 @@ validation:
 ### Example Session (v1.2.0)
 
 ```
-🤖 /batch-super-dev
+🤖 /batch-stories
 
 📊 Ready-for-Dev Stories (5)
 
@@ -398,7 +398,7 @@ sprint-status.yaml: done
 
 ```bash
 # Process all ready-for-dev stories
-/batch-super-dev
+/batch-stories
 
 # Follow prompts:
 # 1. See list of ready stories
@@ -413,7 +413,7 @@ sprint-status.yaml: done
 
 ```bash
 # Only process Epic 3 stories
-/batch-super-dev filter_by_epic=3
+/batch-stories filter_by_epic=3
 ```
 
 ### Selection Syntax
@@ -444,7 +444,7 @@ All: all (processes all ready-for-dev stories)
 
 ## Workflow Configuration
 
-**File:** `_bmad/bmm/workflows/4-implementation/batch-super-dev/workflow.yaml`
+**File:** `_bmad/bmm/workflows/4-implementation/batch-stories/workflow.yaml`
 
 ### Key Settings
 
@@ -503,7 +503,7 @@ reconciliation:
 ### 4. Process Stories
 **Sequential Mode:**
 - For each selected story:
-  - Invoke super-dev-pipeline
+  - Invoke story-full-pipeline
   - Execute reconciliation (Step 4.5)
   - Report results
   - Pause between stories
@@ -547,7 +547,7 @@ See: `step-4.5-reconcile-story-status.md` for detailed algorithm
 
 ### Batch Log
 
-**Location:** `docs/sprint-artifacts/batch-super-dev-{date}.log`
+**Location:** `docs/sprint-artifacts/batch-stories-{date}.log`
 
 **Contains:**
 - Start/end timestamps
@@ -628,7 +628,7 @@ See: `step-4.5-reconcile-story-status.md` for detailed algorithm
 **Fix:**
 1. Review listed stories manually
 2. Check Dev Agent Record has all required sections
-3. Re-run super-dev-pipeline for problematic stories
+3. Re-run story-full-pipeline for problematic stories
 4. Manually reconcile checkboxes if needed
 
 ### Parallel Mode Hangs
@@ -713,24 +713,24 @@ See: `step-4.5-reconcile-story-status.md` for detailed algorithm
 - Initial release
 - Interactive story selector
 - Sequential and parallel execution modes
-- Integration with super-dev-pipeline
+- Integration with story-full-pipeline
 - Batch summary and logging
 
 ---
 
 ## Related Workflows
 
-- **super-dev-pipeline:** Individual story implementation (invoked by batch-super-dev)
+- **story-full-pipeline:** Individual story implementation (invoked by batch-stories)
 - **create-story-with-gap-analysis:** Create new stories with codebase scan
 - **sprint-status:** View/update sprint status
-- **multi-agent-review:** Standalone code review (part of super-dev-pipeline)
+- **multi-agent-review:** Standalone code review (part of story-full-pipeline)
 
 ---
 
 ## Support
 
 **Questions or Issues:**
-- Check workflow logs: `docs/sprint-artifacts/batch-super-dev-*.log`
+- Check workflow logs: `docs/sprint-artifacts/batch-stories-*.log`
 - Review reconciliation step: `step-4.5-reconcile-story-status.md`
 - Check story file format: Ensure 12-section BMAD format
 - Verify Dev Agent Record populated: Required for reconciliation

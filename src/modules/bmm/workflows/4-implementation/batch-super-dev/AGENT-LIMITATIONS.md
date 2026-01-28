@@ -1,6 +1,6 @@
 # Agent Limitations in Batch Mode
 
-**CRITICAL:** Agents running in batch-super-dev have specific limitations. Understanding these prevents wasted time and sets correct expectations.
+**CRITICAL:** Agents running in batch-stories have specific limitations. Understanding these prevents wasted time and sets correct expectations.
 
 ---
 
@@ -93,7 +93,7 @@
 
 ## Pre-Batch Validation Checklist
 
-**Before running /batch-super-dev, verify ALL selected stories:**
+**Before running /batch-stories, verify ALL selected stories:**
 
 ```bash
 # 1. Check story files exist
@@ -121,7 +121,7 @@ done
 **If any checks fail:**
 1. Regenerate those stories: `/create-story-with-gap-analysis`
 2. Validate again
-3. THEN run batch-super-dev
+3. THEN run batch-stories
 
 ---
 
@@ -150,7 +150,7 @@ done
 **What it means:** Agent tried to create story but couldn't
 **Is this a bug?** ❌ NO - Agents can't create stories
 **What to do:**
-- Exit batch-super-dev
+- Exit batch-stories
 - Manually run /create-story-with-gap-analysis
 - Re-run batch after story created
 
@@ -165,7 +165,7 @@ done
 1. Plan epic → Identify stories → Create list
 2. Generate stories: /create-story-with-gap-analysis (1-2 days)
 3. Validate stories: ./scripts/validate-all-stories.sh
-4. Execute stories: /batch-super-dev (parallel, fast)
+4. Execute stories: /batch-stories (parallel, fast)
 ```
 
 ### ✅ DO: Use Small Batches for Mixed Complexity
@@ -183,7 +183,7 @@ done
 **Why it fails:**
 ```
 1. Create 20 skeleton files with just widget lists
-2. Run /batch-super-dev
+2. Run /batch-stories
 3. Expect agents to regenerate them
    → FAILS: Agents can't invoke /create-story workflow
 ```
@@ -193,7 +193,7 @@ done
 **Why it fails:**
 ```
 1. 10 proper BMAD stories + 10 skeletons
-2. Run /batch-super-dev
+2. Run /batch-stories
 3. Expect batch to handle both
    → RESULT: 10 execute, 10 skipped (confusing)
 ```

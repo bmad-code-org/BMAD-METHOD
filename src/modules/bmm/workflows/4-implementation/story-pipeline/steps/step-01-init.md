@@ -3,7 +3,7 @@ name: 'step-01-init'
 description: 'Initialize story pipeline: load context, detect mode, cache documents'
 
 # Path Definitions
-workflow_path: '{project-root}/_bmad/bmm/workflows/4-implementation/story-pipeline'
+workflow_path: '{project-root}/_bmad/bmm/workflows/4-implementation/story-dev-only'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-01-init.md'

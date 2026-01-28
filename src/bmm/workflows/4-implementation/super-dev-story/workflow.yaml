@@ -29,7 +29,7 @@ super_dev_settings:
   fail_on_critical_issues: true
   max_fix_iterations: 3
 
-# Autonomous mode settings (passed from parent workflow like batch-super-dev)
+# Autonomous mode settings (passed from parent workflow like batch-stories)
 auto_accept_gap_analysis: false # When true, skip gap analysis approval prompt
 
 standalone: true

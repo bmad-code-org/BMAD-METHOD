@@ -73,7 +73,7 @@ Build it, one story at a time. All implementation workflows use a unified GSD-st
 | Workflow             | Purpose                                    | Produces                     |
 | -------------------- | ------------------------------------------ | ---------------------------- |
 | `super-dev-story`    | Dev + validation + review + push pipeline  | Production-ready code        |
-| `batch-super-dev`    | Parallel execution of multiple stories     | Multiple stories completed   |
+| `batch-stories`    | Parallel execution of multiple stories     | Multiple stories completed   |
 | `push-all`           | Safe git staging/commit/push with checks   | Committed and pushed changes |
 
 ### Maintenance & Recovery

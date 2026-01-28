@@ -1,5 +1,5 @@
-name: story-pipeline
-description: "Automated story development pipeline with token-efficient step-file architecture. Replaces separate Claude calls with single-session orchestration."
+name: story-dev-only
+description: "Basic TDD story development pipeline with token-efficient step-file architecture. Focuses on implementation without validation/review stages."
 author: "BMad + digital-bridge"
 version: "2.0.0"
 
@@ -11,14 +11,14 @@ communication_language: "{config_source}:communication_language"
 date: system-generated
 
 # Workflow paths
-installed_path: "{project-root}/_bmad/bmm/workflows/4-implementation/story-pipeline"
+installed_path: "{project-root}/_bmad/bmm/workflows/4-implementation/story-dev-only"
 steps_path: "{installed_path}/steps"
 templates_path: "{installed_path}/templates"
 checklists_path: "{installed_path}/checklists"
 
 # State management
-state_file: "{sprint_artifacts}/pipeline-state-{{story_id}}.yaml"
-audit_trail: "{sprint_artifacts}/audit-{{story_id}}-{{date}}.yaml"
+state_file: "{sprint_artifacts}/story-dev-only-state-{{story_id}}.yaml"
+audit_trail: "{sprint_artifacts}/audit-story-dev-only-{{story_id}}-{{date}}.yaml"
 
 # Workflow modes
 modes:

@@ -3,7 +3,7 @@ name: 'step-03-validate-story'
 description: 'Adversarial validation of story completeness and quality'
 
 # Path Definitions
-workflow_path: '{project-root}/_bmad/bmm/workflows/4-implementation/story-pipeline'
+workflow_path: '{project-root}/_bmad/bmm/workflows/4-implementation/story-dev-only'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-03-validate-story.md'

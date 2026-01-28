@@ -1,5 +1,5 @@
-name: batch-super-dev
-description: "Interactive batch selector for super-dev-pipeline with complexity-based routing. Micro stories get lightweight path, standard stories get full pipeline, complex stories get enhanced validation."
+name: batch-stories
+description: "Interactive batch selector for story-full-pipeline with complexity-based routing. Micro stories get lightweight path, standard stories get full pipeline, complex stories get enhanced validation."
 author: "BMad"
 version: "1.3.0"
 
@@ -11,12 +11,12 @@ communication_language: "{config_source}:communication_language"
 date: system-generated
 
 # Workflow paths
-installed_path: "{project-root}/_bmad/bmm/workflows/4-implementation/batch-super-dev"
+installed_path: "{project-root}/_bmad/bmm/workflows/4-implementation/batch-stories"
 instructions: "{installed_path}/instructions.md"
 
 # State management
 sprint_status: "{sprint_artifacts}/sprint-status.yaml"
-batch_log: "{sprint_artifacts}/batch-super-dev-{date}.log"
+batch_log: "{sprint_artifacts}/batch-stories-{date}.log"
 
 # Variables
 filter_by_epic: "" # Optional: Filter stories by epic number (e.g., "3" for only Epic 3 stories)
@@ -26,7 +26,7 @@ pause_between_stories: 5 # Seconds to pause between stories (allows monitoring, 
 # Super-dev-pipeline invocation settings
 super_dev_settings:
   mode: "batch" # Always use batch mode for autonomous execution
-  workflow_path: "{project-root}/_bmad/bmm/workflows/4-implementation/super-dev-pipeline"
+  workflow_path: "{project-root}/_bmad/bmm/workflows/4-implementation/story-full-pipeline"
 
 # Story validation settings (NEW in v1.2.0)
 validation:

@@ -3,7 +3,7 @@ name: 'step-07-complete'
 description: 'Update sprint status and create git commit'
 
 # Path Definitions
-workflow_path: '{project-root}/_bmad/bmm/workflows/4-implementation/story-pipeline'
+workflow_path: '{project-root}/_bmad/bmm/workflows/4-implementation/story-dev-only'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-07-complete.md'
@@ -89,7 +89,7 @@ stories:
       code_reviewed: true
       issues_found: {count}
       issues_fixed: {count}
-      pipeline_version: "story-pipeline-v2.0"
+      pipeline_version: "story-dev-only-v2.0"
 ```
 
 ### 4. Stage Git Changes
@@ -119,7 +119,7 @@ feat(epic-{epic_num}): complete story {story_id}
 - Code reviewed: {issues_found} issues found and fixed
 
 Story: {story_title}
-Pipeline: story-pipeline-v2.0
+Pipeline: story-dev-only-v2.0
 
 🤖 Generated with BMAD Story Pipeline
 

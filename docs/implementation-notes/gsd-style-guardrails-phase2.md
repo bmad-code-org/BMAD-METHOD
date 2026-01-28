@@ -75,7 +75,7 @@ Implemented Phase 2 of GSD-style refactoring: pattern extraction and explicit st
 
 ### 2. Explicit Step Enumeration
 
-**Added to super-dev-pipeline/workflow.md:**
+**Added to story-full-pipeline/workflow.md:**
 
 ```markdown
 <verification_checklist>
@@ -154,7 +154,7 @@ Implemented Phase 2 of GSD-style refactoring: pattern extraction and explicit st
 | patterns/verification.md | Created | Independent verification |
 | patterns/security-checklist.md | Created | Security review checklist |
 | patterns/README.md | Created | Patterns documentation |
-| super-dev-pipeline/workflow.md | Modified | Add explicit step checklist |
+| story-full-pipeline/workflow.md | Modified | Add explicit step checklist |
 | gsd-style-guardrails-phase2.md | Created | Phase 2 summary (this file) |
 
 **Total:**
@@ -239,7 +239,7 @@ When workflow runs:
 ### Test 1: Pattern Resolution ✅
 ```bash
 # Verify patterns are properly resolved
-cat _bmad/bmm/workflows/4-implementation/super-dev-pipeline/agents/builder.md
+cat _bmad/bmm/workflows/4-implementation/story-full-pipeline/agents/builder.md
 
 # Expected: Pattern content inlined in compiled agent
 # Expected: No @patterns/ references remain
@@ -248,7 +248,7 @@ cat _bmad/bmm/workflows/4-implementation/super-dev-pipeline/agents/builder.md
 ### Test 2: Step Enumeration Visible ✅
 ```bash
 # Run workflow
-/bmad_bmm_super-dev-pipeline test-story
+/bmad_bmm_story-full-pipeline test-story
 
 # Expected: User sees "Step 1.1: Builder agent spawned"
 # Expected: User sees "Step 1.2: Builder creates completion artifact"
@@ -264,7 +264,7 @@ echo "New quality standard" >> patterns/hospital-grade.md
 bmad install
 
 # Run workflow
-/bmad_bmm_super-dev-pipeline test-story
+/bmad_bmm_story-full-pipeline test-story
 
 # Expected: All agents receive updated pattern
 ```

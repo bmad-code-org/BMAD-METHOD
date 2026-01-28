@@ -19,9 +19,9 @@ name: multi-agent-review
 version: 3.0.0
 
 agent_selection:
-  micro: {count: 2, agents: [security, code_quality]}
-  standard: {count: 4, agents: [security, code_quality, architecture, testing]}
-  complex: {count: 6, agents: [security, code_quality, architecture, testing, performance, domain_expert]}
+  micro: {count: 1, agents: [security]}
+  standard: {count: 2, agents: [security, code_quality]}
+  complex: {count: 3, agents: [security, code_quality, architecture]}
 
 available_agents:
   security: "Identifies vulnerabilities and security risks"
@@ -41,21 +41,40 @@ available_agents:
 <process>
 
 <step name="determine_agent_count" priority="first">
-**Select agents based on complexity**
+**Select agents based on override or complexity**
 
 ```
-If complexity_level == "micro":
-  agents = ["security", "code_quality"]
-  Display: 🔍 MICRO Review (2 agents)
+# Priority 1: Check for explicit override
+If override_agent_count is provided (not null):
+  agent_count = min(override_agent_count, 6)  # Cap at 6 max
+  Select top N agents based on changed code patterns
+  Display: 🔧 CUSTOM Review ({{agent_count}} agents)
+
+# Priority 2: Use complexity-based default
+Else if complexity_level == "micro":
+  agent_count = 1
+  agents = ["security"]
+  Display: 🔍 MICRO Review (1 agent)
 
 Else if complexity_level == "standard":
-  agents = ["security", "code_quality", "architecture", "testing"]
-  Display: 📋 STANDARD Review (4 agents)
+  agent_count = 2
+  agents = ["security", "code_quality"]
+  Display: 📋 STANDARD Review (2 agents)
 
 Else if complexity_level == "complex":
-  agents = ALL 6 agents
-  Display: 🔬 COMPLEX Review (6 agents)
+  agent_count = 3
+  agents = ["security", "code_quality", "architecture"]
+  Display: 🔬 COMPLEX Review (3 agents)
 ```
+
+**Agent Selection Priority:**
+1. Security (always first)
+2. Code Quality (always second)
+3-6. Selected based on code patterns:
+   - Architecture (for structural changes)
+   - Testing (for test coverage)
+   - Performance (for optimization)
+   - Domain Expert (for business logic)
 </step>
 
 <step name="load_story_context">
@@ -183,6 +202,28 @@ If only LOW/INFO findings:
 - Micro stories (≤3 tasks)
 - Standard stories with simple changes
 - Stories that passed adversarial review cleanly
+
+**Usage Examples:**
+
+```bash
+# Default: Use complexity-based agent count
+/bmad_bmm_multi-agent-review 28-1-volunteer-role-permissions
+
+# Override: Force specific count (token-conscious)
+/bmad_bmm_multi-agent-review 28-2-volunteer-profile --count 2
+
+# Complex story but budget-conscious
+/bmad_bmm_multi-agent-review 28-3-volunteer-opportunities --count 3
+
+# Skip review entirely (micro story)
+/bmad_bmm_multi-agent-review 28-4-tiny-fix --count 0
+```
+
+**Parameter:**
+- `--count N` (optional): Override complexity-based count
+  - Range: 0-6 (0 = skip review)
+  - Default: null (uses complexity_level)
+  - Capped at 6 maximum for safety
 </integration>
 
 <failure_handling>

@@ -3,7 +3,7 @@ name: 'step-05-implement'
 description: 'Implement story to make tests pass (GREEN phase)'
 
 # Path Definitions
-workflow_path: '{project-root}/_bmad/bmm/workflows/4-implementation/story-pipeline'
+workflow_path: '{project-root}/_bmad/bmm/workflows/4-implementation/story-dev-only'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-05-implement.md'

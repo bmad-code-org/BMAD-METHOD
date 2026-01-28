@@ -3,7 +3,7 @@ name: 'step-01b-resume'
 description: 'Resume pipeline from checkpoint after failure or interruption'
 
 # Path Definitions
-workflow_path: '{project-root}/_bmad/bmm/workflows/4-implementation/story-pipeline'
+workflow_path: '{project-root}/_bmad/bmm/workflows/4-implementation/story-dev-only'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-01b-resume.md'

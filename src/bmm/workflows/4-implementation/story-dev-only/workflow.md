@@ -1,5 +1,5 @@
 ---
-name: story-pipeline
+name: story-dev-only
 description: Automated story development pipeline with token-efficient step-file architecture. Single-session orchestration replacing multiple Claude calls.
 web_bundle: true
 ---
@@ -112,7 +112,7 @@ Load and cache these documents (read once, use across steps):
 ### 4. First Step Execution
 
 Load, read the full file and then execute:
-`{project-root}/_bmad/bmm/workflows/4-implementation/story-pipeline/steps/step-01-init.md`
+`{project-root}/_bmad/bmm/workflows/4-implementation/story-dev-only/steps/step-01-init.md`
 
 ---
 

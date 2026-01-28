@@ -228,7 +228,7 @@ Ready for implementation.
 
 Next Steps:
 1. Review story for accuracy
-2. Use /story-pipeline or /super-dev-pipeline to implement
+2. Use /story-dev-only or /story-full-pipeline to implement
 3. All context loaded and ready
 
 [N] Create next story

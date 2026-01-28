@@ -3,7 +3,7 @@ name: 'step-05b-post-validation'
 description: 'Verify completed tasks against codebase reality (catch false positives)'
 
 # Path Definitions
-workflow_path: '{project-root}/_bmad/bmm/workflows/4-implementation/story-pipeline'
+workflow_path: '{project-root}/_bmad/bmm/workflows/4-implementation/story-dev-only'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-05b-post-validation.md'

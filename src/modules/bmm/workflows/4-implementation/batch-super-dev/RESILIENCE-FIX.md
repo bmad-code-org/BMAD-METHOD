@@ -47,7 +47,7 @@ Story 18-5:
 ### Add state file tracking:
 
 ```yaml
-# In batch-super-dev/workflow.yaml
+# In batch-stories/workflow.yaml
 state_tracking:
   enabled: true
   state_file: "{sprint_artifacts}/batch-execution-state-{batch_id}.yaml"
@@ -92,7 +92,7 @@ stories:
 ### Resume logic:
 
 ```bash
-# At batch-super-dev start, check for existing state file
+# At batch-stories start, check for existing state file
 state_file="{sprint_artifacts}/batch-execution-state-*.yaml"
 
 if ls $state_file 2>/dev/null; then
@@ -172,7 +172,7 @@ story_content=$(read_with_retry "$story_file") || {
 
 ## Implementation
 
-Add to batch-super-dev Step 4-Sequential:
+Add to batch-stories Step 4-Sequential:
 
 ```xml
 <substep n="4s-0" title="Check for previous execution state">
@@ -204,7 +204,7 @@ Add to batch-super-dev Step 4-Sequential:
 
   <try>
     <action>Read story file with retry</action>
-    <action>Execute super-dev-pipeline</action>
+    <action>Execute story-full-pipeline</action>
     <action>Save state: story completed</action>
   </try>
 
@@ -236,7 +236,7 @@ Story 18-5: ❌ Crashed (state saved with error)
 
 State file created: batch-execution-state-epic-18.yaml
 
-User re-runs: /batch-super-dev
+User re-runs: /batch-stories
 
 Workflow: "🔄 Found interrupted batch. Resume? (yes/no)"
 User: "yes"

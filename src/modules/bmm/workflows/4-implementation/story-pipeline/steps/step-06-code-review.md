@@ -3,7 +3,7 @@ name: 'step-06-code-review'
 description: 'Adversarial code review finding 3-10 specific issues'
 
 # Path Definitions
-workflow_path: '{project-root}/_bmad/bmm/workflows/4-implementation/story-pipeline'
+workflow_path: '{project-root}/_bmad/bmm/workflows/4-implementation/story-dev-only'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-06-code-review.md'

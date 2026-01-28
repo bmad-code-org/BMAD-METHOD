@@ -33,8 +33,8 @@ Replace trust-based workflow with enforcement-based:
 ### 1. Auto-Fix Missing Prerequisites (Guardrail 1)
 
 **Files Modified:**
-- `src/modules/bmm/workflows/4-implementation/super-dev-pipeline/workflow.md`
-- `src/modules/bmm/workflows/4-implementation/batch-super-dev/workflow.md`
+- `src/modules/bmm/workflows/4-implementation/story-full-pipeline/workflow.md`
+- `src/modules/bmm/workflows/4-implementation/batch-stories/workflow.md`
 
 **What Changed:**
 - Old: Block with error if story file or gap analysis missing
@@ -60,10 +60,10 @@ fi
 ### 2. File-Based Completion Verification (Guardrail 2)
 
 **Files Modified:**
-- `src/modules/bmm/workflows/4-implementation/super-dev-pipeline/agents/builder.md`
-- `src/modules/bmm/workflows/4-implementation/super-dev-pipeline/agents/inspector.md`
-- `src/modules/bmm/workflows/4-implementation/super-dev-pipeline/agents/reviewer.md`
-- `src/modules/bmm/workflows/4-implementation/super-dev-pipeline/agents/fixer.md`
+- `src/modules/bmm/workflows/4-implementation/story-full-pipeline/agents/builder.md`
+- `src/modules/bmm/workflows/4-implementation/story-full-pipeline/agents/inspector.md`
+- `src/modules/bmm/workflows/4-implementation/story-full-pipeline/agents/reviewer.md`
+- `src/modules/bmm/workflows/4-implementation/story-full-pipeline/agents/fixer.md`
 
 **What Changed:**
 - Agents now MUST create completion artifact: `{{story_key}}-{{agent}}.json`
@@ -93,7 +93,7 @@ fi
 ### 3. Verification Gates Between Agents (Guardrail 4)
 
 **Files Modified:**
-- `src/modules/bmm/workflows/4-implementation/super-dev-pipeline/workflow.md`
+- `src/modules/bmm/workflows/4-implementation/story-full-pipeline/workflow.md`
 
 **What Changed:**
 - Added verification step after Builder agent
@@ -126,8 +126,8 @@ done
 ### 4. Orchestrator-Driven Reconciliation (Guardrail 2 cont.)
 
 **Files Modified:**
-- `src/modules/bmm/workflows/4-implementation/super-dev-pipeline/workflow.md`
-- `src/modules/bmm/workflows/4-implementation/batch-super-dev/workflow.md`
+- `src/modules/bmm/workflows/4-implementation/story-full-pipeline/workflow.md`
+- `src/modules/bmm/workflows/4-implementation/batch-stories/workflow.md`
 
 **What Changed:**
 - Orchestrator reads Fixer completion artifact
@@ -167,8 +167,8 @@ done
 
 | File | Type | Lines Changed | Purpose |
 |------|------|---------------|---------|
-| super-dev-pipeline/workflow.md | Modified | ~100 | Add preconditions, verification gates, artifact-based reconciliation |
-| batch-super-dev/workflow.md | Modified | ~80 | Add preconditions, artifact-based reconciliation |
+| story-full-pipeline/workflow.md | Modified | ~100 | Add preconditions, verification gates, artifact-based reconciliation |
+| batch-stories/workflow.md | Modified | ~80 | Add preconditions, artifact-based reconciliation |
 | agents/builder.md | Modified | ~30 | Add completion artifact requirement |
 | agents/inspector.md | Modified | ~25 | Add completion artifact requirement |
 | agents/reviewer.md | Modified | ~30 | Add completion artifact requirement |
@@ -189,7 +189,7 @@ done
 rm docs/sprint-artifacts/test-story.md
 
 # Run workflow
-/bmad_bmm_super-dev-pipeline test-story
+/bmad_bmm_story-full-pipeline test-story
 
 # Expected: Workflow auto-creates story file and gap analysis
 # Expected: Implementation proceeds without manual intervention
@@ -208,7 +208,7 @@ rm docs/sprint-artifacts/test-story.md
 ### Test 3: File-Based Reconciliation ✅
 ```bash
 # Run complete workflow
-/bmad_bmm_super-dev-pipeline test-story
+/bmad_bmm_story-full-pipeline test-story
 
 # After completion, verify:
 CHECKED=$(grep -c "^- \[x\]" docs/sprint-artifacts/test-story.md)
@@ -223,7 +223,7 @@ grep -A 10 "### Dev Agent Record" docs/sprint-artifacts/test-story.md
 ### Test 4: Batch Sequential Processing ✅
 ```bash
 # Run batch in sequential mode
-/bmad_bmm_batch-super-dev
+/bmad_bmm_batch-stories
 # Select: Sequential mode
 # Select: Multiple stories
 

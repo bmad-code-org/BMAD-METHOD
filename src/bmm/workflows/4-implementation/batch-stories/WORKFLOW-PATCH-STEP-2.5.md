@@ -81,7 +81,7 @@ This workflow requires:
    ```
    Must show: "✅ All 12 sections present"
 
-4. **Re-run batch-super-dev:**
+4. **Re-run batch-stories:**
    - Story will now be properly formatted
    - Can be executed in next batch run
 
@@ -132,7 +132,7 @@ This workflow requires:
 
 **After completing these actions:**
 1. Validate all stories: ./scripts/validate-all-stories.sh
-2. Re-run batch-super-dev for these stories
+2. Re-run batch-stories for these stories
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   </output>
 </check>
@@ -220,14 +220,14 @@ fi
 
 ## Documentation Update
 
-**Add to:** `_bmad/bmm/workflows/4-implementation/batch-super-dev/README.md`
+**Add to:** `_bmad/bmm/workflows/4-implementation/batch-stories/README.md`
 
 ```markdown
 # Batch Super-Dev Workflow
 
 ## Critical Prerequisites
 
-**BEFORE running batch-super-dev:**
+**BEFORE running batch-stories:**
 
 1. ✅ **All stories must be properly generated**
    - Run: `/create-story-with-gap-analysis` for each story
@@ -252,13 +252,13 @@ fi
 **What you might try:**
 ```
 1. Create 20 skeleton story files (just headers + widget lists)
-2. Run /batch-super-dev
+2. Run /batch-stories
 3. Expect agents to regenerate them
 ```
 
 **What happens:**
 - Agents identify stories are incomplete
-- Agents correctly halt per super-dev-pipeline validation
+- Agents correctly halt per story-full-pipeline validation
 - Stories get skipped (not regenerated)
 - You waste time
 
@@ -270,7 +270,7 @@ fi
 **Solution:**
 - Generate ALL stories manually FIRST: /create-story-with-gap-analysis
 - Validate: ./scripts/validate-all-stories.sh
-- THEN run batch: /batch-super-dev
+- THEN run batch: /batch-stories
 
 ### ❌ Mixed Story Quality
 
@@ -301,7 +301,7 @@ done
 ./scripts/validate-all-stories.sh
 
 # 3. Execute (4-8 hours, parallel autonomous)
-/batch-super-dev
+/batch-stories
 # Select all 5 stories
 # Choose 2-4 agents parallel
 
@@ -325,13 +325,13 @@ done
 
 **To apply these improvements:**
 
-- [ ] Update `batch-super-dev/instructions.md` Step 2.5 (lines 82-99)
-- [ ] Add `batch-super-dev/AGENT-LIMITATIONS.md` (new file)
-- [ ] Add `batch-super-dev/BATCH-BEST-PRACTICES.md` (new file)
-- [ ] Update `batch-super-dev/README.md` with prerequisites
+- [ ] Update `batch-stories/instructions.md` Step 2.5 (lines 82-99)
+- [ ] Add `batch-stories/AGENT-LIMITATIONS.md` (new file)
+- [ ] Add `batch-stories/BATCH-BEST-PRACTICES.md` (new file)
+- [ ] Update `batch-stories/README.md` with prerequisites
 - [ ] Create `scripts/validate-all-stories.sh` (new script)
 - [ ] Add manual actions tracking to Step 5 summary
-- [ ] Update super-dev-pipeline Step 1.4.5 with agent guidance
+- [ ] Update story-full-pipeline Step 1.4.5 with agent guidance
 
 **Testing:**
 - Try batch with mixed story quality → Should skip skeletons gracefully

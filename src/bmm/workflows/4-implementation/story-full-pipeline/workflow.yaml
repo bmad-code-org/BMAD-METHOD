@@ -1,4 +1,4 @@
-name: super-dev-pipeline
+name: story-full-pipeline
 description: "Multi-agent pipeline with wave-based execution, independent validation, and adversarial code review (GSDMAD)"
 author: "BMAD Method + GSD"
 version: "2.0.0"
@@ -14,7 +14,7 @@ communication_language: "{config_source}:communication_language"
 date: system-generated
 
 # Workflow paths
-installed_path: "{project-root}/_bmad/bmm/workflows/4-implementation/super-dev-pipeline"
+installed_path: "{project-root}/_bmad/bmm/workflows/4-implementation/story-full-pipeline"
 agents_path: "{installed_path}/agents"
 steps_path: "{installed_path}/steps"
 
@@ -23,8 +23,8 @@ agent_history: "{sprint_artifacts}/agent-history.json"
 current_agent_id: "{sprint_artifacts}/current-agent-id.txt"
 
 # State management
-state_file: "{sprint_artifacts}/super-dev-state-{{story_id}}.yaml"
-audit_trail: "{sprint_artifacts}/audit-super-dev-{{story_id}}-{{date}}.yaml"
+state_file: "{sprint_artifacts}/story-full-pipeline-state-{{story_id}}.yaml"
+audit_trail: "{sprint_artifacts}/audit-story-full-pipeline-{{story_id}}-{{date}}.yaml"
 
 # Multi-agent configuration
 agents:
@@ -55,14 +55,15 @@ agents:
     trust_level: "high" # Wants to find problems
     timeout: 1800 # 30 minutes
     review_agent_count:
-      micro: 2
-      standard: 4
-      complex: 6
+      micro: 1 # Minimal review (1 agent)
+      standard: 2 # Balanced review (2 agents)
+      complex: 3 # Full review (3 agents)
 
   fixer:
     description: "Issue resolution - fixes critical/high issues"
     steps: [8, 9]
     subagent_type: "general-purpose"
+    resume_builder: true # IMPORTANT: Resume Builder agent instead of spawning fresh
     prompt_file: "{agents_path}/fixer.md"
     trust_level: "medium" # Incentive to minimize work
     timeout: 2400 # 40 minutes
@@ -118,6 +119,6 @@ final_verification:
 fallback_to_v1:
   enabled: true
   condition: "execution_mode == 'single_agent'"
-  workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/super-dev-pipeline"
+  workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/story-full-pipeline"
 
 standalone: true

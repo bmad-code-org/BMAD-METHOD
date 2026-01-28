@@ -101,7 +101,7 @@ Human-in-the-loop with approval at each step:
 bmad build 1-4
 
 # Or invoke workflow directly
-claude -p "Load and execute: _bmad/bmm/workflows/4-implementation/story-pipeline/workflow.md
+claude -p "Load and execute: _bmad/bmm/workflows/4-implementation/story-dev-only/workflow.md
 Story: 1-4"
 ```
 
@@ -121,7 +121,7 @@ Unattended execution for trusted stories:
 bmad build 1-4 --batch
 
 # Or use batch runner directly
-./_bmad/bmm/workflows/4-implementation/story-pipeline/batch-runner.sh 1-4
+./_bmad/bmm/workflows/4-implementation/story-dev-only/batch-runner.sh 1-4
 ```
 
 Batch mode:
@@ -148,7 +148,7 @@ Resume automatically:
 ## Directory Structure
 
 ```
-story-pipeline/
+story-dev-only/
 ├── workflow.yaml          # Configuration, agent mapping, quality gates
 ├── workflow.md            # Interactive mode orchestration
 ├── batch-runner.sh        # Batch mode runner script
@@ -178,7 +178,7 @@ story-pipeline/
 ### workflow.yaml
 
 ```yaml
-name: story-pipeline
+name: story-dev-only
 version: "2.0"
 description: "Single-session story implementation with step-file loading"
 

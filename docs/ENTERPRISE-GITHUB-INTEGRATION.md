@@ -227,7 +227,7 @@ async function checkoutStory(storyKey) {
 }
 ```
 
-**Lock Verification** (before each task in super-dev-pipeline):
+**Lock Verification** (before each task in story-full-pipeline):
 
 ```javascript
 // Integrated into step-03-implement.md
@@ -270,8 +270,8 @@ async function verifyLockBeforeTask(storyKey) {
 **Files to Modify**:
 
 1. `src/modules/bmm/workflows/4-implementation/dev-story/instructions.xml` (Step 8, lines 502-533)
-2. `src/modules/bmm/workflows/4-implementation/super-dev-pipeline/steps/step-03-implement.md`
-3. `src/modules/bmm/workflows/4-implementation/batch-super-dev/step-4.5-reconcile-story-status.md`
+2. `src/modules/bmm/workflows/4-implementation/story-full-pipeline/steps/step-03-implement.md`
+3. `src/modules/bmm/workflows/4-implementation/batch-stories/step-4.5-reconcile-story-status.md`
 
 **Add After Task Completion**:
 
@@ -391,8 +391,8 @@ Result:
 
 **Files to Modify**:
 
-1. `super-dev-pipeline/steps/step-06-complete.md` - Add PR creation
-2. Add new: `super-dev-pipeline/steps/step-07-sync-github.md`
+1. `story-full-pipeline/steps/step-06-complete.md` - Add PR creation
+2. Add new: `story-full-pipeline/steps/step-07-sync-github.md`
 
 **PR Creation** (after git commit):
 
@@ -576,7 +576,7 @@ This is a HARD REQUIREMENT for team coordination.
 └─────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────┐
-│ 3. IMPLEMENTATION (Developer via super-dev-pipeline)         │
+│ 3. IMPLEMENTATION (Developer via story-full-pipeline)         │
 ├─────────────────────────────────────────────────────────────┤
 │ Step 1: Init                                                │
 │  └─ Verify lock held (HALT if lost)                        │
@@ -750,9 +750,9 @@ try {
 
 ## Critical Integration Points
 
-### Point 1: batch-super-dev Story Selection
+### Point 1: batch-stories Story Selection
 
-**File**: `batch-super-dev/instructions.md` (Step 2)
+**File**: `batch-stories/instructions.md` (Step 2)
 **Change**: Filter locked stories BEFORE user selection
 
 ```xml
@@ -794,9 +794,9 @@ try {
 </step>
 ```
 
-### Point 2: super-dev-pipeline Lock Verification
+### Point 2: story-full-pipeline Lock Verification
 
-**File**: `super-dev-pipeline/steps/step-03-implement.md`
+**File**: `story-full-pipeline/steps/step-03-implement.md`
 **Change**: Add lock check before each task
 
 ```markdown
@@ -1028,7 +1028,7 @@ Try: /available-stories
 # → HALT
 
 # Developer fixes network, resumes:
-$ /super-dev-pipeline story_key=2-5-auth
+$ /story-full-pipeline story_key=2-5-auth
 
 # System:
 # → Detects saved state
@@ -1120,10 +1120,10 @@ $ /super-dev-pipeline story_key=2-5-auth
 
 ### MODIFIED Files (5 total)
 
-1. `batch-super-dev/instructions.md` (+150 lines)
-2. `super-dev-pipeline/steps/step-01-init.md` (+80 lines)
-3. `super-dev-pipeline/steps/step-03-implement.md` (+120 lines)
-4. `super-dev-pipeline/steps/step-06-complete.md` (+100 lines)
+1. `batch-stories/instructions.md` (+150 lines)
+2. `story-full-pipeline/steps/step-01-init.md` (+80 lines)
+3. `story-full-pipeline/steps/step-03-implement.md` (+120 lines)
+4. `story-full-pipeline/steps/step-06-complete.md` (+100 lines)
 5. `dev-story/instructions.xml` (+60 lines)
 
 **Total MODIFIED**: ~510 lines
@@ -1208,7 +1208,7 @@ $ /super-dev-pipeline story_key=2-5-auth
 
 ### Week 2-3
 
-1. Integrate with batch-super-dev
+1. Integrate with batch-stories
 2. Add progress sync to dev-story
 3. Build PO agent + story creation workflow
 4. Test with 3-5 developers

@@ -8,7 +8,7 @@
 
 ```bash
 # Run super-dev pipeline for a story
-/super-dev-pipeline story_key=17-10
+/story-full-pipeline story_key=17-10
 ```
 
 ---
@@ -106,7 +106,7 @@ See `workflow.md` for complete architecture details.
 
 **Directory Structure:**
 ```
-super-dev-pipeline/
+story-full-pipeline/
 ├── README.md (this file)
 ├── workflow.yaml (configuration)
 ├── workflow.md (complete documentation)

@@ -3,7 +3,7 @@ name: 'step-02-create-story'
 description: 'Create detailed story file from epic definition with research'
 
 # Path Definitions
-workflow_path: '{project-root}/_bmad/bmm/workflows/4-implementation/story-pipeline'
+workflow_path: '{project-root}/_bmad/bmm/workflows/4-implementation/story-dev-only'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-02-create-story.md'

@@ -3,7 +3,7 @@ name: 'step-08-summary'
 description: 'Generate audit trail and pipeline summary report'
 
 # Path Definitions
-workflow_path: '{project-root}/_bmad/bmm/workflows/4-implementation/story-pipeline'
+workflow_path: '{project-root}/_bmad/bmm/workflows/4-implementation/story-dev-only'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-08-summary.md'
@@ -48,7 +48,7 @@ Create: `{auditFile}`
 ```yaml
 ---
 audit_version: "1.0"
-pipeline: "story-pipeline-v2.0"
+pipeline: "story-dev-only-v2.0"
 story_id: "{story_id}"
 epic_num: {epic_num}
 ---

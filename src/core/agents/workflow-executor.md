@@ -71,11 +71,11 @@ Instead of main agent trying to execute workflow:
 
 ```typescript
 // OLD (doesn't work - I skip steps):
-Execute super-dev-pipeline for story X
+Execute story-full-pipeline for story X
 
 // NEW (enforcement active):
 Task agent: workflow-executor
-Prompt: Execute super-dev-pipeline for story 18-4
+Prompt: Execute story-full-pipeline for story 18-4
   - Load ALL step files into context at start
   - Execute steps 1-11 in exact order
   - Spawn Task agents when step requires it

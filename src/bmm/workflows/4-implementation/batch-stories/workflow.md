@@ -1,7 +1,7 @@
 # Batch Super-Dev v3.0 - Unified Workflow
 
 <purpose>
-Interactive story selector for batch implementation. Scan codebase for gaps, select stories, process with super-dev-pipeline, reconcile results.
+Interactive story selector for batch implementation. Scan codebase for gaps, select stories, process with story-full-pipeline, reconcile results.
 
 **AKA:** "Mend the Gap" - Mind the gap between story requirements and reality, then mend it.
 </purpose>
@@ -18,7 +18,7 @@ Orchestrator coordinates. Agents do implementation. Orchestrator does reconcilia
 </philosophy>
 
 <config>
-name: batch-super-dev
+name: batch-stories
 version: 3.1.0
 
 modes:
@@ -37,7 +37,7 @@ defaults:
 <execution_context>
 @patterns/hospital-grade.md
 @patterns/agent-completion.md
-@super-dev-pipeline/workflow.md
+@story-full-pipeline/workflow.md
 </execution_context>
 
 <process>
@@ -203,16 +203,16 @@ If missing, auto-create using greenfield workflow:
 echo "✅ Prerequisites satisfied"
 ```
 
-**Step B: Invoke super-dev-pipeline**
+**Step B: Invoke story-full-pipeline**
 
-Use super-dev-pipeline workflow with:
+Use story-full-pipeline workflow with:
 - mode: batch
 - story_key: {{story_key}}
 - complexity_level: {{complexity}}
 
 **Step C: Reconcile Using Completion Artifacts (orchestrator does this directly)**
 
-After super-dev-pipeline completes:
+After story-full-pipeline completes:
 
 **C1. Load Fixer completion artifact:**
 ```bash
@@ -294,10 +294,10 @@ Task({
   subagent_type: "general-purpose",
   description: "Implement {{story_key}}",
   prompt: `
-Execute super-dev-pipeline for story {{story_key}}.
+Execute story-full-pipeline for story {{story_key}}.
 
 <execution_context>
-@super-dev-pipeline/workflow.md
+@story-full-pipeline/workflow.md
 </execution_context>
 
 <context>

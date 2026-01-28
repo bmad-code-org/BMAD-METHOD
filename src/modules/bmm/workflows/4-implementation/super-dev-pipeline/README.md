@@ -8,10 +8,10 @@
 
 ```bash
 # Use v2.0 for a story
-/super-dev-pipeline mode=multi_agent story_key=17-10
+/story-full-pipeline mode=multi_agent story_key=17-10
 
 # Use v1.x (fallback)
-/super-dev-pipeline mode=single_agent story_key=17-10
+/story-full-pipeline mode=single_agent story_key=17-10
 ```
 
 ---
@@ -107,7 +107,7 @@ Separate agents for each phase:
 ## Files in This Directory
 
 ```
-super-dev-pipeline/
+story-full-pipeline/
 ├── README.md (this file)
 ├── workflow.yaml (configuration)
 ├── workflow.md (complete documentation)
