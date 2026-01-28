@@ -397,7 +397,7 @@
       - Verify all acceptance criteria are met
       - Ensure deployment readiness if applicable
       - Run `code-review` workflow for peer review
-      - Optional: Run TEA `*automate` to expand guardrail tests
+      - Optional: If Test Architect module installed, run `/bmad:tea:automate` to expand guardrail tests
     </action>
 
     <output>💡 **Tip:** For best results, run `code-review` using a **different** LLM than the one that implemented this story.</output>
