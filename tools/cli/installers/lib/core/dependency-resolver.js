@@ -338,7 +338,7 @@ class DependencyResolver {
         // Handle {project-root} prefix if present
         if (depPath.includes('{project-root}')) {
           // Remove {project-root} and resolve as bmad path
-          depPath = depPath.replace('{project-root}', '');
+          depPath = depPath.replace('{project-root}', '').replace(/^\/+/, '');
 
           if (depPath.startsWith('bmad/')) {
             const bmadPath = depPath.replace(/^bmad\//, '');
@@ -354,7 +354,11 @@ class DependencyResolver {
               let basePath;
               if (module === 'core') {
                 basePath = path.join(bmadDir, 'core', middlePath);
+              } else if (module === 'bmm') {
+                // bmm is directly under src/
+                basePath = path.join(bmadDir, module, middlePath);
               } else {
+                // Other modules under modules/
                 basePath = path.join(bmadDir, 'modules', module, middlePath);
               }
 
@@ -375,7 +379,14 @@ class DependencyResolver {
                 const parts = bmadPath.split('/');
                 const module = parts[0];
                 const rest = parts.slice(1).join('/');
-                const modulePath = path.join(bmadDir, 'modules', module, rest);
+                let modulePath;
+                if (module === 'bmm') {
+                  // bmm is directly under src/
+                  modulePath = path.join(bmadDir, module, rest);
+                } else {
+                  // Other modules under modules/
+                  modulePath = path.join(bmadDir, 'modules', module, rest);
+                }
 
                 if (await fs.pathExists(modulePath)) {
                   paths.push(modulePath);
@@ -520,10 +531,16 @@ class DependencyResolver {
       const taskName = command.slice(6);
       // Search all modules for this task
       for (const module of ['core', 'bmm', 'cis']) {
-        const taskPath =
-          module === 'core'
-            ? path.join(bmadDir, 'core', 'tasks', `${taskName}.md`)
-            : path.join(bmadDir, 'modules', module, 'tasks', `${taskName}.md`);
+        let taskPath;
+        if (module === 'core') {
+          taskPath = path.join(bmadDir, 'core', 'tasks', `${taskName}.md`);
+        } else if (module === 'bmm') {
+          // bmm is directly under src/
+          taskPath = path.join(bmadDir, 'bmm', 'tasks', `${taskName}.md`);
+        } else {
+          // Other modules under modules/
+          taskPath = path.join(bmadDir, 'modules', module, 'tasks', `${taskName}.md`);
+        }
         if (await fs.pathExists(taskPath)) {
           return taskPath;
         }
@@ -532,10 +549,16 @@ class DependencyResolver {
       const agentName = command.slice(7);
       // Search all modules for this agent
       for (const module of ['core', 'bmm', 'cis']) {
-        const agentPath =
-          module === 'core'
-            ? path.join(bmadDir, 'core', 'agents', `${agentName}.md`)
-            : path.join(bmadDir, 'modules', module, 'agents', `${agentName}.md`);
+        let agentPath;
+        if (module === 'core') {
+          agentPath = path.join(bmadDir, 'core', 'agents', `${agentName}.md`);
+        } else if (module === 'bmm') {
+          // bmm is directly under src/
+          agentPath = path.join(bmadDir, 'bmm', 'agents', `${agentName}.md`);
+        } else {
+          // Other modules under modules/
+          agentPath = path.join(bmadDir, 'modules', module, 'agents', `${agentName}.md`);
+        }
         if (await fs.pathExists(agentPath)) {
           return agentPath;
         }
@@ -550,8 +573,16 @@ class DependencyResolver {
         // Check if name already has extension
         const fileName = name.endsWith('.md') ? name : `${name}.md`;
 
-        const filePath =
-          module === 'core' ? path.join(bmadDir, 'core', type, fileName) : path.join(bmadDir, 'modules', module, type, fileName);
+        let filePath;
+        if (module === 'core') {
+          filePath = path.join(bmadDir, 'core', type, fileName);
+        } else if (module === 'bmm') {
+          // bmm is directly under src/
+          filePath = path.join(bmadDir, 'bmm', type, fileName);
+        } else {
+          // Other modules under modules/
+          filePath = path.join(bmadDir, 'modules', module, type, fileName);
+        }
         if (await fs.pathExists(filePath)) {
           return filePath;
         }
