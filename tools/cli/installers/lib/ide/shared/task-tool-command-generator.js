@@ -242,7 +242,7 @@ Follow all instructions in the ${type} file exactly as written.
    * Write task/tool artifacts using dash format (NEW STANDARD)
    * Creates flat files like: bmad-bmm-bmad-help.md
    *
-   * Note: Tasks/tools do NOT have .agent.md suffix - only agents do.
+   * Note: Tasks/tools do NOT have bmad-agent- prefix - only agents do.
    *
    * @param {string} baseCommandsDir - Base commands directory for the IDE
    * @param {Array} artifacts - Task/tool artifacts with relativePath
