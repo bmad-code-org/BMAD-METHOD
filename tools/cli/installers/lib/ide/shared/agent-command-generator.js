@@ -32,7 +32,9 @@ class AgentCommandGenerator {
       // Use relativePath if available (for nested agents), otherwise just name with .md
       const agentPathInModule = agent.relativePath || `${agent.name}.md`;
       // Calculate the relative agent path (e.g., bmm/agents/pm.md)
-      let agentRelPath = agent.path;
+      let agentRelPath = agent.path || '';
+      // Normalize path separators for cross-platform compatibility
+      agentRelPath = agentRelPath.replaceAll('\\', '/');
       // Remove _bmad/ prefix if present to get relative path from project root
       // Handle both absolute paths (/path/to/_bmad/...) and relative paths (_bmad/...)
       if (agentRelPath.includes('_bmad/')) {
