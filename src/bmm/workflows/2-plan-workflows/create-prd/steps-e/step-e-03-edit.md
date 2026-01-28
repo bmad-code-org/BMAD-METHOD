@@ -5,7 +5,7 @@ description: 'Edit & Update - Apply changes to PRD following approved change pla
 # File references (ONLY variables used in this step)
 nextStepFile: './step-e-04-complete.md'
 prdFile: '{prd_file_path}'
-prdPurpose: '{project-root}/src/bmm/workflows/2-plan-workflows/create-prd/data/prd-purpose.md'
+prdPurpose: '{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-prd/data/prd-purpose.md'
 ---
 
 # Step E-3: Edit & Update
