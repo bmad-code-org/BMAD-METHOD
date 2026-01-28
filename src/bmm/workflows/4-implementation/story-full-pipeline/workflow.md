@@ -23,20 +23,20 @@ Trust but verify. Fresh context for verification. Reuse context for fixes.
 
 <config>
 name: story-full-pipeline
-version: 3.1.0
+version: 3.2.0
 execution_mode: multi_agent
 
 phases:
   phase_1: Builder (saves agent_id)
-  phase_2: [Inspector + N Reviewers] in parallel (N = 1/2/3 based on complexity)
+  phase_2: [Inspector + N Reviewers] in parallel (N = 2/3/4 based on complexity)
   phase_3: Resume Builder with all findings (reuses context)
   phase_4: Inspector re-check (quick verification)
   phase_5: Orchestrator reconciliation
 
 reviewer_counts:
-  micro: 1 reviewer (security only)
-  standard: 2 reviewers (security, performance)
-  complex: 3 reviewers (security, performance, code quality)
+  micro: 2 reviewers (security, architect/integration) v3.2.0+
+  standard: 3 reviewers (security, logic/performance, architect/integration) v3.2.0+
+  complex: 4 reviewers (security, logic, architect/integration, code quality) v3.2.0+
 
 token_efficiency:
   - Phase 2 agents spawn in parallel (same cost, faster)
@@ -195,12 +195,20 @@ If verification fails: fix using Edit, then re-verify.
 <complexity_routing>
 | Complexity | Pipeline | Reviewers | Total Phase 2 Agents |
 |------------|----------|-----------|---------------------|
-| micro | Builder → [Inspector + 1 Reviewer] → Resume Builder → Inspector recheck | 1 (security) | 2 agents |
-| standard | Builder → [Inspector + 2 Reviewers] → Resume Builder → Inspector recheck | 2 (security, performance) | 3 agents |
-| complex | Builder → [Inspector + 3 Reviewers] → Resume Builder → Inspector recheck | 3 (security, performance, quality) | 4 agents |
+| micro | Builder → [Inspector + 2 Reviewers] → Resume Builder → Inspector recheck | 2 (security, architect) | 3 agents |
+| standard | Builder → [Inspector + 3 Reviewers] → Resume Builder → Inspector recheck | 3 (security, logic, architect) | 4 agents |
+| complex | Builder → [Inspector + 4 Reviewers] → Resume Builder → Inspector recheck | 4 (security, logic, architect, quality) | 5 agents |
 
-**Key Improvement:** All verification agents spawn in parallel (single message, faster execution).
-**Token Savings:** Builder resume in Phase 3 saves 50-70% tokens vs spawning fresh Fixer.
+**Key Improvements (v3.2.0):**
+- All verification agents spawn in parallel (single message, faster execution)
+- Builder resume in Phase 3 saves 50-70% tokens vs spawning fresh Fixer
+- **NEW:** Architect/Integration Reviewer catches runtime issues (404s, pattern violations, missing migrations)
+
+**Reviewer Specializations:**
+- **Security:** Auth, injection, secrets, cross-tenant access
+- **Logic/Performance:** Bugs, edge cases, N+1 queries, race conditions
+- **Architect/Integration:** Routes work, patterns match, migrations applied, dependencies installed (v3.2.0+)
+- **Code Quality:** Maintainability, naming, duplication (complex only)
 </complexity_routing>
 
 <success_criteria>

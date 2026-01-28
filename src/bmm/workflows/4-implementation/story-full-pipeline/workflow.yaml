@@ -1,7 +1,7 @@
 name: story-full-pipeline
 description: "Multi-agent pipeline with wave-based execution, independent validation, and adversarial code review (GSDMAD)"
 author: "BMAD Method + GSD"
-version: "2.0.0"
+version: "3.2.0" # Added architect-integration-reviewer for runtime verification
 
 # Execution mode
 execution_mode: "multi_agent" # multi_agent | single_agent (fallback)
@@ -55,9 +55,14 @@ agents:
     trust_level: "high" # Wants to find problems
     timeout: 1800 # 30 minutes
     review_agent_count:
-      micro: 1 # Minimal review (1 agent)
-      standard: 2 # Balanced review (2 agents)
-      complex: 3 # Full review (3 agents)
+      micro: 2 # Security + Architect (v3.2.0+)
+      standard: 3 # Security + Logic + Architect (v3.2.0+)
+      complex: 4 # Security + Logic + Architect + Quality (v3.2.0+)
+    review_types:
+      security: "{agents_path}/reviewer.md" # Security focus
+      logic: "{agents_path}/reviewer.md" # Logic/performance focus
+      architect: "{agents_path}/architect-integration-reviewer.md" # Architecture/routing/integration (v3.2.0+)
+      quality: "{agents_path}/reviewer.md" # Code quality (complex only)
 
   fixer:
     description: "Issue resolution - fixes critical/high issues"
