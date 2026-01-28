@@ -1,0 +1,11 @@
+# Test: Code field with uppercase letters
+# Expected: FAIL
+# Error code: invalid_string
+# Error path: code
+
+code: TestModule
+name: Test Module
+header: Test Header
+subheader: Test Subheader
+default_selected: false
+

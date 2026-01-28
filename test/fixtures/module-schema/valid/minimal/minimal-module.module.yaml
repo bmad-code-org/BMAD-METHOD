@@ -1,0 +1,9 @@
+# Test: Valid module with only required fields
+# Expected: PASS
+
+code: my-module
+name: My Module Name
+header: Module Header
+subheader: Short description of what this module does
+default_selected: false
+

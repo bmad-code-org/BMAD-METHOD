@@ -1,0 +1,9 @@
+# Test: Valid module with minimum 2-character code
+# Expected: PASS
+
+code: ab
+name: Two Letter Module
+header: Short Code Header
+subheader: The shortest valid code is 2 characters
+default_selected: true
+

@@ -1,0 +1,11 @@
+# Test: Missing required subheader field
+# Expected: FAIL
+# Error code: invalid_type
+# Error path: subheader
+# Error message: Required
+
+code: test-module
+name: Test Module
+header: Test Header
+default_selected: false
+
