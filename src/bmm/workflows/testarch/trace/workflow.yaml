@@ -21,7 +21,7 @@ template: "{installed_path}/trace-template.md"
 variables:
   # Directory paths
   test_dir: "{project-root}/tests" # Root test directory
-  source_dir: "{project-root}/src" # Source code directory
+  source_dir: "{project-root}" # Source code directory (customize if needed, e.g., {project-root}/src or {project-root}/lib)
 
   # Workflow behavior
   coverage_levels: "e2e,api,component,unit" # Which test levels to trace

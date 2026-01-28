@@ -25,7 +25,7 @@ variables:
 
   # Directory paths
   test_dir: "{project-root}/tests" # Root test directory
-  source_dir: "{project-root}/src" # Source code directory
+  source_dir: "{project-root}" # Source code directory (customize if needed, e.g., {project-root}/src or {project-root}/lib)
 
 # Output configuration
 default_output_file: "{output_folder}/automation-summary.md"
