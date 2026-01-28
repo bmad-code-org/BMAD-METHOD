@@ -35,11 +35,13 @@
 
 **Module Restructuring:**
 
+
 | Module                                | Status                                            | New Location                                            |
 | ------------------------------------- | ------------------------------------------------- | ------------------------------------------------------- |
 | **bmad-builder**                      | Near beta, with docs and walkthroughs coming soon | `bmad-code-org/bmad-builder`                            |
 | **CIS** (Creative Intelligence Suite) | Published as npm package                          | `bmad-code-org/bmad-module-creative-intelligence-suite` |
 | **Game Dev Studio**                   | Published as npm package                          | `bmad-code-org/bmad-module-game-dev-studio`             |
+
 
 ### 🔧 Installer & CLI Improvements
 
@@ -491,6 +493,7 @@ Located in `src/modules/bmb/workflows/agent/data/`:
 - **Installer Cleanup**: Removed unused configuration code from BMM installer
 
 **Planning Artifacts Path:**
+
 - Default: `planning_artifacts/` (configurable in module.yaml)
 - Previous: `docs/`
 - Benefit: Clear separation between planning work and permanent documentation
@@ -630,7 +633,7 @@ Located in `src/modules/bmb/workflows/agent/data/`:
 
 **Installer Stability:**
 
-- **Fixed \_bmad Folder Stutter**: Resolved issue with duplicate \_bmad folder creation when applying agent custom files
+- **Fixed bmad Folder Stutter**: Resolved issue with duplicate bmad folder creation when applying agent custom files
 - **Cleaner Installation**: Removed unnecessary backup file that was causing bloat in the installer
 - **Streamlined Agent Customization**: Fixed path handling for agent custom files to prevent folder duplication
 
@@ -654,11 +657,9 @@ Located in `src/modules/bmb/workflows/agent/data/`:
   - Engine-specific expertise: Unity, Unreal, Godot testing frameworks
   - Comprehensive knowledge base with 15+ testing topics
   - Complete testing workflows: test-framework, test-design, automate, playtest-plan, performance-test, test-review
-
 - **New Game Solo Dev Agent (Indie)**: Rapid prototyping and iteration specialist
   - Quick-flow workflows optimized for solo/small team development
   - Streamlined development process for indie game creators
-
 - **Production Workflow Alignment**: BMGD 4-production now fully aligned with BMM 4-implementation
   - Removed obsolete workflows: story-done, story-ready, story-context, epic-tech-context
   - Added sprint-status workflow for project tracking
@@ -678,11 +679,9 @@ Located in `src/modules/bmb/workflows/agent/data/`:
   - Game-specific project levels (Game Jam → AAA)
   - Support for gamedev and quickflow paths
   - Project initialization workflow
-
 - **create-tech-spec**: Game-focused technical specification workflow
   - Engine-aware (Unity/Unreal/Godot) specifications
   - Performance and gameplay feel considerations
-
 - **Enhanced Documentation**: Complete documentation suite with 9 guides
   - agents-guide.md: Reference for all 6 agents
   - workflows-guide.md: Complete workflow documentation
@@ -925,9 +924,9 @@ Located in `src/modules/bmb/workflows/agent/data/`:
 ### ⚠️ Breaking Changes
 
 1. **module.yaml Configuration**: All modules must now use `module.yaml` instead of `_module-installer/install-config.yaml`
-   - Core modules updated automatically
-   - Custom modules will need to rename their configuration file
-   - Module builder templates generate new format
+  - Core modules updated automatically
+  - Custom modules will need to rename their configuration file
+  - Module builder templates generate new format
 
 ### 📦 New Dependencies
 
@@ -1105,7 +1104,7 @@ Located in `src/modules/bmb/workflows/agent/data/`:
 - **Frame Expert Agent**: New Excalidraw specialist with 4 diagram workflows
 - **Time Estimate Prohibition**: Warnings across 33 workflows acknowledging AI's impact on development speed
 - **Platform-Specific Commands**: ide-only/web-only fields filter menu items by environment
-- **Agent Customization**: Enhanced memory/prompts merging via \*.customize.yaml files
+- **Agent Customization**: Enhanced memory/prompts merging via .customize.yaml files
 
 ## [6.0.0-alpha.9]
 

@@ -1,0 +1,16 @@
+code: rmtn-solo-dev
+name: "RMTN Developer Suite"
+header: "A 'Senior Developer in a Box' for elite solo developers."
+subheader: "Automates context management and enforces a 'Plan -> Execute' workflow."
+default_selected: false
+
+# Custom Configuration Variables
+saga_folder:
+  prompt: "Where should the Saga (Context/Arch) be stored?"
+  default: "_bmad/saga"
+  result: "{project-root}/{value}"
+
+quests_folder:
+  prompt: "Where should Quests be stored?"
+  default: "quests"
+  result: "{project-root}/{value}"
