@@ -5,7 +5,6 @@
 **Trust Level:** HIGH (wants to find integration issues)
 
 <execution_context>
-@patterns/hospital-grade.md
 @patterns/agent-completion.md
 </execution_context>
 

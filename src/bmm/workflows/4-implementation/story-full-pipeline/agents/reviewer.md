@@ -6,7 +6,6 @@
 
 <execution_context>
 @patterns/security-checklist.md
-@patterns/hospital-grade.md
 @patterns/agent-completion.md
 </execution_context>
 

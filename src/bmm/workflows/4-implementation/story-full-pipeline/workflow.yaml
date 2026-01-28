@@ -1,7 +1,7 @@
 name: story-full-pipeline
-description: "Multi-agent pipeline with wave-based execution, independent validation, and adversarial code review (GSDMAD)"
-author: "BMAD Method + GSD"
-version: "3.2.0" # Added architect-integration-reviewer for runtime verification
+description: "Enhanced multi-agent pipeline with playbook learning, code citation evidence, test quality validation, and resume-builder fixes"
+author: "BMAD Method"
+version: "4.0.0" # Added playbook learning, test quality, coverage gates, Inspector code citations
 
 # Execution mode
 execution_mode: "multi_agent" # multi_agent | single_agent (fallback)
@@ -37,13 +37,23 @@ agents:
     timeout: 3600 # 1 hour
 
   inspector:
-    description: "Validation agent - independent verification"
+    description: "Validation agent - independent verification with code citations"
     steps: [5, 6]
     subagent_type: "general-purpose"
     prompt_file: "{agents_path}/inspector.md"
     fresh_context: true # No knowledge of builder agent
     trust_level: "medium" # No conflict of interest
     timeout: 1800 # 30 minutes
+    require_code_citations: true # v4.0: Must provide file:line evidence for all tasks
+
+  test_quality:
+    description: "Test quality validation - verifies test coverage and quality"
+    steps: [5.5]
+    subagent_type: "general-purpose"
+    prompt_file: "{agents_path}/test-quality.md"
+    fresh_context: true
+    trust_level: "medium"
+    timeout: 1200 # 20 minutes
 
   reviewer:
     description: "Adversarial code review - finds problems"
@@ -73,7 +83,32 @@ agents:
     trust_level: "medium" # Incentive to minimize work
     timeout: 2400 # 40 minutes
 
+  reflection:
+    description: "Playbook learning - extracts patterns for future agents"
+    steps: [10]
+    subagent_type: "general-purpose"
+    prompt_file: "{agents_path}/reflection.md"
+    timeout: 900 # 15 minutes
+
 # Reconciliation: orchestrator does this directly (see workflow.md Phase 5)
+
+# Playbook configuration (v4.0)
+playbooks:
+  enabled: true # Set to false in project config to disable
+  directory: "docs/playbooks/implementation-playbooks"
+  bootstrap_mode: true # Auto-initialize if missing
+  max_load: 3
+  auto_apply_updates: false # Require manual review of playbook updates
+  discovery:
+    enabled: true # Scan git/docs to populate initial playbooks
+    sources: ["git_history", "docs", "existing_code"]
+
+# Quality gates (v4.0)
+quality_gates:
+  coverage_threshold: 80 # % line coverage required
+  task_verification: "all_with_evidence" # Inspector must provide file:line citations
+  critical_issues: "must_fix"
+  high_issues: "must_fix"
 
 # Complexity level (determines which steps to execute)
 complexity_level: "standard" # micro | standard | complex
@@ -81,7 +116,7 @@ complexity_level: "standard" # micro | standard | complex
 # Complexity routing
 complexity_routing:
   micro:
-    skip_agents: ["reviewer"] # Skip code review for micro stories
+    skip_agents: [] # Full pipeline (v4.0: micro gets security scan)
     description: "Lightweight path for low-risk stories"
     examples: ["UI tweaks", "text changes", "simple CRUD"]
 
