@@ -132,12 +132,12 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
    */
   async writeAgentArtifacts(targetPath, artifacts, templateType, config = {}) {
     // Try to load platform-specific template, fall back to default-agent
-    const template = await this.loadTemplate(templateType, 'agent', config, 'default-agent');
+    const { content: template, extension } = await this.loadTemplate(templateType, 'agent', config, 'default-agent');
     let count = 0;
 
     for (const artifact of artifacts) {
       const content = this.renderTemplate(template, artifact);
-      const filename = this.generateFilename(artifact, 'agent');
+      const filename = this.generateFilename(artifact, 'agent', extension);
       const filePath = path.join(targetPath, filename);
       await this.writeFile(filePath, content);
       count++;
@@ -167,9 +167,10 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
 
         // Fall back to default templates if specific ones don't exist
         const finalTemplateType = artifact.isYamlWorkflow ? 'default-workflow-yaml' : 'default-workflow';
-        const template = await this.loadTemplate(workflowTemplateType, 'workflow', config, finalTemplateType);
+        // workflowTemplateType already contains full name (e.g., 'gemini-workflow-yaml'), so pass empty artifactType
+        const { content: template, extension } = await this.loadTemplate(workflowTemplateType, '', config, finalTemplateType);
         const content = this.renderTemplate(template, artifact);
-        const filename = this.generateFilename(artifact, 'workflow');
+        const filename = this.generateFilename(artifact, 'workflow', extension);
         const filePath = path.join(targetPath, filename);
         await this.writeFile(filePath, content);
         count++;
@@ -185,34 +186,47 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
    * @param {string} artifactType - Artifact type (agent, workflow, task, tool)
    * @param {Object} config - Installation configuration
    * @param {string} fallbackTemplateType - Fallback template type if requested template not found
-   * @returns {Promise<string>} Template content
+   * @returns {Promise<{content: string, extension: string}>} Template content and extension
    */
   async loadTemplate(templateType, artifactType, config = {}, fallbackTemplateType = null) {
     const { header_template, body_template } = config;
 
     // Check for separate header/body templates
     if (header_template || body_template) {
-      return await this.loadSplitTemplates(templateType, artifactType, header_template, body_template);
+      const content = await this.loadSplitTemplates(templateType, artifactType, header_template, body_template);
+      // Allow config to override extension, default to .md
+      const ext = config.extension || '.md';
+      const normalizedExt = ext.startsWith('.') ? ext : `.${ext}`;
+      return { content, extension: normalizedExt };
     }
 
-    // Load combined template
-    const templateName = `${templateType}-${artifactType}.md`;
-    const templatePath = path.join(__dirname, 'templates', 'combined', templateName);
+    // Load combined template - try multiple extensions
+    // If artifactType is empty, templateType already contains full name (e.g., 'gemini-workflow-yaml')
+    const templateBaseName = artifactType ? `${templateType}-${artifactType}` : templateType;
+    const templateDir = path.join(__dirname, 'templates', 'combined');
+    const extensions = ['.md', '.toml', '.yaml', '.yml'];
 
-    if (await fs.pathExists(templatePath)) {
-      return await fs.readFile(templatePath, 'utf8');
+    for (const ext of extensions) {
+      const templatePath = path.join(templateDir, templateBaseName + ext);
+      if (await fs.pathExists(templatePath)) {
+        const content = await fs.readFile(templatePath, 'utf8');
+        return { content, extension: ext };
+      }
     }
 
     // Fall back to default template (if provided)
     if (fallbackTemplateType) {
-      const fallbackPath = path.join(__dirname, 'templates', 'combined', `${fallbackTemplateType}.md`);
-      if (await fs.pathExists(fallbackPath)) {
-        return await fs.readFile(fallbackPath, 'utf8');
+      for (const ext of extensions) {
+        const fallbackPath = path.join(templateDir, `${fallbackTemplateType}${ext}`);
+        if (await fs.pathExists(fallbackPath)) {
+          const content = await fs.readFile(fallbackPath, 'utf8');
+          return { content, extension: ext };
+        }
       }
     }
 
     // Ultimate fallback - minimal template
-    return this.getDefaultTemplate(artifactType);
+    return { content: this.getDefaultTemplate(artifactType), extension: '.md' };
   }
 
   /**
@@ -326,13 +340,26 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
    * Generate filename for artifact
    * @param {Object} artifact - Artifact data
    * @param {string} artifactType - Artifact type (agent, workflow, task, tool)
+   * @param {string} extension - File extension to use (e.g., '.md', '.toml')
    * @returns {string} Generated filename
    */
-  generateFilename(artifact, artifactType) {
+  generateFilename(artifact, artifactType, extension = '.md') {
     const { toDashPath } = require('./shared/path-utils');
-    // toDashPath already handles the .agent.md suffix for agents correctly
-    // No need to add it again here
-    return toDashPath(artifact.relativePath);
+
+    // Reuse central logic to ensure consistent naming conventions
+    const standardName = toDashPath(artifact.relativePath);
+
+    // Clean up potential double extensions from source files (e.g. .yaml.md -> .md)
+    const baseName = standardName.replace(/\.(yaml|yml)\.md$/, '.md');
+
+    // If using default markdown, preserve original behavior (keeps .agent.md suffix)
+    if (extension === '.md') {
+      return baseName;
+    }
+
+    // For other extensions (e.g., .toml), remove .agent suffix as well
+    // Gemini doesn't support double-dot patterns like .agent.toml
+    return baseName.replace(/(\.agent)?(\.md|\.yaml|\.yml)$/, extension);
   }
 
   /**
