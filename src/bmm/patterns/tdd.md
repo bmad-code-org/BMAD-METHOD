@@ -1,93 +1,184 @@
-# Test-Driven Development Pattern
+# Test-Driven Development (TDD) Pattern
 
-<overview>
-TDD is about design quality, not coverage metrics. Writing tests first forces you to think about behavior before implementation.
+**Red → Green → Refactor**
 
-**Principle:** If you can describe behavior as `expect(fn(input)).toBe(output)` before writing `fn`, TDD improves the result.
-</overview>
+Write tests first, make them pass, then refactor.
 
-<when_to_use>
-## When TDD Improves Quality
+## Why TDD?
 
-**Use TDD for:**
-- Business logic with defined inputs/outputs
-- API endpoints with request/response contracts
-- Data transformations, parsing, formatting
-- Validation rules and constraints
-- Algorithms with testable behavior
+1. **Design quality:** Writing tests first forces good API design
+2. **Coverage:** 90%+ coverage by default
+3. **Confidence:** Refactor without fear
+4. **Documentation:** Tests document expected behavior
 
-**Skip TDD for:**
-- UI layout and styling
-- Configuration changes
-- Glue code connecting existing components
-- One-off scripts
-- Simple CRUD with no business logic
-</when_to_use>
+## TDD Cycle
 
-<red_green_refactor>
-## Red-Green-Refactor Cycle
-
-**RED - Write failing test:**
-1. Create test describing expected behavior
-2. Run test - it MUST fail
-3. If test passes: feature exists or test is wrong
-
-**GREEN - Implement to pass:**
-1. Write minimal code to make test pass
-2. No cleverness, no optimization - just make it work
-3. Run test - it MUST pass
-
-**REFACTOR (if needed):**
-1. Clean up implementation
-2. Run tests - MUST still pass
-3. Only commit if changes made
-</red_green_refactor>
-
-<test_quality>
-## Good Tests vs Bad Tests
-
-**Test behavior, not implementation:**
-```typescript
-// GOOD: Tests observable behavior
-expect(formatDate(new Date('2024-01-15'))).toBe('Jan 15, 2024')
-
-// BAD: Tests implementation details
-expect(formatDate).toHaveBeenCalledWith(expect.any(Date))
+```
+┌─────────────────────────────────────────────┐
+│ 1. RED: Write a failing test                │
+│    - Test what the code SHOULD do           │
+│    - Test fails (code doesn't exist yet)    │
+└─────────────────────────────────────────────┘
+                    ↓
+┌─────────────────────────────────────────────┐
+│ 2. GREEN: Write minimal code to pass        │
+│    - Simplest implementation that works     │
+│    - Test passes                            │
+└─────────────────────────────────────────────┘
+                    ↓
+┌─────────────────────────────────────────────┐
+│ 3. REFACTOR: Clean up code                  │
+│    - Improve design                         │
+│    - Remove duplication                     │
+│    - Tests still pass                       │
+└─────────────────────────────────────────────┘
+                    ↓
+              (repeat for next feature)
 ```
 
-**One concept per test:**
-```typescript
-// GOOD: Separate tests
-it('accepts valid email', () => { ... })
-it('rejects empty email', () => { ... })
-it('rejects malformed email', () => { ... })
+## Implementation Order
 
-// BAD: Multiple assertions
-it('validates email', () => {
-  expect(validate('test@example.com')).toBe(true)
-  expect(validate('')).toBe(false)
-  expect(validate('invalid')).toBe(false)
-})
+### Greenfield (New Code)
+1. Write test for happy path
+2. Write test for error cases
+3. Write test for edge cases
+4. Implement to make all tests pass
+5. Refactor
+
+### Brownfield (Existing Code)
+1. Understand existing behavior
+2. Add tests for current behavior (characterization tests)
+3. Write test for new behavior
+4. Implement new behavior
+5. Refactor
+
+## Test Quality Standards
+
+### Good Test Characteristics
+- ✅ **Isolated:** Each test independent
+- ✅ **Fast:** Runs in milliseconds
+- ✅ **Clear:** Obvious what it tests
+- ✅ **Focused:** One behavior per test
+- ✅ **Stable:** No flakiness
+
+### Test Structure (AAA Pattern)
+```typescript
+test('should calculate total price with tax', () => {
+  // Arrange: Set up test data
+  const cart = new ShoppingCart();
+  cart.addItem({ price: 100, quantity: 2 });
+  
+  // Act: Execute the behavior
+  const total = cart.getTotalWithTax(0.08);
+  
+  // Assert: Verify the result
+  expect(total).toBe(216); // (100 * 2) * 1.08
+});
 ```
 
-**Descriptive names:**
+## What to Test
+
+### Must Test (Critical)
+- Business logic
+- API endpoints
+- Data transformations
+- Error handling
+- Authorization checks
+- Edge cases
+
+### Nice to Test (Important)
+- UI components
+- Integration flows
+- Performance benchmarks
+
+### Don't Waste Time Testing
+- Third-party libraries (already tested)
+- Framework internals (already tested)
+- Trivial getters/setters
+- Generated code
+
+## Coverage Target
+
+**Minimum:** 90% line coverage
+**Ideal:** 95%+ with meaningful tests
+
+**Coverage ≠ Quality**
+- 100% coverage with bad tests is worthless
+- 90% coverage with good tests is excellent
+
+## TDD Anti-Patterns
+
+**Avoid these:**
+- ❌ Writing tests after code (test-after)
+- ❌ Testing implementation details
+- ❌ Tests that test nothing
+- ❌ Brittle tests (break with refactoring)
+- ❌ Slow tests (> 1 second)
+
+## Example: TDD for API Endpoint
+
 ```typescript
-// GOOD
-it('returns null for invalid user ID')
-it('should reject empty email')
+// Step 1: RED - Write failing test
+describe('POST /api/orders', () => {
+  test('should create order and return 201', async () => {
+    const response = await request(app)
+      .post('/api/orders')
+      .send({ items: [{ id: 1, qty: 2 }] })
+      .expect(201);
+    
+    expect(response.body).toHaveProperty('orderId');
+  });
+});
 
-// BAD
-it('test1')
-it('handles error')
-it('works')
+// Test fails (endpoint doesn't exist yet)
+
+// Step 2: GREEN - Minimal implementation
+app.post('/api/orders', async (req, res) => {
+  const orderId = await createOrder(req.body);
+  res.status(201).json({ orderId });
+});
+
+// Test passes
+
+// Step 3: REFACTOR - Add validation, error handling
+app.post('/api/orders', async (req, res) => {
+  try {
+    // Input validation
+    const schema = z.object({
+      items: z.array(z.object({
+        id: z.number(),
+        qty: z.number().min(1)
+      }))
+    });
+    
+    const data = schema.parse(req.body);
+    
+    // Business logic
+    const orderId = await createOrder(data);
+    
+    res.status(201).json({ orderId });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      res.status(400).json({ error: error.errors });
+    } else {
+      res.status(500).json({ error: 'Internal error' });
+    }
+  }
+});
+
+// All tests still pass
 ```
-</test_quality>
 
-<coverage_targets>
-## Coverage Targets
+## TDD in Practice
 
-- **90%+ line coverage** for new code
-- **100% branch coverage** for critical paths (auth, payments)
-- **Every error path** has at least one test
-- **Edge cases** explicitly tested
-</coverage_targets>
+**Start here:**
+1. Write one test for the simplest case
+2. Make it pass with simplest code
+3. Write next test for slightly more complex case
+4. Refactor when you see duplication
+5. Repeat
+
+**Don't:**
+- Write all tests first (too much work)
+- Write production code without failing test
+- Skip refactoring step

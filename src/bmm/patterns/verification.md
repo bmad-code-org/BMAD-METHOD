@@ -1,143 +1,198 @@
-# Verification Patterns
+# Independent Verification Pattern
 
-<overview>
-Existence ≠ Implementation. A file existing does not mean the feature works.
+**Philosophy:** Trust but verify. Fresh eyes catch what familiarity misses.
 
-**Verification levels:**
-1. **Exists** - File is present
-2. **Substantive** - Content is real, not placeholder
-3. **Wired** - Connected to rest of system
-4. **Functional** - Actually works when invoked
-</overview>
+## Core Principle
 
-<stub_detection>
-## Detecting Stubs and Placeholders
+The person who built something should NOT validate their own work.
 
+**Why?**
+- Confirmation bias (see what you expect to see)
+- Blind spots (familiar with your own code)
+- Fatigue (validated while building, miss issues)
+
+## Verification Requirements
+
+### Fresh Context
+Inspector agent has:
+- ✅ No knowledge of what Builder did
+- ✅ No preconceptions about implementation
+- ✅ Only the story requirements as context
+
+**This means:**
+- Run all checks yourself
+- Don't trust any claims
+- Start from scratch
+
+### What to Verify
+
+**1. Files Exist**
 ```bash
-# Comment-based stubs
-grep -E "(TODO|FIXME|XXX|PLACEHOLDER)" "$file"
-grep -E "implement|add later|coming soon" "$file" -i
-
-# Empty implementations
-grep -E "return null|return undefined|return \{\}|return \[\]" "$file"
-grep -E "console\.(log|warn).*only" "$file"
-
-# Placeholder text
-grep -E "placeholder|lorem ipsum|sample data" "$file" -i
+# For each file mentioned in story tasks
+ls -la {{file_path}}
+# FAIL if file missing or empty
 ```
 
-**Red flags in code:**
-```typescript
-// STUBS - Not real implementations:
-return <div>Placeholder</div>
-onClick={() => {}}
-export async function POST() { return Response.json({ ok: true }) }
-```
-</stub_detection>
+**2. File Contents**
+- Open each file
+- Check it has actual code (not just TODO/stub)
+- Verify it matches story requirements
 
-<file_verification>
-## File Verification Commands
-
-**React Components:**
+**3. Tests Exist**
 ```bash
-# Exists and exports component
-[ -f "$file" ] && grep -E "export.*function|export const.*=" "$file"
-
-# Has real JSX (not null/empty)
-grep -E "return.*<" "$file" | grep -v "return.*null"
-
-# Uses props/state (not static)
-grep -E "props\.|useState|useEffect" "$file"
+find . -name "*.test.ts" -o -name "__tests__"
+# FAIL if no tests found for new code
 ```
 
-**API Routes:**
-```bash
-# Exports HTTP handlers
-grep -E "export.*(GET|POST|PUT|DELETE)" "$file"
+**4. Quality Checks Pass**
 
-# Has database interaction
-grep -E "prisma\.|db\.|query|find|create" "$file"
-
-# Has error handling
-grep -E "try|catch|throw" "$file"
-```
-
-**Tests:**
-```bash
-# Test file exists
-[ -f "$test_file" ]
-
-# Has test cases
-grep -E "it\(|test\(|describe\(" "$test_file"
-
-# Not all skipped
-grep -c "\.skip" "$test_file"
-```
-</file_verification>
-
-<quality_commands>
-## Quality Check Commands
+Run these yourself. Don't trust claims.
 
 ```bash
-# Type check - zero errors
+# Type check
 npm run type-check
-echo "Exit code: $?"
+# FAIL if any errors
 
-# Lint - zero errors/warnings
-npm run lint 2>&1 | tail -5
+# Linter
+npm run lint
+# FAIL if any errors or warnings
 
-# Tests - all passing
-npm test 2>&1 | grep -E "pass|fail|error" -i | tail -10
+# Build
+npm run build
+# FAIL if build fails
 
-# Build - succeeds
-npm run build 2>&1 | tail -5
+# Tests
+npm test -- {{story_specific_tests}}
+# FAIL if any tests fail
+# FAIL if tests are skipped
+# FAIL if coverage < 90%
 ```
 
-**All must return exit code 0.**
-</quality_commands>
-
-<wiring_checks>
-## Wiring Verification
-
-**Component → API:**
+**5. Git Status**
 ```bash
-# Check component calls the API
-grep -E "fetch\(['\"].*$api_path|axios.*$api_path" "$component"
+git status
+# Check for uncommitted files
+# List what was changed
 ```
 
-**API → Database:**
-```bash
-# Check API queries database
-grep -E "await.*prisma|await.*db\." "$route"
-```
+## Verification Verdict
 
-**Form → Handler:**
-```bash
-# Check form has real submit handler
-grep -A 5 "onSubmit" "$component" | grep -E "fetch|axios|mutate"
-```
-</wiring_checks>
+### PASS Criteria
+All of these must be true:
+- [ ] All story files exist and have content
+- [ ] Type check returns 0 errors
+- [ ] Linter returns 0 errors/warnings
+- [ ] Build succeeds
+- [ ] Tests run and pass (not skipped)
+- [ ] Test coverage >= 90%
+- [ ] Git status is clean or has expected changes
 
-<verdict_format>
-## Verdict Format
+**If ANY checkbox is unchecked → FAIL verdict**
+
+### PASS Output
 
 ```markdown
-## VALIDATION RESULT
+✅ VALIDATION PASSED
 
-**Status:** PASS | FAIL
-
-### Evidence
+Evidence:
+- Files verified: [list files checked]
 - Type check: PASS (0 errors)
-- Lint: PASS (0 warnings)
+- Linter: PASS (0 warnings)
 - Build: PASS
-- Tests: 45/45 passing
+- Tests: 45/45 passing (95% coverage)
+- Git: 12 files modified, 3 new files
 
-### Files Verified
-- path/to/file.ts ✓
-- path/to/other.ts ✓
-
-### Failures (if FAIL)
-1. [CRITICAL] Missing file: src/api/route.ts
-2. [HIGH] Type error in lib/auth.ts:45
+Ready for code review.
 ```
-</verdict_format>
+
+### FAIL Output
+
+```markdown
+❌ VALIDATION FAILED
+
+Failures:
+1. File missing: app/api/occupant/agreement/route.ts
+2. Type check: 3 errors in lib/api/auth.ts
+3. Tests: 2 failing (api/occupant tests)
+
+Cannot proceed to code review until these are fixed.
+```
+
+## Why This Works
+
+**Verification is NOT rubber-stamping.**
+
+Inspector's job is to find the truth:
+- Did the work actually get done?
+- Do the quality checks actually pass?
+- Are the files actually there?
+
+If something is wrong, say so with evidence.
+
+## Anti-Patterns
+
+**Don't do this:**
+- ❌ Take Builder's word for anything
+- ❌ Skip verification steps
+- ❌ Assume tests pass without running them
+- ❌ Give PASS verdict if ANY check fails
+
+**Do this instead:**
+- ✅ Run all checks yourself
+- ✅ Provide specific evidence
+- ✅ Give honest verdict
+- ✅ FAIL fast if issues found
+
+## Example: Good Verification
+
+```markdown
+## Verification Results
+
+**File Checks:**
+✅ lib/billing/payment-processor.ts (1,234 lines)
+✅ lib/billing/__tests__/payment-processor.test.ts (456 lines)
+✅ lib/billing/worker.ts (modified)
+
+**Quality Checks:**
+✅ Type check: PASS (0 errors)
+✅ Linter: PASS (0 warnings)
+✅ Build: PASS (2.3s)
+
+**Tests:**
+✅ 48/48 passing
+✅ 96% coverage
+✅ 0 skipped
+
+**Git Status:**
+- Modified: 1 file
+- Created: 2 files
+- Total: 3 files changed
+
+**Verdict:** PASS
+
+Ready for code review.
+```
+
+## Example: Bad Verification (Don't Do This)
+
+```markdown
+## Verification Results
+
+Everything looks good! ✅
+
+Builder said tests pass and I believe them.
+
+**Verdict:** PASS
+```
+
+**What's wrong:**
+- ❌ No evidence
+- ❌ Trusted claims without verification
+- ❌ Didn't run checks
+- ❌ Rubber-stamped
+
+## Remember
+
+**You are the INSPECTOR. Your job is to find the truth.**
+
+If you give a PASS verdict and later find issues, that's on you.

@@ -7,7 +7,7 @@ You are working within the **BMAD Method (BMM)** - a 4-phase AI-powered agile de
 1. **NEVER skip phases** - Each phase builds on the previous (except Phase 1 which is optional)
 2. **ALWAYS check project level** - This determines which workflows to use
 3. **ALWAYS use workflows** - Don't implement features manually without BMAD workflows
-4. **ALWAYS consult workflow docs** - Located in `src/modules/bmm/workflows/`
+4. **ALWAYS consult workflow docs** - Located in `src/bmm/workflows/`
 5. **STAY IN PHASE** - Complete current phase before moving to next
 
 ---
@@ -143,32 +143,32 @@ You are working within the **BMAD Method (BMM)** - a 4-phase AI-powered agile de
 ### Method 1: Read Workflow Documentation
 ```bash
 # Read workflow guide for current phase
-cat src/modules/bmm/workflows/README.md
-cat src/modules/bmm/docs/workflows-{phase}.md
+cat src/bmm/workflows/README.md
+cat src/bmm/docs/workflows-{phase}.md
 
 # Example: Planning phase
-cat src/modules/bmm/docs/workflows-planning.md
+cat src/bmm/docs/workflows-planning.md
 
 # Example: Implementation phase
-cat src/modules/bmm/docs/workflows-implementation.md
+cat src/bmm/docs/workflows-implementation.md
 ```
 
 ### Method 2: Read Specific Workflow
 ```bash
 # Read workflow details
-cat src/modules/bmm/workflows/{phase}/{workflow-name}/README.md
+cat src/bmm/workflows/{phase}/{workflow-name}/README.md
 
 # Example: PRD workflow
-cat src/modules/bmm/workflows/2-plan-workflows/prd/README.md
+cat src/bmm/workflows/2-plan-workflows/prd/README.md
 
 # Example: Dev story workflow
-cat src/modules/bmm/workflows/4-implementation/dev-story/README.md
+cat src/bmm/workflows/4-implementation/dev-story/README.md
 ```
 
 ### Method 3: Check Workflow Configuration
 ```bash
 # See workflow config
-cat src/modules/bmm/workflows/{phase}/{workflow-name}/workflow.yaml
+cat src/bmm/workflows/{phase}/{workflow-name}/workflow.yaml
 ```
 
 ### Method 4: Use Explore Agent
@@ -363,16 +363,16 @@ cat {project-root}/_bmad/bmm/workflow-status.yaml
 ## 📖 ADDITIONAL RESOURCES
 
 ### Core Documentation
-- `src/modules/bmm/docs/workflows-analysis.md` - Phase 1 guidance
-- `src/modules/bmm/docs/workflows-planning.md` - Phase 2 guidance
-- `src/modules/bmm/docs/workflows-solutioning.md` - Phase 3 guidance
-- `src/modules/bmm/docs/workflows-implementation.md` - Phase 4 guidance
-- `src/modules/bmm/docs/scale-adaptive-system.md` - Level detection
-- `src/modules/bmm/docs/brownfield-guide.md` - Existing codebases
+- `src/bmm/docs/workflows-analysis.md` - Phase 1 guidance
+- `src/bmm/docs/workflows-planning.md` - Phase 2 guidance
+- `src/bmm/docs/workflows-solutioning.md` - Phase 3 guidance
+- `src/bmm/docs/workflows-implementation.md` - Phase 4 guidance
+- `src/bmm/docs/scale-adaptive-system.md` - Level detection
+- `src/bmm/docs/brownfield-guide.md` - Existing codebases
 
 ### Specialized Guides
-- `src/modules/bmm/docs/test-architecture.md` - TestArch workflows
-- `src/modules/bmm/docs/agents-guide.md` - All 12 specialized agents
+- `src/bmm/docs/test-architecture.md` - TestArch workflows
+- `src/bmm/docs/agents-guide.md` - All 12 specialized agents
 
 ---
 

@@ -18,29 +18,28 @@ story_id: "{story_id}" # Required
 story_file: "{sprint_artifacts}/story-{story_id}.md"
 base_branch: "main" # Optional: branch to compare against
 complexity_level: "standard" # micro | standard | complex (passed from story-full-pipeline)
-override_agent_count: null # Optional: override complexity-based count (1-6, null = use complexity_level)
 
 # Complexity-based agent selection (NEW v1.0.0)
 # Cost-effective review depth based on story RISK and technical complexity
 # Complexity determined by batch-stories based on: risk keywords, architectural impact, security concerns
 complexity_routing:
   micro:
-    agent_count: 1
-    agents: ["security"]
+    agent_count: 2
+    agents: ["security", "code_quality"]
     description: "Quick sanity check for low-risk stories"
     examples: ["UI tweaks", "text changes", "simple CRUD", "documentation"]
     cost_multiplier: 1x
 
   standard:
-    agent_count: 2
-    agents: ["security", "code_quality"]
+    agent_count: 4
+    agents: ["security", "code_quality", "architecture", "testing"]
     description: "Balanced multi-perspective review for medium-risk changes"
     examples: ["API endpoints", "business logic", "data validation", "component refactors"]
     cost_multiplier: 2x
 
   complex:
-    agent_count: 3
-    agents: ["security", "code_quality", "architecture"]
+    agent_count: 6
+    agents: ["security", "code_quality", "architecture", "testing", "performance", "domain_expert"]
     description: "Comprehensive review for high-risk/high-complexity changes"
     examples: ["auth/security", "payments", "data migration", "architecture changes", "performance-critical", "complex algorithms"]
     cost_multiplier: 3x

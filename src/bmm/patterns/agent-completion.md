@@ -1,187 +1,225 @@
-# Agent Completion Format
+# Agent Completion Artifact Pattern
 
-<overview>
-All agents must return structured output that the orchestrator can parse. This enables automated verification and reliable workflow progression.
+**Problem:** Agents fail to update story files reliably (60% success rate)
+**Solution:** Agents create completion.json artifacts. Orchestrator uses them to update story files.
 
-**Principle:** Return parseable data, not prose. The orchestrator needs to extract file lists, status, and evidence.
-</overview>
+## The Contract
 
-<format>
-## Standard Completion Format
+### Agent Responsibility
+Each agent MUST create a completion artifact before finishing:
+- **File path:** `docs/sprint-artifacts/completions/{{story_key}}-{{agent_name}}.json`
+- **Format:** Structured JSON (see formats below)
+- **Verification:** File exists = work done (binary check)
 
-Every agent returns this structure when done:
+### Orchestrator Responsibility
+Orchestrator reads completion artifacts and:
+- Parses JSON for structured data
+- Updates story file tasks (check off completed)
+- Fills Dev Agent Record with evidence
+- Verifies updates succeeded
 
-```markdown
-## AGENT COMPLETE
+## Why This Works
 
-**Agent:** [builder|inspector|reviewer|fixer]
-**Story:** {{story_key}}
-**Status:** [SUCCESS|PASS|FAIL|ISSUES_FOUND|PARTIAL]
+**File-based verification:**
+- ✅ Binary check: File exists or doesn't
+- ✅ No complex parsing of agent output
+- ✅ No reconciliation logic needed
+- ✅ Hard stop if artifact missing
 
-### [Agent-Specific Section]
-[See below for each agent type]
+**JSON format:**
+- ✅ Easy to parse reliably
+- ✅ Structured data (not prose)
+- ✅ Version controllable
+- ✅ Auditable trail
 
-### Files Created
-- path/to/new/file.ts
-- path/to/another.ts
+## How to Use This Pattern
 
-### Files Modified
-- path/to/existing/file.ts
+### In Agent Prompts
 
-### Ready For
-[Next phase or action required]
-```
-</format>
-
-<builder_format>
-## Builder Agent Output
-
-```markdown
-## AGENT COMPLETE
-
-**Agent:** builder
-**Story:** {{story_key}}
-**Status:** SUCCESS | FAILED
-
-### Files Created
-- src/lib/feature/service.ts
-- src/lib/feature/__tests__/service.test.ts
-
-### Files Modified
-- src/app/api/feature/route.ts
-
-### Tests Added
-- 3 test files
-- 12 test cases total
-
-### Implementation Summary
-Brief description of what was built.
-
-### Known Gaps
-- Edge case X not handled
-- NONE if all complete
-
-### Ready For
-Inspector validation
-```
-</builder_format>
-
-<inspector_format>
-## Inspector Agent Output
+Include this in every agent prompt:
 
 ```markdown
-## AGENT COMPLETE
+## CRITICAL: Create Completion Artifact
 
-**Agent:** inspector
-**Story:** {{story_key}}
-**Status:** PASS | FAIL
+**MANDATORY:** Before returning, you MUST create a completion artifact JSON file.
 
-### Evidence
-- **Type Check:** PASS (0 errors)
-- **Lint:** PASS (0 warnings)
-- **Build:** PASS
-- **Tests:** 45 passing, 0 failing, 92% coverage
+**File Path:** `docs/sprint-artifacts/completions/{{story_key}}-{{agent_name}}.json`
 
-### Files Verified
-- src/lib/feature/service.ts ✓
-- src/app/api/feature/route.ts ✓
-
-### Failures (if FAIL status)
-1. Type error in service.ts:45
-2. Test failing: "should handle empty input"
-
-### Ready For
-Reviewer (if PASS) | Builder fix (if FAIL)
+**Format:**
+```json
+{
+  "story_key": "{{story_key}}",
+  "agent": "{{agent_name}}",
+  "status": "SUCCESS",
+  "files_created": ["file1.ts", "file2.ts"],
+  "files_modified": ["file3.ts"],
+  "timestamp": "2026-01-27T02:30:00Z"
+}
 ```
-</inspector_format>
 
-<reviewer_format>
-## Reviewer Agent Output
-
-```markdown
-## AGENT COMPLETE
-
-**Agent:** reviewer
-**Story:** {{story_key}}
-**Status:** ISSUES_FOUND | CLEAN
-
-### Issue Summary
-- **CRITICAL:** 1 (security, data loss)
-- **HIGH:** 2 (production bugs)
-- **MEDIUM:** 3 (tech debt)
-- **LOW:** 1 (nice-to-have)
-
-### Must Fix (CRITICAL + HIGH)
-1. [CRITICAL] service.ts:45 - SQL injection vulnerability
-2. [HIGH] route.ts:23 - Missing authorization check
-3. [HIGH] service.ts:78 - Unhandled null case
-
-### Should Fix (MEDIUM)
-1. service.ts:92 - No error logging
-
-### Files Reviewed
-- src/lib/feature/service.ts ✓
-- src/app/api/feature/route.ts ✓
-
-### Ready For
-Fixer agent to address CRITICAL and HIGH issues
+**Use Write tool to create this file. No exceptions.**
 ```
-</reviewer_format>
 
-<fixer_format>
-## Fixer Agent Output
+### In Orchestrator Verification
 
-```markdown
-## AGENT COMPLETE
-
-**Agent:** fixer
-**Story:** {{story_key}}
-**Status:** SUCCESS | PARTIAL | FAILED
-
-### Issues Fixed
-- **CRITICAL:** 1/1 fixed
-- **HIGH:** 2/2 fixed
-- **Total:** 3 issues resolved
-
-### Fixes Applied
-1. [CRITICAL] service.ts:45 - Parameterized query
-2. [HIGH] route.ts:23 - Added auth check
-3. [HIGH] service.ts:78 - Added null guard
-
-### Quality Checks
-- **Type Check:** PASS
-- **Lint:** PASS
-- **Tests:** 47 passing (2 new)
-
-### Git Commit
-- **Hash:** abc123def
-- **Message:** fix({{story_key}}): address security and null handling
-
-### Deferred Issues
-- MEDIUM: 3 (defer to follow-up)
-- LOW: 1 (skip as gold-plating)
-
-### Ready For
-Orchestrator reconciliation
-```
-</fixer_format>
-
-<parsing_hints>
-## Parsing Hints for Orchestrator
-
-Extract key data using grep:
+After agent completes, verify artifact exists:
 
 ```bash
-# Get status
-grep "^\*\*Status:\*\*" agent_output.txt | cut -d: -f2 | xargs
+COMPLETION_FILE="docs/sprint-artifacts/completions/{{story_key}}-{{agent}}.json"
 
-# Get files created
-sed -n '/### Files Created/,/###/p' agent_output.txt | grep "^-" | cut -d' ' -f2
+if [ ! -f "$COMPLETION_FILE" ]; then
+  echo "❌ BLOCKER: Agent failed to create completion artifact"
+  exit 1
+fi
 
-# Get issue count
-grep "CRITICAL:" agent_output.txt | grep -oE "[0-9]+"
-
-# Check if ready for next phase
-grep "### Ready For" -A 1 agent_output.txt | tail -1
+echo "✅ Completion artifact found"
 ```
-</parsing_hints>
+
+### In Reconciliation
+
+Parse artifact to update story file:
+
+```markdown
+1. Load completion artifact with Read tool
+2. Parse JSON to extract data
+3. Use Edit tool to update story file
+4. Verify updates with bash checks
+```
+
+## Artifact Formats by Agent
+
+### Builder Completion
+
+```json
+{
+  "story_key": "19-4",
+  "agent": "builder",
+  "status": "SUCCESS",
+  "tasks_completed": [
+    "Create PaymentProcessor service",
+    "Add retry logic with exponential backoff"
+  ],
+  "files_created": [
+    "lib/billing/payment-processor.ts",
+    "lib/billing/__tests__/payment-processor.test.ts"
+  ],
+  "files_modified": [
+    "lib/billing/worker.ts"
+  ],
+  "tests": {
+    "files": 2,
+    "cases": 15
+  },
+  "timestamp": "2026-01-27T02:30:00Z"
+}
+```
+
+### Inspector Completion
+
+```json
+{
+  "story_key": "19-4",
+  "agent": "inspector",
+  "status": "PASS",
+  "quality_checks": {
+    "type_check": "PASS",
+    "lint": "PASS",
+    "build": "PASS"
+  },
+  "tests": {
+    "passing": 45,
+    "failing": 0,
+    "total": 45,
+    "coverage": 95
+  },
+  "files_verified": [
+    "lib/billing/payment-processor.ts"
+  ],
+  "timestamp": "2026-01-27T02:35:00Z"
+}
+```
+
+### Reviewer Completion
+
+```json
+{
+  "story_key": "19-4",
+  "agent": "reviewer",
+  "status": "ISSUES_FOUND",
+  "issues": {
+    "critical": 2,
+    "high": 3,
+    "medium": 4,
+    "low": 2,
+    "total": 11
+  },
+  "must_fix": [
+    {
+      "severity": "CRITICAL",
+      "location": "api/route.ts:45",
+      "description": "SQL injection vulnerability"
+    }
+  ],
+  "files_reviewed": [
+    "api/route.ts"
+  ],
+  "timestamp": "2026-01-27T02:40:00Z"
+}
+```
+
+### Fixer Completion (FINAL)
+
+```json
+{
+  "story_key": "19-4",
+  "agent": "fixer",
+  "status": "SUCCESS",
+  "issues_fixed": {
+    "critical": 2,
+    "high": 3,
+    "total": 5
+  },
+  "fixes_applied": [
+    "Fixed SQL injection in agreement route (CRITICAL)",
+    "Added authorization check (CRITICAL)"
+  ],
+  "files_modified": [
+    "api/route.ts"
+  ],
+  "quality_checks": {
+    "type_check": "PASS",
+    "lint": "PASS",
+    "build": "PASS"
+  },
+  "tests": {
+    "passing": 48,
+    "failing": 0,
+    "total": 48,
+    "coverage": 96
+  },
+  "git_commit": "a1b2c3d4e5f",
+  "timestamp": "2026-01-27T02:50:00Z"
+}
+```
+
+## Benefits
+
+- **Reliability:** 60% → 100% (file exists is binary)
+- **Simplicity:** No complex output parsing
+- **Auditability:** JSON files are version controlled
+- **Debuggability:** Can inspect artifacts when issues occur
+- **Enforcement:** Can't proceed without completion artifact (hard stop)
+
+## Anti-Patterns
+
+**Don't do this:**
+- ❌ Trust agent output without verification
+- ❌ Parse agent prose for structured data
+- ❌ Let agents update story files directly
+- ❌ Skip artifact creation ("just this once")
+
+**Do this instead:**
+- ✅ Verify artifact exists (binary check)
+- ✅ Parse JSON for reliable data
+- ✅ Orchestrator updates story files
+- ✅ Hard stop if artifact missing

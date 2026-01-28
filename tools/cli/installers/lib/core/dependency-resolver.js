@@ -83,27 +83,37 @@ class DependencyResolver {
       // or if it contains a src subdirectory (production scenario)
       const hasSrcSubdir = await fs.pathExists(path.join(bmadDir, 'src'));
       const hasModulesSubdir = await fs.pathExists(path.join(bmadDir, 'modules'));
+      const hasCoreDir = await fs.pathExists(path.join(bmadDir, 'core'));
+      const hasBmmDir = await fs.pathExists(path.join(bmadDir, 'bmm'));
 
       if (hasModulesSubdir) {
-        // bmadDir is already the src directory (e.g., /path/to/src)
-        // Structure: bmadDir/core or bmadDir/modules/bmm
+        // bmadDir is already the src directory with modules/ subdirectory (legacy structure)
+        // Structure: bmadDir/core or bmadDir/bmm or bmadDir/modules/other
         if (module === 'core') {
           moduleDir = path.join(bmadDir, 'core');
         } else if (module === 'bmm') {
-          moduleDir = path.join(bmadDir, 'modules', 'bmm');
+          moduleDir = path.join(bmadDir, 'bmm');
         } else {
           moduleDir = path.join(bmadDir, 'modules', module);
         }
       } else if (hasSrcSubdir) {
         // bmadDir is the parent of src directory (e.g., /path/to/BMAD-METHOD)
-        // Structure: bmadDir/src/core or bmadDir/src/modules/bmm
+        // Structure: bmadDir/src/core or bmadDir/src/bmm
         const srcDir = path.join(bmadDir, 'src');
         if (module === 'core') {
           moduleDir = path.join(srcDir, 'core');
         } else if (module === 'bmm') {
-          moduleDir = path.join(srcDir, 'modules', 'bmm');
+          moduleDir = path.join(srcDir, 'bmm');
         } else {
           moduleDir = path.join(srcDir, 'modules', module);
+        }
+      } else if (hasCoreDir || hasBmmDir) {
+        // bmadDir IS the src directory without modules/ subdirectory (new structure)
+        // Structure: bmadDir/core or bmadDir/bmm
+        if (module === 'core') {
+          moduleDir = path.join(bmadDir, 'core');
+        } else if (module === 'bmm') {
+          moduleDir = path.join(bmadDir, 'bmm');
         }
       }
 

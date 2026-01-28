@@ -19,9 +19,9 @@ name: multi-agent-review
 version: 3.0.0
 
 agent_selection:
-  micro: {count: 1, agents: [security]}
-  standard: {count: 2, agents: [security, code_quality]}
-  complex: {count: 3, agents: [security, code_quality, architecture]}
+  micro: {count: 2, agents: [security, code_quality]}
+  standard: {count: 4, agents: [security, code_quality, architecture, testing]}
+  complex: {count: 6, agents: [security, code_quality, architecture, testing, performance, domain_expert]}
 
 available_agents:
   security: "Identifies vulnerabilities and security risks"
@@ -41,40 +41,21 @@ available_agents:
 <process>
 
 <step name="determine_agent_count" priority="first">
-**Select agents based on override or complexity**
+**Select agents based on complexity**
 
 ```
-# Priority 1: Check for explicit override
-If override_agent_count is provided (not null):
-  agent_count = min(override_agent_count, 6)  # Cap at 6 max
-  Select top N agents based on changed code patterns
-  Display: 🔧 CUSTOM Review ({{agent_count}} agents)
-
-# Priority 2: Use complexity-based default
-Else if complexity_level == "micro":
-  agent_count = 1
-  agents = ["security"]
-  Display: 🔍 MICRO Review (1 agent)
+If complexity_level == "micro":
+  agents = ["security", "code_quality"]
+  Display: 🔍 MICRO Review (2 agents)
 
 Else if complexity_level == "standard":
-  agent_count = 2
-  agents = ["security", "code_quality"]
-  Display: 📋 STANDARD Review (2 agents)
+  agents = ["security", "code_quality", "architecture", "testing"]
+  Display: 📋 STANDARD Review (4 agents)
 
 Else if complexity_level == "complex":
-  agent_count = 3
-  agents = ["security", "code_quality", "architecture"]
-  Display: 🔬 COMPLEX Review (3 agents)
+  agents = ALL 6 agents
+  Display: 🔬 COMPLEX Review (6 agents)
 ```
-
-**Agent Selection Priority:**
-1. Security (always first)
-2. Code Quality (always second)
-3-6. Selected based on code patterns:
-   - Architecture (for structural changes)
-   - Testing (for test coverage)
-   - Performance (for optimization)
-   - Domain Expert (for business logic)
 </step>
 
 <step name="load_story_context">

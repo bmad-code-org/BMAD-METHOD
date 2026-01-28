@@ -585,7 +585,7 @@ Finally check bmad/core/tasks/review
   describe('module organization', () => {
     it('should organize files by module correctly', async () => {
       await createTestFile(bmadDir, 'core/agents/core-agent.md', '<agent>Core</agent>');
-      await createTestFile(bmadDir, 'modules/bmm/agents/bmm-agent.md', '<agent>BMM</agent>');
+      await createTestFile(bmadDir, 'bmm/agents/bmm-agent.md', '<agent>BMM</agent>');
 
       const resolver = new DependencyResolver();
       const result = await resolver.resolve(bmadDir, ['bmm']);
@@ -638,9 +638,9 @@ Finally check bmad/core/tasks/review
       expect(module).toBe('core');
     });
 
-    it('should extract module from src/modules/bmm path', () => {
+    it('should extract module from src/bmm path', () => {
       const resolver = new DependencyResolver();
-      const filePath = path.join(bmadDir, 'modules/bmm/agents/pm.md');
+      const filePath = path.join(bmadDir, 'bmm/agents/pm.md');
 
       const module = resolver.getModuleFromPath(bmadDir, filePath);
 
@@ -651,12 +651,12 @@ Finally check bmad/core/tasks/review
       // Create installed structure (no src/ prefix)
       const installedDir = path.join(tmpDir, 'installed');
       await fs.ensureDir(path.join(installedDir, 'core/agents'));
-      await fs.ensureDir(path.join(installedDir, 'modules/bmm/agents'));
+      await fs.ensureDir(path.join(installedDir, 'bmm/agents'));
 
       const resolver = new DependencyResolver();
 
       const coreFile = path.join(installedDir, 'core/agents/agent.md');
-      const moduleFile = path.join(installedDir, 'modules/bmm/agents/pm.md');
+      const moduleFile = path.join(installedDir, 'bmm/agents/pm.md');
 
       expect(resolver.getModuleFromPath(installedDir, coreFile)).toBe('core');
       expect(resolver.getModuleFromPath(installedDir, moduleFile)).toBe('bmm');
@@ -764,7 +764,7 @@ dependencies: []
       await createTestFile(bmadDir, 'core/agents/core-agent.md', '<agent>Core</agent>');
       await createTestFile(
         bmadDir,
-        'modules/bmm/agents/bmm-agent.md',
+        'bmm/agents/bmm-agent.md',
         `---
 dependencies: ["{project-root}/bmad/core/tasks/shared-task.md"]
 ---
@@ -783,8 +783,8 @@ dependencies: ["{project-root}/bmad/core/tasks/shared-task.md"]
 
     it('should resolve module tasks', async () => {
       await createTestFile(bmadDir, 'core/agents/core-agent.md', '<agent>Core</agent>');
-      await createTestFile(bmadDir, 'modules/bmm/agents/pm.md', '<agent>PM</agent>');
-      await createTestFile(bmadDir, 'modules/bmm/tasks/create-prd.md', 'Create PRD task');
+      await createTestFile(bmadDir, 'bmm/agents/pm.md', '<agent>PM</agent>');
+      await createTestFile(bmadDir, 'bmm/tasks/create-prd.md', 'Create PRD task');
 
       const resolver = new DependencyResolver();
       const result = await resolver.resolve(bmadDir, ['bmm']);

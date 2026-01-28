@@ -14,9 +14,9 @@ describe('DependencyResolver - Advanced Scenarios', () => {
     await fs.ensureDir(path.join(bmadDir, 'core', 'agents'));
     await fs.ensureDir(path.join(bmadDir, 'core', 'tasks'));
     await fs.ensureDir(path.join(bmadDir, 'core', 'templates'));
-    await fs.ensureDir(path.join(bmadDir, 'modules', 'bmm', 'agents'));
-    await fs.ensureDir(path.join(bmadDir, 'modules', 'bmm', 'tasks'));
-    await fs.ensureDir(path.join(bmadDir, 'modules', 'bmm', 'templates'));
+    await fs.ensureDir(path.join(bmadDir, 'bmm', 'agents'));
+    await fs.ensureDir(path.join(bmadDir, 'bmm', 'tasks'));
+    await fs.ensureDir(path.join(bmadDir, 'bmm', 'templates'));
   });
 
   afterEach(async () => {
@@ -33,7 +33,7 @@ dependencies: ["{project-root}/bmad/bmm/tasks/analyze.md"]
 ---
 <agent>Agent</agent>`,
       );
-      await createTestFile(bmadDir, 'modules/bmm/tasks/analyze.md', 'BMM Task');
+      await createTestFile(bmadDir, 'bmm/tasks/analyze.md', 'BMM Task');
 
       const resolver = new DependencyResolver();
       const result = await resolver.resolve(bmadDir, []);
@@ -51,8 +51,8 @@ dependencies: ["{project-root}/bmad/bmm/tasks/*.md"]
 ---
 <agent>Agent</agent>`,
       );
-      await createTestFile(bmadDir, 'modules/bmm/tasks/task1.md', 'Task 1');
-      await createTestFile(bmadDir, 'modules/bmm/tasks/task2.md', 'Task 2');
+      await createTestFile(bmadDir, 'bmm/tasks/task1.md', 'Task 1');
+      await createTestFile(bmadDir, 'bmm/tasks/task2.md', 'Task 2');
 
       const resolver = new DependencyResolver();
       const result = await resolver.resolve(bmadDir, ['bmm']); // Include bmm module
@@ -154,16 +154,16 @@ Task content`,
     });
 
     it('should resolve template from module path', async () => {
-      await createTestFile(bmadDir, 'modules/bmm/agents/agent.md', '<agent>BMM Agent</agent>');
+      await createTestFile(bmadDir, 'bmm/agents/agent.md', '<agent>BMM Agent</agent>');
       await createTestFile(
         bmadDir,
-        'modules/bmm/tasks/task.md',
+        'bmm/tasks/task.md',
         `---
 template: "{project-root}/bmad/bmm/templates/prd-template.yaml"
 ---
 Task`,
       );
-      await createTestFile(bmadDir, 'modules/bmm/templates/prd-template.yaml', 'template');
+      await createTestFile(bmadDir, 'bmm/templates/prd-template.yaml', 'template');
 
       const resolver = new DependencyResolver();
       const result = await resolver.resolve(bmadDir, ['bmm']);
@@ -215,7 +215,7 @@ Task`,
 <command exec="bmad/bmm/tasks/create-prd" />
 </agent>`,
       );
-      await createTestFile(bmadDir, 'modules/bmm/tasks/create-prd.md', 'PRD Task');
+      await createTestFile(bmadDir, 'bmm/tasks/create-prd.md', 'PRD Task');
 
       const resolver = new DependencyResolver();
       const result = await resolver.resolve(bmadDir, []);
@@ -249,7 +249,7 @@ Task`,
 Use @task-custom-task
 </agent>`,
       );
-      await createTestFile(bmadDir, 'modules/bmm/tasks/custom-task.md', 'Custom Task');
+      await createTestFile(bmadDir, 'bmm/tasks/custom-task.md', 'Custom Task');
 
       const resolver = new DependencyResolver();
       const result = await resolver.resolve(bmadDir, ['bmm']);
@@ -265,7 +265,7 @@ Use @task-custom-task
 Use @agent-pm
 </agent>`,
       );
-      await createTestFile(bmadDir, 'modules/bmm/agents/pm.md', '<agent>PM</agent>');
+      await createTestFile(bmadDir, 'bmm/agents/pm.md', '<agent>PM</agent>');
 
       const resolver = new DependencyResolver();
       const result = await resolver.resolve(bmadDir, ['bmm']);
