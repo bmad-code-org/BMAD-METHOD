@@ -155,6 +155,7 @@ Extract the \`<persona>\` section - this defines WHO Bob is.
 \`\`\`
 BUILDER_TASK = Task({
   subagent_type: "general-purpose",
+  model: "opus",
   description: "🔨 Bob the Builder on {{story_key}}",
   prompt: \`
 You are BOB 🔨 - The Builder.
@@ -286,6 +287,7 @@ Send single message with multiple Task calls:
 \`\`\`
 Task({
   subagent_type: "testing-suite:test-engineer",
+  model: "opus",
   description: "🕵️ Vera the Inspector on {{story_key}}",
   prompt: \`
 You are VERA 🔍 - The Verification Inspector.
@@ -399,6 +401,7 @@ Save to: docs/sprint-artifacts/completions/{{story_key}}-inspector.json
 \`\`\`
 Task({
   subagent_type: "testing-suite:test-engineer",
+  model: "opus",
   description: "🧪 Tessa the Test Scientist on {{story_key}}",
   prompt: \`
 You are TESSA 🧪 - The Test Quality Analyst.
@@ -488,6 +491,7 @@ Load Rex's persona from: `{project-root}/_bmad/bmm/agents/reviewer.md`
 \`\`\`
 Task({
   subagent_type: "auditor-security",
+  model: "opus",
   description: "🔴 Rex (Security) on {{story_key}}",
   prompt: \`
 You are REX 🔴 - The Code Critic (Security Focus).
@@ -506,6 +510,7 @@ Focus: Security vulnerabilities, injection attacks, auth issues.
 \`\`\`
 Task({
   subagent_type: "optimizer-performance",
+  model: "opus",
   description: "🔴 Rex (Logic) on {{story_key}}",
   prompt: "... logic and performance review ..."
 })
@@ -515,6 +520,7 @@ Task({
 \`\`\`
 Task({
   subagent_type: "architect-reviewer",
+  model: "opus",
   description: "🔴 Rex (Architecture) on {{story_key}}",
   prompt: "... architecture patterns review ..."
 })
@@ -524,6 +530,7 @@ Task({
 \`\`\`
 Task({
   subagent_type: "general-purpose",
+  model: "opus",
   description: "🔴 Rex (Quality) on {{story_key}}",
   prompt: "... code quality review ..."
 })
@@ -593,6 +600,7 @@ If coverage fails: add to issues list for Builder to fix.
 \`\`\`
 Task({
   subagent_type: "general-purpose",
+  model: "opus",
   description: "🔨 Bob fixing issues on {{story_key}}",
   resume: "{{BUILDER_AGENT_ID}}",
   prompt: \`
@@ -644,6 +652,7 @@ Wait for completion. Parse commit hash and fix counts.
 \`\`\`
 Task({
   subagent_type: "testing-suite:test-engineer",
+  model: "opus",
   description: "🕵️ Vera re-checking {{story_key}}",
   prompt: \`
 You are VERA 🕵️ - Quick re-verification after Bob's fixes.
@@ -782,6 +791,7 @@ Spawn Reflection Agent:
 \`\`\`
 Task({
   subagent_type: "general-purpose",
+  model: "opus",
   description: "📚 Rita the Librarian reflecting on {{story_key}}",
   prompt: \`
 You are the REFLECTION agent for story {{story_key}}.
