@@ -260,7 +260,7 @@ More documentation updates coming soon.
 
 **Workflow & Variable Fixes:**
 
-- **Variable Naming**: Standardized from {project_root} to {project-root} across CIS, BMGD, and BMM modules
+- **Variable Naming**: Standardized from {project_root} to {project-root} across CIS and BMM modules
 - **Workflow References**: Fixed broken .yaml → .md workflow references
 - **Advanced Elicitation Variables**: Fixed undefined variables in brainstorming
 - **Dependency Format**: Corrected dependency format and added missing frontmatter
@@ -357,7 +357,6 @@ Located in `src/modules/bmb/workflows/agent/data/`:
 - **260+ Files Updated**: Comprehensive language integration across:
   - Core workflows (brainstorming, party mode, advanced elicitation)
   - BMB workflows (create-agent, create-module, create-workflow, edit-workflow, etc.)
-  - BMGD workflows (game-brief, gdd, narrative, game-architecture, etc.)
   - BMM workflows (research, create-ux-design, prd, create-architecture, etc.)
 - **Tested Languages**: Verified working with Spanish and Pirate Speak
 - **Natural Conversations**: AI agents respond in configured language throughout workflow
@@ -392,7 +391,7 @@ Located in `src/modules/bmb/workflows/agent/data/`:
 - **index.md** - Core concepts introduction
 - **agents.md** (93 lines) - Understanding agents in BMAD
 - **workflows.md** (89 lines) - Understanding workflows in BMAD
-- **modules.md** (76 lines) - Understanding modules (BMM, BMGD, CIS, BMB, Core)
+- **modules.md** (76 lines) - Understanding modules (BMM, CIS, BMB, Core)
 - **installing/index.md** (77 lines) - Installation guide
 - **installing/upgrading.md** (144 lines) - Upgrading guide
 - **bmad-customization/index.md** - Customization overview
@@ -467,13 +466,12 @@ Located in `src/modules/bmb/workflows/agent/data/`:
 
 - **Compound Menu Triggers**: All agents now use consistent 2-letter compound trigger format (e.g., `bmm-rd`, `bmm-ca`)
 - **Improved UX**: Shorter, more memorable command shortcuts across all modules
-- **Module Prefixing**: Menu items properly scoped by module prefix (bmm-, bmgd-, cis-, bmb-)
+- **Module Prefixing**: Menu items properly scoped by module prefix (bmm-, cis-, bmb-)
 - **Universal Pattern**: All 22 agents updated to follow the same menu structure
 
 **Agent Updates:**
 
 - **BMM Module**: 9 agents with standardized menus (pm, analyst, architect, dev, ux-designer, tech-writer, sm, tea, quick-flow-solo-dev)
-- **BMGD Module**: 6 agents with standardized menus (game-architect, game-designer, game-dev, game-qa, game-scrum-master, game-solo-dev)
 - **CIS Module**: 6 agents with standardized menus (innovation-strategist, design-thinking-coach, creative-problem-solver, brainstorming-coach, presentation-master, storyteller)
 - **BMB Module**: 3 agents with standardized menus (bmad-builder, agent-builder, module-builder, workflow-builder)
 - **Core Module**: BMAD Master agent updated with consistent menu patterns
@@ -497,7 +495,7 @@ Located in `src/modules/bmb/workflows/agent/data/`:
 
 - **Planning Artifacts**: Ephemeral planning documents (prd.md, product-brief.md, ux-design.md, architecture.md)
 - **Documentation**: Long-term project documentation (separate from planning)
-- **Module Configuration**: BMM and BMGD modules updated with proper default paths
+- **Module Configuration**: BMM modules updated with proper default paths
 
 ### 🪟 Windows Installer Fixes
 
@@ -569,7 +567,7 @@ Located in `src/modules/bmb/workflows/agent/data/`:
 
 **Revolutionary Content Organization:**
 
-- **Phase 1-4 Path Segregation**: Implemented new BM paths across all BMM and BMGD workflows
+- **Phase 1-4 Path Segregation**: Implemented new BM paths across all BMM workflows
 - **Planning vs Implementation Artifacts**: Separated ephemeral Phase 4 artifacts from permanent documentation
 - **Optimized File Organization**: Better structure differentiating planning artifacts from long-term project documentation
 - **Backward Compatible**: Existing installations continue working while preparing for optimized content organization
@@ -614,12 +612,6 @@ Located in `src/modules/bmb/workflows/agent/data/`:
 - **Adversarial Review Integration**: Added comprehensive self-check and adversarial review steps
 - **Enhanced Quality Assurance**: 6-step process with mode detection, context gathering, execution, self-check, review, and resolution
 - **578 New Lines Added**: Significant expansion of quick-dev capabilities
-
-**BMGD Workflow Fixes:**
-
-- **workflow-status Filename Correction**: Fixed incorrect filename references (PR #1172)
-- **sprint-planning Update**: Added workflow-status update to game-architecture completion
-- **Path Corrections**: Resolved dead references and syntax errors (PR #1164)
 
 ### 🎨 Code Quality & Refactoring
 
@@ -692,50 +684,6 @@ Located in `src/modules/bmb/workflows/agent/data/`:
 
 **Release: December 18, 2025**
 
-### 🎮 BMGD Module - Complete Game Development Module Updated
-
-**Massive BMGD Overhaul:**
-
-- **New Game QA Agent (GLaDOS)**: Elite Game QA Architect with test automation specialization
-  - Engine-specific expertise: Unity, Unreal, Godot testing frameworks
-  - Comprehensive knowledge base with 15+ testing topics
-  - Complete testing workflows: test-framework, test-design, automate, playtest-plan, performance-test, test-review
-
-- **New Game Solo Dev Agent (Indie)**: Rapid prototyping and iteration specialist
-  - Quick-flow workflows optimized for solo/small team development
-  - Streamlined development process for indie game creators
-
-- **Production Workflow Alignment**: BMGD 4-production now fully aligned with BMM 4-implementation
-  - Removed obsolete workflows: story-done, story-ready, story-context, epic-tech-context
-  - Added sprint-status workflow for project tracking
-  - All workflows updated as standalone with proper XML instructions
-
-**Game Testing Architecture:**
-
-- **Complete Testing Knowledge Base**: 15 comprehensive testing guides covering:
-  - Engine-specific: Unity (TF 1.6.0), Unreal, Godot testing
-  - Game-specific: Playtesting, balance, save systems, multiplayer
-  - Platform: Certification (TRC/XR), localization, input systems
-  - QA Fundamentals: Automation, performance, regression, smoke testing
-
-**New Workflows & Features:**
-
-- **workflow-status**: Multi-mode status checker for game projects
-  - Game-specific project levels (Game Jam → AAA)
-  - Support for gamedev and quickflow paths
-  - Project initialization workflow
-
-- **create-tech-spec**: Game-focused technical specification workflow
-  - Engine-aware (Unity/Unreal/Godot) specifications
-  - Performance and gameplay feel considerations
-
-- **Enhanced Documentation**: Complete documentation suite with 9 guides
-  - agents-guide.md: Reference for all 6 agents
-  - workflows-guide.md: Complete workflow documentation
-  - game-types-guide.md: 24 game type templates
-  - quick-flow-guide.md: Rapid development guide
-  - Comprehensive troubleshooting and glossary
-
 ### 🤖 Agent Management Improved
 
 **Agent Recompile Feature:**
@@ -769,19 +717,15 @@ Located in `src/modules/bmb/workflows/agent/data/`:
 
 ### 📊 Statistics
 
-- **178 files changed** with massive BMGD expansion
-- **28,350+ lines added** across testing documentation and workflows
-- **2 new agents** added to BMGD module
-- **15 comprehensive testing guides** created
-- **Complete alignment** between BMGD and BMM production workflows
+- **28,350+ lines added** across documentation and workflows
 
 ### 🌟 Key Highlights
 
-1. **BMGD Module Revolution**: Complete overhaul with professional game development workflows
-2. **Game Testing Excellence**: Comprehensive testing architecture for all major game engines
-3. **Agent Management**: New recompile feature allows quick agent updates without full reinstall
-4. **Full Customization Support**: All agent fields now customizable via YAML
-5. **Industry-Ready Documentation**: Professional-grade guides for game development teams
+1. **Agent Management**: New recompile feature allows quick agent updates without full reinstall
+2. **Full Customization Support**: All agent fields now customizable via YAML
+3. **Custom Module Management**: Enhanced handling for custom module installation and updates
+4. **Installation Improvements**: Better manifest tracking and customization integration
+5. **Documentation Updates**: All documentation updated to reflect new features
 
 ---
 
@@ -1161,7 +1105,6 @@ Located in `src/modules/bmb/workflows/agent/data/`:
 - **3-Track System**: Simplified from 5 levels to 3 intuitive tracks
 - **Web Bundles Guide**: Comprehensive documentation with 60-80% cost savings strategies
 - **Unified Output Structure**: Eliminated .ephemeral/ folders - single configurable output folder
-- **BMGD Phase 4**: Added 10 game development workflows with BMM patterns
 
 ## [6.0.0-alpha.8]
 
@@ -1171,14 +1114,13 @@ Located in `src/modules/bmb/workflows/agent/data/`:
 - **Optimized Agent Loading**: CLI loads from installed files, eliminating duplication
 - **Party Mode Everywhere**: All web bundles include multi-agent collaboration
 - **Phase 4 Artifact Separation**: Stories, code reviews, sprint plans configurable outside docs
-- **Expanded Web Bundles**: All BMM, BMGD, CIS agents bundled with elicitation integration
+- **Expanded Web Bundles**: All BMM and CIS agents bundled with elicitation integration
 
 ## [6.0.0-alpha.7]
 
 **Release: November 7, 2025**
 
 - **Workflow Vendoring**: Web bundler performs automatic cross-module dependency vendoring
-- **BMGD Module Extraction**: Game development split into standalone 4-phase structure
 - **Enhanced Dependency Resolution**: Better handling of web_bundle: false workflows
 - **Advanced Elicitation Fix**: Added missing CSV files to workflow bundles
 - **Claude Code Fix**: Resolved README slash command installation regression

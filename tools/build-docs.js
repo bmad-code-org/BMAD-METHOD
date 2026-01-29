@@ -166,7 +166,6 @@ function generateLlmsTxt(outputDir) {
     '',
     `- **[BMM - Method](${SITE_URL}/docs/bmm/quick-start)** - Core methodology module`,
     `- **[BMB - Builder](${SITE_URL}/docs/modules/bmb/)** - Agent and workflow builder`,
-    `- **[BMGD - Game Dev](${SITE_URL}/docs/modules/bmgd/quick-start)** - Game development module`,
     '',
     '---',
     '',

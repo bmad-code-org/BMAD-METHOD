@@ -31,5 +31,5 @@ Gap analysis detects existing code and proposes task refinements (extend vs crea
 
 **Changes:** 3 workflows, 4 new docs, 16 files total
 **Lines:** ~2,740 additions
-**Modules:** BMM and BMGD
+**Modules:** BMM
 **Breaking:** None - fully backwards compatible

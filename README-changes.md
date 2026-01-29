@@ -241,10 +241,6 @@ This fork is published to npm under the `@jonahschulte` scope for independent in
 - Modified `create-story` workflow for requirements-focused planning
 - Enhanced `dev-story` workflow with gap analysis integration
 
-### BMGD (BMAD Game Dev)
-- Added parallel workflows for game development context
-- Enhanced `game-dev.agent.yaml` and `game-scrum-master.agent.yaml`
-
 ---
 
 ## Installation

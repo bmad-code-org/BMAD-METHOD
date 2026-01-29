@@ -224,7 +224,7 @@ your-project/
 | **Deep-Dive**     | `document-project.md` |
 | **Configuration** | `core-tasks.md`       |
 | **Glossary**      | `glossary/index.md`   |
-| **Comprehensive** | `bmgd-workflows.md`   |
+| **Comprehensive** | `bmm-workflows.md`    |
 
 ### Reference Index Pages
 
@@ -324,7 +324,6 @@ Add italic context at definition start for limited-scope terms:
 - `*Quick Flow only.*`
 - `*BMad Method/Enterprise.*`
 - `*Phase N.*`
-- `*BMGD.*`
 - `*Brownfield.*`
 
 ### Glossary Checklist

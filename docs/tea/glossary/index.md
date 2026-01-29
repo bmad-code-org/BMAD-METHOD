@@ -30,8 +30,6 @@ Terminology reference for the BMad Method.
 | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Architecture Document** | *BMad Method/Enterprise.* System-wide design document defining structure, components, data models, integration patterns, security, and deployment. |
 | **Epics**                 | High-level feature groupings containing multiple related stories. Typically 5-15 stories each representing cohesive functionality.                 |
-| **Game Brief**            | *BMGD.* Document capturing game's core vision, pillars, target audience, and scope. Foundation for the GDD.                                        |
-| **GDD**                   | *BMGD.* Game Design Document — comprehensive document detailing all aspects of game design: mechanics, systems, content, and more.                 |
 | **PRD**                   | *BMad Method/Enterprise.* Product Requirements Document containing vision, goals, FRs, NFRs, and success criteria. Focuses on WHAT to build.       |
 | **Product Brief**         | *Phase 1.* Optional strategic document capturing product vision, market context, and high-level requirements before detailed planning.             |
 | **Tech-Spec**             | *Quick Flow only.* Comprehensive technical plan with problem statement, solution approach, file-level changes, and testing strategy.               |
@@ -57,8 +55,6 @@ Terminology reference for the BMad Method.
 | **Architect**        | Agent designing system architecture, creating architecture documents, and validating designs. Primary agent for Phase 3.                         |
 | **BMad Master**      | Meta-level orchestrator from BMad Core facilitating party mode and providing high-level guidance across all modules.                             |
 | **DEV**              | Developer agent implementing stories, writing code, running tests, and performing code reviews. Primary implementer in Phase 4.                  |
-| **Game Architect**   | *BMGD.* Agent designing game system architecture and validating game-specific technical designs.                                                 |
-| **Game Designer**    | *BMGD.* Agent creating game design documents (GDD) and running game-specific workflows.                                                          |
 | **Party Mode**       | Multi-agent collaboration feature where agents discuss challenges together. BMad Master orchestrates, selecting 2-3 relevant agents per message. |
 | **PM**               | Product Manager agent creating PRDs and tech-specs. Primary agent for Phase 2 planning.                                                          |
 | **SM**               | Scrum Master agent managing sprints, creating stories, and coordinating implementation. Primary orchestrator for Phase 4.                        |
@@ -102,24 +98,6 @@ Terminology reference for the BMad Method.
 | **Story Context**       | Implementation guidance embedded in story files during create-story, referencing existing patterns and approaches.                         |
 | **Story File**          | Markdown file containing story description, acceptance criteria, technical notes, and testing requirements.                                |
 | **Track Selection**     | Automatic analysis by `bmad-help` suggesting appropriate track based on complexity indicators. User can override.                        |
-
-## Game Development Terms
-
-| Term                           | Definition                                                                                           |
-| ------------------------------ | ---------------------------------------------------------------------------------------------------- |
-| **Core Fantasy**               | *BMGD.* The emotional experience players seek from your game — what they want to FEEL.               |
-| **Core Loop**                  | *BMGD.* Fundamental cycle of actions players repeat throughout gameplay. The heart of your game.     |
-| **Design Pillar**              | *BMGD.* Core principle guiding all design decisions. Typically 3-5 pillars define a game's identity. |
-| **Environmental Storytelling** | *BMGD.* Narrative communicated through the game world itself rather than explicit dialogue.          |
-| **Game Type**                  | *BMGD.* Genre classification determining which specialized GDD sections are included.                |
-| **MDA Framework**              | *BMGD.* Mechanics → Dynamics → Aesthetics — framework for analyzing and designing games.             |
-| **Meta-Progression**           | *BMGD.* Persistent progression carrying between individual runs or sessions.                         |
-| **Metroidvania**               | *BMGD.* Genre featuring interconnected world exploration with ability-gated progression.             |
-| **Narrative Complexity**       | *BMGD.* How central story is to the game: Critical, Heavy, Moderate, or Light.                       |
-| **Permadeath**                 | *BMGD.* Game mechanic where character death is permanent, typically requiring a new run.             |
-| **Player Agency**              | *BMGD.* Degree to which players can make meaningful choices affecting outcomes.                      |
-| **Procedural Generation**      | *BMGD.* Algorithmic creation of game content (levels, items, characters) rather than hand-crafted.   |
-| **Roguelike**                  | *BMGD.* Genre featuring procedural generation, permadeath, and run-based progression.                |
 
 ## Test Architect (TEA) Concepts
 

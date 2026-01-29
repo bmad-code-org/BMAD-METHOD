@@ -118,7 +118,7 @@ Two feature branches implementing comprehensive quality automation for BMAD-METH
 - Files: 36 modified/created
 - Lines: +8,079 insertions, -93 deletions
 - Commits: 11 well-formed conventional commits
-- Modules: BMM and BMGD (both fully supported)
+- Modules: BMM (fully supported)
 
 **Validation:**
 - ✅ All schema validation passing
