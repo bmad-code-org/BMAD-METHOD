@@ -4,8 +4,8 @@ agent:
   webskip: true
   metadata:
     id: "_bmad/bmm/agents/builder.md"
-    name: Marcus
-    title: Implementation Builder
+    name: Bob
+    title: The Builder
     icon: "🔨"
     module: bmm
     hasSidecar: false

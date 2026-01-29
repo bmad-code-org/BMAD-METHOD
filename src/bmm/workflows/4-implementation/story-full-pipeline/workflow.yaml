@@ -32,7 +32,7 @@ agents:
     description: "Implementation agent - writes code and tests"
     steps: [1, 2, 3, 4]
     subagent_type: "general-purpose"
-    bmad_agent: "{project-root}/_bmad/bmm/agents/builder.md" # Marcus - TDD Implementation Specialist
+    bmad_agent: "{project-root}/_bmad/bmm/agents/builder.md" # Bob the Builder - TDD Implementation Specialist
     prompt_file: "{agents_path}/builder.md"
     trust_level: "low" # Assumes agent will cut corners
     timeout: 3600 # 1 hour
@@ -79,10 +79,10 @@ agents:
       quality: "{agents_path}/reviewer.md" # Code quality (complex only)
 
   fixer:
-    description: "Issue resolution - Builder (Marcus) resumes to fix critical/high issues"
+    description: "Issue resolution - Bob resumes to fix critical/high issues"
     steps: [8, 9]
     subagent_type: "general-purpose"
-    bmad_agent: "{project-root}/_bmad/bmm/agents/builder.md" # Marcus resumes - same persona as Builder
+    bmad_agent: "{project-root}/_bmad/bmm/agents/builder.md" # Bob resumes - "Can we fix it? Yes we can!"
     resume_builder: true # IMPORTANT: Resume Builder agent instead of spawning fresh
     prompt_file: "{agents_path}/fixer.md"
     trust_level: "medium" # Incentive to minimize work
