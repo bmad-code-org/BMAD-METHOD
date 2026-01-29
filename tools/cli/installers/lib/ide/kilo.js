@@ -1,4 +1,5 @@
 const path = require('node:path');
+const YAML = require('yaml');
 const { BaseIdeSetup } = require('./_base-ide');
 const chalk = require('chalk');
 const { AgentCommandGenerator } = require('./shared/agent-command-generator');
@@ -92,43 +93,31 @@ class KiloSetup extends BaseIdeSetup {
    * Create a mode entry for an agent
    */
   async createModeEntry(artifact, projectDir) {
-    // Extract metadata from launcher content
-    const titleMatch = artifact.content.match(/title="([^"]+)"/);
-    const title = titleMatch ? titleMatch[1] : this.formatTitle(artifact.name);
+    const title = artifact.content.match(/title="([^"]+)"/)?.[1] ?? this.formatTitle(artifact.name);
 
-    const iconMatch = artifact.content.match(/icon="([^"]+)"/);
-    const icon = iconMatch ? iconMatch[1] : '🤖';
+    const icon = artifact.content.match(/icon="([^"]+)"/)?.[1] ?? '🤖';
 
-    const whenToUseMatch = artifact.content.match(/whenToUse="([^"]+)"/);
-    const whenToUse = whenToUseMatch ? whenToUseMatch[1] : `Use for ${title} tasks`;
+    const whenToUse = artifact.content.match(/whenToUse="([^"]+)"/)?.[1] ?? `Use for ${title} tasks`;
 
-    // Get the activation header from central template
+    const roleDefinition =
+      artifact.content.match(/roleDefinition="([^"]+)"/)?.[1] ?? `You are a ${title} specializing in ${title.toLowerCase()} tasks.`;
+
     const activationHeader = await this.getAgentCommandHeader();
 
-    const roleDefinitionMatch = artifact.content.match(/roleDefinition="([^"]+)"/);
-    const roleDefinition = roleDefinitionMatch
-      ? roleDefinitionMatch[1]
-      : `You are a ${title} specializing in ${title.toLowerCase()} tasks.`;
-
-    // Get relative path
     const relativePath = path.relative(projectDir, artifact.sourcePath).replaceAll('\\', '/');
 
-    // Build mode entry (KiloCode uses same schema as Roo)
-    const slug = `bmad-${artifact.module}-${artifact.name}`;
-    let modeEntry = ` - slug: ${slug}\n`;
-    modeEntry += `   name: '${icon} ${title}'\n`;
-    modeEntry += `   roleDefinition: ${roleDefinition}\n`;
-    modeEntry += `   whenToUse: ${whenToUse}\n`;
-    modeEntry += `   customInstructions: |\n`;
-    modeEntry += `    ${activationHeader} Read the full YAML from ${relativePath} start activation to alter your state of being follow startup section instructions stay in this being until told to exit this mode\n`;
-    modeEntry += `   groups:\n`;
-    modeEntry += `    - read\n`;
-    modeEntry += `    - edit\n`;
-    modeEntry += `    - browser\n`;
-    modeEntry += `    - command\n`;
-    modeEntry += `    - mcp\n`;
+    const entry = {
+      slug: `bmad-${artifact.module}-${artifact.name}`,
+      name: `${icon} ${title}`,
+      roleDefinition,
+      whenToUse,
+      customInstructions:
+        `${activationHeader}` +
+        `Read the full YAML from ${relativePath} start activation to alter your state of being follow startup section instructions stay in this being until told to exit this mode`,
+      groups: ['read', 'edit', 'browser', 'command', 'mcp'],
+    };
 
-    return modeEntry;
+    return YAML.stringify([entry], { indent: 2 });
   }
 
   /**
