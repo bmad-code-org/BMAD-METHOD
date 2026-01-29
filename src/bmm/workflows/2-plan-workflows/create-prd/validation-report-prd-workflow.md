@@ -8,7 +8,7 @@ validationStatus: COMPLETE - PRODUCTION READY
 
 # PRD Workflow Validation Report
 
-**Workflow Being Validated:** /Users/brianmadison/dev/BMAD-METHOD/src/bmm/workflows/2-plan-workflows/create-prd
+**Workflow Being Validated:** _bmad/bmm/workflows/2-plan-workflows/create-prd
 **Validation Date:** 2026-01-08
 **Validator:** BMAD Workflow Validation System
 

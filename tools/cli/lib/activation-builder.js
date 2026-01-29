@@ -121,9 +121,10 @@ class ActivationBuilder {
 
     // Calculate final step numbers
     const menuStep = currentStepNum;
-    const haltStep = currentStepNum + 1;
-    const inputStep = currentStepNum + 2;
-    const executeStep = currentStepNum + 3;
+    const helpStep = currentStepNum + 1;
+    const haltStep = currentStepNum + 2;
+    const inputStep = currentStepNum + 3;
+    const executeStep = currentStepNum + 4;
 
     // Replace placeholders
     const processed = stepsTemplate
@@ -131,6 +132,7 @@ class ActivationBuilder {
       .replace('{{module}}', metadata.module || 'core') // Fixed to use {{module}}
       .replace('{AGENT_SPECIFIC_STEPS}', agentStepsXml)
       .replace('{MENU_STEP}', menuStep.toString())
+      .replace('{HELP_STEP}', helpStep.toString())
       .replace('{HALT_STEP}', haltStep.toString())
       .replace('{INPUT_STEP}', inputStep.toString())
       .replace('{EXECUTE_STEP}', executeStep.toString());
