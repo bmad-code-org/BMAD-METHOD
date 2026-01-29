@@ -39,7 +39,8 @@ agents:
   inspector:
     description: "Validation agent - independent verification with code citations"
     steps: [5, 6]
-    subagent_type: "general-purpose"
+    subagent_type: "testing-suite:test-engineer" # Specialized for test/verification tasks
+    bmad_agent: "{project-root}/_bmad/bmm/agents/inspector.md" # BMAD Inspector persona
     prompt_file: "{agents_path}/inspector.md"
     fresh_context: true # No knowledge of builder agent
     trust_level: "medium" # No conflict of interest
@@ -49,7 +50,7 @@ agents:
   test_quality:
     description: "Test quality validation - verifies test coverage and quality"
     steps: [5.5]
-    subagent_type: "general-purpose"
+    subagent_type: "testing-suite:test-engineer" # Specialized for test quality analysis
     prompt_file: "{agents_path}/test-quality.md"
     fresh_context: true
     trust_level: "medium"

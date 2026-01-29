@@ -568,8 +568,8 @@ For each task in \`inspector.task_verification\`:
 **5.4: Fill Dev Agent Record with evidence**
 
 Use Edit tool:
-\`\`\`markdown
-### Dev Agent Record
+\`\`\`text
+**Dev Agent Record**
 **Implementation Date:** {{timestamp}}
 **Agent Model:** Claude Sonnet 4.5 (multi-agent pipeline v4.0)
 **Git Commit:** {{git_commit}}
