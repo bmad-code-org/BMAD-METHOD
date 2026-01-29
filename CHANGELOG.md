@@ -1,5 +1,48 @@
 # Changelog
 
+## [6.1.0-Beta.7]
+
+**Release: January 2026 - Visible Agent Phases in Claude Code UI**
+
+### 👁️ New Feature: Top-Level Visible Tasks
+
+Pipeline agent phases are now **visible as separate Tasks** in Claude Code's UI instead of being nested inside one giant Task.
+
+**Before (Beta.6):**
+```
+⏺ Task(Implement story 18-5)
+  ⎿  +94 more tool uses (ctrl+o to expand)  ← Everything hidden inside
+```
+
+**After (Beta.7):**
+```
+⏺ Task(🔨 Bob the Builder on 18-5) ✓
+⏺ Task(🕵️ Vera the Inspector on 18-5) ✓
+⏺ Task(🧪 Tessa the Test Scientist on 18-5) ✓
+⏺ Task(🔴 Rex reviewing 18-5) ✓
+⏺ Task(🔨 Bob fixing 18-5) ✓
+⏺ Task(🕵️ Vera re-checking 18-5) ✓
+⏺ Task(📚 Rita reflecting on 18-5)
+```
+
+### 🔧 Technical Changes
+
+**batch-stories (sequential mode):**
+- No longer wraps the entire pipeline in a Task
+- Executes story-full-pipeline phases directly
+- Each agent spawn becomes a visible top-level Task
+
+**story-full-pipeline:**
+- Updated Task descriptions with persona names and emojis
+- Added explicit notes about visible Tasks
+- Expanded Rex reviewer section with individual Task calls
+
+### Why This Matters
+
+Users can now **see each agent working** in real-time, making the multi-agent pipeline more transparent and engaging. Previously, everything was hidden inside one collapsed Task.
+
+---
+
 ## [6.1.0-Beta.6]
 
 **Release: January 2026 - Dynamic BMAD Personas for story-full-pipeline**
