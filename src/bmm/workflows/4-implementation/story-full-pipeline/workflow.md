@@ -136,17 +136,17 @@ Store playbook content for Builder.
 </step>
 
 <step name="spawn_builder">
-**Phase 1: Builder Agent (Bob 🔨)**
+**Phase 1: Builder Agent (Mason 🔨)**
 
 \`\`\`
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🔨 PHASE 1: BOB THE BUILDER
+🔨 PHASE 1: MASON THE CRAFTSMAN
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 \`\`\`
 
 **1. Load BMAD Agent Persona:**
 Read: \`{project-root}/_bmad/bmm/agents/builder.md\`
-Extract the \`<persona>\` section - this defines WHO Bob is.
+Extract the \`<persona>\` section - this defines WHO Mason is.
 
 **2. Spawn Builder agent and SAVE agent_id for resume later:**
 
@@ -156,9 +156,9 @@ Extract the \`<persona>\` section - this defines WHO Bob is.
 BUILDER_TASK = Task({
   subagent_type: "general-purpose",
   model: "opus",
-  description: "🔨 Bob the Builder on {{story_key}}",
+  description: "🔨 Mason the Craftsman on {{story_key}}",
   prompt: \`
-You are BOB 🔨 - The Builder.
+You are MASON 🔨 - The Craftsman.
 
 <persona>
 [INJECT persona section from _bmad/bmm/agents/builder.md]
@@ -585,15 +585,15 @@ If coverage fails: add to issues list for Builder to fix.
 </step>
 
 <step name="resume_builder_with_findings">
-**Phase 3: Resume Bob 🔨 with All Findings**
+**Phase 3: Resume Mason 🔨 with All Findings**
 
 \`\`\`
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🔨 PHASE 3: BOB FIXES IT! "Can we fix it? YES WE CAN!"
+🔨 PHASE 3: MASON REFINES THE WORK
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 \`\`\`
 
-**CRITICAL: Resume Bob (reuses context, 50-70% token savings!)**
+**CRITICAL: Resume Mason (reuses context, 50-70% token savings!)**
 
 ⚠️ **This Task should be VISIBLE in Claude Code UI!**
 
@@ -601,28 +601,28 @@ If coverage fails: add to issues list for Builder to fix.
 Task({
   subagent_type: "general-purpose",
   model: "opus",
-  description: "🔨 Bob fixing issues on {{story_key}}",
+  description: "🔨 Mason refining {{story_key}}",
   resume: "{{BUILDER_AGENT_ID}}",
   prompt: \`
-Hey Bob! 🔨 The review team found some issues. Can we fix it?
+Mason, the review team found some areas that need refinement.
 
 <issues_to_fix>
 [List all CRITICAL and HIGH issues with file:line citations]
 </issues_to_fix>
 
-<bob_principles>
-"Can we fix it? Yes we can!"
-- Fix issues in priority order (CRITICAL → HIGH → MEDIUM)
-- Run tests after each fix to confirm resolution
+<craftsman_principles>
+"A true craftsman takes feedback as an opportunity to improve the work."
+- Address issues in priority order (CRITICAL → HIGH → MEDIUM)
+- Run tests after each refinement to confirm resolution
 - Commit with descriptive message when done
-</bob_principles>
+</craftsman_principles>
 
 <skip>
 - LOW priority items (gold-plating, can address later)
 </skip>
 \`\`\`
 
-Bob fixes issues then returns:
+Mason addresses the issues then returns:
 \`\`\`json
 {
   "agent": "builder_fixes",
@@ -655,7 +655,7 @@ Task({
   model: "opus",
   description: "🕵️ Vera re-checking {{story_key}}",
   prompt: \`
-You are VERA 🕵️ - Quick re-verification after Bob's fixes.
+You are VERA 🕵️ - Quick re-verification after Mason's refinements.
 
 Verify that:
 1. All CRITICAL/HIGH issues from Phase 2 are resolved
