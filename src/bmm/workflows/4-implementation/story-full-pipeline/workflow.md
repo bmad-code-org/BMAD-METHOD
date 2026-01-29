@@ -150,10 +150,12 @@ Extract the \`<persona>\` section - this defines WHO Bob is.
 
 **2. Spawn Builder agent and SAVE agent_id for resume later:**
 
+⚠️ **This Task should be VISIBLE in Claude Code UI!**
+
 \`\`\`
 BUILDER_TASK = Task({
   subagent_type: "general-purpose",
-  description: "Bob 🔨 implementing story {{story_key}}",
+  description: "🔨 Bob the Builder on {{story_key}}",
   prompt: \`
 You are BOB 🔨 - The Builder.
 
@@ -284,7 +286,7 @@ Send single message with multiple Task calls:
 \`\`\`
 Task({
   subagent_type: "testing-suite:test-engineer",
-  description: "Vera 🔍 validating story {{story_key}}",
+  description: "🕵️ Vera the Inspector on {{story_key}}",
   prompt: \`
 You are VERA 🔍 - The Verification Inspector.
 
@@ -397,7 +399,7 @@ Save to: docs/sprint-artifacts/completions/{{story_key}}-inspector.json
 \`\`\`
 Task({
   subagent_type: "testing-suite:test-engineer",
-  description: "Tessa 🧪 reviewing test quality for {{story_key}}",
+  description: "🧪 Tessa the Test Scientist on {{story_key}}",
   prompt: \`
 You are TESSA 🧪 - The Test Quality Analyst.
 
@@ -478,7 +480,56 @@ Save to: docs/sprint-artifacts/completions/{{story_key}}-test-quality.json
 
 ---
 
-(Continue with Security, Logic, Architect, Quality reviewers as before...)
+## Rex 🔴 Reviewers (Spawn based on complexity)
+
+Load Rex's persona from: `{project-root}/_bmad/bmm/agents/reviewer.md`
+
+**Security Reviewer (always spawn):**
+\`\`\`
+Task({
+  subagent_type: "auditor-security",
+  description: "🔴 Rex (Security) on {{story_key}}",
+  prompt: \`
+You are REX 🔴 - The Code Critic (Security Focus).
+
+<persona>
+[INJECT persona section from _bmad/bmm/agents/reviewer.md]
+</persona>
+
+Focus: Security vulnerabilities, injection attacks, auth issues.
+[... security review prompt ...]
+\`
+})
+\`\`\`
+
+**Logic/Performance Reviewer (standard/complex):**
+\`\`\`
+Task({
+  subagent_type: "optimizer-performance",
+  description: "🔴 Rex (Logic) on {{story_key}}",
+  prompt: "... logic and performance review ..."
+})
+\`\`\`
+
+**Architecture Reviewer (always spawn):**
+\`\`\`
+Task({
+  subagent_type: "architect-reviewer",
+  description: "🔴 Rex (Architecture) on {{story_key}}",
+  prompt: "... architecture patterns review ..."
+})
+\`\`\`
+
+**Code Quality Reviewer (complex only):**
+\`\`\`
+Task({
+  subagent_type: "general-purpose",
+  description: "🔴 Rex (Quality) on {{story_key}}",
+  prompt: "... code quality review ..."
+})
+\`\`\`
+
+---
 
 **Wait for ALL agents to complete.**
 
@@ -537,10 +588,14 @@ If coverage fails: add to issues list for Builder to fix.
 
 **CRITICAL: Resume Bob (reuses context, 50-70% token savings!)**
 
-Use Task tool with \`resume: "{{BUILDER_AGENT_ID}}"\` parameter.
+⚠️ **This Task should be VISIBLE in Claude Code UI!**
 
-**Bob's Fix Prompt:**
 \`\`\`
+Task({
+  subagent_type: "general-purpose",
+  description: "🔨 Bob fixing issues on {{story_key}}",
+  resume: "{{BUILDER_AGENT_ID}}",
+  prompt: \`
 Hey Bob! 🔨 The review team found some issues. Can we fix it?
 
 <issues_to_fix>
@@ -576,15 +631,32 @@ Wait for completion. Parse commit hash and fix counts.
 </step>
 
 <step name="inspector_recheck">
-**Phase 4: Quick Inspector Re-Check**
+**Phase 4: Vera 🕵️ Quick Re-Check**
 
 \`\`\`
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-✅ PHASE 4: RE-VERIFICATION
+🕵️ PHASE 4: VERA RE-VERIFIES
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 \`\`\`
 
-Spawn Inspector only (not full review). Quick functional verification.
+⚠️ **This Task should be VISIBLE in Claude Code UI!**
+
+\`\`\`
+Task({
+  subagent_type: "testing-suite:test-engineer",
+  description: "🕵️ Vera re-checking {{story_key}}",
+  prompt: \`
+You are VERA 🕵️ - Quick re-verification after Bob's fixes.
+
+Verify that:
+1. All CRITICAL/HIGH issues from Phase 2 are resolved
+2. Tests still pass
+3. No new issues introduced
+
+Return: PASS or FAIL with evidence.
+\`
+})
+\`\`\`
 
 If FAIL: Resume Builder again with new issues.
 If PASS: Proceed to reconciliation.
@@ -710,7 +782,7 @@ Spawn Reflection Agent:
 \`\`\`
 Task({
   subagent_type: "general-purpose",
-  description: "Extract learnings from {{story_key}}",
+  description: "📚 Rita the Librarian reflecting on {{story_key}}",
   prompt: \`
 You are the REFLECTION agent for story {{story_key}}.
 

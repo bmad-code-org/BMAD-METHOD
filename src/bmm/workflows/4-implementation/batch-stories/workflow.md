@@ -165,11 +165,13 @@ For parallel: proceed to `execute_parallel`
 </step>
 
 <step name="execute_sequential" if="mode == sequential">
-**Sequential Processing**
+**Sequential Processing - Visible Agent Phases**
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📦 SEQUENTIAL PROCESSING
+📦 SEQUENTIAL PROCESSING - VISIBLE AGENTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Each phase spawns as a TOP-LEVEL Task you can see!
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
@@ -203,12 +205,30 @@ If missing, auto-create using greenfield workflow:
 echo "✅ Prerequisites satisfied"
 ```
 
-**Step B: Invoke story-full-pipeline**
+**Step B: Execute Pipeline Phases DIRECTLY (not wrapped in Task)**
 
-Use story-full-pipeline workflow with:
-- mode: batch
-- story_key: {{story_key}}
-- complexity_level: {{complexity}}
+⚠️ **CRITICAL: DO NOT wrap this in a Task!**
+Execute the pipeline phases directly so each agent is a visible top-level Task.
+
+**B.1: Load story-full-pipeline workflow:**
+Read: `{project-root}/_bmad/bmm/workflows/4-implementation/story-full-pipeline/workflow.md`
+
+**B.2: Execute each phase as described in workflow.md:**
+The workflow describes spawning these Tasks - spawn them DIRECTLY:
+
+```
+Phase 0: Playbook Query (orchestrator does this, no Task)
+Phase 1: Task({ description: "🔨 Bob implementing {{story_key}}", ... })  ← VISIBLE
+Phase 2: Task({ description: "🕵️ Vera validating {{story_key}}", ... })   ← VISIBLE
+         Task({ description: "🧪 Tessa testing {{story_key}}", ... })     ← VISIBLE
+         Task({ description: "🔴 Rex reviewing {{story_key}}", ... })     ← VISIBLE (x N)
+Phase 3: Task({ description: "🔨 Bob fixing {{story_key}}", resume: ID }) ← VISIBLE
+Phase 4: Task({ description: "🕵️ Vera re-checking {{story_key}}", ... }) ← VISIBLE
+Phase 5: Reconciliation (orchestrator does this, no Task)
+Phase 6: Task({ description: "📚 Rita reflecting on {{story_key}}", ... }) ← VISIBLE
+```
+
+**Why this matters:** By NOT wrapping the pipeline in a Task, each agent spawn becomes a top-level Task that the user can see in Claude Code's UI.
 
 **Step C: Reconcile Using Completion Artifacts (orchestrator does this directly)**
 
@@ -292,7 +312,7 @@ Use Edit tool: `"{{story_key}}: ready-for-dev"` → `"{{story_key}}: done"`
 ```
 Task({
   subagent_type: "general-purpose",
-  description: "Implement {{story_key}}",
+  description: "🔨 Bob's Team on {{story_key}}",
   prompt: `
 Execute story-full-pipeline for story {{story_key}}.
 
