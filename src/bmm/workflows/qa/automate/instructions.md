@@ -1,10 +1,22 @@
 # Quinn QA - Automate
 
-**Goal**: Generate tests quickly for existing features using standard test patterns.
+**Goal**: Generate automated API and E2E tests for implemented code.
 
-**Scope**: This workflow only generates tests. It does **not** perform code review or story validation (use Code Review `CR` for that).
+**Scope**: This workflow generates tests ONLY. It does **not** perform code review or story validation (use Code Review `CR` for that).
 
 ## Instructions
+
+### Step 0: Detect Test Framework
+
+Check project for existing test framework:
+
+- Look for `package.json` dependencies (playwright, jest, vitest, cypress, etc.)
+- Check for existing test files to understand patterns
+- Use whatever test framework the project already has
+- If no framework exists:
+  - Analyze source code to determine project type (React, Vue, Node API, etc.)
+  - Search online for current recommended test framework for that stack
+  - Suggest the meta framework and use it (or ask user to confirm)
 
 ### Step 1: Identify Features
 
