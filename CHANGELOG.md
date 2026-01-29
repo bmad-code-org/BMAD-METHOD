@@ -1,5 +1,45 @@
 # Changelog
 
+## [6.1.0-Beta.6]
+
+**Release: January 2026 - Dynamic BMAD Personas for story-full-pipeline**
+
+### 🎭 New Feature: Named Agent Personas
+
+The story-full-pipeline now features memorable, personality-driven agents that make the multi-agent review process more engaging while maintaining high quality standards.
+
+**Meet the Team:**
+
+| Agent | Persona | Role |
+|-------|---------|------|
+| 🔨 **Bob** | Bob the Builder | TDD Implementation - "Can we build it? Yes we can!" |
+| 🕵️ **Vera** | Code Detective | Sherlock Holmes verification - "The code never lies, but developers sometimes do" |
+| 🧪 **Tessa** | Mad Scientist | Test quality fanatic - "A test without assertions is just a waste of electricity!" |
+| 🔴 **Rex** | Gordon Ramsay | Adversarial reviewer - "This code is RAW!" |
+| 📚 **Rita** | Wise Librarian | Knowledge keeper - "I've seen this bug before... in the Great Outage of '23" |
+
+### 🔧 Technical Changes
+
+**New Agent Definition Files:**
+- `src/bmm/agents/builder.agent.yaml` - Bob the Builder persona
+- `src/bmm/agents/inspector.agent.yaml` - Vera the Code Detective
+- `src/bmm/agents/test-quality.agent.yaml` - Tessa the Test Scientist
+- `src/bmm/agents/reviewer.agent.yaml` - Rex the Code Critic
+- `src/bmm/agents/reflection.agent.yaml` - Rita the Wise Librarian
+
+**Workflow Integration:**
+- `workflow.yaml` now references `bmad_agent` paths for each pipeline role
+- `workflow.md` loads personas and injects them into Task prompts
+- Phase 3 (fix cycle) uses Bob's "Can we fix it? Yes we can!" catchphrases
+
+**Trust Model:**
+- Builder (Bob): LOW trust - assumes will cut corners, but self-checks before handoff
+- Inspector/Test Quality (Vera/Tessa): MEDIUM trust - independent verification
+- Reviewer (Rex): HIGH trust - adversarial review finds deeper issues
+- Reflection (Rita): Extracts learnings for future stories
+
+---
+
 ## [6.1.0-Beta.1]
 
 **Release: January 2026 - Unified Workflow Architecture**
