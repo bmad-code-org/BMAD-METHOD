@@ -31,19 +31,25 @@ wipFile: '{implementation_artifacts}/tech-spec-wip.md'
 
 **Present to user:**
 
-"Here's your complete tech-spec. Please review:"
+<output-block>
+Here's your complete tech-spec. Please review:
+</output-block>
 
 [Display the complete spec content - all sections]
 
-"**Quick Summary:**
+<output-block>
+**Quick Summary:**
 
 - {task_count} tasks to implement
 - {ac_count} acceptance criteria to verify
-- {files_count} files to modify"
+- {files_count} files to modify
+</output-block>
 
 **Present review menu:**
 
-Display: "**Select:** [C] Continue [E] Edit [Q] Questions [A] Advanced Elicitation [P] Party Mode"
+<output-block>
+**Select:** [C] Continue [E] Edit [Q] Questions [A] Advanced Elicitation [P] Party Mode
+</output-block>
 
 **HALT and wait for user selection.**
 
@@ -173,7 +179,8 @@ b) **HALT and wait for user selection.**
 
 **When user selects [D]:**
 
-"**All done!** Your tech-spec is ready at:
+<output-block>
+**All done!** Your tech-spec is ready at:
 
 `{finalFile}`
 
@@ -183,7 +190,8 @@ When you're ready to implement, run:
 quick-dev {finalFile}
 ```
 
-Ship it!"
+Ship it!
+</output-block>
 
 ---
 
