@@ -158,32 +158,30 @@ async function runTests() {
   console.log('');
 
   // ============================================================
-  // Test 5: TEA Agent Special Handling
+  // Test 5: QA Agent Compilation
   // ============================================================
-  console.log(`${colors.yellow}Test Suite 5: TEA Agent Compilation${colors.reset}\n`);
+  console.log(`${colors.yellow}Test Suite 5: QA Agent Compilation${colors.reset}\n`);
 
   try {
     const builder = new YamlXmlBuilder();
-    const teaAgentPath = path.join(projectRoot, 'src/bmm/agents/tea.agent.yaml');
-    const tempOutput = path.join(__dirname, 'temp-tea-agent.md');
+    const qaAgentPath = path.join(projectRoot, 'src/bmm/agents/quinn.agent.yaml');
+    const tempOutput = path.join(__dirname, 'temp-qa-agent.md');
 
     try {
-      const result = await builder.buildAgent(teaAgentPath, null, tempOutput, { includeMetadata: true });
+      const result = await builder.buildAgent(qaAgentPath, null, tempOutput, { includeMetadata: true });
       const compiled = await fs.readFile(tempOutput, 'utf8');
 
-      assert(compiled.includes('tea-index.csv'), 'TEA agent compilation includes critical_actions with tea-index.csv reference');
+      assert(compiled.includes('QA Engineer'), 'QA agent compilation includes agent title');
 
-      assert(compiled.includes('testarch/knowledge'), 'TEA agent compilation includes knowledge base path');
-
-      assert(compiled.includes('test-design'), 'TEA agent menu includes test-design workflow');
+      assert(compiled.includes('qa/automate'), 'QA agent menu includes automate workflow');
 
       // Cleanup
       await fs.remove(tempOutput);
     } catch (error) {
-      assert(false, 'TEA agent compiles successfully', error.message);
+      assert(false, 'QA agent compiles successfully', error.message);
     }
   } catch (error) {
-    assert(false, 'TEA compilation test setup', error.message);
+    assert(false, 'QA compilation test setup', error.message);
   }
 
   console.log('');
