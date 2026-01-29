@@ -352,14 +352,14 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
     // Clean up potential double extensions from source files (e.g. .yaml.md -> .md)
     const baseName = standardName.replace(/\.(yaml|yml)\.md$/, '.md');
 
-    // If using default markdown, preserve original behavior (keeps .agent.md suffix)
+    // If using default markdown, preserve the bmad-agent- prefix for agents
     if (extension === '.md') {
       return baseName;
     }
 
-    // For other extensions (e.g., .toml), remove .agent suffix as well
-    // Gemini doesn't support double-dot patterns like .agent.toml
-    return baseName.replace(/(\.agent)?(\.md|\.yaml|\.yml)$/, extension);
+    // For other extensions (e.g., .toml), replace .md extension
+    // Note: agent prefix is preserved even with non-markdown extensions
+    return baseName.replace(/\.md$/, extension);
   }
 
   /**

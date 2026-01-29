@@ -292,7 +292,7 @@ When running any workflow:
    * Write workflow command artifacts using dash format (NEW STANDARD)
    * Creates flat files like: bmad-bmm-correct-course.md
    *
-   * Note: Workflows do NOT have .agent.md suffix - only agents do.
+   * Note: Workflows do NOT have bmad-agent- prefix - only agents do.
    *
    * @param {string} baseCommandsDir - Base commands directory for the IDE
    * @param {Array} artifacts - Workflow artifacts

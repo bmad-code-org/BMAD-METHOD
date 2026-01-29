@@ -134,9 +134,9 @@ class AgentCommandGenerator {
 
   /**
    * Write agent launcher artifacts using dash format (NEW STANDARD)
-   * Creates flat files like: bmad-bmm-pm.agent.md
+   * Creates flat files like: bmad-agent-bmm-pm.md
    *
-   * The .agent.md suffix distinguishes agents from workflows/tasks/tools.
+   * The bmad-agent- prefix distinguishes agents from workflows/tasks/tools.
    *
    * @param {string} baseCommandsDir - Base commands directory for the IDE
    * @param {Array} artifacts - Agent launcher artifacts
@@ -147,7 +147,7 @@ class AgentCommandGenerator {
 
     for (const artifact of artifacts) {
       if (artifact.type === 'agent-launcher') {
-        // Convert relativePath to dash format: bmm/agents/pm.md → bmad-bmm-pm.agent.md
+        // Convert relativePath to dash format: bmm/agents/pm.md → bmad-agent-bmm-pm.md
         const flatName = toDashPath(artifact.relativePath);
         const launcherPath = path.join(baseCommandsDir, flatName);
         await fs.ensureDir(path.dirname(launcherPath));
