@@ -136,22 +136,32 @@ Store playbook content for Builder.
 </step>
 
 <step name="spawn_builder">
-**Phase 1: Builder Agent**
+**Phase 1: Builder Agent (Bob 🔨)**
 
 \`\`\`
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🔨 PHASE 1: BUILDER
+🔨 PHASE 1: BOB THE BUILDER
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 \`\`\`
 
-Spawn Builder agent and **SAVE agent_id for resume later**:
+**1. Load BMAD Agent Persona:**
+Read: \`{project-root}/_bmad/bmm/agents/builder.md\`
+Extract the \`<persona>\` section - this defines WHO Bob is.
+
+**2. Spawn Builder agent and SAVE agent_id for resume later:**
 
 \`\`\`
 BUILDER_TASK = Task({
   subagent_type: "general-purpose",
-  description: "Implement story {{story_key}}",
+  description: "Bob 🔨 implementing story {{story_key}}",
   prompt: \`
-You are the BUILDER agent for story {{story_key}}.
+You are BOB 🔨 - The Builder.
+
+<persona>
+[INJECT persona section from _bmad/bmm/agents/builder.md]
+</persona>
+
+You are implementing story {{story_key}}.
 
 <execution_context>
 @patterns/tdd.md
@@ -241,37 +251,48 @@ If files missing or status FAILED: halt pipeline.
 </step>
 
 <step name="spawn_verification_parallel">
-**Phase 2: Parallel Verification (Inspector + Test Quality + Reviewers)**
+**Phase 2: Parallel Verification (Vera 🔍 + Tessa 🧪 + Rex 🔴)**
 
 \`\`\`
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🔍 PHASE 2: PARALLEL VERIFICATION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Spawning: Inspector + Test Quality + {{REVIEWER_COUNT}} Reviewers
+Spawning: Vera (Inspector) + Tessa (Test Quality) + {{REVIEWER_COUNT}} Rex clones (Reviewers)
 Total agents: {{2 + REVIEWER_COUNT}}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 \`\`\`
 
+**Load BMAD Agent Personas (before spawning):**
+- Read: \`{project-root}/_bmad/bmm/agents/inspector.md\` → Extract \`<persona>\` for Vera
+- Read: \`{project-root}/_bmad/bmm/agents/test-quality.md\` → Extract \`<persona>\` for Tessa
+- Read: \`{project-root}/_bmad/bmm/agents/reviewer.md\` → Extract \`<persona>\` for Rex
+
 **CRITICAL: Spawn ALL agents in ONE message (parallel execution)**
 
 Send single message with multiple Task calls:
-1. Inspector Agent
-2. Test Quality Agent
-3. Security Reviewer
-4. Logic/Performance Reviewer (if standard/complex)
-5. Architect/Integration Reviewer
-6. Code Quality Reviewer (if complex)
+1. Vera 🔍 (Inspector)
+2. Tessa 🧪 (Test Quality)
+3. Rex 🔴 - Security focus
+4. Rex 🔴 - Logic/Performance focus (if standard/complex)
+5. Rex 🔴 - Architecture focus
+6. Rex 🔴 - Code Quality focus (if complex)
 
 ---
 
-## Inspector Agent Prompt:
+## Vera 🔍 (Inspector) Prompt:
 
 \`\`\`
 Task({
-  subagent_type: "general-purpose",
-  description: "Validate story {{story_key}} implementation",
+  subagent_type: "testing-suite:test-engineer",
+  description: "Vera 🔍 validating story {{story_key}}",
   prompt: \`
-You are the INSPECTOR agent for story {{story_key}}.
+You are VERA 🔍 - The Verification Inspector.
+
+<persona>
+[INJECT persona section from _bmad/bmm/agents/inspector.md]
+</persona>
+
+You are verifying story {{story_key}}.
 
 <execution_context>
 @patterns/verification.md
@@ -371,14 +392,20 @@ Save to: docs/sprint-artifacts/completions/{{story_key}}-inspector.json
 
 ---
 
-## Test Quality Agent Prompt:
+## Tessa 🧪 (Test Quality) Prompt:
 
 \`\`\`
 Task({
-  subagent_type: "general-purpose",
-  description: "Review test quality for {{story_key}}",
+  subagent_type: "testing-suite:test-engineer",
+  description: "Tessa 🧪 reviewing test quality for {{story_key}}",
   prompt: \`
-You are the TEST QUALITY agent for story {{story_key}}.
+You are TESSA 🧪 - The Test Quality Analyst.
+
+<persona>
+[INJECT persona section from _bmad/bmm/agents/test-quality.md]
+</persona>
+
+You are reviewing test quality for story {{story_key}}.
 
 <context>
 Story: [inline story file content]
@@ -500,24 +527,50 @@ If coverage fails: add to issues list for Builder to fix.
 </step>
 
 <step name="resume_builder_with_findings">
-**Phase 3: Resume Builder with All Findings**
+**Phase 3: Resume Bob 🔨 with All Findings**
 
 \`\`\`
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🔧 PHASE 3: RESUME BUILDER (Fix Issues)
+🔨 PHASE 3: BOB FIXES IT! "Can we fix it? YES WE CAN!"
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 \`\`\`
 
-**CRITICAL: Resume Builder agent (reuses context!)**
+**CRITICAL: Resume Bob (reuses context, 50-70% token savings!)**
 
-Use Task tool with `resume: "{{BUILDER_AGENT_ID}}"` parameter.
+Use Task tool with \`resume: "{{BUILDER_AGENT_ID}}"\` parameter.
 
-Builder receives all consolidated findings and fixes:
-1. ALL CRITICAL issues (security, blockers)
-2. ALL HIGH issues (bugs, logic errors)
-3. MEDIUM if quick (<30 min total)
-4. Skip LOW (gold-plating)
-5. Commit with descriptive message
+**Bob's Fix Prompt:**
+\`\`\`
+Hey Bob! 🔨 The review team found some issues. Can we fix it?
+
+<issues_to_fix>
+[List all CRITICAL and HIGH issues with file:line citations]
+</issues_to_fix>
+
+<bob_principles>
+"Can we fix it? Yes we can!"
+- Fix issues in priority order (CRITICAL → HIGH → MEDIUM)
+- Run tests after each fix to confirm resolution
+- Commit with descriptive message when done
+</bob_principles>
+
+<skip>
+- LOW priority items (gold-plating, can address later)
+</skip>
+\`\`\`
+
+Bob fixes issues then returns:
+\`\`\`json
+{
+  "agent": "builder_fixes",
+  "fixes_applied": [
+    {"issue": "SQL injection", "file": "api/route.ts:45", "fix": "Used parameterized query"},
+    ...
+  ],
+  "tests_passing": true,
+  "commit_hash": "abc123"
+}
+\`\`\`
 
 Wait for completion. Parse commit hash and fix counts.
 </step>
