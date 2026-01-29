@@ -1,150 +1,101 @@
-![BMad Method](banner-bmad-method.png)
+# Quant Method
 
-[![Version](https://img.shields.io/npm/v/bmad-method?color=blue&label=version)](https://www.npmjs.com/package/bmad-method)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Node.js Version](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen)](https://nodejs.org)
-[![Discord](https://img.shields.io/badge/Discord-Join%20Community-7289da?logo=discord&logoColor=white)](https://discord.gg/gk8jAdXWmj)
+**AI-Driven Investment Quant Development and Research Framework** -- Specialized AI agents and structured workflows for systematic strategy research, backtesting, risk management, and production deployment.
 
-**Breakthrough Method of Agile AI Driven Development** — An AI-driven agile development framework with 21 specialized agents, 50+ guided workflows, and scale-adaptive intelligence that adjusts from bug fixes to enterprise systems.
+## Why Quant Method?
 
-**100% free and open source.** No paywalls. No gated content. No gated Discord. We believe in empowering everyone, not just those who can pay.
+Quantitative investment research requires rigorous process discipline -- from hypothesis formation through statistical validation to production monitoring. Traditional tools leave gaps between research notebooks and production systems. Quant Method bridges this with AI agents that act as expert collaborators across the entire quant lifecycle.
 
-## Why BMad?
-
-Traditional AI tools do the thinking for you, producing average results. BMad agents and facilitated workflow act as expert collaborators who guide you through a structured process to bring out your best thinking in partnership with the AI.
-
-- **AI Intelligent Help**: Brand new for beta - AI assisted help will guide you from the beginning to the end - just ask for `/bmad-help` after you have installed BMad to your project
-- **Scale-Domain-Adaptive**: Automatically adjusts planning depth and needs based on project complexity, domain and type - a SaaS Mobile Dating App has different planning needs from a diagnostic medical system, BMad adapts and helps you along the way
-- **Structured Workflows**: Grounded in agile best practices across analysis, planning, architecture, and implementation
-- **Specialized Agents**: 12+ domain experts (PM, Architect, Developer, UX, Scrum Master, and more)
-- **Party Mode**: Bring multiple agent personas into one session to plan, troubleshoot, or discuss your project collaboratively, multiple perspectives with maximum fun
-- **Complete Lifecycle**: From brainstorming to deployment, BMad is there with you every step of the way
+- **Structured Research Process**: Guided workflows grounded in quantitative finance best practices across research, strategy design, validation, and production
+- **Specialized Agents**: Domain experts including Quant Researcher, Portfolio Manager, Risk Analyst, Data Engineer, and more
+- **Quant-Adaptive**: Adjusts depth based on strategy complexity -- a simple momentum factor needs different rigor than a multi-asset statistical arbitrage system
+- **Full Lifecycle**: From alpha research through backtesting, risk analysis, and live monitoring
 
 ## Quick Start
 
 **Prerequisites**: [Node.js](https://nodejs.org) v20+
 
 ```bash
-npx bmad-method install
+npx quant-method install
 ```
 
 Follow the installer prompts, then open your AI IDE (Claude Code, Cursor, Windsurf, etc.) in the project folder.
 
-> **Not sure what to do?** Run `/bmad-help` — it tells you exactly what's next and what's optional. You can also ask it questions like:
+### Rapid Strategy Path (Quick Flow)
 
- - `/bmad-help How should I build a web app for my TShirt Business that can scale to millions?`
- - `/bmad-help I just finished the architecture, I am not sure what to do next`
+Quick hypothesis testing, single-factor strategies, clear signals:
 
-And the amazing thing is BMad Help evolves depending on what modules you install also!
- - `/bmad-help Im interested in really exploring creative ways to demo BMad at work, what do you recommend to help plan a great slide deck and compelling narrative?`, and if you have the Creative Intelligence Suite installed, it will offer you different or complimentary advice than if you just have BMad Method Module installed!
+1. `/strategy-spec` -- analyzes your data and produces a strategy specification with implementation tasks
+2. `/dev-strategy` -- implements each task (signals, backtest, risk checks)
+3. `/strategy-review` -- validates statistical rigor and code quality
 
-The workflows below show the fastest path to working code. You can also load agents directly for a more structured process, extensive planning, or to learn about agile development practices — the agents guide you with menus, explanations, and elicitation at each step.
+### Full Research Path (Quant Method)
 
-### Simple Path (Quick Flow)
+Multi-factor strategies, portfolio-level research, production deployment:
 
-Bug fixes, small features, clear scope — 3 commands - 1 Optional Agent:
+1. `/research-brief` -- define investment thesis, universe, and data requirements
+2. `/create-strategy-design` -- full specification with signal definitions, risk constraints, and performance targets
+3. `/create-architecture` -- technical infrastructure: data pipelines, execution systems, monitoring
+4. `/create-research-plan` -- break work into prioritized research and implementation tasks
+5. `/research-planning` -- initialize research tracking
+6. **Repeat per task:** `/create-task` -> `/dev-task` -> `/task-review`
 
-1. `/quick-spec` — analyzes your codebase and produces a tech-spec with stories
-2. `/dev-story` — implements each story
-3. `/code-review` — validates quality
+## Specialized Agents
 
-### Full Planning Path (BMad Method)
+| Agent | Role | Focus |
+|-------|------|-------|
+| **Quant Researcher** | Alpha Research + Factor Analysis | Signal discovery, literature review, statistical analysis |
+| **Portfolio Manager** | Portfolio Construction + Allocation | Position sizing, rebalancing, benchmark-aware optimization |
+| **Quant Architect** | Systems Design + Infrastructure | Data pipelines, execution systems, backtesting frameworks |
+| **Quant Developer** | Strategy Implementation | Signal code, backtest harnesses, production adapters |
+| **Data Engineer** | Market Data + Alternative Data | Data pipelines, quality validation, feature engineering |
+| **Risk Analyst** | Risk Management + Model Validation | Drawdown analysis, stress testing, regime detection |
+| **Research Director** | Research Process + Coordination | Research pipeline management, prioritization, tracking |
+| **Research Documentarian** | Research Reports + Model Documentation | Strategy documentation, research logs, compliance docs |
+| **Strategy Developer** | Rapid Prototyping | Quick hypothesis testing, single-factor research |
 
-Products, platforms, complex features — structured planning then build:
+## Workflow Phases
 
-1. `/product-brief` — define problem, users, and MVP scope
-2. `/create-prd` — full requirements with personas, metrics, and risks
-3. `/create-architecture` — technical decisions and system design
-4. `/create-epics-and-stories` — break work into prioritized stories
-5. `/sprint-planning` — initialize sprint tracking
-6. **Repeat per story:** `/create-story` → `/dev-story` → `/code-review`
+### Phase 1: Research
 
-Every step tells you what's next. Optional phases (brainstorming, research, UX design) are available when you need them — ask `/bmad-help` anytime. For a detailed walkthrough, see the [Getting Started Tutorial](http://docs.bmad-method.org/tutorials/getting-started/).
+- Market and academic research
+- Factor discovery and screening
+- Data exploration and alternative data evaluation
+- Investment thesis development
 
-## Modules
+### Phase 2: Strategy Design
 
-BMad Method extends with official modules for specialized domains. Modules are available during installation and can be added to your project at any time. After the V6 beta period these will also be available as Plugins and Granular Skills.
+- Signal specification and universe selection
+- Risk constraint definition
+- Performance target setting
+- Model specification (statistical, ML, rules-based)
 
-| Module                                | GitHub                                                                                                                            | NPM                                                                                                                | Purpose                                                           |
-| ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------- |
-| **BMad Method (BMM)**                 | [bmad-code-org/BMAD-METHOD](https://github.com/bmad-code-org/BMAD-METHOD)                                                         | [bmad-method](https://www.npmjs.com/package/bmad-method)                                           | Core framework with 34+ workflows across 4 development phases     |
-| **BMad Builder (BMB)**                | [bmad-code-org/bmad-builder](https://github.com/bmad-code-org/bmad-builder)                                                       | [bmad-builder](https://www.npmjs.com/package/bmad-builder)                                         | Create custom BMad agents, workflows, and domain-specific modules |
-| **Test Architect (TEA)** 🆕           | [bmad-code-org/tea](https://github.com/bmad-code-org/bmad-method-test-architecture-enterprise)                                    | [tea](https://www.npmjs.com/package/bmad-method-test-architecture-enterprise)                      | Risk-based test strategy, automation, and release gates (8 workflows) |
-| **Game Dev Studio (BMGD)**            | [bmad-code-org/bmad-module-game-dev-studio](https://github.com/bmad-code-org/bmad-module-game-dev-studio)                         | [bmad-game-dev-studio](https://www.npmjs.com/package/bmad-game-dev-studio)                         | Game development workflows for Unity, Unreal, and Godot           |
-| **Creative Intelligence Suite (CIS)** | [bmad-code-org/bmad-module-creative-intelligence-suite](https://github.com/bmad-code-org/bmad-module-creative-intelligence-suite) | [bmad-creative-intelligence-suite](https://www.npmjs.com/package/bmad-creative-intelligence-suite) | Innovation, brainstorming, design thinking, and problem-solving   |
+### Phase 3: Validation
 
-* More modules are coming in the next 2 weeks from BMad Official, and a community marketplace for the installer also will be coming with the final V6 release!
+- Backtesting with walk-forward analysis
+- Out-of-sample testing
+- Statistical significance validation
+- Transaction cost and capacity analysis
+- Risk decomposition and stress testing
 
-## Testing Agents
+### Phase 4: Production
 
-BMad provides two testing options to fit your needs:
-
-### Quinn (QA) - Built-in
-
-**Quick test automation for rapid coverage**
-
-- ✅ **Always available** in BMM module (no separate install)
-- ✅ **Simple**: One workflow (`QA` - Automate)
-- ✅ **Beginner-friendly**: Standard test framework patterns
-- ✅ **Fast**: Generate tests and ship
-
-**Use Quinn for:** Small projects, quick coverage, standard patterns
-
-### Test Architect (TEA) - Optional Module
-
-**Enterprise-grade test strategy and quality engineering**
-
-- 🆕 **Standalone module** (install separately)
-- 🏗️ **Comprehensive**: 8 workflows covering full test lifecycle
-- 🎯 **Advanced**: Risk-based planning, quality gates, NFR assessment
-- 📚 **Knowledge-driven**: 34 testing patterns and best practices
-- 📖 [Test Architect Documentation](https://bmad-code-org.github.io/bmad-method-test-architecture-enterprise/)
-
-**Use TEA for:** Enterprise projects, test strategy, compliance, release gates
-
----
+- Deployment and integration
+- Live monitoring and alerting
+- Performance attribution
+- Research retrospective and strategy refinement
 
 ## Documentation
 
-**[BMad Documentation](http://docs.bmad-method.org)** — Tutorials, how-to guides, concepts, and reference
-**[Test Architect Documentation](https://bmad-code-org.github.io/bmad-method-test-architecture-enterprise/)** — TEA standalone module documentation
-
-- [Getting Started Tutorial](http://docs.bmad-method.org/tutorials/getting-started/)
-- [Upgrading from Previous Versions](http://docs.bmad-method.org/how-to/upgrade-to-v6/)
-- [Test Architect Migration Guide](https://bmad-code-org.github.io/bmad-method-test-architecture-enterprise/migration/) — Upgrading from BMM-embedded TEA
-
-### For v4 Users
-
-- **[v4 Documentation](https://github.com/bmad-code-org/BMAD-METHOD/tree/V4/docs)**
-
-## Community
-
-- [Discord](https://discord.gg/gk8jAdXWmj) — Get help, share ideas, collaborate
-- [Subscribe on YouTube](https://www.youtube.com/@BMadCode) — Tutorials, master class, and podcast (launching Feb 2025)
-- [GitHub Issues](https://github.com/bmad-code-org/BMAD-METHOD/issues) — Bug reports and feature requests
-- [Discussions](https://github.com/bmad-code-org/BMAD-METHOD/discussions) — Community conversations
-
-## Support BMad
-
-BMad is free for everyone — and always will be. If you'd like to support development:
-
-- ⭐ Please click the star project icon near the top right of this page
-- ☕ [Buy Me a Coffee](https://buymeacoffee.com/bmad) — Fuel the development
-- 🏢 Corporate sponsorship — DM on Discord
-- 🎤 Speaking & Media — Available for conferences, podcasts, interviews (BM on Discord)
+- Getting Started Tutorial
+- Strategy Research Walkthrough
+- Backtesting Best Practices
+- Risk Management Framework
 
 ## Contributing
 
-We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+We welcome contributions. See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ## License
 
-MIT License — see [LICENSE](LICENSE) for details.
-
----
-
-**BMad** and **BMAD-METHOD** are trademarks of BMad Code, LLC. See [TRADEMARK.md](TRADEMARK.md) for details.
-
-[![Contributors](https://contrib.rocks/image?repo=bmad-code-org/BMAD-METHOD)](https://github.com/bmad-code-org/BMAD-METHOD/graphs/contributors)
-
-See [CONTRIBUTORS.md](CONTRIBUTORS.md) for contributor information.
+MIT License -- see [LICENSE](LICENSE) for details.

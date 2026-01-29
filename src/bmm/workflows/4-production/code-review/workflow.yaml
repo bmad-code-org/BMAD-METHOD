@@ -1,0 +1,49 @@
+# Strategy Code Review Workflow
+name: code-review
+description: "Perform an ADVERSARIAL Senior Quant Developer code review that finds 3-10 specific problems in every task. Challenges everything: statistical correctness, look-ahead bias, test coverage, architecture compliance, numerical stability. NEVER accepts `looks good` - must find minimum issues and can auto-fix with user approval."
+author: "Quant Method"
+
+# Critical variables from config
+config_source: "{project-root}/_bmad/bmm/config.yaml"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+user_skill_level: "{config_source}:user_skill_level"
+document_output_language: "{config_source}:document_output_language"
+date: system-generated
+research_artifacts: "{config_source}:research_artifacts"
+implementation_artifacts: "{config_source}:implementation_artifacts"
+output_folder: "{implementation_artifacts}"
+research_status: "{implementation_artifacts}/research-status.yaml"
+
+# Workflow components
+installed_path: "{project-root}/_bmad/bmm/workflows/4-production/code-review"
+instructions: "{installed_path}/instructions.xml"
+validation: "{installed_path}/checklist.md"
+template: false
+
+variables:
+  # Project context
+  project_context: "**/project-context.md"
+  task_dir: "{implementation_artifacts}"
+
+# Smart input file references - handles both whole docs and sharded docs
+input_file_patterns:
+  architecture:
+    description: "System architecture for review context"
+    whole: "{research_artifacts}/*architecture*.md"
+    sharded: "{research_artifacts}/*architecture*/*.md"
+    load_strategy: "FULL_LOAD"
+  strategy_design:
+    description: "Strategy design specification for validation"
+    whole: "{research_artifacts}/*strategy*.md"
+    sharded: "{research_artifacts}/*strategy*/*.md"
+    load_strategy: "FULL_LOAD"
+  research_plan:
+    description: "Research plan containing task being reviewed"
+    whole: "{research_artifacts}/*research-plan*.md"
+    sharded_index: "{research_artifacts}/*research-plan*/index.md"
+    sharded_single: "{research_artifacts}/*research-plan*/phase-{{phase_num}}.md"
+    load_strategy: "SELECTIVE_LOAD"
+
+standalone: true
+web_bundle: false

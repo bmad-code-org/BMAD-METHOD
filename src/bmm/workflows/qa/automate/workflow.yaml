@@ -1,7 +1,7 @@
-# Quinn QA workflow: Automate
+# Quinn Risk Analysis workflow: Automate
 name: qa-automate
-description: "Generate tests quickly for existing features using standard test patterns"
-author: "BMad"
+description: "Generate validation tests quickly for existing strategy code using standard test patterns and statistical checks"
+author: "Quant Method"
 
 # Critical variables from config
 config_source: "{project-root}/_bmad/bmm/config.yaml"
@@ -37,8 +37,8 @@ required_tools:
   - glob # Find files
 
 tags:
-  - qa
-  - automation
+  - risk-analysis
+  - validation
   - testing
 
 execution_hints:

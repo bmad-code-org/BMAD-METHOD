@@ -1,8 +1,8 @@
-# <!-- Powered by BMAD-CORE™ -->
+# <!-- Powered by QUANT-METHOD-CORE -->
 bundle:
-  name: Team Plan and Architect
+  name: Team Research and Architecture
   icon: 🚀
-  description: Team capable of project analysis, design, and architecture.
+  description: Team capable of quant research, strategy design, and systems architecture.
 agents:
   - analyst
   - architect

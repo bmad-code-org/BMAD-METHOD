@@ -1,0 +1,56 @@
+# Retrospective - Research Phase Completion Review Workflow
+name: "research-retrospective"
+description: "Run after research phase completion to review overall success, extract lessons learned, and explore if new findings emerged that might impact the next research phase"
+author: "Quant Method"
+
+config_source: "{project-root}/_bmad/bmm/config.yaml"
+output_folder: "{config_source}:implementation_artifacts}"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+user_skill_level: "{config_source}:user_skill_level"
+document_output_language: "{config_source}:document_output_language"
+date: system-generated
+research_artifacts: "{config_source}:research_artifacts"
+implementation_artifacts: "{config_source}:implementation_artifacts"
+
+installed_path: "{project-root}/_bmad/bmm/workflows/4-production/research-retrospective"
+template: false
+instructions: "{installed_path}/instructions.md"
+
+required_inputs:
+  - agent_manifest: "{project-root}/_bmad/_config/agent-manifest.csv"
+
+# Smart input file references
+input_file_patterns:
+  research_plan:
+    description: "The completed research phase for retrospective"
+    whole: "{research_artifacts}/*research-plan*.md"
+    sharded_index: "{research_artifacts}/*research-plan*/index.md"
+    sharded_single: "{research_artifacts}/*research-plan*/phase-{{phase_num}}.md"
+    load_strategy: "SELECTIVE_LOAD"
+  previous_retrospective:
+    description: "Previous phase's retrospective (optional)"
+    pattern: "{implementation_artifacts}/**/phase-{{prev_phase_num}}-retro-*.md"
+    load_strategy: "SELECTIVE_LOAD"
+  architecture:
+    description: "System architecture for context"
+    whole: "{research_artifacts}/*architecture*.md"
+    sharded: "{research_artifacts}/*architecture*/*.md"
+    load_strategy: "FULL_LOAD"
+  strategy_design:
+    description: "Strategy design for context"
+    whole: "{research_artifacts}/*strategy*.md"
+    sharded: "{research_artifacts}/*strategy*/*.md"
+    load_strategy: "FULL_LOAD"
+  document_project:
+    description: "Existing project documentation (optional)"
+    sharded: "{research_artifacts}/*.md"
+    load_strategy: "INDEX_GUIDED"
+
+# Required files
+research_status_file: "{implementation_artifacts}/research-status.yaml"
+task_directory: "{implementation_artifacts}"
+retrospectives_folder: "{implementation_artifacts}"
+
+standalone: true
+web_bundle: false

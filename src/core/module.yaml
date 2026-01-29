@@ -1,12 +1,12 @@
 code: core
-name: "BMad Core Module"
+name: "Quant Method Core Module"
 
-header: "BMad Core Configuration"
-subheader: "Configure the core settings for your BMad installation.\nThese settings will be used across all modules and agents."
+header: "Quant Method Core Configuration"
+subheader: "Configure the core settings for your Quant Method installation.\nThese settings will be used across all modules and agents."
 
 user_name:
   prompt: "What should agents call you? (Use your name or a team name)"
-  default: "BMad"
+  default: "Quant"
   result: "{value}"
 
 communication_language:
@@ -21,5 +21,5 @@ document_output_language:
 
 output_folder:
   prompt: "Where should output files be saved?"
-  default: "_bmad-output"
+  default: "_quant-output"
   result: "{project-root}/{value}"

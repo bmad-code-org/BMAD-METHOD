@@ -1,16 +1,18 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
-  "name": "bmad-method",
-  "version": "6.0.0-Beta.4",
-  "description": "Breakthrough Method of Agile AI-driven Development",
+  "name": "quant-method",
+  "version": "1.0.0-alpha.1",
+  "description": "AI-driven investment quant development and research framework",
   "keywords": [
-    "agile",
+    "quantitative-finance",
     "ai",
-    "orchestrator",
-    "development",
-    "methodology",
+    "trading",
+    "backtesting",
+    "alpha-research",
+    "risk-management",
+    "portfolio-optimization",
     "agents",
-    "bmad"
+    "quant"
   ],
   "repository": {
     "type": "git",

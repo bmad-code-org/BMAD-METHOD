@@ -1,0 +1,53 @@
+name: research-planning
+description: "Generate and manage the research status tracking file for Phase 4 production, extracting all research phases and tasks from the research plan and tracking their status through the development lifecycle"
+author: "Quant Method"
+
+# Critical variables from config
+config_source: "{project-root}/_bmad/bmm/config.yaml"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+date: system-generated
+implementation_artifacts: "{config_source}:implementation_artifacts"
+research_artifacts: "{config_source}:research_artifacts"
+output_folder: "{implementation_artifacts}"
+
+# Workflow components
+installed_path: "{project-root}/_bmad/bmm/workflows/4-production/research-planning"
+instructions: "{installed_path}/instructions.md"
+template: "{installed_path}/sprint-status-template.yaml"
+validation: "{installed_path}/checklist.md"
+
+# Variables and inputs
+variables:
+  # Project context
+  project_context: "**/project-context.md"
+  # Project identification
+  project_name: "{config_source}:project_name"
+
+  # Tracking system configuration
+  tracking_system: "file-system"
+  project_key: "NOKEY"
+  task_location: "{config_source}:implementation_artifacts"
+  task_location_absolute: "{config_source}:implementation_artifacts"
+
+  # Source files (file-system only)
+  research_plan_location: "{research_artifacts}"
+  research_plan_pattern: "research-plan*.md"
+
+  # Output configuration
+  status_file: "{implementation_artifacts}/research-status.yaml"
+
+# Smart input file references
+input_file_patterns:
+  research_plan:
+    description: "All research phases with tasks"
+    whole: "{output_folder}/*research-plan*.md"
+    sharded: "{output_folder}/*research-plan*/*.md"
+    load_strategy: "FULL_LOAD"
+
+# Output configuration
+default_output_file: "{status_file}"
+
+standalone: true
+
+web_bundle: false

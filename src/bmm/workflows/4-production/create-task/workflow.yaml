@@ -1,0 +1,60 @@
+name: create-task
+description: "Create the next research or implementation task from the research plan with enhanced context analysis and direct ready-for-dev marking"
+author: "Quant Method"
+
+# Critical variables from config
+config_source: "{project-root}/_bmad/bmm/config.yaml"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+date: system-generated
+research_artifacts: "{config_source}:research_artifacts"
+implementation_artifacts: "{config_source}:implementation_artifacts"
+output_folder: "{implementation_artifacts}"
+task_dir: "{implementation_artifacts}"
+
+# Workflow components
+installed_path: "{project-root}/_bmad/bmm/workflows/4-production/create-task"
+template: "{installed_path}/template.md"
+instructions: "{installed_path}/instructions.xml"
+validation: "{installed_path}/checklist.md"
+
+# Variables and inputs
+variables:
+  research_status: "{implementation_artifacts}/research-status.yaml"
+  research_plan_file: "{research_artifacts}/research-plan.md"
+  strategy_design_file: "{research_artifacts}/strategy-design.md"
+  architecture_file: "{research_artifacts}/architecture.md"
+  data_design_file: "{research_artifacts}/*data-design*.md"
+  task_title: ""
+
+# Project context
+project_context: "**/project-context.md"
+
+default_output_file: "{task_dir}/{{task_key}}.md"
+
+# Smart input file references
+input_file_patterns:
+  strategy_design:
+    description: "Strategy design (fallback - research plan should have most content)"
+    whole: "{research_artifacts}/*strategy*.md"
+    sharded: "{research_artifacts}/*strategy*/*.md"
+    load_strategy: "SELECTIVE_LOAD"
+  architecture:
+    description: "Architecture (fallback - research plan should have relevant sections)"
+    whole: "{research_artifacts}/*architecture*.md"
+    sharded: "{research_artifacts}/*architecture*/*.md"
+    load_strategy: "SELECTIVE_LOAD"
+  data_design:
+    description: "Data design (fallback - research plan should have relevant sections)"
+    whole: "{research_artifacts}/*data-design*.md"
+    sharded: "{research_artifacts}/*data-design*/*.md"
+    load_strategy: "SELECTIVE_LOAD"
+  research_plan:
+    description: "Research plan with tasks and priorities"
+    whole: "{research_artifacts}/*research-plan*.md"
+    sharded: "{research_artifacts}/*research-plan*/*.md"
+    load_strategy: "SELECTIVE_LOAD"
+
+standalone: true
+
+web_bundle: false

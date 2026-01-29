@@ -1,0 +1,58 @@
+# Correct Course - Research Change Management Workflow
+name: "correct-course"
+description: "Navigate significant changes during research execution by analyzing impact of new findings, proposing strategy adjustments, and routing for implementation"
+author: "Quant Method"
+
+config_source: "{project-root}/_bmad/bmm/config.yaml"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+user_skill_level: "{config_source}:user_skill_level"
+document_output_language: "{config_source}:document_output_language"
+date: system-generated
+implementation_artifacts: "{config_source}:implementation_artifacts"
+research_artifacts: "{config_source}:research_artifacts"
+project_knowledge: "{config_source}:project_knowledge"
+output_folder: "{implementation_artifacts}"
+research_status: "{implementation_artifacts}/research-status.yaml"
+
+# Smart input file references
+input_file_patterns:
+  strategy_design:
+    description: "Strategy design for impact analysis"
+    whole: "{research_artifacts}/*strategy*.md"
+    sharded: "{research_artifacts}/*strategy*/*.md"
+    load_strategy: "FULL_LOAD"
+  research_plan:
+    description: "All research phases to analyze change impact"
+    whole: "{research_artifacts}/*research-plan*.md"
+    sharded: "{research_artifacts}/*research-plan*/*.md"
+    load_strategy: "FULL_LOAD"
+  architecture:
+    description: "System architecture and decisions"
+    whole: "{research_artifacts}/*architecture*.md"
+    sharded: "{research_artifacts}/*architecture*/*.md"
+    load_strategy: "FULL_LOAD"
+  data_design:
+    description: "Data design specification (if data impacts)"
+    whole: "{research_artifacts}/*data-design*.md"
+    sharded: "{research_artifacts}/*data-design*/*.md"
+    load_strategy: "FULL_LOAD"
+  backtest_results:
+    description: "Backtest results and validation reports"
+    whole: "{research_artifacts}/*backtest*.md"
+    load_strategy: "FULL_LOAD"
+  document_project:
+    description: "Existing project documentation (optional)"
+    sharded: "{project_knowledge}/index.md"
+    load_strategy: "INDEX_GUIDED"
+
+installed_path: "{project-root}/_bmad/bmm/workflows/4-production/correct-course"
+template: false
+instructions: "{installed_path}/instructions.md"
+validation: "{installed_path}/checklist.md"
+checklist: "{installed_path}/checklist.md"
+default_output_file: "{research_artifacts}/research-change-proposal-{date}.md"
+
+standalone: true
+
+web_bundle: false
