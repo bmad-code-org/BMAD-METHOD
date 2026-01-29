@@ -32,6 +32,7 @@ agents:
     description: "Implementation agent - writes code and tests"
     steps: [1, 2, 3, 4]
     subagent_type: "general-purpose"
+    bmad_agent: "{project-root}/_bmad/bmm/agents/builder.md" # Marcus - TDD Implementation Specialist
     prompt_file: "{agents_path}/builder.md"
     trust_level: "low" # Assumes agent will cut corners
     timeout: 3600 # 1 hour
@@ -51,6 +52,7 @@ agents:
     description: "Test quality validation - verifies test coverage and quality"
     steps: [5.5]
     subagent_type: "testing-suite:test-engineer" # Specialized for test quality analysis
+    bmad_agent: "{project-root}/_bmad/bmm/agents/test-quality.md" # Tessa - Test Quality Analyst
     prompt_file: "{agents_path}/test-quality.md"
     fresh_context: true
     trust_level: "medium"
@@ -60,6 +62,7 @@ agents:
     description: "Adversarial code review - finds problems"
     steps: [7]
     subagent_type: "multi-agent-review" # Spawns multiple reviewers
+    bmad_agent: "{project-root}/_bmad/bmm/agents/reviewer.md" # Rex - Adversarial Reviewer
     prompt_file: "{agents_path}/reviewer.md"
     fresh_context: true
     adversarial: true # Goal: find issues
@@ -76,9 +79,10 @@ agents:
       quality: "{agents_path}/reviewer.md" # Code quality (complex only)
 
   fixer:
-    description: "Issue resolution - fixes critical/high issues"
+    description: "Issue resolution - Builder (Marcus) resumes to fix critical/high issues"
     steps: [8, 9]
     subagent_type: "general-purpose"
+    bmad_agent: "{project-root}/_bmad/bmm/agents/builder.md" # Marcus resumes - same persona as Builder
     resume_builder: true # IMPORTANT: Resume Builder agent instead of spawning fresh
     prompt_file: "{agents_path}/fixer.md"
     trust_level: "medium" # Incentive to minimize work
@@ -88,6 +92,7 @@ agents:
     description: "Playbook learning - extracts patterns for future agents"
     steps: [10]
     subagent_type: "general-purpose"
+    bmad_agent: "{project-root}/_bmad/bmm/agents/reflection.md" # Rita - Knowledge Curator
     prompt_file: "{agents_path}/reflection.md"
     timeout: 900 # 15 minutes
 
