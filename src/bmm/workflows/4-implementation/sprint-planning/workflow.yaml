@@ -26,6 +26,7 @@ variables:
 
   # Tracking system configuration
   tracking_system: "file-system" # Options: file-system, Future will support other options from config of mcp such as jira, linear, trello
+  project_key: "NOKEY" # Placeholder for tracker integrations; file-system uses a no-op key
   story_location: "{config_source}:implementation_artifacts" # Relative path for file-system, Future will support URL for Jira/Linear/Trello
   story_location_absolute: "{config_source}:implementation_artifacts" # Absolute path for file operations
 

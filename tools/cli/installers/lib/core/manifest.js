@@ -835,6 +835,7 @@ class Manifest {
    */
   async getModuleVersionInfo(moduleName, bmadDir, moduleSourcePath = null) {
     const os = require('node:os');
+    const yaml = require('yaml');
 
     // Built-in modules use BMad version (only core and bmm are in BMAD-METHOD repo)
     if (['core', 'bmm'].includes(moduleName)) {

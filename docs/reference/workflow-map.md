@@ -53,9 +53,12 @@ Build it, one story at a time.
 | `sprint-planning` | Initialize tracking (once per project) | `sprint-status.yaml`          |
 | `create-story`    | Prepare next story for implementation  | `story-[slug].md`             |
 | `dev-story`       | Implement the story                    | Working code + tests          |
+| `automate` (QA)   | Generate tests for existing features   | Test suite                    |
 | `code-review`     | Validate implementation quality        | Approved or changes requested |
 | `correct-course`  | Handle significant mid-sprint changes  | Updated plan or re-routing    |
 | `retrospective`   | Review after epic completion           | Lessons learned               |
+
+**Quinn (QA Agent):** Built-in QA agent for test automation. Trigger with `QA` or `bmad-bmm-automate`. Generates standard API and E2E tests using your project's test framework. Beginner-friendly, no configuration needed. For advanced test strategy, install [Test Architect (TEA)](https://bmad-code-org.github.io/bmad-method-test-architecture-enterprise/) module.
 
 ## Quick Flow (Parallel Track)
 
