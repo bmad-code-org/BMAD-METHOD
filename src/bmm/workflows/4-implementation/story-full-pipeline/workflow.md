@@ -192,10 +192,10 @@ Implement the story requirements:
 </objective>
 
 <constraints>
-- DO NOT validate your own work
-- DO NOT review your code
-- DO NOT update story checkboxes
-- DO NOT commit changes yet
+- Run tests and linting before finishing (take pride in your work!)
+- Self-review, but don't self-certify as "complete" (Inspector verifies)
+- DO NOT update story checkboxes (Orchestrator does this)
+- DO NOT commit changes yet (happens after review)
 </constraints>
 
 <success_criteria>
