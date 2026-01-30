@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "bmad-method",
-  "version": "6.0.0-Beta.2",
+  "version": "6.0.0-Beta.4",
   "description": "Breakthrough Method of Agile AI-driven Development",
   "keywords": [
     "agile",
@@ -39,7 +39,7 @@
     "lint": "eslint . --ext .js,.cjs,.mjs,.yaml --max-warnings=0",
     "lint:fix": "eslint . --ext .js,.cjs,.mjs,.yaml --fix",
     "lint:md": "markdownlint-cli2 \"**/*.md\"",
-    "prepare": "husky",
+    "prepare": "command -v husky >/dev/null 2>&1 && husky || exit 0",
     "rebundle": "node tools/cli/bundlers/bundle-web.js rebundle",
     "release:major": "gh workflow run \"Manual Release\" -f version_bump=major",
     "release:minor": "gh workflow run \"Manual Release\" -f version_bump=minor",

@@ -65,21 +65,53 @@ Every step tells you what's next. Optional phases (brainstorming, research, UX d
 
 BMad Method extends with official modules for specialized domains. Modules are available during installation and can be added to your project at any time. After the V6 beta period these will also be available as Plugins and Granular Skills.
 
-| Module                                | GitHub                                                                                                                            | NPM                                                                                                | Purpose                                                           |
-| ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| Module                                | GitHub                                                                                                                            | NPM                                                                                                                | Purpose                                                           |
+| ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------- |
 | **BMad Method (BMM)**                 | [bmad-code-org/BMAD-METHOD](https://github.com/bmad-code-org/BMAD-METHOD)                                                         | [bmad-method](https://www.npmjs.com/package/bmad-method)                                           | Core framework with 34+ workflows across 4 development phases     |
 | **BMad Builder (BMB)**                | [bmad-code-org/bmad-builder](https://github.com/bmad-code-org/bmad-builder)                                                       | [bmad-builder](https://www.npmjs.com/package/bmad-builder)                                         | Create custom BMad agents, workflows, and domain-specific modules |
+| **Test Architect (TEA)** 🆕           | [bmad-code-org/tea](https://github.com/bmad-code-org/bmad-method-test-architecture-enterprise)                                    | [tea](https://www.npmjs.com/package/bmad-method-test-architecture-enterprise)                      | Risk-based test strategy, automation, and release gates (8 workflows) |
 | **Game Dev Studio (BMGD)**            | [bmad-code-org/bmad-module-game-dev-studio](https://github.com/bmad-code-org/bmad-module-game-dev-studio)                         | [bmad-game-dev-studio](https://www.npmjs.com/package/bmad-game-dev-studio)                         | Game development workflows for Unity, Unreal, and Godot           |
 | **Creative Intelligence Suite (CIS)** | [bmad-code-org/bmad-module-creative-intelligence-suite](https://github.com/bmad-code-org/bmad-module-creative-intelligence-suite) | [bmad-creative-intelligence-suite](https://www.npmjs.com/package/bmad-creative-intelligence-suite) | Innovation, brainstorming, design thinking, and problem-solving   |
 
 * More modules are coming in the next 2 weeks from BMad Official, and a community marketplace for the installer also will be coming with the final V6 release!
 
+## Testing Agents
+
+BMad provides two testing options to fit your needs:
+
+### Quinn (QA) - Built-in
+
+**Quick test automation for rapid coverage**
+
+- ✅ **Always available** in BMM module (no separate install)
+- ✅ **Simple**: One workflow (`QA` - Automate)
+- ✅ **Beginner-friendly**: Standard test framework patterns
+- ✅ **Fast**: Generate tests and ship
+
+**Use Quinn for:** Small projects, quick coverage, standard patterns
+
+### Test Architect (TEA) - Optional Module
+
+**Enterprise-grade test strategy and quality engineering**
+
+- 🆕 **Standalone module** (install separately)
+- 🏗️ **Comprehensive**: 8 workflows covering full test lifecycle
+- 🎯 **Advanced**: Risk-based planning, quality gates, NFR assessment
+- 📚 **Knowledge-driven**: 34 testing patterns and best practices
+- 📖 [Test Architect Documentation](https://bmad-code-org.github.io/bmad-method-test-architecture-enterprise/)
+
+**Use TEA for:** Enterprise projects, test strategy, compliance, release gates
+
+---
+
 ## Documentation
 
-**[Full Documentation](http://docs.bmad-method.org)** — Tutorials, how-to guides, concepts, and reference
+**[BMad Documentation](http://docs.bmad-method.org)** — Tutorials, how-to guides, concepts, and reference
+**[Test Architect Documentation](https://bmad-code-org.github.io/bmad-method-test-architecture-enterprise/)** — TEA standalone module documentation
 
 - [Getting Started Tutorial](http://docs.bmad-method.org/tutorials/getting-started/)
 - [Upgrading from Previous Versions](http://docs.bmad-method.org/how-to/upgrade-to-v6/)
+- [Test Architect Migration Guide](https://bmad-code-org.github.io/bmad-method-test-architecture-enterprise/migration/) — Upgrading from BMM-embedded TEA
 
 ### For v4 Users
 
