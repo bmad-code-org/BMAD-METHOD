@@ -66,8 +66,12 @@ class TaskToolCommandGenerator {
 
     // Convert path to use {project-root} placeholder
     let itemPath = item.path;
-    if (itemPath && typeof itemPath === 'string' && itemPath.startsWith('bmad/')) {
-      itemPath = `{project-root}/${itemPath}`;
+    if (itemPath && typeof itemPath === 'string') {
+      if (itemPath.startsWith('bmad/')) {
+        itemPath = `{project-root}/${itemPath}`;
+      } else if (itemPath.startsWith('_bmad/')) {
+        itemPath = `{project-root}/${itemPath}`;
+      }
     }
 
     return `---
