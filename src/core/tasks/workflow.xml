@@ -9,6 +9,26 @@
     <mandate>NEVER skip a step - YOU are responsible for every steps execution without fail or excuse</mandate>
   </llm>
 
+  <enforcement-mode optional="true">
+    <desc>Optional step enforcement for complex workflows - activate via workflow.yaml enforcement.enabled: true</desc>
+
+    <check name="interactive_workflow_detection">
+      IF this conversation has a command-name tag (e.g., /bmad_bmm_workflow):
+        → This is USER-INITIATED, continue in main context
+        → Interactive workflows need user prompts and responses
+
+      IF NO command-name tag AND enforcement.enabled:
+        → This is an INTERNAL workflow call
+        → Consider delegating to workflow-executor Task agent for fresh context
+    </check>
+
+    <evidence-tracking if="enforcement.enabled">
+      <mandate>Record evidence after each step in enforcement.state_file</mandate>
+      <mandate>Verify previous step evidence before proceeding to next</mandate>
+      <mandate>HALT if evidence missing - report what's needed</mandate>
+    </evidence-tracking>
+  </enforcement-mode>
+
   <WORKFLOW-RULES critical="true">
     <rule n="1">Steps execute in exact numerical order (1, 2, 3...)</rule>
     <rule n="2">Optional steps: Ask user unless #yolo mode active</rule>
@@ -45,6 +65,13 @@
 
     <step n="2" title="Process Each Instruction Step in Order">
       <iterate>For each step in instructions:</iterate>
+
+      <substep n="2.0" title="Enforcement Gate" if="enforcement.enabled">
+        <action>Verify previous step has complete evidence in state file</action>
+        <action>Check for required Task agent spawns in previous step</action>
+        <action>If enforcement violation detected → HALT with explanation</action>
+        <note>See _bmad/core/tasks/step-enforcement.xml for full verification protocol</note>
+      </substep>
 
       <substep n="2a" title="Handle Step Attributes">
         <check>If optional="true" and NOT #yolo → Ask user to include</check>
