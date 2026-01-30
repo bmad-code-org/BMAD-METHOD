@@ -88,7 +88,7 @@
   },
   "devDependencies": {
     "@astrojs/sitemap": "^3.6.0",
-    "@astrojs/starlight": "^0.38.0",
+    "@astrojs/starlight": "^0.37.5",
     "@eslint/js": "^9.33.0",
     "archiver": "^7.0.1",
     "astro": "^5.16.0",
