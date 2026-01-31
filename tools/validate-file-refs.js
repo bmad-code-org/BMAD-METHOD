@@ -145,8 +145,8 @@ function mapInstalledToSource(refPath) {
   // Skip install-only paths (generated at install time, not in source)
   if (isInstallOnly(cleaned)) return null;
 
-  // core/ and bmm/ are directly under src/
-  if (cleaned.startsWith('core/') || cleaned.startsWith('bmm/')) {
+  // core/, bmm/, and utility/ are directly under src/
+  if (cleaned.startsWith('core/') || cleaned.startsWith('bmm/') || cleaned.startsWith('utility/')) {
     return path.join(SRC_DIR, cleaned);
   }
 
@@ -222,6 +222,14 @@ function extractYamlRefs(filePath, content) {
   return refs;
 }
 
+function offsetToLine(content, offset) {
+  let line = 1;
+  for (let i = 0; i < offset && i < content.length; i++) {
+    if (content[i] === '\n') line++;
+  }
+  return line;
+}
+
 function extractMarkdownRefs(filePath, content) {
   const refs = [];
   const stripped = stripJsonExampleBlocks(stripCodeBlocks(content));
@@ -232,7 +240,7 @@ function extractMarkdownRefs(filePath, content) {
     while ((match = regex.exec(stripped)) !== null) {
       const raw = match[1];
       if (!isResolvable(raw)) continue;
-      refs.push({ file: filePath, raw, type });
+      refs.push({ file: filePath, raw, type, line: offsetToLine(stripped, match.index) });
     }
   }
 
@@ -342,6 +350,11 @@ for (const filePath of files) {
 
   // Resolve and check
   const broken = [];
+
+  if (VERBOSE && refs.length > 0) {
+    console.log(`\n${relativePath}`);
+  }
+
   for (const ref of refs) {
     totalRefs++;
     const resolved = resolveRef(ref);
@@ -369,10 +382,13 @@ for (const filePath of files) {
   // Report issues for this file
   if (broken.length > 0 || leaks.length > 0) {
     filesWithIssues++;
-    console.log(`\n${relativePath}`);
+    if (!VERBOSE) {
+      console.log(`\n${relativePath}`);
+    }
 
     for (const { ref, resolved } of broken) {
-      console.log(`  [BROKEN] ${ref.raw}`);
+      const location = ref.line ? `line ${ref.line}` : ref.key ? `key: ${ref.key}` : '';
+      console.log(`  [BROKEN] ${ref.raw}${location ? ` (${location})` : ''}`);
       console.log(`     Target not found: ${resolved}`);
     }
 
