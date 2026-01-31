@@ -72,6 +72,7 @@ class TaskToolCommandGenerator {
 
     return `---
 description: '${description.replaceAll("'", "''")}'
+disable-model-invocation: true
 ---
 
 # ${item.displayName || item.name}
