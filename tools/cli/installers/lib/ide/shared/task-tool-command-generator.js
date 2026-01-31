@@ -142,9 +142,33 @@ class TaskToolCommandGenerator {
     const description = item.description || `Execute ${item.displayName || item.name}`;
 
     // Convert path to use {project-root} placeholder
+    // Handle undefined/missing path by constructing from module and name
     let itemPath = item.path;
-    if (itemPath && typeof itemPath === 'string' && itemPath.startsWith('bmad/')) {
-      itemPath = `{project-root}/${itemPath}`;
+    if (!itemPath || typeof itemPath !== 'string') {
+      // Fallback: construct path from module and name if path is missing
+      const typePlural = type === 'task' ? 'tasks' : 'tools';
+      itemPath = `{project-root}/${this.bmadFolderName}/${item.module}/${typePlural}/${item.name}.md`;
+    } else {
+      // Normalize path separators to forward slashes
+      itemPath = itemPath.replaceAll('\\', '/');
+
+      // Extract relative path from absolute paths (Windows or Unix)
+      // Look for _bmad/ or bmad/ in the path and extract everything after it
+      // Match patterns like: /_bmad/core/tasks/... or /bmad/core/tasks/...
+      const bmadMatch = itemPath.match(/\/_bmad\/(.+)$/) || itemPath.match(/\/bmad\/(.+)$/);
+      if (bmadMatch) {
+        // Found /_bmad/ or /bmad/ - use relative path after it
+        itemPath = `{project-root}/${this.bmadFolderName}/${bmadMatch[1]}`;
+      } else if (itemPath.startsWith('_bmad/')) {
+        // Relative path starting with _bmad/
+        itemPath = `{project-root}/${this.bmadFolderName}/${itemPath.slice(6)}`;
+      } else if (itemPath.startsWith('bmad/')) {
+        // Relative path starting with bmad/
+        itemPath = `{project-root}/${this.bmadFolderName}/${itemPath.slice(5)}`;
+      } else if (!itemPath.startsWith('{project-root}')) {
+        // For other relative paths, prefix with project root and bmad folder
+        itemPath = `{project-root}/${this.bmadFolderName}/${itemPath}`;
+      }
     }
 
     return `---
