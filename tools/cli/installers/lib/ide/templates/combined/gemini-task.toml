@@ -1,4 +1,4 @@
-description = "Executes the {{name}} task from the BMad Method."
+description = "Executes the {{name}} task from the BMAD Method."
 prompt = """
 Execute the BMAD '{{name}}' task.
 

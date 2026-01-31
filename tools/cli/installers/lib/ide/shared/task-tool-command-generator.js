@@ -42,6 +42,7 @@ class TaskToolCommandGenerator {
         taskPath = taskPath.slice(6); // Remove '_bmad/'
       }
 
+      const taskExt = path.extname(taskPath) || '.md';
       artifacts.push({
         type: 'task',
         name: task.name,
@@ -49,7 +50,7 @@ class TaskToolCommandGenerator {
         description: task.description || `Execute ${task.displayName || task.name}`,
         module: task.module,
         // Use forward slashes for cross-platform consistency (not path.join which uses backslashes on Windows)
-        relativePath: `${task.module}/tasks/${task.name}.md`,
+        relativePath: `${task.module}/tasks/${task.name}${taskExt}`,
         path: taskPath,
       });
     }
@@ -62,6 +63,7 @@ class TaskToolCommandGenerator {
         toolPath = toolPath.slice(6); // Remove '_bmad/'
       }
 
+      const toolExt = path.extname(toolPath) || '.md';
       artifacts.push({
         type: 'tool',
         name: tool.name,
@@ -69,7 +71,7 @@ class TaskToolCommandGenerator {
         description: tool.description || `Execute ${tool.displayName || tool.name}`,
         module: tool.module,
         // Use forward slashes for cross-platform consistency (not path.join which uses backslashes on Windows)
-        relativePath: `${tool.module}/tools/${tool.name}.md`,
+        relativePath: `${tool.module}/tools/${tool.name}${toolExt}`,
         path: toolPath,
       });
     }
@@ -261,7 +263,7 @@ Follow all instructions in the ${type} file exactly as written.
     // Generate command files for tasks
     for (const task of standaloneTasks) {
       const commandContent = this.generateCommandContent(task, 'task');
-      // Use underscore format: bmad_bmm_name.md
+      // Use dash format: bmad-bmm-name.md
       const flatName = toDashPath(`${task.module}/tasks/${task.name}.md`);
       const commandPath = path.join(baseCommandsDir, flatName);
       await fs.ensureDir(path.dirname(commandPath));
@@ -272,7 +274,7 @@ Follow all instructions in the ${type} file exactly as written.
     // Generate command files for tools
     for (const tool of standaloneTools) {
       const commandContent = this.generateCommandContent(tool, 'tool');
-      // Use underscore format: bmad_bmm_name.md
+      // Use dash format: bmad-bmm-name.md
       const flatName = toDashPath(`${tool.module}/tools/${tool.name}.md`);
       const commandPath = path.join(baseCommandsDir, flatName);
       await fs.ensureDir(path.dirname(commandPath));
