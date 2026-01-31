@@ -127,6 +127,12 @@ function stripCodeBlocks(content) {
   return content.replaceAll(/```[\s\S]*?```/g, '');
 }
 
+function stripJsonExampleBlocks(content) {
+  // Strip bare JSON example blocks: { and } each on their own line.
+  // These are example/template data (not real file references).
+  return content.replaceAll(/^\{\s*\n(?:.*\n)*?^\}\s*$/gm, '');
+}
+
 // --- Path Mapping ---
 
 function mapInstalledToSource(refPath) {
@@ -218,7 +224,7 @@ function extractYamlRefs(filePath, content) {
 
 function extractMarkdownRefs(filePath, content) {
   const refs = [];
-  const stripped = stripCodeBlocks(content);
+  const stripped = stripJsonExampleBlocks(stripCodeBlocks(content));
 
   function runPattern(regex, type) {
     regex.lastIndex = 0;
