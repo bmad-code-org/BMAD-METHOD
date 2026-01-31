@@ -59,7 +59,9 @@ function toDashPath(relativePath) {
     return 'bmad-unknown.md';
   }
 
-  const withoutExt = relativePath.replace('.md', '');
+  // Strip common file extensions to avoid double extensions in generated filenames
+  // e.g., 'create-story.xml' → 'create-story', 'workflow.yaml' → 'workflow'
+  const withoutExt = relativePath.replace(/\.(md|yaml|yml|json|xml|toml)$/i, '');
   const parts = withoutExt.split(/[/\\]/);
 
   const module = parts[0];
@@ -183,7 +185,8 @@ function toUnderscoreName(module, type, name) {
  * @deprecated Use toDashPath instead
  */
 function toUnderscorePath(relativePath) {
-  const withoutExt = relativePath.replace('.md', '');
+  // Strip common file extensions (same as toDashPath for consistency)
+  const withoutExt = relativePath.replace(/\.(md|yaml|yml|json|xml|toml)$/i, '');
   const parts = withoutExt.split(/[/\\]/);
 
   const module = parts[0];

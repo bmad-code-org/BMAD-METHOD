@@ -411,8 +411,9 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
     // Reuse central logic to ensure consistent naming conventions
     const standardName = toDashPath(artifact.relativePath);
 
-    // Clean up potential double extensions from source files (e.g. .yaml.md -> .md)
-    const baseName = standardName.replace(/\.(yaml|yml)\.md$/, '.md');
+    // Clean up potential double extensions from source files (e.g. .yaml.md, .xml.md -> .md)
+    // This handles any extensions that might slip through toDashPath()
+    const baseName = standardName.replace(/\.(md|yaml|yml|json|xml|toml)\.md$/i, '.md');
 
     // If using default markdown, preserve the bmad-agent- prefix for agents
     if (extension === '.md') {
