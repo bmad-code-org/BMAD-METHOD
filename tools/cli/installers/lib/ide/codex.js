@@ -94,6 +94,8 @@ class CodexSetup extends BaseIdeSetup {
     const tasks = await getTasksFromBmad(bmadDir, options.selectedModules || []);
     const taskArtifacts = [];
     for (const task of tasks) {
+      const relativeTaskPath = path.relative(projectDir, task.path).replaceAll('\\', '/');
+      const taskPromptPath = `{project-root}/${relativeTaskPath}`;
       const content = await this.readAndProcessWithProject(
         task.path,
         {
@@ -105,7 +107,9 @@ class CodexSetup extends BaseIdeSetup {
       taskArtifacts.push({
         type: 'task',
         module: task.module,
+        name: task.name,
         sourcePath: task.path,
+        path: taskPromptPath,
         relativePath: path.join(task.module, 'tasks', `${task.name}.md`),
         content,
       });
