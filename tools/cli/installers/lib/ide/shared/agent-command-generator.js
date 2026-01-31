@@ -8,7 +8,7 @@ const { toColonPath, toDashPath, customAgentColonName, customAgentDashName } = r
  * Similar to WorkflowCommandGenerator but for agents
  */
 class AgentCommandGenerator {
-  constructor(bmadFolderName = 'bmad') {
+  constructor(bmadFolderName = '_bmad') {
     this.templatePath = path.join(__dirname, '../templates/agent-command-template.md');
     this.bmadFolderName = bmadFolderName;
   }

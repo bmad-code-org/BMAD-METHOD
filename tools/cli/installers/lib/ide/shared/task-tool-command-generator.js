@@ -15,7 +15,7 @@ class TaskToolCommandGenerator {
    * filesystem paths with '_bmad/' prefix (the actual folder name), while bmadFolderName is
    * used for template placeholder rendering ({{bmadFolderName}}).
    */
-  constructor(bmadFolderName = 'bmad') {
+  constructor(bmadFolderName = '_bmad') {
     this.bmadFolderName = bmadFolderName;
   }
 

@@ -8,7 +8,7 @@ const { toColonPath, toDashPath, customAgentColonName, customAgentDashName } = r
  * Generates command files for each workflow in the manifest
  */
 class WorkflowCommandGenerator {
-  constructor(bmadFolderName = 'bmad') {
+  constructor(bmadFolderName = '_bmad') {
     this.templatePath = path.join(__dirname, '../templates/workflow-command-template.md');
     this.bmadFolderName = bmadFolderName;
   }
