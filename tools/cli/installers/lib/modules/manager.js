@@ -416,7 +416,7 @@ class ModuleManager {
       if (needsDependencyInstall || wasNewClone || nodeModulesMissing) {
         const installSpinner = ora(`Installing dependencies for ${moduleInfo.name}...`).start();
         try {
-          execSync('npm install --production --no-audit --no-fund --prefer-offline --no-progress', {
+          execSync('npm install --production --no-audit --no-fund --prefer-offline --no-progress --legacy-peer-deps', {
             cwd: moduleCacheDir,
             stdio: 'pipe',
             timeout: 120_000, // 2 minute timeout
@@ -441,7 +441,7 @@ class ModuleManager {
         if (packageJsonNewer) {
           const installSpinner = ora(`Installing dependencies for ${moduleInfo.name}...`).start();
           try {
-            execSync('npm install --production --no-audit --no-fund --prefer-offline --no-progress', {
+            execSync('npm install --production --no-audit --no-fund --prefer-offline --no-progress --legacy-peer-deps', {
               cwd: moduleCacheDir,
               stdio: 'pipe',
               timeout: 120_000, // 2 minute timeout
