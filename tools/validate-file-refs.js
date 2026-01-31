@@ -124,13 +124,13 @@ function getSourceFiles(dir) {
 // --- Code Block Stripping ---
 
 function stripCodeBlocks(content) {
-  return content.replaceAll(/```[\s\S]*?```/g, '');
+  return content.replaceAll(/```[\s\S]*?```/g, (m) => m.replaceAll(/[^\n]/g, ''));
 }
 
 function stripJsonExampleBlocks(content) {
   // Strip bare JSON example blocks: { and } each on their own line.
   // These are example/template data (not real file references).
-  return content.replaceAll(/^\{\s*\n(?:.*\n)*?^\}\s*$/gm, '');
+  return content.replaceAll(/^\{\s*\n(?:.*\n)*?^\}\s*$/gm, (m) => m.replaceAll(/[^\n]/g, ''));
 }
 
 // --- Path Mapping ---
@@ -368,6 +368,7 @@ for (const filePath of files) {
       }
       broken.push({ ref, resolved: path.relative(PROJECT_ROOT, resolved) });
       brokenRefs++;
+      continue;
     }
 
     if (VERBOSE && resolved) {
