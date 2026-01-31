@@ -1,0 +1,15 @@
+# Test: Variable with empty prompt
+# Expected: FAIL
+# Error code: custom
+# Error path: my_variable
+# Error message: my_variable.prompt must be a non-empty string
+
+code: test-module
+name: Test Module
+header: Test Header
+subheader: Test Subheader
+default_selected: false
+
+my_variable:
+  prompt: "   "
+

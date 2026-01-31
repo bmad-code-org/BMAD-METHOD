@@ -1,0 +1,14 @@
+# Test: Valid module with variable definition (prompt style)
+# Expected: PASS
+
+code: var-module
+name: Variable Module
+header: Module With Variables
+subheader: Demonstrates variable definitions
+default_selected: false
+
+project_name:
+  prompt: What is your project name?
+  required: true
+  result: The project name is {project_name}
+

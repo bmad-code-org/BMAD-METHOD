@@ -1,0 +1,9 @@
+# Test: Valid module with default_selected set to true
+# Expected: PASS
+
+code: core-like
+name: Core Module
+header: Core Header
+subheader: Module with default_selected true
+default_selected: true
+
