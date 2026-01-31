@@ -1,0 +1,199 @@
+<task id="_bmad/core/tasks/step-enforcement.xml" name="Step Enforcement System" standalone="false">
+  <objective>Enforce mandatory step execution with verification gates - prevent step skipping in multi-step workflows</objective>
+
+  <critical>This enforcement layer provides optional verification gates for complex workflows</critical>
+
+  <when-to-use>
+    <scenario>Multi-step workflows where step-skipping has been observed</scenario>
+    <scenario>Workflows requiring Task agent spawning (multi-agent coordination)</scenario>
+    <scenario>Workflows with quality gates that must be verified</scenario>
+    <scenario>Complex implementation pipelines where evidence of completion matters</scenario>
+  </when-to-use>
+
+  <enforcement-rules>
+    <rule n="1">Before executing ANY step, verify PREVIOUS step completed with EVIDENCE</rule>
+    <rule n="2">Each step must provide PROOF of completion (file created, Task agent ID, test results)</rule>
+    <rule n="3">If step requires Task agent, VERIFY agent was spawned (check for task_id in evidence)</rule>
+    <rule n="4">If step has quality_gate=true, VERIFY gate passed before proceeding</rule>
+    <rule n="5">HALT if any verification fails - report what's missing</rule>
+  </enforcement-rules>
+
+  <step-verification-gate>
+    <mandate>Execute BEFORE each step transition when enforcement is active</mandate>
+
+    <check n="1" desc="Verify previous step completed">
+      <action>Check state file: steps.{prev_step}.status == "completed"</action>
+      <if condition="status != completed">
+        <halt>Previous step not marked complete: {prev_step}
+Cannot proceed to {current_step}
+Fix state file or complete previous step.</halt>
+      </if>
+    </check>
+
+    <check n="2" desc="Verify evidence exists">
+      <action>Check state file for evidence_{prev_step}</action>
+      <required-evidence>
+        <if step_type="implementation">
+          - files_created: [list]
+          - tests_passing: true
+          - commit_sha: {hash}
+        </if>
+        <if step_type="code_review">
+          - review_invoked: true
+          - review_report_path: {path}
+          - issues_found: {count}
+        </if>
+        <if step_type="quality_checks">
+          - tests_passed: true
+          - type_check_passed: true
+          - lint_passed: true
+        </if>
+      </required-evidence>
+
+      <if condition="evidence missing or incomplete">
+        <halt>Step {prev_step} marked complete but missing required evidence:
+{list_missing_evidence}
+Provide evidence or re-execute step.</halt>
+      </if>
+    </check>
+
+    <check n="3" desc="Verify Task agents spawned when required">
+      <action>Read step file: {current_step_file}</action>
+      <action>Check for tags: invoke-workflow, spawn_agents, multi-agent</action>
+
+      <if condition="step requires Task agents">
+        <action>Check evidence for task_agent_ids: [list]</action>
+        <if condition="no task_agent_ids in evidence">
+          <halt>Step {current_step} requires Task agents but none were spawned.
+Required: {agent_count} agents for {purpose}
+Found: 0 agents in evidence
+Spawn required Task agents.</halt>
+        </if>
+      </if>
+    </check>
+
+    <check n="4" desc="Verify quality gates passed">
+      <action>Check step file: quality_gate attribute</action>
+
+      <if condition="quality_gate == true">
+        <action>Verify gate criteria from evidence</action>
+        <if condition="gate criteria not met">
+          <halt>Step {prev_step} has quality_gate=true but criteria not met:
+{list_failed_criteria}
+Meet quality gate criteria before proceeding.</halt>
+        </if>
+      </if>
+    </check>
+  </step-verification-gate>
+
+  <task-agent-enforcement>
+    <mandate>When step file contains invoke-workflow or spawn_agents tags</mandate>
+
+    <detection>
+      <action>Parse step markdown/XML for:</action>
+      <patterns>
+        - "invoke-workflow"
+        - "multi-agent"
+        - "spawn agents"
+        - "Task agent"
+      </patterns>
+    </detection>
+
+    <enforcement>
+      <if condition="patterns detected">
+        <mandate>LLM MUST use Task or Skill tool to spawn agents</mandate>
+        <mandate>MUST record task_id or skill_execution_id in evidence</mandate>
+        <mandate>CANNOT proceed without agent spawn proof</mandate>
+
+        <verification>
+          Check evidence contains:
+          - agent_spawned: true
+          - agent_type: {type}
+          - task_id: {id} OR skill_id: {id}
+        </verification>
+      </if>
+    </enforcement>
+  </task-agent-enforcement>
+
+  <evidence-recording-protocol>
+    <mandate>After EVERY step, record evidence in state file</mandate>
+
+    <template>
+```yaml
+steps:
+  step-{n}-{name}:
+    status: completed
+    completed_at: "{timestamp}"
+    evidence:
+      # MANDATORY for all steps
+      step_file_loaded: "{path}"  # Proves step file was read
+
+      # Step-specific evidence (include what applies)
+      files_created: ["{paths}"]
+      commit_sha: "{hash}"
+      tests_passing: true
+      review_invoked: true
+      review_report: "{path}"
+      issues_found: {count}
+      task_agents_spawned: {count}
+```
+    </template>
+  </evidence-recording-protocol>
+
+  <integration>
+    <desc>How to activate enforcement in a workflow</desc>
+
+    <in-workflow-yaml>
+```yaml
+# Add to workflow.yaml to enable enforcement
+enforcement:
+  enabled: true
+  state_file: "{sprint_artifacts}/workflow-state-{{id}}.yaml"
+  require_evidence: true
+  halt_on_missing: true
+```
+    </in-workflow-yaml>
+
+    <in-workflow-instructions>
+```markdown
+<!-- Add at start of instructions to activate -->
+<enforcement active="true" />
+
+<!-- Enforcement gate runs automatically between steps -->
+```
+    </in-workflow-instructions>
+  </integration>
+
+  <llm-instructions>
+    <critical-mandate>
+      When executing workflows with enforcement active:
+
+      1. **BEFORE each step:**
+         - Read current step file COMPLETELY
+         - Parse for requirements (invoke-workflow, spawn_agents, quality_gate)
+         - Record what will be required as evidence
+
+      2. **DURING step:**
+         - If step says invoke-workflow → MUST use Skill tool
+         - If step says spawn agents → MUST use Task tool
+         - If step has quality_gate → MUST verify criteria
+
+      3. **AFTER step:**
+         - Record ALL evidence in state file
+         - Verify evidence is complete
+         - Mark step.status = completed ONLY if evidence present
+
+      4. **BEFORE next step:**
+         - Run step-enforcement gate
+         - Provide prev_step evidence
+         - If gate HALTS → STOP, don't proceed
+    </critical-mandate>
+
+    <failure-modes-prevented>
+      - Skipping steps → HALTED (no evidence for skipped step)
+      - Not spawning Task agents → HALTED (missing agent IDs in evidence)
+      - Skipping quality gates → HALTED (criteria not met in evidence)
+      - Not reading step files → HALTED (can't provide evidence of what step said)
+    </failure-modes-prevented>
+  </llm-instructions>
+</task>
