@@ -86,10 +86,11 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
       results.workflows = await this.writeWorkflowArtifacts(targetPath, artifacts, template_type, config);
     }
 
-    // Install tasks and tools
+    // Install tasks and tools using template system (supports TOML for Gemini, MD for others)
     if (!artifact_types || artifact_types.includes('tasks') || artifact_types.includes('tools')) {
-      const taskToolGen = new TaskToolCommandGenerator();
-      const taskToolResult = await taskToolGen.generateDashTaskToolCommands(projectDir, bmadDir, targetPath);
+      const taskToolGen = new TaskToolCommandGenerator(this.bmadFolderName);
+      const { artifacts } = await taskToolGen.collectTaskToolArtifacts(bmadDir);
+      const taskToolResult = await this.writeTaskToolArtifacts(targetPath, artifacts, template_type, config);
       results.tasks = taskToolResult.tasks || 0;
       results.tools = taskToolResult.tools || 0;
     }
@@ -178,6 +179,53 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
     }
 
     return count;
+  }
+
+  /**
+   * Write task/tool artifacts to target directory using templates
+   * @param {string} targetPath - Target directory path
+   * @param {Array} artifacts - Task/tool artifacts
+   * @param {string} templateType - Template type to use
+   * @param {Object} config - Installation configuration
+   * @returns {Promise<Object>} Counts of tasks and tools written
+   */
+  async writeTaskToolArtifacts(targetPath, artifacts, templateType, config = {}) {
+    let taskCount = 0;
+    let toolCount = 0;
+
+    // Pre-load templates to avoid repeated file I/O in the loop
+    const taskTemplate = await this.loadTemplate(templateType, 'task', config, 'default-task');
+    const toolTemplate = await this.loadTemplate(templateType, 'tool', config, 'default-tool');
+
+    const { artifact_types } = config;
+
+    for (const artifact of artifacts) {
+      if (artifact.type !== 'task' && artifact.type !== 'tool') {
+        continue;
+      }
+
+      // Skip if the specific artifact type is not requested in config
+      if (artifact_types) {
+        if (artifact.type === 'task' && !artifact_types.includes('tasks')) continue;
+        if (artifact.type === 'tool' && !artifact_types.includes('tools')) continue;
+      }
+
+      // Use pre-loaded template based on artifact type
+      const { content: template, extension } = artifact.type === 'task' ? taskTemplate : toolTemplate;
+
+      const content = this.renderTemplate(template, artifact);
+      const filename = this.generateFilename(artifact, artifact.type, extension);
+      const filePath = path.join(targetPath, filename);
+      await this.writeFile(filePath, content);
+
+      if (artifact.type === 'task') {
+        taskCount++;
+      } else {
+        toolCount++;
+      }
+    }
+
+    return { tasks: taskCount, tools: toolCount };
   }
 
   /**
@@ -314,10 +362,24 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
   renderTemplate(template, artifact) {
     // Use the appropriate path property based on artifact type
     let pathToUse = artifact.relativePath || '';
-    if (artifact.type === 'agent-launcher') {
-      pathToUse = artifact.agentPath || artifact.relativePath || '';
-    } else if (artifact.type === 'workflow-command') {
-      pathToUse = artifact.workflowPath || artifact.relativePath || '';
+    switch (artifact.type) {
+      case 'agent-launcher': {
+        pathToUse = artifact.agentPath || artifact.relativePath || '';
+
+        break;
+      }
+      case 'workflow-command': {
+        pathToUse = artifact.workflowPath || artifact.relativePath || '';
+
+        break;
+      }
+      case 'task':
+      case 'tool': {
+        pathToUse = artifact.path || artifact.relativePath || '';
+
+        break;
+      }
+      // No default
     }
 
     let rendered = template

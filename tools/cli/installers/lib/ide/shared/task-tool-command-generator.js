@@ -9,6 +9,81 @@ const { toColonName, toColonPath, toDashPath } = require('./path-utils');
  */
 class TaskToolCommandGenerator {
   /**
+   * @param {string} bmadFolderName - Name of the BMAD folder for template rendering (default: 'bmad')
+   * Note: This parameter is accepted for API consistency with AgentCommandGenerator and
+   * WorkflowCommandGenerator, but is not used for path stripping. The manifest always stores
+   * filesystem paths with '_bmad/' prefix (the actual folder name), while bmadFolderName is
+   * used for template placeholder rendering ({{bmadFolderName}}).
+   */
+  constructor(bmadFolderName = 'bmad') {
+    this.bmadFolderName = bmadFolderName;
+  }
+
+  /**
+   * Collect task and tool artifacts for IDE installation
+   * @param {string} bmadDir - BMAD installation directory
+   * @returns {Promise<Object>} Artifacts array with metadata
+   */
+  async collectTaskToolArtifacts(bmadDir) {
+    const tasks = await this.loadTaskManifest(bmadDir);
+    const tools = await this.loadToolManifest(bmadDir);
+
+    // Filter to only standalone items
+    const standaloneTasks = tasks ? tasks.filter((t) => t.standalone === 'true' || t.standalone === true) : [];
+    const standaloneTools = tools ? tools.filter((t) => t.standalone === 'true' || t.standalone === true) : [];
+
+    const artifacts = [];
+
+    // Collect task artifacts
+    for (const task of standaloneTasks) {
+      let taskPath = (task.path || '').replaceAll('\\', '/');
+      // Remove _bmad/ prefix if present to get relative path within bmad folder
+      if (taskPath.startsWith('_bmad/')) {
+        taskPath = taskPath.slice(6); // Remove '_bmad/'
+      }
+
+      artifacts.push({
+        type: 'task',
+        name: task.name,
+        displayName: task.displayName || task.name,
+        description: task.description || `Execute ${task.displayName || task.name}`,
+        module: task.module,
+        // Use forward slashes for cross-platform consistency (not path.join which uses backslashes on Windows)
+        relativePath: `${task.module}/tasks/${task.name}.md`,
+        path: taskPath,
+      });
+    }
+
+    // Collect tool artifacts
+    for (const tool of standaloneTools) {
+      let toolPath = (tool.path || '').replaceAll('\\', '/');
+      // Remove _bmad/ prefix if present to get relative path within bmad folder
+      if (toolPath.startsWith('_bmad/')) {
+        toolPath = toolPath.slice(6); // Remove '_bmad/'
+      }
+
+      artifacts.push({
+        type: 'tool',
+        name: tool.name,
+        displayName: tool.displayName || tool.name,
+        description: tool.description || `Execute ${tool.displayName || tool.name}`,
+        module: tool.module,
+        // Use forward slashes for cross-platform consistency (not path.join which uses backslashes on Windows)
+        relativePath: `${tool.module}/tools/${tool.name}.md`,
+        path: toolPath,
+      });
+    }
+
+    return {
+      artifacts,
+      counts: {
+        tasks: standaloneTasks.length,
+        tools: standaloneTools.length,
+      },
+    };
+  }
+
+  /**
    * Generate task and tool commands from manifest CSVs
    * @param {string} projectDir - Project directory
    * @param {string} bmadDir - BMAD installation directory
