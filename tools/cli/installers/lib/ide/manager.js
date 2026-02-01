@@ -74,7 +74,9 @@ class IdeManager {
         if (HandlerClass) {
           const instance = new HandlerClass();
           if (instance.name && typeof instance.name === 'string') {
-            instance.setBmadFolderName(this.bmadFolderName);
+            if (typeof instance.setBmadFolderName === 'function') {
+              instance.setBmadFolderName(this.bmadFolderName);
+            }
             this.handlers.set(instance.name, instance);
           }
         }
@@ -102,7 +104,9 @@ class IdeManager {
       if (!platformInfo.installer) continue;
 
       const handler = new ConfigDrivenIdeSetup(platformCode, platformInfo);
-      handler.setBmadFolderName(this.bmadFolderName);
+      if (typeof handler.setBmadFolderName === 'function') {
+        handler.setBmadFolderName(this.bmadFolderName);
+      }
       this.handlers.set(platformCode, handler);
     }
   }
