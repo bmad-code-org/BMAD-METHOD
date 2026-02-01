@@ -1,0 +1,124 @@
+name: Bug Report
+description: File a bug report to help us improve BMad Method
+title: "[BUG] "
+labels: bug
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for filing a bug report! Please fill out the information below to help us reproduce and fix the issue.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Clear and concise description of what the bug is
+      placeholder: e.g., When I run /dev-story, it crashes on step 3
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Step-by-step instructions to reproduce the behavior
+      placeholder: |
+        1. Run 'npx bmad-method install'
+        2. Select option X
+        3. Run workflow Y
+        4. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What you expected to happen
+      placeholder: The workflow should complete successfully
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What actually happened
+      placeholder: The workflow crashed with error "..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: Add screenshots if applicable (paste images directly)
+      placeholder: Paste any relevant screenshots here
+
+  - type: dropdown
+    id: module
+    attributes:
+      label: Which module is this for?
+      description: Select the BMad module this issue relates to
+      options:
+        - BMad Method (BMM) - Core Framework
+        - BMad Builder (BMB) - Agent Builder Tool
+        - Test Architect (TEA) - Test Strategy Module
+        - Game Dev Studio (BMGD) - Game Development Module
+        - Creative Intelligence Suite (CIS) - Innovation Module
+        - Not sure / Other
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: BMad Version
+      description: "Check with: npx bmad-method --version or check package.json"
+      placeholder: e.g., 6.0.0-Beta.4
+    validations:
+      required: true
+
+  - type: dropdown
+    id: ide
+    attributes:
+      label: Which AI IDE are you using?
+      options:
+        - Claude Code
+        - Cursor
+        - Windsurf
+        - Copilot CLI / GitHub Copilot
+        - Kilo Code
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Operating System
+      options:
+        - macOS
+        - Windows
+        - Linux
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Copy and paste any relevant log output
+      render: shell
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Confirm
+      options:
+        - label: I've searched for existing issues
+          required: true
+        - label: I'm using the latest version
+          required: false

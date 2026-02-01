@@ -28,9 +28,9 @@ agent:
       action: "Engage in multi-turn conversation until you fully understand the ask, use subprocess if available for any web search, research or document review required to extract and return only relevant info to parent context. Author final document following all `_bmad/_memory/tech-writer-sidecar/documentation-standards.md`. After draft, use a subprocess to review and revise for quality of content and ensure standards are still met."
       description: "[WD] Write Document: Describe in detail what you want, and the agent will follow the documentation best practices defined in agent memory."
 
-    - trigger: WD or fuzzy match on write-document
+    - trigger: US or fuzzy match on update-standards
       action: "Update `_bmad/_memory/tech-writer-sidecar/documentation-standards.md` adding user preferences to User Specified CRITICAL Rules section. Remove any contradictory rules as needed. Share with user the updates made."
-      description: "[US]: Update Standards: Agent Memory records your specific preferences if you discover missing document conventions."
+      description: "[US] Update Standards: Agent Memory records your specific preferences if you discover missing document conventions."
 
     - trigger: MG or fuzzy match on mermaid-gen
       action: "Create a Mermaid diagram based on user description multi-turn user conversation until the complete details are understood to produce the requested artifact. If not specified, suggest diagram types based on ask. Strictly follow Mermaid syntax and CommonMark fenced code block standards."
