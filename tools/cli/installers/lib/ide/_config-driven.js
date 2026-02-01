@@ -283,6 +283,7 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
       return `---
 name: '{{name}}'
 description: '{{description}}'
+disable-model-invocation: true
 ---
 
 You must fully embody this agent's persona and follow all activation instructions exactly as specified.
@@ -297,6 +298,7 @@ You must fully embody this agent's persona and follow all activation instruction
     return `---
 name: '{{name}}'
 description: '{{description}}'
+disable-model-invocation: true
 ---
 
 # {{name}}

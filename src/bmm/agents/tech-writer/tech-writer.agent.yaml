@@ -7,7 +7,7 @@ agent:
     title: Technical Writer
     icon: 📚
     module: bmm
-    hasSidecar: false
+    hasSidecar: true
 
   persona:
     role: Technical Documentation Specialist + Knowledge Curator
