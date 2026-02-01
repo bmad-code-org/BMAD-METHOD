@@ -2,6 +2,7 @@ const path = require('node:path');
 const fs = require('fs-extra');
 const os = require('node:os');
 const chalk = require('chalk');
+const yaml = require('yaml');
 const { BaseIdeSetup } = require('./_base-ide');
 const { WorkflowCommandGenerator } = require('./shared/workflow-command-generator');
 const { AgentCommandGenerator } = require('./shared/agent-command-generator');
@@ -102,9 +103,32 @@ class CodexSetup extends BaseIdeSetup {
         },
         projectDir,
       );
+      let displayName = task.name;
+      let description;
+      let declaredName = task.name;
+
+      const frontmatterMatch = content.match(/^---\s*\n([\s\S]*?)\n---/);
+      if (frontmatterMatch) {
+        try {
+          const frontmatter = yaml.parse(frontmatterMatch[1]);
+          if (frontmatter && typeof frontmatter === 'object') {
+            declaredName = frontmatter.name || declaredName;
+            displayName = frontmatter.displayName || frontmatter.name || displayName;
+            description = frontmatter.description || description;
+          }
+        } catch {
+          // Ignore frontmatter parse errors
+        }
+      }
+
+      const taskPath = path.posix.join(this.bmadFolderName, task.module, 'tasks', `${task.name}.md`);
       taskArtifacts.push({
         type: 'task',
         module: task.module,
+        name: declaredName,
+        displayName,
+        description,
+        path: taskPath,
         sourcePath: task.path,
         relativePath: path.join(task.module, 'tasks', `${task.name}.md`),
         content,
