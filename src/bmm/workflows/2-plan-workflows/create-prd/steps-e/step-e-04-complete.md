@@ -4,7 +4,7 @@ description: 'Complete & Validate - Present options for next steps including ful
 
 # File references (ONLY variables used in this step)
 prdFile: '{prd_file_path}'
-validationWorkflow: './steps-v/step-v-01-discovery.md'
+validationWorkflow: '../steps-v/step-v-01-discovery.md'
 ---
 
 # Step E-4: Complete & Validate
