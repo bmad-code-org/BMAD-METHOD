@@ -52,14 +52,16 @@ To provide a comprehensive summary of all findings and give the report a final p
 
 ### 1. Initialize Final Assessment
 
-"Completing **Final Assessment**.
+<display>
+Completing **Final Assessment**.
 
 I will now:
 
 1. Review all findings from previous steps
 2. Provide a comprehensive summary
 3. Add specific recommendations
-4. Determine overall readiness status"
+4. Determine overall readiness status
+</display>
 
 ### 2. Review Previous Findings
 
@@ -105,11 +107,13 @@ This assessment identified [X] issues across [Y] categories. Address the critica
 ### 5. Present Completion
 
 Display:
-"**Implementation Readiness Assessment Complete**
+<display>
+**Implementation Readiness Assessment Complete**
 
 Report generated: {outputFile}
 
-The assessment found [number] issues requiring attention. Review the detailed report for specific findings and recommendations."
+The assessment found [number] issues requiring attention. Review the detailed report for specific findings and recommendations.
+</display>
 
 ## WORKFLOW COMPLETE
 

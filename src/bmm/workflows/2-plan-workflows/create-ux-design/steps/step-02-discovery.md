@@ -51,7 +51,8 @@ Understand the project context, target users, and what makes this product specia
 ### 1. Review Loaded Context
 
 Start by analyzing what we know from the loaded documents:
-"Based on the project documentation we have loaded, let me confirm what I'm understanding about {{project_name}}.
+<display>
+Based on the project documentation we have loaded, let me confirm what I'm understanding about {{project_name}}.
 
 **From the documents:**
 {summary of key insights from loaded PRD, briefs, and other context documents}
@@ -62,12 +63,14 @@ Start by analyzing what we know from the loaded documents:
 **Key Features/Goals:**
 {summary of main features and goals from loaded documents}
 
-Does this match your understanding? Are there any corrections or additions you'd like to make?"
+Does this match your understanding? Are there any corrections or additions you'd like to make?
+</display>
 
 ### 2. Fill Context Gaps (If no documents or gaps exist)
 
 If no documents were loaded or key information is missing:
-"Since we don't have complete documentation, let's start with the essentials:
+<display>
+Since we don't have complete documentation, let's start with the essentials:
 
 **What are you building?** (Describe your product in 1-2 sentences)
 
@@ -75,12 +78,14 @@ If no documents were loaded or key information is missing:
 
 **What makes this special or different?** (What's the unique value proposition?)
 
-**What's the main thing users will do with this?** (Core user action or goal)"
+**What's the main thing users will do with this?** (Core user action or goal)
+</display>
 
 ### 3. Explore User Context Deeper
 
 Dive into user understanding:
-"Let me understand your users better to inform the UX design:
+<display>
+Let me understand your users better to inform the UX design:
 
 **User Context Questions:**
 
@@ -89,12 +94,14 @@ Dive into user understanding:
 - What would make them say 'this is exactly what I needed'?
 - How tech-savvy are your target users?
 - What devices will they use most?
-- When/where will they use this product?"
+- When/where will they use this product?
+</display>
 
 ### 4. Identify UX Design Challenges
 
 Surface the key UX challenges to address:
-"From what we've discussed, I'm seeing some key UX design considerations:
+<display>
+From what we've discussed, I'm seeing some key UX design considerations:
 
 **Design Challenges:**
 
@@ -107,7 +114,8 @@ Surface the key UX challenges to address:
 - [Identify 2-3 areas where great UX could create competitive advantage]
 - [Note any opportunities for innovative UX patterns]
 
-Does this capture the key UX considerations we need to address?"
+Does this capture the key UX considerations we need to address?
+</display>
 
 ### 5. Generate Project Understanding Content
 
@@ -140,14 +148,16 @@ When saving to document, append these Level 2 and Level 3 sections:
 ### 6. Present Content and Menu
 
 Show the generated project understanding content and present choices:
-"I've documented our understanding of {{project_name}} from a UX perspective. This will guide all our design decisions moving forward.
+<display>
+I've documented our understanding of {{project_name}} from a UX perspective. This will guide all our design decisions moving forward.
 
 **Here's what I'll add to the document:**
 
 [Show the complete markdown content from step 5]
 
 **What would you like to do?**
-[C] Continue - Save this to the document and move to core experience definition"
+[C] Continue - Save this to the document and move to core experience definition
+</display>
 
 ### 7. Handle Menu Selection
 

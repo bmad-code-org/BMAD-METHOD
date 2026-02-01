@@ -51,7 +51,8 @@ Define the core interaction that, if nailed, makes everything else follow in the
 ### 1. Identify the Defining Experience
 
 Focus on the core interaction:
-"Every successful product has a defining experience - the core interaction that, if we nail it, everything else follows.
+<display>
+Every successful product has a defining experience - the core interaction that, if we nail it, everything else follows.
 
 **Think about these famous examples:**
 
@@ -63,12 +64,14 @@ Focus on the core interaction:
 **For {{project_name}}:**
 What's the core action that users will describe to their friends?
 What's the interaction that makes users feel successful?
-If we get ONE thing perfectly right, what should it be?"
+If we get ONE thing perfectly right, what should it be?
+</display>
 
 ### 2. Explore the User's Mental Model
 
 Understand how users think about the core task:
-"**User Mental Model Questions:**
+<display>
+**User Mental Model Questions:**
 
 - How do users currently solve this problem?
 - What mental model do they bring to this task?
@@ -79,12 +82,14 @@ Understand how users think about the core task:
 
 - What do users love/hate about existing approaches?
 - What shortcuts or workarounds do they use?
-- What makes existing solutions feel magical or terrible?"
+- What makes existing solutions feel magical or terrible?
+</display>
 
 ### 3. Define Success Criteria for Core Experience
 
 Establish what makes the core interaction successful:
-"**Core Experience Success Criteria:**
+<display>
+**Core Experience Success Criteria:**
 
 - What makes users say 'this just works'?
 - When do they feel smart or accomplished?
@@ -96,12 +101,14 @@ Establish what makes the core interaction successful:
 
 - [Success indicator 1]
 - [Success indicator 2]
-- [Success indicator 3]"
+- [Success indicator 3]
+</display>
 
 ### 4. Identify Novel vs. Established Patterns
 
 Determine if we need to innovate or can use proven patterns:
-"**Pattern Analysis:**
+<display>
+**Pattern Analysis:**
 Looking at your core experience, does this:
 
 - Use established UX patterns that users already understand?
@@ -118,12 +125,14 @@ Looking at your core experience, does this:
 
 - Which proven patterns should we adopt?
 - How can we innovate within familiar patterns?
-- What's our unique twist on established interactions?"
+- What's our unique twist on established interactions?
+</display>
 
 ### 5. Define Experience Mechanics
 
 Break down the core interaction into details:
-"**Core Experience Mechanics:**
+<display>
+**Core Experience Mechanics:**
 Let's design the step-by-step flow for [defining experience]:
 
 **1. Initiation:**
@@ -147,7 +156,8 @@ Let's design the step-by-step flow for [defining experience]:
 
 - How do users know they're done?
 - What's the successful outcome?
-- What's next?"
+- What's next?
+</display>
 
 ### 6. Generate Defining Experience Content
 
@@ -184,7 +194,8 @@ When saving to document, append these Level 2 and Level 3 sections:
 ### 7. Present Content and Menu
 
 Show the generated defining experience content and present choices:
-"I've defined the core experience for {{project_name}} - the interaction that will make users love this product.
+<display>
+I've defined the core experience for {{project_name}} - the interaction that will make users love this product.
 
 **Here's what I'll add to the document:**
 
@@ -194,6 +205,7 @@ Show the generated defining experience content and present choices:
 [A] Advanced Elicitation - Let's refine the core experience definition
 [P] Party Mode - Bring different perspectives on the defining interaction
 [C] Continue - Save this to the document and move to visual foundation
+</display>
 
 ### 8. Handle Menu Selection
 

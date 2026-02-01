@@ -55,7 +55,8 @@ Facilitate collaborative architectural decision making, leveraging existing tech
 ### 1. Load Decision Framework & Check Existing Preferences
 
 **Review Technical Preferences from Step 3:**
-"Based on our technical preferences discussion in step 3, let's build on those foundations:
+<display>
+Based on our technical preferences discussion in step 3, let's build on those foundations:
 
 **Your Technical Preferences:**
 {{user_technical_preferences_from_step_3}}
@@ -64,7 +65,8 @@ Facilitate collaborative architectural decision making, leveraging existing tech
 {{starter_template_decisions}}
 
 **Project Context Technical Rules:**
-{{project_context_technical_rules}}"
+{{project_context_technical_rules}}
+</display>
 
 **Identify Remaining Decisions:**
 Based on technical preferences, starter template choice, and project context, identify remaining critical decisions:
@@ -129,24 +131,29 @@ For each category, facilitate collaborative decision making:
 Based on user skill level and project context:
 
 **Expert Mode:**
-"{{Decision_Category}}: {{Specific_Decision}}
+<display>
+{{Decision_Category}}: {{Specific_Decision}}
 
 Options: {{concise_option_list_with_tradeoffs}}
 
-What's your preference for this decision?"
+What's your preference for this decision?
+</display>
 
 **Intermediate Mode:**
-"Next decision: {{Human_Friendly_Category}}
+<display>
+Next decision: {{Human_Friendly_Category}}
 
 We need to choose {{Specific_Decision}}.
 
 Common options:
 {{option_list_with_brief_explanations}}
 
-For your project, I'd lean toward {{recommendation}} because {{reason}}. What are your thoughts?"
+For your project, I'd lean toward {{recommendation}} because {{reason}}. What are your thoughts?
+</display>
 
 **Beginner Mode:**
-"Let's talk about {{Human_Friendly_Category}}.
+<display>
+Let's talk about {{Human_Friendly_Category}}.
 
 {{Educational_Context_About_Why_This_Matters}}
 
@@ -158,7 +165,8 @@ Your main options:
 My suggestion: {{recommendation}}
 This is good for you because {{beginner_friendly_reason}}.
 
-What feels right to you?"
+What feels right to you?
+</display>
 
 **Verify Technology Versions:**
 If decision involves specific technology:
@@ -170,7 +178,9 @@ Search the web: "{{technology}} production readiness"
 ```
 
 **Get User Input:**
-"What's your preference? (or 'explain more' for details)"
+<display>
+What's your preference? (or 'explain more' for details)
+</display>
 
 **Handle User Response:**
 
@@ -191,10 +201,12 @@ Search the web: "{{technology}} production readiness"
 
 After each major decision, identify related decisions:
 
-"This choice means we'll also need to decide:
+<display>
+This choice means we'll also need to decide:
 
 - {{related_decision_1}}
-- {{related_decision_2}}"
+- {{related_decision_2}}
+</display>
 
 ### 5. Generate Decisions Content
 
@@ -249,7 +261,8 @@ After facilitating all decision categories, prepare the content to append:
 
 Show the generated decisions content and present choices:
 
-"I've documented all the core architectural decisions we've made together.
+<display>
+I've documented all the core architectural decisions we've made together.
 
 **Here's what I'll add to the document:**
 
@@ -258,7 +271,8 @@ Show the generated decisions content and present choices:
 **What would you like to do?**
 [A] Advanced Elicitation - Explore innovative approaches to any specific decisions
 [P] Party Mode - Review decisions from multiple perspectives
-[C] Continue - Save these decisions and move to implementation patterns"
+[C] Continue - Save these decisions and move to implementation patterns
+</display>
 
 ### 7. Handle Menu Selection
 

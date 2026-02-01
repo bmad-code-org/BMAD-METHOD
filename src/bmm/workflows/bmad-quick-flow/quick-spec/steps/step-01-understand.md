@@ -67,7 +67,9 @@ a) **Menu Handling:**
 
 a) **Greet the user briefly:**
 
-"Hey {user_name}! What are we building today?"
+<display>
+Hey {user_name}! What are we building today?
+</display>
 
 b) **Get their initial description.** Don't ask detailed questions yet - just understand enough to know where to look.
 
@@ -150,13 +152,15 @@ a) **Create the tech-spec WIP file:**
 
 b) **Report to user:**
 
-"Created: `{wipFile}`
+<display>
+Created: `{wipFile}`
 
 **Captured:**
 
 - Title: {title}
 - Problem: {problem_statement_summary}
-- Scope: {scope_summary}"
+- Scope: {scope_summary}
+</display>
 
 ### 6. Present Checkpoint Menu
 

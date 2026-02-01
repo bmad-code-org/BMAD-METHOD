@@ -55,7 +55,8 @@ To validate epics and stories against the best practices defined in create-epics
 
 ### 1. Initialize Best Practices Validation
 
-"Beginning **Epic Quality Review** against create-epics-and-stories standards.
+<display>
+Beginning **Epic Quality Review** against create-epics-and-stories standards.
 
 I will rigorously validate:
 
@@ -64,7 +65,8 @@ I will rigorously validate:
 - Story dependencies (no forward references)
 - Proper story sizing and completeness
 
-Any deviation from best practices will be flagged as a defect."
+Any deviation from best practices will be flagged as a defect.
+</display>
 
 ### 2. Epic Structure Validation
 

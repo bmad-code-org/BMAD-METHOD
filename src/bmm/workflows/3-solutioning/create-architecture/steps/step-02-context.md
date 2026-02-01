@@ -94,7 +94,8 @@ Calculate and present project complexity:
 
 Present your analysis back to user for validation:
 
-"I'm reviewing your project documentation for {{project_name}}.
+<display>
+I'm reviewing your project documentation for {{project_name}}.
 
 {if_epics_loaded}I see {{epic_count}} epics with {{story_count}} total stories.{/if_epics_loaded}
 {if_no_epics}I found {{fr_count}} functional requirements organized into {{fr_category_list}}.{/if_no_epics}
@@ -116,7 +117,8 @@ Present your analysis back to user for validation:
 
 This analysis will help me guide you through the architectural decisions needed to ensure AI agents implement this consistently.
 
-Does this match your understanding of the project scope and requirements?"
+Does this match your understanding of the project scope and requirements?
+</display>
 
 ### 4. Generate Project Context Content
 
@@ -155,7 +157,8 @@ Prepare the content to append to the document:
 
 Show the generated content and present choices:
 
-"I've drafted the Project Context Analysis based on your requirements. This sets the foundation for our architectural decisions.
+<display>
+I've drafted the Project Context Analysis based on your requirements. This sets the foundation for our architectural decisions.
 
 **Here's what I'll add to the document:**
 
@@ -164,7 +167,8 @@ Show the generated content and present choices:
 **What would you like to do?**
 [A] Advanced Elicitation - Let's dive deeper into architectural implications
 [P] Party Mode - Bring different perspectives to analyze requirements
-[C] Continue - Save this analysis and begin architectural decisions"
+[C] Continue - Save this analysis and begin architectural decisions
+</display>
 
 ### 6. Handle Menu Selection
 

@@ -51,7 +51,8 @@ Define the desired emotional responses users should feel when using the product.
 ### 1. Explore Core Emotional Goals
 
 Start by understanding the emotional objectives:
-"Now let's think about how {{project_name}} should make users feel.
+<display>
+Now let's think about how {{project_name}} should make users feel.
 
 **Emotional Response Questions:**
 
@@ -60,23 +61,27 @@ Start by understanding the emotional objectives:
 - How should users feel after accomplishing their primary goal?
 - What feeling differentiates this from competitors?
 
-Common emotional goals: Empowered and in control? Delighted and surprised? Efficient and productive? Creative and inspired? Calm and focused? Connected and engaged?"
+Common emotional goals: Empowered and in control? Delighted and surprised? Efficient and productive? Creative and inspired? Calm and focused? Connected and engaged?
+</display>
 
 ### 2. Identify Emotional Journey Mapping
 
 Explore feelings at different stages:
-"**Emotional Journey Considerations:**
+<display>
+**Emotional Journey Considerations:**
 
 - How should users feel when they first discover the product?
 - What emotion during the core experience/action?
 - How should they feel after completing their task?
 - What if something goes wrong - what emotional response do we want?
-- How should they feel when returning to use it again?"
+- How should they feel when returning to use it again?
+</display>
 
 ### 3. Define Micro-Emotions
 
 Surface subtle but important emotional states:
-"**Micro-Emotions to Consider:**
+<display>
+**Micro-Emotions to Consider:**
 
 - Confidence vs. Confusion
 - Trust vs. Skepticism
@@ -85,12 +90,14 @@ Surface subtle but important emotional states:
 - Delight vs. Satisfaction
 - Belonging vs. Isolation
 
-Which of these emotional states are most critical for your product's success?"
+Which of these emotional states are most critical for your product's success?
+</display>
 
 ### 4. Connect Emotions to UX Decisions
 
 Link feelings to design implications:
-"**Design Implications:**
+<display>
+**Design Implications:**
 
 - If we want users to feel [emotional state], what UX choices support this?
 - What interactions might create negative emotions we want to avoid?
@@ -101,18 +108,21 @@ Link feelings to design implications:
 
 - [Emotion 1] → [UX design approach]
 - [Emotion 2] → [UX design approach]
-- [Emotion 3] → [UX design approach]"
+- [Emotion 3] → [UX design approach]
+</display>
 
 ### 5. Validate Emotional Goals
 
 Check if emotional goals align with product vision:
-"Let me make sure I understand the emotional vision for {{project_name}}:
+<display>
+Let me make sure I understand the emotional vision for {{project_name}}:
 
 **Primary Emotional Goal:** [Summarize main emotional response]
 **Secondary Feelings:** [List supporting emotional states]
 **Emotions to Avoid:** [List negative emotions to prevent]
 
-Does this capture the emotional experience you want to create? Any adjustments needed?"
+Does this capture the emotional experience you want to create? Any adjustments needed?
+</display>
 
 ### 6. Generate Emotional Response Content
 
@@ -149,7 +159,8 @@ When saving to document, append these Level 2 and Level 3 sections:
 ### 7. Present Content and Menu
 
 Show the generated emotional response content and present choices:
-"I've defined the desired emotional responses for {{project_name}}. These emotional goals will guide our design decisions to create the right user experience.
+<display>
+I've defined the desired emotional responses for {{project_name}}. These emotional goals will guide our design decisions to create the right user experience.
 
 **Here's what I'll add to the document:**
 
@@ -158,7 +169,8 @@ Show the generated emotional response content and present choices:
 **What would you like to do?**
 [A] Advanced Elicitation - Let's refine the emotional response definition
 [P] Party Mode - Bring different perspectives on user emotional needs
-[C] Continue - Save this to the document and move to inspiration analysis"
+[C] Continue - Save this to the document and move to inspiration analysis
+</display>
 
 ### 8. Handle Menu Selection
 

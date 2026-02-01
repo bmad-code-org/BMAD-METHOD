@@ -51,7 +51,8 @@ Choose appropriate design system approach based on project requirements and cons
 ### 1. Present Design System Options
 
 Educate about design system approaches:
-"For {{project_name}}, we need to choose a design system foundation. Think of design systems like LEGO blocks for UI - they provide proven components and patterns, ensuring consistency and speeding development.
+<display>
+For {{project_name}}, we need to choose a design system foundation. Think of design systems like LEGO blocks for UI - they provide proven components and patterns, ensuring consistency and speeding development.
 
 **Design System Approaches:**
 
@@ -76,12 +77,14 @@ Educate about design system approaches:
 - Moderate learning curve
 - Good balance of speed and uniqueness
 
-Which direction feels right for your project?"
+Which direction feels right for your project?
+</display>
 
 ### 2. Analyze Project Requirements
 
 Guide decision based on project context:
-"**Let's consider your specific needs:**
+<display>
+**Let's consider your specific needs:**
 
 **Based on our previous conversations:**
 
@@ -97,12 +100,14 @@ Guide decision based on project context:
 - Brand guidelines or existing visual identity
 - Team's design expertise
 - Long-term maintenance considerations
-- Integration requirements with existing systems"
+- Integration requirements with existing systems
+</display>
 
 ### 3. Explore Specific Design System Options
 
 Dive deeper into relevant options:
-"**Recommended Options Based on Your Needs:**
+<display>
+**Recommended Options Based on Your Needs:**
 
 **For [Your Platform Type]:**
 
@@ -117,12 +122,14 @@ Dive deeper into relevant options:
 - Customization capabilities
 - Accessibility compliance
 - Performance characteristics
-- Learning curve for your team"
+- Learning curve for your team
+</display>
 
 ### 4. Facilitate Decision Process
 
 Help user make informed choice:
-"**Decision Framework:**
+<display>
+**Decision Framework:**
 
 1. What's most important: Speed, uniqueness, or balance?
 2. How much design expertise does your team have?
@@ -130,12 +137,14 @@ Help user make informed choice:
 4. What's your timeline and budget?
 5. Long-term maintenance needs?
 
-Let's evaluate options based on your answers to these questions."
+Let's evaluate options based on your answers to these questions.
+</display>
 
 ### 5. Finalize Design System Choice
 
 Confirm and document the decision:
-"Based on our analysis, I recommend [Design System Choice] for {{project_name}}.
+<display>
+Based on our analysis, I recommend [Design System Choice] for {{project_name}}.
 
 **Rationale:**
 
@@ -149,7 +158,8 @@ Confirm and document the decision:
 - Define component strategy for custom components needed
 - Establish design tokens and patterns
 
-Does this design system choice feel right to you?"
+Does this design system choice feel right to you?
+</display>
 
 ### 6. Generate Design System Content
 
@@ -182,7 +192,8 @@ When saving to document, append these Level 2 and Level 3 sections:
 ### 7. Present Content and Menu
 
 Show the generated design system content and present choices:
-"I've documented our design system choice for {{project_name}}. This foundation will ensure consistency and speed up development.
+<display>
+I've documented our design system choice for {{project_name}}. This foundation will ensure consistency and speed up development.
 
 **Here's what I'll add to the document:**
 
@@ -192,6 +203,7 @@ Show the generated design system content and present choices:
 [A] Advanced Elicitation - Let's refine our design system decision
 [P] Party Mode - Bring technical perspectives on design systems
 [C] Continue - Save this to the document and move to defining experience
+</display>
 
 ### 8. Handle Menu Selection
 

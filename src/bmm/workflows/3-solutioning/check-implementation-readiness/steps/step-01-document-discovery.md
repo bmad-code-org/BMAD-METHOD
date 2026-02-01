@@ -54,14 +54,16 @@ To discover, inventory, and organize all project documents, identifying duplicat
 
 ### 1. Initialize Document Discovery
 
-"Beginning **Document Discovery** to inventory all project files.
+<display>
+Beginning **Document Discovery** to inventory all project files.
 
 I will:
 
 1. Search for all required documents (PRD, Architecture, Epics, UX)
 2. Group sharded documents together
 3. Identify any duplicates (whole + sharded versions)
-4. Present findings for your confirmation"
+4. Present findings for your confirmation
+</display>
 
 ### 2. Document Search Patterns
 
@@ -133,7 +135,8 @@ Initialize {outputFile} with {templateFile}.
 ### 6. Present Findings and Get Confirmation
 
 Display findings and ask:
-"**Document Discovery Complete**
+<display>
+**Document Discovery Complete**
 
 [Show organized file list]
 
@@ -147,7 +150,8 @@ Display findings and ask:
 - If duplicates exist: Please remove/rename one version
 - Confirm which documents to use for assessment
 
-**Ready to proceed?** [C] Continue after resolving issues"
+**Ready to proceed?** [C] Continue after resolving issues
+</display>
 
 ### 7. Present MENU OPTIONS
 

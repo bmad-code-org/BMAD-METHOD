@@ -176,7 +176,7 @@ Present the functional requirements for review, then display menu:
 - Ask if they'd like to refine further, get other perspectives, or proceed
 - Present menu options naturally as part of conversation
 
-**What would you like to do?**"
+**What would you like to do?**
 
 <display>
 **Select:** [A] Advanced Elicitation [P] Party Mode [C] Continue to Non-Functional Requirements (Step 10 of 11)

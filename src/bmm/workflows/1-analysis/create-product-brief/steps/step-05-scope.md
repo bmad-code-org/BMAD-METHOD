@@ -61,7 +61,8 @@ Define MVP scope with clear boundaries and outline future vision through collabo
 ### 1. Begin Scope Definition
 
 **Opening Exploration:**
-"Now that we understand what {{project_name}} does, who it serves, and how we'll measure success, let's define what we need to build first.
+<display>
+Now that we understand what {{project_name}} does, who it serves, and how we'll measure success, let's define what we need to build first.
 
 **Scope Discovery:**
 
@@ -69,7 +70,8 @@ Define MVP scope with clear boundaries and outline future vision through collabo
 - What features would make users say 'this solves my problem'?
 - How do we balance ambition with getting something valuable to users quickly?
 
-Let's start with the MVP mindset: what's the smallest version that creates real value?"
+Let's start with the MVP mindset: what's the smallest version that creates real value?
+</display>
 
 ### 2. MVP Core Features Definition
 
@@ -167,12 +169,14 @@ Prepare the following structure for document append:
 ### 7. Present MENU OPTIONS
 
 **Content Presentation:**
-"I've defined the MVP scope for {{project_name}} that balances delivering real value with realistic boundaries. This gives us a clear path forward while keeping our options open for future growth.
+<display>
+I've defined the MVP scope for {{project_name}} that balances delivering real value with realistic boundaries. This gives us a clear path forward while keeping our options open for future growth.
 
 **Here's what I'll add to the document:**
 [Show the complete markdown content from step 6]
 
-**Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue"
+**Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue
+</display>
 
 #### Menu Handling Logic:
 

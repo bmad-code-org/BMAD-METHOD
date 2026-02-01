@@ -51,7 +51,8 @@ Generate comprehensive design direction mockups showing different visual approac
 ### 1. Generate Design Direction Variations
 
 Create diverse visual explorations:
-"I'll generate 6-8 different design direction variations exploring:
+<display>
+I'll generate 6-8 different design direction variations exploring:
 
 - Different layout approaches and information hierarchy
 - Various interaction patterns and visual weights
@@ -59,12 +60,14 @@ Create diverse visual explorations:
 - Different density and spacing approaches
 - Various navigation and component arrangements
 
-Each mockup will show a complete vision for {{project_name}} with all our design decisions applied."
+Each mockup will show a complete vision for {{project_name}} with all our design decisions applied.
+</display>
 
 ### 2. Create HTML Design Direction Showcase
 
 Generate interactive visual exploration:
-"🎨 Design Direction Mockups Generated!
+<display>
+🎨 Design Direction Mockups Generated!
 
 I'm creating a comprehensive HTML design direction showcase at `{planning_artifacts}/ux-design-directions.html`
 
@@ -76,12 +79,14 @@ I'm creating a comprehensive HTML design direction showcase at `{planning_artifa
 - Complete UI examples with real content
 - Responsive behavior demonstrations
 
-Each mockup represents a complete visual direction for your app's look and feel."
+Each mockup represents a complete visual direction for your app's look and feel.
+</display>
 
 ### 3. Present Design Exploration Framework
 
 Guide evaluation criteria:
-"As you explore the design directions, look for:
+<display>
+As you explore the design directions, look for:
 
 ✅ **Layout Intuitiveness** - Which information hierarchy matches your priorities?
 ✅ **Interaction Style** - Which interaction style fits your core experience?
@@ -90,12 +95,14 @@ Guide evaluation criteria:
 ✅ **Component Usage** - How well do the components support your user journeys?
 ✅ **Brand Alignment** - Which direction best supports your emotional goals?
 
-Take your time exploring - this is a crucial decision that will guide all our design work!"
+Take your time exploring - this is a crucial decision that will guide all our design work!
+</display>
 
 ### 4. Facilitate Design Direction Selection
 
 Help user choose or combine elements:
-"After exploring all the design directions:
+<display>
+After exploring all the design directions:
 
 **Which approach resonates most with you?**
 
@@ -109,19 +116,22 @@ Help user choose or combine elements:
 - Which layout feels most intuitive for your users?
 - Which visual weight matches your brand personality?
 - Which interaction style supports your core experience?
-- Are there elements from different directions you'd like to combine?"
+- Are there elements from different directions you'd like to combine?
+</display>
 
 ### 5. Document Design Direction Decision
 
 Capture the chosen approach:
-"Based on your exploration, I'm understanding your design direction preference:
+<display>
+Based on your exploration, I'm understanding your design direction preference:
 
 **Chosen Direction:** [Direction number or combination]
 **Key Elements:** [Specific elements you liked]
 **Modifications Needed:** [Any changes requested]
 **Rationale:** [Why this direction works for your product]
 
-This will become our design foundation moving forward. Are we ready to lock this in, or do you want to explore variations?"
+This will become our design foundation moving forward. Are we ready to lock this in, or do you want to explore variations?
+</display>
 
 ### 6. Generate Design Direction Content
 
@@ -154,7 +164,8 @@ When saving to document, append these Level 2 and Level 3 sections:
 ### 7. Present Content and Menu
 
 Show the generated design direction content and present choices:
-"I've documented our design direction decision for {{project_name}}. This visual approach will guide all our detailed design work.
+<display>
+I've documented our design direction decision for {{project_name}}. This visual approach will guide all our detailed design work.
 
 **Here's what I'll add to the document:**
 
@@ -164,6 +175,7 @@ Show the generated design direction content and present choices:
 [A] Advanced Elicitation - Let's refine our design direction
 [P] Party Mode - Bring different perspectives on visual choices
 [C] Continue - Save this to the document and move to user journey flows
+</display>
 
 ### 8. Handle Menu Selection
 

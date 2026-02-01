@@ -99,23 +99,29 @@ Based on the chosen technology stack and decisions, identify where AI agents cou
 For each conflict category, facilitate collaborative pattern definition:
 
 **Present the Conflict Point:**
-"Given that we're using {{tech_stack}}, different AI agents might handle {{conflict_area}} differently.
+<display>
+Given that we're using {{tech_stack}}, different AI agents might handle {{conflict_area}} differently.
 
 For example, one agent might name database tables 'users' while another uses 'Users' - this would cause conflicts.
 
-We need to establish consistent patterns that all agents follow."
+We need to establish consistent patterns that all agents follow.
+</display>
 
 **Show Options and Trade-offs:**
-"Common approaches for {{pattern_category}}:
+<display>
+Common approaches for {{pattern_category}}:
 
 1. {{option_1}} - {{pros_and_cons}}
 2. {{option_2}} - {{pros_and_cons}}
 3. {{option_3}} - {{pros_and_cons}}
 
-Which approach makes the most sense for our project?"
+Which approach makes the most sense for our project?
+</display>
 
 **Get User Decision:**
-"What's your preference for this pattern? (or discuss the trade-offs more)"
+<display>
+What's your preference for this pattern? (or discuss the trade-offs more)
+</display>
 
 ### 3. Define Pattern Categories
 
@@ -290,7 +296,8 @@ Prepare the content to append to the document:
 
 Show the generated patterns content and present choices:
 
-"I've documented implementation patterns that will prevent conflicts between AI agents working on this project.
+<display>
+I've documented implementation patterns that will prevent conflicts between AI agents working on this project.
 
 **Here's what I'll add to the document:**
 
@@ -299,7 +306,8 @@ Show the generated patterns content and present choices:
 **What would you like to do?**
 [A] Advanced Elicitation - Explore additional consistency patterns
 [P] Party Mode - Review patterns from different implementation perspectives
-[C] Continue - Save these patterns and move to project structure"
+[C] Continue - Save these patterns and move to project structure
+</display>
 
 ### 6. Handle Menu Selection
 

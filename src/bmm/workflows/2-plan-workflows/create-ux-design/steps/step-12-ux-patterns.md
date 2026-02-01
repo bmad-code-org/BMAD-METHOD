@@ -51,7 +51,8 @@ Establish UX consistency patterns for common situations like buttons, forms, nav
 ### 1. Identify Pattern Categories
 
 Determine which patterns need definition for your product:
-"Let's establish consistency patterns for how {{project_name}} behaves in common situations.
+<display>
+Let's establish consistency patterns for how {{project_name}} behaves in common situations.
 
 **Pattern Categories to Define:**
 
@@ -63,14 +64,16 @@ Determine which patterns need definition for your product:
 - Empty states and loading states
 - Search and filtering patterns
 
-Which categories are most critical for your product? We can go through each thoroughly or focus on the most important ones."
+Which categories are most critical for your product? We can go through each thoroughly or focus on the most important ones.
+</display>
 
 ### 2. Define Critical Patterns First
 
 Focus on patterns most relevant to your product:
 
 **For [Critical Pattern Category]:**
-"**[Pattern Type] Patterns:**
+<display>
+**[Pattern Type] Patterns:**
 What should users see/do when they need to [pattern action]?
 
 **Considerations:**
@@ -86,7 +89,8 @@ What should users see/do when they need to [pattern action]?
 - [Example 1 for this pattern type]
 - [Example 2 for this pattern type]
 
-How should {{project_name}} handle [pattern type] interactions?"
+How should {{project_name}} handle [pattern type] interactions?
+</display>
 
 ### 3. Establish Pattern Guidelines
 
@@ -108,7 +112,8 @@ Document specific design decisions:
 ### 4. Design System Integration
 
 Ensure patterns work with chosen design system:
-"**Integration with [Design System]:**
+<display>
+**Integration with [Design System]:**
 
 - How do these patterns complement our design system components?
 - What customizations are needed?
@@ -118,7 +123,8 @@ Ensure patterns work with chosen design system:
 
 - [Custom rule 1]
 - [Custom rule 2]
-- [Custom rule 3]"
+- [Custom rule 3]
+</display>
 
 ### 5. Create Pattern Documentation
 
@@ -167,7 +173,8 @@ When saving to document, append these Level 2 and Level 3 sections:
 ### 7. Present Content and Menu
 
 Show the generated UX patterns content and present choices:
-"I've established UX consistency patterns for {{project_name}}. These patterns ensure users have a consistent, predictable experience across all interactions.
+<display>
+I've established UX consistency patterns for {{project_name}}. These patterns ensure users have a consistent, predictable experience across all interactions.
 
 **Here's what I'll add to the document:**
 
@@ -177,6 +184,7 @@ Show the generated UX patterns content and present choices:
 [A] Advanced Elicitation - Let's refine our UX patterns
 [P] Party Mode - Bring different perspectives on consistency patterns
 [C] Continue - Save this to the document and move to responsive design
+</display>
 
 ### 8. Handle Menu Selection
 

@@ -51,7 +51,8 @@ Define the core user experience, platform requirements, and what makes the inter
 ### 1. Define Core User Action
 
 Start by identifying the most important user interaction:
-"Now let's dig into the heart of the user experience for {{project_name}}.
+<display>
+Now let's dig into the heart of the user experience for {{project_name}}.
 
 **Core Experience Questions:**
 
@@ -60,12 +61,14 @@ Start by identifying the most important user interaction:
 - What should be completely effortless for users?
 - If we nail one interaction, everything else follows - what is it?
 
-Think about the core loop or primary action that defines your product's value."
+Think about the core loop or primary action that defines your product's value.
+</display>
 
 ### 2. Explore Platform Requirements
 
 Determine where and how users will interact:
-"Let's define the platform context for {{project_name}}:
+<display>
+Let's define the platform context for {{project_name}}:
 
 **Platform Questions:**
 
@@ -73,34 +76,40 @@ Determine where and how users will interact:
 - Will this be primarily touch-based or mouse/keyboard?
 - Any specific platform requirements or constraints?
 - Do we need to consider offline functionality?
-- Any device-specific capabilities we should leverage?"
+- Any device-specific capabilities we should leverage?
+</display>
 
 ### 3. Identify Effortless Interactions
 
 Surface what should feel magical or completely seamless:
-"**Effortless Experience Design:**
+<display>
+**Effortless Experience Design:**
 
 - What user actions should feel completely natural and require zero thought?
 - Where do users currently struggle with similar products?
 - What interaction, if made effortless, would create delight?
 - What should happen automatically without user intervention?
-- Where can we eliminate steps that competitors require?"
+- Where can we eliminate steps that competitors require?
+</display>
 
 ### 4. Define Critical Success Moments
 
 Identify the moments that determine success or failure:
-"**Critical Success Moments:**
+<display>
+**Critical Success Moments:**
 
 - What's the moment where users realize 'this is better'?
 - When does the user feel successful or accomplished?
 - What interaction, if failed, would ruin the experience?
 - What are the make-or-break user flows?
-- Where does first-time user success happen?"
+- Where does first-time user success happen?
+</display>
 
 ### 5. Synthesize Experience Principles
 
 Extract guiding principles from the conversation:
-"Based on our discussion, I'm hearing these core experience principles for {{project_name}}:
+<display>
+Based on our discussion, I'm hearing these core experience principles for {{project_name}}:
 
 **Experience Principles:**
 
@@ -109,7 +118,8 @@ Extract guiding principles from the conversation:
 - [Principle 3 based on platform considerations]
 - [Principle 4 based on critical success moments]
 
-These principles will guide all our UX decisions. Do these capture what's most important?"
+These principles will guide all our UX decisions. Do these capture what's most important?
+</display>
 
 ### 6. Generate Core Experience Content
 
@@ -146,7 +156,8 @@ When saving to document, append these Level 2 and Level 3 sections:
 ### 7. Present Content and Menu
 
 Show the generated core experience content and present choices:
-"I've defined the core user experience for {{project_name}} based on our conversation. This establishes the foundation for all our UX design decisions.
+<display>
+I've defined the core user experience for {{project_name}} based on our conversation. This establishes the foundation for all our UX design decisions.
 
 **Here's what I'll add to the document:**
 
@@ -155,7 +166,8 @@ Show the generated core experience content and present choices:
 **What would you like to do?**
 [A] Advanced Elicitation - Let's refine the core experience definition
 [P] Party Mode - Bring different perspectives on the user experience
-[C] Continue - Save this to the document and move to emotional response definition"
+[C] Continue - Save this to the document and move to emotional response definition
+</display>
 
 ### 8. Handle Menu Selection
 

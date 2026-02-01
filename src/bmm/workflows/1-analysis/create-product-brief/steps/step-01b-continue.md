@@ -75,7 +75,8 @@ Review the frontmatter to understand:
 ### 3. Present Current Progress
 
 **Progress Report to User:**
-"Welcome back {{user_name}}! I'm resuming our product brief collaboration for {{project_name}}.
+<display>
+Welcome back {{user_name}}! I'm resuming our product brief collaboration for {{project_name}}.
 
 **Current Progress:**
 
@@ -88,7 +89,8 @@ Review the frontmatter to understand:
 - Current product brief is ready with all completed sections
 - Ready to continue from where we left off
 
-Does this look right, or do you want to make any adjustments before we proceed?"
+Does this look right, or do you want to make any adjustments before we proceed?
+</display>
 
 ### 4. Determine Continuation Path
 
@@ -104,7 +106,8 @@ Based on `lastStep` value, determine which step to load next:
 ### 5. Handle Workflow Completion
 
 **If workflow already complete (`lastStep = 6`):**
-"Great news! It looks like we've already completed the product brief workflow for {{project_name}}.
+<display>
+Great news! It looks like we've already completed the product brief workflow for {{project_name}}.
 
 The final document is ready at `{outputFile}` with all sections completed through step 6.
 
@@ -114,7 +117,8 @@ Would you like me to:
 - Suggest next workflow steps (like PRD creation)
 - Start a new product brief revision
 
-What would be most helpful?"
+What would be most helpful?
+</display>
 
 ### 6. Present MENU OPTIONS
 

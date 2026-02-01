@@ -132,7 +132,7 @@ Display:
   - Note: This hands off to the validation workflow which will run its complete 13-step process
 
 - **IF E (Edit More):**
-  - Display: "**Additional Edits**"
+  - <display>**Additional Edits**</display>
   - Ask: "What additional edits would you like to make?"
   - Accept input, then display: "**Returning to edit step...**"
   - Read fully and follow: step-e-03-edit.md again
@@ -142,12 +142,12 @@ Display:
     - Complete list of all changes made
     - Before/after comparison (key improvements)
     - Recommendations for next steps
-  - Display: "**Edit Workflow Complete**"
+  - <display>**Edit Workflow Complete**</display>
   - Exit
 
 - **IF X (Exit):**
   - Display summary
-  - Display: "**Edit Workflow Complete**"
+  - <display>**Edit Workflow Complete**</display>
   - Exit
 
 - **IF Any other:** Help user, then redisplay menu

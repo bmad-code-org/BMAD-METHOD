@@ -117,7 +117,8 @@ Try to discover the following:
 #### C. Present Initialization Results
 
 **Setup Report to User:**
-"Welcome {{user_name}}! I've set up your product brief workspace for {{project_name}}.
+<display>
+Welcome {{user_name}}! I've set up your product brief workspace for {{project_name}}.
 
 **Document Setup:**
 
@@ -133,7 +134,8 @@ Try to discover the following:
 
 **Files loaded:** {list of specific file names or "No additional documents found"}
 
-Do you have any other documents you'd like me to include, or shall we continue to the next step?"
+Do you have any other documents you'd like me to include, or shall we continue to the next step?
+</display>
 
 ### 4. Present MENU OPTIONS
 

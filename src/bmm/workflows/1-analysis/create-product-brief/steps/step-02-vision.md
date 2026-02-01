@@ -61,7 +61,8 @@ Conduct comprehensive product vision discovery to define the core problem, solut
 ### 1. Begin Vision Discovery
 
 **Opening Conversation:**
-"As your PM peer, I'm excited to help you shape the vision for {{project_name}}. Let's start with the foundation.
+<display>
+As your PM peer, I'm excited to help you shape the vision for {{project_name}}. Let's start with the foundation.
 
 **Tell me about the product you envision:**
 
@@ -70,7 +71,8 @@ Conduct comprehensive product vision discovery to define the core problem, solut
 - What would success look like for the people you're helping?
 - What excites you most about this solution?
 
-Let's start with the problem space before we get into solutions."
+Let's start with the problem space before we get into solutions.
+</display>
 
 ### 2. Deep Problem Understanding
 
@@ -147,12 +149,14 @@ Prepare the following structure for document append:
 ### 7. Present MENU OPTIONS
 
 **Content Presentation:**
-"I've drafted the executive summary and core vision based on our conversation. This captures the essence of {{project_name}} and what makes it special.
+<display>
+I've drafted the executive summary and core vision based on our conversation. This captures the essence of {{project_name}} and what makes it special.
 
 **Here's what I'll add to the document:**
 [Show the complete markdown content from step 6]
 
-**Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue"
+**Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue
+</display>
 
 #### Menu Handling Logic:
 

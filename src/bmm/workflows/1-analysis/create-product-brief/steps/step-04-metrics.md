@@ -61,7 +61,8 @@ Define comprehensive success metrics that include user success, business objecti
 ### 1. Begin Success Metrics Discovery
 
 **Opening Exploration:**
-"Now that we know who {{project_name}} serves and what problem it solves, let's define what success looks like.
+<display>
+Now that we know who {{project_name}} serves and what problem it solves, let's define what success looks like.
 
 **Success Discovery:**
 
@@ -69,7 +70,8 @@ Define comprehensive success metrics that include user success, business objecti
 - What would make users say 'this was worth it'?
 - What metrics show we're creating real value?
 
-Let's start with the user perspective."
+Let's start with the user perspective.
+</display>
 
 ### 2. User Success Metrics
 
@@ -153,12 +155,14 @@ Prepare the following structure for document append:
 ### 7. Present MENU OPTIONS
 
 **Content Presentation:**
-"I've defined success metrics that will help us track whether {{project_name}} is creating real value for users and achieving business objectives.
+<display>
+I've defined success metrics that will help us track whether {{project_name}} is creating real value for users and achieving business objectives.
 
 **Here's what I'll add to the document:**
 [Show the complete markdown content from step 6]
 
-**Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue"
+**Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue
+</display>
 
 #### Menu Handling Logic:
 

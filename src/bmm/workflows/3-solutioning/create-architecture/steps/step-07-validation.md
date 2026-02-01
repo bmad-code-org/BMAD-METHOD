@@ -155,25 +155,31 @@ Identify and document any missing elements:
 For any issues found, facilitate resolution:
 
 **Critical Issues:**
-"I found some issues that need to be addressed before implementation:
+<display>
+I found some issues that need to be addressed before implementation:
 
 {{critical_issue_description}}
 
-These could cause implementation problems. How would you like to resolve this?"
+These could cause implementation problems. How would you like to resolve this?
+</display>
 
 **Important Issues:**
-"I noticed a few areas that could be improved:
+<display>
+I noticed a few areas that could be improved:
 
 {{important_issue_description}}
 
-These aren't blocking, but addressing them would make implementation smoother. Should we work on these?"
+These aren't blocking, but addressing them would make implementation smoother. Should we work on these?
+</display>
 
 **Minor Issues:**
-"Here are some minor suggestions for improvement:
+<display>
+Here are some minor suggestions for improvement:
 
 {{minor_issue_description}}
 
-These are optional refinements. Would you like to address any of these?"
+These are optional refinements. Would you like to address any of these?
+</display>
 
 ### 6. Generate Validation Content
 
@@ -284,7 +290,8 @@ Prepare the content to append to the document:
 
 Show the validation results and present choices:
 
-"I've completed a comprehensive validation of your architecture.
+<display>
+I've completed a comprehensive validation of your architecture.
 
 **Validation Summary:**
 
@@ -300,6 +307,7 @@ Show the validation results and present choices:
 [A] Advanced Elicitation - Address any complex architectural concerns
 [P] Party Mode - Review validation from different implementation perspectives
 [C] Continue - Complete the architecture and finish workflow
+</display>
 
 ### 8. Handle Menu Selection
 

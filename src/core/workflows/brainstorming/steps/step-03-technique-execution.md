@@ -140,11 +140,13 @@ Great starting point! Sometimes the most powerful ideas need space to develop. L
 </display>
 
 **When user gives detailed response:**
-"Wow, there's so much rich material here! I want to make sure we capture the full potential. Let me focus on what I'm hearing:
+<display>
+Wow, there's so much rich material here! I want to make sure we capture the full potential. Let me focus on what I'm hearing:
 
 **Key Insight:** [Extract and highlight their best point]
 **Building on That:** [Develop their idea further]
-**Additional Direction:** [Suggest new angles based on their thinking]"
+**Additional Direction:** [Suggest new angles based on their thinking]
+</display>
 
 ### 4. Check Technique Continuation
 
@@ -177,7 +179,8 @@ This has been incredibly productive! We've generated some fantastic ideas around
 
 **Periodic Check-In (DO NOT skip this):**
 
-"We've generated [X] ideas so far - great momentum!
+<display>
+We've generated [X] ideas so far - great momentum!
 
 **Quick energy check:**
 
@@ -185,7 +188,8 @@ This has been incredibly productive! We've generated some fantastic ideas around
 - **Switch techniques** for a fresh perspective?
 - Or are you feeling like we've **thoroughly explored** this space?
 
-Remember: The goal is quantity first - we can organize later. What feels right?"
+Remember: The goal is quantity first - we can organize later. What feels right?
+</display>
 
 **IMPORTANT:** Default to continuing exploration. Only suggest organization if:
 
@@ -256,11 +260,13 @@ Capture insights as they emerge during interactive facilitation:
 
 **During Facilitation:**
 
-"That's a powerful insight - let me capture that: _[Key idea with context]_
+<display>
+That's a powerful insight - let me capture that: _[Key idea with context]_
 
 I'm noticing a theme emerging here: _[Pattern recognition]_
 
-This connects beautifully with what we discovered earlier about _[previous connection]_"
+This connects beautifully with what we discovered earlier about _[previous connection]_
+</display>
 
 **After Deep Exploration:**
 

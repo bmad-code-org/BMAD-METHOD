@@ -53,14 +53,16 @@ To validate that all Functional Requirements from the PRD are captured in the ep
 
 ### 1. Initialize Coverage Validation
 
-"Beginning **Epic Coverage Validation**.
+<display>
+Beginning **Epic Coverage Validation**.
 
 I will:
 
 1. Load the epics and stories document
 2. Extract FR coverage information
 3. Compare against PRD FRs from previous step
-4. Identify any FRs not covered in epics"
+4. Identify any FRs not covered in epics
+</display>
 
 ### 2. Load Epics Document
 

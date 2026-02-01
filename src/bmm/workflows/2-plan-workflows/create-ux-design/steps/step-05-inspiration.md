@@ -51,7 +51,8 @@ Analyze inspiring products and UX patterns to inform design decisions for the cu
 ### 1. Identify User's Favorite Apps
 
 Start by gathering inspiration sources:
-"Let's learn from products your users already love and use regularly.
+<display>
+Let's learn from products your users already love and use regularly.
 
 **Inspiration Questions:**
 
@@ -60,12 +61,14 @@ Start by gathering inspiration sources:
 - What makes the experience compelling or delightful?
 - What keeps users coming back to these apps?
 
-Think about apps in your category or even unrelated products that have great UX."
+Think about apps in your category or even unrelated products that have great UX.
+</display>
 
 ### 2. Analyze UX Patterns and Principles
 
 Break down what makes these apps successful:
-"For each inspiring app, let's analyze their UX success:
+<display>
+For each inspiring app, let's analyze their UX success:
 
 **For [App Name]:**
 
@@ -74,12 +77,14 @@ Break down what makes these apps successful:
 - How do they handle navigation and information hierarchy?
 - What are their most innovative or delightful interactions?
 - What visual design choices support the user experience?
-- How do they handle errors or edge cases?"
+- How do they handle errors or edge cases?
+</display>
 
 ### 3. Extract Transferable Patterns
 
 Identify patterns that could apply to your project:
-"**Transferable UX Patterns:**
+<display>
+**Transferable UX Patterns:**
 Looking across these inspiring apps, I see patterns we could adapt:
 
 **Navigation Patterns:**
@@ -97,24 +102,28 @@ Looking across these inspiring apps, I see patterns we could adapt:
 - [Pattern 1] - supports your [emotional goal]
 - [Pattern 2] - aligns with your [platform requirements]
 
-Which of these patterns resonate most for your product?"
+Which of these patterns resonate most for your product?
+</display>
 
 ### 4. Identify Anti-Patterns to Avoid
 
 Surface what not to do based on analysis:
-"**UX Anti-Patterns to Avoid:**
+<display>
+**UX Anti-Patterns to Avoid:**
 From analyzing both successes and failures in your space, here are patterns to avoid:
 
 - [Anti-pattern 1] - users find this confusing/frustrating
 - [Anti-pattern 2] - this creates unnecessary friction
 - [Anti-pattern 3] - doesn't align with your [emotional goals]
 
-Learning from others' mistakes is as important as learning from their successes."
+Learning from others' mistakes is as important as learning from their successes.
+</display>
 
 ### 5. Define Design Inspiration Strategy
 
 Create a clear strategy for using this inspiration:
-"**Design Inspiration Strategy:**
+<display>
+**Design Inspiration Strategy:**
 
 **What to Adopt:**
 
@@ -131,7 +140,8 @@ Create a clear strategy for using this inspiration:
 - [Specific anti-pattern] - conflicts with [your goals]
 - [Specific anti-pattern] - doesn't fit [your platform]
 
-This strategy will guide our design decisions while keeping {{project_name}} unique."
+This strategy will guide our design decisions while keeping {{project_name}} unique.
+</display>
 
 ### 6. Generate Inspiration Analysis Content
 
@@ -164,7 +174,8 @@ When saving to document, append these Level 2 and Level 3 sections:
 ### 7. Present Content and Menu
 
 Show the generated inspiration analysis content and present choices:
-"I've analyzed inspiring UX patterns and products to inform our design strategy for {{project_name}}. This gives us a solid foundation of proven patterns to build upon.
+<display>
+I've analyzed inspiring UX patterns and products to inform our design strategy for {{project_name}}. This gives us a solid foundation of proven patterns to build upon.
 
 **Here's what I'll add to the document:**
 
@@ -173,7 +184,8 @@ Show the generated inspiration analysis content and present choices:
 **What would you like to do?**
 [A] Advanced Elicitation - Let's deepen our UX pattern analysis
 [P] Party Mode - Bring different perspectives on inspiration sources
-[C] Continue - Save this to the document and move to design system choice"
+[C] Continue - Save this to the document and move to design system choice
+</display>
 
 ### 8. Handle Menu Selection
 

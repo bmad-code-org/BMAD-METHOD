@@ -133,14 +133,17 @@ Last Updated: {{date}}
 Based on user skill level, present the completion:
 
 **Expert Mode:**
-"Project context complete. Optimized for LLM consumption with {{rule_count}} critical rules across {{section_count}} sections.
+<display>
+Project context complete. Optimized for LLM consumption with {{rule_count}} critical rules across {{section_count}} sections.
 
 File saved to: `{output_folder}/project-context.md`
 
-Ready for AI agent integration."
+Ready for AI agent integration.
+</display>
 
 **Intermediate Mode:**
-"Your project context is complete and optimized for AI agents!
+<display>
+Your project context is complete and optimized for AI agents!
 
 **What we created:**
 
@@ -160,10 +163,12 @@ Ready for AI agent integration."
 
 - AI agents should read this file before implementing
 - Update as your project evolves
-- Review periodically for optimization"
+- Review periodically for optimization
+</display>
 
 **Beginner Mode:**
-"Excellent! Your project context guide is ready! 🎉
+<display>
+Excellent! Your project context guide is ready!
 
 **What this does:**
 Think of this as a 'rules of the road' guide for AI agents working on your project. It ensures they all follow the same patterns and avoid common mistakes.
@@ -178,7 +183,8 @@ Think of this as a 'rules of the road' guide for AI agents working on your proje
 **How AI agents use it:**
 They read this file before writing any code, ensuring everything they create follows your project's standards perfectly.
 
-Your project context is saved and ready to help agents implement consistently!"
+Your project context is saved and ready to help agents implement consistently!
+</display>
 
 ### 5. Final File Updates
 
@@ -225,32 +231,34 @@ Final checks before completion:
 
 Present final completion to user:
 
-"✅ **Project Context Generation Complete!**
+<display>
+**Project Context Generation Complete!**
 
 Your optimized project context file is ready at:
 `{output_folder}/project-context.md`
 
-**📊 Context Summary:**
+**Context Summary:**
 
 - {{rule_count}} critical rules for AI agents
 - {{section_count}} comprehensive sections
 - Optimized for LLM context efficiency
 - Ready for immediate agent integration
 
-**🎯 Key Benefits:**
+**Key Benefits:**
 
 - Consistent implementation across all AI agents
 - Reduced common mistakes and edge cases
 - Clear guidance for project-specific patterns
 - Minimal LLM context usage
 
-**📋 Next Steps:**
+**Next Steps:**
 
 1. AI agents will automatically read this file when implementing
 2. Update this file when your technology stack or patterns evolve
 3. Review quarterly to optimize and remove outdated rules
 
-Your project context will help ensure high-quality, consistent implementation across all development work. Great work capturing your project's critical implementation requirements!"
+Your project context will help ensure high-quality, consistent implementation across all development work. Great work capturing your project's critical implementation requirements!
+</display>
 
 ## SUCCESS METRICS:
 

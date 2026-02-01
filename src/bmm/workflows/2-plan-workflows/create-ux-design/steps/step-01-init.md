@@ -94,7 +94,8 @@ Complete setup and report to user:
 
 **Input Documents Discovered:**
 Report what was found:
-"Welcome {{user_name}}! I've set up your UX design workspace for {{project_name}}.
+<display>
+Welcome {{user_name}}! I've set up your UX design workspace for {{project_name}}.
 
 **Documents Found:**
 
@@ -106,7 +107,8 @@ Report what was found:
 
 Do you have any other documents you'd like me to include, or shall we continue to the next step?
 
-[C] Continue to UX discovery"
+[C] Continue to UX discovery
+</display>
 
 ## NEXT STEP:
 

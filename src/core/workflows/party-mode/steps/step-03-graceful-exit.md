@@ -70,7 +70,9 @@ For each selected agent:
 Briefly acknowledge key discussion outcomes:
 
 **Session Recognition:**
-"**Session Highlights:** Today we explored [main topic] through [number] different perspectives, generating valuable insights on [key outcomes]. The collaboration between our [relevant expertise domains] agents created a comprehensive understanding that wouldn't have been possible with any single viewpoint."
+<display>
+**Session Highlights:** Today we explored [main topic] through [number] different perspectives, generating valuable insights on [key outcomes]. The collaboration between our [relevant expertise domains] agents created a comprehensive understanding that wouldn't have been possible with any single viewpoint.
+</display>
 
 ### 4. Final Party Mode Conclusion
 
@@ -116,9 +118,11 @@ workflow_completed: true
 
 Execute final workflow termination:
 
-"[PARTY MODE WORKFLOW COMPLETE]
+<display>
+[PARTY MODE WORKFLOW COMPLETE]
 
-Thank you for using BMAD Party Mode for collaborative multi-agent discussions!"
+Thank you for using BMAD Party Mode for collaborative multi-agent discussions!
+</display>
 
 ## SUCCESS METRICS:
 

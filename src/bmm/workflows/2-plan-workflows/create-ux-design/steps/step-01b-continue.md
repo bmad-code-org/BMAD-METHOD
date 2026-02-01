@@ -52,7 +52,8 @@ Reload the context documents listed in `inputDocuments`:
 ### 3. Summarize Current Progress
 
 Welcome the user back and provide context:
-"Welcome back {{user_name}}! I'm resuming our UX design collaboration for {{project_name}}.
+<display>
+Welcome back {{user_name}}! I'm resuming our UX design collaboration for {{project_name}}.
 
 **Current Progress:**
 
@@ -66,7 +67,8 @@ Welcome the user back and provide context:
 - Current UX design document is ready with all completed sections
 - Ready to continue from where we left off
 
-Does this look right, or do you want to make any adjustments before we proceed?"
+Does this look right, or do you want to make any adjustments before we proceed?
+</display>
 
 ### 4. Determine Next Step
 
@@ -81,9 +83,11 @@ Based on `lastStep` value, determine which step to load next:
 ### 5. Present Continuation Options
 
 After presenting current progress, ask:
-"Ready to continue with Step {nextStepNumber}: {nextStepTitle}?
+<display>
+Ready to continue with Step {nextStepNumber}: {nextStepTitle}?
 
-[C] Continue to Step {nextStepNumber}"
+[C] Continue to Step {nextStepNumber}
+</display>
 
 ## SUCCESS METRICS:
 
@@ -106,7 +110,8 @@ After presenting current progress, ask:
 ## WORKFLOW ALREADY COMPLETE?
 
 If `lastStep` indicates the final step is completed:
-"Great news! It looks like we've already completed the UX design workflow for {{project_name}}.
+<display>
+Great news! It looks like we've already completed the UX design workflow for {{project_name}}.
 
 The final UX design specification is ready at {output_folder}/ux-design-specification.md with all sections completed through step {finalStepNumber}.
 
@@ -118,7 +123,8 @@ Would you like me to:
 - Suggest next workflow steps (like wireframe generation or architecture)
 - Start a new UX design revision
 
-What would be most helpful?"
+What would be most helpful?
+</display>
 
 ## NEXT STEP:
 

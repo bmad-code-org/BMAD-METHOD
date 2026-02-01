@@ -51,7 +51,8 @@ Define component library strategy and design custom components not covered by th
 ### 1. Analyze Design System Coverage
 
 Review what components are available vs. needed:
-"Based on our chosen design system [design system from step 6], let's identify what components are already available and what we need to create custom.
+<display>
+Based on our chosen design system [design system from step 6], let's identify what components are already available and what we need to create custom.
 
 **Available from Design System:**
 [List of components available in chosen design system]
@@ -66,14 +67,16 @@ Looking at our user journeys and design direction, we need:
 **Gap Analysis:**
 
 - [Gap 1 - needed but not available]
-- [Gap 2 - needed but not available]"
+- [Gap 2 - needed but not available]
+</display>
 
 ### 2. Design Custom Components
 
 For each custom component needed, design thoroughly:
 
 **For each custom component:**
-"**[Component Name] Design:**
+<display>
+**[Component Name] Design:**
 
 **Purpose:** What does this component do for users?
 **Content:** What information or data does it display?
@@ -82,7 +85,8 @@ For each custom component needed, design thoroughly:
 **Variants:** Are there different sizes or styles needed?
 **Accessibility:** What ARIA labels and keyboard support needed?
 
-Let's walk through each custom component systematically."
+Let's walk through each custom component systematically.
+</display>
 
 ### 3. Document Component Specifications
 
@@ -106,7 +110,8 @@ Create detailed specifications for each component:
 ### 4. Define Component Strategy
 
 Establish overall component library approach:
-"**Component Strategy:**
+<display>
+**Component Strategy:**
 
 **Foundation Components:** (from design system)
 
@@ -123,12 +128,14 @@ Establish overall component library approach:
 - Build custom components using design system tokens
 - Ensure consistency with established patterns
 - Follow accessibility best practices
-- Create reusable patterns for common use cases"
+- Create reusable patterns for common use cases
+</display>
 
 ### 5. Plan Implementation Roadmap
 
 Define how and when to build components:
-"**Implementation Roadmap:**
+<display>
+**Implementation Roadmap:**
 
 **Phase 1 - Core Components:**
 
@@ -145,7 +152,8 @@ Define how and when to build components:
 - [Component 5] - optimizes [user journey]
 - [Component 6] - adds [special feature]
 
-This roadmap helps prioritize development based on user journey criticality."
+This roadmap helps prioritize development based on user journey criticality.
+</display>
 
 ### 6. Generate Component Strategy Content
 
@@ -178,7 +186,8 @@ When saving to document, append these Level 2 and Level 3 sections:
 ### 7. Present Content and Menu
 
 Show the generated component strategy content and present choices:
-"I've defined the component strategy for {{project_name}}. This balances using proven design system components with custom components for your unique needs.
+<display>
+I've defined the component strategy for {{project_name}}. This balances using proven design system components with custom components for your unique needs.
 
 **Here's what I'll add to the document:**
 
@@ -188,6 +197,7 @@ Show the generated component strategy content and present choices:
 [A] Advanced Elicitation - Let's refine our component strategy
 [P] Party Mode - Bring technical perspectives on component design
 [C] Continue - Save this to the document and move to UX patterns
+</display>
 
 ### 8. Handle Menu Selection
 

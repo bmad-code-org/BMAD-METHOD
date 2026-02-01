@@ -61,7 +61,8 @@ Define target users with rich personas and map their key interactions with the p
 ### 1. Begin User Discovery
 
 **Opening Exploration:**
-"Now that we understand what {{project_name}} does, let's define who it's for.
+<display>
+Now that we understand what {{project_name}} does, let's define who it's for.
 
 **User Discovery:**
 
@@ -70,7 +71,8 @@ Define target users with rich personas and map their key interactions with the p
 - Who gets the most value from this solution?
 - Are there primary users and secondary users we should consider?
 
-Let's start by identifying the main user groups."
+Let's start by identifying the main user groups.
+</display>
 
 ### 2. Primary User Segment Development
 
@@ -150,12 +152,14 @@ Prepare the following structure for document append:
 ### 6. Present MENU OPTIONS
 
 **Content Presentation:**
-"I've mapped out who {{project_name}} serves and how they'll interact with it. This helps us ensure we're building something that real people will love to use.
+<display>
+I've mapped out who {{project_name}} serves and how they'll interact with it. This helps us ensure we're building something that real people will love to use.
 
 **Here's what I'll add to the document:**
 [Show the complete markdown content from step 5]
 
-**Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue"
+**Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue
+</display>
 
 #### Menu Handling Logic:
 

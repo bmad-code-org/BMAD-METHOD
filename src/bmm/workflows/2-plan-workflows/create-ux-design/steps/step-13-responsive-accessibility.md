@@ -51,7 +51,8 @@ Define responsive design strategy and accessibility requirements for the product
 ### 1. Define Responsive Strategy
 
 Establish how the design adapts across devices:
-"Let's define how {{project_name}} adapts across different screen sizes and devices.
+<display>
+Let's define how {{project_name}} adapts across different screen sizes and devices.
 
 **Responsive Design Questions:**
 
@@ -71,12 +72,14 @@ Establish how the design adapts across devices:
 
 - Bottom navigation or hamburger menu?
 - How do layouts collapse on small screens?
-- What's the most critical information to show mobile-first?"
+- What's the most critical information to show mobile-first?
+</display>
 
 ### 2. Establish Breakpoint Strategy
 
 Define when and how layouts change:
-"**Breakpoint Strategy:**
+<display>
+**Breakpoint Strategy:**
 We need to define screen size breakpoints where layouts adapt.
 
 **Common Breakpoints:**
@@ -89,12 +92,14 @@ We need to define screen size breakpoints where layouts adapt.
 
 - Use standard breakpoints or custom ones?
 - Focus on mobile-first or desktop-first design?
-- Have specific breakpoints for your key use cases?"
+- Have specific breakpoints for your key use cases?
+</display>
 
 ### 3. Design Accessibility Strategy
 
 Define accessibility requirements and compliance level:
-"**Accessibility Strategy:**
+<display>
+**Accessibility Strategy:**
 What level of WCAG compliance does {{project_name}} need?
 
 **WCAG Levels:**
@@ -113,12 +118,14 @@ What level of WCAG compliance does {{project_name}} need?
 - Keyboard navigation support
 - Screen reader compatibility
 - Touch target sizes (minimum 44x44px)
-- Focus indicators and skip links"
+- Focus indicators and skip links
+</display>
 
 ### 4. Define Testing Strategy
 
 Plan how to ensure responsive design and accessibility:
-"**Testing Strategy:**
+<display>
+**Testing Strategy:**
 
 **Responsive Testing:**
 
@@ -137,12 +144,14 @@ Plan how to ensure responsive design and accessibility:
 
 - Include users with disabilities in testing
 - Test with diverse assistive technologies
-- Validate with actual target devices"
+- Validate with actual target devices
+</display>
 
 ### 5. Document Implementation Guidelines
 
 Create specific guidelines for developers:
-"**Implementation Guidelines:**
+<display>
+**Implementation Guidelines:**
 
 **Responsive Development:**
 
@@ -157,7 +166,8 @@ Create specific guidelines for developers:
 - ARIA labels and roles
 - Keyboard navigation implementation
 - Focus management and skip links
-- High contrast mode support"
+- High contrast mode support
+</display>
 
 ### 6. Generate Responsive & Accessibility Content
 
@@ -194,7 +204,8 @@ When saving to document, append these Level 2 and Level 3 sections:
 ### 7. Present Content and Menu
 
 Show the generated responsive and accessibility content and present choices:
-"I've defined the responsive design and accessibility strategy for {{project_name}}. This ensures your product works beautifully across all devices and is accessible to all users.
+<display>
+I've defined the responsive design and accessibility strategy for {{project_name}}. This ensures your product works beautifully across all devices and is accessible to all users.
 
 **Here's what I'll add to the document:**
 
@@ -204,6 +215,7 @@ Show the generated responsive and accessibility content and present choices:
 [A] Advanced Elicitation - Let's refine our responsive/accessibility strategy
 [P] Party Mode - Bring different perspectives on inclusive design
 [C] Continue - Save this to the document and complete the workflow
+</display>
 
 ### 8. Handle Menu Selection
 

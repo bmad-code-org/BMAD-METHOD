@@ -56,22 +56,24 @@ Complete the product brief workflow, update status files, and provide guidance o
 ### 1. Announce Workflow Completion
 
 **Completion Announcement:**
-"🎉 **Product Brief Complete, {{user_name}}!**
+<display>
+**Product Brief Complete, {{user_name}}!**
 
 I've successfully collaborated with you to create a comprehensive Product Brief for {{project_name}}.
 
 **What we've accomplished:**
 
-- ✅ Executive Summary with clear vision and problem statement
-- ✅ Core Vision with solution definition and unique differentiators
-- ✅ Target Users with rich personas and user journeys
-- ✅ Success Metrics with measurable outcomes and business objectives
-- ✅ MVP Scope with focused feature set and clear boundaries
-- ✅ Future Vision that inspires while maintaining current focus
+- Executive Summary with clear vision and problem statement
+- Core Vision with solution definition and unique differentiators
+- Target Users with rich personas and user journeys
+- Success Metrics with measurable outcomes and business objectives
+- MVP Scope with focused feature set and clear boundaries
+- Future Vision that inspires while maintaining current focus
 
 **The complete Product Brief is now available at:** `{outputFile}`
 
-This brief serves as the foundation for all subsequent product development activities and strategic decisions."
+This brief serves as the foundation for all subsequent product development activities and strategic decisions.
+</display>
 
 ### 2. Document Quality Check
 
@@ -116,7 +118,9 @@ Provide guidance on logical next workflows:
 
 ### 4. Congrats to the user
 
-"**Your Product Brief for {{project_name}} is now complete and ready for the next phase!**"
+<display>
+**Your Product Brief for {{project_name}} is now complete and ready for the next phase!**
+</display>
 
 Recap that the brief captures everything needed to guide subsequent product development:
 

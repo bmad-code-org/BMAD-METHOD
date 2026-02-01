@@ -55,14 +55,18 @@ Define the complete project structure and architectural boundaries based on all 
 Map project requirements to architectural components:
 
 **From Epics (if available):**
-"Epic: {{epic_name}} → Lives in {{module/directory/service}}"
+<display>
+Epic: {{epic_name}} → Lives in {{module/directory/service}}
+</display>
 
 - User stories within the epic
 - Cross-epic dependencies
 - Shared components needed
 
 **From FR Categories (if no epics):**
-"FR Category: {{fr_category_name}} → Lives in {{module/directory/service}}"
+<display>
+FR Category: {{fr_category_name}} → Lives in {{module/directory/service}}
+</display>
 
 - Related functional requirements
 - Shared functionality across categories
@@ -214,22 +218,26 @@ project-name/
 Create explicit mapping from project requirements to specific files/directories:
 
 **Epic/Feature Mapping:**
-"Epic: User Management
+<display>
+Epic: User Management
 
 - Components: src/components/features/users/
 - Services: src/services/users/
 - API Routes: src/app/api/users/
 - Database: prisma/migrations/_*users*_
-- Tests: tests/features/users/"
+- Tests: tests/features/users/
+</display>
 
 **Cross-Cutting Concerns:**
-"Authentication System
+<display>
+Authentication System
 
 - Components: src/components/auth/
 - Services: src/services/auth/
 - Middleware: src/middleware/auth.ts
 - Guards: src/guards/auth.guard.ts
-- Tests: tests/auth/"
+- Tests: tests/auth/
+</display>
 
 ### 6. Generate Structure Content
 
@@ -310,7 +318,8 @@ Prepare the content to append to the document:
 
 Show the generated project structure content and present choices:
 
-"I've created a complete project structure based on all our architectural decisions.
+<display>
+I've created a complete project structure based on all our architectural decisions.
 
 **Here's what I'll add to the document:**
 
@@ -319,7 +328,8 @@ Show the generated project structure content and present choices:
 **What would you like to do?**
 [A] Advanced Elicitation - Explore innovative project organization approaches
 [P] Party Mode - Review structure from different development perspectives
-[C] Continue - Save this structure and move to architecture validation"
+[C] Continue - Save this structure and move to architecture validation
+</display>
 
 ### 8. Handle Menu Selection
 

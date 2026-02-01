@@ -44,7 +44,8 @@ Complete the UX design workflow, update status files, and suggest next steps for
 ### 1. Announce Workflow Completion
 
 Inform user that the UX design is complete:
-"🎉 **UX Design Complete, {{user_name}}!**
+<display>
+🎉 **UX Design Complete, {{user_name}}!**
 
 I've successfully collaborated with you to create a comprehensive UX design specification for {{project_name}}.
 
@@ -69,7 +70,8 @@ I've successfully collaborated with you to create a comprehensive UX design spec
 - Color themes visualizer: `{planning_artifacts}/ux-color-themes.html`
 - Design directions mockups: `{planning_artifacts}/ux-design-directions.html`
 
-This specification is now ready to guide visual design, implementation, and development."
+This specification is now ready to guide visual design, implementation, and development.
+</display>
 
 ### 2. Workflow Status Update
 

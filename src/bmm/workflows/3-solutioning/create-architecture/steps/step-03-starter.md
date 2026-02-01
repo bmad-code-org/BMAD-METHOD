@@ -53,7 +53,8 @@ Discover technical preferences and evaluate starter template options, leveraging
 ### 0. Check Technical Preferences & Context
 
 **Check Project Context for Existing Technical Preferences:**
-"Before we dive into starter templates, let me check if you have any technical preferences already documented.
+<display>
+Before we dive into starter templates, let me check if you have any technical preferences already documented.
 
 {{if_project_context_exists}}
 I found some technical rules in your project context file:
@@ -68,10 +69,12 @@ I found some technical rules in your project context file:
 
 {{else}}
 No existing technical preferences found in project context file. We'll establish your technical preferences now.
-{{/if_project_context}}"
+{{/if_project_context}}
+</display>
 
 **Discover User Technical Preferences:**
-"Based on your project context, let's discuss your technical preferences:
+<display>
+Based on your project context, let's discuss your technical preferences:
 
 {{primary_technology_category}} Preferences:
 
@@ -94,7 +97,8 @@ No existing technical preferences found in project context file. We'll establish
 - Any existing systems or APIs you need to integrate with?
 - Third-party services you plan to use (payment, authentication, analytics, etc.)?
 
-These preferences will help me recommend the most suitable starter templates and guide our architectural decisions."
+These preferences will help me recommend the most suitable starter templates and guide our architectural decisions.
+</display>
 
 ### 1. Identify Primary Technology Domain
 
@@ -173,28 +177,34 @@ For each viable starter option, document:
 Based on user skill level and project needs:
 
 **For Expert Users:**
-"Found {{starter_name}} which provides:
+<display>
+Found {{starter_name}} which provides:
 {{quick_decision_list_of_key_decisions}}
 
-This would establish our base architecture with these technical decisions already made. Use it?"
+This would establish our base architecture with these technical decisions already made. Use it?
+</display>
 
 **For Intermediate Users:**
-"I found {{starter_name}}, which is a well-maintained starter for {{project_type}} projects.
+<display>
+I found {{starter_name}}, which is a well-maintained starter for {{project_type}} projects.
 
 It makes these architectural decisions for us:
 {{decision_list_with_explanations}}
 
-This gives us a solid foundation following current best practices. Should we use it?"
+This gives us a solid foundation following current best practices. Should we use it?
+</display>
 
 **For Beginner Users:**
-"I found {{starter_name}}, which is like a pre-built foundation for your project.
+<display>
+I found {{starter_name}}, which is like a pre-built foundation for your project.
 
 Think of it like buying a prefab house frame instead of cutting each board yourself.
 
 It makes these decisions for us:
 {{friendly_explanation_of_decisions}}
 
-This is a great starting point that follows best practices and saves us from making dozens of small technical choices. Should we use it?"
+This is a great starting point that follows best practices and saves us from making dozens of small technical choices. Should we use it?
+</display>
 
 ### 7. Get Current CLI Commands
 
@@ -262,7 +272,8 @@ Prepare the content to append to the document:
 
 Show the generated content and present choices:
 
-"I've analyzed starter template options for {{project_type}} projects.
+<display>
+I've analyzed starter template options for {{project_type}} projects.
 
 **Here's what I'll add to the document:**
 
@@ -271,7 +282,8 @@ Show the generated content and present choices:
 **What would you like to do?**
 [A] Advanced Elicitation - Explore custom approaches or unconventional starters
 [P] Party Mode - Evaluate trade-offs from different perspectives
-[C] Continue - Save this decision and move to architectural decisions"
+[C] Continue - Save this decision and move to architectural decisions
+</display>
 
 ### 10. Handle Menu Selection
 

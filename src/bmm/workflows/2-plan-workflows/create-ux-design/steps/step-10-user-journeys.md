@@ -51,7 +51,8 @@ Design detailed user journey flows for critical user interactions.
 ### 1. Load PRD User Journeys as Foundation
 
 Start with user journeys already defined in the PRD:
-"Great! Since we have the PRD available, let's build on the user journeys already documented there.
+<display>
+Great! Since we have the PRD available, let's build on the user journeys already documented there.
 
 **Existing User Journeys from PRD:**
 I've already loaded these user journeys from your PRD:
@@ -66,14 +67,16 @@ Looking at the PRD journeys, I need to design detailed interaction flows for:
 - [Critical journey 2 identified from PRD narratives]
 - [Critical journey 3 identified from PRD narratives]
 
-The PRD gave us the stories - now we design the mechanics!"
+The PRD gave us the stories - now we design the mechanics!
+</display>
 
 ### 2. Design Each Journey Flow
 
 For each critical journey, design detailed flow:
 
 **For [Journey Name]:**
-"Let's design the flow for users accomplishing [journey goal].
+<display>
+Let's design the flow for users accomplishing [journey goal].
 
 **Flow Design Questions:**
 
@@ -83,12 +86,14 @@ For each critical journey, design detailed flow:
 - How do they know they're progressing successfully?
 - What does success look like for this journey?
 - Where might they get confused or stuck?
-- How do they recover from errors?"
+- How do they recover from errors?
+</display>
 
 ### 3. Create Flow Diagrams
 
 Visualize each journey with Mermaid diagrams:
-"I'll create detailed flow diagrams for each journey showing:
+<display>
+I'll create detailed flow diagrams for each journey showing:
 
 **[Journey Name] Flow:**
 
@@ -98,12 +103,14 @@ Visualize each journey with Mermaid diagrams:
 - Error recovery mechanisms
 - Progressive disclosure of information
 
-Each diagram will map the complete user experience from start to finish."
+Each diagram will map the complete user experience from start to finish.
+</display>
 
 ### 4. Optimize for Efficiency and Delight
 
 Refine flows for optimal user experience:
-"**Flow Optimization:**
+<display>
+**Flow Optimization:**
 For each journey, let's ensure we're:
 
 - Minimizing steps to value (getting users to success quickly)
@@ -116,12 +123,14 @@ For each journey, let's ensure we're:
 
 - [Optimization 1 for journey efficiency]
 - [Optimization 2 for user delight]
-- [Optimization 3 for error handling]"
+- [Optimization 3 for error handling]
+</display>
 
 ### 5. Document Journey Patterns
 
 Extract reusable patterns across journeys:
-"**Journey Patterns:**
+<display>
+**Journey Patterns:**
 Across these flows, I'm seeing some common patterns we can standardize:
 
 **Navigation Patterns:**
@@ -139,7 +148,8 @@ Across these flows, I'm seeing some common patterns we can standardize:
 - [Feedback pattern 1]
 - [Feedback pattern 2]
 
-These patterns will ensure consistency across all user experiences."
+These patterns will ensure consistency across all user experiences.
+</display>
 
 ### 6. Generate User Journey Content
 
@@ -172,7 +182,8 @@ When saving to document, append these Level 2 and Level 3 sections:
 ### 7. Present Content and Menu
 
 Show the generated user journey content and present choices:
-"I've designed detailed user journey flows for {{project_name}}. These flows will guide the detailed design of each user interaction.
+<display>
+I've designed detailed user journey flows for {{project_name}}. These flows will guide the detailed design of each user interaction.
 
 **Here's what I'll add to the document:**
 
@@ -182,6 +193,7 @@ Show the generated user journey content and present choices:
 [A] Advanced Elicitation - Let's refine our user journey designs
 [P] Party Mode - Bring different perspectives on user flows
 [C] Continue - Save this to the document and move to component strategy
+</display>
 
 ### 8. Handle Menu Selection
 

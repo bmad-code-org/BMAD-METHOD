@@ -91,7 +91,8 @@ Execute research type discovery and routing:
 
 ### Collaborative Research Discovery
 
-"Welcome {{user_name}}! I'm excited to work with you as your research partner. I bring web research capabilities with rigorous source verification, while you bring the domain expertise and research direction.
+<display>
+Welcome {{user_name}}! I'm excited to work with you as your research partner. I bring web research capabilities with rigorous source verification, while you bring the domain expertise and research direction.
 
 **Let me help you clarify what you'd like to research.**
 
@@ -104,6 +105,7 @@ For example:
 - 'AI implementation in financial services'
 - 'Sustainable packaging regulations'
 - 'Or anything else you have in mind...'
+</display>
 
 ### Topic Exploration and Clarification
 

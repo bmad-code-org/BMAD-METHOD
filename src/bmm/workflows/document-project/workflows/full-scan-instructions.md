@@ -37,9 +37,9 @@ This workflow uses a single comprehensive CSV file to intelligently document you
 
 <action>Load documentation-requirements.csv from: {documentation_requirements_csv}</action>
 <action>Store all 12 rows indexed by project_type_id for project detection and requirements lookup</action>
-<action>Display: "Loaded documentation requirements for 12 project types (web, mobile, backend, cli, library, desktop, game, data, extension, infra, embedded)"</action>
+<display>Loaded documentation requirements for 12 project types (web, mobile, backend, cli, library, desktop, game, data, extension, infra, embedded)</display>
 
-<action>Display: "✓ Documentation requirements loaded successfully. Ready to begin project analysis."</action>
+<display>✓ Documentation requirements loaded successfully. Ready to begin project analysis.</display>
 </step>
 
 <step n="0.6" goal="Check for existing documentation and determine workflow mode">
@@ -114,17 +114,17 @@ Your choice [1/2/3] (default: 1):
 
   <action if="user selects 1 OR user presses enter">
     <action>Set scan_level = "quick"</action>
-    <action>Display: "Using Quick Scan (pattern-based, no source file reading)"</action>
+    <display>Using Quick Scan (pattern-based, no source file reading)</display>
   </action>
 
   <action if="user selects 2">
     <action>Set scan_level = "deep"</action>
-    <action>Display: "Using Deep Scan (reading critical files per project type)"</action>
+    <display>Using Deep Scan (reading critical files per project type)</display>
   </action>
 
   <action if="user selects 3">
     <action>Set scan_level = "exhaustive"</action>
-    <action>Display: "Using Exhaustive Scan (reading all source files)"</action>
+    <display>Using Exhaustive Scan (reading all source files)</display>
   </action>
 
 <action>Initialize state file: {output_folder}/project-scan-report.json</action>
@@ -915,7 +915,7 @@ Enter number(s) separated by commas (e.g., "1,3,5"), or type 'all':
 - Store result in {{selected_items}} array
   </action>
 
-  <action>Display: "Generating {{selected_items.length}} document(s)..."</action>
+  <display>Generating {{selected_items.length}} document(s)...</display>
 
   <action>For each item in {{selected_items}}:
 
@@ -927,7 +927,7 @@ Enter number(s) separated by commas (e.g., "1,3,5"), or type 'all':
 2. **Route to appropriate generation substep based on doc_type:**
 
    **If doc_type == "architecture":**
-   - Display: "Generating architecture documentation for {{part_id}}..."
+   - <display>Generating architecture documentation for {{part_id}}...</display>
    - Load architecture_match for this part from state file (Step 3 cache)
    - Re-run Step 8 architecture generation logic ONLY for this specific part
    - Use matched template and fill with cached data from state file
@@ -935,7 +935,7 @@ Enter number(s) separated by commas (e.g., "1,3,5"), or type 'all':
    - Validate completeness
 
    **If doc_type == "api-contracts":**
-   - Display: "Generating API contracts for {{part_id}}..."
+   - <display>Generating API contracts for {{part_id}}...</display>
    - Load part data and documentation_requirements
    - Re-run Step 4 API scan substep targeting ONLY this part
    - Use scan_level from state file (quick/deep/exhaustive)
@@ -943,35 +943,35 @@ Enter number(s) separated by commas (e.g., "1,3,5"), or type 'all':
    - Validate document structure
 
    **If doc_type == "data-models":**
-   - Display: "Generating data models documentation for {{part_id}}..."
+   - <display>Generating data models documentation for {{part_id}}...</display>
    - Re-run Step 4 data models scan substep targeting ONLY this part
    - Use schema_migration_patterns from documentation_requirements
    - Generate data-models-{{part_id}}.md
    - Validate completeness
 
    **If doc_type == "component-inventory":**
-   - Display: "Generating component inventory for {{part_id}}..."
+   - <display>Generating component inventory for {{part_id}}...</display>
    - Re-run Step 9 component inventory generation for this specific part
    - Scan components/, ui/, widgets/ folders
    - Generate component-inventory-{{part_id}}.md
    - Validate structure
 
    **If doc_type == "development-guide":**
-   - Display: "Generating development guide for {{part_id}}..."
+   - <display>Generating development guide for {{part_id}}...</display>
    - Re-run Step 9 development guide generation for this specific part
    - Use key_file_patterns and test_file_patterns from documentation_requirements
    - Generate development-guide-{{part_id}}.md
    - Validate completeness
 
    **If doc_type == "deployment-guide":**
-   - Display: "Generating deployment guide..."
+   - <display>Generating deployment guide...</display>
    - Re-run Step 6 deployment configuration scan
    - Re-run Step 9 deployment guide generation
    - Generate deployment-guide.md
    - Validate structure
 
    **If doc_type == "integration-architecture":**
-   - Display: "Generating integration architecture..."
+   - <display>Generating integration architecture...</display>
    - Re-run Step 7 integration analysis for all parts
    - Generate integration-architecture.md
    - Validate completeness
@@ -980,7 +980,7 @@ Enter number(s) separated by commas (e.g., "1,3,5"), or type 'all':
    - Confirm file was written successfully
    - Update state file with newly generated output
    - Add to {{newly_generated_docs}} tracking list
-   - Display: "✓ Generated: {{file_path}}"
+   - <display>✓ Generated: {{file_path}}</display>
 
 4. **Handle errors:**
    - If generation fails, log error and continue with next item
@@ -1101,6 +1101,6 @@ When ready to plan new features, run the PRD workflow and provide this index as 
 - Write final state file
   </action>
 
-<action>Display: "State file saved: {{output_folder}}/project-scan-report.json"</action>
+<display>State file saved: {{output_folder}}/project-scan-report.json</display>
 
 </workflow>

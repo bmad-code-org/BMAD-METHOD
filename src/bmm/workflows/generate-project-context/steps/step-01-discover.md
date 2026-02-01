@@ -135,7 +135,8 @@ Set frontmatter `sections_completed` to track what will be updated
 
 Report findings to user:
 
-"Welcome {{user_name}}! I've analyzed your project for {{project_name}} to discover the context that AI agents need.
+<display>
+Welcome {{user_name}}! I've analyzed your project for {{project_name}} to discover the context that AI agents need.
 
 **Technology Stack Discovered:**
 {{list_of_technologies_with_versions}}
@@ -158,7 +159,8 @@ Report findings to user:
 
 Ready to create/update your project context. This will help AI agents implement code consistently with your project's standards.
 
-[C] Continue to context generation"
+[C] Continue to context generation
+</display>
 
 ## SUCCESS METRICS:
 

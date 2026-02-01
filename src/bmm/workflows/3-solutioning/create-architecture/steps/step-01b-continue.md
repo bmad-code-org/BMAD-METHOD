@@ -55,7 +55,8 @@ Read the existing architecture document completely and analyze:
 
 Show the user their current progress:
 
-"Welcome back {{user_name}}! I found your Architecture work for {{project_name}}.
+<display>
+Welcome back {{user_name}}! I found your Architecture work for {{project_name}}.
 
 **Current Progress:**
 
@@ -77,7 +78,7 @@ Show the user their current progress:
 [C] Continue to next logical step
 [O] Overview of all remaining steps
 [X] Start over (will overwrite existing work)
-"
+</display>
 
 ### 3. Handle User Choice
 

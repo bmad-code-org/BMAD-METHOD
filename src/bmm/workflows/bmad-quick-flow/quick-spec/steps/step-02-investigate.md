@@ -45,7 +45,9 @@ a) **Build on Step 1's Quick Scan**
 
 Review what was found in Step 1's orient scan. Then ask:
 
-"Based on my quick look, I see [files/patterns found]. Are there other files or directories I should investigate deeply?"
+<display>
+Based on my quick look, I see [files/patterns found]. Are there other files or directories I should investigate deeply?
+</display>
 
 b) **Read and Analyze Code**
 
@@ -106,12 +108,14 @@ Fill in:
 
 **Report to user:**
 
-"**Context Gathered:**
+<display>
+**Context Gathered:**
 
 - Tech Stack: {tech_stack_summary}
 - Files to Modify: {files_count} files identified
 - Patterns: {patterns_summary}
-- Tests: {test_patterns_summary}"
+- Tests: {test_patterns_summary}
+</display>
 
 ### 4. Present Checkpoint Menu
 

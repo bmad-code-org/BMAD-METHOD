@@ -108,7 +108,8 @@ Complete setup and report to user:
 
 **Input Documents Discovered:**
 Report what was found:
-"Welcome {{user_name}}! I've set up your Architecture workspace for {{project_name}}.
+<display>
+Welcome {{user_name}}! I've set up your Architecture workspace for {{project_name}}.
 
 **Documents Found:**
 
@@ -123,6 +124,7 @@ Report what was found:
 Ready to begin architectural decision making. Do you have any other documents you'd like me to include?
 
 [C] Continue to project context analysis
+</display>
 
 ## SUCCESS METRICS:
 

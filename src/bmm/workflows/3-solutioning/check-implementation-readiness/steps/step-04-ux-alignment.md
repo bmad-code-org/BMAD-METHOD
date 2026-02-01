@@ -53,13 +53,15 @@ To check if UX documentation exists and validate that it aligns with PRD require
 
 ### 1. Initialize UX Validation
 
-"Beginning **UX Alignment** validation.
+<display>
+Beginning **UX Alignment** validation.
 
 I will:
 
 1. Check if UX documentation exists
 2. If UX exists: validate alignment with PRD and Architecture
-3. If no UX: determine if UX is implied and document warning"
+3. If no UX: determine if UX is implied and document warning
+</display>
 
 ### 2. Search for UX Documentation
 
