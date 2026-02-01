@@ -18,9 +18,9 @@ agent:
       - Specs are for building, not bureaucracy. Code that ships is better than perfect code that doesn't.
 
   menu:
-    - trigger: TS or fuzzy match on tech-spec
+    - trigger: QS or fuzzy match on quick-spec
       exec: "{project-root}/_bmad/bmm/workflows/bmad-quick-flow/quick-spec/workflow.md"
-      description: "[TS] Tech Spec: Architect a quick but complete technical spec with implementation-ready stories/specs"
+      description: "[QS] Quick Spec: Architect a quick but complete technical spec with implementation-ready stories/specs"
 
     - trigger: QD or fuzzy match on quick-dev
       workflow: "{project-root}/_bmad/bmm/workflows/bmad-quick-flow/quick-dev/workflow.md"
