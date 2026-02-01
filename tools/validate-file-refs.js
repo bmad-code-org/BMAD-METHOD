@@ -68,6 +68,16 @@ const LOAD_DIRECTIVE = /Load[:\s]+`(\.[^`]+)`/g;
 // Pattern: absolute path leaks
 const ABS_PATH_LEAK = /(?:\/Users\/|\/home\/|[A-Z]:\\\\)/;
 
+// --- Output Escaping ---
+
+function escapeAnnotation(str) {
+  return str.replaceAll('%', '%25').replaceAll('\r', '%0D').replaceAll('\n', '%0A');
+}
+
+function escapeTableCell(str) {
+  return String(str).replaceAll('|', String.raw`\|`);
+}
+
 // Path prefixes/patterns that only exist in installed structure, not in source
 const INSTALL_ONLY_PATHS = ['_config/'];
 
@@ -150,8 +160,8 @@ function mapInstalledToSource(refPath) {
     return path.join(SRC_DIR, cleaned);
   }
 
-  // Other modules are under src/modules/
-  return path.join(SRC_DIR, 'modules', cleaned);
+  // Fallback: map directly under src/
+  return path.join(SRC_DIR, cleaned);
 }
 
 // --- Reference Extraction ---
@@ -181,44 +191,57 @@ function isInstallOnly(cleanedPath) {
 function extractYamlRefs(filePath, content) {
   const refs = [];
 
-  let parsed;
+  let doc;
   try {
-    parsed = yaml.parse(content);
+    doc = yaml.parseDocument(content);
   } catch {
     return refs; // Skip unparseable YAML (schema validator handles this)
   }
 
-  function walkValues(obj, keyPath) {
-    if (typeof obj === 'string') {
-      if (!isResolvable(obj)) return;
+  function checkValue(value, range, keyPath) {
+    if (typeof value !== 'string') return;
+    if (!isResolvable(value)) return;
 
-      // Check for {project-root}/_bmad/ refs
-      const prMatch = obj.match(/\{project-root\}\/_bmad\/[^\s'"<>})\]`]+/);
-      if (prMatch) {
-        refs.push({ file: filePath, raw: prMatch[0], type: 'project-root', key: keyPath });
-      }
+    const line = range ? offsetToLine(content, range[0]) : undefined;
 
-      // Check for {_bmad}/ refs
-      const bmMatch = obj.match(/\{_bmad\}\/[^\s'"<>})\]`]+/);
-      if (bmMatch) {
-        refs.push({ file: filePath, raw: bmMatch[0], type: 'project-root', key: keyPath });
-      }
+    // Check for {project-root}/_bmad/ refs
+    const prMatch = value.match(/\{project-root\}\/_bmad\/[^\s'"<>})\]`]+/);
+    if (prMatch) {
+      refs.push({ file: filePath, raw: prMatch[0], type: 'project-root', line, key: keyPath });
+    }
 
-      // Check for relative paths
-      const relMatch = obj.match(/^\.\.?\/[^\s'"<>})\]`]+\.(?:md|yaml|yml|xml|json|csv|txt)$/);
-      if (relMatch) {
-        refs.push({ file: filePath, raw: relMatch[0], type: 'relative', key: keyPath });
-      }
-    } else if (Array.isArray(obj)) {
-      for (const [i, item] of obj.entries()) walkValues(item, `${keyPath}[${i}]`);
-    } else if (obj && typeof obj === 'object') {
-      for (const [key, val] of Object.entries(obj)) {
-        walkValues(val, keyPath ? `${keyPath}.${key}` : key);
-      }
+    // Check for {_bmad}/ refs
+    const bmMatch = value.match(/\{_bmad\}\/[^\s'"<>})\]`]+/);
+    if (bmMatch) {
+      refs.push({ file: filePath, raw: bmMatch[0], type: 'project-root', line, key: keyPath });
+    }
+
+    // Check for relative paths
+    const relMatch = value.match(/^\.\.?\/[^\s'"<>})\]`]+\.(?:md|yaml|yml|xml|json|csv|txt)$/);
+    if (relMatch) {
+      refs.push({ file: filePath, raw: relMatch[0], type: 'relative', line, key: keyPath });
     }
   }
 
-  walkValues(parsed, '');
+  function walkNode(node, keyPath) {
+    if (!node) return;
+
+    if (yaml.isMap(node)) {
+      for (const item of node.items) {
+        const key = item.key && item.key.value !== undefined ? item.key.value : '?';
+        const childPath = keyPath ? `${keyPath}.${key}` : String(key);
+        walkNode(item.value, childPath);
+      }
+    } else if (yaml.isSeq(node)) {
+      for (const [i, item] of node.items.entries()) {
+        walkNode(item, `${keyPath}[${i}]`);
+      }
+    } else if (yaml.isScalar(node)) {
+      checkValue(node.value, node.range, keyPath);
+    }
+  }
+
+  walkNode(doc.contents, '');
   return refs;
 }
 
@@ -285,6 +308,12 @@ function resolveRef(ref) {
     if (execPath.includes('{project-root}')) {
       return mapInstalledToSource(execPath);
     }
+    if (execPath.includes('{_bmad}')) {
+      return mapInstalledToSource(execPath);
+    }
+    if (execPath.startsWith('_bmad/')) {
+      return mapInstalledToSource(execPath);
+    }
     // Relative exec path
     return path.resolve(path.dirname(ref.file), execPath);
   }
@@ -334,6 +363,7 @@ let totalRefs = 0;
 let brokenRefs = 0;
 let totalLeaks = 0;
 let filesWithIssues = 0;
+const allIssues = []; // Collect for $GITHUB_STEP_SUMMARY
 
 for (const filePath of files) {
   const relativePath = path.relative(PROJECT_ROOT, filePath);
@@ -391,10 +421,19 @@ for (const filePath of files) {
       const location = ref.line ? `line ${ref.line}` : ref.key ? `key: ${ref.key}` : '';
       console.log(`  [BROKEN] ${ref.raw}${location ? ` (${location})` : ''}`);
       console.log(`     Target not found: ${resolved}`);
+      allIssues.push({ file: relativePath, line: ref.line || 1, ref: ref.raw, issue: 'broken ref' });
+      if (process.env.GITHUB_ACTIONS) {
+        const line = ref.line || 1;
+        console.log(`::warning file=${relativePath},line=${line}::${escapeAnnotation(`Broken reference: ${ref.raw} → ${resolved}`)}`);
+      }
     }
 
     for (const leak of leaks) {
       console.log(`  [ABS-PATH] Line ${leak.line}: ${leak.content}`);
+      allIssues.push({ file: relativePath, line: leak.line, ref: leak.content, issue: 'abs-path' });
+      if (process.env.GITHUB_ACTIONS) {
+        console.log(`::warning file=${relativePath},line=${leak.line}::${escapeAnnotation(`Absolute path leak: ${leak.content}`)}`);
+      }
     }
   }
 }
@@ -422,5 +461,20 @@ if (hasIssues) {
 }
 
 console.log('');
+
+// Write GitHub Actions step summary
+if (process.env.GITHUB_STEP_SUMMARY) {
+  let summary = '## File Reference Validation\n\n';
+  if (allIssues.length > 0) {
+    summary += '| File | Line | Reference | Issue |\n';
+    summary += '|------|------|-----------|-------|\n';
+    for (const issue of allIssues) {
+      summary += `| ${escapeTableCell(issue.file)} | ${issue.line} | ${escapeTableCell(issue.ref)} | ${issue.issue} |\n`;
+    }
+    summary += '\n';
+  }
+  summary += `**${files.length} files scanned, ${totalRefs} references checked, ${brokenRefs + totalLeaks} issues found**\n`;
+  fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, summary);
+}
 
 process.exit(hasIssues && STRICT ? 1 : 0);
