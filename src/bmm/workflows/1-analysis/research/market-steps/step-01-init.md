@@ -138,7 +138,7 @@ Show initial scope document and present continue option:
 
 - Update frontmatter: `stepsCompleted: [1]`
 - Add confirmation note to document: "Scope confirmed by user on {{date}}"
-- Load: `./step-02-customer-insights.md`
+- Load: `./step-02-customer-behavior.md`
 
 #### If 'Modify':
 
