@@ -2,13 +2,11 @@ const path = require('node:path');
 const fs = require('fs-extra');
 const os = require('node:os');
 const chalk = require('chalk');
-const yaml = require('yaml');
 const { BaseIdeSetup } = require('./_base-ide');
 const { WorkflowCommandGenerator } = require('./shared/workflow-command-generator');
 const { AgentCommandGenerator } = require('./shared/agent-command-generator');
 const { TaskToolCommandGenerator } = require('./shared/task-tool-command-generator');
-const { getTasksFromBmad } = require('./shared/bmad-artifacts');
-const { toDashPath, customAgentDashName } = require('./shared/path-utils');
+const { customAgentDashName } = require('./shared/path-utils');
 const prompts = require('../../../lib/prompts');
 
 /**
@@ -92,56 +90,16 @@ class CodexSetup extends BaseIdeSetup {
     const { artifacts: agentArtifacts } = await agentGen.collectAgentArtifacts(bmadDir, options.selectedModules || []);
     const agentCount = await agentGen.writeDashArtifacts(destDir, agentArtifacts);
 
-    const tasks = await getTasksFromBmad(bmadDir, options.selectedModules || []);
-    const taskArtifacts = [];
-    for (const task of tasks) {
-      const content = await this.readAndProcessWithProject(
-        task.path,
-        {
-          module: task.module,
-          name: task.name,
-        },
-        projectDir,
-      );
-      let displayName = task.name;
-      let description;
-      let declaredName = task.name;
-
-      const frontmatterMatch = content.match(/^---\s*\n([\s\S]*?)\n---/);
-      if (frontmatterMatch) {
-        try {
-          const frontmatter = yaml.parse(frontmatterMatch[1]);
-          if (frontmatter && typeof frontmatter === 'object') {
-            declaredName = frontmatter.name || declaredName;
-            displayName = frontmatter.displayName || frontmatter.name || displayName;
-            description = frontmatter.description || description;
-          }
-        } catch {
-          // Ignore frontmatter parse errors
-        }
-      }
-
-      const taskPath = path.posix.join(this.bmadFolderName, task.module, 'tasks', `${task.name}.md`);
-      taskArtifacts.push({
-        type: 'task',
-        module: task.module,
-        name: declaredName,
-        displayName,
-        description,
-        path: taskPath,
-        sourcePath: task.path,
-        relativePath: path.join(task.module, 'tasks', `${task.name}.md`),
-        content,
-      });
-    }
-
     const workflowGenerator = new WorkflowCommandGenerator(this.bmadFolderName);
     const { artifacts: workflowArtifacts } = await workflowGenerator.collectWorkflowArtifacts(bmadDir);
     const workflowCount = await workflowGenerator.writeDashArtifacts(destDir, workflowArtifacts);
 
-    // Also write tasks using underscore format
+    // Also write tasks using manifest-driven generator
     const ttGen = new TaskToolCommandGenerator();
-    const tasksWritten = await ttGen.writeDashArtifacts(destDir, taskArtifacts);
+    const taskToolResult = await ttGen.generateDashTaskToolCommands(projectDir, bmadDir, destDir);
+    const tasksWritten = taskToolResult.generated || 0;
+    counts.tasks = taskToolResult.tasks || 0;
+    counts.tools = taskToolResult.tools || 0;
 
     const written = agentCount + workflowCount + tasksWritten;
 
@@ -149,6 +107,7 @@ class CodexSetup extends BaseIdeSetup {
     console.log(chalk.dim(`  - Mode: CLI`));
     console.log(chalk.dim(`  - ${counts.agents} agents exported`));
     console.log(chalk.dim(`  - ${counts.tasks} tasks exported`));
+    console.log(chalk.dim(`  - ${counts.tools} tools exported`));
     console.log(chalk.dim(`  - ${counts.workflows} workflow commands exported`));
     if (counts.workflowLaunchers > 0) {
       console.log(chalk.dim(`  - ${counts.workflowLaunchers} workflow launchers exported`));
@@ -225,17 +184,11 @@ class CodexSetup extends BaseIdeSetup {
       });
     }
 
-    const tasks = await getTasksFromBmad(bmadDir, selectedModules);
-    for (const task of tasks) {
-      const content = await this.readAndProcessWithProject(
-        task.path,
-        {
-          module: task.module,
-          name: task.name,
-        },
-        projectDir,
-      );
-
+    const taskToolGen = new TaskToolCommandGenerator();
+    const taskManifest = await taskToolGen.loadTaskManifest(bmadDir);
+    const standaloneTasks = taskManifest ? taskManifest.filter((task) => task.standalone === 'true' || task.standalone === true) : [];
+    for (const task of standaloneTasks) {
+      const content = taskToolGen.generateCommandContent(task, 'task');
       artifacts.push({
         type: 'task',
         module: task.module,
@@ -253,7 +206,7 @@ class CodexSetup extends BaseIdeSetup {
       artifacts,
       counts: {
         agents: agentArtifacts.length,
-        tasks: tasks.length,
+        tasks: standaloneTasks.length,
         workflows: workflowCounts.commands,
         workflowLaunchers: workflowCounts.launchers,
       },
@@ -265,19 +218,6 @@ class CodexSetup extends BaseIdeSetup {
       return path.join(projectDir, '.codex', 'prompts');
     }
     return path.join(os.homedir(), '.codex', 'prompts');
-  }
-
-  async flattenAndWriteArtifacts(artifacts, destDir) {
-    let written = 0;
-
-    for (const artifact of artifacts) {
-      const flattenedName = this.flattenFilename(artifact.relativePath);
-      const targetPath = path.join(destDir, flattenedName);
-      await fs.writeFile(targetPath, artifact.content);
-      written++;
-    }
-
-    return written;
   }
 
   async clearOldBmadFiles(destDir) {
@@ -320,11 +260,6 @@ class CodexSetup extends BaseIdeSetup {
         console.warn(chalk.dim(`  Skipping ${entry}: ${error.message}`));
       }
     }
-  }
-
-  async readAndProcessWithProject(filePath, metadata, projectDir) {
-    const content = await fs.readFile(filePath, 'utf8');
-    return super.processContent(content, metadata, projectDir);
   }
 
   /**
