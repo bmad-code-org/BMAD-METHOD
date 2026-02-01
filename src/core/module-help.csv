@@ -1,5 +1,5 @@
 module,phase,name,code,sequence,workflow-file,command,required,agent,options,description,output-location,outputs
-core,anytime,Brainstorming,BS,,_bmad/core/workflows/brainstorming/workflow.md,bmad-brainstorming,false,analyst,,"Generate diverse ideas through interactive techniques. Use early in ideation phase or when stuck generating ideas.",{output_folder}/brainstorming/brainstorming-session-{{date}}.md,,
+core,anytime,Brainstorming,BSP,,_bmad/core/workflows/brainstorming/workflow.md,bmad-brainstorming,false,analyst,,"Generate diverse ideas through interactive techniques. Use early in ideation phase or when stuck generating ideas.",{output_folder}/brainstorming/brainstorming-session-{{date}}.md,,
 core,anytime,Party Mode,PM,,_bmad/core/workflows/party-mode/workflow.md,bmad-party-mode,false,party-mode facilitator,,"Orchestrate multi-agent discussions. Use when you need multiple agent perspectives or want agents to collaborate.",,
 core,anytime,bmad-help,BH,,_bmad/core/tasks/help.md,bmad-help,false,,,"Get unstuck by showing what workflow steps come next or answering BMad Method questions.",,
 core,anytime,Index Docs,ID,,_bmad/core/tasks/index-docs.xml,bmad-index-docs,false,,,"Create lightweight index for quick LLM scanning. Use when LLM needs to understand available docs without loading everything.",,
