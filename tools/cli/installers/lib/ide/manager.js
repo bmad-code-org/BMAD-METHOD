@@ -1,6 +1,7 @@
 const fs = require('fs-extra');
 const path = require('node:path');
 const chalk = require('chalk');
+const { BMAD_FOLDER_NAME } = require('./shared/path-utils');
 
 /**
  * IDE Manager - handles IDE-specific setup
@@ -14,7 +15,7 @@ class IdeManager {
   constructor() {
     this.handlers = new Map();
     this._initialized = false;
-    this.bmadFolderName = '_bmad'; // Default, can be overridden
+    this.bmadFolderName = BMAD_FOLDER_NAME; // Default, can be overridden
   }
 
   /**
