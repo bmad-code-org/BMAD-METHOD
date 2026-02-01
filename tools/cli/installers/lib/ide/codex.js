@@ -186,7 +186,9 @@ class CodexSetup extends BaseIdeSetup {
 
     const taskToolGen = new TaskToolCommandGenerator();
     const taskManifest = await taskToolGen.loadTaskManifest(bmadDir);
+    const toolManifest = await taskToolGen.loadToolManifest(bmadDir);
     const standaloneTasks = taskManifest ? taskManifest.filter((task) => task.standalone === 'true' || task.standalone === true) : [];
+    const standaloneTools = toolManifest ? toolManifest.filter((tool) => tool.standalone === 'true' || tool.standalone === true) : [];
     for (const task of standaloneTasks) {
       const content = taskToolGen.generateCommandContent(task, 'task');
       artifacts.push({
@@ -194,6 +196,17 @@ class CodexSetup extends BaseIdeSetup {
         module: task.module,
         sourcePath: task.path,
         relativePath: path.join(task.module, 'tasks', `${task.name}.md`),
+        content,
+      });
+    }
+
+    for (const tool of standaloneTools) {
+      const content = taskToolGen.generateCommandContent(tool, 'tool');
+      artifacts.push({
+        type: 'tool',
+        module: tool.module,
+        sourcePath: tool.path,
+        relativePath: path.join(tool.module, 'tools', `${tool.name}.md`),
         content,
       });
     }
@@ -207,6 +220,7 @@ class CodexSetup extends BaseIdeSetup {
       counts: {
         agents: agentArtifacts.length,
         tasks: standaloneTasks.length,
+        tools: standaloneTools.length,
         workflows: workflowCounts.commands,
         workflowLaunchers: workflowCounts.launchers,
       },
