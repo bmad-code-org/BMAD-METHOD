@@ -123,8 +123,6 @@ overallStatus: '{Pass/Warning/Critical based on all findings}'
 
 ### 4. Present Summary to User Conversationally
 
-Display:
-
 <display>
 **✓ PRD Validation Complete**
 
@@ -160,12 +158,12 @@ Display:
 
 ### 5. Present MENU OPTIONS
 
-Display:
-
+<display>
 **[R] Review Detailed Findings** - Walk through validation report section by section
 **[E] Use Edit Workflow** - Use validation report with Edit workflow for systematic improvements
 **[F] Fix Simpler Items** - Immediate fixes for simple issues (anti-patterns, leakage, missing headers)
 **[X] Exit** - Exit and Suggest Next Steps.
+</display>
 
 #### EXECUTION RULES:
 

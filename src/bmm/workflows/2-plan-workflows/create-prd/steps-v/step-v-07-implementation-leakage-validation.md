@@ -172,8 +172,6 @@ Append to validation report:
 
 ### 5. Display Progress and Auto-Proceed
 
-Display:
-
 <display>
 **Implementation Leakage Validation Complete**
 

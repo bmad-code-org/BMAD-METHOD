@@ -155,8 +155,6 @@ Append to validation report:
 **Note:** This PRD is for a standard domain without regulatory compliance requirements.
 ```
 
-Display:
-
 <display>
 **Domain Compliance Validation Skipped**
 
@@ -209,8 +207,6 @@ Append to validation report:
 ```
 
 ### 7. Display Progress and Auto-Proceed
-
-Display:
 
 <display>
 **Domain Compliance Validation Complete**

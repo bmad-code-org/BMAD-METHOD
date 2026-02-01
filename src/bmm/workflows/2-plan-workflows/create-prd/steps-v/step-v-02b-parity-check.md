@@ -153,8 +153,6 @@ Append to validation report:
 
 ### 4. Present Parity Analysis and Options
 
-Display:
-
 <display>
 **Parity Analysis Complete**
 

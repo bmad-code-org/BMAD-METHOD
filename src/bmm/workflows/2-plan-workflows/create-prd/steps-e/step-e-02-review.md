@@ -144,8 +144,6 @@ Return detailed change plan with section breakdown."
 
 ### 4. Present Change Plan to User
 
-Display:
-
 <display>
 **Deep Review Complete - Change Plan**
 
@@ -200,7 +198,6 @@ Store approved change plan for next step:
 - **Priority order:** Sequence to apply changes
 - **User confirmed:** Yes
 
-Display:
 <display>
 **Change Plan Approved**
 

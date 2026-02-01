@@ -98,7 +98,6 @@ ls -t {prd_folder_path}/validation-report-*.md 2>/dev/null | head -1
 
 **If validation report found:**
 
-Display:
 <display>
 **📋 Found Validation Report**
 
@@ -189,7 +188,6 @@ Analyze the loaded PRD:
 
 **IF validation report provided OR PRD is BMAD Standard/Variant:**
 
-Display:
 <display>
 **Edit Requirements Understood**
 
@@ -204,7 +202,6 @@ Read fully and follow: next step (step-e-02-review.md)
 
 **IF PRD is Legacy (Non-Standard) AND no validation report:**
 
-Display:
 <display>
 **Format Detected:** Legacy PRD
 

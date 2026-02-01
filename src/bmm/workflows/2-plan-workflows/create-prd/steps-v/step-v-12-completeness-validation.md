@@ -206,8 +206,6 @@ Append to validation report:
 
 ### 4. Display Progress and Auto-Proceed
 
-Display:
-
 <display>
 **Completeness Validation Complete**
 

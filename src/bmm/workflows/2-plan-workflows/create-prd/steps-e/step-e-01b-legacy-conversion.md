@@ -126,8 +126,6 @@ Return conversion assessment with gap analysis and effort estimate."
 
 ### 3. Present Conversion Assessment
 
-Display:
-
 <display>
 **Legacy PRD Conversion Assessment**
 
@@ -177,7 +175,6 @@ Store conversion decision for next step:
 - **Edit requirements:** [user's requirements from step e-01]
 - **Gap analysis:** [summary of gaps identified]
 
-Display:
 <display>
 **Conversion Strategy Documented**
 

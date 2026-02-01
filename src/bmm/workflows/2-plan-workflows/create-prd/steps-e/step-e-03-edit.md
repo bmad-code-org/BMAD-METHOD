@@ -64,7 +64,6 @@ From step e-02, retrieve:
 - **Priority order:** Sequence to apply changes
 - **User requirements:** Edit goals from step e-01
 
-Display:
 <display>
 **Starting PRD Edits**
 
@@ -150,7 +149,6 @@ Changes: {brief summary}
 8. Functional Requirements
 9. Non-Functional Requirements
 
-Display:
 <display>
 **PRD Restructured**
 BMAD standard structure applied.
@@ -199,8 +197,6 @@ editHistory:
 - Re-verify after adjustments
 
 ### 7. Confirm Completion
-
-Display:
 
 <display>
 **PRD Edits Complete**

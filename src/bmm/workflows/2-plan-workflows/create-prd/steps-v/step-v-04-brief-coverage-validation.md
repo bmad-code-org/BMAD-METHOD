@@ -72,8 +72,6 @@ Append to validation report:
 **Status:** N/A - No Product Brief was provided as input
 ```
 
-Display:
-
 <display>
 **Product Brief Coverage: Skipped** (No Product Brief provided)
 
@@ -183,8 +181,6 @@ Append to validation report:
 ```
 
 ### 6. Display Progress and Auto-Proceed
-
-Display:
 
 <display>
 **Product Brief Coverage Validation Complete**

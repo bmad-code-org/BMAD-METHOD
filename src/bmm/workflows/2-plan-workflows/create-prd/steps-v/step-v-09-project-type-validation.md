@@ -227,8 +227,6 @@ Append to validation report:
 
 ### 7. Display Progress and Auto-Proceed
 
-Display:
-
 <display>
 **Project-Type Compliance Validation Complete**
 

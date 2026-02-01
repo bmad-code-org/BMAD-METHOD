@@ -95,7 +95,6 @@ Proceed with domain exploration.
 
 **Attempt subprocess data lookup:**
 
-<display>
 Your task: Lookup data in {domainComplexityCSV}
 
 **Search criteria:**
@@ -106,7 +105,6 @@ Return ONLY the matching row as a YAML-formatted object with these fields:
 domain, complexity, typical_concerns, compliance_requirements
 
 **Do NOT return the entire CSV - only the matching row.**
-</display>
 
 **Graceful degradation (if Task tool unavailable):**
 - Load the CSV file directly

@@ -25,13 +25,15 @@ From previous steps:
 
 ## RESOLUTION OPTIONS
 
-Present: "How would you like to handle these findings?"
+<display>
+How would you like to handle these findings?
+</display>
 
-Display:
-
+<display>
 **[W] Walk through** - Discuss each finding individually
 **[F] Fix automatically** - Automatically fix issues classified as "real"
 **[S] Skip** - Acknowledge and proceed to commit
+</display>
 
 ### Menu Handling Logic:
 

@@ -184,8 +184,6 @@ validationStatus: IN_PROGRESS
 
 ### 9. Present MENU OPTIONS
 
-Display:
-
 <display>
 **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue to Format Detection
 </display>

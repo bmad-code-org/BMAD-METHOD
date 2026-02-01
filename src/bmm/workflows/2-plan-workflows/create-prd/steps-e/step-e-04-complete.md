@@ -78,8 +78,6 @@ From step e-03 change execution, compile:
 
 ### 2. Present Completion Summary
 
-Display:
-
 <display>
 **✓ PRD Edit Complete**
 
@@ -103,12 +101,12 @@ Display:
 
 ### 3. Present MENU OPTIONS
 
-Display:
-
+<display>
 **[V] Run Full Validation** - Execute complete validation workflow (steps-v) to verify PRD quality
 **[E] Edit More** - Make additional edits to the PRD
 **[S] Summary** - End with detailed summary of changes
 **[X] Exit** - Exit edit workflow
+</display>
 
 #### EXECUTION RULES:
 
@@ -118,8 +116,7 @@ Display:
 #### Menu Handling Logic:
 
 - **IF V (Run Full Validation):**
-  - Display:
-    <display>
+  - <display>
     **Starting Validation Workflow**
 
     This will run all 13 validation checks on the updated PRD.

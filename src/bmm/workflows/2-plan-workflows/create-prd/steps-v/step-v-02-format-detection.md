@@ -132,8 +132,6 @@ Append to validation report:
 
 **IF format is BMAD Standard or BMAD Variant:**
 
-Display:
-
 <display>
 **Format Detected:** {classification}
 
@@ -143,8 +141,6 @@ Proceeding to systematic validation checks...
 Without delay, read fully and follow: {nextStepFile} (step-v-03-density-validation.md)
 
 **IF format is Non-Standard (< 3 core sections):**
-
-Display:
 
 <display>
 **Format Detected:** Non-Standard PRD

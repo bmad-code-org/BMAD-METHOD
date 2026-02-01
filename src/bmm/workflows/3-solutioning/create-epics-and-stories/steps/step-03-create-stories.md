@@ -140,12 +140,12 @@ For each epic in the approved epics_list:
 
 #### A. Epic Overview
 
-Display:
-
+<display>
 - Epic number and title
 - Epic goal statement
 - FRs covered by this epic
 - Any NFRs or additional requirements relevant
+</display>
 
 #### B. Story Breakdown
 

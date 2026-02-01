@@ -226,8 +226,6 @@ Append to validation report:
 
 ### 4. Display Progress and Auto-Proceed
 
-Display:
-
 <display>
 **Holistic Quality Assessment Complete**
 

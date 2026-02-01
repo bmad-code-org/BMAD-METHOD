@@ -106,13 +106,15 @@ Use holistic judgment, not mechanical keyword matching.
 
 ### Escalation Triggered - Level 0-2
 
-Present: "This looks like a focused feature with multiple components."
+<display>
+This looks like a focused feature with multiple components.
+</display>
 
-Display:
-
+<display>
 **[P] Plan first (tech-spec)** (recommended)
 **[W] Seems bigger than quick-dev** - Recommend the Full BMad Flow PRD Process
 **[E] Execute directly**
+</display>
 
 #### Menu Handling Logic:
 
@@ -129,13 +131,15 @@ Display:
 
 ### Escalation Triggered - Level 3+
 
-Present: "This sounds like platform/system work."
+<display>
+This sounds like platform/system work.
+</display>
 
-Display:
-
+<display>
 **[W] Start BMad Method** (recommended)
 **[P] Plan first (tech-spec)** (lighter planning)
 **[E] Execute directly** - feeling lucky
+</display>
 
 #### Menu Handling Logic:
 
