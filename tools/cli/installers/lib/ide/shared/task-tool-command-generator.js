@@ -2,20 +2,20 @@ const path = require('node:path');
 const fs = require('fs-extra');
 const csv = require('csv-parse/sync');
 const chalk = require('chalk');
-const { toColonName, toColonPath, toDashPath } = require('./path-utils');
+const { toColonName, toColonPath, toDashPath, BMAD_FOLDER_NAME } = require('./path-utils');
 
 /**
  * Generates command files for standalone tasks and tools
  */
 class TaskToolCommandGenerator {
   /**
-   * @param {string} bmadFolderName - Name of the BMAD folder for template rendering (default: 'bmad')
+   * @param {string} bmadFolderName - Name of the BMAD folder for template rendering (default: '_bmad')
    * Note: This parameter is accepted for API consistency with AgentCommandGenerator and
    * WorkflowCommandGenerator, but is not used for path stripping. The manifest always stores
    * filesystem paths with '_bmad/' prefix (the actual folder name), while bmadFolderName is
    * used for template placeholder rendering ({{bmadFolderName}}).
    */
-  constructor(bmadFolderName = '_bmad') {
+  constructor(bmadFolderName = BMAD_FOLDER_NAME) {
     this.bmadFolderName = bmadFolderName;
   }
 
@@ -33,13 +33,14 @@ class TaskToolCommandGenerator {
     const standaloneTools = tools ? tools.filter((t) => t.standalone === 'true' || t.standalone === true) : [];
 
     const artifacts = [];
+    const bmadPrefix = `${BMAD_FOLDER_NAME}/`;
 
     // Collect task artifacts
     for (const task of standaloneTasks) {
       let taskPath = (task.path || '').replaceAll('\\', '/');
       // Remove _bmad/ prefix if present to get relative path within bmad folder
-      if (taskPath.startsWith('_bmad/')) {
-        taskPath = taskPath.slice(6); // Remove '_bmad/'
+      if (taskPath.startsWith(bmadPrefix)) {
+        taskPath = taskPath.slice(bmadPrefix.length);
       }
 
       const taskExt = path.extname(taskPath) || '.md';
@@ -59,8 +60,8 @@ class TaskToolCommandGenerator {
     for (const tool of standaloneTools) {
       let toolPath = (tool.path || '').replaceAll('\\', '/');
       // Remove _bmad/ prefix if present to get relative path within bmad folder
-      if (toolPath.startsWith('_bmad/')) {
-        toolPath = toolPath.slice(6); // Remove '_bmad/'
+      if (toolPath.startsWith(bmadPrefix)) {
+        toolPath = toolPath.slice(bmadPrefix.length);
       }
 
       const toolExt = path.extname(toolPath) || '.md';
@@ -159,9 +160,9 @@ class TaskToolCommandGenerator {
       if (bmadMatch) {
         // Found /_bmad/ or /bmad/ - use relative path after it
         itemPath = `{project-root}/${this.bmadFolderName}/${bmadMatch[1]}`;
-      } else if (itemPath.startsWith('_bmad/')) {
+      } else if (itemPath.startsWith(`${BMAD_FOLDER_NAME}/`)) {
         // Relative path starting with _bmad/
-        itemPath = `{project-root}/${this.bmadFolderName}/${itemPath.slice(6)}`;
+        itemPath = `{project-root}/${this.bmadFolderName}/${itemPath.slice(BMAD_FOLDER_NAME.length + 1)}`;
       } else if (itemPath.startsWith('bmad/')) {
         // Relative path starting with bmad/
         itemPath = `{project-root}/${this.bmadFolderName}/${itemPath.slice(5)}`;

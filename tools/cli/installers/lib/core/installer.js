@@ -17,9 +17,7 @@ const { ManifestGenerator } = require('./manifest-generator');
 const { IdeConfigManager } = require('./ide-config-manager');
 const { CustomHandler } = require('../custom/handler');
 const prompts = require('../../../lib/prompts');
-
-// BMAD installation folder name - this is constant and should never change
-const BMAD_FOLDER_NAME = '_bmad';
+const { BMAD_FOLDER_NAME } = require('../ide/shared/path-utils');
 
 class Installer {
   constructor() {

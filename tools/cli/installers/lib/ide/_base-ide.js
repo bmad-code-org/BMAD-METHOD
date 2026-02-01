@@ -3,6 +3,7 @@ const fs = require('fs-extra');
 const chalk = require('chalk');
 const { XmlHandler } = require('../../../lib/xml-handler');
 const { getSourcePath } = require('../../../lib/project-root');
+const { BMAD_FOLDER_NAME } = require('./shared/path-utils');
 
 /**
  * Base class for IDE-specific setup
@@ -18,7 +19,7 @@ class BaseIdeSetup {
     this.configFile = null; // Override in subclasses when detection is file-based
     this.detectionPaths = []; // Additional paths that indicate the IDE is configured
     this.xmlHandler = new XmlHandler();
-    this.bmadFolderName = '_bmad'; // Default, can be overridden
+    this.bmadFolderName = BMAD_FOLDER_NAME; // Default, can be overridden
   }
 
   /**
@@ -57,7 +58,7 @@ class BaseIdeSetup {
     if (this.configDir) {
       const configPath = path.join(projectDir, this.configDir);
       if (await fs.pathExists(configPath)) {
-        const bmadRulesPath = path.join(configPath, 'bmad');
+        const bmadRulesPath = path.join(configPath, BMAD_FOLDER_NAME);
         if (await fs.pathExists(bmadRulesPath)) {
           await fs.remove(bmadRulesPath);
           console.log(chalk.dim(`Removed ${this.name} BMAD configuration`));

@@ -18,6 +18,9 @@
 const TYPE_SEGMENTS = ['workflows', 'tasks', 'tools'];
 const AGENT_SEGMENT = 'agents';
 
+// BMAD installation folder name - centralized constant for all installers
+const BMAD_FOLDER_NAME = '_bmad';
+
 /**
  * Convert hierarchical path to flat dash-separated name (NEW STANDARD)
  * Converts: 'bmm', 'agents', 'pm' → 'bmad-agent-bmm-pm.md'
@@ -292,4 +295,5 @@ module.exports = {
 
   TYPE_SEGMENTS,
   AGENT_SEGMENT,
+  BMAD_FOLDER_NAME,
 };
