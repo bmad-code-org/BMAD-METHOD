@@ -27,7 +27,7 @@ agent:
     - Focus on realistic user scenarios
 
   menu:
-    - trigger: QA
+    - trigger: qa
       workflow: "{project-root}/_bmad/bmm/workflows/qa/automate/workflow.yaml"
       description: "[QA] Automate - Generate tests for existing features (simplified)"
 

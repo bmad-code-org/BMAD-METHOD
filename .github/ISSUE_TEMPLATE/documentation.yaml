@@ -1,0 +1,55 @@
+name: Documentation
+description: Report issues or suggest improvements to documentation
+title: "[DOCS] "
+labels: documentation
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Help us improve the BMad Method documentation!
+
+  - type: dropdown
+    id: doc-type
+    attributes:
+      label: What type of documentation issue is this?
+      options:
+        - Error or inaccuracy
+        - Missing information
+        - Unclear or confusing
+        - Outdated content
+        - Request for new documentation
+        - Typo or grammar
+    validations:
+      required: true
+
+  - type: textarea
+    id: location
+    attributes:
+      label: Documentation location
+      description: Where is the documentation that needs improvement?
+      placeholder: e.g., http://docs.bmad-method.org/tutorials/getting-started/ or "In the README"
+    validations:
+      required: true
+
+  - type: textarea
+    id: issue
+    attributes:
+      label: What's the issue?
+      description: Describe the documentation issue in detail
+      placeholder: e.g., Step 3 says to run command X but it should be command Y
+    validations:
+      required: true
+
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggested improvement
+      description: How would you like to see this improved?
+      placeholder: e.g., Change the command to X and add an example
+
+  - type: input
+    id: version
+    attributes:
+      label: BMad Version (if applicable)
+      placeholder: e.g., 6.0.0-Beta.4
