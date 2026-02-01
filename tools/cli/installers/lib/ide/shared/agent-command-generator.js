@@ -1,14 +1,14 @@
 const path = require('node:path');
 const fs = require('fs-extra');
 const chalk = require('chalk');
-const { toColonPath, toDashPath, customAgentColonName, customAgentDashName } = require('./path-utils');
+const { toColonPath, toDashPath, customAgentColonName, customAgentDashName, BMAD_FOLDER_NAME } = require('./path-utils');
 
 /**
  * Generates launcher command files for each agent
  * Similar to WorkflowCommandGenerator but for agents
  */
 class AgentCommandGenerator {
-  constructor(bmadFolderName = 'bmad') {
+  constructor(bmadFolderName = BMAD_FOLDER_NAME) {
     this.templatePath = path.join(__dirname, '../templates/agent-command-template.md');
     this.bmadFolderName = bmadFolderName;
   }

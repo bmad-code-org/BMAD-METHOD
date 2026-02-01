@@ -18,6 +18,9 @@
 const TYPE_SEGMENTS = ['workflows', 'tasks', 'tools'];
 const AGENT_SEGMENT = 'agents';
 
+// BMAD installation folder name - centralized constant for all installers
+const BMAD_FOLDER_NAME = '_bmad';
+
 /**
  * Convert hierarchical path to flat dash-separated name (NEW STANDARD)
  * Converts: 'bmm', 'agents', 'pm' → 'bmad-agent-bmm-pm.md'
@@ -59,7 +62,9 @@ function toDashPath(relativePath) {
     return 'bmad-unknown.md';
   }
 
-  const withoutExt = relativePath.replace('.md', '');
+  // Strip common file extensions to avoid double extensions in generated filenames
+  // e.g., 'create-story.xml' → 'create-story', 'workflow.yaml' → 'workflow'
+  const withoutExt = relativePath.replace(/\.(md|yaml|yml|json|xml|toml)$/i, '');
   const parts = withoutExt.split(/[/\\]/);
 
   const module = parts[0];
@@ -183,7 +188,8 @@ function toUnderscoreName(module, type, name) {
  * @deprecated Use toDashPath instead
  */
 function toUnderscorePath(relativePath) {
-  const withoutExt = relativePath.replace('.md', '');
+  // Strip common file extensions (same as toDashPath for consistency)
+  const withoutExt = relativePath.replace(/\.(md|yaml|yml|json|xml|toml)$/i, '');
   const parts = withoutExt.split(/[/\\]/);
 
   const module = parts[0];
@@ -289,4 +295,5 @@ module.exports = {
 
   TYPE_SEGMENTS,
   AGENT_SEGMENT,
+  BMAD_FOLDER_NAME,
 };

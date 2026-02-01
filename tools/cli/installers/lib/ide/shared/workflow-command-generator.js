@@ -2,13 +2,13 @@ const path = require('node:path');
 const fs = require('fs-extra');
 const csv = require('csv-parse/sync');
 const chalk = require('chalk');
-const { toColonPath, toDashPath, customAgentColonName, customAgentDashName } = require('./path-utils');
+const { toColonPath, toDashPath, customAgentColonName, customAgentDashName, BMAD_FOLDER_NAME } = require('./path-utils');
 
 /**
  * Generates command files for each workflow in the manifest
  */
 class WorkflowCommandGenerator {
-  constructor(bmadFolderName = 'bmad') {
+  constructor(bmadFolderName = BMAD_FOLDER_NAME) {
     this.templatePath = path.join(__dirname, '../templates/workflow-command-template.md');
     this.bmadFolderName = bmadFolderName;
   }

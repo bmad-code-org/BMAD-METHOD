@@ -104,7 +104,10 @@ class CodexSetup extends BaseIdeSetup {
       );
       taskArtifacts.push({
         type: 'task',
+        name: task.name,
+        displayName: task.name,
         module: task.module,
+        path: task.path,
         sourcePath: task.path,
         relativePath: path.join(task.module, 'tasks', `${task.name}.md`),
         content,
@@ -116,7 +119,7 @@ class CodexSetup extends BaseIdeSetup {
     const workflowCount = await workflowGenerator.writeDashArtifacts(destDir, workflowArtifacts);
 
     // Also write tasks using underscore format
-    const ttGen = new TaskToolCommandGenerator();
+    const ttGen = new TaskToolCommandGenerator(this.bmadFolderName);
     const tasksWritten = await ttGen.writeDashArtifacts(destDir, taskArtifacts);
 
     const written = agentCount + workflowCount + tasksWritten;
@@ -214,7 +217,10 @@ class CodexSetup extends BaseIdeSetup {
 
       artifacts.push({
         type: 'task',
+        name: task.name,
+        displayName: task.name,
         module: task.module,
+        path: task.path,
         sourcePath: task.path,
         relativePath: path.join(task.module, 'tasks', `${task.name}.md`),
         content,

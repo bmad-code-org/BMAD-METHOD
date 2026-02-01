@@ -14,7 +14,7 @@ class IdeManager {
   constructor() {
     this.handlers = new Map();
     this._initialized = false;
-    this.bmadFolderName = 'bmad'; // Default, can be overridden
+    this.bmadFolderName = '_bmad'; // Default, can be overridden
   }
 
   /**
@@ -73,6 +73,7 @@ class IdeManager {
         if (HandlerClass) {
           const instance = new HandlerClass();
           if (instance.name && typeof instance.name === 'string') {
+            instance.setBmadFolderName(this.bmadFolderName);
             this.handlers.set(instance.name, instance);
           }
         }

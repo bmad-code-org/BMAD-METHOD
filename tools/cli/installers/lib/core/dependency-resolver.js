@@ -146,7 +146,7 @@ class DependencyResolver {
       const content = await fs.readFile(file.path, 'utf8');
 
       // Parse YAML frontmatter for explicit dependencies
-      const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
+      const frontmatterMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
       if (frontmatterMatch) {
         try {
           // Pre-process to handle backticks in YAML values

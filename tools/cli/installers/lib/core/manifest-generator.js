@@ -161,7 +161,7 @@ class ManifestGenerator {
               workflow = yaml.parse(content);
             } else {
               // Parse MD workflow with YAML frontmatter
-              const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
+              const frontmatterMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
               if (!frontmatterMatch) {
                 if (debug) {
                   console.log(`[DEBUG] Skipped (no frontmatter): ${fullPath}`);
@@ -392,7 +392,7 @@ class ManifestGenerator {
 
         if (file.endsWith('.md')) {
           // Parse YAML frontmatter for .md tasks
-          const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
+          const frontmatterMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
           if (frontmatterMatch) {
             try {
               const frontmatter = yaml.parse(frontmatterMatch[1]);
@@ -481,7 +481,7 @@ class ManifestGenerator {
 
         if (file.endsWith('.md')) {
           // Parse YAML frontmatter for .md tools
-          const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
+          const frontmatterMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
           if (frontmatterMatch) {
             try {
               const frontmatter = yaml.parse(frontmatterMatch[1]);
