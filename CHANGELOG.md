@@ -1,5 +1,37 @@
 # Changelog
 
+## [6.0.0-Beta.5]
+
+### 🎁 Features
+
+* **Add generate-project-context workflow** — New 3-step workflow for project context generation, integrated with quick-flow-solo-dev agent
+* **Shard market research customer analysis** — Refactor monolithic customer insights into 4-step detailed customer behavior analysis workflow
+
+### 🐛 Bug Fixes
+
+* **Fix npm install peer dependency issues** — Add `.npmrc` with `legacy-peer-deps=true`, update Starlight to 0.37.5, and add `--legacy-peer-deps` flag to module installer (PR #1476)
+* **Fix leaked source paths in PRD validation report** — Replace absolute `/src/core/` paths with `{project-root}/_bmad/core/` (#1481)
+* **Fix orphaned market research customer analysis** — Connect step-01-init to step-02-customer-behavior to complete workflow sharding (#1486)
+* **Fix duplicate 2-letter brainstorming code** — Change BS to BSP to resolve conflict with cis Brainstorming module
+* **Fix tech writer sidecar functionality** — Enable proper sidecar operation (#1487)
+* **Fix relative paths in workflow steps** — Correct paths in step-11-polish (#1497) and step-e-04-complete (#1498)
+* **Fix party-mode workflow file extension** — Correct extension in workflow.xml (#1499)
+* **Fix generated slash commands** — Add `disable-model-invocation` to all generated commands (#1501)
+* **Fix agent scan and help CSV files** — Correct module-help.csv entries
+* **Fix HELP_STEP placeholder replacement** — Fix placeholder not replaced in compiled agents, fix hardcoded path, fix single quote (#1437)
+
+### 📚 Documentation
+
+* **Add exact slash commands to Getting Started guide** — Provide precise command examples for users (#1505)
+* **Remove .claude/commands from version control** — Commands are generated, not tracked (#1506)
+
+### 🔧 Maintenance
+
+* **Update Starlight to 0.37.5** — Latest version with peer dependency compatibility
+* **Add GitHub issue templates** — New bug-report.yaml and documentation.yaml templates
+
+---
+
 ## [6.0.0-Beta.4]
 
 ### 🐛 Bug Fixes
