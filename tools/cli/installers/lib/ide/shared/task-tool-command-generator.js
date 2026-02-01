@@ -38,6 +38,10 @@ class TaskToolCommandGenerator {
     // Collect task artifacts
     for (const task of standaloneTasks) {
       let taskPath = (task.path || '').replaceAll('\\', '/');
+      // Convert absolute paths to relative paths
+      if (path.isAbsolute(taskPath)) {
+        taskPath = path.relative(bmadDir, taskPath).replaceAll('\\', '/');
+      }
       // Remove _bmad/ prefix if present to get relative path within bmad folder
       if (taskPath.startsWith(bmadPrefix)) {
         taskPath = taskPath.slice(bmadPrefix.length);
@@ -59,6 +63,10 @@ class TaskToolCommandGenerator {
     // Collect tool artifacts
     for (const tool of standaloneTools) {
       let toolPath = (tool.path || '').replaceAll('\\', '/');
+      // Convert absolute paths to relative paths
+      if (path.isAbsolute(toolPath)) {
+        toolPath = path.relative(bmadDir, toolPath).replaceAll('\\', '/');
+      }
       // Remove _bmad/ prefix if present to get relative path within bmad folder
       if (toolPath.startsWith(bmadPrefix)) {
         toolPath = toolPath.slice(bmadPrefix.length);
