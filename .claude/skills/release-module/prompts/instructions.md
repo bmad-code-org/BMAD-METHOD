@@ -42,9 +42,25 @@ Publish the package.
 
 Create release with changelog notes using `gh release create`.
 
-### Step 10: Confirm Completion
+### Step 10: Create Social Announcement
 
-Show npm and GitHub links.
+Create a social media announcement file at `_bmad-output/social/{repo-name}-release.md`.
+
+Format:
+```markdown
+# {name} v{version} Released
+
+## Highlights
+{2-3 bullet points of key features/changes}
+
+## Links
+- GitHub: {release-url}
+- npm: {npm-url}
+```
+
+### Step 11: Confirm Completion
+
+Show npm, GitHub, and social announcement file paths.
 
 ## Error Handling
 
