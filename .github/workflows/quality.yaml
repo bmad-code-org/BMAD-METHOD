@@ -113,3 +113,6 @@ jobs:
 
       - name: Test agent compilation components
         run: npm run test:install
+
+      - name: Validate file references
+        run: npm run validate:refs
