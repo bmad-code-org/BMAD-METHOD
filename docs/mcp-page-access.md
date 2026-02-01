@@ -6,7 +6,7 @@ title: MCP docs page access attempt
 
 Attempted to retrieve `https://developers.openai.com/resources/docs-mcp` from the container, but the request was blocked.
 
-```
+```sh
 $ curl -L -I https://developers.openai.com/resources/docs-mcp
 HTTP/1.1 403 Forbidden
 content-length: 9
