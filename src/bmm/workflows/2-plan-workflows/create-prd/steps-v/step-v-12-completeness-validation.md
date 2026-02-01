@@ -206,11 +206,15 @@ Append to validation report:
 
 ### 4. Display Progress and Auto-Proceed
 
-Display: "**Completeness Validation Complete**
+Display:
+
+<display>
+**Completeness Validation Complete**
 
 Overall Completeness: {percentage}% ({severity})
 
-**Proceeding to final step...**"
+**Proceeding to final step...**
+</display>
 
 Without delay, read fully and follow: {nextStepFile} (step-v-13-report-complete.md)
 

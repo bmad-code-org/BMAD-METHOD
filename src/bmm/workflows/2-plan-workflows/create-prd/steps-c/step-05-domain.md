@@ -80,9 +80,12 @@ For complex domains, explore what makes this domain special:
 **If complexity is LOW:**
 
 Offer to skip:
-"The domain complexity from our discovery is low. We may not need deep domain-specific requirements. Would you like to:
+
+<display>
+The domain complexity from our discovery is low. We may not need deep domain-specific requirements. Would you like to:
 - [C] Skip this step and move to Innovation
-- [D] Do domain exploration anyway"
+- [D] Do domain exploration anyway
+</display>
 
 **If complexity is MEDIUM or HIGH:**
 
@@ -92,7 +95,8 @@ Proceed with domain exploration.
 
 **Attempt subprocess data lookup:**
 
-"Your task: Lookup data in {domainComplexityCSV}
+<display>
+Your task: Lookup data in {domainComplexityCSV}
 
 **Search criteria:**
 - Find row where domain matches {{domainFromStep02}}
@@ -101,7 +105,8 @@ Proceed with domain exploration.
 Return ONLY the matching row as a YAML-formatted object with these fields:
 domain, complexity, typical_concerns, compliance_requirements
 
-**Do NOT return the entire CSV - only the matching row.**"
+**Do NOT return the entire CSV - only the matching row.**
+</display>
 
 **Graceful degradation (if Task tool unavailable):**
 - Load the CSV file directly
@@ -147,11 +152,15 @@ Acknowledge the domain and explore what makes it complex:
 
 **Check with the user:**
 
-"Are there other domain-specific concerns we should consider? For [this domain], what typically gets overlooked?"
+<display>
+Are there other domain-specific concerns we should consider? For [this domain], what typically gets overlooked?
+</display>
 
 ### N. Present MENU OPTIONS
 
-Display: "**Select:** [A] Advanced Elicitation [P] Party Mode [C] Continue - Save and Proceed to Innovation (Step 6 of 13)"
+<display>
+**Select:** [A] Advanced Elicitation [P] Party Mode [C] Continue - Save and Proceed to Innovation (Step 6 of 13)
+</display>
 
 #### Menu Handling Logic:
 - IF A: Read fully and follow: {advancedElicitationTask}, and when finished redisplay the menu

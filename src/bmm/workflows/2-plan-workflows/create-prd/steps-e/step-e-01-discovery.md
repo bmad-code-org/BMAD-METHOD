@@ -70,11 +70,13 @@ This file defines what makes a great BMAD PRD. Internalize this understanding - 
 
 ### 2. Discover PRD to Edit
 
-"**PRD Edit Workflow**
+<display>
+**PRD Edit Workflow**
 
 Which PRD would you like to edit?
 
-Please provide the path to the PRD file you want to edit."
+Please provide the path to the PRD file you want to edit.
+</display>
 
 **Wait for user to provide PRD path.**
 
@@ -97,7 +99,8 @@ ls -t {prd_folder_path}/validation-report-*.md 2>/dev/null | head -1
 **If validation report found:**
 
 Display:
-"**📋 Found Validation Report**
+<display>
+**📋 Found Validation Report**
 
 I found a validation report from {validation_date} in the PRD folder.
 
@@ -105,7 +108,8 @@ This report contains findings from previous validation checks and can help guide
 
 **Would you like to:**
 - **[U] Use validation report** - Load it to guide and prioritize edits
-- **[S] Skip** - Proceed with manual edit discovery"
+- **[S] Skip** - Proceed with manual edit discovery
+</display>
 
 **Wait for user input.**
 
@@ -125,11 +129,13 @@ This report contains findings from previous validation checks and can help guide
 
 ### 5. Ask About Validation Report
 
-"**Do you have a validation report to guide edits?**
+<display>
+**Do you have a validation report to guide edits?**
 
 If you've run the validation workflow on this PRD, I can use that report to guide improvements and prioritize changes.
 
-Validation report path (or type 'none'):"
+Validation report path (or type 'none'):
+</display>
 
 **Wait for user input.**
 
@@ -144,7 +150,8 @@ Validation report path (or type 'none'):"
 
 ### 6. Discover Edit Requirements
 
-"**What would you like to edit in this PRD?**
+<display>
+**What would you like to edit in this PRD?**
 
 Please describe the changes you want to make. For example:
 - Fix specific issues (information density, implementation leakage, etc.)
@@ -154,7 +161,8 @@ Please describe the changes you want to make. For example:
 - General improvements
 - Other changes
 
-**Describe your edit goals:**"
+**Describe your edit goals:**
+</display>
 
 **Wait for user to describe their requirements.**
 
@@ -181,25 +189,31 @@ Analyze the loaded PRD:
 
 **IF validation report provided OR PRD is BMAD Standard/Variant:**
 
-Display: "**Edit Requirements Understood**
+Display:
+<display>
+**Edit Requirements Understood**
 
 **PRD Format:** {classification}
 {If validation report: "**Validation Guide:** Yes - will use validation report findings"}
 **Edit Goals:** {summary of user's requirements}
 
-**Proceeding to deep review and analysis...**"
+**Proceeding to deep review and analysis...**
+</display>
 
 Read fully and follow: next step (step-e-02-review.md)
 
 **IF PRD is Legacy (Non-Standard) AND no validation report:**
 
-Display: "**Format Detected:** Legacy PRD
+Display:
+<display>
+**Format Detected:** Legacy PRD
 
 This PRD does not follow BMAD standard structure (only {count}/6 core sections present).
 
 **Your edit goals:** {user's requirements}
 
-**How would you like to proceed?**"
+**How would you like to proceed?**
+</display>
 
 Present MENU OPTIONS below for user selection
 

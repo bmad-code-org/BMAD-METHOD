@@ -131,6 +131,7 @@
       <tag>template-output - Save content checkpoint</tag>
       <tag>critical - Cannot be skipped</tag>
       <tag>example - Show example output</tag>
+      <tag>display - Present enclosed content to user verbatim (no file save, no pause)</tag>
     </output>
   </supported-tags>
 

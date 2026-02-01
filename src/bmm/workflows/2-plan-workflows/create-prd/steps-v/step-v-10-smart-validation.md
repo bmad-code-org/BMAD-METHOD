@@ -173,11 +173,15 @@ Append to validation report:
 
 ### 5. Display Progress and Auto-Proceed
 
-Display: "**SMART Requirements Validation Complete**
+Display:
+
+<display>
+**SMART Requirements Validation Complete**
 
 FR Quality: {percentage}% with acceptable scores ({severity})
 
-**Proceeding to next validation check...**"
+**Proceeding to next validation check...**
+</display>
 
 Without delay, read fully and follow: {nextStepFile} (step-v-11-holistic-quality-validation.md)
 

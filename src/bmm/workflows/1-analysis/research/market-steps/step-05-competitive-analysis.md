@@ -36,7 +36,9 @@ Conduct comprehensive competitive analysis with emphasis on market positioning.
 ### 1. Begin Competitive Analysis
 
 Start with competitive research approach:
-"Now I'll conduct **competitive analysis** to understand the competitive landscape.
+
+<display>
+Now I'll conduct **competitive analysis** to understand the competitive landscape.
 
 **Competitive Analysis Focus:**
 
@@ -46,7 +48,8 @@ Start with competitive research approach:
 - Market differentiation opportunities
 - Competitive threats and challenges
 
-**Let me search for current competitive information.**"
+**Let me search for current competitive information.**
+</display>
 
 ### 2. Generate Competitive Analysis Content
 
@@ -98,7 +101,9 @@ _Source: [URL]_
 ### 3. Present Analysis and Complete Option
 
 Show the generated competitive analysis and present complete option:
-"I've completed the **competitive analysis** for the competitive landscape.
+
+<display>
+I've completed the **competitive analysis** for the competitive landscape.
 
 **Key Competitive Findings:**
 
@@ -110,6 +115,7 @@ Show the generated competitive analysis and present complete option:
 
 **Ready to complete the market research?**
 [C] Complete Research - Save final document and conclude
+</display>
 
 ### 4. Handle Complete Selection
 

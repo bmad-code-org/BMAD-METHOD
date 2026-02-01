@@ -121,7 +121,8 @@ Try to discover the following:
 
 **Setup Report to User:**
 
-"Welcome {{user_name}}! I've set up your PRD workspace for {{project_name}}.
+<display>
+Welcome {{user_name}}! I've set up your PRD workspace for {{project_name}}.
 
 **Document Setup:**
 
@@ -141,7 +142,8 @@ Try to discover the following:
 📋 **Note:** This is a **brownfield project**. Your existing project documentation has been loaded. In the next step, I'll ask specifically about what new features or changes you want to add to your existing system.
 {/if}
 
-Do you have any other documents you'd like me to include, or shall we continue to the next step?"
+Do you have any other documents you'd like me to include, or shall we continue to the next step?
+</display>
 
 ### 4. Present MENU OPTIONS
 

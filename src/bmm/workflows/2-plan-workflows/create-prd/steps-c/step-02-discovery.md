@@ -83,20 +83,24 @@ Read the frontmatter from `{outputFile}` to get document counts:
 
 **Announce your understanding:**
 
-"From step 1, I have loaded:
+<display>
+From step 1, I have loaded:
 - Product briefs: {{briefCount}}
 - Research: {{researchCount}}
 - Brainstorming: {{brainstormingCount}}
 - Project docs: {{projectDocsCount}}
 
-{{if projectDocsCount > 0}}This is a brownfield project - I'll focus on understanding what you want to add or change.{{else}}This is a greenfield project - I'll help you define the full product vision.{{/if}}"
+{{if projectDocsCount > 0}}This is a brownfield project - I'll focus on understanding what you want to add or change.{{else}}This is a greenfield project - I'll help you define the full product vision.{{/if}}
+</display>
 
 ### 2. Load Classification Data
 
 **Attempt subprocess data lookup:**
 
 **Project Type Lookup:**
-"Your task: Lookup data in {projectTypesCSV}
+
+<display>
+Your task: Lookup data in {projectTypesCSV}
 
 **Search criteria:**
 - Find row where project_type matches {{detectedProjectType}}
@@ -105,10 +109,13 @@ Read the frontmatter from `{outputFile}` to get document counts:
 Return ONLY the matching row as a YAML-formatted object with these fields:
 project_type, detection_signals
 
-**Do NOT return the entire CSV - only the matching row.**"
+**Do NOT return the entire CSV - only the matching row.**
+</display>
 
 **Domain Complexity Lookup:**
-"Your task: Lookup data in {domainComplexityCSV}
+
+<display>
+Your task: Lookup data in {domainComplexityCSV}
 
 **Search criteria:**
 - Find row where domain matches {{detectedDomain}}
@@ -117,7 +124,8 @@ project_type, detection_signals
 Return ONLY the matching row as a YAML-formatted object with these fields:
 domain, complexity, typical_concerns, compliance_requirements
 
-**Do NOT return the entire CSV - only the matching row.**"
+**Do NOT return the entire CSV - only the matching row.**
+</display>
 
 **Graceful degradation (if Task tool unavailable):**
 - Load the CSV files directly
@@ -147,12 +155,14 @@ As the user describes their product, match against:
 
 Once you have enough understanding, share your classification:
 
-"I'm hearing this as:
+<display>
+I'm hearing this as:
 - **Project Type:** {{detectedType}}
 - **Domain:** {{detectedDomain}}
 - **Complexity:** {{complexityLevel}}
 
-Does this sound right to you?"
+Does this sound right to you?
+</display>
 
 Let the user confirm or refine your classification.
 
@@ -171,7 +181,8 @@ classification:
 
 Present the project classification for review, then display menu:
 
-"Based on our conversation, I've discovered and classified your project.
+<display>
+Based on our conversation, I've discovered and classified your project.
 
 **Here's the classification:**
 
@@ -180,9 +191,12 @@ Present the project classification for review, then display menu:
 **Complexity:** {{complexityLevel}}
 **Project Context:** {{greenfield|brownfield}}
 
-**What would you like to do?**"
+**What would you like to do?**
+</display>
 
-Display: "**Select:** [A] Advanced Elicitation [P] Party Mode [C] Continue to Product Vision (Step 2b of 13)"
+<display>
+**Select:** [A] Advanced Elicitation [P] Party Mode [C] Continue to Product Vision (Step 2b of 13)
+</display>
 
 #### Menu Handling Logic:
 - IF A: Read fully and follow: {advancedElicitationTask} with the current classification, process the enhanced insights that come back, ask user if they accept the improvements, if yes update classification then redisplay menu, if no keep original classification then redisplay menu

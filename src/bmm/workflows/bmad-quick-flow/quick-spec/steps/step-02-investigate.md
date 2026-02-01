@@ -115,7 +115,9 @@ Fill in:
 
 ### 4. Present Checkpoint Menu
 
-Display: "**Select:** [A] Advanced Elicitation [P] Party Mode [C] Continue to Generate Spec (Step 3 of 4)"
+<display>
+**Select:** [A] Advanced Elicitation [P] Party Mode [C] Continue to Generate Spec (Step 3 of 4)
+</display>
 
 **HALT and wait for user selection.**
 

@@ -55,7 +55,7 @@ Conduct project-type specific discovery using CSV-driven guidance to define tech
 
 **Attempt subprocess data lookup:**
 
-"Your task: Lookup data in {projectTypesCSV}
+Your task: Lookup data in {projectTypesCSV}
 
 **Search criteria:**
 - Find row where project_type matches {{projectTypeFromStep02}}
@@ -64,7 +64,7 @@ Conduct project-type specific discovery using CSV-driven guidance to define tech
 Return ONLY the matching row as a YAML-formatted object with these fields:
 project_type, key_questions, required_sections, skip_sections, innovation_signals
 
-**Do NOT return the entire CSV - only the matching row.**"
+**Do NOT return the entire CSV - only the matching row.**
 
 **Graceful degradation (if Task tool unavailable):**
 - Load the CSV file directly
@@ -161,15 +161,19 @@ When saving to document, append these Level 2 and Level 3 sections:
 
 Present the project-type content for review, then display menu:
 
-"Based on our conversation and best practices for this product type, I've documented the {project_type}-specific requirements for {{project_name}}.
+<display>
+Based on our conversation and best practices for this product type, I've documented the {project_type}-specific requirements for {{project_name}}.
 
 **Here's what I'll add to the document:**
 
 [Show the complete markdown content from section 5]
 
-**What would you like to do?**"
+**What would you like to do?**
+</display>
 
-Display: "**Select:** [A] Advanced Elicitation [P] Party Mode [C] Continue to Scoping (Step 8 of 11)"
+<display>
+**Select:** [A] Advanced Elicitation [P] Party Mode [C] Continue to Scoping (Step 8 of 11)
+</display>
 
 #### Menu Handling Logic:
 - IF A: Read fully and follow: {advancedElicitationTask} with the current project-type content, process the enhanced technical insights that come back, ask user "Accept these improvements to the technical requirements? (y/n)", if yes update content with improvements then redisplay menu, if no keep original content then redisplay menu

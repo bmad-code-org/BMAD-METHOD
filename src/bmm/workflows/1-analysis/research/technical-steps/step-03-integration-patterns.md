@@ -41,7 +41,9 @@ Conduct integration patterns analysis focusing on APIs, communication protocols,
 **UTILIZE SUBPROCESSES AND SUBAGENTS**: Use research subagents, subprocesses or parallel processing if available to thoroughly analyze different integration areas simultaneously and thoroughly.
 
 Start with integration patterns research approach:
-"Now I'll conduct **integration patterns analysis** for **{{research_topic}}** to understand system integration approaches.
+
+<display>
+Now I'll conduct **integration patterns analysis** for **{{research_topic}}** to understand system integration approaches.
 
 **Integration Patterns Focus:**
 
@@ -51,7 +53,8 @@ Start with integration patterns research approach:
 - Microservices integration patterns
 - Event-driven architectures and messaging
 
-**Let me search for current integration patterns insights.**"
+**Let me search for current integration patterns insights.**
+</display>
 
 ### 2. Parallel Integration Patterns Research Execution
 
@@ -74,7 +77,8 @@ Search the web: "{{research_topic}} microservices integration patterns"
 
 **Collect and analyze findings from all parallel searches:**
 
-"After executing comprehensive parallel web searches, let me analyze and aggregate integration patterns findings:
+<display>
+After executing comprehensive parallel web searches, let me analyze and aggregate integration patterns findings:
 
 **Research Coverage:**
 
@@ -87,7 +91,8 @@ Search the web: "{{research_topic}} microservices integration patterns"
 [Identify patterns connecting API choices, communication protocols, and system design]
 
 **Quality Assessment:**
-[Overall confidence levels and research gaps identified]"
+[Overall confidence levels and research gaps identified]
+</display>
 
 ### 4. Generate Integration Patterns Content
 
@@ -170,7 +175,8 @@ _Source: [URL]_
 
 **Show analysis and present continue option:**
 
-"I've completed **integration patterns analysis** of system integration approaches for {{research_topic}}.
+<display>
+I've completed **integration patterns analysis** of system integration approaches for {{research_topic}}.
 
 **Key Integration Patterns Findings:**
 
@@ -182,6 +188,7 @@ _Source: [URL]_
 
 **Ready to proceed to architectural patterns analysis?**
 [C] Continue - Save this to document and proceed to architectural patterns
+</display>
 
 ### 6. Handle Continue Selection
 

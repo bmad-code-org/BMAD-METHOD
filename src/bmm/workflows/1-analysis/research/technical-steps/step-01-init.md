@@ -37,7 +37,9 @@ Confirm technical research scope and approach for **{{research_topic}}** with th
 ### 1. Begin Scope Confirmation
 
 Start with technical scope understanding:
-"I understand you want to conduct **technical research** for **{{research_topic}}** with these goals: {{research_goals}}
+
+<display>
+I understand you want to conduct **technical research** for **{{research_topic}}** with these goals: {{research_goals}}
 
 **Technical Research Scope:**
 
@@ -53,11 +55,14 @@ Start with technical scope understanding:
 - Multi-source validation for critical technical claims
 - Confidence levels for uncertain technical information
 - Comprehensive technical coverage with architecture-specific insights
+</display>
 
 ### 2. Scope Confirmation
 
 Present clear scope confirmation:
-"**Technical Research Scope Confirmation:**
+
+<display>
+**Technical Research Scope Confirmation:**
 
 For **{{research_topic}}**, I will research:
 
@@ -71,6 +76,7 @@ For **{{research_topic}}**, I will research:
 
 **Does this technical research scope and approach align with your goals?**
 [C] Continue - Begin technical research with this scope
+</display>
 
 ### 3. Handle Continue Selection
 

@@ -128,7 +128,8 @@ Return conversion assessment with gap analysis and effort estimate."
 
 Display:
 
-"**Legacy PRD Conversion Assessment**
+<display>
+**Legacy PRD Conversion Assessment**
 
 **Current PRD Structure:**
 - Core sections present: {count}/6
@@ -146,7 +147,8 @@ Display:
 **Recommendation:**
 {Based on effort and user goals, recommend best approach}
 
-**How would you like to proceed?**"
+**How would you like to proceed?**
+</display>
 
 ### 4. Present MENU OPTIONS
 
@@ -175,12 +177,15 @@ Store conversion decision for next step:
 - **Edit requirements:** [user's requirements from step e-01]
 - **Gap analysis:** [summary of gaps identified]
 
-Display: "**Conversion Strategy Documented**
+Display:
+<display>
+**Conversion Strategy Documented**
 
 Mode: {conversion mode}
 Edit goals: {summary}
 
-**Proceeding to deep review...**"
+**Proceeding to deep review...**
+</display>
 
 Read fully and follow: {nextStepFile} (step-e-02-review.md)
 

@@ -34,7 +34,8 @@ Design a progressive technique flow that takes users from expansive exploration 
 
 Explain the value of systematic creative progression:
 
-"Excellent choice! Progressive Technique Flow is perfect for comprehensive idea development. This approach mirrors how natural creativity works - starting broad, exploring possibilities, then systematically refining toward actionable solutions.
+<display>
+Excellent choice! Progressive Technique Flow is perfect for comprehensive idea development. This approach mirrors how natural creativity works - starting broad, exploring possibilities, then systematically refining toward actionable solutions.
 
 **The Creative Journey We'll Take:**
 
@@ -62,7 +63,8 @@ Explain the value of systematic creative progression:
 - Identify resources, timelines, and success metrics
 - Transform ideas into actionable plans
 
-**Loading Brain Techniques Library for Journey Design...**"
+**Loading Brain Techniques Library for Journey Design...**
+</display>
 
 **Load CSV and parse:**
 
@@ -76,7 +78,8 @@ Select optimal techniques for each progressive phase:
 
 **Phase 1: Expansive Exploration Techniques**
 
-"For **Expansive Exploration**, I'm selecting techniques that maximize creative breadth and wild thinking:
+<display>
+For **Expansive Exploration**, I'm selecting techniques that maximize creative breadth and wild thinking:
 
 **Recommended Technique: [Exploration Technique]**
 
@@ -85,11 +88,13 @@ Select optimal techniques for each progressive phase:
 - **Expected Outcome:** [Number]+ raw ideas across diverse categories
 - **Creative Energy:** High energy, expansive thinking
 
-**Alternative if time-constrained:** [Simpler exploration technique]"
+**Alternative if time-constrained:** [Simpler exploration technique]
+</display>
 
 **Phase 2: Pattern Recognition Techniques**
 
-"For **Pattern Recognition**, we need techniques that help organize and find meaning in the creative abundance:
+<display>
+For **Pattern Recognition**, we need techniques that help organize and find meaning in the creative abundance:
 
 **Recommended Technique: [Analysis Technique]**
 
@@ -98,35 +103,41 @@ Select optimal techniques for each progressive phase:
 - **Expected Outcome:** Clear patterns and priority insights
 - **Analytical Focus:** Organized thinking and pattern discovery
 
-**Alternative for different session type:** [Alternative analysis technique]"
+**Alternative for different session type:** [Alternative analysis technique]
+</display>
 
 **Phase 3: Idea Development Techniques**
 
-"For **Idea Development**, we select techniques that refine and elaborate promising concepts:
+<display>
+For **Idea Development**, we select techniques that refine and elaborate promising concepts:
 
 **Recommended Technique: [Development Technique]**
 
 - **Category:** Structured/Collaborative techniques
 - **Why for Phase 3:** Perfect for building depth and detail around strong concepts
 - **Expected Outcome:** Well-developed solutions with implementation considerations
-- **Refinement Focus:** Practical enhancement and feasibility exploration"
+- **Refinement Focus:** Practical enhancement and feasibility exploration
+</display>
 
 **Phase 4: Action Planning Techniques**
 
-"For **Action Planning**, we choose techniques that create concrete implementation pathways:
+<display>
+For **Action Planning**, we choose techniques that create concrete implementation pathways:
 
 **Recommended Technique: [Planning Technique]**
 
 - **Category:** Structured/Analytical techniques
 - **Why for Phase 4:** Ideal for transforming ideas into actionable steps
 - **Expected Outcome:** Clear implementation plan with timelines and resources
-- **Implementation Focus:** Practical next steps and success metrics"
+- **Implementation Focus:** Practical next steps and success metrics
+</display>
 
 ### 3. Present Complete Journey Map
 
 Show the full progressive flow with timing and transitions:
 
-"**Your Complete Creative Journey Map:**
+<display>
+**Your Complete Creative Journey Map:**
 
 **⏰ Total Journey Time:** [Combined duration]
 **🎯 Session Focus:** Systematic development from ideas to action
@@ -175,12 +186,14 @@ Show the full progressive flow with timing and transitions:
 [Customize] - I'd like to modify any phase techniques
 [Details] - Tell me more about any specific phase or technique
 [Back] - Return to approach selection
+</display>
 
 ### 4. Handle Customization Requests
 
 If user wants customization:
 
-"**Customization Options:**
+<display>
+**Customization Options:**
 
 **Phase Modifications:**
 
@@ -195,7 +208,8 @@ If user wants customization:
 - **Extended Journey:** Add bonus technique at any phase for deeper exploration
 - **Focused Journey:** Emphasize specific phases based on your goals
 
-**Which customization would you like to make?**"
+**Which customization would you like to make?**
+</display>
 
 ### 5. Update Frontmatter and Document
 

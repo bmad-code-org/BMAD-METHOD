@@ -132,19 +132,27 @@ Append to validation report:
 
 **IF format is BMAD Standard or BMAD Variant:**
 
-Display: "**Format Detected:** {classification}
+Display:
 
-Proceeding to systematic validation checks..."
+<display>
+**Format Detected:** {classification}
+
+Proceeding to systematic validation checks...
+</display>
 
 Without delay, read fully and follow: {nextStepFile} (step-v-03-density-validation.md)
 
 **IF format is Non-Standard (< 3 core sections):**
 
-Display: "**Format Detected:** Non-Standard PRD
+Display:
+
+<display>
+**Format Detected:** Non-Standard PRD
 
 This PRD does not follow BMAD standard structure (only {count}/6 core sections present).
 
-You have options:"
+You have options:
+</display>
 
 Present MENU OPTIONS below for user selection
 

@@ -80,7 +80,8 @@ From step e-03 change execution, compile:
 
 Display:
 
-"**✓ PRD Edit Complete**
+<display>
+**✓ PRD Edit Complete**
 
 **Updated PRD:** {prd_file_path}
 
@@ -97,7 +98,8 @@ Display:
 - Validation to ensure quality
 - Production use
 
-**What would you like to do next?**"
+**What would you like to do next?**
+</display>
 
 ### 3. Present MENU OPTIONS
 
@@ -116,10 +118,16 @@ Display:
 #### Menu Handling Logic:
 
 - **IF V (Run Full Validation):**
-  - Display: "**Starting Validation Workflow**"
-  - Display: "This will run all 13 validation checks on the updated PRD."
-  - Display: "Preparing to validate: {prd_file_path}"
-  - Display: "**Proceeding to validation...**"
+  - Display:
+    <display>
+    **Starting Validation Workflow**
+
+    This will run all 13 validation checks on the updated PRD.
+
+    Preparing to validate: {prd_file_path}
+
+    **Proceeding to validation...**
+    </display>
   - Read fully and follow: {validationWorkflow} (steps-v/step-v-01-discovery.md)
   - Note: This hands off to the validation workflow which will run its complete 13-step process
 

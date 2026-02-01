@@ -72,7 +72,8 @@ cp "{template_path}" "{output_folder}/brainstorming/brainstorming-session-{{date
 
 #### C. Session Context Gathering
 
-"Welcome {{user_name}}! I'm excited to facilitate your brainstorming session. I'll guide you through proven creativity techniques to generate innovative ideas and breakthrough solutions.
+<display>
+Welcome {{user_name}}! I'm excited to facilitate your brainstorming session. I'll guide you through proven creativity techniques to generate innovative ideas and breakthrough solutions.
 
 **Context Loading:** [If context_file provided, indicate context is loaded]
 **Context-Based Guidance:** [If context available, briefly mention focus areas]
@@ -82,21 +83,25 @@ cp "{template_path}" "{output_folder}/brainstorming/brainstorming-session-{{date
 **Session Discovery Questions:**
 
 1. **What are we brainstorming about?** (The central topic or challenge)
-2. **What specific outcomes are you hoping for?** (Types of ideas, solutions, or insights)"
+2. **What specific outcomes are you hoping for?** (Types of ideas, solutions, or insights)
+</display>
 
 #### D. Process User Responses
 
 Wait for user responses, then:
 
 **Session Analysis:**
-"Based on your responses, I understand we're focusing on **[summarized topic]** with goals around **[summarized objectives]**.
+
+<display>
+Based on your responses, I understand we're focusing on **[summarized topic]** with goals around **[summarized objectives]**.
 
 **Session Parameters:**
 
 - **Topic Focus:** [Clear topic articulation]
 - **Primary Goals:** [Specific outcome objectives]
 
-**Does this accurately capture what you want to achieve?**"
+**Does this accurately capture what you want to achieve?**
+</display>
 
 #### E. Update Frontmatter and Document
 
@@ -138,7 +143,8 @@ When user selects approach, append the session overview content directly to `{ou
 
 ### E. Continue to Technique Selection
 
-"**Session setup complete!** I have a clear understanding of your goals and can select the perfect techniques for your brainstorming needs.
+<display>
+**Session setup complete!** I have a clear understanding of your goals and can select the perfect techniques for your brainstorming needs.
 
 **Ready to explore technique approaches?**
 [1] User-Selected Techniques - Browse our complete technique library
@@ -146,7 +152,8 @@ When user selects approach, append the session overview content directly to `{ou
 [3] Random Technique Selection - Discover unexpected creative methods
 [4] Progressive Technique Flow - Start broad, then systematically narrow focus
 
-Which approach appeals to you most? (Enter 1-4)"
+Which approach appeals to you most? (Enter 1-4)
+</display>
 
 ### 4. Handle User Selection and Initial Document Append
 

@@ -41,7 +41,9 @@ Load existing document and analyze current state:
 - Identify current stage and next logical steps
 
 **Session Status Assessment:**
-"Welcome back {{user_name}}! I can see your brainstorming session on **[session_topic]** from **[date]**.
+
+<display>
+Welcome back {{user_name}}! I can see your brainstorming session on **[session_topic]** from **[date]**.
 
 **Current Session Status:**
 
@@ -51,28 +53,35 @@ Load existing document and analyze current state:
 - **Current Stage:** [Assess where they left off]
 
 **Session Progress:**
-[Brief summary of what was accomplished and what remains]"
+[Brief summary of what was accomplished and what remains]
+</display>
 
 ### 2. Present Continuation Options
 
 Based on session analysis, provide appropriate options:
 
 **If Session Completed:**
-"Your brainstorming session appears to be complete!
+
+<display>
+Your brainstorming session appears to be complete!
 
 **Options:**
 [1] Review Results - Go through your documented ideas and insights
 [2] Start New Session - Begin brainstorming on a new topic
-[3) Extend Session - Add more techniques or explore new angles"
+[3) Extend Session - Add more techniques or explore new angles
+</display>
 
 **If Session In Progress:**
-"Let's continue where we left off!
+
+<display>
+Let's continue where we left off!
 
 **Current Progress:**
 [Description of current stage and accomplishments]
 
 **Next Steps:**
-[Continue with appropriate next step based on workflow state]"
+[Continue with appropriate next step based on workflow state]
+</display>
 
 ### 3. Handle User Choice
 

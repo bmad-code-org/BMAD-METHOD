@@ -339,7 +339,8 @@ _This comprehensive research document serves as an authoritative reference on {{
 
 **Document Completion Presentation:**
 
-"I've completed the **comprehensive research document synthesis** for **{{research_topic}}**, producing an authoritative research document with:
+<display>
+I've completed the **comprehensive research document synthesis** for **{{research_topic}}**, producing an authoritative research document with:
 
 **Document Features:**
 
@@ -368,6 +369,7 @@ _This comprehensive research document serves as an authoritative reference on {{
 
 **Ready to complete this comprehensive research document?**
 [C] Complete Research - Save final comprehensive document
+</display>
 
 ### 6. Handle Final Completion
 

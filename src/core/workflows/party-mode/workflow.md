@@ -75,7 +75,8 @@ Execute party mode activation and conversation orchestration:
 
 **Welcome Activation:**
 
-"🎉 PARTY MODE ACTIVATED! 🎉
+<display>
+🎉 PARTY MODE ACTIVATED! 🎉
 
 Welcome {{user_name}}! All BMAD agents are here and ready for a dynamic group discussion. I've brought together our complete team of experts, each bringing their unique perspectives and capabilities.
 
@@ -83,7 +84,8 @@ Welcome {{user_name}}! All BMAD agents are here and ready for a dynamic group di
 
 [Load agent roster and display 2-3 most diverse agents as examples]
 
-**What would you like to discuss with the team today?**"
+**What would you like to discuss with the team today?**
+</display>
 
 ### Agent Selection Intelligence
 

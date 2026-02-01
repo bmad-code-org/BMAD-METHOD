@@ -41,7 +41,9 @@ Conduct customer behavior and segment analysis with emphasis on patterns and dem
 **UTILIZE SUBPROCESSES AND SUBAGENTS**: Use research subagents, subprocesses or parallel processing if available to thoroughly analyze different customer behavior areas simultaneously and thoroughly.
 
 Start with customer behavior research approach:
-"Now I'll conduct **customer behavior analysis** for **{{research_topic}}** to understand customer patterns.
+
+<display>
+Now I'll conduct **customer behavior analysis** for **{{research_topic}}** to understand customer patterns.
 
 **Customer Behavior Focus:**
 
@@ -51,7 +53,8 @@ Start with customer behavior research approach:
 - Behavior drivers and influences
 - Customer interaction patterns and engagement
 
-**Let me search for current customer behavior insights.**"
+**Let me search for current customer behavior insights.**
+</display>
 
 ### 2. Parallel Customer Behavior Research Execution
 
@@ -74,7 +77,8 @@ Search the web: "{{research_topic}} customer behavior drivers"
 
 **Collect and analyze findings from all parallel searches:**
 
-"After executing comprehensive parallel web searches, let me analyze and aggregate customer behavior findings:
+<display>
+After executing comprehensive parallel web searches, let me analyze and aggregate customer behavior findings:
 
 **Research Coverage:**
 
@@ -88,7 +92,8 @@ Search the web: "{{research_topic}} customer behavior drivers"
 [Identify patterns connecting demographics, psychographics, and behaviors]
 
 **Quality Assessment:**
-[Overall confidence levels and research gaps identified]"
+[Overall confidence levels and research gaps identified]
+</display>
 
 ### 4. Generate Customer Behavior Content
 
@@ -160,7 +165,8 @@ _Source: [URL]_
 
 **Show analysis and present continue option:**
 
-"I've completed **customer behavior analysis** for {{research_topic}}, focusing on customer patterns.
+<display>
+I've completed **customer behavior analysis** for {{research_topic}}, focusing on customer patterns.
 
 **Key Customer Behavior Findings:**
 
@@ -172,6 +178,7 @@ _Source: [URL]_
 
 **Ready to proceed to customer pain points?**
 [C] Continue - Save this to document and proceed to pain points analysis
+</display>
 
 ### 6. Handle Continue Selection
 

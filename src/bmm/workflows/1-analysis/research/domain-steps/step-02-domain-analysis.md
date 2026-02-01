@@ -41,7 +41,9 @@ Conduct industry analysis focusing on market size, growth, and industry dynamics
 **UTILIZE SUBPROCESSES AND SUBAGENTS**: Use research subagents, subprocesses or parallel processing if available to thoroughly analyze different industry areas simultaneously and thoroughly.
 
 Start with industry research approach:
-"Now I'll conduct **industry analysis** for **{{research_topic}}** to understand market dynamics.
+
+<display>
+Now I'll conduct **industry analysis** for **{{research_topic}}** to understand market dynamics.
 
 **Industry Analysis Focus:**
 
@@ -51,7 +53,8 @@ Start with industry research approach:
 - Industry trends and evolution patterns
 - Economic impact and value creation
 
-**Let me search for current industry insights.**"
+**Let me search for current industry insights.**
+</display>
 
 ### 2. Parallel Industry Research Execution
 
@@ -74,7 +77,8 @@ Search the web: "{{research_topic}} industry trends evolution"
 
 **Collect and analyze findings from all parallel searches:**
 
-"After executing comprehensive parallel web searches, let me analyze and aggregate industry findings:
+<display>
+After executing comprehensive parallel web searches, let me analyze and aggregate industry findings:
 
 **Research Coverage:**
 
@@ -87,7 +91,8 @@ Search the web: "{{research_topic}} industry trends evolution"
 [Identify patterns connecting market dynamics, segmentation, and trends]
 
 **Quality Assessment:**
-[Overall confidence levels and research gaps identified]"
+[Overall confidence levels and research gaps identified]
+</display>
 
 ### 4. Generate Industry Analysis Content
 
@@ -152,7 +157,8 @@ _Source: [URL]_
 
 **Show analysis and present continue option:**
 
-"I've completed **industry analysis** for {{research_topic}}.
+<display>
+I've completed **industry analysis** for {{research_topic}}.
 
 **Key Industry Findings:**
 
@@ -164,6 +170,7 @@ _Source: [URL]_
 
 **Ready to proceed to competitive landscape analysis?**
 [C] Continue - Save this to document and proceed to competitive landscape
+</display>
 
 ### 6. Handle Continue Selection
 

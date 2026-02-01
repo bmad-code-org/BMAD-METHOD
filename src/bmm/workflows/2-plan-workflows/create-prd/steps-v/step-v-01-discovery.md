@@ -71,11 +71,14 @@ This file contains the BMAD PRD philosophy, standards, and validation criteria t
 - Use provided path
 
 **If no PRD path provided:**
-"**PRD Validation Workflow**
+
+<display>
+**PRD Validation Workflow**
 
 Which PRD would you like to validate?
 
-Please provide the path to the PRD file you want to validate."
+Please provide the path to the PRD file you want to validate.
+</display>
 
 **Wait for user to provide PRD path.**
 
@@ -112,7 +115,8 @@ For each document listed in `inputDocuments`:
 
 ### 6. Ask About Additional Reference Documents
 
-"**I've loaded the following documents from your PRD frontmatter:**
+<display>
+**I've loaded the following documents from your PRD frontmatter:**
 
 {list loaded documents with file names}
 
@@ -124,7 +128,8 @@ These could include:
 - Standards or compliance documents
 - Competitive analysis or benchmarks
 
-Please provide paths to any additional documents, or type 'none' to proceed."
+Please provide paths to any additional documents, or type 'none' to proceed.
+</display>
 
 **Load any additional documents provided by user.**
 
@@ -161,7 +166,8 @@ validationStatus: IN_PROGRESS
 
 ### 8. Present Discovery Summary
 
-"**Setup Complete!**
+<display>
+**Setup Complete!**
 
 **PRD to Validate:** {prd_path}
 
@@ -173,11 +179,16 @@ validationStatus: IN_PROGRESS
 
 **Validation Report:** {validationReportPath}
 
-**Ready to begin validation.**"
+**Ready to begin validation.**
+</display>
 
 ### 9. Present MENU OPTIONS
 
-Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue to Format Detection
+Display:
+
+<display>
+**Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue to Format Detection
+</display>
 
 #### EXECUTION RULES:
 

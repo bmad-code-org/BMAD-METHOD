@@ -42,7 +42,9 @@ Conduct customer decision processes and journey analysis with emphasis on decisi
 **UTILIZE SUBPROCESSES AND SUBAGENTS**: Use research subagents, subprocesses or parallel processing if available to thoroughly analyze different customer decision areas simultaneously and thoroughly.
 
 Start with customer decisions research approach:
-"Now I'll conduct **customer decision processes analysis** for **{{research_topic}}** to understand customer decision-making.
+
+<display>
+Now I'll conduct **customer decision processes analysis** for **{{research_topic}}** to understand customer decision-making.
 
 **Customer Decisions Focus:**
 
@@ -52,7 +54,8 @@ Start with customer decisions research approach:
 - Purchase decision influencers
 - Information gathering patterns
 
-**Let me search for current customer decision insights.**"
+**Let me search for current customer decision insights.**
+</display>
 
 ### 2. Parallel Decisions Research Execution
 
@@ -75,7 +78,8 @@ Search the web: "{{research_topic}} decision influencing factors"
 
 **Collect and analyze findings from all parallel searches:**
 
-"After executing comprehensive parallel web searches, let me analyze and aggregate customer decision findings:
+<display>
+After executing comprehensive parallel web searches, let me analyze and aggregate customer decision findings:
 
 **Research Coverage:**
 
@@ -88,7 +92,8 @@ Search the web: "{{research_topic}} decision influencing factors"
 [Identify patterns connecting decision factors and journey stages]
 
 **Quality Assessment:**
-[Overall confidence levels and research gaps identified]"
+[Overall confidence levels and research gaps identified]
+</display>
 
 ### 4. Generate Customer Decisions Content
 
@@ -181,7 +186,8 @@ _Source: [URL]_
 
 **Show analysis and present continue option:**
 
-"I've completed **customer decision processes analysis** for {{research_topic}}, focusing on customer decision-making.
+<display>
+I've completed **customer decision processes analysis** for {{research_topic}}, focusing on customer decision-making.
 
 **Key Decision Findings:**
 
@@ -193,6 +199,7 @@ _Source: [URL]_
 
 **Ready to proceed to competitive analysis?**
 [C] Continue - Save this to document and proceed to competitive analysis
+</display>
 
 ### 6. Handle Continue Selection
 

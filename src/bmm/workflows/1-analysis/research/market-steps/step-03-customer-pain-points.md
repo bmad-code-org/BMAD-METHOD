@@ -42,7 +42,9 @@ Conduct customer pain points and needs analysis with emphasis on challenges and 
 **UTILIZE SUBPROCESSES AND SUBAGENTS**: Use research subagents, subprocesses or parallel processing if available to thoroughly analyze different customer pain point areas simultaneously and thoroughly.
 
 Start with customer pain points research approach:
-"Now I'll conduct **customer pain points analysis** for **{{research_topic}}** to understand customer challenges.
+
+<display>
+Now I'll conduct **customer pain points analysis** for **{{research_topic}}** to understand customer challenges.
 
 **Customer Pain Points Focus:**
 
@@ -52,7 +54,8 @@ Start with customer pain points research approach:
 - Service and support pain points
 - Customer satisfaction gaps
 
-**Let me search for current customer pain points insights.**"
+**Let me search for current customer pain points insights.**
+</display>
 
 ### 2. Parallel Pain Points Research Execution
 
@@ -75,7 +78,8 @@ Search the web: "{{research_topic}} customer barriers to adoption"
 
 **Collect and analyze findings from all parallel searches:**
 
-"After executing comprehensive parallel web searches, let me analyze and aggregate customer pain points findings:
+<display>
+After executing comprehensive parallel web searches, let me analyze and aggregate customer pain points findings:
 
 **Research Coverage:**
 
@@ -88,7 +92,8 @@ Search the web: "{{research_topic}} customer barriers to adoption"
 [Identify patterns connecting different types of pain points]
 
 **Quality Assessment:**
-[Overall confidence levels and research gaps identified]"
+[Overall confidence levels and research gaps identified]
+</display>
 
 ### 4. Generate Customer Pain Points Content
 
@@ -171,7 +176,8 @@ _Source: [URL]_
 
 **Show analysis and present continue option:**
 
-"I've completed **customer pain points analysis** for {{research_topic}}, focusing on customer challenges.
+<display>
+I've completed **customer pain points analysis** for {{research_topic}}, focusing on customer challenges.
 
 **Key Pain Points Findings:**
 
@@ -183,6 +189,7 @@ _Source: [URL]_
 
 **Ready to proceed to customer decision processes?**
 [C] Continue - Save this to document and proceed to decision processes analysis
+</display>
 
 ### 6. Handle Continue Selection
 

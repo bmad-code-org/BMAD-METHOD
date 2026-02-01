@@ -155,7 +155,8 @@ Append to validation report:
 
 Display:
 
-"**Parity Analysis Complete**
+<display>
+**Parity Analysis Complete**
 
 Your PRD is missing {count} of 6 core BMAD PRD sections. The overall effort to reach BMAD standard is: **{effort level}**
 
@@ -165,7 +166,8 @@ Your PRD is missing {count} of 6 core BMAD PRD sections. The overall effort to r
 **Recommendation:**
 {recommendation from analysis}
 
-**How would you like to proceed?**"
+**How would you like to proceed?**
+</display>
 
 ### 5. Present MENU OPTIONS
 

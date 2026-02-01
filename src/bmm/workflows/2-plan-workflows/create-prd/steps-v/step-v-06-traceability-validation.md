@@ -183,11 +183,15 @@ Append to validation report:
 
 ### 5. Display Progress and Auto-Proceed
 
-Display: "**Traceability Validation Complete**
+Display:
+
+<display>
+**Traceability Validation Complete**
 
 Total Issues: {count} ({severity})
 
-**Proceeding to next validation check...**"
+**Proceeding to next validation check...**
+</display>
 
 Without delay, read fully and follow: {nextStepFile} (step-v-07-implementation-leakage-validation.md)
 

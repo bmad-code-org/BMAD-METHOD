@@ -119,9 +119,11 @@ What would be most helpful?"
 ### 6. Present MENU OPTIONS
 
 **If workflow not complete:**
-Display: "Ready to continue with Step {nextStepNumber}: {nextStepTitle}?
+<display>
+Ready to continue with Step {nextStepNumber}: {nextStepTitle}?
 
-**Select an Option:** [C] Continue to Step {nextStepNumber}"
+**Select an Option:** [C] Continue to Step {nextStepNumber}
+</display>
 
 #### Menu Handling Logic:
 

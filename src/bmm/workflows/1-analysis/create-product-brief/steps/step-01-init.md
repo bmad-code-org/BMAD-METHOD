@@ -137,7 +137,9 @@ Do you have any other documents you'd like me to include, or shall we continue t
 
 ### 4. Present MENU OPTIONS
 
-Display: "**Proceeding to product vision discovery...**"
+<display>
+**Proceeding to product vision discovery...**
+</display>
 
 #### Menu Handling Logic:
 

@@ -33,7 +33,9 @@ Orchestrate dynamic multi-agent conversations with intelligent agent selection, 
 For each user message or topic:
 
 **Input Analysis Process:**
-"Analyzing your message for the perfect agent collaboration..."
+<display>
+Analyzing your message for the perfect agent collaboration...
+</display>
 
 **Analysis Criteria:**
 

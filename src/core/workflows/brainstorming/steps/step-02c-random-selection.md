@@ -34,7 +34,8 @@ Use random selection to discover unexpected brainstorming techniques that will b
 
 Create anticipation for serendipitous technique discovery:
 
-"Exciting choice! You've chosen the path of creative serendipity. Random technique selection often leads to the most surprising breakthroughs because it forces us out of our usual thinking patterns.
+<display>
+Exciting choice! You've chosen the path of creative serendipity. Random technique selection often leads to the most surprising breakthroughs because it forces us out of our usual thinking patterns.
 
 **The Magic of Random Selection:**
 
@@ -43,7 +44,8 @@ Create anticipation for serendipitous technique discovery:
 - Find unexpected connections between different creativity methods
 - Experience the joy of genuine creative surprise
 
-**Loading our complete Brain Techniques Library for Random Discovery...**"
+**Loading our complete Brain Techniques Library for Random Discovery...**
+</display>
 
 **Load CSV and parse:**
 
@@ -56,9 +58,12 @@ Create anticipation for serendipitous technique discovery:
 Perform random selection with basic intelligence for good combinations:
 
 **Selection Process:**
-"I'm now randomly selecting 3 complementary techniques from our library of 36+ methods. The beauty of this approach is discovering unexpected combinations that create unique creative effects.
 
-**Randomizing Technique Selection...**"
+<display>
+I'm now randomly selecting 3 complementary techniques from our library of 36+ methods. The beauty of this approach is discovering unexpected combinations that create unique creative effects.
+
+**Randomizing Technique Selection...**
+</display>
 
 **Selection Logic:**
 
@@ -71,7 +76,8 @@ Perform random selection with basic intelligence for good combinations:
 
 Reveal the randomly selected techniques with enthusiasm:
 
-"**🎲 Your Randomly Selected Creative Techniques! 🎲**
+<display>
+**🎲 Your Randomly Selected Creative Techniques! 🎲**
 
 **Phase 1: Exploration**
 **[Random Technique 1]** from [Category] (Duration: [time], Energy: [level])
@@ -95,13 +101,15 @@ Reveal the randomly selected techniques with enthusiasm:
 - **Random discovery bonus:** [Unexpected insight about the overall flow]
 
 **Total Random Session Time:** [Combined duration]
-**Serendipity Factor:** [Enthusiastic description of creative potential]"
+**Serendipity Factor:** [Enthusiastic description of creative potential]
+</display>
 
 ### 4. Highlight the Creative Potential
 
 Emphasize the unique value of this random combination:
 
-"**Why This Random Combination is Perfect:**
+<display>
+**Why This Random Combination is Perfect:**
 
 **Unexpected Synergy:**
 These three techniques might seem unrelated, but that's exactly where the magic happens! [Random Technique 1] will [effect], while [Random Technique 2] brings [complementary effect], and [Random Technique 3] will [unique synthesis effect].
@@ -123,6 +131,7 @@ You're about to experience brainstorming in a completely new way. These unexpect
 [Shuffle] - Randomize another combination for different adventure
 [Details] - Tell me more about any specific technique
 [Back] - Return to approach selection
+</display>
 
 ### 5. Handle User Response
 

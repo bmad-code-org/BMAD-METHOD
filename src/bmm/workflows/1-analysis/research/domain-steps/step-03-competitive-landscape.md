@@ -41,7 +41,9 @@ Conduct competitive landscape analysis focusing on key players, market share, an
 **UTILIZE SUBPROCESSES AND SUBAGENTS**: Use research subagents, subprocesses or parallel processing if available to thoroughly analyze different competitive areas simultaneously and thoroughly.
 
 Start with competitive research approach:
-"Now I'll conduct **competitive landscape analysis** for **{{research_topic}}** to understand the competitive ecosystem.
+
+<display>
+Now I'll conduct **competitive landscape analysis** for **{{research_topic}}** to understand the competitive ecosystem.
 
 **Competitive Landscape Focus:**
 
@@ -51,7 +53,8 @@ Start with competitive research approach:
 - Business models and value propositions
 - Entry barriers and competitive dynamics
 
-**Let me search for current competitive insights.**"
+**Let me search for current competitive insights.**
+</display>
 
 ### 2. Parallel Competitive Research Execution
 
@@ -74,7 +77,8 @@ Search the web: "{{research_topic}} entry barriers competitive dynamics"
 
 **Collect and analyze findings from all parallel searches:**
 
-"After executing comprehensive parallel web searches, let me analyze and aggregate competitive findings:
+<display>
+After executing comprehensive parallel web searches, let me analyze and aggregate competitive findings:
 
 **Research Coverage:**
 
@@ -87,7 +91,8 @@ Search the web: "{{research_topic}} entry barriers competitive dynamics"
 [Identify patterns connecting players, strategies, and market dynamics]
 
 **Quality Assessment:**
-[Overall confidence levels and research gaps identified]"
+[Overall confidence levels and research gaps identified]
+</display>
 
 ### 4. Generate Competitive Landscape Content
 
@@ -161,7 +166,8 @@ _Source: [URL]_
 
 **Show analysis and present continue option:**
 
-"I've completed **competitive landscape analysis** for {{research_topic}}.
+<display>
+I've completed **competitive landscape analysis** for {{research_topic}}.
 
 **Key Competitive Findings:**
 
@@ -173,6 +179,7 @@ _Source: [URL]_
 
 **Ready to proceed to regulatory focus analysis?**
 [C] Continue - Save this to document and proceed to regulatory focus
+</display>
 
 ### 6. Handle Continue Selection
 

@@ -142,11 +142,15 @@ Append to validation report:
 
 ### 5. Display Progress and Auto-Proceed
 
-Display: "**Information Density Validation Complete**
+Display:
+
+<display>
+**Information Density Validation Complete**
 
 Severity: {Critical/Warning/Pass}
 
-**Proceeding to next validation check...**"
+**Proceeding to next validation check...**
+</display>
 
 Without delay, read fully and follow: {nextStepFile} (step-v-04-brief-coverage-validation.md)
 

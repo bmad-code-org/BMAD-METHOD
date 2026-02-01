@@ -226,11 +226,15 @@ Append to validation report:
 
 ### 4. Display Progress and Auto-Proceed
 
-Display: "**Holistic Quality Assessment Complete**
+Display:
+
+<display>
+**Holistic Quality Assessment Complete**
 
 Overall Rating: {rating}/5 - {label}
 
-**Proceeding to final validation checks...**"
+**Proceeding to final validation checks...**
+</display>
 
 Without delay, read fully and follow: {nextStepFile} (step-v-12-completeness-validation.md)
 

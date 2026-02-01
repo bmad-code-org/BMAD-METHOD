@@ -41,7 +41,9 @@ Conduct technology stack analysis focusing on languages, frameworks, tools, and 
 **UTILIZE SUBPROCESSES AND SUBAGENTS**: Use research subagents, subprocesses or parallel processing if available to thoroughly analyze different technology stack areas simultaneously and thoroughly.
 
 Start with technology stack research approach:
-"Now I'll conduct **technology stack analysis** for **{{research_topic}}** to understand the technology landscape.
+
+<display>
+Now I'll conduct **technology stack analysis** for **{{research_topic}}** to understand the technology landscape.
 
 **Technology Stack Focus:**
 
@@ -51,7 +53,8 @@ Start with technology stack research approach:
 - Development tools and platforms
 - Cloud infrastructure and deployment platforms
 
-**Let me search for current technology stack insights.**"
+**Let me search for current technology stack insights.**
+</display>
 
 ### 2. Parallel Technology Stack Research Execution
 
@@ -74,7 +77,8 @@ Search the web: "{{research_topic}} cloud infrastructure platforms"
 
 **Collect and analyze findings from all parallel searches:**
 
-"After executing comprehensive parallel web searches, let me analyze and aggregate technology stack findings:
+<display>
+After executing comprehensive parallel web searches, let me analyze and aggregate technology stack findings:
 
 **Research Coverage:**
 
@@ -87,7 +91,8 @@ Search the web: "{{research_topic}} cloud infrastructure platforms"
 [Identify patterns connecting language choices, frameworks, and platform decisions]
 
 **Quality Assessment:**
-[Overall confidence levels and research gaps identified]"
+[Overall confidence levels and research gaps identified]
+</display>
 
 ### 4. Generate Technology Stack Content
 
@@ -161,7 +166,8 @@ _Source: [URL]_
 
 **Show analysis and present continue option:**
 
-"I've completed **technology stack analysis** of the technology landscape for {{research_topic}}.
+<display>
+I've completed **technology stack analysis** of the technology landscape for {{research_topic}}.
 
 **Key Technology Stack Findings:**
 
@@ -173,6 +179,7 @@ _Source: [URL]_
 
 **Ready to proceed to integration patterns analysis?**
 [C] Continue - Save this to document and proceed to integration patterns
+</display>
 
 ### 6. Handle Continue Selection
 

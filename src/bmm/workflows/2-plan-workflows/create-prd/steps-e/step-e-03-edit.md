@@ -64,13 +64,16 @@ From step e-02, retrieve:
 - **Priority order:** Sequence to apply changes
 - **User requirements:** Edit goals from step e-01
 
-Display: "**Starting PRD Edits**
+Display:
+<display>
+**Starting PRD Edits**
 
 **Change Plan:** {summary}
 **Total Changes:** {count}
 **Estimated Effort:** {effort level}
 
-**Proceeding with edits section by section...**"
+**Proceeding with edits section by section...**
+</display>
 
 ### 2. Attempt Sub-Process Edits (For Complex Changes)
 
@@ -120,9 +123,11 @@ Apply changes and return updated section."
 - Verify changes applied correctly
 
 **Display progress after each section:**
-"**Section Updated:** {section_name}
+<display>
+**Section Updated:** {section_name}
 Changes: {brief summary}
-{More sections remaining...}"
+{More sections remaining...}
+</display>
 
 ### 4. Handle Restructuring (If Needed)
 
@@ -145,9 +150,12 @@ Changes: {brief summary}
 8. Functional Requirements
 9. Non-Functional Requirements
 
-Display: "**PRD Restructured**
+Display:
+<display>
+**PRD Restructured**
 BMAD standard structure applied.
-{Sections added/reordered}"
+{Sections added/reordered}
+</display>
 
 ### 5. Update PRD Frontmatter
 
@@ -194,7 +202,8 @@ editHistory:
 
 Display:
 
-"**PRD Edits Complete**
+<display>
+**PRD Edits Complete**
 
 **Changes Applied:** {count} sections modified
 **PRD Updated:** {prd_file_path}
@@ -206,7 +215,8 @@ Display:
 - Use in downstream workflows (UX, Architecture)
 - Validation (if not yet validated)
 
-**What would you like to do next?**"
+**What would you like to do next?**
+</display>
 
 ### 8. Present MENU OPTIONS
 

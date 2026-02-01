@@ -34,7 +34,8 @@ Organize all brainstorming ideas into coherent themes, facilitate prioritization
 
 Begin systematic review of all generated ideas:
 
-"**Outstanding creative work!** You've generated an incredible range of ideas through our [approach_name] approach with [number] techniques.
+<display>
+**Outstanding creative work!** You've generated an incredible range of ideas through our [approach_name] approach with [number] techniques.
 
 **Session Achievement Summary:**
 
@@ -44,14 +45,17 @@ Begin systematic review of all generated ideas:
 
 **Now let's organize these creative gems and identify your most promising opportunities for action.**
 
-**Loading all generated ideas for systematic organization...**"
+**Loading all generated ideas for systematic organization...**
+</display>
 
 ### 2. Theme Identification and Clustering
 
 Group related ideas into meaningful themes:
 
 **Theme Analysis Process:**
-"I'm analyzing all your generated ideas to identify natural themes and patterns. This will help us see the bigger picture and prioritize effectively.
+
+<display>
+I'm analyzing all your generated ideas to identify natural themes and patterns. This will help us see the bigger picture and prioritize effectively.
 
 **Emerging Themes I'm Identifying:**
 
@@ -77,7 +81,8 @@ _Focus: [Description of what this theme covers]_
 
 - **[Cross-cutting Ideas]:** [Ideas that span multiple themes]
 - **[Breakthrough Concepts]:** [Particularly innovative or surprising ideas]
-- **[Implementation-Ready Ideas]:** [Ideas that seem immediately actionable]"
+- **[Implementation-Ready Ideas]:** [Ideas that seem immediately actionable]
+</display>
 
 ### 3. Present Organized Idea Themes
 
@@ -85,7 +90,8 @@ Display systematically organized ideas for user review:
 
 **Organized by Theme:**
 
-"**Your Brainstorming Results - Organized by Theme:**
+<display>
+**Your Brainstorming Results - Organized by Theme:**
 
 **[Theme 1]: [Theme Description]**
 
@@ -108,7 +114,8 @@ Display systematically organized ideas for user review:
 - **[Innovative Idea]:** [Why this represents a significant breakthrough]
 - **[Unexpected Connection]:** [How this creates new possibilities]
 
-**Which themes or specific ideas stand out to you as most valuable?**"
+**Which themes or specific ideas stand out to you as most valuable?**
+</display>
 
 ### 4. Facilitate Prioritization
 
@@ -116,7 +123,8 @@ Guide user through strategic prioritization:
 
 **Prioritization Framework:**
 
-"Now let's identify your most promising ideas based on what matters most for your **[session_goals]**.
+<display>
+Now let's identify your most promising ideas based on what matters most for your **[session_goals]**.
 
 **Prioritization Criteria for Your Session:**
 
@@ -133,7 +141,8 @@ Review your organized ideas and identify:
 2. **Easiest Quick Wins:** Which ideas could be implemented fastest?
 3. **Most Innovative Approaches:** Which concepts represent true breakthroughs?
 
-**What stands out to you as most valuable? Share your top priorities and I'll help you develop action plans.**"
+**What stands out to you as most valuable? Share your top priorities and I'll help you develop action plans.**
+</display>
 
 ### 5. Develop Action Plans
 
@@ -141,7 +150,8 @@ Create concrete next steps for prioritized ideas:
 
 **Action Planning Process:**
 
-"**Excellent choices!** Let's develop actionable plans for your top priority ideas.
+<display>
+**Excellent choices!** Let's develop actionable plans for your top priority ideas.
 
 **For each selected idea, let's explore:**
 
@@ -162,7 +172,8 @@ Create concrete next steps for prioritized ideas:
 **Timeline:** [Implementation estimate]
 **Success Indicators:** [How to measure progress]
 
-**Would you like me to develop similar action plans for your other top ideas?**"
+**Would you like me to develop similar action plans for your other top ideas?**
+</display>
 
 ### 6. Create Comprehensive Session Documentation
 
@@ -170,7 +181,8 @@ Prepare final session output:
 
 **Session Documentation Structure:**
 
-"**Creating your comprehensive brainstorming session documentation...**
+<display>
+**Creating your comprehensive brainstorming session documentation...**
 
 This document will include:
 
@@ -180,7 +192,8 @@ This document will include:
 - **Action Plans:** Concrete next steps for implementation
 - **Session Insights:** Key learnings and creative breakthroughs
 
-**Your brainstorming session has produced [number] organized ideas across [number] themes, with [number] prioritized concepts ready for action planning.**"
+**Your brainstorming session has produced [number] organized ideas across [number] themes, with [number] prioritized concepts ready for action planning.**
+</display>
 
 **Append to document:**
 
@@ -217,7 +230,8 @@ Provide final session wrap-up and forward guidance:
 
 **Session Completion:**
 
-"**Congratulations on an incredibly productive brainstorming session!**
+<display>
+**Congratulations on an incredibly productive brainstorming session!**
 
 **Your Creative Achievements:**
 
@@ -248,6 +262,7 @@ Provide final session wrap-up and forward guidance:
 
 **Ready to complete your session documentation?**
 [C] Complete - Generate final brainstorming session document
+</display>
 
 ### 8. Handle Completion Selection
 

@@ -34,9 +34,11 @@ Load and present brainstorming techniques from CSV, allowing user to browse and 
 
 Load techniques from CSV on-demand:
 
-"Perfect! Let's explore our complete brainstorming techniques library. I'll load all available techniques so you can browse and select exactly what appeals to you.
+<display>
+Perfect! Let's explore our complete brainstorming techniques library. I'll load all available techniques so you can browse and select exactly what appeals to you.
 
-**Loading Brain Techniques Library...**"
+**Loading Brain Techniques Library...**
+</display>
 
 **Load CSV and parse:**
 
@@ -48,7 +50,8 @@ Load techniques from CSV on-demand:
 
 Show available categories with brief descriptions:
 
-"**Our Brainstorming Technique Library - 36+ Techniques Across 7 Categories:**
+<display>
+**Our Brainstorming Technique Library - 36+ Techniques Across 7 Categories:**
 
 **[1] Structured Thinking** (6 techniques)
 
@@ -85,7 +88,8 @@ Show available categories with brief descriptions:
 - Inner wisdom and authentic exploration approaches
 - Includes: Inner Child Conference, Shadow Work Mining, Values Archaeology
 
-**Which category interests you most? Enter 1-7, or tell me what type of thinking you're drawn to.**"
+**Which category interests you most? Enter 1-7, or tell me what type of thinking you're drawn to.**
+</display>
 
 ### 3. Handle Category Selection
 
@@ -93,9 +97,11 @@ After user selects category:
 
 #### Load Category Techniques:
 
-"**[Selected Category] Techniques:**
+<display>
+**[Selected Category] Techniques:**
 
-**Loading specific techniques from this category...**"
+**Loading specific techniques from this category...**
+</display>
 
 **Present 3-5 techniques from selected category:**
 For each technique:
@@ -106,7 +112,9 @@ For each technique:
 - Example prompt: [Sample facilitation prompt]
 
 **Example presentation format:**
-"**1. SCAMPER Method** (Duration: 20-30 min, Energy: Moderate)
+
+<display>
+**1. SCAMPER Method** (Duration: 20-30 min, Energy: Moderate)
 
 - Systematic creativity through seven lenses (Substitute/Combine/Adapt/Modify/Put/Eliminate/Reverse)
 - Best for: Product improvement, innovation challenges, systematic idea generation
@@ -117,10 +125,12 @@ For each technique:
 - Explore problems through six distinct perspectives for comprehensive analysis
 - Best for: Complex decisions, team alignment, thorough exploration
 - Example prompt: "White hat thinking: What facts do we know for certain about this challenge?"
+</display>
 
 ### 4. Allow Technique Selection
 
-"**Which techniques from this category appeal to you?**
+<display>
+**Which techniques from this category appeal to you?**
 
 You can:
 
@@ -135,13 +145,16 @@ You can:
 - [Details] for more information about any technique
 - [Categories] to return to category list
 - [Back] to return to approach selection
+</display>
 
 ### 5. Handle Technique Confirmation
 
 When user selects techniques:
 
 **Confirmation Process:**
-"**Your Selected Techniques:**
+
+<display>
+**Your Selected Techniques:**
 
 - [Technique 1]: [Why this matches their session goals]
 - [Technique 2]: [Why this complements the first]
@@ -152,7 +165,8 @@ This combination will take approximately [total_time] and focus on [expected out
 
 **Confirm these choices?**
 [C] Continue - Begin technique execution
-[Back] - Modify technique selection"
+[Back] - Modify technique selection
+</display>
 
 ### 6. Update Frontmatter and Continue
 

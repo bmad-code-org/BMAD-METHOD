@@ -227,7 +227,9 @@ The final {outputFile} must follow this structure exactly:
 
 After all epics and stories are complete:
 
-Display: "**Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue"
+<display>
+**Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue
+</display>
 
 #### Menu Handling Logic:
 

@@ -72,9 +72,13 @@ Append to validation report:
 **Status:** N/A - No Product Brief was provided as input
 ```
 
-Display: "**Product Brief Coverage: Skipped** (No Product Brief provided)
+Display:
 
-**Proceeding to next validation check...**"
+<display>
+**Product Brief Coverage: Skipped** (No Product Brief provided)
+
+**Proceeding to next validation check...**
+</display>
 
 Without delay, read fully and follow: {nextStepFile}
 
@@ -180,11 +184,15 @@ Append to validation report:
 
 ### 6. Display Progress and Auto-Proceed
 
-Display: "**Product Brief Coverage Validation Complete**
+Display:
+
+<display>
+**Product Brief Coverage Validation Complete**
 
 Overall Coverage: {assessment}
 
-**Proceeding to next validation check...**"
+**Proceeding to next validation check...**
+</display>
 
 Without delay, read fully and follow: {nextStepFile} (step-v-05-measurability-validation.md)
 

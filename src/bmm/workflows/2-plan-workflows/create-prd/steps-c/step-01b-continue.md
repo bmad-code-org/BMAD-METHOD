@@ -86,7 +86,9 @@ Review the frontmatter to understand:
 ### 4. Handle Workflow Completion
 
 **If `stepsCompleted` array contains `"step-11-complete.md"`:**
-"Great news! It looks like we've already completed the PRD workflow for {{project_name}}.
+
+<display>
+Great news! It looks like we've already completed the PRD workflow for {{project_name}}.
 
 The final document is ready at `{outputFile}` with all sections completed.
 
@@ -96,12 +98,15 @@ Would you like me to:
 - Suggest next workflow steps (like architecture or epic creation)
 - Start a new PRD revision
 
-What would be most helpful?"
+What would be most helpful?
+</display>
 
 ### 5. Present Current Progress
 
 **If workflow not complete:**
-"Welcome back {{user_name}}! I'm resuming our PRD collaboration for {{project_name}}.
+
+<display>
+Welcome back {{user_name}}! I'm resuming our PRD collaboration for {{project_name}}.
 
 **Current Progress:**
 - Last completed: {last step filename from stepsCompleted array}
@@ -112,11 +117,14 @@ What would be most helpful?"
 - Current PRD document is ready with all completed sections
 - Ready to continue from where we left off
 
-Does this look right, or do you want to make any adjustments before we proceed?"
+Does this look right, or do you want to make any adjustments before we proceed?
+</display>
 
 ### 6. Present MENU OPTIONS
 
-Display: "**Select an Option:** [C] Continue to {next step name}"
+<display>
+**Select an Option:** [C] Continue to {next step name}
+</display>
 
 #### Menu Handling Logic:
 

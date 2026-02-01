@@ -227,12 +227,16 @@ Append to validation report:
 
 ### 7. Display Progress and Auto-Proceed
 
-Display: "**Project-Type Compliance Validation Complete**
+Display:
+
+<display>
+**Project-Type Compliance Validation Complete**
 
 Project Type: {projectType}
 Compliance: {score}%
 
-**Proceeding to next validation check...**"
+**Proceeding to next validation check...**
+</display>
 
 Without delay, read fully and follow: {nextStepFile} (step-v-10-smart-validation.md)
 

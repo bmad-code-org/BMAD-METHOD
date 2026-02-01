@@ -155,11 +155,15 @@ Append to validation report:
 **Note:** This PRD is for a standard domain without regulatory compliance requirements.
 ```
 
-Display: "**Domain Compliance Validation Skipped**
+Display:
+
+<display>
+**Domain Compliance Validation Skipped**
 
 Domain: {domain} (low complexity)
 
-**Proceeding to next validation check...**"
+**Proceeding to next validation check...**
+</display>
 
 Without delay, read fully and follow: {nextStepFile}
 
@@ -206,12 +210,16 @@ Append to validation report:
 
 ### 7. Display Progress and Auto-Proceed
 
-Display: "**Domain Compliance Validation Complete**
+Display:
+
+<display>
+**Domain Compliance Validation Complete**
 
 Domain: {domain} ({complexity})
 Compliance Status: {status}
 
-**Proceeding to next validation check...**"
+**Proceeding to next validation check...**
+</display>
 
 Without delay, read fully and follow: {nextStepFile} (step-v-09-project-type-validation.md)
 

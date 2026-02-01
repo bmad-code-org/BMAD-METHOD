@@ -151,7 +151,9 @@ Display findings and ask:
 
 ### 7. Present MENU OPTIONS
 
-Display: **Select an Option:** [C] Continue to File Validation
+<display>
+**Select an Option:** [C] Continue to File Validation
+</display>
 
 #### EXECUTION RULES:
 

@@ -146,7 +146,8 @@ Return detailed change plan with section breakdown."
 
 Display:
 
-"**Deep Review Complete - Change Plan**
+<display>
+**Deep Review Complete - Change Plan**
 
 **PRD Analysis:**
 {Brief summary of PRD current state}
@@ -175,7 +176,8 @@ Display:
 2. Any sections I should add/remove/reprioritize?
 3. Any concerns before I proceed with edits?
 
-**Review the plan and let me know if you'd like any adjustments.**"
+**Review the plan and let me know if you'd like any adjustments.**
+</display>
 
 ### 5. Get User Confirmation
 
@@ -198,11 +200,14 @@ Store approved change plan for next step:
 - **Priority order:** Sequence to apply changes
 - **User confirmed:** Yes
 
-Display: "**Change Plan Approved**
+Display:
+<display>
+**Change Plan Approved**
 
 {Brief summary of approved plan}
 
-**Proceeding to edit step...**"
+**Proceeding to edit step...**
+</display>
 
 Read fully and follow: {nextStepFile} (step-e-03-edit.md)
 

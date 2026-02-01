@@ -37,7 +37,9 @@ Confirm domain research scope and approach for **{{research_topic}}** with the u
 ### 1. Begin Scope Confirmation
 
 Start with domain scope understanding:
-"I understand you want to conduct **domain research** for **{{research_topic}}** with these goals: {{research_goals}}
+
+<display>
+I understand you want to conduct **domain research** for **{{research_topic}}** with these goals: {{research_goals}}
 
 **Domain Research Scope:**
 
@@ -53,11 +55,14 @@ Start with domain scope understanding:
 - Multi-source validation for critical domain claims
 - Confidence levels for uncertain domain information
 - Comprehensive domain coverage with industry-specific insights
+</display>
 
 ### 2. Scope Confirmation
 
 Present clear scope confirmation:
-"**Domain Research Scope Confirmation:**
+
+<display>
+**Domain Research Scope Confirmation:**
 
 For **{{research_topic}}**, I will research:
 
@@ -71,6 +76,7 @@ For **{{research_topic}}**, I will research:
 
 **Does this domain research scope and approach align with your goals?**
 [C] Continue - Begin domain research with this scope
+</display>
 
 ### 3. Handle Continue Selection
 

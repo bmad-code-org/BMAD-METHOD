@@ -88,7 +88,9 @@ Use holistic judgment, not mechanical keyword matching.
 
 ### No Escalation (simple request)
 
-Display: "**Select:** [P] Plan first (tech-spec) [E] Execute directly"
+<display>
+**Select:** [P] Plan first (tech-spec) [E] Execute directly
+</display>
 
 #### Menu Handling Logic:
 

@@ -382,7 +382,8 @@ _This comprehensive technical research document serves as an authoritative techn
 
 **Technical Document Completion Presentation:**
 
-"I've completed the **comprehensive technical research document synthesis** for **{{research_topic}}**, producing an authoritative technical research document with:
+<display>
+I've completed the **comprehensive technical research document synthesis** for **{{research_topic}}**, producing an authoritative technical research document with:
 
 **Technical Document Features:**
 
@@ -411,6 +412,7 @@ _This comprehensive technical research document serves as an authoritative techn
 
 **Ready to complete this comprehensive technical research document?**
 [C] Complete Research - Save final comprehensive technical document
+</display>
 
 ### 6. Handle Final Technical Completion
 

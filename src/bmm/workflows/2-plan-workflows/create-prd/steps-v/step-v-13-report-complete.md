@@ -125,7 +125,8 @@ overallStatus: '{Pass/Warning/Critical based on all findings}'
 
 Display:
 
-"**✓ PRD Validation Complete**
+<display>
+**✓ PRD Validation Complete**
 
 **Overall Status:** {Pass/Warning/Critical}
 
@@ -154,7 +155,8 @@ Display:
 - Warning: "PRD is usable but has issues that should be addressed. Review warnings and improve where needed."
 - Critical: "PRD has significant issues that should be fixed before use. Focus on critical issues above."}
 
-**What would you like to do next?**"
+**What would you like to do next?**
+</display>
 
 ### 5. Present MENU OPTIONS
 
@@ -195,8 +197,12 @@ Display:
   - Return to menu
 
 - **IF X (Exit):**
-  - Display: "**Validation Report Saved:** {validationReportPath}"
-  - Display: "**Summary:** {overall status} - {recommendation}"
+  - Display:
+    <display>
+    **Validation Report Saved:** {validationReportPath}
+
+    **Summary:** {overall status} - {recommendation}
+    </display>
   - PRD Validation complete. Read fully and follow: `_bmad/core/tasks/bmad-help.md` with argument `Validate PRD`.
 
 - **IF Any other:** Help user, then redisplay menu

@@ -39,7 +39,9 @@ Conduct comprehensive architectural patterns analysis with emphasis on design de
 ### 1. Begin Architectural Patterns Analysis
 
 Start with architectural research approach:
-"Now I'll focus on **architectural patterns and design decisions** for effective architecture approaches for [technology/domain].
+
+<display>
+Now I'll focus on **architectural patterns and design decisions** for effective architecture approaches for [technology/domain].
 
 **Architectural Patterns Focus:**
 
@@ -49,7 +51,8 @@ Start with architectural research approach:
 - Integration and communication patterns
 - Security and performance architectural considerations
 
-**Let me search for current architectural patterns and approaches.**"
+**Let me search for current architectural patterns and approaches.**
+</display>
 
 ### 2. Web Search for System Architecture Patterns
 
@@ -137,7 +140,9 @@ _Source: [URL]_
 ### 6. Present Analysis and Continue Option
 
 Show the generated architectural patterns and present continue option:
-"I've completed the **architectural patterns analysis** for effective architecture approaches.
+
+<display>
+I've completed the **architectural patterns analysis** for effective architecture approaches.
 
 **Key Architectural Findings:**
 
@@ -149,6 +154,7 @@ Show the generated architectural patterns and present continue option:
 
 **Ready to proceed to implementation research?**
 [C] Continue - Save this to the document and move to implementation research
+</display>
 
 ### 7. Handle Continue Selection
 

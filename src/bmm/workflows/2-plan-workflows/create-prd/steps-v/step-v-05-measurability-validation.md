@@ -195,11 +195,15 @@ Append to validation report:
 
 ### 5. Display Progress and Auto-Proceed
 
-Display: "**Measurability Validation Complete**
+Display:
+
+<display>
+**Measurability Validation Complete**
 
 Total Violations: {count} ({severity})
 
-**Proceeding to next validation check...**"
+**Proceeding to next validation check...**
+</display>
 
 Without delay, read fully and follow: {nextStepFile} (step-v-06-traceability-validation.md)
 

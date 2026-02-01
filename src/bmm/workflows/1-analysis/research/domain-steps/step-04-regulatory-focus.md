@@ -39,7 +39,9 @@ Conduct focused regulatory and compliance analysis with emphasis on requirements
 ### 1. Begin Regulatory Analysis
 
 Start with regulatory research approach:
-"Now I'll focus on **regulatory and compliance requirements** that impact **{{research_topic}}**.
+
+<display>
+Now I'll focus on **regulatory and compliance requirements** that impact **{{research_topic}}**.
 
 **Regulatory Focus Areas:**
 
@@ -49,7 +51,8 @@ Start with regulatory research approach:
 - Data protection and privacy regulations
 - Environmental and safety requirements
 
-**Let me search for current regulatory requirements.**"
+**Let me search for current regulatory requirements.**
+</display>
 
 ### 2. Web Search for Specific Regulations
 
@@ -136,7 +139,9 @@ _Source: [URL]_
 ### 6. Present Analysis and Continue Option
 
 Show the generated regulatory analysis and present continue option:
-"I've completed **regulatory requirements analysis** for {{research_topic}}.
+
+<display>
+I've completed **regulatory requirements analysis** for {{research_topic}}.
 
 **Key Regulatory Findings:**
 
@@ -148,6 +153,7 @@ Show the generated regulatory analysis and present continue option:
 
 **Ready to proceed to technical trends?**
 [C] Continue - Save this to the document and move to technical trends
+</display>
 
 ### 7. Handle Continue Selection
 

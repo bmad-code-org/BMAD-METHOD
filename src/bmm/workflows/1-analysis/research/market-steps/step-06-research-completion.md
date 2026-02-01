@@ -39,7 +39,9 @@ Produce a comprehensive, authoritative market research document on **{{research_
 ### 1. Begin Strategic Synthesis
 
 Start with strategic synthesis approach:
-"Now I'll complete our market research with **strategic synthesis and recommendations** .
+
+<display>
+Now I'll complete our market research with **strategic synthesis and recommendations** .
 
 **Strategic Synthesis Focus:**
 
@@ -49,7 +51,8 @@ Start with strategic synthesis approach:
 - Risk assessment and mitigation approaches
 - Actionable next steps and implementation guidance
 
-**Let me search for current strategic insights and best practices.**"
+**Let me search for current strategic insights and best practices.**
+</display>
 
 ### 2. Web Search for Market Entry Strategies
 
@@ -356,7 +359,8 @@ _This comprehensive market research document serves as an authoritative market r
 
 **Market Research Document Completion Presentation:**
 
-"I've completed the **comprehensive market research document synthesis** for **{{research_topic}}**, producing an authoritative market research document with:
+<display>
+I've completed the **comprehensive market research document synthesis** for **{{research_topic}}**, producing an authoritative market research document with:
 
 **Document Features:**
 
@@ -384,6 +388,7 @@ _This comprehensive market research document serves as an authoritative market r
 
 **Ready to complete this comprehensive market research document?**
 [C] Complete Research - Save final comprehensive market research document
+</display>
 
 ### 6. Handle Complete Selection
 

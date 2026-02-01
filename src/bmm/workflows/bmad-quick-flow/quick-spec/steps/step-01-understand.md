@@ -162,7 +162,9 @@ b) **Report to user:**
 
 a) **Display menu:**
 
-Display: "**Select:** [A] Advanced Elicitation [P] Party Mode [C] Continue to Deep Investigation (Step 2 of 4)"
+<display>
+**Select:** [A] Advanced Elicitation [P] Party Mode [C] Continue to Deep Investigation (Step 2 of 4)
+</display>
 
 b) **HALT and wait for user selection.**
 

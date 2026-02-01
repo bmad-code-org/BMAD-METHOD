@@ -34,7 +34,8 @@ Analyze session context and recommend optimal brainstorming techniques based on 
 
 Load techniques from CSV for analysis:
 
-"Great choice! Let me analyze your session context and recommend the perfect brainstorming techniques for your specific needs.
+<display>
+Great choice! Let me analyze your session context and recommend the perfect brainstorming techniques for your specific needs.
 
 **Analyzing Your Session Goals:**
 
@@ -43,7 +44,8 @@ Load techniques from CSV for analysis:
 - Constraints: [constraints]
 - Session Type: [session_type]
 
-**Loading Brain Techniques Library for AI Analysis...**"
+**Loading Brain Techniques Library for AI Analysis...**
+</display>
 
 **Load CSV and parse:**
 
@@ -86,7 +88,8 @@ Analyze user's session context across multiple dimensions:
 
 Based on context analysis, create tailored recommendations:
 
-"**My AI Analysis Results:**
+<display>
+**My AI Analysis Results:**
 
 Based on your session context, I recommend this customized technique sequence:
 
@@ -109,7 +112,8 @@ Based on your session context, I recommend this customized technique sequence:
 - **Expected outcome:** [How this leads to actionable results]
 
 **Total Estimated Time:** [Sum of durations]
-**Session Focus:** [Primary benefit and outcome description]"
+**Session Focus:** [Primary benefit and outcome description]
+</display>
 
 ### 4. Present Recommendation Details
 
@@ -117,7 +121,8 @@ Provide deeper insight into each recommended technique:
 
 **Detailed Technique Explanations:**
 
-"For each recommended technique, here's what makes it perfect for your session:
+<display>
+For each recommended technique, here's what makes it perfect for your session:
 
 **1. [Technique 1]:**
 
@@ -138,11 +143,13 @@ Provide deeper insight into each recommended technique:
 - **Description:** [Detailed explanation]
 - **Best for:** [Why this completes the sequence effectively]
 - **Sample facilitation:** [Example of how we'll use this]
-- **Your role:** [What you'll do during this technique]"
+- **Your role:** [What you'll do during this technique]
+</display>
 
 ### 5. Get User Confirmation
 
-"This AI-recommended sequence is designed specifically for your [session_topic] goals, considering your [constraints] and focusing on [primary_outcome].
+<display>
+This AI-recommended sequence is designed specifically for your [session_topic] goals, considering your [constraints] and focusing on [primary_outcome].
 
 **Does this approach sound perfect for your session?**
 
@@ -151,6 +158,7 @@ Provide deeper insight into each recommended technique:
 [Modify] - I'd like to adjust the technique selection
 [Details] - Tell me more about any specific technique
 [Back] - Return to approach selection
+</display>
 
 ### 6. Handle User Response
 

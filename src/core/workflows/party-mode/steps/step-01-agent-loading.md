@@ -34,9 +34,11 @@ Load the complete agent roster from manifest and initialize party mode with enga
 
 Begin agent loading process:
 
-"Now initializing **Party Mode** with our complete BMAD agent roster! Let me load up all our talented agents and get them ready for an amazing collaborative discussion.
+<display>
+Now initializing **Party Mode** with our complete BMAD agent roster! Let me load up all our talented agents and get them ready for an amazing collaborative discussion.
 
-**Agent Manifest Loading:**"
+**Agent Manifest Loading:**
+</display>
 
 Load and parse the agent manifest CSV from `{project-root}/_bmad/_config/agent-manifest.csv`
 
@@ -72,7 +74,8 @@ Create complete agent roster with merged personalities:
 
 Generate enthusiastic party mode introduction:
 
-"🎉 PARTY MODE ACTIVATED! 🎉
+<display>
+🎉 PARTY MODE ACTIVATED! 🎉
 
 Welcome {{user_name}}! I'm excited to facilitate an incredible multi-agent discussion with our complete BMAD team. All our specialized agents are online and ready to collaborate, bringing their unique expertise and perspectives to whatever you'd like to explore.
 
@@ -86,16 +89,19 @@ Welcome {{user_name}}! I'm excited to facilitate an incredible multi-agent discu
 
 **[Total Count] agents** are ready to contribute their expertise!
 
-**What would you like to discuss with the team today?**"
+**What would you like to discuss with the team today?**
+</display>
 
 ### 5. Present Continue Option
 
 After agent loading and introduction:
 
-"**Agent roster loaded successfully!** All our BMAD experts are excited to collaborate with you.
+<display>
+**Agent roster loaded successfully!** All our BMAD experts are excited to collaborate with you.
 
 **Ready to start the discussion?**
 [C] Continue - Begin multi-agent conversation
+</display>
 
 ### 6. Handle Continue Selection
 

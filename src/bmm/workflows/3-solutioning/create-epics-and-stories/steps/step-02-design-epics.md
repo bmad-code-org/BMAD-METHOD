@@ -190,7 +190,9 @@ After approval, update {outputFile}:
 
 ### 8. Present MENU OPTIONS
 
-Display: "**Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue"
+<display>
+**Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue
+</display>
 
 #### Menu Handling Logic:
 

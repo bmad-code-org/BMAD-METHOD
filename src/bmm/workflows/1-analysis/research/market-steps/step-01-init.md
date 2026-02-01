@@ -39,7 +39,9 @@ Initialize market research by confirming understanding of {{research_topic}} and
 **INITIALIZE - DO NOT RESEARCH YET**
 
 Start with research confirmation:
-"I understand you want to conduct **market research** for **{{research_topic}}** with these goals: {{research_goals}}
+
+<display>
+I understand you want to conduct **market research** for **{{research_topic}}** with these goals: {{research_goals}}
 
 **My Understanding of Your Research Needs:**
 
@@ -55,7 +57,8 @@ Start with research confirmation:
 - Competitive landscape and positioning
 - Strategic recommendations and implementation guidance
 
-**Does this accurately capture what you're looking for?**"
+**Does this accurately capture what you're looking for?**
+</display>
 
 ### 2. Refine Research Scope
 
@@ -117,7 +120,9 @@ Write initial research scope to document:
 ### 4. Present Confirmation and Continue Option
 
 Show initial scope document and present continue option:
-"I've documented our understanding and initial scope for **{{research_topic}}** market research.
+
+<display>
+I've documented our understanding and initial scope for **{{research_topic}}** market research.
 
 **What I've established:**
 
@@ -131,6 +136,7 @@ Show initial scope document and present continue option:
 **Ready to begin detailed market research?**
 [C] Continue - Confirm scope and proceed to customer insights analysis
 [Modify] Suggest changes to research scope before proceeding
+</display>
 
 ### 5. Handle User Response
 

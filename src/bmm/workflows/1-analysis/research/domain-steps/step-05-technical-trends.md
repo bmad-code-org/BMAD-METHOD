@@ -39,7 +39,9 @@ Conduct comprehensive technical trends analysis using current web data with emph
 ### 1. Begin Technical Trends Analysis
 
 Start with technology research approach:
-"Now I'll conduct **technical trends and emerging technologies** analysis for **{{research_topic}}** using current data.
+
+<display>
+Now I'll conduct **technical trends and emerging technologies** analysis for **{{research_topic}}** using current data.
 
 **Technical Trends Focus:**
 
@@ -49,7 +51,8 @@ Start with technology research approach:
 - New business models enabled by technology
 - Future technology projections and roadmaps
 
-**Let me search for current technology developments.**"
+**Let me search for current technology developments.**
+</display>
 
 ### 2. Web Search for Emerging Technologies
 
@@ -148,7 +151,9 @@ _Source: [URL]_
 ### 6. Present Analysis and Complete Option
 
 Show the generated technical analysis and present complete option:
-"I've completed **technical trends and innovation analysis** for {{research_topic}}.
+
+<display>
+I've completed **technical trends and innovation analysis** for {{research_topic}}.
 
 **Technical Highlights:**
 
@@ -167,6 +172,7 @@ Show the generated technical analysis and present complete option:
 
 **Ready to proceed to research synthesis and recommendations?**
 [C] Continue - Save this to document and proceed to synthesis
+</display>
 
 ### 7. Handle Continue Selection
 

@@ -40,30 +40,53 @@ Determine which mode to invoke based on:
 3. **Menu Selection (if unclear):**
 
 If mode cannot be determined from invocation:
-"**PRD Workflow - Select Mode:**
+
+<display>
+**PRD Workflow - Select Mode:**
 
 **[C] Create** - Create a new PRD from scratch
 **[V] Validate** - Validate an existing PRD against BMAD standards
 **[E] Edit** - Improve an existing PRD
 
-Which mode would you like?"
+Which mode would you like?
+</display>
 
 Wait for user selection.
 
 ### Route to Appropriate Workflow
 
 **IF Create Mode:**
-"**Create Mode: Creating a new PRD from scratch.**"
+
+<display>
+**Create Mode: Creating a new PRD from scratch.**
+</display>
+
 Read fully and follow: `{nextStep}` (steps-c/step-01-init.md)
 
 **IF Validate Mode:**
-"**Validate Mode: Validating an existing PRD against BMAD standards.**"
-Prompt for PRD path: "Which PRD would you like to validate? Please provide the path to the PRD.md file."
+
+<display>
+**Validate Mode: Validating an existing PRD against BMAD standards.**
+</display>
+
+Prompt for PRD path:
+
+<display>
+Which PRD would you like to validate? Please provide the path to the PRD.md file.
+</display>
 Then read fully and follow: `{validateWorkflow}` (steps-v/step-v-01-discovery.md)
 
 **IF Edit Mode:**
-"**Edit Mode: Improving an existing PRD.**"
-Prompt for PRD path: "Which PRD would you like to edit? Please provide the path to the PRD.md file."
+
+<display>
+**Edit Mode: Improving an existing PRD.**
+</display>
+
+Prompt for PRD path:
+
+<display>
+Which PRD would you like to edit? Please provide the path to the PRD.md file.
+</display>
 Then read fully and follow: `{editWorkflow}` (steps-e/step-e-01-discovery.md)
 
 ---
@@ -113,13 +136,15 @@ This uses **step-file architecture** for disciplined execution:
 
 **If mode is still unclear, ask user:**
 
-"**PRD Workflow - Select Mode:**
+<display>
+**PRD Workflow - Select Mode:**
 
 **[C] Create** - Create a new PRD from scratch
 **[V] Validate** - Validate an existing PRD against BMAD standards
 **[E] Edit** - Improve an existing PRD
 
-Which mode would you like?"
+Which mode would you like?
+</display>
 
 Wait for user selection.
 
@@ -136,15 +161,37 @@ Load and read full config from {main_config} and resolve:
 ### 3. Route to Appropriate Workflow
 
 **IF mode == create:**
-"**Create Mode: Creating a new PRD from scratch.**"
+
+<display>
+**Create Mode: Creating a new PRD from scratch.**
+</display>
+
 Read fully and follow: `{nextStep}` (steps-c/step-01-init.md)
 
 **IF mode == validate:**
-"**Validate Mode: Validating an existing PRD against BMAD standards.**"
-Prompt for PRD path: "Which PRD would you like to validate? Please provide the path to the PRD.md file."
+
+<display>
+**Validate Mode: Validating an existing PRD against BMAD standards.**
+</display>
+
+Prompt for PRD path:
+
+<display>
+Which PRD would you like to validate? Please provide the path to the PRD.md file.
+</display>
+
 Then read fully and follow: `{validateWorkflow}` (steps-v/step-v-01-discovery.md)
 
 **IF mode == edit:**
-"**Edit Mode: Improving an existing PRD.**"
-Prompt for PRD path: "Which PRD would you like to edit? Please provide the path to the PRD.md file."
+
+<display>
+**Edit Mode: Improving an existing PRD.**
+</display>
+
+Prompt for PRD path:
+
+<display>
+Which PRD would you like to edit? Please provide the path to the PRD.md file.
+</display>
+
 Then read fully and follow: `{editWorkflow}` (steps-e/step-e-01-discovery.md)

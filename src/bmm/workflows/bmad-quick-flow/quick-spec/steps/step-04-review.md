@@ -31,19 +31,25 @@ wipFile: '{implementation_artifacts}/tech-spec-wip.md'
 
 **Present to user:**
 
-"Here's your complete tech-spec. Please review:"
+<display>
+Here's your complete tech-spec. Please review:
+</display>
 
 [Display the complete spec content - all sections]
 
-"**Quick Summary:**
+<display>
+**Quick Summary:**
 
 - {task_count} tasks to implement
 - {ac_count} acceptance criteria to verify
-- {files_count} files to modify"
+- {files_count} files to modify
+</display>
 
 **Present review menu:**
 
-Display: "**Select:** [C] Continue [E] Edit [Q] Questions [A] Advanced Elicitation [P] Party Mode"
+<display>
+**Select:** [C] Continue [E] Edit [Q] Questions [A] Advanced Elicitation [P] Party Mode
+</display>
 
 **HALT and wait for user selection.**
 
@@ -106,7 +112,7 @@ b) **Rename WIP file to final filename:**
 
 a) **Display completion message and menu:**
 
-```
+<display>
 **Tech-Spec Complete!**
 
 Saved to: {finalFile}
@@ -127,12 +133,12 @@ Once you are fully satisfied with the spec (ideally after **Adversarial Review**
 
 Copy this prompt to start dev:
 
-\`\`\`
+```
 quick-dev {finalFile}
-\`\`\`
+```
 
 This ensures the dev agent has clean context focused solely on implementation.
-```
+</display>
 
 b) **HALT and wait for user selection.**
 
@@ -173,7 +179,8 @@ b) **HALT and wait for user selection.**
 
 **When user selects [D]:**
 
-"**All done!** Your tech-spec is ready at:
+<display>
+**All done!** Your tech-spec is ready at:
 
 `{finalFile}`
 
@@ -183,7 +190,8 @@ When you're ready to implement, run:
 quick-dev {finalFile}
 ```
 
-Ship it!"
+Ship it!
+</display>
 
 ---
 

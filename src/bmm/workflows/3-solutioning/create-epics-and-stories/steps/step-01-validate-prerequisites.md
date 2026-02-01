@@ -219,7 +219,9 @@ After extraction and confirmation, update {outputFile} with:
 
 ### 10. Present MENU OPTIONS
 
-Display: `**Confirm the Requirements are complete and correct to [C] continue:**`
+<display>
+**Confirm the Requirements are complete and correct to [C] continue:**
+</display>
 
 #### EXECUTION RULES:
 

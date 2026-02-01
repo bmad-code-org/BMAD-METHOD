@@ -172,11 +172,15 @@ Append to validation report:
 
 ### 5. Display Progress and Auto-Proceed
 
-Display: "**Implementation Leakage Validation Complete**
+Display:
+
+<display>
+**Implementation Leakage Validation Complete**
 
 Total Violations: {count} ({severity})
 
-**Proceeding to next validation check...**"
+**Proceeding to next validation check...**
+</display>
 
 Without delay, read fully and follow: {nextStepFile} (step-v-08-domain-compliance-validation.md)
 
