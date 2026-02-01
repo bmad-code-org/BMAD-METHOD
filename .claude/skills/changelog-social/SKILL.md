@@ -1,6 +1,6 @@
 ---
 name: changelog-social
-description: Generate social media announcements for Discord and Twitter from the latest changelog entry.asks to create release announcements, social posts, or share changelog updates on Discord/Twitter. Reads CHANGELOG.md in current working directory.
+description: Generate social media announcements for Discord, Twitter, and LinkedIn from the latest changelog entry. Use when user asks to create release announcements, social posts, or share changelog updates. Reads CHANGELOG.md in current working directory. Reference examples/ for tone and format.
 disable-model-invocation: true
 ---
 
@@ -52,6 +52,8 @@ git log <previous-tag>..<current-tag> --pretty=format:"%h|%s|%an" --grep="#"
 Extract PR numbers from commit messages that contain `#` followed by digits. Compile unique contributors.
 
 ### Step 3: Generate Discord Announcement
+
+**Limit: 2,000 characters per message.** Split into multiple messages if needed.
 
 Use this template style:
 
@@ -107,27 +109,11 @@ Community-driven FTW! 🌟
 
 ### Step 4: Generate Twitter Post
 
-Create a condensed version (280 chars or less for main tweet, optionally thread):
+**Limit: 25,000 characters per tweet (Premium).** With Premium, use a single comprehensive post matching the Discord style (minus Discord-specific formatting). Aim for 1,500-3,000 characters for better engagement.
 
-```
-🚀 BMad vVERSION is live!
+**Threads are optional** — only use for truly massive releases where you want multiple engagement points.
 
-[Most exciting feature] + [Critical bug fix]
-
-• Feature 1
-• Feature 2
-• Fix 3
-
-Install: npx bmad-method@VERSION install
-
-#AI #DevTools
-```
-
-**For major releases**, create a thread:
-1. Hook tweet - biggest news
-2. Feature highlights tweet
-3. Community/contributors tweet
-4. Install CTA
+See `examples/twitter-example.md` for the single-post Premium format.
 
 ## Content Selection Guidelines
 
@@ -150,6 +136,21 @@ Install: npx bmad-method@VERSION install
 - "Faster" operations
 - "Easier" workflows
 - "Now supports" capabilities
+
+## Examples
+
+Reference example posts in `examples/` for tone and formatting guidance:
+
+- **discord-example.md** — Full Discord announcement with emojis, sections, contributor shout-outs
+- **twitter-example.md** — Twitter thread format (5 tweets max for major releases)
+- **linkedin-example.md** — Professional post for major/minor releases with significant features
+
+**When to use LinkedIn:**
+- Major version releases (e.g., v6.0.0 Beta, v7.0.0)
+- Minor releases with exceptional new features
+- Community milestone announcements
+
+Read the appropriate example file before generating to match the established style and voice.
 
 ## Output Format
 
