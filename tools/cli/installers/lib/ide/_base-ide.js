@@ -530,6 +530,11 @@ class BaseIdeSetup {
       content = content.replaceAll('_bmad', this.bmadFolderName);
     }
 
+    // Replace {bmad-folder} placeholder if present
+    if (typeof content === 'string' && content.includes('{bmad-folder}')) {
+      content = content.replaceAll('{bmad-folder}', this.bmadFolderName);
+    }
+
     // Replace escape sequence _bmad with literal _bmad
     if (typeof content === 'string' && content.includes('_bmad')) {
       content = content.replaceAll('_bmad', '_bmad');

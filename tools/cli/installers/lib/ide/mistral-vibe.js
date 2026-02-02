@@ -143,7 +143,7 @@ class MistralVibeSetup extends BaseIdeSetup {
       await fs.ensureDir(skillDir);
 
       const skillContent = `---
-name: ${skill.name}
+name: ${skillName}
 description: ${skill.description}
 license: MIT
 compatibility: Mistral Vibe CLI
@@ -152,7 +152,7 @@ user-invocable: True
 
 # ${skill.name.toUpperCase()}
 
-IT IS CRITICAL THAT YOU FOLLOW THIS COMMAND: LOAD the FULL @.vibe/_bmad/core/workflows/${skill.name}/workflow.md, READ its entire contents and follow its directions exactly!`;
+IT IS CRITICAL THAT YOU FOLLOW THIS COMMAND: LOAD the FULL @.vibe/{bmad-folder}/core/workflows/${skill.name}/workflow.md, READ its entire contents and follow its directions exactly!`;
 
       await fs.writeFile(path.join(skillDir, 'SKILL.md'), skillContent);
       count++;
@@ -256,19 +256,10 @@ This skill provides ${skill.description.toLowerCase()} functionality.`;
     return written;
   }
 
-  async generateAgentSkillContent(skill, bmadDir) {
-    // Generate agent skill content in the exact format
-    const agentName = skill.name.replace('agent-', '');
-    const isBmmAgent = skill.name.startsWith('agent-bmm-');
-
-    // Read the actual agent file to get the path
-    let agentPath;
-    if (isBmmAgent) {
-      const realAgentName = agentName.replace('bmm-', '');
-      agentPath = `_bmad/bmm/agents/${realAgentName}.md`;
-    } else {
-      agentPath = `_bmad/core/agents/${agentName}.md`;
-    }
+  async generateAgentSkillContent(artifact, skillName) {
+    const agentName = artifact.name;
+    const isBmmAgent = artifact.module === 'bmm';
+    const agentPath = isBmmAgent ? `{bmad-folder}/bmm/agents/${agentName}.md` : `{bmad-folder}/core/agents/${agentName}.md`;
 
     return `---
 name: ${skill.name}
@@ -291,25 +282,25 @@ You must fully embody this agent's persona and follow all activation instruction
 </agent-activation>`;
   }
 
-  async generateWorkflowSkillContent(skill, bmadDir) {
+  async generateWorkflowSkillContent(workflow, skillName) {
     // Generate workflow skill content in the exact format
-    const workflowName = skill.name.replace('bmm-', '');
+    const workflowName = skillName.replace('bmm-', '');
 
     // Determine the workflow path based on the workflow name
     let workflowPath;
     switch (workflowName) {
       case 'brainstorming':
       case 'party-mode': {
-        workflowPath = `_bmad/core/workflows/${workflowName}/workflow.md`;
+        workflowPath = `{bmad-folder}/core/workflows/${workflowName}/workflow.md`;
         break;
       }
       case 'help': {
-        workflowPath = `_bmad/core/tasks/help.md`;
+        workflowPath = `{bmad-folder}/core/tasks/help.md`;
         break;
       }
       default: {
         // BMM workflows are in various subdirectories
-        workflowPath = `_bmad/bmm/workflows/${workflowName}/workflow.md`;
+        workflowPath = `{bmad-folder}/bmm/workflows/${workflowName}/workflow.md`;
       }
     }
 
@@ -344,7 +335,7 @@ user-invocable: True
 
 # ${skill.name.toUpperCase()}
 
-IT IS CRITICAL THAT YOU FOLLOW THIS COMMAND: LOAD the FULL @.vibe/_bmad/core/workflows/${skill.name}/workflow.md, READ its entire contents and follow its directions exactly!`;
+IT IS CRITICAL THAT YOU FOLLOW THIS COMMAND: LOAD the FULL @.vibe/{bmad-folder}/core/workflows/${skill.name}/workflow.md, READ its entire contents and follow its directions exactly!`;
   }
 
   getWorkflowDescription(workflowName) {
