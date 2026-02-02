@@ -8,6 +8,8 @@
  */
 
 let _clack = null;
+let _clackCore = null;
+let _picocolors = null;
 
 /**
  * Lazy-load @clack/prompts (ESM module)
@@ -18,6 +20,28 @@ async function getClack() {
     _clack = await import('@clack/prompts');
   }
   return _clack;
+}
+
+/**
+ * Lazy-load @clack/core (ESM module)
+ * @returns {Promise<Object>} The clack core module
+ */
+async function getClackCore() {
+  if (!_clackCore) {
+    _clackCore = await import('@clack/core');
+  }
+  return _clackCore;
+}
+
+/**
+ * Lazy-load picocolors
+ * @returns {Promise<Object>} The picocolors module
+ */
+async function getPicocolors() {
+  if (!_picocolors) {
+    _picocolors = (await import('picocolors')).default;
+  }
+  return _picocolors;
 }
 
 /**
@@ -192,6 +216,35 @@ async function groupMultiselect(options) {
 }
 
 /**
+ * Autocomplete multi-select prompt with type-ahead filtering
+ * @param {Object} options - Prompt options
+ * @param {string} options.message - The question to ask
+ * @param {Array} options.options - Array of choices [{label, value, hint?}]
+ * @param {string} [options.placeholder] - Placeholder text for search input
+ * @param {Array} [options.initialValues] - Array of initially selected values
+ * @param {boolean} [options.required=false] - Whether at least one must be selected
+ * @param {number} [options.maxItems=5] - Maximum visible items in scrollable list
+ * @param {Function} [options.filter] - Custom filter function (search, option) => boolean
+ * @returns {Promise<Array>} Array of selected values
+ */
+async function autocompleteMultiselect(options) {
+  const clack = await getClack();
+
+  const result = await clack.autocompleteMultiselect({
+    message: options.message,
+    options: options.options,
+    placeholder: options.placeholder || 'Type to search...',
+    initialValues: options.initialValues,
+    required: options.required || false,
+    maxItems: options.maxItems || 5,
+    filter: options.filter,
+  });
+
+  await handleCancel(result);
+  return result;
+}
+
+/**
  * Confirm prompt (replaces Inquirer 'confirm' type)
  * @param {Object} options - Prompt options
  * @param {string} options.message - The question to ask
@@ -211,7 +264,12 @@ async function confirm(options) {
 }
 
 /**
- * Text input prompt (replaces Inquirer 'input' type)
+ * Text input prompt with Tab-to-fill-placeholder support (replaces Inquirer 'input' type)
+ *
+ * This custom implementation restores the Tab-to-fill-placeholder behavior that was
+ * intentionally removed in @clack/prompts v1.0.0 (placeholder became purely visual).
+ * Uses @clack/core's TextPrompt primitive with custom key handling.
+ *
  * @param {Object} options - Prompt options
  * @param {string} options.message - The question to ask
  * @param {string} [options.default] - Default value
@@ -220,20 +278,64 @@ async function confirm(options) {
  * @returns {Promise<string>} User's input
  */
 async function text(options) {
-  const clack = await getClack();
+  const core = await getClackCore();
+  const color = await getPicocolors();
 
   // Use default as placeholder if placeholder not explicitly provided
   // This shows the default value as grayed-out hint text
   const placeholder = options.placeholder === undefined ? options.default : options.placeholder;
+  const defaultValue = options.default;
 
-  const result = await clack.text({
-    message: options.message,
-    defaultValue: options.default,
-    placeholder: typeof placeholder === 'string' ? placeholder : undefined,
+  const prompt = new core.TextPrompt({
+    defaultValue,
     validate: options.validate,
+    render() {
+      const title = `${color.gray('◆')}  ${options.message}`;
+
+      // Show placeholder as dim text when input is empty
+      let valueDisplay;
+      if (this.state === 'error') {
+        valueDisplay = color.yellow(this.userInputWithCursor);
+      } else if (this.userInput) {
+        valueDisplay = this.userInputWithCursor;
+      } else if (placeholder) {
+        // Show placeholder with cursor indicator when empty
+        valueDisplay = `${color.inverse(color.hidden('_'))}${color.dim(placeholder)}`;
+      } else {
+        valueDisplay = color.inverse(color.hidden('_'));
+      }
+
+      const bar = color.gray('│');
+
+      // Handle different states
+      if (this.state === 'submit') {
+        return `${color.gray('◇')}  ${options.message}\n${bar}  ${color.dim(this.value || defaultValue || '')}`;
+      }
+
+      if (this.state === 'cancel') {
+        return `${color.gray('◇')}  ${options.message}\n${bar}  ${color.strikethrough(color.dim(this.userInput || ''))}`;
+      }
+
+      if (this.state === 'error') {
+        return `${color.yellow('▲')}  ${options.message}\n${bar}  ${valueDisplay}\n${color.yellow('│')}  ${color.yellow(this.error)}`;
+      }
+
+      return `${title}\n${bar}  ${valueDisplay}\n${bar}`;
+    },
   });
 
+  // Add Tab key handler to fill placeholder into input
+  prompt.on('key', (char) => {
+    if (char === '\t' && placeholder && !prompt.userInput) {
+      // Use _setUserInput with write=true to populate the readline and update internal state
+      prompt._setUserInput(placeholder, true);
+    }
+  });
+
+  const result = await prompt.prompt();
   await handleCancel(result);
+
+  // TextPrompt's finalize handler already applies defaultValue for empty input
   return result;
 }
 
@@ -423,6 +525,7 @@ module.exports = {
   select,
   multiselect,
   groupMultiselect,
+  autocompleteMultiselect,
   confirm,
   text,
   password,
