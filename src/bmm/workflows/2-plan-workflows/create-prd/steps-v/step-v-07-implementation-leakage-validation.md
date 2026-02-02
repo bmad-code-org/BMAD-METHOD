@@ -44,7 +44,7 @@ Ensure Functional Requirements and Non-Functional Requirements don't include imp
 - 🎯 Scan FRs and NFRs for implementation terms
 - 💾 Distinguish capability-relevant vs leakage
 - 📖 Append findings to validation report
-- 📖 Display "Proceeding to next check..." and load next step
+- 📖 <display>Proceeding to next check...</display> and load next step
 - 🚫 FORBIDDEN to pause or request user input
 
 ## CONTEXT BOUNDARIES:

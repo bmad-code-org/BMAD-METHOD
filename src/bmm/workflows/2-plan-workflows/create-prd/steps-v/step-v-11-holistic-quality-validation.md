@@ -46,7 +46,7 @@ Assess the PRD as a cohesive, compelling document - evaluating document flow, du
 - 🎯 Use Advanced Elicitation for multi-perspective assessment
 - 🎯 Evaluate document flow, dual audience, BMAD principles
 - 💾 Append comprehensive assessment to validation report
-- 📖 Display "Proceeding to next check..." and load next step
+- 📖 <display>Proceeding to next check...</display> and load next step
 - 🚫 FORBIDDEN to pause or request user input
 
 ## CONTEXT BOUNDARIES:

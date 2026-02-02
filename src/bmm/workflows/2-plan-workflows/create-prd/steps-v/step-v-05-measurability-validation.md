@@ -44,7 +44,7 @@ Validate that all Functional Requirements (FRs) and Non-Functional Requirements 
 - 🎯 Extract all FRs and NFRs from PRD
 - 💾 Validate each for measurability and format
 - 📖 Append findings to validation report
-- 📖 Display "Proceeding to next check..." and load next step
+- 📖 <display>Proceeding to next check...</display> and load next step
 - 🚫 FORBIDDEN to pause or request user input
 
 ## CONTEXT BOUNDARIES:

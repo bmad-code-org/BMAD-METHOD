@@ -47,7 +47,7 @@ Final comprehensive completeness check - validate no template variables remain, 
 - 🎯 Validate section-specific completeness
 - 🎯 Validate frontmatter completeness
 - 💾 Append completeness matrix to validation report
-- 📖 Display "Proceeding to final step..." and load next step
+- 📖 <display>Proceeding to final step...</display> and load next step
 - 🚫 FORBIDDEN to pause or request user input
 
 ## CONTEXT BOUNDARIES:

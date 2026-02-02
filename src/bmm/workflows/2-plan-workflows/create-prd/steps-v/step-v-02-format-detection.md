@@ -166,7 +166,7 @@ Present MENU OPTIONS below for user selection
 #### Menu Handling Logic:
 
 - IF A (Parity Check): Read fully and follow: {altStepFile} (step-v-02b-parity-check.md)
-- IF B (Validate As-Is): Display "Proceeding with validation..." then read fully and follow: {nextStepFile}
+- IF B (Validate As-Is): <display>Proceeding with validation...</display> then read fully and follow: {nextStepFile}
 - IF C (Exit): Display format findings summary and exit validation
 - IF Any other: help user respond, then redisplay menu
 

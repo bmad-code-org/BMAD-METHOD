@@ -46,7 +46,7 @@ Validate that PRD covers all content from Product Brief (if brief was used as in
 - 💬 If no brief: Skip this check and report "N/A - No Product Brief"
 - 🎯 If brief exists: Map brief content to PRD sections
 - 💾 Append coverage findings to validation report
-- 📖 Display "Proceeding to next check..." and load next step
+- 📖 <display>Proceeding to next check...</display> and load next step
 - 🚫 FORBIDDEN to pause or request user input
 
 ## CONTEXT BOUNDARIES:

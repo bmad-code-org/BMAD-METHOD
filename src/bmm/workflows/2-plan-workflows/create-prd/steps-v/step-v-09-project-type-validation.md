@@ -47,7 +47,7 @@ Validate project-type specific requirements are properly documented - different 
 - 🎯 Validate required sections for that project type are present
 - 🎯 Validate excluded sections for that project type are absent
 - 💾 Append compliance findings to validation report
-- 📖 Display "Proceeding to next check..." and load next step
+- 📖 <display>Proceeding to next check...</display> and load next step
 - 🚫 FORBIDDEN to pause or request user input
 
 ## CONTEXT BOUNDARIES:

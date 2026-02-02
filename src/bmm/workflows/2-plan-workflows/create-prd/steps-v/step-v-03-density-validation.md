@@ -43,7 +43,7 @@ Validate PRD meets BMAD information density standards by scanning for conversati
 
 - 🎯 Scan PRD for density anti-patterns systematically
 - 💾 Append density findings to validation report
-- 📖 Display "Proceeding to next check..." and load next step
+- 📖 <display>Proceeding to next check...</display> and load next step
 - 🚫 FORBIDDEN to pause or request user input
 
 ## CONTEXT BOUNDARIES:

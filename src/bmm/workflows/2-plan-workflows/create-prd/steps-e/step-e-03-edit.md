@@ -228,7 +228,7 @@ editHistory:
 
 #### Menu Handling Logic:
 
-- IF V (Validate): Display "Starting validation workflow..." then read fully and follow: steps-v/step-v-01-discovery.md
+- IF V (Validate): <display>Starting validation workflow...</display> then read fully and follow: steps-v/step-v-01-discovery.md
 - IF S (Summary): Present edit summary and exit
 - IF A (Adjust): Accept additional requirements, loop back to editing
 - IF X (Exit): Display summary and exit

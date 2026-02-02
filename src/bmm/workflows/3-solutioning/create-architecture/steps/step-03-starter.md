@@ -266,8 +266,6 @@ Prepare the content to append to the document:
 
 **Note:** Project initialization using this command should be the first implementation story.
 
-```
-
 ### 9. Present Content and Menu
 
 Show the generated content and present choices:
@@ -340,4 +338,3 @@ When user selects 'C', append the content directly to the document using the str
 After user selects 'C' and content is saved to document, load `./step-04-decisions.md` to begin making specific architectural decisions.
 
 Remember: Do NOT proceed to step-04 until user explicitly selects 'C' from the A/P/C menu and content is saved!
-```

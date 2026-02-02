@@ -195,7 +195,6 @@ overallStatus: '{Pass/Warning/Critical based on all findings}'
   - Return to menu
 
 - **IF X (Exit):**
-  - Display:
     <display>
     **Validation Report Saved:** {validationReportPath}
 

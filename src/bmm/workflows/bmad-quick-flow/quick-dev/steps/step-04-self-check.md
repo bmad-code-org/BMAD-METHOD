@@ -74,8 +74,7 @@ If `{execution_mode}` is "tech-spec":
 
 ## IMPLEMENTATION SUMMARY
 
-Present summary to transition to review:
-
+<display>
 ```
 **Implementation Complete!**
 
@@ -86,6 +85,7 @@ Present summary to transition to review:
 
 Proceeding to adversarial code review...
 ```
+</display>
 
 ---
 

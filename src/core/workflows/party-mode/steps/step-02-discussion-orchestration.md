@@ -105,7 +105,7 @@ When an agent asks the user a specific question:
 
 - End that response round immediately after the question
 - Clearly highlight: **[Agent Name] asks: [Their question]**
-- Display: _[Awaiting user response...]_
+- <display>_[Awaiting user response...]_</display>
 - WAIT for user input before continuing
 
 **Rhetorical Questions:**

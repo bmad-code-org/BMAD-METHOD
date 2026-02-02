@@ -46,7 +46,7 @@ Validate Functional Requirements meet SMART quality criteria (Specific, Measurab
 - 🎯 Score each FR on SMART criteria (Specific, Measurable, Attainable, Relevant, Traceable)
 - 💾 Flag FRs with score < 3 in any category
 - 📖 Append scoring table and suggestions to validation report
-- 📖 Display "Proceeding to next check..." and load next step
+- 📖 <display>Proceeding to next check...</display> and load next step
 - 🚫 FORBIDDEN to pause or request user input
 
 ## CONTEXT BOUNDARIES:

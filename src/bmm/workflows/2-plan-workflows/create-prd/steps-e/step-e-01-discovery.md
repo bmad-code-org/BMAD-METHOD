@@ -228,7 +228,7 @@ Present MENU OPTIONS below for user selection
 #### Menu Handling Logic:
 
 - IF C (Convert): Read fully and follow: {altStepFile} (step-e-01b-legacy-conversion.md)
-- IF E (Edit As-Is): Display "Proceeding with edits..." then load next step
+- IF E (Edit As-Is): <display>Proceeding with edits...</display> then load next step
 - IF X (Exit): Display summary and exit
 - IF Any other: help user, then redisplay menu
 

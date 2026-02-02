@@ -36,7 +36,7 @@ First, check if project context already exists:
 
 - Look for file at `{project_knowledge}/project-context.md or {project-root}/**/project-context.md`
 - If exists: Read complete file to understand existing rules
-- Present to user: "Found existing project context with {number_of_sections} sections. Would you like to update this or create a new one?"
+- <display>Found existing project context with {number_of_sections} sections. Would you like to update this or create a new one?</display>
 
 ### 2. Discover Project Technology Stack
 

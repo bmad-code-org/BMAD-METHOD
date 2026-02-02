@@ -47,7 +47,7 @@ Validate domain-specific requirements are present for high-complexity domains (H
 - 💬 If low complexity (general): Skip detailed checks
 - 🎯 If high complexity: Validate required special sections
 - 💾 Append compliance findings to validation report
-- 📖 Display "Proceeding to next check..." and load next step
+- 📖 <display>Proceeding to next check...</display> and load next step
 - 🚫 FORBIDDEN to pause or request user input
 
 ## CONTEXT BOUNDARIES:
