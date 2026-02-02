@@ -381,7 +381,7 @@ class UI {
     }
 
     // ─────────────────────────────────────────────────────────────────────────────
-    // STEP 1: Recommended Tools (multiselect)
+    // STEP 1: Recommended Tools (multiselect) - optional, user can skip
     // ─────────────────────────────────────────────────────────────────────────────
     const recommendedOptions = preferredIdes.map((ide) => {
       const isConfigured = configuredPreferred.includes(ide.value);
@@ -391,12 +391,6 @@ class UI {
       };
     });
 
-    // Add "__NONE__" option at the end
-    recommendedOptions.push({
-      label: '⚠ None - I am not installing any tools',
-      value: '__NONE__',
-    });
-
     // Pre-select previously configured preferred tools
     const recommendedInitialValues = configuredPreferred.length > 0 ? configuredPreferred : undefined;
 
@@ -404,31 +398,16 @@ class UI {
       message: `Select recommended tools ${chalk.dim('(↑/↓ navigates, SPACE toggles, ENTER to confirm)')}:`,
       options: recommendedOptions,
       initialValues: recommendedInitialValues,
-      required: true,
+      required: false,
     });
 
-    // Handle "__NONE__" selection
-    if (recommendedSelected && recommendedSelected.includes('__NONE__')) {
-      if (recommendedSelected.length > 1) {
-        console.log();
-        console.log(chalk.yellow('⚠️  "None - I am not installing any tools" was selected, so no tools will be configured.'));
-        console.log();
-      }
-      return {
-        ides: [],
-        skipIde: true,
-      };
-    }
-
-    // Filter out any special values from recommended selection
-    const selectedRecommended = (recommendedSelected || []).filter((v) => v !== '__NONE__');
+    const selectedRecommended = recommendedSelected || [];
 
     // ─────────────────────────────────────────────────────────────────────────────
-    // STEP 2: "Add more tools?" confirmation
+    // STEP 2: Additional Tools - show if user has configured "other" tools,
+    // selected no recommended tools, or wants to add more
     // ─────────────────────────────────────────────────────────────────────────────
-    // Auto-show additional tools prompt if user has configured "other" tools
-    // Otherwise, ask if they want to add more
-    let showAdditionalPrompt = configuredOther.length > 0;
+    let showAdditionalPrompt = configuredOther.length > 0 || selectedRecommended.length === 0;
 
     if (!showAdditionalPrompt && otherIdes.length > 0) {
       console.log('');
@@ -440,9 +419,6 @@ class UI {
 
     let selectedAdditional = [];
 
-    // ─────────────────────────────────────────────────────────────────────────────
-    // STEP 3: Additional Tools (autocompleteMultiselect with search)
-    // ─────────────────────────────────────────────────────────────────────────────
     if (showAdditionalPrompt && otherIdes.length > 0) {
       // Build options for additional tools, excluding any already selected in recommended
       const additionalOptions = otherIdes
@@ -455,36 +431,45 @@ class UI {
           };
         });
 
-      // Add "__SKIP__" option at the end
-      additionalOptions.push({
-        label: '⚠ Skip - Keep recommended selections only',
-        value: '__SKIP__',
-      });
-
       // Pre-select previously configured other tools
       const additionalInitialValues = configuredOther.length > 0 ? configuredOther : undefined;
 
       console.log('');
       const additionalSelected = await prompts.autocompleteMultiselect({
-        message: 'Select additional tools:',
+        message: `Select additional tools ${chalk.dim('(type to search, SPACE toggles, ENTER to confirm)')}:`,
         options: additionalOptions,
         initialValues: additionalInitialValues,
-        required: true,
+        required: false,
         maxItems: 6,
         placeholder: 'Type to search...',
       });
 
-      // Handle "__SKIP__" selection
-      if (additionalSelected && additionalSelected.includes('__SKIP__')) {
-        // User chose to skip - keep only recommended selections
-        selectedAdditional = [];
-      } else {
-        selectedAdditional = (additionalSelected || []).filter((v) => v !== '__SKIP__');
-      }
+      selectedAdditional = additionalSelected || [];
     }
 
     // Combine selections
     const allSelectedIdes = [...selectedRecommended, ...selectedAdditional];
+
+    // ─────────────────────────────────────────────────────────────────────────────
+    // STEP 3: Confirm if no tools selected
+    // ─────────────────────────────────────────────────────────────────────────────
+    if (allSelectedIdes.length === 0) {
+      console.log('');
+      const confirmNoTools = await prompts.confirm({
+        message: 'No tools selected. Continue without installing any tools?',
+        default: false,
+      });
+
+      if (!confirmNoTools) {
+        // User wants to select tools - recurse
+        return this.promptToolSelection(projectDir);
+      }
+
+      return {
+        ides: [],
+        skipIde: true,
+      };
+    }
 
     return {
       ides: allSelectedIdes,
