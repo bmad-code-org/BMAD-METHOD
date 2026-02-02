@@ -446,6 +446,11 @@ class BaseIdeSetup {
           try {
             const content = await fs.readFile(fullPath, 'utf8');
 
+            // Skip internal/engine files (not user-facing tasks/tools)
+            if (content.includes('internal="true"')) {
+              continue;
+            }
+
             // Check for standalone="true" in XML files
             if (entry.name.endsWith('.xml')) {
               // Look for standalone="true" in the opening tag (task or tool)
