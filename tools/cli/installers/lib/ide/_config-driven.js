@@ -66,6 +66,13 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
    */
   async installToTarget(projectDir, bmadDir, config, options) {
     const { target_dir, template_type, artifact_types } = config;
+
+    // Skip targets with explicitly empty artifact_types array
+    // This prevents creating empty directories when no artifacts will be written
+    if (Array.isArray(artifact_types) && artifact_types.length === 0) {
+      return { success: true, results: { agents: 0, workflows: 0, tasks: 0, tools: 0 } };
+    }
+
     const targetPath = path.join(projectDir, target_dir);
     await this.ensureDir(targetPath);
 
