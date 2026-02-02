@@ -2,6 +2,7 @@ const path = require('node:path');
 const fs = require('fs-extra');
 const yaml = require('yaml');
 const crypto = require('node:crypto');
+const csv = require('csv-parse/sync');
 const { getSourcePath, getModulePath } = require('../../../lib/project-root');
 
 // Load package.json for version info
@@ -783,30 +784,23 @@ class ManifestGenerator {
    */
   async writeAgentManifest(cfgDir) {
     const csvPath = path.join(cfgDir, 'agent-manifest.csv');
+    const escapeCsv = (value) => `"${String(value ?? '').replaceAll('"', '""')}"`;
 
     // Read existing manifest to preserve entries
     const existingEntries = new Map();
     if (await fs.pathExists(csvPath)) {
       const content = await fs.readFile(csvPath, 'utf8');
-      const lines = content.split('\n').filter((line) => line.trim());
-
-      // Skip header
-      for (let i = 1; i < lines.length; i++) {
-        const line = lines[i];
-        if (line) {
-          // Parse CSV (simple parsing assuming no commas in quoted fields)
-          const parts = line.split('","');
-          if (parts.length >= 11) {
-            const name = parts[0].replace(/^"/, '');
-            const module = parts[8];
-            existingEntries.set(`${module}:${name}`, line);
-          }
-        }
+      const records = csv.parse(content, {
+        columns: true,
+        skip_empty_lines: true,
+      });
+      for (const record of records) {
+        existingEntries.set(`${record.module}:${record.name}`, record);
       }
     }
 
     // Create CSV header with persona fields
-    let csv = 'name,displayName,title,icon,role,identity,communicationStyle,principles,module,path\n';
+    let csvContent = 'name,displayName,title,icon,role,identity,communicationStyle,principles,module,path\n';
 
     // Combine existing and new agents, preferring new data for duplicates
     const allAgents = new Map();
@@ -819,18 +813,38 @@ class ManifestGenerator {
     // Add/update new agents
     for (const agent of this.agents) {
       const key = `${agent.module}:${agent.name}`;
-      allAgents.set(
-        key,
-        `"${agent.name}","${agent.displayName}","${agent.title}","${agent.icon}","${agent.role}","${agent.identity}","${agent.communicationStyle}","${agent.principles}","${agent.module}","${agent.path}"`,
-      );
+      allAgents.set(key, {
+        name: agent.name,
+        displayName: agent.displayName,
+        title: agent.title,
+        icon: agent.icon,
+        role: agent.role,
+        identity: agent.identity,
+        communicationStyle: agent.communicationStyle,
+        principles: agent.principles,
+        module: agent.module,
+        path: agent.path,
+      });
     }
 
     // Write all agents
-    for (const [, value] of allAgents) {
-      csv += value + '\n';
+    for (const [, record] of allAgents) {
+      const row = [
+        escapeCsv(record.name),
+        escapeCsv(record.displayName),
+        escapeCsv(record.title),
+        escapeCsv(record.icon),
+        escapeCsv(record.role),
+        escapeCsv(record.identity),
+        escapeCsv(record.communicationStyle),
+        escapeCsv(record.principles),
+        escapeCsv(record.module),
+        escapeCsv(record.path),
+      ].join(',');
+      csvContent += row + '\n';
     }
 
-    await fs.writeFile(csvPath, csv);
+    await fs.writeFile(csvPath, csvContent);
     return csvPath;
   }
 
@@ -840,30 +854,23 @@ class ManifestGenerator {
    */
   async writeTaskManifest(cfgDir) {
     const csvPath = path.join(cfgDir, 'task-manifest.csv');
+    const escapeCsv = (value) => `"${String(value ?? '').replaceAll('"', '""')}"`;
 
     // Read existing manifest to preserve entries
     const existingEntries = new Map();
     if (await fs.pathExists(csvPath)) {
       const content = await fs.readFile(csvPath, 'utf8');
-      const lines = content.split('\n').filter((line) => line.trim());
-
-      // Skip header
-      for (let i = 1; i < lines.length; i++) {
-        const line = lines[i];
-        if (line) {
-          // Parse CSV (simple parsing assuming no commas in quoted fields)
-          const parts = line.split('","');
-          if (parts.length >= 6) {
-            const name = parts[0].replace(/^"/, '');
-            const module = parts[3];
-            existingEntries.set(`${module}:${name}`, line);
-          }
-        }
+      const records = csv.parse(content, {
+        columns: true,
+        skip_empty_lines: true,
+      });
+      for (const record of records) {
+        existingEntries.set(`${record.module}:${record.name}`, record);
       }
     }
 
     // Create CSV header with standalone column
-    let csv = 'name,displayName,description,module,path,standalone\n';
+    let csvContent = 'name,displayName,description,module,path,standalone\n';
 
     // Combine existing and new tasks
     const allTasks = new Map();
@@ -876,15 +883,30 @@ class ManifestGenerator {
     // Add/update new tasks
     for (const task of this.tasks) {
       const key = `${task.module}:${task.name}`;
-      allTasks.set(key, `"${task.name}","${task.displayName}","${task.description}","${task.module}","${task.path}","${task.standalone}"`);
+      allTasks.set(key, {
+        name: task.name,
+        displayName: task.displayName,
+        description: task.description,
+        module: task.module,
+        path: task.path,
+        standalone: task.standalone,
+      });
     }
 
     // Write all tasks
-    for (const [, value] of allTasks) {
-      csv += value + '\n';
+    for (const [, record] of allTasks) {
+      const row = [
+        escapeCsv(record.name),
+        escapeCsv(record.displayName),
+        escapeCsv(record.description),
+        escapeCsv(record.module),
+        escapeCsv(record.path),
+        escapeCsv(record.standalone),
+      ].join(',');
+      csvContent += row + '\n';
     }
 
-    await fs.writeFile(csvPath, csv);
+    await fs.writeFile(csvPath, csvContent);
     return csvPath;
   }
 
@@ -894,30 +916,23 @@ class ManifestGenerator {
    */
   async writeToolManifest(cfgDir) {
     const csvPath = path.join(cfgDir, 'tool-manifest.csv');
+    const escapeCsv = (value) => `"${String(value ?? '').replaceAll('"', '""')}"`;
 
     // Read existing manifest to preserve entries
     const existingEntries = new Map();
     if (await fs.pathExists(csvPath)) {
       const content = await fs.readFile(csvPath, 'utf8');
-      const lines = content.split('\n').filter((line) => line.trim());
-
-      // Skip header
-      for (let i = 1; i < lines.length; i++) {
-        const line = lines[i];
-        if (line) {
-          // Parse CSV (simple parsing assuming no commas in quoted fields)
-          const parts = line.split('","');
-          if (parts.length >= 6) {
-            const name = parts[0].replace(/^"/, '');
-            const module = parts[3];
-            existingEntries.set(`${module}:${name}`, line);
-          }
-        }
+      const records = csv.parse(content, {
+        columns: true,
+        skip_empty_lines: true,
+      });
+      for (const record of records) {
+        existingEntries.set(`${record.module}:${record.name}`, record);
       }
     }
 
     // Create CSV header with standalone column
-    let csv = 'name,displayName,description,module,path,standalone\n';
+    let csvContent = 'name,displayName,description,module,path,standalone\n';
 
     // Combine existing and new tools
     const allTools = new Map();
@@ -930,15 +945,30 @@ class ManifestGenerator {
     // Add/update new tools
     for (const tool of this.tools) {
       const key = `${tool.module}:${tool.name}`;
-      allTools.set(key, `"${tool.name}","${tool.displayName}","${tool.description}","${tool.module}","${tool.path}","${tool.standalone}"`);
+      allTools.set(key, {
+        name: tool.name,
+        displayName: tool.displayName,
+        description: tool.description,
+        module: tool.module,
+        path: tool.path,
+        standalone: tool.standalone,
+      });
     }
 
     // Write all tools
-    for (const [, value] of allTools) {
-      csv += value + '\n';
+    for (const [, record] of allTools) {
+      const row = [
+        escapeCsv(record.name),
+        escapeCsv(record.displayName),
+        escapeCsv(record.description),
+        escapeCsv(record.module),
+        escapeCsv(record.path),
+        escapeCsv(record.standalone),
+      ].join(',');
+      csvContent += row + '\n';
     }
 
-    await fs.writeFile(csvPath, csv);
+    await fs.writeFile(csvPath, csvContent);
     return csvPath;
   }
 
