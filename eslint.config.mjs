@@ -12,11 +12,7 @@ export default [
       'coverage/**',
       '**/*.min.js',
       'test/template-test-generator/**',
-      'test/template-test-generator/**/*.js',
-      'test/template-test-generator/**/*.md',
       'test/fixtures/**',
-      'test/fixtures/**/*.yaml',
-      '_bmad/**',
       '_bmad*/**',
       // Build output
       'build/**',
@@ -36,6 +32,10 @@ export default [
       'tools/template-test-generator/test-scenarios/**',
       'src/modules/*/sub-modules/**',
       '.bundler-temp/**',
+      // Augment vendor config — not project code, naming conventions
+      // are dictated by Augment and can't be changed, so exclude
+      // the entire directory from linting
+      '.augment/**',
     ],
   },
 

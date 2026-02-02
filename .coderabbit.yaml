@@ -17,21 +17,66 @@ reviews:
     base_branches:
       - main
   path_filters:
+    # --- Shared baseline: tool configs ---
+    - "!.coderabbit.yaml"
+    - "!.augment/**"
+    - "!eslint.config.mjs"
+    # --- Shared baseline: build output ---
+    - "!dist/**"
+    - "!build/**"
+    - "!coverage/**"
+    # --- Shared baseline: vendored/generated ---
     - "!**/node_modules/**"
+    - "!**/*.min.js"
+    - "!**/*.generated.*"
+    - "!**/*.bundle.md"
+    # --- Shared baseline: package metadata ---
+    - "!package-lock.json"
+    # --- Shared baseline: binary/media ---
+    - "!*.png"
+    - "!*.jpg"
+    - "!*.svg"
+    # --- Shared baseline: test fixtures ---
+    - "!test/fixtures/**"
+    - "!test/template-test-generator/**"
+    - "!tools/template-test-generator/test-scenarios/**"
+    # --- Shared baseline: non-project dirs ---
+    - "!_bmad*/**"
+    - "!website/**"
+    - "!z*/**"
+    - "!sample-project/**"
+    - "!test-project-install/**"
+    # --- Shared baseline: AI assistant dirs ---
+    - "!.claude/**"
+    - "!.codex/**"
+    - "!.agent/**"
+    - "!.agentvibes/**"
+    - "!.kiro/**"
+    - "!.roo/**"
+    - "!.github/chatmodes/**"
+    # --- Shared baseline: build temp ---
+    - "!.bundler-temp/**"
+    # --- Shared baseline: generated reports ---
+    - "!**/validation-report-*.md"
+    - "!CHANGELOG.md"
   path_instructions:
     - path: "**/*"
       instructions: |
-        Focus on inconsistencies, contradictions, edge cases and serious issues.
-        Avoid commenting on minor issues such as linting, formatting and style issues.
-        When providing code suggestions, use GitHub's suggestion format:
-        ```suggestion
-        <code changes>
-        ```
-    - path: "**/*.js"
-      instructions: |
-        CLI tooling code. Check for: missing error handling on fs operations,
-        path.join vs string concatenation, proper cleanup in error paths.
-        Flag any process.exit() without error message.
+        You are a cynical, jaded reviewer with zero patience for sloppy work.
+        This PR was submitted by a clueless weasel and you expect to find problems.
+        Be skeptical of everything.
+        Look for what's missing, not just what's wrong.
+        Use a precise, professional tone — no profanity or personal attacks.
+
+        Review with extreme skepticism — assume problems exist.
+        Find at least 10 issues to fix or improve.
+
+        Do NOT:
+        - Comment on formatting, linting, or style
+        - Give "looks good" passes
+        - Anchor on any specific ruleset — reason freely
+
+        If you find zero issues, re-analyze — this is suspicious.
 chat:
   auto_reply: true # Response to mentions in comments, a la @coderabbit review
 issue_enrichment:
