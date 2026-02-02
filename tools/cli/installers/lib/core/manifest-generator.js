@@ -479,6 +479,11 @@ class ManifestGenerator {
         const filePath = path.join(dirPath, file);
         const content = await fs.readFile(filePath, 'utf8');
 
+        // Skip internal tools (same as tasks)
+        if (content.includes('internal="true"')) {
+          continue;
+        }
+
         let name = file.replace(/\.(xml|md)$/, '');
         let displayName = name;
         let description = '';

@@ -164,7 +164,9 @@ class TaskToolCommandGenerator {
       // Extract relative path from absolute paths (Windows or Unix)
       // Look for _bmad/ or bmad/ in the path and extract everything after it
       // Match patterns like: /_bmad/core/tasks/... or /bmad/core/tasks/...
-      const bmadMatch = itemPath.match(/\/_bmad\/(.+)$/) || itemPath.match(/\/bmad\/(.+)$/);
+      // Use [/\\] to handle both Unix forward slashes and Windows backslashes,
+      // and also paths without a leading separator (e.g., C:/_bmad/...)
+      const bmadMatch = itemPath.match(/[/\\]_bmad[/\\](.+)$/) || itemPath.match(/[/\\]bmad[/\\](.+)$/);
       if (bmadMatch) {
         // Found /_bmad/ or /bmad/ - use relative path after it
         itemPath = `{project-root}/${this.bmadFolderName}/${bmadMatch[1]}`;
