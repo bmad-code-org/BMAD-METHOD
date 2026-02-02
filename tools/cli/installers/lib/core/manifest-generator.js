@@ -23,6 +23,19 @@ class ManifestGenerator {
   }
 
   /**
+   * Clean text for CSV output by normalizing whitespace and escaping quotes
+   * @param {string} text - Text to clean
+   * @returns {string} Cleaned text safe for CSV
+   */
+  cleanForCSV(text) {
+    if (!text) return '';
+    return text
+      .trim()
+      .replaceAll(/\s+/g, ' ') // Normalize all whitespace (including newlines) to single space
+      .replaceAll('"', '""'); // Escape quotes for CSV
+  }
+
+  /**
    * Generate all manifests for the installation
    * @param {string} bmadDir - _bmad
    * @param {Array} selectedModules - Selected modules for installation
@@ -202,7 +215,7 @@ class ManifestGenerator {
               // Workflows with standalone: false are filtered out above
               workflows.push({
                 name: workflow.name,
-                description: workflow.description.replaceAll('"', '""'), // Escape quotes for CSV
+                description: this.cleanForCSV(workflow.description),
                 module: moduleName,
                 path: installPath,
               });
@@ -320,24 +333,15 @@ class ManifestGenerator {
 
         const agentName = entry.name.replace('.md', '');
 
-        // Helper function to clean and escape CSV content
-        const cleanForCSV = (text) => {
-          if (!text) return '';
-          return text
-            .trim()
-            .replaceAll(/\s+/g, ' ') // Normalize whitespace
-            .replaceAll('"', '""'); // Escape quotes for CSV
-        };
-
         agents.push({
           name: agentName,
           displayName: nameMatch ? nameMatch[1] : agentName,
           title: titleMatch ? titleMatch[1] : '',
           icon: iconMatch ? iconMatch[1] : '',
-          role: roleMatch ? cleanForCSV(roleMatch[1]) : '',
-          identity: identityMatch ? cleanForCSV(identityMatch[1]) : '',
-          communicationStyle: styleMatch ? cleanForCSV(styleMatch[1]) : '',
-          principles: principlesMatch ? cleanForCSV(principlesMatch[1]) : '',
+          role: roleMatch ? this.cleanForCSV(roleMatch[1]) : '',
+          identity: identityMatch ? this.cleanForCSV(identityMatch[1]) : '',
+          communicationStyle: styleMatch ? this.cleanForCSV(styleMatch[1]) : '',
+          principles: principlesMatch ? this.cleanForCSV(principlesMatch[1]) : '',
           module: moduleName,
           path: installPath,
         });
@@ -404,7 +408,7 @@ class ManifestGenerator {
               const frontmatter = yaml.parse(frontmatterMatch[1]);
               name = frontmatter.name || name;
               displayName = frontmatter.displayName || frontmatter.name || name;
-              description = frontmatter.description || '';
+              description = this.cleanForCSV(frontmatter.description || '');
               standalone = frontmatter.standalone === true || frontmatter.standalone === 'true';
             } catch {
               // If YAML parsing fails, use defaults
@@ -417,7 +421,7 @@ class ManifestGenerator {
 
           const descMatch = content.match(/description="([^"]+)"/);
           const objMatch = content.match(/<objective>([^<]+)<\/objective>/);
-          description = descMatch ? descMatch[1] : objMatch ? objMatch[1].trim() : '';
+          description = this.cleanForCSV(descMatch ? descMatch[1] : objMatch ? objMatch[1].trim() : '');
 
           const standaloneMatch = content.match(/<task[^>]+standalone="true"/);
           standalone = !!standaloneMatch;
@@ -430,7 +434,7 @@ class ManifestGenerator {
         tasks.push({
           name: name,
           displayName: displayName,
-          description: description.replaceAll('"', '""'),
+          description: description,
           module: moduleName,
           path: installPath,
           standalone: standalone,
@@ -498,7 +502,7 @@ class ManifestGenerator {
               const frontmatter = yaml.parse(frontmatterMatch[1]);
               name = frontmatter.name || name;
               displayName = frontmatter.displayName || frontmatter.name || name;
-              description = frontmatter.description || '';
+              description = this.cleanForCSV(frontmatter.description || '');
               standalone = frontmatter.standalone === true || frontmatter.standalone === 'true';
             } catch {
               // If YAML parsing fails, use defaults
@@ -511,7 +515,7 @@ class ManifestGenerator {
 
           const descMatch = content.match(/description="([^"]+)"/);
           const objMatch = content.match(/<objective>([^<]+)<\/objective>/);
-          description = descMatch ? descMatch[1] : objMatch ? objMatch[1].trim() : '';
+          description = this.cleanForCSV(descMatch ? descMatch[1] : objMatch ? objMatch[1].trim() : '');
 
           const standaloneMatch = content.match(/<tool[^>]+standalone="true"/);
           standalone = !!standaloneMatch;
@@ -524,7 +528,7 @@ class ManifestGenerator {
         tools.push({
           name: name,
           displayName: displayName,
-          description: description.replaceAll('"', '""'),
+          description: description,
           module: moduleName,
           path: installPath,
           standalone: standalone,
