@@ -161,9 +161,11 @@ Show the generated content and present choices:
 I've drafted the Project Context Analysis based on your requirements. This sets the foundation for our architectural decisions.
 
 **Here's what I'll add to the document:**
+</display>
 
 [Show the complete markdown content from step 4]
 
+<display>
 **What would you like to do?**
 [A] Advanced Elicitation - Let's dive deeper into architectural implications
 [P] Party Mode - Bring different perspectives to analyze requirements

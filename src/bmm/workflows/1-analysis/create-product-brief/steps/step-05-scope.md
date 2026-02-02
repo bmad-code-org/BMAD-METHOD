@@ -173,8 +173,11 @@ Prepare the following structure for document append:
 I've defined the MVP scope for {{project_name}} that balances delivering real value with realistic boundaries. This gives us a clear path forward while keeping our options open for future growth.
 
 **Here's what I'll add to the document:**
+</display>
+
 [Show the complete markdown content from step 6]
 
+<display>
 **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue
 </display>
 

@@ -274,9 +274,11 @@ After each category, show the generated rules and present choices:
 I've drafted the {{category_name}} rules for your project context.
 
 **Here's what I'll add:**
+</display>
 
 [Show the complete markdown content for this category]
 
+<display>
 **What would you like to do?**
 [A] Advanced Elicitation - Explore nuanced rules for this category
 [P] Party Mode - Review from different implementation perspectives

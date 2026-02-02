@@ -165,9 +165,11 @@ Present the project-type content for review, then display menu:
 Based on our conversation and best practices for this product type, I've documented the {project_type}-specific requirements for {{project_name}}.
 
 **Here's what I'll add to the document:**
+</display>
 
 [Show the complete markdown content from section 5]
 
+<display>
 **What would you like to do?**
 </display>
 

@@ -186,9 +186,11 @@ Show the generated user journey content and present choices:
 I've designed detailed user journey flows for {{project_name}}. These flows will guide the detailed design of each user interaction.
 
 **Here's what I'll add to the document:**
+</display>
 
 [Show the complete markdown content from step 6]
 
+<display>
 **What would you like to do?**
 [A] Advanced Elicitation - Let's refine our user journey designs
 [P] Party Mode - Bring different perspectives on user flows

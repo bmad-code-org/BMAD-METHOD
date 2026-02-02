@@ -178,9 +178,11 @@ Show the generated inspiration analysis content and present choices:
 I've analyzed inspiring UX patterns and products to inform our design strategy for {{project_name}}. This gives us a solid foundation of proven patterns to build upon.
 
 **Here's what I'll add to the document:**
+</display>
 
 [Show the complete markdown content from step 6]
 
+<display>
 **What would you like to do?**
 [A] Advanced Elicitation - Let's deepen our UX pattern analysis
 [P] Party Mode - Bring different perspectives on inspiration sources

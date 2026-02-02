@@ -177,9 +177,11 @@ Show the generated UX patterns content and present choices:
 I've established UX consistency patterns for {{project_name}}. These patterns ensure users have a consistent, predictable experience across all interactions.
 
 **Here's what I'll add to the document:**
+</display>
 
 [Show the complete markdown content from step 6]
 
+<display>
 **What would you like to do?**
 [A] Advanced Elicitation - Let's refine our UX patterns
 [P] Party Mode - Bring different perspectives on consistency patterns

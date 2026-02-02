@@ -322,9 +322,11 @@ Show the generated project structure content and present choices:
 I've created a complete project structure based on all our architectural decisions.
 
 **Here's what I'll add to the document:**
+</display>
 
 [Show the complete markdown content from step 6]
 
+<display>
 **What would you like to do?**
 [A] Advanced Elicitation - Explore innovative project organization approaches
 [P] Party Mode - Review structure from different development perspectives

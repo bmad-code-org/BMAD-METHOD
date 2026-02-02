@@ -300,9 +300,11 @@ I've completed a comprehensive validation of your architecture.
 - ✅ Readiness: AI agents can implement consistently
 
 **Here's what I'll add to complete the architecture document:**
+</display>
 
 [Show the complete markdown content from step 6]
 
+<display>
 **What would you like to do?**
 [A] Advanced Elicitation - Address any complex architectural concerns
 [P] Party Mode - Review validation from different implementation perspectives

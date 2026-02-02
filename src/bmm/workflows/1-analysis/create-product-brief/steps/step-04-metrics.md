@@ -159,8 +159,11 @@ Prepare the following structure for document append:
 I've defined success metrics that will help us track whether {{project_name}} is creating real value for users and achieving business objectives.
 
 **Here's what I'll add to the document:**
+</display>
+
 [Show the complete markdown content from step 6]
 
+<display>
 **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue
 </display>
 

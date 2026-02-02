@@ -196,9 +196,11 @@ Show the generated design system content and present choices:
 I've documented our design system choice for {{project_name}}. This foundation will ensure consistency and speed up development.
 
 **Here's what I'll add to the document:**
+</display>
 
 [Show the complete markdown content from step 6]
 
+<display>
 **What would you like to do?**
 [A] Advanced Elicitation - Let's refine our design system decision
 [P] Party Mode - Bring technical perspectives on design systems

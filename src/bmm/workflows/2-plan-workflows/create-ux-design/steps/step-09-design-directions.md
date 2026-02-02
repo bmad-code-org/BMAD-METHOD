@@ -168,9 +168,11 @@ Show the generated design direction content and present choices:
 I've documented our design direction decision for {{project_name}}. This visual approach will guide all our detailed design work.
 
 **Here's what I'll add to the document:**
+</display>
 
 [Show the complete markdown content from step 6]
 
+<display>
 **What would you like to do?**
 [A] Advanced Elicitation - Let's refine our design direction
 [P] Party Mode - Bring different perspectives on visual choices

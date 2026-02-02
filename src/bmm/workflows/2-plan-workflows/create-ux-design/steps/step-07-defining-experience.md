@@ -198,9 +198,11 @@ Show the generated defining experience content and present choices:
 I've defined the core experience for {{project_name}} - the interaction that will make users love this product.
 
 **Here's what I'll add to the document:**
+</display>
 
 [Show the complete markdown content from step 6]
 
+<display>
 **What would you like to do?**
 [A] Advanced Elicitation - Let's refine the core experience definition
 [P] Party Mode - Bring different perspectives on the defining interaction

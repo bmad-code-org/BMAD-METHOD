@@ -300,9 +300,11 @@ Show the generated patterns content and present choices:
 I've documented implementation patterns that will prevent conflicts between AI agents working on this project.
 
 **Here's what I'll add to the document:**
+</display>
 
 [Show the complete markdown content from step 4]
 
+<display>
 **What would you like to do?**
 [A] Advanced Elicitation - Explore additional consistency patterns
 [P] Party Mode - Review patterns from different implementation perspectives

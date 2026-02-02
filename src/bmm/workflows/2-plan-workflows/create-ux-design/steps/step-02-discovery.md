@@ -152,9 +152,11 @@ Show the generated project understanding content and present choices:
 I've documented our understanding of {{project_name}} from a UX perspective. This will guide all our design decisions moving forward.
 
 **Here's what I'll add to the document:**
+</display>
 
 [Show the complete markdown content from step 5]
 
+<display>
 **What would you like to do?**
 [C] Continue - Save this to the document and move to core experience definition
 </display>

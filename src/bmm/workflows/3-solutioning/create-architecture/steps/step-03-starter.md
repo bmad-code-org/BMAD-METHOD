@@ -274,9 +274,11 @@ Show the generated content and present choices:
 I've analyzed starter template options for {{project_type}} projects.
 
 **Here's what I'll add to the document:**
+</display>
 
 [Show the complete markdown content from step 8]
 
+<display>
 **What would you like to do?**
 [A] Advanced Elicitation - Explore custom approaches or unconventional starters
 [P] Party Mode - Evaluate trade-offs from different perspectives

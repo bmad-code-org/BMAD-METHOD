@@ -156,8 +156,11 @@ Prepare the following structure for document append:
 I've mapped out who {{project_name}} serves and how they'll interact with it. This helps us ensure we're building something that real people will love to use.
 
 **Here's what I'll add to the document:**
+</display>
+
 [Show the complete markdown content from step 5]
 
+<display>
 **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue
 </display>
 

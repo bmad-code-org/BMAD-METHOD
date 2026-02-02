@@ -190,9 +190,11 @@ Show the generated component strategy content and present choices:
 I've defined the component strategy for {{project_name}}. This balances using proven design system components with custom components for your unique needs.
 
 **Here's what I'll add to the document:**
+</display>
 
 [Show the complete markdown content from step 6]
 
+<display>
 **What would you like to do?**
 [A] Advanced Elicitation - Let's refine our component strategy
 [P] Party Mode - Bring technical perspectives on component design

@@ -265,9 +265,11 @@ Show the generated decisions content and present choices:
 I've documented all the core architectural decisions we've made together.
 
 **Here's what I'll add to the document:**
+</display>
 
 [Show the complete markdown content from step 5]
 
+<display>
 **What would you like to do?**
 [A] Advanced Elicitation - Explore innovative approaches to any specific decisions
 [P] Party Mode - Review decisions from multiple perspectives

@@ -168,9 +168,11 @@ Show the generated visual foundation content and present choices:
 I've established the visual design foundation for {{project_name}}. This provides the building blocks for consistent, beautiful design.
 
 **Here's what I'll add to the document:**
+</display>
 
 [Show the complete markdown content from step 6]
 
+<display>
 **What would you like to do?**
 [A] Advanced Elicitation - Let's refine our visual foundation
 [P] Party Mode - Bring design perspectives on visual choices

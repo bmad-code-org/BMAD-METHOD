@@ -208,9 +208,11 @@ Show the generated responsive and accessibility content and present choices:
 I've defined the responsive design and accessibility strategy for {{project_name}}. This ensures your product works beautifully across all devices and is accessible to all users.
 
 **Here's what I'll add to the document:**
+</display>
 
 [Show the complete markdown content from step 6]
 
+<display>
 **What would you like to do?**
 [A] Advanced Elicitation - Let's refine our responsive/accessibility strategy
 [P] Party Mode - Bring different perspectives on inclusive design

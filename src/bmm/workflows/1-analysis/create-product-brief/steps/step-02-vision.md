@@ -153,8 +153,11 @@ Prepare the following structure for document append:
 I've drafted the executive summary and core vision based on our conversation. This captures the essence of {{project_name}} and what makes it special.
 
 **Here's what I'll add to the document:**
+</display>
+
 [Show the complete markdown content from step 6]
 
+<display>
 **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue
 </display>
 
