@@ -871,7 +871,7 @@ class ModuleManager {
     for (const agentFile of agentFiles) {
       if (!agentFile.endsWith('.agent.yaml')) continue;
 
-      const relativePath = path.relative(sourceAgentsPath, agentFile);
+      const relativePath = path.relative(sourceAgentsPath, agentFile).split(path.sep).join('/');
       const targetDir = path.join(targetAgentsPath, path.dirname(relativePath));
 
       await fs.ensureDir(targetDir);
