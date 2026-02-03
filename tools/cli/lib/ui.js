@@ -405,7 +405,7 @@ class UI {
       const sortedInitialValues = sortedTools.filter((ide) => configuredIdes.includes(ide.value)).map((ide) => ide.value);
 
       const upgradeSelected = await prompts.autocompleteMultiselect({
-        message: 'Integrate with::',
+        message: 'Integrate with',
         options: upgradeOptions,
         initialValues: sortedInitialValues,
         required: false,
@@ -458,7 +458,7 @@ class UI {
     const recommendedInitialValues = configuredPreferred.length > 0 ? configuredPreferred : undefined;
 
     const recommendedSelected = await prompts.multiselect({
-      message: `Integrate with: ${chalk.dim('(↑/↓ to navigate • SPACE: select • ENTER: confirm)')}:`,
+      message: `Integrate with ${chalk.dim('(↑/↓ to navigate • SPACE: select • ENTER: confirm)')}:`,
       options: recommendedOptions,
       initialValues: recommendedInitialValues,
       required: false,
