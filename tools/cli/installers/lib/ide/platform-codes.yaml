@@ -94,9 +94,6 @@ platforms:
         - target_dir: .github/agents
           template_type: copilot_agents
           artifact_types: [agents]
-        - target_dir: .vscode
-          template_type: vscode_settings
-          artifact_types: []
 
   iflow:
     name: "iFlow"

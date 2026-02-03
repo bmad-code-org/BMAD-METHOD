@@ -49,6 +49,7 @@
     "test:coverage": "c8 --reporter=text --reporter=html npm run test:schemas",
     "test:install": "node test/test-installation-components.js",
     "test:schemas": "node test/test-agent-schema.js",
+    "validate:refs": "node tools/validate-file-refs.js",
     "validate:schemas": "node tools/validate-agent-schema.js"
   },
   "lint-staged": {
