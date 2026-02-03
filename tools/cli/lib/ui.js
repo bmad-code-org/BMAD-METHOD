@@ -381,7 +381,60 @@ class UI {
     }
 
     // ─────────────────────────────────────────────────────────────────────────────
-    // STEP 1: Recommended Tools (multiselect) - optional, user can skip
+    // UPGRADE PATH: If tools already configured, show all tools with configured at top
+    // ─────────────────────────────────────────────────────────────────────────────
+    if (configuredIdes.length > 0) {
+      const allTools = [...preferredIdes, ...otherIdes];
+
+      // Sort: configured tools first, then preferred, then others
+      const sortedTools = [
+        ...allTools.filter((ide) => configuredIdes.includes(ide.value)),
+        ...allTools.filter((ide) => !configuredIdes.includes(ide.value)),
+      ];
+
+      const upgradeOptions = sortedTools.map((ide) => {
+        const isConfigured = configuredIdes.includes(ide.value);
+        const isPreferred = preferredIdes.some((p) => p.value === ide.value);
+        let label = ide.name;
+        if (isPreferred) label += ' ⭐';
+        if (isConfigured) label += ' ✅';
+        return { label, value: ide.value };
+      });
+
+      // Sort initialValues to match display order
+      const sortedInitialValues = sortedTools
+        .filter((ide) => configuredIdes.includes(ide.value))
+        .map((ide) => ide.value);
+
+      const upgradeSelected = await prompts.autocompleteMultiselect({
+        message: 'Select tools to install:',
+        options: upgradeOptions,
+        initialValues: sortedInitialValues,
+        required: false,
+        maxItems: 8,
+      });
+
+      const selectedIdes = upgradeSelected || [];
+
+      if (selectedIdes.length === 0) {
+        console.log('');
+        const confirmNoTools = await prompts.confirm({
+          message: 'No tools selected. Continue without installing any tools?',
+          default: false,
+        });
+
+        if (!confirmNoTools) {
+          return this.promptToolSelection(projectDir);
+        }
+
+        return { ides: [], skipIde: true };
+      }
+
+      return { ides: selectedIdes, skipIde: false };
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────────
+    // NEW INSTALL: Show recommended tools first with "Browse All" option
     // ─────────────────────────────────────────────────────────────────────────────
     const recommendedOptions = preferredIdes.map((ide) => {
       const isConfigured = configuredPreferred.includes(ide.value);
@@ -391,11 +444,20 @@ class UI {
       };
     });
 
+    // Add "browse all" option at the end if there are additional tools
+    if (otherIdes.length > 0) {
+      const totalTools = preferredIdes.length + otherIdes.length;
+      recommendedOptions.push({
+        label: `→ Browse all supported tools (${totalTools} total)...`,
+        value: '__BROWSE_ALL__',
+      });
+    }
+
     // Pre-select previously configured preferred tools
     const recommendedInitialValues = configuredPreferred.length > 0 ? configuredPreferred : undefined;
 
     const recommendedSelected = await prompts.multiselect({
-      message: `Select recommended tools ${chalk.dim('(↑/↓ navigates, SPACE toggles, ENTER to confirm)')}:`,
+      message: `Select tools to install ${chalk.dim('(↑/↓ to navigate • SPACE: select • ENTER: confirm)')}:`,
       options: recommendedOptions,
       initialValues: recommendedInitialValues,
       required: false,
@@ -404,51 +466,70 @@ class UI {
     const selectedRecommended = recommendedSelected || [];
 
     // ─────────────────────────────────────────────────────────────────────────────
-    // STEP 2: Additional Tools - show if user has configured "other" tools,
-    // selected no recommended tools, or wants to add more
+    // STEP 2: Handle "Browse All" selection - show additional tools if requested
     // ─────────────────────────────────────────────────────────────────────────────
-    let showAdditionalPrompt = configuredOther.length > 0 || selectedRecommended.length === 0;
+    const wantsBrowseAll = selectedRecommended.includes('__BROWSE_ALL__');
+    const filteredRecommended = selectedRecommended.filter((v) => v !== '__BROWSE_ALL__');
 
-    if (!showAdditionalPrompt && otherIdes.length > 0) {
-      console.log('');
-      showAdditionalPrompt = await prompts.confirm({
-        message: 'Add more tools from the extended list?',
-        default: false,
-      });
-    }
+    // Show additional tools if:
+    // 1. User explicitly chose "Browse All", OR
+    // 2. User has previously configured "other" tools, OR
+    // 3. User selected no recommended tools (allow them to pick from other tools)
+    const showAdditionalTools = wantsBrowseAll || configuredOther.length > 0 || filteredRecommended.length === 0;
 
-    let selectedAdditional = [];
+    let selectedAdditionalOrAll = [];
 
-    if (showAdditionalPrompt && otherIdes.length > 0) {
-      // Build options for additional tools, excluding any already selected in recommended
-      const additionalOptions = otherIdes
-        .filter((ide) => !selectedRecommended.includes(ide.value))
-        .map((ide) => {
-          const isConfigured = configuredOther.includes(ide.value);
+    if (showAdditionalTools) {
+      // Show ALL tools if:
+      // - User explicitly chose "Browse All", OR
+      // - User selected nothing from recommended (so they can pick from everything)
+      // Otherwise, show only "other" tools as additional options
+      const showAllTools = wantsBrowseAll || filteredRecommended.length === 0;
+      const toolsToShow = showAllTools
+        ? [...preferredIdes, ...otherIdes]
+        : otherIdes;
+
+      if (toolsToShow.length > 0) {
+        const allToolOptions = toolsToShow.map((ide) => {
+          const isConfigured = configuredIdes.includes(ide.value);
+          const isPreferred = preferredIdes.some((p) => p.value === ide.value);
+          let label = ide.name;
+          if (isPreferred) label += ' ⭐';
+          if (isConfigured) label += ' ✅';
           return {
-            label: isConfigured ? `${ide.name} ✅` : ide.name,
+            label,
             value: ide.value,
           };
         });
 
-      // Pre-select previously configured other tools
-      const additionalInitialValues = configuredOther.length > 0 ? configuredOther : undefined;
+        // Pre-select: previously configured tools + any recommended tools already selected
+        const initialValues = [
+          ...configuredIdes,
+          ...filteredRecommended,
+        ].filter((v, i, arr) => arr.indexOf(v) === i); // dedupe
 
-      console.log('');
-      const additionalSelected = await prompts.autocompleteMultiselect({
-        message: `Select additional tools ${chalk.dim('(type to search, SPACE toggles, ENTER to confirm)')}:`,
-        options: additionalOptions,
-        initialValues: additionalInitialValues,
-        required: false,
-        maxItems: 6,
-        placeholder: 'Type to search...',
-      });
+        // Use "additional" only if user already selected some recommended tools
+        const isAdditional = !wantsBrowseAll && filteredRecommended.length > 0;
 
-      selectedAdditional = additionalSelected || [];
+        console.log('');
+        const selected = await prompts.autocompleteMultiselect({
+          message: isAdditional ? 'Select additional tools:' : 'Select tools:',
+          options: allToolOptions,
+          initialValues: initialValues.length > 0 ? initialValues : undefined,
+          required: false,
+          maxItems: 8,
+        });
+
+        selectedAdditionalOrAll = selected || [];
+      }
     }
 
-    // Combine selections
-    const allSelectedIdes = [...selectedRecommended, ...selectedAdditional];
+    // Combine selections:
+    // - If "Browse All" was used, the second prompt contains ALL selections
+    // - Otherwise, combine recommended + additional
+    const allSelectedIdes = wantsBrowseAll
+      ? selectedAdditionalOrAll
+      : [...filteredRecommended, ...selectedAdditionalOrAll];
 
     // ─────────────────────────────────────────────────────────────────────────────
     // STEP 3: Confirm if no tools selected
@@ -920,7 +1001,7 @@ class UI {
 
           console.log(
             chalk.gray(`Directory exists and contains ${files.length} item(s)`) +
-              (hasBmadInstall ? chalk.yellow(` including existing BMAD installation (${path.basename(bmadResult.bmadDir)})`) : ''),
+            (hasBmadInstall ? chalk.yellow(` including existing BMAD installation (${path.basename(bmadResult.bmadDir)})`) : ''),
           );
         } else {
           console.log(chalk.gray('Directory exists and is empty'));

@@ -216,7 +216,19 @@ async function groupMultiselect(options) {
 }
 
 /**
+ * Default filter function for autocomplete - case-insensitive label matching
+ * @param {string} search - Search string
+ * @param {Object} option - Option object with label
+ * @returns {boolean} Whether the option matches
+ */
+function defaultAutocompleteFilter(search, option) {
+  const label = option.label ?? String(option.value ?? '');
+  return label.toLowerCase().includes(search.toLowerCase());
+}
+
+/**
  * Autocomplete multi-select prompt with type-ahead filtering
+ * Custom implementation that always shows "Space/Tab:" in the hint
  * @param {Object} options - Prompt options
  * @param {string} options.message - The question to ask
  * @param {Array} options.options - Array of choices [{label, value, hint?}]
@@ -228,18 +240,111 @@ async function groupMultiselect(options) {
  * @returns {Promise<Array>} Array of selected values
  */
 async function autocompleteMultiselect(options) {
+  const core = await getClackCore();
   const clack = await getClack();
+  const color = await getPicocolors();
 
-  const result = await clack.autocompleteMultiselect({
-    message: options.message,
+  const filterFn = options.filter ?? defaultAutocompleteFilter;
+
+  const prompt = new core.AutocompletePrompt({
     options: options.options,
-    placeholder: options.placeholder || 'Type to search...',
-    initialValues: options.initialValues,
-    required: options.required || false,
-    maxItems: options.maxItems || 5,
-    filter: options.filter,
+    multiple: true,
+    filter: filterFn,
+    validate: () => {
+      if (options.required && prompt.selectedValues.length === 0) {
+        return 'Please select at least one item';
+      }
+    },
+    initialValue: options.initialValues,
+    render() {
+      const barColor = this.state === 'error' ? color.yellow : color.cyan;
+      const bar = barColor(clack.S_BAR);
+      const barEnd = barColor(clack.S_BAR_END);
+
+      const title = `${color.gray(clack.S_BAR)}\n${clack.symbol(this.state)}  ${options.message}\n`;
+
+      const userInput = this.userInput;
+      const placeholder = options.placeholder || 'Start typing to find your IDE...';
+      const hasPlaceholder = userInput === '' && placeholder !== undefined;
+
+      // Show placeholder or user input with cursor
+      const searchDisplay = this.isNavigating || hasPlaceholder
+        ? color.dim(hasPlaceholder ? placeholder : userInput)
+        : this.userInputWithCursor;
+
+      const allOptions = this.options;
+      const matchCount = this.filteredOptions.length === allOptions.length
+        ? ''
+        : color.dim(` (${this.filteredOptions.length} match${this.filteredOptions.length === 1 ? '' : 'es'})`);
+
+      // Render option with checkbox
+      const renderOption = (opt, isHighlighted) => {
+        const isSelected = this.selectedValues.includes(opt.value);
+        const label = opt.label ?? String(opt.value ?? '');
+        const hintText = opt.hint && opt.value === this.focusedValue ? color.dim(` (${opt.hint})`) : '';
+        const checkbox = isSelected ? color.green(clack.S_CHECKBOX_SELECTED) : color.dim(clack.S_CHECKBOX_INACTIVE);
+        return isHighlighted
+          ? `${checkbox} ${label}${hintText}`
+          : `${checkbox} ${color.dim(label)}`;
+      };
+
+      switch (this.state) {
+        case 'submit': {
+          return `${title}${color.gray(clack.S_BAR)}  ${color.dim(`${this.selectedValues.length} items selected`)}`;
+        }
+
+        case 'cancel': {
+          return `${title}${color.gray(clack.S_BAR)}  ${color.strikethrough(color.dim(userInput))}`;
+        }
+
+        default: {
+          // Always show "SPACE:" regardless of isNavigating state
+          const hints = [
+            `${color.dim('↑/↓')} to navigate`,
+            `${color.dim('TAB/SPACE:')} select`,
+            `${color.dim('ENTER:')} confirm`,
+          ];
+
+          const noMatchesLine = this.filteredOptions.length === 0 && userInput
+            ? [`${bar}  ${color.yellow('No matches found')}`]
+            : [];
+
+          const errorLine = this.state === 'error'
+            ? [`${bar}  ${color.yellow(this.error)}`]
+            : [];
+
+          const headerLines = [
+            ...`${title}${bar}`.split('\n'),
+            `${bar}  ${color.dim('Search:')} ${searchDisplay}${matchCount}`,
+            ...noMatchesLine,
+            ...errorLine,
+          ];
+
+          const footerLines = [
+            `${bar}  ${color.dim(hints.join(' • '))}`,
+            `${barEnd}`,
+          ];
+
+          const optionLines = clack.limitOptions({
+            cursor: this.cursor,
+            options: this.filteredOptions,
+            style: renderOption,
+            maxItems: options.maxItems || 5,
+            output: options.output,
+            rowPadding: headerLines.length + footerLines.length,
+          });
+
+          return [
+            ...headerLines,
+            ...optionLines.map((line) => `${bar}  ${line}`),
+            ...footerLines,
+          ].join('\n');
+        }
+      }
+    },
   });
 
+  const result = await prompt.prompt();
   await handleCancel(result);
   return result;
 }
@@ -446,12 +551,12 @@ async function prompt(questions) {
           default: typeof defaultValue === 'function' ? defaultValue(answers) : defaultValue,
           validate: validate
             ? (val) => {
-                const result = validate(val, answers);
-                if (result instanceof Promise) {
-                  throw new TypeError('Async validation is not supported by @clack/prompts. Please use synchronous validation.');
-                }
-                return result === true ? undefined : result;
+              const result = validate(val, answers);
+              if (result instanceof Promise) {
+                throw new TypeError('Async validation is not supported by @clack/prompts. Please use synchronous validation.');
               }
+              return result === true ? undefined : result;
+            }
             : undefined,
         });
         break;
@@ -489,12 +594,12 @@ async function prompt(questions) {
           message,
           validate: validate
             ? (val) => {
-                const result = validate(val, answers);
-                if (result instanceof Promise) {
-                  throw new TypeError('Async validation is not supported by @clack/prompts. Please use synchronous validation.');
-                }
-                return result === true ? undefined : result;
+              const result = validate(val, answers);
+              if (result instanceof Promise) {
+                throw new TypeError('Async validation is not supported by @clack/prompts. Please use synchronous validation.');
               }
+              return result === true ? undefined : result;
+            }
             : undefined,
         });
         break;
