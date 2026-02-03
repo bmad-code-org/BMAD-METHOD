@@ -402,9 +402,7 @@ class UI {
       });
 
       // Sort initialValues to match display order
-      const sortedInitialValues = sortedTools
-        .filter((ide) => configuredIdes.includes(ide.value))
-        .map((ide) => ide.value);
+      const sortedInitialValues = sortedTools.filter((ide) => configuredIdes.includes(ide.value)).map((ide) => ide.value);
 
       const upgradeSelected = await prompts.autocompleteMultiselect({
         message: 'Select tools to install:',
@@ -488,9 +486,7 @@ class UI {
       // - User selected nothing from recommended (so they can pick from everything)
       // Otherwise, show only "other" tools as additional options
       const showAllTools = wantsBrowseAll || filteredRecommended.length === 0;
-      const toolsToShow = showAllTools
-        ? [...preferredIdes, ...otherIdes]
-        : otherIdes;
+      const toolsToShow = showAllTools ? [...preferredIdes, ...otherIdes] : otherIdes;
 
       if (toolsToShow.length > 0) {
         const allToolOptions = toolsToShow.map((ide) => {
@@ -506,10 +502,7 @@ class UI {
         });
 
         // Pre-select: previously configured tools + any recommended tools already selected
-        const initialValues = [
-          ...configuredIdes,
-          ...filteredRecommended,
-        ].filter((v, i, arr) => arr.indexOf(v) === i); // dedupe
+        const initialValues = [...configuredIdes, ...filteredRecommended].filter((v, i, arr) => arr.indexOf(v) === i); // dedupe
 
         // Use "additional" only if user already selected some recommended tools
         const isAdditional = !wantsBrowseAll && filteredRecommended.length > 0;
@@ -530,9 +523,7 @@ class UI {
     // Combine selections:
     // - If "Browse All" was used, the second prompt contains ALL selections
     // - Otherwise, combine recommended + additional
-    const allSelectedIdes = wantsBrowseAll
-      ? selectedAdditionalOrAll
-      : [...filteredRecommended, ...selectedAdditionalOrAll];
+    const allSelectedIdes = wantsBrowseAll ? selectedAdditionalOrAll : [...filteredRecommended, ...selectedAdditionalOrAll];
 
     // ─────────────────────────────────────────────────────────────────────────────
     // STEP 3: Confirm if no tools selected
@@ -1008,7 +999,7 @@ class UI {
 
           console.log(
             chalk.gray(`Directory exists and contains ${files.length} item(s)`) +
-            (hasBmadInstall ? chalk.yellow(` including existing BMAD installation (${path.basename(bmadResult.bmadDir)})`) : ''),
+              (hasBmadInstall ? chalk.yellow(` including existing BMAD installation (${path.basename(bmadResult.bmadDir)})`) : ''),
           );
         } else {
           console.log(chalk.gray('Directory exists and is empty'));
