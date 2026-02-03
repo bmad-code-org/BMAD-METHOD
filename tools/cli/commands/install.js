@@ -9,7 +9,22 @@ const ui = new UI();
 module.exports = {
   command: 'install',
   description: 'Install BMAD Core agents and tools',
-  options: [['-d, --debug', 'Enable debug output for manifest generation']],
+  options: [
+    ['-d, --debug', 'Enable debug output for manifest generation'],
+    ['--directory <path>', 'Installation directory (default: current directory)'],
+    ['--modules <modules>', 'Comma-separated list of module IDs to install (e.g., "bmm,bmb")'],
+    [
+      '--tools <tools>',
+      'Comma-separated list of tool/IDE IDs to configure (e.g., "claude-code,cursor"). Use "none" to skip tool configuration.',
+    ],
+    ['--custom-content <paths>', 'Comma-separated list of paths to custom modules/agents/workflows'],
+    ['--action <type>', 'Action type for existing installations: install, update, quick-update, or compile-agents'],
+    ['--user-name <name>', 'Name for agents to use (default: system username)'],
+    ['--communication-language <lang>', 'Language for agent communication (default: English)'],
+    ['--document-output-language <lang>', 'Language for document output (default: English)'],
+    ['--output-folder <path>', 'Output folder path relative to project root (default: _bmad-output)'],
+    ['-y, --yes', 'Accept all defaults and skip prompts where possible'],
+  ],
   action: async (options) => {
     try {
       // Set debug flag as environment variable for all components
@@ -18,7 +33,7 @@ module.exports = {
         console.log(chalk.cyan('Debug mode enabled\n'));
       }
 
-      const config = await ui.promptInstall();
+      const config = await ui.promptInstall(options);
 
       // Handle cancel
       if (config.actionType === 'cancel') {
