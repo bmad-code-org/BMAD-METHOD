@@ -430,6 +430,9 @@ class UI {
         return { ides: [], skipIde: true };
       }
 
+      // Display selected tools
+      this.displaySelectedTools(selectedIdes, preferredIdes, allTools);
+
       return { ides: selectedIdes, skipIde: false };
     }
 
@@ -551,6 +554,10 @@ class UI {
         skipIde: true,
       };
     }
+
+    // Display selected tools
+    const allTools = [...preferredIdes, ...otherIdes];
+    this.displaySelectedTools(allSelectedIdes, preferredIdes, allTools);
 
     return {
       ides: allSelectedIdes,
@@ -1754,6 +1761,27 @@ class UI {
     }
 
     console.log('');
+  }
+
+  /**
+   * Display list of selected tools after IDE selection
+   * @param {Array} selectedIdes - Array of selected IDE values
+   * @param {Array} preferredIdes - Array of preferred IDE objects
+   * @param {Array} allTools - Array of all tool objects
+   */
+  displaySelectedTools(selectedIdes, preferredIdes, allTools) {
+    if (selectedIdes.length === 0) return;
+
+    const preferredValues = new Set(preferredIdes.map((ide) => ide.value));
+
+    console.log('');
+    console.log(chalk.dim('  Selected tools:'));
+    for (const ideValue of selectedIdes) {
+      const tool = allTools.find((t) => t.value === ideValue);
+      const name = tool?.name || ideValue;
+      const marker = preferredValues.has(ideValue) ? ' ⭐' : '';
+      console.log(chalk.dim(`  • ${name}${marker}`));
+    }
   }
 }
 
