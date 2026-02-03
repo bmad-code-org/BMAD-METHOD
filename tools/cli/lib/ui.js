@@ -405,7 +405,7 @@ class UI {
       const sortedInitialValues = sortedTools.filter((ide) => configuredIdes.includes(ide.value)).map((ide) => ide.value);
 
       const upgradeSelected = await prompts.autocompleteMultiselect({
-        message: 'Select tools to install:',
+        message: 'Integrate with::',
         options: upgradeOptions,
         initialValues: sortedInitialValues,
         required: false,
@@ -458,7 +458,7 @@ class UI {
     const recommendedInitialValues = configuredPreferred.length > 0 ? configuredPreferred : undefined;
 
     const recommendedSelected = await prompts.multiselect({
-      message: `Select tools to install ${chalk.dim('(↑/↓ to navigate • SPACE: select • ENTER: confirm)')}:`,
+      message: `Integrate with: ${chalk.dim('(↑/↓ to navigate • SPACE: select • ENTER: confirm)')}:`,
       options: recommendedOptions,
       initialValues: recommendedInitialValues,
       required: false,
@@ -999,7 +999,7 @@ class UI {
 
           console.log(
             chalk.gray(`Directory exists and contains ${files.length} item(s)`) +
-              (hasBmadInstall ? chalk.yellow(` including existing BMAD installation (${path.basename(bmadResult.bmadDir)})`) : ''),
+            (hasBmadInstall ? chalk.yellow(` including existing BMAD installation (${path.basename(bmadResult.bmadDir)})`) : ''),
           );
         } else {
           console.log(chalk.gray('Directory exists and is empty'));

@@ -264,7 +264,7 @@ async function autocompleteMultiselect(options) {
       const title = `${color.gray(clack.S_BAR)}\n${clack.symbol(this.state)}  ${options.message}\n`;
 
       const userInput = this.userInput;
-      const placeholder = options.placeholder || 'Start typing to find your IDE...';
+      const placeholder = options.placeholder || 'Type to search...';
       const hasPlaceholder = userInput === '' && placeholder !== undefined;
 
       // Show placeholder or user input with cursor
@@ -305,7 +305,7 @@ async function autocompleteMultiselect(options) {
 
           const headerLines = [
             ...`${title}${bar}`.split('\n'),
-            `${bar}  ${color.dim('Search:')} ${searchDisplay}${matchCount}`,
+            `${bar}  ${searchDisplay}${matchCount}`,
             ...noMatchesLine,
             ...errorLine,
           ];
