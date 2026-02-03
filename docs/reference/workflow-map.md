@@ -58,7 +58,7 @@ Build it, one story at a time.
 | `correct-course`  | Handle significant mid-sprint changes  | Updated plan or re-routing    |
 | `retrospective`   | Review after epic completion           | Lessons learned               |
 
-**Quinn (QA Agent):** Built-in QA agent for test automation. Trigger with `QA` or `bmad-bmm-automate`. Generates standard API and E2E tests using your project's test framework. Beginner-friendly, no configuration needed. For advanced test strategy, install [Test Architect (TEA)](https://bmad-code-org.github.io/bmad-method-test-architecture-enterprise/) module.
+**Quinn (QA Agent):** Built-in QA agent for test automation. Trigger with `QA` or `bmad-bmm-qa-automate`. Generates standard API and E2E tests using your project's test framework. Beginner-friendly, no configuration needed. For advanced test strategy, install [Test Architect (TEA)](https://bmad-code-org.github.io/bmad-method-test-architecture-enterprise/) module.
 
 ## Quick Flow (Parallel Track)
 

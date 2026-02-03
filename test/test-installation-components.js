@@ -164,7 +164,7 @@ async function runTests() {
 
   try {
     const builder = new YamlXmlBuilder();
-    const qaAgentPath = path.join(projectRoot, 'src/bmm/agents/quinn.agent.yaml');
+    const qaAgentPath = path.join(projectRoot, 'src/bmm/agents/qa.agent.yaml');
     const tempOutput = path.join(__dirname, 'temp-qa-agent.md');
 
     try {
