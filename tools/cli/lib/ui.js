@@ -999,7 +999,7 @@ class UI {
 
           console.log(
             chalk.gray(`Directory exists and contains ${files.length} item(s)`) +
-            (hasBmadInstall ? chalk.yellow(` including existing BMAD installation (${path.basename(bmadResult.bmadDir)})`) : ''),
+              (hasBmadInstall ? chalk.yellow(` including existing BMAD installation (${path.basename(bmadResult.bmadDir)})`) : ''),
           );
         } else {
           console.log(chalk.gray('Directory exists and is empty'));

@@ -303,12 +303,7 @@ async function autocompleteMultiselect(options) {
 
           const errorLine = this.state === 'error' ? [`${bar}  ${color.yellow(this.error)}`] : [];
 
-          const headerLines = [
-            ...`${title}${bar}`.split('\n'),
-            `${bar}  ${searchDisplay}${matchCount}`,
-            ...noMatchesLine,
-            ...errorLine,
-          ];
+          const headerLines = [...`${title}${bar}`.split('\n'), `${bar}  ${searchDisplay}${matchCount}`, ...noMatchesLine, ...errorLine];
 
           const footerLines = [`${bar}  ${color.dim(hints.join(' • '))}`, `${barEnd}`];
 
