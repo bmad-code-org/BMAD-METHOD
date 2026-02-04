@@ -1,0 +1,14 @@
+# Expected: FAIL
+# Error code: invalid_type
+# Error path: variables.count
+# Error expected: string
+# Error received: number
+# Tests: variables with non-string value (YAML number) produces wrong_type error
+name: bad-variables-type-test
+description: "A workflow with non-string variable value"
+author: "Test"
+standalone: true
+web_bundle: false
+variables:
+  valid_key: "string value"
+  count: 5
