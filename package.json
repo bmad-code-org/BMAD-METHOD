@@ -69,7 +69,8 @@
     ]
   },
   "dependencies": {
-    "@clack/prompts": "^0.11.0",
+    "@clack/core": "^1.0.0",
+    "@clack/prompts": "^1.0.0",
     "@kayvan/markdown-tree-parser": "^1.6.1",
     "boxen": "^5.1.2",
     "chalk": "^4.1.2",
@@ -82,6 +83,7 @@
     "ignore": "^7.0.5",
     "js-yaml": "^4.1.0",
     "ora": "^5.4.1",
+    "picocolors": "^1.1.1",
     "semver": "^7.6.3",
     "wrap-ansi": "^7.0.0",
     "xml2js": "^0.6.2",

@@ -586,7 +586,11 @@ class ConfigCollector {
       console.log();
       console.log(chalk.cyan('?') + ' ' + chalk.magenta(moduleDisplayName));
       let customize = true;
-      if (moduleName !== 'core') {
+      if (moduleName === 'core') {
+        // Core module: no confirm prompt, so add spacing manually to match visual style
+        console.log(chalk.gray('│'));
+      } else {
+        // Non-core modules: show "Accept Defaults?" confirm prompt (clack adds spacing)
         const customizeAnswer = await prompts.prompt([
           {
             type: 'confirm',

@@ -2,12 +2,98 @@ const path = require('node:path');
 const fs = require('fs-extra');
 const csv = require('csv-parse/sync');
 const chalk = require('chalk');
-const { toColonName, toColonPath, toDashPath } = require('./path-utils');
+const { toColonName, toColonPath, toDashPath, BMAD_FOLDER_NAME } = require('./path-utils');
 
 /**
  * Generates command files for standalone tasks and tools
  */
 class TaskToolCommandGenerator {
+  /**
+   * @param {string} bmadFolderName - Name of the BMAD folder for template rendering (default: '_bmad')
+   * Note: This parameter is accepted for API consistency with AgentCommandGenerator and
+   * WorkflowCommandGenerator, but is not used for path stripping. The manifest always stores
+   * filesystem paths with '_bmad/' prefix (the actual folder name), while bmadFolderName is
+   * used for template placeholder rendering ({{bmadFolderName}}).
+   */
+  constructor(bmadFolderName = BMAD_FOLDER_NAME) {
+    this.bmadFolderName = bmadFolderName;
+  }
+
+  /**
+   * Collect task and tool artifacts for IDE installation
+   * @param {string} bmadDir - BMAD installation directory
+   * @returns {Promise<Object>} Artifacts array with metadata
+   */
+  async collectTaskToolArtifacts(bmadDir) {
+    const tasks = await this.loadTaskManifest(bmadDir);
+    const tools = await this.loadToolManifest(bmadDir);
+
+    // Filter to only standalone items
+    const standaloneTasks = tasks ? tasks.filter((t) => t.standalone === 'true' || t.standalone === true) : [];
+    const standaloneTools = tools ? tools.filter((t) => t.standalone === 'true' || t.standalone === true) : [];
+
+    const artifacts = [];
+    const bmadPrefix = `${BMAD_FOLDER_NAME}/`;
+
+    // Collect task artifacts
+    for (const task of standaloneTasks) {
+      let taskPath = (task.path || '').replaceAll('\\', '/');
+      // Convert absolute paths to relative paths
+      if (path.isAbsolute(taskPath)) {
+        taskPath = path.relative(bmadDir, taskPath).replaceAll('\\', '/');
+      }
+      // Remove _bmad/ prefix if present to get relative path within bmad folder
+      if (taskPath.startsWith(bmadPrefix)) {
+        taskPath = taskPath.slice(bmadPrefix.length);
+      }
+
+      const taskExt = path.extname(taskPath) || '.md';
+      artifacts.push({
+        type: 'task',
+        name: task.name,
+        displayName: task.displayName || task.name,
+        description: task.description || `Execute ${task.displayName || task.name}`,
+        module: task.module,
+        // Use forward slashes for cross-platform consistency (not path.join which uses backslashes on Windows)
+        relativePath: `${task.module}/tasks/${task.name}${taskExt}`,
+        path: taskPath,
+      });
+    }
+
+    // Collect tool artifacts
+    for (const tool of standaloneTools) {
+      let toolPath = (tool.path || '').replaceAll('\\', '/');
+      // Convert absolute paths to relative paths
+      if (path.isAbsolute(toolPath)) {
+        toolPath = path.relative(bmadDir, toolPath).replaceAll('\\', '/');
+      }
+      // Remove _bmad/ prefix if present to get relative path within bmad folder
+      if (toolPath.startsWith(bmadPrefix)) {
+        toolPath = toolPath.slice(bmadPrefix.length);
+      }
+
+      const toolExt = path.extname(toolPath) || '.md';
+      artifacts.push({
+        type: 'tool',
+        name: tool.name,
+        displayName: tool.displayName || tool.name,
+        description: tool.description || `Execute ${tool.displayName || tool.name}`,
+        module: tool.module,
+        // Use forward slashes for cross-platform consistency (not path.join which uses backslashes on Windows)
+        relativePath: `${tool.module}/tools/${tool.name}${toolExt}`,
+        path: toolPath,
+      });
+    }
+
+    return {
+      artifacts,
+      counts: {
+        tasks: standaloneTasks.length,
+        tools: standaloneTools.length,
+      },
+    };
+  }
+
   /**
    * Generate task and tool commands from manifest CSVs
    * @param {string} projectDir - Project directory
@@ -65,9 +151,35 @@ class TaskToolCommandGenerator {
     const description = item.description || `Execute ${item.displayName || item.name}`;
 
     // Convert path to use {project-root} placeholder
+    // Handle undefined/missing path by constructing from module and name
     let itemPath = item.path;
-    if (itemPath && typeof itemPath === 'string' && itemPath.startsWith('bmad/')) {
-      itemPath = `{project-root}/${itemPath}`;
+    if (!itemPath || typeof itemPath !== 'string') {
+      // Fallback: construct path from module and name if path is missing
+      const typePlural = type === 'task' ? 'tasks' : 'tools';
+      itemPath = `{project-root}/${this.bmadFolderName}/${item.module}/${typePlural}/${item.name}.md`;
+    } else {
+      // Normalize path separators to forward slashes
+      itemPath = itemPath.replaceAll('\\', '/');
+
+      // Extract relative path from absolute paths (Windows or Unix)
+      // Look for _bmad/ or bmad/ in the path and extract everything after it
+      // Match patterns like: /_bmad/core/tasks/... or /bmad/core/tasks/...
+      // Use [/\\] to handle both Unix forward slashes and Windows backslashes,
+      // and also paths without a leading separator (e.g., C:/_bmad/...)
+      const bmadMatch = itemPath.match(/[/\\]_bmad[/\\](.+)$/) || itemPath.match(/[/\\]bmad[/\\](.+)$/);
+      if (bmadMatch) {
+        // Found /_bmad/ or /bmad/ - use relative path after it
+        itemPath = `{project-root}/${this.bmadFolderName}/${bmadMatch[1]}`;
+      } else if (itemPath.startsWith(`${BMAD_FOLDER_NAME}/`)) {
+        // Relative path starting with _bmad/
+        itemPath = `{project-root}/${this.bmadFolderName}/${itemPath.slice(BMAD_FOLDER_NAME.length + 1)}`;
+      } else if (itemPath.startsWith('bmad/')) {
+        // Relative path starting with bmad/
+        itemPath = `{project-root}/${this.bmadFolderName}/${itemPath.slice(5)}`;
+      } else if (!itemPath.startsWith('{project-root}')) {
+        // For other relative paths, prefix with project root and bmad folder
+        itemPath = `{project-root}/${this.bmadFolderName}/${itemPath}`;
+      }
     }
 
     return `---
@@ -187,7 +299,7 @@ Follow all instructions in the ${type} file exactly as written.
     // Generate command files for tasks
     for (const task of standaloneTasks) {
       const commandContent = this.generateCommandContent(task, 'task');
-      // Use underscore format: bmad_bmm_name.md
+      // Use dash format: bmad-bmm-name.md
       const flatName = toDashPath(`${task.module}/tasks/${task.name}.md`);
       const commandPath = path.join(baseCommandsDir, flatName);
       await fs.ensureDir(path.dirname(commandPath));
@@ -198,7 +310,7 @@ Follow all instructions in the ${type} file exactly as written.
     // Generate command files for tools
     for (const tool of standaloneTools) {
       const commandContent = this.generateCommandContent(tool, 'tool');
-      // Use underscore format: bmad_bmm_name.md
+      // Use dash format: bmad-bmm-name.md
       const flatName = toDashPath(`${tool.module}/tools/${tool.name}.md`);
       const commandPath = path.join(baseCommandsDir, flatName);
       await fs.ensureDir(path.dirname(commandPath));

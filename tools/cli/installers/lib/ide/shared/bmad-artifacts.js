@@ -141,13 +141,24 @@ async function getTasksFromDir(dirPath, moduleName) {
   const files = await fs.readdir(dirPath);
 
   for (const file of files) {
-    if (!file.endsWith('.md')) {
+    // Include both .md and .xml task files
+    if (!file.endsWith('.md') && !file.endsWith('.xml')) {
       continue;
     }
 
+    const filePath = path.join(dirPath, file);
+    const content = await fs.readFile(filePath, 'utf8');
+
+    // Skip internal/engine files (not user-facing tasks)
+    if (content.includes('internal="true"')) {
+      continue;
+    }
+
+    // Remove extension to get task name
+    const ext = file.endsWith('.xml') ? '.xml' : '.md';
     tasks.push({
-      path: path.join(dirPath, file),
-      name: file.replace('.md', ''),
+      path: filePath,
+      name: file.replace(ext, ''),
       module: moduleName,
     });
   }

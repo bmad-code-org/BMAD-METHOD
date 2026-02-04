@@ -297,7 +297,7 @@ class CustomHandler {
     const agentFiles = await this.findFilesRecursively(sourceAgentsPath, ['.agent.yaml']);
 
     for (const agentFile of agentFiles) {
-      const relativePath = path.relative(sourceAgentsPath, agentFile);
+      const relativePath = path.relative(sourceAgentsPath, agentFile).split(path.sep).join('/');
       const targetDir = path.join(targetAgentsPath, path.dirname(relativePath));
 
       await fs.ensureDir(targetDir);

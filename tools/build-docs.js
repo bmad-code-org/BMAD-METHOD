@@ -38,6 +38,7 @@ const LLM_EXCLUDE_PATTERNS = [
   'faq',
   'reference/glossary/',
   'explanation/game-dev/',
+  'bmgd/',
   // Note: Files/dirs starting with _ (like _STYLE_GUIDE.md, _archive/) are excluded in shouldExcludeFromLlm()
 ];
 
@@ -194,7 +195,7 @@ function generateLlmsFullTxt(docsDir, outputDir) {
   console.log('  → Generating llms-full.txt...');
 
   const date = new Date().toISOString().split('T')[0];
-  const files = getAllMarkdownFiles(docsDir);
+  const files = getAllMarkdownFiles(docsDir).sort(compareLlmDocs);
 
   const output = [
     '# BMAD Method Documentation (Full)',
@@ -234,6 +235,25 @@ function generateLlmsFullTxt(docsDir, outputDir) {
   console.log(
     `    Processed ${fileCount} files (skipped ${skippedCount}), ${result.length.toLocaleString()} chars (~${tokenEstimate} tokens)`,
   );
+}
+
+function compareLlmDocs(a, b) {
+  const aKey = getLlmSortKey(a);
+  const bKey = getLlmSortKey(b);
+
+  if (aKey !== bKey) return aKey - bKey;
+  return a.localeCompare(b);
+}
+
+function getLlmSortKey(filePath) {
+  if (filePath === 'index.md') return 0;
+  if (filePath === 'downloads.md') return 1;
+  if (filePath.startsWith(`tutorials${path.sep}`) || filePath.startsWith('tutorials/')) return 2;
+  if (filePath.startsWith(`how-to${path.sep}`) || filePath.startsWith('how-to/')) return 3;
+  if (filePath.startsWith(`explanation${path.sep}`) || filePath.startsWith('explanation/')) return 4;
+  if (filePath.startsWith(`reference${path.sep}`) || filePath.startsWith('reference/')) return 5;
+  if (filePath.startsWith(`bmgd${path.sep}`) || filePath.startsWith('bmgd/')) return 6;
+  return 7;
 }
 
 /**

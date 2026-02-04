@@ -8,6 +8,8 @@
  */
 
 let _clack = null;
+let _clackCore = null;
+let _picocolors = null;
 
 /**
  * Lazy-load @clack/prompts (ESM module)
@@ -18,6 +20,28 @@ async function getClack() {
     _clack = await import('@clack/prompts');
   }
   return _clack;
+}
+
+/**
+ * Lazy-load @clack/core (ESM module)
+ * @returns {Promise<Object>} The clack core module
+ */
+async function getClackCore() {
+  if (!_clackCore) {
+    _clackCore = await import('@clack/core');
+  }
+  return _clackCore;
+}
+
+/**
+ * Lazy-load picocolors
+ * @returns {Promise<Object>} The picocolors module
+ */
+async function getPicocolors() {
+  if (!_picocolors) {
+    _picocolors = (await import('picocolors')).default;
+  }
+  return _picocolors;
 }
 
 /**
@@ -192,6 +216,118 @@ async function groupMultiselect(options) {
 }
 
 /**
+ * Default filter function for autocomplete - case-insensitive label matching
+ * @param {string} search - Search string
+ * @param {Object} option - Option object with label
+ * @returns {boolean} Whether the option matches
+ */
+function defaultAutocompleteFilter(search, option) {
+  const label = option.label ?? String(option.value ?? '');
+  return label.toLowerCase().includes(search.toLowerCase());
+}
+
+/**
+ * Autocomplete multi-select prompt with type-ahead filtering
+ * Custom implementation that always shows "Space/Tab:" in the hint
+ * @param {Object} options - Prompt options
+ * @param {string} options.message - The question to ask
+ * @param {Array} options.options - Array of choices [{label, value, hint?}]
+ * @param {string} [options.placeholder] - Placeholder text for search input
+ * @param {Array} [options.initialValues] - Array of initially selected values
+ * @param {boolean} [options.required=false] - Whether at least one must be selected
+ * @param {number} [options.maxItems=5] - Maximum visible items in scrollable list
+ * @param {Function} [options.filter] - Custom filter function (search, option) => boolean
+ * @returns {Promise<Array>} Array of selected values
+ */
+async function autocompleteMultiselect(options) {
+  const core = await getClackCore();
+  const clack = await getClack();
+  const color = await getPicocolors();
+
+  const filterFn = options.filter ?? defaultAutocompleteFilter;
+
+  const prompt = new core.AutocompletePrompt({
+    options: options.options,
+    multiple: true,
+    filter: filterFn,
+    validate: () => {
+      if (options.required && prompt.selectedValues.length === 0) {
+        return 'Please select at least one item';
+      }
+    },
+    initialValue: options.initialValues,
+    render() {
+      const barColor = this.state === 'error' ? color.yellow : color.cyan;
+      const bar = barColor(clack.S_BAR);
+      const barEnd = barColor(clack.S_BAR_END);
+
+      const title = `${color.gray(clack.S_BAR)}\n${clack.symbol(this.state)}  ${options.message}\n`;
+
+      const userInput = this.userInput;
+      const placeholder = options.placeholder || 'Type to search...';
+      const hasPlaceholder = userInput === '' && placeholder !== undefined;
+
+      // Show placeholder or user input with cursor
+      const searchDisplay =
+        this.isNavigating || hasPlaceholder ? color.dim(hasPlaceholder ? placeholder : userInput) : this.userInputWithCursor;
+
+      const allOptions = this.options;
+      const matchCount =
+        this.filteredOptions.length === allOptions.length
+          ? ''
+          : color.dim(` (${this.filteredOptions.length} match${this.filteredOptions.length === 1 ? '' : 'es'})`);
+
+      // Render option with checkbox
+      const renderOption = (opt, isHighlighted) => {
+        const isSelected = this.selectedValues.includes(opt.value);
+        const label = opt.label ?? String(opt.value ?? '');
+        const hintText = opt.hint && opt.value === this.focusedValue ? color.dim(` (${opt.hint})`) : '';
+        const checkbox = isSelected ? color.green(clack.S_CHECKBOX_SELECTED) : color.dim(clack.S_CHECKBOX_INACTIVE);
+        return isHighlighted ? `${checkbox} ${label}${hintText}` : `${checkbox} ${color.dim(label)}`;
+      };
+
+      switch (this.state) {
+        case 'submit': {
+          return `${title}${color.gray(clack.S_BAR)}  ${color.dim(`${this.selectedValues.length} items selected`)}`;
+        }
+
+        case 'cancel': {
+          return `${title}${color.gray(clack.S_BAR)}  ${color.strikethrough(color.dim(userInput))}`;
+        }
+
+        default: {
+          // Always show "SPACE:" regardless of isNavigating state
+          const hints = [`${color.dim('↑/↓')} to navigate`, `${color.dim('TAB/SPACE:')} select`, `${color.dim('ENTER:')} confirm`];
+
+          const noMatchesLine = this.filteredOptions.length === 0 && userInput ? [`${bar}  ${color.yellow('No matches found')}`] : [];
+
+          const errorLine = this.state === 'error' ? [`${bar}  ${color.yellow(this.error)}`] : [];
+
+          const headerLines = [...`${title}${bar}`.split('\n'), `${bar}  ${searchDisplay}${matchCount}`, ...noMatchesLine, ...errorLine];
+
+          const footerLines = [`${bar}  ${color.dim(hints.join(' • '))}`, `${barEnd}`];
+
+          const optionLines = clack.limitOptions({
+            cursor: this.cursor,
+            options: this.filteredOptions,
+            style: renderOption,
+            maxItems: options.maxItems || 5,
+            output: options.output,
+            rowPadding: headerLines.length + footerLines.length,
+          });
+
+          return [...headerLines, ...optionLines.map((line) => `${bar}  ${line}`), ...footerLines].join('\n');
+        }
+      }
+    },
+  });
+
+  const result = await prompt.prompt();
+  await handleCancel(result);
+  return result;
+}
+
+/**
  * Confirm prompt (replaces Inquirer 'confirm' type)
  * @param {Object} options - Prompt options
  * @param {string} options.message - The question to ask
@@ -211,7 +347,12 @@ async function confirm(options) {
 }
 
 /**
- * Text input prompt (replaces Inquirer 'input' type)
+ * Text input prompt with Tab-to-fill-placeholder support (replaces Inquirer 'input' type)
+ *
+ * This custom implementation restores the Tab-to-fill-placeholder behavior that was
+ * intentionally removed in @clack/prompts v1.0.0 (placeholder became purely visual).
+ * Uses @clack/core's TextPrompt primitive with custom key handling.
+ *
  * @param {Object} options - Prompt options
  * @param {string} options.message - The question to ask
  * @param {string} [options.default] - Default value
@@ -220,20 +361,64 @@ async function confirm(options) {
  * @returns {Promise<string>} User's input
  */
 async function text(options) {
-  const clack = await getClack();
+  const core = await getClackCore();
+  const color = await getPicocolors();
 
   // Use default as placeholder if placeholder not explicitly provided
   // This shows the default value as grayed-out hint text
   const placeholder = options.placeholder === undefined ? options.default : options.placeholder;
+  const defaultValue = options.default;
 
-  const result = await clack.text({
-    message: options.message,
-    defaultValue: options.default,
-    placeholder: typeof placeholder === 'string' ? placeholder : undefined,
+  const prompt = new core.TextPrompt({
+    defaultValue,
     validate: options.validate,
+    render() {
+      const title = `${color.gray('◆')}  ${options.message}`;
+
+      // Show placeholder as dim text when input is empty
+      let valueDisplay;
+      if (this.state === 'error') {
+        valueDisplay = color.yellow(this.userInputWithCursor);
+      } else if (this.userInput) {
+        valueDisplay = this.userInputWithCursor;
+      } else if (placeholder) {
+        // Show placeholder with cursor indicator when empty
+        valueDisplay = `${color.inverse(color.hidden('_'))}${color.dim(placeholder)}`;
+      } else {
+        valueDisplay = color.inverse(color.hidden('_'));
+      }
+
+      const bar = color.gray('│');
+
+      // Handle different states
+      if (this.state === 'submit') {
+        return `${color.gray('◇')}  ${options.message}\n${bar}  ${color.dim(this.value || defaultValue || '')}`;
+      }
+
+      if (this.state === 'cancel') {
+        return `${color.gray('◇')}  ${options.message}\n${bar}  ${color.strikethrough(color.dim(this.userInput || ''))}`;
+      }
+
+      if (this.state === 'error') {
+        return `${color.yellow('▲')}  ${options.message}\n${bar}  ${valueDisplay}\n${color.yellow('│')}  ${color.yellow(this.error)}`;
+      }
+
+      return `${title}\n${bar}  ${valueDisplay}\n${bar}`;
+    },
   });
 
+  // Add Tab key handler to fill placeholder into input
+  prompt.on('key', (char) => {
+    if (char === '\t' && placeholder && !prompt.userInput) {
+      // Use _setUserInput with write=true to populate the readline and update internal state
+      prompt._setUserInput(placeholder, true);
+    }
+  });
+
+  const result = await prompt.prompt();
   await handleCancel(result);
+
+  // TextPrompt's finalize handler already applies defaultValue for empty input
   return result;
 }
 
@@ -423,6 +608,7 @@ module.exports = {
   select,
   multiselect,
   groupMultiselect,
+  autocompleteMultiselect,
   confirm,
   text,
   password,
