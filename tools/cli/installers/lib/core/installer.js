@@ -353,11 +353,13 @@ class Installer {
         const modulesWithoutCore = allModulesForConfig.filter((m) => m !== 'core');
         moduleConfigs = await this.configCollector.collectAllConfigurations(modulesWithoutCore, path.resolve(config.directory), {
           customModulePaths,
+          skipPrompts: config.skipPrompts,
         });
       } else {
         // Core not collected yet, include it
         moduleConfigs = await this.configCollector.collectAllConfigurations(allModulesForConfig, path.resolve(config.directory), {
           customModulePaths,
+          skipPrompts: config.skipPrompts,
         });
       }
     }
@@ -680,7 +682,8 @@ class Installer {
       } else {
         // Pass pre-selected IDEs from early prompt (if available)
         // This allows IDE selection to happen before file copying, improving UX
-        const preSelectedIdes = config.ides && config.ides.length > 0 ? config.ides : null;
+        // Use config.ides if it's an array (even if empty), null means prompt
+        const preSelectedIdes = Array.isArray(config.ides) ? config.ides : null;
         toolSelection = await this.collectToolConfigurations(
           path.resolve(config.directory),
           config.modules,

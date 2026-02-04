@@ -43,7 +43,7 @@ class UI {
       // Use provided directory from command-line
       const expandedDir = this.expandUserPath(options.directory);
       const validation = this.validateDirectorySync(expandedDir);
-      if (validation !== true) {
+      if (validation) {
         throw new Error(`Invalid directory: ${validation}`);
       }
       confirmedDirectory = expandedDir;
@@ -308,7 +308,7 @@ class UI {
           for (const customPath of paths) {
             const expandedPath = this.expandUserPath(customPath);
             const validation = this.validateCustomContentPathSync(expandedPath);
-            if (validation !== true) {
+            if (validation) {
               console.log(chalk.yellow(`⚠️  Skipping invalid custom content path: ${customPath} - ${validation}`));
               continue;
             }
@@ -405,6 +405,10 @@ class UI {
         .map((m) => m.trim())
         .filter(Boolean);
       console.log(chalk.cyan('Using modules from command-line:'), chalk.bold(selectedModules.join(', ')));
+    } else if (options.yes) {
+      // Use default modules when --yes flag is set
+      selectedModules = await this.getDefaultModules(installedModuleIds);
+      console.log(chalk.cyan('Using default modules (--yes flag):'), chalk.bold(selectedModules.join(', ')));
     } else {
       selectedModules = await this.selectAllModules(installedModuleIds);
     }
@@ -425,7 +429,7 @@ class UI {
       for (const customPath of paths) {
         const expandedPath = this.expandUserPath(customPath);
         const validation = this.validateCustomContentPathSync(expandedPath);
-        if (validation !== true) {
+        if (validation) {
           console.log(chalk.yellow(`⚠️  Skipping invalid custom content path: ${customPath} - ${validation}`));
           continue;
         }
@@ -487,6 +491,7 @@ class UI {
       skipIde: toolSelection.skipIde,
       coreConfig: coreConfig,
       customContent: customContentConfig,
+      skipPrompts: options.yes || false,
     };
   }
 
@@ -1122,6 +1127,33 @@ class UI {
 
     // Filter out the special '__NONE__' value
     return selected ? selected.filter((m) => m !== '__NONE__') : [];
+  }
+
+  /**
+   * Get default modules for non-interactive mode
+   * @param {Set} installedModuleIds - Already installed module IDs
+   * @returns {Array} Default module codes
+   */
+  async getDefaultModules(installedModuleIds = new Set()) {
+    const { ModuleManager } = require('../installers/lib/modules/manager');
+    const moduleManager = new ModuleManager();
+    const { modules: localModules } = await moduleManager.listAvailable();
+
+    const defaultModules = [];
+
+    // Add default-selected local modules (typically BMM)
+    for (const mod of localModules) {
+      if (mod.defaultSelected === true || installedModuleIds.has(mod.id)) {
+        defaultModules.push(mod.id);
+      }
+    }
+
+    // If no defaults found, use 'bmm' as the fallback default
+    if (defaultModules.length === 0) {
+      defaultModules.push('bmm');
+    }
+
+    return defaultModules;
   }
 
   /**

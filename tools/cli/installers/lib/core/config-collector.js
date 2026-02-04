@@ -136,10 +136,12 @@ class ConfigCollector {
    * @param {string} projectDir - Target project directory
    * @param {Object} options - Additional options
    * @param {Map} options.customModulePaths - Map of module ID to source path for custom modules
+   * @param {boolean} options.skipPrompts - Skip prompts and use defaults (for --yes flag)
    */
   async collectAllConfigurations(modules, projectDir, options = {}) {
     // Store custom module paths for use in collectModuleConfig
     this.customModulePaths = options.customModulePaths || new Map();
+    this.skipPrompts = options.skipPrompts || false;
     await this.loadExistingConfig(projectDir);
 
     // Check if core was already collected (e.g., in early collection phase)
@@ -583,47 +585,60 @@ class ConfigCollector {
     // If there are questions to ask, prompt for accepting defaults vs customizing
     if (questions.length > 0) {
       const moduleDisplayName = moduleConfig.header || `${moduleName.toUpperCase()} Module`;
-      console.log();
-      console.log(chalk.cyan('?') + ' ' + chalk.magenta(moduleDisplayName));
-      let customize = true;
-      if (moduleName === 'core') {
-        // Core module: no confirm prompt, so add spacing manually to match visual style
-        console.log(chalk.gray('│'));
+
+      // Skip prompts mode: use all defaults without asking
+      if (this.skipPrompts) {
+        console.log(chalk.cyan('Using default configuration for'), chalk.magenta(moduleDisplayName));
+        // Use defaults for all questions
+        for (const question of questions) {
+          const hasDefault = question.default !== undefined && question.default !== null && question.default !== '';
+          if (hasDefault && typeof question.default !== 'function') {
+            allAnswers[question.name] = question.default;
+          }
+        }
       } else {
-        // Non-core modules: show "Accept Defaults?" confirm prompt (clack adds spacing)
-        const customizeAnswer = await prompts.prompt([
-          {
-            type: 'confirm',
-            name: 'customize',
-            message: 'Accept Defaults (no to customize)?',
-            default: true,
-          },
-        ]);
-        customize = customizeAnswer.customize;
-      }
+        console.log();
+        console.log(chalk.cyan('?') + ' ' + chalk.magenta(moduleDisplayName));
+        let customize = true;
+        if (moduleName === 'core') {
+          // Core module: no confirm prompt, so add spacing manually to match visual style
+          console.log(chalk.gray('│'));
+        } else {
+          // Non-core modules: show "Accept Defaults?" confirm prompt (clack adds spacing)
+          const customizeAnswer = await prompts.prompt([
+            {
+              type: 'confirm',
+              name: 'customize',
+              message: 'Accept Defaults (no to customize)?',
+              default: true,
+            },
+          ]);
+          customize = customizeAnswer.customize;
+        }
 
-      if (customize && moduleName !== 'core') {
-        // Accept defaults - only ask questions that have NO default value
-        const questionsWithoutDefaults = questions.filter((q) => q.default === undefined || q.default === null || q.default === '');
+        if (customize && moduleName !== 'core') {
+          // Accept defaults - only ask questions that have NO default value
+          const questionsWithoutDefaults = questions.filter((q) => q.default === undefined || q.default === null || q.default === '');
 
-        if (questionsWithoutDefaults.length > 0) {
-          console.log(chalk.dim(`\n  Asking required questions for ${moduleName.toUpperCase()}...`));
-          const promptedAnswers = await prompts.prompt(questionsWithoutDefaults);
+          if (questionsWithoutDefaults.length > 0) {
+            console.log(chalk.dim(`\n  Asking required questions for ${moduleName.toUpperCase()}...`));
+            const promptedAnswers = await prompts.prompt(questionsWithoutDefaults);
+            Object.assign(allAnswers, promptedAnswers);
+          }
+
+          // For questions with defaults that weren't asked, we need to process them with their default values
+          const questionsWithDefaults = questions.filter((q) => q.default !== undefined && q.default !== null && q.default !== '');
+          for (const question of questionsWithDefaults) {
+            // Skip function defaults - these are dynamic and will be evaluated later
+            if (typeof question.default === 'function') {
+              continue;
+            }
+            allAnswers[question.name] = question.default;
+          }
+        } else {
+          const promptedAnswers = await prompts.prompt(questions);
           Object.assign(allAnswers, promptedAnswers);
         }
-
-        // For questions with defaults that weren't asked, we need to process them with their default values
-        const questionsWithDefaults = questions.filter((q) => q.default !== undefined && q.default !== null && q.default !== '');
-        for (const question of questionsWithDefaults) {
-          // Skip function defaults - these are dynamic and will be evaluated later
-          if (typeof question.default === 'function') {
-            continue;
-          }
-          allAnswers[question.name] = question.default;
-        }
-      } else {
-        const promptedAnswers = await prompts.prompt(questions);
-        Object.assign(allAnswers, promptedAnswers);
       }
     }
 
