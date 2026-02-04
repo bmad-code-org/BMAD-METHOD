@@ -1,0 +1,15 @@
+# Expected: FAIL
+# Error code: invalid_enum_value
+# Error path: input_file_patterns.epics.load_strategy
+# Tests: AC17 — invalid load_strategy enum produces error
+name: bad-load-strategy-test
+description: "A workflow with invalid load_strategy"
+author: "Test"
+standalone: true
+web_bundle: false
+
+input_file_patterns:
+  epics:
+    description: "All epics"
+    whole: "{output_folder}/*epic*.md"
+    load_strategy: "INVALID_STRATEGY"

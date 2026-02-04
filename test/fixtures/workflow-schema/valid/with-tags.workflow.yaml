@@ -1,0 +1,12 @@
+# Expected: PASS
+# Tests: AC20 (positive) — tags as array of strings
+name: tags-test
+description: "A workflow with tags"
+author: "Test"
+standalone: true
+web_bundle: false
+
+tags:
+  - qa
+  - automation
+  - testing

@@ -1,0 +1,11 @@
+# Expected: FAIL
+# Error code: invalid_type
+# Error path: name
+# Error expected: string
+# Error received: number
+# Tests: AC7 — name with non-string value produces wrong_type error
+name: 42
+description: "A workflow with wrong type for name"
+author: "Test"
+standalone: true
+web_bundle: false

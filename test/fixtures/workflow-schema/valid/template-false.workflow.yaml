@@ -1,0 +1,8 @@
+# Expected: PASS
+# Tests: AC11 — template: false (boolean variant) passes
+name: template-false-test
+description: "A workflow with template set to false"
+author: "Test"
+standalone: true
+web_bundle: false
+template: false

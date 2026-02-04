@@ -1,0 +1,11 @@
+# Expected: FAIL
+# Error code: custom
+# Error path: instructions
+# Error message: Instructions file must end with .md or .xml
+# Tests: AC22 — instructions ending in .txt produces error
+name: bad-instructions-ext-test
+description: "A workflow with invalid instructions file extension"
+author: "Test"
+standalone: true
+web_bundle: false
+instructions: "{installed_path}/instructions.txt"

@@ -1,0 +1,8 @@
+# Expected: FAIL
+# Error code: invalid_type
+# Error path: name
+# Tests: AC1 — missing name produces error
+description: "A workflow missing the name field"
+author: "Test"
+standalone: true
+web_bundle: false

@@ -1,0 +1,6 @@
+# Expected: FAIL
+# Tests: YAML parse error — malformed YAML
+name: yaml-parse-error-test
+description: "This file has bad YAML
+  indentation: [that is: broken
+  and: missing brackets

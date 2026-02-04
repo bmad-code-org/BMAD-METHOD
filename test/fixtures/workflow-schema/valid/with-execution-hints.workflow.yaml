@@ -1,0 +1,12 @@
+# Expected: PASS
+# Tests: AC19 (positive) — execution_hints with valid boolean sub-fields
+name: execution-hints-test
+description: "A workflow with execution hints"
+author: "Test"
+standalone: true
+web_bundle: false
+
+execution_hints:
+  interactive: false
+  autonomous: true
+  iterative: false

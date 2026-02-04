@@ -1,0 +1,14 @@
+# Expected: PASS
+# Tests: AC23 — variables with arbitrary string key-value pairs
+name: variables-test
+description: "A workflow with variables section"
+author: "Test"
+standalone: true
+web_bundle: false
+
+variables:
+  project_context: "**/project-context.md"
+  test_dir: "{project-root}/tests"
+  source_dir: "{project-root}"
+  tracking_system: "file-system"
+  project_name: "{config_source}:project_name"

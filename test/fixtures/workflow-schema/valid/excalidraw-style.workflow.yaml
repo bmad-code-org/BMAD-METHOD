@@ -1,0 +1,23 @@
+# Expected: PASS
+# Tests: Excalidraw-style workflow with helpers, shared_path, library, json_validation
+name: excalidraw-style-test
+description: "Create diagrams in Excalidraw format"
+author: "BMad"
+
+config_source: "{project-root}/_bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+
+installed_path: "{project-root}/_bmad/bmm/workflows/excalidraw-diagrams/create-diagram"
+shared_path: "{project-root}/_bmad/bmm/workflows/excalidraw-diagrams/_shared"
+instructions: "{installed_path}/instructions.md"
+validation: "{installed_path}/checklist.md"
+
+helpers: "{project-root}/_bmad/core/resources/excalidraw/excalidraw-helpers.md"
+json_validation: "{project-root}/_bmad/core/resources/excalidraw/validate-json-instructions.md"
+templates: "{shared_path}/excalidraw-templates.yaml"
+library: "{shared_path}/excalidraw-library.json"
+
+default_output_file: "{output_folder}/excalidraw-diagrams/diagram-{timestamp}.excalidraw"
+
+standalone: true
+web_bundle: false

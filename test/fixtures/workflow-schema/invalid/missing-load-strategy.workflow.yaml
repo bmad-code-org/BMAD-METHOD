@@ -1,0 +1,14 @@
+# Expected: FAIL
+# Error code: invalid_type
+# Error path: input_file_patterns.epics.load_strategy
+# Tests: AC18 — input_file_patterns entry missing load_strategy produces error
+name: missing-load-strategy-test
+description: "A workflow with input_file_patterns missing load_strategy"
+author: "Test"
+standalone: true
+web_bundle: false
+
+input_file_patterns:
+  epics:
+    description: "All epics"
+    whole: "{output_folder}/*epic*.md"

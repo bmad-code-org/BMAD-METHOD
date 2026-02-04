@@ -1,0 +1,8 @@
+# Expected: FAIL
+# Error code: invalid_type
+# Error path: author
+# Tests: AC3 — missing author produces error
+name: missing-author-test
+description: "A workflow missing the author field"
+standalone: true
+web_bundle: false

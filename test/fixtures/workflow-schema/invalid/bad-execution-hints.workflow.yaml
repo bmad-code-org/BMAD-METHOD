@@ -1,0 +1,16 @@
+# Expected: FAIL
+# Error code: invalid_type
+# Error path: execution_hints.interactive
+# Error expected: boolean
+# Error received: string
+# Tests: AC19 — execution_hints with non-boolean sub-fields produces error
+name: bad-execution-hints-test
+description: "A workflow with wrong type in execution_hints"
+author: "Test"
+standalone: true
+web_bundle: false
+
+execution_hints:
+  interactive: "yes"
+  autonomous: true
+  iterative: false

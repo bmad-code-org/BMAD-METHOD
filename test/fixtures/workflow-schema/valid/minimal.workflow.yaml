@@ -1,0 +1,7 @@
+# Expected: PASS
+# Tests: AC6 — workflow.yaml with only the 5 required fields passes
+name: minimal-test
+description: "A minimal workflow with only required fields"
+author: "Test"
+standalone: true
+web_bundle: false

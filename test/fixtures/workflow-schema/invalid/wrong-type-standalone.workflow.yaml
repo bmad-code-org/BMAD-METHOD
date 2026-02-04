@@ -1,0 +1,11 @@
+# Expected: FAIL
+# Error code: invalid_type
+# Error path: standalone
+# Error expected: boolean
+# Error received: string
+# Tests: AC8 — standalone with non-boolean value produces wrong_type error
+name: wrong-type-standalone-test
+description: "A workflow with wrong type for standalone"
+author: "Test"
+standalone: "yes"
+web_bundle: false

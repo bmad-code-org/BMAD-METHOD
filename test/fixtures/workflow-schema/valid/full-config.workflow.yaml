@@ -1,0 +1,25 @@
+# Expected: PASS
+# Tests: All common fields populated — mirrors a real implementation workflow
+name: full-config-test
+description: "A workflow with all common fields populated"
+author: "BMad"
+
+config_source: "{project-root}/_bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+document_output_language: "{config_source}:document_output_language"
+user_skill_level: "{config_source}:user_skill_level"
+date: system-generated
+
+installed_path: "{project-root}/_bmad/bmm/workflows/test"
+instructions: "{installed_path}/instructions.md"
+validation: "{installed_path}/checklist.md"
+template: "{installed_path}/template.md"
+
+planning_artifacts: "{config_source}:planning_artifacts"
+implementation_artifacts: "{config_source}:implementation_artifacts"
+default_output_file: "{output_folder}/test-output.md"
+
+standalone: true
+web_bundle: false

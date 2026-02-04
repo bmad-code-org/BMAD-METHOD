@@ -1,0 +1,11 @@
+# Expected: FAIL
+# Error code: invalid_type
+# Error path: web_bundle
+# Error expected: boolean
+# Error received: string
+# Tests: AC9 — web_bundle with non-boolean value produces wrong_type error
+name: wrong-type-web-bundle-test
+description: "A workflow with wrong type for web_bundle"
+author: "Test"
+standalone: true
+web_bundle: "true"

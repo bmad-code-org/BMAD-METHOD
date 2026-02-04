@@ -1,0 +1,12 @@
+# Expected: FAIL
+# Error code: invalid_type
+# Error path: tags
+# Error expected: array
+# Error received: string
+# Tests: AC20 — tags with non-array value produces error
+name: bad-tags-type-test
+description: "A workflow with wrong type for tags"
+author: "Test"
+standalone: true
+web_bundle: false
+tags: "qa,automation,testing"

@@ -1,0 +1,10 @@
+# Expected: FAIL
+# Error code: invalid_union
+# Error path: template
+# Tests: AC13 — template with number type produces error
+name: bad-template-type-test
+description: "A workflow with wrong type for template"
+author: "Test"
+standalone: true
+web_bundle: false
+template: 42

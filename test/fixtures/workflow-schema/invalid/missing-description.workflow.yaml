@@ -1,0 +1,8 @@
+# Expected: FAIL
+# Error code: invalid_type
+# Error path: description
+# Tests: AC2 — missing description produces error
+name: missing-description-test
+author: "Test"
+standalone: true
+web_bundle: false

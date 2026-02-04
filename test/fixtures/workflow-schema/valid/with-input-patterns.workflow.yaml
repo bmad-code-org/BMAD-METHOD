@@ -1,0 +1,24 @@
+# Expected: PASS
+# Tests: AC14, AC15, AC16 — input_file_patterns with all three load strategies
+name: input-patterns-test
+description: "A workflow with input_file_patterns using all load strategies"
+author: "Test"
+standalone: true
+web_bundle: false
+
+input_file_patterns:
+  epics:
+    description: "All epics with user stories"
+    whole: "{output_folder}/*epic*.md"
+    sharded: "{output_folder}/*epic*/*.md"
+    load_strategy: "FULL_LOAD"
+  architecture:
+    description: "Architecture document"
+    whole: "{planning_artifacts}/architecture.md"
+    sharded: "{planning_artifacts}/architecture/*.md"
+    sharded_index: "{planning_artifacts}/architecture/index.md"
+    load_strategy: "SELECTIVE_LOAD"
+  retrospective:
+    description: "Previous retrospective"
+    pattern: "{implementation_artifacts}/retrospective*.md"
+    load_strategy: "INDEX_GUIDED"

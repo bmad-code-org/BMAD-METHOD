@@ -1,0 +1,9 @@
+# Expected: FAIL
+# Error code: too_small
+# Error path: name
+# Tests: AC10 — empty string name produces error
+name: ""
+description: "A workflow with an empty name"
+author: "Test"
+standalone: true
+web_bundle: false
