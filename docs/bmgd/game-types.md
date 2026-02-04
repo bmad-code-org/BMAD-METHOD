@@ -1,5 +1,6 @@
 ---
 title: "Game Types Reference"
+draft: true
 ---
 
 BMGD supports 24 game type templates. Each adds genre-specific sections to your GDD.

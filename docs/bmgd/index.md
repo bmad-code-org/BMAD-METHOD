@@ -1,6 +1,7 @@
 ---
 title: "BMGD Quick Guide"
 description: Quick reference for BMad Game Dev Studio
+draft: true
 ---
 
 ![BMGD Logo](bmgd-logo.png)
@@ -110,4 +111,3 @@ Each template provides genre-specific GDD sections, mechanics patterns, testing 
 
 - [Game Types Guide](game-types.md)
 - [Quick-Flow Guide](quick-flow-workflows.md)
-
