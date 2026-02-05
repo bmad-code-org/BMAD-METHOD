@@ -1,5 +1,5 @@
 # BMAD Method Documentation
-# https://bmad-code-org.github.io/BMAD-METHOD/
+# https://docs.bmad-method.org/
 #
 # This file controls web crawler access to the documentation site.
 
@@ -34,4 +34,4 @@ User-agent: cohere-ai
 Allow: /
 
 # Sitemap
-Sitemap: https://bmad-code-org.github.io/BMAD-METHOD/sitemap.xml
+Sitemap: https://docs.bmad-method.org/sitemap-index.xml
