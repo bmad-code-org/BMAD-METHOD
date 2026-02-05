@@ -1244,7 +1244,6 @@ Located in `src/modules/bmb/workflows/agent/data/`:
 
 - **Workflow Vendoring**: Web bundler performs automatic cross-module dependency vendoring
 - **BMGD Module Extraction**: Game development split into standalone 4-phase structure
-- **Enhanced Dependency Resolution**: Better handling of web_bundle: false workflows
 - **Advanced Elicitation Fix**: Added missing CSV files to workflow bundles
 - **Claude Code Fix**: Resolved README slash command installation regression
 

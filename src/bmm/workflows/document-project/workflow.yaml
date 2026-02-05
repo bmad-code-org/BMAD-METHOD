@@ -20,5 +20,3 @@ validation: "{installed_path}/checklist.md"
 
 # Required data files - CRITICAL for project type detection and documentation requirements
 documentation_requirements_csv: "{installed_path}/documentation-requirements.csv"
-
-web_bundle: false

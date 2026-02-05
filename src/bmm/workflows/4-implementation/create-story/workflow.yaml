@@ -55,5 +55,3 @@ input_file_patterns:
     whole: "{planning_artifacts}/*epic*.md"
     sharded: "{planning_artifacts}/*epic*/*.md"
     load_strategy: "SELECTIVE_LOAD" # Only load needed epic
-
-web_bundle: false

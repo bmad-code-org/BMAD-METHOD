@@ -54,5 +54,3 @@ instructions: "{installed_path}/instructions.md"
 validation: "{installed_path}/checklist.md"
 checklist: "{installed_path}/checklist.md"
 default_output_file: "{planning_artifacts}/sprint-change-proposal-{date}.md"
-
-web_bundle: false

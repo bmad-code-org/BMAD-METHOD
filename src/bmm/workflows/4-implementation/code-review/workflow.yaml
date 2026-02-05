@@ -46,5 +46,3 @@ input_file_patterns:
     sharded_index: "{planning_artifacts}/*epic*/index.md"
     sharded_single: "{planning_artifacts}/*epic*/epic-{{epic_num}}.md"
     load_strategy: "SELECTIVE_LOAD"
-
-web_bundle: false
