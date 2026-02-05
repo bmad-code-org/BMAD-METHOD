@@ -148,7 +148,7 @@ class ManifestGenerator {
       return workflows;
     }
 
-    // Recursively find workflow.yaml files
+    // Recursively find workflow files
     const findWorkflows = async (dir, relativePath = '') => {
       const entries = await fs.readdir(dir, { withFileTypes: true });
 
