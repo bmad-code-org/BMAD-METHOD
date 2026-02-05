@@ -235,6 +235,101 @@ async function runTests() {
   console.log('');
 
   // ============================================================
+  // Test 7: Validate Workflow XML Reference Guard
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 7: Validate Workflow Reference Guard${colors.reset}\n`);
+
+  try {
+    const searchRoots = [path.join(projectRoot, 'src'), path.join(projectRoot, 'docs')];
+    const allowedExtensions = new Set(['.md', '.yaml', '.yml', '.xml']);
+    const forbiddenRef = 'validate-workflow.xml';
+    const excludedFile = path.join(projectRoot, 'src', 'core', 'tasks', 'validate-workflow.xml');
+    const offenders = [];
+
+    const walk = async (dir) => {
+      const entries = await fs.readdir(dir, { withFileTypes: true });
+      for (const entry of entries) {
+        const fullPath = path.join(dir, entry.name);
+        if (entry.isDirectory()) {
+          await walk(fullPath);
+          continue;
+        }
+        if (!allowedExtensions.has(path.extname(entry.name))) {
+          continue;
+        }
+        if (fullPath === excludedFile) {
+          continue;
+        }
+        const content = await fs.readFile(fullPath, 'utf8');
+        if (content.includes(forbiddenRef)) {
+          offenders.push(path.relative(projectRoot, fullPath));
+        }
+      }
+    };
+
+    for (const root of searchRoots) {
+      await walk(root);
+    }
+
+    assert(
+      offenders.length === 0,
+      'No validate-workflow.xml references outside XML source',
+      offenders.length > 0 ? offenders.join(', ') : '',
+    );
+  } catch (error) {
+    assert(false, 'Validate workflow reference guard runs', error.message);
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test 8: Workflow XML Reference Guard
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 8: Workflow Reference Guard${colors.reset}\n`);
+
+  try {
+    const searchRoots = [path.join(projectRoot, 'src'), path.join(projectRoot, 'docs'), path.join(projectRoot, 'tools')];
+    const allowedExtensions = new Set(['.md', '.yaml', '.yml', '.xml']);
+    const forbiddenRef = 'workflow.xml';
+    const excludedFiles = new Set([
+      path.join(projectRoot, 'src', 'core', 'tasks', 'workflow.xml'),
+      path.join(projectRoot, 'src', 'core', 'workflows', 'advanced-elicitation', 'workflow.xml'),
+    ]);
+    const offenders = [];
+
+    const walk = async (dir) => {
+      const entries = await fs.readdir(dir, { withFileTypes: true });
+      for (const entry of entries) {
+        const fullPath = path.join(dir, entry.name);
+        if (entry.isDirectory()) {
+          await walk(fullPath);
+          continue;
+        }
+        if (!allowedExtensions.has(path.extname(entry.name))) {
+          continue;
+        }
+        if (excludedFiles.has(fullPath)) {
+          continue;
+        }
+        const content = await fs.readFile(fullPath, 'utf8');
+        if (content.includes(forbiddenRef)) {
+          offenders.push(path.relative(projectRoot, fullPath));
+        }
+      }
+    };
+
+    for (const root of searchRoots) {
+      await walk(root);
+    }
+
+    assert(offenders.length === 0, 'No workflow.xml references outside XML source', offenders.length > 0 ? offenders.join(', ') : '');
+  } catch (error) {
+    assert(false, 'Workflow reference guard runs', error.message);
+  }
+
+  console.log('');
+
+  // ============================================================
   // Summary
   // ============================================================
   console.log(`${colors.cyan}========================================`);

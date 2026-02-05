@@ -304,7 +304,7 @@ class BaseIdeSetup {
       if (entry.isDirectory() && entry.name !== 'core' && entry.name !== '_config' && entry.name !== 'agents') {
         const moduleWorkflowsPath = path.join(bmadDir, entry.name, 'workflows');
         if (await fs.pathExists(moduleWorkflowsPath)) {
-          const moduleWorkflows = await this.findWorkflowYamlFiles(moduleWorkflowsPath);
+          const moduleWorkflows = await this.findWorkflowFiles(moduleWorkflowsPath);
           workflows.push(
             ...moduleWorkflows.map((w) => ({
               ...w,
@@ -324,11 +324,11 @@ class BaseIdeSetup {
   }
 
   /**
-   * Recursively find workflow.yaml files
+   * Recursively find workflow files (workflow.yaml or workflow.md)
    * @param {string} dir - Directory to search
    * @returns {Array} List of workflow file info objects
    */
-  async findWorkflowYamlFiles(dir) {
+  async findWorkflowFiles(dir) {
     const workflows = [];
 
     if (!(await fs.pathExists(dir))) {
@@ -342,14 +342,24 @@ class BaseIdeSetup {
 
       if (entry.isDirectory()) {
         // Recursively search subdirectories
-        const subWorkflows = await this.findWorkflowYamlFiles(fullPath);
+        const subWorkflows = await this.findWorkflowFiles(fullPath);
         workflows.push(...subWorkflows);
-      } else if (entry.isFile() && entry.name === 'workflow.yaml') {
-        // Read workflow.yaml to get name and standalone property
+      } else if (entry.isFile() && (entry.name === 'workflow.yaml' || entry.name === 'workflow.md')) {
+        // Read workflow file to get name and standalone property
         try {
           const yaml = require('yaml');
           const content = await fs.readFile(fullPath, 'utf8');
-          const workflowData = yaml.parse(content);
+          let workflowData = null;
+
+          if (entry.name === 'workflow.yaml') {
+            workflowData = yaml.parse(content);
+          } else {
+            const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
+            if (!frontmatterMatch) {
+              continue;
+            }
+            workflowData = yaml.parse(frontmatterMatch[1]);
+          }
 
           if (workflowData && workflowData.name) {
             // Workflows are standalone by default unless explicitly false
