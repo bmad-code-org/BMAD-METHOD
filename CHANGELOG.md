@@ -1,5 +1,27 @@
 # Changelog
 
+## [6.0.0-Beta.7]
+
+**Release: February 4, 2026**
+
+### 🌟 Key Highlights
+
+1. **Direct Workflow Invocation** — Agent workflows can now be run directly via slash commands instead of only through agent orchestration
+2. **Installer Workflow Support** — Installer now picks up `workflow-*.md` files, enabling multiple workflow files per directory
+
+### 🎁 Features
+
+* **Slash Command Workflow Access** — Research and PRD workflows now accessible via direct slash commands: `/domain-research`, `/market-research`, `/technical-research`, `/create-prd`, `/edit-prd`, `/validate-prd` (bd620e38, 731bee26)
+* **Version Checking** — CLI now checks npm for newer versions and displays a warning banner when updates are available (d37ee7f2)
+
+### ♻️ Refactoring
+
+* **Workflow File Splitting** — Split monolithic `workflow.md` files into specific `workflow-*.md` files for individual workflow invocation (bd620e38)
+* **Installer Multi-Workflow Support** — Installer manifest generator now supports `workflow-*.md` pattern, allowing multiple workflow files per directory (731bee26)
+* **Internal Skill Renaming** — Renamed internal project skills to use `bmad-os-` prefix for consistent naming (5276d58b)
+
+---
+
 ## [6.0.0-Beta.6]
 
 **Release: February 4, 2026**
