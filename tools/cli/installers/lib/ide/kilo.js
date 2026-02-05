@@ -4,6 +4,7 @@ const chalk = require('chalk');
 const yaml = require('yaml');
 const { AgentCommandGenerator } = require('./shared/agent-command-generator');
 const { WorkflowCommandGenerator } = require('./shared/workflow-command-generator');
+const { TaskToolCommandGenerator } = require('./shared/task-tool-command-generator');
 
 /**
  * KiloCode IDE setup handler
@@ -78,9 +79,20 @@ class KiloSetup extends BaseIdeSetup {
     // Write workflow files
     const workflowCount = await workflowGenerator.writeDashArtifacts(workflowsDir, workflowArtifacts);
 
+    // Generate task and tool commands
+    const taskToolGen = new TaskToolCommandGenerator(this.bmadFolderName);
+    const { artifacts: taskToolArtifacts, counts: taskToolCounts } = await taskToolGen.collectTaskToolArtifacts(bmadDir);
+
+    // Write task/tool files to workflows directory (same location as workflows)
+    await taskToolGen.writeDashArtifacts(workflowsDir, taskToolArtifacts);
+    const taskCount = taskToolCounts.tasks || 0;
+    const toolCount = taskToolCounts.tools || 0;
+
     console.log(chalk.green(`✓ ${this.name} configured:`));
     console.log(chalk.dim(`  - ${addedCount} modes added`));
     console.log(chalk.dim(`  - ${workflowCount} workflows exported`));
+    console.log(chalk.dim(`  - ${taskCount} tasks exported`));
+    console.log(chalk.dim(`  - ${toolCount} tools exported`));
     console.log(chalk.dim(`  - Configuration file: ${this.configFile}`));
     console.log(chalk.dim(`  - Workflows directory: .kilocode/workflows/`));
     console.log(chalk.dim('\n  Modes will be available when you open this project in KiloCode'));
@@ -89,6 +101,8 @@ class KiloSetup extends BaseIdeSetup {
       success: true,
       modes: addedCount,
       workflows: workflowCount,
+      tasks: taskCount,
+      tools: toolCount,
     };
   }
 
