@@ -3,8 +3,6 @@
 name: required-tools-test
 description: "A workflow with required tools"
 author: "Test"
-standalone: true
-web_bundle: false
 
 required_tools:
   - read_file

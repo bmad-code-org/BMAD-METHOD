@@ -3,8 +3,6 @@
 name: input-patterns-test
 description: "A workflow with input_file_patterns using all load strategies"
 author: "Test"
-standalone: true
-web_bundle: false
 
 input_file_patterns:
   epics:

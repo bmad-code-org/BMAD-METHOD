@@ -1,8 +1,0 @@
-# Expected: FAIL
-# Error code: invalid_type
-# Error path: web_bundle
-# Tests: AC5 — missing web_bundle produces error
-name: missing-web-bundle-test
-description: "A workflow missing the web_bundle field"
-author: "Test"
-standalone: true

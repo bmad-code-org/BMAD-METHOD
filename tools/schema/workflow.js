@@ -29,12 +29,10 @@ const executionHintsSchema = z
 // Main workflow schema
 const workflowSchema = z
   .object({
-    // Required fields (all 13 workflow.yaml files have these)
+    // Required fields
     name: z.string().min(1),
     description: z.string().min(1),
     author: z.string().min(1),
-    standalone: z.boolean(),
-    web_bundle: z.boolean(),
 
     // Structured optional fields
     template: z.union([z.string(), z.literal(false)]).optional(),

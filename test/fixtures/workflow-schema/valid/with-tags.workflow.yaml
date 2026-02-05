@@ -3,8 +3,6 @@
 name: tags-test
 description: "A workflow with tags"
 author: "Test"
-standalone: true
-web_bundle: false
 
 tags:
   - qa

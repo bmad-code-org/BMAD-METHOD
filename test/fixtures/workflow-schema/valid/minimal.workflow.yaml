@@ -3,5 +3,3 @@
 name: minimal-test
 description: "A minimal workflow with only required fields"
 author: "Test"
-standalone: true
-web_bundle: false

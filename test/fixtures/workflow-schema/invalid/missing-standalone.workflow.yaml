@@ -1,8 +1,0 @@
-# Expected: FAIL
-# Error code: invalid_type
-# Error path: standalone
-# Tests: AC4 — missing standalone produces error
-name: missing-standalone-test
-description: "A workflow missing the standalone field"
-author: "Test"
-web_bundle: false

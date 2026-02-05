@@ -3,6 +3,4 @@
 name: template-path-test
 description: "A workflow with template set to a path"
 author: "Test"
-standalone: true
-web_bundle: false
 template: "{installed_path}/template.md"

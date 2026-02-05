@@ -3,8 +3,6 @@
 name: variables-test
 description: "A workflow with variables section"
 author: "Test"
-standalone: true
-web_bundle: false
 
 variables:
   project_context: "**/project-context.md"

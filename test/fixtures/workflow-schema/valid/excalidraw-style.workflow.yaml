@@ -19,5 +19,3 @@ library: "{shared_path}/excalidraw-library.json"
 
 default_output_file: "{output_folder}/excalidraw-diagrams/diagram-{timestamp}.excalidraw"
 
-standalone: true
-web_bundle: false

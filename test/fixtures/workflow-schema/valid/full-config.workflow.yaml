@@ -21,5 +21,3 @@ planning_artifacts: "{config_source}:planning_artifacts"
 implementation_artifacts: "{config_source}:implementation_artifacts"
 default_output_file: "{output_folder}/test-output.md"
 
-standalone: true
-web_bundle: false
