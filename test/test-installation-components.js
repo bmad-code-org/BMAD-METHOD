@@ -187,6 +187,54 @@ async function runTests() {
   console.log('');
 
   // ============================================================
+  // Test 6: Guard against advanced-elicitation XML references
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 6: Advanced Elicitation Reference Guard${colors.reset}\n`);
+
+  try {
+    const searchRoots = [path.join(projectRoot, 'src'), path.join(projectRoot, 'docs')];
+    const allowedExtensions = new Set(['.md', '.yaml', '.yml', '.xml']);
+    const forbiddenRef = 'advanced-elicitation/workflow.xml';
+    const excludedFile = path.join(projectRoot, 'src', 'core', 'workflows', 'advanced-elicitation', 'workflow.xml');
+    const offenders = [];
+
+    const walk = async (dir) => {
+      const entries = await fs.readdir(dir, { withFileTypes: true });
+      for (const entry of entries) {
+        const fullPath = path.join(dir, entry.name);
+        if (entry.isDirectory()) {
+          await walk(fullPath);
+          continue;
+        }
+        if (!allowedExtensions.has(path.extname(entry.name))) {
+          continue;
+        }
+        if (fullPath === excludedFile) {
+          continue;
+        }
+        const content = await fs.readFile(fullPath, 'utf8');
+        if (content.includes(forbiddenRef)) {
+          offenders.push(path.relative(projectRoot, fullPath));
+        }
+      }
+    };
+
+    for (const root of searchRoots) {
+      await walk(root);
+    }
+
+    assert(
+      offenders.length === 0,
+      'No advanced-elicitation/workflow.xml references outside XML source',
+      offenders.length > 0 ? offenders.join(', ') : '',
+    );
+  } catch (error) {
+    assert(false, 'Advanced elicitation reference guard runs', error.message);
+  }
+
+  console.log('');
+
+  // ============================================================
   // Summary
   // ============================================================
   console.log(`${colors.cyan}========================================`);
