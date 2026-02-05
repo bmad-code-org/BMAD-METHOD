@@ -102,8 +102,8 @@ class KiloSetup extends BaseIdeSetup {
     const whenToUseMatch = artifact.content.match(/whenToUse="([^"]+)"/);
     const whenToUse = whenToUseMatch ? whenToUseMatch[1] : `Use for ${title} tasks`;
 
-    // Get the activation header from central template
-    const activationHeader = await this.getAgentCommandHeader();
+    // Get the activation header from central template (trim to avoid YAML formatting issues)
+    const activationHeader = (await this.getAgentCommandHeader()).trim();
 
     const roleDefinitionMatch = artifact.content.match(/roleDefinition="([^"]+)"/);
     const roleDefinition = roleDefinitionMatch
