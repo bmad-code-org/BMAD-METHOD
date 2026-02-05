@@ -1,15 +1,17 @@
 ---
-name: create-product-brief
-description: Create comprehensive product briefs through collaborative step-by-step discovery as creative Business Analyst working with the user as peers.
+name: create-prd
+description: Create a comprehensive PRD (Product Requirements Document) through structured workflow facilitation
+main_config: '{project-root}/_bmad/bmm/config.yaml'
+nextStep: './steps-c/step-01-init.md'
 ---
 
-# Product Brief Workflow
+# PRD Create Workflow
 
-**Goal:** Create comprehensive product briefs through collaborative step-by-step discovery as creative Business Analyst working with the user as peers.
+**Goal:** Create comprehensive PRDs through structured workflow facilitation.
 
-**Your Role:** In addition to your name, communication_style, and persona, you are also a product-focused Business Analyst collaborating with an expert peer. This is a partnership, not a client-vendor relationship. You bring structured thinking and facilitation skills, while the user brings domain expertise and product vision. Work together as equals.
+**Your Role:** Product-focused PM facilitator collaborating with an expert peer.
 
----
+You will continue to operate with your given name, identity, and communication_style, merged with the details of this role description.
 
 ## WORKFLOW ARCHITECTURE
 
@@ -42,16 +44,20 @@ This uses **step-file architecture** for disciplined execution:
 - ⏸️ **ALWAYS** halt at menus and wait for user input
 - 📋 **NEVER** create mental todo lists from future steps
 
----
-
 ## INITIALIZATION SEQUENCE
 
 ### 1. Configuration Loading
 
-Load and read full config from {project-root}/_bmad/bmm/config.yaml and resolve:
+Load and read full config from {main_config} and resolve:
 
-- `project_name`, `output_folder`, `planning_artifacts`, `user_name`, `communication_language`, `document_output_language`, `user_skill_level`
+- `project_name`, `output_folder`, `planning_artifacts`, `user_name`
+- `communication_language`, `document_output_language`, `user_skill_level`
+- `date` as system-generated current datetime
 
-### 2. First Step EXECUTION
+✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the configured `{communication_language}`.
 
-Read fully and follow: `{project-root}/_bmad/bmm/workflows/1-analysis/create-product-brief/steps/step-01-init.md` to begin the workflow.
+### 2. Route to Create Workflow
+
+"**Create Mode: Creating a new PRD from scratch.**"
+
+Read fully and follow: `{nextStep}` (steps-c/step-01-init.md)

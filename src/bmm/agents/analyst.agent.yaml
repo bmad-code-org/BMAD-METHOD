@@ -1,5 +1,3 @@
-# Business Analyst Agent Definition
-
 agent:
   metadata:
     id: "_bmad/bmm/agents/analyst.md"
@@ -23,9 +21,17 @@ agent:
       data: "{project-root}/_bmad/bmm/data/project-context-template.md"
       description: "[BP] Brainstorm Project: Expert Guided Facilitation through a single or multiple techniques with a final report"
 
-    - trigger: RS or fuzzy match on research
-      exec: "{project-root}/_bmad/bmm/workflows/1-analysis/research/workflow.md"
-      description: "[RS] Research: Choose from or specify market, domain, competitive analysis, or technical research"
+    - trigger: MR or fuzzy match on market-research
+      exec: "{project-root}/_bmad/bmm/workflows/1-analysis/research/workflow-market-research.md"
+      description: "[MR] Market Research: Market analysis, competitive landscape, customer needs and trends"
+
+    - trigger: DR or fuzzy match on domain-research
+      exec: "{project-root}/_bmad/bmm/workflows/1-analysis/research/workflow-domain-research.md"
+      description: "[DR] Domain Research: Industry domain deep dive, subject matter expertise and terminology"
+
+    - trigger: TR or fuzzy match on technical-research
+      exec: "{project-root}/_bmad/bmm/workflows/1-analysis/research/workflow-technical-research.md"
+      description: "[TR] Technical Research: Technical feasibility, architecture options and implementation approaches"
 
     - trigger: CB or fuzzy match on product-brief
       exec: "{project-root}/_bmad/bmm/workflows/1-analysis/create-product-brief/workflow.md"

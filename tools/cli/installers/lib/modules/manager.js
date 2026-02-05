@@ -781,10 +781,6 @@ class ModuleManager {
         return;
       }
 
-      // Remove web_bundle section using regex to preserve formatting
-      // Match the web_bundle key and all its content (including nested items)
-      // This handles both web_bundle: false and web_bundle: {...}
-
       // Find the line that starts web_bundle
       const lines = yamlContent.split('\n');
       let startIdx = -1;

@@ -53,5 +53,3 @@ input_file_patterns:
 sprint_status_file: "{implementation_artifacts}/sprint-status.yaml"
 story_directory: "{implementation_artifacts}"
 retrospectives_folder: "{implementation_artifacts}"
-
-web_bundle: false
