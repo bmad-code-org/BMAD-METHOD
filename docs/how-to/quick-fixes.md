@@ -1,6 +1,6 @@
 ---
 title: "Quick Fixes"
-description: How to make quick fixes and ad-hoc changes in existing projects
+description: How to make quick fixes and ad-hoc changes
 ---
 
 Use the **DEV agent** directly for bug fixes, refactorings, or small targeted changes that don't require the full BMad method or Quick Flow.
