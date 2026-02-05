@@ -130,7 +130,7 @@ class ManifestGenerator {
   }
 
   /**
-   * Recursively find and parse workflow.yaml and workflow.md files
+   * Recursively find and parse workflow definition files
    */
   async getWorkflowsFromPath(basePath, moduleName) {
     const workflows = [];

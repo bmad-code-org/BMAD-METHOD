@@ -324,7 +324,7 @@ class BaseIdeSetup {
   }
 
   /**
-   * Recursively find workflow files (workflow.yaml or workflow.md)
+   * Recursively find workflow definition files
    * @param {string} dir - Directory to search
    * @returns {Array} List of workflow file info objects
    */
