@@ -6,7 +6,6 @@ const { XmlHandler } = require('../../../lib/xml-handler');
 const { getProjectRoot, getSourcePath, getModulePath } = require('../../../lib/project-root');
 const { filterCustomizationData } = require('../../../lib/agent/compiler');
 const { ExternalModuleManager } = require('./external-manager');
-const { BMAD_FOLDER_NAME } = require('../ide/shared/path-utils');
 
 /**
  * Manages the installation, updating, and removal of BMAD modules.
@@ -27,7 +26,7 @@ const { BMAD_FOLDER_NAME } = require('../ide/shared/path-utils');
 class ModuleManager {
   constructor(options = {}) {
     this.xmlHandler = new XmlHandler();
-    this.bmadFolderName = BMAD_FOLDER_NAME; // Default, can be overridden
+    this.bmadFolderName = 'bmad'; // Default, can be overridden
     this.customModulePaths = new Map(); // Initialize custom module paths
     this.externalModuleManager = new ExternalModuleManager(); // For external official modules
   }
@@ -450,7 +449,7 @@ class ModuleManager {
         const installSpinner = await createSpinner();
         installSpinner.start(`Installing dependencies for ${moduleInfo.name}...`);
         try {
-          execSync('npm install --omit=dev --no-audit --no-fund --no-progress --legacy-peer-deps', {
+          execSync('npm install --production --no-audit --no-fund --prefer-offline --no-progress', {
             cwd: moduleCacheDir,
             stdio: ['ignore', 'pipe', 'pipe'],
             timeout: 120_000, // 2 minute timeout
@@ -476,7 +475,7 @@ class ModuleManager {
           const installSpinner = await createSpinner();
           installSpinner.start(`Installing dependencies for ${moduleInfo.name}...`);
           try {
-            execSync('npm install --omit=dev --no-audit --no-fund --no-progress --legacy-peer-deps', {
+            execSync('npm install --production --no-audit --no-fund --prefer-offline --no-progress', {
               cwd: moduleCacheDir,
               stdio: ['ignore', 'pipe', 'pipe'],
               timeout: 120_000, // 2 minute timeout
@@ -774,8 +773,8 @@ class ModuleManager {
         }
       }
 
-      // Check if this is a workflow file (YAML or MD)
-      if (file.endsWith('workflow.yaml') || file.endsWith('workflow.md')) {
+      // Check if this is a workflow file (MD)
+      if (file.endsWith('workflow.md')) {
         await fs.ensureDir(path.dirname(targetFile));
         await this.copyWorkflowFileStripped(sourceFile, targetFile);
       } else {
@@ -791,100 +790,18 @@ class ModuleManager {
   }
 
   /**
-   * Copy workflow file with web_bundle section stripped (YAML or MD)
+   * Copy workflow file with web_bundle section stripped (MD)
    * Preserves comments, formatting, and line breaks
    * @param {string} sourceFile - Source workflow file path
    * @param {string} targetFile - Target workflow file path
    */
   async copyWorkflowFileStripped(sourceFile, targetFile) {
-    if (sourceFile.endsWith('.md')) {
-      let mdContent = await fs.readFile(sourceFile, 'utf8');
+    let mdContent = await fs.readFile(sourceFile, 'utf8');
 
-      mdContent = mdContent.replaceAll('_bmad', '_bmad');
-      mdContent = mdContent.replaceAll('_bmad', this.bmadFolderName);
-      mdContent = this.stripWebBundleFromFrontmatter(mdContent);
-
-      await fs.writeFile(targetFile, mdContent, 'utf8');
-      return;
-    }
-
-    // Read the source YAML file
-    let yamlContent = await fs.readFile(sourceFile, 'utf8');
-
-    // IMPORTANT: Replace escape sequence and placeholder BEFORE parsing YAML
-    // Otherwise parsing will fail on the placeholder
-    yamlContent = yamlContent.replaceAll('_bmad', this.bmadFolderName);
-
-    try {
-      // First check if web_bundle exists by parsing
-      const workflowConfig = yaml.parse(yamlContent);
-
-      if (workflowConfig.web_bundle === undefined) {
-        // No web_bundle section, just write (placeholders already replaced above)
-        await fs.writeFile(targetFile, yamlContent, 'utf8');
-        return;
-      }
-
-      // Find the line that starts web_bundle
-      const lines = yamlContent.split('\n');
-      let startIdx = -1;
-      let endIdx = -1;
-      let baseIndent = 0;
-
-      // Find the start of web_bundle section
-      for (const [i, line] of lines.entries()) {
-        const match = line.match(/^(\s*)web_bundle:/);
-        if (match) {
-          startIdx = i;
-          baseIndent = match[1].length;
-          break;
-        }
-      }
-
-      if (startIdx === -1) {
-        // web_bundle not found in text (shouldn't happen), copy as-is
-        await fs.writeFile(targetFile, yamlContent, 'utf8');
-        return;
-      }
-
-      // Find the end of web_bundle section
-      // It ends when we find a line with same or less indentation that's not empty/comment
-      endIdx = startIdx;
-      for (let i = startIdx + 1; i < lines.length; i++) {
-        const line = lines[i];
-
-        // Skip empty lines and comments
-        if (line.trim() === '' || line.trim().startsWith('#')) {
-          continue;
-        }
-
-        // Check indentation
-        const indent = line.match(/^(\s*)/)[1].length;
-        if (indent <= baseIndent) {
-          // Found next section at same or lower indentation
-          endIdx = i - 1;
-          break;
-        }
-      }
-
-      // If we didn't find an end, it goes to end of file
-      if (endIdx === startIdx) {
-        endIdx = lines.length - 1;
-      }
-
-      // Remove the web_bundle section (including the line before if it's just a blank line)
-      const newLines = [...lines.slice(0, startIdx), ...lines.slice(endIdx + 1)];
-
-      // Clean up any double blank lines that might result
-      const strippedYaml = newLines.join('\n').replaceAll(/\n\n\n+/g, '\n\n');
-
-      // Placeholders already replaced at the beginning of this function
-      await fs.writeFile(targetFile, strippedYaml, 'utf8');
-    } catch {
-      // If anything fails, just copy the file as-is
-      await prompts.log.warn(`  Warning: Could not process ${path.basename(sourceFile)}, copying as-is`);
-      await fs.copy(sourceFile, targetFile, { overwrite: true });
-    }
+    mdContent = mdContent.replaceAll('_bmad', '_bmad');
+    mdContent = mdContent.replaceAll('_bmad', this.bmadFolderName);
+    mdContent = this.stripWebBundleFromFrontmatter(mdContent);
+    await fs.writeFile(targetFile, mdContent, 'utf8');
   }
 
   stripWebBundleFromFrontmatter(content) {
@@ -925,7 +842,7 @@ class ModuleManager {
     for (const agentFile of agentFiles) {
       if (!agentFile.endsWith('.agent.yaml')) continue;
 
-      const relativePath = path.relative(sourceAgentsPath, agentFile).split(path.sep).join('/');
+      const relativePath = path.relative(sourceAgentsPath, agentFile);
       const targetDir = path.join(targetAgentsPath, path.dirname(relativePath));
 
       await fs.ensureDir(targetDir);
@@ -1229,13 +1146,9 @@ class ModuleManager {
         const installWorkflowSubPath = installMatch[2];
 
         const sourceModulePath = getModulePath(sourceModule);
-        const actualSourceWorkflowPath = path.join(
-          sourceModulePath,
-          'workflows',
-          sourceWorkflowSubPath.replace(/\/workflow\.(yaml|md)$/, ''),
-        );
+        const actualSourceWorkflowPath = path.join(sourceModulePath, 'workflows', sourceWorkflowSubPath.replace(/\/workflow\.md$/, ''));
 
-        const actualDestWorkflowPath = path.join(targetPath, 'workflows', installWorkflowSubPath.replace(/\/workflow\.(yaml|md)$/, ''));
+        const actualDestWorkflowPath = path.join(targetPath, 'workflows', installWorkflowSubPath.replace(/\/workflow\.md$/, ''));
 
         // Check if source workflow exists
         if (!(await fs.pathExists(actualSourceWorkflowPath))) {
@@ -1245,7 +1158,7 @@ class ModuleManager {
 
         // Copy the entire workflow folder
         await prompts.log.message(
-          `      Vendoring: ${sourceModule}/workflows/${sourceWorkflowSubPath.replace(/\/workflow\.(yaml|md)$/, '')} → ${moduleName}/workflows/${installWorkflowSubPath.replace(/\/workflow\.(yaml|md)$/, '')}`,
+          `      Vendoring: ${sourceModule}/workflows/${sourceWorkflowSubPath.replace(/\/workflow\.md$/, '')} → ${moduleName}/workflows/${installWorkflowSubPath.replace(/\/workflow\.md$/, '')}`,
         );
 
         await fs.ensureDir(path.dirname(actualDestWorkflowPath));
@@ -1254,12 +1167,8 @@ class ModuleManager {
 
         // Update workflow config_source references
         const workflowMdPath = path.join(actualDestWorkflowPath, 'workflow.md');
-        const workflowYamlPath = path.join(actualDestWorkflowPath, 'workflow.yaml');
-
         if (await fs.pathExists(workflowMdPath)) {
           await this.updateWorkflowConfigSource(workflowMdPath, moduleName);
-        } else if (await fs.pathExists(workflowYamlPath)) {
-          await this.updateWorkflowConfigSource(workflowYamlPath, moduleName);
         }
       }
     }
