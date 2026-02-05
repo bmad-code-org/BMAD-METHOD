@@ -73,7 +73,7 @@ Skip phases 1-3 for small, well-understood work.
 
 Each document becomes context for the next phase. The PRD tells the architect what constraints matter. The architecture tells the dev agent which patterns to follow. Story files give focused, complete context for implementation. Without this structure, agents make inconsistent decisions.
 
-For brownfield projects, `document-project` creates or updates `project-context.md` - what exists in the codebase and the rules all implementation workflows must observe. Run it just before Phase 4, and again when something significant changes - structure, architecture, or those rules. You can also edit `project-context.md` by hand.
+For established projects, `document-project` creates or updates `project-context.md` - what exists in the codebase and the rules all implementation workflows must observe. Run it just before Phase 4, and again when something significant changes - structure, architecture, or those rules. You can also edit `project-context.md` by hand.
 
 All implementation workflows load `project-context.md` if it exists. Additional context per workflow:
 
