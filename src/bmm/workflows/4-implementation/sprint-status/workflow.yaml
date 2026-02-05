@@ -29,8 +29,5 @@ input_file_patterns:
     whole: "{implementation_artifacts}/sprint-status.yaml"
     load_strategy: "FULL_LOAD"
 
-# Standalone so IDE commands get generated
-standalone: true
-
 # No web bundle needed
 web_bundle: false

@@ -1,5 +1,5 @@
 ---
-name: gh-triage
+name: bmad-os-gh-triage
 description: Fetch all GitHub issues via gh CLI and use AI agents to deeply analyze, cluster, and prioritize issues
 license: MIT
 disable-model-invocation: true

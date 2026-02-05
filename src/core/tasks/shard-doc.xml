@@ -1,6 +1,5 @@
 <task id="_bmad/core/tasks/shard-doc" name="Shard Document"
-  description="Splits large markdown documents into smaller, organized files based on level 2 (default) sections" webskip="true"
-  standalone="true">
+  description="Splits large markdown documents into smaller, organized files based on level 2 (default) sections">
   <objective>Split large markdown documents into smaller, organized files based on level 2 sections using @kayvan/markdown-tree-parser tool</objective>
 
   <llm critical="true">

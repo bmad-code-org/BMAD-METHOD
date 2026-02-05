@@ -4,29 +4,28 @@
 <task id="_bmad/core/tasks/editorial-review-structure.xml"
   name="Editorial Review - Structure"
   description="Structural editor that proposes cuts, reorganization,
-    and simplification while preserving comprehension"
-  standalone="true">
+    and simplification while preserving comprehension">
   <objective>Review document structure and propose substantive changes
     to improve clarity and flow-run this BEFORE copy editing</objective>
   <inputs>
     <input name="content" required="true"
-      desc="Document to review (markdown, plain text, or structured content)"/>
+      desc="Document to review (markdown, plain text, or structured content)" />
     <input name="style_guide" required="false"
       desc="Project-specific style guide. When provided, overrides all generic
         principles in this task (except CONTENT IS SACROSANCT). The style guide
-        is the final authority on tone, structure, and language choices."/>
+        is the final authority on tone, structure, and language choices." />
     <input name="purpose" required="false"
       desc="Document's intended purpose (e.g., 'quickstart tutorial',
-        'API reference', 'conceptual overview')"/>
+        'API reference', 'conceptual overview')" />
     <input name="target_audience" required="false"
       desc="Who reads this? (e.g., 'new users', 'experienced developers',
-        'decision makers')"/>
+        'decision makers')" />
     <input name="reader_type" required="false" default="humans"
       desc="'humans' (default) preserves comprehension aids;
-        'llm' optimizes for precision and density"/>
+        'llm' optimizes for precision and density" />
     <input name="length_target" required="false"
       desc="Target reduction (e.g., '30% shorter', 'half the length',
-        'no limit')"/>
+        'no limit')" />
   </inputs>
   <llm critical="true">
     <i>MANDATORY: Execute ALL steps in the flow section IN EXACT ORDER</i>
@@ -69,7 +68,7 @@
       <i>Cut emotional language, encouragement, and orientation sections</i>
       <i>
         IF concept is well-known from training (e.g., "conventional
-          commits", "REST APIs"): Reference the standard-don't re-teach it
+        commits", "REST APIs"): Reference the standard-don't re-teach it
         ELSE: Be explicit-don't assume the LLM will infer correctly
       </i>
       <i>Use consistent terminology-same word for same concept throughout</i>
@@ -132,7 +131,8 @@
       <action>Note reader_type and which principles apply (human-reader-principles or llm-reader-principles)</action>
     </step>
     <step n="3" title="Structural Analysis" critical="true">
-      <action if="style_guide provided">Consult style_guide now and note its key requirements—these override default principles for this analysis</action>
+      <action if="style_guide provided">Consult style_guide now and note its key requirements—these override default principles for this
+        analysis</action>
       <action>Map the document structure: list each major section with its word count</action>
       <action>Evaluate structure against the selected model's primary rules
         (e.g., 'Does recommendation come first?' for Pyramid)</action>
@@ -176,27 +176,27 @@
       <action>Output estimated total reduction if all recommendations accepted</action>
       <action if="no recommendations">Output: "No substantive changes recommended-document structure is sound"</action>
       <output-format>
-## Document Summary
-- **Purpose:** [inferred or provided purpose]
-- **Audience:** [inferred or provided audience]
-- **Reader type:** [selected reader type]
-- **Structure model:** [selected structure model]
-- **Current length:** [X] words across [Y] sections
+        ## Document Summary
+        - **Purpose:** [inferred or provided purpose]
+        - **Audience:** [inferred or provided audience]
+        - **Reader type:** [selected reader type]
+        - **Structure model:** [selected structure model]
+        - **Current length:** [X] words across [Y] sections
 
-## Recommendations
+        ## Recommendations
 
-### 1. [CUT/MERGE/MOVE/CONDENSE/QUESTION/PRESERVE] - [Section or element name]
-**Rationale:** [One sentence explanation]
-**Impact:** ~[X] words
-**Comprehension note:** [If applicable, note impact on reader understanding]
+        ### 1. [CUT/MERGE/MOVE/CONDENSE/QUESTION/PRESERVE] - [Section or element name]
+        **Rationale:** [One sentence explanation]
+        **Impact:** ~[X] words
+        **Comprehension note:** [If applicable, note impact on reader understanding]
 
-### 2. ...
+        ### 2. ...
 
-## Summary
-- **Total recommendations:** [N]
-- **Estimated reduction:** [X] words ([Y]% of original)
-- **Meets length target:** [Yes/No/No target specified]
-- **Comprehension trade-offs:** [Note any cuts that sacrifice reader engagement for brevity]
+        ## Summary
+        - **Total recommendations:** [N]
+        - **Estimated reduction:** [X] words ([Y]% of original)
+        - **Meets length target:** [Yes/No/No target specified]
+        - **Comprehension trade-offs:** [Note any cuts that sacrifice reader engagement for brevity]
       </output-format>
     </step>
   </flow>

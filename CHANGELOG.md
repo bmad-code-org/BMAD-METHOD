@@ -1,5 +1,48 @@
 # Changelog
 
+## [6.0.0-Beta.6]
+
+**Release: February 4, 2026**
+
+### 🌟 Key Highlights
+
+1. **Cross-File Reference Validator**: Comprehensive tool to detect broken file references, preventing 59 known bugs (~25% of historical issues)
+2. **New AutocompleteMultiselect Prompt**: Searchable multi-select with improved tool/IDE selection UX
+3. **Critical Installer Fixes**: Windows CRLF parsing, Gemini CLI TOML support, file extension preservation
+4. **Codebase Cleanup**: Removed dead Excalidraw/flattener artifacts (-3,798 lines)
+
+### 🎁 Features
+
+* **Cross-File Reference Validator** — Validates ~483 references across ~217 source files, detecting absolute path leaks and broken references (PR #1494)
+* **AutocompleteMultiselect Prompt** — Upgraded `@clack/prompts` to v1.0.0 with custom searchable multiselect, Tab-to-fill-placeholder behavior, and improved tool/IDE selection UX (PR #1514)
+* **OT Domains** — Added `process_control` and `building_automation` domains with high complexity ratings (PR #1510)
+* **Documentation Reference Pages** — Added `docs/reference/agents.md`, `commands.md`, and `testing.md` (PR #1525)
+
+### 🐛 Bug Fixes
+
+* **Critical Installer Fixes** — Fixed CRLF line ending parsing on Windows, Gemini CLI TOML support, file extension preservation, Codex task generation, Windows path handling, and CSV parsing (PR #1492)
+* **Double Tool Questioning** — Removed redundant tool questioning during installation (df176d42)
+* **QA Agent Rename** — Renamed Quinn agent to `qa` for naming consistency (PR #1508)
+* **Documentation Organization** — Fixed documentation ordering and links, hide BMGD pages from main LLM docs (PR #1525)
+
+### ♻️ Refactoring
+
+* **Excalidraw/Flattener Removal** — Removed dead artifacts no longer supported beyond beta: Excalidraw workflows, flattener tool, and 12+ diagram creation workflows (-3,798 lines) (f699a368)
+* **Centralized Constants** — Centralized `BMAD_FOLDER_NAME` to reduce hardcoded strings (PR #1492)
+* **Cross-Platform Paths** — Fixed path separator inconsistencies in agent IDs (PR #1492)
+
+### 📚 Documentation
+
+* **BMGD Diataxis Refactor** — Refactored BMGD documentation using Diataxis principles for better organization (PR #1502)
+* **Generate Project Context** — Restored `generate-project-context` workflow for brownfield project analysis (PR #1491)
+
+### 🔧 Maintenance
+
+* **Dependency Updates** — Upgraded `@clack/prompts` from v0.11.0 to v1.0.0 and added `@clack/core` (PR #1514)
+* **CI Integration** — Added `validate:refs` to CI quality workflow with warning annotations (PR #1494)
+
+---
+
 ## [6.0.0-Beta.5]
 
 ### 🎁 Features

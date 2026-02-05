@@ -1,5 +1,5 @@
 ---
-name: changelog-social
+name: bmad-os-changelog-social
 description: Generate social media announcements for Discord, Twitter, and LinkedIn from the latest changelog entry. Use when user asks to create release announcements, social posts, or share changelog updates. Reads CHANGELOG.md in current working directory. Reference examples/ for tone and format.
 disable-model-invocation: true
 ---
@@ -154,7 +154,13 @@ Read the appropriate example file before generating to match the established sty
 
 ## Output Format
 
-Present both announcements in clearly labeled sections:
+**CRITICAL: ALWAYS write to files** - Create files in `_bmad-output/social/` directory:
+
+1. `{repo-name}-discord-{version}.md` - Discord announcement
+2. `{repo-name}-twitter-{version}.md` - Twitter post
+3. `{repo-name}-linkedin-{version}.md` - LinkedIn post (if applicable)
+
+Also present a preview in the chat:
 
 ```markdown
 ## Discord Announcement
@@ -165,5 +171,8 @@ Present both announcements in clearly labeled sections:
 
 [paste Twitter content here]
 ```
+
+Files created:
+- `_bmad-output/social/{filename}`
 
 Offer to make adjustments if the user wants different emphasis, tone, or content.

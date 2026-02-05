@@ -1,5 +1,5 @@
 <task id="_bmad/core/tasks/index-docs" name="Index Docs"
-  description="Generates or updates an index.md of all documents in the specified directory" webskip="true" standalone="true">
+  description="Generates or updates an index.md of all documents in the specified directory">
   <llm critical="true">
     <i>MANDATORY: Execute ALL steps in the flow section IN EXACT ORDER</i>
     <i>DO NOT skip steps or change the sequence</i>

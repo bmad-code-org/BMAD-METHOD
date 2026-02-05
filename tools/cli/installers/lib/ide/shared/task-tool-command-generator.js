@@ -28,15 +28,12 @@ class TaskToolCommandGenerator {
     const tasks = await this.loadTaskManifest(bmadDir);
     const tools = await this.loadToolManifest(bmadDir);
 
-    // Filter to only standalone items
-    const standaloneTasks = tasks ? tasks.filter((t) => t.standalone === 'true' || t.standalone === true) : [];
-    const standaloneTools = tools ? tools.filter((t) => t.standalone === 'true' || t.standalone === true) : [];
-
+    // All tasks/tools in manifest are standalone (internal=true items are filtered during manifest generation)
     const artifacts = [];
     const bmadPrefix = `${BMAD_FOLDER_NAME}/`;
 
     // Collect task artifacts
-    for (const task of standaloneTasks) {
+    for (const task of tasks || []) {
       let taskPath = (task.path || '').replaceAll('\\', '/');
       // Convert absolute paths to relative paths
       if (path.isAbsolute(taskPath)) {
@@ -61,7 +58,7 @@ class TaskToolCommandGenerator {
     }
 
     // Collect tool artifacts
-    for (const tool of standaloneTools) {
+    for (const tool of tools || []) {
       let toolPath = (tool.path || '').replaceAll('\\', '/');
       // Convert absolute paths to relative paths
       if (path.isAbsolute(toolPath)) {
@@ -88,8 +85,8 @@ class TaskToolCommandGenerator {
     return {
       artifacts,
       counts: {
-        tasks: standaloneTasks.length,
-        tools: standaloneTools.length,
+        tasks: (tasks || []).length,
+        tools: (tools || []).length,
       },
     };
   }
@@ -104,17 +101,13 @@ class TaskToolCommandGenerator {
     const tasks = await this.loadTaskManifest(bmadDir);
     const tools = await this.loadToolManifest(bmadDir);
 
-    // Filter to only standalone items
-    const standaloneTasks = tasks ? tasks.filter((t) => t.standalone === 'true' || t.standalone === true) : [];
-    const standaloneTools = tools ? tools.filter((t) => t.standalone === 'true' || t.standalone === true) : [];
-
     // Base commands directory - use provided or default to Claude Code structure
     const commandsDir = baseCommandsDir || path.join(projectDir, '.claude', 'commands', 'bmad');
 
     let generatedCount = 0;
 
     // Generate command files for tasks
-    for (const task of standaloneTasks) {
+    for (const task of tasks || []) {
       const moduleTasksDir = path.join(commandsDir, task.module, 'tasks');
       await fs.ensureDir(moduleTasksDir);
 
@@ -126,7 +119,7 @@ class TaskToolCommandGenerator {
     }
 
     // Generate command files for tools
-    for (const tool of standaloneTools) {
+    for (const tool of tools || []) {
       const moduleToolsDir = path.join(commandsDir, tool.module, 'tools');
       await fs.ensureDir(moduleToolsDir);
 
@@ -139,8 +132,8 @@ class TaskToolCommandGenerator {
 
     return {
       generated: generatedCount,
-      tasks: standaloneTasks.length,
-      tools: standaloneTools.length,
+      tasks: (tasks || []).length,
+      tools: (tools || []).length,
     };
   }
 
@@ -242,14 +235,10 @@ Follow all instructions in the ${type} file exactly as written.
     const tasks = await this.loadTaskManifest(bmadDir);
     const tools = await this.loadToolManifest(bmadDir);
 
-    // Filter to only standalone items
-    const standaloneTasks = tasks ? tasks.filter((t) => t.standalone === 'true' || t.standalone === true) : [];
-    const standaloneTools = tools ? tools.filter((t) => t.standalone === 'true' || t.standalone === true) : [];
-
     let generatedCount = 0;
 
     // Generate command files for tasks
-    for (const task of standaloneTasks) {
+    for (const task of tasks || []) {
       const commandContent = this.generateCommandContent(task, 'task');
       // Use underscore format: bmad_bmm_name.md
       const flatName = toColonName(task.module, 'tasks', task.name);
@@ -260,7 +249,7 @@ Follow all instructions in the ${type} file exactly as written.
     }
 
     // Generate command files for tools
-    for (const tool of standaloneTools) {
+    for (const tool of tools || []) {
       const commandContent = this.generateCommandContent(tool, 'tool');
       // Use underscore format: bmad_bmm_name.md
       const flatName = toColonName(tool.module, 'tools', tool.name);
@@ -272,8 +261,8 @@ Follow all instructions in the ${type} file exactly as written.
 
     return {
       generated: generatedCount,
-      tasks: standaloneTasks.length,
-      tools: standaloneTools.length,
+      tasks: (tasks || []).length,
+      tools: (tools || []).length,
     };
   }
 
@@ -290,14 +279,10 @@ Follow all instructions in the ${type} file exactly as written.
     const tasks = await this.loadTaskManifest(bmadDir);
     const tools = await this.loadToolManifest(bmadDir);
 
-    // Filter to only standalone items
-    const standaloneTasks = tasks ? tasks.filter((t) => t.standalone === 'true' || t.standalone === true) : [];
-    const standaloneTools = tools ? tools.filter((t) => t.standalone === 'true' || t.standalone === true) : [];
-
     let generatedCount = 0;
 
     // Generate command files for tasks
-    for (const task of standaloneTasks) {
+    for (const task of tasks || []) {
       const commandContent = this.generateCommandContent(task, 'task');
       // Use dash format: bmad-bmm-name.md
       const flatName = toDashPath(`${task.module}/tasks/${task.name}.md`);
@@ -308,7 +293,7 @@ Follow all instructions in the ${type} file exactly as written.
     }
 
     // Generate command files for tools
-    for (const tool of standaloneTools) {
+    for (const tool of tools || []) {
       const commandContent = this.generateCommandContent(tool, 'tool');
       // Use dash format: bmad-bmm-name.md
       const flatName = toDashPath(`${tool.module}/tools/${tool.name}.md`);
@@ -320,8 +305,8 @@ Follow all instructions in the ${type} file exactly as written.
 
     return {
       generated: generatedCount,
-      tasks: standaloneTasks.length,
-      tools: standaloneTools.length,
+      tasks: (tasks || []).length,
+      tools: (tools || []).length,
     };
   }
 

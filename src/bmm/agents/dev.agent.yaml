@@ -1,7 +1,6 @@
 # Dev Implementation Agent Definition (v6)
 
 agent:
-  webskip: true
   metadata:
     id: "_bmad/bmm/agents/dev.md"
     name: Amelia

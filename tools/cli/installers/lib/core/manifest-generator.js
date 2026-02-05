@@ -409,10 +409,14 @@ class ManifestGenerator {
               name = frontmatter.name || name;
               displayName = frontmatter.displayName || frontmatter.name || name;
               description = this.cleanForCSV(frontmatter.description || '');
-              standalone = frontmatter.standalone === true || frontmatter.standalone === 'true';
+              // Tasks are standalone by default unless explicitly false (internal=true is already filtered above)
+              standalone = frontmatter.standalone !== false && frontmatter.standalone !== 'false';
             } catch {
               // If YAML parsing fails, use defaults
+              standalone = true; // Default to standalone
             }
+          } else {
+            standalone = true; // No frontmatter means standalone
           }
         } else {
           // For .xml tasks, extract from tag attributes
@@ -423,8 +427,8 @@ class ManifestGenerator {
           const objMatch = content.match(/<objective>([^<]+)<\/objective>/);
           description = this.cleanForCSV(descMatch ? descMatch[1] : objMatch ? objMatch[1].trim() : '');
 
-          const standaloneMatch = content.match(/<task[^>]+standalone="true"/);
-          standalone = !!standaloneMatch;
+          const standaloneFalseMatch = content.match(/<task[^>]+standalone="false"/);
+          standalone = !standaloneFalseMatch;
         }
 
         // Build relative path for installation
@@ -503,10 +507,14 @@ class ManifestGenerator {
               name = frontmatter.name || name;
               displayName = frontmatter.displayName || frontmatter.name || name;
               description = this.cleanForCSV(frontmatter.description || '');
-              standalone = frontmatter.standalone === true || frontmatter.standalone === 'true';
+              // Tools are standalone by default unless explicitly false (internal=true is already filtered above)
+              standalone = frontmatter.standalone !== false && frontmatter.standalone !== 'false';
             } catch {
               // If YAML parsing fails, use defaults
+              standalone = true; // Default to standalone
             }
+          } else {
+            standalone = true; // No frontmatter means standalone
           }
         } else {
           // For .xml tools, extract from tag attributes
@@ -517,8 +525,8 @@ class ManifestGenerator {
           const objMatch = content.match(/<objective>([^<]+)<\/objective>/);
           description = this.cleanForCSV(descMatch ? descMatch[1] : objMatch ? objMatch[1].trim() : '');
 
-          const standaloneMatch = content.match(/<tool[^>]+standalone="true"/);
-          standalone = !!standaloneMatch;
+          const standaloneFalseMatch = content.match(/<tool[^>]+standalone="false"/);
+          standalone = !standaloneFalseMatch;
         }
 
         // Build relative path for installation

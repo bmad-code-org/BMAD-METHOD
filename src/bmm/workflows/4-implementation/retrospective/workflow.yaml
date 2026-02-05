@@ -54,5 +54,4 @@ sprint_status_file: "{implementation_artifacts}/sprint-status.yaml"
 story_directory: "{implementation_artifacts}"
 retrospectives_folder: "{implementation_artifacts}"
 
-standalone: true
 web_bundle: false

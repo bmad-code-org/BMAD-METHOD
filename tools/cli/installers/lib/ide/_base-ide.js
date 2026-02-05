@@ -352,13 +352,15 @@ class BaseIdeSetup {
           const workflowData = yaml.parse(content);
 
           if (workflowData && workflowData.name) {
+            // Workflows are standalone by default unless explicitly false
+            const standalone = workflowData.standalone !== false && workflowData.standalone !== 'false';
             workflows.push({
               name: workflowData.name,
               path: fullPath,
               relativePath: path.relative(dir, fullPath),
               filename: entry.name,
               description: workflowData.description || '',
-              standalone: workflowData.standalone === true, // Check standalone property
+              standalone: standalone,
             });
           }
         } catch {
@@ -442,36 +444,38 @@ class BaseIdeSetup {
         const matchedExt = extensions.find((e) => entry.name.endsWith(e));
         if (matchedExt) {
           // Read file content to check for standalone attribute
-          let standalone = false;
+          // All non-internal files are considered standalone by default
+          let standalone = true;
           try {
             const content = await fs.readFile(fullPath, 'utf8');
 
-            // Skip internal/engine files (not user-facing tasks/tools)
+            // Skip internal/engine files (not user-facing)
             if (content.includes('internal="true"')) {
               continue;
             }
 
-            // Check for standalone="true" in XML files
+            // Check for explicit standalone: false
             if (entry.name.endsWith('.xml')) {
-              // Look for standalone="true" in the opening tag (task or tool)
-              const standaloneMatch = content.match(/<(?:task|tool)[^>]+standalone="true"/);
-              standalone = !!standaloneMatch;
+              // For XML files, check for standalone="false" attribute
+              const tagMatch = content.match(/<(task|tool)[^>]*standalone="false"/);
+              standalone = !tagMatch;
             } else if (entry.name.endsWith('.md')) {
-              // Check for standalone: true in YAML frontmatter
-              const frontmatterMatch = content.match(/^---\s*\n([\s\S]*?)\n---/);
+              // For MD files, parse YAML frontmatter
+              const frontmatterMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
               if (frontmatterMatch) {
-                const yaml = require('yaml');
                 try {
+                  const yaml = require('yaml');
                   const frontmatter = yaml.parse(frontmatterMatch[1]);
-                  standalone = frontmatter.standalone === true;
+                  standalone = frontmatter.standalone !== false && frontmatter.standalone !== 'false';
                 } catch {
-                  // Ignore YAML parse errors
+                  // If YAML parsing fails, default to standalone
                 }
               }
+              // No frontmatter means standalone (default)
             }
           } catch {
-            // If we can't read the file, assume not standalone
-            standalone = false;
+            // If we can't read the file, default to standalone
+            standalone = true;
           }
 
           files.push({
