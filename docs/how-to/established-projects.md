@@ -1,11 +1,11 @@
 ---
 title: "Established Projects"
-description: How to use BMad Method on established projects
+description: How to use BMad Method on existing codebases
 ---
 
-Use BMad Method effectively when working on established projects and codebases.
+Use BMad Method effectively when working on existing projects and legacy codebases.
 
-This guide covers the essential workflow for onboarding to established projects with BMad Method.
+This guide covers the essential workflow for onboarding to existing projects with BMad Method.
 
 :::note[Prerequisites]
 - BMad Method installed (`npx bmad-method install`)
