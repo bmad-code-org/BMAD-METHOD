@@ -9,7 +9,7 @@ const { toColonPath, toDashPath, customAgentColonName, customAgentDashName } = r
  */
 class WorkflowCommandGenerator {
   constructor(bmadFolderName = 'bmad') {
-    this.templatePath = path.join(__dirname, '../templates/workflow-command-template.md');
+    this.templatePath = path.join(__dirname, '../templates/workflow-commander.md');
     this.bmadFolderName = bmadFolderName;
   }
 
@@ -77,11 +77,8 @@ class WorkflowCommandGenerator {
           workflowRelPath = parts.slice(1).join('/');
         }
       }
-      // Determine if this is a YAML workflow
-      const isYamlWorkflow = workflow.path.endsWith('.yaml') || workflow.path.endsWith('.yml');
       artifacts.push({
         type: 'workflow-command',
-        isYamlWorkflow: isYamlWorkflow, // For template selection
         name: workflow.name,
         description: workflow.description || `${workflow.name} workflow`,
         module: workflow.module,
@@ -117,9 +114,7 @@ class WorkflowCommandGenerator {
    */
   async generateCommandContent(workflow, bmadDir) {
     // Determine template based on workflow file type
-    const isMarkdownWorkflow = workflow.path.endsWith('workflow.md');
-    const templateName = isMarkdownWorkflow ? 'workflow-commander.md' : 'workflow-command-template.md';
-    const templatePath = path.join(path.dirname(this.templatePath), templateName);
+    const templatePath = path.join(path.dirname(this.templatePath), 'workflow-commander.md');
 
     // Load the appropriate template
     const template = await fs.readFile(templatePath, 'utf8');
