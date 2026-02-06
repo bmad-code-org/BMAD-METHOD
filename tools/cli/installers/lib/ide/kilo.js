@@ -1,7 +1,10 @@
 const path = require('node:path');
 const { BaseIdeSetup } = require('./_base-ide');
 const chalk = require('chalk');
+const yaml = require('yaml');
 const { AgentCommandGenerator } = require('./shared/agent-command-generator');
+const { WorkflowCommandGenerator } = require('./shared/workflow-command-generator');
+const { TaskToolCommandGenerator } = require('./shared/task-tool-command-generator');
 
 /**
  * KiloCode IDE setup handler
@@ -22,76 +25,94 @@ class KiloSetup extends BaseIdeSetup {
   async setup(projectDir, bmadDir, options = {}) {
     console.log(chalk.cyan(`Setting up ${this.name}...`));
 
-    // Check for existing .kilocodemodes file
+    // Clean up any old BMAD installation first
+    await this.cleanup(projectDir);
+
+    // Load existing config (may contain non-BMAD modes and other settings)
     const kiloModesPath = path.join(projectDir, this.configFile);
-    let existingModes = [];
-    let existingContent = '';
+    let config = {};
 
     if (await this.pathExists(kiloModesPath)) {
-      existingContent = await this.readFile(kiloModesPath);
-      // Parse existing modes
-      const modeMatches = existingContent.matchAll(/- slug: ([\w-]+)/g);
-      for (const match of modeMatches) {
-        existingModes.push(match[1]);
+      const existingContent = await this.readFile(kiloModesPath);
+      try {
+        config = yaml.parse(existingContent) || {};
+      } catch {
+        // If parsing fails, start fresh but warn user
+        console.log(chalk.yellow('Warning: Could not parse existing .kilocodemodes, starting fresh'));
+        config = {};
       }
-      console.log(chalk.yellow(`Found existing .kilocodemodes file with ${existingModes.length} modes`));
+    }
+
+    // Ensure customModes array exists
+    if (!Array.isArray(config.customModes)) {
+      config.customModes = [];
     }
 
     // Generate agent launchers
     const agentGen = new AgentCommandGenerator(this.bmadFolderName);
     const { artifacts: agentArtifacts } = await agentGen.collectAgentArtifacts(bmadDir, options.selectedModules || []);
 
-    // Create modes content
-    let newModesContent = '';
+    // Create mode objects and add to config
     let addedCount = 0;
-    let skippedCount = 0;
 
     for (const artifact of agentArtifacts) {
-      const slug = `bmad-${artifact.module}-${artifact.name}`;
-
-      // Skip if already exists
-      if (existingModes.includes(slug)) {
-        console.log(chalk.dim(`  Skipping ${slug} - already exists`));
-        skippedCount++;
-        continue;
-      }
-
-      const modeEntry = await this.createModeEntry(artifact, projectDir);
-
-      newModesContent += modeEntry;
+      const modeObject = await this.createModeObject(artifact, projectDir);
+      config.customModes.push(modeObject);
       addedCount++;
     }
 
-    // Build final content
-    let finalContent = '';
-    if (existingContent) {
-      finalContent = existingContent.trim() + '\n' + newModesContent;
-    } else {
-      finalContent = 'customModes:\n' + newModesContent;
-    }
-
-    // Write .kilocodemodes file
+    // Write .kilocodemodes file with proper YAML structure
+    const finalContent = yaml.stringify(config, { lineWidth: 0 });
     await this.writeFile(kiloModesPath, finalContent);
+
+    // Generate workflow commands
+    const workflowGenerator = new WorkflowCommandGenerator(this.bmadFolderName);
+    const { artifacts: workflowArtifacts } = await workflowGenerator.collectWorkflowArtifacts(bmadDir);
+
+    // Write to .kilocode/workflows/ directory
+    const workflowsDir = path.join(projectDir, '.kilocode', 'workflows');
+    await this.ensureDir(workflowsDir);
+
+    // Clear old BMAD workflows before writing new ones
+    await this.clearBmadWorkflows(workflowsDir);
+
+    // Write workflow files
+    const workflowCount = await workflowGenerator.writeDashArtifacts(workflowsDir, workflowArtifacts);
+
+    // Generate task and tool commands
+    const taskToolGen = new TaskToolCommandGenerator(this.bmadFolderName);
+    const { artifacts: taskToolArtifacts, counts: taskToolCounts } = await taskToolGen.collectTaskToolArtifacts(bmadDir);
+
+    // Write task/tool files to workflows directory (same location as workflows)
+    await taskToolGen.writeDashArtifacts(workflowsDir, taskToolArtifacts);
+    const taskCount = taskToolCounts.tasks || 0;
+    const toolCount = taskToolCounts.tools || 0;
 
     console.log(chalk.green(`✓ ${this.name} configured:`));
     console.log(chalk.dim(`  - ${addedCount} modes added`));
-    if (skippedCount > 0) {
-      console.log(chalk.dim(`  - ${skippedCount} modes skipped (already exist)`));
-    }
+    console.log(chalk.dim(`  - ${workflowCount} workflows exported`));
+    console.log(chalk.dim(`  - ${taskCount} tasks exported`));
+    console.log(chalk.dim(`  - ${toolCount} tools exported`));
     console.log(chalk.dim(`  - Configuration file: ${this.configFile}`));
+    console.log(chalk.dim(`  - Workflows directory: .kilocode/workflows/`));
     console.log(chalk.dim('\n  Modes will be available when you open this project in KiloCode'));
 
     return {
       success: true,
       modes: addedCount,
-      skipped: skippedCount,
+      workflows: workflowCount,
+      tasks: taskCount,
+      tools: toolCount,
     };
   }
 
   /**
-   * Create a mode entry for an agent
+   * Create a mode object for an agent
+   * @param {Object} artifact - Agent artifact
+   * @param {string} projectDir - Project directory
+   * @returns {Object} Mode object for YAML serialization
    */
-  async createModeEntry(artifact, projectDir) {
+  async createModeObject(artifact, projectDir) {
     // Extract metadata from launcher content
     const titleMatch = artifact.content.match(/title="([^"]+)"/);
     const title = titleMatch ? titleMatch[1] : this.formatTitle(artifact.name);
@@ -102,8 +123,8 @@ class KiloSetup extends BaseIdeSetup {
     const whenToUseMatch = artifact.content.match(/whenToUse="([^"]+)"/);
     const whenToUse = whenToUseMatch ? whenToUseMatch[1] : `Use for ${title} tasks`;
 
-    // Get the activation header from central template
-    const activationHeader = await this.getAgentCommandHeader();
+    // Get the activation header from central template (trim to avoid YAML formatting issues)
+    const activationHeader = (await this.getAgentCommandHeader()).trim();
 
     const roleDefinitionMatch = artifact.content.match(/roleDefinition="([^"]+)"/);
     const roleDefinition = roleDefinitionMatch
@@ -113,22 +134,15 @@ class KiloSetup extends BaseIdeSetup {
     // Get relative path
     const relativePath = path.relative(projectDir, artifact.sourcePath).replaceAll('\\', '/');
 
-    // Build mode entry (KiloCode uses same schema as Roo)
-    const slug = `bmad-${artifact.module}-${artifact.name}`;
-    let modeEntry = ` - slug: ${slug}\n`;
-    modeEntry += `   name: '${icon} ${title}'\n`;
-    modeEntry += `   roleDefinition: ${roleDefinition}\n`;
-    modeEntry += `   whenToUse: ${whenToUse}\n`;
-    modeEntry += `   customInstructions: |\n`;
-    modeEntry += `    ${activationHeader} Read the full YAML from ${relativePath} start activation to alter your state of being follow startup section instructions stay in this being until told to exit this mode\n`;
-    modeEntry += `   groups:\n`;
-    modeEntry += `    - read\n`;
-    modeEntry += `    - edit\n`;
-    modeEntry += `    - browser\n`;
-    modeEntry += `    - command\n`;
-    modeEntry += `    - mcp\n`;
-
-    return modeEntry;
+    // Build mode object (KiloCode uses same schema as Roo)
+    return {
+      slug: `bmad-${artifact.module}-${artifact.name}`,
+      name: `${icon} ${title}`,
+      roleDefinition: roleDefinition,
+      whenToUse: whenToUse,
+      customInstructions: `${activationHeader} Read the full YAML from ${relativePath} start activation to alter your state of being follow startup section instructions stay in this being until told to exit this mode\n`,
+      groups: ['read', 'edit', 'browser', 'command', 'mcp'],
+    };
   }
 
   /**
@@ -142,6 +156,22 @@ class KiloSetup extends BaseIdeSetup {
   }
 
   /**
+   * Clear old BMAD workflow files from workflows directory
+   * @param {string} workflowsDir - Workflows directory path
+   */
+  async clearBmadWorkflows(workflowsDir) {
+    const fs = require('fs-extra');
+    if (!(await fs.pathExists(workflowsDir))) return;
+
+    const entries = await fs.readdir(workflowsDir);
+    for (const entry of entries) {
+      if (entry.startsWith('bmad-') && entry.endsWith('.md')) {
+        await fs.remove(path.join(workflowsDir, entry));
+      }
+    }
+  }
+
+  /**
    * Cleanup KiloCode configuration
    */
   async cleanup(projectDir) {
@@ -151,28 +181,29 @@ class KiloSetup extends BaseIdeSetup {
     if (await fs.pathExists(kiloModesPath)) {
       const content = await fs.readFile(kiloModesPath, 'utf8');
 
-      // Remove BMAD modes only
-      const lines = content.split('\n');
-      const filteredLines = [];
-      let skipMode = false;
-      let removedCount = 0;
+      try {
+        const config = yaml.parse(content) || {};
 
-      for (const line of lines) {
-        if (/^\s*- slug: bmad-/.test(line)) {
-          skipMode = true;
-          removedCount++;
-        } else if (skipMode && /^\s*- slug: /.test(line)) {
-          skipMode = false;
-        }
+        if (Array.isArray(config.customModes)) {
+          const originalCount = config.customModes.length;
+          // Remove BMAD modes only (keep non-BMAD modes)
+          config.customModes = config.customModes.filter((mode) => !mode.slug || !mode.slug.startsWith('bmad-'));
+          const removedCount = originalCount - config.customModes.length;
 
-        if (!skipMode) {
-          filteredLines.push(line);
+          if (removedCount > 0) {
+            await fs.writeFile(kiloModesPath, yaml.stringify(config, { lineWidth: 0 }));
+            console.log(chalk.dim(`Removed ${removedCount} BMAD modes from .kilocodemodes`));
+          }
         }
+      } catch {
+        // If parsing fails, leave file as-is
+        console.log(chalk.yellow('Warning: Could not parse .kilocodemodes for cleanup'));
       }
-
-      await fs.writeFile(kiloModesPath, filteredLines.join('\n'));
-      console.log(chalk.dim(`Removed ${removedCount} BMAD modes from .kilocodemodes`));
     }
+
+    // Clean up workflow files
+    const workflowsDir = path.join(projectDir, '.kilocode', 'workflows');
+    await this.clearBmadWorkflows(workflowsDir);
   }
 
   /**
@@ -185,31 +216,28 @@ class KiloSetup extends BaseIdeSetup {
    */
   async installCustomAgentLauncher(projectDir, agentName, agentPath, metadata) {
     const kilocodemodesPath = path.join(projectDir, this.configFile);
-    let existingContent = '';
+    let config = {};
 
     // Read existing .kilocodemodes file
     if (await this.pathExists(kilocodemodesPath)) {
-      existingContent = await this.readFile(kilocodemodesPath);
+      const existingContent = await this.readFile(kilocodemodesPath);
+      try {
+        config = yaml.parse(existingContent) || {};
+      } catch {
+        config = {};
+      }
     }
 
-    // Create custom agent mode entry
+    // Ensure customModes array exists
+    if (!Array.isArray(config.customModes)) {
+      config.customModes = [];
+    }
+
+    // Create custom agent mode object
     const slug = `bmad-custom-${agentName.toLowerCase()}`;
-    const modeEntry = ` - slug: ${slug}
-   name: 'BMAD Custom: ${agentName}'
-   description: |
-    Custom BMAD agent: ${agentName}
-
-    **⚠️ IMPORTANT**: Run @${agentPath} first to load the complete agent!
-
-    This is a launcher for the custom BMAD agent "${agentName}". The agent will follow the persona and instructions from the main agent file.
-   prompt: |
-    @${agentPath}
-   always: false
-   permissions: all
-`;
 
     // Check if mode already exists
-    if (existingContent.includes(slug)) {
+    if (config.customModes.some((mode) => mode.slug === slug)) {
       return {
         ide: 'kilo',
         path: this.configFile,
@@ -219,24 +247,18 @@ class KiloSetup extends BaseIdeSetup {
       };
     }
 
-    // Build final content
-    let finalContent = '';
-    if (existingContent) {
-      // Find customModes section or add it
-      if (existingContent.includes('customModes:')) {
-        // Append to existing customModes
-        finalContent = existingContent + modeEntry;
-      } else {
-        // Add customModes section
-        finalContent = existingContent.trim() + '\n\ncustomModes:\n' + modeEntry;
-      }
-    } else {
-      // Create new .kilocodemodes file with customModes
-      finalContent = 'customModes:\n' + modeEntry;
-    }
+    // Add custom mode object
+    config.customModes.push({
+      slug: slug,
+      name: `BMAD Custom: ${agentName}`,
+      description: `Custom BMAD agent: ${agentName}\n\n**⚠️ IMPORTANT**: Run @${agentPath} first to load the complete agent!\n\nThis is a launcher for the custom BMAD agent "${agentName}". The agent will follow the persona and instructions from the main agent file.\n`,
+      prompt: `@${agentPath}\n`,
+      always: false,
+      permissions: 'all',
+    });
 
-    // Write .kilocodemodes file
-    await this.writeFile(kilocodemodesPath, finalContent);
+    // Write .kilocodemodes file with proper YAML structure
+    await this.writeFile(kilocodemodesPath, yaml.stringify(config, { lineWidth: 0 }));
 
     return {
       ide: 'kilo',

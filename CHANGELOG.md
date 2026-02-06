@@ -1,5 +1,70 @@
 # Changelog
 
+## [6.0.0-Beta.7]
+
+**Release: February 4, 2026**
+
+### 🌟 Key Highlights
+
+1. **Direct Workflow Invocation** — Agent workflows can now be run directly via slash commands instead of only through agent orchestration
+2. **Installer Workflow Support** — Installer now picks up `workflow-*.md` files, enabling multiple workflow files per directory
+
+### 🎁 Features
+
+* **Slash Command Workflow Access** — Research and PRD workflows now accessible via direct slash commands: `/domain-research`, `/market-research`, `/technical-research`, `/create-prd`, `/edit-prd`, `/validate-prd` (bd620e38, 731bee26)
+* **Version Checking** — CLI now checks npm for newer versions and displays a warning banner when updates are available (d37ee7f2)
+
+### ♻️ Refactoring
+
+* **Workflow File Splitting** — Split monolithic `workflow.md` files into specific `workflow-*.md` files for individual workflow invocation (bd620e38)
+* **Installer Multi-Workflow Support** — Installer manifest generator now supports `workflow-*.md` pattern, allowing multiple workflow files per directory (731bee26)
+* **Internal Skill Renaming** — Renamed internal project skills to use `bmad-os-` prefix for consistent naming (5276d58b)
+
+---
+
+## [6.0.0-Beta.6]
+
+**Release: February 4, 2026**
+
+### 🌟 Key Highlights
+
+1. **Cross-File Reference Validator**: Comprehensive tool to detect broken file references, preventing 59 known bugs (~25% of historical issues)
+2. **New AutocompleteMultiselect Prompt**: Searchable multi-select with improved tool/IDE selection UX
+3. **Critical Installer Fixes**: Windows CRLF parsing, Gemini CLI TOML support, file extension preservation
+4. **Codebase Cleanup**: Removed dead Excalidraw/flattener artifacts (-3,798 lines)
+
+### 🎁 Features
+
+* **Cross-File Reference Validator** — Validates ~483 references across ~217 source files, detecting absolute path leaks and broken references (PR #1494)
+* **AutocompleteMultiselect Prompt** — Upgraded `@clack/prompts` to v1.0.0 with custom searchable multiselect, Tab-to-fill-placeholder behavior, and improved tool/IDE selection UX (PR #1514)
+* **OT Domains** — Added `process_control` and `building_automation` domains with high complexity ratings (PR #1510)
+* **Documentation Reference Pages** — Added `docs/reference/agents.md`, `commands.md`, and `testing.md` (PR #1525)
+
+### 🐛 Bug Fixes
+
+* **Critical Installer Fixes** — Fixed CRLF line ending parsing on Windows, Gemini CLI TOML support, file extension preservation, Codex task generation, Windows path handling, and CSV parsing (PR #1492)
+* **Double Tool Questioning** — Removed redundant tool questioning during installation (df176d42)
+* **QA Agent Rename** — Renamed Quinn agent to `qa` for naming consistency (PR #1508)
+* **Documentation Organization** — Fixed documentation ordering and links, hide BMGD pages from main LLM docs (PR #1525)
+
+### ♻️ Refactoring
+
+* **Excalidraw/Flattener Removal** — Removed dead artifacts no longer supported beyond beta: Excalidraw workflows, flattener tool, and 12+ diagram creation workflows (-3,798 lines) (f699a368)
+* **Centralized Constants** — Centralized `BMAD_FOLDER_NAME` to reduce hardcoded strings (PR #1492)
+* **Cross-Platform Paths** — Fixed path separator inconsistencies in agent IDs (PR #1492)
+
+### 📚 Documentation
+
+* **BMGD Diataxis Refactor** — Refactored BMGD documentation using Diataxis principles for better organization (PR #1502)
+* **Generate Project Context** — Restored `generate-project-context` workflow for brownfield project analysis (PR #1491)
+
+### 🔧 Maintenance
+
+* **Dependency Updates** — Upgraded `@clack/prompts` from v0.11.0 to v1.0.0 and added `@clack/core` (PR #1514)
+* **CI Integration** — Added `validate:refs` to CI quality workflow with warning annotations (PR #1494)
+
+---
+
 ## [6.0.0-Beta.5]
 
 ### 🎁 Features
@@ -1201,7 +1266,6 @@ Located in `src/modules/bmb/workflows/agent/data/`:
 
 - **Workflow Vendoring**: Web bundler performs automatic cross-module dependency vendoring
 - **BMGD Module Extraction**: Game development split into standalone 4-phase structure
-- **Enhanced Dependency Resolution**: Better handling of web_bundle: false workflows
 - **Advanced Elicitation Fix**: Added missing CSV files to workflow bundles
 - **Claude Code Fix**: Resolved README slash command installation regression
 

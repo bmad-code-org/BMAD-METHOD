@@ -124,8 +124,13 @@ platforms:
     category: ide
     description: "OpenCode terminal coding assistant"
     installer:
-      target_dir: .opencode/command
-      template_type: opencode
+      targets:
+        - target_dir: .opencode/agent
+          template_type: opencode
+          artifact_types: [agents]
+        - target_dir: .opencode/command
+          template_type: opencode
+          artifact_types: [workflows, tasks, tools]
 
   qwen:
     name: "QwenCoder"

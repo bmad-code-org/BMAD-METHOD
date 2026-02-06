@@ -159,7 +159,11 @@ class ManifestGenerator {
           // Recurse into subdirectories
           const newRelativePath = relativePath ? `${relativePath}/${entry.name}` : entry.name;
           await findWorkflows(fullPath, newRelativePath);
-        } else if (entry.name === 'workflow.yaml' || entry.name === 'workflow.md') {
+        } else if (
+          entry.name === 'workflow.yaml' ||
+          entry.name === 'workflow.md' ||
+          (entry.name.startsWith('workflow-') && entry.name.endsWith('.md'))
+        ) {
           // Parse workflow file (both YAML and MD formats)
           if (debug) {
             console.log(`[DEBUG] Found workflow file: ${fullPath}`);
@@ -409,10 +413,14 @@ class ManifestGenerator {
               name = frontmatter.name || name;
               displayName = frontmatter.displayName || frontmatter.name || name;
               description = this.cleanForCSV(frontmatter.description || '');
-              standalone = frontmatter.standalone === true || frontmatter.standalone === 'true';
+              // Tasks are standalone by default unless explicitly false (internal=true is already filtered above)
+              standalone = frontmatter.standalone !== false && frontmatter.standalone !== 'false';
             } catch {
               // If YAML parsing fails, use defaults
+              standalone = true; // Default to standalone
             }
+          } else {
+            standalone = true; // No frontmatter means standalone
           }
         } else {
           // For .xml tasks, extract from tag attributes
@@ -423,8 +431,8 @@ class ManifestGenerator {
           const objMatch = content.match(/<objective>([^<]+)<\/objective>/);
           description = this.cleanForCSV(descMatch ? descMatch[1] : objMatch ? objMatch[1].trim() : '');
 
-          const standaloneMatch = content.match(/<task[^>]+standalone="true"/);
-          standalone = !!standaloneMatch;
+          const standaloneFalseMatch = content.match(/<task[^>]+standalone="false"/);
+          standalone = !standaloneFalseMatch;
         }
 
         // Build relative path for installation
@@ -503,10 +511,14 @@ class ManifestGenerator {
               name = frontmatter.name || name;
               displayName = frontmatter.displayName || frontmatter.name || name;
               description = this.cleanForCSV(frontmatter.description || '');
-              standalone = frontmatter.standalone === true || frontmatter.standalone === 'true';
+              // Tools are standalone by default unless explicitly false (internal=true is already filtered above)
+              standalone = frontmatter.standalone !== false && frontmatter.standalone !== 'false';
             } catch {
               // If YAML parsing fails, use defaults
+              standalone = true; // Default to standalone
             }
+          } else {
+            standalone = true; // No frontmatter means standalone
           }
         } else {
           // For .xml tools, extract from tag attributes
@@ -517,8 +529,8 @@ class ManifestGenerator {
           const objMatch = content.match(/<objective>([^<]+)<\/objective>/);
           description = this.cleanForCSV(descMatch ? descMatch[1] : objMatch ? objMatch[1].trim() : '');
 
-          const standaloneMatch = content.match(/<tool[^>]+standalone="true"/);
-          standalone = !!standaloneMatch;
+          const standaloneFalseMatch = content.match(/<tool[^>]+standalone="false"/);
+          standalone = !standaloneFalseMatch;
         }
 
         // Build relative path for installation
@@ -721,47 +733,15 @@ class ManifestGenerator {
   async writeWorkflowManifest(cfgDir) {
     const csvPath = path.join(cfgDir, 'workflow-manifest.csv');
     const escapeCsv = (value) => `"${String(value ?? '').replaceAll('"', '""')}"`;
-    const parseCsvLine = (line) => {
-      const columns = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || [];
-      return columns.map((c) => c.replaceAll(/^"|"$/g, ''));
-    };
-
-    // Read existing manifest to preserve entries
-    const existingEntries = new Map();
-    if (await fs.pathExists(csvPath)) {
-      const content = await fs.readFile(csvPath, 'utf8');
-      const lines = content.split('\n').filter((line) => line.trim());
-
-      // Skip header
-      for (let i = 1; i < lines.length; i++) {
-        const line = lines[i];
-        if (line) {
-          const parts = parseCsvLine(line);
-          if (parts.length >= 4) {
-            const [name, description, module, workflowPath] = parts;
-            existingEntries.set(`${module}:${name}`, {
-              name,
-              description,
-              module,
-              path: workflowPath,
-            });
-          }
-        }
-      }
-    }
 
     // Create CSV header - standalone column removed, everything is canonicalized to 4 columns
     let csv = 'name,description,module,path\n';
 
-    // Combine existing and new workflows
+    // Build workflows map from discovered workflows only
+    // Old entries are NOT preserved - the manifest reflects what actually exists on disk
     const allWorkflows = new Map();
 
-    // Add existing entries
-    for (const [key, value] of existingEntries) {
-      allWorkflows.set(key, value);
-    }
-
-    // Add/update new workflows
+    // Only add workflows that were actually discovered in this scan
     for (const workflow of this.workflows) {
       const key = `${workflow.module}:${workflow.name}`;
       allWorkflows.set(key, {

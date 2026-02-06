@@ -417,7 +417,7 @@ class ModuleManager {
       if (needsDependencyInstall || wasNewClone || nodeModulesMissing) {
         const installSpinner = ora(`Installing dependencies for ${moduleInfo.name}...`).start();
         try {
-          execSync('npm install --production --no-audit --no-fund --prefer-offline --no-progress --legacy-peer-deps', {
+          execSync('npm install --omit=dev --no-audit --no-fund --no-progress --legacy-peer-deps', {
             cwd: moduleCacheDir,
             stdio: 'pipe',
             timeout: 120_000, // 2 minute timeout
@@ -442,7 +442,7 @@ class ModuleManager {
         if (packageJsonNewer) {
           const installSpinner = ora(`Installing dependencies for ${moduleInfo.name}...`).start();
           try {
-            execSync('npm install --production --no-audit --no-fund --prefer-offline --no-progress --legacy-peer-deps', {
+            execSync('npm install --omit=dev --no-audit --no-fund --no-progress --legacy-peer-deps', {
               cwd: moduleCacheDir,
               stdio: 'pipe',
               timeout: 120_000, // 2 minute timeout
@@ -780,10 +780,6 @@ class ModuleManager {
         await fs.writeFile(targetFile, yamlContent, 'utf8');
         return;
       }
-
-      // Remove web_bundle section using regex to preserve formatting
-      // Match the web_bundle key and all its content (including nested items)
-      // This handles both web_bundle: false and web_bundle: {...}
 
       // Find the line that starts web_bundle
       const lines = yamlContent.split('\n');
