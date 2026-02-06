@@ -29,6 +29,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const yaml = require('yaml');
+const { parse: parseCsv } = require('csv-parse/sync');
 
 const PROJECT_ROOT = path.resolve(__dirname, '..');
 const SRC_DIR = path.join(PROJECT_ROOT, 'src');
@@ -38,7 +39,7 @@ const STRICT = process.argv.includes('--strict');
 // --- Constants ---
 
 // File extensions to scan
-const SCAN_EXTENSIONS = new Set(['.yaml', '.yml', '.md', '.xml']);
+const SCAN_EXTENSIONS = new Set(['.yaml', '.yml', '.md', '.xml', '.csv']);
 
 // Skip directories
 const SKIP_DIRS = new Set(['node_modules', '_module-installer', '.git']);
@@ -292,6 +293,39 @@ function extractMarkdownRefs(filePath, content) {
   return refs;
 }
 
+function extractCsvRefs(filePath, content) {
+  const refs = [];
+
+  let records;
+  try {
+    records = parseCsv(content, {
+      columns: true,
+      skip_empty_lines: true,
+      relax_column_count: true,
+    });
+  } catch {
+    return refs; // Skip unparseable CSV
+  }
+
+  // Only process if workflow-file column exists
+  const firstRecord = records[0];
+  if (!firstRecord || !('workflow-file' in firstRecord)) {
+    return refs;
+  }
+
+  for (const [i, record] of records.entries()) {
+    const raw = record['workflow-file'];
+    if (!raw || raw.trim() === '') continue;
+    if (!isResolvable(raw)) continue;
+
+    // Line = header (1) + data row index (0-based) + 1
+    const line = i + 2;
+    refs.push({ file: filePath, raw, type: 'project-root', line });
+  }
+
+  return refs;
+}
+
 // --- Reference Resolution ---
 
 function resolveRef(ref) {
@@ -351,130 +385,137 @@ function checkAbsolutePathLeaks(filePath, content) {
   return leaks;
 }
 
+// --- Exports (for testing) ---
+module.exports = { extractCsvRefs };
+
 // --- Main ---
 
-console.log(`\nValidating file references in: ${SRC_DIR}`);
-console.log(`Mode: ${STRICT ? 'STRICT (exit 1 on issues)' : 'WARNING (exit 0)'}${VERBOSE ? ' + VERBOSE' : ''}\n`);
+if (require.main === module) {
+  console.log(`\nValidating file references in: ${SRC_DIR}`);
+  console.log(`Mode: ${STRICT ? 'STRICT (exit 1 on issues)' : 'WARNING (exit 0)'}${VERBOSE ? ' + VERBOSE' : ''}\n`);
 
-const files = getSourceFiles(SRC_DIR);
-console.log(`Found ${files.length} source files\n`);
+  const files = getSourceFiles(SRC_DIR);
+  console.log(`Found ${files.length} source files\n`);
 
-let totalRefs = 0;
-let brokenRefs = 0;
-let totalLeaks = 0;
-let filesWithIssues = 0;
-const allIssues = []; // Collect for $GITHUB_STEP_SUMMARY
+  let totalRefs = 0;
+  let brokenRefs = 0;
+  let totalLeaks = 0;
+  let filesWithIssues = 0;
+  const allIssues = []; // Collect for $GITHUB_STEP_SUMMARY
 
-for (const filePath of files) {
-  const relativePath = path.relative(PROJECT_ROOT, filePath);
-  const content = fs.readFileSync(filePath, 'utf-8');
-  const ext = path.extname(filePath);
+  for (const filePath of files) {
+    const relativePath = path.relative(PROJECT_ROOT, filePath);
+    const content = fs.readFileSync(filePath, 'utf-8');
+    const ext = path.extname(filePath);
 
-  // Extract references
-  let refs;
-  if (ext === '.yaml' || ext === '.yml') {
-    refs = extractYamlRefs(filePath, content);
-  } else {
-    refs = extractMarkdownRefs(filePath, content);
-  }
-
-  // Resolve and check
-  const broken = [];
-
-  if (VERBOSE && refs.length > 0) {
-    console.log(`\n${relativePath}`);
-  }
-
-  for (const ref of refs) {
-    totalRefs++;
-    const resolved = resolveRef(ref);
-
-    if (resolved && !fs.existsSync(resolved)) {
-      // For paths without extensions, also check if it's a directory
-      const hasExt = path.extname(resolved) !== '';
-      if (!hasExt) {
-        // Could be a directory reference — skip if not clearly a file
-        continue;
-      }
-      broken.push({ ref, resolved: path.relative(PROJECT_ROOT, resolved) });
-      brokenRefs++;
-      continue;
+    // Extract references
+    let refs;
+    if (ext === '.yaml' || ext === '.yml') {
+      refs = extractYamlRefs(filePath, content);
+    } else if (ext === '.csv') {
+      refs = extractCsvRefs(filePath, content);
+    } else {
+      refs = extractMarkdownRefs(filePath, content);
     }
 
-    if (VERBOSE && resolved) {
-      console.log(`  [OK] ${ref.raw}`);
-    }
-  }
+    // Resolve and check
+    const broken = [];
 
-  // Check absolute path leaks
-  const leaks = checkAbsolutePathLeaks(filePath, content);
-  totalLeaks += leaks.length;
-
-  // Report issues for this file
-  if (broken.length > 0 || leaks.length > 0) {
-    filesWithIssues++;
-    if (!VERBOSE) {
+    if (VERBOSE && refs.length > 0) {
       console.log(`\n${relativePath}`);
     }
 
-    for (const { ref, resolved } of broken) {
-      const location = ref.line ? `line ${ref.line}` : ref.key ? `key: ${ref.key}` : '';
-      console.log(`  [BROKEN] ${ref.raw}${location ? ` (${location})` : ''}`);
-      console.log(`     Target not found: ${resolved}`);
-      allIssues.push({ file: relativePath, line: ref.line || 1, ref: ref.raw, issue: 'broken ref' });
-      if (process.env.GITHUB_ACTIONS) {
-        const line = ref.line || 1;
-        console.log(`::warning file=${relativePath},line=${line}::${escapeAnnotation(`Broken reference: ${ref.raw} → ${resolved}`)}`);
+    for (const ref of refs) {
+      totalRefs++;
+      const resolved = resolveRef(ref);
+
+      if (resolved && !fs.existsSync(resolved)) {
+        // For paths without extensions, also check if it's a directory
+        const hasExt = path.extname(resolved) !== '';
+        if (!hasExt) {
+          // Could be a directory reference — skip if not clearly a file
+          continue;
+        }
+        broken.push({ ref, resolved: path.relative(PROJECT_ROOT, resolved) });
+        brokenRefs++;
+        continue;
+      }
+
+      if (VERBOSE && resolved) {
+        console.log(`  [OK] ${ref.raw}`);
       }
     }
 
-    for (const leak of leaks) {
-      console.log(`  [ABS-PATH] Line ${leak.line}: ${leak.content}`);
-      allIssues.push({ file: relativePath, line: leak.line, ref: leak.content, issue: 'abs-path' });
-      if (process.env.GITHUB_ACTIONS) {
-        console.log(`::warning file=${relativePath},line=${leak.line}::${escapeAnnotation(`Absolute path leak: ${leak.content}`)}`);
+    // Check absolute path leaks
+    const leaks = checkAbsolutePathLeaks(filePath, content);
+    totalLeaks += leaks.length;
+
+    // Report issues for this file
+    if (broken.length > 0 || leaks.length > 0) {
+      filesWithIssues++;
+      if (!VERBOSE) {
+        console.log(`\n${relativePath}`);
+      }
+
+      for (const { ref, resolved } of broken) {
+        const location = ref.line ? `line ${ref.line}` : ref.key ? `key: ${ref.key}` : '';
+        console.log(`  [BROKEN] ${ref.raw}${location ? ` (${location})` : ''}`);
+        console.log(`     Target not found: ${resolved}`);
+        allIssues.push({ file: relativePath, line: ref.line || 1, ref: ref.raw, issue: 'broken ref' });
+        if (process.env.GITHUB_ACTIONS) {
+          const line = ref.line || 1;
+          console.log(`::warning file=${relativePath},line=${line}::${escapeAnnotation(`Broken reference: ${ref.raw} → ${resolved}`)}`);
+        }
+      }
+
+      for (const leak of leaks) {
+        console.log(`  [ABS-PATH] Line ${leak.line}: ${leak.content}`);
+        allIssues.push({ file: relativePath, line: leak.line, ref: leak.content, issue: 'abs-path' });
+        if (process.env.GITHUB_ACTIONS) {
+          console.log(`::warning file=${relativePath},line=${leak.line}::${escapeAnnotation(`Absolute path leak: ${leak.content}`)}`);
+        }
       }
     }
   }
-}
 
-// Summary
-console.log(`\n${'─'.repeat(60)}`);
-console.log(`\nSummary:`);
-console.log(`   Files scanned: ${files.length}`);
-console.log(`   References checked: ${totalRefs}`);
-console.log(`   Broken references: ${brokenRefs}`);
-console.log(`   Absolute path leaks: ${totalLeaks}`);
+  // Summary
+  console.log(`\n${'─'.repeat(60)}`);
+  console.log(`\nSummary:`);
+  console.log(`   Files scanned: ${files.length}`);
+  console.log(`   References checked: ${totalRefs}`);
+  console.log(`   Broken references: ${brokenRefs}`);
+  console.log(`   Absolute path leaks: ${totalLeaks}`);
 
-const hasIssues = brokenRefs > 0 || totalLeaks > 0;
+  const hasIssues = brokenRefs > 0 || totalLeaks > 0;
 
-if (hasIssues) {
-  console.log(`\n   ${filesWithIssues} file(s) with issues`);
+  if (hasIssues) {
+    console.log(`\n   ${filesWithIssues} file(s) with issues`);
 
-  if (STRICT) {
-    console.log(`\n   [STRICT MODE] Exiting with failure.`);
+    if (STRICT) {
+      console.log(`\n   [STRICT MODE] Exiting with failure.`);
+    } else {
+      console.log(`\n   Run with --strict to treat warnings as errors.`);
+    }
   } else {
-    console.log(`\n   Run with --strict to treat warnings as errors.`);
+    console.log(`\n   All file references valid!`);
   }
-} else {
-  console.log(`\n   All file references valid!`);
-}
 
-console.log('');
+  console.log('');
 
-// Write GitHub Actions step summary
-if (process.env.GITHUB_STEP_SUMMARY) {
-  let summary = '## File Reference Validation\n\n';
-  if (allIssues.length > 0) {
-    summary += '| File | Line | Reference | Issue |\n';
-    summary += '|------|------|-----------|-------|\n';
-    for (const issue of allIssues) {
-      summary += `| ${escapeTableCell(issue.file)} | ${issue.line} | ${escapeTableCell(issue.ref)} | ${issue.issue} |\n`;
+  // Write GitHub Actions step summary
+  if (process.env.GITHUB_STEP_SUMMARY) {
+    let summary = '## File Reference Validation\n\n';
+    if (allIssues.length > 0) {
+      summary += '| File | Line | Reference | Issue |\n';
+      summary += '|------|------|-----------|-------|\n';
+      for (const issue of allIssues) {
+        summary += `| ${escapeTableCell(issue.file)} | ${issue.line} | ${escapeTableCell(issue.ref)} | ${issue.issue} |\n`;
+      }
+      summary += '\n';
     }
-    summary += '\n';
+    summary += `**${files.length} files scanned, ${totalRefs} references checked, ${brokenRefs + totalLeaks} issues found**\n`;
+    fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, summary);
   }
-  summary += `**${files.length} files scanned, ${totalRefs} references checked, ${brokenRefs + totalLeaks} issues found**\n`;
-  fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, summary);
-}
 
-process.exit(hasIssues && STRICT ? 1 : 0);
+  process.exit(hasIssues && STRICT ? 1 : 0);
+}
