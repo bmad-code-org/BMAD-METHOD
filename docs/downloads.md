@@ -1,5 +1,6 @@
 ---
 title: Downloads
+description: Download BMad Method source bundles, prompts, and LLM-optimized documentation files
 ---
 
 Download BMad Method resources for offline use, AI training, or integration.

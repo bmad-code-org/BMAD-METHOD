@@ -1,5 +1,6 @@
 ---
 title: Testing Options
+description: Built-in QA agent and the standalone Test Architect module for advanced testing
 ---
 
 # Testing Options
