@@ -26,7 +26,7 @@
   "scripts": {
     "bmad:install": "node tools/cli/bmad-cli.js install",
     "bundle": "node tools/cli/bundlers/bundle-web.js all",
-    "docs:build": "node tools/build-docs.js",
+    "docs:build": "node tools/build-docs.mjs",
     "docs:dev": "astro dev --root website",
     "docs:fix-links": "node tools/fix-doc-links.js",
     "docs:preview": "astro preview --root website",

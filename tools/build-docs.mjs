@@ -9,19 +9,20 @@
  *   build/site/          - Final Astro output (deployable)
  */
 
-const { execSync } = require('node:child_process');
-const fs = require('node:fs');
-const path = require('node:path');
-const archiver = require('archiver');
+import { execSync } from 'node:child_process';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import archiver from 'archiver';
+import { getSiteUrl } from '../website/src/lib/site-url.mjs';
 
 // =============================================================================
 // Configuration
 // =============================================================================
 
-const PROJECT_ROOT = path.dirname(__dirname);
+const PROJECT_ROOT = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const BUILD_DIR = path.join(PROJECT_ROOT, 'build');
 
-let SITE_URL; // Resolved in main() via shared getSiteUrl()
 const REPO_URL = 'https://github.com/bmad-code-org/BMAD-METHOD';
 
 // DO NOT CHANGE THESE VALUES!
@@ -53,12 +54,6 @@ const LLM_EXCLUDE_PATTERNS = [
  */
 
 async function main() {
-  // Resolve site URL using the same function as Astro config
-  const { pathToFileURL } = require('node:url');
-  const siteUrlModule = path.join(PROJECT_ROOT, 'website/src/lib/site-url.mjs');
-  const { getSiteUrl } = await import(pathToFileURL(siteUrlModule).href);
-  SITE_URL = getSiteUrl();
-
   console.log();
   printBanner('BMAD Documentation Build Pipeline');
   console.log();
@@ -149,39 +144,40 @@ function buildAstroSite() {
 function generateLlmsTxt(outputDir) {
   console.log('  → Generating llms.txt...');
 
+  const siteUrl = getSiteUrl();
   const content = [
     '# BMAD Method Documentation',
     '',
     '> AI-driven agile development with specialized agents and workflows that scale from bug fixes to enterprise platforms.',
     '',
-    `Documentation: ${SITE_URL}`,
+    `Documentation: ${siteUrl}`,
     `Repository: ${REPO_URL}`,
-    `Full docs: ${SITE_URL}/llms-full.txt`,
+    `Full docs: ${siteUrl}/llms-full.txt`,
     '',
     '## Quick Start',
     '',
-    `- **[Quick Start](${SITE_URL}/docs/modules/bmm/quick-start)** - Get started with BMAD Method`,
-    `- **[Installation](${SITE_URL}/docs/getting-started/installation)** - Installation guide`,
+    `- **[Quick Start](${siteUrl}/docs/modules/bmm/quick-start)** - Get started with BMAD Method`,
+    `- **[Installation](${siteUrl}/docs/getting-started/installation)** - Installation guide`,
     '',
     '## Core Concepts',
     '',
-    `- **[Scale Adaptive System](${SITE_URL}/docs/modules/bmm/scale-adaptive-system)** - Understand BMAD scaling`,
-    `- **[Quick Flow](${SITE_URL}/docs/modules/bmm/bmad-quick-flow)** - Fast development workflow`,
-    `- **[Party Mode](${SITE_URL}/docs/modules/bmm/party-mode)** - Multi-agent collaboration`,
+    `- **[Scale Adaptive System](${siteUrl}/docs/modules/bmm/scale-adaptive-system)** - Understand BMAD scaling`,
+    `- **[Quick Flow](${siteUrl}/docs/modules/bmm/bmad-quick-flow)** - Fast development workflow`,
+    `- **[Party Mode](${siteUrl}/docs/modules/bmm/party-mode)** - Multi-agent collaboration`,
     '',
     '## Modules',
     '',
-    `- **[BMM - Method](${SITE_URL}/docs/modules/bmm/quick-start)** - Core methodology module`,
-    `- **[BMB - Builder](${SITE_URL}/docs/modules/bmb/)** - Agent and workflow builder`,
-    `- **[BMGD - Game Dev](${SITE_URL}/docs/modules/bmgd/quick-start)** - Game development module`,
+    `- **[BMM - Method](${siteUrl}/docs/modules/bmm/quick-start)** - Core methodology module`,
+    `- **[BMB - Builder](${siteUrl}/docs/modules/bmb/)** - Agent and workflow builder`,
+    `- **[BMGD - Game Dev](${siteUrl}/docs/modules/bmgd/quick-start)** - Game development module`,
     '',
     '---',
     '',
     '## Quick Links',
     '',
-    `- [Full Documentation (llms-full.txt)](${SITE_URL}/llms-full.txt) - Complete docs for AI context`,
-    `- [Source Bundle](${SITE_URL}/downloads/bmad-sources.zip) - Complete source code`,
-    `- [Prompts Bundle](${SITE_URL}/downloads/bmad-prompts.zip) - Agent prompts and workflows`,
+    `- [Full Documentation (llms-full.txt)](${siteUrl}/llms-full.txt) - Complete docs for AI context`,
+    `- [Source Bundle](${siteUrl}/downloads/bmad-sources.zip) - Complete source code`,
+    `- [Prompts Bundle](${siteUrl}/downloads/bmad-prompts.zip) - Agent prompts and workflows`,
     '',
   ].join('\n');
 
