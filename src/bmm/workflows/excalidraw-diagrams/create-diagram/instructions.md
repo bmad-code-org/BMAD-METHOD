@@ -132,7 +132,7 @@
   </step>
 
   <step n="10" goal="Validate Content">
-    <invoke-task>Validate against {{validation}} using {_bmad}/core/tasks/validate-workflow.xml</invoke-task>
+    <invoke-task>Validate against {{validation}} using {_bmad}/core/tasks/validate-workflow.md</invoke-task>
   </step>
 
 </workflow>
