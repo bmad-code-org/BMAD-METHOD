@@ -15,10 +15,21 @@ That means the authoritative list lives **in your project**, not in a static doc
 
 ## Where Commands Are Generated
 
-The installer writes command files into your project (example paths for Claude Code):
+The installer writes command files into your project. The location and format depend on your AI tool:
+
+| AI Tool | Location | File Reference Syntax |
+| --- | --- | --- |
+| Claude Code | `.claude/commands/` | `@path` references |
+| Kiro | `.kiro/steering/` | `#[[file:path]]` references with `inclusion: manual` frontmatter |
+| Cursor | `.cursor/commands/` | `@path` references |
+| Windsurf | `.windsurf/workflows/` | `@{project-root}/path` references |
+
+Example paths for Claude Code:
 
 - `.claude/commands/bmad/<module>/agents/`
 - `.claude/commands/bmad/<module>/workflows/`
+
+All tools invoke the same underlying `_bmad/` workflows and agents — only the launcher format differs.
 
 These folders are the **canonical, project-specific command list**.
 
