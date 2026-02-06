@@ -99,6 +99,7 @@ async function generateArtifacts(docsDir) {
   // Generate LLM files reading from docs/, output to artifacts/
   generateLlmsTxt(outputDir);
   generateLlmsFullTxt(docsDir, outputDir);
+  generateBmadInstallation();
   await generateDownloadBundles(outputDir);
 
   console.log();
@@ -326,39 +327,111 @@ function validateLlmSize(content) {
 // Download Bundle Generation
 // =============================================================================
 
+/**
+ * Run the BMAD installer non-interactively to produce the _bmad/ directory.
+ *
+ * This generates compiled agent prompts and workflows needed for the prompts
+ * download bundle. Only installs built-in modules (core + bmm); external
+ * modules like BMB have their own distribution channels.
+ */
+function generateBmadInstallation() {
+  const bmadDir = path.join(PROJECT_ROOT, '_bmad');
+
+  // Clean any existing _bmad to ensure a fresh compilation
+  if (fs.existsSync(bmadDir)) {
+    fs.rmSync(bmadDir, { recursive: true });
+  }
+
+  console.log('  → Running BMAD installer for prompts bundle...');
+  execSync('node tools/cli/bmad-cli.js install --directory . --modules bmm --tools none -y', {
+    cwd: PROJECT_ROOT,
+    stdio: 'inherit',
+  });
+
+  if (!fs.existsSync(bmadDir)) {
+    throw new Error('BMAD installer did not produce _bmad/ directory');
+  }
+
+  console.log('  → _bmad/ directory generated successfully');
+}
+
 async function generateDownloadBundles(outputDir) {
   console.log('  → Generating download bundles...');
 
   const downloadsDir = path.join(outputDir, 'downloads');
   fs.mkdirSync(downloadsDir, { recursive: true });
 
-  await generateSourcesBundle(downloadsDir);
+  generateSourcesBundle(downloadsDir);
   await generatePromptsBundle(downloadsDir);
 }
 
-async function generateSourcesBundle(downloadsDir) {
-  const srcDir = path.join(PROJECT_ROOT, 'src');
-  if (!fs.existsSync(srcDir)) return;
-
+/**
+ * Download the latest released version as bmad-sources.zip for the downloads page.
+ *
+ * Uses the GitHub CLI to find the latest release tag and download its source
+ * archive. Falls back to git archive of the latest tag if gh is unavailable.
+ * Throws if the archive cannot be produced.
+ * @param {string} downloadsDir - Destination directory where bmad-sources.zip will be written.
+ */
+function generateSourcesBundle(downloadsDir) {
   const zipPath = path.join(downloadsDir, 'bmad-sources.zip');
-  await createZipArchive(srcDir, zipPath, ['__pycache__', '.pyc', '.DS_Store', 'node_modules']);
+
+  try {
+    const tag = execSync('gh release view --json tagName -q .tagName', {
+      cwd: PROJECT_ROOT,
+      encoding: 'utf-8',
+      stdio: ['pipe', 'pipe', 'pipe'],
+    }).trim();
+
+    if (!tag) {
+      throw new Error('No release tag found');
+    }
+
+    console.log(`    Downloading sources for release ${tag}...`);
+    execSync(`gh release download "${tag}" --archive zip --output "${zipPath}"`, { cwd: PROJECT_ROOT, stdio: 'pipe' });
+  } catch (ghError) {
+    console.log('    gh CLI unavailable, falling back to git archive...');
+    try {
+      const tag = execSync('git describe --tags --abbrev=0', {
+        cwd: PROJECT_ROOT,
+        encoding: 'utf-8',
+        stdio: ['pipe', 'pipe', 'pipe'],
+      }).trim();
+
+      if (!tag) {
+        throw new Error('No git tags found');
+      }
+
+      console.log(`    Creating archive from tag ${tag}...`);
+      execSync(`git archive --format=zip --prefix=BMAD-METHOD/ "${tag}" -o "${zipPath}"`, { cwd: PROJECT_ROOT, stdio: 'pipe' });
+    } catch (gitError) {
+      throw new Error(`Failed to create sources bundle.\n` + `  gh error: ${ghError.message}\n` + `  git error: ${gitError.message}`);
+    }
+  }
+
+  if (!fs.existsSync(zipPath)) {
+    throw new Error('Sources bundle was not produced');
+  }
 
   const size = (fs.statSync(zipPath).size / 1024 / 1024).toFixed(1);
   console.log(`    bmad-sources.zip (${size}M)`);
 }
 
 /**
- * Create a zip archive of the project's prompts modules and place it in the downloads directory.
+ * Create a zip archive of compiled agent prompts and workflows for the downloads page.
  *
- * Creates bmad-prompts.zip from src/modules, excluding common unwanted paths, writes it to the provided downloads directory, and logs the resulting file size. If the modules directory does not exist, the function returns without creating a bundle.
+ * Zips the _bmad/ directory (the installed output from the BMAD installer) containing
+ * compiled agents, workflows, tasks, and configuration. Throws if the directory is missing.
  * @param {string} downloadsDir - Destination directory where bmad-prompts.zip will be written.
  */
 async function generatePromptsBundle(downloadsDir) {
-  const modulesDir = path.join(PROJECT_ROOT, 'src', 'modules');
-  if (!fs.existsSync(modulesDir)) return;
+  const bmadDir = path.join(PROJECT_ROOT, '_bmad');
+  if (!fs.existsSync(bmadDir)) {
+    throw new Error(`Prompts bundle source directory not found: ${bmadDir}\n` + 'Run the BMAD installer first: npx bmad-method install');
+  }
 
   const zipPath = path.join(downloadsDir, 'bmad-prompts.zip');
-  await createZipArchive(modulesDir, zipPath, ['docs', '.DS_Store', '__pycache__', 'node_modules']);
+  await createZipArchive(bmadDir, zipPath, ['.DS_Store']);
 
   const size = Math.floor(fs.statSync(zipPath).size / 1024);
   console.log(`    bmad-prompts.zip (${size}K)`);

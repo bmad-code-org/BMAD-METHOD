@@ -8,10 +8,10 @@ Download BMad Method resources for offline use, AI training, or integration.
 
 Download these from the `downloads/` folder on the documentation site.
 
-| File               | Description                     |
-| ------------------ | ------------------------------- |
-| `bmad-sources.zip` | Complete BMad source files      |
-| `bmad-prompts.zip` | Agent and workflow prompts only |
+| File               | Description                                           |
+| ------------------ | ----------------------------------------------------- |
+| `bmad-sources.zip` | Complete repository snapshot (latest release)         |
+| `bmad-prompts.zip` | Compiled agents, workflows, and tasks (like `_bmad/`) |
 
 ## LLM-Optimized Files
 
