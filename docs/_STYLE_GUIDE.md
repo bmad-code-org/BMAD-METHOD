@@ -147,7 +147,7 @@ your-project/
 | **Concept**       | `what-are-agents.md`         |
 | **Feature**       | `quick-flow.md`              |
 | **Philosophy**    | `why-solutioning-matters.md` |
-| **FAQ**           | `brownfield-faq.md`          |
+| **FAQ**           | `established-projects-faq.md` |
 
 ### General Template
 
@@ -325,7 +325,7 @@ Add italic context at definition start for limited-scope terms:
 - `*BMad Method/Enterprise.*`
 - `*Phase N.*`
 - `*BMGD.*`
-- `*Brownfield.*`
+- `*Established projects.*`
 
 ### Glossary Checklist
 
