@@ -322,6 +322,25 @@ async function autocompleteMultiselect(options) {
     },
   });
 
+  // === FIX: Make SPACE always act as selection key (not search input) ===
+  // Override _isActionKey to treat SPACE like TAB - always an action key
+  // This prevents SPACE from being added to the search input
+  const originalIsActionKey = prompt._isActionKey.bind(prompt);
+  prompt._isActionKey = function (char, key) {
+    if (key && key.name === 'space') {
+      return true;
+    }
+    return originalIsActionKey(char, key);
+  };
+
+  // Handle SPACE toggle when NOT navigating (internal code only handles it when isNavigating=true)
+  prompt.on('key', (char, key) => {
+    if (key && key.name === 'space' && !prompt.isNavigating && prompt.focusedValue !== undefined) {
+      prompt.toggleSelected(prompt.focusedValue);
+    }
+  });
+  // === END FIX ===
+
   const result = await prompt.prompt();
   await handleCancel(result);
   return result;

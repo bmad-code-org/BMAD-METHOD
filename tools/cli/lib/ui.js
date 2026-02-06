@@ -634,7 +634,7 @@ class UI {
 
     // Interactive mode
     const interactiveSelectedIdes = await prompts.autocompleteMultiselect({
-      message: 'Select tools:',
+      message: 'Integrate with:',
       options: allToolOptions,
       initialValues: configuredIdes.length > 0 ? configuredIdes : undefined,
       required: false,
