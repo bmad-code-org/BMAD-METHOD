@@ -57,6 +57,15 @@ platforms:
     description: "OpenAI Codex integration"
     # No installer config - uses custom codex.js
 
+  codebuddy:
+    name: "CodeBuddy"
+    preferred: false
+    category: ide
+    description: "Tencent Cloud Code Assistant - AI-powered coding companion"
+    installer:
+      target_dir: .codebuddy/commands
+      template_type: default
+
   crush:
     name: "Crush"
     preferred: false
