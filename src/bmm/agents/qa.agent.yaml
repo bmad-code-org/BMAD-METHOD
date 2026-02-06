@@ -28,7 +28,7 @@ agent:
 
   menu:
     - trigger: QA or fuzzy match on qa-automate
-      workflow: "{project-root}/_bmad/bmm/workflows/qa/automate/workflow.yaml"
+      workflow: "{project-root}/_bmad/bmm/workflows/qa/automate/workflow.md"
       description: "[QA] Automate - Generate tests for existing features (simplified)"
 
   prompts:
