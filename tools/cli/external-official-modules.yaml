@@ -16,7 +16,7 @@ modules:
     url: https://github.com/bmad-code-org/bmad-module-creative-intelligence-suite
     module-definition: src/module.yaml
     code: cis
-    name: "BMad Creative Innovation Suite"
+    name: "BMad Creative Intelligence Suite"
     description: "Creative tools for writing, brainstorming, and more"
     defaultSelected: false
     type: bmad-org
@@ -26,7 +26,7 @@ modules:
     url: https://github.com/bmad-code-org/bmad-module-game-dev-studio.git
     module-definition: src/module.yaml
     code: gds
-    name: "BMad Game Dev Suite"
+    name: "BMad Game Dev Studio"
     description: "Game development agents and workflows"
     defaultSelected: false
     type: bmad-org
