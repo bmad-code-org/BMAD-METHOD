@@ -30,6 +30,14 @@ npx bmad-method install
 
 Follow the installer prompts, then open your AI IDE (Claude Code, Cursor, Windsurf, etc.) in the project folder.
 
+**Non-Interactive Installation**: For CI/CD pipelines or automated deployments, use command-line flags:
+
+```bash
+npx bmad-method install --directory /path/to/project --modules bmm --tools claude-code --yes
+```
+
+See [Non-Interactive Installation Guide](docs/non-interactive-installation.md) for all available options.
+
 > **Not sure what to do?** Run `/bmad-help` — it tells you exactly what's next and what's optional. You can also ask it questions like:
 
  - `/bmad-help How should I build a web app for my TShirt Business that can scale to millions?`

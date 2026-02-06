@@ -26,9 +26,10 @@ const choiceUtils = { Separator };
 class UI {
   /**
    * Prompt for installation configuration
+   * @param {Object} options - Command-line options from install command
    * @returns {Object} Installation configuration
    */
-  async promptInstall() {
+  async promptInstall(options = {}) {
     CLIUtils.displayLogo();
 
     // Display version-specific start message from install-messages.yaml
@@ -36,7 +37,20 @@ class UI {
     const messageLoader = new MessageLoader();
     messageLoader.displayStartMessage();
 
-    const confirmedDirectory = await this.getConfirmedDirectory();
+    // Get directory from options or prompt
+    let confirmedDirectory;
+    if (options.directory) {
+      // Use provided directory from command-line
+      const expandedDir = this.expandUserPath(options.directory);
+      const validation = this.validateDirectorySync(expandedDir);
+      if (validation) {
+        throw new Error(`Invalid directory: ${validation}`);
+      }
+      confirmedDirectory = expandedDir;
+      console.log(chalk.cyan('Using directory from command-line:'), chalk.bold(confirmedDirectory));
+    } else {
+      confirmedDirectory = await this.getConfirmedDirectory();
+    }
 
     // Preflight: Check for legacy BMAD v4 footprints immediately after getting directory
     const { Detector } = require('../installers/lib/core/detector');
@@ -218,11 +232,21 @@ class UI {
       // Common actions
       choices.push({ name: 'Modify BMAD Installation', value: 'update' });
 
-      actionType = await prompts.select({
-        message: 'How would you like to proceed?',
-        choices: choices,
-        default: choices[0].value,
-      });
+      // Check if action is provided via command-line
+      if (options.action) {
+        const validActions = choices.map((c) => c.value);
+        if (!validActions.includes(options.action)) {
+          throw new Error(`Invalid action: ${options.action}. Valid actions: ${validActions.join(', ')}`);
+        }
+        actionType = options.action;
+        console.log(chalk.cyan('Using action from command-line:'), chalk.bold(actionType));
+      } else {
+        actionType = await prompts.select({
+          message: 'How would you like to proceed?',
+          choices: choices,
+          default: choices[0].value,
+        });
+      }
 
       // Handle quick update separately
       if (actionType === 'quick-update') {
@@ -253,30 +277,94 @@ class UI {
         console.log(chalk.dim(`  Found existing modules: ${[...installedModuleIds].join(', ')}`));
 
         // Unified module selection - all modules in one grouped multiselect
-        let selectedModules = await this.selectAllModules(installedModuleIds);
+        let selectedModules;
+        if (options.modules) {
+          // Use modules from command-line
+          selectedModules = options.modules
+            .split(',')
+            .map((m) => m.trim())
+            .filter(Boolean);
+          console.log(chalk.cyan('Using modules from command-line:'), chalk.bold(selectedModules.join(', ')));
+        } else {
+          selectedModules = await this.selectAllModules(installedModuleIds);
+        }
 
         // After module selection, ask about custom modules
         console.log('');
-        const changeCustomModules = await prompts.confirm({
-          message: 'Modify custom modules, agents, or workflows?',
-          default: false,
-        });
-
         let customModuleResult = { selectedCustomModules: [], customContentConfig: { hasCustomContent: false } };
-        if (changeCustomModules) {
-          customModuleResult = await this.handleCustomModulesInModifyFlow(confirmedDirectory, selectedModules);
-        } else {
-          // Preserve existing custom modules if user doesn't want to modify them
-          const { Installer } = require('../installers/lib/core/installer');
-          const installer = new Installer();
-          const { bmadDir } = await installer.findBmadDir(confirmedDirectory);
 
-          const cacheDir = path.join(bmadDir, '_config', 'custom');
-          if (await fs.pathExists(cacheDir)) {
-            const entries = await fs.readdir(cacheDir, { withFileTypes: true });
-            for (const entry of entries) {
-              if (entry.isDirectory()) {
-                customModuleResult.selectedCustomModules.push(entry.name);
+        if (options.customContent) {
+          // Use custom content from command-line
+          const paths = options.customContent
+            .split(',')
+            .map((p) => p.trim())
+            .filter(Boolean);
+          console.log(chalk.cyan('Using custom content from command-line:'), chalk.bold(paths.join(', ')));
+
+          // Build custom content config similar to promptCustomContentSource
+          const customPaths = [];
+          const selectedModuleIds = [];
+
+          for (const customPath of paths) {
+            const expandedPath = this.expandUserPath(customPath);
+            const validation = this.validateCustomContentPathSync(expandedPath);
+            if (validation) {
+              console.log(chalk.yellow(`⚠️  Skipping invalid custom content path: ${customPath} - ${validation}`));
+              continue;
+            }
+
+            // Read module metadata
+            let moduleMeta;
+            try {
+              const moduleYamlPath = path.join(expandedPath, 'module.yaml');
+              const moduleYaml = await fs.readFile(moduleYamlPath, 'utf-8');
+              const yaml = require('yaml');
+              moduleMeta = yaml.parse(moduleYaml);
+            } catch (error) {
+              console.log(chalk.yellow(`⚠️  Skipping custom content path: ${customPath} - failed to read module.yaml: ${error.message}`));
+              continue;
+            }
+
+            if (!moduleMeta.code) {
+              console.log(chalk.yellow(`⚠️  Skipping custom content path: ${customPath} - module.yaml missing 'code' field`));
+              continue;
+            }
+
+            customPaths.push(expandedPath);
+            selectedModuleIds.push(moduleMeta.code);
+          }
+
+          if (customPaths.length > 0) {
+            customModuleResult = {
+              selectedCustomModules: selectedModuleIds,
+              customContentConfig: {
+                hasCustomContent: true,
+                paths: customPaths,
+                selectedModuleIds: selectedModuleIds,
+              },
+            };
+          }
+        } else {
+          const changeCustomModules = await prompts.confirm({
+            message: 'Modify custom modules, agents, or workflows?',
+            default: false,
+          });
+
+          if (changeCustomModules) {
+            customModuleResult = await this.handleCustomModulesInModifyFlow(confirmedDirectory, selectedModules);
+          } else {
+            // Preserve existing custom modules if user doesn't want to modify them
+            const { Installer } = require('../installers/lib/core/installer');
+            const installer = new Installer();
+            const { bmadDir } = await installer.findBmadDir(confirmedDirectory);
+
+            const cacheDir = path.join(bmadDir, '_config', 'custom');
+            if (await fs.pathExists(cacheDir)) {
+              const entries = await fs.readdir(cacheDir, { withFileTypes: true });
+              for (const entry of entries) {
+                if (entry.isDirectory()) {
+                  customModuleResult.selectedCustomModules.push(entry.name);
+                }
               }
             }
           }
@@ -288,9 +376,9 @@ class UI {
         }
 
         // Get tool selection
-        const toolSelection = await this.promptToolSelection(confirmedDirectory);
+        const toolSelection = await this.promptToolSelection(confirmedDirectory, options);
 
-        const coreConfig = await this.collectCoreConfig(confirmedDirectory);
+        const coreConfig = await this.collectCoreConfig(confirmedDirectory, options);
 
         return {
           actionType: 'update',
@@ -309,16 +397,80 @@ class UI {
     const { installedModuleIds } = await this.getExistingInstallation(confirmedDirectory);
 
     // Unified module selection - all modules in one grouped multiselect
-    let selectedModules = await this.selectAllModules(installedModuleIds);
+    let selectedModules;
+    if (options.modules) {
+      // Use modules from command-line
+      selectedModules = options.modules
+        .split(',')
+        .map((m) => m.trim())
+        .filter(Boolean);
+      console.log(chalk.cyan('Using modules from command-line:'), chalk.bold(selectedModules.join(', ')));
+    } else if (options.yes) {
+      // Use default modules when --yes flag is set
+      selectedModules = await this.getDefaultModules(installedModuleIds);
+      console.log(chalk.cyan('Using default modules (--yes flag):'), chalk.bold(selectedModules.join(', ')));
+    } else {
+      selectedModules = await this.selectAllModules(installedModuleIds);
+    }
 
     // Ask about custom content (local modules/agents/workflows)
-    const wantsCustomContent = await prompts.confirm({
-      message: 'Add custom modules, agents, or workflows from your computer?',
-      default: false,
-    });
+    if (options.customContent) {
+      // Use custom content from command-line
+      const paths = options.customContent
+        .split(',')
+        .map((p) => p.trim())
+        .filter(Boolean);
+      console.log(chalk.cyan('Using custom content from command-line:'), chalk.bold(paths.join(', ')));
 
-    if (wantsCustomContent) {
-      customContentConfig = await this.promptCustomContentSource();
+      // Build custom content config similar to promptCustomContentSource
+      const customPaths = [];
+      const selectedModuleIds = [];
+
+      for (const customPath of paths) {
+        const expandedPath = this.expandUserPath(customPath);
+        const validation = this.validateCustomContentPathSync(expandedPath);
+        if (validation) {
+          console.log(chalk.yellow(`⚠️  Skipping invalid custom content path: ${customPath} - ${validation}`));
+          continue;
+        }
+
+        // Read module metadata
+        let moduleMeta;
+        try {
+          const moduleYamlPath = path.join(expandedPath, 'module.yaml');
+          const moduleYaml = await fs.readFile(moduleYamlPath, 'utf-8');
+          const yaml = require('yaml');
+          moduleMeta = yaml.parse(moduleYaml);
+        } catch (error) {
+          console.log(chalk.yellow(`⚠️  Skipping custom content path: ${customPath} - failed to read module.yaml: ${error.message}`));
+          continue;
+        }
+
+        if (!moduleMeta.code) {
+          console.log(chalk.yellow(`⚠️  Skipping custom content path: ${customPath} - module.yaml missing 'code' field`));
+          continue;
+        }
+
+        customPaths.push(expandedPath);
+        selectedModuleIds.push(moduleMeta.code);
+      }
+
+      if (customPaths.length > 0) {
+        customContentConfig = {
+          hasCustomContent: true,
+          paths: customPaths,
+          selectedModuleIds: selectedModuleIds,
+        };
+      }
+    } else if (!options.yes) {
+      const wantsCustomContent = await prompts.confirm({
+        message: 'Add custom modules, agents, or workflows from your computer?',
+        default: false,
+      });
+
+      if (wantsCustomContent) {
+        customContentConfig = await this.promptCustomContentSource();
+      }
     }
 
     // Add custom content modules if any were selected
@@ -327,8 +479,8 @@ class UI {
     }
 
     selectedModules = selectedModules.filter((m) => m !== 'core');
-    let toolSelection = await this.promptToolSelection(confirmedDirectory);
-    const coreConfig = await this.collectCoreConfig(confirmedDirectory);
+    let toolSelection = await this.promptToolSelection(confirmedDirectory, options);
+    const coreConfig = await this.collectCoreConfig(confirmedDirectory, options);
 
     return {
       actionType: 'install',
@@ -339,6 +491,7 @@ class UI {
       skipIde: toolSelection.skipIde,
       coreConfig: coreConfig,
       customContent: customContentConfig,
+      skipPrompts: options.yes || false,
     };
   }
 
@@ -348,9 +501,10 @@ class UI {
    *   1. Recommended tools - standard multiselect for 3 preferred tools
    *   2. Additional tools - autocompleteMultiselect with search capability
    * @param {string} projectDir - Project directory to check for existing IDEs
+   * @param {Object} options - Command-line options
    * @returns {Object} Tool configuration
    */
-  async promptToolSelection(projectDir) {
+  async promptToolSelection(projectDir, options = {}) {
     // Check for existing configured IDEs - use findBmadDir to detect custom folder names
     const { Detector } = require('../installers/lib/core/detector');
     const { Installer } = require('../installers/lib/core/installer');
@@ -449,7 +603,37 @@ class UI {
       };
     });
 
-    const selectedIdes = await prompts.autocompleteMultiselect({
+    let selectedIdes = [];
+
+    // Check if tools are provided via command-line
+    if (options.tools) {
+      // Check for explicit "none" value to skip tool installation
+      if (options.tools.toLowerCase() === 'none') {
+        console.log(chalk.cyan('Skipping tool configuration (--tools none)'));
+        return { ides: [], skipIde: true };
+      } else {
+        selectedIdes = options.tools
+          .split(',')
+          .map((t) => t.trim())
+          .filter(Boolean);
+        console.log(chalk.cyan('Using tools from command-line:'), chalk.bold(selectedIdes.join(', ')));
+        this.displaySelectedTools(selectedIdes, preferredIdes, allTools);
+        return { ides: selectedIdes, skipIde: false };
+      }
+    } else if (options.yes) {
+      // If --yes flag is set, skip tool prompt and use previously configured tools or empty
+      if (configuredIdes.length > 0) {
+        console.log(chalk.cyan('Using previously configured tools (--yes flag):'), chalk.bold(configuredIdes.join(', ')));
+        this.displaySelectedTools(configuredIdes, preferredIdes, allTools);
+        return { ides: configuredIdes, skipIde: false };
+      } else {
+        console.log(chalk.cyan('Skipping tool configuration (--yes flag, no previous tools)'));
+        return { ides: [], skipIde: true };
+      }
+    }
+
+    // Interactive mode
+    const interactiveSelectedIdes = await prompts.autocompleteMultiselect({
       message: 'Select tools:',
       options: allToolOptions,
       initialValues: configuredIdes.length > 0 ? configuredIdes : undefined,
@@ -457,12 +641,12 @@ class UI {
       maxItems: 8,
     });
 
-    const allSelectedIdes = selectedIdes || [];
+    selectedIdes = interactiveSelectedIdes || [];
 
     // ─────────────────────────────────────────────────────────────────────────────
     // STEP 3: Confirm if no tools selected
     // ─────────────────────────────────────────────────────────────────────────────
-    if (allSelectedIdes.length === 0) {
+    if (selectedIdes.length === 0) {
       console.log('');
       const confirmNoTools = await prompts.confirm({
         message: 'No tools selected. Continue without installing any tools?',
@@ -481,11 +665,11 @@ class UI {
     }
 
     // Display selected tools
-    this.displaySelectedTools(allSelectedIdes, preferredIdes, allTools);
+    this.displaySelectedTools(selectedIdes, preferredIdes, allTools);
 
     return {
-      ides: allSelectedIdes,
-      skipIde: allSelectedIdes.length === 0,
+      ides: selectedIdes,
+      skipIde: selectedIdes.length === 0,
     };
   }
 
@@ -573,15 +757,75 @@ class UI {
   /**
    * Collect core configuration
    * @param {string} directory - Installation directory
+   * @param {Object} options - Command-line options
    * @returns {Object} Core configuration
    */
-  async collectCoreConfig(directory) {
+  async collectCoreConfig(directory, options = {}) {
     const { ConfigCollector } = require('../installers/lib/core/config-collector');
     const configCollector = new ConfigCollector();
-    // Load existing configs first if they exist
-    await configCollector.loadExistingConfig(directory);
-    // Now collect with existing values as defaults (false = don't skip loading, true = skip completion message)
-    await configCollector.collectModuleConfig('core', directory, false, true);
+
+    // If options are provided, set them directly
+    if (options.userName || options.communicationLanguage || options.documentOutputLanguage || options.outputFolder) {
+      const coreConfig = {};
+      if (options.userName) {
+        coreConfig.user_name = options.userName;
+        console.log(chalk.cyan('Using user name from command-line:'), chalk.bold(options.userName));
+      }
+      if (options.communicationLanguage) {
+        coreConfig.communication_language = options.communicationLanguage;
+        console.log(chalk.cyan('Using communication language from command-line:'), chalk.bold(options.communicationLanguage));
+      }
+      if (options.documentOutputLanguage) {
+        coreConfig.document_output_language = options.documentOutputLanguage;
+        console.log(chalk.cyan('Using document output language from command-line:'), chalk.bold(options.documentOutputLanguage));
+      }
+      if (options.outputFolder) {
+        coreConfig.output_folder = options.outputFolder;
+        console.log(chalk.cyan('Using output folder from command-line:'), chalk.bold(options.outputFolder));
+      }
+
+      // Load existing config to merge with provided options
+      await configCollector.loadExistingConfig(directory);
+
+      // Merge provided options with existing config (or defaults)
+      const existingConfig = configCollector.collectedConfig.core || {};
+      configCollector.collectedConfig.core = { ...existingConfig, ...coreConfig };
+
+      // If not all options are provided, collect the missing ones interactively (unless --yes flag)
+      if (
+        !options.yes &&
+        (!options.userName || !options.communicationLanguage || !options.documentOutputLanguage || !options.outputFolder)
+      ) {
+        await configCollector.collectModuleConfig('core', directory, false, true);
+      }
+    } else if (options.yes) {
+      // Use all defaults when --yes flag is set
+      await configCollector.loadExistingConfig(directory);
+      const existingConfig = configCollector.collectedConfig.core || {};
+
+      // If no existing config, use defaults
+      if (Object.keys(existingConfig).length === 0) {
+        let safeUsername;
+        try {
+          safeUsername = os.userInfo().username;
+        } catch {
+          safeUsername = process.env.USER || process.env.USERNAME || 'User';
+        }
+        const defaultUsername = safeUsername.charAt(0).toUpperCase() + safeUsername.slice(1);
+        configCollector.collectedConfig.core = {
+          user_name: defaultUsername,
+          communication_language: 'English',
+          document_output_language: 'English',
+          output_folder: '_bmad-output',
+        };
+        console.log(chalk.cyan('Using default configuration (--yes flag)'));
+      }
+    } else {
+      // Load existing configs first if they exist
+      await configCollector.loadExistingConfig(directory);
+      // Now collect with existing values as defaults (false = don't skip loading, true = skip completion message)
+      await configCollector.collectModuleConfig('core', directory, false, true);
+    }
 
     const coreConfig = configCollector.collectedConfig.core;
     // Ensure we always have a core config object, even if empty
@@ -883,6 +1127,33 @@ class UI {
 
     // Filter out the special '__NONE__' value
     return selected ? selected.filter((m) => m !== '__NONE__') : [];
+  }
+
+  /**
+   * Get default modules for non-interactive mode
+   * @param {Set} installedModuleIds - Already installed module IDs
+   * @returns {Array} Default module codes
+   */
+  async getDefaultModules(installedModuleIds = new Set()) {
+    const { ModuleManager } = require('../installers/lib/modules/manager');
+    const moduleManager = new ModuleManager();
+    const { modules: localModules } = await moduleManager.listAvailable();
+
+    const defaultModules = [];
+
+    // Add default-selected local modules (typically BMM)
+    for (const mod of localModules) {
+      if (mod.defaultSelected === true || installedModuleIds.has(mod.id)) {
+        defaultModules.push(mod.id);
+      }
+    }
+
+    // If no defaults found, use 'bmm' as the fallback default
+    if (defaultModules.length === 0) {
+      defaultModules.push('bmm');
+    }
+
+    return defaultModules;
   }
 
   /**
