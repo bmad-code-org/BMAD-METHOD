@@ -1,15 +1,11 @@
 ---
-title: "Brownfield Development"
+title: "Established Projects"
 description: How to use BMad Method on existing codebases
 ---
 
 Use BMad Method effectively when working on existing projects and legacy codebases.
 
-## What is Brownfield Development?
-
-**Brownfield** refers to working on existing projects with established codebases and patterns, as opposed to **greenfield** which means starting from scratch with a clean slate.
-
-This guide covers the essential workflow for onboarding to brownfield projects with BMad Method.
+This guide covers the essential workflow for onboarding to existing projects with BMad Method.
 
 :::note[Prerequisites]
 - BMad Method installed (`npx bmad-method install`)
@@ -80,5 +76,5 @@ Pay close attention here to prevent reinventing the wheel or making decisions th
 
 ## More Information
 
-- **[Quick Fix in Brownfield](/docs/how-to/brownfield/quick-fix-in-brownfield.md)** - Bug fixes and ad-hoc changes
-- **[Brownfield FAQ](/docs/explanation/brownfield-faq.md)** - Common questions about brownfield development
+- **[Quick Fixes](/docs/how-to/quick-fixes.md)** - Bug fixes and ad-hoc changes
+- **[Established Projects FAQ](/docs/explanation/established-projects-faq.md)** - Common questions about working on established projects
