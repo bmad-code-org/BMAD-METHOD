@@ -1,5 +1,6 @@
 ---
 title: Official Modules
+description: Add-on modules for building custom agents, creative intelligence, game development, and testing
 ---
 
 BMad extends through official modules that you select during installation. These add-on modules provide specialized agents, workflows, and tasks for specific domains beyond the built-in core and BMM (Agile suite).

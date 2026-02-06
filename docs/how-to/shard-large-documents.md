@@ -1,5 +1,6 @@
 ---
 title: "Document Sharding Guide"
+description: Split large markdown files into smaller organized files for better context management
 ---
 
 Use the `shard-doc` tool to split large markdown files into smaller, organized files for better context management.
