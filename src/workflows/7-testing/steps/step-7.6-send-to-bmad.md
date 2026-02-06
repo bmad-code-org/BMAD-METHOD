@@ -19,339 +19,78 @@ Send test results, issues, and test report to BMad for fixes.
 
 ## Prepare Notification
 
-### Gather All Artifacts
-
-**Checklist:**
-
-- [ ] Test report: `test-reports/TR-XXX-YYYY-MM-DD.md`
-- [ ] Issues list: `issues/issues-list.md`
-- [ ] Individual issue files: `issues/ISS-XXX-*.md`
-- [ ] Screenshots folder: `testing/DD-XXX/screenshots/`
-- [ ] Screen recordings folder: `testing/DD-XXX/screen-recordings/`
-
----
-
-## Send Notification to BMad
-
-### If Issues Found (NOT APPROVED)
+**Message to BMad Developer:**
 
 ```
-WDS Designer → BMad Developer
+WDS UX Expert → BMad Developer
 
-Subject: Testing Complete for DD-XXX - Issues Found
+Subject: Test Results for DD-XXX - [X] Issues Found
 
 Hi Developer!
 
-Testing complete for DD-XXX ([Flow Name]).
+I've completed testing for DD-XXX ([Flow Name]).
 
-📊 **Test Results:**
-- Overall Result: FAIL
-- Issues Found: [number] ([critical], [high], [medium], [low])
-- Test Pass Rate: [percentage]%
-- Design System Compliance: [percentage]%
+📊 **Test Summary:**
+- Overall Result: [PASS/FAIL]
+- Total Issues: [X]
+- High Severity: [X]
+- Blocking: [Yes/No]
 
-❌ **Status:** NOT APPROVED
-
-🐛 **Issues Found:**
-
-**High Severity ([number]):**
-- ISS-XXX: [Issue title]
-- ISS-XXX: [Issue title]
-- ISS-XXX: [Issue title]
-
-**Medium Severity ([number]):**
-- ISS-XXX: [Issue title]
-- ISS-XXX: [Issue title]
-
-**Low Severity ([number]):**
-- ISS-XXX: [Issue title]
-
-📁 **Artifacts:**
-- Test Report: test-reports/TR-XXX-2024-12-09.md
-- Issues List: issues/issues-list.md
-- Issue Files: issues/ISS-XXX-*.md
+📋 **Artifacts:**
+- Test Report: testing/DD-XXX/TR-XXX-flow-name.md
+- Issues: issues/ISS-001 through ISS-XXX
 - Screenshots: testing/DD-XXX/screenshots/
-- Recordings: testing/DD-XXX/screen-recordings/
+- Recordings: testing/DD-XXX/recordings/
 
-🔧 **Priority Fixes:**
-Must fix before release:
-1. ISS-XXX: [Issue title] (High)
-2. ISS-XXX: [Issue title] (High)
-3. ISS-XXX: [Issue title] (High)
+🎯 **Priority Issues:**
+1. ISS-XXX: [High] [Description]
+2. ISS-XXX: [High] [Description]
 
-Should fix before release:
-4. ISS-XXX: [Issue title] (Medium)
-5. ISS-XXX: [Issue title] (Medium)
+📌 **Next Steps:**
+[If FAIL] Please fix high severity issues and notify me for retest.
+[If PASS] Ready for production deployment!
 
-Can fix later:
-6. ISS-XXX: [Issue title] (Low)
-
-📅 **Next Steps:**
-1. Review test report and all issues
-2. Fix high severity issues first
-3. Fix medium severity issues
-4. Notify me when ready for retest
-5. I'll retest and provide updated report
-
-⏱️ **Estimated Fix Time:**
-Based on issue complexity, estimate [time] to fix all high/medium issues.
-
-❓ **Questions:**
-Let me know if you have questions about any issues. I'm available to clarify!
+Questions? I'm available to clarify any issues.
 
 Thanks,
 [Your name]
-WDS Designer
-```
-
----
-
-### If No Issues (APPROVED)
-
-```
-WDS Designer → BMad Developer
-
-Subject: Testing Complete for DD-XXX - APPROVED ✅
-
-Hi Developer!
-
-Testing complete for DD-XXX ([Flow Name]).
-
-📊 **Test Results:**
-- Overall Result: PASS
-- Issues Found: 0
-- Test Pass Rate: 100%
-- Design System Compliance: [percentage]%
-
-✅ **Status:** APPROVED - Ready to ship!
-
-🎉 **What Worked Well:**
-- [Positive feedback 1]
-- [Positive feedback 2]
-- [Positive feedback 3]
-
-📁 **Artifacts:**
-- Test Report: test-reports/TR-XXX-2024-12-09.md
-- Screenshots: testing/DD-XXX/screenshots/
-- Recordings: testing/DD-XXX/screen-recordings/
-
-📝 **Sign-Off:**
-I confirm that the implemented feature matches the design
-specifications and meets the quality standards defined in
-the test scenario.
-
-Designer: [Your name]
-Date: 2024-12-09
-
-🚀 **Next Steps:**
-1. Feature is approved for production release
-2. Deploy to production when ready
-3. Monitor user feedback after launch
-
-Excellent work! The implementation matches the design perfectly!
-
-Thanks,
-[Your name]
-WDS Designer
-```
-
----
-
-### If Minor Issues (APPROVED WITH MINOR ISSUES)
-
-```
-WDS Designer → BMad Developer
-
-Subject: Testing Complete for DD-XXX - Approved with Minor Issues
-
-Hi Developer!
-
-Testing complete for DD-XXX ([Flow Name]).
-
-📊 **Test Results:**
-- Overall Result: PASS (with minor issues)
-- Issues Found: [number] (all low severity)
-- Test Pass Rate: [percentage]%
-- Design System Compliance: [percentage]%
-
-✅ **Status:** APPROVED - Can ship with minor issues
-
-🐛 **Minor Issues Found:**
-
-**Low Severity ([number]):**
-- ISS-XXX: [Issue title]
-- ISS-XXX: [Issue title]
-
-These are cosmetic issues that don't block release. Can be fixed in next update.
-
-📁 **Artifacts:**
-- Test Report: test-reports/TR-XXX-2024-12-09.md
-- Issues: issues/ISS-XXX-*.md
-- Screenshots: testing/DD-XXX/screenshots/
-
-📝 **Sign-Off:**
-I approve this feature for production release. Minor issues can be addressed in future updates.
-
-Designer: [Your name]
-Date: 2024-12-09
-
-🚀 **Next Steps:**
-1. Deploy to production (approved)
-2. Create tickets for minor issues in backlog
-3. Fix minor issues in next sprint
-
-Great work overall!
-
-Thanks,
-[Your name]
-WDS Designer
 ```
 
 ---
 
 ## BMad Acknowledges
 
-**BMad Developer responds:**
-
-### If Issues Found
+**Expected response:**
 
 ```
-BMad Developer → WDS Designer
+BMad Developer → WDS UX Expert
 
-Subject: Re: Testing Complete for DD-XXX - Issues Found
+Thanks for the thorough testing!
 
-Received! Thank you for the thorough testing.
+Reviewing the issues now. Will prioritize:
+1. [High severity issues]
+2. [Medium severity issues]
 
-📋 **My Plan:**
-1. Review all [number] issues
-2. Fix high severity issues first ([number] issues)
-3. Fix medium severity issues ([number] issues)
-4. Low severity issues: backlog for next sprint
+Low severity issues moved to backlog.
 
-⏱️ **Estimated Fix Time:**
-- High severity: [time]
-- Medium severity: [time]
-- Total: [time]
-
-🔔 **I'll notify you when:**
-- Each high severity issue is fixed (for early validation if needed)
-- All issues are fixed and ready for retest
-
-❓ **Questions:**
-- ISS-XXX: [Question about specific issue]
-
-Thanks for the detailed feedback!
-
-BMad Developer
+Estimated fix time: [X days]
+Will notify when ready for retest.
 ```
 
 ---
 
-### If Approved
+## Track Status
 
-```
-BMad Developer → WDS Designer
-
-Subject: Re: Testing Complete for DD-XXX - APPROVED ✅
-
-Awesome! Thank you for the approval!
-
-🚀 **Next Steps:**
-1. Merging to main branch
-2. Deploying to production
-3. Monitoring for any issues
-
-Thanks for the great collaboration!
-
-BMad Developer
-```
-
----
-
-## Update Delivery Status
-
-**Update `deliveries/DD-XXX-name.yaml`:**
-
-### If Issues Found
+**Update delivery status:**
 
 ```yaml
 delivery:
-  status: 'in_testing' # Changed from "in_development"
-  tested_at: '2024-12-09T16:00:00Z'
-  test_result: 'fail'
-  issues_found: 8
-  test_report: 'test-reports/TR-001-2024-12-09.md'
-  retest_required: true
+  status: 'in_testing_iteration'
+  test_result: 'FAIL'
+  issues_count: X
+  issues_high: X
+  retest_pending: true
 ```
-
----
-
-### If Approved
-
-```yaml
-delivery:
-  status: 'complete' # Changed from "in_development"
-  tested_at: '2024-12-09T16:00:00Z'
-  test_result: 'pass'
-  issues_found: 0
-  test_report: 'test-reports/TR-001-2024-12-09.md'
-  approved_by: '[Your name]'
-  approved_at: '2024-12-09T16:00:00Z'
-  ready_for_production: true
-```
-
----
-
-## Communication Tips
-
-### DO ✅
-
-**Be clear:**
-
-- State result upfront (PASS/FAIL)
-- List issues by severity
-- Provide clear next steps
-
-**Be helpful:**
-
-- Offer to clarify issues
-- Provide recommendations
-- Be available for questions
-
-**Be professional:**
-
-- Objective tone
-- Data-driven feedback
-- Constructive criticism
-
-**Be appreciative:**
-
-- Acknowledge good work
-- Highlight what worked well
-- Thank for collaboration
-
-### DON'T ❌
-
-**Don't be vague:**
-
-- "Some issues found" ❌
-- "8 issues found (3 high, 3 medium, 2 low)" ✅
-
-**Don't be harsh:**
-
-- "This is terrible" ❌
-- "Found some issues that need fixing" ✅
-
-**Don't disappear:**
-
-- Send notification and stay available
-- Answer questions promptly
-- Be responsive
-
-**Don't delay:**
-
-- Send results within 24 hours of completing testing
-- Don't make BMad wait
 
 ---
 
@@ -368,25 +107,18 @@ After sending to BMad:
 ## Success Metrics
 
 ✅ Notification sent to BMad
-✅ All artifacts included
-✅ Clear result stated (PASS/FAIL/PARTIAL)
-✅ Issues listed by severity
-✅ Next steps provided
+✅ All artifacts referenced
+✅ Priority issues highlighted
+✅ Clear next steps provided
 ✅ BMad acknowledged receipt
-✅ Delivery status updated
-✅ Available for questions
+✅ Status updated
 
 ---
 
 ## Failure Modes
 
-❌ Not sending notification
-❌ Vague results
-❌ Missing artifacts
+❌ Incomplete notification
+❌ Missing artifact links
+❌ Unclear priorities
 ❌ No next steps
-❌ Disappearing after sending
-❌ Not updating delivery status
-
----
-
-**Remember:** Clear communication = fast fixes. Be thorough, helpful, and available!
+❌ Status not updated

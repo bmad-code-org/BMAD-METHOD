@@ -64,14 +64,14 @@ User situation:</ask>
 
 <check if="multiple_scenarios_exist">
   <ask>**Which scenario does this page belong to?**
-  
+
   Existing scenarios:
   {{#each scenario in existing_scenarios}}
   - {{scenario.number}}: {{scenario.name}}
   {{/each}}
-  
+
   Choose scenario [number] or "new" for a new scenario:</ask>
-  
+
   <action>Store scenario_number</action>
 </check>
 
@@ -95,16 +95,7 @@ User situation:</ask>
 
 <ask>**What page comes BEFORE this one?**
 
-{{#if existing_pages_in_scenario.length > 0}}
-Existing pages:
-{{#each page in existing_pages_in_scenario}}
-- {{page.number}}: {{page.name}}
-{{/each}}
-
 Type page number, or "none" if this is the first page:
-{{else}}
-This is the first page in the scenario. Type "none":
-{{/if}}
 
 Previous page:</ask>
 
@@ -134,120 +125,9 @@ Path: `4-scenarios/{{scenario_path}}/{{page_number}}-{{page_slug}}/`
 Create:
 1. Page folder: `{{page_number}}-{{page_slug}}/`
 2. Sketches folder: `{{page_number}}-{{page_slug}}/sketches/`
-3. Placeholder document: `{{page_number}}-{{page_slug}}.md`
-</action>
+3. Placeholder document using template
 
-<action>
-**Generate placeholder document:**
-
-File: `4-scenarios/{{scenario_path}}/{{page_number}}-{{page_slug}}/{{page_number}}-{{page_slug}}.md`
-
-Content:
-```markdown
-{{#if previous_page != "none"}}
-← [{{previous_page}}](../{{previous_page_slug}}/{{previous_page_slug}}.md)
-{{/if}}
-{{#if next_page != "none" and next_page != "TBD"}}
- | [{{next_page}}](../{{next_page_slug}}/{{next_page_slug}}.md) →
-{{/if}}
-{{#if next_page == "TBD"}}
- | Next: TBD
-{{/if}}
-
-![{{page_name}}](sketches/{{page_slug}}-concept.jpg)
-
-{{#if previous_page != "none"}}
-← [{{previous_page}}](../{{previous_page_slug}}/{{previous_page_slug}}.md)
-{{/if}}
-{{#if next_page != "none" and next_page != "TBD"}}
- | [{{next_page}}](../{{next_page_slug}}/{{next_page_slug}}.md) →
-{{/if}}
-
-# {{page_number}} {{page_name}}
-
-**User Situation:** {{user_situation}}
-
-**Page Purpose:** {{page_purpose}}
-
----
-
-## Status
-
-⚠️ **PLACEHOLDER** - This page needs:
-- [ ] Sketch or screenshot
-- [ ] Section breakdown
-- [ ] Object specifications
-- [ ] Component links
-- [ ] Interaction definitions
-- [ ] States and variants
-
----
-
-## Navigation Context
-
-{{#if previous_page != "none"}}
-**Previous:** {{previous_page}}
-{{else}}
-**This is the first page in the scenario**
-{{/if}}
-
-{{#if next_page == "TBD"}}
-**Next:** TBD (to be defined)
-{{else if next_page != "none"}}
-**Next:** {{next_page}}
-{{else}}
-**This is the last page in the scenario**
-{{/if}}
-
----
-
-## Open Questions
-
-<!--
-  Auto-populate questions based on page characteristics.
-  Reference: instructions/open-questions.instructions.md
-
-  Check for:
-  - Responsive breakpoints
-  - Loading/Error/Empty states
-  - SEO (if public)
-  - Accessibility
-  - User permissions
-  - Time-sensitive behaviors
-  - Form validation
-  - Navigation/back behavior
--->
-
-_No open questions at this time._
-
----
-
-## Next Steps
-
-To complete this page specification:
-
-1. **Add a sketch**: Place your sketch in `sketches/` folder
-2. **Run Page Process Workshop**: Analyze your sketch
-3. **Specify sections**: Define all page sections
-4. **Specify objects**: Define all interactive elements with Object IDs
-5. **Link components**: Connect to design system components
-6. **Document states**: Define loading, error, success, empty states
-7. **Review open-questions.instructions.md**: Add relevant questions to Open Questions section
-8. **Generate prototype**: Create interactive HTML preview
-
----
-
-{{#if previous_page != "none"}}
-**Previous Step**: ← [{{previous_page}}](../{{previous_page_slug}}/{{previous_page_slug}}.md)
-{{/if}}
-{{#if next_page != "none" and next_page != "TBD"}}
-**Next Step**: → [{{next_page}}](../{{next_page_slug}}/{{next_page_slug}}.md)
-{{/if}}
-
----
-
-_Placeholder created using Whiteport Design Studio (WDS) methodology_
-```
+**See:** [substeps/lightweight-page-template.md](substeps/lightweight-page-template.md)
 </action>
 
 ---
@@ -280,18 +160,8 @@ _Placeholder created using Whiteport Design Studio (WDS) methodology_
 - **Purpose:** {{page_purpose}}
 
 **Navigation:**
-{{#if previous_page != "none"}}
-- Previous: {{previous_page}} ✅ linked
-{{else}}
-- First page in scenario
-{{/if}}
-{{#if next_page != "none" and next_page != "TBD"}}
-- Next: {{next_page}} ✅ linked
-{{else if next_page == "TBD"}}
-- Next: TBD
-{{else}}
-- Last page in scenario
-{{/if}}
+- Previous: {{previous_page}} {{#if linked}}✅ linked{{/if}}
+- Next: {{next_page}}
 
 ---
 
@@ -321,35 +191,6 @@ Based on user choice:
 
 ---
 
-## KEY PRINCIPLES
-
-### ✅ **Navigation is Critical**
-- Appears three times (above sketch, below sketch, document bottom)
-- Links to previous/next pages
-- Creates navigable flow
-- Essential for comprehension
-
-### ✅ **Lightweight Setup**
-- Quick to create
-- No detailed specs yet
-- Just enough to get started
-- Ready for iteration
-
-### ✅ **Context Captured**
-- Name, purpose, situation
-- Scenario placement
-- Page number assigned
-- Flow established
-
-### ✅ **Open Questions Ready**
-- Section included from start
-- Reference `open-questions.instructions.md` during spec creation
-- Auto-populate based on page characteristics
-- Ensures no edge cases are missed
-
----
-
-**Created:** December 28, 2025  
-**Purpose:** Quick page initialization with navigation  
+**Created:** December 28, 2025
+**Purpose:** Quick page initialization with navigation
 **Status:** Ready for WDS Presentation page
-

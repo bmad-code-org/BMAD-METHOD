@@ -25,25 +25,14 @@ BMad Developer → WDS Designer
 
 Subject: Design Delivery Complete: DD-XXX
 
-Hi Designer!
-
 Design Delivery DD-XXX is complete and ready for validation.
 
-✅ **Implemented:**
-- [Feature/change 1]
-- [Feature/change 2]
-- [Feature/change 3]
-
+✅ **Implemented:** [Features/changes]
 📦 **Build:** v2.1.0
 🌐 **Environment:** Staging
-📱 **Device:** [Platform details]
-
 📝 **Test Scenario:** test-scenarios/TS-XXX.yaml
 
 Ready for your validation!
-
-Thanks,
-BMad Developer
 ```
 
 ---
@@ -57,7 +46,6 @@ BMad Developer
 **Load:** `test-scenarios/TS-XXX.yaml`
 
 **Focus on:**
-
 - New functionality (what changed)
 - Regression testing (what should stay the same)
 - Edge cases specific to the update
@@ -74,7 +62,6 @@ BMad Developer
 ## New Functionality Tests
 
 ### HP-001: [New feature works]
-
 - Action: [Test new feature]
 - Expected: [New behavior]
 - Actual: [What happened]
@@ -87,7 +74,6 @@ BMad Developer
 ## Regression Tests
 
 ### REG-001: [Existing feature unchanged]
-
 - Action: [Use existing feature]
 - Expected: [Works as before]
 - Actual: [What happened]
@@ -98,60 +84,7 @@ BMad Developer
 
 ### 3. Document Results
 
-**Create:** `test-reports/TR-XXX-DD-XXX-validation.md`
-
-```markdown
-# Validation Report: DD-XXX [Name]
-
-**Date:** 2024-12-13
-**Tester:** [Your name]
-**Build:** v2.1.0
-**Type:** Design Delivery Validation (Incremental Improvement)
-
----
-
-## Result
-
-**Status:** [PASS | FAIL]
-
----
-
-## New Functionality
-
-### Test HP-001: [Name]
-
-- Status: [PASS | FAIL]
-- Notes: [Any observations]
-
-[Repeat for each new functionality test]
-
----
-
-## Regression Testing
-
-### Test REG-001: [Name]
-
-- Status: [PASS | FAIL]
-- Notes: [Any observations]
-
-[Repeat for each regression test]
-
----
-
-## Issues Found
-
-**Total:** [Number]
-
-[If any issues, list them]
-
----
-
-## Recommendation
-
-[APPROVED | NOT APPROVED]
-
-[Brief explanation]
-```
+**See:** [substeps/delivery-templates.md](substeps/delivery-templates.md) for Validation Report template
 
 ---
 
@@ -164,10 +97,6 @@ WDS Designer → BMad Developer
 
 Subject: DD-XXX Validation Complete - APPROVED ✅
 
-Hi Developer!
-
-Validation complete for DD-XXX!
-
 ✅ **Status:** APPROVED - Ready to ship!
 
 📊 **Test Results:**
@@ -175,20 +104,8 @@ Validation complete for DD-XXX!
 - Regression tests: No issues
 - Issues found: 0
 
-📁 **Validation Report:**
-test-reports/TR-XXX-DD-XXX-validation.md
-
-🚀 **Next Steps:**
-Deploy to production and start measuring impact!
-
-Great work!
-
-Thanks,
-[Your name]
-WDS Designer
+🚀 **Next Steps:** Deploy to production!
 ```
-
----
 
 **If ISSUES FOUND:**
 
@@ -197,24 +114,12 @@ WDS Designer → BMad Developer
 
 Subject: DD-XXX Validation Complete - Issues Found
 
-Hi Developer!
-
-Validation complete for DD-XXX.
-
 ❌ **Status:** NOT APPROVED (issues found)
 
 🐛 **Issues:**
 - ISS-XXX: [Issue description]
-- ISS-XXX: [Issue description]
 
-📁 **Validation Report:**
-test-reports/TR-XXX-DD-XXX-validation.md
-
-🔧 **Next Steps:**
-Please fix issues, then notify for retest.
-
-Thanks,
-[Your name]
+🔧 **Next Steps:** Please fix issues, notify for retest.
 ```
 
 ---

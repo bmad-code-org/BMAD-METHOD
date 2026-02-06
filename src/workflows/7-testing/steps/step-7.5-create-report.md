@@ -19,350 +19,61 @@ Create a comprehensive test report summarizing all testing results.
 
 ## Create Test Report File
 
-**File:** `test-reports/TR-XXX-YYYY-MM-DD.md`
+**File:** `testing/DD-XXX/TR-XXX-[flow-name].md`
 
-**Example:** `test-reports/TR-001-2024-12-09.md`
-
----
-
-## Test Report Template
-
-```markdown
-# Test Report: TS-XXX [Flow Name]
-
-**Date:** 2024-12-09
-**Tester:** [Your name] (Designer)
-**Device:** [Device details]
-**Build:** v0.1.0-beta.1
-**Environment:** Staging
-**Duration:** [Testing duration]
+**See:** [substeps/issue-templates.md](substeps/issue-templates.md) for complete test report template
 
 ---
 
-## Executive Summary
+## Report Sections
 
-**Overall Result:** [PASS | FAIL | PARTIAL PASS]
-
-**Quick Summary:**
-[2-3 sentences summarizing the test results]
-
-**Recommendation:**
-[APPROVED | NOT APPROVED | APPROVED WITH MINOR ISSUES]
-
----
-
-## Test Coverage
-
-### Happy Path Tests
-
-- **Total:** [number] tests
-- **Passed:** [number]/[total] ([percentage]%)
-- **Failed:** [number]/[total] ([percentage]%)
-- **Status:** [PASS | FAIL]
-
-### Error State Tests
-
-- **Total:** [number] tests
-- **Passed:** [number]/[total] ([percentage]%)
-- **Failed:** [number]/[total] ([percentage]%)
-- **Status:** [PASS | FAIL]
-
-### Edge Case Tests
-
-- **Total:** [number] tests
-- **Passed:** [number]/[total] ([percentage]%)
-- **Failed:** [number]/[total] ([percentage]%)
-- **Status:** [PASS | FAIL]
-
-### Design System Validation
-
-- **Components Checked:** [number]
-- **Compliant:** [number]/[total] ([percentage]%)
-- **Non-compliant:** [number]/[total] ([percentage]%)
-- **Target:** >95% compliance
-- **Status:** [PASS | FAIL]
-
-### Accessibility Tests
-
-- **Total:** [number] tests
-- **Passed:** [number]/[total] ([percentage]%)
-- **Failed:** [number]/[total] ([percentage]%)
-- **Status:** [PASS | FAIL]
+1. **Summary** - Overall result, total issues, blocking status
+2. **Test Coverage** - Pass/fail by category
+3. **Issues Found** - Table of all issues
+4. **Sign-Off Recommendation** - Ready or needs fixes
+5. **Next Steps** - What happens next
+6. **Attachments** - Recordings, screenshots, issue files
 
 ---
 
-## Issues Found
+## Overall Result Determination
 
-**Total Issues:** [number]
+**PASS if:**
+- All Critical issues: 0
+- All High issues: Fixed or accepted risk
+- Happy path: 100% pass
+- Design system: > 95% compliant
 
-### By Severity
-
-- **Critical:** [number]
-- **High:** [number]
-- **Medium:** [number]
-- **Low:** [number]
-
-### By Category
-
-- **Functionality:** [number]
-- **Design System:** [number]
-- **Accessibility:** [number]
-- **Performance:** [number]
-
-### Issue List
-
-#### Critical Issues (0)
-
-None
-
-#### High Severity Issues ([number])
-
-**ISS-XXX: [Issue Title]**
-
-- **Category:** [Functionality | Design System | Accessibility]
-- **Impact:** [Brief impact description]
-- **Status:** Open
-- **Details:** [Link to issue file]
-
-[Repeat for each high severity issue]
-
-#### Medium Severity Issues ([number])
-
-**ISS-XXX: [Issue Title]**
-
-- **Category:** [Category]
-- **Impact:** [Brief impact]
-- **Status:** Open
-- **Details:** [Link to issue file]
-
-[Repeat for each medium severity issue]
-
-#### Low Severity Issues ([number])
-
-**ISS-XXX: [Issue Title]**
-
-- **Category:** [Category]
-- **Impact:** [Brief impact]
-- **Status:** Open
-- **Details:** [Link to issue file]
-
-[Repeat for each low severity issue]
+**FAIL if:**
+- Any Critical issues unfixed
+- Any High issues blocking
+- Happy path failures
+- Design system < 95% compliant
 
 ---
 
-## Detailed Test Results
+## Attach Supporting Files
 
-### Happy Path Tests
+Organize testing folder:
 
-**HP-001: [Test Name]**
-
-- **Status:** [PASS | FAIL]
-- **Steps:** [number] total
-- **Passed:** [number]/[total]
-- **Failed:** [number]/[total]
-- **Duration:** [time]
-- **Issues:** [List issue IDs if any]
-- **Notes:** [Any additional notes]
-
-[Repeat for each happy path test]
-
-### Error State Tests
-
-**ES-001: [Test Name]**
-
-- **Status:** [PASS | FAIL]
-- **Expected Behavior:** [Description]
-- **Actual Behavior:** [Description]
-- **Issues:** [List issue IDs if any]
-
-[Repeat for each error state test]
-
-### Edge Case Tests
-
-**EC-001: [Test Name]**
-
-- **Status:** [PASS | FAIL]
-- **Scenario:** [Description]
-- **Result:** [Description]
-- **Issues:** [List issue IDs if any]
-
-[Repeat for each edge case test]
-
-### Design System Validation
-
-**DS-001: [Component Name]**
-
-- **Instances Checked:** [number]
-- **Compliant:** [number]/[total]
-- **Issues:** [List issue IDs if any]
-- **Details:** [Specific non-compliance]
-
-[Repeat for each component type]
-
-### Accessibility Tests
-
-**A11Y-001: [Test Name]**
-
-- **Status:** [PASS | FAIL]
-- **Standard:** WCAG 2.1 AA
-- **Result:** [Description]
-- **Issues:** [List issue IDs if any]
-
-[Repeat for each accessibility test]
-
----
-
-## What Worked Well
-
-### Strengths
-
-- [Positive observation 1]
-- [Positive observation 2]
-- [Positive observation 3]
-
-### Highlights
-
-- [Specific thing that exceeded expectations]
-- [Specific thing that worked perfectly]
-
----
-
-## What Needs Improvement
-
-### Areas of Concern
-
-- [Issue category 1]: [Brief description]
-- [Issue category 2]: [Brief description]
-- [Issue category 3]: [Brief description]
-
-### Recommendations
-
-1. [Specific recommendation 1]
-2. [Specific recommendation 2]
-3. [Specific recommendation 3]
-
----
-
-## Metrics
-
-### Performance Metrics
-
-- **Average screen load time:** [time]
-- **Form submission time:** [time]
-- **Animation frame rate:** [fps]
-
-### User Experience Metrics
-
-- **Flow completion time:** [time]
-- **Number of taps:** [number]
-- **Error rate:** [percentage]%
-
-### Quality Metrics
-
-- **Test pass rate:** [percentage]%
-- **Design system compliance:** [percentage]%
-- **Accessibility compliance:** [percentage]%
-
----
-
-## Sign-Off Criteria
-
-### Required for Approval
-
-- [ ] All critical tests pass
-- [ ] No critical or high severity issues
-- [ ] Design system compliance > 95%
-- [ ] All accessibility tests pass
-- [ ] All acceptance criteria met
-
-### Current Status
-
-- **Critical tests:** [PASS | FAIL]
-- **Critical/High issues:** [number] found
-- **Design system compliance:** [percentage]%
-- **Accessibility tests:** [PASS | FAIL]
-- **Acceptance criteria:** [number]/[total] met
-
----
-
-## Recommendation
-
-**Status:** [APPROVED | NOT APPROVED | APPROVED WITH MINOR ISSUES]
-
-**Reason:**
-[Detailed explanation of recommendation]
-
-**Next Steps:**
-
-1. [Step 1]
-2. [Step 2]
-3. [Step 3]
-
----
-
-## Retest Required
-
-**Retest:** [YES | NO]
-
-**If YES:**
-
-- **Issues to fix:** [List critical/high issues]
-- **Expected fix time:** [Estimate]
-- **Retest date:** [Date]
-
-**If NO:**
-
-- **Approval:** Ready to ship ✅
-- **Sign-off:** [Your name], [Date]
-
----
-
-## Attachments
-
-### Screenshots
-
-- [Link to screenshots folder]
-- Total screenshots: [number]
-
-### Screen Recordings
-
-- [Link to recordings folder]
-- Total recordings: [number]
-
-### Test Data
-
-- [Link to test data used]
-
-### Issue Tickets
-
-- [Link to issues folder]
-- Total issues: [number]
-
----
-
-## Notes
-
-[Any additional notes, observations, or context]
-
----
-
-**Report prepared by:** [Your name]
-**Role:** WDS Designer
-**Date:** 2024-12-09
-**Signature:** **\*\***\_\_\_\_**\*\***
 ```
-
----
-
-## Example Test Report
-
-See `testing-guide.md` for complete example.
+testing/DD-XXX/
+├── TR-XXX-flow-name.md (this report)
+├── screenshots/
+│   ├── ISS-001.png
+│   ├── ISS-002.png
+├── recordings/
+│   ├── happy-path-HP-001.mov
+│   ├── happy-path-HP-002.mov
+└── test-data/
+    └── test-accounts.md
+```
 
 ---
 
 ## Next Step
 
-After creating the test report:
+After creating test report:
 
 ```
 [C] Continue to step-7.6-send-to-bmad.md
@@ -372,70 +83,18 @@ After creating the test report:
 
 ## Success Metrics
 
-✅ Test report created
-✅ All sections filled out
-✅ Executive summary clear
-✅ All test results documented
-✅ All issues listed
-✅ Metrics calculated
-✅ Recommendation provided
-✅ Sign-off criteria evaluated
+✅ Test report created with all sections
+✅ Test coverage complete
+✅ Issues list accurate
+✅ Clear recommendation
+✅ All attachments organized
 
 ---
 
 ## Failure Modes
 
-❌ Incomplete test report
-❌ Missing test results
-❌ No recommendation
-❌ Vague summary
-❌ Missing metrics
-❌ No sign-off criteria evaluation
-
----
-
-## Tips
-
-### DO ✅
-
-**Be comprehensive:**
-
-- Include all test results
-- Document everything
-- Provide context
-
-**Be clear:**
-
-- Executive summary first
-- Clear recommendation
-- Specific next steps
-
-**Be professional:**
-
-- Objective tone
-- Data-driven
-- Constructive feedback
-
-### DON'T ❌
-
-**Don't be vague:**
-
-- Provide specific numbers
-- Reference exact issues
-- Give clear recommendations
-
-**Don't sugarcoat:**
-
-- Be honest about issues
-- Don't hide problems
-- Be direct but professional
-
-**Don't skip sections:**
-
-- Complete all sections
-- Even if "no issues"
-- Document everything
-
----
-
-**Remember:** This report is the official record of testing. Be thorough and professional!
+❌ Missing test categories
+❌ Incorrect issue counts
+❌ Unclear recommendation
+❌ Missing attachments
+❌ Incomplete coverage data
