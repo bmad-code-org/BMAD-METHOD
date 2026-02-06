@@ -21,7 +21,7 @@ const archiver = require('archiver');
 const PROJECT_ROOT = path.dirname(__dirname);
 const BUILD_DIR = path.join(PROJECT_ROOT, 'build');
 
-const SITE_URL = process.env.SITE_URL || 'https://bmad-code-org.github.io/BMAD-METHOD';
+let SITE_URL; // Resolved in main() via shared getSiteUrl()
 const REPO_URL = 'https://github.com/bmad-code-org/BMAD-METHOD';
 
 // DO NOT CHANGE THESE VALUES!
@@ -53,6 +53,12 @@ const LLM_EXCLUDE_PATTERNS = [
  */
 
 async function main() {
+  // Resolve site URL using the same function as Astro config
+  const { pathToFileURL } = require('node:url');
+  const siteUrlModule = path.join(PROJECT_ROOT, 'website/src/lib/site-url.mjs');
+  const { getSiteUrl } = await import(pathToFileURL(siteUrlModule).href);
+  SITE_URL = getSiteUrl();
+
   console.log();
   printBanner('BMAD Documentation Build Pipeline');
   console.log();
