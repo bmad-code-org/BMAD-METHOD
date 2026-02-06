@@ -82,6 +82,8 @@ class OpenCodeSetup extends BaseIdeSetup {
       agents: agentCount,
       workflows: workflowCommandCount,
       workflowCounts,
+      tasks,
+      tools,
     };
   }
 
@@ -145,7 +147,7 @@ class OpenCodeSetup extends BaseIdeSetup {
   parseFrontmatter(content) {
     const match = content.match(/^---\s*\n([\s\S]*?)\n---\s*\n?/);
     if (!match) {
-      return { data: {}, body: content };
+      return { frontmatter: {}, body: content };
     }
 
     const body = content.slice(match[0].length);
@@ -162,10 +164,9 @@ class OpenCodeSetup extends BaseIdeSetup {
 
   stringifyFrontmatter(frontmatter) {
     const yamlText = yaml
-      .dump(frontmatter, {
+      .stringify(frontmatter, {
         indent: 2,
         lineWidth: -1,
-        noRefs: true,
         sortKeys: false,
       })
       .trimEnd();
@@ -225,11 +226,12 @@ class OpenCodeSetup extends BaseIdeSetup {
 
     await this.ensureDir(agentsDir);
 
-    const launcherContent = `---
-name: '${agentName}'
-description: '${metadata.title || agentName} agent'
-mode: 'primary'
----
+    const launcherFrontmatter = {
+      name: agentName,
+      description: `${metadata.title || agentName} agent`,
+      mode: 'primary',
+    };
+    const launcherContent = `${this.stringifyFrontmatter(launcherFrontmatter)}
 
 You must fully embody this agent's persona and follow all activation instructions exactly as specified. NEVER break character until given an exit command.
 
