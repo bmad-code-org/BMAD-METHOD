@@ -15,6 +15,8 @@ const path = require('node:path');
 const fs = require('fs-extra');
 const { YamlXmlBuilder } = require('../tools/cli/lib/yaml-xml-builder');
 const { ManifestGenerator } = require('../tools/cli/installers/lib/core/manifest-generator');
+const { WorkflowCommandGenerator } = require('../tools/cli/installers/lib/ide/shared/workflow-command-generator');
+const { BMAD_FOLDER_NAME } = require('../tools/cli/installers/lib/ide/shared/path-utils');
 
 // ANSI colors
 const colors = {
@@ -208,6 +210,24 @@ async function runTests() {
   console.log('');
 
   // ============================================================
+  // Test 4: Workflow Command Generator Defaults
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 4: Workflow Generator Defaults${colors.reset}\n`);
+
+  try {
+    const workflowGenerator = new WorkflowCommandGenerator();
+    assert(
+      workflowGenerator.bmadFolderName === BMAD_FOLDER_NAME,
+      'Workflow generator default BMAD folder matches shared constant',
+      `Expected "${BMAD_FOLDER_NAME}", got "${workflowGenerator.bmadFolderName}"`,
+    );
+  } catch (error) {
+    assert(false, 'Workflow generator default path is valid', error.message);
+  }
+
+  console.log('');
+
+  // ============================================================
   // Test 5: QA Agent Compilation
   // ============================================================
   console.log(`${colors.yellow}Test Suite 5: QA Agent Compilation${colors.reset}\n`);
@@ -232,6 +252,36 @@ async function runTests() {
     }
   } catch (error) {
     assert(false, 'QA compilation test setup', error.message);
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test 9: Guard against incorrect module config references
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 9: BMM Config Reference Guard${colors.reset}\n`);
+
+  try {
+    const searchTargets = [path.join(projectRoot, 'src', 'bmm', 'workflows', 'document-project', 'workflows')];
+    const allowedExtensions = new Set(['.yaml', '.yml']);
+    const forbiddenRef = '{project-root}/_bmad/bmb/config.yaml';
+    const offenders = [];
+
+    const files = await collectFiles(searchTargets, allowedExtensions);
+    for (const fullPath of files) {
+      const content = await fs.readFile(fullPath, 'utf8');
+      if (content.includes(forbiddenRef)) {
+        offenders.push(path.relative(projectRoot, fullPath));
+      }
+    }
+
+    assert(
+      offenders.length === 0,
+      'No bmm workflow configs should reference _bmad/bmb/config.yaml',
+      offenders.length > 0 ? offenders.join(', ') : '',
+    );
+  } catch (error) {
+    assert(false, 'BMM config reference guard runs', error.message);
   }
 
   console.log('');
