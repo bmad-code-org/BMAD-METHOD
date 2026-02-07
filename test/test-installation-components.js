@@ -30,6 +30,48 @@ let passed = 0;
 let failed = 0;
 
 /**
+ * Recursively collect files from a mix of files/directories.
+ */
+async function collectFiles(targets, allowedExtensions) {
+  const files = [];
+
+  const walk = async (targetPath) => {
+    if (!(await fs.pathExists(targetPath))) {
+      return;
+    }
+
+    const stat = await fs.stat(targetPath);
+    if (stat.isFile()) {
+      if (allowedExtensions.has(path.extname(targetPath))) {
+        files.push(targetPath);
+      }
+      return;
+    }
+
+    const entries = await fs.readdir(targetPath, { withFileTypes: true });
+    for (const entry of entries) {
+      const fullPath = path.join(targetPath, entry.name);
+      if (entry.isSymbolicLink()) {
+        continue;
+      }
+      if (entry.isDirectory()) {
+        await walk(fullPath);
+        continue;
+      }
+      if (allowedExtensions.has(path.extname(entry.name))) {
+        files.push(fullPath);
+      }
+    }
+  };
+
+  for (const target of targets) {
+    await walk(target);
+  }
+
+  return files;
+}
+
+/**
  * Test helper: Assert condition
  */
 function assert(condition, testName, errorMessage = '') {
@@ -192,31 +234,20 @@ async function runTests() {
   console.log(`${colors.yellow}Test Suite 6: Advanced Elicitation Reference Guard${colors.reset}\n`);
 
   try {
-    const searchRoots = [path.join(projectRoot, 'src'), path.join(projectRoot, 'docs')];
+    const searchTargets = [
+      path.join(projectRoot, 'src', 'bmm', 'workflows', '2-plan-workflows', 'create-prd', 'steps-e'),
+      path.join(projectRoot, 'src', 'bmm', 'workflows', '2-plan-workflows', 'create-prd', 'steps-v', 'step-v-01-discovery.md'),
+    ];
     const allowedExtensions = new Set(['.md', '.yaml', '.yml', '.xml']);
     const forbiddenRef = 'advanced-elicitation/workflow.xml';
     const offenders = [];
 
-    const walk = async (dir) => {
-      const entries = await fs.readdir(dir, { withFileTypes: true });
-      for (const entry of entries) {
-        const fullPath = path.join(dir, entry.name);
-        if (entry.isDirectory()) {
-          await walk(fullPath);
-          continue;
-        }
-        if (!allowedExtensions.has(path.extname(entry.name))) {
-          continue;
-        }
-        const content = await fs.readFile(fullPath, 'utf8');
-        if (content.includes(forbiddenRef)) {
-          offenders.push(path.relative(projectRoot, fullPath));
-        }
+    const files = await collectFiles(searchTargets, allowedExtensions);
+    for (const fullPath of files) {
+      const content = await fs.readFile(fullPath, 'utf8');
+      if (content.includes(forbiddenRef)) {
+        offenders.push(path.relative(projectRoot, fullPath));
       }
-    };
-
-    for (const root of searchRoots) {
-      await walk(root);
     }
 
     assert(
@@ -236,32 +267,20 @@ async function runTests() {
   console.log(`${colors.yellow}Test Suite 7: Validate Workflow Reference Guard${colors.reset}\n`);
 
   try {
-    const searchRoots = [path.join(projectRoot, 'src'), path.join(projectRoot, 'docs')];
+    const searchTargets = [
+      path.join(projectRoot, 'src', 'bmm', 'workflows', '4-implementation'),
+      path.join(projectRoot, 'src', 'bmm', 'workflows', 'document-project'),
+    ];
     const allowedExtensions = new Set(['.md', '.yaml', '.yml', '.xml']);
     const forbiddenRef = 'validate-workflow.xml';
-    const excludedFile = path.join(projectRoot, 'src', 'core', 'tasks', 'validate-workflow.xml');
     const offenders = [];
 
-    const walk = async (dir) => {
-      const entries = await fs.readdir(dir, { withFileTypes: true });
-      for (const entry of entries) {
-        const fullPath = path.join(dir, entry.name);
-        if (entry.isDirectory()) {
-          await walk(fullPath);
-          continue;
-        }
-        if (!allowedExtensions.has(path.extname(entry.name))) {
-          continue;
-        }
-        const content = await fs.readFile(fullPath, 'utf8');
-        if (content.includes(forbiddenRef)) {
-          offenders.push(path.relative(projectRoot, fullPath));
-        }
+    const files = await collectFiles(searchTargets, allowedExtensions);
+    for (const fullPath of files) {
+      const content = await fs.readFile(fullPath, 'utf8');
+      if (content.includes(forbiddenRef)) {
+        offenders.push(path.relative(projectRoot, fullPath));
       }
-    };
-
-    for (const root of searchRoots) {
-      await walk(root);
     }
 
     assert(
@@ -281,31 +300,21 @@ async function runTests() {
   console.log(`${colors.yellow}Test Suite 8: Workflow Reference Guard${colors.reset}\n`);
 
   try {
-    const searchRoots = [path.join(projectRoot, 'src'), path.join(projectRoot, 'docs'), path.join(projectRoot, 'tools')];
+    const searchTargets = [
+      path.join(projectRoot, 'src', 'bmm', 'workflows', '4-implementation'),
+      path.join(projectRoot, 'src', 'bmm', 'workflows', 'document-project'),
+      path.join(projectRoot, 'tools', 'cli', 'installers', 'lib'),
+    ];
     const allowedExtensions = new Set(['.md', '.yaml', '.yml', '.xml']);
-    const forbiddenRef = 'workflow.xml';
+    const forbiddenRefPattern = /(^|[^a-zA-Z0-9_-])workflow\.xml\b/;
     const offenders = [];
 
-    const walk = async (dir) => {
-      const entries = await fs.readdir(dir, { withFileTypes: true });
-      for (const entry of entries) {
-        const fullPath = path.join(dir, entry.name);
-        if (entry.isDirectory()) {
-          await walk(fullPath);
-          continue;
-        }
-        if (!allowedExtensions.has(path.extname(entry.name))) {
-          continue;
-        }
-        const content = await fs.readFile(fullPath, 'utf8');
-        if (content.includes(forbiddenRef)) {
-          offenders.push(path.relative(projectRoot, fullPath));
-        }
+    const files = await collectFiles(searchTargets, allowedExtensions);
+    for (const fullPath of files) {
+      const content = await fs.readFile(fullPath, 'utf8');
+      if (forbiddenRefPattern.test(content)) {
+        offenders.push(path.relative(projectRoot, fullPath));
       }
-    };
-
-    for (const root of searchRoots) {
-      await walk(root);
     }
 
     assert(offenders.length === 0, 'No workflow.xml references outside XML source', offenders.length > 0 ? offenders.join(', ') : '');

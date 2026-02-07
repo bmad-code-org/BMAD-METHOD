@@ -3,8 +3,8 @@ name: "document-project-deep-dive"
 description: "Exhaustive deep-dive documentation of specific project areas"
 author: "BMad"
 
-# This is a sub-workflow called by document-project/workflow.yaml
-parent_workflow: "{project-root}/_bmad/bmm/workflows/document-project/workflow.yaml"
+# This is a sub-workflow called by document-project/workflow.md
+parent_workflow: "{project-root}/_bmad/bmm/workflows/document-project/workflow.md"
 
 # Critical variables inherited from parent
 config_source: "{project-root}/_bmad/bmb/config.yaml"

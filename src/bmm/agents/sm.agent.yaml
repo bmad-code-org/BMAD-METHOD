@@ -19,18 +19,18 @@ agent:
 
   menu:
     - trigger: SP or fuzzy match on sprint-planning
-      workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/sprint-planning/workflow.yaml"
+      workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/sprint-planning/workflow.md"
       description: "[SP] Sprint Planning: Generate or update the record that will sequence the tasks to complete the full project that the dev agent will follow"
 
     - trigger: CS or fuzzy match on create-story
-      workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/create-story/workflow.yaml"
+      workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/create-story/workflow.md"
       description: "[CS] Context Story: Prepare a story with all required context for implementation for the developer agent"
 
     - trigger: ER or fuzzy match on epic-retrospective
-      workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/retrospective/workflow.yaml"
+      workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/retrospective/workflow.md"
       data: "{project-root}/_bmad/_config/agent-manifest.csv"
       description: "[ER] Epic Retrospective: Party Mode review of all work completed across an epic."
 
     - trigger: CC or fuzzy match on correct-course
-      workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/correct-course/workflow.yaml"
+      workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/correct-course/workflow.md"
       description: "[CC] Course Correction: Use this so we can determine how to proceed if major need for change is discovered mid implementation"

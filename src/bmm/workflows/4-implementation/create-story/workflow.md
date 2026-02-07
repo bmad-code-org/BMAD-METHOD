@@ -131,62 +131,6 @@ web_bundle: false
 
       <action>GOTO step 2a</action>
     </check>
-    <action>Load the FULL file: {{sprint_status}}</action>
-    <action>Read ALL lines from beginning to end - do not skip any content</action>
-    <action>Parse the development_status section completely</action>
-
-    <action>Find the FIRST story (by reading in order from top to bottom) where:
-      - Key matches pattern: number-number-name (e.g., "1-2-user-auth")
-      - NOT an epic key (epic-X) or retrospective (epic-X-retrospective)
-      - Status value equals "backlog"
-    </action>
-
-    <check if="no backlog story found">
-      <output>📋 No backlog stories found in sprint-status.yaml
-
-        All stories are either already created, in progress, or done.
-
-        **Options:**
-        1. Run sprint-planning to refresh story tracking
-        2. Load PM agent and run correct-course to add more stories
-        3. Check if current sprint is complete and run retrospective
-      </output>
-      <action>HALT</action>
-    </check>
-
-    <action>Extract from found story key (e.g., "1-2-user-authentication"):
-      - epic_num: first number before dash (e.g., "1")
-      - story_num: second number after first dash (e.g., "2")
-      - story_title: remainder after second dash (e.g., "user-authentication")
-    </action>
-    <action>Set {{story_id}} = "{{epic_num}}.{{story_num}}"</action>
-    <action>Store story_key for later use (e.g., "1-2-user-authentication")</action>
-
-    <!-- Mark epic as in-progress if this is first story -->
-    <action>Check if this is the first story in epic {{epic_num}} by looking for {{epic_num}}-1-* pattern</action>
-    <check if="this is first story in epic {{epic_num}}">
-      <action>Load {{sprint_status}} and check epic-{{epic_num}} status</action>
-      <action>If epic status is "backlog" → update to "in-progress"</action>
-      <action>If epic status is "contexted" (legacy status) → update to "in-progress" (backward compatibility)</action>
-      <action>If epic status is "in-progress" → no change needed</action>
-      <check if="epic status is 'done'">
-        <output>🚫 ERROR: Cannot create story in completed epic</output>
-        <output>Epic {{epic_num}} is marked as 'done'. All stories are complete.</output>
-        <output>If you need to add more work, either:</output>
-        <output>1. Manually change epic status back to 'in-progress' in sprint-status.yaml</output>
-        <output>2. Create a new epic for additional work</output>
-        <action>HALT - Cannot proceed</action>
-      </check>
-      <check if="epic status is not one of: backlog, contexted, in-progress, done">
-        <output>🚫 ERROR: Invalid epic status '{{epic_status}}'</output>
-        <output>Epic {{epic_num}} has invalid status. Expected: backlog, in-progress, or done</output>
-        <output>Please fix sprint-status.yaml manually or run sprint-planning to regenerate</output>
-        <action>HALT - Cannot proceed</action>
-      </check>
-      <output>📊 Epic {{epic_num}} status updated to in-progress</output>
-    </check>
-
-    <action>GOTO step 2a</action>
   </step>
 
   <step n="2" goal="Load and analyze core artifacts">

@@ -798,14 +798,13 @@ class ModuleManager {
   async copyWorkflowFileStripped(sourceFile, targetFile) {
     let mdContent = await fs.readFile(sourceFile, 'utf8');
 
-    mdContent = mdContent.replaceAll('_bmad', '_bmad');
     mdContent = mdContent.replaceAll('_bmad', this.bmadFolderName);
     mdContent = this.stripWebBundleFromFrontmatter(mdContent);
     await fs.writeFile(targetFile, mdContent, 'utf8');
   }
 
   stripWebBundleFromFrontmatter(content) {
-    const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
+    const frontmatterMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
     if (!frontmatterMatch) {
       return content;
     }

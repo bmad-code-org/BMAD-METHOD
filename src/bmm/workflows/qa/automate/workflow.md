@@ -26,7 +26,10 @@ web_bundle: false
 
 <step n="1" goal="Generate automated tests">
   <action>Read and follow instructions at: {installed_path}/instructions.md</action>
-  <action>Validate against checklist at: {installed_path}/checklist.md</action>
+</step>
+
+<step n="2" goal="Validate generated tests">
+  <invoke-task>Validate against checklist at {installed_path}/checklist.md using _bmad/core/tasks/validate-workflow.md</invoke-task>
 </step>
 
 </workflow>
