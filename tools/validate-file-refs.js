@@ -444,11 +444,14 @@ if (require.main === module) {
           if (fs.existsSync(resolved)) {
             ok.push({ ref, tag: 'OK-DIR' });
           } else {
-            ok.push({ ref, tag: 'SKIP', note: 'no extension, target not found' });
+            // No extension and nothing exists — not a file, not a directory.
+            // Flag as UNRESOLVED (distinct from BROKEN which means "file with extension not found").
+            broken.push({ ref, resolved: path.relative(PROJECT_ROOT, resolved), kind: 'unresolved' });
+            brokenRefs++;
           }
           continue;
         }
-        broken.push({ ref, resolved: path.relative(PROJECT_ROOT, resolved) });
+        broken.push({ ref, resolved: path.relative(PROJECT_ROOT, resolved), kind: 'broken' });
         brokenRefs++;
         continue;
       }
@@ -476,14 +479,19 @@ if (require.main === module) {
         }
       }
 
-      for (const { ref, resolved } of broken) {
+      for (const { ref, resolved, kind } of broken) {
         const location = ref.line ? `line ${ref.line}` : ref.key ? `key: ${ref.key}` : '';
-        console.log(`  [BROKEN] ${ref.raw}${location ? ` (${location})` : ''}`);
-        console.log(`     Target not found: ${resolved}`);
-        allIssues.push({ file: relativePath, line: ref.line || 1, ref: ref.raw, issue: 'broken ref' });
+        const tag = kind === 'unresolved' ? 'UNRESOLVED' : 'BROKEN';
+        const detail = kind === 'unresolved' ? 'Not found as file or directory' : 'Target not found';
+        const issueType = kind === 'unresolved' ? 'unresolved path' : 'broken ref';
+        console.log(`  [${tag}] ${ref.raw}${location ? ` (${location})` : ''}`);
+        console.log(`     ${detail}: ${resolved}`);
+        allIssues.push({ file: relativePath, line: ref.line || 1, ref: ref.raw, issue: issueType });
         if (process.env.GITHUB_ACTIONS) {
           const line = ref.line || 1;
-          console.log(`::warning file=${relativePath},line=${line}::${escapeAnnotation(`Broken reference: ${ref.raw} → ${resolved}`)}`);
+          console.log(
+            `::warning file=${relativePath},line=${line}::${escapeAnnotation(`${tag === 'UNRESOLVED' ? 'Unresolved path' : 'Broken reference'}: ${ref.raw} → ${resolved}`)}`,
+          );
         }
       }
 
