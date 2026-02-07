@@ -49,48 +49,26 @@ Store as `product_complexity`:
 ## 3. TECH STACK (Optional)
 
 <ask>
-**Do you know your tech stack?** (Skip if undecided)
-
-[A] **React / Next.js** - Modern React ecosystem
-[B] **Vue / Nuxt** - Vue.js ecosystem
-[C] **WordPress** - CMS-based
-[D] **Static HTML** - Simple HTML/CSS/JS
-[E] **Other** - Different framework
-[F] **Skip** - Decide later
-
-Choice:
+**Tech stack?** [A] React/Next [B] Vue/Nuxt [C] WordPress [D] HTML [E] Other [F] Skip
 </ask>
 
-<action>Store as `tech_stack` (or null if skipped)</action>
+<action>Store as `tech_stack` (or null if F)</action>
 
 ---
 
 ## 4. COMPONENT LIBRARY (Optional)
 
 <ask>
-**Using a component library?** (Skip if not applicable)
+**Component library?**
 
-[A] **shadcn/ui** - Tailwind-based components
-    → Skip Phase 5 (Design System)
-
-[B] **Tailwind only** - Utility CSS, custom components
-    → Phase 5 optional
-
-[C] **Material UI** - Google's design system
-    → Skip Phase 5
-
-[D] **Custom** - Building your own
-    → Phase 5 recommended
-
-[E] **None / Skip** - Decide later
-
-Choice:
+[A] **shadcn/ui** → Skip Phase 5
+[B] **Tailwind only** → Phase 5 optional
+[C] **Material UI** → Skip Phase 5
+[D] **Custom** → Phase 5 recommended
+[E] **Skip** - Decide later
 </ask>
 
-<action>
-Store as `component_library`
-If A, C → set `skip_design_system: true`
-</action>
+<action>Store as `component_library`. If A/C → `skip_design_system: true`</action>
 
 ---
 
@@ -116,71 +94,68 @@ Choice:
 
 ---
 
-## 6. CREATE STRUCTURE
+## 6. STRATEGIC ANALYSIS LEVEL (Greenfield only)
+
+<ask if="greenfield AND product_complexity != simple">
+**How deep should the user/market analysis go?**
+
+[A] **Full Trigger Map** (Recommended for complex products)
+    - Separate Phase 2 workflow
+    - Deep persona development
+    - Feature Impact Analysis
+    - Customer awareness stages
+    - Best for: Products with multiple user types, B2B, marketplaces
+
+[B] **Simplified VTC** (Value Trigger Chain)
+    - Embedded in Project Brief
+    - Core value proposition + key triggers
+    - Basic persona sketch
+    - Best for: Single user type, clear target market, MVPs
+
+[C] **Skip** (Not recommended)
+    - No formal user analysis
+    - Jump straight to design
+    - Best for: Internal tools, personal projects
+
+Choice:
+</ask>
 
 <action>
-**Check for existing structure first:**
-- Look for `docs/` folder
-- Look for `.wds-project-outline.yaml`
-
-**If exists:** Ask to keep or reset
+Store as `strategic_analysis`:
+- A → full (Phase 2 enabled)
+- B → simplified (VTC in Phase 1, skip Phase 2)
+- C → skip (skip Phase 2)
 </action>
-
-### Greenfield Structure
-
-```
-docs/
-├── .wds-project-outline.yaml
-├── 1-project-brief/
-├── 2-trigger-map/          # Skip if simple
-├── 3-prd/                  # Skip if simple
-├── 4-ux-design/
-├── 5-design-system/        # Skip if using library
-├── 6-deliveries/
-└── 7-testing/
-```
-
-### Brownfield Structure
-
-```
-docs/
-├── .wds-project-outline.yaml
-├── A-project-brief/
-│   └── limited-brief.md
-├── improvements/
-└── deliveries/
-```
 
 ---
 
-## 7. GENERATE PROJECT OUTLINE
+## 7. CREATE STRUCTURE & OUTLINE
 
 <action>
-**Create `.wds-project-outline.yaml` with all config:**
+**Check existing:** Look for `docs/` and `.wds-project-outline.yaml`
+**If exists:** Ask to keep or reset
+
+**Create folder structure:**
+
+Greenfield: `docs/1-project-brief/`, `2-trigger-map/`, `3-prd/`, `4-ux-design/`, `5-design-system/`, `6-deliveries/`, `7-testing/`
+Brownfield: `docs/A-project-brief/`, `improvements/`, `deliveries/`
+
+**Generate `.wds-project-outline.yaml`:**
 
 ```yaml
-# WDS Project Outline
-# Generated: {{date}}
-
 project:
   name: "{{project_name}}"
   type: {{greenfield|brownfield}}
-  created: {{date}}
-
 config:
   product_complexity: {{simple|standard|complex}}
   tech_stack: {{tech_stack|null}}
   component_library: {{component_library|null}}
-  brief_level: {{complete|simplified}}       # Greenfield only
+  brief_level: {{complete|simplified}}
+  strategic_analysis: {{full|simplified|skip}}
   skip_design_system: {{true|false}}
-
+  skip_trigger_map: {{true|false}}
 phases:
-  # Phases configured based on complexity and config
   {{generated_phases}}
-
-notes: |
-  Configuration captured during Phase 0 setup.
-  Phases marked 'skip' will not appear in workflow.
 ```
 </action>
 
@@ -196,15 +171,23 @@ notes: |
 | Name | {{project_name}} |
 | Type | {{greenfield/brownfield}} |
 | Complexity | {{product_complexity}} |
-| Tech Stack | {{tech_stack or "Not set"}} |
 | Brief Level | {{brief_level}} |
+| Strategic Analysis | {{strategic_analysis}} |
+| Tech Stack | {{tech_stack or "Not set"}} |
 
 **Phases:** {{enabled_phases}} enabled, {{skipped_phases}} skipped
 
 ---
 
 **[GREENFIELD]** Ready for Phase 1: Project Brief
-- {{brief_level}} mode ({{brief_level == "complete" ? "14 steps" : "5 steps"}})
+
+{{#if strategic_analysis == "full"}}
+→ Full workflow: Phase 1 (Brief) → Phase 2 (Trigger Map) → Phase 3+
+{{else if strategic_analysis == "simplified"}}
+→ Streamlined: Phase 1 with VTC → Phase 3+ (skip Phase 2)
+{{else}}
+→ Direct: Phase 1 minimal → Phase 4 (UX Design)
+{{/if}}
 
 [A] Start Phase 1 now
 [B] Hand off to Saga (specialist)
@@ -218,11 +201,11 @@ notes: |
 
 ---
 
-## ROUTING
+## 9. ROUTING
 
 <action>
 **Greenfield:**
-- [A] → Phase 1 workflow (brief_level determines which)
+- [A] → Phase 1 workflow (brief_level + strategic_analysis determines path)
 - [B] → Hand off to Saga
 
 **Brownfield:**
