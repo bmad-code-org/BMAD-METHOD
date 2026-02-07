@@ -2,7 +2,6 @@
 name: 'step-04-review'
 description: 'Review and finalize the tech-spec'
 
-workflow_path: '{project-root}/_bmad/bmm/workflows/bmad-quick-flow/quick-spec'
 wipFile: '{implementation_artifacts}/tech-spec-wip.md'
 ---
 
@@ -153,7 +152,7 @@ b) **HALT and wait for user selection.**
 #### Adversarial Review [R] Process:
 
 1. **Invoke Adversarial Review Task**:
-       > With `{finalFile}` constructed, invoke the review task. If possible, use information asymmetry: run this task, and only it, in a separate subagent or process with read access to the project, but no context except the `{finalFile}`.
+       > With `{finalFile}` constructed, load and follow the review task. If possible, use information asymmetry: load this task, and only it, in a separate subagent or process with read access to the project, but no context except the `{finalFile}`.
        <invoke-task>Review {finalFile} using {project-root}/_bmad/core/tasks/review-adversarial-general.xml</invoke-task>
        > **Platform fallback:** If task invocation not available, load the task file and follow its instructions inline, passing `{finalFile}` as the content.
        > The task should: review `{finalFile}` and return a list of findings.
