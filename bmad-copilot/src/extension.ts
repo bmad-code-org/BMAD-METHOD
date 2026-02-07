@@ -3,6 +3,11 @@ import { initLogger, logInfo } from './logger';
 import { refreshIndex, startWatching } from './bmadIndex';
 import { chatHandler } from './chatHandler';
 
+/**
+ * Extension entry point — registers the `@bmad` chat participant,
+ * builds the initial BMAD index, and wires up file/config watchers.
+ * @param context - VS Code extension context for lifecycle management.
+ */
 export function activate(context: vscode.ExtensionContext): void {
     // ── Logger ──
     initLogger(context);
@@ -45,6 +50,7 @@ export function activate(context: vscode.ExtensionContext): void {
     logInfo('BMAD Copilot extension activated.');
 }
 
+/** Extension teardown. Cleanup is handled automatically by `context.subscriptions`. */
 export function deactivate(): void {
     // Cleanup handled by context.subscriptions
 }

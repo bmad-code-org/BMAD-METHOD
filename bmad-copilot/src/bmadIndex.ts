@@ -33,6 +33,10 @@ export interface BmadIndex {
 
 // ─── Detection ──────────────────────────────────────────
 
+/**
+ * Return the filesystem path of the first open workspace folder.
+ * @returns Absolute path, or `undefined` if no folder is open.
+ */
 function workspaceRoot(): string | undefined {
     return vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
 }
@@ -146,6 +150,12 @@ function extractWorkflowMeta(content: string): { name?: string; description?: st
 
 // ─── Recursive file walker ──────────────────────────────
 
+/**
+ * Recursively collect all file paths under {@link dir}.
+ * Silently skips directories that cannot be read.
+ * @param dir - Root directory to walk.
+ * @returns Array of absolute file paths.
+ */
 function walkAll(dir: string): string[] {
     const results: string[] = [];
     function walk(current: string): void {
@@ -170,20 +180,43 @@ function walkAll(dir: string): string[] {
 
 // ─── Name derivation ────────────────────────────────────
 
+/**
+ * Test whether a filename matches the BMAD agent naming convention (`*.agent.yaml` / `*.agent.md`).
+ * @param filename - Base filename (no directory component).
+ * @returns `true` if the file is an agent definition.
+ */
 function isAgentFile(filename: string): boolean {
     return /\.agent\.(yaml|md)$/i.test(filename);
 }
 
+/**
+ * Test whether a filename matches the BMAD workflow naming convention
+ * (`workflow.yaml`, `workflow.md`, `workflow-*.yaml`, `workflow-*.md`).
+ * @param filename - Base filename (no directory component).
+ * @returns `true` if the file is a workflow definition.
+ */
 function isWorkflowFile(filename: string): boolean {
     // Matches: workflow.yaml, workflow.md, workflow-*.md, workflow-*.yaml
     return /^workflow(-[\w-]+)?\.(yaml|md)$/i.test(filename);
 }
 
+/**
+ * Derive a short display name from an agent file path by stripping the `.agent.yaml/.md` suffix.
+ * @param filePath - Absolute path to the agent file.
+ * @returns Display name (e.g. `"analyst"`).
+ */
 function deriveAgentName(filePath: string): string {
     const base = path.basename(filePath);
     return base.replace(/\.agent\.(yaml|md)$/i, '');
 }
 
+/**
+ * Derive a display name for a workflow. Prefers the `name:` key from YAML
+ * metadata; falls back to stripping the `workflow-` prefix and extension.
+ * @param filePath - Absolute path to the workflow file.
+ * @param content  - Raw file content (used for metadata extraction).
+ * @returns Display name (e.g. `"create-prd"`).
+ */
 function deriveWorkflowName(filePath: string, content: string): string {
     // Prefer name from YAML metadata
     const meta = extractWorkflowMeta(content);
@@ -209,6 +242,12 @@ function inferModule(filePath: string, bmadRoot: string): string | undefined {
 
 // ─── Build index ────────────────────────────────────────
 
+/**
+ * Walk the BMAD root directory and build a complete index of agents and workflows.
+ * Reads each matching file to extract metadata. Deduplicates workflows by name.
+ * @param bmadRoot - Absolute path to the detected BMAD root directory.
+ * @returns A {@link BmadIndex} with sorted agent and workflow lists.
+ */
 export function buildIndex(bmadRoot: string): BmadIndex {
     const wsRoot = workspaceRoot() ?? bmadRoot;
     const allFiles = walkAll(bmadRoot);
@@ -267,10 +306,18 @@ export function buildIndex(bmadRoot: string): BmadIndex {
 let _index: BmadIndex | undefined;
 let _watcher: vscode.FileSystemWatcher | undefined;
 
+/**
+ * Return the current in-memory BMAD index without rebuilding.
+ * @returns The cached index, or `undefined` if not yet built.
+ */
 export function getIndex(): BmadIndex | undefined {
     return _index;
 }
 
+/**
+ * Re-detect the BMAD root and rebuild the index from disk.
+ * @returns The newly built index, or `undefined` if no BMAD root was found.
+ */
 export function refreshIndex(): BmadIndex | undefined {
     const root = detectBmadRoot();
     if (!root) {
@@ -281,6 +328,11 @@ export function refreshIndex(): BmadIndex | undefined {
     return _index;
 }
 
+/**
+ * Register a file-system watcher that rebuilds the BMAD index when
+ * YAML/Markdown files in the workspace change. Changes are debounced (500 ms).
+ * @param ctx - Extension context for disposable management.
+ */
 export function startWatching(ctx: vscode.ExtensionContext): void {
     const wsRoot = workspaceRoot();
     if (!wsRoot) { return; }
