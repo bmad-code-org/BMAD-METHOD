@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "bmad-method",
-  "version": "6.0.0-Beta.6",
+  "version": "6.0.0-Beta.7",
   "description": "Breakthrough Method of Agile AI-driven Development",
   "keywords": [
     "agile",
