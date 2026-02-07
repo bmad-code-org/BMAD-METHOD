@@ -3,7 +3,7 @@ title: "Established Projects"
 description: How to use BMad Method on existing codebases
 ---
 
-Use BMad Method effectively when working on existing projects and legacy codebases.
+Use BMad Method effectively when working on existing projects and legacy codebases, sometimes also referred to as brownfield projects.
 
 This guide covers the essential workflow for onboarding to existing projects with BMad Method.
 

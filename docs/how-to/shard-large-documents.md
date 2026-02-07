@@ -2,23 +2,17 @@
 title: "Document Sharding Guide"
 ---
 
-Use the `shard-doc` tool to split large markdown files into smaller, organized files for better context management.
+Use the `shard-doc` tool if you need to split large markdown files into smaller, organized files for better context management.
+
+This is no longer recommended, and soon with updated workflows and most major llms and tools supporting sub processes this will be unnecessary.
 
 ## When to Use This
 
-- Very large complex PRDs
-- Architecture documents with multiple system layers
-- Epic files with 4+ epics (especially for Phase 4)
-- UX design specs covering multiple subsystems
+Only use this if you notice your chosen tool / model combination are failing to load and read all the documents as input when needed.
 
 ## What is Document Sharding?
 
-Document sharding splits large markdown files into smaller, organized files based on level 2 headings (`## Heading`). This enables:
-
-- **Selective Loading** - Workflows load only the sections they need
-- **Reduced Token Usage** - Massive efficiency gains for large projects
-- **Better Organization** - Logical section-based file structure
-- **Maintained Context** - Index file preserves document structure
+Document sharding splits large markdown files into smaller, organized files based on level 2 headings (`## Heading`).
 
 ### Architecture
 
@@ -60,28 +54,6 @@ Agent: Sharding PRD.md...
        ✓ Generated index.md
        ✓ Complete!
 ```
-
-## What You Get
-
-**index.md structure:**
-
-```markdown
-
-## Sections
-
-1. [Overview](./overview.md) - Project vision and objectives
-2. [User Requirements](./user-requirements.md) - Feature specifications
-3. [Epic 1: Authentication](./epic-1-authentication.md) - User auth system
-4. [Epic 2: Dashboard](./epic-2-dashboard.md) - Main dashboard UI
-   ...
-```
-
-**Individual section files:**
-
-- Named from heading text (kebab-case)
-- Contains complete section content
-- Preserves all markdown formatting
-- Can be read independently
 
 ## How Workflow Discovery Works
 
