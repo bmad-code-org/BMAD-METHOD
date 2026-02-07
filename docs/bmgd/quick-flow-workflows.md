@@ -1,5 +1,6 @@
 ---
 title: "Quick Flow Workflows"
+description: Create tech specs and execute implementations with BMGD Quick Flow
 draft: true
 ---
 
