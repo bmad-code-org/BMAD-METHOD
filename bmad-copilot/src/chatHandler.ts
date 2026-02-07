@@ -6,6 +6,11 @@ import { logInfo, logWarn, logError } from './logger';
 
 // ─── Dynamic help builder ───────────────────────────────
 
+/**
+ * Build dynamic help Markdown that lists all slash commands and currently installed items.
+ * @param idx - Current BMAD index (may be `undefined` if not yet detected).
+ * @returns Formatted Markdown string.
+ */
 function buildHelpText(idx: BmadIndex | undefined): string {
     let md = `## BMAD Copilot — Available Commands\n\n`;
     md += `| Command | Description |\n`;
@@ -42,6 +47,11 @@ function buildHelpText(idx: BmadIndex | undefined): string {
 
 const KNOWN_SUBS = ['help', 'doctor', 'list', 'run', 'agents', 'workflows'];
 
+/**
+ * Suggest the closest known slash command for a mistyped input using positional character overlap.
+ * @param input - The unrecognised command string the user typed.
+ * @returns The best-matching known command name (falls back to `"help"`).
+ */
 function suggestCommand(input: string): string {
     let best = '';
     let bestScore = 0;
@@ -57,11 +67,19 @@ function suggestCommand(input: string): string {
 
 // ─── Sub-command handlers ───────────────────────────────
 
+/**
+ * Handle the `/help` command — render dynamic help text.
+ * @param stream - Chat response stream to write Markdown into.
+ */
 function handleHelp(stream: vscode.ChatResponseStream): void {
     const idx = getIndex() ?? refreshIndex();
     stream.markdown(buildHelpText(idx));
 }
 
+/**
+ * Handle the `/doctor` command — render BMAD installation diagnostics.
+ * @param stream - Chat response stream to write Markdown into.
+ */
 function handleDoctor(stream: vscode.ChatResponseStream): void {
     const wsRoot = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? '(no workspace)';
     const config = vscode.workspace.getConfiguration('bmad');
@@ -102,6 +120,11 @@ function handleDoctor(stream: vscode.ChatResponseStream): void {
     stream.markdown(md);
 }
 
+/**
+ * Handle the `/list` command — display agents or workflows in a table.
+ * @param stream - Chat response stream.
+ * @param args   - Remaining tokens (expects `["agents"]` or `["workflows"]`).
+ */
 function handleList(stream: vscode.ChatResponseStream, args: string[]): void {
     const idx = getIndex() ?? refreshIndex();
     if (!idx) {
@@ -119,6 +142,13 @@ function handleList(stream: vscode.ChatResponseStream, args: string[]): void {
     }
 }
 
+/**
+ * Render a Markdown table of BMAD items (agents or workflows).
+ * @param stream  - Chat response stream.
+ * @param title   - Section heading (e.g. `"Agents"`).
+ * @param items   - Items to display.
+ * @param isAgent - `true` to show agent-specific columns (Title, Icon); `false` for workflow columns (Description).
+ */
 function listItems(stream: vscode.ChatResponseStream, title: string, items: BmadItem[], isAgent: boolean): void {
     if (items.length === 0) {
         stream.markdown(`## ${title}\n\n_No items found._\n`);
@@ -141,6 +171,12 @@ function listItems(stream: vscode.ChatResponseStream, title: string, items: Bmad
     stream.markdown(md);
 }
 
+/**
+ * Truncate a string to at most {@link max} characters, appending `'…'` if shortened.
+ * @param s   - Input string.
+ * @param max - Maximum allowed length.
+ * @returns The (possibly truncated) string.
+ */
 function truncate(s: string, max: number): string {
     return s.length > max ? s.slice(0, max - 1) + '…' : s;
 }
@@ -169,6 +205,14 @@ function safeFence(content: string): string {
 
 // ─── Run agent / workflow ───────────────────────────────
 
+/**
+ * Execute a resolved run target by injecting its definition into the LLM context.
+ * Falls back to displaying a copyable prompt if the Language Model API is unavailable.
+ * @param request  - Original chat request (provides the language model).
+ * @param stream   - Chat response stream for output.
+ * @param token    - Cancellation token.
+ * @param resolved - The agent/workflow and task to execute.
+ */
 async function executeRun(
     request: vscode.ChatRequest,
     stream: vscode.ChatResponseStream,
@@ -221,6 +265,15 @@ async function executeRun(
     fallbackPrompt(stream, item, kind, fileContent, task);
 }
 
+/**
+ * Handle the `/run` command — resolve args to an agent/workflow and execute it.
+ * Shows helpful feedback with closest-name suggestions on resolution failure.
+ * @param request - Original chat request.
+ * @param stream  - Chat response stream.
+ * @param token   - Cancellation token.
+ * @param args    - Parsed tokens after `/run`.
+ * @returns A promise that resolves when execution is complete.
+ */
 function handleRun(
     request: vscode.ChatRequest,
     stream: vscode.ChatResponseStream,
@@ -253,6 +306,15 @@ function handleRun(
     return executeRun(request, stream, token, resolved);
 }
 
+/**
+ * Display the assembled prompt as a copyable code block when the LLM API is unavailable.
+ * Includes a "Copy Prompt" button bound to the clipboard command.
+ * @param stream      - Chat response stream.
+ * @param item        - The agent or workflow item.
+ * @param kind        - `"agent"` or `"workflow"`.
+ * @param fileContent - Raw content of the definition file.
+ * @param task        - User-supplied task description.
+ */
 function fallbackPrompt(
     stream: vscode.ChatResponseStream,
     item: BmadItem,
@@ -275,6 +337,10 @@ function fallbackPrompt(
 
 // ─── Main handler ───────────────────────────────────────
 
+/**
+ * Main `@bmad` chat participant request handler.
+ * Routes incoming commands to the appropriate sub-handler and returns an empty result.
+ */
 export const chatHandler: vscode.ChatRequestHandler = async (
     request: vscode.ChatRequest,
     context: vscode.ChatContext,

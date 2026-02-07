@@ -128,10 +128,24 @@ export function resolveDirectKind(kind: ResolvedKind, args: string[], index: Bma
 
 // ── Helpers ──
 
+/**
+ * Test whether a token looks like a BMAD module name (e.g. `"bmm"`, `"core"`).
+ * Rejects known command keywords so they are not confused with modules.
+ * @param s - Lowercased token to check.
+ * @returns `true` if the token is a plausible module name.
+ */
 function isModuleName(s: string): boolean {
     return /^[a-z][a-z0-9_-]*$/.test(s) && !['agent', 'workflow', 'a', 'w', 'agents', 'workflows'].includes(s);
 }
 
+/**
+ * Look up a named item of the given kind in the index.
+ * @param kind         - `'agent'` or `'workflow'`.
+ * @param args         - Remaining tokens: `[name, ...taskWords]`.
+ * @param index        - Current BMAD index.
+ * @param moduleFilter - Optional module name to narrow the search.
+ * @returns Resolved target, or `undefined` if no match is found.
+ */
 function findItem(kind: ResolvedKind, args: string[], index: BmadIndex, moduleFilter?: string): ResolvedRunTarget | undefined {
     if (args.length === 0) { return undefined; }
     const name = args[0].toLowerCase();
@@ -146,6 +160,12 @@ function findItem(kind: ResolvedKind, args: string[], index: BmadIndex, moduleFi
     return { kind, item, task };
 }
 
+/**
+ * Auto-resolve a name to an agent or workflow (agent takes priority).
+ * @param name  - Item name to look up (case-insensitive).
+ * @param index - Current BMAD index.
+ * @returns The matched kind and item, or `undefined`.
+ */
 function findByName(name: string, index: BmadIndex): { kind: ResolvedKind; item: BmadItem } | undefined {
     const n = name.toLowerCase();
     const agent = index.agents.find(a => a.name.toLowerCase() === n);
