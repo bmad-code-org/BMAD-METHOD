@@ -18,7 +18,7 @@ class KiroCliSetup extends BaseIdeSetup {
    * Cleanup old BMAD installation before reinstalling
    * @param {string} projectDir - Project directory
    */
-  async cleanup(projectDir) {
+  async cleanup(projectDir, options = {}) {
     const bmadAgentsDir = path.join(projectDir, this.configDir, this.agentsDir);
 
     if (await fs.pathExists(bmadAgentsDir)) {
@@ -29,7 +29,7 @@ class KiroCliSetup extends BaseIdeSetup {
           await fs.remove(path.join(bmadAgentsDir, file));
         }
       }
-      await prompts.log.message(`  Cleaned old BMAD agents from ${this.name}`);
+      if (!options.silent) await prompts.log.message(`  Cleaned old BMAD agents from ${this.name}`);
     }
   }
 
@@ -40,9 +40,9 @@ class KiroCliSetup extends BaseIdeSetup {
    * @param {Object} options - Setup options
    */
   async setup(projectDir, bmadDir, options = {}) {
-    await prompts.log.info(`Setting up ${this.name}...`);
+    if (!options.silent) await prompts.log.info(`Setting up ${this.name}...`);
 
-    await this.cleanup(projectDir);
+    await this.cleanup(projectDir, options);
 
     const kiroDir = path.join(projectDir, this.configDir);
     const agentsDir = path.join(kiroDir, this.agentsDir);
@@ -52,7 +52,7 @@ class KiroCliSetup extends BaseIdeSetup {
     // Create BMad agents from source YAML files
     await this.createBmadAgentsFromSource(agentsDir, projectDir);
 
-    await prompts.log.success(`${this.name} configured with BMad agents`);
+    if (!options.silent) await prompts.log.success(`${this.name} configured with BMad agents`);
   }
 
   /**

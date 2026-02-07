@@ -7,7 +7,8 @@ const prompts = require('./lib/prompts');
 // The installer flow uses many sequential @clack/prompts, each adding keypress
 // listeners to stdin. Raise the limit to avoid spurious EventEmitter warnings.
 if (process.stdin?.setMaxListeners) {
-  process.stdin.setMaxListeners(25);
+  const currentLimit = process.stdin.getMaxListeners();
+  process.stdin.setMaxListeners(Math.max(currentLimit, 50));
 }
 
 // Check for updates - do this asynchronously so it doesn't block startup

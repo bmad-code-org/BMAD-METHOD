@@ -99,12 +99,18 @@ async function spinner() {
 
   return {
     start: (msg) => {
-      spinning = true;
-      s.start(msg);
+      if (spinning) {
+        s.message(msg);
+      } else {
+        spinning = true;
+        s.start(msg);
+      }
     },
     stop: (msg) => {
-      spinning = false;
-      s.stop(msg);
+      if (spinning) {
+        spinning = false;
+        s.stop(msg);
+      }
     },
     message: (msg) => s.message(msg),
     error: (msg) => {
@@ -264,7 +270,7 @@ async function autocompleteMultiselect(options) {
         return 'Please select at least one item';
       }
     },
-    initialValue: options.initialValues,
+    initialValue: [...new Set([...(options.initialValues || []), ...(options.lockedValues || [])])],
     render() {
       const barColor = this.state === 'error' ? color.yellow : color.cyan;
       const bar = barColor(clack.S_BAR);

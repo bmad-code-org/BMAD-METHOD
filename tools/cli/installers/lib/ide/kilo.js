@@ -23,10 +23,10 @@ class KiloSetup extends BaseIdeSetup {
    * @param {Object} options - Setup options
    */
   async setup(projectDir, bmadDir, options = {}) {
-    await prompts.log.info(`Setting up ${this.name}...`);
+    if (!options.silent) await prompts.log.info(`Setting up ${this.name}...`);
 
     // Clean up any old BMAD installation first
-    await this.cleanup(projectDir);
+    await this.cleanup(projectDir, options);
 
     // Load existing config (may contain non-BMAD modes and other settings)
     const kiloModesPath = path.join(projectDir, this.configFile);
@@ -88,9 +88,11 @@ class KiloSetup extends BaseIdeSetup {
     const taskCount = taskToolCounts.tasks || 0;
     const toolCount = taskToolCounts.tools || 0;
 
-    await prompts.log.success(
-      `${this.name} configured: ${addedCount} modes, ${workflowCount} workflows, ${taskCount} tasks, ${toolCount} tools → ${this.configFile}`,
-    );
+    if (!options.silent) {
+      await prompts.log.success(
+        `${this.name} configured: ${addedCount} modes, ${workflowCount} workflows, ${taskCount} tasks, ${toolCount} tools → ${this.configFile}`,
+      );
+    }
 
     return {
       success: true,
@@ -169,7 +171,7 @@ class KiloSetup extends BaseIdeSetup {
   /**
    * Cleanup KiloCode configuration
    */
-  async cleanup(projectDir) {
+  async cleanup(projectDir, options = {}) {
     const fs = require('fs-extra');
     const kiloModesPath = path.join(projectDir, this.configFile);
 
@@ -187,12 +189,12 @@ class KiloSetup extends BaseIdeSetup {
 
           if (removedCount > 0) {
             await fs.writeFile(kiloModesPath, yaml.stringify(config, { lineWidth: 0 }));
-            await prompts.log.message(`Removed ${removedCount} BMAD modes from .kilocodemodes`);
+            if (!options.silent) await prompts.log.message(`Removed ${removedCount} BMAD modes from .kilocodemodes`);
           }
         }
       } catch {
         // If parsing fails, leave file as-is
-        await prompts.log.warn('Warning: Could not parse .kilocodemodes for cleanup');
+        if (!options.silent) await prompts.log.warn('Warning: Could not parse .kilocodemodes for cleanup');
       }
     }
 

@@ -42,11 +42,11 @@ class CodexSetup extends BaseIdeSetup {
         default: 'global',
       });
 
-      // Display detailed instructions for the chosen option
+      // Show brief confirmation hint (detailed instructions available via verbose)
       if (installLocation === 'project') {
-        await prompts.note(this.getProjectSpecificInstructions(), 'Codex Project Installation');
+        await prompts.log.info('Prompts installed to: <project>/.codex/prompts (requires CODEX_HOME)');
       } else {
-        await prompts.note(this.getGlobalInstructions(), 'Codex Global Installation');
+        await prompts.log.info('Prompts installed to: ~/.codex/prompts');
       }
 
       // Confirm the choice
@@ -70,7 +70,7 @@ class CodexSetup extends BaseIdeSetup {
    * @param {Object} options - Setup options
    */
   async setup(projectDir, bmadDir, options = {}) {
-    await prompts.log.info(`Setting up ${this.name}...`);
+    if (!options.silent) await prompts.log.info(`Setting up ${this.name}...`);
 
     // Always use CLI mode
     const mode = 'cli';
@@ -82,7 +82,7 @@ class CodexSetup extends BaseIdeSetup {
 
     const destDir = this.getCodexPromptDir(projectDir, installLocation);
     await fs.ensureDir(destDir);
-    await this.clearOldBmadFiles(destDir);
+    await this.clearOldBmadFiles(destDir, options);
 
     // Collect artifacts and write using underscore format
     const agentGen = new AgentCommandGenerator(this.bmadFolderName);
@@ -122,9 +122,11 @@ class CodexSetup extends BaseIdeSetup {
 
     const written = agentCount + workflowCount + tasksWritten;
 
-    await prompts.log.success(
-      `${this.name} configured: ${counts.agents} agents, ${counts.workflows} workflows, ${counts.tasks} tasks, ${written} files → ${destDir}`,
-    );
+    if (!options.silent) {
+      await prompts.log.success(
+        `${this.name} configured: ${counts.agents} agents, ${counts.workflows} workflows, ${counts.tasks} tasks, ${written} files → ${destDir}`,
+      );
+    }
 
     return {
       success: true,
@@ -253,7 +255,7 @@ class CodexSetup extends BaseIdeSetup {
     return written;
   }
 
-  async clearOldBmadFiles(destDir) {
+  async clearOldBmadFiles(destDir, options = {}) {
     if (!(await fs.pathExists(destDir))) {
       return;
     }
@@ -263,7 +265,7 @@ class CodexSetup extends BaseIdeSetup {
       entries = await fs.readdir(destDir);
     } catch (error) {
       // Directory exists but can't be read - skip cleanup
-      await prompts.log.warn(`Warning: Could not read directory ${destDir}: ${error.message}`);
+      if (!options.silent) await prompts.log.warn(`Warning: Could not read directory ${destDir}: ${error.message}`);
       return;
     }
 

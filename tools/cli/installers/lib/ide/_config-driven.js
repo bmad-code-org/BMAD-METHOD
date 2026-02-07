@@ -34,10 +34,10 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
    * @returns {Promise<Object>} Setup result
    */
   async setup(projectDir, bmadDir, options = {}) {
-    await prompts.log.info(`Setting up ${this.name}...`);
+    if (!options.silent) await prompts.log.info(`Setting up ${this.name}...`);
 
     // Clean up any old BMAD installation first
-    await this.cleanup(projectDir);
+    await this.cleanup(projectDir, options);
 
     if (!this.installerConfig) {
       return { success: false, reason: 'no-config' };
@@ -102,7 +102,7 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
       results.tools = taskToolResult.tools || 0;
     }
 
-    await this.printSummary(results, target_dir);
+    await this.printSummary(results, target_dir, options);
     return { success: true, results };
   }
 
@@ -439,7 +439,8 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
    * @param {Object} results - Installation results
    * @param {string} targetDir - Target directory (relative)
    */
-  async printSummary(results, targetDir) {
+  async printSummary(results, targetDir, options = {}) {
+    if (options.silent) return;
     const parts = [];
     if (results.agents > 0) parts.push(`${results.agents} agents`);
     if (results.workflows > 0) parts.push(`${results.workflows} workflows`);
@@ -452,14 +453,14 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
    * Cleanup IDE configuration
    * @param {string} projectDir - Project directory
    */
-  async cleanup(projectDir) {
+  async cleanup(projectDir, options = {}) {
     // Clean all target directories
     if (this.installerConfig?.targets) {
       for (const target of this.installerConfig.targets) {
-        await this.cleanupTarget(projectDir, target.target_dir);
+        await this.cleanupTarget(projectDir, target.target_dir, options);
       }
     } else if (this.installerConfig?.target_dir) {
-      await this.cleanupTarget(projectDir, this.installerConfig.target_dir);
+      await this.cleanupTarget(projectDir, this.installerConfig.target_dir, options);
     }
   }
 
@@ -468,7 +469,7 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
    * @param {string} projectDir - Project directory
    * @param {string} targetDir - Target directory to clean
    */
-  async cleanupTarget(projectDir, targetDir) {
+  async cleanupTarget(projectDir, targetDir, options = {}) {
     const targetPath = path.join(projectDir, targetDir);
 
     if (!(await fs.pathExists(targetPath))) {
@@ -508,7 +509,7 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
       }
     }
 
-    if (removedCount > 0) {
+    if (removedCount > 0 && !options.silent) {
       await prompts.log.message(`  Cleaned ${removedCount} BMAD files from ${targetDir}`);
     }
   }

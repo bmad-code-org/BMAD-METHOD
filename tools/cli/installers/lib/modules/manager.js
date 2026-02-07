@@ -298,7 +298,7 @@ class ModuleManager {
    * @param {string} moduleCode - Code of the module to find (from module.yaml)
    * @returns {string|null} Path to the module source or null if not found
    */
-  async findModuleSource(moduleCode) {
+  async findModuleSource(moduleCode, options = {}) {
     const projectRoot = getProjectRoot();
 
     // First check custom module paths if they exist
@@ -315,7 +315,7 @@ class ModuleManager {
     }
 
     // Check external official modules
-    const externalSource = await this.findExternalModuleSource(moduleCode);
+    const externalSource = await this.findExternalModuleSource(moduleCode, options);
     if (externalSource) {
       return externalSource;
     }
@@ -347,7 +347,7 @@ class ModuleManager {
    * @param {string} moduleCode - Code of the external module
    * @returns {string} Path to the cloned repository
    */
-  async cloneExternalModule(moduleCode) {
+  async cloneExternalModule(moduleCode, options = {}) {
     const { execSync } = require('node:child_process');
     const moduleInfo = await this.externalModuleManager.getModuleByCode(moduleCode);
 
@@ -357,9 +357,18 @@ class ModuleManager {
 
     const cacheDir = this.getExternalCacheDir();
     const moduleCacheDir = path.join(cacheDir, moduleCode);
+    const silent = options.silent || false;
 
     // Create cache directory if it doesn't exist
     await fs.ensureDir(cacheDir);
+
+    // Helper to create a spinner or a no-op when silent
+    const createSpinner = async () => {
+      if (silent) {
+        return { start() {}, stop() {}, error() {}, message() {} };
+      }
+      return await prompts.spinner();
+    };
 
     // Track if we need to install dependencies
     let needsDependencyInstall = false;
@@ -368,13 +377,21 @@ class ModuleManager {
     // Check if already cloned
     if (await fs.pathExists(moduleCacheDir)) {
       // Try to update if it's a git repo
-      const fetchSpinner = await prompts.spinner();
+      const fetchSpinner = await createSpinner();
       fetchSpinner.start(`Fetching ${moduleInfo.name}...`);
       try {
         const currentRef = execSync('git rev-parse HEAD', { cwd: moduleCacheDir, stdio: 'pipe' }).toString().trim();
         // Fetch and reset to remote - works better with shallow clones than pull
-        execSync('git fetch origin --depth 1', { cwd: moduleCacheDir, stdio: 'pipe' });
-        execSync('git reset --hard origin/HEAD', { cwd: moduleCacheDir, stdio: 'pipe' });
+        execSync('git fetch origin --depth 1', {
+          cwd: moduleCacheDir,
+          stdio: ['ignore', 'pipe', 'pipe'],
+          env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
+        });
+        execSync('git reset --hard origin/HEAD', {
+          cwd: moduleCacheDir,
+          stdio: ['ignore', 'pipe', 'pipe'],
+          env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
+        });
         const newRef = execSync('git rev-parse HEAD', { cwd: moduleCacheDir, stdio: 'pipe' }).toString().trim();
 
         fetchSpinner.stop(`Fetched ${moduleInfo.name}`);
@@ -394,11 +411,12 @@ class ModuleManager {
 
     // Clone if not exists or was removed
     if (wasNewClone) {
-      const fetchSpinner = await prompts.spinner();
+      const fetchSpinner = await createSpinner();
       fetchSpinner.start(`Fetching ${moduleInfo.name}...`);
       try {
         execSync(`git clone --depth 1 "${moduleInfo.url}" "${moduleCacheDir}"`, {
-          stdio: 'pipe',
+          stdio: ['ignore', 'pipe', 'pipe'],
+          env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
         });
         fetchSpinner.stop(`Fetched ${moduleInfo.name}`);
       } catch (error) {
@@ -416,18 +434,18 @@ class ModuleManager {
 
       // Force install if we updated or cloned new
       if (needsDependencyInstall || wasNewClone || nodeModulesMissing) {
-        const installSpinner = await prompts.spinner();
+        const installSpinner = await createSpinner();
         installSpinner.start(`Installing dependencies for ${moduleInfo.name}...`);
         try {
           execSync('npm install --omit=dev --no-audit --no-fund --no-progress --legacy-peer-deps', {
             cwd: moduleCacheDir,
-            stdio: 'pipe',
+            stdio: ['ignore', 'pipe', 'pipe'],
             timeout: 120_000, // 2 minute timeout
           });
           installSpinner.stop(`Installed dependencies for ${moduleInfo.name}`);
         } catch (error) {
           installSpinner.error(`Failed to install dependencies for ${moduleInfo.name}`);
-          await prompts.log.warn(`  Warning: ${error.message}`);
+          if (!silent) await prompts.log.warn(`  Warning: ${error.message}`);
         }
       } else {
         // Check if package.json is newer than node_modules
@@ -442,18 +460,18 @@ class ModuleManager {
         }
 
         if (packageJsonNewer) {
-          const installSpinner = await prompts.spinner();
+          const installSpinner = await createSpinner();
           installSpinner.start(`Installing dependencies for ${moduleInfo.name}...`);
           try {
             execSync('npm install --omit=dev --no-audit --no-fund --no-progress --legacy-peer-deps', {
               cwd: moduleCacheDir,
-              stdio: 'pipe',
+              stdio: ['ignore', 'pipe', 'pipe'],
               timeout: 120_000, // 2 minute timeout
             });
             installSpinner.stop(`Installed dependencies for ${moduleInfo.name}`);
           } catch (error) {
             installSpinner.error(`Failed to install dependencies for ${moduleInfo.name}`);
-            await prompts.log.warn(`  Warning: ${error.message}`);
+            if (!silent) await prompts.log.warn(`  Warning: ${error.message}`);
           }
         }
       }
@@ -467,7 +485,7 @@ class ModuleManager {
    * @param {string} moduleCode - Code of the external module
    * @returns {string|null} Path to the module source or null if not found
    */
-  async findExternalModuleSource(moduleCode) {
+  async findExternalModuleSource(moduleCode, options = {}) {
     const moduleInfo = await this.externalModuleManager.getModuleByCode(moduleCode);
 
     if (!moduleInfo) {
@@ -475,7 +493,7 @@ class ModuleManager {
     }
 
     // Clone the external module repo
-    const cloneDir = await this.cloneExternalModule(moduleCode);
+    const cloneDir = await this.cloneExternalModule(moduleCode, options);
 
     // The module-definition specifies the path to module.yaml relative to repo root
     // We need to return the directory containing module.yaml
@@ -496,7 +514,7 @@ class ModuleManager {
    * @param {Object} options.logger - Logger instance for output
    */
   async install(moduleName, bmadDir, fileTrackingCallback = null, options = {}) {
-    const sourcePath = await this.findModuleSource(moduleName);
+    const sourcePath = await this.findModuleSource(moduleName, { silent: options.silent });
     const targetPath = path.join(bmadDir, moduleName);
 
     // Check if source module exists
@@ -1240,7 +1258,7 @@ class ModuleManager {
     if (moduleName === 'core') {
       sourcePath = getSourcePath('core');
     } else {
-      sourcePath = await this.findModuleSource(moduleName);
+      sourcePath = await this.findModuleSource(moduleName, { silent: options.silent });
       if (!sourcePath) {
         // No source found, skip module installer
         return;
