@@ -204,10 +204,16 @@ class WorkflowCommandGenerator {
 ## Execution
 
 When running any workflow:
-1. LOAD {project-root}/${this.bmadFolderName}/core/tasks/workflow.md
-2. Pass the workflow path as 'workflow-config' parameter
-3. Follow workflow.md instructions EXACTLY
-4. Save outputs after EACH section
+1. Resolve loader paths:
+   - Primary: {project-root}/${this.bmadFolderName}/core/tasks/workflow.md
+   - Fallback: {project-root}/src/core/tasks/workflow.md
+2. Check the primary path exists and is readable before loading
+3. If primary is missing/unreadable, log a warning with the path and error, then try fallback
+4. If fallback is also missing/unreadable, log an error with both attempted paths and stop
+5. LOAD the resolved workflow loader file
+6. Pass the workflow path as 'workflow-config' parameter
+7. Follow workflow.md instructions EXACTLY
+8. Save outputs after EACH section
 
 ## Modes
 - Normal: Full interaction

@@ -1,10 +1,19 @@
     <handler type="workflow">
       When menu item has: workflow="path/to/workflow.md":
 
-      1. CRITICAL: Always LOAD {project-root}/_bmad/core/tasks/workflow.md
-      2. Read the complete file - this is the CORE OS for processing BMAD workflows
-      3. Pass the workflow definition path as 'workflow-config' parameter to those instructions
-      4. Follow workflow.md instructions precisely following all steps
-      5. Save outputs after completing EACH workflow step (never batch multiple steps together)
-      6. If workflow.md path is "todo", inform user the workflow hasn't been implemented yet
+      1. Resolve loader paths safely:
+         - Primary: {project-root}/_bmad/core/tasks/workflow.md
+         - Fallback: {project-root}/src/core/tasks/workflow.md
+      2. Verify the primary loader exists and is readable before loading it
+      3. If primary is missing/unreadable:
+         - Log a warning with the primary path and underlying error
+         - Attempt the fallback loader path
+      4. If fallback is also missing/unreadable:
+         - Log an error including both attempted paths and underlying errors
+         - Fail fast with a descriptive message and HALT
+      5. LOAD the resolved workflow loader file and read it completely
+      6. Pass the workflow definition path as 'workflow-config' parameter to those instructions
+      7. Follow workflow.md instructions precisely following all steps
+      8. Save outputs after completing EACH workflow step (never batch multiple steps together)
+      9. If workflow.md path is "todo", inform user the workflow hasn't been implemented yet
     </handler>
