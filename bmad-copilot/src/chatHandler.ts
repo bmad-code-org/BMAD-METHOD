@@ -145,6 +145,28 @@ function truncate(s: string, max: number): string {
     return s.length > max ? s.slice(0, max - 1) + '…' : s;
 }
 
+/**
+ * Wrap `content` in a Markdown fenced code block using a fence that is
+ * guaranteed not to collide with any backtick sequence inside the content.
+ *
+ * Algorithm: find the longest run of consecutive backticks in `content`,
+ * then use a fence that is at least one backtick longer (minimum 3).
+ */
+function safeFence(content: string): string {
+    let maxRun = 0;
+    let run = 0;
+    for (const ch of content) {
+        if (ch === '`') {
+            run++;
+            if (run > maxRun) { maxRun = run; }
+        } else {
+            run = 0;
+        }
+    }
+    const fence = '`'.repeat(Math.max(3, maxRun + 1));
+    return `${fence}\n${content}\n${fence}`;
+}
+
 // ─── Run agent / workflow ───────────────────────────────
 
 async function executeRun(
@@ -242,7 +264,7 @@ function fallbackPrompt(
 
     const assembled = `I want you to adopt the following ${kind} persona and follow its instructions exactly.\n\n--- BEGIN ${kind.toUpperCase()} DEFINITION ---\n${fileContent}\n--- END ${kind.toUpperCase()} DEFINITION ---\n\nNow respond to this task:\n${task}`;
 
-    stream.markdown('```\n' + assembled + '\n```\n');
+    stream.markdown(safeFence(assembled) + '\n');
 
     stream.button({
         title: 'Copy Prompt',

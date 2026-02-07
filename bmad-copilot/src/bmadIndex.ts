@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
-import { logInfo, logWarn, logError } from './logger';
+import { logInfo, logWarn } from './logger';
 
 /**
  * Well-known paths where BMAD is installed after `npx bmad-method install`.
@@ -53,11 +53,17 @@ export function detectBmadRoot(): string | undefined {
 
     if (explicit) {
         const abs = path.isAbsolute(explicit) ? explicit : path.join(wsRoot, explicit);
-        if (fs.existsSync(abs)) {
+        try {
+            const stat = fs.statSync(abs);
+            if (!stat.isDirectory()) {
+                logWarn(`Configured bmad.rootPath "${explicit}" exists but is not a directory: ${abs}`);
+                return undefined;
+            }
             logInfo(`Using explicit bmad.rootPath: ${abs}`);
             return abs;
+        } catch {
+            logWarn(`Configured bmad.rootPath "${explicit}" not found at ${abs}`);
         }
-        logWarn(`Configured bmad.rootPath "${explicit}" not found at ${abs}`);
     }
 
     const autoDetect = config.get<boolean>('autoDetect', true);
