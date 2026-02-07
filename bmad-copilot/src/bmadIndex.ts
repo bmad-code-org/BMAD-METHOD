@@ -96,6 +96,16 @@ export function detectBmadRoot(): string | undefined {
 /**
  * Lightweight extraction of metadata from YAML agent files.
  * Reads plain text and uses regex — no YAML parser dependency.
+ *
+ * LIMITATION: The regexes below match any indented `key: value` line in the
+ * file, not only keys under specific YAML blocks (e.g. `metadata:` or
+ * `persona:`).  This means a `title:` nested under an unrelated section
+ * could be picked up.  This is a deliberate trade-off:
+ *   - Pro: zero external dependencies, fast, simple.
+ *   - Con: may over-match in unusual YAML structures.
+ * A full YAML parser (e.g. `yaml` or `js-yaml`) would eliminate the
+ * ambiguity but add a dependency and complexity not justified for
+ * display-only metadata hints.
  */
 function extractAgentMeta(content: string): { title?: string; description?: string; icon?: string; module?: string; role?: string } {
     const meta: { title?: string; description?: string; icon?: string; module?: string; role?: string } = {};
@@ -279,13 +289,20 @@ export function startWatching(ctx: vscode.ExtensionContext): void {
     const pattern = new vscode.RelativePattern(wsRoot, '**/*.{yaml,md}');
     _watcher = vscode.workspace.createFileSystemWatcher(pattern);
 
+    // Debounce: the glob matches all yaml/md files so unrelated edits may
+    // fire frequently.  Collapse rapid bursts into a single rebuild.
+    let debounceTimer: ReturnType<typeof setTimeout> | undefined;
     const rebuild = () => {
-        logInfo('File change detected — rebuilding index');
-        refreshIndex();
+        if (debounceTimer) { clearTimeout(debounceTimer); }
+        debounceTimer = setTimeout(() => {
+            logInfo('File change detected — rebuilding index');
+            refreshIndex();
+        }, 500);
     };
 
     _watcher.onDidCreate(rebuild);
     _watcher.onDidDelete(rebuild);
     _watcher.onDidChange(rebuild);
     ctx.subscriptions.push(_watcher);
+    ctx.subscriptions.push({ dispose: () => { if (debounceTimer) { clearTimeout(debounceTimer); } } });
 }

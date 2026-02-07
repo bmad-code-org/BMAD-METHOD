@@ -171,16 +171,40 @@ export function findClosestName(input: string, index: BmadIndex): string | undef
     // Substring match
     const sub = all.find(n => n.toLowerCase().includes(lower));
     if (sub) { return sub; }
-    // Levenshtein-like: best character overlap
+    // Fall back to true Levenshtein distance — O(n*m) per candidate but
+    // the candidate list is small (tens of items) so this is fine for a
+    // hint-only code path.
     let best = all[0];
-    let bestScore = 0;
+    let bestDist = Infinity;
     for (const n of all) {
-        let score = 0;
-        const nl = n.toLowerCase();
-        for (let i = 0; i < Math.min(lower.length, nl.length); i++) {
-            if (lower[i] === nl[i]) { score++; }
-        }
-        if (score > bestScore) { bestScore = score; best = n; }
+        const d = levenshtein(lower, n.toLowerCase());
+        if (d < bestDist) { bestDist = d; best = n; }
     }
     return best;
+}
+
+/**
+ * Minimal Levenshtein distance (edit distance) between two strings.
+ * Handles insertions, deletions and substitutions.
+ * Uses a single-row DP approach to keep memory at O(min(a,b)).
+ */
+function levenshtein(a: string, b: string): number {
+    if (a === b) { return 0; }
+    if (a.length === 0) { return b.length; }
+    if (b.length === 0) { return a.length; }
+    // Ensure a is the shorter string for memory efficiency
+    if (a.length > b.length) { [a, b] = [b, a]; }
+    const row = Array.from({ length: a.length + 1 }, (_, i) => i);
+    for (let j = 1; j <= b.length; j++) {
+        let prev = row[0];
+        row[0] = j;
+        for (let i = 1; i <= a.length; i++) {
+            const cur = row[i];
+            row[i] = a[i - 1] === b[j - 1]
+                ? prev
+                : 1 + Math.min(prev, row[i], row[i - 1]);
+            prev = cur;
+        }
+    }
+    return row[a.length];
 }
