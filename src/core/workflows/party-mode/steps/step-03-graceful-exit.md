@@ -142,6 +142,17 @@ Thank you for using BMAD Party Mode for collaborative multi-agent discussions!"
 - Express genuine appreciation for user's participation and engagement
 - Leave user with encouragement for future collaborative sessions
 
+## RETURN PROTOCOL:
+
+If this workflow was invoked from within a parent workflow:
+
+1. Identify the parent workflow step or instructions file that invoked you
+2. Re-read that file now to restore context
+3. Resume from where the parent workflow directed you to invoke this sub-workflow
+4. Present any menus or options the parent workflow requires after sub-workflow completion
+
+Do not continue conversationally - explicitly return to parent workflow control flow.
+
 ## WORKFLOW COMPLETION:
 
 After farewell sequence and final closure:

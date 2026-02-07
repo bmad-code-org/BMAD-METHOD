@@ -1,4 +1,4 @@
-# Technical Research Step 4: Implementation Research
+# Technical Research Step 5: Implementation Research
 
 ## MANDATORY EXECUTION RULES (READ FIRST):
 
@@ -17,7 +17,7 @@
 - 🎯 Show web search analysis before presenting findings
 - ⚠️ Present [C] complete option after implementation research content generation
 - 💾 ONLY save when user chooses C (Complete)
-- 📖 Update frontmatter `stepsCompleted: [1, 2, 3, 4]` before completing workflow
+- 📖 Update frontmatter `stepsCompleted: [1, 2, 3, 4, 5]` before completing workflow
 - 🚫 FORBIDDEN to complete workflow until C is selected
 
 ## CONTEXT BOUNDARIES:
@@ -25,7 +25,7 @@
 - Current document and frontmatter from previous steps are available
 - Focus on implementation approaches and technology adoption strategies
 - Web search capabilities with source verification are enabled
-- This is the final step in the technical research workflow
+- This step prepares for the final synthesis step
 
 ## YOUR TASK:
 
@@ -149,10 +149,10 @@ _Source: [URL]_
 [Success measurement framework]
 ```
 
-### 6. Present Analysis and Complete Option
+### 6. Present Analysis and Continue Option
 
-Show the generated implementation research and present complete option:
-"I've completed the **implementation research and technology adoption** analysis, finalizing our comprehensive technical research.
+Show the generated implementation research and present continue option:
+"I've completed the **implementation research and technology adoption** analysis for {{research_topic}}.
 
 **Implementation Highlights:**
 
@@ -162,23 +162,24 @@ Show the generated implementation research and present complete option:
 - Team organization and skill requirements identified
 - Cost optimization and resource management strategies provided
 
-**This completes our technical research covering:**
+**Technical research phases completed:**
 
-- Technical overview and landscape analysis
-- Architectural patterns and design decisions
-- Implementation approaches and technology adoption
-- Practical recommendations and implementation roadmap
+- Step 1: Research scope confirmation
+- Step 2: Technology stack analysis
+- Step 3: Integration patterns analysis
+- Step 4: Architectural patterns analysis
+- Step 5: Implementation research (current step)
 
-**Ready to complete the technical research report?**
-[C] Complete Research - Save final document and conclude
+**Ready to proceed to the final synthesis step?**
+[C] Continue - Save this to document and proceed to synthesis
 
-### 7. Handle Complete Selection
+### 7. Handle Continue Selection
 
-#### If 'C' (Complete Research):
+#### If 'C' (Continue):
 
 - Append the final content to the research document
-- Update frontmatter: `stepsCompleted: [1, 2, 3, 4]`
-- Complete the technical research workflow
+- Update frontmatter: `stepsCompleted: [1, 2, 3, 4, 5]`
+- Load: `./step-06-research-synthesis.md`
 
 ## APPEND TO DOCUMENT:
 
@@ -191,9 +192,9 @@ When user selects 'C', append the content directly to the research document usin
 ✅ Testing and deployment practices clearly documented
 ✅ Team organization and skill requirements mapped
 ✅ Cost optimization and risk mitigation strategies provided
-✅ [C] complete option presented and handled correctly
+✅ [C] continue option presented and handled correctly
 ✅ Content properly appended to document when C selected
-✅ Technical research workflow completed successfully
+✅ Proper routing to synthesis step (step-06)
 
 ## FAILURE MODES:
 
@@ -202,8 +203,9 @@ When user selects 'C', append the content directly to the research document usin
 ❌ Missing critical technology adoption strategies
 ❌ Not providing practical implementation guidance
 ❌ Incomplete development workflows or operational practices analysis
-❌ Not presenting completion option for research workflow
+❌ Not presenting continue option to synthesis step
 ❌ Appending content without user selecting 'C'
+❌ Not routing to step-06-research-synthesis.md
 
 ❌ **CRITICAL**: Reading only partial step file - leads to incomplete understanding and poor decisions
 ❌ **CRITICAL**: Proceeding with 'C' without fully reading and understanding the next step file
@@ -221,19 +223,11 @@ When user selects 'C', append the content directly to the research document usin
 
 When 'C' is selected:
 
-- All technical research steps completed
-- Comprehensive technical research document generated
-- All sections appended with source citations
-- Technical research workflow status updated
-- Final implementation recommendations provided to user
+- Implementation research step completed
+- Content appended to research document with source citations
+- Frontmatter updated with stepsCompleted: [1, 2, 3, 4, 5]
+- Ready to proceed to final synthesis step
 
-## NEXT STEPS:
+## NEXT STEP:
 
-Technical research workflow complete. User may:
-
-- Use technical research to inform architecture decisions
-- Conduct additional research on specific technologies
-- Combine technical research with other research types for comprehensive insights
-- Move forward with implementation based on technical insights
-
-Congratulations on completing comprehensive technical research! 🎉
+After user selects 'C', load `./step-06-research-synthesis.md` to produce the comprehensive technical research document with narrative introduction, detailed TOC, and executive summary.

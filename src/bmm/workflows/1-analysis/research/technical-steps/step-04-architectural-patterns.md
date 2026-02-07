@@ -155,7 +155,7 @@ Show the generated architectural patterns and present continue option:
 #### If 'C' (Continue):
 
 - Append the final content to the research document
-- Update frontmatter: `stepsCompleted: [1, 2, 3]`
+- Update frontmatter: `stepsCompleted: [1, 2, 3, 4]`
 - Load: `./step-05-implementation-research.md`
 
 ## APPEND TO DOCUMENT:
