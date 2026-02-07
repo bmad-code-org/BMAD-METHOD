@@ -88,30 +88,49 @@ Would you like me to hand over to Saga to get started?
 ---
 
 [SCENARIO B - Code Without Docs]:
-Project Status: Active development, no WDS documentation
+Project Status: BROWNFIELD - Existing product, no WDS documentation
 ├─ Implementation: [X] files in [app/src/] directory
 ├─ Tech Stack: [List detected technologies]
-└─ Status: Reverse-document needed
+└─ Status: Ready for Phase 8 entry
 
 Implementation found:
 ├─ [Feature/file 1]
 ├─ [Feature/file 2]
 └─ [Feature/file 3]
 
-💡 Observation:
-This project has active development but hasn't adopted WDS methodology yet.
+⚠️ IMPORTANT: This is a BROWNFIELD project!
 
-Recommended Next Steps:
-1. Create docs/ folder structure
-2. Reverse-engineer Product Brief from existing code
-3. Document implemented features as scenarios
-4. Create project outline to track status
+You have existing code. DO NOT start with Phase 1-3.
+Those phases are for NEW products (greenfield).
 
-**Saga WDS Analyst Agent** can help reverse-document your project.
-Would you like me to hand over to Saga?
+✅ Recommended Path: **Phase 8 - Existing Product Entry**
 
-Alternatively, I can help you:
-[Suggest domain-specific tasks]
+Phase 8 uses the Kaizen (改善) approach:
+├─ Create Limited Brief (document what exists)
+├─ Identify specific improvements
+├─ Design focused updates (not complete redesigns)
+├─ Implement incrementally
+└─ Monitor and iterate
+
+Next Steps:
+1. Create docs/ folder with brownfield structure
+2. Create Limited Brief (what exists + what you want to change)
+3. Identify your first improvement opportunity
+4. Begin Phase 8.1
+
+**Options:**
+
+[A] Set up brownfield structure now
+    → Creates docs/ with Phase 8 templates
+    → Guides you through Limited Brief
+
+[B] Tell me what you want to improve
+    → Skip straight to improvement design
+    → I'll help document as we go
+
+[C] Hand off to Saga for Limited Brief
+    → Saga specializes in strategic documentation
+    → Will reverse-engineer your product brief
 
 ---
 
