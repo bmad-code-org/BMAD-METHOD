@@ -344,7 +344,7 @@ class ConfigCollector {
       if (questions.length > 0) {
         // Only show header if we actually have questions
         await CLIUtils.displayModuleConfigHeader(moduleName, moduleConfig.header, moduleConfig.subheader);
-        console.log(); // Line break before questions
+        await prompts.log.message('');
         const promptedAnswers = await prompts.prompt(questions);
 
         // Merge prompted answers with static answers
@@ -738,20 +738,7 @@ class ConfigCollector {
       const hasNoConfig = actualConfigKeys.length === 0;
 
       if (hasNoConfig && (moduleConfig.subheader || moduleConfig.header)) {
-        // Module explicitly has no configuration - show with special styling
         await prompts.log.step(moduleDisplayName);
-
-        // Ask user if they want to accept defaults or customize on the next line
-        const { customize } = await prompts.prompt([
-          {
-            type: 'confirm',
-            name: 'customize',
-            message: 'Accept Defaults (no to customize)?',
-            default: true,
-          },
-        ]);
-
-        // Show the subheader if available, otherwise show a default message
         if (moduleConfig.subheader) {
           await prompts.log.message(`  \u2713 ${moduleConfig.subheader}`);
         } else {

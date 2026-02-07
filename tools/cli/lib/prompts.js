@@ -112,7 +112,9 @@ async function spinner() {
         s.stop(msg);
       }
     },
-    message: (msg) => s.message(msg),
+    message: (msg) => {
+      if (spinning) s.message(msg);
+    },
     error: (msg) => {
       spinning = false;
       s.error(msg);
@@ -297,7 +299,7 @@ async function autocompleteMultiselect(options) {
         const isSelected = this.selectedValues.includes(opt.value);
         const isLocked = lockedSet.has(opt.value);
         const label = opt.label ?? String(opt.value ?? '');
-        const hintText = opt.hint && opt.value === this.focusedValue ? color.dim(` (${opt.hint})`) : '';
+        const hintText = opt.hint && isHighlighted ? color.dim(` (${opt.hint})`) : '';
 
         let checkbox;
         if (isLocked) {
@@ -370,8 +372,9 @@ async function autocompleteMultiselect(options) {
 
   // Handle SPACE toggle when NOT navigating (internal code only handles it when isNavigating=true)
   prompt.on('key', (char, key) => {
-    if (key && key.name === 'space' && !prompt.isNavigating && prompt.focusedValue !== undefined) {
-      prompt.toggleSelected(prompt.focusedValue);
+    if (key && key.name === 'space' && !prompt.isNavigating) {
+      const focused = prompt.filteredOptions[prompt.cursor];
+      if (focused) prompt.toggleSelected(focused.value);
     }
   });
   // === END FIX ===
@@ -648,27 +651,27 @@ async function selectKey(options) {
 const stream = {
   async info(generator) {
     const clack = await getClack();
-    clack.stream.info(generator);
+    return clack.stream.info(generator);
   },
   async success(generator) {
     const clack = await getClack();
-    clack.stream.success(generator);
+    return clack.stream.success(generator);
   },
   async step(generator) {
     const clack = await getClack();
-    clack.stream.step(generator);
+    return clack.stream.step(generator);
   },
   async warn(generator) {
     const clack = await getClack();
-    clack.stream.warn(generator);
+    return clack.stream.warn(generator);
   },
   async error(generator) {
     const clack = await getClack();
-    clack.stream.error(generator);
+    return clack.stream.error(generator);
   },
   async message(generator, options) {
     const clack = await getClack();
-    clack.stream.message(generator, options);
+    return clack.stream.message(generator, options);
   },
 };
 

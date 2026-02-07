@@ -237,6 +237,7 @@ class Installer {
     // before any config collection, so we don't need to check again here
 
     const projectDir = path.resolve(config.directory);
+    const bmadDir = path.join(projectDir, BMAD_FOLDER_NAME);
 
     // If core config was pre-collected (from interactive mode), use it
     if (config.coreConfig && Object.keys(config.coreConfig).length > 0) {
@@ -374,12 +375,6 @@ class Installer {
     spinner.start('Preparing installation...');
 
     try {
-      // Resolve target directory (path.resolve handles platform differences)
-      const projectDir = path.resolve(config.directory);
-
-      // Always use the standard _bmad folder name
-      const bmadDir = path.join(projectDir, BMAD_FOLDER_NAME);
-
       // Create a project directory if it doesn't exist (user already confirmed)
       if (!(await fs.pathExists(projectDir))) {
         spinner.message('Creating installation directory...');
@@ -807,12 +802,12 @@ class Installer {
         bmadDir: bmadDir, // Pass bmadDir so we can check cache
       });
 
+      spinner.message('Resolving dependencies...');
+
       const resolution = await this.dependencyResolver.resolve(projectRoot, regularModulesForResolution, {
         verbose: config.verbose,
         moduleManager: tempModuleManager,
       });
-
-      spinner.message('Resolving dependencies...');
 
       // Install modules with their dependencies
       if (allModules && allModules.length > 0) {
@@ -1020,46 +1015,47 @@ class Installer {
             console.log = () => {};
           }
 
-          for (const ide of validIdes) {
-            if (!needsPrompting || ideConfigurations[ide]) {
-              // All IDEs pre-configured, or this specific IDE has config: keep spinner running
-              spinner.message(`Configuring ${ide}...`);
-            } else {
-              // This IDE needs prompting: stop spinner to allow user interaction
-              if (spinner.isSpinning) {
-                spinner.stop('Ready for IDE configuration');
+          try {
+            for (const ide of validIdes) {
+              if (!needsPrompting || ideConfigurations[ide]) {
+                // All IDEs pre-configured, or this specific IDE has config: keep spinner running
+                spinner.message(`Configuring ${ide}...`);
+              } else {
+                // This IDE needs prompting: stop spinner to allow user interaction
+                if (spinner.isSpinning) {
+                  spinner.stop('Ready for IDE configuration');
+                }
+              }
+
+              // Silent when this IDE has pre-collected config (no prompts for THIS IDE)
+              const ideHasConfig = Boolean(ideConfigurations[ide]);
+              const setupResult = await this.ideManager.setup(ide, projectDir, bmadDir, {
+                selectedModules: allModules || [],
+                preCollectedConfig: ideConfigurations[ide] || null,
+                verbose: config.verbose,
+                silent: ideHasConfig,
+              });
+
+              // Save IDE configuration for future updates
+              if (ideConfigurations[ide] && !ideConfigurations[ide]._alreadyConfigured) {
+                await this.ideConfigManager.saveIdeConfig(bmadDir, ide, ideConfigurations[ide]);
+              }
+
+              // Collect result for summary
+              if (setupResult.success) {
+                addResult(ide, 'ok', setupResult.detail || '');
+              } else {
+                addResult(ide, 'error', setupResult.error || 'failed');
+              }
+
+              // Restart spinner if we stopped it for prompting
+              if (needsPrompting && !spinner.isSpinning) {
+                spinner.start('Configuring IDEs...');
               }
             }
-
-            // Silent when this IDE has pre-collected config (no prompts for THIS IDE)
-            const ideHasConfig = Boolean(ideConfigurations[ide]);
-            const setupResult = await this.ideManager.setup(ide, projectDir, bmadDir, {
-              selectedModules: allModules || [],
-              preCollectedConfig: ideConfigurations[ide] || null,
-              verbose: config.verbose,
-              silent: ideHasConfig,
-            });
-
-            // Save IDE configuration for future updates
-            if (ideConfigurations[ide] && !ideConfigurations[ide]._alreadyConfigured) {
-              await this.ideConfigManager.saveIdeConfig(bmadDir, ide, ideConfigurations[ide]);
-            }
-
-            // Collect result for summary
-            if (setupResult.success) {
-              addResult(ide, 'ok', setupResult.detail || '');
-            } else {
-              addResult(ide, 'error', setupResult.error || 'failed');
-            }
-
-            // Restart spinner if we stopped it for prompting
-            if (needsPrompting && !spinner.isSpinning) {
-              spinner.start('Configuring IDEs...');
-            }
+          } finally {
+            console.log = originalLog;
           }
-
-          // Restore console.log
-          console.log = originalLog;
         }
       }
 
@@ -1338,7 +1334,7 @@ class Installer {
 
       for (const module of existingInstall.modules) {
         spinner.message(`Updating module: ${module.id}...`);
-        await this.moduleManager.update(module.id, bmadDir, config.force);
+        await this.moduleManager.update(module.id, bmadDir, config.force, { installer: this });
       }
 
       // Update manifest

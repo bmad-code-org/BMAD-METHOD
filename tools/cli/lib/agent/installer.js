@@ -164,15 +164,15 @@ async function promptInstallQuestions(installConfig, defaults, presetAnswers = {
       case 'text': {
         const response = await prompts.text({
           message: q.prompt,
-          defaultValue: q.default || '',
+          default: q.default ?? '',
         });
-        answers[q.var] = response || q.default || '';
+        answers[q.var] = response ?? q.default ?? '';
         break;
       }
       case 'boolean': {
         const response = await prompts.confirm({
           message: q.prompt,
-          initialValue: q.default,
+          default: q.default,
         });
         answers[q.var] = response;
         break;

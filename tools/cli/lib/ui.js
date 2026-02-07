@@ -74,7 +74,7 @@ class UI {
       for (const entry of entries) {
         if (entry.isDirectory() && (entry.name === '.bmad' || entry.name === 'bmad')) {
           hasLegacyBmadFolder = true;
-          legacyBmadPath = path.join(confirmedDirectory, '.bmad');
+          legacyBmadPath = path.join(confirmedDirectory, entry.name);
           bmadDir = legacyBmadPath;
 
           // Check if it has _cfg folder
@@ -151,7 +151,7 @@ class UI {
           const newBmadPath = path.join(confirmedDirectory, '_bmad');
           await fs.move(legacyBmadPath, newBmadPath);
           bmadDir = newBmadPath;
-          s.stop('Renamed ".bmad" to "_bmad"');
+          s.stop(`Renamed "${path.basename(legacyBmadPath)}" to "_bmad"`);
         }
 
         // Handle _cfg folder (either from .bmad or standalone)
@@ -274,6 +274,7 @@ class UI {
           await prompts.log.info(`Using modules from command-line: ${selectedModules.join(', ')}`);
         } else {
           selectedModules = await this.selectAllModules(installedModuleIds);
+          selectedModules = selectedModules.filter((m) => m !== 'core');
         }
 
         // After module selection, ask about custom modules
@@ -561,7 +562,7 @@ class UI {
         });
 
         if (!confirmNoTools) {
-          return this.promptToolSelection(projectDir);
+          return this.promptToolSelection(projectDir, options);
         }
 
         return { ides: [], skipIde: true };
@@ -639,7 +640,7 @@ class UI {
 
       if (!confirmNoTools) {
         // User wants to select tools - recurse
-        return this.promptToolSelection(projectDir);
+        return this.promptToolSelection(projectDir, options);
       }
 
       return {
@@ -825,7 +826,6 @@ class UI {
     const isNewInstallation = installedModuleIds.size === 0;
 
     const customContentItems = [];
-    const hasCustomContentItems = false;
 
     // Add custom content items
     if (customContentConfig && customContentConfig.hasCustomContent && customContentConfig.customPath) {
@@ -962,7 +962,6 @@ class UI {
    */
   async selectExternalModules(externalModuleChoices, defaultSelections = []) {
     // Build a message showing available modules
-    const availableNames = externalModuleChoices.map((c) => c.name).join(', ');
     const message = 'Select official BMad modules to install (use arrow keys, space to toggle):';
 
     // Mark choices as checked based on defaultSelections

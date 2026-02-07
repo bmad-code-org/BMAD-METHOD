@@ -85,16 +85,17 @@ module.exports = {
         process.exit(0);
       }
     } catch (error) {
-      // Check if error has a complete formatted message
-      if (error.fullMessage) {
-        console.error(error.fullMessage);
+      try {
+        if (error.fullMessage) {
+          await prompts.log.error(error.fullMessage);
+        } else {
+          await prompts.log.error(`Installation failed: ${error.message}`);
+        }
         if (error.stack) {
           await prompts.log.message(error.stack);
         }
-      } else {
-        // Generic error handling for all other errors
-        await prompts.log.error(`Installation failed: ${error.message}`);
-        await prompts.log.message(error.stack);
+      } catch {
+        console.error(error.fullMessage || error.message || error);
       }
       process.exit(1);
     }

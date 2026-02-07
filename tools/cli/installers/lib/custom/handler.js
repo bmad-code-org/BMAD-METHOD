@@ -268,13 +268,12 @@ class CustomHandler {
             }
 
             results.filesCopied++;
+            if (entry.name.endsWith('.md')) {
+              results.workflowsInstalled++;
+            }
             if (fileTrackingCallback) {
               fileTrackingCallback(targetPath);
             }
-          }
-
-          if (entry.name.endsWith('.md')) {
-            results.workflowsInstalled++;
           }
         } catch (error) {
           results.errors.push(`Failed to copy ${entry.name}: ${error.message}`);

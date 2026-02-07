@@ -492,19 +492,16 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
     let removedCount = 0;
 
     for (const entry of entries) {
-      // Skip non-strings or undefined entries
       if (!entry || typeof entry !== 'string') {
         continue;
       }
       if (entry.startsWith('bmad')) {
         const entryPath = path.join(targetPath, entry);
-        const stat = await fs.stat(entryPath);
-        if (stat.isFile()) {
+        try {
           await fs.remove(entryPath);
           removedCount++;
-        } else if (stat.isDirectory()) {
-          await fs.remove(entryPath);
-          removedCount++;
+        } catch {
+          // Skip entries that can't be removed (broken symlinks, permission errors)
         }
       }
     }

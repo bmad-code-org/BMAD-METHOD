@@ -90,6 +90,10 @@ class DependencyResolver {
         }
       }
 
+      if (!moduleDir) {
+        continue;
+      }
+
       if (!(await fs.pathExists(moduleDir))) {
         await prompts.log.warn('Module directory not found: ' + moduleDir);
         continue;

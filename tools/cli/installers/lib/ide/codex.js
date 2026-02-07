@@ -284,15 +284,11 @@ class CodexSetup extends BaseIdeSetup {
 
       const entryPath = path.join(destDir, entry);
       try {
-        const stat = await fs.stat(entryPath);
-        if (stat.isFile()) {
-          await fs.remove(entryPath);
-        } else if (stat.isDirectory()) {
-          await fs.remove(entryPath);
-        }
+        await fs.remove(entryPath);
       } catch (error) {
-        // Skip files that can't be processed
-        await prompts.log.message(`  Skipping ${entry}: ${error.message}`);
+        if (!options.silent) {
+          await prompts.log.message(`  Skipping ${entry}: ${error.message}`);
+        }
       }
     }
   }

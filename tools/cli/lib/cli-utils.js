@@ -66,8 +66,8 @@ const CLIUtils = {
 
     const color = await prompts.getColor();
     const borderColor = options.borderColor || 'cyan';
-    const formatBorder =
-      borderColor === 'green' ? color.green : borderColor === 'red' ? color.red : borderColor === 'yellow' ? color.yellow : color.cyan;
+    const colorMap = { green: color.green, red: color.red, yellow: color.yellow, cyan: color.cyan, blue: color.blue };
+    const formatBorder = colorMap[borderColor] || color.cyan;
 
     await prompts.box(text, options.title, {
       rounded: options.borderStyle === 'round' || options.borderStyle === undefined,

@@ -287,7 +287,7 @@ class ModuleManager {
       moduleInfo.dependencies = config.dependencies || [];
       moduleInfo.defaultSelected = config.default_selected === undefined ? false : config.default_selected;
     } catch (error) {
-      console.warn(`Failed to read config for ${defaultName}:`, error.message);
+      await prompts.log.warn(`Failed to read config for ${defaultName}: ${error.message}`);
     }
 
     return moduleInfo;
@@ -365,7 +365,20 @@ class ModuleManager {
     // Helper to create a spinner or a no-op when silent
     const createSpinner = async () => {
       if (silent) {
-        return { start() {}, stop() {}, error() {}, message() {} };
+        return {
+          start() {},
+          stop() {},
+          error() {},
+          message() {},
+          cancel() {},
+          clear() {},
+          get isSpinning() {
+            return false;
+          },
+          get isCancelled() {
+            return false;
+          },
+        };
       }
       return await prompts.spinner();
     };
@@ -603,7 +616,7 @@ class ModuleManager {
    * @param {string} bmadDir - Target bmad directory
    * @param {boolean} force - Force update (overwrite modifications)
    */
-  async update(moduleName, bmadDir, force = false) {
+  async update(moduleName, bmadDir, force = false, options = {}) {
     const sourcePath = await this.findModuleSource(moduleName);
     const targetPath = path.join(bmadDir, moduleName);
 
@@ -620,13 +633,13 @@ class ModuleManager {
     if (force) {
       // Force update - remove and reinstall
       await fs.remove(targetPath);
-      return await this.install(moduleName, bmadDir);
+      return await this.install(moduleName, bmadDir, null, { installer: options.installer });
     } else {
       // Selective update - preserve user modifications
       await this.syncModule(sourcePath, targetPath);
 
       // Recompile agents (#1133)
-      await this.compileModuleAgents(sourcePath, targetPath, moduleName, bmadDir);
+      await this.compileModuleAgents(sourcePath, targetPath, moduleName, bmadDir, options.installer);
       await this.processAgentFiles(targetPath, moduleName);
     }
 
@@ -694,7 +707,7 @@ class ModuleManager {
         const config = yaml.parse(configContent);
         Object.assign(moduleInfo, config);
       } catch (error) {
-        console.warn(`Failed to read installed module config:`, error.message);
+        await prompts.log.warn(`Failed to read installed module config: ${error.message}`);
       }
     }
 
@@ -789,7 +802,6 @@ class ModuleManager {
 
     // IMPORTANT: Replace escape sequence and placeholder BEFORE parsing YAML
     // Otherwise parsing will fail on the placeholder
-    yamlContent = yamlContent.replaceAll('_bmad', '_bmad');
     yamlContent = yamlContent.replaceAll('_bmad', this.bmadFolderName);
 
     try {
@@ -1323,7 +1335,7 @@ class ModuleManager {
 
         await fs.writeFile(configPath, configContent, 'utf8');
       } catch (error) {
-        console.warn(`Failed to process module config:`, error.message);
+        await prompts.log.warn(`Failed to process module config: ${error.message}`);
       }
     }
   }

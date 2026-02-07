@@ -173,7 +173,7 @@ class IdeManager {
     if (!handler) {
       await prompts.log.warn(`IDE '${ideName}' is not yet supported`);
       await prompts.log.message(`Supported IDEs: ${[...this.handlers.keys()].join(', ')}`);
-      return { success: false, reason: 'unsupported' };
+      return { success: false, ide: ideName, error: 'unsupported IDE' };
     }
 
     try {
@@ -200,7 +200,7 @@ class IdeManager {
       } else if (handlerResult && handlerResult.modes !== undefined) {
         // Kilo handler returns { success, modes, workflows, tasks, tools }
         const parts = [];
-        if (handlerResult.modes > 0) parts.push(`${handlerResult.modes} agents`);
+        if (handlerResult.modes > 0) parts.push(`${handlerResult.modes} modes`);
         if (handlerResult.workflows > 0) parts.push(`${handlerResult.workflows} workflows`);
         if (handlerResult.tasks > 0) parts.push(`${handlerResult.tasks} tasks`);
         if (handlerResult.tools > 0) parts.push(`${handlerResult.tools} tools`);
