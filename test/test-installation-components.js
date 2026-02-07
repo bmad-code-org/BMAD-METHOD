@@ -32,8 +32,9 @@ let failed = 0;
 /**
  * Recursively collect files from a mix of files/directories.
  */
-async function collectFiles(targets, allowedExtensions) {
+async function collectFiles(targets, allowedExtensions, excludedFiles = new Set()) {
   const files = [];
+  const normalizedExcludes = new Set([...excludedFiles].map((p) => path.resolve(p)));
 
   const walk = async (targetPath) => {
     if (!(await fs.pathExists(targetPath))) {
@@ -42,6 +43,10 @@ async function collectFiles(targets, allowedExtensions) {
 
     const stat = await fs.stat(targetPath);
     if (stat.isFile()) {
+      const normalizedTargetPath = path.resolve(targetPath);
+      if (normalizedExcludes.has(normalizedTargetPath)) {
+        return;
+      }
       if (allowedExtensions.has(path.extname(targetPath))) {
         files.push(targetPath);
       }
@@ -56,6 +61,9 @@ async function collectFiles(targets, allowedExtensions) {
       }
       if (entry.isDirectory()) {
         await walk(fullPath);
+        continue;
+      }
+      if (normalizedExcludes.has(path.resolve(fullPath))) {
         continue;
       }
       if (allowedExtensions.has(path.extname(entry.name))) {
@@ -273,9 +281,10 @@ async function runTests() {
     ];
     const allowedExtensions = new Set(['.md', '.yaml', '.yml', '.xml']);
     const forbiddenRef = 'validate-workflow.xml';
+    const excludedFile = path.join(projectRoot, 'src', 'core', 'tasks', 'validate-workflow.xml');
     const offenders = [];
 
-    const files = await collectFiles(searchTargets, allowedExtensions);
+    const files = await collectFiles(searchTargets, allowedExtensions, new Set([excludedFile]));
     for (const fullPath of files) {
       const content = await fs.readFile(fullPath, 'utf8');
       if (content.includes(forbiddenRef)) {
