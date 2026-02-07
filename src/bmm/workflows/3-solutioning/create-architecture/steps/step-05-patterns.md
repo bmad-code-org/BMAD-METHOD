@@ -32,7 +32,7 @@ This step will generate content and present choices:
 
 ## PROTOCOL INTEGRATION:
 
-- When 'A' selected: Read fully and follow: {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml
+- When 'A' selected: Read fully and follow: {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.md
 - When 'P' selected: Read fully and follow: {project-root}/_bmad/core/workflows/party-mode/workflow.md
 - PROTOCOLS always return to display this step's A/P/C menu after the A or P have completed
 - User accepts/rejects protocol changes before proceeding
@@ -305,7 +305,7 @@ Show the generated patterns content and present choices:
 
 #### If 'A' (Advanced Elicitation):
 
-- Read fully and follow: {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml with current patterns
+- Read fully and follow: {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.md with current patterns
 - Process enhanced consistency rules that come back
 - Ask user: "Accept these additional pattern refinements? (y/n)"
 - If yes: Update content, then return to A/P/C menu

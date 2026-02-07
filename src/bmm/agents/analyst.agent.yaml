@@ -38,5 +38,5 @@ agent:
       description: "[CB] Create Brief: A guided experience to nail down your product idea into an executive brief"
 
     - trigger: DP or fuzzy match on document-project
-      workflow: "{project-root}/_bmad/bmm/workflows/document-project/workflow.yaml"
+      workflow: "{project-root}/_bmad/bmm/workflows/document-project/workflow.md"
       description: "[DP] Document Project: Analyze an existing project to produce useful documentation for both human and LLM"

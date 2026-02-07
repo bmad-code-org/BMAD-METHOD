@@ -780,7 +780,7 @@ class ManifestGenerator {
         if (line) {
           // Parse CSV (simple parsing assuming no commas in quoted fields)
           const parts = line.split('","');
-          if (parts.length >= 11) {
+          if (parts.length >= 10) {
             const name = parts[0].replace(/^"/, '');
             const module = parts[8];
             existingEntries.set(`${module}:${name}`, line);

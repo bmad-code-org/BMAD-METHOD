@@ -100,7 +100,7 @@ Any custom items you add here will be included in the agents display menu.
 ```yaml
 menu:
   - trigger: my-workflow
-    workflow: '{project-root}/my-custom/workflows/my-workflow.yaml'
+    workflow: '{project-root}/my-custom/workflows/my-workflow.md'
     description: My custom workflow
   - trigger: deploy
     action: '#deploy-prompt'

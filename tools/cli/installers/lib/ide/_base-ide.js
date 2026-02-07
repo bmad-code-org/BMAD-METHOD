@@ -289,7 +289,7 @@ class BaseIdeSetup {
     // Get core workflows
     const coreWorkflowsPath = path.join(bmadDir, 'core', 'workflows');
     if (await fs.pathExists(coreWorkflowsPath)) {
-      const coreWorkflows = await this.findWorkflowYamlFiles(coreWorkflowsPath);
+      const coreWorkflows = await this.findWorkflowFiles(coreWorkflowsPath);
       workflows.push(
         ...coreWorkflows.map((w) => ({
           ...w,
@@ -351,7 +351,7 @@ class BaseIdeSetup {
           const content = await fs.readFile(fullPath, 'utf8');
           let workflowData = null;
 
-          const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
+          const frontmatterMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
           if (!frontmatterMatch) {
             continue;
           }
@@ -546,10 +546,6 @@ class BaseIdeSetup {
       content = content.replaceAll('_bmad', this.bmadFolderName);
     }
 
-    // Replace escape sequence _bmad with literal _bmad
-    if (typeof content === 'string' && content.includes('_bmad')) {
-      content = content.replaceAll('_bmad', '_bmad');
-    }
     await this.ensureDir(path.dirname(filePath));
     await fs.writeFile(filePath, content, 'utf8');
   }
@@ -575,11 +571,6 @@ class BaseIdeSetup {
         // Replace _bmad placeholder with actual folder name
         if (content.includes('_bmad')) {
           content = content.replaceAll('_bmad', this.bmadFolderName);
-        }
-
-        // Replace escape sequence _bmad with literal _bmad
-        if (content.includes('_bmad')) {
-          content = content.replaceAll('_bmad', '_bmad');
         }
 
         // Write to dest with replaced content
