@@ -26,9 +26,6 @@ const shouldRenderSearch =
 		{shouldRenderSearch && <Search {...Astro.props} />}
 	</div>
 	<div class="sl-hidden md:sl-flex print:hidden right-group">
-		<nav class="sl-flex nav-links">
-			<a href={`${import.meta.env.BASE_URL}downloads/`}>Downloads</a>
-		</nav>
 		<div class="sl-flex social-icons">
 			<SocialIcons {...Astro.props} />
 		</div>
@@ -55,31 +52,9 @@ const shouldRenderSearch =
 	}
 
 	.right-group,
-	.social-icons,
-	.nav-links {
+	.social-icons {
 		gap: 1rem;
 		align-items: center;
-	}
-
-	.nav-links a {
-		color: var(--sl-color-white);
-		text-decoration: none;
-		font-size: 0.875rem;
-		font-weight: 500;
-		padding: 0.25rem 0.5rem;
-		border-radius: 4px;
-		transition: color 0.15s ease, background-color 0.15s ease;
-	}
-
-	.nav-links a:hover {
-		color: var(--sl-color-accent);
-		background-color: rgba(140, 140, 255, 0.1);
-	}
-
-	.nav-links::after {
-		content: '';
-		height: 2rem;
-		border-inline-end: 1px solid var(--sl-color-gray-5);
 	}
 
 	.social-icons::after {

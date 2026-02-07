@@ -2,10 +2,10 @@
  * BMAD Documentation Build Pipeline
  *
  * Consolidates docs from multiple sources, generates LLM-friendly files,
- * creates downloadable bundles, and builds the Astro+Starlight site.
+ * and builds the Astro+Starlight site.
  *
  * Build outputs:
- *   build/artifacts/     - With llms.txt, llms-full.txt, ZIPs
+ *   build/artifacts/     - With llms.txt, llms-full.txt
  *   build/site/          - Final Astro output (deployable)
  */
 
@@ -13,7 +13,6 @@ import { execSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import archiver from 'archiver';
 import { getSiteUrl } from '../website/src/lib/site-url.mjs';
 
 // =============================================================================
@@ -35,7 +34,6 @@ const LLM_EXCLUDE_PATTERNS = [
   'changelog',
   'ide-info/',
   'v4-to-v6-upgrade',
-  'downloads/',
   'faq',
   'reference/glossary/',
   'explanation/game-dev/',
@@ -81,17 +79,16 @@ main().catch((error) => {
 // =============================================================================
 // Pipeline Stages
 /**
- * Generate LLM files and downloadable bundles for the documentation pipeline.
+ * Generate LLM files for the documentation pipeline.
  *
- * Creates the build/artifacts directory, writes `llms.txt` and `llms-full.txt` (sourced from the provided docs directory),
- * and produces download ZIP bundles.
+ * Creates the build/artifacts directory and writes `llms.txt` and `llms-full.txt` (sourced from the provided docs directory).
  *
  * @param {string} docsDir - Path to the source docs directory containing Markdown files.
  * @returns {string} Path to the created artifacts directory.
  */
 
 async function generateArtifacts(docsDir) {
-  printHeader('Generating LLM files and download bundles');
+  printHeader('Generating LLM files');
 
   const outputDir = path.join(BUILD_DIR, 'artifacts');
   fs.mkdirSync(outputDir, { recursive: true });
@@ -99,7 +96,6 @@ async function generateArtifacts(docsDir) {
   // Generate LLM files reading from docs/, output to artifacts/
   generateLlmsTxt(outputDir);
   generateLlmsFullTxt(docsDir, outputDir);
-  await generateDownloadBundles(outputDir);
 
   console.log();
   console.log(`  \u001B[32m✓\u001B[0m Artifact generation complete`);
@@ -176,8 +172,6 @@ function generateLlmsTxt(outputDir) {
     '## Quick Links',
     '',
     `- [Full Documentation (llms-full.txt)](${siteUrl}/llms-full.txt) - Complete docs for AI context`,
-    `- [Source Bundle](${siteUrl}/downloads/bmad-sources.zip) - Complete source code`,
-    `- [Prompts Bundle](${siteUrl}/downloads/bmad-prompts.zip) - Agent prompts and workflows`,
     '',
   ].join('\n');
 
@@ -249,7 +243,6 @@ function compareLlmDocs(a, b) {
 
 function getLlmSortKey(filePath) {
   if (filePath === 'index.md') return 0;
-  if (filePath === 'downloads.md') return 1;
   if (filePath.startsWith(`tutorials${path.sep}`) || filePath.startsWith('tutorials/')) return 2;
   if (filePath.startsWith(`how-to${path.sep}`) || filePath.startsWith('how-to/')) return 3;
   if (filePath.startsWith(`explanation${path.sep}`) || filePath.startsWith('explanation/')) return 4;
@@ -323,48 +316,6 @@ function validateLlmSize(content) {
 }
 
 // =============================================================================
-// Download Bundle Generation
-// =============================================================================
-
-async function generateDownloadBundles(outputDir) {
-  console.log('  → Generating download bundles...');
-
-  const downloadsDir = path.join(outputDir, 'downloads');
-  fs.mkdirSync(downloadsDir, { recursive: true });
-
-  await generateSourcesBundle(downloadsDir);
-  await generatePromptsBundle(downloadsDir);
-}
-
-async function generateSourcesBundle(downloadsDir) {
-  const srcDir = path.join(PROJECT_ROOT, 'src');
-  if (!fs.existsSync(srcDir)) return;
-
-  const zipPath = path.join(downloadsDir, 'bmad-sources.zip');
-  await createZipArchive(srcDir, zipPath, ['__pycache__', '.pyc', '.DS_Store', 'node_modules']);
-
-  const size = (fs.statSync(zipPath).size / 1024 / 1024).toFixed(1);
-  console.log(`    bmad-sources.zip (${size}M)`);
-}
-
-/**
- * Create a zip archive of the project's prompts modules and place it in the downloads directory.
- *
- * Creates bmad-prompts.zip from src/modules, excluding common unwanted paths, writes it to the provided downloads directory, and logs the resulting file size. If the modules directory does not exist, the function returns without creating a bundle.
- * @param {string} downloadsDir - Destination directory where bmad-prompts.zip will be written.
- */
-async function generatePromptsBundle(downloadsDir) {
-  const modulesDir = path.join(PROJECT_ROOT, 'src', 'modules');
-  if (!fs.existsSync(modulesDir)) return;
-
-  const zipPath = path.join(downloadsDir, 'bmad-prompts.zip');
-  await createZipArchive(modulesDir, zipPath, ['docs', '.DS_Store', '__pycache__', 'node_modules']);
-
-  const size = Math.floor(fs.statSync(zipPath).size / 1024);
-  console.log(`    bmad-prompts.zip (${size}K)`);
-}
-
-// =============================================================================
 // Astro Build
 /**
  * Builds the Astro site to build/site (configured in astro.config.mjs).
@@ -384,7 +335,6 @@ function runAstroBuild() {
  * Copy generated artifact files into the built site directory.
  *
  * Copies llms.txt and llms-full.txt from the artifacts directory into the site directory.
- * If a downloads subdirectory exists under artifacts, copies it into siteDir/downloads.
  *
  * @param {string} artifactsDir - Path to the build artifacts directory containing generated files.
  * @param {string} siteDir - Path to the target site directory where artifacts should be placed.
@@ -394,11 +344,6 @@ function copyArtifactsToSite(artifactsDir, siteDir) {
 
   fs.copyFileSync(path.join(artifactsDir, 'llms.txt'), path.join(siteDir, 'llms.txt'));
   fs.copyFileSync(path.join(artifactsDir, 'llms-full.txt'), path.join(siteDir, 'llms-full.txt'));
-
-  const downloadsDir = path.join(artifactsDir, 'downloads');
-  if (fs.existsSync(downloadsDir)) {
-    copyDirectory(downloadsDir, path.join(siteDir, 'downloads'));
-  }
 }
 
 // =============================================================================
@@ -407,7 +352,7 @@ function copyArtifactsToSite(artifactsDir, siteDir) {
  * Prints a concise end-of-build summary and displays a sample listing of the final site directory.
  *
  * @param {string} docsDir - Path to the source documentation directory used for the build.
- * @param {string} artifactsDir - Path to the directory containing generated artifacts (e.g., llms.txt, downloads).
+ * @param {string} artifactsDir - Path to the directory containing generated artifacts (e.g., llms.txt).
  * @param {string} siteDir - Path to the final built site directory whose contents will be listed.
  */
 
@@ -524,35 +469,6 @@ function copyDirectory(src, dest, exclude = []) {
     }
   }
   return true;
-}
-
-/**
- * Create a ZIP archive of a directory, optionally excluding entries that match given substrings.
- * @param {string} sourceDir - Path to the source directory to archive.
- * @param {string} outputPath - Path to write the resulting ZIP file.
- * @param {string[]} [exclude=[]] - Array of substrings; any entry whose path includes one of these substrings will be omitted.
- * @returns {Promise<void>} Resolves when the archive has been fully written and closed, rejects on error.
- */
-function createZipArchive(sourceDir, outputPath, exclude = []) {
-  return new Promise((resolve, reject) => {
-    const output = fs.createWriteStream(outputPath);
-    const archive = archiver('zip', { zlib: { level: 9 } });
-
-    output.on('close', resolve);
-    archive.on('error', reject);
-
-    archive.pipe(output);
-
-    const baseName = path.basename(sourceDir);
-    archive.directory(sourceDir, baseName, (entry) => {
-      for (const pattern of exclude) {
-        if (entry.name.includes(pattern)) return false;
-      }
-      return entry;
-    });
-
-    archive.finalize();
-  });
 }
 
 // =============================================================================
