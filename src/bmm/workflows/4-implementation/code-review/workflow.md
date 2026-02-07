@@ -5,6 +5,16 @@ main_config: '{project-root}/_bmad/bmm/config.yaml'
 web_bundle: false
 ---
 
+# Code Review Workflow
+
+## Goal
+Run a rigorous review that validates story claims against code reality, surfaces actionable findings, and synchronizes story/sprint status.
+
+## Workflow Architecture
+- Uses step-file execution for predictable, auditable review flow.
+- Read one step file fully, execute it, then continue to the next step.
+- Do not load later steps before the current step completes.
+
 ## Initialization
 - Load config from `{project-root}/_bmad/bmm/config.yaml`.
 - Resolve variables:
@@ -20,14 +30,12 @@ web_bundle: false
   - `date` (system-generated)
   - `installed_path` = `{project-root}/_bmad/bmm/workflows/4-implementation/code-review`
 
-<workflow>
-  <critical>Communicate all responses in {communication_language} and generate all documents in {document_output_language}</critical>
+## Critical Rules
+- Communicate in `{communication_language}`.
+- Review implementation evidence, not assumptions.
+- Verify acceptance criteria and completed tasks against actual files.
+- Prioritize concrete, actionable findings with severity and evidence.
+- Exclude generated/config-only folders from source-code review scope (`_bmad/`, `_bmad-output/`, `.cursor/`, `.windsurf/`, `.claude/`).
 
-  <step n="1" goal="Perform review">
-    <action>Read and follow instructions at: {installed_path}/instructions.xml</action>
-  </step>
-
-  <step n="2" goal="Validate review checklist">
-    <invoke-task>Validate against checklist at {installed_path}/checklist.md using _bmad/core/tasks/validate-workflow.md</invoke-task>
-  </step>
-</workflow>
+## Execution
+Read fully and follow: `steps/step-01-load-story-and-changes.md`.

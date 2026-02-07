@@ -145,7 +145,7 @@ class ManifestGenerator {
           // Recurse into subdirectories
           const newRelativePath = relativePath ? `${relativePath}/${entry.name}` : entry.name;
           await findWorkflows(fullPath, newRelativePath);
-        } else if (entry.name === 'workflow.md') {
+        } else if (entry.isFile() && /^workflow(?:-[^/]+)?\.md$/.test(entry.name)) {
           // Parse workflow file (MD with YAML frontmatter)
           if (debug) {
             console.log(`[DEBUG] Found workflow file: ${fullPath}`);
@@ -187,10 +187,11 @@ class ManifestGenerator {
 
             if (workflow.name && workflow.description) {
               // Build relative path for installation
+              const relativeWorkflowPath = relativePath ? `${relativePath}/${entry.name}` : entry.name;
               const installPath =
                 moduleName === 'core'
-                  ? `${this.bmadFolderName}/core/workflows/${relativePath}/${entry.name}`
-                  : `${this.bmadFolderName}/${moduleName}/workflows/${relativePath}/${entry.name}`;
+                  ? `${this.bmadFolderName}/core/workflows/${relativeWorkflowPath}`
+                  : `${this.bmadFolderName}/${moduleName}/workflows/${relativeWorkflowPath}`;
 
               // Workflows with standalone: false are filtered out above
               workflows.push({

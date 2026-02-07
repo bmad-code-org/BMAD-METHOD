@@ -159,8 +159,8 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
 
     for (const artifact of artifacts) {
       if (artifact.type === 'workflow-command') {
-        // Default to 'default' template type, but allow override via config
-        const workflowTemplateType = config.md_workflow_template || `${templateType}-workflow`;
+        // Allow explicit override, but normalize to template type prefix (without "-workflow" suffix)
+        const workflowTemplateType = (config.md_workflow_template || templateType).replace(/-workflow$/, '');
 
         // Fall back to default template if the requested one doesn't exist
         const finalTemplateType = 'default-workflow';
