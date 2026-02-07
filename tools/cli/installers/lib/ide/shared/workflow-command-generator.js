@@ -144,8 +144,7 @@ class WorkflowCommandGenerator {
       .replaceAll('{{module}}', workflow.module)
       .replaceAll('{{description}}', workflow.description)
       .replaceAll('{{workflow_path}}', workflowPath)
-      .replaceAll('_bmad', this.bmadFolderName)
-      .replaceAll('_bmad', '_bmad');
+      .replaceAll('_bmad', this.bmadFolderName);
   }
 
   /**
@@ -225,15 +224,15 @@ When running any workflow:
       const match = workflowPath.match(/\/src\/bmm\/(.+)/);
       if (match) {
         transformed = `{project-root}/${this.bmadFolderName}/bmm/${match[1]}`;
-      } else if (workflowPath.includes('/src/core/')) {
-        const match = workflowPath.match(/\/src\/core\/(.+)/);
-        if (match) {
-          transformed = `{project-root}/${this.bmadFolderName}/core/${match[1]}`;
-        }
       }
-
-      return transformed;
+    } else if (workflowPath.includes('/src/core/')) {
+      const match = workflowPath.match(/\/src\/core\/(.+)/);
+      if (match) {
+        transformed = `{project-root}/${this.bmadFolderName}/core/${match[1]}`;
+      }
     }
+
+    return transformed;
   }
 
   async loadWorkflowManifest(bmadDir) {

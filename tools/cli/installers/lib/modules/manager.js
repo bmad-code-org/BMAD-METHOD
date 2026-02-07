@@ -739,8 +739,8 @@ class ModuleManager {
         }
       }
 
-      // Check if this is a workflow file (MD)
-      if (file.endsWith('workflow.md')) {
+      // Check if this is a workflow definition file (workflow.md or workflow-*.md)
+      if (/(^|\/)workflow(?:-[^/]+)?\.md$/.test(file)) {
         await fs.ensureDir(path.dirname(targetFile));
         await this.copyWorkflowFileStripped(sourceFile, targetFile);
       } else {
@@ -1094,7 +1094,7 @@ class ModuleManager {
         // Handle both _bmad placeholder and hardcoded 'bmad'
         // Example: {project-root}/_bmad/bmm/workflows/4-implementation/create-story/workflow.md
         // Or: {project-root}/bmad/bmm/workflows/4-implementation/create-story/workflow.md
-        const sourceMatch = sourceWorkflowPath.match(/\{project-root\}\/(?:_bmad)\/([^/]+)\/workflows\/(.+)/);
+        const sourceMatch = sourceWorkflowPath.match(/\{project-root\}\/(?:_?bmad)\/([^/]+)\/workflows\/(.+)/);
         if (!sourceMatch) {
           console.warn(chalk.yellow(`      Could not parse workflow path: ${sourceWorkflowPath}`));
           continue;
@@ -1103,20 +1103,22 @@ class ModuleManager {
         const [, sourceModule, sourceWorkflowSubPath] = sourceMatch;
 
         // Parse INSTALL workflow path
-        // Handle_bmad
+        // Handle both _bmad placeholder and hardcoded 'bmad'
         // Example: {project-root}/_bmad/bmgd/workflows/4-production/create-story/workflow.md
-        const installMatch = installWorkflowPath.match(/\{project-root\}\/(_bmad)\/([^/]+)\/workflows\/(.+)/);
+        // Or: {project-root}/bmad/bmgd/workflows/4-production/create-story/workflow.md
+        const installMatch = installWorkflowPath.match(/\{project-root\}\/(?:_?bmad)\/([^/]+)\/workflows\/(.+)/);
         if (!installMatch) {
           console.warn(chalk.yellow(`      Could not parse workflow-install path: ${installWorkflowPath}`));
           continue;
         }
 
-        const installWorkflowSubPath = installMatch[2];
+        const [, installModule, installWorkflowSubPath] = installMatch;
 
         const sourceModulePath = getModulePath(sourceModule);
-        const actualSourceWorkflowPath = path.join(sourceModulePath, 'workflows', sourceWorkflowSubPath.replace(/\/workflow\.md$/, ''));
+        const workflowSuffixPattern = /\/workflow(?:-[^/]+)?\.md$/;
+        const actualSourceWorkflowPath = path.join(sourceModulePath, 'workflows', sourceWorkflowSubPath.replace(workflowSuffixPattern, ''));
 
-        const actualDestWorkflowPath = path.join(targetPath, 'workflows', installWorkflowSubPath.replace(/\/workflow\.md$/, ''));
+        const actualDestWorkflowPath = path.join(targetPath, 'workflows', installWorkflowSubPath.replace(workflowSuffixPattern, ''));
 
         // Check if source workflow exists
         if (!(await fs.pathExists(actualSourceWorkflowPath))) {
@@ -1127,7 +1129,7 @@ class ModuleManager {
         // Copy the entire workflow folder
         console.log(
           chalk.dim(
-            `      Vendoring: ${sourceModule}/workflows/${sourceWorkflowSubPath.replace(/\/workflow\.md$/, '')} → ${moduleName}/workflows/${installWorkflowSubPath.replace(/\/workflow\.md$/, '')}`,
+            `      Vendoring: ${sourceModule}/workflows/${sourceWorkflowSubPath.replace(workflowSuffixPattern, '')} → ${installModule}/workflows/${installWorkflowSubPath.replace(workflowSuffixPattern, '')}`,
           ),
         );
 
@@ -1135,10 +1137,11 @@ class ModuleManager {
         // Copy the workflow directory recursively with placeholder replacement
         await this.copyDirectoryWithPlaceholderReplacement(actualSourceWorkflowPath, actualDestWorkflowPath);
 
-        // Update workflow config_source references
-        const workflowMdPath = path.join(actualDestWorkflowPath, 'workflow.md');
-        if (await fs.pathExists(workflowMdPath)) {
-          await this.updateWorkflowConfigSource(workflowMdPath, moduleName);
+        // Update workflow config_source references in vendored workflow definition
+        const destinationFiles = await fs.readdir(actualDestWorkflowPath);
+        const workflowDefinitionFile = destinationFiles.find((name) => /^workflow(?:-[^/]+)?\.md$/.test(name));
+        if (workflowDefinitionFile) {
+          await this.updateWorkflowConfigSource(path.join(actualDestWorkflowPath, workflowDefinitionFile), moduleName);
         }
       }
     }

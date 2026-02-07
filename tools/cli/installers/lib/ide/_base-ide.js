@@ -344,7 +344,7 @@ class BaseIdeSetup {
         // Recursively search subdirectories
         const subWorkflows = await this.findWorkflowFiles(fullPath);
         workflows.push(...subWorkflows);
-      } else if (entry.isFile() && entry.name === 'workflow.md') {
+      } else if (entry.isFile() && /^workflow(?:-[^/]+)?\.md$/.test(entry.name)) {
         // Read workflow file to get name and standalone property
         try {
           const yaml = require('yaml');

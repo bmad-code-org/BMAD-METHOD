@@ -267,7 +267,7 @@ After each category, show the generated rules and present choices:
 
 #### If 'A' (Advanced Elicitation):
 
-- Execute advanced-elicitation.xml with current category rules
+- Execute advanced-elicitation workflow (`{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.md`) with current category rules
 - Process enhanced rules that come back
 - Ask user: "Accept these enhanced rules for {{category}}? (y/n)"
 - If yes: Update content, then return to A/P/C menu
