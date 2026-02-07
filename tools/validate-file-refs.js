@@ -303,8 +303,15 @@ function extractCsvRefs(filePath, content) {
       skip_empty_lines: true,
       relax_column_count: true,
     });
-  } catch {
-    return refs; // Skip unparseable CSV
+  } catch (error) {
+    // No CSV schema validator exists yet (planned as Layer 2c) — surface parse errors visibly.
+    // YAML equivalent (line ~198) defers to validate-agent-schema.js; CSV has no such fallback.
+    const rel = path.relative(PROJECT_ROOT, filePath);
+    console.error(`  [CSV-PARSE-ERROR] ${rel}: ${error.message}`);
+    if (process.env.GITHUB_ACTIONS) {
+      console.log(`::warning file=${rel},line=1::${escapeAnnotation(`CSV parse error: ${error.message}`)}`);
+    }
+    return refs;
   }
 
   // Only process if workflow-file column exists
@@ -421,6 +428,8 @@ if (require.main === module) {
     // Resolve and check
     const broken = [];
 
+    // Verbose mode: print file header for every file with refs (so [OK] lines have context).
+    // Non-verbose mode prints the header later, only when issues are found (see below).
     if (VERBOSE && refs.length > 0) {
       console.log(`\n${relativePath}`);
     }
@@ -430,10 +439,18 @@ if (require.main === module) {
       const resolved = resolveRef(ref);
 
       if (resolved && !fs.existsSync(resolved)) {
-        // For paths without extensions, also check if it's a directory
+        // Extensionless paths may be directory references or partial templates.
+        // If the path has no extension, check whether it exists as a directory.
+        // Flag it if nothing exists at all — likely a real broken reference.
         const hasExt = path.extname(resolved) !== '';
         if (!hasExt) {
-          // Could be a directory reference — skip if not clearly a file
+          if (!fs.existsSync(resolved)) {
+            if (VERBOSE) {
+              console.log(`  [SKIP] ${ref.raw} (no extension, target not found)`);
+            }
+          } else if (VERBOSE) {
+            console.log(`  [OK-DIR] ${ref.raw}`);
+          }
           continue;
         }
         broken.push({ ref, resolved: path.relative(PROJECT_ROOT, resolved) });
@@ -453,6 +470,8 @@ if (require.main === module) {
     // Report issues for this file
     if (broken.length > 0 || leaks.length > 0) {
       filesWithIssues++;
+      // Non-verbose: print file header only when reporting issues.
+      // Verbose mode already printed it above (for every file with refs).
       if (!VERBOSE) {
         console.log(`\n${relativePath}`);
       }
