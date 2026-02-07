@@ -221,6 +221,18 @@ async function runTests() {
       'Workflow generator default BMAD folder matches shared constant',
       `Expected "${BMAD_FOLDER_NAME}", got "${workflowGenerator.bmadFolderName}"`,
     );
+
+    const launcherContent = workflowGenerator.buildLauncherContent('bmm', [
+      {
+        name: 'create-story',
+        displayPath: '{project-root}/_bmad/bmm/workflows/4-implementation/create-story/workflow.md',
+        description: 'Create and validate the next story',
+      },
+    ]);
+    assert(
+      launcherContent.includes('{project-root}/src/core/tasks/workflow.md'),
+      'Workflow launcher includes fallback loader path for workflow task',
+    );
   } catch (error) {
     assert(false, 'Workflow generator default path is valid', error.message);
   }
@@ -379,6 +391,27 @@ async function runTests() {
     assert(offenders.length === 0, 'No workflow.xml references outside XML source', offenders.length > 0 ? offenders.join(', ') : '');
   } catch (error) {
     assert(false, 'Workflow reference guard runs', error.message);
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test 10: Workflow Handler Fallback Guard
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 10: Workflow Handler Fallback Guard${colors.reset}\n`);
+
+  try {
+    const workflowHandlerPath = path.join(projectRoot, 'src', 'utility', 'agent-components', 'handler-workflow.txt');
+    const content = await fs.readFile(workflowHandlerPath, 'utf8');
+
+    assert(content.includes('{project-root}/src/core/tasks/workflow.md'), 'Workflow handler documents fallback loader path');
+    assert(content.includes('Log an error including both attempted paths'), 'Workflow handler requires explicit dual-path error logging');
+    assert(
+      content.includes('Fail fast with a descriptive message and HALT'),
+      'Workflow handler mandates fail-fast behavior when loader is unavailable',
+    );
+  } catch (error) {
+    assert(false, 'Workflow handler fallback guard runs', error.message);
   }
 
   console.log('');
