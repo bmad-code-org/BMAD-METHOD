@@ -1,7 +1,7 @@
 const fs = require('fs-extra');
 const path = require('node:path');
-const chalk = require('chalk');
 const { BMAD_FOLDER_NAME } = require('./shared/path-utils');
+const prompts = require('../../../lib/prompts');
 
 /**
  * IDE Manager - handles IDE-specific setup
@@ -49,7 +49,7 @@ class IdeManager {
    */
   async loadHandlers() {
     // Load custom installer files
-    this.loadCustomInstallerFiles();
+    await this.loadCustomInstallerFiles();
 
     // Load config-driven handlers from platform-codes.yaml
     await this.loadConfigDrivenHandlers();
@@ -59,7 +59,7 @@ class IdeManager {
    * Load custom installer files (unique installation logic)
    * These files have special installation patterns that don't fit the config-driven model
    */
-  loadCustomInstallerFiles() {
+  async loadCustomInstallerFiles() {
     const ideDir = __dirname;
     const customFiles = ['codex.js', 'kilo.js', 'kiro-cli.js'];
 
@@ -81,7 +81,7 @@ class IdeManager {
           }
         }
       } catch (error) {
-        console.log(chalk.yellow(`  Warning: Could not load ${file}: ${error.message}`));
+        await prompts.log.warn(`Warning: Could not load ${file}: ${error.message}`);
       }
     }
   }
@@ -171,8 +171,8 @@ class IdeManager {
     const handler = this.handlers.get(ideName.toLowerCase());
 
     if (!handler) {
-      console.warn(chalk.yellow(`⚠️  IDE '${ideName}' is not yet supported`));
-      console.log(chalk.dim('Supported IDEs:', [...this.handlers.keys()].join(', ')));
+      await prompts.log.warn(`IDE '${ideName}' is not yet supported`);
+      await prompts.log.message(`Supported IDEs: ${[...this.handlers.keys()].join(', ')}`);
       return { success: false, reason: 'unsupported' };
     }
 
@@ -180,7 +180,7 @@ class IdeManager {
       await handler.setup(projectDir, bmadDir, options);
       return { success: true, ide: ideName };
     } catch (error) {
-      console.error(chalk.red(`Failed to setup ${ideName}:`), error.message);
+      await prompts.log.error(`Failed to setup ${ideName}: ${error.message}`);
       return { success: false, error: error.message };
     }
   }
@@ -254,7 +254,7 @@ class IdeManager {
       const handler = this.handlers.get(ideName.toLowerCase());
 
       if (!handler) {
-        console.warn(chalk.yellow(`⚠️  IDE '${ideName}' is not yet supported for custom agent installation`));
+        await prompts.log.warn(`IDE '${ideName}' is not yet supported for custom agent installation`);
         continue;
       }
 
@@ -266,7 +266,7 @@ class IdeManager {
           }
         }
       } catch (error) {
-        console.warn(chalk.yellow(`⚠️  Failed to install ${ideName} launcher: ${error.message}`));
+        await prompts.log.warn(`Failed to install ${ideName} launcher: ${error.message}`);
       }
     }
 

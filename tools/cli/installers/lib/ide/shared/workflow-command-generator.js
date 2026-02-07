@@ -1,7 +1,7 @@
 const path = require('node:path');
 const fs = require('fs-extra');
 const csv = require('csv-parse/sync');
-const chalk = require('chalk');
+const prompts = require('../../../../lib/prompts');
 const { toColonPath, toDashPath, customAgentColonName, customAgentDashName, BMAD_FOLDER_NAME } = require('./path-utils');
 
 /**
@@ -22,7 +22,7 @@ class WorkflowCommandGenerator {
     const workflows = await this.loadWorkflowManifest(bmadDir);
 
     if (!workflows) {
-      console.log(chalk.yellow('Workflow manifest not found. Skipping command generation.'));
+      await prompts.log.warn('Workflow manifest not found. Skipping command generation.');
       return { generated: 0 };
     }
 

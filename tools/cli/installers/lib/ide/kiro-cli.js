@@ -1,7 +1,7 @@
 const path = require('node:path');
 const { BaseIdeSetup } = require('./_base-ide');
-const chalk = require('chalk');
 const fs = require('fs-extra');
+const prompts = require('../../../lib/prompts');
 const yaml = require('yaml');
 
 /**
@@ -29,7 +29,7 @@ class KiroCliSetup extends BaseIdeSetup {
           await fs.remove(path.join(bmadAgentsDir, file));
         }
       }
-      console.log(chalk.dim(`  Cleaned old BMAD agents from ${this.name}`));
+      await prompts.log.message(`  Cleaned old BMAD agents from ${this.name}`);
     }
   }
 
@@ -40,7 +40,7 @@ class KiroCliSetup extends BaseIdeSetup {
    * @param {Object} options - Setup options
    */
   async setup(projectDir, bmadDir, options = {}) {
-    console.log(chalk.cyan(`Setting up ${this.name}...`));
+    await prompts.log.info(`Setting up ${this.name}...`);
 
     await this.cleanup(projectDir);
 
@@ -52,7 +52,7 @@ class KiroCliSetup extends BaseIdeSetup {
     // Create BMad agents from source YAML files
     await this.createBmadAgentsFromSource(agentsDir, projectDir);
 
-    console.log(chalk.green(`✓ ${this.name} configured with BMad agents`));
+    await prompts.log.success(`${this.name} configured with BMad agents`);
   }
 
   /**
@@ -70,7 +70,7 @@ class KiroCliSetup extends BaseIdeSetup {
       try {
         await this.processAgentFile(agentFile, agentsDir, projectDir);
       } catch (error) {
-        console.warn(chalk.yellow(`⚠️  Failed to process ${agentFile}: ${error.message}`));
+        await prompts.log.warn(`Failed to process ${agentFile}: ${error.message}`);
       }
     }
   }

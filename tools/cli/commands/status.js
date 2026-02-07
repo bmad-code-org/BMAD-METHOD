@@ -1,5 +1,5 @@
-const chalk = require('chalk');
 const path = require('node:path');
+const prompts = require('../lib/prompts');
 const { Installer } = require('../installers/lib/core/installer');
 const { Manifest } = require('../installers/lib/core/manifest');
 const { UI } = require('../lib/ui');
@@ -21,9 +21,9 @@ module.exports = {
       // Check if bmad directory exists
       const fs = require('fs-extra');
       if (!(await fs.pathExists(bmadDir))) {
-        console.log(chalk.yellow('No BMAD installation found in the current directory.'));
-        console.log(chalk.dim(`Expected location: ${bmadDir}`));
-        console.log(chalk.dim('\nRun "bmad install" to set up a new installation.'));
+        await prompts.log.warn('No BMAD installation found in the current directory.');
+        await prompts.log.message(`Expected location: ${bmadDir}`);
+        await prompts.log.message('Run "bmad install" to set up a new installation.');
         process.exit(0);
         return;
       }
@@ -32,8 +32,8 @@ module.exports = {
       const manifestData = await manifest._readRaw(bmadDir);
 
       if (!manifestData) {
-        console.log(chalk.yellow('No BMAD installation manifest found.'));
-        console.log(chalk.dim('\nRun "bmad install" to set up a new installation.'));
+        await prompts.log.warn('No BMAD installation manifest found.');
+        await prompts.log.message('Run "bmad install" to set up a new installation.');
         process.exit(0);
         return;
       }
@@ -46,7 +46,7 @@ module.exports = {
       const availableUpdates = await manifest.checkForUpdates(bmadDir);
 
       // Display status
-      ui.displayStatus({
+      await ui.displayStatus({
         installation,
         modules,
         availableUpdates,
@@ -55,9 +55,9 @@ module.exports = {
 
       process.exit(0);
     } catch (error) {
-      console.error(chalk.red('Status check failed:'), error.message);
+      await prompts.log.error(`Status check failed: ${error.message}`);
       if (process.env.BMAD_DEBUG) {
-        console.error(chalk.dim(error.stack));
+        await prompts.log.message(error.stack);
       }
       process.exit(1);
     }

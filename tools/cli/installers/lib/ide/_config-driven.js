@@ -1,7 +1,7 @@
 const path = require('node:path');
 const fs = require('fs-extra');
-const chalk = require('chalk');
 const { BaseIdeSetup } = require('./_base-ide');
+const prompts = require('../../../lib/prompts');
 const { AgentCommandGenerator } = require('./shared/agent-command-generator');
 const { WorkflowCommandGenerator } = require('./shared/workflow-command-generator');
 const { TaskToolCommandGenerator } = require('./shared/task-tool-command-generator');
@@ -34,7 +34,7 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
    * @returns {Promise<Object>} Setup result
    */
   async setup(projectDir, bmadDir, options = {}) {
-    console.log(chalk.cyan(`Setting up ${this.name}...`));
+    await prompts.log.info(`Setting up ${this.name}...`);
 
     // Clean up any old BMAD installation first
     await this.cleanup(projectDir);
@@ -102,7 +102,7 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
       results.tools = taskToolResult.tools || 0;
     }
 
-    this.printSummary(results, target_dir);
+    await this.printSummary(results, target_dir);
     return { success: true, results };
   }
 
@@ -439,18 +439,13 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
    * @param {Object} results - Installation results
    * @param {string} targetDir - Target directory (relative)
    */
-  printSummary(results, targetDir) {
-    console.log(chalk.green(`\n✓ ${this.name} configured:`));
-    if (results.agents > 0) {
-      console.log(chalk.dim(`  - ${results.agents} agents installed`));
-    }
-    if (results.workflows > 0) {
-      console.log(chalk.dim(`  - ${results.workflows} workflow commands generated`));
-    }
-    if (results.tasks > 0 || results.tools > 0) {
-      console.log(chalk.dim(`  - ${results.tasks + results.tools} task/tool commands generated`));
-    }
-    console.log(chalk.dim(`  - Destination: ${targetDir}`));
+  async printSummary(results, targetDir) {
+    const parts = [];
+    if (results.agents > 0) parts.push(`${results.agents} agents`);
+    if (results.workflows > 0) parts.push(`${results.workflows} workflows`);
+    if (results.tasks > 0) parts.push(`${results.tasks} tasks`);
+    if (results.tools > 0) parts.push(`${results.tools} tools`);
+    await prompts.log.success(`${this.name} configured: ${parts.join(', ')} → ${targetDir}`);
   }
 
   /**
@@ -514,7 +509,7 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
     }
 
     if (removedCount > 0) {
-      console.log(chalk.dim(`  Cleaned ${removedCount} BMAD files from ${targetDir}`));
+      await prompts.log.message(`  Cleaned ${removedCount} BMAD files from ${targetDir}`);
     }
   }
 }

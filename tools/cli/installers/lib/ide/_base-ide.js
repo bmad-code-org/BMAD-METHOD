@@ -1,7 +1,7 @@
 const path = require('node:path');
 const fs = require('fs-extra');
-const chalk = require('chalk');
 const { XmlHandler } = require('../../../lib/xml-handler');
+const prompts = require('../../../lib/prompts');
 const { getSourcePath } = require('../../../lib/project-root');
 const { BMAD_FOLDER_NAME } = require('./shared/path-utils');
 
@@ -61,7 +61,7 @@ class BaseIdeSetup {
         const bmadRulesPath = path.join(configPath, BMAD_FOLDER_NAME);
         if (await fs.pathExists(bmadRulesPath)) {
           await fs.remove(bmadRulesPath);
-          console.log(chalk.dim(`Removed ${this.name} BMAD configuration`));
+          await prompts.log.message(`Removed ${this.name} BMAD configuration`);
         }
       }
     }
