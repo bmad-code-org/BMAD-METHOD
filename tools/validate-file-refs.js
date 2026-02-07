@@ -425,14 +425,11 @@ if (require.main === module) {
       refs = extractMarkdownRefs(filePath, content);
     }
 
-    // Resolve and check
+    // Resolve and classify all refs before printing anything.
+    // This avoids the confusing pattern of printing headers at two different
+    // times depending on verbosity — collect first, then print once.
     const broken = [];
-
-    // Verbose mode: print file header for every file with refs (so [OK] lines have context).
-    // Non-verbose mode prints the header later, only when issues are found (see below).
-    if (VERBOSE && refs.length > 0) {
-      console.log(`\n${relativePath}`);
-    }
+    const ok = [];
 
     for (const ref of refs) {
       totalRefs++;
@@ -444,12 +441,10 @@ if (require.main === module) {
         // Flag it if nothing exists at all — likely a real broken reference.
         const hasExt = path.extname(resolved) !== '';
         if (!hasExt) {
-          if (!fs.existsSync(resolved)) {
-            if (VERBOSE) {
-              console.log(`  [SKIP] ${ref.raw} (no extension, target not found)`);
-            }
-          } else if (VERBOSE) {
-            console.log(`  [OK-DIR] ${ref.raw}`);
+          if (fs.existsSync(resolved)) {
+            ok.push({ ref, tag: 'OK-DIR' });
+          } else {
+            ok.push({ ref, tag: 'SKIP', note: 'no extension, target not found' });
           }
           continue;
         }
@@ -458,8 +453,8 @@ if (require.main === module) {
         continue;
       }
 
-      if (VERBOSE && resolved) {
-        console.log(`  [OK] ${ref.raw}`);
+      if (resolved) {
+        ok.push({ ref, tag: 'OK' });
       }
     }
 
@@ -467,13 +462,18 @@ if (require.main === module) {
     const leaks = checkAbsolutePathLeaks(filePath, content);
     totalLeaks += leaks.length;
 
-    // Report issues for this file
-    if (broken.length > 0 || leaks.length > 0) {
+    // Print results — file header appears once, in one place
+    const hasFileIssues = broken.length > 0 || leaks.length > 0;
+
+    if (hasFileIssues) {
       filesWithIssues++;
-      // Non-verbose: print file header only when reporting issues.
-      // Verbose mode already printed it above (for every file with refs).
-      if (!VERBOSE) {
-        console.log(`\n${relativePath}`);
+      console.log(`\n${relativePath}`);
+
+      if (VERBOSE) {
+        for (const { ref, tag, note } of ok) {
+          const suffix = note ? ` (${note})` : '';
+          console.log(`  [${tag}] ${ref.raw}${suffix}`);
+        }
       }
 
       for (const { ref, resolved } of broken) {
@@ -493,6 +493,12 @@ if (require.main === module) {
         if (process.env.GITHUB_ACTIONS) {
           console.log(`::warning file=${relativePath},line=${leak.line}::${escapeAnnotation(`Absolute path leak: ${leak.content}`)}`);
         }
+      }
+    } else if (VERBOSE && refs.length > 0) {
+      console.log(`\n${relativePath}`);
+      for (const { ref, tag, note } of ok) {
+        const suffix = note ? ` (${note})` : '';
+        console.log(`  [${tag}] ${ref.raw}${suffix}`);
       }
     }
   }
