@@ -1,0 +1,95 @@
+{
+    "name": "bmad-copilot",
+    "displayName": "BMAD Copilot",
+    "description": "Integrate BMAD-METHOD agents and workflows into GitHub Copilot Chat via slash commands.",
+    "version": "0.1.0",
+    "publisher": "bmad-code-org",
+    "license": "MIT",
+    "engines": {
+        "vscode": "^1.93.0"
+    },
+    "categories": [
+        "Chat"
+    ],
+    "keywords": [
+        "bmad",
+        "copilot",
+        "chat",
+        "agents",
+        "workflows"
+    ],
+    "extensionDependencies": [
+        "github.copilot-chat"
+    ],
+    "activationEvents": [],
+    "main": "./out/extension.js",
+    "contributes": {
+        "chatParticipants": [
+            {
+                "id": "bmad-copilot.bmad",
+                "name": "bmad",
+                "fullName": "BMAD Method",
+                "description": "Run BMAD agents and workflows in Copilot Chat. Try /help to get started.",
+                "isSticky": true,
+                "commands": [
+                    {
+                        "name": "help",
+                        "description": "Show available BMAD commands and usage examples"
+                    },
+                    {
+                        "name": "doctor",
+                        "description": "Diagnose BMAD installation: workspace path, detected files, errors"
+                    },
+                    {
+                        "name": "list",
+                        "description": "List available agents or workflows. Usage: /list agents | /list workflows"
+                    },
+                    {
+                        "name": "run",
+                        "description": "Run an agent or workflow. Usage: /run agent <name> | /run workflow <name> | /run <name>"
+                    },
+                    {
+                        "name": "agents",
+                        "description": "List agents or run one. Usage: /agents | /agents <name> \"<task>\""
+                    },
+                    {
+                        "name": "workflows",
+                        "description": "List workflows or run one. Usage: /workflows | /workflows <name> \"<task>\""
+                    }
+                ]
+            }
+        ],
+        "configuration": {
+            "title": "BMAD Copilot",
+            "properties": {
+                "bmad.rootPath": {
+                    "type": "string",
+                    "default": "",
+                    "description": "Explicit path to the BMAD root directory (e.g. _bmad). Leave empty for auto-detection."
+                },
+                "bmad.autoDetect": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Automatically detect BMAD installation in the workspace."
+                }
+            }
+        },
+        "commands": [
+            {
+                "command": "bmad-copilot.copyToClipboard",
+                "title": "BMAD: Copy Prompt to Clipboard"
+            }
+        ]
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "lint": "eslint src --ext ts"
+    },
+    "devDependencies": {
+        "@types/vscode": "^1.93.0",
+        "@types/node": "^20.0.0",
+        "typescript": "^5.5.0"
+    }
+}
