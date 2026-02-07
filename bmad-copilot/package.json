@@ -85,11 +85,13 @@
         "vscode:prepublish": "npm run compile",
         "compile": "tsc -p ./",
         "watch": "tsc -watch -p ./",
-        "lint": "eslint src --ext ts"
+        "lint": "eslint src/"
     },
     "devDependencies": {
         "@types/vscode": "^1.93.0",
         "@types/node": "^20.0.0",
-        "typescript": "^5.5.0"
+        "eslint": "^9.0.0",
+        "typescript": "^5.5.0",
+        "typescript-eslint": "^8.0.0"
     }
 }
