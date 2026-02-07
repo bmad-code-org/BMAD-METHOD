@@ -36,7 +36,35 @@
     </step>
 
     <step n="3" title="Present Findings">
-      <action>Output findings as a Markdown list (descriptions only)</action>
+      <action>Classify each finding by severity: CRITICAL, HIGH, MEDIUM, or LOW</action>
+      <action>Order findings by severity (CRITICAL first, LOW last)</action>
+      <action>Number findings sequentially</action>
+      <action>Include file path and line number where applicable</action>
+      <action>Output findings using the format below</action>
+
+      <output-format>
+        ## Adversarial Review Findings
+
+        **Findings:** {count}
+        - Critical: {n} | High: {n} | Medium: {n} | Low: {n}
+
+        1. **{SEVERITY}** - `{location}` - {description}
+        2. **{SEVERITY}** - {description}
+        ...
+      </output-format>
+
+      <example title="Correct output format">
+        ## Adversarial Review Findings
+
+        **Findings:** 5
+        - Critical: 0 | High: 2 | Medium: 2 | Low: 1
+
+        1. **HIGH** - `login.ts:47` - No rate limiting on failed authentication attempts allows brute force attacks
+        2. **HIGH** - Session token stored in localStorage instead of httpOnly cookie, vulnerable to XSS exfiltration
+        3. **MEDIUM** - Password validation only enforced client-side; server accepts any string
+        4. **MEDIUM** - Failed login attempts not written to audit log
+        5. **LOW** - Magic number `3600` should be named constant `SESSION_TIMEOUT_SECONDS`
+      </example>
     </step>
   </flow>
 
