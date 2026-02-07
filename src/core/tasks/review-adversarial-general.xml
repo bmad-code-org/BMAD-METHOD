@@ -45,8 +45,8 @@
       <output-format>
         ## Adversarial Review Findings
 
-        **Findings:** {count}
-        - Critical: {n} | High: {n} | Medium: {n} | Low: {n}
+        **Findings:** [total]
+        - Critical: [count] | High: [count] | Medium: [count] | Low: [count]
 
         1. **{SEVERITY}** - `{location}` - {description}
         2. **{SEVERITY}** - {description}
