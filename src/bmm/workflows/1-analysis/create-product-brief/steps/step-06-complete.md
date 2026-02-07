@@ -128,7 +128,7 @@ Recap that the brief captures everything needed to guide subsequent product deve
 
 ### 5. Suggest next steps
 
-Product Brief complete. Read fully and follow: `_bmad/core/tasks/bmad-help.md` with argument `Validate PRD`.
+Product Brief complete. Read fully and follow: `_bmad/core/tasks/help.md` with argument `Validate PRD`.
 
 ---
 
