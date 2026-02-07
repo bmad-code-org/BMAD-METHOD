@@ -42,7 +42,9 @@ z*/
 _bmad
 _bmad-output
 .clinerules
-.augment
+# .augment/ is gitignored except tracked config files — add exceptions explicitly
+.augment/*
+!.augment/code_review_guidelines.yaml
 .crush
 .cursor
 .iflow

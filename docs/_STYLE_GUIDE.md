@@ -1,5 +1,6 @@
 ---
 title: "Documentation Style Guide"
+description: Project-specific documentation conventions based on Google style and Diataxis structure
 ---
 
 This project adheres to the [Google Developer Documentation Style Guide](https://developers.google.com/style) and uses [Diataxis](https://diataxis.fr/) to structure content. Only project-specific conventions follow.

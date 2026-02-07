@@ -1,5 +1,6 @@
 ---
 title: "BMad Method Customization Guide"
+description: Customize agents, workflows, and modules while preserving update compatibility
 ---
 
 The ability to customize the BMad Method and its core to your needs, while still being able to get updates and enhancements is a critical idea within the BMad Ecosystem.
