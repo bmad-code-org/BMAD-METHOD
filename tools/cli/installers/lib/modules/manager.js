@@ -1277,16 +1277,31 @@ class ModuleManager {
       }
     }
 
-    const installerPath = path.join(sourcePath, '_module-installer', 'installer.js');
+    const installerDir = path.join(sourcePath, '_module-installer');
+    // Prefer .cjs (always CommonJS) then fall back to .js
+    const cjsPath = path.join(installerDir, 'installer.cjs');
+    const jsPath = path.join(installerDir, 'installer.js');
+    const hasCjs = await fs.pathExists(cjsPath);
+    const installerPath = hasCjs ? cjsPath : jsPath;
 
     // Check if module has a custom installer
-    if (!(await fs.pathExists(installerPath))) {
+    if (!hasCjs && !(await fs.pathExists(jsPath))) {
       return; // No custom installer
     }
 
     try {
-      // Load the module installer
-      const moduleInstaller = require(installerPath);
+      // .cjs files are always CommonJS and safe to require().
+      // .js files may be ESM (when the package sets "type":"module"),
+      // so use dynamic import() which handles both CJS and ESM.
+      let moduleInstaller;
+      if (hasCjs) {
+        moduleInstaller = require(installerPath);
+      } else {
+        const { pathToFileURL } = require('node:url');
+        const imported = await import(pathToFileURL(installerPath).href);
+        // CJS module.exports lands on .default, ESM named exports are top-level
+        moduleInstaller = imported.default && typeof imported.default === 'object' ? imported.default : imported;
+      }
 
       if (typeof moduleInstaller.install === 'function') {
         // Get project root (parent of bmad directory)
