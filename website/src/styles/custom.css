@@ -479,16 +479,10 @@ blockquote {
 }
 
 /* ============================================
-   FOOTER - Minimal styling
+   FOOTER - No custom styling needed
+   The only <footer> in Starlight is the content footer
+   (meta/pagination), which should stay transparent.
    ============================================ */
-footer {
-  background-color: var(--sl-color-black);
-  border-top: 1px solid var(--sl-color-hairline);
-}
-
-:root[data-theme='dark'] footer {
-  background-color: #020617;
-}
 
 /* ============================================
    RESPONSIVE ADJUSTMENTS

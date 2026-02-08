@@ -27,6 +27,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          # Full history needed for Starlight's lastUpdated timestamps (git log)
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4

@@ -7,11 +7,13 @@ sidebar:
 
 Use the `shard-doc` tool if you need to split large markdown files into smaller, organized files for better context management.
 
-This is no longer recommended, and soon with updated workflows and most major llms and tools supporting sub processes this will be unnecessary.
+:::caution[Deprecated]
+This is no longer recommended, and soon with updated workflows and most major LLMs and tools supporting subprocesses this will be unnecessary.
+:::
 
 ## When to Use This
 
-Only use this if you notice your chosen tool / model combination are failing to load and read all the documents as input when needed.
+Only use this if you notice your chosen tool / model combination is failing to load and read all the documents as input when needed.
 
 ## What is Document Sharding?
 

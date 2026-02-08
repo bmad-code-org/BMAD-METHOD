@@ -46,8 +46,8 @@ You have two primary options depending on the scope of changes:
 
 | Scope                          | Recommended Approach                                                                                                          |
 | ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
-| **Small updates or additions** | Use `quick-flow-solo-dev` to create a tech-spec and implement the change. The full four-phase BMad method is likely overkill. |
-| **Major changes or additions** | Start with the BMad method, applying as much or as little rigor as needed.                                                    |
+| **Small updates or additions** | Use `quick-flow-solo-dev` to create a tech-spec and implement the change. The full four-phase BMad Method is likely overkill. |
+| **Major changes or additions** | Start with the BMad Method, applying as much or as little rigor as needed.                                                    |
 
 ### During PRD Creation
 

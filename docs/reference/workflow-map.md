@@ -25,7 +25,7 @@ Explore the problem space and validate ideas before committing to planning.
 
 | Workflow               | Purpose                                                                    | Produces                  |
 | ---------------------- | -------------------------------------------------------------------------- | ------------------------- |
-| `brainstorm`           | Brainstorm Project Ideas with guided facilitation of a brainstorming coach | `brainstorming-report.md` |
+| `brainstorming`        | Brainstorm Project Ideas with guided facilitation of a brainstorming coach | `brainstorming-report.md` |
 | `research`             | Validate market, technical, or domain assumptions                          | Research findings         |
 | `create-product-brief` | Capture strategic vision                                                   | `product-brief.md`        |
 

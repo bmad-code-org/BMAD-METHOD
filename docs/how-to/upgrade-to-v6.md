@@ -31,7 +31,7 @@ When v4 is detected, you can:
 - Allow the installer to back up and remove `.bmad-method`
 - Exit and handle cleanup manually
 
-If you named your bmad method folder something else - you will need to manual remove the folder yourself.
+If you named your bmad method folder something else - you will need to manually remove the folder yourself.
 
 ### 3. Clean Up IDE Commands
 
@@ -67,14 +67,14 @@ If you have stories created or implemented:
 
 ```text
 your-project/
-└── _bmad/               # Single installation folder
-    ├── _config/         # Your customizations
-    │   └── agents/      # Agent customization files
-    ├── core/            # Universal core framework
-    ├── bmm/             # BMad Method module
-    ├── bmb/             # BMad Builder
-    └── cis/             # Creative Intelligence Suite
-├── _bmad-output/        # Output folder (was doc folder in v4)
+├── _bmad/               # Single installation folder
+│   ├── _config/         # Your customizations
+│   │   └── agents/      # Agent customization files
+│   ├── core/            # Universal core framework
+│   ├── bmm/             # BMad Method module
+│   ├── bmb/             # BMad Builder
+│   └── cis/             # Creative Intelligence Suite
+└── _bmad-output/        # Output folder (was doc folder in v4)
 ```
 
 ## Module Migration

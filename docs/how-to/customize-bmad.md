@@ -140,7 +140,7 @@ The installer detects the existing installation and offers these options:
 | --------------------- | ------------------------------------------------------------------- |
 | **Quick Update**      | Updates all modules to the latest version and recompiles all agents |
 | **Recompile Agents**  | Applies customizations only, without updating module files          |
-| **Modify BMAD Installation** | Full installation flow for adding or removing modules        |
+| **Modify BMad Installation** | Full installation flow for adding or removing modules        |
 
 For customization-only changes, **Recompile Agents** is the fastest option.
 
