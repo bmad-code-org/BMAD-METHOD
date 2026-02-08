@@ -18,6 +18,7 @@ web_bundle: false
   - `sprint_status` = `{implementation_artifacts}/sprint-status.yaml`
   - `date` (system-generated)
   - `installed_path` = `{project-root}/_bmad/bmm/workflows/4-implementation/correct-course`
+  - Note: `installed_path` targets the installed runtime tree under `_bmad/...`; source authoring files are in `src/bmm/workflows/4-implementation/correct-course/...`.
   - `default_output_file` = `{planning_artifacts}/sprint-change-proposal-{date}.md`
 
 <workflow>
