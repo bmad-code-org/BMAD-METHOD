@@ -3,6 +3,22 @@ name: code-review
 description: "Perform an adversarial senior developer code review with concrete findings across quality, tests, architecture, security, and performance"
 main_config: '{project-root}/_bmad/bmm/config.yaml'
 web_bundle: false
+input_file_patterns:
+  architecture:
+    description: "System architecture for review context"
+    whole: "{planning_artifacts}/*architecture*.md"
+    sharded: "{planning_artifacts}/*architecture*/*.md"
+    load_strategy: "FULL_LOAD"
+  ux_design:
+    description: "UX design specification (if UI review)"
+    whole: "{planning_artifacts}/*ux*.md"
+    sharded: "{planning_artifacts}/*ux*/*.md"
+    load_strategy: "FULL_LOAD"
+  epics:
+    description: "Epic and story requirements for review context"
+    whole: "{planning_artifacts}/*epic*.md"
+    sharded: "{planning_artifacts}/*epic*/*.md"
+    load_strategy: "FULL_LOAD"
 ---
 
 # Code Review Workflow

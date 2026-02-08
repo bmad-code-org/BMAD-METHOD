@@ -3,6 +3,28 @@ name: create-story
 description: "Create the next user story from epics+stories with enhanced context analysis and direct ready-for-dev marking"
 main_config: '{project-root}/_bmad/bmm/config.yaml'
 web_bundle: false
+input_file_patterns:
+  prd:
+    description: "PRD (fallback - epics file should have most content)"
+    whole: "{planning_artifacts}/*prd*.md"
+    sharded: "{planning_artifacts}/*prd*/*.md"
+    load_strategy: "SELECTIVE_LOAD"
+  architecture:
+    description: "Architecture (fallback - epics file should have relevant sections)"
+    whole: "{planning_artifacts}/*architecture*.md"
+    sharded: "{planning_artifacts}/*architecture*/*.md"
+    load_strategy: "SELECTIVE_LOAD"
+  ux:
+    description: "UX design (fallback - epics file should have relevant sections)"
+    whole: "{planning_artifacts}/*ux*.md"
+    sharded: "{planning_artifacts}/*ux*/*.md"
+    load_strategy: "SELECTIVE_LOAD"
+  epics:
+    description: "Enhanced epics+stories file with BDD and source hints"
+    whole: "{planning_artifacts}/*epic*.md"
+    sharded_index: "{planning_artifacts}/*epic*/index.md"
+    sharded_single: "{planning_artifacts}/*epic*/epic-{{epic_num}}.md"
+    load_strategy: "SELECTIVE_LOAD"
 ---
 
 ## Initialization

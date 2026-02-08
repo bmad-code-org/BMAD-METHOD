@@ -58,6 +58,7 @@ test('bmm-style.csv: extracts workflow-file refs with trailing commas', () => {
   const { fullPath, content } = loadFixture('valid/bmm-style.csv');
   const refs = extractCsvRefs(fullPath, content);
   assert(refs.length === 2, `Expected 2 refs, got ${refs.length}`);
+  // Keep this legacy .yaml reference to verify backward-compatible CSV parsing.
   assert(refs[0].raw === '_bmad/bmm/workflows/document-project/workflow.yaml', `Wrong raw[0]: ${refs[0].raw}`);
   assert(refs[1].raw === '_bmad/core/workflows/brainstorming/workflow.md', `Wrong raw[1]: ${refs[1].raw}`);
   assert(refs[0].type === 'project-root', `Wrong type: ${refs[0].type}`);

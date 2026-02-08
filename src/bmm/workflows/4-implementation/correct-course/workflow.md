@@ -3,6 +3,35 @@ name: correct-course
 description: "Navigate significant changes during sprint execution by analyzing impact, proposing solutions, and routing for implementation"
 main_config: '{project-root}/_bmad/bmm/config.yaml'
 web_bundle: false
+input_file_patterns:
+  prd:
+    description: "Product requirements for impact analysis"
+    whole: "{planning_artifacts}/*prd*.md"
+    sharded: "{planning_artifacts}/*prd*/*.md"
+    load_strategy: "FULL_LOAD"
+  epics:
+    description: "All epics to analyze change impact"
+    whole: "{planning_artifacts}/*epic*.md"
+    sharded: "{planning_artifacts}/*epic*/*.md"
+    load_strategy: "FULL_LOAD"
+  architecture:
+    description: "System architecture and decisions"
+    whole: "{planning_artifacts}/*architecture*.md"
+    sharded: "{planning_artifacts}/*architecture*/*.md"
+    load_strategy: "FULL_LOAD"
+  ux_design:
+    description: "UX design specification (if UI impacts)"
+    whole: "{planning_artifacts}/*ux*.md"
+    sharded: "{planning_artifacts}/*ux*/*.md"
+    load_strategy: "FULL_LOAD"
+  tech_spec:
+    description: "Technical specification"
+    whole: "{planning_artifacts}/*tech-spec*.md"
+    load_strategy: "FULL_LOAD"
+  document_project:
+    description: "Brownfield project documentation (optional)"
+    sharded: "{project_knowledge}/index.md"
+    load_strategy: "INDEX_GUIDED"
 ---
 
 ## Initialization

@@ -28,7 +28,7 @@ When called during template workflow processing:
 
 <workflow>
   <step n="1" title="Method Registry Loading">
-    <action>Load and read {{methods}} and {{agent-party}}</action>
+    <action>Load and read {{methods}} and {{agent_manifest}}</action>
 
     <csv-structure>
       <i>category: Method grouping (core, structural, risk, etc.)</i>
