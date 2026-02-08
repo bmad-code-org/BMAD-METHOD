@@ -809,12 +809,28 @@ class ModuleManager {
       return content;
     }
 
-    const frontmatter = frontmatterMatch[1]
-      .split('\n')
-      .filter((line) => !line.trim().startsWith('web_bundle:'))
-      .join('\n');
+    try {
+      const yaml = require('yaml');
+      const parsed = yaml.parse(frontmatterMatch[1]);
 
-    return content.replace(frontmatterMatch[0], `---\n${frontmatter}\n---`);
+      if (!parsed || typeof parsed !== 'object' || !Object.prototype.hasOwnProperty.call(parsed, 'web_bundle')) {
+        return content;
+      }
+
+      delete parsed.web_bundle;
+      const serialized = yaml
+        .stringify(parsed, {
+          indent: 2,
+          lineWidth: 0,
+          sortMapEntries: false,
+        })
+        .trimEnd();
+
+      return content.replace(frontmatterMatch[0], `---\n${serialized}\n---`);
+    } catch (error) {
+      console.warn(`Warning: Failed to parse workflow frontmatter for web_bundle removal: ${error.message}`);
+      return content;
+    }
   }
 
   /**

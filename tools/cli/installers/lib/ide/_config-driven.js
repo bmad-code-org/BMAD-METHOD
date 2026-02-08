@@ -89,9 +89,10 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
     // Install tasks and tools
     if (!artifact_types || artifact_types.includes('tasks') || artifact_types.includes('tools')) {
       const taskToolGen = new TaskToolCommandGenerator();
-      const taskToolResult = await taskToolGen.generateDashTaskToolCommands(projectDir, bmadDir, targetPath);
-      results.tasks = taskToolResult.tasks || 0;
-      results.tools = taskToolResult.tools || 0;
+      const { artifacts } = await taskToolGen.collectTaskToolArtifacts(bmadDir);
+      const taskToolResult = await this.writeTaskToolArtifacts(targetPath, artifacts, template_type, config, artifact_types);
+      results.tasks = taskToolResult.tasks;
+      results.tools = taskToolResult.tools;
     }
 
     await this.printSummary(results, target_dir, options);
@@ -132,12 +133,12 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
    */
   async writeAgentArtifacts(targetPath, artifacts, templateType, config = {}) {
     // Try to load platform-specific template, fall back to default-agent
-    const template = await this.loadTemplate(templateType, 'agent', config, 'default-agent');
+    const { template, extension } = await this.loadTemplateWithMetadata(templateType, 'agent', config, 'default-agent');
     let count = 0;
 
     for (const artifact of artifacts) {
       const content = this.renderTemplate(template, artifact);
-      const filename = this.generateFilename(artifact, 'agent');
+      const filename = this.generateFilename(artifact, 'agent', extension);
       const filePath = path.join(targetPath, filename);
       await this.writeFile(filePath, content);
       count++;
@@ -164,9 +165,9 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
 
         // Fall back to default template if the requested one doesn't exist
         const finalTemplateType = 'default-workflow';
-        const template = await this.loadTemplate(workflowTemplateType, 'workflow', config, finalTemplateType);
+        const { template, extension } = await this.loadTemplateWithMetadata(workflowTemplateType, 'workflow', config, finalTemplateType);
         const content = this.renderTemplate(template, artifact);
-        const filename = this.generateFilename(artifact, 'workflow');
+        const filename = this.generateFilename(artifact, 'workflow', extension);
         const filePath = path.join(targetPath, filename);
         await this.writeFile(filePath, content);
         count++;
@@ -174,6 +175,51 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
     }
 
     return count;
+  }
+
+  /**
+   * Write task/tool artifacts to target directory
+   * @param {string} targetPath - Target directory path
+   * @param {Array} artifacts - Task/tool artifacts
+   * @param {string} templateType - Template type to use
+   * @param {Object} config - Installation configuration
+   * @param {Array<string>} artifactTypes - Optional include filter from installer config
+   * @returns {Promise<{tasks:number,tools:number}>} Count of artifacts written
+   */
+  async writeTaskToolArtifacts(targetPath, artifacts, templateType, config = {}, artifactTypes = null) {
+    let tasks = 0;
+    let tools = 0;
+    const templateCache = new Map();
+
+    for (const artifact of artifacts) {
+      if (artifact.type !== 'task' && artifact.type !== 'tool') {
+        continue;
+      }
+
+      if (artifactTypes && !artifactTypes.includes(`${artifact.type}s`)) {
+        continue;
+      }
+
+      const cacheKey = `${templateType}:${artifact.type}`;
+      if (!templateCache.has(cacheKey)) {
+        const loaded = await this.loadTemplateWithMetadata(templateType, artifact.type, config, `default-${artifact.type}`);
+        templateCache.set(cacheKey, loaded);
+      }
+
+      const { template, extension } = templateCache.get(cacheKey);
+      const content = this.renderTemplate(template, artifact);
+      const filename = this.generateFilename(artifact, artifact.type, extension);
+      const filePath = path.join(targetPath, filename);
+      await this.writeFile(filePath, content);
+
+      if (artifact.type === 'task') {
+        tasks++;
+      } else {
+        tools++;
+      }
+    }
+
+    return { tasks, tools };
   }
 
   /**
@@ -185,31 +231,58 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
    * @returns {Promise<string>} Template content
    */
   async loadTemplate(templateType, artifactType, config = {}, fallbackTemplateType = null) {
+    const { template } = await this.loadTemplateWithMetadata(templateType, artifactType, config, fallbackTemplateType);
+    return template;
+  }
+
+  /**
+   * Load template with file extension metadata for extension-aware command generation
+   * @param {string} templateType - Template type (claude, windsurf, etc.)
+   * @param {string} artifactType - Artifact type (agent, workflow, task, tool)
+   * @param {Object} config - Installation configuration
+   * @param {string} fallbackTemplateType - Fallback template type if requested template not found
+   * @returns {Promise<{template:string, extension:string}>} Template content and extension
+   */
+  async loadTemplateWithMetadata(templateType, artifactType, config = {}, fallbackTemplateType = null) {
     const { header_template, body_template } = config;
+    const supportedExtensions = ['.md', '.toml', '.yaml', '.yml', '.json', '.txt'];
 
     // Check for separate header/body templates
     if (header_template || body_template) {
-      return await this.loadSplitTemplates(templateType, artifactType, header_template, body_template);
+      const template = await this.loadSplitTemplates(templateType, artifactType, header_template, body_template);
+      return { template, extension: '.md' };
     }
 
-    // Load combined template
-    const templateName = `${templateType}-${artifactType}.md`;
-    const templatePath = path.join(__dirname, 'templates', 'combined', templateName);
-
-    if (await fs.pathExists(templatePath)) {
-      return await fs.readFile(templatePath, 'utf8');
+    // Load combined template with extension detection
+    for (const extension of supportedExtensions) {
+      const templateName = `${templateType}-${artifactType}${extension}`;
+      const templatePath = path.join(__dirname, 'templates', 'combined', templateName);
+      if (await fs.pathExists(templatePath)) {
+        return {
+          template: await fs.readFile(templatePath, 'utf8'),
+          extension,
+        };
+      }
     }
 
     // Fall back to default template (if provided)
     if (fallbackTemplateType) {
-      const fallbackPath = path.join(__dirname, 'templates', 'combined', `${fallbackTemplateType}.md`);
-      if (await fs.pathExists(fallbackPath)) {
-        return await fs.readFile(fallbackPath, 'utf8');
+      for (const extension of supportedExtensions) {
+        const fallbackPath = path.join(__dirname, 'templates', 'combined', `${fallbackTemplateType}${extension}`);
+        if (await fs.pathExists(fallbackPath)) {
+          return {
+            template: await fs.readFile(fallbackPath, 'utf8'),
+            extension,
+          };
+        }
       }
     }
 
     // Ultimate fallback - minimal template
-    return this.getDefaultTemplate(artifactType);
+    return {
+      template: this.getDefaultTemplate(artifactType),
+      extension: '.md',
+    };
   }
 
   /**
@@ -325,11 +398,15 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
    * @param {string} artifactType - Artifact type (agent, workflow, task, tool)
    * @returns {string} Generated filename
    */
-  generateFilename(artifact, artifactType) {
+  generateFilename(artifact, artifactType, extension = '.md') {
     const { toDashPath } = require('./shared/path-utils');
     // toDashPath already handles the .agent.md suffix for agents correctly
     // No need to add it again here
-    return toDashPath(artifact.relativePath);
+    const dashName = toDashPath(artifact.relativePath);
+    if (extension === '.md') {
+      return dashName;
+    }
+    return dashName.replace(/\.md$/i, extension);
   }
 
   /**

@@ -69,6 +69,15 @@ Products, platforms, complex features — structured planning then build:
 
 Every step tells you what's next. Optional phases (brainstorming, research, UX design) are available when you need them — ask `/bmad-help` anytime. For a detailed walkthrough, see the [Getting Started Tutorial](http://docs.bmad-method.org/tutorials/getting-started/).
 
+### Workflow Path Resolution
+
+BMad workflow/task files often reference placeholders such as `{project-root}` and installed paths like `{project-root}/_bmad/...`.
+
+- In installed projects, `{project-root}` resolves to the consuming repository root where BMAD is installed.
+- `_bmad/...` paths point to the installed BMAD runtime content in that repository.
+- In this source repository, equivalent source files typically live under `src/...`.
+- When a workflow must run directly from source (without install), use explicit `src/...` paths in that workflow step.
+
 ## Modules
 
 BMad Method extends with official modules for specialized domains. Modules are available during installation and can be added to your project at any time. After the V6 beta period these will also be available as Plugins and Granular Skills.

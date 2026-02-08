@@ -12,10 +12,15 @@
  */
 
 const path = require('node:path');
+const os = require('node:os');
 const fs = require('fs-extra');
+const yaml = require('yaml');
 const { YamlXmlBuilder } = require('../tools/cli/lib/yaml-xml-builder');
 const { ManifestGenerator } = require('../tools/cli/installers/lib/core/manifest-generator');
 const { WorkflowCommandGenerator } = require('../tools/cli/installers/lib/ide/shared/workflow-command-generator');
+const { TaskToolCommandGenerator } = require('../tools/cli/installers/lib/ide/shared/task-tool-command-generator');
+const { IdeManager } = require('../tools/cli/installers/lib/ide/manager');
+const { ModuleManager } = require('../tools/cli/installers/lib/modules/manager');
 const { BMAD_FOLDER_NAME } = require('../tools/cli/installers/lib/ide/shared/path-utils');
 
 // ANSI colors
@@ -412,6 +417,143 @@ async function runTests() {
     );
   } catch (error) {
     assert(false, 'Workflow handler fallback guard runs', error.message);
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test 11: Gemini Template Extension Regression Guard
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 11: Gemini Template Extension Guard${colors.reset}\n`);
+
+  try {
+    const tmpRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-gemini-install-'));
+    const projectDir = path.join(tmpRoot, 'project');
+    const bmadDir = path.join(tmpRoot, BMAD_FOLDER_NAME);
+    await fs.ensureDir(projectDir);
+    await fs.copy(path.join(projectRoot, 'src', 'core'), path.join(bmadDir, 'core'));
+    await fs.copy(path.join(projectRoot, 'src', 'bmm'), path.join(bmadDir, 'bmm'));
+
+    const manifestGenerator = new ManifestGenerator();
+    await manifestGenerator.generateManifests(bmadDir, ['bmm'], [], { ides: ['gemini'] });
+
+    const ideManager = new IdeManager();
+    await ideManager.ensureInitialized();
+    await ideManager.setup('gemini', projectDir, bmadDir, { selectedModules: ['bmm'] });
+
+    const commandsDir = path.join(projectDir, '.gemini', 'commands');
+    const generated = await fs.readdir(commandsDir);
+
+    assert(
+      generated.some((file) => file.endsWith('.toml')),
+      'Gemini installer emits template-native TOML command files',
+      generated.join(', '),
+    );
+
+    assert(!generated.some((file) => file.endsWith('.md')), 'Gemini installer does not emit markdown command files', generated.join(', '));
+
+    await fs.remove(tmpRoot);
+  } catch (error) {
+    assert(false, 'Gemini template extension guard runs', error.message);
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test 12: Manifest Stale Entry Cleanup Guard
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 12: Manifest Stale Entry Cleanup Guard${colors.reset}\n`);
+
+  try {
+    const tmpRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-manifest-clean-'));
+    const bmadDir = path.join(tmpRoot, BMAD_FOLDER_NAME);
+    await fs.copy(path.join(projectRoot, 'src', 'core'), path.join(bmadDir, 'core'));
+    await fs.copy(path.join(projectRoot, 'src', 'bmm'), path.join(bmadDir, 'bmm'));
+
+    const cfgDir = path.join(bmadDir, '_config');
+    await fs.ensureDir(cfgDir);
+    const staleManifestPath = path.join(cfgDir, 'workflow-manifest.csv');
+    await fs.writeFile(
+      staleManifestPath,
+      'name,description,module,path\n"old","old workflow","core","_bmad/core/workflows/old/workflow.md"\n',
+    );
+
+    const manifestGenerator = new ManifestGenerator();
+    await manifestGenerator.generateManifests(bmadDir, ['bmm'], [], { ides: ['claude-code'] });
+    const regenerated = await fs.readFile(staleManifestPath, 'utf8');
+
+    assert(
+      !regenerated.includes('"old","old workflow","core","_bmad/core/workflows/old/workflow.md"'),
+      'Workflow manifest regeneration removes stale/deleted rows',
+    );
+
+    await fs.remove(tmpRoot);
+  } catch (error) {
+    assert(false, 'Manifest stale entry cleanup guard runs', error.message);
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test 13: Internal Task Command Exposure Guard
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 13: Internal Task Exposure Guard${colors.reset}\n`);
+
+  try {
+    const tmpRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-task-filter-'));
+    const projectDir = path.join(tmpRoot, 'project');
+    const bmadDir = path.join(tmpRoot, BMAD_FOLDER_NAME);
+    const commandsDir = path.join(tmpRoot, 'commands');
+    await fs.ensureDir(projectDir);
+    await fs.copy(path.join(projectRoot, 'src', 'core'), path.join(bmadDir, 'core'));
+    await fs.copy(path.join(projectRoot, 'src', 'bmm'), path.join(bmadDir, 'bmm'));
+
+    const manifestGenerator = new ManifestGenerator();
+    await manifestGenerator.generateManifests(bmadDir, ['bmm'], [], { ides: ['claude-code'] });
+
+    const taskToolGenerator = new TaskToolCommandGenerator();
+    await taskToolGenerator.generateDashTaskToolCommands(projectDir, bmadDir, commandsDir);
+    const generated = await fs.readdir(commandsDir);
+
+    assert(
+      !generated.some((file) => /^bmad-workflow\./.test(file)),
+      'Task/tool command generation excludes internal workflow runner task command',
+      generated.join(', '),
+    );
+
+    await fs.remove(tmpRoot);
+  } catch (error) {
+    assert(false, 'Internal task exposure guard runs', error.message);
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test 14: Workflow Frontmatter web_bundle Strip Guard
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 14: web_bundle Frontmatter Strip Guard${colors.reset}\n`);
+
+  try {
+    const manager = new ModuleManager();
+    const content = `---
+name: demo-workflow
+description: Demo
+web_bundle:
+  enabled: true
+  bundle:
+    mode: strict
+---
+
+# Demo
+`;
+    const stripped = manager.stripWebBundleFromFrontmatter(content);
+    const frontmatterMatch = stripped.match(/^---\n([\s\S]*?)\n---/);
+    const parsed = frontmatterMatch ? yaml.parse(frontmatterMatch[1]) : {};
+
+    assert(!stripped.includes('web_bundle:'), 'web_bundle strip removes nested web_bundle block from frontmatter');
+    assert(parsed.name === 'demo-workflow' && parsed.description === 'Demo', 'web_bundle strip preserves other frontmatter keys');
+  } catch (error) {
+    assert(false, 'web_bundle strip guard runs', error.message);
   }
 
   console.log('');

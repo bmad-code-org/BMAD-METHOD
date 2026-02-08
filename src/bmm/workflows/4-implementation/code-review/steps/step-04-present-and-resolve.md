@@ -2,9 +2,15 @@
 name: 'step-04-present-and-resolve'
 description: 'Present findings and either apply fixes or create follow-up action items'
 nextStepFile: './step-05-update-status.md'
+reviewFindingsFile: '{story_dir}/review-findings.json'
 ---
 
   <step n="4" goal="Present findings and fix them">
+    <action>Load structured findings from {reviewFindingsFile}</action>
+    <action>Validate findings schema for each entry:
+      id, severity, type, summary, detail, file_line, proof, suggested_fix, reviewer, timestamp
+    </action>
+    <action>If findings file missing or malformed: HALT with explicit error and return to step 3 generation</action>
     <action>Categorize findings: HIGH (must fix), MEDIUM (should fix), LOW (nice to fix)</action>
     <action>Set {{fixed_count}} = 0</action>
     <action>Set {{action_count}} = 0</action>
