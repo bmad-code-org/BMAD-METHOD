@@ -241,12 +241,9 @@ function buildPersonaSchema() {
       role: createNonEmptyString('agent.persona.role'),
       identity: createNonEmptyString('agent.persona.identity'),
       communication_style: createNonEmptyString('agent.persona.communication_style'),
-      principles: z.union([
-        createNonEmptyString('agent.persona.principles'),
-        z
-          .array(createNonEmptyString('agent.persona.principles[]'))
-          .min(1, { message: 'agent.persona.principles must include at least one entry' }),
-      ]),
+      principles: z
+        .array(createNonEmptyString('agent.persona.principles[]'))
+        .min(1, { message: 'agent.persona.principles must include at least one entry' }),
     })
     .strict();
 }
