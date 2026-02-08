@@ -157,7 +157,7 @@ input_file_patterns:
   </step>
 
   <step n="2" goal="Load and analyze core artifacts">
-    <critical>🔬 EXHAUSTIVE ARTIFACT ANALYSIS - This is where you prevent future developer fuckups!</critical>
+    <critical>🔬 EXHAUSTIVE ARTIFACT ANALYSIS - This is where you prevent future developer mistakes!</critical>
 
     <!-- Load all available content through discovery protocol -->
     <invoke-protocol

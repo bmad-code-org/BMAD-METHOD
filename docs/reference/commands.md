@@ -27,7 +27,7 @@ The installer uses templates for each command type:
 | Command type | What the generated file does |
 | --- | --- |
 | **Agent launcher** | Loads the agent persona file, activates its menu, and stays in character |
-| **Workflow command** | Loads the workflow engine (`workflow.xml`) and passes the workflow config |
+| **Workflow command** | Loads the workflow engine (`workflow.md`) and passes the workflow config |
 | **Task command** | Loads a standalone task file and follows its instructions |
 | **Tool command** | Loads a standalone tool file and follows its instructions |
 
