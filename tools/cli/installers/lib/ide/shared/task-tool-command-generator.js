@@ -1,7 +1,6 @@
 const path = require('node:path');
 const fs = require('fs-extra');
 const csv = require('csv-parse/sync');
-const chalk = require('chalk');
 const { toColonName, toColonPath, toDashPath, BMAD_FOLDER_NAME } = require('./path-utils');
 
 /**

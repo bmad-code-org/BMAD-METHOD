@@ -1,7 +1,7 @@
 const path = require('node:path');
 const { BaseIdeSetup } = require('./_base-ide');
-const chalk = require('chalk');
 const yaml = require('yaml');
+const prompts = require('../../../lib/prompts');
 const { AgentCommandGenerator } = require('./shared/agent-command-generator');
 const { WorkflowCommandGenerator } = require('./shared/workflow-command-generator');
 const { TaskToolCommandGenerator } = require('./shared/task-tool-command-generator');
@@ -23,10 +23,10 @@ class KiloSetup extends BaseIdeSetup {
    * @param {Object} options - Setup options
    */
   async setup(projectDir, bmadDir, options = {}) {
-    console.log(chalk.cyan(`Setting up ${this.name}...`));
+    if (!options.silent) await prompts.log.info(`Setting up ${this.name}...`);
 
     // Clean up any old BMAD installation first
-    await this.cleanup(projectDir);
+    await this.cleanup(projectDir, options);
 
     // Load existing config (may contain non-BMAD modes and other settings)
     const kiloModesPath = path.join(projectDir, this.configFile);
@@ -38,7 +38,7 @@ class KiloSetup extends BaseIdeSetup {
         config = yaml.parse(existingContent) || {};
       } catch {
         // If parsing fails, start fresh but warn user
-        console.log(chalk.yellow('Warning: Could not parse existing .kilocodemodes, starting fresh'));
+        await prompts.log.warn('Warning: Could not parse existing .kilocodemodes, starting fresh');
         config = {};
       }
     }
@@ -88,14 +88,11 @@ class KiloSetup extends BaseIdeSetup {
     const taskCount = taskToolCounts.tasks || 0;
     const toolCount = taskToolCounts.tools || 0;
 
-    console.log(chalk.green(`✓ ${this.name} configured:`));
-    console.log(chalk.dim(`  - ${addedCount} modes added`));
-    console.log(chalk.dim(`  - ${workflowCount} workflows exported`));
-    console.log(chalk.dim(`  - ${taskCount} tasks exported`));
-    console.log(chalk.dim(`  - ${toolCount} tools exported`));
-    console.log(chalk.dim(`  - Configuration file: ${this.configFile}`));
-    console.log(chalk.dim(`  - Workflows directory: .kilocode/workflows/`));
-    console.log(chalk.dim('\n  Modes will be available when you open this project in KiloCode'));
+    if (!options.silent) {
+      await prompts.log.success(
+        `${this.name} configured: ${addedCount} modes, ${workflowCount} workflows, ${taskCount} tasks, ${toolCount} tools → ${this.configFile}`,
+      );
+    }
 
     return {
       success: true,
@@ -174,7 +171,7 @@ class KiloSetup extends BaseIdeSetup {
   /**
    * Cleanup KiloCode configuration
    */
-  async cleanup(projectDir) {
+  async cleanup(projectDir, options = {}) {
     const fs = require('fs-extra');
     const kiloModesPath = path.join(projectDir, this.configFile);
 
@@ -192,12 +189,12 @@ class KiloSetup extends BaseIdeSetup {
 
           if (removedCount > 0) {
             await fs.writeFile(kiloModesPath, yaml.stringify(config, { lineWidth: 0 }));
-            console.log(chalk.dim(`Removed ${removedCount} BMAD modes from .kilocodemodes`));
+            if (!options.silent) await prompts.log.message(`Removed ${removedCount} BMAD modes from .kilocodemodes`);
           }
         }
       } catch {
         // If parsing fails, leave file as-is
-        console.log(chalk.yellow('Warning: Could not parse .kilocodemodes for cleanup'));
+        if (!options.silent) await prompts.log.warn('Warning: Could not parse .kilocodemodes for cleanup');
       }
     }
 

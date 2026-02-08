@@ -89,11 +89,51 @@ async function note(message, title) {
 
 /**
  * Display a spinner for async operations
- * @returns {Object} Spinner controller with start, stop, message methods
+ * Wraps @clack/prompts spinner with isSpinning state tracking
+ * @returns {Object} Spinner controller with start, stop, message, error, cancel, clear, isSpinning
  */
 async function spinner() {
   const clack = await getClack();
-  return clack.spinner();
+  const s = clack.spinner();
+  let spinning = false;
+
+  return {
+    start: (msg) => {
+      if (spinning) {
+        s.message(msg);
+      } else {
+        spinning = true;
+        s.start(msg);
+      }
+    },
+    stop: (msg) => {
+      if (spinning) {
+        spinning = false;
+        s.stop(msg);
+      }
+    },
+    message: (msg) => {
+      if (spinning) s.message(msg);
+    },
+    error: (msg) => {
+      spinning = false;
+      s.error(msg);
+    },
+    cancel: (msg) => {
+      spinning = false;
+      s.cancel(msg);
+    },
+    clear: () => {
+      spinning = false;
+      s.clear();
+    },
+    get isSpinning() {
+      return spinning;
+    },
+    get isCancelled() {
+      return s.isCancelled;
+    },
+  };
 }
 
 /**
@@ -191,31 +231,6 @@ async function multiselect(options) {
 }
 
 /**
- * Grouped multi-select prompt for categorized options
- * @param {Object} options - Prompt options
- * @param {string} options.message - The question to ask
- * @param {Object} options.options - Object mapping group names to arrays of choices
- * @param {Array} [options.initialValues] - Array of initially selected values
- * @param {boolean} [options.required=false] - Whether at least one must be selected
- * @param {boolean} [options.selectableGroups=false] - Whether groups can be selected as a whole
- * @returns {Promise<Array>} Array of selected values
- */
-async function groupMultiselect(options) {
-  const clack = await getClack();
-
-  const result = await clack.groupMultiselect({
-    message: options.message,
-    options: options.options,
-    initialValues: options.initialValues,
-    required: options.required || false,
-    selectableGroups: options.selectableGroups || false,
-  });
-
-  await handleCancel(result);
-  return result;
-}
-
-/**
  * Default filter function for autocomplete - case-insensitive label matching
  * @param {string} search - Search string
  * @param {Object} option - Option object with label
@@ -237,6 +252,7 @@ function defaultAutocompleteFilter(search, option) {
  * @param {boolean} [options.required=false] - Whether at least one must be selected
  * @param {number} [options.maxItems=5] - Maximum visible items in scrollable list
  * @param {Function} [options.filter] - Custom filter function (search, option) => boolean
+ * @param {Array} [options.lockedValues] - Values that are always selected and cannot be toggled off
  * @returns {Promise<Array>} Array of selected values
  */
 async function autocompleteMultiselect(options) {
@@ -245,6 +261,7 @@ async function autocompleteMultiselect(options) {
   const color = await getPicocolors();
 
   const filterFn = options.filter ?? defaultAutocompleteFilter;
+  const lockedSet = new Set(options.lockedValues || []);
 
   const prompt = new core.AutocompletePrompt({
     options: options.options,
@@ -255,7 +272,7 @@ async function autocompleteMultiselect(options) {
         return 'Please select at least one item';
       }
     },
-    initialValue: options.initialValues,
+    initialValue: [...new Set([...(options.initialValues || []), ...(options.lockedValues || [])])],
     render() {
       const barColor = this.state === 'error' ? color.yellow : color.cyan;
       const bar = barColor(clack.S_BAR);
@@ -280,9 +297,17 @@ async function autocompleteMultiselect(options) {
       // Render option with checkbox
       const renderOption = (opt, isHighlighted) => {
         const isSelected = this.selectedValues.includes(opt.value);
+        const isLocked = lockedSet.has(opt.value);
         const label = opt.label ?? String(opt.value ?? '');
-        const hintText = opt.hint && opt.value === this.focusedValue ? color.dim(` (${opt.hint})`) : '';
-        const checkbox = isSelected ? color.green(clack.S_CHECKBOX_SELECTED) : color.dim(clack.S_CHECKBOX_INACTIVE);
+        const hintText = opt.hint && isHighlighted ? color.dim(` (${opt.hint})`) : '';
+
+        let checkbox;
+        if (isLocked) {
+          checkbox = color.green(clack.S_CHECKBOX_SELECTED);
+          const lockHint = color.dim(' (always installed)');
+          return isHighlighted ? `${checkbox} ${label}${lockHint}` : `${checkbox} ${color.dim(label)}${lockHint}`;
+        }
+        checkbox = isSelected ? color.green(clack.S_CHECKBOX_SELECTED) : color.dim(clack.S_CHECKBOX_INACTIVE);
         return isHighlighted ? `${checkbox} ${label}${hintText}` : `${checkbox} ${color.dim(label)}`;
       };
 
@@ -322,6 +347,18 @@ async function autocompleteMultiselect(options) {
     },
   });
 
+  // Prevent locked values from being toggled off
+  if (lockedSet.size > 0) {
+    const originalToggle = prompt.toggleSelected.bind(prompt);
+    prompt.toggleSelected = function (value) {
+      // If locked and already selected, skip the toggle (would deselect)
+      if (lockedSet.has(value) && this.selectedValues.includes(value)) {
+        return;
+      }
+      originalToggle(value);
+    };
+  }
+
   // === FIX: Make SPACE always act as selection key (not search input) ===
   // Override _isActionKey to treat SPACE like TAB - always an action key
   // This prevents SPACE from being added to the search input
@@ -335,8 +372,9 @@ async function autocompleteMultiselect(options) {
 
   // Handle SPACE toggle when NOT navigating (internal code only handles it when isNavigating=true)
   prompt.on('key', (char, key) => {
-    if (key && key.name === 'space' && !prompt.isNavigating && prompt.focusedValue !== undefined) {
-      prompt.toggleSelected(prompt.focusedValue);
+    if (key && key.name === 'space' && !prompt.isNavigating) {
+      const focused = prompt.filteredOptions[prompt.cursor];
+      if (focused) prompt.toggleSelected(focused.value);
     }
   });
   // === END FIX ===
@@ -521,6 +559,131 @@ const log = {
 };
 
 /**
+ * Display cancellation message
+ * @param {string} [message='Operation cancelled'] - The cancellation message
+ */
+async function cancel(message = 'Operation cancelled') {
+  const clack = await getClack();
+  clack.cancel(message);
+}
+
+/**
+ * Display content in a styled box
+ * @param {string} content - The box content
+ * @param {string} [title] - Optional title
+ * @param {Object} [options] - Box options (contentAlign, titleAlign, width, rounded, formatBorder, etc.)
+ */
+async function box(content, title, options) {
+  const clack = await getClack();
+  clack.box(content, title, options);
+}
+
+/**
+ * Create a progress bar for visualizing task completion
+ * @param {Object} [options] - Progress options (max, style, etc.)
+ * @returns {Promise<Object>} Progress controller with start, advance, stop methods
+ */
+async function progress(options) {
+  const clack = await getClack();
+  return clack.progress(options);
+}
+
+/**
+ * Create a task log for displaying scrolling subprocess output
+ * @param {Object} options - TaskLog options (title, limit, retainLog)
+ * @returns {Promise<Object>} TaskLog controller with message, success, error methods
+ */
+async function taskLog(options) {
+  const clack = await getClack();
+  return clack.taskLog(options);
+}
+
+/**
+ * File system path prompt with autocomplete
+ * @param {Object} options - Path options
+ * @param {string} options.message - The prompt message
+ * @param {string} [options.initialValue] - Initial path value
+ * @param {boolean} [options.directory=false] - Only allow directories
+ * @param {Function} [options.validate] - Validation function
+ * @returns {Promise<string>} Selected path
+ */
+async function pathPrompt(options) {
+  const clack = await getClack();
+  const result = await clack.path(options);
+  await handleCancel(result);
+  return result;
+}
+
+/**
+ * Autocomplete single-select prompt with type-ahead filtering
+ * @param {Object} options - Autocomplete options
+ * @param {string} options.message - The prompt message
+ * @param {Array} options.options - Array of choices [{value, label, hint?}]
+ * @param {string} [options.placeholder] - Placeholder text
+ * @param {number} [options.maxItems] - Maximum visible items
+ * @param {Function} [options.filter] - Custom filter function
+ * @returns {Promise<any>} Selected value
+ */
+async function autocomplete(options) {
+  const clack = await getClack();
+  const result = await clack.autocomplete(options);
+  await handleCancel(result);
+  return result;
+}
+
+/**
+ * Key-based instant selection prompt
+ * @param {Object} options - SelectKey options
+ * @param {string} options.message - The prompt message
+ * @param {Array} options.options - Array of choices [{value, label, hint?}]
+ * @returns {Promise<any>} Selected value
+ */
+async function selectKey(options) {
+  const clack = await getClack();
+  const result = await clack.selectKey(options);
+  await handleCancel(result);
+  return result;
+}
+
+/**
+ * Stream messages with dynamic content (for LLMs, generators, etc.)
+ */
+const stream = {
+  async info(generator) {
+    const clack = await getClack();
+    return clack.stream.info(generator);
+  },
+  async success(generator) {
+    const clack = await getClack();
+    return clack.stream.success(generator);
+  },
+  async step(generator) {
+    const clack = await getClack();
+    return clack.stream.step(generator);
+  },
+  async warn(generator) {
+    const clack = await getClack();
+    return clack.stream.warn(generator);
+  },
+  async error(generator) {
+    const clack = await getClack();
+    return clack.stream.error(generator);
+  },
+  async message(generator, options) {
+    const clack = await getClack();
+    return clack.stream.message(generator, options);
+  },
+};
+
+/**
+ * Get the color utility (picocolors instance from @clack/prompts)
+ * @returns {Promise<Object>} The color utility (picocolors)
+ */
+async function getColor() {
+  return await getPicocolors();
+}
+
+/**
  * Execute an array of Inquirer-style questions using @clack/prompts
  * This provides compatibility with dynamic question arrays
  * @param {Array} questions - Array of Inquirer-style question objects
@@ -619,20 +782,28 @@ async function prompt(questions) {
 
 module.exports = {
   getClack,
+  getColor,
   handleCancel,
   intro,
   outro,
+  cancel,
   note,
+  box,
   spinner,
+  progress,
+  taskLog,
   select,
   multiselect,
-  groupMultiselect,
   autocompleteMultiselect,
+  autocomplete,
+  selectKey,
   confirm,
   text,
+  path: pathPrompt,
   password,
   group,
   tasks,
   log,
+  stream,
   prompt,
 };

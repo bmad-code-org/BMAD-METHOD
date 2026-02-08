@@ -2,6 +2,14 @@ const { program } = require('commander');
 const path = require('node:path');
 const fs = require('node:fs');
 const { execSync } = require('node:child_process');
+const prompts = require('./lib/prompts');
+
+// The installer flow uses many sequential @clack/prompts, each adding keypress
+// listeners to stdin. Raise the limit to avoid spurious EventEmitter warnings.
+if (process.stdin?.setMaxListeners) {
+  const currentLimit = process.stdin.getMaxListeners();
+  process.stdin.setMaxListeners(Math.max(currentLimit, 50));
+}
 
 // Check for updates - do this asynchronously so it doesn't block startup
 const packageJson = require('../../package.json');
@@ -27,17 +35,17 @@ async function checkForUpdate() {
     }).trim();
 
     if (result && result !== packageJson.version) {
-      console.warn('');
-      console.warn('  ╔═══════════════════════════════════════════════════════════════════════════════╗');
-      console.warn('  ║  UPDATE AVAILABLE                                                             ║');
-      console.warn('  ║                                                                               ║');
-      console.warn(`  ║  You are using version ${packageJson.version} but ${result} is available.     ║`);
-      console.warn('  ║                                                                               ║');
-      console.warn('  ║  To update,exir and first run:                                                ║');
-      console.warn(`  ║    npm cache clean --force && npx bmad-method@${tag} install                  ║`);
-      console.warn('  ║                                                                               ║');
-      console.warn('  ╚═══════════════════════════════════════════════════════════════════════════════╝');
-      console.warn('');
+      const color = await prompts.getColor();
+      const updateMsg = [
+        `You are using version ${packageJson.version} but ${result} is available.`,
+        '',
+        'To update, exit and first run:',
+        `  npm cache clean --force && npx bmad-method@${tag} install`,
+      ].join('\n');
+      await prompts.box(updateMsg, 'Update Available', {
+        rounded: true,
+        formatBorder: color.yellow,
+      });
     }
   } catch {
     // Silently fail - network issues or npm not available

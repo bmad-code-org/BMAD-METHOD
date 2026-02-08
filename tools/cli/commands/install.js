@@ -1,5 +1,5 @@
-const chalk = require('chalk');
 const path = require('node:path');
+const prompts = require('../lib/prompts');
 const { Installer } = require('../installers/lib/core/installer');
 const { UI } = require('../lib/ui');
 
@@ -30,14 +30,14 @@ module.exports = {
       // Set debug flag as environment variable for all components
       if (options.debug) {
         process.env.BMAD_DEBUG_MANIFEST = 'true';
-        console.log(chalk.cyan('Debug mode enabled\n'));
+        await prompts.log.info('Debug mode enabled');
       }
 
       const config = await ui.promptInstall(options);
 
       // Handle cancel
       if (config.actionType === 'cancel') {
-        console.log(chalk.yellow('Installation cancelled.'));
+        await prompts.log.warn('Installation cancelled.');
         process.exit(0);
         return;
       }
@@ -45,13 +45,13 @@ module.exports = {
       // Handle quick update separately
       if (config.actionType === 'quick-update') {
         const result = await installer.quickUpdate(config);
-        console.log(chalk.green('\n✨ Quick update complete!'));
-        console.log(chalk.cyan(`Updated ${result.moduleCount} modules with preserved settings (${result.modules.join(', ')})`));
+        await prompts.log.success('Quick update complete!');
+        await prompts.log.info(`Updated ${result.moduleCount} modules with preserved settings (${result.modules.join(', ')})`);
 
         // Display version-specific end message
         const { MessageLoader } = require('../installers/lib/message-loader');
         const messageLoader = new MessageLoader();
-        messageLoader.displayEndMessage();
+        await messageLoader.displayEndMessage();
 
         process.exit(0);
         return;
@@ -60,8 +60,8 @@ module.exports = {
       // Handle compile agents separately
       if (config.actionType === 'compile-agents') {
         const result = await installer.compileAgents(config);
-        console.log(chalk.green('\n✨ Agent recompilation complete!'));
-        console.log(chalk.cyan(`Recompiled ${result.agentCount} agents with customizations applied`));
+        await prompts.log.success('Agent recompilation complete!');
+        await prompts.log.info(`Recompiled ${result.agentCount} agents with customizations applied`);
         process.exit(0);
         return;
       }
@@ -80,21 +80,22 @@ module.exports = {
         // Display version-specific end message from install-messages.yaml
         const { MessageLoader } = require('../installers/lib/message-loader');
         const messageLoader = new MessageLoader();
-        messageLoader.displayEndMessage();
+        await messageLoader.displayEndMessage();
 
         process.exit(0);
       }
     } catch (error) {
-      // Check if error has a complete formatted message
-      if (error.fullMessage) {
-        console.error(error.fullMessage);
-        if (error.stack) {
-          console.error('\n' + chalk.dim(error.stack));
+      try {
+        if (error.fullMessage) {
+          await prompts.log.error(error.fullMessage);
+        } else {
+          await prompts.log.error(`Installation failed: ${error.message}`);
         }
-      } else {
-        // Generic error handling for all other errors
-        console.error(chalk.red('Installation failed:'), error.message);
-        console.error(chalk.dim(error.stack));
+        if (error.stack) {
+          await prompts.log.message(error.stack);
+        }
+      } catch {
+        console.error(error.fullMessage || error.message || error);
       }
       process.exit(1);
     }

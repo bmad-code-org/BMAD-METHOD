@@ -1,7 +1,7 @@
 const path = require('node:path');
 const fs = require('fs-extra');
-const chalk = require('chalk');
 const yaml = require('yaml');
+const prompts = require('../../../lib/prompts');
 const { FileOps } = require('../../../lib/file-ops');
 const { XmlHandler } = require('../../../lib/xml-handler');
 
@@ -88,7 +88,7 @@ class CustomHandler {
       try {
         config = yaml.parse(configContent);
       } catch (parseError) {
-        console.warn(chalk.yellow(`Warning: YAML parse error in ${configPath}:`, parseError.message));
+        await prompts.log.warn('YAML parse error in ' + configPath + ': ' + parseError.message);
         return null;
       }
 
@@ -111,7 +111,7 @@ class CustomHandler {
         isInstallConfig: isInstallConfig, // Track which type this is
       };
     } catch (error) {
-      console.warn(chalk.yellow(`Warning: Failed to read ${configPath}:`, error.message));
+      await prompts.log.warn('Failed to read ' + configPath + ': ' + error.message);
       return null;
     }
   }
@@ -268,13 +268,12 @@ class CustomHandler {
             }
 
             results.filesCopied++;
+            if (entry.name.endsWith('.md')) {
+              results.workflowsInstalled++;
+            }
             if (fileTrackingCallback) {
               fileTrackingCallback(targetPath);
             }
-          }
-
-          if (entry.name.endsWith('.md')) {
-            results.workflowsInstalled++;
           }
         } catch (error) {
           results.errors.push(`Failed to copy ${entry.name}: ${error.message}`);
@@ -322,7 +321,7 @@ class CustomHandler {
             await fs.writeFile(customizePath, templateContent, 'utf8');
             // Only show customize creation in verbose mode
             if (process.env.BMAD_VERBOSE_INSTALL === 'true') {
-              console.log(chalk.dim(`  Created customize: custom-${agentName}.customize.yaml`));
+              await prompts.log.message('  Created customize: custom-' + agentName + '.customize.yaml');
             }
           }
         }
@@ -346,14 +345,10 @@ class CustomHandler {
 
         // Only show compilation details in verbose mode
         if (process.env.BMAD_VERBOSE_INSTALL === 'true') {
-          console.log(
-            chalk.dim(
-              `    Compiled agent: ${agentName} -> ${path.relative(targetAgentsPath, targetMdPath)}${hasSidecar ? ' (with sidecar)' : ''}`,
-            ),
-          );
+          await prompts.log.message('    Compiled agent: ' + agentName + ' -> ' + path.relative(targetAgentsPath, targetMdPath));
         }
       } catch (error) {
-        console.warn(chalk.yellow(`    Failed to compile agent ${agentName}:`, error.message));
+        await prompts.log.warn('    Failed to compile agent ' + agentName + ': ' + error.message);
         results.errors.push(`Failed to compile agent ${agentName}: ${error.message}`);
       }
     }

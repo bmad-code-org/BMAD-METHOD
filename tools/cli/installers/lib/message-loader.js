@@ -1,7 +1,7 @@
 const fs = require('fs-extra');
 const path = require('node:path');
 const yaml = require('yaml');
-const chalk = require('chalk');
+const prompts = require('../../lib/prompts');
 
 /**
  * Load and display installer messages from messages.yaml
@@ -51,22 +51,20 @@ class MessageLoader {
   /**
    * Display the start message (after logo, before prompts)
    */
-  displayStartMessage() {
+  async displayStartMessage() {
     const message = this.getStartMessage();
     if (message) {
-      console.log(chalk.cyan(message));
-      console.log();
+      await prompts.log.info(message);
     }
   }
 
   /**
    * Display the end message (after installation completes)
    */
-  displayEndMessage() {
+  async displayEndMessage() {
     const message = this.getEndMessage();
     if (message) {
-      console.log();
-      console.log(chalk.cyan(message));
+      await prompts.log.info(message);
     }
   }
 
