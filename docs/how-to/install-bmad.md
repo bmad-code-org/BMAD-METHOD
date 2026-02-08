@@ -41,6 +41,7 @@ Pick which AI tools you use:
 - Claude Code
 - Cursor
 - Windsurf
+- Kiro
 - Others
 
 Each tool has its own way of integrating commands. The installer creates tiny prompt files to activate workflows and agents — it just puts them where your tool expects to find them.
@@ -63,7 +64,8 @@ your-project/
 │   ├── core/           # Required core module
 │   └── ...
 ├── _bmad-output/       # Generated artifacts
-└── .claude/            # Claude Code commands (if using Claude Code)
+├── .claude/            # Claude Code commands (if using Claude Code)
+└── .kiro/              # Kiro steering files (if using Kiro)
 ```
 
 ## Verify Installation

@@ -147,6 +147,15 @@ Keep messages under 72 characters. Each commit = one logical change.
 - Everything is natural language (markdown) — no code in core framework
 - Use BMad modules for domain-specific features
 - Validate YAML schemas: `npm run validate:schemas`
+- Validate file references: `npm run validate:refs`
+
+### File-Pattern-to-Validator Mapping
+
+| File Pattern | Validator | Extraction Function |
+| ------------ | --------- | ------------------- |
+| `*.yaml`, `*.yml` | `validate-file-refs.js` | `extractYamlRefs` |
+| `*.md`, `*.xml` | `validate-file-refs.js` | `extractMarkdownRefs` |
+| `*.csv` | `validate-file-refs.js` | `extractCsvRefs` |
 
 ---
 
