@@ -75,10 +75,10 @@ class WorkflowCommandGenerator {
       if (workflowRelPath.includes('_bmad/')) {
         const parts = workflowRelPath.split(/_bmad\//);
         if (parts.length > 1) {
-          workflowRelPath = parts.slice(1).join('/');
+          workflowRelPath = parts.at(-1);
         }
-      } else if (workflowRelPath.includes('/src/')) {
-        const match = workflowRelPath.match(/\/src\/([^/]+)\/(.+)/);
+      } else if (workflowRelPath.includes('/src/') || workflowRelPath.startsWith('src/')) {
+        const match = workflowRelPath.match(/(?:^|\/)src\/([^/]+)\/(.+)/);
         if (match) {
           workflowRelPath = `${match[1]}/${match[2]}`;
         }
@@ -119,30 +119,9 @@ class WorkflowCommandGenerator {
    * Generate command content for a workflow
    */
   async generateCommandContent(workflow, bmadDir) {
-    // Determine template based on workflow file type
-    const templatePath = path.join(path.dirname(this.templatePath), 'workflow-commander.md');
-
-    // Load the appropriate template
-    const template = await fs.readFile(templatePath, 'utf8');
-
-    // Convert source path to installed path
-    // From: /Users/.../src/bmm/workflows/.../workflow.md
-    // To: {project-root}/_bmad/bmm/workflows/.../workflow.md
-    let workflowPath = workflow.path;
-
-    // Extract the relative path from source
-    if (workflowPath.includes('/src/bmm/')) {
-      // bmm is directly under src/
-      const match = workflowPath.match(/\/src\/bmm\/(.+)/);
-      if (match) {
-        workflowPath = `${this.bmadFolderName}/bmm/${match[1]}`;
-      }
-    } else if (workflowPath.includes('/src/core/')) {
-      const match = workflowPath.match(/\/src\/core\/(.+)/);
-      if (match) {
-        workflowPath = `${this.bmadFolderName}/core/${match[1]}`;
-      }
-    }
+    // Load the workflow command template
+    const template = await fs.readFile(this.templatePath, 'utf8');
+    const workflowPath = this.mapSourcePathToInstalled(workflow.path);
 
     // Replace template variables
     return template
@@ -212,14 +191,15 @@ class WorkflowCommandGenerator {
 When running any workflow:
 1. Resolve loader paths:
    - Primary: {project-root}/${this.bmadFolderName}/core/tasks/workflow.md
-   - Fallback: {project-root}/src/core/tasks/workflow.md
+   - Optional dev fallback: {project-root}/src/core/tasks/workflow.md (only if it exists and is readable)
 2. Check the primary path exists and is readable before loading
-3. If primary is missing/unreadable, log a warning with the path and error, then try fallback
-4. If fallback is also missing/unreadable, log an error with both attempted paths and stop
-5. LOAD the resolved workflow loader file
-6. Pass the workflow path as 'workflow-config' parameter
-7. Follow workflow.md instructions EXACTLY
-8. Save outputs after EACH section
+3. If primary is missing/unreadable, log a warning with the primary path and error
+4. Only if the dev fallback exists and is readable, try the fallback path; otherwise skip it
+5. If no readable loader is found, log an error with all attempted readable paths and stop
+6. LOAD the resolved workflow loader file
+7. Pass the workflow path as 'workflow-config' parameter
+8. Follow workflow.md instructions EXACTLY
+9. Save outputs after EACH section
 
 ## Modes
 - Normal: Full interaction
@@ -230,21 +210,33 @@ When running any workflow:
   }
 
   transformWorkflowPath(workflowPath) {
-    let transformed = workflowPath;
+    return this.mapSourcePathToInstalled(workflowPath, true);
+  }
 
-    if (workflowPath.includes('/src/bmm/')) {
-      const match = workflowPath.match(/\/src\/bmm\/(.+)/);
-      if (match) {
-        transformed = `{project-root}/${this.bmadFolderName}/bmm/${match[1]}`;
-      }
-    } else if (workflowPath.includes('/src/core/')) {
-      const match = workflowPath.match(/\/src\/core\/(.+)/);
-      if (match) {
-        transformed = `{project-root}/${this.bmadFolderName}/core/${match[1]}`;
-      }
+  mapSourcePathToInstalled(sourcePath, includeProjectRootPrefix = false) {
+    if (!sourcePath) {
+      return sourcePath;
     }
 
-    return transformed;
+    const normalized = sourcePath.replaceAll('\\', '/');
+    const srcMatch = normalized.match(/(?:^|\/)src\/([^/]+)\/(.+)/);
+    if (srcMatch) {
+      const mapped = `${this.bmadFolderName}/${srcMatch[1]}/${srcMatch[2]}`;
+      return includeProjectRootPrefix ? `{project-root}/${mapped}` : mapped;
+    }
+
+    if (normalized.includes('_bmad/')) {
+      const parts = normalized.split(/_bmad\//);
+      const relative = parts.at(-1);
+      const mapped = `${this.bmadFolderName}/${relative}`;
+      return includeProjectRootPrefix ? `{project-root}/${mapped}` : mapped;
+    }
+
+    if (normalized.startsWith(`${this.bmadFolderName}/`)) {
+      return includeProjectRootPrefix ? `{project-root}/${normalized}` : normalized;
+    }
+
+    return sourcePath;
   }
 
   async loadWorkflowManifest(bmadDir) {

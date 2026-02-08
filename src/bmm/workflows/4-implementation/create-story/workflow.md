@@ -59,7 +59,7 @@ input_file_patterns:
     <check if="{{story_path}} is provided by user or user provided the epic and story number such as 2-4 or 1.6 or epic 1 story 5">
       <action>Parse user-provided story path: extract epic_num, story_num, story_title from format like "1-2-user-auth"</action>
       <action>Set {{epic_num}}, {{story_num}}, {{story_key}} from user input</action>
-      <action>GOTO step 2a</action>
+      <action>GOTO step 2</action>
     </check>
 
     <action>Check if {{sprint_status}} file exists for auto discover</action>
@@ -85,12 +85,12 @@ input_file_patterns:
       <check if="user provides epic-story number">
         <action>Parse user input: extract epic_num, story_num, story_title</action>
         <action>Set {{epic_num}}, {{story_num}}, {{story_key}} from user input</action>
-        <action>GOTO step 2a</action>
+        <action>GOTO step 2</action>
       </check>
 
       <check if="user provides story docs path">
         <action>Use user-provided path for story documents</action>
-        <action>GOTO step 2a</action>
+        <action>GOTO step 2</action>
       </check>
     </check>
 
@@ -152,7 +152,7 @@ input_file_patterns:
         <output>📊 Epic {{epic_num}} status updated to in-progress</output>
       </check>
 
-      <action>GOTO step 2a</action>
+      <action>GOTO step 2</action>
     </check>
   </step>
 
@@ -174,6 +174,7 @@ input_file_patterns:
     (As a, I want, so that) - Detailed acceptance criteria (already BDD formatted) - Technical requirements specific to this story -
     Business context and value - Success criteria <!-- Previous story analysis for context continuity -->
     <check if="story_num > 1">
+      <action>Set {{previous_story_num}} = {{story_num}} - 1</action>
       <action>Load previous story file: {{story_dir}}/{{epic_num}}-{{previous_story_num}}-*.md</action> **PREVIOUS STORY INTELLIGENCE:** -
     Dev notes and learnings from previous story - Review feedback and corrections needed - Files that were created/modified and their
     patterns - Testing approaches that worked/didn't work - Problems encountered and solutions found - Code patterns established <action>Extract

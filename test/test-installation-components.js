@@ -114,6 +114,12 @@ async function runTests() {
   console.log(`========================================${colors.reset}\n`);
 
   const projectRoot = path.join(__dirname, '..');
+  const tmpRoots = [];
+  const trackTmp = async (prefix) => {
+    const dir = await fs.mkdtemp(path.join(os.tmpdir(), prefix));
+    tmpRoots.push(dir);
+    return dir;
+  };
 
   // ============================================================
   // Test 1: YAML → XML Agent Compilation (In-Memory)
@@ -432,7 +438,7 @@ async function runTests() {
   console.log(`${colors.yellow}Test Suite 11: Gemini Template Extension Guard${colors.reset}\n`);
 
   try {
-    const tmpRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-gemini-install-'));
+    const tmpRoot = await trackTmp('bmad-gemini-install-');
     const projectDir = path.join(tmpRoot, 'project');
     const bmadDir = path.join(tmpRoot, BMAD_FOLDER_NAME);
     await fs.ensureDir(projectDir);
@@ -470,7 +476,7 @@ async function runTests() {
   console.log(`${colors.yellow}Test Suite 12: Manifest Stale Entry Cleanup Guard${colors.reset}\n`);
 
   try {
-    const tmpRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-manifest-clean-'));
+    const tmpRoot = await trackTmp('bmad-manifest-clean-');
     const bmadDir = path.join(tmpRoot, BMAD_FOLDER_NAME);
     await fs.copy(path.join(projectRoot, 'src', 'core'), path.join(bmadDir, 'core'));
     await fs.copy(path.join(projectRoot, 'src', 'bmm'), path.join(bmadDir, 'bmm'));
@@ -505,7 +511,7 @@ async function runTests() {
   console.log(`${colors.yellow}Test Suite 13: Internal Task Exposure Guard${colors.reset}\n`);
 
   try {
-    const tmpRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-task-filter-'));
+    const tmpRoot = await trackTmp('bmad-task-filter-');
     const projectDir = path.join(tmpRoot, 'project');
     const bmadDir = path.join(tmpRoot, BMAD_FOLDER_NAME);
     const commandsDir = path.join(tmpRoot, 'commands');
@@ -592,7 +598,7 @@ web_bundle:
   console.log(`${colors.yellow}Test Suite 16: Task/Tool Standalone + CRLF Guard${colors.reset}\n`);
 
   try {
-    const tmpRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-standalone-crlf-'));
+    const tmpRoot = await trackTmp('bmad-standalone-crlf-');
     const coreTasksDir = path.join(tmpRoot, '_bmad', 'core', 'tasks');
     const coreToolsDir = path.join(tmpRoot, '_bmad', 'core', 'tools');
     await fs.ensureDir(coreTasksDir);
@@ -717,7 +723,7 @@ internal: true
   console.log(`${colors.yellow}Test Suite 18: Codex Task Visibility Guard${colors.reset}\n`);
 
   try {
-    const tmpRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-codex-visibility-'));
+    const tmpRoot = await trackTmp('bmad-codex-visibility-');
     const projectDir = path.join(tmpRoot, 'project');
     const bmadDir = path.join(tmpRoot, BMAD_FOLDER_NAME);
     await fs.ensureDir(projectDir);
@@ -751,7 +757,7 @@ internal: true
   console.log(`${colors.yellow}Test Suite 19: Empty Artifact Target Guard${colors.reset}\n`);
 
   try {
-    const tmpRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-empty-target-'));
+    const tmpRoot = await trackTmp('bmad-empty-target-');
     const projectDir = path.join(tmpRoot, 'project');
     const bmadDir = path.join(tmpRoot, BMAD_FOLDER_NAME);
     await fs.ensureDir(projectDir);
@@ -855,6 +861,10 @@ internal: true
   }
 
   console.log('');
+
+  for (const tmpRoot of tmpRoots) {
+    await fs.remove(tmpRoot).catch(() => {});
+  }
 
   // ============================================================
   // Summary

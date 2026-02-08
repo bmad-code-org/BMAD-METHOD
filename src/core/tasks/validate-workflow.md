@@ -31,7 +31,7 @@ Execute a validation checklist against a target file and report findings clearly
      - Path-like tokens in checklist items
      - First matching path from glob patterns supplied by checklist/input
    - Normalize all candidate paths relative to repo root and resolve `.`/`..`.
-   - Validate candidate existence and expected file type (`.yaml`, `.yml`, `.json`, or checklist-defined extension).
+  - Validate candidate existence and expected file type (`.md`, `.yaml`, `.yml`, `.json`, or checklist-defined extension).
    - If multiple valid candidates remain, prefer explicit key fields over inferred tokens.
    - If no valid candidate is found, prompt user with schema example:
      - `Please provide the exact file path (relative to repo root), e.g. ./workflows/ci.yml`
@@ -50,11 +50,17 @@ Execute a validation checklist against a target file and report findings clearly
    - If checklist requires edits/auto-fixes, follow safe-edit protocol:
      - Ask for confirmation before editing.
      - Create backup snapshot of target file before changes.
+     - Use deterministic backup location: `{project-root}/.bmad-tmp/validate-workflow/`.
+     - Name backup as `{target-file-name}.{timestamp}.bak` and diff as `{target-file-name}.{timestamp}.diff`.
+     - If temp backup directory cannot be created, fall back to adjacent backup file `{target-file}.bak`.
      - Generate reversible diff preview and show it to user.
      - Apply edits only after user approval.
      - Run syntax/validation checks against edited file.
      - If validation fails or user cancels, rollback from backup and report rollback status.
-     - Record backup/diff locations in task output.
+     - Record full backup and diff paths in task output.
+     - Support `retain_artifacts` flag (default `false`) to keep backup/diff artifacts when requested.
 
 6. **Finalize**
    - Confirm completion and provide the final validation summary.
+   - If edits succeeded and `retain_artifacts` is `false`, delete backup/diff artifacts and report cleanup status.
+   - If edits failed or rollback occurred, preserve backup/diff artifacts and report rollback path explicitly.

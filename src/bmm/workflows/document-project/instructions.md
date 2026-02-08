@@ -18,6 +18,13 @@
   - Set suggestion = ""
   - Set next_workflow = ""
   - Set next_agent = ""
+  - Set status_file_path = ""
+  - Set field_type = ""
+  - Set workflow_mode = ""
+  - Set scan_level = ""
+  - Set subworkflow_success = false
+  - Set status_update_success = false
+  - Set cached_project_types = ""
 </action>
 
 <action>Attempt to load workflow status directly from `{output_folder}/bmm-workflow-status.yaml`:
@@ -29,10 +36,18 @@
     - Extract field_type, warning, suggestion, next_workflow, next_agent if present
   - If file is missing, unreadable, or malformed:
     - Keep defaults and continue in standalone mode
+    - Set status_load_error_reason from the caught file/parse error (e.g., missing file, permission denied, YAML parse error)
+    - Set warning = "Unable to load workflow status from {output_folder}/bmm-workflow-status.yaml: {{status_load_error_reason}}"
+    - Output warning and continue in standalone mode
 </action>
 
 <check if="status_exists == false">
-  <output>{{suggestion}}</output>
+  <check if="suggestion != ''">
+    <output>{{suggestion}}</output>
+  </check>
+  <check if="warning != ''">
+    <output>{{warning}}</output>
+  </check>
   <output>Note: Documentation workflow can run standalone. Continuing without progress tracking.</output>
   <action>Set standalone_mode = true</action>
   <action>Set status_file_found = false</action>
@@ -62,7 +77,9 @@
     <output>Note: This may be auto-invoked by prd for brownfield documentation.</output>
     <ask>Continue with documentation? (y/n)</ask>
     <check if="n">
-      <output>{{suggestion}}</output>
+      <check if="suggestion != ''">
+        <output>{{suggestion}}</output>
+      </check>
       <action>Exit workflow</action>
     </check>
   </check>
@@ -78,14 +95,33 @@
 
 <check if="project-scan-report.json exists">
   <action>Read state file and extract: timestamps, mode, scan_level, current_step, completed_steps, project_classification</action>
+  <action>Validate last_updated from state file:
+    - If last_updated is missing or invalid, set state_age_hours = 999 and mark state as stale
+    - Otherwise parse timestamp and continue
+  </action>
   <action>Extract cached project_type_id(s) from state file if present</action>
   <action>Calculate age of state file (current time - last_updated)</action>
 
 <check if="state file age >= 24 hours">
   <action>Display: "Found old state file (>24 hours). Starting fresh scan."</action>
-  <action>Create archive directory: {output_folder}/.archive/</action>
-  <action>Archive old state file to: {output_folder}/.archive/project-scan-report-{{timestamp}}.json</action>
+  <action>Attempt to create archive directory: {output_folder}/.archive/</action>
+  <check if="archive directory creation failed">
+    <output>Failed to create archive directory at {output_folder}/.archive/. Keeping existing state and exiting to avoid data loss.</output>
+    <action>Set resume_mode = true</action>
+    <action>Exit workflow</action>
+  </check>
+  <action>Attempt to archive old state file to: {output_folder}/.archive/project-scan-report-{{timestamp}}.json</action>
+  <check if="archive move failed">
+    <output>Failed to archive old state file. Keeping existing state and exiting to avoid data loss.</output>
+    <action>Set resume_mode = true</action>
+    <action>Exit workflow</action>
+  </check>
   <action>Set resume_mode = false</action>
+  <action>Set workflow_mode = ""</action>
+  <action>Set scan_level = ""</action>
+  <action>Set cached_project_types = ""</action>
+  <action>Set current_step = ""</action>
+  <action>Set subworkflow_success = false</action>
   <action>Continue to Step 3</action>
 </check>
 
@@ -112,15 +148,25 @@ Your choice [1/2/3]:
 
   <check if="user selects 1">
     <action>Set resume_mode = true</action>
-    <action>Set workflow_mode = {{mode}}</action>
+    <action>Validate persisted mode before assigning workflow_mode:
+      - If mode is one of [deep_dive, initial_scan, full_rescan], set workflow_mode = {{mode}}
+      - Otherwise set workflow_mode = "full_rescan", set resume_mode = false, and continue as fresh scan
+    </action>
     <action>Set subworkflow_success = false</action>
     <action>Load findings summaries from state file</action>
     <action>Load cached project_type_id(s) from state file</action>
 
     <critical>CONDITIONAL CSV LOADING FOR RESUME:</critical>
+    <check if="cached_project_types == ''">
+      <output>No cached project types found. Falling back to full CSV load.</output>
+      <action>Load project-types.csv and architecture_registry.csv</action>
+      <action>Load documentation_requirements_csv for active project classification</action>
+    </check>
+    <check if="cached_project_types != ''">
     <action>For each cached project_type_id, load ONLY the corresponding row from: {documentation_requirements_csv}</action>
     <action>Skip loading project-types.csv and architecture_registry.csv (not needed on resume)</action>
     <action>Store loaded doc requirements for use in remaining steps</action>
+    </check>
 
     <action>Display: "Resuming {{workflow_mode}} from {{current_step}} with cached project type(s): {{cached_project_types}}"</action>
 
@@ -152,9 +198,21 @@ Your choice [1/2/3]:
   </check>
 
   <check if="user selects 2">
-    <action>Create archive directory: {output_folder}/.archive/</action>
-    <action>Move old state file to: {output_folder}/.archive/project-scan-report-{{timestamp}}.json</action>
+    <action>Attempt to create archive directory: {output_folder}/.archive/</action>
+    <check if="archive directory creation failed">
+      <output>Failed to create archive directory. Keeping existing state and exiting to avoid data loss.</output>
+      <action>Set resume_mode = true</action>
+      <action>Exit workflow</action>
+    </check>
+    <action>Attempt to move old state file to: {output_folder}/.archive/project-scan-report-{{timestamp}}.json</action>
+    <check if="archive move failed">
+      <output>Failed to archive old state file. Keeping existing state and exiting to avoid data loss.</output>
+      <action>Set resume_mode = true</action>
+      <action>Exit workflow</action>
+    </check>
     <action>Set resume_mode = false</action>
+    <action>Reset workflow_mode, scan_level, cached_project_types, current_step to defaults</action>
+    <action>Set subworkflow_success = false</action>
     <action>Continue to Step 3</action>
   </check>
 
@@ -198,6 +256,7 @@ Your choice [1/2/3]:
 
   <check if="user selects 1">
     <action>Set workflow_mode = "full_rescan"</action>
+    <action>Set scan_level = "standard"</action>
     <action>Display: "Starting full project rescan..."</action>
     <action>Read fully and follow: {installed_path}/workflows/full-scan-instructions.md</action>
     <action>Set subworkflow_success = true only if delegated workflow completed without HALT/error</action>
@@ -234,6 +293,7 @@ Your choice [1/2/3]:
 
 <check if="index.md does not exist">
   <action>Set workflow_mode = "initial_scan"</action>
+  <action>Set scan_level = "initial"</action>
   <action>Display: "No existing documentation found. Starting initial project scan..."</action>
   <action>Read fully and follow: {installed_path}/workflows/full-scan-instructions.md</action>
   <action>Set subworkflow_success = true only if delegated workflow completed without HALT/error</action>
@@ -282,8 +342,13 @@ Your choice [1/2/3]:
   <output>**Status Updated:** Progress tracking updated.
 
 **Next Steps:**
-- **Next required:** {{next_workflow}} ({{next_agent}} agent)
 - Run `bmad-help` if you need recommended next workflows.</output>
+  <check if="next_workflow != '' AND next_agent != ''">
+    <output>- **Next required:** {{next_workflow}} ({{next_agent}} agent)</output>
+  </check>
+  <check if="next_workflow == '' OR next_agent == ''">
+    <output>- **Next required:** not specified</output>
+  </check>
 </check>
 
 <check if="status_file_found == false OR status_update_success != true">

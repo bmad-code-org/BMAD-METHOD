@@ -78,15 +78,15 @@ Work through phases 1-3. **Use fresh chats for each workflow.**
 ### Phase 1: Analysis (Optional)
 
 All workflows in this phase are optional:
-- **brainstorming** — Guided ideation
-- **research** — Market and technical research
-- **create-product-brief** — Recommended foundation document
+- **brainstorming** (`bmad-bmm-brainstorming`) — Guided ideation
+- **research** (`bmad-bmm-research`) — Market and technical research
+- **create-product-brief** (`bmad-bmm-create-product-brief`) — Recommended foundation document
 
 ### Phase 2: Planning (Required)
 
 **For BMad Method and Enterprise tracks:**
 1. Load the **PM agent** in a new chat
-2. Run the `prd` workflow
+2. Run the `create-prd` workflow (`bmad-bmm-create-prd`)
 3. Output: `PRD.md`
 
 **For Quick Flow track:**
@@ -100,7 +100,7 @@ If your project has a user interface, load the **UX-Designer agent** and run the
 
 **Create Architecture**
 1. Load the **Architect agent** in a new chat
-2. Run `create-architecture`
+2. Run `create-architecture` (`bmad-bmm-create-architecture`)
 3. Output: Architecture document with technical decisions
 
 **Create Epics and Stories**
@@ -110,12 +110,12 @@ Epics and stories are now created *after* architecture. This produces better qua
 :::
 
 1. Load the **PM agent** in a new chat
-2. Run `create-epics-and-stories`
+2. Run `create-epics-and-stories` (`bmad-bmm-create-epics-and-stories`)
 3. The workflow uses both PRD and Architecture to create technically-informed stories
 
 **Implementation Readiness Check** *(Highly Recommended)*
 1. Load the **Architect agent** in a new chat
-2. Run `check-implementation-readiness`
+2. Run `check-implementation-readiness` (`bmad-bmm-check-implementation-readiness`)
 3. Validates cohesion across all planning documents
 
 ## Step 2: Build Your Project
@@ -124,7 +124,7 @@ Once planning is complete, move to implementation. **Each workflow should run in
 
 ### Initialize Sprint Planning
 
-Load the **SM agent** and run `sprint-planning`. This creates `sprint-status.yaml` to track all epics and stories.
+Load the **SM agent** and run `sprint-planning` (`bmad-bmm-sprint-planning`). This creates `sprint-status.yaml` to track all epics and stories.
 
 ### The Build Cycle
 
@@ -132,11 +132,11 @@ For each story, repeat this cycle with fresh chats:
 
 | Step | Agent | Workflow       | Purpose                            |
 | ---- | ----- | -------------- | ---------------------------------- |
-| 1    | SM    | `create-story` | Create story file from epic        |
-| 2    | DEV   | `dev-story`    | Implement the story                |
-| 3    | DEV   | `code-review`  | Quality validation *(recommended)* |
+| 1    | SM    | `create-story` (`bmad-bmm-create-story`) | Create story file from epic        |
+| 2    | DEV   | `dev-story` (`bmad-bmm-dev-story`) | Implement the story                |
+| 3    | DEV   | `code-review` (`bmad-bmm-code-review`) | Quality validation *(recommended)* |
 
-After completing all stories in an epic, load the **SM agent** and run `retrospective`.
+After completing all stories in an epic, load the **SM agent** and run `retrospective` (`bmad-bmm-retrospective`).
 
 ## What You've Accomplished
 
@@ -162,17 +162,17 @@ your-project/
 
 ## Quick Reference
 
-| Workflow                         | Agent     | Purpose                              |
-| -------------------------------- | --------- | ------------------------------------ |
-| `help`                           | Any       | Get guidance on what to do next      |
-| `prd`                            | PM        | Create Product Requirements Document |
-| `create-architecture`            | Architect | Create architecture document         |
-| `create-epics-and-stories`       | PM        | Break down PRD into epics            |
-| `check-implementation-readiness` | Architect | Validate planning cohesion           |
-| `sprint-planning`                | SM        | Initialize sprint tracking           |
-| `create-story`                   | SM        | Create a story file                  |
-| `dev-story`                      | DEV       | Implement a story                    |
-| `code-review`                    | DEV       | Review implemented code              |
+| Workflow                         | Slash Command                         | Agent     | Purpose                              |
+| -------------------------------- | ------------------------------------- | --------- | ------------------------------------ |
+| `help`                           | `bmad-help`                           | Any       | Get guidance on what to do next      |
+| `create-prd`                     | `bmad-bmm-create-prd`                | PM        | Create Product Requirements Document |
+| `create-architecture`            | `bmad-bmm-create-architecture`       | Architect | Create architecture document         |
+| `create-epics-and-stories`       | `bmad-bmm-create-epics-and-stories`  | PM        | Break down PRD into epics            |
+| `check-implementation-readiness` | `bmad-bmm-check-implementation-readiness` | Architect | Validate planning cohesion           |
+| `sprint-planning`                | `bmad-bmm-sprint-planning`           | SM        | Initialize sprint tracking           |
+| `create-story`                   | `bmad-bmm-create-story`              | SM        | Create a story file                  |
+| `dev-story`                      | `bmad-bmm-dev-story`                 | DEV       | Implement a story                    |
+| `code-review`                    | `bmad-bmm-code-review`               | DEV       | Review implemented code              |
 
 ## Common Questions
 
@@ -183,7 +183,7 @@ Only for BMad Method and Enterprise tracks. Quick Flow skips from tech-spec to i
 Yes. The SM agent has a `correct-course` workflow for handling scope changes.
 
 **What if I want to brainstorm first?**
-Load the Analyst agent and run `brainstorming` before starting your PRD.
+Load the Analyst agent and run `brainstorming` (`bmad-bmm-brainstorming`) before starting your PRD.
 
 **Do I need to follow a strict order?**
 Not strictly. Once you learn the flow, you can run workflows directly using the Quick Reference above.
@@ -192,7 +192,7 @@ Not strictly. Once you learn the flow, you can run workflows directly using the 
 
 - **During workflows** — Agents guide you with questions and explanations
 - **Community** — [Discord](https://discord.gg/gk8jAdXWmj) (#bmad-method-help, #report-bugs-and-issues)
-- **Stuck?** — Run `help` to see what to do next
+- **Stuck?** — Run `help` (`bmad-help` on most platforms) to see what to do next
 
 ## Key Takeaways
 

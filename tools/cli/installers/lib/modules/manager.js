@@ -813,7 +813,6 @@ class ModuleManager {
     const newline = frontmatterMatch[0].includes('\r\n') ? '\r\n' : '\n';
 
     try {
-      const yaml = require('yaml');
       const parsed = yaml.parse(frontmatterMatch[1]);
 
       if (!parsed || typeof parsed !== 'object' || !Object.prototype.hasOwnProperty.call(parsed, 'web_bundle')) {
@@ -897,7 +896,6 @@ class ModuleManager {
             let manifestData = {};
             if (await fs.pathExists(manifestPath)) {
               const manifestContent = await fs.readFile(manifestPath, 'utf8');
-              const yaml = require('yaml');
               manifestData = yaml.parse(manifestContent);
             }
             if (!manifestData.agentCustomizations) {
@@ -906,7 +904,6 @@ class ModuleManager {
             manifestData.agentCustomizations[path.relative(bmadDir, customizePath)] = originalHash;
 
             // Write back to manifest
-            const yaml = require('yaml');
             // Clean the manifest data to remove any non-serializable values
             const cleanManifestData = structuredClone(manifestData);
 
