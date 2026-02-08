@@ -6,6 +6,7 @@ const { XmlHandler } = require('../../../lib/xml-handler');
 const { getProjectRoot, getSourcePath, getModulePath } = require('../../../lib/project-root');
 const { filterCustomizationData } = require('../../../lib/agent/compiler');
 const { ExternalModuleManager } = require('./external-manager');
+const { BMAD_FOLDER_NAME } = require('../ide/shared/path-utils');
 
 /**
  * Manages the installation, updating, and removal of BMAD modules.
@@ -26,7 +27,7 @@ const { ExternalModuleManager } = require('./external-manager');
 class ModuleManager {
   constructor(options = {}) {
     this.xmlHandler = new XmlHandler();
-    this.bmadFolderName = 'bmad'; // Default, can be overridden
+    this.bmadFolderName = BMAD_FOLDER_NAME; // Default, can be overridden
     this.customModulePaths = new Map(); // Initialize custom module paths
     this.externalModuleManager = new ExternalModuleManager(); // For external official modules
   }

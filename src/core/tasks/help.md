@@ -35,13 +35,15 @@ Determine what was just completed:
 
 1. **Load catalog** — Load `{project-root}/_bmad/_config/bmad-help.csv`
 
-2. **Resolve output locations** — Scan each folder under `_bmad/` (except `_config`) for `config.yaml`. For each workflow row, resolve its `output-location` variables against that module's config so artifact paths can be searched.
+2. **Resolve output locations and config** — Scan each folder under `_bmad/` (except `_config`) for `config.yaml`. For each workflow row, resolve its `output-location` variables against that module's config so artifact paths can be searched. Also extract `communication_language` and `project_knowledge` from each scanned module's config.
 
-3. **Analyze input** — Task may provide a workflow name/code, conversational phrase, or nothing. Infer what was just completed using INPUT ANALYSIS above.
+3. **Ground in project knowledge** — If `project_knowledge` resolves to an existing path, read available documentation files (architecture docs, project overview, tech stack references) for grounding context. Use discovered project facts when composing any project-specific output. Never fabricate project-specific details. If documentation is unavailable, state that clearly.
 
-4. **Detect active module** — Use MODULE DETECTION above to determine which module the user is working in.
+4. **Analyze input** — Task may provide a workflow name/code, conversational phrase, or nothing. Infer what was just completed using INPUT ANALYSIS above.
 
-5. **Present recommendations** — Show next steps based on completed workflows, phase/sequence ordering (KEY RULES), and artifact detection. Format per the following
+5. **Detect active module** — Use MODULE DETECTION above to determine which module the user is working in.
+
+6. **Present recommendations** — Show next steps based on completed workflows, phase/sequence ordering (KEY RULES), and artifact detection. Format per the following
 
 ## RECOMMENDED OUTPUT FORMAT
 
@@ -67,9 +69,10 @@ Determine what was just completed:
        - `Description: Create clear technical explanations with examples`
 
    ### Additional response output guidance to convey:
+   - Present all output in `{communication_language}` when available in module config
    - Run each workflow in a **fresh context window**
    - Load the agent using the platform's command format for `agent-command`, or run the workflow command directly
    - For **validation workflows**: recommend using a different high-quality LLM if available
    - For conversational requests: match the user's tone while presenting clearly
 
-6. Return to the calling process after presenting recommendations.
+7. Return to the calling process after presenting recommendations.
