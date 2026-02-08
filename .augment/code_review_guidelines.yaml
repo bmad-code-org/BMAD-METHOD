@@ -56,7 +56,7 @@ areas:
       - "src/**/workflows/**"
     rules:
       - id: "workflow_entry_point_required"
-        description: "Every workflow folder must have workflow.yaml, workflow.md, or workflow.xml as entry point"
+        description: "Every workflow folder must have workflow.md (or workflow-*.md variant) as entry point"
         severity: "high"
 
       - id: "sharded_workflow_steps_folder"
@@ -64,7 +64,7 @@ areas:
         severity: "high"
 
       - id: "standard_workflow_instructions"
-        description: "Standard workflows using workflow.yaml must include instructions.md for execution guidance"
+        description: "Standard workflows using workflow.md should include instructions.md for execution guidance"
         severity: "medium"
 
       - id: "workflow_step_limit"
@@ -75,11 +75,10 @@ areas:
   # WORKFLOW ENTRY FILE RULES
   # ============================================
   workflow_definitions:
-    description: "Workflow entry files (workflow.yaml, workflow.md, workflow.xml)"
+    description: "Workflow entry files (workflow.md variants)"
     globs:
-      - "src/**/workflows/**/workflow.yaml"
       - "src/**/workflows/**/workflow.md"
-      - "src/**/workflows/**/workflow.xml"
+      - "src/**/workflows/**/workflow-*.md"
     rules:
       - id: "workflow_name_required"
         description: "Workflow entry files must define 'name' field in frontmatter or root element"
