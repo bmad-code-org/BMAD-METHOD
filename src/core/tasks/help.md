@@ -49,9 +49,22 @@ Determine what was just completed:
    **Required items next** — List the next required workflow
    For each item show:
    - Workflow **name**
-   - **Command** (use the catalog command name; present it in your platform's command format, e.g., `bmad-example-build-prototype`)
+   - **Command** when `command` is present
+   - **Agent load instruction + code** when `command` is empty
    - **Agent** title and display name from the CSV (e.g., "🎨 Alex (Designer)")
    - Brief **description**
+
+   ### Display branching rules
+   - When `command` has a value:
+     - Present the command in your platform's command format (for example: `bmad-example-build-prototype`)
+   - When `command` is empty:
+     - Do not invent a slash command
+     - Show how to load the agent from `agent` and then invoke using the workflow/code description
+     - Example:
+       - `Explain Concept (EC)`
+       - `Load: /tech-writer, then ask to "EC about [topic]"`
+       - `Agent: Tech Writer`
+       - `Description: Create clear technical explanations with examples`
 
    ### Additional response output guidance to convey:
    - Run each workflow in a **fresh context window**

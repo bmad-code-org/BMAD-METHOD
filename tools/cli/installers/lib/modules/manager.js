@@ -449,7 +449,7 @@ class ModuleManager {
         const installSpinner = await createSpinner();
         installSpinner.start(`Installing dependencies for ${moduleInfo.name}...`);
         try {
-          execSync('npm install --production --no-audit --no-fund --prefer-offline --no-progress', {
+          execSync('npm install --omit=dev --no-audit --no-fund --no-progress --legacy-peer-deps', {
             cwd: moduleCacheDir,
             stdio: ['ignore', 'pipe', 'pipe'],
             timeout: 120_000, // 2 minute timeout
@@ -475,7 +475,7 @@ class ModuleManager {
           const installSpinner = await createSpinner();
           installSpinner.start(`Installing dependencies for ${moduleInfo.name}...`);
           try {
-            execSync('npm install --production --no-audit --no-fund --prefer-offline --no-progress', {
+            execSync('npm install --omit=dev --no-audit --no-fund --no-progress --legacy-peer-deps', {
               cwd: moduleCacheDir,
               stdio: ['ignore', 'pipe', 'pipe'],
               timeout: 120_000, // 2 minute timeout
