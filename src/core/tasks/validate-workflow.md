@@ -13,8 +13,8 @@ standalone: true
   - Parse YAML and fail fast with explicit error if parsing fails.
   - Require `user_name`; if missing, abort initialization with descriptive error.
   - Apply explicit defaults when optional keys are absent:
-    - `communication_language = "en"`
-    - `document_output_language = "en"`
+    - `communication_language = "English"`
+    - `document_output_language = "English"`
   - Log resolved values and config source path.
 
 ## Purpose
