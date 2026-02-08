@@ -350,10 +350,9 @@ async function runTests() {
     ];
     const allowedExtensions = new Set(['.md', '.yaml', '.yml', '.xml']);
     const forbiddenRef = 'validate-workflow.xml';
-    const excludedFile = path.join(projectRoot, 'src', 'core', 'tasks', 'validate-workflow.xml');
     const offenders = [];
 
-    const files = await collectFiles(searchTargets, allowedExtensions, new Set([excludedFile]));
+    const files = await collectFiles(searchTargets, allowedExtensions);
     for (const fullPath of files) {
       const content = await fs.readFile(fullPath, 'utf8');
       if (content.includes(forbiddenRef)) {
