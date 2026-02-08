@@ -14,6 +14,7 @@
 const path = require('node:path');
 const os = require('node:os');
 const fs = require('fs-extra');
+const csv = require('csv-parse/sync');
 const yaml = require('yaml');
 const { YamlXmlBuilder } = require('../tools/cli/lib/yaml-xml-builder');
 const { ManifestGenerator } = require('../tools/cli/installers/lib/core/manifest-generator');
@@ -674,6 +675,34 @@ internal: true
     await fs.remove(tmpRoot);
   } catch (error) {
     assert(false, 'Task/tool standalone and CRLF guard runs', error.message);
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test 17: Help Task Agent-Only Guidance Guard
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 17: Help Task Agent-Only Guidance Guard${colors.reset}\n`);
+
+  try {
+    const helpTaskPath = path.join(projectRoot, 'src', 'core', 'tasks', 'help.md');
+    const moduleHelpPath = path.join(projectRoot, 'src', 'bmm', 'module-help.csv');
+
+    const helpTaskContent = await fs.readFile(helpTaskPath, 'utf8');
+    const moduleHelpRows = csv.parse(await fs.readFile(moduleHelpPath, 'utf8'), {
+      columns: true,
+      skip_empty_lines: true,
+    });
+
+    const hasAgentOnlyRows = moduleHelpRows.some((row) => !row.command && row.agent);
+    assert(hasAgentOnlyRows, 'Help catalog includes agent-only rows with empty command values');
+
+    assert(
+      helpTaskContent.includes('When `command` is empty') && helpTaskContent.includes('Do not invent a slash command'),
+      'Help task includes explicit guidance for agent-only rows without commands',
+    );
+  } catch (error) {
+    assert(false, 'Help task agent-only guidance guard runs', error.message);
   }
 
   console.log('');
