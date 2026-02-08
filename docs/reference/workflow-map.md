@@ -1,19 +1,23 @@
 ---
 title: "Workflow Map"
 description: Visual reference for BMad Method workflow phases and outputs
+sidebar:
+  order: 1
 ---
 
 The BMad Method (BMM) is a module in the BMad Ecosystem, targeted at following the best practices of context engineering and planning. AI agents work best with clear, structured context. The BMM system builds that context progressively across 4 distinct phases - each phase, and multiple workflows optionally within each phase, produce documents that inform the next, so agents always know what to build and why.
 
 The rationale and concepts come from agile methodologies that have been used across the industry with great success as a mental framework.
 
-If at anytime you are unsure what to do, the `/bmad-help` command will help you stay on track or know what to do next. You can always refer to this for reference also - but /bmad-help is fully interactive and much quicker if you have already installed the BMadMethod. Additionally, if you are using different modules that have extended the BMad Method or added other complimentary non extension modules - the /bmad-help evolves to know all that is available to give you the best in the moment advice.
+If at any time you are unsure what to do, the `/bmad-help` command will help you stay on track or know what to do next. You can always refer to this for reference also - but /bmad-help is fully interactive and much quicker if you have already installed the BMad Method. Additionally, if you are using different modules that have extended the BMad Method or added other complementary non-extension modules - the /bmad-help evolves to know all that is available to give you the best in-the-moment advice.
 
 Final important note: Every workflow below can be run directly with your tool of choice via slash command or by loading an agent first and using the entry from the agents menu.
 
-<iframe src="/workflow-map-diagram.html" width="100%" height="100%" frameborder="0" style="border-radius: 8px; border: 1px solid #334155; min-height: 900px;"></iframe>
+<iframe src="/workflow-map-diagram.html" title="BMad Method Workflow Map Diagram" width="100%" height="100%" style="border-radius: 8px; border: 1px solid #334155; min-height: 900px;"></iframe>
 
-*[Interactive diagram - hover over outputs to see artifact flows]*
+<p style="font-size: 0.8rem; text-align: right; margin-top: -0.5rem; margin-bottom: 1rem;">
+  <a href="/workflow-map-diagram.html" target="_blank" rel="noopener noreferrer">Open diagram in new tab ↗</a>
+</p>
 
 ## Phase 1: Analysis (Optional)
 
@@ -21,7 +25,7 @@ Explore the problem space and validate ideas before committing to planning.
 
 | Workflow               | Purpose                                                                    | Produces                  |
 | ---------------------- | -------------------------------------------------------------------------- | ------------------------- |
-| `brainstorm`           | Brainstorm Project Ideas with guided facilitation of a brainstorming coach | `brainstorming-report.md` |
+| `brainstorming`        | Brainstorm Project Ideas with guided facilitation of a brainstorming coach | `brainstorming-report.md` |
 | `research`             | Validate market, technical, or domain assumptions                          | Research findings         |
 | `create-product-brief` | Capture strategic vision                                                   | `product-brief.md`        |
 

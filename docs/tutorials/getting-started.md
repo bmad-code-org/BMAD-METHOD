@@ -37,7 +37,7 @@ BMad helps you build software through guided workflows with specialized AI agent
 | 3     | Solutioning    | Design architecture *(BMad Method/Enterprise only)* |
 | 4     | Implementation | Build epic by epic, story by story                  |
 
-**[Open the Workflow Map](/docs/reference/workflow-map.md)** to explore phases, workflows, and context management.
+**[Open the Workflow Map](../reference/workflow-map.md)** to explore phases, workflows, and context management.
 
 Based on your project's complexity, BMad offers three planning tracks:
 
@@ -153,7 +153,7 @@ You've learned the foundation of building with BMad:
 
 Your project now has:
 
-```
+```text
 your-project/
 ├── _bmad/                         # BMad configuration
 ├── _bmad-output/

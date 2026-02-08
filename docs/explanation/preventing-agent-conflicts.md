@@ -1,6 +1,8 @@
 ---
 title: "Preventing Agent Conflicts"
 description: How architecture prevents conflicts when multiple agents implement a system
+sidebar:
+  order: 4
 ---
 
 When multiple AI agents implement different parts of a system, they can make conflicting technical decisions. Architecture documentation prevents this by establishing shared standards.
@@ -69,7 +71,7 @@ Explicit documentation of:
 
 Think of architecture as the shared context that all agents read before implementing:
 
-```
+```text
 PRD: "What to build"
      ↓
 Architecture: "How to build it"

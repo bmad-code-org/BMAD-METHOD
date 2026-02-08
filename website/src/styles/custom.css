@@ -17,12 +17,12 @@
   --sl-nav-height: 6.25rem; /* Base nav height (~3.5rem) + banner height (2.75rem) */
 
   /* Full-width content - override Starlight's default 45rem/67.5rem */
-  --sl-content-width: 100%;
+  --sl-content-width: 65rem;
 
   /* Primary accent colors - purple to match Docusaurus */
   --sl-color-accent-low: #e0e0ff;
-  --sl-color-accent: #8C8CFF;
-  --sl-color-accent-high: #4141FF;
+  --sl-color-accent: #5E5ED0;
+  --sl-color-accent-high: #3333CC;
 
   /* Text colors */
   --sl-color-white: #1e293b;
@@ -41,7 +41,7 @@
   --sl-line-height: 1.7;
 
   /* Code highlighting */
-  --sl-color-bg-inline-code: rgba(140, 140, 255, 0.1);
+  --sl-color-bg-inline-code: rgba(94, 94, 208, 0.1);
 }
 
 /* ============================================
@@ -49,7 +49,7 @@
    ============================================ */
 :root[data-theme='dark'] {
   /* Full-width content - override Starlight's default */
-  --sl-content-width: 100%;
+  --sl-content-width: 65rem;
 
   /* Primary accent colors - purple to match Docusaurus */
   --sl-color-accent-low: #2a2a5a;
@@ -138,7 +138,7 @@
 
 /* Active state - thin left accent bar */
 .sidebar-content a[aria-current='page'] {
-  background-color: rgba(140, 140, 255, 0.08);
+  background-color: rgba(94, 94, 208, 0.08);
   color: var(--sl-color-accent);
   border-left-color: var(--sl-color-accent);
   font-weight: 600;
@@ -281,7 +281,7 @@ header.header .header.sl-flex {
 .card:hover {
   transform: translateY(-3px);
   border-color: var(--sl-color-accent);
-  box-shadow: 0 8px 24px rgba(140, 140, 255, 0.15);
+  box-shadow: 0 8px 24px rgba(94, 94, 208, 0.15);
 }
 
 :root[data-theme='dark'] .card {
@@ -339,9 +339,24 @@ button:hover {
    MISC ENHANCEMENTS
    ============================================ */
 
-/* Smooth scrolling */
+/* Prevent horizontal scrollbar from full-viewport-width breakout elements (e.g. iframe) */
 html {
-  scroll-behavior: smooth;
+  overflow-x: clip;
+}
+
+/* Smooth scrolling */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Disable hover animations for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .card:hover,
+  .sl-link-card:hover {
+    transform: none;
+  }
 }
 
 /* Better link underlines */
@@ -371,7 +386,7 @@ table {
 /* Blockquotes */
 blockquote {
   border-left-color: var(--sl-color-accent);
-  background-color: rgba(140, 140, 255, 0.05);
+  background-color: rgba(94, 94, 208, 0.05);
   border-radius: 0 8px 8px 0;
   padding: 1rem 1.25rem;
 }
@@ -395,7 +410,7 @@ blockquote {
 }
 
 .starlight-aside--tip .starlight-aside__title {
-  color: #059669;
+  color: #047857;
 }
 
 :root[data-theme='dark'] .starlight-aside--tip {
@@ -408,11 +423,11 @@ blockquote {
 
 /* Note aside */
 .starlight-aside--note {
-  background-color: rgba(140, 140, 255, 0.08);
+  background-color: rgba(94, 94, 208, 0.08);
 }
 
 .starlight-aside--note .starlight-aside__title {
-  color: #8C8CFF;
+  color: #5C5CCC;
 }
 
 :root[data-theme='dark'] .starlight-aside--note {
@@ -429,7 +444,7 @@ blockquote {
 }
 
 .starlight-aside--caution .starlight-aside__title {
-  color: #d97706;
+  color: #a14908;
 }
 
 :root[data-theme='dark'] .starlight-aside--caution {
@@ -446,7 +461,7 @@ blockquote {
 }
 
 .starlight-aside--danger .starlight-aside__title {
-  color: #dc2626;
+  color: #be1c1c;
 }
 
 :root[data-theme='dark'] .starlight-aside--danger {
@@ -464,16 +479,10 @@ blockquote {
 }
 
 /* ============================================
-   FOOTER - Minimal styling
+   FOOTER - No custom styling needed
+   The only <footer> in Starlight is the content footer
+   (meta/pagination), which should stay transparent.
    ============================================ */
-footer {
-  background-color: var(--sl-color-black);
-  border-top: 1px solid var(--sl-color-hairline);
-}
-
-:root[data-theme='dark'] footer {
-  background-color: #020617;
-}
 
 /* ============================================
    RESPONSIVE ADJUSTMENTS

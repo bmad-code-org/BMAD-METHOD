@@ -1,11 +1,13 @@
 ---
 title: "How to Install BMad"
 description: Step-by-step guide to installing BMad in your project
+sidebar:
+  order: 1
 ---
 
 Use the `npx bmad-method install` command to set up BMad in your project with your choice of modules and AI tools.
 
-If you want to use a non interactive installer and provide all install options on the command line, [this guide](/docs/non-interactive-installation.md).
+If you want to use a non interactive installer and provide all install options on the command line, see [this guide](./non-interactive-installation.md).
 
 ## When to Use This
 
@@ -26,6 +28,13 @@ If you want to use a non interactive installer and provide all install options o
 ```bash
 npx bmad-method install
 ```
+
+:::tip[Bleeding edge]
+To install the latest from the main branch (may be unstable):
+```bash
+npx github:bmad-code-org/BMAD-METHOD install
+```
+:::
 
 ### 2. Choose Installation Location
 
@@ -56,7 +65,7 @@ The installer guides you through the rest — custom content, settings, etc.
 
 ## What You Get
 
-```
+```text
 your-project/
 ├── _bmad/
 │   ├── bmm/            # Your selected modules
@@ -72,15 +81,8 @@ your-project/
 
 Run the `help` workflow (`/bmad-help` on most platforms) to verify everything works and see what to do next.
 
-**Latest from main branch:**
-```bash
-npx github:bmad-code-org/BMAD-METHOD install
-```
-
-Use these if you want the newest features before they're officially released. Things might break.
-
 ## Troubleshooting
 
 **Installer throws an error** — Copy-paste the output into your AI assistant and let it figure it out.
 
-**Installer worked but something doesn't work later** — Your AI needs BMad context to help. See [How to Get Answers About BMad](/docs/how-to/get-answers-about-bmad.md) for how to point your AI at the right sources.
+**Installer worked but something doesn't work later** — Your AI needs BMad context to help. See [How to Get Answers About BMad](./get-answers-about-bmad.md) for how to point your AI at the right sources.
