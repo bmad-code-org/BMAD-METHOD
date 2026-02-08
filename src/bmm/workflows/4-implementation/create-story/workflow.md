@@ -14,6 +14,7 @@ web_bundle: false
   - `sprint_status`, `epics_file`, `prd_file`, `architecture_file`, `ux_file`
   - `project_context`
   - `date` (system-generated)
+  - `installed_path` = `{project-root}/_bmad/bmm/workflows/4-implementation/create-story`
 
 <workflow>
   <critical>Communicate all responses in {communication_language} and generate all documents in {document_output_language}</critical>
@@ -269,7 +270,7 @@ web_bundle: false
   </step>
 
   <step n="6" goal="Update sprint status and finalize">
-    <invoke-task>Validate against checklist at {installed_path}/checklist.md using _bmad/core/tasks/validate-workflow.md</invoke-task>
+    <invoke-task>Validate against checklist at {installed_path}/checklist.md using {project-root}/_bmad/core/tasks/validate-workflow.md</invoke-task>
     <action>Save story document unconditionally</action>
 
     <!-- Update sprint status -->

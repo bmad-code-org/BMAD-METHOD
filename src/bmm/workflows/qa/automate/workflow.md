@@ -13,7 +13,7 @@ web_bundle: false
   - `document_output_language`
   - `output_folder`
   - `implementation_artifacts`
-  - `installed_path`
+  - `installed_path` = `{project-root}/_bmad/bmm/workflows/qa/automate`
   - `config_source`
   - `test_dir`
   - `source_dir`
@@ -29,7 +29,7 @@ web_bundle: false
 </step>
 
 <step n="2" goal="Validate generated tests">
-  <invoke-task>Validate against checklist at {installed_path}/checklist.md using _bmad/core/tasks/validate-workflow.md</invoke-task>
+  <invoke-task>Validate against checklist at {installed_path}/checklist.md using {project-root}/_bmad/core/tasks/validate-workflow.md</invoke-task>
 </step>
 
 </workflow>
