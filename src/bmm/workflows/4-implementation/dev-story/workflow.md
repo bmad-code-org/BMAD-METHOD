@@ -45,22 +45,36 @@ Implement a ready story end-to-end with strict validation gates, accurate progre
   - Change Log
   - Status
 - Execute steps in order and do not skip validation gates.
-- Continue until the story is complete unless a defined HALT condition triggers.
+- Continue until the story is complete unless the HALT protocol below is triggered.
 
-## HALT Definition
-- HALT triggers:
-  - Required inputs/files are missing or unreadable.
-  - Validation gates fail and cannot be remediated in current step.
-  - Test/regression failures persist after fix attempts.
-  - Story state becomes inconsistent (e.g., malformed task structure preventing safe updates).
+## HALT Protocol (Normative)
+- Scope:
+  - Every `HALT` instruction in this workflow and all `steps/*.md` files MUST use this protocol.
+- Operational definition:
+  - HALT is a deterministic hard-stop event raised when execution cannot safely continue.
+  - A HALT event MUST include:
+    - `reason_code` (stable machine-readable code)
+    - `step_id` (current step file + step number)
+    - `message` (human-readable failure summary)
+    - `required_action` (what user/operator must do before resume)
+- Trigger criteria:
+  - Required inputs/files are missing, unreadable, or malformed.
+  - Validation gates fail and cannot be remediated in the current step.
+  - Test/regression failures persist after attempted fixes.
+  - Story state is inconsistent (for example malformed task structure preventing safe updates).
 - HALT behavior:
-  - Stop executing further steps immediately.
-  - Persist current story-file edits and workflow state safely.
-  - Emit explicit user-facing error message describing trigger and remediation needed.
-  - Do not apply partial completion marks after HALT.
+  - Stop execution immediately and skip all downstream steps.
+  - Persist workflow checkpoint: current step id, resolved variables, and pending task context.
+  - Persist only already-applied safe edits; do not apply new partial completion marks after HALT.
+  - Emit logger event exactly in this format:
+    - `HALT[{reason_code}] step={step_id} story={story_key|unknown} detail=\"{message}\"`
+  - Emit user-facing prompt exactly in this format:
+    - `Workflow HALTED at {step_id} ({reason_code}): {message}. Required action: {required_action}. Reply RESUME after remediation.`
 - Resume semantics:
-  - Manual resume only after user confirms the blocking issue is resolved.
-  - Resume from the last incomplete step checkpoint, re-running validations before progressing.
+  - Manual resume only (no automatic retry loop).
+  - Resume is checkpoint-based: restart from the halted step after user confirms remediation.
+  - Re-run the failed validation/input check before executing further actions.
+  - If the same HALT condition repeats, stop again with updated evidence.
 
 ## Execution
 Read fully and follow: `steps/step-01-find-story.md`.

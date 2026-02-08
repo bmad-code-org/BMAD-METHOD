@@ -10,9 +10,14 @@ nextStepFile: './step-10-closeout.md'
     <action>Confirm File List includes every changed file</action>
     <action>Execute enhanced definition-of-done validation</action>
     <action>Update the story Status to: "review"</action>
-    <action>Initialize sprint tracking state:
-      - If {sprint_status} exists and is readable, load file and set {{current_sprint_status}} from tracking mode/content
-      - If file does not exist, unreadable, or indicates no sprint tracking, set {{current_sprint_status}} = "no-sprint-tracking"
+    <action>Initialize sprint tracking state deterministically before any sprint-status check:
+      - Set {{current_sprint_status}} = "no-sprint-tracking"
+      - Set {{sprint_tracking_enabled}} = false
+      - If {sprint_status} exists and is readable:
+        - Load the FULL file: {sprint_status}
+        - If file content indicates tracking disabled OR development_status section is missing, keep "no-sprint-tracking"
+        - Else set {{current_sprint_status}} = "enabled" and {{sprint_tracking_enabled}} = true
+      - If file missing/unreadable, keep defaults and continue with story-only status update
     </action>
 
     <!-- Enhanced Definition of Done Validation -->
@@ -31,31 +36,31 @@ nextStepFile: './step-10-closeout.md'
     </action>
 
     <!-- Mark story ready for review - sprint status conditional -->
-    <check if="{sprint_status} file exists AND {{current_sprint_status}} != 'no-sprint-tracking'">
-      <action>Load the FULL file: {sprint_status}</action>
+    <check if="{{sprint_tracking_enabled}} == true">
       <action>Find development_status key matching {{story_key}}</action>
-      <action>Verify current status is "in-progress" (expected previous state)</action>
-      <action>Update development_status[{{story_key}}] = "review"</action>
-      <action>Save file, preserving ALL comments and structure including STATUS DEFINITIONS</action>
-      <output>✅ Story status updated to "review" in sprint-status.yaml</output>
+      <check if="story key found in sprint status">
+        <action>Verify current status is "in-progress" (expected previous state)</action>
+        <action>Update development_status[{{story_key}}] = "review"</action>
+        <action>Save file, preserving ALL comments and structure including STATUS DEFINITIONS</action>
+        <output>✅ Story status updated to "review" in sprint-status.yaml</output>
+      </check>
+      <check if="story key not found in sprint status">
+        <output>⚠️ Story file updated, but sprint-status update failed: {{story_key}} not found
+
+          Story status is set to "review" in file, but sprint-status.yaml may be out of sync.
+        </output>
+      </check>
     </check>
 
-    <check if="{sprint_status} file does NOT exist OR {{current_sprint_status}} == 'no-sprint-tracking'">
+    <check if="{{sprint_tracking_enabled}} == false">
       <output>ℹ️ Story status updated to "review" in story file (no sprint tracking configured)</output>
     </check>
 
-    <check if="story key not found in sprint status">
-      <output>⚠️ Story file updated, but sprint-status update failed: {{story_key}} not found
-
-        Story status is set to "review" in file, but sprint-status.yaml may be out of sync.
-      </output>
-    </check>
-
     <!-- Final validation gates -->
-    <action if="any task is incomplete">HALT - Complete remaining tasks before marking ready for review</action>
-    <action if="regression failures exist">HALT - Fix regression issues before completing</action>
-    <action if="File List is incomplete">HALT - Update File List with all changed files</action>
-    <action if="definition-of-done validation fails">HALT - Address DoD failures before completing</action>
+    <action if="any task is incomplete">Invoke HALT protocol (reason_code: DEV-STORY-STEP-09-INCOMPLETE-TASKS, step_id: step-09-mark-review-ready, message: "Incomplete tasks remain before review-ready transition.", required_action: "Complete all tasks/subtasks and rerun validations.")</action>
+    <action if="regression failures exist">Invoke HALT protocol (reason_code: DEV-STORY-STEP-09-REGRESSION-FAIL, step_id: step-09-mark-review-ready, message: "Regression suite has failures.", required_action: "Fix failing tests and rerun full regression suite.")</action>
+    <action if="File List is incomplete">Invoke HALT protocol (reason_code: DEV-STORY-STEP-09-FILE-LIST-INCOMPLETE, step_id: step-09-mark-review-ready, message: "File List does not include all changed files.", required_action: "Update File List with all added/modified/deleted paths.")</action>
+    <action if="definition-of-done validation fails">Invoke HALT protocol (reason_code: DEV-STORY-STEP-09-DOD-FAIL, step_id: step-09-mark-review-ready, message: "Definition-of-done checks failed.", required_action: "Address DoD failures and rerun validation.")</action>
   </step>
 
 ## Next

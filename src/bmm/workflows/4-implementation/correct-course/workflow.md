@@ -18,17 +18,24 @@ web_bundle: false
   - `sprint_status` = `{implementation_artifacts}/sprint-status.yaml`
   - `date` (system-generated)
   - `installed_path` = `{project-root}/_bmad/bmm/workflows/4-implementation/correct-course`
-  - Note: `installed_path` targets the installed runtime tree under `_bmad/...`; source authoring files are in `src/bmm/workflows/4-implementation/correct-course/...`.
+  - `source_path` = `{project-root}/src/bmm/workflows/4-implementation/correct-course`
+  - Note: `installed_path` targets the installed runtime tree under `_bmad/...`; `source_path` is the repository authoring path.
   - `default_output_file` = `{planning_artifacts}/sprint-change-proposal-{date}.md`
 
 <workflow>
   <critical>Communicate all responses in {communication_language} and generate all documents in {document_output_language}</critical>
 
   <step n="1" goal="Analyze changes and propose corrective actions">
-    <action>Read and follow instructions at: {installed_path}/instructions.md</action>
+    <action>Resolve workflow content path:
+      - If `{installed_path}/instructions.md` exists and is readable, set {{workflow_path}} = `{installed_path}`
+      - Else if `{source_path}/instructions.md` exists and is readable, set {{workflow_path}} = `{source_path}`
+      - Else emit an error listing both paths and HALT
+    </action>
+    <action>Read and follow instructions at: {{workflow_path}}/instructions.md</action>
   </step>
 
   <step n="2" goal="Validate proposal quality">
-    <invoke-task>Validate against checklist at {installed_path}/checklist.md using {project-root}/_bmad/core/tasks/validate-workflow.md</invoke-task>
+    <action>If {{workflow_path}} is not set from step 1, repeat path resolution using checklist.md</action>
+    <invoke-task>Validate against checklist at {{workflow_path}}/checklist.md using {project-root}/_bmad/core/tasks/validate-workflow.md</invoke-task>
   </step>
 </workflow>

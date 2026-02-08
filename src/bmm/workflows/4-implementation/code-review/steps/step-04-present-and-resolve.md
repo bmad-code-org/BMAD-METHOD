@@ -6,11 +6,20 @@ reviewFindingsFile: '{story_dir}/review-findings.json'
 ---
 
   <step n="4" goal="Present findings and fix them">
-    <action>Load structured findings from {reviewFindingsFile}</action>
+    <action>Resolve findings artifact input:
+      - Use {{review_findings_file}} from step 3 when present
+      - Otherwise fallback to {reviewFindingsFile}
+      - Set {{review_findings_schema}} = "id,severity,type,summary,detail,file_line,proof,suggested_fix,reviewer,timestamp" if not already set
+    </action>
+    <action>Load structured findings JSON array from {{review_findings_file}}</action>
     <action>Validate findings schema for each entry:
       id, severity, type, summary, detail, file_line, proof, suggested_fix, reviewer, timestamp
     </action>
-    <action>If findings file missing or malformed: HALT with explicit error and return to step 3 generation</action>
+    <action>Validation contract:
+      - `file_line` is the required `file:line` locator in `path/to/file:line` format
+      - Reject non-array JSON, missing required keys, or invalid file_line formatting
+      - If findings file missing/unreadable/malformed: HALT with explicit error and return to step 3 generation
+    </action>
     <action>Categorize findings: HIGH (must fix), MEDIUM (should fix), LOW (nice to fix)</action>
     <action>Set {{fixed_count}} = 0</action>
     <action>Set {{action_count}} = 0</action>
