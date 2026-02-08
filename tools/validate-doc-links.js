@@ -21,8 +21,8 @@ const path = require('node:path');
 const DOCS_ROOT = path.resolve(__dirname, '../docs');
 const DRY_RUN = !process.argv.includes('--write');
 
-// Regex to match markdown links with site-relative paths
-const LINK_REGEX = /\[([^\]]*)\]\((\/[^)]+)\)/g;
+// Regex to match markdown links with site-relative paths or bare .md references
+const LINK_REGEX = /\[([^\]]*)\]\(((?:\.{1,2}\/|\/)[^)]+|[\w][^)\s]*\.md(?:[?#][^)]*)?)\)/g;
 
 // File extensions that are static assets, not markdown docs
 const STATIC_ASSET_EXTENSIONS = ['.zip', '.txt', '.pdf', '.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp', '.ico'];
@@ -108,11 +108,27 @@ function extractAnchors(content) {
  * /docs/how-to/installation/install-bmad.md -> docs/how-to/installation/install-bmad.md
  * /how-to/installation/install-bmad/ -> docs/how-to/installation/install-bmad.md or .../index.md
  */
-function resolveLink(siteRelativePath) {
+function resolveLink(siteRelativePath, sourceFile) {
   // Strip anchor and query
   let checkPath = siteRelativePath.split('#')[0].split('?')[0];
 
-  // Strip /docs/ prefix if present (repo-relative links)
+  // Handle relative paths (including bare .md): resolve from source file's directory
+  if (checkPath.startsWith('./') || checkPath.startsWith('../') || (!checkPath.startsWith('/') && checkPath.endsWith('.md'))) {
+    const sourceDir = path.dirname(sourceFile);
+    const resolved = path.resolve(sourceDir, checkPath);
+    // Ensure the resolved path stays within DOCS_ROOT
+    if (!resolved.startsWith(DOCS_ROOT + path.sep) && resolved !== DOCS_ROOT) return null;
+    if (fs.existsSync(resolved) && fs.statSync(resolved).isFile()) return resolved;
+    if (fs.existsSync(resolved + '.md')) return resolved + '.md';
+    // Directory: check for index.md
+    if (fs.existsSync(resolved) && fs.statSync(resolved).isDirectory()) {
+      const indexFile = path.join(resolved, 'index.md');
+      if (fs.existsSync(indexFile)) return indexFile;
+    }
+    return null;
+  }
+
+  // Strip /docs/ prefix if present (legacy absolute links)
   if (checkPath.startsWith('/docs/')) {
     checkPath = checkPath.slice(5); // Remove '/docs' but keep leading '/'
   }
@@ -129,11 +145,17 @@ function resolveLink(siteRelativePath) {
 
   // Direct path (e.g., /path/file.md)
   const direct = path.join(DOCS_ROOT, checkPath);
-  if (fs.existsSync(direct)) return direct;
+  if (fs.existsSync(direct) && fs.statSync(direct).isFile()) return direct;
 
   // Try with .md extension
   const withMd = direct + '.md';
   if (fs.existsSync(withMd)) return withMd;
+
+  // Directory without trailing slash: check for index.md
+  if (fs.existsSync(direct) && fs.statSync(direct).isDirectory()) {
+    const indexFile = path.join(direct, 'index.md');
+    if (fs.existsSync(indexFile)) return indexFile;
+  }
 
   return null;
 }
@@ -144,7 +166,7 @@ function resolveLink(siteRelativePath) {
 function findFileWithContext(brokenPath) {
   // Extract filename and parent directory from the broken path
   // e.g., /tutorials/getting-started/foo/ -> parent: getting-started, file: foo.md
-  const cleanPath = brokenPath.replace(/\/$/, '').replace(/^\//, '');
+  const cleanPath = brokenPath.replace(/\/$/, '').replace(/^(\.\.\/|\.\/|\/)+/, '');
   const parts = cleanPath.split('/');
   const fileName = parts.at(-1) + '.md';
   const parentDir = parts.length > 1 ? parts.at(-2) : null;
@@ -219,7 +241,7 @@ function processFile(filePath) {
     }
 
     // Validate the link target exists
-    const targetFile = resolveLink(linkPath);
+    const targetFile = resolveLink(linkPath, filePath);
 
     if (!targetFile) {
       // Link is broken - try to find the file

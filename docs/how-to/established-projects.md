@@ -1,6 +1,8 @@
 ---
 title: "Established Projects"
 description: How to use BMad Method on existing codebases
+sidebar:
+  order: 6
 ---
 
 Use BMad Method effectively when working on existing projects and legacy codebases, sometimes also referred to as brownfield projects.
@@ -44,8 +46,8 @@ You have two primary options depending on the scope of changes:
 
 | Scope                          | Recommended Approach                                                                                                          |
 | ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
-| **Small updates or additions** | Use `quick-flow-solo-dev` to create a tech-spec and implement the change. The full four-phase BMad method is likely overkill. |
-| **Major changes or additions** | Start with the BMad method, applying as much or as little rigor as needed.                                                    |
+| **Small updates or additions** | Use `quick-flow-solo-dev` to create a tech-spec and implement the change. The full four-phase BMad Method is likely overkill. |
+| **Major changes or additions** | Start with the BMad Method, applying as much or as little rigor as needed.                                                    |
 
 ### During PRD Creation
 
@@ -76,5 +78,5 @@ Pay close attention here to prevent reinventing the wheel or making decisions th
 
 ## More Information
 
-- **[Quick Fixes](/docs/how-to/quick-fixes.md)** - Bug fixes and ad-hoc changes
-- **[Established Projects FAQ](/docs/explanation/established-projects-faq.md)** - Common questions about working on established projects
+- **[Quick Fixes](./quick-fixes.md)** - Bug fixes and ad-hoc changes
+- **[Established Projects FAQ](../explanation/established-projects-faq.md)** - Common questions about working on established projects

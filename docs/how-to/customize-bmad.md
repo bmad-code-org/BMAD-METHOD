@@ -1,34 +1,35 @@
 ---
-title: "BMad Method Customization Guide"
+title: "How to Customize BMad"
 description: Customize agents, workflows, and modules while preserving update compatibility
+sidebar:
+  order: 7
 ---
 
-The ability to customize the BMad Method and its core to your needs, while still being able to get updates and enhancements is a critical idea within the BMad Ecosystem.
+Use the `.customize.yaml` files to tailor agent behavior, personas, and menus while preserving your changes across updates.
 
-The Customization Guidance outlined here, while targeted at understanding BMad Method customization, applies to any other module use within the BMad Method.
+## When to Use This
 
-## Types of Customization
+- You want to change an agent's name, personality, or communication style
+- You need agents to remember project-specific context
+- You want to add custom menu items that trigger your own workflows or prompts
+- You want agents to perform specific actions every time they start up
 
-Customization includes Agent Customization, Workflow/Skill customization, the addition of new MCPs or Skills to be used by existing agents. Aside from all of this, a whole other realm of customization involves creating / adding your own relevant BMad Builder workflows, skills, agents and maybe even your own net new modules to compliment the BMad Method Module.
+:::note[Prerequisites]
+- BMad installed in your project (see [How to Install BMad](./install-bmad.md))
+- A text editor for YAML files
+:::
 
-Warning: The reason for customizing as this guide will prescribe will allow you to continue getting updates without worrying about losing your customization changes. And by continuing to get updates as BMad modules advance, you will be able to continue to evolve as the system improves.
+:::caution[Keep Your Customizations Safe]
+Always use the `.customize.yaml` files described here rather than editing agent files directly. The installer overwrites agent files during updates, but preserves your `.customize.yaml` changes.
+:::
 
-## Agent Customization
+## Steps
 
-### Agent Customization Areas
+### 1. Locate Customization Files
 
-- Change agent names, personas or manner of speech
-- Add project-specific memories or context
-- Add custom menu items to custom or inline prompts, skills or custom BMad workflows
-- Define critical actions that occur agent startup for consistent behavior
+After installation, find one `.customize.yaml` file per agent in:
 
-## How to customize an agent.
-
-**1. Locate Customization Files**
-
-After installation, find agent customization files in:
-
-```
+```text
 _bmad/_config/agents/
 ├── core-bmad-master.customize.yaml
 ├── bmm-dev.customize.yaml
@@ -36,28 +37,22 @@ _bmad/_config/agents/
 └── ... (one file per installed agent)
 ```
 
-**2. Edit Any Agent**
+### 2. Edit the Customization File
 
-Open the `.customize.yaml` file for the agent you want to modify. All sections are optional - customize only what you need.
+Open the `.customize.yaml` file for the agent you want to modify. Every section is optional -- customize only what you need.
 
-**3. Rebuild the Agent**
+| Section             | Behavior     | Purpose                                        |
+| ------------------- | ------------ | ---------------------------------------------- |
+| `agent.metadata`    | Replaces     | Override the agent's display name               |
+| `persona`           | Replaces     | Set role, identity, style, and principles       |
+| `memories`          | Appends      | Add persistent context the agent always recalls |
+| `menu`              | Appends      | Add custom menu items for workflows or prompts  |
+| `critical_actions`  | Appends      | Define startup instructions for the agent       |
+| `prompts`           | Appends      | Create reusable prompts for menu actions         |
 
-After editing, IT IS CRITICAL to rebuild the agent to apply changes:
+Sections marked **Replaces** overwrite the agent's defaults entirely. Sections marked **Appends** add to the existing configuration.
 
-```bash
-npx bmad-method install
-```
-
-You can either then:
-
-- Select `Quick Update` - This will also ensure all packages are up to date AND compile all agents to include any updates or customizations
-- Select `Rebuild Agents` - This will only rebuild and apply customizations to agents, without pulling the latest
-
-There will be additional tools shortly after beta launch to allow install of individual agents, workflows, skills and modules without the need for using the full bmad installer.
-
-### What Agent Properties Can Be Customized?
-
-#### Agent Name
+**Agent Name**
 
 Change how the agent introduces itself:
 
@@ -67,7 +62,7 @@ agent:
     name: 'Spongebob' # Default: "Amelia"
 ```
 
-#### Persona
+**Persona**
 
 Replace the agent's personality, role, and communication style:
 
@@ -81,9 +76,9 @@ persona:
     - 'Favor composition over inheritance'
 ```
 
-**Note:** The persona section replaces the entire default persona (not merged).
+The `persona` section replaces the entire default persona, so include all four fields if you set it.
 
-#### Memories
+**Memories**
 
 Add persistent context the agent will always remember:
 
@@ -91,12 +86,12 @@ Add persistent context the agent will always remember:
 memories:
   - 'Works at Krusty Krab'
   - 'Favorite Celebrity: David Hasslehoff'
-  - 'Learned in Epic 1 that its not cool to just pretend that tests have passed'
+  - 'Learned in Epic 1 that it is not cool to just pretend that tests have passed'
 ```
 
-### Custom Menu Items
+**Menu Items**
 
-Any custom items you add here will be included in the agents display menu.
+Add custom entries to the agent's display menu. Each item needs a `trigger`, a target (`workflow` path or `action` reference), and a `description`:
 
 ```yaml
 menu:
@@ -108,18 +103,18 @@ menu:
     description: Deploy to production
 ```
 
-### Critical Actions
+**Critical Actions**
 
-Add instructions that execute before the agent starts:
+Define instructions that run when the agent starts up:
 
 ```yaml
 critical_actions:
   - 'Check the CI Pipelines with the XYZ Skill and alert user on wake if anything is urgently needing attention'
 ```
 
-### Custom Prompts
+**Custom Prompts**
 
-Define reusable prompts for `action="#id"` menu handlers:
+Create reusable prompts that menu items can reference with `action="#id"`:
 
 ```yaml
 prompts:
@@ -131,29 +126,47 @@ prompts:
       3. Execute deployment script
 ```
 
+### 3. Apply Your Changes
+
+After editing, recompile the agent to apply changes:
+
+```bash
+npx bmad-method install
+```
+
+The installer detects the existing installation and offers these options:
+
+| Option                | What It Does                                                        |
+| --------------------- | ------------------------------------------------------------------- |
+| **Quick Update**      | Updates all modules to the latest version and recompiles all agents |
+| **Recompile Agents**  | Applies customizations only, without updating module files          |
+| **Modify BMad Installation** | Full installation flow for adding or removing modules        |
+
+For customization-only changes, **Recompile Agents** is the fastest option.
+
 ## Troubleshooting
 
 **Changes not appearing?**
 
-- Make sure you ran `npx bmad-method build <agent-name>` after editing
-- Check YAML syntax is valid (indentation matters!)
-- Verify the agent name matches the file name pattern
+- Run `npx bmad-method install` and select **Recompile Agents** to apply changes
+- Check that your YAML syntax is valid (indentation matters)
+- Verify you edited the correct `.customize.yaml` file for the agent
 
 **Agent not loading?**
 
-- Check for YAML syntax errors
-- Ensure required fields aren't left empty if you uncommented them
-- Try reverting to the template and rebuilding
+- Check for YAML syntax errors using an online YAML validator
+- Ensure you did not leave fields empty after uncommenting them
+- Try reverting to the original template and rebuilding
 
-**Need to reset?**
+**Need to reset an agent?**
 
-- Remove content from the `.customize.yaml` file (or delete the file)
-- Run `npx bmad-method build <agent-name>` to regenerate defaults
+- Clear or delete the agent's `.customize.yaml` file
+- Run `npx bmad-method install` and select **Recompile Agents** to restore defaults
 
 ## Workflow Customization
 
-Information about customizing existing BMad Method workflows and skills are coming soon.
+Customization of existing BMad Method workflows and skills is coming soon.
 
 ## Module Customization
 
-Information on how to build expansion modules that augment BMad, or make other existing module customizations are coming soon.
+Guidance on building expansion modules and customizing existing modules is coming soon.

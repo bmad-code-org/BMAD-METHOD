@@ -6,7 +6,6 @@ on:
       - main
     paths:
       - "docs/**"
-      - "src/modules/*/docs/**"
       - "website/**"
       - "tools/build-docs.mjs"
       - ".github/workflows/docs.yaml"
@@ -19,6 +18,7 @@ permissions:
 
 concurrency:
   group: "pages"
+  # No big win in setting this to true — risk of cancelling a deploy mid-flight.
   cancel-in-progress: false
 
 jobs:
@@ -28,12 +28,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
+          # Full history needed for Starlight's lastUpdated timestamps (git log)
           fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version-file: ".nvmrc"
           cache: "npm"
 
       - name: Install dependencies

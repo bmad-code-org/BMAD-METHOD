@@ -1,6 +1,8 @@
 ---
 title: "How to Get Answers About BMad"
 description: Use an LLM to quickly answer your own BMad questions
+sidebar:
+  order: 4
 ---
 
 If you have successfully installed BMad and the BMad Method (+ other modules as needed) - the first step in getting answers is `/bmad-help`. This will answer upwards of 80% of all questions and is available to you in the IDE as you are working.
@@ -38,9 +40,10 @@ The `_bmad` folder is created when you install BMad. If you don't have it yet, c
 
 Fetch `llms-full.txt` into your session:
 
-```
+```text
 https://bmad-code-org.github.io/BMAD-METHOD/llms-full.txt
 ```
+
 
 ### 3. Ask Your Question
 

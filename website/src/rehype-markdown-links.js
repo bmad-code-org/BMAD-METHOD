@@ -1,117 +1,111 @@
 /**
- * Rehype plugin to transform markdown file links (.md) to page routes
+ * Rehype plugin to transform relative .md links into correct site URLs.
  *
- * Transforms:
- *   ./path/to/file.md → ./path/to/file/
- *   ./path/index.md → ./path/ (index.md becomes directory root)
- *   ../path/file.md#anchor → ../path/file/#anchor
- *   ./file.md?query=param → ./file/?query=param
- *   /docs/absolute/path/file.md → {base}/absolute/path/file/
+ * Uses the source file's disk path (via vfile) to resolve the link target,
+ * then computes the output URL relative to the content root directory.
+ * This correctly handles Starlight's directory-per-page URL structure
+ * where ./sibling.md from reference/testing.md must become /reference/sibling/
+ * (not ./sibling/ which would resolve to /reference/testing/sibling/).
  *
- * For absolute paths starting with /docs/, the /docs prefix is stripped
- * since the Astro site serves content from the docs directory as the root.
- * The base path is prepended to absolute paths for subdirectory deployments.
- *
- * Affects relative links (./, ../) and absolute paths (/) - external links are unchanged
+ * Supports: ./sibling.md, ../other/page.md, bare.md, /docs/absolute.md
+ * Preserves: query strings, hash anchors
+ * Skips: external URLs, non-.md links
  */
 
 import { visit } from 'unist-util-visit';
+import path from 'node:path';
 
 /**
- * Convert Markdown file links (.md) into equivalent page route-style links.
- *
- * The returned transformer walks the HTML tree and rewrites anchor `href` values that are relative paths (./, ../) or absolute paths (/) pointing to `.md` files. It preserves query strings and hash anchors, rewrites `.../index.md` to the directory root path (`.../`), and rewrites other `.md` file paths by removing the `.md` extension and ensuring a trailing slash. External links (http://, https://) and non-.md links are left unchanged.
- *
- * @param {Object} options - Plugin options
- * @param {string} options.base - The base path to prepend to absolute URLs (e.g., '/BMAD-METHOD/')
- * @returns {function} A HAST tree transformer that mutates `a` element `href` properties as described.
+ * @param {Object} options
+ * @param {string} options.base - Site base path (e.g., '/BMAD-METHOD/')
+ * @param {string} [options.contentDir] - Absolute path to content root; auto-detected if omitted
  */
 export default function rehypeMarkdownLinks(options = {}) {
   const base = options.base || '/';
-  // Normalize base: ensure it ends with / and doesn't have double slashes
-  const normalizedBase = base === '/' ? '' : base.endsWith('/') ? base.slice(0, -1) : base;
+  const normalizedBase = base === '/' ? '' : base.replace(/\/$/, '');
 
-  return (tree) => {
+  return (tree, file) => {
+    // The current file's absolute path on disk, set by Astro's markdown pipeline
+    const currentFilePath = file.path;
+    if (!currentFilePath) return;
+
+    // Auto-detect content root: walk up from current file to find src/content/docs
+    const contentDir = options.contentDir || detectContentDir(currentFilePath);
+    if (!contentDir) {
+      throw new Error(`[rehype-markdown-links] Could not detect content directory for: ${currentFilePath}`);
+    }
+
     visit(tree, 'element', (node) => {
-      // Only process anchor tags with href
-      if (node.tagName !== 'a' || !node.properties?.href) {
+      if (node.tagName !== 'a' || typeof node.properties?.href !== 'string') {
         return;
       }
 
       const href = node.properties.href;
 
-      // Skip if not a string (shouldn't happen, but be safe)
-      if (typeof href !== 'string') {
+      // Skip external links (including protocol-relative URLs like //cdn.example.com)
+      if (href.includes('://') || href.startsWith('//') || href.startsWith('mailto:') || href.startsWith('tel:')) {
         return;
       }
 
-      // Skip external links (http://, https://, mailto:, etc.)
-      if (href.includes('://') || href.startsWith('mailto:') || href.startsWith('tel:')) {
-        return;
-      }
+      // Split href into path vs query+fragment suffix
+      const delimIdx = findFirstDelimiter(href);
+      const linkPath = delimIdx === -1 ? href : href.substring(0, delimIdx);
+      const suffix = delimIdx === -1 ? '' : href.substring(delimIdx);
 
-      // Only transform paths starting with ./, ../, or / (absolute)
-      if (!href.startsWith('./') && !href.startsWith('../') && !href.startsWith('/')) {
-        return;
-      }
+      // Only process .md links
+      if (!linkPath.endsWith('.md')) return;
 
-      // Extract path portion (before ? and #) to check if it's a .md file
-      const firstDelimiter = Math.min(
-        href.indexOf('?') === -1 ? Infinity : href.indexOf('?'),
-        href.indexOf('#') === -1 ? Infinity : href.indexOf('#'),
-      );
-      const pathPortion = firstDelimiter === Infinity ? href : href.substring(0, firstDelimiter);
-
-      // Don't transform if path doesn't end with .md
-      if (!pathPortion.endsWith('.md')) {
-        return;
-      }
-
-      // Split the URL into parts: path, anchor, and query
-      let urlPath = pathPortion;
-      let anchor = '';
-      let query = '';
-
-      // Extract query string and anchor from original href
-      if (firstDelimiter !== Infinity) {
-        const suffix = href.substring(firstDelimiter);
-        const anchorInSuffix = suffix.indexOf('#');
-        if (suffix.startsWith('?')) {
-          if (anchorInSuffix !== -1) {
-            query = suffix.substring(0, anchorInSuffix);
-            anchor = suffix.substring(anchorInSuffix);
-          } else {
-            query = suffix;
-          }
-        } else {
-          // starts with #
-          anchor = suffix;
-        }
-      }
-
-      // Track if this was an absolute path (for base path prepending)
-      const isAbsolute = urlPath.startsWith('/');
-
-      // Strip /docs/ prefix from absolute paths (repo-relative → site-relative)
-      if (urlPath.startsWith('/docs/')) {
-        urlPath = urlPath.slice(5); // Remove '/docs' prefix, keeping the leading /
-      }
-
-      // Transform .md to /
-      // Special case: index.md → directory root (e.g., ./tutorials/index.md → ./tutorials/)
-      if (urlPath.endsWith('/index.md')) {
-        urlPath = urlPath.replace(/\/index\.md$/, '/');
+      // Resolve the target file's absolute path on disk
+      let targetPath;
+      if (linkPath.startsWith('/docs/')) {
+        // Absolute /docs/ path — resolve from content root
+        targetPath = path.join(contentDir, linkPath.slice(5)); // strip '/docs'
+      } else if (linkPath.startsWith('/')) {
+        // Other absolute paths — resolve from content root
+        targetPath = path.join(contentDir, linkPath);
       } else {
-        urlPath = urlPath.replace(/\.md$/, '/');
+        // Relative path (./sibling.md, ../other.md, bare.md) — resolve from current file
+        targetPath = path.resolve(path.dirname(currentFilePath), linkPath);
       }
 
-      // Prepend base path to absolute URLs for subdirectory deployments
-      if (isAbsolute && normalizedBase) {
-        urlPath = normalizedBase + urlPath;
+      // Compute the target's path relative to content root
+      const relativeToContent = path.relative(contentDir, targetPath);
+
+      // Safety: skip if target resolves outside content root
+      if (relativeToContent.startsWith('..')) return;
+
+      // Convert file path to URL: strip .md, handle index, ensure leading/trailing slashes
+      let urlPath = relativeToContent.replace(/\.md$/, '');
+
+      // index.md becomes the directory root
+      if (urlPath.endsWith('/index') || urlPath === 'index') {
+        urlPath = urlPath.slice(0, -'index'.length);
       }
 
-      // Reconstruct the href
-      node.properties.href = urlPath + query + anchor;
+      // Build absolute URL with base path, normalizing any double slashes
+      const raw = normalizedBase + '/' + urlPath.replace(/\/?$/, '/') + suffix;
+      node.properties.href = raw.replace(/\/\/+/g, '/');
     });
   };
+}
+
+/** Find the index of the first ? or # in a string, or -1 if neither exists. */
+export function findFirstDelimiter(str) {
+  const q = str.indexOf('?');
+  const h = str.indexOf('#');
+  if (q === -1) return h;
+  if (h === -1) return q;
+  return Math.min(q, h);
+}
+
+/** Walk up from a file path to find the content docs directory. */
+export function detectContentDir(filePath) {
+  const segments = filePath.split(path.sep);
+  // Look for src/content/docs in the path
+  for (let i = segments.length - 1; i >= 2; i--) {
+    if (segments[i - 2] === 'src' && segments[i - 1] === 'content' && segments[i] === 'docs') {
+      return segments.slice(0, i + 1).join(path.sep);
+    }
+  }
+  return null;
 }
