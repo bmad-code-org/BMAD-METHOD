@@ -1327,11 +1327,12 @@ class ModuleManager {
           await prompts.log.warn(`Module installer for ${moduleName} returned false`);
         }
       }
-    } catch (error) {
-      await prompts.log.warn(
-        `Post-install script for ${moduleName} could not run: ${error.message}\n` +
-          `  The module itself was installed successfully. The post-install script is optional.`,
-      );
+    } catch {
+      // Post-install scripts are optional; module files are already installed.
+      // TODO: Eliminate post-install scripts entirely by adding a `directories` key
+      // to module.yaml that declares which config keys are paths to auto-create.
+      // The main installer can then handle directory creation centrally, removing
+      // the need for per-module installer.js scripts and their CJS/ESM issues.
     }
   }
 
