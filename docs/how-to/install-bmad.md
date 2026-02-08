@@ -5,7 +5,7 @@ description: Step-by-step guide to installing BMad in your project
 
 Use the `npx bmad-method install` command to set up BMad in your project with your choice of modules and AI tools.
 
-If you want to use a non interactive installer and provide all install options on the command line, [this guide](/docs/non-interactive-installation.md).
+For automated or scripted installations, see the [Non-Interactive Installation](/docs/how-to/non-interactive-installation.md) guide.
 
 ## When to Use This
 
