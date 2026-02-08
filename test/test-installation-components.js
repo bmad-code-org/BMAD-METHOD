@@ -392,7 +392,7 @@ async function runTests() {
       path.join(projectRoot, 'src', 'bmm', 'workflows', 'document-project'),
       path.join(projectRoot, 'tools', 'cli', 'installers', 'lib'),
     ];
-    const allowedExtensions = new Set(['.md', '.yaml', '.yml', '.xml']);
+    const allowedExtensions = new Set(['.md', '.yaml', '.yml', '.xml', '.js', '.cjs', '.mjs']);
     const forbiddenRefPattern = /(^|[^a-zA-Z0-9_-])workflow\.xml\b/;
     const offenders = [];
 
