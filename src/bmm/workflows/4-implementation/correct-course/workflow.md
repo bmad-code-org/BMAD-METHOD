@@ -17,7 +17,7 @@ web_bundle: false
   - `project_knowledge`
   - `sprint_status` = `{implementation_artifacts}/sprint-status.yaml`
   - `date` (system-generated)
-  - `installed_path` = `src/bmm/workflows/4-implementation/correct-course`
+  - `installed_path` = `{project-root}/_bmad/bmm/workflows/4-implementation/correct-course`
   - `default_output_file` = `{planning_artifacts}/sprint-change-proposal-{date}.md`
 
 <workflow>
@@ -28,6 +28,6 @@ web_bundle: false
   </step>
 
   <step n="2" goal="Validate proposal quality">
-    <invoke-task>Validate against checklist at {installed_path}/checklist.md using src/core/tasks/validate-workflow.md</invoke-task>
+    <invoke-task>Validate against checklist at {installed_path}/checklist.md using {project-root}/_bmad/core/tasks/validate-workflow.md</invoke-task>
   </step>
 </workflow>

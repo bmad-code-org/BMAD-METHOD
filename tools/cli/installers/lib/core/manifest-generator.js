@@ -383,18 +383,25 @@ class ManifestGenerator {
         let name = file.replace(/\.(xml|md)$/, '');
         let displayName = name;
         let description = '';
-        let standalone = false;
+        let standalone = true;
 
         if (file.endsWith('.md')) {
           // Parse YAML frontmatter for .md tasks
-          const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
+          const frontmatterMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
           if (frontmatterMatch) {
             try {
-              const frontmatter = yaml.parse(frontmatterMatch[1]);
+              const frontmatter = yaml.parse(frontmatterMatch[1]) || {};
               name = frontmatter.name || name;
               displayName = frontmatter.displayName || frontmatter.name || name;
               description = frontmatter.description || '';
-              standalone = frontmatter.standalone === true || frontmatter.standalone === 'true';
+              const isInternal = frontmatter.internal === true || frontmatter.internal === 'true';
+              if (frontmatter.standalone === true || frontmatter.standalone === 'true') {
+                standalone = true;
+              } else if (frontmatter.standalone === false || frontmatter.standalone === 'false') {
+                standalone = false;
+              } else {
+                standalone = !isInternal;
+              }
             } catch {
               // If YAML parsing fails, use defaults
             }
@@ -408,8 +415,16 @@ class ManifestGenerator {
           const objMatch = content.match(/<objective>([^<]+)<\/objective>/);
           description = descMatch ? descMatch[1] : objMatch ? objMatch[1].trim() : '';
 
-          const standaloneMatch = content.match(/<task[^>]+standalone="true"/);
-          standalone = !!standaloneMatch;
+          const standaloneTrueMatch = content.match(/<task[^>]+standalone="true"/i);
+          const standaloneFalseMatch = content.match(/<task[^>]+standalone="false"/i);
+          const internalMatch = content.match(/<task[^>]+internal="true"/i);
+          if (standaloneFalseMatch) {
+            standalone = false;
+          } else if (standaloneTrueMatch) {
+            standalone = true;
+          } else {
+            standalone = !internalMatch;
+          }
         }
 
         // Build relative path for installation
@@ -472,18 +487,25 @@ class ManifestGenerator {
         let name = file.replace(/\.(xml|md)$/, '');
         let displayName = name;
         let description = '';
-        let standalone = false;
+        let standalone = true;
 
         if (file.endsWith('.md')) {
           // Parse YAML frontmatter for .md tools
-          const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
+          const frontmatterMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
           if (frontmatterMatch) {
             try {
-              const frontmatter = yaml.parse(frontmatterMatch[1]);
+              const frontmatter = yaml.parse(frontmatterMatch[1]) || {};
               name = frontmatter.name || name;
               displayName = frontmatter.displayName || frontmatter.name || name;
               description = frontmatter.description || '';
-              standalone = frontmatter.standalone === true || frontmatter.standalone === 'true';
+              const isInternal = frontmatter.internal === true || frontmatter.internal === 'true';
+              if (frontmatter.standalone === true || frontmatter.standalone === 'true') {
+                standalone = true;
+              } else if (frontmatter.standalone === false || frontmatter.standalone === 'false') {
+                standalone = false;
+              } else {
+                standalone = !isInternal;
+              }
             } catch {
               // If YAML parsing fails, use defaults
             }
@@ -497,8 +519,16 @@ class ManifestGenerator {
           const objMatch = content.match(/<objective>([^<]+)<\/objective>/);
           description = descMatch ? descMatch[1] : objMatch ? objMatch[1].trim() : '';
 
-          const standaloneMatch = content.match(/<tool[^>]+standalone="true"/);
-          standalone = !!standaloneMatch;
+          const standaloneTrueMatch = content.match(/<tool[^>]+standalone="true"/i);
+          const standaloneFalseMatch = content.match(/<tool[^>]+standalone="false"/i);
+          const internalMatch = content.match(/<tool[^>]+internal="true"/i);
+          if (standaloneFalseMatch) {
+            standalone = false;
+          } else if (standaloneTrueMatch) {
+            standalone = true;
+          } else {
+            standalone = !internalMatch;
+          }
         }
 
         // Build relative path for installation

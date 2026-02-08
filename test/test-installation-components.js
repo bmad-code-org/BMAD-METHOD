@@ -559,6 +559,126 @@ web_bundle:
   console.log('');
 
   // ============================================================
+  // Test 15: Correct-Course Installed Path Guard
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 15: Correct-Course Installed Path Guard${colors.reset}\n`);
+
+  try {
+    const workflowPath = path.join(projectRoot, 'src', 'bmm', 'workflows', '4-implementation', 'correct-course', 'workflow.md');
+    const content = await fs.readFile(workflowPath, 'utf8');
+
+    assert(
+      content.includes('`installed_path` = `{project-root}/_bmad/bmm/workflows/4-implementation/correct-course`'),
+      'Correct-course workflow uses installed runtime path',
+    );
+    assert(
+      content.includes('{project-root}/_bmad/core/tasks/validate-workflow.md'),
+      'Correct-course workflow uses installed validate-workflow task path',
+    );
+  } catch (error) {
+    assert(false, 'Correct-course installed path guard runs', error.message);
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test 16: Task/Tool Standalone and CRLF Parsing Guard
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 16: Task/Tool Standalone + CRLF Guard${colors.reset}\n`);
+
+  try {
+    const tmpRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-standalone-crlf-'));
+    const coreTasksDir = path.join(tmpRoot, '_bmad', 'core', 'tasks');
+    const coreToolsDir = path.join(tmpRoot, '_bmad', 'core', 'tools');
+    await fs.ensureDir(coreTasksDir);
+    await fs.ensureDir(coreToolsDir);
+
+    await fs.writeFile(
+      path.join(coreTasksDir, 'default-task.md'),
+      `---
+name: default-task
+displayName: Default Task
+description: Defaults to standalone
+---
+`,
+    );
+
+    await fs.writeFile(
+      path.join(coreTasksDir, 'internal-task.md'),
+      `---
+name: internal-task
+displayName: Internal Task
+description: Hidden task
+internal: true
+---
+`,
+    );
+
+    await fs.writeFile(
+      path.join(coreTasksDir, 'crlf-task.md'),
+      '---\r\nname: crlf-task\r\ndisplayName: CRLF Task\r\ndescription: Parsed from CRLF\r\nstandalone: true\r\n---\r\n',
+    );
+
+    await fs.writeFile(
+      path.join(coreToolsDir, 'default-tool.md'),
+      `---
+name: default-tool
+displayName: Default Tool
+description: Defaults to standalone
+---
+`,
+    );
+
+    await fs.writeFile(
+      path.join(coreToolsDir, 'internal-tool.md'),
+      `---
+name: internal-tool
+displayName: Internal Tool
+description: Hidden tool
+internal: true
+---
+`,
+    );
+
+    await fs.writeFile(
+      path.join(coreToolsDir, 'crlf-tool.md'),
+      '---\r\nname: crlf-tool\r\ndisplayName: CRLF Tool\r\ndescription: Parsed from CRLF\r\nstandalone: true\r\n---\r\n',
+    );
+
+    const manifestGenerator = new ManifestGenerator();
+    const tasks = await manifestGenerator.getTasksFromDir(coreTasksDir, 'core');
+    const tools = await manifestGenerator.getToolsFromDir(coreToolsDir, 'core');
+
+    const defaultTask = tasks.find((task) => task.name === 'default-task');
+    const internalTask = tasks.find((task) => task.name === 'internal-task');
+    const crlfTask = tasks.find((task) => task.name === 'crlf-task');
+    const defaultTool = tools.find((tool) => tool.name === 'default-tool');
+    const internalTool = tools.find((tool) => tool.name === 'internal-tool');
+    const crlfTool = tools.find((tool) => tool.name === 'crlf-tool');
+
+    assert(defaultTask?.standalone === true, 'Tasks default to standalone when standalone key is omitted');
+    assert(internalTask?.standalone === false, 'Tasks marked internal are excluded from standalone commands');
+    assert(crlfTask?.description === 'Parsed from CRLF', 'CRLF task frontmatter is parsed correctly');
+
+    assert(defaultTool?.standalone === true, 'Tools default to standalone when standalone key is omitted');
+    assert(internalTool?.standalone === false, 'Tools marked internal are excluded from standalone commands');
+    assert(crlfTool?.description === 'Parsed from CRLF', 'CRLF tool frontmatter is parsed correctly');
+
+    const taskToolGenerator = new TaskToolCommandGenerator();
+    assert(taskToolGenerator.isStandalone({}) === true, 'Task/tool command filter defaults missing standalone metadata to visible');
+    assert(
+      taskToolGenerator.isStandalone({ standalone: 'false' }) === false,
+      'Task/tool command filter hides entries explicitly marked standalone=false',
+    );
+
+    await fs.remove(tmpRoot);
+  } catch (error) {
+    assert(false, 'Task/tool standalone and CRLF guard runs', error.message);
+  }
+
+  console.log('');
+
+  // ============================================================
   // Summary
   // ============================================================
   console.log(`${colors.cyan}========================================`);

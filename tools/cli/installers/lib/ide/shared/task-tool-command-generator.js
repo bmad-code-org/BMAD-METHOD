@@ -24,7 +24,14 @@ class TaskToolCommandGenerator {
    * @returns {boolean} True when item should be exposed as a command
    */
   isStandalone(item) {
-    return item?.standalone === 'true' || item?.standalone === true;
+    if (item?.standalone === false || item?.standalone === 'false') {
+      return false;
+    }
+    if (item?.internal === true || item?.internal === 'true') {
+      return false;
+    }
+    // Backward-compatible default: entries are user-facing unless explicitly hidden.
+    return true;
   }
 
   /**
