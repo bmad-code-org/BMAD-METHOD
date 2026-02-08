@@ -2,7 +2,7 @@
 title: "How to Customize BMad"
 description: Customize agents, workflows, and modules while preserving update compatibility
 sidebar:
-  order: 5
+  order: 7
 ---
 
 Use the `.customize.yaml` files to tailor agent behavior, personas, and menus while preserving your changes across updates.

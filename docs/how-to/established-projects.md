@@ -2,7 +2,7 @@
 title: "Established Projects"
 description: How to use BMad Method on existing codebases
 sidebar:
-  order: 4
+  order: 6
 ---
 
 Use BMad Method effectively when working on existing projects and legacy codebases, sometimes also referred to as brownfield projects.

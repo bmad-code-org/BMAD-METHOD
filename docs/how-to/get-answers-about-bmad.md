@@ -2,7 +2,7 @@
 title: "How to Get Answers About BMad"
 description: Use an LLM to quickly answer your own BMad questions
 sidebar:
-  order: 2
+  order: 4
 ---
 
 If you have successfully installed BMad and the BMad Method (+ other modules as needed) - the first step in getting answers is `/bmad-help`. This will answer upwards of 80% of all questions and is available to you in the IDE as you are working.

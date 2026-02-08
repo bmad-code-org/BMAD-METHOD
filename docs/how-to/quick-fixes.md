@@ -2,7 +2,7 @@
 title: "Quick Fixes"
 description: How to make quick fixes and ad-hoc changes
 sidebar:
-  order: 3
+  order: 5
 ---
 
 Use the **DEV agent** directly for bug fixes, refactorings, or small targeted changes that don't require the full BMad Method or Quick Flow.
