@@ -163,6 +163,11 @@ Your choice [1/2/3]:
     <action>Exit workflow</action>
   </check>
 
+  <check if="user input is not 1, 2, or 3">
+    <output>Invalid selection. Expected 1, 2, or 3. Exiting workflow without changes.</output>
+    <action>Exit workflow</action>
+  </check>
+
 </check>
 </check>
 
@@ -218,6 +223,11 @@ Your choice [1/2/3]:
 
   <check if="user selects 3">
     <action>Display message: "Keeping existing documentation. Exiting workflow."</action>
+    <action>Exit workflow</action>
+  </check>
+
+  <check if="user input is not 1, 2, or 3">
+    <output>Invalid selection. Expected 1, 2, or 3. Exiting workflow without changes.</output>
     <action>Exit workflow</action>
   </check>
 </check>

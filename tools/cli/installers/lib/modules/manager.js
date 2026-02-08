@@ -810,6 +810,8 @@ class ModuleManager {
       return content;
     }
 
+    const newline = frontmatterMatch[0].includes('\r\n') ? '\r\n' : '\n';
+
     try {
       const yaml = require('yaml');
       const parsed = yaml.parse(frontmatterMatch[1]);
@@ -827,7 +829,8 @@ class ModuleManager {
         })
         .trimEnd();
 
-      return content.replace(frontmatterMatch[0], `---\n${serialized}\n---`);
+      const normalized = newline === '\r\n' ? serialized.replaceAll('\n', '\r\n') : serialized;
+      return content.replace(frontmatterMatch[0], `---${newline}${normalized}${newline}---`);
     } catch (error) {
       console.warn(`Warning: Failed to parse workflow frontmatter for web_bundle removal: ${error.message}`);
       return content;

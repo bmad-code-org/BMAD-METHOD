@@ -2,7 +2,7 @@
 name: dev-story
 description: "Execute a story by implementing tasks/subtasks, writing tests, validating, and updating the story file per acceptance criteria"
 projectRoot: '{project-root}'
-main_config: '{projectRoot}/_bmad/bmm/config.yaml'
+main_config: '{project-root}/_bmad/bmm/config.yaml'
 web_bundle: false
 ---
 
