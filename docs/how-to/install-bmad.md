@@ -29,6 +29,13 @@ If you want to use a non interactive installer and provide all install options o
 npx bmad-method install
 ```
 
+:::tip[Bleeding edge]
+To install the latest from the main branch (may be unstable):
+```bash
+npx github:bmad-code-org/BMAD-METHOD install
+```
+:::
+
 ### 2. Choose Installation Location
 
 The installer will ask where to install BMad files:
@@ -73,13 +80,6 @@ your-project/
 ## Verify Installation
 
 Run the `help` workflow (`/bmad-help` on most platforms) to verify everything works and see what to do next.
-
-**Latest from main branch:**
-```bash
-npx github:bmad-code-org/BMAD-METHOD install
-```
-
-Use these if you want the newest features before they're officially released. Things might break.
 
 ## Troubleshooting
 

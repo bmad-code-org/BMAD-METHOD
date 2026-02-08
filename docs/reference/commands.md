@@ -42,10 +42,8 @@ The installer writes command files into an IDE-specific directory inside your pr
 | IDE / CLI | Command directory |
 | --- | --- |
 | Claude Code | `.claude/commands/` |
-| Kiro | `.kiro/steering/` |
 | Cursor | `.cursor/commands/` |
 | Windsurf | `.windsurf/workflows/` |
-| Gemini CLI | `.gemini/commands/` |
 | Other IDEs | See the installer output for the target path |
 
 All IDEs receive a flat set of command files in their command directory. For example, a Claude Code installation looks like:
