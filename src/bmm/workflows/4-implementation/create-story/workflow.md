@@ -175,10 +175,16 @@ input_file_patterns:
     Business context and value - Success criteria <!-- Previous story analysis for context continuity -->
     <check if="story_num > 1">
       <action>Set {{previous_story_num}} = {{story_num}} - 1</action>
-      <action>Load previous story file: {{story_dir}}/{{epic_num}}-{{previous_story_num}}-*.md</action> **PREVIOUS STORY INTELLIGENCE:** -
-    Dev notes and learnings from previous story - Review feedback and corrections needed - Files that were created/modified and their
-    patterns - Testing approaches that worked/didn't work - Problems encountered and solutions found - Code patterns established <action>Extract
-    all learnings that could impact current story implementation</action>
+      <action>Load previous story file: {{story_dir}}/{{epic_num}}-{{previous_story_num}}-*.md</action>
+      <action>Extract previous story intelligence:
+        - Dev notes and learnings from previous story
+        - Review feedback and corrections needed
+        - Files that were created/modified and their patterns
+        - Testing approaches that worked/didn't work
+        - Problems encountered and solutions found
+        - Code patterns established
+      </action>
+      <action>Extract all learnings that could impact current story implementation</action>
     </check>
 
     <!-- Git intelligence for previous work patterns -->

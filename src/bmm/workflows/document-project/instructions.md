@@ -15,6 +15,7 @@
   - Set status_file_found = false
   - Set standalone_mode = true
   - Set warning = ""
+  - Set status_load_error_reason = ""
   - Set suggestion = ""
   - Set next_workflow = ""
   - Set next_agent = ""
@@ -97,12 +98,15 @@
   <action>Read state file and extract: timestamps, mode, scan_level, current_step, completed_steps, project_classification</action>
   <action>Validate last_updated from state file:
     - If last_updated is missing or invalid, set state_age_hours = 999 and mark state as stale
-    - Otherwise parse timestamp and continue
+    - Otherwise parse last_updated into validated_last_updated
   </action>
   <action>Extract cached project_type_id(s) from state file if present</action>
-  <action>Calculate age of state file (current time - last_updated)</action>
+  <action>Calculate state_age_hours:
+    - If validated_last_updated exists, compute current time - validated_last_updated
+    - Otherwise keep state_age_hours = 999
+  </action>
 
-<check if="state file age >= 24 hours">
+<check if="state_age_hours >= 24">
   <action>Display: "Found old state file (>24 hours). Starting fresh scan."</action>
   <action>Attempt to create archive directory: {output_folder}/.archive/</action>
   <check if="archive directory creation failed">
@@ -125,7 +129,7 @@
   <action>Continue to Step 3</action>
 </check>
 
-<check if="state file age < 24 hours">
+<check if="state_age_hours < 24">
 
 <ask>I found an in-progress workflow state from {{last_updated}}.
 
