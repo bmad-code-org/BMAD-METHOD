@@ -1,6 +1,8 @@
 ---
 title: "Document Sharding Guide"
 description: Split large markdown files into smaller organized files for better context management
+sidebar:
+  order: 7
 ---
 
 Use the `shard-doc` tool if you need to split large markdown files into smaller, organized files for better context management.
@@ -17,7 +19,7 @@ Document sharding splits large markdown files into smaller, organized files base
 
 ### Architecture
 
-```
+```text
 Before Sharding:
 docs/
 └── PRD.md (large 50k token file)
@@ -37,12 +39,12 @@ docs/
 ### 1. Run the Shard-Doc Tool
 
 ```bash
-/bmad:core:tools:shard-doc
+/bmad-shard-doc
 ```
 
 ### 2. Follow the Interactive Process
 
-```
+```text
 Agent: Which document would you like to shard?
 User: docs/PRD.md
 

@@ -1,11 +1,9 @@
 ---
 title: Non-Interactive Installation
-description: Install BMAD using command-line flags for CI/CD pipelines and automated deployments
+description: Install BMad using command-line flags for CI/CD pipelines and automated deployments
 ---
 
-# Non-Interactive Installation
-
-BMAD now supports non-interactive installation through command-line flags. This is particularly useful for:
+BMad now supports non-interactive installation through command-line flags. This is particularly useful for:
 
 - Automated deployments and CI/CD pipelines
 - Scripted installations
@@ -39,7 +37,7 @@ npx bmad-method install \
 
 ### 3. Semi-Interactive (Graceful Fallback)
 
-Provide some flags and let BMAD prompt for the rest:
+Provide some flags and let BMad prompt for the rest:
 
 ```bash
 npx bmad-method install \
@@ -47,7 +45,7 @@ npx bmad-method install \
   --modules bmm
 ```
 
-In this case, BMAD will:
+In this case, BMad will:
 - Use the provided directory and modules
 - Prompt for tool selection
 - Prompt for core configuration
@@ -261,7 +259,7 @@ npx bmad-method install \
 
 ## Validation and Error Handling
 
-BMAD validates all provided flags:
+BMad validates all provided flags:
 
 - **Directory**: Must be a valid path with write permissions
 - **Modules**: Will warn about invalid module IDs (but won't fail)
@@ -282,7 +280,7 @@ Invalid values will either:
 4. **Check module availability** by running the interactive installer once
 5. **Use `--debug`** flag if you encounter issues during installation
 6. **Skip tool configuration** with `--tools none` for server/CI environments where IDEs aren't needed
-7. **Partial flags are OK** - Omit flags and let BMAD prompt for missing values interactively
+7. **Partial flags are OK** - Omit flags and let BMad prompt for missing values interactively
 
 ## Troubleshooting
 

@@ -1,6 +1,8 @@
 ---
 title: "Adversarial Review"
 description: Forced reasoning technique that prevents lazy "looks good" reviews
+sidebar:
+  order: 5
 ---
 
 Force deeper analysis by requiring problems to be found.
@@ -24,7 +26,7 @@ Normal reviews suffer from confirmation bias. You skim the work, nothing jumps o
 
 ## Where It's Used
 
-Adversarial review appears throughout BMAD workflows - code review, implementation readiness checks, spec validation, and others. Sometimes it's a required step, sometimes optional (like advanced elicitation or party mode). The pattern adapts to whatever artifact needs scrutiny.
+Adversarial review appears throughout BMad workflows - code review, implementation readiness checks, spec validation, and others. Sometimes it's a required step, sometimes optional (like advanced elicitation or party mode). The pattern adapts to whatever artifact needs scrutiny.
 
 ## Human Filtering Required
 

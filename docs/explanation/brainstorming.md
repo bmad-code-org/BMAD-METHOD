@@ -1,6 +1,8 @@
 ---
 title: "Brainstorming"
 description: Interactive creative sessions using 60+ proven ideation techniques
+sidebar:
+  order: 2
 ---
 
 Unlock your creativity through guided exploration.

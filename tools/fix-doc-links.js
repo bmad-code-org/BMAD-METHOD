@@ -20,11 +20,8 @@ const path = require('node:path');
 const DOCS_ROOT = path.resolve(__dirname, '../docs');
 const DRY_RUN = !process.argv.includes('--write');
 
-// Regex to match markdown links:
-// - [text](path.md) or [text](path.md#anchor) - existing .md links
-// - [text](/path/to/page/) or [text](/path/to/page/#anchor) - site-relative links to convert
-const MARKDOWN_LINK_REGEX = /\[([^\]]*)\]\(([^)]+(?:\.md|\/))(?:#[^)]*)?(?:\?[^)]*)?\)/g;
-// Simpler approach: match all markdown links and filter in the handler
+// Match all markdown links; filtering (external, anchors, assets) happens in convertToRepoRelative.
+// This intentionally matches broadly so the handler can make context-aware decisions.
 const ALL_MARKDOWN_LINKS_REGEX = /\[([^\]]*)\]\(([^)]+)\)/g;
 
 /**
@@ -64,8 +61,8 @@ function getMarkdownFiles(dir) {
  * @returns {string|null} - Repo-relative path (e.g., "/docs/path/to/file.md"), or null if shouldn't be converted
  */
 function convertToRepoRelative(href, currentFilePath) {
-  // Skip external links
-  if (href.includes('://') || href.startsWith('mailto:') || href.startsWith('tel:')) {
+  // Skip external links (including protocol-relative URLs like //cdn.example.com)
+  if (href.includes('://') || href.startsWith('//') || href.startsWith('mailto:') || href.startsWith('tel:')) {
     return null;
   }
 

@@ -52,6 +52,12 @@ const LLM_EXCLUDE_PATTERNS = [
  */
 
 async function main() {
+  if (process.platform === 'win32') {
+    console.error('Error: The docs build pipeline does not support Windows.');
+    console.error('Please build on Linux, macOS, or WSL.');
+    process.exit(1);
+  }
+
   console.log();
   printBanner('BMAD Documentation Build Pipeline');
   console.log();
@@ -118,9 +124,6 @@ function buildAstroSite() {
   runAstroBuild();
   copyArtifactsToSite(artifactsDir, siteDir);
 
-  // No longer needed: Inject AI agents banner into every HTML page
-  // injectAgentBanner(siteDir);
-
   console.log();
   console.log(`  \u001B[32m✓\u001B[0m Astro build complete`);
 
@@ -152,20 +155,18 @@ function generateLlmsTxt(outputDir) {
     '',
     '## Quick Start',
     '',
-    `- **[Quick Start](${siteUrl}/docs/modules/bmm/quick-start)** - Get started with BMAD Method`,
-    `- **[Installation](${siteUrl}/docs/getting-started/installation)** - Installation guide`,
+    `- **[Getting Started](${siteUrl}/tutorials/getting-started/)** - Tutorial: install and learn how BMad works`,
+    `- **[Installation](${siteUrl}/how-to/install-bmad/)** - How to install BMad Method`,
     '',
     '## Core Concepts',
     '',
-    `- **[Scale Adaptive System](${siteUrl}/docs/modules/bmm/scale-adaptive-system)** - Understand BMAD scaling`,
-    `- **[Quick Flow](${siteUrl}/docs/modules/bmm/bmad-quick-flow)** - Fast development workflow`,
-    `- **[Party Mode](${siteUrl}/docs/modules/bmm/party-mode)** - Multi-agent collaboration`,
+    `- **[Quick Flow](${siteUrl}/explanation/quick-flow/)** - Fast development workflow`,
+    `- **[Party Mode](${siteUrl}/explanation/party-mode/)** - Multi-agent collaboration`,
+    `- **[Workflow Map](${siteUrl}/reference/workflow-map/)** - Visual overview of phases and workflows`,
     '',
     '## Modules',
     '',
-    `- **[BMM - Method](${siteUrl}/docs/modules/bmm/quick-start)** - Core methodology module`,
-    `- **[BMB - Builder](${siteUrl}/docs/modules/bmb/)** - Agent and workflow builder`,
-    `- **[BMGD - Game Dev](${siteUrl}/docs/modules/bmgd/quick-start)** - Game development module`,
+    `- **[Official Modules](${siteUrl}/reference/modules/)** - BMM, BMB, BMGD, and more`,
     '',
     '---',
     '',
@@ -402,32 +403,6 @@ function formatFileSize(bytes) {
 }
 
 // =============================================================================
-// Post-build Injection
-/**
- * Recursively collects all files with the given extension under a directory.
- *
- * @param {string} dir - Root directory to search.
- * @param {string} ext - File extension to match (include the leading dot, e.g. ".md").
- * @returns {string[]} An array of file paths for files ending with `ext` found under `dir`.
- */
-
-function getAllFilesByExtension(dir, ext) {
-  const result = [];
-  const entries = fs.readdirSync(dir, { withFileTypes: true });
-
-  for (const entry of entries) {
-    const fullPath = path.join(dir, entry.name);
-    if (entry.isDirectory()) {
-      result.push(...getAllFilesByExtension(fullPath, ext));
-    } else if (entry.name.endsWith(ext)) {
-      result.push(fullPath);
-    }
-  }
-
-  return result;
-}
-
-// =============================================================================
 // File System Utilities
 /**
  * Remove any existing build output and recreate the build directory.
@@ -442,33 +417,6 @@ function cleanBuildDirectory() {
     fs.rmSync(BUILD_DIR, { recursive: true });
   }
   fs.mkdirSync(BUILD_DIR, { recursive: true });
-}
-
-/**
- * Recursively copies all files and subdirectories from one directory to another, creating the destination if needed.
- *
- * @param {string} src - Path to the source directory to copy from.
- * @param {string} dest - Path to the destination directory to copy to.
- * @param {string[]} [exclude=[]] - List of file or directory names (not paths) to skip while copying.
- * @returns {boolean} `true` if the source existed and copying proceeded, `false` if the source did not exist.
- */
-function copyDirectory(src, dest, exclude = []) {
-  if (!fs.existsSync(src)) return false;
-  fs.mkdirSync(dest, { recursive: true });
-
-  for (const entry of fs.readdirSync(src, { withFileTypes: true })) {
-    if (exclude.includes(entry.name)) continue;
-
-    const srcPath = path.join(src, entry.name);
-    const destPath = path.join(dest, entry.name);
-
-    if (entry.isDirectory()) {
-      copyDirectory(srcPath, destPath, exclude);
-    } else {
-      fs.copyFileSync(srcPath, destPath);
-    }
-  }
-  return true;
 }
 
 // =============================================================================
@@ -496,7 +444,7 @@ function printBanner(title) {
 /**
  * Verify internal documentation links by running the link-checking script.
  *
- * Executes the Node script tools/check-doc-links.js from the project root and
+ * Executes the Node script tools/validate-doc-links.js from the project root and
  * exits the process with code 1 if the check fails.
  */
 
