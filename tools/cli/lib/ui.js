@@ -361,6 +361,9 @@ class UI {
           selectedModules.push(...customModuleResult.selectedCustomModules);
         }
 
+        // Filter out core - it's always installed via installCore flag
+        selectedModules = selectedModules.filter((m) => m !== 'core');
+
         // Get tool selection
         const toolSelection = await this.promptToolSelection(confirmedDirectory, options);
 
@@ -898,9 +901,10 @@ class UI {
   }
 
   /**
-   * Select all modules (core + official + community) using grouped multiselect
+   * Select all modules (official + community) using grouped multiselect.
+   * Core is shown as locked but filtered from the result since it's always installed separately.
    * @param {Set} installedModuleIds - Currently installed module IDs
-   * @returns {Array} Selected module codes
+   * @returns {Array} Selected module codes (excluding core)
    */
   async selectAllModules(installedModuleIds = new Set()) {
     const { ModuleManager } = require('../installers/lib/modules/manager');

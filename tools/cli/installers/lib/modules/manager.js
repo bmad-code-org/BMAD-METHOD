@@ -1299,8 +1299,8 @@ class ModuleManager {
       } else {
         const { pathToFileURL } = require('node:url');
         const imported = await import(pathToFileURL(installerPath).href);
-        // CJS module.exports lands on .default, ESM named exports are top-level
-        moduleInstaller = imported.default && typeof imported.default === 'object' ? imported.default : imported;
+        // CJS module.exports lands on .default; ESM default can be object, function, or class
+        moduleInstaller = imported.default == null ? imported : imported.default;
       }
 
       if (typeof moduleInstaller.install === 'function') {
