@@ -10,6 +10,10 @@ nextStepFile: './step-10-closeout.md'
     <action>Confirm File List includes every changed file</action>
     <action>Execute enhanced definition-of-done validation</action>
     <action>Update the story Status to: "review"</action>
+    <action>Initialize sprint tracking state:
+      - If {sprint_status} exists and is readable, load file and set {{current_sprint_status}} from tracking mode/content
+      - If file does not exist, unreadable, or indicates no sprint tracking, set {{current_sprint_status}} = "no-sprint-tracking"
+    </action>
 
     <!-- Enhanced Definition of Done Validation -->
     <action>Validate definition-of-done checklist with essential requirements:

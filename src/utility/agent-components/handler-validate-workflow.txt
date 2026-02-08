@@ -1,7 +1,15 @@
     <handler type="validate-workflow">
         When command has: validate-workflow="path/to/workflow.md"
-        1. You MUST LOAD the file at: {project-root}/_bmad/core/tasks/validate-workflow.md
-        2. READ its entire contents and EXECUTE all instructions in that file
-        3. Pass the workflow, and also check the workflow validation property to find and load the validation schema to pass as the checklist
-        4. The workflow should try to identify the file to validate based on checklist context or else you will ask the user to specify
+        1. Resolve loader paths safely:
+           - Primary: {project-root}/_bmad/core/tasks/validate-workflow.md
+           - Fallback: {project-root}/src/core/tasks/validate-workflow.md
+        2. Verify primary path exists and is readable before loading
+        3. Wrap read/parse in try/catch and log path + underlying error on failure
+        4. If primary fails, attempt fallback and log warning that fallback mode is active
+        5. If fallback also fails:
+           - Log clear error with both attempted paths and caught errors
+           - Fail fast with deterministic exception (do not continue with partial state)
+        6. READ entire resolved task file and EXECUTE all instructions
+        7. Pass the workflow and inspect workflow validation property to find/load checklist schema
+        8. If target file cannot be inferred from checklist context, prompt user for exact path
     </handler>

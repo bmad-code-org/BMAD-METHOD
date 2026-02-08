@@ -701,60 +701,16 @@ class ManifestGenerator {
   async writeWorkflowManifest(cfgDir) {
     const csvPath = path.join(cfgDir, 'workflow-manifest.csv');
     const escapeCsv = (value) => `"${String(value ?? '').replaceAll('"', '""')}"`;
-    const parseCsvLine = (line) => {
-      const columns = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || [];
-      return columns.map((c) => c.replaceAll(/^"|"$/g, ''));
-    };
-
-    // Read existing manifest to preserve entries
-    const existingEntries = new Map();
-    if (await fs.pathExists(csvPath)) {
-      const content = await fs.readFile(csvPath, 'utf8');
-      const lines = content.split('\n').filter((line) => line.trim());
-
-      // Skip header
-      for (let i = 1; i < lines.length; i++) {
-        const line = lines[i];
-        if (line) {
-          const parts = parseCsvLine(line);
-          if (parts.length >= 4) {
-            const [name, description, module, workflowPath] = parts;
-            existingEntries.set(`${module}:${name}`, {
-              name,
-              description,
-              module,
-              path: workflowPath,
-            });
-          }
-        }
-      }
-    }
 
     // Create CSV header - standalone column removed, everything is canonicalized to 4 columns
     let csv = 'name,description,module,path\n';
 
-    // Combine existing and new workflows
-    const allWorkflows = new Map();
-
-    // Add existing entries
-    for (const [key, value] of existingEntries) {
-      allWorkflows.set(key, value);
-    }
-
-    // Add/update new workflows
-    for (const workflow of this.workflows) {
-      const key = `${workflow.module}:${workflow.name}`;
-      allWorkflows.set(key, {
-        name: workflow.name,
-        description: workflow.description,
-        module: workflow.module,
-        path: workflow.path,
-      });
-    }
-
-    // Write all workflows
-    for (const [, value] of allWorkflows) {
-      const row = [escapeCsv(value.name), escapeCsv(value.description), escapeCsv(value.module), escapeCsv(value.path)].join(',');
+    // Regenerate from current install scan to avoid preserving stale/deleted entries
+    const sortedWorkflows = [...this.workflows].sort((a, b) => `${a.module}:${a.name}`.localeCompare(`${b.module}:${b.name}`));
+    for (const workflow of sortedWorkflows) {
+      const row = [escapeCsv(workflow.name), escapeCsv(workflow.description), escapeCsv(workflow.module), escapeCsv(workflow.path)].join(
+        ',',
+      );
       csv += row + '\n';
     }
 
@@ -769,50 +725,12 @@ class ManifestGenerator {
   async writeAgentManifest(cfgDir) {
     const csvPath = path.join(cfgDir, 'agent-manifest.csv');
 
-    // Read existing manifest to preserve entries
-    const existingEntries = new Map();
-    if (await fs.pathExists(csvPath)) {
-      const content = await fs.readFile(csvPath, 'utf8');
-      const lines = content.split('\n').filter((line) => line.trim());
-
-      // Skip header
-      for (let i = 1; i < lines.length; i++) {
-        const line = lines[i];
-        if (line) {
-          // Parse CSV (simple parsing assuming no commas in quoted fields)
-          const parts = line.split('","');
-          if (parts.length >= 10) {
-            const name = parts[0].replace(/^"/, '');
-            const module = parts[8];
-            existingEntries.set(`${module}:${name}`, line);
-          }
-        }
-      }
-    }
-
     // Create CSV header with persona fields
     let csv = 'name,displayName,title,icon,role,identity,communicationStyle,principles,module,path\n';
+    const sortedAgents = [...this.agents].sort((a, b) => `${a.module}:${a.name}`.localeCompare(`${b.module}:${b.name}`));
 
-    // Combine existing and new agents, preferring new data for duplicates
-    const allAgents = new Map();
-
-    // Add existing entries
-    for (const [key, value] of existingEntries) {
-      allAgents.set(key, value);
-    }
-
-    // Add/update new agents
-    for (const agent of this.agents) {
-      const key = `${agent.module}:${agent.name}`;
-      allAgents.set(
-        key,
-        `"${agent.name}","${agent.displayName}","${agent.title}","${agent.icon}","${agent.role}","${agent.identity}","${agent.communicationStyle}","${agent.principles}","${agent.module}","${agent.path}"`,
-      );
-    }
-
-    // Write all agents
-    for (const [, value] of allAgents) {
-      csv += value + '\n';
+    for (const agent of sortedAgents) {
+      csv += `"${agent.name}","${agent.displayName}","${agent.title}","${agent.icon}","${agent.role}","${agent.identity}","${agent.communicationStyle}","${agent.principles}","${agent.module}","${agent.path}"\n`;
     }
 
     await fs.writeFile(csvPath, csv);
@@ -826,47 +744,11 @@ class ManifestGenerator {
   async writeTaskManifest(cfgDir) {
     const csvPath = path.join(cfgDir, 'task-manifest.csv');
 
-    // Read existing manifest to preserve entries
-    const existingEntries = new Map();
-    if (await fs.pathExists(csvPath)) {
-      const content = await fs.readFile(csvPath, 'utf8');
-      const lines = content.split('\n').filter((line) => line.trim());
-
-      // Skip header
-      for (let i = 1; i < lines.length; i++) {
-        const line = lines[i];
-        if (line) {
-          // Parse CSV (simple parsing assuming no commas in quoted fields)
-          const parts = line.split('","');
-          if (parts.length >= 6) {
-            const name = parts[0].replace(/^"/, '');
-            const module = parts[3];
-            existingEntries.set(`${module}:${name}`, line);
-          }
-        }
-      }
-    }
-
     // Create CSV header with standalone column
     let csv = 'name,displayName,description,module,path,standalone\n';
-
-    // Combine existing and new tasks
-    const allTasks = new Map();
-
-    // Add existing entries
-    for (const [key, value] of existingEntries) {
-      allTasks.set(key, value);
-    }
-
-    // Add/update new tasks
-    for (const task of this.tasks) {
-      const key = `${task.module}:${task.name}`;
-      allTasks.set(key, `"${task.name}","${task.displayName}","${task.description}","${task.module}","${task.path}","${task.standalone}"`);
-    }
-
-    // Write all tasks
-    for (const [, value] of allTasks) {
-      csv += value + '\n';
+    const sortedTasks = [...this.tasks].sort((a, b) => `${a.module}:${a.name}`.localeCompare(`${b.module}:${b.name}`));
+    for (const task of sortedTasks) {
+      csv += `"${task.name}","${task.displayName}","${task.description}","${task.module}","${task.path}","${task.standalone}"\n`;
     }
 
     await fs.writeFile(csvPath, csv);
@@ -880,47 +762,11 @@ class ManifestGenerator {
   async writeToolManifest(cfgDir) {
     const csvPath = path.join(cfgDir, 'tool-manifest.csv');
 
-    // Read existing manifest to preserve entries
-    const existingEntries = new Map();
-    if (await fs.pathExists(csvPath)) {
-      const content = await fs.readFile(csvPath, 'utf8');
-      const lines = content.split('\n').filter((line) => line.trim());
-
-      // Skip header
-      for (let i = 1; i < lines.length; i++) {
-        const line = lines[i];
-        if (line) {
-          // Parse CSV (simple parsing assuming no commas in quoted fields)
-          const parts = line.split('","');
-          if (parts.length >= 6) {
-            const name = parts[0].replace(/^"/, '');
-            const module = parts[3];
-            existingEntries.set(`${module}:${name}`, line);
-          }
-        }
-      }
-    }
-
     // Create CSV header with standalone column
     let csv = 'name,displayName,description,module,path,standalone\n';
-
-    // Combine existing and new tools
-    const allTools = new Map();
-
-    // Add existing entries
-    for (const [key, value] of existingEntries) {
-      allTools.set(key, value);
-    }
-
-    // Add/update new tools
-    for (const tool of this.tools) {
-      const key = `${tool.module}:${tool.name}`;
-      allTools.set(key, `"${tool.name}","${tool.displayName}","${tool.description}","${tool.module}","${tool.path}","${tool.standalone}"`);
-    }
-
-    // Write all tools
-    for (const [, value] of allTools) {
-      csv += value + '\n';
+    const sortedTools = [...this.tools].sort((a, b) => `${a.module}:${a.name}`.localeCompare(`${b.module}:${b.name}`));
+    for (const tool of sortedTools) {
+      csv += `"${tool.name}","${tool.displayName}","${tool.description}","${tool.module}","${tool.path}","${tool.standalone}"\n`;
     }
 
     await fs.writeFile(csvPath, csv);

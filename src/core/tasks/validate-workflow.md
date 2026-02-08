@@ -8,8 +8,14 @@ standalone: true
 
 ## Initialization
 - Load config from `{project-root}/_bmad/core/config.yaml`.
-- Resolve variables (if available):
-  - `communication_language`, `user_name`, `document_output_language`
+- Validate config load before continuing:
+  - Verify file exists and is readable.
+  - Parse YAML and fail fast with explicit error if parsing fails.
+  - Require `user_name`; if missing, abort initialization with descriptive error.
+  - Apply explicit defaults when optional keys are absent:
+    - `communication_language = "en"`
+    - `document_output_language = "en"`
+  - Log resolved values and config source path.
 
 ## Purpose
 Execute a validation checklist against a target file and report findings clearly and consistently.
@@ -20,8 +26,16 @@ Execute a validation checklist against a target file and report findings clearly
    - If not provided, ask the user for the checklist path.
 
 2. **Load target file**
-   - Infer the target file from the checklist context or workflow inputs.
-   - If unclear, ask the user for the exact file path to validate.
+   - Infer candidate target path in this order:
+     - Explicit keys in workflow/checklist inputs: `file`, `path`, `target`, `filePath`
+     - Path-like tokens in checklist items
+     - First matching path from glob patterns supplied by checklist/input
+   - Normalize all candidate paths relative to repo root and resolve `.`/`..`.
+   - Validate candidate existence and expected file type (`.yaml`, `.yml`, `.json`, or checklist-defined extension).
+   - If multiple valid candidates remain, prefer explicit key fields over inferred tokens.
+   - If no valid candidate is found, prompt user with schema example:
+     - `Please provide the exact file path (relative to repo root), e.g. ./workflows/ci.yml`
+   - Validate user-supplied path before proceeding.
 
 3. **Run the checklist**
    - Read the checklist fully.
@@ -33,8 +47,14 @@ Execute a validation checklist against a target file and report findings clearly
    - Provide actionable fixes for each issue.
 
 5. **Edits (if applicable)**
-   - If the checklist instructs updates or auto-fixes, ask for confirmation before editing.
-   - Only apply changes after user approval.
+   - If checklist requires edits/auto-fixes, follow safe-edit protocol:
+     - Ask for confirmation before editing.
+     - Create backup snapshot of target file before changes.
+     - Generate reversible diff preview and show it to user.
+     - Apply edits only after user approval.
+     - Run syntax/validation checks against edited file.
+     - If validation fails or user cancels, rollback from backup and report rollback status.
+     - Record backup/diff locations in task output.
 
 6. **Finalize**
    - Confirm completion and provide the final validation summary.
