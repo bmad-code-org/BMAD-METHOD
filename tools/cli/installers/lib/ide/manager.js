@@ -44,7 +44,7 @@ class IdeManager {
 
   /**
    * Dynamically load all IDE handlers
-   * 1. Load custom installer files first (codex.js, kilo.js, kiro-cli.js)
+   * 1. Load custom installer files first (codex.js, kilo.js, kiro-cli.js, opencode.js)
    * 2. Load config-driven handlers from platform-codes.yaml
    */
   async loadHandlers() {
@@ -61,7 +61,7 @@ class IdeManager {
    */
   async loadCustomInstallerFiles() {
     const ideDir = __dirname;
-    const customFiles = ['codex.js', 'kilo.js', 'kiro-cli.js'];
+    const customFiles = ['codex.js', 'kilo.js', 'kiro-cli.js', 'opencode.js'];
 
     for (const file of customFiles) {
       const filePath = path.join(ideDir, file);
