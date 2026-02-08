@@ -111,12 +111,14 @@ platforms:
     description: "AI coding platform"
     # No installer config - uses custom kilo.js (creates .kilocodemodes file)
 
-  kiro-cli:
-    name: "Kiro CLI"
+  kiro:
+    name: "Kiro"
     preferred: false
-    category: cli
-    description: "Kiro command-line interface"
-    # No installer config - uses custom kiro-cli.js (YAML→JSON conversion)
+    category: ide
+    description: "Amazon's AI-powered IDE"
+    installer:
+      target_dir: .kiro/steering
+      template_type: kiro
 
   opencode:
     name: "OpenCode"
