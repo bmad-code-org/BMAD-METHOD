@@ -20,6 +20,7 @@ const { YamlXmlBuilder } = require('../tools/cli/lib/yaml-xml-builder');
 const { ManifestGenerator } = require('../tools/cli/installers/lib/core/manifest-generator');
 const { WorkflowCommandGenerator } = require('../tools/cli/installers/lib/ide/shared/workflow-command-generator');
 const { TaskToolCommandGenerator } = require('../tools/cli/installers/lib/ide/shared/task-tool-command-generator');
+const { ConfigDrivenIdeSetup } = require('../tools/cli/installers/lib/ide/_config-driven');
 const { IdeManager } = require('../tools/cli/installers/lib/ide/manager');
 const { CodexSetup } = require('../tools/cli/installers/lib/ide/codex');
 const { ModuleManager } = require('../tools/cli/installers/lib/modules/manager');
@@ -740,6 +741,117 @@ internal: true
     await fs.remove(tmpRoot);
   } catch (error) {
     assert(false, 'Codex task visibility guard runs', error.message);
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test 19: Empty Target Artifact Filter Guard
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 19: Empty Artifact Target Guard${colors.reset}\n`);
+
+  try {
+    const tmpRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-empty-target-'));
+    const projectDir = path.join(tmpRoot, 'project');
+    const bmadDir = path.join(tmpRoot, BMAD_FOLDER_NAME);
+    await fs.ensureDir(projectDir);
+    await fs.ensureDir(bmadDir);
+
+    const setup = new ConfigDrivenIdeSetup('test', {
+      name: 'Test IDE',
+      preferred: false,
+      installer: { target_dir: '.test', template_type: 'default' },
+    });
+
+    const result = await setup.installToTarget(
+      projectDir,
+      bmadDir,
+      { target_dir: '.test', template_type: 'default', artifact_types: [] },
+      { silent: true },
+    );
+
+    assert(
+      result.success &&
+        result.results.agents === 0 &&
+        result.results.workflows === 0 &&
+        result.results.tasks === 0 &&
+        result.results.tools === 0,
+      'Installer short-circuits explicit empty artifact target',
+    );
+
+    assert(!(await fs.pathExists(path.join(projectDir, '.test'))), 'Installer does not create output directory for empty artifact target');
+
+    await fs.remove(tmpRoot);
+  } catch (error) {
+    assert(false, 'Empty artifact target guard runs', error.message);
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test 20: Split Template Extension Override Guard
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 20: Split Template Extension Guard${colors.reset}\n`);
+
+  try {
+    const setup = new ConfigDrivenIdeSetup('test', {
+      name: 'Test IDE',
+      preferred: false,
+      installer: { target_dir: '.test', template_type: 'default' },
+    });
+
+    setup.loadSplitTemplates = async () => 'template-content';
+    const loaded = await setup.loadTemplateWithMetadata('default', 'workflow', {
+      header_template: 'header.md',
+      extension: 'toml',
+    });
+
+    assert(loaded.extension === '.toml', 'Split template loader preserves configured extension override');
+  } catch (error) {
+    assert(false, 'Split template extension guard runs', error.message);
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test 21: Workflow Path Normalization Guard
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 21: Workflow Path Normalization Guard${colors.reset}\n`);
+
+  try {
+    const generator = new WorkflowCommandGenerator();
+    generator.loadWorkflowManifest = async () => [
+      {
+        name: 'create-story',
+        description: 'Create Story',
+        module: 'bmm',
+        path: String.raw`C:\repo\src\bmm\workflows\4-implementation\create-story\workflow.md`,
+      },
+      {
+        name: 'validate-workflow',
+        description: 'Validate Workflow',
+        module: 'core',
+        path: String.raw`C:\repo\_bmad\core\workflows\validate-workflow\workflow.md`,
+      },
+    ];
+    generator.generateCommandContent = async () => 'content';
+
+    const { artifacts } = await generator.collectWorkflowArtifacts('/tmp');
+    const createStory = artifacts.find((artifact) => artifact.name === 'create-story');
+    const validateWorkflow = artifacts.find((artifact) => artifact.name === 'validate-workflow');
+
+    assert(
+      createStory?.workflowPath === 'bmm/workflows/4-implementation/create-story/workflow.md',
+      'Workflow artifact path normalizes Windows src path to module-relative path',
+      createStory?.workflowPath,
+    );
+    assert(
+      validateWorkflow?.workflowPath === 'core/workflows/validate-workflow/workflow.md',
+      'Workflow artifact path strips _bmad prefix after separator normalization',
+      validateWorkflow?.workflowPath,
+    );
+  } catch (error) {
+    assert(false, 'Workflow path normalization guard runs', error.message);
   }
 
   console.log('');

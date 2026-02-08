@@ -66,6 +66,12 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
    */
   async installToTarget(projectDir, bmadDir, config, options) {
     const { target_dir, template_type, artifact_types } = config;
+
+    // Skip explicitly empty targets to avoid creating empty command directories.
+    if (Array.isArray(artifact_types) && artifact_types.length === 0) {
+      return { success: true, results: { agents: 0, workflows: 0, tasks: 0, tools: 0 } };
+    }
+
     const targetPath = path.join(projectDir, target_dir);
     await this.ensureDir(targetPath);
 
@@ -250,12 +256,13 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
     // Check for separate header/body templates
     if (header_template || body_template) {
       const template = await this.loadSplitTemplates(templateType, artifactType, header_template, body_template);
-      return { template, extension: '.md' };
+      return { template, extension: this.normalizeExtension(config.extension) };
     }
 
     // Load combined template with extension detection
+    const templateBaseName = artifactType ? `${templateType}-${artifactType}` : templateType;
     for (const extension of supportedExtensions) {
-      const templateName = `${templateType}-${artifactType}${extension}`;
+      const templateName = `${templateBaseName}${extension}`;
       const templatePath = path.join(__dirname, 'templates', 'combined', templateName);
       if (await fs.pathExists(templatePath)) {
         return {
@@ -327,6 +334,19 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
 
     // Combine header and body
     return `${header}\n${body}`;
+  }
+
+  normalizeExtension(extension) {
+    if (!extension) {
+      return '.md';
+    }
+
+    const trimmed = String(extension).trim();
+    if (trimmed === '') {
+      return '.md';
+    }
+
+    return trimmed.startsWith('.') ? trimmed : `.${trimmed}`;
   }
 
   /**

@@ -68,13 +68,19 @@ class WorkflowCommandGenerator {
     for (const workflow of allWorkflows) {
       const commandContent = await this.generateCommandContent(workflow, bmadDir);
       // Calculate the relative workflow path (e.g., bmm/workflows/4-implementation/sprint-planning/workflow.md)
-      let workflowRelPath = workflow.path;
+      let workflowRelPath = workflow.path || '';
+      workflowRelPath = workflowRelPath.replaceAll('\\', '/');
       // Remove _bmad/ prefix if present to get relative path from project root
       // Handle both absolute paths (/path/to/_bmad/...) and relative paths (_bmad/...)
       if (workflowRelPath.includes('_bmad/')) {
         const parts = workflowRelPath.split(/_bmad\//);
         if (parts.length > 1) {
           workflowRelPath = parts.slice(1).join('/');
+        }
+      } else if (workflowRelPath.includes('/src/')) {
+        const match = workflowRelPath.match(/\/src\/([^/]+)\/(.+)/);
+        if (match) {
+          workflowRelPath = `${match[1]}/${match[2]}`;
         }
       }
       artifacts.push({
