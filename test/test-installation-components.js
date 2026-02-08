@@ -21,6 +21,7 @@ const { ManifestGenerator } = require('../tools/cli/installers/lib/core/manifest
 const { WorkflowCommandGenerator } = require('../tools/cli/installers/lib/ide/shared/workflow-command-generator');
 const { TaskToolCommandGenerator } = require('../tools/cli/installers/lib/ide/shared/task-tool-command-generator');
 const { IdeManager } = require('../tools/cli/installers/lib/ide/manager');
+const { CodexSetup } = require('../tools/cli/installers/lib/ide/codex');
 const { ModuleManager } = require('../tools/cli/installers/lib/modules/manager');
 const { BMAD_FOLDER_NAME } = require('../tools/cli/installers/lib/ide/shared/path-utils');
 
@@ -703,6 +704,40 @@ internal: true
     );
   } catch (error) {
     assert(false, 'Help task agent-only guidance guard runs', error.message);
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test 18: Codex Task Visibility Guard
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 18: Codex Task Visibility Guard${colors.reset}\n`);
+
+  try {
+    const tmpRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-codex-visibility-'));
+    const projectDir = path.join(tmpRoot, 'project');
+    const bmadDir = path.join(tmpRoot, BMAD_FOLDER_NAME);
+    await fs.ensureDir(projectDir);
+    await fs.copy(path.join(projectRoot, 'src', 'core'), path.join(bmadDir, 'core'));
+    await fs.copy(path.join(projectRoot, 'src', 'bmm'), path.join(bmadDir, 'bmm'));
+
+    const manifestGenerator = new ManifestGenerator();
+    await manifestGenerator.generateManifests(bmadDir, ['bmm'], [], { ides: ['codex'] });
+
+    const codexSetup = new CodexSetup();
+    await codexSetup.setup(projectDir, bmadDir, {
+      selectedModules: ['bmm'],
+      preCollectedConfig: { installLocation: 'project' },
+    });
+
+    const promptsDir = path.join(projectDir, '.codex', 'prompts');
+    const generated = await fs.readdir(promptsDir);
+
+    assert(!generated.includes('bmad-workflow.md'), 'Codex export excludes internal workflow runner task prompt', generated.join(', '));
+
+    await fs.remove(tmpRoot);
+  } catch (error) {
+    assert(false, 'Codex task visibility guard runs', error.message);
   }
 
   console.log('');

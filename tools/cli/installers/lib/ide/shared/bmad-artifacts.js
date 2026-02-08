@@ -1,5 +1,6 @@
 const path = require('node:path');
 const fs = require('fs-extra');
+const yaml = require('yaml');
 
 /**
  * Helpers for gathering BMAD agents/tasks from the installed tree.
@@ -149,8 +150,33 @@ async function getTasksFromDir(dirPath, moduleName) {
     const filePath = path.join(dirPath, file);
     const content = await fs.readFile(filePath, 'utf8');
 
-    // Skip internal/engine files (not user-facing tasks)
-    if (content.includes('internal="true"')) {
+    let isInternal = false;
+    let isStandalone = true;
+
+    if (file.endsWith('.md')) {
+      // Parse markdown frontmatter for standalone/internal flags.
+      const frontmatterMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+      if (frontmatterMatch) {
+        try {
+          const frontmatter = yaml.parse(frontmatterMatch[1]) || {};
+          isInternal = frontmatter.internal === true || frontmatter.internal === 'true';
+          if (frontmatter.standalone === false || frontmatter.standalone === 'false') {
+            isStandalone = false;
+          }
+        } catch {
+          // Keep defaults when frontmatter parsing fails.
+        }
+      }
+    } else {
+      // XML tasks rely on attributes for standalone/internal visibility.
+      isInternal = /internal\s*=\s*["']true["']/i.test(content);
+      if (/standalone\s*=\s*["']false["']/i.test(content)) {
+        isStandalone = false;
+      }
+    }
+
+    // Skip internal/engine or explicitly non-standalone tasks.
+    if (isInternal || !isStandalone) {
       continue;
     }
 
