@@ -175,7 +175,7 @@ class Installer {
             }
 
             // Check if this IDE handler has a collectConfiguration method
-            // (custom installers like Codex, Kilo, Kiro-cli may have this)
+            // (custom installers like Codex, Kilo may have this)
             if (typeof handler.collectConfiguration === 'function') {
               await prompts.log.info(`Configuring ${ide}...`);
               ideConfigurations[ide] = await handler.collectConfiguration({

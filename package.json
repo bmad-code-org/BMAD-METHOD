@@ -41,9 +41,10 @@
     "lint:md": "markdownlint-cli2 \"**/*.md\"",
     "prepare": "command -v husky >/dev/null 2>&1 && husky || exit 0",
     "rebundle": "node tools/cli/bundlers/bundle-web.js rebundle",
-    "test": "npm run test:schemas && npm run test:install && npm run validate:schemas && npm run lint && npm run lint:md && npm run format:check",
+    "test": "npm run test:schemas && npm run test:refs && npm run test:install && npm run validate:schemas && npm run lint && npm run lint:md && npm run format:check",
     "test:coverage": "c8 --reporter=text --reporter=html npm run test:schemas",
     "test:install": "node test/test-installation-components.js",
+    "test:refs": "node test/test-file-refs-csv.js",
     "test:schemas": "node test/test-agent-schema.js",
     "validate:refs": "node tools/validate-file-refs.js",
     "validate:schemas": "node tools/validate-agent-schema.js"

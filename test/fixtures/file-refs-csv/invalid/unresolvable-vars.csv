@@ -1,0 +1,3 @@
+module,phase,name,workflow-file,description
+bmm,anytime,Template Var,{output_folder}/something.md,Has unresolvable template var
+bmm,anytime,Normal Ref,_bmad/core/tasks/help.md,Normal resolvable ref
