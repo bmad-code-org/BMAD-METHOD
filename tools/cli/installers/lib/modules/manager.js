@@ -1328,7 +1328,10 @@ class ModuleManager {
         }
       }
     } catch (error) {
-      await prompts.log.error(`Error running module installer for ${moduleName}: ${error.message}`);
+      await prompts.log.warn(
+        `Post-install script for ${moduleName} could not run: ${error.message}\n` +
+          `  The module itself was installed successfully. The post-install script is optional.`,
+      );
     }
   }
 
