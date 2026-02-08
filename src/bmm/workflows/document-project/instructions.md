@@ -113,6 +113,7 @@ Your choice [1/2/3]:
   <check if="user selects 1">
     <action>Set resume_mode = true</action>
     <action>Set workflow_mode = {{mode}}</action>
+    <action>Set subworkflow_success = false</action>
     <action>Load findings summaries from state file</action>
     <action>Load cached project_type_id(s) from state file</action>
 
@@ -125,10 +126,27 @@ Your choice [1/2/3]:
 
     <check if="workflow_mode == deep_dive">
       <action>Read fully and follow: {installed_path}/workflows/deep-dive-instructions.md with resume context</action>
+      <action>Set subworkflow_success = true only if delegated workflow completed without HALT/error</action>
+      <check if="subworkflow_success != true">
+        <output>Sub-workflow failed or was aborted during resume deep-dive mode. Exiting without marking completion.</output>
+        <action>Exit workflow</action>
+      </check>
+      <action>After sub-workflow completes, continue to Step 4</action>
     </check>
 
     <check if="workflow_mode == initial_scan OR workflow_mode == full_rescan">
       <action>Read fully and follow: {installed_path}/workflows/full-scan-instructions.md with resume context</action>
+      <action>Set subworkflow_success = true only if delegated workflow completed without HALT/error</action>
+      <check if="subworkflow_success != true">
+        <output>Sub-workflow failed or was aborted during resume full-scan mode. Exiting without marking completion.</output>
+        <action>Exit workflow</action>
+      </check>
+      <action>After sub-workflow completes, continue to Step 4</action>
+    </check>
+
+    <check if="workflow_mode != deep_dive AND workflow_mode != initial_scan AND workflow_mode != full_rescan">
+      <output>Invalid resume workflow mode '{{workflow_mode}}'. Exiting without marking completion.</output>
+      <action>Exit workflow</action>
     </check>
 
   </check>
@@ -219,6 +237,11 @@ Your choice [1/2/3]:
 </step>
 
 <step n="4" goal="Update status and complete">
+
+<check if="resume_mode == true AND subworkflow_success != true">
+  <output>Resume flow did not complete a delegated sub-workflow successfully. Exiting without completion update.</output>
+  <action>Exit workflow</action>
+</check>
 
 <check if="status_file_found == true">
   <action>Attempt status update in {{status_file_path}}:
