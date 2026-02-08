@@ -84,6 +84,13 @@ platforms:
       target_dir: .gemini/commands
       template_type: gemini
 
+  mistral-vibe:
+    name: "Mistral Vibe CLI"
+    preferred: false
+    category: cli
+    description: "Mistral's vibe command-line interface"
+    # No installer config - uses custom mistral-vibe.js
+
   github-copilot:
     name: "GitHub Copilot"
     preferred: false
