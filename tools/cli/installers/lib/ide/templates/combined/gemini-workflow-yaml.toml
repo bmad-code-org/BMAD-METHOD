@@ -2,15 +2,11 @@ description = """{{description}}"""
 prompt = """
 Execute the BMAD '{{name}}' workflow.
 
-CRITICAL: This is a structured YAML workflow. Follow these steps precisely:
+CRITICAL: Use the workflow runner task, not direct workflow-file execution.
 
-1. LOAD the workflow definition from {project-root}/{{bmadFolderName}}/{{workflow_path}}
-2. PARSE the YAML structure to understand:
-   - Workflow phases and steps
-   - Required inputs and outputs
-   - Dependencies between steps
-3. EXECUTE each step in order
-4. VALIDATE outputs before proceeding to next step
-
-WORKFLOW FILE: {project-root}/{{bmadFolderName}}/{{workflow_path}}
+WORKFLOW INSTRUCTIONS:
+1. LOAD the workflow runner from {project-root}/{{bmadFolderName}}/core/tasks/workflow.md
+2. READ its entire contents
+3. PASS this parameter to the runner: workflow-config: {{workflow_path}}
+4. FOLLOW every runner step exactly as specified
 """

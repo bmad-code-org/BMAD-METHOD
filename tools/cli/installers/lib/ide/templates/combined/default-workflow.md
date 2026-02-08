@@ -4,4 +4,8 @@ description: '{{description}}'
 disable-model-invocation: true
 ---
 
-IT IS CRITICAL THAT YOU FOLLOW THIS COMMAND: LOAD the FULL @{project-root}/{{bmadFolderName}}/{{path}}, READ its entire contents and follow its directions exactly!
+IT IS CRITICAL THAT YOU FOLLOW THESE STEPS:
+1. LOAD the FULL @{project-root}/{{bmadFolderName}}/core/tasks/workflow.md
+2. READ its entire contents
+3. Execute workflow runner with parameter: workflow-config: {{bmadFolderName}}/{{path}}
+4. FOLLOW the runner instructions exactly as written

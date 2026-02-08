@@ -2,13 +2,11 @@ description = """{{description}}"""
 prompt = """
 Execute the BMAD '{{name}}' workflow.
 
-CRITICAL: You must load and follow the workflow definition exactly.
+CRITICAL: Use the workflow runner task, not direct workflow-file execution.
 
 WORKFLOW INSTRUCTIONS:
-1. LOAD the workflow file from {project-root}/{{bmadFolderName}}/{{workflow_path}}
+1. LOAD the workflow runner from {project-root}/{{bmadFolderName}}/core/tasks/workflow.md
 2. READ its entire contents
-3. FOLLOW every step precisely as specified
-4. DO NOT skip or modify any steps
-
-WORKFLOW FILE: {project-root}/{{bmadFolderName}}/{{workflow_path}}
+3. PASS this parameter to the runner: workflow-config: {{workflow_path}}
+4. FOLLOW every runner step exactly as specified
 """
