@@ -10,10 +10,26 @@
 
 <step n="1" goal="Validate workflow and get project info">
 
-<invoke-workflow path="{project-root}/_bmad/bmm/workflows/workflow-status">
-  <param>mode: data</param>
-  <param>data_request: project_config</param>
-</invoke-workflow>
+<action>Initialize status defaults:
+  - Set status_exists = false
+  - Set status_file_found = false
+  - Set standalone_mode = true
+  - Set warning = ""
+  - Set suggestion = ""
+  - Set next_workflow = ""
+  - Set next_agent = ""
+</action>
+
+<action>Attempt to load workflow status directly from `{output_folder}/bmm-workflow-status.yaml`:
+  - If file exists, is readable, and parses correctly:
+    - Set status_exists = true
+    - Set status_file_found = true
+    - Set standalone_mode = false
+    - Set status_file_path = `{output_folder}/bmm-workflow-status.yaml`
+    - Extract field_type, warning, suggestion, next_workflow, next_agent if present
+  - If file is missing, unreadable, or malformed:
+    - Keep defaults and continue in standalone mode
+</action>
 
 <check if="status_exists == false">
   <output>{{suggestion}}</output>
@@ -35,11 +51,11 @@
     </check>
   </check>
 
-  <!-- Now validate sequencing -->
-  <invoke-workflow path="{project-root}/_bmad/bmm/workflows/workflow-status">
-    <param>mode: validate</param>
-    <param>calling_workflow: document-project</param>
-  </invoke-workflow>
+  <!-- Validate sequencing from loaded status fields -->
+  <action>Validate sequencing locally from loaded status fields:
+    - If warning is empty, continue
+    - If warning contains guidance, require explicit user confirmation before continuing
+  </action>
 
   <check if="warning != ''">
     <output>{{warning}}</output>
@@ -58,11 +74,22 @@
 <critical>SMART LOADING STRATEGY: Check state file FIRST before loading any CSV files</critical>
 
 <action>Check for existing state file at: {output_folder}/project-scan-report.json</action>
+<action>Set resume_mode = false</action>
 
 <check if="project-scan-report.json exists">
   <action>Read state file and extract: timestamps, mode, scan_level, current_step, completed_steps, project_classification</action>
   <action>Extract cached project_type_id(s) from state file if present</action>
   <action>Calculate age of state file (current time - last_updated)</action>
+
+<check if="state file age >= 24 hours">
+  <action>Display: "Found old state file (>24 hours). Starting fresh scan."</action>
+  <action>Create archive directory: {output_folder}/.archive/</action>
+  <action>Archive old state file to: {output_folder}/.archive/project-scan-report-{{timestamp}}.json</action>
+  <action>Set resume_mode = false</action>
+  <action>Continue to Step 3</action>
+</check>
+
+<check if="state file age < 24 hours">
 
 <ask>I found an in-progress workflow state from {{last_updated}}.
 
@@ -110,7 +137,7 @@ Your choice [1/2/3]:
     <action>Create archive directory: {output_folder}/.archive/</action>
     <action>Move old state file to: {output_folder}/.archive/project-scan-report-{{timestamp}}.json</action>
     <action>Set resume_mode = false</action>
-    <action>Continue to Step 0.5</action>
+    <action>Continue to Step 3</action>
   </check>
 
   <check if="user selects 3">
@@ -118,12 +145,13 @@ Your choice [1/2/3]:
     <action>Exit workflow</action>
   </check>
 
-  <check if="state file age >= 24 hours">
-    <action>Display: "Found old state file (>24 hours). Starting fresh scan."</action>
-    <action>Archive old state file to: {output_folder}/.archive/project-scan-report-{{timestamp}}.json</action>
-    <action>Set resume_mode = false</action>
-    <action>Continue to Step 0.5</action>
-  </check>
+</check>
+</check>
+
+<check if="project-scan-report.json does not exist">
+  <action>Set resume_mode = false</action>
+  <action>Continue to Step 3</action>
+</check>
 
 </step>
 
@@ -149,6 +177,11 @@ Your choice [1/2/3]:
     <action>Set workflow_mode = "full_rescan"</action>
     <action>Display: "Starting full project rescan..."</action>
     <action>Read fully and follow: {installed_path}/workflows/full-scan-instructions.md</action>
+    <action>Set subworkflow_success = true only if delegated workflow completed without HALT/error</action>
+    <check if="subworkflow_success != true">
+      <output>Sub-workflow failed or was aborted during full rescan. Exiting without marking completion.</output>
+      <action>Exit workflow</action>
+    </check>
     <action>After sub-workflow completes, continue to Step 4</action>
   </check>
 
@@ -157,6 +190,11 @@ Your choice [1/2/3]:
     <action>Set scan_level = "exhaustive"</action>
     <action>Display: "Starting deep-dive documentation mode..."</action>
     <action>Read fully and follow: {installed_path}/workflows/deep-dive-instructions.md</action>
+    <action>Set subworkflow_success = true only if delegated workflow completed without HALT/error</action>
+    <check if="subworkflow_success != true">
+      <output>Sub-workflow failed or was aborted during deep-dive mode. Exiting without marking completion.</output>
+      <action>Exit workflow</action>
+    </check>
     <action>After sub-workflow completes, continue to Step 4</action>
   </check>
 
@@ -170,6 +208,11 @@ Your choice [1/2/3]:
   <action>Set workflow_mode = "initial_scan"</action>
   <action>Display: "No existing documentation found. Starting initial project scan..."</action>
   <action>Read fully and follow: {installed_path}/workflows/full-scan-instructions.md</action>
+  <action>Set subworkflow_success = true only if delegated workflow completed without HALT/error</action>
+  <check if="subworkflow_success != true">
+    <output>Sub-workflow failed or was aborted during initial scan. Exiting without marking completion.</output>
+    <action>Exit workflow</action>
+  </check>
   <action>After sub-workflow completes, continue to Step 4</action>
 </check>
 
@@ -178,14 +221,18 @@ Your choice [1/2/3]:
 <step n="4" goal="Update status and complete">
 
 <check if="status_file_found == true">
-  <invoke-workflow path="{project-root}/_bmad/bmm/workflows/workflow-status">
-    <param>mode: update</param>
-    <param>action: complete_workflow</param>
-    <param>workflow_name: document-project</param>
-  </invoke-workflow>
+  <action>Attempt status update in {{status_file_path}}:
+    - Mark workflow `document-project` as completed
+    - Persist updated timestamp and completion metadata
+    - Set status_update_success = true on success
+    - If write fails, set status_update_success = false and capture status_update_error
+  </action>
 
-  <check if="success == true">
+  <check if="status_update_success == true">
     <output>Status updated!</output>
+  </check>
+  <check if="status_update_success != true">
+    <output>⚠️ Status update skipped: {{status_update_error}}</output>
   </check>
 </check>
 
@@ -196,25 +243,21 @@ Your choice [1/2/3]:
 - Mode: {{workflow_mode}}
 - Scan Level: {{scan_level}}
 - Output: {output_folder}/index.md and related files
+</output>
 
-{{#if status_file_found}}
-**Status Updated:**
-
-- Progress tracking updated
+<check if="status_file_found == true AND status_update_success == true">
+  <output>**Status Updated:** Progress tracking updated.
 
 **Next Steps:**
-
 - **Next required:** {{next_workflow}} ({{next_agent}} agent)
+- Run `bmad-help` if you need recommended next workflows.</output>
+</check>
 
-Check status anytime with: `workflow-status`
-{{else}}
-**Next Steps:**
-Since no workflow is in progress:
-
+<check if="status_file_found == false OR status_update_success != true">
+  <output>**Next Steps:**
 - Refer to the BMM workflow guide if unsure what to do next
-- Or run `workflow-init` to create a workflow path and get guided next steps
-  {{/if}}
-  </output>
+- Run `bmad-help` to get guided workflow recommendations</output>
+</check>
 
 </step>
 

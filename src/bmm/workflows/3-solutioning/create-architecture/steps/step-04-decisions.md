@@ -15,9 +15,9 @@
 
 ## EXECUTION PROTOCOLS:
 
-- 🎯 Show your analysis before taking any action
+- 🎯 Provide a brief rationale before taking any action
 - 🌐 Search the web to verify technology versions and options
-- ⚠️ Present A/P/C menu after each major decision category
+- ⚠️ Present A/P/C menu after drafting decision content (and when user requests refinement)
 - 💾 ONLY save when user chooses C (Continue)
 - 📖 Update frontmatter `stepsCompleted: [1, 2, 3, 4]` before loading next step
 - 🚫 FORBIDDEN to load next step until C is selected
@@ -44,7 +44,7 @@ This step will generate content and present choices for each decision category:
 - Project context file may contain technical preferences and rules
 - Technical preferences discovered in step 3 are available
 - Focus on decisions not already made by starter template or existing preferences
-- Collaborative decision making, not recommendations
+- Collaborative decision making first; recommendations are allowed only with explicit rationale and user confirmation
 
 ## YOUR TASK:
 
@@ -58,7 +58,7 @@ Facilitate collaborative architectural decision making, leveraging existing tech
 "Based on our technical preferences discussion in step 3, let's build on those foundations:
 
 **Your Technical Preferences:**
-{{user_technical_preferences_from_step_3}}
+{{user_technical_preferences}}
 
 **Starter Template Decisions:**
 {{starter_template_decisions}}
@@ -72,7 +72,7 @@ Based on technical preferences, starter template choice, and project context, id
 **Already Decided (Don't re-decide these):**
 
 - {{starter_template_decisions}}
-- {{user_technology_preferences}}
+- {{user_technical_preferences}}
 - {{project_context_technical_rules}}
 
 **Critical Decisions:** Must be decided before implementation can proceed
@@ -165,7 +165,7 @@ If decision involves specific technology:
 
 ```
 Search the web: "{{technology}} latest stable version"
-Search the web: "{{technology}} current LTS version"
+Search the web: "{{technology}} current LTS version" (only if the technology publishes an LTS track)
 Search the web: "{{technology}} production readiness"
 ```
 

@@ -88,11 +88,18 @@ Search for required documents using these patterns (sharded means a large docume
 1. `{planning_artifacts}/*ux*.md` (whole document)
 2. `{planning_artifacts}/*ux*/index.md` (sharded version)
 
+**Deterministic Selection Rules (required):**
+
+- When multiple files match the same priority level, prefer exact filename matches (`prd.md`, `architecture.md`, `ux-design.md`) before wildcard matches.
+- If multiple wildcard matches remain, prefer files under `{planning_artifacts}` root before nested paths.
+- If ambiguity still remains, present candidates to the user and require explicit selection before extraction.
+- Record the final selected files in `inputDocuments` frontmatter to keep downstream steps deterministic.
+
 Before proceeding, Ask the user if there are any other documents to include for analysis, and if anything found should be excluded. Wait for user confirmation. Once confirmed, create the {outputFile} from the {epicsTemplate} and in the front matter list the files in the array of `inputDocuments: []`.
 
 ### 3. Extract Functional Requirements (FRs)
 
-From the PRD document (full or sharded), read then entire document and extract ALL functional requirements:
+From the PRD document (full or sharded), read the entire document and extract ALL functional requirements:
 
 **Extraction Method:**
 
