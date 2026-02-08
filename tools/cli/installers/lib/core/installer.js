@@ -1201,19 +1201,11 @@ class Installer {
       lines.push(`  ${icon}  ${r.step}${detail}`);
     }
 
-    // Add context info
+    // Context and warnings
     lines.push('');
     if (context.bmadDir) {
       lines.push(`  Installed to: ${color.dim(context.bmadDir)}`);
     }
-    if (context.modules && context.modules.length > 0) {
-      lines.push(`  Modules: ${color.dim(context.modules.join(', '))}`);
-    }
-    if (context.ides && context.ides.length > 0) {
-      lines.push(`  Tools: ${color.dim(context.ides.join(', '))}`);
-    }
-
-    // Custom/modified file warnings
     if (context.customFiles && context.customFiles.length > 0) {
       lines.push(`  ${color.cyan(`Custom files preserved: ${context.customFiles.length}`)}`);
     }
