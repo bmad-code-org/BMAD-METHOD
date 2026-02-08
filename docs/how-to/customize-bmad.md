@@ -96,7 +96,7 @@ Add custom entries to the agent's display menu. Each item needs a `trigger`, a t
 ```yaml
 menu:
   - trigger: my-workflow
-    workflow: '{project-root}/my-custom/workflows/my-workflow.yaml'
+    workflow: '{project-root}/my-custom/workflows/my-workflow.md'
     description: My custom workflow
   - trigger: deploy
     action: '#deploy-prompt'

@@ -4,7 +4,7 @@ description: Conversational spec engineering - ask questions, investigate code, 
 main_config: '{project-root}/_bmad/bmm/config.yaml'
 
 # Checkpoint handler paths
-advanced_elicitation: '{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml'
+advanced_elicitation: '{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.md'
 party_mode_exec: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 quick_dev_workflow: '{project-root}/_bmad/bmm/workflows/bmad-quick-flow/quick-dev/workflow.md'
 ---

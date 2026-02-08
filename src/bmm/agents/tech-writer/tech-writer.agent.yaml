@@ -21,7 +21,7 @@ agent:
 
   menu:
     - trigger: DP or fuzzy match on document-project
-      workflow: "{project-root}/_bmad/bmm/workflows/document-project/workflow.yaml"
+      workflow: "{project-root}/_bmad/bmm/workflows/document-project/workflow.md"
       description: "[DP] Document Project: Generate comprehensive project documentation (brownfield analysis, architecture scanning)"
 
     - trigger: WD or fuzzy match on write-document

@@ -2,7 +2,6 @@ const path = require('node:path');
 const fs = require('fs-extra');
 const yaml = require('yaml');
 const crypto = require('node:crypto');
-const csv = require('csv-parse/sync');
 const { getSourcePath, getModulePath } = require('../../../lib/project-root');
 
 // Load package.json for version info
@@ -20,19 +19,6 @@ class ManifestGenerator {
     this.modules = [];
     this.files = [];
     this.selectedIdes = [];
-  }
-
-  /**
-   * Clean text for CSV output by normalizing whitespace and escaping quotes
-   * @param {string} text - Text to clean
-   * @returns {string} Cleaned text safe for CSV
-   */
-  cleanForCSV(text) {
-    if (!text) return '';
-    return text
-      .trim()
-      .replaceAll(/\s+/g, ' ') // Normalize all whitespace (including newlines) to single space
-      .replaceAll('"', '""'); // Escape quotes for CSV
   }
 
   /**
@@ -130,7 +116,7 @@ class ManifestGenerator {
   }
 
   /**
-   * Recursively find and parse workflow.yaml and workflow.md files
+   * Recursively find and parse workflow definition files
    */
   async getWorkflowsFromPath(basePath, moduleName) {
     const workflows = [];
@@ -148,7 +134,7 @@ class ManifestGenerator {
       return workflows;
     }
 
-    // Recursively find workflow.yaml files
+    // Recursively find workflow files
     const findWorkflows = async (dir, relativePath = '') => {
       const entries = await fs.readdir(dir, { withFileTypes: true });
 
@@ -159,12 +145,8 @@ class ManifestGenerator {
           // Recurse into subdirectories
           const newRelativePath = relativePath ? `${relativePath}/${entry.name}` : entry.name;
           await findWorkflows(fullPath, newRelativePath);
-        } else if (
-          entry.name === 'workflow.yaml' ||
-          entry.name === 'workflow.md' ||
-          (entry.name.startsWith('workflow-') && entry.name.endsWith('.md'))
-        ) {
-          // Parse workflow file (both YAML and MD formats)
+        } else if (entry.isFile() && /^workflow(?:-[^/]+)?\.md$/.test(entry.name)) {
+          // Parse workflow file (MD with YAML frontmatter)
           if (debug) {
             console.log(`[DEBUG] Found workflow file: ${fullPath}`);
           }
@@ -173,21 +155,15 @@ class ManifestGenerator {
             const rawContent = await fs.readFile(fullPath, 'utf8');
             const content = rawContent.replaceAll('\r\n', '\n').replaceAll('\r', '\n');
 
-            let workflow;
-            if (entry.name === 'workflow.yaml') {
-              // Parse YAML workflow
-              workflow = yaml.parse(content);
-            } else {
-              // Parse MD workflow with YAML frontmatter
-              const frontmatterMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
-              if (!frontmatterMatch) {
-                if (debug) {
-                  console.log(`[DEBUG] Skipped (no frontmatter): ${fullPath}`);
-                }
-                continue; // Skip MD files without frontmatter
+            // Parse MD workflow with YAML frontmatter
+            const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
+            if (!frontmatterMatch) {
+              if (debug) {
+                console.log(`[DEBUG] Skipped (no frontmatter): ${fullPath}`);
               }
-              workflow = yaml.parse(frontmatterMatch[1]);
+              continue; // Skip MD files without frontmatter
             }
+            const workflow = yaml.parse(frontmatterMatch[1]);
 
             if (debug) {
               console.log(`[DEBUG] Parsed: name="${workflow.name}", description=${workflow.description ? 'OK' : 'MISSING'}`);
@@ -211,15 +187,16 @@ class ManifestGenerator {
 
             if (workflow.name && workflow.description) {
               // Build relative path for installation
+              const relativeWorkflowPath = relativePath ? `${relativePath}/${entry.name}` : entry.name;
               const installPath =
                 moduleName === 'core'
-                  ? `${this.bmadFolderName}/core/workflows/${relativePath}/${entry.name}`
-                  : `${this.bmadFolderName}/${moduleName}/workflows/${relativePath}/${entry.name}`;
+                  ? `${this.bmadFolderName}/core/workflows/${relativeWorkflowPath}`
+                  : `${this.bmadFolderName}/${moduleName}/workflows/${relativeWorkflowPath}`;
 
               // Workflows with standalone: false are filtered out above
               workflows.push({
                 name: workflow.name,
-                description: this.cleanForCSV(workflow.description),
+                description: workflow.description.replaceAll('"', '""'), // Escape quotes for CSV
                 module: moduleName,
                 path: installPath,
               });
@@ -337,15 +314,24 @@ class ManifestGenerator {
 
         const agentName = entry.name.replace('.md', '');
 
+        // Helper function to clean and escape CSV content
+        const cleanForCSV = (text) => {
+          if (!text) return '';
+          return text
+            .trim()
+            .replaceAll(/\s+/g, ' ') // Normalize whitespace
+            .replaceAll('"', '""'); // Escape quotes for CSV
+        };
+
         agents.push({
           name: agentName,
           displayName: nameMatch ? nameMatch[1] : agentName,
           title: titleMatch ? titleMatch[1] : '',
           icon: iconMatch ? iconMatch[1] : '',
-          role: roleMatch ? this.cleanForCSV(roleMatch[1]) : '',
-          identity: identityMatch ? this.cleanForCSV(identityMatch[1]) : '',
-          communicationStyle: styleMatch ? this.cleanForCSV(styleMatch[1]) : '',
-          principles: principlesMatch ? this.cleanForCSV(principlesMatch[1]) : '',
+          role: roleMatch ? cleanForCSV(roleMatch[1]) : '',
+          identity: identityMatch ? cleanForCSV(identityMatch[1]) : '',
+          communicationStyle: styleMatch ? cleanForCSV(styleMatch[1]) : '',
+          principles: principlesMatch ? cleanForCSV(principlesMatch[1]) : '',
           module: moduleName,
           path: installPath,
         });
@@ -394,33 +380,31 @@ class ManifestGenerator {
         const filePath = path.join(dirPath, file);
         const content = await fs.readFile(filePath, 'utf8');
 
-        // Skip internal/engine files (not user-facing tasks)
-        if (content.includes('internal="true"')) {
-          continue;
-        }
-
         let name = file.replace(/\.(xml|md)$/, '');
         let displayName = name;
         let description = '';
-        let standalone = false;
+        let standalone = true;
 
         if (file.endsWith('.md')) {
           // Parse YAML frontmatter for .md tasks
           const frontmatterMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
           if (frontmatterMatch) {
             try {
-              const frontmatter = yaml.parse(frontmatterMatch[1]);
+              const frontmatter = yaml.parse(frontmatterMatch[1]) || {};
               name = frontmatter.name || name;
               displayName = frontmatter.displayName || frontmatter.name || name;
-              description = this.cleanForCSV(frontmatter.description || '');
-              // Tasks are standalone by default unless explicitly false (internal=true is already filtered above)
-              standalone = frontmatter.standalone !== false && frontmatter.standalone !== 'false';
+              description = frontmatter.description || '';
+              const isInternal = frontmatter.internal === true || frontmatter.internal === 'true';
+              if (frontmatter.standalone === true || frontmatter.standalone === 'true') {
+                standalone = true;
+              } else if (frontmatter.standalone === false || frontmatter.standalone === 'false') {
+                standalone = false;
+              } else {
+                standalone = !isInternal;
+              }
             } catch {
               // If YAML parsing fails, use defaults
-              standalone = true; // Default to standalone
             }
-          } else {
-            standalone = true; // No frontmatter means standalone
           }
         } else {
           // For .xml tasks, extract from tag attributes
@@ -429,10 +413,18 @@ class ManifestGenerator {
 
           const descMatch = content.match(/description="([^"]+)"/);
           const objMatch = content.match(/<objective>([^<]+)<\/objective>/);
-          description = this.cleanForCSV(descMatch ? descMatch[1] : objMatch ? objMatch[1].trim() : '');
+          description = descMatch ? descMatch[1] : objMatch ? objMatch[1].trim() : '';
 
-          const standaloneFalseMatch = content.match(/<task[^>]+standalone="false"/);
-          standalone = !standaloneFalseMatch;
+          const standaloneTrueMatch = content.match(/<task[^>]+standalone="true"/i);
+          const standaloneFalseMatch = content.match(/<task[^>]+standalone="false"/i);
+          const internalMatch = content.match(/<task[^>]+internal="true"/i);
+          if (standaloneFalseMatch) {
+            standalone = false;
+          } else if (standaloneTrueMatch) {
+            standalone = true;
+          } else {
+            standalone = !internalMatch;
+          }
         }
 
         // Build relative path for installation
@@ -442,7 +434,7 @@ class ManifestGenerator {
         tasks.push({
           name: name,
           displayName: displayName,
-          description: description,
+          description: description.replaceAll('"', '""'),
           module: moduleName,
           path: installPath,
           standalone: standalone,
@@ -492,33 +484,31 @@ class ManifestGenerator {
         const filePath = path.join(dirPath, file);
         const content = await fs.readFile(filePath, 'utf8');
 
-        // Skip internal tools (same as tasks)
-        if (content.includes('internal="true"')) {
-          continue;
-        }
-
         let name = file.replace(/\.(xml|md)$/, '');
         let displayName = name;
         let description = '';
-        let standalone = false;
+        let standalone = true;
 
         if (file.endsWith('.md')) {
           // Parse YAML frontmatter for .md tools
           const frontmatterMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
           if (frontmatterMatch) {
             try {
-              const frontmatter = yaml.parse(frontmatterMatch[1]);
+              const frontmatter = yaml.parse(frontmatterMatch[1]) || {};
               name = frontmatter.name || name;
               displayName = frontmatter.displayName || frontmatter.name || name;
-              description = this.cleanForCSV(frontmatter.description || '');
-              // Tools are standalone by default unless explicitly false (internal=true is already filtered above)
-              standalone = frontmatter.standalone !== false && frontmatter.standalone !== 'false';
+              description = frontmatter.description || '';
+              const isInternal = frontmatter.internal === true || frontmatter.internal === 'true';
+              if (frontmatter.standalone === true || frontmatter.standalone === 'true') {
+                standalone = true;
+              } else if (frontmatter.standalone === false || frontmatter.standalone === 'false') {
+                standalone = false;
+              } else {
+                standalone = !isInternal;
+              }
             } catch {
               // If YAML parsing fails, use defaults
-              standalone = true; // Default to standalone
             }
-          } else {
-            standalone = true; // No frontmatter means standalone
           }
         } else {
           // For .xml tools, extract from tag attributes
@@ -527,10 +517,18 @@ class ManifestGenerator {
 
           const descMatch = content.match(/description="([^"]+)"/);
           const objMatch = content.match(/<objective>([^<]+)<\/objective>/);
-          description = this.cleanForCSV(descMatch ? descMatch[1] : objMatch ? objMatch[1].trim() : '');
+          description = descMatch ? descMatch[1] : objMatch ? objMatch[1].trim() : '';
 
-          const standaloneFalseMatch = content.match(/<tool[^>]+standalone="false"/);
-          standalone = !standaloneFalseMatch;
+          const standaloneTrueMatch = content.match(/<tool[^>]+standalone="true"/i);
+          const standaloneFalseMatch = content.match(/<tool[^>]+standalone="false"/i);
+          const internalMatch = content.match(/<tool[^>]+internal="true"/i);
+          if (standaloneFalseMatch) {
+            standalone = false;
+          } else if (standaloneTrueMatch) {
+            standalone = true;
+          } else {
+            standalone = !internalMatch;
+          }
         }
 
         // Build relative path for installation
@@ -540,7 +538,7 @@ class ManifestGenerator {
         tools.push({
           name: name,
           displayName: displayName,
-          description: description,
+          description: description.replaceAll('"', '""'),
           module: moduleName,
           path: installPath,
           standalone: standalone,
@@ -737,24 +735,12 @@ class ManifestGenerator {
     // Create CSV header - standalone column removed, everything is canonicalized to 4 columns
     let csv = 'name,description,module,path\n';
 
-    // Build workflows map from discovered workflows only
-    // Old entries are NOT preserved - the manifest reflects what actually exists on disk
-    const allWorkflows = new Map();
-
-    // Only add workflows that were actually discovered in this scan
-    for (const workflow of this.workflows) {
-      const key = `${workflow.module}:${workflow.name}`;
-      allWorkflows.set(key, {
-        name: workflow.name,
-        description: workflow.description,
-        module: workflow.module,
-        path: workflow.path,
-      });
-    }
-
-    // Write all workflows
-    for (const [, value] of allWorkflows) {
-      const row = [escapeCsv(value.name), escapeCsv(value.description), escapeCsv(value.module), escapeCsv(value.path)].join(',');
+    // Regenerate from current install scan to avoid preserving stale/deleted entries
+    const sortedWorkflows = [...this.workflows].sort((a, b) => `${a.module}:${a.name}`.localeCompare(`${b.module}:${b.name}`));
+    for (const workflow of sortedWorkflows) {
+      const row = [escapeCsv(workflow.name), escapeCsv(workflow.description), escapeCsv(workflow.module), escapeCsv(workflow.path)].join(
+        ',',
+      );
       csv += row + '\n';
     }
 
@@ -768,67 +754,16 @@ class ManifestGenerator {
    */
   async writeAgentManifest(cfgDir) {
     const csvPath = path.join(cfgDir, 'agent-manifest.csv');
-    const escapeCsv = (value) => `"${String(value ?? '').replaceAll('"', '""')}"`;
-
-    // Read existing manifest to preserve entries
-    const existingEntries = new Map();
-    if (await fs.pathExists(csvPath)) {
-      const content = await fs.readFile(csvPath, 'utf8');
-      const records = csv.parse(content, {
-        columns: true,
-        skip_empty_lines: true,
-      });
-      for (const record of records) {
-        existingEntries.set(`${record.module}:${record.name}`, record);
-      }
-    }
 
     // Create CSV header with persona fields
-    let csvContent = 'name,displayName,title,icon,role,identity,communicationStyle,principles,module,path\n';
+    let csv = 'name,displayName,title,icon,role,identity,communicationStyle,principles,module,path\n';
+    const sortedAgents = [...this.agents].sort((a, b) => `${a.module}:${a.name}`.localeCompare(`${b.module}:${b.name}`));
 
-    // Combine existing and new agents, preferring new data for duplicates
-    const allAgents = new Map();
-
-    // Add existing entries
-    for (const [key, value] of existingEntries) {
-      allAgents.set(key, value);
+    for (const agent of sortedAgents) {
+      csv += `"${agent.name}","${agent.displayName}","${agent.title}","${agent.icon}","${agent.role}","${agent.identity}","${agent.communicationStyle}","${agent.principles}","${agent.module}","${agent.path}"\n`;
     }
 
-    // Add/update new agents
-    for (const agent of this.agents) {
-      const key = `${agent.module}:${agent.name}`;
-      allAgents.set(key, {
-        name: agent.name,
-        displayName: agent.displayName,
-        title: agent.title,
-        icon: agent.icon,
-        role: agent.role,
-        identity: agent.identity,
-        communicationStyle: agent.communicationStyle,
-        principles: agent.principles,
-        module: agent.module,
-        path: agent.path,
-      });
-    }
-
-    // Write all agents
-    for (const [, record] of allAgents) {
-      const row = [
-        escapeCsv(record.name),
-        escapeCsv(record.displayName),
-        escapeCsv(record.title),
-        escapeCsv(record.icon),
-        escapeCsv(record.role),
-        escapeCsv(record.identity),
-        escapeCsv(record.communicationStyle),
-        escapeCsv(record.principles),
-        escapeCsv(record.module),
-        escapeCsv(record.path),
-      ].join(',');
-      csvContent += row + '\n';
-    }
-
-    await fs.writeFile(csvPath, csvContent);
+    await fs.writeFile(csvPath, csv);
     return csvPath;
   }
 
@@ -838,59 +773,15 @@ class ManifestGenerator {
    */
   async writeTaskManifest(cfgDir) {
     const csvPath = path.join(cfgDir, 'task-manifest.csv');
-    const escapeCsv = (value) => `"${String(value ?? '').replaceAll('"', '""')}"`;
-
-    // Read existing manifest to preserve entries
-    const existingEntries = new Map();
-    if (await fs.pathExists(csvPath)) {
-      const content = await fs.readFile(csvPath, 'utf8');
-      const records = csv.parse(content, {
-        columns: true,
-        skip_empty_lines: true,
-      });
-      for (const record of records) {
-        existingEntries.set(`${record.module}:${record.name}`, record);
-      }
-    }
 
     // Create CSV header with standalone column
-    let csvContent = 'name,displayName,description,module,path,standalone\n';
-
-    // Combine existing and new tasks
-    const allTasks = new Map();
-
-    // Add existing entries
-    for (const [key, value] of existingEntries) {
-      allTasks.set(key, value);
+    let csv = 'name,displayName,description,module,path,standalone\n';
+    const sortedTasks = [...this.tasks].sort((a, b) => `${a.module}:${a.name}`.localeCompare(`${b.module}:${b.name}`));
+    for (const task of sortedTasks) {
+      csv += `"${task.name}","${task.displayName}","${task.description}","${task.module}","${task.path}","${task.standalone}"\n`;
     }
 
-    // Add/update new tasks
-    for (const task of this.tasks) {
-      const key = `${task.module}:${task.name}`;
-      allTasks.set(key, {
-        name: task.name,
-        displayName: task.displayName,
-        description: task.description,
-        module: task.module,
-        path: task.path,
-        standalone: task.standalone,
-      });
-    }
-
-    // Write all tasks
-    for (const [, record] of allTasks) {
-      const row = [
-        escapeCsv(record.name),
-        escapeCsv(record.displayName),
-        escapeCsv(record.description),
-        escapeCsv(record.module),
-        escapeCsv(record.path),
-        escapeCsv(record.standalone),
-      ].join(',');
-      csvContent += row + '\n';
-    }
-
-    await fs.writeFile(csvPath, csvContent);
+    await fs.writeFile(csvPath, csv);
     return csvPath;
   }
 
@@ -900,59 +791,15 @@ class ManifestGenerator {
    */
   async writeToolManifest(cfgDir) {
     const csvPath = path.join(cfgDir, 'tool-manifest.csv');
-    const escapeCsv = (value) => `"${String(value ?? '').replaceAll('"', '""')}"`;
-
-    // Read existing manifest to preserve entries
-    const existingEntries = new Map();
-    if (await fs.pathExists(csvPath)) {
-      const content = await fs.readFile(csvPath, 'utf8');
-      const records = csv.parse(content, {
-        columns: true,
-        skip_empty_lines: true,
-      });
-      for (const record of records) {
-        existingEntries.set(`${record.module}:${record.name}`, record);
-      }
-    }
 
     // Create CSV header with standalone column
-    let csvContent = 'name,displayName,description,module,path,standalone\n';
-
-    // Combine existing and new tools
-    const allTools = new Map();
-
-    // Add existing entries
-    for (const [key, value] of existingEntries) {
-      allTools.set(key, value);
+    let csv = 'name,displayName,description,module,path,standalone\n';
+    const sortedTools = [...this.tools].sort((a, b) => `${a.module}:${a.name}`.localeCompare(`${b.module}:${b.name}`));
+    for (const tool of sortedTools) {
+      csv += `"${tool.name}","${tool.displayName}","${tool.description}","${tool.module}","${tool.path}","${tool.standalone}"\n`;
     }
 
-    // Add/update new tools
-    for (const tool of this.tools) {
-      const key = `${tool.module}:${tool.name}`;
-      allTools.set(key, {
-        name: tool.name,
-        displayName: tool.displayName,
-        description: tool.description,
-        module: tool.module,
-        path: tool.path,
-        standalone: tool.standalone,
-      });
-    }
-
-    // Write all tools
-    for (const [, record] of allTools) {
-      const row = [
-        escapeCsv(record.name),
-        escapeCsv(record.displayName),
-        escapeCsv(record.description),
-        escapeCsv(record.module),
-        escapeCsv(record.path),
-        escapeCsv(record.standalone),
-      ].join(',');
-      csvContent += row + '\n';
-    }
-
-    await fs.writeFile(csvPath, csvContent);
+    await fs.writeFile(csvPath, csv);
     return csvPath;
   }
 

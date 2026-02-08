@@ -289,7 +289,7 @@ class BaseIdeSetup {
     // Get core workflows
     const coreWorkflowsPath = path.join(bmadDir, 'core', 'workflows');
     if (await fs.pathExists(coreWorkflowsPath)) {
-      const coreWorkflows = await this.findWorkflowYamlFiles(coreWorkflowsPath);
+      const coreWorkflows = await this.findWorkflowFiles(coreWorkflowsPath);
       workflows.push(
         ...coreWorkflows.map((w) => ({
           ...w,
@@ -304,7 +304,7 @@ class BaseIdeSetup {
       if (entry.isDirectory() && entry.name !== 'core' && entry.name !== '_config' && entry.name !== 'agents') {
         const moduleWorkflowsPath = path.join(bmadDir, entry.name, 'workflows');
         if (await fs.pathExists(moduleWorkflowsPath)) {
-          const moduleWorkflows = await this.findWorkflowYamlFiles(moduleWorkflowsPath);
+          const moduleWorkflows = await this.findWorkflowFiles(moduleWorkflowsPath);
           workflows.push(
             ...moduleWorkflows.map((w) => ({
               ...w,
@@ -324,11 +324,11 @@ class BaseIdeSetup {
   }
 
   /**
-   * Recursively find workflow.yaml files
+   * Recursively find workflow definition files
    * @param {string} dir - Directory to search
    * @returns {Array} List of workflow file info objects
    */
-  async findWorkflowYamlFiles(dir) {
+  async findWorkflowFiles(dir) {
     const workflows = [];
 
     if (!(await fs.pathExists(dir))) {
@@ -342,14 +342,20 @@ class BaseIdeSetup {
 
       if (entry.isDirectory()) {
         // Recursively search subdirectories
-        const subWorkflows = await this.findWorkflowYamlFiles(fullPath);
+        const subWorkflows = await this.findWorkflowFiles(fullPath);
         workflows.push(...subWorkflows);
-      } else if (entry.isFile() && entry.name === 'workflow.yaml') {
-        // Read workflow.yaml to get name and standalone property
+      } else if (entry.isFile() && /^workflow(?:-[^/]+)?\.md$/.test(entry.name)) {
+        // Read workflow file to get name and standalone property
         try {
           const yaml = require('yaml');
           const content = await fs.readFile(fullPath, 'utf8');
-          const workflowData = yaml.parse(content);
+          let workflowData = null;
+
+          const frontmatterMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+          if (!frontmatterMatch) {
+            continue;
+          }
+          workflowData = yaml.parse(frontmatterMatch[1]);
 
           if (workflowData && workflowData.name) {
             // Workflows are standalone by default unless explicitly false
@@ -540,10 +546,6 @@ class BaseIdeSetup {
       content = content.replaceAll('_bmad', this.bmadFolderName);
     }
 
-    // Replace escape sequence _bmad with literal _bmad
-    if (typeof content === 'string' && content.includes('_bmad')) {
-      content = content.replaceAll('_bmad', '_bmad');
-    }
     await this.ensureDir(path.dirname(filePath));
     await fs.writeFile(filePath, content, 'utf8');
   }
@@ -569,11 +571,6 @@ class BaseIdeSetup {
         // Replace _bmad placeholder with actual folder name
         if (content.includes('_bmad')) {
           content = content.replaceAll('_bmad', this.bmadFolderName);
-        }
-
-        // Replace escape sequence _bmad with literal _bmad
-        if (content.includes('_bmad')) {
-          content = content.replaceAll('_bmad', '_bmad');
         }
 
         // Write to dest with replaced content

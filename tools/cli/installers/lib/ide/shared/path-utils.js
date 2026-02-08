@@ -63,7 +63,7 @@ function toDashPath(relativePath) {
   }
 
   // Strip common file extensions to avoid double extensions in generated filenames
-  // e.g., 'create-story.xml' → 'create-story', 'workflow.yaml' → 'workflow'
+  // e.g., 'create-story.xml' → 'create-story', 'workflow.md' → 'workflow'
   const withoutExt = relativePath.replace(/\.(md|yaml|yml|json|xml|toml)$/i, '');
   const parts = withoutExt.split(/[/\\]/);
 
