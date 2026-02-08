@@ -1,5 +1,17 @@
 # Draft Changelog Execution
 
+## ⚠️ IMPORTANT - READ FIRST
+
+**This skill ONLY updates CHANGELOG.md. That is its entire purpose.**
+
+- **DO** update CHANGELOG.md with the new version entry
+- **DO** present the draft for user review before editing
+- **DO NOT** trigger any GitHub release workflows
+- **DO NOT** run any other skills or workflows automatically
+- **DO NOT** make any commits
+
+After the changelog is complete, you may suggest the user can run `/release-module` if they want to proceed with the actual release — but NEVER trigger it yourself.
+
 ## Input
 Project path (or run from project root)
 
@@ -53,6 +65,18 @@ Guidelines:
 - Clear, concise language
 - For breaking changes, clearly indicate impact
 
-## Step 4: Present Draft
+## Step 4: Present Draft & Update CHANGELOG.md
 
 Show the draft with current version, last tag, commit count, and options to edit/retry.
+
+When user accepts:
+1. Update CHANGELOG.md with the new entry (insert at top, after `# Changelog` header)
+2. STOP. That's it. You're done.
+
+You may optionally suggest: *"When ready, you can run `/release-module` to create the actual release."*
+
+**DO NOT:**
+- Trigger any GitHub workflows
+- Run any other skills
+- Make any commits
+- Do anything beyond updating CHANGELOG.md

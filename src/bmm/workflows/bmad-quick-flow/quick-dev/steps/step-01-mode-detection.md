@@ -2,8 +2,6 @@
 name: 'step-01-mode-detection'
 description: 'Determine execution mode (tech-spec vs direct), handle escalation, set state variables'
 
-workflow_path: '{project-root}/_bmad/bmm/workflows/bmad-quick-flow/quick-dev'
-thisStepFile: './step-01-mode-detection.md'
 nextStepFile_modeA: './step-03-execute.md'
 nextStepFile_modeB: './step-02-context-gathering.md'
 ---

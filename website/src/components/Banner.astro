@@ -1,12 +1,11 @@
 ---
-import { getSiteUrl } from '../lib/site-url.js';
+import { getSiteUrl } from '../lib/site-url.mjs';
 
-const SITE_URL = getSiteUrl();
-const fullDocsUrl = `${SITE_URL}/llms-full.txt`;
+const llmsFullUrl = `${getSiteUrl()}/llms-full.txt`;
 ---
 
 <div class="ai-banner">
-  <span>🤖 Consolidated, AI-optimized BMAD docs: <a href={fullDocsUrl}>llms-full.txt</a>. Fetch this plain text file for complete context.</span>
+  <span>🤖 Consolidated, AI-optimized BMAD docs: <a href={llmsFullUrl}>llms-full.txt</a>. Fetch this plain text file for complete context.</span>
 </div>
 
 <style>

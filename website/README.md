@@ -73,4 +73,3 @@ Note: If copying, remember to keep the copy in sync with changes to `docs/`.
 The build pipeline (`npm run docs:build`) produces:
 - Static HTML site in `build/site/`
 - LLM-friendly files: `llms.txt`, `llms-full.txt`
-- Downloadable ZIP bundles in `downloads/`

@@ -1,4 +1,4 @@
-<task id="_bmad/core/tasks/workflow.xml" name="Execute Workflow" standalone="false">
+<task id="_bmad/core/tasks/workflow.xml" name="Execute Workflow" internal="true">
   <objective>Execute given workflow by loading its configuration, following instructions, and producing output</objective>
 
   <llm critical="true">

@@ -101,9 +101,6 @@ platforms:
         - target_dir: .github/agents
           template_type: copilot_agents
           artifact_types: [agents]
-        - target_dir: .vscode
-          template_type: vscode_settings
-          artifact_types: []
 
   iflow:
     name: "iFlow"
@@ -134,8 +131,13 @@ platforms:
     category: ide
     description: "OpenCode terminal coding assistant"
     installer:
-      target_dir: .opencode/command
-      template_type: opencode
+      targets:
+        - target_dir: .opencode/agent
+          template_type: opencode
+          artifact_types: [agents]
+        - target_dir: .opencode/command
+          template_type: opencode
+          artifact_types: [workflows, tasks, tools]
 
   qwen:
     name: "QwenCoder"

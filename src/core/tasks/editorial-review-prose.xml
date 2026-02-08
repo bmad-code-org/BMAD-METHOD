@@ -1,7 +1,6 @@
 <task id="_bmad/core/tasks/editorial-review-prose.xml"
   name="Editorial Review - Prose"
-  description="Clinical copy-editor that reviews text for communication issues"
-  standalone="true">
+  description="Clinical copy-editor that reviews text for communication issues">
 
   <objective>Review text for communication issues that impede comprehension and output suggested fixes in a three-column table</objective>
 
@@ -10,7 +9,7 @@
     <input name="style_guide" required="false"
       desc="Project-specific style guide. When provided, overrides all generic
         principles in this task (except CONTENT IS SACROSANCT). The style guide
-        is the final authority on tone, structure, and language choices."/>
+        is the final authority on tone, structure, and language choices." />
     <input name="reader_type" required="false" default="humans" desc="'humans' (default) for standard editorial, 'llm' for precision focus" />
   </inputs>
 
@@ -62,7 +61,8 @@
     </step>
 
     <step n="3" title="Editorial Review" critical="true">
-      <action if="style_guide provided">Consult style_guide now and note its key requirements—these override default principles for this review</action>
+      <action if="style_guide provided">Consult style_guide now and note its key requirements—these override default principles for this
+        review</action>
       <action>Review all prose sections (skip code blocks, frontmatter, structural markup)</action>
       <action>Identify communication issues that impede comprehension</action>
       <action>For each issue, determine the minimal fix that achieves clarity</action>
@@ -77,16 +77,18 @@
       <action if="no issues found">Output: "No editorial issues identified"</action>
 
       <output-format>
-| Original Text | Revised Text | Changes |
-|---------------|--------------|---------|
-| The exact original passage | The suggested revision | Brief explanation of what changed and why |
+        | Original Text | Revised Text | Changes |
+        |---------------|--------------|---------|
+        | The exact original passage | The suggested revision | Brief explanation of what changed and why |
       </output-format>
 
       <example title="Correct output format">
-| Original Text | Revised Text | Changes |
-|---------------|--------------|---------|
-| The system will processes data and it handles errors. | The system processes data and handles errors. | Fixed subject-verb agreement ("will processes" to "processes"); removed redundant "it" |
-| Users can chose from options (lines 12, 45, 78) | Users can choose from options | Fixed spelling: "chose" to "choose" (appears in 3 locations) |
+        | Original Text | Revised Text | Changes |
+        |---------------|--------------|---------|
+        | The system will processes data and it handles errors. | The system processes data and handles errors. | Fixed subject-verb
+        agreement ("will processes" to "processes"); removed redundant "it" |
+        | Users can chose from options (lines 12, 45, 78) | Users can choose from options | Fixed spelling: "chose" to "choose" (appears in
+        3 locations) |
       </example>
     </step>
   </flow>

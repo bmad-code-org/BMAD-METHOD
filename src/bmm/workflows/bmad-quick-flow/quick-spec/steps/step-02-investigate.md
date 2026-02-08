@@ -2,7 +2,6 @@
 name: 'step-02-investigate'
 description: 'Map technical constraints and anchor points within the codebase'
 
-workflow_path: '{project-root}/_bmad/bmm/workflows/bmad-quick-flow/quick-spec'
 nextStepFile: './step-03-generate.md'
 wipFile: '{implementation_artifacts}/tech-spec-wip.md'
 ---

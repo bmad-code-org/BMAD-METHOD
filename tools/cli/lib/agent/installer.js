@@ -6,7 +6,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const yaml = require('yaml');
-const readline = require('node:readline');
+const prompts = require('../prompts');
 const { compileAgent, compileAgentFile } = require('./compiler');
 const { extractInstallConfig, getDefaultValues } = require('./template-engine');
 
@@ -42,7 +42,7 @@ function findBmadConfig(startPath = process.cwd()) {
  * @returns {string} Resolved path
  */
 function resolvePath(pathStr, context) {
-  return pathStr.replaceAll('{project-root}', context.projectRoot).replaceAll('{bmad-folder}', context_bmadFolder);
+  return pathStr.replaceAll('{project-root}', context.projectRoot).replaceAll('{bmad-folder}', context.bmadFolder);
 }
 
 /**
@@ -149,83 +149,47 @@ async function promptInstallQuestions(installConfig, defaults, presetAnswers = {
     return { ...defaults, ...presetAnswers };
   }
 
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  });
-
-  const question = (prompt) =>
-    new Promise((resolve) => {
-      rl.question(prompt, resolve);
-    });
-
   const answers = { ...defaults, ...presetAnswers };
 
-  console.log('\n📝 Agent Configuration\n');
-  if (installConfig.description) {
-    console.log(`   ${installConfig.description}\n`);
-  }
+  await prompts.note(installConfig.description || '', 'Agent Configuration');
 
   for (const q of installConfig.questions) {
     // Skip questions for variables that are already set (e.g., custom_name set upfront)
     if (answers[q.var] !== undefined && answers[q.var] !== defaults[q.var]) {
-      console.log(chalk.dim(`   ${q.var}: ${answers[q.var]} (already set)`));
+      await prompts.log.message(`   ${q.var}: ${answers[q.var]} (already set)`);
       continue;
     }
 
-    let response;
-
     switch (q.type) {
       case 'text': {
-        const defaultHint = q.default ? ` (default: ${q.default})` : '';
-        response = await question(`   ${q.prompt}${defaultHint}: `);
-        answers[q.var] = response || q.default || '';
-
+        const response = await prompts.text({
+          message: q.prompt,
+          default: q.default ?? '',
+        });
+        answers[q.var] = response ?? q.default ?? '';
         break;
       }
       case 'boolean': {
-        const defaultHint = q.default ? ' [Y/n]' : ' [y/N]';
-        response = await question(`   ${q.prompt}${defaultHint}: `);
-        if (response === '') {
-          answers[q.var] = q.default;
-        } else {
-          answers[q.var] = response.toLowerCase().startsWith('y');
-        }
-
+        const response = await prompts.confirm({
+          message: q.prompt,
+          default: q.default,
+        });
+        answers[q.var] = response;
         break;
       }
       case 'choice': {
-        console.log(`   ${q.prompt}`);
-        for (const [idx, opt] of q.options.entries()) {
-          const marker = opt.value === q.default ? '* ' : '  ';
-          console.log(`   ${marker}${idx + 1}. ${opt.label}`);
-        }
-        const defaultIdx = q.options.findIndex((o) => o.value === q.default) + 1;
-        let validChoice = false;
-        let choiceIdx;
-        while (!validChoice) {
-          response = await question(`   Choice (default: ${defaultIdx}): `);
-          if (response) {
-            choiceIdx = parseInt(response, 10) - 1;
-            if (isNaN(choiceIdx) || choiceIdx < 0 || choiceIdx >= q.options.length) {
-              console.log(`   Invalid choice. Please enter 1-${q.options.length}`);
-            } else {
-              validChoice = true;
-            }
-          } else {
-            choiceIdx = defaultIdx - 1;
-            validChoice = true;
-          }
-        }
-        answers[q.var] = q.options[choiceIdx].value;
-
+        const response = await prompts.select({
+          message: q.prompt,
+          options: q.options.map((o) => ({ value: o.value, label: o.label })),
+          initialValue: q.default,
+        });
+        answers[q.var] = response;
         break;
       }
       // No default
     }
   }
 
-  rl.close();
   return answers;
 }
 

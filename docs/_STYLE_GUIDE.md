@@ -1,5 +1,6 @@
 ---
 title: "Documentation Style Guide"
+description: Project-specific documentation conventions based on Google style and Diataxis structure
 ---
 
 This project adheres to the [Google Developer Documentation Style Guide](https://developers.google.com/style) and uses [Diataxis](https://diataxis.fr/) to structure content. Only project-specific conventions follow.
@@ -147,7 +148,7 @@ your-project/
 | **Concept**       | `what-are-agents.md`         |
 | **Feature**       | `quick-flow.md`              |
 | **Philosophy**    | `why-solutioning-matters.md` |
-| **FAQ**           | `brownfield-faq.md`          |
+| **FAQ**           | `established-projects-faq.md` |
 
 ### General Template
 
@@ -325,7 +326,7 @@ Add italic context at definition start for limited-scope terms:
 - `*BMad Method/Enterprise.*`
 - `*Phase N.*`
 - `*BMGD.*`
-- `*Brownfield.*`
+- `*Established projects.*`
 
 ### Glossary Checklist
 

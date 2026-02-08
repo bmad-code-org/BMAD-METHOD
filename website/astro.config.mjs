@@ -4,7 +4,7 @@ import starlight from '@astrojs/starlight';
 import sitemap from '@astrojs/sitemap';
 import rehypeMarkdownLinks from './src/rehype-markdown-links.js';
 import rehypeBasePaths from './src/rehype-base-paths.js';
-import { getSiteUrl } from './src/lib/site-url.js';
+import { getSiteUrl } from './src/lib/site-url.mjs';
 
 const siteUrl = getSiteUrl();
 const urlParts = new URL(siteUrl);

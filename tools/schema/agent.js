@@ -210,7 +210,6 @@ function buildAgentSchema(expectedModule) {
       critical_actions: z.array(createNonEmptyString('agent.critical_actions[]')).optional(),
       menu: z.array(buildMenuItemSchema()).min(1, { message: 'agent.menu must include at least one entry' }),
       prompts: z.array(buildPromptSchema()).optional(),
-      webskip: z.boolean().optional(),
       discussion: z.boolean().optional(),
       conversational_knowledge: z.array(z.object({}).passthrough()).min(1).optional(),
     })

@@ -87,7 +87,7 @@ Offer validation workflows to ensure PRD is ready for implementation:
 
 ### 4. Suggest Next Workflows
 
-PRD complete. Read fully and follow: `_bmad/core/tasks/bmad-help.md` with argument `Create PRD`.
+PRD complete. Read fully and follow: `_bmad/core/tasks/help.md` with argument `Create PRD`.
 
 ### 5. Final Completion Confirmation
 

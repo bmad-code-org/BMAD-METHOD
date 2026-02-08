@@ -3,7 +3,6 @@
  *
  * Transforms:
  *   /img/foo.png → /BMAD-METHOD/img/foo.png (when base is /BMAD-METHOD/)
- *   /downloads/file.zip → /BMAD-METHOD/downloads/file.zip
  *   /llms.txt → /BMAD-METHOD/llms.txt
  *
  * Only affects absolute paths (/) - relative paths and external URLs are unchanged.

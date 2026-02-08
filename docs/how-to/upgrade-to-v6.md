@@ -20,14 +20,7 @@ Use the BMad installer to upgrade from v4 to v6, which includes automatic detect
 
 ### 1. Run the Installer
 
-```bash
-npx bmad-method install
-```
-
-The installer automatically detects:
-
-- **Legacy v4 folder**: `.bmad-method`
-- **IDE command artifacts**: Legacy bmad folders in `.claude/commands/`, `.cursor/commands/`, etc.
+Follow the [Installer Instructions](/docs/how-to/install-bmad.md).
 
 ### 2. Handle Legacy Installation
 
@@ -35,20 +28,15 @@ When v4 is detected, you can:
 
 - Allow the installer to back up and remove `.bmad-method`
 - Exit and handle cleanup manually
-- Keep both (not recommended for same project)
+
+If you named your bmad method folder something else - you will need to manual remove the folder yourself.
 
 ### 3. Clean Up IDE Commands
 
-Manually remove legacy v4 IDE commands:
+Manually remove legacy v4 IDE commands - for example if you have claude, look for any nested folders that start with bmad and remove them:
 
 - `.claude/commands/BMad/agents`
 - `.claude/commands/BMad/tasks`
-
-New v6 commands will be at `.claude/commands/bmad/<module>/agents|workflows`.
-
-:::tip[Accidentally Deleted Commands?]
-If you delete the wrong commands, rerun the installer and choose "quick update" to restore them.
-:::
 
 ### 4. Migrate Planning Artifacts
 
@@ -71,24 +59,6 @@ If you have stories created or implemented:
 3. Run the Scrum Master's `sprint-planning` workflow
 4. Tell the SM which epics/stories are already complete
 
-### 6. Migrate Agent Customizations
-
-**v4:** Modified agent files directly in `_bmad-*` folders
-
-**v6:** All customizations go in `_bmad/_config/agents/` using customize files:
-
-```yaml
-# _bmad/_config/agents/bmm-pm.customize.yaml
-persona:
-  name: 'Captain Jack'
-  role: 'Swashbuckling Product Owner'
-  communication_style: |
-    - Talk like a pirate
-    - Use nautical metaphors
-```
-
-After modifying customization files, rerun the installer and choose "rebuild all agents" or "quick update".
-
 ## What You Get
 
 **v6 unified structure:**
@@ -107,25 +77,19 @@ your-project/
 
 ## Module Migration
 
-| v4 Module | v6 Status |
-|-----------|-----------|
-| `_bmad-2d-phaser-game-dev` | Integrated into BMGD Module |
-| `_bmad-2d-unity-game-dev` | Integrated into BMGD Module |
-| `_bmad-godot-game-dev` | Integrated into BMGD Module |
-| `_bmad-infrastructure-devops` | Deprecated — new DevOps agent coming soon |
-| `_bmad-creative-writing` | Not adapted — new v6 module coming soon |
+| v4 Module                     | v6 Status                                 |
+| ----------------------------- | ----------------------------------------- |
+| `.bmad-2d-phaser-game-dev`    | Integrated into BMGD Module               |
+| `.bmad-2d-unity-game-dev`     | Integrated into BMGD Module               |
+| `.bmad-godot-game-dev`        | Integrated into BMGD Module               |
+| `.bmad-infrastructure-devops` | Deprecated — new DevOps agent coming soon |
+| `.bmad-creative-writing`      | Not adapted — new v6 module coming soon   |
 
 ## Key Changes
 
-| Concept | v4 | v6 |
-|---------|----|----|
-| **Core** | `_bmad-core` was actually BMad Method | `_bmad/core/` is universal framework |
-| **Method** | `_bmad-method` | `_bmad/bmm/` |
-| **Config** | Modified files directly | `config.yaml` per module |
-| **Documents** | Sharded or unsharded required setup | Fully flexible, auto-scanned |
-
-## Tips
-
-- **Back up first** — Keep your v4 installation until you verify v6 works
-- **Use v6 workflows** — Even partial planning docs benefit from v6's improved discovery
-- **Rebuild after customizing** — Always run the installer after changing customize files
+| Concept       | v4                                    | v6                                   |
+| ------------- | ------------------------------------- | ------------------------------------ |
+| **Core**      | `_bmad-core` was actually BMad Method | `_bmad/core/` is universal framework |
+| **Method**    | `_bmad-method`                        | `_bmad/bmm/`                         |
+| **Config**    | Modified files directly               | `config.yaml` per module             |
+| **Documents** | Sharded or unsharded required setup   | Fully flexible, auto-scanned         |

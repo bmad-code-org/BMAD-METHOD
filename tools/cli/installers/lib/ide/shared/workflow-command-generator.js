@@ -1,14 +1,14 @@
 const path = require('node:path');
 const fs = require('fs-extra');
 const csv = require('csv-parse/sync');
-const chalk = require('chalk');
-const { toColonPath, toDashPath, customAgentColonName, customAgentDashName } = require('./path-utils');
+const prompts = require('../../../../lib/prompts');
+const { toColonPath, toDashPath, customAgentColonName, customAgentDashName, BMAD_FOLDER_NAME } = require('./path-utils');
 
 /**
  * Generates command files for each workflow in the manifest
  */
 class WorkflowCommandGenerator {
-  constructor(bmadFolderName = 'bmad') {
+  constructor(bmadFolderName = BMAD_FOLDER_NAME) {
     this.templatePath = path.join(__dirname, '../templates/workflow-command-template.md');
     this.bmadFolderName = bmadFolderName;
   }
@@ -22,7 +22,7 @@ class WorkflowCommandGenerator {
     const workflows = await this.loadWorkflowManifest(bmadDir);
 
     if (!workflows) {
-      console.log(chalk.yellow('Workflow manifest not found. Skipping command generation.'));
+      await prompts.log.warn('Workflow manifest not found. Skipping command generation.');
       return { generated: 0 };
     }
 
@@ -157,8 +157,7 @@ class WorkflowCommandGenerator {
       .replaceAll('{{module}}', workflow.module)
       .replaceAll('{{description}}', workflow.description)
       .replaceAll('{{workflow_path}}', workflowPath)
-      .replaceAll('_bmad', this.bmadFolderName)
-      .replaceAll('_bmad', '_bmad');
+      .replaceAll('_bmad', this.bmadFolderName);
   }
 
   /**
@@ -238,15 +237,15 @@ When running any workflow:
       const match = workflowPath.match(/\/src\/bmm\/(.+)/);
       if (match) {
         transformed = `{project-root}/${this.bmadFolderName}/bmm/${match[1]}`;
-      } else if (workflowPath.includes('/src/core/')) {
-        const match = workflowPath.match(/\/src\/core\/(.+)/);
-        if (match) {
-          transformed = `{project-root}/${this.bmadFolderName}/core/${match[1]}`;
-        }
       }
-
-      return transformed;
+    } else if (workflowPath.includes('/src/core/')) {
+      const match = workflowPath.match(/\/src\/core\/(.+)/);
+      if (match) {
+        transformed = `{project-root}/${this.bmadFolderName}/core/${match[1]}`;
+      }
     }
+
+    return transformed;
   }
 
   async loadWorkflowManifest(bmadDir) {

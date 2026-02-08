@@ -1,0 +1,22 @@
+name: Trigger CodeRabbit on Ready for Review
+
+on:
+  pull_request_target:
+    types: [ready_for_review]
+
+jobs:
+  trigger-review:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Request CodeRabbit review
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body: '@coderabbitai review'
+            });

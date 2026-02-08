@@ -1,7 +1,6 @@
 ---
 name: create-ux-design
 description: Work with a peer UX Design expert to plan your applications UX patterns, look and feel.
-web_bundle: true
 ---
 
 # Create UX Design Workflow
