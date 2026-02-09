@@ -556,7 +556,7 @@ Type \`/bmad-\` in Copilot Chat to see all available BMAD workflows and agent ac
    * @returns {string} Escaped string safe for YAML single-quoted context
    */
   escapeYamlSingleQuote(value) {
-    return value.replaceAll("'", "''");
+    return (value || '').replaceAll("'", "''");
   }
 
   /**
