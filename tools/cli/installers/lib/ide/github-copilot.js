@@ -167,7 +167,7 @@ class GitHubCopilotSetup extends BaseIdeSetup {
 
     // Build the agent file path for the activation block
     const agentPath = artifact.agentPath || artifact.relativePath;
-    const agentFilePath = `{project-root}/_bmad/${agentPath}`;
+    const agentFilePath = `{project-root}/${this.bmadFolderName}/${agentPath}`;
 
     return `---
 description: '${description.replaceAll("'", "''")}'
@@ -256,13 +256,13 @@ You must fully embody this agent's persona and follow all activation instruction
     const description = this.escapeYamlSingleQuote(this.createPromptDescription(entry.name));
     // bmm/config.yaml is safe to hardcode here: these prompts are only generated when
     // bmad-help.csv exists (bmm module data), so bmm is guaranteed to be installed.
-    const configLine = '1. Load {project-root}/_bmad/bmm/config.yaml and store ALL fields as session variables';
+    const configLine = `1. Load {project-root}/${this.bmadFolderName}/bmm/config.yaml and store ALL fields as session variables`;
 
     let body;
     if (workflowFile.endsWith('.yaml')) {
       // Pattern B: YAML-based workflows — use workflow engine
       body = `${configLine}
-2. Load the workflow engine at {project-root}/_bmad/core/tasks/workflow.xml
+2. Load the workflow engine at {project-root}/${this.bmadFolderName}/core/tasks/workflow.xml
 3. Load and execute the workflow configuration at {project-root}/${workflowFile} using the engine from step 2`;
     } else if (workflowFile.endsWith('.xml')) {
       // Pattern A variant: XML tasks — load and execute directly
@@ -357,8 +357,8 @@ agent: 'agent'
 tools: ${toolsStr}
 ---
 
-1. Load {project-root}/_bmad/bmm/config.yaml and store ALL fields as session variables
-2. Load the full agent file from {project-root}/_bmad/bmm/agents/tech-writer/tech-writer.md and activate the Paige (Technical Writer) persona
+1. Load {project-root}/${this.bmadFolderName}/bmm/config.yaml and store ALL fields as session variables
+2. Load the full agent file from {project-root}/${this.bmadFolderName}/bmm/agents/tech-writer/tech-writer.md and activate the Paige (Technical Writer) persona
 3. Execute the ${entry.name} menu command (${cmd.code})
 `;
 
@@ -381,7 +381,7 @@ tools: ${toolsStr}
 
     const safeDescription = this.escapeYamlSingleQuote(description);
     const agentPath = artifact.agentPath || artifact.relativePath;
-    const agentFilePath = `{project-root}/_bmad/${agentPath}`;
+    const agentFilePath = `{project-root}/${this.bmadFolderName}/${agentPath}`;
 
     // bmm/config.yaml is safe to hardcode: agent activators are only generated from
     // bmm agent artifacts, so bmm is guaranteed to be installed.
@@ -391,7 +391,7 @@ agent: 'agent'
 tools: ${toolsStr}
 ---
 
-1. Load {project-root}/_bmad/bmm/config.yaml and store ALL fields as session variables
+1. Load {project-root}/${this.bmadFolderName}/bmm/config.yaml and store ALL fields as session variables
 2. Load the full agent file from ${agentFilePath}
 3. Follow ALL activation instructions in the agent file
 4. Display the welcome/greeting as instructed
@@ -433,7 +433,7 @@ tools: ${toolsStr}
       }
     }
 
-    const bmad = '_bmad';
+    const bmad = this.bmadFolderName;
     const bmadSection = `# BMAD Method — Project Instructions
 
 ## Project Configuration
