@@ -61,7 +61,7 @@ class IdeManager {
    */
   async loadCustomInstallerFiles() {
     const ideDir = __dirname;
-    const customFiles = ['codex.js', 'kilo.js'];
+    const customFiles = ['codex.js', 'github-copilot.js', 'kilo.js'];
 
     for (const file of customFiles) {
       const filePath = path.join(ideDir, file);
