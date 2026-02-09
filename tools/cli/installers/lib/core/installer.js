@@ -883,7 +883,7 @@ class Installer {
       let taskResolution;
 
       // Collect directory creation results for output after tasks() completes
-      const dirResults = { createdDirs: [], createdWdsFolders: [] };
+      const dirResults = { createdDirs: [], movedDirs: [], createdWdsFolders: [] };
 
       // Build task list conditionally
       const installTasks = [];
@@ -1055,12 +1055,14 @@ class Installer {
             const result = await this.moduleManager.createModuleDirectories('core', bmadDir, {
               installedIDEs: config.ides || [],
               moduleConfig: moduleConfigs.core || {},
+              existingModuleConfig: this.configCollector.existingConfig?.core || {},
               coreConfig: moduleConfigs.core || {},
               logger: moduleLogger,
               silent: true,
             });
             if (result) {
               dirResults.createdDirs.push(...result.createdDirs);
+              dirResults.movedDirs.push(...(result.movedDirs || []));
               dirResults.createdWdsFolders.push(...result.createdWdsFolders);
             }
           }
@@ -1072,12 +1074,14 @@ class Installer {
               const result = await this.moduleManager.createModuleDirectories(moduleName, bmadDir, {
                 installedIDEs: config.ides || [],
                 moduleConfig: moduleConfigs[moduleName] || {},
+                existingModuleConfig: this.configCollector.existingConfig?.[moduleName] || {},
                 coreConfig: moduleConfigs.core || {},
                 logger: moduleLogger,
                 silent: true,
               });
               if (result) {
                 dirResults.createdDirs.push(...result.createdDirs);
+                dirResults.movedDirs.push(...(result.movedDirs || []));
                 dirResults.createdWdsFolders.push(...result.createdWdsFolders);
               }
             }
@@ -1148,6 +1152,10 @@ class Installer {
 
       // Render directory creation output right after directory task
       const color = await prompts.getColor();
+      if (dirResults.movedDirs.length > 0) {
+        const lines = dirResults.movedDirs.map((d) => `  ${d}`).join('\n');
+        await prompts.log.message(color.cyan(`Moved directories:\n${lines}`));
+      }
       if (dirResults.createdDirs.length > 0) {
         const lines = dirResults.createdDirs.map((d) => `  ${d}`).join('\n');
         await prompts.log.message(color.yellow(`Created directories:\n${lines}`));

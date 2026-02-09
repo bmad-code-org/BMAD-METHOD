@@ -1247,17 +1247,20 @@ class ModuleManager {
   /**
    * Create directories declared in module.yaml's `directories` key
    * This replaces the security-risky module installer pattern with declarative config
+   * During updates, if a directory path changed, moves the old directory to the new path
    * @param {string} moduleName - Name of the module
    * @param {string} bmadDir - Target bmad directory
    * @param {Object} options - Installation options
    * @param {Object} options.moduleConfig - Module configuration from config collector
+   * @param {Object} options.existingModuleConfig - Previous module config (for detecting path changes during updates)
    * @param {Object} options.coreConfig - Core configuration
-   * @returns {Promise<{createdDirs: string[], createdWdsFolders: string[]}>} Created directories info
+   * @returns {Promise<{createdDirs: string[], movedDirs: string[], createdWdsFolders: string[]}>} Created directories info
    */
   async createModuleDirectories(moduleName, bmadDir, options = {}) {
     const moduleConfig = options.moduleConfig || {};
+    const existingModuleConfig = options.existingModuleConfig || {};
     const projectRoot = path.dirname(bmadDir);
-    const emptyResult = { createdDirs: [], createdWdsFolders: [] };
+    const emptyResult = { createdDirs: [], movedDirs: [], createdWdsFolders: [] };
 
     // Special handling for core module - it's in src/core not src/modules
     let sourcePath;
@@ -1291,6 +1294,7 @@ class ModuleManager {
     const directories = moduleYaml.directories;
     const wdsFolders = moduleYaml.wds_folders || [];
     const createdDirs = [];
+    const movedDirs = [];
     const createdWdsFolders = [];
 
     for (const dirRef of directories) {
@@ -1325,9 +1329,74 @@ class ModuleManager {
         continue;
       }
 
-      // Create directory if it doesn't exist
-      if (!(await fs.pathExists(fullPath))) {
-        const dirName = configKey.replaceAll('_', ' ');
+      // Check if directory path changed from previous config (update/modify scenario)
+      const oldDirValue = existingModuleConfig[configKey];
+      let oldFullPath = null;
+      let oldDirPath = null;
+      if (oldDirValue && typeof oldDirValue === 'string') {
+        // F3: Normalize both values before comparing to avoid false negatives
+        // from trailing slashes, separator differences, or prefix format variations
+        let normalizedOld = oldDirValue.replace(/^\{project-root\}\/?/, '');
+        normalizedOld = path.normalize(normalizedOld.replaceAll('{project-root}', ''));
+        const normalizedNew = path.normalize(dirPath);
+
+        if (normalizedOld !== normalizedNew) {
+          oldDirPath = normalizedOld;
+          oldFullPath = path.join(projectRoot, oldDirPath);
+          const normalizedOldAbsolute = path.normalize(oldFullPath);
+          if (!normalizedOldAbsolute.startsWith(normalizedRoot + path.sep) && normalizedOldAbsolute !== normalizedRoot) {
+            oldFullPath = null; // Old path escapes project root, ignore it
+          }
+
+          // F13: Prevent parent/child move (e.g. docs/planning → docs/planning/v2)
+          if (oldFullPath) {
+            const normalizedNewAbsolute = path.normalize(fullPath);
+            if (
+              normalizedOldAbsolute.startsWith(normalizedNewAbsolute + path.sep) ||
+              normalizedNewAbsolute.startsWith(normalizedOldAbsolute + path.sep)
+            ) {
+              const color = await prompts.getColor();
+              await prompts.log.warn(
+                color.yellow(
+                  `${configKey}: cannot move between parent/child paths (${oldDirPath} / ${dirPath}), creating new directory instead`,
+                ),
+              );
+              oldFullPath = null;
+            }
+          }
+        }
+      }
+
+      const dirName = configKey.replaceAll('_', ' ');
+
+      if (oldFullPath && (await fs.pathExists(oldFullPath)) && !(await fs.pathExists(fullPath))) {
+        // Path changed and old dir exists → move old to new location
+        // F1: Use fs.move() instead of fs.rename() for cross-device/volume support
+        // F2: Wrap in try/catch — fallback to creating new dir on failure
+        try {
+          await fs.ensureDir(path.dirname(fullPath));
+          await fs.move(oldFullPath, fullPath);
+          movedDirs.push(`${dirName}: ${oldDirPath} → ${dirPath}`);
+        } catch (moveError) {
+          const color = await prompts.getColor();
+          await prompts.log.warn(
+            color.yellow(
+              `Failed to move ${oldDirPath} → ${dirPath}: ${moveError.message}\n  Creating new directory instead. Please move contents from the old directory manually.`,
+            ),
+          );
+          await fs.ensureDir(fullPath);
+          createdDirs.push(`${dirName}: ${dirPath}`);
+        }
+      } else if (oldFullPath && (await fs.pathExists(oldFullPath)) && (await fs.pathExists(fullPath))) {
+        // F5: Both old and new directories exist — warn user about potential orphaned documents
+        const color = await prompts.getColor();
+        await prompts.log.warn(
+          color.yellow(
+            `${dirName}: path changed but both directories exist:\n  Old: ${oldDirPath}\n  New: ${dirPath}\n  Old directory may contain orphaned documents — please review and merge manually.`,
+          ),
+        );
+      } else if (!(await fs.pathExists(fullPath))) {
+        // New directory doesn't exist yet → create it
         createdDirs.push(`${dirName}: ${dirPath}`);
         await fs.ensureDir(fullPath);
       }
@@ -1344,7 +1413,7 @@ class ModuleManager {
       }
     }
 
-    return { createdDirs, createdWdsFolders };
+    return { createdDirs, movedDirs, createdWdsFolders };
   }
 
   /**
