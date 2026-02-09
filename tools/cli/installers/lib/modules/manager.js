@@ -1290,6 +1290,8 @@ class ModuleManager {
     const color = await prompts.getColor();
     const directories = moduleYaml.directories;
     const wdsFolders = moduleYaml.wds_folders || [];
+    const createdDirs = [];
+    const createdWdsFolders = [];
 
     for (const dirRef of directories) {
       // Parse variable reference like "{design_artifacts}"
@@ -1325,21 +1327,30 @@ class ModuleManager {
       // Create directory if it doesn't exist
       if (!(await fs.pathExists(fullPath))) {
         const dirName = configKey.replaceAll('_', ' ');
-        await prompts.log.message(color.yellow(`Creating ${dirName} directory: ${dirPath}`));
+        createdDirs.push(`${dirName}: ${dirPath}`);
         await fs.ensureDir(fullPath);
       }
 
       // Create WDS subfolders if this is the design_artifacts directory
       if (configKey === 'design_artifacts' && wdsFolders.length > 0) {
-        await prompts.log.message(color.cyan('Creating WDS folder structure...'));
         for (const subfolder of wdsFolders) {
           const subPath = path.join(fullPath, subfolder);
           if (!(await fs.pathExists(subPath))) {
             await fs.ensureDir(subPath);
-            await prompts.log.message(color.dim(`  ✓ ${subfolder}/`));
+            createdWdsFolders.push(subfolder);
           }
         }
       }
+    }
+
+    // Batch output: single log message for all created directories
+    if (createdDirs.length > 0) {
+      const lines = createdDirs.map((d) => `  ${d}`).join('\n');
+      await prompts.log.message(color.yellow(`Created directories:\n${lines}`));
+    }
+    if (createdWdsFolders.length > 0) {
+      const lines = createdWdsFolders.map((f) => color.dim(`  ✓ ${f}/`)).join('\n');
+      await prompts.log.message(color.cyan(`Created WDS folder structure:\n${lines}`));
     }
   }
 
