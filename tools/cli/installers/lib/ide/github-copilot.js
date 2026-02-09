@@ -269,6 +269,8 @@ You must fully embody this agent's persona and follow all activation instruction
    */
   createWorkflowPromptContent(entry, workflowFile) {
     const description = this.escapeYamlSingleQuote(this.createPromptDescription(entry.name));
+    // bmm/config.yaml is safe to hardcode here: these prompts are only generated when
+    // bmad-help.csv exists (bmm module data), so bmm is guaranteed to be installed.
     const configLine = '1. Load {project-root}/_bmad/bmm/config.yaml and store ALL fields as session variables';
 
     let body;
@@ -395,6 +397,8 @@ tools: ['read', 'edit', 'search', 'execute']
     const agentPath = artifact.agentPath || artifact.relativePath;
     const agentFilePath = `{project-root}/_bmad/${agentPath}`;
 
+    // bmm/config.yaml is safe to hardcode: agent activators are only generated from
+    // bmm agent artifacts, so bmm is guaranteed to be installed.
     return `---
 description: '${safeDescription}'
 agent: 'agent'
