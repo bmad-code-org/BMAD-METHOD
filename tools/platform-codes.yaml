@@ -67,11 +67,11 @@ platforms:
     category: ide
     description: "Atlassian's Rovo development environment"
 
-  kiro-cli:
-    name: "Kiro CLI"
+  kiro:
+    name: "Kiro"
     preferred: false
-    category: cli
-    description: "Kiro command-line interface"
+    category: ide
+    description: "Amazon's AI-powered IDE"
 
   github-copilot:
     name: "GitHub Copilot"

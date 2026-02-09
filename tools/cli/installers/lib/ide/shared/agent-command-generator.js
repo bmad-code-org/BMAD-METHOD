@@ -1,6 +1,5 @@
 const path = require('node:path');
 const fs = require('fs-extra');
-const chalk = require('chalk');
 const { toColonPath, toDashPath, customAgentColonName, customAgentDashName, BMAD_FOLDER_NAME } = require('./path-utils');
 
 /**

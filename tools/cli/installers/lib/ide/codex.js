@@ -1,7 +1,6 @@
 const path = require('node:path');
 const fs = require('fs-extra');
 const os = require('node:os');
-const chalk = require('chalk');
 const { BaseIdeSetup } = require('./_base-ide');
 const { WorkflowCommandGenerator } = require('./shared/workflow-command-generator');
 const { AgentCommandGenerator } = require('./shared/agent-command-generator');
@@ -43,12 +42,11 @@ class CodexSetup extends BaseIdeSetup {
         default: 'global',
       });
 
-      // Display detailed instructions for the chosen option
-      console.log('');
+      // Show brief confirmation hint (detailed instructions available via verbose)
       if (installLocation === 'project') {
-        console.log(this.getProjectSpecificInstructions());
+        await prompts.log.info('Prompts installed to: <project>/.codex/prompts (requires CODEX_HOME)');
       } else {
-        console.log(this.getGlobalInstructions());
+        await prompts.log.info('Prompts installed to: ~/.codex/prompts');
       }
 
       // Confirm the choice
@@ -58,7 +56,7 @@ class CodexSetup extends BaseIdeSetup {
       });
 
       if (!confirmed) {
-        console.log(chalk.yellow("\n  Let's choose a different installation option.\n"));
+        await prompts.log.warn("Let's choose a different installation option.");
       }
     }
 
@@ -72,7 +70,7 @@ class CodexSetup extends BaseIdeSetup {
    * @param {Object} options - Setup options
    */
   async setup(projectDir, bmadDir, options = {}) {
-    console.log(chalk.cyan(`Setting up ${this.name}...`));
+    if (!options.silent) await prompts.log.info(`Setting up ${this.name}...`);
 
     // Always use CLI mode
     const mode = 'cli';
@@ -84,7 +82,7 @@ class CodexSetup extends BaseIdeSetup {
 
     const destDir = this.getCodexPromptDir(projectDir, installLocation);
     await fs.ensureDir(destDir);
-    await this.clearOldBmadFiles(destDir);
+    await this.clearOldBmadFiles(destDir, options);
 
     // Collect artifacts and write using underscore format
     const agentGen = new AgentCommandGenerator(this.bmadFolderName);
@@ -124,16 +122,11 @@ class CodexSetup extends BaseIdeSetup {
 
     const written = agentCount + workflowCount + tasksWritten;
 
-    console.log(chalk.green(`✓ ${this.name} configured:`));
-    console.log(chalk.dim(`  - Mode: CLI`));
-    console.log(chalk.dim(`  - ${counts.agents} agents exported`));
-    console.log(chalk.dim(`  - ${counts.tasks} tasks exported`));
-    console.log(chalk.dim(`  - ${counts.workflows} workflow commands exported`));
-    if (counts.workflowLaunchers > 0) {
-      console.log(chalk.dim(`  - ${counts.workflowLaunchers} workflow launchers exported`));
+    if (!options.silent) {
+      await prompts.log.success(
+        `${this.name} configured: ${counts.agents} agents, ${counts.workflows} workflows, ${counts.tasks} tasks, ${written} files → ${destDir}`,
+      );
     }
-    console.log(chalk.dim(`  - ${written} Codex prompt files written`));
-    console.log(chalk.dim(`  - Destination: ${destDir}`));
 
     return {
       success: true,
@@ -262,7 +255,7 @@ class CodexSetup extends BaseIdeSetup {
     return written;
   }
 
-  async clearOldBmadFiles(destDir) {
+  async clearOldBmadFiles(destDir, options = {}) {
     if (!(await fs.pathExists(destDir))) {
       return;
     }
@@ -272,7 +265,7 @@ class CodexSetup extends BaseIdeSetup {
       entries = await fs.readdir(destDir);
     } catch (error) {
       // Directory exists but can't be read - skip cleanup
-      console.warn(chalk.yellow(`Warning: Could not read directory ${destDir}: ${error.message}`));
+      if (!options.silent) await prompts.log.warn(`Warning: Could not read directory ${destDir}: ${error.message}`);
       return;
     }
 
@@ -291,15 +284,11 @@ class CodexSetup extends BaseIdeSetup {
 
       const entryPath = path.join(destDir, entry);
       try {
-        const stat = await fs.stat(entryPath);
-        if (stat.isFile()) {
-          await fs.remove(entryPath);
-        } else if (stat.isDirectory()) {
-          await fs.remove(entryPath);
-        }
+        await fs.remove(entryPath);
       } catch (error) {
-        // Skip files that can't be processed
-        console.warn(chalk.dim(`  Skipping ${entry}: ${error.message}`));
+        if (!options.silent) {
+          await prompts.log.message(`  Skipping ${entry}: ${error.message}`);
+        }
       }
     }
   }
@@ -315,22 +304,16 @@ class CodexSetup extends BaseIdeSetup {
    */
   getGlobalInstructions(destDir) {
     const lines = [
+      'IMPORTANT: Codex Configuration',
       '',
-      chalk.bold.cyan('═'.repeat(70)),
-      chalk.bold.yellow('  IMPORTANT: Codex Configuration'),
-      chalk.bold.cyan('═'.repeat(70)),
+      '/prompts installed globally to your HOME DIRECTORY.',
       '',
-      chalk.white('  /prompts installed globally to your HOME DIRECTORY.'),
+      'These prompts reference a specific _bmad path.',
+      "To use with other projects, you'd need to copy the _bmad dir.",
       '',
-      chalk.yellow('  ⚠️  These prompts reference a specific _bmad path'),
-      chalk.dim("  To use with other projects, you'd need to copy the _bmad dir"),
-      '',
-      chalk.green('  ✓ You can now use /commands in Codex CLI'),
-      chalk.dim('    Example: /bmad_bmm_pm'),
-      chalk.dim('    Type / to see all available commands'),
-      '',
-      chalk.bold.cyan('═'.repeat(70)),
-      '',
+      'You can now use /commands in Codex CLI',
+      '  Example: /bmad_bmm_pm',
+      '  Type / to see all available commands',
     ];
     return lines.join('\n');
   }
@@ -345,43 +328,34 @@ class CodexSetup extends BaseIdeSetup {
     const isWindows = os.platform() === 'win32';
 
     const commonLines = [
+      'Project-Specific Codex Configuration',
       '',
-      chalk.bold.cyan('═'.repeat(70)),
-      chalk.bold.yellow('  Project-Specific Codex Configuration'),
-      chalk.bold.cyan('═'.repeat(70)),
+      `Prompts will be installed to: ${destDir || '<project>/.codex/prompts'}`,
       '',
-      chalk.white('  Prompts will be installed to: ') + chalk.cyan(destDir || '<project>/.codex/prompts'),
-      '',
-      chalk.bold.yellow('  ⚠️  REQUIRED: You must set CODEX_HOME to use these prompts'),
+      'REQUIRED: You must set CODEX_HOME to use these prompts',
       '',
     ];
 
     const windowsLines = [
-      chalk.bold('  Create a codex.cmd file in your project root:'),
+      'Create a codex.cmd file in your project root:',
       '',
-      chalk.green('    @echo off'),
-      chalk.green('    set CODEX_HOME=%~dp0.codex'),
-      chalk.green('    codex %*'),
+      '  @echo off',
+      '  set CODEX_HOME=%~dp0.codex',
+      '  codex %*',
       '',
-      chalk.dim(String.raw`  Then run: .\codex instead of codex`),
-      chalk.dim('  (The %~dp0 gets the directory of the .cmd file)'),
+      String.raw`Then run: .\codex instead of codex`,
+      '(The %~dp0 gets the directory of the .cmd file)',
     ];
 
     const unixLines = [
-      chalk.bold('  Add this alias to your ~/.bashrc or ~/.zshrc:'),
+      'Add this alias to your ~/.bashrc or ~/.zshrc:',
       '',
-      chalk.green('    alias codex=\'CODEX_HOME="$PWD/.codex" codex\''),
+      '  alias codex=\'CODEX_HOME="$PWD/.codex" codex\'',
       '',
-      chalk.dim('  After adding, run: source ~/.bashrc  (or source ~/.zshrc)'),
-      chalk.dim('  (The $PWD uses your current working directory)'),
+      'After adding, run: source ~/.bashrc  (or source ~/.zshrc)',
+      '(The $PWD uses your current working directory)',
     ];
-    const closingLines = [
-      '',
-      chalk.dim('  This tells Codex CLI to use prompts from this project instead of ~/.codex'),
-      '',
-      chalk.bold.cyan('═'.repeat(70)),
-      '',
-    ];
+    const closingLines = ['', 'This tells Codex CLI to use prompts from this project instead of ~/.codex'];
 
     const lines = [...commonLines, ...(isWindows ? windowsLines : unixLines), ...closingLines];
 

@@ -1,14 +1,14 @@
 const fs = require('fs-extra');
 const path = require('node:path');
-const chalk = require('chalk');
 const { BMAD_FOLDER_NAME } = require('./shared/path-utils');
+const prompts = require('../../../lib/prompts');
 
 /**
  * IDE Manager - handles IDE-specific setup
  * Dynamically discovers and loads IDE handlers
  *
  * Loading strategy:
- * 1. Custom installer files (codex.js, kilo.js, kiro-cli.js) - for platforms with unique installation logic
+ * 1. Custom installer files (codex.js, kilo.js) - for platforms with unique installation logic
  * 2. Config-driven handlers (from platform-codes.yaml) - for standard IDE installation patterns
  */
 class IdeManager {
@@ -44,12 +44,12 @@ class IdeManager {
 
   /**
    * Dynamically load all IDE handlers
-   * 1. Load custom installer files first (codex.js, kilo.js, kiro-cli.js)
+   * 1. Load custom installer files first (codex.js, kilo.js)
    * 2. Load config-driven handlers from platform-codes.yaml
    */
   async loadHandlers() {
     // Load custom installer files
-    this.loadCustomInstallerFiles();
+    await this.loadCustomInstallerFiles();
 
     // Load config-driven handlers from platform-codes.yaml
     await this.loadConfigDrivenHandlers();
@@ -59,9 +59,9 @@ class IdeManager {
    * Load custom installer files (unique installation logic)
    * These files have special installation patterns that don't fit the config-driven model
    */
-  loadCustomInstallerFiles() {
+  async loadCustomInstallerFiles() {
     const ideDir = __dirname;
-    const customFiles = ['codex.js', 'kilo.js', 'kiro-cli.js'];
+    const customFiles = ['codex.js', 'kilo.js'];
 
     for (const file of customFiles) {
       const filePath = path.join(ideDir, file);
@@ -81,7 +81,7 @@ class IdeManager {
           }
         }
       } catch (error) {
-        console.log(chalk.yellow(`  Warning: Could not load ${file}: ${error.message}`));
+        await prompts.log.warn(`Warning: Could not load ${file}: ${error.message}`);
       }
     }
   }
@@ -171,17 +171,45 @@ class IdeManager {
     const handler = this.handlers.get(ideName.toLowerCase());
 
     if (!handler) {
-      console.warn(chalk.yellow(`⚠️  IDE '${ideName}' is not yet supported`));
-      console.log(chalk.dim('Supported IDEs:', [...this.handlers.keys()].join(', ')));
-      return { success: false, reason: 'unsupported' };
+      await prompts.log.warn(`IDE '${ideName}' is not yet supported`);
+      await prompts.log.message(`Supported IDEs: ${[...this.handlers.keys()].join(', ')}`);
+      return { success: false, ide: ideName, error: 'unsupported IDE' };
     }
 
     try {
-      await handler.setup(projectDir, bmadDir, options);
-      return { success: true, ide: ideName };
+      const handlerResult = await handler.setup(projectDir, bmadDir, options);
+      // Build detail string from handler-returned data
+      let detail = '';
+      if (handlerResult && handlerResult.results) {
+        // Config-driven handlers return { success, results: { agents, workflows, tasks, tools } }
+        const r = handlerResult.results;
+        const parts = [];
+        if (r.agents > 0) parts.push(`${r.agents} agents`);
+        if (r.workflows > 0) parts.push(`${r.workflows} workflows`);
+        if (r.tasks > 0) parts.push(`${r.tasks} tasks`);
+        if (r.tools > 0) parts.push(`${r.tools} tools`);
+        detail = parts.join(', ');
+      } else if (handlerResult && handlerResult.counts) {
+        // Codex handler returns { success, counts: { agents, workflows, tasks }, written }
+        const c = handlerResult.counts;
+        const parts = [];
+        if (c.agents > 0) parts.push(`${c.agents} agents`);
+        if (c.workflows > 0) parts.push(`${c.workflows} workflows`);
+        if (c.tasks > 0) parts.push(`${c.tasks} tasks`);
+        detail = parts.join(', ');
+      } else if (handlerResult && handlerResult.modes !== undefined) {
+        // Kilo handler returns { success, modes, workflows, tasks, tools }
+        const parts = [];
+        if (handlerResult.modes > 0) parts.push(`${handlerResult.modes} modes`);
+        if (handlerResult.workflows > 0) parts.push(`${handlerResult.workflows} workflows`);
+        if (handlerResult.tasks > 0) parts.push(`${handlerResult.tasks} tasks`);
+        if (handlerResult.tools > 0) parts.push(`${handlerResult.tools} tools`);
+        detail = parts.join(', ');
+      }
+      return { success: true, ide: ideName, detail, handlerResult };
     } catch (error) {
-      console.error(chalk.red(`Failed to setup ${ideName}:`), error.message);
-      return { success: false, error: error.message };
+      await prompts.log.error(`Failed to setup ${ideName}: ${error.message}`);
+      return { success: false, ide: ideName, error: error.message };
     }
   }
 
@@ -254,7 +282,7 @@ class IdeManager {
       const handler = this.handlers.get(ideName.toLowerCase());
 
       if (!handler) {
-        console.warn(chalk.yellow(`⚠️  IDE '${ideName}' is not yet supported for custom agent installation`));
+        await prompts.log.warn(`IDE '${ideName}' is not yet supported for custom agent installation`);
         continue;
       }
 
@@ -266,7 +294,7 @@ class IdeManager {
           }
         }
       } catch (error) {
-        console.warn(chalk.yellow(`⚠️  Failed to install ${ideName} launcher: ${error.message}`));
+        await prompts.log.warn(`Failed to install ${ideName} launcher: ${error.message}`);
       }
     }
 

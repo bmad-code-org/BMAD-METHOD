@@ -12,11 +12,7 @@ export default [
       'coverage/**',
       '**/*.min.js',
       'test/template-test-generator/**',
-      'test/template-test-generator/**/*.js',
-      'test/template-test-generator/**/*.md',
       'test/fixtures/**',
-      'test/fixtures/**/*.yaml',
-      '_bmad/**',
       '_bmad*/**',
       // Build output
       'build/**',
@@ -36,6 +32,10 @@ export default [
       'tools/template-test-generator/test-scenarios/**',
       'src/modules/*/sub-modules/**',
       '.bundler-temp/**',
+      // Augment vendor config — not project code, naming conventions
+      // are dictated by Augment and can't be changed, so exclude
+      // the entire directory from linting
+      '.augment/**',
     ],
   },
 
@@ -83,7 +83,7 @@ export default [
 
   // CLI scripts under tools/** and test/**
   {
-    files: ['tools/**/*.js', 'tools/**/*.mjs', 'test/**/*.js'],
+    files: ['tools/**/*.js', 'tools/**/*.mjs', 'test/**/*.js', 'test/**/*.mjs'],
     rules: {
       // Allow CommonJS patterns for Node CLI scripts
       'unicorn/prefer-module': 'off',
@@ -111,17 +111,6 @@ export default [
       'unicorn/prefer-number-properties': 'off',
       'no-unreachable': 'off',
       'unicorn/text-encoding-identifier-case': 'off',
-    },
-  },
-
-  // Module installer scripts use CommonJS for compatibility
-  {
-    files: ['**/_module-installer/**/*.js'],
-    rules: {
-      // Allow CommonJS patterns for installer scripts
-      'unicorn/prefer-module': 'off',
-      'n/no-missing-require': 'off',
-      'n/no-unpublished-require': 'off',
     },
   },
 

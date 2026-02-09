@@ -84,10 +84,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Validate documentation links
-        run: npm run docs:validate-links
-
       - name: Build documentation
+        # Note: build-docs.mjs runs link validation internally before building
         run: npm run docs:build
 
   validate:

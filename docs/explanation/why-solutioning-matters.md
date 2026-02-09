@@ -1,6 +1,8 @@
 ---
 title: "Why Solutioning Matters"
 description: Understanding why the solutioning phase is critical for multi-epic projects
+sidebar:
+  order: 3
 ---
 
 
@@ -8,7 +10,7 @@ Phase 3 (Solutioning) translates **what** to build (from Planning) into **how** 
 
 ## The Problem Without Solutioning
 
-```
+```text
 Agent 1 implements Epic 1 using REST API
 Agent 2 implements Epic 2 using GraphQL
 Result: Inconsistent API design, integration nightmare
@@ -18,7 +20,7 @@ When multiple agents implement different parts of a system without shared archit
 
 ## The Solution With Solutioning
 
-```
+```text
 architecture workflow decides: "Use GraphQL for all APIs"
 All agents follow architecture decisions
 Result: Consistent implementation, no conflicts

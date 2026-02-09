@@ -1,7 +1,6 @@
 const path = require('node:path');
 const fs = require('fs-extra');
 const yaml = require('yaml');
-const chalk = require('chalk');
 const { getProjectRoot, getModulePath } = require('../../../lib/project-root');
 const { CLIUtils } = require('../../../lib/cli-utils');
 const prompts = require('../../../lib/prompts');
@@ -189,20 +188,18 @@ class ConfigCollector {
       this.allAnswers = {};
     }
 
-    // Load module's install config schema
+    // Load module's config schema from module.yaml
     // First, try the standard src/modules location
-    let installerConfigPath = path.join(getModulePath(moduleName), '_module-installer', 'module.yaml');
     let moduleConfigPath = path.join(getModulePath(moduleName), 'module.yaml');
 
     // If not found in src/modules, we need to find it by searching the project
-    if (!(await fs.pathExists(installerConfigPath)) && !(await fs.pathExists(moduleConfigPath))) {
+    if (!(await fs.pathExists(moduleConfigPath))) {
       // Use the module manager to find the module source
       const { ModuleManager } = require('../modules/manager');
       const moduleManager = new ModuleManager();
       const moduleSourcePath = await moduleManager.findModuleSource(moduleName);
 
       if (moduleSourcePath) {
-        installerConfigPath = path.join(moduleSourcePath, '_module-installer', 'module.yaml');
         moduleConfigPath = path.join(moduleSourcePath, 'module.yaml');
       }
     }
@@ -212,8 +209,6 @@ class ConfigCollector {
 
     if (await fs.pathExists(moduleConfigPath)) {
       configPath = moduleConfigPath;
-    } else if (await fs.pathExists(installerConfigPath)) {
-      configPath = installerConfigPath;
     } else {
       // Check if this is a custom module with custom.yaml
       const { ModuleManager } = require('../modules/manager');
@@ -222,9 +217,8 @@ class ConfigCollector {
 
       if (moduleSourcePath) {
         const rootCustomConfigPath = path.join(moduleSourcePath, 'custom.yaml');
-        const moduleInstallerCustomPath = path.join(moduleSourcePath, '_module-installer', 'custom.yaml');
 
-        if ((await fs.pathExists(rootCustomConfigPath)) || (await fs.pathExists(moduleInstallerCustomPath))) {
+        if (await fs.pathExists(rootCustomConfigPath)) {
           isCustomModule = true;
           // For custom modules, we don't have an install-config schema, so just use existing values
           // The custom.yaml values will be loaded and merged during installation
@@ -260,15 +254,9 @@ class ConfigCollector {
 
     // If module has no config keys at all, handle it specially
     if (hasNoConfig && moduleConfig.subheader) {
-      // Add blank line for better readability (matches other modules)
-      console.log();
       const moduleDisplayName = moduleConfig.header || `${moduleName.toUpperCase()} Module`;
-
-      // Display the module name in color first (matches other modules)
-      console.log(chalk.cyan('?') + ' ' + chalk.magenta(moduleDisplayName));
-
-      // Show the subheader since there's no configuration to ask about
-      console.log(chalk.dim(`  ✓ ${moduleConfig.subheader}`));
+      await prompts.log.step(moduleDisplayName);
+      await prompts.log.message(`  \u2713 ${moduleConfig.subheader}`);
       return false; // No new fields
     }
 
@@ -322,7 +310,7 @@ class ConfigCollector {
       }
 
       // Show "no config" message for modules with no new questions (that have config keys)
-      console.log(chalk.dim(`  ✓ ${moduleName.toUpperCase()} module already up to date`));
+      await prompts.log.message(`  \u2713 ${moduleName.toUpperCase()} module already up to date`);
       return false; // No new fields
     }
 
@@ -350,15 +338,15 @@ class ConfigCollector {
 
       if (questions.length > 0) {
         // Only show header if we actually have questions
-        CLIUtils.displayModuleConfigHeader(moduleName, moduleConfig.header, moduleConfig.subheader);
-        console.log(); // Line break before questions
+        await CLIUtils.displayModuleConfigHeader(moduleName, moduleConfig.header, moduleConfig.subheader);
+        await prompts.log.message('');
         const promptedAnswers = await prompts.prompt(questions);
 
         // Merge prompted answers with static answers
         Object.assign(allAnswers, promptedAnswers);
       } else if (newStaticKeys.length > 0) {
         // Only static fields, no questions - show no config message
-        console.log(chalk.dim(`  ✓ ${moduleName.toUpperCase()} module configuration updated`));
+        await prompts.log.message(`  \u2713 ${moduleName.toUpperCase()} module configuration updated`);
       }
 
       // Store all answers for cross-referencing
@@ -507,28 +495,24 @@ class ConfigCollector {
     }
     // Load module's config
     // First, check if we have a custom module path for this module
-    let installerConfigPath = null;
     let moduleConfigPath = null;
 
     if (this.customModulePaths && this.customModulePaths.has(moduleName)) {
       const customPath = this.customModulePaths.get(moduleName);
-      installerConfigPath = path.join(customPath, '_module-installer', 'module.yaml');
       moduleConfigPath = path.join(customPath, 'module.yaml');
     } else {
       // Try the standard src/modules location
-      installerConfigPath = path.join(getModulePath(moduleName), '_module-installer', 'module.yaml');
       moduleConfigPath = path.join(getModulePath(moduleName), 'module.yaml');
     }
 
     // If not found in src/modules or custom paths, search the project
-    if (!(await fs.pathExists(installerConfigPath)) && !(await fs.pathExists(moduleConfigPath))) {
+    if (!(await fs.pathExists(moduleConfigPath))) {
       // Use the module manager to find the module source
       const { ModuleManager } = require('../modules/manager');
       const moduleManager = new ModuleManager();
       const moduleSourcePath = await moduleManager.findModuleSource(moduleName);
 
       if (moduleSourcePath) {
-        installerConfigPath = path.join(moduleSourcePath, '_module-installer', 'module.yaml');
         moduleConfigPath = path.join(moduleSourcePath, 'module.yaml');
       }
     }
@@ -536,8 +520,6 @@ class ConfigCollector {
     let configPath = null;
     if (await fs.pathExists(moduleConfigPath)) {
       configPath = moduleConfigPath;
-    } else if (await fs.pathExists(installerConfigPath)) {
-      configPath = installerConfigPath;
     } else {
       // No config for this module
       return;
@@ -588,7 +570,7 @@ class ConfigCollector {
 
       // Skip prompts mode: use all defaults without asking
       if (this.skipPrompts) {
-        console.log(chalk.cyan('Using default configuration for'), chalk.magenta(moduleDisplayName));
+        await prompts.log.info(`Using default configuration for ${moduleDisplayName}`);
         // Use defaults for all questions
         for (const question of questions) {
           const hasDefault = question.default !== undefined && question.default !== null && question.default !== '';
@@ -597,12 +579,10 @@ class ConfigCollector {
           }
         }
       } else {
-        console.log();
-        console.log(chalk.cyan('?') + ' ' + chalk.magenta(moduleDisplayName));
+        await prompts.log.step(moduleDisplayName);
         let customize = true;
         if (moduleName === 'core') {
-          // Core module: no confirm prompt, so add spacing manually to match visual style
-          console.log(chalk.gray('│'));
+          // Core module: no confirm prompt, continues directly
         } else {
           // Non-core modules: show "Accept Defaults?" confirm prompt (clack adds spacing)
           const customizeAnswer = await prompts.prompt([
@@ -621,7 +601,7 @@ class ConfigCollector {
           const questionsWithoutDefaults = questions.filter((q) => q.default === undefined || q.default === null || q.default === '');
 
           if (questionsWithoutDefaults.length > 0) {
-            console.log(chalk.dim(`\n  Asking required questions for ${moduleName.toUpperCase()}...`));
+            await prompts.log.message(`  Asking required questions for ${moduleName.toUpperCase()}...`);
             const promptedAnswers = await prompts.prompt(questionsWithoutDefaults);
             Object.assign(allAnswers, promptedAnswers);
           }
@@ -747,32 +727,15 @@ class ConfigCollector {
       const hasNoConfig = actualConfigKeys.length === 0;
 
       if (hasNoConfig && (moduleConfig.subheader || moduleConfig.header)) {
-        // Module explicitly has no configuration - show with special styling
-        // Add blank line for better readability (matches other modules)
-        console.log();
-
-        // Display the module name in color first (matches other modules)
-        console.log(chalk.cyan('?') + ' ' + chalk.magenta(moduleDisplayName));
-
-        // Ask user if they want to accept defaults or customize on the next line
-        const { customize } = await prompts.prompt([
-          {
-            type: 'confirm',
-            name: 'customize',
-            message: 'Accept Defaults (no to customize)?',
-            default: true,
-          },
-        ]);
-
-        // Show the subheader if available, otherwise show a default message
+        await prompts.log.step(moduleDisplayName);
         if (moduleConfig.subheader) {
-          console.log(chalk.dim(`  ✓ ${moduleConfig.subheader}`));
+          await prompts.log.message(`  \u2713 ${moduleConfig.subheader}`);
         } else {
-          console.log(chalk.dim(`  ✓ No custom configuration required`));
+          await prompts.log.message(`  \u2713 No custom configuration required`);
         }
       } else {
         // Module has config but just no questions to ask
-        console.log(chalk.dim(`  ✓ ${moduleName.toUpperCase()} module configured`));
+        await prompts.log.message(`  \u2713 ${moduleName.toUpperCase()} module configured`);
       }
     }
 
@@ -981,14 +944,15 @@ class ConfigCollector {
     }
 
     // Add current value indicator for existing configs
+    const color = await prompts.getColor();
     if (existingValue !== null && existingValue !== undefined) {
       if (typeof existingValue === 'boolean') {
-        message += chalk.dim(` (current: ${existingValue ? 'true' : 'false'})`);
+        message += color.dim(` (current: ${existingValue ? 'true' : 'false'})`);
       } else if (Array.isArray(existingValue)) {
-        message += chalk.dim(` (current: ${existingValue.join(', ')})`);
+        message += color.dim(` (current: ${existingValue.join(', ')})`);
       } else if (questionType !== 'list') {
         // Show the cleaned value (without {project-root}/) for display
-        message += chalk.dim(` (current: ${existingValue})`);
+        message += color.dim(` (current: ${existingValue})`);
       }
     } else if (item.example && questionType === 'input') {
       // Show example for input fields
@@ -998,7 +962,7 @@ class ConfigCollector {
         exampleText = this.replacePlaceholders(exampleText, moduleName, moduleConfig);
         exampleText = exampleText.replace('{project-root}/', '');
       }
-      message += chalk.dim(` (e.g., ${exampleText})`);
+      message += color.dim(` (e.g., ${exampleText})`);
     }
 
     // Build the question object

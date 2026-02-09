@@ -42,3 +42,9 @@ project_knowledge: # Artifacts from research, document-project output, other lon
   prompt: "Where should long-term project knowledge be stored? (docs, research, references)"
   default: "docs"
   result: "{project-root}/{value}"
+
+# Directories to create during installation (declarative, no code execution)
+directories:
+  - "{planning_artifacts}"
+  - "{implementation_artifacts}"
+  - "{project_knowledge}"

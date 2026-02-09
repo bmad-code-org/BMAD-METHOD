@@ -1,0 +1,271 @@
+# Augment Code Review Guidelines for BMAD-METHOD
+# https://docs.augmentcode.com/codereview/overview
+# Focus: Workflow validation and quality
+
+file_paths_to_ignore:
+  # --- Shared baseline: tool configs ---
+  - ".coderabbit.yaml"
+  - ".augment/**"
+  - "eslint.config.mjs"
+  # --- Shared baseline: build output ---
+  - "dist/**"
+  - "build/**"
+  - "coverage/**"
+  # --- Shared baseline: vendored/generated ---
+  - "node_modules/**"
+  - "**/*.min.js"
+  - "**/*.generated.*"
+  - "**/*.bundle.md"
+  # --- Shared baseline: package metadata ---
+  - "package-lock.json"
+  # --- Shared baseline: binary/media ---
+  - "*.png"
+  - "*.jpg"
+  - "*.svg"
+  # --- Shared baseline: test fixtures ---
+  - "test/fixtures/**"
+  - "test/template-test-generator/**"
+  - "tools/template-test-generator/test-scenarios/**"
+  # --- Shared baseline: non-project dirs ---
+  - "_bmad*/**"
+  - "website/**"
+  - "z*/**"
+  - "sample-project/**"
+  - "test-project-install/**"
+  # --- Shared baseline: AI assistant dirs ---
+  - ".claude/**"
+  - ".codex/**"
+  - ".agent/**"
+  - ".agentvibes/**"
+  - ".kiro/**"
+  - ".roo/**"
+  - ".github/chatmodes/**"
+  # --- Shared baseline: build temp ---
+  - ".bundler-temp/**"
+  # --- Shared baseline: generated reports ---
+  - "**/validation-report-*.md"
+  - "CHANGELOG.md"
+
+areas:
+  # ============================================
+  # WORKFLOW STRUCTURE RULES
+  # ============================================
+  workflow_structure:
+    description: "Workflow folder organization and required components"
+    globs:
+      - "src/**/workflows/**"
+    rules:
+      - id: "workflow_entry_point_required"
+        description: "Every workflow folder must have workflow.yaml, workflow.md, or workflow.xml as entry point"
+        severity: "high"
+
+      - id: "sharded_workflow_steps_folder"
+        description: "Sharded workflows (using workflow.md) must have steps/ folder with numbered files (step-01-*.md, step-02-*.md)"
+        severity: "high"
+
+      - id: "standard_workflow_instructions"
+        description: "Standard workflows using workflow.yaml must include instructions.md for execution guidance"
+        severity: "medium"
+
+      - id: "workflow_step_limit"
+        description: "Workflows should have 5-10 steps maximum to prevent context loss in LLM execution"
+        severity: "medium"
+
+  # ============================================
+  # WORKFLOW ENTRY FILE RULES
+  # ============================================
+  workflow_definitions:
+    description: "Workflow entry files (workflow.yaml, workflow.md, workflow.xml)"
+    globs:
+      - "src/**/workflows/**/workflow.yaml"
+      - "src/**/workflows/**/workflow.md"
+      - "src/**/workflows/**/workflow.xml"
+    rules:
+      - id: "workflow_name_required"
+        description: "Workflow entry files must define 'name' field in frontmatter or root element"
+        severity: "high"
+
+      - id: "workflow_description_required"
+        description: "Workflow entry files must include 'description' explaining the workflow's purpose"
+        severity: "high"
+
+      - id: "workflow_config_source"
+        description: "Workflows should reference config_source for variable resolution (e.g., {project-root}/_bmad/module/config.yaml)"
+        severity: "medium"
+
+      - id: "workflow_installed_path"
+        description: "Workflows should define installed_path for relative file references within the workflow"
+        severity: "medium"
+
+      - id: "valid_step_references"
+        description: "Step file references in workflow entry must point to existing files"
+        severity: "high"
+
+  # ============================================
+  # SHARDED WORKFLOW STEP RULES
+  # ============================================
+  workflow_steps:
+    description: "Individual step files in sharded workflows"
+    globs:
+      - "src/**/workflows/**/steps/step-*.md"
+    rules:
+      - id: "step_goal_required"
+        description: "Each step must clearly state its goal (## STEP GOAL, ## YOUR TASK, or step n='X' goal='...')"
+        severity: "high"
+
+      - id: "step_mandatory_rules"
+        description: "Step files should include MANDATORY EXECUTION RULES section with universal agent behavior rules"
+        severity: "medium"
+
+      - id: "step_context_boundaries"
+        description: "Step files should define CONTEXT BOUNDARIES explaining available context and limits"
+        severity: "medium"
+
+      - id: "step_success_metrics"
+        description: "Step files should include SUCCESS METRICS section with ✅ checkmarks for validation criteria"
+        severity: "medium"
+
+      - id: "step_failure_modes"
+        description: "Step files should include FAILURE MODES section with ❌ marks for anti-patterns to avoid"
+        severity: "medium"
+
+      - id: "step_next_step_reference"
+        description: "Step files should reference the next step file path for sequential execution"
+        severity: "medium"
+
+      - id: "step_no_forward_loading"
+        description: "Steps must NOT load future step files until current step completes - just-in-time loading only"
+        severity: "high"
+
+      - id: "valid_file_references"
+        description: "File path references using {variable}/filename.md must point to existing files"
+        severity: "high"
+
+      - id: "step_naming"
+        description: "Step files must be named step-NN-description.md (e.g., step-01-init.md, step-02-context.md)"
+        severity: "medium"
+
+      - id: "halt_before_menu"
+        description: "Steps presenting user menus ([C] Continue, [a] Advanced, etc.) must HALT and wait for response"
+        severity: "high"
+
+  # ============================================
+  # XML WORKFLOW/TASK RULES
+  # ============================================
+  xml_workflows:
+    description: "XML-based workflows and tasks"
+    globs:
+      - "src/**/workflows/**/*.xml"
+      - "src/**/tasks/**/*.xml"
+    rules:
+      - id: "xml_task_id_required"
+        description: "XML tasks must have unique 'id' attribute on root task element"
+        severity: "high"
+
+      - id: "xml_llm_instructions"
+        description: "XML workflows should include <llm> section with critical execution instructions for the agent"
+        severity: "medium"
+
+      - id: "xml_step_numbering"
+        description: "XML steps should use n='X' attribute for sequential numbering"
+        severity: "medium"
+
+      - id: "xml_action_tags"
+        description: "Use <action> for required actions, <ask> for user input (must HALT), <goto> for jumps, <check if='...'> for conditionals"
+        severity: "medium"
+
+      - id: "xml_ask_must_halt"
+        description: "<ask> tags require agent to HALT and wait for user response before continuing"
+        severity: "high"
+
+  # ============================================
+  # WORKFLOW CONTENT QUALITY
+  # ============================================
+  workflow_content:
+    description: "Content quality and consistency rules for all workflow files"
+    globs:
+      - "src/**/workflows/**/*.md"
+      - "src/**/workflows/**/*.yaml"
+    rules:
+      - id: "communication_language_variable"
+        description: "Workflows should use {communication_language} variable for agent output language consistency"
+        severity: "low"
+
+      - id: "path_placeholders_required"
+        description: "Use path placeholders (e.g. {project-root}, {installed_path}, {output_folder}) instead of hardcoded paths"
+        severity: "medium"
+
+      - id: "no_time_estimates"
+        description: "Workflows should NOT include time estimates - AI development speed varies significantly"
+        severity: "low"
+
+      - id: "facilitator_not_generator"
+        description: "Workflow agents should act as facilitators (guide user input) not content generators (create without input)"
+        severity: "medium"
+
+      - id: "no_skip_optimization"
+        description: "Workflows must execute steps sequentially - no skipping or 'optimizing' step order"
+        severity: "high"
+
+  # ============================================
+  # AGENT DEFINITIONS
+  # ============================================
+  agent_definitions:
+    description: "Agent YAML configuration files"
+    globs:
+      - "src/**/*.agent.yaml"
+    rules:
+      - id: "agent_metadata_required"
+        description: "Agent files must have metadata section with id, name, title, icon, and module"
+        severity: "high"
+
+      - id: "agent_persona_required"
+        description: "Agent files must define persona with role, identity, communication_style, and principles"
+        severity: "high"
+
+      - id: "agent_menu_valid_workflows"
+        description: "Menu triggers must reference valid workflow paths that exist"
+        severity: "high"
+
+  # ============================================
+  # TEMPLATES
+  # ============================================
+  templates:
+    description: "Template files for workflow outputs"
+    globs:
+      - "src/**/template*.md"
+      - "src/**/templates/**/*.md"
+    rules:
+      - id: "placeholder_syntax"
+        description: "Use {variable_name} or {{variable_name}} syntax consistently for placeholders"
+        severity: "medium"
+
+      - id: "template_sections_marked"
+        description: "Template sections that need generation should be clearly marked (e.g., <!-- GENERATE: section_name -->)"
+        severity: "low"
+
+  # ============================================
+  # DOCUMENTATION
+  # ============================================
+  documentation:
+    description: "Documentation files"
+    globs:
+      - "docs/**/*.md"
+      - "README.md"
+      - "CONTRIBUTING.md"
+    rules:
+      - id: "valid_internal_links"
+        description: "Internal markdown links must point to existing files"
+        severity: "medium"
+
+  # ============================================
+  # BUILD TOOLS
+  # ============================================
+  build_tools:
+    description: "Build scripts and tooling"
+    globs:
+      - "tools/**"
+    rules:
+      - id: "script_error_handling"
+        description: "Scripts should handle errors gracefully with proper exit codes"
+        severity: "medium"

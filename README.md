@@ -36,7 +36,7 @@ Follow the installer prompts, then open your AI IDE (Claude Code, Cursor, Windsu
 npx bmad-method install --directory /path/to/project --modules bmm --tools claude-code --yes
 ```
 
-See [Non-Interactive Installation Guide](docs/non-interactive-installation.md) for all available options.
+See [Non-Interactive Installation Guide](http://docs.bmad-method.org/how-to/non-interactive-installation/) for all available options.
 
 > **Not sure what to do?** Run `/bmad-help` — it tells you exactly what's next and what's optional. You can also ask it questions like:
 

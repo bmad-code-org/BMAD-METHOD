@@ -1,7 +1,7 @@
 const path = require('node:path');
 const fs = require('fs-extra');
-const chalk = require('chalk');
 const { BaseIdeSetup } = require('./_base-ide');
+const prompts = require('../../../lib/prompts');
 const { AgentCommandGenerator } = require('./shared/agent-command-generator');
 const { WorkflowCommandGenerator } = require('./shared/workflow-command-generator');
 const { TaskToolCommandGenerator } = require('./shared/task-tool-command-generator');
@@ -34,10 +34,10 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
    * @returns {Promise<Object>} Setup result
    */
   async setup(projectDir, bmadDir, options = {}) {
-    console.log(chalk.cyan(`Setting up ${this.name}...`));
+    if (!options.silent) await prompts.log.info(`Setting up ${this.name}...`);
 
     // Clean up any old BMAD installation first
-    await this.cleanup(projectDir);
+    await this.cleanup(projectDir, options);
 
     if (!this.installerConfig) {
       return { success: false, reason: 'no-config' };
@@ -102,7 +102,7 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
       results.tools = taskToolResult.tools || 0;
     }
 
-    this.printSummary(results, target_dir);
+    await this.printSummary(results, target_dir, options);
     return { success: true, results };
   }
 
@@ -439,32 +439,28 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
    * @param {Object} results - Installation results
    * @param {string} targetDir - Target directory (relative)
    */
-  printSummary(results, targetDir) {
-    console.log(chalk.green(`\n✓ ${this.name} configured:`));
-    if (results.agents > 0) {
-      console.log(chalk.dim(`  - ${results.agents} agents installed`));
-    }
-    if (results.workflows > 0) {
-      console.log(chalk.dim(`  - ${results.workflows} workflow commands generated`));
-    }
-    if (results.tasks > 0 || results.tools > 0) {
-      console.log(chalk.dim(`  - ${results.tasks + results.tools} task/tool commands generated`));
-    }
-    console.log(chalk.dim(`  - Destination: ${targetDir}`));
+  async printSummary(results, targetDir, options = {}) {
+    if (options.silent) return;
+    const parts = [];
+    if (results.agents > 0) parts.push(`${results.agents} agents`);
+    if (results.workflows > 0) parts.push(`${results.workflows} workflows`);
+    if (results.tasks > 0) parts.push(`${results.tasks} tasks`);
+    if (results.tools > 0) parts.push(`${results.tools} tools`);
+    await prompts.log.success(`${this.name} configured: ${parts.join(', ')} → ${targetDir}`);
   }
 
   /**
    * Cleanup IDE configuration
    * @param {string} projectDir - Project directory
    */
-  async cleanup(projectDir) {
+  async cleanup(projectDir, options = {}) {
     // Clean all target directories
     if (this.installerConfig?.targets) {
       for (const target of this.installerConfig.targets) {
-        await this.cleanupTarget(projectDir, target.target_dir);
+        await this.cleanupTarget(projectDir, target.target_dir, options);
       }
     } else if (this.installerConfig?.target_dir) {
-      await this.cleanupTarget(projectDir, this.installerConfig.target_dir);
+      await this.cleanupTarget(projectDir, this.installerConfig.target_dir, options);
     }
   }
 
@@ -473,7 +469,7 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
    * @param {string} projectDir - Project directory
    * @param {string} targetDir - Target directory to clean
    */
-  async cleanupTarget(projectDir, targetDir) {
+  async cleanupTarget(projectDir, targetDir, options = {}) {
     const targetPath = path.join(projectDir, targetDir);
 
     if (!(await fs.pathExists(targetPath))) {
@@ -496,25 +492,22 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
     let removedCount = 0;
 
     for (const entry of entries) {
-      // Skip non-strings or undefined entries
       if (!entry || typeof entry !== 'string') {
         continue;
       }
       if (entry.startsWith('bmad')) {
         const entryPath = path.join(targetPath, entry);
-        const stat = await fs.stat(entryPath);
-        if (stat.isFile()) {
+        try {
           await fs.remove(entryPath);
           removedCount++;
-        } else if (stat.isDirectory()) {
-          await fs.remove(entryPath);
-          removedCount++;
+        } catch {
+          // Skip entries that can't be removed (broken symlinks, permission errors)
         }
       }
     }
 
-    if (removedCount > 0) {
-      console.log(chalk.dim(`  Cleaned ${removedCount} BMAD files from ${targetDir}`));
+    if (removedCount > 0 && !options.silent) {
+      await prompts.log.message(`  Cleaned ${removedCount} BMAD files from ${targetDir}`);
     }
   }
 }
