@@ -452,7 +452,7 @@ class ModuleManager {
           installSpinner.stop(`Installed dependencies for ${moduleInfo.name}`);
         } catch (error) {
           installSpinner.error(`Failed to install dependencies for ${moduleInfo.name}`);
-          if (!silent) await prompts.log.warn(`  Warning: ${error.message}`);
+          if (!silent) await prompts.log.warn(`  ${error.message}`);
         }
       } else {
         // Check if package.json is newer than node_modules
@@ -478,7 +478,7 @@ class ModuleManager {
             installSpinner.stop(`Installed dependencies for ${moduleInfo.name}`);
           } catch (error) {
             installSpinner.error(`Failed to install dependencies for ${moduleInfo.name}`);
-            if (!silent) await prompts.log.warn(`  Warning: ${error.message}`);
+            if (!silent) await prompts.log.warn(`  ${error.message}`);
           }
         }
       }
@@ -541,7 +541,7 @@ class ModuleManager {
         const customContent = await fs.readFile(rootCustomConfigPath, 'utf8');
         customConfig = yaml.parse(customContent);
       } catch (error) {
-        await prompts.log.warn(`Warning: Failed to read custom.yaml for ${moduleName}: ${error.message}`);
+        await prompts.log.warn(`Failed to read custom.yaml for ${moduleName}: ${error.message}`);
       }
     }
 
@@ -549,7 +549,7 @@ class ModuleManager {
     if (customConfig) {
       options.moduleConfig = { ...options.moduleConfig, ...customConfig };
       if (options.logger) {
-        options.logger.log(`  Merged custom configuration for ${moduleName}`);
+        await options.logger.log(`  Merged custom configuration for ${moduleName}`);
       }
     }
 
@@ -857,7 +857,7 @@ class ModuleManager {
       await fs.writeFile(targetFile, strippedYaml, 'utf8');
     } catch {
       // If anything fails, just copy the file as-is
-      await prompts.log.warn(`  Warning: Could not process ${path.basename(sourceFile)}, copying as-is`);
+      await prompts.log.warn(`  Could not process ${path.basename(sourceFile)}, copying as-is`);
       await fs.copy(sourceFile, targetFile, { overwrite: true });
     }
   }
@@ -1012,7 +1012,7 @@ class ModuleManager {
               await prompts.log.message(`    Sidecar files processed: ${copiedFiles.length} files`);
             }
           } else if (process.env.BMAD_VERBOSE_INSTALL === 'true') {
-            await prompts.log.warn(`    Warning: Agent marked as having sidecar but ${sidecarDirName} directory not found`);
+            await prompts.log.warn(`    Agent marked as having sidecar but ${sidecarDirName} directory not found`);
           }
         }
 
@@ -1321,7 +1321,7 @@ class ModuleManager {
       const normalizedRoot = path.normalize(projectRoot);
       if (!normalizedPath.startsWith(normalizedRoot + path.sep) && normalizedPath !== normalizedRoot) {
         const color = await prompts.getColor();
-        await prompts.log.warn(color.yellow(`Warning: ${configKey} path escapes project root, skipping: ${dirPath}`));
+        await prompts.log.warn(color.yellow(`${configKey} path escapes project root, skipping: ${dirPath}`));
         continue;
       }
 

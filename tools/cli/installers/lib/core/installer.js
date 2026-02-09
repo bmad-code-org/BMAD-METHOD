@@ -451,7 +451,6 @@ class Installer {
               }
               spinner.start('Preparing update...');
             } else {
-              const prompts = require('../../../lib/prompts');
               if (spinner.isSpinning) {
                 spinner.stop('Reviewing module changes');
               }
@@ -1153,9 +1152,9 @@ class Installer {
       // Create a conditional logger based on verbose mode
       const verboseMode = process.env.BMAD_VERBOSE_INSTALL === 'true' || config.verbose;
       const moduleLogger = {
-        log: (msg) => (verboseMode ? console.log(msg) : {}), // Only log in verbose mode
-        error: (msg) => console.error(msg), // Always show errors
-        warn: (msg) => console.warn(msg), // Always show warnings
+        log: async (msg) => (verboseMode ? await prompts.log.message(msg) : undefined),
+        error: async (msg) => await prompts.log.error(msg),
+        warn: async (msg) => await prompts.log.warn(msg),
       };
 
       // Create directories for all modules
@@ -1262,7 +1261,7 @@ class Installer {
       }
 
       // Blank line for spacing before final status
-      console.log();
+      await prompts.log.message('');
 
       // Stop the single installation spinner
       spinner.stop('Installation complete');

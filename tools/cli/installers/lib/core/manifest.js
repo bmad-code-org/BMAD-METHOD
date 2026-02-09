@@ -2,6 +2,7 @@ const path = require('node:path');
 const fs = require('fs-extra');
 const crypto = require('node:crypto');
 const { getProjectRoot } = require('../../../lib/project-root');
+const prompts = require('../../../lib/prompts');
 
 class Manifest {
   /**
@@ -100,7 +101,7 @@ class Manifest {
           ides: manifestData.ides || [],
         };
       } catch (error) {
-        console.error('Failed to read YAML manifest:', error.message);
+        await prompts.log.error(`Failed to read YAML manifest: ${error.message}`);
       }
     }
 
@@ -230,7 +231,7 @@ class Manifest {
         const content = await fs.readFile(yamlPath, 'utf8');
         return yaml.parse(content);
       } catch (error) {
-        console.error('Failed to read YAML manifest:', error.message);
+        await prompts.log.error(`Failed to read YAML manifest: ${error.message}`);
       }
     }
 
@@ -472,7 +473,7 @@ class Manifest {
             }
           }
         } catch (error) {
-          console.warn(`Warning: Could not parse ${filePath}:`, error.message);
+          await prompts.log.warn(`Could not parse ${filePath}: ${error.message}`);
         }
       }
       // Handle other file types (CSV, JSON, YAML, etc.)
@@ -774,7 +775,7 @@ class Manifest {
           configs[moduleName] = yaml.parse(content);
         }
       } catch (error) {
-        console.warn(`Could not load config for module ${moduleName}:`, error.message);
+        await prompts.log.warn(`Could not load config for module ${moduleName}: ${error.message}`);
       }
     }
 
@@ -876,7 +877,7 @@ class Manifest {
             const pkg = require(packageJsonPath);
             version = pkg.version;
           } catch (error) {
-            console.warn(`Failed to read package.json for ${moduleName}: ${error.message}`);
+            await prompts.log.warn(`Failed to read package.json for ${moduleName}: ${error.message}`);
           }
         }
       }
@@ -904,7 +905,7 @@ class Manifest {
           repoUrl: moduleConfig.repoUrl || null,
         };
       } catch (error) {
-        console.warn(`Failed to read module.yaml for ${moduleName}: ${error.message}`);
+        await prompts.log.warn(`Failed to read module.yaml for ${moduleName}: ${error.message}`);
       }
     }
 
