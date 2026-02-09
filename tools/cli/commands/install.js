@@ -39,7 +39,6 @@ module.exports = {
       if (config.actionType === 'cancel') {
         await prompts.log.warn('Installation cancelled.');
         process.exit(0);
-        return;
       }
 
       // Handle quick update separately
@@ -54,7 +53,6 @@ module.exports = {
         await messageLoader.displayEndMessage();
 
         process.exit(0);
-        return;
       }
 
       // Handle compile agents separately
@@ -62,7 +60,6 @@ module.exports = {
         const result = await installer.compileAgents(config);
         await prompts.log.info(`Recompiled ${result.agentCount} agents with customizations applied`);
         process.exit(0);
-        return;
       }
 
       // Regular install/update flow
@@ -71,7 +68,6 @@ module.exports = {
       // Check if installation was cancelled
       if (result && result.cancelled) {
         process.exit(0);
-        return;
       }
 
       // Check if installation succeeded
