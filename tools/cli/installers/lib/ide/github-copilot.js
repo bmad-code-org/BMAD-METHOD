@@ -15,9 +15,13 @@ const yaml = require('yaml');
 class GitHubCopilotSetup extends BaseIdeSetup {
   constructor() {
     super('github-copilot', 'GitHub Copilot', false);
-    this.configDir = '.github';
+    // Don't set configDir to '.github' — nearly every GitHub repo has that directory,
+    // which would cause the base detect() to false-positive. Use detectionPaths instead.
+    this.configDir = null;
+    this.githubDir = '.github';
     this.agentsDir = 'agents';
     this.promptsDir = 'prompts';
+    this.detectionPaths = ['.github/copilot-instructions.md', '.github/agents'];
   }
 
   /**
@@ -30,7 +34,7 @@ class GitHubCopilotSetup extends BaseIdeSetup {
     console.log(chalk.cyan(`Setting up ${this.name}...`));
 
     // Create .github/agents and .github/prompts directories
-    const githubDir = path.join(projectDir, this.configDir);
+    const githubDir = path.join(projectDir, this.githubDir);
     const agentsDir = path.join(githubDir, this.agentsDir);
     const promptsDir = path.join(githubDir, this.promptsDir);
     await this.ensureDir(agentsDir);
@@ -211,7 +215,7 @@ You must fully embody this agent's persona and follow all activation instruction
    * @returns {number} Count of prompts generated
    */
   async generatePromptFiles(projectDir, bmadDir, agentArtifacts, agentManifest) {
-    const promptsDir = path.join(projectDir, this.configDir, this.promptsDir);
+    const promptsDir = path.join(projectDir, this.githubDir, this.promptsDir);
     let promptCount = 0;
 
     // Load bmad-help.csv to drive workflow/task prompt generation
@@ -485,7 +489,7 @@ ${agentsTable}
 
 Type \`/bmad-\` in Copilot Chat to see all available BMAD workflows and agent activators. Agents are also available in the agents dropdown.`;
 
-    const instructionsPath = path.join(projectDir, this.configDir, 'copilot-instructions.md');
+    const instructionsPath = path.join(projectDir, this.githubDir, 'copilot-instructions.md');
     const markerStart = '<!-- BMAD:START -->';
     const markerEnd = '<!-- BMAD:END -->';
     const markedContent = `${markerStart}\n${bmadSection}\n${markerEnd}`;
@@ -565,7 +569,7 @@ Type \`/bmad-\` in Copilot Chat to see all available BMAD workflows and agent ac
    */
   async cleanup(projectDir) {
     // Clean up agents directory
-    const agentsDir = path.join(projectDir, this.configDir, this.agentsDir);
+    const agentsDir = path.join(projectDir, this.githubDir, this.agentsDir);
     if (await fs.pathExists(agentsDir)) {
       const files = await fs.readdir(agentsDir);
       let removed = 0;
@@ -583,7 +587,7 @@ Type \`/bmad-\` in Copilot Chat to see all available BMAD workflows and agent ac
     }
 
     // Clean up prompts directory
-    const promptsDir = path.join(projectDir, this.configDir, this.promptsDir);
+    const promptsDir = path.join(projectDir, this.githubDir, this.promptsDir);
     if (await fs.pathExists(promptsDir)) {
       const files = await fs.readdir(promptsDir);
       let removed = 0;
@@ -601,7 +605,7 @@ Type \`/bmad-\` in Copilot Chat to see all available BMAD workflows and agent ac
     }
 
     // Clean up BMAD section from copilot-instructions.md (preserve user content)
-    const instructionsPath = path.join(projectDir, this.configDir, 'copilot-instructions.md');
+    const instructionsPath = path.join(projectDir, this.githubDir, 'copilot-instructions.md');
     if (await fs.pathExists(instructionsPath)) {
       const existing = await fs.readFile(instructionsPath, 'utf8');
       const markerStart = '<!-- BMAD:START -->';
