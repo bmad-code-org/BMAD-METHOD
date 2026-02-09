@@ -23,6 +23,11 @@ class CodexSetup extends BaseIdeSetup {
    * @returns {Object} Collected configuration
    */
   async collectConfiguration(options = {}) {
+    // Non-interactive mode: use default (global)
+    if (options.skipPrompts) {
+      return { installLocation: 'global' };
+    }
+
     let confirmed = false;
     let installLocation = 'global';
 

@@ -109,9 +109,17 @@ class Installer {
    * @param {boolean} isFullReinstall - Whether this is a full reinstall
    * @param {Array} previousIdes - Previously configured IDEs (for reinstalls)
    * @param {Array} preSelectedIdes - Pre-selected IDEs from early prompt (optional)
+   * @param {boolean} skipPrompts - Skip prompts and use defaults (for --yes flag)
    * @returns {Object} Tool/IDE selection and configurations
    */
-  async collectToolConfigurations(projectDir, selectedModules, isFullReinstall = false, previousIdes = [], preSelectedIdes = null) {
+  async collectToolConfigurations(
+    projectDir,
+    selectedModules,
+    isFullReinstall = false,
+    previousIdes = [],
+    preSelectedIdes = null,
+    skipPrompts = false,
+  ) {
     // Use pre-selected IDEs if provided, otherwise prompt
     let toolConfig;
     if (preSelectedIdes === null) {
@@ -182,6 +190,7 @@ class Installer {
                 selectedModules: selectedModules || [],
                 projectDir,
                 bmadDir,
+                skipPrompts,
               });
             } else {
               // Config-driven IDEs don't need configuration - mark as ready
@@ -684,6 +693,7 @@ class Installer {
           config._isFullReinstall || false,
           config._previouslyConfiguredIdes || [],
           preSelectedIdes,
+          config.skipPrompts || false,
         );
       }
 
@@ -709,10 +719,13 @@ class Installer {
             await prompts.log.error(`  - ${ide}`);
           }
 
-          const confirmRemoval = await prompts.confirm({
-            message: `Remove BMAD configuration for ${idesToRemove.length} IDE(s)?`,
-            default: false,
-          });
+          // In non-interactive mode, preserve existing configs (matches prompt default: false)
+          const confirmRemoval = config.skipPrompts
+            ? false
+            : await prompts.confirm({
+                message: `Remove BMAD configuration for ${idesToRemove.length} IDE(s)?`,
+                default: false,
+              });
 
           if (confirmRemoval) {
             await this.ideManager.ensureInitialized();
