@@ -5,6 +5,7 @@ agent:
     title: Product Manager
     icon: 📋
     module: bmm
+    capabilities: "PRD creation, requirements discovery, stakeholder alignment, user interviews"
     hasSidecar: false
 
   persona:

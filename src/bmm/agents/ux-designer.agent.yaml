@@ -7,6 +7,7 @@ agent:
     title: UX Designer
     icon: 🎨
     module: bmm
+    capabilities: "user research, interaction design, UI patterns, experience strategy"
     hasSidecar: false
 
   persona:
