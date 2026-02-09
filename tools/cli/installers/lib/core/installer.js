@@ -882,6 +882,9 @@ class Installer {
       // Shared resolution result across task callbacks (closure-scoped, not on `this`)
       let taskResolution;
 
+      // Collect directory creation results for output after tasks() completes
+      const dirResults = { createdDirs: [], createdWdsFolders: [] };
+
       // Build task list conditionally
       const installTasks = [];
 
@@ -992,6 +995,10 @@ class Installer {
                   [moduleName]: { ...config.coreConfig, ...customInfo.config, ...collectedModuleConfig },
                 });
               } else {
+                if (!resolution || !resolution.byModule) {
+                  addResult(`Module: ${moduleName}`, 'warn', 'skipped (no resolution data)');
+                  continue;
+                }
                 if (moduleName === 'core') {
                   await this.installCoreWithDependencies(bmadDir, resolution.byModule[moduleName]);
                 } else {
@@ -1003,6 +1010,9 @@ class Installer {
             }
 
             // Install partial modules (only dependencies)
+            if (!resolution || !resolution.byModule) {
+              return `${allModules.length} module(s) ${isQuickUpdate ? 'updated' : 'installed'}`;
+            }
             for (const [module, files] of Object.entries(resolution.byModule)) {
               if (!allModules.includes(module) && module !== 'core') {
                 const totalFiles =
@@ -1024,8 +1034,62 @@ class Installer {
         });
       }
 
-      // Configuration generation task
+      // Module directory creation task
       installTasks.push({
+        title: 'Creating module directories',
+        task: async (message) => {
+          const resolution = taskResolution;
+          if (!resolution || !resolution.byModule) {
+            addResult('Module directories', 'warn', 'no resolution data');
+            return 'Module directories skipped (no resolution data)';
+          }
+          const verboseMode = process.env.BMAD_VERBOSE_INSTALL === 'true' || config.verbose;
+          const moduleLogger = {
+            log: async (msg) => (verboseMode ? await prompts.log.message(msg) : undefined),
+            error: async (msg) => await prompts.log.error(msg),
+            warn: async (msg) => await prompts.log.warn(msg),
+          };
+
+          // Core module directories
+          if (config.installCore || resolution.byModule.core) {
+            const result = await this.moduleManager.createModuleDirectories('core', bmadDir, {
+              installedIDEs: config.ides || [],
+              moduleConfig: moduleConfigs.core || {},
+              coreConfig: moduleConfigs.core || {},
+              logger: moduleLogger,
+              silent: true,
+            });
+            if (result) {
+              dirResults.createdDirs.push(...result.createdDirs);
+              dirResults.createdWdsFolders.push(...result.createdWdsFolders);
+            }
+          }
+
+          // User-selected module directories
+          if (config.modules && config.modules.length > 0) {
+            for (const moduleName of config.modules) {
+              message(`Setting up ${moduleName}...`);
+              const result = await this.moduleManager.createModuleDirectories(moduleName, bmadDir, {
+                installedIDEs: config.ides || [],
+                moduleConfig: moduleConfigs[moduleName] || {},
+                coreConfig: moduleConfigs.core || {},
+                logger: moduleLogger,
+                silent: true,
+              });
+              if (result) {
+                dirResults.createdDirs.push(...result.createdDirs);
+                dirResults.createdWdsFolders.push(...result.createdWdsFolders);
+              }
+            }
+          }
+
+          addResult('Module directories', 'ok');
+          return 'Module directories created';
+        },
+      });
+
+      // Configuration generation task (stored as named reference for deferred execution)
+      const configTask = {
         title: 'Generating configurations',
         task: async (message) => {
           // Generate clean config.yaml files for each installed module
@@ -1075,9 +1139,26 @@ class Installer {
 
           return 'Configurations generated';
         },
-      });
+      };
+      installTasks.push(configTask);
 
-      await prompts.tasks(installTasks);
+      // Run all tasks except config (which runs after directory output)
+      const mainTasks = installTasks.filter((t) => t !== configTask);
+      await prompts.tasks(mainTasks);
+
+      // Render directory creation output right after directory task
+      const color = await prompts.getColor();
+      if (dirResults.createdDirs.length > 0) {
+        const lines = dirResults.createdDirs.map((d) => `  ${d}`).join('\n');
+        await prompts.log.message(color.yellow(`Created directories:\n${lines}`));
+      }
+      if (dirResults.createdWdsFolders.length > 0) {
+        const lines = dirResults.createdWdsFolders.map((f) => color.dim(`  \u2713 ${f}/`)).join('\n');
+        await prompts.log.message(color.cyan(`Created WDS folder structure:\n${lines}`));
+      }
+
+      // Now run configuration generation
+      await prompts.tasks([configTask]);
 
       // Resolution is now available via closure-scoped taskResolution
       const resolution = taskResolution;
@@ -1094,7 +1175,7 @@ class Installer {
         } else {
           const needsPrompting = validIdes.some((ide) => !ideConfigurations[ide]);
           const ideSpinner = await prompts.spinner();
-          ideSpinner.start('Configuring IDEs...');
+          ideSpinner.start('Configuring tools...');
 
           try {
             for (const ide of validIdes) {
@@ -1134,12 +1215,12 @@ class Installer {
               }
 
               if (needsPrompting && !ideSpinner.isSpinning) {
-                ideSpinner.start('Configuring IDEs...');
+                ideSpinner.start('Configuring tools...');
               }
             }
           } finally {
             if (ideSpinner.isSpinning) {
-              ideSpinner.stop('IDE configuration complete');
+              ideSpinner.stop('Tool configuration complete');
             }
           }
         }
@@ -1149,58 +1230,6 @@ class Installer {
       // SECOND TASKS BLOCK: Post-IDE operations (non-interactive)
       // ─────────────────────────────────────────────────────────────────────────
       const postIdeTasks = [];
-
-      // Collect directory creation results for output after tasks() completes
-      const dirResults = { createdDirs: [], createdWdsFolders: [] };
-
-      // Module directory creation task
-      postIdeTasks.push({
-        title: 'Creating module directories',
-        task: async (message) => {
-          const verboseMode = process.env.BMAD_VERBOSE_INSTALL === 'true' || config.verbose;
-          const moduleLogger = {
-            log: async (msg) => (verboseMode ? await prompts.log.message(msg) : undefined),
-            error: async (msg) => await prompts.log.error(msg),
-            warn: async (msg) => await prompts.log.warn(msg),
-          };
-
-          // Core module directories
-          if (config.installCore || resolution.byModule.core) {
-            const result = await this.moduleManager.createModuleDirectories('core', bmadDir, {
-              installedIDEs: config.ides || [],
-              moduleConfig: moduleConfigs.core || {},
-              coreConfig: moduleConfigs.core || {},
-              logger: moduleLogger,
-              silent: true,
-            });
-            if (result) {
-              dirResults.createdDirs.push(...result.createdDirs);
-              dirResults.createdWdsFolders.push(...result.createdWdsFolders);
-            }
-          }
-
-          // User-selected module directories
-          if (config.modules && config.modules.length > 0) {
-            for (const moduleName of config.modules) {
-              message(`Setting up ${moduleName}...`);
-              const result = await this.moduleManager.createModuleDirectories(moduleName, bmadDir, {
-                installedIDEs: config.ides || [],
-                moduleConfig: moduleConfigs[moduleName] || {},
-                coreConfig: moduleConfigs.core || {},
-                logger: moduleLogger,
-                silent: true,
-              });
-              if (result) {
-                dirResults.createdDirs.push(...result.createdDirs);
-                dirResults.createdWdsFolders.push(...result.createdWdsFolders);
-              }
-            }
-          }
-
-          addResult('Module directories', 'ok');
-          return 'Module setup complete';
-        },
-      });
 
       // File restoration task (only for updates)
       if (
@@ -1264,18 +1293,6 @@ class Installer {
       }
 
       await prompts.tasks(postIdeTasks);
-
-      // Render directory creation output after tasks() to avoid breaking progress display
-      if (dirResults.createdDirs.length > 0) {
-        const color = await prompts.getColor();
-        const lines = dirResults.createdDirs.map((d) => `  ${d}`).join('\n');
-        await prompts.log.message(color.yellow(`Created directories:\n${lines}`));
-      }
-      if (dirResults.createdWdsFolders.length > 0) {
-        const color = await prompts.getColor();
-        const lines = dirResults.createdWdsFolders.map((f) => color.dim(`  ✓ ${f}/`)).join('\n');
-        await prompts.log.message(color.cyan(`Created WDS folder structure:\n${lines}`));
-      }
 
       // Retrieve restored file info for summary
       const customFiles = config._restoredCustomFiles || [];
