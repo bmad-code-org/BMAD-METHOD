@@ -60,7 +60,6 @@ module.exports = {
       // Handle compile agents separately
       if (config.actionType === 'compile-agents') {
         const result = await installer.compileAgents(config);
-        await prompts.log.success('Agent recompilation complete!');
         await prompts.log.info(`Recompiled ${result.agentCount} agents with customizations applied`);
         process.exit(0);
         return;
