@@ -415,6 +415,9 @@ class Installer {
         let action = null;
         if (config.actionType === 'update') {
           action = 'update';
+        } else if (config.skipPrompts) {
+          // Non-interactive mode: default to update
+          action = 'update';
         } else {
           // Fallback: Ask the user (backwards compatibility for other code paths)
           await prompts.log.warn('Existing BMAD installation detected');
@@ -440,48 +443,57 @@ class Installer {
 
           // If there are modules to remove, ask for confirmation
           if (modulesToRemove.length > 0) {
-            const prompts = require('../../../lib/prompts');
-            if (spinner.isSpinning) {
-              spinner.stop('Reviewing module changes');
-            }
-
-            await prompts.log.warn('Modules to be removed:');
-            for (const moduleId of modulesToRemove) {
-              const moduleInfo = existingInstall.modules.find((m) => m.id === moduleId);
-              const displayName = moduleInfo?.name || moduleId;
-              const modulePath = path.join(bmadDir, moduleId);
-              await prompts.log.error(`  - ${displayName} (${modulePath})`);
-            }
-
-            const confirmRemoval = await prompts.confirm({
-              message: `Remove ${modulesToRemove.length} module(s) from BMAD installation?`,
-              default: false,
-            });
-
-            if (confirmRemoval) {
-              // Remove module folders
-              for (const moduleId of modulesToRemove) {
-                const modulePath = path.join(bmadDir, moduleId);
-                try {
-                  if (await fs.pathExists(modulePath)) {
-                    await fs.remove(modulePath);
-                    await prompts.log.message(`  Removed: ${moduleId}`);
-                  }
-                } catch (error) {
-                  await prompts.log.warn(`  Warning: Failed to remove ${moduleId}: ${error.message}`);
-                }
-              }
-              await prompts.log.success(`  Removed ${modulesToRemove.length} module(s)`);
-            } else {
-              await prompts.log.message('  Module removal cancelled');
-              // Add the modules back to the selection since user cancelled removal
+            if (config.skipPrompts) {
+              // Non-interactive mode: preserve modules (matches prompt default: false)
               for (const moduleId of modulesToRemove) {
                 if (!config.modules) config.modules = [];
                 config.modules.push(moduleId);
               }
-            }
+              spinner.start('Preparing update...');
+            } else {
+              const prompts = require('../../../lib/prompts');
+              if (spinner.isSpinning) {
+                spinner.stop('Reviewing module changes');
+              }
 
-            spinner.start('Preparing update...');
+              await prompts.log.warn('Modules to be removed:');
+              for (const moduleId of modulesToRemove) {
+                const moduleInfo = existingInstall.modules.find((m) => m.id === moduleId);
+                const displayName = moduleInfo?.name || moduleId;
+                const modulePath = path.join(bmadDir, moduleId);
+                await prompts.log.error(`  - ${displayName} (${modulePath})`);
+              }
+
+              const confirmRemoval = await prompts.confirm({
+                message: `Remove ${modulesToRemove.length} module(s) from BMAD installation?`,
+                default: false,
+              });
+
+              if (confirmRemoval) {
+                // Remove module folders
+                for (const moduleId of modulesToRemove) {
+                  const modulePath = path.join(bmadDir, moduleId);
+                  try {
+                    if (await fs.pathExists(modulePath)) {
+                      await fs.remove(modulePath);
+                      await prompts.log.message(`  Removed: ${moduleId}`);
+                    }
+                  } catch (error) {
+                    await prompts.log.warn(`  Warning: Failed to remove ${moduleId}: ${error.message}`);
+                  }
+                }
+                await prompts.log.success(`  Removed ${modulesToRemove.length} module(s)`);
+              } else {
+                await prompts.log.message('  Module removal cancelled');
+                // Add the modules back to the selection since user cancelled removal
+                for (const moduleId of modulesToRemove) {
+                  if (!config.modules) config.modules = [];
+                  config.modules.push(moduleId);
+                }
+              }
+
+              spinner.start('Preparing update...');
+            }
           }
 
           // Detect custom and modified files BEFORE updating (compare current files vs files-manifest.csv)
@@ -1085,26 +1097,26 @@ class Installer {
           // Check if any IDE might need prompting (no pre-collected config)
           const needsPrompting = validIdes.some((ide) => !ideConfigurations[ide]);
 
-          // Temporarily suppress console output if not verbose
-          const originalLog = console.log;
-          if (!config.verbose) {
-            console.log = () => {};
-          }
-
-          try {
-            for (const ide of validIdes) {
-              if (!needsPrompting || ideConfigurations[ide]) {
-                // All IDEs pre-configured, or this specific IDE has config: keep spinner running
-                spinner.message(`Configuring ${ide}...`);
-              } else {
-                // This IDE needs prompting: stop spinner to allow user interaction
-                if (spinner.isSpinning) {
-                  spinner.stop('Ready for IDE configuration');
-                }
+          for (const ide of validIdes) {
+            if (!needsPrompting || ideConfigurations[ide]) {
+              // All IDEs pre-configured, or this specific IDE has config: keep spinner running
+              spinner.message(`Configuring ${ide}...`);
+            } else {
+              // This IDE needs prompting: stop spinner to allow user interaction
+              if (spinner.isSpinning) {
+                spinner.stop('Ready for IDE configuration');
               }
+            }
 
-              // Silent when this IDE has pre-collected config (no prompts for THIS IDE)
-              const ideHasConfig = Boolean(ideConfigurations[ide]);
+            // Silent when this IDE has pre-collected config (no prompts for THIS IDE)
+            const ideHasConfig = Boolean(ideConfigurations[ide]);
+
+            // Suppress stray console output for pre-configured IDEs (no user interaction)
+            const originalLog = console.log;
+            if (!config.verbose && ideHasConfig) {
+              console.log = () => {};
+            }
+            try {
               const setupResult = await this.ideManager.setup(ide, projectDir, bmadDir, {
                 selectedModules: allModules || [],
                 preCollectedConfig: ideConfigurations[ide] || null,
@@ -1123,14 +1135,14 @@ class Installer {
               } else {
                 addResult(ide, 'error', setupResult.error || 'failed');
               }
-
-              // Restart spinner if we stopped it for prompting
-              if (needsPrompting && !spinner.isSpinning) {
-                spinner.start('Configuring IDEs...');
-              }
+            } finally {
+              console.log = originalLog;
             }
-          } finally {
-            console.log = originalLog;
+
+            // Restart spinner if we stopped it for prompting
+            if (needsPrompting && !spinner.isSpinning) {
+              spinner.start('Configuring IDEs...');
+            }
           }
         }
       }
@@ -1396,6 +1408,7 @@ class Installer {
           projectRoot,
           'update',
           existingInstall.modules.map((m) => m.id),
+          config.skipPrompts || false,
         );
 
         spinner.start('Preparing update...');
@@ -2259,6 +2272,7 @@ class Installer {
         projectRoot,
         'update',
         installedModules,
+        config.skipPrompts || false,
       );
 
       const { validCustomModules, keptModulesWithoutSources } = customModuleResult;
@@ -2516,7 +2530,9 @@ class Installer {
 
     if (proceed === 'exit') {
       await prompts.log.info('Please remove the .bmad-method folder and any v4 rules/commands, then run the installer again.');
-      process.exit(0);
+      // Allow event loop to flush pending I/O before exit
+      setImmediate(() => process.exit(0));
+      return;
     }
 
     await prompts.log.warn('Proceeding with installation despite legacy v4 folder');
@@ -2700,9 +2716,10 @@ class Installer {
    * @param {string} projectRoot - Project root directory
    * @param {string} operation - Current operation ('update', 'compile', etc.)
    * @param {Array} installedModules - Array of installed module IDs (will be modified)
+   * @param {boolean} [skipPrompts=false] - Skip interactive prompts and keep all modules with missing sources
    * @returns {Object} Object with validCustomModules array and keptModulesWithoutSources array
    */
-  async handleMissingCustomSources(customModuleSources, bmadDir, projectRoot, operation, installedModules) {
+  async handleMissingCustomSources(customModuleSources, bmadDir, projectRoot, operation, installedModules, skipPrompts = false) {
     const validCustomModules = [];
     const keptModulesWithoutSources = []; // Track modules kept without sources
     const customModulesWithMissingSources = [];
@@ -2743,6 +2760,14 @@ class Installer {
         validCustomModules,
         keptModulesWithoutSources: [],
       };
+    }
+
+    // Non-interactive mode: keep all modules with missing sources
+    if (skipPrompts) {
+      for (const missing of customModulesWithMissingSources) {
+        keptModulesWithoutSources.push(missing.id);
+      }
+      return { validCustomModules, keptModulesWithoutSources };
     }
 
     await prompts.log.warn(`Found ${customModulesWithMissingSources.length} custom module(s) with missing sources:`);
@@ -2808,6 +2833,13 @@ class Installer {
               return; // clack expects undefined for valid input
             },
           });
+
+          // Defensive: handleCancel should have exited, but guard against symbol propagation
+          if (typeof newSourcePath !== 'string') {
+            keptCount++;
+            keptModulesWithoutSources.push(missing.id);
+            continue;
+          }
 
           // Update the source in manifest
           const resolvedPath = path.resolve(newSourcePath.trim());
