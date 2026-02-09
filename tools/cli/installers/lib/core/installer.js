@@ -1347,7 +1347,12 @@ class Installer {
     }
 
     // Next steps
-    lines.push('', `  Docs: ${color.dim('https://docs.bmad-method.org/')}`, `  Run ${color.cyan('/bmad-help')} in your IDE to get started`);
+    lines.push(
+      '',
+      '  Next steps:',
+      `    Docs: ${color.dim('https://docs.bmad-method.org/')}`,
+      `    Run ${color.cyan('/bmad-help')} in your IDE to get started`,
+    );
 
     await prompts.note(lines.join('\n'), 'BMAD is ready to use!');
   }

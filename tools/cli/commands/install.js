@@ -46,12 +46,6 @@ module.exports = {
         const result = await installer.quickUpdate(config);
         await prompts.log.success('Quick update complete!');
         await prompts.log.info(`Updated ${result.moduleCount} modules with preserved settings (${result.modules.join(', ')})`);
-
-        // Display version-specific end message
-        const { MessageLoader } = require('../installers/lib/message-loader');
-        const messageLoader = new MessageLoader();
-        await messageLoader.displayEndMessage();
-
         process.exit(0);
       }
 
@@ -72,11 +66,6 @@ module.exports = {
 
       // Check if installation succeeded
       if (result && result.success) {
-        // Display version-specific end message from install-messages.yaml
-        const { MessageLoader } = require('../installers/lib/message-loader');
-        const messageLoader = new MessageLoader();
-        await messageLoader.displayEndMessage();
-
         process.exit(0);
       }
     } catch (error) {
