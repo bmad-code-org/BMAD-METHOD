@@ -862,6 +862,56 @@ internal: true
 
   console.log('');
 
+  // ============================================================
+  // Test 22: Custom BMAD Folder Workflow Path Guard
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 22: Custom BMAD Folder Workflow Path Guard${colors.reset}\n`);
+
+  try {
+    const generator = new WorkflowCommandGenerator('mybmad');
+    generator.loadWorkflowManifest = async () => [
+      {
+        name: 'sprint-planning',
+        description: 'Sprint Planning',
+        module: 'bmm',
+        path: '/tmp/project/mybmad/bmm/workflows/4-implementation/sprint-planning/workflow.md',
+      },
+      {
+        name: 'create-story',
+        description: 'Create Story',
+        module: 'bmm',
+        path: 'mybmad/bmm/workflows/4-implementation/create-story/workflow.md',
+      },
+    ];
+    generator.generateCommandContent = async () => 'content';
+
+    const { artifacts } = await generator.collectWorkflowArtifacts('/tmp');
+    const sprintPlanning = artifacts.find((artifact) => artifact.name === 'sprint-planning');
+    const createStory = artifacts.find((artifact) => artifact.name === 'create-story');
+
+    assert(
+      sprintPlanning?.workflowPath === 'bmm/workflows/4-implementation/sprint-planning/workflow.md',
+      'Custom folder absolute workflow path strips configured BMAD folder prefix',
+      sprintPlanning?.workflowPath,
+    );
+    assert(
+      createStory?.workflowPath === 'bmm/workflows/4-implementation/create-story/workflow.md',
+      'Custom folder relative workflow path strips configured BMAD folder prefix',
+      createStory?.workflowPath,
+    );
+
+    const installedPath = generator.mapSourcePathToInstalled('/tmp/project/mybmad/core/tasks/workflow.md');
+    assert(
+      installedPath === 'mybmad/core/tasks/workflow.md',
+      'Installed workflow path mapping handles absolute paths containing custom BMAD folder',
+      installedPath,
+    );
+  } catch (error) {
+    assert(false, 'Custom BMAD folder workflow path guard runs', error.message);
+  }
+
+  console.log('');
+
   for (const tmpRoot of tmpRoots) {
     await fs.remove(tmpRoot).catch(() => {});
   }

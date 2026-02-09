@@ -4,6 +4,10 @@ const csv = require('csv-parse/sync');
 const prompts = require('../../../../lib/prompts');
 const { toColonPath, toDashPath, customAgentColonName, customAgentDashName, BMAD_FOLDER_NAME } = require('./path-utils');
 
+function escapeRegex(value) {
+  return String(value).replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
+}
+
 /**
  * Generates command files for each workflow in the manifest
  */
@@ -67,22 +71,7 @@ class WorkflowCommandGenerator {
 
     for (const workflow of allWorkflows) {
       const commandContent = await this.generateCommandContent(workflow, bmadDir);
-      // Calculate the relative workflow path (e.g., bmm/workflows/4-implementation/sprint-planning/workflow.md)
-      let workflowRelPath = workflow.path || '';
-      workflowRelPath = workflowRelPath.replaceAll('\\', '/');
-      // Remove _bmad/ prefix if present to get relative path from project root
-      // Handle both absolute paths (/path/to/_bmad/...) and relative paths (_bmad/...)
-      if (workflowRelPath.includes('_bmad/')) {
-        const parts = workflowRelPath.split(/_bmad\//);
-        if (parts.length > 1) {
-          workflowRelPath = parts.at(-1);
-        }
-      } else if (workflowRelPath.includes('/src/') || workflowRelPath.startsWith('src/')) {
-        const match = workflowRelPath.match(/(?:^|\/)src\/([^/]+)\/(.+)/);
-        if (match) {
-          workflowRelPath = `${match[1]}/${match[2]}`;
-        }
-      }
+      const workflowRelPath = this.mapSourcePathToModuleRelative(workflow.path);
       artifacts.push({
         type: 'workflow-command',
         name: workflow.name,
@@ -213,6 +202,29 @@ When running any workflow:
     return this.mapSourcePathToInstalled(workflowPath, true);
   }
 
+  mapSourcePathToModuleRelative(sourcePath) {
+    const mapped = this.mapSourcePathToInstalled(sourcePath, false);
+    if (!mapped) {
+      return mapped;
+    }
+
+    const normalized = String(mapped).replaceAll('\\', '/');
+
+    // Typical installed path -> strip BMAD root prefix for templates that prepend it.
+    if (normalized.startsWith(`${this.bmadFolderName}/`)) {
+      return normalized.slice(`${this.bmadFolderName}/`.length);
+    }
+
+    // Absolute path containing the configured BMAD root folder.
+    const folderPattern = new RegExp(`(?:^|\\/)${escapeRegex(this.bmadFolderName)}\\/(.+)`);
+    const folderMatch = normalized.match(folderPattern);
+    if (folderMatch) {
+      return folderMatch[1];
+    }
+
+    return normalized;
+  }
+
   mapSourcePathToInstalled(sourcePath, includeProjectRootPrefix = false) {
     if (!sourcePath) {
       return sourcePath;
@@ -229,6 +241,15 @@ When running any workflow:
       const parts = normalized.split(/_bmad\//);
       const relative = parts.at(-1);
       const mapped = `${this.bmadFolderName}/${relative}`;
+      return includeProjectRootPrefix ? `{project-root}/${mapped}` : mapped;
+    }
+
+    // Handle absolute paths that already include the configured BMAD folder
+    // (e.g., /tmp/project/mybmad/bmm/workflows/...).
+    const folderPattern = new RegExp(`(?:^|\\/)${escapeRegex(this.bmadFolderName)}\\/(.+)`);
+    const folderMatch = normalized.match(folderPattern);
+    if (folderMatch) {
+      const mapped = `${this.bmadFolderName}/${folderMatch[1]}`;
       return includeProjectRootPrefix ? `{project-root}/${mapped}` : mapped;
     }
 
