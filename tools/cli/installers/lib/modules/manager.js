@@ -1252,11 +1252,12 @@ class ModuleManager {
    * @param {Object} options - Installation options
    * @param {Object} options.moduleConfig - Module configuration from config collector
    * @param {Object} options.coreConfig - Core configuration
-   * @returns {Promise<{createdDirs: string[], createdWdsFolders: string[]} | undefined>} Created directories info
+   * @returns {Promise<{createdDirs: string[], createdWdsFolders: string[]}>} Created directories info
    */
   async createModuleDirectories(moduleName, bmadDir, options = {}) {
     const moduleConfig = options.moduleConfig || {};
     const projectRoot = path.dirname(bmadDir);
+    const emptyResult = { createdDirs: [], createdWdsFolders: [] };
 
     // Special handling for core module - it's in src/core not src/modules
     let sourcePath;
@@ -1265,14 +1266,14 @@ class ModuleManager {
     } else {
       sourcePath = await this.findModuleSource(moduleName, { silent: true });
       if (!sourcePath) {
-        return; // No source found, skip
+        return emptyResult; // No source found, skip
       }
     }
 
     // Read module.yaml to find the `directories` key
     const moduleYamlPath = path.join(sourcePath, 'module.yaml');
     if (!(await fs.pathExists(moduleYamlPath))) {
-      return; // No module.yaml, skip
+      return emptyResult; // No module.yaml, skip
     }
 
     let moduleYaml;
@@ -1280,11 +1281,11 @@ class ModuleManager {
       const yamlContent = await fs.readFile(moduleYamlPath, 'utf8');
       moduleYaml = yaml.parse(yamlContent);
     } catch {
-      return; // Invalid YAML, skip
+      return emptyResult; // Invalid YAML, skip
     }
 
     if (!moduleYaml || !moduleYaml.directories) {
-      return; // No directories declared, skip
+      return emptyResult; // No directories declared, skip
     }
 
     const directories = moduleYaml.directories;

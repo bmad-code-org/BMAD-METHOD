@@ -710,47 +710,61 @@ class Installer {
         const idesToRemove = [...previouslyInstalledIdes].filter((ide) => !newlySelectedIdes.has(ide));
 
         if (idesToRemove.length > 0) {
-          if (spinner.isSpinning) {
-            spinner.stop('Reviewing IDE changes');
-          }
-
-          await prompts.log.warn('IDEs to be removed:');
-          for (const ide of idesToRemove) {
-            await prompts.log.error(`  - ${ide}`);
-          }
-
-          // In non-interactive mode, preserve existing configs (matches prompt default: false)
-          const confirmRemoval = config.skipPrompts
-            ? false
-            : await prompts.confirm({
-                message: `Remove BMAD configuration for ${idesToRemove.length} IDE(s)?`,
-                default: false,
-              });
-
-          if (confirmRemoval) {
-            await this.ideManager.ensureInitialized();
-            for (const ide of idesToRemove) {
-              try {
-                const handler = this.ideManager.handlers.get(ide);
-                if (handler) {
-                  await handler.cleanup(projectDir);
-                }
-                await this.ideConfigManager.deleteIdeConfig(bmadDir, ide);
-                await prompts.log.message(`  Removed: ${ide}`);
-              } catch (error) {
-                await prompts.log.warn(`  Warning: Failed to remove ${ide}: ${error.message}`);
-              }
-            }
-            await prompts.log.success(`  Removed ${idesToRemove.length} IDE(s)`);
-          } else {
-            await prompts.log.message('  IDE removal cancelled');
-            // Add IDEs back to selection since user cancelled removal
+          if (config.skipPrompts) {
+            // Non-interactive mode: silently preserve existing IDE configs
+            if (!config.ides) config.ides = [];
+            const savedIdeConfigs = await this.ideConfigManager.loadAllIdeConfigs(bmadDir);
             for (const ide of idesToRemove) {
               config.ides.push(ide);
+              if (savedIdeConfigs[ide] && !ideConfigurations[ide]) {
+                ideConfigurations[ide] = savedIdeConfigs[ide];
+              }
             }
-          }
+          } else {
+            if (spinner.isSpinning) {
+              spinner.stop('Reviewing IDE changes');
+            }
 
-          spinner.start('Preparing installation...');
+            await prompts.log.warn('IDEs to be removed:');
+            for (const ide of idesToRemove) {
+              await prompts.log.error(`  - ${ide}`);
+            }
+
+            const confirmRemoval = await prompts.confirm({
+              message: `Remove BMAD configuration for ${idesToRemove.length} IDE(s)?`,
+              default: false,
+            });
+
+            if (confirmRemoval) {
+              await this.ideManager.ensureInitialized();
+              for (const ide of idesToRemove) {
+                try {
+                  const handler = this.ideManager.handlers.get(ide);
+                  if (handler) {
+                    await handler.cleanup(projectDir);
+                  }
+                  await this.ideConfigManager.deleteIdeConfig(bmadDir, ide);
+                  await prompts.log.message(`  Removed: ${ide}`);
+                } catch (error) {
+                  await prompts.log.warn(`  Warning: Failed to remove ${ide}: ${error.message}`);
+                }
+              }
+              await prompts.log.success(`  Removed ${idesToRemove.length} IDE(s)`);
+            } else {
+              await prompts.log.message('  IDE removal cancelled');
+              // Add IDEs back to selection and restore their saved configurations
+              if (!config.ides) config.ides = [];
+              const savedIdeConfigs = await this.ideConfigManager.loadAllIdeConfigs(bmadDir);
+              for (const ide of idesToRemove) {
+                config.ides.push(ide);
+                if (savedIdeConfigs[ide] && !ideConfigurations[ide]) {
+                  ideConfigurations[ide] = savedIdeConfigs[ide];
+                }
+              }
+            }
+
+            spinner.start('Preparing installation...');
+          }
         }
       }
 
