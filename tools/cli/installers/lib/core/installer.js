@@ -692,6 +692,55 @@ class Installer {
       config.skipIde = toolSelection.skipIde;
       const ideConfigurations = toolSelection.configurations;
 
+      // Detect IDEs that were previously installed but are NOT in the new selection (to be removed)
+      if (config._isUpdate && config._existingInstall) {
+        const previouslyInstalledIdes = new Set(config._existingInstall.ides || []);
+        const newlySelectedIdes = new Set(config.ides || []);
+
+        const idesToRemove = [...previouslyInstalledIdes].filter((ide) => !newlySelectedIdes.has(ide));
+
+        if (idesToRemove.length > 0) {
+          if (spinner.isSpinning) {
+            spinner.stop('Reviewing IDE changes');
+          }
+
+          await prompts.log.warn('IDEs to be removed:');
+          for (const ide of idesToRemove) {
+            await prompts.log.error(`  - ${ide}`);
+          }
+
+          const confirmRemoval = await prompts.confirm({
+            message: `Remove BMAD configuration for ${idesToRemove.length} IDE(s)?`,
+            default: false,
+          });
+
+          if (confirmRemoval) {
+            await this.ideManager.ensureInitialized();
+            for (const ide of idesToRemove) {
+              try {
+                const handler = this.ideManager.handlers.get(ide);
+                if (handler) {
+                  await handler.cleanup(projectDir);
+                }
+                await this.ideConfigManager.deleteIdeConfig(bmadDir, ide);
+                await prompts.log.message(`  Removed: ${ide}`);
+              } catch (error) {
+                await prompts.log.warn(`  Warning: Failed to remove ${ide}: ${error.message}`);
+              }
+            }
+            await prompts.log.success(`  Removed ${idesToRemove.length} IDE(s)`);
+          } else {
+            await prompts.log.message('  IDE removal cancelled');
+            // Add IDEs back to selection since user cancelled removal
+            for (const ide of idesToRemove) {
+              config.ides.push(ide);
+            }
+          }
+
+          spinner.start('Preparing installation...');
+        }
+      }
+
       // Results collector for consolidated summary
       const results = [];
       const addResult = (step, status, detail = '') => results.push({ step, status, detail });
