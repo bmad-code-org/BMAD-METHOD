@@ -255,7 +255,7 @@ You must fully embody this agent's persona and follow all activation instruction
    * @returns {string} Prompt file content
    */
   createWorkflowPromptContent(entry, workflowFile) {
-    const description = this.createPromptDescription(entry.name);
+    const description = this.escapeYamlSingleQuote(this.createPromptDescription(entry.name));
     const configLine = '1. Load {project-root}/_bmad/bmm/config.yaml and store ALL fields as session variables';
 
     let body;
@@ -348,8 +348,10 @@ ${body}
     const cmd = techWriterCommands[entry.name];
     if (!cmd) return null;
 
+    const safeDescription = this.escapeYamlSingleQuote(cmd.description);
+
     const content = `---
-description: '${cmd.description}'
+description: '${safeDescription}'
 agent: 'agent'
 tools: ['read', 'edit', 'search', 'execute']
 ---
@@ -376,11 +378,12 @@ tools: ['read', 'edit', 'search', 'execute']
       description = this.formatTitle(artifact.name);
     }
 
+    const safeDescription = this.escapeYamlSingleQuote(description);
     const agentPath = artifact.agentPath || artifact.relativePath;
     const agentFilePath = `{project-root}/_bmad/${agentPath}`;
 
     return `---
-description: '${description}'
+description: '${safeDescription}'
 agent: 'agent'
 tools: ['read', 'edit', 'search', 'execute']
 ---
@@ -428,7 +431,7 @@ tools: ['read', 'edit', 'search', 'execute']
     }
 
     const bmad = '_bmad';
-    const content = `# BMAD Method — Project Instructions
+    const bmadSection = `# BMAD Method — Project Instructions
 
 ## Project Configuration
 
@@ -471,12 +474,38 @@ tools: ['read', 'edit', 'search', 'execute']
 ${agentsTable}
 ## Slash Commands
 
-Type \`/bmad-\` in Copilot Chat to see all available BMAD workflows and agent activators. Agents are also available in the agents dropdown.
-`;
+Type \`/bmad-\` in Copilot Chat to see all available BMAD workflows and agent activators. Agents are also available in the agents dropdown.`;
 
     const instructionsPath = path.join(projectDir, this.configDir, 'copilot-instructions.md');
-    await this.writeFile(instructionsPath, content);
-    console.log(chalk.green('  ✓ Generated copilot-instructions.md'));
+    const markerStart = '<!-- BMAD:START -->';
+    const markerEnd = '<!-- BMAD:END -->';
+    const markedContent = `${markerStart}\n${bmadSection}\n${markerEnd}`;
+
+    if (await fs.pathExists(instructionsPath)) {
+      const existing = await fs.readFile(instructionsPath, 'utf8');
+      const startIdx = existing.indexOf(markerStart);
+      const endIdx = existing.indexOf(markerEnd);
+
+      if (startIdx !== -1 && endIdx !== -1 && endIdx > startIdx) {
+        // Replace only the BMAD section between markers
+        const before = existing.slice(0, startIdx);
+        const after = existing.slice(endIdx + markerEnd.length);
+        const merged = `${before}${markedContent}${after}`;
+        await this.writeFile(instructionsPath, merged);
+        console.log(chalk.green('  ✓ Updated BMAD section in copilot-instructions.md'));
+      } else {
+        // Existing file without markers — back it up before overwriting
+        const backupPath = `${instructionsPath}.bak`;
+        await fs.copy(instructionsPath, backupPath);
+        console.log(chalk.yellow(`  ⚠ Backed up existing copilot-instructions.md → copilot-instructions.md.bak`));
+        await this.writeFile(instructionsPath, `${markedContent}\n`);
+        console.log(chalk.green('  ✓ Generated copilot-instructions.md (with BMAD markers)'));
+      }
+    } else {
+      // No existing file — create fresh with markers
+      await this.writeFile(instructionsPath, `${markedContent}\n`);
+      console.log(chalk.green('  ✓ Generated copilot-instructions.md'));
+    }
   }
 
   /**
@@ -500,6 +529,16 @@ Type \`/bmad-\` in Copilot Chat to see all available BMAD workflows and agent ac
     }
 
     return {};
+  }
+
+  /**
+   * Escape a string for use inside YAML single-quoted values.
+   * In YAML, the only escape inside single quotes is '' for a literal '.
+   * @param {string} value - Raw string
+   * @returns {string} Escaped string safe for YAML single-quoted context
+   */
+  escapeYamlSingleQuote(value) {
+    return value.replaceAll("'", "''");
   }
 
   /**
@@ -552,11 +591,33 @@ Type \`/bmad-\` in Copilot Chat to see all available BMAD workflows and agent ac
       }
     }
 
-    // Clean up copilot-instructions.md
+    // Clean up BMAD section from copilot-instructions.md (preserve user content)
     const instructionsPath = path.join(projectDir, this.configDir, 'copilot-instructions.md');
     if (await fs.pathExists(instructionsPath)) {
-      await fs.remove(instructionsPath);
-      console.log(chalk.dim('  Cleaned up copilot-instructions.md'));
+      const existing = await fs.readFile(instructionsPath, 'utf8');
+      const markerStart = '<!-- BMAD:START -->';
+      const markerEnd = '<!-- BMAD:END -->';
+      const startIdx = existing.indexOf(markerStart);
+      const endIdx = existing.indexOf(markerEnd);
+
+      if (startIdx !== -1 && endIdx !== -1 && endIdx > startIdx) {
+        // Remove only the BMAD section between markers (inclusive)
+        const before = existing.slice(0, startIdx);
+        const after = existing.slice(endIdx + markerEnd.length);
+        const remaining = (before + after).trim();
+
+        if (remaining.length > 0) {
+          await fs.writeFile(instructionsPath, `${remaining}\n`);
+          console.log(chalk.dim('  Cleaned up BMAD section from copilot-instructions.md (user content preserved)'));
+        } else {
+          await fs.remove(instructionsPath);
+          console.log(chalk.dim('  Cleaned up copilot-instructions.md'));
+        }
+      } else {
+        // No markers — file is either entirely BMAD-generated or entirely user content.
+        // Leave it alone during cleanup to avoid destroying user content.
+        console.log(chalk.dim('  Skipped copilot-instructions.md (no BMAD markers found, not modified)'));
+      }
     }
   }
 }
