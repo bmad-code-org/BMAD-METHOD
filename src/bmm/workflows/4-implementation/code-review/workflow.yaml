@@ -12,7 +12,6 @@ document_output_language: "{config_source}:document_output_language"
 date: system-generated
 planning_artifacts: "{config_source}:planning_artifacts"
 implementation_artifacts: "{config_source}:implementation_artifacts"
-output_folder: "{implementation_artifacts}"
 sprint_status: "{implementation_artifacts}/sprint-status.yaml"
 
 # Workflow components
@@ -21,10 +20,7 @@ instructions: "{installed_path}/instructions.xml"
 validation: "{installed_path}/checklist.md"
 template: false
 
-variables:
-  # Project context
-  project_context: "**/project-context.md"
-  story_dir: "{implementation_artifacts}"
+project_context: "**/project-context.md"
 
 # Smart input file references - handles both whole docs and sharded docs
 # Priority: Whole document first, then sharded version
