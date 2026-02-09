@@ -321,6 +321,7 @@ class ManifestGenerator {
         const nameMatch = content.match(/name="([^"]+)"/);
         const titleMatch = content.match(/title="([^"]+)"/);
         const iconMatch = content.match(/icon="([^"]+)"/);
+        const capabilitiesMatch = content.match(/capabilities="([^"]+)"/);
 
         // Extract persona fields
         const roleMatch = content.match(/<role>([^<]+)<\/role>/);
@@ -342,6 +343,7 @@ class ManifestGenerator {
           displayName: nameMatch ? nameMatch[1] : agentName,
           title: titleMatch ? titleMatch[1] : '',
           icon: iconMatch ? iconMatch[1] : '',
+          capabilities: capabilitiesMatch ? this.cleanForCSV(capabilitiesMatch[1]) : '',
           role: roleMatch ? this.cleanForCSV(roleMatch[1]) : '',
           identity: identityMatch ? this.cleanForCSV(identityMatch[1]) : '',
           communicationStyle: styleMatch ? this.cleanForCSV(styleMatch[1]) : '',
@@ -784,7 +786,7 @@ class ManifestGenerator {
     }
 
     // Create CSV header with persona fields
-    let csvContent = 'name,displayName,title,icon,role,identity,communicationStyle,principles,module,path\n';
+    let csvContent = 'name,displayName,title,icon,capabilities,role,identity,communicationStyle,principles,module,path\n';
 
     // Combine existing and new agents, preferring new data for duplicates
     const allAgents = new Map();
@@ -802,6 +804,7 @@ class ManifestGenerator {
         displayName: agent.displayName,
         title: agent.title,
         icon: agent.icon,
+        capabilities: agent.capabilities,
         role: agent.role,
         identity: agent.identity,
         communicationStyle: agent.communicationStyle,
@@ -818,6 +821,7 @@ class ManifestGenerator {
         escapeCsv(record.displayName),
         escapeCsv(record.title),
         escapeCsv(record.icon),
+        escapeCsv(record.capabilities),
         escapeCsv(record.role),
         escapeCsv(record.identity),
         escapeCsv(record.communicationStyle),

@@ -159,7 +159,7 @@ class GitHubCopilotSetup extends BaseIdeSetup {
     if (manifestEntry) {
       const persona = manifestEntry.displayName || artifact.name;
       const title = manifestEntry.title || this.formatTitle(artifact.name);
-      const capabilities = this.getAgentCapabilities(artifact.name);
+      const capabilities = manifestEntry.capabilities || 'agent capabilities';
       description = `${persona} — ${title}: ${capabilities}`;
     } else {
       description = `Activates the ${this.formatTitle(artifact.name)} agent persona.`;
@@ -186,28 +186,6 @@ You must fully embody this agent's persona and follow all activation instruction
 6. WAIT for user input before proceeding
 </agent-activation>
 `;
-  }
-
-  /**
-   * Get capabilities string for an agent
-   * @param {string} agentName - Agent name
-   * @returns {string} Comma-separated capabilities
-   */
-  getAgentCapabilities(agentName) {
-    const capabilitiesMap = {
-      'bmad-master': 'runtime resource management, workflow orchestration, task execution, knowledge custodian',
-      analyst: 'market research, competitive analysis, requirements elicitation, domain expertise',
-      architect: 'distributed systems, cloud infrastructure, API design, scalable patterns',
-      dev: 'story execution, test-driven development, code implementation',
-      pm: 'PRD creation, requirements discovery, stakeholder alignment, user interviews',
-      qa: 'test automation, API testing, E2E testing, coverage analysis',
-      'quick-flow-solo-dev': 'rapid spec creation, lean implementation, minimum ceremony',
-      sm: 'sprint planning, story preparation, agile ceremonies, backlog management',
-      'tech-writer': 'documentation, Mermaid diagrams, standards compliance, concept explanation',
-      'ux-designer': 'user research, interaction design, UI patterns, experience strategy',
-    };
-
-    return capabilitiesMap[agentName] || 'agent capabilities';
   }
 
   /**
@@ -449,7 +427,7 @@ tools: ${toolsStr}
     for (const agentName of agentOrder) {
       const meta = agentManifest.get(agentName);
       if (meta) {
-        const capabilities = this.getAgentCapabilities(agentName);
+        const capabilities = meta.capabilities || 'agent capabilities';
         const cleanTitle = (meta.title || '').replaceAll('""', '"');
         agentsTable += `| ${agentName} | ${meta.displayName} | ${cleanTitle} | ${capabilities} |\n`;
       }
