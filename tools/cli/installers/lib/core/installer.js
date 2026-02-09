@@ -1070,11 +1070,11 @@ class Installer {
         warn: (msg) => console.warn(msg), // Always show warnings
       };
 
-      // Run core module installer if core was installed
+      // Create directories for core module if core was installed
       if (config.installCore || resolution.byModule.core) {
-        spinner.message('Running core module installer...');
+        spinner.message('Creating core module directories...');
 
-        await this.moduleManager.runModuleInstaller('core', bmadDir, {
+        await this.moduleManager.createModuleDirectories('core', bmadDir, {
           installedIDEs: config.ides || [],
           moduleConfig: moduleConfigs.core || {},
           coreConfig: moduleConfigs.core || {},
@@ -1083,13 +1083,13 @@ class Installer {
         });
       }
 
-      // Run installers for user-selected modules
+      // Create directories for user-selected modules
       if (config.modules && config.modules.length > 0) {
         for (const moduleName of config.modules) {
-          spinner.message(`Running ${moduleName} module installer...`);
+          spinner.message(`Creating ${moduleName} module directories...`);
 
-          // Pass installed IDEs and module config to module installer
-          await this.moduleManager.runModuleInstaller(moduleName, bmadDir, {
+          // Pass installed IDEs and module config to directory creator
+          await this.moduleManager.createModuleDirectories(moduleName, bmadDir, {
             installedIDEs: config.ides || [],
             moduleConfig: moduleConfigs[moduleName] || {},
             coreConfig: moduleConfigs.core || {},
@@ -1904,8 +1904,8 @@ class Installer {
         continue;
       }
 
-      // Skip _module-installer directory - it's only needed at install time
-      if (file.startsWith('_module-installer/') || file === 'module.yaml') {
+      // Skip module.yaml at root - it's only needed at install time
+      if (file === 'module.yaml') {
         continue;
       }
 
@@ -1958,10 +1958,6 @@ class Installer {
       const fullPath = path.join(dir, entry.name);
 
       if (entry.isDirectory()) {
-        // Skip _module-installer directories
-        if (entry.name === '_module-installer') {
-          continue;
-        }
         const subFiles = await this.getFileList(fullPath, baseDir);
         files.push(...subFiles);
       } else {

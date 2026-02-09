@@ -236,17 +236,11 @@ class ModuleManager {
   async getModuleInfo(modulePath, defaultName, sourceDescription) {
     // Check for module structure (module.yaml OR custom.yaml)
     const moduleConfigPath = path.join(modulePath, 'module.yaml');
-    const installerConfigPath = path.join(modulePath, '_module-installer', 'module.yaml');
-    const customConfigPath = path.join(modulePath, '_module-installer', 'custom.yaml');
     const rootCustomConfigPath = path.join(modulePath, 'custom.yaml');
     let configPath = null;
 
     if (await fs.pathExists(moduleConfigPath)) {
       configPath = moduleConfigPath;
-    } else if (await fs.pathExists(installerConfigPath)) {
-      configPath = installerConfigPath;
-    } else if (await fs.pathExists(customConfigPath)) {
-      configPath = customConfigPath;
     } else if (await fs.pathExists(rootCustomConfigPath)) {
       configPath = rootCustomConfigPath;
     }
@@ -268,7 +262,7 @@ class ModuleManager {
       description: 'BMAD Module',
       version: '5.0.0',
       source: sourceDescription,
-      isCustom: configPath === customConfigPath || configPath === rootCustomConfigPath || isCustomSource,
+      isCustom: configPath === rootCustomConfigPath || isCustomSource,
     };
 
     // Read module config for metadata
@@ -541,18 +535,10 @@ class ModuleManager {
     // Check if this is a custom module and read its custom.yaml values
     let customConfig = null;
     const rootCustomConfigPath = path.join(sourcePath, 'custom.yaml');
-    const moduleInstallerCustomPath = path.join(sourcePath, '_module-installer', 'custom.yaml');
 
     if (await fs.pathExists(rootCustomConfigPath)) {
       try {
         const customContent = await fs.readFile(rootCustomConfigPath, 'utf8');
-        customConfig = yaml.parse(customContent);
-      } catch (error) {
-        await prompts.log.warn(`Warning: Failed to read custom.yaml for ${moduleName}: ${error.message}`);
-      }
-    } else if (await fs.pathExists(moduleInstallerCustomPath)) {
-      try {
-        const customContent = await fs.readFile(moduleInstallerCustomPath, 'utf8');
         customConfig = yaml.parse(customContent);
       } catch (error) {
         await prompts.log.warn(`Warning: Failed to read custom.yaml for ${moduleName}: ${error.message}`);
@@ -585,9 +571,9 @@ class ModuleManager {
     // Process agent files to inject activation block
     await this.processAgentFiles(targetPath, moduleName);
 
-    // Call module-specific installer if it exists (unless explicitly skipped)
+    // Create directories declared in module.yaml (unless explicitly skipped)
     if (!options.skipModuleInstaller) {
-      await this.runModuleInstaller(moduleName, bmadDir, options);
+      await this.createModuleDirectories(moduleName, bmadDir, options);
     }
 
     // Capture version info for manifest
@@ -743,8 +729,8 @@ class ModuleManager {
         continue;
       }
 
-      // Skip _module-installer directory - it's only needed at install time
-      if (file.startsWith('_module-installer/') || file === 'module.yaml') {
+      // Skip module.yaml at root - it's only needed at install time
+      if (file === 'module.yaml') {
         continue;
       }
 
@@ -1220,80 +1206,101 @@ class ModuleManager {
   }
 
   /**
-   * Run module-specific installer if it exists
+   * Create directories declared in module.yaml's `directories` key
+   * This replaces the security-risky module installer pattern with declarative config
    * @param {string} moduleName - Name of the module
    * @param {string} bmadDir - Target bmad directory
    * @param {Object} options - Installation options
+   * @param {Object} options.moduleConfig - Module configuration from config collector
+   * @param {Object} options.coreConfig - Core configuration
    */
-  async runModuleInstaller(moduleName, bmadDir, options = {}) {
+  async createModuleDirectories(moduleName, bmadDir, options = {}) {
+    const moduleConfig = options.moduleConfig || {};
+    const projectRoot = path.dirname(bmadDir);
+
     // Special handling for core module - it's in src/core not src/modules
     let sourcePath;
     if (moduleName === 'core') {
       sourcePath = getSourcePath('core');
     } else {
-      sourcePath = await this.findModuleSource(moduleName, { silent: options.silent });
+      sourcePath = await this.findModuleSource(moduleName, { silent: true });
       if (!sourcePath) {
-        // No source found, skip module installer
-        return;
+        return; // No source found, skip
       }
     }
 
-    const installerDir = path.join(sourcePath, '_module-installer');
-    // Prefer .cjs (always CommonJS) then fall back to .js
-    const cjsPath = path.join(installerDir, 'installer.cjs');
-    const jsPath = path.join(installerDir, 'installer.js');
-    const hasCjs = await fs.pathExists(cjsPath);
-    const installerPath = hasCjs ? cjsPath : jsPath;
-
-    // Check if module has a custom installer
-    if (!hasCjs && !(await fs.pathExists(jsPath))) {
-      return; // No custom installer
+    // Read module.yaml to find the `directories` key
+    const moduleYamlPath = path.join(sourcePath, 'module.yaml');
+    if (!(await fs.pathExists(moduleYamlPath))) {
+      return; // No module.yaml, skip
     }
 
+    let moduleYaml;
     try {
-      // .cjs files are always CommonJS and safe to require().
-      // .js files may be ESM (when the package sets "type":"module"),
-      // so use dynamic import() which handles both CJS and ESM.
-      let moduleInstaller;
-      if (hasCjs) {
-        moduleInstaller = require(installerPath);
-      } else {
-        const { pathToFileURL } = require('node:url');
-        const imported = await import(pathToFileURL(installerPath).href);
-        // CJS module.exports lands on .default; ESM default can be object, function, or class
-        moduleInstaller = imported.default == null ? imported : imported.default;
+      const yamlContent = await fs.readFile(moduleYamlPath, 'utf8');
+      moduleYaml = yaml.parse(yamlContent);
+    } catch {
+      return; // Invalid YAML, skip
+    }
+
+    if (!moduleYaml || !moduleYaml.directories) {
+      return; // No directories declared, skip
+    }
+
+    // Get color utility for styled output
+    const color = await prompts.getColor();
+    const directories = moduleYaml.directories;
+    const wdsFolders = moduleYaml.wds_folders || [];
+
+    for (const dirRef of directories) {
+      // Parse variable reference like "{design_artifacts}"
+      const varMatch = dirRef.match(/^\{([^}]+)\}$/);
+      if (!varMatch) {
+        // Not a variable reference, skip
+        continue;
       }
 
-      if (typeof moduleInstaller.install === 'function') {
-        // Get project root (parent of bmad directory)
-        const projectRoot = path.dirname(bmadDir);
+      const configKey = varMatch[1];
+      const dirValue = moduleConfig[configKey];
+      if (!dirValue || typeof dirValue !== 'string') {
+        continue; // No value or not a string, skip
+      }
 
-        // Prepare logger (use console if not provided)
-        const logger = options.logger || {
-          log: console.log,
-          error: console.error,
-          warn: console.warn,
-        };
+      // Strip {project-root}/ prefix if present
+      let dirPath = dirValue.replace(/^\{project-root\}\/?/, '');
 
-        // Call the module installer
-        const result = await moduleInstaller.install({
-          projectRoot,
-          config: options.moduleConfig || {},
-          coreConfig: options.coreConfig || {},
-          installedIDEs: options.installedIDEs || [],
-          logger,
-        });
+      // Handle remaining {project-root} anywhere in the path
+      dirPath = dirPath.replaceAll('{project-root}', '');
 
-        if (!result) {
-          await prompts.log.warn(`Module installer for ${moduleName} returned false`);
+      // Resolve to absolute path
+      const fullPath = path.join(projectRoot, dirPath);
+
+      // Validate path is within project root (prevent directory traversal)
+      const normalizedPath = path.normalize(fullPath);
+      const normalizedRoot = path.normalize(projectRoot);
+      if (!normalizedPath.startsWith(normalizedRoot + path.sep) && normalizedPath !== normalizedRoot) {
+        await prompts.log.warn(color.yellow(`Warning: ${configKey} path escapes project root, skipping: ${dirPath}`));
+        continue;
+      }
+
+      // Create directory if it doesn't exist
+      if (!(await fs.pathExists(fullPath))) {
+        const dirName = configKey.replaceAll('_', ' ');
+        await prompts.log.message(color.yellow(`Creating ${dirName} directory: ${dirPath}`));
+        await fs.ensureDir(fullPath);
+      }
+
+      // Create WDS subfolders if this is the design_artifacts directory
+      if (configKey === 'design_artifacts' && wdsFolders.length > 0) {
+        await prompts.log.message(color.cyan('Creating WDS folder structure...'));
+        for (const subfolder of wdsFolders) {
+          const subPath = path.join(fullPath, subfolder);
+          if (!(await fs.pathExists(subPath))) {
+            await fs.ensureDir(subPath);
+            await prompts.log.message(color.dim(`  ✓ ${subfolder}/`));
+          }
         }
       }
-    } catch {
-      // Post-install scripts are optional; module files are already installed.
-      // TODO: Eliminate post-install scripts entirely by adding a `directories` key
-      // to module.yaml that declares which config keys are paths to auto-create.
-      // The main installer can then handle directory creation centrally, removing
-      // the need for per-module installer.js scripts and their CJS/ESM issues.
     }
   }
 
@@ -1363,10 +1370,6 @@ class ModuleManager {
       const fullPath = path.join(dir, entry.name);
 
       if (entry.isDirectory()) {
-        // Skip _module-installer directories
-        if (entry.name === '_module-installer') {
-          continue;
-        }
         const subFiles = await this.getFileList(fullPath, baseDir);
         files.push(...subFiles);
       } else {
