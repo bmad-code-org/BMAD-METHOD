@@ -98,14 +98,18 @@ class GitHubCopilotSetup extends BaseIdeSetup {
       return agents;
     }
 
-    const csvContent = await fs.readFile(manifestPath, 'utf8');
-    const records = csv.parse(csvContent, {
-      columns: true,
-      skip_empty_lines: true,
-    });
+    try {
+      const csvContent = await fs.readFile(manifestPath, 'utf8');
+      const records = csv.parse(csvContent, {
+        columns: true,
+        skip_empty_lines: true,
+      });
 
-    for (const record of records) {
-      agents.set(record.name, record);
+      for (const record of records) {
+        agents.set(record.name, record);
+      }
+    } catch {
+      // Gracefully degrade if manifest is unreadable/malformed
     }
 
     return agents;
@@ -123,11 +127,16 @@ class GitHubCopilotSetup extends BaseIdeSetup {
       return null;
     }
 
-    const csvContent = await fs.readFile(helpPath, 'utf8');
-    return csv.parse(csvContent, {
-      columns: true,
-      skip_empty_lines: true,
-    });
+    try {
+      const csvContent = await fs.readFile(helpPath, 'utf8');
+      return csv.parse(csvContent, {
+        columns: true,
+        skip_empty_lines: true,
+      });
+    } catch {
+      // Gracefully degrade if help CSV is unreadable/malformed
+      return null;
+    }
   }
 
   /**
