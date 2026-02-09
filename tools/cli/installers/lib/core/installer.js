@@ -1155,7 +1155,7 @@ class Installer {
 
       // Module directory creation task
       postIdeTasks.push({
-        title: 'Running module installers',
+        title: 'Creating module directories',
         task: async (message) => {
           const verboseMode = process.env.BMAD_VERBOSE_INSTALL === 'true' || config.verbose;
           const moduleLogger = {
@@ -1197,7 +1197,7 @@ class Installer {
             }
           }
 
-          addResult('Module installers', 'ok');
+          addResult('Module directories', 'ok');
           return 'Module setup complete';
         },
       });
