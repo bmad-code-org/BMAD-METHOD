@@ -666,34 +666,11 @@ Type \`/bmad-\` in Copilot Chat to see all available BMAD workflows and agent ac
       }
     }
 
-    // Clean up BMAD section from copilot-instructions.md (preserve user content)
-    const instructionsPath = path.join(projectDir, this.githubDir, 'copilot-instructions.md');
-    if (await fs.pathExists(instructionsPath)) {
-      const existing = await fs.readFile(instructionsPath, 'utf8');
-      const markerStart = '<!-- BMAD:START -->';
-      const markerEnd = '<!-- BMAD:END -->';
-      const startIdx = existing.indexOf(markerStart);
-      const endIdx = existing.indexOf(markerEnd);
-
-      if (startIdx !== -1 && endIdx !== -1 && endIdx > startIdx) {
-        // Remove only the BMAD section between markers (inclusive)
-        const before = existing.slice(0, startIdx);
-        const after = existing.slice(endIdx + markerEnd.length);
-        const remaining = (before + after).trim();
-
-        if (remaining.length > 0) {
-          await fs.writeFile(instructionsPath, `${remaining}\n`);
-          console.log(chalk.dim('  Cleaned up BMAD section from copilot-instructions.md (user content preserved)'));
-        } else {
-          await fs.remove(instructionsPath);
-          console.log(chalk.dim('  Cleaned up copilot-instructions.md'));
-        }
-      } else {
-        // No markers — file is either entirely BMAD-generated or entirely user content.
-        // Leave it alone during cleanup to avoid destroying user content.
-        console.log(chalk.dim('  Skipped copilot-instructions.md (no BMAD markers found, not modified)'));
-      }
-    }
+    // Note: copilot-instructions.md is NOT cleaned up here.
+    // generateCopilotInstructions() handles marker-based replacement in a single
+    // read-modify-write pass, which correctly preserves user content outside the markers.
+    // Stripping markers here would cause generation to treat the file as legacy (no markers)
+    // and overwrite user content.
   }
 }
 
