@@ -1252,6 +1252,7 @@ class ModuleManager {
    * @param {Object} options - Installation options
    * @param {Object} options.moduleConfig - Module configuration from config collector
    * @param {Object} options.coreConfig - Core configuration
+   * @returns {Promise<{createdDirs: string[], createdWdsFolders: string[]} | undefined>} Created directories info
    */
   async createModuleDirectories(moduleName, bmadDir, options = {}) {
     const moduleConfig = options.moduleConfig || {};
@@ -1286,8 +1287,6 @@ class ModuleManager {
       return; // No directories declared, skip
     }
 
-    // Get color utility for styled output
-    const color = await prompts.getColor();
     const directories = moduleYaml.directories;
     const wdsFolders = moduleYaml.wds_folders || [];
     const createdDirs = [];
@@ -1320,6 +1319,7 @@ class ModuleManager {
       const normalizedPath = path.normalize(fullPath);
       const normalizedRoot = path.normalize(projectRoot);
       if (!normalizedPath.startsWith(normalizedRoot + path.sep) && normalizedPath !== normalizedRoot) {
+        const color = await prompts.getColor();
         await prompts.log.warn(color.yellow(`Warning: ${configKey} path escapes project root, skipping: ${dirPath}`));
         continue;
       }
@@ -1343,15 +1343,7 @@ class ModuleManager {
       }
     }
 
-    // Batch output: single log message for all created directories
-    if (createdDirs.length > 0) {
-      const lines = createdDirs.map((d) => `  ${d}`).join('\n');
-      await prompts.log.message(color.yellow(`Created directories:\n${lines}`));
-    }
-    if (createdWdsFolders.length > 0) {
-      const lines = createdWdsFolders.map((f) => color.dim(`  ✓ ${f}/`)).join('\n');
-      await prompts.log.message(color.cyan(`Created WDS folder structure:\n${lines}`));
-    }
+    return { createdDirs, createdWdsFolders };
   }
 
   /**

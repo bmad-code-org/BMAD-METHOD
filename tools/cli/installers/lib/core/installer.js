@@ -1119,33 +1119,53 @@ class Installer {
         warn: (msg) => console.warn(msg), // Always show warnings
       };
 
-      // Create directories for core module if core was installed
-      if (config.installCore || resolution.byModule.core) {
-        spinner.message('Creating core module directories...');
+      // Create directories for all modules
+      spinner.message('Creating module directories...');
+      const allCreatedDirs = [];
+      const allCreatedWdsFolders = [];
 
-        await this.moduleManager.createModuleDirectories('core', bmadDir, {
+      // Core module directories
+      if (config.installCore || resolution.byModule.core) {
+        const result = await this.moduleManager.createModuleDirectories('core', bmadDir, {
           installedIDEs: config.ides || [],
           moduleConfig: moduleConfigs.core || {},
           coreConfig: moduleConfigs.core || {},
           logger: moduleLogger,
           silent: true,
         });
+        if (result) {
+          allCreatedDirs.push(...result.createdDirs);
+          allCreatedWdsFolders.push(...result.createdWdsFolders);
+        }
       }
 
-      // Create directories for user-selected modules
+      // User-selected module directories
       if (config.modules && config.modules.length > 0) {
         for (const moduleName of config.modules) {
-          spinner.message(`Creating ${moduleName} module directories...`);
-
-          // Pass installed IDEs and module config to directory creator
-          await this.moduleManager.createModuleDirectories(moduleName, bmadDir, {
+          const result = await this.moduleManager.createModuleDirectories(moduleName, bmadDir, {
             installedIDEs: config.ides || [],
             moduleConfig: moduleConfigs[moduleName] || {},
             coreConfig: moduleConfigs.core || {},
             logger: moduleLogger,
             silent: true,
           });
+          if (result) {
+            allCreatedDirs.push(...result.createdDirs);
+            allCreatedWdsFolders.push(...result.createdWdsFolders);
+          }
         }
+      }
+
+      // Batch output: single log message for all created directories across all modules
+      if (allCreatedDirs.length > 0) {
+        const color = await prompts.getColor();
+        const lines = allCreatedDirs.map((d) => `  ${d}`).join('\n');
+        await prompts.log.message(color.yellow(`Created directories:\n${lines}`));
+      }
+      if (allCreatedWdsFolders.length > 0) {
+        const color = await prompts.getColor();
+        const lines = allCreatedWdsFolders.map((f) => color.dim(`  ✓ ${f}/`)).join('\n');
+        await prompts.log.message(color.cyan(`Created WDS folder structure:\n${lines}`));
       }
 
       addResult('Module installers', 'ok');
@@ -1201,6 +1221,9 @@ class Installer {
           }
         }
       }
+
+      // Blank line for spacing before final status
+      console.log();
 
       // Stop the single installation spinner
       spinner.stop('Installation complete');
