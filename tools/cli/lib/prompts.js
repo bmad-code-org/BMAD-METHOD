@@ -575,7 +575,26 @@ async function cancel(message = 'Operation cancelled') {
  */
 async function box(content, title, options) {
   const clack = await getClack();
-  clack.box(content, title, options);
+
+  // @clack/prompts v1 does not expose `box`. Keep compatibility with older
+  // wrappers by degrading to `note`, then plain logging if needed.
+  if (typeof clack.box === 'function') {
+    clack.box(content, title, options);
+    return;
+  }
+
+  if (typeof clack.note === 'function') {
+    clack.note(content, title || 'Info');
+    return;
+  }
+
+  if (clack.log && typeof clack.log.message === 'function') {
+    clack.log.message(title ? `${title}\n${content}` : content);
+    return;
+  }
+
+  // Final defensive fallback if prompt APIs are unavailable.
+  console.log(title ? `${title}\n${content}` : content);
 }
 
 /**
