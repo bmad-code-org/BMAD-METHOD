@@ -227,6 +227,7 @@ You must fully embody this agent's persona and follow all activation instruction
         if (!command) continue; // Skip entries without a command (tech-writer commands have no command column)
 
         const workflowFile = entry['workflow-file'];
+        if (!workflowFile) continue; // Skip entries with no workflow file path
         const promptContent = this.createWorkflowPromptContent(entry, workflowFile);
         const promptPath = path.join(promptsDir, `${command}.prompt.md`);
         await this.writeFile(promptPath, promptContent);
