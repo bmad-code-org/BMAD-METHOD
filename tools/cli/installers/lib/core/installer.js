@@ -452,7 +452,7 @@ class Installer {
               spinner.start('Preparing update...');
             } else {
               if (spinner.isSpinning) {
-                spinner.stop('Reviewing module changes');
+                spinner.stop('Module changes reviewed');
               }
 
               await prompts.log.warn('Modules to be removed:');
@@ -733,7 +733,7 @@ class Installer {
             }
           } else {
             if (spinner.isSpinning) {
-              spinner.stop('Reviewing IDE changes');
+              spinner.stop('IDE changes reviewed');
             }
 
             await prompts.log.warn('IDEs to be removed:');
@@ -784,9 +784,9 @@ class Installer {
       const addResult = (step, status, detail = '') => results.push({ step, status, detail });
 
       if (spinner.isSpinning) {
-        spinner.message('Installing...');
+        spinner.message('Preparing installation...');
       } else {
-        spinner.start('Installing...');
+        spinner.start('Preparing installation...');
       }
 
       // Create bmad directory structure
@@ -815,20 +815,10 @@ class Installer {
 
       const projectRoot = getProjectRoot();
 
-      // Step 1: Install core module first (if requested)
-      if (config.installCore) {
-        spinner.message('Installing BMAD core...');
-        await this.installCoreWithDependencies(bmadDir, { core: {} });
-        addResult('Core', 'ok', 'installed');
-
-        // Generate core config file
-        await this.generateModuleConfigs(bmadDir, { core: config.coreConfig || {} });
-      }
-
       // Custom content is already handled in UI before module selection
-      let finalCustomContent = config.customContent;
+      const finalCustomContent = config.customContent;
 
-      // Step 3: Prepare modules list including cached custom modules
+      // Prepare modules list including cached custom modules
       let allModules = [...(config.modules || [])];
 
       // During quick update, we might have custom module sources from the manifest
@@ -867,8 +857,6 @@ class Installer {
         allModules = allModules.filter((m) => m !== 'core');
       }
 
-      const modulesToInstall = allModules;
-
       // For dependency resolution, we only need regular modules (not custom modules)
       // Custom modules are already installed in _bmad and don't need dependency resolution from source
       const regularModulesForResolution = allModules.filter((module) => {
@@ -883,388 +871,415 @@ class Installer {
         return !isCustom;
       });
 
-      // For dependency resolution, we need to pass the project root
-      // Create a temporary module manager that knows about custom content locations
-      const tempModuleManager = new ModuleManager({
-        bmadDir: bmadDir, // Pass bmadDir so we can check cache
+      // Stop spinner before tasks() takes over progress display
+      spinner.stop('Preparation complete');
+
+      // ─────────────────────────────────────────────────────────────────────────
+      // FIRST TASKS BLOCK: Core installation through manifests (non-interactive)
+      // ─────────────────────────────────────────────────────────────────────────
+      const isQuickUpdate = config._quickUpdate || false;
+
+      // Shared resolution result across task callbacks (closure-scoped, not on `this`)
+      let taskResolution;
+
+      // Build task list conditionally
+      const installTasks = [];
+
+      // Core installation task
+      if (config.installCore) {
+        installTasks.push({
+          title: isQuickUpdate ? 'Updating BMAD core' : 'Installing BMAD core',
+          task: async (message) => {
+            await this.installCoreWithDependencies(bmadDir, { core: {} });
+            addResult('Core', 'ok', isQuickUpdate ? 'updated' : 'installed');
+            await this.generateModuleConfigs(bmadDir, { core: config.coreConfig || {} });
+            return isQuickUpdate ? 'Core updated' : 'Core installed';
+          },
+        });
+      }
+
+      // Dependency resolution task
+      installTasks.push({
+        title: 'Resolving dependencies',
+        task: async (message) => {
+          // Create a temporary module manager that knows about custom content locations
+          const tempModuleManager = new ModuleManager({
+            bmadDir: bmadDir,
+          });
+
+          taskResolution = await this.dependencyResolver.resolve(projectRoot, regularModulesForResolution, {
+            verbose: config.verbose,
+            moduleManager: tempModuleManager,
+          });
+          return 'Dependencies resolved';
+        },
       });
 
-      spinner.message('Resolving dependencies...');
-
-      const resolution = await this.dependencyResolver.resolve(projectRoot, regularModulesForResolution, {
-        verbose: config.verbose,
-        moduleManager: tempModuleManager,
-      });
-
-      // Install modules with their dependencies
+      // Module installation task
       if (allModules && allModules.length > 0) {
-        const installedModuleNames = new Set();
+        installTasks.push({
+          title: isQuickUpdate ? `Updating ${allModules.length} module(s)` : `Installing ${allModules.length} module(s)`,
+          task: async (message) => {
+            const resolution = taskResolution;
+            const installedModuleNames = new Set();
 
-        for (const moduleName of allModules) {
-          // Skip if already installed
-          if (installedModuleNames.has(moduleName)) {
-            continue;
-          }
-          installedModuleNames.add(moduleName);
+            for (const moduleName of allModules) {
+              if (installedModuleNames.has(moduleName)) continue;
+              installedModuleNames.add(moduleName);
 
-          // Show appropriate message based on whether this is a quick update
-          const isQuickUpdate = config._quickUpdate || false;
-          spinner.message(`${isQuickUpdate ? 'Updating' : 'Installing'} module: ${moduleName}...`);
+              message(`${isQuickUpdate ? 'Updating' : 'Installing'} ${moduleName}...`);
 
-          // Check if this is a custom module
-          let isCustomModule = false;
-          let customInfo = null;
-          let useCache = false;
+              // Check if this is a custom module
+              let isCustomModule = false;
+              let customInfo = null;
 
-          // First check if we have a cached version
-          if (finalCustomContent && finalCustomContent.cachedModules) {
-            const cachedModule = finalCustomContent.cachedModules.find((m) => m.id === moduleName);
-            if (cachedModule) {
-              isCustomModule = true;
-              customInfo = {
-                id: moduleName,
-                path: cachedModule.cachePath,
-                config: {},
-              };
-              useCache = true;
-            }
-          }
-
-          // Then check if we have custom module sources from the manifest (for quick update)
-          if (!isCustomModule && config._customModuleSources && config._customModuleSources.has(moduleName)) {
-            customInfo = config._customModuleSources.get(moduleName);
-            isCustomModule = true;
-
-            // Check if this is a cached module (source path starts with _config)
-            if (
-              customInfo.sourcePath &&
-              (customInfo.sourcePath.startsWith('_config') || customInfo.sourcePath.includes('_config/custom'))
-            ) {
-              useCache = true;
-              // Make sure we have the right path structure
-              if (!customInfo.path) {
-                customInfo.path = customInfo.sourcePath;
+              // First check if we have a cached version
+              if (finalCustomContent && finalCustomContent.cachedModules) {
+                const cachedModule = finalCustomContent.cachedModules.find((m) => m.id === moduleName);
+                if (cachedModule) {
+                  isCustomModule = true;
+                  customInfo = { id: moduleName, path: cachedModule.cachePath, config: {} };
+                }
               }
-            }
-          }
 
-          // Finally check regular custom content
-          if (!isCustomModule && finalCustomContent && finalCustomContent.selected && finalCustomContent.selectedFiles) {
-            const customHandler = new CustomHandler();
-            for (const customFile of finalCustomContent.selectedFiles) {
-              const info = await customHandler.getCustomInfo(customFile, projectDir);
-              if (info && info.id === moduleName) {
+              // Then check custom module sources from manifest (for quick update)
+              if (!isCustomModule && config._customModuleSources && config._customModuleSources.has(moduleName)) {
+                customInfo = config._customModuleSources.get(moduleName);
                 isCustomModule = true;
-                customInfo = info;
-                break;
+                if (
+                  customInfo.sourcePath &&
+                  (customInfo.sourcePath.startsWith('_config') || customInfo.sourcePath.includes('_config/custom')) &&
+                  !customInfo.path
+                )
+                  customInfo.path = customInfo.sourcePath;
+              }
+
+              // Finally check regular custom content
+              if (!isCustomModule && finalCustomContent && finalCustomContent.selected && finalCustomContent.selectedFiles) {
+                const customHandler = new CustomHandler();
+                for (const customFile of finalCustomContent.selectedFiles) {
+                  const info = await customHandler.getCustomInfo(customFile, projectDir);
+                  if (info && info.id === moduleName) {
+                    isCustomModule = true;
+                    customInfo = info;
+                    break;
+                  }
+                }
+              }
+
+              if (isCustomModule && customInfo) {
+                if (!customModulePaths.has(moduleName) && customInfo.path) {
+                  customModulePaths.set(moduleName, customInfo.path);
+                  this.moduleManager.setCustomModulePaths(customModulePaths);
+                }
+
+                const collectedModuleConfig = moduleConfigs[moduleName] || {};
+                await this.moduleManager.install(
+                  moduleName,
+                  bmadDir,
+                  (filePath) => {
+                    this.installedFiles.add(filePath);
+                  },
+                  {
+                    isCustom: true,
+                    moduleConfig: collectedModuleConfig,
+                    isQuickUpdate: isQuickUpdate,
+                    installer: this,
+                    silent: true,
+                  },
+                );
+                await this.generateModuleConfigs(bmadDir, {
+                  [moduleName]: { ...config.coreConfig, ...customInfo.config, ...collectedModuleConfig },
+                });
+              } else {
+                if (moduleName === 'core') {
+                  await this.installCoreWithDependencies(bmadDir, resolution.byModule[moduleName]);
+                } else {
+                  await this.installModuleWithDependencies(moduleName, bmadDir, resolution.byModule[moduleName]);
+                }
+              }
+
+              addResult(`Module: ${moduleName}`, 'ok', isQuickUpdate ? 'updated' : 'installed');
+            }
+
+            // Install partial modules (only dependencies)
+            for (const [module, files] of Object.entries(resolution.byModule)) {
+              if (!allModules.includes(module) && module !== 'core') {
+                const totalFiles =
+                  files.agents.length +
+                  files.tasks.length +
+                  files.tools.length +
+                  files.templates.length +
+                  files.data.length +
+                  files.other.length;
+                if (totalFiles > 0) {
+                  message(`Installing ${module} dependencies...`);
+                  await this.installPartialModule(module, bmadDir, files);
+                }
               }
             }
-          }
 
-          if (isCustomModule && customInfo) {
-            // Custom modules are now installed via ModuleManager just like standard modules
-            // The custom module path should already be in customModulePaths from earlier setup
-            if (!customModulePaths.has(moduleName) && customInfo.path) {
-              customModulePaths.set(moduleName, customInfo.path);
-              this.moduleManager.setCustomModulePaths(customModulePaths);
-            }
+            return `${allModules.length} module(s) ${isQuickUpdate ? 'updated' : 'installed'}`;
+          },
+        });
+      }
 
-            const collectedModuleConfig = moduleConfigs[moduleName] || {};
+      // Configuration generation task
+      installTasks.push({
+        title: 'Generating configurations',
+        task: async (message) => {
+          // Generate clean config.yaml files for each installed module
+          await this.generateModuleConfigs(bmadDir, moduleConfigs);
+          addResult('Configurations', 'ok', 'generated');
 
-            // Use ModuleManager to install the custom module
-            await this.moduleManager.install(
-              moduleName,
-              bmadDir,
-              (filePath) => {
-                this.installedFiles.add(filePath);
-              },
-              {
-                isCustom: true,
-                moduleConfig: collectedModuleConfig,
-                isQuickUpdate: config._quickUpdate || false,
-                installer: this,
-                silent: true,
-              },
-            );
+          // Pre-register manifest files
+          const cfgDir = path.join(bmadDir, '_config');
+          this.installedFiles.add(path.join(cfgDir, 'manifest.yaml'));
+          this.installedFiles.add(path.join(cfgDir, 'workflow-manifest.csv'));
+          this.installedFiles.add(path.join(cfgDir, 'agent-manifest.csv'));
+          this.installedFiles.add(path.join(cfgDir, 'task-manifest.csv'));
 
-            // Create module config (include collected config from module.yaml prompts)
-            await this.generateModuleConfigs(bmadDir, {
-              [moduleName]: { ...config.coreConfig, ...customInfo.config, ...collectedModuleConfig },
-            });
+          // Generate CSV manifests for workflows, agents, tasks AND ALL FILES with hashes
+          // This must happen BEFORE mergeModuleHelpCatalogs because it depends on agent-manifest.csv
+          message('Generating manifests...');
+          const manifestGen = new ManifestGenerator();
+
+          const allModulesForManifest = config._quickUpdate
+            ? config._existingModules || allModules || []
+            : config._preserveModules
+              ? [...allModules, ...config._preserveModules]
+              : allModules || [];
+
+          let modulesForCsvPreserve;
+          if (config._quickUpdate) {
+            modulesForCsvPreserve = config._existingModules || allModules || [];
           } else {
-            // Regular module installation
-            // Special case for core module
-            if (moduleName === 'core') {
-              await this.installCoreWithDependencies(bmadDir, resolution.byModule[moduleName]);
-            } else {
-              await this.installModuleWithDependencies(moduleName, bmadDir, resolution.byModule[moduleName]);
-            }
+            modulesForCsvPreserve = config._preserveModules ? [...allModules, ...config._preserveModules] : allModules;
           }
 
-          addResult(`Module: ${moduleName}`, 'ok', isQuickUpdate ? 'updated' : 'installed');
-        }
+          const manifestStats = await manifestGen.generateManifests(bmadDir, allModulesForManifest, [...this.installedFiles], {
+            ides: config.ides || [],
+            preservedModules: modulesForCsvPreserve,
+          });
 
-        // Install partial modules (only dependencies)
-        for (const [module, files] of Object.entries(resolution.byModule)) {
-          if (!allModules.includes(module) && module !== 'core') {
-            const totalFiles =
-              files.agents.length +
-              files.tasks.length +
-              files.tools.length +
-              files.templates.length +
-              files.data.length +
-              files.other.length;
-            if (totalFiles > 0) {
-              spinner.message(`Installing ${module} dependencies...`);
-              await this.installPartialModule(module, bmadDir, files);
-            }
-          }
-        }
-      }
+          addResult(
+            'Manifests',
+            'ok',
+            `${manifestStats.workflows} workflows, ${manifestStats.agents} agents, ${manifestStats.tasks} tasks, ${manifestStats.tools} tools`,
+          );
 
-      // All content is now installed as modules - no separate custom content handling needed
+          // Merge help catalogs
+          message('Generating help catalog...');
+          await this.mergeModuleHelpCatalogs(bmadDir);
+          addResult('Help catalog', 'ok');
 
-      // Generate clean config.yaml files for each installed module
-      spinner.message('Generating module configurations...');
-      await this.generateModuleConfigs(bmadDir, moduleConfigs);
-      addResult('Configurations', 'ok', 'generated');
-
-      // Create agent configuration files
-      // Note: Legacy createAgentConfigs removed - using YAML customize system instead
-      // Customize templates are now created in processAgentFiles when building YAML agents
-
-      // Pre-register manifest files that will be created (except files-manifest.csv to avoid recursion)
-      const cfgDir = path.join(bmadDir, '_config');
-      this.installedFiles.add(path.join(cfgDir, 'manifest.yaml'));
-      this.installedFiles.add(path.join(cfgDir, 'workflow-manifest.csv'));
-      this.installedFiles.add(path.join(cfgDir, 'agent-manifest.csv'));
-      this.installedFiles.add(path.join(cfgDir, 'task-manifest.csv'));
-
-      // Generate CSV manifests for workflows, agents, tasks AND ALL FILES with hashes BEFORE IDE setup
-      // This must happen BEFORE mergeModuleHelpCatalogs because it depends on agent-manifest.csv
-      spinner.message('Generating workflow and agent manifests...');
-      const manifestGen = new ManifestGenerator();
-
-      // For quick update, we need ALL installed modules in the manifest
-      // Not just the ones being updated
-      const allModulesForManifest = config._quickUpdate
-        ? config._existingModules || allModules || []
-        : config._preserveModules
-          ? [...allModules, ...config._preserveModules]
-          : allModules || [];
-
-      // For regular installs (including when called from quick update), use what we have
-      let modulesForCsvPreserve;
-      if (config._quickUpdate) {
-        // Quick update - use existing modules or fall back to modules being updated
-        modulesForCsvPreserve = config._existingModules || allModules || [];
-      } else {
-        // Regular install - use the modules we're installing plus any preserved ones
-        modulesForCsvPreserve = config._preserveModules ? [...allModules, ...config._preserveModules] : allModules;
-      }
-
-      const manifestStats = await manifestGen.generateManifests(bmadDir, allModulesForManifest, [...this.installedFiles], {
-        ides: config.ides || [],
-        preservedModules: modulesForCsvPreserve, // Scan these from installed bmad/ dir
+          return 'Configurations generated';
+        },
       });
 
-      // Custom modules are now included in the main modules list - no separate tracking needed
+      await prompts.tasks(installTasks);
 
-      addResult(
-        'Manifests',
-        'ok',
-        `${manifestStats.workflows} workflows, ${manifestStats.agents} agents, ${manifestStats.tasks} tasks, ${manifestStats.tools} tools`,
-      );
+      // Resolution is now available via closure-scoped taskResolution
+      const resolution = taskResolution;
 
-      // Merge all module-help.csv files into bmad-help.csv
-      // This must happen AFTER generateManifests because it depends on agent-manifest.csv
-      spinner.message('Generating workflow help catalog...');
-      await this.mergeModuleHelpCatalogs(bmadDir);
-      addResult('Help catalog', 'ok');
-
-      // Configure IDEs and copy documentation
+      // ─────────────────────────────────────────────────────────────────────────
+      // IDE SETUP: Keep as spinner since it may prompt for user input
+      // ─────────────────────────────────────────────────────────────────────────
       if (!config.skipIde && config.ides && config.ides.length > 0) {
-        // Ensure IDE manager is initialized (handlers may not be loaded in quick update flow)
         await this.ideManager.ensureInitialized();
-
-        // Filter out any undefined/null values from the IDE list
         const validIdes = config.ides.filter((ide) => ide && typeof ide === 'string');
 
         if (validIdes.length === 0) {
           addResult('IDE configuration', 'warn', 'no valid IDEs selected');
         } else {
-          // Check if any IDE might need prompting (no pre-collected config)
           const needsPrompting = validIdes.some((ide) => !ideConfigurations[ide]);
+          const ideSpinner = await prompts.spinner();
+          ideSpinner.start('Configuring IDEs...');
 
-          for (const ide of validIdes) {
-            if (!needsPrompting || ideConfigurations[ide]) {
-              // All IDEs pre-configured, or this specific IDE has config: keep spinner running
-              spinner.message(`Configuring ${ide}...`);
-            } else {
-              // This IDE needs prompting: stop spinner to allow user interaction
-              if (spinner.isSpinning) {
-                spinner.stop('Ready for IDE configuration');
-              }
-            }
-
-            // Silent when this IDE has pre-collected config (no prompts for THIS IDE)
-            const ideHasConfig = Boolean(ideConfigurations[ide]);
-
-            // Suppress stray console output for pre-configured IDEs (no user interaction)
-            const originalLog = console.log;
-            if (!config.verbose && ideHasConfig) {
-              console.log = () => {};
-            }
-            try {
-              const setupResult = await this.ideManager.setup(ide, projectDir, bmadDir, {
-                selectedModules: allModules || [],
-                preCollectedConfig: ideConfigurations[ide] || null,
-                verbose: config.verbose,
-                silent: ideHasConfig,
-              });
-
-              // Save IDE configuration for future updates
-              if (ideConfigurations[ide] && !ideConfigurations[ide]._alreadyConfigured) {
-                await this.ideConfigManager.saveIdeConfig(bmadDir, ide, ideConfigurations[ide]);
-              }
-
-              // Collect result for summary
-              if (setupResult.success) {
-                addResult(ide, 'ok', setupResult.detail || '');
+          try {
+            for (const ide of validIdes) {
+              if (!needsPrompting || ideConfigurations[ide]) {
+                ideSpinner.message(`Configuring ${ide}...`);
               } else {
-                addResult(ide, 'error', setupResult.error || 'failed');
+                if (ideSpinner.isSpinning) {
+                  ideSpinner.stop('Ready for IDE configuration');
+                }
               }
-            } finally {
-              console.log = originalLog;
-            }
 
-            // Restart spinner if we stopped it for prompting
-            if (needsPrompting && !spinner.isSpinning) {
-              spinner.start('Configuring IDEs...');
+              // Suppress stray console output for pre-configured IDEs (no user interaction)
+              const ideHasConfig = Boolean(ideConfigurations[ide]);
+              const originalLog = console.log;
+              if (!config.verbose && ideHasConfig) {
+                console.log = () => {};
+              }
+              try {
+                const setupResult = await this.ideManager.setup(ide, projectDir, bmadDir, {
+                  selectedModules: allModules || [],
+                  preCollectedConfig: ideConfigurations[ide] || null,
+                  verbose: config.verbose,
+                  silent: ideHasConfig,
+                });
+
+                if (ideConfigurations[ide] && !ideConfigurations[ide]._alreadyConfigured) {
+                  await this.ideConfigManager.saveIdeConfig(bmadDir, ide, ideConfigurations[ide]);
+                }
+
+                if (setupResult.success) {
+                  addResult(ide, 'ok', setupResult.detail || '');
+                } else {
+                  addResult(ide, 'error', setupResult.error || 'failed');
+                }
+              } finally {
+                console.log = originalLog;
+              }
+
+              if (needsPrompting && !ideSpinner.isSpinning) {
+                ideSpinner.start('Configuring IDEs...');
+              }
+            }
+          } finally {
+            if (ideSpinner.isSpinning) {
+              ideSpinner.stop('IDE configuration complete');
             }
           }
         }
       }
 
-      // Run module-specific installers after IDE setup
-      spinner.message('Running module-specific installers...');
+      // ─────────────────────────────────────────────────────────────────────────
+      // SECOND TASKS BLOCK: Post-IDE operations (non-interactive)
+      // ─────────────────────────────────────────────────────────────────────────
+      const postIdeTasks = [];
 
-      // Create a conditional logger based on verbose mode
-      const verboseMode = process.env.BMAD_VERBOSE_INSTALL === 'true' || config.verbose;
-      const moduleLogger = {
-        log: async (msg) => (verboseMode ? await prompts.log.message(msg) : undefined),
-        error: async (msg) => await prompts.log.error(msg),
-        warn: async (msg) => await prompts.log.warn(msg),
-      };
+      // Collect directory creation results for output after tasks() completes
+      const dirResults = { createdDirs: [], createdWdsFolders: [] };
 
-      // Create directories for all modules
-      spinner.message('Creating module directories...');
-      const allCreatedDirs = [];
-      const allCreatedWdsFolders = [];
+      // Module directory creation task
+      postIdeTasks.push({
+        title: 'Running module installers',
+        task: async (message) => {
+          const verboseMode = process.env.BMAD_VERBOSE_INSTALL === 'true' || config.verbose;
+          const moduleLogger = {
+            log: async (msg) => (verboseMode ? await prompts.log.message(msg) : undefined),
+            error: async (msg) => await prompts.log.error(msg),
+            warn: async (msg) => await prompts.log.warn(msg),
+          };
 
-      // Core module directories
-      if (config.installCore || resolution.byModule.core) {
-        const result = await this.moduleManager.createModuleDirectories('core', bmadDir, {
-          installedIDEs: config.ides || [],
-          moduleConfig: moduleConfigs.core || {},
-          coreConfig: moduleConfigs.core || {},
-          logger: moduleLogger,
-          silent: true,
+          // Core module directories
+          if (config.installCore || resolution.byModule.core) {
+            const result = await this.moduleManager.createModuleDirectories('core', bmadDir, {
+              installedIDEs: config.ides || [],
+              moduleConfig: moduleConfigs.core || {},
+              coreConfig: moduleConfigs.core || {},
+              logger: moduleLogger,
+              silent: true,
+            });
+            if (result) {
+              dirResults.createdDirs.push(...result.createdDirs);
+              dirResults.createdWdsFolders.push(...result.createdWdsFolders);
+            }
+          }
+
+          // User-selected module directories
+          if (config.modules && config.modules.length > 0) {
+            for (const moduleName of config.modules) {
+              message(`Setting up ${moduleName}...`);
+              const result = await this.moduleManager.createModuleDirectories(moduleName, bmadDir, {
+                installedIDEs: config.ides || [],
+                moduleConfig: moduleConfigs[moduleName] || {},
+                coreConfig: moduleConfigs.core || {},
+                logger: moduleLogger,
+                silent: true,
+              });
+              if (result) {
+                dirResults.createdDirs.push(...result.createdDirs);
+                dirResults.createdWdsFolders.push(...result.createdWdsFolders);
+              }
+            }
+          }
+
+          addResult('Module installers', 'ok');
+          return 'Module setup complete';
+        },
+      });
+
+      // File restoration task (only for updates)
+      if (
+        config._isUpdate &&
+        ((config._customFiles && config._customFiles.length > 0) || (config._modifiedFiles && config._modifiedFiles.length > 0))
+      ) {
+        postIdeTasks.push({
+          title: 'Finalizing installation',
+          task: async (message) => {
+            let customFiles = [];
+            let modifiedFiles = [];
+
+            if (config._customFiles && config._customFiles.length > 0) {
+              message(`Restoring ${config._customFiles.length} custom files...`);
+
+              for (const originalPath of config._customFiles) {
+                const relativePath = path.relative(bmadDir, originalPath);
+                const backupPath = path.join(config._tempBackupDir, relativePath);
+
+                if (await fs.pathExists(backupPath)) {
+                  await fs.ensureDir(path.dirname(originalPath));
+                  await fs.copy(backupPath, originalPath, { overwrite: true });
+                }
+              }
+
+              if (config._tempBackupDir && (await fs.pathExists(config._tempBackupDir))) {
+                await fs.remove(config._tempBackupDir);
+              }
+
+              customFiles = config._customFiles;
+            }
+
+            if (config._modifiedFiles && config._modifiedFiles.length > 0) {
+              modifiedFiles = config._modifiedFiles;
+
+              if (config._tempModifiedBackupDir && (await fs.pathExists(config._tempModifiedBackupDir))) {
+                message(`Restoring ${modifiedFiles.length} modified files as .bak...`);
+
+                for (const modifiedFile of modifiedFiles) {
+                  const relativePath = path.relative(bmadDir, modifiedFile.path);
+                  const tempBackupPath = path.join(config._tempModifiedBackupDir, relativePath);
+                  const bakPath = modifiedFile.path + '.bak';
+
+                  if (await fs.pathExists(tempBackupPath)) {
+                    await fs.ensureDir(path.dirname(bakPath));
+                    await fs.copy(tempBackupPath, bakPath, { overwrite: true });
+                  }
+                }
+
+                await fs.remove(config._tempModifiedBackupDir);
+              }
+            }
+
+            // Store for summary access
+            config._restoredCustomFiles = customFiles;
+            config._restoredModifiedFiles = modifiedFiles;
+
+            return 'Installation finalized';
+          },
         });
-        if (result) {
-          allCreatedDirs.push(...result.createdDirs);
-          allCreatedWdsFolders.push(...result.createdWdsFolders);
-        }
       }
 
-      // User-selected module directories
-      if (config.modules && config.modules.length > 0) {
-        for (const moduleName of config.modules) {
-          const result = await this.moduleManager.createModuleDirectories(moduleName, bmadDir, {
-            installedIDEs: config.ides || [],
-            moduleConfig: moduleConfigs[moduleName] || {},
-            coreConfig: moduleConfigs.core || {},
-            logger: moduleLogger,
-            silent: true,
-          });
-          if (result) {
-            allCreatedDirs.push(...result.createdDirs);
-            allCreatedWdsFolders.push(...result.createdWdsFolders);
-          }
-        }
-      }
+      await prompts.tasks(postIdeTasks);
 
-      // Batch output: single log message for all created directories across all modules
-      if (allCreatedDirs.length > 0) {
+      // Render directory creation output after tasks() to avoid breaking progress display
+      if (dirResults.createdDirs.length > 0) {
         const color = await prompts.getColor();
-        const lines = allCreatedDirs.map((d) => `  ${d}`).join('\n');
+        const lines = dirResults.createdDirs.map((d) => `  ${d}`).join('\n');
         await prompts.log.message(color.yellow(`Created directories:\n${lines}`));
       }
-      if (allCreatedWdsFolders.length > 0) {
+      if (dirResults.createdWdsFolders.length > 0) {
         const color = await prompts.getColor();
-        const lines = allCreatedWdsFolders.map((f) => color.dim(`  ✓ ${f}/`)).join('\n');
+        const lines = dirResults.createdWdsFolders.map((f) => color.dim(`  ✓ ${f}/`)).join('\n');
         await prompts.log.message(color.cyan(`Created WDS folder structure:\n${lines}`));
       }
 
-      addResult('Module installers', 'ok');
-
-      // Note: Manifest files are already created by ManifestGenerator above
-      // No need to create legacy manifest.csv anymore
-
-      // If this was an update, restore custom files
-      let customFiles = [];
-      let modifiedFiles = [];
-      if (config._isUpdate) {
-        if (config._customFiles && config._customFiles.length > 0) {
-          spinner.message(`Restoring ${config._customFiles.length} custom files...`);
-
-          for (const originalPath of config._customFiles) {
-            const relativePath = path.relative(bmadDir, originalPath);
-            const backupPath = path.join(config._tempBackupDir, relativePath);
-
-            if (await fs.pathExists(backupPath)) {
-              await fs.ensureDir(path.dirname(originalPath));
-              await fs.copy(backupPath, originalPath, { overwrite: true });
-            }
-          }
-
-          // Clean up temp backup
-          if (config._tempBackupDir && (await fs.pathExists(config._tempBackupDir))) {
-            await fs.remove(config._tempBackupDir);
-          }
-
-          customFiles = config._customFiles;
-        }
-
-        if (config._modifiedFiles && config._modifiedFiles.length > 0) {
-          modifiedFiles = config._modifiedFiles;
-
-          // Restore modified files as .bak files
-          if (config._tempModifiedBackupDir && (await fs.pathExists(config._tempModifiedBackupDir))) {
-            spinner.message(`Restoring ${modifiedFiles.length} modified files as .bak...`);
-
-            for (const modifiedFile of modifiedFiles) {
-              const relativePath = path.relative(bmadDir, modifiedFile.path);
-              const tempBackupPath = path.join(config._tempModifiedBackupDir, relativePath);
-              const bakPath = modifiedFile.path + '.bak';
-
-              if (await fs.pathExists(tempBackupPath)) {
-                await fs.ensureDir(path.dirname(bakPath));
-                await fs.copy(tempBackupPath, bakPath, { overwrite: true });
-              }
-            }
-
-            // Clean up temp backup
-            await fs.remove(config._tempModifiedBackupDir);
-          }
-        }
-      }
-
-      // Blank line for spacing before final status
-      await prompts.log.message('');
-
-      // Stop the single installation spinner
-      spinner.stop('Installation complete');
+      // Retrieve restored file info for summary
+      const customFiles = config._restoredCustomFiles || [];
+      const modifiedFiles = config._restoredModifiedFiles || [];
 
       // Render consolidated summary
       await this.renderInstallSummary(results, {
@@ -1283,7 +1298,15 @@ class Installer {
         projectDir: projectDir,
       };
     } catch (error) {
-      spinner.error('Installation failed');
+      try {
+        if (spinner.isSpinning) {
+          spinner.error('Installation failed');
+        } else {
+          await prompts.log.error('Installation failed');
+        }
+      } catch {
+        // Ensure the original error is never swallowed by a logging failure
+      }
       throw error;
     }
   }
@@ -1322,6 +1345,9 @@ class Installer {
     if (context.modifiedFiles && context.modifiedFiles.length > 0) {
       lines.push(`  ${color.yellow(`Modified files backed up (.bak): ${context.modifiedFiles.length}`)}`);
     }
+
+    // Next steps
+    lines.push('', `  Docs: ${color.dim('https://docs.bmad-method.org/')}`, `  Run ${color.cyan('/bmad-help')} in your IDE to get started`);
 
     await prompts.note(lines.join('\n'), 'BMAD is ready to use!');
   }

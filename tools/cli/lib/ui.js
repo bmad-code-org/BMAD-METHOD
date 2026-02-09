@@ -692,18 +692,6 @@ class UI {
   }
 
   /**
-   * Display installation summary
-   * @param {Object} result - Installation result
-   */
-  async showInstallSummary(result) {
-    let summary = `Installed to: ${result.path}`;
-    if (result.modules && result.modules.length > 0) {
-      summary += `\nModules: ${result.modules.join(', ')}`;
-    }
-    await prompts.note(summary, 'BMAD is ready to use!');
-  }
-
-  /**
    * Get confirmed directory from user
    * @returns {string} Confirmed directory path
    */
