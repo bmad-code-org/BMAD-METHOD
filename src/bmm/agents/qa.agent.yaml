@@ -5,6 +5,7 @@ agent:
     title: QA Engineer
     icon: 🧪
     module: bmm
+    capabilities: "test automation, API testing, E2E testing, coverage analysis"
     hasSidecar: false
 
   persona:

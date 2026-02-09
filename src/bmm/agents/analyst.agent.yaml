@@ -5,6 +5,7 @@ agent:
     title: Business Analyst
     icon: 📊
     module: bmm
+    capabilities: "market research, competitive analysis, requirements elicitation, domain expertise"
     hasSidecar: false
 
   persona:

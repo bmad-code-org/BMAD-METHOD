@@ -7,6 +7,7 @@ agent:
     title: Developer Agent
     icon: 💻
     module: bmm
+    capabilities: "story execution, test-driven development, code implementation"
     hasSidecar: false
 
   persona:

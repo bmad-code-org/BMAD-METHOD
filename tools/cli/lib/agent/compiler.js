@@ -279,6 +279,9 @@ async function compileToXml(agentYaml, agentName = '', targetPath = '') {
     `title="${meta.title || ''}"`,
     `icon="${meta.icon || '🤖'}"`,
   ];
+  if (meta.capabilities) {
+    agentAttrs.push(`capabilities="${escapeXml(meta.capabilities)}"`);
+  }
 
   xml += `<agent ${agentAttrs.join(' ')}>\n`;
 
