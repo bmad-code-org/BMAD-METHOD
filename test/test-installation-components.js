@@ -906,6 +906,27 @@ internal: true
       'Installed workflow path mapping handles absolute paths containing custom BMAD folder',
       installedPath,
     );
+
+    const setup = new ConfigDrivenIdeSetup('test', {
+      name: 'Test IDE',
+      preferred: false,
+      installer: { target_dir: '.test', template_type: 'default' },
+    });
+    setup.setBmadFolderName('mybmad');
+    const rendered = setup.renderTemplate('workflow-config: {{bmadFolderName}}/{{path}}', {
+      type: 'workflow-command',
+      name: 'create-story',
+      module: 'bmm',
+      workflowPath: createStory?.workflowPath,
+      relativePath: 'unused.md',
+    });
+
+    assert(
+      rendered.includes('workflow-config: mybmad/bmm/workflows/4-implementation/create-story/workflow.md'),
+      'Rendered workflow template uses a single configured BMAD folder prefix',
+      rendered,
+    );
+    assert(!rendered.includes('mybmad/mybmad/'), 'Rendered workflow template does not duplicate BMAD folder prefix', rendered);
   } catch (error) {
     assert(false, 'Custom BMAD folder workflow path guard runs', error.message);
   }
