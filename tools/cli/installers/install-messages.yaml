@@ -39,4 +39,4 @@ startMessage: |
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 # No end message - install summary and next steps are rendered by the installer
-endMessage: ''
+endMessage: ""
