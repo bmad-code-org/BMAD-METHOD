@@ -3,6 +3,7 @@ const fs = require('fs-extra');
 const yaml = require('yaml');
 const crypto = require('node:crypto');
 const { getSourcePath, getModulePath } = require('../../../lib/project-root');
+const prompts = require('../../../lib/prompts');
 
 // Load package.json for version info
 const packageJson = require('../../../../../package.json');
@@ -218,7 +219,7 @@ class ManifestGenerator {
               }
             }
           } catch (error) {
-            console.warn(`Warning: Failed to parse workflow at ${fullPath}: ${error.message}`);
+            await prompts.log.warn(`Failed to parse workflow at ${fullPath}: ${error.message}`);
           }
         }
       }
@@ -689,7 +690,7 @@ class ManifestGenerator {
 
       return preservedRows;
     } catch (error) {
-      console.warn(`Warning: Failed to read existing CSV ${csvPath}:`, error.message);
+      await prompts.log.warn(`Failed to read existing CSV ${csvPath}: ${error.message}`);
       return [];
     }
   }
@@ -915,7 +916,7 @@ class ManifestGenerator {
         }
       }
     } catch (error) {
-      console.warn(`Warning: Could not scan for installed modules: ${error.message}`);
+      await prompts.log.warn(`Could not scan for installed modules: ${error.message}`);
     }
 
     return modules;

@@ -10,6 +10,19 @@ class ConfigCollector {
     this.collectedConfig = {};
     this.existingConfig = null;
     this.currentProjectDir = null;
+    this._moduleManagerInstance = null;
+  }
+
+  /**
+   * Get or create a cached ModuleManager instance (lazy initialization)
+   * @returns {Object} ModuleManager instance
+   */
+  _getModuleManager() {
+    if (!this._moduleManagerInstance) {
+      const { ModuleManager } = require('../modules/manager');
+      this._moduleManagerInstance = new ModuleManager();
+    }
+    return this._moduleManagerInstance;
   }
 
   /**
@@ -130,6 +143,70 @@ class ConfigCollector {
   }
 
   /**
+   * Pre-scan module schemas to gather metadata for the configuration gateway prompt.
+   * Returns info about which modules have configurable options.
+   * @param {Array} modules - List of non-core module names
+   * @returns {Promise<Array>} Array of {moduleName, displayName, questionCount, hasFieldsWithoutDefaults}
+   */
+  async scanModuleSchemas(modules) {
+    const metadataFields = new Set(['code', 'name', 'header', 'subheader', 'default_selected']);
+    const results = [];
+
+    for (const moduleName of modules) {
+      // Resolve module.yaml path - custom paths first, then standard location, then ModuleManager search
+      let moduleConfigPath = null;
+      const customPath = this.customModulePaths?.get(moduleName);
+      if (customPath) {
+        moduleConfigPath = path.join(customPath, 'module.yaml');
+      } else {
+        const standardPath = path.join(getModulePath(moduleName), 'module.yaml');
+        if (await fs.pathExists(standardPath)) {
+          moduleConfigPath = standardPath;
+        } else {
+          const moduleSourcePath = await this._getModuleManager().findModuleSource(moduleName, { silent: true });
+          if (moduleSourcePath) {
+            moduleConfigPath = path.join(moduleSourcePath, 'module.yaml');
+          }
+        }
+      }
+
+      if (!moduleConfigPath || !(await fs.pathExists(moduleConfigPath))) {
+        continue;
+      }
+
+      try {
+        const content = await fs.readFile(moduleConfigPath, 'utf8');
+        const moduleConfig = yaml.parse(content);
+        if (!moduleConfig) continue;
+
+        const displayName = moduleConfig.header || `${moduleName.toUpperCase()} Module`;
+        const configKeys = Object.keys(moduleConfig).filter((key) => key !== 'prompt');
+        const questionKeys = configKeys.filter((key) => {
+          if (metadataFields.has(key)) return false;
+          const item = moduleConfig[key];
+          return item && typeof item === 'object' && item.prompt;
+        });
+
+        const hasFieldsWithoutDefaults = questionKeys.some((key) => {
+          const item = moduleConfig[key];
+          return item.default === undefined || item.default === null || item.default === '';
+        });
+
+        results.push({
+          moduleName,
+          displayName,
+          questionCount: questionKeys.length,
+          hasFieldsWithoutDefaults,
+        });
+      } catch (error) {
+        await prompts.log.warn(`Could not read schema for module "${moduleName}": ${error.message}`);
+      }
+    }
+
+    return results;
+  }
+
+  /**
    * Collect configuration for all modules
    * @param {Array} modules - List of modules to configure (including 'core')
    * @param {string} projectDir - Target project directory
@@ -141,6 +218,7 @@ class ConfigCollector {
     // Store custom module paths for use in collectModuleConfig
     this.customModulePaths = options.customModulePaths || new Map();
     this.skipPrompts = options.skipPrompts || false;
+    this.modulesToCustomize = undefined;
     await this.loadExistingConfig(projectDir);
 
     // Check if core was already collected (e.g., in early collection phase)
@@ -154,8 +232,93 @@ class ConfigCollector {
       this.allAnswers = {};
     }
 
-    for (const moduleName of allModules) {
+    // Split processing: core first, then gateway, then remaining modules
+    const coreModules = allModules.filter((m) => m === 'core');
+    const nonCoreModules = allModules.filter((m) => m !== 'core');
+
+    // Collect core config first (always fully prompted)
+    for (const moduleName of coreModules) {
       await this.collectModuleConfig(moduleName, projectDir);
+    }
+
+    // Show batch configuration gateway for non-core modules
+    // Scan all non-core module schemas for display names and config metadata
+    let scannedModules = [];
+    if (!this.skipPrompts && nonCoreModules.length > 0) {
+      scannedModules = await this.scanModuleSchemas(nonCoreModules);
+      const customizableModules = scannedModules.filter((m) => m.questionCount > 0);
+
+      if (customizableModules.length > 0) {
+        const configMode = await prompts.select({
+          message: 'Module configuration',
+          choices: [
+            { name: 'Express Setup', value: 'express', hint: 'accept all defaults (recommended)' },
+            { name: 'Customize', value: 'customize', hint: 'choose modules to configure' },
+          ],
+          default: 'express',
+        });
+
+        if (configMode === 'customize') {
+          const choices = customizableModules.map((m) => ({
+            name: `${m.displayName} (${m.questionCount} option${m.questionCount === 1 ? '' : 's'})`,
+            value: m.moduleName,
+            hint: m.hasFieldsWithoutDefaults ? 'has fields without defaults' : undefined,
+            checked: m.hasFieldsWithoutDefaults,
+          }));
+          const selected = await prompts.multiselect({
+            message: 'Select modules to customize:',
+            choices,
+            required: false,
+          });
+          this.modulesToCustomize = new Set(selected);
+        } else {
+          // Express mode: no modules to customize
+          this.modulesToCustomize = new Set();
+        }
+      } else {
+        // All non-core modules have zero config - no gateway needed
+        this.modulesToCustomize = new Set();
+      }
+    }
+
+    // Collect remaining non-core modules
+    if (this.modulesToCustomize === undefined) {
+      // No gateway was shown (skipPrompts, no non-core modules, or direct call) - process all normally
+      for (const moduleName of nonCoreModules) {
+        await this.collectModuleConfig(moduleName, projectDir);
+      }
+    } else {
+      // Split into default modules (tasks progress) and customized modules (interactive)
+      const defaultModules = nonCoreModules.filter((m) => !this.modulesToCustomize.has(m));
+      const customizeModules = nonCoreModules.filter((m) => this.modulesToCustomize.has(m));
+
+      // Run default modules with a single spinner
+      if (defaultModules.length > 0) {
+        // Build display name map from all scanned modules for pre-call spinner messages
+        const displayNameMap = new Map();
+        for (const m of scannedModules) {
+          displayNameMap.set(m.moduleName, m.displayName);
+        }
+
+        const configSpinner = await prompts.spinner();
+        configSpinner.start('Configuring modules...');
+        for (const moduleName of defaultModules) {
+          const displayName = displayNameMap.get(moduleName) || moduleName.toUpperCase();
+          configSpinner.message(`Configuring ${displayName}...`);
+          try {
+            this._silentConfig = true;
+            await this.collectModuleConfig(moduleName, projectDir);
+          } finally {
+            this._silentConfig = false;
+          }
+        }
+        configSpinner.stop('Module configuration complete');
+      }
+
+      // Run customized modules individually (may show interactive prompts)
+      for (const moduleName of customizeModules) {
+        await this.collectModuleConfig(moduleName, projectDir);
+      }
     }
 
     // Add metadata
@@ -194,10 +357,7 @@ class ConfigCollector {
 
     // If not found in src/modules, we need to find it by searching the project
     if (!(await fs.pathExists(moduleConfigPath))) {
-      // Use the module manager to find the module source
-      const { ModuleManager } = require('../modules/manager');
-      const moduleManager = new ModuleManager();
-      const moduleSourcePath = await moduleManager.findModuleSource(moduleName);
+      const moduleSourcePath = await this._getModuleManager().findModuleSource(moduleName, { silent: true });
 
       if (moduleSourcePath) {
         moduleConfigPath = path.join(moduleSourcePath, 'module.yaml');
@@ -211,9 +371,7 @@ class ConfigCollector {
       configPath = moduleConfigPath;
     } else {
       // Check if this is a custom module with custom.yaml
-      const { ModuleManager } = require('../modules/manager');
-      const moduleManager = new ModuleManager();
-      const moduleSourcePath = await moduleManager.findModuleSource(moduleName);
+      const moduleSourcePath = await this._getModuleManager().findModuleSource(moduleName, { silent: true });
 
       if (moduleSourcePath) {
         const rootCustomConfigPath = path.join(moduleSourcePath, 'custom.yaml');
@@ -507,10 +665,7 @@ class ConfigCollector {
 
     // If not found in src/modules or custom paths, search the project
     if (!(await fs.pathExists(moduleConfigPath))) {
-      // Use the module manager to find the module source
-      const { ModuleManager } = require('../modules/manager');
-      const moduleManager = new ModuleManager();
-      const moduleSourcePath = await moduleManager.findModuleSource(moduleName);
+      const moduleSourcePath = await this._getModuleManager().findModuleSource(moduleName, { silent: true });
 
       if (moduleSourcePath) {
         moduleConfigPath = path.join(moduleSourcePath, 'module.yaml');
@@ -579,12 +734,12 @@ class ConfigCollector {
           }
         }
       } else {
-        await prompts.log.step(moduleDisplayName);
-        let customize = true;
+        if (!this._silentConfig) await prompts.log.step(`Configuring ${moduleDisplayName}`);
+        let useDefaults = true;
         if (moduleName === 'core') {
-          // Core module: no confirm prompt, continues directly
-        } else {
-          // Non-core modules: show "Accept Defaults?" confirm prompt (clack adds spacing)
+          useDefaults = false; // Core: always show all questions
+        } else if (this.modulesToCustomize === undefined) {
+          // Fallback: original per-module confirm (backward compat for direct calls)
           const customizeAnswer = await prompts.prompt([
             {
               type: 'confirm',
@@ -593,10 +748,13 @@ class ConfigCollector {
               default: true,
             },
           ]);
-          customize = customizeAnswer.customize;
+          useDefaults = customizeAnswer.customize;
+        } else {
+          // Batch mode: use defaults unless module was selected for customization
+          useDefaults = !this.modulesToCustomize.has(moduleName);
         }
 
-        if (customize && moduleName !== 'core') {
+        if (useDefaults && moduleName !== 'core') {
           // Accept defaults - only ask questions that have NO default value
           const questionsWithoutDefaults = questions.filter((q) => q.default === undefined || q.default === null || q.default === '');
 
@@ -726,16 +884,18 @@ class ConfigCollector {
       const actualConfigKeys = configKeys.filter((key) => !metadataFields.has(key));
       const hasNoConfig = actualConfigKeys.length === 0;
 
-      if (hasNoConfig && (moduleConfig.subheader || moduleConfig.header)) {
-        await prompts.log.step(moduleDisplayName);
-        if (moduleConfig.subheader) {
-          await prompts.log.message(`  \u2713 ${moduleConfig.subheader}`);
+      if (!this._silentConfig) {
+        if (hasNoConfig && (moduleConfig.subheader || moduleConfig.header)) {
+          await prompts.log.step(moduleDisplayName);
+          if (moduleConfig.subheader) {
+            await prompts.log.message(`  \u2713 ${moduleConfig.subheader}`);
+          } else {
+            await prompts.log.message(`  \u2713 No custom configuration required`);
+          }
         } else {
-          await prompts.log.message(`  \u2713 No custom configuration required`);
+          // Module has config but just no questions to ask
+          await prompts.log.message(`  \u2713 ${moduleName.toUpperCase()} module configured`);
         }
-      } else {
-        // Module has config but just no questions to ask
-        await prompts.log.message(`  \u2713 ${moduleName.toUpperCase()} module configured`);
       }
     }
 

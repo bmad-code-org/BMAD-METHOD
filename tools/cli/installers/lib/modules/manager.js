@@ -452,7 +452,7 @@ class ModuleManager {
           installSpinner.stop(`Installed dependencies for ${moduleInfo.name}`);
         } catch (error) {
           installSpinner.error(`Failed to install dependencies for ${moduleInfo.name}`);
-          if (!silent) await prompts.log.warn(`  Warning: ${error.message}`);
+          if (!silent) await prompts.log.warn(`  ${error.message}`);
         }
       } else {
         // Check if package.json is newer than node_modules
@@ -478,7 +478,7 @@ class ModuleManager {
             installSpinner.stop(`Installed dependencies for ${moduleInfo.name}`);
           } catch (error) {
             installSpinner.error(`Failed to install dependencies for ${moduleInfo.name}`);
-            if (!silent) await prompts.log.warn(`  Warning: ${error.message}`);
+            if (!silent) await prompts.log.warn(`  ${error.message}`);
           }
         }
       }
@@ -541,7 +541,7 @@ class ModuleManager {
         const customContent = await fs.readFile(rootCustomConfigPath, 'utf8');
         customConfig = yaml.parse(customContent);
       } catch (error) {
-        await prompts.log.warn(`Warning: Failed to read custom.yaml for ${moduleName}: ${error.message}`);
+        await prompts.log.warn(`Failed to read custom.yaml for ${moduleName}: ${error.message}`);
       }
     }
 
@@ -549,7 +549,7 @@ class ModuleManager {
     if (customConfig) {
       options.moduleConfig = { ...options.moduleConfig, ...customConfig };
       if (options.logger) {
-        options.logger.log(`  Merged custom configuration for ${moduleName}`);
+        await options.logger.log(`  Merged custom configuration for ${moduleName}`);
       }
     }
 
@@ -970,7 +970,7 @@ class ModuleManager {
               await prompts.log.message(`    Sidecar files processed: ${copiedFiles.length} files`);
             }
           } else if (process.env.BMAD_VERBOSE_INSTALL === 'true') {
-            await prompts.log.warn(`    Warning: Agent marked as having sidecar but ${sidecarDirName} directory not found`);
+            await prompts.log.warn(`    Agent marked as having sidecar but ${sidecarDirName} directory not found`);
           }
         }
 
@@ -1208,15 +1208,20 @@ class ModuleManager {
   /**
    * Create directories declared in module.yaml's `directories` key
    * This replaces the security-risky module installer pattern with declarative config
+   * During updates, if a directory path changed, moves the old directory to the new path
    * @param {string} moduleName - Name of the module
    * @param {string} bmadDir - Target bmad directory
    * @param {Object} options - Installation options
    * @param {Object} options.moduleConfig - Module configuration from config collector
+   * @param {Object} options.existingModuleConfig - Previous module config (for detecting path changes during updates)
    * @param {Object} options.coreConfig - Core configuration
+   * @returns {Promise<{createdDirs: string[], movedDirs: string[], createdWdsFolders: string[]}>} Created directories info
    */
   async createModuleDirectories(moduleName, bmadDir, options = {}) {
     const moduleConfig = options.moduleConfig || {};
+    const existingModuleConfig = options.existingModuleConfig || {};
     const projectRoot = path.dirname(bmadDir);
+    const emptyResult = { createdDirs: [], movedDirs: [], createdWdsFolders: [] };
 
     // Special handling for core module - it's in src/core not src/modules
     let sourcePath;
@@ -1225,14 +1230,14 @@ class ModuleManager {
     } else {
       sourcePath = await this.findModuleSource(moduleName, { silent: true });
       if (!sourcePath) {
-        return; // No source found, skip
+        return emptyResult; // No source found, skip
       }
     }
 
     // Read module.yaml to find the `directories` key
     const moduleYamlPath = path.join(sourcePath, 'module.yaml');
     if (!(await fs.pathExists(moduleYamlPath))) {
-      return; // No module.yaml, skip
+      return emptyResult; // No module.yaml, skip
     }
 
     let moduleYaml;
@@ -1240,17 +1245,18 @@ class ModuleManager {
       const yamlContent = await fs.readFile(moduleYamlPath, 'utf8');
       moduleYaml = yaml.parse(yamlContent);
     } catch {
-      return; // Invalid YAML, skip
+      return emptyResult; // Invalid YAML, skip
     }
 
     if (!moduleYaml || !moduleYaml.directories) {
-      return; // No directories declared, skip
+      return emptyResult; // No directories declared, skip
     }
 
-    // Get color utility for styled output
-    const color = await prompts.getColor();
     const directories = moduleYaml.directories;
     const wdsFolders = moduleYaml.wds_folders || [];
+    const createdDirs = [];
+    const movedDirs = [];
+    const createdWdsFolders = [];
 
     for (const dirRef of directories) {
       // Parse variable reference like "{design_artifacts}"
@@ -1279,29 +1285,96 @@ class ModuleManager {
       const normalizedPath = path.normalize(fullPath);
       const normalizedRoot = path.normalize(projectRoot);
       if (!normalizedPath.startsWith(normalizedRoot + path.sep) && normalizedPath !== normalizedRoot) {
-        await prompts.log.warn(color.yellow(`Warning: ${configKey} path escapes project root, skipping: ${dirPath}`));
+        const color = await prompts.getColor();
+        await prompts.log.warn(color.yellow(`${configKey} path escapes project root, skipping: ${dirPath}`));
         continue;
       }
 
-      // Create directory if it doesn't exist
-      if (!(await fs.pathExists(fullPath))) {
-        const dirName = configKey.replaceAll('_', ' ');
-        await prompts.log.message(color.yellow(`Creating ${dirName} directory: ${dirPath}`));
+      // Check if directory path changed from previous config (update/modify scenario)
+      const oldDirValue = existingModuleConfig[configKey];
+      let oldFullPath = null;
+      let oldDirPath = null;
+      if (oldDirValue && typeof oldDirValue === 'string') {
+        // F3: Normalize both values before comparing to avoid false negatives
+        // from trailing slashes, separator differences, or prefix format variations
+        let normalizedOld = oldDirValue.replace(/^\{project-root\}\/?/, '');
+        normalizedOld = path.normalize(normalizedOld.replaceAll('{project-root}', ''));
+        const normalizedNew = path.normalize(dirPath);
+
+        if (normalizedOld !== normalizedNew) {
+          oldDirPath = normalizedOld;
+          oldFullPath = path.join(projectRoot, oldDirPath);
+          const normalizedOldAbsolute = path.normalize(oldFullPath);
+          if (!normalizedOldAbsolute.startsWith(normalizedRoot + path.sep) && normalizedOldAbsolute !== normalizedRoot) {
+            oldFullPath = null; // Old path escapes project root, ignore it
+          }
+
+          // F13: Prevent parent/child move (e.g. docs/planning → docs/planning/v2)
+          if (oldFullPath) {
+            const normalizedNewAbsolute = path.normalize(fullPath);
+            if (
+              normalizedOldAbsolute.startsWith(normalizedNewAbsolute + path.sep) ||
+              normalizedNewAbsolute.startsWith(normalizedOldAbsolute + path.sep)
+            ) {
+              const color = await prompts.getColor();
+              await prompts.log.warn(
+                color.yellow(
+                  `${configKey}: cannot move between parent/child paths (${oldDirPath} / ${dirPath}), creating new directory instead`,
+                ),
+              );
+              oldFullPath = null;
+            }
+          }
+        }
+      }
+
+      const dirName = configKey.replaceAll('_', ' ');
+
+      if (oldFullPath && (await fs.pathExists(oldFullPath)) && !(await fs.pathExists(fullPath))) {
+        // Path changed and old dir exists → move old to new location
+        // F1: Use fs.move() instead of fs.rename() for cross-device/volume support
+        // F2: Wrap in try/catch — fallback to creating new dir on failure
+        try {
+          await fs.ensureDir(path.dirname(fullPath));
+          await fs.move(oldFullPath, fullPath);
+          movedDirs.push(`${dirName}: ${oldDirPath} → ${dirPath}`);
+        } catch (moveError) {
+          const color = await prompts.getColor();
+          await prompts.log.warn(
+            color.yellow(
+              `Failed to move ${oldDirPath} → ${dirPath}: ${moveError.message}\n  Creating new directory instead. Please move contents from the old directory manually.`,
+            ),
+          );
+          await fs.ensureDir(fullPath);
+          createdDirs.push(`${dirName}: ${dirPath}`);
+        }
+      } else if (oldFullPath && (await fs.pathExists(oldFullPath)) && (await fs.pathExists(fullPath))) {
+        // F5: Both old and new directories exist — warn user about potential orphaned documents
+        const color = await prompts.getColor();
+        await prompts.log.warn(
+          color.yellow(
+            `${dirName}: path changed but both directories exist:\n  Old: ${oldDirPath}\n  New: ${dirPath}\n  Old directory may contain orphaned documents — please review and merge manually.`,
+          ),
+        );
+      } else if (!(await fs.pathExists(fullPath))) {
+        // New directory doesn't exist yet → create it
+        createdDirs.push(`${dirName}: ${dirPath}`);
         await fs.ensureDir(fullPath);
       }
 
       // Create WDS subfolders if this is the design_artifacts directory
       if (configKey === 'design_artifacts' && wdsFolders.length > 0) {
-        await prompts.log.message(color.cyan('Creating WDS folder structure...'));
         for (const subfolder of wdsFolders) {
           const subPath = path.join(fullPath, subfolder);
           if (!(await fs.pathExists(subPath))) {
             await fs.ensureDir(subPath);
-            await prompts.log.message(color.dim(`  ✓ ${subfolder}/`));
+            createdWdsFolders.push(subfolder);
           }
         }
       }
     }
+
+    return { createdDirs, movedDirs, createdWdsFolders };
   }
 
   /**
