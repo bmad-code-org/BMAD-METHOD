@@ -10,6 +10,7 @@
 <workflow>
 
 <step n="1" goal="Initialize Change Navigation">
+  <action>Load {project_context} for coding standards and project-wide patterns (if exists)</action>
   <action>Confirm change trigger and gather user description of the issue</action>
   <action>Ask: "What specific issue or change has been identified that requires navigation?"</action>
   <action>Verify access to required project documents:</action>
