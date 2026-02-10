@@ -114,17 +114,6 @@ export default [
     },
   },
 
-  // Module installer scripts use CommonJS for compatibility
-  {
-    files: ['**/_module-installer/**/*.js'],
-    rules: {
-      // Allow CommonJS patterns for installer scripts
-      'unicorn/prefer-module': 'off',
-      'n/no-missing-require': 'off',
-      'n/no-unpublished-require': 'off',
-    },
-  },
-
   // ESLint config file should not be checked for publish-related Node rules
   {
     files: ['eslint.config.mjs'],

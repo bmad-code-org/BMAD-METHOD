@@ -189,7 +189,7 @@ class UI {
       const installedVersion = existingInstall.version || 'unknown';
 
       // Check if version is pre beta
-      const shouldProceed = await this.showLegacyVersionWarning(installedVersion, currentVersion, path.basename(bmadDir));
+      const shouldProceed = await this.showLegacyVersionWarning(installedVersion, currentVersion, path.basename(bmadDir), options);
 
       // If user chose to cancel, exit the installer
       if (!shouldProceed) {
@@ -227,6 +227,14 @@ class UI {
         }
         actionType = options.action;
         await prompts.log.info(`Using action from command-line: ${actionType}`);
+      } else if (options.yes) {
+        // Default to quick-update if available, otherwise first available choice
+        if (choices.length === 0) {
+          throw new Error('No valid actions available for this installation');
+        }
+        const hasQuickUpdate = choices.some((c) => c.value === 'quick-update');
+        actionType = hasQuickUpdate ? 'quick-update' : choices[0].value;
+        await prompts.log.info(`Non-interactive mode (--yes): defaulting to ${actionType}`);
       } else {
         actionType = await prompts.select({
           message: 'How would you like to proceed?',
@@ -242,6 +250,7 @@ class UI {
           actionType: 'quick-update',
           directory: confirmedDirectory,
           customContent: { hasCustomContent: false },
+          skipPrompts: options.yes || false,
         };
       }
 
@@ -252,6 +261,7 @@ class UI {
           actionType: 'compile-agents',
           directory: confirmedDirectory,
           customContent: { hasCustomContent: false },
+          skipPrompts: options.yes || false,
         };
       }
 
@@ -272,9 +282,13 @@ class UI {
             .map((m) => m.trim())
             .filter(Boolean);
           await prompts.log.info(`Using modules from command-line: ${selectedModules.join(', ')}`);
+        } else if (options.yes) {
+          selectedModules = await this.getDefaultModules(installedModuleIds);
+          await prompts.log.info(
+            `Non-interactive mode (--yes): using default modules (installed + defaults): ${selectedModules.join(', ')}`,
+          );
         } else {
           selectedModules = await this.selectAllModules(installedModuleIds);
-          selectedModules = selectedModules.filter((m) => m !== 'core');
         }
 
         // After module selection, ask about custom modules
@@ -331,6 +345,22 @@ class UI {
               },
             };
           }
+        } else if (options.yes) {
+          // Non-interactive mode: preserve existing custom modules (matches default: false)
+          const cacheDir = path.join(bmadDir, '_config', 'custom');
+          if (await fs.pathExists(cacheDir)) {
+            const entries = await fs.readdir(cacheDir, { withFileTypes: true });
+            for (const entry of entries) {
+              if (entry.isDirectory()) {
+                customModuleResult.selectedCustomModules.push(entry.name);
+              }
+            }
+            await prompts.log.info(
+              `Non-interactive mode (--yes): preserving ${customModuleResult.selectedCustomModules.length} existing custom module(s)`,
+            );
+          } else {
+            await prompts.log.info('Non-interactive mode (--yes): no existing custom modules found');
+          }
         } else {
           const changeCustomModules = await prompts.confirm({
             message: 'Modify custom modules, agents, or workflows?',
@@ -362,6 +392,9 @@ class UI {
           selectedModules.push(...customModuleResult.selectedCustomModules);
         }
 
+        // Filter out core - it's always installed via installCore flag
+        selectedModules = selectedModules.filter((m) => m !== 'core');
+
         // Get tool selection
         const toolSelection = await this.promptToolSelection(confirmedDirectory, options);
 
@@ -376,6 +409,7 @@ class UI {
           skipIde: toolSelection.skipIde,
           coreConfig: coreConfig,
           customContent: customModuleResult.customContentConfig,
+          skipPrompts: options.yes || false,
         };
       }
     }
@@ -526,6 +560,27 @@ class UI {
     // ─────────────────────────────────────────────────────────────────────────────
     if (configuredIdes.length > 0) {
       const allTools = [...preferredIdes, ...otherIdes];
+
+      // Non-interactive: handle --tools and --yes flags before interactive prompt
+      if (options.tools) {
+        if (options.tools.toLowerCase() === 'none') {
+          await prompts.log.info('Skipping tool configuration (--tools none)');
+          return { ides: [], skipIde: true };
+        }
+        const selectedIdes = options.tools
+          .split(',')
+          .map((t) => t.trim())
+          .filter(Boolean);
+        await prompts.log.info(`Using tools from command-line: ${selectedIdes.join(', ')}`);
+        await this.displaySelectedTools(selectedIdes, preferredIdes, allTools);
+        return { ides: selectedIdes, skipIde: false };
+      }
+
+      if (options.yes) {
+        await prompts.log.info(`Non-interactive mode (--yes): keeping configured tools: ${configuredIdes.join(', ')}`);
+        await this.displaySelectedTools(configuredIdes, preferredIdes, allTools);
+        return { ides: configuredIdes, skipIde: false };
+      }
 
       // Sort: configured tools first, then preferred, then others
       const sortedTools = [
@@ -687,18 +742,6 @@ class UI {
       message,
       default: defaultValue,
     });
-  }
-
-  /**
-   * Display installation summary
-   * @param {Object} result - Installation result
-   */
-  async showInstallSummary(result) {
-    let summary = `Installed to: ${result.path}`;
-    if (result.modules && result.modules.length > 0) {
-      summary += `\nModules: ${result.modules.join(', ')}`;
-    }
-    await prompts.note(summary, 'BMAD is ready to use!');
   }
 
   /**
@@ -899,107 +942,10 @@ class UI {
   }
 
   /**
-   * Prompt for module selection
-   * @param {Array} moduleChoices - Available module choices
-   * @returns {Array} Selected module IDs
-   */
-  async selectModules(moduleChoices, defaultSelections = null) {
-    // If defaultSelections is provided, use it to override checked state
-    // Otherwise preserve the checked state from moduleChoices (set by getModuleChoices)
-    const choicesWithDefaults = moduleChoices.map((choice) => ({
-      ...choice,
-      ...(defaultSelections === null ? {} : { checked: defaultSelections.includes(choice.value) }),
-    }));
-
-    // Add a "None" option at the end for users who changed their mind
-    const choicesWithSkipOption = [
-      ...choicesWithDefaults,
-      {
-        value: '__NONE__',
-        label: '\u26A0 None / I changed my mind - skip module installation',
-        checked: false,
-      },
-    ];
-
-    const selected = await prompts.multiselect({
-      message: 'Select modules to install (use arrow keys, space to toggle):',
-      choices: choicesWithSkipOption,
-      required: true,
-    });
-
-    // If user selected both "__NONE__" and other items, honor the "None" choice
-    if (selected && selected.includes('__NONE__') && selected.length > 1) {
-      await prompts.log.warn('"None / I changed my mind" was selected, so no modules will be installed.');
-      return [];
-    }
-
-    // Filter out the special '__NONE__' value
-    return selected ? selected.filter((m) => m !== '__NONE__') : [];
-  }
-
-  /**
-   * Get external module choices for selection
-   * @returns {Array} External module choices for prompt
-   */
-  async getExternalModuleChoices() {
-    const externalManager = new ExternalModuleManager();
-    const modules = await externalManager.listAvailable();
-
-    return modules.map((mod) => ({
-      name: mod.name,
-      value: mod.code, // Use the code (e.g., 'cis') as the value
-      checked: mod.defaultSelected || false,
-      hint: mod.description || undefined, // Show description as hint
-      module: mod, // Store full module info for later use
-    }));
-  }
-
-  /**
-   * Prompt for external module selection
-   * @param {Array} externalModuleChoices - Available external module choices
-   * @param {Array} defaultSelections - Module codes to pre-select
-   * @returns {Array} Selected external module codes
-   */
-  async selectExternalModules(externalModuleChoices, defaultSelections = []) {
-    // Build a message showing available modules
-    const message = 'Select official BMad modules to install (use arrow keys, space to toggle):';
-
-    // Mark choices as checked based on defaultSelections
-    const choicesWithDefaults = externalModuleChoices.map((choice) => ({
-      ...choice,
-      checked: defaultSelections.includes(choice.value),
-    }));
-
-    // Add a "None" option at the end for users who changed their mind
-    const choicesWithSkipOption = [
-      ...choicesWithDefaults,
-      {
-        name: '⚠ None / I changed my mind - skip external module installation',
-        value: '__NONE__',
-        checked: false,
-      },
-    ];
-
-    const selected = await prompts.multiselect({
-      message,
-      choices: choicesWithSkipOption,
-      required: true,
-    });
-
-    // If user selected both "__NONE__" and other items, honor the "None" choice
-    if (selected && selected.includes('__NONE__') && selected.length > 1) {
-      await prompts.log.warn('"None / I changed my mind" was selected, so no external modules will be installed.');
-      return [];
-    }
-
-    // Filter out the special '__NONE__' value
-    return selected ? selected.filter((m) => m !== '__NONE__') : [];
-  }
-
-  /**
-   * Select all modules (core + official + community) using grouped multiselect
+   * Select all modules (official + community) using grouped multiselect.
+   * Core is shown as locked but filtered from the result since it's always installed separately.
    * @param {Set} installedModuleIds - Currently installed module IDs
-   * @returns {Array} Selected module codes
+   * @returns {Array} Selected module codes (excluding core)
    */
   async selectAllModules(installedModuleIds = new Set()) {
     const { ModuleManager } = require('../installers/lib/modules/manager');
@@ -1068,11 +1014,7 @@ class UI {
         }
       }
     }
-    allOptions.push(...communityModules.map(({ label, value, hint }) => ({ label, value, hint })), {
-      // "None" option at the end
-      label: '\u26A0 None - Skip module installation',
-      value: '__NONE__',
-    });
+    allOptions.push(...communityModules.map(({ label, value, hint }) => ({ label, value, hint })));
 
     const selected = await prompts.autocompleteMultiselect({
       message: 'Select modules to install:',
@@ -1083,14 +1025,7 @@ class UI {
       maxItems: allOptions.length,
     });
 
-    // If user selected both "__NONE__" and other items, honor the "None" choice
-    if (selected && selected.includes('__NONE__') && selected.length > 1) {
-      await prompts.log.warn('"None" was selected, so no modules will be installed.');
-      return [];
-    }
-
-    // Filter out the special '__NONE__' value
-    const result = selected ? selected.filter((m) => m !== '__NONE__') : [];
+    const result = selected ? selected.filter((m) => m !== 'core') : [];
 
     // Display selected modules as bulleted list
     if (result.length > 0) {
@@ -1748,7 +1683,7 @@ class UI {
    * @param {string} bmadFolderName - Name of the BMAD folder
    * @returns {Promise<boolean>} True if user wants to proceed, false if they cancel
    */
-  async showLegacyVersionWarning(installedVersion, currentVersion, bmadFolderName) {
+  async showLegacyVersionWarning(installedVersion, currentVersion, bmadFolderName, options = {}) {
     if (!this.isLegacyVersion(installedVersion)) {
       return true; // Not legacy, proceed
     }
@@ -1773,6 +1708,11 @@ class UI {
 
     await prompts.log.warn('VERSION WARNING');
     await prompts.note(warningContent, 'Version Warning');
+
+    if (options.yes) {
+      await prompts.log.warn('Non-interactive mode (--yes): auto-proceeding with legacy update');
+      return true;
+    }
 
     const proceed = await prompts.select({
       message: 'How would you like to proceed?',

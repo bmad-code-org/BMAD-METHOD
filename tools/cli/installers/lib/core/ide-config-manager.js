@@ -1,6 +1,7 @@
 const path = require('node:path');
 const fs = require('fs-extra');
 const yaml = require('yaml');
+const prompts = require('../../../lib/prompts');
 
 /**
  * Manages IDE configuration persistence
@@ -93,7 +94,7 @@ class IdeConfigManager {
       const config = yaml.parse(content);
       return config;
     } catch (error) {
-      console.warn(`Warning: Failed to load IDE config for ${ideName}:`, error.message);
+      await prompts.log.warn(`Failed to load IDE config for ${ideName}: ${error.message}`);
       return null;
     }
   }
@@ -123,7 +124,7 @@ class IdeConfigManager {
         }
       }
     } catch (error) {
-      console.warn('Warning: Failed to load IDE configs:', error.message);
+      await prompts.log.warn(`Failed to load IDE configs: ${error.message}`);
     }
 
     return configs;

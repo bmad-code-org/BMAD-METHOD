@@ -55,7 +55,7 @@ class CustomHandler {
             // Found a custom.yaml file
             customPaths.push(fullPath);
           } else if (
-            entry.name === 'module.yaml' && // Check if this is a custom module (either in _module-installer or in root directory)
+            entry.name === 'module.yaml' && // Check if this is a custom module (in root directory)
             // Skip if it's in src/modules (those are standard modules)
             !fullPath.includes(path.join('src', 'modules'))
           ) {

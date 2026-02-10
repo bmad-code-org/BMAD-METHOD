@@ -42,7 +42,7 @@ const STRICT = process.argv.includes('--strict');
 const SCAN_EXTENSIONS = new Set(['.yaml', '.yml', '.md', '.xml', '.csv']);
 
 // Skip directories
-const SKIP_DIRS = new Set(['node_modules', '_module-installer', '.git']);
+const SKIP_DIRS = new Set(['node_modules', '.git']);
 
 // Pattern: {project-root}/_bmad/ references
 const PROJECT_ROOT_REF = /\{project-root\}\/_bmad\/([^\s'"<>})\]`]+)/g;
