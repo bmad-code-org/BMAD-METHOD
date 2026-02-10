@@ -51,4 +51,3 @@ input_file_patterns:
 
 # Required files
 sprint_status_file: "{implementation_artifacts}/sprint-status.yaml"
-retrospectives_folder: "{implementation_artifacts}"

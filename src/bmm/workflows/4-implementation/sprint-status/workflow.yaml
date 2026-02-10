@@ -8,10 +8,7 @@ config_source: "{project-root}/_bmad/bmm/config.yaml"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
 document_output_language: "{config_source}:document_output_language"
-date: system-generated
 implementation_artifacts: "{config_source}:implementation_artifacts"
-planning_artifacts: "{config_source}:planning_artifacts"
-project_context: "**/project-context.md"
 
 # Workflow components
 installed_path: "{project-root}/_bmad/bmm/workflows/4-implementation/sprint-status"
@@ -19,7 +16,6 @@ instructions: "{installed_path}/instructions.md"
 
 # Inputs
 sprint_status_file: "{implementation_artifacts}/sprint-status.yaml"
-tracking_system: "file-system"
 
 # Smart input file references
 input_file_patterns:
