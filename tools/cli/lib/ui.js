@@ -336,11 +336,15 @@ class UI {
           }
 
           if (customPaths.length > 0) {
+            const sources = customPaths.map((p, i) => ({ path: p, id: selectedModuleIds[i], name: selectedModuleIds[i] }));
             customModuleResult = {
               selectedCustomModules: selectedModuleIds,
               customContentConfig: {
                 hasCustomContent: true,
+                selected: true,
                 paths: customPaths,
+                sources: sources,
+                selectedFiles: customPaths.map((p) => path.join(p, 'module.yaml')),
                 selectedModuleIds: selectedModuleIds,
               },
             };
@@ -477,9 +481,13 @@ class UI {
       }
 
       if (customPaths.length > 0) {
+        const sources = customPaths.map((p, i) => ({ path: p, id: selectedModuleIds[i], name: selectedModuleIds[i] }));
         customContentConfig = {
           hasCustomContent: true,
+          selected: true,
           paths: customPaths,
+          sources: sources,
+          selectedFiles: customPaths.map((p) => path.join(p, 'module.yaml')),
           selectedModuleIds: selectedModuleIds,
         };
       }
