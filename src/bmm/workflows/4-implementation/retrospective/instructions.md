@@ -262,14 +262,14 @@ Bob (Scrum Master): "We'll get to all of it. But first, let me load the previous
 <action>Calculate previous epic number: {{prev_epic_num}} = {{epic_number}} - 1</action>
 
 <check if="{{prev_epic_num}} >= 1">
-  <action>Search for previous retrospective using pattern: {implementation_artifacts}/epic-{{prev_epic_num}}-retro-*.md</action>
+  <action>Search for previous retrospectives using pattern: {implementation_artifacts}/epic-{{prev_epic_num}}-retro-*.md</action>
 
-  <check if="previous retro found">
+  <check if="previous retrospectives found">
     <output>
-Bob (Scrum Master): "I found our retrospective from Epic {{prev_epic_num}}. Let me see what we committed to back then..."
+Bob (Scrum Master): "I found our retrospectives from Epic {{prev_epic_num}}. Let me see what we committed to back then..."
     </output>
 
-    <action>Read the complete previous retrospective file</action>
+    <action>Read the previous retrospectives</action>
 
     <action>Extract key elements:</action>
     - **Action items committed**: What did the team agree to improve?
