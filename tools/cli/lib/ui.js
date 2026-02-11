@@ -305,6 +305,7 @@ class UI {
           // Build custom content config similar to promptCustomContentSource
           const customPaths = [];
           const selectedModuleIds = [];
+          const selectedModuleMetas = [];
 
           for (const customPath of paths) {
             const expandedPath = this.expandUserPath(customPath);
@@ -326,6 +327,11 @@ class UI {
               continue;
             }
 
+            if (!moduleMeta) {
+              await prompts.log.warn(`Skipping custom content path: ${customPath} - module.yaml is empty`);
+              continue;
+            }
+
             if (!moduleMeta.code) {
               await prompts.log.warn(`Skipping custom content path: ${customPath} - module.yaml missing 'code' field`);
               continue;
@@ -333,16 +339,20 @@ class UI {
 
             customPaths.push(expandedPath);
             selectedModuleIds.push(moduleMeta.code);
+            selectedModuleMetas.push(moduleMeta);
           }
 
           if (customPaths.length > 0) {
-            const sources = customPaths.map((p, i) => ({ path: p, id: selectedModuleIds[i], name: selectedModuleIds[i] }));
+            const sources = customPaths.map((p, i) => ({
+              path: p,
+              id: selectedModuleIds[i],
+              name: selectedModuleMetas[i].name || selectedModuleIds[i],
+            }));
             customModuleResult = {
               selectedCustomModules: selectedModuleIds,
               customContentConfig: {
                 hasCustomContent: true,
                 selected: true,
-                paths: customPaths,
                 sources: sources,
                 selectedFiles: customPaths.map((p) => path.join(p, 'module.yaml')),
                 selectedModuleIds: selectedModuleIds,
@@ -450,6 +460,7 @@ class UI {
       // Build custom content config similar to promptCustomContentSource
       const customPaths = [];
       const selectedModuleIds = [];
+      const selectedModuleMetas = [];
 
       for (const customPath of paths) {
         const expandedPath = this.expandUserPath(customPath);
@@ -471,6 +482,11 @@ class UI {
           continue;
         }
 
+        if (!moduleMeta) {
+          await prompts.log.warn(`Skipping custom content path: ${customPath} - module.yaml is empty`);
+          continue;
+        }
+
         if (!moduleMeta.code) {
           await prompts.log.warn(`Skipping custom content path: ${customPath} - module.yaml missing 'code' field`);
           continue;
@@ -478,14 +494,18 @@ class UI {
 
         customPaths.push(expandedPath);
         selectedModuleIds.push(moduleMeta.code);
+        selectedModuleMetas.push(moduleMeta);
       }
 
       if (customPaths.length > 0) {
-        const sources = customPaths.map((p, i) => ({ path: p, id: selectedModuleIds[i], name: selectedModuleIds[i] }));
+        const sources = customPaths.map((p, i) => ({
+          path: p,
+          id: selectedModuleIds[i],
+          name: selectedModuleMetas[i].name || selectedModuleIds[i],
+        }));
         customContentConfig = {
           hasCustomContent: true,
           selected: true,
-          paths: customPaths,
           sources: sources,
           selectedFiles: customPaths.map((p) => path.join(p, 'module.yaml')),
           selectedModuleIds: selectedModuleIds,
