@@ -60,6 +60,4 @@ Load and read full config from {main_config} and resolve:
 
 "**Validate Mode: Validating an existing PRD against BMAD standards.**"
 
-Prompt for PRD path: "Which PRD would you like to validate? Please provide the path to the PRD.md file."
-
 Then read fully and follow: `{validateWorkflow}` (steps-v/step-v-01-discovery.md)
