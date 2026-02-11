@@ -4,7 +4,6 @@ description: "Run after epic completion to review overall success, extract lesso
 author: "BMad"
 
 config_source: "{project-root}/_bmad/bmm/config.yaml"
-output_folder: "{config_source}:implementation_artifacts}"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
 user_skill_level: "{config_source}:user_skill_level"
@@ -52,5 +51,3 @@ input_file_patterns:
 
 # Required files
 sprint_status_file: "{implementation_artifacts}/sprint-status.yaml"
-story_directory: "{implementation_artifacts}"
-retrospectives_folder: "{implementation_artifacts}"

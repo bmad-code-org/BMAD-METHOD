@@ -4,12 +4,10 @@ author: "BMad"
 
 # Critical variables from config
 config_source: "{project-root}/_bmad/bmm/config.yaml"
-output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
 user_skill_level: "{config_source}:user_skill_level"
 document_output_language: "{config_source}:document_output_language"
-story_dir: "{config_source}:implementation_artifacts"
 date: system-generated
 
 # Workflow components

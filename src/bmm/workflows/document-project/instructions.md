@@ -57,7 +57,7 @@
 <step n="2" goal="Check for resumability and determine workflow mode">
 <critical>SMART LOADING STRATEGY: Check state file FIRST before loading any CSV files</critical>
 
-<action>Check for existing state file at: {output_folder}/project-scan-report.json</action>
+<action>Check for existing state file at: {project_knowledge}/project-scan-report.json</action>
 
 <check if="project-scan-report.json exists">
   <action>Read state file and extract: timestamps, mode, scan_level, current_step, completed_steps, project_classification</action>
@@ -107,8 +107,8 @@ Your choice [1/2/3]:
   </check>
 
   <check if="user selects 2">
-    <action>Create archive directory: {output_folder}/.archive/</action>
-    <action>Move old state file to: {output_folder}/.archive/project-scan-report-{{timestamp}}.json</action>
+    <action>Create archive directory: {project_knowledge}/.archive/</action>
+    <action>Move old state file to: {project_knowledge}/.archive/project-scan-report-{{timestamp}}.json</action>
     <action>Set resume_mode = false</action>
     <action>Continue to Step 0.5</action>
   </check>
@@ -120,7 +120,7 @@ Your choice [1/2/3]:
 
   <check if="state file age >= 24 hours">
     <action>Display: "Found old state file (>24 hours). Starting fresh scan."</action>
-    <action>Archive old state file to: {output_folder}/.archive/project-scan-report-{{timestamp}}.json</action>
+    <action>Archive old state file to: {project_knowledge}/.archive/project-scan-report-{{timestamp}}.json</action>
     <action>Set resume_mode = false</action>
     <action>Continue to Step 0.5</action>
   </check>
@@ -128,7 +128,7 @@ Your choice [1/2/3]:
 </step>
 
 <step n="3" goal="Check for existing documentation and determine workflow mode" if="resume_mode == false">
-<action>Check if {output_folder}/index.md exists</action>
+<action>Check if {project_knowledge}/index.md exists</action>
 
 <check if="index.md exists">
   <action>Read existing index.md to extract metadata (date, project structure, parts count)</action>
@@ -195,7 +195,7 @@ Your choice [1/2/3]:
 
 - Mode: {{workflow_mode}}
 - Scan Level: {{scan_level}}
-- Output: {output_folder}/index.md and related files
+- Output: {project_knowledge}/index.md and related files
 
 {{#if status_file_found}}
 **Status Updated:**
