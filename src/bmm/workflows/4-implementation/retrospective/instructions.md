@@ -171,7 +171,7 @@ Bob (Scrum Master): "Before we start the team discussion, let me review all the 
 Charlie (Senior Dev): "Good idea - those dev notes always have gold in them."
 </output>
 
-<action>For each story in epic {{epic_number}}, read the complete story file from {implementation_artifacts}/{{epic_number}}-{{story_num}}-\*.md</action>
+<action>For each story in epic {{epic_number}}, read the complete story file from {implementation_artifacts}/{{epic_number}}-{{story_num}}-*.md</action>
 
 <action>Extract and analyze from each story:</action>
 
@@ -366,7 +366,7 @@ Alice (Product Owner): "Good thinking - helps us connect what we learned to what
 <action>Attempt to load next epic using selective loading strategy:</action>
 
 **Try sharded first (more specific):**
-<action>Check if file exists: {planning_artifacts}/epic\*/epic-{{next_epic_num}}.md</action>
+<action>Check if file exists: {planning_artifacts}/epic*/epic-{{next_epic_num}}.md</action>
 
 <check if="sharded epic file found">
   <action>Load {planning_artifacts}/*epic*/epic-{{next_epic_num}}.md</action>
@@ -375,7 +375,7 @@ Alice (Product Owner): "Good thinking - helps us connect what we learned to what
 
 **Fallback to whole document:**
 <check if="sharded epic not found">
-<action>Check if file exists: {planning_artifacts}/epic\*.md</action>
+<action>Check if file exists: {planning_artifacts}/epic*.md</action>
 
   <check if="whole epic file found">
     <action>Load entire epics document</action>
