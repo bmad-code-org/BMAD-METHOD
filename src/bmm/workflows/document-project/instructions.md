@@ -91,7 +91,7 @@
 <step n="2" goal="Check for resumability and determine workflow mode">
 <critical>SMART LOADING STRATEGY: Check state file FIRST before loading any CSV files</critical>
 
-<action>Check for existing state file at: {output_folder}/project-scan-report.json</action>
+<action>Check for existing state file at: {project_knowledge}/project-scan-report.json</action>
 <action>Set resume_mode = false</action>
 
 <check if="project-scan-report.json exists">
@@ -108,13 +108,13 @@
 
 <check if="state_age_hours >= 24">
   <action>Display: "Found old state file (>24 hours). Starting fresh scan."</action>
-  <action>Attempt to create archive directory: {output_folder}/.archive/</action>
+  <action>Attempt to create archive directory: {project_knowledge}/.archive/</action>
   <check if="archive directory creation failed">
-    <output>Failed to create archive directory at {output_folder}/.archive/. Keeping existing state and exiting to avoid data loss.</output>
+    <output>Failed to create archive directory at {project_knowledge}/.archive/. Keeping existing state and exiting to avoid data loss.</output>
     <action>Set resume_mode = true</action>
     <action>Exit workflow</action>
   </check>
-  <action>Attempt to archive old state file to: {output_folder}/.archive/project-scan-report-{{timestamp}}.json</action>
+  <action>Attempt to archive old state file to: {project_knowledge}/.archive/project-scan-report-{{timestamp}}.json</action>
   <check if="archive move failed">
     <output>Failed to archive old state file. Keeping existing state and exiting to avoid data loss.</output>
     <action>Set resume_mode = true</action>
@@ -202,13 +202,13 @@ Your choice [1/2/3]:
   </check>
 
   <check if="user selects 2">
-    <action>Attempt to create archive directory: {output_folder}/.archive/</action>
+    <action>Attempt to create archive directory: {project_knowledge}/.archive/</action>
     <check if="archive directory creation failed">
       <output>Failed to create archive directory. Keeping existing state and exiting to avoid data loss.</output>
       <action>Set resume_mode = true</action>
       <action>Exit workflow</action>
     </check>
-    <action>Attempt to move old state file to: {output_folder}/.archive/project-scan-report-{{timestamp}}.json</action>
+    <action>Attempt to move old state file to: {project_knowledge}/.archive/project-scan-report-{{timestamp}}.json</action>
     <check if="archive move failed">
       <output>Failed to archive old state file. Keeping existing state and exiting to avoid data loss.</output>
       <action>Set resume_mode = true</action>
@@ -241,7 +241,7 @@ Your choice [1/2/3]:
 </step>
 
 <step n="3" goal="Check for existing documentation and determine workflow mode" if="resume_mode == false">
-<action>Check if {output_folder}/index.md exists</action>
+<action>Check if {project_knowledge}/index.md exists</action>
 
 <check if="index.md exists">
   <action>Read existing index.md to extract metadata (date, project structure, parts count)</action>
@@ -339,7 +339,7 @@ Your choice [1/2/3]:
 
 - Mode: {{workflow_mode}}
 - Scan Level: {{scan_level}}
-- Output: {output_folder}/index.md and related files
+- Output: {project_knowledge}/index.md and related files
 </output>
 
 <check if="status_file_found == true AND status_update_success == true">
