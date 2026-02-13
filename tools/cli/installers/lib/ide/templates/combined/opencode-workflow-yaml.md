@@ -1,4 +1,5 @@
 ---
+name: '{{name}}'
 description: '{{description}}'
 ---
 

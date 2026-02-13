@@ -24,4 +24,4 @@ agent:
   menu:
     - trigger: CU or fuzzy match on ux-design
       exec: "{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-ux-design/workflow.md"
-      description: "[CU] Create UX: Guidance through realizing the plan for your UX to inform architecture and implementation. PRovides more details that what was discovered in the PRD"
+      description: "[CU] Create UX: Guidance through realizing the plan for your UX to inform architecture and implementation. Provides more details than what was discovered in the PRD"
