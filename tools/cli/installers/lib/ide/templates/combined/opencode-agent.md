@@ -1,5 +1,5 @@
 ---
-mode: primary
+name: '{{name}}'
 description: '{{description}}'
 ---
 
