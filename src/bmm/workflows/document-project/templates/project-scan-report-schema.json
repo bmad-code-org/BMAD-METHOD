@@ -45,9 +45,9 @@
       "type": "string",
       "description": "Absolute path to project root directory"
     },
-    "output_folder": {
+    "project_knowledge": {
       "type": "string",
-      "description": "Absolute path to output folder"
+      "description": "Absolute path to project knowledge folder"
     },
     "completed_steps": {
       "type": "array",

@@ -23,6 +23,7 @@
 <workflow>
 
 <step n="1" goal="Parse epic files and extract all work items">
+<action>Load {project_context} for project-wide patterns and conventions (if exists)</action>
 <action>Communicate in {communication_language} with {user_name}</action>
 <action>Look for all files matching `{epics_pattern}` in {epics_location}</action>
 <action>Could be a single `epics.md` file or multiple `epic-1.md`, `epic-2.md` files</action>

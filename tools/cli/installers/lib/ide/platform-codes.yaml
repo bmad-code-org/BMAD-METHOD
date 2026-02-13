@@ -89,11 +89,7 @@ platforms:
     preferred: false
     category: ide
     description: "GitHub's AI pair programmer"
-    installer:
-      targets:
-        - target_dir: .github/agents
-          template_type: copilot_agents
-          artifact_types: [agents]
+    # No installer config - uses custom github-copilot.js
 
   iflow:
     name: "iFlow"

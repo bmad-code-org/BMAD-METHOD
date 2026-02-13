@@ -1,5 +1,58 @@
 # Changelog
 
+## [6.0.0-Beta.8]
+
+**Release: February 8, 2026**
+
+### 🌟 Key Highlights
+
+1. **Non-Interactive Installation** — Full CI/CD support with 10 new CLI flags for automated deployments
+2. **Complete @clack/prompts Migration** — Unified CLI experience with consolidated installer output
+3. **CSV File Reference Validation** — Extended Layer 1 validator to catch broken workflow references in CSV files
+4. **Kiro IDE Support** — Standardized config-driven installation, replacing custom installer
+
+### 🎁 Features
+
+* **Non-Interactive Installation** — Added `--directory`, `--modules`, `--tools`, `--custom-content`, `--user-name`, `--communication-language`, `--document-output-language`, `--output-folder`, and `-y/--yes` flags for CI/CD automation (#1520)
+* **CSV File Reference Validation** — Extended validator to scan `.csv` files for broken workflow references, checking 501 references across 212 files (#1573)
+* **Kiro IDE Support** — Replaced broken custom installer with config-driven templates using `#[[file:...]]` syntax and `inclusion: manual` frontmatter (#1589)
+* **OpenCode Template Consolidation** — Combined split templates with `mode: primary` frontmatter for Tab-switching support, fixing agent discovery (#1556)
+* **Modules Reference Page** — Added official external modules reference documentation (#1540)
+
+### 🐛 Bug Fixes
+
+* **Installer Streamlining** — Removed "None - Skip module installation" option, eliminated ~100 lines of dead code, and added ESM/.cjs support for module installers (#1590)
+* **CodeRabbit Workflow** — Changed `pull_request` to `pull_request_target` to fix 403 errors and enable reviews on fork PRs (#1583)
+* **Party Mode Return Protocol** — Added RETURN PROTOCOL to prevent lost-in-the-middle failures after Party Mode completes (#1569)
+* **Spacebar Toggle** — Fixed SPACE key not working in autocomplete multiselect prompts for tool/IDE selection (#1557)
+* **OpenCode Agent Routing** — Fixed agents installing to wrong directory by adding `targets` array for routing `.opencode/agent/` vs `.opencode/command/` (#1549)
+* **Technical Research Workflow** — Fixed step-05 routing to step-06 and corrected `stepsCompleted` values (#1547)
+* **Forbidden Variable Removal** — Removed `workflow_path` variable from 16 workflow step files (#1546)
+* **Kilo Installer** — Fixed YAML formatting issues by trimming activation header and converting to yaml.parse/stringify (#1537)
+* **bmad-help** — Now reads project-specific docs and respects `communication_language` setting (#1535)
+* **Cache Errors** — Removed `--prefer-offline` npm flag to prevent stale cache errors during installation (#1531)
+
+### ♻️ Refactoring
+
+* **Complete @clack/prompts Migration** — Migrated 24 files from legacy libraries (ora, chalk, boxen, figlet, etc.), replaced ~100 console.log+chalk calls, consolidated installer output to single spinner, and removed 5 dependencies (#1586)
+* **Downloads Page Removal** — Removed downloads page, bundle generation, and archiver dependency in favor of GitHub's native archives (#1577)
+* **Workflow Verb Standardization** — Replaced "invoke/run" with "load and follow/load" in review workflow prompts (#1570)
+* **Documentation Language** — Renamed "brownfield" to "established projects" and flattened directory structure for accessibility (#1539)
+
+### 📚 Documentation
+
+* **Comprehensive Site Review** — Fixed broken directory tree diagram, corrected grammar/capitalization, added SEO descriptions, and reordered how-to guides (#1578)
+* **SEO Metadata** — Added description front matter to 9 documentation pages for search engine optimization (#1566)
+* **PR Template** — Added pull request template for consistent PR descriptions (#1554)
+* **Manual Release Cleanup** — Removed broken manual-release workflow and related scripts (#1576)
+
+### 🔧 Maintenance
+
+* **Dual-Mode AI Code Review** — Configured Augment Code (audit mode) and CodeRabbit (adversarial mode) for improved code quality (#1511)
+* **Package-Lock Sync** — Cleaned up 471 lines of orphaned dependencies after archiver removal (#1580)
+
+---
+
 ## [6.0.0-Beta.7]
 
 **Release: February 4, 2026**
