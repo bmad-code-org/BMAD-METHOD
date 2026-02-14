@@ -95,6 +95,26 @@ module.exports = {
         removeModules = selected.includes('modules');
         removeIdeConfigs = selected.includes('ide');
         removeOutputFolder = selected.includes('output');
+
+        const red = (s) => `\u001B[31m${s}\u001B[0m`;
+        await prompts.note(
+          red('💀 This action is IRREVERSIBLE! Removed files cannot be recovered!') +
+            '\n' +
+            red('💀 IDE configurations and modules will need to be reinstalled.') +
+            '\n' +
+            red('💀 User artifacts are preserved unless explicitly selected.'),
+          '!! DESTRUCTIVE ACTION !!',
+        );
+
+        const confirmed = await prompts.confirm({
+          message: 'Proceed with uninstall?',
+          default: false,
+        });
+
+        if (!confirmed) {
+          await prompts.outro('Uninstall cancelled.');
+          process.exit(0);
+        }
       }
 
       // Phase 1: IDE integrations
