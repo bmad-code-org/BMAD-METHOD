@@ -550,7 +550,7 @@ class ConfigCollector {
       }
     }
 
-    this.displayModulePostConfigNotes(moduleName);
+    await this.displayModulePostConfigNotes(moduleName);
 
     return newKeys.length > 0 || newStaticKeys.length > 0; // Return true if we had any new fields (interactive or static)
   }
@@ -926,7 +926,7 @@ class ConfigCollector {
       }
     }
 
-    this.displayModulePostConfigNotes(moduleName);
+    await this.displayModulePostConfigNotes(moduleName);
   }
 
   /**
@@ -1204,7 +1204,8 @@ class ConfigCollector {
    * Shows prerequisite guidance based on collected config values
    * @param {string} moduleName - Module name
    */
-  displayModulePostConfigNotes(moduleName) {
+  async displayModulePostConfigNotes(moduleName) {
+    if (this._silentConfig) return;
     if (moduleName !== 'tea') return;
 
     const teaConfig = this.collectedConfig[moduleName];
@@ -1214,23 +1215,23 @@ class ConfigCollector {
 
     if (mode === 'none') return;
 
-    console.log();
+    const color = await prompts.getColor();
+
+    await prompts.log.message('');
 
     if (mode === 'cli' || mode === 'auto') {
-      console.log(chalk.blue('  ℹ') + chalk.bold(' Playwright CLI Setup:'));
-      console.log(chalk.dim('    npm install -g @playwright/cli@latest'));
-      console.log(chalk.dim('    playwright-cli install --skills    # Run from project root'));
-      console.log(chalk.dim('    Node.js 18+ required.'));
+      await prompts.log.info(color.bold('Playwright CLI Setup:'));
+      await prompts.log.message(color.dim('  npm install -g @playwright/cli@latest'));
+      await prompts.log.message(color.dim('  playwright-cli install --skills    # Run from project root'));
+      await prompts.log.message(color.dim('  Node.js 18+ required.'));
     }
 
     if (mode === 'mcp' || mode === 'auto') {
-      if (mode === 'auto') console.log();
-      console.log(chalk.blue('  ℹ') + chalk.bold(' Playwright MCP Setup:'));
-      console.log(chalk.dim('    Configure MCP servers in your IDE'));
-      console.log(chalk.dim('    See: https://github.com/microsoft/playwright-mcp'));
+      if (mode === 'auto') await prompts.log.message('');
+      await prompts.log.info(color.bold('Playwright MCP Setup:'));
+      await prompts.log.message(color.dim('  Configure MCP servers in your IDE'));
+      await prompts.log.message(color.dim('  See: https://github.com/microsoft/playwright-mcp'));
     }
-
-    console.log();
   }
 
   /**
