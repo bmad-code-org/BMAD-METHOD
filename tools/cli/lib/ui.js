@@ -305,6 +305,7 @@ class UI {
           // Build custom content config similar to promptCustomContentSource
           const customPaths = [];
           const selectedModuleIds = [];
+          const sources = [];
 
           for (const customPath of paths) {
             const expandedPath = this.expandUserPath(customPath);
@@ -333,6 +334,11 @@ class UI {
 
             customPaths.push(expandedPath);
             selectedModuleIds.push(moduleMeta.code);
+            sources.push({
+              path: expandedPath,
+              id: moduleMeta.code,
+              name: moduleMeta.name || moduleMeta.code,
+            });
           }
 
           if (customPaths.length > 0) {
@@ -342,6 +348,9 @@ class UI {
                 hasCustomContent: true,
                 paths: customPaths,
                 selectedModuleIds: selectedModuleIds,
+                sources,
+                selected: true,
+                selectedFiles: customPaths.map((p) => path.join(p, 'module.yaml')),
               },
             };
           }
@@ -446,6 +455,7 @@ class UI {
       // Build custom content config similar to promptCustomContentSource
       const customPaths = [];
       const selectedModuleIds = [];
+      const sources = [];
 
       for (const customPath of paths) {
         const expandedPath = this.expandUserPath(customPath);
@@ -474,6 +484,11 @@ class UI {
 
         customPaths.push(expandedPath);
         selectedModuleIds.push(moduleMeta.code);
+        sources.push({
+          path: expandedPath,
+          id: moduleMeta.code,
+          name: moduleMeta.name || moduleMeta.code,
+        });
       }
 
       if (customPaths.length > 0) {
@@ -481,6 +496,9 @@ class UI {
           hasCustomContent: true,
           paths: customPaths,
           selectedModuleIds: selectedModuleIds,
+          sources,
+          selected: true,
+          selectedFiles: customPaths.map((p) => path.join(p, 'module.yaml')),
         };
       }
     } else if (!options.yes) {
