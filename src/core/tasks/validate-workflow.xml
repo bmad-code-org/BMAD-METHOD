@@ -137,10 +137,10 @@
           - Action (if PARTIAL/FAIL): {specific remediation}
 
         ## Must Fix Before Proceeding
-        - {all critical FAIL and PARTIAL items}
+        - {all critical FAIL and critical PARTIAL items}
 
         ## Should Improve
-        - {all non-critical FAIL and PARTIAL items}
+        - {all non-critical FAIL and non-critical PARTIAL items}
 
         ## Final Recommendation
         1. {highest-priority fix}
