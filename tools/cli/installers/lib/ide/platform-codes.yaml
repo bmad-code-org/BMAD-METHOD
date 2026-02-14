@@ -54,7 +54,7 @@ platforms:
     name: "Codex"
     preferred: false
     category: cli
-    description: "OpenAI Codex skills (agentskills.io format)"
+    description: "OpenAI Codex integration"
     # No installer config - uses custom codex.js
 
   crush:

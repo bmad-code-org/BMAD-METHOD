@@ -25,28 +25,28 @@ class CodexSetup extends BaseIdeSetup {
    * @returns {Object} Collected configuration
    */
   async collectConfiguration(options = {}) {
-    // Non-interactive mode: use default (global)
+    // Non-interactive mode: use default (project)
     if (options.skipPrompts) {
-      return { installLocation: 'global' };
+      return { installLocation: 'project' };
     }
 
     let confirmed = false;
-    let installLocation = 'global';
+    let installLocation = 'project';
 
     while (!confirmed) {
       installLocation = await prompts.select({
         message: 'Where would you like to install Codex CLI skills?',
         choices: [
           {
-            name: 'Global - Simple for single project ' + '(~/.agents/skills, but references THIS project only)',
-            value: 'global',
-          },
-          {
-            name: 'Project-specific - Recommended for real work (<project>/.agents/skills)',
+            name: 'Project-specific - Recommended (<project>/.agents/skills)',
             value: 'project',
           },
+          {
+            name: 'Global - (~/.agents/skills)',
+            value: 'global',
+          },
         ],
-        default: 'global',
+        default: 'project',
       });
 
       // Show brief confirmation hint (detailed instructions available via verbose)
@@ -82,8 +82,8 @@ class CodexSetup extends BaseIdeSetup {
     // Always use CLI mode
     const mode = 'cli';
 
-    // Get installation location from pre-collected config or default to global
-    const installLocation = options.preCollectedConfig?.installLocation || 'global';
+    // Get installation location from pre-collected config or default to project
+    const installLocation = options.preCollectedConfig?.installLocation || 'project';
 
     const { artifacts, counts } = await this.collectClaudeArtifacts(projectDir, bmadDir, options);
 
