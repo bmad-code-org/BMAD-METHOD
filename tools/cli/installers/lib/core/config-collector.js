@@ -550,7 +550,7 @@ class ConfigCollector {
       }
     }
 
-    await this.displayModulePostConfigNotes(moduleName);
+    await this.displayModulePostConfigNotes(moduleName, moduleConfig);
 
     return newKeys.length > 0 || newStaticKeys.length > 0; // Return true if we had any new fields (interactive or static)
   }
@@ -926,7 +926,7 @@ class ConfigCollector {
       }
     }
 
-    await this.displayModulePostConfigNotes(moduleName);
+    await this.displayModulePostConfigNotes(moduleName, moduleConfig);
   }
 
   /**
@@ -1202,35 +1202,53 @@ class ConfigCollector {
   /**
    * Display post-configuration notes for a module
    * Shows prerequisite guidance based on collected config values
+   * Reads notes from the module's `post-install-notes` section in module.yaml
+   * Supports two formats:
+   *   - Simple string: always displayed
+   *   - Object keyed by config field name, with value-specific messages
    * @param {string} moduleName - Module name
+   * @param {Object} moduleConfig - Parsed module.yaml content
    */
-  async displayModulePostConfigNotes(moduleName) {
+  async displayModulePostConfigNotes(moduleName, moduleConfig) {
     if (this._silentConfig) return;
-    if (moduleName !== 'tea') return;
+    if (!moduleConfig || !moduleConfig['post-install-notes']) return;
 
-    const teaConfig = this.collectedConfig[moduleName];
-    if (!teaConfig || !teaConfig.tea_browser_automation) return;
-
-    const mode = teaConfig.tea_browser_automation;
-
-    if (mode === 'none') return;
-
+    const notes = moduleConfig['post-install-notes'];
     const color = await prompts.getColor();
 
-    await prompts.log.message('');
-
-    if (mode === 'cli' || mode === 'auto') {
-      await prompts.log.info(color.bold('Playwright CLI Setup:'));
-      await prompts.log.message(color.dim('  npm install -g @playwright/cli@latest'));
-      await prompts.log.message(color.dim('  playwright-cli install --skills    # Run from project root'));
-      await prompts.log.message(color.dim('  Node.js 18+ required.'));
+    // Format 1: Simple string - always display
+    if (typeof notes === 'string') {
+      await prompts.log.message('');
+      for (const line of notes.trim().split('\n')) {
+        await prompts.log.message(color.dim(line));
+      }
+      return;
     }
 
-    if (mode === 'mcp' || mode === 'auto') {
-      if (mode === 'auto') await prompts.log.message('');
-      await prompts.log.info(color.bold('Playwright MCP Setup:'));
-      await prompts.log.message(color.dim('  Configure MCP servers in your IDE'));
-      await prompts.log.message(color.dim('  See: https://github.com/microsoft/playwright-mcp'));
+    // Format 2: Conditional on config values
+    if (typeof notes === 'object') {
+      const config = this.collectedConfig[moduleName];
+      if (!config) return;
+
+      let hasOutput = false;
+      for (const [configKey, valueMessages] of Object.entries(notes)) {
+        const selectedValue = config[configKey];
+        if (!selectedValue || !valueMessages[selectedValue]) continue;
+
+        if (hasOutput) await prompts.log.message('');
+        hasOutput = true;
+
+        const message = valueMessages[selectedValue];
+        await prompts.log.message('');
+        for (const line of message.trim().split('\n')) {
+          const trimmedLine = line.trim();
+          if (trimmedLine.endsWith(':') && !trimmedLine.startsWith(' ')) {
+            await prompts.log.info(color.bold(trimmedLine));
+          } else {
+            await prompts.log.message(color.dim('  ' + trimmedLine));
+          }
+        }
+      }
     }
   }
 
