@@ -640,7 +640,7 @@ Type \`/bmad-\` in Copilot Chat to see all available BMAD workflows and agent ac
     // handles marker-based replacement in a single read-modify-write pass,
     // which correctly preserves user content outside the markers.
     if (options.isUninstall) {
-      await this.cleanupCopilotInstructions(projectDir);
+      await this.cleanupCopilotInstructions(projectDir, options);
     }
   }
 
@@ -649,8 +649,9 @@ Type \`/bmad-\` in Copilot Chat to see all available BMAD workflows and agent ac
    * If file becomes empty after stripping, delete it.
    * If a .bak backup exists and the main file was deleted, restore the backup.
    * @param {string} projectDir - Project directory
+   * @param {Object} [options] - Options (e.g. { silent: true })
    */
-  async cleanupCopilotInstructions(projectDir) {
+  async cleanupCopilotInstructions(projectDir, options = {}) {
     const instructionsPath = path.join(projectDir, this.githubDir, 'copilot-instructions.md');
     const backupPath = `${instructionsPath}.bak`;
 
@@ -680,7 +681,9 @@ Type \`/bmad-\` in Copilot Chat to see all available BMAD workflows and agent ac
       // If backup exists, restore it
       if (await fs.pathExists(backupPath)) {
         await fs.rename(backupPath, instructionsPath);
-        await prompts.log.message('  Restored copilot-instructions.md from backup');
+        if (!options.silent) {
+          await prompts.log.message('  Restored copilot-instructions.md from backup');
+        }
       }
     } else {
       // Write cleaned content back (preserve original whitespace)

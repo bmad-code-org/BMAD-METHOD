@@ -43,10 +43,15 @@ module.exports = {
             },
           });
 
-          projectDir = path.resolve(customDir);
+          projectDir = path.resolve(customDir.trim());
         } else {
           projectDir = process.cwd();
         }
+      }
+
+      if (!(await fs.pathExists(projectDir))) {
+        await prompts.log.error(`Directory does not exist: ${projectDir}`);
+        process.exit(1);
       }
 
       const { bmadDir } = await installer.findBmadDir(projectDir);

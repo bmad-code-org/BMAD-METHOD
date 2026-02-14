@@ -1552,30 +1552,18 @@ class Installer {
 
     // 2. IDE CLEANUP (before _bmad/ deletion so configs are accessible)
     if (options.removeIdeConfigs !== false) {
-      await this.ideManager.ensureInitialized();
-      const cleanupOptions = { isUninstall: true };
-      const ideList = existingInstall.ides || [];
-      if (ideList.length > 0) {
-        await this.ideManager.cleanupByList(projectDir, ideList, cleanupOptions);
-      } else {
-        await this.ideManager.cleanup(projectDir, cleanupOptions);
-      }
+      await this.uninstallIdeConfigs(projectDir, existingInstall, { silent: options.silent });
       removed.ideConfigs = true;
     }
 
     // 3. OUTPUT FOLDER (only if explicitly requested)
     if (options.removeOutputFolder === true && outputFolder) {
-      const outputPath = path.join(projectDir, outputFolder);
-      if (await fs.pathExists(outputPath)) {
-        await fs.remove(outputPath);
-        removed.outputFolder = true;
-      }
+      removed.outputFolder = await this.uninstallOutputFolder(projectDir, outputFolder);
     }
 
     // 4. BMAD DIRECTORY (last, after everything that needs it)
     if (options.removeModules !== false) {
-      await fs.remove(bmadDir);
-      removed.modules = true;
+      removed.modules = await this.uninstallModules(projectDir);
     }
 
     return { success: true, removed, version: existingInstall.version };
@@ -1606,7 +1594,11 @@ class Installer {
    */
   async uninstallOutputFolder(projectDir, outputFolder) {
     if (!outputFolder) return false;
-    const outputPath = path.join(projectDir, outputFolder);
+    const resolvedProject = path.resolve(projectDir);
+    const outputPath = path.resolve(resolvedProject, outputFolder);
+    if (!outputPath.startsWith(resolvedProject + path.sep)) {
+      return false;
+    }
     if (await fs.pathExists(outputPath)) {
       await fs.remove(outputPath);
       return true;

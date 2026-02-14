@@ -548,7 +548,7 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
         if (!(await fs.pathExists(fullPath))) break;
         const remaining = await fs.readdir(fullPath);
         if (remaining.length > 0) break;
-        await fs.remove(fullPath);
+        await fs.rmdir(fullPath);
       } catch {
         break;
       }
