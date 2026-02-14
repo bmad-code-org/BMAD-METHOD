@@ -550,6 +550,8 @@ class ConfigCollector {
       }
     }
 
+    this.displayModulePostConfigNotes(moduleName);
+
     return newKeys.length > 0 || newStaticKeys.length > 0; // Return true if we had any new fields (interactive or static)
   }
 
@@ -923,6 +925,8 @@ class ConfigCollector {
         }
       }
     }
+
+    this.displayModulePostConfigNotes(moduleName);
   }
 
   /**
@@ -1193,6 +1197,40 @@ class ConfigCollector {
     }
 
     return question;
+  }
+
+  /**
+   * Display post-configuration notes for a module
+   * Shows prerequisite guidance based on collected config values
+   * @param {string} moduleName - Module name
+   */
+  displayModulePostConfigNotes(moduleName) {
+    if (moduleName !== 'tea') return;
+
+    const teaConfig = this.collectedConfig[moduleName];
+    if (!teaConfig || !teaConfig.tea_browser_automation) return;
+
+    const mode = teaConfig.tea_browser_automation;
+
+    if (mode === 'none') return;
+
+    console.log();
+
+    if (mode === 'cli' || mode === 'auto') {
+      console.log(chalk.blue('  ℹ') + chalk.bold(' Playwright CLI Setup:'));
+      console.log(chalk.dim('    npm install -g @playwright/cli@latest'));
+      console.log(chalk.dim('    playwright-cli install --skills    # Run from project root'));
+      console.log(chalk.dim('    Node.js 18+ required.'));
+    }
+
+    if (mode === 'mcp' || mode === 'auto') {
+      if (mode === 'auto') console.log();
+      console.log(chalk.blue('  ℹ') + chalk.bold(' Playwright MCP Setup:'));
+      console.log(chalk.dim('    Configure MCP servers in your IDE'));
+      console.log(chalk.dim('    See: https://github.com/microsoft/playwright-mcp'));
+    }
+
+    console.log();
   }
 
   /**
