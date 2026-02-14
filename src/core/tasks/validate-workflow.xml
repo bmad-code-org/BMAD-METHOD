@@ -9,7 +9,6 @@
     <input name="checklist" required="false" desc="Checklist file path. Defaults to workflow.yaml validation field, then checklist.md beside workflow" />
     <input name="document" required="false" desc="Document to validate. If omitted, resolve from workflow variables only" />
     <input name="report" required="false" desc="Output report file path. Defaults to document folder validation-report-{timestamp_utc}.md" />
-    <input name="auto_proceed_on_pass" required="false" desc="If true, do not wait for user direction when gate decision is PASS" />
   </inputs>
 
   <llm critical="true">
@@ -50,6 +49,8 @@
       <action>Load full target document content (use chunked sequential reads only when needed for large files, and record covered ranges)</action>
       <action>Extract story metadata when available (epic_num, story_num, story_id, story_key, title) from filename, heading, or frontmatter</action>
       <action>Parse checklist into ordered sections and atomic validation items; assign each item a stable id (section_index.item_index)</action>
+      <action>Compute parsed_item_count and expected_item_count (from raw checklist requirement markers such as - [ ], - [x], and requirement list lines)</action>
+      <action if="expected_item_count &gt; 0 AND parsed_item_count &lt; expected_item_count * 0.9">HALT with error: "Checklist parse divergence too large (parsed={parsed_item_count}, expected~={expected_item_count}); fix checklist formatting before validation"</action>
       <action>Determine critical checks from explicit signals only:
         - item-level markers: [CRITICAL], critical:true, MUST FIX
         - section-level markers: headings containing CRITICAL (case-insensitive), MUST FIX, MUST-FIX, or the exact phrase "Must Fix Before Proceeding"
@@ -107,6 +108,7 @@
         - else save to target document folder as validation-report-{timestamp_utc}.md
       </action>
       <action>Write report with the format below</action>
+      <action if="report write/save fails">HALT with error: "Validation report could not be saved"</action>
 
       <report-format>
         # Validation Report
@@ -153,8 +155,8 @@
       <action>Present concise summary with counts and gate decision</action>
       <action>Provide report path</action>
       <action if="critical failures exist">State clearly that workflow should not proceed until fixes are applied</action>
-      <action if="gate decision == PASS AND auto_proceed_on_pass == true">Return control immediately without waiting for user direction</action>
-      <action if="NOT(gate decision == PASS AND auto_proceed_on_pass == true)">HALT and wait for user direction</action>
+      <action if="gate decision == PASS">Return control immediately and continue calling workflow execution</action>
+      <action if="gate decision == FAIL OR gate decision == NEEDS_REVIEW">HALT and wait for user direction</action>
     </step>
   </flow>
 
@@ -163,6 +165,7 @@
     <condition>HALT if checklist file cannot be loaded</condition>
     <condition>HALT if target document cannot be determined after user prompt</condition>
     <condition>HALT if any checklist section is skipped</condition>
+    <condition>HALT if validation report cannot be saved</condition>
   </halt-conditions>
 
   <critical-rules>
