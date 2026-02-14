@@ -35,7 +35,7 @@ This is a COMPETITION to create the **ULTIMATE story context** that makes LLM de
 
 - The `{project-root}/_bmad/core/tasks/validate-workflow.xml` framework will automatically:
   - Load this checklist file
-  - Load the newly created story file (`{default_output_file}`)
+  - Load the story file (`{story_file}` when provided, otherwise `{default_output_file}`)
   - Load workflow variables from `{installed_path}/workflow.yaml`
   - Execute the validation process
 
@@ -62,15 +62,17 @@ You will systematically re-do the entire story creation process, but with a crit
 ### **Step 1: Load and Understand the Target**
 
 1. **Load the workflow configuration**: `{installed_path}/workflow.yaml` for variable inclusion
-2. **Load the story file**: `{default_output_file}` (or explicit `{document}` input)
+2. **Load the story file**: `{story_file}` first, fallback to `{default_output_file}` (or explicit `{document}` input)
 3. **Load validation framework**: `{project-root}/_bmad/core/tasks/validate-workflow.xml`
 4. **Resolve variables deterministically**:
+   - Load config_source file if present
    - Parse workflow.yaml key/value pairs
-   - For any value matching `{config_source}:key`, load the referenced config file and resolve `key`
+   - For any value matching `{config_source}:key`, resolve from the loaded config source
    - Resolve system path variables (for example `{project-root}`, `{installed_path}`) in every path value
-   - Required for this checklist flow: `{default_output_file}`, `{epics_file}`, `{architecture_file}`, `{implementation_artifacts}`, `{project-root}`, `{installed_path}`
-   - Optional/fallback-capable values: `{story_file}`, validation `{checklist}` input, validation `{report}` input
+   - Required for this checklist flow: `{epics_file}`, `{architecture_file}`, `{implementation_artifacts}`, `{project-root}`, `{installed_path}`, and at least one story locator (`{story_file}` or `{default_output_file}`)
+   - Optional/fallback-capable values: validation `{checklist}` input and validation `{report}` input
    - Validation task input contract: `workflow` is required; `checklist`, `document`, and `report` are optional with deterministic fallback
+   - Note: create-story invoke-task passes `document={default_output_file}` explicitly, which overrides fallback discovery
    - If any required value remains unresolved, stop and request explicit user input before continuing
 5. **Extract metadata**: epic_num, story_num, story_key, story_title from story file
 6. **Understand current status**: What story implementation guidance is currently provided?

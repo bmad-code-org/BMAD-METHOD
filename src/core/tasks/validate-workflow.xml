@@ -9,6 +9,7 @@
     <input name="checklist" required="false" desc="Checklist file path. Defaults to workflow.yaml validation field, then checklist.md beside workflow" />
     <input name="document" required="false" desc="Document to validate. If omitted, resolve from workflow variables only" />
     <input name="report" required="false" desc="Output report file path. Defaults to document folder validation-report-{timestamp_utc}.md" />
+    <input name="auto_proceed_on_pass" required="false" desc="If true, do not wait for user direction when gate decision is PASS" />
   </inputs>
 
   <llm critical="true">
@@ -49,10 +50,15 @@
       <action>Load full target document content (use chunked sequential reads only when needed for large files, and record covered ranges)</action>
       <action>Extract story metadata when available (epic_num, story_num, story_id, story_key, title) from filename, heading, or frontmatter</action>
       <action>Parse checklist into ordered sections and atomic validation items; assign each item a stable id (section_index.item_index)</action>
-      <action>Determine critical checks from explicit signals only: item-level markers ([CRITICAL], critical:true, MUST FIX) or critical section labels; do not infer criticality from generic keywords alone</action>
+      <action>Determine critical checks from explicit signals only:
+        - item-level markers: [CRITICAL], critical:true, MUST FIX
+        - section-level markers: headings containing CRITICAL (case-insensitive), MUST FIX, MUST-FIX, or the exact phrase "Must Fix Before Proceeding"
+        - XML section attributes: critical="true" or critical="yes"
+        - do not infer criticality from generic keywords alone
+      </action>
       <action>Detect conditional expressions in checklist items (for example: if/when/unless + variable references)</action>
       <action if="no checklist items parsed">HALT with error: "Checklist is empty or unparsable"</action>
-      <action if="conditional items reference metadata and metadata is missing">Ask user to provide missing metadata fields (epic_num, story_num, story_id/story_key) and WAIT before evaluating checklist items</action>
+      <action if="conditional items reference metadata and metadata is missing">Ask user to provide all missing referenced metadata fields (epic_num, story_num, story_id, story_key, title/story_title) and WAIT before evaluating checklist items</action>
     </step>
 
     <step n="3" title="Validate Every Checklist Item" critical="true">
@@ -66,7 +72,6 @@
       <action>For each item:
         - restate requirement in one short sentence
         - if item contains explicit condition (for example "If story_num > 1") and condition is false, mark N/A with the exact reason
-        - if item condition depends on missing metadata, mark PARTIAL (not N/A) and specify required metadata
         - locate explicit evidence in document (include line references when possible)
         - consider implied coverage only when explicit text is absent
         - assign verdict and rationale
@@ -78,7 +83,12 @@
       <action if="processed_item_count != total_item_count">HALT with error: "Validation incomplete: one or more checklist items were not processed"</action>
       <action>Compute applicable_count = pass_count + partial_count + fail_count</action>
       <action>Compute pass_percent using applicable_count (if 0, set pass_percent=0)</action>
+      <action>Set gate_warning:
+        - "No applicable checklist items were evaluated; manual confirmation required" if applicable_count == 0
+        - "N/A" otherwise
+      </action>
       <action>Set gate decision deterministically:
+        - NEEDS_REVIEW if applicable_count == 0
         - FAIL if critical_fail_count &gt; 0
         - FAIL if critical_partial_count &gt; 0
         - FAIL if fail_count &gt; 0
@@ -110,7 +120,8 @@
         - Overall pass rate: {pass_count}/{applicable_count} ({pass_percent}%)
         - Critical failures: {critical_fail_count}
         - Critical partials: {critical_partial_count}
-        - Gate decision: {PASS|FAIL}
+        - Gate decision: {PASS|FAIL|NEEDS_REVIEW}
+        - Gate warning: {gate_warning}
 
         ## Section Results
         ### {Section Name}
@@ -126,7 +137,7 @@
           - Action (if PARTIAL/FAIL): {specific remediation}
 
         ## Must Fix Before Proceeding
-        - {all critical FAIL items}
+        - {all critical FAIL and PARTIAL items}
 
         ## Should Improve
         - {all non-critical FAIL and PARTIAL items}
@@ -142,7 +153,8 @@
       <action>Present concise summary with counts and gate decision</action>
       <action>Provide report path</action>
       <action if="critical failures exist">State clearly that workflow should not proceed until fixes are applied</action>
-      <action>HALT and wait for user direction</action>
+      <action if="gate decision == PASS AND auto_proceed_on_pass == true">Return control immediately without waiting for user direction</action>
+      <action if="NOT(gate decision == PASS AND auto_proceed_on_pass == true)">HALT and wait for user direction</action>
     </step>
   </flow>
 

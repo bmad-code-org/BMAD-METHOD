@@ -280,15 +280,15 @@
     <template-output file="{default_output_file}">testing_requirements</template-output>
 
     <!-- Previous story intelligence -->
-    <action>If previous story learnings are unavailable (for example this is story 1 in epic), set previous_story_intelligence to an explicit N/A note with reason</action>
+    <action>If previous story learnings are unavailable (for example this is story 1 in epic), set previous_story_intelligence to the canonical format: N/A: {one-line reason}</action>
     <template-output file="{default_output_file}">previous_story_intelligence</template-output>
 
     <!-- Git intelligence -->
-    <action>If git analysis is unavailable or not relevant, set git_intelligence_summary to an explicit N/A note with reason</action>
+    <action>If git analysis is unavailable or not relevant, set git_intelligence_summary to the canonical format: N/A: {one-line reason}</action>
     <template-output file="{default_output_file}">git_intelligence_summary</template-output>
 
     <!-- Latest technical specifics -->
-    <action>If web research was not completed or not needed, set latest_tech_information to an explicit N/A note with reason</action>
+    <action>If web research was not completed or not needed, set latest_tech_information to the canonical format: N/A: {one-line reason}</action>
     <template-output file="{default_output_file}">latest_tech_information</template-output>
 
     <!-- Project context reference -->
@@ -306,8 +306,8 @@
   </step>
 
   <step n="6" goal="Update sprint status and finalize">
-    <invoke-task>Run {project-root}/_bmad/core/tasks/validate-workflow.xml with workflow={installed_path}/workflow.yaml checklist={installed_path}/checklist.md document={default_output_file}</invoke-task>
     <action>Save story document unconditionally</action>
+    <invoke-task>Run {project-root}/_bmad/core/tasks/validate-workflow.xml with workflow={installed_path}/workflow.yaml checklist={installed_path}/checklist.md document={default_output_file}</invoke-task>
 
     <!-- Update sprint status -->
     <check if="sprint status file exists">
