@@ -35,7 +35,7 @@ This is a COMPETITION to create the **ULTIMATE story context** that makes LLM de
 
 - The `{project-root}/_bmad/core/tasks/validate-workflow.xml` framework will automatically:
   - Load this checklist file
-  - Load the newly created story file (`{story_file_path}`)
+  - Load the newly created story file (`{default_output_file}`)
   - Load workflow variables from `{installed_path}/workflow.yaml`
   - Execute the validation process
 
@@ -62,7 +62,7 @@ You will systematically re-do the entire story creation process, but with a crit
 ### **Step 1: Load and Understand the Target**
 
 1. **Load the workflow configuration**: `{installed_path}/workflow.yaml` for variable inclusion
-2. **Load the story file**: `{story_file_path}` (provided by user or discovered)
+2. **Load the story file**: `{default_output_file}` (or explicit `{document}` input)
 3. **Load validation framework**: `{project-root}/_bmad/core/tasks/validate-workflow.xml`
 4. **Resolve variables deterministically**:
    - Parse workflow.yaml key/value pairs

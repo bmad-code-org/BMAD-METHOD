@@ -7,16 +7,18 @@
   <inputs>
     <input name="workflow" required="true" desc="Workflow yaml path used to resolve variables and checklist location" />
     <input name="checklist" required="false" desc="Checklist file path. Defaults to workflow.yaml validation field, then checklist.md beside workflow" />
-    <input name="document" required="false" desc="Document to validate. If omitted, infer from workflow variables and recent artifacts" />
-    <input name="report" required="false" desc="Output report file path. Defaults to document folder validation-report-{timestamp}.md" />
+    <input name="document" required="false" desc="Document to validate. If omitted, resolve from workflow variables only" />
+    <input name="report" required="false" desc="Output report file path. Defaults to document folder validation-report-{timestamp_utc}.md" />
   </inputs>
 
   <llm critical="true">
     <i>MANDATORY: Execute ALL steps in order. Do not skip any checklist item.</i>
     <i>Always read COMPLETE files; do not sample with offsets.</i>
+    <i>If a file cannot be loaded in one read, read it in deterministic sequential chunks until full coverage is achieved and recorded.</i>
     <i>Every non-N/A judgment must include concrete evidence from the document.</i>
     <i>If a required path cannot be resolved, stop and ask for explicit user input.</i>
     <i>Be strict and objective: no assumptions without evidence.</i>
+    <i>N/A is allowed only when an explicit conditional requirement is not applicable; never use N/A due to missing evidence.</i>
   </llm>
 
   <flow>
@@ -38,36 +40,61 @@
         - resolved variable {story_file} if present
         - resolved variable {default_output_file} if present
       </action>
-      <action if="document path unresolved">Try fuzzy discovery in implementation_artifacts: pick most likely recent .md output and state this inference explicitly</action>
       <action if="still unresolved">Ask user: "Which document should I validate?" and WAIT</action>
+      <action>Normalize resolved workflow/checklist/document paths to absolute paths before loading files</action>
     </step>
 
     <step n="2" title="Load Checklist and Target Document" critical="true">
-      <action>Load full checklist content</action>
-      <action>Load full target document content</action>
-      <action>Extract story metadata when available (epic_num, story_num, story_id) from document title or filename for conditional checks</action>
-      <action>Parse checklist into sections and atomic validation items</action>
-      <action>Mark items containing terms like "critical", "must", "required", "blocking" as critical checks</action>
+      <action>Load full checklist content (use chunked sequential reads only when needed for large files, and record covered ranges)</action>
+      <action>Load full target document content (use chunked sequential reads only when needed for large files, and record covered ranges)</action>
+      <action>Extract story metadata when available (epic_num, story_num, story_id, story_key, title) from filename, heading, or frontmatter</action>
+      <action>Parse checklist into ordered sections and atomic validation items; assign each item a stable id (section_index.item_index)</action>
+      <action>Determine critical checks from explicit signals only: item-level markers ([CRITICAL], critical:true, MUST FIX) or critical section labels; do not infer criticality from generic keywords alone</action>
+      <action>Detect conditional expressions in checklist items (for example: if/when/unless + variable references)</action>
       <action if="no checklist items parsed">HALT with error: "Checklist is empty or unparsable"</action>
+      <action if="conditional items reference metadata and metadata is missing">Record metadata_gap=true and list missing metadata fields for explicit PARTIAL decisions in step 3</action>
     </step>
 
     <step n="3" title="Validate Every Checklist Item" critical="true">
       <mandate>For every checklist item, evaluate one of: PASS, PARTIAL, FAIL, N/A</mandate>
+      <action>Initialize counters to zero before evaluation:
+        - pass_count, partial_count, fail_count, na_count
+        - critical_fail_count, critical_partial_count
+        - applicable_count, total_item_count, processed_item_count
+        - total_section_count, processed_section_count
+      </action>
       <action>For each item:
         - restate requirement in one short sentence
         - if item contains explicit condition (for example "If story_num > 1") and condition is false, mark N/A with the exact reason
+        - if item condition depends on missing metadata, mark PARTIAL (not N/A) and specify required metadata
         - locate explicit evidence in document (include line references when possible)
         - consider implied coverage only when explicit text is absent
         - assign verdict and rationale
         - if PARTIAL/FAIL, describe impact and a concrete fix
+        - update all counters immediately after each verdict
+      </action>
+      <action>Process sections in deterministic order and increment processed_section_count after each section completes</action>
+      <action if="processed_section_count != total_section_count">HALT with error: "Validation incomplete: one or more checklist sections were not processed"</action>
+      <action if="processed_item_count != total_item_count">HALT with error: "Validation incomplete: one or more checklist items were not processed"</action>
+      <action>Compute applicable_count = pass_count + partial_count + fail_count</action>
+      <action>Compute pass_percent using applicable_count (if 0, set pass_percent=0)</action>
+      <action>Set gate decision deterministically:
+        - FAIL if critical_fail_count &gt; 0
+        - FAIL if critical_partial_count &gt; 0
+        - FAIL if fail_count &gt; 0
+        - PASS otherwise
       </action>
       <critical>DO NOT SKIP ANY ITEM OR SECTION</critical>
     </step>
 
     <step n="4" title="Generate Validation Report">
+      <action>Generate timestamp values:
+        - timestamp_utc for filenames in YYYYMMDD-HHmmss (UTC)
+        - generated_at_utc for report display in ISO-8601 UTC
+      </action>
       <action>Set report path:
         - use explicit input {report} when provided
-        - else save to target document folder as validation-report-{timestamp}.md
+        - else save to target document folder as validation-report-{timestamp_utc}.md
       </action>
       <action>Write report with the format below</action>
 
@@ -77,7 +104,7 @@
         - Document: {document}
         - Checklist: {checklist}
         - Workflow: {workflow}
-        - Date: {timestamp}
+        - Date: {generated_at_utc}
 
         ## Summary
         - Overall pass rate: {pass_count}/{applicable_count} ({pass_percent}%)
@@ -114,6 +141,7 @@
     <step n="5" title="Return Decision and Halt">
       <action>Present concise summary with counts and gate decision</action>
       <action>Provide report path</action>
+      <action if="metadata_gap=true">Call out missing metadata fields that caused PARTIAL results and how to supply them</action>
       <action if="critical failures exist">State clearly that workflow should not proceed until fixes are applied</action>
       <action>HALT and wait for user direction</action>
     </step>
@@ -131,5 +159,7 @@
     <rule>Every PASS/PARTIAL/FAIL must have evidence</rule>
     <rule>Use deterministic variable resolution before asking the user</rule>
     <rule>Always save a validation report file</rule>
+    <rule>N/A is valid only for explicit conditional non-applicability</rule>
+    <rule>Criticality must come from explicit checklist markers or critical sections</rule>
   </critical-rules>
 </task>
