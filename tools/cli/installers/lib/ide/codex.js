@@ -309,7 +309,7 @@ class CodexSetup extends BaseIdeSetup {
     };
   }
 
-  getCodexSkillsDir(projectDir = null, location = 'global') {
+  getCodexSkillsDir(projectDir = null, location = 'project') {
     if (location === 'project' && projectDir) {
       return path.join(projectDir, '.agents', 'skills');
     }
