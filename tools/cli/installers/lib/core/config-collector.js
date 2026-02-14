@@ -302,22 +302,29 @@ class ConfigCollector {
 
         const configSpinner = await prompts.spinner();
         configSpinner.start('Configuring modules...');
-        for (const moduleName of defaultModules) {
-          const displayName = displayNameMap.get(moduleName) || moduleName.toUpperCase();
-          configSpinner.message(`Configuring ${displayName}...`);
-          try {
-            this._silentConfig = true;
-            await this.collectModuleConfig(moduleName, projectDir);
-          } finally {
-            this._silentConfig = false;
+        try {
+          for (const moduleName of defaultModules) {
+            const displayName = displayNameMap.get(moduleName) || moduleName.toUpperCase();
+            configSpinner.message(`Configuring ${displayName}...`);
+            try {
+              this._silentConfig = true;
+              await this.collectModuleConfig(moduleName, projectDir);
+            } finally {
+              this._silentConfig = false;
+            }
           }
+        } finally {
+          configSpinner.stop(customizeModules.length > 0 ? 'Module defaults applied' : 'Module configuration complete');
         }
-        configSpinner.stop('Module configuration complete');
       }
 
       // Run customized modules individually (may show interactive prompts)
       for (const moduleName of customizeModules) {
         await this.collectModuleConfig(moduleName, projectDir);
+      }
+
+      if (customizeModules.length > 0) {
+        await prompts.log.step('Module configuration complete');
       }
     }
 
@@ -1239,7 +1246,6 @@ class ConfigCollector {
         hasOutput = true;
 
         const message = valueMessages[selectedValue];
-        await prompts.log.message('');
         for (const line of message.trim().split('\n')) {
           const trimmedLine = line.trim();
           if (trimmedLine.endsWith(':') && !trimmedLine.startsWith(' ')) {
