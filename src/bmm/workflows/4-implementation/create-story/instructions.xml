@@ -306,7 +306,7 @@
   </step>
 
   <step n="6" goal="Update sprint status and finalize">
-    <invoke-task>Run _bmad/core/tasks/validate-workflow.xml with workflow={installed_path}/workflow.yaml checklist={installed_path}/checklist.md document={default_output_file}</invoke-task>
+    <invoke-task>Run {project-root}/_bmad/core/tasks/validate-workflow.xml with workflow={installed_path}/workflow.yaml checklist={installed_path}/checklist.md document={default_output_file}</invoke-task>
     <action>Save story document unconditionally</action>
 
     <!-- Update sprint status -->

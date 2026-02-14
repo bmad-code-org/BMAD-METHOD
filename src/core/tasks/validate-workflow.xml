@@ -52,7 +52,7 @@
       <action>Determine critical checks from explicit signals only: item-level markers ([CRITICAL], critical:true, MUST FIX) or critical section labels; do not infer criticality from generic keywords alone</action>
       <action>Detect conditional expressions in checklist items (for example: if/when/unless + variable references)</action>
       <action if="no checklist items parsed">HALT with error: "Checklist is empty or unparsable"</action>
-      <action if="conditional items reference metadata and metadata is missing">Record metadata_gap=true and list missing metadata fields for explicit PARTIAL decisions in step 3</action>
+      <action if="conditional items reference metadata and metadata is missing">Ask user to provide missing metadata fields (epic_num, story_num, story_id/story_key) and WAIT before evaluating checklist items</action>
     </step>
 
     <step n="3" title="Validate Every Checklist Item" critical="true">
@@ -141,7 +141,6 @@
     <step n="5" title="Return Decision and Halt">
       <action>Present concise summary with counts and gate decision</action>
       <action>Provide report path</action>
-      <action if="metadata_gap=true">Call out missing metadata fields that caused PARTIAL results and how to supply them</action>
       <action if="critical failures exist">State clearly that workflow should not proceed until fixes are applied</action>
       <action>HALT and wait for user direction</action>
     </step>

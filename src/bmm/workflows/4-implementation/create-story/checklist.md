@@ -68,7 +68,10 @@ You will systematically re-do the entire story creation process, but with a crit
    - Parse workflow.yaml key/value pairs
    - For any value matching `{config_source}:key`, load the referenced config file and resolve `key`
    - Resolve system path variables (for example `{project-root}`, `{installed_path}`) in every path value
-   - If any required variable remains unresolved, stop and request explicit user input before continuing
+   - Required for this checklist flow: `{default_output_file}`, `{epics_file}`, `{architecture_file}`, `{implementation_artifacts}`, `{project-root}`, `{installed_path}`
+   - Optional/fallback-capable values: `{story_file}`, validation `{checklist}` input, validation `{report}` input
+   - Validation task input contract: `workflow` is required; `checklist`, `document`, and `report` are optional with deterministic fallback
+   - If any required value remains unresolved, stop and request explicit user input before continuing
 5. **Extract metadata**: epic_num, story_num, story_key, story_title from story file
 6. **Understand current status**: What story implementation guidance is currently provided?
 
