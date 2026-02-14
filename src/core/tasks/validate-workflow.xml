@@ -1,0 +1,135 @@
+<task id="_bmad/core/tasks/validate-workflow.xml"
+  name="Validate Workflow Output"
+  description="Run a workflow checklist against a target document and produce an evidence-backed validation report">
+
+  <objective>Validate a generated document against checklist requirements with deterministic variable resolution and produce an actionable pass/fail report</objective>
+
+  <inputs>
+    <input name="workflow" required="true" desc="Workflow yaml path used to resolve variables and checklist location" />
+    <input name="checklist" required="false" desc="Checklist file path. Defaults to workflow.yaml validation field, then checklist.md beside workflow" />
+    <input name="document" required="false" desc="Document to validate. If omitted, infer from workflow variables and recent artifacts" />
+    <input name="report" required="false" desc="Output report file path. Defaults to document folder validation-report-{timestamp}.md" />
+  </inputs>
+
+  <llm critical="true">
+    <i>MANDATORY: Execute ALL steps in order. Do not skip any checklist item.</i>
+    <i>Always read COMPLETE files; do not sample with offsets.</i>
+    <i>Every non-N/A judgment must include concrete evidence from the document.</i>
+    <i>If a required path cannot be resolved, stop and ask for explicit user input.</i>
+    <i>Be strict and objective: no assumptions without evidence.</i>
+  </llm>
+
+  <flow>
+    <step n="1" title="Load Workflow Context">
+      <action>Load workflow yaml from input {workflow}</action>
+      <action>Resolve variables in this order:
+        1) load config_source file if present
+        2) resolve all {config_source}:key references
+        3) resolve system path variables ({project-root}, {installed_path})
+        4) resolve system-generated values (date)
+      </action>
+      <action>Determine checklist path in priority order:
+        - explicit input {checklist}
+        - workflow.yaml field "validation"
+        - sibling file checklist.md in workflow directory
+      </action>
+      <action>Determine document path in priority order:
+        - explicit input {document}
+        - resolved variable {story_file} if present
+        - resolved variable {default_output_file} if present
+      </action>
+      <action if="document path unresolved">Try fuzzy discovery in implementation_artifacts: pick most likely recent .md output and state this inference explicitly</action>
+      <action if="still unresolved">Ask user: "Which document should I validate?" and WAIT</action>
+    </step>
+
+    <step n="2" title="Load Checklist and Target Document" critical="true">
+      <action>Load full checklist content</action>
+      <action>Load full target document content</action>
+      <action>Extract story metadata when available (epic_num, story_num, story_id) from document title or filename for conditional checks</action>
+      <action>Parse checklist into sections and atomic validation items</action>
+      <action>Mark items containing terms like "critical", "must", "required", "blocking" as critical checks</action>
+      <action if="no checklist items parsed">HALT with error: "Checklist is empty or unparsable"</action>
+    </step>
+
+    <step n="3" title="Validate Every Checklist Item" critical="true">
+      <mandate>For every checklist item, evaluate one of: PASS, PARTIAL, FAIL, N/A</mandate>
+      <action>For each item:
+        - restate requirement in one short sentence
+        - if item contains explicit condition (for example "If story_num > 1") and condition is false, mark N/A with the exact reason
+        - locate explicit evidence in document (include line references when possible)
+        - consider implied coverage only when explicit text is absent
+        - assign verdict and rationale
+        - if PARTIAL/FAIL, describe impact and a concrete fix
+      </action>
+      <critical>DO NOT SKIP ANY ITEM OR SECTION</critical>
+    </step>
+
+    <step n="4" title="Generate Validation Report">
+      <action>Set report path:
+        - use explicit input {report} when provided
+        - else save to target document folder as validation-report-{timestamp}.md
+      </action>
+      <action>Write report with the format below</action>
+
+      <report-format>
+        # Validation Report
+
+        - Document: {document}
+        - Checklist: {checklist}
+        - Workflow: {workflow}
+        - Date: {timestamp}
+
+        ## Summary
+        - Overall pass rate: {pass_count}/{applicable_count} ({pass_percent}%)
+        - Critical failures: {critical_fail_count}
+        - Critical partials: {critical_partial_count}
+        - Gate decision: {PASS|FAIL}
+
+        ## Section Results
+        ### {Section Name}
+        - PASS: {count}
+        - PARTIAL: {count}
+        - FAIL: {count}
+        - N/A: {count}
+
+        For each checklist item:
+        - [MARK] {item}
+          - Evidence: {quote or line reference}
+          - Analysis: {why mark is correct}
+          - Action (if PARTIAL/FAIL): {specific remediation}
+
+        ## Must Fix Before Proceeding
+        - {all critical FAIL items}
+
+        ## Should Improve
+        - {all non-critical FAIL and PARTIAL items}
+
+        ## Final Recommendation
+        1. {highest-priority fix}
+        2. {second-priority fix}
+        3. {third-priority fix}
+      </report-format>
+    </step>
+
+    <step n="5" title="Return Decision and Halt">
+      <action>Present concise summary with counts and gate decision</action>
+      <action>Provide report path</action>
+      <action if="critical failures exist">State clearly that workflow should not proceed until fixes are applied</action>
+      <action>HALT and wait for user direction</action>
+    </step>
+  </flow>
+
+  <halt-conditions>
+    <condition>HALT if workflow file cannot be loaded</condition>
+    <condition>HALT if checklist file cannot be loaded</condition>
+    <condition>HALT if target document cannot be determined after user prompt</condition>
+    <condition>HALT if any checklist section is skipped</condition>
+  </halt-conditions>
+
+  <critical-rules>
+    <rule>Never skip checklist items</rule>
+    <rule>Every PASS/PARTIAL/FAIL must have evidence</rule>
+    <rule>Use deterministic variable resolution before asking the user</rule>
+    <rule>Always save a validation report file</rule>
+  </critical-rules>
+</task>

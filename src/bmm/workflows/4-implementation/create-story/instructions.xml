@@ -280,16 +280,12 @@
     <template-output file="{default_output_file}">testing_requirements</template-output>
 
     <!-- Previous story intelligence -->
-    <check
-      if="previous story learnings available">
-      <template-output file="{default_output_file}">previous_story_intelligence</template-output>
-    </check>
+    <action>If previous story learnings are unavailable (for example this is story 1 in epic), set previous_story_intelligence to an explicit N/A note with reason</action>
+    <template-output file="{default_output_file}">previous_story_intelligence</template-output>
 
     <!-- Git intelligence -->
-    <check
-      if="git analysis completed">
-      <template-output file="{default_output_file}">git_intelligence_summary</template-output>
-    </check>
+    <action>If git analysis is unavailable or not relevant, set git_intelligence_summary to an explicit N/A note with reason</action>
+    <template-output file="{default_output_file}">git_intelligence_summary</template-output>
 
     <!-- Latest technical specifics -->
     <check if="web research completed">
@@ -311,7 +307,7 @@
   </step>
 
   <step n="6" goal="Update sprint status and finalize">
-    <invoke-task>Validate against checklist at {installed_path}/checklist.md using _bmad/core/tasks/validate-workflow.xml</invoke-task>
+    <invoke-task>Validate against checklist at {installed_path}/checklist.md using _bmad/core/tasks/validate-workflow.xml and target file {default_output_file}</invoke-task>
     <action>Save story document unconditionally</action>
 
     <!-- Update sprint status -->
