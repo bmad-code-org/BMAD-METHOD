@@ -318,7 +318,6 @@ class CodexSetup extends BaseIdeSetup {
 
   /**
    * Remove existing BMAD skill directories from the skills directory.
-   * Handles both old flat files and new skill directories.
    */
   async clearOldBmadSkills(destDir, options = {}) {
     if (!(await fs.pathExists(destDir))) {
@@ -349,7 +348,6 @@ class CodexSetup extends BaseIdeSetup {
 
       const entryPath = path.join(destDir, entry);
       try {
-        // fs.remove handles both files and directories
         await fs.remove(entryPath);
       } catch (error) {
         if (!options.silent) {
