@@ -63,6 +63,48 @@ Check the {outputFile} for sections added by previous steps:
 - UX Alignment issues
 - Epic Quality violations
 
+### 2b. Enterprise Track Additional Checks (if applicable)
+
+If the project is Enterprise track (check PRD frontmatter for `track: enterprise`), perform these additional validations:
+
+**StRS Completeness:**
+- [ ] StRS document exists and follows ISO 29148 Clause 7 structure
+- [ ] All 7 major sections present (Introduction, References, Business Mgmt, Operational, User, System Concept, Constraints)
+- [ ] StRS status is at least 'review' (check frontmatter)
+
+**SyRS Completeness:**
+- [ ] SyRS document exists and follows ISO 29148 Clause 8 structure
+- [ ] System functional requirements mapped from PRD
+- [ ] System interfaces defined
+- [ ] Verification plan for each system requirement
+- [ ] SyRS status is at least 'review' (check frontmatter)
+
+**RTM Integrity:**
+- [ ] RTM document exists with bidirectional traceability
+- [ ] StRS → SyRS traceability present (forward coverage > 90%)
+- [ ] SyRS → PRD traceability present (forward coverage > 90%)
+- [ ] PRD → Stories traceability present (forward coverage > 95%)
+- [ ] No orphan requirements at any level
+- [ ] All requirement statuses documented
+
+**Verification Method Assignment:**
+- [ ] Every FR in PRD has a verification method assigned (Inspection / Analysis / Demonstration / Test)
+- [ ] Every SyRS requirement has a verification method assigned
+- [ ] Verification plan section exists in PRD
+
+**Cross-Document Consistency:**
+- [ ] StRS scope aligns with PRD scope
+- [ ] SyRS interfaces match Architecture interfaces
+- [ ] No terminology contradictions across documents
+- [ ] Requirement priorities consistent across levels
+
+**Baseline Status:**
+- [ ] All requirement documents have version numbers in frontmatter
+- [ ] Baseline version established (or ready to establish)
+- [ ] Change history documented in each requirement document
+
+Add Enterprise assessment findings to the report under a dedicated "Enterprise Track Assessment" section.
+
 ### 3. Add Final Assessment Section
 
 Append to {outputFile}:

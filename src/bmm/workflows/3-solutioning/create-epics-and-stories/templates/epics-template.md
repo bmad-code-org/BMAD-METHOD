@@ -1,6 +1,7 @@
 ---
 stepsCompleted: []
 inputDocuments: []
+track: "{{bmad|enterprise}}"
 ---
 
 # {{project_name}} - Epic Breakdown
@@ -26,6 +27,10 @@ This document provides the complete epic and story breakdown for {{project_name}
 ### FR Coverage Map
 
 {{requirements_coverage_map}}
+
+<!-- Enterprise Track Only: Requirements Traceability Summary -->
+<!-- ### Requirements Traceability Summary -->
+<!-- {{requirements_traceability_summary}} -->
 
 ## Epic List
 
@@ -53,5 +58,12 @@ So that {{value_benefit}}.
 **When** {{action}}
 **Then** {{expected_outcome}}
 **And** {{additional_criteria}}
+
+<!-- Enterprise Track Only: Requirements Traceability per story -->
+<!-- **Requirements Traceability:** -->
+<!-- - **PRD:** {{prd_requirement_ids}} -->
+<!-- - **SyRS:** {{syrs_requirement_ids}} -->
+<!-- - **StRS:** {{strs_requirement_ids}} -->
+<!-- - **Verification:** {{verification_method}} -->
 
 <!-- End story repeat -->

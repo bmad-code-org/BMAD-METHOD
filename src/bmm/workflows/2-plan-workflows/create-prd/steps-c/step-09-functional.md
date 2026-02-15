@@ -103,11 +103,24 @@ Group FRs by logical capability areas (NOT by technology or layer):
 
 Create complete functional requirements using this format:
 
-**Format:**
+**Standard Format (Quick Flow / BMad Method tracks):**
 
 - FR#: [Actor] can [capability] [context/constraint if needed]
 - Number sequentially (FR1, FR2, FR3...)
 - Aim for 20-50 FRs for typical projects
+
+**Enterprise Format (ISO 29148 compliant - when Enterprise track is configured):**
+
+For Enterprise track, each FR should include additional attributes:
+
+- **FR-[Area]-###**: [Actor] can [capability] [context/constraint if needed]
+  - **Priority:** Must / Should / Could / Won't (MoSCoW)
+  - **Source:** [StRS reference or stakeholder]
+  - **Rationale:** [Why this requirement exists]
+  - **Verification:** Inspection | Analysis | Demonstration | Test
+  - **Risk:** High | Medium | Low
+
+Note: If not on Enterprise track, use the standard format above. The Enterprise attributes are optional for BMad Method track.
 
 **Altitude Check:**
 Each FR should answer "WHAT capability exists?" NOT "HOW it's implemented?"
@@ -150,6 +163,8 @@ Prepare the content to append to the document:
 
 When saving to document, append these Level 2 and Level 3 sections:
 
+**Standard Format:**
+
 ```markdown
 ## Functional Requirements
 
@@ -165,6 +180,23 @@ When saving to document, append these Level 2 and Level 3 sections:
 - FR5: [Specific Actor] can [specific capability]
 
 [Continue for all capability areas discovered in conversation]
+```
+
+**Enterprise Format (when Enterprise track is active):**
+
+```markdown
+## Functional Requirements
+
+### [Capability Area Name]
+
+- **FR-[AREA]-001**: [Specific Actor] can [specific capability]
+  - Priority: Must | Should | Could | Won't
+  - Source: [StRS-XXX or stakeholder name]
+  - Rationale: [Why this requirement exists]
+  - Verification: Test | Demonstration | Analysis | Inspection
+  - Risk: High | Medium | Low
+
+[Continue for all capability areas with full attributes]
 ```
 
 ### 7. Present MENU OPTIONS

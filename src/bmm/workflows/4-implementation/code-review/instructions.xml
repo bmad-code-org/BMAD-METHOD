@@ -94,6 +94,17 @@
       5. **Test Quality**: Are tests real assertions or placeholders?
     </action>
 
+    <!-- Enterprise Track: Requirements Verification Check -->
+    <action>If story has a "Requirements Traceability" section (Enterprise track):
+      1. **Verification Method Check**: For each referenced requirement, check if the specified verification method is satisfied:
+         - **Test**: Are there actual tests that verify this requirement? Tests must exist and be meaningful.
+         - **Demonstration**: Can the implemented feature be demonstrated to satisfy the requirement?
+         - **Inspection**: Does the code implementation clearly match the requirement intent?
+         - **Analysis**: Are there calculations, models, or analysis artifacts that verify the requirement?
+      2. **Requirement Coverage**: Are ALL referenced PRD FRs actually addressed by the implementation?
+      3. If verification gaps found → HIGH SEVERITY finding: "Requirement {{REQ-ID}} verification method '{{method}}' not satisfied"
+    </action>
+
     <check if="total_issues_found lt 3">
       <critical>NOT LOOKING HARD ENOUGH - Find more problems!</critical>
       <action>Re-examine code for:
