@@ -1528,20 +1528,157 @@ class Installer {
   }
 
   /**
-   * Uninstall BMAD
+   * Uninstall BMAD with selective removal options
+   * @param {string} directory - Project directory
+   * @param {Object} options - Uninstall options
+   * @param {boolean} [options.removeModules=true] - Remove _bmad/ directory
+   * @param {boolean} [options.removeIdeConfigs=true] - Remove IDE configurations
+   * @param {boolean} [options.removeOutputFolder=false] - Remove user artifacts output folder
+   * @returns {Object} Result with success status and removed components
    */
-  async uninstall(directory) {
+  async uninstall(directory, options = {}) {
     const projectDir = path.resolve(directory);
     const { bmadDir } = await this.findBmadDir(projectDir);
 
-    if (await fs.pathExists(bmadDir)) {
-      await fs.remove(bmadDir);
+    if (!(await fs.pathExists(bmadDir))) {
+      return { success: false, reason: 'not-installed' };
     }
 
-    // Clean up IDE configurations
-    await this.ideManager.cleanup(projectDir);
+    // 1. DETECT: Read state BEFORE deleting anything
+    const existingInstall = await this.detector.detect(bmadDir);
+    const outputFolder = await this._readOutputFolder(bmadDir);
 
-    return { success: true };
+    const removed = { modules: false, ideConfigs: false, outputFolder: false };
+
+    // 2. IDE CLEANUP (before _bmad/ deletion so configs are accessible)
+    if (options.removeIdeConfigs !== false) {
+      await this.uninstallIdeConfigs(projectDir, existingInstall, { silent: options.silent });
+      removed.ideConfigs = true;
+    }
+
+    // 3. OUTPUT FOLDER (only if explicitly requested)
+    if (options.removeOutputFolder === true && outputFolder) {
+      removed.outputFolder = await this.uninstallOutputFolder(projectDir, outputFolder);
+    }
+
+    // 4. BMAD DIRECTORY (last, after everything that needs it)
+    if (options.removeModules !== false) {
+      removed.modules = await this.uninstallModules(projectDir);
+    }
+
+    return { success: true, removed, version: existingInstall.version };
+  }
+
+  /**
+   * Uninstall IDE configurations only
+   * @param {string} projectDir - Project directory
+   * @param {Object} existingInstall - Detection result from detector.detect()
+   * @param {Object} [options] - Options (e.g. { silent: true })
+   * @returns {Promise<Object>} Results from IDE cleanup
+   */
+  async uninstallIdeConfigs(projectDir, existingInstall, options = {}) {
+    await this.ideManager.ensureInitialized();
+    const cleanupOptions = { isUninstall: true, silent: options.silent };
+    const ideList = existingInstall.ides || [];
+    if (ideList.length > 0) {
+      return this.ideManager.cleanupByList(projectDir, ideList, cleanupOptions);
+    }
+    return this.ideManager.cleanup(projectDir, cleanupOptions);
+  }
+
+  /**
+   * Remove user artifacts output folder
+   * @param {string} projectDir - Project directory
+   * @param {string} outputFolder - Output folder name (relative)
+   * @returns {Promise<boolean>} Whether the folder was removed
+   */
+  async uninstallOutputFolder(projectDir, outputFolder) {
+    if (!outputFolder) return false;
+    const resolvedProject = path.resolve(projectDir);
+    const outputPath = path.resolve(resolvedProject, outputFolder);
+    if (!outputPath.startsWith(resolvedProject + path.sep)) {
+      return false;
+    }
+    if (await fs.pathExists(outputPath)) {
+      await fs.remove(outputPath);
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Remove the _bmad/ directory
+   * @param {string} projectDir - Project directory
+   * @returns {Promise<boolean>} Whether the directory was removed
+   */
+  async uninstallModules(projectDir) {
+    const { bmadDir } = await this.findBmadDir(projectDir);
+    if (await fs.pathExists(bmadDir)) {
+      await fs.remove(bmadDir);
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Get the configured output folder name for a project
+   * Resolves bmadDir internally from projectDir
+   * @param {string} projectDir - Project directory
+   * @returns {string} Output folder name (relative, default: '_bmad-output')
+   */
+  async getOutputFolder(projectDir) {
+    const { bmadDir } = await this.findBmadDir(projectDir);
+    return this._readOutputFolder(bmadDir);
+  }
+
+  /**
+   * Read the output_folder setting from module config files
+   * Checks bmm/config.yaml first, then other module configs
+   * @param {string} bmadDir - BMAD installation directory
+   * @returns {string} Output folder path or default
+   */
+  async _readOutputFolder(bmadDir) {
+    const yaml = require('yaml');
+
+    // Check bmm/config.yaml first (most common)
+    const bmmConfigPath = path.join(bmadDir, 'bmm', 'config.yaml');
+    if (await fs.pathExists(bmmConfigPath)) {
+      try {
+        const content = await fs.readFile(bmmConfigPath, 'utf8');
+        const config = yaml.parse(content);
+        if (config && config.output_folder) {
+          // Strip {project-root}/ prefix if present
+          return config.output_folder.replace(/^\{project-root\}[/\\]/, '');
+        }
+      } catch {
+        // Fall through to other modules
+      }
+    }
+
+    // Scan other module config.yaml files
+    try {
+      const entries = await fs.readdir(bmadDir, { withFileTypes: true });
+      for (const entry of entries) {
+        if (!entry.isDirectory() || entry.name === 'bmm' || entry.name.startsWith('_')) continue;
+        const configPath = path.join(bmadDir, entry.name, 'config.yaml');
+        if (await fs.pathExists(configPath)) {
+          try {
+            const content = await fs.readFile(configPath, 'utf8');
+            const config = yaml.parse(content);
+            if (config && config.output_folder) {
+              return config.output_folder.replace(/^\{project-root\}[/\\]/, '');
+            }
+          } catch {
+            // Continue scanning
+          }
+        }
+      }
+    } catch {
+      // Directory scan failed
+    }
+
+    // Default fallback
+    return '_bmad-output';
   }
 
   /**
