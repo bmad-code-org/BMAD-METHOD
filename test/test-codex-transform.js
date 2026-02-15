@@ -60,20 +60,8 @@ console.log(`\n${colors.cyan}CodexSetup.transformToSkillFormat tests${colors.res
 {
   const input = `---\ndescription: "it's a test"\n---\n\nBody.`;
   const result = setup.transformToSkillFormat(input, 'test-skill');
-
-  // Verify the inner quote is escaped: description: 'it''s a test'
-  const descLine = result.split('\n').find((l) => l.startsWith('description:'));
-  const value = descLine.replace('description: ', '');
-
-  // Check that single quotes inside the value are properly escaped
-  // In YAML single-quoted scalars, a literal ' must be written as ''
-  const innerContent = value.slice(1, -1); // strip outer quotes
-  const hasUnescapedQuote = innerContent.match(/[^']'[^']/);
-  assert(
-    !hasUnescapedQuote,
-    'description with apostrophe produces valid YAML (no unescaped inner quotes)',
-    `description line: ${descLine}`,
-  );
+  const expected = `---\nname: test-skill\ndescription: 'it''s a test'\n---\n\nBody.`;
+  assert(result === expected, 'description with apostrophe produces valid YAML', `got: ${JSON.stringify(result)}`);
 }
 
 // --- Single-quoted input with pre-escaped apostrophe (YAML '' escape) ---
