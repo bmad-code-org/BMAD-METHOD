@@ -107,9 +107,22 @@ Provide guidance on logical next workflows:
 1. `create-ux-design` - UX research and design (can run parallel with PRD)
 2. `domain-research` - Deep market or domain research (if needed)
 
+**Enterprise Track: StRS Creation (ISO 29148)**
+
+If the project follows the **Enterprise** track, the Product Brief serves as the primary input for creating an ISO 29148 compliant Stakeholder Requirements Specification (StRS):
+
+1. `create-strs` - Create Stakeholder Requirements Specification
+   - Product Brief vision → StRS business purpose and objectives
+   - Product Brief target users → StRS stakeholder profiles and user requirements
+   - Product Brief features → StRS operational requirements and system concept
+   - Product Brief constraints → StRS project constraints
+
+The StRS extends the Product Brief with formal stakeholder analysis, operational scenarios, and project constraints required by ISO 29148 Clause 7. This is recommended before starting the PRD for Enterprise track projects.
+
 **Strategic Considerations:**
 
 - The PRD workflow builds directly on this brief for detailed planning
+- Enterprise track: Consider creating StRS before PRD for full traceability chain
 - Consider team capacity and immediate priorities
 - Use brief to validate concept before committing to detailed work
 - Brief can guide early technical feasibility discussions
