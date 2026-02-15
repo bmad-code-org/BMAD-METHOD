@@ -3,7 +3,7 @@ name: 'step-v-12-completeness-validation'
 description: 'Completeness Check - Final comprehensive completeness check before report generation'
 
 # File references (ONLY variables used in this step)
-nextStepFile: './step-v-13-report-complete.md'
+nextStepFile: './step-v-12b-verification-coverage.md'
 prdFile: '{prd_file_path}'
 prdFrontmatter: '{prd_frontmatter}'
 validationReportPath: '{validation_report_path}'

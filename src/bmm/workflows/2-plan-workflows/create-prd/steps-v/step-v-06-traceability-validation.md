@@ -3,7 +3,7 @@ name: 'step-v-06-traceability-validation'
 description: 'Traceability Validation - Validate the traceability chain from vision → success → journeys → FRs is intact'
 
 # File references (ONLY variables used in this step)
-nextStepFile: './step-v-07-implementation-leakage-validation.md'
+nextStepFile: './step-v-06b-per-requirement-quality.md'
 prdFile: '{prd_file_path}'
 validationReportPath: '{validation_report_path}'
 ---
