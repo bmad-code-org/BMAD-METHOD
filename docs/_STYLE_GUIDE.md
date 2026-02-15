@@ -78,7 +78,6 @@ your-project/
 ├── _bmad/                         # BMad configuration
 ├── _bmad-output/
 │   ├── PRD.md                     # Your requirements document
-│   └── bmm-workflow-status.yaml   # Progress tracking
 └── ...
 ```
 ````
@@ -142,12 +141,12 @@ your-project/
 
 ### Types
 
-| Type              | Example                      |
-| ----------------- | ---------------------------- |
-| **Index/Landing** | `core-concepts/index.md`     |
-| **Concept**       | `what-are-agents.md`         |
-| **Feature**       | `quick-flow.md`              |
-| **Philosophy**    | `why-solutioning-matters.md` |
+| Type              | Example                       |
+| ----------------- | ----------------------------- |
+| **Index/Landing** | `core-concepts/index.md`      |
+| **Concept**       | `what-are-agents.md`          |
+| **Feature**       | `quick-flow.md`               |
+| **Philosophy**    | `why-solutioning-matters.md`  |
 | **FAQ**           | `established-projects-faq.md` |
 
 ### General Template
