@@ -327,6 +327,11 @@ class UI {
               continue;
             }
 
+            if (!moduleMeta) {
+              await prompts.log.warn(`Skipping custom content path: ${customPath} - module.yaml is empty`);
+              continue;
+            }
+
             if (!moduleMeta.code) {
               await prompts.log.warn(`Skipping custom content path: ${customPath} - module.yaml missing 'code' field`);
               continue;
@@ -346,11 +351,10 @@ class UI {
               selectedCustomModules: selectedModuleIds,
               customContentConfig: {
                 hasCustomContent: true,
-                paths: customPaths,
-                selectedModuleIds: selectedModuleIds,
-                sources,
                 selected: true,
+                sources,
                 selectedFiles: customPaths.map((p) => path.join(p, 'module.yaml')),
+                selectedModuleIds: selectedModuleIds,
               },
             };
           }
@@ -477,6 +481,11 @@ class UI {
           continue;
         }
 
+        if (!moduleMeta) {
+          await prompts.log.warn(`Skipping custom content path: ${customPath} - module.yaml is empty`);
+          continue;
+        }
+
         if (!moduleMeta.code) {
           await prompts.log.warn(`Skipping custom content path: ${customPath} - module.yaml missing 'code' field`);
           continue;
@@ -494,11 +503,10 @@ class UI {
       if (customPaths.length > 0) {
         customContentConfig = {
           hasCustomContent: true,
-          paths: customPaths,
-          selectedModuleIds: selectedModuleIds,
-          sources,
           selected: true,
+          sources,
           selectedFiles: customPaths.map((p) => path.join(p, 'module.yaml')),
+          selectedModuleIds: selectedModuleIds,
         };
       }
     } else if (!options.yes) {
