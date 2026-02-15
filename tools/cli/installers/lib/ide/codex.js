@@ -369,7 +369,8 @@ class CodexSetup extends BaseIdeSetup {
   }
 
   async readAndProcessWithProject(filePath, metadata, projectDir) {
-    const content = await fs.readFile(filePath, 'utf8');
+    const rawContent = await fs.readFile(filePath, 'utf8');
+    const content = rawContent.replaceAll('\r\n', '\n').replaceAll('\r', '\n');
     return super.processContent(content, metadata, projectDir);
   }
 
