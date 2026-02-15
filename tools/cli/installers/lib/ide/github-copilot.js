@@ -1,6 +1,6 @@
 const path = require('node:path');
 const { BaseIdeSetup } = require('./_base-ide');
-const chalk = require('chalk');
+const prompts = require('../../../lib/prompts');
 const { AgentCommandGenerator } = require('./shared/agent-command-generator');
 const { BMAD_FOLDER_NAME, toDashPath } = require('./shared/path-utils');
 const fs = require('fs-extra');
@@ -31,7 +31,7 @@ class GitHubCopilotSetup extends BaseIdeSetup {
    * @param {Object} options - Setup options
    */
   async setup(projectDir, bmadDir, options = {}) {
-    console.log(chalk.cyan(`Setting up ${this.name}...`));
+    if (!options.silent) await prompts.log.info(`Setting up ${this.name}...`);
 
     // Create .github/agents and .github/prompts directories
     const githubDir = path.join(projectDir, this.githubDir);
@@ -66,21 +66,15 @@ class GitHubCopilotSetup extends BaseIdeSetup {
       const targetPath = path.join(agentsDir, fileName);
       await this.writeFile(targetPath, agentContent);
       agentCount++;
-
-      console.log(chalk.green(`  ✓ Created agent: ${fileName}`));
     }
 
     // Generate prompt files from bmad-help.csv
     const promptCount = await this.generatePromptFiles(projectDir, bmadDir, agentArtifacts, agentManifest);
 
     // Generate copilot-instructions.md
-    await this.generateCopilotInstructions(projectDir, bmadDir, agentManifest);
+    await this.generateCopilotInstructions(projectDir, bmadDir, agentManifest, options);
 
-    console.log(chalk.green(`\n✓ ${this.name} configured:`));
-    console.log(chalk.dim(`  - ${agentCount} agents created in .github/agents/`));
-    console.log(chalk.dim(`  - ${promptCount} prompts created in .github/prompts/`));
-    console.log(chalk.dim(`  - copilot-instructions.md generated`));
-    console.log(chalk.dim(`  - Destination: .github/`));
+    if (!options.silent) await prompts.log.success(`${this.name} configured: ${agentCount} agents, ${promptCount} prompts → .github/`);
 
     return {
       success: true,
@@ -406,7 +400,7 @@ tools: ${toolsStr}
    * @param {string} bmadDir - BMAD installation directory
    * @param {Map} agentManifest - Agent manifest data
    */
-  async generateCopilotInstructions(projectDir, bmadDir, agentManifest) {
+  async generateCopilotInstructions(projectDir, bmadDir, agentManifest, options = {}) {
     const configVars = await this.loadModuleConfig(bmadDir);
 
     // Build the agents table from the manifest
@@ -495,19 +489,16 @@ Type \`/bmad-\` in Copilot Chat to see all available BMAD workflows and agent ac
         const after = existing.slice(endIdx + markerEnd.length);
         const merged = `${before}${markedContent}${after}`;
         await this.writeFile(instructionsPath, merged);
-        console.log(chalk.green('  ✓ Updated BMAD section in copilot-instructions.md'));
       } else {
         // Existing file without markers — back it up before overwriting
         const backupPath = `${instructionsPath}.bak`;
         await fs.copy(instructionsPath, backupPath);
-        console.log(chalk.yellow(`  ⚠ Backed up existing copilot-instructions.md → copilot-instructions.md.bak`));
+        if (!options.silent) await prompts.log.warn(`  Backed up copilot-instructions.md → .bak`);
         await this.writeFile(instructionsPath, `${markedContent}\n`);
-        console.log(chalk.green('  ✓ Generated copilot-instructions.md (with BMAD markers)'));
       }
     } else {
       // No existing file — create fresh with markers
       await this.writeFile(instructionsPath, `${markedContent}\n`);
-      console.log(chalk.green('  ✓ Generated copilot-instructions.md'));
     }
   }
 
@@ -607,7 +598,7 @@ Type \`/bmad-\` in Copilot Chat to see all available BMAD workflows and agent ac
   /**
    * Cleanup GitHub Copilot configuration - surgically remove only BMAD files
    */
-  async cleanup(projectDir) {
+  async cleanup(projectDir, options = {}) {
     // Clean up agents directory
     const agentsDir = path.join(projectDir, this.githubDir, this.agentsDir);
     if (await fs.pathExists(agentsDir)) {
@@ -621,8 +612,8 @@ Type \`/bmad-\` in Copilot Chat to see all available BMAD workflows and agent ac
         }
       }
 
-      if (removed > 0) {
-        console.log(chalk.dim(`  Cleaned up ${removed} existing BMAD agents`));
+      if (removed > 0 && !options.silent) {
+        await prompts.log.message(`  Cleaned up ${removed} existing BMAD agents`);
       }
     }
 
@@ -639,16 +630,70 @@ Type \`/bmad-\` in Copilot Chat to see all available BMAD workflows and agent ac
         }
       }
 
-      if (removed > 0) {
-        console.log(chalk.dim(`  Cleaned up ${removed} existing BMAD prompts`));
+      if (removed > 0 && !options.silent) {
+        await prompts.log.message(`  Cleaned up ${removed} existing BMAD prompts`);
       }
     }
 
-    // Note: copilot-instructions.md is NOT cleaned up here.
-    // generateCopilotInstructions() handles marker-based replacement in a single
-    // read-modify-write pass, which correctly preserves user content outside the markers.
-    // Stripping markers here would cause generation to treat the file as legacy (no markers)
-    // and overwrite user content.
+    // During uninstall, also strip BMAD markers from copilot-instructions.md.
+    // During reinstall (default), this is skipped because generateCopilotInstructions()
+    // handles marker-based replacement in a single read-modify-write pass,
+    // which correctly preserves user content outside the markers.
+    if (options.isUninstall) {
+      await this.cleanupCopilotInstructions(projectDir, options);
+    }
+  }
+
+  /**
+   * Strip BMAD marker section from copilot-instructions.md
+   * If file becomes empty after stripping, delete it.
+   * If a .bak backup exists and the main file was deleted, restore the backup.
+   * @param {string} projectDir - Project directory
+   * @param {Object} [options] - Options (e.g. { silent: true })
+   */
+  async cleanupCopilotInstructions(projectDir, options = {}) {
+    const instructionsPath = path.join(projectDir, this.githubDir, 'copilot-instructions.md');
+    const backupPath = `${instructionsPath}.bak`;
+
+    if (!(await fs.pathExists(instructionsPath))) {
+      return;
+    }
+
+    const content = await fs.readFile(instructionsPath, 'utf8');
+    const markerStart = '<!-- BMAD:START -->';
+    const markerEnd = '<!-- BMAD:END -->';
+    const startIdx = content.indexOf(markerStart);
+    const endIdx = content.indexOf(markerEnd);
+
+    if (startIdx === -1 || endIdx === -1 || endIdx <= startIdx) {
+      return; // No valid markers found
+    }
+
+    // Strip the marker section (including markers)
+    const before = content.slice(0, startIdx);
+    const after = content.slice(endIdx + markerEnd.length);
+    const cleaned = before + after;
+
+    if (cleaned.trim().length === 0) {
+      // File is empty after stripping — delete it
+      await fs.remove(instructionsPath);
+
+      // If backup exists, restore it
+      if (await fs.pathExists(backupPath)) {
+        await fs.rename(backupPath, instructionsPath);
+        if (!options.silent) {
+          await prompts.log.message('  Restored copilot-instructions.md from backup');
+        }
+      }
+    } else {
+      // Write cleaned content back (preserve original whitespace)
+      await fs.writeFile(instructionsPath, cleaned, 'utf8');
+
+      // If backup exists, it's stale now — remove it
+      if (await fs.pathExists(backupPath)) {
+        await fs.remove(backupPath);
+      }
+    }
   }
 }
 
