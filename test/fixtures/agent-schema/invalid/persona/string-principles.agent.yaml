@@ -1,0 +1,26 @@
+# Test: Principles as block scalar string instead of array
+# Expected: FAIL
+# Error path: agent.persona.principles
+# Error expected: array
+# Error received: string
+
+agent:
+  metadata:
+    id: string-principles
+    name: String Principles
+    title: String Principles
+    icon: ❌
+    hasSidecar: false
+
+  persona:
+    role: Test agent
+    identity: Test identity
+    communication_style: Test style
+    principles: |
+      - This is a string, not an array
+      - Each line is part of one string
+
+  menu:
+    - trigger: help
+      description: Show help
+      action: display_help
