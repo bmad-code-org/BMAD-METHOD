@@ -94,6 +94,25 @@ console.log(`\n${colors.cyan}CodexSetup.transformToSkillFormat tests${colors.res
   assert(parsed.name === 'my-custom-skill', 'name field matches skillName argument', `got name: ${JSON.stringify(parsed.name)}`);
 }
 
+// --- Extra frontmatter keys are stripped ---
+{
+  const input = `---\ndescription: foo\ndisable-model-invocation: true\ncustom-field: bar\n---\n\nBody.`;
+  const result = setup.transformToSkillFormat(input, 'strip-extra');
+  const desc = parseOutputDescription(result);
+  assert(desc === 'foo', 'description preserved when extra keys present', `got description: ${JSON.stringify(desc)}`);
+  const match = result.match(/^---\n([\s\S]*?)\n---/);
+  const parsed = yaml.parse(match[1]);
+  assert(parsed.name === 'strip-extra', 'name equals skillName after stripping extras', `got name: ${JSON.stringify(parsed.name)}`);
+  assert(!('disable-model-invocation' in parsed), 'disable-model-invocation stripped', `keys: ${Object.keys(parsed).join(', ')}`);
+  assert(!('custom-field' in parsed), 'custom-field stripped', `keys: ${Object.keys(parsed).join(', ')}`);
+  const keys = Object.keys(parsed).sort();
+  assert(
+    keys.length === 2 && keys[0] === 'description' && keys[1] === 'name',
+    'only name and description remain',
+    `keys: ${keys.join(', ')}`,
+  );
+}
+
 // --- No frontmatter wraps content ---
 {
   const input = 'Just some content without frontmatter.';
@@ -101,6 +120,15 @@ console.log(`\n${colors.cyan}CodexSetup.transformToSkillFormat tests${colors.res
   const desc = parseOutputDescription(result);
   assert(desc === 'bare-skill', 'no-frontmatter fallback uses skillName as description', `got description: ${JSON.stringify(desc)}`);
   assert(result.includes('Just some content without frontmatter.'), 'body preserved when no frontmatter');
+}
+
+// --- No frontmatter with single-quote in skillName ---
+{
+  const input = 'Body content for the skill.';
+  const result = setup.transformToSkillFormat(input, "it's-a-task");
+  const desc = parseOutputDescription(result);
+  assert(desc === "it's-a-task", 'no-frontmatter skillName with single quote round-trips', `got description: ${JSON.stringify(desc)}`);
+  assert(result.includes('Body content for the skill.'), 'body preserved for single-quote skillName');
 }
 
 // --- CRLF frontmatter is parsed correctly (Windows line endings) ---
