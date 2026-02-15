@@ -38,6 +38,10 @@ agent:
       exec: "{project-root}/_bmad/bmm/workflows/1-analysis/create-product-brief/workflow.md"
       description: "[CB] Create Brief: A guided experience to nail down your product idea into an executive brief"
 
+    - trigger: CS or fuzzy match on create-strs
+      exec: "{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-strs/workflow.md"
+      description: "[CS] Create StRS: Create ISO 29148 compliant Stakeholder Requirements Specification (Enterprise track)"
+
     - trigger: DP or fuzzy match on document-project
       workflow: "{project-root}/_bmad/bmm/workflows/document-project/workflow.yaml"
       description: "[DP] Document Project: Analyze an existing project to produce useful documentation for both human and LLM"
