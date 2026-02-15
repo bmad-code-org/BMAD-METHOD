@@ -45,6 +45,7 @@ _bmad-output
 # .augment/ is gitignored except tracked config files — add exceptions explicitly
 .augment/*
 !.augment/code_review_guidelines.yaml
+.codebuddy
 .crush
 .cursor
 .iflow
