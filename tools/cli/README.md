@@ -16,8 +16,8 @@ Always displayed after the module is configured:
 
 ```yaml
 post-install-notes: |
-  Remember to set the API_KEY environment variable.
-  See: https://example.com/setup
+  Thank you for choosing the XYZ Cool Module
+  For Support about this Module call 555-1212
 ```
 
 ### Conditional Format
