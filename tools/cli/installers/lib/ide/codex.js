@@ -396,7 +396,7 @@ class CodexSetup extends BaseIdeSetup {
       '',
       `Skills installed to: ${destDir || '<project>/.agents/skills'}`,
       '',
-      'Codex automatically discovers skills in .agents/skills/ at and above the current directory.',
+      'Codex automatically discovers skills in .agents/skills/ at and above the current directory and in your home directory.',
       'No additional configuration is needed.',
     ];
 
