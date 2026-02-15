@@ -1175,11 +1175,25 @@ class ConfigCollector {
         if (!input && item.required) {
           return 'This field is required';
         }
-        // Validate against regex pattern if provided
-        if (input && item.regex) {
-          const regex = new RegExp(item.regex);
-          if (!regex.test(input)) {
-            return `Invalid format. Must match pattern: ${item.regex}`;
+        if (input) {
+          if (input.length > 1024) {
+            return 'Input is too long (maximum 1024 characters)';
+          }
+          if (/\.\.[/\\]/.test(input)) {
+            return 'Path traversal sequences (../ or ..\\) are not allowed';
+          }
+          if (/[;|&`$(){}!<>]/.test(input) && !item.allowSpecialChars) {
+            return 'Special characters (;|&`$(){}!<>) are not allowed';
+          }
+          if (/[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]/.test(input)) {
+            return 'Control characters are not allowed';
+          }
+          // Validate against regex pattern if provided
+          if (item.regex) {
+            const regex = new RegExp(item.regex);
+            if (!regex.test(input)) {
+              return `Invalid format. Must match pattern: ${item.regex}`;
+            }
           }
         }
         return true;
