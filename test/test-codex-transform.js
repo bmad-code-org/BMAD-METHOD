@@ -1,12 +1,14 @@
 /**
  * Tests for CodexSetup.transformToSkillFormat
  *
- * Demonstrates that the description regex mangles descriptions containing quotes.
+ * Validates that descriptions round-trip correctly through parse/stringify,
+ * producing valid YAML regardless of input quoting style.
  *
  * Usage: node test/test-codex-transform.js
  */
 
 const path = require('node:path');
+const yaml = require('yaml');
 
 // ANSI colors
 const colors = {
@@ -31,6 +33,17 @@ function assert(condition, testName, detail) {
   }
 }
 
+/**
+ * Parse the output frontmatter and return the description value.
+ * Validates the output is well-formed YAML that parses back correctly.
+ */
+function parseOutputDescription(output) {
+  const match = output.match(/^---\n([\s\S]*?)\n---/);
+  if (!match) return null;
+  const parsed = yaml.parse(match[1]);
+  return parsed?.description;
+}
+
 // Import the class under test
 const { CodexSetup } = require(path.join(__dirname, '..', 'tools', 'cli', 'installers', 'lib', 'ide', 'codex.js'));
 
@@ -38,39 +51,56 @@ const setup = new CodexSetup();
 
 console.log(`\n${colors.cyan}CodexSetup.transformToSkillFormat tests${colors.reset}\n`);
 
-// --- Passing case: simple description, no quotes ---
+// --- Simple description, no quotes ---
 {
   const input = `---\ndescription: A simple description\n---\n\nBody content here.`;
   const result = setup.transformToSkillFormat(input, 'my-skill');
-  const expected = `---\nname: my-skill\ndescription: 'A simple description'\n---\n\nBody content here.`;
-  assert(result === expected, 'simple description without quotes', `got: ${JSON.stringify(result)}`);
+  const desc = parseOutputDescription(result);
+  assert(desc === 'A simple description', 'simple description round-trips', `got description: ${JSON.stringify(desc)}`);
+  assert(result.includes('\nBody content here.'), 'body preserved for simple description');
 }
 
 // --- Description with embedded single quotes (from double-quoted YAML input) ---
 {
   const input = `---\ndescription: "can't stop won't stop"\n---\n\nBody content here.`;
   const result = setup.transformToSkillFormat(input, 'my-skill');
-
-  // Output should have properly escaped YAML single-quoted scalar: '' for each '
-  const expected = `---\nname: my-skill\ndescription: 'can''t stop won''t stop'\n---\n\nBody content here.`;
-  assert(result === expected, 'description with embedded single quotes produces valid escaped YAML', `got: ${JSON.stringify(result)}`);
+  const desc = parseOutputDescription(result);
+  assert(desc === "can't stop won't stop", 'description with apostrophes round-trips', `got description: ${JSON.stringify(desc)}`);
+  assert(result.includes('\nBody content here.'), 'body preserved for quoted description');
 }
 
-// --- Description with embedded single quote produces valid YAML ---
+// --- Description with embedded single quote ---
 {
   const input = `---\ndescription: "it's a test"\n---\n\nBody.`;
   const result = setup.transformToSkillFormat(input, 'test-skill');
-  const expected = `---\nname: test-skill\ndescription: 'it''s a test'\n---\n\nBody.`;
-  assert(result === expected, 'description with apostrophe produces valid YAML', `got: ${JSON.stringify(result)}`);
+  const desc = parseOutputDescription(result);
+  assert(desc === "it's a test", 'description with apostrophe round-trips', `got description: ${JSON.stringify(desc)}`);
 }
 
 // --- Single-quoted input with pre-escaped apostrophe (YAML '' escape) ---
 {
   const input = `---\ndescription: 'don''t panic'\n---\n\nBody.`;
   const result = setup.transformToSkillFormat(input, 'test-skill');
-  // Input has don''t (YAML-escaped). Should round-trip to don''t in output.
-  const expected = `---\nname: test-skill\ndescription: 'don''t panic'\n---\n\nBody.`;
-  assert(result === expected, 'single-quoted description with escaped apostrophe round-trips correctly', `got: ${JSON.stringify(result)}`);
+  const desc = parseOutputDescription(result);
+  assert(desc === "don't panic", 'single-quoted escaped apostrophe round-trips', `got description: ${JSON.stringify(desc)}`);
+}
+
+// --- Verify name is set correctly ---
+{
+  const input = `---\ndescription: test\n---\n\nBody.`;
+  const result = setup.transformToSkillFormat(input, 'my-custom-skill');
+  const match = result.match(/^---\n([\s\S]*?)\n---/);
+  const parsed = yaml.parse(match[1]);
+  assert(parsed.name === 'my-custom-skill', 'name field matches skillName argument', `got name: ${JSON.stringify(parsed.name)}`);
+}
+
+// --- No frontmatter wraps content ---
+{
+  const input = 'Just some content without frontmatter.';
+  const result = setup.transformToSkillFormat(input, 'bare-skill');
+  const desc = parseOutputDescription(result);
+  assert(desc === 'bare-skill', 'no-frontmatter fallback uses skillName as description', `got description: ${JSON.stringify(desc)}`);
+  assert(result.includes('Just some content without frontmatter.'), 'body preserved when no frontmatter');
 }
 
 // --- Summary ---

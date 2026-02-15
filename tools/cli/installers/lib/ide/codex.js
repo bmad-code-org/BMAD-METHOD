@@ -7,6 +7,7 @@ const { AgentCommandGenerator } = require('./shared/agent-command-generator');
 const { TaskToolCommandGenerator } = require('./shared/task-tool-command-generator');
 const { getTasksFromBmad } = require('./shared/bmad-artifacts');
 const { toDashPath, customAgentDashName } = require('./shared/path-utils');
+const yaml = require('yaml');
 const prompts = require('../../../lib/prompts');
 
 /**
@@ -205,28 +206,18 @@ class CodexSetup extends BaseIdeSetup {
     const frontmatter = fmMatch[1];
     const body = fmMatch[2];
 
-    // Extract description from existing frontmatter, handling quoted and unquoted values
-    const descMatch = frontmatter.match(/^description:\s*(?:'((?:[^']|'')*)'|"((?:[^"\\]|\\.)*)"|(.*))\s*$/m);
+    // Parse frontmatter with yaml library to handle all quoting variants
     let description;
-    if (descMatch) {
-      if (descMatch[1] != null) {
-        // Single-quoted YAML: unescape '' to '
-        description = descMatch[1].replaceAll("''", "'");
-      } else if (descMatch[2] == null) {
-        description = descMatch[3];
-      } else {
-        // Double-quoted YAML: unescape \" to "
-        description = descMatch[2].replaceAll(String.raw`\"`, '"');
-      }
-    } else {
+    try {
+      const parsed = yaml.parse(frontmatter);
+      description = parsed?.description || `${skillName} skill`;
+    } catch {
       description = `${skillName} skill`;
     }
 
-    // Escape single quotes for YAML single-quoted scalar (a literal ' becomes '')
-    const safeDescription = description.replaceAll("'", "''");
-
-    // Build new frontmatter with only skills-spec fields
-    return `---\nname: ${skillName}\ndescription: '${safeDescription}'\n---\n${body}`;
+    // Build new frontmatter with only skills-spec fields, let yaml handle quoting
+    const newFrontmatter = yaml.stringify({ name: skillName, description }).trimEnd();
+    return `---\n${newFrontmatter}\n---\n${body}`;
   }
 
   /**
