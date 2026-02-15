@@ -200,7 +200,8 @@ class CodexSetup extends BaseIdeSetup {
     const fmMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/);
     if (!fmMatch) {
       // No frontmatter -- wrap with minimal frontmatter
-      return `---\nname: ${skillName}\ndescription: '${skillName}'\n---\n\n${content}`;
+      const fm = yaml.stringify({ name: skillName, description: skillName }).trimEnd();
+      return `---\n${fm}\n---\n\n${content}`;
     }
 
     const frontmatter = fmMatch[1];
@@ -438,9 +439,9 @@ class CodexSetup extends BaseIdeSetup {
     const skillDir = path.join(destDir, skillName);
     await fs.ensureDir(skillDir);
 
+    const fm = yaml.stringify({ name: skillName, description: `${agentName} agent` }).trimEnd();
     const skillContent = `---
-name: ${skillName}
-description: '${agentName} agent'
+${fm}
 ---
 
 You must fully embody this agent's persona and follow all activation instructions exactly as specified. NEVER break character until given an exit command.
