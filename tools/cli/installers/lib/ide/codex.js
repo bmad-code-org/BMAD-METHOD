@@ -321,6 +321,9 @@ class CodexSetup extends BaseIdeSetup {
     if (location === 'project' && projectDir) {
       return path.join(projectDir, '.agents', 'skills');
     }
+    if (location === 'project' && !projectDir) {
+      throw new Error('projectDir is required for project-scoped skill installation');
+    }
     return path.join(os.homedir(), '.agents', 'skills');
   }
 
