@@ -43,7 +43,7 @@ class CodexSetup extends BaseIdeSetup {
             value: 'project',
           },
           {
-            name: 'Global - (~/.agents/skills)',
+            name: 'Global - ($HOME/.agents/skills)',
             value: 'global',
           },
         ],
@@ -54,7 +54,7 @@ class CodexSetup extends BaseIdeSetup {
       if (installLocation === 'project') {
         await prompts.log.info('Skills installed to: <project>/.agents/skills');
       } else {
-        await prompts.log.info('Skills installed to: ~/.agents/skills');
+        await prompts.log.info('Skills installed to: $HOME/.agents/skills');
       }
 
       // Confirm the choice
@@ -377,7 +377,7 @@ class CodexSetup extends BaseIdeSetup {
     const lines = [
       'IMPORTANT: Codex Configuration',
       '',
-      'Skills installed globally to your HOME DIRECTORY (~/.agents/skills).',
+      'Skills installed globally to your HOME DIRECTORY ($HOME/.agents/skills).',
       '',
       'These skills reference a specific _bmad path.',
       "To use with other projects, you'd need to copy the _bmad dir.",
