@@ -112,6 +112,20 @@ So that {value_benefit}.
 **And** {additional_criteria}
 ```
 
+**ENTERPRISE TRACK: REQUIREMENT TRACEABILITY**
+
+If the project is Enterprise track (check PRD frontmatter for `track: enterprise`), each story MUST include a **Requirements Traceability** section after Acceptance Criteria:
+
+```
+**Requirements Traceability:**
+- **PRD:** FR-AUTH-001, FR-AUTH-002
+- **SyRS:** SYS-FUNC-001
+- **StRS:** STK-BIZ-001
+- **Verification:** Test
+```
+
+This links each story back to its source requirements at all levels. The verification method indicates how this story's requirements will be validated (Inspection / Analysis / Demonstration / Test).
+
 **✅ GOOD STORY EXAMPLES:**
 
 _Epic 1: User Authentication_

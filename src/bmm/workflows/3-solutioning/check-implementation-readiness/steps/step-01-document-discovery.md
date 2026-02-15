@@ -81,6 +81,21 @@ Search for each document type using these patterns:
 - Whole: `{planning_artifacts}/*ux*.md`
 - Sharded: `{planning_artifacts}/*ux*/index.md` and related files
 
+#### E. Enterprise Track Documents (if applicable)
+
+Check the PRD frontmatter for `track: enterprise`. If Enterprise track:
+
+- **StRS:** `{planning_artifacts}/*strs*.md`
+- **SyRS:** `{planning_artifacts}/*syrs*.md`
+- **RTM:** `{planning_artifacts}/*rtm*.md`
+
+Flag missing Enterprise documents:
+```
+⚠️ ENTERPRISE TRACK: Required document not found
+- StRS/SyRS/RTM document not found
+- Enterprise track requires these for full readiness assessment
+```
+
 ### 3. Organize Findings
 
 For each document type found:
