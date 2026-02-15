@@ -38,7 +38,7 @@ function assert(condition, testName, detail) {
  * Validates the output is well-formed YAML that parses back correctly.
  */
 function parseOutputDescription(output) {
-  const match = output.match(/^---\n([\s\S]*?)\n---/);
+  const match = output.match(/^---\r?\n([\s\S]*?)\r?\n---/);
   if (!match) return null;
   const parsed = yaml.parse(match[1]);
   return parsed?.description;
@@ -101,6 +101,15 @@ console.log(`\n${colors.cyan}CodexSetup.transformToSkillFormat tests${colors.res
   const desc = parseOutputDescription(result);
   assert(desc === 'bare-skill', 'no-frontmatter fallback uses skillName as description', `got description: ${JSON.stringify(desc)}`);
   assert(result.includes('Just some content without frontmatter.'), 'body preserved when no frontmatter');
+}
+
+// --- CRLF frontmatter is parsed correctly (Windows line endings) ---
+{
+  const input = '---\r\ndescription: windows line endings\r\n---\r\n\r\nBody.';
+  const result = setup.transformToSkillFormat(input, 'crlf-skill');
+  const desc = parseOutputDescription(result);
+  assert(desc === 'windows line endings', 'CRLF frontmatter parses correctly', `got description: ${JSON.stringify(desc)}`);
+  assert(result.includes('Body.'), 'body preserved for CRLF input');
 }
 
 // --- Summary ---

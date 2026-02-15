@@ -197,7 +197,7 @@ class CodexSetup extends BaseIdeSetup {
    */
   transformToSkillFormat(content, skillName) {
     // Parse frontmatter
-    const fmMatch = content.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
+    const fmMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/);
     if (!fmMatch) {
       // No frontmatter -- wrap with minimal frontmatter
       return `---\nname: ${skillName}\ndescription: '${skillName}'\n---\n\n${content}`;
