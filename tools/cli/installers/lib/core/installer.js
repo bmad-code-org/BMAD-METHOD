@@ -527,28 +527,30 @@ class Installer {
             const cachedModules = await fs.readdir(cacheDir, { withFileTypes: true });
 
             for (const cachedModule of cachedModules) {
-              if (cachedModule.isDirectory()) {
-                const moduleId = cachedModule.name;
+              const moduleId = cachedModule.name;
+              const cachedPath = path.join(cacheDir, moduleId);
 
-                // Skip if we already have this module from manifest
-                if (customModulePaths.has(moduleId)) {
-                  continue;
-                }
+              // Skip if path doesn't exist (broken symlink, deleted dir) - avoids lstat ENOENT
+              if (!(await fs.pathExists(cachedPath)) || !cachedModule.isDirectory()) {
+                continue;
+              }
 
-                // Check if this is an external official module - skip cache for those
-                const isExternal = await this.moduleManager.isExternalModule(moduleId);
-                if (isExternal) {
-                  // External modules are handled via cloneExternalModule, not from cache
-                  continue;
-                }
+              // Skip if we already have this module from manifest
+              if (customModulePaths.has(moduleId)) {
+                continue;
+              }
 
-                const cachedPath = path.join(cacheDir, moduleId);
+              // Check if this is an external official module - skip cache for those
+              const isExternal = await this.moduleManager.isExternalModule(moduleId);
+              if (isExternal) {
+                // External modules are handled via cloneExternalModule, not from cache
+                continue;
+              }
 
-                // Check if this is actually a custom module (has module.yaml)
-                const moduleYamlPath = path.join(cachedPath, 'module.yaml');
-                if (await fs.pathExists(moduleYamlPath)) {
-                  customModulePaths.set(moduleId, cachedPath);
-                }
+              // Check if this is actually a custom module (has module.yaml)
+              const moduleYamlPath = path.join(cachedPath, 'module.yaml');
+              if (await fs.pathExists(moduleYamlPath)) {
+                customModulePaths.set(moduleId, cachedPath);
               }
             }
 
@@ -609,28 +611,30 @@ class Installer {
           const cachedModules = await fs.readdir(cacheDir, { withFileTypes: true });
 
           for (const cachedModule of cachedModules) {
-            if (cachedModule.isDirectory()) {
-              const moduleId = cachedModule.name;
+            const moduleId = cachedModule.name;
+            const cachedPath = path.join(cacheDir, moduleId);
 
-              // Skip if we already have this module from manifest
-              if (customModulePaths.has(moduleId)) {
-                continue;
-              }
+            // Skip if path doesn't exist (broken symlink, deleted dir) - avoids lstat ENOENT
+            if (!(await fs.pathExists(cachedPath)) || !cachedModule.isDirectory()) {
+              continue;
+            }
 
-              // Check if this is an external official module - skip cache for those
-              const isExternal = await this.moduleManager.isExternalModule(moduleId);
-              if (isExternal) {
-                // External modules are handled via cloneExternalModule, not from cache
-                continue;
-              }
+            // Skip if we already have this module from manifest
+            if (customModulePaths.has(moduleId)) {
+              continue;
+            }
 
-              const cachedPath = path.join(cacheDir, moduleId);
+            // Check if this is an external official module - skip cache for those
+            const isExternal = await this.moduleManager.isExternalModule(moduleId);
+            if (isExternal) {
+              // External modules are handled via cloneExternalModule, not from cache
+              continue;
+            }
 
-              // Check if this is actually a custom module (has module.yaml)
-              const moduleYamlPath = path.join(cachedPath, 'module.yaml');
-              if (await fs.pathExists(moduleYamlPath)) {
-                customModulePaths.set(moduleId, cachedPath);
-              }
+            // Check if this is actually a custom module (has module.yaml)
+            const moduleYamlPath = path.join(cachedPath, 'module.yaml');
+            if (await fs.pathExists(moduleYamlPath)) {
+              customModulePaths.set(moduleId, cachedPath);
             }
           }
 
@@ -949,12 +953,11 @@ class Installer {
               if (!isCustomModule && config._customModuleSources && config._customModuleSources.has(moduleName)) {
                 customInfo = config._customModuleSources.get(moduleName);
                 isCustomModule = true;
-                if (
-                  customInfo.sourcePath &&
-                  (customInfo.sourcePath.startsWith('_config') || customInfo.sourcePath.includes('_config/custom')) &&
-                  !customInfo.path
-                )
-                  customInfo.path = customInfo.sourcePath;
+                if (customInfo.sourcePath && !customInfo.path) {
+                  customInfo.path = path.isAbsolute(customInfo.sourcePath)
+                    ? customInfo.sourcePath
+                    : path.join(bmadDir, customInfo.sourcePath);
+                }
               }
 
               // Finally check regular custom content
@@ -2373,41 +2376,58 @@ class Installer {
       const configuredIdes = existingInstall.ides || [];
       const projectRoot = path.dirname(bmadDir);
 
-      // Get custom module sources from cache
+      // Get custom module sources: first from --custom-content (re-cache from source), then from cache
       const customModuleSources = new Map();
+      if (config.customContent?.sources?.length > 0) {
+        for (const source of config.customContent.sources) {
+          if (source.id && source.path && (await fs.pathExists(source.path))) {
+            customModuleSources.set(source.id, {
+              id: source.id,
+              name: source.name || source.id,
+              sourcePath: source.path,
+              cached: false, // From CLI, will be re-cached
+            });
+          }
+        }
+      }
       const cacheDir = path.join(bmadDir, '_config', 'custom');
       if (await fs.pathExists(cacheDir)) {
         const cachedModules = await fs.readdir(cacheDir, { withFileTypes: true });
 
         for (const cachedModule of cachedModules) {
-          if (cachedModule.isDirectory()) {
-            const moduleId = cachedModule.name;
+          const moduleId = cachedModule.name;
+          const cachedPath = path.join(cacheDir, moduleId);
 
-            // Skip if we already have this module from manifest
-            if (customModuleSources.has(moduleId)) {
-              continue;
-            }
+          // Skip if path doesn't exist (broken symlink, deleted dir) - avoids lstat ENOENT
+          if (!(await fs.pathExists(cachedPath))) {
+            continue;
+          }
+          if (!cachedModule.isDirectory()) {
+            continue;
+          }
 
-            // Check if this is an external official module - skip cache for those
-            const isExternal = await this.moduleManager.isExternalModule(moduleId);
-            if (isExternal) {
-              // External modules are handled via cloneExternalModule, not from cache
-              continue;
-            }
+          // Skip if we already have this module from manifest
+          if (customModuleSources.has(moduleId)) {
+            continue;
+          }
 
-            const cachedPath = path.join(cacheDir, moduleId);
+          // Check if this is an external official module - skip cache for those
+          const isExternal = await this.moduleManager.isExternalModule(moduleId);
+          if (isExternal) {
+            // External modules are handled via cloneExternalModule, not from cache
+            continue;
+          }
 
-            // Check if this is actually a custom module (has module.yaml)
-            const moduleYamlPath = path.join(cachedPath, 'module.yaml');
-            if (await fs.pathExists(moduleYamlPath)) {
-              // For quick update, we always rebuild from cache
-              customModuleSources.set(moduleId, {
-                id: moduleId,
-                name: moduleId, // We'll read the actual name if needed
-                sourcePath: cachedPath,
-                cached: true, // Flag to indicate this is from cache
-              });
-            }
+          // Check if this is actually a custom module (has module.yaml)
+          const moduleYamlPath = path.join(cachedPath, 'module.yaml');
+          if (await fs.pathExists(moduleYamlPath)) {
+            // For quick update, we always rebuild from cache
+            customModuleSources.set(moduleId, {
+              id: moduleId,
+              name: moduleId, // We'll read the actual name if needed
+              sourcePath: cachedPath,
+              cached: true, // Flag to indicate this is from cache
+            });
           }
         }
       }
@@ -2544,6 +2564,7 @@ class Installer {
         _savedIdeConfigs: savedIdeConfigs, // Pass saved IDE configs to installer
         _customModuleSources: customModuleSources, // Pass custom module sources for updates
         _existingModules: installedModules, // Pass all installed modules for manifest generation
+        customContent: config.customContent, // Pass through for re-caching from source
       };
 
       // Call the standard install method

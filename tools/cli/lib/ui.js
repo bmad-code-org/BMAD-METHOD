@@ -245,11 +245,48 @@ class UI {
 
       // Handle quick update separately
       if (actionType === 'quick-update') {
-        // Quick update doesn't install custom content - just updates existing modules
+        // Pass --custom-content through so installer can re-cache if cache is missing
+        let customContentForQuickUpdate = { hasCustomContent: false };
+        if (options.customContent) {
+          const paths = options.customContent
+            .split(',')
+            .map((p) => p.trim())
+            .filter(Boolean);
+          if (paths.length > 0) {
+            const customPaths = [];
+            const selectedModuleIds = [];
+            const sources = [];
+            for (const customPath of paths) {
+              const expandedPath = this.expandUserPath(customPath);
+              const validation = this.validateCustomContentPathSync(expandedPath);
+              if (validation) continue;
+              let moduleMeta;
+              try {
+                const moduleYamlPath = path.join(expandedPath, 'module.yaml');
+                moduleMeta = require('yaml').parse(await fs.readFile(moduleYamlPath, 'utf-8'));
+              } catch {
+                continue;
+              }
+              if (!moduleMeta?.code) continue;
+              customPaths.push(expandedPath);
+              selectedModuleIds.push(moduleMeta.code);
+              sources.push({ path: expandedPath, id: moduleMeta.code, name: moduleMeta.name || moduleMeta.code });
+            }
+            if (customPaths.length > 0) {
+              customContentForQuickUpdate = {
+                hasCustomContent: true,
+                selected: true,
+                sources,
+                selectedFiles: customPaths.map((p) => path.join(p, 'module.yaml')),
+                selectedModuleIds,
+              };
+            }
+          }
+        }
         return {
           actionType: 'quick-update',
           directory: confirmedDirectory,
-          customContent: { hasCustomContent: false },
+          customContent: customContentForQuickUpdate,
           skipPrompts: options.yes || false,
         };
       }
