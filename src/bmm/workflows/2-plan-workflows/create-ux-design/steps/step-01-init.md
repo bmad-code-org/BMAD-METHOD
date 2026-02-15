@@ -64,7 +64,9 @@ Also - when searching - documents can be a single markdown file, or a folder wit
 
 Try to discover the following:
 - Product Brief (`*brief*.md`)
-- Research Documents (`*prd*.md`)
+- PRD (`*prd*.md`) - PRIMARY input: contains FRs and NFRs the UX must address
+- Architecture Document (`*architecture*.md`) - Contains technical constraints that affect UX decisions (API limits, platform requirements, performance budgets)
+- StRS (`*strs*.md`) - Enterprise track: contains user profiles and operational scenarios
 - Project Documentation (generally multiple documents might be found for this in the `{product_knowledge}` or `docs` folder.)
 - Project Context (`**/project-context.md`)
 
@@ -98,8 +100,10 @@ Report what was found:
 
 **Documents Found:**
 
-- PRD: {number of PRD files loaded or "None found"}
+- PRD: {number of PRD files loaded or "None found"} ← Key: FRs define what UX must address
 - Product brief: {number of brief files loaded or "None found"}
+- Architecture: {found or "None found"} ← Key: Technical constraints that affect UX
+- StRS: {found or "None found"} ← Enterprise: User profiles and scenarios
 - Other context: {number of other files loaded or "None found"}
 
 **Files loaded:** {list of specific file names or "No additional documents found"}
