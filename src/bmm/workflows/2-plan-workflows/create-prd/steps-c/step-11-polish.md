@@ -127,11 +127,6 @@ Make targeted improvements:
 - Check that headers follow consistent patterns
 - Verify headers support document navigation
 
-**Glossary Check (Enterprise track or if technical terms present):**
-- Ensure a "Definitions and Acronyms" section exists if the document uses domain-specific terminology
-- Consolidate all technical terms, acronyms, and abbreviations
-- This is MANDATORY for Enterprise track, recommended for all tracks
-
 ### 4. Preserve Critical Information
 
 **While optimizing, ensure NOTHING essential is lost:**
@@ -145,10 +140,6 @@ Make targeted improvements:
 - Product differentiator and vision
 - Domain-specific requirements
 - Innovation analysis (if present)
-- External interface requirements (if present)
-- Design constraints and assumptions (if present)
-- Verification approaches (if present)
-- All requirement IDs and attributes (Enterprise track)
 
 **Can Consolidate:**
 - Repeated explanations of the same concept

@@ -39,20 +39,7 @@ status: 'complete'
 completedAt: '{{current_date}}'
 ```
 
-### 3. Enterprise Track: SyRS Creation Guidance
-
-If the project follows the **Enterprise** track (check PRD frontmatter for `track: enterprise`), inform the user:
-
-"**Enterprise Track Note:** Your Architecture Document serves as a key input for the System Requirements Specification (SyRS). The SyRS extends your architectural decisions with ISO 29148 compliant system-level requirements including:
-
-- System functional requirements derived from PRD FRs
-- System interface specifications from your architecture interfaces
-- Quality requirements (performance, security) with measurable targets
-- Verification plan for each system requirement
-
-**Recommended next step:** `create-syrs` (Create SyRS) to establish the system requirements baseline before proceeding to Epics & Stories."
-
-### 4. Next Steps Guidance
+### 3. Next Steps Guidance
 
 Architecture complete. Read fully and follow: `_bmad/core/tasks/help.md` with argument `Create Architecture`.
 

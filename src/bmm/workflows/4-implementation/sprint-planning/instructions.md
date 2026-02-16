@@ -144,28 +144,7 @@ development_status:
 <action>Ensure all items are ordered: epic, its stories, its retrospective, next epic...</action>
 </step>
 
-<step n="5" goal="Enterprise track: requirements traceability enrichment">
-<action>Check if the project is Enterprise track (look for StRS/SyRS/RTM documents or PRD frontmatter `track: enterprise`)</action>
-
-<action>If Enterprise track, enrich the sprint status with a requirements traceability comment block:</action>
-
-```yaml
-# REQUIREMENTS TRACEABILITY (Enterprise Track):
-# =============================================
-# This section maps stories to their source requirements for traceability.
-# Format: story-key: [PRD FR IDs] ← [SyRS IDs] ← [StRS IDs]
-#
-# requirements_trace:
-#   1-1-user-authentication: [FR-AUTH-001, FR-AUTH-002] ← [SYS-FUNC-001] ← [STK-BIZ-001]
-#   1-2-account-management: [FR-AUTH-003] ← [SYS-FUNC-002] ← [STK-BIZ-001]
-```
-
-<action>Extract requirement ID references from each story's "Requirements Traceability" section (if present in epics document)</action>
-<action>Add as YAML comments to sprint status for reference during development</action>
-<action>If no requirement traceability found in stories, add a note suggesting to run the RTM workflow</action>
-</step>
-
-<step n="6" goal="Validate and report">
+<step n="5" goal="Validate and report">
 <action>Perform validation checks:</action>
 
 - [ ] Every epic in epic files appears in {status_file}

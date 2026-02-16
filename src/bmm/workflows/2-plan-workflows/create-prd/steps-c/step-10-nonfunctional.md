@@ -3,7 +3,7 @@ name: 'step-10-nonfunctional'
 description: 'Define quality attributes that matter for this specific product'
 
 # File References
-nextStepFile: './step-10b-interfaces.md'
+nextStepFile: './step-11-polish.md'
 outputFile: '{planning_artifacts}/prd.md'
 
 # Task References
@@ -132,8 +132,6 @@ Prepare the content to append to the document:
 
 When saving to document, append these Level 2 and Level 3 sections (only include sections that are relevant):
 
-**Standard Format:**
-
 ```markdown
 ## Non-Functional Requirements
 
@@ -158,24 +156,6 @@ When saving to document, append these Level 2 and Level 3 sections (only include
 [Integration requirements based on conversation - only include if relevant]
 ```
 
-**Enterprise Format (when Enterprise track is active):**
-
-```markdown
-## Non-Functional Requirements
-
-### Performance
-
-- **NFR-PERF-001**: [Specific, measurable performance requirement]
-  - Priority: Must | Should | Could | Won't
-  - Source: [StRS-XXX or stakeholder name]
-  - Rationale: [Why this quality attribute matters]
-  - Verification: Test | Analysis | Demonstration | Inspection
-  - Risk: High | Medium | Low
-  - Metric: [Measurable target value]
-
-[Continue with full attributes for each NFR category]
-```
-
 ### 6. Present MENU OPTIONS
 
 Present the non-functional requirements for review, then display menu:
@@ -185,7 +165,7 @@ Present the non-functional requirements for review, then display menu:
 - Ask if they'd like to refine further, get other perspectives, or proceed
 - Present menu options naturally as part of conversation
 
-Display: "**Select:** [A] Advanced Elicitation [P] Party Mode [C] Continue to Interface Requirements (Step 10b)"
+Display: "**Select:** [A] Advanced Elicitation [P] Party Mode [C] Continue to Polish Document (Step 11 of 12)"
 
 #### Menu Handling Logic:
 - IF A: Read fully and follow: {advancedElicitationTask} with the current NFR content, process the enhanced quality attribute insights that come back, ask user if they accept the improvements, if yes update content then redisplay menu, if no keep original content then redisplay menu
@@ -257,6 +237,6 @@ When user selects 'C', append the content directly to the document using the str
 
 ## NEXT STEP:
 
-After user selects 'C' and content is saved to document, load {nextStepFile} to define interface requirements.
+After user selects 'C' and content is saved to document, load {nextStepFile} to finalize the PRD and complete the workflow.
 
-Remember: Do NOT proceed to step-10b until user explicitly selects 'C' from the A/P/C menu and content is saved!
+Remember: Do NOT proceed to step-11 until user explicitly selects 'C' from the A/P/C menu and content is saved!

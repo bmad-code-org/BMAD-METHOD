@@ -111,27 +111,7 @@ Review the complete epic and story breakdown to ensure EVERY FR is covered:
 - Foundation stories only setup what's needed
 - No big upfront technical work
 
-### 5. Enterprise Track: Requirements Traceability Validation
-
-If the project is Enterprise track (check PRD frontmatter for `track: enterprise`):
-
-**Requirement ID Reference Check:**
-
-- [ ] Every story has a **Requirements Traceability** section
-- [ ] Every story references at least one PRD FR by ID
-- [ ] Every story references corresponding SyRS requirement ID (if SyRS exists)
-- [ ] Every story references originating StRS requirement ID (if StRS exists)
-- [ ] Every story specifies a verification method
-
-**RTM Forward Coverage Check:**
-
-- [ ] Every PRD FR is referenced by at least one story
-- [ ] No stories reference non-existent requirement IDs
-- [ ] FR Coverage Map is consistent with story requirement references
-
-If traceability gaps found, list them as Critical findings and require resolution before completion.
-
-### 6. Dependency Validation (CRITICAL)
+### 5. Dependency Validation (CRITICAL)
 
 **Epic Independence Check:**
 
@@ -151,7 +131,7 @@ For each epic, review stories in order:
 - ❌ WRONG: Story references features not yet implemented
 - ✅ RIGHT: Each story builds only on previous stories
 
-### 7. Complete and Save
+### 6. Complete and Save
 
 If all validations pass:
 

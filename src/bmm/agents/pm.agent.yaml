@@ -39,18 +39,6 @@ agent:
       exec: "{project-root}/_bmad/bmm/workflows/3-solutioning/check-implementation-readiness/workflow.md"
       description: "[IR] Implementation Readiness: Ensure the PRD, UX, and Architecture and Epics and Stories List are all aligned"
 
-    - trigger: RT or fuzzy match on traceability
-      exec: "{project-root}/_bmad/bmm/workflows/shared/rtm/workflow.md"
-      description: "[RT] Traceability Matrix: Generate or update the Requirements Traceability Matrix (Enterprise track)"
-
-    - trigger: RM or fuzzy match on manage-requirements
-      exec: "{project-root}/_bmad/bmm/workflows/shared/change-management/workflow.md"
-      description: "[RM] Requirements Management: Formal change control process for requirements (Enterprise track)"
-
-    - trigger: QG or fuzzy match on quality-gate
-      exec: "{project-root}/_bmad/bmm/workflows/shared/quality-gate/workflow.md"
-      description: "[QG] Quality Gate: Run phase-transition quality gate check (Enterprise track)"
-
     - trigger: CC or fuzzy match on correct-course
       workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/correct-course/workflow.yaml"
       description: "[CC] Course Correction: Use this so we can determine how to proceed if major need for change is discovered mid implementation"
