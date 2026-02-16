@@ -32,6 +32,16 @@ modules:
     type: bmad-org
     npmPackage: bmad-game-dev-studio
 
+  bmad-method-audit-standards-enterprise:
+    url: https://github.com/bmad-code-org/bmad-method-audit-standards-enterprise
+    module-definition: src/module.yaml
+    code: audit
+    name: "Audit Standards Enterprise"
+    description: "Standards Auditor for compliance, security auditing, traceability, and multi-standard governance"
+    defaultSelected: false
+    type: bmad-org
+    npmPackage: bmad-method-audit-standards-enterprise
+
   bmad-method-test-architecture-enterprise:
     url: https://github.com/bmad-code-org/bmad-method-test-architecture-enterprise
     module-definition: src/module.yaml
