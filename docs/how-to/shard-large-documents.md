@@ -23,11 +23,11 @@ Document sharding splits large markdown files into smaller, organized files base
 
 ```text
 Before Sharding:
-docs/
+_bmad-output/planning-artifacts/
 └── PRD.md (large 50k token file)
 
 After Sharding:
-docs/
+_bmad-output/planning-artifacts/
 └── prd/
     ├── index.md                    # Table of contents with descriptions
     ├── overview.md                 # Section 1

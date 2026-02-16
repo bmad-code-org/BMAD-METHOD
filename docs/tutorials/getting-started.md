@@ -79,6 +79,12 @@ Always start a fresh chat for each workflow. This prevents context limitations f
 
 Work through phases 1-3. **Use fresh chats for each workflow.**
 
+:::tip[Project Context (Optional)]
+Before starting, consider creating `project-context.md` to document your technical preferences and implementation rules. This ensures all AI agents follow your conventions throughout the project.
+
+Create it manually at `_bmad-output/project-context.md` or generate it after architecture using `/bmad-bmm-generate-project-context`. [Learn more](../explanation/project-context.md).
+:::
+
 ### Phase 1: Analysis (Optional)
 
 All workflows in this phase are optional:
@@ -155,12 +161,15 @@ Your project now has:
 
 ```text
 your-project/
-├── _bmad/                         # BMad configuration
+├── _bmad/                                   # BMad configuration
 ├── _bmad-output/
-│   ├── PRD.md                     # Your requirements document
-│   ├── architecture.md            # Technical decisions
-│   ├── epics/                     # Epic and story files
-│   └── sprint-status.yaml         # Sprint tracking
+│   ├── planning-artifacts/
+│   │   ├── PRD.md                           # Your requirements document
+│   │   ├── architecture.md                  # Technical decisions
+│   │   └── epics/                           # Epic and story files
+│   ├── implementation-artifacts/
+│   │   └── sprint-status.yaml               # Sprint tracking
+│   └── project-context.md                   # Implementation rules (optional)
 └── ...
 ```
 
@@ -171,6 +180,7 @@ your-project/
 | `help`                           | `/bmad-help`                               | Any       | Get guidance on what to do next      |
 | `prd`                            | `/bmad-bmm-create-prd`                     | PM        | Create Product Requirements Document |
 | `create-architecture`            | `/bmad-bmm-create-architecture`            | Architect | Create architecture document         |
+| `generate-project-context`       | `/bmad-bmm-generate-project-context`       | Analyst   | Create project context file          |
 | `create-epics-and-stories`       | `/bmad-bmm-create-epics-and-stories`       | PM        | Break down PRD into epics            |
 | `check-implementation-readiness` | `/bmad-bmm-check-implementation-readiness` | Architect | Validate planning cohesion           |
 | `sprint-planning`                | `/bmad-bmm-sprint-planning`                | SM        | Initialize sprint tracking           |

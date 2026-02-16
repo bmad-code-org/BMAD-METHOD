@@ -77,14 +77,46 @@ Skip phases 1-3 for small, well-understood work.
 
 Each document becomes context for the next phase. The PRD tells the architect what constraints matter. The architecture tells the dev agent which patterns to follow. Story files give focused, complete context for implementation. Without this structure, agents make inconsistent decisions.
 
-For established projects, `document-project` creates or updates `project-context.md` - what exists in the codebase and the rules all implementation workflows must observe. Run it just before Phase 4, and again when something significant changes - structure, architecture, or those rules. You can also edit `project-context.md` by hand.
+### Project Context
 
-All implementation workflows load `project-context.md` if it exists. Additional context per workflow:
+:::tip[Recommended]
+Create `project-context.md` to ensure AI agents follow your project's rules and preferences. This file works like a constitution for your project — it guides implementation decisions across all workflows.
+:::
 
-| Workflow       | Also Loads                   |
-| -------------- | ---------------------------- |
+**When to create it:**
+
+| Scenario | Approach |
+|----------|----------|
+| Before architecture (manual) | Document technical preferences you want the architect to respect |
+| After architecture | Generate it to capture decisions made during solutioning |
+| Existing projects | Run `generate-project-context` to discover established patterns |
+| Quick Flow | Create before `quick-dev` to ensure consistent implementation |
+
+**How to create it:**
+
+- **Manually** — Create `_bmad-output/project-context.md` with your technology stack and implementation rules
+- **Generate it** — Run `/bmad-bmm-generate-project-context` to auto-generate from your architecture or codebase
+
+**What workflows load it:**
+
+| Workflow | Purpose |
+|----------|---------|
+| `create-architecture` | Respects technical preferences when designing |
+| `create-story` | Informs story creation with project patterns |
+| `dev-story` | Guides implementation decisions |
+| `code-review` | Validates against project standards |
+| `quick-dev` | Applies patterns when implementing |
+
+[**Learn more about project-context.md**](../explanation/project-context.md)
+
+### Additional Context by Workflow
+
+Beyond `project-context.md`, each workflow loads specific documents:
+
+| Workflow | Also Loads |
+|----------|------------|
 | `create-story` | epics, PRD, architecture, UX |
-| `dev-story`    | story file                   |
-| `code-review`  | architecture, story file     |
-| `quick-spec`   | planning docs (if exist)     |
-| `quick-dev`    | tech-spec                    |
+| `dev-story` | story file |
+| `code-review` | architecture, story file |
+| `quick-spec` | planning docs (if exist) |
+| `quick-dev` | tech-spec |

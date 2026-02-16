@@ -302,22 +302,29 @@ class ConfigCollector {
 
         const configSpinner = await prompts.spinner();
         configSpinner.start('Configuring modules...');
-        for (const moduleName of defaultModules) {
-          const displayName = displayNameMap.get(moduleName) || moduleName.toUpperCase();
-          configSpinner.message(`Configuring ${displayName}...`);
-          try {
-            this._silentConfig = true;
-            await this.collectModuleConfig(moduleName, projectDir);
-          } finally {
-            this._silentConfig = false;
+        try {
+          for (const moduleName of defaultModules) {
+            const displayName = displayNameMap.get(moduleName) || moduleName.toUpperCase();
+            configSpinner.message(`Configuring ${displayName}...`);
+            try {
+              this._silentConfig = true;
+              await this.collectModuleConfig(moduleName, projectDir);
+            } finally {
+              this._silentConfig = false;
+            }
           }
+        } finally {
+          configSpinner.stop(customizeModules.length > 0 ? 'Module defaults applied' : 'Module configuration complete');
         }
-        configSpinner.stop('Module configuration complete');
       }
 
       // Run customized modules individually (may show interactive prompts)
       for (const moduleName of customizeModules) {
         await this.collectModuleConfig(moduleName, projectDir);
+      }
+
+      if (customizeModules.length > 0) {
+        await prompts.log.step('Module configuration complete');
       }
     }
 
@@ -549,6 +556,8 @@ class ConfigCollector {
         }
       }
     }
+
+    await this.displayModulePostConfigNotes(moduleName, moduleConfig);
 
     return newKeys.length > 0 || newStaticKeys.length > 0; // Return true if we had any new fields (interactive or static)
   }
@@ -923,6 +932,8 @@ class ConfigCollector {
         }
       }
     }
+
+    await this.displayModulePostConfigNotes(moduleName, moduleConfig);
   }
 
   /**
@@ -1193,6 +1204,58 @@ class ConfigCollector {
     }
 
     return question;
+  }
+
+  /**
+   * Display post-configuration notes for a module
+   * Shows prerequisite guidance based on collected config values
+   * Reads notes from the module's `post-install-notes` section in module.yaml
+   * Supports two formats:
+   *   - Simple string: always displayed
+   *   - Object keyed by config field name, with value-specific messages
+   * @param {string} moduleName - Module name
+   * @param {Object} moduleConfig - Parsed module.yaml content
+   */
+  async displayModulePostConfigNotes(moduleName, moduleConfig) {
+    if (this._silentConfig) return;
+    if (!moduleConfig || !moduleConfig['post-install-notes']) return;
+
+    const notes = moduleConfig['post-install-notes'];
+    const color = await prompts.getColor();
+
+    // Format 1: Simple string - always display
+    if (typeof notes === 'string') {
+      await prompts.log.message('');
+      for (const line of notes.trim().split('\n')) {
+        await prompts.log.message(color.dim(line));
+      }
+      return;
+    }
+
+    // Format 2: Conditional on config values
+    if (typeof notes === 'object') {
+      const config = this.collectedConfig[moduleName];
+      if (!config) return;
+
+      let hasOutput = false;
+      for (const [configKey, valueMessages] of Object.entries(notes)) {
+        const selectedValue = config[configKey];
+        if (!selectedValue || !valueMessages[selectedValue]) continue;
+
+        if (hasOutput) await prompts.log.message('');
+        hasOutput = true;
+
+        const message = valueMessages[selectedValue];
+        for (const line of message.trim().split('\n')) {
+          const trimmedLine = line.trim();
+          if (trimmedLine.endsWith(':') && !trimmedLine.startsWith(' ')) {
+            await prompts.log.info(color.bold(trimmedLine));
+          } else {
+            await prompts.log.message(color.dim('  ' + trimmedLine));
+          }
+        }
+      }
+    }
   }
 
   /**

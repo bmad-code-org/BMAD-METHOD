@@ -8,56 +8,8 @@
 
 <critical>This router determines workflow mode and delegates to specialized sub-workflows</critical>
 
-<step n="1" goal="Validate workflow and get project info">
-
-<invoke-workflow path="{project-root}/_bmad/bmm/workflows/workflow-status">
-  <param>mode: data</param>
-  <param>data_request: project_config</param>
-</invoke-workflow>
-
-<check if="status_exists == false">
-  <output>{{suggestion}}</output>
-  <output>Note: Documentation workflow can run standalone. Continuing without progress tracking.</output>
-  <action>Set standalone_mode = true</action>
-  <action>Set status_file_found = false</action>
-</check>
-
-<check if="status_exists == true">
-  <action>Store {{status_file_path}} for later updates</action>
-  <action>Set status_file_found = true</action>
-
-  <!-- Extract brownfield/greenfield from status data -->
-  <check if="field_type == 'greenfield'">
-    <output>Note: This is a greenfield project. Documentation workflow is typically for brownfield projects.</output>
-    <ask>Continue anyway to document planning artifacts? (y/n)</ask>
-    <check if="n">
-      <action>Exit workflow</action>
-    </check>
-  </check>
-
-  <!-- Now validate sequencing -->
-  <invoke-workflow path="{project-root}/_bmad/bmm/workflows/workflow-status">
-    <param>mode: validate</param>
-    <param>calling_workflow: document-project</param>
-  </invoke-workflow>
-
-  <check if="warning != ''">
-    <output>{{warning}}</output>
-    <output>Note: This may be auto-invoked by prd for brownfield documentation.</output>
-    <ask>Continue with documentation? (y/n)</ask>
-    <check if="n">
-      <output>{{suggestion}}</output>
-      <action>Exit workflow</action>
-    </check>
-  </check>
-</check>
-
-</step>
-
-<step n="2" goal="Check for resumability and determine workflow mode">
-<critical>SMART LOADING STRATEGY: Check state file FIRST before loading any CSV files</critical>
-
-<action>Check for existing state file at: {output_folder}/project-scan-report.json</action>
+<step n="1" goal="Check for ability to resume and determine workflow mode">
+<action>Check for existing state file at: {project_knowledge}/project-scan-report.json</action>
 
 <check if="project-scan-report.json exists">
   <action>Read state file and extract: timestamps, mode, scan_level, current_step, completed_steps, project_classification</action>
@@ -66,21 +18,21 @@
 
 <ask>I found an in-progress workflow state from {{last_updated}}.
 
-**Current Progress:**
+    **Current Progress:**
 
-- Mode: {{mode}}
-- Scan Level: {{scan_level}}
-- Completed Steps: {{completed_steps_count}}/{{total_steps}}
-- Last Step: {{current_step}}
-- Project Type(s): {{cached_project_types}}
+    - Mode: {{mode}}
+    - Scan Level: {{scan_level}}
+    - Completed Steps: {{completed_steps_count}}/{{total_steps}}
+    - Last Step: {{current_step}}
+    - Project Type(s): {{cached_project_types}}
 
-Would you like to:
+    Would you like to:
 
-1. **Resume from where we left off** - Continue from step {{current_step}}
-2. **Start fresh** - Archive old state and begin new scan
-3. **Cancel** - Exit without changes
+    1. **Resume from where we left off** - Continue from step {{current_step}}
+    2. **Start fresh** - Archive old state and begin new scan
+    3. **Cancel** - Exit without changes
 
-Your choice [1/2/3]:
+    Your choice [1/2/3]:
 </ask>
 
   <check if="user selects 1">
@@ -107,8 +59,8 @@ Your choice [1/2/3]:
   </check>
 
   <check if="user selects 2">
-    <action>Create archive directory: {output_folder}/.archive/</action>
-    <action>Move old state file to: {output_folder}/.archive/project-scan-report-{{timestamp}}.json</action>
+    <action>Create archive directory: {project_knowledge}/.archive/</action>
+    <action>Move old state file to: {project_knowledge}/.archive/project-scan-report-{{timestamp}}.json</action>
     <action>Set resume_mode = false</action>
     <action>Continue to Step 0.5</action>
   </check>
@@ -120,7 +72,7 @@ Your choice [1/2/3]:
 
   <check if="state file age >= 24 hours">
     <action>Display: "Found old state file (>24 hours). Starting fresh scan."</action>
-    <action>Archive old state file to: {output_folder}/.archive/project-scan-report-{{timestamp}}.json</action>
+    <action>Archive old state file to: {project_knowledge}/.archive/project-scan-report-{{timestamp}}.json</action>
     <action>Set resume_mode = false</action>
     <action>Continue to Step 0.5</action>
   </check>
@@ -128,7 +80,7 @@ Your choice [1/2/3]:
 </step>
 
 <step n="3" goal="Check for existing documentation and determine workflow mode" if="resume_mode == false">
-<action>Check if {output_folder}/index.md exists</action>
+<action>Check if {project_knowledge}/index.md exists</action>
 
 <check if="index.md exists">
   <action>Read existing index.md to extract metadata (date, project structure, parts count)</action>
@@ -172,49 +124,6 @@ Your choice [1/2/3]:
   <action>Read fully and follow: {installed_path}/workflows/full-scan-instructions.md</action>
   <action>After sub-workflow completes, continue to Step 4</action>
 </check>
-
-</step>
-
-<step n="4" goal="Update status and complete">
-
-<check if="status_file_found == true">
-  <invoke-workflow path="{project-root}/_bmad/bmm/workflows/workflow-status">
-    <param>mode: update</param>
-    <param>action: complete_workflow</param>
-    <param>workflow_name: document-project</param>
-  </invoke-workflow>
-
-  <check if="success == true">
-    <output>Status updated!</output>
-  </check>
-</check>
-
-<output>**✅ Document Project Workflow Complete, {user_name}!**
-
-**Documentation Generated:**
-
-- Mode: {{workflow_mode}}
-- Scan Level: {{scan_level}}
-- Output: {output_folder}/index.md and related files
-
-{{#if status_file_found}}
-**Status Updated:**
-
-- Progress tracking updated
-
-**Next Steps:**
-
-- **Next required:** {{next_workflow}} ({{next_agent}} agent)
-
-Check status anytime with: `workflow-status`
-{{else}}
-**Next Steps:**
-Since no workflow is in progress:
-
-- Refer to the BMM workflow guide if unsure what to do next
-- Or run `workflow-init` to create a workflow path and get guided next steps
-  {{/if}}
-  </output>
 
 </step>
 

@@ -5,7 +5,7 @@ sidebar:
   order: 6
 ---
 
-Use BMad Method effectively when working on existing projects and legacy codebases, sometimes also referred to as brownfield projects.
+Use BMad Method effectively when working on existing projects and legacy codebases.
 
 This guide covers the essential workflow for onboarding to existing projects with BMad Method.
 
@@ -23,7 +23,30 @@ If you have completed all PRD epics and stories through the BMad process, clean 
 - `_bmad-output/planning-artifacts/`
 - `_bmad-output/implementation-artifacts/`
 
-## Step 2: Maintain Quality Project Documentation
+## Step 2: Create Project Context
+
+:::tip[Recommended for Existing Projects]
+Generate `project-context.md` to capture your existing codebase patterns and conventions. This ensures AI agents follow your established practices when implementing changes.
+:::
+
+Run the generate project context workflow:
+
+```bash
+/bmad-bmm-generate-project-context
+```
+
+This scans your codebase to identify:
+- Technology stack and versions
+- Code organization patterns
+- Naming conventions
+- Testing approaches
+- Framework-specific patterns
+
+You can review and refine the generated file, or create it manually at `_bmad-output/project-context.md` if you prefer.
+
+[Learn more about project context](../explanation/project-context.md)
+
+## Step 3: Maintain Quality Project Documentation
 
 Your `docs/` folder should contain succinct, well-organized documentation that accurately represents your project:
 
