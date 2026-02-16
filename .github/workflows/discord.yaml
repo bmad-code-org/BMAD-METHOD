@@ -12,7 +12,7 @@ env:
 
 jobs:
   pull_request:
-    if: github.event_name == 'pull_request'
+    if: false # disabled – workflow disabled for fork
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -54,7 +54,7 @@ jobs:
           jq -n --arg content "$MSG" '{content: $content}' | curl -sf --retry 2 -X POST "$WEBHOOK" -H "Content-Type: application/json" -d @-
 
   issues:
-    if: github.event_name == 'issues'
+    if: false # disabled – workflow disabled for fork
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

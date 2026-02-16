@@ -23,6 +23,7 @@ concurrency:
 
 jobs:
   build:
+    if: false # disabled – workflow disabled for fork
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository

@@ -16,6 +16,7 @@ name: Quality & Validation
 
 jobs:
   prettier:
+    if: false # disabled – workflow disabled for fork
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -34,6 +35,7 @@ jobs:
         run: npm run format:check
 
   eslint:
+    if: false # disabled – workflow disabled for fork
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -52,6 +54,7 @@ jobs:
         run: npm run lint
 
   markdownlint:
+    if: false # disabled – workflow disabled for fork
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -70,6 +73,7 @@ jobs:
         run: npm run lint:md
 
   docs:
+    if: false # disabled – workflow disabled for fork
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -89,6 +93,7 @@ jobs:
         run: npm run docs:build
 
   validate:
+    if: false # disabled – workflow disabled for fork
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

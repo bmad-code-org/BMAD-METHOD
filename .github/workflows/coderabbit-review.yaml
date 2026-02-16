@@ -6,6 +6,7 @@ on:
 
 jobs:
   trigger-review:
+    if: false # disabled – workflow disabled for fork
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
