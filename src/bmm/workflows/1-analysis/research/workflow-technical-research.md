@@ -1,6 +1,7 @@
 ---
 name: technical-research
 description: Conduct technical research covering technology evaluation, architecture decisions, and implementation approaches using current web data and verified sources.
+main_config: '{project-root}/_bmad/bmm/config.yaml'
 ---
 
 # Technical Research Workflow
@@ -24,7 +25,6 @@ Load and read full config from {main_config} and resolve basic variables.
 2. If it exists, read its content as `{project_suffix}` and override output folder:
    - `output_folder`: `{project-root}/_bmad-output/{project_suffix}`
 
-Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 - `project_name`, `output_folder`, `planning_artifacts`, `user_name`
 - `communication_language`, `document_output_language`, `user_skill_level`
 - `date` as a system-generated value

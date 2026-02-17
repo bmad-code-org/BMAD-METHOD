@@ -1,6 +1,7 @@
 ---
 name: market-research
 description: Conduct market research covering market size, growth, competition, and customer insights using current web data and verified sources.
+main_config: '{project-root}/_bmad/bmm/config.yaml'
 ---
 
 # Market Research Workflow

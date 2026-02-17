@@ -1,6 +1,7 @@
 ---
 name: create-product-brief
 description: Create comprehensive product briefs through collaborative step-by-step discovery as creative Business Analyst working with the user as peers.
+main_config: '{project-root}/_bmad/bmm/config.yaml'
 ---
 
 # Product Brief Workflow

@@ -1,6 +1,7 @@
 ---
 name: domain-research
 description: Conduct domain research covering industry analysis, regulations, technology trends, and ecosystem dynamics using current web data and verified sources.
+main_config: '{project-root}/_bmad/bmm/config.yaml'
 ---
 
 # Domain Research Workflow
