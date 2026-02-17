@@ -25,7 +25,14 @@ This uses **micro-file architecture** for disciplined execution:
 
 ## INITIALIZATION
 
-### Configuration Loading
+### 1. Configuration Loading
+
+Load and read full config from {main_config} and resolve basic variables.
+
+**Monorepo Context Check:**
+1. Check if `_bmad/.current_project exists`.
+2. If it exists, read its content as `{project_suffix}` and override output folder:
+   - `output_folder`: `{project-root}/_bmad-output/{project_suffix}`
 
 Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 

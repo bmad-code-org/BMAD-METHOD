@@ -1,7 +1,17 @@
 # Retrospective - Epic Completion Review Instructions
 
 <critical>The workflow execution engine is governed by: {project-root}/_bmad/core/tasks/workflow.xml</critical>
-<critical>You MUST have already loaded and processed: {project-root}/_bmad/bmm/workflows/4-implementation/retrospective/workflow.yaml</critical>
+<critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
+
+## 1. Configuration Loading
+
+Load and read full config from {main_config} and resolve basic variables.
+
+**Monorepo Context Check:**
+1. Check if `_bmad/.current_project exists`.
+2. If it exists, read its content as `{project_suffix}` and override output folder:
+   - `output_folder`: `{project-root}/_bmad-output/{project_suffix}`
+
 <critical>Communicate all responses in {communication_language} and language MUST be tailored to {user_skill_level}</critical>
 <critical>Generate all documents in {document_output_language}</critical>
 <critical>⚠️ ABSOLUTELY NO TIME ESTIMATES - NEVER mention hours, days, weeks, months, or ANY time-based predictions. AI has fundamentally changed development speed - what once took teams weeks/months can now be done by one person in hours. DO NOT give ANY time estimates whatsoever.</critical>

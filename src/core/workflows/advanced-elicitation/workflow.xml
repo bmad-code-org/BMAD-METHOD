@@ -20,6 +20,11 @@
 
   <flow>
     <step n="1" title="Method Registry Loading">
+      <check if="_bmad/.current_project exists">
+        <action>Read content as project_suffix</action>
+        <action>Override output_folder to {project-root}/_bmad-output/{project_suffix}</action>
+      </check>
+
       <action>Load and read {{methods}} and {{agent-party}}</action>
 
       <csv-structure>

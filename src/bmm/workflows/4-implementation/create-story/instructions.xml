@@ -18,6 +18,11 @@
   <critical>🎯 ZERO USER INTERVENTION: Process should be fully automated except for initial epic/story selection or missing documents</critical>
 
   <step n="1" goal="Determine target story">
+    <check if="_bmad/.current_project exists">
+      <action>Read content as project_suffix</action>
+      <action>Override output_folder to {project-root}/_bmad-output/{project_suffix}</action>
+    </check>
+
     <check if="{{story_path}} is provided by user or user provided the epic and story number such as 2-4 or 1.6 or epic 1 story 5">
       <action>Parse user-provided story path: extract epic_num, story_num, story_title from format like "1-2-user-auth"</action>
       <action>Set {{epic_num}}, {{story_num}}, {{story_key}} from user input</action>
