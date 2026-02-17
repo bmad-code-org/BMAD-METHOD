@@ -42,9 +42,14 @@ description: 'Critical validation workflow that assesses PRD, Architecture, and 
 
 ## INITIALIZATION SEQUENCE
 
-### 1. Module Configuration Loading
+### 1. Configuration Loading
 
-Load and read full config from {project-root}/_bmad/bmm/config.yaml and resolve:
+Load and read full config from {main_config} and resolve basic variables.
+
+**Monorepo Context Check:**
+1. Check if `_bmad/.current_project exists`.
+2. If it exists, read its content as `{project_suffix}` and override output folder:
+   - `output_folder`: `{project-root}/_bmad-output/{project_suffix}`
 
 - `project_name`, `output_folder`, `planning_artifacts`, `user_name`, `communication_language`, `document_output_language`
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`

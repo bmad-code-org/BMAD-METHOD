@@ -40,6 +40,14 @@
     - [x] Done - Item completed successfully
     - [N/A] Skip - Item not applicable to this change
     - [!] Action-needed - Item requires attention or follow-up
+### 1. Configuration Loading
+
+Load and read full config from {main_config} and resolve basic variables.
+
+**Monorepo Context Check:**
+1. Check if `_bmad/.current_project exists`.
+2. If it exists, read its content as `{project_suffix}` and override output folder:
+   - `output_folder`: `{project-root}/_bmad-output/{project_suffix}`
   <action>Maintain running notes of findings and impacts discovered</action>
   <action>Present checklist progress after each major section</action>
 

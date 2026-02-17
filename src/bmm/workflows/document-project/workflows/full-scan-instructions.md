@@ -95,6 +95,16 @@ Your choice [1/2/3]:
 - Best for: Quick project overview, initial understanding
 - File reading: Minimal (configs, README, package.json, etc.)
 
+## 1. Configuration Loading
+
+Load and read full config from {main_config} and resolve basic variables.
+
+**Monorepo Context Check:**
+1. Check if `_bmad/.current_project exists`.
+2. If it exists, read its content as `{project_suffix}` and override output folder:
+   - `output_folder`: `{project-root}/_bmad-output/{project_suffix}`
+json, etc.)
+
 **2. Deep Scan** (10-30 minutes)
 
 - Reads files in critical directories based on project type
