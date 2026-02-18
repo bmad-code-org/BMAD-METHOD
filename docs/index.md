@@ -12,7 +12,11 @@ If you're comfortable working with AI coding assistants like Claude, Cursor, or 
 The fastest way to understand BMad is to try it.
 
 - **[Get Started with BMad](./tutorials/getting-started.md)** — Install and understand how BMad works
-- **[Workflow Map](./reference/workflow-map.md)** — Visual overview of BMM phases, workflows, and context management.
+- **[Workflow Map](./reference/workflow-map.md)** — Visual overview of BMM phases, workflows, and context management
+
+:::tip[Just Want to Dive In?]
+Install BMad and run `/bmad-help` — it will guide you through everything based on your project and installed modules.
+:::
 
 ## How to Use These Docs
 

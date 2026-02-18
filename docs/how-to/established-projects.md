@@ -59,9 +59,21 @@ For complex projects, consider using the `document-project` workflow. It offers 
 
 ## Step 3: Get Help
 
-Get help to know what to do next based on your unique needs
+### BMad-Help: Your Starting Point
 
-Run `bmad-help` to get guidance when you are not sure what to do next.
+**Run `/bmad-help` anytime you're unsure what to do next.** This intelligent guide:
+
+- Inspects your project to see what's already been done
+- Shows options based on your installed modules
+- Understands natural language queries
+
+```
+/bmad-help I have an existing Rails app, where should I start?
+/bmad-help What's the difference between quick-flow and full method?
+/bmad-help Show me what workflows are available
+```
+
+BMad-Help also **automatically runs at the end of every workflow**, providing clear guidance on exactly what to do next.
 
 ### Choosing Your Approach
 

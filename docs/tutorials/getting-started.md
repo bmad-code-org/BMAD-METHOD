@@ -8,6 +8,7 @@ Build software faster using AI-powered workflows with specialized agents that gu
 ## What You'll Learn
 
 - Install and initialize BMad Method for a new project
+- Use **BMad-Help** — your intelligent guide that knows what to do next
 - Choose the right planning track for your project size
 - Progress through phases from requirements to working code
 - Use agents and workflows effectively
@@ -19,11 +20,46 @@ Build software faster using AI-powered workflows with specialized agents that gu
 - **A project idea** — Even a simple one works for learning
 :::
 
-:::tip[Quick Path]
+:::tip[The Easiest Path]
 **Install** → `npx bmad-method install`
-**Plan** → PM creates PRD, Architect creates architecture
-**Build** → SM manages sprints, DEV implements stories
-**Fresh chats** for each workflow to avoid context issues.
+**Ask** → `/bmad-help what should I do first?`
+**Build** → Let BMad-Help guide you workflow by workflow
+:::
+
+## Meet BMad-Help: Your Intelligent Guide
+
+**BMad-Help is the fastest way to get started with BMad.** You don't need to memorize workflows or phases — just ask, and BMad-Help will:
+
+- **Inspect your project** to see what's already been done
+- **Show your options** based on which modules you have installed
+- **Recommend what's next** — including the first required task
+- **Answer questions** like "I have a SaaS idea, where do I start?"
+
+### How to Use BMad-Help
+
+Run it in your AI IDE with just the slash command:
+
+```
+/bmad-help
+```
+
+Or combine it with a question for context-aware guidance:
+
+```
+/bmad-help I have an idea for a SaaS product, I already know all the features I want. where do I get started?
+```
+
+BMad-Help will respond with:
+- What's recommended for your situation
+- What the first required task is
+- What the rest of the process looks like
+
+### It Powers Workflows Too
+
+BMad-Help doesn't just answer questions — **it automatically runs at the end of every workflow** to tell you exactly what to do next. No guessing, no searching docs — just clear guidance on the next required workflow.
+
+:::tip[Start Here]
+After installing BMad, run `/bmad-help` immediately. It will detect what modules you have installed and guide you to the right starting point for your project.
 :::
 
 ## Understanding BMad
@@ -65,7 +101,15 @@ The installer creates two folders:
 - `_bmad/` — agents, workflows, tasks, and configuration
 - `_bmad-output/` — empty for now, but this is where your artifacts will be saved
 
-Open your AI IDE in the project folder. Run the `help` workflow (`/bmad-help`) to see what to do next — it detects what you've completed and recommends the next step.
+:::tip[Your Next Step]
+Open your AI IDE in the project folder and run:
+
+```
+/bmad-help
+```
+
+BMad-Help will detect what you've completed and recommend exactly what to do next. You can also ask it questions like "What are my options?" or "I have a SaaS idea, where should I start?"
+:::
 
 :::note[How to Load Agents and Run Workflows]
 Each workflow has a **slash command** you run in your IDE (e.g., `/bmad-bmm-create-prd`). Running a workflow command automatically loads the appropriate agent — you don't need to load agents separately. You can also load an agent directly for general conversation (e.g., `/bmad-agent-bmm-pm` for the PM agent).
@@ -175,12 +219,12 @@ your-project/
 
 ## Quick Reference
 
-| Workflow                         | Command                                    | Agent     | Purpose                              |
-| -------------------------------- | ------------------------------------------ | --------- | ------------------------------------ |
-| `help`                           | `/bmad-help`                               | Any       | Get guidance on what to do next      |
-| `prd`                            | `/bmad-bmm-create-prd`                     | PM        | Create Product Requirements Document |
-| `create-architecture`            | `/bmad-bmm-create-architecture`            | Architect | Create architecture document         |
-| `generate-project-context`       | `/bmad-bmm-generate-project-context`       | Analyst   | Create project context file          |
+| Workflow                              | Command                                    | Agent     | Purpose                                         |
+| ------------------------------------- | ------------------------------------------ | --------- | ----------------------------------------------- |
+| **`help`** ⭐                         | `/bmad-help`                               | Any       | **Your intelligent guide — ask anything!**      |
+| `prd`                                 | `/bmad-bmm-create-prd`                     | PM        | Create Product Requirements Document            |
+| `create-architecture`                 | `/bmad-bmm-create-architecture`            | Architect | Create architecture document                     |
+| `generate-project-context`            | `/bmad-bmm-generate-project-context`       | Analyst   | Create project context file                     |
 | `create-epics-and-stories`       | `/bmad-bmm-create-epics-and-stories`       | PM        | Break down PRD into epics            |
 | `check-implementation-readiness` | `/bmad-bmm-check-implementation-readiness` | Architect | Validate planning cohesion           |
 | `sprint-planning`                | `/bmad-bmm-sprint-planning`                | SM        | Initialize sprint tracking           |
@@ -204,16 +248,26 @@ Not strictly. Once you learn the flow, you can run workflows directly using the 
 
 ## Getting Help
 
+:::tip[First Stop: BMad-Help]
+**Run `/bmad-help` anytime** — it's the fastest way to get unstuck. Ask it anything:
+- "What should I do after installing?"
+- "I'm stuck on workflow X"
+- "What are my options for Y?"
+- "Show me what's been done so far"
+
+BMad-Help inspects your project, detects what you've completed, and tells you exactly what to do next.
+:::
+
 - **During workflows** — Agents guide you with questions and explanations
 - **Community** — [Discord](https://discord.gg/gk8jAdXWmj) (#bmad-method-help, #report-bugs-and-issues)
-- **Stuck?** — Run `help` (`/bmad-help`) to see what to do next
 
 ## Key Takeaways
 
 :::tip[Remember These]
+- **Start with `/bmad-help`** — Your intelligent guide that knows your project and options
 - **Always use fresh chats** — Start a new chat for each workflow
 - **Track matters** — Quick Flow uses quick-spec; Method/Enterprise need PRD and architecture
-- **Use `help` (`/bmad-help`) when stuck** — It detects your progress and suggests next steps
+- **BMad-Help runs automatically** — Every workflow ends with guidance on what's next
 :::
 
-Ready to start? Install BMad and let the agents guide you through your first project.
+Ready to start? Install BMad, run `/bmad-help`, and let your intelligent guide lead the way.
