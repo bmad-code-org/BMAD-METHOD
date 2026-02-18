@@ -153,9 +153,7 @@ platforms:
     preferred: false
     category: ide
     description: "Atlassian's Rovo development environment"
-    installer:
-      target_dir: .rovodev/workflows
-      template_type: rovodev
+    # No installer config - uses custom rovodev.js (generates prompts.yml manifest)
 
   trae:
     name: "Trae"

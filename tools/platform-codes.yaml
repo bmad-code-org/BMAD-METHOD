@@ -55,12 +55,6 @@ platforms:
     category: ide
     description: "Enhanced Cline fork"
 
-  rovo:
-    name: "Rovo"
-    preferred: false
-    category: ide
-    description: "Atlassian's AI coding assistant"
-
   rovo-dev:
     name: "Rovo Dev"
     preferred: false
