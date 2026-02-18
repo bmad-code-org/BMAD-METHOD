@@ -24,11 +24,11 @@ Load and read full config from {main_config} and resolve basic variables.
 2.  **Wait for Input.**
 3.  **Process Input:**
     - **Case: CLEAR**:
-      - Delete file: `_bmad/.current_project`
+      - Delete file: `{project-root}/_bmad/.current_project`
       - Output: "✅ Project context cleared. Artifacts will go to root `_bmad-output/`."
     - **Case: Path Provided**:
       - **Sanitize:** Remove leading `/` or `_bmad-output/` if present in the input.
-      - Write file: `_bmad/.current_project` with content `<sanitized_path>`
+      - Write file: `{project-root}/_bmad/.current_project` with content `<sanitized_path>`
       - Output: "✅ Project context set to: `<sanitized_path>`. Artifacts will go to `_bmad-output/<sanitized_path>/`."
 
 ### 3. Verification

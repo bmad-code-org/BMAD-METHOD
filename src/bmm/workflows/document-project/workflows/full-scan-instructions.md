@@ -100,7 +100,7 @@ Your choice [1/2/3]:
 Load and read full config from {main_config} and resolve basic variables.
 
 **Monorepo Context Check:**
-1. Check if `_bmad/.current_project exists`.
+1. Check if `{project-root}/_bmad/.current_project` exists.
 2. If it exists, read its content as `{project_suffix}` and override output folder:
    - `output_folder`: `{project-root}/_bmad-output/{project_suffix}`
 json, etc.)

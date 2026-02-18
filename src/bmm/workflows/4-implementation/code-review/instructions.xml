@@ -16,7 +16,7 @@
 
 
   <step n="1" goal="Load story and discover changes">
-    <check if="_bmad/.current_project exists">
+    <check if="{project-root}/_bmad/.current_project exists">
       <action>Read content as project_suffix</action>
       <action>Override output_folder to {project-root}/_bmad-output/{project_suffix}</action>
     </check>
