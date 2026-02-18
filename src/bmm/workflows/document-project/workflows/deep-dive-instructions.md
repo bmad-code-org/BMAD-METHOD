@@ -11,6 +11,23 @@
 <action>Load existing project structure from index.md and project-parts.json (if exists)</action>
 <action>Load source tree analysis to understand available areas</action>
 
+<check if="{project-root}/_bmad/.current_project exists">
+  <action>Read content as project_suffix</action>
+  <!-- Sanitization and Validation -->
+  <action>Trim whitespace and newlines from project_suffix</action>
+  <check if="project_suffix contains '..' or starts with '/' or starts with '\'">
+      <output>🚫 Security Error: Invalid project context path detected.</output>
+      <action>HALT</action>
+  </check>
+  <check if="project_suffix matches regex '[^a-zA-Z0-9._-]|^\s*$'">
+      <output>🚫 Error: Project context must only contain alphanumeric characters, dots, dashes, or underscores.</output>
+      <action>HALT</action>
+  </check>
+  <action>Override output_folder to {project-root}/_bmad-output/{project_suffix}</action>
+  <action>Override project_knowledge to {project-root}/_bmad-output/{project_suffix}</action>
+  <action>Output "Monorepo context detected. Writing deep-dive artifacts to: {project_knowledge}"</action>
+</check>
+
 <step n="13a" goal="Identify area for deep-dive">
   <action>Analyze existing documentation to suggest deep-dive options</action>
 
@@ -254,10 +271,7 @@ Detailed exhaustive analysis of specific areas:
 
 Load and read full config from {main_config} and resolve basic variables.
 
-**Monorepo Context Check:**
-1. Check if `{project-root}/_bmad/.current_project` exists.
-2. If it exists, read its content as `{project_suffix}` and override output folder:
-   - `output_folder`: `{project-root}/_bmad-output/{project_suffix}`
+
 - Related code and reuse opportunities
 - Implementation guidance
 
