@@ -150,10 +150,10 @@ class RovoDevSetup extends BaseIdeSetup {
       }
     }
 
-    // Build new BMAD entries
+    // Build new BMAD entries (prefix description with name so /prompts list is scannable)
     const bmadEntries = writtenFiles.map((file) => ({
       name: file.name,
-      description: file.description,
+      description: `${file.name} - ${file.description}`,
       content_file: file.contentFile,
     }));
 
