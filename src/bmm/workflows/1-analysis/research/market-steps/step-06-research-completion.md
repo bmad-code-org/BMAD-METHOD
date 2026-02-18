@@ -389,13 +389,14 @@ _This comprehensive market research document serves as an authoritative market r
 
 #### If 'C' (Complete Research):
 
+- **Replace** the template placeholder `[Research overview and methodology will be appended here]` in the `## Research Overview` section near the top of the document with a concise 2-3 paragraph overview summarizing the research scope, key findings, and a pointer to the full executive summary in the Research Synthesis section
 - Append the final content to the research document
 - Update frontmatter: `stepsCompleted: [1, 2, 3, 4]`
 - Complete the market research workflow
 
 ## APPEND TO DOCUMENT:
 
-When user selects 'C', append the content directly to the research document using the structure from step 4.
+When user selects 'C', append the content directly to the research document using the structure from step 4. Also replace the `[Research overview and methodology will be appended here]` placeholder in the Research Overview section at the top of the document.
 
 ## SUCCESS METRICS:
 
