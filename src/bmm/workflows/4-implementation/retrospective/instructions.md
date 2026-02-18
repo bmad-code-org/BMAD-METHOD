@@ -11,6 +11,9 @@ Load and read full config from {main_config} and resolve basic variables.
 1. Check if `{project-root}/_bmad/.current_project` exists.
 2. If it exists, read its content as `{project_suffix}` and override output folder:
    - `output_folder`: `{project-root}/_bmad-output/{project_suffix}`
+3. Re-derive dependent path variables to reflect the new `output_folder`:
+   - `implementation_artifacts`: `{output_folder}/implementation`
+   - `planning_artifacts`: `{output_folder}/planning`
 
 <critical>Communicate all responses in {communication_language} and language MUST be tailored to {user_skill_level}</critical>
 <critical>Generate all documents in {document_output_language}</critical>
