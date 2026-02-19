@@ -325,11 +325,13 @@ ${body}
 
   /**
    * Create prompt content for tech-writer agent-only commands (Pattern C)
+   * Tech-writer is BMM-specific - these commands only work with the BMM module.
    * @param {Object} entry - bmad-help.csv row
    * @returns {Object|null} { fileName, content } or null if not a tech-writer command
    */
   createTechWriterPromptContent(entry) {
-    if (entry['agent-name'] !== 'tech-writer') return null;
+    // Tech-writer is BMM-specific - only process entries from the bmm module
+    if (entry['agent-name'] !== 'tech-writer' || entry.module !== 'bmm') return null;
 
     const techWriterCommands = {
       'Write Document': { code: 'WD', file: 'bmad-bmm-write-document', description: 'Write document' },
@@ -403,11 +405,11 @@ tools: ${toolsStr}
    * @param {Map} agentManifest - Agent manifest data
    */
   async generateCopilotInstructions(projectDir, bmadDir, agentManifest, options = {}) {
-    const configVars = await this.loadModuleConfig(bmadDir);
-
     // Determine installed modules (excluding internal directories)
     const selectedModules = options.selectedModules || [];
-    const installedModules = selectedModules.length > 0 ? selectedModules : ['core'];
+    // Deduplicate selectedModules to prevent duplicate paths in generated markdown
+    const installedModules = selectedModules.length > 0 ? [...new Set(selectedModules)] : ['core'];
+    const configVars = await this.loadModuleConfig(bmadDir, installedModules);
     // Filter to only non-core modules for display (core is always listed separately)
     const nonCoreModules = installedModules.filter((m) => m !== 'core');
 
@@ -465,9 +467,6 @@ tools: ${toolsStr}
     } else {
       moduleConfigLine = `- **Module configuration**: (no non-core modules installed)`;
     }
-
-    // Determine primary module for config loading instruction
-    const primaryModule = nonCoreModules.length > 0 ? nonCoreModules[0] : 'core';
 
     const bmadSection = `# BMAD Method — Project Instructions
 
@@ -546,13 +545,15 @@ Type \`/bmad-\` in Copilot Chat to see all available BMAD workflows and agent ac
   /**
    * Load module config.yaml for template variables
    * @param {string} bmadDir - BMAD installation directory
+   * @param {string[]} installedModules - List of installed modules to check for config
    * @returns {Object} Config variables
    */
-  async loadModuleConfig(bmadDir) {
-    const bmmConfigPath = path.join(bmadDir, 'bmm', 'config.yaml');
-    const coreConfigPath = path.join(bmadDir, 'core', 'config.yaml');
+  async loadModuleConfig(bmadDir, installedModules = ['core']) {
+    // Build config paths from installed modules (non-core first, then core as fallback)
+    const nonCoreModules = installedModules.filter((m) => m !== 'core');
+    const configPaths = [...nonCoreModules.map((m) => path.join(bmadDir, m, 'config.yaml')), path.join(bmadDir, 'core', 'config.yaml')];
 
-    for (const configPath of [bmmConfigPath, coreConfigPath]) {
+    for (const configPath of configPaths) {
       if (await fs.pathExists(configPath)) {
         try {
           const content = await fs.readFile(configPath, 'utf8');
