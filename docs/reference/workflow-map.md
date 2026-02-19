@@ -23,55 +23,53 @@ Final important note: Every workflow below can be run directly with your tool of
 
 Explore the problem space and validate ideas before committing to planning.
 
-| Workflow               | Purpose                                                                    | Produces                  |
-| ---------------------- | -------------------------------------------------------------------------- | ------------------------- |
-| `brainstorming`        | Brainstorm Project Ideas with guided facilitation of a brainstorming coach | `brainstorming-report.md` |
-| `research`             | Validate market, technical, or domain assumptions                          | Research findings         |
-| `create-product-brief` | Capture strategic vision                                                   | `product-brief.md`        |
+| Workflow                        | Purpose                                                                    | Produces                  |
+| ------------------------------- | -------------------------------------------------------------------------- | ------------------------- |
+| `bmad-brainstorming`            | Brainstorm Project Ideas with guided facilitation of a brainstorming coach | `brainstorming-report.md` |
+| `bmad-bmm-research`             | Validate market, technical, or domain assumptions                          | Research findings         |
+| `bmad-bmm-create-product-brief` | Capture strategic vision                                                   | `product-brief.md`        |
 
 ## Phase 2: Planning
 
 Define what to build and for whom.
 
-| Workflow           | Purpose                                  | Produces     |
-| ------------------ | ---------------------------------------- | ------------ |
-| `create-prd`       | Define requirements (FRs/NFRs)           | `PRD.md`     |
-| `create-ux-design` | Design user experience (when UX matters) | `ux-spec.md` |
+| Workflow                    | Purpose                                  | Produces     |
+| --------------------------- | ---------------------------------------- | ------------ |
+| `bmad-bmm-create-prd`       | Define requirements (FRs/NFRs)           | `PRD.md`     |
+| `bmad-bmm-create-ux-design` | Design user experience (when UX matters) | `ux-spec.md` |
 
 ## Phase 3: Solutioning
 
 Decide how to build it and break work into stories.
 
-| Workflow                         | Purpose                                    | Produces                    |
-| -------------------------------- | ------------------------------------------ | --------------------------- |
-| `create-architecture`            | Make technical decisions explicit          | `architecture.md` with ADRs |
-| `create-epics-and-stories`       | Break requirements into implementable work | Epic files with stories     |
-| `check-implementation-readiness` | Gate check before implementation           | PASS/CONCERNS/FAIL decision |
+| Workflow                                  | Purpose                                    | Produces                    |
+| ----------------------------------------- | ------------------------------------------ | --------------------------- |
+| `bmad-bmm-create-architecture`            | Make technical decisions explicit          | `architecture.md` with ADRs |
+| `bmad-bmm-create-epics-and-stories`       | Break requirements into implementable work | Epic files with stories     |
+| `bmad-bmm-check-implementation-readiness` | Gate check before implementation           | PASS/CONCERNS/FAIL decision |
 
 ## Phase 4: Implementation
 
-Build it, one story at a time.
+Build it, one story at a time. Coming soon, full phase 4 automation!
 
-| Workflow          | Purpose                                | Produces                      |
-| ----------------- | -------------------------------------- | ----------------------------- |
-| `sprint-planning` | Initialize tracking (once per project) | `sprint-status.yaml`          |
-| `create-story`    | Prepare next story for implementation  | `story-[slug].md`             |
-| `dev-story`       | Implement the story                    | Working code + tests          |
-| `automate` (QA)   | Generate tests for existing features   | Test suite                    |
-| `code-review`     | Validate implementation quality        | Approved or changes requested |
-| `correct-course`  | Handle significant mid-sprint changes  | Updated plan or re-routing    |
-| `retrospective`   | Review after epic completion           | Lessons learned               |
-
-**Quinn (QA Agent):** Built-in QA agent for test automation. Trigger with `QA` or `bmad-bmm-qa-automate`. Generates standard API and E2E tests using your project's test framework. Beginner-friendly, no configuration needed. For advanced test strategy, install [Test Architect (TEA)](https://bmad-code-org.github.io/bmad-method-test-architecture-enterprise/) module.
+| Workflow                   | Purpose                                                                  | Produces                         |
+| -------------------------- | ------------------------------------------------------------------------ | -------------------------------- |
+| `bmad-bmm-sprint-planning` | Initialize tracking (once per project to sequence the dev cycle)         | `sprint-status.yaml`             |
+| `bmad-bmm-create-story`    | Prepare next story for implementation                                    | `story-[slug].md`                |
+| `bmad-bmm-dev-story`       | Implement the story                                                      | Working code + tests             |
+| `bmad-bmm-code-review`     | Validate implementation quality                                          | Approved or changes requested    |
+| `bmad-bmm-correct-course`  | Handle significant mid-sprint changes                                    | Updated plan or re-routing       |
+| `bmad-bmm-automate`        | Generate tests for existing features - Use after a full epic is complete | End to End UI Focused Test suite |
+| `bmad-bmm-retrospective`   | Review after epic completion                                             | Lessons learned                  |
 
 ## Quick Flow (Parallel Track)
 
 Skip phases 1-3 for small, well-understood work.
 
-| Workflow     | Purpose                                    | Produces                                      |
-| ------------ | ------------------------------------------ | --------------------------------------------- |
-| `quick-spec` | Define an ad-hoc change                    | `tech-spec.md` (story file for small changes) |
-| `quick-dev`  | Implement from spec or direct instructions | Working code + tests                          |
+| Workflow              | Purpose                                    | Produces                                      |
+| --------------------- | ------------------------------------------ | --------------------------------------------- |
+| `bmad-bmm-quick-spec` | Define an ad-hoc change                    | `tech-spec.md` (story file for small changes) |
+| `bmad-bmm-quick-dev`  | Implement from spec or direct instructions | Working code + tests                          |
 
 ## Context Management
 
@@ -80,43 +78,12 @@ Each document becomes context for the next phase. The PRD tells the architect wh
 ### Project Context
 
 :::tip[Recommended]
-Create `project-context.md` to ensure AI agents follow your project's rules and preferences. This file works like a constitution for your project — it guides implementation decisions across all workflows.
+Create `project-context.md` to ensure AI agents follow your project's rules and preferences. This file works like a constitution for your project — it guides implementation decisions across all workflows. This optional file can be generated at the end of Architecture Creation, or in an existing project it can be generated also to capture whats important to keep aligned with current conventions.
 :::
-
-**When to create it:**
-
-| Scenario | Approach |
-|----------|----------|
-| Before architecture (manual) | Document technical preferences you want the architect to respect |
-| After architecture | Generate it to capture decisions made during solutioning |
-| Existing projects | Run `generate-project-context` to discover established patterns |
-| Quick Flow | Create before `quick-dev` to ensure consistent implementation |
 
 **How to create it:**
 
 - **Manually** — Create `_bmad-output/project-context.md` with your technology stack and implementation rules
 - **Generate it** — Run `/bmad-bmm-generate-project-context` to auto-generate from your architecture or codebase
 
-**What workflows load it:**
-
-| Workflow | Purpose |
-|----------|---------|
-| `create-architecture` | Respects technical preferences when designing |
-| `create-story` | Informs story creation with project patterns |
-| `dev-story` | Guides implementation decisions |
-| `code-review` | Validates against project standards |
-| `quick-dev` | Applies patterns when implementing |
-
 [**Learn more about project-context.md**](../explanation/project-context.md)
-
-### Additional Context by Workflow
-
-Beyond `project-context.md`, each workflow loads specific documents:
-
-| Workflow | Also Loads |
-|----------|------------|
-| `create-story` | epics, PRD, architecture, UX |
-| `dev-story` | story file |
-| `code-review` | architecture, story file |
-| `quick-spec` | planning docs (if exist) |
-| `quick-dev` | tech-spec |
