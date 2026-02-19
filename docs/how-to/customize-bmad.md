@@ -41,14 +41,14 @@ _bmad/_config/agents/
 
 Open the `.customize.yaml` file for the agent you want to modify. Every section is optional -- customize only what you need.
 
-| Section             | Behavior     | Purpose                                        |
-| ------------------- | ------------ | ---------------------------------------------- |
-| `agent.metadata`    | Replaces     | Override the agent's display name               |
-| `persona`           | Replaces     | Set role, identity, style, and principles       |
-| `memories`          | Appends      | Add persistent context the agent always recalls |
-| `menu`              | Appends      | Add custom menu items for workflows or prompts  |
-| `critical_actions`  | Appends      | Define startup instructions for the agent       |
-| `prompts`           | Appends      | Create reusable prompts for menu actions         |
+| Section            | Behavior | Purpose                                         |
+| ------------------ | -------- | ----------------------------------------------- |
+| `agent.metadata`   | Replaces | Override the agent's display name               |
+| `persona`          | Replaces | Set role, identity, style, and principles       |
+| `memories`         | Appends  | Add persistent context the agent always recalls |
+| `menu`             | Appends  | Add custom menu items for workflows or prompts  |
+| `critical_actions` | Appends  | Define startup instructions for the agent       |
+| `prompts`          | Appends  | Create reusable prompts for menu actions        |
 
 Sections marked **Replaces** overwrite the agent's defaults entirely. Sections marked **Appends** add to the existing configuration.
 
@@ -96,7 +96,7 @@ Add custom entries to the agent's display menu. Each item needs a `trigger`, a t
 ```yaml
 menu:
   - trigger: my-workflow
-    workflow: '{project-root}/my-custom/workflows/my-workflow.yaml'
+    workflow: 'my-custom/workflows/my-workflow.yaml'
     description: My custom workflow
   - trigger: deploy
     action: '#deploy-prompt'
@@ -136,11 +136,11 @@ npx bmad-method install
 
 The installer detects the existing installation and offers these options:
 
-| Option                | What It Does                                                        |
-| --------------------- | ------------------------------------------------------------------- |
-| **Quick Update**      | Updates all modules to the latest version and recompiles all agents |
-| **Recompile Agents**  | Applies customizations only, without updating module files          |
-| **Modify BMad Installation** | Full installation flow for adding or removing modules        |
+| Option                       | What It Does                                                        |
+| ---------------------------- | ------------------------------------------------------------------- |
+| **Quick Update**             | Updates all modules to the latest version and recompiles all agents |
+| **Recompile Agents**         | Applies customizations only, without updating module files          |
+| **Modify BMad Installation** | Full installation flow for adding or removing modules               |
 
 For customization-only changes, **Recompile Agents** is the fastest option.
 

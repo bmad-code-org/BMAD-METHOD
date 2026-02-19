@@ -456,8 +456,18 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
   async cleanup(projectDir, options = {}) {
     // Clean all target directories
     if (this.installerConfig?.targets) {
+      const parentDirs = new Set();
       for (const target of this.installerConfig.targets) {
         await this.cleanupTarget(projectDir, target.target_dir, options);
+        // Track parent directories for empty-dir cleanup
+        const parentDir = path.dirname(target.target_dir);
+        if (parentDir && parentDir !== '.') {
+          parentDirs.add(parentDir);
+        }
+      }
+      // After all targets cleaned, remove empty parent directories (recursive up to projectDir)
+      for (const parentDir of parentDirs) {
+        await this.removeEmptyParents(projectDir, parentDir);
       }
     } else if (this.installerConfig?.target_dir) {
       await this.cleanupTarget(projectDir, this.installerConfig.target_dir, options);
@@ -508,6 +518,41 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
 
     if (removedCount > 0 && !options.silent) {
       await prompts.log.message(`  Cleaned ${removedCount} BMAD files from ${targetDir}`);
+    }
+
+    // Remove empty directory after cleanup
+    if (removedCount > 0) {
+      try {
+        const remaining = await fs.readdir(targetPath);
+        if (remaining.length === 0) {
+          await fs.remove(targetPath);
+        }
+      } catch {
+        // Directory may already be gone or in use — skip
+      }
+    }
+  }
+  /**
+   * Recursively remove empty directories walking up from dir toward projectDir
+   * Stops at projectDir boundary — never removes projectDir itself
+   * @param {string} projectDir - Project root (boundary)
+   * @param {string} relativeDir - Relative directory to start from
+   */
+  async removeEmptyParents(projectDir, relativeDir) {
+    let current = relativeDir;
+    let last = null;
+    while (current && current !== '.' && current !== last) {
+      last = current;
+      const fullPath = path.join(projectDir, current);
+      try {
+        if (!(await fs.pathExists(fullPath))) break;
+        const remaining = await fs.readdir(fullPath);
+        if (remaining.length > 0) break;
+        await fs.rmdir(fullPath);
+      } catch {
+        break;
+      }
+      current = path.dirname(current);
     }
   }
 }

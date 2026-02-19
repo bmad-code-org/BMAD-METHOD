@@ -23,9 +23,9 @@ class CodexSetup extends BaseIdeSetup {
    * @returns {Object} Collected configuration
    */
   async collectConfiguration(options = {}) {
-    // Non-interactive mode: use default (global)
+    // Non-interactive mode: use default (project) - recommended for real work
     if (options.skipPrompts) {
-      return { installLocation: 'global' };
+      return { installLocation: options.codexLocation || 'project' };
     }
 
     let confirmed = false;

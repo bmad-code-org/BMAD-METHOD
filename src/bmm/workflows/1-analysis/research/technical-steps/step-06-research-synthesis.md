@@ -416,6 +416,7 @@ _This comprehensive technical research document serves as an authoritative techn
 
 #### If 'C' (Complete Research):
 
+- **Replace** the template placeholder `[Research overview and methodology will be appended here]` in the `## Research Overview` section near the top of the document with a concise 2-3 paragraph overview summarizing the research scope, key findings, and a pointer to the full executive summary in the Research Synthesis section
 - Append the complete technical document to the research file
 - Update frontmatter: `stepsCompleted: [1, 2, 3, 4, 5, 6]`
 - Complete the technical research workflow
@@ -423,7 +424,7 @@ _This comprehensive technical research document serves as an authoritative techn
 
 ## APPEND TO DOCUMENT:
 
-When user selects 'C', append the complete comprehensive technical research document using the full structure above.
+When user selects 'C', append the complete comprehensive technical research document using the full structure above. Also replace the `[Research overview and methodology will be appended here]` placeholder in the Research Overview section at the top of the document.
 
 ## SUCCESS METRICS:
 

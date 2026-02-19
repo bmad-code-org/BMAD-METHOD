@@ -216,16 +216,51 @@ class IdeManager {
   /**
    * Cleanup IDE configurations
    * @param {string} projectDir - Project directory
+   * @param {Object} [options] - Cleanup options passed through to handlers
    */
-  async cleanup(projectDir) {
+  async cleanup(projectDir, options = {}) {
     const results = [];
 
     for (const [name, handler] of this.handlers) {
       try {
-        await handler.cleanup(projectDir);
+        await handler.cleanup(projectDir, options);
         results.push({ ide: name, success: true });
       } catch (error) {
         results.push({ ide: name, success: false, error: error.message });
+      }
+    }
+
+    return results;
+  }
+
+  /**
+   * Cleanup only the IDEs in the provided list
+   * Falls back to cleanup() (all handlers) if ideList is empty or undefined
+   * @param {string} projectDir - Project directory
+   * @param {Array<string>} ideList - List of IDE names to clean up
+   * @param {Object} [options] - Cleanup options passed through to handlers
+   * @returns {Array} Results array
+   */
+  async cleanupByList(projectDir, ideList, options = {}) {
+    if (!ideList || ideList.length === 0) {
+      return this.cleanup(projectDir, options);
+    }
+
+    await this.ensureInitialized();
+    const results = [];
+
+    // Build lowercase lookup for case-insensitive matching
+    const lowercaseHandlers = new Map([...this.handlers.entries()].map(([k, v]) => [k.toLowerCase(), v]));
+
+    for (const ideName of ideList) {
+      const handler = lowercaseHandlers.get(ideName.toLowerCase());
+      if (!handler) continue;
+
+      try {
+        await handler.cleanup(projectDir, options);
+        results.push({ ide: ideName, success: true });
+      } catch (error) {
+        results.push({ ide: ideName, success: false, error: error.message });
       }
     }
 

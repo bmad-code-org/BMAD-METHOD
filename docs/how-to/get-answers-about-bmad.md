@@ -5,17 +5,48 @@ sidebar:
   order: 4
 ---
 
-If you have successfully installed BMad and the BMad Method (+ other modules as needed) - the first step in getting answers is `/bmad-help`. This will answer upwards of 80% of all questions and is available to you in the IDE as you are working.
+## Start Here: BMad-Help
 
-## When to Use This
+**The fastest way to get answers about BMad is `/bmad-help`.** This intelligent guide will answer upwards of 80% of all questions and is available to you directly in your IDE as you work.
 
-- You have a question about how BMad works or what to do next with BMad
-- You want to understand a specific agent or workflow
-- You need quick answers without waiting for Discord
+BMad-Help is more than a lookup tool — it:
+- **Inspects your project** to see what's already been completed
+- **Understands natural language** — ask questions in plain English
+- **Varies based on your installed modules** — shows relevant options
+- **Auto-runs after workflows** — tells you exactly what to do next
+- **Recommends the first required task** — no guessing where to start
 
-:::note[Prerequisites]
-An AI tool (Claude Code, Cursor, ChatGPT, Claude.ai, etc.) and either BMad installed in your project or access to the GitHub repo.
-:::
+### How to Use BMad-Help
+
+Run it with just the slash command:
+
+```
+/bmad-help
+```
+
+Or combine it with a natural language query:
+
+```
+/bmad-help I have a SaaS idea and know all the features. Where do I start?
+/bmad-help What are my options for UX design?
+/bmad-help I'm stuck on the PRD workflow
+/bmad-help Show me what's been done so far
+```
+
+BMad-Help responds with:
+- What's recommended for your situation
+- What the first required task is
+- What the rest of the process looks like
+
+---
+
+## When to Use This Guide
+
+Use this section when:
+- You want to understand BMad's architecture or internals
+- You need answers outside of what BMad-Help provides
+- You're researching BMad before installing
+- You want to explore the source code directly
 
 ## Steps
 

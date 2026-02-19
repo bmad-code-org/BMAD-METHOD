@@ -9,6 +9,7 @@ description: Get unstuck by showing what workflow steps come next or answering q
 
 - **Empty `phase` = anytime** — Universal tools work regardless of workflow state
 - **Numbered phases indicate sequence** — Phases like `1-discover` → `2-define` → `3-build` → `4-ship` flow in order (naming varies by module)
+- **Phase with no Required Steps** - If an entire phase has no required, true items, the entire phase is optional. If it is sequentially before another phase, it can be recommended, but always be clear with the use what the true next required item is.
 - **Stay in module** — Guide through the active module's workflow based on phase+sequence ordering
 - **Descriptions contain routing** — Read for alternate paths (e.g., "back to previous if fixes needed")
 - **`required=true` blocks progress** — Required workflows must complete before proceeding to later phases
@@ -52,7 +53,7 @@ Determine what was just completed:
 
 ## EXECUTION
 
-1. **Load catalog** — Load `{project-root}/_bmad/_config/bmad-help.csv`
+1. **Load catalog** — Load `_bmad/_config/bmad-help.csv`
 
 2. **Resolve output locations and config** — Scan each folder under `_bmad/` (except `_config`) for `config.yaml`. For each workflow row, resolve its `output-location` variables against that module's config so artifact paths can be searched. Also extract `communication_language` and `project_knowledge` from each scanned module's config.
 
