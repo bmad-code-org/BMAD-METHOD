@@ -20,6 +20,7 @@
 
   <flow>
     <step n="1" title="Method Registry Loading">
+      <!-- Retained inline check because this workflow may be invoked as a standalone tool mid-conversation, bypassing the OS-level context injection. -->
       <check if="{project-root}/_bmad/.current_project exists">
         <action>Read content as project_suffix</action>
         <!-- Sanitization and Validation -->
