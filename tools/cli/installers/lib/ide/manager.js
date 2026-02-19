@@ -44,7 +44,7 @@ class IdeManager {
 
   /**
    * Dynamically load all IDE handlers
-   * 1. Load custom installer files first (codex.js, github-copilot.js, kilo.js)
+   * 1. Load custom installer files first (codex.js, github-copilot.js, kilo.js, rovodev.js)
    * 2. Load config-driven handlers from platform-codes.yaml
    */
   async loadHandlers() {

@@ -6,6 +6,7 @@ const prompts = require('../../../lib/prompts');
 const { AgentCommandGenerator } = require('./shared/agent-command-generator');
 const { WorkflowCommandGenerator } = require('./shared/workflow-command-generator');
 const { TaskToolCommandGenerator } = require('./shared/task-tool-command-generator');
+const { toDashPath } = require('./shared/path-utils');
 
 /**
  * Rovo Dev IDE setup handler
@@ -25,7 +26,6 @@ class RovoDevSetup extends BaseIdeSetup {
     this.rovoDir = '.rovodev';
     this.workflowsDir = 'workflows';
     this.promptsFile = 'prompts.yml';
-    this.detectionPaths = ['.rovodev/workflows', '.rovodev/prompts.yml'];
   }
 
   /**
@@ -51,37 +51,13 @@ class RovoDevSetup extends BaseIdeSetup {
     const agentGen = new AgentCommandGenerator(this.bmadFolderName);
     const { artifacts: agentArtifacts } = await agentGen.collectAgentArtifacts(bmadDir, selectedModules);
     const agentCount = await agentGen.writeDashArtifacts(workflowsPath, agentArtifacts);
-
-    // Track written agent files for prompts.yml
-    for (const artifact of agentArtifacts) {
-      if (artifact.type === 'agent-launcher') {
-        const { toDashPath } = require('./shared/path-utils');
-        const flatName = toDashPath(artifact.relativePath);
-        writtenFiles.push({
-          name: path.basename(flatName, '.md'),
-          description: artifact.description || `${artifact.name} agent`,
-          contentFile: `${this.workflowsDir}/${flatName}`,
-        });
-      }
-    }
+    this._collectPromptEntries(writtenFiles, agentArtifacts, ['agent-launcher'], 'agent');
 
     // Generate and write workflow commands
     const workflowGen = new WorkflowCommandGenerator(this.bmadFolderName);
     const { artifacts: workflowArtifacts } = await workflowGen.collectWorkflowArtifacts(bmadDir);
     const workflowCount = await workflowGen.writeDashArtifacts(workflowsPath, workflowArtifacts);
-
-    // Track written workflow files for prompts.yml
-    for (const artifact of workflowArtifacts) {
-      if (artifact.type === 'workflow-command') {
-        const { toDashPath } = require('./shared/path-utils');
-        const flatName = toDashPath(artifact.relativePath);
-        writtenFiles.push({
-          name: path.basename(flatName, '.md'),
-          description: artifact.description || `${artifact.name} workflow`,
-          contentFile: `${this.workflowsDir}/${flatName}`,
-        });
-      }
-    }
+    this._collectPromptEntries(writtenFiles, workflowArtifacts, ['workflow-command'], 'workflow');
 
     // Generate and write task/tool commands
     const taskToolGen = new TaskToolCommandGenerator(this.bmadFolderName);
@@ -89,22 +65,12 @@ class RovoDevSetup extends BaseIdeSetup {
     await taskToolGen.writeDashArtifacts(workflowsPath, taskToolArtifacts);
     const taskCount = taskToolCounts.tasks || 0;
     const toolCount = taskToolCounts.tools || 0;
+    this._collectPromptEntries(writtenFiles, taskToolArtifacts, ['task', 'tool']);
 
-    // Track written task/tool files for prompts.yml
-    for (const artifact of taskToolArtifacts) {
-      if (artifact.type === 'task' || artifact.type === 'tool') {
-        const { toDashPath } = require('./shared/path-utils');
-        const flatName = toDashPath(artifact.relativePath);
-        writtenFiles.push({
-          name: path.basename(flatName, '.md'),
-          description: artifact.description || `${artifact.name} ${artifact.type}`,
-          contentFile: `${this.workflowsDir}/${flatName}`,
-        });
-      }
+    // Generate prompts.yml manifest (only if we have entries to write)
+    if (writtenFiles.length > 0) {
+      await this.generatePromptsYml(projectDir, writtenFiles);
     }
-
-    // Generate prompts.yml manifest
-    await this.generatePromptsYml(projectDir, writtenFiles);
 
     if (!options.silent) {
       await prompts.log.success(
@@ -121,6 +87,25 @@ class RovoDevSetup extends BaseIdeSetup {
         tools: toolCount,
       },
     };
+  }
+
+  /**
+   * Collect prompt entries from artifacts into writtenFiles array
+   * @param {Array} writtenFiles - Target array to push entries into
+   * @param {Array} artifacts - Artifacts from a generator's collect method
+   * @param {string[]} acceptedTypes - Artifact types to include (e.g., ['agent-launcher'])
+   * @param {string} [fallbackSuffix] - Suffix for fallback description; defaults to artifact.type
+   */
+  _collectPromptEntries(writtenFiles, artifacts, acceptedTypes, fallbackSuffix) {
+    for (const artifact of artifacts) {
+      if (!acceptedTypes.includes(artifact.type)) continue;
+      const flatName = toDashPath(artifact.relativePath);
+      writtenFiles.push({
+        name: path.basename(flatName, '.md'),
+        description: artifact.description || `${artifact.name} ${fallbackSuffix || artifact.type}`,
+        contentFile: `${this.workflowsDir}/${flatName}`,
+      });
+    }
   }
 
   /**
@@ -174,11 +159,11 @@ class RovoDevSetup extends BaseIdeSetup {
   async cleanup(projectDir, options = {}) {
     const workflowsPath = path.join(projectDir, this.rovoDir, this.workflowsDir);
 
-    // Remove bmad-* workflow files
-    if (await fs.pathExists(workflowsPath)) {
+    // Remove all bmad-* entries from workflows dir (aligned with detect() predicate)
+    if (await this.pathExists(workflowsPath)) {
       const entries = await fs.readdir(workflowsPath);
       for (const entry of entries) {
-        if (entry.startsWith('bmad-') && entry.endsWith('.md')) {
+        if (entry.startsWith('bmad-')) {
           await fs.remove(path.join(workflowsPath, entry));
         }
       }
@@ -186,9 +171,9 @@ class RovoDevSetup extends BaseIdeSetup {
 
     // Clean BMAD entries from prompts.yml (preserve user entries)
     const promptsPath = path.join(projectDir, this.rovoDir, this.promptsFile);
-    if (await fs.pathExists(promptsPath)) {
+    if (await this.pathExists(promptsPath)) {
       try {
-        const content = await fs.readFile(promptsPath, 'utf8');
+        const content = await this.readFile(promptsPath);
         const parsed = yaml.parse(content) || {};
 
         if (Array.isArray(parsed.prompts)) {
@@ -201,7 +186,7 @@ class RovoDevSetup extends BaseIdeSetup {
               // If no entries remain, remove the file entirely
               await fs.remove(promptsPath);
             } else {
-              await fs.writeFile(promptsPath, yaml.stringify(parsed, { lineWidth: 0 }));
+              await this.writeFile(promptsPath, yaml.stringify(parsed, { lineWidth: 0 }));
             }
             if (!options.silent) {
               await prompts.log.message(`Removed ${removedCount} BMAD entries from ${this.promptsFile}`);
@@ -217,7 +202,7 @@ class RovoDevSetup extends BaseIdeSetup {
     }
 
     // Remove empty .rovodev directories
-    if (await fs.pathExists(workflowsPath)) {
+    if (await this.pathExists(workflowsPath)) {
       const remaining = await fs.readdir(workflowsPath);
       if (remaining.length === 0) {
         await fs.remove(workflowsPath);
@@ -225,7 +210,7 @@ class RovoDevSetup extends BaseIdeSetup {
     }
 
     const rovoDirPath = path.join(projectDir, this.rovoDir);
-    if (await fs.pathExists(rovoDirPath)) {
+    if (await this.pathExists(rovoDirPath)) {
       const remaining = await fs.readdir(rovoDirPath);
       if (remaining.length === 0) {
         await fs.remove(rovoDirPath);
