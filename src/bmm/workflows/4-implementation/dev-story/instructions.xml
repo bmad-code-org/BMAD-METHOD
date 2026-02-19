@@ -13,25 +13,7 @@
   <critical>User skill level ({user_skill_level}) affects conversation style ONLY, not code updates.</critical>
 
   <step n="1" goal="Find next ready story and load it" tag="sprint-status">
-    <check if="{project-root}/_bmad/.current_project exists">
-      <action>Read content as project_suffix</action>
-      <!-- Sanitization and Validation -->
-      <action>Trim whitespace and newlines from project_suffix</action>
-      <check if="project_suffix contains '..' or starts with '/' or starts with '\'">
-         <output>🚫 Security Error: Invalid project context path detected.</output>
-         <action>HALT</action>
-      </check>
-      <check if="project_suffix matches regex '[^a-zA-Z0-9._-]|^\s*$'">
-         <output>🚫 Error: Project context must only contain alphanumeric characters, dots, dashes, or underscores.</output>
-         <action>HALT</action>
-      </check>
-      <check if="project_suffix.length > 100">
-         <output>🚫 Error: Project context name is too long (max 100 characters).</output>
-         <action>HALT</action>
-      </check>
-      <action>Override output_folder to {project-root}/_bmad-output/{project_suffix}</action>
-    </check>
-
+    
     <check if="{{story_path}} is provided">
       <action>Use {{story_path}} directly</action>
       <action>Read COMPLETE story file</action>

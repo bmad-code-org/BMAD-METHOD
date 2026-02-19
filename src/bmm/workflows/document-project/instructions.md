@@ -83,10 +83,6 @@
 
 Load and read full config from {main_config} and resolve basic variables.
 
-**Monorepo Context Check:**
-1. Check if `{project-root}/_bmad/.current_project` exists.
-2. If it exists, read its content as `{project_suffix}` and override output folder:
-   - `output_folder`: `{project-root}/_bmad-output/{project_suffix}`
 
 <step n="3" goal="Check for existing documentation and determine workflow mode" if="resume_mode == false">
 <action>Check if {project_knowledge}/index.md exists</action>

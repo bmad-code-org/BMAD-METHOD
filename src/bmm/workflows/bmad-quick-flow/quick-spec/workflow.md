@@ -68,11 +68,6 @@ This uses **step-file architecture** for disciplined execution:
 
 Load and read full config from {main_config} and resolve basic variables.
 
-**Monorepo Context Check:**
-1. Check if `{project-root}/_bmad/.current_project` exists.
-2. If it exists, read its content as `{project_suffix}` and override output folder:
-   - `output_folder`: `{project-root}/_bmad-output/{project_suffix}`
-
 Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 - `project_name`, `planning_artifacts`, `implementation_artifacts`, `user_name`
 - `communication_language`, `document_output_language`, `user_skill_level`

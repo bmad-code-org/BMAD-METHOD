@@ -1,9 +1,19 @@
 /**
  * Monorepo Support Validation Tests
  *
- * Verifies that:
+ * Architecture after deduplication:
+ * - Monorepo context logic lives ONLY in context-logic.js
+ * - workflow.xml (src) uses {{monorepo_context_logic}} placeholder → injected at install time
+ * - Individual source workflow files do NOT have inline checks (that's the deduplication!)
+ * - Only code-review/instructions.xml, dev-story/instructions.xml, create-story/instructions.xml
+ *   and advanced-elicitation/workflow.xml are XML workflows checked; XML workflows that go through
+ *   workflow.xml no longer need inline checks.
+ *
+ * Verifies:
  * 1. The set-project workflow is correctly registered.
- * 2. All core and BMM workflows contain the monorepo context logic.
+ * 2. No source workflow file has a stale inline "Monorepo Context Check" block.
+ * 3. Only the canonical SINGLE source (context-logic.js) defines the check.
+ * 4. set-project implementation still manages .current_project.
  */
 
 const fs = require('fs-extra');
@@ -55,46 +65,39 @@ async function runTests() {
 
   console.log('');
 
-  // 2. Verify context logic in workflows
-  console.log(`${colors.yellow}Test Suite 2: Workflow Context Logic${colors.reset}\n`);
+  // 2. Verify NO stale inline "Monorepo Context Check" blocks in source workflow files
+  //    These are redundant since workflow.xml now handles context injection via context-logic.js
+  console.log(`${colors.yellow}Test Suite 2: No Stale Inline Monorepo Context Checks${colors.reset}\n`);
+  console.log(`  ${colors.dim}(Inline checks were moved to workflow.xml via context-logic.js)${colors.reset}\n`);
 
   const workflowFiles = glob.sync('src/{core,bmm}/workflows/**/*.{md,xml}', { cwd: projectRoot });
 
-  // Workflows that MUST have the check
-  const requiredWorkflows = [
-    'brainstorming',
-    'party-mode',
-    'create-product-brief',
-    'create-prd',
-    'create-architecture',
-    'code-review',
-    'create-story',
-    'dev-story',
-    'set-project', // Should not have the check itself, but let's exclude it
-  ];
-
   for (const file of workflowFiles) {
-    const basename = path.basename(path.dirname(file));
-    if (basename === 'set-project' || basename === '0-context') continue;
+    // skip the context-logic source itself (it's the canonical source)
+    if (file.includes('context-logic')) continue;
 
     const content = await fs.readFile(path.join(projectRoot, file), 'utf8');
-    const isXml = file.endsWith('.xml');
 
-    if (isXml) {
-      assert(content.includes('_bmad/.current_project'), `XML workflow contains context check: ${file}`);
-    } else {
-      // Only check Markdown files that look like main workflow/instruction files
-      const filename = path.basename(file);
-      if (filename.includes('workflow') || filename.includes('instructions')) {
-        assert(content.includes('_bmad/.current_project'), `Markdown workflow contains context check: ${file}`);
-      }
-    }
+    assert(!content.includes('**Monorepo Context Check:**'), `No stale inline check block in: ${file}`);
   }
 
   console.log('');
 
-  // 3. Verify set-project implementation
-  console.log(`${colors.yellow}Test Suite 3: set-project Implementation${colors.reset}\n`);
+  // 3. Verify canonical source is context-logic.js (single source of truth)
+  console.log(`${colors.yellow}Test Suite 3: Single Source of Truth${colors.reset}\n`);
+
+  const contextLogicPath = path.join(projectRoot, 'tools/cli/installers/lib/ide/shared/context-logic.js');
+  assert(await fs.pathExists(contextLogicPath), 'context-logic.js exists as canonical source');
+
+  const srcWorkflowXml = path.join(projectRoot, 'src/core/tasks/workflow.xml');
+  const xmlContent = await fs.readFile(srcWorkflowXml, 'utf8');
+  assert(xmlContent.includes('{{monorepo_context_logic}}'), 'workflow.xml uses {{monorepo_context_logic}} placeholder');
+  assert(!xmlContent.includes('**Monorepo Context Check:**'), 'workflow.xml has no stale inline check');
+
+  console.log('');
+
+  // 4. Verify set-project implementation
+  console.log(`${colors.yellow}Test Suite 4: set-project Implementation${colors.reset}\n`);
   try {
     const setProjectPath = path.join(projectRoot, 'src/bmm/workflows/0-context/set-project/workflow.md');
     const exists = await fs.pathExists(setProjectPath);
@@ -102,6 +105,7 @@ async function runTests() {
     if (exists) {
       const content = await fs.readFile(setProjectPath, 'utf8');
       assert(content.includes('_bmad/.current_project'), 'set-project implementation manages .current_project');
+      assert(content.includes('my-app'), 'set-project examples use generic public-friendly names');
     }
   } catch (error) {
     assert(false, 'set-project check failed', error.message);
