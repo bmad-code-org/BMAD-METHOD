@@ -34,3 +34,16 @@ Load and read full config from {main_config} and resolve basic variables.
 ### 3. Verification
 
 - Display the full resolved output path for confirmation.
+
+## Inline Project Overrides
+
+You can also temporarily run a command against a different project without changing the global context file. Use the `#project:NAME` or `#p:NAME` syntax in your command invocation.
+
+**Examples:**
+- `/create-prd #project:my-app`
+- `/sprint-planning #p:admin-portal`
+
+**Precedence:**
+1. **Inline Override** (`#p:NAME`)
+2. **Global Context File** (`_bmad/.current_project`)
+3. **Default Config** (if neither is present)

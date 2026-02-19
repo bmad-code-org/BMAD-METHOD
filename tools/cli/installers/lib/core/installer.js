@@ -16,6 +16,7 @@ const { IdeConfigManager } = require('./ide-config-manager');
 const { CustomHandler } = require('../custom/handler');
 const prompts = require('../../../lib/prompts');
 const { BMAD_FOLDER_NAME } = require('../ide/shared/path-utils');
+const { MONOREPO_CONTEXT_LOGIC } = require('../ide/shared/context-logic');
 
 class Installer {
   constructor() {
@@ -88,6 +89,10 @@ class Installer {
       try {
         // Read the file content
         let content = await fs.readFile(sourcePath, 'utf8');
+
+        // Apply replacements
+        content = content.replaceAll('{{monorepo_context_logic}}', MONOREPO_CONTEXT_LOGIC);
+        content = content.replaceAll('_bmad', this.bmadFolderName);
 
         // Write to target with replaced content
         await fs.ensureDir(path.dirname(targetPath));
