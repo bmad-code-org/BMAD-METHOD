@@ -3,7 +3,7 @@ name: 'step-05-domain'
 description: 'Explore domain-specific requirements for complex domains (optional step)'
 
 # File References
-nextStepFile: './step-06-innovation.md'
+nextStepFile: '{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-prd/steps-c/step-06-innovation.md'
 outputFile: '{planning_artifacts}/prd.md'
 domainComplexityCSV: '../data/domain-complexity.csv'
 

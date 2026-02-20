@@ -323,7 +323,7 @@ Show the generated patterns content and present choices:
 
 - Append the final content to `{planning_artifacts}/architecture.md`
 - Update frontmatter: `stepsCompleted: [1, 2, 3, 4, 5]`
-- Load `./step-06-structure.md`
+- Load `{project-root}/_bmad/bmm/workflows/3-solutioning/create-architecture/steps/step-06-structure.md`
 
 ## APPEND TO DOCUMENT:
 
@@ -354,6 +354,6 @@ When user selects 'C', append the content directly to the document using the str
 
 ## NEXT STEP:
 
-After user selects 'C' and content is saved to document, load `./step-06-structure.md` to define the complete project structure.
+After user selects 'C' and content is saved to document, load `{project-root}/_bmad/bmm/workflows/3-solutioning/create-architecture/steps/step-06-structure.md` to define the complete project structure.
 
 Remember: Do NOT proceed to step-06 until user explicitly selects 'C' from the A/P/C menu and content is saved!

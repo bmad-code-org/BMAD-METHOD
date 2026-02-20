@@ -58,7 +58,7 @@ a) **Menu Handling:**
   - Jump directly to the appropriate step based on `stepsCompleted`:
     - `[1]` → Load `{nextStepFile}` (Step 2)
     - `[1, 2]` → Load `{skipToStepFile}` (Step 3)
-    - `[1, 2, 3]` → Load `./step-04-review.md` (Step 4)
+    - `[1, 2, 3]` → Load `{project-root}/_bmad/bmm/workflows/bmad-quick-flow/quick-spec/steps/step-04-review.md` (Step 4)
 - **[N] Archive and start fresh:**
   - Rename `{wipFile}` to `{implementation_artifacts}/tech-spec-{slug}-archived-{date}.md`
 

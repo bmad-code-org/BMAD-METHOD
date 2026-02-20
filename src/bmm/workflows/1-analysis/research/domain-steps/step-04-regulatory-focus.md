@@ -155,7 +155,7 @@ Show the generated regulatory analysis and present continue option:
 
 - **CONTENT ALREADY WRITTEN TO DOCUMENT**
 - Update frontmatter: `stepsCompleted: [1, 2, 3, 4]`
-- Load: `./step-05-technical-trends.md`
+- Load: `{project-root}/_bmad/bmm/workflows/1-analysis/research/domain-steps/step-05-technical-trends.md`
 
 ## APPEND TO DOCUMENT:
 
@@ -201,6 +201,6 @@ Content is already written to document when generated in step 5. No additional a
 
 ## NEXT STEP:
 
-After user selects 'C' and content is saved to document, load `./step-05-technical-trends.md` to analyze technical trends and innovations in the domain.
+After user selects 'C' and content is saved to document, load `{project-root}/_bmad/bmm/workflows/1-analysis/research/domain-steps/step-05-technical-trends.md` to analyze technical trends and innovations in the domain.
 
 Remember: Search the web to verify regulatory facts and provide practical implementation considerations!

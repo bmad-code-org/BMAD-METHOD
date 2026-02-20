@@ -3,7 +3,7 @@ name: 'step-03-success'
 description: 'Define comprehensive success criteria covering user, business, and technical success'
 
 # File References
-nextStepFile: './step-04-journeys.md'
+nextStepFile: '{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-prd/steps-c/step-04-journeys.md'
 outputFile: '{planning_artifacts}/prd.md'
 
 # Task References
@@ -221,6 +221,6 @@ If working in regulated domains (healthcare, fintech, govtech):
 
 ## NEXT STEP:
 
-After user selects 'C' and content is saved to document, load `./step-04-journeys.md` to map user journeys.
+After user selects 'C' and content is saved to document, load `{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-prd/steps-c/step-04-journeys.md` to map user journeys.
 
 Remember: Do NOT proceed to step-04 until user explicitly selects 'C' from the A/P/C menu and content is saved!

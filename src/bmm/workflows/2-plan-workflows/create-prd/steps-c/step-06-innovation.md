@@ -3,7 +3,7 @@ name: 'step-06-innovation'
 description: 'Detect and explore innovative aspects of the product (optional step)'
 
 # File References
-nextStepFile: './step-07-project-type.md'
+nextStepFile: '{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-prd/steps-c/step-07-project-type.md'
 outputFile: '{planning_artifacts}/prd.md'
 
 # Data Files
