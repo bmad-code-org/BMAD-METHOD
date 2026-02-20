@@ -17,7 +17,7 @@ const prompts = require('../../../lib/prompts');
  */
 class CodexSkillsSetup extends BaseIdeSetup {
   constructor() {
-    super('codex', 'Codex', true); // preferred IDE
+    super('codex-skills', 'Codex', true); // preferred IDE
   }
 
   /**
