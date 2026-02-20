@@ -25,7 +25,7 @@ This uses **step-file architecture** for focused execution:
 
 ### 1. Configuration Loading
 
-Load and read full config from {main_config} and resolve basic variables.
+Load and read full config from {main_config} and resolve variables and artifact paths.
 
 Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 

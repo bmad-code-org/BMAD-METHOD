@@ -401,10 +401,11 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
       .replaceAll('{{workflow_path}}', pathToUse)
       .replaceAll('{{monorepo_context_logic}}', MONOREPO_CONTEXT_LOGIC);
 
-    // Replace _bmad placeholder with actual folder name
-    rendered = rendered.replaceAll('_bmad', this.bmadFolderName);
+    // Replace _bmad placeholder with actual folder name using precise regex
+    // This protects literals like '_bmad-output' from corruption.
+    rendered = rendered.replaceAll(/_bmad(?!-output)/g, this.bmadFolderName);
 
-    // Replace {{bmadFolderName}} placeholder if present
+    // Replace {{bmadFolderName}} placeholder (used in centralized context logic)
     rendered = rendered.replaceAll('{{bmadFolderName}}', this.bmadFolderName);
 
     return rendered;

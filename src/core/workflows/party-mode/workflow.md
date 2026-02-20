@@ -27,7 +27,7 @@ This uses **micro-file architecture** with **sequential conversation orchestrati
 
 ### 1. Configuration Loading
 
-Load and read full config from {main_config} and resolve basic variables.
+Load and read full config from {main_config} and resolve variables and artifact paths.
 
 - `project_name`, `output_folder`, `user_name`
 - `communication_language`, `document_output_language`, `user_skill_level`

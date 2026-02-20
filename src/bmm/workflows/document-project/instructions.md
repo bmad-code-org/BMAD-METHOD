@@ -81,7 +81,7 @@
 
 ## 1. Configuration Loading
 
-Load and read full config from {main_config} and resolve basic variables.
+Load and read full config from {main_config} and resolve variables and artifact paths.
 
 
 <step n="3" goal="Check for existing documentation and determine workflow mode" if="resume_mode == false">

@@ -18,7 +18,7 @@ main_config: '{project-root}/_bmad/bmm/config.yaml'
 
 ### 1. Configuration Loading
 
-Load and read full config from {main_config} and resolve basic variables.
+Load and read full config from {main_config} and resolve variables and artifact paths.
 
 
 - `project_name`, `output_folder`, `planning_artifacts`, `user_name`

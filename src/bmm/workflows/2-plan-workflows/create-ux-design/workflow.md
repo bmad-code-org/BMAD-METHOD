@@ -24,7 +24,7 @@ This uses **micro-file architecture** for disciplined execution:
 
 ### 1. Configuration Loading
 
-Load and read full config from {main_config} and resolve basic variables.
+Load and read full config from {main_config} and resolve variables and artifact paths.
 
 
 - `project_name`, `output_folder`, `planning_artifacts`, `user_name`

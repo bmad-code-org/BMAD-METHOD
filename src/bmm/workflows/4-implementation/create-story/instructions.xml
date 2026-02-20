@@ -262,7 +262,7 @@
     <critical>📝 CREATE ULTIMATE STORY FILE - The developer's master implementation guide!</critical>
 
     <!-- Recompute output file path with correct output_folder and story_key -->
-    <action>Set {target_story_file} = {output_folder}/{story_key}.md</action>
+    <action>Set {target_story_file} = {output_folder}/{{story_key}}.md</action>
     <action>Output "Generating story file at: {target_story_file}"</action>
 
     <action>Initialize from template.md:

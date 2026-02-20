@@ -21,19 +21,38 @@
   <flow>
     <step n="1" title="Method Registry Loading">
       <!-- Retained inline check because this workflow may be invoked as a standalone tool mid-conversation, bypassing the OS-level context injection. -->
-      <check if="{project-root}/_bmad/.current_project exists">
+      
+      <!-- Step 1: Check for inline project override (#project:NAME or #p:NAME) -->
+      <action>Scan request for pattern #project:NAME or #p:NAME (case-insensitive)</action>
+      <check if="inline override found">
+        <action>Set project_suffix = extracted NAME</action>
+      </check>
+
+      <!-- Step 2: Fall back to .current_project file -->
+      <check if="project_suffix not yet set AND {project-root}/_bmad/.current_project exists">
         <action>Read content as project_suffix</action>
-        <!-- Sanitization and Validation -->
-        <action>Trim whitespace and newlines from project_suffix</action>
-        <check if="project_suffix contains '..' or starts with '/' or starts with '\'">
-           <output>🚫 Security Error: Invalid project context path detected.</output>
+      </check>
+
+      <!-- Step 3: Validate and Canonicalize -->
+      <check if="project_suffix is set">
+        <!-- Security: Reject traversal, absolute paths, and invalid patterns -->
+        <check if="project_suffix is empty OR project_suffix contains '..' or starts with '/' or starts with '\'">
+           <output>🚫 Security Error: Invalid project context path detected — path traversal or absolute path detected.</output>
            <action>HALT</action>
         </check>
-        <check if="project_suffix matches regex '[^a-zA-Z0-9._-]|^\s*$'">
-           <output>🚫 Error: Project context must only contain alphanumeric characters, dots, dashes, or underscores.</output>
+        
+        <!-- Whitelist: Alphanumeric, dots, dashes, underscores, AND slashes (for nested segments) -->
+        <check if="project_suffix matches regex '[^a-zA-Z0-9._-/]|^\s*$'">
+           <output>🚫 Error: Project context must only contain alphanumeric characters, dots, dashes, underscores, or slashes.</output>
            <action>HALT</action>
         </check>
+
         <action>Override output_folder to {project-root}/_bmad-output/{project_suffix}</action>
+        <action>Override planning_artifacts to {project-root}/_bmad-output/{project_suffix}</action>
+        <action>Override implementation_artifacts to {project-root}/_bmad-output/{project_suffix}</action>
+        <action>Override project_knowledge to {project-root}/_bmad-output/{project_suffix}</action>
+        <action>Override sprint_status_file to {project-root}/_bmad-output/{project_suffix}/sprint-status.yaml</action>
+        <action>Output "Monorepo context detected. Paths adjusted to: {project_suffix}"</action>
       </check>
 
       <action>Load and read {{methods}} and {{agent-party}}</action>

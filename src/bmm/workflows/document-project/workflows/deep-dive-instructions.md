@@ -11,18 +11,31 @@
 <action>Load existing project structure from index.md and project-parts.json (if exists)</action>
 <action>Load source tree analysis to understand available areas</action>
 
-<check if="{project-root}/_bmad/.current_project exists">
+<!-- Step 1: Check for inline project override (#project:NAME or #p:NAME) -->
+<action>Scan request for pattern #project:NAME or #p:NAME (case-insensitive)</action>
+<check if="inline override found">
+  <action>Set project_suffix = extracted NAME</action>
+</check>
+
+<!-- Step 2: Fall back to .current_project file -->
+<check if="project_suffix not yet set AND {project-root}/_bmad/.current_project exists">
   <action>Read content as project_suffix</action>
-  <!-- Sanitization and Validation -->
-  <action>Trim whitespace and newlines from project_suffix</action>
-  <check if="project_suffix contains '..' or starts with '/' or starts with '\'">
-      <output>🚫 Security Error: Invalid project context path detected.</output>
-      <action>HALT</action>
+</check>
+
+<!-- Step 3: Validate and Canonicalize -->
+<check if="project_suffix is set">
+  <!-- Security: Reject traversal, absolute paths, and invalid patterns -->
+  <check if="project_suffix is empty OR project_suffix contains '..' or starts with '/' or starts with '\'">
+    <output>🚫 Security Error: Invalid project context path detected — path traversal or absolute path detected.</output>
+    <action>HALT</action>
   </check>
-  <check if="project_suffix matches regex '[^a-zA-Z0-9._-]|^\s*$'">
-      <output>🚫 Error: Project context must only contain alphanumeric characters, dots, dashes, or underscores.</output>
-      <action>HALT</action>
+  
+  <!-- Whitelist: Alphanumeric, dots, dashes, underscores, AND slashes (for nested segments) -->
+  <check if="project_suffix matches regex '[^a-zA-Z0-9._-/]|^\s*$'">
+     <output>🚫 Error: Project context must only contain alphanumeric characters, dots, dashes, underscores, or slashes.</output>
+     <action>HALT</action>
   </check>
+
   <action>Override output_folder to {project-root}/_bmad-output/{project_suffix}</action>
   <action>Override project_knowledge to {project-root}/_bmad-output/{project_suffix}</action>
   <action>Output "Monorepo context detected. Writing deep-dive artifacts to: {project_knowledge}"</action>
@@ -269,7 +282,7 @@ Detailed exhaustive analysis of specific areas:
 - Dependency graph and data flow
 ### 1. Configuration Loading
 
-Load and read full config from {main_config} and resolve basic variables.
+Load and read full config from {main_config} and resolve variables and artifact paths.
 
 
 - Related code and reuse opportunities

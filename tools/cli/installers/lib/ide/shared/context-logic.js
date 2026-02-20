@@ -17,20 +17,22 @@ const MONOREPO_CONTEXT_LOGIC = `
   </check>
 
   <!-- Step 2: Fall back to .current_project file -->
-  <check if="project_suffix not yet set AND {project-root}/_bmad/.current_project exists">
-    <action>Read {project-root}/_bmad/.current_project as project_suffix</action>
+  <check if="project_suffix not yet set AND {project-root}/{{bmadFolderName}}/.current_project exists">
+    <action>Read {project-root}/{{bmadFolderName}}/.current_project as project_suffix</action>
   </check>
 
   <!-- Step 3: Validate -->
   <check if="project_suffix is set">
     <action>Trim whitespace and newlines from project_suffix</action>
-    <!-- Security: Prevent path traversal and invalid chars -->
-    <check if="project_suffix contains '..' OR starts with '/' OR starts with '\\'">
-      <output>🚫 Security Error: Invalid project context — path traversal detected.</output>
+    <!-- Security: Reject traversal, absolute paths, and invalid patterns -->
+    <check if="project_suffix is empty OR project_suffix contains '..' OR starts with '/' OR starts with '\\\\'">
+      <output>🚫 Security Error: Invalid project context — path traversal or absolute path detected.</output>
       <action>HALT</action>
     </check>
-    <check if="project_suffix matching regex [^a-zA-Z0-9._-]">
-      <output>🚫 Error: project_suffix must only contain alphanumeric characters, dots, dashes, or underscores.</output>
+    
+    <!-- Whitelist: Alphanumeric, dots, dashes, underscores, AND slashes (for nested segments) -->
+    <check if="project_suffix matches regex '[^a-zA-Z0-9._-/]|^\\\\s*$'">
+      <output>🚫 Error: project_suffix must only contain alphanumeric characters, dots, dashes, underscores, or slashes.</output>
       <action>HALT</action>
     </check>
 

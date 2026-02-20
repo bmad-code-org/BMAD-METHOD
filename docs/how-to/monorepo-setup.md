@@ -45,7 +45,7 @@ monorepo-root/
 
 ### Context Injection
 
-Core and BMM workflows automatically check for the existence of `_bmad/.current_project`.
+Core and BMM workflows automatically check for the existence of `{project-root}/_bmad/.current_project`.
 - **If found**: It reads the content (e.g., "app-alpha") and overrides the `output_folder` to `_bmad-output/app-alpha`.
 - **If not found**: It behaves like a standard single-project installation, outputting to `_bmad-output` root.
 

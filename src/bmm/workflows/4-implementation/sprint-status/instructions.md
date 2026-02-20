@@ -25,17 +25,26 @@
 </step>
 
 <step n="1" goal="Locate sprint status file">
+  <!-- Runtime Validation Gate -->
+  <check if="{sprint_status_file} is not defined OR {sprint_status_file} == ''">
+    <output>🚫 Error: Workflow configuration not loaded properly ({sprint_status_file} is undefined).</output>
+    <action>HALT</action>
+  </check>
+
   <action>Load {project_context} for project-wide patterns and conventions (if exists)</action>
   <action>Try {sprint_status_file}</action>
   <check if="file not found">
-    <output>❌ sprint-status.yaml not found.
+    <output>❌ sprint-status.yaml not found at: {sprint_status_file}
 Run `/bmad:bmm:workflows:sprint-planning` to generate it, then rerun sprint-status.</output>
-    <action>Exit workflow</action>
+    <action>HALT</action>
   </check>
   <action>Continue to Step 2</action>
 </step>
 
 <step n="2" goal="Read and parse sprint-status.yaml">
+  <check if="{sprint_status_file} is not defined">
+    <action>HALT - Safety Error: sprint_status_file variable lost or undefined.</action>
+  </check>
   <action>Read the FULL file: {sprint_status_file}</action>
   <action>Parse fields: generated, project, project_key, tracking_system, story_location</action>
   <action>Parse development_status map. Classify keys:</action>
@@ -165,6 +174,9 @@ If the command targets a story, set `story_key={{next_story_id}}` when prompted.
 <!-- ========================= -->
 
 <step n="20" goal="Data mode output">
+  <check if="{sprint_status_file} is not defined">
+    <action>HALT - Safety Error: sprint_status_file variable lost or undefined.</action>
+  </check>
   <action>Load and parse {sprint_status_file} same as Step 2</action>
   <action>Compute recommendation same as Step 3</action>
   <template-output>next_workflow_id = {{next_workflow_id}}</template-output>
@@ -186,6 +198,9 @@ If the command targets a story, set `story_key={{next_story_id}}` when prompted.
 <!-- ========================= -->
 
 <step n="30" goal="Validate sprint-status file">
+  <check if="{sprint_status_file} is not defined">
+    <action>HALT - Safety Error: sprint_status_file variable lost or undefined.</action>
+  </check>
   <action>Check that {sprint_status_file} exists</action>
   <check if="missing">
     <template-output>is_valid = false</template-output>

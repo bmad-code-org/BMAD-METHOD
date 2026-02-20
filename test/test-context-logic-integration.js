@@ -108,9 +108,13 @@ async function runTests() {
 
   for (const { file, expectedImport } of consumers) {
     const fullPath = path.join(root, file);
-    const content = await readFile(fullPath);
-    ok(content.includes(expectedImport), `${path.basename(file)} imports context-logic correctly`);
-    ok(content.includes("replaceAll('{{monorepo_context_logic}}'"), `${path.basename(file)} uses replaceAll for placeholder`);
+    try {
+      const content = await readFile(fullPath);
+      ok(content.includes(expectedImport), `${path.basename(file)} imports context-logic correctly`);
+      ok(content.includes("replaceAll('{{monorepo_context_logic}}'"), `${path.basename(file)} uses replaceAll for placeholder`);
+    } catch (error) {
+      ok(false, `File not found or unreadable: ${fullPath} - ${error.message}`);
+    }
   }
   console.log('');
 
@@ -135,10 +139,14 @@ async function runTests() {
 
   for (const filePath of mustHavePlaceholder) {
     const rel = path.relative(root, filePath);
-    const content = await readFile(filePath);
-    ok(content.includes('{{monorepo_context_logic}}'), `${path.basename(filePath)} has {{monorepo_context_logic}} placeholder`);
-    // Must NOT have raw hardcoded block (only the shared module should have it)
-    ok(!content.includes('<monorepo-context-check'), `${path.basename(filePath)} has NO hardcoded <monorepo-context-check> block`);
+    try {
+      const content = await readFile(filePath);
+      ok(content.includes('{{monorepo_context_logic}}'), `${path.basename(filePath)} has {{monorepo_context_logic}} placeholder`);
+      // Must NOT have raw hardcoded block (only the shared module should have it)
+      ok(!content.includes('<monorepo-context-check'), `${path.basename(filePath)} has NO hardcoded <monorepo-context-check> block`);
+    } catch (error) {
+      ok(false, `File not found or unreadable: ${filePath} - ${error.message}`);
+    }
   }
   console.log('');
 
