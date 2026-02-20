@@ -7,7 +7,7 @@ nextStepFile: '{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-prd/st
 outputFile: '{planning_artifacts}/prd.md'
 
 # Data Files
-projectTypesCSV: '../data/project-types.csv'
+projectTypesCSV: '{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-prd/data/project-types.csv'
 
 # Task References
 advancedElicitationTask: '{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml'
