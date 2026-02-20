@@ -36,7 +36,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
 ### Paths
 
-- `installed_path` = `{project-root}/_bmad/bmm/workflows/3-solutioning/architecture`
+- `installed_path` = `{project-root}/_bmad/bmm/workflows/3-solutioning/create-architecture`
 - `template_path` = `{installed_path}/architecture-decision-template.md`
 - `data_files_path` = `{installed_path}/data/`
 

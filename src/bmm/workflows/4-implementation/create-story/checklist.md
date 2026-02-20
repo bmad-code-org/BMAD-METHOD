@@ -33,7 +33,7 @@ This is a COMPETITION to create the **ULTIMATE story context** that makes LLM de
 
 ### **When Running from Create-Story Workflow:**
 
-- The `{project-root}/_bmad/core/tasks/validate-workflow.xml` framework will automatically:
+- The `{project-root}/_bmad/core/tasks/workflow.xml` framework will automatically:
   - Load this checklist file
   - Load the newly created story file (`{story_file_path}`)
   - Load workflow variables from `{installed_path}/workflow.yaml`
@@ -63,7 +63,7 @@ You will systematically re-do the entire story creation process, but with a crit
 
 1. **Load the workflow configuration**: `{installed_path}/workflow.yaml` for variable inclusion
 2. **Load the story file**: `{story_file_path}` (provided by user or discovered)
-3. **Load validation framework**: `{project-root}/_bmad/core/tasks/validate-workflow.xml`
+3. **Load validation framework**: `{project-root}/_bmad/core/tasks/workflow.xml`
 4. **Extract metadata**: epic_num, story_num, story_key, story_title from story file
 5. **Resolve all workflow variables**: implementation_artifacts, epics_file, architecture_file, etc.
 6. **Understand current status**: What story implementation guidance is currently provided?
