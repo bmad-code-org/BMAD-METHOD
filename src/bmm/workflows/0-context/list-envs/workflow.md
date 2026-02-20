@@ -15,7 +15,9 @@ main_config: '{project-root}/_bmad/bmm/config.yaml'
 ### 1. Identify Environments
 
 - Use your file listing/system capabilities to examine the `{project-root}/_bmad-output/` directory.
-- Identify all subdirectories within this path. Each subdirectory represents an available environment (ignore hidden directories starting with `.`).
+- Identify all subdirectories within this path. Each subdirectory represents an available environment, EXCEPT:
+  - Ignore hidden directories starting with `.`
+  - Ignore standard BMAD artifact directories: `planning-artifacts`, `implementation-artifacts`, `test-artifacts`, `knowledge`, `docs`, `assets`
 - The root `_bmad-output/` directory itself represents the `default (root)` unset environment.
 
 ### 2. Output Results

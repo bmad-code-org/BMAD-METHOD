@@ -24,14 +24,29 @@ Load and read full config from {main_config} and resolve variables and artifact 
 2.  **Wait for Input (If Missing)**: If the user did NOT provide a project name:
     - Use your file listing capabilities to examine the `{project-root}/_bmad-output/` directory.
     - Output: A formatted list of the existing environments (subdirectories) you found, explicitly noting the `default (root)` environment.
-    - Ask the user: "Please select an existing environment from the list above, or type a new name to create one. Enter `CLEAR` to reset to root."
+      *(Exclude hidden directories and standard BMAD artifact folders like `planning-artifacts`, `implementation-artifacts`, `test-artifacts`, `knowledge`, `docs`, `assets`)*
+    - Present options in a numbered list format and ask the user to select by number or type a new project name:
+      ```
+      Select a project environment:
+      [0] default (root) - Current location for standard artifacts
+      [1] project-name-1
+      [2] project-name-2
+      ...
+
+      Enter a number to select, type a new project name, or enter 'CLEAR' to reset to root:
+      ```
     - **Wait for Input.**
 3.  **Process Input**: Once a project name is established:
     - **Case: CLEAR**:
       - Delete file: `{project-root}/{{bmadFolderName}}/.current_project`
       - Output: "✅ Project context cleared. Artifacts will go to root `_bmad-output/`."
       - **HALT**
-    - **Case: Path Provided**:
+    - **Case: Numeric Selection**: If input is a number (0, 1, 2, etc.):
+      - Map the number to the corresponding environment from your earlier listing
+      - If number 0, treat as "CLEAR" case above
+      - If valid number but out of range, show error and ask again
+      - If valid selection, use that environment name as the path
+    - **Case: Path Provided** (text input):
       - **1. Cleanup**: Remove leading/trailing slashes and any occurrences of `_bmad-output/`.
       - **2. Validate Existence**: Check if `{project-root}/_bmad-output/<sanitized_path>` exists on the file system.
         - **If it DOES NOT exist**:
