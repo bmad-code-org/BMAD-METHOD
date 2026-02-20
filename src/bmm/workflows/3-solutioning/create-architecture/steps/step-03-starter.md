@@ -232,7 +232,6 @@ Prepare the content to append to the document:
 ```bash
 {{full_starter_command_with_options}}
 ```
-````
 
 **Architectural Decisions Provided by Starter:**
 
@@ -256,7 +255,7 @@ Prepare the content to append to the document:
 
 **Note:** Project initialization using this command should be the first implementation story.
 
-```
+````
 
 ### 9. Present Content and Menu
 
