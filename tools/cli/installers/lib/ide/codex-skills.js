@@ -1,6 +1,5 @@
 const path = require('node:path');
 const fs = require('fs-extra');
-const os = require('node:os');
 const { BaseIdeSetup } = require('./_base-ide');
 const { WorkflowCommandGenerator } = require('./shared/workflow-command-generator');
 const { AgentCommandGenerator } = require('./shared/agent-command-generator');
@@ -21,57 +20,6 @@ class CodexSkillsSetup extends BaseIdeSetup {
   }
 
   /**
-   * Collect configuration choices before installation
-   * @param {Object} options - Configuration options
-   * @returns {Object} Collected configuration
-   */
-  async collectConfiguration(options = {}) {
-    // Non-interactive mode: use default (project) - recommended for real work
-    if (options.skipPrompts) {
-      return { installLocation: options.codexLocation || 'project' };
-    }
-
-    let confirmed = false;
-    let installLocation = 'project';
-
-    while (!confirmed) {
-      installLocation = await prompts.select({
-        message: 'Where would you like to install Codex CLI skills?',
-        choices: [
-          {
-            name: 'Project-specific - Recommended (<project>/.agents/skills)',
-            value: 'project',
-          },
-          {
-            name: 'Global - ($HOME/.agents/skills)',
-            value: 'global',
-          },
-        ],
-        default: 'project',
-      });
-
-      // Show brief confirmation hint (detailed instructions available via verbose)
-      if (installLocation === 'project') {
-        await prompts.log.info('Skills installed to: <project>/.agents/skills');
-      } else {
-        await prompts.log.info('Skills installed to: $HOME/.agents/skills');
-      }
-
-      // Confirm the choice
-      confirmed = await prompts.confirm({
-        message: 'Proceed with this installation option?',
-        default: true,
-      });
-
-      if (!confirmed) {
-        await prompts.log.warn("Let's choose a different installation option.");
-      }
-    }
-
-    return { installLocation };
-  }
-
-  /**
    * Setup Codex configuration
    * @param {string} projectDir - Project directory
    * @param {string} bmadDir - BMAD installation directory
@@ -83,12 +31,9 @@ class CodexSkillsSetup extends BaseIdeSetup {
     // Always use CLI mode
     const mode = 'cli';
 
-    // Get installation location from pre-collected config or default to project
-    const installLocation = options.preCollectedConfig?.installLocation || 'project';
-
     const { artifacts, counts } = await this.collectClaudeArtifacts(projectDir, bmadDir, options);
 
-    const destDir = this.getCodexSkillsDir(projectDir, installLocation);
+    const destDir = this.getCodexSkillsDir(projectDir);
     await fs.ensureDir(destDir);
     await this.clearOldBmadSkills(destDir, options);
 
@@ -148,7 +93,6 @@ class CodexSkillsSetup extends BaseIdeSetup {
       counts,
       destination: destDir,
       written,
-      installLocation,
     };
   }
 
@@ -225,27 +169,11 @@ class CodexSkillsSetup extends BaseIdeSetup {
    * Detect Codex installation by checking for BMAD skills
    */
   async detect(projectDir) {
-    // Check both global and project-specific locations
-    const globalDir = this.getCodexSkillsDir(null, 'global');
-    const projectDir_local = projectDir || process.cwd();
-    const projectSpecificDir = this.getCodexSkillsDir(projectDir_local, 'project');
+    const dir = this.getCodexSkillsDir(projectDir || process.cwd());
 
-    // Check global location
-    if (await fs.pathExists(globalDir)) {
+    if (await fs.pathExists(dir)) {
       try {
-        const entries = await fs.readdir(globalDir);
-        if (entries && entries.some((entry) => entry && typeof entry === 'string' && entry.startsWith('bmad'))) {
-          return true;
-        }
-      } catch {
-        // Ignore errors
-      }
-    }
-
-    // Check project-specific location
-    if (await fs.pathExists(projectSpecificDir)) {
-      try {
-        const entries = await fs.readdir(projectSpecificDir);
+        const entries = await fs.readdir(dir);
         if (entries && entries.some((entry) => entry && typeof entry === 'string' && entry.startsWith('bmad'))) {
           return true;
         }
@@ -317,14 +245,11 @@ class CodexSkillsSetup extends BaseIdeSetup {
     };
   }
 
-  getCodexSkillsDir(projectDir = null, location = 'project') {
-    if (location === 'project' && projectDir) {
-      return path.join(projectDir, '.agents', 'skills');
-    }
-    if (location === 'project' && !projectDir) {
+  getCodexSkillsDir(projectDir) {
+    if (!projectDir) {
       throw new Error('projectDir is required for project-scoped skill installation');
     }
-    return path.join(os.homedir(), '.agents', 'skills');
+    return path.join(projectDir, '.agents', 'skills');
   }
 
   /**
@@ -375,26 +300,6 @@ class CodexSkillsSetup extends BaseIdeSetup {
   }
 
   /**
-   * Get instructions for global installation
-   * @returns {string} Instructions text
-   */
-  getGlobalInstructions(destDir) {
-    const lines = [
-      'IMPORTANT: Codex Configuration',
-      '',
-      'Skills installed globally to your HOME DIRECTORY ($HOME/.agents/skills).',
-      '',
-      'These skills reference a specific _bmad path.',
-      "To use with other projects, you'd need to copy the _bmad dir.",
-      '',
-      'Skills are available in Codex CLI automatically.',
-      '  Use /skills to see available skills',
-      '  Skills can also be invoked implicitly based on task description',
-    ];
-    return lines.join('\n');
-  }
-
-  /**
    * Get instructions for project-specific installation
    * @param {string} projectDir - Optional project directory
    * @param {string} destDir - Optional destination directory
@@ -417,13 +322,9 @@ class CodexSkillsSetup extends BaseIdeSetup {
    * Cleanup Codex configuration
    */
   async cleanup(projectDir = null) {
-    // Clean both global and project-specific locations
-    const globalDir = this.getCodexSkillsDir(null, 'global');
-    await this.clearOldBmadSkills(globalDir);
-
     if (projectDir) {
-      const projectSpecificDir = this.getCodexSkillsDir(projectDir, 'project');
-      await this.clearOldBmadSkills(projectSpecificDir);
+      const destDir = this.getCodexSkillsDir(projectDir);
+      await this.clearOldBmadSkills(destDir);
     }
   }
 
