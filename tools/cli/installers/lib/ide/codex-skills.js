@@ -337,7 +337,7 @@ class CodexSkillsSetup extends BaseIdeSetup {
    * @returns {Object|null} Info about created skill
    */
   async installCustomAgentLauncher(projectDir, agentName, agentPath, metadata) {
-    const destDir = this.getCodexSkillsDir(projectDir, 'project');
+    const destDir = this.getCodexSkillsDir(projectDir);
 
     // Skill name from the dash name (without .md)
     const skillName = customAgentDashName(agentName).replace(/\.md$/, '');
