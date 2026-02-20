@@ -22,7 +22,7 @@ main_config: '{project-root}/_bmad/bmm/config.yaml'
 
 ### 2. Output Results
 
-1. Display a formatted bulleted list of the existing environments you found.
-2. Clearly indicate the `default (root)` environment.
+1. Display a formatted numbered list of the existing environments you found.
+2. Clearly indicate the `default (root)` environment (usually [0]).
 3. Check if there is an active environment currently set. Read `{project-root}/{{bmadFolderName}}/.current_project`. If it exists, indicate which environment from the list is currently active (e.g. by adding `(ACTIVE)` next to the bullet point).
 4. Inform the user that they can switch to another environment or create a new one using the `/set-project <env_name>` command.
