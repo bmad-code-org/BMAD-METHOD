@@ -80,8 +80,7 @@ Review the frontmatter to understand:
 - If `stepsCompleted = ["step-01-init.md", "step-02-discovery.md", "step-03-success.md"]`
 - Last element is `"step-03-success.md"`
 - Load `{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-prd/steps-c/step-03-success.md`, read its frontmatter
-- Find `nextStepFile: '{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-prd/steps-c/step-04-journeys.md'`
-- Next step to load is `{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-prd/steps-c/step-04-journeys.md`
+- Read fully and follow: `{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-prd/steps-c/step-04-journeys.md`
 
 ### 4. Handle Workflow Completion
 

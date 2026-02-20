@@ -103,7 +103,7 @@ Show the user their current progress:
 #### If 'X' (Start over):
 
 - Confirm: "This will delete all existing architectural decisions. Are you sure? (y/n)"
-- If confirmed: Delete existing document and load `{project-root}/_bmad/bmm/workflows/3-solutioning/architecture/steps/step-01-init.md`
+- If confirmed: Delete existing document and read fully and follow: `{project-root}/_bmad/bmm/workflows/3-solutioning/architecture/steps/step-01-init.md`
 - If not confirmed: Return to continuation menu
 
 ### 4. Navigate to Selected Step
