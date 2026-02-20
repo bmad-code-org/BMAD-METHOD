@@ -49,18 +49,21 @@ Core and BMM workflows automatically check for the existence of `{project-root}/
 - **If found**: It reads the content (e.g., "app-alpha") and overrides the `output_folder` to `_bmad-output/app-alpha`.
 - **If not found**: It behaves like a standard single-project installation, outputting to `_bmad-output` root.
 
+### The /list-envs Command
+
+You can view all available environments created in your monorepo by running the `/list-envs` command. This will scan your `_bmad-output/` directory and display all existing project environments, as well as indicate which one is currently active.
+
 ### The /set-project Command
 
 You can easily manage the active project context using the `/set-project` workflow.
 
 **To set a context:**
-1. Run `/set-project` in your chat.
-2. Select "Set Project Context".
-3. Enter the name of your project (e.g., `frontend`, `backend`, `mobile-app`).
+1. Run `/set-project <env_name>` in your chat.
+2. If the environment does not exist, you will be prompted to create it interactively.
+3. If you run `/set-project` without an argument, it will automatically list available environments and prompt you to select one or create a new one.
 
 **To clear context (return to single-project mode):**
-1. Run `/set-project`.
-2. Select "Clear Project Context".
+1. Run `/set-project CLEAR`.
 
 ### Inline Override
 

@@ -115,7 +115,7 @@ async function runTests() {
     assert(exists, 'set-project workflow file exists');
     if (exists) {
       const content = await fs.readFile(setProjectPath, 'utf8');
-      assert(content.includes('_bmad/.current_project'), 'set-project implementation manages .current_project');
+      assert(content.includes('{{bmadFolderName}}/.current_project'), 'set-project implementation manages .current_project');
       const examplePattern = /(?:example|my[-_ ]?app|[a-z0-9]+-[a-z0-9]+)/i;
       assert(examplePattern.test(content), 'set-project examples use generic public-friendly names');
     }
