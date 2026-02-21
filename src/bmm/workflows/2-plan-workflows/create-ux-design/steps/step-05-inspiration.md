@@ -197,7 +197,7 @@ Show the generated inspiration analysis content and present choices:
 
 - Append the final content to `{planning_artifacts}/ux-design-specification.md`
 - Update frontmatter: append step to end of stepsCompleted array
-- Read fully and follow: `./step-06-design-system.md`
+- Read fully and follow: `{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-ux-design/steps/step-06-design-system.md`
 
 ## APPEND TO DOCUMENT:
 
@@ -229,6 +229,6 @@ When user selects 'C', append the content directly to the document using the str
 
 ## NEXT STEP:
 
-After user selects 'C' and content is saved to document, load `./step-06-design-system.md` to choose the appropriate design system approach.
+After user selects 'C' and content is saved to document, load `{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-ux-design/steps/step-06-design-system.md` to choose the appropriate design system approach.
 
 Remember: Do NOT proceed to step-06 until user explicitly selects 'C' from the A/P/C menu and content is saved!
