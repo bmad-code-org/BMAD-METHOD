@@ -161,7 +161,7 @@ class CodexSkillsSetup extends BaseIdeSetup {
     }
 
     // Build new frontmatter with only skills-spec fields, let yaml handle quoting
-    const newFrontmatter = yaml.stringify({ name: skillName, description }).trimEnd();
+    const newFrontmatter = yaml.stringify({ name: skillName, description }, { lineWidth: 0 }).trimEnd();
     return `---\n${newFrontmatter}\n---\n${body}`;
   }
 
