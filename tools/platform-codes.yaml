@@ -18,12 +18,6 @@ platforms:
     category: cli
     description: "Anthropic's official CLI for Claude"
 
-  windsurf:
-    name: "Windsurf"
-    preferred: true
-    category: ide
-    description: "AI-powered IDE with cascade flows"
-
   cursor:
     name: "Cursor"
     preferred: true
@@ -54,12 +48,6 @@ platforms:
     preferred: false
     category: ide
     description: "Enhanced Cline fork"
-
-  rovo:
-    name: "Rovo"
-    preferred: false
-    category: ide
-    description: "Atlassian's AI coding assistant"
 
   rovo-dev:
     name: "Rovo Dev"
@@ -126,6 +114,12 @@ platforms:
     preferred: false
     category: ide
     description: "AI coding tool"
+
+  windsurf:
+    name: "Windsurf"
+    preferred: false
+    category: ide
+    description: "AI-powered IDE with cascade flows"
 
 # Platform categories
 categories:

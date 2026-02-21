@@ -16,7 +16,7 @@ Use the **DEV agent** directly for bug fixes, refactorings, or small targeted ch
 
 :::note[Prerequisites]
 - BMad Method installed (`npx bmad-method install`)
-- An AI-powered IDE (Claude Code, Cursor, Windsurf, or similar)
+- An AI-powered IDE (Claude Code, Cursor, or similar)
 :::
 
 ## Choose Your Approach
