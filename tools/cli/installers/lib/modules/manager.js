@@ -204,6 +204,21 @@ class ModuleManager {
       }
     }
 
+    // Scan src/modules/ for locally-defined modules
+    const localModulesPath = getSourcePath('modules');
+    if (await fs.pathExists(localModulesPath)) {
+      const moduleEntries = await fs.readdir(localModulesPath, { withFileTypes: true });
+      for (const entry of moduleEntries) {
+        if (entry.isDirectory()) {
+          const modulePath = path.join(localModulesPath, entry.name);
+          const moduleInfo = await this.getModuleInfo(modulePath, entry.name, 'src/modules');
+          if (moduleInfo && !modules.some((m) => m.id === moduleInfo.id)) {
+            modules.push(moduleInfo);
+          }
+        }
+      }
+    }
+
     // Check for cached custom modules in _config/custom/
     if (this.bmadDir) {
       const customCacheDir = path.join(this.bmadDir, '_config', 'custom');
@@ -306,6 +321,12 @@ class ModuleManager {
       if (await fs.pathExists(bmmPath)) {
         return bmmPath;
       }
+    }
+
+    // Check src/modules/{moduleCode} for locally-defined modules (takes priority over external)
+    const localModulePath = getModulePath(moduleCode);
+    if (await fs.pathExists(localModulePath)) {
+      return localModulePath;
     }
 
     // Check external official modules
@@ -1150,7 +1171,9 @@ class ModuleManager {
       const agentYaml = yaml.parse(await fs.readFile(agentPath, 'utf8'));
 
       // Check if agent has menu items with workflow-install
-      const menuItems = agentYaml?.agent?.menu || [];
+      // menu can be an array OR an object with an `items` array
+      const menu = agentYaml?.agent?.menu;
+      const menuItems = Array.isArray(menu) ? menu : menu?.items || [];
       const workflowInstallItems = menuItems.filter((item) => item['workflow-install']);
 
       if (workflowInstallItems.length === 0) {

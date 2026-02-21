@@ -23,7 +23,9 @@ class AgentAnalyzer {
     }
 
     // Analyze menu items (support both 'menu' and legacy 'commands')
-    const menuItems = agentYaml.agent?.menu || agentYaml.agent?.commands || [];
+    // menu can be an array or an object with an `items` array
+    const rawMenu = agentYaml.agent?.menu || agentYaml.agent?.commands;
+    const menuItems = Array.isArray(rawMenu) ? rawMenu : rawMenu?.items || [];
 
     for (const item of menuItems) {
       // Track the menu item

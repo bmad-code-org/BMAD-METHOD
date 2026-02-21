@@ -309,8 +309,10 @@ async function compileToXml(agentYaml, agentName = '', targetPath = '') {
     xml += buildMemoriesXml(agent.memories);
   }
 
-  // Menu section
-  xml += buildMenuXml(agent.menu || []);
+  // Menu section — menu can be an array or an object with an `items` array
+  const menuData = agent.menu;
+  const menuItems = Array.isArray(menuData) ? menuData : menuData?.items || [];
+  xml += buildMenuXml(menuItems);
 
   // Closing agent tag
   xml += '</agent>\n';
@@ -397,7 +399,8 @@ async function compileAgent(yamlContent, answers = {}, agentName = '', targetPat
 
     // For menu: append to existing or create new
     if (customizations.menu) {
-      const existing = agentYaml.agent.menu || [];
+      const existingMenu = agentYaml.agent.menu;
+      const existing = Array.isArray(existingMenu) ? existingMenu : existingMenu?.items || [];
       agentYaml.agent.menu = [...existing, ...customizations.menu];
     }
 
