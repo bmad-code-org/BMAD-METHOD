@@ -18,7 +18,7 @@ If you want to use a non interactive installer and provide all install options o
 :::note[Prerequisites]
 - **Node.js** 20+ (required for the installer)
 - **Git** (recommended)
-- **AI tool** (Claude Code, Cursor, Windsurf, or similar)
+- **AI tool** (Claude Code, Cursor, or similar)
 :::
 
 ## Steps
@@ -49,8 +49,6 @@ Pick which AI tools you use:
 
 - Claude Code
 - Cursor
-- Windsurf
-- Kiro
 - Others
 
 Each tool has its own way of integrating commands. The installer creates tiny prompt files to activate workflows and agents — it just puts them where your tool expects to find them.
@@ -79,7 +77,18 @@ your-project/
 
 ## Verify Installation
 
-Run the `help` workflow (`/bmad-help` on most platforms) to verify everything works and see what to do next.
+Run `/bmad-help` to verify everything works and see what to do next.
+
+**BMad-Help is your intelligent guide** that will:
+- Confirm your installation is working
+- Show what's available based on your installed modules
+- Recommend your first step
+
+You can also ask it questions:
+```
+/bmad-help I just installed, what should I do first?
+/bmad-help What are my options for a SaaS project?
+```
 
 ## Troubleshooting
 

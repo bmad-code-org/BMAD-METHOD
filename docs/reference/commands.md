@@ -103,9 +103,29 @@ See [Workflow Map](./workflow-map.md) for the complete workflow reference organi
 
 Tasks and tools are standalone operations that do not require an agent or workflow context.
 
+#### BMad-Help: Your Intelligent Guide
+
+**`/bmad-help`** is your primary interface for discovering what to do next. It's not just a lookup tool — it's an intelligent assistant that:
+
+- **Inspects your project** to see what's already been done
+- **Understands natural language queries** — ask questions in plain English
+- **Varies by installed modules** — shows options based on what you have
+- **Auto-invokes after workflows** — every workflow ends with clear next steps
+- **Recommends the first required task** — no guessing where to start
+
+**Examples:**
+
+```
+/bmad-help
+/bmad-help I have a SaaS idea and know all the features. Where do I start?
+/bmad-help What are my options for UX design?
+/bmad-help I'm stuck on the PRD workflow
+```
+
+#### Other Tasks and Tools
+
 | Example command | Purpose |
 | --- | --- |
-| `/bmad-help` | Context-aware guidance and next-step recommendations |
 | `/bmad-shard-doc` | Split a large markdown file into smaller sections |
 | `/bmad-index-docs` | Index project documentation |
 | `/bmad-editorial-review-prose` | Review document prose quality |

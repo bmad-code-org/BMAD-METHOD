@@ -3,7 +3,7 @@ name: 'step-05-scope'
 description: 'Define MVP scope with clear boundaries and outline future vision while managing scope creep'
 
 # File References
-nextStepFile: './step-06-complete.md'
+nextStepFile: '{project-root}/_bmad/bmm/workflows/1-analysis/create-product-brief/steps/step-06-complete.md'
 outputFile: '{planning_artifacts}/product-brief-{{project_name}}-{{date}}.md'
 
 # Task References

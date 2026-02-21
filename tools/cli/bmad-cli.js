@@ -2,6 +2,7 @@ const { program } = require('commander');
 const path = require('node:path');
 const fs = require('node:fs');
 const { execSync } = require('node:child_process');
+const semver = require('semver');
 const prompts = require('./lib/prompts');
 
 // The installer flow uses many sequential @clack/prompts, each adding keypress
@@ -34,7 +35,7 @@ async function checkForUpdate() {
       timeout: 5000,
     }).trim();
 
-    if (result && result !== packageJson.version) {
+    if (result && semver.gt(result, packageJson.version)) {
       const color = await prompts.getColor();
       const updateMsg = [
         `You are using version ${packageJson.version} but ${result} is available.`,

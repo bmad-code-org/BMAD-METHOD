@@ -39,7 +39,6 @@ module.exports = {
       if (config.actionType === 'cancel') {
         await prompts.log.warn('Installation cancelled.');
         process.exit(0);
-        return;
       }
 
       // Handle quick update separately
@@ -47,23 +46,14 @@ module.exports = {
         const result = await installer.quickUpdate(config);
         await prompts.log.success('Quick update complete!');
         await prompts.log.info(`Updated ${result.moduleCount} modules with preserved settings (${result.modules.join(', ')})`);
-
-        // Display version-specific end message
-        const { MessageLoader } = require('../installers/lib/message-loader');
-        const messageLoader = new MessageLoader();
-        await messageLoader.displayEndMessage();
-
         process.exit(0);
-        return;
       }
 
       // Handle compile agents separately
       if (config.actionType === 'compile-agents') {
         const result = await installer.compileAgents(config);
-        await prompts.log.success('Agent recompilation complete!');
         await prompts.log.info(`Recompiled ${result.agentCount} agents with customizations applied`);
         process.exit(0);
-        return;
       }
 
       // Regular install/update flow
@@ -72,16 +62,10 @@ module.exports = {
       // Check if installation was cancelled
       if (result && result.cancelled) {
         process.exit(0);
-        return;
       }
 
       // Check if installation succeeded
       if (result && result.success) {
-        // Display version-specific end message from install-messages.yaml
-        const { MessageLoader } = require('../installers/lib/message-loader');
-        const messageLoader = new MessageLoader();
-        await messageLoader.displayEndMessage();
-
         process.exit(0);
       }
     } catch (error) {

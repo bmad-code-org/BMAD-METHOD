@@ -73,7 +73,7 @@ After searching, use the [feature request template](https://github.com/bmad-code
 
 ### Target Branch
 
-Submit PRs to the `main` branch.
+Submit PRs to the `main` branch. We use [trunk-based development](https://trunkbaseddevelopment.com/branch-for-release/): `main` is the trunk where all work lands, and stable release branches receive only cherry-picked fixes.
 
 ### PR Size
 

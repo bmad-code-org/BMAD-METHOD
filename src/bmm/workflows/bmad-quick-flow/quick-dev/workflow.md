@@ -28,7 +28,7 @@ This uses **step-file architecture** for focused execution:
 Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
 - `user_name`, `communication_language`, `user_skill_level`
-- `output_folder`, `planning_artifacts`,  `implementation_artifacts`
+- `planning_artifacts`, `implementation_artifacts`
 - `date` as system-generated current datetime
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
@@ -47,4 +47,4 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
 ## EXECUTION
 
-Read fully and follow: `steps/step-01-mode-detection.md` to begin the workflow.
+Read fully and follow: `{project-root}/_bmad/bmm/workflows/bmad-quick-flow/quick-dev/steps/step-01-mode-detection.md` to begin the workflow.

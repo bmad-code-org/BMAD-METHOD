@@ -7,6 +7,7 @@ agent:
     title: Architect
     icon: 🏗️
     module: bmm
+    capabilities: "distributed systems, cloud infrastructure, API design, scalable patterns"
     hasSidecar: false
 
   persona:

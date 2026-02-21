@@ -14,7 +14,7 @@ const prompts = require('../../../lib/prompts');
  */
 class CodexSetup extends BaseIdeSetup {
   constructor() {
-    super('codex', 'Codex', true); // preferred IDE
+    super('codex', 'Codex', false);
   }
 
   /**
@@ -23,6 +23,11 @@ class CodexSetup extends BaseIdeSetup {
    * @returns {Object} Collected configuration
    */
   async collectConfiguration(options = {}) {
+    // Non-interactive mode: use default (project) - recommended for real work
+    if (options.skipPrompts) {
+      return { installLocation: options.codexLocation || 'project' };
+    }
+
     let confirmed = false;
     let installLocation = 'global';
 

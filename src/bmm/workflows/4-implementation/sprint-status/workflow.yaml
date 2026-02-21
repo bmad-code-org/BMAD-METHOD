@@ -5,22 +5,17 @@ author: "BMad"
 
 # Critical variables from config
 config_source: "{project-root}/_bmad/bmm/config.yaml"
-output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
 document_output_language: "{config_source}:document_output_language"
-date: system-generated
 implementation_artifacts: "{config_source}:implementation_artifacts"
-planning_artifacts: "{config_source}:planning_artifacts"
 
 # Workflow components
 installed_path: "{project-root}/_bmad/bmm/workflows/4-implementation/sprint-status"
 instructions: "{installed_path}/instructions.md"
 
 # Inputs
-variables:
-  sprint_status_file: "{implementation_artifacts}/sprint-status.yaml"
-  tracking_system: "file-system"
+sprint_status_file: "{implementation_artifacts}/sprint-status.yaml"
 
 # Smart input file references
 input_file_patterns:

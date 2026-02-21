@@ -189,7 +189,7 @@ class UI {
       const installedVersion = existingInstall.version || 'unknown';
 
       // Check if version is pre beta
-      const shouldProceed = await this.showLegacyVersionWarning(installedVersion, currentVersion, path.basename(bmadDir));
+      const shouldProceed = await this.showLegacyVersionWarning(installedVersion, currentVersion, path.basename(bmadDir), options);
 
       // If user chose to cancel, exit the installer
       if (!shouldProceed) {
@@ -227,6 +227,14 @@ class UI {
         }
         actionType = options.action;
         await prompts.log.info(`Using action from command-line: ${actionType}`);
+      } else if (options.yes) {
+        // Default to quick-update if available, otherwise first available choice
+        if (choices.length === 0) {
+          throw new Error('No valid actions available for this installation');
+        }
+        const hasQuickUpdate = choices.some((c) => c.value === 'quick-update');
+        actionType = hasQuickUpdate ? 'quick-update' : choices[0].value;
+        await prompts.log.info(`Non-interactive mode (--yes): defaulting to ${actionType}`);
       } else {
         actionType = await prompts.select({
           message: 'How would you like to proceed?',
@@ -237,11 +245,49 @@ class UI {
 
       // Handle quick update separately
       if (actionType === 'quick-update') {
-        // Quick update doesn't install custom content - just updates existing modules
+        // Pass --custom-content through so installer can re-cache if cache is missing
+        let customContentForQuickUpdate = { hasCustomContent: false };
+        if (options.customContent) {
+          const paths = options.customContent
+            .split(',')
+            .map((p) => p.trim())
+            .filter(Boolean);
+          if (paths.length > 0) {
+            const customPaths = [];
+            const selectedModuleIds = [];
+            const sources = [];
+            for (const customPath of paths) {
+              const expandedPath = this.expandUserPath(customPath);
+              const validation = this.validateCustomContentPathSync(expandedPath);
+              if (validation) continue;
+              let moduleMeta;
+              try {
+                const moduleYamlPath = path.join(expandedPath, 'module.yaml');
+                moduleMeta = require('yaml').parse(await fs.readFile(moduleYamlPath, 'utf-8'));
+              } catch {
+                continue;
+              }
+              if (!moduleMeta?.code) continue;
+              customPaths.push(expandedPath);
+              selectedModuleIds.push(moduleMeta.code);
+              sources.push({ path: expandedPath, id: moduleMeta.code, name: moduleMeta.name || moduleMeta.code });
+            }
+            if (customPaths.length > 0) {
+              customContentForQuickUpdate = {
+                hasCustomContent: true,
+                selected: true,
+                sources,
+                selectedFiles: customPaths.map((p) => path.join(p, 'module.yaml')),
+                selectedModuleIds,
+              };
+            }
+          }
+        }
         return {
           actionType: 'quick-update',
           directory: confirmedDirectory,
-          customContent: { hasCustomContent: false },
+          customContent: customContentForQuickUpdate,
+          skipPrompts: options.yes || false,
         };
       }
 
@@ -252,6 +298,7 @@ class UI {
           actionType: 'compile-agents',
           directory: confirmedDirectory,
           customContent: { hasCustomContent: false },
+          skipPrompts: options.yes || false,
         };
       }
 
@@ -272,6 +319,11 @@ class UI {
             .map((m) => m.trim())
             .filter(Boolean);
           await prompts.log.info(`Using modules from command-line: ${selectedModules.join(', ')}`);
+        } else if (options.yes) {
+          selectedModules = await this.getDefaultModules(installedModuleIds);
+          await prompts.log.info(
+            `Non-interactive mode (--yes): using default modules (installed + defaults): ${selectedModules.join(', ')}`,
+          );
         } else {
           selectedModules = await this.selectAllModules(installedModuleIds);
         }
@@ -290,6 +342,7 @@ class UI {
           // Build custom content config similar to promptCustomContentSource
           const customPaths = [];
           const selectedModuleIds = [];
+          const sources = [];
 
           for (const customPath of paths) {
             const expandedPath = this.expandUserPath(customPath);
@@ -311,6 +364,11 @@ class UI {
               continue;
             }
 
+            if (!moduleMeta) {
+              await prompts.log.warn(`Skipping custom content path: ${customPath} - module.yaml is empty`);
+              continue;
+            }
+
             if (!moduleMeta.code) {
               await prompts.log.warn(`Skipping custom content path: ${customPath} - module.yaml missing 'code' field`);
               continue;
@@ -318,6 +376,11 @@ class UI {
 
             customPaths.push(expandedPath);
             selectedModuleIds.push(moduleMeta.code);
+            sources.push({
+              path: expandedPath,
+              id: moduleMeta.code,
+              name: moduleMeta.name || moduleMeta.code,
+            });
           }
 
           if (customPaths.length > 0) {
@@ -325,10 +388,28 @@ class UI {
               selectedCustomModules: selectedModuleIds,
               customContentConfig: {
                 hasCustomContent: true,
-                paths: customPaths,
+                selected: true,
+                sources,
+                selectedFiles: customPaths.map((p) => path.join(p, 'module.yaml')),
                 selectedModuleIds: selectedModuleIds,
               },
             };
+          }
+        } else if (options.yes) {
+          // Non-interactive mode: preserve existing custom modules (matches default: false)
+          const cacheDir = path.join(bmadDir, '_config', 'custom');
+          if (await fs.pathExists(cacheDir)) {
+            const entries = await fs.readdir(cacheDir, { withFileTypes: true });
+            for (const entry of entries) {
+              if (entry.isDirectory()) {
+                customModuleResult.selectedCustomModules.push(entry.name);
+              }
+            }
+            await prompts.log.info(
+              `Non-interactive mode (--yes): preserving ${customModuleResult.selectedCustomModules.length} existing custom module(s)`,
+            );
+          } else {
+            await prompts.log.info('Non-interactive mode (--yes): no existing custom modules found');
           }
         } else {
           const changeCustomModules = await prompts.confirm({
@@ -378,6 +459,7 @@ class UI {
           skipIde: toolSelection.skipIde,
           coreConfig: coreConfig,
           customContent: customModuleResult.customContentConfig,
+          skipPrompts: options.yes || false,
         };
       }
     }
@@ -414,6 +496,7 @@ class UI {
       // Build custom content config similar to promptCustomContentSource
       const customPaths = [];
       const selectedModuleIds = [];
+      const sources = [];
 
       for (const customPath of paths) {
         const expandedPath = this.expandUserPath(customPath);
@@ -435,6 +518,11 @@ class UI {
           continue;
         }
 
+        if (!moduleMeta) {
+          await prompts.log.warn(`Skipping custom content path: ${customPath} - module.yaml is empty`);
+          continue;
+        }
+
         if (!moduleMeta.code) {
           await prompts.log.warn(`Skipping custom content path: ${customPath} - module.yaml missing 'code' field`);
           continue;
@@ -442,12 +530,19 @@ class UI {
 
         customPaths.push(expandedPath);
         selectedModuleIds.push(moduleMeta.code);
+        sources.push({
+          path: expandedPath,
+          id: moduleMeta.code,
+          name: moduleMeta.name || moduleMeta.code,
+        });
       }
 
       if (customPaths.length > 0) {
         customContentConfig = {
           hasCustomContent: true,
-          paths: customPaths,
+          selected: true,
+          sources,
+          selectedFiles: customPaths.map((p) => path.join(p, 'module.yaml')),
           selectedModuleIds: selectedModuleIds,
         };
       }
@@ -487,7 +582,7 @@ class UI {
   /**
    * Prompt for tool/IDE selection (called after module configuration)
    * Uses a split prompt approach:
-   *   1. Recommended tools - standard multiselect for 3 preferred tools
+   *   1. Recommended tools - standard multiselect for preferred tools
    *   2. Additional tools - autocompleteMultiselect with search capability
    * @param {string} projectDir - Project directory to check for existing IDEs
    * @param {Object} options - Command-line options
@@ -528,6 +623,27 @@ class UI {
     // ─────────────────────────────────────────────────────────────────────────────
     if (configuredIdes.length > 0) {
       const allTools = [...preferredIdes, ...otherIdes];
+
+      // Non-interactive: handle --tools and --yes flags before interactive prompt
+      if (options.tools) {
+        if (options.tools.toLowerCase() === 'none') {
+          await prompts.log.info('Skipping tool configuration (--tools none)');
+          return { ides: [], skipIde: true };
+        }
+        const selectedIdes = options.tools
+          .split(',')
+          .map((t) => t.trim())
+          .filter(Boolean);
+        await prompts.log.info(`Using tools from command-line: ${selectedIdes.join(', ')}`);
+        await this.displaySelectedTools(selectedIdes, preferredIdes, allTools);
+        return { ides: selectedIdes, skipIde: false };
+      }
+
+      if (options.yes) {
+        await prompts.log.info(`Non-interactive mode (--yes): keeping configured tools: ${configuredIdes.join(', ')}`);
+        await this.displaySelectedTools(configuredIdes, preferredIdes, allTools);
+        return { ides: configuredIdes, skipIde: false };
+      }
 
       // Sort: configured tools first, then preferred, then others
       const sortedTools = [
@@ -689,18 +805,6 @@ class UI {
       message,
       default: defaultValue,
     });
-  }
-
-  /**
-   * Display installation summary
-   * @param {Object} result - Installation result
-   */
-  async showInstallSummary(result) {
-    let summary = `Installed to: ${result.path}`;
-    if (result.modules && result.modules.length > 0) {
-      summary += `\nModules: ${result.modules.join(', ')}`;
-    }
-    await prompts.note(summary, 'BMAD is ready to use!');
   }
 
   /**
@@ -1642,7 +1746,7 @@ class UI {
    * @param {string} bmadFolderName - Name of the BMAD folder
    * @returns {Promise<boolean>} True if user wants to proceed, false if they cancel
    */
-  async showLegacyVersionWarning(installedVersion, currentVersion, bmadFolderName) {
+  async showLegacyVersionWarning(installedVersion, currentVersion, bmadFolderName, options = {}) {
     if (!this.isLegacyVersion(installedVersion)) {
       return true; // Not legacy, proceed
     }
@@ -1667,6 +1771,11 @@ class UI {
 
     await prompts.log.warn('VERSION WARNING');
     await prompts.note(warningContent, 'Version Warning');
+
+    if (options.yes) {
+      await prompts.log.warn('Non-interactive mode (--yes): auto-proceeding with legacy update');
+      return true;
+    }
 
     const proceed = await prompts.select({
       message: 'How would you like to proceed?',

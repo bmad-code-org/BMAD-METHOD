@@ -155,11 +155,11 @@ Show the generated project understanding content and present choices:
 
 - Append the final content to `{planning_artifacts}/ux-design-specification.md`
 - Update frontmatter: `stepsCompleted: [1, 2]`
-- Load `./step-03-core-experience.md`
+- Load `{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-ux-design/steps/step-03-core-experience.md`
 
 ## APPEND TO DOCUMENT:
 
-When user selects 'C', append the content directly to the document. Only after the content is saved to document, read fully and follow: `./step-03-core-experience.md`.
+When user selects 'C', append the content directly to the document. Only after the content is saved to document, read fully and follow: `{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-ux-design/steps/step-03-core-experience.md`.
 
 ## SUCCESS METRICS:
 

@@ -75,10 +75,12 @@ Show in "What You've Accomplished" sections:
 ````md
 ```
 your-project/
-├── _bmad/                         # BMad configuration
+├── _bmad/                                   # BMad configuration
 ├── _bmad-output/
-│   ├── PRD.md                     # Your requirements document
-│   └── bmm-workflow-status.yaml   # Progress tracking
+│   ├── planning-artifacts/
+│   │   └── PRD.md                           # Your requirements document
+│   ├── implementation-artifacts/
+│   └── project-context.md                   # Implementation rules (optional)
 └── ...
 ```
 ````
@@ -142,12 +144,12 @@ your-project/
 
 ### Types
 
-| Type              | Example                      |
-| ----------------- | ---------------------------- |
-| **Index/Landing** | `core-concepts/index.md`     |
-| **Concept**       | `what-are-agents.md`         |
-| **Feature**       | `quick-flow.md`              |
-| **Philosophy**    | `why-solutioning-matters.md` |
+| Type              | Example                       |
+| ----------------- | ----------------------------- |
+| **Index/Landing** | `core-concepts/index.md`      |
+| **Concept**       | `what-are-agents.md`          |
+| **Feature**       | `quick-flow.md`               |
+| **Philosophy**    | `why-solutioning-matters.md`  |
 | **FAQ**           | `established-projects-faq.md` |
 
 ### General Template

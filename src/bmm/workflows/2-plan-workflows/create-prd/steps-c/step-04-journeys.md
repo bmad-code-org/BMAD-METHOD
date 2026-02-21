@@ -3,7 +3,7 @@ name: 'step-04-journeys'
 description: 'Map ALL user types that interact with the system with narrative story-based journeys'
 
 # File References
-nextStepFile: './step-05-domain.md'
+nextStepFile: '{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-prd/steps-c/step-05-domain.md'
 outputFile: '{planning_artifacts}/prd.md'
 
 # Task References
@@ -208,6 +208,6 @@ When user selects 'C', append the content directly to the document using the str
 
 ## NEXT STEP:
 
-After user selects 'C' and content is saved to document, load `./step-05-domain.md`.
+After user selects 'C' and content is saved to document, load `{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-prd/steps-c/step-05-domain.md`.
 
 Remember: Do NOT proceed to step-05 until user explicitly selects 'C' from the A/P/C menu and content is saved!

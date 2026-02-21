@@ -6,54 +6,34 @@
 startMessage: |
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-  🎉 BETA IS HERE! Welcome to BMad Method V6 Beta!
+  🎉 V6 IS HERE! Welcome to BMad Method V6 - Official Stable Release!
 
-  We've officially graduated from Alpha! This milestone represents:
-    - 50+ workflows covering the full development lifecycle
-    - Stability - we will still be adding and evolving and optimizing, 
-      but anticipate no massive breaking changes
-    - Groundwork in place for customization and community modules
-
-  📚 New Docs Site: http://docs.bmad-method.org/
-    - High quality tutorials, guided walkthrough, and articles coming soon!
-    - Everything is free. No paywalls. No gated content.
-    - Knowledge should be shared, not sold.
-
-  💡 Love BMad? Please star us on GitHub & subscribe on YouTube!
-    - GitHub: https://github.com/bmad-code-org/BMAD-METHOD/
-    - YouTube: https://www.youtube.com/@BMadCode
-
-  Latest updates: https://github.com/bmad-code-org/BMAD-METHOD/CHANGELOG.md
-
-  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-# Display at the END of installation (after all setup completes)
-endMessage: |
-  ════════════════════════════════════════════════════════════════════════════════
-
-  ✨ BMAD V6 BETA IS INSTALLED! Thank you for being part of this journey!
+  The BMad Method is now a Platform powered by the BMad Method Core and Module Ecosystem!
+    - Select and install modules during setup - customize your experience
+    - New BMad Method for Agile AI-Driven Development (the evolution of V4)
+    - Exciting new modules available during installation, with community modules coming soon
+    - Documentation: docs.bmad-method.com
 
   🌟 BMad is 100% free and open source.
-    - No gated Discord. No paywalls.
+    - No gated Discord. No paywalls. No gated content.
     - We believe in empowering everyone, not just those who can pay.
-
-  🙏 SUPPORT BMAD DEVELOPMENT:
-    - During the Beta, please give us feedback and raise issues on GitHub!
-    - Donate: https://buymeacoffee.com/bmad
-    - Corporate Sponsorship available - DM on Discord
+    - Knowledge should be shared, not sold.
 
   🎤 SPEAKING & MEDIA:
     - Available for conferences, podcasts, and media appearances
     - Topics: AI-Native Transformation, Spec and Context Engineering, BMad Method
     - For speaking inquiries or interviews, reach out to BMad on Discord!
 
-  📚 RESOURCES:
-    - Docs: http://docs.bmad-method.org/ (bookmark it!)
-    - Changelog: https://github.com/bmad-code-org/BMAD-METHOD/CHANGELOG.md
-
-  ⭐⭐⭐ HELP US GROW:
+  ⭐ HELP US GROW:
     - Star us on GitHub: https://github.com/bmad-code-org/BMAD-METHOD/
     - Subscribe on YouTube: https://www.youtube.com/@BMadCode
-    - Every star & sub helps us reach more developers!
+    - Free Community and Support: https://discord.gg/gk8jAdXWmj
+    - Donate: https://buymeacoffee.com/bmad
+    - Corporate Sponsorship available
 
-  ════════════════════════════════════════════════════════════════════════════════
+  Latest updates: https://github.com/bmad-code-org/BMAD-METHOD/blob/main/CHANGELOG.md
+
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# No end message - install summary and next steps are rendered by the installer
+endMessage: ""

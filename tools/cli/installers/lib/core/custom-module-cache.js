@@ -7,6 +7,7 @@
 const fs = require('fs-extra');
 const path = require('node:path');
 const crypto = require('node:crypto');
+const prompts = require('../../../lib/prompts');
 
 class CustomModuleCache {
   constructor(bmadDir) {
@@ -195,7 +196,7 @@ class CustomModuleCache {
     // Verify cache integrity
     const currentCacheHash = await this.calculateHash(cacheDir);
     if (currentCacheHash !== cached.cacheHash) {
-      console.warn(`Warning: Cache integrity check failed for ${moduleId}`);
+      await prompts.log.warn(`Cache integrity check failed for ${moduleId}`);
     }
 
     return {

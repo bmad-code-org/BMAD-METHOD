@@ -98,11 +98,7 @@ platforms:
     preferred: false
     category: ide
     description: "GitHub's AI pair programmer"
-    installer:
-      targets:
-        - target_dir: .github/agents
-          template_type: copilot_agents
-          artifact_types: [agents]
+    # No installer config - uses custom github-copilot.js
 
   iflow:
     name: "iFlow"
@@ -166,9 +162,7 @@ platforms:
     preferred: false
     category: ide
     description: "Atlassian's Rovo development environment"
-    installer:
-      target_dir: .rovodev/workflows
-      template_type: rovodev
+    # No installer config - uses custom rovodev.js (generates prompts.yml manifest)
 
   trae:
     name: "Trae"
@@ -181,7 +175,7 @@ platforms:
 
   windsurf:
     name: "Windsurf"
-    preferred: true
+    preferred: false
     category: ide
     description: "AI-powered IDE with cascade flows"
     installer:

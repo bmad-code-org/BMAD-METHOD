@@ -89,7 +89,7 @@ Proceeding to adversarial code review...
 
 ## NEXT STEP
 
-Proceed immediately to `step-05-adversarial-review.md`.
+Proceed immediately to `{project-root}/_bmad/bmm/workflows/bmad-quick-flow/quick-dev/steps/step-05-adversarial-review.md`.
 
 ---
 

@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "bmad-method",
-  "version": "6.0.0-Beta.8",
+  "version": "6.0.1",
   "description": "Breakthrough Method of Agile AI-driven Development",
   "keywords": [
     "agile",
@@ -25,6 +25,7 @@
   },
   "scripts": {
     "bmad:install": "node tools/cli/bmad-cli.js install",
+    "bmad:uninstall": "node tools/cli/bmad-cli.js uninstall",
     "docs:build": "node tools/build-docs.mjs",
     "docs:dev": "astro dev --root website",
     "docs:fix-links": "node tools/fix-doc-links.js",
@@ -44,7 +45,7 @@
     "test:install": "node test/test-installation-components.js",
     "test:refs": "node test/test-file-refs-csv.js",
     "test:schemas": "node test/test-agent-schema.js",
-    "validate:refs": "node tools/validate-file-refs.js",
+    "validate:refs": "node tools/validate-file-refs.js --strict",
     "validate:schemas": "node tools/validate-agent-schema.js"
   },
   "lint-staged": {

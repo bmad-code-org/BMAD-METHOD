@@ -6,7 +6,7 @@ author: "BMad"
 
 # Critical variables
 config_source: "{project-root}/_bmad/bmm/config.yaml"
-output_folder: "{config_source}:project_knowledge"
+project_knowledge: "{config_source}:project_knowledge"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
 document_output_language: "{config_source}:document_output_language"

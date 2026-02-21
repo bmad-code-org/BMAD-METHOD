@@ -1,6 +1,7 @@
 const fs = require('fs-extra');
 const path = require('node:path');
 const yaml = require('yaml');
+const prompts = require('../../../lib/prompts');
 
 /**
  * Manages external official modules defined in external-official-modules.yaml
@@ -29,7 +30,7 @@ class ExternalModuleManager {
       this.cachedModules = config;
       return config;
     } catch (error) {
-      console.warn(`Failed to load external modules config: ${error.message}`);
+      await prompts.log.warn(`Failed to load external modules config: ${error.message}`);
       return { modules: {} };
     }
   }
