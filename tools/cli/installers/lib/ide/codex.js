@@ -227,8 +227,9 @@ class CodexSetup extends BaseIdeSetup {
       // Transform content: rewrite frontmatter for skills format
       const skillContent = this.transformToSkillFormat(artifact.content, skillName);
 
-      // Write SKILL.md
-      await fs.writeFile(path.join(skillDir, 'SKILL.md'), skillContent, 'utf8');
+      // Write SKILL.md with platform-native line endings
+      const platformContent = skillContent.replaceAll('\n', os.EOL);
+      await fs.writeFile(path.join(skillDir, 'SKILL.md'), platformContent, 'utf8');
       writtenCount++;
     }
 
@@ -243,6 +244,9 @@ class CodexSetup extends BaseIdeSetup {
    * @returns {string} Transformed content
    */
   transformToSkillFormat(content, skillName) {
+    // Normalize line endings so body matches rebuilt frontmatter (both LF)
+    content = content.replaceAll('\r\n', '\n').replaceAll('\r', '\n');
+
     // Parse frontmatter
     const fmMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/);
     if (!fmMatch) {
@@ -420,8 +424,10 @@ class CodexSetup extends BaseIdeSetup {
       '6. WAIT for user input before proceeding\n' +
       '</agent-activation>\n';
 
+    // Write with platform-native line endings
+    const platformContent = skillContent.replaceAll('\n', os.EOL);
     const skillPath = path.join(skillDir, 'SKILL.md');
-    await fs.writeFile(skillPath, skillContent, 'utf8');
+    await fs.writeFile(skillPath, platformContent, 'utf8');
 
     return {
       path: path.relative(projectDir, skillPath),
