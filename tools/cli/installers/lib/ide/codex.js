@@ -411,7 +411,8 @@ class CodexSetup extends BaseIdeSetup {
     const skillDir = path.join(destDir, skillName);
     await fs.ensureDir(skillDir);
 
-    const fm = yaml.stringify({ name: skillName, description: `${agentName} agent` }).trimEnd();
+    const description = metadata?.description || `${agentName} agent`;
+    const fm = yaml.stringify({ name: skillName, description }).trimEnd();
     const skillContent =
       `---\n${fm}\n---\n` +
       "\nYou must fully embody this agent's persona and follow all activation instructions exactly as specified. NEVER break character until given an exit command.\n" +
