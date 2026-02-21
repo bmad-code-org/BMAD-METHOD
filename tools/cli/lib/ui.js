@@ -582,7 +582,7 @@ class UI {
   /**
    * Prompt for tool/IDE selection (called after module configuration)
    * Uses a split prompt approach:
-   *   1. Recommended tools - standard multiselect for 3 preferred tools
+   *   1. Recommended tools - standard multiselect for preferred tools
    *   2. Additional tools - autocompleteMultiselect with search capability
    * @param {string} projectDir - Project directory to check for existing IDEs
    * @param {Object} options - Command-line options

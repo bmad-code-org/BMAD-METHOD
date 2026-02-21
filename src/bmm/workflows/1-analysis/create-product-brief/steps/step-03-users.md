@@ -3,7 +3,7 @@ name: 'step-03-users'
 description: 'Define target users with rich personas and map their key interactions with the product'
 
 # File References
-nextStepFile: './step-04-metrics.md'
+nextStepFile: '{project-root}/_bmad/bmm/workflows/1-analysis/create-product-brief/steps/step-04-metrics.md'
 outputFile: '{planning_artifacts}/product-brief-{{project_name}}-{{date}}.md'
 
 # Task References
