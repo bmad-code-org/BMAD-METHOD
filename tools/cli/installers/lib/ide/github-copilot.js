@@ -248,9 +248,9 @@ You must fully embody this agent's persona and follow all activation instruction
    */
   createWorkflowPromptContent(entry, workflowFile, toolsStr) {
     const description = this.escapeYamlSingleQuote(this.createPromptDescription(entry.name));
-    // bmm/config.yaml is safe to hardcode here: these prompts are only generated when
-    // bmad-help.csv exists (bmm module data), so bmm is guaranteed to be installed.
-    const configLine = `1. Load {project-root}/${this.bmadFolderName}/bmm/config.yaml and store ALL fields as session variables`;
+    // Use the module from the bmad-help.csv entry to reference the correct config.yaml
+    const configModule = entry.module || 'core';
+    const configLine = `1. Load {project-root}/${this.bmadFolderName}/${configModule}/config.yaml and store ALL fields as session variables`;
 
     let body;
     if (workflowFile.endsWith('.yaml')) {
@@ -325,11 +325,13 @@ ${body}
 
   /**
    * Create prompt content for tech-writer agent-only commands (Pattern C)
+   * Tech-writer is BMM-specific - these commands only work with the BMM module.
    * @param {Object} entry - bmad-help.csv row
    * @returns {Object|null} { fileName, content } or null if not a tech-writer command
    */
   createTechWriterPromptContent(entry) {
-    if (entry['agent-name'] !== 'tech-writer') return null;
+    // Tech-writer is BMM-specific - only process entries from the bmm module
+    if (entry['agent-name'] !== 'tech-writer' || entry.module !== 'bmm') return null;
 
     const techWriterCommands = {
       'Write Document': { code: 'WD', file: 'bmad-bmm-write-document', description: 'Write document' },
@@ -345,14 +347,16 @@ ${body}
     const safeDescription = this.escapeYamlSingleQuote(cmd.description);
     const toolsStr = this.getToolsForFile(`${cmd.file}.prompt.md`);
 
+    // Use the module from the bmad-help.csv entry to reference the correct paths
+    const configModule = entry.module || 'core';
     const content = `---
 description: '${safeDescription}'
 agent: 'agent'
 tools: ${toolsStr}
 ---
 
-1. Load {project-root}/${this.bmadFolderName}/bmm/config.yaml and store ALL fields as session variables
-2. Load the full agent file from {project-root}/${this.bmadFolderName}/bmm/agents/tech-writer/tech-writer.md and activate the Paige (Technical Writer) persona
+1. Load {project-root}/${this.bmadFolderName}/${configModule}/config.yaml and store ALL fields as session variables
+2. Load the full agent file from {project-root}/${this.bmadFolderName}/${configModule}/agents/tech-writer/tech-writer.md and activate the Paige (Technical Writer) persona
 3. Execute the ${entry.name} menu command (${cmd.code})
 `;
 
@@ -377,15 +381,15 @@ tools: ${toolsStr}
     const agentPath = artifact.agentPath || artifact.relativePath;
     const agentFilePath = `{project-root}/${this.bmadFolderName}/${agentPath}`;
 
-    // bmm/config.yaml is safe to hardcode: agent activators are only generated from
-    // bmm agent artifacts, so bmm is guaranteed to be installed.
+    // Use the agent's module to reference the correct config.yaml
+    const configModule = artifact.module || 'core';
     return `---
 description: '${safeDescription}'
 agent: 'agent'
 tools: ${toolsStr}
 ---
 
-1. Load {project-root}/${this.bmadFolderName}/bmm/config.yaml and store ALL fields as session variables
+1. Load {project-root}/${this.bmadFolderName}/${configModule}/config.yaml and store ALL fields as session variables
 2. Load the full agent file from ${agentFilePath}
 3. Follow ALL activation instructions in the agent file
 4. Display the welcome/greeting as instructed
@@ -401,7 +405,13 @@ tools: ${toolsStr}
    * @param {Map} agentManifest - Agent manifest data
    */
   async generateCopilotInstructions(projectDir, bmadDir, agentManifest, options = {}) {
-    const configVars = await this.loadModuleConfig(bmadDir);
+    // Determine installed modules (excluding internal directories)
+    const selectedModules = options.selectedModules || [];
+    // Deduplicate selectedModules to prevent duplicate paths in generated markdown
+    const installedModules = selectedModules.length > 0 ? [...new Set(selectedModules)] : ['core'];
+    const configVars = await this.loadModuleConfig(bmadDir, installedModules);
+    // Filter to only non-core modules for display (core is always listed separately)
+    const nonCoreModules = installedModules.filter((m) => m !== 'core');
 
     // Build the agents table from the manifest
     let agentsTable = '| Agent | Persona | Title | Capabilities |\n|---|---|---|---|\n';
@@ -428,6 +438,36 @@ tools: ${toolsStr}
     }
 
     const bmad = this.bmadFolderName;
+
+    // Build dynamic module paths based on installed modules
+    const moduleAgentPaths = nonCoreModules.map((m) => `\`${bmad}/${m}/agents/\``).join(', ');
+    const moduleWorkflowPaths = nonCoreModules.map((m) => `\`${bmad}/${m}/workflows/\``).join(', ');
+    const moduleConfigPaths = nonCoreModules.map((m) => `\`${bmad}/${m}/config.yaml\``).join(', ');
+
+    // Build agent definitions line
+    let agentDefsLine;
+    if (nonCoreModules.length > 0) {
+      agentDefsLine = `- **Agent definitions**: ${moduleAgentPaths} and \`${bmad}/core/agents/\` (core)`;
+    } else {
+      agentDefsLine = `- **Agent definitions**: \`${bmad}/core/agents/\``;
+    }
+
+    // Build workflow definitions line
+    let workflowDefsLine;
+    if (nonCoreModules.length > 0) {
+      workflowDefsLine = `- **Workflow definitions**: ${moduleWorkflowPaths} (organized by phase)`;
+    } else {
+      workflowDefsLine = `- **Workflow definitions**: \`${bmad}/core/workflows/\``;
+    }
+
+    // Build module configuration line
+    let moduleConfigLine;
+    if (nonCoreModules.length > 0) {
+      moduleConfigLine = `- **Module configuration**: ${moduleConfigPaths}`;
+    } else {
+      moduleConfigLine = `- **Module configuration**: (no non-core modules installed)`;
+    }
+
     const bmadSection = `# BMAD Method — Project Instructions
 
 ## Project Configuration
@@ -444,12 +484,12 @@ tools: ${toolsStr}
 
 ## BMAD Runtime Structure
 
-- **Agent definitions**: \`${bmad}/bmm/agents/\` (BMM module) and \`${bmad}/core/agents/\` (core)
-- **Workflow definitions**: \`${bmad}/bmm/workflows/\` (organized by phase)
+${agentDefsLine}
+${workflowDefsLine}
 - **Core tasks**: \`${bmad}/core/tasks/\` (help, editorial review, indexing, sharding, adversarial review)
 - **Core workflows**: \`${bmad}/core/workflows/\` (brainstorming, party-mode, advanced-elicitation)
 - **Workflow engine**: \`${bmad}/core/tasks/workflow.xml\` (executes YAML-based workflows)
-- **Module configuration**: \`${bmad}/bmm/config.yaml\`
+${moduleConfigLine}
 - **Core configuration**: \`${bmad}/core/config.yaml\`
 - **Agent manifest**: \`${bmad}/_config/agent-manifest.csv\`
 - **Workflow manifest**: \`${bmad}/_config/workflow-manifest.csv\`
@@ -458,7 +498,7 @@ tools: ${toolsStr}
 
 ## Key Conventions
 
-- Always load \`${bmad}/bmm/config.yaml\` before any agent activation or workflow execution
+- Always load the agent/workflow's module \`config.yaml\` before activation or execution (each prompt file specifies which config to load)
 - Store all config fields as session variables: \`{user_name}\`, \`{communication_language}\`, \`{output_folder}\`, \`{planning_artifacts}\`, \`{implementation_artifacts}\`, \`{project_knowledge}\`
 - MD-based workflows execute directly — load and follow the \`.md\` file
 - YAML-based workflows require the workflow engine — load \`workflow.xml\` first, then pass the \`.yaml\` config
@@ -505,13 +545,15 @@ Type \`/bmad-\` in Copilot Chat to see all available BMAD workflows and agent ac
   /**
    * Load module config.yaml for template variables
    * @param {string} bmadDir - BMAD installation directory
+   * @param {string[]} installedModules - List of installed modules to check for config
    * @returns {Object} Config variables
    */
-  async loadModuleConfig(bmadDir) {
-    const bmmConfigPath = path.join(bmadDir, 'bmm', 'config.yaml');
-    const coreConfigPath = path.join(bmadDir, 'core', 'config.yaml');
+  async loadModuleConfig(bmadDir, installedModules = ['core']) {
+    // Build config paths from installed modules (non-core first, then core as fallback)
+    const nonCoreModules = installedModules.filter((m) => m !== 'core');
+    const configPaths = [...nonCoreModules.map((m) => path.join(bmadDir, m, 'config.yaml')), path.join(bmadDir, 'core', 'config.yaml')];
 
-    for (const configPath of [bmmConfigPath, coreConfigPath]) {
+    for (const configPath of configPaths) {
       if (await fs.pathExists(configPath)) {
         try {
           const content = await fs.readFile(configPath, 'utf8');
