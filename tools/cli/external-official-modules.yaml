@@ -42,6 +42,16 @@ modules:
     type: bmad-org
     npmPackage: bmad-method-test-architecture-enterprise
 
+  bmad-novel-writing-suite:
+    url: https://github.com/bmad-code-org/bmad-novel-writing-suite
+    module-definition: src/module.yaml
+    code: nws
+    name: "Novel Writing Suite"
+    description: "AI-powered novel writing with text analysis"
+    npm_package: "bmad-novel-writing-suite"
+    github_repo: "fsandx/bmad-novel-writing-suite"
+    default_selected: false
+
   # whiteport-design-system:
   #   url: https://github.com/bmad-code-org/bmad-method-wds-expansion
   #   module-definition: src/module.yaml

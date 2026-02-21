@@ -1,0 +1,7 @@
+module:
+  code: "nws"
+  name: "Novel Writing Suite"
+  description: "AI-powered novel writing framework with text analysis, structured planning, and iterative drafting workflows"
+  version: "1.0.0"
+  default_selected: false
+  config_variables: []

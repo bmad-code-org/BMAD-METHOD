@@ -1,0 +1,29 @@
+workflow:
+  id: "create-character-profiles"
+  name: "Create Character Profiles"
+  description: "Develop detailed character sheets with arcs, motivations, relationships, and voice"
+  agent: "atlas"
+  module: "nws"
+  version: "1.0.0"
+
+  inputs:
+    - id: "story_brief"
+      type: "file"
+      path: "docs/story-brief.md"
+      required: true
+
+  outputs:
+    - id: "character_profiles"
+      type: "file"
+      path: "docs/character-profiles.md"
+      description: "Detailed character profiles for all major characters"
+
+  steps:
+    - identify_main_characters
+    - develop_protagonist
+    - develop_antagonist
+    - develop_supporting_cast
+    - map_relationships
+    - define_character_arcs
+    - establish_voices
+    - create_document

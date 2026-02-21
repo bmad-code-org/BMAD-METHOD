@@ -1,0 +1,32 @@
+workflow:
+  id: "design-plot-structure"
+  name: "Design Plot Structure"
+  description: "Map your story to a proven framework and create act-by-act outline"
+  agent: "atlas"
+  module: "nws"
+  version: "1.0.0"
+
+  inputs:
+    - id: "story_brief"
+      type: "file"
+      path: "docs/story-brief.md"
+      required: true
+    - id: "character_profiles"
+      type: "file"
+      path: "docs/character-profiles.md"
+      required: true
+
+  outputs:
+    - id: "plot_outline"
+      type: "file"
+      path: "docs/plot-outline.md"
+      description: "Complete plot structure with beats and turning points"
+
+  steps:
+    - choose_framework
+    - identify_key_beats
+    - map_acts
+    - plan_subplots
+    - create_scene_list
+    - plan_pacing
+    - create_document

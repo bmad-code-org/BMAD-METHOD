@@ -1,0 +1,22 @@
+workflow:
+  id: "create-story-brief"
+  name: "Create Story Brief"
+  description: "Develop the foundational document defining your story's premise, conflict, themes, and goals"
+  agent: "sage"
+  module: "nws"
+  version: "1.0.0"
+
+  outputs:
+    - id: "story_brief"
+      type: "file"
+      path: "docs/story-brief.md"
+      description: "Complete story brief document"
+
+  steps:
+    - brainstorm_premise
+    - identify_central_conflict
+    - define_themes
+    - set_goals_and_non_goals
+    - risk_analysis
+    - define_audience
+    - create_document

@@ -1,0 +1,47 @@
+workflow:
+  id: "analyze-text"
+  name: "Analyze Text"
+  description: "Deep analysis of uploaded novel or manuscript to extract techniques and insights"
+  agent: "librarian"
+  module: "nws"
+  version: "1.0.0"
+
+  inputs:
+    - id: "text_file"
+      type: "file"
+      description: "The text to analyze (.txt, .md, .docx)"
+      required: true
+
+    - id: "analysis_type"
+      type: "choice"
+      description: "Type of analysis to perform"
+      required: true
+      options:
+        - "full"
+        - "structural"
+        - "character"
+        - "prose"
+        - "quick"
+
+  outputs:
+    - id: "analysis_report"
+      type: "file"
+      path: "_bmad/_memory/librarian-sidecar/knowledge/analyzed-texts/{filename}-analysis.md"
+      description: "Complete analysis report"
+
+    - id: "extracted_techniques"
+      type: "data"
+      description: "List of techniques identified"
+
+    - id: "recommendations"
+      type: "data"
+      description: "How to apply these insights"
+
+  steps:
+    - upload
+    - select_analysis_type
+    - perform_analysis
+    - extract_techniques
+    - generate_recommendations
+    - save_results
+    - offer_next_steps

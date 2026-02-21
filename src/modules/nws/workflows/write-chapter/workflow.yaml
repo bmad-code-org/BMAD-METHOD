@@ -1,0 +1,41 @@
+workflow:
+  id: "write-chapter"
+  name: "Write Chapter"
+  description: "Draft a chapter following your architecture, character profiles, and narrative voice"
+  agent: "scribe"
+  module: "nws"
+  version: "1.0.0"
+
+  inputs:
+    - id: "plot_outline"
+      type: "file"
+      path: "docs/plot-outline.md"
+      required: true
+    - id: "character_profiles"
+      type: "file"
+      path: "docs/character-profiles.md"
+      required: true
+    - id: "narrative_architecture"
+      type: "file"
+      path: "docs/narrative-architecture.md"
+      required: false
+    - id: "chapter_number"
+      type: "number"
+      description: "Which chapter to write"
+      required: true
+
+  outputs:
+    - id: "chapter_draft"
+      type: "file"
+      path: "chapters/chapter-{number}.md"
+      description: "Completed chapter draft"
+
+  steps:
+    - review_outline_for_chapter
+    - identify_pov_character
+    - define_scene_goals
+    - draft_opening
+    - draft_body
+    - draft_closing
+    - continuity_check
+    - save_chapter
