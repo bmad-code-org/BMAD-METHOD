@@ -168,7 +168,7 @@ platforms:
 
   windsurf:
     name: "Windsurf"
-    preferred: true
+    preferred: false
     category: ide
     description: "AI-powered IDE with cascade flows"
     installer:
