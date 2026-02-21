@@ -39,9 +39,7 @@ BMad works with any AI coding assistant that supports custom system prompts or p
 
 - **[Claude Code](https://code.claude.com)** — Anthropic's CLI tool (recommended)
 - **[Cursor](https://cursor.sh)** — AI-first code editor
-- **[Windsurf](https://codeium.com/windsurf)** — Codeium's AI IDE
-- **[Kiro](https://kiro.dev)** — Amazon's AI-powered IDE
-- **[Roo Code](https://roocode.com)** — VS Code extension
+- **[Codex CLI](https://github.com/openai/codex)** — OpenAI's terminal coding agent
 
 You should be comfortable with basic software development concepts like version control, project structure, and agile workflows. No prior experience with BMad-style agent systems is required—that's what these docs are for.
 

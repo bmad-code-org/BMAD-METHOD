@@ -16,7 +16,7 @@ Build software faster using AI-powered workflows with specialized agents that gu
 :::note[Prerequisites]
 - **Node.js 20+** — Required for the installer
 - **Git** — Recommended for version control
-- **AI-powered IDE** — Claude Code, Cursor, Windsurf, or similar
+- **AI-powered IDE** — Claude Code, Cursor, or similar
 - **A project idea** — Even a simple one works for learning
 :::
 

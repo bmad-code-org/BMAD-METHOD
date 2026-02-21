@@ -14,7 +14,7 @@ const prompts = require('../../../lib/prompts');
  */
 class CodexSetup extends BaseIdeSetup {
   constructor() {
-    super('codex', 'Codex', true); // preferred IDE
+    super('codex', 'Codex', false);
   }
 
   /**

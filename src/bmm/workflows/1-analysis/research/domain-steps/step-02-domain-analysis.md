@@ -171,7 +171,7 @@ _Source: [URL]_
 
 - **CONTENT ALREADY WRITTEN TO DOCUMENT**
 - Update frontmatter: `stepsCompleted: [1, 2]`
-- Load: `./step-03-competitive-landscape.md`
+- Load: `{project-root}/_bmad/bmm/workflows/1-analysis/research/domain-steps/step-03-competitive-landscape.md`
 
 ## APPEND TO DOCUMENT:
 
@@ -224,6 +224,6 @@ Content is already written to document when generated in step 4. No additional a
 
 ## NEXT STEP:
 
-After user selects 'C', load `./step-03-competitive-landscape.md` to analyze competitive landscape, key players, and ecosystem analysis for {{research_topic}}.
+After user selects 'C', load `{project-root}/_bmad/bmm/workflows/1-analysis/research/domain-steps/step-03-competitive-landscape.md` to analyze competitive landscape, key players, and ecosystem analysis for {{research_topic}}.
 
 Remember: Always write research content to document immediately and search the web to verify facts!
