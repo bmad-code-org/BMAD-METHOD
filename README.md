@@ -32,7 +32,7 @@ npx bmad-method install
 
 > If you are getting a stale beta version, use: `npx bmad-method@6.0.1 install`
 
-Follow the installer prompts, then open your AI IDE (Claude Code, Codex, Windsurf, etc.) in your project folder.
+Follow the installer prompts, then open your AI IDE (Claude Code, Cursor, etc.) in your project folder.
 
 **Non-Interactive Installation** (for CI/CD):
 

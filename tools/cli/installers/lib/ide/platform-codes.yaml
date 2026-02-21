@@ -57,6 +57,15 @@ platforms:
     description: "OpenAI Codex integration"
     # No installer config - uses custom codex.js
 
+  codebuddy:
+    name: "CodeBuddy"
+    preferred: false
+    category: ide
+    description: "Tencent Cloud Code Assistant - AI-powered coding companion"
+    installer:
+      target_dir: .codebuddy/commands
+      template_type: default
+
   crush:
     name: "Crush"
     preferred: false
@@ -153,9 +162,7 @@ platforms:
     preferred: false
     category: ide
     description: "Atlassian's Rovo development environment"
-    installer:
-      target_dir: .rovodev/workflows
-      template_type: rovodev
+    # No installer config - uses custom rovodev.js (generates prompts.yml manifest)
 
   trae:
     name: "Trae"
@@ -168,7 +175,7 @@ platforms:
 
   windsurf:
     name: "Windsurf"
-    preferred: true
+    preferred: false
     category: ide
     description: "AI-powered IDE with cascade flows"
     installer:
