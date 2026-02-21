@@ -51,14 +51,14 @@ platforms:
       template_type: windsurf
 
   codex:
-    name: "Codex (Deprecated)"
+    name: "Codex (Custom Prompts) (Deprecated)"
     preferred: false
     category: cli
     description: "OpenAI Codex integration (legacy custom prompts)"
     # No installer config - uses custom codex.js
 
   codex-skills:
-    name: "Codex"
+    name: "Codex (Skills)"
     preferred: true
     category: cli
     description: "OpenAI Codex integration (skills)"
