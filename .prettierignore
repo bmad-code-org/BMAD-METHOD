@@ -7,3 +7,6 @@ CODE_OF_CONDUCT.md
 # BMAD runtime folders (user-specific, not in repo)
 _bmad/
 _bmad*/
+
+# IDE integration folders (user-specific, not in repo)
+.junie/
