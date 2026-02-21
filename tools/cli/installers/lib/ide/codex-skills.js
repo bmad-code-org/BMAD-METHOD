@@ -125,7 +125,7 @@ class CodexSkillsSetup extends BaseIdeSetup {
       const skillContent = this.transformToSkillFormat(artifact.content, skillName);
 
       // Write SKILL.md
-      await fs.writeFile(path.join(skillDir, 'SKILL.md'), skillContent);
+      await fs.writeFile(path.join(skillDir, 'SKILL.md'), skillContent, 'utf8');
       writtenCount++;
     }
 
