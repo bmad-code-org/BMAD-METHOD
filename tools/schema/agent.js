@@ -4,7 +4,7 @@ const { z } = require('zod');
 
 const COMMAND_TARGET_KEYS = ['workflow', 'validate-workflow', 'exec', 'action', 'tmpl', 'data'];
 const TRIGGER_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-const COMPOUND_TRIGGER_PATTERN = /^([A-Z]{1,3}) or fuzzy match on ([a-z0-9]+(?:-[a-z0-9]+)*)$/;
+const COMPOUND_TRIGGER_PATTERN = /^([A-Z][A-Z0-9]{0,2}) or fuzzy match on ([a-z0-9]+(?:-[a-z0-9]+)*)$/;
 
 /**
  * Derive the expected shortcut from a kebab-case trigger.
@@ -100,7 +100,7 @@ function agentSchema(options = {}) {
               }
 
               // Validate that shortcut matches description brackets
-              const descriptionMatch = item.description?.match(/^\[([A-Z]{1,3})\]/);
+              const descriptionMatch = item.description?.match(/^\[([A-Z][A-Z0-9]{0,2})\]/);
               if (!descriptionMatch) {
                 ctx.addIssue({
                   code: 'custom',
