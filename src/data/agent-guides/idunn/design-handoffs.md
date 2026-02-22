@@ -51,14 +51,14 @@ description: |
 
 scenarios:
   - name: "New User Signup"
-    path: "docs/C-Scenarios/1.1-signup-flow/"
+    path: "docs/C-UX-Scenarios/1.1-signup-flow/"
     pages:
       - "01-signup-form.md"
       - "02-email-verification.md"
       - "03-welcome-onboarding.md"
     
   - name: "Existing User Login"
-    path: "docs/C-Scenarios/1.2-login-flow/"
+    path: "docs/C-UX-Scenarios/1.2-login-flow/"
     pages:
       - "01-login-form.md"
       - "02-two-factor-auth.md"
@@ -219,7 +219,7 @@ DD-001:
 DD-001:
   scenarios:
     - name: "Signup Flow"
-      path: "docs/C-Scenarios/1.1-signup-flow/"
+      path: "docs/C-UX-Scenarios/1.1-signup-flow/"
       pages:
         - "01-signup-form.md"
         - "02-verification.md"
@@ -399,7 +399,7 @@ docs/E-PRD/Design-Deliveries/
 
 ## Related Resources
 
-- **Phase 6 Workflow:** `../../workflows/6-design-deliveries/`
+- **Handover Workflow:** `../../workflows/4-ux-design/workflow-handover.md`
 - **DD Template:** `../../templates/design-delivery.template.yaml`
 - **BMM Phase 4:** Where these deliveries are implemented
 - **Complete PRD:** Synthesis of Platform + Functional requirements

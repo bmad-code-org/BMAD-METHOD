@@ -1,8 +1,13 @@
+---
+name: project-setup
+description: Project onboarding - determine project type, complexity, tech stack, and route to correct phase
+web_bundle: true
+---
+
 # Phase 0: Project Setup
 
 **The starting point for every WDS project.**
 
----
 
 ## Purpose
 
@@ -21,7 +26,7 @@ Phase 0 ensures you start on the right path. Before diving into design work, we 
 **The #1 mistake**: Starting Phase 1 with an existing codebase.
 
 - **Phase 1-7** = Building something NEW (Greenfield)
-- **Phase 8** = Improving something EXISTING (Brownfield)
+- **Phase 8** = Improving something EXISTING (Brownfield, Product Evolution)
 
 Wrong path = wasted work. Phase 0 prevents this.
 
@@ -32,11 +37,11 @@ Wrong path = wasted work. Phase 0 prevents this.
 ```
 Phase 0: Project Setup
     │
-    ├─→ Step 0.1: Welcome
+    ├─→ Step 01: Welcome
     │       ├─→ "What is WDS?" (quick intro)
     │       └─→ "Greenfield or Brownfield?"
     │
-    └─→ Step 0.2: Configuration
+    └─→ Step 02: Configuration
             ├─→ Project name
             ├─→ Product complexity (landing/website/app)
             ├─→ Tech stack (optional)
@@ -56,14 +61,14 @@ Phase 0: Project Setup
 
 | Step | Name | Purpose |
 |------|------|---------|
-| 0.1 | [Welcome & Orientation](steps/step-0.1-welcome.md) | Introduce WDS, determine greenfield vs brownfield |
-| 0.2 | [Configuration & Structure](steps/step-0.2-structure.md) | Configure project, create folders, generate outline |
+| 01 | [Welcome & Orientation](steps/step-01-welcome.md) | Introduce WDS, determine greenfield vs brownfield |
+| 02 | [Configuration & Structure](steps/step-02-structure.md) | Configure project, create folders, generate outline |
 
 ---
 
 ## Entry Point
 
-**Start here**: `steps/step-0.1-welcome.md`
+**Start here**: `steps/step-01-welcome.md`
 
 ---
 
@@ -92,7 +97,7 @@ Phase 0: Project Setup
 
 | Option | Values | Impact |
 |--------|--------|--------|
-| Project Type | greenfield / brownfield | Determines Phase 1-7 vs Phase 8 |
+| Project Type | greenfield / brownfield | Determines Phase 1-7 (greenfield) vs Phase 8 (brownfield) |
 | Complexity | simple / standard / complex | Which phases are enabled |
 | Tech Stack | react / vue / wordpress / etc. | Delivery format guidance |
 | Component Library | shadcn / tailwind / custom | Skip or enable Phase 5 |

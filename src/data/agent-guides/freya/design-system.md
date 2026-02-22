@@ -1,6 +1,6 @@
 # Freya's Design System Guide
 
-**When to load:** When Phase 5 (Design System) is enabled and component questions arise
+**When to load:** When Phase 7 (Design System) is enabled and component questions arise
 
 ---
 
@@ -20,7 +20,7 @@
 - Faster for simple projects
 
 **When this workflow doesn't run:**
-- Phase 5 is disabled
+- Phase 7 is disabled
 - Components reference page context only
 
 **Agent behavior:**
@@ -43,7 +43,7 @@
 3. Agent links to Figma via Component ID
 4. Specification references Figma source
 
-**See:** `../../workflows/5-design-system/figma-integration/`
+**See:** `../../workflows/6-asset-generation/workflow-figma.md`
 
 ---
 
@@ -76,7 +76,7 @@
 - Is there a similar component?
 - Should we create new or use/extend existing?
 
-**See:** `../../workflows/5-design-system/design-system-router.md`
+**See:** `../../workflows/7-design-system/design-system-router.md`
 
 ---
 
@@ -109,7 +109,7 @@
 
 **When similar component exists, run assessment:**
 
-**See:** `../../workflows/5-design-system/assessment/`
+**See:** `../../workflows/7-design-system/assessment/`
 
 **7 Micro-Steps:**
 1. Scan existing components
@@ -190,7 +190,7 @@ organisms/
 
 ## Component Operations
 
-**See:** `../../workflows/5-design-system/operations/`
+**See:** `../../workflows/7-design-system/operations/`
 
 ### 1. Initialize Design System
 **First component triggers auto-initialization**
@@ -261,7 +261,7 @@ organisms/
 
 ## Integration with Phase 4
 
-**Phase 4 (UX Design) → Phase 5 (Design System) flow:**
+**Phase 4 (UX Design) → Phase 7 (Design System) flow:**
 
 ```
 User creates page specification
@@ -323,11 +323,8 @@ Before marking a component "complete":
 
 ## Related Resources
 
-- **Phase 5 Workflow:** `../../workflows/5-design-system/`
-- **Design System Router:** `../../workflows/5-design-system/design-system-router.md`
-- **Opportunity/Risk Assessment:** `../../workflows/5-design-system/assessment/`
-- **Component Operations:** `../../workflows/5-design-system/operations/`
-- **Figma Integration:** `../../workflows/5-design-system/figma-integration/`
+- **Phase 7 Workflow:** `../../workflows/7-design-system/`
+- **Figma Integration:** `../../workflows/6-asset-generation/workflow-figma.md`
 - **Shared Knowledge:** `../design-system/` (tokens, naming, states, validation, boundaries)
 
 ---

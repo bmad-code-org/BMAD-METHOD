@@ -236,7 +236,7 @@ Not:
 ## Related Resources
 
 - **Product Brief Workflow:** `../../workflows/1-project-brief/project-brief/`
-- **Alignment & Signoff:** `../../workflows/1-project-brief/alignment-signoff/`
+- **Alignment & Signoff:** `../../workflows/0-alignment-signoff/`
 - **Golden Circle Model:** `../../docs/models/golden-circle.md` (for discovery order: WHY → HOW → WHAT)
 
 ---

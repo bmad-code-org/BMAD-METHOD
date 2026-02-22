@@ -145,7 +145,7 @@ class Installer {
    * Copy src/ content into the target WDS directory
    */
   async copySrcFiles(wdsDir) {
-    const contentDirs = ['agents', 'data', 'gems', 'templates', 'workflows'];
+    const contentDirs = ['agents', 'data', 'gems', 'skills', 'workflows'];
 
     for (const dir of contentDirs) {
       const src = path.join(this.srcDir, dir);
@@ -155,10 +155,14 @@ class Installer {
       }
     }
 
-    // Copy module.yaml
+    // Copy module.yaml and module-help.csv
     const moduleYaml = path.join(this.srcDir, 'module.yaml');
     if (await fs.pathExists(moduleYaml)) {
       await fs.copy(moduleYaml, path.join(wdsDir, 'module.yaml'));
+    }
+    const moduleHelp = path.join(this.srcDir, 'module-help.csv');
+    if (await fs.pathExists(moduleHelp)) {
+      await fs.copy(moduleHelp, path.join(wdsDir, 'module-help.csv'));
     }
   }
 
@@ -236,11 +240,12 @@ class Installer {
     const folders = [
       'A-Product-Brief',
       'B-Trigger-Map',
-      'C-Platform-Requirements',
-      'C-Scenarios',
+      'C-UX-Scenarios',
       'D-Design-System',
+      'E-PRD',
       'E-PRD/Design-Deliveries',
-      'F-Agent-Dialogs',
+      'F-Testing',
+      'G-Product-Development',
     ];
 
     for (const folder of folders) {

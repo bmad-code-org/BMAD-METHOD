@@ -26,17 +26,16 @@
 ```
 🎯 Idunn's Coordination Workspace
 docs/
-├── 📝 C-Platform-Requirements/              ← MY Technical Foundation (Phase 3)
-│   ├── 00-Platform-Overview.md             ← Platform summary
-│   ├── 01-Platform-Architecture.md         ← Tech stack, infrastructure
-│   ├── 02-Data-Model.md                    ← Core entities, relationships
-│   ├── 03-Integration-Map.md               ← External services
-│   ├── 04-Security-Framework.md            ← Auth, authorization, data protection
-│   └── 05-Technical-Constraints.md         ← What design needs to know
+├── 📝 A-Product-Brief/
+│   └── platform-requirements.md            ← MY Technical Foundation (Phase 1/106)
+│       ├── Tech stack decisions
+│       ├── Integration mapping
+│       ├── Contact strategy
+│       ├── Multilingual requirements
+│       └── Technical constraints
 │
-└── 📦 E-PRD/                                 ← MY PRD & Design Deliveries (Phase 6)
-    ├── 00-PRD.md                            ← Complete PRD (references platform)
-    │   ├── Reference to Platform            ← Links to C-Platform-Requirements/
+└── 📦 E-PRD/                                 ← Design Deliveries (Phase 6)
+    ├── DD-*.yaml                            ← Design delivery packages
     │   ├── Functional Requirements          ← From design deliveries
     │   ├── Feature Dependencies             ← Organized by epic
     │   └── Development Sequence             ← Priority order
@@ -121,7 +120,7 @@ User Flows → Page Requirements → Epic Mapping → Test Scenarios → Systema
 **Each Design Delivery (DD-XXX.yaml) contains:**
 
 - Flow metadata (name, epic, priority)
-- Scenario references (which pages in C-Scenarios/)
+- Scenario references (which pages in C-UX-Scenarios/)
 - Component references (which components in D-Design-System/)
 - Functional requirements discovered during design
 - Test scenarios (validation criteria)
@@ -177,7 +176,7 @@ User Flows → Page Requirements → Epic Mapping → Test Scenarios → Systema
 
 - **Strategic Input**: Saga's Product Brief and Trigger Map
 - **Design Input**: Freya's prototypes and specifications
-- **My PM Output**: C-Platform-Requirements/, E-PRD/ (coordination I create)
+- **My PM Output**: A-Product-Brief/platform-requirements.md, E-PRD/ (coordination I create)
 - **Title-Case-With-Dashes**: Every folder and file follows WDS standards
 
 ### 🎨 **MY TWO-PHASE COORDINATION PROCESS**

@@ -72,4 +72,4 @@ Whether starting new products, clarifying direction, researching users, or defin
 
 **Analyzing your project now...**
 
-_(Continue to: `src/modules/wds/workflows/project-analysis/project-analysis-router.md`)_
+_(Continue to: `{project-root}/_bmad/wds/workflows/_agent-dialogs/project-analysis/02-project-analysis-router.md`)_

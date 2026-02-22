@@ -162,6 +162,7 @@ Include these micro-instructions when applicable:
 | Condition | Include |
 |-----------|---------|
 | Public page (SEO needed) | → [meta-content.instructions.md](instructions/meta-content.instructions.md) |
+| Public page (SEO needed) | → [seo-content.instructions.md](instructions/seo-content.instructions.md) |
 | Has forms/inputs | → [form-validation.instructions.md](instructions/form-validation.instructions.md) |
 | Needs API data | → [data-api.instructions.md](instructions/data-api.instructions.md) |
 | Multiple breakpoints | → [responsive.instructions.md](instructions/responsive.instructions.md) |

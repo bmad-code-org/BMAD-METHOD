@@ -323,12 +323,15 @@ ${agentSteps}    <step n="${menuStep}">Show greeting using {user_name} from conf
 // --- Path Rewriting ---
 
 function rewritePaths(content, wdsFolder) {
-  // Replace {bmad_folder}/wds/ with the standalone WDS folder path
-  // In BMAD: {project-root}/{bmad_folder}/wds/workflows/...
+  // Replace BMAD module paths with standalone WDS folder path
+  // In BMAD: {project-root}/_bmad/wds/workflows/...
   // Standalone: {project-root}/_wds/workflows/...
   let result = content;
+  // Handle {bmad_folder} variable form
   result = result.replaceAll('{bmad_folder}/wds/', `${wdsFolder}/`);
   result = result.replaceAll('{project-root}/{bmad_folder}/wds/', `{project-root}/${wdsFolder}/`);
+  // Handle hardcoded _bmad/wds/ form (used by expansion module agents)
+  result = result.replaceAll('_bmad/wds/', `${wdsFolder}/`);
   return result;
 }
 

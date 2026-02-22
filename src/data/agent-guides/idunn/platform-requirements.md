@@ -339,8 +339,8 @@ Before marking Platform PRD "complete":
 
 ## Related Resources
 
-- **Phase 3 Workflow:** `../../workflows/3-prd-platform/`
-- **Platform PRD Template:** `../../templates/platform-requirements.template.yaml`
+- **Platform Requirements Workflow:** `../../workflows/1-project-brief/`
+- **Platform PRD Template:** `../../workflows/1-project-brief/templates/platform-requirements.template.yaml`
 - **Phase 4 Coordination:** Work with Freya WDS Designer Agent
 - **BMM Handoff:** Feeds into BMM Phase 2 (Architecture)
 

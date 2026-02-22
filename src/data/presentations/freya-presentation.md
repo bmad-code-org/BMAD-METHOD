@@ -29,12 +29,12 @@ docs/
 │       │       └── interactive-demo.html
 │       └── 02-feature/
 │
-├── 5-design-system/          ← Component Library
+├── 7-design-system/          ← Component Library
 │   ├── tokens/               ← Colors, fonts, spacing
 │   └── components/           ← Reusable UI elements
 │
-└── 7-testing/                ← Quality Validation
-    └── usability-tests/
+└── 8-product-evolution/      ← Continuous Improvement
+    └── kaizen-cycles/
 ```
 
 ---
@@ -45,7 +45,7 @@ docs/
 **Phase 5: Design System** - Building design tokens, component libraries, and style guides  
 **Phase 6: Design Deliverables** - Preparing handoff packages for development with all specifications and assets  
 **Phase 7: Testing** - Validating designs through usability testing and implementation review  
-**Phase 8: Ongoing Product Cycles** - Iterative improvements and feature evolution for existing products
+**Phase 10: Product Evolution** - Iterative improvements and feature evolution for existing products
 
 ---
 
@@ -75,4 +75,4 @@ Whether designing new features, refining experiences, building design foundation
 
 **Analyzing your project now...**
 
-_(Continue to: `src/modules/wds/workflows/project-analysis/project-analysis-router.md`)_
+_(Continue to: `{project-root}/_bmad/wds/workflows/_agent-dialogs/project-analysis/02-project-analysis-router.md`)_

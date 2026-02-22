@@ -472,11 +472,23 @@ Before finalizing meta content:
 
 ---
 
+## SEO Integration
+
+Meta content is one part of a broader SEO strategy. For comprehensive SEO guidance:
+
+- **SEO Strategy Guide:** `../saga/seo-strategy-guide.md` — Full SEO reference (keywords, URL structure, local SEO, structured data, image SEO)
+- **SEO Content Instructions:** `../../workflows/4-ux-design/templates/instructions/seo-content.instructions.md` — Page-level SEO checklist during specification
+- **Project Brief SEO:** Check the project's content-language document for the page-keyword map and SEO strategy
+
+**Workflow:** The project brief (Phase 1) captures the SEO strategy. Page specifications (Phase 4) apply it per page. This guide handles the meta content portion — but also check heading hierarchy, alt text, internal links, and structured data.
+
+---
+
 ## Related Resources
 
 - **Page Specification Template:** `../../workflows/4-ux-design/templates/page-specification.template.md`
 - **Language Configuration:** `../../workflows/00-system/language-configuration-guide.md`
-- **SEO Session Log:** `../../docs/examples/wds-v6-conversion/session-logs/session-2026-01-20-seo-optimization-specifications.md`
+- **SEO Strategy Guide:** `../saga/seo-strategy-guide.md`
 
 ---
 

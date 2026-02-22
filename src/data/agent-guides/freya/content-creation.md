@@ -69,7 +69,7 @@
 - Content is complex
 
 **Process:**
-Load: `../../workflows/shared/content-creation-workshop/`
+Load: `{project-root}/_bmad/wds/workflows/6-asset-generation/`
 
 **6-Step Framework:**
 1. Define purpose & success criteria
@@ -256,7 +256,7 @@ Features (WHAT): 10K templates, smart pricing, e-signatures
 
 ## Related Resources
 
-- **Content Creation Workshop:** `../../workflows/shared/content-creation-workshop/`
+- **Asset Generation:** `{project-root}/_bmad/wds/workflows/6-asset-generation/`
 - **Content Purpose Guide:** `../../docs/method/content-purpose-guide.md`
 - **Tone of Voice Guide:** `../../docs/method/tone-of-voice-guide.md`
 - **Customer Awareness Cycle:** `../../docs/models/customer-awareness-cycle.md`

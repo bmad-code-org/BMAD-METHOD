@@ -64,32 +64,91 @@ Business Goals → Product/Solution → Target Groups → Usage Goals
 
 ## Business Goals Layer
 
-### Vision Goals (Directional)
-**"Where are we going?"**
+### Generating Business Goals (Actionable Process)
 
-- Build the most trusted proposal platform
-- Become the industry standard for consultants
-- Revolutionize how professionals communicate value
+**Structure Requirement: 3×3 Format**
 
-**Characteristics:**
-- Inspirational, not measurable
-- Provides direction and purpose
-- Guides strategic decisions
+Generate **3 visionary goals** with **3 objectives each** (sometimes 4-5 if truly necessary).
 
----
+```
+Goal 1: [Primary Outcome - e.g., Become more profitable]
+  Objective 1.1: [Measurable]
+  Objective 1.2: [Measurable]
+  Objective 1.3: [Measurable]
 
-### SMART Goals (Measurable)
-**"How do we know we're making progress?"**
+Goal 2: [Prerequisite - e.g., Get happier customers]
+  Objective 2.1: [Measurable]
+  Objective 2.2: [Measurable]
+  Objective 2.3: [Measurable]
 
-- 1,000 registered users in 12 months
-- 500 premium signups in 18 months  
-- $50K MRR by end of year 2
-- 80% activation rate (signup → first proposal)
+Goal 3: [Prerequisite - e.g., Work smarter]
+  Objective 3.1: [Measurable]
+  Objective 3.2: [Measurable]
+  Objective 3.3: [Measurable]
+```
 
-**Characteristics:**
-- Specific, Measurable, Achievable, Relevant, Time-bound
-- Can be tracked objectively
-- Tied to business success
+**Step 1: Identify 3 Visionary Goals (Hierarchical Order)**
+
+Ask: "What does 'winning' look like for this business?" Extract aspirational goals from Product Brief.
+
+Order goals hierarchically:
+1. **Primary Outcome Goal** - Ultimate business success (e.g., "Become more profitable")
+2. **Prerequisite Goals** - What enables the primary goal (e.g., "Get happier customers", "Work smarter")
+
+**Common business goals:**
+- Become more profitable (financial health) - often primary
+- Get happier customers (satisfaction, loyalty) - often prerequisite
+- Work smarter (reduce costs, less admin) - often prerequisite
+- Constant customer flow (sustainable demand) - can be primary or prerequisite
+- Market leadership (trusted authority) - can be primary or prerequisite
+
+**Step 2: Attach 3 SMART Objectives Per Goal**
+
+For each visionary goal, identify 3 specific measurements that track progress:
+
+```
+Goal 1: Become More Profitable
+  Objective 1.1: Maintain 20% profit margin annually
+  Objective 1.2: Grow revenue 10% year-over-year
+  Objective 1.3: Achieve Page 1 ranking for key terms
+
+Goal 2: Get Happier Customers
+  Objective 2.1: Maintain 4.8+ rating
+  Objective 2.2: 70%+ repeat customer rate
+  Objective 2.3: Service quality consistent year-round
+
+Goal 3: Work Smarter
+  Objective 3.1: Reduce admin calls by 40%
+  Objective 3.2: 70% questions answered by website
+  Objective 3.3: Healthy work-life balance maintained
+```
+
+**Step 3: Verify Objective Alignment**
+
+Each objective must align with its parent goal:
+
+- **Profitability objectives:** Revenue, profit margin, market visibility (drives sales), pricing power
+- **Customer satisfaction objectives:** Ratings, repeat rate, service quality, review sentiment
+- **Operational efficiency objectives:** Time savings, cost reduction, work-life balance, automation
+- **Customer flow objectives:** Discovery metrics, conversion rates, customer acquisition, seasonal consistency
+
+❌ **Wrong alignment:** "Healthy work-life balance" under "Become More Profitable" (belongs in "Work Smarter")
+✅ **Correct alignment:** "Healthy work-life balance" under "Work Smarter" (operational efficiency)
+
+**Critical: Metrics ≠ Goals**
+
+❌ **Don't do this:**
+- "Business Goal: Reduce phone calls 40%" (metric, not aspirational)
+- "Business Goal: Page 1 on Google" (tactic, not vision)
+
+✅ **Do this:**
+- "Business Goal: Work smarter → Measured by: 40% fewer calls"
+- "Business Goal: Constant customer flow → Measured by: Page 1 ranking"
+
+**Self-Check:**
+- Are your goals visionary/aspirational? (exciting to achieve?)
+- Do metrics support goals? (not replace them?)
+- Would these goals still be relevant if tactics changed?
 
 ---
 
@@ -128,6 +187,83 @@ Target Groups:
 > Owns a salon, 15 years experience, ambitious. Wants to be seen as the "queen of beauty" in her town - not just another hairdresser, but THE expert everyone comes to. Fears falling behind competitors who have better online presence. Frustrated by not knowing how to market herself effectively. In her salon context, she's confident. In the digital marketing context, she feels like a beginner.
 
 **Why better:** You can design for her psychology
+
+---
+
+### Persona Section Structure
+
+Each detailed persona should include these sections:
+
+**Required Sections:**
+
+1. **Who [Name] Is** - Context, background, life situation (2-3 sentences)
+2. **Psychological Profile** - How they think, what they value, their relationship to the problem (2-3 paragraphs with **bold key traits**)
+3. **Internal State** - Emotional relationship when thinking about the problem/solution (1 paragraph with **bold emotion words**)
+4. **Usage Context** - When/how/why they interact with product (see template below)
+5. **Relationship to Business Goals** - Explicit connection to each relevant goal with rationale
+   - Format: `✅ **[Goal Name]:** [How this persona serves this goal]`
+
+**Example Structure:**
+
+```markdown
+### Lars Lojal (Lars the Loyal) — Priority 1
+
+**Who Lars Is:**
+Lars lives 45 minutes from Löttorp but has brought every vehicle to Källa for 12 years. Two cars, camper van, trailers — if it has wheels, Björn has seen it. Late 50s, works in Kalmar, summer house near Byxelkrok.
+
+**Psychological Profile:**
+Lars values **loyalty and consistency** above almost everything. Once he finds someone trustworthy, he sticks with them. He's seen other mechanics — chain workshops, "quick fix" places — and finds them impersonal and unpredictable. With Björn, Lars knows what to expect: honest diagnosis, fair price, work done when promised.
+
+**Internal State:**
+When Lars thinks about car service, he feels **calm and secure**. There's no anxiety, no "will they rip me off?" worry. Björn is like family. Lars takes pride in this relationship.
+
+**Usage Context:**
+Lars checks the website occasionally, mostly to confirm hours before calling. He already has Björn's number saved. He might visit the site to show someone else: "See, this is the place I go to." The website reinforces his choice — certifications, reviews, professionalism.
+
+**Relationship to Business Goals:**
+- ✅ **Become More Profitable:** Highest lifetime value — multiple vehicles, predictable revenue
+- ✅ **Get Happier Customers:** Loyal for 12 years, refers others, never complains
+- ✅ **Work Smarter:** Books ahead, minimal hand-holding, trusts recommendations
+```
+
+---
+
+### Usage Context Template
+
+For each persona's Usage Context section, answer:
+
+**1. Access/Discovery:** How do they find/reach the product?
+- Example: "Google search 'motorhome repair Öland'"
+- Example: "Has phone number saved, checks website for hours"
+
+**2. Emotional State:** What do they feel during usage?
+- Example: "Panic mode, stressed, vulnerable"
+- Example: "Calm and secure, already trusts the service"
+
+**3. Behavior Pattern:** How do they interact?
+- Example: "Scans quickly, doesn't read paragraphs, looks for trust signals"
+- Example: "Reads carefully, wants to understand details"
+
+**4. Decision Criteria:** What signals matter most?
+- Example: "Capability confirmation (do you fix X?), trust signals (reviews, certifications)"
+- Example: "Price transparency, availability, booking process"
+
+**5. Success Outcome:** What gets them to take action?
+- Example: "Finds phone number and calls within 30 seconds"
+- Example: "Feels confident enough to book appointment"
+
+**Full Example (Hasse the Motorhome):**
+
+```markdown
+**Usage Context:**
+Hasse finds the website via Google search. He's scanning for **trust signals and capability confirmation**:
+- ✅ "Husbilservice" listed → Okay, they do motorhomes
+- ✅ "20+ years, Autoexperten certified" → Seems legitimate
+- ✅ "4.8/5 reviews" → Other people trust them
+- ✅ Phone number huge and visible → I can call NOW
+
+He doesn't read paragraphs. He scans, checks, decides, calls. The website's job is to get him to that call within 30 seconds.
+```
 
 ---
 
@@ -217,31 +353,145 @@ Both are valid! Often negative triggers action faster (pain > pleasure).
 
 ---
 
-## Feature Impact Analysis
+### Driving Forces Pattern: WHAT + WHY + WHEN
 
-**Once map is complete, prioritize driving forces:**
+Good driving forces follow this pattern:
+**[WHAT they want/fear] + [WHY it matters] + [WHEN/CONTEXT]**
 
-### Scoring System (1-5 scale)
-- **Frequency:** How often does this trigger matter?
-- **Intensity:** How strongly do they feel this?
-- **Fit:** How well can our solution address this?
+This pattern creates actionable, specific forces that directly inform design decisions.
 
-**Example:**
+**✅ Good Examples (Specific, contextual, actionable):**
+
+- "Find immediate reassurance of capability within 30 seconds"
+  - WHAT: reassurance about capability
+  - WHY: stressed/urgent need
+  - WHEN: searching on phone in panic mode
+
+- "Confirm specialized capability before calling"
+  - WHAT: capability verification
+  - WHY: avoid wasted call, seasonal planning
+  - WHEN: preparing for busy season, needs to book ahead
+
+- "Validate loyalty choice when showing website to others"
+  - WHAT: validation of decision
+  - WHY: justify 45-minute drive, maintain identity as smart chooser
+  - WHEN: referring friends or colleagues
+
+**❌ Too Vague (Not actionable):**
+
+- "Want convenience" → Too generic, applies to everything
+- "Want peace of mind" → What creates peace of mind specifically?
+- "Want good experience" → What does "good" mean in this context?
+- "Feel confident" → About what? When? Why?
+
+**Test Your Driving Force:**
+
+1. **Actionability:** Can a designer create a specific feature to address this?
+2. **Psychology:** Does it reveal motivation beyond "wants it to work well"?
+3. **Context:** Is it clear WHEN this force is active during product usage?
+
+If no to any question, add more specificity using WHAT + WHY + WHEN.
+
+**Before/After Example:**
+
+❌ Before: "Want to feel secure"
+✅ After: "Feel secure about future availability — wants reassurance that mechanic won't suddenly close or retire (when considering long-term loyalty)"
+
+❌ Before: "Need help quickly"
+✅ After: "Get back on road quickly — vacation timeline is tight, every hour stuck is lost experience (when breakdown happens mid-trip)"
+
+---
+
+## Prioritizing Driving Forces
+
+**Once all driving forces are identified, prioritize using Feature Impact Analysis:**
+
+### Scoring Method (Frequency × Intensity × Fit)
+
+Score each driving force on three dimensions (1-5 scale):
+
+**1. Frequency (1-5):** How often does this force matter?
+- **5** = Every interaction / constant concern
+- **4** = Most of the time
+- **3** = Regularly but not always
+- **2** = Occasional
+- **1** = Rare edge case
+
+**2. Intensity (1-5):** How strongly do they feel this?
+- **5** = Critical, visceral, blocks action if not addressed
+- **4** = Very important, strong emotion
+- **3** = Important but manageable
+- **2** = Mild concern
+- **1** = Nice to have, minimal emotion
+
+**3. Fit (1-5):** How well can the product address this?
+- **5** = Perfect fit, direct solution
+- **4** = Strong fit, clear approach
+- **3** = Moderate fit, partial solution
+- **2** = Weak fit, indirect approach
+- **1** = Hard to address with this product
+
+**Total Score = Frequency + Intensity + Fit (max 15)**
+
+### Score Interpretation
+
+**14-15: HIGH PRIORITY**
+- Must address in core product
+- Core to user success
+- Strong ROI on design effort
+
+**11-13: MEDIUM PRIORITY**
+- Should address if feasible
+- Significant but not critical
+- Enhances experience
+
+**8-10: LOW PRIORITY**
+- Nice to have
+- Limited strategic impact
+- Consider for future iterations
+
+**<8: DEPRIORITIZE**
+- Minimal strategic value
+- Resource drain vs. benefit
+- May indicate wrong target group
+
+### Example Scoring
+
 ```
-"Want to look professional to clients"
-├── Frequency: 5 (every proposal)
-├── Intensity: 5 (critical to business)
-├── Fit: 5 (we solve this directly)
-└── Score: 15/15 (HIGH PRIORITY)
+Hasse Husbil: "Find immediate reassurance of capability"
+├── Frequency: 5 (every stressed tourist in panic mode)
+├── Intensity: 5 (critical to their decision to call)
+├── Fit: 5 (website can show this immediately)
+└── Total: 15/15 → HIGH PRIORITY
 
-"Want to collaborate with team members"
-├── Frequency: 2 (solo consultants rarely need this)
-├── Intensity: 3 (nice to have)
-├── Fit: 3 (requires complex features)
-└── Score: 8/15 (LOWER PRIORITY)
+Lars Lojal: "Feel secure about future availability"
+├── Frequency: 3 (occasional worry, not constant)
+├── Intensity: 5 (very important to him emotionally)
+├── Fit: 3 (hard to guarantee, can signal continuity)
+└── Total: 11/15 → MEDIUM PRIORITY
+
+Siv Skötsam: "See detailed pricing upfront"
+├── Frequency: 4 (checks before every service)
+├── Intensity: 3 (wants it but will call anyway)
+├── Fit: 2 (car repair pricing is context-dependent)
+└── Total: 9/15 → LOW PRIORITY
 ```
 
-**Use scores to prioritize features and design decisions.**
+### Using Scores Strategically
+
+**Prioritize Features:**
+- Design for 14-15 forces first
+- Group 11-13 forces into common solutions
+- Defer <10 forces until core experience is solid
+
+**Defend Decisions:**
+- "This feature addresses 3 forces with 14+ scores"
+- "We're deprioritizing X because it scored 7/15"
+
+**Identify Gaps:**
+- High-intensity forces with low fit = product limitation
+- High-frequency, low-intensity = table stakes (must have, but not differentiator)
+- Low-frequency, high-intensity = edge case (support via other channels)
 
 ---
 

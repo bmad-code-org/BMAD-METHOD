@@ -126,7 +126,7 @@ This scenario helps users avoid:
 
 ## Design Assets
 
-**Scenario Folder:** `C-Scenarios/{scenario-number}-{scenario-name}/`
+**Scenario Folder:** `C-UX-Scenarios/{scenario-number}-{scenario-name}/`
 
 **Page Specifications:**
 

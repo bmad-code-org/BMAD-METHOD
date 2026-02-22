@@ -1,6 +1,6 @@
 code: wds
-name: "WDS: Whiteport Design System (BMad Method Expansion Module)"
-header: "BMad Method Expansion Module: Whiteport Design System"
+name: "WDS: Whiteport Design Studio"
+header: "Whiteport Design Studio for Professional UX Design processes"
 subheader: "Configure the settings for the WDS design-first methodology"
 description: ""
 default_selected: false
@@ -15,7 +15,12 @@ requiredModules: [core]
 ## bmad_folder
 ## install_user_docs
 ## kb_install
+## project_knowledge
 
+project_knowledge:
+  prompt: "Where should long-term project knowledge be stored? (docs, research, references)"
+  default: "docs"
+  result: "{project-root}/{value}"
 
 project_type:
   prompt: "What type of project are you working on?"
@@ -31,17 +36,24 @@ project_type:
     - value: "other"
       label: "Other - Custom or specialized project"
 
+design_artifacts:
+  prompt: "Where should design system output be created? (Trigger Map, Scenarios, Testing, etc...)"
+  default: "design-artifacts"
+  result: "{project-root}/{value}"
+
 design_system_mode:
   prompt: "How will you manage design system components?"
   default: "none"
   result: "{value}"
   single-select:
     - value: "none"
-      label: "No Design System - Page-specific components only"
-    - value: "figma"
-      label: "Custom Figma Design System - Link to Figma components"
+      label: "1. None - Ad-hoc styling, no reusable components"
+    - value: "building"
+      label: "2. Building - Design system grows organically from your design work"
     - value: "component_library"
-      label: "Component Library - Use shadcn/Radix/similar library"
+      label: "3. Component Library - Use shadcn/Radix/MUI + apply your branding"
+    - value: "existing"
+      label: "4. Existing - Import your design system from previous projects"
 
 methodology_version:
   prompt: "Which WDS methodology version would you like to use?"
@@ -109,3 +121,29 @@ design_experience:
       label: "Intermediate - Familiar with design concepts, balanced approach"
     - value: "expert"
       label: "Expert - Experienced designer, be direct and efficient"
+
+# Directories to create during installation (declarative, no code execution)
+directories:
+  - "{design_artifacts}"
+  - "{project_knowledge}"
+
+# WDS folder structure to create within design_artifacts directory
+wds_folders:
+  - A-Product-Brief
+  - B-Trigger-Map
+  - C-UX-Scenarios
+  - D-Design-System
+  - E-PRD
+  - E-PRD/Design-Deliveries
+  - F-Testing
+  - G-Product-Development
+
+post-install-notes: |
+  Thank you for choosing to install the Whiteport Design System,
+  A design-first methodology for creating software that people love!
+
+  For Support and UX community, https://discord.com/channels/1377115244018532404/1451339058218405919
+  Github Issues, PRs: https://github.com/bmad-code-org/bmad-method-wds-expansion/issues
+
+  License: MIT
+

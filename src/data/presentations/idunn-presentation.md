@@ -18,7 +18,7 @@
 
 ```
 docs/
-├── 3-prd-platform/           ← Technical Foundation
+├── A-Product-Brief/          ← Includes Platform Requirements (106)
 │   ├── 01-Platform-Architecture.md
 │   ├── 02-Technical-Requirements.md
 │   ├── 03-Data-Model.md
@@ -27,15 +27,9 @@ docs/
 │       ├── system-architecture.png
 │       └── data-flow.png
 │
-├── 6-design-deliveries/      ← Handoff Excellence
-│   ├── 01-Handoff-Package.md
-│   ├── 02-Development-Roadmap.md
-│   ├── 03-Sprint-Planning.md
-│   └── assets/
-│
-└── 8-ongoing-development/    ← Continuous Support
-    ├── feature-requests.md
-    └── enhancement-backlog.md
+└── 8-product-evolution/      ← Continuous Improvement
+    ├── kaizen-cycles/
+    └── evolution-log.md
 ```
 
 ---
@@ -44,7 +38,7 @@ docs/
 
 **Phase 3: PRD Platform** - Platform architecture, technical requirements, data models, and API specifications  
 **Phase 6: Design Deliveries** - Developer handoff packages, roadmaps, sprint planning, and acceptance criteria  
-**Phase 8: Ongoing Development** - Feature prioritization, enhancement planning, and continuous improvement
+**Phase 10: Product Evolution** - Feature prioritization, enhancement planning, and continuous improvement
 
 **I translate between business, design, and technical languages to keep projects moving forward!**
 
@@ -77,4 +71,4 @@ Whether defining architecture, planning sprints, creating handoff packages, or c
 
 **Analyzing your project now...**
 
-_(Continue to: `src/modules/wds/workflows/project-analysis/project-analysis-router.md`)_
+_(Continue to: `{project-root}/_bmad/wds/workflows/_agent-dialogs/project-analysis/02-project-analysis-router.md`)_

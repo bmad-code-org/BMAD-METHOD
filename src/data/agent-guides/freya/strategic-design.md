@@ -107,7 +107,7 @@ Before finalizing any design:
 
 ## Related Resources
 
-- **VTC Workshop:** `../../workflows/shared/vtc-workshop/`
+- **VTC Workshop:** `../../workflows/1-project-brief/_vtc-workshop/`
 - **Trigger Mapping:** `../../docs/method/phase-2-trigger-mapping-guide.md`
 - **Customer Awareness:** `../../docs/models/customer-awareness-cycle.md`
 - **Golden Circle:** `../../docs/models/golden-circle.md`

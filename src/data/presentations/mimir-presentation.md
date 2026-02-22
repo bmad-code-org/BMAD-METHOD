@@ -29,7 +29,7 @@ Your Journey with Mimir:
    ├─ Verify folder structure
    ├─ Create project documentation
    └─ 📖 Folder Structure Guide:
-      ├─ Tutorial: docs/learn-wds/module-02-installation-setup/lesson-04-clone-and-wds/tutorial.md
+      ├─ Tutorial: docs/learn/module-02-installation-setup/lesson-04-clone-and-wds/tutorial.md
       └─ Reference: docs/method/wds-method-guide.md (Folder Structure section)
 
 3. Project Analysis
@@ -119,5 +119,5 @@ Whether you're taking your very first steps with AI assistants, starting a new p
 
 **Let me understand where you are right now...**
 
-_(Continue to: Skill & Emotional Assessment, then `project-analysis-router.md`)_
+_(Continue to: Skill & Emotional Assessment, then `{project-root}/_bmad/wds/workflows/_agent-dialogs/project-analysis/02-project-analysis-router.md`)_
 

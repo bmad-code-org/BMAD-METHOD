@@ -190,6 +190,17 @@ Before marking a spec "complete":
 - [ ] **Error Announcements** - Error messages accessible to screen readers?
 - [ ] **Heading Hierarchy** - Logical H1-H6 structure documented?
 
+### SEO (Public Pages)
+- [ ] **H1 Present** - Exactly one H1 on the page, contains primary keyword?
+- [ ] **Heading Hierarchy** - Logical H1 → H2 → H3, no skipped levels?
+- [ ] **URL Slug** - Defined, keyword-rich, matches project brief keyword map?
+- [ ] **Primary Keyword** - Identified and placed in H1, title tag, meta description?
+- [ ] **Meta Title** - ≤ 60 chars, includes primary keyword + brand?
+- [ ] **Meta Description** - 150-160 chars, includes keyword + CTA?
+- [ ] **Image Alt Text** - All images have descriptive alt text in all languages?
+- [ ] **Internal Links** - At least 2 links to other pages on the site?
+- [ ] **Structured Data** - Schema type specified per project brief plan?
+
 ### Content Completeness
 - [ ] **All Text Defined** - No placeholder content?
 - [ ] **Error Messages** - All error states have messages in all languages?
@@ -216,8 +227,9 @@ Before marking a spec "complete":
 🚩 **English-only:** "We'll translate later..."  
 🚩 **Gaps in logic:** "Users will just know what to do here"  
 🚩 **Missing accessibility:** "We'll add ARIA labels during development..."  
-🚩 **No alt text:** Images without descriptive alternatives  
+🚩 **No alt text:** Images without descriptive alternatives
 🚩 **Unlabeled inputs:** Form fields without associated labels
+🚩 **No SEO section:** Public page without URL slug, keywords, or meta content
 
 **When you spot these, pause and dig deeper.**
 
