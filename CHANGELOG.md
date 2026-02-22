@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.2.0 (2026-02-20)
+
+### Breaking Changes
+- **Restructured workflows** - All workflow phases reorganized for BMad compliance (phases 0-8). Existing installations should do a fresh install.
+- **Templates moved** - Top-level `templates/` directory removed. Templates now live inside their respective workflow folders.
+- **Doc folders renamed** - `C-Platform-Requirements` → `C-UX-Scenarios`, added `E-PRD`, `F-Testing`, `G-Product-Development`, removed `F-Agent-Dialogs`.
+
+### Features
+- **Skills directory** - Added agent activation files (`skills/`) for `/freya`, `/idunn`, `/saga` commands.
+- **Workflow registry** - Added `module-help.csv` with full workflow index and descriptions.
+- **BMad path rewriting** - Compiler now handles `_bmad/wds/` paths from expansion module agents.
+
+### Fixes
+- **Agent menu paths** - Updated all agent workflow references to match restructured directories.
+- **Stale documentation references** - Fixed old phase paths in agent guides and dialog templates.
+
 ## 0.1.1 (2026-01-29)
 
 ### Changes
