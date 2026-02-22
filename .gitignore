@@ -30,6 +30,7 @@ Thumbs.db
 # ai temp or local only files
 CLAUDE.md
 .*/**
+!.github/**
 
 _bmad
 _bmad-output
