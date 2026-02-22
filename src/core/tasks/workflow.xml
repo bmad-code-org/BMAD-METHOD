@@ -18,8 +18,8 @@
 
   <flow>
     <step n="1" title="Load and Initialize Workflow">
-      <substep n="1a" title="Monorepo Context Injection">
-        {{monorepo_context_logic}}
+      <substep n="1a" title="Initialize Environment Variables">
+        <action>Resolve system variables (date:system-generated) and paths ({project-root}, {installed_path})</action>
       </substep>
 
       <substep n="1b" title="Load Configuration and Resolve Variables">
@@ -27,11 +27,14 @@
         <mandate>Load config_source (REQUIRED for all modules)</mandate>
         <phase n="1">Load external config from config_source path</phase>
         <phase n="2">Resolve all {config_source}: references with values from config</phase>
-        <phase n="3">Resolve system variables (date:system-generated) and paths ({project-root}, {installed_path})</phase>
-        <phase n="4">Ask user for input of any variables that are still unknown</phase>
+        <phase n="3">Ask user for input of any variables that are still unknown</phase>
       </substep>
 
-      <substep n="1c" title="Load Required Components">
+      <substep n="1c" title="Monorepo Context Enforcement">
+        {{monorepo_context_logic}}
+      </substep>
+
+      <substep n="1d" title="Load Required Components">
         <mandate>Instructions: Read COMPLETE file from path OR embedded list (REQUIRED)</mandate>
         <check>If template path → Read COMPLETE template file</check>
         <check>If validation path → Note path for later loading when needed</check>
@@ -39,7 +42,7 @@
         <note>Data files (csv, json) → Store paths only, load on-demand when instructions reference them</note>
       </substep>
 
-      <substep n="1d" title="Initialize Output" if="template-workflow">
+      <substep n="1e" title="Initialize Output" if="template-workflow">
         <action>Resolve default_output_file path with all variables and {{date}}</action>
         <action>Create output directory if doesn't exist</action>
         <action>If template-workflow → Write template to output file with placeholders</action>

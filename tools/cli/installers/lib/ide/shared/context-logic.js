@@ -36,7 +36,8 @@ const MONOREPO_CONTEXT_LOGIC = `
       <action>HALT</action>
     </check>
 
-    <!-- Step 4: Override path variables -->
+    <!-- Step 4: Override path and identification variables -->
+    <action>Override project_name = {project_suffix}</action>
     <action>Override output_folder = {project-root}/_bmad-output/{project_suffix}</action>
     <action>Override planning_artifacts = {output_folder}/planning-artifacts</action>
     <action>Override implementation_artifacts = {output_folder}/implementation-artifacts</action>

@@ -29,6 +29,7 @@
          <output>🚫 Error: Project context must only contain alphanumeric characters, dots, dashes, underscores, or slashes.</output>
          <action>HALT</action>
       </check>
+      <action>Override project_name to {project_suffix}</action>
       <action>Override output_folder to {project-root}/_bmad-output/{project_suffix}</action>
     </check>
 
