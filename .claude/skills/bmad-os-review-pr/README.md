@@ -6,9 +6,9 @@ Adversarial code review for GitHub PRs. Works with any LLM agent.
 
 ## How It Works
 
-Point your agent at `review-pr.md` and ask it to review a specific PR:
+Use `/bmad-os-review-pr` to review a specific PR:
 
-> "Read tools/maintainer/review-pr.md and apply it to PR #123"
+> "Use /bmad-os-review-pr to review PR #123"
 
 The tool will:
 
@@ -17,7 +17,7 @@ The tool will:
 3. Transform findings into professional tone
 4. Preview the review and ask before posting
 
-See `review-pr.md` for full prompt structure, severity ratings, and sandboxing rules.
+See `prompts/instructions.md` for full prompt structure, severity ratings, and sandboxing rules.
 
 ## When to Use
 
