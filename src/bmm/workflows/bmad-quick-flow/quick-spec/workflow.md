@@ -66,8 +66,9 @@ This uses **step-file architecture** for disciplined execution:
 
 ### 1. Configuration Loading
 
-Load and read full config from `{main_config}` and resolve:
+Load and read full config from {main_config} and resolve variables and artifact paths.
 
+Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 - `project_name`, `planning_artifacts`, `implementation_artifacts`, `user_name`
 - `communication_language`, `document_output_language`, `user_skill_level`
 - `date` as system-generated current datetime

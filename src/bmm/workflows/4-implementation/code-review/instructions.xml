@@ -16,6 +16,23 @@
 
 
   <step n="1" goal="Load story and discover changes">
+    <check if="{project-root}/_bmad/.current_project exists">
+      <action>Read content as project_suffix</action>
+      <!-- Security: Reject traversal, absolute paths, and invalid patterns -->
+      <check if="project_suffix is empty OR project_suffix contains '..' or starts with '/' or starts with '\'">
+        <output>🚫 Security Error: Invalid project context path detected — path traversal or absolute path detected.</output>
+        <action>HALT</action>
+      </check>
+      
+      <!-- Whitelist: Alphanumeric, dots, dashes, underscores, AND slashes (for nested segments) -->
+      <check if="project_suffix matches regex '[^a-zA-Z0-9._-/]|^\s*$'">
+         <output>🚫 Error: Project context must only contain alphanumeric characters, dots, dashes, underscores, or slashes.</output>
+         <action>HALT</action>
+      </check>
+      <action>Override project_name to {project_suffix}</action>
+      <action>Override output_folder to {project-root}/_bmad-output/{project_suffix}</action>
+    </check>
+
     <action>Use provided {{story_path}} or ask user which story file to review</action>
     <action>Read COMPLETE story file</action>
     <action>Set {{story_key}} = extracted key from filename (e.g., "1-2-user-authentication.md" → "1-2-user-authentication") or story
@@ -41,6 +58,7 @@
 
     <invoke-protocol name="discover_inputs" />
     <action>Load {project_context} for coding standards (if exists)</action>
+
   </step>
 
   <step n="2" goal="Build review attack plan">

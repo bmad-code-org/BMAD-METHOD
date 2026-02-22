@@ -3,6 +3,8 @@ name: '{{name}}'
 description: '{{description}}'
 ---
 
+{{monorepo_context_logic}}
+
 Execute the BMAD '{{name}}' workflow.
 
 CRITICAL: You must load and follow the workflow definition exactly.

@@ -16,6 +16,7 @@ const { IdeConfigManager } = require('./ide-config-manager');
 const { CustomHandler } = require('../custom/handler');
 const prompts = require('../../../lib/prompts');
 const { BMAD_FOLDER_NAME } = require('../ide/shared/path-utils');
+const { MONOREPO_CONTEXT_LOGIC } = require('../ide/shared/context-logic');
 
 class Installer {
   constructor() {
@@ -88,6 +89,17 @@ class Installer {
       try {
         // Read the file content
         let content = await fs.readFile(sourcePath, 'utf8');
+
+        // Apply replacements in an order that protects _bmad-output literals.
+        // 1. First, inject the monorepo logic (which now uses {{bmadFolderName}} for its config dir references).
+        content = content.replaceAll('{{monorepo_context_logic}}', MONOREPO_CONTEXT_LOGIC);
+
+        // 2. Perform a precise replacement of the generic '_bmad' folder name using a negative lookahead
+        //    to avoid corrupting the fixed '_bmad-output' folder name.
+        content = content.replaceAll(/_bmad(?!-output)/g, this.bmadFolderName);
+
+        // 3. Finally, resolve the explicit placeholder used in centralized context logic.
+        content = content.replaceAll('{{bmadFolderName}}', this.bmadFolderName);
 
         // Write to target with replaced content
         await fs.ensureDir(path.dirname(targetPath));

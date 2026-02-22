@@ -18,6 +18,12 @@ The fastest way to understand BMad is to try it.
 Install BMad and run `/bmad-help` — it will guide you through everything based on your project and installed modules.
 :::
 
+## Advanced Setup
+
+- **[Monorepo Support](./how-to/monorepo-setup.md)** — Manage multiple projects in a single repository.
+- **[Non-Interactive Installation](./how-to/non-interactive-installation.md)** — Automate BMad installation for CI/CD.
+
+
 ## How to Use These Docs
 
 These docs are organized into four sections based on what you're trying to do:

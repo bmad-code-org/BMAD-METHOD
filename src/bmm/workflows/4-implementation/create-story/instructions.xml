@@ -18,6 +18,7 @@
   <critical>🎯 ZERO USER INTERVENTION: Process should be fully automated except for initial epic/story selection or missing documents</critical>
 
   <step n="1" goal="Determine target story">
+    
     <check if="{{story_path}} is provided by user or user provided the epic and story number such as 2-4 or 1.6 or epic 1 story 5">
       <action>Parse user-provided story path: extract epic_num, story_num, story_title from format like "1-2-user-auth"</action>
       <action>Set {{epic_num}}, {{story_num}}, {{story_key}} from user input</action>
@@ -260,48 +261,52 @@
   <step n="5" goal="Create comprehensive story file">
     <critical>📝 CREATE ULTIMATE STORY FILE - The developer's master implementation guide!</critical>
 
+    <!-- Recompute output file path with correct output_folder and story_key -->
+    <action>Set {target_story_file} = {output_folder}/{{story_key}}.md</action>
+    <action>Output "Generating story file at: {target_story_file}"</action>
+
     <action>Initialize from template.md:
-    {default_output_file}</action>
-    <template-output file="{default_output_file}">story_header</template-output>
+    {target_story_file}</action>
+    <template-output file="{target_story_file}">story_header</template-output>
 
     <!-- Story foundation from epics analysis -->
     <template-output
-      file="{default_output_file}">story_requirements</template-output>
+      file="{target_story_file}">story_requirements</template-output>
 
     <!-- Developer context section - MOST IMPORTANT PART -->
-    <template-output file="{default_output_file}">
-    developer_context_section</template-output> **DEV AGENT GUARDRAILS:** <template-output file="{default_output_file}">
+    <template-output file="{target_story_file}">
+    developer_context_section</template-output> **DEV AGENT GUARDRAILS:** <template-output file="{target_story_file}">
     technical_requirements</template-output>
-    <template-output file="{default_output_file}">architecture_compliance</template-output>
+    <template-output file="{target_story_file}">architecture_compliance</template-output>
     <template-output
-      file="{default_output_file}">library_framework_requirements</template-output>
-    <template-output file="{default_output_file}">
+      file="{target_story_file}">library_framework_requirements</template-output>
+    <template-output file="{target_story_file}">
     file_structure_requirements</template-output>
-    <template-output file="{default_output_file}">testing_requirements</template-output>
+    <template-output file="{target_story_file}">testing_requirements</template-output>
 
     <!-- Previous story intelligence -->
     <check
       if="previous story learnings available">
-      <template-output file="{default_output_file}">previous_story_intelligence</template-output>
+      <template-output file="{target_story_file}">previous_story_intelligence</template-output>
     </check>
 
     <!-- Git intelligence -->
     <check
       if="git analysis completed">
-      <template-output file="{default_output_file}">git_intelligence_summary</template-output>
+      <template-output file="{target_story_file}">git_intelligence_summary</template-output>
     </check>
 
     <!-- Latest technical specifics -->
     <check if="web research completed">
-      <template-output file="{default_output_file}">latest_tech_information</template-output>
+      <template-output file="{target_story_file}">latest_tech_information</template-output>
     </check>
 
     <!-- Project context reference -->
     <template-output
-      file="{default_output_file}">project_context_reference</template-output>
+      file="{target_story_file}">project_context_reference</template-output>
 
     <!-- Final status update -->
-    <template-output file="{default_output_file}">
+    <template-output file="{target_story_file}">
     story_completion_status</template-output>
 
     <!-- CRITICAL: Set status to ready-for-dev -->

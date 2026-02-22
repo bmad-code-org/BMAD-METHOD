@@ -13,6 +13,7 @@
   <critical>User skill level ({user_skill_level}) affects conversation style ONLY, not code updates.</critical>
 
   <step n="1" goal="Find next ready story and load it" tag="sprint-status">
+    
     <check if="{{story_path}} is provided">
       <action>Use {{story_path}} directly</action>
       <action>Read COMPLETE story file</action>
@@ -376,8 +377,6 @@
 
     <action>Communicate to {user_name} that story implementation is complete and ready for review</action>
     <action>Summarize key accomplishments: story ID, story key, title, key changes made, tests added, files modified</action>
-    <action>Provide the story file path and current status (now "review")</action>
-
     <action>Based on {user_skill_level}, ask if user needs any explanations about:
       - What was implemented and how it works
       - Why certain technical decisions were made

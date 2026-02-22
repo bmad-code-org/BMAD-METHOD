@@ -95,6 +95,8 @@ Your choice [1/2/3]:
 - Best for: Quick project overview, initial understanding
 - File reading: Minimal (configs, README, package.json, etc.)
 
+
+
 **2. Deep Scan** (10-30 minutes)
 
 - Reads files in critical directories based on project type

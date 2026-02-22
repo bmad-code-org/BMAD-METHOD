@@ -1,6 +1,7 @@
 ---
 name: domain-research
 description: Conduct domain research covering industry analysis, regulations, technology trends, and ecosystem dynamics using current web data and verified sources.
+main_config: '{project-root}/_bmad/bmm/config.yaml'
 ---
 
 # Domain Research Workflow
@@ -15,7 +16,11 @@ description: Conduct domain research covering industry analysis, regulations, te
 
 ## CONFIGURATION
 
-Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
+### 1. Configuration Loading
+
+Load and read full config from {main_config} and resolve variables and artifact paths.
+
+
 - `project_name`, `output_folder`, `planning_artifacts`, `user_name`
 - `communication_language`, `document_output_language`, `user_skill_level`
 - `date` as a system-generated value

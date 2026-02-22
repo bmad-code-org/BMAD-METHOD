@@ -40,7 +40,7 @@
     - [x] Done - Item completed successfully
     - [N/A] Skip - Item not applicable to this change
     - [!] Action-needed - Item requires attention or follow-up
-  <action>Maintain running notes of findings and impacts discovered</action>
+    
   <action>Present checklist progress after each major section</action>
 
 <action if="checklist cannot be completed">Identify blocking issues and work with user to resolve before continuing</action>

@@ -437,9 +437,9 @@ tools: ${toolsStr}
 - **Communication Language**: ${configVars.communication_language || '{{communication_language}}'}
 - **Document Output Language**: ${configVars.document_output_language || '{{document_output_language}}'}
 - **User Skill Level**: ${configVars.user_skill_level || '{{user_skill_level}}'}
-- **Output Folder**: ${configVars.output_folder || '{{output_folder}}'}
-- **Planning Artifacts**: ${configVars.planning_artifacts || '{{planning_artifacts}}'}
-- **Implementation Artifacts**: ${configVars.implementation_artifacts || '{{implementation_artifacts}}'}
+- **Output Folder**: ${configVars.output_folder || '{{output_folder}}'}/{context} (Dynamic)
+- **Planning Artifacts**: ${configVars.planning_artifacts || '{{planning_artifacts}}'}/{context} (Dynamic)
+- **Implementation Artifacts**: ${configVars.implementation_artifacts || '{{implementation_artifacts}}'}/{context} (Dynamic)
 - **Project Knowledge**: ${configVars.project_knowledge || '{{project_knowledge}}'}
 
 ## BMAD Runtime Structure

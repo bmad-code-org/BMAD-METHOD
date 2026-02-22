@@ -11,6 +11,36 @@
 <action>Load existing project structure from index.md and project-parts.json (if exists)</action>
 <action>Load source tree analysis to understand available areas</action>
 
+<!-- Step 1: Check for inline project override (#project:NAME or #p:NAME) -->
+<action>Scan request for pattern #project:NAME or #p:NAME (case-insensitive)</action>
+<check if="inline override found">
+  <action>Set project_suffix = extracted NAME</action>
+</check>
+
+<!-- Step 2: Fall back to .current_project file -->
+<check if="project_suffix not yet set AND {project-root}/_bmad/.current_project exists">
+  <action>Read content as project_suffix</action>
+</check>
+
+<!-- Step 3: Validate and Canonicalize -->
+<check if="project_suffix is set">
+  <!-- Security: Reject traversal, absolute paths, and invalid patterns -->
+  <check if="project_suffix is empty OR project_suffix contains '..' or starts with '/' or starts with '\'">
+    <output>🚫 Security Error: Invalid project context path detected — path traversal or absolute path detected.</output>
+    <action>HALT</action>
+  </check>
+  
+  <!-- Whitelist: Alphanumeric, dots, dashes, underscores, AND slashes (for nested segments) -->
+  <check if="project_suffix matches regex '[^a-zA-Z0-9._-/]|^\s*$'">
+     <output>🚫 Error: Project context must only contain alphanumeric characters, dots, dashes, underscores, or slashes.</output>
+     <action>HALT</action>
+  </check>
+
+  <action>Override output_folder to {project-root}/_bmad-output/{project_suffix}</action>
+  <action>Override project_knowledge to {project-root}/_bmad-output/{project_suffix}</action>
+  <action>Output "Monorepo context detected. Writing deep-dive artifacts to: {project_knowledge}"</action>
+</check>
+
 <step n="13a" goal="Identify area for deep-dive">
   <action>Analyze existing documentation to suggest deep-dive options</action>
 
@@ -250,8 +280,11 @@ Detailed exhaustive analysis of specific areas:
 
 - Complete file inventory with all exports
 - Dependency graph and data flow
-- Integration points and API contracts
-- Testing analysis and coverage
+### 1. Configuration Loading
+
+Load and read full config from {main_config} and resolve variables and artifact paths.
+
+
 - Related code and reuse opportunities
 - Implementation guidance
 

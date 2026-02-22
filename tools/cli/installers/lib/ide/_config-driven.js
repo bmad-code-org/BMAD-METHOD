@@ -391,17 +391,21 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
       // No default
     }
 
+    const { MONOREPO_CONTEXT_LOGIC } = require('./shared/context-logic');
+
     let rendered = template
       .replaceAll('{{name}}', artifact.name || '')
       .replaceAll('{{module}}', artifact.module || 'core')
       .replaceAll('{{path}}', pathToUse)
       .replaceAll('{{description}}', artifact.description || `${artifact.name} ${artifact.type || ''}`)
-      .replaceAll('{{workflow_path}}', pathToUse);
+      .replaceAll('{{workflow_path}}', pathToUse)
+      .replaceAll('{{monorepo_context_logic}}', MONOREPO_CONTEXT_LOGIC);
 
-    // Replace _bmad placeholder with actual folder name
-    rendered = rendered.replaceAll('_bmad', this.bmadFolderName);
+    // Replace _bmad placeholder with actual folder name using precise regex
+    // This protects literals like '_bmad-output' from corruption.
+    rendered = rendered.replaceAll(/_bmad(?!-output)/g, this.bmadFolderName);
 
-    // Replace {{bmadFolderName}} placeholder if present
+    // Replace {{bmadFolderName}} placeholder (used in centralized context logic)
     rendered = rendered.replaceAll('{{bmadFolderName}}', this.bmadFolderName);
 
     return rendered;

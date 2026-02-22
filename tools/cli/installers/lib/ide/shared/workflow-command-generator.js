@@ -151,13 +151,22 @@ class WorkflowCommandGenerator {
       }
     }
 
+    const { MONOREPO_CONTEXT_LOGIC } = require('./context-logic');
+
     // Replace template variables
-    return template
-      .replaceAll('{{name}}', workflow.name)
-      .replaceAll('{{module}}', workflow.module)
-      .replaceAll('{{description}}', workflow.description)
-      .replaceAll('{{workflow_path}}', workflowPath)
-      .replaceAll('_bmad', this.bmadFolderName);
+    return (
+      template
+        .replaceAll('{{name}}', workflow.name)
+        .replaceAll('{{module}}', workflow.module)
+        .replaceAll('{{description}}', workflow.description)
+        .replaceAll('{{workflow_path}}', workflowPath)
+        .replaceAll('{{monorepo_context_logic}}', MONOREPO_CONTEXT_LOGIC)
+        // Replace _bmad placeholder with actual folder name using precise regex
+        // This protects literals like '_bmad-output' from corruption.
+        .replaceAll(/_bmad(?!-output)/g, this.bmadFolderName)
+        // Replace {{bmadFolderName}} placeholder (used in centralized context logic)
+        .replaceAll('{{bmadFolderName}}', this.bmadFolderName)
+    );
   }
 
   /**

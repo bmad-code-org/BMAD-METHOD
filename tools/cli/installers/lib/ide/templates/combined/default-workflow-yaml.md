@@ -6,6 +6,8 @@ disable-model-invocation: true
 
 IT IS CRITICAL THAT YOU FOLLOW THESE STEPS - while staying in character as the current agent persona you may have loaded:
 
+{{monorepo_context_logic}}
+
 <steps CRITICAL="TRUE">
 1. Always LOAD the FULL @{project-root}/{{bmadFolderName}}/core/tasks/workflow.xml
 2. READ its entire contents - this is the CORE OS for EXECUTING the specific workflow-config @{project-root}/{{bmadFolderName}}/{{path}}

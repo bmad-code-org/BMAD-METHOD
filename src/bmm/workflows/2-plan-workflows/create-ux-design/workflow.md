@@ -22,9 +22,10 @@ This uses **micro-file architecture** for disciplined execution:
 
 ## INITIALIZATION
 
-### Configuration Loading
+### 1. Configuration Loading
 
-Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
+Load and read full config from {main_config} and resolve variables and artifact paths.
+
 
 - `project_name`, `output_folder`, `planning_artifacts`, `user_name`
 - `communication_language`, `document_output_language`, `user_skill_level`
