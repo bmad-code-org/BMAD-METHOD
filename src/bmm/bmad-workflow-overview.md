@@ -13,12 +13,6 @@ If at any time you are unsure what to do, the `/bmad-help` command will help you
 
 Final important note: Every workflow below can be run directly with your tool of choice via slash command or by loading an agent first and using the entry from the agents menu.
 
-<iframe src="/workflow-map-diagram.html" title="BMad Method Workflow Map Diagram" width="100%" height="100%" style="border-radius: 8px; border: 1px solid #334155; min-height: 900px;"></iframe>
-
-<p style="font-size: 0.8rem; text-align: right; margin-top: -0.5rem; margin-bottom: 1rem;">
-  <a href="/workflow-map-diagram.html" target="_blank" rel="noopener noreferrer">Open diagram in new tab ↗</a>
-</p>
-
 ## Full Workflow Diagram
 
 ```mermaid
@@ -158,7 +152,7 @@ Skip phases 1-3 for small, well-understood work.
 
 ## TEA Module Integration
 
-The [TEA module](./testing.md) is an optional installable module that adds test architecture workflows run by a dedicated Test Architect agent (Murat). It integrates with the BMM workflow at two points:
+The TEA module is an optional installable module that adds test architecture workflows run by a dedicated Test Architect agent (Murat). It integrates with the BMM workflow at two points:
 
 ```mermaid
 flowchart TD
@@ -226,13 +220,9 @@ flowchart LR
 
 ### Project Context
 
-:::tip[Recommended]
 Create `project-context.md` to ensure AI agents follow your project's rules and preferences. This file works like a constitution for your project — it guides implementation decisions across all workflows. This optional file can be generated at the end of Architecture Creation, or in an existing project it can be generated also to capture whats important to keep aligned with current conventions.
-:::
 
 **How to create it:**
 
 - **Manually** — Create `_bmad-output/project-context.md` with your technology stack and implementation rules
 - **Generate it** — Run `/bmad-bmm-generate-project-context` to auto-generate from your architecture or codebase
-
-[**Learn more about project-context.md**](../explanation/project-context.md)
