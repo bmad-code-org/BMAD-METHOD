@@ -171,7 +171,7 @@ function buildMenuXml(menuItems, wdsFolder) {
 
         // Rebuild multi description without party-mode reference
         let multiDesc = item.multi;
-        multiDesc = multiDesc.replace(/\[SPM\] Start Party Mode \(optionally suggest attendees and topic\),?\s*/g, '').trim();
+        multiDesc = multiDesc.replaceAll(/\[SPM\] Start Party Mode \(optionally suggest attendees and topic\),?\s*/g, '').trim();
         if (!multiDesc) multiDesc = '[CH] Chat';
 
         xml += `    <item type="multi">${escapeXml(multiDesc)}\n`;
@@ -360,12 +360,7 @@ function compileAgentFile(yamlPath, options = {}) {
 
   // Agent opening tag
   const agentId = `${wdsFolder}/agents/${basename}.md`;
-  const agentAttrs = [
-    `id="${agentId}"`,
-    `name="${meta.name || ''}"`,
-    `title="${meta.title || ''}"`,
-    `icon="${meta.icon || ''}"`,
-  ];
+  const agentAttrs = [`id="${agentId}"`, `name="${meta.name || ''}"`, `title="${meta.title || ''}"`, `icon="${meta.icon || ''}"`];
   output += `<agent ${agentAttrs.join(' ')}>\n`;
 
   // Activation block (inlined)

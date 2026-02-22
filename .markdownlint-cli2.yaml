@@ -9,6 +9,9 @@ ignores:
   - _bmad*/**
   - .*/**
   - z*/**
+  - docs/examples/**
+  - "**/templates/**"
+  - "**/steps-c/**"
 
 # Rule configuration
 config:

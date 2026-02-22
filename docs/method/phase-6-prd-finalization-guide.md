@@ -318,7 +318,7 @@ Complete list for test automation:
 
 ---
 
-## How It Works
+## How the Handoff Works
 
 ### Review Completeness
 
@@ -398,7 +398,7 @@ Organize everything into the UI Roadmap folder:
 
 ---
 
-## When to Use This Phase
+## When to Use This Phase (Summary)
 
 **First handoff when:**
 

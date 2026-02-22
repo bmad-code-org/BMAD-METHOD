@@ -19,8 +19,8 @@
   "author": "Whiteport Collective",
   "main": "tools/cli/wds-cli.js",
   "bin": {
-    "whiteport-design-studio": "tools/wds-npx-wrapper.js",
-    "wds-studio": "tools/wds-npx-wrapper.js"
+    "wds-studio": "tools/wds-npx-wrapper.js",
+    "whiteport-design-studio": "tools/wds-npx-wrapper.js"
   },
   "files": [
     "tools/",

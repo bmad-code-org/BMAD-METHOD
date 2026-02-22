@@ -84,7 +84,7 @@ async function writeIdeConfig(projectDir, ide, wdsFolder) {
   await fs.ensureDir(path.dirname(filePath));
 
   // If append mode and file exists, append with separator
-  if (config.append && await fs.pathExists(filePath)) {
+  if (config.append && (await fs.pathExists(filePath))) {
     const existing = await fs.readFile(filePath, 'utf8');
     if (!existing.includes('Whiteport Design Studio')) {
       await fs.writeFile(filePath, existing + '\n\n' + content + '\n', 'utf8');

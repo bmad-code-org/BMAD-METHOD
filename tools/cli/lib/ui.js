@@ -89,7 +89,7 @@ class UI {
         name: 'ides',
         message: 'Which AI IDE/tools are you using? (Space to select, Enter to confirm)',
         choices: getIdeChoices(),
-        validate: (answer) => answer.length > 0 ? true : 'Select at least one IDE.',
+        validate: (answer) => (answer.length > 0 ? true : 'Select at least one IDE.'),
       },
     ]);
 

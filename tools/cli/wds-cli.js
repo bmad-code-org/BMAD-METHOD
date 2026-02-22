@@ -23,9 +23,7 @@ const packageJson = require('../../package.json');
 const installCommand = require('./commands/install');
 
 // Set up program
-program
-  .version(packageJson.version)
-  .description('Whiteport Design Studio - Strategic design methodology for AI-powered workflows');
+program.version(packageJson.version).description('Whiteport Design Studio - Strategic design methodology for AI-powered workflows');
 
 // Register install command
 const cmd = program.command(installCommand.command).description(installCommand.description);

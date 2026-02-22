@@ -76,9 +76,9 @@ class Installer {
     try {
       await this.copySrcFiles(wdsDir);
       spinner.succeed('WDS files copied');
-    } catch (err) {
+    } catch (error) {
       spinner.fail('Failed to copy WDS files');
-      throw err;
+      throw error;
     }
 
     // Step 2: Write config.yaml
@@ -86,9 +86,9 @@ class Installer {
     try {
       await this.writeConfig(wdsDir, config);
       configSpinner.succeed('Configuration saved');
-    } catch (err) {
+    } catch (error) {
       configSpinner.fail('Failed to write configuration');
-      throw err;
+      throw error;
     }
 
     // Step 3: Compile agents
@@ -96,9 +96,9 @@ class Installer {
     try {
       const agents = await this.compileAgents(wdsDir, wdsFolder);
       agentSpinner.succeed(`Compiled ${agents.length} agents`);
-    } catch (err) {
+    } catch (error) {
       agentSpinner.fail('Failed to compile agents');
-      throw err;
+      throw error;
     }
 
     // Step 4: Create docs folder structure
@@ -106,9 +106,9 @@ class Installer {
     try {
       await this.createDocsFolders(projectDir);
       docsSpinner.succeed('Project folders created');
-    } catch (err) {
+    } catch (error) {
       docsSpinner.fail('Failed to create project folders');
-      throw err;
+      throw error;
     }
 
     // Step 5: Set up IDEs
@@ -121,9 +121,9 @@ class Installer {
         labels.push(result.label);
       }
       ideSpinner.succeed(`Configured: ${labels.join(', ')}`);
-    } catch (err) {
+    } catch (error) {
       ideSpinner.fail('Failed to set up IDEs');
-      throw err;
+      throw error;
     }
 
     // Step 6: Copy learning & reference material (optional)
@@ -132,9 +132,9 @@ class Installer {
       try {
         await this.copyLearningMaterial(projectDir);
         learnSpinner.succeed('Learning material added to _wds-learn/ (safe to remove when no longer needed)');
-      } catch (err) {
+      } catch (error) {
         learnSpinner.fail('Failed to copy learning material');
-        throw err;
+        throw error;
       }
     }
 
@@ -215,7 +215,7 @@ class Installer {
   async copyLearningMaterial(projectDir) {
     const learnDir = path.join(projectDir, '_wds-learn');
     const learningDirs = ['getting-started', 'learn-wds', 'method', 'models', 'tools'];
-    const excludeDirs = ['course-explainers', 'Webinars'];
+    const excludeDirs = new Set(['course-explainers', 'Webinars']);
 
     for (const dir of learningDirs) {
       const src = path.join(this.docsDir, dir);
@@ -225,7 +225,7 @@ class Installer {
           filter: (srcPath) => {
             const relative = path.relative(src, srcPath);
             const topDir = relative.split(path.sep)[0];
-            return !excludeDirs.includes(topDir);
+            return !excludeDirs.has(topDir);
           },
         });
       }
