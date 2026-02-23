@@ -105,7 +105,7 @@ class Installer {
     const docsSpinner = ora('Creating project folders...').start();
     let detectedOutputFolder = 'docs';
     try {
-      detectedOutputFolder = await this.createDocsFolders(projectDir);
+      detectedOutputFolder = await this.createDocsFolders(projectDir, config);
       docsSpinner.succeed(`Project folders created in ${detectedOutputFolder}/`);
     } catch (error) {
       docsSpinner.fail('Failed to create project folders');
@@ -245,7 +245,7 @@ class Installer {
    * Create the WDS docs folder structure
    * FIXED: Detects existing folders, doesn't overwrite files
    */
-  async createDocsFolders(projectDir) {
+  async createDocsFolders(projectDir, config) {
     // Check if user already has a deliverables folder with WDS content
     const possibleFolders = ['design-process', 'docs', 'deliverables', 'wds-deliverables'];
     let existingFolder = null;
