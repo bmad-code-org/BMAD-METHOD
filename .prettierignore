@@ -8,5 +8,8 @@ CODE_OF_CONDUCT.md
 _bmad/
 _bmad*/
 
+# Experiment folders
+_experiment/
+
 # IDE integration folders (user-specific, not in repo)
 .junie/
