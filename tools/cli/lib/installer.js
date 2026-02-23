@@ -25,7 +25,7 @@ class Installer {
    * @param {Object} config - Configuration from UI prompts
    */
   async install(config) {
-    const { projectDir, wdsFolder, ides, project_type, design_experience } = config;
+    const { projectDir, wdsFolder, ides, project_type, design_experience, root_folder } = config;
     const wdsDir = path.join(projectDir, wdsFolder);
 
     // Check if already installed
@@ -101,24 +101,22 @@ class Installer {
       throw error;
     }
 
-    // Step 4: Create docs folder structure
-    const docsSpinner = ora('Creating project folders...').start();
-    let detectedOutputFolder = 'docs';
+    // Step 4: Create work products folder structure
+    const rootFolder = root_folder || 'design-process';
+    const docsSpinner = ora(`Creating project folders in ${rootFolder}/...`).start();
     try {
-      detectedOutputFolder = await this.createDocsFolders(projectDir, config);
-      docsSpinner.succeed(`Project folders created in ${detectedOutputFolder}/`);
+      await this.createDocsFolders(projectDir, rootFolder, config);
+      docsSpinner.succeed(`Project folders created in ${rootFolder}/`);
     } catch (error) {
       docsSpinner.fail('Failed to create project folders');
       throw error;
     }
 
-    // Update config.yaml with detected output folder (if different from default)
-    if (detectedOutputFolder !== 'docs') {
-      const configPath = path.join(wdsDir, 'config.yaml');
-      let configContent = await fs.readFile(configPath, 'utf8');
-      configContent = configContent.replace(/output_folder:\s*docs/, `output_folder: ${detectedOutputFolder}`);
-      await fs.writeFile(configPath, configContent, 'utf8');
-    }
+    // Update config.yaml with root folder
+    const configPath = path.join(wdsDir, 'config.yaml');
+    let configContent = await fs.readFile(configPath, 'utf8');
+    configContent = configContent.replace(/output_folder:\s*docs/, `output_folder: ${rootFolder}`);
+    await fs.writeFile(configPath, configContent, 'utf8');
 
     // Step 5: Set up IDEs
     const ideList = ides || (config.ide ? [config.ide] : []);
@@ -242,30 +240,13 @@ class Installer {
   }
 
   /**
-   * Create the WDS docs folder structure
-   * FIXED: Detects existing folders, doesn't overwrite files
+   * Create the WDS work products folder structure
+   * @param {string} projectDir - Project root directory
+   * @param {string} rootFolder - Root folder name (design-process, docs, deliverables, etc.)
+   * @param {Object} config - Configuration object
    */
-  async createDocsFolders(projectDir, config) {
-    // Check if user already has a deliverables folder with WDS content
-    const possibleFolders = ['design-process', 'docs', 'deliverables', 'wds-deliverables'];
-    let existingFolder = null;
-
-    for (const folderName of possibleFolders) {
-      const folderPath = path.join(projectDir, folderName);
-      if (await fs.pathExists(folderPath)) {
-        // Check if it has WDS structure (A-Product-Brief, B-Trigger-Map, etc.)
-        const hasProductBrief = await fs.pathExists(path.join(folderPath, 'A-Product-Brief'));
-        const hasTriggerMap = await fs.pathExists(path.join(folderPath, 'B-Trigger-Map'));
-        if (hasProductBrief || hasTriggerMap) {
-          existingFolder = folderName;
-          break;
-        }
-      }
-    }
-
-    // Use existing folder if found, otherwise default to 'docs'
-    const outputFolder = existingFolder || 'docs';
-    const docsPath = path.join(projectDir, outputFolder);
+  async createDocsFolders(projectDir, rootFolder, config) {
+    const docsPath = path.join(projectDir, rootFolder);
 
     const folders = [
       'A-Product-Brief',
@@ -296,9 +277,6 @@ class Installer {
 
     // Create 00 guide files in each folder (if they don't exist)
     await this.createFolderGuides(docsPath, config);
-
-    // Return the detected/used folder name so config.yaml can be updated
-    return outputFolder;
   }
 
   /**

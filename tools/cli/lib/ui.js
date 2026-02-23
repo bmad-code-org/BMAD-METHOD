@@ -79,6 +79,17 @@ class UI {
         default: 'intermediate',
       },
       {
+        type: 'list',
+        name: 'root_folder',
+        message: 'Where should design work products be stored?',
+        choices: [
+          { name: 'design-process/ - Recommended for clarity', value: 'design-process' },
+          { name: 'docs/ - Standard documentation folder', value: 'docs' },
+          { name: 'deliverables/ - Alternative naming', value: 'deliverables' },
+        ],
+        default: 'design-process',
+      },
+      {
         type: 'confirm',
         name: 'include_learning',
         message: 'Include learning & reference material in _wds-learn/?',
