@@ -1,9 +1,14 @@
 # Changelog
 
-## 0.2.1 (2026-02-22)
+## 0.2.2 (2026-02-23)
 
 ### Fixes
 - **Installer crash** - Fixed "config is not defined" error during installation. The `createDocsFolders` method now correctly receives the config parameter needed for template replacements.
+
+## 0.2.1 (2026-02-22)
+
+### Known Issues
+- **Installer crash** - Installation fails with "config is not defined" error. Fixed in 0.2.2.
 
 ## 0.2.0 (2026-02-20)
 
