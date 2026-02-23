@@ -16,9 +16,13 @@ Run QD2 as-is (bare one-liner prompts + BMM plumbing) on a real small task. Docu
    - What questions did it ask that it shouldn't have?
    - What did it fail to do that it should have?
 
+5. Run an adversarial review of the test findings against the plan file (`_experiment/planning/redesign-plan.md`). For each gap or plumbing issue, trace whether the plan specified the behavior that was missing — classify as **Plan Gap** (plan didn't cover it) or **Execution Gap** (plan covered it but the step file didn't deliver).
+
 ## Output
 
 A findings document: `_experiment/results/skeleton-test-findings.md` with per-step observations classified as:
 - **Works** — training handled it fine, no tightening needed
 - **Gap** — specific behavior missing or wrong, needs prompt tightening
 - **Plumbing** — structural issue with the BMM infrastructure itself
+- **Plan Gap** — plan didn't specify the expected behavior
+- **Execution Gap** — plan specified it but step file failed to deliver
