@@ -24,13 +24,12 @@ wipFile: '{implementation_artifacts}/tech-spec-wip.md'
 
 ## INSTRUCTIONS
 
-1. Clarify intent until: problem unambiguous, scope clear, no contradictions, you can explain back what you'll do.
-2. Backfill VC conventions to project-context if unknown.
-3. Route:
+1. Clarify intent. Do not fantasize, do not leave open questions Keep asking the human until clear enough to implement. 
+2. Route:
    - **One-shot** — trivial (~3 files). `{execution_mode}` = "one-shot". → Step 3.
    - **Plan-code-review** — normal. → Step 2.
    - **Full BMM** — too big. Recommend and exit.
-   - Ambiguous? Default plan-code-review.
+   - Ambiguous? Default to plan-code-review.
 
 ---
 

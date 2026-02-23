@@ -16,11 +16,7 @@ description: 'Present findings, get approval, create PR'
 
 ## INSTRUCTIONS
 
-Present classified findings. `[A] Approve  [E] Edit  [R] Reject`. HALT.
-
-- **A**: Commit patches. Print push command. Wait. Create PR.
-- **E**: Apply changes, re-present.
-- **R**: Route back.
+Display summary of your work to the user. Advice on how to review the changes. Offer to make a plan for manual testing, or to push and/or create a pull request.
 
 ---
 
