@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.3 (2026-02-23)
+
+### Features
+- **Root folder selection** - Installer now asks where to create work products folder (design-process/, docs/, or deliverables/)
+
+### Fixes
+- **Duplicate folders** - Fixed issue where both design-process/ and docs/ folders were created during installation
+
 ## 0.2.2 (2026-02-23)
 
 ### Fixes
