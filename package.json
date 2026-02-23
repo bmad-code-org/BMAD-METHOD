@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "whiteport-design-studio",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Whiteport Design Studio - Strategic design methodology for AI-powered workflows",
   "keywords": [
     "design",
