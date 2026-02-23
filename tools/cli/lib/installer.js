@@ -103,12 +103,21 @@ class Installer {
 
     // Step 4: Create docs folder structure
     const docsSpinner = ora('Creating project folders...').start();
+    let detectedOutputFolder = 'docs';
     try {
-      await this.createDocsFolders(projectDir);
-      docsSpinner.succeed('Project folders created');
+      detectedOutputFolder = await this.createDocsFolders(projectDir);
+      docsSpinner.succeed(`Project folders created in ${detectedOutputFolder}/`);
     } catch (error) {
       docsSpinner.fail('Failed to create project folders');
       throw error;
+    }
+
+    // Update config.yaml with detected output folder (if different from default)
+    if (detectedOutputFolder !== 'docs') {
+      const configPath = path.join(wdsDir, 'config.yaml');
+      let configContent = await fs.readFile(configPath, 'utf8');
+      configContent = configContent.replace(/output_folder:\s*docs/, `output_folder: ${detectedOutputFolder}`);
+      await fs.writeFile(configPath, configContent, 'utf8');
     }
 
     // Step 5: Set up IDEs
@@ -234,9 +243,30 @@ class Installer {
 
   /**
    * Create the WDS docs folder structure
+   * FIXED: Detects existing folders, doesn't overwrite files
    */
   async createDocsFolders(projectDir) {
-    const docsPath = path.join(projectDir, 'docs');
+    // Check if user already has a deliverables folder with WDS content
+    const possibleFolders = ['design-process', 'docs', 'deliverables', 'wds-deliverables'];
+    let existingFolder = null;
+
+    for (const folderName of possibleFolders) {
+      const folderPath = path.join(projectDir, folderName);
+      if (await fs.pathExists(folderPath)) {
+        // Check if it has WDS structure (A-Product-Brief, B-Trigger-Map, etc.)
+        const hasProductBrief = await fs.pathExists(path.join(folderPath, 'A-Product-Brief'));
+        const hasTriggerMap = await fs.pathExists(path.join(folderPath, 'B-Trigger-Map'));
+        if (hasProductBrief || hasTriggerMap) {
+          existingFolder = folderName;
+          break;
+        }
+      }
+    }
+
+    // Use existing folder if found, otherwise default to 'docs'
+    const outputFolder = existingFolder || 'docs';
+    const docsPath = path.join(projectDir, outputFolder);
+
     const folders = [
       'A-Product-Brief',
       'B-Trigger-Map',
@@ -250,14 +280,121 @@ class Installer {
 
     for (const folder of folders) {
       const folderPath = path.join(docsPath, folder);
-      await fs.ensureDir(folderPath);
 
-      // Add .gitkeep to preserve empty directories
-      const gitkeepPath = path.join(folderPath, '.gitkeep');
-      if (!(await fs.pathExists(gitkeepPath))) {
-        await fs.writeFile(gitkeepPath, '# This file ensures the directory is tracked by git\n');
+      // Only create folder if it doesn't exist
+      if (!(await fs.pathExists(folderPath))) {
+        await fs.ensureDir(folderPath);
+
+        // Add .gitkeep to preserve empty directories (only if folder is empty)
+        const gitkeepPath = path.join(folderPath, '.gitkeep');
+        const existingFiles = await fs.readdir(folderPath);
+        if (existingFiles.length === 0) {
+          await fs.writeFile(gitkeepPath, '# This file ensures the directory is tracked by git\n');
+        }
       }
     }
+
+    // Create 00 guide files in each folder (if they don't exist)
+    await this.createFolderGuides(docsPath, config);
+
+    // Return the detected/used folder name so config.yaml can be updated
+    return outputFolder;
+  }
+
+  /**
+   * Create 00 guide files in each folder from templates
+   */
+  async createFolderGuides(docsPath, config) {
+    const templateDir = path.join(this.srcDir, 'workflows', '0-project-setup', 'templates', 'folder-guides');
+
+    // Mapping: template filename → destination folder & filename
+    const guides = [
+      { template: '00-product-brief.template.md', folder: 'A-Product-Brief', filename: '00-product-brief.md' },
+      { template: '00-trigger-map.template.md', folder: 'B-Trigger-Map', filename: '00-trigger-map.md' },
+      { template: '00-ux-scenarios.template.md', folder: 'C-UX-Scenarios', filename: '00-ux-scenarios.md' },
+      { template: '00-design-system.template.md', folder: 'D-Design-System', filename: '00-design-system.md' },
+    ];
+
+    // Common placeholder replacements
+    const replacements = {
+      '{{project_name}}': config.project_name || 'Untitled Project',
+      '{{date}}': new Date().toISOString().split('T')[0],
+      '{{project_type}}': config.project_type || 'digital_product',
+      '{{design_experience}}': config.design_experience || 'intermediate',
+      '{{user_name}}': config.user_name || 'Designer',
+      '{{communication_language}}': config.communication_language || 'en',
+      '{{document_output_language}}': config.document_output_language || 'en',
+      '{{output_folder}}': path.relative(config.projectDir, docsPath) || 'docs',
+      '{{wds_folder}}': config.wdsFolder || '_wds',
+    };
+
+    // Create each folder guide
+    for (const guide of guides) {
+      const templatePath = path.join(templateDir, guide.template);
+      const destPath = path.join(docsPath, guide.folder, guide.filename);
+
+      // Skip if file exists (never overwrite) or template doesn't exist
+      if (await fs.pathExists(destPath)) continue;
+      if (!(await fs.pathExists(templatePath))) continue;
+
+      // Read template
+      let content = await fs.readFile(templatePath, 'utf8');
+
+      // Replace all placeholders
+      for (const [placeholder, value] of Object.entries(replacements)) {
+        content = content.split(placeholder).join(value);
+      }
+
+      // Write file
+      await fs.writeFile(destPath, content, 'utf8');
+    }
+
+    // Also create 00-project-info.md in A-Product-Brief (project settings home)
+    await this.createProjectInfoFile(docsPath, config);
+  }
+
+  /**
+   * Create 00-project-info.md in A-Product-Brief from template
+   */
+  async createProjectInfoFile(docsPath, config) {
+    const productBriefPath = path.join(docsPath, 'A-Product-Brief');
+    const projectInfoPath = path.join(productBriefPath, '00-project-info.md');
+
+    // Only create if it doesn't exist (never overwrite)
+    if (await fs.pathExists(projectInfoPath)) {
+      return;
+    }
+
+    const templatePath = path.join(this.srcDir, 'workflows', '1-project-brief', 'templates', '00-project-info.template.md');
+
+    // Check if template exists
+    if (!(await fs.pathExists(templatePath))) {
+      // Skip if template not found (backward compatibility)
+      return;
+    }
+
+    // Read template
+    let template = await fs.readFile(templatePath, 'utf8');
+
+    // Replace placeholders
+    const replacements = {
+      '{{project_name}}': config.project_name || 'Untitled Project',
+      '{{date}}': new Date().toISOString().split('T')[0],
+      '{{project_type}}': config.project_type || 'digital_product',
+      '{{design_experience}}': config.design_experience || 'intermediate',
+      '{{user_name}}': config.user_name || 'Designer',
+      '{{communication_language}}': config.communication_language || 'en',
+      '{{document_output_language}}': config.document_output_language || 'en',
+      '{{output_folder}}': path.relative(config.projectDir, docsPath) || 'docs',
+      '{{wds_folder}}': config.wdsFolder || '_wds',
+    };
+
+    for (const [placeholder, value] of Object.entries(replacements)) {
+      template = template.split(placeholder).join(value);
+    }
+
+    // Write the file
+    await fs.writeFile(projectInfoPath, template, 'utf8');
   }
 }
 
