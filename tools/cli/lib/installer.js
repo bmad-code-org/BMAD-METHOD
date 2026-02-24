@@ -235,13 +235,12 @@ class Installer {
   async createDocsFolders(projectDir, rootFolder, config) {
     const docsPath = path.join(projectDir, rootFolder);
 
-    // Simplified 5-phase structure
+    // Simplified 4-phase structure
     const folders = [
       'A-Product-Brief',
       'B-Trigger-Map',
       'C-UX-Scenarios',
-      'D-UX-Design',
-      'E-Design-System',
+      'D-Design-System',
     ];
 
     for (const folder of folders) {
