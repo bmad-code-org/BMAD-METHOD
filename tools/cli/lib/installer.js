@@ -100,6 +100,43 @@ class Installer {
       throw error;
     }
 
+    // Step 3.5: Setup IDE integrations
+    if (config.ides && config.ides.length > 0) {
+      const ideSpinner = ora('Setting up IDE integrations...').start();
+      try {
+        const { IdeManager } = require('../installers/lib/ide/manager');
+        const ideManager = new IdeManager();
+
+        const results = await ideManager.setup(
+          projectDir,
+          wdsDir,
+          config.ides,
+          {
+            logger: {
+              log: (msg) => {}, // Suppress detailed logs during spinner
+              warn: (msg) => console.log(msg),
+            },
+            wdsFolderName: wdsFolder,
+          }
+        );
+
+        const successCount = results.success.length;
+        const failedCount = results.failed.length;
+        const skippedCount = results.skipped.length;
+
+        if (successCount > 0) {
+          ideSpinner.succeed(`IDE integrations configured (${successCount} IDE${successCount > 1 ? 's' : ''})`);
+        } else if (failedCount > 0 || skippedCount > 0) {
+          ideSpinner.warn(`IDE setup completed with ${failedCount} failed, ${skippedCount} skipped`);
+        } else {
+          ideSpinner.succeed('IDE integrations configured');
+        }
+      } catch (error) {
+        ideSpinner.warn(`IDE setup encountered issues: ${error.message}`);
+        console.log(chalk.dim('  You can still use WDS by manually activating agents'));
+      }
+    }
+
     // Step 4: Create work products folder structure
     const rootFolder = root_folder || 'design-process';
     const docsSpinner = ora(`Creating project folders in ${rootFolder}/...`).start();

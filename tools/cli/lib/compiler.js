@@ -232,7 +232,7 @@ function buildActivationBlock(agent, wdsFolder) {
     <step n="1">Load persona from this current agent file (already in context)</step>
     <step n="2">IMMEDIATE ACTION REQUIRED - BEFORE ANY OUTPUT:
         - Load and read {project-root}/${wdsFolder}/config.yaml NOW
-        - Store ALL fields as session variables: {user_name}, {communication_language}, {output_folder}
+        - Store ALL fields as session variables: {user_name}, {communication_language}, {output_folder}, {starting_point}, {project_name}
         - VERIFY: If config not loaded, STOP and report error to user
         - DO NOT PROCEED to step 3 until config is successfully loaded and variables stored
     </step>

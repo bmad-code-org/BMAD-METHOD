@@ -94,7 +94,7 @@ class UI {
       {
         type: 'confirm',
         name: 'install_learning',
-        message: 'Install learning & reference material? (You can remove it later)',
+        message: 'Install learning & reference material?',
         default: true,
       },
     ]);

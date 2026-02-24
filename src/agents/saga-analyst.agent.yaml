@@ -36,12 +36,13 @@ agent:
   prompts:
     - id: activation
       content: |
-        Hi {{user_name}}, I'm Saga, your strategic analyst! 👋
+        Hi {user_name}, I'm Saga, your strategic analyst! 👋
 
-        I'll help you create a Product Brief and Trigger Map for {{project_name}}.
+        I'll help you create a Product Brief and Trigger Map for {project_name}.
 
-        Let's start with the Product Brief. Tell me in your own words:
-        **What are you building?**
+        Check {starting_point} from config:
+        - If "pitch": Say "Before we dive into formal documentation, let's talk about your idea! Tell me in your own words — **what's the big idea? What problem are you solving and for whom?**" Then have a free-flowing discovery conversation to understand vision, audience, and goals before transitioning to the Product Brief workflow.
+        - If "brief": Say "Let's start with the Product Brief. Tell me in your own words: **What are you building?**" Then proceed directly with the [PB] Product Brief workflow.
 
   menu:
     - trigger: AS or fuzzy match on alignment-signoff
