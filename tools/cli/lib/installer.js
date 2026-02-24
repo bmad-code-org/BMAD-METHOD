@@ -111,14 +111,16 @@ class Installer {
       throw error;
     }
 
-    // Step 5: Copy learning & reference material (always included)
-    const learnSpinner = ora('Copying learning & reference material...').start();
-    try {
-      await this.copyLearningMaterial(projectDir);
-      learnSpinner.succeed('Learning material added to _wds-learn/ (safe to remove when no longer needed)');
-    } catch (error) {
-      learnSpinner.fail('Failed to copy learning material');
-      throw error;
+    // Step 5: Copy learning & reference material (optional)
+    if (config.install_learning !== false) {
+      const learnSpinner = ora('Copying learning & reference material...').start();
+      try {
+        await this.copyLearningMaterial(projectDir);
+        learnSpinner.succeed('Learning material added to _wds-learn/ (safe to remove when no longer needed)');
+      } catch (error) {
+        learnSpinner.fail('Failed to copy learning material');
+        throw error;
+      }
     }
 
     return { success: true, wdsDir, projectDir };
@@ -178,6 +180,7 @@ class Installer {
       document_output_language: 'en',
       output_folder: config.root_folder || 'design-process',
       wds_folder: config.wdsFolder,
+      ide: config.ide || 'windsurf',
     };
 
     const yamlStr = yaml.dump(configData, { lineWidth: -1 });

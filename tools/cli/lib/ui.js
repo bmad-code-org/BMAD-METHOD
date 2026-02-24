@@ -34,7 +34,7 @@ class UI {
     console.log(chalk.white(`  Target: ${chalk.cyan(projectDir)}`));
     console.log(chalk.dim(`  Agents and workflows will be installed in ${chalk.white('_wds/')}\n`));
 
-    // Minimal 3-question installer
+    // 5-question installer
     const answers = await inquirer.prompt([
       {
         type: 'input',
@@ -58,6 +58,24 @@ class UI {
         ],
         default: 'brief',
       },
+      {
+        type: 'list',
+        name: 'ide',
+        message: 'Which IDE are you using?',
+        choices: [
+          { name: 'Windsurf', value: 'windsurf' },
+          { name: 'VS Code', value: 'vscode' },
+          { name: 'Cursor', value: 'cursor' },
+          { name: 'Other', value: 'other' },
+        ],
+        default: 'windsurf',
+      },
+      {
+        type: 'confirm',
+        name: 'install_learning',
+        message: 'Install learning & reference material? (You can remove it later)',
+        default: true,
+      },
     ]);
 
     return {
@@ -71,13 +89,20 @@ class UI {
   /**
    * Display success message with next steps
    */
-  displaySuccess(wdsFolder) {
+  displaySuccess(wdsFolder, ide = 'windsurf') {
+    const ideName = {
+      windsurf: 'Windsurf',
+      vscode: 'VS Code',
+      cursor: 'Cursor',
+      other: 'your IDE',
+    }[ide] || 'your IDE';
+
     console.log('');
     console.log(chalk.green.bold('  ✨ Installation complete!'));
     console.log('');
     console.log(chalk.white.bold('  Get Started with Your Product Brief'));
     console.log('');
-    console.log(chalk.white('  1. Open this folder in Windsurf or VS Code'));
+    console.log(chalk.white(`  1. Open this folder in ${ideName}`));
     console.log('');
     console.log(chalk.white('  2. Locate the chat window in your IDE and type:'));
     console.log('');

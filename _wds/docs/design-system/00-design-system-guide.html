@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WDS Design System Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem 2rem;
+            margin-bottom: 3rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        nav {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 1rem;
+            z-index: 100;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        nav a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        nav a:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        section {
+            background: white;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        h2 {
+            color: #667eea;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #667eea;
+        }
+
+        h3 {
+            color: #764ba2;
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        h4 {
+            color: #555;
+            font-size: 1.2rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .hierarchy {
+            display: flex;
+            gap: 2rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .tier {
+            flex: 1;
+            min-width: 200px;
+            padding: 1.5rem;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+
+        .tier h4 {
+            color: #667eea;
+            margin-top: 0;
+        }
+
+        .tier ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .tier li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .example-box {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 4px;
+        }
+
+        .component-demo {
+            display: flex;
+            gap: 2rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .demo-item {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .demo-visual {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .demo-button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .demo-button:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .demo-button.secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .demo-button.ghost {
+            background: transparent;
+            color: #667eea;
+            border: none;
+            text-decoration: underline;
+        }
+
+        .anatomy-diagram {
+            background: white;
+            border: 2px dashed #667eea;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border-radius: 8px;
+            position: relative;
+        }
+
+        .anatomy-label {
+            position: absolute;
+            background: #667eea;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #764ba2;
+        }
+
+        pre {
+            background: #1a1a1a;
+            color: #f8f8f2;
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        pre code {
+            background: none;
+            color: #f8f8f2;
+            padding: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .key-principle {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            font-weight: 500;
+        }
+
+        .workflow-step {
+            background: #f8f9fa;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 6px;
+            border-left: 4px solid #764ba2;
+        }
+
+        .workflow-step strong {
+            color: #764ba2;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+            margin-top: 3rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>WDS Design System Guide</h1>
+            <p class="subtitle">Standards for Building Scalable, Consistent Component Libraries</p>
+        </header>
+
+        <nav>
+            <ul>
+                <li><a href="#atomic-design">Atomic Design</a></li>
+                <li><a href="#anatomy">Anatomy</a></li>
+                <li><a href="#slots">Slots</a></li>
+                <li><a href="#props">Props</a></li>
+                <li><a href="#states">States</a></li>
+                <li><a href="#variants">Variants</a></li>
+                <li><a href="#specs">Specifications</a></li>
+                <li><a href="#pattern-recognition">Pattern Recognition</a></li>
+            </ul>
+        </nav>
+
+        <!-- 1. Atomic Design -->
+        <section id="atomic-design">
+            <h2>1. Atomic Design Methodology</h2>
+
+            <p>Components are organized in three levels of complexity, inspired by atomic design principles:</p>
+
+            <div class="hierarchy">
+                <div class="tier">
+                    <h4>⚛️ Atoms</h4>
+                    <p>Basic building blocks</p>
+                    <ul>
+                        <li>Button</li>
+                        <li>Input</li>
+                        <li>Icon</li>
+                        <li>Label</li>
+                        <li>Avatar</li>
+                    </ul>
+                </div>
+
+                <div class="tier">
+                    <h4>🔗 Molecules</h4>
+                    <p>Combinations of atoms</p>
+                    <ul>
+                        <li>Search Bar (Input + Button)</li>
+                        <li>Form Field (Label + Input)</li>
+                        <li>Card (Image + Text + Button)</li>
+                        <li>Menu Item (Icon + Label)</li>
+                    </ul>
+                </div>
+
+                <div class="tier">
+                    <h4>🏗️ Organisms</h4>
+                    <p>Complex components</p>
+                    <ul>
+                        <li>Navigation Bar</li>
+                        <li>Hero Section</li>
+                        <li>Product Grid</li>
+                        <li>Footer</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="example-box">
+                <h4>Example: Building a Card Component</h4>
+                <p><strong>Atoms used:</strong> Image, Heading, Paragraph, Button, Icon</p>
+                <p><strong>Classification:</strong> Molecule (combines multiple atoms)</p>
+                <p><strong>Can be used in:</strong> Organism (e.g., Product Grid contains multiple Cards)</p>
+            </div>
+        </section>
+
+        <!-- 2. Component Anatomy -->
+        <section id="anatomy">
+            <h2>2. Component Anatomy</h2>
+
+            <p>Every component is broken down into its structural parts.</p>
+
+            <h3>Button Anatomy Example</h3>
+
+            <div class="anatomy-diagram">
+                <button class="demo-button" style="position: relative; margin: 3rem auto; display: block;">
+                    <span style="margin-right: 0.5rem;">✓</span> Click Me
+                </button>
+                <div class="anatomy-label" style="top: 1rem; left: 1rem;">Container</div>
+                <div class="anatomy-label" style="top: 5rem; left: 3rem;">Icon (optional)</div>
+                <div class="anatomy-label" style="top: 5rem; right: 3rem;">Label</div>
+            </div>
+
+            <h4>Anatomy Documentation Format:</h4>
+            <pre><code>## Anatomy
+
+**Parts:**
+1. **Container** - The button's outer wrapper
+2. **Icon** (optional) - Leading or trailing icon
+3. **Label** - The button text
+4. **Loading Indicator** (optional) - Replaces icon during loading state</code></pre>
+        </section>
+
+        <!-- 3. Slots -->
+        <section id="slots">
+            <h2>3. Slots (Content Placeholders)</h2>
+
+            <div class="key-principle">
+                <strong>Key Principle:</strong> Structure is shared, content is page-specific.
+            </div>
+
+            <p>Slots define <strong>where content goes</strong>, not what the content is.</p>
+
+            <h3>Card Component Slots Example</h3>
+
+            <div class="component-demo">
+                <div class="demo-item">
+                    <div class="demo-visual" style="text-align: left;">
+                        <div style="background: #e0e0e0; height: 150px; margin-bottom: 1rem; border-radius: 4px;"></div>
+                        <h4>[title slot]</h4>
+                        <p style="color: #666; margin: 0.5rem 0;">[description slot]</p>
+                        <button class="demo-button" style="margin-top: 1rem;">[action slot]</button>
+                    </div>
+                    <p><strong>Structure</strong> (shared)</p>
+                </div>
+
+                <div class="demo-item">
+                    <div class="demo-visual" style="text-align: left;">
+                        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); height: 150px; margin-bottom: 1rem; border-radius: 4px;"></div>
+                        <h4>Premium Plan</h4>
+                        <p style="color: #666; margin: 0.5rem 0;">Unlock all features</p>
+                        <button class="demo-button" style="margin-top: 1rem;">Subscribe</button>
+                    </div>
+                    <p><strong>Content</strong> (page-specific)</p>
+                </div>
+            </div>
+
+            <h4>Slots Documentation Format:</h4>
+            <pre><code>## Slots
+
+1. **image** - Visual content (photo, illustration, icon)
+2. **title** - Main heading
+3. **description** - Supporting text
+4. **action** - Call-to-action button</code></pre>
+        </section>
+
+        <!-- 4. Props -->
+        <section id="props">
+            <h2>4. Props (Configuration Options)</h2>
+
+            <p>Props control <strong>how a component looks and behaves</strong>.</p>
+
+            <h3>Button Props Example</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Prop</th>
+                        <th>Type</th>
+                        <th>Options</th>
+                        <th>Default</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>variant</code></td>
+                        <td>string</td>
+                        <td>primary | secondary | ghost</td>
+                        <td>primary</td>
+                    </tr>
+                    <tr>
+                        <td><code>size</code></td>
+                        <td>string</td>
+                        <td>small | medium | large</td>
+                        <td>medium</td>
+                    </tr>
+                    <tr>
+                        <td><code>disabled</code></td>
+                        <td>boolean</td>
+                        <td>true | false</td>
+                        <td>false</td>
+                    </tr>
+                    <tr>
+                        <td><code>fullWidth</code></td>
+                        <td>boolean</td>
+                        <td>true | false</td>
+                        <td>false</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4>Props Documentation Format:</h4>
+            <pre><code>## Props
+
+| Prop | Type | Options | Default | Description |
+|------|------|---------|---------|-------------|
+| variant | string | primary, secondary, ghost | primary | Visual style |
+| size | string | small, medium, large | medium | Button size |
+| disabled | boolean | true, false | false | Disable interactions |
+| fullWidth | boolean | true, false | false | Stretch to container width |</code></pre>
+        </section>
+
+        <!-- 5. States -->
+        <section id="states">
+            <h2>5. States (Interactive Behavior)</h2>
+
+            <p>States define how components respond to user interaction.</p>
+
+            <h3>Button States Example</h3>
+
+            <div class="component-demo">
+                <div class="demo-item">
+                    <div class="demo-visual">
+                        <button class="demo-button">Default</button>
+                    </div>
+                    <p><strong>Default</strong> - Idle state</p>
+                </div>
+
+                <div class="demo-item">
+                    <div class="demo-visual">
+                        <button class="demo-button" style="background: #5568d3; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);">Hover</button>
+                    </div>
+                    <p><strong>Hover</strong> - Mouse over</p>
+                </div>
+
+                <div class="demo-item">
+                    <div class="demo-visual">
+                        <button class="demo-button" style="opacity: 0.5; cursor: not-allowed;">Disabled</button>
+                    </div>
+                    <p><strong>Disabled</strong> - Not interactive</p>
+                </div>
+
+                <div class="demo-item">
+                    <div class="demo-visual">
+                        <button class="demo-button">
+                            <span style="display: inline-block; animation: spin 1s linear infinite;">⏳</span> Loading
+                        </button>
+                    </div>
+                    <p><strong>Loading</strong> - Processing</p>
+                </div>
+            </div>
+
+            <h4>Common States:</h4>
+            <ul>
+                <li><code>default</code> - Idle/resting state</li>
+                <li><code>hover</code> - Mouse/pointer over component</li>
+                <li><code>active</code> - Currently pressed/clicked</li>
+                <li><code>focus</code> - Keyboard focus (accessibility)</li>
+                <li><code>disabled</code> - Not interactive</li>
+                <li><code>loading</code> - Awaiting response</li>
+                <li><code>error</code> - Invalid/failed state</li>
+                <li><code>success</code> - Completed successfully</li>
+            </ul>
+        </section>
+
+        <!-- 6. Variants -->
+        <section id="variants">
+            <h2>6. Variants (Visual Styles)</h2>
+
+            <p>Variants are different visual styles of the same component structure.</p>
+
+            <h3>Button Variants Example</h3>
+
+            <div class="component-demo">
+                <div class="demo-item">
+                    <div class="demo-visual">
+                        <button class="demo-button">Primary</button>
+                    </div>
+                    <p><strong>Primary</strong> - Main actions</p>
+                </div>
+
+                <div class="demo-item">
+                    <div class="demo-visual">
+                        <button class="demo-button secondary">Secondary</button>
+                    </div>
+                    <p><strong>Secondary</strong> - Less emphasis</p>
+                </div>
+
+                <div class="demo-item">
+                    <div class="demo-visual">
+                        <button class="demo-button ghost">Ghost</button>
+                    </div>
+                    <p><strong>Ghost</strong> - Minimal style</p>
+                </div>
+            </div>
+
+            <div class="example-box">
+                <h4>When to Create Variants</h4>
+                <p><strong>Same structure, different appearance</strong></p>
+                <ul>
+                    <li>✅ Primary vs Secondary button (same anatomy, different colors)</li>
+                    <li>✅ Card with shadow vs Card without shadow</li>
+                    <li>✅ Input with border vs Input with underline only</li>
+                </ul>
+                <p><strong>Different structure = Different component</strong></p>
+                <ul>
+                    <li>❌ Button with icon vs Button without icon → Use props/slots</li>
+                    <li>❌ Horizontal nav vs Vertical nav → Separate components</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 7. Specifications -->
+        <section id="specs">
+            <h2>7. Specifications (Technical Measurements)</h2>
+
+            <p>Precise measurements for implementation.</p>
+
+            <h3>Button Specifications Example</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Property</th>
+                        <th>Small</th>
+                        <th>Medium</th>
+                        <th>Large</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Height</strong></td>
+                        <td>32px</td>
+                        <td>40px</td>
+                        <td>48px</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Padding (horizontal)</strong></td>
+                        <td>12px</td>
+                        <td>16px</td>
+                        <td>24px</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Font Size</strong></td>
+                        <td>14px</td>
+                        <td>16px</td>
+                        <td>18px</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Border Radius</strong></td>
+                        <td>4px</td>
+                        <td>6px</td>
+                        <td>8px</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Icon Size</strong></td>
+                        <td>16px</td>
+                        <td>20px</td>
+                        <td>24px</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4>Specification Categories:</h4>
+            <ul>
+                <li><strong>Dimensions</strong> - Width, height, min/max sizes</li>
+                <li><strong>Spacing</strong> - Padding, margin, gap between elements</li>
+                <li><strong>Typography</strong> - Font size, weight, line height</li>
+                <li><strong>Colors</strong> - Background, text, border colors (reference to color system)</li>
+                <li><strong>Effects</strong> - Border radius, shadows, transitions</li>
+            </ul>
+        </section>
+
+        <!-- 8. Pattern Recognition -->
+        <section id="pattern-recognition">
+            <h2>8. Pattern Recognition (Freya's Workflow)</h2>
+
+            <div class="key-principle">
+                <strong>Rule:</strong> Document a component in the design system on its <strong>SECOND occurrence</strong>.
+            </div>
+
+            <h3>Incremental Building Process</h3>
+
+            <div class="workflow-step">
+                <strong>Page 1.1:</strong> Uses Button (first occurrence)
+                <p>→ Freya notes it, continues without creating design system entry</p>
+            </div>
+
+            <div class="workflow-step">
+                <strong>Page 1.2:</strong> Uses Button again (second occurrence)
+                <p>→ Freya: "I've used 'Button' twice now. Should I document this in the design system?"</p>
+                <p>→ User: "Yes"</p>
+                <p>→ Freya creates E-Design-System/atoms/button/ with full documentation</p>
+            </div>
+
+            <div class="workflow-step">
+                <strong>Page 1.3:</strong> Uses Button + Card
+                <p>→ Button: Already documented, reference existing spec</p>
+                <p>→ Card: Second occurrence → Ask to document</p>
+            </div>
+
+            <div class="workflow-step">
+                <strong>Page 2.1:</strong> Uses Button (primary variant) + new Ghost variant
+                <p>→ Freya: "New variant detected! I'll add 'Ghost' to the Button variants."</p>
+                <p>→ Updates E-Design-System/atoms/button/05-variants.md</p>
+            </div>
+
+            <h3>Why Second Occurrence?</h3>
+
+            <div class="example-box">
+                <h4>Prevents Premature Abstraction</h4>
+                <p><strong>❌ Problem with "first occurrence":</strong> You document something that never gets reused.</p>
+                <p><strong>✅ Solution with "second occurrence":</strong> You only document actual patterns.</p>
+
+                <h4 style="margin-top: 1.5rem;">Natural Pattern Emergence</h4>
+                <p>Components earn their place in the design system by being <strong>actually reused</strong>, not by being <strong>potentially reusable</strong>.</p>
+            </div>
+
+            <h3>Freya's Tracking System</h3>
+
+            <pre><code>Component Usage Tracking:
+
+Button:
+  - Page 1.1 (first occurrence)
+  - Page 1.2 (second occurrence) ← TRIGGER: Create design system entry
+  - Page 1.3 (third occurrence) ← Reference existing
+
+Card:
+  - Page 1.2 (first occurrence)
+  - Page 1.3 (second occurrence) ← TRIGGER: Create design system entry
+
+Input:
+  - Page 2.1 (first occurrence)
+  [No second occurrence yet, no design system entry]</code></pre>
+        </section>
+
+        <footer>
+            <p><strong>WDS Design System Standards</strong> | Whiteport Design Studio v0.3.0</p>
+            <p>Reference: <code>_wds/docs/design-system/00-design-system.md</code></p>
+        </footer>
+    </div>
+
+    <style>
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</body>
+</html>
