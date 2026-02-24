@@ -153,6 +153,44 @@ docs/method/dream-up-rubric-phase-2.md
 
 ---
 
+### For Phase 3 (Scenarios)
+
+**Load these WDS learning materials:**
+```
+src/workflows/3-scenarios/data/quality-checklist.md
+src/workflows/3-scenarios/data/scenario-outline-template.md
+src/workflows/3-scenarios/data/validation-standards.md
+```
+
+**Learn and internalize:**
+
+#### Structure Requirements
+- Scenario has 7 required components (Name, Core Feature, Entry Point, Mental State, Success Goals, Shortest Path, Trigger Map Connections)
+- Entry points must be realistic (device + context + discovery) — max 2 sentences
+- Mental states must be visceral (Trigger/Hope/Worry) — one sentence each
+- Paths must be linear (zero branches, minimum viable steps)
+- Success goals must be mutual (user + business, both measurable)
+
+#### Quality Criteria (from quality-checklist.md)
+1. **Persona Alignment** — Serves specific Trigger Map persona
+2. **Mental State Richness** — Visceral, not generic
+3. **Mutual Success Clarity** — Both specific and measurable
+4. **Sunshine Path Focus** — Completely linear
+5. **Minimum Viable Steps** — Each justifies existence
+6. **Entry Point Realism** — Real-world behavior
+7. **Business Goal Connection** — Traces to Trigger Map
+
+#### Common Mistakes to Avoid
+- Edge cases in sunshine path (zero "if" statements)
+- Feature-first naming (use persona + purpose)
+- Missing mental state components
+- Vague page descriptions
+- Generic persona ("user" instead of named persona)
+- Missing business value
+- Bloated descriptions (max 2 sentences per entry point, 1 sentence per mental state component)
+
+---
+
 ## Layer 2: Project Context (Cumulative)
 
 **Purpose:** Extract substance from prior artifacts. Layer 2 GROWS with each step.
@@ -268,6 +306,24 @@ docs/method/dream-up-rubric-phase-2.md
 
 **Key Principle:** Each subsequent generation step uses ALL prior artifacts from Layer 2.
 
+### For Phase 3: Cumulative Context Growth
+
+**Initial Load (start of Phase 3):**
+- Product Brief (all 4 documents from Phase 1)
+- Trigger Map (all documents from Phase 2)
+- VTCs (Value Trigger Chains)
+
+**After each scenario outlined:**
+```markdown
+### Scenario [NN] (Added to Layer 2)
+**Persona:** [Name]
+**Pages covered:** [List]
+**Driving forces addressed:** [Which ones from Trigger Map]
+**Remaining unaddressed forces:** [What still needs scenarios]
+```
+
+**Key Rule:** Each subsequent scenario should address DIFFERENT driving forces. Check Layer 2 to avoid duplicating coverage.
+
 ---
 
 ## Layer 3: Domain Research (Ongoing)
@@ -334,6 +390,23 @@ Forums: Reddit r/travel, car forums about breakdowns while traveling
 **Informing Generation:**
 [How research will be applied to this step]
 ```
+
+### For Phase 3 (Scenarios)
+
+**For Entry Points:**
+- WebSearch: "[user type] how they find [service type]"
+- WebSearch: "[device type] user behavior [context]"
+- Look for: Real search terms, realistic discovery paths, device usage statistics
+
+**For Mental States:**
+- WebSearch: "[situation] user emotions anxiety"
+- WebSearch: "[service] customer reviews pain points"
+- Look for: Actual user language from reviews and forums — visceral, specific feelings
+
+**For Shortest Paths:**
+- WebSearch: "[similar service] website user flow best practices"
+- WebSearch: "[industry] conversion funnel steps"
+- Look for: Industry-standard page flows, minimum viable steps for this type of service
 
 ---
 
@@ -624,6 +697,23 @@ For each of 7 criteria: ✅ (met), ⚠️ (partial), ❌ (gap)
 
 **Then generate Iteration N+1 with refinements applied, using full 5-layer process again.**
 
+### Self-Review for Phase 3 (Scenarios)
+
+**Use `quality-checklist.md` directly as the rubric.** The checklist has 4 dimensions:
+
+1. **Completeness** (7 sections) — target 7/7
+2. **Quality Criteria** (7 checks) — target 5/7 minimum
+3. **Common Mistakes** (7 checks) — target 7/7 (zero tolerance)
+4. **Best Practices** (4 checks) — target 2/4 minimum
+
+**Run quality-checklist.md against each generated scenario. Score using the checklist's own format.**
+
+**Refinement triggers for scenarios:**
+- Any Dimension 3 failure (Common Mistakes) → immediate fix (zero tolerance)
+- Dimension 1 below 6/7 → fix before proceeding
+- Dimension 2 below 5/7 → refine mental state and success goals first (most common gap)
+- Bloated descriptions (Dimension 3.7) → trim to max lengths before any other refinement
+
 ---
 
 ## Mode-Specific Presentation
@@ -717,6 +807,41 @@ Would you like to review the full Trigger Map now?
 ```
 
 **No user checkpoints - continue autonomously until complete or interrupted.**
+
+---
+
+## Layer 6: Completeness Gate (Dream Mode Only)
+
+**Purpose:** After all Layer 5 self-reviews pass, verify ALL required output documents exist before presenting results.
+
+### Required Documents Checklist
+
+Run this gate after autonomous generation completes:
+
+**Mandatory files in `{output_folder}/B-Trigger-Map/`:**
+- [ ] `00-trigger-map.md` — Hub document with Mermaid diagram
+- [ ] `01-Business-Goals.md` — Vision + SMART objectives
+- [ ] One persona document per target group (`02-XX.md`, `03-XX.md`, etc.)
+- [ ] `05-Key-Insights.md` — Strategic insights summary
+
+**Conditional files:**
+- [ ] `06-Feature-Impact.md` — Only if feature impact workshop was completed
+
+### Validation Rules:
+- Each file must be non-empty (contains actual content, not just headers)
+- Hub document must contain a Mermaid code block
+- Persona count must match the number of target groups from workshops
+- Business Goals must contain vision + at least 2 SMART objectives
+
+### IF any file missing or empty:
+1. Identify which file is missing
+2. Re-run Layer 4 generation for that specific artifact
+3. Re-run Layer 5 self-review for that artifact
+4. Re-check this gate
+
+### IF 3 retries fail for any file:
+Switch to Suggest mode for the missing artifact:
+> "I generated most of the Trigger Map autonomously, but [missing artifact] needs your input. Let's switch to Suggest mode for this section."
 
 ---
 

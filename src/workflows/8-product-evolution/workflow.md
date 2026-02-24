@@ -62,12 +62,12 @@ What would you like to do?
 
 ### Activity Routing
 
-| Choice | Workflow File | Steps Folder | Borrows From |
-|--------|--------------|--------------|--------------|
+| Choice | Workflow File | Steps | Borrows From |
+|--------|--------------|-------|--------------|
 | [A] | workflow-analyze.md | steps-a/ | Phase 3 (scenarios) |
-| [S] | workflow-scope.md | steps-s/ | Phase 3 (scenarios) |
+| [S] | workflow-scope.md | Inline | Phase 3 (scenarios) |
 | [D] | workflow-design.md | steps-d/ | Phase 4 (UX design) |
-| [I] | workflow-implement.md | steps-i/ | Phase 5 (development) |
+| [I] | workflow-implement.md | Inline | Phase 5 (development) |
 | [T] | workflow-test.md | steps-t/ | Phase 5 [T] (testing) |
 | [P] | workflow-deploy.md | steps-p/ | Phase 4 [H] (delivery) |
 

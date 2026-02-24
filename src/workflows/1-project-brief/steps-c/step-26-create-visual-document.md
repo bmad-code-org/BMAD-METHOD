@@ -1,5 +1,5 @@
 ---
-name: 'step-26-visual-synthesize'
+name: 'step-26-create-visual-document'
 description: 'Complete the Visual Direction document with clear actionable summary'
 
 # File References
@@ -8,7 +8,7 @@ workflowFile: '../workflow.md'
 activityWorkflowFile: '../workflow.md'
 ---
 
-# Step 26: Visual Direction Synthesize & Review
+# Step 26: Create Visual Direction Document
 
 ## STEP GOAL:
 Complete the Visual Direction document with a clear, actionable summary that designers can use as reference.

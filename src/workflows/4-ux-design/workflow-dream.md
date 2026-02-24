@@ -40,6 +40,18 @@ The Dream workflow uses the same steps as Suggest (`./steps-s/`) but with **auto
 - After completion, present a summary of all decisions made
 - User can accept, request changes, or switch to **[S] Suggest** for finer control
 
+### Mode Override Rule (CRITICAL)
+
+Step files in `./steps-s/` contain rules like "ALWAYS halt and wait for user input" and "NEVER generate content without user input." **These rules apply ONLY in Suggest mode.**
+
+In Dream mode:
+- **OVERRIDE** all "halt and wait" rules — auto-proceed after completing each step
+- **OVERRIDE** "NEVER generate content without user input" — generate based on context and WDS patterns
+- **DO NOT** display menus or wait for menu selections between steps
+- **DO** still save outputs and update agent dialog at each step
+- **DO** still follow the step's actual instructions for what to generate
+- The user can type **"stop"** or **"pause"** at any time to interrupt and switch to Suggest mode
+
 **Reference data:**
 - `./data/scenario-init/` — scenario guides and examples
 - `./data/page-creation-flows/` — page creation approaches

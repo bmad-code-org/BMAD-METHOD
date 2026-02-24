@@ -1,5 +1,5 @@
 ---
-name: 'step-32-platform-synthesize'
+name: 'step-32-create-platform-document'
 description: 'Complete the Platform Requirements document and prepare for next steps'
 
 # File References
@@ -8,7 +8,7 @@ workflowFile: '../workflow.md'
 activityWorkflowFile: '../workflow.md'
 ---
 
-# Step 32: Platform Requirements Synthesize & Review
+# Step 32: Create Platform Requirements Document
 
 ## STEP GOAL:
 Complete the Platform Requirements document, document maintenance ownership, and prepare for next steps.

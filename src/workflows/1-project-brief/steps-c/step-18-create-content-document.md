@@ -1,5 +1,5 @@
 ---
-name: 'step-18-content-synthesize'
+name: 'step-18-create-content-document'
 description: 'Complete the Content and Language document with actionable guidelines'
 
 # File References
@@ -8,7 +8,7 @@ workflowFile: '../workflow.md'
 activityWorkflowFile: '../workflow.md'
 ---
 
-# Step 18: Content & Language Synthesize & Review
+# Step 18: Create Content & Language Document
 
 ## STEP GOAL:
 Complete the Content & Language document and create actionable guidelines that writers and designers can use.
@@ -115,7 +115,7 @@ Explain what's next:
 After completing this step, update the agent dialog:
 
 ```markdown
-### Step 18: Synthesize & Review
+### Step 18: Create Content Document
 **Q:** Does this capture how [business] should sound?
 **A:** [User confirmation, any final adjustments]
 **Documented in:** content-language.md (complete)

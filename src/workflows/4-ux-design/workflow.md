@@ -96,7 +96,7 @@ What would you like to do?
 | [C] | workflow-conceptualize.md | steps-c/ |
 | [K] | workflow-sketch.md | steps-k/ |
 | [S] | workflow-suggest.md | steps-s/ |
-| [D] | workflow-dream.md | steps-d/ (uses steps-s/) |
+| [D] | workflow-dream.md | steps-s/ (autonomous mode) |
 | [P] | workflow-specify.md | steps-p/ |
 | [W] | workflow-visual.md | steps-w/ |
 | [M] | workflow-design-system.md | steps-m/ |

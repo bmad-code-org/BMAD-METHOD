@@ -3,7 +3,7 @@ name: 'step-31-multilingual'
 description: 'Document multilingual requirements and technical SEO needs'
 
 # File References
-nextStepFile: './step-32-platform-synthesize.md'
+nextStepFile: './step-32-create-platform-document.md'
 workflowFile: '../workflow.md'
 activityWorkflowFile: '../workflow.md'
 ---

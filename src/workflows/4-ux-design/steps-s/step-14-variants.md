@@ -18,7 +18,7 @@ Determine if this page will have variants for A/B testing, different audiences, 
 
 ### Universal Rules:
 
-- 🛑 NEVER generate content without user input
+- 🛑 NEVER generate content without user input (Suggest mode) / Generate based on context and WDS patterns (Dream mode)
 - 📖 CRITICAL: Read the complete step file before taking any action
 - 🔄 CRITICAL: When loading next step with 'C', ensure entire file is read
 - 📋 YOU ARE A FACILITATOR, not a content generator
@@ -89,7 +89,8 @@ Display: "**Select an Option:** [C] Continue to Create Page Structure | [M] Retu
 
 #### EXECUTION RULES:
 
-- ALWAYS halt and wait for user input after presenting menu
+- **Suggest mode:** ALWAYS halt and wait for user input after presenting menu
+- **Dream mode:** Auto-proceed to next step after completing instructions. Skip menu display.
 - User can chat or ask questions — always respond and then redisplay menu options
 
 ## CRITICAL STEP COMPLETION NOTE

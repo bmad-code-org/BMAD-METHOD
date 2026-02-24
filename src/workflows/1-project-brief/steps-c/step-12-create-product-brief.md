@@ -1,6 +1,6 @@
 ---
-name: 'step-12-synthesize'
-description: 'Synthesize all captured information and generate the complete Product Brief document'
+name: 'step-12-create-product-brief'
+description: 'Compile all captured information and generate the complete Product Brief document'
 
 # File References
 nextStepFile: './step-13-content-init.md'
@@ -8,10 +8,10 @@ workflowFile: '../workflow.md'
 activityWorkflowFile: '../workflow.md'
 ---
 
-# Step 12: Synthesize and Create Brief
+# Step 12: Create Product Brief
 
 ## STEP GOAL:
-Present a cohesive synthesis of everything captured, get final confirmation, and generate the complete Product Brief document.
+Present a cohesive summary of everything captured, get final confirmation, and generate the complete Product Brief document.
 
 ## MANDATORY EXECUTION RULES (READ FIRST):
 

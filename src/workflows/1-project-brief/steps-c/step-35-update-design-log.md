@@ -58,7 +58,7 @@ Add the following under the `## Progress` section (after the last entry):
 ```
 ### [date] - Phase 1: Product Brief Complete
 
-**Agent:** Mimir (Project Brief)
+**Agent:** Saga (Product Brief)
 **Brief Level:** [standard / simplified]
 
 **Artifacts Created:**
@@ -80,7 +80,7 @@ Add the following under the `## Progress` section (after the last entry):
 Add rows to the `## Key Decisions` table for any significant choices made during Phase 1:
 
 ```
-| [date] | [decision] | Phase 1: Product Brief | Mimir + [user_name] |
+| [date] | [decision] | Phase 1: Product Brief | Saga + [user_name] |
 ```
 
 Examples of key decisions worth logging:

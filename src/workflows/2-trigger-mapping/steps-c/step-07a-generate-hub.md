@@ -55,6 +55,32 @@ Create the main entry point document (00-trigger-map.md) with Mermaid diagram, o
 
 ## Sequence of Instructions (Do not deviate, skip, or optimize)
 
+### 0. Data Extraction (MANDATORY BEFORE GENERATION)
+
+Before generating ANY content, extract structured data from all workshop outputs:
+
+**Read and extract from workshop data:**
+
+1. **From Business Goals workshop:**
+   - `vision_statement` = exact vision text (character-for-character)
+   - `objectives[]` = each SMART objective with metric, target, timeline
+
+2. **From Target Groups workshop:**
+   - `target_groups[]` = each group with name, priority, persona summary
+   - `positive_drivers[]` per group (specific wants)
+   - `negative_drivers[]` per group (specific fears)
+
+3. **From Prioritization workshop:**
+   - `focus_statement` = strategic focus
+   - `top_group` = primary design target
+   - `must_address_drivers[]` and `should_address_drivers[]`
+
+**Store these as variables. When filling the hub document, use EXACT values from these variables. Do NOT paraphrase or summarize workshop outputs.**
+
+**Validation rule:** Vision statement in the hub MUST be character-for-character identical to the vision from Business Goals workshop. If you cannot find the exact text, ask the user rather than inventing a paraphrase.
+
+---
+
 ### 1. Generate Header Section
 
 Create header with project name, date, author, and methodology credit.
@@ -96,6 +122,16 @@ Explain diagram reading: left-to-right flow, top-to-bottom priority, driving for
 ### 6. Generate Footer
 
 Include WDS framework credit and Effect Mapping methodology credits.
+
+### 6b. Cross-Validation Check
+
+Before saving, verify data consistency:
+- [ ] Vision in hub matches vision from Business Goals workshop exactly
+- [ ] Persona names in hub match names used in individual persona documents
+- [ ] Driver count in Mermaid diagram matches drivers in per-persona workshop outputs
+- [ ] Priority ordering in hub matches prioritization workshop output
+
+If any mismatch found: correct the hub document to match the source workshop data.
 
 ### 7. Save and Confirm
 

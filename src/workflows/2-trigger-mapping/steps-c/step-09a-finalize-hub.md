@@ -66,9 +66,25 @@ This will create all documents following the standard trigger map structure:
 - `05-Key-Insights.md`
 - `06-Feature-Impact.md` (if workshop was run)
 
-### 2. Confirm Generation Complete
+### 2. Confirm Generation Complete (Completeness Gate)
 
-Verify all documents have been generated and saved.
+Verify ALL required documents have been generated:
+
+**Mandatory files in `{output_folder}/B-Trigger-Map/`:**
+- [ ] `00-trigger-map.md` — Hub document with Mermaid diagram
+- [ ] `01-Business-Goals.md` — Vision + SMART objectives
+- [ ] One persona document per target group (`02-XX.md`, `03-XX.md`, etc.)
+- [ ] `05-Key-Insights.md` — Strategic insights summary
+
+**Conditional files:**
+- [ ] `06-Feature-Impact.md` — Only if feature impact workshop was completed
+
+**Validation rules:**
+- Each file must be non-empty (contains actual content, not just headers)
+- Hub document must contain a Mermaid code block
+- Persona count must match the number of target groups from workshops
+
+**If any file is missing:** Generate the missing file before proceeding. Do NOT skip.
 
 ### 3. Present MENU OPTIONS
 

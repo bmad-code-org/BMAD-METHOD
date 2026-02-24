@@ -210,7 +210,7 @@ Created in Step 4 (early in the brief) to provide strategic grounding:
 
 ---
 
-### 12. Synthesize
+### 12. Create Product Brief
 **Bring it all together**
 
 Generate complete Product Brief document using template.

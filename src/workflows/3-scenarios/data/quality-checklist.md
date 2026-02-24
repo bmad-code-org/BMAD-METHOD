@@ -71,9 +71,9 @@ For each scenario, verify all 7 components exist:
 
 ---
 
-## Dimension 3: Common Mistakes (6 checks)
+## Dimension 3: Common Mistakes (7 checks)
 
-All 6 must be avoided — any single mistake requires correction.
+All 7 must be avoided — any single mistake requires correction.
 
 ### 3.1 Edge Cases in Sunshine Path
 **Check:** Are there any "if" statements, error states, or branches?
@@ -103,7 +103,11 @@ All 6 must be avoided — any single mistake requires correction.
 **Check:** Is business success explicitly defined and measurable?
 **Fix:** Add specific business outcome connected to Trigger Map goal.
 
-**Minimum:** 6/6 avoided (zero tolerance for mistakes)
+### 3.7 Bloated Descriptions
+**Check:** Does any single component (Entry Point, Mental State, Success Goals) exceed 2 sentences?
+**Fix:** Trim to bullet-point essentials. Entry points: device + context + discovery. Mental state: one phrase per component. Success: one measurable statement each.
+
+**Minimum:** 7/7 avoided (zero tolerance for mistakes)
 
 ---
 
@@ -134,7 +138,7 @@ Scenario states which specific wants/fears from Trigger Map it addresses, with c
 
 **Completeness:** [X]/7
 **Quality:** [X]/7
-**Mistakes Avoided:** [X]/6
+**Mistakes Avoided:** [X]/7
 **Best Practices:** [X]/4
 
 **Status:** [Excellent / Good / Needs Work]
@@ -147,8 +151,8 @@ Scenario states which specific wants/fears from Trigger Map it addresses, with c
 
 | Level | Complete | Quality | Mistakes | Practices |
 |-------|----------|---------|----------|-----------|
-| Minimum | 6/7 | 5/7 | 6/6 | 2/4 |
-| Excellent | 7/7 | 7/7 | 6/6 | 4/4 |
+| Minimum | 6/7 | 5/7 | 7/7 | 2/4 |
+| Excellent | 7/7 | 7/7 | 7/7 | 4/4 |
 
 **If not meeting Minimum after corrections:** Note gaps and consult user for guidance.
 

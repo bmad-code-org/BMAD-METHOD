@@ -32,7 +32,7 @@
 **Context:** [Where the user is, what they're doing, what just happened]
 **Discovery:** [How they found the site — Google search terms, link from email, bookmark, ad, etc.]
 
-**Specific entry:** [Full realistic description]
+**Specific entry:** [Device] + [Context] + [Discovery] — max 2 sentences
 
 ---
 
@@ -43,6 +43,8 @@
 **Hope:** [What they're hoping to find or achieve — be specific]
 
 **Worry:** [What they're afraid of or want to avoid — be specific]
+
+> CONSTRAINT: One sentence per component. Use phrases, not paragraphs.
 
 ---
 

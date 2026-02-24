@@ -75,14 +75,14 @@ Based on `brief_level`:
 | 10a | Platform Strategy | Define platform approach |
 | 11 | Tone of Voice | Establish brand voice |
 | 11a | Create VTC | Second VTC opportunity (refs `vtc-workshop/`) |
-| 12 | Synthesize | Create the Product Brief document |
+| 12 | Create Product Brief | Generate the Product Brief document |
 | 13 | Content Init | Initialize content & language strategy |
 | 14 | Personality | Define brand personality |
 | 15 | Tone | Refine tone guidelines |
 | 16 | Languages | Language strategy |
 | 17 | SEO Keywords | Define keyword map |
 | 17a | Content Structure | Content architecture |
-| 18 | Content Synthesize | Create Content & Language document |
+| 18 | Create Content Document | Generate Content & Language document |
 | 19 | Inspiration Workshop | Analyze reference sites |
 | 20 | Visual Init | Initialize visual direction |
 | 21 | Existing Brand | Document existing brand assets |
@@ -90,13 +90,13 @@ Based on `brief_level`:
 | 23 | Design Style | Define design style |
 | 24 | Layout & Effects | Layout patterns and effects |
 | 25 | Imagery | Photography and illustration direction |
-| 26 | Visual Synthesize | Create Visual Direction document |
+| 26 | Create Visual Document | Generate Visual Direction document |
 | 27 | Platform Init | Initialize platform requirements |
 | 28 | Tech Stack | Define technology choices |
 | 29 | Integrations | Third-party integrations |
 | 30 | Contact Strategy | Contact forms and communication |
 | 31 | Multilingual | Multi-language setup |
-| 32 | Platform Synthesize | Create Platform Requirements document |
+| 32 | Create Platform Document | Generate Platform Requirements document |
 | 33 | Analyze Brief | Review all Phase 1 artifacts |
 | 34 | Create Summary | Generate handover summary |
 | 35 | Update Design Log | Record Phase 1 decisions |

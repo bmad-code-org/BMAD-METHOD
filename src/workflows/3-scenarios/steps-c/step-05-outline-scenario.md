@@ -27,7 +27,7 @@ Create a detailed outline for ONE scenario using all 7 required components, veri
 
 ### Role Reinforcement:
 
-- ✅ You are a UX Scenario Architect collaborating with the project owner
+- ✅ You are a UX Scenario Facilitator — you ASK, the user DECIDES
 - ✅ If you already have been given a name, communication_style and identity, continue to use those while playing this new role
 - ✅ We engage in collaborative dialogue, not command-response
 - ✅ You bring scenario thinking and user journey expertise, user brings their project knowledge, together we create concrete UX scenario outlines
@@ -98,6 +98,8 @@ How the user ACTUALLY arrives. Be specific about:
 - **Bad:** "User opens app"
 - **Good:** "Googles 'car repair Oland' on mobile while parked at gas station, clicks top organic result"
 
+**Length Rule:** Entry Point must be 1-2 sentences max. State device + context + discovery method. No backstory or narrative prose.
+
 #### Component 4: Mental State (Trigger / Hope / Worry)
 
 Three components, all required, all specific:
@@ -108,6 +110,8 @@ Three components, all required, all specific:
 
 - **Bad:** "User is interested in the product"
 - **Good:** "Trigger: Motorhome broke down in Byxelkrok, family vacation at risk. Hope: Find trustworthy mechanic nearby, get back on road today. Worry: Being stranded for days, getting ripped off by unknown mechanic"
+
+**Length Rule:** Each Trigger/Hope/Worry must be ONE sentence max. Use comma-separated phrases, not paragraphs.
 
 #### Component 5: Success Goals (Mutual Value)
 

@@ -3,7 +3,7 @@ name: 'step-25-imagery'
 description: 'Define photography style, image sources, and imagery guidelines'
 
 # File References
-nextStepFile: './step-26-visual-synthesize.md'
+nextStepFile: './step-26-create-visual-document.md'
 workflowFile: '../workflow.md'
 activityWorkflowFile: '../workflow.md'
 ---

@@ -3,7 +3,7 @@ name: 'step-11a-create-vtc'
 description: 'Create simplified Value Trigger Chain for strategic summary'
 
 # File References
-nextStepFile: './step-12-synthesize.md'
+nextStepFile: './step-12-create-product-brief.md'
 workflowFile: '../workflow.md'
 activityWorkflowFile: '../workflow.md'
 ---

@@ -62,13 +62,13 @@ What would you like to do?
 
 ### Activity Routing
 
-| Choice | Workflow File | Steps Folder |
-|--------|--------------|--------------|
+| Choice | Workflow File | Steps |
+|--------|--------------|-------|
 | [C] | workflow-create.md | steps-c/ |
-| [I] | workflow-import.md | steps-i/ |
-| [V] | workflow-view.md | steps-v/ |
-| [E] | workflow-edit.md | steps-e/ |
-| [B] | workflow-browse.md | steps-b/ |
+| [I] | workflow-import.md | Inline |
+| [V] | workflow-view.md | Inline |
+| [E] | workflow-edit.md | Inline |
+| [B] | workflow-browse.md | Inline |
 
 ---
 
