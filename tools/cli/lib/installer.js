@@ -176,7 +176,7 @@ class Installer {
       starting_point: config.starting_point || 'brief',
       communication_language: 'en',
       document_output_language: 'en',
-      output_folder: 'design-process',
+      output_folder: config.root_folder || 'design-process',
       wds_folder: config.wdsFolder,
     };
 
@@ -291,7 +291,7 @@ class Installer {
       '{{user_name}}': config.user_name || 'Designer',
       '{{communication_language}}': 'en',
       '{{document_output_language}}': 'en',
-      '{{output_folder}}': 'design-process',
+      '{{output_folder}}': config.root_folder || 'design-process',
       '{{wds_folder}}': config.wdsFolder || '_wds',
     };
 
@@ -351,7 +351,7 @@ class Installer {
       '{{user_name}}': config.user_name || 'Designer',
       '{{communication_language}}': 'en',
       '{{document_output_language}}': 'en',
-      '{{output_folder}}': 'design-process',
+      '{{output_folder}}': config.root_folder || 'design-process',
       '{{wds_folder}}': config.wdsFolder || '_wds',
     };
 

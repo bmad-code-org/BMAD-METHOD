@@ -34,7 +34,7 @@ class UI {
     console.log(chalk.white(`  Target: ${chalk.cyan(projectDir)}`));
     console.log(chalk.dim(`  Agents and workflows will be installed in ${chalk.white('_wds/')}\n`));
 
-    // Minimal 2-question installer
+    // Minimal 3-question installer
     const answers = await inquirer.prompt([
       {
         type: 'input',
@@ -52,13 +52,18 @@ class UI {
         ],
         default: 'brief',
       },
+      {
+        type: 'input',
+        name: 'root_folder',
+        message: 'Output folder name:',
+        default: 'design-process',
+      },
     ]);
 
     return {
       projectDir,
       ...answers,
       wdsFolder: '_wds',
-      root_folder: 'design-process',
       cancelled: false,
     };
   }
