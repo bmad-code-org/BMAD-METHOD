@@ -45,10 +45,10 @@ class UI {
       {
         type: 'list',
         name: 'starting_point',
-        message: 'Where are you starting?',
+        message: 'Do you need to create a pitch deck & project contract before starting the project?',
         choices: [
-          { name: 'Go straight to Product Brief (I have approval)', value: 'brief' },
-          { name: 'Create pitch deck and project contract first', value: 'pitch' },
+          { name: 'No, start directly with the Product Brief', value: 'brief' },
+          { name: 'Yes, start with a project pitch', value: 'pitch' },
         ],
         default: 'brief',
       },
