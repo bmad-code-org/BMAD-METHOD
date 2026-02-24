@@ -43,6 +43,12 @@ class UI {
         default: defaultProjectName,
       },
       {
+        type: 'input',
+        name: 'root_folder',
+        message: 'Output folder name:',
+        default: 'design-process',
+      },
+      {
         type: 'list',
         name: 'starting_point',
         message: 'Do you need to create a pitch deck & project contract before starting the project?',
@@ -51,12 +57,6 @@ class UI {
           { name: 'Yes, start with a project pitch', value: 'pitch' },
         ],
         default: 'brief',
-      },
-      {
-        type: 'input',
-        name: 'root_folder',
-        message: 'Output folder name:',
-        default: 'design-process',
       },
     ]);
 
