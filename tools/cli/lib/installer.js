@@ -10,7 +10,6 @@ const ora = require('ora');
 const yaml = require('js-yaml');
 const inquirer = require('inquirer').default || require('inquirer');
 const { compileAgentFile } = require('./compiler');
-const { writeIdeConfig } = require('./ide-configs');
 
 class Installer {
   constructor() {
@@ -25,7 +24,7 @@ class Installer {
    * @param {Object} config - Configuration from UI prompts
    */
   async install(config) {
-    const { projectDir, wdsFolder, ides, project_type, design_experience, root_folder } = config;
+    const { projectDir, wdsFolder, root_folder } = config;
     const wdsDir = path.join(projectDir, wdsFolder);
 
     // Check if already installed
@@ -112,37 +111,14 @@ class Installer {
       throw error;
     }
 
-    // Update config.yaml with root folder
-    const configPath = path.join(wdsDir, 'config.yaml');
-    let configContent = await fs.readFile(configPath, 'utf8');
-    configContent = configContent.replace(/output_folder:\s*docs/, `output_folder: ${rootFolder}`);
-    await fs.writeFile(configPath, configContent, 'utf8');
-
-    // Step 5: Set up IDEs
-    const ideList = ides || (config.ide ? [config.ide] : []);
-    const ideSpinner = ora(`Setting up ${ideList.length} IDE(s)...`).start();
+    // Step 5: Copy learning & reference material (always included)
+    const learnSpinner = ora('Copying learning & reference material...').start();
     try {
-      const labels = [];
-      for (const ide of ideList) {
-        const result = await writeIdeConfig(projectDir, ide, wdsFolder);
-        labels.push(result.label);
-      }
-      ideSpinner.succeed(`Configured: ${labels.join(', ')}`);
+      await this.copyLearningMaterial(projectDir);
+      learnSpinner.succeed('Learning material added to _wds-learn/ (safe to remove when no longer needed)');
     } catch (error) {
-      ideSpinner.fail('Failed to set up IDEs');
+      learnSpinner.fail('Failed to copy learning material');
       throw error;
-    }
-
-    // Step 6: Copy learning & reference material (optional)
-    if (config.include_learning) {
-      const learnSpinner = ora('Copying learning & reference material...').start();
-      try {
-        await this.copyLearningMaterial(projectDir);
-        learnSpinner.succeed('Learning material added to _wds-learn/ (safe to remove when no longer needed)');
-      } catch (error) {
-        learnSpinner.fail('Failed to copy learning material');
-        throw error;
-      }
     }
 
     return { success: true, wdsDir, projectDir };
@@ -183,14 +159,25 @@ class Installer {
       return;
     }
 
+    // Get user name from git or system
+    const getUserName = () => {
+      try {
+        const { execSync } = require('child_process');
+        const gitName = execSync('git config user.name', { encoding: 'utf8' }).trim();
+        return gitName || 'Designer';
+      } catch {
+        return 'Designer';
+      }
+    };
+
     const configData = {
-      user_name: config.user_name || 'Designer',
-      communication_language: config.communication_language || 'en',
-      document_output_language: config.document_output_language || 'en',
-      output_folder: 'docs',
+      user_name: getUserName(),
+      project_name: config.project_name || 'Untitled Project',
+      starting_point: config.starting_point || 'brief',
+      communication_language: 'en',
+      document_output_language: 'en',
+      output_folder: 'design-process',
       wds_folder: config.wdsFolder,
-      project_type: config.project_type,
-      design_experience: config.design_experience,
     };
 
     const yamlStr = yaml.dump(configData, { lineWidth: -1 });
@@ -242,21 +229,19 @@ class Installer {
   /**
    * Create the WDS work products folder structure
    * @param {string} projectDir - Project root directory
-   * @param {string} rootFolder - Root folder name (design-process, docs, deliverables, etc.)
+   * @param {string} rootFolder - Root folder name (design-process)
    * @param {Object} config - Configuration object
    */
   async createDocsFolders(projectDir, rootFolder, config) {
     const docsPath = path.join(projectDir, rootFolder);
 
+    // Simplified 5-phase structure
     const folders = [
       'A-Product-Brief',
       'B-Trigger-Map',
       'C-UX-Scenarios',
-      'D-Design-System',
-      'E-PRD',
-      'E-PRD/Design-Deliveries',
-      'F-Testing',
-      'G-Product-Development',
+      'D-UX-Design',
+      'E-Design-System',
     ];
 
     for (const folder of folders) {
@@ -275,6 +260,11 @@ class Installer {
       }
     }
 
+    // Create _progress folder for agent tracking
+    const progressPath = path.join(docsPath, '_progress');
+    await fs.ensureDir(progressPath);
+    await fs.ensureDir(path.join(progressPath, 'agent-dialogs'));
+
     // Create 00 guide files in each folder (if they don't exist)
     await this.createFolderGuides(docsPath, config);
   }
@@ -290,19 +280,18 @@ class Installer {
       { template: '00-product-brief.template.md', folder: 'A-Product-Brief', filename: '00-product-brief.md' },
       { template: '00-trigger-map.template.md', folder: 'B-Trigger-Map', filename: '00-trigger-map.md' },
       { template: '00-ux-scenarios.template.md', folder: 'C-UX-Scenarios', filename: '00-ux-scenarios.md' },
-      { template: '00-design-system.template.md', folder: 'D-Design-System', filename: '00-design-system.md' },
+      { template: '00-design-system.template.md', folder: 'E-Design-System', filename: '00-design-system.md' },
     ];
 
     // Common placeholder replacements
     const replacements = {
       '{{project_name}}': config.project_name || 'Untitled Project',
       '{{date}}': new Date().toISOString().split('T')[0],
-      '{{project_type}}': config.project_type || 'digital_product',
-      '{{design_experience}}': config.design_experience || 'intermediate',
+      '{{starting_point}}': config.starting_point || 'brief',
       '{{user_name}}': config.user_name || 'Designer',
-      '{{communication_language}}': config.communication_language || 'en',
-      '{{document_output_language}}': config.document_output_language || 'en',
-      '{{output_folder}}': path.relative(config.projectDir, docsPath) || 'docs',
+      '{{communication_language}}': 'en',
+      '{{document_output_language}}': 'en',
+      '{{output_folder}}': 'design-process',
       '{{wds_folder}}': config.wdsFolder || '_wds',
     };
 
@@ -358,12 +347,11 @@ class Installer {
     const replacements = {
       '{{project_name}}': config.project_name || 'Untitled Project',
       '{{date}}': new Date().toISOString().split('T')[0],
-      '{{project_type}}': config.project_type || 'digital_product',
-      '{{design_experience}}': config.design_experience || 'intermediate',
+      '{{starting_point}}': config.starting_point || 'brief',
       '{{user_name}}': config.user_name || 'Designer',
-      '{{communication_language}}': config.communication_language || 'en',
-      '{{document_output_language}}': config.document_output_language || 'en',
-      '{{output_folder}}': path.relative(config.projectDir, docsPath) || 'docs',
+      '{{communication_language}}': 'en',
+      '{{document_output_language}}': 'en',
+      '{{output_folder}}': 'design-process',
       '{{wds_folder}}': config.wdsFolder || '_wds',
     };
 
