@@ -63,12 +63,12 @@ class UI {
         name: 'ides',
         message: 'Which tools/IDEs are you using? (use spacebar to select)',
         choices: [
-          { name: 'Windsurf ⭐', value: 'windsurf', checked: true },
-          { name: 'Cursor ⭐', value: 'cursor', checked: true },
           { name: 'Claude Code', value: 'claude-code', checked: false },
-          { name: 'GitHub Copilot', value: 'github-copilot', checked: false },
           { name: 'Cline', value: 'cline', checked: false },
+          { name: 'Cursor', value: 'cursor', checked: false },
+          { name: 'GitHub Copilot', value: 'github-copilot', checked: false },
           { name: 'VS Code', value: 'vscode', checked: false },
+          { name: 'Windsurf', value: 'windsurf', checked: false },
           { name: 'Other', value: 'other', checked: false },
         ],
         validate: (answers) => {
