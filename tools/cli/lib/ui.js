@@ -59,16 +59,24 @@ class UI {
         default: 'brief',
       },
       {
-        type: 'list',
-        name: 'ide',
-        message: 'Which IDE are you using?',
+        type: 'checkbox',
+        name: 'ides',
+        message: 'Which tools/IDEs are you using? (use spacebar to select)',
         choices: [
-          { name: 'Windsurf', value: 'windsurf' },
-          { name: 'VS Code', value: 'vscode' },
-          { name: 'Cursor', value: 'cursor' },
-          { name: 'Other', value: 'other' },
+          { name: 'Windsurf ⭐', value: 'windsurf', checked: true },
+          { name: 'Cursor ⭐', value: 'cursor', checked: true },
+          { name: 'Claude Code', value: 'claude-code', checked: false },
+          { name: 'GitHub Copilot', value: 'github-copilot', checked: false },
+          { name: 'Cline', value: 'cline', checked: false },
+          { name: 'VS Code', value: 'vscode', checked: false },
+          { name: 'Other', value: 'other', checked: false },
         ],
-        default: 'windsurf',
+        validate: (answers) => {
+          if (!answers || answers.length === 0) {
+            return 'At least one IDE must be selected';
+          }
+          return true;
+        },
       },
       {
         type: 'confirm',
@@ -89,20 +97,34 @@ class UI {
   /**
    * Display success message with next steps
    */
-  displaySuccess(wdsFolder, ide = 'windsurf') {
-    const ideName = {
+  displaySuccess(wdsFolder, ides = ['windsurf']) {
+    const ideNames = {
       windsurf: 'Windsurf',
       vscode: 'VS Code',
       cursor: 'Cursor',
+      'claude-code': 'Claude Code',
+      'github-copilot': 'GitHub Copilot',
+      cline: 'Cline',
       other: 'your IDE',
-    }[ide] || 'your IDE';
+    };
+
+    // Format IDE list for display
+    let ideDisplay;
+    if (!ides || ides.length === 0) {
+      ideDisplay = 'your IDE';
+    } else if (ides.length === 1) {
+      ideDisplay = ideNames[ides[0]] || 'your IDE';
+    } else {
+      const names = ides.map((ide) => ideNames[ide] || ide);
+      ideDisplay = names.join(' or ');
+    }
 
     console.log('');
     console.log(chalk.green.bold('  ✨ Installation complete!'));
     console.log('');
     console.log(chalk.white.bold('  Get Started with Your Product Brief'));
     console.log('');
-    console.log(chalk.white(`  1. Open this folder in ${ideName}`));
+    console.log(chalk.white(`  1. Open this folder in ${ideDisplay}`));
     console.log('');
     console.log(chalk.white('  2. Locate the chat window in your IDE and type:'));
     console.log('');

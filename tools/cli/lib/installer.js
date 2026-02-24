@@ -180,7 +180,7 @@ class Installer {
       document_output_language: 'en',
       output_folder: config.root_folder || 'design-process',
       wds_folder: config.wdsFolder,
-      ide: config.ide || 'windsurf',
+      ides: config.ides || ['windsurf'],
     };
 
     const yamlStr = yaml.dump(configData, { lineWidth: -1 });
