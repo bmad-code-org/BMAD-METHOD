@@ -75,21 +75,21 @@ class UI {
     console.log('');
     console.log(chalk.green.bold('  ✨ Installation complete!'));
     console.log('');
-    console.log(chalk.white('  Whiteport Design Studio - Design Methodology'));
-    console.log(chalk.dim('  Output: Product Brief, Trigger Map, UX Scenarios, Design System\n'));
-    console.log(chalk.white('  Getting started:'));
-    console.log(chalk.dim(`  1. Open your project in your AI IDE`));
-    console.log(chalk.dim(`  2. Tell the AI:`));
-    console.log(chalk.cyan(`     "Read and activate ${wdsFolder}/agents/saga-analyst.md"`));
-    console.log(chalk.dim(`  3. Saga will greet you and start the Product Brief`));
+    console.log(chalk.white.bold('  Next: Start the Product Brief'));
     console.log('');
-    console.log(chalk.white(`  Agents in ${chalk.cyan(wdsFolder + '/agents/')}:`));
-    console.log(chalk.dim(`  - Saga  (Analyst)  - Product Brief & Trigger Mapping (Start here)`));
-    console.log(chalk.dim(`  - Freya (Designer) - UX Scenarios, Design & Design System`));
+    console.log(chalk.white('  1. Open this folder in Windsurf or VS Code'));
+    console.log(chalk.white('  2. Open the AI chat and paste this command:'));
     console.log('');
-    console.log(chalk.dim('  Need development? Install BMM: npx bmad-builder install'));
+    console.log(chalk.cyan(`     Read and activate ${wdsFolder}/agents/saga-analyst.md`));
     console.log('');
-    console.log(chalk.dim('  https://github.com/whiteport-collective/whiteport-design-studio'));
+    console.log(chalk.white(`  3. Saga (your AI analyst) will greet you by name`));
+    console.log(chalk.dim(`     and guide you through creating your Product Brief`));
+    console.log('');
+    console.log(chalk.dim('  ─────────────────────────────────────────────────'));
+    console.log('');
+    console.log(chalk.dim(`  Available agents: Saga (Analyst), Freya (Designer), Idunn (PM)`));
+    console.log(chalk.dim(`  Need development? Install BMM: npx bmad-builder install`));
+    console.log(chalk.dim('  Docs: https://github.com/whiteport-collective/whiteport-design-studio'));
     console.log('');
   }
 }
