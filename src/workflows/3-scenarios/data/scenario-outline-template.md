@@ -88,7 +88,7 @@
 
 ## Pages in This Scenario
 
-Each page has its own folder with a boilerplate spec and a Sketches/ subfolder.
+Page folders are created when the user chooses [O] Outline or [D] Design from the post-scenario menu.
 
 | Page Number | Folder | Purpose in Flow |
 |-------------|--------|----------------|

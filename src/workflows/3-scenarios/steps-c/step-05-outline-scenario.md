@@ -187,7 +187,7 @@ Display:
 Scenario [NN] complete! What would you like to do?
 
 [N] Define the next scenario — [next transaction from the plan]
-[S] Scaffold all pages — create page folders for the whole scenario
+[O] Outline scenario pages — create page folders with boilerplate specs
 [D] Start designing — create first page folder and jump to Phase 4
 [C] Continue to generating the overview (when all scenarios are done)
 ```
@@ -195,7 +195,7 @@ Scenario [NN] complete! What would you like to do?
 #### Menu Handling Logic:
 
 - IF N: Loop back to instruction 1 for the next transaction and target group. The scenario outline is saved — page folders can be created later.
-- IF S: Create page folders for ALL pages in Q8's shortest path (see Page Folder Structure below), then return to this menu.
+- IF O: Walk through the pages in Q8's shortest path, creating page folders one at a time (see Page Folder Structure below). The user can stop at any point and return to this menu.
 - IF D: Create the first page folder (see Page Folder Structure below), then hand over to Phase 4 (UX Design). The remaining scenarios and page folders can be created later.
 - IF C: Load, read entire file, then execute {nextStepFile} (only when all planned scenarios are complete)
 
@@ -204,7 +204,7 @@ Scenario [NN] complete! What would you like to do?
 - ALWAYS halt and wait for user input after presenting menu
 - After other menu items execution, return to this menu
 - User can chat or ask questions — always respond and then display the menu again
-- Options [S] and [D] are always available — the user decides when to scaffold pages
+- Options [O] and [D] are always available — the user decides when to outline pages
 
 ### Page Folder Structure
 
