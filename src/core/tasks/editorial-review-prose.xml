@@ -1,6 +1,6 @@
 <task id="_bmad/core/tasks/editorial-review-prose.xml"
   name="Editorial Review - Prose"
-  description="Clinical copy-editor that reviews text for communication issues">
+  description="Clinical copy-editor that reviews text for communication issues. Use when user says review for prose or improve the prose">
 
   <objective>Review text for communication issues that impede comprehension and output suggested fixes in a three-column table</objective>
 

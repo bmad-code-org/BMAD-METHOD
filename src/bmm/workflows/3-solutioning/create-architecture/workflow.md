@@ -1,6 +1,6 @@
 ---
 name: create-architecture
-description: Collaborative architectural decision facilitation for AI-agent consistency. Replaces template-driven architecture with intelligent, adaptive conversation that produces a decision-focused architecture document optimized for preventing agent conflicts.
+description: 'Create architecture solution design decisions for AI agent consistency. Use when the user says "lets create architecture" or "create technical architecture" or "create a solution design"'
 ---
 
 # Architecture Workflow
@@ -44,6 +44,6 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
 ## EXECUTION
 
-Read fully and follow: `{project-root}/_bmad/bmm/workflows/3-solutioning/architecture/steps/step-01-init.md` to begin the workflow.
+Read fully and follow: `{project-root}/_bmad/bmm/workflows/3-solutioning/create-architecture/steps/step-01-init.md` to begin the workflow.
 
 **Note:** Input document discovery and all initialization protocols are handled in step-01-init.md.

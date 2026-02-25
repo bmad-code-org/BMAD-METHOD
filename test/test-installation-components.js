@@ -173,7 +173,7 @@ async function runTests() {
 
       assert(compiled.includes('QA Engineer'), 'QA agent compilation includes agent title');
 
-      assert(compiled.includes('qa/automate'), 'QA agent menu includes automate workflow');
+      assert(compiled.includes('qa-generate-e2e-tests'), 'QA agent menu includes automate workflow');
 
       // Cleanup
       await fs.remove(tempOutput);

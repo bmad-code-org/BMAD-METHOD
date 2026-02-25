@@ -1,7 +1,6 @@
 ---
 name: bmad-os-release-module
-description: Automates the complete release process for npm modules - version bump, changelog, git tag, npm publish, GitHub release
-disable-model-invocation: true
+description: Perform requested version bump, git tag, npm publish, GitHub release. Use when user requests 'perform a release' only.
 ---
 
 Read `prompts/instructions.md` and execute.

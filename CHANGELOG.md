@@ -1,5 +1,50 @@
 # Changelog
 
+## [6.0.3]
+
+### 🐛 Bug Fixes
+
+* Fix workflow descriptions to use proper quotes so they format better in skill conversion and don't break yaml front matter
+
+---
+
+## [6.0.2]
+
+### 🎁 Features
+
+* Add CodeBuddy platform support with installer configuration (#1483)
+* Add LLM audit prompt for file reference conventions - new audit tool using parallel subagents (#1720)
+* Migrate Codex installer from `.codex/prompts` to `.agents/skills` format to align with Codex CLI changes (#1729)
+* Convert review-pr and audit-file-refs tools to proper bmad-os skills with slash commands `/bmad-os-review-pr` and `/bmad-os-audit-file-refs` (#1732)
+
+### 🐛 Bug Fixes
+
+* Fix 24 broken step references in create-architecture workflow after directory rename (#1734)
+* Fix step file path references in check-implementation-readiness workflow (#1709, #1716)
+* Fix 3 broken file references and enable strict file reference validation in CI (#1717)
+* Fix Rovo Dev integration with custom installer that generates prompts.yml manifest (#1701)
+* Fix 104 relative step file references to use standardized `{project-root}/_bmad/` paths across 68 files (#1722)
+* Fix code fence imbalance in step-03-starter.md that caused rendering issues (#1724)
+* Remove Windsurf from recommended/preferred IDEs list (#1727)
+* Fix default Codex install location from global to project for better defaults (#1698)
+* Add npx cache workaround to Quick Start for stale beta versions (#1685)
+* Add language instructions to replace placeholder text in Research overview (#1703)
+* Ignore `.junie/` IDE integration folder in git and prettier configs (#1719)
+
+### ♻️ Refactoring
+
+* Update open source tool skills structure for future plugin migration
+* Standardize all workflow descriptions for skill generation with concise format and explicit trigger phrases
+* Remove `disable-model-invocation` flag from all IDE installer templates to enable workflow skill calls
+
+### 📚 Documentation
+
+* Elevate `bmad-help` as primary on-ramp across all documentation
+* Update workflow names with `bmad-bmm-` prefix and standardize table formatting
+* Clarify phase routing and catalog path in help task
+
+---
+
 ## [6.0.0]
 
 V6 Stable Release! The End of Beta!

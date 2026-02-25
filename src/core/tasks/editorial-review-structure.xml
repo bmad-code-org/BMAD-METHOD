@@ -3,8 +3,7 @@
   but no context except the content to review -->
 <task id="_bmad/core/tasks/editorial-review-structure.xml"
   name="Editorial Review - Structure"
-  description="Structural editor that proposes cuts, reorganization,
-    and simplification while preserving comprehension">
+  description="Structural editor that proposes cuts, reorganization, and simplification while preserving comprehension. Use when user requests structural review or editorial review of structure">
   <objective>Review document structure and propose substantive changes
     to improve clarity and flow-run this BEFORE copy editing</objective>
   <inputs>

@@ -1,7 +1,6 @@
 ---
 name: bmad-os-changelog-social
-description: Generate social media announcements for Discord, Twitter, and LinkedIn from the latest changelog entry. Use when user asks to create release announcements, social posts, or share changelog updates. Reads CHANGELOG.md in current working directory. Reference examples/ for tone and format.
-disable-model-invocation: true
+description: Generate social media announcements for Discord, Twitter, and LinkedIn from the latest changelog entry. Use when user asks to 'create release announcement' or 'create social posts' or share changelog updates.
 ---
 
 # Changelog Social

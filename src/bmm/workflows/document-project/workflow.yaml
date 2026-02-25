@@ -1,7 +1,7 @@
 # Document Project Workflow Configuration
 name: "document-project"
 version: "1.2.0"
-description: "Analyzes and documents brownfield projects by scanning codebase, architecture, and patterns to create comprehensive reference documentation for AI-assisted development"
+description: 'Document brownfield projects for AI context. Use when the user says "document this project" or "generate project docs"'
 author: "BMad"
 
 # Critical variables

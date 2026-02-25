@@ -29,7 +29,7 @@ agent:
 
   menu:
     - trigger: QA or fuzzy match on qa-automate
-      workflow: "{project-root}/_bmad/bmm/workflows/qa/automate/workflow.yaml"
+      workflow: "{project-root}/_bmad/bmm/workflows/qa-generate-e2e-tests/workflow.yaml"
       description: "[QA] Automate - Generate tests for existing features (simplified)"
 
   prompts:

@@ -1,7 +1,6 @@
 # Correct Course - Sprint Change Management Workflow
 name: "correct-course"
-description: "Navigate significant changes during sprint execution by analyzing impact, proposing solutions, and routing for implementation"
-author: "BMad Method"
+description: 'Manage significant changes during sprint execution. Use when the user says "correct course" or "propose sprint change"'
 
 config_source: "{project-root}/_bmad/bmm/config.yaml"
 user_name: "{config_source}:user_name"

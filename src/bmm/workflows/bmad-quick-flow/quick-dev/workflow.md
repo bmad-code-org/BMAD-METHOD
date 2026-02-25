@@ -1,6 +1,6 @@
 ---
 name: quick-dev
-description: 'Flexible development - execute tech-specs OR direct instructions with optional planning.'
+description: 'Implement a Quick Tech Spec for small changes or features. Use when the user provides a quick tech spec and says "implement this quick spec" or "proceed with implementation of [quick tech spec]"'
 ---
 
 # Quick Dev Workflow

@@ -1,7 +1,5 @@
-# Quinn QA workflow: Automate
-name: qa-automate
-description: "Generate tests quickly for existing features using standard test patterns"
-author: "BMad"
+name: qa-generate-e2e-tests
+description: 'Generate end to end automated tests for existing features. Use when the user says "create qa automated tests for [feature]"'
 
 # Critical variables from config
 config_source: "{project-root}/_bmad/bmm/config.yaml"
@@ -12,7 +10,7 @@ document_output_language: "{config_source}:document_output_language"
 date: system-generated
 
 # Workflow components
-installed_path: "{project-root}/_bmad/bmm/workflows/qa/automate"
+installed_path: "{project-root}/_bmad/bmm/workflows/qa-generate-e2e-tests"
 instructions: "{installed_path}/instructions.md"
 validation: "{installed_path}/checklist.md"
 template: false

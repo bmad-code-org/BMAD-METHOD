@@ -7,6 +7,10 @@ The BMad Method (**B**reakthrough **M**ethod of **A**gile AI **D**riven Developm
 
 If you're comfortable working with AI coding assistants like Claude, Cursor, or GitHub Copilot, you're ready to get started.
 
+:::note[🚀 V6 is Here and We're Just Getting Started!]
+Skills Architecture, BMad Builder v1, Dev Loop Automation, and so much more in the works. **[Check out the Roadmap →](/roadmap/)**
+:::
+
 ## New Here? Start with a Tutorial
 
 The fastest way to understand BMad is to try it.

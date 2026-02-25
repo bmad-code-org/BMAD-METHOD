@@ -37,6 +37,12 @@ platforms:
     category: ide
     description: "OpenCode terminal coding assistant"
 
+  codebuddy:
+    name: "CodeBuddy"
+    preferred: false
+    category: ide
+    description: "Tencent Cloud Code Assistant - AI-powered coding companion"
+
   auggie:
     name: "Auggie"
     preferred: false

@@ -1,6 +1,6 @@
 ---
 name: help
-description: Get unstuck by showing what workflow steps come next or answering questions about what to do
+description: "Analyzes what is done and the users query and offers advice on what to do next. Use if user says what should I do next or what do I do now"
 ---
 
 # Task: BMAD Help

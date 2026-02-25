@@ -1,6 +1,6 @@
 ---
 name: brainstorming
-description: Facilitate interactive brainstorming sessions using diverse creative techniques and ideation methods
+description: 'Facilitate interactive brainstorming sessions using diverse creative techniques and ideation methods. Use when the user says "help me brainstorm" or "help me ideate".'
 context_file: '' # Optional context file path for project-specific guidance
 ---
 
