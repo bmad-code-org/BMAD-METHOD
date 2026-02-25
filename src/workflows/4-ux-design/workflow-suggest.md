@@ -24,21 +24,29 @@ description: 'Build a scenario's page flow step by step, with the agent proposin
 
 Load scenario context from `{output_folder}/C-UX-Scenarios/`.
 
+### Scenario Check (CRITICAL GATE)
+
+Before starting page design, verify that a scenario exists for the selected scenario:
+
+1. Look for scenario files in `{output_folder}/C-UX-Scenarios/[NN-slug]/[NN-slug].md`
+2. **If a Phase 3 scenario exists** → Skip to **Page Creation** below. The scenario's 8-question answers, shortest path, and first page specification provide everything needed.
+3. **If NO scenario exists** → Do NOT attempt to define the scenario here. Instead:
+   - Inform the user: *"Before we design pages, we need a scenario outline. This gives us the user's device, mental state, entry point, and the shortest path — all essential for good page design."*
+   - Suggest returning to Phase 3 to outline the scenario using the 8-question dialog
+   - The user can then return here with [D] from the Phase 3 post-scenario menu
+
+**Why:** Phase 3's 8-question dialog is the canonical way to define scenarios. It produces richer, more grounded scenarios than trying to shortcut the process here.
+
+### Phase 3 Handover Context
+
+When entering from Phase 3's [D] option (start designing), the scenario file and first page specification already exist. Use:
+- **First page spec** from `{output_folder}/C-UX-Scenarios/[NN-slug]/pages/[page-slug].md` as starting point
+- **Entry context** (device + arrival method + mental state) from the scenario's Q5, Q6, Q4
+- **Shortest path** from Q8 to know the full page sequence
+
 ## Steps
 
 Execute steps in `./steps-s/`:
-
-### Scenario Setup (if new scenario)
-
-| Step | File | Purpose |
-|------|------|---------|
-| 01 | step-01-core-feature.md | Identify the core feature |
-| 02 | step-02-entry-point.md | Define user entry point |
-| 03 | step-03-mental-state.md | Capture user mental state |
-| 04 | step-04-mutual-success.md | Define mutual success criteria |
-| 05 | step-05-shortest-path.md | Map the shortest path |
-| 06 | step-06-scenario-name.md | Name the scenario |
-| 07 | step-07-create-scenario-folder.md | Create output structure |
 
 ### Page Creation (per page)
 
