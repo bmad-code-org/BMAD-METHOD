@@ -237,11 +237,11 @@ WDS offers three ways to apply Trigger Mapping methodology, depending on your si
 
 ---
 
-### 2. Value Trigger Chain (Quick Validation)
+### 2. Slim Trigger Map (Quick Validation)
 
 **What it is:**
 - Streamlined single-workshop approach
-- Focus on one primary user journey
+- Focus on one primary business goal, target group, and their driving forces
 - Quick strategic validation
 - Essential connections only
 
@@ -252,9 +252,8 @@ WDS offers three ways to apply Trigger Mapping methodology, depending on your si
 - Early-stage validation
 - Time-constrained situations
 
-**Time investment:** 15-20 minutes  
-**Output:** Single-chain map from goal to trigger  
-**Tutorial:** [Tutorial 05B: Create Your Value Trigger Chain](tutorial-05b-value-trigger-chain.md)
+**Time investment:** 15-20 minutes
+**Output:** Slim Trigger Map with one goal, one target group, key driving forces
 
 ---
 
@@ -292,7 +291,7 @@ Organizations spend thousands on research that sits unused. 200-page reports nob
 - Stakeholders need strategic justification
 - Building long-term product strategy
 
-**Use Value Trigger Chain if:**
+**Use Slim Trigger Map if:**
 - Iterating on existing features
 - One clear user journey to validate
 - Need quick strategic check

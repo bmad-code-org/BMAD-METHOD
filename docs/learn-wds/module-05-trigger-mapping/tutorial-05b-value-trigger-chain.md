@@ -1,4 +1,6 @@
-# Tutorial 05B: Create Your Value Trigger Chain
+# Tutorial 05B: Create a Slim Trigger Map
+
+> **Note:** This tutorial previously covered "Value Trigger Chains (VTC)" which has been replaced by the simpler concept of a Slim Trigger Map — define one business goal, one target group, and their key driving forces. The core process is the same.
 
 **Quick strategic validation for focused user journeys**
 
@@ -6,7 +8,7 @@
 
 ## Overview
 
-This tutorial walks you through creating a Value Trigger Chain - a lightweight, streamlined version of Trigger Mapping. Perfect for when you need quick strategic validation or are working with a single, focused user journey.
+This tutorial walks you through creating a Slim Trigger Map - a lightweight, streamlined version of Trigger Mapping. Perfect for when you need quick strategic validation or are working with a single, focused user journey.
 
 **Time:** 15-20 minutes  
 **Prerequisites:** Module 04 completed (Product Brief created)  

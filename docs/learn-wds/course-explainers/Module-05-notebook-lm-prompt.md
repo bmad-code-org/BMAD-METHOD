@@ -102,9 +102,9 @@ First, the full process we just covered - starting from scratch. Sixty to ninety
 
 Second, what if you already have documentation? Vision docs, user research, interview transcripts, project plans - maybe hundreds of pages gathering dust that nobody actually reads? That's where Documentation Synthesis comes in. Thirty to forty-five minutes. Saga analyzes your documentation, validates what's there, fills gaps through conversation, and transforms it all into a single-slide Trigger Map you can actually use. No more pasting 200 pages into AI chats. No more research reports nobody reads. One actionable strategic artifact.
 
-Third, what if you're in a real hurry? What if you need strategic guidance but don't have even 30 minutes? That's the Value Trigger Chain - or VTC. Fifteen to twenty minutes. You pick ONE strategic objective, identify ONE target group, map ONE key driver - typically negative, because that's often most powerful. One clear chain from business goal to user psychology to design decision. Quick strategic validation when time is tight.
+Third, what if you're in a real hurry? What if you need strategic guidance but don't have even 30 minutes? That's the Slim Trigger Map. Fifteen to twenty minutes. You pick ONE strategic objective, identify ONE target group, map ONE key driver - typically negative, because that's often most powerful. One clear chain from business goal to user psychology to design decision. Quick strategic validation when time is tight.
 
-Think of it like this: Full Trigger Mapping is your comprehensive foundation for major products. Documentation Synthesis transforms existing research into actionable strategy. The Value Trigger Chain is your quick strategic check for focused features. All three are based on the same proven methodology. All three give you traceable reasoning. You just choose the approach that fits your situation."
+Think of it like this: Full Trigger Mapping is your comprehensive foundation for major products. The from-existing-docs route transforms existing research into actionable strategy. The Slim Trigger Map is your quick strategic check for focused features. All three are based on the same proven methodology. All three give you traceable reasoning. You just choose the approach that fits your situation."
 
 **The Closing (7:00-7:10)**
 

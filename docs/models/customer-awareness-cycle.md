@@ -177,19 +177,6 @@ While Schwartz focused on advertising copy, his framework applies powerfully to:
 
 ## Whiteport Methods That Harness This Model
 
-### [Value Trigger Chain Guide](../method/value-trigger-chain-guide.md)
-
-VTCs include Customer Awareness positioning:
-- Starting point: Where is user NOW?
-- Target point: Where do we want to move them?
-- Design serves this progression
-
-**Example:**
-```
-Customer Awareness: Problem Aware → Product Aware
-Design Implication: Introduce OUR solution after establishing problem
-```
-
 ### [Trigger Mapping Guide](../method/phase-2-trigger-mapping-guide.md)
 
 Trigger Maps can include awareness positioning for each persona:
@@ -204,7 +191,7 @@ Each scenario defines awareness progression:
 - Exit point awareness level
 - Interactions designed to bridge the gap
 
-### [Content Creation Workflow](../method/value-trigger-chain-guide.md#using-vtcs-in-your-design-process)
+### Content Creation Workflow
 
 Before creating any content:
 1. Identify user's current awareness level
@@ -520,7 +507,6 @@ measurement:
 5. **Test and measure:** Track progression through awareness stages
 
 **Related Resources:**
-- [Value Trigger Chain Guide](../method/value-trigger-chain-guide.md) - Includes Customer Awareness positioning
 - [Trigger Mapping Guide](../method/phase-2-trigger-mapping-guide.md) - Uses awareness to position personas
 - [Phase 4: UX Design Guide](../method/phase-4-ux-design-guide.md) - Applies awareness to scenarios
 

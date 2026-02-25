@@ -24,10 +24,8 @@ Complete documentation for Whiteport Design Studio - a design-first methodology 
 - **[WDS Method Overview](method/wds-method-guide.md)** - Complete methodology guide
 - **[Phase 1: Product Exploration](method/phase-1-product-exploration-guide.md)** - Strategic foundation
 - **[Phase 2: Trigger Mapping](method/phase-2-trigger-mapping-guide.md)** - User psychology & business goals
-- **[Phase 3: PRD Platform](method/phase-3-prd-platform-guide.md)** - Technical foundation
-- **[Phase 4: UX Design](method/phase-4-ux-design-guide.md)** - Scenarios & specifications
-- **[Phase 5: Design System](method/phase-5-design-system-guide.md)** - Component library (optional)
-- **[Phase 6: PRD Finalization](method/phase-6-prd-finalization-guide.md)** - PRD finalization & handoff
+- **[Phase 3: UX Scenarios](method/phase-3-ux-scenarios-guide.md)** - User journeys & scenario outlines
+- **[Phase 4: UX Design](method/phase-4-ux-design-guide.md)** - Page specifications & prototypes
 
 **These guides are tool-agnostic** - explaining the methodology regardless of how you apply it.
 
@@ -43,7 +41,6 @@ Complete documentation for Whiteport Design Studio - a design-first methodology 
 - **[Golden Circle](models/golden-circle.md)** - Simon Sinek (start with WHY)
 - **[Action Mapping](models/action-mapping.md)** - Cathy Moore (focus on what people DO)
 - **[Kathy Sierra Badass Users](models/kathy-sierra-badass-users.md)** - Kathy Sierra (make users awesome)
-- **[Value Trigger Chain](method/value-trigger-chain-guide.md)** - Whiteport method (lightweight strategic context)
 
 **These are external frameworks** with full attribution to original creators. Our methods build on these giants' shoulders.
 

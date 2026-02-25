@@ -178,7 +178,7 @@ Different purposes emphasize different strategic models:
 ### Purpose: "Inspire users with our mission"
 **Model Priorities:**
 - Golden Circle ⭐⭐⭐ (WHY story)
-- VTC ⭐⭐ (Who we serve)
+- Trigger Map ⭐⭐ (Who we serve)
 - Customer Awareness ⭐ (Meet their level)
 - Action Mapping ⭐ (Soft)
 
@@ -196,7 +196,7 @@ Different purposes emphasize different strategic models:
 - Golden Circle (WHY)
 - Badass Users (Transform)
 - Action Mapping (Enable)
-- VTC (Context)
+- Trigger Map (Context)
 
 ---
 
@@ -238,7 +238,7 @@ Different purposes emphasize different strategic models:
 
 **Purpose:** "Convince value-conscious users that longer shelf life saves them money"
 
-**Model Priorities:** VTC ⭐⭐⭐ (fear of waste), Badass Users ⭐⭐
+**Model Priorities:** Trigger Map ⭐⭐⭐ (fear of waste), Badass Users ⭐⭐
 
 **Content:** "Stop throwing away spoiled product. Our 90-day shelf life (3x longer than competitors) means you'll use what you buy. No more waste. No more emergency reorders."
 
@@ -425,7 +425,7 @@ When reviewing content, ask:
 - [Kathy Sierra Badass Users](../models/kathy-sierra-badass-users.md) - Empowerment framing
 
 **Whiteport Methods:**
-- [Value Trigger Chain](value-trigger-chain-guide.md) - Strategic context for content
+- [Trigger Mapping Guide](phase-2-trigger-mapping-guide.md) - Strategic context for content
 
 **Workflows:**
 - [Content Creation Workshop](../src/workflows/shared/content-creation-workshop/content-creation-workshop-guide.md) - Using purpose in content generation

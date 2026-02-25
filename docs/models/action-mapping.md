@@ -672,7 +672,7 @@ Action 1: [Observable behavior]
 
 **Related Resources:**
 - [Phase 4: UX Design Guide](../method/phase-4-ux-design-guide.md) - Scenario design using action focus
-- [Value Trigger Chain Guide](../method/value-trigger-chain-guide.md) - Connect actions to driving forces
+- [Trigger Mapping Guide](../method/phase-2-trigger-mapping-guide.md) - Connect actions to driving forces
 - [Blog.Cathy-Moore.com](https://blog.cathy-moore.com) - Original source and examples
 
 ---

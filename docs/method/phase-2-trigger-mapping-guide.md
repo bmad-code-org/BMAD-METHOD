@@ -387,7 +387,7 @@ Bring:
 
 Your Trigger Map enables:
 
-- **Phase 3: Requirements** - Technical decisions aligned with user priorities
+- **Phase 3: UX Scenarios** - User journeys grounded in personas and driving forces
 - **Phase 4: UX Design** - Design work grounded in user psychology
 - **Development priorities** - Clear guidance on what to build first
 
@@ -425,8 +425,8 @@ See: `examples/dog-week-patterns/B-Trigger-Map/` for a complete Trigger Map with
 ## Related Resources
 
 **Method Guides:**
-- [Value Trigger Chain Guide](./value-trigger-chain-guide.md) - Extracting VTCs from Trigger Map
 - [Phase 1: Product Exploration](./phase-1-product-exploration-guide.md) - Strategic foundation (prerequisite)
+- [Phase 3: UX Scenarios Guide](./phase-3-ux-scenarios-guide.md) - User journeys from Trigger Map
 - [Phase 4: UX Design Guide](./phase-4-ux-design-guide.md) - Using Trigger Map in scenarios
 
 **Foundational Models:**

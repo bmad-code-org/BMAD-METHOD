@@ -40,7 +40,6 @@ Each model includes:
 
 **Applied in WDS:**
 - Trigger Mapping (Whiteport's enhanced adaptation)
-- Value Trigger Chains (lightweight version)
 - Strategic alignment from why to what
 
 **When to Use:** Strategic planning, feature prioritization, aligning team on goals

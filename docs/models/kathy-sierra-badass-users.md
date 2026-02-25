@@ -662,7 +662,7 @@ For each screen/component, ask:
 5. **Test:** Do users feel more confident after new version?
 
 **Related Resources:**
-- [Value Trigger Chain Guide](../method/value-trigger-chain-guide.md) - Driving forces include capability desires
+- [Trigger Mapping Guide](../method/phase-2-trigger-mapping-guide.md) - Driving forces include capability desires
 - [Action Mapping Model](./action-mapping.md) - Similar philosophy: focus on what users DO
 - [Phase 4: UX Design Guide](../method/phase-4-ux-design-guide.md) - Scenario design with user capability in mind
 

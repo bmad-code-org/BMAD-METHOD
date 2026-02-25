@@ -27,7 +27,7 @@ This tutorial walks you through synthesizing your existing documentation into a 
 - ❌ Starting from scratch with no documentation
 - ❌ Documentation is minimal or non-existent
 
-**Use Value Trigger Chain instead if:**
+**Use Slim Trigger Map instead if:**
 - ❌ Need quick validation (under 20 minutes)
 - ❌ Single user journey focus
 
@@ -467,7 +467,7 @@ A: Trigger Map organizes research into actionable structure, identifies gaps, va
 
 - [Lesson 2: Heritage & Evolution](lesson-02-heritage-evolution.md) - Understanding the three approaches
 - [Tutorial 05: Full Trigger Mapping](tutorial-05.md) - Starting from scratch
-- [Tutorial 05B: Value Trigger Chain](tutorial-05b-value-trigger-chain.md) - Quick validation
+- [Tutorial 05B: Slim Trigger Map](tutorial-05b-value-trigger-chain.md) - Quick validation
 - [Module 05 Overview](module-05-overview.md) - Complete module guide
 
 ---
