@@ -36,9 +36,60 @@ For each scenario/page:
 
 ---
 
-## Activities
+## Workflow Structure
 
 Phase 4 is **menu-driven**, not linear. You pick scenarios and activities from a dashboard:
+
+```mermaid
+flowchart TD
+    START(["Phase 4: UX Design"]) --> DASH["Scenario Dashboard\nList all scenarios + status"]
+
+    DASH --> PICK{Select scenario\n+ activity}
+
+    PICK -->|"[C] Conceptualize"| C_WF["Explore what the\ndesign needs"]
+    PICK -->|"[K] Analyse Sketches"| K_WF["Interpret user's\nsketch"]
+    PICK -->|"[S] Suggest"| S_GATE{Phase 3\nscenario?}
+    PICK -->|"[D] Dream Up"| D_GATE{Phase 3\nscenario?}
+    PICK -->|"[P] Specify"| P_WF["Write detailed\npage specification\nSteps 01-08"]
+    PICK -->|"[W] Visual"| W_WF["Visual design tools\nNanoBanana, Figma, etc."]
+    PICK -->|"[M] Design System"| M_WF["Define/update\ncomponents"]
+    PICK -->|"[V] Validate"| V_WF["Audit specification\n10-step validation"]
+    PICK -->|"[H] Handover"| H_WF["Package DD-XXX\nfor development"]
+
+    S_GATE -->|No| REDIRECT["Redirect to Phase 3\nOutline scenario first"]
+    S_GATE -->|Yes| S_WF["Suggest Interface\nSteps 08-15\nAgent proposes, user confirms"]
+
+    D_GATE -->|No| REDIRECT
+    D_GATE -->|Yes| D_WF["Dream Up Interface\nSteps 08-15\nAgent creates autonomously"]
+
+    S_WF --> POST{Page complete}
+    D_WF --> POST
+
+    POST -->|"[N] Next page"| LOOP["Outline next page\nPurpose + exit action\n→ Create page folder\n→ Design steps 08-15"]
+    POST -->|"[R] Dashboard"| DASH
+    POST -->|"[V] Validate"| V_WF
+
+    LOOP --> POST
+
+    C_WF --> DASH
+    K_WF --> DASH
+    P_WF --> DASH
+    W_WF --> DASH
+    M_WF --> DASH
+    V_WF --> DASH
+    H_WF --> DASH
+```
+
+**Key patterns:**
+- **Scenario gate**: [S] Suggest and [D] Dream Up require a Phase 3 scenario — if none exists, you're redirected to Phase 3
+- **Outline → Design loop**: After completing a page, [N] outlines and designs the next page continuously
+- **Non-linear**: All other activities are available at any time from the dashboard
+
+---
+
+## Activities
+
+Phase 4 activities from the dashboard:
 
 ```
 What would you like to do?
@@ -314,7 +365,6 @@ Your specifications enable:
 **Method Guides:**
 - [Phase 3: UX Scenarios Guide](./phase-3-ux-scenarios-guide.md) - Scenario outlines that drive page design
 - [Phase 2: Trigger Mapping Guide](./phase-2-trigger-mapping-guide.md) - Source for user psychology
-- [Value Trigger Chain Guide](./value-trigger-chain-guide.md) - VTCs for each scenario
 
 **Strategic Models:**
 - [Customer Awareness Cycle](../models/customer-awareness-cycle.md) - User awareness positioning
