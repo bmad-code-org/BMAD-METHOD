@@ -64,7 +64,7 @@ Based on `brief_level`:
 | 01 | Init | Load context, confirm readiness |
 | 02 | Vision | Explore and document project vision |
 | 03 | Positioning | Define market positioning |
-| 04 | Create VTC | Value Trigger Chain (refs `vtc-workshop/`) |
+| 04 | Create Trigger Map | Strategic foundation (refs `vtc-workshop/`) |
 | 05 | Business Model | Define revenue/business model |
 | 06 | Business Customers | Identify B2B customers (if applicable) |
 | 07 | Target Users | Define end users |
@@ -74,7 +74,7 @@ Based on `brief_level`:
 | 10 | Constraints | Document project constraints |
 | 10a | Platform Strategy | Define platform approach |
 | 11 | Tone of Voice | Establish brand voice |
-| 11a | Create VTC | Second VTC opportunity (refs `vtc-workshop/`) |
+| 11a | Create Trigger Map | Second Trigger Map opportunity (refs `vtc-workshop/`) |
 | 12 | Create Product Brief | Generate the Product Brief document |
 | 13 | Content Init | Initialize content & language strategy |
 | 14 | Personality | Define brand personality |

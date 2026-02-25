@@ -40,7 +40,7 @@ Help user explore alternatives and discover their unfair advantage. Explore what
 - Avoid generating content without user input
 
 ## CONTEXT BOUNDARIES:
-- Available context: Vision, positioning, VTC, business model, users, success criteria
+- Available context: Vision, positioning, Trigger Map, business model, users, success criteria
 - Focus: Competitive landscape and unfair advantage
 - Limits: Not detailed feature comparison - strategic positioning
 - Dependencies: Steps 1-8 completed

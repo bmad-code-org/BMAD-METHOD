@@ -90,7 +90,7 @@ Every visual you create should answer: "Why does this design choice trigger the 
 
 You (the designer) act as the bridge between Freya (WDS Designer Agent in Cursor) and Eira (Visual Designer in Nano Banana/image generation tool).
 
-### Value to Customer (VTC):
+### Value Proposition:
 [What value does this product deliver? Why should users care?]
 
 ### Target Audience:
@@ -138,7 +138,7 @@ This context will guide all visual generation for this project. Reference these 
 
 ```markdown
 ## 🎯 STRATEGIC BRIEF
-[Why this screen/component matters - connects to VTC and triggers]
+[Why this screen/component matters - connects to Trigger Map and driving forces]
 
 ## 📋 PROMPT FOR EIRA
 ────────────────────────────────────────────────────────────────
@@ -209,7 +209,7 @@ AVOID:
 ### Step 2: Freya Reads Context
 - Reads: `1-project-brief/product-brief.md`
 - Reads: `2-strategy/trigger-map.md`
-- Reads: `2-strategy/vtc.md`
+- Reads: `2-strategy/trigger-map.md`
 - Analyzes: Target audience, psychological triggers, brand positioning
 
 ### Step 3: Freya Generates Prompt

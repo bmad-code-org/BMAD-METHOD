@@ -67,7 +67,7 @@ Check if SEO/keyword content exists in the Content & Language document. If not, 
 ### 3. Cross-Phase Readiness
 
 - [ ] Keyword map is in a format Phase 3 (Scenarios) can reference
-- [ ] SEO priorities align with user priorities from VTC
+- [ ] SEO priorities align with user priorities from Trigger Map
 - [ ] Content structure supports keyword targeting
 
 ### 4. Report

@@ -67,9 +67,9 @@ Appointment-driven trust-building flow
 
 ## Next Step
 
-Once you have clarity on all 7 steps (including VTC), **start sketching the journey.**
+Once you have clarity on all 7 steps (including strategic context), **start sketching the journey.**
 
-Each sketch serves the path from trigger to mutual success, guided by the VTC.
+Each sketch serves the path from trigger to mutual success, guided by the Trigger Map.
 
 ---
 

@@ -48,7 +48,7 @@ Determine site type, list all pages/views, assess scale, select approach mode, a
 
 - Available context: Product Brief data, Trigger Map data loaded in Step 1
 - Focus: Site classification, page inventory, scale assessment
-- Limits: No scenario creation, no VTC building — only scope analysis
+- Limits: No scenario creation, no strategic context building — only scope analysis
 - Dependencies: Step 1 context must be loaded
 
 ## Sequence of Instructions (Do not deviate, skip, or optimize)
@@ -150,7 +150,7 @@ Present to user and **wait for approval**:
 
 ### 6. Present MENU OPTIONS
 
-Display: "Are you ready to [C] Continue to Building Value Trigger Chains?"
+Display: "Are you ready to [C] Continue to Building Strategic Context?"
 
 #### Menu Handling Logic:
 
@@ -165,7 +165,7 @@ Display: "Are you ready to [C] Continue to Building Value Trigger Chains?"
 
 ## CRITICAL STEP COMPLETION NOTE
 
-ONLY WHEN [C continue option] is selected and [user has explicitly approved the scope analysis], will you then load and read fully `{nextStepFile}` to execute and begin building VTCs.
+ONLY WHEN [C continue option] is selected and [user has explicitly approved the scope analysis], will you then load and read fully `{nextStepFile}` to execute and begin building strategic context.
 
 ---
 

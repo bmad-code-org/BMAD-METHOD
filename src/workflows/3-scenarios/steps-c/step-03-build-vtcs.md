@@ -1,16 +1,16 @@
 ---
 name: 'step-03-build-vtcs'
-description: 'Extract Value Trigger Chains from Trigger Map to identify which scenarios to create'
+description: 'Build strategic context from Trigger Map to identify which scenarios to create'
 
 # File References
 nextStepFile: './step-04-suggest-scenarios.md'
 ---
 
-# Step 3: Build Value Trigger Chains
+# Step 3: Build Strategic Context
 
 ## STEP GOAL:
 
-Extract Value Trigger Chains (VTCs) from the Trigger Map, assign pages to each VTC, prioritize them, and verify complete coverage of all pages.
+Extract strategic context from the Trigger Map — tracing paths from business goals through personas and driving forces to transactions — assign pages to each scenario chain, prioritize them, and verify complete coverage of all pages.
 
 ## MANDATORY EXECUTION RULES (READ FIRST):
 
@@ -32,32 +32,32 @@ Extract Value Trigger Chains (VTCs) from the Trigger Map, assign pages to each V
 
 ### Step-Specific Rules:
 
-- 🎯 Focus only on building VTCs, assigning pages, and prioritizing
+- 🎯 Focus only on building strategic context, assigning pages, and prioritizing
 - 🚫 FORBIDDEN to create scenario outlines — only identify and plan scenarios
 - 💬 Approach: Systematically trace paths from business goals to user actions
-- 📋 Every page from the inventory must be assigned to exactly one VTC
+- 📋 Every page from the inventory must be assigned to exactly one scenario chain
 
 ## EXECUTION PROTOCOLS:
 
 - 🔗 Trace complete chains from Business Goal → Persona → Force → Transaction → Scenario
-- 📋 Answer all 7 Decision Matrix questions for each VTC
+- 📋 Answer all 7 Decision Matrix questions for each scenario chain
 - 📊 Assign pages ensuring no repetition and full coverage
 - 🚫 FORBIDDEN to leave any page unassigned
 
 ## CONTEXT BOUNDARIES:
 
 - Available context: Product Brief, Trigger Map, approved page inventory from Step 2
-- Focus: VTC extraction, page assignment, prioritization
+- Focus: Strategic context extraction, page assignment, prioritization
 - Limits: No scenario outlining, no file creation — only planning
 - Dependencies: Approved scope analysis from Step 2
 
 ## Sequence of Instructions (Do not deviate, skip, or optimize)
 
-### 1. Build VTCs
+### 1. Build Strategic Context Chains
 
-**What is a Value Trigger Chain?**
+**What is a strategic context chain?**
 
-A VTC traces the path from business strategy to user action:
+A strategic context chain traces the path from business strategy to user action:
 
 ```
 Business Goal → Persona → Driving Force → Transaction → Scenario
@@ -79,7 +79,7 @@ For **each business goal** from the Trigger Map:
 3. Determine the specific transaction/action that fulfills it
 4. Name a candidate scenario using the persona's name
 
-**For each VTC, answer the Decision Matrix (all 7 required):**
+**For each scenario chain, answer the Decision Matrix (all 7 required):**
 
 | # | Question | Answer |
 |---|----------|--------|
@@ -91,18 +91,18 @@ For **each business goal** from the Trigger Map:
 | 6 | What value does user get? | [Tangible outcome] |
 | 7 | What value does business get? | [Measurable result] |
 
-### 2. Assign Pages to VTCs
+### 2. Assign Pages to Scenario Chains
 
-For each VTC, list which pages from the inventory (Step 02) the user visits.
+For each scenario chain, list which pages from the inventory (Step 02) the user visits.
 
 **Rules:**
-- Each page appears in exactly ONE VTC/scenario (no repetition)
+- Each page appears in exactly ONE scenario chain (no repetition)
 - If a page could fit multiple scenarios, assign it to the highest-priority one
 - Shared elements (navigation, footer) are excluded from page assignment
 
 ### 3. Prioritize
 
-Rank the VTCs:
+Rank the scenario chains:
 
 **Priority 1 — Critical Path:**
 - Top business goal + primary persona + core product value
@@ -118,29 +118,29 @@ Rank the VTCs:
 
 ### 4. Coverage Check
 
-After building all VTCs, verify:
+After building all scenario chains, verify:
 
-- [ ] Every page from inventory is assigned to exactly one VTC
+- [ ] Every page from inventory is assigned to exactly one scenario chain
 - [ ] Primary persona has at least one Priority 1 scenario
 - [ ] Top business goal is addressed by at least one scenario
 - [ ] No page appears in multiple scenarios
 
-**If pages are unassigned:** Create additional VTCs or expand existing ones to cover them.
+**If pages are unassigned:** Create additional scenario chains or expand existing ones to cover them.
 
-### 5. Present VTC List
+### 5. Present Scenario Chain List
 
-Present the complete VTC list:
+Present the complete scenario chain list:
 
 ```
-## Value Trigger Chains
+## Strategic Context Chains
 
 ### Priority 1
-**VTC-01:** [Business Goal] → [Persona] → [Force] → [Transaction]
+**Chain 01:** [Business Goal] → [Persona] → [Force] → [Transaction]
 - Scenario: 01-[slug]
 - Pages: [list]
 
 ### Priority 2
-**VTC-02:** [Business Goal] → [Persona] → [Force] → [Transaction]
+**Chain 02:** [Business Goal] → [Persona] → [Force] → [Transaction]
 - Scenario: 02-[slug]
 - Pages: [list]
 
@@ -164,7 +164,7 @@ Display: "Are you ready to [C] Continue to Scenario Suggestions?"
 
 ## CRITICAL STEP COMPLETION NOTE
 
-ONLY WHEN [C continue option] is selected and [VTC list with full page coverage presented], will you then load and read fully `{nextStepFile}` to execute and begin scenario suggestions.
+ONLY WHEN [C continue option] is selected and [scenario chain list with full page coverage presented], will you then load and read fully `{nextStepFile}` to execute and begin scenario suggestions.
 
 ---
 
@@ -172,18 +172,18 @@ ONLY WHEN [C continue option] is selected and [VTC list with full page coverage 
 
 ### ✅ SUCCESS:
 
-- All business goals traced through complete VTC chains
-- All 7 Decision Matrix questions answered for each VTC
-- Every page from inventory assigned to exactly one VTC
-- VTCs prioritized with clear rationale
+- All business goals traced through complete strategic context chains
+- All 7 Decision Matrix questions answered for each scenario chain
+- Every page from inventory assigned to exactly one scenario chain
+- Scenario chains prioritized with clear rationale
 - Coverage check passes (all pages assigned, no duplicates)
-- Complete VTC list presented to user
+- Complete scenario chain list presented to user
 - Menu presented and user input handled correctly
 
 ### ❌ SYSTEM FAILURE:
 
 - Leaving pages unassigned
-- Assigning pages to multiple VTCs
+- Assigning pages to multiple scenario chains
 - Skipping Decision Matrix questions
 - Creating scenario outlines during this step
 - Not verifying coverage before proceeding

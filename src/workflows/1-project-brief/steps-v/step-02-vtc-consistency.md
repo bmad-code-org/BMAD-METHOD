@@ -1,6 +1,6 @@
 ---
 name: 'step-02-vtc-consistency'
-description: 'Verify Value Trigger Chain consistency and validity'
+description: 'Verify Trigger Map consistency and validity'
 
 # File References
 nextStepFile: './step-03-seo-strategy.md'
@@ -8,10 +8,10 @@ workflowFile: '../workflow.md'
 activityWorkflowFile: '../workflow-validate.md'
 ---
 
-# Validation Step 02: VTC Consistency
+# Validation Step 02: Trigger Map Consistency
 
 ## STEP GOAL:
-Verify the Value Trigger Chain(s) form a valid chain from business goals through personas to driving forces.
+Verify the Trigger Map(s) form a valid chain from business goals through personas to driving forces.
 
 ## MANDATORY EXECUTION RULES (READ FIRST):
 
@@ -23,39 +23,39 @@ Verify the Value Trigger Chain(s) form a valid chain from business goals through
 - YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `{communication_language}`
 
 ### Role Reinforcement:
-- You are a Strategic Business Analyst validating VTC chain integrity
+- You are a Strategic Business Analyst validating Trigger Map chain integrity
 - If you already have been given a name, communication_style and persona, continue to use those while playing this new role
 - We engage in collaborative dialogue, not command-response
 - You bring structured thinking and facilitation skills, user brings domain expertise and product vision
 - Maintain collaborative and strategic tone throughout
 
 ### Step-Specific Rules:
-- Focus: VTC completeness, chain validity, cross-VTC consistency
+- Focus: Trigger Map completeness, chain validity, cross-Trigger Map consistency
 - FORBIDDEN: Do not skip chain validity checks
-- Approach: Locate VTCs, check completeness, validate chains, check cross-VTC consistency
+- Approach: Locate Trigger Maps, check completeness, validate chains, check cross-Trigger Map consistency
 
 ## EXECUTION PROTOCOLS:
-- Primary goal: VTC consistency verified
+- Primary goal: Trigger Map consistency verified
 - Save/document outputs appropriately
 - Avoid generating content without user input
 
 ## CONTEXT BOUNDARIES:
-- Available context: VTC files and Product Brief
+- Available context: Trigger Map files and Product Brief
 - Focus: Chain validity and consistency
 - Limits: Validation only, not modification
 - Dependencies: Step 01 completed
 
 ## Sequence of Instructions (Do not deviate, skip, or optimize)
 
-### 1. Locate VTC Files
+### 1. Locate Trigger Map Files
 
 Check for:
-- `{output_folder}/A-Product-Brief/vtc-primary.yaml` (Product Pitch VTC)
-- Any scenario-level VTCs in `{output_folder}/C-UX-Scenarios/`
+- `{output_folder}/A-Product-Brief/vtc-primary.yaml` (Product Pitch Trigger Map)
+- Any scenario-level Trigger Maps in `{output_folder}/C-UX-Scenarios/`
 
-### 2. VTC Completeness
+### 2. Trigger Map Completeness
 
-For each VTC:
+For each Trigger Map:
 - [ ] `businessGoal` — specific and measurable
 - [ ] `solution` — describes how we help the user
 - [ ] `user` — identifies who we're helping
@@ -66,23 +66,23 @@ For each VTC:
 
 ### 3. Chain Validity
 
-- [ ] Business goal in VTC matches a goal in the Product Brief
-- [ ] User in VTC matches a target user in the Product Brief
+- [ ] Business goal in Trigger Map matches a goal in the Product Brief
+- [ ] User in Trigger Map matches a target user in the Product Brief
 - [ ] Driving forces are specific (not generic like "wants it to work")
 - [ ] Awareness journey makes logical sense (start ≠ end)
 
-### 4. Cross-VTC Consistency (if multiple)
+### 4. Cross-Trigger Map Consistency (if multiple)
 
-- [ ] No contradictory business goals across VTCs
+- [ ] No contradictory business goals across Trigger Maps
 - [ ] Users are distinct or represent different contexts
-- [ ] Driving forces don't duplicate across VTCs without reason
+- [ ] Driving forces don't duplicate across Trigger Maps without reason
 
 ### 5. Report
 
 ```
-## VTC Consistency Report
+## Trigger Map Consistency Report
 
-**VTCs found:** [N]
+**Trigger Maps found:** [N]
 **All complete:** [Yes/No]
 **Chain issues:** [N]
 
@@ -109,15 +109,15 @@ ONLY WHEN step objectives are met and user confirms will you then load and read 
 ## SYSTEM SUCCESS/FAILURE METRICS
 
 ### SUCCESS:
-- All VTCs located and checked
-- Completeness verified for each VTC
+- All Trigger Maps located and checked
+- Completeness verified for each Trigger Map
 - Chain validity confirmed
-- Cross-VTC consistency checked (if multiple)
+- Cross-Trigger Map consistency checked (if multiple)
 - Consistency report generated
 
 ### FAILURE:
 - Skipped chain validity checks
-- Missed VTC files
-- Did not check cross-VTC consistency
+- Missed Trigger Map files
+- Did not check cross-Trigger Map consistency
 
 **Master Rule:** Skipping steps, optimizing sequences, or not following exact instructions is FORBIDDEN and constitutes SYSTEM FAILURE.

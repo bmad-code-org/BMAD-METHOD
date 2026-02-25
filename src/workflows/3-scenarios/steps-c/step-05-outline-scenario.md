@@ -51,7 +51,7 @@ Define ONE scenario through 8 strategic questions in natural conversation order.
 
 ## CONTEXT BOUNDARIES:
 
-- Available context: Approved scenario plan from Step 4, VTCs, page inventory, Trigger Map
+- Available context: Approved scenario plan from Step 4, strategic context, page inventory, Trigger Map
 - Focus: Detailed outlining of one scenario at a time
 - Limits: Only outline scenarios from the approved plan
 - Dependencies: User-approved scenario plan from Step 4
@@ -74,7 +74,7 @@ Load the full template: `{scenarioTemplate}`
 **Two modes — same 8 questions, different driver:**
 
 - **Conversation mode** (default): YOU ask, the USER answers. One question at a time. Each answer shapes the next question naturally.
-- **Suggest mode** (when user asks you to suggest): YOU answer all 8 questions based on the Trigger Map, Product Brief, and VTCs. Present the complete scenario to the user for review and adjustment.
+- **Suggest mode** (when user asks you to suggest): YOU answer all 8 questions based on the Trigger Map, Product Brief, and strategic context. Present the complete scenario to the user for review and adjustment.
 
 This IS the scenario — when all 8 are answered, the outline writes itself.
 

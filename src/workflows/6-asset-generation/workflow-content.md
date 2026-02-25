@@ -21,7 +21,7 @@ description: Strategic text content generation using the 5-model framework
 ## The Five-Model Framework
 
 1. **Content Purpose** — The job to do
-2. **VTC** — Strategic foundation
+2. **Trigger Map** — Strategic foundation
 3. **Customer Awareness Cycle** — Content strategy
 4. **Action Mapping** — Content filter
 5. **Badass Users** — Tone & frame

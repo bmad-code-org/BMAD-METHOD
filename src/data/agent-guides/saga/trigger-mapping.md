@@ -562,9 +562,9 @@ Scenario adds:
 
 ---
 
-## Trigger Map → VTC Connection
+## Trigger Map → Design Context
 
-**VTC is extracted from Trigger Map:**
+**For a specific design task, extract the relevant slice:**
 
 ```
 Trigger Map (Comprehensive):
@@ -573,14 +573,14 @@ Trigger Map (Comprehensive):
 ├── 12 detailed personas
 └── 40+ driving forces
 
-VTC (Focused):
+Design Context (Focused):
 ├── 1 business goal
-├── 1 user/persona
+├── 1 persona
 ├── 1 solution context
 └── 3-5 key driving forces
 ```
 
-**VTC is the "working copy" for a specific design task.**
+**The focused context is the "working copy" for a specific design task.**
 
 ---
 
@@ -633,7 +633,7 @@ graph TD
 **Process:**
 1. Create new version (v2)
 2. Document what changed and why
-3. Update any VTCs derived from map
+3. Review impact on active design work
 4. Keep old version for reference
 
 ---
@@ -642,7 +642,7 @@ graph TD
 
 - **Phase 2 Workflow:** `../../workflows/2-trigger-mapping/`
 - **Impact/Effect Mapping Model:** `../../docs/models/impact-effect-mapping.md`
-- **VTC Guide:** `../../docs/method/value-trigger-chain-guide.md`
+- **Trigger Mapping Guide:** `../../docs/method/phase-2-trigger-mapping-guide.md`
 - **Customer Awareness Cycle:** `../../docs/models/customer-awareness-cycle.md`
 - **Feature Impact Analysis:** Prioritization method based on Impact Mapping
 

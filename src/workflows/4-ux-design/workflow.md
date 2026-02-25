@@ -54,7 +54,7 @@ Load and read full config from `{project-root}/_bmad/wds/config.yaml` and resolv
 
 ### 4. Scenario Dashboard
 
-Read all scenario files from `{output_folder}/C-UX-Scenarios/scenarios/` and display:
+Read all scenario files from `{output_folder}/C-UX-Scenarios/` and display:
 
 ```
 Your scenarios and their design status:
@@ -78,15 +78,20 @@ When a scenario is selected (or for scenario-independent work), present:
 ```
 What would you like to do?
 
-[C] Conceptualize            — Explore what the design needs
-[K] Analyse Sketches         — I'll interpret your sketch
-[S] Suggest Interface        — I'll propose a design, checking each step
-[D] Dream Up Interface       — I'll create it all, you review
-[P] Write Specifications     — Detail a page specification
-[W] Visual Design            — Work with visual tools, integrate results
-[M] Manage Design System     — Define/update design system components
-[V] Validate Specifications  — Audit a finished spec
-[H] Design Delivery          — Package DD-XXX, hand off to BMad
+── Design ──────────────────────────────────────
+[C] Conceptualize        — Explore what the design needs
+[K] Analyse Sketches     — I'll interpret your sketch
+[S] Suggest Design       — I'll propose a design, you confirm each step
+[D] Dream Up Design      — I'll create it all, you review
+
+── Specify ─────────────────────────────────────
+[P] Write Specifications — Content, interaction and functionality specs
+[V] Validate Specs       — Audit spec completeness and quality
+
+── Produce ─────────────────────────────────────
+[W] Visual Design        — Generate assets with Nano Banana, Stitch, etc.
+[M] Design System        — Extract or update shared components
+[H] Design Delivery      — Package for development handoff
 ```
 
 ### Activity Routing
@@ -99,7 +104,7 @@ What would you like to do?
 | [D] | workflow-dream.md | steps-s/ (autonomous mode) |
 | [P] | workflow-specify.md | steps-p/ |
 | [W] | workflow-visual.md | steps-w/ |
-| [M] | workflow-design-system.md | steps-m/ |
+| [M] | workflow-design-system.md | steps-m/ (extract on 2nd use) |
 | [V] | workflow-validate.md | steps-v/ |
 | [H] | workflow-handover.md | steps-h/ |
 
@@ -123,7 +128,8 @@ If the scenario has a `design_intent` from Phase 3 handover, pre-select that act
 
 ## OUTPUT
 
-- `{output_folder}/D-UX-Design/` — page specifications, design system, validation reports
+- `{output_folder}/C-UX-Scenarios/` — page specifications within scenario page folders
+- `{output_folder}/D-Design-System/` — shared components and design tokens
 
 ---
 

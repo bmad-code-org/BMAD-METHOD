@@ -44,7 +44,7 @@ Apply Simon Sinek's Golden Circle to sequence all content from previous steps in
 
 ## CONTEXT BOUNDARIES:
 
-- Available context: Purpose (Step 0), VTC (Step 1), Awareness (Step 2), Action Filter (Step 3), Empowerment Frame (Step 4)
+- Available context: Purpose (Step 0), Trigger Map (Step 1), Awareness (Step 2), Action Filter (Step 3), Empowerment Frame (Step 4)
 - Focus: Sequencing existing content elements into persuasive order
 - Limits: Do not write final content — organize the structure for it
 - Dependencies: All previous steps provide the content elements to sequence
@@ -55,7 +55,7 @@ Apply Simon Sinek's Golden Circle to sequence all content from previous steps in
 
 Ask: **"What's the emotional opening that connects to their driving forces?"**
 
-Opens with user's current emotional state, connects to driving forces from VTC, makes them care before explaining the solution.
+Opens with user's current emotional state, connects to driving forces from the Trigger Map, makes them care before explaining the solution.
 
 ### 2. Identify the HOW
 

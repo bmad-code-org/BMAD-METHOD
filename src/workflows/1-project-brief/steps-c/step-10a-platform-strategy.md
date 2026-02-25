@@ -40,7 +40,7 @@ Establish the technical platform strategy and device support requirements that w
 - Avoid generating content without user input
 
 ## CONTEXT BOUNDARIES:
-- Available context: All previous steps (vision, positioning, VTC, business model, users, success criteria, competitive landscape, constraints)
+- Available context: All previous steps (vision, positioning, Trigger Map, business model, users, success criteria, competitive landscape, constraints)
 - Focus: Platform and device strategy
 - Limits: Not detailed technical specs - strategic platform direction
 - Dependencies: Steps 1-10 completed

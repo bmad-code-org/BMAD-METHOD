@@ -311,7 +311,7 @@ src/workflows/3-scenarios/data/validation-standards.md
 **Initial Load (start of Phase 3):**
 - Product Brief (all 4 documents from Phase 1)
 - Trigger Map (all documents from Phase 2)
-- VTCs (Value Trigger Chains)
+- Strategic context (business goal, persona, driving forces)
 
 **After each scenario outlined:**
 ```markdown

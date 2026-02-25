@@ -6,7 +6,7 @@ web_bundle: true
 
 # Phase 3: Synthesize & Present
 
-**Goal:** Synthesize the section explorations into a complete alignment document, optionally create a VTC, and present for stakeholder approval.
+**Goal:** Synthesize the section explorations into a complete alignment document, optionally create strategic context, and present for stakeholder approval.
 
 **Your Role:** Reflect back what was captured, compile the alignment document, and guide the user through the approval process.
 

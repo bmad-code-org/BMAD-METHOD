@@ -15,8 +15,7 @@
 ### 1. Load Strategic Context
 
 **Ask yourself:**
-- Is there a VTC (Value Trigger Chain) for this page/scenario?
-- What's in the Trigger Map?
+- What's in the Trigger Map for this page/scenario?
 - What does the Product Brief say?
 
 **If missing:** Suggest creating one first. Design without strategy is decoration.
@@ -37,7 +36,7 @@
 
 ### 3. Identify User Driving Forces
 
-**From the VTC/Trigger Map, ask:**
+**From the Trigger Map, ask:**
 - What positive driving forces should we trigger? (wishes, desires, aspirations)
 - What negative driving forces should we address? (fears, frustrations, anxieties)
 
@@ -86,7 +85,7 @@ Hero Section:
 
 Before finalizing any design:
 
-- [ ] **VTC Connection** - Which driving force does this serve?
+- [ ] **Trigger Map** - Which driving force does this serve?
 - [ ] **Business Goal** - How does this support our objectives?
 - [ ] **Customer Awareness** - Appropriate for their awareness stage?
 - [ ] **Golden Circle** - WHY before HOW before WHAT?
@@ -98,7 +97,7 @@ Before finalizing any design:
 
 **If you can't connect a design choice to strategy:**
 1. It might not be needed (remove it)
-2. You need more strategic context (ask for VTC/Trigger Map)
+2. You need more strategic context (ask for Trigger Map)
 3. There's a better alternative (explore options)
 
 **Never guess.** Always design with intent.
@@ -107,7 +106,6 @@ Before finalizing any design:
 
 ## Related Resources
 
-- **VTC Workshop:** `../../workflows/1-project-brief/_vtc-workshop/`
 - **Trigger Mapping:** `../../docs/method/phase-2-trigger-mapping-guide.md`
 - **Customer Awareness:** `../../docs/models/customer-awareness-cycle.md`
 - **Golden Circle:** `../../docs/models/golden-circle.md`

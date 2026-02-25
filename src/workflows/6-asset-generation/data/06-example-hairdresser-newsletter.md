@@ -1,6 +1,6 @@
 # Example: Hairdresser Newsletter Signup
 
-**VTC Context:** Hairdresser newsletter signup
+**Trigger Map Context:** Hairdresser newsletter signup
 
 **Content Generations:**
 

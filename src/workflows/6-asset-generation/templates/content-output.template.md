@@ -11,10 +11,10 @@
 
 ## Strategic Foundation
 
-### Step 1: VTC Context
+### Step 1: Trigger Map Context
 
 ```yaml
-vtc_reference:
+trigger_map_reference:
   business_goal: "{goal text}"
   solution: "{solution name/description}"
   user:
@@ -81,7 +81,7 @@ action_filter:
     success_criteria: "{How we know they can do it}"
   
   business_impact:
-    connection: "{How this action drives the VTC business goal}"
+    connection: "{How this action drives the business goal}"
     logic: "{Action → Outcome → Goal}"
   
   user_motivation:
@@ -293,7 +293,7 @@ WHAT Section:
 
 **This content serves:**
 
-- **VTC Business Goal:** {How this drives the goal}
+- **Business Goal:** {How this drives the goal}
 - **User Driving Forces:** 
   - Positive: {How it satisfies wish}
   - Negative: {How it addresses fear}
@@ -345,5 +345,5 @@ WHAT Section:
 ---
 
 _Created using WDS Content Creation Workshop (5-Model Framework)_  
-_Models: VTC, Customer Awareness Cycle, Action Mapping, Badass Users, Golden Circle_
+_Models: Trigger Map, Customer Awareness Cycle, Action Mapping, Badass Users, Golden Circle_
 

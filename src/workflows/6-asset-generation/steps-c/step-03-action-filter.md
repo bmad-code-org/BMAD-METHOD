@@ -44,10 +44,10 @@ Apply Action Mapping (Cathy Moore) to identify the specific action the user must
 
 ## CONTEXT BOUNDARIES:
 
-- Available context: Purpose (Step 0), VTC (Step 1), Awareness Strategy (Step 2)
+- Available context: Purpose (Step 0), Trigger Map (Step 1), Awareness Strategy (Step 2)
 - Focus: What action must the user take, and what information enables it
 - Limits: Do not write content — filter what information to include
-- Dependencies: VTC and Awareness Strategy from previous steps
+- Dependencies: Trigger Map and Awareness Strategy from previous steps
 
 ## Sequence of Instructions (Do not deviate, skip, or optimize)
 
@@ -63,13 +63,13 @@ Push for specific behaviors, not vague understanding:
 
 ### 2. Connect Action to Business Goal
 
-Trace the logic: User does [action] → which leads to [outcome] → which drives [business goal from VTC].
+Trace the logic: User does [action] → which leads to [outcome] → which drives [business goal from Trigger Map].
 
-Ask: **"Does this action clearly serve the VTC's business goal?"**
+Ask: **"Does this action clearly serve the Trigger Map's business goal?"**
 
 ### 3. Connect Action to Driving Forces
 
-From VTC driving forces: **"By taking this action, how does the user move toward their wish or away from their fear?"**
+From the Trigger Map driving forces: **"By taking this action, how does the user move toward their wish or away from their fear?"**
 
 ### 4. Determine Essential Information
 
@@ -96,7 +96,7 @@ action_filter:
     description: "[Specific action user must be able to take]"
     success_criteria: "[How we know they can do it]"
   business_impact:
-    connection: "[How this action drives the VTC business goal]"
+    connection: "[How this action drives the business goal]"
     logic: "[Action → Outcome → Goal]"
   user_motivation:
     positive_driver: "[How action satisfies their wish]"
@@ -141,7 +141,7 @@ ONLY WHEN C is selected and the action filter is documented will you load {nextS
 ### ✅ SUCCESS:
 
 - Specific action identified (not vague "understanding")
-- Action connects to VTC business goal
+- Action connects to Trigger Map business goal
 - Action satisfies user's driving forces
 - Essential information determined (what enables the action)
 - Unnecessary information identified (what does not enable action)

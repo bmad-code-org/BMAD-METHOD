@@ -48,7 +48,7 @@ Help the user define their ideal business customer profile, including company ch
 
 ## CONTEXT CARRY-FORWARD (READ BEFORE ASKING QUESTIONS):
 - From Step 3 (Positioning): You already know the target segment and market positioning. DO NOT re-ask "who is this for?" — instead reference: "In positioning, we identified [target segment]. Now let's go deeper into the business customer profile."
-- From VTC Workshop (if completed): You may already have Value Trigger Chains with user archetypes. Reference those rather than starting from scratch.
+- From Trigger Map Workshop (if completed): You may already have Trigger Maps with user archetypes. Reference those rather than starting from scratch.
 - BUILD ON prior answers. If the user already described their customers during positioning, acknowledge that: "You mentioned [X] earlier. Let's build on that — tell me more about the decision-making structure."
 - RULE: If the user says "I already told you this," immediately acknowledge, reference the earlier answer, and ask only for NEW information.
 

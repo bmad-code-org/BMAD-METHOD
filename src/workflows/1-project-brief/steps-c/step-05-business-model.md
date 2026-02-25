@@ -41,7 +41,7 @@ Help the user identify and understand their business model (B2B, B2C, or both) t
 - 🚫 Avoid generic questions — adapt to context
 
 ## CONTEXT BOUNDARIES:
-- Available context: Vision, Positioning, VTC from previous steps
+- Available context: Vision, Positioning, Trigger Map from previous steps
 - Focus: Business model determination and implications
 - Limits: Not detailed customer profiles yet — that is next steps
 - Dependencies: Steps 1-4 completed

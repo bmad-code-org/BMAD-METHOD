@@ -68,9 +68,9 @@
 
 ---
 
-## Value Trigger Chain
+## Trigger Map
 
-**Strategic Summary** - [View full VTC](./vtc-primary.yaml)
+**Strategic Summary** - [View full Trigger Map](./vtc-primary.yaml)
 
 This project serves:
 - **Business Goal:** {{vtc_business_goal}}
@@ -83,7 +83,7 @@ This project serves:
 
 **Awareness Journey:** {{vtc_awareness_start}} → {{vtc_awareness_end}}
 
-This strategic chain ensures every design decision serves the user's psychology while achieving business goals.
+This Trigger Map ensures every design decision serves the user's psychology while achieving business goals.
 
 ---
 

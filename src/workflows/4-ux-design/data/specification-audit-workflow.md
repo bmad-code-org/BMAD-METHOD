@@ -196,7 +196,7 @@ This is especially important for storyboards and multi-state specifications wher
 **Strategic Foundation**
 - [ ] User situation clearly defined
 - [ ] Usage context documented
-- [ ] Trigger Value Chain (VTC) defined and linked
+- [ ] Strategic context (Trigger Map) defined and linked
 - [ ] Scenario purpose stated
 - [ ] Success criteria defined
 
@@ -239,7 +239,7 @@ This is especially important for storyboards and multi-state specifications wher
 **Checklist:**
 - [ ] Page purpose clearly stated
 - [ ] Success criteria defined
-- [ ] VTC reference present
+- [ ] Trigger Map reference present
 - [ ] Sections properly separated and named
 - [ ] Section purposes defined
 - [ ] Page layout logical and flows well
@@ -550,7 +550,7 @@ For rapid validation during active design work:
 
 **Content (Levels 1-5):**
 - [ ] Page purpose clear
-- [ ] VTC reference present
+- [ ] Trigger Map reference present
 - [ ] Structural Area Labels complete
 - [ ] Interactive Area Labels complete
 - [ ] Multi-language content present

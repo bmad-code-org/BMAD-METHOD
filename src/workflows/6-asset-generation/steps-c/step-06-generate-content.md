@@ -44,7 +44,7 @@ Generate 2-3 strategically grounded content variations based on all strategic co
 
 ## CONTEXT BOUNDARIES:
 
-- Available context: All outputs from Steps 0-5 (Purpose, VTC, Awareness, Action, Empowerment, Structure)
+- Available context: All outputs from Steps 0-5 (Purpose, Trigger Map, Awareness, Action, Empowerment, Structure)
 - Focus: Synthesizing strategy into actual content text, then refining with user
 - Limits: Variations are strategic alternatives, not random drafts
 - Dependencies: Complete WHY-HOW-WHAT structure from Step 5
@@ -72,7 +72,7 @@ Ask: **"Which variation resonates most with you?"** Allow selection, combination
 
 Ask: **"Does this feel aligned with the strategic context?"**
 
-Check against: VTC business goal, driving forces, awareness level, required action, capability framing, WHY-HOW-WHAT structure.
+Check against: Trigger Map business goal, driving forces, awareness level, required action, capability framing, WHY-HOW-WHAT structure.
 
 ### 5. Refinement
 
@@ -89,7 +89,7 @@ Ask: **"Does this move the user from START to END awareness?"** Verify the journ
 ### 8. Document Final Content
 
 Save using content-output template with full strategic traceability:
-- VTC reference, awareness journey, action enabled, empowerment achieved
+- Trigger Map reference, awareness journey, action enabled, empowerment achieved
 - Implementation notes (technical, design, language tags, asset needs)
 
 ### 9. Present MENU OPTIONS

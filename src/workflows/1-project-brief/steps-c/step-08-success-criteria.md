@@ -40,7 +40,7 @@ Help the user explore and define what success looks like through conversational 
 - Avoid generating content without user input
 
 ## CONTEXT BOUNDARIES:
-- Available context: Vision, positioning, VTC, business model, target users, product concept
+- Available context: Vision, positioning, Trigger Map, business model, target users, product concept
 - Focus: Measurable success criteria with primary/secondary metrics and timeline
 - Limits: Not business model changes, not competitive analysis
 - Dependencies: Steps 1-7a completed

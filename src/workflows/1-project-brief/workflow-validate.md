@@ -32,7 +32,7 @@ Execute each step in order. Each step produces a section of the final validation
 | Step | Name | Validates |
 |------|------|-----------|
 | 01 | Brief Completeness | All required sections present and filled |
-| 02 | VTC Consistency | Goals → personas → forces chain is valid |
+| 02 | Trigger Map Consistency | Goals → personas → forces chain is valid |
 | 03 | SEO Strategy | Keyword map complete, page assignments clear |
 | 04 | Content & Language | Tone, personality, guidelines coherent |
 | 05 | Visual Direction | Brand, style, references documented |

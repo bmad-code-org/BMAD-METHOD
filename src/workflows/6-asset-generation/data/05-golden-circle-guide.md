@@ -38,7 +38,7 @@
 - "Sign up now" (jumping to action without motivation)
 
 **Connects to:**
-- User's driving forces (from VTC)
+- User's driving forces (from Trigger Map)
 - Current emotional state (from Empowerment Frame)
 - The problem or aspiration that matters
 

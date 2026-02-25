@@ -122,7 +122,7 @@ Store as `brief_level`: complete | simplified
 **How deep should the user/market analysis go?** (Only ask if greenfield AND not simple)
 
 [A] **Full Trigger Map** (Recommended for complex) -> Phase 2 enabled
-[B] **Simplified VTC** -> VTC in Phase 1, skip Phase 2
+[B] **Simplified** -> Strategic context in Phase 1, skip Phase 2
 [C] **Skip** (Not recommended) -> Skip Phase 2
 
 Store as `strategic_analysis`: full | simplified | skip

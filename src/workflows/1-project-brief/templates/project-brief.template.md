@@ -162,9 +162,9 @@
 
 ---
 
-## Value Trigger Chain
+## Trigger Map
 
-**Strategic Summary** - [View full VTC](./vtc-primary.yaml)
+**Strategic Summary** - [View full Trigger Map](./vtc-primary.yaml)
 
 - **Business Goal:** {{vtc_business_goal}}
 - **Solution:** {{vtc_solution}}
@@ -174,7 +174,7 @@
   - *Wants to avoid:* {{vtc_negative_forces}}
 - **Awareness Journey:** {{vtc_awareness_start}} → {{vtc_awareness_end}}
 
-This VTC provides quick strategic reference and will inform all design decisions.
+This Trigger Map provides quick strategic reference and will inform all design decisions.
 
 ---
 

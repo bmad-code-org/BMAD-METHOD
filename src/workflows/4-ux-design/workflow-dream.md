@@ -53,7 +53,7 @@ The Dream workflow uses the same steps as Suggest (`./steps-s/`) but with **auto
 
 ### Agent Behavior
 
-- Make reasonable decisions at each step based on VTC, scenario context, and WDS patterns
+- Make reasonable decisions at each step based on Trigger Map, scenario context, and WDS patterns
 - Document decisions and rationale as you go
 - When uncertain, choose the simpler option
 - After completion, present a summary of all decisions made

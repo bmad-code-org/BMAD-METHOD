@@ -102,7 +102,7 @@ Compile results from all 6 validation steps:
 | Check | Status | Issues |
 |-------|--------|--------|
 | Brief Completeness | pass/warn/fail | [summary] |
-| VTC Consistency | pass/warn/fail | [summary] |
+| Trigger Map Consistency | pass/warn/fail | [summary] |
 | SEO Strategy | pass/warn/fail | [summary] |
 | Content & Language | pass/warn/fail | [summary] |
 | Visual Direction | pass/warn/fail | [summary] |
