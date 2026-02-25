@@ -1,19 +1,13 @@
 # Whiteport Design Studio (WDS)
 
-**Strategic design methodology for creating products users love, powered by AI agents.**
-
-[![npm version](https://img.shields.io/npm/v/whiteport-design-studio.svg)](https://www.npmjs.com/package/whiteport-design-studio)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-
----
-
-## Installation
-
 ```bash
 npx whiteport-design-studio install
 ```
 
-The installer will guide you through setup: project type, experience level, and IDE configuration. Everything gets installed into a `_wds/` folder in your project.
+**Strategic design methodology for creating products users love, powered by AI agents.**
+
+[![npm version](https://img.shields.io/npm/v/whiteport-design-studio.svg)](https://www.npmjs.com/package/whiteport-design-studio)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 ---
 
@@ -23,46 +17,67 @@ WDS is a structured design methodology that uses AI agents to guide you through 
 
 - **Strategic foundation** - Connect every design decision to business goals and user psychology
 - **Complete specifications** - Generate developer-ready page specs with all details defined
-- **AI-powered workflow** - Four specialized agents guide you through each phase
-- **IDE-native** - Works inside your AI coding tool (Claude Code, Cursor, Windsurf, and 14 more)
+- **AI-powered workflow** - Three specialized agents guide you through each phase
+- **IDE-native** - Works inside your AI coding tool (Claude Code, Cursor, Windsurf, and 16 more)
 
 ---
 
 ## Agents
 
-WDS uses four specialized AI agents (the Norse Pantheon):
+WDS uses three specialized AI agents (the Norse Pantheon):
 
 | Agent | Role | What they do |
 |-------|------|-------------|
-| **Mimir** (Orchestrator) | Coach & Guide | Greets you, assesses your level, guides you through the entire process. Start here. |
-| **Saga** (Analyst) | Business & Product Analyst | Product Brief (Phase 1) and Trigger Mapping (Phase 2) |
-| **Idunn** (Product Manager) | Platform Requirements | Platform architecture (Phase 3) and design deliveries (Phase 6) |
-| **Freya** (Designer) | UX/UI Designer | UX Design (Phase 4), Design System (Phase 5), and testing (Phases 7-8) |
+| **Saga** (Analyst) | Business & Product Analyst | Product Brief (Phase 1), Trigger Mapping (Phase 2), UX Scenarios (Phase 3). Start here. |
+| **Freya** (Designer) | UX/UI Designer | UX Design (Phase 4), Agentic Development (Phase 5), Asset Generation (Phase 6), Design System (Phase 7) |
+| **Idunn** (Product Manager) | Technical Coordinator | Platform Requirements (Phase 1), Design Handover (Phase 4), Product Evolution (Phase 8) |
 
 ### Activating an agent
 
 Tell your AI IDE:
 
 ```
-Read and activate the agent in _wds/agents/mimir-orchestrator.md
+Read and activate _wds/agents/saga-analyst.md
 ```
 
-Mimir will greet you, assess your situation, and guide you to the right specialist.
+Saga will greet you by name and guide you through creating your Product Brief.
 
 ---
 
 ## Design Phases
 
-| Phase | Focus | Output folder |
-|-------|-------|--------------|
-| 1. Product Exploration | Vision, positioning, success criteria | `docs/A-Product-Brief/` |
-| 2. Trigger Mapping | User psychology, business goals | `docs/B-Trigger-Map/` |
-| 3. Platform Architecture | Technical requirements (optional) | `docs/C-Platform-Requirements/` |
-| 4. UX Design | Scenarios, interactions, content structure | `docs/C-Scenarios/` |
-| 5. Visual Design | Brand identity, design system, components | `docs/D-Design-System/` |
-| 6. Design Delivery | Developer handoff, PRD finalization | `docs/E-PRD/Design-Deliveries/` |
+| Phase | Focus | Agent | Output folder |
+|-------|-------|-------|--------------|
+| 0. Alignment & Signoff | Stakeholder alignment before starting | Saga | — |
+| 1. Product Brief | Vision, positioning, success criteria | Saga | `A-Product-Brief/` |
+| 2. Trigger Mapping | User psychology, business goals | Saga | `B-Trigger-Map/` |
+| 3. UX Scenarios | Scenario outlines via 8-question dialog | Saga | `C-UX-Scenarios/` |
+| 4. UX Design | Page specifications, interactions | Freya | `D-UX-Design/` |
+| 5. Agentic Development | AI-assisted development & testing | Freya | `G-Product-Development/` |
+| 6. Asset Generation | Visual and text assets from specs | Freya | — |
+| 7. Design System | Component library, design tokens | Freya | `D-Design-System/` |
+| 8. Product Evolution | Brownfield improvements | Idunn | — |
 
-Agent dialogs and conversation logs are saved to `docs/F-Agent-Dialogs/`.
+Output folders are created inside your configured design artifacts directory (default: `design-artifacts/`).
+
+---
+
+## The 8-Question Scenario Dialog
+
+Phase 3 uses a structured conversation to define each scenario. The agent walks through 8 strategic questions — one at a time — building a complete scenario outline:
+
+1. **What transaction do we need to get really right?**
+2. **Which business goal does it serve?**
+3. **Which user, and in what real-life situation?**
+4. **What do they want and fear going into this?**
+5. **What device are they on?**
+6. **What's the natural starting point?**
+7. **What's the best possible outcome — for both sides?**
+8. **What's the shortest path through the site?**
+
+A *transaction* is any meaningful user journey — purchasing, booking, researching content page-by-page, comparing options, or any interaction where the user moves through the site with intent.
+
+Two modes: **Conversation** (agent asks, you answer) or **Suggest** (agent proposes all 8, you review).
 
 ---
 
@@ -86,14 +101,14 @@ your-project/
 │   ├── method/
 │   ├── models/
 │   └── tools/
-├── docs/                    # Design output (created by agents)
+├── design-artifacts/        # Design output (created by agents)
 │   ├── A-Product-Brief/
 │   ├── B-Trigger-Map/
-│   ├── C-Platform-Requirements/
-│   ├── C-Scenarios/
+│   ├── C-UX-Scenarios/
 │   ├── D-Design-System/
-│   ├── E-PRD/Design-Deliveries/
-│   └── F-Agent-Dialogs/
+│   ├── E-PRD/
+│   ├── F-Testing/
+│   └── G-Product-Development/
 └── .claude/instructions.md  # IDE configuration (varies by IDE)
 ```
 
@@ -108,12 +123,12 @@ your-project/
 
 2. **Open your project** in your AI IDE (Claude Code, Cursor, Windsurf, etc.)
 
-3. **Activate Mimir** - tell the AI:
+3. **Activate Saga** — tell the AI:
    ```
-   Read and activate the agent in _wds/agents/mimir-orchestrator.md
+   Read and activate _wds/agents/saga-analyst.md
    ```
 
-4. **Follow Mimir's guidance** - Mimir will greet you, assess your experience level, and walk you through project setup. When you're ready for specific work, Mimir connects you to the right specialist agent.
+4. **Follow Saga's guidance** — Saga will greet you by name and walk you through creating your Product Brief. When you're ready for design work, switch to Freya.
 
 ---
 
@@ -121,7 +136,7 @@ your-project/
 
 WDS works with any AI-powered IDE or coding tool:
 
-Claude Code, Cursor, Windsurf, Cline, GitHub Copilot, Roo Code, Codex, Gemini, Qwen, Trae, Kiro CLI, Rovo Dev, Crush, Auggie, Antigravity, iFlow, OpenCode
+Atlassian Rovo Dev, Auggie CLI, Claude Code, Cline, Codex, Crush, Cursor, Gemini CLI, GitHub Copilot, Google Antigravity, iFlow CLI, Kilo Code, Kiro CLI, OpenCode, Qwen Code, Roo Code, Trae, VS Code, Windsurf
 
 The installer configures your selected IDE(s) automatically.
 
@@ -135,24 +150,6 @@ WDS integrates with design and prototyping tools:
 - **html.to.design** - Import HTML prototypes into Figma
 - **NanoBanana/Eira** - AI-powered image generation for brand exploration
 - **Excalidraw** - Sketch analysis and wireframing
-
----
-
-## Key Concepts
-
-### UX vs Visual Design
-
-Phase 4 (UX Design) defines **how it works** - functionality, interactions, content structure.
-Phase 5 (Visual Design) defines **how it looks** - brand expression, design tokens, component library.
-
-Visual design can start at any time - brand identity is independent of product strategy.
-
-### Adaptive Teaching
-
-Mimir adapts to your experience level:
-- **Beginner** - Detailed guidance, one step at a time
-- **Intermediate** - Balanced approach, builds on existing knowledge
-- **Expert** - Direct and efficient, respects your time
 
 ---
 
