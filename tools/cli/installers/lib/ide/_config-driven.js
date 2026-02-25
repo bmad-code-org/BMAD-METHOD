@@ -453,6 +453,15 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
    * @param {string} projectDir - Project directory
    */
   async cleanup(projectDir, options = {}) {
+    // Migrate legacy target directories (e.g. .opencode/agent → .opencode/agents)
+    if (this.installerConfig?.legacy_targets) {
+      if (!options.silent) await prompts.log.message('  Migrating legacy directories...');
+      for (const legacyDir of this.installerConfig.legacy_targets) {
+        await this.cleanupTarget(projectDir, legacyDir, options);
+        await this.removeEmptyParents(projectDir, legacyDir);
+      }
+    }
+
     // Clean all target directories
     if (this.installerConfig?.targets) {
       const parentDirs = new Set();
@@ -532,24 +541,37 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
     }
   }
   /**
-   * Recursively remove empty directories walking up from dir toward projectDir
+   * Walk up ancestor directories from relativeDir toward projectDir, removing each if empty
    * Stops at projectDir boundary — never removes projectDir itself
    * @param {string} projectDir - Project root (boundary)
    * @param {string} relativeDir - Relative directory to start from
    */
   async removeEmptyParents(projectDir, relativeDir) {
+    const resolvedProject = path.resolve(projectDir);
     let current = relativeDir;
     let last = null;
     while (current && current !== '.' && current !== last) {
       last = current;
-      const fullPath = path.join(projectDir, current);
+      const fullPath = path.resolve(projectDir, current);
+      // Boundary guard: never traverse outside projectDir
+      if (!fullPath.startsWith(resolvedProject + path.sep) && fullPath !== resolvedProject) break;
       try {
-        if (!(await fs.pathExists(fullPath))) break;
+        if (!(await fs.pathExists(fullPath))) {
+          // Dir already gone — advance current; last is reset at top of next iteration
+          current = path.dirname(current);
+          continue;
+        }
         const remaining = await fs.readdir(fullPath);
         if (remaining.length > 0) break;
         await fs.rmdir(fullPath);
-      } catch {
-        break;
+      } catch (error) {
+        // ENOTEMPTY: TOCTOU race (file added between readdir and rmdir) — skip level, continue upward
+        // ENOENT: dir removed by another process between pathExists and rmdir — skip level, continue upward
+        if (error.code === 'ENOTEMPTY' || error.code === 'ENOENT') {
+          current = path.dirname(current);
+          continue;
+        }
+        break; // fatal error (e.g. EACCES) — stop upward walk
       }
       current = path.dirname(current);
     }
