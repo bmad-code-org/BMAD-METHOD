@@ -49,6 +49,12 @@ platforms:
     category: cli
     description: "AI development tool"
 
+  bob:
+    name: "IBM Bob"
+    preferred: false
+    category: ide
+    description: "IBM's agentic IDE for AI-powered development"
+
   roo:
     name: "Roo Cline"
     preferred: false

@@ -54,6 +54,8 @@ _bmad-output
 .opencode
 .qwen
 .rovodev
+.bobmodes
+.bob
 .kilocodemodes
 .claude/commands
 .codex
