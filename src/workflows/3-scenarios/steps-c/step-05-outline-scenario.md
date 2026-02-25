@@ -195,8 +195,8 @@ Scenario [NN] complete! What would you like to do?
 #### Menu Handling Logic:
 
 - IF N: Loop back to instruction 1 for the next transaction and target group. The scenario outline is saved — page folders can be created later.
-- IF O: Walk through the pages in Q8's shortest path, creating page folders one at a time (see Page Folder Structure below). The user can stop at any point and return to this menu.
-- IF D: Create the first page folder (see Page Folder Structure below), then hand over to Phase 4 (UX Design). The remaining scenarios and page folders can be created later.
+- IF O: Start the Page Outline Dialog (see below). Walk through pages one at a time, starting from the first page. The user can stop at any point and return to this menu.
+- IF D: Create the first page folder (see Page Folder Structure below), then hand over to Phase 4 (UX Design). The remaining pages can be outlined later.
 - IF C: Load, read entire file, then execute {nextStepFile} (only when all planned scenarios are complete)
 
 #### EXECUTION RULES:
@@ -206,55 +206,47 @@ Scenario [NN] complete! What would you like to do?
 - User can chat or ask questions — always respond and then display the menu again
 - Options [O] and [D] are always available — the user decides when to outline pages
 
+### Page Outline Dialog
+
+When the user selects [O], walk through each page as a conversation. Q8's shortest path gives the rough page sequence — the outline dialog refines it by identifying what happens on each page.
+
+**Start from page 1** (already defined by Q6 + Q8 step 1).
+
+#### For each page, ask two questions:
+
+**1. "What's the point of this page?"**
+
+What does the user need to accomplish here? This becomes the page purpose.
+- e.g., "See a list of news articles" or "Find the phone number and opening hours"
+
+**2. "What does the user do to move forward?"**
+
+What interaction takes them to the next step? This defines the exit action.
+- e.g., "Selects 'News' in the menu" → next page is the News listing
+- e.g., "Clicks 'Read more' on an article" → next page is the Article detail
+
+#### Two types of interactions:
+
+- **Leaves the page** → new scenario step (new page folder, next number)
+- **Stays on the page** → storyboard item (documented within the page spec as an on-page interaction)
+
+#### After each page, create the folder and continue:
+
+Create the page folder, then ask about the next page. The user can say "stop" at any point to return to the scenario menu.
+
 ### Page Folder Structure
 
-When creating page folders (via [S] or [D]), use this structure:
+**Naming convention:** `{scenario-number}.{step-number}-{page-slug}` (e.g., `1.1-start-page`, `1.2-news-listing`, `1.3-article-detail`)
 
-**Naming convention:** `{scenario-number}.{step-number}-{page-slug}` (e.g., `1.1-start-page`, `1.2-services`, `1.3-contact`)
+Each page folder contains:
 
 ```
-{output_folder}/C-UX-Scenarios/[NN-slug]/pages/
-├── {NN}.1-{page-slug}/
-│   ├── {NN}.1-{page-slug}.md    ← Full boilerplate (first page only)
-│   └── Sketches/
-├── {NN}.2-{page-slug}/
-│   ├── {NN}.2-{page-slug}.md    ← Minimal boilerplate
-│   └── Sketches/
-└── {NN}.3-{page-slug}/
-    ├── {NN}.3-{page-slug}.md    ← Minimal boilerplate
-    └── Sketches/
+{NN}.{step}-{page-slug}/
+├── {NN}.{step}-{page-slug}.md
+└── Sketches/
 ```
 
-#### First page — full boilerplate:
-
-The first page gets rich context from the 8-question dialog:
-
-```markdown
-# {NN}.1-{page-name}
-
-## Page Metadata
-
-| Property | Value |
-|----------|-------|
-| **Scenario** | {scenario-name} |
-| **Page Number** | {NN}.1 |
-| **Platform** | {Device from Q5} |
-
-## Overview
-
-**Page Purpose:** {Purpose from step 1 of the Shortest Path (Q8)}
-
-**User Situation:** {Persona + real-life situation from Q3}
-
-**Entry Context:** {Device (Q5)} arriving via {discovery method (Q6)}, feeling {mental state — hope + worry from Q4}
-
-**Success Criteria:** {What must be true before the user moves to step 2}
-
-**Exit Points:**
-- → {NN}.2-{next-page-slug}
-```
-
-#### Remaining pages — minimal boilerplate:
+#### Page boilerplate:
 
 ```markdown
 # {NN}.{step}-{page-name}
@@ -265,11 +257,24 @@ The first page gets rich context from the 8-question dialog:
 |----------|-------|
 | **Scenario** | {scenario-name} |
 | **Page Number** | {NN}.{step} |
+| **Platform** | {Device from Q5} |
 
 ## Overview
 
-**Page Purpose:** {Purpose from this step of the Shortest Path (Q8)}
+**Page Purpose:** {What the user needs to accomplish here}
+
+**Entry Context:** {How the user arrived — previous page + interaction that brought them here}
+
+**Exit Action:** {What the user does to move to the next step}
+
+**On-Page Interactions:**
+- {Any interactions that keep the user on this page — storyboard items}
 ```
+
+The **first page** additionally includes:
+- **User Situation** from Q3
+- **Mental State** (hope + worry) from Q4
+- **Discovery Method** from Q6
 
 ## CRITICAL STEP COMPLETION NOTE
 

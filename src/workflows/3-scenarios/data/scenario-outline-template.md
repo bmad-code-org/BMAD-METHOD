@@ -88,16 +88,16 @@
 
 ## Pages in This Scenario
 
-Page folders are created when the user chooses [O] Outline or [D] Design from the post-scenario menu.
+Page folders are created via [O] Outline (page-by-page dialog) or [D] Design (first page + Phase 4).
 
-| Page Number | Folder | Purpose in Flow |
-|-------------|--------|----------------|
-| [NN].1 | `[NN].1-[page-slug]/` | [What it does — from Q8 step 1] |
-| [NN].2 | `[NN].2-[page-slug]/` | [What it does — from Q8 step 2] |
-| [NN].3 | `[NN].3-[page-slug]/` | [What it does — from Q8 step 3] |
+| Page Number | Folder | Purpose | Exit Action |
+|-------------|--------|---------|-------------|
+| [NN].1 | `[NN].1-[page-slug]/` | [Page purpose] | [Interaction that leads to next page] |
+| [NN].2 | `[NN].2-[page-slug]/` | [Page purpose] | [Interaction that leads to next page] |
+| [NN].3 | `[NN].3-[page-slug]/` | [Page purpose] | [Final — scenario success] ✓ |
 
-**First page** ([NN].1) has full boilerplate with entry context (Q4 + Q5 + Q6).
-**Remaining pages** have minimal boilerplate with page purpose from Q8.
+**First page** ([NN].1) includes full entry context (Q3 + Q4 + Q5 + Q6).
+**On-page interactions** (that don't leave the page) are documented as storyboard items within each page spec.
 ```
 
 ---
