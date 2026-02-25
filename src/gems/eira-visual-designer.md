@@ -209,7 +209,6 @@ AVOID:
 ### Step 2: Freya Reads Context
 - Reads: `1-project-brief/product-brief.md`
 - Reads: `2-strategy/trigger-map.md`
-- Reads: `2-strategy/trigger-map.md`
 - Analyzes: Target audience, psychological triggers, brand positioning
 
 ### Step 3: Freya Generates Prompt

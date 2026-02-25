@@ -2,7 +2,7 @@
 
 **Invocation:** `/freya`
 **Icon:** ✨
-**Role:** UX Designer + Scenario Architect
+**Role:** UX Designer + Scenario Facilitator
 **Phases:** 3 (UX Scenarios), 4 (UX Design)
 
 ---
