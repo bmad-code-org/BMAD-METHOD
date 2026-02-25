@@ -1,9 +1,11 @@
 # Value Trigger Chain (VTC)
 
-**Deprecated** — The VTC concept has been replaced by the Trigger Map's built-in strategic context.
+**Removed** — The VTC concept has been removed entirely. The VTC Workshop and all related files were deleted in v0.3.0.
 
-When you need quick strategic grounding without a full Trigger Map, use a **slim Trigger Map** instead — define the business goal, target group, and their driving forces directly. This provides the same strategic context without introducing a separate concept.
+When a scenario or content piece needs strategic context, reference the Trigger Map directly — pick the relevant business goal, persona, and driving forces from the Trigger Map (Phase 2).
+
+Phase 1 (Product Brief) is casual business discovery. Phase 2 (Trigger Mapping) is where strategic analysis happens. There is no separate "VTC" concept.
 
 See:
-- [Phase 2: Trigger Mapping Guide](./phase-2-trigger-mapping-guide.md) — full or slim Trigger Map
-- [Phase 1: Product Exploration Guide](./phase-1-product-exploration-guide.md) — strategic context step
+- [Phase 2: Trigger Mapping Guide](./phase-2-trigger-mapping-guide.md) — the Trigger Map Workshop
+- [Phase 1: Product Exploration Guide](./phase-1-product-exploration-guide.md) — casual business discovery

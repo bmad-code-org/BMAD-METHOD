@@ -23,11 +23,8 @@ Your Product Brief includes:
 - **Solution Approach** - The "how" that enables development
 - **Success Criteria** - The "what" that measures progress
 - **Market Positioning** - How you're different (optional: ICP framework)
-- **Strategic Context** - Business goal, target group, and driving forces as a benchmark
 
-**Strategic Context (Step 4):**
-
-After capturing your vision and positioning, you'll establish a strategic context — identifying your primary business goal, target group, and their driving forces. This serves as a benchmark for all subsequent discovery work. If anything contradicts these during discovery, either the strategic context needs refinement or the finding doesn't serve your strategy.
+Phase 1 captures a casual, conversational understanding of the business — who the users are, what the goals are, what the product should do. The deep strategic analysis (personas, driving forces, prioritization) happens in Phase 2: Trigger Mapping.
 
 ---
 
@@ -44,8 +41,7 @@ flowchart TD
 
     SIMPLE --> DONE([Phase complete])
 
-    VISION --> CONTEXT["Strategic Context\nBusiness goal, target group,\ndriving forces\nStep 04"]
-    CONTEXT --> BRIEF["Product Brief\nBusiness model, users,\nsuccess criteria, constraints\nSteps 05-12"]
+    VISION --> BRIEF["Product Brief\nBusiness model, users,\nsuccess criteria, constraints\nSteps 05-12"]
     BRIEF --> CONTENT["Content & Language\nPersonality, tone, SEO,\ncontent structure\nSteps 13-18"]
     CONTENT --> VISUAL["Visual Direction\nInspiration, brand, style,\nlayout, imagery\nSteps 19-26"]
     VISUAL --> PLATFORM["Platform Requirements\nTech stack, integrations,\ncontact strategy, multilingual\nSteps 27-32"]
@@ -62,7 +58,7 @@ flowchart TD
 3. **Visual Direction** — brand, style references, layout, imagery
 4. **Platform Requirements** — tech stack, integrations, multilingual
 
-**Strategic Context** (step 04) establishes the primary business goal, target group, and driving forces early — serving as a benchmark for all remaining discovery.
+Phase 1 captures casual business context. Deep strategic analysis (personas, driving forces) is done in Phase 2: Trigger Mapping.
 
 ---
 
@@ -152,7 +148,7 @@ You don't need polished answers. The conversation will help clarify everything.
 
 Your Product Brief enables:
 
-- **Phase 2: Trigger Mapping** - Deeper into user psychology with your strategic context
+- **Phase 2: Trigger Mapping** - Deep user psychology (personas, driving forces, prioritization)
 - **Phase 3: UX Scenarios** - User journeys grounded in your vision
 - **Phase 4: UX Design** - Design work grounded in strategic purpose
 
