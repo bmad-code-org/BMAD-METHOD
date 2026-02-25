@@ -71,6 +71,29 @@ Execute steps in `./steps-s/`:
 
 ## AFTER COMPLETION
 
-1. Update design log
-2. Suggest next action
-3. Return to activity menu
+After finishing a page specification, present the user with a choice:
+
+```
+Page [NN.step] complete! What would you like to do?
+
+[N] Next page — outline and design the next step in this scenario
+[R] Return to Scenario Dashboard — pick a different scenario or activity
+[V] Validate — audit this page specification
+```
+
+### Menu Handling Logic:
+
+- IF N: Check the scenario's shortest path (Q8) for the next page. If the next page doesn't have a folder yet, run the Page Outline Dialog from Phase 3 (ask the two questions: page purpose + exit action), create the page folder, then design it using steps 08-15. This is the **outline → design loop**.
+- IF R: Return to the Phase 4 Scenario Dashboard
+- IF V: Load and execute `./workflow-validate.md`
+
+### The Outline → Design Loop
+
+When the user chooses [N], the flow is:
+
+1. **Outline the next page** — Ask: "What's the point of this page?" and "What does the user do to move forward?" (same as Phase 3's [O] dialog)
+2. **Create the page folder** with boilerplate spec and Sketches/ subfolder
+3. **Design the page** — run steps 08-15 for this page
+4. **After completion** — present this menu again
+
+This loop continues until all pages in the scenario are designed or the user chooses to stop.
