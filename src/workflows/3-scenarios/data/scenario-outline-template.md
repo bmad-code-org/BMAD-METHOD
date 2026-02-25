@@ -1,7 +1,7 @@
 # Scenario Outline Template
 
 **Used by:** step-05-outline-scenario.md
-**Purpose:** Complete template for one scenario outline with all 7 required components.
+**Purpose:** Structure the answers from the 8-question scenario dialog into a complete scenario outline.
 
 ---
 
@@ -16,49 +16,55 @@
 
 ---
 
-## Core Feature
+## Transaction (Q1)
 
 **What this scenario covers:**
-[State as user purpose, not feature name]
-
-**Business Goal Alignment:**
-[Which specific business goal this serves, with objective reference]
+[The key transaction — stated as user purpose, not feature name]
 
 ---
 
-## Entry Point
+## Business Goal (Q2)
+
+**Goal:** [Which specific business goal this serves]
+**Objective:** [Objective reference from Trigger Map]
+
+---
+
+## User & Situation (Q3)
+
+**Persona:** [Name] ([Priority level: Primary/Secondary/Tertiary])
+**Situation:** [Real-life context — who they are, where they are, what's happening]
+
+---
+
+## Driving Forces (Q4)
+
+**Hope:** [What they're hoping to find or achieve — one sentence]
+
+**Worry:** [What they're afraid of or want to avoid — one sentence]
+
+> CONSTRAINT: One sentence per component. Phrases, not paragraphs.
+
+---
+
+## Device & Starting Point (Q5 + Q6)
 
 **Device:** [Mobile / Desktop / Tablet]
-**Context:** [Where the user is, what they're doing, what just happened]
-**Discovery:** [How they found the site — Google search terms, link from email, bookmark, ad, etc.]
-
-**Specific entry:** [Device] + [Context] + [Discovery] — max 2 sentences
+**Entry:** [How they actually arrive] — max 2 sentences
 
 ---
 
-## Mental State
-
-**Trigger:** [What just happened that brought them here NOW]
-
-**Hope:** [What they're hoping to find or achieve — be specific]
-
-**Worry:** [What they're afraid of or want to avoid — be specific]
-
-> CONSTRAINT: One sentence per component. Use phrases, not paragraphs.
-
----
-
-## Success Goals
+## Best Outcome (Q7)
 
 **User Success:**
-[Tangible, measurable outcome the user achieves when scenario completes]
+[Tangible, measurable outcome the user achieves]
 
 **Business Success:**
-[Specific, measurable result the business gets when scenario completes]
+[Specific, measurable result the business gets]
 
 ---
 
-## Shortest Path
+## Shortest Path (Q8)
 
 [Linear sunshine path — NO branches, NO "if" statements. Minimum viable steps.]
 
@@ -70,13 +76,22 @@
 
 ## Trigger Map Connections
 
-**Persona:** [Name] ([Priority level: Primary/Secondary/Tertiary])
+**Persona:** [Name] ([Priority level])
 
 **Driving Forces Addressed:**
 - ✅ **Want:** [Specific positive driver from Trigger Map]
 - ❌ **Fear:** [Specific negative driver from Trigger Map]
 
 **Business Goal:** [Specific goal + objective from Trigger Map]
+
+---
+
+## First Page (Entry Point)
+
+**Page:** [Page name from step 1 of Shortest Path]
+**Entry context:** [Device] arriving via [discovery method], feeling [mental state summary]
+**What the user needs here:** [Purpose from step 1 of Shortest Path]
+**Success criteria:** [What must be true before user moves to step 2]
 
 ---
 
@@ -95,16 +110,16 @@
 
 When filling this template, check:
 
-**Entry Point** — Would a real person arrive this way? Include device, location, search terms.
+**Transaction** — Is this a real user journey? Browsing content page-by-page counts. Comparing options counts. Any meaningful path through the site with intent.
 
-**Mental State** — Can you FEEL the user's emotional state? "Interested" is not enough. "Panicked because family vacation is at risk" is.
+**Driving Forces** — Can you FEEL the user's state? "Interested" is not enough. "Panicked because family vacation is at risk" is.
 
-**Success Goals** — "Get more customers" fails. "Reduce info calls by 40% by giving tourists the info they need online" passes.
+**Best Outcome** — "Get more customers" fails. "Reduce info calls by 40% by giving tourists the info they need online" passes.
 
-**Shortest Path** — Count the steps. Can you remove any? Each step must justify its existence. If you can't defend why a step is there, remove it.
+**Shortest Path** — Count the steps. Can you remove any? Each step must justify its existence.
 
-**Trigger Map** — Don't invent a user. Use the actual persona from the Trigger Map with their actual driving forces.
+**Trigger Map** — Don't invent a user. Use the actual persona with their actual driving forces.
 
 ---
 
-_Template for Step 05: Outline Scenario_
+_Template for Step 05: Outline Scenario (8-Question Dialog)_
