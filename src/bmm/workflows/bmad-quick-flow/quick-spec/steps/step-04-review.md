@@ -124,17 +124,19 @@ Saved to: {finalFile}
 
 Once you are fully satisfied with the spec (ideally after **Adversarial Review** and maybe a few rounds of **Advanced Elicitation**), it is recommended to run implementation in a FRESH CONTEXT for best results.
 
-To run **Adversarial Review** in a fresh context (recommended for information asymmetry):
+Load and follow **Adversarial Review** in a fresh context (recommended for information asymmetry):
 
 \`\`\`
-/bmad-review-adversarial-general {finalFile}
+/bmad-review-adversarial-general "{finalFile}"
 \`\`\`
 
-To start **development** in a fresh context:
+Load and follow **development** in a fresh context:
 
 \`\`\`
-quick-dev {finalFile}
+/quick-dev "{finalFile}"
 \`\`\`
+
+_(Both are slash commands — prefix `/` invokes a BMAD skill or workflow.)_
 
 This ensures the agent has clean context focused solely on its task.
 ```
@@ -185,7 +187,7 @@ b) **HALT and wait for user selection.**
 When you're ready to implement, run:
 
 ```
-quick-dev {finalFile}
+/quick-dev {finalFile}
 ```
 
 Ship it!"
