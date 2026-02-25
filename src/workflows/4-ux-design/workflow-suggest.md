@@ -92,8 +92,37 @@ Page [NN.step] complete! What would you like to do?
 When the user chooses [N], the flow is:
 
 1. **Outline the next page** — Ask: "What's the point of this page?" and "What does the user do to move forward?" (same as Phase 3's [O] dialog)
-2. **Create the page folder** with boilerplate spec and Sketches/ subfolder
-3. **Design the page** — run steps 08-15 for this page
-4. **After completion** — present this menu again
+2. **Component Extraction Check** (2nd+ page only) — see below
+3. **Create the page folder** with boilerplate spec and Sketches/ subfolder
+4. **Design the page** — run steps 08-15 for this page
+5. **After completion** — present this menu again
 
 This loop continues until all pages in the scenario are designed or the user chooses to stop.
+
+### Component Extraction Check (2nd+ Page)
+
+**Trigger:** Automatically runs when starting the 2nd or later page in a scenario.
+
+**Purpose:** Identify repeating elements across pages and suggest extracting them as shared components before they multiply.
+
+**Process:**
+
+1. **Scan completed page specs** in the current scenario's `pages/` folder
+2. **Identify common patterns** across completed pages:
+   - Navigation headers / footers
+   - Repeated form fields or input patterns
+   - Shared section layouts (e.g., hero, card grids)
+   - Identical UI elements (buttons, modals, alerts)
+3. **If shared elements found**, present briefly:
+   ```
+   I noticed these elements appear across your completed pages:
+   - [element] — used in [page 1], [page 2]
+   - [element] — used in [page 1], [page 2]
+
+   Want me to extract these as shared components now, or continue and handle it later?
+   [E] Extract now → routes to [M] Manage Design System
+   [L] Later — continue with page design
+   ```
+4. **If no shared elements found** (or this is only the 2nd page with minimal overlap), skip silently and continue to page design.
+
+**Key principle:** Don't block the design flow. This is a brief check, not a deep audit. The user can always choose [L] to defer.

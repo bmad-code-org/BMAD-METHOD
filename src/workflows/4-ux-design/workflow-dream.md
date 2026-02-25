@@ -100,8 +100,23 @@ Page [NN.step] complete! What would you like to do?
 When the user chooses [N], the flow is:
 
 1. **Outline the next page** — Ask: "What's the point of this page?" and "What does the user do to move forward?" (same as Phase 3's [O] dialog)
-2. **Create the page folder** with boilerplate spec and Sketches/ subfolder
-3. **Design the page** — run steps 08-15 for this page
-4. **After completion** — present this menu again
+2. **Component Extraction Check** (2nd+ page only) — see below
+3. **Create the page folder** with boilerplate spec and Sketches/ subfolder
+4. **Design the page** — run steps 08-15 for this page
+5. **After completion** — present this menu again
 
 This loop continues until all pages in the scenario are designed or the user chooses to stop.
+
+### Component Extraction Check (2nd+ Page)
+
+**Trigger:** Automatically runs when starting the 2nd or later page in a scenario.
+
+**Purpose:** Identify repeating elements across pages and suggest extracting them as shared components before they multiply.
+
+**Dream mode behavior:**
+1. Scan completed page specs silently
+2. If shared elements found, auto-extract them as shared components (log decisions)
+3. Reference shared components in subsequent page specs instead of duplicating definitions
+4. Include extraction summary in the final review presentation
+
+**Key principle:** In Dream mode, extract automatically and report in the summary. The user reviews component decisions alongside page decisions.

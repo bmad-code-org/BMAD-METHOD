@@ -309,7 +309,31 @@ This is especially important for storyboards and multi-state specifications wher
 - Error messages
 - Loading indicators
 
-### B. Design System Integration (if enabled)
+### B. Cross-Page Duplicate Detection
+
+**Purpose:** Compare sections across all pages in the scenario and flag identical or near-identical content that should be shared components.
+
+**Process:**
+1. Collect all section definitions from completed page specs in the scenario
+2. Compare sections by structure (heading patterns, object types, layout)
+3. Flag matches:
+   - **Exact duplicate** — identical section structure and content across 2+ pages (e.g., navigation header, footer)
+   - **Near duplicate** — same structure with minor content differences (e.g., hero sections with different text but identical layout)
+   - **Repeated pattern** — same object types appearing in multiple pages (e.g., card grids, form fields)
+
+**Checklist:**
+- [ ] All completed pages in scenario scanned
+- [ ] Exact duplicates flagged with source pages listed
+- [ ] Near duplicates flagged with diff summary
+- [ ] Repeated patterns identified
+- [ ] Extraction recommendation for each finding (extract / leave as-is / parameterize)
+
+**Severity:**
+- **Critical** — Exact duplicate in 3+ pages (must extract)
+- **Warning** — Exact duplicate in 2 pages or near duplicate in 3+ (should extract)
+- **Suggestion** — Repeated pattern (consider extracting)
+
+### C. Design System Integration (if enabled)
 
 **Checklist:**
 - [ ] All components added to design system
@@ -322,6 +346,7 @@ This is especially important for storyboards and multi-state specifications wher
 - [ ] Component variants documented
 
 ### Output
+- Cross-page duplicate report (from B)
 - List of components needing extraction
 - Design system gaps
 - Component hierarchy recommendations
