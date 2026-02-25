@@ -158,23 +158,9 @@ After the 8 questions, name the scenario using the persona:
 - **ID:** 01, 02, etc.
 - **Slug:** `01-hasses-emergency-search`
 
-### 5. Create the First Page
+### 5. Quality Gates (Check Before Moving On)
 
-We now know the natural starting point (Q6) and what the user needs to accomplish there (Q8, step 1). Create the first page specification:
-
-1. Take step 1 from the Shortest Path (Q8)
-2. Create: `{output_folder}/C-UX-Scenarios/[NN-slug]/pages/[page-slug].md`
-3. Include:
-   - **Page name** from the shortest path
-   - **Entry context:** Device (Q5) + how they arrived (Q6) + mental state (Q4)
-   - **What the user needs here:** The purpose from step 1 of the shortest path
-   - **Success criteria:** What must be true before the user moves to step 2
-
-This gives Phase 4 (UX Design) a concrete starting point instead of an abstract scenario document.
-
-### 6. Quality Gates (Check Before Moving On)
-
-Before proceeding to the next scenario, verify:
+Before proceeding, verify the scenario outline:
 
 - [ ] All 8 questions answered with specific, concrete responses
 - [ ] Mental state is visceral and specific (not generic "interested")
@@ -183,17 +169,16 @@ Before proceeding to the next scenario, verify:
 - [ ] Both successes are specific and measurable (not vague)
 - [ ] Scenario name includes persona name
 - [ ] Trigger Map connection is explicit (persona + business goal)
-- [ ] First page specification created with entry context
 
 **If any gate fails:** Fix before proceeding.
 
-### 7. Create the Scenario File
+### 6. Create the Scenario File
 
 1. Create folder: `{output_folder}/C-UX-Scenarios/[NN-slug]/`
 2. Create file: `{output_folder}/C-UX-Scenarios/[NN-slug]/[NN-slug].md`
 3. Use the template from data/ to structure the content from the 8 answers
 
-### 8. After Each Scenario — Ask What's Next
+### 7. After Each Scenario — Ask What's Next
 
 After completing a scenario, present the user with a choice:
 
@@ -202,14 +187,16 @@ Display:
 Scenario [NN] complete! What would you like to do?
 
 [N] Define the next scenario — [next transaction from the plan]
-[D] Start designing — jump to Phase 4 with this scenario's first page
+[S] Scaffold all pages — create page folders for the whole scenario
+[D] Start designing — create first page folder and jump to Phase 4
 [C] Continue to generating the overview (when all scenarios are done)
 ```
 
 #### Menu Handling Logic:
 
-- IF N: Loop back to instruction 1 for the next transaction and target group
-- IF D: Hand over to Phase 4 (UX Design) with the first page specification from instruction 5. The remaining scenarios can be defined later.
+- IF N: Loop back to instruction 1 for the next transaction and target group. The scenario outline is saved — page folders can be created later.
+- IF S: Create page folders for ALL pages in Q8's shortest path (see Page Folder Structure below), then return to this menu.
+- IF D: Create the first page folder (see Page Folder Structure below), then hand over to Phase 4 (UX Design). The remaining scenarios and page folders can be created later.
 - IF C: Load, read entire file, then execute {nextStepFile} (only when all planned scenarios are complete)
 
 #### EXECUTION RULES:
@@ -217,13 +204,78 @@ Scenario [NN] complete! What would you like to do?
 - ALWAYS halt and wait for user input after presenting menu
 - After other menu items execution, return to this menu
 - User can chat or ask questions — always respond and then display the menu again
-- Option [D] is always available — the user may want to design one scenario before defining the rest
+- Options [S] and [D] are always available — the user decides when to scaffold pages
+
+### Page Folder Structure
+
+When creating page folders (via [S] or [D]), use this structure:
+
+**Naming convention:** `{scenario-number}.{step-number}-{page-slug}` (e.g., `1.1-start-page`, `1.2-services`, `1.3-contact`)
+
+```
+{output_folder}/C-UX-Scenarios/[NN-slug]/pages/
+├── {NN}.1-{page-slug}/
+│   ├── {NN}.1-{page-slug}.md    ← Full boilerplate (first page only)
+│   └── Sketches/
+├── {NN}.2-{page-slug}/
+│   ├── {NN}.2-{page-slug}.md    ← Minimal boilerplate
+│   └── Sketches/
+└── {NN}.3-{page-slug}/
+    ├── {NN}.3-{page-slug}.md    ← Minimal boilerplate
+    └── Sketches/
+```
+
+#### First page — full boilerplate:
+
+The first page gets rich context from the 8-question dialog:
+
+```markdown
+# {NN}.1-{page-name}
+
+## Page Metadata
+
+| Property | Value |
+|----------|-------|
+| **Scenario** | {scenario-name} |
+| **Page Number** | {NN}.1 |
+| **Platform** | {Device from Q5} |
+
+## Overview
+
+**Page Purpose:** {Purpose from step 1 of the Shortest Path (Q8)}
+
+**User Situation:** {Persona + real-life situation from Q3}
+
+**Entry Context:** {Device (Q5)} arriving via {discovery method (Q6)}, feeling {mental state — hope + worry from Q4}
+
+**Success Criteria:** {What must be true before the user moves to step 2}
+
+**Exit Points:**
+- → {NN}.2-{next-page-slug}
+```
+
+#### Remaining pages — minimal boilerplate:
+
+```markdown
+# {NN}.{step}-{page-name}
+
+## Page Metadata
+
+| Property | Value |
+|----------|-------|
+| **Scenario** | {scenario-name} |
+| **Page Number** | {NN}.{step} |
+
+## Overview
+
+**Page Purpose:** {Purpose from this step of the Shortest Path (Q8)}
+```
 
 ## CRITICAL STEP COMPLETION NOTE
 
 When [C] is selected, ALL scenarios from the approved plan must be outlined and pass quality gates. Then load and read fully `{nextStepFile}` to begin generating the overview.
 
-When [D] is selected, hand over to Phase 4 with the current scenario's first page. The user can return to Phase 3 later for remaining scenarios.
+When [D] is selected, hand over to Phase 4 with the current scenario's first page folder. The user can return to Phase 3 later for remaining scenarios.
 
 ---
 
@@ -233,7 +285,7 @@ When [D] is selected, hand over to Phase 4 with the current scenario's first pag
 
 - All 8 questions answered for each scenario with specific, concrete responses
 - All quality gates pass for every scenario
-- Output files created in correct folder structure
+- Scenario outline file created in correct folder structure
 - Scenarios processed in priority order (primary transaction first, then secondary, etc.)
 - All scenarios from approved plan completed before proceeding
 - Conversation mode: Dialog felt like a natural conversation, not a form to fill

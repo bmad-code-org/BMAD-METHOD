@@ -39,9 +39,9 @@ Before starting page design, verify that a scenario exists for the selected scen
 
 ### Phase 3 Handover Context
 
-When entering from Phase 3's [D] option (start designing), the scenario file and first page specification already exist. Use:
-- **First page spec** from `{output_folder}/C-UX-Scenarios/[NN-slug]/pages/[page-slug].md` as starting point
-- **Entry context** (device + arrival method + mental state) from the scenario's Q5, Q6, Q4
+When entering from Phase 3's [D] option (start designing), the scenario file and page folders already exist. Use:
+- **Page folders** from `{output_folder}/C-UX-Scenarios/[NN-slug]/pages/[NN].1-[page-slug]/` — each page has a boilerplate `.md` and a `Sketches/` subfolder
+- **First page spec** (`[NN].1-*.md`) has full entry context (device, arrival, mental state) from Q4, Q5, Q6
 - **Shortest path** from Q8 to know the full page sequence
 
 ## Process

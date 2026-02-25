@@ -86,22 +86,18 @@
 
 ---
 
-## First Page (Entry Point)
-
-**Page:** [Page name from step 1 of Shortest Path]
-**Entry context:** [Device] arriving via [discovery method], feeling [mental state summary]
-**What the user needs here:** [Purpose from step 1 of Shortest Path]
-**Success criteria:** [What must be true before user moves to step 2]
-
----
-
 ## Pages in This Scenario
 
-| # | Page | Purpose in Flow | Template? |
-|---|------|----------------|-----------|
-| 1 | [Page Name] | [What it does in this scenario] | [Unique / Template: group name] |
-| 2 | [Page Name] | [What it does in this scenario] | [Unique / Template: group name] |
-| 3 | [Page Name] | [What it does in this scenario] | [Unique / Template: group name] |
+Each page has its own folder with a boilerplate spec and a Sketches/ subfolder.
+
+| Page Number | Folder | Purpose in Flow |
+|-------------|--------|----------------|
+| [NN].1 | `[NN].1-[page-slug]/` | [What it does — from Q8 step 1] |
+| [NN].2 | `[NN].2-[page-slug]/` | [What it does — from Q8 step 2] |
+| [NN].3 | `[NN].3-[page-slug]/` | [What it does — from Q8 step 3] |
+
+**First page** ([NN].1) has full boilerplate with entry context (Q4 + Q5 + Q6).
+**Remaining pages** have minimal boilerplate with page purpose from Q8.
 ```
 
 ---
