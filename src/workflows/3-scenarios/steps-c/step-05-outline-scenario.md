@@ -193,31 +193,37 @@ Before proceeding to the next scenario, verify:
 2. Create file: `{output_folder}/C-UX-Scenarios/[NN-slug]/[NN-slug].md`
 3. Use the template from data/ to structure the content from the 8 answers
 
-### 8. Loop Check
+### 8. After Each Scenario — Ask What's Next
 
-**Are there more transactions in the approved plan?**
+After completing a scenario, present the user with a choice:
 
-- **Yes** → Loop back to instruction 1 for the next transaction and target group
-- **No** → Proceed to menu options
+Display:
+```
+Scenario [NN] complete! What would you like to do?
 
-### 9. Present MENU OPTIONS
-
-Display: "Are you ready to [C] Continue to Generating the Overview?"
+[N] Define the next scenario — [next transaction from the plan]
+[D] Start designing — jump to Phase 4 with this scenario's first page
+[C] Continue to generating the overview (when all scenarios are done)
+```
 
 #### Menu Handling Logic:
 
-- IF C: Load, read entire file, then execute {nextStepFile}
+- IF N: Loop back to instruction 1 for the next transaction and target group
+- IF D: Hand over to Phase 4 (UX Design) with the first page specification from instruction 5. The remaining scenarios can be defined later.
+- IF C: Load, read entire file, then execute {nextStepFile} (only when all planned scenarios are complete)
 
 #### EXECUTION RULES:
 
 - ALWAYS halt and wait for user input after presenting menu
-- ONLY proceed to next step when user selects 'C'
 - After other menu items execution, return to this menu
-- User can chat or ask questions - always respond and then end with display again of the menu options
+- User can chat or ask questions — always respond and then display the menu again
+- Option [D] is always available — the user may want to design one scenario before defining the rest
 
 ## CRITICAL STEP COMPLETION NOTE
 
-ONLY WHEN [C continue option] is selected and [all scenarios from approved plan are outlined and pass quality gates], will you then load and read fully `{nextStepFile}` to execute and begin generating the overview.
+When [C] is selected, ALL scenarios from the approved plan must be outlined and pass quality gates. Then load and read fully `{nextStepFile}` to begin generating the overview.
+
+When [D] is selected, hand over to Phase 4 with the current scenario's first page. The user can return to Phase 3 later for remaining scenarios.
 
 ---
 
