@@ -23,7 +23,6 @@ This folder feeds directly into Phase 4 (UX Scenarios). Every page spec should t
 **Learn more:**
 - WDS Course Module 06: Trigger Mapping — Connect Business Goals to User Psychology
 - WDS Course Module 06, Lessons 4–8: The Five Workshops
-- WDS Course Tutorial 06b: Value Trigger Chain
 
 ---
 

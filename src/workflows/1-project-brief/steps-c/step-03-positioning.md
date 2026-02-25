@@ -3,7 +3,7 @@ name: 'step-03-positioning'
 description: 'Help user explore and articulate their positioning through natural conversation'
 
 # File References
-nextStepFile: './step-04-create-vtc.md'
+nextStepFile: './step-05-business-model.md'
 workflowFile: '../workflow.md'
 ---
 

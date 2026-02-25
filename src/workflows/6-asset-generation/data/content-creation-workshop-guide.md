@@ -285,7 +285,7 @@ DESIGNER: "Make headline more fear-focused"
 **Micro-Steps:**
 - `steps/workflow.md` - Sequential execution guide
 - `steps/step-00-define-purpose.md`
-- `steps/step-01-load-vtc-context.md`
+- `steps/step-01-load-trigger-map-context.md`
 - `steps/step-02-awareness-strategy.md`
 - `steps/step-03-action-filter.md`
 - `steps/step-04-empowerment-frame.md`

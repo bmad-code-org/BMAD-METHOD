@@ -129,4 +129,4 @@ stepsCompleted: ['step-01-init.md', 'step-02-vision.md', 'step-03-positioning.md
 positioning: '[final positioning statement]'
 ```
 
-Load, read full file, and execute: `step-04-create-vtc.md` (Create Trigger Map)
+Load, read full file, and execute: `step-05-business-model.md` (Business Model)

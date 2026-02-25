@@ -3,7 +3,7 @@ name: 'step-03b-synthesize-document'
 description: 'Create the alignment document from all explored and confirmed sections'
 
 # File References
-nextStepFile: './step-03c-create-vtc.md'
+nextStepFile: './step-03d-present-approval.md'
 workflowFile: '../workflow.md'
 ---
 
@@ -86,7 +86,7 @@ Help crystallize into a clear, compelling narrative using framework thinking:
 
 ### 4. Present MENU OPTIONS
 
-Display: "**Select an Option:** [C] Continue to step-03c-create-vtc"
+Display: "**Select an Option:** [C] Continue to Present for Approval"
 
 #### Menu Handling Logic:
 - IF C: Update agent dialog, then load, read entire file, then execute {nextStepFile}

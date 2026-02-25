@@ -36,7 +36,7 @@ Execute steps in `./steps-c/`:
 | Step | File | Purpose |
 |------|------|---------|
 | 00 | step-00-define-purpose.md | Define content purpose |
-| 01 | step-01-load-vtc-context.md | Load VTC context |
+| 01 | step-01-load-trigger-map-context.md | Load Trigger Map context |
 | 02 | step-02-awareness-strategy.md | Awareness strategy |
 | 03 | step-03-action-filter.md | Action mapping filter |
 | 04 | step-04-empowerment-frame.md | Empowerment framing |

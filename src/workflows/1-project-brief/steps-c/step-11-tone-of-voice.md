@@ -3,7 +3,7 @@ name: 'step-11-tone-of-voice'
 description: 'Establish the product communication personality and style'
 
 # File References
-nextStepFile: './step-11a-create-vtc.md'
+nextStepFile: './step-12-create-product-brief.md'
 workflowFile: '../workflow.md'
 activityWorkflowFile: '../workflow.md'
 ---

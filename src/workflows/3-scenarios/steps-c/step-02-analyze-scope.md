@@ -3,7 +3,7 @@ name: 'step-02-analyze-scope'
 description: 'Determine site type, list all pages/views, assess scale, and select approach mode'
 
 # File References
-nextStepFile: './step-03-build-vtcs.md'
+nextStepFile: './step-03-build-strategic-context.md'
 ---
 
 # Step 2: Analyze Scope & Scale Strategy

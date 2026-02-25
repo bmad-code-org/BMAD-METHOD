@@ -1,5 +1,5 @@
 ---
-name: 'step-02-vtc-consistency'
+name: 'step-02-trigger-map-consistency'
 description: 'Verify Trigger Map consistency and validity'
 
 # File References
@@ -50,8 +50,8 @@ Verify the Trigger Map(s) form a valid chain from business goals through persona
 ### 1. Locate Trigger Map Files
 
 Check for:
-- `{output_folder}/A-Product-Brief/vtc-primary.yaml` (Product Pitch Trigger Map)
-- Any scenario-level Trigger Maps in `{output_folder}/C-UX-Scenarios/`
+- `{output_folder}/B-Trigger-Map/00-trigger-map.md` (Trigger Map hub document)
+- Persona documents in `{output_folder}/B-Trigger-Map/`
 
 ### 2. Trigger Map Completeness
 

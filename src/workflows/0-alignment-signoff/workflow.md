@@ -87,7 +87,6 @@ Explore 10 alignment document sections (flexible order):
 |------|------|---------|
 | 03a | Reflect Back | Synthesize understanding, confirm |
 | 03b | Synthesize Document | Create alignment document |
-| 03c | Create Trigger Map | Trigger Map (refs `1-project-brief/vtc-workshop/`) |
 | 03d | Present for Approval | Share with stakeholders |
 
 ### Phase 4: Generate Signoff (step-04*)
@@ -139,7 +138,6 @@ Explore 10 alignment document sections (flexible order):
 ## OUTPUT
 
 - **Alignment Document**: `{output_folder}/A-Product-Brief/pitch.md`
-- **Value Trigger Chain**: `{output_folder}/A-Product-Brief/vtc-primary.yaml`
 - **Signoff Document**: `{output_folder}/A-Product-Brief/contract.md` (or `service-agreement.md` or `signoff.md`)
 
 ---

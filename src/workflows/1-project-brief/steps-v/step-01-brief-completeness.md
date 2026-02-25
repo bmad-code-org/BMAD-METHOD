@@ -3,7 +3,7 @@ name: 'step-01-brief-completeness'
 description: 'Verify Product Brief contains all required sections'
 
 # File References
-nextStepFile: './step-02-vtc-consistency.md'
+nextStepFile: './step-02-trigger-map-consistency.md'
 workflowFile: '../workflow.md'
 activityWorkflowFile: '../workflow-validate.md'
 ---

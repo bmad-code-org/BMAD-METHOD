@@ -1,5 +1,5 @@
 ---
-name: 'step-03-build-vtcs'
+name: 'step-03-build-strategic-context'
 description: 'Build strategic context from Trigger Map to identify which scenarios to create'
 
 # File References

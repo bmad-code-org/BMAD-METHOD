@@ -1,7 +1,7 @@
 ---
 name: 'step-00-define-purpose'
 description: 'Define the measurable job and purpose for content before generation begins'
-nextStepFile: './step-01-load-vtc-context.md'
+nextStepFile: './step-01-load-trigger-map-context.md'
 ---
 
 # Step 0: Define Content Purpose
