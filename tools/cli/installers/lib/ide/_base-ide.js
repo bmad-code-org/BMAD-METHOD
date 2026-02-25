@@ -153,8 +153,7 @@ class BaseIdeSetup {
       return {
         name: this.formatTitle(agentName),
         description: agentName.includes('saga') ? 'Strategic Analyst' :
-                     agentName.includes('freya') ? 'UX Designer' :
-                     agentName.includes('idunn') ? 'Product Manager' : '',
+                     agentName.includes('freya') ? 'Designer' : '',
         icon: '📋',
         slug: agentName.split('-')[0],
       };

@@ -161,7 +161,7 @@ class UI {
     console.log('');
     console.log(chalk.dim('  ─────────────────────────────────────────────────'));
     console.log('');
-    console.log(chalk.dim(`  Available agents: Saga (Analyst), Freya (Designer), Idunn (PM)`));
+    console.log(chalk.dim(`  Available agents: Saga (Analyst), Freya (Designer)`));
     console.log(chalk.dim(`  Need development? Install BMM: npx bmad-builder install`));
     console.log(chalk.dim('  Docs: https://github.com/whiteport-collective/whiteport-design-studio'));
     console.log('');

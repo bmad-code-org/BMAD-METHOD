@@ -85,7 +85,7 @@ ${contentWithoutFrontmatter}`;
 
     if (await this.exists(wdsPath)) {
       // Only remove WDS agent files, not entire .cline directory
-      const agents = ['saga.md', 'freya.md', 'idunn.md'];
+      const agents = ['saga.md', 'freya.md'];
       for (const agentFile of agents) {
         const filePath = path.join(wdsPath, agentFile);
         if (await this.exists(filePath)) {
