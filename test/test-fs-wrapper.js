@@ -270,10 +270,11 @@ async function runTests() {
   });
 
   await asyncTest('copy creates parent directories for dest', async () => {
-    const src = path.join(TMP, 'copy-file-src.txt');
+    const src = path.join(TMP, 'copy-mkdir-src.txt');
+    nativeFs.writeFileSync(src, 'copy mkdir');
     const dest = path.join(TMP, 'copy-deep', 'nested', 'dest.txt');
     await fs.copy(src, dest);
-    assertEqual(nativeFs.readFileSync(dest, 'utf8'), 'copy file', 'copy with mkdir content mismatch');
+    assertEqual(nativeFs.readFileSync(dest, 'utf8'), 'copy mkdir', 'copy with mkdir content mismatch');
   });
 
   await asyncTest('copy copies a directory recursively', async () => {
