@@ -97,7 +97,9 @@ Replace the table below with your system's spacing tokens. Any naming convention
 
 ### Option B: WDS default scale
 
-Nine tokens, symmetric around `space-md`. Freya will propose pixel values during the first design session.
+Nine tokens, symmetric around `space-md` (the baseline). Freya will propose pixel values during the first design session.
+
+`space-md` is to spacing what `text-md` is to typography — the default you reach for first. It's the gap between paragraphs, between form fields, between list items. Everything else is relative to it: `space-sm` is tighter, `space-lg` is more generous.
 
 | Token | Value | Use |
 |-------|-------|-----|
@@ -105,13 +107,36 @@ Nine tokens, symmetric around `space-md`. Freya will propose pixel values during
 | space-2xs | — | Minimal spacing (badge padding, tight lists) |
 | space-xs | — | Tight spacing (within compact groups) |
 | space-sm | — | Small gaps (between related elements) |
-| space-md | — | Default element spacing |
+| **space-md** | — | **Default element spacing (the baseline)** |
 | space-lg | — | Comfortable spacing (card padding, form fields) |
 | space-xl | — | Section padding |
 | space-2xl | — | Section gaps |
 | space-3xl | — | Page-level breathing room |
 
+### Optical adjustments
+
+Sometimes the math is right but the eye says it's wrong. A circular image leaves white corners, a light element on a light background looks more spaced than it is. When this happens, use token math — not raw pixels:
+
+```
+space-lg - space-3xs    → "standard spacing, pulled in by a hairline"
+space-xl + space-2xs    → "section padding, nudged out slightly"
+```
+
+In page specs, always annotate why:
+
+| Padding top | **space-lg - space-3xs** (optical: circular image adds perceived whitespace) |
+
+**Rules:**
+- Adjustments always use token math: `base ± correction`
+- Always annotate the reason — future readers need to know this wasn't a mistake
+- If adjusting by more than one step, the base token is probably wrong — reconsider
+
+In CSS: `calc(var(--space-lg) - var(--space-3xs))`
+
 <!--
+  space-md is typically 16px (on an 8px grid) or 12px (on a 4px grid) — the most common
+  default spacing on the web. Same ballpark as body text size, which is not a coincidence.
+
   The pixel values are yours to define. Common starting points:
   2/4/8/12/16/24/32/48/64 (8px grid) or 4/6/12/16/24/32/48/72.
   You can adjust later — specs stay valid because they reference names, not numbers.
@@ -158,6 +183,63 @@ Nine tokens, symmetric around `text-md` (body text). Freya will propose sizes du
 ## Tokens
 
 _Additional design tokens (colors, shadows, borders) will be documented here as they emerge from page specifications._
+
+---
+
+## Patterns
+
+<!--
+  Patterns are organized BY the spacing, not by object pairs.
+  Each spacing value/composition accumulates a list of where it's used.
+
+  When the designer says "more space here", the agent fixes it, reflects
+  what it learned, and adds the situation to the relevant pattern below.
+
+  The agent does NOT ask "why?" — it observes and reflects:
+  "Got it — large image above a card row needs extra room. I'll remember that."
+
+  First occurrence: one-off fix in the page spec.
+  Second occurrence: agent applies the same pattern.
+  Third time: extract it here.
+
+  CONTEXT RULE: Entries are context-free by default (universal).
+  Add context only when the same object pair needs DIFFERENT spacing
+  in different situations. When that happens, BOTH entries get context
+  so you can tell them apart. Before the first violation, keep it clean.
+-->
+
+Spacing objects are first-class — they have IDs in page specs (e.g., `hem-heading-subtitle-gap`) and live here organized by value. Each spacing value accumulates the situations where it's used. The list grows from real design decisions.
+
+_Patterns will be documented here as spacing objects recur across pages._
+
+<!--
+  Example format (delete when real patterns emerge):
+
+  ### space-sm
+  - Between heading and subheading
+  - Between icon and label inside buttons
+  - Between badge dot and badge text
+
+  ### space-lg
+  - Card grid gap
+  - Between image and caption
+  - Between form field groups
+
+  ### space-md
+  - Between image and caption (article page, inline photo — smaller image needs less room)
+  Note: space-lg also has "Between image and caption" — context added to both
+  because article pages are an exception to the universal rule.
+
+  ### space-zero
+  - Vehicle icon bar flush against section below (homepage hero)
+  - Nav items touching divider lines (service menu)
+
+  ### space-2xl / line / space-2xl
+  - Between content groups within a section when a visual break is needed
+
+  ### space-xl + space-xs
+  - Below busy content blocks before card rows
+-->
 
 ---
 

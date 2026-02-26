@@ -152,6 +152,38 @@
 | EN | "{English text}" |
 | Behavior | {onClick / onChange / etc.} |
 
+#### ↕ `{page-name}-{above}-{below}-gap` — {spacing token}
+
+<!--
+  Spacing objects sit between content objects. They have IDs and are first-class.
+
+  RULES:
+  - Default element gap (from the Spacing section above) is implicit — no spacing object needed.
+  - Non-default spacing MUST be an explicit spacing object with an ID.
+  - Zero spacing (overlap / flush) MUST be documented: ↕ `id` — space-zero (reason)
+  - Spacing objects flow into D-Design-System/00-design-system.md → Patterns.
+
+  FORMAT: #### ↕ `{id}` — {token} [{optional reason}]
+
+  EXAMPLES:
+  #### ↕ `hem-heading-subtitle-gap` — space-sm
+  #### ↕ `hem-icons-about-gap` — space-zero (icon bar sits flush against section below)
+  #### ↕ `hem-about-trust-gap` — space-xl + space-xs (busy content needs breathing room)
+-->
+
+---
+
+#### {Object Name 2}
+
+**OBJECT ID:** `{page-name}-{object-name-2}`
+
+| Property | Value |
+|----------|-------|
+| Component | [{Component}]({path}) |
+| Translation Key | `{translation.key}` |
+| SE | "{Swedish text}" |
+| EN | "{English text}" |
+
 ---
 
 #### {Group Name} (Container)
@@ -174,6 +206,8 @@
 | Translation Key | `{translation.key}` |
 | SE | "{Swedish text}" |
 | EN | "{English text}" |
+
+##### ↕ `{page-name}-{group-name}-{obj1}-{obj2}-gap` — {spacing token}
 
 ##### {Object in Group 2}
 

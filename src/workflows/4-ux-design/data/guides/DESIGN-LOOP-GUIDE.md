@@ -98,6 +98,8 @@ space-3xs  space-2xs  space-xs  space-sm  space-md  space-lg  space-xl  space-2x
 - If a spacing value isn't in the scale, it doesn't belong in the spec
 - The scale can be adjusted as the project matures — specs stay valid because they reference names, not numbers
 
+**Optical adjustments:** Sometimes the math is right but the eye says it's wrong — a circular image leaves white corners, a light element looks more spaced than it is. Use token math: `space-lg - space-3xs` (not raw pixels). Always annotate the reason. If adjusting by more than one step, the base token is probably wrong.
+
 ---
 
 ## Tool Roles
@@ -143,6 +145,26 @@ Once design tokens exist (step 9), use token names:
 > "Changed hero top padding from **space-2xl** (48px) to **space-3xl** (64px)"
 
 This builds shared vocabulary. Over time, the user learns to say "change from space-md to space-lg" instead of "add more space."
+
+### Pattern recognition — reflect, don't interrogate
+
+When the user requests a spacing adjustment, the agent's job is to **observe and reflect** — not to ask "why?" A trained designer carries spacing patterns unconsciously. Their gut says "more space here" because a pattern is firing in the back of their brain. The agent externalizes that intuition.
+
+**Wrong:** "Why does this need more space?" — breaks the flow, puts the meta-work on the designer.
+
+**Right:** "Got it — large image above a card row needs extra breathing room. I'll use space-xl + space-xs for this relationship going forward."
+
+The designer nods or corrects. The agent records it. The pattern table in the design system builds itself as a byproduct of doing the work.
+
+**The process:**
+1. User says "more space between the photo and the cards"
+2. Agent fixes it: `space-lg + space-xs`
+3. Agent reflects: "So when an image-with-text block sits above a card row, the default gap isn't enough."
+4. First time: one-off adjustment noted in the page spec
+5. Second time: agent says "this is the same pattern as the homepage about section — applying it"
+6. Third time: agent extracts it to `D-Design-System/00-design-system.md` → Patterns
+
+This is how a designer's unconscious expertise becomes a shared, reusable asset. The agent does the tedious classification and recall work. The designer just keeps designing.
 
 ---
 
