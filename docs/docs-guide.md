@@ -50,14 +50,14 @@ Complete documentation for Whiteport Design Studio - a design-first methodology 
 
 **How to use WDS with AI agents:** Step-by-step course using WDS agents + Cursor/Windsurf.
 
-- **[Complete WDS Course](learn-wds/)** - Sequential learning path
-- **[Course Overview](learn-wds/00-course-overview.md)** - What you'll learn
-- **[Module 01: Why WDS Matters](learn-wds/module-01-why-wds-matters/)** - The problem & solution
-- **[Module 02: Installation & Setup](learn-wds/module-02-installation-setup/)** - Get WDS running
-- **[Module 03: Alignment & Signoff](learn-wds/module-03-alignment-signoff/)** - Stakeholder alignment
-- **[Module 04: Product Brief](learn-wds/module-04-product-brief/)** - Create strategic foundation
-- **[Module 05: Trigger Mapping](learn-wds/module-05-map-triggers-outcomes/)** - Map user psychology
-- **[Module 06+](learn-wds/)** - Continue through all phases
+- **[Complete WDS Course](learn/)** - Sequential learning path
+- **[Course Overview](learn/00-course-overview.md)** - What you'll learn
+- **[Module 01: Why WDS Matters](learn/module-01-why-wds-matters/)** - The problem & solution
+- **[Module 02: Installation & Setup](learn/module-02-installation-setup/)** - Get WDS running
+- **[Module 03: Alignment & Signoff](learn/module-03-alignment-signoff/)** - Stakeholder alignment
+- **[Module 04: Product Brief](learn/module-04-product-brief/)** - Create strategic foundation
+- **[Module 05: Trigger Mapping](learn/module-05-map-triggers-outcomes/)** - Map user psychology
+- **[Module 06+](learn/)** - Continue through all phases
 
 **This course is WDS-specific** - teaching you to use Saga, Freya, and Idunn agents.
 
@@ -129,7 +129,7 @@ Complete documentation for Whiteport Design Studio - a design-first methodology 
 → Read phase guides as needed
 
 **Learn to use WDS with AI agents**  
-→ Take the [Complete WDS Course](learn-wds/)  
+→ Take the [Complete WDS Course](learn/)  
 → Follow sequential modules
 
 **See what WDS creates**  
@@ -153,7 +153,7 @@ docs/
 ├── getting-started/      # Quick start guides (15 min total)
 ├── models/               # External strategic frameworks
 ├── method/               # Whiteport's methodology guides
-├── learn-wds/            # WDS-specific course (agent-driven)
+├── learn/            # WDS-specific course (agent-driven)
 ├── deliverables/         # Specifications for what you create
 ├── examples/             # Real project examples
 └── README.md             # This navigation hub
@@ -163,7 +163,7 @@ docs/
 
 1. **models/** → "What are the foundational frameworks?" (external, attributed)
 2. **method/** → "How does WDS methodology work?" (Whiteport instruments)
-3. **learn-wds/** → "How do I use WDS agents?" (WDS-specific)
+3. **learn/** → "How do I use WDS agents?" (WDS-specific)
 4. **examples/** → "Show me a real project" (reference implementation)
 
 ---

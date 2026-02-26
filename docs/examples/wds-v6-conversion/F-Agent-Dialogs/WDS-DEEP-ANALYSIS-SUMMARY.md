@@ -190,7 +190,7 @@ Integration Readiness:   ✅ 95% (testing in BMad needed)
 ### For WDS Team
 
 1. **Monitor Alpha Feedback** - VTC Workshop validation
-2. **Course Audit** - Fix learn-wds module numbering (future release)
+2. **Course Audit** - Fix learn module numbering (future release)
 3. **README Cleanup** - Consider renaming workflow README.md files (future release)
 
 ---

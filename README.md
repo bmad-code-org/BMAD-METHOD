@@ -82,7 +82,7 @@ your-project/
 │   └── module.yaml          # Module definition
 ├── _wds-learn/              # Learning material (optional, safe to delete)
 │   ├── getting-started/
-│   ├── learn-wds/
+│   ├── learn/
 │   ├── method/
 │   ├── models/
 │   └── tools/

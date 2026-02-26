@@ -248,7 +248,7 @@ class Installer {
    */
   async copyLearningMaterial(projectDir) {
     const learnDir = path.join(projectDir, '_wds-learn');
-    const learningDirs = ['getting-started', 'learn-wds', 'method', 'models', 'tools'];
+    const learningDirs = ['getting-started', 'learn', 'method', 'models', 'tools'];
     const excludeDirs = new Set(['course-explainers', 'Webinars']);
 
     for (const dir of learningDirs) {

@@ -45,7 +45,7 @@ You should see:
 
 - [About WDS](about-wds.md) - Understand what WDS is and why it exists
 - [Quick Start Guide](quick-start.md) - Your first 5 minutes
-- [Learn WDS Course](../learn-wds/00-course-overview.md) - Learn the concepts deeply
+- [Learn WDS Course](../learn/00-course-overview.md) - Learn the concepts deeply
 
 ---
 

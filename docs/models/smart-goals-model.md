@@ -275,8 +275,8 @@ SMART goals are now standard practice in:
 
 **Related WDS Resources:**
 - [Phase 2: Trigger Mapping Guide](../method/phase-2-trigger-mapping-guide.md)
-- [Module 05: Trigger Mapping](../learn-wds/module-05-trigger-mapping/module-05-overview.md)
-- [Lesson 3: The Five Workshops](../learn-wds/module-05-trigger-mapping/lesson-03-five-workshops.md)
+- [Module 05: Trigger Mapping](../learn/module-05-trigger-mapping/module-05-overview.md)
+- [Lesson 3: The Five Workshops](../learn/module-05-trigger-mapping/lesson-03-five-workshops.md)
 
 ---
 
