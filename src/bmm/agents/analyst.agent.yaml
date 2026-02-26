@@ -41,3 +41,7 @@ agent:
     - trigger: DP or fuzzy match on document-project
       workflow: "{project-root}/_bmad/bmm/workflows/document-project/workflow.yaml"
       description: "[DP] Document Project: Analyze an existing project to produce useful documentation for both human and LLM"
+
+    - trigger: KS or fuzzy match on knowledge-sync
+      exec: "{project-root}/_bmad/bmm/workflows/4-implementation/genai-knowledge-sync/workflow.md"
+      description: "[KS] Knowledge Sync: Build a RAG-ready knowledge index from project artifacts for optimized AI agent retrieval"

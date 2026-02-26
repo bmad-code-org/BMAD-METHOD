@@ -7,8 +7,14 @@ const packageJson = require('../../../package.json');
  * Configuration utility class
  */
 class Config {
+  /** @type {Map<string, { data: Object, mtime: number }>} */
+  #cache = new Map();
+
   /**
-   * Load a YAML configuration file
+   * Load a YAML configuration file with in-memory caching.
+   * Cached entries are automatically invalidated when the file's
+   * modification time changes, so callers always receive fresh data
+   * after a file is written.
    * @param {string} configPath - Path to config file
    * @returns {Object} Parsed configuration
    */
@@ -17,8 +23,26 @@ class Config {
       throw new Error(`Configuration file not found: ${configPath}`);
     }
 
-    const content = await fs.readFile(configPath, 'utf8');
-    return yaml.parse(content);
+    const resolved = path.resolve(configPath);
+    const stat = await fs.stat(resolved);
+    const mtime = stat.mtimeMs;
+
+    const cached = this.#cache.get(resolved);
+    if (cached && cached.mtime === mtime) {
+      return cached.data;
+    }
+
+    const content = await fs.readFile(resolved, 'utf8');
+    const data = yaml.parse(content);
+    this.#cache.set(resolved, { data, mtime });
+    return data;
+  }
+
+  /**
+   * Clear the in-memory YAML cache.
+   */
+  clearCache() {
+    this.#cache.clear();
   }
 
   /**

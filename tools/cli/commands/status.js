@@ -11,7 +11,7 @@ const ui = new UI();
 module.exports = {
   command: 'status',
   description: 'Display BMAD installation status and module versions',
-  options: [],
+  options: [['-v, --verbose', 'Show detailed status including agent and workflow counts']],
   action: async (options) => {
     try {
       // Find the bmad directory
@@ -52,6 +52,23 @@ module.exports = {
         availableUpdates,
         bmadDir,
       });
+
+      // Verbose mode: show agent and workflow counts per module
+      if (options.verbose) {
+        const { glob } = require('glob');
+        for (const mod of modules) {
+          const moduleName = typeof mod === 'string' ? mod : (mod.id || mod.name || '');
+          if (!moduleName) continue;
+
+          const modDir = path.join(bmadDir, moduleName);
+          if (!(await fs.pathExists(modDir))) continue;
+
+          const agents = await glob('agents/**/*.agent.yaml', { cwd: modDir });
+          const workflows = await glob('workflows/**/*.{yaml,yml,md}', { cwd: modDir });
+
+          await prompts.log.info(`Module "${moduleName}": ${agents.length} agent(s), ${workflows.length} workflow(s)`);
+        }
+      }
 
       process.exit(0);
     } catch (error) {
