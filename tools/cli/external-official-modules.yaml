@@ -61,3 +61,23 @@ modules:
     defaultSelected: true
     type: community
     npmPackage: scsa-bmad-agents
+
+  ddat-module:
+    url: https://github.com/SCSA-dev/scsa-bmad-agents.git
+    module-definition: ddat/module.yaml
+    code: ddat
+    name: "DDAT Module"
+    description: "Agents and Workflow from DDAT"
+    defaultSelected: true
+    type: community
+    npmPackage: scsa-bmad-agents
+
+  lean-prioritisation-module:
+    url: https://github.com/SCSA-dev/scsa-bmad-agents.git
+    module-definition: lean-prioritisation/module.yaml
+    code: lp
+    name: "Lean Prioritisation Module"
+    description: "Agents and Workflow for Lean Prioritisation"
+    defaultSelected: true
+    type: community
+    npmPackage: scsa-bmad-agents
