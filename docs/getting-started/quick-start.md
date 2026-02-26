@@ -110,7 +110,7 @@ You created **conceptual specifications** in 5 minutes:
 
 ### Learn the Concepts
 
-[Learn WDS Course](../learn-wds/00-course-overview.md) - Deep dive into WDS methodology
+[Learn WDS Course](../learn/00-course-overview.md) - Deep dive into WDS methodology
 
 ### Start Your Project
 

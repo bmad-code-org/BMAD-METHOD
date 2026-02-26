@@ -81,7 +81,7 @@ Strategic content considers:
 - **Action Mapping:** What action must this enable?
 - **Badass Users:** How does this make them feel capable?
 - **Golden Circle:** What's the persuasive sequence (WHY-HOW-WHAT)?
-- **VTC:** What business goal and user psychology does this serve?
+- **Trigger Map:** What business goal and user psychology does this serve?
 
 Quick generation misses these dimensions.
 
@@ -104,7 +104,7 @@ The workshop codifies strategic thinking:
 
 **What it does:**
 1. Defines content purpose (what job must this do?)
-2. Loads strategic context (VTC, awareness, users)
+2. Loads strategic context (Trigger Map, awareness, users)
 3. Applies relevant models (CAC, Action Mapping, Badass Users, Golden Circle)
 4. Generates options with reasoning
 5. Enables informed selection
@@ -294,7 +294,7 @@ Which resonates with your brand voice?"
 **WDS Method Guides:**
 - [Content Purpose Guide](content-purpose-guide.md) - How to define what content must do
 - [Tone of Voice Guide](tone-of-voice-guide.md) - For UI microcopy consistency
-- [Value Trigger Chain Guide](value-trigger-chain-guide.md) - Strategic context for content
+- [Trigger Mapping Guide](phase-2-trigger-mapping-guide.md) - Strategic context for content
 
 **Strategic Models:**
 - [Customer Awareness Cycle](../models/customer-awareness-cycle.md) - What language users understand

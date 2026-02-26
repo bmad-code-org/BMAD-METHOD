@@ -194,7 +194,7 @@ https://www.youtube.com/watch?v=TdujvNYI-3g&list=PL094dWo_kC3t1Z0fs85P99ZK5T3tPv
 There's a course overview that walks through the WDS approach step by step. It covers working in the IDE, creating foundations, design systems, and collaborating with developers.
 
 No pressure, but here it is if you want to explore:
-https://github.com/whiteport-collective/whiteport-design-studio/blob/main/src/modules/wds/docs/learn-wds/00-course-overview.md
+https://github.com/whiteport-collective/whiteport-design-studio/blob/main/src/modules/wds/docs/learn/00-course-overview.md
 ```
 
 ### Swedish
@@ -202,7 +202,7 @@ https://github.com/whiteport-collective/whiteport-design-studio/blob/main/src/mo
 Det finns en kursöversikt som går igenom WDS-tillvägagångssättet steg för steg. Den täcker att jobba i IDE:n, skapa grunder, designsystem och samarbeta med utvecklare.
 
 Ingen press, men här är den om du vill utforska:
-https://github.com/whiteport-collective/whiteport-design-studio/blob/main/src/modules/wds/docs/learn-wds/00-course-overview.md
+https://github.com/whiteport-collective/whiteport-design-studio/blob/main/src/modules/wds/docs/learn/00-course-overview.md
 ```
 
 ---
@@ -320,7 +320,7 @@ https://github.com/whiteport-collective/whiteport-design-studio
 Found this course about WDS that walks through working in the IDE, creating foundations, design systems, and collaborating with developers using AI agents.
 
 It's free and might be helpful if you're interested in this kind of thing:
-https://github.com/whiteport-collective/whiteport-design-studio/blob/main/src/modules/wds/docs/learn-wds/00-course-overview.md
+https://github.com/whiteport-collective/whiteport-design-studio/blob/main/src/modules/wds/docs/learn/00-course-overview.md
 ```
 
 ### Swedish
@@ -328,7 +328,7 @@ https://github.com/whiteport-collective/whiteport-design-studio/blob/main/src/mo
 Hittade den här kursen om WDS som går igenom att jobba i IDE:n, skapa grunder, designsystem och samarbeta med utvecklare med hjälp av AI-agenter.
 
 Den är gratis och kan vara till hjälp om du är intresserad av den här typen av saker:
-https://github.com/whiteport-collective/whiteport-design-studio/blob/main/src/modules/wds/docs/learn-wds/00-course-overview.md
+https://github.com/whiteport-collective/whiteport-design-studio/blob/main/src/modules/wds/docs/learn/00-course-overview.md
 ```
 
 ---

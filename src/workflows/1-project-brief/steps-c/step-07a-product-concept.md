@@ -46,6 +46,12 @@ Capture the designer's STRUCTURAL vision — the founding idea, key concept, or 
 - Limits: Not detailed features or specifications — the founding principle
 - Dependencies: Steps 1-7 completed
 
+## CONTEXT CARRY-FORWARD (READ BEFORE ASKING QUESTIONS):
+- From Step 2 (Vision): The high-level vision is already captured. Product concept is the STRUCTURAL realization of that vision — do not re-ask about vision.
+- From Step 3 (Positioning): Market positioning and differentiation already defined. Product concept is how the structural design delivers on that positioning.
+- From Step 7 (Target Users): User needs and behavioral profiles exist. Product concept should serve those users — reference them rather than re-exploring user needs.
+- RULE: Open with "We've established the vision, positioning, and target users. Now I want to understand the structural idea — the founding principle that makes this product WORK differently."
+
 ## Sequence of Instructions (Do not deviate, skip, or optimize)
 
 ### 1. Open the Concept Conversation

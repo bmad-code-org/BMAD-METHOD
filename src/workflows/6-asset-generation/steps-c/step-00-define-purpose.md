@@ -1,7 +1,7 @@
 ---
 name: 'step-00-define-purpose'
 description: 'Define the measurable job and purpose for content before generation begins'
-nextStepFile: './step-01-load-vtc-context.md'
+nextStepFile: './step-01-load-trigger-map-context.md'
 ---
 
 # Step 0: Define Content Purpose
@@ -83,7 +83,7 @@ Define measurable or observable outcomes: "User recognizes themselves and contin
 
 Ask: **"Which strategic models matter most for THIS job?"**
 
-Present the Model Priority Matrix from the Content Purpose Guide. Different content types emphasize different models (Customer Awareness, Golden Circle, Badass Users, VTC, Action Mapping). Discuss and assign star ratings per model.
+Present the Model Priority Matrix from the Content Purpose Guide. Different content types emphasize different models (Customer Awareness, Golden Circle, Badass Users, Trigger Map, Action Mapping). Discuss and assign star ratings per model.
 
 ### 6. Document Purpose Definition
 
@@ -124,7 +124,7 @@ Display: **"Select an Option:** [C] Continue"
 
 ## CRITICAL STEP COMPLETION NOTE
 
-ONLY WHEN C is selected and the purpose definition is documented will you load {nextStepFile} to begin loading VTC context.
+ONLY WHEN C is selected and the purpose definition is documented will you load {nextStepFile} to begin loading Trigger Map context.
 
 ---
 

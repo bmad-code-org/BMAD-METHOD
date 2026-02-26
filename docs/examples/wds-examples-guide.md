@@ -83,7 +83,7 @@ While these are real projects (not sanitized templates), you can:
 
 - **[Getting Started](../getting-started/)** - Installation and quick start
 - **[Method Guides](../method/)** - Tool-agnostic methodology references
-- **[Learn WDS Course](../learn-wds/)** - Step-by-step learning path
+- **[Learn WDS Course](../learn/)** - Step-by-step learning path
 - **[Workflows](../src/workflows/)** - Detailed workflow instructions
 
 ---

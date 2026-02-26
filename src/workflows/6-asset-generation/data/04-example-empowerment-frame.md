@@ -1,6 +1,6 @@
 # Example: Badass Users Framework Applied to Hairdresser Newsletter
 
-**VTC Context:** Hairdresser newsletter signup
+**Trigger Map Context:** Hairdresser newsletter signup
 
 **Empowerment Frame:**
 

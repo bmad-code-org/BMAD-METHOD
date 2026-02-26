@@ -43,9 +43,9 @@ What does winning look like for both business and user?
 
 Minimum steps from starting point to mutual success
 
-### [7. Create Value Trigger Chain](07-create-vtc.md)
+### [7. Reference Trigger Map](07-reference-trigger-map.md)
 
-Crystallize scenario strategy before sketching
+Identify the relevant Trigger Map context for this scenario
 
 ---
 
@@ -67,9 +67,9 @@ Appointment-driven trust-building flow
 
 ## Next Step
 
-Once you have clarity on all 7 steps (including VTC), **start sketching the journey.**
+Once you have clarity on all 7 steps (including strategic context), **start sketching the journey.**
 
-Each sketch serves the path from trigger to mutual success, guided by the VTC.
+Each sketch serves the path from trigger to mutual success, guided by the Trigger Map.
 
 ---
 

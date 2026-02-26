@@ -83,9 +83,9 @@ With all 5 questions answered, you have:
 - ✅ Mutual success (where to end)
 - ✅ Shortest path (how to get there)
 
-**→ Proceed to [Step 6: Create VTC](06-create-vtc.md)**
+**→ Proceed to [Step 7: Reference Trigger Map](07-reference-trigger-map.md)**
 
-Before sketching, crystallize this scenario's strategy into a Value Trigger Chain.
+Before sketching, identify the relevant Trigger Map context for this scenario.
 
 ---
 

@@ -24,7 +24,7 @@ content_purpose:
 
   model_priorities:
     primary: ["Customer Awareness ⭐⭐⭐", "Golden Circle ⭐⭐⭐"]
-    secondary: ["Badass Users ⭐⭐", "VTC ⭐⭐"]
+    secondary: ["Badass Users ⭐⭐", "Trigger Map ⭐⭐"]
     tertiary: ["Action Mapping ⭐"]
 
   review_question: "Does a Problem Aware hairdresser feel seen and want to learn more?"
@@ -60,7 +60,7 @@ content_purpose:
   model_priorities:
     primary: ["Badass Users ⭐⭐⭐", "Action Mapping ⭐⭐⭐"]
     secondary: ["Customer Awareness ⭐"]
-    tertiary: ["Golden Circle ⭐", "VTC ⭐"]
+    tertiary: ["Golden Circle ⭐", "Trigger Map ⭐"]
 
   review_question: "Can user fix error quickly without feeling frustrated?"
 ```
@@ -92,7 +92,7 @@ content_purpose:
     - "User sees this as competitive advantage worth paying for"
 
   model_priorities:
-    primary: ["VTC ⭐⭐⭐", "Badass Users ⭐⭐"]
+    primary: ["Trigger Map ⭐⭐⭐", "Badass Users ⭐⭐"]
     secondary: ["Action Mapping ⭐⭐", "Customer Awareness ⭐"]
     tertiary: ["Golden Circle ⭐"]
 
@@ -102,7 +102,7 @@ content_purpose:
 **Analysis:**
 - **Comparison context:** User actively evaluating competitors
 - **Value connection:** Not just "3x longer" but "saves money/hassle"
-- **Model priority:** VTC emphasized for understanding driving forces
+- **Model priority:** Trigger Map emphasized for understanding driving forces
 - **Testable:** Can assess if users understand and value the advantage
 
 ---

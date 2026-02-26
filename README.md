@@ -28,8 +28,8 @@ WDS uses three specialized AI agents (the Norse Pantheon):
 
 | Agent | Role | What they do |
 |-------|------|-------------|
-| **Saga** (Analyst) | Business & Product Analyst | Product Brief (Phase 1), Trigger Mapping (Phase 2), UX Scenarios (Phase 3). Start here. |
-| **Freya** (Designer) | UX/UI Designer | UX Design (Phase 4), Agentic Development (Phase 5), Asset Generation (Phase 6), Design System (Phase 7) |
+| **Saga** (Analyst) | Business & Product Analyst | Product Brief (Phase 1), Trigger Mapping (Phase 2). Start here. |
+| **Freya** (Designer) | UX/UI Designer | UX Scenarios (Phase 3), UX Design (Phase 4), Agentic Development (Phase 5), Asset Generation (Phase 6), Design System (Phase 7) |
 | **Idunn** (Product Manager) | Technical Coordinator | Platform Requirements (Phase 1), Design Handover (Phase 4), Product Evolution (Phase 8) |
 
 ### Activating an agent
@@ -51,7 +51,7 @@ Saga will greet you by name and guide you through creating your Product Brief.
 | 0. Alignment & Signoff | Stakeholder alignment before starting | Saga | — |
 | 1. Product Brief | Vision, positioning, success criteria | Saga | `A-Product-Brief/` |
 | 2. Trigger Mapping | User psychology, business goals | Saga | `B-Trigger-Map/` |
-| 3. UX Scenarios | Scenario outlines via 8-question dialog | Saga | `C-UX-Scenarios/` |
+| 3. UX Scenarios | Scenario outlines via 8-question dialog | Freya | `C-UX-Scenarios/` |
 | 4. UX Design | Page specifications, interactions | Freya | `D-UX-Design/` |
 | 5. Agentic Development | AI-assisted development & testing | Freya | `G-Product-Development/` |
 | 6. Asset Generation | Visual and text assets from specs | Freya | — |
@@ -97,7 +97,7 @@ your-project/
 │   └── module.yaml          # Module definition
 ├── _wds-learn/              # Learning material (optional, safe to delete)
 │   ├── getting-started/
-│   ├── learn-wds/
+│   ├── learn/
 │   ├── method/
 │   ├── models/
 │   └── tools/

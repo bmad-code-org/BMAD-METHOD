@@ -54,7 +54,7 @@ The Content Creation Workshop is a disciplined, multi-model framework for genera
 - Defines: WHAT must this content accomplish? HOW will we know it worked?
 - Answers: What's the measurable outcome? Which models should we emphasize?
 
-### 1. VTC = Strategic Foundation
+### 1. Trigger Map = Strategic Foundation
 - Provides: Business goal, solution, user, driving forces, customer awareness positioning
 - Answers: WHO are we serving? WHAT motivates them? WHERE are they in their journey?
 
@@ -81,7 +81,7 @@ The Content Creation Workshop is a disciplined, multi-model framework for genera
 The workshop follows **7 sequential considerations** (agents can adapt flow naturally):
 
 0. **Define Content Purpose** - What job must this content do?
-1. **Load VTC Context** - Establish strategic foundation
+1. **Load Trigger Map Context** - Establish strategic foundation
 2. **Apply Customer Awareness Strategy** - Determine appropriate language & information
 3. **Define Required Action** - Filter for relevance
 4. **Frame User Empowerment** - Set tone and transformation narrative
@@ -115,12 +115,12 @@ When you encounter content creation in a workflow:
      - Collaborative conversation through considerations
      - Adapt flow naturally (skip/combine as appropriate)
 
-3. **Check for VTC** - Does the current context have a defined VTC?
+3. **Check for Trigger Map** - Does the current context have a Trigger Map?
    - If YES → Proceed with strategic generation
-   - If NO → Suggest creating a VTC first (route to VTC Workshop)
+   - If NO → Suggest creating a Trigger Map first (route to Phase 2)
 
 4. **Execute Strategically:**
-   - Consider all strategic layers (VTC, Awareness, Action, Empowerment, Structure)
+   - Consider all strategic layers (Trigger Map, Awareness, Action, Empowerment, Structure)
    - Emphasize models based on content purpose (see Content Purpose Guide)
    - Don't force rigid steps - adapt naturally
 
@@ -141,7 +141,7 @@ You control the strategic context and mode:
 2. **Choose your mode:**
    - Need quick suggestions? → "Suggest content for this hero section"
    - Want to explore together? → "Let's work through the homepage hero"
-3. **Provide context** or let agent find it (VTC, page purpose, user state)
+3. **Provide context** or let agent find it (Trigger Map, page purpose, user state)
 4. **Review against purpose** - Does it do its job? (objective criteria)
 5. **Select or refine** - Choose variant or combine elements
 6. **Iterate if needed** - Purpose not achieved? Refine and regenerate
@@ -233,7 +233,7 @@ DESIGNER: "Make headline more fear-focused"
    - Model priority emphasis
 
 2. **Strategic Context Document** (shows your thinking)
-   - VTC reference
+   - Trigger Map reference
    - Awareness journey map
    - Action requirement
    - Empowerment frame
@@ -285,7 +285,7 @@ DESIGNER: "Make headline more fear-focused"
 **Micro-Steps:**
 - `steps/workflow.md` - Sequential execution guide
 - `steps/step-00-define-purpose.md`
-- `steps/step-01-load-vtc-context.md`
+- `steps/step-01-load-trigger-map-context.md`
 - `steps/step-02-awareness-strategy.md`
 - `steps/step-03-action-filter.md`
 - `steps/step-04-empowerment-frame.md`
@@ -306,8 +306,7 @@ DESIGNER: "Make headline more fear-focused"
 - [Kathy Sierra Badass Users](../../../docs/models/kathy-sierra-badass-users.md)
 
 **Whiteport Methods:**
-- [Value Trigger Chain](../../../docs/method/value-trigger-chain-guide.md)
-- [VTC Advanced Usage](../../../docs/learn/module-06-trigger-mapping/lesson-12-vtc-advanced-usage.md)
+- [Trigger Mapping Guide](../../../docs/method/trigger-mapping-guide.md)
 - [Content Purpose Guide](../../../docs/method/content-purpose-guide.md) - **Start here for content effectiveness**
 
 **Workflows:**

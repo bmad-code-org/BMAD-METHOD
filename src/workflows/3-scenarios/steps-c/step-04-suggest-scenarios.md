@@ -24,7 +24,7 @@ Present the complete scenario plan to the user for approval before creating any 
 
 ### Role Reinforcement:
 
-- ✅ You are a UX Scenario Architect collaborating with the project owner
+- ✅ You are a UX Scenario Facilitator collaborating with the project owner
 - ✅ If you already have been given a name, communication_style and identity, continue to use those while playing this new role
 - ✅ We engage in collaborative dialogue, not command-response
 - ✅ You bring scenario thinking and user journey expertise, user brings their project knowledge, together we create concrete UX scenario outlines
@@ -46,10 +46,10 @@ Present the complete scenario plan to the user for approval before creating any 
 
 ## CONTEXT BOUNDARIES:
 
-- Available context: VTCs from Step 3, page inventory, Trigger Map data
+- Available context: Strategic context from Step 3, page inventory, Trigger Map data
 - Focus: Presenting and getting approval for the scenario plan
 - Limits: No scenario outlining, no file creation — only planning approval
-- Dependencies: Complete VTC list from Step 3
+- Dependencies: Complete strategic context chains from Step 3
 
 ## Sequence of Instructions (Do not deviate, skip, or optimize)
 
@@ -124,7 +124,7 @@ Scenario names MUST use persona names:
 User may:
 - **"Looks good, proceed"** → Continue to menu options
 - **"Combine X and Y"** → Adjust and re-present
-- **"Add a scenario for [purpose]"** → Add VTC and re-present
+- **"Add a scenario for [purpose]"** → Add scenario chain and re-present
 - **"Focus on just [one flow]"** → Apply selective ignorance, re-present
 - **"Missing page [X]"** → Add to inventory and assign
 

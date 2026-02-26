@@ -1,15 +1,26 @@
-# Phase 4: UX Design (UX-Sketches & Usage Scenarios)
+# Phase 4: UX Design (Page Specifications)
 
-**Agent:** Freya the WDS Designer  
-**Output:** `C-Scenarios/` (or your configured prefix)
+**Agent:** Freya the Designer
+**Output:** `D-UX-Design/` (or your configured prefix)
 
 ---
 
 ## What This Phase Does
 
-UX Design transforms ideas into detailed visual specifications. Working with Freya, you conceptualize, sketch, and specify every interaction until your design can be logically explained without gaps.
+UX Design transforms scenarios into detailed visual specifications. Working with Freya, you conceptualize, sketch, and specify every interaction until your design can be logically explained without gaps.
 
 **The key insight:** Designs that can be logically explained without gaps are easy to develop. The specification process reveals gaps in your thinking early - when they're easy to address.
+
+---
+
+## Scenario Gate
+
+Phase 4 requires a Phase 3 scenario before page design can begin. When you start, Freya checks for existing scenarios in `C-UX-Scenarios/`.
+
+- **If a scenario exists** — Freya loads the scenario context (8-question answers, shortest path, first page spec) and proceeds to design.
+- **If no scenario exists** — Freya redirects you to Phase 3 to outline the scenario first. The 8-question dialog produces richer, more grounded scenarios than trying to shortcut the process.
+
+This ensures every page is designed with purpose — grounded in a real user journey, connected to business goals.
 
 ---
 
@@ -17,170 +28,189 @@ UX Design transforms ideas into detailed visual specifications. Working with Fre
 
 For each scenario/page:
 
-- **Scenario Structure** - Numbered folder hierarchy
 - **Page Specifications** - Complete documentation of each screen
 - **Component Definitions** - Every element with Object IDs
 - **Interaction Behaviors** - What happens when users interact
 - **State Definitions** - All possible states for dynamic elements
-- **Multilingual Content** - Text in all supported languages
 - **HTML Prototypes** - Interactive prototypes for validation
 
 ---
 
-## How Freya the WDS Designer helps you design software
+## Workflow Structure
 
-### 4A: Scenario Initialization & Exploration
+Phase 4 is **menu-driven**, not linear. You pick scenarios and activities from a dashboard:
 
-**When:** Starting a new scenario - before sketching begins
+```mermaid
+flowchart TD
+    START(["Phase 4: UX Design"]) --> DASH["Scenario Dashboard\nList all scenarios + status"]
 
-**The Scenario Init Process** (6 steps):
+    DASH --> PICK{Select scenario\n+ activity}
 
-1. Feature selection - Which feature delivers value?
-2. Entry point - Where does user encounter it?
-3. Mental state - How are they feeling?
-4. Mutual success - What's winning for both sides?
-5. Shortest path - Minimum steps to success
-6. **Create VTC** - Crystallize scenario strategy
+    PICK -->|"[C] Conceptualize"| C_WF["Explore what the\ndesign needs"]
+    PICK -->|"[K] Analyse Sketches"| K_WF["Interpret user's\nsketch"]
+    PICK -->|"[S] Suggest"| S_GATE{Phase 3\nscenario?}
+    PICK -->|"[D] Dream Up"| D_GATE{Phase 3\nscenario?}
+    PICK -->|"[P] Specify"| P_WF["Write detailed\npage specification\nSteps 01-08"]
+    PICK -->|"[W] Visual"| W_WF["Visual design tools\nNanoBanana, Figma, etc."]
+    PICK -->|"[M] Design System"| M_WF["Define/update\ncomponents"]
+    PICK -->|"[V] Validate"| V_WF["Audit specification\n10-step validation"]
+    PICK -->|"[H] Handover"| H_WF["Package DD-XXX\nfor development"]
 
-See: [Scenario Initialization Guide](../workflows/4-ux-design/scenario-init/scenario-init/00-SCENARIO-INIT-GUIDE.md)
+    S_GATE -->|No| REDIRECT["Redirect to Phase 3\nOutline scenario first"]
+    S_GATE -->|Yes| S_WF["Suggest Interface\nSteps 08-15\nAgent proposes, user confirms"]
 
-**Value Trigger Chain for Each Scenario:**
+    D_GATE -->|No| REDIRECT
+    D_GATE -->|Yes| D_WF["Dream Up Interface\nSteps 08-15\nAgent creates autonomously"]
 
-Each scenario gets its own [VTC](./value-trigger-chain-guide.md) that serves as strategic guidance:
-- Extracted from Trigger Map (if Selection Workshop - 10-15 mins)
-- Created from scratch (if Creation Workshop - 20-30 mins)
+    S_WF --> POST{Page complete}
+    D_WF --> POST
 
-The VTC guides every page, every interaction, every word in the scenario.
+    POST -->|"[N] Next page"| LOOP["Outline next page\nPurpose + exit action\n→ Create page folder\n→ Design steps 08-15"]
+    POST -->|"[R] Dashboard"| DASH
+    POST -->|"[V] Validate"| V_WF
 
-**Then Exploration:**
+    LOOP --> POST
 
-Freya helps you:
-- Think through the user's journey
-- Explore content and feature options  
-- Consider psychological triggers from your Trigger Map
-- Reference the scenario's VTC for driving forces
-- Arrive at a clear solution ready for sketching
+    C_WF --> DASH
+    K_WF --> DASH
+    P_WF --> DASH
+    W_WF --> DASH
+    M_WF --> DASH
+    V_WF --> DASH
+    H_WF --> DASH
+```
 
-### 4B: UI Sketch Analysis
+**Key patterns:**
+- **Scenario gate**: [S] Suggest and [D] Dream Up require a Phase 3 scenario — if none exists, you're redirected to Phase 3
+- **Outline → Design loop**: After completing a page, [N] outlines and designs the next page continuously
+- **Non-linear**: All other activities are available at any time from the dashboard
 
-**When:** You have a sketch and you need feedback on it
+---
 
-Freya helps you:
+## Activities
 
-- Analyze what the sketch shows
-- Ask clarifying questions
-- Identify all components and states
+Phase 4 activities from the dashboard:
 
-### 4C: Conceptual Specification
+```
+What would you like to do?
+
+[C] Conceptualize            — Explore what the design needs
+[K] Analyse Sketches         — I'll interpret your sketch
+[S] Suggest Interface        — I'll propose a design, checking each step
+[D] Dream Up Interface       — I'll create it all, you review
+[P] Write Specifications     — Detail a page specification
+[W] Visual Design            — Work with visual tools, integrate results
+[M] Manage Design System     — Define/update design system components
+[V] Validate Specifications  — Audit a finished spec
+[H] Design Delivery          — Package and hand off for development
+```
+
+### [C] Conceptualize
+
+**When:** Starting a new page — before sketching begins
+
+Freya helps you think through the user's journey, explore content and feature options, consider psychological triggers from your Trigger Map, and arrive at a clear solution ready for sketching.
+
+### [K] Analyse Sketches
+
+**When:** You have a sketch and need feedback
+
+Freya analyzes what the sketch shows, asks clarifying questions, and identifies all components and states.
+
+### [S] Suggest Interface
+
+**When:** You want collaborative step-by-step design
+
+Freya proposes each design decision, you confirm or adjust before moving on. Uses steps 08-15 to build the page specification incrementally.
+
+### [D] Dream Up Interface
+
+**When:** You trust Freya to make good decisions
+
+Freya creates a complete page specification autonomously, then presents the result for your review. Uses the same steps as Suggest but with autonomous execution.
+
+### [P] Write Specifications
 
 **When:** Design is clear, need development-ready specs
 
-Freya helps you:
+Document every detail systematically — Object IDs, interactions, states, content.
 
-- Document every detail systematically
-- Assign Object IDs for testing
-- Define all interactions and states
-- Prepare multilingual content, error codes, instructions and any other content needed for the developers
+### [W] Visual Design
 
-### 4D: HTML Prototype
+**When:** Working with visual tools (Figma, design files)
 
-**When:** Specifications complete, and we make the sketch come alive to test the concept
+Work with visual design tools and integrate results back into specifications.
 
-Freya helps you:
+### [M] Manage Design System
 
-- Create interactive prototypes
-- Test the design in browser
-- Discover gaps and issues
-- Refine specifications
-- Visualize the concept before development
+**When:** Extracting or updating reusable components
 
-**Visual Refinement (Optional):**
+Define, update, or browse design system components as you design pages.
 
-If the prototype looks functional but not visually appealing (design system incomplete):
+### [V] Validate Specifications
 
-- Freya automatically identifies components needing refinement
-- Injects components to Figma via MCP server for visual polish
-- Designer refines in Figma (colors, spacing, typography, states)
-- Freya reads refined components back automatically
-- Updates design system with new tokens and components
-- Re-renders prototype with enhanced design system
+**When:** Auditing a finished spec for completeness
 
-This iterative refinement enables you to build the design system organically as you create prototypes, rather than requiring a complete design system upfront.
+Check that specifications are complete, consistent, and development-ready.
 
-**Figma Export Methods:**
-- **MCP Server (Automated):** Single viewport, fully automated, no file modifications
-- **Browser Extension (Manual):** Multiple viewports (mobile/tablet/desktop), requires temporary aria-label injection
+### [H] Design Delivery
 
-See: [Prepare for Figma Export](../tools/prepare-for-figma-export.md) for aria-label workflow details
+**When:** Ready to hand off for development
 
-### 4E: PRD Update
+Package specifications for development handoff.
 
-**When:** Page design is complete, before moving to the next scenario
+---
 
-Freya helps you:
+## The Outline → Design Loop
 
-- Identify what features this page requires
-- Add functional requirements to the PRD
-- Reference the page (e.g., "Required by: 2.1-Dog-Calendar")
-- Note any API endpoints, validations, or data needs discovered
+After designing a page (via [S] Suggest or [D] Dream Up), you choose what to do next:
 
-**Why this step matters:**
-
-Each page reveals concrete requirements:
-
-- "This form needs email validation"
-- "We need a GET endpoint for availability"
-- "Users need to upload images here"
-
-Capturing these while the page is fresh ensures nothing is forgotten. The PRD becomes a complete feature inventory with traceability to the pages that need each feature.
-
-**PRD grows like this:**
-
-```markdown
-## Functional Requirements
-
-### Email Validation
-
-**Required by:** 1.2-Sign-Up, 2.3-Profile-Edit
-
-- Validate format on input
-- Check domain exists
-- Prevent duplicates
-
-### Availability Calendar API
-
-**Required by:** 2.1-Dog-Calendar, 3.1-Booking-Flow
-
-- GET /api/walkers/{id}/availability
-- Returns 2-week window
-- Updates via WebSocket
 ```
+Page complete! What would you like to do?
+
+[N] Next page — outline and design the next step in this scenario
+[R] Return to Scenario Dashboard — pick a different scenario or activity
+[V] Validate — audit this page specification
+```
+
+When you choose **[N] Next page**, the flow is:
+
+1. **Outline the next page** — "What's the point of this page?" and "What does the user do to move forward?"
+2. **Create the page folder** with boilerplate spec and Sketches/ subfolder
+3. **Design the page** — run steps 08-15
+4. **After completion** — present this menu again
+
+This loop continues until all pages in the scenario are designed or you choose to stop.
 
 ---
 
 ## The Scenario Structure
 
-Scenarios organize your design work into a clear hierarchy:
+Scenarios from Phase 3 organize your design work into a clear hierarchy:
 
 ```
-C-Scenarios/
-├── 00-Scenario-Overview.md
-├── 01-User-Onboarding/
-│   ├── 1.1-Start-Page/
-│   │   ├── 1.1-Start-Page.md
-│   │   ├── Sketches/
-│   │   └── Prototype/
-│   └── 1.2-Sign-Up/
-│       ├── 1.2-Sign-Up.md
-│       └── ...
-├── 02-Core-Feature/
+C-UX-Scenarios/
+├── 01-hasses-emergency-search/
+│   ├── 01-hasses-emergency-search.md     # Scenario outline
+│   └── pages/
+│       ├── 01.1-start-page/
+│       │   ├── 01.1-start-page.md        # Page spec (full context)
+│       │   └── Sketches/
+│       ├── 01.2-services/
+│       │   ├── 01.2-services.md          # Page spec
+│       │   └── Sketches/
+│       └── 01.3-contact/
+│           ├── 01.3-contact.md           # Page spec
+│           └── Sketches/
+├── 02-lisas-summer-booking/
 │   └── ...
 ```
 
 **Numbering Convention:**
 
 - Scenarios: 01, 02, 03...
-- Pages within scenarios: 1.1, 1.2, 2.1, 2.2...
+- Pages within scenarios: 01.1, 01.2, 02.1, 02.2...
+- First page gets full entry context (device, mental state, arrival method)
 
 ---
 
@@ -205,31 +235,18 @@ signin-form-error-email
 
 ### Design System Integration
 
-**When Design System is enabled** (Phase 5), each object in your specification includes component library references:
-
-**Example specification entry:**
+**When Design System is enabled** (Phase 7), each object in your specification includes component library references:
 
 ```markdown
 ### Submit Button
 
 **Object ID:** `signin-form-submit-button`
 **Component:** primary-button (from Design System)
-**Figma Component:** Primary Button
 **Variant:** size=large, type=primary
 **State:** default
 
 Triggers form validation and submission...
 ```
-
-**Benefits:**
-
-- Designers know which Figma component to use
-- Developers know which code component to implement
-- Design System ensures consistency
-- Object IDs connect spec → design → code
-
-**Without Design System:**
-Just describe the element directly in the specification without component references.
 
 ---
 
@@ -257,28 +274,13 @@ Interactive prototypes that validate your design:
 - Semantic HTML matching your specs
 - CSS using your Design System tokens
 - JavaScript for interactions and validation
-- Multilingual content switching
 
 **What they reveal:**
 
 - Visual gaps ("the spacing doesn't match")
 - Interaction issues ("we forgot the loading state")
 - Component needs ("we need a phone input component")
-- Content problems ("the translation is too long")
 - Flow issues ("this navigation doesn't make sense")
-
-**File Structure:**
-
-```
-1.1-Start-Page/
-├── 1.1-Start-Page.md (specification)
-├── Sketches/
-│   └── concept-sketch.jpg
-└── Prototype/
-    ├── 1.1-Start-Page-Prototype.html
-    ├── 1.1-Start-Page-Prototype.css
-    └── 1.1-Start-Page-Prototype.js
-```
 
 ---
 
@@ -287,25 +289,24 @@ Interactive prototypes that validate your design:
 **Use this phase when:**
 
 - Ready to design specific screens/pages
-- Have strategic clarity from Phase 1-2
+- Have scenario outlines from Phase 3
 - Want to validate designs before development
 
-**Start with exploration (4A) if:**
+**Start with [C] Conceptualize if:**
 
 - No existing sketches
 - Unsure how to approach a feature
 - Need to think through the user journey
 
-**Start with analysis (4B) if:**
+**Start with [K] Analyse Sketches if:**
 
 - Have sketches ready to specify
 - Know what you want, need to document it
 
-**Use HTML prototypes (4D) if:**
+**Start with [S] Suggest or [D] Dream Up if:**
 
-- Specifications feel complete
-- Want to validate before development
-- Need stakeholder sign-off
+- Have a Phase 3 scenario with page outlines
+- Want Freya to help build the page specification step by step
 
 ---
 
@@ -313,10 +314,9 @@ Interactive prototypes that validate your design:
 
 Bring:
 
-- Trigger Map (Phase 2) - for user psychology reference
+- **UX Scenarios** (Phase 3) - scenario outlines with page folders
+- **Trigger Map** (Phase 2) - for user psychology reference
 - Any existing sketches or wireframes
-- Technical constraints from PRD (Phase 3)
-- Content in all supported languages (or draft it together)
 
 ---
 
@@ -324,8 +324,8 @@ Bring:
 
 Your specifications enable:
 
-- **Phase 5: Design System** - Components extracted and documented
-- **Phase 6: Dev Integration** - Complete handoff package
+- **Phase 5: Agentic Development** - AI-assisted implementation
+- **Phase 7: Design System** - Components extracted and documented
 - **Development** - Specs so clear they eliminate guesswork
 
 ---
@@ -360,28 +360,16 @@ Your specifications enable:
 
 ---
 
-## Example Output
-
-See: `examples/dog-week-patterns/C-Scenarios/` for complete scenario specifications from a real project.
-
----
-
 ## Related Resources
 
 **Method Guides:**
-- [Value Trigger Chain Guide](./value-trigger-chain-guide.md) - Creating VTCs for each scenario
-- [Phase 2: Trigger Mapping Guide](./phase-2-trigger-mapping-guide.md) - Source for VTC extraction
-- [Phase 3: PRD Platform Guide](./phase-3-prd-platform-guide.md) - Technical constraints
-- [Phase 5: Design System Guide](./phase-5-design-system-guide.md) - Component extraction (parallel)
+- [Phase 3: UX Scenarios Guide](./phase-3-ux-scenarios-guide.md) - Scenario outlines that drive page design
+- [Phase 2: Trigger Mapping Guide](./phase-2-trigger-mapping-guide.md) - Source for user psychology
 
 **Strategic Models:**
-- [Customer Awareness Cycle](../models/customer-awareness-cycle.md) - User awareness positioning (used in VTC)
+- [Customer Awareness Cycle](../models/customer-awareness-cycle.md) - User awareness positioning
 - [Action Mapping](../models/action-mapping.md) - User actions in scenario steps
 - [Kathy Sierra: Badass Users](../models/kathy-sierra-badass-users.md) - Making users feel capable
-
-**Workflows:**
-- Scenario Initialization: `workflows/4-ux-design/scenario-init/scenario-init/00-SCENARIO-INIT-GUIDE.md`
-- VTC Workshop: `workflows/shared/vtc-workshop/vtc-workshop-guide.md`
 
 ---
 

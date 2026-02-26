@@ -23,15 +23,42 @@ Your Product Brief includes:
 - **Solution Approach** - The "how" that enables development
 - **Success Criteria** - The "what" that measures progress
 - **Market Positioning** - How you're different (optional: ICP framework)
-- **Value Trigger Chain (VTC)** - Strategic benchmark created after vision and positioning
 
-**The VTC (Step 4):**
+Phase 1 captures a casual, conversational understanding of the business — who the users are, what the goals are, what the product should do. The deep strategic analysis (personas, driving forces, prioritization) happens in Phase 2: Trigger Mapping.
 
-After capturing your vision and positioning, you'll create a [Value Trigger Chain](./value-trigger-chain-guide.md) - a strategic summary that serves as a benchmark for all subsequent discovery work. It captures:
+---
 
-- Business Goal → Solution → User → Driving Forces → Customer Awareness
+## Workflow Structure
 
-This early VTC ensures all remaining discovery (business model, success criteria, etc.) aligns with your core strategy. If anything contradicts the VTC during discovery, either the VTC needs refinement or the discovery finding doesn't serve your strategy.
+Phase 1 follows a linear path through four document modules, with an optional simplified mode:
+
+```mermaid
+flowchart TD
+    START(["Phase 1: Product Exploration"]) --> MODE{Brief level?}
+
+    MODE -->|Simplified| SIMPLE["Simplified Brief\nSingle-step quick capture"]
+    MODE -->|Complete| VISION["Vision & Positioning\nSteps 01-03"]
+
+    SIMPLE --> DONE([Phase complete])
+
+    VISION --> BRIEF["Product Brief\nBusiness model, users,\nsuccess criteria, constraints\nSteps 05-12"]
+    BRIEF --> CONTENT["Content & Language\nPersonality, tone, SEO,\ncontent structure\nSteps 13-18"]
+    CONTENT --> VISUAL["Visual Direction\nInspiration, brand, style,\nlayout, imagery\nSteps 19-26"]
+    VISUAL --> PLATFORM["Platform Requirements\nTech stack, integrations,\ncontact strategy, multilingual\nSteps 27-32"]
+    PLATFORM --> SUMMARY["Summary & Activation\nAnalyze, summarize,\nupdate design log\nSteps 33-36"]
+    SUMMARY --> PHASE2(["→ Phase 2: Trigger Mapping"])
+
+    START -.->|"validate / -v"| VALIDATE["Validation Mode\nBrief completeness\n→ SEO → Content → Visual → Platform"]
+    VALIDATE -.-> REPORT["Validation Report"]
+```
+
+**Four document modules** — each produces its own output file:
+1. **Product Brief** — vision, business model, users, success criteria
+2. **Content & Language** — personality, tone, SEO keywords, structure
+3. **Visual Direction** — brand, style references, layout, imagery
+4. **Platform Requirements** — tech stack, integrations, multilingual
+
+Phase 1 captures casual business context. Deep strategic analysis (personas, driving forces) is done in Phase 2: Trigger Mapping.
 
 ---
 
@@ -121,8 +148,8 @@ You don't need polished answers. The conversation will help clarify everything.
 
 Your Product Brief enables:
 
-- **Phase 2: User Research** - Deeper into user psychology with your strategic context
-- **Phase 3: Requirements** - Technical decisions aligned with your vision
+- **Phase 2: Trigger Mapping** - Deep user psychology (personas, driving forces, prioritization)
+- **Phase 3: UX Scenarios** - User journeys grounded in your vision
 - **Phase 4: UX Design** - Design work grounded in strategic purpose
 
 The brief becomes the reference point everyone shares.
@@ -162,11 +189,11 @@ See: `examples/dog-week-patterns/A-Product-Brief/` for a complete Product Brief 
 ## Related Resources
 
 **Method Guides:**
-- [Value Trigger Chain Guide](./value-trigger-chain-guide.md) - Creating your strategic benchmark (Step 4)
 - [Phase 2: Trigger Mapping Guide](./phase-2-trigger-mapping-guide.md) - Deep user psychology (next phase)
+- [Phase 3: UX Scenarios Guide](./phase-3-ux-scenarios-guide.md) - User journeys from Trigger Map
 
 **Strategic Models:**
-- [Customer Awareness Cycle](../models/customer-awareness-cycle.md) - Understanding user awareness stages (used in VTC)
+- [Customer Awareness Cycle](../models/customer-awareness-cycle.md) - Understanding user awareness stages
 - [Golden Circle](../models/golden-circle.md) - WHY, HOW, WHAT framework (useful for vision)
 
 **Workflows:**

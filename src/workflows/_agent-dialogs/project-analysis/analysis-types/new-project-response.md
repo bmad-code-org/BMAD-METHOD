@@ -158,7 +158,7 @@ Phase 0: Project Setup
             ├─→ Tech stack (optional)
             ├─→ Component library (optional)
             ├─→ Brief level (complete/simplified)
-            ├─→ Strategic analysis (full/VTC/skip)
+            ├─→ Strategic analysis (full/simplified/skip)
             ├─→ Create folder structure
             └─→ Generate .wds-project-outline.yaml
                     │

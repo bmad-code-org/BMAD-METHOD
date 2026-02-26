@@ -42,7 +42,7 @@ Guide the user through a quick, focused session to capture the essential project
 ## CONTEXT BOUNDARIES:
 - Available context: Project configuration, user name, communication language
 - Focus: Essential project context in minimal time
-- Limits: No deep competitive analysis, no VTC, no detailed positioning
+- Limits: No deep competitive analysis, no Trigger Map, no detailed positioning
 - Dependencies: Config loaded from `{project-root}/_bmad/wds/config.yaml`
 
 ## Sequence of Instructions (Do not deviate, skip, or optimize)

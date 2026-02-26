@@ -24,21 +24,29 @@ description: 'Build a scenario's page flow step by step, with the agent proposin
 
 Load scenario context from `{output_folder}/C-UX-Scenarios/`.
 
+### Scenario Check (CRITICAL GATE)
+
+Before starting page design, verify that a scenario exists for the selected scenario:
+
+1. Look for scenario files in `{output_folder}/C-UX-Scenarios/[NN-slug]/[NN-slug].md`
+2. **If a Phase 3 scenario exists** → Skip to **Page Creation** below. The scenario's 8-question answers, shortest path, and first page specification provide everything needed.
+3. **If NO scenario exists** → Do NOT attempt to define the scenario here. Instead:
+   - Inform the user: *"Before we design pages, we need a scenario outline. This gives us the user's device, mental state, entry point, and the shortest path — all essential for good page design."*
+   - Suggest returning to Phase 3 to outline the scenario using the 8-question dialog
+   - The user can then return here with [D] from the Phase 3 post-scenario menu
+
+**Why:** Phase 3's 8-question dialog is the canonical way to define scenarios. It produces richer, more grounded scenarios than trying to shortcut the process here.
+
+### Phase 3 Handover Context
+
+When entering from Phase 3's [D] option (start designing), the scenario file and page folders already exist. Use:
+- **Page folders** from `{output_folder}/C-UX-Scenarios/[NN-slug]/pages/[NN].1-[page-slug]/` — each page has a boilerplate `.md` and a `Sketches/` subfolder
+- **First page spec** (`[NN].1-*.md`) has full entry context (device, arrival, mental state) from Q4, Q5, Q6
+- **Shortest path** from Q8 to know the full page sequence
+
 ## Steps
 
 Execute steps in `./steps-s/`:
-
-### Scenario Setup (if new scenario)
-
-| Step | File | Purpose |
-|------|------|---------|
-| 01 | step-01-core-feature.md | Identify the core feature |
-| 02 | step-02-entry-point.md | Define user entry point |
-| 03 | step-03-mental-state.md | Capture user mental state |
-| 04 | step-04-mutual-success.md | Define mutual success criteria |
-| 05 | step-05-shortest-path.md | Map the shortest path |
-| 06 | step-06-scenario-name.md | Name the scenario |
-| 07 | step-07-create-scenario-folder.md | Create output structure |
 
 ### Page Creation (per page)
 
@@ -63,6 +71,58 @@ Execute steps in `./steps-s/`:
 
 ## AFTER COMPLETION
 
-1. Update design log
-2. Suggest next action
-3. Return to activity menu
+After finishing a page specification, present the user with a choice:
+
+```
+Page [NN.step] complete! What would you like to do?
+
+[N] Next page — outline and design the next step in this scenario
+[R] Return to Scenario Dashboard — pick a different scenario or activity
+[V] Validate — audit this page specification
+```
+
+### Menu Handling Logic:
+
+- IF N: Check the scenario's shortest path (Q8) for the next page. If the next page doesn't have a folder yet, run the Page Outline Dialog from Phase 3 (ask the two questions: page purpose + exit action), create the page folder, then design it using steps 08-15. This is the **outline → design loop**.
+- IF R: Return to the Phase 4 Scenario Dashboard
+- IF V: Load and execute `./workflow-validate.md`
+
+### The Outline → Design Loop
+
+When the user chooses [N], the flow is:
+
+1. **Outline the next page** — Ask: "What's the point of this page?" and "What does the user do to move forward?" (same as Phase 3's [O] dialog)
+2. **Component Extraction Check** (2nd+ page only) — see below
+3. **Create the page folder** with boilerplate spec and Sketches/ subfolder
+4. **Design the page** — run steps 08-15 for this page
+5. **After completion** — present this menu again
+
+This loop continues until all pages in the scenario are designed or the user chooses to stop.
+
+### Component Extraction Check (2nd+ Page)
+
+**Trigger:** Automatically runs when starting the 2nd or later page in a scenario.
+
+**Purpose:** Identify repeating elements across pages and suggest extracting them as shared components before they multiply.
+
+**Process:**
+
+1. **Scan completed page specs** in the current scenario's `pages/` folder
+2. **Identify common patterns** across completed pages:
+   - Navigation headers / footers
+   - Repeated form fields or input patterns
+   - Shared section layouts (e.g., hero, card grids)
+   - Identical UI elements (buttons, modals, alerts)
+3. **If shared elements found**, present briefly:
+   ```
+   I noticed these elements appear across your completed pages:
+   - [element] — used in [page 1], [page 2]
+   - [element] — used in [page 1], [page 2]
+
+   Want me to extract these as shared components now, or continue and handle it later?
+   [E] Extract now → routes to [M] Manage Design System
+   [L] Later — continue with page design
+   ```
+4. **If no shared elements found** (or this is only the 2nd page with minimal overlap), skip silently and continue to page design.
+
+**Key principle:** Don't block the design flow. This is a brief check, not a deep audit. The user can always choose [L] to defer.

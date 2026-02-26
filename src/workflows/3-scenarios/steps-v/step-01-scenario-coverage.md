@@ -1,6 +1,6 @@
 ---
 name: step-01-scenario-coverage
-description: Verify that all Value Trigger Chains from the Trigger Map are covered by at least one scenario
+description: Verify that all strategic context chains from the Trigger Map are covered by at least one scenario
 
 # File References
 nextStepFile: './step-02-navigation-patterns.md'
@@ -10,7 +10,7 @@ nextStepFile: './step-02-navigation-patterns.md'
 
 ## STEP GOAL:
 
-Verify that all Value Trigger Chains (VTCs) from the Trigger Map are covered by at least one scenario, with Priority 1 VTCs having dedicated scenarios.
+Verify that all strategic context chains from the Trigger Map are covered by at least one scenario, with Priority 1 chains having dedicated scenarios.
 
 ## MANDATORY EXECUTION RULES (READ FIRST):
 
@@ -32,22 +32,22 @@ Verify that all Value Trigger Chains (VTCs) from the Trigger Map are covered by 
 
 ### Step-Specific Rules:
 
-- 🎯 Focus only on VTC-to-scenario coverage verification
+- 🎯 Focus only on strategic-context-to-scenario coverage verification
 - 🚫 FORBIDDEN to modify any scenario files during validation
-- 💬 Approach: Systematic cross-referencing of Trigger Map VTCs against scenarios
+- 💬 Approach: Systematic cross-referencing of Trigger Map strategic context against scenarios
 - 📋 Report findings with clear severity levels
 
 ## EXECUTION PROTOCOLS:
 
 - 📖 Load both Trigger Map and all scenario files
-- 🔗 Cross-reference every VTC against scenario coverage
+- 🔗 Cross-reference every strategic context chain against scenario coverage
 - 📊 Report with severity levels (Critical/Warning/Pass)
-- 🚫 FORBIDDEN to skip any VTC during verification
+- 🚫 FORBIDDEN to skip any chain during verification
 
 ## CONTEXT BOUNDARIES:
 
 - Available context: Trigger Map, all scenario outlines, scenario index
-- Focus: VTC coverage verification only
+- Focus: Strategic context coverage verification only
 - Limits: No scenario modifications, only verification and reporting
 - Dependencies: All scenario files must exist from Phase 3 creation workflow
 
@@ -55,7 +55,7 @@ Verify that all Value Trigger Chains (VTCs) from the Trigger Map are covered by 
 
 ### 1. Load Trigger Map Data
 
-Read `{output_folder}/B-Trigger-Map/trigger-map.md` and extract all VTCs (Business Goal → Persona → Driving Force chains).
+Read `{output_folder}/B-Trigger-Map/trigger-map.md` and extract all strategic context chains (Business Goal → Persona → Driving Force chains).
 
 ### 2. Load All Scenario Files
 
@@ -63,28 +63,28 @@ Read all scenario outlines from `{output_folder}/C-UX-Scenarios/`.
 
 ### 3. Cross-Reference
 
-For each VTC, verify:
-- [ ] At least one scenario addresses this VTC
-- [ ] The scenario Trigger Map Connections section explicitly references the VTC components
-- [ ] Priority 1 VTCs have dedicated scenarios (not just secondary coverage)
+For each strategic context chain, verify:
+- [ ] At least one scenario addresses this chain
+- [ ] The scenario Trigger Map Connections section explicitly references the strategic context components
+- [ ] Priority 1 chains have dedicated scenarios (not just secondary coverage)
 
 ### 4. Generate Report
 
 ```
 ## Coverage Report
 
-| VTC | Persona | Driving Force | Scenario(s) | Status |
+| Chain | Persona | Driving Force | Scenario(s) | Status |
 |-----|---------|---------------|-------------|--------|
 | [Goal] | [Name] | [Force] | [Scenario ID] | ✅/⚠️/❌ |
 
-**Coverage:** [X]/[Total] VTCs covered ([X]%)
-**Gaps:** [list uncovered VTCs]
+**Coverage: [X]/[Total] chains covered ([X]%)
+**Gaps: [list uncovered chains]]
 ```
 
 **Severity:**
-- ❌ Critical: Priority 1 VTC with no scenario
-- ⚠️ Warning: Priority 2-3 VTC with no scenario
-- ✅ Pass: VTC covered by at least one scenario
+- ❌ Critical: Priority 1 chain with no scenario
+- ⚠️ Warning: Priority 2-3 chain with no scenario
+- ✅ Pass: Chain covered by at least one scenario
 
 ### 5. Present MENU OPTIONS
 
@@ -103,7 +103,7 @@ Display: "Are you ready to [C] Continue to Navigation Patterns validation?"
 
 ## CRITICAL STEP COMPLETION NOTE
 
-ONLY WHEN [C continue option] is selected and [coverage report generated with all VTCs checked], will you then load and read fully `{nextStepFile}` to execute and begin navigation patterns validation.
+ONLY WHEN [C continue option] is selected and [coverage report generated with all chains checked], will you then load and read fully `{nextStepFile}` to execute and begin navigation patterns validation.
 
 ---
 
@@ -111,16 +111,16 @@ ONLY WHEN [C continue option] is selected and [coverage report generated with al
 
 ### ✅ SUCCESS:
 
-- All VTCs from Trigger Map identified and cross-referenced
-- Every VTC checked against scenario coverage
+- All strategic context chains from Trigger Map identified and cross-referenced
+- Every chain checked against scenario coverage
 - Severity levels correctly assigned
 - Coverage report generated with clear gaps identified
-- Priority 1 VTCs verified for dedicated scenario coverage
+- Priority 1 chains verified for dedicated scenario coverage
 - Menu presented and user input handled correctly
 
 ### ❌ SYSTEM FAILURE:
 
-- Missing any VTC from the cross-reference
+- Missing any chain from the cross-reference
 - Not loading all scenario files
 - Incorrect severity assignment
 - Not identifying coverage gaps

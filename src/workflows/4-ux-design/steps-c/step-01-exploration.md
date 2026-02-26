@@ -136,23 +136,32 @@ Walk me through:
 **Flow:**
 {{interaction_flow}}
 
-You're ready to sketch! Would you like to:
+You're ready for next steps! Would you like to:
 
-1. **Create sketches** - Use your preferred tool, then come back for analysis
-2. **Skip sketching** - Go directly to specification
-3. **Explore more** - Refine the concept further</output>
+1. **I have a sketch** - You provide a sketch, I'll analyze it
+2. **Sketch it for me** - I create a wireframe in Excalidraw
+3. **Skip sketching** - Go directly to specification
+4. **Explore more** - Refine the concept further</output>
 
 <check if="choice == 1">
-  <output>Perfect! Sketch your concept and come back when ready. I'll be here to analyze it.</output>
-  <action>Save exploration notes to page folder as "exploration-notes.md"</action>
+  <output>Go sketch your concept and come back when ready. I'll analyze it with [K].</output>
+  <action>Update the page specification with exploration findings (fill empty sections, not a separate file)</action>
   <action>Pause workflow - user will return to sketch analysis</action>
 </check>
 
 <check if="choice == 2">
-  <action>Proceed directly to specification activity</action>
+  <action>Update the page specification with exploration findings (fill empty sections, not a separate file)</action>
+  <action>BEFORE drawing: Read existing completed page specs AND their sketches to understand the established page structure — navigation, service menus, footer, card patterns, shared components. Do NOT draw from memory.</action>
+  <action>Create wireframe in Excalidraw at page folder `Sketches/{page-slug}-wireframe.excalidraw`</action>
+  <action>Wireframe must be CLEAN — no annotations, no labels outside the page area. Design decisions belong in the page specification, not on the sketch.</action>
 </check>
 
 <check if="choice == 3">
+  <action>Update the page specification with exploration findings (fill empty sections, not a separate file)</action>
+  <action>Proceed directly to specification activity</action>
+</check>
+
+<check if="choice == 4">
   <action>Ask what aspect to explore more deeply</action>
   <action>Continue exploration dialog</action>
 </check>
@@ -185,7 +194,7 @@ ONLY WHEN the user has completed their exploration and chosen a next action (ske
 - Page elements structured from user input
 - Trigger Map connections identified
 - Interaction flow mapped verbally
-- Exploration notes saved if user proceeds to sketching
+- Exploration findings saved to the page specification (not a separate file)
 - User chose next action with clear understanding
 
 ### ❌ SYSTEM FAILURE:
@@ -196,5 +205,8 @@ ONLY WHEN the user has completed their exploration and chosen a next action (ske
 - Skipping the interaction flow mapping
 - Proceeding without user confirmation of exploration summary
 - Creating detailed component specifications (wrong activity)
+- Saving exploration findings to a separate notes file instead of updating the page spec
+- Drawing wireframes with annotations or labels outside the page area
+- Drawing shared elements (nav, footer) from memory instead of reading existing specs
 
 **Master Rule:** Skipping steps, optimizing sequences, or not following exact instructions is FORBIDDEN and constitutes SYSTEM FAILURE.

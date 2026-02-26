@@ -232,7 +232,7 @@ function buildActivationBlock(agent, wdsFolder) {
     <step n="1">Load persona from this current agent file (already in context)</step>
     <step n="2">IMMEDIATE ACTION REQUIRED - BEFORE ANY OUTPUT:
         - Load and read {project-root}/${wdsFolder}/config.yaml NOW
-        - Store ALL fields as session variables: {user_name}, {communication_language}, {output_folder}
+        - Store ALL fields as session variables: {user_name}, {communication_language}, {output_folder}, {starting_point}, {project_name}
         - VERIFY: If config not loaded, STOP and report error to user
         - DO NOT PROCEED to step 3 until config is successfully loaded and variables stored
     </step>
@@ -314,6 +314,14 @@ ${agentSteps}    <step n="${menuStep}">Show greeting using {user_name} from conf
       <r>Display Menu items as the item dictates and in the order given.</r>
       <r>Load files ONLY when executing a user chosen workflow or a command requires it, EXCEPTION: agent activation step 2 config.yaml</r>
     </rules>
+
+    <output-discipline critical="MANDATORY">
+      <r>Keep responses focused: address ONE topic per message, then invite follow-up.</r>
+      <r>Be concise: use bullet points over paragraphs. If a response exceeds 300 words, split into parts.</r>
+      <r>Lead with the actionable content. Place context and rationale AFTER the main point.</r>
+      <r>Never repeat information the user already confirmed. Reference it, do not restate it.</r>
+      <r>When presenting options, use numbered lists. Maximum 5 options before asking to narrow scope.</r>
+    </output-discipline>
   </activation>
 `;
 

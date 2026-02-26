@@ -1,6 +1,6 @@
 # Example: Golden Circle Applied to Hairdresser Newsletter
 
-**VTC Context:** Hairdresser newsletter signup
+**Trigger Map Context:** Hairdresser newsletter signup
 
 **Structural Order:**
 

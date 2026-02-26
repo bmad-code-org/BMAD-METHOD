@@ -86,7 +86,7 @@ Integrate recently added WDS features into the course materials:
 
 ### Rough Approach
 
-1. Create new learn-wds module: "Working with Agent Dialogs"
+1. Create new learn module: "Working with Agent Dialogs"
 2. Update page specification lessons to include Open Questions
 3. Add Eira to agent personas documentation
 4. Create hands-on exercises for each feature
@@ -111,7 +111,7 @@ These three features represent significant additions to the WDS methodology:
 
 ### Open Questions
 
-- Which learn-wds module should Agent Dialogs go in? (New module or extend existing?)
+- Which learn module should Agent Dialogs go in? (New module or extend existing?)
 - Should Open Questions be part of the page specification lesson or standalone?
 - Is Eira documented enough to add to the course, or needs more definition first?
 - Should we create a dedicated example project showcasing all three features?
@@ -134,7 +134,7 @@ These three features represent significant additions to the WDS methodology:
 ## When I Return
 
 1. Review all three feature locations and documentation
-2. Check existing learn-wds modules for best placement
+2. Check existing learn modules for best placement
 3. Draft course content outline for each feature
 4. Create hands-on exercises
 5. Identify any gaps in feature documentation that need filling first

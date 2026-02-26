@@ -4,7 +4,7 @@
 
 **Originated by:** Mijo Balic & Ingrid Domingues (Ottersten) at inUse, Sweden  
 **Popularized by:** Gojko Adzic, *Impact Mapping* (2012)  
-**Applied in WDS:** Trigger Mapping, Value Trigger Chains, strategic alignment
+**Applied in WDS:** Trigger Mapping, strategic alignment
 
 ---
 
@@ -247,15 +247,15 @@ A separate method (also derived from Impact Mapping) that uses the Trigger Map:
 
 **Note:** This is a distinct method that USES the Trigger Map data, to be fair to Impact Mapping's influence on this approach.
 
-### [Value Trigger Chain Guide](../method/value-trigger-chain-guide.md)
+### Trigger Mapping
 
-Lightweight version extracting core strategic elements:
+Whiteport's adaptation extracting core strategic elements:
 
 - Business Goal (from Effect/Impact Mapping)
 - Solution (combines Actor context + Impact)
 - User (Actor with psychological depth)
 - Driving Forces (Positive and negative impacts)
-- Customer Awareness (Added positioning layer)
+- Feature Impact Analysis (scored prioritization)
 
 **Result:** Minimum viable strategic context, perfect for quick projects or prototypes.
 
@@ -587,11 +587,10 @@ Goal
 1. **Read:** Get Gojko Adzic's book for full methodology
 2. **Try:** Run a simple Impact Mapping session for current project
 3. **Compare:** See how Whiteport's Trigger Mapping adapts the concepts
-4. **Choose:** Decide if you need quick VTC, full Impact Map, or comprehensive Trigger Map
+4. **Choose:** Decide if you need a slim Trigger Map, full Impact Map, or comprehensive Trigger Map
 
 **Related Resources:**
 - [Trigger Mapping Guide](../method/phase-2-trigger-mapping-guide.md) - Whiteport's adaptation
-- [Value Trigger Chain Guide](../method/value-trigger-chain-guide.md) - Lightweight version
 - [ImpactMapping.org](https://www.impactmapping.org) - Official resources
 
 ---

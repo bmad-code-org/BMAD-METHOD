@@ -120,6 +120,48 @@ When all levels are prioritized, you have perfect guidance for design:
 
 ---
 
+## Workflow Structure
+
+Phase 2 has two entry routes — from scratch or from existing documentation — that merge into the same main flow:
+
+```mermaid
+flowchart TD
+    START(["Phase 2: Trigger Mapping"]) --> ENTRY{Entry route?}
+
+    ENTRY -->|"From scratch"| OVERVIEW["Overview & Setup\nStep 01"]
+    ENTRY -->|"From existing docs"| SYNTH["Documentation Synthesis\nExtract goals, groups,\ndriving forces, priorities\nSteps 00a-00f"]
+    SYNTH --> OVERVIEW
+
+    OVERVIEW --> GOALS["Business Goals\nVision + SMART objectives\nStep 02"]
+    GOALS --> GROUPS["Target Groups\nWho needs to succeed?\nStep 03"]
+    GROUPS --> FORCES["Driving Forces\nPositive + negative triggers\nStep 04"]
+    FORCES --> PRIORITY["Prioritization\nRank goals, groups, forces\nStep 05"]
+
+    PRIORITY --> FIA["Feature Impact Analysis\nExtract features → assess impact\n→ score → generate document\nSteps 06a-06e"]
+
+    FIA --> GENERATE["Generate Trigger Map\nHub document + personas\n+ key insights + quality check\nSteps 07a-07g"]
+
+    GENERATE --> MERMAID["Mermaid Diagram\nBuild visual map incrementally\nGoals → platform → groups\n→ forces → connections → styling\nSteps 08a-08h"]
+
+    MERMAID --> FINALIZE["Finalize & Deliver\nHub doc + cross-references\n+ quality check + handover\nSteps 09a-09f"]
+
+    FINALIZE --> PHASE3(["→ Phase 3: UX Scenarios"])
+
+    START -.->|"validate / -v"| VALIDATE["Validation Mode\nTarget groups → prioritization\n→ personas → feature alignment\n→ cross-document coherence"]
+    VALIDATE -.-> REPORT["Validation Report"]
+```
+
+**Two entry routes:**
+- **From scratch** — full conversational discovery through all stages
+- **From existing documentation** — synthesize existing docs first, then fill gaps through the same stages
+
+**Key outputs:**
+- `trigger-map.md` — hub document with Mermaid diagram
+- Persona files for each target group
+- `feature-impact-analysis.md` — scored feature list
+
+---
+
 ## How It Works
 
 ### Stage 1: Business Goals (15-20 minutes)
@@ -345,7 +387,7 @@ Bring:
 
 Your Trigger Map enables:
 
-- **Phase 3: Requirements** - Technical decisions aligned with user priorities
+- **Phase 3: UX Scenarios** - User journeys grounded in personas and driving forces
 - **Phase 4: UX Design** - Design work grounded in user psychology
 - **Development priorities** - Clear guidance on what to build first
 
@@ -383,8 +425,8 @@ See: `examples/dog-week-patterns/B-Trigger-Map/` for a complete Trigger Map with
 ## Related Resources
 
 **Method Guides:**
-- [Value Trigger Chain Guide](./value-trigger-chain-guide.md) - Extracting VTCs from Trigger Map
 - [Phase 1: Product Exploration](./phase-1-product-exploration-guide.md) - Strategic foundation (prerequisite)
+- [Phase 3: UX Scenarios Guide](./phase-3-ux-scenarios-guide.md) - User journeys from Trigger Map
 - [Phase 4: UX Design Guide](./phase-4-ux-design-guide.md) - Using Trigger Map in scenarios
 
 **Foundational Models:**

@@ -162,19 +162,13 @@
 
 ---
 
-## Value Trigger Chain
+## Business Context
 
-**Strategic Summary** - [View full VTC](./vtc-primary.yaml)
+- **Primary Goal:** {{business_goal}}
+- **Solution:** {{solution}}
+- **Target Users:** {{target_users}}
 
-- **Business Goal:** {{vtc_business_goal}}
-- **Solution:** {{vtc_solution}}
-- **User:** {{vtc_user}}
-- **Driving Forces:**
-  - *Wants to:* {{vtc_positive_forces}}
-  - *Wants to avoid:* {{vtc_negative_forces}}
-- **Awareness Journey:** {{vtc_awareness_start}} → {{vtc_awareness_end}}
-
-This VTC provides quick strategic reference and will inform all design decisions.
+*Full strategic analysis (business goals, personas, driving forces) is developed in [Phase 2: Trigger Mapping](../B-Trigger-Map/).*
 
 ---
 

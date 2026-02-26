@@ -44,7 +44,7 @@ Apply Kathy Sierra's Badass Users framework to frame content around user capabil
 
 ## CONTEXT BOUNDARIES:
 
-- Available context: Purpose (Step 0), VTC (Step 1), Awareness (Step 2), Action Filter (Step 3)
+- Available context: Purpose (Step 0), Trigger Map (Step 1), Awareness (Step 2), Action Filter (Step 3)
 - Focus: Framing content around user capability, not product features
 - Limits: Do not write content — define the empowerment frame for it
 - Dependencies: Action Filter from Step 3

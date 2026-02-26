@@ -51,10 +51,8 @@ WDS files are installed in the \`${wdsFolder}/\` directory.
 
 To activate a WDS agent, load and follow the instructions in the agent file:
 
-- **Mimir** (Orchestrator & Guide): Read \`${wdsFolder}/agents/mimir-orchestrator.md\` - Start here if you're new to WDS
-- **Saga** (Analyst): Read \`${wdsFolder}/agents/saga-analyst.md\` - Product Brief & Trigger Mapping (Phases 1-2)
-- **Idunn** (Product Manager): Read \`${wdsFolder}/agents/idunn-pm.md\` - Platform Requirements & Design Deliveries (Phases 3, 6)
-- **Freya** (UX Designer): Read \`${wdsFolder}/agents/freya-ux.md\` - UX Design, Design System & Testing (Phases 4-5, 7-8)
+- **Saga** (Analyst): Read \`${wdsFolder}/agents/saga-analyst.md\` - Product Brief, Trigger Mapping & UX Scenarios (Phases 0-3)
+- **Freya** (Designer): Read \`${wdsFolder}/agents/freya-ux.md\` - UX Design, Asset Generation & Design System (Phases 4, 6-7)
 
 ## How to Activate
 

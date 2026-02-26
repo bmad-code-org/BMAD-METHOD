@@ -102,7 +102,7 @@
 **Checklist:**
 - [ ] User situation clearly defined
 - [ ] Usage context documented
-- [ ] Trigger Value Chain (VTC) defined and linked
+- [ ] Strategic context (Trigger Map) defined and linked
 - [ ] Scenario purpose stated
 - [ ] Success criteria defined
 
@@ -134,7 +134,7 @@
 **Checklist:**
 - [ ] Page purpose clearly stated
 - [ ] Success criteria defined
-- [ ] VTC reference present
+- [ ] Trigger Map reference present
 - [ ] Sections properly separated and named
 - [ ] Section purposes defined
 - [ ] Page layout logical and flows well

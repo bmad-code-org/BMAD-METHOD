@@ -221,9 +221,9 @@ The Product Brief discovery conversation uses Golden Circle structure:
 
 **Result:** Product Brief grounded in purpose, not just feature list.
 
-### [Value Trigger Chain Guide](../method/value-trigger-chain-guide.md)
+### Trigger Mapping
 
-VTC implicitly uses Golden Circle:
+Trigger Maps implicitly use Golden Circle:
 
 - **Business Goal:** The WHY (organizational purpose)
 - **Driving Forces:** User's personal WHY (motivation)
@@ -523,7 +523,6 @@ We offer:
 
 **Related Resources:**
 - [Product Exploration Guide](../method/phase-1-product-exploration-guide.md) - Uses WHY-first discovery
-- [Value Trigger Chain Guide](../method/value-trigger-chain-guide.md) - Captures user's WHY (driving forces)
 - [Trigger Mapping Guide](../method/phase-2-trigger-mapping-guide.md) - Connects business WHY to user WHY
 
 ---

@@ -22,7 +22,7 @@ description: 'Collaboratively explore what a scenario's design should achieve be
 
 ## Entry
 
-Load scenario context (VTC, scenario overview) from `{output_folder}/C-UX-Scenarios/`.
+Load scenario context (Trigger Map, scenario overview) from `{output_folder}/C-UX-Scenarios/`.
 
 ## Steps
 

@@ -63,7 +63,7 @@ Validate:
 - Page description paragraph (1-2 paragraphs explaining what page does)
 - User Situation section (user's context, needs, emotional state)
 - Page Purpose section (what job page must accomplish)
-- Success criteria or VTC reference
+- Success criteria or Trigger Map reference
 - Emotional context and pain points addressed
 
 ### 2. Generate Diagnostic Report

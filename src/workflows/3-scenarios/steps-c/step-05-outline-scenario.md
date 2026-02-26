@@ -13,7 +13,7 @@ scenarioTemplate: '../data/scenario-outline-template.md'
 
 ## STEP GOAL:
 
-Create a detailed outline for ONE scenario using all 7 required components, verify against quality gates, create the output file, then loop for each remaining scenario in the approved plan.
+Define ONE scenario through 8 strategic questions in natural conversation order. Start with the primary transaction (highest priority), complete it fully, then loop for each remaining scenario. A **transaction** is any meaningful user journey — purchasing, booking, researching content page-by-page, comparing options, or any interaction where the user moves through the site with intent.
 
 ## MANDATORY EXECUTION RULES (READ FIRST):
 
@@ -27,7 +27,7 @@ Create a detailed outline for ONE scenario using all 7 required components, veri
 
 ### Role Reinforcement:
 
-- ✅ You are a UX Scenario Architect collaborating with the project owner
+- ✅ You are a UX Scenario Facilitator — you ASK, the user DECIDES
 - ✅ If you already have been given a name, communication_style and identity, continue to use those while playing this new role
 - ✅ We engage in collaborative dialogue, not command-response
 - ✅ You bring scenario thinking and user journey expertise, user brings their project knowledge, together we create concrete UX scenario outlines
@@ -35,23 +35,23 @@ Create a detailed outline for ONE scenario using all 7 required components, veri
 
 ### Step-Specific Rules:
 
-- 🎯 Focus on ONE scenario at a time, complete it fully before moving to the next
-- 🚫 FORBIDDEN to skip any of the 7 required components
-- 💬 Approach: Collaborate with user on each scenario, using the template as structure
+- 🎯 Focus on ONE transaction at a time, complete it fully before moving to the next
+- 🚫 FORBIDDEN to skip any of the 8 strategic questions
+- 💬 Approach: Ask one question at a time, let the answer shape the next question naturally
 - 📋 Verify all quality gates before proceeding to the next scenario or step
 
 ## EXECUTION PROTOCOLS:
 
 - 📖 Load the scenario outline template before starting
-- 📋 Ensure all 7 components are present and high quality
+- 💬 Walk through 8 questions as a dialog — one question at a time, building on each answer
 - ✅ Run quality gates check before moving on
 - 💾 Create output file in the correct folder structure
-- 🔄 Loop back for each remaining scenario
+- 🔄 Loop back for each remaining scenario (next transaction, next target group)
 - 🚫 FORBIDDEN to proceed if any quality gate fails
 
 ## CONTEXT BOUNDARIES:
 
-- Available context: Approved scenario plan from Step 4, VTCs, page inventory, Trigger Map
+- Available context: Approved scenario plan from Step 4, strategic context, page inventory, Trigger Map
 - Focus: Detailed outlining of one scenario at a time
 - Limits: Only outline scenarios from the approved plan
 - Dependencies: User-approved scenario plan from Step 4
@@ -69,65 +69,79 @@ If returning from a loop, continue with the next unfinished scenario.
 
 Load the full template: `{scenarioTemplate}`
 
-### 3. Create Outline with 7 Required Components
+### 3. The 8-Question Scenario Dialog
 
-Every scenario outline MUST have all 7 components:
+**Two modes — same 8 questions, different driver:**
 
-#### Component 1: Scenario Name & ID
+- **Conversation mode** (default): YOU ask, the USER answers. One question at a time. Each answer shapes the next question naturally.
+- **Suggest mode** (when user asks you to suggest): YOU answer all 8 questions based on the Trigger Map, Product Brief, and strategic context. Present the complete scenario to the user for review and adjustment.
 
-- **Name:** Uses persona name + purpose (e.g., "Hasse's Emergency Search")
-- **ID:** 01, 02, etc.
-- **Slug:** `01-hasses-emergency-search`
+This IS the scenario — when all 8 are answered, the outline writes itself.
 
-#### Component 2: Core Feature
+> **What counts as a transaction:** Not just purchases or bookings. Clicking through a menu item by item to research site content is a transaction. Comparing options is a transaction. Any meaningful journey where the user moves through the site with intent.
 
-What this scenario covers, stated as user purpose (not feature name).
+#### Q1: "What transaction do we need to get really right?"
 
+Start with the WHY. What is the most important thing a user needs to accomplish on this site?
+
+- State as user purpose, not feature name
 - **Bad:** "Homepage and service pages"
 - **Good:** "Verify service availability before booking"
 
-Must align with a specific business goal from the Trigger Map.
+#### Q2: "If this transaction succeeds, which business goal does it add value to?"
 
-#### Component 3: Entry Point (Realistic)
+Connect to the Trigger Map immediately. Which specific business goal and objective does this serve?
 
-How the user ACTUALLY arrives. Be specific about:
-- **Device:** Mobile, desktop, tablet
-- **Context:** Where they are, what they are doing
-- **Discovery:** How they found the site (Google search, link, ad, bookmark)
+- Reference actual goals from the Trigger Map
+- This grounds the scenario in business strategy, not just user needs
 
-- **Bad:** "User opens app"
-- **Good:** "Googles 'car repair Oland' on mobile while parked at gas station, clicks top organic result"
+#### Q3: "Which user experiences this most, and in what real-life situation?"
 
-#### Component 4: Mental State (Trigger / Hope / Worry)
+Identify the persona AND their context. Not just "who" but "who, where, when."
 
-Three components, all required, all specific:
+- Use actual personas from the Trigger Map
+- **Bad:** "A customer looking for information"
+- **Good:** "Hasse, 55, motorhome tourist stranded in Byxelkrok with a broken vehicle during family vacation"
 
-- **Trigger:** What just happened that brought them here NOW
-- **Hope:** What they are hoping to find or achieve
-- **Worry:** What they are afraid of or want to avoid
+#### Q4: "What do they want and what do they fear going into this interaction?"
 
+The driving forces — hope and worry. These must be visceral and specific.
+
+- **Hope:** What they're hoping to find or achieve
+- **Worry:** What they're afraid of or want to avoid
 - **Bad:** "User is interested in the product"
-- **Good:** "Trigger: Motorhome broke down in Byxelkrok, family vacation at risk. Hope: Find trustworthy mechanic nearby, get back on road today. Worry: Being stranded for days, getting ripped off by unknown mechanic"
+- **Good:** "Hope: Find trustworthy mechanic nearby, get back on road today. Worry: Being stranded for days, getting ripped off by unknown mechanic"
+- **Length Rule:** ONE sentence max per component. Phrases, not paragraphs.
 
-#### Component 5: Success Goals (Mutual Value)
+#### Q5: "What device are they on?"
 
-Both required, both specific and measurable:
+Mobile, desktop, or tablet. This shapes the entire design approach.
+
+#### Q6: "What's the natural starting point — how do they actually arrive?"
+
+How the user ACTUALLY gets to the site. Be specific about discovery method.
+
+- **Bad:** "User opens the website"
+- **Good:** "Googles 'car repair Öland' on mobile while parked at gas station, clicks top organic result"
+- **Length Rule:** 1-2 sentences max. Device + context + discovery method.
+
+#### Q7: "What does the best possible outcome look like — for both sides?"
+
+Mutual success — user AND business. Both specific and measurable.
 
 - **User Success:** Tangible outcome the user achieves
 - **Business Success:** Measurable result for the business
-
 - **Bad:** User: "Successfully use the site" / Business: "Get more customers"
 - **Good:** User: "Confirmed mechanic fixes motorhomes, has location and hours, feels confident calling" / Business: "High-intent tourist call captured, positioned as emergency-capable, info call avoided"
 
-#### Component 6: Shortest Path (Linear Sunshine Path)
+#### Q8: "What's the shortest path through the site to get there?"
 
-Numbered steps. Each step has page name + what user accomplishes there.
+The linear sunshine path. Numbered steps, each with page name + what the user accomplishes.
 
 **Rules:**
 - Completely linear — ZERO "if" statements, ZERO branches
 - Minimum viable steps — can you remove any step without breaking the flow?
 - Each step moves meaningfully toward success
-- This is the happiest path when everything works perfectly
 
 **Format:**
 ```
@@ -136,59 +150,137 @@ Numbered steps. Each step has page name + what user accomplishes there.
 3. **[Page Name]** — [What user sees/does/achieves here] ✓
 ```
 
-#### Component 7: Trigger Map Connections
+### 4. Name the Scenario
 
-Explicitly link to Trigger Map data:
-- **Persona:** [Name] ([Priority level])
-- **Driving Forces Addressed:**
-  - Positive: [specific want from Trigger Map]
-  - Negative: [specific fear from Trigger Map]
-- **Business Goal:** [specific goal + objective number]
+After the 8 questions, name the scenario using the persona:
 
-### 4. Quality Gates (Check Before Moving On)
+- **Name:** Persona name + purpose (e.g., "Hasse's Emergency Search")
+- **ID:** 01, 02, etc.
+- **Slug:** `01-hasses-emergency-search`
 
-Before proceeding to the next scenario, verify:
+### 5. Quality Gates (Check Before Moving On)
 
+Before proceeding, verify the scenario outline:
+
+- [ ] All 8 questions answered with specific, concrete responses
 - [ ] Mental state is visceral and specific (not generic "interested")
 - [ ] Entry point is realistic with device + context + discovery method
 - [ ] Path is truly linear (zero "if" statements)
 - [ ] Both successes are specific and measurable (not vague)
 - [ ] Scenario name includes persona name
-- [ ] All 7 components present
+- [ ] Trigger Map connection is explicit (persona + business goal)
 
 **If any gate fails:** Fix before proceeding.
 
-### 5. Create the File
+### 6. Create the Scenario File
 
 1. Create folder: `{output_folder}/C-UX-Scenarios/[NN-slug]/`
 2. Create file: `{output_folder}/C-UX-Scenarios/[NN-slug]/[NN-slug].md`
-3. Use the template from data/ to structure the content
+3. Use the template from data/ to structure the content from the 8 answers
 
-### 6. Loop Check
+### 7. After Each Scenario — Ask What's Next
 
-**Are there more scenarios in the approved plan?**
+After completing a scenario, present the user with a choice:
 
-- **Yes** → Loop back to instruction 1 for the next scenario
-- **No** → Proceed to menu options
+Display:
+```
+Scenario [NN] complete! What would you like to do?
 
-### 7. Present MENU OPTIONS
-
-Display: "Are you ready to [C] Continue to Generating the Overview?"
+[N] Define the next scenario — [next transaction from the plan]
+[O] Outline scenario pages — create page folders with boilerplate specs
+[D] Start designing — create first page folder and jump to Phase 4
+[C] Continue to generating the overview (when all scenarios are done)
+```
 
 #### Menu Handling Logic:
 
-- IF C: Load, read entire file, then execute {nextStepFile}
+- IF N: Loop back to instruction 1 for the next transaction and target group. The scenario outline is saved — page folders can be created later.
+- IF O: Start the Page Outline Dialog (see below). Walk through pages one at a time, starting from the first page. The user can stop at any point and return to this menu.
+- IF D: Create the first page folder (see Page Folder Structure below), then hand over to Phase 4 (UX Design). The remaining pages can be outlined later.
+- IF C: Load, read entire file, then execute {nextStepFile} (only when all planned scenarios are complete)
 
 #### EXECUTION RULES:
 
 - ALWAYS halt and wait for user input after presenting menu
-- ONLY proceed to next step when user selects 'C'
 - After other menu items execution, return to this menu
-- User can chat or ask questions - always respond and then end with display again of the menu options
+- User can chat or ask questions — always respond and then display the menu again
+- Options [O] and [D] are always available — the user decides when to outline pages
+
+### Page Outline Dialog
+
+When the user selects [O], walk through each page as a conversation. Q8's shortest path gives the rough page sequence — the outline dialog refines it by identifying what happens on each page.
+
+**Start from page 1** (already defined by Q6 + Q8 step 1).
+
+#### For each page, ask two questions:
+
+**1. "What's the point of this page?"**
+
+What does the user need to accomplish here? This becomes the page purpose.
+- e.g., "See a list of news articles" or "Find the phone number and opening hours"
+
+**2. "What does the user do to move forward?"**
+
+What interaction takes them to the next step? This defines the exit action.
+- e.g., "Selects 'News' in the menu" → next page is the News listing
+- e.g., "Clicks 'Read more' on an article" → next page is the Article detail
+
+#### Two types of interactions:
+
+- **Leaves the page** → new scenario step (new page folder, next number)
+- **Stays on the page** → storyboard item (documented within the page spec as an on-page interaction)
+
+#### After each page, create the folder and continue:
+
+Create the page folder, then ask about the next page. The user can say "stop" at any point to return to the scenario menu.
+
+### Page Folder Structure
+
+**Naming convention:** `{scenario-number}.{step-number}-{page-slug}` (e.g., `1.1-start-page`, `1.2-news-listing`, `1.3-article-detail`)
+
+Each page folder contains:
+
+```
+{NN}.{step}-{page-slug}/
+├── {NN}.{step}-{page-slug}.md
+└── Sketches/
+```
+
+#### Page boilerplate:
+
+```markdown
+# {NN}.{step}-{page-name}
+
+## Page Metadata
+
+| Property | Value |
+|----------|-------|
+| **Scenario** | {scenario-name} |
+| **Page Number** | {NN}.{step} |
+| **Platform** | {Device from Q5} |
+
+## Overview
+
+**Page Purpose:** {What the user needs to accomplish here}
+
+**Entry Context:** {How the user arrived — previous page + interaction that brought them here}
+
+**Exit Action:** {What the user does to move to the next step}
+
+**On-Page Interactions:**
+- {Any interactions that keep the user on this page — storyboard items}
+```
+
+The **first page** additionally includes:
+- **User Situation** from Q3
+- **Mental State** (hope + worry) from Q4
+- **Discovery Method** from Q6
 
 ## CRITICAL STEP COMPLETION NOTE
 
-ONLY WHEN [C continue option] is selected and [all scenarios from approved plan are outlined and pass quality gates], will you then load and read fully `{nextStepFile}` to execute and begin generating the overview.
+When [C] is selected, ALL scenarios from the approved plan must be outlined and pass quality gates. Then load and read fully `{nextStepFile}` to begin generating the overview.
+
+When [D] is selected, hand over to Phase 4 with the current scenario's first page folder. The user can return to Phase 3 later for remaining scenarios.
 
 ---
 
@@ -196,16 +288,19 @@ ONLY WHEN [C continue option] is selected and [all scenarios from approved plan 
 
 ### ✅ SUCCESS:
 
-- Each scenario has all 7 required components
+- All 8 questions answered for each scenario with specific, concrete responses
 - All quality gates pass for every scenario
-- Output files created in correct folder structure
-- Scenarios processed in priority order
+- Scenario outline file created in correct folder structure
+- Scenarios processed in priority order (primary transaction first, then secondary, etc.)
 - All scenarios from approved plan completed before proceeding
-- Menu presented and user input handled correctly
+- Conversation mode: Dialog felt like a natural conversation, not a form to fill
+- Suggest mode: All 8 answers grounded in actual Trigger Map/Brief data, presented for user review
 
 ### ❌ SYSTEM FAILURE:
 
-- Missing any of the 7 required components
+- Skipping any of the 8 strategic questions
+- Conversation mode: Presenting all questions at once instead of one at a time
+- Suggest mode: Not presenting answers for user review before proceeding
 - Proceeding with failing quality gates
 - Skipping scenarios from the approved plan
 - Using generic mental states or vague success goals

@@ -16,17 +16,17 @@ web_bundle: true
 
 | # | File | Purpose |
 |---|------|---------|
-| 01 | [Explore Realization](01-explore-realization.md) | What we've realized needs attention |
-| 02 | [Explore Solution](02-explore-solution.md) | Solution approach (if starting here) |
-| 03 | [Explore Why It Matters](03-explore-why-it-matters.md) | Why this matters and who we help |
-| 04 | [Explore How We See It Working](04-explore-how-we-see-it-working.md) | High-level solution overview |
-| 05 | [Explore Paths We Explored](05-explore-paths-we-explored.md) | Alternative approaches considered |
-| 06 | [Explore Recommended Solution](06-explore-recommended-solution.md) | Preferred approach and why |
-| 07 | [Explore Path Forward](07-explore-path-forward.md) | How the work will be done |
-| 08 | [Explore Value We Create](08-explore-value-we-create.md) | What happens if we DO build this |
-| 09 | [Explore Cost of Inaction](09-explore-cost-of-inaction.md) | What happens if we DON'T |
-| 10 | [Explore Our Commitment](10-explore-our-commitment.md) | Resources and risks |
-| 11 | [Explore Summary](11-explore-summary.md) | Key takeaways |
+| 01 | [Explore Realization](../steps-c/step-02a-explore-realization.md) | What we've realized needs attention |
+| 02 | [Explore Solution](../steps-c/step-02b-explore-solution.md) | Solution approach (if starting here) |
+| 03 | [Explore Why It Matters](../steps-c/step-02c-explore-why-it-matters.md) | Why this matters and who we help |
+| 04 | [Explore How We See It Working](../steps-c/step-02d-explore-how-we-see-it-working.md) | High-level solution overview |
+| 05 | [Explore Paths We Explored](../steps-c/step-02e-explore-paths-we-explored.md) | Alternative approaches considered |
+| 06 | [Explore Recommended Solution](../steps-c/step-02f-explore-recommended-solution.md) | Preferred approach and why |
+| 07 | [Explore Path Forward](../steps-c/step-02g-explore-path-forward.md) | How the work will be done |
+| 08 | [Explore Value We Create](../steps-c/step-02h-explore-value-we-create.md) | What happens if we DO build this |
+| 09 | [Explore Cost of Inaction](../steps-c/step-02i-explore-cost-of-inaction.md) | What happens if we DON'T |
+| 10 | [Explore Our Commitment](../steps-c/step-02j-explore-our-commitment.md) | Resources and risks |
+| 11 | [Explore Summary](../steps-c/step-02k-explore-summary.md) | Key takeaways |
 
 **Flexible order:** Sections can be explored in any order based on the user's natural thinking flow.
 
@@ -228,4 +228,4 @@ web_bundle: true
 
 ## INITIALIZATION
 
-Start with `01-explore-realization.md` or whichever section the user wants to explore first.
+Start with `step-02a-explore-realization.md` (in steps-c/) or whichever section the user wants to explore first.

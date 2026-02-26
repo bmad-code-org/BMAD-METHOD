@@ -44,7 +44,7 @@ src/modules/wds/
 │   ├── getting-started/       ✅ Installation, quick start, activation
 │   ├── method/                ✅ 11 methodology guides (tool-agnostic)
 │   ├── models/                ✅ 6 strategic models (external frameworks)
-│   ├── learn-wds/             ✅ 12 modules (agent-driven course)
+│   ├── learn/             ✅ 12 modules (agent-driven course)
 │   ├── deliverables/          ✅ 8 artifact specifications
 │   └── examples/              ✅ 2 real projects (WDS-Presentation, v6-conversion)
 ├── templates/                 ✅ 3 YAML templates
@@ -292,7 +292,7 @@ src/modules/wds/
 
 ---
 
-#### 4. Learn WDS Course (`docs/learn-wds/`)
+#### 4. Learn WDS Course (`docs/learn/`)
 
 **12 Sequential Modules:**
 - Module 00: Course Overview
@@ -561,7 +561,7 @@ src/modules/wds/
 **Issue:** Module numbering inconsistent (skips 7, 11, 13+)  
 **Impact:** Low - course still functional  
 **Recommendation:** Audit and renumber in future release  
-**File:** `learn-wds-audit.md` (created during analysis)
+**File:** `learn-audit.md` (created during analysis)
 
 ---
 

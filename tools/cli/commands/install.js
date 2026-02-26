@@ -22,7 +22,7 @@ module.exports = {
       const result = await installer.install(config);
 
       if (result && result.success) {
-        ui.displaySuccess(config.wdsFolder);
+        ui.displaySuccess(config.wdsFolder, config.ides);
         process.exit(0);
       }
     } catch (error) {

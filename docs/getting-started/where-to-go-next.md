@@ -8,13 +8,13 @@
 
 ### 🎓 Take the Course
 
-**[WDS Course: From Designer to Linchpin](../learn-wds/00-course-overview.md)**
+**[WDS Course: From Designer to Linchpin](../learn/00-course-overview.md)**
 
 Complete training from project brief to AI-ready specifications:
 
 **Module 01: Why WDS Matters**  
 Learn how to be indispensable in the AI era. Understand the paradigm shift where design becomes specification.  
-→ [Start Module 01](../learn-wds/module-01-why-wds-matters/module-01-overview.md)
+→ [Start Module 01](../learn/module-01-why-wds-matters/module-01-overview.md)
 
 **Modules 02-16: Complete WDS Workflow**  
 Master every phase from trigger mapping through design system to development handoff. Each module includes:
@@ -23,7 +23,7 @@ Master every phase from trigger mapping through design system to development han
 - **Tutorials** - Step-by-step hands-on guides
 - **Practice** - Apply to your own project
 
-→ [View All Modules](../learn-wds/00-course-overview.md)
+→ [View All Modules](../learn/00-course-overview.md)
 
 **Best for:** Comprehensive learning with structured curriculum
 
@@ -39,11 +39,11 @@ Step-by-step workflows for:
 
 **Phase 1: Project Brief**  
 Define vision, goals, stakeholders, and constraints that guide all design decisions.  
-→ [Tutorial: Create Project Brief](../learn-wds/module-04-product-brief/tutorial-04.md)
+→ [Tutorial: Create Project Brief](../learn/module-04-product-brief/tutorial-04.md)
 
 **Phase 2: Trigger Mapping**  
 Understand WHO your users are, WHAT triggers their needs, and WHY your business exists. Create a Trigger Map that connects user psychology to business value.  
-→ [Tutorial: Map Triggers & Outcomes](../learn-wds/module-05-map-triggers-outcomes/tutorial-04.md)
+→ [Tutorial: Map Triggers & Outcomes](../learn/module-05-map-triggers-outcomes/tutorial-04.md)
 
 **Phase 3: Platform Requirements**  
 Document technical constraints, integrations, and infrastructure needs.  
@@ -51,7 +51,7 @@ Document technical constraints, integrations, and infrastructure needs.
 
 **Phase 4: UX Design**  
 Transform ideas into conceptual specifications that preserve your design intent. AI agents help you think through solutions, then capture your brilliance in specifications that give your designs eternal life.  
-→ [Tutorial: Initialize Scenario](../learn-wds/module-08-initialize-scenario/tutorial-08.md) | [Tutorial: Conceptual Specs](../learn-wds/module-12-conceptual-specs/tutorial-12.md)
+→ [Tutorial: Initialize Scenario](../learn/module-08-initialize-scenario/tutorial-08.md) | [Tutorial: Conceptual Specs](../learn/module-12-conceptual-specs/tutorial-12.md)
 
 **Phase 5: Design System**  
 Extract design tokens, create reusable components, and generate interactive HTML catalog.  
@@ -123,14 +123,14 @@ Join the WDS community for:
 
 ## Quick Links
 
-- [Course](../learn-wds/00-course-overview.md)
+- [Course](../learn/00-course-overview.md)
 - [Workflows](../wds-workflows-guide.md)
 - [Modular Architecture](../src/workflows/4-ux-design/modular-architecture/00-MODULAR-ARCHITECTURE-GUIDE.md)
 - [Conceptual Specifications](../src/workflows/4-ux-design/CONCEPTUAL-SPECIFICATIONS.md)
 
 ---
 
-**Ready to dive deeper? Start with the [Course](../learn-wds/00-course-overview.md)!**
+**Ready to dive deeper? Start with the [Course](../learn/00-course-overview.md)!**
 
 ---
 

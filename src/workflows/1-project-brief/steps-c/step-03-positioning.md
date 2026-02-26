@@ -3,7 +3,7 @@ name: 'step-03-positioning'
 description: 'Help user explore and articulate their positioning through natural conversation'
 
 # File References
-nextStepFile: './step-04-create-vtc.md'
+nextStepFile: './step-05-business-model.md'
 workflowFile: '../workflow.md'
 ---
 
@@ -73,7 +73,7 @@ The dialog should capture:
 Mark Step 3 complete in `dialog/progress-tracker.md` progress tracker.
 
 ### 6. Present MENU OPTIONS
-Display: "**Select an Option:** [C] Continue to Create VTC"
+Display: "**Select an Option:** [C] Continue to Create Trigger Map"
 
 #### Menu Handling Logic:
 - IF C: Update agent dialog, then load, read entire file, then execute {nextStepFile}

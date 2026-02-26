@@ -53,7 +53,7 @@
 - Time is tight
 
 **Process:**
-1. Load VTC for context
+1. Load Trigger Map for context
 2. Consider Customer Awareness
 3. Apply Golden Circle (WHY → HOW → WHAT)
 4. Generate options
@@ -73,7 +73,7 @@ Load: `{project-root}/_bmad/wds/workflows/6-asset-generation/`
 
 **6-Step Framework:**
 1. Define purpose & success criteria
-2. Load VTC context
+2. Load Trigger Map context
 3. Apply Customer Awareness strategy
 4. Filter with Action Mapping
 5. Frame with Badass Users
@@ -95,7 +95,7 @@ Load: `{project-root}/_bmad/wds/workflows/6-asset-generation/`
 
 ---
 
-### 2. Value Trigger Chain (VTC)
+### 2. Trigger Map
 **Strategic foundation**
 
 - Business Goal: What are we trying to achieve?
@@ -167,7 +167,7 @@ Features (WHAT): 10K templates, smart pricing, e-signatures
 
 **Think of them as lenses, not sequential steps:**
 
-1. **VTC** = Which driving force to trigger?
+1. **Trigger Map** = Which driving force to trigger?
 2. **Customer Awareness** = What language can they understand?
 3. **Golden Circle** = In what order should I present?
 4. **Action Mapping** = Is this enabling action?
@@ -203,7 +203,7 @@ Features (WHAT): 10K templates, smart pricing, e-signatures
 - Golden Circle: ⭐⭐⭐
 - Badass Users: ⭐⭐
 - Action Mapping: ⭐
-- VTC: Always loaded
+- Trigger Map: Always loaded
 - Content Purpose: Always defined
 
 ### Feature Description
@@ -211,7 +211,7 @@ Features (WHAT): 10K templates, smart pricing, e-signatures
 - Badass Users: ⭐⭐⭐
 - Customer Awareness: ⭐⭐
 - Golden Circle: ⭐
-- VTC: Always loaded
+- Trigger Map: Always loaded
 - Content Purpose: Always defined
 
 ### Error Messages
@@ -245,7 +245,7 @@ Features (WHAT): 10K templates, smart pricing, e-signatures
 **Before creating any strategic content:**
 
 1. **Define purpose** - What job does this do?
-2. **Load VTC** - Which driving forces?
+2. **Load Trigger Map** - Which driving forces?
 3. **Check awareness** - Where are users?
 4. **Apply Golden Circle** - WHY → HOW → WHAT
 5. **Filter with Action** - Does it enable action?

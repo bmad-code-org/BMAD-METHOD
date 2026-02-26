@@ -7,7 +7,7 @@
 ## 1. Synthesize All Context
 
 Before generating, review and confirm you understand:
-- [ ] WHO the user is and what drives them (VTC)
+- [ ] WHO the user is and what drives them (Trigger Map)
 - [ ] WHERE they are in awareness (START → END)
 - [ ] WHAT action this content must enable (Action Filter)
 - [ ] HOW to make them feel capable (Empowerment Frame)

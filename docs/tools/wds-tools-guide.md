@@ -2,7 +2,7 @@
 
 **Purpose:** Recommended tools for WDS workflows with setup instructions and best practices.
 
-**Last Updated:** January 8, 2026
+**Last Updated:** February 25, 2026
 
 ---
 
@@ -29,6 +29,11 @@ WDS works best with a curated set of tools that support the concept-first, itera
 ---
 
 ### Recommended Tools
+
+**[Excalidraw](excalidraw.md)**
+- Agent + human collaborative wireframing (JSON format)
+- Agent writes elements, user edits visually in VS Code
+- **Status:** Recommended for Phase 4 wireframing
 
 **[Figma MCP](figma-mcp.md)**
 - MCP server for automated Figma integration
@@ -62,6 +67,7 @@ WDS works best with a curated set of tools that support the concept-first, itera
 |------|----------|-------------|-----------|--------|
 | **[Cursor/Windsurf](cursor-windsurf.md)** | IDE | Development, agent interaction | All | Required |
 | **[Git](git.md)** | Version Control | Track changes, collaborate | All | Required |
+| **[Excalidraw](excalidraw.md)** | Wireframing | Agent+human wireframes, JSON format | 4 | Recommended |
 | **[Figma](figma.md)** | Design | Visual refinement, design system | 4-5 | Optional |
 | **[Figma MCP](figma-mcp.md)** | Integration | Automated Figma ↔ WDS sync | 4-5 | Recommended |
 | **[html.to.design](html-to-design.md)** | Conversion | HTML → Figma (fallback) | 4-5 | Optional |
@@ -81,18 +87,20 @@ WDS works best with a curated set of tools that support the concept-first, itera
 
 1. Install [Cursor or Windsurf IDE](cursor-windsurf.md)
 2. Install [Git](git.md)
-3. Create [Figma](figma.md) account
-4. Install and configure [Figma MCP](figma-mcp.md) server
-5. Set up Figma API access token
+3. Install [Excalidraw](excalidraw.md) VS Code extension (wireframing)
+4. Create [Figma](figma.md) account
+5. Install and configure [Figma MCP](figma-mcp.md) server
+6. Set up Figma API access token
 
 ### Full Setup (All Features)
 
 1. Install [Cursor or Windsurf IDE](cursor-windsurf.md)
 2. Install [Git](git.md)
-3. Create [Figma](figma.md) account
-4. Install and configure [Figma MCP](figma-mcp.md) server
-5. Set up Figma API access token
-6. Explore [NanoBanana](nanobanana.md) for asset creation
+3. Install [Excalidraw](excalidraw.md) VS Code extension (wireframing)
+4. Create [Figma](figma.md) account
+5. Install and configure [Figma MCP](figma-mcp.md) server
+6. Set up Figma API access token
+7. Explore [NanoBanana](nanobanana.md) for asset creation
 
 ### Optional Tools
 

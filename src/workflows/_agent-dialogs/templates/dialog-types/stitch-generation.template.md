@@ -93,7 +93,7 @@ This dialog guides the **AI-assisted UI generation workflow** using Google Stitc
 
 | Document | Path | Key Elements |
 |----------|------|--------------|
-| VTC/Trigger Map | [{path}]({path}) | {Key triggers for this feature} |
+| Trigger Map | [{path}]({path}) | {Key triggers for this feature} |
 | User Personas | [{path}]({path}) | {Target personas} |
 | Product Brief | [{path}]({path}) | {Relevant product goals} |
 

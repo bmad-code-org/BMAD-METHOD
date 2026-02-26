@@ -3,7 +3,7 @@ name: 'step-17a-content-structure'
 description: 'Capture content structure principles and client vision for product pages'
 
 # File References
-nextStepFile: './step-18-content-synthesize.md'
+nextStepFile: './step-18-create-content-document.md'
 workflowFile: '../workflow.md'
 activityWorkflowFile: '../workflow.md'
 ---

@@ -8,7 +8,7 @@ nextStepFile: './step-03-action-filter.md'
 
 ## STEP GOAL:
 
-Translate the VTC's awareness positioning into a concrete content strategy — determining what language the user can understand, what information they need, what proof is required, and what emotional journey we are facilitating.
+Translate the Trigger Map's awareness positioning into a concrete content strategy — determining what language the user can understand, what information they need, what proof is required, and what emotional journey we are facilitating.
 
 ## MANDATORY EXECUTION RULES (READ FIRST):
 
@@ -44,20 +44,20 @@ Translate the VTC's awareness positioning into a concrete content strategy — d
 
 ## CONTEXT BOUNDARIES:
 
-- Available context: Purpose definition (Step 0), VTC context (Step 1)
+- Available context: Purpose definition (Step 0), Trigger Map context (Step 1)
 - Focus: Translating awareness levels into content strategy decisions
 - Limits: Do not write content — define the strategy for it
-- Dependencies: Confirmed VTC with awareness START and END levels
+- Dependencies: Confirmed Trigger Map with awareness START and END levels
 
 ## Sequence of Instructions (Do not deviate, skip, or optimize)
 
 ### 1. Validate Starting Awareness Level
 
-Present the START level from VTC and describe what it means. Confirm with user: does this match where users are when they encounter this content?
+Present the START level from the Trigger Map and describe what it means. Confirm with user: does this match where users are when they encounter this content?
 
 ### 2. Clarify Target Awareness Level
 
-Present the END level from VTC and describe the shift. Confirm: is this the right awareness goal for this content?
+Present the END level from the Trigger Map and describe the shift. Confirm: is this the right awareness goal for this content?
 
 ### 3. Determine Awareness-Appropriate Language
 

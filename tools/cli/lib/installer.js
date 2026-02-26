@@ -10,7 +10,6 @@ const ora = require('ora');
 const yaml = require('js-yaml');
 const inquirer = require('inquirer').default || require('inquirer');
 const { compileAgentFile } = require('./compiler');
-const { writeIdeConfig } = require('./ide-configs');
 
 class Installer {
   constructor() {
@@ -25,7 +24,7 @@ class Installer {
    * @param {Object} config - Configuration from UI prompts
    */
   async install(config) {
-    const { projectDir, wdsFolder, ides, project_type, design_experience, root_folder } = config;
+    const { projectDir, wdsFolder, root_folder } = config;
     const wdsDir = path.join(projectDir, wdsFolder);
 
     // Check if already installed
@@ -101,6 +100,43 @@ class Installer {
       throw error;
     }
 
+    // Step 3.5: Setup IDE integrations
+    if (config.ides && config.ides.length > 0) {
+      const ideSpinner = ora('Setting up IDE integrations...').start();
+      try {
+        const { IdeManager } = require('../installers/lib/ide/manager');
+        const ideManager = new IdeManager();
+
+        const results = await ideManager.setup(
+          projectDir,
+          wdsDir,
+          config.ides,
+          {
+            logger: {
+              log: (msg) => {}, // Suppress detailed logs during spinner
+              warn: (msg) => console.log(msg),
+            },
+            wdsFolderName: wdsFolder,
+          }
+        );
+
+        const successCount = results.success.length;
+        const failedCount = results.failed.length;
+        const skippedCount = results.skipped.length;
+
+        if (successCount > 0) {
+          ideSpinner.succeed(`IDE integrations configured (${successCount} IDE${successCount > 1 ? 's' : ''})`);
+        } else if (failedCount > 0 || skippedCount > 0) {
+          ideSpinner.warn(`IDE setup completed with ${failedCount} failed, ${skippedCount} skipped`);
+        } else {
+          ideSpinner.succeed('IDE integrations configured');
+        }
+      } catch (error) {
+        ideSpinner.warn(`IDE setup encountered issues: ${error.message}`);
+        console.log(chalk.dim('  You can still use WDS by manually activating agents'));
+      }
+    }
+
     // Step 4: Create work products folder structure
     const rootFolder = root_folder || 'design-process';
     const docsSpinner = ora(`Creating project folders in ${rootFolder}/...`).start();
@@ -112,29 +148,8 @@ class Installer {
       throw error;
     }
 
-    // Update config.yaml with root folder
-    const configPath = path.join(wdsDir, 'config.yaml');
-    let configContent = await fs.readFile(configPath, 'utf8');
-    configContent = configContent.replace(/output_folder:\s*docs/, `output_folder: ${rootFolder}`);
-    await fs.writeFile(configPath, configContent, 'utf8');
-
-    // Step 5: Set up IDEs
-    const ideList = ides || (config.ide ? [config.ide] : []);
-    const ideSpinner = ora(`Setting up ${ideList.length} IDE(s)...`).start();
-    try {
-      const labels = [];
-      for (const ide of ideList) {
-        const result = await writeIdeConfig(projectDir, ide, wdsFolder);
-        labels.push(result.label);
-      }
-      ideSpinner.succeed(`Configured: ${labels.join(', ')}`);
-    } catch (error) {
-      ideSpinner.fail('Failed to set up IDEs');
-      throw error;
-    }
-
-    // Step 6: Copy learning & reference material (optional)
-    if (config.include_learning) {
+    // Step 5: Copy learning & reference material (optional)
+    if (config.install_learning !== false) {
       const learnSpinner = ora('Copying learning & reference material...').start();
       try {
         await this.copyLearningMaterial(projectDir);
@@ -183,14 +198,26 @@ class Installer {
       return;
     }
 
+    // Get user name from git or system
+    const getUserName = () => {
+      try {
+        const { execSync } = require('child_process');
+        const gitName = execSync('git config user.name', { encoding: 'utf8' }).trim();
+        return gitName || 'Designer';
+      } catch {
+        return 'Designer';
+      }
+    };
+
     const configData = {
-      user_name: config.user_name || 'Designer',
-      communication_language: config.communication_language || 'en',
-      document_output_language: config.document_output_language || 'en',
-      output_folder: 'docs',
+      user_name: getUserName(),
+      project_name: config.project_name || 'Untitled Project',
+      starting_point: config.starting_point || 'brief',
+      communication_language: 'en',
+      document_output_language: 'en',
+      output_folder: config.root_folder || 'design-process',
       wds_folder: config.wdsFolder,
-      project_type: config.project_type,
-      design_experience: config.design_experience,
+      ides: config.ides || ['windsurf'],
     };
 
     const yamlStr = yaml.dump(configData, { lineWidth: -1 });
@@ -221,7 +248,7 @@ class Installer {
    */
   async copyLearningMaterial(projectDir) {
     const learnDir = path.join(projectDir, '_wds-learn');
-    const learningDirs = ['getting-started', 'learn-wds', 'method', 'models', 'tools'];
+    const learningDirs = ['getting-started', 'learn', 'method', 'models', 'tools'];
     const excludeDirs = new Set(['course-explainers', 'Webinars']);
 
     for (const dir of learningDirs) {
@@ -242,21 +269,18 @@ class Installer {
   /**
    * Create the WDS work products folder structure
    * @param {string} projectDir - Project root directory
-   * @param {string} rootFolder - Root folder name (design-process, docs, deliverables, etc.)
+   * @param {string} rootFolder - Root folder name (design-process)
    * @param {Object} config - Configuration object
    */
   async createDocsFolders(projectDir, rootFolder, config) {
     const docsPath = path.join(projectDir, rootFolder);
 
+    // Simplified 4-phase structure
     const folders = [
       'A-Product-Brief',
       'B-Trigger-Map',
       'C-UX-Scenarios',
       'D-Design-System',
-      'E-PRD',
-      'E-PRD/Design-Deliveries',
-      'F-Testing',
-      'G-Product-Development',
     ];
 
     for (const folder of folders) {
@@ -275,105 +299,12 @@ class Installer {
       }
     }
 
-    // Create 00 guide files in each folder (if they don't exist)
-    await this.createFolderGuides(docsPath, config);
+    // Create _progress folder for agent tracking
+    const progressPath = path.join(docsPath, '_progress');
+    await fs.ensureDir(progressPath);
+    await fs.ensureDir(path.join(progressPath, 'agent-dialogs'));
   }
 
-  /**
-   * Create 00 guide files in each folder from templates
-   */
-  async createFolderGuides(docsPath, config) {
-    const templateDir = path.join(this.srcDir, 'workflows', '0-project-setup', 'templates', 'folder-guides');
-
-    // Mapping: template filename → destination folder & filename
-    const guides = [
-      { template: '00-product-brief.template.md', folder: 'A-Product-Brief', filename: '00-product-brief.md' },
-      { template: '00-trigger-map.template.md', folder: 'B-Trigger-Map', filename: '00-trigger-map.md' },
-      { template: '00-ux-scenarios.template.md', folder: 'C-UX-Scenarios', filename: '00-ux-scenarios.md' },
-      { template: '00-design-system.template.md', folder: 'D-Design-System', filename: '00-design-system.md' },
-    ];
-
-    // Common placeholder replacements
-    const replacements = {
-      '{{project_name}}': config.project_name || 'Untitled Project',
-      '{{date}}': new Date().toISOString().split('T')[0],
-      '{{project_type}}': config.project_type || 'digital_product',
-      '{{design_experience}}': config.design_experience || 'intermediate',
-      '{{user_name}}': config.user_name || 'Designer',
-      '{{communication_language}}': config.communication_language || 'en',
-      '{{document_output_language}}': config.document_output_language || 'en',
-      '{{output_folder}}': path.relative(config.projectDir, docsPath) || 'docs',
-      '{{wds_folder}}': config.wdsFolder || '_wds',
-    };
-
-    // Create each folder guide
-    for (const guide of guides) {
-      const templatePath = path.join(templateDir, guide.template);
-      const destPath = path.join(docsPath, guide.folder, guide.filename);
-
-      // Skip if file exists (never overwrite) or template doesn't exist
-      if (await fs.pathExists(destPath)) continue;
-      if (!(await fs.pathExists(templatePath))) continue;
-
-      // Read template
-      let content = await fs.readFile(templatePath, 'utf8');
-
-      // Replace all placeholders
-      for (const [placeholder, value] of Object.entries(replacements)) {
-        content = content.split(placeholder).join(value);
-      }
-
-      // Write file
-      await fs.writeFile(destPath, content, 'utf8');
-    }
-
-    // Also create 00-project-info.md in A-Product-Brief (project settings home)
-    await this.createProjectInfoFile(docsPath, config);
-  }
-
-  /**
-   * Create 00-project-info.md in A-Product-Brief from template
-   */
-  async createProjectInfoFile(docsPath, config) {
-    const productBriefPath = path.join(docsPath, 'A-Product-Brief');
-    const projectInfoPath = path.join(productBriefPath, '00-project-info.md');
-
-    // Only create if it doesn't exist (never overwrite)
-    if (await fs.pathExists(projectInfoPath)) {
-      return;
-    }
-
-    const templatePath = path.join(this.srcDir, 'workflows', '1-project-brief', 'templates', '00-project-info.template.md');
-
-    // Check if template exists
-    if (!(await fs.pathExists(templatePath))) {
-      // Skip if template not found (backward compatibility)
-      return;
-    }
-
-    // Read template
-    let template = await fs.readFile(templatePath, 'utf8');
-
-    // Replace placeholders
-    const replacements = {
-      '{{project_name}}': config.project_name || 'Untitled Project',
-      '{{date}}': new Date().toISOString().split('T')[0],
-      '{{project_type}}': config.project_type || 'digital_product',
-      '{{design_experience}}': config.design_experience || 'intermediate',
-      '{{user_name}}': config.user_name || 'Designer',
-      '{{communication_language}}': config.communication_language || 'en',
-      '{{document_output_language}}': config.document_output_language || 'en',
-      '{{output_folder}}': path.relative(config.projectDir, docsPath) || 'docs',
-      '{{wds_folder}}': config.wdsFolder || '_wds',
-    };
-
-    for (const [placeholder, value] of Object.entries(replacements)) {
-      template = template.split(placeholder).join(value);
-    }
-
-    // Write the file
-    await fs.writeFile(projectInfoPath, template, 'utf8');
-  }
 }
 
 module.exports = { Installer };
