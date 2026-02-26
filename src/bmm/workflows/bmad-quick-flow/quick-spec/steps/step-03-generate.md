@@ -2,7 +2,6 @@
 name: 'step-03-generate'
 description: 'Build the implementation plan based on the technical mapping of constraints'
 
-nextStepFile: './step-04-review.md'
 wipFile: '{implementation_artifacts}/tech-spec-wip.md'
 ---
 
@@ -113,7 +112,7 @@ stepsCompleted: [1, 2, 3]
 ---
 ```
 
-c) **Read fully and follow: `{nextStepFile}` (Step 4)**
+c) **Read fully and follow: `{project-root}/_bmad/bmm/workflows/bmad-quick-flow/quick-spec/steps/step-04-review.md` (Step 4)**
 
 ## REQUIRED OUTPUTS:
 

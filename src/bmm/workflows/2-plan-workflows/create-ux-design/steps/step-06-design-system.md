@@ -215,7 +215,7 @@ Show the generated design system content and present choices:
 
 - Append the final content to `{planning_artifacts}/ux-design-specification.md`
 - Update frontmatter: append step to end of stepsCompleted array
-- Load `./step-07-defining-experience.md`
+- Load `{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-ux-design/steps/step-07-defining-experience.md`
 
 ## APPEND TO DOCUMENT:
 
@@ -247,6 +247,6 @@ When user selects 'C', append the content directly to the document using the str
 
 ## NEXT STEP:
 
-After user selects 'C' and content is saved to document, load `./step-07-defining-experience.md` to define the core user interaction.
+After user selects 'C' and content is saved to document, load `{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-ux-design/steps/step-07-defining-experience.md` to define the core user interaction.
 
 Remember: Do NOT proceed to step-07 until user explicitly selects 'C' from the A/P/C menu and content is saved!

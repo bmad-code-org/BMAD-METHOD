@@ -24,16 +24,14 @@ class ManifestGenerator {
   }
 
   /**
-   * Clean text for CSV output by normalizing whitespace and escaping quotes
+   * Clean text for CSV output by normalizing whitespace.
+   * Note: Quote escaping is handled by escapeCsv() at write time.
    * @param {string} text - Text to clean
-   * @returns {string} Cleaned text safe for CSV
+   * @returns {string} Cleaned text
    */
   cleanForCSV(text) {
     if (!text) return '';
-    return text
-      .trim()
-      .replaceAll(/\s+/g, ' ') // Normalize all whitespace (including newlines) to single space
-      .replaceAll('"', '""'); // Escape quotes for CSV
+    return text.trim().replaceAll(/\s+/g, ' '); // Normalize all whitespace (including newlines) to single space
   }
 
   /**

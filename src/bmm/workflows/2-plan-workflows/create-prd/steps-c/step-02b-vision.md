@@ -3,7 +3,7 @@ name: 'step-02b-vision'
 description: 'Discover the product vision and differentiator through collaborative dialogue'
 
 # File References
-nextStepFile: './step-02c-executive-summary.md'
+nextStepFile: '{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-prd/steps-c/step-02c-executive-summary.md'
 outputFile: '{planning_artifacts}/prd.md'
 
 # Task References

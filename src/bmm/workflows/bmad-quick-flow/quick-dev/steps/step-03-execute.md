@@ -89,7 +89,7 @@ For each task:
 
 ## NEXT STEP
 
-When ALL tasks are complete (or halted on blocker), read fully and follow: `step-04-self-check.md`.
+When ALL tasks are complete (or halted on blocker), read fully and follow: `{project-root}/_bmad/bmm/workflows/bmad-quick-flow/quick-dev/steps/step-04-self-check.md`.
 
 ---
 

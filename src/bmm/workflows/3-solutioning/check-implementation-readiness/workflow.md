@@ -1,6 +1,6 @@
 ---
 name: check-implementation-readiness
-description: 'Critical validation workflow that assesses PRD, Architecture, and Epics & Stories for completeness and alignment before implementation. Uses adversarial review approach to find gaps and issues.'
+description: 'Validate PRD, UX, Architecture and Epics specs are complete. Use when the user says "check implementation readiness".'
 ---
 
 # Implementation Readiness
@@ -51,4 +51,4 @@ Load and read full config from {project-root}/_bmad/bmm/config.yaml and resolve:
 
 ### 2. First Step EXECUTION
 
-Read fully and follow: `./step-01-document-discovery.md` to begin the workflow.
+Read fully and follow: `./steps/step-01-document-discovery.md` to begin the workflow.

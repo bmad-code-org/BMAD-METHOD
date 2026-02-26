@@ -179,7 +179,7 @@ Show the generated implementation research and present continue option:
 
 - Append the final content to the research document
 - Update frontmatter: `stepsCompleted: [1, 2, 3, 4, 5]`
-- Load: `./step-06-research-synthesis.md`
+- Load: `{project-root}/_bmad/bmm/workflows/1-analysis/research/technical-steps/step-06-research-synthesis.md`
 
 ## APPEND TO DOCUMENT:
 
@@ -230,4 +230,4 @@ When 'C' is selected:
 
 ## NEXT STEP:
 
-After user selects 'C', load `./step-06-research-synthesis.md` to produce the comprehensive technical research document with narrative introduction, detailed TOC, and executive summary.
+After user selects 'C', load `{project-root}/_bmad/bmm/workflows/1-analysis/research/technical-steps/step-06-research-synthesis.md` to produce the comprehensive technical research document with narrative introduction, detailed TOC, and executive summary.

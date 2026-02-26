@@ -18,7 +18,7 @@ If you want to use a non interactive installer and provide all install options o
 :::note[Prerequisites]
 - **Node.js** 20+ (required for the installer)
 - **Git** (recommended)
-- **AI tool** (Claude Code, Cursor, Windsurf, or similar)
+- **AI tool** (Claude Code, Cursor, or similar)
 :::
 
 ## Steps
@@ -49,8 +49,6 @@ Pick which AI tools you use:
 
 - Claude Code
 - Cursor
-- Windsurf
-- Kiro
 - Others
 
 Each tool has its own way of integrating commands. The installer creates tiny prompt files to activate workflows and agents — it just puts them where your tool expects to find them.

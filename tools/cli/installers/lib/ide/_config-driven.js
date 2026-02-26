@@ -34,6 +34,25 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
    * @returns {Promise<Object>} Setup result
    */
   async setup(projectDir, bmadDir, options = {}) {
+    // Check for BMAD files in ancestor directories that would cause duplicates
+    if (this.installerConfig?.ancestor_conflict_check) {
+      const conflict = await this.findAncestorConflict(projectDir);
+      if (conflict) {
+        await prompts.log.error(
+          `Found existing BMAD commands in ancestor installation: ${conflict}\n` +
+            `  ${this.name} inherits commands from parent directories, so this would cause duplicates.\n` +
+            `  Please remove the BMAD files from that directory first:\n` +
+            `    rm -rf "${conflict}"/bmad*`,
+        );
+        return {
+          success: false,
+          reason: 'ancestor-conflict',
+          error: `Ancestor conflict: ${conflict}`,
+          conflictDir: conflict,
+        };
+      }
+    }
+
     if (!options.silent) await prompts.log.info(`Setting up ${this.name}...`);
 
     // Clean up any old BMAD installation first
@@ -353,7 +372,6 @@ You must fully embody this agent's persona and follow all activation instruction
     return `---
 name: '{{name}}'
 description: '{{description}}'
-disable-model-invocation: true
 ---
 
 # {{name}}
@@ -454,6 +472,15 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
    * @param {string} projectDir - Project directory
    */
   async cleanup(projectDir, options = {}) {
+    // Migrate legacy target directories (e.g. .opencode/agent → .opencode/agents)
+    if (this.installerConfig?.legacy_targets) {
+      if (!options.silent) await prompts.log.message('  Migrating legacy directories...');
+      for (const legacyDir of this.installerConfig.legacy_targets) {
+        await this.cleanupTarget(projectDir, legacyDir, options);
+        await this.removeEmptyParents(projectDir, legacyDir);
+      }
+    }
+
     // Clean all target directories
     if (this.installerConfig?.targets) {
       const parentDirs = new Set();
@@ -533,24 +560,71 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
     }
   }
   /**
-   * Recursively remove empty directories walking up from dir toward projectDir
+   * Check ancestor directories for existing BMAD files in the same target_dir.
+   * IDEs like Claude Code inherit commands from parent directories, so an existing
+   * installation in an ancestor would cause duplicate commands.
+   * @param {string} projectDir - Project directory being installed to
+   * @returns {Promise<string|null>} Path to conflicting directory, or null if clean
+   */
+  async findAncestorConflict(projectDir) {
+    const targetDir = this.installerConfig?.target_dir;
+    if (!targetDir) return null;
+
+    const resolvedProject = await fs.realpath(path.resolve(projectDir));
+    let current = path.dirname(resolvedProject);
+    const root = path.parse(current).root;
+
+    while (current !== root && current.length > root.length) {
+      const candidatePath = path.join(current, targetDir);
+      try {
+        if (await fs.pathExists(candidatePath)) {
+          const entries = await fs.readdir(candidatePath);
+          const hasBmad = entries.some((e) => typeof e === 'string' && e.toLowerCase().startsWith('bmad'));
+          if (hasBmad) {
+            return candidatePath;
+          }
+        }
+      } catch {
+        // Can't read directory — skip
+      }
+      current = path.dirname(current);
+    }
+
+    return null;
+  }
+
+  /**
+   * Walk up ancestor directories from relativeDir toward projectDir, removing each if empty
    * Stops at projectDir boundary — never removes projectDir itself
    * @param {string} projectDir - Project root (boundary)
    * @param {string} relativeDir - Relative directory to start from
    */
   async removeEmptyParents(projectDir, relativeDir) {
+    const resolvedProject = path.resolve(projectDir);
     let current = relativeDir;
     let last = null;
     while (current && current !== '.' && current !== last) {
       last = current;
-      const fullPath = path.join(projectDir, current);
+      const fullPath = path.resolve(projectDir, current);
+      // Boundary guard: never traverse outside projectDir
+      if (!fullPath.startsWith(resolvedProject + path.sep) && fullPath !== resolvedProject) break;
       try {
-        if (!(await fs.pathExists(fullPath))) break;
+        if (!(await fs.pathExists(fullPath))) {
+          // Dir already gone — advance current; last is reset at top of next iteration
+          current = path.dirname(current);
+          continue;
+        }
         const remaining = await fs.readdir(fullPath);
         if (remaining.length > 0) break;
         await fs.rmdir(fullPath);
-      } catch {
-        break;
+      } catch (error) {
+        // ENOTEMPTY: TOCTOU race (file added between readdir and rmdir) — skip level, continue upward
+        // ENOENT: dir removed by another process between pathExists and rmdir — skip level, continue upward
+        if (error.code === 'ENOTEMPTY' || error.code === 'ENOENT') {
+          current = path.dirname(current);
+          continue;
+        }
+        break; // fatal error (e.g. EACCES) — stop upward walk
       }
       current = path.dirname(current);
     }

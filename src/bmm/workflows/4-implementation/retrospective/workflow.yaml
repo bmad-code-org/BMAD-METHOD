@@ -1,7 +1,6 @@
 # Retrospective - Epic Completion Review Workflow
 name: "retrospective"
-description: "Run after epic completion to review overall success, extract lessons learned, and explore if new information emerged that might impact the next epic"
-author: "BMad"
+description: 'Post-epic review to extract lessons and assess success. Use when the user says "run a retrospective" or "lets retro the epic [epic]"'
 
 config_source: "{project-root}/_bmad/bmm/config.yaml"
 user_name: "{config_source}:user_name"

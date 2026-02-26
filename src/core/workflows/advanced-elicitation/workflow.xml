@@ -1,4 +1,5 @@
 <task id="_bmad/core/workflows/advanced-elicitation/workflow.xml" name="Advanced Elicitation"
+  description="Push the LLM to reconsider refine and improve its recent output. Use when the user asks for advanced elicitation"
   methods="{project-root}/_bmad/core/workflows/advanced-elicitation/methods.csv"
   agent-party="{project-root}/_bmad/_config/agent-manifest.csv">
   <llm critical="true">

@@ -1,7 +1,8 @@
 <!-- if possible, run this in a separate subagent or process with read access to the project, 
   but no context except the content to review -->
 
-<task id="_bmad/core/tasks/review-adversarial-general.xml" name="Adversarial Review (General)">
+<task id="_bmad/core/tasks/review-adversarial-general.xml" name="Adversarial Review (General)"
+  description="Perform a Cynical Review and produce a findings report. Use when the user requests a critical review of something">
   <objective>Cynically review content and produce findings</objective>
 
   <inputs>

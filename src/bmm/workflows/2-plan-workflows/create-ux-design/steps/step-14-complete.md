@@ -82,7 +82,7 @@ Update the main workflow status file:
 
 ### 3. Suggest Next Steps
 
-UX Design complete. Read fully and follow: `_bmad/core/tasks/help.md` with argument `Create UX`.
+UX Design complete. Read fully and follow: `{project-root}/_bmad/core/tasks/help.md`
 
 ### 5. Final Completion Confirmation
 

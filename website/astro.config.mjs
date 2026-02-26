@@ -90,6 +90,7 @@ export default defineConfig({
       // Sidebar configuration (Diataxis structure)
       sidebar: [
         { label: 'Welcome', slug: 'index' },
+        { label: 'Roadmap', slug: 'roadmap' },
         {
           label: 'Tutorials',
           collapsed: false,

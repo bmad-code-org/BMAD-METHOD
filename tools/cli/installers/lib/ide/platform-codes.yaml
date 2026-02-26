@@ -40,6 +40,7 @@ platforms:
     installer:
       target_dir: .claude/commands
       template_type: default
+      ancestor_conflict_check: true
 
   cline:
     name: "Cline"
@@ -56,6 +57,15 @@ platforms:
     category: cli
     description: "OpenAI Codex integration"
     # No installer config - uses custom codex.js
+
+  codebuddy:
+    name: "CodeBuddy"
+    preferred: false
+    category: ide
+    description: "Tencent Cloud Code Assistant - AI-powered coding companion"
+    installer:
+      target_dir: .codebuddy/commands
+      template_type: default
 
   crush:
     name: "Crush"
@@ -122,11 +132,14 @@ platforms:
     category: ide
     description: "OpenCode terminal coding assistant"
     installer:
+      legacy_targets:
+        - .opencode/agent
+        - .opencode/command
       targets:
-        - target_dir: .opencode/agent
+        - target_dir: .opencode/agents
           template_type: opencode
           artifact_types: [agents]
-        - target_dir: .opencode/command
+        - target_dir: .opencode/commands
           template_type: opencode
           artifact_types: [workflows, tasks, tools]
 
@@ -153,9 +166,7 @@ platforms:
     preferred: false
     category: ide
     description: "Atlassian's Rovo development environment"
-    installer:
-      target_dir: .rovodev/workflows
-      template_type: rovodev
+    # No installer config - uses custom rovodev.js (generates prompts.yml manifest)
 
   trae:
     name: "Trae"
@@ -168,7 +179,7 @@ platforms:
 
   windsurf:
     name: "Windsurf"
-    preferred: true
+    preferred: false
     category: ide
     description: "AI-powered IDE with cascade flows"
     installer:
@@ -184,12 +195,17 @@ platforms:
 #   template_type: string                 # Default template type to use
 #   header_template: string (optional)    # Override for header/frontmatter template
 #   body_template: string (optional)      # Override for body/content template
+#   legacy_targets: array (optional)      # Old target dirs to clean up on reinstall (migration)
+#     - string                            # Relative path, e.g. .opencode/agent
 #   targets: array (optional)             # For multi-target installations
 #     - target_dir: string
 #       template_type: string
 #       artifact_types: [agents, workflows, tasks, tools]
 #   artifact_types: array (optional)      # Filter which artifacts to install (default: all)
 #   skip_existing: boolean (optional)     # Skip files that already exist (default: false)
+#   ancestor_conflict_check: boolean (optional) # Refuse install when ancestor dir has BMAD files
+#                                                # in the same target_dir (for IDEs that inherit
+#                                                # commands from parent directories)
 
 # ============================================================================
 # Platform Categories

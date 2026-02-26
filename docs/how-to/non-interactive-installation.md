@@ -59,7 +59,7 @@ Check the [BMad registry](https://github.com/bmad-code-org) for available extern
 
 Available tool IDs for the `--tools` flag:
 
-**Preferred:** `claude-code`, `cursor`, `windsurf`
+**Preferred:** `claude-code`, `cursor`
 
 Run `npx bmad-method install` interactively once to see the full current list of supported tools, or check the [platform codes configuration](https://github.com/bmad-code-org/BMAD-METHOD/blob/main/tools/cli/installers/lib/ide/platform-codes.yaml).
 

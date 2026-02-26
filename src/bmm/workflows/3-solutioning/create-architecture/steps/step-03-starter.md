@@ -232,7 +232,6 @@ Prepare the content to append to the document:
 ```bash
 {{full_starter_command_with_options}}
 ```
-````
 
 **Architectural Decisions Provided by Starter:**
 
@@ -256,7 +255,7 @@ Prepare the content to append to the document:
 
 **Note:** Project initialization using this command should be the first implementation story.
 
-```
+````
 
 ### 9. Present Content and Menu
 
@@ -295,7 +294,7 @@ Show the generated content and present choices:
 
 - Append the final content to `{planning_artifacts}/architecture.md`
 - Update frontmatter: `stepsCompleted: [1, 2, 3]`
-- Load `./step-04-decisions.md`
+- Load `{project-root}/_bmad/bmm/workflows/3-solutioning/create-architecture/steps/step-04-decisions.md`
 
 ## APPEND TO DOCUMENT:
 
@@ -325,7 +324,6 @@ When user selects 'C', append the content directly to the document using the str
 
 ## NEXT STEP:
 
-After user selects 'C' and content is saved to document, load `./step-04-decisions.md` to begin making specific architectural decisions.
+After user selects 'C' and content is saved to document, load `{project-root}/_bmad/bmm/workflows/3-solutioning/create-architecture/steps/step-04-decisions.md` to begin making specific architectural decisions.
 
 Remember: Do NOT proceed to step-04 until user explicitly selects 'C' from the A/P/C menu and content is saved!
-```

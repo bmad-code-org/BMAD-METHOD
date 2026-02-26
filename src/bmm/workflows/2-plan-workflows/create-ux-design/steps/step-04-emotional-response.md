@@ -182,7 +182,7 @@ Show the generated emotional response content and present choices:
 
 - Append the final content to `{planning_artifacts}/ux-design-specification.md`
 - Update frontmatter: append step to end of stepsCompleted array
-- Load `./step-05-inspiration.md`
+- Load `{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-ux-design/steps/step-05-inspiration.md`
 
 ## APPEND TO DOCUMENT:
 
@@ -214,6 +214,6 @@ When user selects 'C', append the content directly to the document using the str
 
 ## NEXT STEP:
 
-After user selects 'C' and content is saved to document, load `./step-05-inspiration.md` to analyze UX patterns from inspiring products.
+After user selects 'C' and content is saved to document, load `{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-ux-design/steps/step-05-inspiration.md` to analyze UX patterns from inspiring products.
 
 Remember: Do NOT proceed to step-05 until user explicitly selects 'C' from the A/P/C menu and content is saved!

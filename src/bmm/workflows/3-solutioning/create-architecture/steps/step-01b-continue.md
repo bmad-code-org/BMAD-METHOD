@@ -85,7 +85,7 @@ Show the user their current progress:
 
 - Identify the next step based on `stepsCompleted`
 - Load the appropriate step file to continue
-- Example: If `stepsCompleted: [1, 2, 3]`, load `step-04-decisions.md`
+- Example: If `stepsCompleted: [1, 2, 3]`, load `{project-root}/_bmad/bmm/workflows/3-solutioning/create-architecture/steps/step-04-decisions.md`
 
 #### If 'C' (Continue to next logical step):
 
@@ -103,7 +103,7 @@ Show the user their current progress:
 #### If 'X' (Start over):
 
 - Confirm: "This will delete all existing architectural decisions. Are you sure? (y/n)"
-- If confirmed: Delete existing document and return to step-01-init.md
+- If confirmed: Delete existing document and read fully and follow: `{project-root}/_bmad/bmm/workflows/3-solutioning/create-architecture/steps/step-01-init.md`
 - If not confirmed: Return to continuation menu
 
 ### 4. Navigate to Selected Step
@@ -160,5 +160,14 @@ After user makes choice:
 ## NEXT STEP:
 
 After user selects their continuation option, load the appropriate step file based on their choice. The step file will handle the detailed work from that point forward.
+
+Valid step files to load:
+- `{project-root}/_bmad/bmm/workflows/3-solutioning/create-architecture/steps/step-02-context.md`
+- `{project-root}/_bmad/bmm/workflows/3-solutioning/create-architecture/steps/step-03-starter.md`
+- `{project-root}/_bmad/bmm/workflows/3-solutioning/create-architecture/steps/step-04-decisions.md`
+- `{project-root}/_bmad/bmm/workflows/3-solutioning/create-architecture/steps/step-05-patterns.md`
+- `{project-root}/_bmad/bmm/workflows/3-solutioning/create-architecture/steps/step-06-structure.md`
+- `{project-root}/_bmad/bmm/workflows/3-solutioning/create-architecture/steps/step-07-validation.md`
+- `{project-root}/_bmad/bmm/workflows/3-solutioning/create-architecture/steps/step-08-complete.md`
 
 Remember: The goal is smooth, transparent resumption that respects the work already done while giving the user control over how to proceed.

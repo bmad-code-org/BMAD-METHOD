@@ -3,9 +3,9 @@ name: 'step-11-polish'
 description: 'Optimize and polish the complete PRD document for flow, coherence, and readability'
 
 # File References
-nextStepFile: './step-12-complete.md'
+nextStepFile: '{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-prd/steps-c/step-12-complete.md'
 outputFile: '{planning_artifacts}/prd.md'
-purposeFile: '../data/prd-purpose.md'
+purposeFile: '{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-prd/data/prd-purpose.md'
 
 # Task References
 advancedElicitationTask: '{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml'
@@ -212,6 +212,6 @@ When user selects 'C', replace the entire document content with the polished ver
 
 ## NEXT STEP:
 
-After user selects 'C' and polished document is saved, load `./step-12-complete.md` to complete the workflow.
+After user selects 'C' and polished document is saved, load `{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-prd/steps-c/step-12-complete.md` to complete the workflow.
 
 Remember: Do NOT proceed to step-12 until user explicitly selects 'C' from the A/P/C menu and polished document is saved!

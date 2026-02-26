@@ -72,9 +72,9 @@ Does this look right, or do you want to make any adjustments before we proceed?"
 
 Based on `lastStep` value, determine which step to load next:
 
-- If `lastStep = 1` → Load `./step-02-discovery.md`
-- If `lastStep = 2` → Load `./step-03-core-experience.md`
-- If `lastStep = 3` → Load `./step-04-emotional-response.md`
+- If `lastStep = 1` → Load `{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-ux-design/steps/step-02-discovery.md`
+- If `lastStep = 2` → Load `{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-ux-design/steps/step-03-core-experience.md`
+- If `lastStep = 3` → Load `{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-ux-design/steps/step-04-emotional-response.md`
 - Continue this pattern for all steps
 - If `lastStep` indicates final step → Workflow already complete
 

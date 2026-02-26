@@ -78,7 +78,7 @@ For **{{research_topic}}**, I will research:
 
 - Document scope confirmation in research file
 - Update frontmatter: `stepsCompleted: [1]`
-- Load: `./step-02-domain-analysis.md`
+- Load: `{project-root}/_bmad/bmm/workflows/1-analysis/research/domain-steps/step-02-domain-analysis.md`
 
 ## APPEND TO DOCUMENT:
 
@@ -132,6 +132,6 @@ When user selects 'C', append scope confirmation:
 
 ## NEXT STEP:
 
-After user selects 'C', load `./step-02-domain-analysis.md` to begin industry analysis.
+After user selects 'C', load `{project-root}/_bmad/bmm/workflows/1-analysis/research/domain-steps/step-02-domain-analysis.md` to begin industry analysis.
 
 Remember: This is SCOPE CONFIRMATION ONLY - no actual domain research yet, just confirming the research approach and scope!

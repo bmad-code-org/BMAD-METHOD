@@ -343,7 +343,7 @@ Show the generated project structure content and present choices:
 
 - Append the final content to `{planning_artifacts}/architecture.md`
 - Update frontmatter: `stepsCompleted: [1, 2, 3, 4, 5, 6]`
-- Load `./step-07-validation.md`
+- Load `{project-root}/_bmad/bmm/workflows/3-solutioning/create-architecture/steps/step-07-validation.md`
 
 ## APPEND TO DOCUMENT:
 
@@ -374,6 +374,6 @@ When user selects 'C', append the content directly to the document using the str
 
 ## NEXT STEP:
 
-After user selects 'C' and content is saved to document, load `./step-07-validation.md` to validate architectural coherence and completeness.
+After user selects 'C' and content is saved to document, load `{project-root}/_bmad/bmm/workflows/3-solutioning/create-architecture/steps/step-07-validation.md` to validate architectural coherence and completeness.
 
 Remember: Do NOT proceed to step-07 until user explicitly selects 'C' from the A/P/C menu and content is saved!

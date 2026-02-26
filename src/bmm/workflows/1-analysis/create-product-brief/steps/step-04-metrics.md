@@ -3,7 +3,7 @@ name: 'step-04-metrics'
 description: 'Define comprehensive success metrics that include user success, business objectives, and key performance indicators'
 
 # File References
-nextStepFile: './step-05-scope.md'
+nextStepFile: '{project-root}/_bmad/bmm/workflows/1-analysis/create-product-brief/steps/step-05-scope.md'
 outputFile: '{planning_artifacts}/product-brief-{{project_name}}-{{date}}.md'
 
 # Task References

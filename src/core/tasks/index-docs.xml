@@ -1,5 +1,5 @@
 <task id="_bmad/core/tasks/index-docs" name="Index Docs"
-  description="Generates or updates an index.md of all documents in the specified directory">
+  description="Generates or updates an index.md to reference all docs in the folder. Use if user requests to create or update an index of all files in a specific folder">
   <llm critical="true">
     <i>MANDATORY: Execute ALL steps in the flow section IN EXACT ORDER</i>
     <i>DO NOT skip steps or change the sequence</i>

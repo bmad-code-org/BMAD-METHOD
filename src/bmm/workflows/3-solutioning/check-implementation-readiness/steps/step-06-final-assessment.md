@@ -109,7 +109,7 @@ The assessment found [number] issues requiring attention. Review the detailed re
 
 The implementation readiness workflow is now complete. The report contains all findings and recommendations for the user to consider.
 
-Implementation Readiness complete. Read fully and follow: `_bmad/core/tasks/help.md` with argument `implementation readiness`.
+Implementation Readiness complete. Read fully and follow: `{project-root}/_bmad/core/tasks/help.md`
 
 ---
 
