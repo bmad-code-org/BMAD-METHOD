@@ -45,6 +45,22 @@ When you complete a phase milestone, add an entry to the Progress section below.
 
 ---
 
+## Design Loop Status
+
+> Per-page design progress. Updated by agents at every design transition.
+
+| Scenario | Step | Page | Status | Updated |
+|----------|------|------|--------|---------|
+
+**Status values:** `discussed` → `wireframed` → `specified` → `explored` → `building` → `built` → `approved` | `removed`
+
+**How agents use this table:**
+- **Append a row** when a page reaches a new status (do not overwrite — the latest row per page is the current status)
+- **Read on startup** to determine where the project stands and what to suggest next
+- **The latest row per Step** is the current status for that page
+
+---
+
 ## Key Decisions
 
 | Date | Decision | Context | Made By |

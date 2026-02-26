@@ -96,5 +96,4 @@ Activity-specific output in project structure.
 
 ## AFTER COMPLETION
 
-1. Update design log
-2. Suggest next action or return to Activity Menu
+Each activity workflow has its own explicit design log reporting points. See the individual workflow files for details on what to log and where.

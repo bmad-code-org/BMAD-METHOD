@@ -41,6 +41,4 @@ Execute steps in `./steps-k/`:
 
 ## AFTER COMPLETION
 
-1. Update design log
-2. Suggest next action
-3. Return to activity menu
+After sketch analysis, the page returns to step-01-exploration.md's flow. The sketch analysis feeds into the wireframe/spec sync step — the calling step handles design log updates and transition options.

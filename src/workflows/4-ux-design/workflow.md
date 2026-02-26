@@ -14,14 +14,14 @@ web_bundle: true
 
 ## WORKFLOW ARCHITECTURE
 
-Phase 4 is **menu-driven**, not linear. The user picks scenarios and activities from a dashboard.
+Phase 4 is **adaptive** — Freya reads the design log on startup, shows the project's design status, and suggests the next logical step. The user can follow the suggestion or switch to any activity.
 
 ### Core Principles
 
+- **Adaptive**: Freya reads the design log and suggests where to continue
 - **Scenario-Driven**: Each scenario (from Phase 3) gets its own design approach
-- **Activity-Based**: Pick the right activity for the current need
-- **Non-Linear**: Start anywhere, switch between activities freely
-- **Design Intent**: Phase 3 handover specifies preferred approach per scenario
+- **Two-Option Transitions**: Every completed stage offers: next logical step + explore next scenario step
+- **Design Log as Memory**: Per-page status tracking drives the adaptive dashboard across sessions
 
 ### Step Processing Rules
 
@@ -42,44 +42,125 @@ Load and read full config from `{project-root}/_bmad/wds/config.yaml` and resolv
 
 ### 2. Agent Dialog Gate
 
-1. Check `{output_folder}/_progress/agent-dialogs/` for pending UX design dialogs
-2. If pending, present with status
-3. If none, suggest creating one
+Check `{output_folder}/_progress/agent-dialogs/` for agent dialogs with `status: active` and `agent: Freya`.
+
+**If an active dialog exists:** Read it. The dialog contains the session plan — what pages the user intended to work on and how far they got. Use this to drive the dashboard.
+
+**If no active dialog exists:** You'll create one after the user chooses what to work on (see step 4c).
 
 ### 3. Mode Determination
 
 **Check invocation:**
 - "validate" / -v → Load and execute `./workflow-validate.md`
-- Default → Continue to Scenario Dashboard
+- Default → Continue to Adaptive Dashboard
 
-### 4. Scenario Dashboard
+### 4. Adaptive Dashboard
 
-Read all scenario files from `{output_folder}/C-UX-Scenarios/` and display:
+Read both sources:
+1. **Agent dialog** (the plan) — what was the user working on?
+2. **Design log** (`{output_folder}/_progress/00-progress.md`) — what status did each page reach?
+3. **Scenario files** from `{output_folder}/C-UX-Scenarios/` — full page inventory
 
+#### 4a. Build Status Overview
+
+For each scenario, determine per-page status from the Design Loop Status table in the design log. The **latest row per page** is the current status.
+
+#### 4b. Suggest Where to Continue
+
+**If an active dialog with a session plan exists:**
+
+Read the plan's checklist. Compare against the design log. Present what's done and what's left:
+
+<output>
+**Welcome back! Here's where we left off:**
+
+**Session plan:** [topic from dialog]
+
+| Step | Page | Plan | Status |
+|------|------|------|--------|
+| [NN.1] | [page name] | [target] | [current] ✓ |
+| [NN.2] | [page name] | [target] | [current] ← next |
+| [NN.3] | [page name] | [target] | — |
+
+I'd suggest we continue with **[next unchecked item from the plan]**.
+Pick up there, or change plans?
+</output>
+
+**If the session plan is complete** (all items checked):
+
+<output>
+**Session plan complete!**
+
+Everything we planned is done. What would you like to do next?
+
+1. **Continue with [next scenario step / next scenario]** — keep the momentum
+2. **Start a new session plan** — pick different pages to work on
+</output>
+
+**If no active dialog exists** (fresh start):
+
+<output>
+**Ready to start designing!**
+
+Your scenarios:
+| # | Scenario | Pages | Designed |
+|---|----------|-------|----------|
+| 01 | [Name] | [total] | [done] |
+| 02 | [Name] | [total] | [done] |
+
+Which scenario shall we work on? I'll set up a session plan.
+</output>
+
+#### 4c. Create or Update Session Plan
+
+**When starting a new session**, create an agent dialog file:
+
+**File:** `{output_folder}/_progress/agent-dialogs/YYYY-MM-DD-freya-[topic].md`
+
+```markdown
+---
+status: active
+agent: Freya
+topic: [what the user wants to work on]
+created: [date]
+last_updated: [date]
+---
+
+# [Topic]
+
+## Session Plan
+
+| # | Page | Target Status | Done |
+|---|------|---------------|------|
+| 1 | [NN.X page name] | [discussed/wireframed/specified/etc.] | [ ] |
+| 2 | [NN.X page name] | [discussed/wireframed/specified/etc.] | [ ] |
+
+## Decisions Made
+
+| # | Decision | Rationale |
+|---|----------|-----------|
 ```
-Your scenarios and their design status:
 
-1. [Scenario Name]     → [Approach] — [Status]
-2. [Scenario Name]     → [Approach] — [Status]
-3. [Scenario Name]     → [Approach] — [Status]
+**At each transition:** Update the dialog — check off completed items, add decisions, update `last_updated`.
 
-Pick a scenario to work on, or choose a scenario-independent activity:
-```
+**When the plan is complete or user stops:** Set `status: complete` or `status: paused`. The next session will find no active dialog and offer to start fresh or resume.
 
-**Status values:** not started / in progress / completed
-**Approach values:** [K] Sketch, [C] Conceptualize, [S] Suggest, [D] Dream Up, [L] Not chosen
+#### 4d. User Response Handling
+
+- **User accepts suggestion** → Load the appropriate activity workflow and continue
+- **User picks a different page or scenario** → Update the session plan and continue
+- **User asks for the full activity menu** → Show the Activity Reference below
+- **User wants scenario-independent work** (design system, validation, delivery) → Route to that activity
 
 ---
 
-## ACTIVITY MENU
+## ACTIVITY REFERENCE
 
-When a scenario is selected (or for scenario-independent work), present:
+The primary navigation is the adaptive dashboard above — Freya suggests the next logical step based on the design log. The activities below are available when the user wants to switch to a specific workflow or asks for the full menu.
 
 ```
-What would you like to do?
-
 ── Design ──────────────────────────────────────
-[C] Conceptualize        — Explore what the design needs
+[C] Discuss              — Creative dialog (D1, D2), wireframe, iterate
 [K] Analyse Sketches     — I'll interpret your sketch
 [S] Suggest Design       — I'll propose a design, you confirm each step
 [D] Dream Up Design      — I'll create it all, you review
@@ -135,5 +216,4 @@ If the scenario has a `design_intent` from Phase 3 handover, pre-select that act
 
 ## AFTER COMPLETION
 
-1. Update design log
-2. Suggest next action or return to Scenario Dashboard
+When the user returns to Phase 4 (or starts a new session), the Adaptive Dashboard (section 4) reads the design log and suggests where to continue. No separate "after completion" action is needed — the design log IS the memory.

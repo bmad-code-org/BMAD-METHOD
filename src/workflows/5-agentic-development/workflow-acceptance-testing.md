@@ -40,8 +40,36 @@ Execute steps in `./steps-t/`:
 
 ---
 
+## DESIGN LOG REPORTING POINT
+
+When all tests pass and the user approves, append to the Design Loop Status table in `{output_folder}/_progress/00-progress.md`:
+
+```
+| [Scenario slug] | [NN.X] | [Page name] | approved | [YYYY-MM-DD] |
+```
+
+Do NOT skip this. The design log drives Phase 4's adaptive dashboard.
+
 ## AFTER COMPLETION
 
-1. Update design log
-2. If approved, suggest handover (Phase 4 [H]) or next iteration
-3. Return to activity menu
+**If all tests pass:**
+
+Design log updated with `approved` status (see above). Present the transition:
+
+<output>
+**"[page name]" is approved!**
+
+1. **Explore the next scenario step** — [next page name]
+2. **Design delivery** — package for development handoff (Phase 4 [H])
+</output>
+
+**If issues found:**
+
+Status stays `built`. Present:
+
+<output>
+**"[page name]" has [N] issues to fix.**
+
+1. **Fix the issues** — route to bugfixing
+2. **Explore the next scenario step** — fix later, continue designing
+</output>

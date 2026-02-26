@@ -71,58 +71,52 @@ Execute steps in `./steps-s/`:
 
 ## AFTER COMPLETION
 
-After finishing a page specification, present the user with a choice:
+### Design Log Update
 
+After finishing a page specification, append to the Design Loop Status table in `{output_folder}/_progress/00-progress.md`:
 ```
-Page [NN.step] complete! What would you like to do?
-
-[N] Next page — outline and design the next step in this scenario
-[R] Return to Scenario Dashboard — pick a different scenario or activity
-[V] Validate — audit this page specification
+| [Scenario slug] | [NN.X] | [Page name] | specified | [YYYY-MM-DD] |
 ```
+Do NOT skip this — the design log drives the adaptive dashboard.
 
-### Menu Handling Logic:
+### Two-Option Transition
 
-- IF N: Check the scenario's shortest path (Q8) for the next page. If the next page doesn't have a folder yet, run the Page Outline Dialog from Phase 3 (ask the two questions: page purpose + exit action), create the page folder, then design it using steps 08-15. This is the **outline → design loop**.
-- IF R: Return to the Phase 4 Scenario Dashboard
-- IF V: Load and execute `./workflow-validate.md`
+After specification is complete, check what was identified during the design:
+- **Web platform?** → Responsive content decisions are needed
+- **Storyboard items identified?** → On-page interactions need exploring
+- **Complex functionality?** → Forms, validation, dynamic content need detail
 
-### The Outline → Design Loop
+**If complexity exists:**
 
-When the user chooses [N], the flow is:
+<output>
+**Specification for "[page name]" is complete.**
 
-1. **Outline the next page** — Ask: "What's the point of this page?" and "What does the user do to move forward?" (same as Phase 3's [O] dialog)
-2. **Component Extraction Check** (2nd+ page only) — see below
-3. **Create the page folder** with boilerplate spec and Sketches/ subfolder
-4. **Design the page** — run steps 08-15 for this page
-5. **After completion** — present this menu again
+This page has [responsive states / storyboard items / complex functionality] that need exploring.
 
-This loop continues until all pages in the scenario are designed or the user chooses to stop.
+1. **Explore [responsive states / storyboard / functionality]** — define the details
+2. **Explore the next scenario step** — [next page name]
+</output>
 
-### Component Extraction Check (2nd+ Page)
+**If simple page (no complexity identified):**
 
-**Trigger:** Automatically runs when starting the 2nd or later page in a scenario.
+<output>
+**Specification for "[page name]" is complete. Ready to build.**
 
-**Purpose:** Identify repeating elements across pages and suggest extracting them as shared components before they multiply.
+1. **Build it** — start agentic development
+2. **Explore the next scenario step** — [next page name]
+</output>
 
-**Process:**
+**If no more pages in scenario:**
+Replace option 2 with: "All pages in this scenario are designed!"
 
-1. **Scan completed page specs** in the current scenario's `pages/` folder
-2. **Identify common patterns** across completed pages:
-   - Navigation headers / footers
-   - Repeated form fields or input patterns
-   - Shared section layouts (e.g., hero, card grids)
-   - Identical UI elements (buttons, modals, alerts)
-3. **If shared elements found**, present briefly:
-   ```
-   I noticed these elements appear across your completed pages:
-   - [element] — used in [page 1], [page 2]
-   - [element] — used in [page 1], [page 2]
+### Transition Handling
 
-   Want me to extract these as shared components now, or continue and handle it later?
-   [E] Extract now → routes to [M] Manage Design System
-   [L] Later — continue with page design
-   ```
-4. **If no shared elements found** (or this is only the 2nd page with minimal overlap), skip silently and continue to page design.
+- **Option 1 (next logical step):** Proceed to the appropriate activity (explore → responsive diffs, build → Phase 5 prototyping)
+- **Option 2 (next scenario step):** Check Q8 for the next page. If the next page doesn't have a folder yet, ask the two outline questions (page purpose + exit action), create the page folder, then design it using steps 08-15.
+- **Component Extraction Check** (2nd+ page only): Before designing the next page, scan completed specs for shared elements. If found, briefly suggest extraction. Don't block the flow — the user can defer.
 
-**Key principle:** Don't block the design flow. This is a brief check, not a deep audit. The user can always choose [L] to defer.
+### Execution Rules
+
+- ALWAYS halt and wait for user input after presenting transition options
+- User can chat or ask questions — always respond and then redisplay the transition
+- The user can always say "stop" to pause and return later — log current status

@@ -92,34 +92,25 @@ Fill in all sections with data collected:
 - {{validation_count}} validation rules
 - {{error_count}} error messages
 
-**Your specification is development-ready!**
+**Your specification is development-ready!**</output>
 
-The specification document includes:
+### 2. Update Design Log
 
-- Clear Object IDs for every element
-- Complete multilingual content
-- Detailed interaction behaviors
-- All possible states defined
-- Validation rules and error messages
-- Technical notes and data requirements</output>
+<action>Append a row with status `specified` to the Design Loop Status table in `{output_folder}/_progress/00-progress.md`:
 
-### 2. Present MENU OPTIONS
+```
+| [Scenario slug] | [NN.X] | [Page name] | specified | [YYYY-MM-DD] |
+```
 
-Display: "**Select an Option:** [M] Return to Activity Menu"
+Do NOT skip this. The design log drives the adaptive dashboard.</action>
 
-#### Menu Handling Logic:
+### 3. Return to Calling Step
 
-- IF M: Return to {workflowFile} or {activityWorkflowFile}
-- IF Any other comments or queries: help user respond then [Redisplay Menu Options](#2-present-menu-options)
-
-#### EXECUTION RULES:
-
-- ALWAYS halt and wait for user input after presenting menu
-- User can chat or ask questions — always respond and then redisplay menu options
+This step is called from either step-01-exploration.md (Discuss) or workflow-suggest.md (Suggest). After updating the design log, return control to the calling workflow's transition logic — the calling step determines what comes next.
 
 ## CRITICAL STEP COMPLETION NOTE
 
-ONLY WHEN the user selects an option from the menu and the specification has been generated and saved will you proceed accordingly. This is the last step in the Specify activity.
+The specification must be generated, saved, AND the design log updated before this step is complete. This is the last step in the Specify activity.
 
 ---
 

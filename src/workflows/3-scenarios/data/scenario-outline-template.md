@@ -86,18 +86,18 @@
 
 ---
 
-## Pages in This Scenario
+## Scenario Steps
 
-Page folders are created via [O] Outline (page-by-page dialog) or [D] Design (first page + Phase 4).
+Steps are outlined one at a time after scenario creation. The first step is processed automatically.
 
-| Page Number | Folder | Purpose | Exit Action |
-|-------------|--------|---------|-------------|
-| [NN].1 | `[NN].1-[page-slug]/` | [Page purpose] | [Interaction that leads to next page] |
-| [NN].2 | `[NN].2-[page-slug]/` | [Page purpose] | [Interaction that leads to next page] |
-| [NN].3 | `[NN].3-[page-slug]/` | [Page purpose] | [Final — scenario success] ✓ |
+| Step | Folder | Purpose | Exit Action |
+|------|--------|---------|-------------|
+| [NN].1 | `[NN].1-[page-slug]/` | [Step purpose] | [Interaction that leads to next step] |
+| [NN].2 | `[NN].2-[page-slug]/` | [Step purpose] | [Interaction that leads to next step] |
+| [NN].3 | `[NN].3-[page-slug]/` | [Step purpose] | [Final — scenario success] ✓ |
 
-**First page** ([NN].1) includes full entry context (Q3 + Q4 + Q5 + Q6).
-**On-page interactions** (that don't leave the page) are documented as storyboard items within each page spec.
+**First step** ([NN].1) includes full entry context (Q3 + Q4 + Q5 + Q6).
+**On-step interactions** (that don't leave the step) are documented as storyboard items within each page spec.
 ```
 
 ---

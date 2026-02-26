@@ -22,7 +22,7 @@ description: 'Create a complete, implementation-ready page specification with la
 
 ## Entry
 
-Load page context from existing page structure in `{output_folder}/D-UX-Design/`.
+Load page context from the existing page specification in the scenario's page folder (`{output_folder}/C-UX-Scenarios/[NN-slug]/pages/[NN].[step]-[page-slug]/`).
 
 ## Steps
 
@@ -49,6 +49,5 @@ Execute steps in `./steps-p/`:
 
 ## AFTER COMPLETION
 
-1. Update design log
-2. Suggest next action
-3. Return to activity menu
+1. Update design log: status → `specified`
+2. Return to the two-option transition from step-01-exploration.md (the calling step determines what comes next based on what was identified during specification)

@@ -59,6 +59,6 @@ Save validation report to `{output_folder}/D-UX-Design/validation-report.md`
 
 ## AFTER COMPLETION
 
-1. Update design log
-2. Suggest next action
-3. Return to activity menu
+1. Append a progress entry to `{output_folder}/_progress/00-progress.md` under `## Progress`:
+   `### [date] — Validation: [N] pages audited, [results summary]`
+2. If issues found, suggest fixing them. If all pass, suggest next logical step from the adaptive dashboard

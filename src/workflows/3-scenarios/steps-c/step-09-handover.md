@@ -102,7 +102,7 @@ Your scenarios are ready for design. How would you like to approach each?
 
 **Approaches:**
 [K] Sketch — I will draw it myself, agent interprets later
-[C] Conceptualize — Let us explore what the design needs together
+[C] Discuss — Creative dialog for page design
 [S] Suggest — Agent proposes step by step, I confirm each
 [D] Dream Up — Agent creates the whole flow, I review the result
 [L] Later — Decide when I start Phase 4
@@ -121,7 +121,7 @@ Explain to user:
 
 **Phase 4: UX Design** takes each scenario outline and designs it using your chosen approach:
 - **Sketch** scenarios wait for your drawings
-- **Conceptualize** scenarios start with collaborative exploration
+- **Discuss** scenarios start with a creative dialog for each page
 - **Suggest** scenarios let the agent propose step by step
 - **Dream Up** scenarios let the agent create autonomously
 

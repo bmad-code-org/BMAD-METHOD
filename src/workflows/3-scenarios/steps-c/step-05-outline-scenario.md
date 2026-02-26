@@ -178,61 +178,73 @@ Before proceeding, verify the scenario outline:
 2. Create file: `{output_folder}/C-UX-Scenarios/[NN-slug]/[NN-slug].md`
 3. Use the template from data/ to structure the content from the 8 answers
 
-### 7. After Each Scenario — Ask What's Next
+### 7. After Scenario Creation — Outline Scenario Steps
 
-After completing a scenario, present the user with a choice:
+After the scenario file is saved (Q1-Q8 answered, quality gates passed), begin outlining scenario steps from the Q8 shortest path.
 
-Display:
+#### Automatic First Step
+
+Process the first scenario step from Q8 automatically:
+1. Name it using Q8's first step name
+2. Create the page folder (see Page Folder Structure below)
+3. Fill first-step metadata from Q3 (user situation), Q4 (mental state), Q5 (device), Q6 (entry point)
+4. Present the result to the user
+
+Then show the Scenario Step Menu.
+
+#### Scenario Step Menu
+
+After each scenario step is outlined, present:
+
 ```
-Scenario [NN] complete! What would you like to do?
+Step [NN.X] "[step-name]" outlined!
 
-[N] Define the next scenario — [next transaction from the plan]
-[O] Outline scenario pages — create page folders with boilerplate specs
-[D] Start designing — create first page folder and jump to Phase 4
-[C] Continue to generating the overview (when all scenarios are done)
+1. Outline next scenario step — [next step name from Q8]
+2. Start designing — enter the design loop from step 1
+
+---
+[N] Define the next scenario
+[C] Continue to overview (when all scenarios are done)
 ```
+
+**Adaptive labels:**
+- Option 1 shows the name of the next step from Q8
+- When all Q8 steps are outlined: Option 1 becomes unavailable — show "All [X] scenario steps outlined!"
+- Option 2: **"Start designing"** when only 1 step is outlined. **"Start designing pages"** when 2+ steps are outlined.
 
 #### Menu Handling Logic:
 
-- IF N: Loop back to instruction 1 for the next transaction and target group. The scenario outline is saved — page folders can be created later.
-- IF O: Start the Page Outline Dialog (see below). Walk through pages one at a time, starting from the first page. The user can stop at any point and return to this menu.
-- IF D: Create the first page folder (see Page Folder Structure below), then hand over to Phase 4 (UX Design). The remaining pages can be outlined later.
-- IF C: Load, read entire file, then execute {nextStepFile} (only when all planned scenarios are complete)
+- **IF 1 (Outline next):** Ask the two questions for the next step (see Per-Step Dialog below), create the folder, then show this menu again.
+- **IF 2 (Start designing):** Hand over to Phase 4 (UX Design) → Discuss activity. Phase 4 handles the creative dialog (D1, D2) and all design decisions. The design loop always starts from scenario step 1, regardless of how far the outline has progressed.
+- **IF N:** Loop back to instruction 1 for the next scenario. The current scenario's remaining steps can be outlined later.
+- **IF C:** Load, read entire file, then execute {nextStepFile} (only when all planned scenarios are complete).
 
 #### EXECUTION RULES:
 
 - ALWAYS halt and wait for user input after presenting menu
-- After other menu items execution, return to this menu
-- User can chat or ask questions — always respond and then display the menu again
-- Options [O] and [D] are always available — the user decides when to outline pages
+- User can chat or ask questions — always respond and then redisplay the menu
+- The first step is processed automatically after scenario creation (no menu prompt first)
 
-### Page Outline Dialog
+#### Per-Step Dialog
 
-When the user selects [O], walk through each page as a conversation. Q8's shortest path gives the rough page sequence — the outline dialog refines it by identifying what happens on each page.
+For each step after the first, refine Q8's outline into a concrete scenario step:
 
-**Start from page 1** (already defined by Q6 + Q8 step 1).
+**1. "What's the point of this step?"**
 
-#### For each page, ask two questions:
-
-**1. "What's the point of this page?"**
-
-What does the user need to accomplish here? This becomes the page purpose.
+What does the user need to accomplish here? This becomes the step purpose.
 - e.g., "See a list of news articles" or "Find the phone number and opening hours"
 
 **2. "What does the user do to move forward?"**
 
 What interaction takes them to the next step? This defines the exit action.
-- e.g., "Selects 'News' in the menu" → next page is the News listing
-- e.g., "Clicks 'Read more' on an article" → next page is the Article detail
+- e.g., "Selects 'News' in the menu" → next step
+- e.g., "Clicks 'Read more' on an article" → next step
 
-#### Two types of interactions:
+**Two types of interactions:**
+- **Leaves the step** → new scenario step (new page folder, next number)
+- **Stays on the step** → storyboard item (documented within the page spec as an on-page interaction)
 
-- **Leaves the page** → new scenario step (new page folder, next number)
-- **Stays on the page** → storyboard item (documented within the page spec as an on-page interaction)
-
-#### After each page, create the folder and continue:
-
-Create the page folder, then ask about the next page. The user can say "stop" at any point to return to the scenario menu.
+After answering, create the page folder and return to the Scenario Step Menu.
 
 ### Page Folder Structure
 
@@ -271,7 +283,7 @@ Each page folder contains:
 - {Any interactions that keep the user on this page — storyboard items}
 ```
 
-The **first page** additionally includes:
+The **first step** additionally includes:
 - **User Situation** from Q3
 - **Mental State** (hope + worry) from Q4
 - **Discovery Method** from Q6
@@ -280,7 +292,7 @@ The **first page** additionally includes:
 
 When [C] is selected, ALL scenarios from the approved plan must be outlined and pass quality gates. Then load and read fully `{nextStepFile}` to begin generating the overview.
 
-When [D] is selected, hand over to Phase 4 with the current scenario's first page folder. The user can return to Phase 3 later for remaining scenarios.
+When **Start designing** is selected, hand over to Phase 4 with the current scenario context. The design loop starts from scenario step 1. The user can return to Phase 3 later for remaining scenarios or steps.
 
 ---
 
@@ -295,6 +307,9 @@ When [D] is selected, hand over to Phase 4 with the current scenario's first pag
 - All scenarios from approved plan completed before proceeding
 - Conversation mode: Dialog felt like a natural conversation, not a form to fill
 - Suggest mode: All 8 answers grounded in actual Trigger Map/Brief data, presented for user review
+- First scenario step processed automatically after scenario creation
+- User presented with clear two-option flow after each step (outline next / start designing)
+- "Start designing" always begins from scenario step 1
 
 ### ❌ SYSTEM FAILURE:
 
@@ -306,5 +321,8 @@ When [D] is selected, hand over to Phase 4 with the current scenario's first pag
 - Using generic mental states or vague success goals
 - Creating branching paths instead of linear sunshine paths
 - Not creating output files
+- Not automatically processing the first scenario step after scenario creation
+- Starting the design loop from a step other than step 1
+- Presenting the old [N]/[O]/[D]/[C] menu instead of the simplified two-option flow
 
 **Master Rule:** Skipping steps, optimizing sequences, or not following exact instructions is FORBIDDEN and constitutes SYSTEM FAILURE.

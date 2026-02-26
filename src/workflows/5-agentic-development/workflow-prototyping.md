@@ -59,8 +59,29 @@ Execute steps in `./steps-p/`:
 
 ---
 
+## DESIGN LOG REPORTING POINTS
+
+This workflow has TWO reporting points. Both append to the Design Loop Status table in `{output_folder}/_progress/00-progress.md`:
+
+**1. On entry (step 1 complete):** Append status `building`
+```
+| [Scenario slug] | [NN.X] | [Page name] | building | [YYYY-MM-DD] |
+```
+
+**2. On completion (step 5 approved):** Append status `built`
+```
+| [Scenario slug] | [NN.X] | [Page name] | built | [YYYY-MM-DD] |
+```
+
+Do NOT skip these updates. The design log drives Phase 4's adaptive dashboard.
+
 ## AFTER COMPLETION
 
-1. Update design log
-2. Suggest next action (handover? next scenario?)
-3. Return to activity menu
+Design log already updated with `built` status (see above). Present the transition:
+
+<output>
+**"[page name]" is built!**
+
+1. **Run acceptance testing** — validate against the specification
+2. **Explore the next scenario step** — [next page name]
+</output>

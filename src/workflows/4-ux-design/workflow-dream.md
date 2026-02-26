@@ -77,46 +77,73 @@ In Dream mode:
 
 ---
 
+## DESIGN LOG REPORTING
+
+In Dream mode, the agent updates the design log autonomously at each page completion. Append to the Design Loop Status table in `{output_folder}/_progress/00-progress.md`:
+
+```
+| [Scenario slug] | [NN.X] | [Page name] | specified | [YYYY-MM-DD] |
+```
+
+Do NOT skip this — even in autonomous mode, the design log must be updated per page.
+
 ## AFTER COMPLETION
 
-After finishing a page specification (or all pages in Dream mode), present the user with a choice:
+### Autonomous Mode (all pages at once)
 
-```
-Page [NN.step] complete! What would you like to do?
+When Dream mode completes all pages in the scenario, present a summary for review:
 
-[N] Next page — outline and design the next step in this scenario
-[R] Return to Scenario Dashboard — pick a different scenario or activity
-[V] Validate — audit this page specification
-```
+<output>
+**Dream complete! Here's what I created for [Scenario Name]:**
 
-### Menu Handling Logic:
+| Step | Page | Status | Key Decisions |
+|------|------|--------|---------------|
+| [NN.1] | [page name] | specified | [brief summary] |
+| [NN.2] | [page name] | specified | [brief summary] |
+| ... | ... | ... | ... |
 
-- IF N: Check the scenario's shortest path (Q8) for the next page. If the next page doesn't have a folder yet, run the Page Outline Dialog from Phase 3 (ask the two questions: page purpose + exit action), create the page folder, then design it. In Dream mode, the agent outlines AND designs autonomously, then presents the result.
-- IF R: Return to the Phase 4 Scenario Dashboard
-- IF V: Load and execute `./workflow-validate.md`
+**Shared components extracted:** [list if any]
 
-### The Outline → Design Loop
+Review the pages and let me know what to adjust. When you're happy:
 
-When the user chooses [N], the flow is:
+1. **Start building** — hand the first page to agentic development
+2. **Explore responsive states / storyboard** — if any pages need detail work
+</output>
 
-1. **Outline the next page** — Ask: "What's the point of this page?" and "What does the user do to move forward?" (same as Phase 3's [O] dialog)
-2. **Component Extraction Check** (2nd+ page only) — see below
-3. **Create the page folder** with boilerplate spec and Sketches/ subfolder
-4. **Design the page** — run steps 08-15 for this page
-5. **After completion** — present this menu again
+### Per-Page Mode (user interrupted or reviewing one at a time)
 
-This loop continues until all pages in the scenario are designed or the user chooses to stop.
+Present the same two-option transition as Discuss and Suggest:
 
-### Component Extraction Check (2nd+ Page)
+**If complexity exists on this page:**
 
-**Trigger:** Automatically runs when starting the 2nd or later page in a scenario.
+<output>
+**Specification for "[page name]" is complete.**
 
-**Purpose:** Identify repeating elements across pages and suggest extracting them as shared components before they multiply.
+This page has [responsive states / storyboard items / complex functionality] that need exploring.
 
-**Dream mode behavior:**
-1. Scan completed page specs silently
-2. If shared elements found, auto-extract them as shared components (log decisions)
-3. Reference shared components in subsequent page specs instead of duplicating definitions
+1. **Explore [responsive states / storyboard / functionality]** — define the details
+2. **Explore the next scenario step** — [next page name]
+</output>
+
+**If simple page:**
+
+<output>
+**Specification for "[page name]" is complete. Ready to build.**
+
+1. **Build it** — start agentic development
+2. **Explore the next scenario step** — [next page name]
+</output>
+
+### Component Extraction (Dream Mode)
+
+In Dream mode, component extraction runs automatically:
+1. Scan completed page specs silently after each page
+2. If shared elements found, auto-extract as shared components (log decisions)
+3. Reference shared components in subsequent page specs instead of duplicating
 4. Include extraction summary in the final review presentation
 
-**Key principle:** In Dream mode, extract automatically and report in the summary. The user reviews component decisions alongside page decisions.
+### Execution Rules
+
+- ALWAYS halt and wait for user input after presenting review/transition
+- User can type "stop" or "pause" to interrupt autonomous mode
+- The user can always say "stop" to pause and return later — log current status

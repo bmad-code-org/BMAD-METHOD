@@ -1,13 +1,13 @@
 ---
-name: 'workflow-conceptualize'
-description: 'Collaboratively explore what a scenario's design should achieve before committing to specific pages or layouts.'
+name: 'workflow-discuss'
+description: 'Creative dialog for page design — discuss what each page needs, then visualize and specify.'
 ---
 
-# [C] Conceptualize — Explore What the Design Needs
+# [C] Discuss — Creative Dialog for Page Design
 
-**Goal:** Collaboratively explore what a scenario's design should achieve before committing to specific pages or layouts.
+**Goal:** Lead a focused creative dialog for each page — what does it need, can we simplify it, then visualize and specify.
 
-**When to use:** When the user isn't sure what pages are needed, wants to think through the user journey, or needs to explore design options before building.
+**When to use:** The default design activity. Start here for any page that needs design thinking before building.
 
 ---
 
@@ -41,6 +41,4 @@ Execute steps in `./steps-c/`:
 
 ## AFTER COMPLETION
 
-1. Update design log
-2. Suggest next action
-3. Return to activity menu
+Step 01's two-option transitions handle all navigation. The design log is updated at every transition within the step itself. There is no separate "after completion" — the step loops through pages until the user stops or all pages are designed.

@@ -49,6 +49,6 @@ Execute steps in `./steps-w/`:
 
 ## AFTER COMPLETION
 
-1. Update design log
-2. Suggest next action
-3. Return to activity menu
+1. Append a progress entry to `{output_folder}/_progress/00-progress.md` under `## Progress`:
+   `### [date] — Visual Design: [what was generated]`
+2. Suggest next action based on the adaptive dashboard (read Design Loop Status to find what needs attention next)

@@ -62,6 +62,6 @@ Execute steps in `./steps-e/`:
 
 ## AFTER COMPLETION
 
-1. Update design log
-2. Suggest next action
-3. Return to activity menu
+1. Append a progress entry to `{output_folder}/_progress/00-progress.md` under `## Progress`:
+   `### [date] — Evolution: [what was evolved/added]`
+2. Suggest acceptance testing (Phase 5 [T]) to validate the changes

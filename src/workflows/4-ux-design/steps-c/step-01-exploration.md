@@ -1,17 +1,18 @@
 ---
 name: 'step-01-exploration'
-description: 'Help user think through the concept, flow, and solution before sketching begins'
+description: 'Creative dialog for page design — discuss what the page needs, then choose how to visualize'
 
 # File References
 workflowFile: '../workflow.md'
 activityWorkflowFile: '../workflow-conceptualize.md'
+designLoopGuide: '../data/guides/DESIGN-LOOP-GUIDE.md'
 ---
 
-# Step 1: Scenario Exploration
+# Step 1: Page Design Dialog
 
 ## STEP GOAL:
 
-Help user think through the concept, flow, and solution before sketching begins. This step is OPTIONAL — only use if the user needs conceptual help before creating visuals.
+Lead the designer through a focused creative dialog for the current page. Two questions establish what the page needs, natural discussion refines it, then the designer chooses how to visualize. Every transition offers two choices: go deeper on this page, or move to the next scenario step.
 
 ## MANDATORY EXECUTION RULES (READ FIRST):
 
@@ -19,7 +20,6 @@ Help user think through the concept, flow, and solution before sketching begins.
 
 - 🛑 NEVER generate content without user input
 - 📖 CRITICAL: Read the complete step file before taking any action
-- 🔄 CRITICAL: When loading next step with 'C', ensure entire file is read
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `{communication_language}`
 
@@ -33,160 +33,253 @@ Help user think through the concept, flow, and solution before sketching begins.
 
 ### Step-Specific Rules:
 
-- 🎯 Focus on helping the user think through concepts — do not create detailed specifications
-- 🚫 FORBIDDEN to jump to specification details before the concept is explored
-- 💬 Approach: Ask exploratory questions, reflect back, connect to Trigger Map
-- 📋 This step is optional — skip if user has sketches ready or knows exactly what they want
+- 🎯 Focus on the two design questions — do not create detailed specifications
+- 🚫 FORBIDDEN to jump to specification details before the dialog is complete
+- 💬 Approach: Set the scene, ask D1 and D2, discuss naturally, then offer visualization options
+- 📋 After each completed stage, update the design log and present the two-option transition
 
 ## EXECUTION PROTOCOLS:
 
-- 🎯 Guide user through conceptual exploration of what the design needs
-- 💾 Save exploration notes when user is ready to sketch
+- 🎯 Guide user through the page design dialog (D1, D2)
+- 💾 Save findings to the page specification (fill empty sections, not a separate file)
 - 📖 Reference Trigger Map for persona driving forces
+- 📊 Update design log status after each transition
 - 🚫 FORBIDDEN to skip user confirmation before proceeding
 
 ## CONTEXT BOUNDARIES:
 
-- Available context: Scenario data, Trigger Map, Product Brief
-- Focus: Conceptual exploration — what, why, and how the page serves users
-- Limits: Do not create detailed specifications or component lists (that's steps-p/)
-- Dependencies: Active scenario selected from dashboard
+- Available context: Scenario data, Trigger Map, Product Brief, page boilerplate from Phase 3
+- Focus: What the page needs to do and whether it should exist at all
+- Limits: Do not create detailed component specs (that's steps-p/)
+- Dependencies: Page folder exists from Phase 3 scenario outline
 
 ## Sequence of Instructions (Do not deviate, skip, or optimize)
 
-### 1. Check Prerequisites
+### 1. Load Context
 
-Determine if this step is needed:
+Read the scenario file and current page boilerplate. Determine:
+- Which page in the scenario flow this is (first, middle, last)
+- What the scenario's driving forces are (Q4: hopes and worries)
+- What the previous page's exit action was (if not first page)
+- What platform this is (Q5: mobile, desktop, tablet, web, iOS, etc.)
 
-**Use this step when:**
-- User has no existing sketches
-- User is unsure how to approach a feature
-- User wants to explore the concept together
+If other pages in this scenario have been designed, read their specs to understand established patterns (navigation, shared components, layout conventions). Do NOT draw from memory.
 
-**Skip this step when:**
-- User has sketches ready
-- User knows exactly what they want
+### 2. Set the Scene
 
-### 2. Explore User Goal
+Present the page context to the designer.
 
-<output>**Let's explore this concept together before sketching.**
+**First page in the scenario:**
 
-I'll help you think through:
+<output>
+**[Page name] — Step [NN.X] in [Scenario Name]**
 
-- What the user is trying to accomplish
-- What content and features they need
-- How psychological triggers from your Trigger Map apply
-- What the interaction flow should be</output>
+The user arrives: [Q3 situation + Q6 entry point]
+They're hoping: [Q4 hope]
+They're worried about: [Q4 worry]
+Device: [Q5]
+</output>
 
-<ask>**What is the user trying to accomplish on this page?**
+**Subsequent pages:**
 
-What's their goal? What brought them here?</ask>
+<output>
+**[Page name] — Step [NN.X] in [Scenario Name]**
 
-<action>Listen and reflect back the core user goal</action>
+In the previous step, the user [exit action from previous page].
+Now they're on [page name].
+</output>
 
-### 3. Explore Page Elements
+### 3. Design Question D1
 
-<ask>**What do they need to see or do to accomplish that?**
+<ask>**What is the main thing the user should do on this page?**</ask>
 
-Think about:
+<action>Listen and reflect back. Connect to the scenario's end goal — begin with the end in mind. The primary action should move the user toward the scenario's success outcome (Q7).</action>
 
-- Information they need
-- Actions they can take
-- Choices they need to make</ask>
+### 4. Design Question D2
 
-<action>Help structure the page elements</action>
+<ask>**Can we simplify, remove this step completely, or simplify it?**</ask>
 
-### 4. Connect to Trigger Map
+<action>Challenge the page's existence. Can the previous page handle this? Can we combine steps? Every page must justify itself — same philosophy as Q8's "minimum viable steps."</action>
 
-<ask>**Let's check your Trigger Map - what drives this user?**
+**If the user decides to eliminate the step:**
+1. Update the scenario outline (remove/merge the step)
+2. Remove the page folder
+3. Append status `removed` to `{output_folder}/_progress/00-progress.md` Design Loop Status table:
+   `| [Scenario slug] | [NN.X] | [Page name] | removed | [YYYY-MM-DD] |`
+4. Loop back to step 2 (Set the Scene) for the next page
 
-Looking at your personas and driving forces:
+### 5. Natural Discussion
 
-- What positive goals does this page support?
-- What negative outcomes does it help them avoid?</ask>
+After D1 and D2, continue the conversation naturally. The agent's job:
 
-<action>Reference Trigger Map from B-Trigger-Map/ if available</action>
-<action>Connect design choices to user psychology</action>
+- **Connect to driving forces** — Reference the Trigger Map. What hopes does this page fulfill? What worries does it address?
+- **Identify content needs** — What information, actions, and choices belong on this page?
+- **Surface on-page interactions** — Are there interactions that keep the user on this page? (storyboard items: filters, accordions, modals, form steps)
+- **Note complexity signals** — Are there storyboard items? Complex functionality? If web: responsive content decisions will be needed later.
+- **Default device** — The scenario's Q5 prescribes the primary device. All design work (wireframe, spec, discussion) targets this device first. Other viewports are explored as responsive diffs after the base spec is complete.
 
-### 5. Map Interaction Flow
+Do NOT rush this. Let the designer think. Ask follow-up questions. Reflect back what you hear.
 
-<ask>**How does the interaction flow?**
+### 6. Present Discussion Summary
 
-Walk me through:
+When the discussion feels complete, summarize:
 
-1. User arrives (from where?)
-2. User sees... (what catches attention?)
-3. User does... (main actions?)
-4. User goes... (where next?)</ask>
+<output>
+**Here's what we've established for [page name]:**
 
-<action>Sketch out the interaction flow verbally</action>
+**Primary Action:** {{primary_action}}
+**Default Device:** {{device_from_Q5}} (base spec targets this viewport)
+**Content Needs:** {{content_list}}
+**Driving Forces Addressed:** {{trigger_connections}}
+**On-Page Interactions:** {{storyboard_items_if_any}}
+**Complexity Notes:** {{responsive_needs_storyboard_functionality}}
+</output>
 
-### 6. Present Exploration Summary
+<action>Update the page specification with discussion findings (fill empty sections in the existing page spec file)</action>
+<action>Update design log: append row with status `discussed` to `{output_folder}/_progress/00-progress.md` (see section 9 for exact format)</action>
 
-<output>**Great! Here's what we've explored:**
+### 7. Visualization Question
 
-**User Goal:** {{user_goal}}
+<ask>
+**Ready to visualize. How would you like to proceed?**
 
-**Key Elements:**
-{{key_elements_list}}
+1. **Should I wireframe it for you?** — I'll create an Excalidraw wireframe based on our discussion
+2. **Do you want to provide a sketch?** — Bring your own sketch and I'll analyze it
+3. **Add specification without a sketch** — Go directly to detailed specification
+</ask>
 
-**Psychological Triggers:**
-{{trigger_connections}}
+#### IF 1 (Wireframe):
 
-**Flow:**
-{{interaction_flow}}
+<action>BEFORE drawing: Read existing completed page specs AND their sketches to understand established patterns — navigation, shared components, layout conventions. Do NOT draw from memory.</action>
+<action>Create wireframe in Excalidraw at page folder `Sketches/{page-slug}-wireframe.excalidraw`</action>
+<action>Wireframe must be CLEAN — no annotations, no labels outside the page area. Design decisions belong in the page specification, not on the sketch.</action>
+<action>Present wireframe for review. The user can open the same .excalidraw file in VS Code and edit visually — both agent and user can modify the same artifact.</action>
+<action>ITERATE: When user gives feedback, update the wireframe. This loop is fast — JSON manipulation, seconds per change. Repeat until agreed.</action>
+<action>SYNC SPEC: When wireframe is agreed, update the page specification to match. The spec is the source of truth — never implement from wireframe directly.</action>
+<action>Update design log: append row with status `wireframed` to `{output_folder}/_progress/00-progress.md` (see section 9)</action>
+<output>See `{designLoopGuide}` for the full design loop reference.</output>
 
-You're ready to visualize! Would you like to:
+Then proceed to the **Page Transition** (step 8).
 
-1. **Wireframe it** (recommended) — I create an Excalidraw wireframe, we iterate together
-2. **I have a sketch** — You provide a sketch, I'll analyze it
-3. **Skip to spec** — Go directly to specification (for pages following established patterns)
-4. **Explore more** — Refine the concept further</output>
+#### IF 2 (User provides sketch):
 
-<check if="choice == 1">
-  <action>Update the page specification with exploration findings (fill empty sections, not a separate file)</action>
-  <action>BEFORE drawing: Read existing completed page specs AND their sketches to understand the established page structure — navigation, service menus, footer, card patterns, shared components. Do NOT draw from memory.</action>
-  <action>Create wireframe in Excalidraw at page folder `Sketches/{page-slug}-wireframe.excalidraw`</action>
-  <action>Wireframe must be CLEAN — no annotations, no labels outside the page area. Design decisions belong in the page specification, not on the sketch.</action>
-  <action>Present wireframe for review. The user can open the same .excalidraw file in VS Code and edit visually — both agent and user can modify the same artifact.</action>
-  <action>ITERATE: When user gives feedback, update the wireframe. This loop is fast — JSON manipulation, seconds per change. Repeat until agreed.</action>
-  <action>SYNC SPEC: When wireframe is agreed, update the page specification to match. The spec is the source of truth — never implement from wireframe directly.</action>
-  <output>See `data/guides/DESIGN-LOOP-GUIDE.md` for the full design loop reference.</output>
-</check>
+<output>Go sketch your concept and come back when ready. I'll analyze it.</output>
+<action>Pause workflow — user will return with a sketch</action>
+<action>When user returns: Load sketch analysis workflow (steps-k/step-01-sketch-analysis.md)</action>
 
-<check if="choice == 2">
-  <output>Go sketch your concept and come back when ready. I'll analyze it with [K].</output>
-  <action>Update the page specification with exploration findings (fill empty sections, not a separate file)</action>
-  <action>Pause workflow - user will return to sketch analysis</action>
-</check>
+#### IF 3 (Specification without sketch):
 
-<check if="choice == 3">
-  <action>Update the page specification with exploration findings (fill empty sections, not a separate file)</action>
-  <action>Proceed directly to specification activity</action>
-</check>
+<action>Proceed to specification activity (steps-p/) with the discussion findings</action>
+<action>Update design log: append row with status `specified` to `{output_folder}/_progress/00-progress.md` (see section 9)</action>
 
-<check if="choice == 4">
-  <action>Ask what aspect to explore more deeply</action>
-  <action>Continue exploration dialog</action>
-</check>
+Then proceed to the **Page Transition** (step 8).
 
-### 7. Present MENU OPTIONS
+### 8. Page Transition
 
-Display: "**Select an Option:** [M] Return to Activity Menu"
+After each completed stage, present the two-option transition. The "next logical step" adapts based on where the page is in the design loop:
 
-#### Menu Handling Logic:
+**After wireframe agreed + spec synced:**
 
-- IF M: Return to {workflowFile} or {activityWorkflowFile}
-- IF Any other comments or queries: help user respond then [Redisplay Menu Options](#7-present-menu-options)
+<output>
+**Spec for "[page name]" is synced with the wireframe.**
+
+1. **Write the detailed specification** — content, interactions, states
+2. **Explore the next scenario step** — [next page name]
+</output>
+
+**After specification complete:**
+
+The agent checks what was identified during discussion and specification:
+- **Web platform?** → Responsive content decisions are needed
+- **Storyboard items identified?** → On-page interactions need exploring
+- **Complex functionality?** → Forms, validation, dynamic content need detail
+
+If any of the above exist:
+
+<output>
+**Specification for "[page name]" is complete.**
+
+This page has [responsive states / storyboard items / complex functionality] that need exploring.
+
+1. **Explore [responsive states / storyboard / functionality]** — define the details
+2. **Explore the next scenario step** — [next page name]
+</output>
+
+If none exist (simple page, single-device platform):
+
+<output>
+**Specification for "[page name]" is complete. Ready to build.**
+
+1. **Build it** — start agentic development
+2. **Explore the next scenario step** — [next page name]
+</output>
+
+**After responsive/storyboard/functionality exploration:**
+
+<output>
+**"[page name]" is fully specified. Ready to build.**
+
+1. **Build it** — start agentic development
+2. **Explore the next scenario step** — [next page name]
+</output>
+
+#### Transition Handling:
+
+- **Next logical step:** Proceed to the appropriate activity (specification → steps-p/, responsive → diff file, build → Phase 5 prototyping)
+- **Explore next scenario step:** Loop back to step 2 (Set the Scene) for the next page in the scenario's shortest path. If no more pages, show "All pages in this scenario are designed!"
+- **Design log:** Always append a status row to `{output_folder}/_progress/00-progress.md` before presenting transition options (see section 9)
+- **Session plan:** Check off the completed item in the active agent dialog. If all plan items are done, note it in the transition: "That's everything we planned! Want to continue or wrap up?"
 
 #### EXECUTION RULES:
 
-- ALWAYS halt and wait for user input after presenting menu
-- User can chat or ask questions — always respond and then redisplay menu options
+- ALWAYS halt and wait for user input after presenting transition options
+- User can chat or ask questions — always respond and then redisplay the transition
+- The user can always say "stop" to pause and return later — update the design log with current status AND set the agent dialog to `status: paused`
+
+### 9. Design Log Updates
+
+At every transition, append a row to the **Design Loop Status** table in `{output_folder}/_progress/00-progress.md`.
+
+**How to update (exact procedure):**
+
+1. Open `{output_folder}/_progress/00-progress.md`
+2. Find the `## Design Loop Status` section
+3. Append a new row to the table:
+
+```
+| [Scenario slug] | [NN.X] | [Page name] | [status] | [YYYY-MM-DD] |
+```
+
+**Example:**
+```
+| 01-hasses-emergency-search | 1.1 | Start Page | discussed | 2026-02-26 |
+| 01-hasses-emergency-search | 1.1 | Start Page | wireframed | 2026-02-26 |
+| 01-hasses-emergency-search | 1.2 | Service Page | discussed | 2026-02-26 |
+```
+
+**Status values and when to log:**
+
+| Status | When logged |
+|--------|------------|
+| `discussed` | D1 + D2 complete, discussion findings saved to spec |
+| `wireframed` | Wireframe created and agreed, spec synced |
+| `specified` | Detailed specification complete |
+| `explored` | Responsive states / storyboard / functionality mapped |
+| `building` | Handed to Phase 5 for implementation |
+| `built` | Implementation complete |
+| `approved` | User approved after browser review |
+| `removed` | Step eliminated during D2 challenge |
+
+**Rules:**
+- Do NOT overwrite previous rows — append only. The latest row per page is the current status.
+- Do NOT skip this step. The design log drives the adaptive dashboard when Freya starts up. Without it, the agent has no memory of where things stand.
+- Update BEFORE presenting the transition options to the user.
+
+---
 
 ## CRITICAL STEP COMPLETION NOTE
 
-ONLY WHEN the user has completed their exploration and chosen a next action (sketch, specify, or return to menu) will you proceed accordingly. This is the only step in the Conceptualize activity.
+This step is the core of Phase 4's creative work. It runs once per page in the scenario, looping through D1 → D2 → discuss → visualize → transition for each page. The two-option transition pattern ensures the designer always knows where they are and what comes next.
 
 ---
 
@@ -194,26 +287,29 @@ ONLY WHEN the user has completed their exploration and chosen a next action (ske
 
 ### ✅ SUCCESS:
 
-- User goal clearly identified through collaborative exploration
-- Page elements structured from user input
-- Trigger Map connections identified
-- Interaction flow mapped verbally
-- Exploration findings saved to the page specification (not a separate file)
-- User chose next action with clear understanding
+- Agent set the scene with context from the scenario (arrival, driving forces, previous action)
+- D1 answered: primary action clearly identified
+- D2 asked: page's existence challenged — simplified or justified
+- Discussion connected to Trigger Map driving forces
+- Findings saved to the page specification (not a separate file)
+- Visualization choice offered after discussion (wireframe / sketch / spec)
 - When wireframing: iterated with user until agreed, then synced spec to match
+- Two-option transition presented after each stage (next logical step + explore next scenario step)
+- Design log updated at every transition
 
 ### ❌ SYSTEM FAILURE:
 
 - Generating page concepts without user input
-- Jumping to specification details before exploration is complete
+- Skipping D1 or D2
+- Not challenging the page's existence (D2)
 - Not connecting design choices to user psychology / Trigger Map
-- Skipping the interaction flow mapping
-- Proceeding without user confirmation of exploration summary
-- Creating detailed component specifications (wrong activity)
+- Jumping to specification before discussion is complete
 - Saving exploration findings to a separate notes file instead of updating the page spec
 - Drawing wireframes with annotations or labels outside the page area
 - Drawing shared elements (nav, footer) from memory instead of reading existing specs
 - Implementing from wireframe without updating the spec first
 - Using AI image generators (Nano Banana) for wireframes instead of Excalidraw
+- Presenting the old activity menu instead of the two-option transition
+- Not updating the design log at transitions
 
 **Master Rule:** Skipping steps, optimizing sequences, or not following exact instructions is FORBIDDEN and constitutes SYSTEM FAILURE.

@@ -73,8 +73,20 @@ Execute steps in `./steps-d/`:
 
 ---
 
+## DESIGN LOG REPORTING POINTS
+
+Append to the Design Loop Status table in `{output_folder}/_progress/00-progress.md`:
+
+**On entry (step 01 complete):** `| [Scenario slug] | [NN.X] | [Page name] | building | [YYYY-MM-DD] |`
+**On completion (step 05 approved):** `| [Scenario slug] | [NN.X] | [Page name] | built | [YYYY-MM-DD] |`
+
 ## AFTER COMPLETION
 
-1. Update design log
-2. Suggest next action (acceptance testing? handover?)
-3. Return to activity menu
+Design log updated with `built` status (see above). Present the transition:
+
+<output>
+**"[page name]" is built!**
+
+1. **Run acceptance testing** — validate against the specification
+2. **Explore the next scenario step** — [next page name]
+</output>

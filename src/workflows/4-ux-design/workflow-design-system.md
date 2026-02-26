@@ -43,6 +43,6 @@ Execute steps in `./steps-m/`:
 
 ## AFTER COMPLETION
 
-1. Update design log
-2. Suggest next action
-3. Return to activity menu
+1. Append a progress entry to `{output_folder}/_progress/00-progress.md` under `## Progress`:
+   `### [date] — Design System: [components extracted/updated]`
+2. Suggest next action based on the adaptive dashboard
