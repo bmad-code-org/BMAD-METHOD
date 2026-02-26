@@ -152,23 +152,30 @@
 | EN | "{English text}" |
 | Behavior | {onClick / onChange / etc.} |
 
-#### ↕ `{page-name}-{above}-{below}-gap` — {spacing token}
+#### ↕ `{page}-{v|h}-{type}-{size}` — {reason}
 
 <!--
   Spacing objects sit between content objects. They have IDs and are first-class.
 
+  NAMING: {page}-{v|h}-{type}-{size}
+  - v = vertical, h = horizontal
+  - type = space, separator, line
+  - size = the token name (zero, sm, md, lg, xl, 2xl, 3xl, flex)
+  The ID describes WHAT the spacing IS, not which objects it sits between.
+
   RULES:
-  - Default element gap (from the Spacing section above) is implicit — no spacing object needed.
+  - Default element spacing (from the Spacing section above) is implicit — no spacing object needed.
   - Non-default spacing MUST be an explicit spacing object with an ID.
   - Zero spacing (overlap / flush) MUST be documented: ↕ `id` — space-zero (reason)
+  - Same spacing shared by all items in a group → define on the group, not between each item.
   - Spacing objects flow into D-Design-System/00-design-system.md → Patterns.
 
-  FORMAT: #### ↕ `{id}` — {token} [{optional reason}]
+  FORMAT: #### ↕ `{id}` — {reason}
 
   EXAMPLES:
-  #### ↕ `hem-heading-subtitle-gap` — space-sm
-  #### ↕ `hem-icons-about-gap` — space-zero (icon bar sits flush against section below)
-  #### ↕ `hem-about-trust-gap` — space-xl + space-xs (busy content needs breathing room)
+  #### ↕ `hem-v-space-zero` — header and service menu form one continuous nav unit
+  #### ↕ `hem-v-separator-2xl` — gray line, space-2xl above and below. Separates about from trust cards.
+  #### ↕ `hem-v-space-3xl` — major section boundary between seasons and footer
 -->
 
 ---

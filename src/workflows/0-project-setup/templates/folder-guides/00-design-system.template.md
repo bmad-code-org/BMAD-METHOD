@@ -198,9 +198,10 @@ _Additional design tokens (colors, shadows, borders) will be documented here as 
   The agent does NOT ask "why?" — it observes and reflects:
   "Got it — large image above a card row needs extra room. I'll remember that."
 
-  First occurrence: one-off fix in the page spec.
-  Second occurrence: agent applies the same pattern.
-  Third time: extract it here.
+  EXTRACTION RULES — objects vs spacing:
+  - Objects: first use stays in the page spec. Second use → extract here.
+  - Spacing: first use → immediately extract here. No waiting.
+  Spacing is relational — a decision about two object types is universal from day one.
 
   CONTEXT RULE: Entries are context-free by default (universal).
   Add context only when the same object pair needs DIFFERENT spacing
@@ -208,7 +209,7 @@ _Additional design tokens (colors, shadows, borders) will be documented here as 
   so you can tell them apart. Before the first violation, keep it clean.
 -->
 
-Spacing objects are first-class — they have IDs in page specs (e.g., `hem-heading-subtitle-gap`) and live here organized by value. Each spacing value accumulates the situations where it's used. The list grows from real design decisions.
+Spacing objects are first-class — they have IDs in page specs (e.g., `hem-v-space-xl`) and live here organized by value. Each spacing value accumulates the situations where it's used. The list grows from real design decisions.
 
 _Patterns will be documented here as spacing objects recur across pages._
 
@@ -216,29 +217,27 @@ _Patterns will be documented here as spacing objects recur across pages._
   Example format (delete when real patterns emerge):
 
   ### space-sm
-  - Between heading and subheading
-  - Between icon and label inside buttons
-  - Between badge dot and badge text
+  | Above | Below | Why |
+  |-------|-------|-----|
+  | Heading | Subheading | Tight pair — always read together |
+  | Icon | Label (inside button) | Compact inline group |
 
   ### space-lg
-  - Card grid gap
-  - Between image and caption
-  - Between form field groups
-
-  ### space-md
-  - Between image and caption (article page, inline photo — smaller image needs less room)
-  Note: space-lg also has "Between image and caption" — context added to both
-  because article pages are an exception to the universal rule.
+  | Above | Below | Why |
+  |-------|-------|-----|
+  | Card | Card (grid gap) | Comfortable breathing room |
+  | Image | Caption | Standard image-to-text |
 
   ### space-zero
-  - Vehicle icon bar flush against section below (homepage hero)
-  - Nav items touching divider lines (service menu)
+  | Above | Below | Why |
+  |-------|-------|-----|
+  | Header | Service menu | One continuous nav unit |
+  | Icon bar | Section below | Flush — belongs to the section above |
 
-  ### space-2xl / line / space-2xl
-  - Between content groups within a section when a visual break is needed
-
-  ### space-xl + space-xs
-  - Below busy content blocks before card rows
+  ### v-separator-2xl
+  | Above | Below | Why |
+  |-------|-------|-----|
+  | About preview | Trust cards | Gray line, equal space above/below |
 -->
 
 ---
