@@ -1,5 +1,5 @@
 const path = require('node:path');
-const fs = require('fs-extra');
+const fs = require('../../../lib/fs');
 const crypto = require('node:crypto');
 const { getProjectRoot } = require('../../../lib/project-root');
 const prompts = require('../../../lib/prompts');

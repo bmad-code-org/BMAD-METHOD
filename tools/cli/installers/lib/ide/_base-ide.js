@@ -1,5 +1,5 @@
 const path = require('node:path');
-const fs = require('fs-extra');
+const fs = require('../../../lib/fs');
 const { XmlHandler } = require('../../../lib/xml-handler');
 const prompts = require('../../../lib/prompts');
 const { getSourcePath } = require('../../../lib/project-root');

@@ -1,5 +1,5 @@
 const path = require('node:path');
-const fs = require('fs-extra');
+const fs = require('../../../lib/fs');
 const yaml = require('yaml');
 const prompts = require('../../../lib/prompts');
 const { XmlHandler } = require('../../../lib/xml-handler');
@@ -14,7 +14,7 @@ const { BMAD_FOLDER_NAME } = require('../ide/shared/path-utils');
  * and agent file management including XML activation block injection.
  *
  * @class ModuleManager
- * @requires fs-extra
+ * @requires lib/fs
  * @requires yaml
  * @requires prompts
  * @requires XmlHandler
@@ -208,7 +208,9 @@ class ModuleManager {
     if (this.bmadDir) {
       const customCacheDir = path.join(this.bmadDir, '_config', 'custom');
       if (await fs.pathExists(customCacheDir)) {
-        const cacheEntries = await fs.readdir(customCacheDir, { withFileTypes: true });
+        const cacheEntries = await fs.readdir(customCacheDir, {
+          withFileTypes: true,
+        });
         for (const entry of cacheEntries) {
           if (entry.isDirectory()) {
             const cachePath = path.join(customCacheDir, entry.name);
@@ -387,7 +389,12 @@ class ModuleManager {
       const fetchSpinner = await createSpinner();
       fetchSpinner.start(`Fetching ${moduleInfo.name}...`);
       try {
-        const currentRef = execSync('git rev-parse HEAD', { cwd: moduleCacheDir, stdio: 'pipe' }).toString().trim();
+        const currentRef = execSync('git rev-parse HEAD', {
+          cwd: moduleCacheDir,
+          stdio: 'pipe',
+        })
+          .toString()
+          .trim();
         // Fetch and reset to remote - works better with shallow clones than pull
         execSync('git fetch origin --depth 1', {
           cwd: moduleCacheDir,
@@ -399,7 +406,12 @@ class ModuleManager {
           stdio: ['ignore', 'pipe', 'pipe'],
           env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
         });
-        const newRef = execSync('git rev-parse HEAD', { cwd: moduleCacheDir, stdio: 'pipe' }).toString().trim();
+        const newRef = execSync('git rev-parse HEAD', {
+          cwd: moduleCacheDir,
+          stdio: 'pipe',
+        })
+          .toString()
+          .trim();
 
         fetchSpinner.stop(`Fetched ${moduleInfo.name}`);
         // Force dependency install if we got new code
@@ -521,7 +533,9 @@ class ModuleManager {
    * @param {Object} options.logger - Logger instance for output
    */
   async install(moduleName, bmadDir, fileTrackingCallback = null, options = {}) {
-    const sourcePath = await this.findModuleSource(moduleName, { silent: options.silent });
+    const sourcePath = await this.findModuleSource(moduleName, {
+      silent: options.silent,
+    });
     const targetPath = path.join(bmadDir, moduleName);
 
     // Check if source module exists
@@ -619,7 +633,9 @@ class ModuleManager {
     if (force) {
       // Force update - remove and reinstall
       await fs.remove(targetPath);
-      return await this.install(moduleName, bmadDir, null, { installer: options.installer });
+      return await this.install(moduleName, bmadDir, null, {
+        installer: options.installer,
+      });
     } else {
       // Selective update - preserve user modifications
       await this.syncModule(sourcePath, targetPath);
@@ -855,7 +871,7 @@ class ModuleManager {
 
         // Check for customizations and build answers object
         let customizedFields = [];
-        let answers = {};
+        const answers = {};
         if (await fs.pathExists(customizePath)) {
           const customizeContent = await fs.readFile(customizePath, 'utf8');
           const customizeData = yaml.parse(customizeContent);
@@ -928,7 +944,9 @@ class ModuleManager {
 
         // Copy any non-sidecar files from agent directory (e.g., foo.md)
         const agentDir = path.dirname(agentFile);
-        const agentEntries = await fs.readdir(agentDir, { withFileTypes: true });
+        const agentEntries = await fs.readdir(agentDir, {
+          withFileTypes: true,
+        });
 
         for (const entry of agentEntries) {
           if (entry.isFile() && !entry.name.endsWith('.agent.yaml') && !entry.name.endsWith('.md')) {
@@ -1139,7 +1157,11 @@ class ModuleManager {
     const moduleConfig = options.moduleConfig || {};
     const existingModuleConfig = options.existingModuleConfig || {};
     const projectRoot = path.dirname(bmadDir);
-    const emptyResult = { createdDirs: [], movedDirs: [], createdWdsFolders: [] };
+    const emptyResult = {
+      createdDirs: [],
+      movedDirs: [],
+      createdWdsFolders: [],
+    };
 
     // Special handling for core module - it's in src/core not src/modules
     let sourcePath;

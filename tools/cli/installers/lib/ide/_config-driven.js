@@ -1,6 +1,6 @@
 const os = require('node:os');
 const path = require('node:path');
-const fs = require('fs-extra');
+const fs = require('../../../lib/fs');
 const yaml = require('yaml');
 const { BaseIdeSetup } = require('./_base-ide');
 const prompts = require('../../../lib/prompts');

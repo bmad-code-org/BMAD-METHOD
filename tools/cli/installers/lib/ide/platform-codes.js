@@ -1,4 +1,4 @@
-const fs = require('fs-extra');
+const fs = require('../../../lib/fs');
 const path = require('node:path');
 const yaml = require('yaml');
 

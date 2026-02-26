@@ -1,6 +1,6 @@
 const path = require('node:path');
 const os = require('node:os');
-const fs = require('fs-extra');
+const fs = require('./fs');
 const { CLIUtils } = require('./cli-utils');
 const { CustomHandler } = require('../installers/lib/custom/handler');
 const { ExternalModuleManager } = require('../installers/lib/modules/external-manager');

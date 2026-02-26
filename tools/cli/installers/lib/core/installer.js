@@ -1,5 +1,5 @@
 const path = require('node:path');
-const fs = require('fs-extra');
+const fs = require('../../../lib/fs');
 const { Detector } = require('./detector');
 const { Manifest } = require('./manifest');
 const { ModuleManager } = require('../modules/manager');
@@ -87,7 +87,7 @@ class Installer {
     if (textExtensions.includes(ext)) {
       try {
         // Read the file content
-        let content = await fs.readFile(sourcePath, 'utf8');
+        const content = await fs.readFile(sourcePath, 'utf8');
 
         // Write to target with replaced content
         await fs.ensureDir(path.dirname(targetPath));
@@ -260,7 +260,7 @@ class Installer {
 
     // Collect configurations for modules (skip if quick update already collected them)
     let moduleConfigs;
-    let customModulePaths = new Map();
+    const customModulePaths = new Map();
 
     if (config._quickUpdate) {
       // Quick update already collected all configs, use them directly
@@ -524,7 +524,9 @@ class Installer {
           // Also check cache directory for custom modules (like quick update does)
           const cacheDir = path.join(bmadDir, '_config', 'custom');
           if (await fs.pathExists(cacheDir)) {
-            const cachedModules = await fs.readdir(cacheDir, { withFileTypes: true });
+            const cachedModules = await fs.readdir(cacheDir, {
+              withFileTypes: true,
+            });
 
             for (const cachedModule of cachedModules) {
               const moduleId = cachedModule.name;
@@ -585,7 +587,9 @@ class Installer {
               const relativePath = path.relative(bmadDir, modifiedFile.path);
               const tempBackupPath = path.join(tempModifiedBackupDir, relativePath);
               await fs.ensureDir(path.dirname(tempBackupPath));
-              await fs.copy(modifiedFile.path, tempBackupPath, { overwrite: true });
+              await fs.copy(modifiedFile.path, tempBackupPath, {
+                overwrite: true,
+              });
             }
             spinner.stop(`Backed up ${modifiedFiles.length} modified files`);
 
@@ -608,7 +612,9 @@ class Installer {
         // Also check cache directory for custom modules (like quick update does)
         const cacheDir = path.join(bmadDir, '_config', 'custom');
         if (await fs.pathExists(cacheDir)) {
-          const cachedModules = await fs.readdir(cacheDir, { withFileTypes: true });
+          const cachedModules = await fs.readdir(cacheDir, {
+            withFileTypes: true,
+          });
 
           for (const cachedModule of cachedModules) {
             const moduleId = cachedModule.name;
@@ -668,7 +674,9 @@ class Installer {
             const relativePath = path.relative(bmadDir, modifiedFile.path);
             const tempBackupPath = path.join(tempModifiedBackupDir, relativePath);
             await fs.ensureDir(path.dirname(tempBackupPath));
-            await fs.copy(modifiedFile.path, tempBackupPath, { overwrite: true });
+            await fs.copy(modifiedFile.path, tempBackupPath, {
+              overwrite: true,
+            });
           }
           spinner.stop(`Backed up ${modifiedFiles.length} modified files`);
           config._tempModifiedBackupDir = tempModifiedBackupDir;
@@ -907,7 +915,11 @@ class Installer {
       let taskResolution;
 
       // Collect directory creation results for output after tasks() completes
-      const dirResults = { createdDirs: [], movedDirs: [], createdWdsFolders: [] };
+      const dirResults = {
+        createdDirs: [],
+        movedDirs: [],
+        createdWdsFolders: [],
+      };
 
       // Build task list conditionally
       const installTasks = [];
@@ -919,7 +931,9 @@ class Installer {
           task: async (message) => {
             await this.installCoreWithDependencies(bmadDir, { core: {} });
             addResult('Core', 'ok', isQuickUpdate ? 'updated' : 'installed');
-            await this.generateModuleConfigs(bmadDir, { core: config.coreConfig || {} });
+            await this.generateModuleConfigs(bmadDir, {
+              core: config.coreConfig || {},
+            });
             return isQuickUpdate ? 'Core updated' : 'Core installed';
           },
         });
@@ -965,7 +979,11 @@ class Installer {
                 const cachedModule = finalCustomContent.cachedModules.find((m) => m.id === moduleName);
                 if (cachedModule) {
                   isCustomModule = true;
-                  customInfo = { id: moduleName, path: cachedModule.cachePath, config: {} };
+                  customInfo = {
+                    id: moduleName,
+                    path: cachedModule.cachePath,
+                    config: {},
+                  };
                 }
               }
 
@@ -1015,7 +1033,11 @@ class Installer {
                   },
                 );
                 await this.generateModuleConfigs(bmadDir, {
-                  [moduleName]: { ...config.coreConfig, ...customInfo.config, ...collectedModuleConfig },
+                  [moduleName]: {
+                    ...config.coreConfig,
+                    ...customInfo.config,
+                    ...collectedModuleConfig,
+                  },
                 });
               } else {
                 if (!resolution || !resolution.byModule) {
@@ -1474,7 +1496,9 @@ class Installer {
       // Also check cache directory
       const cacheDir = path.join(bmadDir, '_config', 'custom');
       if (await fs.pathExists(cacheDir)) {
-        const cachedModules = await fs.readdir(cacheDir, { withFileTypes: true });
+        const cachedModules = await fs.readdir(cacheDir, {
+          withFileTypes: true,
+        });
 
         for (const cachedModule of cachedModules) {
           if (cachedModule.isDirectory()) {
@@ -1549,7 +1573,9 @@ class Installer {
 
       for (const module of existingInstall.modules) {
         spinner.message(`Updating module: ${module.id}...`);
-        await this.moduleManager.update(module.id, bmadDir, config.force, { installer: this });
+        await this.moduleManager.update(module.id, bmadDir, config.force, {
+          installer: this,
+        });
       }
 
       // Update manifest
@@ -1608,7 +1634,9 @@ class Installer {
 
     // 2. IDE CLEANUP (before _bmad/ deletion so configs are accessible)
     if (options.removeIdeConfigs !== false) {
-      await this.uninstallIdeConfigs(projectDir, existingInstall, { silent: options.silent });
+      await this.uninstallIdeConfigs(projectDir, existingInstall, {
+        silent: options.silent,
+      });
       removed.ideConfigs = true;
     }
 
@@ -1847,7 +1875,11 @@ class Installer {
 
               // Lookup agent info
               const cleanAgentName = agentName ? agentName.trim() : '';
-              const agentData = agentInfo.get(cleanAgentName) || { command: '', displayName: '', title: '' };
+              const agentData = agentInfo.get(cleanAgentName) || {
+                command: '',
+                displayName: '',
+                title: '',
+              };
 
               // Build new row with agent info
               const newRow = [
@@ -1902,8 +1934,8 @@ class Installer {
       }
 
       // Sequence comparison
-      const seqA = parseInt(colsA[4] || '0', 10);
-      const seqB = parseInt(colsB[4] || '0', 10);
+      const seqA = Number.parseInt(colsA[4] || '0', 10);
+      const seqB = Number.parseInt(colsB[4] || '0', 10);
       return seqA - seqB;
     });
 
@@ -2445,7 +2477,9 @@ class Installer {
       }
       const cacheDir = path.join(bmadDir, '_config', 'custom');
       if (await fs.pathExists(cacheDir)) {
-        const cachedModules = await fs.readdir(cacheDir, { withFileTypes: true });
+        const cachedModules = await fs.readdir(cacheDir, {
+          withFileTypes: true,
+        });
 
         for (const cachedModule of cachedModules) {
           const moduleId = cachedModule.name;
@@ -2680,7 +2714,9 @@ class Installer {
       const customModuleSources = new Map();
       const cacheDir = path.join(bmadDir, '_config', 'custom');
       if (await fs.pathExists(cacheDir)) {
-        const cachedModules = await fs.readdir(cacheDir, { withFileTypes: true });
+        const cachedModules = await fs.readdir(cacheDir, {
+          withFileTypes: true,
+        });
 
         for (const cachedModule of cachedModules) {
           if (cachedModule.isDirectory()) {
@@ -3152,8 +3188,7 @@ class Installer {
               // Remove the module from filesystem and manifest
               const modulePath = path.join(bmadDir, missing.id);
               if (await fs.pathExists(modulePath)) {
-                const fsExtra = require('fs-extra');
-                await fsExtra.remove(modulePath);
+                await fs.remove(modulePath);
                 await prompts.log.warn(`Deleted module directory: ${path.relative(projectRoot, modulePath)}`);
               }
 

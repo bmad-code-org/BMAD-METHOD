@@ -1,5 +1,5 @@
 const path = require('node:path');
-const fs = require('fs-extra');
+const fs = require('../../../lib/fs');
 const yaml = require('yaml');
 const { Manifest } = require('./manifest');
 
