@@ -74,7 +74,7 @@ modules:
 
   lean-prioritisation-module:
     url: https://github.com/SCSA-dev/scsa-bmad-agents.git
-    module-definition: lean-prioritisation/module.yaml
+    module-definition: lean-prioritisation-module/module.yaml
     code: lp
     name: "Lean Prioritisation Module"
     description: "Agents and Workflow for Lean Prioritisation"
