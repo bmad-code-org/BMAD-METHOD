@@ -82,6 +82,49 @@
 
 ---
 
+## Spacing
+
+<!--
+  All spacing values MUST use token names from the project's spacing scale.
+  The scale is defined in D-Design-System/00-design-system.md → Spacing Scale.
+  This can be the WDS default scale, Tailwind classes, Material tokens, or any system.
+  Do NOT use arbitrary pixel values. If unsure, check the scale.
+-->
+
+**Scale:** [Spacing Scale](../../D-Design-System/00-design-system.md#spacing-scale)
+
+| Property | Token |
+|----------|-------|
+| Page padding (horizontal) | {e.g., space-md mobile / space-lg desktop} |
+| Section gap | {e.g., space-xl} |
+| Element gap (default within sections) | {e.g., space-md} |
+| Component gap (within groups) | {e.g., space-sm} |
+
+---
+
+## Typography
+
+<!--
+  Text sizes use token names from the project's type scale.
+  The scale is defined in D-Design-System/00-design-system.md → Type Scale.
+
+  IMPORTANT: Semantic level (H1, H2, p) signals document structure — for accessibility and SEO.
+  Visual styling (size, weight, typeface) signals visual hierarchy — how it looks.
+  They are related but NOT locked together. An H2 can be text-sm. A <p> can be text-2xl.
+  Headings can have different typefaces and styles on different pages — that's fine.
+-->
+
+**Scale:** [Type Scale](../../D-Design-System/00-design-system.md#type-scale)
+
+| Element | Semantic | Size | Weight | Typeface |
+|---------|----------|------|--------|----------|
+| {Page title} | H1 | {e.g., text-2xl} | {e.g., bold} | {e.g., display / default} |
+| {Section heading} | H2 | {e.g., text-xl} | {e.g., semibold} | {default} |
+| {Body text} | p | text-md | normal | {default} |
+| {Caption/helper} | p | {e.g., text-xs} | normal | {default} |
+
+---
+
 ## Page Sections
 
 ### Section: {Section Name}
@@ -92,6 +135,8 @@
 |----------|-------|
 | Purpose | {What this section does} |
 | Component | [{Design System Component}]({path}) |
+| Padding | {e.g., space-lg space-md} |
+| Element gap | {e.g., space-md — or "default" if same as page-level} |
 
 ---
 

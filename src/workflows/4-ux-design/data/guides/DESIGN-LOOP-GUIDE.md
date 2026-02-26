@@ -10,22 +10,23 @@ Design is not a handoff between phases. It's a loop: discuss → visualize → a
 
 ---
 
-## The 8-Step Loop
+## The 9-Step Loop
 
 ```
 1. DISCUSS    → Talk about what the page needs to do, who it's for, primary actions
 2. SPEC       → Write the page specification (content, structure, object IDs)
 3. WIREFRAME  → Generate Excalidraw wireframe from the spec
 4. ITERATE    → User reviews wireframe, agent updates — fast loop (seconds)
-5. SYNC SPEC  → Spec updates to match agreed wireframe
-6. IMPLEMENT  → Build the page in code
-7. REFINE     → Browser review via screenshots at real breakpoints
-8. TOKENS     → Extract recurring patterns into design tokens
+5. APPROVE    → User exports PNG — the export IS the approval
+6. SYNC SPEC  → Spec updates to match agreed wireframe
+7. IMPLEMENT  → Build the page in code
+8. REFINE     → Browser review via screenshots at real breakpoints
+9. TOKENS     → Extract recurring patterns into design tokens
 ```
 
-Steps 4 and 7 are the iteration loops:
+Steps 4 and 8 are the iteration loops:
 - **Step 4** is fast — Excalidraw JSON manipulation, seconds per change
-- **Step 7** is real — actual browser rendering, actual responsive breakpoints
+- **Step 8** is real — actual browser rendering, actual responsive breakpoints
 
 ---
 
@@ -52,6 +53,19 @@ No other design tool offers this:
 - Pencil uses encrypted files
 - AI image generators produce dead images that can't be edited
 
+### Export = approval
+
+The agent can read and write `.excalidraw` JSON, but it cannot export to PNG — that requires the Excalidraw UI. This limitation is a feature: the manual export becomes an approval gate.
+
+**The pattern:**
+1. Agent creates/edits the `.excalidraw` file (JSON)
+2. User reviews in Excalidraw, can tweak things directly
+3. When agreed → user exports PNG and saves it alongside the `.excalidraw` file
+4. PNG becomes the frozen visual reference in the specification
+5. `.excalidraw` file stays as the editable source for future revisions
+
+The PNG serves as both a backup and a confirmation. If the user hasn't exported the image, the wireframe isn't approved yet.
+
 ### The spec is the contract
 
 The wireframe helps reach agreement. The spec captures what was agreed. The implementation follows the spec. This prevents "I thought we said..." drift.
@@ -66,11 +80,23 @@ Because the spec has object IDs, responsive breakpoints, and real content, the a
 
 Real fonts, real images, real responsive breakpoints. Screenshots at 375px, 768px, 1280px show exactly what users will see. This is where micro-adjustments happen — spacing, font sizes, proportions.
 
-### Tokens emerge from usage
+### Spacing discipline — named scale, never arbitrary values
 
-Don't design a heading scale and spacing system before building the page. Build the page, notice you're making the same kinds of adjustments ("make this heading bigger," "more space here"), and extract the patterns into tokens. The design system grows from real needs.
+Agents don't have a trained eye for spacing. Without constraints, they'll use arbitrary values — 17px here, 23px there. The fix: a named spacing scale defined per project.
 
-**Don't design tokens upfront.** Build pages first. Extract patterns when they recur across 3+ pages.
+**The scale lives in** `D-Design-System/00-design-system.md` → Spacing Scale. If the project already has a design system (Tailwind, Material, Carbon, custom tokens), use that. If not, WDS provides a default 9-token scale from `space-3xs` to `space-3xl`, symmetric around `space-md`. The user defines what pixel values they represent.
+
+**First design session:** Freya checks if the project has an existing spacing system. If yes, map those tokens into the design system file. If no, Freya proposes values for the default scale and the user confirms. From that point on, every spec uses token names.
+
+```
+space-3xs  space-2xs  space-xs  space-sm  space-md  space-lg  space-xl  space-2xl  space-3xl
+```
+
+**The rules:**
+- Specs always use token names, never raw pixel values
+- Every section in a page spec declares its padding and element gap using tokens
+- If a spacing value isn't in the scale, it doesn't belong in the spec
+- The scale can be adjusted as the project matures — specs stay valid because they reference names, not numbers
 
 ---
 
@@ -78,11 +104,11 @@ Don't design a heading scale and spacing system before building the page. Build 
 
 | Tool | Role | When |
 |------|------|------|
-| **Excalidraw** | Wireframes and layout iteration | Steps 3-4 |
-| **Puppeteer** | Browser screenshots for visual review | Step 7 |
+| **Excalidraw** | Wireframes and layout iteration | Steps 3-5 |
+| **Puppeteer** | Browser screenshots for visual review | Step 8 |
 | **Nano Banana** | Image asset generation (photos, illustrations) | Asset creation only |
-| **Design tokens** | Heading scale, spacing scale, component tokens | Step 8 |
-| **Page specs** | Source of truth for structure and content | Steps 2, 5 |
+| **Design tokens** | Heading scale, spacing scale, component tokens | Step 9 |
+| **Page specs** | Source of truth for structure, content, and spacing | Steps 2, 6 |
 
 ### Tool boundaries
 
@@ -108,11 +134,11 @@ When the wireframe and spec disagree, the spec must be updated before implementa
 
 ## Communication During Refinement
 
-When making spacing or sizing changes during browser review (step 7), state the change in concrete terms:
+When making spacing or sizing changes during browser review (step 8), state the change in concrete terms:
 
 > "Changed hero top padding from 48px to 64px"
 
-Once design tokens exist (step 8), use token names:
+Once design tokens exist (step 9), use token names:
 
 > "Changed hero top padding from **space-2xl** (48px) to **space-3xl** (64px)"
 
@@ -122,7 +148,7 @@ This builds shared vocabulary. Over time, the user learns to say "change from sp
 
 ## When to Use This Loop
 
-**Full loop (all 8 steps):** New pages where layout isn't obvious. Pages with complex information hierarchy. First page of a new scenario.
+**Full loop (all 9 steps):** New pages where layout isn't obvious. Pages with complex information hierarchy. First page of a new scenario.
 
 **Partial loop (skip wireframe):** Pages that follow an established pattern. Second instance of a template page (e.g., vehicle type pages after the first one is done). Simple content pages.
 

@@ -87,9 +87,77 @@ D-Design-System/
 
 ---
 
+## Spacing Scale
+
+> **Bring your own or use ours.** If your project already has a design system with a spacing scale (Tailwind, Material, Carbon, your own tokens), use that. Map your token names below so page specs reference them consistently. If you don't have one yet, WDS provides a default 9-token scale to get started.
+
+### Option A: Use your existing design system
+
+Replace the table below with your system's spacing tokens. Any naming convention works — numbered (`spacing-4`), t-shirt (`sm`/`md`/`lg`), or your own. The only rule: page specs reference token names, never raw pixel values.
+
+### Option B: WDS default scale
+
+Nine tokens, symmetric around `space-md`. Freya will propose pixel values during the first design session.
+
+| Token | Value | Use |
+|-------|-------|-----|
+| space-3xs | — | Hairline gaps (icon-to-label, inline elements) |
+| space-2xs | — | Minimal spacing (badge padding, tight lists) |
+| space-xs | — | Tight spacing (within compact groups) |
+| space-sm | — | Small gaps (between related elements) |
+| space-md | — | Default element spacing |
+| space-lg | — | Comfortable spacing (card padding, form fields) |
+| space-xl | — | Section padding |
+| space-2xl | — | Section gaps |
+| space-3xl | — | Page-level breathing room |
+
+<!--
+  The pixel values are yours to define. Common starting points:
+  2/4/8/12/16/24/32/48/64 (8px grid) or 4/6/12/16/24/32/48/72.
+  You can adjust later — specs stay valid because they reference names, not numbers.
+-->
+
+---
+
+## Type Scale
+
+> **Bring your own or use ours.** Same principle as spacing — if your project has a type system, map it here. If not, use the WDS default.
+
+The type scale controls **visual size** — how big text looks. This is separate from semantic level (H1, H2, p) which controls **document structure**. An H2 in a sidebar might be `text-sm`. A tagline might be a `<p>` at `text-2xl`. The semantic level is for accessibility and SEO; the type token is for visual hierarchy.
+
+Headings can have different typefaces, weights, and styles on different pages. A landing page H1 might be a serif display font at `text-3xl` italic. An admin page H1 might be clean sans-serif at `text-lg` medium. Each page spec declares its own typographic treatment — the type scale provides the shared sizing vocabulary.
+
+### Option A: Use your existing type system
+
+Replace the table below with your system's type tokens.
+
+### Option B: WDS default scale
+
+Nine tokens, symmetric around `text-md` (body text). Freya will propose sizes during the first design session.
+
+| Token | Value | Use |
+|-------|-------|-----|
+| text-3xs | — | Fine print, legal text |
+| text-2xs | — | Metadata, timestamps |
+| text-xs | — | Captions, helper text |
+| text-sm | — | Labels, secondary text |
+| text-md | — | Body text (the baseline) |
+| text-lg | — | Emphasis, lead paragraphs |
+| text-xl | — | Subheadings |
+| text-2xl | — | Section titles, display text |
+| text-3xl | — | Hero headings, page titles |
+
+<!--
+  text-md (body text) is typically 16px or 14px — the most common baseline on the web.
+  Common starting points: 11/12/13/14/16/18/20/24/32 or 10/11/12/14/16/18/22/30/40.
+  Line heights should align to your spacing grid for vertical rhythm.
+-->
+
+---
+
 ## Tokens
 
-_Design tokens will be documented here as they emerge from page specifications._
+_Additional design tokens (colors, shadows, borders) will be documented here as they emerge from page specifications._
 
 ---
 

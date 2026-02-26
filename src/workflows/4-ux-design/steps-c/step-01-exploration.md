@@ -155,7 +155,24 @@ When the discussion feels complete, summarize:
 <action>Wireframe must be CLEAN — no annotations, no labels outside the page area. Design decisions belong in the page specification, not on the sketch.</action>
 <action>Present wireframe for review. The user can open the same .excalidraw file in VS Code and edit visually — both agent and user can modify the same artifact.</action>
 <action>ITERATE: When user gives feedback, update the wireframe. This loop is fast — JSON manipulation, seconds per change. Repeat until agreed.</action>
-<action>SYNC SPEC: When wireframe is agreed, update the page specification to match. The spec is the source of truth — never implement from wireframe directly.</action>
+
+**Approval gate — user exports PNG:**
+
+When the wireframe is agreed, ask the user to save a PNG snapshot:
+
+<output>
+**Wireframe agreed!**
+
+Before we move on — please export a PNG from Excalidraw and save it as:
+`Sketches/{page-slug}-wireframe.png`
+
+This becomes the approved visual reference in the specification. The `.excalidraw` file stays as the editable source if we need to revisit later.
+
+Let me know when you've saved the image.
+</output>
+
+<action>Wait for user confirmation that the PNG is saved.</action>
+<action>SYNC SPEC: Update the page specification to match the agreed wireframe. Add a reference to the PNG in the spec's visual reference section. The spec is the source of truth — never implement from wireframe directly.</action>
 <action>Update design log: append row with status `wireframed` to `{output_folder}/_progress/00-progress.md` (see section 9)</action>
 <output>See `{designLoopGuide}` for the full design loop reference.</output>
 
