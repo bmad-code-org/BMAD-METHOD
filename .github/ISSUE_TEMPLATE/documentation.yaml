@@ -28,7 +28,7 @@ body:
     attributes:
       label: Documentation location
       description: Where is the documentation that needs improvement?
-      placeholder: e.g., http://docs.bmad-method.org/tutorials/getting-started/ or "In the README"
+      placeholder: e.g., https://docs.bmad-method.org/tutorials/getting-started/ or "In the README"
     validations:
       required: true
 

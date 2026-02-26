@@ -20,7 +20,7 @@ Traditional AI tools do the thinking for you, producing average results. BMad ag
 - **Party Mode** — Bring multiple agent personas into one session to collaborate and discuss
 - **Complete Lifecycle** — From brainstorming to deployment
 
-[Learn more at **docs.bmad-method.org**](http://docs.bmad-method.org)
+[Learn more at **docs.bmad-method.org**](https://docs.bmad-method.org)
 
 ---
 
@@ -28,7 +28,7 @@ Traditional AI tools do the thinking for you, producing average results. BMad ag
 
 **V6 is here and we're just getting started!** The BMad Method is evolving rapidly with optimizations including Cross Platform Agent Team and Sub Agent inclusion, Skills Architecture, BMad Builder v1, Dev Loop Automation, and so much more in the works.
 
-**[📍 Check out the complete Roadmap →](http://docs.bmad-method.org/roadmap/)**
+**[📍 Check out the complete Roadmap →](https://docs.bmad-method.org/roadmap/)**
 
 ---
 
@@ -50,7 +50,7 @@ Follow the installer prompts, then open your AI IDE (Claude Code, Cursor, etc.) 
 npx bmad-method install --directory /path/to/project --modules bmm --tools claude-code --yes
 ```
 
-[See all installation options](http://docs.bmad-method.org/how-to/non-interactive-installation/)
+[See all installation options](https://docs.bmad-method.org/how-to/non-interactive-installation/)
 
 > **Not sure what to do?** Run `/bmad-help` — it tells you exactly what's next and what's optional. You can also ask questions like `/bmad-help I just finished the architecture, what do I do next?`
 
@@ -68,11 +68,11 @@ BMad Method extends with official modules for specialized domains. Available dur
 
 ## Documentation
 
-[BMad Method Docs Site](http://docs.bmad-method.org) — Tutorials, guides, concepts, and reference
+[BMad Method Docs Site](https://docs.bmad-method.org) — Tutorials, guides, concepts, and reference
 
 **Quick links:**
-- [Getting Started Tutorial](http://docs.bmad-method.org/tutorials/getting-started/)
-- [Upgrading from Previous Versions](http://docs.bmad-method.org/how-to/upgrade-to-v6/)
+- [Getting Started Tutorial](https://docs.bmad-method.org/tutorials/getting-started/)
+- [Upgrading from Previous Versions](https://docs.bmad-method.org/how-to/upgrade-to-v6/)
 - [Test Architect Documentation](https://bmad-code-org.github.io/bmad-method-test-architecture-enterprise/)
 
 
