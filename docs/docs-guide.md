@@ -107,7 +107,6 @@ Complete documentation for Whiteport Design Studio - a design-first methodology 
 - **[Saga WDS Analyst](getting-started/agent-activation/wds-saga-analyst.md)** - Business analysis
 - **[Freya WDS Designer](getting-started/agent-activation/wds-freya-ux.md)** - UX design
 - **[Idunn WDS PM](getting-started/agent-activation/wds-idunn-pm.md)** - Product management
-- **[Mimir Orchestrator](getting-started/agent-activation/wds-mimir.md)** - Workflow coordination
 
 ---
 

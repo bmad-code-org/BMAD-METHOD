@@ -23,31 +23,30 @@ WDS is a structured design methodology that uses AI agents to guide you through 
 
 - **Strategic foundation** - Connect every design decision to business goals and user psychology
 - **Complete specifications** - Generate developer-ready page specs with all details defined
-- **AI-powered workflow** - Four specialized agents guide you through each phase
+- **AI-powered workflow** - Three specialized agents guide you through each phase
 - **IDE-native** - Works inside your AI coding tool (Claude Code, Cursor, Windsurf, and 14 more)
 
 ---
 
 ## Agents
 
-WDS uses four specialized AI agents (the Norse Pantheon):
+WDS uses three specialized AI agents (the Norse Pantheon):
 
 | Agent | Role | What they do |
 |-------|------|-------------|
-| **Mimir** (Orchestrator) | Coach & Guide | Greets you, assesses your level, guides you through the entire process. Start here. |
 | **Saga** (Analyst) | Business & Product Analyst | Product Brief (Phase 1) and Trigger Mapping (Phase 2) |
-| **Idunn** (Product Manager) | Platform Requirements | Platform architecture (Phase 3) and design deliveries (Phase 6) |
-| **Freya** (Designer) | UX/UI Designer | UX Design (Phase 4), Design System (Phase 5), and testing (Phases 7-8) |
+| **Freya** (Designer) | UX/UI Designer | Scenarios (Phase 3), UX Design (Phase 4), Design System (Phase 5) |
+| **Idunn** (Product Manager) | Platform & Delivery | Platform architecture (Phase 3) and design deliveries (Phase 6) |
 
 ### Activating an agent
 
 Tell your AI IDE:
 
 ```
-Read and activate the agent in _wds/agents/mimir-orchestrator.md
+Read and activate the agent in _wds/agents/saga-analyst.md
 ```
 
-Mimir will greet you, assess your situation, and guide you to the right specialist.
+The agent will greet you, analyze your project, and guide you through the next steps.
 
 ---
 
@@ -108,12 +107,12 @@ your-project/
 
 2. **Open your project** in your AI IDE (Claude Code, Cursor, Windsurf, etc.)
 
-3. **Activate Mimir** - tell the AI:
+3. **Activate an agent** - tell the AI:
    ```
-   Read and activate the agent in _wds/agents/mimir-orchestrator.md
+   Read and activate the agent in _wds/agents/saga-analyst.md
    ```
 
-4. **Follow Mimir's guidance** - Mimir will greet you, assess your experience level, and walk you through project setup. When you're ready for specific work, Mimir connects you to the right specialist agent.
+4. **Follow the agent's guidance** - The agent will analyze your project, present actionable next steps, and walk you through the work. Start with Saga for strategy, Freya for design, or Idunn for platform architecture.
 
 ---
 
@@ -149,7 +148,7 @@ Visual design can start at any time - brand identity is independent of product s
 
 ### Adaptive Teaching
 
-Mimir adapts to your experience level:
+Agents adapt to your experience level:
 - **Beginner** - Detailed guidance, one step at a time
 - **Intermediate** - Balanced approach, builds on existing knowledge
 - **Expert** - Direct and efficient, respects your time

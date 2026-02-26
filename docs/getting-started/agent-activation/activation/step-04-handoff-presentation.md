@@ -14,7 +14,6 @@ Show your full presentation even though this is a handoff.
 - Saga: `src/modules/wds/data/presentations/saga-presentation.md`
 - Freya: `src/modules/wds/data/presentations/freya-presentation.md`
 - Idunn: `src/modules/wds/data/presentations/idunn-presentation.md`
-- Mimir: `src/modules/wds/agents/presentations/mimir-presentation.md`
 
 **What to do**:
 1. Load and show your full presentation
