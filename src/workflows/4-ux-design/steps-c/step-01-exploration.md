@@ -136,24 +136,28 @@ Walk me through:
 **Flow:**
 {{interaction_flow}}
 
-You're ready for next steps! Would you like to:
+You're ready to visualize! Would you like to:
 
-1. **I have a sketch** - You provide a sketch, I'll analyze it
-2. **Sketch it for me** - I create a wireframe in Excalidraw
-3. **Skip sketching** - Go directly to specification
-4. **Explore more** - Refine the concept further</output>
+1. **Wireframe it** (recommended) — I create an Excalidraw wireframe, we iterate together
+2. **I have a sketch** — You provide a sketch, I'll analyze it
+3. **Skip to spec** — Go directly to specification (for pages following established patterns)
+4. **Explore more** — Refine the concept further</output>
 
 <check if="choice == 1">
-  <output>Go sketch your concept and come back when ready. I'll analyze it with [K].</output>
-  <action>Update the page specification with exploration findings (fill empty sections, not a separate file)</action>
-  <action>Pause workflow - user will return to sketch analysis</action>
-</check>
-
-<check if="choice == 2">
   <action>Update the page specification with exploration findings (fill empty sections, not a separate file)</action>
   <action>BEFORE drawing: Read existing completed page specs AND their sketches to understand the established page structure — navigation, service menus, footer, card patterns, shared components. Do NOT draw from memory.</action>
   <action>Create wireframe in Excalidraw at page folder `Sketches/{page-slug}-wireframe.excalidraw`</action>
   <action>Wireframe must be CLEAN — no annotations, no labels outside the page area. Design decisions belong in the page specification, not on the sketch.</action>
+  <action>Present wireframe for review. The user can open the same .excalidraw file in VS Code and edit visually — both agent and user can modify the same artifact.</action>
+  <action>ITERATE: When user gives feedback, update the wireframe. This loop is fast — JSON manipulation, seconds per change. Repeat until agreed.</action>
+  <action>SYNC SPEC: When wireframe is agreed, update the page specification to match. The spec is the source of truth — never implement from wireframe directly.</action>
+  <output>See `data/guides/DESIGN-LOOP-GUIDE.md` for the full design loop reference.</output>
+</check>
+
+<check if="choice == 2">
+  <output>Go sketch your concept and come back when ready. I'll analyze it with [K].</output>
+  <action>Update the page specification with exploration findings (fill empty sections, not a separate file)</action>
+  <action>Pause workflow - user will return to sketch analysis</action>
 </check>
 
 <check if="choice == 3">
@@ -196,6 +200,7 @@ ONLY WHEN the user has completed their exploration and chosen a next action (ske
 - Interaction flow mapped verbally
 - Exploration findings saved to the page specification (not a separate file)
 - User chose next action with clear understanding
+- When wireframing: iterated with user until agreed, then synced spec to match
 
 ### ❌ SYSTEM FAILURE:
 
@@ -208,5 +213,7 @@ ONLY WHEN the user has completed their exploration and chosen a next action (ske
 - Saving exploration findings to a separate notes file instead of updating the page spec
 - Drawing wireframes with annotations or labels outside the page area
 - Drawing shared elements (nav, footer) from memory instead of reading existing specs
+- Implementing from wireframe without updating the spec first
+- Using AI image generators (Nano Banana) for wireframes instead of Excalidraw
 
 **Master Rule:** Skipping steps, optimizing sequences, or not following exact instructions is FORBIDDEN and constitutes SYSTEM FAILURE.

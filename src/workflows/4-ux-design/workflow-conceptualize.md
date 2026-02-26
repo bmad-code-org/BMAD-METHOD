@@ -33,6 +33,7 @@ Execute steps in `./steps-c/`:
 | 01 | step-01-exploration.md | Open-ended design exploration |
 
 **Reference data:**
+- `./data/guides/DESIGN-LOOP-GUIDE.md` — the 8-step design loop (discuss → wireframe → iterate → spec sync → implement → refine)
 - `./data/scenario-init/` — scenario initialization guides
 - `./data/page-creation-flows/` — page creation flow options
 

@@ -117,7 +117,7 @@ If the scenario has a `design_intent` from Phase 3 handover, pre-select that act
 | Location | Purpose |
 |----------|---------|
 | `data/object-types/` | Component type definitions and templates |
-| `data/guides/` | Sketch analysis, specification patterns, styling |
+| `data/guides/` | Design loop, sketch analysis, specification patterns, styling |
 | `data/modular-architecture/` | Three-tier architecture documentation |
 | `data/scenario-init/` | Scenario initialization guides and examples |
 | `data/page-creation-flows/` | Page creation flow approaches |
