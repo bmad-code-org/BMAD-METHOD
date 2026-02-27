@@ -13,11 +13,7 @@ description: Package complete testable flows and hand off to development
 
 ## INITIALIZATION
 
-### Agent Dialog Gate
-
-1. Check `{output_folder}/_progress/agent-dialogs/` for pending handover dialogs
-2. If none exists, suggest creating one for this handover
-3. If exists, load and resume
+Read design log at `{output_folder}/_progress/00-design-log.md` before starting.
 
 ---
 
@@ -43,6 +39,6 @@ Execute steps in `./steps-h/`:
 
 ## AFTER COMPLETION
 
-1. Append a progress entry to `{output_folder}/_progress/00-progress.md` under `## Progress`:
+1. Append a progress entry to `{output_folder}/_progress/00-design-log.md` under `## Progress`:
    `### [date] — Design Delivery: [what was packaged]`
 2. Suggest next action: Phase 5 prototyping or next scenario

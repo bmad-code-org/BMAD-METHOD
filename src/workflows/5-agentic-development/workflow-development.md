@@ -75,7 +75,7 @@ Execute steps in `./steps-d/`:
 
 ## DESIGN LOG REPORTING POINTS
 
-Append to the Design Loop Status table in `{output_folder}/_progress/00-progress.md`:
+Append to the Design Loop Status table in `{output_folder}/_progress/00-design-log.md`:
 
 **On entry (step 01 complete):** `| [Scenario slug] | [NN.X] | [Page name] | building | [YYYY-MM-DD] |`
 **On completion (step 05 approved):** `| [Scenario slug] | [NN.X] | [Page name] | built | [YYYY-MM-DD] |`

@@ -13,12 +13,7 @@ description: 'Define, update, and review design system components used across pa
 
 ## INITIALIZATION
 
-### Agent Dialog Gate
-
-1. Check for pending activity dialogs
-2. If none, suggest creating one
-3. Load dialog context
-
+Read design log at `{output_folder}/_progress/00-design-log.md` before starting.
 
 ## Extraction Rules
 
@@ -60,6 +55,6 @@ Execute steps in `./steps-m/`:
 
 ## AFTER COMPLETION
 
-1. Append a progress entry to `{output_folder}/_progress/00-progress.md` under `## Progress`:
+1. Append a progress entry to `{output_folder}/_progress/00-design-log.md` under `## Progress`:
    `### [date] — Design System: [components extracted/updated]`
 2. Suggest next action based on the adaptive dashboard

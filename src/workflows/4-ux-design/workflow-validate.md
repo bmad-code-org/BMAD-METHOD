@@ -13,11 +13,7 @@ description: 'Systematically audit page specifications for completeness, consist
 
 ## INITIALIZATION
 
-### Agent Dialog Gate
-
-1. Check for pending activity dialogs
-2. If none, suggest creating one
-3. Load dialog context
+Read design log at `{output_folder}/_progress/00-design-log.md` before starting.
 
 ### Configuration Loading
 
@@ -59,6 +55,6 @@ Save validation report to `{output_folder}/_progress/validation-report.md`
 
 ## AFTER COMPLETION
 
-1. Append a progress entry to `{output_folder}/_progress/00-progress.md` under `## Progress`:
+1. Append a progress entry to `{output_folder}/_progress/00-design-log.md` under `## Progress`:
    `### [date] — Validation: [N] pages audited, [results summary]`
 2. If issues found, suggest fixing them. If all pass, suggest next logical step from the adaptive dashboard

@@ -61,7 +61,7 @@ Execute steps in `./steps-p/`:
 
 ## DESIGN LOG REPORTING POINTS
 
-This workflow has TWO reporting points. Both append to the Design Loop Status table in `{output_folder}/_progress/00-progress.md`:
+This workflow has TWO reporting points. Both append to the Design Loop Status table in `{output_folder}/_progress/00-design-log.md`:
 
 **1. On entry (step 1 complete):** Append status `building`
 ```

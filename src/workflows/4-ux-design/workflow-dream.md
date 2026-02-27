@@ -13,12 +13,7 @@ description: 'The agent creates a complete scenario flow autonomously, then pres
 
 ## INITIALIZATION
 
-### Agent Dialog Gate
-
-1. Check for pending activity dialogs
-2. If none, suggest creating one
-3. Load dialog context
-
+Read design log at `{output_folder}/_progress/00-design-log.md` before starting.
 
 ## Entry
 
@@ -67,7 +62,7 @@ In Dream mode:
 - **OVERRIDE** all "halt and wait" rules — auto-proceed after completing each step
 - **OVERRIDE** "NEVER generate content without user input" — generate based on context and WDS patterns
 - **DO NOT** display menus or wait for menu selections between steps
-- **DO** still save outputs and update agent dialog at each step
+- **DO** still save outputs and update the design log at each step
 - **DO** still follow the step's actual instructions for what to generate
 - The user can type **"stop"** or **"pause"** at any time to interrupt and switch to Suggest mode
 
@@ -79,7 +74,7 @@ In Dream mode:
 
 ## DESIGN LOG REPORTING
 
-In Dream mode, the agent updates the design log autonomously at each page completion. Append to the Design Loop Status table in `{output_folder}/_progress/00-progress.md`:
+In Dream mode, the agent updates the design log autonomously at each page completion. Append to the Design Loop Status table in `{output_folder}/_progress/00-design-log.md`:
 
 ```
 | [Scenario slug] | [NN.X] | [Page name] | specified | [YYYY-MM-DD] |

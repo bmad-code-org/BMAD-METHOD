@@ -39,12 +39,12 @@ Translate a page specification into an effective AI image generation prompt that
 - 🎯 Focus on composing an effective generation prompt from page spec data
 - 🚫 FORBIDDEN to generate without user confirming creative direction
 - 💬 Approach: Extract, present, let user override, compose, generate, iterate
-- 📋 Track all generations in agent dialog file
+- 📋 Track all generations in agent experience file
 
 ## EXECUTION PROTOCOLS:
 
 - 🎯 Extract image descriptions, gather creative direction, compose prompt, generate
-- 💾 Log all generations to agent dialog file
+- 💾 Log all generations to agent experience file
 - 📖 Reference NANO-BANANA-PROMPT-GUIDE.md for compression strategy
 - 🚫 FORBIDDEN to skip creative direction step
 
@@ -57,24 +57,15 @@ Translate a page specification into an effective AI image generation prompt that
 
 ## Sequence of Instructions (Do not deviate, skip, or optimize)
 
-### 0. Start Agent Dialog
+### 0. Start Generation Log
 
-Create (or resume) an agent dialog file to track this visual generation session.
+Create an agent experience file to track this visual generation session.
 
-**File location:** `{output_folder}/_progress/agent-dialogs/`
-**Naming:** `{date}-freya-visual-{page-name}.md`
-**Example:** `2026-02-19-freya-visual-1.1-hem.md`
+**File location:** `{output_folder}/_progress/agent-experiences/`
+**Naming:** `{date}-visual-{page-name}.md`
+**Example:** `2026-02-19-visual-1.1-hem.md`
 
 ```markdown
----
-status: active
-agent: Freya
-topic: Visual generation for {page-name}
-created: {timestamp}
-last_updated: {timestamp}
-context_summary: Generating visual designs for {page-name} using Nano Banana
----
-
 # Visual Generation: {page-name}
 
 ## Inputs
@@ -92,7 +83,7 @@ context_summary: Generating visual designs for {page-name} using Nano Banana
 {each generation appended here in step H}
 ```
 
-**If an active dialog exists** for this page, resume it -- load previous context, creative direction, and generation history.
+**If a previous generation log exists** for this page, read it for context — previous creative direction, successful prompts, and lessons learned.
 
 ### A. Load Inputs
 
@@ -253,7 +244,7 @@ Call `mcp__nanobanana__generate_image` with the assembled prompt, system instruc
 
 Present the result to the user.
 
-**Log to agent dialog:**
+**Log to agent experience file:**
 
 ```markdown
 ### Generation {N} -- {timestamp}
@@ -274,7 +265,7 @@ Present the result to the user.
 **User feedback:** {filled after review}
 ```
 
-Update the dialog `last_updated` timestamp.
+Update the agent experience file.
 
 ### I. Iterate
 
@@ -339,19 +330,19 @@ ONLY WHEN the user has accepted a generated visual and selected an option from t
 
 ### ✅ SUCCESS:
 
-- Agent dialog created or resumed
+- Generation log created in agent experiences
 - Image descriptions extracted from spec
 - User creative direction captured
 - Prompt composed within 8192 char limit
 - Image generated and presented
-- Generation logged to agent dialog
+- Generation logged to agent experience file
 - User accepted or iterated to satisfaction
 
 ### ❌ SYSTEM FAILURE:
 
 - Generating without user creative direction
 - Exceeding prompt character limit
-- Not logging generations to agent dialog
+- Not logging generations to agent experience file
 - Not presenting iteration options
 - Skipping reference image auto-detection
 

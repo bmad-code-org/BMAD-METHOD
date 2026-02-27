@@ -59,6 +59,6 @@ Execute steps in `./steps-a/`:
 
 ## AFTER COMPLETION
 
-1. Append a progress entry to `{output_folder}/_progress/00-progress.md` under `## Progress`:
+1. Append a progress entry to `{output_folder}/_progress/00-design-log.md` under `## Progress`:
    `### [date] — Analysis: [what was analyzed, key findings]`
 2. Suggest next action: feed into development, reverse engineer further, or start prototyping

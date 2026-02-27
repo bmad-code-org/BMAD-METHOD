@@ -82,8 +82,7 @@ How would you like to create the visual design?
 ### 3. Setup Gate (Nano Banana only)
 
 If user selects [N]:
-1. Check for existing agent dialog for this page in `{output_folder}/_progress/agent-dialogs/`
-   - If active dialog found: offer to resume previous visual generation session
+1. Check the design log at `{output_folder}/_progress/00-design-log.md` for previous visual generation entries for this page
 2. If first time using Nano Banana in this project:
    - Route to `step-00-nb-setup.md` to verify MCP connection
    - Return here after verification succeeds

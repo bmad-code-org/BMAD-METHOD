@@ -99,7 +99,7 @@ Fill in all sections with data collected:
 
 ### 2. Update Design Log
 
-<action>Append a row with status `specified` to the Design Loop Status table in `{output_folder}/_progress/00-progress.md`:
+<action>Append a row with status `specified` to the Design Loop Status table in `{output_folder}/_progress/00-design-log.md`:
 
 ```
 | [Scenario slug] | [NN.X] | [Page name] | specified | [YYYY-MM-DD] |

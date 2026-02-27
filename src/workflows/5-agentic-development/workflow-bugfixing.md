@@ -62,6 +62,6 @@ Execute steps in `./steps-f/`:
 
 ## AFTER COMPLETION
 
-1. Append a progress entry to `{output_folder}/_progress/00-progress.md` under `## Progress`:
+1. Append a progress entry to `{output_folder}/_progress/00-design-log.md` under `## Progress`:
    `### [date] — Bugfix: [what was fixed]`
 2. Suggest re-running acceptance testing (Phase 5 [T]) to verify the fix

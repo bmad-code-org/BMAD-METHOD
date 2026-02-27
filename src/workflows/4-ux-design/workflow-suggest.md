@@ -13,12 +13,7 @@ description: 'Build a scenario's page flow step by step, with the agent proposin
 
 ## INITIALIZATION
 
-### Agent Dialog Gate
-
-1. Check for pending activity dialogs
-2. If none, suggest creating one
-3. Load dialog context
-
+Read design log at `{output_folder}/_progress/00-design-log.md` before starting.
 
 ## Entry
 
@@ -73,7 +68,7 @@ Execute steps in `./steps-s/`:
 
 ### Design Log Update
 
-After finishing a page specification, append to the Design Loop Status table in `{output_folder}/_progress/00-progress.md`:
+After finishing a page specification, append to the Design Loop Status table in `{output_folder}/_progress/00-design-log.md`:
 ```
 | [Scenario slug] | [NN.X] | [Page name] | specified | [YYYY-MM-DD] |
 ```

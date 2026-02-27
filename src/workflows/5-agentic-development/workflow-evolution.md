@@ -62,6 +62,6 @@ Execute steps in `./steps-e/`:
 
 ## AFTER COMPLETION
 
-1. Append a progress entry to `{output_folder}/_progress/00-progress.md` under `## Progress`:
+1. Append a progress entry to `{output_folder}/_progress/00-design-log.md` under `## Progress`:
    `### [date] — Evolution: [what was evolved/added]`
 2. Suggest acceptance testing (Phase 5 [T]) to validate the changes

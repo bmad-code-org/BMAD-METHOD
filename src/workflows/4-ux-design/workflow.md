@@ -40,13 +40,15 @@ Load and read full config from `{project-root}/_bmad/wds/config.yaml` and resolv
 - `project_name`, `output_folder`, `user_name`
 - `communication_language`, `document_output_language`
 
-### 2. Agent Dialog Gate
+### 2. Design Log Loading
 
-Check `{output_folder}/_progress/agent-dialogs/` for agent dialogs with `status: active` and `agent: Freya`.
+Read the design log at `{output_folder}/_progress/00-design-log.md`. This single file contains:
+- **Backlog** — business-value items to work on
+- **Current** — what's actively being worked on right now
+- **Design Loop Status** — per-page status tracking (latest row per page = current status)
+- **Log** — append-only history of completed work
 
-**If an active dialog exists:** Read it. The dialog contains the session plan — what pages the user intended to work on and how far they got. Use this to drive the dashboard.
-
-**If no active dialog exists:** You'll create one after the user chooses what to work on (see step 4c).
+If the file doesn't exist, guide the user to run Phase 0 setup first.
 
 ### 3. Mode Determination
 
@@ -56,48 +58,53 @@ Check `{output_folder}/_progress/agent-dialogs/` for agent dialogs with `status:
 
 ### 4. Adaptive Dashboard
 
-Read both sources:
-1. **Agent dialog** (the plan) — what was the user working on?
-2. **Design log** (`{output_folder}/_progress/00-progress.md`) — what status did each page reach?
-3. **Scenario files** from `{output_folder}/C-UX-Scenarios/` — full page inventory
+Read from the design log and scenario files:
+1. **Design log** (`{output_folder}/_progress/00-design-log.md`) — Backlog, Current, Design Loop Status, Log
+2. **Scenario files** from `{output_folder}/C-UX-Scenarios/` — full page inventory
 
 #### 4a. Build Status Overview
 
-For each scenario, determine per-page status from the Design Loop Status table in the design log. The **latest row per page** is the current status.
+For each scenario, determine per-page status from the **Design Loop Status** table. The latest row per page is the current status.
+
+Check the **Current** table — if a task is listed there, the user was mid-work when the last session ended.
 
 #### 4b. Suggest Where to Continue
 
-**If an active dialog with a session plan exists:**
-
-Read the plan's checklist. Compare against the design log. Present what's done and what's left:
+**If a task is listed in Current:**
 
 <output>
 **Welcome back! Here's where we left off:**
 
-**Session plan:** [topic from dialog]
+**In progress:** [task from Current table]
 
-| Step | Page | Plan | Status |
-|------|------|------|--------|
-| [NN.1] | [page name] | [target] | [current] ✓ |
-| [NN.2] | [page name] | [target] | [current] ← next |
-| [NN.3] | [page name] | [target] | — |
+**Design status:**
+| Scenario | Page | Status |
+|----------|------|--------|
+| [NN] | [page name] | [current status] |
+| ... | ... | ... |
 
-I'd suggest we continue with **[next unchecked item from the plan]**.
-Pick up there, or change plans?
+I'd suggest we continue with **[the in-progress task]**.
+Pick up there, or change direction?
 </output>
 
-**If the session plan is complete** (all items checked):
+**If Current is empty but Backlog has items:**
 
 <output>
-**Session plan complete!**
+**Ready to continue!**
 
-Everything we planned is done. What would you like to do next?
+**Next from backlog:**
+- [ ] [first unchecked backlog item]
+- [ ] [second unchecked backlog item]
 
-1. **Continue with [next scenario step / next scenario]** — keep the momentum
-2. **Start a new session plan** — pick different pages to work on
+**Design status:**
+| Scenario | Page | Status |
+|----------|------|--------|
+| [NN] | [page name] | [latest status] |
+
+I'd suggest we start with **[first backlog item]**. Sound good?
 </output>
 
-**If no active dialog exists** (fresh start):
+**If both Current and Backlog are empty** (fresh project):
 
 <output>
 **Ready to start designing!**
@@ -108,44 +115,22 @@ Your scenarios:
 | 01 | [Name] | [total] | [done] |
 | 02 | [Name] | [total] | [done] |
 
-Which scenario shall we work on? I'll set up a session plan.
+Which scenario shall we work on?
 </output>
 
-#### 4c. Create or Update Session Plan
+#### 4c. Design Log Updates
 
-**When starting a new session**, create an agent dialog file:
+**When starting work:** Move the task from Backlog to Current (or add a new row to Current).
 
-**File:** `{output_folder}/_progress/agent-dialogs/YYYY-MM-DD-freya-[topic].md`
+**At each transition:** Append a row to the Design Loop Status table with the new status. Update the Log section with what was accomplished.
 
-```markdown
----
-status: active
-agent: Freya
-topic: [what the user wants to work on]
-created: [date]
-last_updated: [date]
----
+**When finishing a task:** Remove from Current. Check off the Backlog item if applicable. The next session reads the updated design log and knows exactly where things stand.
 
-# [Topic]
+#### 4d. Agent Experiences
 
-## Session Plan
+After fruitful design discussions, methodology breakthroughs, or pattern discoveries, save compressed insights to `{output_folder}/_progress/agent-experiences/YYYY-MM-DD-[topic].md`. These are cross-session wisdom — not project state, but lessons learned.
 
-| # | Page | Target Status | Done |
-|---|------|---------------|------|
-| 1 | [NN.X page name] | [discussed/wireframed/specified/etc.] | [ ] |
-| 2 | [NN.X page name] | [discussed/wireframed/specified/etc.] | [ ] |
-
-## Decisions Made
-
-| # | Decision | Rationale |
-|---|----------|-----------|
-```
-
-**At each transition:** Update the dialog — check off completed items, add decisions, update `last_updated`.
-
-**When the plan is complete or user stops:** Set `status: complete` or `status: paused`. The next session will find no active dialog and offer to start fresh or resume.
-
-#### 4d. User Response Handling
+#### 4e. User Response Handling
 
 - **User accepts suggestion** → Load the appropriate activity workflow and continue
 - **User picks a different page or scenario** → Update the session plan and continue

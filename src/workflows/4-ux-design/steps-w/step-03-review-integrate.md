@@ -87,7 +87,7 @@ Store visual artifact in the appropriate location:
 - **Image assets (photos/illustrations):** `{output_folder}/D-Design-System/01-Visual-Design/design-concepts/` (move to `02-Assets/images/` when finalized)
 - **Legacy path:** `{output_folder}/C-UX-Scenarios/[scenario]/visuals/` (if project uses older folder structure)
 
-**Update the agent dialog** with the accepted result and save path.
+**Update the agent experience file** with the accepted result and save path.
 
 ### 5. Present MENU OPTIONS
 
@@ -117,14 +117,14 @@ ONLY WHEN the user selects an option from the menu and the visual has been integ
 - Design decisions documented
 - Page specification updated with visual reference
 - Visual artifact saved to correct location
-- Agent dialog updated with accepted result
+- Agent experience file updated with accepted result
 
 ### ❌ SYSTEM FAILURE:
 
 - Skipping user feedback
 - Not integrating into page specification
 - Not saving visual artifact
-- Not updating agent dialog
+- Not updating agent experience file
 - Relying on AI-generated text in images for content accuracy
 
 **Master Rule:** Skipping steps, optimizing sequences, or not following exact instructions is FORBIDDEN and constitutes SYSTEM FAILURE.

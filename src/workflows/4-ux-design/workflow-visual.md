@@ -13,12 +13,7 @@ description: 'Create visual representations of page designs using external tools
 
 ## INITIALIZATION
 
-### Agent Dialog Gate
-
-1. Check for pending activity dialogs
-2. If none, suggest creating one
-3. Load dialog context
-
+Read design log at `{output_folder}/_progress/00-design-log.md` before starting.
 
 ## Entry
 
@@ -49,6 +44,6 @@ Execute steps in `./steps-w/`:
 
 ## AFTER COMPLETION
 
-1. Append a progress entry to `{output_folder}/_progress/00-progress.md` under `## Progress`:
+1. Append a progress entry to `{output_folder}/_progress/00-design-log.md` under `## Progress`:
    `### [date] — Visual Design: [what was generated]`
 2. Suggest next action based on the adaptive dashboard (read Design Loop Status to find what needs attention next)

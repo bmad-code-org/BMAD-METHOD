@@ -42,7 +42,7 @@ Document Phase 2: Trigger Mapping completion in the project design log, listing 
 ## EXECUTION PROTOCOLS:
 
 - 🎯 Read current design log and append progress entry
-- 💾 Update {output_folder}/_progress/00-progress.md
+- 💾 Update {output_folder}/_progress/00-design-log.md
 - 📖 List all artifacts and key decisions specifically
 - 🚫 Do not overwrite existing entries
 
@@ -57,7 +57,7 @@ Document Phase 2: Trigger Mapping completion in the project design log, listing 
 
 ### 1. Read Current Log
 
-Read `{output_folder}/_progress/00-progress.md` to understand existing entries and format.
+Read `{output_folder}/_progress/00-design-log.md` to understand existing entries and format.
 
 ### 2. Append Progress Entry
 
@@ -106,7 +106,7 @@ If no significant decisions were made, skip this section.
 - Summary is specific, not generic
 - Key decisions recorded (if any)
 
-Output: "Design log updated. Phase 2: Trigger Mapping documented in _progress/00-progress.md"
+Output: "Design log updated. Phase 2: Trigger Mapping documented in _progress/00-design-log.md"
 
 ### 5. Present MENU OPTIONS
 

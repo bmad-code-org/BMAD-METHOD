@@ -104,7 +104,7 @@ Now they're on [page name].
 **If the user decides to eliminate the step:**
 1. Update the scenario outline (remove/merge the step)
 2. Remove the page folder
-3. Append status `removed` to `{output_folder}/_progress/00-progress.md` Design Loop Status table:
+3. Append status `removed` to `{output_folder}/_progress/00-design-log.md` Design Loop Status table:
    `| [Scenario slug] | [NN.X] | [Page name] | removed | [YYYY-MM-DD] |`
 4. Loop back to step 2 (Set the Scene) for the next page
 
@@ -136,7 +136,7 @@ When the discussion feels complete, summarize:
 </output>
 
 <action>Update the page specification with discussion findings (fill empty sections in the existing page spec file)</action>
-<action>Update design log: append row with status `discussed` to `{output_folder}/_progress/00-progress.md` (see section 9 for exact format)</action>
+<action>Update design log: append row with status `discussed` to `{output_folder}/_progress/00-design-log.md` (see section 9 for exact format)</action>
 
 ### 7. Visualization Question
 
@@ -173,7 +173,7 @@ Let me know when you've saved the image.
 
 <action>Wait for user confirmation that the PNG is saved.</action>
 <action>SYNC SPEC: Update the page specification to match the agreed wireframe. Add a reference to the PNG in the spec's visual reference section. The spec is the source of truth — never implement from wireframe directly.</action>
-<action>Update design log: append row with status `wireframed` to `{output_folder}/_progress/00-progress.md` (see section 9)</action>
+<action>Update design log: append row with status `wireframed` to `{output_folder}/_progress/00-design-log.md` (see section 9)</action>
 <output>See `{designLoopGuide}` for the full design loop reference.</output>
 
 Then proceed to the **Page Transition** (step 8).
@@ -187,7 +187,7 @@ Then proceed to the **Page Transition** (step 8).
 #### IF 3 (Specification without sketch):
 
 <action>Proceed to specification activity (steps-p/) with the discussion findings</action>
-<action>Update design log: append row with status `specified` to `{output_folder}/_progress/00-progress.md` (see section 9)</action>
+<action>Update design log: append row with status `specified` to `{output_folder}/_progress/00-design-log.md` (see section 9)</action>
 
 Then proceed to the **Page Transition** (step 8).
 
@@ -244,22 +244,22 @@ If none exist (simple page, single-device platform):
 
 - **Next logical step:** Proceed to the appropriate activity (specification → steps-p/, responsive → diff file, build → Phase 5 prototyping)
 - **Explore next scenario step:** Loop back to step 2 (Set the Scene) for the next page in the scenario's shortest path. If no more pages, show "All pages in this scenario are designed!"
-- **Design log:** Always append a status row to `{output_folder}/_progress/00-progress.md` before presenting transition options (see section 9)
-- **Session plan:** Check off the completed item in the active agent dialog. If all plan items are done, note it in the transition: "That's everything we planned! Want to continue or wrap up?"
+- **Design log:** Always append a status row to `{output_folder}/_progress/00-design-log.md` before presenting transition options (see section 9)
+- **Current task:** Update the Current table in the design log — remove completed task, add next task if continuing
 
 #### EXECUTION RULES:
 
 - ALWAYS halt and wait for user input after presenting transition options
 - User can chat or ask questions — always respond and then redisplay the transition
-- The user can always say "stop" to pause and return later — update the design log with current status AND set the agent dialog to `status: paused`
+- The user can always say "stop" to pause and return later — update the design log with current status and clear the Current table
 
 ### 9. Design Log Updates
 
-At every transition, append a row to the **Design Loop Status** table in `{output_folder}/_progress/00-progress.md`.
+At every transition, append a row to the **Design Loop Status** table in `{output_folder}/_progress/00-design-log.md`.
 
 **How to update (exact procedure):**
 
-1. Open `{output_folder}/_progress/00-progress.md`
+1. Open `{output_folder}/_progress/00-design-log.md`
 2. Find the `## Design Loop Status` section
 3. Append a new row to the table:
 

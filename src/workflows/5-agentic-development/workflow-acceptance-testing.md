@@ -42,7 +42,7 @@ Execute steps in `./steps-t/`:
 
 ## DESIGN LOG REPORTING POINT
 
-When all tests pass and the user approves, append to the Design Loop Status table in `{output_folder}/_progress/00-progress.md`:
+When all tests pass and the user approves, append to the Design Loop Status table in `{output_folder}/_progress/00-design-log.md`:
 
 ```
 | [Scenario slug] | [NN.X] | [Page name] | approved | [YYYY-MM-DD] |

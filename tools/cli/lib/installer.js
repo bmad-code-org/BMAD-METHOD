@@ -302,7 +302,7 @@ class Installer {
     // Create _progress folder for agent tracking
     const progressPath = path.join(docsPath, '_progress');
     await fs.ensureDir(progressPath);
-    await fs.ensureDir(path.join(progressPath, 'agent-dialogs'));
+    await fs.ensureDir(path.join(progressPath, 'agent-experiences'));
   }
 
 }

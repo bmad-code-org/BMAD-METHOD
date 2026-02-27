@@ -393,7 +393,7 @@ white cards with subtle shadow, warm authentic imagery.
 - **Only content swaps:** image descriptions, headlines, service lists, section-specific text
 - **Sequential generation:** Generate one at a time, quick-review each, flag outliers for iteration
 - **Use `flash` model tier** for batch runs (faster, cheaper) — save `pro` for the template page
-- **Track everything** in the batch agent dialog for reproducibility
+- **Track everything** in the agent experience file for reproducibility
 
 ---
 

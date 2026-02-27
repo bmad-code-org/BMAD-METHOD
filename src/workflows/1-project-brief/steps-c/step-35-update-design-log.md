@@ -49,7 +49,7 @@ Document Phase 1 completion in the project design log - the project's memory.
 
 ### 1. Read the Current Log
 
-Read `{output_folder}/_progress/00-progress.md` to understand existing entries and format.
+Read `{output_folder}/_progress/00-design-log.md` to understand existing entries and format.
 
 ### 2. Append Progress Entry
 

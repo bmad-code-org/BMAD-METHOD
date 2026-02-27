@@ -63,6 +63,6 @@ Execute steps in `./steps-r/`:
 
 ## AFTER COMPLETION
 
-1. Append a progress entry to `{output_folder}/_progress/00-progress.md` under `## Progress`:
+1. Append a progress entry to `{output_folder}/_progress/00-design-log.md` under `## Progress`:
    `### [date] — Reverse Engineering: [what was extracted]`
 2. Suggest next action: feed specs into prototyping, analyze further, or start development
