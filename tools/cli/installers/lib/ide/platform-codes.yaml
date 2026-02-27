@@ -32,6 +32,13 @@ platforms:
       target_dir: .augment/commands
       template_type: default
 
+  bob:
+    name: "IBM Bob"
+    preferred: false
+    category: ide
+    description: "IBM's AI development environment"
+    # No installer config - uses custom bob.js (creates .bob/custom_modes.yaml)
+
   claude-code:
     name: "Claude Code"
     preferred: true

@@ -8,12 +8,13 @@ const { TaskToolCommandGenerator } = require('./shared/task-tool-command-generat
 
 /**
  * IBM Bob IDE setup handler
- * Creates custom modes in .bobmodes file (similar to Kilo)
+ * Creates custom modes in .bob/custom_modes.yaml file
  */
 class BobSetup extends BaseIdeSetup {
   constructor() {
     super('bob', 'IBM Bob');
-    this.configFile = '.bobmodes';
+    this.configFile = '.bob/custom_modes.yaml';
+    this.detectionPaths = ['.bob'];
   }
 
   /**
@@ -38,7 +39,7 @@ class BobSetup extends BaseIdeSetup {
         config = yaml.parse(existingContent) || {};
       } catch {
         // If parsing fails, start fresh but warn user
-        await prompts.log.warn('Warning: Could not parse existing .bobmodes, starting fresh');
+        await prompts.log.warn('Warning: Could not parse existing .bob/custom_modes.yaml, starting fresh');
         config = {};
       }
     }
@@ -61,7 +62,7 @@ class BobSetup extends BaseIdeSetup {
       addedCount++;
     }
 
-    // Write .bobmodes file with proper YAML structure
+    // Write .bob/custom_modes.yaml file with proper YAML structure
     const finalContent = yaml.stringify(config, { lineWidth: 0 });
     await this.writeFile(bobModesPath, finalContent);
 
@@ -110,23 +111,25 @@ class BobSetup extends BaseIdeSetup {
    * @returns {Object} Mode object for YAML serialization
    */
   async createModeObject(artifact, projectDir) {
-    // Extract metadata from launcher content
-    const titleMatch = artifact.content.match(/title="([^"]+)"/);
-    const title = titleMatch ? titleMatch[1] : this.formatTitle(artifact.name);
+    // Extract title and icon from the compiled agent file's <agent> XML tag
+    // artifact.content is the launcher template which does NOT contain these attributes
+    let title = this.formatTitle(artifact.name);
+    let icon = '🤖';
 
-    const iconMatch = artifact.content.match(/icon="([^"]+)"/);
-    const icon = iconMatch ? iconMatch[1] : '🤖';
+    if (artifact.sourcePath && (await this.pathExists(artifact.sourcePath))) {
+      const agentContent = await this.readFile(artifact.sourcePath);
+      const titleMatch = agentContent.match(/<agent[^>]*\stitle="([^"]+)"/);
+      if (titleMatch) title = titleMatch[1];
+      const iconMatch = agentContent.match(/<agent[^>]*\sicon="([^"]+)"/);
+      if (iconMatch) icon = iconMatch[1];
+    }
 
-    const whenToUseMatch = artifact.content.match(/whenToUse="([^"]+)"/);
-    const whenToUse = whenToUseMatch ? whenToUseMatch[1] : `Use for ${title} tasks`;
+    const whenToUse = `Use for ${title} tasks`;
 
     // Get the activation header from central template (trim to avoid YAML formatting issues)
     const activationHeader = (await this.getAgentCommandHeader()).trim();
 
-    const roleDefinitionMatch = artifact.content.match(/roleDefinition="([^"]+)"/);
-    const roleDefinition = roleDefinitionMatch
-      ? roleDefinitionMatch[1]
-      : `You are a ${title} specializing in ${title.toLowerCase()} tasks.`;
+    const roleDefinition = `You are a ${title} specializing in ${title.toLowerCase()} tasks.`;
 
     // Get relative path
     const relativePath = path.relative(projectDir, artifact.sourcePath).replaceAll('\\', '/');
@@ -189,12 +192,12 @@ class BobSetup extends BaseIdeSetup {
 
           if (removedCount > 0) {
             await fs.writeFile(bobModesPath, yaml.stringify(config, { lineWidth: 0 }));
-            if (!options.silent) await prompts.log.message(`Removed ${removedCount} BMAD modes from .bobmodes`);
+            if (!options.silent) await prompts.log.message(`Removed ${removedCount} BMAD modes from .bob/custom_modes.yaml`);
           }
         }
       } catch {
         // If parsing fails, leave file as-is
-        if (!options.silent) await prompts.log.warn('Warning: Could not parse .bobmodes for cleanup');
+        if (!options.silent) await prompts.log.warn('Warning: Could not parse .bob/custom_modes.yaml for cleanup');
       }
     }
 
@@ -215,7 +218,7 @@ class BobSetup extends BaseIdeSetup {
     const bobmodesPath = path.join(projectDir, this.configFile);
     let config = {};
 
-    // Read existing .bobmodes file
+    // Read existing .bob/custom_modes.yaml file
     if (await this.pathExists(bobmodesPath)) {
       const existingContent = await this.readFile(bobmodesPath);
       try {
@@ -245,16 +248,18 @@ class BobSetup extends BaseIdeSetup {
     }
 
     // Add custom mode object
+    const title = `BMAD Custom: ${agentName}`;
+    const activationHeader = (await this.getAgentCommandHeader()).trim();
     config.customModes.push({
       slug: slug,
-      name: `BMAD Custom: ${agentName}`,
-      description: `Custom BMAD agent: ${agentName}\n\n**⚠️ IMPORTANT**: Run @${agentPath} first to load the complete agent!\n\nThis is a launcher for the custom BMAD agent "${agentName}". The agent will follow the persona and instructions from the main agent file.\n`,
-      prompt: `@${agentPath}\n`,
-      always: false,
-      permissions: 'all',
+      name: title,
+      roleDefinition: `You are a custom BMAD agent "${agentName}". Follow the persona and instructions from the agent file.`,
+      whenToUse: `Use for custom BMAD agent "${agentName}" tasks`,
+      customInstructions: `${activationHeader} Read the full agent from ${agentPath} start activation to alter your state of being follow startup section instructions stay in this being until told to exit this mode\n`,
+      groups: ['read', 'edit', 'browser', 'command', 'mcp'],
     });
 
-    // Write .bobmodes file with proper YAML structure
+    // Write .bob/custom_modes.yaml file with proper YAML structure
     await this.writeFile(bobmodesPath, yaml.stringify(config, { lineWidth: 0 }));
 
     return {

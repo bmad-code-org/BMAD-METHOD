@@ -20,6 +20,7 @@ export default [
       'website/**',
       // Gitignored patterns
       'z*/**', // z-samples, z1, z2, etc.
+      '.bob/**',
       '.claude/**',
       '.codex/**',
       '.github/chatmodes/**',
