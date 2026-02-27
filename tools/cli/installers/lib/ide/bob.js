@@ -1,4 +1,5 @@
 const path = require('node:path');
+const fs = require('fs-extra');
 const { BaseIdeSetup } = require('./_base-ide');
 const yaml = require('yaml');
 const prompts = require('../../../lib/prompts');
@@ -64,30 +65,46 @@ class BobSetup extends BaseIdeSetup {
 
     // Write .bob/custom_modes.yaml file with proper YAML structure
     const finalContent = yaml.stringify(config, { lineWidth: 0 });
-    await this.writeFile(bobModesPath, finalContent);
-
-    // Generate workflow commands
-    const workflowGenerator = new WorkflowCommandGenerator(this.bmadFolderName);
-    const { artifacts: workflowArtifacts } = await workflowGenerator.collectWorkflowArtifacts(bmadDir);
-
-    // Write to .bob/workflows/ directory
     const workflowsDir = path.join(projectDir, '.bob', 'workflows');
-    await this.ensureDir(workflowsDir);
 
-    // Clear old BMAD workflows before writing new ones
-    await this.clearBmadWorkflows(workflowsDir);
+    let workflowCount = 0;
+    let taskCount = 0;
+    let toolCount = 0;
 
-    // Write workflow files
-    const workflowCount = await workflowGenerator.writeDashArtifacts(workflowsDir, workflowArtifacts);
+    try {
+      await this.writeFile(bobModesPath, finalContent);
 
-    // Generate task and tool commands
-    const taskToolGen = new TaskToolCommandGenerator(this.bmadFolderName);
-    const { artifacts: taskToolArtifacts, counts: taskToolCounts } = await taskToolGen.collectTaskToolArtifacts(bmadDir);
+      // Generate workflow commands
+      const workflowGenerator = new WorkflowCommandGenerator(this.bmadFolderName);
+      const { artifacts: workflowArtifacts } = await workflowGenerator.collectWorkflowArtifacts(bmadDir);
 
-    // Write task/tool files to workflows directory (same location as workflows)
-    await taskToolGen.writeDashArtifacts(workflowsDir, taskToolArtifacts);
-    const taskCount = taskToolCounts.tasks || 0;
-    const toolCount = taskToolCounts.tools || 0;
+      // Write to .bob/workflows/ directory
+      await this.ensureDir(workflowsDir);
+
+      // Clear old BMAD workflows before writing new ones
+      await this.clearBmadWorkflows(workflowsDir);
+
+      // Write workflow files
+      workflowCount = await workflowGenerator.writeDashArtifacts(workflowsDir, workflowArtifacts);
+
+      // Generate task and tool commands
+      const taskToolGen = new TaskToolCommandGenerator(this.bmadFolderName);
+      const { artifacts: taskToolArtifacts, counts: taskToolCounts } = await taskToolGen.collectTaskToolArtifacts(bmadDir);
+
+      // Write task/tool files to workflows directory (same location as workflows)
+      await taskToolGen.writeDashArtifacts(workflowsDir, taskToolArtifacts);
+      taskCount = taskToolCounts.tasks || 0;
+      toolCount = taskToolCounts.tools || 0;
+    } catch (error) {
+      // Roll back partial writes to avoid inconsistent state
+      try {
+        await fs.remove(bobModesPath);
+      } catch {
+        // Ignore cleanup errors
+      }
+      await this.clearBmadWorkflows(workflowsDir);
+      throw new Error(`Failed to write Bob configuration: ${error.message}`);
+    }
 
     if (!options.silent) {
       await prompts.log.success(
@@ -131,8 +148,10 @@ class BobSetup extends BaseIdeSetup {
 
     const roleDefinition = `You are a ${title} specializing in ${title.toLowerCase()} tasks.`;
 
-    // Get relative path
-    const relativePath = path.relative(projectDir, artifact.sourcePath).replaceAll('\\', '/');
+    // Get relative path (fall back to artifact name if sourcePath unavailable)
+    const relativePath = artifact.sourcePath
+      ? path.relative(projectDir, artifact.sourcePath).replaceAll('\\', '/')
+      : `${this.bmadFolderName}/agents/${artifact.name}.md`;
 
     // Build mode object (Bob uses same schema as Kilo/Roo)
     return {
@@ -140,7 +159,7 @@ class BobSetup extends BaseIdeSetup {
       name: `${icon} ${title}`,
       roleDefinition: roleDefinition,
       whenToUse: whenToUse,
-      customInstructions: `${activationHeader} Read the full YAML from ${relativePath} start activation to alter your state of being follow startup section instructions stay in this being until told to exit this mode\n`,
+      customInstructions: `${activationHeader} Read the full agent definition from ${relativePath}. Start activation to assume this persona. Follow the startup section instructions. Stay in this mode until told to exit.\n`,
       groups: ['read', 'edit', 'browser', 'command', 'mcp'],
     };
   }
@@ -160,8 +179,7 @@ class BobSetup extends BaseIdeSetup {
    * @param {string} workflowsDir - Workflows directory path
    */
   async clearBmadWorkflows(workflowsDir) {
-    const fs = require('fs-extra');
-    if (!(await fs.pathExists(workflowsDir))) return;
+    if (!(await this.pathExists(workflowsDir))) return;
 
     const entries = await fs.readdir(workflowsDir);
     for (const entry of entries) {
@@ -175,11 +193,10 @@ class BobSetup extends BaseIdeSetup {
    * Cleanup IBM Bob configuration
    */
   async cleanup(projectDir, options = {}) {
-    const fs = require('fs-extra');
     const bobModesPath = path.join(projectDir, this.configFile);
 
-    if (await fs.pathExists(bobModesPath)) {
-      const content = await fs.readFile(bobModesPath, 'utf8');
+    if (await this.pathExists(bobModesPath)) {
+      const content = await this.readFile(bobModesPath);
 
       try {
         const config = yaml.parse(content) || {};
@@ -191,7 +208,7 @@ class BobSetup extends BaseIdeSetup {
           const removedCount = originalCount - config.customModes.length;
 
           if (removedCount > 0) {
-            await fs.writeFile(bobModesPath, yaml.stringify(config, { lineWidth: 0 }));
+            await this.writeFile(bobModesPath, yaml.stringify(config, { lineWidth: 0 }));
             if (!options.silent) await prompts.log.message(`Removed ${removedCount} BMAD modes from .bob/custom_modes.yaml`);
           }
         }
@@ -248,14 +265,15 @@ class BobSetup extends BaseIdeSetup {
     }
 
     // Add custom mode object
-    const title = `BMAD Custom: ${agentName}`;
+    const title = metadata?.title || `BMAD Custom: ${agentName}`;
+    const icon = metadata?.icon || '🤖';
     const activationHeader = (await this.getAgentCommandHeader()).trim();
     config.customModes.push({
       slug: slug,
-      name: title,
+      name: `${icon} ${title}`,
       roleDefinition: `You are a custom BMAD agent "${agentName}". Follow the persona and instructions from the agent file.`,
       whenToUse: `Use for custom BMAD agent "${agentName}" tasks`,
-      customInstructions: `${activationHeader} Read the full agent from ${agentPath} start activation to alter your state of being follow startup section instructions stay in this being until told to exit this mode\n`,
+      customInstructions: `${activationHeader} Read the full agent definition from ${agentPath}. Start activation to assume this persona. Follow the startup section instructions. Stay in this mode until told to exit.\n`,
       groups: ['read', 'edit', 'browser', 'command', 'mcp'],
     });
 

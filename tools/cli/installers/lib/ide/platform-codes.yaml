@@ -36,7 +36,7 @@ platforms:
     name: "IBM Bob"
     preferred: false
     category: ide
-    description: "IBM's AI development environment"
+    description: "IBM's agentic IDE for AI-powered development"
     # No installer config - uses custom bob.js (creates .bob/custom_modes.yaml)
 
   claude-code:
