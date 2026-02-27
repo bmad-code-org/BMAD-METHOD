@@ -99,15 +99,39 @@ Specifications use consistent terminology:
 
 ## IDs Are the Key
 
-Every object gets a unique ID:
+Every object has two IDs:
+
+1. **Instance ID** — unique on the page: `hem-trust-cards:pos-1`
+2. **DS Type** — defined in the design system: `article-card`
+
+The Instance ID tells you WHERE this specific object is. The DS Type tells you WHAT kind of object it is.
+
+```markdown
+### Trust Card 1
+
+**OBJECT ID:** `hem-trust-cards:pos-1`
+**DS TYPE:** `article-card`
+```
+
+### Positional IDs for Lists
+
+When a page has multiple instances of the same component, use positional identifiers:
 
 ```
-Page:       P01-signup-page
-Section:    P01-S01-hero-section
-Widget:     P01-S02-W01-signup-form
-Card:       P01-S03-C01-feature-card
-Element:    P01-S02-W01-E01-email-field
+hem-trust-cards:pos-1
+hem-trust-cards:pos-2
+hem-trust-cards:pos-3
 ```
+
+Child elements use colon-separated hierarchy:
+
+```
+hem-trust-cards:pos-1:image
+hem-trust-cards:pos-1:heading
+hem-trust-cards:pos-1:teaser
+```
+
+Use positional IDs (`pos-1`, `pos-2`) instead of semantic names when content order can change dynamically.
 
 **Why IDs matter:**
 
@@ -117,6 +141,7 @@ Element:    P01-S02-W01-E01-email-field
 4. **Accessibility** — Reference specific elements for ARIA
 5. **Analytics** — Track interactions precisely
 6. **Testing** — Target elements for automation
+7. **Design System** — Link page instances to reusable types
 
 **Without IDs, specifications are just documentation. With IDs, they're implementation maps.**
 
@@ -410,6 +435,12 @@ Deep dive on specifying sections (placement, responsive behavior) and widgets (r
 **Lesson 3: Element & State Specifications**
 Complete element specifications with all states, exact content, ARIA attributes, edge cases, and translations
 
+**Lesson 4: Spacing as First-Class Objects**
+Every gap between sections gets an ID, a type, and a value — the invisible layer that holds everything together
+
+**Lesson 5: Typography Tokens — Size Is Not Structure**
+Decouple visual size from semantic meaning. An H2 can be `heading-xl` on the homepage and `heading-sm` in a sidebar.
+
 **Tutorial: Specify Your Pages**
 Hands-on practice with Freya creating complete specifications
 
@@ -439,6 +470,12 @@ Deep dive on Layers 2 & 3 of the hierarchy
 
 ### [Lesson 3: Element & State Specifications](lesson-03-element-state-specifications.md)
 Deep dive on Layers 4 & 5 — Complete implementation details
+
+### [Lesson 4: Spacing as First-Class Objects](lesson-04-spacing-objects.md)
+The invisible layer — every gap gets an ID, a type, and a value
+
+### [Lesson 5: Typography Tokens — Size Is Not Structure](lesson-05-typography-tokens.md)
+Decouple visual size from semantic meaning
 
 ---
 

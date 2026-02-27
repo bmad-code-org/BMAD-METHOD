@@ -344,7 +344,44 @@ Summary:
 
 ---
 
-## Step 8: Review Complete Specification (5 min)
+## Step 8: Add Spacing Objects (5 min)
+
+### Freya guides the invisible layer:
+
+> "Now let's specify the spacing between sections. Every gap needs an ID."
+
+**You work through the page sections:**
+
+```markdown
+## Spacing Objects
+
+#### ↕ `signup-v-space-zero` — header sits flush against form section
+#### ↕ `signup-v-space-xl` — comfortable gap between form and trust section
+#### ↕ `signup-v-space-lg` — standard gap between trust section and footer
+```
+
+**Freya reminds:**
+> "Zero spacing is a design decision too — document it so nobody 'fixes' it later."
+
+### Typography tokens:
+
+> "Let's also specify the heading sizes using tokens, not pixels."
+
+```markdown
+### Headline
+| Property | Value |
+|----------|-------|
+| Tag | h1 |
+| Visual size | heading-xl / heading-2xl / heading-3xl |
+| Font weight | 900 |
+```
+
+**Freya explains:**
+> "The semantic tag (h1) and the visual size (heading-xl) are independent. The h1 tells screen readers this is the page title. The token controls how big it looks."
+
+---
+
+## Step 9: Review Complete Specification (5 min)
 
 ### Freya presents the full document:
 
@@ -370,7 +407,7 @@ If yes, you're done. If not, identify what's missing.
 
 ---
 
-## Step 9: Save and Organize (2 min)
+## Step 10: Save and Organize (2 min)
 
 ### Save the specification:
 

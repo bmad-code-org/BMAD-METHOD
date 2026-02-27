@@ -48,11 +48,27 @@ Shared vocabulary with developers.
 
 ## When to Extract
 
-Not everything should be a component. Look for:
+Not everything should be a component. And **objects and spacing have different extraction timing:**
+
+### Objects: Extract on Second Use
+
+The first time a button or card appears, it's a one-off — it stays inline in the page spec. The second time the same pattern appears (same states, same behavior), it's a real pattern. Extract it to the design system.
+
+First use = one-off. Second use = pattern. Extract.
+
+### Spacing: Extract Immediately
+
+Spacing extracts on **first use** — no waiting for a second occurrence.
+
+Why? Because spacing is relational. When you decide that a heading needs `space-xl` above a card grid, that's a universal design principle — not a page-specific detail. It applies everywhere that pair of object types appears.
+
+### The Decision Checklist
+
+For objects, look for:
 
 **Appears more than once**
 
-Once is an instance. Twice or more is a pattern worth considering.
+Once is an instance. Twice or more is a pattern worth extracting.
 
 **Consistent behavior**
 
