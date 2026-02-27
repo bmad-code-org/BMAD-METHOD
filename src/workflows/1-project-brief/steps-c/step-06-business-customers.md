@@ -57,7 +57,7 @@ Help the user define their ideal business customer profile, including company ch
 ### 1. Guide Business Customer Definition
 Ask about company size, industry, decision-making structure, and budget authority. Also identify buying roles (buyer vs. user).
 
-### 2. Agent Dialog Update
+### 2. Design Log Update
 **Mandatory:** Append to `dialog/decisions.md` if key decisions were made.
 
 Record: Business customer definition, buyer vs end-user distinction, business customer needs and decision criteria.
@@ -68,7 +68,7 @@ Mark Step 6 complete in `dialog/progress-tracker.md` progress tracker.
 Display: "**Select an Option:** [C] Continue to Target Users"
 
 #### Menu Handling Logic:
-- IF C: Update agent dialog, then load, read entire file, then execute {nextStepFile}
+- IF C: Load, read entire file, then execute {nextStepFile}
 - IF M: Return to {workflowFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options]
 

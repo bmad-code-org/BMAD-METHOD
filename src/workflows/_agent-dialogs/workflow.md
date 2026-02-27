@@ -6,6 +6,8 @@ web_bundle: true
 
 # Agent Dialog Workflow
 
+> **DEPRECATED:** This workflow has been replaced by the Design Log system (`_progress/00-design-log.md`). Project state is now tracked in the design log's Backlog/Current/Design Loop Status/Log sections. Session insights are saved to `_progress/agent-experiences/`. This folder is preserved as reference for the structured step-file approach — do not use for new projects.
+
 **Goal:** Create structured, documented agent dialog folders that enable isolated, reproducible implementation tasks. Plan first, then execute in order.
 
 **Your Role:** Guide the user through creating an agent dialog structure that captures scope, context, and step-by-step instructions.

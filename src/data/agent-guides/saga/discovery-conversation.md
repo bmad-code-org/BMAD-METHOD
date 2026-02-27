@@ -237,7 +237,7 @@ Not:
 
 ### Never Re-Ask What You Already Know
 
-When loading a new step, ALWAYS check what was captured in prior steps. The agent dialog files contain previous answers.
+When loading a new step, ALWAYS check what was captured in prior steps. The design log and previous step outputs contain previous answers.
 
 **Pattern:**
 1. Before asking your first question in a new step, review available context from prior steps

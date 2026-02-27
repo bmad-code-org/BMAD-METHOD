@@ -73,7 +73,7 @@ Synthesize what you heard and confirm understanding with: Core Structural Idea, 
 ### 5. Document the Concept
 Record: Core Structural Idea, Implementation Principle, Rationale, Concrete Example, Features That Stem From Concept.
 
-### 6. Agent Dialog Update
+### 6. Design Log Update
 **Mandatory:** Update `dialog/04-concept.md` before marking this step complete.
 
 Fill in: Opening question, user's initial description, key exchanges, rationale discussion, reflection checkpoint, final concept documentation. Mark Step 7a complete in `dialog/progress-tracker.md`.
@@ -82,7 +82,7 @@ Fill in: Opening question, user's initial description, key exchanges, rationale 
 Display: "**Select an Option:** [C] Continue to Success Criteria"
 
 #### Menu Handling Logic:
-- IF C: Update agent dialog, then load, read entire file, then execute {nextStepFile}
+- IF C: Load, read entire file, then execute {nextStepFile}
 - IF M: Return to {workflowFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options]
 
@@ -102,7 +102,7 @@ ONLY WHEN product concept is articulated and user confirms will you then load an
 - Rationale explored and documented
 - Concrete example provided
 - User confirmed the concept captures their vision
-- Agent dialog updated
+- Design log updated
 
 ### ❌ SYSTEM FAILURE:
 - Accepted a feature list as the product concept

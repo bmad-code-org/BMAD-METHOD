@@ -96,7 +96,7 @@ Present breakdown to user for approval.
 Display: "**Select an Option:** [C] Continue to Step 4a: Announce and Gather"
 
 #### Menu Handling Logic:
-- IF C: Update agent dialog, then load, read entire file, then execute {nextStepFile}
+- IF C: Update design log, then load, read entire file, then execute {nextStepFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options]
 
 #### EXECUTION RULES:

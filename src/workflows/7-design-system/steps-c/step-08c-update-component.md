@@ -629,7 +629,7 @@ Display: "**Select an Option:** [C] Continue or [M] Return to Activity Menu"
 
 #### Menu Handling Logic:
 
-- IF C: Update agent dialog, then load, read entire file, then execute {nextStepFile}
+- IF C: Update design log, then load, read entire file, then execute {nextStepFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options](#10-present-menu-options)
 
 #### EXECUTION RULES:
@@ -652,7 +652,7 @@ ONLY WHEN [component is updated, version history tracked, and affected pages not
 - All instructions executed in sequence
 - Results documented and presented to user
 - User confirmed before proceeding
-- Agent dialog updated
+- Design log updated
 
 ### ❌ SYSTEM FAILURE:
 

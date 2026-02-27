@@ -90,8 +90,8 @@ Validate with user: "Would you say the visual direction should feel [keywords]?"
 - Add each reference with URL and what we like
 - Capture mood description and keywords
 
-### 7. Agent Dialog Update
-After completing this step, update the agent dialog:
+### 7. Design Log Update
+After completing this step, update the design log:
 
 ```markdown
 ### Step 22: Visual References
@@ -107,7 +107,7 @@ After completing this step, update the agent dialog:
 Display: "**Select an Option:** [C] Continue to next step"
 
 #### Menu Handling Logic:
-- IF C: Update agent dialog, then load, read entire file, then execute {nextStepFile}
+- IF C: Load, read entire file, then execute {nextStepFile}
 - IF M: Return to {workflowFile} or {activityWorkflowFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options]
 

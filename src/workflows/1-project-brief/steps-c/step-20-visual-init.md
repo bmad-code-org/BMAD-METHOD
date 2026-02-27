@@ -73,8 +73,8 @@ Welcome user and set context for capturing visual direction.
 - If yes: "Let's start by documenting what exists."
 - If no: "Great, we have a blank canvas to work with."
 
-### 5. Agent Dialog Update
-After completing this step, update the agent dialog:
+### 5. Design Log Update
+After completing this step, update the design log:
 
 ```markdown
 ### Step 20: Visual Direction Init
@@ -90,7 +90,7 @@ After completing this step, update the agent dialog:
 Display: "**Select an Option:** [C] Continue to next step"
 
 #### Menu Handling Logic:
-- IF C: Update agent dialog, then load, read entire file, then execute {nextStepFile}
+- IF C: Load, read entire file, then execute {nextStepFile}
 - IF M: Return to {workflowFile} or {activityWorkflowFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options]
 

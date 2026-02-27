@@ -21,11 +21,8 @@ description: Understand an existing codebase through systematic exploration
 
 ## INITIALIZATION
 
-### Agent Dialog Gate
-
-1. Check for pending analysis dialogs
-2. If none, suggest creating one with analysis focus
-3. Load dialog context
+### Design Log
+Read `{output_folder}/_progress/00-design-log.md`. Check Current and Backlog for context.
 
 ### Essential Guides
 

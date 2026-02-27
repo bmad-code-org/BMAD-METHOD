@@ -123,7 +123,7 @@ Record the inventory, implementation order, and acceptance criteria in the dialo
 Display: "**Select an Option:** [C] Continue to Step 2: Setup Environment"
 
 #### Menu Handling Logic:
-- IF C: Update agent dialog, then load, read entire file, then execute {nextStepFile}
+- IF C: Update design log, then load, read entire file, then execute {nextStepFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options]
 
 #### EXECUTION RULES:

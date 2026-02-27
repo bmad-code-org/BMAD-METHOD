@@ -515,7 +515,7 @@ Display: "**Select an Option:** [C] Continue to Create First Component"
 
 #### Menu Handling Logic:
 
-- IF C: Update agent dialog, then load, read entire file, then execute {nextStepFile}
+- IF C: Update design log, then load, read entire file, then execute {nextStepFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options](#9-present-menu-options)
 
 #### EXECUTION RULES:
@@ -538,7 +538,7 @@ ONLY WHEN [C continue option is selected and design system structure is initiali
 - All instructions executed in sequence
 - Results documented and presented to user
 - User confirmed before proceeding
-- Agent dialog updated
+- Design log updated
 
 ### ❌ SYSTEM FAILURE:
 

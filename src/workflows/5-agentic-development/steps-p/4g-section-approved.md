@@ -90,8 +90,8 @@ Display based on status:
 - **If all complete**: "[C] Continue to Step 5: Finalization"
 
 #### Menu Handling Logic:
-- IF C (more sections): Update agent dialog, then load, read entire file, then execute `./4a-announce-and-gather.md`
-- IF C (all complete): Update agent dialog, then load, read entire file, then execute {nextStepFile}
+- IF C (more sections): Update design log, then load, read entire file, then execute `./4a-announce-and-gather.md`
+- IF C (all complete): Update design log, then load, read entire file, then execute {nextStepFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options]
 
 #### EXECUTION RULES:

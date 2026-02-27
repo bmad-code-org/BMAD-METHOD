@@ -481,7 +481,7 @@ Display: "**Select an Option:** [1/2/3/4] Choose option or request more info"
 
 #### Menu Handling Logic:
 
-- IF C: Update agent dialog, then load, read entire file, then execute {nextStepFile}
+- IF C: Update design log, then load, read entire file, then execute {nextStepFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options](#7-present-menu-options)
 
 #### EXECUTION RULES:
@@ -504,7 +504,7 @@ ONLY WHEN [designer has selected an option (1/2/3) and decision is confirmed], w
 - All instructions executed in sequence
 - Results documented and presented to user
 - User confirmed before proceeding
-- Agent dialog updated
+- Design log updated
 
 ### ❌ SYSTEM FAILURE:
 

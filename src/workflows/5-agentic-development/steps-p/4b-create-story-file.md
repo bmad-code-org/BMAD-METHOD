@@ -79,7 +79,7 @@ Present summary and offer user the choice to review the story first or proceed t
 Display: "**Select an Option:** [C] Continue to Step 4c: Implement Section"
 
 #### Menu Handling Logic:
-- IF C: Update agent dialog, then load, read entire file, then execute {nextStepFile}
+- IF C: Update design log, then load, read entire file, then execute {nextStepFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options]
 
 #### EXECUTION RULES:

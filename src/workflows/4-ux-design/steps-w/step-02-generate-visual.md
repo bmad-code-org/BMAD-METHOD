@@ -61,7 +61,7 @@ Create the visual design using the chosen tool — route to the appropriate sub-
 <action>Load and execute: step-02w-nb-compose-prompt.md</action>
 
 This sub-workflow handles:
-- Agent dialog creation (tracks prompts and generation history)
+- Design log entry (tracks prompts and generation history)
 - Image description extraction from the page spec
 - User creative direction (overrides and enhancements)
 - Prompt composition with compression strategy

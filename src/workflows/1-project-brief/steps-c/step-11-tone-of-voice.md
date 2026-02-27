@@ -122,7 +122,7 @@ Once confirmed, document:
 4. **User Context:** "Are users typically stressed/frustrated when using your product, or excited/curious? How should tone respond to their state?"
 5. **Differentiation:** "How do competitors communicate? Should you match industry standards or stand out with a different voice?"
 
-### 7. Agent Dialog Update
+### 7. Design Log Update
 **Mandatory:** Append to `dialog/decisions.md` if key decisions were made.
 
 **Record:**
@@ -136,7 +136,7 @@ Once confirmed, document:
 Display: "**Select an Option:** [C] Continue to next step"
 
 #### Menu Handling Logic:
-- IF C: Update agent dialog, then load, read entire file, then execute {nextStepFile}
+- IF C: Load, read entire file, then execute {nextStepFile}
 - IF M: Return to {workflowFile} or {activityWorkflowFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options]
 

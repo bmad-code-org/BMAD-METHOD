@@ -193,7 +193,7 @@ Example:
 Save the document to the project's output location. If no output location is defined, save to:
 
 - `docs/architecture/` in the analyzed project, or
-- The dialog output folder if using the agent dialog system
+- The agent experiences folder for session insights
 
 ### 6. Verify Checklist
 
@@ -209,7 +209,7 @@ Save the document to the project's output location. If no output location is def
 Display: "**Select an Option:** [M] Return to Activity Menu"
 
 #### Menu Handling Logic:
-- IF M: Update agent dialog, then load, read entire file, then execute {activityWorkflowFile}
+- IF M: Update design log, then load, read entire file, then execute {activityWorkflowFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options]
 
 #### EXECUTION RULES:

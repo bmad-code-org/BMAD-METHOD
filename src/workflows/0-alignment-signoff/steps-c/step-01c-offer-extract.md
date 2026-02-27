@@ -82,7 +82,7 @@ Skip to step-01e-detect-starting-point.md
 Display: "**Select an Option:** [C] Continue to step-01d-extract-info (if documents provided) or step-01e-detect-starting-point (if skipping)"
 
 #### Menu Handling Logic:
-- IF C: Update agent dialog, then load, read entire file, then execute {nextStepFile} (or step-01e if skipping extraction)
+- IF C: Load, read entire file, then execute {nextStepFile} (or step-01e if skipping extraction)
 - IF M: Return to {workflowFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options]
 

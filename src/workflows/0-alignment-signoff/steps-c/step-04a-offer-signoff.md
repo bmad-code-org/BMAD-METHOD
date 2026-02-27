@@ -91,7 +91,7 @@ Route to step-06a-build-internal-signoff.md (for internal signoff)
 Display: "**Select an Option:** [C] Continue to step-04b-determine-business-model (or step-06a for internal signoff)"
 
 #### Menu Handling Logic:
-- IF C: Update agent dialog, then load, read entire file, then execute {nextStepFile} (or step-06a for internal)
+- IF C: Load, read entire file, then execute {nextStepFile} (or step-06a for internal)
 - IF M: Return to {workflowFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options]
 

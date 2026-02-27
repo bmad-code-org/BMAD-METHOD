@@ -148,7 +148,7 @@ Next: Set up your project structure.
 Display: "**Select an Option:** [C] Continue to Step 2: Configuration & Structure"
 
 #### Menu Handling Logic:
-- IF C: Update agent dialog, then load, read entire file, then execute {nextStepFile}
+- IF C: Load, read entire file, then execute {nextStepFile}
 - IF M: Return to {workflowFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options]
 

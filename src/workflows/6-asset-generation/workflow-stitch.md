@@ -14,11 +14,8 @@ web_bundle: true
 
 ## INITIALIZATION
 
-### Agent Dialog Gate
-
-1. Check for pending activity dialogs
-2. If none, suggest creating one
-3. Load dialog context
+### Design Log
+Read `{output_folder}/_progress/00-design-log.md`. Check Current and Backlog for context.
 
 
 ## OVERVIEW
@@ -59,12 +56,11 @@ Visual Reference + Sketch + Specification = Stitch Generation
 
 ## WORKFLOW
 
-### Step 1: Create Dialog
+### Step 1: Create Generation Log
 
-Create a Stitch generation dialog in the project's Agent Dialogs folder.
+Create a Stitch generation log in the agent experiences folder.
 
-**Template:** `_agent-dialogs/templates/dialog-types/stitch-generation.template.md`
-**Location:** `{output_folder}/_progress/agent-dialogs/{YYYY-MM-DD}-freya-stitch-{feature}.md`
+**Location:** `{output_folder}/_progress/agent-experiences/{YYYY-MM-DD}-stitch-{feature}.md`
 
 ### Step 2: Pre-Generation Questions
 

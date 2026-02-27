@@ -34,12 +34,12 @@ Let me check what you're working on...
 3. Filter out system repos (WDS, BMad expansion modules)
 4. For each WDS project repo found:
    - Read `wds-project-outline.yaml` for project name and phase status
-   - Scan `_progress/agent-dialogs/` for dialog files with status `In Progress` or `Not Started`
-   - Note any open dialogs related to Phases 3-4
+   - Read `_progress/00-design-log.md` — check Current table and Design Loop Status
+   - Note any in-progress work related to Phases 3-4
 
 **Multi-project branching logic:**
 
-**If multiple open agent dialogs found:**
+**If in-progress work found in multiple projects:**
 ```
 I found open work in multiple projects:
 1. [Project A]: [Phase X - task description]
@@ -48,7 +48,7 @@ I found open work in multiple projects:
 Which would you like to work on?
 ```
 
-**If no open dialogs but multiple projects:**
+**If no in-progress work but multiple projects:**
 ```
 I found [N] WDS projects in your workspace:
 1. [Project A] - Phase [X] status
@@ -64,7 +64,7 @@ Which project would you like to work on?
 - Check for my artifacts:
   - `C-UX-Scenarios/` folder (Phase 3)
   - `C-UX-Scenarios/` folder (Phase 3+4)
-- Check for open agent dialogs in that project
+- Check design log Current table for in-progress work
 - Note phase completion status
 
 ### 3. Status Report
@@ -83,26 +83,25 @@ Phase 4: UX Design        [✓ complete / ⏳ in-progress / ○ not started]
 ⚠️ Prerequisites missing: Need Saga to complete Phase 1-2 first
    Type /saga to call Saga
 
-[If open dialog found:]
-⏸ Unfinished work: [dialog-file-name.md]
-   Last task: [task description from dialog]
+[If Current table has task:]
+⏸ In progress: [task from Current table]
 
-[If no open dialogs:]
-○ No open agent dialogs for my phases
+[If Current is empty:]
+○ No work in progress for my phases
 ```
 
 ### 4. Offer Next Steps
 
 **Only shown for single-project scenario.** Based on status, offer appropriate actions:
 
-**If unfinished dialog found (default: resume):**
+**If Current table has a task (default: resume):**
 ```
-I found unfinished work in [dialog-file-name.md]:
-→ [task description from dialog]
+I found in-progress work:
+→ [task from Current table]
 
 Picking up where we left off...
 ```
-Read the dialog file, find the next incomplete step, and continue naturally.
+Read the design log, check Design Loop Status for current page state, and continue naturally.
 Only ask before resuming if the user's message clearly indicates a different task.
 
 **If prerequisites missing:**

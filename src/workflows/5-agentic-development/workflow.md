@@ -20,7 +20,7 @@ Phase 5 is **menu-driven**, not linear. The user picks an activity.
 
 - **Activity-Based**: Pick the right activity for the current need
 - **Non-Linear**: Start anywhere, switch between activities freely
-- **Agent Dialog Driven**: Every activity creates/resumes agent dialogs for high-level planning
+- **Design Log Driven**: Every activity reads/updates the design log for state tracking
 - **Specification as Truth**: All work traces back to approved specifications
 
 ### Step Processing Rules
@@ -28,7 +28,7 @@ Phase 5 is **menu-driven**, not linear. The user picks an activity.
 1. **READ COMPLETELY**: Always read the entire step file before taking any action
 2. **FOLLOW SEQUENCE**: Execute all sections in order within a step
 3. **WAIT FOR INPUT**: Halt at menus and wait for user selection
-4. **SAVE STATE**: Update dialog tracking when completing steps
+4. **SAVE STATE**: Update design log when completing steps
 
 ---
 
@@ -40,11 +40,9 @@ Load and read full config from `{project-root}/_bmad/wds/config.yaml` and resolv
 - `project_name`, `output_folder`, `user_name`
 - `communication_language`, `document_output_language`
 
-### 2. Agent Dialog Gate
+### 2. Design Log
 
-1. Check `{output_folder}/_progress/agent-dialogs/` for pending development dialogs
-2. If pending dialogs exist, present them with status
-3. User can resume existing or start new
+Read `{output_folder}/_progress/00-design-log.md`. Check Current and Backlog for context.
 
 ### 3. Activity Menu
 

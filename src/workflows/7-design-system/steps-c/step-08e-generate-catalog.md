@@ -742,7 +742,7 @@ ONLY WHEN [M is selected and catalog is generated and saved], will you then retu
 - All instructions executed in sequence
 - Results documented and presented to user
 - User confirmed before proceeding
-- Agent dialog updated
+- Design log updated
 
 ### ❌ SYSTEM FAILURE:
 

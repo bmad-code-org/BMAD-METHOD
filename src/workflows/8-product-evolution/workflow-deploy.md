@@ -12,11 +12,8 @@ borrows_from: Phase 4 [H] (design delivery)
 
 ## INITIALIZATION
 
-### Agent Dialog Gate
-
-1. Check for pending activity dialogs
-2. If none, suggest creating one
-3. Load dialog context
+### Design Log
+Read `{output_folder}/_progress/00-design-log.md`. Check Current and Backlog for context.
 
 
 ## Steps
@@ -74,7 +71,7 @@ Create a delivery summary at `{output_folder}/evolution/deliveries/`:
 
 ### Step 4: Notify Team
 
-If the project uses agent dialogs or team notifications:
+If the project uses design log tracking or team notifications:
 
 1. Create completion notification
 2. Reference all artifacts (analysis → scenario → spec → test → PR)

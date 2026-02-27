@@ -96,7 +96,7 @@ Read `{output_folder}/B-Trigger-Map/trigger-map.md` (the hub document)
 **Check for resume situation:**
 - Does `{output_folder}/C-UX-Scenarios/` exist?
 - Are there any scenario files already?
-- Are there unfinished agent dialogs in `{output_folder}/_progress/agent-dialogs/`?
+- Is there in-progress work in the design log (`{output_folder}/_progress/00-design-log.md`)?
 
 **If existing work found:**
 ```

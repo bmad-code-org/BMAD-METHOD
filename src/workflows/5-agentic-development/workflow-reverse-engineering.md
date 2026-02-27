@@ -25,11 +25,8 @@ description: Analyze any software or website to extract specifications and desig
 
 ## INITIALIZATION
 
-### Agent Dialog Gate
-
-1. Check for pending reverse engineering dialogs
-2. If none, suggest creating one with target description
-3. Load dialog context
+### Design Log
+Read `{output_folder}/_progress/00-design-log.md`. Check Current and Backlog for context.
 
 ### Essential Guides
 

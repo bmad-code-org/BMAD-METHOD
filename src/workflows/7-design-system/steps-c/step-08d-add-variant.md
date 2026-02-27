@@ -538,7 +538,7 @@ Display: "**Select an Option:** [C] Continue to Generate Catalog or [M] Return t
 
 #### Menu Handling Logic:
 
-- IF C: Update agent dialog, then load, read entire file, then execute {nextStepFile}
+- IF C: Update design log, then load, read entire file, then execute {nextStepFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options](#11-present-menu-options)
 
 #### EXECUTION RULES:
@@ -561,7 +561,7 @@ ONLY WHEN [variant is added, component file updated, and usage tracked], will yo
 - All instructions executed in sequence
 - Results documented and presented to user
 - User confirmed before proceeding
-- Agent dialog updated
+- Design log updated
 
 ### ❌ SYSTEM FAILURE:
 

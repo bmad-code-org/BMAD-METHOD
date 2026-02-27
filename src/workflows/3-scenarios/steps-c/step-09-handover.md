@@ -10,7 +10,7 @@ workflowFile: '../workflow.md'
 
 ## STEP GOAL:
 
-Complete Phase 3 by presenting a final summary, guiding the user through design intent selection for each scenario, explaining what comes next in Phase 4, and updating any agent dialogs.
+Complete Phase 3 by presenting a final summary, guiding the user through design intent selection for each scenario, explaining what comes next in Phase 4, and updating the design log.
 
 ## MANDATORY EXECUTION RULES (READ FIRST):
 
@@ -130,9 +130,9 @@ You can always change approach in Phase 4.
 Would you like to continue to Phase 4, or take a break?
 ```
 
-### 4. Update Agent Dialog (If Exists)
+### 4. Update Design Log (If Exists)
 
-If tracking via agent dialog:
+If tracking via design log:
 - Mark Phase 3 as complete
 - Log scenario count and quality scores
 - Note any user adjustments made during the process
@@ -166,7 +166,7 @@ ONLY WHEN [M main menu option] is selected and [design intent captured for all s
 - Design intent selection offered for each scenario
 - Design intent and status saved to scenario frontmatter
 - Phase 4 approaches clearly explained
-- Agent dialog updated if applicable
+- Design log updated if applicable
 - User informed of next steps
 - Menu presented and user input handled correctly
 
@@ -176,6 +176,6 @@ ONLY WHEN [M main menu option] is selected and [design intent captured for all s
 - Skipping design intent selection
 - Not saving design intent to scenario files
 - Ending without explaining next steps
-- Not updating agent dialog when one exists
+- Not updating design log when one exists
 
 **Master Rule:** Skipping steps, optimizing sequences, or not following exact instructions is FORBIDDEN and constitutes SYSTEM FAILURE.

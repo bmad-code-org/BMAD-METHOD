@@ -101,7 +101,7 @@ Confirm the fix works and has not introduced regressions.
 Display: "**Select an Option:** [C] Continue to Step 5: Document"
 
 #### Menu Handling Logic:
-- IF C: Update agent dialog, then load, read entire file, then execute {nextStepFile}
+- IF C: Update design log, then load, read entire file, then execute {nextStepFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options]
 
 #### EXECUTION RULES:

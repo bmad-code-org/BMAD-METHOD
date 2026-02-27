@@ -75,4 +75,4 @@ Whether designing new features, refining experiences, building design foundation
 
 **Analyzing your project now...**
 
-_(Continue to: `{project-root}/_bmad/wds/workflows/_agent-dialogs/project-analysis/02-project-analysis-router.md`)_
+_(Continue to: Read `{output_folder}/_progress/00-design-log.md` and present the Adaptive Dashboard)_

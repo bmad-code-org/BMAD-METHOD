@@ -96,8 +96,8 @@ Based on tone and style:
 - Fill in Color Direction section
 - Fill in Typography Direction section
 
-### 6. Agent Dialog Update
-After completing this step, update the agent dialog:
+### 6. Design Log Update
+After completing this step, update the design log:
 
 ```markdown
 ### Step 23: Design Style
@@ -113,7 +113,7 @@ After completing this step, update the agent dialog:
 Display: "**Select an Option:** [C] Continue to next step"
 
 #### Menu Handling Logic:
-- IF C: Update agent dialog, then load, read entire file, then execute {nextStepFile}
+- IF C: Load, read entire file, then execute {nextStepFile}
 - IF M: Return to {workflowFile} or {activityWorkflowFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options]
 

@@ -58,7 +58,7 @@ Welcome the user and explain that this is their strategic foundation. This workf
 
 Set time expectations (30-60 minutes) and ask about any existing context that should be considered.
 
-### 2. Agent Dialog Update
+### 2. Design Log Update
 **Mandatory:** Update `dialog/00-context.md` before marking this step complete.
 
 Fill in:
@@ -72,7 +72,7 @@ Mark Phase 0 / Step 1 complete in `dialog/progress-tracker.md` progress tracker.
 Display: "**Select an Option:** [C] Continue to Vision"
 
 #### Menu Handling Logic:
-- IF C: Update agent dialog, then load, read entire file, then execute {nextStepFile}
+- IF C: Load, read entire file, then execute {nextStepFile}
 - IF M: Return to {workflowFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options]
 
@@ -91,13 +91,13 @@ ONLY WHEN user confirms readiness will you then load and read fully `{nextStepFi
 - User welcomed and expectations set
 - Time estimate communicated (30-60 minutes)
 - Existing context gathered (or noted as none)
-- Agent dialog updated with project metadata
+- Design log updated with project metadata
 - User confirms readiness to proceed
 
 ### ❌ SYSTEM FAILURE:
 - Started exploring vision or strategic topics
 - Generated content without user input
-- Skipped agent dialog update
+- Skipped design log update
 - Did not wait for user confirmation before proceeding
 
 **Master Rule:** Skipping steps, optimizing sequences, or not following exact instructions is FORBIDDEN and constitutes SYSTEM FAILURE.

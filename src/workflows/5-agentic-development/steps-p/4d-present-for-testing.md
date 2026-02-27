@@ -95,7 +95,7 @@ Display based on user feedback:
 - **If improvement suggested**: "[C] Continue to Step 4f: Handle Improvement"
 
 #### Menu Handling Logic:
-- IF C: Update agent dialog, then load, read entire file, then execute the appropriate next step file
+- IF C: Update design log, then load, read entire file, then execute the appropriate next step file
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options]
 
 #### EXECUTION RULES:

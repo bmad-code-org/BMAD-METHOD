@@ -33,7 +33,7 @@ Add to `product-brief.md`:
 - [Insight 3 - unique angle]
 ```
 
-### 3. Update Agent Dialog
+### 3. Update Design Log
 
 **Mandatory:** Update `dialog/02-vision.md` before marking this step complete.
 

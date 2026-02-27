@@ -129,7 +129,7 @@ docs/method/dream-up-rubric-phase-2.md
 - ✅ Context declaration (explicit usage context)
 - ✅ Visual connection diagram (shows logic flow)
 
-**Document in agent dialog:**
+**Document in design log:**
 
 ```markdown
 ## Layer 1: WDS Form Learned
@@ -233,7 +233,7 @@ src/workflows/3-scenarios/data/validation-standards.md
 - SEO keywords (if relevant)
 - Future plans
 
-**Document in agent dialog:**
+**Document in design log:**
 
 ```markdown
 ## Layer 2: Project Context (Initial Load)
@@ -917,12 +917,12 @@ Would you like to:
 
 ---
 
-## Agent Dialog Documentation
+## Design Log Documentation
 
-**Throughout process, maintain comprehensive agent dialog:**
+**Throughout process, maintain comprehensive agent experience log:**
 
 ```markdown
-# Agent Dialog: Dream Up - Källa Trigger Map
+# Agent Experience: Dream Up - Källa Trigger Map
 
 **Created:** {{date time}}
 **Mode:** {{Suggest/Dream}}
@@ -996,9 +996,9 @@ Would you like to:
 [Strategic choices during generation]
 ```
 
-**Save agent dialog at:**
+**Save agent experience at:**
 ```
-{output_folder}/_progress/agent-dialogs/{date}-trigger-map-{{mode}}.md
+{output_folder}/_progress/agent-experiences/{date}-trigger-map-{{mode}}.md
 ```
 
 ---

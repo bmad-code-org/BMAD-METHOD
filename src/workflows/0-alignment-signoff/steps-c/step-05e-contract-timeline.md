@@ -81,7 +81,7 @@ Build the Timeline section defining when work will happen, key milestones, and d
 Display: "**Select an Option:** [C] Continue to step-05f-contract-availability (or step-05g if not Retainer)"
 
 #### Menu Handling Logic:
-- IF C: Update agent dialog, then load, read entire file, then execute {nextStepFile} (or step-05g if not Retainer)
+- IF C: Load, read entire file, then execute {nextStepFile} (or step-05g if not Retainer)
 - IF M: Return to {workflowFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options]
 

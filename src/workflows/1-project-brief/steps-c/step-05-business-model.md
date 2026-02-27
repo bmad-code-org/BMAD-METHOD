@@ -62,7 +62,7 @@ Reflect back what you heard. If user corrects, update understanding and confirm 
 ### 4. Document Decision
 Add Business Model section to product brief with Model, Rationale, and Implications.
 
-### 5. Agent Dialog Update
+### 5. Design Log Update
 **Mandatory:** In `dialog/decisions.md`, append Business Model decision with opening question, user response, key discussion points, final decision, rationale, and implications.
 
 Mark Step 5 complete in `dialog/progress-tracker.md` progress tracker.
@@ -75,7 +75,7 @@ Mark Step 5 complete in `dialog/progress-tracker.md` progress tracker.
 Display: "**Select an Option:** [C] Continue to Business Customers" (or "Continue to Target Users" if B2C)
 
 #### Menu Handling Logic:
-- IF C: Update agent dialog, then load, read entire file, then execute {nextStepFile} (or step-07 if B2C)
+- IF C: Load, read entire file, then execute {nextStepFile} (or step-07 if B2C)
 - IF M: Return to {workflowFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options]
 
@@ -94,7 +94,7 @@ ONLY WHEN business model is determined and user confirms will you then load and 
 - Business model determined through natural conversation
 - Rationale and implications documented
 - User confirmed the business model assessment
-- Agent dialog updated with decision
+- Design log updated with decision
 - Correct conditional routing applied
 
 ### ❌ SYSTEM FAILURE:

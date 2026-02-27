@@ -21,11 +21,8 @@ description: Add features to existing products through targeted changes
 
 ## INITIALIZATION
 
-### Agent Dialog Gate
-
-1. Check for pending evolution dialogs
-2. If none, suggest creating one
-3. Load dialog context
+### Design Log
+Read `{output_folder}/_progress/00-design-log.md`. Check Current and Backlog for context.
 
 ### Essential Guides
 

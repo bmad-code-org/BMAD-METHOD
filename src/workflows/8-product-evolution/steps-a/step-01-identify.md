@@ -49,10 +49,10 @@ Identify the strategic challenge or improvement opportunity to address in this K
 
 ## CONTEXT BOUNDARIES:
 
-- Available context: Agent dialog from workflow entry, project configuration
+- Available context: Design log context from workflow entry, project configuration
 - Focus: Problem identification and opportunity framing only
 - Limits: Do not gather detailed context yet (that's step 02), do not design solutions
-- Dependencies: Active agent dialog created during workflow initialization
+- Dependencies: Active design log updated during workflow initialization
 
 ## Sequence of Instructions (Do not deviate, skip, or optimize)
 
@@ -109,7 +109,7 @@ Display: "**Select an Option:** [C] Continue to Gather Context"
 
 #### Menu Handling Logic:
 
-- IF C: Update agent dialog with identified opportunity, then load, read entire file, then execute {nextStepFile}
+- IF C: Update design log with identified opportunity, then load, read entire file, then execute {nextStepFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options](#4-present-menu-options)
 
 #### EXECUTION RULES:
@@ -134,7 +134,7 @@ ONLY WHEN [C continue option] is selected and [opportunity identified, documente
 - Scope defined and appropriate for Kaizen (small, focused)
 - Success criteria established
 - Documented in limited brief or improvement file
-- Agent dialog updated with opportunity summary
+- Design log updated with opportunity summary
 
 ### ❌ SYSTEM FAILURE:
 

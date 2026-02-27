@@ -177,7 +177,7 @@ Present a cohesive summary of everything captured, get final confirmation, and g
 
 ### 5. Update All Dialog Files
 
-**Finalize agent dialogs:**
+**Finalize design log:**
 
 **In `dialog/progress-tracker.md`:**
 - Mark ALL steps complete
@@ -205,7 +205,7 @@ Present a cohesive summary of everything captured, get final confirmation, and g
 Display: "**Select an Option:** [C] Continue to next step"
 
 #### Menu Handling Logic:
-- IF C: Update agent dialog, then load, read entire file, then execute {nextStepFile}
+- IF C: Load, read entire file, then execute {nextStepFile}
 - IF M: Return to {workflowFile} or {activityWorkflowFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options]
 

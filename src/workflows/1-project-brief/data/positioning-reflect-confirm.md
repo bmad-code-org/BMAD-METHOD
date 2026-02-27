@@ -40,7 +40,7 @@ Present the positioning components you captured:
 
 ### 3. Document What Was Misunderstood
 
-**For agent dialog `07-positioning.md`:**
+**For design log `07-positioning.md`:**
 
 In the Reflection Checkpoint section, record:
 - Your synthesis (what you presented)
@@ -72,7 +72,7 @@ Am I capturing this right?"
 
 **Agent:** [Updates understanding, proceeds to Substep 4]
 
-**Agent Dialog Update (`dialog/07-positioning.md`):**
+**Design Log Update (`dialog/07-positioning.md`):**
 ```markdown
 ### Reflection Checkpoint
 

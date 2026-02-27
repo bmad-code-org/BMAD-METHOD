@@ -76,7 +76,7 @@ Help user define their platform strategy by asking about primary platform choice
 ### 2. Capture and Validate
 Capture platform strategy, validate alignment with vision and constraints, and document in Product Brief under "Platform & Device Strategy" section including primary platform, supported devices, device priority with rationale, interaction models, technical requirements (offline, native features), platform rationale, constraints considered, future plans, and design/development implications.
 
-### 3. Agent Dialog Update
+### 3. Design Log Update
 **Mandatory:** Append to `dialog/decisions.md` if key decisions were made.
 
 **Record:**
@@ -90,7 +90,7 @@ Capture platform strategy, validate alignment with vision and constraints, and d
 Display: "**Select an Option:** [C] Continue to next step"
 
 #### Menu Handling Logic:
-- IF C: Update agent dialog, then load, read entire file, then execute {nextStepFile}
+- IF C: Load, read entire file, then execute {nextStepFile}
 - IF M: Return to {workflowFile} or {activityWorkflowFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options]
 

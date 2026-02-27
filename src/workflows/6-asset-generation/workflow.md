@@ -30,7 +30,7 @@ Phase 6 is **menu-driven**, not linear. The user picks what to generate.
 1. **READ COMPLETELY**: Always read the entire step file before action
 2. **FOLLOW SEQUENCE**: Execute all sections in order
 3. **WAIT FOR INPUT**: Halt at menus and wait for user selection
-4. **SAVE STATE**: Update dialog tracking when completing steps
+4. **SAVE STATE**: Update design log when completing steps
 
 ---
 
@@ -42,11 +42,9 @@ Load and read full config from `{project-root}/_bmad/wds/config.yaml` and resolv
 - `project_name`, `output_folder`, `user_name`
 - `communication_language`, `document_output_language`
 
-### 2. Agent Dialog Gate
+### 2. Design Log
 
-1. Check `{output_folder}/_progress/agent-dialogs/` for pending asset generation dialogs
-2. If pending, present with status
-3. If none, suggest creating one
+Read `{output_folder}/_progress/00-design-log.md`. Check Current and Backlog for context.
 
 ### 3. Activity Menu
 

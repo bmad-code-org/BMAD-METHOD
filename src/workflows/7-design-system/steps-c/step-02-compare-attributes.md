@@ -333,7 +333,7 @@ Display: "**Select an Option:** [C] Continue to Calculate Similarity"
 
 #### Menu Handling Logic:
 
-- IF C: Update agent dialog, then load, read entire file, then execute {nextStepFile}
+- IF C: Update design log, then load, read entire file, then execute {nextStepFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options](#8-present-menu-options)
 
 #### EXECUTION RULES:
@@ -356,7 +356,7 @@ ONLY WHEN [C continue option is selected and all four dimensions compared with s
 - All instructions executed in sequence
 - Results documented and presented to user
 - User confirmed before proceeding
-- Agent dialog updated
+- Design log updated
 
 ### ❌ SYSTEM FAILURE:
 

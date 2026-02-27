@@ -21,11 +21,8 @@ description: Fix bugs in existing code through structured investigation and veri
 
 ## INITIALIZATION
 
-### Agent Dialog Gate
-
-1. Check for pending bugfix dialogs
-2. If none, suggest creating one with bug details
-3. Load dialog context
+### Design Log
+Read `{output_folder}/_progress/00-design-log.md`. Check Current and Backlog for context.
 
 ### Essential Guides
 

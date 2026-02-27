@@ -64,8 +64,8 @@ Welcome user and set context for defining content and language strategy.
 - "We'll cover: brand personality, tone of voice, language requirements, and content guidelines."
 - "This usually takes 15-20 minutes."
 
-### 5. Agent Dialog Update
-After completing this step, update the agent dialog:
+### 5. Design Log Update
+After completing this step, update the design log:
 
 ```markdown
 ### Step 13: Initialization
@@ -81,7 +81,7 @@ After completing this step, update the agent dialog:
 Display: "**Select an Option:** [C] Continue to next step"
 
 #### Menu Handling Logic:
-- IF C: Update agent dialog, then load, read entire file, then execute {nextStepFile}
+- IF C: Load, read entire file, then execute {nextStepFile}
 - IF M: Return to {workflowFile} or {activityWorkflowFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options]
 

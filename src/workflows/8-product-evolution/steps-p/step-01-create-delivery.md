@@ -265,7 +265,7 @@ Define accessibility checks:
 Display: "**Select an Option:** [C] Continue to step-02-hand-off.md (next step in this activity)"
 
 #### Menu Handling Logic:
-- IF C: Update agent dialog, then load, read entire file, then execute {nextStepFile}
+- IF C: Update design log, then load, read entire file, then execute {nextStepFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options]
 
 #### EXECUTION RULES:

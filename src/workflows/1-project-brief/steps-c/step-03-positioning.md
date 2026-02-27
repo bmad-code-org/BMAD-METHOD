@@ -60,7 +60,7 @@ Load and reference `../data/positioning-reflect-confirm.md`. Synthesize position
 ### 4. Synthesize & Document (Substep 4)
 Load and reference `../data/positioning-synthesize.md`. Create positioning statement, document with components and rationale.
 
-### 5. Agent Dialog Update
+### 5. Design Log Update
 **Mandatory:** Update `dialog/07-positioning.md` before marking this step complete.
 
 The dialog should capture:
@@ -76,7 +76,7 @@ Mark Step 3 complete in `dialog/progress-tracker.md` progress tracker.
 Display: "**Select an Option:** [C] Continue to Create Trigger Map"
 
 #### Menu Handling Logic:
-- IF C: Update agent dialog, then load, read entire file, then execute {nextStepFile}
+- IF C: Load, read entire file, then execute {nextStepFile}
 - IF M: Return to {workflowFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options]
 
@@ -96,7 +96,7 @@ ONLY WHEN positioning is synthesized and user confirms will you then load and re
 - All components captured (target, need, category, benefit, differentiator)
 - Positioning statement synthesized by agent from user input
 - User confirmed the synthesis
-- Agent dialog updated
+- Design log updated
 
 ### ❌ SYSTEM FAILURE:
 - Asked user to write a positioning statement directly

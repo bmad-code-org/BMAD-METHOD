@@ -11,11 +11,9 @@ description: 'Verify all Product Brief artifacts are complete, consistent, and r
 
 ## INITIALIZATION
 
-### Agent Dialog Gate
+### Design Log
 
-1. Check for pending activity dialogs
-2. If none, suggest creating one
-3. Load dialog context
+Read `{output_folder}/_progress/00-design-log.md` before starting.
 
 ### Configuration Loading
 

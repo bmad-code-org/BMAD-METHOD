@@ -94,7 +94,7 @@ If after 3 iterations issues persist:
 Display: "**Select an Option:** [M] Return to Activity Menu"
 
 #### Menu Handling Logic:
-- IF M: Update agent dialog, then load, read entire file, then execute {activityWorkflowFile}
+- IF M: Update design log, then load, read entire file, then execute {activityWorkflowFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options]
 
 #### EXECUTION RULES:

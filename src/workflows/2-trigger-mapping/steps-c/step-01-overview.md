@@ -37,7 +37,7 @@ Present Phase 2: Trigger Mapping overview, offer engagement mode selection (Work
 - 🚫 FORBIDDEN to skip mode selection or auto-choose for user
 - 💬 Approach: Clear presentation of three modes with time estimates
 - 📋 Workshop mode proceeds through step-by-step facilitation
-- 📋 Suggest and Dream modes use the dream-up-approach with agent dialog tracking
+- 📋 Suggest and Dream modes use the dream-up-approach with design log tracking
 
 ## EXECUTION PROTOCOLS:
 
@@ -88,9 +88,9 @@ If One at a time: Run Workshop 1, then offer to save and continue later.
 **If Suggest (S) or Dream (D):**
 Output: "{{mode}} selected. I'll generate the Trigger Map using WDS methodology + Product Brief + domain research."
 
-Inform user: "I'm creating an agent dialog to track my learning, research, generation, and self-review process."
+Inform user: "I'm creating a design log to track my learning, research, generation, and self-review process."
 
-Create agent dialog using ../../_agent-dialogs/templates/dream-up-agent-dialog.template.md at {output_folder}/_progress/agent-dialogs/{date}-trigger-map-{{mode}}.md
+Create session log at {output_folder}/_progress/agent-experiences/{date}-trigger-map-{{mode}}.md
 
 Execute Layer 1: Learn WDS Form (Static - loaded once)
 - Read docs/method/phase-2-trigger-mapping-guide.md
@@ -99,7 +99,7 @@ Execute Layer 1: Learn WDS Form (Static - loaded once)
 - Read docs/models/impact-effect-mapping.md
 - Read docs/method/dream-up-rubric-phase-2.md
 - Internalize: Structure, quality criteria, common mistakes, best practices
-- Document in agent dialog "Layer 1: WDS Form Learned" section
+- Document in design log "Layer 1: WDS Form Learned" section
 
 Execute Layer 2: Project Context (Initial load, grows with each step)
 - Read {output_folder}/A-Product-Brief/product-brief.md
@@ -107,7 +107,7 @@ Execute Layer 2: Project Context (Initial load, grows with each step)
 - Read {output_folder}/A-Product-Brief/platform-requirements.md
 - Read {output_folder}/A-Product-Brief/visual-direction.md
 - Extract: business context, user archetypes, constraints, strategic direction
-- Document in agent dialog "Layer 2: Project Context (Initial)" section
+- Document in design log "Layer 2: Project Context (Initial)" section
 - NOTE: Layer 2 grows cumulatively - add Business Goals, Target Groups, Driving Forces, Prioritization as created
 
 For EACH step (Business Goals, Target Groups, Driving Forces, Prioritization):
@@ -115,7 +115,7 @@ For EACH step (Business Goals, Target Groups, Driving Forces, Prioritization):
   Execute Layer 3: Domain Research (per step)
   - WebSearch relevant to current step
   - Look for industry insights, user reviews, behavioral patterns
-  - Document findings in agent dialog
+  - Document findings in design log
 
   Execute Layer 4: Generate
   - Apply WDS Form (Layer 1) with ALL Project Context (Layer 2 cumulative)
@@ -125,7 +125,7 @@ For EACH step (Business Goals, Target Groups, Driving Forces, Prioritization):
   Execute Layer 5: Self-Review
   - Check against rubric (completeness, quality, mistakes, practices)
   - Calculate quality score, identify gaps
-  - Document in agent dialog
+  - Document in design log
 
   If gaps exist: Create refinement plan, regenerate (max 5 iterations per step)
 
@@ -140,7 +140,7 @@ When all steps complete:
 - Create persona documents if needed
 - Create mermaid diagram if generated
 - Present final output to user
-- Update agent dialog with final output section
+- Update design log with final output section
 
 Skip to handover after generation complete.
 
@@ -171,7 +171,7 @@ ONLY WHEN user selects [C] will you load the next step file. Mode must be select
 - User explicitly selected a mode
 - Correct path activated based on selection
 - Workshop sub-choice (All/One) offered if Workshop mode selected
-- Suggest/Dream modes properly initialize agent dialog and layered approach
+- Suggest/Dream modes properly initialize design log and layered approach
 - User confirmed and ready to proceed
 
 ### ❌ SYSTEM FAILURE:
@@ -179,7 +179,7 @@ ONLY WHEN user selects [C] will you load the next step file. Mode must be select
 - Not presenting all three mode options
 - Not explaining what each mode involves
 - Proceeding without explicit user selection
-- Not initializing agent dialog for Suggest/Dream modes
+- Not initializing design log for Suggest/Dream modes
 - Skipping the layered approach for autonomous modes
 
 **Master Rule:** Skipping steps, optimizing sequences, or not following exact instructions is FORBIDDEN and constitutes SYSTEM FAILURE.

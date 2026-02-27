@@ -28,7 +28,7 @@ Figma for refinement and component integration.
 
 ### 4. Agentic Development
 **When to use:** You want to build features iteratively with AI assistance.
-**What it does:** Guided implementation using agent dialogs — prototypes, code, bug fixes.
+**What it does:** Guided implementation using design log — prototypes, code, bug fixes.
 **Output:** Working implementations, prototype iterations
 **Best for:** When you're ready to go from spec to code with AI support.
 

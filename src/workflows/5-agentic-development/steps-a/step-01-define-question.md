@@ -115,7 +115,7 @@ If the time box expires, document what you found and what remains unexplored.
 Display: "**Select an Option:** [C] Continue to Step 2: Scan Codebase"
 
 #### Menu Handling Logic:
-- IF C: Update agent dialog, then load, read entire file, then execute {nextStepFile}
+- IF C: Update design log, then load, read entire file, then execute {nextStepFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options]
 
 #### EXECUTION RULES:

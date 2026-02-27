@@ -13,11 +13,8 @@ description: Design and run acceptance tests from specification criteria
 
 ## INITIALIZATION
 
-### Agent Dialog Gate
-
-1. Check for pending testing dialogs
-2. If none, suggest creating one with test target
-3. Load dialog context (which delivery/feature to test)
+### Design Log
+Read `{output_folder}/_progress/00-design-log.md`. Check Current and Backlog for context.
 
 ---
 

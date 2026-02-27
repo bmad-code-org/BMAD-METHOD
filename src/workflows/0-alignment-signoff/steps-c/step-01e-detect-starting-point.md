@@ -85,7 +85,7 @@ Ask where they'd like to start:
 Display: "**Select an Option:** [C] Continue to step-02a-explore-realization (or step-02b-explore-solution based on user choice)"
 
 #### Menu Handling Logic:
-- IF C: Update agent dialog, then load, read entire file, then execute {nextStepFile} (or step-02b if starting with solution)
+- IF C: Load, read entire file, then execute {nextStepFile} (or step-02b if starting with solution)
 - IF M: Return to {workflowFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options]
 

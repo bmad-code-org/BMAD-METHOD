@@ -134,8 +134,8 @@ Document how keywords should be used:
 - Fill in full SEO Strategy section in content-language document
 - Include page-keyword map, URL structure, local SEO, structured data plan
 
-### 10. Agent Dialog Update
-After completing this step, update the agent dialog:
+### 10. Design Log Update
+After completing this step, update the design log:
 
 ```markdown
 ### Step 17: SEO Strategy
@@ -151,7 +151,7 @@ After completing this step, update the agent dialog:
 Display: "**Select an Option:** [C] Continue to next step"
 
 #### Menu Handling Logic:
-- IF C: Update agent dialog, then load, read entire file, then execute {nextStepFile}
+- IF C: Load, read entire file, then execute {nextStepFile}
 - IF M: Return to {workflowFile} or {activityWorkflowFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options]
 

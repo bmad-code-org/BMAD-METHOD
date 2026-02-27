@@ -56,7 +56,7 @@ Show them the positioning statement:
 [1-2 sentences explaining why this positioning makes sense - reference specific context from conversation]
 ```
 
-### 4. Update Agent Dialog
+### 4. Update Design Log
 
 **In `dialog/07-positioning.md`:**
 
@@ -108,7 +108,7 @@ Northern Öland's geography creates a natural monopoly during summer season, but
 
 ---
 
-## Agent Dialog Update
+## Design Log Update
 
 **Mandatory:** Update `dialog/07-positioning.md` with:
 - Full conversation flow
