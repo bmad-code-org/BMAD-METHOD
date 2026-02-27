@@ -22,7 +22,7 @@ description: 'Create visual representations of page designs using external tools
 
 ## Entry
 
-Load page specification from `{output_folder}/D-UX-Design/`.
+Load page specification from `{output_folder}/C-UX-Scenarios/`.
 
 ## Steps
 

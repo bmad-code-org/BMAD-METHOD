@@ -120,7 +120,7 @@ Next page:</ask>
 <action>
 **Create folder structure:**
 
-Path: `4-scenarios/{{scenario_path}}/{{page_number}}-{{page_slug}}/`
+Path: `C-UX-Scenarios/{{scenario_path}}/{{page_number}}-{{page_slug}}/`
 
 Create:
 1. Page folder: `{{page_number}}-{{page_slug}}/`

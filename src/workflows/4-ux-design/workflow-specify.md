@@ -37,7 +37,8 @@ Execute steps in `./steps-p/`:
 | 05 | step-05-interactions.md | User interactions and behaviors |
 | 06 | step-06-states.md | Loading, error, empty states |
 | 07 | step-07-validation.md | Form validation and constraints |
-| 08 | step-08-generate-spec.md | Generate final specification document |
+| 08 | step-08-spacing-typography.md | Spacing objects and typography tokens |
+| 09 | step-09-generate-spec.md | Generate final specification document |
 
 **Reference data:**
 - `./data/object-types/` — component types and templates

@@ -50,13 +50,13 @@ Understand the current state of the design system before making changes. Invento
 - Available context: Design system folder, page specifications
 - Focus: Review and inventory only
 - Limits: Do not modify any components (that is step 02)
-- Dependencies: Design system folder must exist at {output_folder}/D-UX-Design/design-system/
+- Dependencies: Design system folder must exist at {output_folder}/D-Design-System/
 
 ## Sequence of Instructions (Do not deviate, skip, or optimize)
 
 ### 1. Load Design System
 
-Check `{output_folder}/D-UX-Design/design-system/` for existing components.
+Check `{output_folder}/D-Design-System/` for existing components.
 
 ### 2. Inventory
 

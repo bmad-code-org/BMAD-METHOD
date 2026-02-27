@@ -82,7 +82,7 @@ Reference `../data/object-types/COMPLEXITY-ROUTER.md`:
 
 ### 4. Save
 
-Write component definition to `{output_folder}/D-UX-Design/design-system/`
+Write component definition to `{output_folder}/D-Design-System/`
 
 ### 5. Present MENU OPTIONS
 

@@ -85,7 +85,7 @@ Store visual artifact in the appropriate location:
 
 - **UI mockups (page/section):** `{output_folder}/D-Design-System/01-Visual-Design/design-concepts/`
 - **Image assets (photos/illustrations):** `{output_folder}/D-Design-System/01-Visual-Design/design-concepts/` (move to `02-Assets/images/` when finalized)
-- **Legacy path:** `{output_folder}/D-UX-Design/[scenario]/visuals/` (if project uses older folder structure)
+- **Legacy path:** `{output_folder}/C-UX-Scenarios/[scenario]/visuals/` (if project uses older folder structure)
 
 **Update the agent dialog** with the accepted result and save path.
 

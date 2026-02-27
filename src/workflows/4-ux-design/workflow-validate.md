@@ -22,7 +22,7 @@ description: 'Systematically audit page specifications for completeness, consist
 ### Configuration Loading
 
 1. Load project config
-2. Locate page specifications at `{output_folder}/D-UX-Design/`
+2. Locate page specifications at `{output_folder}/C-UX-Scenarios/`
 3. Begin: Load and execute `./steps-v/step-01-page-metadata.md`
 
 **Reference data:**
@@ -53,7 +53,7 @@ Execute each step in order. Each step produces a section of the validation repor
 
 ## Final Output
 
-Save validation report to `{output_folder}/D-UX-Design/validation-report.md`
+Save validation report to `{output_folder}/_progress/validation-report.md`
 
 ---
 

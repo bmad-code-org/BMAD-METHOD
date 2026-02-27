@@ -20,9 +20,26 @@ description: 'Define, update, and review design system components used across pa
 3. Load dialog context
 
 
+## Extraction Rules
+
+Not everything extracts at the same time:
+
+### Objects: Extract on Second Use
+The first time a button, card, or widget appears, it stays inline in the page spec — it's a one-off. The **second** time the same pattern appears (same states, same behavior), it's a real pattern. Extract it to the design system.
+
+**First use = one-off. Second use = pattern. Extract.**
+
+### Spacing: Extract Immediately on First Use
+Spacing extracts on **first use** — no waiting for a second occurrence. Spacing is relational: when you decide that a heading needs `space-xl` above a card grid, that's a universal design principle, not a page-specific detail.
+
+### Component Extraction Check
+Before designing the 2nd+ page, scan completed specs for shared elements. If found, suggest extraction. Don't block the flow — the user can defer.
+
+---
+
 ## Entry
 
-Load design system from `{output_folder}/D-UX-Design/design-system/` (if exists).
+Load design system from `{output_folder}/D-Design-System/` (if exists).
 
 ## Steps
 

@@ -166,7 +166,7 @@ The primary navigation is the adaptive dashboard above — Freya suggests the ne
 [D] Dream Up Design      — I'll create it all, you review
 
 ── Specify ─────────────────────────────────────
-[P] Write Specifications — Content, interaction and functionality specs
+[P] Write Specifications — Content, interactions, spacing, typography specs
 [V] Validate Specs       — Audit spec completeness and quality
 
 ── Produce ─────────────────────────────────────

@@ -78,7 +78,7 @@ Styling:</ask>
 
 File: `prototypes/{{page_slug}}-prototype.html`
 
-Save to: `4-scenarios/{{scenario_path}}/{{page_number}}-{{page_slug}}/prototypes/`
+Save to: `C-UX-Scenarios/{{scenario_path}}/{{page_number}}-{{page_slug}}/prototypes/`
 </action>
 
 ---
@@ -88,7 +88,7 @@ Save to: `4-scenarios/{{scenario_path}}/{{page_number}}-{{page_slug}}/prototypes
 <output>**Prototype generated!** 🎉
 
 **File location:**
-`4-scenarios/{{scenario_path}}/{{page_number}}-{{page_slug}}/prototypes/{{page_slug}}-prototype.html`
+`C-UX-Scenarios/{{scenario_path}}/{{page_number}}-{{page_slug}}/prototypes/{{page_slug}}-prototype.html`
 
 **Next steps:**
 

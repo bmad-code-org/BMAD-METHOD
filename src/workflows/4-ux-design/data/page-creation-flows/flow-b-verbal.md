@@ -108,7 +108,7 @@ Generate page specification document:
 - User flow description
 - Next steps: "Create visualization (sketch/wireframe)"
 
-Save to: 4-scenarios/{{scenario_path}}/{{page_number}}-{{page_slug}}/{{page_number}}-{{page_slug}}.md
+Save to: C-UX-Scenarios/{{scenario_path}}/{{page_number}}-{{page_slug}}/{{page_number}}-{{page_slug}}.md
 </action>
 
 ---

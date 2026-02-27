@@ -6,7 +6,7 @@ Template for generating page placeholder documents in page-init-lightweight work
 
 ## File Location
 
-`4-scenarios/{{scenario_path}}/{{page_number}}-{{page_slug}}/{{page_number}}-{{page_slug}}.md`
+`C-UX-Scenarios/{{scenario_path}}/{{page_number}}-{{page_slug}}/{{page_number}}-{{page_slug}}.md`
 
 ---
 

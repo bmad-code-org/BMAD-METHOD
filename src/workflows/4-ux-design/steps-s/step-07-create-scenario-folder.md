@@ -59,7 +59,7 @@ Create the physical folder structure and overview documents for the scenario bas
 
 <action>
 **Determine scenario number:**
-- Count existing scenario folders in `4-scenarios/`
+- Count existing scenario folders in `C-UX-Scenarios/`
 - If none exist, scenario_num = 1
 - Otherwise, scenario_num = (highest number + 1)
 - Store scenario_num
@@ -68,11 +68,11 @@ Create the physical folder structure and overview documents for the scenario bas
 <action>
 **Create physical folder structure:**
 
-1. Create `4-scenarios/{{scenario_num}}-{{scenario-slug}}/` directory
+1. Create `C-UX-Scenarios/{{scenario_num}}-{{scenario-slug}}/` directory
 
 **Generate 00-scenario-overview.md:**
 
-File: `4-scenarios/{{scenario_num}}-{{scenario-slug}}/00-scenario-overview.md`
+File: `C-UX-Scenarios/{{scenario_num}}-{{scenario-slug}}/00-scenario-overview.md`
 
 Content:
 ```markdown
@@ -145,7 +145,7 @@ When users arrive, they are feeling:
 
 **Generate scenario-tracking.yaml:**
 
-File: `4-scenarios/{{scenario_num}}-{{scenario-slug}}/scenario-tracking.yaml`
+File: `C-UX-Scenarios/{{scenario_num}}-{{scenario-slug}}/scenario-tracking.yaml`
 
 Content:
 ```yaml
@@ -176,7 +176,7 @@ total_pages: {{pages_list.length}}
 **Scenario {{scenario_num}}:** {{scenario_name}}
 
 **Folder:**
-- `4-scenarios/{{scenario_num}}-{{scenario-slug}}/`
+- `C-UX-Scenarios/{{scenario_num}}-{{scenario-slug}}/`
 
 **Documents:**
 - `00-scenario-overview.md` (detailed scenario metadata)

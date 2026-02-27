@@ -3,7 +3,7 @@ name: 'step-07-validation'
 description: 'Define all validation rules and error messages for form fields and inputs'
 
 # File References
-nextStepFile: './step-08-generate-spec.md'
+nextStepFile: './step-08-spacing-typography.md'
 workflowFile: '../workflow.md'
 activityWorkflowFile: '../workflow-specify.md'
 ---
@@ -107,11 +107,11 @@ Error code (e.g., ERR_EMAIL_INVALID):
 **Validated fields:** {{validated_field_count}}
 **Error messages:** {{error_message_count}}
 
-**Next:** We'll generate the complete specification document.</output>
+**Next:** We'll define the invisible layer — spacing and typography.</output>
 
 ### 3. Present MENU OPTIONS
 
-Display: "**Select an Option:** [C] Continue to Generate Specification | [M] Return to Activity Menu"
+Display: "**Select an Option:** [C] Continue to Spacing & Typography | [M] Return to Activity Menu"
 
 #### Menu Handling Logic:
 

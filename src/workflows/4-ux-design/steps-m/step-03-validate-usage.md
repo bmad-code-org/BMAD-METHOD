@@ -42,7 +42,7 @@ Check that design system components are used correctly and consistently across p
 
 - 🎯 Scan page specifications, cross-reference with design system, generate report
 - 💾 Update component definitions and page specs based on resolution decisions
-- 📖 Reference all page specifications in `{output_folder}/D-UX-Design/`
+- 📖 Reference all page specifications in `{output_folder}/C-UX-Scenarios/`
 - 🚫 FORBIDDEN to auto-fix inconsistencies without user approval
 
 ## CONTEXT BOUNDARIES:
@@ -56,7 +56,7 @@ Check that design system components are used correctly and consistently across p
 
 ### 1. Scan Page Specifications
 
-Read all page specifications in `{output_folder}/D-UX-Design/` and extract component references.
+Read all page specifications in `{output_folder}/C-UX-Scenarios/` and extract component references.
 
 ### 2. Cross-Reference
 

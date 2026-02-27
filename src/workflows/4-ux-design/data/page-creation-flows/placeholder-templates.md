@@ -6,7 +6,7 @@ Templates for generating placeholder page documents.
 
 ## Page Placeholder Document Template
 
-File: `4-scenarios/{{scenario_path}}/{{page.number}}-{{page.slug}}/{{page.number}}-{{page.slug}}.md`
+File: `C-UX-Scenarios/{{scenario_path}}/{{page.number}}-{{page.slug}}/{{page.number}}-{{page.slug}}.md`
 
 ```markdown
 {{#if @index > 0}}
@@ -64,7 +64,7 @@ _Placeholder created using Whiteport Design Studio (WDS) methodology_
 
 ## Scenario Overview Template
 
-File: `4-scenarios/{{scenario_path}}/00-{{scenario_slug}}-scenario.md`
+File: `C-UX-Scenarios/{{scenario_path}}/00-{{scenario_slug}}-scenario.md`
 
 ```markdown
 # {{scenario_number}} {{scenario_name}} - Scenario Overview
@@ -112,7 +112,7 @@ _Created using Whiteport Design Studio (WDS) methodology_
 
 ## Scenario Tracking Template
 
-File: `4-scenarios/{{scenario_path}}/scenario-tracking.yaml`
+File: `C-UX-Scenarios/{{scenario_path}}/scenario-tracking.yaml`
 
 ```yaml
 scenario_number: {{scenario_number}}

@@ -60,13 +60,13 @@ Create the physical page folder structure, generate the initial specification do
 **Determine page folder path:**
 
 **For single page projects (no scenarios):**
-- Page path: `4-scenarios/{{page_slug}}/`
+- Page path: `C-UX-Scenarios/{{page_slug}}/`
 
 **For scenario-based projects:**
 - Read scenario_number from context
 - Read current_page_index from `scenario-tracking.yaml`
 - Calculate page_number: `{{scenario_number}}.{{current_page_index + 1}}`
-- Page path: `4-scenarios/{{scenario_number}}-{{scenario-slug}}/{{page_number}}-{{page_slug}}/`
+- Page path: `C-UX-Scenarios/{{scenario_number}}-{{scenario-slug}}/{{page_number}}-{{page_slug}}/`
 
 Store page_path and page_number
 </action>
@@ -178,26 +178,44 @@ If this is a scenario-based project:
 - Add sketches to the sketches folder
 - Continue with page design</output>
 
-### 2. Present MENU OPTIONS
+### 2. Two-Option Transition
 
-Display: "**Select an Option:** [A] Add Another Page | [S] Add Another Scenario | [M] Return to Activity Menu"
+After page structure is created, present exactly two options:
 
-#### Menu Handling Logic:
+**If more pages exist in the scenario (from Q8 shortest path):**
 
-- IF A: Load, read entire file, then execute ./step-08-page-context.md
-- IF S: Load, read entire file, then execute ./step-01-core-feature.md
-- IF M: Return to {workflowFile} or {activityWorkflowFile}
-- IF Any other comments or queries: help user respond then [Redisplay Menu Options](#2-present-menu-options)
+<output>
+**Page structure for "[page name]" is ready!**
+
+1. **Specify this page** — add full detail with [P] Specify
+2. **Design the next scenario step** — [next page name]
+</output>
+
+**If this is the last page in the scenario:**
+
+<output>
+**Page structure for "[page name]" is ready!**
+
+1. **Specify this page** — add full detail with [P] Specify
+2. **All pages in this scenario are created!** — return to dashboard
+</output>
+
+#### Transition Handling:
+
+- **Option 1 (specify):** Load and execute `../steps-p/step-01-page-basics.md`
+- **Option 2 (next page):** Load and execute `./step-08-page-context.md` for the next page
+- **Option 2 (all done):** Return to {workflowFile} adaptive dashboard
+- **Dream mode:** Auto-proceed to option 1. Skip menu display.
 
 #### EXECUTION RULES:
 
-- **Suggest mode:** ALWAYS halt and wait for user input after presenting menu
-- **Dream mode:** Auto-proceed to next step after completing instructions. Skip menu display.
-- User can chat or ask questions — always respond and then redisplay menu options
+- **Suggest mode:** ALWAYS halt and wait for user input after presenting transition options
+- User can chat or ask questions — always respond and then redisplay the transition
+- The user can always say "stop" to pause and return later — log current status
 
 ## CRITICAL STEP COMPLETION NOTE
 
-ONLY WHEN the user selects an option from the menu and the page structure has been created will you proceed as directed. This is the last step in the Suggest activity chain.
+ONLY WHEN the user selects an option and the page structure has been created will you proceed as directed. This is the last step in the Suggest page creation chain.
 
 ---
 

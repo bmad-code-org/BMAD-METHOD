@@ -1,5 +1,5 @@
 ---
-name: 'step-08-generate-spec'
+name: 'step-09-generate-spec'
 description: 'Compile all gathered information into the complete page specification document'
 
 # File References
@@ -7,11 +7,11 @@ workflowFile: '../workflow.md'
 activityWorkflowFile: '../workflow-specify.md'
 ---
 
-# Step 8: Generate Specification Document
+# Step 9: Generate Specification Document
 
 ## STEP GOAL:
 
-Compile all gathered information from steps 1-7 into the complete page specification document using the specification template.
+Compile all gathered information from steps 1-8 into the complete page specification document using the specification template.
 
 ## MANDATORY EXECUTION RULES (READ FIRST):
 
@@ -42,12 +42,12 @@ Compile all gathered information from steps 1-7 into the complete page specifica
 
 - 🎯 Generate complete specification using the page-specification template
 - 💾 Save specification to the correct output location
-- 📖 Reference all data from steps 1-7
+- 📖 Reference all data from steps 1-8
 - 🚫 FORBIDDEN to generate with missing data sections
 
 ## CONTEXT BOUNDARIES:
 
-- Available context: All data from steps 1-7
+- Available context: All data from steps 1-8
 - Focus: Compilation and document generation
 - Limits: Use the template — do not invent new formats
 - Dependencies: All previous steps must be complete
@@ -71,6 +71,7 @@ Fill in all sections with data collected:
 - interaction_behaviors (from step 05)
 - page_states and component_states (from step 06)
 - validation_rules and error_messages (from step 07)
+- spacing_objects and typography_tokens (from step 08)
   </action>
 
 <action>Save complete specification to:
@@ -91,6 +92,8 @@ Fill in all sections with data collected:
 - {{state_count}} total states (page + component)
 - {{validation_count}} validation rules
 - {{error_count}} error messages
+- {{spacing_count}} spacing objects
+- {{typography_count}} typography tokens
 
 **Your specification is development-ready!**</output>
 
@@ -119,7 +122,7 @@ The specification must be generated, saved, AND the design log updated before th
 ### ✅ SUCCESS:
 
 - Specification generated using the template
-- All data sections from steps 1-7 included
+- All data sections from steps 1-8 included
 - Document saved to correct output location
 - Summary presented to user with metrics
 - Specification is development-ready
