@@ -47,3 +47,6 @@ so that {{benefit}}.
 ### Completion Notes List
 
 ### File List
+
+<!-- Use `git diff --name-only` and `git status --porcelain` to capture ALL changed files,
+     including infrastructure side-effects: lock files, this story file, sprint-status.yaml -->
