@@ -40,9 +40,6 @@ class GitHubCopilotSetup extends BaseIdeSetup {
     await this.ensureDir(agentsDir);
     await this.ensureDir(promptsDir);
 
-    // Preserve any customised tool permissions from existing files before cleanup
-    this.existingToolPermissions = await this.collectExistingToolPermissions(projectDir);
-
     // Clean up any existing BMAD files before reinstalling
     await this.cleanup(projectDir);
 
@@ -58,11 +55,9 @@ class GitHubCopilotSetup extends BaseIdeSetup {
     for (const artifact of agentArtifacts) {
       const agentMeta = agentManifest.get(artifact.name);
 
-      // Compute fileName first so we can look up any existing tool permissions
       const dashName = toDashPath(artifact.relativePath);
       const fileName = dashName.replace(/\.md$/, '.agent.md');
-      const toolsStr = this.getToolsForFile(fileName);
-      const agentContent = this.createAgentContent(artifact, agentMeta, toolsStr);
+      const agentContent = this.createAgentContent(artifact, agentMeta);
       const targetPath = path.join(agentsDir, fileName);
       await this.writeFile(targetPath, agentContent);
       agentCount++;
@@ -147,25 +142,30 @@ class GitHubCopilotSetup extends BaseIdeSetup {
    * @param {Object|undefined} manifestEntry - Agent manifest entry with metadata
    * @returns {string} Agent file content
    */
-  createAgentContent(artifact, manifestEntry, toolsStr) {
+  createAgentContent(artifact, manifestEntry) {
     // Build enriched description from manifest metadata
     let description;
+    let name;
     if (manifestEntry) {
       const persona = manifestEntry.displayName || artifact.name;
       const title = manifestEntry.title || this.formatTitle(artifact.name);
       const capabilities = manifestEntry.capabilities || 'agent capabilities';
       description = `${persona} — ${title}: ${capabilities}`;
+      name = manifestEntry.displayName || this.formatTitle(artifact.name);
     } else {
       description = `Activates the ${this.formatTitle(artifact.name)} agent persona.`;
+      name = this.formatTitle(artifact.name);
     }
+
+    const safeName = this.escapeYamlSingleQuote(name);
 
     // Build the agent file path for the activation block
     const agentPath = artifact.agentPath || artifact.relativePath;
     const agentFilePath = `{project-root}/${this.bmadFolderName}/${agentPath}`;
 
     return `---
+name: '${safeName}'
 description: '${description.replaceAll("'", "''")}'
-tools: ${toolsStr}
 ---
 
 You must fully embody this agent's persona and follow all activation instructions exactly as specified.
@@ -204,8 +204,7 @@ You must fully embody this agent's persona and follow all activation instruction
         const workflowFile = entry['workflow-file'];
         if (!workflowFile) continue; // Skip entries with no workflow file path
         const promptFileName = `${command}.prompt.md`;
-        const toolsStr = this.getToolsForFile(promptFileName);
-        const promptContent = this.createWorkflowPromptContent(entry, workflowFile, toolsStr);
+        const promptContent = this.createWorkflowPromptContent(entry, workflowFile, agentManifest);
         const promptPath = path.join(promptsDir, promptFileName);
         await this.writeFile(promptPath, promptContent);
         promptCount++;
@@ -228,8 +227,7 @@ You must fully embody this agent's persona and follow all activation instruction
     for (const artifact of agentArtifacts) {
       const agentMeta = agentManifest.get(artifact.name);
       const fileName = `bmad-${artifact.name}.prompt.md`;
-      const toolsStr = this.getToolsForFile(fileName);
-      const promptContent = this.createAgentActivatorPromptContent(artifact, agentMeta, toolsStr);
+      const promptContent = this.createAgentActivatorPromptContent(artifact, agentMeta);
       const promptPath = path.join(promptsDir, fileName);
       await this.writeFile(promptPath, promptContent);
       promptCount++;
@@ -243,10 +241,12 @@ You must fully embody this agent's persona and follow all activation instruction
    * Determines the pattern (A, B, or A for .xml tasks) based on file extension
    * @param {Object} entry - bmad-help.csv row
    * @param {string} workflowFile - Workflow file path
+   * @param {Map} agentManifest - Agent manifest data for display name lookup
    * @returns {string} Prompt file content
    */
-  createWorkflowPromptContent(entry, workflowFile, toolsStr) {
+  createWorkflowPromptContent(entry, workflowFile, agentManifest) {
     const description = this.escapeYamlSingleQuote(this.createPromptDescription(entry.name));
+    const promptName = this.escapeYamlSingleQuote(entry.name || description);
     // bmm/config.yaml is safe to hardcode here: these prompts are only generated when
     // bmad-help.csv exists (bmm module data), so bmm is guaranteed to be installed.
     const configLine = `1. Load {project-root}/${this.bmadFolderName}/bmm/config.yaml and store ALL fields as session variables`;
@@ -267,10 +267,18 @@ You must fully embody this agent's persona and follow all activation instruction
 2. Load and follow the workflow at {project-root}/${workflowFile}`;
     }
 
+    // Build the agent line: use agent displayName from manifest if available
+    const agentName = (entry['agent-name'] || '').trim();
+    let agentLine = '';
+    if (agentName) {
+      const agentMeta = agentManifest.get(agentName);
+      const agentDisplayName = (agentMeta && agentMeta.displayName) || this.formatTitle(agentName);
+      agentLine = `\nagent: '${this.escapeYamlSingleQuote(agentDisplayName)}'`;
+    }
+
     return `---
-description: '${description}'
-agent: 'agent'
-tools: ${toolsStr}
+name: '${promptName}'
+description: '${description}'${agentLine}
 ---
 
 ${body}
@@ -341,13 +349,16 @@ ${body}
     const cmd = techWriterCommands[entry.name];
     if (!cmd) return null;
 
+    const safeName = this.escapeYamlSingleQuote(entry.name);
     const safeDescription = this.escapeYamlSingleQuote(cmd.description);
-    const toolsStr = this.getToolsForFile(`${cmd.file}.prompt.md`);
+
+    // Use agent display name from merged CSV if available, otherwise format the raw name
+    const agentDisplayName = (entry['agent-display-name'] || '').trim() || this.formatTitle(entry['agent-name']);
+    const agentLine = `\nagent: '${this.escapeYamlSingleQuote(agentDisplayName)}'`;
 
     const content = `---
-description: '${safeDescription}'
-agent: 'agent'
-tools: ${toolsStr}
+name: '${safeName}'
+description: '${safeDescription}'${agentLine}
 ---
 
 1. Load {project-root}/${this.bmadFolderName}/bmm/config.yaml and store ALL fields as session variables
@@ -364,14 +375,18 @@ tools: ${toolsStr}
    * @param {Object|undefined} manifestEntry - Agent manifest entry
    * @returns {string} Prompt file content
    */
-  createAgentActivatorPromptContent(artifact, manifestEntry, toolsStr) {
+  createAgentActivatorPromptContent(artifact, manifestEntry) {
     let description;
+    let name;
     if (manifestEntry) {
       description = manifestEntry.title || this.formatTitle(artifact.name);
+      name = manifestEntry.displayName || this.formatTitle(artifact.name);
     } else {
       description = this.formatTitle(artifact.name);
+      name = this.formatTitle(artifact.name);
     }
 
+    const safeName = this.escapeYamlSingleQuote(name);
     const safeDescription = this.escapeYamlSingleQuote(description);
     const agentPath = artifact.agentPath || artifact.relativePath;
     const agentFilePath = `{project-root}/${this.bmadFolderName}/${agentPath}`;
@@ -379,9 +394,9 @@ tools: ${toolsStr}
     // bmm/config.yaml is safe to hardcode: agent activators are only generated from
     // bmm agent artifacts, so bmm is guaranteed to be installed.
     return `---
+name: '${safeName}'
 description: '${safeDescription}'
-agent: 'agent'
-tools: ${toolsStr}
+agent: '${safeName}'
 ---
 
 1. Load {project-root}/${this.bmadFolderName}/bmm/config.yaml and store ALL fields as session variables
@@ -532,56 +547,6 @@ Type \`/bmad-\` in Copilot Chat to see all available BMAD workflows and agent ac
    */
   escapeYamlSingleQuote(value) {
     return (value || '').replaceAll("'", "''");
-  }
-
-  /**
-   * Scan existing agent and prompt files for customised tool permissions before cleanup.
-   * Returns a Map<filename, toolsArray> so permissions can be preserved across reinstalls.
-   * @param {string} projectDir - Project directory
-   * @returns {Map} Existing tool permissions keyed by filename
-   */
-  async collectExistingToolPermissions(projectDir) {
-    const permissions = new Map();
-    const dirs = [
-      [path.join(projectDir, this.githubDir, this.agentsDir), /^bmad.*\.agent\.md$/],
-      [path.join(projectDir, this.githubDir, this.promptsDir), /^bmad-.*\.prompt\.md$/],
-    ];
-
-    for (const [dir, pattern] of dirs) {
-      if (!(await fs.pathExists(dir))) continue;
-      const files = await fs.readdir(dir);
-
-      for (const file of files) {
-        if (!pattern.test(file)) continue;
-
-        try {
-          const content = await fs.readFile(path.join(dir, file), 'utf8');
-          const fmMatch = content.match(/^---\n([\s\S]*?)\n---/);
-          if (!fmMatch) continue;
-
-          const frontmatter = yaml.parse(fmMatch[1]);
-          if (frontmatter && Array.isArray(frontmatter.tools)) {
-            permissions.set(file, frontmatter.tools);
-          }
-        } catch {
-          // Skip unreadable files
-        }
-      }
-    }
-
-    return permissions;
-  }
-
-  /**
-   * Get the tools array string for a file, preserving any existing customisation.
-   * Falls back to the default tools if no prior customisation exists.
-   * @param {string} fileName - Target filename (e.g. 'bmad-agent-bmm-pm.agent.md')
-   * @returns {string} YAML inline array string
-   */
-  getToolsForFile(fileName) {
-    const defaultTools = ['read', 'edit', 'search', 'execute'];
-    const tools = (this.existingToolPermissions && this.existingToolPermissions.get(fileName)) || defaultTools;
-    return '[' + tools.map((t) => `'${t}'`).join(', ') + ']';
   }
 
   /**
