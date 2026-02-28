@@ -48,5 +48,13 @@ so that {{benefit}}.
 
 ### File List
 
-<!-- Use `git diff --name-only` and `git status --porcelain` to capture ALL changed files,
-     including infrastructure side-effects: lock files, this story file, sprint-status.yaml -->
+<!-- 
+  Populate using git commands after each task:
+    git diff --name-only
+    git diff --cached --name-only
+    git status --porcelain
+  Include infrastructure side-effects (lock files, sprint-status.yaml, story file).
+  Exclude: _bmad/, _bmad-output/ directories.
+-->
+
+- (list files here, one per line)
