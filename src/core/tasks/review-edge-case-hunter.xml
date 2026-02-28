@@ -15,16 +15,16 @@ Ignore the rest of the codebase unless the provided content explicitly reference
   </inputs>
 
   <output-format>Return ONLY a valid JSON array of objects. Each object must contain exactly these four fields and nothing else:
-{
+[{
   "location": "file:line",
   "trigger_condition": "one-line description (max 15 words)",
   "guard_snippet": "minimal code sketch that closes the gap",
   "potential_consequence": "what could actually go wrong (max 15 words)"
-}
-No extra text, no explanations, no markdown wrapping.</output-format>
+}]
+No extra text, no explanations, no markdown wrapping. An empty array [] is valid when no unhandled paths are found.</output-format>
 
   <llm critical="true">
-    <i>MANDATORY: Execute ALL steps in the flow section IN EXACT ORDER</i>
+    <i>MANDATORY: Execute steps in the flow section IN EXACT ORDER unless a halt-condition triggers</i>
     <i>DO NOT skip steps or change the sequence</i>
     <i>HALT immediately when halt-conditions are met</i>
     <i>Each action xml tag within step xml tag is a REQUIRED action to complete that step</i>
@@ -39,7 +39,7 @@ No extra text, no explanations, no markdown wrapping.</output-format>
   <flow>
     <step n="1" title="Receive Content">
       <action>Load the content to review from provided input or context</action>
-      <action>If content to review is empty, ask for clarification and abort task</action>
+      <action>If content to review is empty or unreadable, HALT per halt-conditions</action>
       <action>Identify content type (diff, full file, or function) to determine scope rules</action>
     </step>
 
