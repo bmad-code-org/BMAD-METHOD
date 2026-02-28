@@ -117,6 +117,13 @@ platforms:
     description: "AI coding platform"
     # No installer config - uses custom kilo.js (creates .kilocodemodes file)
 
+  kimi-cli:
+    name: "Kimi Code CLI"
+    preferred: false
+    category: cli
+    description: "Moonshot AI's official CLI for Kimi"
+    # No installer config - uses custom kimi-cli.js (creates .kimi/skills directory structure)
+
   kiro:
     name: "Kiro"
     preferred: false
