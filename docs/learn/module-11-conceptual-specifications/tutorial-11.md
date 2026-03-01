@@ -116,7 +116,7 @@ Transform curious visitors into registered users.
 > "Let's specify each element. Starting with the email field — what are the details?"
 
 **You respond:**
-> "Text input, label says 'Email', placeholder 'you@example.com', validates email format, error message 'Please enter a valid email'."
+> "Text input, label says 'Email', placeholder '`you@example.com`', validates email format, error message 'Please enter a valid email'."
 
 **Freya documents:**
 ```markdown

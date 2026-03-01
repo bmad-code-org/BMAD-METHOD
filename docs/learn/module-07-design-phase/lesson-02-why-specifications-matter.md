@@ -754,7 +754,7 @@ Many methodologies exist. What makes WDS different?
 
 ---
 
-## Your App Exists in Specifications
+## Remember: Your App Exists in Specifications
 
 **Let this sink in:**
 

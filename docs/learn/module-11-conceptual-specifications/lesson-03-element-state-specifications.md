@@ -1,3 +1,4 @@
+<!-- markdownlint-disable MD024 -->
 # Module 11: Conceptual Specifications
 
 ## Lesson 3: Element & State Specifications
