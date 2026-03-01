@@ -210,7 +210,7 @@ class Installer {
     // Get user name from git or system
     const getUserName = () => {
       try {
-        const { execSync } = require('child_process');
+        const { execSync } = require('node:child_process');
         const gitName = execSync('git config user.name', { encoding: 'utf8' }).trim();
         return gitName || 'Designer';
       } catch {

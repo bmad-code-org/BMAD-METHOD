@@ -33,7 +33,7 @@ class GeminiSetup extends BaseIdeSetup {
       metadata.description || 'WDS Agent';
 
     // Escape content for TOML multi-line string
-    const escapedContent = content.replace(/"""/g, '\\"\\"\\"');
+    const escapedContent = content.replaceAll('"""', String.raw`\"\"\"`);
 
     return `description = "${description}"
 

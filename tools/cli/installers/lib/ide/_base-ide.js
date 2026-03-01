@@ -157,7 +157,7 @@ class BaseIdeSetup {
         icon: '📋',
         slug: agentName.split('-')[0],
       };
-    } catch (error) {
+    } catch {
       // Fallback metadata on error
       const agentName = path.basename(filePath, '.md');
       return {
@@ -177,7 +177,7 @@ class BaseIdeSetup {
    */
   formatAgentLauncher(agentName, agentPath) {
     const relativePath = path.relative(process.cwd(), agentPath)
-      .replace(/\\/g, '/'); // Convert Windows paths to forward slashes
+      .replaceAll('\\', '/'); // Convert Windows paths to forward slashes
 
     return `<!-- WDS Agent Launcher -->
 <!-- This file references the compiled agent. Do not edit directly. -->
