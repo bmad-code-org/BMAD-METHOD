@@ -145,16 +145,15 @@ class GitHubCopilotSetup extends BaseIdeSetup {
   createAgentContent(artifact, manifestEntry) {
     // Build enriched description from manifest metadata
     let description;
-    let name;
+    // Use the raw agent name (e.g., "dev", "pm") for clean @mention selection
+    const name = artifact.name;
     if (manifestEntry) {
       const persona = manifestEntry.displayName || artifact.name;
       const title = manifestEntry.title || this.formatTitle(artifact.name);
       const capabilities = manifestEntry.capabilities || 'agent capabilities';
       description = `${persona} — ${title}: ${capabilities}`;
-      name = manifestEntry.displayName || this.formatTitle(artifact.name);
     } else {
       description = `Activates the ${this.formatTitle(artifact.name)} agent persona.`;
-      name = this.formatTitle(artifact.name);
     }
 
     const safeName = this.escapeYamlSingleQuote(name);
@@ -197,14 +196,30 @@ You must fully embody this agent's persona and follow all activation instruction
     const helpEntries = await this.loadBmadHelp(bmadDir);
 
     if (helpEntries) {
+      // Detect duplicate commands to derive unique filenames when multiple entries share one
+      const commandCounts = new Map();
+      for (const entry of helpEntries) {
+        if (!entry.command || !entry['workflow-file']) continue;
+        commandCounts.set(entry.command, (commandCounts.get(entry.command) || 0) + 1);
+      }
+
       for (const entry of helpEntries) {
         const command = entry.command;
         if (!command) continue; // Skip entries without a command (tech-writer commands have no command column)
 
         const workflowFile = entry['workflow-file'];
         if (!workflowFile) continue; // Skip entries with no workflow file path
-        const promptFileName = `${command}.prompt.md`;
-        const promptContent = this.createWorkflowPromptContent(entry, workflowFile, agentManifest);
+
+        // When multiple entries share the same command, derive a unique filename from the entry name
+        let promptFileName;
+        if (commandCounts.get(command) > 1) {
+          const slug = entry.name.toLowerCase().replaceAll(/[^a-z0-9]+/g, '-');
+          promptFileName = `bmad-bmm-${slug}.prompt.md`;
+        } else {
+          promptFileName = `${command}.prompt.md`;
+        }
+
+        const promptContent = this.createWorkflowPromptContent(entry, workflowFile);
         const promptPath = path.join(promptsDir, promptFileName);
         await this.writeFile(promptPath, promptContent);
         promptCount++;
@@ -241,10 +256,9 @@ You must fully embody this agent's persona and follow all activation instruction
    * Determines the pattern (A, B, or A for .xml tasks) based on file extension
    * @param {Object} entry - bmad-help.csv row
    * @param {string} workflowFile - Workflow file path
-   * @param {Map} agentManifest - Agent manifest data for display name lookup
    * @returns {string} Prompt file content
    */
-  createWorkflowPromptContent(entry, workflowFile, agentManifest) {
+  createWorkflowPromptContent(entry, workflowFile) {
     const description = this.escapeYamlSingleQuote(this.createPromptDescription(entry.name));
     const promptName = this.escapeYamlSingleQuote(entry.name || description);
     // bmm/config.yaml is safe to hardcode here: these prompts are only generated when
@@ -267,21 +281,23 @@ You must fully embody this agent's persona and follow all activation instruction
 2. Load and follow the workflow at {project-root}/${workflowFile}`;
     }
 
-    // Build the agent line: use agent displayName from manifest if available
+    // Build the agent line: use raw agent name to match agent .agent.md name field
     const agentName = (entry['agent-name'] || '').trim();
     let agentLine = '';
     if (agentName) {
-      const agentMeta = agentManifest.get(agentName);
-      const agentDisplayName = (agentMeta && agentMeta.displayName) || this.formatTitle(agentName);
-      agentLine = `\nagent: '${this.escapeYamlSingleQuote(agentDisplayName)}'`;
+      agentLine = `\nagent: '${this.escapeYamlSingleQuote(agentName)}'`;
     }
+
+    // Include options (e.g., "Create Mode", "Validate Mode") when present
+    const options = (entry.options || '').trim();
+    const optionsInstruction = options ? `\n4. Use option: ${options}` : '';
 
     return `---
 name: '${promptName}'
 description: '${description}'${agentLine}
 ---
 
-${body}
+${body}${optionsInstruction}
 `;
   }
 
@@ -352,9 +368,8 @@ ${body}
     const safeName = this.escapeYamlSingleQuote(entry.name);
     const safeDescription = this.escapeYamlSingleQuote(cmd.description);
 
-    // Use agent display name from merged CSV if available, otherwise format the raw name
-    const agentDisplayName = (entry['agent-display-name'] || '').trim() || this.formatTitle(entry['agent-name']);
-    const agentLine = `\nagent: '${this.escapeYamlSingleQuote(agentDisplayName)}'`;
+    // Use raw agent name to match agent .agent.md name field
+    const agentLine = `\nagent: '${this.escapeYamlSingleQuote(entry['agent-name'])}'`;
 
     const content = `---
 name: '${safeName}'
@@ -377,15 +392,14 @@ description: '${safeDescription}'${agentLine}
    */
   createAgentActivatorPromptContent(artifact, manifestEntry) {
     let description;
-    let name;
     if (manifestEntry) {
       description = manifestEntry.title || this.formatTitle(artifact.name);
-      name = manifestEntry.displayName || this.formatTitle(artifact.name);
     } else {
       description = this.formatTitle(artifact.name);
-      name = this.formatTitle(artifact.name);
     }
 
+    // Use the raw agent name (e.g., "dev") to match agent .agent.md name field
+    const name = artifact.name;
     const safeName = this.escapeYamlSingleQuote(name);
     const safeDescription = this.escapeYamlSingleQuote(description);
     const agentPath = artifact.agentPath || artifact.relativePath;
