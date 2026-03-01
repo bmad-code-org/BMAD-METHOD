@@ -6,6 +6,10 @@ const chalk = require('chalk');
 const figlet = require('figlet');
 const inquirer = require('inquirer').default || require('inquirer');
 const path = require('node:path');
+const fs = require('fs-extra');
+
+const WDS_FOLDER = '_bmad/wds';
+const LEGACY_WDS_FOLDER = '_wds';
 
 class UI {
   /**
@@ -23,6 +27,26 @@ class UI {
   }
 
   /**
+   * Detect existing WDS installation and determine folder path
+   */
+  async detectInstallation(projectDir) {
+    const hasBmadWds = await fs.pathExists(path.join(projectDir, WDS_FOLDER));
+    const hasLegacyWds = await fs.pathExists(path.join(projectDir, LEGACY_WDS_FOLDER));
+    const hasBmadDir = await fs.pathExists(path.join(projectDir, '_bmad'));
+
+    if (hasBmadWds) {
+      return { type: 'bmad', folder: WDS_FOLDER };
+    }
+    if (hasLegacyWds) {
+      return { type: 'legacy', folder: LEGACY_WDS_FOLDER };
+    }
+    if (hasBmadDir) {
+      return { type: 'bmad-ready', folder: WDS_FOLDER };
+    }
+    return { type: 'fresh', folder: WDS_FOLDER };
+  }
+
+  /**
    * Run the full prompt flow and return config
    */
   async promptInstall() {
@@ -30,9 +54,35 @@ class UI {
 
     const projectDir = process.cwd();
     const defaultProjectName = path.basename(projectDir);
+    const detection = await this.detectInstallation(projectDir);
 
     console.log(chalk.white(`  Target: ${chalk.cyan(projectDir)}`));
-    console.log(chalk.dim(`  Agents and workflows will be installed in ${chalk.white('_wds/')}\n`));
+
+    // Handle legacy _wds/ detection
+    let wdsFolder = detection.folder;
+    if (detection.type === 'legacy') {
+      console.log(chalk.yellow(`\n  Found legacy installation at ${chalk.white(LEGACY_WDS_FOLDER + '/')}`));
+      console.log(chalk.dim(`  BMAD standard path is ${chalk.white(WDS_FOLDER + '/')}\n`));
+
+      const { migrationChoice } = await inquirer.prompt([
+        {
+          type: 'list',
+          name: 'migrationChoice',
+          message: 'How would you like to proceed?',
+          choices: [
+            { name: `Migrate to ${WDS_FOLDER}/ (recommended)`, value: 'migrate' },
+            { name: `Keep at ${LEGACY_WDS_FOLDER}/ (legacy)`, value: 'keep' },
+          ],
+        },
+      ]);
+
+      if (migrationChoice === 'keep') {
+        wdsFolder = LEGACY_WDS_FOLDER;
+      }
+      // 'migrate' keeps the default WDS_FOLDER — installer.js handles the actual move
+    } else {
+      console.log(chalk.dim(`  Agents and workflows will be installed in ${chalk.white(wdsFolder + '/')}\n`));
+    }
 
     // 5-question installer
     const answers = await inquirer.prompt([
@@ -102,7 +152,8 @@ class UI {
     return {
       projectDir,
       ...answers,
-      wdsFolder: '_wds',
+      wdsFolder,
+      _detection: detection,
       cancelled: false,
     };
   }

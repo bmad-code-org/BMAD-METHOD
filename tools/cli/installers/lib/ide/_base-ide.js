@@ -15,7 +15,7 @@ class BaseIdeSetup {
     this.configDir = null; // Override in subclasses (e.g., '.windsurf/workflows/wds')
     this.configFile = null; // Override in subclasses when detection is file-based
     this.detectionPaths = []; // Additional paths that indicate the IDE is configured
-    this.wdsFolderName = '_wds'; // Default, can be overridden
+    this.wdsFolderName = '_bmad/wds'; // Default, can be overridden
   }
 
   /**

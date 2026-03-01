@@ -346,7 +346,7 @@ function rewritePaths(content, wdsFolder) {
 // --- Main Compilation ---
 
 function compileAgentFile(yamlPath, options = {}) {
-  const wdsFolder = options.wdsFolder || '_wds';
+  const wdsFolder = options.wdsFolder || '_bmad/wds';
   const rawContent = fs.readFileSync(yamlPath, 'utf8');
 
   // Rewrite paths before parsing

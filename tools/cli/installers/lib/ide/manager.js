@@ -10,7 +10,7 @@ class IdeManager {
   constructor() {
     this.handlers = new Map();
     this.loadHandlers();
-    this.wdsFolderName = '_wds'; // Default, can be overridden
+    this.wdsFolderName = '_bmad/wds'; // Default, can be overridden
   }
 
   /**

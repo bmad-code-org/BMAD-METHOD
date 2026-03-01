@@ -26,8 +26,28 @@ class Installer {
   async install(config) {
     const { projectDir, wdsFolder, root_folder } = config;
     const wdsDir = path.join(projectDir, wdsFolder);
+    const detection = config._detection || { type: 'fresh' };
 
-    // Check if already installed
+    // Handle legacy _wds/ → _bmad/wds/ migration
+    if (detection.type === 'legacy' && wdsFolder !== '_wds') {
+      const legacyDir = path.join(projectDir, '_wds');
+      const legacyConfigPath = path.join(legacyDir, 'config.yaml');
+
+      // Save config from legacy location
+      if (await fs.pathExists(legacyConfigPath)) {
+        let savedConfig = await fs.readFile(legacyConfigPath, 'utf8');
+        // Update wds_folder in saved config to new path
+        savedConfig = savedConfig.replace(/wds_folder:.*/, `wds_folder: ${wdsFolder}`);
+        config._savedConfigYaml = savedConfig;
+      }
+
+      const migrateSpinner = ora(`Migrating _wds/ → ${wdsFolder}/...`).start();
+      await fs.ensureDir(path.dirname(wdsDir));
+      await fs.remove(legacyDir);
+      migrateSpinner.succeed(`Legacy _wds/ removed — installing fresh at ${wdsFolder}/`);
+    }
+
+    // Check if already installed at target path
     if (await fs.pathExists(wdsDir)) {
       console.log(chalk.yellow(`\n  ${wdsFolder}/ already exists.`));
       const { action } = await inquirer.prompt([
@@ -67,6 +87,9 @@ class Installer {
         config._savedConfigYaml = savedConfig;
       }
     }
+
+    // Ensure parent directory exists (for _bmad/wds/)
+    await fs.ensureDir(path.dirname(wdsDir));
 
     console.log('');
 
