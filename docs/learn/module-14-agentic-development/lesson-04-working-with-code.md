@@ -108,7 +108,7 @@ Your design tokens (Module 13) define the rules. The component library implement
 | Spacing: 8px scale | `spacing: { 1: '8px', 2: '16px', ... }` |
 | Button: primary variant | `<Button variant="primary">` uses all the above |
 
-When the agent builds, it should use your component library and respect your design tokens. Include your design system in the Agent Dialog requirements:
+When the agent builds, it should use your component library and respect your design tokens. Include your design system in the Design Log requirements:
 
 > "Use our design system tokens. Primary #0066FF, Inter font, 8px spacing scale. Use shadcn/ui components where applicable."
 
@@ -278,7 +278,7 @@ Many projects use both categories: static HTML for exploration, framework code f
 - Ask the agent: "Build this as a component in our [framework] project using our design system"
 - Make sure your development environment is running before you start
 - Deploy to a preview URL (Vercel, Netlify) when you need to share
-- Keep the Agent Dialog updated with the branch and commit information
+- Keep the Design Log updated with the branch and commit information
 
 ### When to ask a developer
 

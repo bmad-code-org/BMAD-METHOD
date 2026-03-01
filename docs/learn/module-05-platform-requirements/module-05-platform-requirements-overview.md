@@ -81,7 +81,7 @@ What do we **not** know yet?
 - No team expertise?
 - Needs a spike or proof-of-concept?
 
-**Surface these gaps explicitly.** They become tasks for Idunn to investigate in parallel.
+**Surface these gaps explicitly.** They become development tasks to investigate in parallel.
 
 ---
 
@@ -106,11 +106,11 @@ This document lives with your Product Brief because it's part of the strategic f
 
 ---
 
-## Handoff to Idunn
+## Handoff to Development
 
-Once platform requirements are documented, you can **send them to Idunn** immediately.
+Once platform requirements are documented, you can **hand them off to development** immediately.
 
-While you continue with UX design (Freya), Idunn can:
+While you continue with UX design, Freya can also handle development tasks:
 
 - Research knowledge gaps
 - Spike complex integrations

@@ -408,7 +408,7 @@ Amateur designers make AI code faster.
 **The methodology empowers you:**
 - Saga helps you think strategically about business and users
 - Freya helps you forge complete UX specifications
-- Idunn helps you generate implementations
+- Freya helps you generate implementations
 
 **The guard rails keep you strategic:**
 - Every decision traces to business goals

@@ -48,7 +48,7 @@ This isn't optional. It's how teams avoid overwriting each other's work.
 
 ## Let the Agent Handle Git
 
-You don't have to type Git commands yourself. The agent can create branches, make commits, and even create pull requests as part of the Agent Dialog flow.
+You don't have to type Git commands yourself. The agent can create branches, make commits, and even create pull requests as part of the Design Log flow.
 
 **Tell the agent at the start:**
 
@@ -106,7 +106,7 @@ You've created a new branch and switched to it. All your work happens here.
 
 ### Step 4: Work and save as you go
 
-After each completed step in your Agent Dialog, commit:
+After each completed step in your Design Log, commit:
 
 ```
 git add .
@@ -140,11 +140,11 @@ Your branch now exists online. Others can see it. After the first push, just typ
 
 ### Step 6: Create a pull request
 
-When you're done and the Agent Dialog shows all tests passing:
+When you're done and the Design Log shows all tests passing:
 
 **Using the command line:**
 ```
-gh pr create --title "Add signup form prototype" --body "Built from spec P02. See Agent Dialog for details."
+gh pr create --title "Add signup form prototype" --body "Built from spec P02. See Design Log for details."
 ```
 
 **Using GitHub:** Go to your repository, click "Pull requests", click "New pull request", select your branch.
@@ -152,7 +152,7 @@ gh pr create --title "Add signup form prototype" --body "Built from spec P02. Se
 **What goes in the PR:**
 - What you built (reference the spec)
 - What to look for in review
-- Link to the Agent Dialog
+- Link to the Design Log
 - Any known limitations
 
 ### Step 7: Merge and clean up
@@ -225,7 +225,7 @@ Their version
 3. Delete the conflict markers (`<<<<<<<`, `=======`, `>>>>>>>`)
 4. Save, stage, and commit
 
-**When to ask for help:** If the conflict is in code you don't understand, ask a developer. Show them the Agent Dialog so they have context.
+**When to ask for help:** If the conflict is in code you don't understand, ask a developer. Show them the Design Log so they have context.
 
 ### Code reviews
 
@@ -239,15 +239,15 @@ Don't take change requests personally. Reviews improve code quality and catch is
 
 ---
 
-## Connecting Git to the Agent Dialog
+## Connecting Git to the Design Log
 
-Your Agent Dialog meta section should include the branch:
+Your Design Log meta section should include the branch:
 
 ```markdown
 ## Meta
 - Date: 2026-02-10
 - Input: P02-signup-form.md
-- Agent: Idunn
+- Agent: Freya
 - Branch: feature/signup-form-prototype
 - Status: In Progress
 ```
@@ -336,7 +336,7 @@ Removes the last commit but keeps all the changes in your files.
 
 ## What's Next
 
-In the tutorial, you'll run through a complete agentic development session — from creating the Agent Dialog through evaluation, feedback, and handling a stuck moment.
+In the tutorial, you'll run through a complete agentic development session — from creating the Design Log through evaluation, feedback, and handling a stuck moment.
 
 ---
 

@@ -309,9 +309,9 @@ Needs Team Decision:
 
 ### Why this matters:
 
-**Knowledge gaps become tasks for Idunn.**
+**Knowledge gaps become development tasks.**
 
-While you design with Freya, Idunn can:
+While you focus on design, the development agent can:
 - Research the unknowns
 - Spike the complex integrations
 - Test the assumptions
@@ -383,11 +383,11 @@ Just like the Product Brief, this document gets referenced throughout the projec
 
 Once this document exists:
 
-1. **Send to Idunn** — Technical investigation begins
+1. **Hand off to development** — Technical investigation begins
 2. **Reference in design** — Every decision respects these boundaries
 3. **Update as you learn** — New discoveries get documented
 
-**This is a living document.** As Idunn investigates knowledge gaps, the document gets updated. As the project evolves, constraints may change. Keep it current.
+**This is a living document.** As knowledge gaps get investigated, the document gets updated. As the project evolves, constraints may change. Keep it current.
 
 ---
 
@@ -396,7 +396,7 @@ Once this document exists:
 - The five sections of platform requirements
 - How to document each section effectively
 - Why constraints inform rather than limit design
-- How knowledge gaps become parallel work for Idunn
+- How knowledge gaps become parallel development work
 - Where the document lives and how it's used
 
 ---

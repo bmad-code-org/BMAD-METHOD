@@ -146,18 +146,17 @@ Finally, Freya helps apply visual language to your specifications and packages e
 
 **Don't start with Freya when:**
 - You haven't completed the strategic foundation yet (go back to Saga)
-- You want to write code (that's Idunn's domain)
+- You want to write code (that's handled in a development session)
 - You're still figuring out business goals or target groups
 
-### The Three Agents — Quick Reference
+### The Two Agents — Quick Reference
 
 | Agent | Domain | When to Use |
 |-------|--------|------------|
 | **Saga** | Strategy | Product Brief, Trigger Mapping, Platform Requirements |
 | **Freya** | Design | Scenarios, Sketching, Specifications, Components, Visual Design |
-| **Idunn** | Implementation | Prototyping, Development, Verification |
 
-Saga hands off to Freya. Freya hands off to Idunn. But the handoff isn't one-way — you'll often loop back to earlier stages as you learn from design and implementation.
+Saga hands off to Freya. Freya handles both design and development. But the workflow isn't one-way — you'll often loop back to earlier stages as you learn from design and implementation.
 
 ---
 

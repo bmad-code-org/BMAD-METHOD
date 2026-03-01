@@ -192,7 +192,7 @@ By the end of this phase:
 | **Component definitions** | Reusable patterns identified |
 | **Visual designs** | Final look and feel |
 | **Design system** | Your component library |
-| **Delivery package** | Ready for Idunn to implement |
+| **Delivery package** | Ready for implementation |
 
 ---
 

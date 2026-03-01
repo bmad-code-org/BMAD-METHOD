@@ -289,7 +289,7 @@ E-PRD/Design-Deliveries/
 ### Sign off:
 
 **Freya:**
-> "Delivery package DD01-User-Registration is validated and ready for handoff to Idunn.
+> "Delivery package DD01-User-Registration is validated and ready for handoff to development.
 >
 > Summary:
 > - 3 pages specified
@@ -301,7 +301,7 @@ E-PRD/Design-Deliveries/
 
 ---
 
-## Step 6: Handoff to Idunn (2 min)
+## Step 6: Handoff to Development (2 min)
 
 ### Prepare handoff message:
 
@@ -309,7 +309,7 @@ E-PRD/Design-Deliveries/
 ```markdown
 # Design Handoff: DD01-User-Registration
 
-## For: Idunn (Implementation)
+## For: Development
 ## From: Freya (Design)
 ## Date: [Today]
 

@@ -1,6 +1,6 @@
 # Module 14: Agentic Development
 
-**Time: 60 min | Agents: Freya + Idunn | Phase: Design-Build**
+**Time: 60 min | Agent: Freya | Phase: Design-Build**
 
 ---
 
@@ -42,9 +42,9 @@ Each activity has its own workflow with dedicated steps. The core agentic loop (
 
 ---
 
-## The Agent Dialog
+## The Design Log
 
-Every agentic development session starts with an **Agent Dialog** — a structured document that organizes the work.
+Every agentic development session starts with a **Design Log** — a structured document that organizes the work.
 
 Before writing a single line of code, the agent creates:
 
@@ -61,7 +61,7 @@ This is your plan. It evolves as you work.
 
 ```
 ┌──────────────┐
-│ Create plan  │  ← Agent Dialog: scope, tasks, requirements, tests
+│ Create plan  │  ← Design Log: scope, tasks, requirements, tests
 └──────┬───────┘
        │
        ▼
@@ -144,31 +144,29 @@ Every step is logged. Every action is noted. Every decision is recorded.
 This means you can **restart the conversation at any time**. New session? Load the dialog. The agent picks up where you left off.
 
 ```
-docs/F-Agent-Dialogs/
-└── 2026-02-10-signup-form/
-    ├── dialog.md           ← Plan, steps, status
-    ├── decisions.md        ← What was decided and why
-    └── changes.md          ← What changed from spec
+docs/_progress/
+├── 00-design-log.md        ← Plan, status, backlog
+└── agent-experiences/
+    └── 2026-02-10-signup-form.md  ← Session insights
 ```
 
 ---
 
 ## Who Does What?
 
-Both Freya and Idunn can do agentic development:
+Freya handles all agentic development activities:
 
 | Agent | Activities | When to use |
 |-------|-----------|-------------|
-| **Freya** | [P] Prototyping, [A] Analysis | Design exploration — dream up visuals, components, page layouts. Investigate and understand existing products. |
-| **Idunn** | [D] Development, [F] Bugfixing, [E] Evolution, [R] Reverse Engineering, [T] Acceptance Testing | Implementation — generate working code from specifications. Fix bugs, add features, test against specs. |
+| **Freya** | All 7 activities: [P] Prototyping, [D] Development, [F] Bugfixing, [E] Evolution, [A] Analysis, [R] Reverse Engineering, [T] Acceptance Testing | Design exploration, implementation, bugfixing, evolution, analysis, reverse engineering, and acceptance testing. |
 
-The process is the same. The domain differs.
+The process is the same across all activities. The scope and context differ.
 
 ---
 
 ## What You'll Learn
 
-### Lesson 1: The Development Agent Dialog
+### Lesson 1: The Development Design Log
 
 How the process is organized. Creating plans, logging steps, structuring sessions so you can restart at any time.
 
@@ -194,7 +192,7 @@ Keeping your work safe with version control. When to branch, how to commit, work
 
 | Mistake | Fix |
 |---------|-----|
-| Jumping in without a plan | Start with Agent Dialog every time |
+| Jumping in without a plan | Start with Design Log every time |
 | Not logging steps | Everything gets logged, no exceptions |
 | Keeping a stale plan | Re-evaluate after every step |
 | Fighting the AI for too long | Know when to ask for help |
@@ -206,7 +204,7 @@ Keeping your work safe with version control. When to branch, how to commit, work
 
 Pick one specification and run the full loop:
 
-1. Create an Agent Dialog with scope, tasks, and test protocol
+1. Create a Design Log with scope, tasks, and test protocol
 2. Execute one step
 3. Evaluate the result
 4. Update the plan
@@ -216,7 +214,7 @@ Pick one specification and run the full loop:
 
 ## Lessons
 
-### [Lesson 1: The Development Agent Dialog](lesson-01-iterative-building.md)
+### [Lesson 1: The Development Design Log](lesson-01-iterative-building.md)
 How the process is organized
 
 ### [Lesson 2: Evaluation and Feedback](lesson-02-documenting-decisions.md)

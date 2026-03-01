@@ -6,12 +6,12 @@
 
 ## Overview
 
-This tutorial walks you through a product evolution cycle — from receiving user feedback to closing the Agent Dialog with a verified change.
+This tutorial walks you through a product evolution cycle — from receiving user feedback to closing the Design Log with a verified change.
 
 **Time:** 20-30 minutes
 **Prerequisites:** Understanding of WDS workflow (Modules 4-17)
-**Agent:** Idunn
-**What you'll practice:** The complete evolution cycle using the Product Evolution Agent Dialog
+**Agent:** Freya
+**What you'll practice:** The complete evolution cycle using the Product Evolution Design Log
 
 ---
 
@@ -47,21 +47,21 @@ Is this worth showing to 5 users and 1 domain expert? Yes — the problem was fo
 
 ---
 
-## Step 2: Create the Evolution Agent Dialog (5 min)
+## Step 2: Create the Evolution Design Log (5 min)
 
 **You say:**
-> "Create an Agent Dialog for this evolution. Type: feature modification. Context: password field requirements are hidden until error."
+> "Create a Design Log for this evolution. Type: feature modification. Context: password field requirements are hidden until error."
 
 **The agent creates:**
 
 ```markdown
-# Agent Dialog: Password Requirements Clarity
+# Design Log: Password Requirements Clarity
 
 ## Meta
 - Date: 2026-03-15
 - Type: Feature modification
 - Input: Usability test findings (Round 1)
-- Agent: Idunn
+- Agent: Freya
 - Branch: fix/password-requirements
 - Status: In Progress
 
@@ -206,7 +206,7 @@ One guerrilla test isn't statistically significant — but combined with the ori
 **The agent commits:**
 > "Show password requirements upfront per spec v1.2"
 
-**Close the Agent Dialog:**
+**Close the Design Log:**
 
 ```markdown
 ## Meta
@@ -249,12 +249,12 @@ Guerrilla test confirmed improvement.
 The complete evolution cycle:
 
 1. **Connected** feedback to Trigger Map and business goal
-2. **Created** an Evolution Agent Dialog with context
+2. **Created** an Evolution Design Log with context
 3. **Updated** the specification before touching code
 4. **Built** from the updated spec
 5. **Verified** with Puppeteer during development
 6. **Tested** with a quick guerrilla session
-7. **Documented** everything in the Agent Dialog
+7. **Documented** everything in the Design Log
 
 Same WDS process. Smaller scope. Full discipline.
 

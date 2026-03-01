@@ -36,7 +36,7 @@ The installer will guide you through:
 - **Experience level** — Beginner, Intermediate, or Expert
 - **IDE configuration** — Sets up your AI IDE automatically
 
-**✅ Checkpoint:** Installer completes, `_wds/` folder appears in your project
+**✅ Checkpoint:** Installer completes, `_bmad/wds/` folder appears in your project
 
 ---
 
@@ -46,11 +46,10 @@ After installation, your project has:
 
 ```
 your-project/
-├── _wds/                    ← WDS system files
+├── _bmad/wds/               ← WDS system files
 │   ├── agents/              ← Agent files (.md)
 │   │   ├── saga-analyst.md
 │   │   ├── freya-ux.md
-│   │   └── idunn-pm.md
 │   ├── workflows/           ← Phase workflows
 │   ├── data/                ← Standards, frameworks
 │   ├── gems/                ← Reusable prompt components
@@ -63,11 +62,11 @@ your-project/
 │   ├── C-UX-Scenarios/
 │   ├── D-Design-System/
 │   ├── E-PRD/
-│   └── F-Agent-Dialogs/
+│   └── _progress/
 └── .claude/instructions.md  ← IDE configuration
 ```
 
-**Key insight:** `_wds/` contains the methodology. `docs/` is where your design work lives.
+**Key insight:** `_bmad/wds/` contains the methodology. `docs/` is where your design work lives.
 
 ---
 
@@ -79,7 +78,6 @@ WDS has three specialized agents:
 |-------|-------------|-------------|
 | **Saga** | Business & Product Analyst | Product Brief, Trigger Mapping |
 | **Freya** | UX/UI Designer | Scenarios, UX Design, Visual Design |
-| **Idunn** | Project Manager | Platform Requirements, Design System |
 
 ### Start with Saga
 
@@ -88,7 +86,7 @@ For a new project, start with Saga to create your Product Brief:
 Tell your AI IDE:
 
 ```
-Read and activate the agent in _wds/agents/saga-analyst.md
+Read and activate the agent in _bmad/wds/agents/saga-analyst.md
 ```
 
 Saga will:
@@ -104,7 +102,7 @@ Saga will:
 
 **Issue:** `npx` command not found → Install Node.js from <https://nodejs.org>
 **Issue:** Installer fails → Make sure you're in your project folder
-**Issue:** Agent file not found → Check `_wds/agents/` folder exists
+**Issue:** Agent file not found → Check `_bmad/wds/agents/` folder exists
 
 ---
 

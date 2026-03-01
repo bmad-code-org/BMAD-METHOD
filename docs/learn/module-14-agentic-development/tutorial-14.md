@@ -6,12 +6,12 @@
 
 ## Overview
 
-This tutorial walks you through a complete agentic development session — creating an Agent Dialog, building from specification, evaluating results, and handling a stuck moment.
+This tutorial walks you through a complete agentic development session — creating a Design Log, building from specification, evaluating results, and handling a stuck moment.
 
 **Time:** 45-60 minutes
 **Prerequisites:** Design system completed (Module 13)
-**Agent:** Idunn (or Freya for design exploration)
-**What you'll create:** Working prototype with documented Agent Dialog
+**Agent:** Freya
+**What you'll create:** Working prototype with documented Design Log
 
 ---
 
@@ -25,29 +25,29 @@ This tutorial walks you through a complete agentic development session — creat
 
 **The agent will help you:**
 
-- Create the Agent Dialog
+- Create the Design Log
 - Build step by step
 - Track decisions
 - Handle problems
 
 ---
 
-## Step 1: Start the Agent Dialog (5 min)
+## Step 1: Start the Design Log (5 min)
 
 ### Give the agent your specification:
 
 **You say:**
-> "I want to build a working prototype of the signup form from spec P02-signup-form.md. Start by creating an Agent Dialog with scope, tasks, requirements, and test protocol."
+> "I want to build a working prototype of the signup form from spec P02-signup-form.md. Start by creating a Design Log with scope, tasks, requirements, and test protocol."
 
 ### The agent creates the dialog:
 
 ```markdown
-# Agent Dialog: Signup Form Prototype
+# Design Log: Signup Form Prototype
 
 ## Meta
 - Date: 2026-02-10
 - Input: P02-signup-form.md
-- Agent: Idunn
+- Agent: Freya
 - Status: In Progress
 
 ## Scope
@@ -233,7 +233,7 @@ New task emerged from building. That's normal.
 
 ### Verify everything:
 
-Go through the test protocol from the Agent Dialog:
+Go through the test protocol from the Design Log:
 
 ```markdown
 ## Test Protocol
@@ -262,13 +262,13 @@ Go through the test protocol from the Agent Dialog:
 
 ## Step 8: Finalize the Dialog (5 min)
 
-### Complete the Agent Dialog:
+### Complete the Design Log:
 
 ```markdown
 ## Meta
 - Date: 2026-02-10
 - Input: P02-signup-form.md
-- Agent: Idunn
+- Agent: Freya
 - Status: Complete
 
 ## Summary
@@ -282,9 +282,8 @@ All tests passing.
 ### Save the dialog:
 
 ```
-docs/F-Agent-Dialogs/
-└── 2026-02-10-signup-form/
-    └── dialog.md
+docs/_progress/agent-experiences/
+└── 2026-02-10-signup-form.md
 ```
 
 ---
@@ -292,7 +291,7 @@ docs/F-Agent-Dialogs/
 ## What You've Created
 
 - **Working prototype** matching your specification
-- **Complete Agent Dialog** with plan, log, decisions, and test results
+- **Complete Design Log** with plan, log, decisions, and test results
 - **Reusable context** for future sessions or handoff
 
 ---
@@ -301,7 +300,7 @@ docs/F-Agent-Dialogs/
 
 **DO:**
 
-- Always start with an Agent Dialog
+- Always start with a Design Log
 - Evaluate after every step
 - Give specific, numbered feedback
 - Update the plan as you learn
@@ -320,7 +319,7 @@ docs/F-Agent-Dialogs/
 ## You've Completed Module 14!
 
 **You can now run agentic development sessions.** You know how to:
-- Structure work with Agent Dialogs
+- Structure work with Design Logs
 - Evaluate and give effective feedback
 - Handle stuck moments
 - Keep plans alive and updated

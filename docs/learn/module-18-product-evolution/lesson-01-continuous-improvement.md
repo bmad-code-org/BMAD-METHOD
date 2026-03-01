@@ -10,7 +10,7 @@
 
 A product evolution change — whether it's a new feature, a modification, a fix, or an optimization — follows the same WDS process you've learned throughout this course. The difference is scope. Instead of building a whole product, you're improving one part of it.
 
-The Product Evolution Agent Dialog organizes this cycle. It's the same Agent Dialog from Module 14, with one addition: **context** — what exists today and why it needs to change.
+The Product Evolution Design Log organizes this cycle. It's the same Design Log from Module 14, with one addition: **context** — what exists today and why it needs to change.
 
 ---
 
@@ -44,18 +44,18 @@ Connected. Proceed.
 
 ---
 
-## Step 2: Start the Agent Dialog
+## Step 2: Start the Design Log
 
 Create the dialog with context about what exists and what needs to change:
 
 ```markdown
-# Agent Dialog: Password Requirements Clarity
+# Design Log: Password Requirements Clarity
 
 ## Meta
 - Date: 2026-03-15
 - Type: Feature modification
 - Input: User feedback + usability test findings
-- Agent: Idunn
+- Agent: Freya
 - Branch: fix/password-requirements
 - Status: In Progress
 
@@ -118,7 +118,7 @@ Make the change in the spec first. The spec is the source of truth.
 
 The agent implements from the updated spec — exactly as in Module 14.
 
-### Tasks in the Agent Dialog:
+### Tasks in the Design Log:
 
 ```markdown
 ## Tasks
@@ -164,7 +164,7 @@ For a color fix or typo correction — probably no. Functional verification is e
 
 ### Create the delivery
 
-For changes that go through development review, create a DD (Module 16). For small changes you implement yourself, document in the Agent Dialog.
+For changes that go through development review, create a DD (Module 16). For small changes you implement yourself, document in the Design Log.
 
 ### Close the dialog
 

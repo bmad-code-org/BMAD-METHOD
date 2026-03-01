@@ -39,7 +39,7 @@ This happens. Code changes sneak in without spec updates. A developer fixes some
 
 When you find drift:
 
-1. **Note it** — Document the discrepancy in the Agent Dialog
+1. **Note it** — Document the discrepancy in the Design Log
 2. **Decide** — Does reality match the original intent, or has it drifted in a useful direction?
 3. **Update the spec** — Make the spec match what should be true, whether that's the current state or the intended change
 4. **Then proceed** — Now you're working from an accurate baseline
@@ -130,7 +130,7 @@ The updated spec is the acceptance criteria. The agent checks each element again
 
 ## The Scope Boundary
 
-The Agent Dialog defines what changes and what doesn't. The spec update makes this concrete.
+The Design Log defines what changes and what doesn't. The spec update makes this concrete.
 
 When the agent is working, it has a clear boundary:
 
@@ -140,7 +140,7 @@ When the agent is working, it has a clear boundary:
 
 This is how you prevent a small change from snowballing. The password field helper text changes. The email field doesn't. The form layout doesn't. The submission flow doesn't.
 
-If the agent discovers something out of scope that needs attention — a bug, a related improvement, an inconsistency — it logs it in the Agent Dialog for a future cycle. It doesn't fix it now.
+If the agent discovers something out of scope that needs attention — a bug, a related improvement, an inconsistency — it logs it in the Design Log for a future cycle. It doesn't fix it now.
 
 ```markdown
 ## Notes
@@ -216,7 +216,7 @@ The cost of updating a spec is minutes. The cost of spec drift is hours — spen
 
 ## What's Next
 
-In the tutorial, you'll run a complete evolution cycle — from receiving feedback to closing the Agent Dialog with a verified change.
+In the tutorial, you'll run a complete evolution cycle — from receiving feedback to closing the Design Log with a verified change.
 
 ---
 

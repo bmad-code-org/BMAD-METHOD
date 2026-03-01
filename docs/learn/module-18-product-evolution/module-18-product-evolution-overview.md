@@ -1,6 +1,6 @@
 # Module 18: Product Evolution
 
-**Time: 30 min | Agent: Freya + Idunn | Phase: Continuous**
+**Time: 30 min | Agent: Freya | Phase: Continuous**
 
 ---
 
@@ -52,7 +52,7 @@ Here is the full WDS process and how each module maps to an evolution cycle:
 
 ### Build (How do we implement it?)
 
-**Agentic Development (Module 14)** — Start an Agent Dialog. The agent builds the change from the specification while verifying with Puppeteer.
+**Agentic Development (Module 14)** — Start a Design Log. The agent builds the change from the specification while verifying with Puppeteer.
 
 **Visual Design (Module 15)** — Does the change need visual polish? Apply the same design layer process — code first, Figma when needed.
 
@@ -64,20 +64,20 @@ Here is the full WDS process and how each module maps to an evolution cycle:
 
 ---
 
-## The Product Evolution Agent Dialog
+## The Product Evolution Design Log
 
-The Agent Dialog is the container for every change. In greenfield, it organizes a build session. In brownfield, it organizes an evolution cycle.
+The Design Log is the container for every change. In greenfield, it organizes a build session. In brownfield, it organizes an evolution cycle.
 
 The structure is identical:
 
 ```markdown
-# Agent Dialog: [Change Name]
+# Design Log: [Change Name]
 
 ## Meta
 - Date: 2026-03-15
 - Type: Evolution (feature | modification | fix | optimization)
 - Input: User feedback / analytics / business request
-- Agent: Idunn
+- Agent: Freya
 - Branch: fix/password-requirements
 - Status: In Progress
 
@@ -180,7 +180,7 @@ The brownfield becomes as well-documented as a greenfield project — one change
 
 ### Lesson 1: The Evolution Cycle
 
-How to run a complete evolution cycle using the Product Evolution Agent Dialog — from receiving feedback through implementation and delivery. The same WDS steps, compressed for a single change.
+How to run a complete evolution cycle using the Product Evolution Design Log — from receiving feedback through implementation and delivery. The same WDS steps, compressed for a single change.
 
 ### Lesson 2: Update the Spec — Project the Code
 

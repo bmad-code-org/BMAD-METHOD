@@ -132,11 +132,11 @@ npx whiteport-design-studio install
 ```
 
 - [ ] Follow the installer prompts (project type, experience level, IDE)
-- [ ] ✅ `_wds/` folder appears in your project
+- [ ] ✅ `_bmad/wds/` folder appears in your project
 
 ### Activate an Agent
 
-- [ ] Tell your AI IDE: `Read and activate the agent in _wds/agents/saga-analyst.md`
+- [ ] Tell your AI IDE: `Read and activate the agent in _bmad/wds/agents/saga-analyst.md`
 - [ ] ✅ Saga responds and welcomes you!
 
 ---

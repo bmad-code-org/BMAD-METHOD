@@ -101,7 +101,7 @@ Not everything is in the spec. Use your design judgment:
 
 ## Re-evaluating the Plan
 
-After evaluation, open the Agent Dialog and update the task list.
+After evaluation, open the Design Log and update the task list.
 
 **Before step 3:**
 ```markdown

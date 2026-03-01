@@ -1,6 +1,6 @@
 # Module 14: Agentic Development
 
-## Lesson 1: The Development Agent Dialog
+## Lesson 1: The Development Design Log
 
 **How the process is organized**
 
@@ -8,7 +8,7 @@
 
 ## Every Session Starts with a Plan
 
-When you ask Freya or Idunn to develop something, the first thing the agent does is create an **Agent Dialog**.
+When you ask Freya to develop something, the first thing the agent does is create a **Design Log**.
 
 This isn't documentation after the fact. It's the plan *before* anything is built.
 
@@ -23,15 +23,15 @@ Then the agent starts executing. One step at a time.
 
 ---
 
-## The Agent Dialog Document
+## The Design Log Document
 
 ```markdown
-# Agent Dialog: Signup Form
+# Design Log: Signup Form
 
 ## Meta
 - Date: 2026-02-10
 - Input: P02-signup-form.md (specification)
-- Agent: Idunn
+- Agent: Freya
 - Status: In Progress
 
 ## Scope
@@ -128,15 +128,15 @@ The plan is not a contract. It's a compass.
 
 ## Types of Agentic Sessions
 
-The same Agent Dialog structure works for all types:
+The same Design Log structure works for all types:
 
 | Type | Example | Agent |
 |------|---------|-------|
 | **Concept exploration** | "Dream up a dashboard layout for dog trainers" | Freya |
-| **Proof of concept** | "Can we do infinite scroll with this data model?" | Idunn |
-| **Prototype** | "Build a working signup form from this spec" | Idunn |
+| **Proof of concept** | "Can we do infinite scroll with this data model?" | Freya |
+| **Prototype** | "Build a working signup form from this spec" | Freya |
 | **Design inspiration** | "Generate 3 visual directions for the landing page" | Freya |
-| **Production code** | "Implement the complete registration scenario" | Idunn |
+| **Production code** | "Implement the complete registration scenario" | Freya |
 
 The scope and depth change. The process doesn't.
 
@@ -146,11 +146,11 @@ The scope and depth change. The process doesn't.
 
 ### Starting a new session
 
-Load the Agent Dialog into your new conversation:
+Load the Design Log into your new conversation:
 
 ```
 "I'm continuing the signup form implementation.
-Here's the current Agent Dialog with plan and log:
+Here's the current Design Log with plan and log:
 
 [Paste dialog.md content]
 
@@ -161,9 +161,9 @@ The agent picks up from the log, not from memory.
 
 ### Handing off between agents
 
-Freya dreamed up a component. Now Idunn needs to build it.
+You dreamed up a component in a design session. Now you need to build it.
 
-The Agent Dialog travels with the work. Idunn reads Freya's dialog and continues where she left off.
+The Design Log travels with the work. The agent reads the previous design log and continues where it left off.
 
 ---
 

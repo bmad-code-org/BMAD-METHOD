@@ -105,20 +105,20 @@ Each module contains:
 | 12 | [Functional Components](../module-12-functional-components/module-12-functional-components-overview.md) | Freya | UX | 45 min |
 | 13 | [Design System](../module-13-design-system/module-13-design-system-overview.md) | Freya | Systems | 30 min |
 
-### Build & Deliver Phase (Modules 14-16) — Agents: Freya + Idunn
+### Build & Deliver Phase (Modules 14-16) — Agent: Freya
 
 | Module | Title | Agent | Focus | Time |
 |--------|-------|-------|-------|------|
-| 14 | [Agentic Development](../module-14-agentic-development/module-14-agentic-development-overview.md) | Idunn | 7-activity menu | 60 min |
+| 14 | [Agentic Development](../module-14-agentic-development/module-14-agentic-development-overview.md) | Freya | 7-activity menu | 60 min |
 | 15 | [Visual Design & Assets](../module-15-visual-design/module-15-visual-design-overview.md) | Freya | Asset pipeline | 60 min |
 | 16 | [Design Delivery](../module-16-design-delivery/module-16-design-delivery-overview.md) | Freya | Handover | 45 min |
 
-### Validate & Evolve (Modules 17-18) — Agents: Freya + Idunn
+### Validate & Evolve (Modules 17-18) — Agent: Freya
 
 | Module | Title | Agent | Time |
 |--------|-------|-------|------|
 | 17 | [Usability Testing](../module-17-usability-testing/module-17-usability-testing-overview.md) | Freya | 45 min |
-| 18 | [Product Evolution](../module-18-product-evolution/module-18-product-evolution-overview.md) | Idunn | 30 min |
+| 18 | [Product Evolution](../module-18-product-evolution/module-18-product-evolution-overview.md) | Freya | 30 min |
 
 ---
 
@@ -138,19 +138,18 @@ Each module contains:
 
 ---
 
-## The Three Agents
+## The Two Agents
 
-WDS uses three AI agents, each with a specific domain:
+WDS uses two AI agents, each with a specific domain:
 
 | Agent | Domain | Phase | Modules |
 |-------|--------|-------|---------|
 | **Saga** | Strategy | Strategy | 3-6 |
-| **Freya** | UX, Visual Design & Assets | Design & Deliver | 7-13, 15-17 |
-| **Idunn** | Development & Evolution | Build & Evolve | 14, 18 |
+| **Freya** | UX, Visual Design, Development & Evolution | Design, Build & Evolve | 7-18 |
 
-Each agent maintains focus on their domain while coordinating with the others.
+Each agent maintains focus on their domain while coordinating with the other.
 
-**Idunn's 7 activities** (Module 14): Prototyping, Development, Bugfixing, Evolution, Analysis, Reverse Engineering, and Acceptance Testing — all menu-driven from a single entry point.
+**Freya's 7 activities** (Module 14): Prototyping, Development, Bugfixing, Evolution, Analysis, Reverse Engineering, and Acceptance Testing — all menu-driven from a single entry point.
 
 ---
 

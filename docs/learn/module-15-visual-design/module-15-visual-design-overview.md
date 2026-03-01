@@ -137,7 +137,7 @@ There is no wrong approach. Use whatever gives you confidence in the result.
 
 ### AI Code Generation
 
-The agent generates HTML/CSS from your specifications. You review the output in your browser and refine through the Agent Dialog process (Module 14).
+The agent generates HTML/CSS from your specifications. You review the output in your browser and refine through the Design Log process (Module 14).
 
 ### Figma
 

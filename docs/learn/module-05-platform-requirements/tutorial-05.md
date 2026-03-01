@@ -28,7 +28,7 @@ This tutorial walks you through creating a platform requirements document that c
 - Ask the right questions
 - Identify gaps you might miss
 - Document clearly and consistently
-- Prepare handoff to Idunn
+- Prepare handoff to development
 
 ---
 
@@ -168,7 +168,7 @@ This gives Saga the context to ask relevant questions.
 
 ### Saga summarizes:
 
-> "So we have medium complexity on push notifications and offline sync, with lower complexity on core features. I'll flag the iOS push notification limitations as something Idunn should research."
+> "So we have medium complexity on push notifications and offline sync, with lower complexity on core features. I'll flag the iOS push notification limitations as something that needs research."
 
 ---
 
@@ -237,15 +237,15 @@ If anything is missing or wrong, tell Saga:
 
 ---
 
-## Step 9: Handoff to Idunn (Optional)
+## Step 9: Handoff to Development (Optional)
 
 ### If you want parallel development:
 
-> "Please prepare a handoff for Idunn with the knowledge gaps that need investigation."
+> "Please prepare a handoff for development with the knowledge gaps that need investigation."
 
 ### Saga creates handoff:
 
-> "Handoff prepared for Idunn:
+> "Handoff prepared for development:
 >
 > **Research Tasks:**
 > - iOS 17+ PWA push notification behavior
@@ -257,7 +257,7 @@ If anything is missing or wrong, tell Saga:
 > **Pending Decisions:**
 > - React Native vs PWA long-term strategy
 >
-> Idunn can start investigating while you continue to UX design with Freya."
+> Development can start while you continue to UX design with Freya."
 
 ---
 
@@ -305,7 +305,7 @@ If anything is missing or wrong, tell Saga:
 ### Immediate:
 
 - Platform requirements inform all design decisions
-- Knowledge gaps become Idunn's research tasks
+- Knowledge gaps become development research tasks
 - You have a clear picture of what's possible
 
 ### Next Phase:
@@ -337,7 +337,7 @@ If anything is missing or wrong, tell Saga:
 ## Common Questions
 
 **Q: What if I don't know the technical details?**
-A: That's what knowledge gaps are for. Document what you don't know and let Idunn investigate.
+A: That's what knowledge gaps are for. Document what you don't know and let the development agent investigate.
 
 **Q: Should I talk to developers before creating this?**
 A: Helpful but not required. Saga will ask questions that surface what you know. Mark unknowns as knowledge gaps.

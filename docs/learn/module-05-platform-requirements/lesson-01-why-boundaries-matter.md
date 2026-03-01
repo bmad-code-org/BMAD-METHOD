@@ -180,9 +180,9 @@ This document travels with your Product Brief because it's strategic context —
 
 Here's a powerful pattern:
 
-Once you document platform requirements, you can **send them to Idunn immediately**.
+Once you document platform requirements, you can **hand them off to development immediately**.
 
-While you move into UX design (Freya), Idunn can:
+While you move into UX design, Freya can also handle development tasks in parallel:
 
 - Research knowledge gaps
 - Spike complex integrations

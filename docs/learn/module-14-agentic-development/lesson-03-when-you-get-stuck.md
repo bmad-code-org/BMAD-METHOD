@@ -118,9 +118,9 @@ This is the hardest moment for a designer working with AI: admitting the agent c
 
 ### How to Ask
 
-Don't come empty-handed. Bring your Agent Dialog:
+Don't come empty-handed. Bring your Design Log:
 
-> "I've been building the signup form. Here's my Agent Dialog with everything we tried.
+> "I've been building the signup form. Here's my Design Log with everything we tried.
 >
 > The issue: error messages work on desktop but disappear on mobile. The agent tried 4 different approaches (logged in the dialog). None worked.
 >
@@ -130,7 +130,7 @@ The dialog shows what you've tried. The developer doesn't start from zero.
 
 ### What to Document
 
-When a developer fixes the issue, add it to your Agent Dialog:
+When a developer fixes the issue, add it to your Design Log:
 
 ```markdown
 ### Step 4: Error states on mobile (resolved with developer help)

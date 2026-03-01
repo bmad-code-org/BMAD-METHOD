@@ -550,7 +550,7 @@ Spec phase: Define exactly what you want (upfront investment)
   Specifications: Document every detail (with Freya)
 
 Code phase: Agent builds it correctly (first time)
-  Idunn reads specs
+  Freya reads specs
   Generates code matching specifications exactly
   Includes tests from specs
 
