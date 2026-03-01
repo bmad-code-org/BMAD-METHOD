@@ -84,7 +84,7 @@ class UI {
 
       if (choice === 'migrate-update') {
         action = 'update';
-        // wdsFolder stays as WDS_FOLDER (_bmad/wds)
+        wdsFolder = WDS_FOLDER;
       } else if (choice === 'legacy-update') {
         action = 'update';
         wdsFolder = LEGACY_WDS_FOLDER;
