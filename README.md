@@ -51,19 +51,19 @@ Saga will greet you by name and guide you through creating your Product Brief.
 | 1. Product Brief | Vision, positioning, success criteria | Saga | `A-Product-Brief/` |
 | 2. Trigger Mapping | User psychology, business goals | Saga | `B-Trigger-Map/` |
 | 3. UX Scenarios | Scenario outlines via 8-question dialog | Freya | `C-UX-Scenarios/` |
-| 4. UX Design | Page specifications, interactions | Freya | `D-UX-Design/` |
-| 5. Agentic Development | AI-assisted development & testing | Freya | `G-Product-Development/` |
+| 4. UX Design | Page specifications, interactions | Freya | `C-UX-Scenarios/` |
+| 5. Agentic Development | AI-assisted development & testing | Freya | — |
 | 6. Asset Generation | Visual and text assets from specs | Freya | — |
 | 7. Design System | Component library, design tokens | Freya | `D-Design-System/` |
 | 8. Product Evolution | Brownfield improvements | Freya | — |
 
-Output folders are created inside your configured design artifacts directory (default: `design-artifacts/`).
+Output folders are created inside your configured design output directory (default: `design-process/`).
 
 ---
 
 ## Supported Design Tools
 
-WDS offers agenttic design capabilities with several visual design and prototyping services on the market:
+WDS offers agentic design capabilities with several visual design and prototyping services on the market:
 
 | Tool | What it does | MCP |
 |------|-------------|-----|
@@ -98,14 +98,11 @@ your-project/
 │   ├── method/
 │   ├── models/
 │   └── tools/
-├── design-artifacts/        # Design output (created by agents)
+├── design-process/          # Design output (created by agents)
 │   ├── A-Product-Brief/
 │   ├── B-Trigger-Map/
 │   ├── C-UX-Scenarios/
-│   ├── D-Design-System/
-│   ├── E-PRD/
-│   ├── F-Testing/
-│   └── G-Product-Development/
+│   └── D-Design-System/
 └── .claude/instructions.md  # IDE configuration (varies by IDE)
 ```
 
