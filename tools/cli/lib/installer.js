@@ -27,6 +27,7 @@ class Installer {
     const { projectDir, wdsFolder, root_folder } = config;
     const wdsDir = path.join(projectDir, wdsFolder);
     const detection = config._detection || { type: 'fresh' };
+    const action = config._action || 'fresh';
 
     // Handle legacy _wds/ → _bmad/wds/ migration
     if (detection.type === 'legacy' && wdsFolder !== '_wds') {
@@ -47,45 +48,30 @@ class Installer {
       migrateSpinner.succeed(`Legacy _wds/ removed — installing fresh at ${wdsFolder}/`);
     }
 
-    // Check if already installed at target path
-    if (await fs.pathExists(wdsDir)) {
-      console.log(chalk.yellow(`\n  ${wdsFolder}/ already exists.`));
-      const { action } = await inquirer.prompt([
-        {
-          type: 'list',
-          name: 'action',
-          message: 'What would you like to do?',
-          choices: [
-            { name: 'Update - Replace WDS files, keep config.yaml', value: 'update' },
-            { name: 'Fresh install - Remove everything and start over', value: 'fresh' },
-            { name: 'Cancel', value: 'cancel' },
-          ],
-        },
-      ]);
-
-      if (action === 'cancel') {
-        return { success: false };
+    // Handle update vs fresh for existing target path
+    if (action === 'update' && await fs.pathExists(wdsDir)) {
+      // Preserve config.yaml during update
+      const configPath = path.join(wdsDir, 'config.yaml');
+      if (!config._savedConfigYaml && await fs.pathExists(configPath)) {
+        config._savedConfigYaml = await fs.readFile(configPath, 'utf8');
       }
 
-      if (action === 'fresh') {
-        const removeSpinner = ora('Removing existing WDS installation...').start();
-        await fs.remove(wdsDir);
-        removeSpinner.succeed('Old installation removed');
-      } else if (action === 'update') {
-        // Preserve config.yaml during update
-        const configPath = path.join(wdsDir, 'config.yaml');
-        let savedConfig = null;
-        if (await fs.pathExists(configPath)) {
-          savedConfig = await fs.readFile(configPath, 'utf8');
-        }
+      const removeSpinner = ora('Updating WDS files...').start();
+      await fs.remove(wdsDir);
+      removeSpinner.succeed('Old files cleared');
+    } else if (action === 'fresh' && await fs.pathExists(wdsDir)) {
+      const removeSpinner = ora('Removing existing WDS installation...').start();
+      await fs.remove(wdsDir);
+      removeSpinner.succeed('Old installation removed');
+    }
 
-        const removeSpinner = ora('Updating WDS files...').start();
-        await fs.remove(wdsDir);
-        removeSpinner.succeed('Old files cleared');
-
-        // Will be restored after copy
-        config._savedConfigYaml = savedConfig;
-      }
+    // On update, extract ides and root_folder from saved config
+    if (action === 'update' && config._savedConfigYaml) {
+      try {
+        const savedData = yaml.load(config._savedConfigYaml);
+        if (!config.ides && savedData.ides) config.ides = savedData.ides;
+        if (!config.root_folder && savedData.output_folder) config.root_folder = savedData.output_folder;
+      } catch { /* ignore parse errors, defaults will apply */ }
     }
 
     // Ensure parent directory exists (for _bmad/wds/)

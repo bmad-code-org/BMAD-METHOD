@@ -58,33 +58,75 @@ class UI {
 
     console.log(chalk.white(`  Target: ${chalk.cyan(projectDir)}`));
 
-    // Handle legacy _wds/ detection
     let wdsFolder = detection.folder;
+    let action = 'fresh';
+
+    // --- Existing installation: ask update/fresh/migrate FIRST ---
     if (detection.type === 'legacy') {
       console.log(chalk.yellow(`\n  Found legacy installation at ${chalk.white(LEGACY_WDS_FOLDER + '/')}`));
       console.log(chalk.dim(`  BMAD standard path is ${chalk.white(WDS_FOLDER + '/')}\n`));
 
-      const { migrationChoice } = await inquirer.prompt([
+      const { choice } = await inquirer.prompt([
         {
           type: 'list',
-          name: 'migrationChoice',
+          name: 'choice',
           message: 'How would you like to proceed?',
           choices: [
-            { name: `Migrate to ${WDS_FOLDER}/ (recommended)`, value: 'migrate' },
-            { name: `Keep at ${LEGACY_WDS_FOLDER}/ (legacy)`, value: 'keep' },
+            { name: `Update & migrate to ${WDS_FOLDER}/ (recommended)`, value: 'migrate-update' },
+            { name: `Update at ${LEGACY_WDS_FOLDER}/ (keep legacy path)`, value: 'legacy-update' },
+            { name: 'Fresh install (remove everything and start over)', value: 'fresh' },
+            { name: 'Cancel', value: 'cancel' },
           ],
         },
       ]);
 
-      if (migrationChoice === 'keep') {
+      if (choice === 'cancel') return { cancelled: true };
+
+      if (choice === 'migrate-update') {
+        action = 'update';
+        // wdsFolder stays as WDS_FOLDER (_bmad/wds)
+      } else if (choice === 'legacy-update') {
+        action = 'update';
         wdsFolder = LEGACY_WDS_FOLDER;
+      } else {
+        action = 'fresh';
       }
-      // 'migrate' keeps the default WDS_FOLDER — installer.js handles the actual move
+    } else if (detection.type === 'bmad') {
+      console.log(chalk.dim(`\n  Found existing installation at ${chalk.white(WDS_FOLDER + '/')}\n`));
+
+      const { choice } = await inquirer.prompt([
+        {
+          type: 'list',
+          name: 'choice',
+          message: 'What would you like to do?',
+          choices: [
+            { name: 'Update - Replace WDS files, keep config.yaml', value: 'update' },
+            { name: 'Fresh install - Remove everything and start over', value: 'fresh' },
+            { name: 'Cancel', value: 'cancel' },
+          ],
+        },
+      ]);
+
+      if (choice === 'cancel') return { cancelled: true };
+      action = choice;
     } else {
       console.log(chalk.dim(`  Agents and workflows will be installed in ${chalk.white(wdsFolder + '/')}\n`));
     }
 
-    // 5-question installer
+    // --- Update: skip config questions, config.yaml will be preserved ---
+    if (action === 'update') {
+      console.log(chalk.dim('  Existing config.yaml will be preserved.\n'));
+
+      return {
+        projectDir,
+        wdsFolder,
+        _detection: detection,
+        _action: action,
+        cancelled: false,
+      };
+    }
+
+    // --- Fresh install: ask all config questions ---
     const answers = await inquirer.prompt([
       {
         type: 'input',
@@ -154,6 +196,7 @@ class UI {
       ...answers,
       wdsFolder,
       _detection: detection,
+      _action: action,
       cancelled: false,
     };
   }
