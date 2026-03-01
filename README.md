@@ -61,6 +61,23 @@ Output folders are created inside your configured design artifacts directory (de
 
 ---
 
+## Supported Design Tools
+
+WDS offers agenttic design capabilities with several visual design and prototyping services on the market:
+
+| Tool | What it does | MCP |
+|------|-------------|-----|
+| **Figma** | Professional UI design, design system management | Figma MCP |
+| **Pencil (Penpot)** | Open-source design tool, AI-assisted layout | Pencil MCP |
+| **Stitch** | AI screen generation from text descriptions | Stitch MCP |
+| **Excalidraw** | Wireframing and sketch analysis | — |
+| **html.to.design** | Import HTML prototypes into Figma | Figma plugin |
+| **NanoBanana** | AI image generation for brand exploration | — |
+
+The design loop works with any combination: wireframe in Excalidraw, generate screens with Stitch or Pencil, refine in Figma, pull back via MCP.
+
+---
+
 ## Project Structure
 
 After installation, your project will have:
@@ -122,22 +139,6 @@ The installer configures your selected IDE(s) automatically.
 
 ---
 
-## Design Tools
-
-WDS integrates with visual design and prototyping services:
-
-| Tool | What it does | MCP |
-|------|-------------|-----|
-| **Figma** | Professional UI design, design system management | Figma MCP |
-| **Pencil (Penpot)** | Open-source design tool, AI-assisted layout | Pencil MCP |
-| **Stitch** | AI screen generation from text descriptions | Stitch MCP |
-| **Excalidraw** | Wireframing and sketch analysis | — |
-| **html.to.design** | Import HTML prototypes into Figma | Figma plugin |
-| **NanoBanana/Eira** | AI image generation for brand exploration | — |
-
-The design loop works with any combination: wireframe in Excalidraw, generate screens with Stitch or Pencil, refine in Figma, pull back via MCP.
-
----
 
 ## Learning Material
 
