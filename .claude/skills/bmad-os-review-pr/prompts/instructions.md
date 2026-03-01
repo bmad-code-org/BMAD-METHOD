@@ -95,7 +95,7 @@ Store list of binary files to skip. Note them in final output.
 
 ## Review Layers
 
-**Launch steps 1.1 and 1.2 as parallel subagents** using the Task tool. Both receive the same PR diff and run concurrently. Wait for both to complete before proceeding to step 1.3.
+**Launch steps 1.1 and 1.2 as parallel subagents.** Both receive the same PR diff and run concurrently. Wait for both to complete before proceeding to step 1.3.
 
 ### 1.1 Run Cynical Review (subagent)
 
@@ -136,7 +136,7 @@ The task returns a JSON array of objects, each with: `location`, `trigger_condit
 
 **Map each JSON finding to the standard finding format:**
 
-```markdown
+````markdown
 ### [NUMBER]. [trigger_condition] [likely]
 
 **Severity:** [INFERRED_EMOJI] [INFERRED_LEVEL]
@@ -147,7 +147,7 @@ The task returns a JSON array of objects, each with: `location`, `trigger_condit
 ```
 [guard_snippet]
 ```
-```
+````
 
 Severity inference rules for edge case findings:
 
