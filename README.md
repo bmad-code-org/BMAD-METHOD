@@ -122,14 +122,20 @@ The installer configures your selected IDE(s) automatically.
 
 ---
 
-## Tools Integration
+## Design Tools
 
-WDS integrates with design and prototyping tools:
+WDS integrates with visual design and prototyping services:
 
-- **Figma MCP** - Bidirectional sync between AI-generated designs and Figma
-- **html.to.design** - Import HTML prototypes into Figma
-- **NanoBanana/Eira** - AI-powered image generation for brand exploration
-- **Excalidraw** - Sketch analysis and wireframing
+| Tool | What it does | MCP |
+|------|-------------|-----|
+| **Figma** | Professional UI design, design system management | Figma MCP |
+| **Pencil (Penpot)** | Open-source design tool, AI-assisted layout | Pencil MCP |
+| **Stitch** | AI screen generation from text descriptions | Stitch MCP |
+| **Excalidraw** | Wireframing and sketch analysis | — |
+| **html.to.design** | Import HTML prototypes into Figma | Figma plugin |
+| **NanoBanana/Eira** | AI image generation for brand exploration | — |
+
+The design loop works with any combination: wireframe in Excalidraw, generate screens with Stitch or Pencil, refine in Figma, pull back via MCP.
 
 ---
 
