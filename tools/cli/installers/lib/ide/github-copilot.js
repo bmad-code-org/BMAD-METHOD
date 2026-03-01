@@ -143,6 +143,9 @@ class GitHubCopilotSetup extends BaseIdeSetup {
    * @returns {string} Agent file content
    */
   createAgentContent(artifact, manifestEntry) {
+    if (!artifact?.name) {
+      throw new Error('Agent artifact must have a name');
+    }
     // Build enriched description from manifest metadata
     let description;
     // Use the raw agent name (e.g., "dev", "pm") for clean @mention selection
@@ -202,6 +205,7 @@ You must fully embody this agent's persona and follow all activation instruction
         if (!entry.command || !entry['workflow-file']) continue;
         commandCounts.set(entry.command, (commandCounts.get(entry.command) || 0) + 1);
       }
+      const seenSlugs = new Set();
 
       for (const entry of helpEntries) {
         const command = entry.command;
@@ -213,7 +217,15 @@ You must fully embody this agent's persona and follow all activation instruction
         // When multiple entries share the same command, derive a unique filename from the entry name
         let promptFileName;
         if (commandCounts.get(command) > 1) {
-          const slug = entry.name.toLowerCase().replaceAll(/[^a-z0-9]+/g, '-');
+          let slug = entry.name.toLowerCase().replaceAll(/[^a-z0-9]+/g, '-').replaceAll(/^-+|-+$/g, '');
+          if (!slug) {
+            slug = `unnamed-${promptCount}`;
+          }
+          // Guard against slug collisions
+          while (seenSlugs.has(slug)) {
+            slug = `${slug}-${promptCount}`;
+          }
+          seenSlugs.add(slug);
           promptFileName = `bmad-bmm-${slug}.prompt.md`;
         } else {
           promptFileName = `${command}.prompt.md`;
@@ -290,7 +302,20 @@ You must fully embody this agent's persona and follow all activation instruction
 
     // Include options (e.g., "Create Mode", "Validate Mode") when present
     const options = (entry.options || '').trim();
-    const optionsInstruction = options ? `\n4. Use option: ${options}` : '';
+    let optionsInstruction = '';
+    if (options) {
+      // Determine the next step number based on the last numbered step in the body
+      let nextStepNumber = 4;
+      const stepMatches = body.match(/(?:^|\n)(\d+)\.\s/g);
+      if (stepMatches && stepMatches.length > 0) {
+        const lastMatch = stepMatches.at(-1);
+        const numberMatch = lastMatch.match(/(\d+)\.\s/);
+        if (numberMatch) {
+          nextStepNumber = parseInt(numberMatch[1], 10) + 1;
+        }
+      }
+      optionsInstruction = `\n${nextStepNumber}. Use option: ${options}`;
+    }
 
     return `---
 name: '${promptName}'
@@ -405,15 +430,14 @@ description: '${safeDescription}'${agentLine}
     const agentPath = artifact.agentPath || artifact.relativePath;
     const agentFilePath = `{project-root}/${this.bmadFolderName}/${agentPath}`;
 
-    // bmm/config.yaml is safe to hardcode: agent activators are only generated from
-    // bmm agent artifacts, so bmm is guaranteed to be installed.
+    const moduleName = artifact.module || 'bmm';
     return `---
 name: '${safeName}'
 description: '${safeDescription}'
 agent: '${safeName}'
 ---
 
-1. Load {project-root}/${this.bmadFolderName}/bmm/config.yaml and store ALL fields as session variables
+1. Load {project-root}/${this.bmadFolderName}/${moduleName}/config.yaml and store ALL fields as session variables
 2. Load the full agent file from ${agentFilePath}
 3. Follow ALL activation instructions in the agent file
 4. Display the welcome/greeting as instructed
