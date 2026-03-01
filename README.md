@@ -61,25 +61,6 @@ Output folders are created inside your configured design artifacts directory (de
 
 ---
 
-## The 8-Question Scenario Dialog
-
-Phase 3 uses a structured conversation to define each scenario. The agent walks through 8 strategic questions — one at a time — building a complete scenario outline:
-
-1. **What transaction do we need to get really right?**
-2. **Which business goal does it serve?**
-3. **Which user, and in what real-life situation?**
-4. **What do they want and fear going into this?**
-5. **What device are they on?**
-6. **What's the natural starting point?**
-7. **What's the best possible outcome — for both sides?**
-8. **What's the shortest path through the site?**
-
-A *transaction* is any meaningful user journey — purchasing, booking, researching content page-by-page, comparing options, or any interaction where the user moves through the site with intent.
-
-Two modes: **Conversation** (agent asks, you answer) or **Suggest** (agent proposes all 8, you review).
-
----
-
 ## Project Structure
 
 After installation, your project will have:
