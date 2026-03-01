@@ -296,8 +296,12 @@
     <!-- ONLY MARK COMPLETE IF ALL VALIDATION PASS -->
     <check if="ALL validation gates pass AND tests ACTUALLY exist and pass">
       <action>ONLY THEN mark the task (and subtasks) checkbox with [x]</action>
-      <action>Update File List section with ALL new, modified, or deleted files (paths relative to repo root)</action>
       <action>Add completion notes to Dev Agent Record summarizing what was ACTUALLY implemented and tested</action>
+      <action>Save the story file NOW so its own changes appear in the working tree</action>
+      <action>Run `git diff --name-only`, `git diff --cached --name-only`, and `git status --porcelain` to discover ALL changed files
+        (including infrastructure side-effects like lock files, the story file itself, and sprint-status.yaml)</action>
+      <action>Filter out paths under `_bmad/` and `_bmad-output/` directories from the git output</action>
+      <action>REPLACE the File List section entirely with the filtered results: ALL new, modified, or deleted files (paths relative to repo root, one per line)</action>
     </check>
 
     <check if="ANY validation fails">
@@ -323,7 +327,9 @@
   <step n="9" goal="Story completion and mark for review" tag="sprint-status">
     <action>Verify ALL tasks and subtasks are marked [x] (re-scan the story document now)</action>
     <action>Run the full regression suite (do not skip)</action>
-    <action>Confirm File List includes every changed file</action>
+    <action>Save the story file before inspecting the working tree</action>
+    <action>Run `git diff --name-only`, `git diff --cached --name-only`, and `git status --porcelain` to get actual changed files
+      (excluding paths under `_bmad/` and `_bmad-output/`); verify File List contains ALL reported paths and auto-append any missing entries</action>
     <action>Execute enhanced definition-of-done validation</action>
     <action>Update the story Status to: "review"</action>
 
@@ -336,7 +342,7 @@
       - End-to-end tests for critical flows added when story demands them
       - All tests pass (no regressions, new tests successful)
       - Code quality checks pass (linting, static analysis if configured)
-      - File List includes every new/modified/deleted file (relative paths)
+      - File List matches all git-reported changes - run `git diff --name-only`, `git diff --cached --name-only`, and `git status --porcelain` to verify (exclude `_bmad/`, `_bmad-output/`)
       - Dev Agent Record contains implementation notes
       - Change Log includes summary of changes
       - Only permitted story sections were modified

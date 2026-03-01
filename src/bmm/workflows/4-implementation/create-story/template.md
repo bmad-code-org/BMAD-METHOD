@@ -47,3 +47,14 @@ so that {{benefit}}.
 ### Completion Notes List
 
 ### File List
+
+<!-- 
+  Populate using git commands after each task:
+    git diff --name-only
+    git diff --cached --name-only
+    git status --porcelain
+  Include infrastructure side-effects (lock files, sprint-status.yaml, story file).
+  Exclude: _bmad/, _bmad-output/ directories.
+-->
+
+- (list files here, one per line)
