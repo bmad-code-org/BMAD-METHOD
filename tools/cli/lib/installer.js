@@ -45,6 +45,13 @@ class Installer {
       const migrateSpinner = ora(`Migrating _wds/ → ${wdsFolder}/...`).start();
       await fs.ensureDir(path.dirname(wdsDir));
       await fs.remove(legacyDir);
+
+      // Also remove legacy _wds-learn/ (will be recreated if learning material is selected)
+      const legacyLearnDir = path.join(projectDir, '_wds-learn');
+      if (await fs.pathExists(legacyLearnDir)) {
+        await fs.remove(legacyLearnDir);
+      }
+
       migrateSpinner.succeed(`Legacy _wds/ removed — installing fresh at ${wdsFolder}/`);
     }
 

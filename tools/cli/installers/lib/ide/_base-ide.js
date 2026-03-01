@@ -1,7 +1,7 @@
 const path = require('node:path');
 const fs = require('fs-extra');
 const chalk = require('chalk');
-const yaml = require('yaml');
+const yaml = require('js-yaml');
 
 /**
  * Base class for IDE-specific setup
@@ -138,7 +138,7 @@ class BaseIdeSetup {
       // Try to extract YAML frontmatter
       const frontmatterMatch = content.match(/^---\s*\n([\s\S]*?)\n---/);
       if (frontmatterMatch) {
-        const frontmatter = yaml.parse(frontmatterMatch[1]);
+        const frontmatter = yaml.load(frontmatterMatch[1]);
 
         return {
           name: frontmatter.name || path.basename(filePath, '.md'),
