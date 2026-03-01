@@ -67,9 +67,7 @@ class ClineSetup extends BaseIdeSetup {
     const contentWithoutFrontmatter = content.replace(frontmatterRegex, '');
 
     // Add title header for Cline
-    const title = metadata.name ?
-      `${metadata.name} - ${metadata.description}` :
-      metadata.description || 'WDS Agent';
+    const title = metadata.name ? `${metadata.name} - ${metadata.description}` : metadata.description || 'WDS Agent';
 
     return `# ${title}
 

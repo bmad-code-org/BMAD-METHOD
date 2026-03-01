@@ -152,8 +152,7 @@ class BaseIdeSetup {
       const agentName = path.basename(filePath, '.md');
       return {
         name: this.formatTitle(agentName),
-        description: agentName.includes('saga') ? 'Strategic Analyst' :
-                     agentName.includes('freya') ? 'Designer' : '',
+        description: agentName.includes('saga') ? 'Strategic Analyst' : agentName.includes('freya') ? 'Designer' : '',
         icon: '📋',
         slug: agentName.split('-')[0],
       };
@@ -176,8 +175,7 @@ class BaseIdeSetup {
    * @returns {string} Launcher content
    */
   formatAgentLauncher(agentName, agentPath) {
-    const relativePath = path.relative(process.cwd(), agentPath)
-      .replaceAll('\\', '/'); // Convert Windows paths to forward slashes
+    const relativePath = path.relative(process.cwd(), agentPath).replaceAll('\\', '/'); // Convert Windows paths to forward slashes
 
     return `<!-- WDS Agent Launcher -->
 <!-- This file references the compiled agent. Do not edit directly. -->

@@ -61,9 +61,7 @@ class WindsurfSetup extends BaseIdeSetup {
    * @returns {string} Processed content with Windsurf YAML frontmatter
    */
   processContent(content, metadata = {}) {
-    const description = metadata.name ?
-      `${metadata.name} - ${metadata.description}` :
-      metadata.description || 'WDS Agent';
+    const description = metadata.name ? `${metadata.name} - ${metadata.description}` : metadata.description || 'WDS Agent';
 
     return `---
 description: ${description}

@@ -27,9 +27,7 @@ class TraeSetup extends BaseIdeSetup {
   }
 
   processContent(content, metadata = {}) {
-    const title = metadata.name ?
-      `${metadata.name} - ${metadata.description}` :
-      metadata.description || 'WDS Agent';
+    const title = metadata.name ? `${metadata.name} - ${metadata.description}` : metadata.description || 'WDS Agent';
 
     return `# ${title}
 

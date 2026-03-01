@@ -29,7 +29,10 @@ class KiloSetup extends BaseIdeSetup {
       modesContent += `\n  roleDefinition: "${agent.metadata.description || 'WDS Agent'}"`;
       modesContent += `\n  customInstructions: |`;
       // Indent launcher content for YAML block
-      const indented = launcher.split('\n').map(line => `    ${line}`).join('\n');
+      const indented = launcher
+        .split('\n')
+        .map((line) => `    ${line}`)
+        .join('\n');
       modesContent += `\n${indented}\n`;
     }
 

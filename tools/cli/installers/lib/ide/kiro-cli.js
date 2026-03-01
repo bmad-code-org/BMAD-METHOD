@@ -27,10 +27,7 @@ class KiroCliSetup extends BaseIdeSetup {
         description: agent.metadata.description || 'WDS Agent',
         prompt: `./${agent.slug}-prompt.md`,
       };
-      await this.writeFile(
-        path.join(targetDir, `${agent.slug}.json`),
-        JSON.stringify(jsonConfig, null, 2)
-      );
+      await this.writeFile(path.join(targetDir, `${agent.slug}.json`), JSON.stringify(jsonConfig, null, 2));
 
       // Write markdown prompt
       await this.writeFile(path.join(targetDir, `${agent.slug}-prompt.md`), launcher);

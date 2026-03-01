@@ -28,9 +28,7 @@ class GeminiSetup extends BaseIdeSetup {
   }
 
   processContent(content, metadata = {}) {
-    const description = metadata.name ?
-      `${metadata.name} - ${metadata.description}` :
-      metadata.description || 'WDS Agent';
+    const description = metadata.name ? `${metadata.name} - ${metadata.description}` : metadata.description || 'WDS Agent';
 
     // Escape content for TOML multi-line string
     const escapedContent = content.replaceAll('"""', String.raw`\"\"\"`);

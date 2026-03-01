@@ -49,17 +49,17 @@ class Installer {
     }
 
     // Handle update vs fresh for existing target path
-    if (action === 'update' && await fs.pathExists(wdsDir)) {
+    if (action === 'update' && (await fs.pathExists(wdsDir))) {
       // Preserve config.yaml during update
       const configPath = path.join(wdsDir, 'config.yaml');
-      if (!config._savedConfigYaml && await fs.pathExists(configPath)) {
+      if (!config._savedConfigYaml && (await fs.pathExists(configPath))) {
         config._savedConfigYaml = await fs.readFile(configPath, 'utf8');
       }
 
       const removeSpinner = ora('Updating WDS files...').start();
       await fs.remove(wdsDir);
       removeSpinner.succeed('Old files cleared');
-    } else if (action === 'fresh' && await fs.pathExists(wdsDir)) {
+    } else if (action === 'fresh' && (await fs.pathExists(wdsDir))) {
       const removeSpinner = ora('Removing existing WDS installation...').start();
       await fs.remove(wdsDir);
       removeSpinner.succeed('Old installation removed');
@@ -71,7 +71,9 @@ class Installer {
         const savedData = yaml.load(config._savedConfigYaml);
         if (!config.ides && savedData.ides) config.ides = savedData.ides;
         if (!config.root_folder && savedData.output_folder) config.root_folder = savedData.output_folder;
-      } catch { /* ignore parse errors, defaults will apply */ }
+      } catch {
+        /* ignore parse errors, defaults will apply */
+      }
     }
 
     // Ensure parent directory exists (for _bmad/wds/)
@@ -116,18 +118,13 @@ class Installer {
         const { IdeManager } = require('../installers/lib/ide/manager');
         const ideManager = new IdeManager();
 
-        const results = await ideManager.setup(
-          projectDir,
-          wdsDir,
-          config.ides,
-          {
-            logger: {
-              log: (msg) => {}, // Suppress detailed logs during spinner
-              warn: (msg) => console.log(msg),
-            },
-            wdsFolderName: wdsFolder,
-          }
-        );
+        const results = await ideManager.setup(projectDir, wdsDir, config.ides, {
+          logger: {
+            log: (msg) => {}, // Suppress detailed logs during spinner
+            warn: (msg) => console.log(msg),
+          },
+          wdsFolderName: wdsFolder,
+        });
 
         const successCount = results.success.length;
         const failedCount = results.failed.length;
@@ -285,12 +282,7 @@ class Installer {
     const docsPath = path.join(projectDir, rootFolder);
 
     // Simplified 4-phase structure
-    const folders = [
-      'A-Product-Brief',
-      'B-Trigger-Map',
-      'C-UX-Scenarios',
-      'D-Design-System',
-    ];
+    const folders = ['A-Product-Brief', 'B-Trigger-Map', 'C-UX-Scenarios', 'D-Design-System'];
 
     for (const folder of folders) {
       const folderPath = path.join(docsPath, folder);
@@ -313,7 +305,6 @@ class Installer {
     await fs.ensureDir(progressPath);
     await fs.ensureDir(path.join(progressPath, 'agent-experiences'));
   }
-
 }
 
 module.exports = { Installer };

@@ -37,11 +37,7 @@ class IdeManager {
       // Get all JS files in the IDE directory
       const files = fs.readdirSync(ideDir).filter((file) => {
         // Skip base class, manager, and utility files (starting with _)
-        return (
-          file.endsWith('.js') &&
-          !file.startsWith('_') &&
-          file !== 'manager.js'
-        );
+        return file.endsWith('.js') && !file.startsWith('_') && file !== 'manager.js';
       });
 
       // Sort alphabetically for consistent ordering

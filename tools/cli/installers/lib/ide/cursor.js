@@ -65,9 +65,9 @@ class CursorSetup extends BaseIdeSetup {
     const frontmatterRegex = /^---\s*\n[\s\S]*?\n---\s*\n/;
     const contentWithoutFrontmatter = content.replace(frontmatterRegex, '');
 
-    const description = metadata.name ?
-      `WDS Agent: ${metadata.name} - ${metadata.description}` :
-      `WDS Agent: ${metadata.description || 'Agent'}`;
+    const description = metadata.name
+      ? `WDS Agent: ${metadata.name} - ${metadata.description}`
+      : `WDS Agent: ${metadata.description || 'Agent'}`;
 
     // Create Cursor MDC metadata header
     const mdcHeader = `---
