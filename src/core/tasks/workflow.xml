@@ -2,6 +2,7 @@
   <objective>Execute given workflow by loading its configuration, following instructions, and producing output</objective>
 
   <llm critical="true">
+    <mandate>RULE: Check your stored {interaction_style} session variable from activation step 2. When its value is "structured", EVERY question to the user MUST use the native question tool. No exceptions. No inline prompts. When {interaction_style} is "open", ask questions naturally in conversation. If you cannot determine {interaction_style}, default to open mode.</mandate>
     <mandate>Always read COMPLETE files - NEVER use offset/limit when reading any workflow related files</mandate>
     <mandate>Instructions are MANDATORY - either as file path, steps or embedded list in YAML, XML or markdown</mandate>
     <mandate>Execute ALL steps in instructions IN EXACT ORDER</mandate>

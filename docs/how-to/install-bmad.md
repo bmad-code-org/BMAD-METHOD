@@ -57,9 +57,24 @@ Each tool has its own way of integrating commands. The installer creates tiny pr
 
 The installer shows available modules. Select whichever ones you need — most users just want **BMad Method** (the software development module).
 
-### 5. Follow the Prompts
+### 5. Configure Settings
 
-The installer guides you through the rest — custom content, settings, etc.
+The installer prompts you for core settings that control how agents behave:
+
+| Setting | Default | Description |
+| ------- | ------- | ----------- |
+| **User Name** | `BMad` | What agents call you — use your name or a team name |
+| **Communication Language** | `English` | Language agents use when chatting with you |
+| **Document Output Language** | `English` | Language for generated documents and artifacts |
+| **Output Folder** | `_bmad-output` | Where agents save generated files |
+| **Interaction Style** | `structured` | How agents ask you questions (see below) |
+
+**Interaction Style** controls how agents present choices:
+
+- **Structured** (recommended) — Agents present numbered option lists for every question, using your IDE's native question tool when available. This keeps conversations focused and reduces ambiguity.
+- **Open** — Agents ask natural conversational questions. More flexible but can lead to longer back-and-forth.
+
+These settings are saved to `_bmad/<module>/config.yaml` and can be changed later by editing that file and rerunning the installer.
 
 ## What You Get
 

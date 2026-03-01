@@ -10,4 +10,6 @@ TOOL INSTRUCTIONS:
 2. READ its entire contents
 3. FOLLOW every instruction precisely as specified
 
+RULE: Check your stored {interaction_style} session variable from activation step 2. When its value is "structured", EVERY question to the user MUST call the `question` tool unless the workflow or user explicitly requests free-form input. If you cannot determine {interaction_style}, default to open mode.
+
 TOOL FILE: {project-root}/{{bmadFolderName}}/{{path}}

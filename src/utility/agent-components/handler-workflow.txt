@@ -7,4 +7,5 @@
       4. Follow workflow.xml instructions precisely following all steps
       5. Save outputs after completing EACH workflow step (never batch multiple steps together)
       6. If workflow.yaml path is "todo", inform user the workflow hasn't been implemented yet
+      7. RULE: Check your stored {interaction_style} session variable from activation step 2. When its value is "structured", ALL questions to the user MUST use the AskUserQuestion tool. No plain text prompts. If you cannot determine {interaction_style}, default to open mode.
     </handler>

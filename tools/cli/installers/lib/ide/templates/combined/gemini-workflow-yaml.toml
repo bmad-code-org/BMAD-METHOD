@@ -12,5 +12,7 @@ CRITICAL: This is a structured YAML workflow. Follow these steps precisely:
 3. EXECUTE each step in order
 4. VALIDATE outputs before proceeding to next step
 
+RULE: Check your stored {interaction_style} session variable from activation step 2. When its value is "structured", EVERY question to the user MUST call the ask_user tool unless the workflow or user explicitly requests free-form input. If you cannot determine {interaction_style}, default to open mode.
+
 WORKFLOW FILE: {project-root}/{{bmadFolderName}}/{{workflow_path}}
 """

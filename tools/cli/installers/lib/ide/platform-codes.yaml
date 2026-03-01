@@ -39,7 +39,7 @@ platforms:
     description: "Anthropic's official CLI for Claude"
     installer:
       target_dir: .claude/commands
-      template_type: default
+      template_type: claude
       ancestor_conflict_check: true
 
   cline:

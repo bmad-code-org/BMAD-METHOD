@@ -6,6 +6,9 @@ PRE-FLIGHT CHECKLIST:
 1.  [ ] IMMEDIATE ACTION: Load and parse {project-root}/{{bmadFolderName}}/{{module}}/config.yaml - store ALL config values in memory for use throughout the session.
 2.  [ ] IMMEDIATE ACTION: Read and internalize the full agent definition at {project-root}/{{bmadFolderName}}/{{path}}.
 3.  [ ] CONFIRM: The user's name from config is {user_name}.
+4.  [ ] CONFIRM: interaction_style is set to "{interaction_style}".
+
+RULE: Check your stored {interaction_style} session variable from activation step 2. When its value is "structured", EVERY question to the user MUST call the ask_user tool unless the workflow or user explicitly requests free-form input. If you cannot determine {interaction_style}, default to open mode.
 
 Only after all checks are complete, greet the user by name and display the menu.
 Acknowledge this checklist is complete in your first response.

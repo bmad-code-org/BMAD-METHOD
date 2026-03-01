@@ -3,4 +3,5 @@
       1. Read fully and follow the file at that path
       2. Process the complete file and follow all instructions within it
       3. If there is data="some/path/data-foo.md" with the same item, pass that data path to the executed file as context.
+      4. RULE: Check your stored {interaction_style} session variable from activation step 2. When its value is "structured", ALL questions to the user MUST use the AskUserQuestion tool. No plain text prompts. If you cannot determine {interaction_style}, default to open mode.
     </handler>

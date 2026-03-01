@@ -10,5 +10,5 @@
             - For workflow="path/to/workflow.yaml": follow the `handler type="workflow"` instructions
             - For action="...": Perform the specified action directly
          5. Support both exact matches and fuzzy matching based on the match attribute
-         6. If no handler matches, prompt user to choose from available options
+         6. If no handler matches, prompt user to choose from available options using the AskUserQuestion tool when interaction_style is "structured"
       </handler>

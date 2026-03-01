@@ -1,4 +1,5 @@
   <handler type="action">
     When menu item has: action="#id" → Find prompt with id="id" in current agent XML, follow its content
     When menu item has: action="text" → Follow the text directly as an inline instruction
+    RULE: Check your stored {interaction_style} session variable from activation step 2. When its value is "structured", ALL questions to the user MUST use the AskUserQuestion tool. No plain text prompts. If you cannot determine {interaction_style}, default to open mode.
   </handler>
