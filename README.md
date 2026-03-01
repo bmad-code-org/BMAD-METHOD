@@ -17,27 +17,26 @@ WDS is a structured design methodology that uses AI agents to guide you through 
 
 - **Strategic foundation** - Connect every design decision to business goals and user psychology
 - **Complete specifications** - Generate developer-ready page specs with all details defined
-- **AI-powered workflow** - Three specialized agents guide you through each phase
+- **AI-powered workflow** - Two specialized agents guide you through each phase
 - **IDE-native** - Works inside your AI coding tool (Claude Code, Cursor, Windsurf, and 16 more)
 
 ---
 
 ## Agents
 
-WDS uses three specialized AI agents (the Norse Pantheon):
+WDS uses two specialized AI agents (the Norse Pantheon):
 
 | Agent | Role | What they do |
 |-------|------|-------------|
 | **Saga** (Analyst) | Business & Product Analyst | Product Brief (Phase 1), Trigger Mapping (Phase 2). Start here. |
-| **Freya** (Designer) | UX/UI Designer | UX Scenarios (Phase 3), UX Design (Phase 4), Agentic Development (Phase 5), Asset Generation (Phase 6), Design System (Phase 7) |
-| **Idunn** (Product Manager) | Technical Coordinator | Platform Requirements (Phase 1), Design Handover (Phase 4), Product Evolution (Phase 8) |
+| **Freya** (Designer) | UX/UI Designer & Developer | UX Scenarios (Phase 3), UX Design (Phase 4), Agentic Development (Phase 5), Asset Generation (Phase 6), Design System (Phase 7), Product Evolution (Phase 8) |
 
 ### Activating an agent
 
 Tell your AI IDE:
 
 ```
-Read and activate _wds/agents/saga-analyst.md
+Read and activate _bmad/wds/agents/saga-analyst.md
 ```
 
 Saga will greet you by name and guide you through creating your Product Brief.
@@ -56,7 +55,7 @@ Saga will greet you by name and guide you through creating your Product Brief.
 | 5. Agentic Development | AI-assisted development & testing | Freya | `G-Product-Development/` |
 | 6. Asset Generation | Visual and text assets from specs | Freya | — |
 | 7. Design System | Component library, design tokens | Freya | `D-Design-System/` |
-| 8. Product Evolution | Brownfield improvements | Idunn | — |
+| 8. Product Evolution | Brownfield improvements | Freya | — |
 
 Output folders are created inside your configured design artifacts directory (default: `design-artifacts/`).
 
@@ -87,7 +86,7 @@ After installation, your project will have:
 
 ```
 your-project/
-├── _wds/                    # WDS system files
+├── _bmad/wds/               # WDS system files
 │   ├── agents/              # Compiled agent files (.md)
 │   ├── workflows/           # Phase workflows
 │   ├── data/                # Standards, frameworks, agent guides
@@ -125,7 +124,7 @@ your-project/
 
 3. **Activate Saga** — tell the AI:
    ```
-   Read and activate _wds/agents/saga-analyst.md
+   Read and activate _bmad/wds/agents/saga-analyst.md
    ```
 
 4. **Follow Saga's guidance** — Saga will greet you by name and walk you through creating your Product Brief. When you're ready for design work, switch to Freya.

@@ -1,5 +1,27 @@
 # Changelog
 
+## 0.3.0 (2026-03-01)
+
+### Breaking Changes
+- **Two agents** - Removed Mimir orchestrator and Idunn PM. Only Saga (analyst) and Freya (designer + development) remain.
+- **BMAD standard path** - Default installation path changed from `_wds/` to `_bmad/wds/`. Existing `_wds/` projects get a migration prompt.
+- **Design Log replaces Agent Dialogs** - Single `00-design-log.md` with Backlog, Current, Design Loop Status, and Log sections replaces the multi-file Agent Dialog system.
+- **VTC removed** - Value Trigger Chain concept removed entirely. Scenarios and content reference the Trigger Map directly.
+
+### Features
+- **9-step Design Loop** - Discuss, Spec, Wireframe, Approve, Iterate, Update Spec, Implement, Browser Review, Extract Tokens. Excalidraw default wireframing tool, PNG export as approval gate.
+- **Spacing as first-class objects** - Named tokens (space-3xs to space-3xl), spacing objects with IDs in page specs, patterns section in design system.
+- **8-question Scenario Dialog** - Replaces the old 7-component scenario template with a more conversational approach.
+- **Adaptive dashboard in Phase 4** - Reads design log and suggests where to continue. Two-option transitions replace dead-end menus.
+- **Token extraction** - Agents extract design system tokens from completed pages automatically.
+- **Installer improvements** - Detects existing installations, update/migrate first, skips config on update. IDE multiselect, platform-agnostic. Optional learning material.
+
+### Fixes
+- Path references across 14+ files (D-UX-Design → C-UX-Scenarios)
+- Duplicate trigger-map references
+- Workflow routing and step chain cohesion (6-item audit)
+- Learn section synced to v0.3.0 (24 files updated)
+
 ## 0.2.3 (2026-02-23)
 
 ### Features
