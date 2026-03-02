@@ -29,7 +29,7 @@ Do NOT `git add` anything — this is read-only inspection.
 
 **One-shot:** Skip diff construction. Still invoke `{adversarial_review_task}` in a subagent with the changed files — inline review invites anchoring bias.
 
-**Plan-code-review:** Launch three subagents without conversation context. If no sub-agents are available, perform all three reviews inline sequentially.
+**Plan-code-review:** Launch three subagents without conversation context. If no sub-agents are available, generate three review prompt files in `{implementation_artifacts}` — one per reviewer role below — and HALT. Ask the human to run each in a separate session (ideally a different LLM) and paste back the findings.
 
 - **Blind hunter** — receives `{diff_output}` only. No spec, no context docs, no project access. Invoke via `{adversarial_review_task}`.
 - **Edge case hunter** — receives `{diff_output}` and read access to the project. Invoke via `{edge_case_hunter_task}`.
