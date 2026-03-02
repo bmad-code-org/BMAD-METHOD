@@ -29,3 +29,6 @@ agent:
     - trigger: H or fuzzy match on help
       description: "[H] Single-word compound trigger (1-letter shortcut)"
       action: help
+    - trigger: QD2 or fuzzy match on quick-dev2
+      description: "[QD2] Alphanumeric shortcut with trailing digit"
+      action: quick_dev2
