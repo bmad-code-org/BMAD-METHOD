@@ -27,9 +27,9 @@ agent:
       workflow: "{project-root}/_bmad/bmm/workflows/bmad-quick-flow/quick-dev/workflow.md"
       description: "[QD] Quick-flow Develop: Implement a story tech spec end-to-end (Core of Quick Flow)"
 
-    - trigger: QD2 or fuzzy match on quick-dev2
+    - trigger: QQ or fuzzy match on quick-dev2
       workflow: "{project-root}/_bmad/bmm/workflows/bmad-quick-flow/quick-dev2/workflow.md"
-      description: "[QD2] Quick Dev 2: Unified quick flow — clarify intent, plan, implement, review, present (experimental)"
+      description: "[QQ] Quick Dev 2: Unified quick flow — clarify intent, plan, implement, review, present (experimental)"
 
     - trigger: CR or fuzzy match on code-review
       workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/code-review/workflow.yaml"
