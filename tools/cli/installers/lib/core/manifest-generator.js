@@ -5,9 +5,56 @@ const crypto = require('node:crypto');
 const csv = require('csv-parse/sync');
 const { getSourcePath, getModulePath } = require('../../../lib/project-root');
 const prompts = require('../../../lib/prompts');
+const {
+  EXEMPLAR_CANONICAL_ALIAS_SOURCE_PATH,
+  LOCKED_EXEMPLAR_ALIAS_ROWS,
+  normalizeAndResolveExemplarAlias,
+} = require('./help-alias-normalizer');
+const { validateTaskManifestCompatibilitySurface } = require('./projection-compatibility-validator');
 
 // Load package.json for version info
 const packageJson = require('../../../../../package.json');
+const DEFAULT_EXEMPLAR_HELP_SIDECAR_SOURCE_PATH = 'bmad-fork/src/core/tasks/help.artifact.yaml';
+const CANONICAL_ALIAS_TABLE_COLUMNS = Object.freeze([
+  'canonicalId',
+  'alias',
+  'aliasType',
+  'authoritySourceType',
+  'authoritySourcePath',
+  'rowIdentity',
+  'normalizedAliasValue',
+  'rawIdentityHasLeadingSlash',
+  'resolutionEligibility',
+]);
+const LOCKED_CANONICAL_ALIAS_TABLE_EXEMPLAR_ROWS = Object.freeze([
+  Object.freeze({
+    canonicalId: 'bmad-help',
+    alias: 'bmad-help',
+    aliasType: 'canonical-id',
+    rowIdentity: 'alias-row:bmad-help:canonical-id',
+    normalizedAliasValue: 'bmad-help',
+    rawIdentityHasLeadingSlash: false,
+    resolutionEligibility: 'canonical-id-only',
+  }),
+  Object.freeze({
+    canonicalId: 'bmad-help',
+    alias: 'help',
+    aliasType: 'legacy-name',
+    rowIdentity: 'alias-row:bmad-help:legacy-name',
+    normalizedAliasValue: 'help',
+    rawIdentityHasLeadingSlash: false,
+    resolutionEligibility: 'legacy-name-only',
+  }),
+  Object.freeze({
+    canonicalId: 'bmad-help',
+    alias: '/bmad-help',
+    aliasType: 'slash-command',
+    rowIdentity: 'alias-row:bmad-help:slash-command',
+    normalizedAliasValue: 'bmad-help',
+    rawIdentityHasLeadingSlash: true,
+    resolutionEligibility: 'slash-command-only',
+  }),
+]);
 
 /**
  * Generates manifest files for installed workflows, agents, and tasks
@@ -32,6 +79,65 @@ class ManifestGenerator {
   cleanForCSV(text) {
     if (!text) return '';
     return text.trim().replaceAll(/\s+/g, ' '); // Normalize all whitespace (including newlines) to single space
+  }
+
+  /**
+   * Normalize authority records emitted by help authority validation so they can
+   * be written into downstream artifacts deterministically.
+   * @param {Array<object>} records - Raw authority records
+   * @returns {Array<object>} Normalized and sorted records
+   */
+  async normalizeHelpAuthorityRecords(records) {
+    if (!Array.isArray(records)) return [];
+
+    const normalized = [];
+    const canonicalAliasTablePath = this.bmadDir ? path.join(this.bmadDir, '_config', 'canonical-aliases.csv') : '';
+    const hasCanonicalAliasTable = canonicalAliasTablePath ? await fs.pathExists(canonicalAliasTablePath) : false;
+    const canonicalAliasSourcePath = hasCanonicalAliasTable
+      ? `${this.bmadFolderName || '_bmad'}/_config/canonical-aliases.csv`
+      : EXEMPLAR_CANONICAL_ALIAS_SOURCE_PATH;
+
+    for (const record of records) {
+      if (!record || typeof record !== 'object' || Array.isArray(record)) {
+        continue;
+      }
+
+      const rawCanonicalIdentity = String(record.canonicalId ?? '').trim();
+      const authoritySourceType = String(record.authoritySourceType ?? '').trim();
+      const authoritySourcePath = String(record.authoritySourcePath ?? '').trim();
+      const sourcePath = String(record.sourcePath ?? '').trim();
+      const recordType = String(record.recordType ?? '').trim();
+
+      if (!rawCanonicalIdentity || !authoritySourceType || !authoritySourcePath || !sourcePath) {
+        continue;
+      }
+
+      const canonicalIdentityResolution = await normalizeAndResolveExemplarAlias(rawCanonicalIdentity, {
+        fieldPath: 'canonicalId',
+        sourcePath: authoritySourcePath,
+        aliasTablePath: hasCanonicalAliasTable ? canonicalAliasTablePath : undefined,
+        aliasRows: hasCanonicalAliasTable ? undefined : LOCKED_EXEMPLAR_ALIAS_ROWS,
+        aliasTableSourcePath: canonicalAliasSourcePath,
+      });
+      const canonicalId = canonicalIdentityResolution.postAliasCanonicalId;
+
+      normalized.push({
+        recordType,
+        canonicalId,
+        authoritativePresenceKey: `capability:${canonicalId}`,
+        authoritySourceType,
+        authoritySourcePath,
+        sourcePath,
+      });
+    }
+
+    normalized.sort((left, right) => {
+      const leftKey = `${left.canonicalId}|${left.recordType}|${left.authoritySourceType}|${left.authoritySourcePath}|${left.sourcePath}`;
+      const rightKey = `${right.canonicalId}|${right.recordType}|${right.authoritySourceType}|${right.authoritySourcePath}|${right.sourcePath}`;
+      return leftKey.localeCompare(rightKey);
+    });
+
+    return normalized;
   }
 
   /**
@@ -75,6 +181,8 @@ class ManifestGenerator {
       throw new TypeError('ManifestGenerator expected `options.ides` to be an array.');
     }
 
+    this.helpAuthorityRecords = await this.normalizeHelpAuthorityRecords(options.helpAuthorityRecords);
+
     // Filter out any undefined/null values from IDE list
     this.selectedIdes = resolvedIdes.filter((ide) => ide && typeof ide === 'string');
 
@@ -96,6 +204,7 @@ class ManifestGenerator {
       await this.writeWorkflowManifest(cfgDir),
       await this.writeAgentManifest(cfgDir),
       await this.writeTaskManifest(cfgDir),
+      await this.writeCanonicalAliasManifest(cfgDir),
       await this.writeToolManifest(cfgDir),
       await this.writeFilesManifest(cfgDir),
     ];
@@ -630,6 +739,12 @@ class ManifestGenerator {
       ides: this.selectedIdes,
     };
 
+    if (this.helpAuthorityRecords.length > 0) {
+      manifest.helpAuthority = {
+        records: this.helpAuthorityRecords,
+      };
+    }
+
     // Clean the manifest to remove any non-serializable values
     const cleanManifest = structuredClone(manifest);
 
@@ -842,22 +957,51 @@ class ManifestGenerator {
   async writeTaskManifest(cfgDir) {
     const csvPath = path.join(cfgDir, 'task-manifest.csv');
     const escapeCsv = (value) => `"${String(value ?? '').replaceAll('"', '""')}"`;
+    const compatibilitySurfacePath = `${this.bmadFolderName || '_bmad'}/_config/task-manifest.csv`;
+    const sidecarAuthorityRecord = Array.isArray(this.helpAuthorityRecords)
+      ? this.helpAuthorityRecords.find(
+          (record) => record?.canonicalId === 'bmad-help' && record?.authoritySourceType === 'sidecar' && record?.authoritySourcePath,
+        )
+      : null;
+    const exemplarAuthoritySourceType = sidecarAuthorityRecord ? sidecarAuthorityRecord.authoritySourceType : 'sidecar';
+    const exemplarAuthoritySourcePath = sidecarAuthorityRecord
+      ? sidecarAuthorityRecord.authoritySourcePath
+      : 'bmad-fork/src/core/tasks/help.artifact.yaml';
 
     // Read existing manifest to preserve entries
     const existingEntries = new Map();
     if (await fs.pathExists(csvPath)) {
       const content = await fs.readFile(csvPath, 'utf8');
+      validateTaskManifestCompatibilitySurface(content, {
+        sourcePath: compatibilitySurfacePath,
+        allowLegacyPrefixOnly: true,
+      });
       const records = csv.parse(content, {
         columns: true,
         skip_empty_lines: true,
       });
       for (const record of records) {
-        existingEntries.set(`${record.module}:${record.name}`, record);
+        if (!record?.module || !record?.name) {
+          continue;
+        }
+
+        existingEntries.set(`${record.module}:${record.name}`, {
+          name: record.name,
+          displayName: record.displayName,
+          description: record.description,
+          module: record.module,
+          path: record.path,
+          standalone: record.standalone,
+          legacyName: record.legacyName || record.name,
+          canonicalId: record.canonicalId || '',
+          authoritySourceType: record.authoritySourceType || '',
+          authoritySourcePath: record.authoritySourcePath || '',
+        });
       }
     }
 
-    // Create CSV header with standalone column
-    let csvContent = 'name,displayName,description,module,path,standalone\n';
+    // Create CSV header with compatibility-prefix columns followed by additive wave-1 columns.
+    let csvContent = 'name,displayName,description,module,path,standalone,legacyName,canonicalId,authoritySourceType,authoritySourcePath\n';
 
     // Combine existing and new tasks
     const allTasks = new Map();
@@ -870,6 +1014,9 @@ class ManifestGenerator {
     // Add/update new tasks
     for (const task of this.tasks) {
       const key = `${task.module}:${task.name}`;
+      const previousRecord = allTasks.get(key);
+      const isExemplarHelpTask = task.module === 'core' && task.name === 'help';
+
       allTasks.set(key, {
         name: task.name,
         displayName: task.displayName,
@@ -877,11 +1024,17 @@ class ManifestGenerator {
         module: task.module,
         path: task.path,
         standalone: task.standalone,
+        legacyName: isExemplarHelpTask ? 'help' : previousRecord?.legacyName || task.name,
+        canonicalId: isExemplarHelpTask ? 'bmad-help' : previousRecord?.canonicalId || '',
+        authoritySourceType: isExemplarHelpTask ? exemplarAuthoritySourceType : previousRecord?.authoritySourceType || '',
+        authoritySourcePath: isExemplarHelpTask ? exemplarAuthoritySourcePath : previousRecord?.authoritySourcePath || '',
       });
     }
 
-    // Write all tasks
-    for (const [, record] of allTasks) {
+    // Write all tasks in deterministic order.
+    const sortedTaskKeys = [...allTasks.keys()].sort((left, right) => left.localeCompare(right));
+    for (const taskKey of sortedTaskKeys) {
+      const record = allTasks.get(taskKey);
       const row = [
         escapeCsv(record.name),
         escapeCsv(record.displayName),
@@ -889,11 +1042,86 @@ class ManifestGenerator {
         escapeCsv(record.module),
         escapeCsv(record.path),
         escapeCsv(record.standalone),
+        escapeCsv(record.legacyName || record.name),
+        escapeCsv(record.canonicalId || ''),
+        escapeCsv(record.authoritySourceType || ''),
+        escapeCsv(record.authoritySourcePath || ''),
       ].join(',');
       csvContent += row + '\n';
     }
 
+    validateTaskManifestCompatibilitySurface(csvContent, {
+      sourcePath: compatibilitySurfacePath,
+    });
+
     await fs.writeFile(csvPath, csvContent);
+    return csvPath;
+  }
+
+  resolveExemplarAliasAuthorityRecord() {
+    const sidecarAuthorityRecord = Array.isArray(this.helpAuthorityRecords)
+      ? this.helpAuthorityRecords.find(
+          (record) => record?.canonicalId === 'bmad-help' && record?.authoritySourceType === 'sidecar' && record?.authoritySourcePath,
+        )
+      : null;
+    return {
+      authoritySourceType: sidecarAuthorityRecord ? sidecarAuthorityRecord.authoritySourceType : 'sidecar',
+      authoritySourcePath: sidecarAuthorityRecord ? sidecarAuthorityRecord.authoritySourcePath : DEFAULT_EXEMPLAR_HELP_SIDECAR_SOURCE_PATH,
+    };
+  }
+
+  buildCanonicalAliasProjectionRows(authoritySourceType, authoritySourcePath) {
+    return LOCKED_CANONICAL_ALIAS_TABLE_EXEMPLAR_ROWS.map((row) => ({
+      canonicalId: row.canonicalId,
+      alias: row.alias,
+      aliasType: row.aliasType,
+      authoritySourceType,
+      authoritySourcePath,
+      rowIdentity: row.rowIdentity,
+      normalizedAliasValue: row.normalizedAliasValue,
+      rawIdentityHasLeadingSlash: row.rawIdentityHasLeadingSlash,
+      resolutionEligibility: row.resolutionEligibility,
+    }));
+  }
+
+  /**
+   * Write canonical alias table projection CSV.
+   * @returns {string} Path to the canonical alias projection file
+   */
+  async writeCanonicalAliasManifest(cfgDir) {
+    const csvPath = path.join(cfgDir, 'canonical-aliases.csv');
+    const escapeCsv = (value) => `"${String(value ?? '').replaceAll('"', '""')}"`;
+    const { authoritySourceType, authoritySourcePath } = this.resolveExemplarAliasAuthorityRecord();
+    const projectedRows = this.buildCanonicalAliasProjectionRows(authoritySourceType, authoritySourcePath);
+
+    let csvContent = `${CANONICAL_ALIAS_TABLE_COLUMNS.join(',')}\n`;
+    for (const row of projectedRows) {
+      const serializedRow = [
+        escapeCsv(row.canonicalId),
+        escapeCsv(row.alias),
+        escapeCsv(row.aliasType),
+        escapeCsv(row.authoritySourceType),
+        escapeCsv(row.authoritySourcePath),
+        escapeCsv(row.rowIdentity),
+        escapeCsv(row.normalizedAliasValue),
+        escapeCsv(row.rawIdentityHasLeadingSlash),
+        escapeCsv(row.resolutionEligibility),
+      ].join(',');
+      csvContent += `${serializedRow}\n`;
+    }
+
+    await fs.writeFile(csvPath, csvContent);
+
+    const trackedPath = `${this.bmadFolderName || '_bmad'}/_config/canonical-aliases.csv`;
+    if (!this.files.some((file) => file.path === trackedPath)) {
+      this.files.push({
+        type: 'config',
+        name: 'canonical-aliases',
+        module: '_config',
+        path: trackedPath,
+      });
+    }
+
     return csvPath;
   }
 

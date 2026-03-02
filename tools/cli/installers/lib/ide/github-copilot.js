@@ -6,6 +6,11 @@ const { BMAD_FOLDER_NAME, toDashPath } = require('./shared/path-utils');
 const fs = require('fs-extra');
 const csv = require('csv-parse/sync');
 const yaml = require('yaml');
+const {
+  ProjectionCompatibilityError,
+  validateHelpCatalogLoaderEntries,
+  validateGithubCopilotHelpLoaderEntries,
+} = require('../core/projection-compatibility-validator');
 
 /**
  * GitHub Copilot setup handler
@@ -131,12 +136,20 @@ class GitHubCopilotSetup extends BaseIdeSetup {
 
     try {
       const csvContent = await fs.readFile(helpPath, 'utf8');
-      return csv.parse(csvContent, {
+      const rows = csv.parse(csvContent, {
         columns: true,
         skip_empty_lines: true,
       });
-    } catch {
+      const sourcePath = `${this.bmadFolderName || BMAD_FOLDER_NAME}/_config/bmad-help.csv`;
+      validateHelpCatalogLoaderEntries(rows, { sourcePath });
+      validateGithubCopilotHelpLoaderEntries(rows, { sourcePath });
+      return rows;
+    } catch (error) {
       // Gracefully degrade if help CSV is unreadable/malformed
+      // but fail-fast on deterministic compatibility contract violations.
+      if (error instanceof ProjectionCompatibilityError) {
+        throw error;
+      }
       return null;
     }
   }

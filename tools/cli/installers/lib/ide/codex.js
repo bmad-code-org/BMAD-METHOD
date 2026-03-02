@@ -8,7 +8,43 @@ const { AgentCommandGenerator } = require('./shared/agent-command-generator');
 const { TaskToolCommandGenerator } = require('./shared/task-tool-command-generator');
 const { getTasksFromBmad } = require('./shared/bmad-artifacts');
 const { toDashPath, customAgentDashName } = require('./shared/path-utils');
+const { normalizeAndResolveExemplarAlias } = require('../core/help-alias-normalizer');
 const prompts = require('../../../lib/prompts');
+
+const CODEX_EXPORT_DERIVATION_ERROR_CODES = Object.freeze({
+  SIDECAR_FILE_NOT_FOUND: 'ERR_CODEX_EXPORT_SIDECAR_FILE_NOT_FOUND',
+  SIDECAR_PARSE_FAILED: 'ERR_CODEX_EXPORT_SIDECAR_PARSE_FAILED',
+  CANONICAL_ID_MISSING: 'ERR_CODEX_EXPORT_CANONICAL_ID_MISSING',
+  CANONICAL_ID_DERIVATION_FAILED: 'ERR_CODEX_EXPORT_CANONICAL_ID_DERIVATION_FAILED',
+});
+
+const EXEMPLAR_HELP_TASK_MARKDOWN_SOURCE_PATH = 'bmad-fork/src/core/tasks/help.md';
+const EXEMPLAR_HELP_SIDECAR_CONTRACT_SOURCE_PATH = 'bmad-fork/src/core/tasks/help.artifact.yaml';
+const EXEMPLAR_HELP_EXPORT_DERIVATION_SOURCE_TYPE = 'sidecar-canonical-id';
+const EXEMPLAR_SIDECAR_SOURCE_CANDIDATES = Object.freeze([
+  Object.freeze({
+    segments: ['bmad-fork', 'src', 'core', 'tasks', 'help.artifact.yaml'],
+  }),
+  Object.freeze({
+    segments: ['src', 'core', 'tasks', 'help.artifact.yaml'],
+  }),
+]);
+
+class CodexExportDerivationError extends Error {
+  constructor({ code, detail, fieldPath, sourcePath, observedValue, cause = null }) {
+    const message = `${code}: ${detail} (fieldPath=${fieldPath}, sourcePath=${sourcePath}, observedValue=${observedValue})`;
+    super(message);
+    this.name = 'CodexExportDerivationError';
+    this.code = code;
+    this.detail = detail;
+    this.fieldPath = fieldPath;
+    this.sourcePath = sourcePath;
+    this.observedValue = observedValue;
+    if (cause) {
+      this.cause = cause;
+    }
+  }
+}
 
 /**
  * Codex setup handler (CLI mode)
@@ -16,6 +52,7 @@ const prompts = require('../../../lib/prompts');
 class CodexSetup extends BaseIdeSetup {
   constructor() {
     super('codex', 'Codex', false);
+    this.exportDerivationRecords = [];
   }
 
   /**
@@ -31,6 +68,7 @@ class CodexSetup extends BaseIdeSetup {
     const mode = 'cli';
 
     const { artifacts, counts } = await this.collectClaudeArtifacts(projectDir, bmadDir, options);
+    this.exportDerivationRecords = [];
 
     // Clean up old .codex/prompts locations (both global and project)
     const oldGlobalDir = this.getOldCodexPromptDir(null, 'global');
@@ -46,7 +84,7 @@ class CodexSetup extends BaseIdeSetup {
     // Collect and write agent skills
     const agentGen = new AgentCommandGenerator(this.bmadFolderName);
     const { artifacts: agentArtifacts } = await agentGen.collectAgentArtifacts(bmadDir, options.selectedModules || []);
-    const agentCount = await this.writeSkillArtifacts(destDir, agentArtifacts, 'agent-launcher');
+    const agentCount = await this.writeSkillArtifacts(destDir, agentArtifacts, 'agent-launcher', { projectDir });
 
     // Collect and write task skills
     const tasks = await getTasksFromBmad(bmadDir, options.selectedModules || []);
@@ -77,12 +115,12 @@ class CodexSetup extends BaseIdeSetup {
       ...artifact,
       content: ttGen.generateCommandContent(artifact, artifact.type),
     }));
-    const tasksWritten = await this.writeSkillArtifacts(destDir, taskSkillArtifacts, 'task');
+    const tasksWritten = await this.writeSkillArtifacts(destDir, taskSkillArtifacts, 'task', { projectDir });
 
     // Collect and write workflow skills
     const workflowGenerator = new WorkflowCommandGenerator(this.bmadFolderName);
     const { artifacts: workflowArtifacts } = await workflowGenerator.collectWorkflowArtifacts(bmadDir);
-    const workflowCount = await this.writeSkillArtifacts(destDir, workflowArtifacts, 'workflow-command');
+    const workflowCount = await this.writeSkillArtifacts(destDir, workflowArtifacts, 'workflow-command', { projectDir });
 
     const written = agentCount + workflowCount + tasksWritten;
 
@@ -99,6 +137,7 @@ class CodexSetup extends BaseIdeSetup {
       counts,
       destination: destDir,
       written,
+      exportDerivationRecords: [...this.exportDerivationRecords],
     };
   }
 
@@ -207,7 +246,148 @@ class CodexSetup extends BaseIdeSetup {
    * @param {string} artifactType - Type filter (e.g., 'agent-launcher', 'workflow-command', 'task')
    * @returns {number} Number of skills written
    */
-  async writeSkillArtifacts(destDir, artifacts, artifactType) {
+  isExemplarHelpTaskArtifact(artifact = {}) {
+    if (artifact.type !== 'task' || artifact.module !== 'core') {
+      return false;
+    }
+
+    const normalizedName = String(artifact.name || '')
+      .trim()
+      .toLowerCase();
+    const normalizedRelativePath = String(artifact.relativePath || '')
+      .trim()
+      .replaceAll('\\', '/')
+      .toLowerCase();
+    const normalizedSourcePath = String(artifact.sourcePath || '')
+      .trim()
+      .replaceAll('\\', '/')
+      .toLowerCase();
+
+    if (normalizedName !== 'help') {
+      return false;
+    }
+
+    return normalizedRelativePath.endsWith('/core/tasks/help.md') || normalizedSourcePath.endsWith('/core/tasks/help.md');
+  }
+
+  throwExportDerivationError({ code, detail, fieldPath, sourcePath, observedValue, cause = null }) {
+    throw new CodexExportDerivationError({
+      code,
+      detail,
+      fieldPath,
+      sourcePath,
+      observedValue,
+      cause,
+    });
+  }
+
+  async loadExemplarHelpSidecar(projectDir) {
+    for (const candidate of EXEMPLAR_SIDECAR_SOURCE_CANDIDATES) {
+      const sidecarPath = path.join(projectDir, ...candidate.segments);
+      if (await fs.pathExists(sidecarPath)) {
+        let sidecarData;
+        try {
+          sidecarData = yaml.parse(await fs.readFile(sidecarPath, 'utf8'));
+        } catch (error) {
+          this.throwExportDerivationError({
+            code: CODEX_EXPORT_DERIVATION_ERROR_CODES.SIDECAR_PARSE_FAILED,
+            detail: `YAML parse failure: ${error.message}`,
+            fieldPath: '<document>',
+            sourcePath: EXEMPLAR_HELP_SIDECAR_CONTRACT_SOURCE_PATH,
+            observedValue: '<parse-error>',
+            cause: error,
+          });
+        }
+
+        if (!sidecarData || typeof sidecarData !== 'object' || Array.isArray(sidecarData)) {
+          this.throwExportDerivationError({
+            code: CODEX_EXPORT_DERIVATION_ERROR_CODES.SIDECAR_PARSE_FAILED,
+            detail: 'sidecar root must be a YAML mapping object',
+            fieldPath: '<document>',
+            sourcePath: EXEMPLAR_HELP_SIDECAR_CONTRACT_SOURCE_PATH,
+            observedValue: typeof sidecarData,
+          });
+        }
+
+        const canonicalId = String(sidecarData.canonicalId || '').trim();
+        if (canonicalId.length === 0) {
+          this.throwExportDerivationError({
+            code: CODEX_EXPORT_DERIVATION_ERROR_CODES.CANONICAL_ID_MISSING,
+            detail: 'sidecar canonicalId is required for exemplar export derivation',
+            fieldPath: 'canonicalId',
+            sourcePath: EXEMPLAR_HELP_SIDECAR_CONTRACT_SOURCE_PATH,
+            observedValue: canonicalId,
+          });
+        }
+
+        return {
+          canonicalId,
+          sourcePath: EXEMPLAR_HELP_SIDECAR_CONTRACT_SOURCE_PATH,
+        };
+      }
+    }
+
+    this.throwExportDerivationError({
+      code: CODEX_EXPORT_DERIVATION_ERROR_CODES.SIDECAR_FILE_NOT_FOUND,
+      detail: 'expected exemplar sidecar metadata file was not found',
+      fieldPath: '<file>',
+      sourcePath: EXEMPLAR_HELP_SIDECAR_CONTRACT_SOURCE_PATH,
+      observedValue: projectDir,
+    });
+  }
+
+  async resolveSkillIdentityFromArtifact(artifact, projectDir) {
+    const inferredSkillName = toDashPath(artifact.relativePath).replace(/\.md$/, '');
+    const isExemplarHelpTask = this.isExemplarHelpTaskArtifact(artifact);
+    if (!isExemplarHelpTask) {
+      return {
+        skillName: inferredSkillName,
+        canonicalId: inferredSkillName,
+        exportIdDerivationSourceType: 'path-derived',
+        exportIdDerivationSourcePath: String(artifact.relativePath || ''),
+      };
+    }
+
+    const sidecarData = await this.loadExemplarHelpSidecar(projectDir);
+
+    let canonicalResolution;
+    try {
+      canonicalResolution = await normalizeAndResolveExemplarAlias(sidecarData.canonicalId, {
+        fieldPath: 'canonicalId',
+        sourcePath: sidecarData.sourcePath,
+      });
+    } catch (error) {
+      this.throwExportDerivationError({
+        code: CODEX_EXPORT_DERIVATION_ERROR_CODES.CANONICAL_ID_DERIVATION_FAILED,
+        detail: `failed to derive exemplar export id from sidecar canonicalId (${error.code || error.message})`,
+        fieldPath: 'canonicalId',
+        sourcePath: sidecarData.sourcePath,
+        observedValue: sidecarData.canonicalId,
+        cause: error,
+      });
+    }
+
+    const skillName = String(canonicalResolution.postAliasCanonicalId || '').trim();
+    if (skillName.length === 0) {
+      this.throwExportDerivationError({
+        code: CODEX_EXPORT_DERIVATION_ERROR_CODES.CANONICAL_ID_DERIVATION_FAILED,
+        detail: 'resolved canonical export id is empty',
+        fieldPath: 'canonicalId',
+        sourcePath: sidecarData.sourcePath,
+        observedValue: sidecarData.canonicalId,
+      });
+    }
+
+    return {
+      skillName,
+      canonicalId: skillName,
+      exportIdDerivationSourceType: EXEMPLAR_HELP_EXPORT_DERIVATION_SOURCE_TYPE,
+      exportIdDerivationSourcePath: sidecarData.sourcePath,
+      exportIdDerivationEvidence: `applied:${canonicalResolution.preAliasNormalizedValue}|leadingSlash:${canonicalResolution.rawIdentityHasLeadingSlash}->${canonicalResolution.postAliasCanonicalId}|rows:${canonicalResolution.aliasRowLocator}`,
+    };
+  }
+
+  async writeSkillArtifacts(destDir, artifacts, artifactType, options = {}) {
     let writtenCount = 0;
 
     for (const artifact of artifacts) {
@@ -217,8 +397,8 @@ class CodexSetup extends BaseIdeSetup {
       }
 
       // Get the dash-format name (e.g., bmad-bmm-create-prd.md) and remove .md
-      const flatName = toDashPath(artifact.relativePath);
-      const skillName = flatName.replace(/\.md$/, '');
+      const exportIdentity = await this.resolveSkillIdentityFromArtifact(artifact, options.projectDir || process.cwd());
+      const skillName = exportIdentity.skillName;
 
       // Create skill directory
       const skillDir = path.join(destDir, skillName);
@@ -229,8 +409,26 @@ class CodexSetup extends BaseIdeSetup {
 
       // Write SKILL.md with platform-native line endings
       const platformContent = skillContent.replaceAll('\n', os.EOL);
-      await fs.writeFile(path.join(skillDir, 'SKILL.md'), platformContent, 'utf8');
+      const skillPath = path.join(skillDir, 'SKILL.md');
+      await fs.writeFile(skillPath, platformContent, 'utf8');
       writtenCount++;
+
+      if (exportIdentity.exportIdDerivationSourceType === EXEMPLAR_HELP_EXPORT_DERIVATION_SOURCE_TYPE) {
+        this.exportDerivationRecords.push({
+          exportPath: path.join('.agents', 'skills', skillName, 'SKILL.md').replaceAll('\\', '/'),
+          sourcePath: EXEMPLAR_HELP_TASK_MARKDOWN_SOURCE_PATH,
+          canonicalId: exportIdentity.canonicalId,
+          visibleId: skillName,
+          visibleSurfaceClass: 'export-id',
+          authoritySourceType: 'sidecar',
+          authoritySourcePath: exportIdentity.exportIdDerivationSourcePath,
+          exportIdDerivationSourceType: exportIdentity.exportIdDerivationSourceType,
+          exportIdDerivationSourcePath: exportIdentity.exportIdDerivationSourcePath,
+          issuingComponent: 'bmad-fork/tools/cli/installers/lib/ide/codex.js',
+          issuingComponentBindingEvidence: exportIdentity.exportIdDerivationEvidence || '',
+          generatedSkillPath: skillPath.replaceAll('\\', '/'),
+        });
+      }
     }
 
     return writtenCount;
@@ -437,4 +635,9 @@ class CodexSetup extends BaseIdeSetup {
   }
 }
 
-module.exports = { CodexSetup };
+module.exports = {
+  CodexSetup,
+  CODEX_EXPORT_DERIVATION_ERROR_CODES,
+  CodexExportDerivationError,
+  EXEMPLAR_HELP_EXPORT_DERIVATION_SOURCE_TYPE,
+};

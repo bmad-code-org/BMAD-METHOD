@@ -9,6 +9,17 @@ const { Config } = require('../../../lib/config');
 const { XmlHandler } = require('../../../lib/xml-handler');
 const { DependencyResolver } = require('./dependency-resolver');
 const { ConfigCollector } = require('./config-collector');
+const { validateHelpSidecarContractFile } = require('./sidecar-contract-validator');
+const { validateHelpAuthoritySplitAndPrecedence } = require('./help-authority-validator');
+const {
+  HELP_CATALOG_GENERATION_ERROR_CODES,
+  buildSidecarAwareExemplarHelpRow,
+  evaluateExemplarCommandLabelReportRows,
+  normalizeDisplayedCommandLabel,
+  renderDisplayedCommandLabel,
+} = require('./help-catalog-generator');
+const { validateHelpCatalogCompatibilitySurface } = require('./projection-compatibility-validator');
+const { Wave1ValidationHarness } = require('./wave-1-validation-harness');
 const { getProjectRoot, getSourcePath, getModulePath } = require('../../../lib/project-root');
 const { CLIUtils } = require('../../../lib/cli-utils');
 const { ManifestGenerator } = require('./manifest-generator');
@@ -16,6 +27,9 @@ const { IdeConfigManager } = require('./ide-config-manager');
 const { CustomHandler } = require('../custom/handler');
 const prompts = require('../../../lib/prompts');
 const { BMAD_FOLDER_NAME } = require('../ide/shared/path-utils');
+
+const EXEMPLAR_HELP_SIDECAR_SOURCE_PATH = 'bmad-fork/src/core/tasks/help.artifact.yaml';
+const EXEMPLAR_HELP_SOURCE_MARKDOWN_SOURCE_PATH = 'bmad-fork/src/core/tasks/help.md';
 
 class Installer {
   constructor() {
@@ -29,8 +43,104 @@ class Installer {
     this.dependencyResolver = new DependencyResolver();
     this.configCollector = new ConfigCollector();
     this.ideConfigManager = new IdeConfigManager();
+    this.validateHelpSidecarContractFile = validateHelpSidecarContractFile;
+    this.validateHelpAuthoritySplitAndPrecedence = validateHelpAuthoritySplitAndPrecedence;
+    this.ManifestGenerator = ManifestGenerator;
     this.installedFiles = new Set(); // Track all installed files
     this.bmadFolderName = BMAD_FOLDER_NAME;
+    this.helpCatalogPipelineRows = [];
+    this.helpCatalogCommandLabelReportRows = [];
+    this.codexExportDerivationRecords = [];
+    this.latestWave1ValidationRun = null;
+    this.wave1ValidationHarness = new Wave1ValidationHarness();
+  }
+
+  async runConfigurationGenerationTask({ message, bmadDir, moduleConfigs, config, allModules, addResult }) {
+    // Validate exemplar sidecar contract before generating projections/manifests.
+    // Fail-fast here prevents downstream artifacts from being produced on invalid metadata.
+    message('Validating exemplar sidecar contract...');
+    await this.validateHelpSidecarContractFile();
+    addResult('Sidecar contract', 'ok', 'validated');
+
+    message('Validating authority split and frontmatter precedence...');
+    const helpAuthorityValidation = await this.validateHelpAuthoritySplitAndPrecedence({
+      bmadDir,
+      runtimeMarkdownPath: path.join(bmadDir, 'core', 'tasks', 'help.md'),
+      sidecarSourcePath: EXEMPLAR_HELP_SIDECAR_SOURCE_PATH,
+      sourceMarkdownSourcePath: EXEMPLAR_HELP_SOURCE_MARKDOWN_SOURCE_PATH,
+      runtimeMarkdownSourcePath: `${this.bmadFolderName}/core/tasks/help.md`,
+    });
+    this.helpAuthorityRecords = helpAuthorityValidation.authoritativeRecords;
+    addResult('Authority split', 'ok', helpAuthorityValidation.authoritativePresenceKey);
+
+    // Generate clean config.yaml files for each installed module
+    await this.generateModuleConfigs(bmadDir, moduleConfigs);
+    addResult('Configurations', 'ok', 'generated');
+
+    // Pre-register manifest files
+    const cfgDir = path.join(bmadDir, '_config');
+    this.installedFiles.add(path.join(cfgDir, 'manifest.yaml'));
+    this.installedFiles.add(path.join(cfgDir, 'workflow-manifest.csv'));
+    this.installedFiles.add(path.join(cfgDir, 'agent-manifest.csv'));
+    this.installedFiles.add(path.join(cfgDir, 'task-manifest.csv'));
+    this.installedFiles.add(path.join(cfgDir, 'canonical-aliases.csv'));
+    this.installedFiles.add(path.join(cfgDir, 'bmad-help-catalog-pipeline.csv'));
+    this.installedFiles.add(path.join(cfgDir, 'bmad-help-command-label-report.csv'));
+
+    // Generate CSV manifests for workflows, agents, tasks AND ALL FILES with hashes
+    // This must happen BEFORE mergeModuleHelpCatalogs because it depends on agent-manifest.csv
+    message('Generating manifests...');
+    const manifestGen = new this.ManifestGenerator();
+
+    const allModulesForManifest = config._quickUpdate
+      ? config._existingModules || allModules || []
+      : config._preserveModules
+        ? [...allModules, ...config._preserveModules]
+        : allModules || [];
+
+    let modulesForCsvPreserve;
+    if (config._quickUpdate) {
+      modulesForCsvPreserve = config._existingModules || allModules || [];
+    } else {
+      modulesForCsvPreserve = config._preserveModules ? [...allModules, ...config._preserveModules] : allModules;
+    }
+
+    const manifestStats = await manifestGen.generateManifests(bmadDir, allModulesForManifest, [...this.installedFiles], {
+      ides: config.ides || [],
+      preservedModules: modulesForCsvPreserve,
+      helpAuthorityRecords: this.helpAuthorityRecords || [],
+    });
+
+    addResult(
+      'Manifests',
+      'ok',
+      `${manifestStats.workflows} workflows, ${manifestStats.agents} agents, ${manifestStats.tasks} tasks, ${manifestStats.tools} tools`,
+    );
+
+    // Merge help catalogs
+    message('Generating help catalog...');
+    await this.mergeModuleHelpCatalogs(bmadDir);
+    addResult('Help catalog', 'ok');
+
+    return 'Configurations generated';
+  }
+
+  async buildWave1ValidationOptions({ projectDir, bmadDir }) {
+    const exportSkillProjectionPath = path.join(projectDir, '.agents', 'skills', 'bmad-help', 'SKILL.md');
+    const hasCodexExportDerivationRecords =
+      Array.isArray(this.codexExportDerivationRecords) && this.codexExportDerivationRecords.length > 0;
+    const requireExportSkillProjection = hasCodexExportDerivationRecords || (await fs.pathExists(exportSkillProjectionPath));
+
+    return {
+      projectDir,
+      bmadDir,
+      bmadFolderName: this.bmadFolderName || BMAD_FOLDER_NAME,
+      helpAuthorityRecords: this.helpAuthorityRecords || [],
+      helpCatalogPipelineRows: this.helpCatalogPipelineRows || [],
+      helpCatalogCommandLabelReportRows: this.helpCatalogCommandLabelReportRows || [],
+      codexExportDerivationRecords: this.codexExportDerivationRecords || [],
+      requireExportSkillProjection,
+    };
   }
 
   /**
@@ -1098,54 +1208,15 @@ class Installer {
       // Configuration generation task (stored as named reference for deferred execution)
       const configTask = {
         title: 'Generating configurations',
-        task: async (message) => {
-          // Generate clean config.yaml files for each installed module
-          await this.generateModuleConfigs(bmadDir, moduleConfigs);
-          addResult('Configurations', 'ok', 'generated');
-
-          // Pre-register manifest files
-          const cfgDir = path.join(bmadDir, '_config');
-          this.installedFiles.add(path.join(cfgDir, 'manifest.yaml'));
-          this.installedFiles.add(path.join(cfgDir, 'workflow-manifest.csv'));
-          this.installedFiles.add(path.join(cfgDir, 'agent-manifest.csv'));
-          this.installedFiles.add(path.join(cfgDir, 'task-manifest.csv'));
-
-          // Generate CSV manifests for workflows, agents, tasks AND ALL FILES with hashes
-          // This must happen BEFORE mergeModuleHelpCatalogs because it depends on agent-manifest.csv
-          message('Generating manifests...');
-          const manifestGen = new ManifestGenerator();
-
-          const allModulesForManifest = config._quickUpdate
-            ? config._existingModules || allModules || []
-            : config._preserveModules
-              ? [...allModules, ...config._preserveModules]
-              : allModules || [];
-
-          let modulesForCsvPreserve;
-          if (config._quickUpdate) {
-            modulesForCsvPreserve = config._existingModules || allModules || [];
-          } else {
-            modulesForCsvPreserve = config._preserveModules ? [...allModules, ...config._preserveModules] : allModules;
-          }
-
-          const manifestStats = await manifestGen.generateManifests(bmadDir, allModulesForManifest, [...this.installedFiles], {
-            ides: config.ides || [],
-            preservedModules: modulesForCsvPreserve,
-          });
-
-          addResult(
-            'Manifests',
-            'ok',
-            `${manifestStats.workflows} workflows, ${manifestStats.agents} agents, ${manifestStats.tasks} tasks, ${manifestStats.tools} tools`,
-          );
-
-          // Merge help catalogs
-          message('Generating help catalog...');
-          await this.mergeModuleHelpCatalogs(bmadDir);
-          addResult('Help catalog', 'ok');
-
-          return 'Configurations generated';
-        },
+        task: async (message) =>
+          this.runConfigurationGenerationTask({
+            message,
+            bmadDir,
+            moduleConfigs,
+            config,
+            allModules,
+            addResult,
+          }),
       };
       installTasks.push(configTask);
 
@@ -1173,6 +1244,7 @@ class Installer {
 
       // Resolution is now available via closure-scoped taskResolution
       const resolution = taskResolution;
+      this.codexExportDerivationRecords = [];
 
       // ─────────────────────────────────────────────────────────────────────────
       // IDE SETUP: Keep as spinner since it may prompt for user input
@@ -1217,6 +1289,9 @@ class Installer {
                 }
 
                 if (setupResult.success) {
+                  if (Array.isArray(setupResult.exportDerivationRecords) && setupResult.exportDerivationRecords.length > 0) {
+                    this.codexExportDerivationRecords = [...setupResult.exportDerivationRecords];
+                  }
                   addResult(ide, 'ok', setupResult.detail || '');
                 } else {
                   addResult(ide, 'error', setupResult.error || 'failed');
@@ -1241,6 +1316,21 @@ class Installer {
       // SECOND TASKS BLOCK: Post-IDE operations (non-interactive)
       // ─────────────────────────────────────────────────────────────────────────
       const postIdeTasks = [];
+
+      postIdeTasks.push({
+        title: 'Generating validation artifacts',
+        task: async (message) => {
+          message('Generating deterministic wave-1 validation artifact suite...');
+          const validationOptions = await this.buildWave1ValidationOptions({
+            projectDir,
+            bmadDir,
+          });
+          const validationRun = await this.wave1ValidationHarness.generateAndValidate(validationOptions);
+          this.latestWave1ValidationRun = validationRun;
+          addResult('Validation artifacts', 'ok', `${validationRun.generatedArtifactCount} artifacts`);
+          return `${validationRun.generatedArtifactCount} validation artifacts generated`;
+        },
+      });
 
       // File restoration task (only for updates)
       if (
@@ -1690,6 +1780,94 @@ class Installer {
   /**
    * Private: Create directory structure
    */
+  isExemplarHelpCatalogRow({ moduleName, name, workflowFile, command, canonicalId }) {
+    if (moduleName !== 'core') return false;
+
+    const normalizedName = String(name || '')
+      .trim()
+      .toLowerCase();
+    const normalizedWorkflowFile = String(workflowFile || '')
+      .trim()
+      .replaceAll('\\', '/')
+      .toLowerCase();
+    const normalizedCommand = String(command || '')
+      .trim()
+      .toLowerCase()
+      .replace(/^\/+/, '');
+    const normalizedCanonicalId = String(canonicalId || '')
+      .trim()
+      .toLowerCase()
+      .replace(/^\/+/, '');
+
+    const hasExemplarWorkflowPath = normalizedWorkflowFile.endsWith('/core/tasks/help.md');
+    const hasExemplarIdentity =
+      normalizedName === 'bmad-help' || normalizedCommand === normalizedCanonicalId || normalizedCommand === 'bmad-help';
+
+    return hasExemplarWorkflowPath && hasExemplarIdentity;
+  }
+
+  buildHelpCatalogRowWithAgentInfo(row, fallback, agentInfo) {
+    const agentName = String(row['agent-name'] || fallback.agentName || '').trim();
+    const agentData = agentInfo.get(agentName) || { command: '', displayName: '', title: '' };
+
+    return [
+      row.module || fallback.module || '',
+      row.phase || fallback.phase || '',
+      row.name || fallback.name || '',
+      row.code || fallback.code || '',
+      row.sequence || fallback.sequence || '',
+      row['workflow-file'] || fallback.workflowFile || '',
+      row.command || fallback.command || '',
+      row.required || fallback.required || 'false',
+      agentName,
+      row['agent-command'] || agentData.command,
+      row['agent-display-name'] || agentData.displayName,
+      row['agent-title'] || agentData.title,
+      row.options || fallback.options || '',
+      row.description || fallback.description || '',
+      row['output-location'] || fallback.outputLocation || '',
+      row.outputs || fallback.outputs || '',
+    ];
+  }
+
+  isExemplarCommandLabelCandidate({ workflowFile, name, rawCommandValue, canonicalId, legacyName }) {
+    const normalizedWorkflowFile = String(workflowFile || '')
+      .trim()
+      .replaceAll('\\', '/')
+      .toLowerCase();
+    const normalizedName = String(name || '')
+      .trim()
+      .toLowerCase();
+    const normalizedCanonicalId = String(canonicalId || '')
+      .trim()
+      .toLowerCase();
+    const normalizedLegacyName = String(legacyName || '')
+      .trim()
+      .toLowerCase();
+    const normalizedCommandValue = String(rawCommandValue || '')
+      .trim()
+      .toLowerCase()
+      .replace(/^\/+/, '');
+
+    const isHelpWorkflow = normalizedWorkflowFile.endsWith('/core/tasks/help.md');
+    const isExemplarIdentity =
+      normalizedName === 'bmad-help' ||
+      normalizedCommandValue === normalizedCanonicalId ||
+      (normalizedLegacyName.length > 0 && normalizedCommandValue === normalizedLegacyName);
+
+    return isHelpWorkflow && isExemplarIdentity;
+  }
+
+  async writeCsvArtifact(filePath, columns, rows) {
+    const csvLines = [columns.join(',')];
+    for (const row of rows || []) {
+      const csvRow = columns.map((column) => this.escapeCSVField(Object.prototype.hasOwnProperty.call(row, column) ? row[column] : ''));
+      csvLines.push(csvRow.join(','));
+    }
+    await fs.writeFile(filePath, csvLines.join('\n'), 'utf8');
+    this.installedFiles.add(filePath);
+  }
+
   /**
    * Merge all module-help.csv files into a single bmad-help.csv
    * Scans all installed modules for module-help.csv and merges them
@@ -1701,6 +1879,14 @@ class Installer {
     const allRows = [];
     const headerRow =
       'module,phase,name,code,sequence,workflow-file,command,required,agent-name,agent-command,agent-display-name,agent-title,options,description,output-location,outputs';
+    this.helpCatalogPipelineRows = [];
+    this.helpCatalogCommandLabelReportRows = [];
+
+    const sidecarAwareExemplar = await buildSidecarAwareExemplarHelpRow({
+      helpAuthorityRecords: this.helpAuthorityRecords || [],
+      bmadFolderName: this.bmadFolderName || BMAD_FOLDER_NAME,
+    });
+    let exemplarRowWritten = false;
 
     // Load agent manifest for agent info lookup
     const agentManifestPath = path.join(bmadDir, '_config', 'agent-manifest.csv');
@@ -1795,29 +1981,62 @@ class Installer {
               // If module column is empty, set it to this module's name (except for core which stays empty for universal tools)
               const finalModule = (!module || module.trim() === '') && moduleName !== 'core' ? moduleName : module || '';
 
-              // Lookup agent info
-              const cleanAgentName = agentName ? agentName.trim() : '';
-              const agentData = agentInfo.get(cleanAgentName) || { command: '', displayName: '', title: '' };
+              const isExemplarRow = this.isExemplarHelpCatalogRow({
+                moduleName,
+                name,
+                workflowFile,
+                command,
+                canonicalId: sidecarAwareExemplar.canonicalId,
+              });
 
-              // Build new row with agent info
-              const newRow = [
-                finalModule,
-                phase || '',
-                name || '',
-                code || '',
-                sequence || '',
-                workflowFile || '',
-                command || '',
-                required || 'false',
-                cleanAgentName,
-                agentData.command,
-                agentData.displayName,
-                agentData.title,
-                options || '',
-                description || '',
-                outputLocation || '',
-                outputs || '',
-              ];
+              const fallbackRow = {
+                module: finalModule,
+                phase: phase || '',
+                name: name || '',
+                code: code || '',
+                sequence: sequence || '',
+                workflowFile: workflowFile || '',
+                command: command || '',
+                required: required || 'false',
+                agentName: agentName || '',
+                options: options || '',
+                description: description || '',
+                outputLocation: outputLocation || '',
+                outputs: outputs || '',
+              };
+
+              let newRow;
+              if (isExemplarRow) {
+                if (exemplarRowWritten) {
+                  continue;
+                }
+
+                newRow = this.buildHelpCatalogRowWithAgentInfo(sidecarAwareExemplar.row, fallbackRow, agentInfo);
+                exemplarRowWritten = true;
+              } else {
+                newRow = this.buildHelpCatalogRowWithAgentInfo(
+                  {
+                    module: finalModule,
+                    phase: phase || '',
+                    name: name || '',
+                    code: code || '',
+                    sequence: sequence || '',
+                    'workflow-file': workflowFile || '',
+                    command: command || '',
+                    required: required || 'false',
+                    'agent-name': agentName || '',
+                    'agent-command': '',
+                    'agent-display-name': '',
+                    'agent-title': '',
+                    options: options || '',
+                    description: description || '',
+                    'output-location': outputLocation || '',
+                    outputs: outputs || '',
+                  },
+                  fallbackRow,
+                  agentInfo,
+                );
+              }
 
               allRows.push(newRow.map((c) => this.escapeCSVField(c)).join(','));
             }
@@ -1830,6 +2049,30 @@ class Installer {
           await prompts.log.warn(`  Warning: Failed to read module-help.csv from ${moduleName}: ${error.message}`);
         }
       }
+    }
+
+    if (!exemplarRowWritten) {
+      const injectedExemplarRow = this.buildHelpCatalogRowWithAgentInfo(
+        sidecarAwareExemplar.row,
+        {
+          module: 'core',
+          phase: sidecarAwareExemplar.row.phase,
+          name: sidecarAwareExemplar.row.name,
+          code: sidecarAwareExemplar.row.code,
+          sequence: sidecarAwareExemplar.row.sequence,
+          workflowFile: sidecarAwareExemplar.row['workflow-file'],
+          command: sidecarAwareExemplar.row.command,
+          required: sidecarAwareExemplar.row.required,
+          agentName: sidecarAwareExemplar.row['agent-name'],
+          options: sidecarAwareExemplar.row.options,
+          description: sidecarAwareExemplar.row.description,
+          outputLocation: sidecarAwareExemplar.row['output-location'],
+          outputs: sidecarAwareExemplar.row.outputs,
+        },
+        agentInfo,
+      );
+      allRows.push(injectedExemplarRow.map((c) => this.escapeCSVField(c)).join(','));
+      exemplarRowWritten = true;
     }
 
     // Sort by module, then phase, then sequence
@@ -1857,16 +2100,135 @@ class Installer {
       return seqA - seqB;
     });
 
+    const commandLabelRowsFromMergedCatalog = [];
+    for (const row of allRows) {
+      const columns = this.parseCSVLine(row);
+      const workflowFile = String(columns[5] || '').trim();
+      const name = String(columns[2] || '').trim();
+      const rawCommandValue = String(columns[6] || '').trim();
+      if (!rawCommandValue) {
+        continue;
+      }
+
+      if (
+        !this.isExemplarCommandLabelCandidate({
+          workflowFile,
+          name,
+          rawCommandValue,
+          canonicalId: sidecarAwareExemplar.canonicalId,
+          legacyName: sidecarAwareExemplar.legacyName,
+        })
+      ) {
+        continue;
+      }
+
+      const displayedCommandLabel = renderDisplayedCommandLabel(rawCommandValue);
+      commandLabelRowsFromMergedCatalog.push({
+        surface: `${this.bmadFolderName || BMAD_FOLDER_NAME}/_config/bmad-help.csv`,
+        canonicalId: sidecarAwareExemplar.canonicalId,
+        rawCommandValue,
+        displayedCommandLabel,
+        normalizedDisplayedLabel: normalizeDisplayedCommandLabel(displayedCommandLabel),
+        authoritySourceType: sidecarAwareExemplar.authoritySourceType,
+        authoritySourcePath: sidecarAwareExemplar.authoritySourcePath,
+      });
+    }
+
+    const exemplarRowCount = commandLabelRowsFromMergedCatalog.length;
+
+    this.helpCatalogPipelineRows = sidecarAwareExemplar.pipelineStageRows.map((row) => ({
+      ...row,
+      rowCountForStageCanonicalId: exemplarRowCount,
+      stageStatus: exemplarRowCount === 1 ? 'PASS' : 'FAIL',
+      status: exemplarRowCount === 1 ? 'PASS' : 'FAIL',
+    }));
+    this.helpCatalogCommandLabelReportRows = commandLabelRowsFromMergedCatalog.map((row) => ({
+      ...row,
+      rowCountForCanonicalId: exemplarRowCount,
+      status: exemplarRowCount === 1 ? 'PASS' : 'FAIL',
+    }));
+
+    const commandLabelContractResult = evaluateExemplarCommandLabelReportRows(this.helpCatalogCommandLabelReportRows, {
+      canonicalId: sidecarAwareExemplar.canonicalId,
+      displayedCommandLabel: sidecarAwareExemplar.displayedCommandLabel,
+    });
+    if (!commandLabelContractResult.valid) {
+      this.helpCatalogPipelineRows = this.helpCatalogPipelineRows.map((row) => ({
+        ...row,
+        stageStatus: 'FAIL',
+        status: 'FAIL',
+      }));
+      this.helpCatalogCommandLabelReportRows = this.helpCatalogCommandLabelReportRows.map((row) => ({
+        ...row,
+        status: 'FAIL',
+        failureReason: commandLabelContractResult.reason,
+      }));
+
+      const commandLabelError = new Error(
+        `${HELP_CATALOG_GENERATION_ERROR_CODES.COMMAND_LABEL_CONTRACT_FAILED}: ${commandLabelContractResult.reason}`,
+      );
+      commandLabelError.code = HELP_CATALOG_GENERATION_ERROR_CODES.COMMAND_LABEL_CONTRACT_FAILED;
+      commandLabelError.detail = commandLabelContractResult.reason;
+      throw commandLabelError;
+    }
+
     // Write merged catalog
     const outputDir = path.join(bmadDir, '_config');
     await fs.ensureDir(outputDir);
     const outputPath = path.join(outputDir, 'bmad-help.csv');
+    const helpCatalogPipelinePath = path.join(outputDir, 'bmad-help-catalog-pipeline.csv');
+    const commandLabelReportPath = path.join(outputDir, 'bmad-help-command-label-report.csv');
 
     const mergedContent = [headerRow, ...allRows].join('\n');
+    validateHelpCatalogCompatibilitySurface(mergedContent, {
+      sourcePath: `${this.bmadFolderName || BMAD_FOLDER_NAME}/_config/bmad-help.csv`,
+    });
     await fs.writeFile(outputPath, mergedContent, 'utf8');
 
     // Track the installed file
     this.installedFiles.add(outputPath);
+
+    await this.writeCsvArtifact(
+      helpCatalogPipelinePath,
+      [
+        'stage',
+        'artifactPath',
+        'rowIdentity',
+        'canonicalId',
+        'sourcePath',
+        'rowCountForStageCanonicalId',
+        'commandValue',
+        'expectedCommandValue',
+        'descriptionValue',
+        'expectedDescriptionValue',
+        'descriptionAuthoritySourceType',
+        'descriptionAuthoritySourcePath',
+        'commandAuthoritySourceType',
+        'commandAuthoritySourcePath',
+        'issuerOwnerClass',
+        'issuingComponent',
+        'issuingComponentBindingEvidence',
+        'stageStatus',
+        'status',
+      ],
+      this.helpCatalogPipelineRows,
+    );
+    await this.writeCsvArtifact(
+      commandLabelReportPath,
+      [
+        'surface',
+        'canonicalId',
+        'rawCommandValue',
+        'displayedCommandLabel',
+        'normalizedDisplayedLabel',
+        'rowCountForCanonicalId',
+        'authoritySourceType',
+        'authoritySourcePath',
+        'status',
+        'failureReason',
+      ],
+      this.helpCatalogCommandLabelReportRows,
+    );
 
     if (process.env.BMAD_VERBOSE_INSTALL === 'true') {
       await prompts.log.message(`  Generated bmad-help.csv: ${allRows.length} workflows`);

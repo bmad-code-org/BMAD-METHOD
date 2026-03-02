@@ -2,6 +2,7 @@ const path = require('node:path');
 const fs = require('fs-extra');
 const csv = require('csv-parse/sync');
 const { toColonName, toColonPath, toDashPath, BMAD_FOLDER_NAME } = require('./path-utils');
+const { validateTaskManifestLoaderEntries } = require('../../core/projection-compatibility-validator');
 
 /**
  * Generates command files for standalone tasks and tools
@@ -197,10 +198,14 @@ Follow all instructions in the ${type} file exactly as written.
     }
 
     const csvContent = await fs.readFile(manifestPath, 'utf8');
-    return csv.parse(csvContent, {
+    const records = csv.parse(csvContent, {
       columns: true,
       skip_empty_lines: true,
     });
+    validateTaskManifestLoaderEntries(records, {
+      sourcePath: `${this.bmadFolderName || BMAD_FOLDER_NAME}/_config/task-manifest.csv`,
+    });
+    return records;
   }
 
   /**
