@@ -24,11 +24,11 @@ agent:
       description: "[QS] Quick Spec: Architect a quick but complete technical spec with implementation-ready stories/specs"
 
     - trigger: QD or fuzzy match on quick-dev
-      workflow: "{project-root}/_bmad/bmm/workflows/bmad-quick-flow/quick-dev/workflow.md"
+      exec: "{project-root}/_bmad/bmm/workflows/bmad-quick-flow/quick-dev/workflow.md"
       description: "[QD] Quick-flow Develop: Implement a story tech spec end-to-end (Core of Quick Flow)"
 
     - trigger: QQ or fuzzy match on quick-dev2
-      workflow: "{project-root}/_bmad/bmm/workflows/bmad-quick-flow/quick-dev2/workflow.md"
+      exec: "{project-root}/_bmad/bmm/workflows/bmad-quick-flow/quick-dev2/workflow.md"
       description: "[QQ] Quick Dev 2: Unified quick flow — clarify intent, plan, implement, review, present (experimental)"
 
     - trigger: CR or fuzzy match on code-review
