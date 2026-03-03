@@ -1,0 +1,9 @@
+schemaVersion: 1
+canonicalId: bmad-shard-doc
+artifactType: task
+module: core
+sourcePath: bmad-fork/src/core/tasks/not-shard-doc.xml
+displayName: Shard Document
+description: "Split large markdown documents into smaller files by section with an index."
+dependencies:
+  requires: []

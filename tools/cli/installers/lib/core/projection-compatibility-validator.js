@@ -37,7 +37,13 @@ const PROJECTION_COMPATIBILITY_ERROR_CODES = Object.freeze({
   HELP_CATALOG_HEADER_WAVE1_MISMATCH: 'ERR_HELP_CATALOG_COMPAT_HEADER_WAVE1_MISMATCH',
   HELP_CATALOG_REQUIRED_COLUMN_MISSING: 'ERR_HELP_CATALOG_COMPAT_REQUIRED_COLUMN_MISSING',
   HELP_CATALOG_EXEMPLAR_ROW_CONTRACT_FAILED: 'ERR_HELP_CATALOG_COMPAT_EXEMPLAR_ROW_CONTRACT_FAILED',
+  HELP_CATALOG_SHARD_DOC_ROW_CONTRACT_FAILED: 'ERR_HELP_CATALOG_COMPAT_SHARD_DOC_ROW_CONTRACT_FAILED',
   GITHUB_COPILOT_WORKFLOW_FILE_MISSING: 'ERR_GITHUB_COPILOT_HELP_WORKFLOW_FILE_MISSING',
+  COMMAND_DOC_PARSE_FAILED: 'ERR_COMMAND_DOC_CONSISTENCY_PARSE_FAILED',
+  COMMAND_DOC_CANONICAL_COMMAND_MISSING: 'ERR_COMMAND_DOC_CONSISTENCY_CANONICAL_COMMAND_MISSING',
+  COMMAND_DOC_CANONICAL_COMMAND_AMBIGUOUS: 'ERR_COMMAND_DOC_CONSISTENCY_CANONICAL_COMMAND_AMBIGUOUS',
+  COMMAND_DOC_ALIAS_AMBIGUOUS: 'ERR_COMMAND_DOC_CONSISTENCY_ALIAS_AMBIGUOUS',
+  COMMAND_DOC_GENERATED_SURFACE_MISMATCH: 'ERR_COMMAND_DOC_CONSISTENCY_GENERATED_SURFACE_MISMATCH',
 });
 
 class ProjectionCompatibilityError extends Error {
@@ -177,6 +183,37 @@ function normalizeWorkflowPath(value) {
   return normalizeSourcePath(value).toLowerCase();
 }
 
+function normalizeDisplayedCommandLabel(value) {
+  const normalized = normalizeValue(value).toLowerCase().replace(/^\/+/, '');
+  return normalized.length > 0 ? `/${normalized}` : '';
+}
+
+function parseDocumentedSlashCommands(markdownContent, options = {}) {
+  const sourcePath = normalizeSourcePath(options.sourcePath || 'docs/reference/commands.md');
+  const surface = options.surface || 'command-doc-consistency';
+  const content = String(markdownContent ?? '');
+  const commandPattern = /\|\s*`(\/[^`]+)`\s*\|/g;
+  const commands = [];
+  let match;
+  while ((match = commandPattern.exec(content)) !== null) {
+    commands.push(normalizeDisplayedCommandLabel(match[1]));
+  }
+
+  if (commands.length === 0) {
+    throwCompatibilityError({
+      code: PROJECTION_COMPATIBILITY_ERROR_CODES.COMMAND_DOC_PARSE_FAILED,
+      detail: 'Unable to find slash-command rows in command reference markdown',
+      surface,
+      fieldPath: 'docs.reference.commands',
+      sourcePath,
+      observedValue: '<no-slash-command-rows>',
+      expectedValue: '| `/bmad-...` |',
+    });
+  }
+
+  return commands;
+}
+
 function validateTaskManifestLoaderEntries(rows, options = {}) {
   const surface = options.surface || 'task-manifest-loader';
   const sourcePath = normalizeSourcePath(options.sourcePath || '_bmad/_config/task-manifest.csv');
@@ -257,6 +294,23 @@ function validateHelpCatalogLoaderEntries(rows, options = {}) {
       fieldPath: 'rows[*].command',
       sourcePath,
       observedValue: String(exemplarRows.length),
+      expectedValue: '1',
+    });
+  }
+
+  const shardDocRows = parsedRows.filter(
+    (row) =>
+      normalizeCommandValue(row.command) === 'bmad-shard-doc' &&
+      normalizeWorkflowPath(row['workflow-file']).endsWith('/core/tasks/shard-doc.xml'),
+  );
+  if (shardDocRows.length !== 1) {
+    throwCompatibilityError({
+      code: PROJECTION_COMPATIBILITY_ERROR_CODES.HELP_CATALOG_SHARD_DOC_ROW_CONTRACT_FAILED,
+      detail: 'Exactly one shard-doc compatibility row is required for help catalog consumers',
+      surface,
+      fieldPath: 'rows[*].command',
+      sourcePath,
+      observedValue: String(shardDocRows.length),
       expectedValue: '1',
     });
   }
@@ -392,6 +446,84 @@ function validateHelpCatalogCompatibilitySurface(csvContent, options = {}) {
   return { headerColumns, rows };
 }
 
+function validateCommandDocSurfaceConsistency(commandDocMarkdown, options = {}) {
+  const surface = options.surface || 'command-doc-consistency';
+  const sourcePath = normalizeSourcePath(options.sourcePath || 'docs/reference/commands.md');
+  const canonicalId = normalizeValue(options.canonicalId || 'bmad-shard-doc');
+  const expectedDisplayedCommandLabel = normalizeDisplayedCommandLabel(options.expectedDisplayedCommandLabel || '/bmad-shard-doc');
+  const disallowedAliasLabels = Array.isArray(options.disallowedAliasLabels) ? options.disallowedAliasLabels : ['/shard-doc'];
+  const commandLabelRows = Array.isArray(options.commandLabelRows) ? options.commandLabelRows : [];
+
+  const documentedCommands = parseDocumentedSlashCommands(commandDocMarkdown, {
+    sourcePath,
+    surface,
+  });
+  const documentedCanonicalMatches = documentedCommands.filter((commandLabel) => commandLabel === expectedDisplayedCommandLabel);
+  if (documentedCanonicalMatches.length === 0) {
+    throwCompatibilityError({
+      code: PROJECTION_COMPATIBILITY_ERROR_CODES.COMMAND_DOC_CANONICAL_COMMAND_MISSING,
+      detail: 'Expected canonical command is missing from command reference markdown',
+      surface,
+      fieldPath: 'docs.reference.commands.canonical-command',
+      sourcePath,
+      observedValue: '<missing>',
+      expectedValue: expectedDisplayedCommandLabel,
+    });
+  }
+  if (documentedCanonicalMatches.length > 1) {
+    throwCompatibilityError({
+      code: PROJECTION_COMPATIBILITY_ERROR_CODES.COMMAND_DOC_CANONICAL_COMMAND_AMBIGUOUS,
+      detail: 'Canonical command appears multiple times in command reference markdown',
+      surface,
+      fieldPath: 'docs.reference.commands.canonical-command',
+      sourcePath,
+      observedValue: String(documentedCanonicalMatches.length),
+      expectedValue: '1',
+    });
+  }
+
+  const normalizedDisallowedAliases = disallowedAliasLabels.map((label) => normalizeDisplayedCommandLabel(label)).filter(Boolean);
+  const presentDisallowedAlias = normalizedDisallowedAliases.find((label) => documentedCommands.includes(label));
+  if (presentDisallowedAlias) {
+    throwCompatibilityError({
+      code: PROJECTION_COMPATIBILITY_ERROR_CODES.COMMAND_DOC_ALIAS_AMBIGUOUS,
+      detail: 'Disallowed alias command detected in command reference markdown',
+      surface,
+      fieldPath: 'docs.reference.commands.alias-command',
+      sourcePath,
+      observedValue: presentDisallowedAlias,
+      expectedValue: expectedDisplayedCommandLabel,
+    });
+  }
+
+  const generatedCanonicalRows = commandLabelRows.filter((row) => normalizeValue(row.canonicalId) === canonicalId);
+  const generatedMatchingRows = generatedCanonicalRows.filter(
+    (row) => normalizeDisplayedCommandLabel(row.displayedCommandLabel) === expectedDisplayedCommandLabel,
+  );
+  if (generatedCanonicalRows.length === 0 || generatedMatchingRows.length !== 1) {
+    throwCompatibilityError({
+      code: PROJECTION_COMPATIBILITY_ERROR_CODES.COMMAND_DOC_GENERATED_SURFACE_MISMATCH,
+      detail: 'Generated command-label surface does not match canonical command-doc contract',
+      surface,
+      fieldPath: 'generated.command-label-report',
+      sourcePath: normalizeSourcePath(options.generatedSurfacePath || '_bmad/_config/bmad-help-command-label-report.csv'),
+      observedValue:
+        generatedCanonicalRows
+          .map((row) => normalizeDisplayedCommandLabel(row.displayedCommandLabel))
+          .filter(Boolean)
+          .join('|') || '<missing>',
+      expectedValue: expectedDisplayedCommandLabel,
+    });
+  }
+
+  return {
+    canonicalId,
+    expectedDisplayedCommandLabel,
+    documentedCommands,
+    generatedCanonicalCommand: expectedDisplayedCommandLabel,
+  };
+}
+
 module.exports = {
   PROJECTION_COMPATIBILITY_ERROR_CODES,
   ProjectionCompatibilityError,
@@ -404,4 +536,5 @@ module.exports = {
   validateHelpCatalogCompatibilitySurface,
   validateHelpCatalogLoaderEntries,
   validateGithubCopilotHelpLoaderEntries,
+  validateCommandDocSurfaceConsistency,
 };

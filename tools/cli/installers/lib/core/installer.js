@@ -9,8 +9,9 @@ const { Config } = require('../../../lib/config');
 const { XmlHandler } = require('../../../lib/xml-handler');
 const { DependencyResolver } = require('./dependency-resolver');
 const { ConfigCollector } = require('./config-collector');
-const { validateHelpSidecarContractFile } = require('./sidecar-contract-validator');
+const { validateHelpSidecarContractFile, validateShardDocSidecarContractFile } = require('./sidecar-contract-validator');
 const { validateHelpAuthoritySplitAndPrecedence } = require('./help-authority-validator');
+const { validateShardDocAuthoritySplitAndPrecedence } = require('./shard-doc-authority-validator');
 const {
   HELP_CATALOG_GENERATION_ERROR_CODES,
   buildSidecarAwareExemplarHelpRow,
@@ -30,6 +31,10 @@ const { BMAD_FOLDER_NAME } = require('../ide/shared/path-utils');
 
 const EXEMPLAR_HELP_SIDECAR_SOURCE_PATH = 'bmad-fork/src/core/tasks/help.artifact.yaml';
 const EXEMPLAR_HELP_SOURCE_MARKDOWN_SOURCE_PATH = 'bmad-fork/src/core/tasks/help.md';
+const EXEMPLAR_SHARD_DOC_SIDECAR_SOURCE_PATH = 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml';
+const EXEMPLAR_SHARD_DOC_SOURCE_XML_SOURCE_PATH = 'bmad-fork/src/core/tasks/shard-doc.xml';
+const EXEMPLAR_SHARD_DOC_COMPATIBILITY_CATALOG_SOURCE_PATH = 'bmad-fork/src/core/module-help.csv';
+const EXEMPLAR_SHARD_DOC_WORKFLOW_FILE_PATH = '_bmad/core/tasks/shard-doc.xml';
 
 class Installer {
   constructor() {
@@ -44,7 +49,9 @@ class Installer {
     this.configCollector = new ConfigCollector();
     this.ideConfigManager = new IdeConfigManager();
     this.validateHelpSidecarContractFile = validateHelpSidecarContractFile;
+    this.validateShardDocSidecarContractFile = validateShardDocSidecarContractFile;
     this.validateHelpAuthoritySplitAndPrecedence = validateHelpAuthoritySplitAndPrecedence;
+    this.validateShardDocAuthoritySplitAndPrecedence = validateShardDocAuthoritySplitAndPrecedence;
     this.ManifestGenerator = ManifestGenerator;
     this.installedFiles = new Set(); // Track all installed files
     this.bmadFolderName = BMAD_FOLDER_NAME;
@@ -56,11 +63,26 @@ class Installer {
   }
 
   async runConfigurationGenerationTask({ message, bmadDir, moduleConfigs, config, allModules, addResult }) {
-    // Validate exemplar sidecar contract before generating projections/manifests.
+    // Validate converted-capability sidecar contracts before generating projections/manifests.
     // Fail-fast here prevents downstream artifacts from being produced on invalid metadata.
+    message('Validating shard-doc sidecar contract...');
+    await this.validateShardDocSidecarContractFile();
+
     message('Validating exemplar sidecar contract...');
     await this.validateHelpSidecarContractFile();
+
+    addResult('Shard-doc sidecar contract', 'ok', 'validated');
     addResult('Sidecar contract', 'ok', 'validated');
+
+    message('Validating shard-doc authority split and XML precedence...');
+    const shardDocAuthorityValidation = await this.validateShardDocAuthoritySplitAndPrecedence({
+      sidecarSourcePath: EXEMPLAR_SHARD_DOC_SIDECAR_SOURCE_PATH,
+      sourceXmlSourcePath: EXEMPLAR_SHARD_DOC_SOURCE_XML_SOURCE_PATH,
+      compatibilityCatalogSourcePath: EXEMPLAR_SHARD_DOC_COMPATIBILITY_CATALOG_SOURCE_PATH,
+      compatibilityWorkflowFilePath: EXEMPLAR_SHARD_DOC_WORKFLOW_FILE_PATH,
+    });
+    this.shardDocAuthorityRecords = shardDocAuthorityValidation.authoritativeRecords;
+    addResult('Shard-doc authority split', 'ok', shardDocAuthorityValidation.authoritativePresenceKey);
 
     message('Validating authority split and frontmatter precedence...');
     const helpAuthorityValidation = await this.validateHelpAuthoritySplitAndPrecedence({
@@ -109,6 +131,7 @@ class Installer {
       ides: config.ides || [],
       preservedModules: modulesForCsvPreserve,
       helpAuthorityRecords: this.helpAuthorityRecords || [],
+      taskAuthorityRecords: [...(this.helpAuthorityRecords || []), ...(this.shardDocAuthorityRecords || [])],
     });
 
     addResult(
@@ -1780,6 +1803,38 @@ class Installer {
   /**
    * Private: Create directory structure
    */
+  resolveCanonicalIdFromAuthorityRecords({ authorityRecords, authoritySourcePath, fallbackCanonicalId }) {
+    const normalizedAuthoritySourcePath = String(authoritySourcePath || '')
+      .trim()
+      .replaceAll('\\', '/');
+    const normalizedFallbackCanonicalId = String(fallbackCanonicalId || '').trim();
+    const records = Array.isArray(authorityRecords) ? authorityRecords : [];
+
+    for (const record of records) {
+      if (!record || typeof record !== 'object') {
+        continue;
+      }
+
+      const recordCanonicalId = String(record.canonicalId || '').trim();
+      const recordAuthoritySourceType = String(record.authoritySourceType || '').trim();
+      const recordAuthoritySourcePath = String(record.authoritySourcePath || '')
+        .trim()
+        .replaceAll('\\', '/');
+      const recordType = String(record.recordType || '').trim();
+
+      if (
+        recordType === 'metadata-authority' &&
+        recordAuthoritySourceType === 'sidecar' &&
+        recordAuthoritySourcePath === normalizedAuthoritySourcePath &&
+        recordCanonicalId.length > 0
+      ) {
+        return recordCanonicalId;
+      }
+    }
+
+    return normalizedFallbackCanonicalId;
+  }
+
   isExemplarHelpCatalogRow({ moduleName, name, workflowFile, command, canonicalId }) {
     if (moduleName !== 'core') return false;
 
@@ -1830,7 +1885,7 @@ class Installer {
     ];
   }
 
-  isExemplarCommandLabelCandidate({ workflowFile, name, rawCommandValue, canonicalId, legacyName }) {
+  isCommandLabelCandidate({ workflowFile, name, rawCommandValue, canonicalId, legacyName, workflowFileContractPath, nameCandidates = [] }) {
     const normalizedWorkflowFile = String(workflowFile || '')
       .trim()
       .replaceAll('\\', '/')
@@ -1849,13 +1904,27 @@ class Installer {
       .toLowerCase()
       .replace(/^\/+/, '');
 
-    const isHelpWorkflow = normalizedWorkflowFile.endsWith('/core/tasks/help.md');
-    const isExemplarIdentity =
-      normalizedName === 'bmad-help' ||
-      normalizedCommandValue === normalizedCanonicalId ||
-      (normalizedLegacyName.length > 0 && normalizedCommandValue === normalizedLegacyName);
+    const normalizedWorkflowFileContractPath = String(workflowFileContractPath || '')
+      .trim()
+      .replaceAll('\\', '/')
+      .toLowerCase();
+    const workflowMarker = '/core/tasks/';
+    const markerIndex = normalizedWorkflowFileContractPath.indexOf(workflowMarker);
+    const workflowSuffix = markerIndex === -1 ? normalizedWorkflowFileContractPath : normalizedWorkflowFileContractPath.slice(markerIndex);
+    const hasWorkflowMatch = workflowSuffix.length > 0 && normalizedWorkflowFile.endsWith(workflowSuffix);
 
-    return isHelpWorkflow && isExemplarIdentity;
+    const normalizedNameCandidates = (Array.isArray(nameCandidates) ? nameCandidates : [])
+      .map((candidate) =>
+        String(candidate || '')
+          .trim()
+          .toLowerCase(),
+      )
+      .filter((candidate) => candidate.length > 0);
+    const matchesNameCandidate = normalizedNameCandidates.includes(normalizedName);
+    const isCanonicalCommand = normalizedCanonicalId.length > 0 && normalizedCommandValue === normalizedCanonicalId;
+    const isLegacyCommand = normalizedLegacyName.length > 0 && normalizedCommandValue === normalizedLegacyName;
+
+    return hasWorkflowMatch && (matchesNameCandidate || isCanonicalCommand || isLegacyCommand);
   }
 
   async writeCsvArtifact(filePath, columns, rows) {
@@ -1886,6 +1955,31 @@ class Installer {
       helpAuthorityRecords: this.helpAuthorityRecords || [],
       bmadFolderName: this.bmadFolderName || BMAD_FOLDER_NAME,
     });
+    const shardDocCanonicalId = this.resolveCanonicalIdFromAuthorityRecords({
+      authorityRecords: this.shardDocAuthorityRecords || [],
+      authoritySourcePath: EXEMPLAR_SHARD_DOC_SIDECAR_SOURCE_PATH,
+      fallbackCanonicalId: 'bmad-shard-doc',
+    });
+    const commandLabelContracts = [
+      {
+        canonicalId: sidecarAwareExemplar.canonicalId,
+        legacyName: sidecarAwareExemplar.legacyName,
+        displayedCommandLabel: sidecarAwareExemplar.displayedCommandLabel,
+        authoritySourceType: sidecarAwareExemplar.authoritySourceType,
+        authoritySourcePath: sidecarAwareExemplar.authoritySourcePath,
+        workflowFilePath: sidecarAwareExemplar.row['workflow-file'],
+        nameCandidates: [sidecarAwareExemplar.row.name],
+      },
+      {
+        canonicalId: shardDocCanonicalId,
+        legacyName: 'shard-doc',
+        displayedCommandLabel: renderDisplayedCommandLabel(shardDocCanonicalId),
+        authoritySourceType: 'sidecar',
+        authoritySourcePath: EXEMPLAR_SHARD_DOC_SIDECAR_SOURCE_PATH,
+        workflowFilePath: EXEMPLAR_SHARD_DOC_WORKFLOW_FILE_PATH,
+        nameCandidates: ['shard document', 'shard-doc'],
+      },
+    ];
     let exemplarRowWritten = false;
 
     // Load agent manifest for agent info lookup
@@ -2110,31 +2204,37 @@ class Installer {
         continue;
       }
 
-      if (
-        !this.isExemplarCommandLabelCandidate({
+      for (const contract of commandLabelContracts) {
+        const isContractCandidate = this.isCommandLabelCandidate({
           workflowFile,
           name,
           rawCommandValue,
-          canonicalId: sidecarAwareExemplar.canonicalId,
-          legacyName: sidecarAwareExemplar.legacyName,
-        })
-      ) {
-        continue;
+          canonicalId: contract.canonicalId,
+          legacyName: contract.legacyName,
+          workflowFileContractPath: contract.workflowFilePath,
+          nameCandidates: contract.nameCandidates,
+        });
+        if (isContractCandidate) {
+          const displayedCommandLabel = renderDisplayedCommandLabel(rawCommandValue);
+          commandLabelRowsFromMergedCatalog.push({
+            surface: `${this.bmadFolderName || BMAD_FOLDER_NAME}/_config/bmad-help.csv`,
+            canonicalId: contract.canonicalId,
+            rawCommandValue,
+            displayedCommandLabel,
+            normalizedDisplayedLabel: normalizeDisplayedCommandLabel(displayedCommandLabel),
+            authoritySourceType: contract.authoritySourceType,
+            authoritySourcePath: contract.authoritySourcePath,
+          });
+          break;
+        }
       }
-
-      const displayedCommandLabel = renderDisplayedCommandLabel(rawCommandValue);
-      commandLabelRowsFromMergedCatalog.push({
-        surface: `${this.bmadFolderName || BMAD_FOLDER_NAME}/_config/bmad-help.csv`,
-        canonicalId: sidecarAwareExemplar.canonicalId,
-        rawCommandValue,
-        displayedCommandLabel,
-        normalizedDisplayedLabel: normalizeDisplayedCommandLabel(displayedCommandLabel),
-        authoritySourceType: sidecarAwareExemplar.authoritySourceType,
-        authoritySourcePath: sidecarAwareExemplar.authoritySourcePath,
-      });
     }
 
-    const exemplarRowCount = commandLabelRowsFromMergedCatalog.length;
+    const commandLabelRowCountByCanonicalId = new Map(commandLabelContracts.map((contract) => [contract.canonicalId, 0]));
+    for (const row of commandLabelRowsFromMergedCatalog) {
+      commandLabelRowCountByCanonicalId.set(row.canonicalId, (commandLabelRowCountByCanonicalId.get(row.canonicalId) || 0) + 1);
+    }
+    const exemplarRowCount = commandLabelRowCountByCanonicalId.get(sidecarAwareExemplar.canonicalId) || 0;
 
     this.helpCatalogPipelineRows = sidecarAwareExemplar.pipelineStageRows.map((row) => ({
       ...row,
@@ -2144,15 +2244,24 @@ class Installer {
     }));
     this.helpCatalogCommandLabelReportRows = commandLabelRowsFromMergedCatalog.map((row) => ({
       ...row,
-      rowCountForCanonicalId: exemplarRowCount,
-      status: exemplarRowCount === 1 ? 'PASS' : 'FAIL',
+      rowCountForCanonicalId: commandLabelRowCountByCanonicalId.get(row.canonicalId) || 0,
+      status: (commandLabelRowCountByCanonicalId.get(row.canonicalId) || 0) === 1 ? 'PASS' : 'FAIL',
     }));
 
-    const commandLabelContractResult = evaluateExemplarCommandLabelReportRows(this.helpCatalogCommandLabelReportRows, {
-      canonicalId: sidecarAwareExemplar.canonicalId,
-      displayedCommandLabel: sidecarAwareExemplar.displayedCommandLabel,
-    });
-    if (!commandLabelContractResult.valid) {
+    const commandLabelContractFailures = new Map();
+    for (const contract of commandLabelContracts) {
+      const commandLabelContractResult = evaluateExemplarCommandLabelReportRows(this.helpCatalogCommandLabelReportRows, {
+        canonicalId: contract.canonicalId,
+        displayedCommandLabel: contract.displayedCommandLabel,
+        authoritySourceType: contract.authoritySourceType,
+        authoritySourcePath: contract.authoritySourcePath,
+      });
+      if (!commandLabelContractResult.valid) {
+        commandLabelContractFailures.set(contract.canonicalId, commandLabelContractResult.reason);
+      }
+    }
+
+    if (commandLabelContractFailures.size > 0) {
       this.helpCatalogPipelineRows = this.helpCatalogPipelineRows.map((row) => ({
         ...row,
         stageStatus: 'FAIL',
@@ -2161,14 +2270,19 @@ class Installer {
       this.helpCatalogCommandLabelReportRows = this.helpCatalogCommandLabelReportRows.map((row) => ({
         ...row,
         status: 'FAIL',
-        failureReason: commandLabelContractResult.reason,
+        failureReason: commandLabelContractFailures.get(row.canonicalId) || row.failureReason || '',
       }));
 
+      const commandLabelFailureSummary = [...commandLabelContractFailures.entries()]
+        .sort(([leftCanonicalId], [rightCanonicalId]) => leftCanonicalId.localeCompare(rightCanonicalId))
+        .map(([canonicalId, reason]) => `${canonicalId}:${reason}`)
+        .join('|');
+
       const commandLabelError = new Error(
-        `${HELP_CATALOG_GENERATION_ERROR_CODES.COMMAND_LABEL_CONTRACT_FAILED}: ${commandLabelContractResult.reason}`,
+        `${HELP_CATALOG_GENERATION_ERROR_CODES.COMMAND_LABEL_CONTRACT_FAILED}: ${commandLabelFailureSummary}`,
       );
       commandLabelError.code = HELP_CATALOG_GENERATION_ERROR_CODES.COMMAND_LABEL_CONTRACT_FAILED;
-      commandLabelError.detail = commandLabelContractResult.reason;
+      commandLabelError.detail = commandLabelFailureSummary;
       throw commandLabelError;
     }
 

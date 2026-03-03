@@ -32,12 +32,19 @@ const {
 const {
   HELP_SIDECAR_REQUIRED_FIELDS,
   HELP_SIDECAR_ERROR_CODES,
+  SHARD_DOC_SIDECAR_REQUIRED_FIELDS,
+  SHARD_DOC_SIDECAR_ERROR_CODES,
   validateHelpSidecarContractFile,
+  validateShardDocSidecarContractFile,
 } = require('../tools/cli/installers/lib/core/sidecar-contract-validator');
 const {
   HELP_FRONTMATTER_MISMATCH_ERROR_CODES,
   validateHelpAuthoritySplitAndPrecedence,
 } = require('../tools/cli/installers/lib/core/help-authority-validator');
+const {
+  SHARD_DOC_AUTHORITY_VALIDATION_ERROR_CODES,
+  validateShardDocAuthoritySplitAndPrecedence,
+} = require('../tools/cli/installers/lib/core/shard-doc-authority-validator');
 const {
   HELP_CATALOG_GENERATION_ERROR_CODES,
   EXEMPLAR_HELP_CATALOG_AUTHORITY_SOURCE_PATH,
@@ -62,6 +69,7 @@ const {
   validateHelpCatalogCompatibilitySurface,
   validateHelpCatalogLoaderEntries,
   validateGithubCopilotHelpLoaderEntries,
+  validateCommandDocSurfaceConsistency,
 } = require('../tools/cli/installers/lib/core/projection-compatibility-validator');
 const {
   WAVE1_VALIDATION_ERROR_CODES,
@@ -386,6 +394,202 @@ async function runTests() {
   console.log('');
 
   // ============================================================
+  // Test 4b: Wave-2 shard-doc Sidecar Contract Validation
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 4b: Wave-2 shard-doc Sidecar Contract Validation${colors.reset}\n`);
+
+  const validShardDocSidecar = {
+    schemaVersion: 1,
+    canonicalId: 'bmad-shard-doc',
+    artifactType: 'task',
+    module: 'core',
+    sourcePath: 'bmad-fork/src/core/tasks/shard-doc.xml',
+    displayName: 'Shard Document',
+    description: 'Split large markdown documents into smaller files by section with an index.',
+    dependencies: {
+      requires: [],
+    },
+  };
+
+  const shardDocFixtureRoot = path.join(projectRoot, 'test', 'fixtures', 'wave-2', 'sidecar-negative');
+  const unknownMajorFixturePath = path.join(shardDocFixtureRoot, 'unknown-major-version', 'shard-doc.artifact.yaml');
+  const basenameMismatchFixturePath = path.join(shardDocFixtureRoot, 'basename-path-mismatch', 'shard-doc.artifact.yaml');
+
+  const tempShardDocRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-shard-doc-sidecar-'));
+  const tempShardDocSidecarPath = path.join(tempShardDocRoot, 'shard-doc.artifact.yaml');
+  const deterministicShardDocSourcePath = 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml';
+
+  const writeTempShardDocSidecar = async (data) => {
+    await fs.writeFile(tempShardDocSidecarPath, yaml.stringify(data), 'utf8');
+  };
+
+  const expectShardDocValidationError = async (data, expectedCode, expectedFieldPath, testLabel, expectedDetail = null) => {
+    await writeTempShardDocSidecar(data);
+
+    try {
+      await validateShardDocSidecarContractFile(tempShardDocSidecarPath, { errorSourcePath: deterministicShardDocSourcePath });
+      assert(false, testLabel, 'Expected validation error but validation passed');
+    } catch (error) {
+      assert(error.code === expectedCode, `${testLabel} returns expected error code`, `Expected ${expectedCode}, got ${error.code}`);
+      assert(
+        error.fieldPath === expectedFieldPath,
+        `${testLabel} returns expected field path`,
+        `Expected ${expectedFieldPath}, got ${error.fieldPath}`,
+      );
+      assert(
+        error.sourcePath === deterministicShardDocSourcePath,
+        `${testLabel} returns expected source path`,
+        `Expected ${deterministicShardDocSourcePath}, got ${error.sourcePath}`,
+      );
+      assert(
+        typeof error.message === 'string' &&
+          error.message.includes(expectedCode) &&
+          error.message.includes(expectedFieldPath) &&
+          error.message.includes(deterministicShardDocSourcePath),
+        `${testLabel} includes deterministic message context`,
+      );
+      if (expectedDetail !== null) {
+        assert(
+          error.detail === expectedDetail,
+          `${testLabel} returns locked detail string`,
+          `Expected "${expectedDetail}", got "${error.detail}"`,
+        );
+      }
+    }
+  };
+
+  try {
+    await writeTempShardDocSidecar(validShardDocSidecar);
+    await validateShardDocSidecarContractFile(tempShardDocSidecarPath, { errorSourcePath: deterministicShardDocSourcePath });
+    assert(true, 'Valid shard-doc sidecar contract passes');
+
+    for (const requiredField of SHARD_DOC_SIDECAR_REQUIRED_FIELDS.filter((field) => field !== 'dependencies')) {
+      const invalidSidecar = structuredClone(validShardDocSidecar);
+      delete invalidSidecar[requiredField];
+      await expectShardDocValidationError(
+        invalidSidecar,
+        SHARD_DOC_SIDECAR_ERROR_CODES.REQUIRED_FIELD_MISSING,
+        requiredField,
+        `Shard-doc missing required field "${requiredField}"`,
+      );
+    }
+
+    const unknownMajorFixture = yaml.parse(await fs.readFile(unknownMajorFixturePath, 'utf8'));
+    await expectShardDocValidationError(
+      unknownMajorFixture,
+      SHARD_DOC_SIDECAR_ERROR_CODES.MAJOR_VERSION_UNSUPPORTED,
+      'schemaVersion',
+      'Shard-doc unsupported sidecar major schema version',
+      'sidecar schema major version is unsupported',
+    );
+
+    const basenameMismatchFixture = yaml.parse(await fs.readFile(basenameMismatchFixturePath, 'utf8'));
+    await expectShardDocValidationError(
+      basenameMismatchFixture,
+      SHARD_DOC_SIDECAR_ERROR_CODES.SOURCEPATH_BASENAME_MISMATCH,
+      'sourcePath',
+      'Shard-doc sourcePath mismatch',
+      'sidecar basename does not match sourcePath basename',
+    );
+
+    const mismatchedShardDocBasenamePath = path.join(tempShardDocRoot, 'not-shard-doc.artifact.yaml');
+    await fs.writeFile(mismatchedShardDocBasenamePath, yaml.stringify(validShardDocSidecar), 'utf8');
+    try {
+      await validateShardDocSidecarContractFile(mismatchedShardDocBasenamePath, {
+        errorSourcePath: 'bmad-fork/src/core/tasks/not-shard-doc.artifact.yaml',
+      });
+      assert(false, 'Shard-doc basename mismatch returns validation error', 'Expected validation error but validation passed');
+    } catch (error) {
+      assert(
+        error.code === SHARD_DOC_SIDECAR_ERROR_CODES.SOURCEPATH_BASENAME_MISMATCH,
+        'Shard-doc basename mismatch returns expected error code',
+      );
+      assert(
+        error.fieldPath === 'sourcePath',
+        'Shard-doc basename mismatch returns expected field path',
+        `Expected sourcePath, got ${error.fieldPath}`,
+      );
+      assert(
+        typeof error.message === 'string' &&
+          error.message.includes(SHARD_DOC_SIDECAR_ERROR_CODES.SOURCEPATH_BASENAME_MISMATCH) &&
+          error.message.includes('bmad-fork/src/core/tasks/not-shard-doc.artifact.yaml'),
+        'Shard-doc basename mismatch includes deterministic message context',
+      );
+    }
+
+    await expectShardDocValidationError(
+      { ...validShardDocSidecar, artifactType: 'workflow' },
+      SHARD_DOC_SIDECAR_ERROR_CODES.ARTIFACT_TYPE_INVALID,
+      'artifactType',
+      'Shard-doc invalid artifactType',
+    );
+
+    await expectShardDocValidationError(
+      { ...validShardDocSidecar, module: 'bmm' },
+      SHARD_DOC_SIDECAR_ERROR_CODES.MODULE_INVALID,
+      'module',
+      'Shard-doc invalid module',
+    );
+
+    await expectShardDocValidationError(
+      { ...validShardDocSidecar, canonicalId: '   ' },
+      SHARD_DOC_SIDECAR_ERROR_CODES.REQUIRED_FIELD_EMPTY,
+      'canonicalId',
+      'Shard-doc empty canonicalId',
+    );
+
+    await expectShardDocValidationError(
+      { ...validShardDocSidecar, sourcePath: '' },
+      SHARD_DOC_SIDECAR_ERROR_CODES.REQUIRED_FIELD_EMPTY,
+      'sourcePath',
+      'Shard-doc empty sourcePath',
+    );
+
+    await expectShardDocValidationError(
+      { ...validShardDocSidecar, description: '' },
+      SHARD_DOC_SIDECAR_ERROR_CODES.REQUIRED_FIELD_EMPTY,
+      'description',
+      'Shard-doc empty description',
+    );
+
+    await expectShardDocValidationError(
+      { ...validShardDocSidecar, displayName: '' },
+      SHARD_DOC_SIDECAR_ERROR_CODES.REQUIRED_FIELD_EMPTY,
+      'displayName',
+      'Shard-doc empty displayName',
+    );
+
+    const missingShardDocDependencies = structuredClone(validShardDocSidecar);
+    delete missingShardDocDependencies.dependencies;
+    await expectShardDocValidationError(
+      missingShardDocDependencies,
+      SHARD_DOC_SIDECAR_ERROR_CODES.DEPENDENCIES_MISSING,
+      'dependencies',
+      'Shard-doc missing dependencies block',
+    );
+
+    await expectShardDocValidationError(
+      { ...validShardDocSidecar, dependencies: { requires: 'skill:bmad-help' } },
+      SHARD_DOC_SIDECAR_ERROR_CODES.DEPENDENCIES_REQUIRES_INVALID,
+      'dependencies.requires',
+      'Shard-doc non-array dependencies.requires',
+    );
+
+    await expectShardDocValidationError(
+      { ...validShardDocSidecar, dependencies: { requires: ['skill:bmad-help'] } },
+      SHARD_DOC_SIDECAR_ERROR_CODES.DEPENDENCIES_REQUIRES_NOT_EMPTY,
+      'dependencies.requires',
+      'Shard-doc non-empty dependencies.requires',
+    );
+  } catch (error) {
+    assert(false, 'Wave-2 shard-doc sidecar validation suite setup', error.message);
+  } finally {
+    await fs.remove(tempShardDocRoot);
+  }
+
+  console.log('');
+
+  // ============================================================
   // Test 5: Authority Split and Frontmatter Precedence
   // ============================================================
   console.log(`${colors.yellow}Test Suite 5: Authority Split and Precedence${colors.reset}\n`);
@@ -576,6 +780,217 @@ async function runTests() {
       deterministicAuthorityPaths.source,
       'Source dependencies.requires mismatch',
     );
+
+    const tempShardDocAuthoritySidecarPath = path.join(tempAuthorityRoot, 'shard-doc.artifact.yaml');
+    const tempShardDocAuthoritySourcePath = path.join(tempAuthorityRoot, 'shard-doc.xml');
+    const tempShardDocModuleHelpPath = path.join(tempAuthorityRoot, 'module-help.csv');
+
+    const deterministicShardDocAuthorityPaths = {
+      sidecar: 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml',
+      source: 'bmad-fork/src/core/tasks/shard-doc.xml',
+      compatibility: 'bmad-fork/src/core/module-help.csv',
+      workflowFile: '_bmad/core/tasks/shard-doc.xml',
+    };
+
+    const validShardDocAuthoritySidecar = {
+      schemaVersion: 1,
+      canonicalId: 'bmad-shard-doc',
+      artifactType: 'task',
+      module: 'core',
+      sourcePath: deterministicShardDocAuthorityPaths.source,
+      displayName: 'Shard Document',
+      description: 'Split large markdown documents into smaller files by section with an index.',
+      dependencies: {
+        requires: [],
+      },
+    };
+
+    const writeModuleHelpCsv = async (rows) => {
+      const header = 'module,phase,name,code,sequence,workflow-file,command,required,agent,options,description,output-location,outputs';
+      const lines = rows.map((row) =>
+        [
+          row.module ?? 'core',
+          row.phase ?? 'anytime',
+          row.name ?? 'Shard Document',
+          row.code ?? 'SD',
+          row.sequence ?? '',
+          row.workflowFile ?? '',
+          row.command ?? '',
+          row.required ?? 'false',
+          row.agent ?? '',
+          row.options ?? '',
+          row.description ?? 'Compatibility row',
+          row.outputLocation ?? '',
+          row.outputs ?? '',
+        ].join(','),
+      );
+
+      await fs.writeFile(tempShardDocModuleHelpPath, [header, ...lines].join('\n'), 'utf8');
+    };
+
+    const runShardDocAuthorityValidation = async () =>
+      validateShardDocAuthoritySplitAndPrecedence({
+        sidecarPath: tempShardDocAuthoritySidecarPath,
+        sourceXmlPath: tempShardDocAuthoritySourcePath,
+        compatibilityCatalogPath: tempShardDocModuleHelpPath,
+        sidecarSourcePath: deterministicShardDocAuthorityPaths.sidecar,
+        sourceXmlSourcePath: deterministicShardDocAuthorityPaths.source,
+        compatibilityCatalogSourcePath: deterministicShardDocAuthorityPaths.compatibility,
+        compatibilityWorkflowFilePath: deterministicShardDocAuthorityPaths.workflowFile,
+      });
+
+    const expectShardDocAuthorityValidationError = async (
+      rows,
+      expectedCode,
+      expectedFieldPath,
+      testLabel,
+      expectedSourcePath = deterministicShardDocAuthorityPaths.compatibility,
+    ) => {
+      await writeModuleHelpCsv(rows);
+
+      try {
+        await runShardDocAuthorityValidation();
+        assert(false, testLabel, 'Expected shard-doc authority validation error but validation passed');
+      } catch (error) {
+        assert(error.code === expectedCode, `${testLabel} returns expected error code`, `Expected ${expectedCode}, got ${error.code}`);
+        assert(
+          error.fieldPath === expectedFieldPath,
+          `${testLabel} returns expected field path`,
+          `Expected ${expectedFieldPath}, got ${error.fieldPath}`,
+        );
+        assert(
+          error.sourcePath === expectedSourcePath,
+          `${testLabel} returns expected source path`,
+          `Expected ${expectedSourcePath}, got ${error.sourcePath}`,
+        );
+        assert(
+          typeof error.message === 'string' &&
+            error.message.includes(expectedCode) &&
+            error.message.includes(expectedFieldPath) &&
+            error.message.includes(expectedSourcePath),
+          `${testLabel} includes deterministic message context`,
+        );
+      }
+    };
+
+    await fs.writeFile(tempShardDocAuthoritySidecarPath, yaml.stringify(validShardDocAuthoritySidecar), 'utf8');
+    await fs.writeFile(tempShardDocAuthoritySourcePath, '<task id="_bmad/core/tasks/shard-doc"></task>\n', 'utf8');
+
+    await writeModuleHelpCsv([
+      {
+        workflowFile: deterministicShardDocAuthorityPaths.workflowFile,
+        command: 'bmad-shard-doc',
+        name: 'Shard Document',
+      },
+    ]);
+
+    const shardDocAuthorityValidation = await runShardDocAuthorityValidation();
+    assert(
+      shardDocAuthorityValidation.authoritativePresenceKey === 'capability:bmad-shard-doc',
+      'Shard-doc authority validation returns expected authoritative presence key',
+    );
+    assert(
+      Array.isArray(shardDocAuthorityValidation.authoritativeRecords) && shardDocAuthorityValidation.authoritativeRecords.length === 2,
+      'Shard-doc authority validation returns sidecar and source authority records',
+    );
+
+    const shardDocSidecarRecord = shardDocAuthorityValidation.authoritativeRecords.find(
+      (record) => record.authoritySourceType === 'sidecar',
+    );
+    const shardDocSourceRecord = shardDocAuthorityValidation.authoritativeRecords.find(
+      (record) => record.authoritySourceType === 'source-xml',
+    );
+
+    assert(
+      shardDocSidecarRecord &&
+        shardDocSourceRecord &&
+        shardDocSidecarRecord.authoritativePresenceKey === shardDocSourceRecord.authoritativePresenceKey,
+      'Shard-doc sidecar and source-xml records share one authoritative presence key',
+    );
+    assert(
+      shardDocSidecarRecord &&
+        shardDocSourceRecord &&
+        shardDocSidecarRecord.authoritativePresenceKey === 'capability:bmad-shard-doc' &&
+        shardDocSourceRecord.authoritativePresenceKey === 'capability:bmad-shard-doc',
+      'Shard-doc authority records lock authoritative presence key to capability:bmad-shard-doc',
+    );
+    assert(
+      shardDocSidecarRecord && shardDocSidecarRecord.authoritySourcePath === deterministicShardDocAuthorityPaths.sidecar,
+      'Shard-doc metadata authority record preserves sidecar source path',
+    );
+    assert(
+      shardDocSourceRecord && shardDocSourceRecord.authoritySourcePath === deterministicShardDocAuthorityPaths.source,
+      'Shard-doc source-body authority record preserves source XML path',
+    );
+
+    await expectShardDocAuthorityValidationError(
+      [
+        {
+          workflowFile: deterministicShardDocAuthorityPaths.workflowFile,
+          command: 'legacy-shard-doc',
+          name: 'Shard Document',
+        },
+      ],
+      SHARD_DOC_AUTHORITY_VALIDATION_ERROR_CODES.COMMAND_MISMATCH,
+      'command',
+      'Shard-doc compatibility command mismatch',
+    );
+
+    await expectShardDocAuthorityValidationError(
+      [
+        {
+          workflowFile: '_bmad/core/tasks/help.md',
+          command: 'bmad-shard-doc',
+          name: 'Shard Document',
+        },
+      ],
+      SHARD_DOC_AUTHORITY_VALIDATION_ERROR_CODES.COMPATIBILITY_ROW_MISSING,
+      'workflow-file',
+      'Shard-doc missing compatibility row',
+    );
+
+    await expectShardDocAuthorityValidationError(
+      [
+        {
+          workflowFile: deterministicShardDocAuthorityPaths.workflowFile,
+          command: 'bmad-shard-doc',
+          name: 'Shard Document',
+        },
+        {
+          workflowFile: '_bmad/core/tasks/another.xml',
+          command: 'bmad-shard-doc',
+          name: 'Shard Document',
+        },
+      ],
+      SHARD_DOC_AUTHORITY_VALIDATION_ERROR_CODES.DUPLICATE_CANONICAL_COMMAND,
+      'command',
+      'Shard-doc duplicate canonical command rows',
+    );
+
+    await fs.writeFile(
+      tempShardDocAuthoritySidecarPath,
+      yaml.stringify({
+        ...validShardDocAuthoritySidecar,
+        canonicalId: 'bmad-shard-doc-renamed',
+      }),
+      'utf8',
+    );
+
+    await expectShardDocAuthorityValidationError(
+      [
+        {
+          workflowFile: deterministicShardDocAuthorityPaths.workflowFile,
+          command: 'bmad-shard-doc-renamed',
+          name: 'Shard Document',
+        },
+      ],
+      SHARD_DOC_AUTHORITY_VALIDATION_ERROR_CODES.SIDECAR_CANONICAL_ID_MISMATCH,
+      'canonicalId',
+      'Shard-doc canonicalId drift fails deterministic authority validation',
+      deterministicShardDocAuthorityPaths.sidecar,
+    );
+
+    await fs.writeFile(tempShardDocAuthoritySidecarPath, yaml.stringify(validShardDocAuthoritySidecar), 'utf8');
   } catch (error) {
     assert(false, 'Authority split and precedence suite setup', error.message);
   } finally {
@@ -592,79 +1007,453 @@ async function runTests() {
   const tempInstallerRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-installer-sidecar-failfast-'));
 
   try {
-    const installer = new Installer();
-    let authorityValidationCalled = false;
-    let generateConfigsCalled = false;
-    let manifestGenerationCalled = false;
-    let helpCatalogGenerationCalled = false;
-    let successResultCount = 0;
+    // 6a: Existing help sidecar fail-fast behavior remains intact.
+    {
+      const installer = new Installer();
+      let shardDocValidationCalled = false;
+      let shardDocAuthorityValidationCalled = false;
+      let helpAuthorityValidationCalled = false;
+      let generateConfigsCalled = false;
+      let manifestGenerationCalled = false;
+      let helpCatalogGenerationCalled = false;
+      let successResultCount = 0;
 
-    installer.validateHelpSidecarContractFile = async () => {
-      const error = new Error(expectedUnsupportedMajorDetail);
-      error.code = HELP_SIDECAR_ERROR_CODES.MAJOR_VERSION_UNSUPPORTED;
-      error.fieldPath = 'schemaVersion';
-      error.detail = expectedUnsupportedMajorDetail;
-      throw error;
-    };
-
-    installer.validateHelpAuthoritySplitAndPrecedence = async () => {
-      authorityValidationCalled = true;
-      return {
-        authoritativeRecords: [],
-        authoritativePresenceKey: 'capability:bmad-help',
+      installer.validateShardDocSidecarContractFile = async () => {
+        shardDocValidationCalled = true;
       };
-    };
+      installer.validateHelpSidecarContractFile = async () => {
+        const error = new Error(expectedUnsupportedMajorDetail);
+        error.code = HELP_SIDECAR_ERROR_CODES.MAJOR_VERSION_UNSUPPORTED;
+        error.fieldPath = 'schemaVersion';
+        error.detail = expectedUnsupportedMajorDetail;
+        throw error;
+      };
 
-    installer.generateModuleConfigs = async () => {
-      generateConfigsCalled = true;
-    };
-
-    installer.mergeModuleHelpCatalogs = async () => {
-      helpCatalogGenerationCalled = true;
-    };
-
-    installer.ManifestGenerator = class ManifestGeneratorStub {
-      async generateManifests() {
-        manifestGenerationCalled = true;
+      installer.validateShardDocAuthoritySplitAndPrecedence = async () => {
+        shardDocAuthorityValidationCalled = true;
         return {
-          workflows: 0,
-          agents: 0,
-          tasks: 0,
-          tools: 0,
+          authoritativeRecords: [],
+          authoritativePresenceKey: 'capability:bmad-shard-doc',
         };
-      }
-    };
+      };
 
-    try {
+      installer.validateHelpAuthoritySplitAndPrecedence = async () => {
+        helpAuthorityValidationCalled = true;
+        return {
+          authoritativeRecords: [],
+          authoritativePresenceKey: 'capability:bmad-help',
+        };
+      };
+
+      installer.generateModuleConfigs = async () => {
+        generateConfigsCalled = true;
+      };
+
+      installer.mergeModuleHelpCatalogs = async () => {
+        helpCatalogGenerationCalled = true;
+      };
+
+      installer.ManifestGenerator = class ManifestGeneratorStub {
+        async generateManifests() {
+          manifestGenerationCalled = true;
+          return {
+            workflows: 0,
+            agents: 0,
+            tasks: 0,
+            tools: 0,
+          };
+        }
+      };
+
+      try {
+        await installer.runConfigurationGenerationTask({
+          message: () => {},
+          bmadDir: tempInstallerRoot,
+          moduleConfigs: { core: {} },
+          config: { ides: [] },
+          allModules: ['core'],
+          addResult: () => {
+            successResultCount += 1;
+          },
+        });
+        assert(
+          false,
+          'Installer fail-fast blocks projection generation on help sidecar validation failure',
+          'Expected sidecar validation failure but configuration generation completed',
+        );
+      } catch (error) {
+        assert(
+          error.code === HELP_SIDECAR_ERROR_CODES.MAJOR_VERSION_UNSUPPORTED,
+          'Installer fail-fast surfaces help sidecar validation error code',
+          `Expected ${HELP_SIDECAR_ERROR_CODES.MAJOR_VERSION_UNSUPPORTED}, got ${error.code}`,
+        );
+        assert(shardDocValidationCalled, 'Installer runs shard-doc sidecar validation before help sidecar validation');
+        assert(
+          !shardDocAuthorityValidationCalled &&
+            !helpAuthorityValidationCalled &&
+            !generateConfigsCalled &&
+            !manifestGenerationCalled &&
+            !helpCatalogGenerationCalled,
+          'Installer help fail-fast prevents downstream authority/config/manifest/help generation',
+        );
+        assert(
+          successResultCount === 0,
+          'Installer help fail-fast records no successful projection milestones',
+          `Expected 0, got ${successResultCount}`,
+        );
+      }
+    }
+
+    // 6b: Shard-doc fail-fast covers Wave-2 negative matrix classes.
+    {
+      const deterministicShardDocFailFastSourcePath = 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml';
+      const shardDocFailureScenarios = [
+        {
+          label: 'missing shard-doc sidecar file',
+          code: SHARD_DOC_SIDECAR_ERROR_CODES.FILE_NOT_FOUND,
+          fieldPath: '<file>',
+          detail: 'Expected shard-doc sidecar file was not found.',
+        },
+        {
+          label: 'malformed shard-doc sidecar YAML',
+          code: SHARD_DOC_SIDECAR_ERROR_CODES.PARSE_FAILED,
+          fieldPath: '<document>',
+          detail: 'YAML parse failure: malformed content',
+        },
+        {
+          label: 'missing shard-doc required field',
+          code: SHARD_DOC_SIDECAR_ERROR_CODES.REQUIRED_FIELD_MISSING,
+          fieldPath: 'canonicalId',
+          detail: 'Missing required sidecar field "canonicalId".',
+        },
+        {
+          label: 'empty shard-doc required field',
+          code: SHARD_DOC_SIDECAR_ERROR_CODES.REQUIRED_FIELD_EMPTY,
+          fieldPath: 'canonicalId',
+          detail: 'Required sidecar field "canonicalId" must be a non-empty string.',
+        },
+        {
+          label: 'unsupported shard-doc sidecar major schema version',
+          code: SHARD_DOC_SIDECAR_ERROR_CODES.MAJOR_VERSION_UNSUPPORTED,
+          fieldPath: 'schemaVersion',
+          detail: expectedUnsupportedMajorDetail,
+        },
+        {
+          label: 'shard-doc sourcePath basename mismatch',
+          code: SHARD_DOC_SIDECAR_ERROR_CODES.SOURCEPATH_BASENAME_MISMATCH,
+          fieldPath: 'sourcePath',
+          detail: expectedBasenameMismatchDetail,
+        },
+      ];
+
+      for (const scenario of shardDocFailureScenarios) {
+        const installer = new Installer();
+        let helpValidationCalled = false;
+        let shardDocAuthorityValidationCalled = false;
+        let helpAuthorityValidationCalled = false;
+        let generateConfigsCalled = false;
+        let manifestGenerationCalled = false;
+        let helpCatalogGenerationCalled = false;
+        let successResultCount = 0;
+
+        installer.validateShardDocSidecarContractFile = async () => {
+          const error = new Error(scenario.detail);
+          error.code = scenario.code;
+          error.fieldPath = scenario.fieldPath;
+          error.sourcePath = deterministicShardDocFailFastSourcePath;
+          error.detail = scenario.detail;
+          throw error;
+        };
+        installer.validateHelpSidecarContractFile = async () => {
+          helpValidationCalled = true;
+        };
+        installer.validateShardDocAuthoritySplitAndPrecedence = async () => {
+          shardDocAuthorityValidationCalled = true;
+          return {
+            authoritativeRecords: [],
+            authoritativePresenceKey: 'capability:bmad-shard-doc',
+          };
+        };
+        installer.validateHelpAuthoritySplitAndPrecedence = async () => {
+          helpAuthorityValidationCalled = true;
+          return {
+            authoritativeRecords: [],
+            authoritativePresenceKey: 'capability:bmad-help',
+          };
+        };
+        installer.generateModuleConfigs = async () => {
+          generateConfigsCalled = true;
+        };
+        installer.mergeModuleHelpCatalogs = async () => {
+          helpCatalogGenerationCalled = true;
+        };
+        installer.ManifestGenerator = class ManifestGeneratorStub {
+          async generateManifests() {
+            manifestGenerationCalled = true;
+            return {
+              workflows: 0,
+              agents: 0,
+              tasks: 0,
+              tools: 0,
+            };
+          }
+        };
+
+        try {
+          await installer.runConfigurationGenerationTask({
+            message: () => {},
+            bmadDir: tempInstallerRoot,
+            moduleConfigs: { core: {} },
+            config: { ides: [] },
+            allModules: ['core'],
+            addResult: () => {
+              successResultCount += 1;
+            },
+          });
+          assert(false, `Installer fail-fast blocks projection generation on ${scenario.label}`);
+        } catch (error) {
+          assert(error.code === scenario.code, `Installer ${scenario.label} returns deterministic error code`);
+          assert(error.fieldPath === scenario.fieldPath, `Installer ${scenario.label} returns deterministic field path`);
+          assert(
+            error.sourcePath === deterministicShardDocFailFastSourcePath,
+            `Installer ${scenario.label} returns deterministic source path`,
+          );
+          assert(!helpValidationCalled, `Installer ${scenario.label} aborts before help sidecar validation`);
+          assert(
+            !shardDocAuthorityValidationCalled &&
+              !helpAuthorityValidationCalled &&
+              !generateConfigsCalled &&
+              !manifestGenerationCalled &&
+              !helpCatalogGenerationCalled,
+            `Installer ${scenario.label} prevents downstream authority/config/manifest/help generation`,
+          );
+          assert(successResultCount === 0, `Installer ${scenario.label} records no successful projection milestones`);
+        }
+      }
+    }
+
+    // 6c: Shard-doc authority precedence conflict fails fast before help authority or generation.
+    {
+      const installer = new Installer();
+      let helpAuthorityValidationCalled = false;
+      let generateConfigsCalled = false;
+      let manifestGenerationCalled = false;
+      let helpCatalogGenerationCalled = false;
+      let successResultCount = 0;
+
+      installer.validateShardDocSidecarContractFile = async () => {};
+      installer.validateHelpSidecarContractFile = async () => {};
+      installer.validateShardDocAuthoritySplitAndPrecedence = async () => {
+        const error = new Error('Converted shard-doc compatibility command must match sidecar canonicalId');
+        error.code = SHARD_DOC_AUTHORITY_VALIDATION_ERROR_CODES.COMMAND_MISMATCH;
+        error.fieldPath = 'command';
+        error.sourcePath = 'bmad-fork/src/core/module-help.csv';
+        throw error;
+      };
+      installer.validateHelpAuthoritySplitAndPrecedence = async () => {
+        helpAuthorityValidationCalled = true;
+        return {
+          authoritativeRecords: [],
+          authoritativePresenceKey: 'capability:bmad-help',
+        };
+      };
+      installer.generateModuleConfigs = async () => {
+        generateConfigsCalled = true;
+      };
+      installer.mergeModuleHelpCatalogs = async () => {
+        helpCatalogGenerationCalled = true;
+      };
+      installer.ManifestGenerator = class ManifestGeneratorStub {
+        async generateManifests() {
+          manifestGenerationCalled = true;
+          return {
+            workflows: 0,
+            agents: 0,
+            tasks: 0,
+            tools: 0,
+          };
+        }
+      };
+
+      try {
+        await installer.runConfigurationGenerationTask({
+          message: () => {},
+          bmadDir: tempInstallerRoot,
+          moduleConfigs: { core: {} },
+          config: { ides: [] },
+          allModules: ['core'],
+          addResult: () => {
+            successResultCount += 1;
+          },
+        });
+        assert(false, 'Installer shard-doc authority mismatch fails fast pre-projection');
+      } catch (error) {
+        assert(
+          error.code === SHARD_DOC_AUTHORITY_VALIDATION_ERROR_CODES.COMMAND_MISMATCH,
+          'Installer shard-doc authority mismatch returns deterministic error code',
+        );
+        assert(error.fieldPath === 'command', 'Installer shard-doc authority mismatch returns deterministic field path');
+        assert(
+          error.sourcePath === 'bmad-fork/src/core/module-help.csv',
+          'Installer shard-doc authority mismatch returns deterministic source path',
+        );
+        assert(
+          !helpAuthorityValidationCalled && !generateConfigsCalled && !manifestGenerationCalled && !helpCatalogGenerationCalled,
+          'Installer shard-doc authority mismatch blocks downstream help authority/config/manifest/help generation',
+        );
+        assert(
+          successResultCount === 2,
+          'Installer shard-doc authority mismatch records only sidecar gate pass milestones before abort',
+          `Expected 2, got ${successResultCount}`,
+        );
+      }
+    }
+
+    // 6d: Shard-doc canonical drift fails fast before help authority or generation.
+    {
+      const installer = new Installer();
+      let helpAuthorityValidationCalled = false;
+      let generateConfigsCalled = false;
+      let manifestGenerationCalled = false;
+      let helpCatalogGenerationCalled = false;
+      let successResultCount = 0;
+
+      installer.validateShardDocSidecarContractFile = async () => {};
+      installer.validateHelpSidecarContractFile = async () => {};
+      installer.validateShardDocAuthoritySplitAndPrecedence = async () => {
+        const error = new Error('Converted shard-doc sidecar canonicalId must remain locked to bmad-shard-doc');
+        error.code = SHARD_DOC_AUTHORITY_VALIDATION_ERROR_CODES.SIDECAR_CANONICAL_ID_MISMATCH;
+        error.fieldPath = 'canonicalId';
+        error.sourcePath = 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml';
+        throw error;
+      };
+      installer.validateHelpAuthoritySplitAndPrecedence = async () => {
+        helpAuthorityValidationCalled = true;
+        return {
+          authoritativeRecords: [],
+          authoritativePresenceKey: 'capability:bmad-help',
+        };
+      };
+      installer.generateModuleConfigs = async () => {
+        generateConfigsCalled = true;
+      };
+      installer.mergeModuleHelpCatalogs = async () => {
+        helpCatalogGenerationCalled = true;
+      };
+      installer.ManifestGenerator = class ManifestGeneratorStub {
+        async generateManifests() {
+          manifestGenerationCalled = true;
+          return {
+            workflows: 0,
+            agents: 0,
+            tasks: 0,
+            tools: 0,
+          };
+        }
+      };
+
+      try {
+        await installer.runConfigurationGenerationTask({
+          message: () => {},
+          bmadDir: tempInstallerRoot,
+          moduleConfigs: { core: {} },
+          config: { ides: [] },
+          allModules: ['core'],
+          addResult: () => {
+            successResultCount += 1;
+          },
+        });
+        assert(false, 'Installer shard-doc canonical drift fails fast pre-projection');
+      } catch (error) {
+        assert(
+          error.code === SHARD_DOC_AUTHORITY_VALIDATION_ERROR_CODES.SIDECAR_CANONICAL_ID_MISMATCH,
+          'Installer shard-doc canonical drift returns deterministic error code',
+        );
+        assert(error.fieldPath === 'canonicalId', 'Installer shard-doc canonical drift returns deterministic field path');
+        assert(
+          error.sourcePath === 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml',
+          'Installer shard-doc canonical drift returns deterministic source path',
+        );
+        assert(
+          !helpAuthorityValidationCalled && !generateConfigsCalled && !manifestGenerationCalled && !helpCatalogGenerationCalled,
+          'Installer shard-doc canonical drift blocks downstream help authority/config/manifest/help generation',
+        );
+        assert(
+          successResultCount === 2,
+          'Installer shard-doc canonical drift records only sidecar gate pass milestones before abort',
+          `Expected 2, got ${successResultCount}`,
+        );
+      }
+    }
+
+    // 6e: Valid sidecars preserve fail-fast ordering and allow generation path.
+    {
+      const installer = new Installer();
+      const executionOrder = [];
+      const resultMilestones = [];
+
+      installer.validateShardDocSidecarContractFile = async () => {
+        executionOrder.push('shard-doc-sidecar');
+      };
+      installer.validateHelpSidecarContractFile = async () => {
+        executionOrder.push('help-sidecar');
+      };
+      installer.validateShardDocAuthoritySplitAndPrecedence = async () => {
+        executionOrder.push('shard-doc-authority');
+        return {
+          authoritativeRecords: [],
+          authoritativePresenceKey: 'capability:bmad-shard-doc',
+        };
+      };
+      installer.validateHelpAuthoritySplitAndPrecedence = async () => {
+        executionOrder.push('help-authority');
+        return {
+          authoritativeRecords: [],
+          authoritativePresenceKey: 'capability:bmad-help',
+        };
+      };
+      installer.generateModuleConfigs = async () => {
+        executionOrder.push('config-generation');
+      };
+      installer.mergeModuleHelpCatalogs = async () => {
+        executionOrder.push('help-catalog-generation');
+      };
+      installer.ManifestGenerator = class ManifestGeneratorStub {
+        async generateManifests() {
+          executionOrder.push('manifest-generation');
+          return {
+            workflows: 0,
+            agents: 0,
+            tasks: 0,
+            tools: 0,
+          };
+        }
+      };
+
       await installer.runConfigurationGenerationTask({
         message: () => {},
         bmadDir: tempInstallerRoot,
         moduleConfigs: { core: {} },
         config: { ides: [] },
         allModules: ['core'],
-        addResult: () => {
-          successResultCount += 1;
+        addResult: (name) => {
+          resultMilestones.push(name);
         },
       });
+
       assert(
-        false,
-        'Installer fail-fast blocks projection generation on sidecar validation failure',
-        'Expected sidecar validation failure but configuration generation completed',
-      );
-    } catch (error) {
-      assert(
-        error.code === HELP_SIDECAR_ERROR_CODES.MAJOR_VERSION_UNSUPPORTED,
-        'Installer fail-fast surfaces sidecar validation error code',
-        `Expected ${HELP_SIDECAR_ERROR_CODES.MAJOR_VERSION_UNSUPPORTED}, got ${error.code}`,
+        executionOrder.join(' -> ') ===
+          'shard-doc-sidecar -> help-sidecar -> shard-doc-authority -> help-authority -> config-generation -> manifest-generation -> help-catalog-generation',
+        'Installer valid sidecar path preserves fail-fast gate ordering and continues generation flow',
+        `Observed order: ${executionOrder.join(' -> ')}`,
       );
       assert(
-        !authorityValidationCalled && !generateConfigsCalled && !manifestGenerationCalled && !helpCatalogGenerationCalled,
-        'Installer fail-fast prevents downstream authority/config/manifest/help generation',
+        resultMilestones.includes('Shard-doc sidecar contract'),
+        'Installer valid sidecar path records explicit shard-doc sidecar gate pass milestone',
       );
       assert(
-        successResultCount === 0,
-        'Installer fail-fast records no successful projection milestones',
-        `Expected 0, got ${successResultCount}`,
+        resultMilestones.includes('Shard-doc authority split'),
+        'Installer valid sidecar path records explicit shard-doc authority gate pass milestone',
       );
     }
   } catch (error) {
@@ -950,6 +1739,78 @@ async function runTests() {
       'alias tuple resolved ambiguously to multiple canonical alias rows',
     );
 
+    const shardDocAliasRows = [
+      {
+        rowIdentity: 'alias-row:bmad-shard-doc:canonical-id',
+        canonicalId: 'bmad-shard-doc',
+        normalizedAliasValue: 'bmad-shard-doc',
+        rawIdentityHasLeadingSlash: false,
+      },
+      {
+        rowIdentity: 'alias-row:bmad-shard-doc:legacy-name',
+        canonicalId: 'bmad-shard-doc',
+        normalizedAliasValue: 'shard-doc',
+        rawIdentityHasLeadingSlash: false,
+      },
+      {
+        rowIdentity: 'alias-row:bmad-shard-doc:slash-command',
+        canonicalId: 'bmad-shard-doc',
+        normalizedAliasValue: 'bmad-shard-doc',
+        rawIdentityHasLeadingSlash: true,
+      },
+    ];
+
+    const shardDocSlashResolution = await normalizeAndResolveExemplarAlias('/bmad-shard-doc', {
+      fieldPath: 'canonicalId',
+      sourcePath: deterministicAliasTableSourcePath,
+      aliasRows: shardDocAliasRows,
+      aliasTableSourcePath: deterministicAliasTableSourcePath,
+    });
+    assert(
+      shardDocSlashResolution.postAliasCanonicalId === 'bmad-shard-doc' &&
+        shardDocSlashResolution.aliasRowLocator === 'alias-row:bmad-shard-doc:slash-command',
+      'Alias resolver normalizes shard-doc slash-command tuple with explicit shard-doc alias rows',
+    );
+
+    await expectAliasNormalizationError(
+      () =>
+        normalizeAndResolveExemplarAlias('/bmad-shard-doc', {
+          fieldPath: 'canonicalId',
+          sourcePath: deterministicAliasTableSourcePath,
+          aliasRows: LOCKED_EXEMPLAR_ALIAS_ROWS,
+          aliasTableSourcePath: deterministicAliasTableSourcePath,
+        }),
+      HELP_ALIAS_NORMALIZATION_ERROR_CODES.UNRESOLVED,
+      'preAliasNormalizedValue',
+      'bmad-shard-doc|leadingSlash:true',
+      'Shard-doc alias tuple unresolved without shard-doc alias table rows',
+      'alias tuple did not resolve to any canonical alias row',
+    );
+
+    const ambiguousShardDocRows = [
+      ...shardDocAliasRows,
+      {
+        rowIdentity: 'alias-row:bmad-shard-doc:slash-command:duplicate',
+        canonicalId: 'bmad-shard-doc-alt',
+        normalizedAliasValue: 'bmad-shard-doc',
+        rawIdentityHasLeadingSlash: true,
+      },
+    ];
+    await expectAliasNormalizationError(
+      () =>
+        normalizeAndResolveExemplarAlias('/bmad-shard-doc', {
+          fieldPath: 'canonicalId',
+          sourcePath: deterministicAliasTableSourcePath,
+          aliasRows: ambiguousShardDocRows,
+          aliasTableSourcePath: deterministicAliasTableSourcePath,
+        }),
+      HELP_ALIAS_NORMALIZATION_ERROR_CODES.UNRESOLVED,
+      'preAliasNormalizedValue',
+      'bmad-shard-doc|leadingSlash:true',
+      'Shard-doc alias tuple ambiguous when duplicate shard-doc slash-command rows exist',
+      'alias tuple resolved ambiguously to multiple canonical alias rows',
+    );
+
     const tempAliasTableRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-canonical-alias-table-'));
     const tempAliasTablePath = path.join(tempAliasTableRoot, 'canonical-aliases.csv');
     const csvRows = [
@@ -1060,6 +1921,14 @@ async function runTests() {
         path: 'core/tasks/validate-workflow.xml',
         standalone: true,
       },
+      {
+        name: 'shard-doc',
+        displayName: 'Shard Document',
+        description: 'Split large markdown documents into smaller files by section with an index.',
+        module: 'core',
+        path: 'core/tasks/shard-doc.xml',
+        standalone: true,
+      },
     ];
     manifestGenerator.helpAuthorityRecords = [
       {
@@ -1071,7 +1940,17 @@ async function runTests() {
         sourcePath: 'bmad-fork/src/core/tasks/help.md',
       },
     ];
-
+    manifestGenerator.taskAuthorityRecords = [
+      ...manifestGenerator.helpAuthorityRecords,
+      {
+        recordType: 'metadata-authority',
+        canonicalId: 'bmad-shard-doc',
+        authoritativePresenceKey: 'capability:bmad-shard-doc',
+        authoritySourceType: 'sidecar',
+        authoritySourcePath: 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml',
+        sourcePath: 'bmad-fork/src/core/tasks/shard-doc.xml',
+      },
+    ];
     const tempTaskManifestConfigDir = path.join(tempTaskManifestRoot, '_config');
     await fs.ensureDir(tempTaskManifestConfigDir);
     await manifestGenerator.writeTaskManifest(tempTaskManifestConfigDir);
@@ -1093,6 +1972,7 @@ async function runTests() {
     });
     const helpTaskRow = writtenTaskManifestRecords.find((record) => record.module === 'core' && record.name === 'help');
     const validateTaskRow = writtenTaskManifestRecords.find((record) => record.module === 'core' && record.name === 'validate-workflow');
+    const shardDocTaskRow = writtenTaskManifestRecords.find((record) => record.module === 'core' && record.name === 'shard-doc');
 
     assert(!!helpTaskRow, 'Task manifest includes exemplar help row');
     assert(helpTaskRow && helpTaskRow.legacyName === 'help', 'Task manifest help row sets legacyName=help');
@@ -1108,13 +1988,61 @@ async function runTests() {
       validateTaskRow && validateTaskRow.legacyName === 'validate-workflow',
       'Task manifest non-exemplar rows remain additive-compatible with default legacyName',
     );
+    assert(!!shardDocTaskRow, 'Task manifest includes converted shard-doc row');
+    assert(shardDocTaskRow && shardDocTaskRow.legacyName === 'shard-doc', 'Task manifest shard-doc row sets legacyName=shard-doc');
+    assert(
+      shardDocTaskRow && shardDocTaskRow.canonicalId === 'bmad-shard-doc',
+      'Task manifest shard-doc row sets canonicalId=bmad-shard-doc',
+    );
+    assert(
+      shardDocTaskRow && shardDocTaskRow.authoritySourceType === 'sidecar',
+      'Task manifest shard-doc row sets authoritySourceType=sidecar',
+    );
+    assert(
+      shardDocTaskRow && shardDocTaskRow.authoritySourcePath === 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml',
+      'Task manifest shard-doc row sets authoritySourcePath to shard-doc sidecar source path',
+    );
+
+    await manifestGenerator.writeTaskManifest(tempTaskManifestConfigDir);
+    const repeatedTaskManifestRaw = await fs.readFile(path.join(tempTaskManifestConfigDir, 'task-manifest.csv'), 'utf8');
+    assert(
+      repeatedTaskManifestRaw === writtenTaskManifestRaw,
+      'Task manifest shard-doc canonical row values remain deterministic across repeated generation runs',
+    );
 
     let capturedAuthorityValidationOptions = null;
+    let capturedShardDocAuthorityValidationOptions = null;
     let capturedManifestHelpAuthorityRecords = null;
+    let capturedManifestTaskAuthorityRecords = null;
     let capturedInstalledFiles = null;
 
     const installer = new Installer();
+    installer.validateShardDocSidecarContractFile = async () => {};
     installer.validateHelpSidecarContractFile = async () => {};
+    installer.validateShardDocAuthoritySplitAndPrecedence = async (options) => {
+      capturedShardDocAuthorityValidationOptions = options;
+      return {
+        authoritativePresenceKey: 'capability:bmad-shard-doc',
+        authoritativeRecords: [
+          {
+            recordType: 'metadata-authority',
+            canonicalId: 'bmad-shard-doc',
+            authoritativePresenceKey: 'capability:bmad-shard-doc',
+            authoritySourceType: 'sidecar',
+            authoritySourcePath: options.sidecarSourcePath,
+            sourcePath: options.sourceXmlSourcePath,
+          },
+          {
+            recordType: 'source-body-authority',
+            canonicalId: 'bmad-shard-doc',
+            authoritativePresenceKey: 'capability:bmad-shard-doc',
+            authoritySourceType: 'source-xml',
+            authoritySourcePath: options.sourceXmlSourcePath,
+            sourcePath: options.sourceXmlSourcePath,
+          },
+        ],
+      };
+    };
     installer.validateHelpAuthoritySplitAndPrecedence = async (options) => {
       capturedAuthorityValidationOptions = options;
       return {
@@ -1137,6 +2065,7 @@ async function runTests() {
       async generateManifests(_bmadDir, _selectedModules, _installedFiles, options = {}) {
         capturedInstalledFiles = _installedFiles;
         capturedManifestHelpAuthorityRecords = options.helpAuthorityRecords;
+        capturedManifestTaskAuthorityRecords = options.taskAuthorityRecords;
         return {
           workflows: 0,
           agents: 0,
@@ -1170,10 +2099,36 @@ async function runTests() {
       'Installer passes locked runtime markdown path to authority validation',
     );
     assert(
+      capturedShardDocAuthorityValidationOptions &&
+        capturedShardDocAuthorityValidationOptions.sidecarSourcePath === 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml',
+      'Installer passes locked shard-doc sidecar source path to shard-doc authority validation',
+    );
+    assert(
+      capturedShardDocAuthorityValidationOptions &&
+        capturedShardDocAuthorityValidationOptions.sourceXmlSourcePath === 'bmad-fork/src/core/tasks/shard-doc.xml',
+      'Installer passes locked shard-doc source XML path to shard-doc authority validation',
+    );
+    assert(
+      capturedShardDocAuthorityValidationOptions &&
+        capturedShardDocAuthorityValidationOptions.compatibilityCatalogSourcePath === 'bmad-fork/src/core/module-help.csv',
+      'Installer passes locked module-help source path to shard-doc authority validation',
+    );
+    assert(
       Array.isArray(capturedManifestHelpAuthorityRecords) &&
         capturedManifestHelpAuthorityRecords[0] &&
         capturedManifestHelpAuthorityRecords[0].authoritySourcePath === 'bmad-fork/src/core/tasks/help.artifact.yaml',
       'Installer passes sidecar authority path into manifest generation options',
+    );
+    assert(
+      Array.isArray(capturedManifestTaskAuthorityRecords) &&
+        capturedManifestTaskAuthorityRecords.some(
+          (record) =>
+            record &&
+            record.canonicalId === 'bmad-shard-doc' &&
+            record.authoritySourceType === 'sidecar' &&
+            record.authoritySourcePath === 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml',
+        ),
+      'Installer passes shard-doc sidecar authority records into task-manifest projection options',
     );
     assert(
       Array.isArray(capturedInstalledFiles) &&
@@ -1208,6 +2163,17 @@ async function runTests() {
         sourcePath: 'bmad-fork/src/core/tasks/help.md',
       },
     ];
+    manifestGenerator.taskAuthorityRecords = [
+      ...manifestGenerator.helpAuthorityRecords,
+      {
+        recordType: 'metadata-authority',
+        canonicalId: 'bmad-shard-doc',
+        authoritativePresenceKey: 'capability:bmad-shard-doc',
+        authoritySourceType: 'sidecar',
+        authoritySourcePath: 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml',
+        sourcePath: 'bmad-fork/src/core/tasks/shard-doc.xml',
+      },
+    ];
 
     const tempCanonicalAliasConfigDir = path.join(tempCanonicalAliasRoot, '_config');
     await fs.ensureDir(tempCanonicalAliasConfigDir);
@@ -1227,96 +2193,142 @@ async function runTests() {
       skip_empty_lines: true,
       trim: true,
     });
-    assert(canonicalAliasRows.length === 3, 'Canonical alias table emits exactly three exemplar rows');
+    assert(canonicalAliasRows.length === 6, 'Canonical alias table emits help + shard-doc canonical alias exemplar rows');
     assert(
-      canonicalAliasRows.map((row) => row.aliasType).join(',') === 'canonical-id,legacy-name,slash-command',
+      canonicalAliasRows.map((row) => row.aliasType).join(',') ===
+        'canonical-id,legacy-name,slash-command,canonical-id,legacy-name,slash-command',
       'Canonical alias table preserves locked deterministic row ordering',
     );
 
-    const expectedRowsByType = new Map([
+    const expectedRowsByIdentity = new Map([
       [
-        'canonical-id',
+        'alias-row:bmad-help:canonical-id',
         {
           canonicalId: 'bmad-help',
           alias: 'bmad-help',
-          rowIdentity: 'alias-row:bmad-help:canonical-id',
+          aliasType: 'canonical-id',
+          authoritySourcePath: 'bmad-fork/src/core/tasks/help.artifact.yaml',
           normalizedAliasValue: 'bmad-help',
           rawIdentityHasLeadingSlash: 'false',
           resolutionEligibility: 'canonical-id-only',
         },
       ],
       [
-        'legacy-name',
+        'alias-row:bmad-help:legacy-name',
         {
           canonicalId: 'bmad-help',
           alias: 'help',
-          rowIdentity: 'alias-row:bmad-help:legacy-name',
+          aliasType: 'legacy-name',
+          authoritySourcePath: 'bmad-fork/src/core/tasks/help.artifact.yaml',
           normalizedAliasValue: 'help',
           rawIdentityHasLeadingSlash: 'false',
           resolutionEligibility: 'legacy-name-only',
         },
       ],
       [
-        'slash-command',
+        'alias-row:bmad-help:slash-command',
         {
           canonicalId: 'bmad-help',
           alias: '/bmad-help',
-          rowIdentity: 'alias-row:bmad-help:slash-command',
+          aliasType: 'slash-command',
+          authoritySourcePath: 'bmad-fork/src/core/tasks/help.artifact.yaml',
           normalizedAliasValue: 'bmad-help',
+          rawIdentityHasLeadingSlash: 'true',
+          resolutionEligibility: 'slash-command-only',
+        },
+      ],
+      [
+        'alias-row:bmad-shard-doc:canonical-id',
+        {
+          canonicalId: 'bmad-shard-doc',
+          alias: 'bmad-shard-doc',
+          aliasType: 'canonical-id',
+          authoritySourcePath: 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml',
+          normalizedAliasValue: 'bmad-shard-doc',
+          rawIdentityHasLeadingSlash: 'false',
+          resolutionEligibility: 'canonical-id-only',
+        },
+      ],
+      [
+        'alias-row:bmad-shard-doc:legacy-name',
+        {
+          canonicalId: 'bmad-shard-doc',
+          alias: 'shard-doc',
+          aliasType: 'legacy-name',
+          authoritySourcePath: 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml',
+          normalizedAliasValue: 'shard-doc',
+          rawIdentityHasLeadingSlash: 'false',
+          resolutionEligibility: 'legacy-name-only',
+        },
+      ],
+      [
+        'alias-row:bmad-shard-doc:slash-command',
+        {
+          canonicalId: 'bmad-shard-doc',
+          alias: '/bmad-shard-doc',
+          aliasType: 'slash-command',
+          authoritySourcePath: 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml',
+          normalizedAliasValue: 'bmad-shard-doc',
           rawIdentityHasLeadingSlash: 'true',
           resolutionEligibility: 'slash-command-only',
         },
       ],
     ]);
 
-    for (const [aliasType, expectedRow] of expectedRowsByType) {
-      const matchingRows = canonicalAliasRows.filter((row) => row.aliasType === aliasType);
-      assert(matchingRows.length === 1, `Canonical alias table emits exactly one ${aliasType} exemplar row`);
+    for (const [rowIdentity, expectedRow] of expectedRowsByIdentity) {
+      const matchingRows = canonicalAliasRows.filter((row) => row.rowIdentity === rowIdentity);
+      assert(matchingRows.length === 1, `Canonical alias table emits exactly one ${rowIdentity} exemplar row`);
 
       const row = matchingRows[0];
       assert(
-        row && row.authoritySourceType === 'sidecar' && row.authoritySourcePath === 'bmad-fork/src/core/tasks/help.artifact.yaml',
-        `${aliasType} exemplar row uses sidecar provenance fields`,
+        row && row.authoritySourceType === 'sidecar' && row.authoritySourcePath === expectedRow.authoritySourcePath,
+        `${rowIdentity} exemplar row uses locked sidecar provenance`,
       );
-      assert(row && row.canonicalId === expectedRow.canonicalId, `${aliasType} exemplar row locks canonicalId contract`);
-      assert(row && row.alias === expectedRow.alias, `${aliasType} exemplar row locks alias contract`);
-      assert(row && row.rowIdentity === expectedRow.rowIdentity, `${aliasType} exemplar row locks rowIdentity contract`);
+      assert(row && row.canonicalId === expectedRow.canonicalId, `${rowIdentity} exemplar row locks canonicalId contract`);
+      assert(row && row.alias === expectedRow.alias, `${rowIdentity} exemplar row locks alias contract`);
+      assert(row && row.aliasType === expectedRow.aliasType, `${rowIdentity} exemplar row locks aliasType contract`);
+      assert(row && row.rowIdentity === rowIdentity, `${rowIdentity} exemplar row locks rowIdentity contract`);
       assert(
         row && row.normalizedAliasValue === expectedRow.normalizedAliasValue,
-        `${aliasType} exemplar row locks normalizedAliasValue contract`,
+        `${rowIdentity} exemplar row locks normalizedAliasValue contract`,
       );
       assert(
         row && row.rawIdentityHasLeadingSlash === expectedRow.rawIdentityHasLeadingSlash,
-        `${aliasType} exemplar row locks rawIdentityHasLeadingSlash contract`,
+        `${rowIdentity} exemplar row locks rawIdentityHasLeadingSlash contract`,
       );
       assert(
         row && row.resolutionEligibility === expectedRow.resolutionEligibility,
-        `${aliasType} exemplar row locks resolutionEligibility contract`,
+        `${rowIdentity} exemplar row locks resolutionEligibility contract`,
       );
     }
 
     const validateLockedCanonicalAliasProjection = (rows) => {
-      for (const [aliasType, expectedRow] of expectedRowsByType) {
-        const matchingRows = rows.filter((row) => row.canonicalId === 'bmad-help' && row.aliasType === aliasType);
+      for (const [rowIdentity, expectedRow] of expectedRowsByIdentity) {
+        const matchingRows = rows.filter((row) => row.rowIdentity === rowIdentity);
         if (matchingRows.length === 0) {
-          return { valid: false, reason: `missing:${aliasType}` };
+          return { valid: false, reason: `missing:${rowIdentity}` };
         }
         if (matchingRows.length > 1) {
-          return { valid: false, reason: `conflict:${aliasType}` };
+          return { valid: false, reason: `conflict:${rowIdentity}` };
         }
 
         const row = matchingRows[0];
         if (
-          row.rowIdentity !== expectedRow.rowIdentity ||
+          row.canonicalId !== expectedRow.canonicalId ||
+          row.alias !== expectedRow.alias ||
+          row.aliasType !== expectedRow.aliasType ||
+          row.authoritySourceType !== 'sidecar' ||
+          row.authoritySourcePath !== expectedRow.authoritySourcePath ||
+          row.rowIdentity !== rowIdentity ||
           row.normalizedAliasValue !== expectedRow.normalizedAliasValue ||
           row.rawIdentityHasLeadingSlash !== expectedRow.rawIdentityHasLeadingSlash ||
           row.resolutionEligibility !== expectedRow.resolutionEligibility
         ) {
-          return { valid: false, reason: `conflict:${aliasType}` };
+          return { valid: false, reason: `conflict:${rowIdentity}` };
         }
       }
 
-      if (rows.length !== expectedRowsByType.size) {
+      if (rows.length !== expectedRowsByIdentity.size) {
         return { valid: false, reason: 'conflict:extra-rows' };
       }
 
@@ -1330,23 +2342,22 @@ async function runTests() {
       baselineProjectionValidation.reason,
     );
 
-    const missingLegacyRows = canonicalAliasRows.filter((row) => row.aliasType !== 'legacy-name');
+    const missingLegacyRows = canonicalAliasRows.filter((row) => row.rowIdentity !== 'alias-row:bmad-shard-doc:legacy-name');
     const missingLegacyValidation = validateLockedCanonicalAliasProjection(missingLegacyRows);
     assert(
-      !missingLegacyValidation.valid && missingLegacyValidation.reason === 'missing:legacy-name',
-      'Canonical alias projection validator fails when required legacy-name row is missing',
+      !missingLegacyValidation.valid && missingLegacyValidation.reason === 'missing:alias-row:bmad-shard-doc:legacy-name',
+      'Canonical alias projection validator fails when required shard-doc legacy-name row is missing',
     );
 
     const conflictingRows = [
       ...canonicalAliasRows,
       {
-        ...canonicalAliasRows.find((row) => row.aliasType === 'slash-command'),
-        rowIdentity: 'alias-row:bmad-help:slash-command:duplicate',
+        ...canonicalAliasRows.find((row) => row.rowIdentity === 'alias-row:bmad-help:slash-command'),
       },
     ];
     const conflictingValidation = validateLockedCanonicalAliasProjection(conflictingRows);
     assert(
-      !conflictingValidation.valid && conflictingValidation.reason === 'conflict:slash-command',
+      !conflictingValidation.valid && conflictingValidation.reason === 'conflict:alias-row:bmad-help:slash-command',
       'Canonical alias projection validator fails when conflicting duplicate exemplar rows appear',
     );
 
@@ -1354,6 +2365,8 @@ async function runTests() {
     fallbackManifestGenerator.bmadDir = tempCanonicalAliasRoot;
     fallbackManifestGenerator.bmadFolderName = '_bmad';
     fallbackManifestGenerator.helpAuthorityRecords = [];
+    fallbackManifestGenerator.taskAuthorityRecords = [];
+    fallbackManifestGenerator.includeConvertedShardDocAliasRows = true;
     const fallbackCanonicalAliasPath = await fallbackManifestGenerator.writeCanonicalAliasManifest(tempCanonicalAliasConfigDir);
     const fallbackCanonicalAliasRaw = await fs.readFile(fallbackCanonicalAliasPath, 'utf8');
     const fallbackCanonicalAliasRows = csv.parse(fallbackCanonicalAliasRaw, {
@@ -1362,9 +2375,18 @@ async function runTests() {
       trim: true,
     });
     assert(
-      fallbackCanonicalAliasRows.every(
-        (row) => row.authoritySourceType === 'sidecar' && row.authoritySourcePath === 'bmad-fork/src/core/tasks/help.artifact.yaml',
-      ),
+      fallbackCanonicalAliasRows.every((row) => {
+        if (row.authoritySourceType !== 'sidecar') {
+          return false;
+        }
+        if (row.canonicalId === 'bmad-help') {
+          return row.authoritySourcePath === 'bmad-fork/src/core/tasks/help.artifact.yaml';
+        }
+        if (row.canonicalId === 'bmad-shard-doc') {
+          return row.authoritySourcePath === 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml';
+        }
+        return false;
+      }),
       'Canonical alias table falls back to locked sidecar provenance when authority records are unavailable',
     );
 
@@ -1378,6 +2400,7 @@ async function runTests() {
         ides: [],
         preservedModules: [],
         helpAuthorityRecords: manifestGenerator.helpAuthorityRecords,
+        taskAuthorityRecords: manifestGenerator.taskAuthorityRecords,
       },
     );
 
@@ -1477,10 +2500,16 @@ async function runTests() {
     });
 
     const exemplarRows = generatedHelpRows.filter((row) => row.command === 'bmad-help');
+    const shardDocRows = generatedHelpRows.filter((row) => row.command === 'bmad-shard-doc');
     assert(exemplarRows.length === 1, 'Help catalog emits exactly one exemplar raw command row for bmad-help');
     assert(
       exemplarRows[0] && exemplarRows[0].name === 'bmad-help',
       'Help catalog exemplar row preserves locked bmad-help workflow identity',
+    );
+    assert(shardDocRows.length === 1, 'Help catalog emits exactly one shard-doc raw command row for bmad-shard-doc');
+    assert(
+      shardDocRows[0] && shardDocRows[0]['workflow-file'] === '_bmad/core/tasks/shard-doc.xml',
+      'Help catalog shard-doc row preserves locked shard-doc workflow identity',
     );
 
     const sidecarRaw = await fs.readFile(path.join(projectRoot, 'src', 'core', 'tasks', 'help.artifact.yaml'), 'utf8');
@@ -1491,18 +2520,32 @@ async function runTests() {
     );
 
     const commandLabelRows = installer.helpCatalogCommandLabelReportRows || [];
-    assert(commandLabelRows.length === 1, 'Installer emits one command-label report row for exemplar canonical id');
+    const helpCommandLabelRow = commandLabelRows.find((row) => row.canonicalId === 'bmad-help');
+    const shardDocCommandLabelRow = commandLabelRows.find((row) => row.canonicalId === 'bmad-shard-doc');
+    assert(commandLabelRows.length === 2, 'Installer emits command-label report rows for help and shard-doc canonical ids');
     assert(
-      commandLabelRows[0] &&
-        commandLabelRows[0].rawCommandValue === 'bmad-help' &&
-        commandLabelRows[0].displayedCommandLabel === '/bmad-help',
+      helpCommandLabelRow &&
+        helpCommandLabelRow.rawCommandValue === 'bmad-help' &&
+        helpCommandLabelRow.displayedCommandLabel === '/bmad-help',
       'Command-label report locks raw and displayed command values for exemplar',
     );
     assert(
-      commandLabelRows[0] &&
-        commandLabelRows[0].authoritySourceType === 'sidecar' &&
-        commandLabelRows[0].authoritySourcePath === 'bmad-fork/src/core/tasks/help.artifact.yaml',
+      helpCommandLabelRow &&
+        helpCommandLabelRow.authoritySourceType === 'sidecar' &&
+        helpCommandLabelRow.authoritySourcePath === 'bmad-fork/src/core/tasks/help.artifact.yaml',
       'Command-label report includes sidecar provenance linkage',
+    );
+    assert(
+      shardDocCommandLabelRow &&
+        shardDocCommandLabelRow.rawCommandValue === 'bmad-shard-doc' &&
+        shardDocCommandLabelRow.displayedCommandLabel === '/bmad-shard-doc',
+      'Command-label report locks raw and displayed command values for shard-doc',
+    );
+    assert(
+      shardDocCommandLabelRow &&
+        shardDocCommandLabelRow.authoritySourceType === 'sidecar' &&
+        shardDocCommandLabelRow.authoritySourcePath === 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml',
+      'Command-label report includes shard-doc sidecar provenance linkage',
     );
     const generatedCommandLabelReportRaw = await fs.readFile(generatedCommandLabelReportPath, 'utf8');
     const generatedCommandLabelReportRows = csv.parse(generatedCommandLabelReportRaw, {
@@ -1510,11 +2553,17 @@ async function runTests() {
       skip_empty_lines: true,
       trim: true,
     });
+    const generatedHelpCommandLabelRow = generatedCommandLabelReportRows.find((row) => row.canonicalId === 'bmad-help');
+    const generatedShardDocCommandLabelRow = generatedCommandLabelReportRows.find((row) => row.canonicalId === 'bmad-shard-doc');
     assert(
-      generatedCommandLabelReportRows.length === 1 &&
-        generatedCommandLabelReportRows[0].displayedCommandLabel === '/bmad-help' &&
-        generatedCommandLabelReportRows[0].rowCountForCanonicalId === '1',
-      'Installer persists command-label report artifact with locked exemplar label contract values',
+      generatedCommandLabelReportRows.length === 2 &&
+        generatedHelpCommandLabelRow &&
+        generatedHelpCommandLabelRow.displayedCommandLabel === '/bmad-help' &&
+        generatedHelpCommandLabelRow.rowCountForCanonicalId === '1' &&
+        generatedShardDocCommandLabelRow &&
+        generatedShardDocCommandLabelRow.displayedCommandLabel === '/bmad-shard-doc' &&
+        generatedShardDocCommandLabelRow.rowCountForCanonicalId === '1',
+      'Installer persists command-label report artifact with locked help and shard-doc label contract values',
     );
 
     const baselineLabelContract = evaluateExemplarCommandLabelReportRows(commandLabelRows);
@@ -1523,10 +2572,100 @@ async function runTests() {
       'Command-label validator passes when exactly one exemplar /bmad-help displayed label row exists',
       baselineLabelContract.reason,
     );
+    const baselineShardDocLabelContract = evaluateExemplarCommandLabelReportRows(commandLabelRows, {
+      canonicalId: 'bmad-shard-doc',
+      displayedCommandLabel: '/bmad-shard-doc',
+      authoritySourcePath: 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml',
+    });
+    assert(
+      baselineShardDocLabelContract.valid,
+      'Command-label validator passes when exactly one /bmad-shard-doc displayed label row exists',
+      baselineShardDocLabelContract.reason,
+    );
+
+    const commandDocsSourcePath = path.join(projectRoot, 'docs', 'reference', 'commands.md');
+    const commandDocsMarkdown = await fs.readFile(commandDocsSourcePath, 'utf8');
+    const commandDocConsistency = validateCommandDocSurfaceConsistency(commandDocsMarkdown, {
+      sourcePath: 'docs/reference/commands.md',
+      generatedSurfacePath: '_bmad/_config/bmad-help-command-label-report.csv',
+      commandLabelRows,
+      canonicalId: 'bmad-shard-doc',
+      expectedDisplayedCommandLabel: '/bmad-shard-doc',
+      disallowedAliasLabels: ['/shard-doc'],
+    });
+    assert(
+      commandDocConsistency.generatedCanonicalCommand === '/bmad-shard-doc',
+      'Command-doc consistency validator passes when generated shard-doc command matches command docs canonical label',
+    );
+
+    const missingCanonicalCommandDocsMarkdown = commandDocsMarkdown.replace(
+      '| `/bmad-shard-doc` | Split a large markdown file into smaller sections |',
+      '| `/bmad-shard-doc-renamed` | Split a large markdown file into smaller sections |',
+    );
+    try {
+      validateCommandDocSurfaceConsistency(missingCanonicalCommandDocsMarkdown, {
+        sourcePath: 'docs/reference/commands.md',
+        generatedSurfacePath: '_bmad/_config/bmad-help-command-label-report.csv',
+        commandLabelRows,
+        canonicalId: 'bmad-shard-doc',
+        expectedDisplayedCommandLabel: '/bmad-shard-doc',
+        disallowedAliasLabels: ['/shard-doc'],
+      });
+      assert(false, 'Command-doc consistency validator rejects missing canonical shard-doc command rows');
+    } catch (error) {
+      assert(
+        error.code === PROJECTION_COMPATIBILITY_ERROR_CODES.COMMAND_DOC_CANONICAL_COMMAND_MISSING,
+        'Command-doc consistency validator emits deterministic diagnostics for missing canonical shard-doc command docs row',
+        `Expected ${PROJECTION_COMPATIBILITY_ERROR_CODES.COMMAND_DOC_CANONICAL_COMMAND_MISSING}, got ${error.code}`,
+      );
+    }
+
+    const aliasAmbiguousCommandDocsMarkdown = `${commandDocsMarkdown}\n| \`/shard-doc\` | Legacy alias |\n`;
+    try {
+      validateCommandDocSurfaceConsistency(aliasAmbiguousCommandDocsMarkdown, {
+        sourcePath: 'docs/reference/commands.md',
+        generatedSurfacePath: '_bmad/_config/bmad-help-command-label-report.csv',
+        commandLabelRows,
+        canonicalId: 'bmad-shard-doc',
+        expectedDisplayedCommandLabel: '/bmad-shard-doc',
+        disallowedAliasLabels: ['/shard-doc'],
+      });
+      assert(false, 'Command-doc consistency validator rejects shard-doc alias ambiguity in command docs');
+    } catch (error) {
+      assert(
+        error.code === PROJECTION_COMPATIBILITY_ERROR_CODES.COMMAND_DOC_ALIAS_AMBIGUOUS,
+        'Command-doc consistency validator emits deterministic diagnostics for shard-doc alias ambiguity in command docs',
+        `Expected ${PROJECTION_COMPATIBILITY_ERROR_CODES.COMMAND_DOC_ALIAS_AMBIGUOUS}, got ${error.code}`,
+      );
+    }
+
+    try {
+      validateCommandDocSurfaceConsistency(commandDocsMarkdown, {
+        sourcePath: 'docs/reference/commands.md',
+        generatedSurfacePath: '_bmad/_config/bmad-help-command-label-report.csv',
+        commandLabelRows: [
+          helpCommandLabelRow,
+          {
+            ...shardDocCommandLabelRow,
+            displayedCommandLabel: '/shard-doc',
+          },
+        ],
+        canonicalId: 'bmad-shard-doc',
+        expectedDisplayedCommandLabel: '/bmad-shard-doc',
+        disallowedAliasLabels: ['/shard-doc'],
+      });
+      assert(false, 'Command-doc consistency validator rejects generated shard-doc command-label drift');
+    } catch (error) {
+      assert(
+        error.code === PROJECTION_COMPATIBILITY_ERROR_CODES.COMMAND_DOC_GENERATED_SURFACE_MISMATCH,
+        'Command-doc consistency validator emits deterministic diagnostics for generated shard-doc command-label drift',
+        `Expected ${PROJECTION_COMPATIBILITY_ERROR_CODES.COMMAND_DOC_GENERATED_SURFACE_MISMATCH}, got ${error.code}`,
+      );
+    }
 
     const invalidLegacyLabelContract = evaluateExemplarCommandLabelReportRows([
       {
-        ...commandLabelRows[0],
+        ...helpCommandLabelRow,
         displayedCommandLabel: 'help',
       },
     ]);
@@ -1537,13 +2676,32 @@ async function runTests() {
 
     const invalidSlashHelpLabelContract = evaluateExemplarCommandLabelReportRows([
       {
-        ...commandLabelRows[0],
+        ...helpCommandLabelRow,
         displayedCommandLabel: '/help',
       },
     ]);
     assert(
       !invalidSlashHelpLabelContract.valid && invalidSlashHelpLabelContract.reason === 'invalid-displayed-label:/help',
       'Command-label validator fails on alternate displayed label form "/help"',
+    );
+
+    const invalidShardDocLabelContract = evaluateExemplarCommandLabelReportRows(
+      [
+        helpCommandLabelRow,
+        {
+          ...shardDocCommandLabelRow,
+          displayedCommandLabel: '/shard-doc',
+        },
+      ],
+      {
+        canonicalId: 'bmad-shard-doc',
+        displayedCommandLabel: '/bmad-shard-doc',
+        authoritySourcePath: 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml',
+      },
+    );
+    assert(
+      !invalidShardDocLabelContract.valid && invalidShardDocLabelContract.reason === 'invalid-displayed-label:/shard-doc',
+      'Command-label validator fails on alternate shard-doc displayed label form "/shard-doc"',
     );
 
     const pipelineRows = installer.helpCatalogPipelineRows || [];
@@ -1650,6 +2808,20 @@ async function runTests() {
       }),
       'utf8',
     );
+    await fs.writeFile(
+      path.join(tempExportRoot, 'bmad-fork', 'src', 'core', 'tasks', 'shard-doc.artifact.yaml'),
+      yaml.stringify({
+        schemaVersion: 1,
+        canonicalId: 'bmad-shard-doc',
+        artifactType: 'task',
+        module: 'core',
+        sourcePath: 'bmad-fork/src/core/tasks/shard-doc.xml',
+        displayName: 'Shard Document',
+        description: 'Split large markdown documents into smaller files by section with an index.',
+        dependencies: { requires: [] },
+      }),
+      'utf8',
+    );
 
     const exemplarTaskArtifact = {
       type: 'task',
@@ -1658,6 +2830,14 @@ async function runTests() {
       sourcePath: path.join(tempExportRoot, '_bmad', 'core', 'tasks', 'help.md'),
       relativePath: path.join('core', 'tasks', 'help.md'),
       content: '---\nname: help\ndescription: Help command\ncanonicalId: bmad-help\n---\n\n# help\n',
+    };
+    const shardDocTaskArtifact = {
+      type: 'task',
+      name: 'shard-doc',
+      module: 'core',
+      sourcePath: path.join(tempExportRoot, '_bmad', 'core', 'tasks', 'shard-doc.xml'),
+      relativePath: path.join('core', 'tasks', 'shard-doc.md'),
+      content: '<task id="shard-doc"><description>Split markdown docs</description></task>\n',
     };
 
     const writtenCount = await codexSetup.writeSkillArtifacts(skillsDir, [exemplarTaskArtifact], 'task', {
@@ -1687,6 +2867,64 @@ async function runTests() {
         exportDerivationRecord.exportIdDerivationSourcePath === 'bmad-fork/src/core/tasks/help.artifact.yaml',
       'Codex export records exemplar derivation source metadata from sidecar canonical-id',
     );
+
+    const shardDocWrittenCount = await codexSetup.writeSkillArtifacts(skillsDir, [shardDocTaskArtifact], 'task', {
+      projectDir: tempExportRoot,
+    });
+    assert(shardDocWrittenCount === 1, 'Codex export writes one shard-doc converted skill artifact');
+
+    const shardDocSkillPath = path.join(skillsDir, 'bmad-shard-doc', 'SKILL.md');
+    assert(await fs.pathExists(shardDocSkillPath), 'Codex export derives shard-doc skill path from sidecar canonical identity');
+
+    const shardDocSkillRaw = await fs.readFile(shardDocSkillPath, 'utf8');
+    const shardDocFrontmatterMatch = shardDocSkillRaw.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+    const shardDocFrontmatter = shardDocFrontmatterMatch ? yaml.parse(shardDocFrontmatterMatch[1]) : null;
+    assert(
+      shardDocFrontmatter && shardDocFrontmatter.name === 'bmad-shard-doc',
+      'Codex export frontmatter sets shard-doc required name from sidecar canonical identity',
+    );
+
+    const shardDocExportDerivationRecord = codexSetup.exportDerivationRecords.find(
+      (row) => row.exportPath === '.agents/skills/bmad-shard-doc/SKILL.md',
+    );
+    assert(
+      shardDocExportDerivationRecord &&
+        shardDocExportDerivationRecord.exportIdDerivationSourceType === EXEMPLAR_HELP_EXPORT_DERIVATION_SOURCE_TYPE &&
+        shardDocExportDerivationRecord.exportIdDerivationSourcePath === 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml' &&
+        shardDocExportDerivationRecord.sourcePath === 'bmad-fork/src/core/tasks/shard-doc.xml',
+      'Codex export records shard-doc sidecar-canonical derivation metadata and source path',
+    );
+
+    const duplicateExportSetup = new CodexSetup();
+    const duplicateSkillDir = path.join(tempExportRoot, '.agents', 'skills-duplicate-check');
+    await fs.ensureDir(duplicateSkillDir);
+    try {
+      await duplicateExportSetup.writeSkillArtifacts(
+        duplicateSkillDir,
+        [
+          shardDocTaskArtifact,
+          {
+            ...shardDocTaskArtifact,
+            content: '<task id="shard-doc"><description>Duplicate shard-doc export artifact</description></task>\n',
+          },
+        ],
+        'task',
+        {
+          projectDir: tempExportRoot,
+        },
+      );
+      assert(
+        false,
+        'Codex export rejects duplicate shard-doc canonical-id skill export surfaces',
+        'Expected duplicate export-surface failure but export succeeded',
+      );
+    } catch (error) {
+      assert(
+        error.code === CODEX_EXPORT_DERIVATION_ERROR_CODES.DUPLICATE_EXPORT_SURFACE,
+        'Codex export duplicate shard-doc canonical-id rejection returns deterministic failure code',
+        `Expected ${CODEX_EXPORT_DERIVATION_ERROR_CODES.DUPLICATE_EXPORT_SURFACE}, got ${error.code}`,
+      );
+    }
 
     const tempSubmoduleRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-export-submodule-root-'));
     try {
@@ -1790,6 +3028,47 @@ async function runTests() {
       }
     } finally {
       await fs.remove(tempInferenceRoot);
+    }
+
+    const tempShardDocInferenceRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-export-no-shard-doc-inference-'));
+    try {
+      const noShardDocInferenceSetup = new CodexSetup();
+      const noShardDocInferenceSkillDir = path.join(tempShardDocInferenceRoot, '.agents', 'skills');
+      await fs.ensureDir(noShardDocInferenceSkillDir);
+      await fs.ensureDir(path.join(tempShardDocInferenceRoot, 'bmad-fork', 'src', 'core', 'tasks'));
+      await fs.writeFile(
+        path.join(tempShardDocInferenceRoot, 'bmad-fork', 'src', 'core', 'tasks', 'shard-doc.artifact.yaml'),
+        yaml.stringify({
+          schemaVersion: 1,
+          canonicalId: 'nonexistent-shard-doc-id',
+          artifactType: 'task',
+          module: 'core',
+          sourcePath: 'bmad-fork/src/core/tasks/shard-doc.xml',
+          displayName: 'Shard Document',
+          description: 'Split large markdown documents into smaller files by section with an index.',
+          dependencies: { requires: [] },
+        }),
+        'utf8',
+      );
+
+      try {
+        await noShardDocInferenceSetup.writeSkillArtifacts(noShardDocInferenceSkillDir, [shardDocTaskArtifact], 'task', {
+          projectDir: tempShardDocInferenceRoot,
+        });
+        assert(
+          false,
+          'Codex export rejects path-inferred shard-doc id when sidecar canonical-id derivation is unresolved',
+          'Expected shard-doc canonical-id derivation failure but export succeeded',
+        );
+      } catch (error) {
+        assert(
+          error.code === CODEX_EXPORT_DERIVATION_ERROR_CODES.CANONICAL_ID_DERIVATION_FAILED,
+          'Codex export unresolved shard-doc canonical-id derivation returns deterministic failure code',
+          `Expected ${CODEX_EXPORT_DERIVATION_ERROR_CODES.CANONICAL_ID_DERIVATION_FAILED}, got ${error.code}`,
+        );
+      }
+    } finally {
+      await fs.remove(tempShardDocInferenceRoot);
     }
 
     const compatibilitySetup = new CodexSetup();
@@ -1992,6 +3271,25 @@ async function runTests() {
         futureAdditiveField: 'wave-1',
       },
       {
+        module: 'core',
+        phase: 'anytime',
+        name: 'Shard Document',
+        code: 'SD',
+        sequence: '',
+        'workflow-file': '_bmad/core/tasks/shard-doc.xml',
+        command: 'bmad-shard-doc',
+        required: 'false',
+        'agent-name': '',
+        'agent-command': '',
+        'agent-display-name': '',
+        'agent-title': '',
+        options: '',
+        description: 'Shard document command',
+        'output-location': '',
+        outputs: '',
+        futureAdditiveField: 'wave-1',
+      },
+      {
         module: 'bmm',
         phase: 'planning',
         name: 'create-story',
@@ -2041,9 +3339,9 @@ async function runTests() {
     const loadedHelpRows = await githubCopilotSetup.loadBmadHelp(tempCompatibilityRoot);
     assert(
       Array.isArray(loadedHelpRows) &&
-        loadedHelpRows.length === 2 &&
-        loadedHelpRows[0]['workflow-file'] === '_bmad/core/tasks/help.md' &&
-        loadedHelpRows[0].command === 'bmad-help',
+        loadedHelpRows.length === 3 &&
+        loadedHelpRows.some((row) => row['workflow-file'] === '_bmad/core/tasks/help.md' && row.command === 'bmad-help') &&
+        loadedHelpRows.some((row) => row['workflow-file'] === '_bmad/core/tasks/shard-doc.xml' && row.command === 'bmad-shard-doc'),
       'GitHub Copilot help loader remains parseable with additive help-catalog columns',
     );
 
@@ -2060,6 +3358,45 @@ async function runTests() {
       assert(
         error.code === PROJECTION_COMPATIBILITY_ERROR_CODES.HELP_CATALOG_HEADER_PREFIX_MISMATCH && error.fieldPath === 'header[5]',
         'Help-catalog validator emits deterministic diagnostics for reordered compatibility headers',
+      );
+    }
+
+    const missingShardDocRows = validHelpRows.filter((row) => row.command !== 'bmad-shard-doc');
+    const missingShardDocCsv =
+      [helpCatalogColumns.join(','), ...missingShardDocRows.map((row) => buildCsvLine(helpCatalogColumns, row))].join('\n') + '\n';
+    try {
+      validateHelpCatalogCompatibilitySurface(missingShardDocCsv, {
+        sourcePath: '_bmad/_config/bmad-help.csv',
+      });
+      assert(false, 'Help-catalog validator rejects missing shard-doc canonical command rows');
+    } catch (error) {
+      assert(
+        error.code === PROJECTION_COMPATIBILITY_ERROR_CODES.HELP_CATALOG_SHARD_DOC_ROW_CONTRACT_FAILED &&
+          error.fieldPath === 'rows[*].command' &&
+          error.observedValue === '0',
+        'Help-catalog validator emits deterministic diagnostics for missing shard-doc canonical command rows',
+      );
+    }
+
+    const shardDocBaselineRow = validHelpRows.find((row) => row.command === 'bmad-shard-doc');
+    const duplicateShardDocCsv =
+      [
+        helpCatalogColumns.join(','),
+        ...[...validHelpRows, { ...shardDocBaselineRow, name: 'Shard Document Duplicate' }].map((row) =>
+          buildCsvLine(helpCatalogColumns, row),
+        ),
+      ].join('\n') + '\n';
+    try {
+      validateHelpCatalogCompatibilitySurface(duplicateShardDocCsv, {
+        sourcePath: '_bmad/_config/bmad-help.csv',
+      });
+      assert(false, 'Help-catalog validator rejects duplicate shard-doc canonical command rows');
+    } catch (error) {
+      assert(
+        error.code === PROJECTION_COMPATIBILITY_ERROR_CODES.HELP_CATALOG_SHARD_DOC_ROW_CONTRACT_FAILED &&
+          error.fieldPath === 'rows[*].command' &&
+          error.observedValue === '2',
+        'Help-catalog validator emits deterministic diagnostics for duplicate shard-doc canonical command rows',
       );
     }
 
@@ -2254,6 +3591,24 @@ async function runTests() {
           'output-location': '',
           outputs: '',
         },
+        {
+          module: 'core',
+          phase: 'anytime',
+          name: 'Shard Document',
+          code: 'SD',
+          sequence: '',
+          'workflow-file': '_bmad/core/tasks/shard-doc.xml',
+          command: 'bmad-shard-doc',
+          required: 'false',
+          'agent-name': '',
+          'agent-command': '',
+          'agent-display-name': '',
+          'agent-title': '',
+          options: '',
+          description: 'Split large markdown documents into smaller files by section with an index.',
+          'output-location': '',
+          outputs: '',
+        },
       ],
     );
     await writeCsv(
@@ -2286,6 +3641,21 @@ async function runTests() {
           agent: '',
           options: '',
           description: 'Help command',
+          'output-location': '',
+          outputs: '',
+        },
+        {
+          module: 'core',
+          phase: 'anytime',
+          name: 'Shard Document',
+          code: 'SD',
+          sequence: '',
+          'workflow-file': '_bmad/core/tasks/shard-doc.xml',
+          command: 'bmad-shard-doc',
+          required: 'false',
+          agent: '',
+          options: '',
+          description: 'Split large markdown documents into smaller files by section with an index.',
           'output-location': '',
           outputs: '',
         },

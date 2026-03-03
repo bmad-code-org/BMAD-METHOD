@@ -15,6 +15,7 @@ const { validateTaskManifestCompatibilitySurface } = require('./projection-compa
 // Load package.json for version info
 const packageJson = require('../../../../../package.json');
 const DEFAULT_EXEMPLAR_HELP_SIDECAR_SOURCE_PATH = 'bmad-fork/src/core/tasks/help.artifact.yaml';
+const DEFAULT_EXEMPLAR_SHARD_DOC_SIDECAR_SOURCE_PATH = 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml';
 const CANONICAL_ALIAS_TABLE_COLUMNS = Object.freeze([
   'canonicalId',
   'alias',
@@ -55,6 +56,35 @@ const LOCKED_CANONICAL_ALIAS_TABLE_EXEMPLAR_ROWS = Object.freeze([
     resolutionEligibility: 'slash-command-only',
   }),
 ]);
+const LOCKED_CANONICAL_ALIAS_TABLE_SHARD_DOC_ROWS = Object.freeze([
+  Object.freeze({
+    canonicalId: 'bmad-shard-doc',
+    alias: 'bmad-shard-doc',
+    aliasType: 'canonical-id',
+    rowIdentity: 'alias-row:bmad-shard-doc:canonical-id',
+    normalizedAliasValue: 'bmad-shard-doc',
+    rawIdentityHasLeadingSlash: false,
+    resolutionEligibility: 'canonical-id-only',
+  }),
+  Object.freeze({
+    canonicalId: 'bmad-shard-doc',
+    alias: 'shard-doc',
+    aliasType: 'legacy-name',
+    rowIdentity: 'alias-row:bmad-shard-doc:legacy-name',
+    normalizedAliasValue: 'shard-doc',
+    rawIdentityHasLeadingSlash: false,
+    resolutionEligibility: 'legacy-name-only',
+  }),
+  Object.freeze({
+    canonicalId: 'bmad-shard-doc',
+    alias: '/bmad-shard-doc',
+    aliasType: 'slash-command',
+    rowIdentity: 'alias-row:bmad-shard-doc:slash-command',
+    normalizedAliasValue: 'bmad-shard-doc',
+    rawIdentityHasLeadingSlash: true,
+    resolutionEligibility: 'slash-command-only',
+  }),
+]);
 
 /**
  * Generates manifest files for installed workflows, agents, and tasks
@@ -68,6 +98,73 @@ class ManifestGenerator {
     this.modules = [];
     this.files = [];
     this.selectedIdes = [];
+    this.includeConvertedShardDocAliasRows = null;
+  }
+
+  normalizeTaskAuthorityRecords(records) {
+    if (!Array.isArray(records)) return [];
+
+    const normalized = [];
+    for (const record of records) {
+      if (!record || typeof record !== 'object' || Array.isArray(record)) {
+        continue;
+      }
+
+      const canonicalId = String(record.canonicalId ?? '').trim();
+      const authoritySourceType = String(record.authoritySourceType ?? '').trim();
+      const authoritySourcePath = String(record.authoritySourcePath ?? '').trim();
+      const sourcePath = String(record.sourcePath ?? '')
+        .trim()
+        .replaceAll('\\', '/');
+      const recordType = String(record.recordType ?? '').trim();
+
+      if (!canonicalId || !authoritySourceType || !authoritySourcePath || !sourcePath || !recordType) {
+        continue;
+      }
+
+      normalized.push({
+        recordType,
+        canonicalId,
+        authoritySourceType,
+        authoritySourcePath,
+        sourcePath,
+      });
+    }
+
+    normalized.sort((left, right) => {
+      const leftKey = `${left.canonicalId}|${left.recordType}|${left.authoritySourceType}|${left.authoritySourcePath}|${left.sourcePath}`;
+      const rightKey = `${right.canonicalId}|${right.recordType}|${right.authoritySourceType}|${right.authoritySourcePath}|${right.sourcePath}`;
+      return leftKey.localeCompare(rightKey);
+    });
+
+    return normalized;
+  }
+
+  buildTaskAuthorityProjectionIndex(records) {
+    const projectionIndex = new Map();
+    for (const record of records) {
+      if (!record || record.recordType !== 'metadata-authority' || record.authoritySourceType !== 'sidecar') {
+        continue;
+      }
+
+      const sourceMatch = String(record.sourcePath)
+        .replaceAll('\\', '/')
+        .match(/\/src\/([^/]+)\/tasks\/([^/.]+)\.(?:md|xml)$/i);
+      if (!sourceMatch) {
+        continue;
+      }
+
+      const moduleName = sourceMatch[1];
+      const taskName = sourceMatch[2];
+      projectionIndex.set(`${moduleName}:${taskName}`, {
+        legacyName: taskName,
+        canonicalId: record.canonicalId,
+        authoritySourceType: record.authoritySourceType,
+        authoritySourcePath: record.authoritySourcePath,
+      });
+    }
+
+    return projectionIndex;
   }
 
   /**
@@ -182,6 +279,13 @@ class ManifestGenerator {
     }
 
     this.helpAuthorityRecords = await this.normalizeHelpAuthorityRecords(options.helpAuthorityRecords);
+    const taskAuthorityInput = Object.prototype.hasOwnProperty.call(options, 'taskAuthorityRecords')
+      ? options.taskAuthorityRecords
+      : options.helpAuthorityRecords;
+    this.taskAuthorityRecords = this.normalizeTaskAuthorityRecords(taskAuthorityInput);
+    this.includeConvertedShardDocAliasRows = Object.prototype.hasOwnProperty.call(options, 'includeConvertedShardDocAliasRows')
+      ? options.includeConvertedShardDocAliasRows === true
+      : null;
 
     // Filter out any undefined/null values from IDE list
     this.selectedIdes = resolvedIdes.filter((ide) => ide && typeof ide === 'string');
@@ -958,15 +1062,10 @@ class ManifestGenerator {
     const csvPath = path.join(cfgDir, 'task-manifest.csv');
     const escapeCsv = (value) => `"${String(value ?? '').replaceAll('"', '""')}"`;
     const compatibilitySurfacePath = `${this.bmadFolderName || '_bmad'}/_config/task-manifest.csv`;
-    const sidecarAuthorityRecord = Array.isArray(this.helpAuthorityRecords)
-      ? this.helpAuthorityRecords.find(
-          (record) => record?.canonicalId === 'bmad-help' && record?.authoritySourceType === 'sidecar' && record?.authoritySourcePath,
-        )
-      : null;
-    const exemplarAuthoritySourceType = sidecarAuthorityRecord ? sidecarAuthorityRecord.authoritySourceType : 'sidecar';
-    const exemplarAuthoritySourcePath = sidecarAuthorityRecord
-      ? sidecarAuthorityRecord.authoritySourcePath
-      : 'bmad-fork/src/core/tasks/help.artifact.yaml';
+    const taskAuthorityRecords = Array.isArray(this.taskAuthorityRecords)
+      ? this.taskAuthorityRecords
+      : this.normalizeTaskAuthorityRecords(this.helpAuthorityRecords);
+    const taskAuthorityProjectionIndex = this.buildTaskAuthorityProjectionIndex(taskAuthorityRecords);
 
     // Read existing manifest to preserve entries
     const existingEntries = new Map();
@@ -1015,7 +1114,7 @@ class ManifestGenerator {
     for (const task of this.tasks) {
       const key = `${task.module}:${task.name}`;
       const previousRecord = allTasks.get(key);
-      const isExemplarHelpTask = task.module === 'core' && task.name === 'help';
+      const authorityProjection = taskAuthorityProjectionIndex.get(key);
 
       allTasks.set(key, {
         name: task.name,
@@ -1024,10 +1123,10 @@ class ManifestGenerator {
         module: task.module,
         path: task.path,
         standalone: task.standalone,
-        legacyName: isExemplarHelpTask ? 'help' : previousRecord?.legacyName || task.name,
-        canonicalId: isExemplarHelpTask ? 'bmad-help' : previousRecord?.canonicalId || '',
-        authoritySourceType: isExemplarHelpTask ? exemplarAuthoritySourceType : previousRecord?.authoritySourceType || '',
-        authoritySourcePath: isExemplarHelpTask ? exemplarAuthoritySourcePath : previousRecord?.authoritySourcePath || '',
+        legacyName: authorityProjection ? authorityProjection.legacyName : previousRecord?.legacyName || task.name,
+        canonicalId: authorityProjection ? authorityProjection.canonicalId : previousRecord?.canonicalId || '',
+        authoritySourceType: authorityProjection ? authorityProjection.authoritySourceType : previousRecord?.authoritySourceType || '',
+        authoritySourcePath: authorityProjection ? authorityProjection.authoritySourcePath : previousRecord?.authoritySourcePath || '',
       });
     }
 
@@ -1070,18 +1169,64 @@ class ManifestGenerator {
     };
   }
 
-  buildCanonicalAliasProjectionRows(authoritySourceType, authoritySourcePath) {
-    return LOCKED_CANONICAL_ALIAS_TABLE_EXEMPLAR_ROWS.map((row) => ({
-      canonicalId: row.canonicalId,
-      alias: row.alias,
-      aliasType: row.aliasType,
-      authoritySourceType,
-      authoritySourcePath,
-      rowIdentity: row.rowIdentity,
-      normalizedAliasValue: row.normalizedAliasValue,
-      rawIdentityHasLeadingSlash: row.rawIdentityHasLeadingSlash,
-      resolutionEligibility: row.resolutionEligibility,
-    }));
+  resolveShardDocAliasAuthorityRecord() {
+    const sidecarAuthorityRecord = Array.isArray(this.taskAuthorityRecords)
+      ? this.taskAuthorityRecords.find(
+          (record) => record?.canonicalId === 'bmad-shard-doc' && record?.authoritySourceType === 'sidecar' && record?.authoritySourcePath,
+        )
+      : null;
+    return {
+      authoritySourceType: sidecarAuthorityRecord ? sidecarAuthorityRecord.authoritySourceType : 'sidecar',
+      authoritySourcePath: sidecarAuthorityRecord
+        ? sidecarAuthorityRecord.authoritySourcePath
+        : DEFAULT_EXEMPLAR_SHARD_DOC_SIDECAR_SOURCE_PATH,
+    };
+  }
+
+  hasShardDocTaskAuthorityProjection() {
+    if (!Array.isArray(this.taskAuthorityRecords)) {
+      return false;
+    }
+
+    return this.taskAuthorityRecords.some(
+      (record) =>
+        record?.recordType === 'metadata-authority' &&
+        record?.canonicalId === 'bmad-shard-doc' &&
+        record?.authoritySourceType === 'sidecar' &&
+        String(record?.authoritySourcePath || '').trim().length > 0,
+    );
+  }
+
+  shouldProjectShardDocAliasRows() {
+    if (this.includeConvertedShardDocAliasRows === true) {
+      return true;
+    }
+    if (this.includeConvertedShardDocAliasRows === false) {
+      return false;
+    }
+
+    return this.hasShardDocTaskAuthorityProjection();
+  }
+
+  buildCanonicalAliasProjectionRows() {
+    const buildRows = (lockedRows, authorityRecord) =>
+      lockedRows.map((row) => ({
+        canonicalId: row.canonicalId,
+        alias: row.alias,
+        aliasType: row.aliasType,
+        authoritySourceType: authorityRecord.authoritySourceType,
+        authoritySourcePath: authorityRecord.authoritySourcePath,
+        rowIdentity: row.rowIdentity,
+        normalizedAliasValue: row.normalizedAliasValue,
+        rawIdentityHasLeadingSlash: row.rawIdentityHasLeadingSlash,
+        resolutionEligibility: row.resolutionEligibility,
+      }));
+
+    const rows = [...buildRows(LOCKED_CANONICAL_ALIAS_TABLE_EXEMPLAR_ROWS, this.resolveExemplarAliasAuthorityRecord())];
+    if (this.shouldProjectShardDocAliasRows()) {
+      rows.push(...buildRows(LOCKED_CANONICAL_ALIAS_TABLE_SHARD_DOC_ROWS, this.resolveShardDocAliasAuthorityRecord()));
+    }
+    return rows;
   }
 
   /**
@@ -1091,8 +1236,7 @@ class ManifestGenerator {
   async writeCanonicalAliasManifest(cfgDir) {
     const csvPath = path.join(cfgDir, 'canonical-aliases.csv');
     const escapeCsv = (value) => `"${String(value ?? '').replaceAll('"', '""')}"`;
-    const { authoritySourceType, authoritySourcePath } = this.resolveExemplarAliasAuthorityRecord();
-    const projectedRows = this.buildCanonicalAliasProjectionRows(authoritySourceType, authoritySourcePath);
+    const projectedRows = this.buildCanonicalAliasProjectionRows();
 
     let csvContent = `${CANONICAL_ALIAS_TABLE_COLUMNS.join(',')}\n`;
     for (const row of projectedRows) {

@@ -854,13 +854,16 @@ class Wave1ValidationHarness {
 
     const generator = new ManifestGenerator();
     generator.bmadFolderName = runtimeFolder;
-    generator.helpAuthorityRecords = [
+    generator.taskAuthorityRecords = [
       {
+        recordType: 'metadata-authority',
         canonicalId: 'bmad-help',
         authoritySourceType: 'sidecar',
         authoritySourcePath: SIDEcar_AUTHORITY_SOURCE_PATH,
+        sourcePath: SOURCE_MARKDOWN_SOURCE_PATH,
       },
     ];
+    generator.helpAuthorityRecords = [...generator.taskAuthorityRecords];
     generator.tasks = perturbed
       ? []
       : [
@@ -928,6 +931,21 @@ class Wave1ValidationHarness {
         agent: '',
         options: '',
         description: 'Help command',
+        'output-location': '',
+        outputs: '',
+      },
+      {
+        module: 'core',
+        phase: 'anytime',
+        name: 'Shard Document',
+        code: 'SD',
+        sequence: '',
+        'workflow-file': `${runtimeFolder}/core/tasks/shard-doc.xml`,
+        command: 'bmad-shard-doc',
+        required: 'false',
+        agent: '',
+        options: '',
+        description: 'Split large markdown documents into smaller files by section with an index.',
         'output-location': '',
         outputs: '',
       },

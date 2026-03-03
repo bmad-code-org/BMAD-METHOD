@@ -169,6 +169,8 @@ function resolveCanonicalIdFromAuthorityRecords(helpAuthorityRecords = []) {
 function evaluateExemplarCommandLabelReportRows(rows, options = {}) {
   const expectedCanonicalId = frontmatterMatchValue(options.canonicalId || EXEMPLAR_HELP_CATALOG_CANONICAL_ID);
   const expectedDisplayedLabel = frontmatterMatchValue(options.displayedCommandLabel || `/${expectedCanonicalId}`);
+  const expectedAuthoritySourceType = frontmatterMatchValue(options.authoritySourceType || 'sidecar');
+  const expectedAuthoritySourcePath = frontmatterMatchValue(options.authoritySourcePath || EXEMPLAR_HELP_CATALOG_AUTHORITY_SOURCE_PATH);
   const normalizedExpectedDisplayedLabel = normalizeDisplayedCommandLabel(expectedDisplayedLabel);
 
   const targetRows = (Array.isArray(rows) ? rows : []).filter(
@@ -200,11 +202,14 @@ function evaluateExemplarCommandLabelReportRows(rows, options = {}) {
     return { valid: false, reason: `invalid-row-count-for-canonical-id:${String(row.rowCountForCanonicalId ?? '<empty>')}` };
   }
 
-  if (frontmatterMatchValue(row.authoritySourceType) !== 'sidecar') {
-    return { valid: false, reason: `invalid-authority-source-type:${frontmatterMatchValue(row.authoritySourceType) || '<empty>'}` };
+  if (frontmatterMatchValue(row.authoritySourceType) !== expectedAuthoritySourceType) {
+    return {
+      valid: false,
+      reason: `invalid-authority-source-type:${frontmatterMatchValue(row.authoritySourceType) || '<empty>'}`,
+    };
   }
 
-  if (frontmatterMatchValue(row.authoritySourcePath) !== EXEMPLAR_HELP_CATALOG_AUTHORITY_SOURCE_PATH) {
+  if (frontmatterMatchValue(row.authoritySourcePath) !== expectedAuthoritySourcePath) {
     return {
       valid: false,
       reason: `invalid-authority-source-path:${frontmatterMatchValue(row.authoritySourcePath) || '<empty>'}`,

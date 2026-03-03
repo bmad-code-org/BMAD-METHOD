@@ -16,19 +16,62 @@ const CODEX_EXPORT_DERIVATION_ERROR_CODES = Object.freeze({
   SIDECAR_PARSE_FAILED: 'ERR_CODEX_EXPORT_SIDECAR_PARSE_FAILED',
   CANONICAL_ID_MISSING: 'ERR_CODEX_EXPORT_CANONICAL_ID_MISSING',
   CANONICAL_ID_DERIVATION_FAILED: 'ERR_CODEX_EXPORT_CANONICAL_ID_DERIVATION_FAILED',
+  DUPLICATE_EXPORT_SURFACE: 'ERR_CODEX_EXPORT_DUPLICATE_EXPORT_SURFACE',
 });
 
 const EXEMPLAR_HELP_TASK_MARKDOWN_SOURCE_PATH = 'bmad-fork/src/core/tasks/help.md';
+const EXEMPLAR_SHARD_DOC_TASK_XML_SOURCE_PATH = 'bmad-fork/src/core/tasks/shard-doc.xml';
 const EXEMPLAR_HELP_SIDECAR_CONTRACT_SOURCE_PATH = 'bmad-fork/src/core/tasks/help.artifact.yaml';
+const EXEMPLAR_SHARD_DOC_SIDECAR_CONTRACT_SOURCE_PATH = 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml';
 const EXEMPLAR_HELP_EXPORT_DERIVATION_SOURCE_TYPE = 'sidecar-canonical-id';
-const EXEMPLAR_SIDECAR_SOURCE_CANDIDATES = Object.freeze([
+const SHARD_DOC_EXPORT_ALIAS_ROWS = Object.freeze([
   Object.freeze({
-    segments: ['bmad-fork', 'src', 'core', 'tasks', 'help.artifact.yaml'],
+    rowIdentity: 'alias-row:bmad-shard-doc:canonical-id',
+    canonicalId: 'bmad-shard-doc',
+    normalizedAliasValue: 'bmad-shard-doc',
+    rawIdentityHasLeadingSlash: false,
   }),
   Object.freeze({
-    segments: ['src', 'core', 'tasks', 'help.artifact.yaml'],
+    rowIdentity: 'alias-row:bmad-shard-doc:legacy-name',
+    canonicalId: 'bmad-shard-doc',
+    normalizedAliasValue: 'shard-doc',
+    rawIdentityHasLeadingSlash: false,
+  }),
+  Object.freeze({
+    rowIdentity: 'alias-row:bmad-shard-doc:slash-command',
+    canonicalId: 'bmad-shard-doc',
+    normalizedAliasValue: 'bmad-shard-doc',
+    rawIdentityHasLeadingSlash: true,
   }),
 ]);
+const EXEMPLAR_CONVERTED_TASK_EXPORT_TARGETS = Object.freeze({
+  help: Object.freeze({
+    taskSourcePath: EXEMPLAR_HELP_TASK_MARKDOWN_SOURCE_PATH,
+    sourcePathSuffix: '/core/tasks/help.md',
+    sidecarSourcePath: EXEMPLAR_HELP_SIDECAR_CONTRACT_SOURCE_PATH,
+    sidecarSourceCandidates: Object.freeze([
+      Object.freeze({
+        segments: ['bmad-fork', 'src', 'core', 'tasks', 'help.artifact.yaml'],
+      }),
+      Object.freeze({
+        segments: ['src', 'core', 'tasks', 'help.artifact.yaml'],
+      }),
+    ]),
+  }),
+  'shard-doc': Object.freeze({
+    taskSourcePath: EXEMPLAR_SHARD_DOC_TASK_XML_SOURCE_PATH,
+    sourcePathSuffix: '/core/tasks/shard-doc.xml',
+    sidecarSourcePath: EXEMPLAR_SHARD_DOC_SIDECAR_CONTRACT_SOURCE_PATH,
+    sidecarSourceCandidates: Object.freeze([
+      Object.freeze({
+        segments: ['bmad-fork', 'src', 'core', 'tasks', 'shard-doc.artifact.yaml'],
+      }),
+      Object.freeze({
+        segments: ['src', 'core', 'tasks', 'shard-doc.artifact.yaml'],
+      }),
+    ]),
+  }),
+});
 
 class CodexExportDerivationError extends Error {
   constructor({ code, detail, fieldPath, sourcePath, observedValue, cause = null }) {
@@ -53,6 +96,7 @@ class CodexSetup extends BaseIdeSetup {
   constructor() {
     super('codex', 'Codex', false);
     this.exportDerivationRecords = [];
+    this.exportSurfaceIdentityOwners = new Map();
   }
 
   /**
@@ -69,6 +113,7 @@ class CodexSetup extends BaseIdeSetup {
 
     const { artifacts, counts } = await this.collectClaudeArtifacts(projectDir, bmadDir, options);
     this.exportDerivationRecords = [];
+    this.exportSurfaceIdentityOwners = new Map();
 
     // Clean up old .codex/prompts locations (both global and project)
     const oldGlobalDir = this.getOldCodexPromptDir(null, 'global');
@@ -246,14 +291,19 @@ class CodexSetup extends BaseIdeSetup {
    * @param {string} artifactType - Type filter (e.g., 'agent-launcher', 'workflow-command', 'task')
    * @returns {number} Number of skills written
    */
-  isExemplarHelpTaskArtifact(artifact = {}) {
+  getConvertedTaskExportTarget(artifact = {}) {
     if (artifact.type !== 'task' || artifact.module !== 'core') {
-      return false;
+      return null;
     }
 
     const normalizedName = String(artifact.name || '')
       .trim()
       .toLowerCase();
+    const exportTarget = EXEMPLAR_CONVERTED_TASK_EXPORT_TARGETS[normalizedName];
+    if (!exportTarget) {
+      return null;
+    }
+
     const normalizedRelativePath = String(artifact.relativePath || '')
       .trim()
       .replaceAll('\\', '/')
@@ -263,11 +313,17 @@ class CodexSetup extends BaseIdeSetup {
       .replaceAll('\\', '/')
       .toLowerCase();
 
-    if (normalizedName !== 'help') {
-      return false;
+    const normalizedRelativePathWithRoot = normalizedRelativePath.startsWith('/') ? normalizedRelativePath : `/${normalizedRelativePath}`;
+    if (!normalizedRelativePathWithRoot.endsWith(`/core/tasks/${normalizedName}.md`)) {
+      return null;
     }
 
-    return normalizedRelativePath.endsWith('/core/tasks/help.md') || normalizedSourcePath.endsWith('/core/tasks/help.md');
+    const normalizedSourcePathWithRoot = normalizedSourcePath.startsWith('/') ? normalizedSourcePath : `/${normalizedSourcePath}`;
+    if (normalizedSourcePath && !normalizedSourcePathWithRoot.endsWith(exportTarget.sourcePathSuffix)) {
+      return null;
+    }
+
+    return exportTarget;
   }
 
   throwExportDerivationError({ code, detail, fieldPath, sourcePath, observedValue, cause = null }) {
@@ -281,8 +337,8 @@ class CodexSetup extends BaseIdeSetup {
     });
   }
 
-  async loadExemplarHelpSidecar(projectDir) {
-    for (const candidate of EXEMPLAR_SIDECAR_SOURCE_CANDIDATES) {
+  async loadConvertedTaskSidecar(projectDir, exportTarget) {
+    for (const candidate of exportTarget.sidecarSourceCandidates) {
       const sidecarPath = path.join(projectDir, ...candidate.segments);
       if (await fs.pathExists(sidecarPath)) {
         let sidecarData;
@@ -293,7 +349,7 @@ class CodexSetup extends BaseIdeSetup {
             code: CODEX_EXPORT_DERIVATION_ERROR_CODES.SIDECAR_PARSE_FAILED,
             detail: `YAML parse failure: ${error.message}`,
             fieldPath: '<document>',
-            sourcePath: EXEMPLAR_HELP_SIDECAR_CONTRACT_SOURCE_PATH,
+            sourcePath: exportTarget.sidecarSourcePath,
             observedValue: '<parse-error>',
             cause: error,
           });
@@ -304,7 +360,7 @@ class CodexSetup extends BaseIdeSetup {
             code: CODEX_EXPORT_DERIVATION_ERROR_CODES.SIDECAR_PARSE_FAILED,
             detail: 'sidecar root must be a YAML mapping object',
             fieldPath: '<document>',
-            sourcePath: EXEMPLAR_HELP_SIDECAR_CONTRACT_SOURCE_PATH,
+            sourcePath: exportTarget.sidecarSourcePath,
             observedValue: typeof sidecarData,
           });
         }
@@ -315,14 +371,14 @@ class CodexSetup extends BaseIdeSetup {
             code: CODEX_EXPORT_DERIVATION_ERROR_CODES.CANONICAL_ID_MISSING,
             detail: 'sidecar canonicalId is required for exemplar export derivation',
             fieldPath: 'canonicalId',
-            sourcePath: EXEMPLAR_HELP_SIDECAR_CONTRACT_SOURCE_PATH,
+            sourcePath: exportTarget.sidecarSourcePath,
             observedValue: canonicalId,
           });
         }
 
         return {
           canonicalId,
-          sourcePath: EXEMPLAR_HELP_SIDECAR_CONTRACT_SOURCE_PATH,
+          sourcePath: exportTarget.sidecarSourcePath,
         };
       }
     }
@@ -331,15 +387,15 @@ class CodexSetup extends BaseIdeSetup {
       code: CODEX_EXPORT_DERIVATION_ERROR_CODES.SIDECAR_FILE_NOT_FOUND,
       detail: 'expected exemplar sidecar metadata file was not found',
       fieldPath: '<file>',
-      sourcePath: EXEMPLAR_HELP_SIDECAR_CONTRACT_SOURCE_PATH,
+      sourcePath: exportTarget.sidecarSourcePath,
       observedValue: projectDir,
     });
   }
 
   async resolveSkillIdentityFromArtifact(artifact, projectDir) {
     const inferredSkillName = toDashPath(artifact.relativePath).replace(/\.md$/, '');
-    const isExemplarHelpTask = this.isExemplarHelpTaskArtifact(artifact);
-    if (!isExemplarHelpTask) {
+    const exportTarget = this.getConvertedTaskExportTarget(artifact);
+    if (!exportTarget) {
       return {
         skillName: inferredSkillName,
         canonicalId: inferredSkillName,
@@ -348,14 +404,19 @@ class CodexSetup extends BaseIdeSetup {
       };
     }
 
-    const sidecarData = await this.loadExemplarHelpSidecar(projectDir);
+    const sidecarData = await this.loadConvertedTaskSidecar(projectDir, exportTarget);
 
     let canonicalResolution;
     try {
-      canonicalResolution = await normalizeAndResolveExemplarAlias(sidecarData.canonicalId, {
+      const aliasResolutionOptions = {
         fieldPath: 'canonicalId',
         sourcePath: sidecarData.sourcePath,
-      });
+      };
+      if (exportTarget.taskSourcePath === EXEMPLAR_SHARD_DOC_TASK_XML_SOURCE_PATH) {
+        aliasResolutionOptions.aliasRows = SHARD_DOC_EXPORT_ALIAS_ROWS;
+        aliasResolutionOptions.aliasTableSourcePath = '_bmad/_config/canonical-aliases.csv';
+      }
+      canonicalResolution = await normalizeAndResolveExemplarAlias(sidecarData.canonicalId, aliasResolutionOptions);
     } catch (error) {
       this.throwExportDerivationError({
         code: CODEX_EXPORT_DERIVATION_ERROR_CODES.CANONICAL_ID_DERIVATION_FAILED,
@@ -383,6 +444,7 @@ class CodexSetup extends BaseIdeSetup {
       canonicalId: skillName,
       exportIdDerivationSourceType: EXEMPLAR_HELP_EXPORT_DERIVATION_SOURCE_TYPE,
       exportIdDerivationSourcePath: sidecarData.sourcePath,
+      exportIdDerivationTaskSourcePath: exportTarget.taskSourcePath,
       exportIdDerivationEvidence: `applied:${canonicalResolution.preAliasNormalizedValue}|leadingSlash:${canonicalResolution.rawIdentityHasLeadingSlash}->${canonicalResolution.postAliasCanonicalId}|rows:${canonicalResolution.aliasRowLocator}`,
     };
   }
@@ -402,6 +464,33 @@ class CodexSetup extends BaseIdeSetup {
 
       // Create skill directory
       const skillDir = path.join(destDir, skillName);
+      const skillPath = path.join(skillDir, 'SKILL.md');
+      const normalizedSkillPath = skillPath.replaceAll('\\', '/');
+      const ownerRecord = {
+        artifactType,
+        sourcePath: String(artifact.sourcePath || artifact.relativePath || '<unknown>'),
+      };
+      const existingOwner = this.exportSurfaceIdentityOwners.get(normalizedSkillPath);
+      if (existingOwner) {
+        this.throwExportDerivationError({
+          code: CODEX_EXPORT_DERIVATION_ERROR_CODES.DUPLICATE_EXPORT_SURFACE,
+          detail: `duplicate export surface path already claimed by ${existingOwner.artifactType}:${existingOwner.sourcePath}`,
+          fieldPath: 'canonicalId',
+          sourcePath: ownerRecord.sourcePath,
+          observedValue: normalizedSkillPath,
+        });
+      }
+
+      if (await fs.pathExists(skillPath)) {
+        this.throwExportDerivationError({
+          code: CODEX_EXPORT_DERIVATION_ERROR_CODES.DUPLICATE_EXPORT_SURFACE,
+          detail: 'duplicate export surface path already exists on disk',
+          fieldPath: 'canonicalId',
+          sourcePath: ownerRecord.sourcePath,
+          observedValue: normalizedSkillPath,
+        });
+      }
+
       await fs.ensureDir(skillDir);
 
       // Transform content: rewrite frontmatter for skills format
@@ -409,14 +498,14 @@ class CodexSetup extends BaseIdeSetup {
 
       // Write SKILL.md with platform-native line endings
       const platformContent = skillContent.replaceAll('\n', os.EOL);
-      const skillPath = path.join(skillDir, 'SKILL.md');
       await fs.writeFile(skillPath, platformContent, 'utf8');
+      this.exportSurfaceIdentityOwners.set(normalizedSkillPath, ownerRecord);
       writtenCount++;
 
       if (exportIdentity.exportIdDerivationSourceType === EXEMPLAR_HELP_EXPORT_DERIVATION_SOURCE_TYPE) {
         this.exportDerivationRecords.push({
           exportPath: path.join('.agents', 'skills', skillName, 'SKILL.md').replaceAll('\\', '/'),
-          sourcePath: EXEMPLAR_HELP_TASK_MARKDOWN_SOURCE_PATH,
+          sourcePath: exportIdentity.exportIdDerivationTaskSourcePath || EXEMPLAR_HELP_TASK_MARKDOWN_SOURCE_PATH,
           canonicalId: exportIdentity.canonicalId,
           visibleId: skillName,
           visibleSurfaceClass: 'export-id',
