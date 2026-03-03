@@ -21,6 +21,7 @@ const {
 } = require('./help-catalog-generator');
 const { validateHelpCatalogCompatibilitySurface } = require('./projection-compatibility-validator');
 const { Wave1ValidationHarness } = require('./wave-1-validation-harness');
+const { Wave2ValidationHarness } = require('./wave-2-validation-harness');
 const { getProjectRoot, getSourcePath, getModulePath } = require('../../../lib/project-root');
 const { CLIUtils } = require('../../../lib/cli-utils');
 const { ManifestGenerator } = require('./manifest-generator');
@@ -59,7 +60,9 @@ class Installer {
     this.helpCatalogCommandLabelReportRows = [];
     this.codexExportDerivationRecords = [];
     this.latestWave1ValidationRun = null;
+    this.latestWave2ValidationRun = null;
     this.wave1ValidationHarness = new Wave1ValidationHarness();
+    this.wave2ValidationHarness = new Wave2ValidationHarness();
   }
 
   async runConfigurationGenerationTask({ message, bmadDir, moduleConfigs, config, allModules, addResult }) {
@@ -163,6 +166,16 @@ class Installer {
       helpCatalogCommandLabelReportRows: this.helpCatalogCommandLabelReportRows || [],
       codexExportDerivationRecords: this.codexExportDerivationRecords || [],
       requireExportSkillProjection,
+    };
+  }
+
+  async buildWave2ValidationOptions({ projectDir, bmadDir }) {
+    return {
+      projectDir,
+      bmadDir,
+      bmadFolderName: this.bmadFolderName || BMAD_FOLDER_NAME,
+      shardDocAuthorityRecords: this.shardDocAuthorityRecords || [],
+      helpCatalogCommandLabelReportRows: this.helpCatalogCommandLabelReportRows || [],
     };
   }
 
@@ -1350,8 +1363,18 @@ class Installer {
           });
           const validationRun = await this.wave1ValidationHarness.generateAndValidate(validationOptions);
           this.latestWave1ValidationRun = validationRun;
-          addResult('Validation artifacts', 'ok', `${validationRun.generatedArtifactCount} artifacts`);
-          return `${validationRun.generatedArtifactCount} validation artifacts generated`;
+          addResult('Wave-1 validation artifacts', 'ok', `${validationRun.generatedArtifactCount} artifacts`);
+
+          message('Generating deterministic wave-2 shard-doc validation artifact suite...');
+          const wave2ValidationOptions = await this.buildWave2ValidationOptions({
+            projectDir,
+            bmadDir,
+          });
+          const wave2ValidationRun = await this.wave2ValidationHarness.generateAndValidate(wave2ValidationOptions);
+          this.latestWave2ValidationRun = wave2ValidationRun;
+          addResult('Wave-2 validation artifacts', 'ok', `${wave2ValidationRun.generatedArtifactCount} artifacts`);
+
+          return `${validationRun.generatedArtifactCount + wave2ValidationRun.generatedArtifactCount} validation artifacts generated`;
         },
       });
 
