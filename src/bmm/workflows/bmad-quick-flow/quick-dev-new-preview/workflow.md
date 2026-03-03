@@ -1,5 +1,5 @@
 ---
-name: quick-dev2
+name: quick-dev-new-preview
 description: 'Unified quick flow - clarify intent, plan, implement, review, present.'
 main_config: '{project-root}/_bmad/bmm/config.yaml'
 
@@ -11,7 +11,7 @@ party_mode_exec: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 adversarial_review_task: '{project-root}/_bmad/core/tasks/review-adversarial-general.xml'
 ---
 
-# Quick Dev 2 Workflow
+# Quick Dev New Preview Workflow
 
 **Goal:** Take a user request from intent through implementation, adversarial review, and PR creation in a single unified flow.
 
@@ -81,7 +81,7 @@ YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `
 
 ### 2. Paths
 
-- `installed_path` = `{project-root}/_bmad/bmm/workflows/bmad-quick-flow/quick-dev2`
+- `installed_path` = `{project-root}/_bmad/bmm/workflows/bmad-quick-flow/quick-dev-new-preview`
 - `templateFile` = `{installed_path}/tech-spec-template.md`
 - `wipFile` = `{implementation_artifacts}/tech-spec-wip.md`
 
