@@ -8,7 +8,7 @@
 
 **WDS (Whiteport Design Studio)** is an AI agent framework module within the BMAD Method that transforms how designers work. Instead of creating documentation that gets lost in translation, your design work becomes **powerful prompts** that guide AI agents and development teams with precision and intent.
 
-**The Platform PRD** ensures your design vision is technically feasible. Idunn the Technical Architect helps you define the technical foundation before UX design begins, preventing costly rework when beautiful designs meet harsh technical reality.
+**The Platform PRD** ensures your design vision is technically feasible. Saga helps you define the technical foundation before UX design begins, preventing costly rework when beautiful designs meet harsh technical reality.
 
 ---
 
@@ -21,7 +21,7 @@ The Platform PRD (Product Requirements Document) defines the technical architect
 - Security and performance requirements
 - Technical constraints and decisions
 
-**Created by:** Idunn the Technical Architect  
+**Created by:** Saga the Analyst
 **When:** Phase 4 - After Trigger Map, before UX design (or in parallel)  
 **Format:** Structured PRD document + architecture diagrams
 
@@ -82,32 +82,31 @@ The Platform PRD (Product Requirements Document) defines the technical architect
 
 ---
 
-## The Dialog with Your Technical Partner: Idunn the Technical Architect
+## The Dialog with Your Strategic Partner: Saga the Analyst
 
 **The Process (1-2 hours):**
 
-Idunn the Technical Architect helps you define technical boundaries:
+Saga helps you define technical boundaries:
 
 ```
-Idunn the Technical Architect: "Let's establish the foundation. What platform 
-                                are you targeting?"
+Saga: "Let's establish the foundation. What platform are you targeting?"
 
 You: "WordPress site with custom blocks for the design system."
 
-Idunn the Technical Architect: "Smart choice - familiar editing, structured output. 
-                                Any third-party integrations?"
+Saga: "Smart choice - familiar editing, structured output.
+       Any third-party integrations?"
 
 You: "Newsletter signup (Mailchimp), analytics (Google Analytics)."
 
-Idunn the Technical Architect: "Got it. What about user authentication?"
+Saga: "Got it. What about user authentication?"
 
 You: "No login needed - it's a marketing site."
 
-Idunn the Technical Architect: "Perfect - that simplifies architecture significantly. 
-                                Let me document this..."
+Saga: "Perfect - that simplifies architecture significantly.
+       Let me document this..."
 ```
 
-As you discuss, Idunn the Technical Architect creates:
+As you discuss, Saga creates:
 - ✅ Technology stack decisions
 - ✅ Data model (if needed)
 - ✅ Integration requirements
@@ -118,11 +117,11 @@ As you discuss, Idunn the Technical Architect creates:
 Then you review together:
 
 ```
-Idunn the Technical Architect: "Here's your Platform PRD. Does this match your needs?"
+Saga: "Here's your Platform PRD. Does this match your needs?"
 
 You: "Add mobile-first responsive requirement."
 
-Idunn the Technical Architect: "Added to technical requirements. ✅ PRD is ready."
+Saga: "Added to technical requirements. ✅ PRD is ready."
 ```
 
 **Result:** Platform PRD ready to guide UX design and development
@@ -140,10 +139,10 @@ Idunn the Technical Architect: "Added to technical requirements. ✅ PRD is read
 To start creating your Platform PRD:
 
 ```
-@idunn I need to create a Platform PRD for [Your Project Name].
+@saga I need to create a Platform PRD for [Your Project Name].
 ```
 
-Idunn the Technical Architect will begin the conversation and guide you through the process.
+Saga will begin the conversation and guide you through the process.
 
 ---
 

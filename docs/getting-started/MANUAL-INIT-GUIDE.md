@@ -55,7 +55,6 @@ your-project/
 │       └── wds/
 │           ├── agents/
 │           │   ├── freya-ux.agent.yaml
-│           │   ├── idunn-pm.agent.yaml
 │           │   └── saga-analyst.agent.yaml
 │           ├── workflows/
 │           │   ├── 1-project-brief/
@@ -79,8 +78,7 @@ your-project/
 3. **Reference the WDS agent** you want to use:
 
 ```
-@wds/agents/freya-ux    - For UX Design & Prototyping
-@wds/agents/idunn-pm     - For Product Management & Analysis
+@wds/agents/freya-ux    - For UX Design, Prototyping & Product Management
 @wds/agents/saga-analyst - For Scenario Analysis
 ```
 
@@ -148,8 +146,7 @@ Choose a workflow to start:
 
 | Agent | Purpose | Reference |
 |-------|---------|-----------|
-| **Freya** | UX Design & Prototyping | `@wds/agents/freya-ux` |
-| **Idunn** | Product Management | `@wds/agents/idunn-pm` |
+| **Freya** | UX Design, Prototyping & Product Management | `@wds/agents/freya-ux` |
 | **Saga** | Scenario Analysis | `@wds/agents/saga-analyst` |
 
 ### Key Workflows

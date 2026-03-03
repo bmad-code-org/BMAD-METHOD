@@ -59,7 +59,7 @@ Complete documentation for Whiteport Design Studio - a design-first methodology 
 - **[Module 05: Trigger Mapping](learn/module-05-map-triggers-outcomes/)** - Map user psychology
 - **[Module 06+](learn/)** - Continue through all phases
 
-**This course is WDS-specific** - teaching you to use Saga, Freya, and Idunn agents.
+**This course is WDS-specific** - teaching you to use Saga and Freya agents.
 
 ---
 
@@ -101,12 +101,11 @@ Complete documentation for Whiteport Design Studio - a design-first methodology 
 
 ## 🤖 Agent Activation
 
-**Using WDS agents:** Quick activation guides for Saga, Freya, and Idunn.
+**Using WDS agents:** Quick activation guides for Saga and Freya.
 
 - **[Agent Launchers](getting-started/agent-activation/agent-launchers.md)** - Quick reference
 - **[Saga WDS Analyst](getting-started/agent-activation/wds-saga-analyst.md)** - Business analysis
 - **[Freya WDS Designer](getting-started/agent-activation/wds-freya-ux.md)** - UX design
-- **[Idunn WDS PM](getting-started/agent-activation/wds-idunn-pm.md)** - Product management
 
 ---
 

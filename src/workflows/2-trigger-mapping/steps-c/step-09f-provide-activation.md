@@ -90,12 +90,6 @@ The UX Designer can hand off completed scenarios/pages to development while cont
 
 **Alternative Paths:**
 
-**Skip to Platform Requirements (Phase 3)?**
-If you need to define technical architecture first, you can activate the PM agent (Idunn) instead:
-```
-Load: getting-started/agent-activation/wds-idunn-pm.md
-```
-
 **Run Feature Impact First?**
 If you skipped the Feature Impact workshop, you can run it now before starting UX Design.
 

@@ -52,34 +52,14 @@ WDS has three specialist agents. Each owns specific phases of product developmen
 
 ---
 
-## Idunn — WDS PM Agent
-
-**Phases:** 3 (Platform Requirements), 6 (Design Deliveries)
-
-**What she does:**
-- Defines the technical foundation (architecture, data model, integrations)
-- Packages Freya's designs into development-ready deliveries
-- Creates PRD with functional requirements organized by epic
-- Coordinates handoff to development teams
-
-**When to use Idunn:**
-- You need to define the tech stack and architecture
-- Freya's designs are ready and need to be packaged for developers
-- You need a PRD with organized requirements
-- You want clean handoffs to a development team
-
-**What she produces:** Platform requirements, PRD, Design Delivery packages (DD-XXX.yaml)
-
----
-
 ## How They Work Together
 
 ```
-Saga (Strategy) → Freya (Design) + Idunn (Platform) → Idunn (Handoff) → Development
-     Phase 1-2         Phase 4-5      Phase 3              Phase 6
+Saga (Strategy) → Freya (Design + Delivery) → Development
+     Phase 1-2         Phase 4-8
 ```
 
-Saga goes first. Freya and Idunn work in parallel. Idunn packages everything at the end.
+Saga goes first. Freya designs, packages deliveries, and guides product evolution.
 
 ---
 

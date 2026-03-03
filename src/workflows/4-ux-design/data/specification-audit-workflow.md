@@ -645,7 +645,7 @@ For full validation including visual verification:
 
 **Agent Integration:**
 - Freya runs audits on page specifications
-- Idunn can request audits before development
+- Freya can request audits before development
 - Saga can audit for strategic alignment
 
 **Menu Trigger:**

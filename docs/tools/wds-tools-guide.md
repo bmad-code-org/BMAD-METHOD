@@ -18,7 +18,7 @@ WDS works best with a curated set of tools that support the concept-first, itera
 
 **[Cursor/Windsurf IDE](cursor-windsurf.md)**
 - AI-powered IDE for WDS agent workflows
-- Development environment for Freya, Saga, Idunn
+- Development environment for Freya, Saga
 - **Status:** Required for all WDS phases
 
 **[Git](git.md)**

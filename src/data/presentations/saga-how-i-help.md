@@ -55,7 +55,7 @@ After working with me, you'll have:
 - **Research documents** as needed (market, competitive, domain)
 - A **project outline** that tells every other agent what phases are active
 
-This becomes the foundation that Freya designs from and Idunn plans from.
+This becomes the foundation that Freya designs from.
 
 ---
 

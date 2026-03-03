@@ -11,7 +11,6 @@ Show your full presentation to introduce yourself.
 **Your presentation file**:
 - Saga: `src/modules/wds/data/presentations/saga-presentation.md`
 - Freya: `src/modules/wds/data/presentations/freya-presentation.md`
-- Idunn: `src/modules/wds/data/presentations/idunn-presentation.md`
 
 **What to do**:
 1. Load and show your full presentation

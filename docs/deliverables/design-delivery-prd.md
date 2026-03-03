@@ -8,7 +8,7 @@
 
 **WDS (Whiteport Design Studio)** is an AI agent framework module within the BMAD Method that transforms how designers work. Instead of creating documentation that gets lost in translation, your design work becomes **powerful prompts** that guide AI agents and development teams with precision and intent.
 
-**The Design Delivery PRD** is the final bridge between design and development. Idunn the Technical Architect takes your page specifications and design system and organizes them into developer-ready epics, stories, and implementation sequences. This is where your design work transforms into actionable development tasks.
+**The Design Delivery PRD** is the final bridge between design and development. Freya takes your page specifications and design system and organizes them into developer-ready epics, stories, and implementation sequences. This is where your design work transforms into actionable development tasks.
 
 ---
 
@@ -22,7 +22,7 @@ The Design Delivery PRD organizes your page specifications and design system int
 - Implementation sequence
 - Links back to page specifications
 
-**Created by:** Idunn the Technical Architect  
+**Created by:** Freya the Designer
 **When:** Phase 7 - After page specs and design system are complete  
 **Format:** PRD document with epics, stories, and implementation guide
 
@@ -87,34 +87,34 @@ For each story:
 
 ---
 
-## The Dialog with Your Technical Partner: Idunn the Technical Architect
+## The Dialog with Your Design Partner: Freya the Designer
 
 **The Process (2-3 hours):**
 
-Idunn the Technical Architect helps you organize for development:
+Freya helps you organize for development:
 
 ```
-Idunn the Technical Architect: "Let's package this for development. I've analyzed 
-                                your 8 page specifications. I see 3 major epics."
+Freya: "Let's package this for development. I've analyzed your 8 page
+        specifications. I see 3 major epics."
 
 You: "What are they?"
 
-Idunn the Technical Architect: "Epic 1: User Authentication & Profile. 
-                                Epic 2: Project Dashboard. 
-                                Epic 3: Task Management. Sound right?"
+Freya: "Epic 1: User Authentication & Profile.
+        Epic 2: Project Dashboard.
+        Epic 3: Task Management. Sound right?"
 
 You: "Perfect! Which should we build first?"
 
-Idunn the Technical Architect: "Authentication is foundational - everything depends on it. 
-                                Dashboard next, then Task Management. I'll create stories..."
+Freya: "Authentication is foundational - everything depends on it.
+        Dashboard next, then Task Management. I'll create stories..."
 
 You: "How many stories total?"
 
-Idunn the Technical Architect: "15 stories across the 3 epics. Each links directly to 
-                                your page specifications with Object IDs."
+Freya: "15 stories across the 3 epics. Each links directly to
+        your page specifications with Object IDs."
 ```
 
-As you work together, Idunn the Technical Architect creates:
+As you work together, Freya creates:
 - ✅ Epic breakdown
 - ✅ User stories with acceptance criteria
 - ✅ Implementation sequence
@@ -124,11 +124,11 @@ As you work together, Idunn the Technical Architect creates:
 Then you review together:
 
 ```
-Idunn the Technical Architect: "Here's your Design Delivery PRD. Ready for development?"
+Freya: "Here's your Design Delivery PRD. Ready for development?"
 
 You: "Move the profile settings story to phase 2 - not critical for MVP."
 
-Idunn the Technical Architect: "Moved to Epic 4: Post-MVP Enhancements. ✅ PRD is ready."
+Freya: "Moved to Epic 4: Post-MVP Enhancements. ✅ PRD is ready."
 ```
 
 **Result:** Design Delivery PRD ready for development team handoff
@@ -146,10 +146,10 @@ Idunn the Technical Architect: "Moved to Epic 4: Post-MVP Enhancements. ✅ PRD 
 To start creating your Design Delivery PRD:
 
 ```
-@idunn Let's create a Design Delivery PRD to hand off to development.
+@freya Let's create a Design Delivery PRD to hand off to development.
 ```
 
-Idunn the Technical Architect will analyze your specifications and guide the organization process.
+Freya will analyze your specifications and guide the organization process.
 
 ---
 

@@ -11,7 +11,6 @@ Read and fully embody the persona from your agent definition file.
 **Your agent definition file**:
 - Saga: `src/modules/wds/agents/saga-analyst.agent.yaml`
 - Freya: `src/modules/wds/agents/freya-ux.agent.yaml`
-- Idunn: `src/modules/wds/agents/idunn-pm.agent.yaml`
 
 **What to do**:
 1. Read the entire agent definition file

@@ -2,7 +2,7 @@
 
 **Version**: 1.0  
 **Last Updated**: December 10, 2025  
-**For**: WDS Agents (Freya, Saga, Idunn)
+**For**: WDS Agents (Freya, Saga)
 
 ---
 
@@ -224,19 +224,6 @@ This system creates **production-ready, self-contained interactive prototypes** 
 3. Success criteria definitions
 
 ---
-
-### Idunn (PM)
-**Role in prototypes**: Project tracking, stakeholder communication
-
-**Read**:
-1. `PROTOTYPE-ROADMAP.md` (status tracking)
-2. Work files (understand scope)
-3. Completed prototypes (demo to stakeholders)
-
-**Create**:
-1. Project timelines
-2. Stakeholder reports
-3. Testing plans
 
 ---
 

@@ -98,8 +98,7 @@ Three specialized agents help you:
 | Agent | Domain | Specialty |
 |-------|--------|-----------|
 | **Saga** | Strategy | Project Briefs, user research, requirements |
-| **Freya** | Design | UX/UI, wireframes, specifications, prototypes |
-| **Idunn** | Technical | Architecture, APIs, implementation specs |
+| **Freya** | Design | UX/UI, wireframes, specifications, prototypes, product evolution |
 
 You are currently working with one of these agents.
 

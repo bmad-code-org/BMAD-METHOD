@@ -52,7 +52,7 @@ agentic-development/
 
 #### `AGENTIC-DEVELOPMENT-GUIDE.md`
 **Purpose**: Complete system overview
-**For**: All agents (Freya, Saga, Idunn)
+**For**: All agents (Freya, Saga)
 **Contains**:
 - System overview
 - Folder structure

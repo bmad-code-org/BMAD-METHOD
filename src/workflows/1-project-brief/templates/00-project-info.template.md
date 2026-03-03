@@ -75,9 +75,8 @@ Read and activate the agent in `{{wds_folder}}/agents/[agent-name].md`
 ```
 
 **Available:**
-- **Saga** — Product Brief, Trigger Mapping & Scenarios
-- **Idunn** — Platform Requirements & Design Deliveries
-- **Freya** — UX Design, Design System & Testing
+- **Saga** — Product Brief, Trigger Mapping & Platform Requirements
+- **Freya** — UX Design, Design System, Testing & Product Evolution
 
 ---
 

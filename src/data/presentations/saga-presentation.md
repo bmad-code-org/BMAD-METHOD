@@ -48,8 +48,7 @@ docs/
 
 ## 🤝 Team Collaboration
 
-**With Freya WDS Designer Agent**: I provide strategic foundation and user personas for her scenarios  
-**With Idunn WDS PM Agent**: I hand off strategic foundation for her technical planning  
+**With Freya WDS Designer Agent**: I provide strategic foundation and user personas for her scenarios
 **With You**: I ask probing questions, research your market, and create clarity from complexity
 
 ---

@@ -1,6 +1,6 @@
 # Scenario Initialization Dialog
 
-**Agents**: Freya WDS Designer Agent + Idunn WDS PM Agent  
+**Agent**: Freya WDS Designer Agent
 **Purpose**: Define a complete user scenario before creating page specifications or prototypes  
 **Output**: `[Scenario-Number]-[Scenario-Name].md` (scenario specification)
 
@@ -21,11 +21,9 @@
 
 ## 🤝 **Collaboration Approach**
 
-**Both agents contribute**:
-- Idunn brings **business perspective** (goals, metrics, value)
-- Freya brings **UX perspective** (flow, interactions, usability)
-
-**Either agent can initiate** this dialog, then both collaborate.
+**Freya contributes both**:
+- **Business perspective** (goals, metrics, value)
+- **UX perspective** (flow, interactions, usability)
 
 ---
 
@@ -274,9 +272,9 @@
 
 ---
 
-### **Step 10: Business Value** (Idunn's focus)
+### **Step 10: Business Value** (Freya's focus)
 
-> "**Idunn, what's the business value of this scenario?**
+> "**Freya, what's the business value of this scenario?**
 >
 > **How will users completing this scenario add value to business goals?**
 >
@@ -472,7 +470,7 @@ _(If no Trigger Map exists, omit this section)_
 
 **User**: "I want to create a scenario for booking dog walks"
 
-**Idunn**: "Great! Let's define this together. I'll collaborate with Freya. What's the high-level purpose?"
+**Freya**: "Great! Let's define this together. What's the high-level purpose?"
 
 **User**: "Family members coordinate who walks the dog each day"
 
@@ -480,7 +478,7 @@ _(If no Trigger Map exists, omit this section)_
 
 **User**: "Any family member - parent or child - planning the week ahead"
 
-**Idunn**: "What are their specific goals?"
+**Freya**: "What are their specific goals?"
 
 **User**: "See who walked the dog, book a time slot, track contributions, get fair distribution"
 
@@ -490,13 +488,13 @@ _(If no Trigger Map exists, omit this section)_
 
 [Dialog continues through all questions...]
 
-**Idunn & Freya**: "✅ Scenario specification created! Ready to create page specs?"
+**Freya**: "✅ Scenario specification created! Ready to create page specs?"
 
 ---
 
 ## 💡 **Tips for Both Agents**
 
-**Idunn focuses on**:
+**Business perspective focus**:
 - Business goals and metrics
 - Value to users and business
 - Priority and scope

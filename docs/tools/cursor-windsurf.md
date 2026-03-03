@@ -8,14 +8,14 @@
 
 ## What It Is
 
-Cursor and Windsurf are AI-powered IDEs built on VS Code that enable natural language interaction with WDS agents (Freya, Saga, Idunn). They provide the environment where agents can read, write, and modify code while maintaining full context of your project.
+Cursor and Windsurf are AI-powered IDEs built on VS Code that enable natural language interaction with WDS agents (Freya, Saga). They provide the environment where agents can read, write, and modify code while maintaining full context of your project.
 
 ---
 
 ## Why WDS Recommends It
 
 **AI Agent Integration:**
-- Native support for AI agents like Freya, Saga, Idunn
+- Native support for AI agents like Freya, Saga
 - Agents can read/write files, run commands, analyze code
 - Context-aware suggestions and automation
 
@@ -103,7 +103,7 @@ Create workspace settings for WDS projects:
 ### DO ✅
 
 **1. Use Agent Chat Effectively**
-- Be specific with requests to Freya, Saga, or Idunn
+- Be specific with requests to Freya or Saga
 - Reference files using @ mentions
 - Provide context about what you're trying to achieve
 

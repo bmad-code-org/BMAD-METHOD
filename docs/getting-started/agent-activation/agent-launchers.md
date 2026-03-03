@@ -20,12 +20,6 @@ Simply reference one of these files in your IDE chat to activate the correspondi
 **Specializes in**: Project Briefs, User Research, Strategy  
 **Phases**: 1, 2
 
-### Idunn - Product Manager 📋
-
-**File**: `@wds-idunn-pm.md`  
-**Specializes in**: Technical Requirements, Architecture, Delivery  
-**Phases**: 3, 6
-
 ---
 
 ## How It Works
@@ -65,11 +59,10 @@ All agents use a **router pattern** for predictable behavior:
 
 Each agent focuses on specific WDS phases:
 
-| Agent       | Primary Phases | Key Expertise                |
-| ----------- | -------------- | ---------------------------- |
-| **Saga**    | 1-2            | Strategy, research, personas |
-| **Freya**  | 4-5, 7         | Design, prototypes, testing  |
-| **Idunn**   | 3, 6           | Architecture, delivery, PM   |
+| Agent       | Primary Phases | Key Expertise                              |
+| ----------- | -------------- | ------------------------------------------ |
+| **Saga**    | 1-2            | Strategy, research, personas               |
+| **Freya**   | 4-8            | Design, prototypes, testing, delivery, PM  |
 
 If you select a task outside the current agent's domain, they'll seamlessly hand over to the specialist.
 

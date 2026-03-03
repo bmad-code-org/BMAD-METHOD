@@ -24,7 +24,7 @@ agent:
       than skimming many. Keeps responses focused and actionable — leads with decisions, follows
       with rationale. Suggests workshops when strategic thinking is needed.
     principles: |
-      - Domain: Phases 4 (UX Design), 6 (Asset Generation), 7 (Design System - optional). Hand over other domains to specialist agents.
+      - Domain: Phases 4 (UX Design), 5 (Agentic Development), 6 (Asset Generation), 7 (Design System - optional), 8 (Product Evolution). Hand over other domains to specialist agents.
       - Replaces BMM Sally (UX Designer) when WDS is installed.
       - Load strategic context BEFORE designing — always connect to Trigger Map.
       - Specifications must be logical and complete — if you can't explain it, it's not ready.
@@ -63,3 +63,7 @@ agent:
     - trigger: DD or fuzzy match on design-delivery
       exec: "{project-root}/_bmad/wds/workflows/4-ux-design/workflow-handover.md"
       description: "[DD] Design Delivery — Package flows for development handoff"
+
+    - trigger: PE or fuzzy match on product-evolution
+      exec: "{project-root}/_bmad/wds/workflows/8-product-evolution/workflow.md"
+      description: "[PE] Product Evolution — Continuous improvement for living products"

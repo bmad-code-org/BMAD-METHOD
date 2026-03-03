@@ -25,8 +25,9 @@ I guide you through the creative heart of the WDS journey - from scenarios and u
 **I receive handoff from:**
 - **Saga** - Strategic foundation and user personas
 
-**I hand off to:**
-- **Idunn** - When designs are ready for technical implementation planning
+**I also handle:**
+- Design delivery packaging for development handoff
+- Product evolution and continuous improvement
 
 ---
 

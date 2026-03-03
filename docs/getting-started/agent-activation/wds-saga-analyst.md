@@ -25,7 +25,6 @@ I work at the very beginning of your journey - where vision meets reality. Toget
 
 **I hand off to:**
 - **Freya** - When strategy is ready for design execution
-- **Idunn** - When technical architecture planning begins
 
 ---
 

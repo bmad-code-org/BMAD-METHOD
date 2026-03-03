@@ -139,7 +139,7 @@ See: [Phase 4: UX Design Guide](./phase-4-ux-design-guide.md)
 ### Phase 5: Agentic Development
 
 **Output:** Development artifacts
-**Agent:** Idunn the PM
+**Agent:** Freya the Designer
 
 Bridge from design to development. Manage the development process with AI-assisted implementation, testing, and deployment.
 
@@ -181,7 +181,7 @@ Build your component library following atomic design principles. This phase runs
 ### Phase 8: Product Evolution
 
 **Output:** Evolution artifacts
-**Agent:** Idunn the PM
+**Agent:** Freya the Designer
 
 Iterate on existing products. Analyze usage, scope changes, design updates, implement, test, and deploy improvements.
 
@@ -247,7 +247,7 @@ Your agents will help you identify which phases fit your project.
 
 ## Your Agents
 
-Three specialized agents guide you through WDS:
+Two specialized agents guide you through WDS:
 
 ### Saga the Analyst
 
@@ -266,23 +266,14 @@ Saga guides you through discovery, research, and scenario creation. She's curiou
 
 _"The one who brings light and beauty"_
 
-Freya transforms your scenarios into beautiful, detailed specifications. She cares deeply about craft and ensures every detail serves the user experience.
+Freya transforms your scenarios into beautiful, detailed specifications. She cares deeply about craft and ensures every detail serves the user experience. She also bridges design to development and guides product evolution.
 
 **Works with you on:**
 
 - Phase 4: UX Design
+- Phase 5: Agentic Development
 - Phase 6: Asset Generation
 - Phase 7: Design System
-
-### Idunn the PM
-
-_"The keeper of what endures"_
-
-Idunn manages the bridge from design to development and guides product evolution. She ensures nothing is lost in translation and that products continue to improve.
-
-**Works with you on:**
-
-- Phase 5: Agentic Development
 - Phase 8: Product Evolution
 
 ---
