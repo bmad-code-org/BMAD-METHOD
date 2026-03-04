@@ -21,8 +21,10 @@ const CODEX_EXPORT_DERIVATION_ERROR_CODES = Object.freeze({
 
 const EXEMPLAR_HELP_TASK_MARKDOWN_SOURCE_PATH = 'bmad-fork/src/core/tasks/help.md';
 const EXEMPLAR_SHARD_DOC_TASK_XML_SOURCE_PATH = 'bmad-fork/src/core/tasks/shard-doc.xml';
+const EXEMPLAR_INDEX_DOCS_TASK_XML_SOURCE_PATH = 'bmad-fork/src/core/tasks/index-docs.xml';
 const EXEMPLAR_HELP_SIDECAR_CONTRACT_SOURCE_PATH = 'bmad-fork/src/core/tasks/help.artifact.yaml';
 const EXEMPLAR_SHARD_DOC_SIDECAR_CONTRACT_SOURCE_PATH = 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml';
+const EXEMPLAR_INDEX_DOCS_SIDECAR_CONTRACT_SOURCE_PATH = 'bmad-fork/src/core/tasks/index-docs.artifact.yaml';
 const EXEMPLAR_HELP_EXPORT_DERIVATION_SOURCE_TYPE = 'sidecar-canonical-id';
 const SHARD_DOC_EXPORT_ALIAS_ROWS = Object.freeze([
   Object.freeze({
@@ -44,6 +46,26 @@ const SHARD_DOC_EXPORT_ALIAS_ROWS = Object.freeze([
     rawIdentityHasLeadingSlash: true,
   }),
 ]);
+const INDEX_DOCS_EXPORT_ALIAS_ROWS = Object.freeze([
+  Object.freeze({
+    rowIdentity: 'alias-row:bmad-index-docs:canonical-id',
+    canonicalId: 'bmad-index-docs',
+    normalizedAliasValue: 'bmad-index-docs',
+    rawIdentityHasLeadingSlash: false,
+  }),
+  Object.freeze({
+    rowIdentity: 'alias-row:bmad-index-docs:legacy-name',
+    canonicalId: 'bmad-index-docs',
+    normalizedAliasValue: 'index-docs',
+    rawIdentityHasLeadingSlash: false,
+  }),
+  Object.freeze({
+    rowIdentity: 'alias-row:bmad-index-docs:slash-command',
+    canonicalId: 'bmad-index-docs',
+    normalizedAliasValue: 'bmad-index-docs',
+    rawIdentityHasLeadingSlash: true,
+  }),
+]);
 const EXEMPLAR_CONVERTED_TASK_EXPORT_TARGETS = Object.freeze({
   help: Object.freeze({
     taskSourcePath: EXEMPLAR_HELP_TASK_MARKDOWN_SOURCE_PATH,
@@ -62,12 +84,27 @@ const EXEMPLAR_CONVERTED_TASK_EXPORT_TARGETS = Object.freeze({
     taskSourcePath: EXEMPLAR_SHARD_DOC_TASK_XML_SOURCE_PATH,
     sourcePathSuffix: '/core/tasks/shard-doc.xml',
     sidecarSourcePath: EXEMPLAR_SHARD_DOC_SIDECAR_CONTRACT_SOURCE_PATH,
+    aliasRows: SHARD_DOC_EXPORT_ALIAS_ROWS,
     sidecarSourceCandidates: Object.freeze([
       Object.freeze({
         segments: ['bmad-fork', 'src', 'core', 'tasks', 'shard-doc.artifact.yaml'],
       }),
       Object.freeze({
         segments: ['src', 'core', 'tasks', 'shard-doc.artifact.yaml'],
+      }),
+    ]),
+  }),
+  'index-docs': Object.freeze({
+    taskSourcePath: EXEMPLAR_INDEX_DOCS_TASK_XML_SOURCE_PATH,
+    sourcePathSuffix: '/core/tasks/index-docs.xml',
+    sidecarSourcePath: EXEMPLAR_INDEX_DOCS_SIDECAR_CONTRACT_SOURCE_PATH,
+    aliasRows: INDEX_DOCS_EXPORT_ALIAS_ROWS,
+    sidecarSourceCandidates: Object.freeze([
+      Object.freeze({
+        segments: ['bmad-fork', 'src', 'core', 'tasks', 'index-docs.artifact.yaml'],
+      }),
+      Object.freeze({
+        segments: ['src', 'core', 'tasks', 'index-docs.artifact.yaml'],
       }),
     ]),
   }),
@@ -412,8 +449,8 @@ class CodexSetup extends BaseIdeSetup {
         fieldPath: 'canonicalId',
         sourcePath: sidecarData.sourcePath,
       };
-      if (exportTarget.taskSourcePath === EXEMPLAR_SHARD_DOC_TASK_XML_SOURCE_PATH) {
-        aliasResolutionOptions.aliasRows = SHARD_DOC_EXPORT_ALIAS_ROWS;
+      if (Array.isArray(exportTarget.aliasRows)) {
+        aliasResolutionOptions.aliasRows = exportTarget.aliasRows;
         aliasResolutionOptions.aliasTableSourcePath = '_bmad/_config/canonical-aliases.csv';
       }
       canonicalResolution = await normalizeAndResolveExemplarAlias(sidecarData.canonicalId, aliasResolutionOptions);

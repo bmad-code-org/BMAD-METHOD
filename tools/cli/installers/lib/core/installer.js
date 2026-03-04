@@ -9,9 +9,14 @@ const { Config } = require('../../../lib/config');
 const { XmlHandler } = require('../../../lib/xml-handler');
 const { DependencyResolver } = require('./dependency-resolver');
 const { ConfigCollector } = require('./config-collector');
-const { validateHelpSidecarContractFile, validateShardDocSidecarContractFile } = require('./sidecar-contract-validator');
+const {
+  validateHelpSidecarContractFile,
+  validateShardDocSidecarContractFile,
+  validateIndexDocsSidecarContractFile,
+} = require('./sidecar-contract-validator');
 const { validateHelpAuthoritySplitAndPrecedence } = require('./help-authority-validator');
 const { validateShardDocAuthoritySplitAndPrecedence } = require('./shard-doc-authority-validator');
+const { validateIndexDocsAuthoritySplitAndPrecedence } = require('./index-docs-authority-validator');
 const {
   HELP_CATALOG_GENERATION_ERROR_CODES,
   buildSidecarAwareExemplarHelpRow,
@@ -36,6 +41,10 @@ const EXEMPLAR_SHARD_DOC_SIDECAR_SOURCE_PATH = 'bmad-fork/src/core/tasks/shard-d
 const EXEMPLAR_SHARD_DOC_SOURCE_XML_SOURCE_PATH = 'bmad-fork/src/core/tasks/shard-doc.xml';
 const EXEMPLAR_SHARD_DOC_COMPATIBILITY_CATALOG_SOURCE_PATH = 'bmad-fork/src/core/module-help.csv';
 const EXEMPLAR_SHARD_DOC_WORKFLOW_FILE_PATH = '_bmad/core/tasks/shard-doc.xml';
+const EXEMPLAR_INDEX_DOCS_SIDECAR_SOURCE_PATH = 'bmad-fork/src/core/tasks/index-docs.artifact.yaml';
+const EXEMPLAR_INDEX_DOCS_SOURCE_XML_SOURCE_PATH = 'bmad-fork/src/core/tasks/index-docs.xml';
+const EXEMPLAR_INDEX_DOCS_COMPATIBILITY_CATALOG_SOURCE_PATH = 'bmad-fork/src/core/module-help.csv';
+const EXEMPLAR_INDEX_DOCS_WORKFLOW_FILE_PATH = '_bmad/core/tasks/index-docs.xml';
 
 class Installer {
   constructor() {
@@ -51,14 +60,19 @@ class Installer {
     this.ideConfigManager = new IdeConfigManager();
     this.validateHelpSidecarContractFile = validateHelpSidecarContractFile;
     this.validateShardDocSidecarContractFile = validateShardDocSidecarContractFile;
+    this.validateIndexDocsSidecarContractFile = validateIndexDocsSidecarContractFile;
     this.validateHelpAuthoritySplitAndPrecedence = validateHelpAuthoritySplitAndPrecedence;
     this.validateShardDocAuthoritySplitAndPrecedence = validateShardDocAuthoritySplitAndPrecedence;
+    this.validateIndexDocsAuthoritySplitAndPrecedence = validateIndexDocsAuthoritySplitAndPrecedence;
     this.ManifestGenerator = ManifestGenerator;
     this.installedFiles = new Set(); // Track all installed files
     this.bmadFolderName = BMAD_FOLDER_NAME;
     this.helpCatalogPipelineRows = [];
     this.helpCatalogCommandLabelReportRows = [];
     this.codexExportDerivationRecords = [];
+    this.helpAuthorityRecords = [];
+    this.shardDocAuthorityRecords = [];
+    this.indexDocsAuthorityRecords = [];
     this.latestHelpValidationRun = null;
     this.latestShardDocValidationRun = null;
     this.helpValidationHarness = new HelpValidationHarness();
@@ -71,10 +85,14 @@ class Installer {
     message('Validating shard-doc sidecar contract...');
     await this.validateShardDocSidecarContractFile();
 
+    message('Validating index-docs sidecar contract...');
+    await this.validateIndexDocsSidecarContractFile();
+
     message('Validating exemplar sidecar contract...');
     await this.validateHelpSidecarContractFile();
 
     addResult('Shard-doc sidecar contract', 'ok', 'validated');
+    addResult('Index-docs sidecar contract', 'ok', 'validated');
     addResult('Sidecar contract', 'ok', 'validated');
 
     message('Validating shard-doc authority split and XML precedence...');
@@ -86,6 +104,16 @@ class Installer {
     });
     this.shardDocAuthorityRecords = shardDocAuthorityValidation.authoritativeRecords;
     addResult('Shard-doc authority split', 'ok', shardDocAuthorityValidation.authoritativePresenceKey);
+
+    message('Validating index-docs authority split and XML precedence...');
+    const indexDocsAuthorityValidation = await this.validateIndexDocsAuthoritySplitAndPrecedence({
+      sidecarSourcePath: EXEMPLAR_INDEX_DOCS_SIDECAR_SOURCE_PATH,
+      sourceXmlSourcePath: EXEMPLAR_INDEX_DOCS_SOURCE_XML_SOURCE_PATH,
+      compatibilityCatalogSourcePath: EXEMPLAR_INDEX_DOCS_COMPATIBILITY_CATALOG_SOURCE_PATH,
+      compatibilityWorkflowFilePath: EXEMPLAR_INDEX_DOCS_WORKFLOW_FILE_PATH,
+    });
+    this.indexDocsAuthorityRecords = indexDocsAuthorityValidation.authoritativeRecords;
+    addResult('Index-docs authority split', 'ok', indexDocsAuthorityValidation.authoritativePresenceKey);
 
     message('Validating authority split and frontmatter precedence...');
     const helpAuthorityValidation = await this.validateHelpAuthoritySplitAndPrecedence({
@@ -134,7 +162,11 @@ class Installer {
       ides: config.ides || [],
       preservedModules: modulesForCsvPreserve,
       helpAuthorityRecords: this.helpAuthorityRecords || [],
-      taskAuthorityRecords: [...(this.helpAuthorityRecords || []), ...(this.shardDocAuthorityRecords || [])],
+      taskAuthorityRecords: [
+        ...(this.helpAuthorityRecords || []),
+        ...(this.shardDocAuthorityRecords || []),
+        ...(this.indexDocsAuthorityRecords || []),
+      ],
     });
 
     addResult(
@@ -1983,6 +2015,11 @@ class Installer {
       authoritySourcePath: EXEMPLAR_SHARD_DOC_SIDECAR_SOURCE_PATH,
       fallbackCanonicalId: 'bmad-shard-doc',
     });
+    const indexDocsCanonicalId = this.resolveCanonicalIdFromAuthorityRecords({
+      authorityRecords: this.indexDocsAuthorityRecords || [],
+      authoritySourcePath: EXEMPLAR_INDEX_DOCS_SIDECAR_SOURCE_PATH,
+      fallbackCanonicalId: 'bmad-index-docs',
+    });
     const commandLabelContracts = [
       {
         canonicalId: sidecarAwareExemplar.canonicalId,
@@ -2001,6 +2038,15 @@ class Installer {
         authoritySourcePath: EXEMPLAR_SHARD_DOC_SIDECAR_SOURCE_PATH,
         workflowFilePath: EXEMPLAR_SHARD_DOC_WORKFLOW_FILE_PATH,
         nameCandidates: ['shard document', 'shard-doc'],
+      },
+      {
+        canonicalId: indexDocsCanonicalId,
+        legacyName: 'index-docs',
+        displayedCommandLabel: renderDisplayedCommandLabel(indexDocsCanonicalId),
+        authoritySourceType: 'sidecar',
+        authoritySourcePath: EXEMPLAR_INDEX_DOCS_SIDECAR_SOURCE_PATH,
+        workflowFilePath: EXEMPLAR_INDEX_DOCS_WORKFLOW_FILE_PATH,
+        nameCandidates: ['index docs', 'index-docs'],
       },
     ];
     let exemplarRowWritten = false;

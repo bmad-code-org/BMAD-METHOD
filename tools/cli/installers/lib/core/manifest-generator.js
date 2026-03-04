@@ -16,6 +16,7 @@ const { validateTaskManifestCompatibilitySurface } = require('./projection-compa
 const packageJson = require('../../../../../package.json');
 const DEFAULT_EXEMPLAR_HELP_SIDECAR_SOURCE_PATH = 'bmad-fork/src/core/tasks/help.artifact.yaml';
 const DEFAULT_EXEMPLAR_SHARD_DOC_SIDECAR_SOURCE_PATH = 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml';
+const DEFAULT_EXEMPLAR_INDEX_DOCS_SIDECAR_SOURCE_PATH = 'bmad-fork/src/core/tasks/index-docs.artifact.yaml';
 const CANONICAL_ALIAS_TABLE_COLUMNS = Object.freeze([
   'canonicalId',
   'alias',
@@ -85,6 +86,35 @@ const LOCKED_CANONICAL_ALIAS_TABLE_SHARD_DOC_ROWS = Object.freeze([
     resolutionEligibility: 'slash-command-only',
   }),
 ]);
+const LOCKED_CANONICAL_ALIAS_TABLE_INDEX_DOCS_ROWS = Object.freeze([
+  Object.freeze({
+    canonicalId: 'bmad-index-docs',
+    alias: 'bmad-index-docs',
+    aliasType: 'canonical-id',
+    rowIdentity: 'alias-row:bmad-index-docs:canonical-id',
+    normalizedAliasValue: 'bmad-index-docs',
+    rawIdentityHasLeadingSlash: false,
+    resolutionEligibility: 'canonical-id-only',
+  }),
+  Object.freeze({
+    canonicalId: 'bmad-index-docs',
+    alias: 'index-docs',
+    aliasType: 'legacy-name',
+    rowIdentity: 'alias-row:bmad-index-docs:legacy-name',
+    normalizedAliasValue: 'index-docs',
+    rawIdentityHasLeadingSlash: false,
+    resolutionEligibility: 'legacy-name-only',
+  }),
+  Object.freeze({
+    canonicalId: 'bmad-index-docs',
+    alias: '/bmad-index-docs',
+    aliasType: 'slash-command',
+    rowIdentity: 'alias-row:bmad-index-docs:slash-command',
+    normalizedAliasValue: 'bmad-index-docs',
+    rawIdentityHasLeadingSlash: true,
+    resolutionEligibility: 'slash-command-only',
+  }),
+]);
 
 /**
  * Generates manifest files for installed workflows, agents, and tasks
@@ -99,6 +129,7 @@ class ManifestGenerator {
     this.files = [];
     this.selectedIdes = [];
     this.includeConvertedShardDocAliasRows = null;
+    this.includeConvertedIndexDocsAliasRows = null;
   }
 
   normalizeTaskAuthorityRecords(records) {
@@ -285,6 +316,9 @@ class ManifestGenerator {
     this.taskAuthorityRecords = this.normalizeTaskAuthorityRecords(taskAuthorityInput);
     this.includeConvertedShardDocAliasRows = Object.prototype.hasOwnProperty.call(options, 'includeConvertedShardDocAliasRows')
       ? options.includeConvertedShardDocAliasRows === true
+      : null;
+    this.includeConvertedIndexDocsAliasRows = Object.prototype.hasOwnProperty.call(options, 'includeConvertedIndexDocsAliasRows')
+      ? options.includeConvertedIndexDocsAliasRows === true
       : null;
 
     // Filter out any undefined/null values from IDE list
@@ -1183,6 +1217,20 @@ class ManifestGenerator {
     };
   }
 
+  resolveIndexDocsAliasAuthorityRecord() {
+    const sidecarAuthorityRecord = Array.isArray(this.taskAuthorityRecords)
+      ? this.taskAuthorityRecords.find(
+          (record) => record?.canonicalId === 'bmad-index-docs' && record?.authoritySourceType === 'sidecar' && record?.authoritySourcePath,
+        )
+      : null;
+    return {
+      authoritySourceType: sidecarAuthorityRecord ? sidecarAuthorityRecord.authoritySourceType : 'sidecar',
+      authoritySourcePath: sidecarAuthorityRecord
+        ? sidecarAuthorityRecord.authoritySourcePath
+        : DEFAULT_EXEMPLAR_INDEX_DOCS_SIDECAR_SOURCE_PATH,
+    };
+  }
+
   hasShardDocTaskAuthorityProjection() {
     if (!Array.isArray(this.taskAuthorityRecords)) {
       return false;
@@ -1208,6 +1256,31 @@ class ManifestGenerator {
     return this.hasShardDocTaskAuthorityProjection();
   }
 
+  hasIndexDocsTaskAuthorityProjection() {
+    if (!Array.isArray(this.taskAuthorityRecords)) {
+      return false;
+    }
+
+    return this.taskAuthorityRecords.some(
+      (record) =>
+        record?.recordType === 'metadata-authority' &&
+        record?.canonicalId === 'bmad-index-docs' &&
+        record?.authoritySourceType === 'sidecar' &&
+        String(record?.authoritySourcePath || '').trim().length > 0,
+    );
+  }
+
+  shouldProjectIndexDocsAliasRows() {
+    if (this.includeConvertedIndexDocsAliasRows === true) {
+      return true;
+    }
+    if (this.includeConvertedIndexDocsAliasRows === false) {
+      return false;
+    }
+
+    return this.hasIndexDocsTaskAuthorityProjection();
+  }
+
   buildCanonicalAliasProjectionRows() {
     const buildRows = (lockedRows, authorityRecord) =>
       lockedRows.map((row) => ({
@@ -1225,6 +1298,9 @@ class ManifestGenerator {
     const rows = [...buildRows(LOCKED_CANONICAL_ALIAS_TABLE_EXEMPLAR_ROWS, this.resolveExemplarAliasAuthorityRecord())];
     if (this.shouldProjectShardDocAliasRows()) {
       rows.push(...buildRows(LOCKED_CANONICAL_ALIAS_TABLE_SHARD_DOC_ROWS, this.resolveShardDocAliasAuthorityRecord()));
+    }
+    if (this.shouldProjectIndexDocsAliasRows()) {
+      rows.push(...buildRows(LOCKED_CANONICAL_ALIAS_TABLE_INDEX_DOCS_ROWS, this.resolveIndexDocsAliasAuthorityRecord()));
     }
     return rows;
   }

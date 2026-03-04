@@ -1,0 +1,9 @@
+schemaVersion: 1
+canonicalId: bmad-index-docs
+artifactType: task
+module: core
+sourcePath: bmad-fork/src/core/tasks/index-docs.xml
+displayName: Index Docs
+description: "Create lightweight index for quick LLM scanning. Use when LLM needs to understand available docs without loading everything."
+dependencies:
+  requires: []

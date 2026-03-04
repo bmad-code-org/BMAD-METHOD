@@ -547,6 +547,22 @@ class ShardDocValidationHarness {
           'output-location': '',
           outputs: '',
         },
+        {
+          module: 'core',
+          phase: 'anytime',
+          name: 'Index Docs',
+          code: 'ID',
+          sequence: '',
+          'workflow-file': `${runtimeFolder}/core/tasks/index-docs.xml`,
+          command: 'bmad-index-docs',
+          required: 'false',
+          agent: '',
+          options: '',
+          description:
+            'Create lightweight index for quick LLM scanning. Use when LLM needs to understand available docs without loading everything.',
+          'output-location': '',
+          outputs: '',
+        },
       ],
     );
 

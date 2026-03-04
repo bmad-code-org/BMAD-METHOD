@@ -38,6 +38,7 @@ const PROJECTION_COMPATIBILITY_ERROR_CODES = Object.freeze({
   HELP_CATALOG_REQUIRED_COLUMN_MISSING: 'ERR_HELP_CATALOG_COMPAT_REQUIRED_COLUMN_MISSING',
   HELP_CATALOG_EXEMPLAR_ROW_CONTRACT_FAILED: 'ERR_HELP_CATALOG_COMPAT_EXEMPLAR_ROW_CONTRACT_FAILED',
   HELP_CATALOG_SHARD_DOC_ROW_CONTRACT_FAILED: 'ERR_HELP_CATALOG_COMPAT_SHARD_DOC_ROW_CONTRACT_FAILED',
+  HELP_CATALOG_INDEX_DOCS_ROW_CONTRACT_FAILED: 'ERR_HELP_CATALOG_COMPAT_INDEX_DOCS_ROW_CONTRACT_FAILED',
   GITHUB_COPILOT_WORKFLOW_FILE_MISSING: 'ERR_GITHUB_COPILOT_HELP_WORKFLOW_FILE_MISSING',
   COMMAND_DOC_PARSE_FAILED: 'ERR_COMMAND_DOC_CONSISTENCY_PARSE_FAILED',
   COMMAND_DOC_CANONICAL_COMMAND_MISSING: 'ERR_COMMAND_DOC_CONSISTENCY_CANONICAL_COMMAND_MISSING',
@@ -311,6 +312,23 @@ function validateHelpCatalogLoaderEntries(rows, options = {}) {
       fieldPath: 'rows[*].command',
       sourcePath,
       observedValue: String(shardDocRows.length),
+      expectedValue: '1',
+    });
+  }
+
+  const indexDocsRows = parsedRows.filter(
+    (row) =>
+      normalizeCommandValue(row.command) === 'bmad-index-docs' &&
+      normalizeWorkflowPath(row['workflow-file']).endsWith('/core/tasks/index-docs.xml'),
+  );
+  if (indexDocsRows.length !== 1) {
+    throwCompatibilityError({
+      code: PROJECTION_COMPATIBILITY_ERROR_CODES.HELP_CATALOG_INDEX_DOCS_ROW_CONTRACT_FAILED,
+      detail: 'Exactly one index-docs compatibility row is required for help catalog consumers',
+      surface,
+      fieldPath: 'rows[*].command',
+      sourcePath,
+      observedValue: String(indexDocsRows.length),
       expectedValue: '1',
     });
   }

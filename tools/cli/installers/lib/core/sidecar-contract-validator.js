@@ -15,6 +15,7 @@ const HELP_SIDECAR_REQUIRED_FIELDS = Object.freeze([
 ]);
 
 const SHARD_DOC_SIDECAR_REQUIRED_FIELDS = Object.freeze([...HELP_SIDECAR_REQUIRED_FIELDS]);
+const INDEX_DOCS_SIDECAR_REQUIRED_FIELDS = Object.freeze([...HELP_SIDECAR_REQUIRED_FIELDS]);
 
 const HELP_SIDECAR_ERROR_CODES = Object.freeze({
   FILE_NOT_FOUND: 'ERR_HELP_SIDECAR_FILE_NOT_FOUND',
@@ -46,8 +47,24 @@ const SHARD_DOC_SIDECAR_ERROR_CODES = Object.freeze({
   SOURCEPATH_BASENAME_MISMATCH: 'ERR_SHARD_DOC_SIDECAR_SOURCEPATH_BASENAME_MISMATCH',
 });
 
+const INDEX_DOCS_SIDECAR_ERROR_CODES = Object.freeze({
+  FILE_NOT_FOUND: 'ERR_INDEX_DOCS_SIDECAR_FILE_NOT_FOUND',
+  PARSE_FAILED: 'ERR_INDEX_DOCS_SIDECAR_PARSE_FAILED',
+  INVALID_ROOT_OBJECT: 'ERR_INDEX_DOCS_SIDECAR_INVALID_ROOT_OBJECT',
+  REQUIRED_FIELD_MISSING: 'ERR_INDEX_DOCS_SIDECAR_REQUIRED_FIELD_MISSING',
+  REQUIRED_FIELD_EMPTY: 'ERR_INDEX_DOCS_SIDECAR_REQUIRED_FIELD_EMPTY',
+  ARTIFACT_TYPE_INVALID: 'ERR_INDEX_DOCS_SIDECAR_ARTIFACT_TYPE_INVALID',
+  MODULE_INVALID: 'ERR_INDEX_DOCS_SIDECAR_MODULE_INVALID',
+  DEPENDENCIES_MISSING: 'ERR_INDEX_DOCS_SIDECAR_DEPENDENCIES_MISSING',
+  DEPENDENCIES_REQUIRES_INVALID: 'ERR_INDEX_DOCS_SIDECAR_DEPENDENCIES_REQUIRES_INVALID',
+  DEPENDENCIES_REQUIRES_NOT_EMPTY: 'ERR_INDEX_DOCS_SIDECAR_DEPENDENCIES_REQUIRES_NOT_EMPTY',
+  MAJOR_VERSION_UNSUPPORTED: 'ERR_INDEX_DOCS_SIDECAR_MAJOR_VERSION_UNSUPPORTED',
+  SOURCEPATH_BASENAME_MISMATCH: 'ERR_INDEX_DOCS_SIDECAR_SOURCEPATH_BASENAME_MISMATCH',
+});
+
 const HELP_EXEMPLAR_CANONICAL_SOURCE_PATH = 'bmad-fork/src/core/tasks/help.md';
 const SHARD_DOC_CANONICAL_SOURCE_PATH = 'bmad-fork/src/core/tasks/shard-doc.xml';
+const INDEX_DOCS_CANONICAL_SOURCE_PATH = 'bmad-fork/src/core/tasks/index-docs.xml';
 const SIDECAR_SUPPORTED_SCHEMA_MAJOR = 1;
 
 class SidecarContractError extends Error {
@@ -257,6 +274,26 @@ function validateShardDocSidecarContractData(sidecarData, options = {}) {
   });
 }
 
+function validateIndexDocsSidecarContractData(sidecarData, options = {}) {
+  const sourcePath = normalizeSourcePath(options.errorSourcePath || 'src/core/tasks/index-docs.artifact.yaml');
+  validateSidecarContractData(sidecarData, {
+    sourcePath,
+    requiredFields: INDEX_DOCS_SIDECAR_REQUIRED_FIELDS,
+    requiredNonEmptyStringFields: ['canonicalId', 'sourcePath', 'displayName', 'description'],
+    errorCodes: INDEX_DOCS_SIDECAR_ERROR_CODES,
+    expectedArtifactType: 'task',
+    expectedModule: 'core',
+    expectedCanonicalSourcePath: INDEX_DOCS_CANONICAL_SOURCE_PATH,
+    missingDependenciesDetail: 'Index-docs sidecar requires an explicit dependencies block.',
+    dependenciesObjectDetail: 'Index-docs sidecar requires an explicit dependencies object.',
+    dependenciesRequiresArrayDetail: 'Index-docs dependencies.requires must be an array.',
+    dependenciesRequiresNotEmptyDetail: 'Index-docs contract requires explicit zero dependencies: dependencies.requires must be [].',
+    artifactTypeDetail: 'Index-docs contract requires artifactType to equal "task".',
+    moduleDetail: 'Index-docs contract requires module to equal "core".',
+    requiresMustBeEmpty: true,
+  });
+}
+
 async function validateHelpSidecarContractFile(sidecarPath = getSourcePath('core', 'tasks', 'help.artifact.yaml'), options = {}) {
   const normalizedSourcePath = normalizeSourcePath(options.errorSourcePath || toProjectRelativePath(sidecarPath));
 
@@ -313,14 +350,49 @@ async function validateShardDocSidecarContractFile(sidecarPath = getSourcePath('
   validateShardDocSidecarContractData(parsedSidecar, { errorSourcePath: normalizedSourcePath });
 }
 
+async function validateIndexDocsSidecarContractFile(
+  sidecarPath = getSourcePath('core', 'tasks', 'index-docs.artifact.yaml'),
+  options = {},
+) {
+  const normalizedSourcePath = normalizeSourcePath(options.errorSourcePath || toProjectRelativePath(sidecarPath));
+
+  if (!(await fs.pathExists(sidecarPath))) {
+    createValidationError(
+      INDEX_DOCS_SIDECAR_ERROR_CODES.FILE_NOT_FOUND,
+      '<file>',
+      normalizedSourcePath,
+      'Expected index-docs sidecar file was not found.',
+    );
+  }
+
+  let parsedSidecar;
+  try {
+    const sidecarRaw = await fs.readFile(sidecarPath, 'utf8');
+    parsedSidecar = yaml.parse(sidecarRaw);
+  } catch (error) {
+    createValidationError(
+      INDEX_DOCS_SIDECAR_ERROR_CODES.PARSE_FAILED,
+      '<document>',
+      normalizedSourcePath,
+      `YAML parse failure: ${error.message}`,
+    );
+  }
+
+  validateIndexDocsSidecarContractData(parsedSidecar, { errorSourcePath: normalizedSourcePath });
+}
+
 module.exports = {
   HELP_SIDECAR_REQUIRED_FIELDS,
   SHARD_DOC_SIDECAR_REQUIRED_FIELDS,
+  INDEX_DOCS_SIDECAR_REQUIRED_FIELDS,
   HELP_SIDECAR_ERROR_CODES,
   SHARD_DOC_SIDECAR_ERROR_CODES,
+  INDEX_DOCS_SIDECAR_ERROR_CODES,
   SidecarContractError,
   validateHelpSidecarContractData,
   validateHelpSidecarContractFile,
   validateShardDocSidecarContractData,
   validateShardDocSidecarContractFile,
+  validateIndexDocsSidecarContractData,
+  validateIndexDocsSidecarContractFile,
 };

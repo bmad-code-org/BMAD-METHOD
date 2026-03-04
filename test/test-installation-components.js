@@ -34,8 +34,11 @@ const {
   HELP_SIDECAR_ERROR_CODES,
   SHARD_DOC_SIDECAR_REQUIRED_FIELDS,
   SHARD_DOC_SIDECAR_ERROR_CODES,
+  INDEX_DOCS_SIDECAR_REQUIRED_FIELDS,
+  INDEX_DOCS_SIDECAR_ERROR_CODES,
   validateHelpSidecarContractFile,
   validateShardDocSidecarContractFile,
+  validateIndexDocsSidecarContractFile,
 } = require('../tools/cli/installers/lib/core/sidecar-contract-validator');
 const {
   HELP_FRONTMATTER_MISMATCH_ERROR_CODES,
@@ -45,6 +48,10 @@ const {
   SHARD_DOC_AUTHORITY_VALIDATION_ERROR_CODES,
   validateShardDocAuthoritySplitAndPrecedence,
 } = require('../tools/cli/installers/lib/core/shard-doc-authority-validator');
+const {
+  INDEX_DOCS_AUTHORITY_VALIDATION_ERROR_CODES,
+  validateIndexDocsAuthoritySplitAndPrecedence,
+} = require('../tools/cli/installers/lib/core/index-docs-authority-validator');
 const {
   HELP_CATALOG_GENERATION_ERROR_CODES,
   EXEMPLAR_HELP_CATALOG_AUTHORITY_SOURCE_PATH,
@@ -595,6 +602,203 @@ async function runTests() {
   console.log('');
 
   // ============================================================
+  // Test 4c: Index-docs Sidecar Contract Validation
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 4c: Index-docs Sidecar Contract Validation${colors.reset}\n`);
+
+  const validIndexDocsSidecar = {
+    schemaVersion: 1,
+    canonicalId: 'bmad-index-docs',
+    artifactType: 'task',
+    module: 'core',
+    sourcePath: 'bmad-fork/src/core/tasks/index-docs.xml',
+    displayName: 'Index Docs',
+    description:
+      'Create lightweight index for quick LLM scanning. Use when LLM needs to understand available docs without loading everything.',
+    dependencies: {
+      requires: [],
+    },
+  };
+
+  const indexDocsFixtureRoot = path.join(projectRoot, 'test', 'fixtures', 'index-docs', 'sidecar-negative');
+  const indexDocsUnknownMajorFixturePath = path.join(indexDocsFixtureRoot, 'unknown-major-version', 'index-docs.artifact.yaml');
+  const indexDocsBasenameMismatchFixturePath = path.join(indexDocsFixtureRoot, 'basename-path-mismatch', 'index-docs.artifact.yaml');
+
+  const tempIndexDocsRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-index-docs-sidecar-'));
+  const tempIndexDocsSidecarPath = path.join(tempIndexDocsRoot, 'index-docs.artifact.yaml');
+  const deterministicIndexDocsSourcePath = 'bmad-fork/src/core/tasks/index-docs.artifact.yaml';
+
+  const writeTempIndexDocsSidecar = async (data) => {
+    await fs.writeFile(tempIndexDocsSidecarPath, yaml.stringify(data), 'utf8');
+  };
+
+  const expectIndexDocsValidationError = async (data, expectedCode, expectedFieldPath, testLabel, expectedDetail = null) => {
+    await writeTempIndexDocsSidecar(data);
+
+    try {
+      await validateIndexDocsSidecarContractFile(tempIndexDocsSidecarPath, { errorSourcePath: deterministicIndexDocsSourcePath });
+      assert(false, testLabel, 'Expected validation error but validation passed');
+    } catch (error) {
+      assert(error.code === expectedCode, `${testLabel} returns expected error code`, `Expected ${expectedCode}, got ${error.code}`);
+      assert(
+        error.fieldPath === expectedFieldPath,
+        `${testLabel} returns expected field path`,
+        `Expected ${expectedFieldPath}, got ${error.fieldPath}`,
+      );
+      assert(
+        error.sourcePath === deterministicIndexDocsSourcePath,
+        `${testLabel} returns expected source path`,
+        `Expected ${deterministicIndexDocsSourcePath}, got ${error.sourcePath}`,
+      );
+      assert(
+        typeof error.message === 'string' &&
+          error.message.includes(expectedCode) &&
+          error.message.includes(expectedFieldPath) &&
+          error.message.includes(deterministicIndexDocsSourcePath),
+        `${testLabel} includes deterministic message context`,
+      );
+      if (expectedDetail !== null) {
+        assert(
+          error.detail === expectedDetail,
+          `${testLabel} returns locked detail string`,
+          `Expected "${expectedDetail}", got "${error.detail}"`,
+        );
+      }
+    }
+  };
+
+  try {
+    await writeTempIndexDocsSidecar(validIndexDocsSidecar);
+    await validateIndexDocsSidecarContractFile(tempIndexDocsSidecarPath, { errorSourcePath: deterministicIndexDocsSourcePath });
+    assert(true, 'Valid index-docs sidecar contract passes');
+
+    for (const requiredField of INDEX_DOCS_SIDECAR_REQUIRED_FIELDS.filter((field) => field !== 'dependencies')) {
+      const invalidSidecar = structuredClone(validIndexDocsSidecar);
+      delete invalidSidecar[requiredField];
+      await expectIndexDocsValidationError(
+        invalidSidecar,
+        INDEX_DOCS_SIDECAR_ERROR_CODES.REQUIRED_FIELD_MISSING,
+        requiredField,
+        `Index-docs missing required field "${requiredField}"`,
+      );
+    }
+
+    const unknownMajorFixture = yaml.parse(await fs.readFile(indexDocsUnknownMajorFixturePath, 'utf8'));
+    await expectIndexDocsValidationError(
+      unknownMajorFixture,
+      INDEX_DOCS_SIDECAR_ERROR_CODES.MAJOR_VERSION_UNSUPPORTED,
+      'schemaVersion',
+      'Index-docs unsupported sidecar major schema version',
+      'sidecar schema major version is unsupported',
+    );
+
+    const basenameMismatchFixture = yaml.parse(await fs.readFile(indexDocsBasenameMismatchFixturePath, 'utf8'));
+    await expectIndexDocsValidationError(
+      basenameMismatchFixture,
+      INDEX_DOCS_SIDECAR_ERROR_CODES.SOURCEPATH_BASENAME_MISMATCH,
+      'sourcePath',
+      'Index-docs sourcePath mismatch',
+      'sidecar basename does not match sourcePath basename',
+    );
+
+    const mismatchedIndexDocsBasenamePath = path.join(tempIndexDocsRoot, 'not-index-docs.artifact.yaml');
+    await fs.writeFile(mismatchedIndexDocsBasenamePath, yaml.stringify(validIndexDocsSidecar), 'utf8');
+    try {
+      await validateIndexDocsSidecarContractFile(mismatchedIndexDocsBasenamePath, {
+        errorSourcePath: 'bmad-fork/src/core/tasks/not-index-docs.artifact.yaml',
+      });
+      assert(false, 'Index-docs basename mismatch returns validation error', 'Expected validation error but validation passed');
+    } catch (error) {
+      assert(
+        error.code === INDEX_DOCS_SIDECAR_ERROR_CODES.SOURCEPATH_BASENAME_MISMATCH,
+        'Index-docs basename mismatch returns expected error code',
+      );
+      assert(
+        error.fieldPath === 'sourcePath',
+        'Index-docs basename mismatch returns expected field path',
+        `Expected sourcePath, got ${error.fieldPath}`,
+      );
+      assert(
+        typeof error.message === 'string' &&
+          error.message.includes(INDEX_DOCS_SIDECAR_ERROR_CODES.SOURCEPATH_BASENAME_MISMATCH) &&
+          error.message.includes('bmad-fork/src/core/tasks/not-index-docs.artifact.yaml'),
+        'Index-docs basename mismatch includes deterministic message context',
+      );
+    }
+
+    await expectIndexDocsValidationError(
+      { ...validIndexDocsSidecar, artifactType: 'workflow' },
+      INDEX_DOCS_SIDECAR_ERROR_CODES.ARTIFACT_TYPE_INVALID,
+      'artifactType',
+      'Index-docs invalid artifactType',
+    );
+
+    await expectIndexDocsValidationError(
+      { ...validIndexDocsSidecar, module: 'bmm' },
+      INDEX_DOCS_SIDECAR_ERROR_CODES.MODULE_INVALID,
+      'module',
+      'Index-docs invalid module',
+    );
+
+    await expectIndexDocsValidationError(
+      { ...validIndexDocsSidecar, canonicalId: '   ' },
+      INDEX_DOCS_SIDECAR_ERROR_CODES.REQUIRED_FIELD_EMPTY,
+      'canonicalId',
+      'Index-docs empty canonicalId',
+    );
+
+    await expectIndexDocsValidationError(
+      { ...validIndexDocsSidecar, sourcePath: '' },
+      INDEX_DOCS_SIDECAR_ERROR_CODES.REQUIRED_FIELD_EMPTY,
+      'sourcePath',
+      'Index-docs empty sourcePath',
+    );
+
+    await expectIndexDocsValidationError(
+      { ...validIndexDocsSidecar, description: '' },
+      INDEX_DOCS_SIDECAR_ERROR_CODES.REQUIRED_FIELD_EMPTY,
+      'description',
+      'Index-docs empty description',
+    );
+
+    await expectIndexDocsValidationError(
+      { ...validIndexDocsSidecar, displayName: '' },
+      INDEX_DOCS_SIDECAR_ERROR_CODES.REQUIRED_FIELD_EMPTY,
+      'displayName',
+      'Index-docs empty displayName',
+    );
+
+    const missingIndexDocsDependencies = structuredClone(validIndexDocsSidecar);
+    delete missingIndexDocsDependencies.dependencies;
+    await expectIndexDocsValidationError(
+      missingIndexDocsDependencies,
+      INDEX_DOCS_SIDECAR_ERROR_CODES.DEPENDENCIES_MISSING,
+      'dependencies',
+      'Index-docs missing dependencies block',
+    );
+
+    await expectIndexDocsValidationError(
+      { ...validIndexDocsSidecar, dependencies: { requires: 'skill:bmad-help' } },
+      INDEX_DOCS_SIDECAR_ERROR_CODES.DEPENDENCIES_REQUIRES_INVALID,
+      'dependencies.requires',
+      'Index-docs non-array dependencies.requires',
+    );
+
+    await expectIndexDocsValidationError(
+      { ...validIndexDocsSidecar, dependencies: { requires: ['skill:bmad-help'] } },
+      INDEX_DOCS_SIDECAR_ERROR_CODES.DEPENDENCIES_REQUIRES_NOT_EMPTY,
+      'dependencies.requires',
+      'Index-docs non-empty dependencies.requires',
+    );
+  } catch (error) {
+    assert(false, 'Index-docs sidecar validation suite setup', error.message);
+  } finally {
+    await fs.remove(tempIndexDocsRoot);
+  }
+
+  console.log('');
+
+  // ============================================================
   // Test 5: Authority Split and Frontmatter Precedence
   // ============================================================
   console.log(`${colors.yellow}Test Suite 5: Authority Split and Precedence${colors.reset}\n`);
@@ -996,6 +1200,218 @@ async function runTests() {
     );
 
     await fs.writeFile(tempShardDocAuthoritySidecarPath, yaml.stringify(validShardDocAuthoritySidecar), 'utf8');
+
+    const tempIndexDocsAuthoritySidecarPath = path.join(tempAuthorityRoot, 'index-docs.artifact.yaml');
+    const tempIndexDocsAuthoritySourcePath = path.join(tempAuthorityRoot, 'index-docs.xml');
+    const tempIndexDocsModuleHelpPath = path.join(tempAuthorityRoot, 'index-docs-module-help.csv');
+
+    const deterministicIndexDocsAuthorityPaths = {
+      sidecar: 'bmad-fork/src/core/tasks/index-docs.artifact.yaml',
+      source: 'bmad-fork/src/core/tasks/index-docs.xml',
+      compatibility: 'bmad-fork/src/core/module-help.csv',
+      workflowFile: '_bmad/core/tasks/index-docs.xml',
+    };
+
+    const validIndexDocsAuthoritySidecar = {
+      schemaVersion: 1,
+      canonicalId: 'bmad-index-docs',
+      artifactType: 'task',
+      module: 'core',
+      sourcePath: deterministicIndexDocsAuthorityPaths.source,
+      displayName: 'Index Docs',
+      description:
+        'Create lightweight index for quick LLM scanning. Use when LLM needs to understand available docs without loading everything.',
+      dependencies: {
+        requires: [],
+      },
+    };
+
+    const writeIndexDocsModuleHelpCsv = async (rows) => {
+      const header = 'module,phase,name,code,sequence,workflow-file,command,required,agent,options,description,output-location,outputs';
+      const lines = rows.map((row) =>
+        [
+          row.module ?? 'core',
+          row.phase ?? 'anytime',
+          row.name ?? 'Index Docs',
+          row.code ?? 'ID',
+          row.sequence ?? '',
+          row.workflowFile ?? '',
+          row.command ?? '',
+          row.required ?? 'false',
+          row.agent ?? '',
+          row.options ?? '',
+          row.description ?? 'Compatibility row',
+          row.outputLocation ?? '',
+          row.outputs ?? '',
+        ].join(','),
+      );
+
+      await fs.writeFile(tempIndexDocsModuleHelpPath, [header, ...lines].join('\n'), 'utf8');
+    };
+
+    const runIndexDocsAuthorityValidation = async () =>
+      validateIndexDocsAuthoritySplitAndPrecedence({
+        sidecarPath: tempIndexDocsAuthoritySidecarPath,
+        sourceXmlPath: tempIndexDocsAuthoritySourcePath,
+        compatibilityCatalogPath: tempIndexDocsModuleHelpPath,
+        sidecarSourcePath: deterministicIndexDocsAuthorityPaths.sidecar,
+        sourceXmlSourcePath: deterministicIndexDocsAuthorityPaths.source,
+        compatibilityCatalogSourcePath: deterministicIndexDocsAuthorityPaths.compatibility,
+        compatibilityWorkflowFilePath: deterministicIndexDocsAuthorityPaths.workflowFile,
+      });
+
+    const expectIndexDocsAuthorityValidationError = async (
+      rows,
+      expectedCode,
+      expectedFieldPath,
+      testLabel,
+      expectedSourcePath = deterministicIndexDocsAuthorityPaths.compatibility,
+    ) => {
+      await writeIndexDocsModuleHelpCsv(rows);
+
+      try {
+        await runIndexDocsAuthorityValidation();
+        assert(false, testLabel, 'Expected index-docs authority validation error but validation passed');
+      } catch (error) {
+        assert(error.code === expectedCode, `${testLabel} returns expected error code`, `Expected ${expectedCode}, got ${error.code}`);
+        assert(
+          error.fieldPath === expectedFieldPath,
+          `${testLabel} returns expected field path`,
+          `Expected ${expectedFieldPath}, got ${error.fieldPath}`,
+        );
+        assert(
+          error.sourcePath === expectedSourcePath,
+          `${testLabel} returns expected source path`,
+          `Expected ${expectedSourcePath}, got ${error.sourcePath}`,
+        );
+        assert(
+          typeof error.message === 'string' &&
+            error.message.includes(expectedCode) &&
+            error.message.includes(expectedFieldPath) &&
+            error.message.includes(expectedSourcePath),
+          `${testLabel} includes deterministic message context`,
+        );
+      }
+    };
+
+    await fs.writeFile(tempIndexDocsAuthoritySidecarPath, yaml.stringify(validIndexDocsAuthoritySidecar), 'utf8');
+    await fs.writeFile(tempIndexDocsAuthoritySourcePath, '<task id="_bmad/core/tasks/index-docs"></task>\n', 'utf8');
+
+    await writeIndexDocsModuleHelpCsv([
+      {
+        workflowFile: deterministicIndexDocsAuthorityPaths.workflowFile,
+        command: 'bmad-index-docs',
+        name: 'Index Docs',
+      },
+    ]);
+
+    const indexDocsAuthorityValidation = await runIndexDocsAuthorityValidation();
+    assert(
+      indexDocsAuthorityValidation.authoritativePresenceKey === 'capability:bmad-index-docs',
+      'Index-docs authority validation returns expected authoritative presence key',
+    );
+    assert(
+      Array.isArray(indexDocsAuthorityValidation.authoritativeRecords) && indexDocsAuthorityValidation.authoritativeRecords.length === 2,
+      'Index-docs authority validation returns sidecar and source authority records',
+    );
+
+    const indexDocsSidecarRecord = indexDocsAuthorityValidation.authoritativeRecords.find(
+      (record) => record.authoritySourceType === 'sidecar',
+    );
+    const indexDocsSourceRecord = indexDocsAuthorityValidation.authoritativeRecords.find(
+      (record) => record.authoritySourceType === 'source-xml',
+    );
+
+    assert(
+      indexDocsSidecarRecord &&
+        indexDocsSourceRecord &&
+        indexDocsSidecarRecord.authoritativePresenceKey === indexDocsSourceRecord.authoritativePresenceKey,
+      'Index-docs sidecar and source-xml records share one authoritative presence key',
+    );
+    assert(
+      indexDocsSidecarRecord &&
+        indexDocsSourceRecord &&
+        indexDocsSidecarRecord.authoritativePresenceKey === 'capability:bmad-index-docs' &&
+        indexDocsSourceRecord.authoritativePresenceKey === 'capability:bmad-index-docs',
+      'Index-docs authority records lock authoritative presence key to capability:bmad-index-docs',
+    );
+    assert(
+      indexDocsSidecarRecord && indexDocsSidecarRecord.authoritySourcePath === deterministicIndexDocsAuthorityPaths.sidecar,
+      'Index-docs metadata authority record preserves sidecar source path',
+    );
+    assert(
+      indexDocsSourceRecord && indexDocsSourceRecord.authoritySourcePath === deterministicIndexDocsAuthorityPaths.source,
+      'Index-docs source-body authority record preserves source XML path',
+    );
+
+    await expectIndexDocsAuthorityValidationError(
+      [
+        {
+          workflowFile: deterministicIndexDocsAuthorityPaths.workflowFile,
+          command: 'legacy-index-docs',
+          name: 'Index Docs',
+        },
+      ],
+      INDEX_DOCS_AUTHORITY_VALIDATION_ERROR_CODES.COMMAND_MISMATCH,
+      'command',
+      'Index-docs compatibility command mismatch',
+    );
+
+    await expectIndexDocsAuthorityValidationError(
+      [
+        {
+          workflowFile: '_bmad/core/tasks/help.md',
+          command: 'bmad-index-docs',
+          name: 'Index Docs',
+        },
+      ],
+      INDEX_DOCS_AUTHORITY_VALIDATION_ERROR_CODES.COMPATIBILITY_ROW_MISSING,
+      'workflow-file',
+      'Index-docs missing compatibility row',
+    );
+
+    await expectIndexDocsAuthorityValidationError(
+      [
+        {
+          workflowFile: deterministicIndexDocsAuthorityPaths.workflowFile,
+          command: 'bmad-index-docs',
+          name: 'Index Docs',
+        },
+        {
+          workflowFile: '_bmad/core/tasks/another.xml',
+          command: 'bmad-index-docs',
+          name: 'Index Docs',
+        },
+      ],
+      INDEX_DOCS_AUTHORITY_VALIDATION_ERROR_CODES.DUPLICATE_CANONICAL_COMMAND,
+      'command',
+      'Index-docs duplicate canonical command rows',
+    );
+
+    await fs.writeFile(
+      tempIndexDocsAuthoritySidecarPath,
+      yaml.stringify({
+        ...validIndexDocsAuthoritySidecar,
+        canonicalId: 'bmad-index-docs-renamed',
+      }),
+      'utf8',
+    );
+
+    await expectIndexDocsAuthorityValidationError(
+      [
+        {
+          workflowFile: deterministicIndexDocsAuthorityPaths.workflowFile,
+          command: 'bmad-index-docs-renamed',
+          name: 'Index Docs',
+        },
+      ],
+      INDEX_DOCS_AUTHORITY_VALIDATION_ERROR_CODES.SIDECAR_CANONICAL_ID_MISMATCH,
+      'canonicalId',
+      'Index-docs canonicalId drift fails deterministic authority validation',
+      deterministicIndexDocsAuthorityPaths.sidecar,
+    );
+
+    await fs.writeFile(tempIndexDocsAuthoritySidecarPath, yaml.stringify(validIndexDocsAuthoritySidecar), 'utf8');
   } catch (error) {
     assert(false, 'Authority split and precedence suite setup', error.message);
   } finally {
@@ -1016,7 +1432,9 @@ async function runTests() {
     {
       const installer = new Installer();
       let shardDocValidationCalled = false;
+      let indexDocsValidationCalled = false;
       let shardDocAuthorityValidationCalled = false;
+      let indexDocsAuthorityValidationCalled = false;
       let helpAuthorityValidationCalled = false;
       let generateConfigsCalled = false;
       let manifestGenerationCalled = false;
@@ -1025,6 +1443,9 @@ async function runTests() {
 
       installer.validateShardDocSidecarContractFile = async () => {
         shardDocValidationCalled = true;
+      };
+      installer.validateIndexDocsSidecarContractFile = async () => {
+        indexDocsValidationCalled = true;
       };
       installer.validateHelpSidecarContractFile = async () => {
         const error = new Error(expectedUnsupportedMajorDetail);
@@ -1039,6 +1460,13 @@ async function runTests() {
         return {
           authoritativeRecords: [],
           authoritativePresenceKey: 'capability:bmad-shard-doc',
+        };
+      };
+      installer.validateIndexDocsAuthoritySplitAndPrecedence = async () => {
+        indexDocsAuthorityValidationCalled = true;
+        return {
+          authoritativeRecords: [],
+          authoritativePresenceKey: 'capability:bmad-index-docs',
         };
       };
 
@@ -1093,8 +1521,10 @@ async function runTests() {
           `Expected ${HELP_SIDECAR_ERROR_CODES.MAJOR_VERSION_UNSUPPORTED}, got ${error.code}`,
         );
         assert(shardDocValidationCalled, 'Installer runs shard-doc sidecar validation before help sidecar validation');
+        assert(indexDocsValidationCalled, 'Installer runs index-docs sidecar validation before help sidecar validation');
         assert(
           !shardDocAuthorityValidationCalled &&
+            !indexDocsAuthorityValidationCalled &&
             !helpAuthorityValidationCalled &&
             !generateConfigsCalled &&
             !manifestGenerationCalled &&
@@ -1153,8 +1583,10 @@ async function runTests() {
 
       for (const scenario of shardDocFailureScenarios) {
         const installer = new Installer();
+        let indexDocsValidationCalled = false;
         let helpValidationCalled = false;
         let shardDocAuthorityValidationCalled = false;
+        let indexDocsAuthorityValidationCalled = false;
         let helpAuthorityValidationCalled = false;
         let generateConfigsCalled = false;
         let manifestGenerationCalled = false;
@@ -1169,6 +1601,9 @@ async function runTests() {
           error.detail = scenario.detail;
           throw error;
         };
+        installer.validateIndexDocsSidecarContractFile = async () => {
+          indexDocsValidationCalled = true;
+        };
         installer.validateHelpSidecarContractFile = async () => {
           helpValidationCalled = true;
         };
@@ -1177,6 +1612,13 @@ async function runTests() {
           return {
             authoritativeRecords: [],
             authoritativePresenceKey: 'capability:bmad-shard-doc',
+          };
+        };
+        installer.validateIndexDocsAuthoritySplitAndPrecedence = async () => {
+          indexDocsAuthorityValidationCalled = true;
+          return {
+            authoritativeRecords: [],
+            authoritativePresenceKey: 'capability:bmad-index-docs',
           };
         };
         installer.validateHelpAuthoritySplitAndPrecedence = async () => {
@@ -1223,9 +1665,11 @@ async function runTests() {
             error.sourcePath === deterministicShardDocFailFastSourcePath,
             `Installer ${scenario.label} returns deterministic source path`,
           );
+          assert(!indexDocsValidationCalled, `Installer ${scenario.label} aborts before index-docs sidecar validation`);
           assert(!helpValidationCalled, `Installer ${scenario.label} aborts before help sidecar validation`);
           assert(
             !shardDocAuthorityValidationCalled &&
+              !indexDocsAuthorityValidationCalled &&
               !helpAuthorityValidationCalled &&
               !generateConfigsCalled &&
               !manifestGenerationCalled &&
@@ -1240,6 +1684,7 @@ async function runTests() {
     // 6c: Shard-doc authority precedence conflict fails fast before help authority or generation.
     {
       const installer = new Installer();
+      let indexDocsAuthorityValidationCalled = false;
       let helpAuthorityValidationCalled = false;
       let generateConfigsCalled = false;
       let manifestGenerationCalled = false;
@@ -1247,6 +1692,7 @@ async function runTests() {
       let successResultCount = 0;
 
       installer.validateShardDocSidecarContractFile = async () => {};
+      installer.validateIndexDocsSidecarContractFile = async () => {};
       installer.validateHelpSidecarContractFile = async () => {};
       installer.validateShardDocAuthoritySplitAndPrecedence = async () => {
         const error = new Error('Converted shard-doc compatibility command must match sidecar canonicalId');
@@ -1254,6 +1700,13 @@ async function runTests() {
         error.fieldPath = 'command';
         error.sourcePath = 'bmad-fork/src/core/module-help.csv';
         throw error;
+      };
+      installer.validateIndexDocsAuthoritySplitAndPrecedence = async () => {
+        indexDocsAuthorityValidationCalled = true;
+        return {
+          authoritativeRecords: [],
+          authoritativePresenceKey: 'capability:bmad-index-docs',
+        };
       };
       installer.validateHelpAuthoritySplitAndPrecedence = async () => {
         helpAuthorityValidationCalled = true;
@@ -1303,13 +1756,17 @@ async function runTests() {
           'Installer shard-doc authority mismatch returns deterministic source path',
         );
         assert(
-          !helpAuthorityValidationCalled && !generateConfigsCalled && !manifestGenerationCalled && !helpCatalogGenerationCalled,
+          !indexDocsAuthorityValidationCalled &&
+            !helpAuthorityValidationCalled &&
+            !generateConfigsCalled &&
+            !manifestGenerationCalled &&
+            !helpCatalogGenerationCalled,
           'Installer shard-doc authority mismatch blocks downstream help authority/config/manifest/help generation',
         );
         assert(
-          successResultCount === 2,
+          successResultCount === 3,
           'Installer shard-doc authority mismatch records only sidecar gate pass milestones before abort',
-          `Expected 2, got ${successResultCount}`,
+          `Expected 3, got ${successResultCount}`,
         );
       }
     }
@@ -1317,6 +1774,7 @@ async function runTests() {
     // 6d: Shard-doc canonical drift fails fast before help authority or generation.
     {
       const installer = new Installer();
+      let indexDocsAuthorityValidationCalled = false;
       let helpAuthorityValidationCalled = false;
       let generateConfigsCalled = false;
       let manifestGenerationCalled = false;
@@ -1324,6 +1782,7 @@ async function runTests() {
       let successResultCount = 0;
 
       installer.validateShardDocSidecarContractFile = async () => {};
+      installer.validateIndexDocsSidecarContractFile = async () => {};
       installer.validateHelpSidecarContractFile = async () => {};
       installer.validateShardDocAuthoritySplitAndPrecedence = async () => {
         const error = new Error('Converted shard-doc sidecar canonicalId must remain locked to bmad-shard-doc');
@@ -1331,6 +1790,13 @@ async function runTests() {
         error.fieldPath = 'canonicalId';
         error.sourcePath = 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml';
         throw error;
+      };
+      installer.validateIndexDocsAuthoritySplitAndPrecedence = async () => {
+        indexDocsAuthorityValidationCalled = true;
+        return {
+          authoritativeRecords: [],
+          authoritativePresenceKey: 'capability:bmad-index-docs',
+        };
       };
       installer.validateHelpAuthoritySplitAndPrecedence = async () => {
         helpAuthorityValidationCalled = true;
@@ -1380,13 +1846,17 @@ async function runTests() {
           'Installer shard-doc canonical drift returns deterministic source path',
         );
         assert(
-          !helpAuthorityValidationCalled && !generateConfigsCalled && !manifestGenerationCalled && !helpCatalogGenerationCalled,
+          !indexDocsAuthorityValidationCalled &&
+            !helpAuthorityValidationCalled &&
+            !generateConfigsCalled &&
+            !manifestGenerationCalled &&
+            !helpCatalogGenerationCalled,
           'Installer shard-doc canonical drift blocks downstream help authority/config/manifest/help generation',
         );
         assert(
-          successResultCount === 2,
+          successResultCount === 3,
           'Installer shard-doc canonical drift records only sidecar gate pass milestones before abort',
-          `Expected 2, got ${successResultCount}`,
+          `Expected 3, got ${successResultCount}`,
         );
       }
     }
@@ -1400,6 +1870,9 @@ async function runTests() {
       installer.validateShardDocSidecarContractFile = async () => {
         executionOrder.push('shard-doc-sidecar');
       };
+      installer.validateIndexDocsSidecarContractFile = async () => {
+        executionOrder.push('index-docs-sidecar');
+      };
       installer.validateHelpSidecarContractFile = async () => {
         executionOrder.push('help-sidecar');
       };
@@ -1408,6 +1881,13 @@ async function runTests() {
         return {
           authoritativeRecords: [],
           authoritativePresenceKey: 'capability:bmad-shard-doc',
+        };
+      };
+      installer.validateIndexDocsAuthoritySplitAndPrecedence = async () => {
+        executionOrder.push('index-docs-authority');
+        return {
+          authoritativeRecords: [],
+          authoritativePresenceKey: 'capability:bmad-index-docs',
         };
       };
       installer.validateHelpAuthoritySplitAndPrecedence = async () => {
@@ -1448,7 +1928,7 @@ async function runTests() {
 
       assert(
         executionOrder.join(' -> ') ===
-          'shard-doc-sidecar -> help-sidecar -> shard-doc-authority -> help-authority -> config-generation -> manifest-generation -> help-catalog-generation',
+          'shard-doc-sidecar -> index-docs-sidecar -> help-sidecar -> shard-doc-authority -> index-docs-authority -> help-authority -> config-generation -> manifest-generation -> help-catalog-generation',
         'Installer valid sidecar path preserves fail-fast gate ordering and continues generation flow',
         `Observed order: ${executionOrder.join(' -> ')}`,
       );
@@ -1457,8 +1937,16 @@ async function runTests() {
         'Installer valid sidecar path records explicit shard-doc sidecar gate pass milestone',
       );
       assert(
+        resultMilestones.includes('Index-docs sidecar contract'),
+        'Installer valid sidecar path records explicit index-docs sidecar gate pass milestone',
+      );
+      assert(
         resultMilestones.includes('Shard-doc authority split'),
         'Installer valid sidecar path records explicit shard-doc authority gate pass milestone',
+      );
+      assert(
+        resultMilestones.includes('Index-docs authority split'),
+        'Installer valid sidecar path records explicit index-docs authority gate pass milestone',
       );
     }
   } catch (error) {
@@ -1934,6 +2422,15 @@ async function runTests() {
         path: 'core/tasks/shard-doc.xml',
         standalone: true,
       },
+      {
+        name: 'index-docs',
+        displayName: 'Index Docs',
+        description:
+          'Create lightweight index for quick LLM scanning. Use when LLM needs to understand available docs without loading everything.',
+        module: 'core',
+        path: 'core/tasks/index-docs.xml',
+        standalone: true,
+      },
     ];
     manifestGenerator.helpAuthorityRecords = [
       {
@@ -1954,6 +2451,14 @@ async function runTests() {
         authoritySourceType: 'sidecar',
         authoritySourcePath: 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml',
         sourcePath: 'bmad-fork/src/core/tasks/shard-doc.xml',
+      },
+      {
+        recordType: 'metadata-authority',
+        canonicalId: 'bmad-index-docs',
+        authoritativePresenceKey: 'capability:bmad-index-docs',
+        authoritySourceType: 'sidecar',
+        authoritySourcePath: 'bmad-fork/src/core/tasks/index-docs.artifact.yaml',
+        sourcePath: 'bmad-fork/src/core/tasks/index-docs.xml',
       },
     ];
     const tempTaskManifestConfigDir = path.join(tempTaskManifestRoot, '_config');
@@ -1978,6 +2483,7 @@ async function runTests() {
     const helpTaskRow = writtenTaskManifestRecords.find((record) => record.module === 'core' && record.name === 'help');
     const validateTaskRow = writtenTaskManifestRecords.find((record) => record.module === 'core' && record.name === 'validate-workflow');
     const shardDocTaskRow = writtenTaskManifestRecords.find((record) => record.module === 'core' && record.name === 'shard-doc');
+    const indexDocsTaskRow = writtenTaskManifestRecords.find((record) => record.module === 'core' && record.name === 'index-docs');
 
     assert(!!helpTaskRow, 'Task manifest includes exemplar help row');
     assert(helpTaskRow && helpTaskRow.legacyName === 'help', 'Task manifest help row sets legacyName=help');
@@ -2007,6 +2513,20 @@ async function runTests() {
       shardDocTaskRow && shardDocTaskRow.authoritySourcePath === 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml',
       'Task manifest shard-doc row sets authoritySourcePath to shard-doc sidecar source path',
     );
+    assert(!!indexDocsTaskRow, 'Task manifest includes converted index-docs row');
+    assert(indexDocsTaskRow && indexDocsTaskRow.legacyName === 'index-docs', 'Task manifest index-docs row sets legacyName=index-docs');
+    assert(
+      indexDocsTaskRow && indexDocsTaskRow.canonicalId === 'bmad-index-docs',
+      'Task manifest index-docs row sets canonicalId=bmad-index-docs',
+    );
+    assert(
+      indexDocsTaskRow && indexDocsTaskRow.authoritySourceType === 'sidecar',
+      'Task manifest index-docs row sets authoritySourceType=sidecar',
+    );
+    assert(
+      indexDocsTaskRow && indexDocsTaskRow.authoritySourcePath === 'bmad-fork/src/core/tasks/index-docs.artifact.yaml',
+      'Task manifest index-docs row sets authoritySourcePath to index-docs sidecar source path',
+    );
 
     await manifestGenerator.writeTaskManifest(tempTaskManifestConfigDir);
     const repeatedTaskManifestRaw = await fs.readFile(path.join(tempTaskManifestConfigDir, 'task-manifest.csv'), 'utf8');
@@ -2017,12 +2537,14 @@ async function runTests() {
 
     let capturedAuthorityValidationOptions = null;
     let capturedShardDocAuthorityValidationOptions = null;
+    let capturedIndexDocsAuthorityValidationOptions = null;
     let capturedManifestHelpAuthorityRecords = null;
     let capturedManifestTaskAuthorityRecords = null;
     let capturedInstalledFiles = null;
 
     const installer = new Installer();
     installer.validateShardDocSidecarContractFile = async () => {};
+    installer.validateIndexDocsSidecarContractFile = async () => {};
     installer.validateHelpSidecarContractFile = async () => {};
     installer.validateShardDocAuthoritySplitAndPrecedence = async (options) => {
       capturedShardDocAuthorityValidationOptions = options;
@@ -2041,6 +2563,30 @@ async function runTests() {
             recordType: 'source-body-authority',
             canonicalId: 'bmad-shard-doc',
             authoritativePresenceKey: 'capability:bmad-shard-doc',
+            authoritySourceType: 'source-xml',
+            authoritySourcePath: options.sourceXmlSourcePath,
+            sourcePath: options.sourceXmlSourcePath,
+          },
+        ],
+      };
+    };
+    installer.validateIndexDocsAuthoritySplitAndPrecedence = async (options) => {
+      capturedIndexDocsAuthorityValidationOptions = options;
+      return {
+        authoritativePresenceKey: 'capability:bmad-index-docs',
+        authoritativeRecords: [
+          {
+            recordType: 'metadata-authority',
+            canonicalId: 'bmad-index-docs',
+            authoritativePresenceKey: 'capability:bmad-index-docs',
+            authoritySourceType: 'sidecar',
+            authoritySourcePath: options.sidecarSourcePath,
+            sourcePath: options.sourceXmlSourcePath,
+          },
+          {
+            recordType: 'source-body-authority',
+            canonicalId: 'bmad-index-docs',
+            authoritativePresenceKey: 'capability:bmad-index-docs',
             authoritySourceType: 'source-xml',
             authoritySourcePath: options.sourceXmlSourcePath,
             sourcePath: options.sourceXmlSourcePath,
@@ -2119,6 +2665,21 @@ async function runTests() {
       'Installer passes locked module-help source path to shard-doc authority validation',
     );
     assert(
+      capturedIndexDocsAuthorityValidationOptions &&
+        capturedIndexDocsAuthorityValidationOptions.sidecarSourcePath === 'bmad-fork/src/core/tasks/index-docs.artifact.yaml',
+      'Installer passes locked index-docs sidecar source path to index-docs authority validation',
+    );
+    assert(
+      capturedIndexDocsAuthorityValidationOptions &&
+        capturedIndexDocsAuthorityValidationOptions.sourceXmlSourcePath === 'bmad-fork/src/core/tasks/index-docs.xml',
+      'Installer passes locked index-docs source XML path to index-docs authority validation',
+    );
+    assert(
+      capturedIndexDocsAuthorityValidationOptions &&
+        capturedIndexDocsAuthorityValidationOptions.compatibilityCatalogSourcePath === 'bmad-fork/src/core/module-help.csv',
+      'Installer passes locked module-help source path to index-docs authority validation',
+    );
+    assert(
       Array.isArray(capturedManifestHelpAuthorityRecords) &&
         capturedManifestHelpAuthorityRecords[0] &&
         capturedManifestHelpAuthorityRecords[0].authoritySourcePath === 'bmad-fork/src/core/tasks/help.artifact.yaml',
@@ -2134,6 +2695,17 @@ async function runTests() {
             record.authoritySourcePath === 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml',
         ),
       'Installer passes shard-doc sidecar authority records into task-manifest projection options',
+    );
+    assert(
+      Array.isArray(capturedManifestTaskAuthorityRecords) &&
+        capturedManifestTaskAuthorityRecords.some(
+          (record) =>
+            record &&
+            record.canonicalId === 'bmad-index-docs' &&
+            record.authoritySourceType === 'sidecar' &&
+            record.authoritySourcePath === 'bmad-fork/src/core/tasks/index-docs.artifact.yaml',
+        ),
+      'Installer passes index-docs sidecar authority records into task-manifest projection options',
     );
     assert(
       Array.isArray(capturedInstalledFiles) &&
@@ -2178,6 +2750,14 @@ async function runTests() {
         authoritySourcePath: 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml',
         sourcePath: 'bmad-fork/src/core/tasks/shard-doc.xml',
       },
+      {
+        recordType: 'metadata-authority',
+        canonicalId: 'bmad-index-docs',
+        authoritativePresenceKey: 'capability:bmad-index-docs',
+        authoritySourceType: 'sidecar',
+        authoritySourcePath: 'bmad-fork/src/core/tasks/index-docs.artifact.yaml',
+        sourcePath: 'bmad-fork/src/core/tasks/index-docs.xml',
+      },
     ];
 
     const tempCanonicalAliasConfigDir = path.join(tempCanonicalAliasRoot, '_config');
@@ -2198,10 +2778,10 @@ async function runTests() {
       skip_empty_lines: true,
       trim: true,
     });
-    assert(canonicalAliasRows.length === 6, 'Canonical alias table emits help + shard-doc canonical alias exemplar rows');
+    assert(canonicalAliasRows.length === 9, 'Canonical alias table emits help + shard-doc + index-docs canonical alias exemplar rows');
     assert(
       canonicalAliasRows.map((row) => row.aliasType).join(',') ===
-        'canonical-id,legacy-name,slash-command,canonical-id,legacy-name,slash-command',
+        'canonical-id,legacy-name,slash-command,canonical-id,legacy-name,slash-command,canonical-id,legacy-name,slash-command',
       'Canonical alias table preserves locked deterministic row ordering',
     );
 
@@ -2274,6 +2854,42 @@ async function runTests() {
           aliasType: 'slash-command',
           authoritySourcePath: 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml',
           normalizedAliasValue: 'bmad-shard-doc',
+          rawIdentityHasLeadingSlash: 'true',
+          resolutionEligibility: 'slash-command-only',
+        },
+      ],
+      [
+        'alias-row:bmad-index-docs:canonical-id',
+        {
+          canonicalId: 'bmad-index-docs',
+          alias: 'bmad-index-docs',
+          aliasType: 'canonical-id',
+          authoritySourcePath: 'bmad-fork/src/core/tasks/index-docs.artifact.yaml',
+          normalizedAliasValue: 'bmad-index-docs',
+          rawIdentityHasLeadingSlash: 'false',
+          resolutionEligibility: 'canonical-id-only',
+        },
+      ],
+      [
+        'alias-row:bmad-index-docs:legacy-name',
+        {
+          canonicalId: 'bmad-index-docs',
+          alias: 'index-docs',
+          aliasType: 'legacy-name',
+          authoritySourcePath: 'bmad-fork/src/core/tasks/index-docs.artifact.yaml',
+          normalizedAliasValue: 'index-docs',
+          rawIdentityHasLeadingSlash: 'false',
+          resolutionEligibility: 'legacy-name-only',
+        },
+      ],
+      [
+        'alias-row:bmad-index-docs:slash-command',
+        {
+          canonicalId: 'bmad-index-docs',
+          alias: '/bmad-index-docs',
+          aliasType: 'slash-command',
+          authoritySourcePath: 'bmad-fork/src/core/tasks/index-docs.artifact.yaml',
+          normalizedAliasValue: 'bmad-index-docs',
           rawIdentityHasLeadingSlash: 'true',
           resolutionEligibility: 'slash-command-only',
         },
@@ -2506,6 +3122,7 @@ async function runTests() {
 
     const exemplarRows = generatedHelpRows.filter((row) => row.command === 'bmad-help');
     const shardDocRows = generatedHelpRows.filter((row) => row.command === 'bmad-shard-doc');
+    const indexDocsRows = generatedHelpRows.filter((row) => row.command === 'bmad-index-docs');
     assert(exemplarRows.length === 1, 'Help catalog emits exactly one exemplar raw command row for bmad-help');
     assert(
       exemplarRows[0] && exemplarRows[0].name === 'bmad-help',
@@ -2515,6 +3132,11 @@ async function runTests() {
     assert(
       shardDocRows[0] && shardDocRows[0]['workflow-file'] === '_bmad/core/tasks/shard-doc.xml',
       'Help catalog shard-doc row preserves locked shard-doc workflow identity',
+    );
+    assert(indexDocsRows.length === 1, 'Help catalog emits exactly one index-docs raw command row for bmad-index-docs');
+    assert(
+      indexDocsRows[0] && indexDocsRows[0]['workflow-file'] === '_bmad/core/tasks/index-docs.xml',
+      'Help catalog index-docs row preserves locked index-docs workflow identity',
     );
 
     const sidecarRaw = await fs.readFile(path.join(projectRoot, 'src', 'core', 'tasks', 'help.artifact.yaml'), 'utf8');
@@ -2527,7 +3149,8 @@ async function runTests() {
     const commandLabelRows = installer.helpCatalogCommandLabelReportRows || [];
     const helpCommandLabelRow = commandLabelRows.find((row) => row.canonicalId === 'bmad-help');
     const shardDocCommandLabelRow = commandLabelRows.find((row) => row.canonicalId === 'bmad-shard-doc');
-    assert(commandLabelRows.length === 2, 'Installer emits command-label report rows for help and shard-doc canonical ids');
+    const indexDocsCommandLabelRow = commandLabelRows.find((row) => row.canonicalId === 'bmad-index-docs');
+    assert(commandLabelRows.length === 3, 'Installer emits command-label report rows for help, shard-doc, and index-docs canonical ids');
     assert(
       helpCommandLabelRow &&
         helpCommandLabelRow.rawCommandValue === 'bmad-help' &&
@@ -2552,6 +3175,18 @@ async function runTests() {
         shardDocCommandLabelRow.authoritySourcePath === 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml',
       'Command-label report includes shard-doc sidecar provenance linkage',
     );
+    assert(
+      indexDocsCommandLabelRow &&
+        indexDocsCommandLabelRow.rawCommandValue === 'bmad-index-docs' &&
+        indexDocsCommandLabelRow.displayedCommandLabel === '/bmad-index-docs',
+      'Command-label report locks raw and displayed command values for index-docs',
+    );
+    assert(
+      indexDocsCommandLabelRow &&
+        indexDocsCommandLabelRow.authoritySourceType === 'sidecar' &&
+        indexDocsCommandLabelRow.authoritySourcePath === 'bmad-fork/src/core/tasks/index-docs.artifact.yaml',
+      'Command-label report includes index-docs sidecar provenance linkage',
+    );
     const generatedCommandLabelReportRaw = await fs.readFile(generatedCommandLabelReportPath, 'utf8');
     const generatedCommandLabelReportRows = csv.parse(generatedCommandLabelReportRaw, {
       columns: true,
@@ -2560,15 +3195,19 @@ async function runTests() {
     });
     const generatedHelpCommandLabelRow = generatedCommandLabelReportRows.find((row) => row.canonicalId === 'bmad-help');
     const generatedShardDocCommandLabelRow = generatedCommandLabelReportRows.find((row) => row.canonicalId === 'bmad-shard-doc');
+    const generatedIndexDocsCommandLabelRow = generatedCommandLabelReportRows.find((row) => row.canonicalId === 'bmad-index-docs');
     assert(
-      generatedCommandLabelReportRows.length === 2 &&
+      generatedCommandLabelReportRows.length === 3 &&
         generatedHelpCommandLabelRow &&
         generatedHelpCommandLabelRow.displayedCommandLabel === '/bmad-help' &&
         generatedHelpCommandLabelRow.rowCountForCanonicalId === '1' &&
         generatedShardDocCommandLabelRow &&
         generatedShardDocCommandLabelRow.displayedCommandLabel === '/bmad-shard-doc' &&
-        generatedShardDocCommandLabelRow.rowCountForCanonicalId === '1',
-      'Installer persists command-label report artifact with locked help and shard-doc label contract values',
+        generatedShardDocCommandLabelRow.rowCountForCanonicalId === '1' &&
+        generatedIndexDocsCommandLabelRow &&
+        generatedIndexDocsCommandLabelRow.displayedCommandLabel === '/bmad-index-docs' &&
+        generatedIndexDocsCommandLabelRow.rowCountForCanonicalId === '1',
+      'Installer persists command-label report artifact with locked help, shard-doc, and index-docs label contract values',
     );
 
     const baselineLabelContract = evaluateExemplarCommandLabelReportRows(commandLabelRows);
@@ -2586,6 +3225,16 @@ async function runTests() {
       baselineShardDocLabelContract.valid,
       'Command-label validator passes when exactly one /bmad-shard-doc displayed label row exists',
       baselineShardDocLabelContract.reason,
+    );
+    const baselineIndexDocsLabelContract = evaluateExemplarCommandLabelReportRows(commandLabelRows, {
+      canonicalId: 'bmad-index-docs',
+      displayedCommandLabel: '/bmad-index-docs',
+      authoritySourcePath: 'bmad-fork/src/core/tasks/index-docs.artifact.yaml',
+    });
+    assert(
+      baselineIndexDocsLabelContract.valid,
+      'Command-label validator passes when exactly one /bmad-index-docs displayed label row exists',
+      baselineIndexDocsLabelContract.reason,
     );
 
     const commandDocsSourcePath = path.join(projectRoot, 'docs', 'reference', 'commands.md');
@@ -2827,6 +3476,21 @@ async function runTests() {
       }),
       'utf8',
     );
+    await fs.writeFile(
+      path.join(tempExportRoot, 'bmad-fork', 'src', 'core', 'tasks', 'index-docs.artifact.yaml'),
+      yaml.stringify({
+        schemaVersion: 1,
+        canonicalId: 'bmad-index-docs',
+        artifactType: 'task',
+        module: 'core',
+        sourcePath: 'bmad-fork/src/core/tasks/index-docs.xml',
+        displayName: 'Index Docs',
+        description:
+          'Create lightweight index for quick LLM scanning. Use when LLM needs to understand available docs without loading everything.',
+        dependencies: { requires: [] },
+      }),
+      'utf8',
+    );
 
     const exemplarTaskArtifact = {
       type: 'task',
@@ -2843,6 +3507,14 @@ async function runTests() {
       sourcePath: path.join(tempExportRoot, '_bmad', 'core', 'tasks', 'shard-doc.xml'),
       relativePath: path.join('core', 'tasks', 'shard-doc.md'),
       content: '<task id="shard-doc"><description>Split markdown docs</description></task>\n',
+    };
+    const indexDocsTaskArtifact = {
+      type: 'task',
+      name: 'index-docs',
+      module: 'core',
+      sourcePath: path.join(tempExportRoot, '_bmad', 'core', 'tasks', 'index-docs.xml'),
+      relativePath: path.join('core', 'tasks', 'index-docs.md'),
+      content: '<task id="index-docs"><description>Index docs</description></task>\n',
     };
 
     const writtenCount = await codexSetup.writeSkillArtifacts(skillsDir, [exemplarTaskArtifact], 'task', {
@@ -2898,6 +3570,33 @@ async function runTests() {
         shardDocExportDerivationRecord.exportIdDerivationSourcePath === 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml' &&
         shardDocExportDerivationRecord.sourcePath === 'bmad-fork/src/core/tasks/shard-doc.xml',
       'Codex export records shard-doc sidecar-canonical derivation metadata and source path',
+    );
+
+    const indexDocsWrittenCount = await codexSetup.writeSkillArtifacts(skillsDir, [indexDocsTaskArtifact], 'task', {
+      projectDir: tempExportRoot,
+    });
+    assert(indexDocsWrittenCount === 1, 'Codex export writes one index-docs converted skill artifact');
+
+    const indexDocsSkillPath = path.join(skillsDir, 'bmad-index-docs', 'SKILL.md');
+    assert(await fs.pathExists(indexDocsSkillPath), 'Codex export derives index-docs skill path from sidecar canonical identity');
+
+    const indexDocsSkillRaw = await fs.readFile(indexDocsSkillPath, 'utf8');
+    const indexDocsFrontmatterMatch = indexDocsSkillRaw.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+    const indexDocsFrontmatter = indexDocsFrontmatterMatch ? yaml.parse(indexDocsFrontmatterMatch[1]) : null;
+    assert(
+      indexDocsFrontmatter && indexDocsFrontmatter.name === 'bmad-index-docs',
+      'Codex export frontmatter sets index-docs required name from sidecar canonical identity',
+    );
+
+    const indexDocsExportDerivationRecord = codexSetup.exportDerivationRecords.find(
+      (row) => row.exportPath === '.agents/skills/bmad-index-docs/SKILL.md',
+    );
+    assert(
+      indexDocsExportDerivationRecord &&
+        indexDocsExportDerivationRecord.exportIdDerivationSourceType === EXEMPLAR_HELP_EXPORT_DERIVATION_SOURCE_TYPE &&
+        indexDocsExportDerivationRecord.exportIdDerivationSourcePath === 'bmad-fork/src/core/tasks/index-docs.artifact.yaml' &&
+        indexDocsExportDerivationRecord.sourcePath === 'bmad-fork/src/core/tasks/index-docs.xml',
+      'Codex export records index-docs sidecar-canonical derivation metadata and source path',
     );
 
     const duplicateExportSetup = new CodexSetup();
@@ -3074,6 +3773,48 @@ async function runTests() {
       }
     } finally {
       await fs.remove(tempShardDocInferenceRoot);
+    }
+
+    const tempIndexDocsInferenceRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-export-no-index-docs-inference-'));
+    try {
+      const noIndexDocsInferenceSetup = new CodexSetup();
+      const noIndexDocsInferenceSkillDir = path.join(tempIndexDocsInferenceRoot, '.agents', 'skills');
+      await fs.ensureDir(noIndexDocsInferenceSkillDir);
+      await fs.ensureDir(path.join(tempIndexDocsInferenceRoot, 'bmad-fork', 'src', 'core', 'tasks'));
+      await fs.writeFile(
+        path.join(tempIndexDocsInferenceRoot, 'bmad-fork', 'src', 'core', 'tasks', 'index-docs.artifact.yaml'),
+        yaml.stringify({
+          schemaVersion: 1,
+          canonicalId: 'nonexistent-index-docs-id',
+          artifactType: 'task',
+          module: 'core',
+          sourcePath: 'bmad-fork/src/core/tasks/index-docs.xml',
+          displayName: 'Index Docs',
+          description:
+            'Create lightweight index for quick LLM scanning. Use when LLM needs to understand available docs without loading everything.',
+          dependencies: { requires: [] },
+        }),
+        'utf8',
+      );
+
+      try {
+        await noIndexDocsInferenceSetup.writeSkillArtifacts(noIndexDocsInferenceSkillDir, [indexDocsTaskArtifact], 'task', {
+          projectDir: tempIndexDocsInferenceRoot,
+        });
+        assert(
+          false,
+          'Codex export rejects path-inferred index-docs id when sidecar canonical-id derivation is unresolved',
+          'Expected index-docs canonical-id derivation failure but export succeeded',
+        );
+      } catch (error) {
+        assert(
+          error.code === CODEX_EXPORT_DERIVATION_ERROR_CODES.CANONICAL_ID_DERIVATION_FAILED,
+          'Codex export unresolved index-docs canonical-id derivation returns deterministic failure code',
+          `Expected ${CODEX_EXPORT_DERIVATION_ERROR_CODES.CANONICAL_ID_DERIVATION_FAILED}, got ${error.code}`,
+        );
+      }
+    } finally {
+      await fs.remove(tempIndexDocsInferenceRoot);
     }
 
     const compatibilitySetup = new CodexSetup();
@@ -3295,6 +4036,25 @@ async function runTests() {
         futureAdditiveField: 'canonical-additive',
       },
       {
+        module: 'core',
+        phase: 'anytime',
+        name: 'Index Docs',
+        code: 'ID',
+        sequence: '',
+        'workflow-file': '_bmad/core/tasks/index-docs.xml',
+        command: 'bmad-index-docs',
+        required: 'false',
+        'agent-name': '',
+        'agent-command': '',
+        'agent-display-name': '',
+        'agent-title': '',
+        options: '',
+        description: 'Index docs command',
+        'output-location': '',
+        outputs: '',
+        futureAdditiveField: 'canonical-additive',
+      },
+      {
         module: 'bmm',
         phase: 'planning',
         name: 'create-story',
@@ -3344,9 +4104,10 @@ async function runTests() {
     const loadedHelpRows = await githubCopilotSetup.loadBmadHelp(tempCompatibilityRoot);
     assert(
       Array.isArray(loadedHelpRows) &&
-        loadedHelpRows.length === 3 &&
+        loadedHelpRows.length === 4 &&
         loadedHelpRows.some((row) => row['workflow-file'] === '_bmad/core/tasks/help.md' && row.command === 'bmad-help') &&
-        loadedHelpRows.some((row) => row['workflow-file'] === '_bmad/core/tasks/shard-doc.xml' && row.command === 'bmad-shard-doc'),
+        loadedHelpRows.some((row) => row['workflow-file'] === '_bmad/core/tasks/shard-doc.xml' && row.command === 'bmad-shard-doc') &&
+        loadedHelpRows.some((row) => row['workflow-file'] === '_bmad/core/tasks/index-docs.xml' && row.command === 'bmad-index-docs'),
       'GitHub Copilot help loader remains parseable with additive help-catalog columns',
     );
 
@@ -3380,6 +4141,23 @@ async function runTests() {
           error.fieldPath === 'rows[*].command' &&
           error.observedValue === '0',
         'Help-catalog validator emits deterministic diagnostics for missing shard-doc canonical command rows',
+      );
+    }
+
+    const missingIndexDocsRows = validHelpRows.filter((row) => row.command !== 'bmad-index-docs');
+    const missingIndexDocsCsv =
+      [helpCatalogColumns.join(','), ...missingIndexDocsRows.map((row) => buildCsvLine(helpCatalogColumns, row))].join('\n') + '\n';
+    try {
+      validateHelpCatalogCompatibilitySurface(missingIndexDocsCsv, {
+        sourcePath: '_bmad/_config/bmad-help.csv',
+      });
+      assert(false, 'Help-catalog validator rejects missing index-docs canonical command rows');
+    } catch (error) {
+      assert(
+        error.code === PROJECTION_COMPATIBILITY_ERROR_CODES.HELP_CATALOG_INDEX_DOCS_ROW_CONTRACT_FAILED &&
+          error.fieldPath === 'rows[*].command' &&
+          error.observedValue === '0',
+        'Help-catalog validator emits deterministic diagnostics for missing index-docs canonical command rows',
       );
     }
 
@@ -3614,6 +4392,25 @@ async function runTests() {
           'output-location': '',
           outputs: '',
         },
+        {
+          module: 'core',
+          phase: 'anytime',
+          name: 'Index Docs',
+          code: 'ID',
+          sequence: '',
+          'workflow-file': '_bmad/core/tasks/index-docs.xml',
+          command: 'bmad-index-docs',
+          required: 'false',
+          'agent-name': '',
+          'agent-command': '',
+          'agent-display-name': '',
+          'agent-title': '',
+          options: '',
+          description:
+            'Create lightweight index for quick LLM scanning. Use when LLM needs to understand available docs without loading everything.',
+          'output-location': '',
+          outputs: '',
+        },
       ],
     );
     await writeCsv(
@@ -3661,6 +4458,22 @@ async function runTests() {
           agent: '',
           options: '',
           description: 'Split large markdown documents into smaller files by section with an index.',
+          'output-location': '',
+          outputs: '',
+        },
+        {
+          module: 'core',
+          phase: 'anytime',
+          name: 'Index Docs',
+          code: 'ID',
+          sequence: '',
+          'workflow-file': '_bmad/core/tasks/index-docs.xml',
+          command: 'bmad-index-docs',
+          required: 'false',
+          agent: '',
+          options: '',
+          description:
+            'Create lightweight index for quick LLM scanning. Use when LLM needs to understand available docs without loading everything.',
           'output-location': '',
           outputs: '',
         },
@@ -4298,6 +5111,25 @@ async function runTests() {
           'agent-title': '',
           options: '',
           description: 'Split large markdown documents into smaller files by section with an index.',
+          'output-location': '',
+          outputs: '',
+        },
+        {
+          module: 'core',
+          phase: 'anytime',
+          name: 'Index Docs',
+          code: 'ID',
+          sequence: '',
+          'workflow-file': '_bmad/core/tasks/index-docs.xml',
+          command: 'bmad-index-docs',
+          required: 'false',
+          'agent-name': '',
+          'agent-command': '',
+          'agent-display-name': '',
+          'agent-title': '',
+          options: '',
+          description:
+            'Create lightweight index for quick LLM scanning. Use when LLM needs to understand available docs without loading everything.',
           'output-location': '',
           outputs: '',
         },
