@@ -1,4 +1,5 @@
 const path = require('node:path');
+const os = require('node:os');
 const fs = require('fs-extra');
 const yaml = require('yaml');
 const { BaseIdeSetup } = require('./_base-ide');
@@ -15,7 +16,7 @@ const prompts = require('../../../lib/prompts');
  */
 class KimiCliSetup extends BaseIdeSetup {
   constructor() {
-    super('kimi-cli', 'Kimi Code CLI', true);
+    super('kimi-cli', 'Kimi Code CLI', false);
   }
 
   /**
@@ -25,6 +26,9 @@ class KimiCliSetup extends BaseIdeSetup {
    * @param {Object} options - Setup options
    */
   async setup(projectDir, bmadDir, options = {}) {
+    if (!bmadDir) {
+      throw new Error('bmadDir is required for Kimi CLI setup');
+    }
     if (!options.silent) await prompts.log.info(`Setting up ${this.name}...`);
 
     const { artifacts, counts } = await this.collectClaudeArtifacts(projectDir, bmadDir, options);
@@ -40,7 +44,7 @@ class KimiCliSetup extends BaseIdeSetup {
     const agentCount = await this.writeSkillArtifacts(destDir, agentArtifacts, 'agent-launcher');
 
     // Collect and write task skills
-    const tasks = await getTasksFromBmad(bmadDir, options.selectedModules || []);
+    const tasks = await getTasksFromBmad(bmadDir);
     const taskArtifacts = [];
     for (const task of tasks) {
       const content = await this.readAndProcessWithProject(
@@ -104,8 +108,8 @@ class KimiCliSetup extends BaseIdeSetup {
         if (entries && entries.some((entry) => entry && typeof entry === 'string' && entry.startsWith('bmad'))) {
           return true;
         }
-      } catch {
-        // Ignore errors
+      } catch (error) {
+        if (!options.silent) await prompts.log.debug(`Debug: Could not read directory ${dir}: ${error.message}`);
       }
     }
 
@@ -208,7 +212,6 @@ class KimiCliSetup extends BaseIdeSetup {
       const skillContent = this.transformToSkillFormat(artifact.content, skillName);
 
       // Write SKILL.md with platform-native line endings
-      const os = require('node:os');
       const platformContent = skillContent.replaceAll('\n', os.EOL);
       await fs.writeFile(path.join(skillDir, 'SKILL.md'), platformContent, 'utf8');
       writtenCount++;
@@ -229,7 +232,7 @@ class KimiCliSetup extends BaseIdeSetup {
     content = content.replaceAll('\r\n', '\n').replaceAll('\r', '\n');
 
     // Parse frontmatter
-    const fmMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/);
+    const fmMatch = content.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
     if (!fmMatch) {
       // No frontmatter -- wrap with minimal frontmatter
       const fm = yaml.stringify({ name: skillName, description: skillName }).trimEnd();
@@ -304,7 +307,7 @@ class KimiCliSetup extends BaseIdeSetup {
    * @param {string} destDir - Optional destination directory
    * @returns {string} Instructions text
    */
-  getProjectSpecificInstructions(projectDir = null, destDir = null) {
+  getProjectSpecificInstructions(destDir = null) {
     const lines = [
       'Project-Specific Kimi CLI Configuration',
       '',
@@ -323,10 +326,10 @@ class KimiCliSetup extends BaseIdeSetup {
   /**
    * Cleanup Kimi CLI configuration
    */
-  async cleanup(projectDir = null) {
+  async cleanup(projectDir = null, options = {}) {
     if (projectDir) {
       const destDir = this.getKimiSkillsDir(projectDir);
-      await this.clearOldBmadSkills(destDir);
+      await this.clearOldBmadSkills(destDir, options);
     }
   }
 
@@ -352,7 +355,7 @@ class KimiCliSetup extends BaseIdeSetup {
       `---\n${fm}\n---\n` +
       "\nYou must fully embody this agent's persona and follow all activation instructions exactly as specified. NEVER break character until given an exit command.\n" +
       '\n<agent-activation CRITICAL="TRUE">\n' +
-      `1. LOAD the FULL agent file from @${agentPath}\n` +
+      `1. LOAD the FULL agent file from ${agentPath}\n` +
       '2. READ its entire contents - this contains the complete agent persona, menu, and instructions\n' +
       '3. FOLLOW every step in the <activation> section precisely\n' +
       '4. DISPLAY the welcome/greeting as instructed\n' +
@@ -361,7 +364,6 @@ class KimiCliSetup extends BaseIdeSetup {
       '</agent-activation>\n';
 
     // Write with platform-native line endings
-    const os = require('node:os');
     const platformContent = skillContent.replaceAll('\n', os.EOL);
     const skillPath = path.join(skillDir, 'SKILL.md');
     await fs.writeFile(skillPath, platformContent, 'utf8');
