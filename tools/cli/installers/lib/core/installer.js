@@ -27,6 +27,7 @@ const {
 const { validateHelpCatalogCompatibilitySurface } = require('./projection-compatibility-validator');
 const { HelpValidationHarness } = require('./help-validation-harness');
 const { ShardDocValidationHarness } = require('./shard-doc-validation-harness');
+const { IndexDocsValidationHarness } = require('./index-docs-validation-harness');
 const { getProjectRoot, getSourcePath, getModulePath } = require('../../../lib/project-root');
 const { CLIUtils } = require('../../../lib/cli-utils');
 const { ManifestGenerator } = require('./manifest-generator');
@@ -75,8 +76,10 @@ class Installer {
     this.indexDocsAuthorityRecords = [];
     this.latestHelpValidationRun = null;
     this.latestShardDocValidationRun = null;
+    this.latestIndexDocsValidationRun = null;
     this.helpValidationHarness = new HelpValidationHarness();
     this.shardDocValidationHarness = new ShardDocValidationHarness();
+    this.indexDocsValidationHarness = new IndexDocsValidationHarness();
   }
 
   async runConfigurationGenerationTask({ message, bmadDir, moduleConfigs, config, allModules, addResult }) {
@@ -207,6 +210,16 @@ class Installer {
       bmadDir,
       bmadFolderName: this.bmadFolderName || BMAD_FOLDER_NAME,
       shardDocAuthorityRecords: this.shardDocAuthorityRecords || [],
+      helpCatalogCommandLabelReportRows: this.helpCatalogCommandLabelReportRows || [],
+    };
+  }
+
+  async buildIndexDocsValidationOptions({ projectDir, bmadDir }) {
+    return {
+      projectDir,
+      bmadDir,
+      bmadFolderName: this.bmadFolderName || BMAD_FOLDER_NAME,
+      indexDocsAuthorityRecords: this.indexDocsAuthorityRecords || [],
       helpCatalogCommandLabelReportRows: this.helpCatalogCommandLabelReportRows || [],
     };
   }
@@ -1406,7 +1419,20 @@ class Installer {
           this.latestShardDocValidationRun = shardDocValidationRun;
           addResult('Shard-doc validation artifacts', 'ok', `${shardDocValidationRun.generatedArtifactCount} artifacts`);
 
-          return `${validationRun.generatedArtifactCount + shardDocValidationRun.generatedArtifactCount} validation artifacts generated`;
+          message('Generating deterministic index-docs validation artifact suite...');
+          const indexDocsValidationOptions = await this.buildIndexDocsValidationOptions({
+            projectDir,
+            bmadDir,
+          });
+          const indexDocsValidationRun = await this.indexDocsValidationHarness.generateAndValidate(indexDocsValidationOptions);
+          this.latestIndexDocsValidationRun = indexDocsValidationRun;
+          addResult('Index-docs validation artifacts', 'ok', `${indexDocsValidationRun.generatedArtifactCount} artifacts`);
+
+          return `${
+            validationRun.generatedArtifactCount +
+            shardDocValidationRun.generatedArtifactCount +
+            indexDocsValidationRun.generatedArtifactCount
+          } validation artifacts generated`;
         },
       });
 
