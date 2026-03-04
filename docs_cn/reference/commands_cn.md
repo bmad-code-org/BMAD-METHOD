@@ -140,7 +140,7 @@ BMad 提供两种开始工作的方式，它们服务于不同的目的。
 | `bmad-<module>-<workflow>` | 工作流命令 | `bmad-bmm-create-prd` |
 | `bmad-<name>` | 核心任务或工具 | `bmad-help` |
 
-模块代码：`bmm`（敏捷套件）、`bmb`（构建器）、`tea`（测试架构师）、`cis`（创意智能）、`gds`（游戏开发工作室）。参见[模块](./modules.md)获取描述。
+模块代码：`bmm`（敏捷套件）、`bmb`（构建器）、`tea`（测试架构师）、`cis`（创意智能）、`gds`（游戏开发工作室）。参见[模块](./modules_cn.md)获取描述。
 
 ## 故障排除
 
