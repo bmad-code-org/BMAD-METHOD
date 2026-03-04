@@ -1099,7 +1099,7 @@ class ManifestGenerator {
       }
     }
 
-    // Create CSV header with compatibility-prefix columns followed by additive wave-1 columns.
+    // Create CSV header with compatibility-prefix columns followed by additive canonical-identity columns.
     let csvContent = 'name,displayName,description,module,path,standalone,legacyName,canonicalId,authoritySourceType,authoritySourcePath\n';
 
     // Combine existing and new tasks

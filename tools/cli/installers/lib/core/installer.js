@@ -20,8 +20,8 @@ const {
   renderDisplayedCommandLabel,
 } = require('./help-catalog-generator');
 const { validateHelpCatalogCompatibilitySurface } = require('./projection-compatibility-validator');
-const { Wave1ValidationHarness } = require('./wave-1-validation-harness');
-const { Wave2ValidationHarness } = require('./wave-2-validation-harness');
+const { HelpValidationHarness } = require('./help-validation-harness');
+const { ShardDocValidationHarness } = require('./shard-doc-validation-harness');
 const { getProjectRoot, getSourcePath, getModulePath } = require('../../../lib/project-root');
 const { CLIUtils } = require('../../../lib/cli-utils');
 const { ManifestGenerator } = require('./manifest-generator');
@@ -59,10 +59,10 @@ class Installer {
     this.helpCatalogPipelineRows = [];
     this.helpCatalogCommandLabelReportRows = [];
     this.codexExportDerivationRecords = [];
-    this.latestWave1ValidationRun = null;
-    this.latestWave2ValidationRun = null;
-    this.wave1ValidationHarness = new Wave1ValidationHarness();
-    this.wave2ValidationHarness = new Wave2ValidationHarness();
+    this.latestHelpValidationRun = null;
+    this.latestShardDocValidationRun = null;
+    this.helpValidationHarness = new HelpValidationHarness();
+    this.shardDocValidationHarness = new ShardDocValidationHarness();
   }
 
   async runConfigurationGenerationTask({ message, bmadDir, moduleConfigs, config, allModules, addResult }) {
@@ -151,7 +151,7 @@ class Installer {
     return 'Configurations generated';
   }
 
-  async buildWave1ValidationOptions({ projectDir, bmadDir }) {
+  async buildHelpValidationOptions({ projectDir, bmadDir }) {
     const exportSkillProjectionPath = path.join(projectDir, '.agents', 'skills', 'bmad-help', 'SKILL.md');
     const hasCodexExportDerivationRecords =
       Array.isArray(this.codexExportDerivationRecords) && this.codexExportDerivationRecords.length > 0;
@@ -169,7 +169,7 @@ class Installer {
     };
   }
 
-  async buildWave2ValidationOptions({ projectDir, bmadDir }) {
+  async buildShardDocValidationOptions({ projectDir, bmadDir }) {
     return {
       projectDir,
       bmadDir,
@@ -1356,25 +1356,25 @@ class Installer {
       postIdeTasks.push({
         title: 'Generating validation artifacts',
         task: async (message) => {
-          message('Generating deterministic wave-1 validation artifact suite...');
-          const validationOptions = await this.buildWave1ValidationOptions({
+          message('Generating deterministic help validation artifact suite...');
+          const validationOptions = await this.buildHelpValidationOptions({
             projectDir,
             bmadDir,
           });
-          const validationRun = await this.wave1ValidationHarness.generateAndValidate(validationOptions);
-          this.latestWave1ValidationRun = validationRun;
-          addResult('Wave-1 validation artifacts', 'ok', `${validationRun.generatedArtifactCount} artifacts`);
+          const validationRun = await this.helpValidationHarness.generateAndValidate(validationOptions);
+          this.latestHelpValidationRun = validationRun;
+          addResult('Help validation artifacts', 'ok', `${validationRun.generatedArtifactCount} artifacts`);
 
-          message('Generating deterministic wave-2 shard-doc validation artifact suite...');
-          const wave2ValidationOptions = await this.buildWave2ValidationOptions({
+          message('Generating deterministic shard-doc validation artifact suite...');
+          const shardDocValidationOptions = await this.buildShardDocValidationOptions({
             projectDir,
             bmadDir,
           });
-          const wave2ValidationRun = await this.wave2ValidationHarness.generateAndValidate(wave2ValidationOptions);
-          this.latestWave2ValidationRun = wave2ValidationRun;
-          addResult('Wave-2 validation artifacts', 'ok', `${wave2ValidationRun.generatedArtifactCount} artifacts`);
+          const shardDocValidationRun = await this.shardDocValidationHarness.generateAndValidate(shardDocValidationOptions);
+          this.latestShardDocValidationRun = shardDocValidationRun;
+          addResult('Shard-doc validation artifacts', 'ok', `${shardDocValidationRun.generatedArtifactCount} artifacts`);
 
-          return `${validationRun.generatedArtifactCount + wave2ValidationRun.generatedArtifactCount} validation artifacts generated`;
+          return `${validationRun.generatedArtifactCount + shardDocValidationRun.generatedArtifactCount} validation artifacts generated`;
         },
       });
 

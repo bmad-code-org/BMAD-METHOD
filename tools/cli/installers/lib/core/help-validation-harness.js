@@ -11,23 +11,23 @@ const { ManifestGenerator } = require('./manifest-generator');
 const { buildSidecarAwareExemplarHelpRow } = require('./help-catalog-generator');
 const { CodexSetup } = require('../ide/codex');
 
-const WAVE1_VALIDATION_ERROR_CODES = Object.freeze({
-  REQUIRED_ARTIFACT_MISSING: 'ERR_WAVE1_VALIDATION_REQUIRED_ARTIFACT_MISSING',
-  CSV_SCHEMA_MISMATCH: 'ERR_WAVE1_VALIDATION_CSV_SCHEMA_MISMATCH',
-  REQUIRED_ROW_IDENTITY_MISSING: 'ERR_WAVE1_VALIDATION_REQUIRED_ROW_IDENTITY_MISSING',
-  REQUIRED_EVIDENCE_LINK_MISSING: 'ERR_WAVE1_VALIDATION_REQUIRED_EVIDENCE_LINK_MISSING',
-  EVIDENCE_LINK_REFERENCE_INVALID: 'ERR_WAVE1_VALIDATION_EVIDENCE_LINK_REFERENCE_INVALID',
-  BINDING_EVIDENCE_INVALID: 'ERR_WAVE1_VALIDATION_BINDING_EVIDENCE_INVALID',
-  ISSUER_PREREQUISITE_MISSING: 'ERR_WAVE1_VALIDATION_ISSUER_PREREQUISITE_MISSING',
-  SELF_ATTESTED_ISSUER_CLAIM: 'ERR_WAVE1_VALIDATION_SELF_ATTESTED_ISSUER_CLAIM',
-  YAML_SCHEMA_MISMATCH: 'ERR_WAVE1_VALIDATION_YAML_SCHEMA_MISMATCH',
-  DECISION_RECORD_SCHEMA_MISMATCH: 'ERR_WAVE1_VALIDATION_DECISION_RECORD_SCHEMA_MISMATCH',
-  DECISION_RECORD_PARSE_FAILED: 'ERR_WAVE1_VALIDATION_DECISION_RECORD_PARSE_FAILED',
+const HELP_VALIDATION_ERROR_CODES = Object.freeze({
+  REQUIRED_ARTIFACT_MISSING: 'ERR_HELP_VALIDATION_REQUIRED_ARTIFACT_MISSING',
+  CSV_SCHEMA_MISMATCH: 'ERR_HELP_VALIDATION_CSV_SCHEMA_MISMATCH',
+  REQUIRED_ROW_IDENTITY_MISSING: 'ERR_HELP_VALIDATION_REQUIRED_ROW_IDENTITY_MISSING',
+  REQUIRED_EVIDENCE_LINK_MISSING: 'ERR_HELP_VALIDATION_REQUIRED_EVIDENCE_LINK_MISSING',
+  EVIDENCE_LINK_REFERENCE_INVALID: 'ERR_HELP_VALIDATION_EVIDENCE_LINK_REFERENCE_INVALID',
+  BINDING_EVIDENCE_INVALID: 'ERR_HELP_VALIDATION_BINDING_EVIDENCE_INVALID',
+  ISSUER_PREREQUISITE_MISSING: 'ERR_HELP_VALIDATION_ISSUER_PREREQUISITE_MISSING',
+  SELF_ATTESTED_ISSUER_CLAIM: 'ERR_HELP_VALIDATION_SELF_ATTESTED_ISSUER_CLAIM',
+  YAML_SCHEMA_MISMATCH: 'ERR_HELP_VALIDATION_YAML_SCHEMA_MISMATCH',
+  DECISION_RECORD_SCHEMA_MISMATCH: 'ERR_HELP_VALIDATION_DECISION_RECORD_SCHEMA_MISMATCH',
+  DECISION_RECORD_PARSE_FAILED: 'ERR_HELP_VALIDATION_DECISION_RECORD_PARSE_FAILED',
 });
 
 const SIDEcar_AUTHORITY_SOURCE_PATH = 'bmad-fork/src/core/tasks/help.artifact.yaml';
 const SOURCE_MARKDOWN_SOURCE_PATH = 'bmad-fork/src/core/tasks/help.md';
-const EVIDENCE_ISSUER_COMPONENT = 'bmad-fork/tools/cli/installers/lib/core/wave-1-validation-harness.js';
+const EVIDENCE_ISSUER_COMPONENT = 'bmad-fork/tools/cli/installers/lib/core/help-validation-harness.js';
 
 const FRONTMATTER_MISMATCH_DETAILS = Object.freeze({
   [HELP_FRONTMATTER_MISMATCH_ERROR_CODES.CANONICAL_ID_MISMATCH]: 'frontmatter canonicalId must match sidecar canonicalId',
@@ -37,16 +37,16 @@ const FRONTMATTER_MISMATCH_DETAILS = Object.freeze({
     'frontmatter dependencies.requires must match sidecar dependencies.requires',
 });
 
-const WAVE1_VALIDATION_ARTIFACT_REGISTRY = Object.freeze([
+const HELP_VALIDATION_ARTIFACT_REGISTRY = Object.freeze([
   Object.freeze({
     artifactId: 1,
-    relativePath: path.join('validation', 'wave-1', 'bmad-help-sidecar-snapshot.yaml'),
+    relativePath: path.join('validation', 'help', 'bmad-help-sidecar-snapshot.yaml'),
     type: 'yaml',
     requiredTopLevelKeys: ['schemaVersion', 'canonicalId', 'artifactType', 'module', 'sourcePath', 'displayName', 'description', 'status'],
   }),
   Object.freeze({
     artifactId: 2,
-    relativePath: path.join('validation', 'wave-1', 'bmad-help-runtime-comparison.csv'),
+    relativePath: path.join('validation', 'help', 'bmad-help-runtime-comparison.csv'),
     type: 'csv',
     columns: [
       'surface',
@@ -65,7 +65,7 @@ const WAVE1_VALIDATION_ARTIFACT_REGISTRY = Object.freeze([
   }),
   Object.freeze({
     artifactId: 3,
-    relativePath: path.join('validation', 'wave-1', 'bmad-help-issued-artifact-provenance.csv'),
+    relativePath: path.join('validation', 'help', 'bmad-help-issued-artifact-provenance.csv'),
     type: 'csv',
     columns: [
       'rowIdentity',
@@ -84,7 +84,7 @@ const WAVE1_VALIDATION_ARTIFACT_REGISTRY = Object.freeze([
   }),
   Object.freeze({
     artifactId: 4,
-    relativePath: path.join('validation', 'wave-1', 'bmad-help-manifest-comparison.csv'),
+    relativePath: path.join('validation', 'help', 'bmad-help-manifest-comparison.csv'),
     type: 'csv',
     columns: [
       'surface',
@@ -106,7 +106,7 @@ const WAVE1_VALIDATION_ARTIFACT_REGISTRY = Object.freeze([
   }),
   Object.freeze({
     artifactId: 5,
-    relativePath: path.join('validation', 'wave-1', 'bmad-help-alias-table.csv'),
+    relativePath: path.join('validation', 'help', 'bmad-help-alias-table.csv'),
     type: 'csv',
     columns: [
       'rowIdentity',
@@ -124,7 +124,7 @@ const WAVE1_VALIDATION_ARTIFACT_REGISTRY = Object.freeze([
   }),
   Object.freeze({
     artifactId: 6,
-    relativePath: path.join('validation', 'wave-1', 'bmad-help-description-provenance.csv'),
+    relativePath: path.join('validation', 'help', 'bmad-help-description-provenance.csv'),
     type: 'csv',
     columns: [
       'surface',
@@ -142,7 +142,7 @@ const WAVE1_VALIDATION_ARTIFACT_REGISTRY = Object.freeze([
   }),
   Object.freeze({
     artifactId: 7,
-    relativePath: path.join('validation', 'wave-1', 'bmad-help-export-comparison.csv'),
+    relativePath: path.join('validation', 'help', 'bmad-help-export-comparison.csv'),
     type: 'csv',
     columns: [
       'exportPath',
@@ -166,7 +166,7 @@ const WAVE1_VALIDATION_ARTIFACT_REGISTRY = Object.freeze([
   }),
   Object.freeze({
     artifactId: 8,
-    relativePath: path.join('validation', 'wave-1', 'bmad-help-command-label-report.csv'),
+    relativePath: path.join('validation', 'help', 'bmad-help-command-label-report.csv'),
     type: 'csv',
     columns: [
       'surface',
@@ -186,7 +186,7 @@ const WAVE1_VALIDATION_ARTIFACT_REGISTRY = Object.freeze([
   }),
   Object.freeze({
     artifactId: 9,
-    relativePath: path.join('validation', 'wave-1', 'bmad-help-catalog-pipeline.csv'),
+    relativePath: path.join('validation', 'help', 'bmad-help-catalog-pipeline.csv'),
     type: 'csv',
     columns: [
       'stage',
@@ -215,7 +215,7 @@ const WAVE1_VALIDATION_ARTIFACT_REGISTRY = Object.freeze([
   }),
   Object.freeze({
     artifactId: 10,
-    relativePath: path.join('validation', 'wave-1', 'bmad-help-duplicate-report.csv'),
+    relativePath: path.join('validation', 'help', 'bmad-help-duplicate-report.csv'),
     type: 'csv',
     columns: [
       'surface',
@@ -247,7 +247,7 @@ const WAVE1_VALIDATION_ARTIFACT_REGISTRY = Object.freeze([
   }),
   Object.freeze({
     artifactId: 11,
-    relativePath: path.join('validation', 'wave-1', 'bmad-help-dependency-report.csv'),
+    relativePath: path.join('validation', 'help', 'bmad-help-dependency-report.csv'),
     type: 'csv',
     columns: [
       'declaredIn',
@@ -268,13 +268,13 @@ const WAVE1_VALIDATION_ARTIFACT_REGISTRY = Object.freeze([
   }),
   Object.freeze({
     artifactId: 12,
-    relativePath: path.join('decision-records', 'wave-1-native-skills-exit.md'),
+    relativePath: path.join('decision-records', 'help-native-skills-exit.md'),
     type: 'markdown',
-    requiredFrontmatterKeys: ['wave', 'goNoGo', 'status'],
+    requiredFrontmatterKeys: ['capability', 'goNoGo', 'status'],
   }),
   Object.freeze({
     artifactId: 13,
-    relativePath: path.join('validation', 'wave-1', 'bmad-help-sidecar-negative-validation.csv'),
+    relativePath: path.join('validation', 'help', 'bmad-help-sidecar-negative-validation.csv'),
     type: 'csv',
     columns: [
       'scenario',
@@ -291,7 +291,7 @@ const WAVE1_VALIDATION_ARTIFACT_REGISTRY = Object.freeze([
   }),
   Object.freeze({
     artifactId: 14,
-    relativePath: path.join('validation', 'wave-1', 'bmad-help-frontmatter-mismatch-validation.csv'),
+    relativePath: path.join('validation', 'help', 'bmad-help-frontmatter-mismatch-validation.csv'),
     type: 'csv',
     columns: [
       'scenario',
@@ -314,11 +314,11 @@ const WAVE1_VALIDATION_ARTIFACT_REGISTRY = Object.freeze([
   }),
 ]);
 
-class Wave1ValidationHarnessError extends Error {
+class HelpValidationHarnessError extends Error {
   constructor({ code, detail, artifactId, fieldPath, sourcePath, observedValue, expectedValue }) {
     const message = `${code}: ${detail} (artifact=${artifactId}, fieldPath=${fieldPath}, sourcePath=${sourcePath})`;
     super(message);
-    this.name = 'Wave1ValidationHarnessError';
+    this.name = 'HelpValidationHarnessError';
     this.code = code;
     this.detail = detail;
     this.artifactId = artifactId;
@@ -505,7 +505,7 @@ function buildReplaySidecarFixture({ canonicalId = 'bmad-help', description = 'H
 
 function replayFailurePayload(error) {
   return canonicalJsonStringify({
-    replayFailureCode: normalizeValue(error?.code || 'ERR_WAVE1_REPLAY_COMPONENT_FAILED'),
+    replayFailureCode: normalizeValue(error?.code || 'ERR_HELP_VALIDATION_REPLAY_COMPONENT_FAILED'),
     replayFailureDetail: normalizeValue(error?.detail || error?.message || 'component replay failed'),
   });
 }
@@ -514,9 +514,9 @@ function isSha256(value) {
   return /^[a-f0-9]{64}$/.test(String(value || ''));
 }
 
-class Wave1ValidationHarness {
+class HelpValidationHarness {
   constructor() {
-    this.registry = WAVE1_VALIDATION_ARTIFACT_REGISTRY;
+    this.registry = HELP_VALIDATION_ARTIFACT_REGISTRY;
   }
 
   getArtifactRegistry() {
@@ -526,7 +526,7 @@ class Wave1ValidationHarness {
   resolveOutputPaths(options = {}) {
     const projectDir = path.resolve(options.projectDir || process.cwd());
     const planningArtifactsRoot = path.join(projectDir, '_bmad-output', 'planning-artifacts');
-    const validationRoot = path.join(planningArtifactsRoot, 'validation', 'wave-1');
+    const validationRoot = path.join(planningArtifactsRoot, 'validation', 'help');
     const decisionRecordsRoot = path.join(planningArtifactsRoot, 'decision-records');
     return {
       projectDir,
@@ -608,8 +608,8 @@ class Wave1ValidationHarness {
     if (await fs.pathExists(absolutePath)) {
       return;
     }
-    throw new Wave1ValidationHarnessError({
-      code: WAVE1_VALIDATION_ERROR_CODES.REQUIRED_ARTIFACT_MISSING,
+    throw new HelpValidationHarnessError({
+      code: HELP_VALIDATION_ERROR_CODES.REQUIRED_ARTIFACT_MISSING,
       detail: `Required input surface is missing (${description})`,
       artifactId,
       fieldPath: '<file>',
@@ -624,8 +624,8 @@ class Wave1ValidationHarness {
     if (match) {
       return match;
     }
-    throw new Wave1ValidationHarnessError({
-      code: WAVE1_VALIDATION_ERROR_CODES.REQUIRED_ROW_IDENTITY_MISSING,
+    throw new HelpValidationHarnessError({
+      code: HELP_VALIDATION_ERROR_CODES.REQUIRED_ROW_IDENTITY_MISSING,
       detail,
       artifactId,
       fieldPath,
@@ -734,8 +734,8 @@ class Wave1ValidationHarness {
   resolveReplayContract({ artifactPath, componentPath, rowIdentity, runtimeFolder }) {
     const claimedRowIdentity = normalizeValue(rowIdentity);
     if (!claimedRowIdentity) {
-      throw new Wave1ValidationHarnessError({
-        code: WAVE1_VALIDATION_ERROR_CODES.REQUIRED_ROW_IDENTITY_MISSING,
+      throw new HelpValidationHarnessError({
+        code: HELP_VALIDATION_ERROR_CODES.REQUIRED_ROW_IDENTITY_MISSING,
         detail: 'Claimed replay rowIdentity is required',
         artifactId: 3,
         fieldPath: 'rowIdentity',
@@ -747,8 +747,8 @@ class Wave1ValidationHarness {
 
     const expectedRowIdentity = buildIssuedArtifactRowIdentity(artifactPath);
     if (claimedRowIdentity !== expectedRowIdentity) {
-      throw new Wave1ValidationHarnessError({
-        code: WAVE1_VALIDATION_ERROR_CODES.REQUIRED_ROW_IDENTITY_MISSING,
+      throw new HelpValidationHarnessError({
+        code: HELP_VALIDATION_ERROR_CODES.REQUIRED_ROW_IDENTITY_MISSING,
         detail: 'Claimed replay rowIdentity does not match artifact claim rowIdentity contract',
         artifactId: 3,
         fieldPath: 'rowIdentity',
@@ -809,8 +809,8 @@ class Wave1ValidationHarness {
 
     const contract = contractsByClaimRowIdentity.get(claimedRowIdentity);
     if (!contract) {
-      throw new Wave1ValidationHarnessError({
-        code: WAVE1_VALIDATION_ERROR_CODES.REQUIRED_ROW_IDENTITY_MISSING,
+      throw new HelpValidationHarnessError({
+        code: HELP_VALIDATION_ERROR_CODES.REQUIRED_ROW_IDENTITY_MISSING,
         detail: 'Claimed rowIdentity is not mapped to a replay contract',
         artifactId: 3,
         fieldPath: 'rowIdentity',
@@ -825,8 +825,8 @@ class Wave1ValidationHarness {
       normalizeValue(artifactPath) !== normalizeValue(contract.artifactPath) ||
       !normalizedComponentPath.includes(String(contract.componentPathIncludes || '').toLowerCase())
     ) {
-      throw new Wave1ValidationHarnessError({
-        code: WAVE1_VALIDATION_ERROR_CODES.BINDING_EVIDENCE_INVALID,
+      throw new HelpValidationHarnessError({
+        code: HELP_VALIDATION_ERROR_CODES.BINDING_EVIDENCE_INVALID,
         detail: 'Claimed replay rowIdentity/component pair does not match replay contract mapping',
         artifactId: 3,
         fieldPath: 'issuingComponent',
@@ -1024,14 +1024,14 @@ class Wave1ValidationHarness {
       rowIdentity,
       runtimeFolder,
     });
-    const baselineWorkspaceRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'wave1-replay-baseline-'));
-    const perturbedWorkspaceRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'wave1-replay-perturbed-'));
+    const baselineWorkspaceRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'help-replay-baseline-'));
+    const perturbedWorkspaceRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'help-replay-perturbed-'));
 
     try {
       const baseline = await contract.run({ workspaceRoot: baselineWorkspaceRoot, perturbed: false });
       if (Number(baseline.targetRowCount) <= 0) {
-        throw new Wave1ValidationHarnessError({
-          code: WAVE1_VALIDATION_ERROR_CODES.REQUIRED_ROW_IDENTITY_MISSING,
+        throw new HelpValidationHarnessError({
+          code: HELP_VALIDATION_ERROR_CODES.REQUIRED_ROW_IDENTITY_MISSING,
           detail: 'Claimed rowIdentity target is absent in baseline component replay output',
           artifactId: 3,
           fieldPath: 'rowIdentity',
@@ -1236,7 +1236,7 @@ class Wave1ValidationHarness {
     const runtimeHelpCatalogPath = `${runtimeFolder}/_config/bmad-help.csv`;
     const runtimePipelinePath = `${runtimeFolder}/_config/bmad-help-catalog-pipeline.csv`;
     const runtimeCommandLabelPath = `${runtimeFolder}/_config/bmad-help-command-label-report.csv`;
-    const evidenceArtifactPath = '_bmad-output/planning-artifacts/validation/wave-1/bmad-help-issued-artifact-provenance.csv';
+    const evidenceArtifactPath = '_bmad-output/planning-artifacts/validation/help/bmad-help-issued-artifact-provenance.csv';
     const exportSkillPath = '.agents/skills/bmad-help/SKILL.md';
     const exportSkillAbsolutePath = path.join(outputPaths.projectDir, '.agents', 'skills', 'bmad-help', 'SKILL.md');
     const codexExportRows =
@@ -1445,8 +1445,8 @@ class Wave1ValidationHarness {
         status: 'PASS',
       }));
     if (aliasRowsForExemplar.length === 0) {
-      throw new Wave1ValidationHarnessError({
-        code: WAVE1_VALIDATION_ERROR_CODES.REQUIRED_ROW_IDENTITY_MISSING,
+      throw new HelpValidationHarnessError({
+        code: HELP_VALIDATION_ERROR_CODES.REQUIRED_ROW_IDENTITY_MISSING,
         detail: 'Required canonical alias rows for exemplar are missing',
         artifactId: 5,
         fieldPath: 'rows[canonicalId=bmad-help]',
@@ -1626,8 +1626,8 @@ class Wave1ValidationHarness {
         };
       });
     if (pipelineWithEvidence.length === 0) {
-      throw new Wave1ValidationHarnessError({
-        code: WAVE1_VALIDATION_ERROR_CODES.REQUIRED_ROW_IDENTITY_MISSING,
+      throw new HelpValidationHarnessError({
+        code: HELP_VALIDATION_ERROR_CODES.REQUIRED_ROW_IDENTITY_MISSING,
         detail: 'Required help-catalog pipeline exemplar rows are missing',
         artifactId: 9,
         fieldPath: 'rows[canonicalId=bmad-help]',
@@ -1883,11 +1883,11 @@ class Wave1ValidationHarness {
 
     // Artifact 12: decision record
     const decisionRecord = {
-      wave: 1,
+      capability: 'bmad-help',
       goNoGo: 'GO',
       status: 'PASS',
     };
-    const decisionRecordContent = `---\n${yaml.stringify(decisionRecord).trimEnd()}\n---\n\n# Wave 1 Native Skills Exit\n\nStatus: PASS\n`;
+    const decisionRecordContent = `---\n${yaml.stringify(decisionRecord).trimEnd()}\n---\n\n# Help Native Skills Exit\n\nStatus: PASS\n`;
     await fs.writeFile(artifactPaths.get(12), decisionRecordContent, 'utf8');
 
     // Fixtures for artifacts 13 and 14
@@ -1898,15 +1898,14 @@ class Wave1ValidationHarness {
     const sidecarNegativeScenarios = [
       {
         scenario: 'unknown-major-version',
-        fixturePath: '_bmad-output/planning-artifacts/validation/wave-1/fixtures/sidecar-negative/unknown-major-version/help.artifact.yaml',
+        fixturePath: '_bmad-output/planning-artifacts/validation/help/fixtures/sidecar-negative/unknown-major-version/help.artifact.yaml',
         absolutePath: fixtures.unknownMajorFixturePath,
         expectedFailureCode: HELP_SIDECAR_ERROR_CODES.MAJOR_VERSION_UNSUPPORTED,
         expectedFailureDetail: 'sidecar schema major version is unsupported',
       },
       {
         scenario: 'basename-path-mismatch',
-        fixturePath:
-          '_bmad-output/planning-artifacts/validation/wave-1/fixtures/sidecar-negative/basename-path-mismatch/help.artifact.yaml',
+        fixturePath: '_bmad-output/planning-artifacts/validation/help/fixtures/sidecar-negative/basename-path-mismatch/help.artifact.yaml',
         absolutePath: fixtures.basenameMismatchFixturePath,
         expectedFailureCode: HELP_SIDECAR_ERROR_CODES.SOURCEPATH_BASENAME_MISMATCH,
         expectedFailureDetail: 'sidecar basename does not match sourcePath basename',
@@ -1991,7 +1990,7 @@ class Wave1ValidationHarness {
     for (const scope of ['source', 'runtime']) {
       for (const scenario of mismatchScenarios) {
         const fixturePath = path.join(outputPaths.validationRoot, 'fixtures', 'frontmatter-mismatch', scope, `${scenario.scenario}.md`);
-        const fixtureRelativePath = `_bmad-output/planning-artifacts/validation/wave-1/fixtures/frontmatter-mismatch/${scope}/${scenario.scenario}.md`;
+        const fixtureRelativePath = `_bmad-output/planning-artifacts/validation/help/fixtures/frontmatter-mismatch/${scope}/${scenario.scenario}.md`;
         let observedFailureCode = '';
         let observedFailureDetail = '';
         let observedFrontmatterValue = '';
@@ -2071,8 +2070,8 @@ class Wave1ValidationHarness {
     try {
       parsed = JSON.parse(String(payloadRaw || ''));
     } catch (error) {
-      throw new Wave1ValidationHarnessError({
-        code: WAVE1_VALIDATION_ERROR_CODES.BINDING_EVIDENCE_INVALID,
+      throw new HelpValidationHarnessError({
+        code: HELP_VALIDATION_ERROR_CODES.BINDING_EVIDENCE_INVALID,
         detail: `Binding evidence payload is not valid JSON (${error.message})`,
         artifactId,
         fieldPath,
@@ -2083,8 +2082,8 @@ class Wave1ValidationHarness {
     }
 
     if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
-      throw new Wave1ValidationHarnessError({
-        code: WAVE1_VALIDATION_ERROR_CODES.BINDING_EVIDENCE_INVALID,
+      throw new HelpValidationHarnessError({
+        code: HELP_VALIDATION_ERROR_CODES.BINDING_EVIDENCE_INVALID,
         detail: 'Binding evidence payload must be a JSON object',
         artifactId,
         fieldPath,
@@ -2108,8 +2107,8 @@ class Wave1ValidationHarness {
     });
 
     if (normalizeValue(payload.evidenceVersion) !== '1') {
-      throw new Wave1ValidationHarnessError({
-        code: WAVE1_VALIDATION_ERROR_CODES.BINDING_EVIDENCE_INVALID,
+      throw new HelpValidationHarnessError({
+        code: HELP_VALIDATION_ERROR_CODES.BINDING_EVIDENCE_INVALID,
         detail: 'Binding evidence payload must use evidenceVersion=1',
         artifactId,
         fieldPath: 'issuingComponentBindingEvidence.evidenceVersion',
@@ -2121,8 +2120,8 @@ class Wave1ValidationHarness {
 
     if (rowStatus === 'SKIP') {
       if (normalizeValue(payload.observationMethod) !== 'validator-observed-optional-surface-omitted') {
-        throw new Wave1ValidationHarnessError({
-          code: WAVE1_VALIDATION_ERROR_CODES.BINDING_EVIDENCE_INVALID,
+        throw new HelpValidationHarnessError({
+          code: HELP_VALIDATION_ERROR_CODES.BINDING_EVIDENCE_INVALID,
           detail: 'Optional-surface provenance rows must use optional-surface evidence method',
           artifactId,
           fieldPath: 'issuingComponentBindingEvidence.observationMethod',
@@ -2150,8 +2149,8 @@ class Wave1ValidationHarness {
     ];
     for (const key of requiredPayloadFields) {
       if (normalizeValue(payload[key]).length === 0 && payload[key] !== false) {
-        throw new Wave1ValidationHarnessError({
-          code: WAVE1_VALIDATION_ERROR_CODES.BINDING_EVIDENCE_INVALID,
+        throw new HelpValidationHarnessError({
+          code: HELP_VALIDATION_ERROR_CODES.BINDING_EVIDENCE_INVALID,
           detail: 'Required binding evidence field is missing',
           artifactId,
           fieldPath: `issuingComponentBindingEvidence.${key}`,
@@ -2167,8 +2166,8 @@ class Wave1ValidationHarness {
       normalizeValue(row.evidenceMethod) !== 'validator-observed-baseline-plus-isolated-single-component-perturbation' ||
       normalizeValue(row.issuingComponentBindingBasis) !== 'validator-observed-baseline-plus-isolated-single-component-perturbation'
     ) {
-      throw new Wave1ValidationHarnessError({
-        code: WAVE1_VALIDATION_ERROR_CODES.BINDING_EVIDENCE_INVALID,
+      throw new HelpValidationHarnessError({
+        code: HELP_VALIDATION_ERROR_CODES.BINDING_EVIDENCE_INVALID,
         detail: 'Replay evidence must use the baseline-plus-isolated-perturbation method',
         artifactId,
         fieldPath: 'evidenceMethod',
@@ -2185,8 +2184,8 @@ class Wave1ValidationHarness {
       normalizeValue(payload.mutatedRowIdentity) !== normalizeValue(row.rowIdentity) ||
       normalizeValue(payload.targetedRowLocator) !== normalizeValue(row.rowIdentity)
     ) {
-      throw new Wave1ValidationHarnessError({
-        code: WAVE1_VALIDATION_ERROR_CODES.BINDING_EVIDENCE_INVALID,
+      throw new HelpValidationHarnessError({
+        code: HELP_VALIDATION_ERROR_CODES.BINDING_EVIDENCE_INVALID,
         detail: 'Binding evidence payload does not match provenance row contract fields',
         artifactId,
         fieldPath: 'issuingComponentBindingEvidence',
@@ -2197,8 +2196,8 @@ class Wave1ValidationHarness {
     }
 
     if (!isSha256(payload.baselineArtifactSha256) || !isSha256(payload.mutatedArtifactSha256) || !isSha256(payload.rowLevelDiffSha256)) {
-      throw new Wave1ValidationHarnessError({
-        code: WAVE1_VALIDATION_ERROR_CODES.BINDING_EVIDENCE_INVALID,
+      throw new HelpValidationHarnessError({
+        code: HELP_VALIDATION_ERROR_CODES.BINDING_EVIDENCE_INVALID,
         detail: 'Replay evidence hashes must be sha256 hex values',
         artifactId,
         fieldPath: 'issuingComponentBindingEvidence.*Sha256',
@@ -2213,8 +2212,8 @@ class Wave1ValidationHarness {
     }
 
     if (payload.baselineArtifactSha256 === payload.mutatedArtifactSha256 || payload.perturbationApplied !== true) {
-      throw new Wave1ValidationHarnessError({
-        code: WAVE1_VALIDATION_ERROR_CODES.BINDING_EVIDENCE_INVALID,
+      throw new HelpValidationHarnessError({
+        code: HELP_VALIDATION_ERROR_CODES.BINDING_EVIDENCE_INVALID,
         detail: 'Replay evidence must show isolated perturbation impact',
         artifactId,
         fieldPath: 'issuingComponentBindingEvidence.perturbationApplied',
@@ -2229,8 +2228,8 @@ class Wave1ValidationHarness {
     }
 
     if (Number(payload.baselineTargetRowCount) <= Number(payload.mutatedTargetRowCount)) {
-      throw new Wave1ValidationHarnessError({
-        code: WAVE1_VALIDATION_ERROR_CODES.BINDING_EVIDENCE_INVALID,
+      throw new HelpValidationHarnessError({
+        code: HELP_VALIDATION_ERROR_CODES.BINDING_EVIDENCE_INVALID,
         detail: 'Replay evidence must show reduced target-row impact after perturbation',
         artifactId,
         fieldPath: 'issuingComponentBindingEvidence.baselineTargetRowCount',
@@ -2250,8 +2249,8 @@ class Wave1ValidationHarness {
     if (normalizeValue(value).length > 0) {
       return;
     }
-    throw new Wave1ValidationHarnessError({
-      code: WAVE1_VALIDATION_ERROR_CODES.REQUIRED_EVIDENCE_LINK_MISSING,
+    throw new HelpValidationHarnessError({
+      code: HELP_VALIDATION_ERROR_CODES.REQUIRED_EVIDENCE_LINK_MISSING,
       detail: 'Required evidence-link field is missing or empty',
       artifactId,
       fieldPath,
@@ -2276,8 +2275,8 @@ class Wave1ValidationHarness {
       }
 
       if (normalizeValue(row.issuedArtifactEvidencePath) !== evidencePath) {
-        throw new Wave1ValidationHarnessError({
-          code: WAVE1_VALIDATION_ERROR_CODES.EVIDENCE_LINK_REFERENCE_INVALID,
+        throw new HelpValidationHarnessError({
+          code: HELP_VALIDATION_ERROR_CODES.EVIDENCE_LINK_REFERENCE_INVALID,
           detail: 'Evidence-link path does not point to required provenance artifact',
           artifactId,
           fieldPath: `rows[${index}].issuedArtifactEvidencePath`,
@@ -2290,8 +2289,8 @@ class Wave1ValidationHarness {
       const linkedEvidenceRowIdentity = normalizeValue(row.issuedArtifactEvidenceRowIdentity);
       const provenanceRow = provenanceByIdentity.get(linkedEvidenceRowIdentity);
       if (!provenanceRow) {
-        throw new Wave1ValidationHarnessError({
-          code: WAVE1_VALIDATION_ERROR_CODES.EVIDENCE_LINK_REFERENCE_INVALID,
+        throw new HelpValidationHarnessError({
+          code: HELP_VALIDATION_ERROR_CODES.EVIDENCE_LINK_REFERENCE_INVALID,
           detail: 'Evidence-link row identity does not resolve to provenance artifact row',
           artifactId,
           fieldPath: `rows[${index}].issuedArtifactEvidenceRowIdentity`,
@@ -2302,8 +2301,8 @@ class Wave1ValidationHarness {
       }
 
       if (normalizeValue(provenanceRow.status) !== 'PASS') {
-        throw new Wave1ValidationHarnessError({
-          code: WAVE1_VALIDATION_ERROR_CODES.ISSUER_PREREQUISITE_MISSING,
+        throw new HelpValidationHarnessError({
+          code: HELP_VALIDATION_ERROR_CODES.ISSUER_PREREQUISITE_MISSING,
           detail: 'Terminal PASS requires linked provenance rows to be PASS',
           artifactId,
           fieldPath: `rows[${index}].issuedArtifactEvidenceRowIdentity`,
@@ -2314,8 +2313,8 @@ class Wave1ValidationHarness {
       }
 
       if (rowArtifactPathField && normalizeValue(row[rowArtifactPathField]) !== normalizeValue(provenanceRow.artifactPath)) {
-        throw new Wave1ValidationHarnessError({
-          code: WAVE1_VALIDATION_ERROR_CODES.EVIDENCE_LINK_REFERENCE_INVALID,
+        throw new HelpValidationHarnessError({
+          code: HELP_VALIDATION_ERROR_CODES.EVIDENCE_LINK_REFERENCE_INVALID,
           detail: 'Evidence-linked provenance row does not match claimed artifact path',
           artifactId,
           fieldPath: `rows[${index}].${rowArtifactPathField}`,
@@ -2330,8 +2329,8 @@ class Wave1ValidationHarness {
         normalizeValue(row.issuingComponent).length > 0 &&
         normalizeValue(row.issuingComponent) !== normalizeValue(provenanceRow.issuingComponent)
       ) {
-        throw new Wave1ValidationHarnessError({
-          code: WAVE1_VALIDATION_ERROR_CODES.SELF_ATTESTED_ISSUER_CLAIM,
+        throw new HelpValidationHarnessError({
+          code: HELP_VALIDATION_ERROR_CODES.SELF_ATTESTED_ISSUER_CLAIM,
           detail: 'Issuer component claim diverges from validator-linked provenance evidence',
           artifactId,
           fieldPath: `rows[${index}].issuingComponent`,
@@ -2346,8 +2345,8 @@ class Wave1ValidationHarness {
         normalizeValue(row.issuingComponentBindingEvidence).length > 0 &&
         normalizeValue(row.issuingComponentBindingEvidence) !== normalizeValue(provenanceRow.issuingComponentBindingEvidence)
       ) {
-        throw new Wave1ValidationHarnessError({
-          code: WAVE1_VALIDATION_ERROR_CODES.SELF_ATTESTED_ISSUER_CLAIM,
+        throw new HelpValidationHarnessError({
+          code: HELP_VALIDATION_ERROR_CODES.SELF_ATTESTED_ISSUER_CLAIM,
           detail: 'Issuer binding evidence claim diverges from validator-linked provenance evidence',
           artifactId,
           fieldPath: `rows[${index}].issuingComponentBindingEvidence`,
@@ -2360,7 +2359,7 @@ class Wave1ValidationHarness {
   }
 
   validateIssuerPrerequisites({ artifactDataById, runtimeFolder, requireExportSkillProjection }) {
-    const evidencePath = '_bmad-output/planning-artifacts/validation/wave-1/bmad-help-issued-artifact-provenance.csv';
+    const evidencePath = '_bmad-output/planning-artifacts/validation/help/bmad-help-issued-artifact-provenance.csv';
     const provenanceArtifact = artifactDataById.get(3) || { rows: [] };
     const provenanceRows = Array.isArray(provenanceArtifact.rows) ? provenanceArtifact.rows : [];
     const provenanceByIdentity = new Map();
@@ -2392,8 +2391,8 @@ class Wave1ValidationHarness {
     for (const artifactPath of requiredProvenanceArtifactPaths) {
       const row = provenanceByArtifactPath.get(artifactPath);
       if (!row || normalizeValue(row.status) !== 'PASS') {
-        throw new Wave1ValidationHarnessError({
-          code: WAVE1_VALIDATION_ERROR_CODES.ISSUER_PREREQUISITE_MISSING,
+        throw new HelpValidationHarnessError({
+          code: HELP_VALIDATION_ERROR_CODES.ISSUER_PREREQUISITE_MISSING,
           detail: 'Terminal PASS requires provenance prerequisite rows for all required issuing-component claims',
           artifactId: 3,
           fieldPath: `rows[artifactPath=${artifactPath}]`,
@@ -2494,9 +2493,9 @@ class Wave1ValidationHarness {
     for (const artifact of this.registry) {
       const artifactPath = path.join(planningArtifactsRoot, artifact.relativePath);
       if (!(await fs.pathExists(artifactPath))) {
-        throw new Wave1ValidationHarnessError({
-          code: WAVE1_VALIDATION_ERROR_CODES.REQUIRED_ARTIFACT_MISSING,
-          detail: 'Required wave-1 validation artifact is missing',
+        throw new HelpValidationHarnessError({
+          code: HELP_VALIDATION_ERROR_CODES.REQUIRED_ARTIFACT_MISSING,
+          detail: 'Required help validation artifact is missing',
           artifactId: artifact.artifactId,
           fieldPath: '<file>',
           sourcePath: normalizePath(artifact.relativePath),
@@ -2519,8 +2518,8 @@ class Wave1ValidationHarness {
           });
 
           if (observedHeader.length !== expectedHeader.length) {
-            throw new Wave1ValidationHarnessError({
-              code: WAVE1_VALIDATION_ERROR_CODES.CSV_SCHEMA_MISMATCH,
+            throw new HelpValidationHarnessError({
+              code: HELP_VALIDATION_ERROR_CODES.CSV_SCHEMA_MISMATCH,
               detail: 'CSV header length does not match required schema',
               artifactId: artifact.artifactId,
               fieldPath: '<header>',
@@ -2534,8 +2533,8 @@ class Wave1ValidationHarness {
             const observed = normalizeValue(observedHeader[index]);
             const expected = normalizeValue(expectedValue);
             if (observed !== expected) {
-              throw new Wave1ValidationHarnessError({
-                code: WAVE1_VALIDATION_ERROR_CODES.CSV_SCHEMA_MISMATCH,
+              throw new HelpValidationHarnessError({
+                code: HELP_VALIDATION_ERROR_CODES.CSV_SCHEMA_MISMATCH,
                 detail: 'CSV header ordering does not match required schema',
                 artifactId: artifact.artifactId,
                 fieldPath: `header[${index}]`,
@@ -2548,8 +2547,8 @@ class Wave1ValidationHarness {
 
           if (Array.isArray(artifact.requiredRowIdentityFields) && artifact.requiredRowIdentityFields.length > 0) {
             if (rows.length === 0) {
-              throw new Wave1ValidationHarnessError({
-                code: WAVE1_VALIDATION_ERROR_CODES.REQUIRED_ROW_IDENTITY_MISSING,
+              throw new HelpValidationHarnessError({
+                code: HELP_VALIDATION_ERROR_CODES.REQUIRED_ROW_IDENTITY_MISSING,
                 detail: 'Required row identity rows are missing',
                 artifactId: artifact.artifactId,
                 fieldPath: 'rows',
@@ -2560,8 +2559,8 @@ class Wave1ValidationHarness {
             }
             for (const field of artifact.requiredRowIdentityFields) {
               if (!expectedHeader.includes(field)) {
-                throw new Wave1ValidationHarnessError({
-                  code: WAVE1_VALIDATION_ERROR_CODES.CSV_SCHEMA_MISMATCH,
+                throw new HelpValidationHarnessError({
+                  code: HELP_VALIDATION_ERROR_CODES.CSV_SCHEMA_MISMATCH,
                   detail: 'Required row identity field is missing from artifact schema',
                   artifactId: artifact.artifactId,
                   fieldPath: `header.${field}`,
@@ -2574,10 +2573,10 @@ class Wave1ValidationHarness {
               for (const [rowIndex, row] of rows.entries()) {
                 if (normalizeValue(row[field]).length === 0) {
                   const isEvidenceLinkField = field === 'issuedArtifactEvidenceRowIdentity';
-                  throw new Wave1ValidationHarnessError({
+                  throw new HelpValidationHarnessError({
                     code: isEvidenceLinkField
-                      ? WAVE1_VALIDATION_ERROR_CODES.REQUIRED_EVIDENCE_LINK_MISSING
-                      : WAVE1_VALIDATION_ERROR_CODES.REQUIRED_ROW_IDENTITY_MISSING,
+                      ? HELP_VALIDATION_ERROR_CODES.REQUIRED_EVIDENCE_LINK_MISSING
+                      : HELP_VALIDATION_ERROR_CODES.REQUIRED_ROW_IDENTITY_MISSING,
                     detail: isEvidenceLinkField
                       ? 'Required evidence-link row identity is missing or empty'
                       : 'Required row identity value is missing or empty',
@@ -2601,8 +2600,8 @@ class Wave1ValidationHarness {
             parsed,
           });
           if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
-            throw new Wave1ValidationHarnessError({
-              code: WAVE1_VALIDATION_ERROR_CODES.YAML_SCHEMA_MISMATCH,
+            throw new HelpValidationHarnessError({
+              code: HELP_VALIDATION_ERROR_CODES.YAML_SCHEMA_MISMATCH,
               detail: 'YAML artifact root must be a mapping object',
               artifactId: artifact.artifactId,
               fieldPath: '<document>',
@@ -2613,8 +2612,8 @@ class Wave1ValidationHarness {
           }
           for (const requiredKey of artifact.requiredTopLevelKeys || []) {
             if (!Object.prototype.hasOwnProperty.call(parsed, requiredKey)) {
-              throw new Wave1ValidationHarnessError({
-                code: WAVE1_VALIDATION_ERROR_CODES.YAML_SCHEMA_MISMATCH,
+              throw new HelpValidationHarnessError({
+                code: HELP_VALIDATION_ERROR_CODES.YAML_SCHEMA_MISMATCH,
                 detail: 'Required YAML key is missing',
                 artifactId: artifact.artifactId,
                 fieldPath: requiredKey,
@@ -2637,8 +2636,8 @@ class Wave1ValidationHarness {
           try {
             frontmatter = parseFrontmatter(content);
           } catch (error) {
-            throw new Wave1ValidationHarnessError({
-              code: WAVE1_VALIDATION_ERROR_CODES.DECISION_RECORD_PARSE_FAILED,
+            throw new HelpValidationHarnessError({
+              code: HELP_VALIDATION_ERROR_CODES.DECISION_RECORD_PARSE_FAILED,
               detail: `Unable to parse decision record frontmatter (${error.message})`,
               artifactId: artifact.artifactId,
               fieldPath: '<frontmatter>',
@@ -2647,8 +2646,8 @@ class Wave1ValidationHarness {
           }
           for (const requiredKey of artifact.requiredFrontmatterKeys || []) {
             if (!Object.prototype.hasOwnProperty.call(frontmatter, requiredKey)) {
-              throw new Wave1ValidationHarnessError({
-                code: WAVE1_VALIDATION_ERROR_CODES.DECISION_RECORD_SCHEMA_MISMATCH,
+              throw new HelpValidationHarnessError({
+                code: HELP_VALIDATION_ERROR_CODES.DECISION_RECORD_SCHEMA_MISMATCH,
                 detail: 'Required decision-record key is missing',
                 artifactId: artifact.artifactId,
                 fieldPath: requiredKey,
@@ -2695,8 +2694,8 @@ class Wave1ValidationHarness {
 }
 
 module.exports = {
-  WAVE1_VALIDATION_ERROR_CODES,
-  WAVE1_VALIDATION_ARTIFACT_REGISTRY,
-  Wave1ValidationHarnessError,
-  Wave1ValidationHarness,
+  HELP_VALIDATION_ERROR_CODES,
+  HELP_VALIDATION_ARTIFACT_REGISTRY,
+  HelpValidationHarnessError,
+  HelpValidationHarness,
 };

@@ -2,7 +2,7 @@ const csv = require('csv-parse/sync');
 
 const TASK_MANIFEST_COMPATIBILITY_PREFIX_COLUMNS = Object.freeze(['name', 'displayName', 'description', 'module', 'path', 'standalone']);
 
-const TASK_MANIFEST_WAVE1_ADDITIVE_COLUMNS = Object.freeze(['legacyName', 'canonicalId', 'authoritySourceType', 'authoritySourcePath']);
+const TASK_MANIFEST_CANONICAL_ADDITIVE_COLUMNS = Object.freeze(['legacyName', 'canonicalId', 'authoritySourceType', 'authoritySourcePath']);
 
 const HELP_CATALOG_COMPATIBILITY_PREFIX_COLUMNS = Object.freeze([
   'module',
@@ -15,7 +15,7 @@ const HELP_CATALOG_COMPATIBILITY_PREFIX_COLUMNS = Object.freeze([
   'required',
 ]);
 
-const HELP_CATALOG_WAVE1_ADDITIVE_COLUMNS = Object.freeze([
+const HELP_CATALOG_CANONICAL_ADDITIVE_COLUMNS = Object.freeze([
   'agent-name',
   'agent-command',
   'agent-display-name',
@@ -29,12 +29,12 @@ const HELP_CATALOG_WAVE1_ADDITIVE_COLUMNS = Object.freeze([
 const PROJECTION_COMPATIBILITY_ERROR_CODES = Object.freeze({
   TASK_MANIFEST_CSV_PARSE_FAILED: 'ERR_TASK_MANIFEST_COMPAT_PARSE_FAILED',
   TASK_MANIFEST_HEADER_PREFIX_MISMATCH: 'ERR_TASK_MANIFEST_COMPAT_HEADER_PREFIX_MISMATCH',
-  TASK_MANIFEST_HEADER_WAVE1_MISMATCH: 'ERR_TASK_MANIFEST_COMPAT_HEADER_WAVE1_MISMATCH',
+  TASK_MANIFEST_HEADER_CANONICAL_MISMATCH: 'ERR_TASK_MANIFEST_COMPAT_HEADER_CANONICAL_MISMATCH',
   TASK_MANIFEST_REQUIRED_COLUMN_MISSING: 'ERR_TASK_MANIFEST_COMPAT_REQUIRED_COLUMN_MISSING',
   TASK_MANIFEST_ROW_FIELD_EMPTY: 'ERR_TASK_MANIFEST_COMPAT_ROW_FIELD_EMPTY',
   HELP_CATALOG_CSV_PARSE_FAILED: 'ERR_HELP_CATALOG_COMPAT_PARSE_FAILED',
   HELP_CATALOG_HEADER_PREFIX_MISMATCH: 'ERR_HELP_CATALOG_COMPAT_HEADER_PREFIX_MISMATCH',
-  HELP_CATALOG_HEADER_WAVE1_MISMATCH: 'ERR_HELP_CATALOG_COMPAT_HEADER_WAVE1_MISMATCH',
+  HELP_CATALOG_HEADER_CANONICAL_MISMATCH: 'ERR_HELP_CATALOG_COMPAT_HEADER_CANONICAL_MISMATCH',
   HELP_CATALOG_REQUIRED_COLUMN_MISSING: 'ERR_HELP_CATALOG_COMPAT_REQUIRED_COLUMN_MISSING',
   HELP_CATALOG_EXEMPLAR_ROW_CONTRACT_FAILED: 'ERR_HELP_CATALOG_COMPAT_EXEMPLAR_ROW_CONTRACT_FAILED',
   HELP_CATALOG_SHARD_DOC_ROW_CONTRACT_FAILED: 'ERR_HELP_CATALOG_COMPAT_SHARD_DOC_ROW_CONTRACT_FAILED',
@@ -375,10 +375,10 @@ function validateTaskManifestCompatibilitySurface(csvContent, options = {}) {
   });
   assertLockedColumns({
     headerColumns,
-    expectedColumns: TASK_MANIFEST_WAVE1_ADDITIVE_COLUMNS,
+    expectedColumns: TASK_MANIFEST_CANONICAL_ADDITIVE_COLUMNS,
     offset: TASK_MANIFEST_COMPATIBILITY_PREFIX_COLUMNS.length,
-    code: PROJECTION_COMPATIBILITY_ERROR_CODES.TASK_MANIFEST_HEADER_WAVE1_MISMATCH,
-    detail: 'Task-manifest wave-1 additive columns must remain appended after compatibility-prefix columns',
+    code: PROJECTION_COMPATIBILITY_ERROR_CODES.TASK_MANIFEST_HEADER_CANONICAL_MISMATCH,
+    detail: 'Task-manifest canonical additive columns must remain appended after compatibility-prefix columns',
     surface,
     sourcePath,
   });
@@ -419,10 +419,10 @@ function validateHelpCatalogCompatibilitySurface(csvContent, options = {}) {
   });
   assertLockedColumns({
     headerColumns,
-    expectedColumns: HELP_CATALOG_WAVE1_ADDITIVE_COLUMNS,
+    expectedColumns: HELP_CATALOG_CANONICAL_ADDITIVE_COLUMNS,
     offset: HELP_CATALOG_COMPATIBILITY_PREFIX_COLUMNS.length,
-    code: PROJECTION_COMPATIBILITY_ERROR_CODES.HELP_CATALOG_HEADER_WAVE1_MISMATCH,
-    detail: 'Help-catalog wave-1 additive columns must remain appended after compatibility-prefix columns',
+    code: PROJECTION_COMPATIBILITY_ERROR_CODES.HELP_CATALOG_HEADER_CANONICAL_MISMATCH,
+    detail: 'Help-catalog canonical additive columns must remain appended after compatibility-prefix columns',
     surface,
     sourcePath,
   });
@@ -528,9 +528,9 @@ module.exports = {
   PROJECTION_COMPATIBILITY_ERROR_CODES,
   ProjectionCompatibilityError,
   TASK_MANIFEST_COMPATIBILITY_PREFIX_COLUMNS,
-  TASK_MANIFEST_WAVE1_ADDITIVE_COLUMNS,
+  TASK_MANIFEST_CANONICAL_ADDITIVE_COLUMNS,
   HELP_CATALOG_COMPATIBILITY_PREFIX_COLUMNS,
-  HELP_CATALOG_WAVE1_ADDITIVE_COLUMNS,
+  HELP_CATALOG_CANONICAL_ADDITIVE_COLUMNS,
   validateTaskManifestCompatibilitySurface,
   validateTaskManifestLoaderEntries,
   validateHelpCatalogCompatibilitySurface,

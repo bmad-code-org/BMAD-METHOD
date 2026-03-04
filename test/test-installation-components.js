@@ -61,9 +61,9 @@ const {
 const {
   PROJECTION_COMPATIBILITY_ERROR_CODES,
   TASK_MANIFEST_COMPATIBILITY_PREFIX_COLUMNS,
-  TASK_MANIFEST_WAVE1_ADDITIVE_COLUMNS,
+  TASK_MANIFEST_CANONICAL_ADDITIVE_COLUMNS,
   HELP_CATALOG_COMPATIBILITY_PREFIX_COLUMNS,
-  HELP_CATALOG_WAVE1_ADDITIVE_COLUMNS,
+  HELP_CATALOG_CANONICAL_ADDITIVE_COLUMNS,
   validateTaskManifestCompatibilitySurface,
   validateTaskManifestLoaderEntries,
   validateHelpCatalogCompatibilitySurface,
@@ -72,15 +72,15 @@ const {
   validateCommandDocSurfaceConsistency,
 } = require('../tools/cli/installers/lib/core/projection-compatibility-validator');
 const {
-  WAVE1_VALIDATION_ERROR_CODES,
-  WAVE1_VALIDATION_ARTIFACT_REGISTRY,
-  Wave1ValidationHarness,
-} = require('../tools/cli/installers/lib/core/wave-1-validation-harness');
+  HELP_VALIDATION_ERROR_CODES,
+  HELP_VALIDATION_ARTIFACT_REGISTRY,
+  HelpValidationHarness,
+} = require('../tools/cli/installers/lib/core/help-validation-harness');
 const {
-  WAVE2_VALIDATION_ERROR_CODES,
-  WAVE2_VALIDATION_ARTIFACT_REGISTRY,
-  Wave2ValidationHarness,
-} = require('../tools/cli/installers/lib/core/wave-2-validation-harness');
+  SHARD_DOC_VALIDATION_ERROR_CODES,
+  SHARD_DOC_VALIDATION_ARTIFACT_REGISTRY,
+  ShardDocValidationHarness,
+} = require('../tools/cli/installers/lib/core/shard-doc-validation-harness');
 
 // ANSI colors
 const colors = {
@@ -399,9 +399,9 @@ async function runTests() {
   console.log('');
 
   // ============================================================
-  // Test 4b: Wave-2 shard-doc Sidecar Contract Validation
+  // Test 4b: Shard-doc Sidecar Contract Validation
   // ============================================================
-  console.log(`${colors.yellow}Test Suite 4b: Wave-2 shard-doc Sidecar Contract Validation${colors.reset}\n`);
+  console.log(`${colors.yellow}Test Suite 4b: Shard-doc Sidecar Contract Validation${colors.reset}\n`);
 
   const validShardDocSidecar = {
     schemaVersion: 1,
@@ -416,7 +416,7 @@ async function runTests() {
     },
   };
 
-  const shardDocFixtureRoot = path.join(projectRoot, 'test', 'fixtures', 'wave-2', 'sidecar-negative');
+  const shardDocFixtureRoot = path.join(projectRoot, 'test', 'fixtures', 'shard-doc', 'sidecar-negative');
   const unknownMajorFixturePath = path.join(shardDocFixtureRoot, 'unknown-major-version', 'shard-doc.artifact.yaml');
   const basenameMismatchFixturePath = path.join(shardDocFixtureRoot, 'basename-path-mismatch', 'shard-doc.artifact.yaml');
 
@@ -587,7 +587,7 @@ async function runTests() {
       'Shard-doc non-empty dependencies.requires',
     );
   } catch (error) {
-    assert(false, 'Wave-2 shard-doc sidecar validation suite setup', error.message);
+    assert(false, 'Shard-doc sidecar validation suite setup', error.message);
   } finally {
     await fs.remove(tempShardDocRoot);
   }
@@ -1109,7 +1109,7 @@ async function runTests() {
       }
     }
 
-    // 6b: Shard-doc fail-fast covers Wave-2 negative matrix classes.
+    // 6b: Shard-doc fail-fast covers Shard-doc negative matrix classes.
     {
       const deterministicShardDocFailFastSourcePath = 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml';
       const shardDocFailureScenarios = [
@@ -1967,7 +1967,7 @@ async function runTests() {
 
     assert(
       writtenTaskManifestLines[0] === expectedHeader,
-      'Task manifest writes compatibility-prefix columns with locked wave-1 appended column order',
+      'Task manifest writes compatibility-prefix columns with locked canonical appended column order',
     );
 
     const writtenTaskManifestRecords = csv.parse(writtenTaskManifestRaw, {
@@ -3147,7 +3147,7 @@ async function runTests() {
 
     const taskManifestColumns = [
       ...TASK_MANIFEST_COMPATIBILITY_PREFIX_COLUMNS,
-      ...TASK_MANIFEST_WAVE1_ADDITIVE_COLUMNS,
+      ...TASK_MANIFEST_CANONICAL_ADDITIVE_COLUMNS,
       'futureAdditiveField',
     ];
     const validTaskRows = [
@@ -3162,7 +3162,7 @@ async function runTests() {
         canonicalId: 'bmad-help',
         authoritySourceType: 'sidecar',
         authoritySourcePath: 'bmad-fork/src/core/tasks/help.artifact.yaml',
-        futureAdditiveField: 'wave-1',
+        futureAdditiveField: 'canonical-additive',
       },
       {
         name: 'create-story',
@@ -3175,7 +3175,7 @@ async function runTests() {
         canonicalId: '',
         authoritySourceType: '',
         authoritySourcePath: '',
-        futureAdditiveField: 'wave-1',
+        futureAdditiveField: 'canonical-additive',
       },
     ];
     const validTaskManifestCsv =
@@ -3188,11 +3188,11 @@ async function runTests() {
     assert(
       validatedTaskSurface.headerColumns[0] === 'name' &&
         validatedTaskSurface.headerColumns[TASK_MANIFEST_COMPATIBILITY_PREFIX_COLUMNS.length] === 'legacyName',
-      'Task-manifest compatibility validator enforces locked prefix plus additive wave-1 ordering',
+      'Task-manifest compatibility validator enforces locked prefix plus additive canonical ordering',
     );
     assert(
       validatedTaskSurface.headerColumns.at(-1) === 'futureAdditiveField',
-      'Task-manifest compatibility validator allows additive columns appended after locked wave-1 columns',
+      'Task-manifest compatibility validator allows additive columns appended after locked canonical columns',
     );
 
     validateTaskManifestLoaderEntries(validatedTaskSurface.rows, {
@@ -3229,8 +3229,8 @@ async function runTests() {
       assert(false, 'Task-manifest strict validator rejects legacy prefix-only header without migration mode');
     } catch (error) {
       assert(
-        error.code === PROJECTION_COMPATIBILITY_ERROR_CODES.TASK_MANIFEST_HEADER_WAVE1_MISMATCH,
-        'Task-manifest strict validator emits deterministic wave-1 mismatch error for legacy prefix-only headers',
+        error.code === PROJECTION_COMPATIBILITY_ERROR_CODES.TASK_MANIFEST_HEADER_CANONICAL_MISMATCH,
+        'Task-manifest strict validator emits deterministic canonical mismatch error for legacy prefix-only headers',
       );
     }
 
@@ -3252,7 +3252,7 @@ async function runTests() {
 
     const helpCatalogColumns = [
       ...HELP_CATALOG_COMPATIBILITY_PREFIX_COLUMNS,
-      ...HELP_CATALOG_WAVE1_ADDITIVE_COLUMNS,
+      ...HELP_CATALOG_CANONICAL_ADDITIVE_COLUMNS,
       'futureAdditiveField',
     ];
     const validHelpRows = [
@@ -3273,7 +3273,7 @@ async function runTests() {
         description: 'Help command',
         'output-location': '',
         outputs: '',
-        futureAdditiveField: 'wave-1',
+        futureAdditiveField: 'canonical-additive',
       },
       {
         module: 'core',
@@ -3292,7 +3292,7 @@ async function runTests() {
         description: 'Shard document command',
         'output-location': '',
         outputs: '',
-        futureAdditiveField: 'wave-1',
+        futureAdditiveField: 'canonical-additive',
       },
       {
         module: 'bmm',
@@ -3311,7 +3311,7 @@ async function runTests() {
         description: 'Create next story',
         'output-location': '',
         outputs: '',
-        futureAdditiveField: 'wave-1',
+        futureAdditiveField: 'canonical-additive',
       },
     ];
     const validHelpCatalogCsv =
@@ -3327,7 +3327,7 @@ async function runTests() {
     );
     assert(
       validatedHelpSurface.headerColumns.at(-1) === 'futureAdditiveField',
-      'Help-catalog compatibility validator allows additive columns appended after locked wave-1 columns',
+      'Help-catalog compatibility validator allows additive columns appended after locked canonical columns',
     );
 
     validateHelpCatalogLoaderEntries(validatedHelpSurface.rows, {
@@ -3438,7 +3438,7 @@ async function runTests() {
   // ============================================================
   console.log(`${colors.yellow}Test Suite 14: Deterministic Validation Artifact Suite${colors.reset}\n`);
 
-  const tempValidationHarnessRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-wave1-validation-suite-'));
+  const tempValidationHarnessRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-help-validation-suite-'));
   try {
     const tempProjectRoot = tempValidationHarnessRoot;
     const tempBmadDir = path.join(tempProjectRoot, '_bmad');
@@ -3509,7 +3509,7 @@ async function runTests() {
 
     await writeCsv(
       path.join(tempConfigDir, 'task-manifest.csv'),
-      [...TASK_MANIFEST_COMPATIBILITY_PREFIX_COLUMNS, ...TASK_MANIFEST_WAVE1_ADDITIVE_COLUMNS],
+      [...TASK_MANIFEST_COMPATIBILITY_PREFIX_COLUMNS, ...TASK_MANIFEST_CANONICAL_ADDITIVE_COLUMNS],
       [
         {
           name: 'help',
@@ -3576,7 +3576,7 @@ async function runTests() {
     );
     await writeCsv(
       path.join(tempConfigDir, 'bmad-help.csv'),
-      [...HELP_CATALOG_COMPATIBILITY_PREFIX_COLUMNS, ...HELP_CATALOG_WAVE1_ADDITIVE_COLUMNS],
+      [...HELP_CATALOG_COMPATIBILITY_PREFIX_COLUMNS, ...HELP_CATALOG_CANONICAL_ADDITIVE_COLUMNS],
       [
         {
           module: 'core',
@@ -3764,7 +3764,7 @@ async function runTests() {
       ],
     );
 
-    const harness = new Wave1ValidationHarness();
+    const harness = new HelpValidationHarness();
     const firstRun = await harness.generateAndValidate({
       projectDir: tempProjectRoot,
       bmadDir: tempBmadDir,
@@ -3773,18 +3773,18 @@ async function runTests() {
       sourceMarkdownPath: path.join(tempSourceTasksDir, 'help.md'),
     });
     assert(
-      firstRun.terminalStatus === 'PASS' && firstRun.generatedArtifactCount === WAVE1_VALIDATION_ARTIFACT_REGISTRY.length,
-      'Wave-1 validation harness generates and validates all required artifacts',
+      firstRun.terminalStatus === 'PASS' && firstRun.generatedArtifactCount === HELP_VALIDATION_ARTIFACT_REGISTRY.length,
+      'Help validation harness generates and validates all required artifacts',
     );
 
     const artifactPathsById = new Map(
-      WAVE1_VALIDATION_ARTIFACT_REGISTRY.map((artifact) => [
+      HELP_VALIDATION_ARTIFACT_REGISTRY.map((artifact) => [
         artifact.artifactId,
         path.join(tempProjectRoot, '_bmad-output', 'planning-artifacts', artifact.relativePath),
       ]),
     );
     for (const [artifactId, artifactPath] of artifactPathsById.entries()) {
-      assert(await fs.pathExists(artifactPath), `Wave-1 validation harness outputs artifact ${artifactId}`);
+      assert(await fs.pathExists(artifactPath), `Help validation harness outputs artifact ${artifactId}`);
     }
 
     const artifactThreeBaselineRows = csv.parse(await fs.readFile(artifactPathsById.get(3), 'utf8'), {
@@ -3810,7 +3810,7 @@ async function runTests() {
         manifestReplayEvidence.perturbationApplied === true &&
         Number(manifestReplayEvidence.baselineTargetRowCount) > Number(manifestReplayEvidence.mutatedTargetRowCount) &&
         manifestReplayEvidence.targetedRowLocator === manifestProvenanceRow.rowIdentity,
-      'Wave-1 validation harness emits validator-observed replay evidence with baseline/perturbation impact',
+      'Help validation harness emits validator-observed replay evidence with baseline/perturbation impact',
     );
 
     const firstArtifactContents = new Map();
@@ -3834,18 +3834,18 @@ async function runTests() {
         break;
       }
     }
-    assert(deterministicOutputs, 'Wave-1 validation harness outputs are byte-stable across unchanged repeated runs');
+    assert(deterministicOutputs, 'Help validation harness outputs are byte-stable across unchanged repeated runs');
 
     await fs.remove(path.join(tempSkillDir, 'SKILL.md'));
     const noIdeInstaller = new Installer();
     noIdeInstaller.codexExportDerivationRecords = [];
-    const noIdeValidationOptions = await noIdeInstaller.buildWave1ValidationOptions({
+    const noIdeValidationOptions = await noIdeInstaller.buildHelpValidationOptions({
       projectDir: tempProjectRoot,
       bmadDir: tempBmadDir,
     });
     assert(
       noIdeValidationOptions.requireExportSkillProjection === false,
-      'Installer wave-1 validation options disable export-surface requirement for no-IDE/non-Codex flow',
+      'Installer help validation options disable export-surface requirement for no-IDE/non-Codex flow',
     );
     const noIdeRun = await harness.generateAndValidate({
       ...noIdeValidationOptions,
@@ -3854,7 +3854,7 @@ async function runTests() {
     });
     assert(
       noIdeRun.terminalStatus === 'PASS',
-      'Wave-1 validation harness remains terminal-PASS for no-IDE/non-Codex flow when core projection surfaces are present',
+      'Help validation harness remains terminal-PASS for no-IDE/non-Codex flow when core projection surfaces are present',
     );
     const noIdeStandaloneValidation = await harness.validateGeneratedArtifacts({
       projectDir: tempProjectRoot,
@@ -3862,7 +3862,7 @@ async function runTests() {
     });
     assert(
       noIdeStandaloneValidation.status === 'PASS',
-      'Wave-1 validation harness infers no-IDE export prerequisite context during standalone validation when options are omitted',
+      'Help validation harness infers no-IDE export prerequisite context during standalone validation when options are omitted',
     );
     try {
       await harness.buildObservedBindingEvidence({
@@ -3873,11 +3873,11 @@ async function runTests() {
         optionalSurface: false,
         runtimeFolder: '_bmad',
       });
-      assert(false, 'Wave-1 replay evidence generation rejects unmapped claimed rowIdentity');
+      assert(false, 'Help replay evidence generation rejects unmapped claimed rowIdentity');
     } catch (error) {
       assert(
-        error.code === WAVE1_VALIDATION_ERROR_CODES.REQUIRED_ROW_IDENTITY_MISSING,
-        'Wave-1 replay evidence generation emits deterministic missing-claimed-rowIdentity error code',
+        error.code === HELP_VALIDATION_ERROR_CODES.REQUIRED_ROW_IDENTITY_MISSING,
+        'Help replay evidence generation emits deterministic missing-claimed-rowIdentity error code',
       );
     }
     await fs.writeFile(
@@ -3895,16 +3895,16 @@ async function runTests() {
         sidecarPath: path.join(tempSourceTasksDir, 'help.artifact.yaml'),
         sourceMarkdownPath: path.join(tempSourceTasksDir, 'help.md'),
       });
-      assert(false, 'Wave-1 validation harness fails when required projection input surfaces are missing');
+      assert(false, 'Help validation harness fails when required projection input surfaces are missing');
     } catch (error) {
       assert(
-        error.code === WAVE1_VALIDATION_ERROR_CODES.REQUIRED_ARTIFACT_MISSING,
-        'Wave-1 validation harness emits deterministic missing-input-surface error code',
+        error.code === HELP_VALIDATION_ERROR_CODES.REQUIRED_ARTIFACT_MISSING,
+        'Help validation harness emits deterministic missing-input-surface error code',
       );
     }
     await writeCsv(
       path.join(tempConfigDir, 'task-manifest.csv'),
-      [...TASK_MANIFEST_COMPATIBILITY_PREFIX_COLUMNS, ...TASK_MANIFEST_WAVE1_ADDITIVE_COLUMNS],
+      [...TASK_MANIFEST_COMPATIBILITY_PREFIX_COLUMNS, ...TASK_MANIFEST_CANONICAL_ADDITIVE_COLUMNS],
       [
         {
           name: 'help',
@@ -3931,11 +3931,11 @@ async function runTests() {
     await fs.remove(artifactPathsById.get(14));
     try {
       await harness.validateGeneratedArtifacts({ projectDir: tempProjectRoot });
-      assert(false, 'Wave-1 validation harness fails when a required artifact is missing');
+      assert(false, 'Help validation harness fails when a required artifact is missing');
     } catch (error) {
       assert(
-        error.code === WAVE1_VALIDATION_ERROR_CODES.REQUIRED_ARTIFACT_MISSING,
-        'Wave-1 validation harness emits deterministic missing-artifact error code',
+        error.code === HELP_VALIDATION_ERROR_CODES.REQUIRED_ARTIFACT_MISSING,
+        'Help validation harness emits deterministic missing-artifact error code',
       );
     }
 
@@ -3954,11 +3954,11 @@ async function runTests() {
     await fs.writeFile(artifactTwoPath, artifactTwoLines.join('\n'), 'utf8');
     try {
       await harness.validateGeneratedArtifacts({ projectDir: tempProjectRoot });
-      assert(false, 'Wave-1 validation harness rejects schema/header drift');
+      assert(false, 'Help validation harness rejects schema/header drift');
     } catch (error) {
       assert(
-        error.code === WAVE1_VALIDATION_ERROR_CODES.CSV_SCHEMA_MISMATCH,
-        'Wave-1 validation harness emits deterministic schema-mismatch error code',
+        error.code === HELP_VALIDATION_ERROR_CODES.CSV_SCHEMA_MISMATCH,
+        'Help validation harness emits deterministic schema-mismatch error code',
       );
     }
 
@@ -3975,11 +3975,11 @@ async function runTests() {
     await fs.writeFile(artifactNinePath, `${artifactNineHeader}\n`, 'utf8');
     try {
       await harness.validateGeneratedArtifacts({ projectDir: tempProjectRoot });
-      assert(false, 'Wave-1 validation harness rejects header-only required-identity artifacts');
+      assert(false, 'Help validation harness rejects header-only required-identity artifacts');
     } catch (error) {
       assert(
-        error.code === WAVE1_VALIDATION_ERROR_CODES.REQUIRED_ROW_IDENTITY_MISSING,
-        'Wave-1 validation harness emits deterministic missing-row error code for header-only artifacts',
+        error.code === HELP_VALIDATION_ERROR_CODES.REQUIRED_ROW_IDENTITY_MISSING,
+        'Help validation harness emits deterministic missing-row error code for header-only artifacts',
       );
     }
 
@@ -4017,11 +4017,11 @@ async function runTests() {
     );
     try {
       await harness.validateGeneratedArtifacts({ projectDir: tempProjectRoot });
-      assert(false, 'Wave-1 validation harness rejects missing required row identity values');
+      assert(false, 'Help validation harness rejects missing required row identity values');
     } catch (error) {
       assert(
-        error.code === WAVE1_VALIDATION_ERROR_CODES.REQUIRED_ROW_IDENTITY_MISSING,
-        'Wave-1 validation harness emits deterministic row-identity error code',
+        error.code === HELP_VALIDATION_ERROR_CODES.REQUIRED_ROW_IDENTITY_MISSING,
+        'Help validation harness emits deterministic row-identity error code',
       );
     }
 
@@ -4061,11 +4061,11 @@ async function runTests() {
     );
     try {
       await harness.validateGeneratedArtifacts({ projectDir: tempProjectRoot });
-      assert(false, 'Wave-1 validation harness rejects PASS rows missing required evidence-link fields');
+      assert(false, 'Help validation harness rejects PASS rows missing required evidence-link fields');
     } catch (error) {
       assert(
-        error.code === WAVE1_VALIDATION_ERROR_CODES.REQUIRED_EVIDENCE_LINK_MISSING,
-        'Wave-1 validation harness emits deterministic evidence-link error code for missing row identity link',
+        error.code === HELP_VALIDATION_ERROR_CODES.REQUIRED_EVIDENCE_LINK_MISSING,
+        'Help validation harness emits deterministic evidence-link error code for missing row identity link',
       );
     }
 
@@ -4111,11 +4111,11 @@ async function runTests() {
     );
     try {
       await harness.validateGeneratedArtifacts({ projectDir: tempProjectRoot });
-      assert(false, 'Wave-1 validation harness rejects self-attested issuer claims that diverge from validator evidence');
+      assert(false, 'Help validation harness rejects self-attested issuer claims that diverge from validator evidence');
     } catch (error) {
       assert(
-        error.code === WAVE1_VALIDATION_ERROR_CODES.SELF_ATTESTED_ISSUER_CLAIM,
-        'Wave-1 validation harness emits deterministic self-attested issuer-claim rejection code',
+        error.code === HELP_VALIDATION_ERROR_CODES.SELF_ATTESTED_ISSUER_CLAIM,
+        'Help validation harness emits deterministic self-attested issuer-claim rejection code',
       );
     }
 
@@ -4151,11 +4151,11 @@ async function runTests() {
     );
     try {
       await harness.validateGeneratedArtifacts({ projectDir: tempProjectRoot });
-      assert(false, 'Wave-1 validation harness rejects malformed replay-evidence payloads');
+      assert(false, 'Help validation harness rejects malformed replay-evidence payloads');
     } catch (error) {
       assert(
-        error.code === WAVE1_VALIDATION_ERROR_CODES.BINDING_EVIDENCE_INVALID,
-        'Wave-1 validation harness emits deterministic replay-evidence validation error code',
+        error.code === HELP_VALIDATION_ERROR_CODES.BINDING_EVIDENCE_INVALID,
+        'Help validation harness emits deterministic replay-evidence validation error code',
       );
     }
   } catch (error) {
@@ -4167,13 +4167,13 @@ async function runTests() {
   console.log('');
 
   // ============================================================
-  // Test 15: Wave-2 shard-doc Validation Artifact Suite
+  // Test 15: Shard-doc Validation Artifact Suite
   // ============================================================
-  console.log(`${colors.yellow}Test Suite 15: Wave-2 shard-doc Validation Artifact Suite${colors.reset}\n`);
+  console.log(`${colors.yellow}Test Suite 15: Shard-doc Validation Artifact Suite${colors.reset}\n`);
 
-  const tempWave2ValidationHarnessRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-wave2-validation-suite-'));
+  const tempShardDocValidationHarnessRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-shard-doc-validation-suite-'));
   try {
-    const tempProjectRoot = tempWave2ValidationHarnessRoot;
+    const tempProjectRoot = tempShardDocValidationHarnessRoot;
     const tempBmadDir = path.join(tempProjectRoot, '_bmad');
     const tempConfigDir = path.join(tempBmadDir, '_config');
     const tempSourceTasksDir = path.join(tempProjectRoot, 'bmad-fork', 'src', 'core', 'tasks');
@@ -4245,7 +4245,7 @@ async function runTests() {
 
     await writeCsv(
       path.join(tempConfigDir, 'task-manifest.csv'),
-      [...TASK_MANIFEST_COMPATIBILITY_PREFIX_COLUMNS, ...TASK_MANIFEST_WAVE1_ADDITIVE_COLUMNS],
+      [...TASK_MANIFEST_COMPATIBILITY_PREFIX_COLUMNS, ...TASK_MANIFEST_CANONICAL_ADDITIVE_COLUMNS],
       [
         {
           name: 'shard-doc',
@@ -4263,7 +4263,7 @@ async function runTests() {
     );
     await writeCsv(
       path.join(tempConfigDir, 'bmad-help.csv'),
-      [...HELP_CATALOG_COMPATIBILITY_PREFIX_COLUMNS, ...HELP_CATALOG_WAVE1_ADDITIVE_COLUMNS],
+      [...HELP_CATALOG_COMPATIBILITY_PREFIX_COLUMNS, ...HELP_CATALOG_CANONICAL_ADDITIVE_COLUMNS],
       [
         {
           module: 'core',
@@ -4353,7 +4353,7 @@ async function runTests() {
       },
     ];
 
-    const harness = new Wave2ValidationHarness();
+    const harness = new ShardDocValidationHarness();
     const firstRun = await harness.generateAndValidate({
       projectDir: tempProjectRoot,
       bmadDir: tempBmadDir,
@@ -4361,18 +4361,18 @@ async function runTests() {
       shardDocAuthorityRecords: authorityRecords,
     });
     assert(
-      firstRun.terminalStatus === 'PASS' && firstRun.generatedArtifactCount === WAVE2_VALIDATION_ARTIFACT_REGISTRY.length,
-      'Wave-2 validation harness generates and validates all required artifacts',
+      firstRun.terminalStatus === 'PASS' && firstRun.generatedArtifactCount === SHARD_DOC_VALIDATION_ARTIFACT_REGISTRY.length,
+      'Shard-doc validation harness generates and validates all required artifacts',
     );
 
     const artifactPathsById = new Map(
-      WAVE2_VALIDATION_ARTIFACT_REGISTRY.map((artifact) => [
+      SHARD_DOC_VALIDATION_ARTIFACT_REGISTRY.map((artifact) => [
         artifact.artifactId,
         path.join(tempProjectRoot, '_bmad-output', 'planning-artifacts', artifact.relativePath),
       ]),
     );
     for (const [artifactId, artifactPath] of artifactPathsById.entries()) {
-      assert(await fs.pathExists(artifactPath), `Wave-2 validation harness outputs artifact ${artifactId}`);
+      assert(await fs.pathExists(artifactPath), `Shard-doc validation harness outputs artifact ${artifactId}`);
     }
 
     const firstArtifactContents = new Map();
@@ -4394,16 +4394,16 @@ async function runTests() {
         break;
       }
     }
-    assert(deterministicOutputs, 'Wave-2 validation harness outputs are byte-stable across unchanged repeated runs');
+    assert(deterministicOutputs, 'Shard-doc validation harness outputs are byte-stable across unchanged repeated runs');
 
     await fs.remove(artifactPathsById.get(8));
     try {
       await harness.validateGeneratedArtifacts({ projectDir: tempProjectRoot });
-      assert(false, 'Wave-2 validation harness fails when a required artifact is missing');
+      assert(false, 'Shard-doc validation harness fails when a required artifact is missing');
     } catch (error) {
       assert(
-        error.code === WAVE2_VALIDATION_ERROR_CODES.REQUIRED_ARTIFACT_MISSING,
-        'Wave-2 validation harness emits deterministic missing-artifact error code',
+        error.code === SHARD_DOC_VALIDATION_ERROR_CODES.REQUIRED_ARTIFACT_MISSING,
+        'Shard-doc validation harness emits deterministic missing-artifact error code',
       );
     }
 
@@ -4422,11 +4422,11 @@ async function runTests() {
         bmadFolderName: '_bmad',
         shardDocAuthorityRecords: authorityRecords,
       });
-      assert(false, 'Wave-2 validation harness rejects missing command-label report input surface');
+      assert(false, 'Shard-doc validation harness rejects missing command-label report input surface');
     } catch (error) {
       assert(
-        error.code === WAVE2_VALIDATION_ERROR_CODES.REQUIRED_ARTIFACT_MISSING,
-        'Wave-2 validation harness emits deterministic missing-input-surface error code',
+        error.code === SHARD_DOC_VALIDATION_ERROR_CODES.REQUIRED_ARTIFACT_MISSING,
+        'Shard-doc validation harness emits deterministic missing-input-surface error code',
       );
     }
     await writeCsv(commandLabelReportPath, commandLabelReportColumns, commandLabelReportRows);
@@ -4437,11 +4437,11 @@ async function runTests() {
     await fs.writeFile(artifactSixPath, artifactSixLines.join('\n'), 'utf8');
     try {
       await harness.validateGeneratedArtifacts({ projectDir: tempProjectRoot });
-      assert(false, 'Wave-2 validation harness rejects schema/header drift');
+      assert(false, 'Shard-doc validation harness rejects schema/header drift');
     } catch (error) {
       assert(
-        error.code === WAVE2_VALIDATION_ERROR_CODES.CSV_SCHEMA_MISMATCH,
-        'Wave-2 validation harness emits deterministic schema-mismatch error code',
+        error.code === SHARD_DOC_VALIDATION_ERROR_CODES.CSV_SCHEMA_MISMATCH,
+        'Shard-doc validation harness emits deterministic schema-mismatch error code',
       );
     }
 
@@ -4459,7 +4459,7 @@ async function runTests() {
     });
     const artifactSixInventoryRow = artifactEightRows.find((row) => row.artifactId === '6');
     if (artifactSixInventoryRow) {
-      artifactSixInventoryRow.artifactPath = 'validation/wave-2/drifted-command-label-report.csv';
+      artifactSixInventoryRow.artifactPath = 'validation/shard-doc/drifted-command-label-report.csv';
     }
     await writeCsv(
       artifactEightPath,
@@ -4468,11 +4468,11 @@ async function runTests() {
     );
     try {
       await harness.validateGeneratedArtifacts({ projectDir: tempProjectRoot });
-      assert(false, 'Wave-2 validation harness rejects inventory deterministic-identifier drift');
+      assert(false, 'Shard-doc validation harness rejects inventory deterministic-identifier drift');
     } catch (error) {
       assert(
-        error.code === WAVE2_VALIDATION_ERROR_CODES.REQUIRED_ROW_MISSING,
-        'Wave-2 validation harness emits deterministic inventory-row validation error code',
+        error.code === SHARD_DOC_VALIDATION_ERROR_CODES.REQUIRED_ROW_MISSING,
+        'Shard-doc validation harness emits deterministic inventory-row validation error code',
       );
     }
 
@@ -4496,17 +4496,17 @@ async function runTests() {
     );
     try {
       await harness.validateGeneratedArtifacts({ projectDir: tempProjectRoot });
-      assert(false, 'Wave-2 validation harness rejects missing source-body authority records');
+      assert(false, 'Shard-doc validation harness rejects missing source-body authority records');
     } catch (error) {
       assert(
-        error.code === WAVE2_VALIDATION_ERROR_CODES.REQUIRED_ROW_MISSING,
-        'Wave-2 validation harness emits deterministic missing-row error code',
+        error.code === SHARD_DOC_VALIDATION_ERROR_CODES.REQUIRED_ROW_MISSING,
+        'Shard-doc validation harness emits deterministic missing-row error code',
       );
     }
   } catch (error) {
-    assert(false, 'Wave-2 shard-doc validation artifact suite setup', error.message);
+    assert(false, 'Shard-doc validation artifact suite setup', error.message);
   } finally {
-    await fs.remove(tempWave2ValidationHarnessRoot);
+    await fs.remove(tempShardDocValidationHarnessRoot);
   }
 
   console.log('');

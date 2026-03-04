@@ -8,23 +8,23 @@ const { normalizeDisplayedCommandLabel } = require('./help-catalog-generator');
 const SHARD_DOC_SIDECAR_SOURCE_PATH = 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml';
 const SHARD_DOC_SOURCE_XML_SOURCE_PATH = 'bmad-fork/src/core/tasks/shard-doc.xml';
 
-const WAVE2_VALIDATION_ERROR_CODES = Object.freeze({
-  REQUIRED_ARTIFACT_MISSING: 'ERR_WAVE2_VALIDATION_REQUIRED_ARTIFACT_MISSING',
-  CSV_SCHEMA_MISMATCH: 'ERR_WAVE2_VALIDATION_CSV_SCHEMA_MISMATCH',
-  REQUIRED_ROW_MISSING: 'ERR_WAVE2_VALIDATION_REQUIRED_ROW_MISSING',
-  YAML_SCHEMA_MISMATCH: 'ERR_WAVE2_VALIDATION_YAML_SCHEMA_MISMATCH',
+const SHARD_DOC_VALIDATION_ERROR_CODES = Object.freeze({
+  REQUIRED_ARTIFACT_MISSING: 'ERR_SHARD_DOC_VALIDATION_REQUIRED_ARTIFACT_MISSING',
+  CSV_SCHEMA_MISMATCH: 'ERR_SHARD_DOC_VALIDATION_CSV_SCHEMA_MISMATCH',
+  REQUIRED_ROW_MISSING: 'ERR_SHARD_DOC_VALIDATION_REQUIRED_ROW_MISSING',
+  YAML_SCHEMA_MISMATCH: 'ERR_SHARD_DOC_VALIDATION_YAML_SCHEMA_MISMATCH',
 });
 
-const WAVE2_VALIDATION_ARTIFACT_REGISTRY = Object.freeze([
+const SHARD_DOC_VALIDATION_ARTIFACT_REGISTRY = Object.freeze([
   Object.freeze({
     artifactId: 1,
-    relativePath: path.join('validation', 'wave-2', 'shard-doc-sidecar-snapshot.yaml'),
+    relativePath: path.join('validation', 'shard-doc', 'shard-doc-sidecar-snapshot.yaml'),
     type: 'yaml',
     requiredTopLevelKeys: ['schemaVersion', 'canonicalId', 'artifactType', 'module', 'sourcePath', 'displayName', 'description', 'status'],
   }),
   Object.freeze({
     artifactId: 2,
-    relativePath: path.join('validation', 'wave-2', 'shard-doc-authority-records.csv'),
+    relativePath: path.join('validation', 'shard-doc', 'shard-doc-authority-records.csv'),
     type: 'csv',
     columns: [
       'rowIdentity',
@@ -39,7 +39,7 @@ const WAVE2_VALIDATION_ARTIFACT_REGISTRY = Object.freeze([
   }),
   Object.freeze({
     artifactId: 3,
-    relativePath: path.join('validation', 'wave-2', 'shard-doc-task-manifest-comparison.csv'),
+    relativePath: path.join('validation', 'shard-doc', 'shard-doc-task-manifest-comparison.csv'),
     type: 'csv',
     columns: [
       'surface',
@@ -56,13 +56,13 @@ const WAVE2_VALIDATION_ARTIFACT_REGISTRY = Object.freeze([
   }),
   Object.freeze({
     artifactId: 4,
-    relativePath: path.join('validation', 'wave-2', 'shard-doc-help-catalog-comparison.csv'),
+    relativePath: path.join('validation', 'shard-doc', 'shard-doc-help-catalog-comparison.csv'),
     type: 'csv',
     columns: ['surface', 'sourcePath', 'name', 'workflowFile', 'command', 'rowCountForCanonicalCommand', 'status'],
   }),
   Object.freeze({
     artifactId: 5,
-    relativePath: path.join('validation', 'wave-2', 'shard-doc-alias-table.csv'),
+    relativePath: path.join('validation', 'shard-doc', 'shard-doc-alias-table.csv'),
     type: 'csv',
     columns: [
       'rowIdentity',
@@ -80,7 +80,7 @@ const WAVE2_VALIDATION_ARTIFACT_REGISTRY = Object.freeze([
   }),
   Object.freeze({
     artifactId: 6,
-    relativePath: path.join('validation', 'wave-2', 'shard-doc-command-label-report.csv'),
+    relativePath: path.join('validation', 'shard-doc', 'shard-doc-command-label-report.csv'),
     type: 'csv',
     columns: [
       'surface',
@@ -96,24 +96,24 @@ const WAVE2_VALIDATION_ARTIFACT_REGISTRY = Object.freeze([
   }),
   Object.freeze({
     artifactId: 7,
-    relativePath: path.join('validation', 'wave-2', 'shard-doc-duplicate-report.csv'),
+    relativePath: path.join('validation', 'shard-doc', 'shard-doc-duplicate-report.csv'),
     type: 'csv',
     columns: ['surface', 'canonicalId', 'normalizedVisibleKey', 'matchingRowCount', 'status'],
   }),
   Object.freeze({
     artifactId: 8,
-    relativePath: path.join('validation', 'wave-2', 'shard-doc-artifact-inventory.csv'),
+    relativePath: path.join('validation', 'shard-doc', 'shard-doc-artifact-inventory.csv'),
     type: 'csv',
     columns: ['rowIdentity', 'artifactId', 'artifactPath', 'artifactType', 'required', 'rowCount', 'exists', 'schemaVersion', 'status'],
     requiredRowIdentityFields: ['rowIdentity'],
   }),
 ]);
 
-class Wave2ValidationHarnessError extends Error {
+class ShardDocValidationHarnessError extends Error {
   constructor({ code, detail, artifactId, fieldPath, sourcePath, observedValue, expectedValue }) {
     const message = `${code}: ${detail} (artifact=${artifactId}, fieldPath=${fieldPath}, sourcePath=${sourcePath})`;
     super(message);
-    this.name = 'Wave2ValidationHarnessError';
+    this.name = 'ShardDocValidationHarnessError';
     this.code = code;
     this.detail = detail;
     this.artifactId = artifactId;
@@ -170,9 +170,9 @@ function sortRowsDeterministically(rows, columns) {
   });
 }
 
-class Wave2ValidationHarness {
+class ShardDocValidationHarness {
   constructor() {
-    this.registry = WAVE2_VALIDATION_ARTIFACT_REGISTRY;
+    this.registry = SHARD_DOC_VALIDATION_ARTIFACT_REGISTRY;
   }
 
   getArtifactRegistry() {
@@ -182,7 +182,7 @@ class Wave2ValidationHarness {
   resolveOutputPaths(options = {}) {
     const projectDir = path.resolve(options.projectDir || process.cwd());
     const planningArtifactsRoot = path.join(projectDir, '_bmad-output', 'planning-artifacts');
-    const validationRoot = path.join(planningArtifactsRoot, 'validation', 'wave-2');
+    const validationRoot = path.join(planningArtifactsRoot, 'validation', 'shard-doc');
     return {
       projectDir,
       planningArtifactsRoot,
@@ -207,8 +207,8 @@ class Wave2ValidationHarness {
     if (await fs.pathExists(absolutePath)) {
       return;
     }
-    throw new Wave2ValidationHarnessError({
-      code: WAVE2_VALIDATION_ERROR_CODES.REQUIRED_ARTIFACT_MISSING,
+    throw new ShardDocValidationHarnessError({
+      code: SHARD_DOC_VALIDATION_ERROR_CODES.REQUIRED_ARTIFACT_MISSING,
       detail: `Required input surface is missing (${description})`,
       artifactId,
       fieldPath: '<file>',
@@ -223,8 +223,8 @@ class Wave2ValidationHarness {
     if (match) {
       return match;
     }
-    throw new Wave2ValidationHarnessError({
-      code: WAVE2_VALIDATION_ERROR_CODES.REQUIRED_ROW_MISSING,
+    throw new ShardDocValidationHarnessError({
+      code: SHARD_DOC_VALIDATION_ERROR_CODES.REQUIRED_ROW_MISSING,
       detail,
       artifactId,
       fieldPath,
@@ -318,8 +318,8 @@ class Wave2ValidationHarness {
         normalizePath(normalizeValue(row['workflow-file'])).toLowerCase().endsWith('/core/tasks/shard-doc.xml'),
     );
     if (shardDocHelpRows.length !== 1) {
-      throw new Wave2ValidationHarnessError({
-        code: WAVE2_VALIDATION_ERROR_CODES.REQUIRED_ROW_MISSING,
+      throw new ShardDocValidationHarnessError({
+        code: SHARD_DOC_VALIDATION_ERROR_CODES.REQUIRED_ROW_MISSING,
         detail: 'Expected exactly one shard-doc help-catalog command row',
         artifactId: 4,
         fieldPath: 'rows[*].command',
@@ -334,8 +334,8 @@ class Wave2ValidationHarness {
     const observedAliasTypes = new Set(shardDocAliasRows.map((row) => normalizeValue(row.aliasType)));
     for (const aliasType of requiredAliasTypes) {
       if (!observedAliasTypes.has(aliasType)) {
-        throw new Wave2ValidationHarnessError({
-          code: WAVE2_VALIDATION_ERROR_CODES.REQUIRED_ROW_MISSING,
+        throw new ShardDocValidationHarnessError({
+          code: SHARD_DOC_VALIDATION_ERROR_CODES.REQUIRED_ROW_MISSING,
           detail: 'Required shard-doc alias type row is missing',
           artifactId: 5,
           fieldPath: 'rows[*].aliasType',
@@ -348,8 +348,8 @@ class Wave2ValidationHarness {
 
     const shardDocCommandLabelRows = commandLabelRows.filter((row) => normalizeValue(row.canonicalId) === 'bmad-shard-doc');
     if (shardDocCommandLabelRows.length !== 1) {
-      throw new Wave2ValidationHarnessError({
-        code: WAVE2_VALIDATION_ERROR_CODES.REQUIRED_ROW_MISSING,
+      throw new ShardDocValidationHarnessError({
+        code: SHARD_DOC_VALIDATION_ERROR_CODES.REQUIRED_ROW_MISSING,
         detail: 'Expected exactly one shard-doc command-label row',
         artifactId: 6,
         fieldPath: 'rows[*].canonicalId',
@@ -536,9 +536,9 @@ class Wave2ValidationHarness {
     for (const artifact of this.registry) {
       const artifactPath = path.join(outputPaths.planningArtifactsRoot, artifact.relativePath);
       if (!(await fs.pathExists(artifactPath))) {
-        throw new Wave2ValidationHarnessError({
-          code: WAVE2_VALIDATION_ERROR_CODES.REQUIRED_ARTIFACT_MISSING,
-          detail: 'Required wave-2 validation artifact is missing',
+        throw new ShardDocValidationHarnessError({
+          code: SHARD_DOC_VALIDATION_ERROR_CODES.REQUIRED_ARTIFACT_MISSING,
+          detail: 'Required shard-doc validation artifact is missing',
           artifactId: artifact.artifactId,
           fieldPath: '<file>',
           sourcePath: normalizePath(artifact.relativePath),
@@ -552,8 +552,8 @@ class Wave2ValidationHarness {
         const observedHeader = parseCsvHeader(content);
         const expectedHeader = artifact.columns || [];
         if (observedHeader.length !== expectedHeader.length) {
-          throw new Wave2ValidationHarnessError({
-            code: WAVE2_VALIDATION_ERROR_CODES.CSV_SCHEMA_MISMATCH,
+          throw new ShardDocValidationHarnessError({
+            code: SHARD_DOC_VALIDATION_ERROR_CODES.CSV_SCHEMA_MISMATCH,
             detail: 'CSV header length does not match required schema',
             artifactId: artifact.artifactId,
             fieldPath: '<header>',
@@ -567,8 +567,8 @@ class Wave2ValidationHarness {
           const observed = normalizeValue(observedHeader[index]);
           const expected = normalizeValue(expectedValue);
           if (observed !== expected) {
-            throw new Wave2ValidationHarnessError({
-              code: WAVE2_VALIDATION_ERROR_CODES.CSV_SCHEMA_MISMATCH,
+            throw new ShardDocValidationHarnessError({
+              code: SHARD_DOC_VALIDATION_ERROR_CODES.CSV_SCHEMA_MISMATCH,
               detail: 'CSV header ordering does not match required schema',
               artifactId: artifact.artifactId,
               fieldPath: `header[${index}]`,
@@ -581,8 +581,8 @@ class Wave2ValidationHarness {
 
         const rows = parseCsvRows(content);
         if (rows.length === 0) {
-          throw new Wave2ValidationHarnessError({
-            code: WAVE2_VALIDATION_ERROR_CODES.REQUIRED_ROW_MISSING,
+          throw new ShardDocValidationHarnessError({
+            code: SHARD_DOC_VALIDATION_ERROR_CODES.REQUIRED_ROW_MISSING,
             detail: 'Required CSV artifact rows are missing',
             artifactId: artifact.artifactId,
             fieldPath: 'rows',
@@ -594,8 +594,8 @@ class Wave2ValidationHarness {
         for (const requiredField of artifact.requiredRowIdentityFields || []) {
           for (const [rowIndex, row] of rows.entries()) {
             if (!normalizeValue(row[requiredField])) {
-              throw new Wave2ValidationHarnessError({
-                code: WAVE2_VALIDATION_ERROR_CODES.REQUIRED_ROW_MISSING,
+              throw new ShardDocValidationHarnessError({
+                code: SHARD_DOC_VALIDATION_ERROR_CODES.REQUIRED_ROW_MISSING,
                 detail: 'Required row identity field is empty',
                 artifactId: artifact.artifactId,
                 fieldPath: `rows[${rowIndex}].${requiredField}`,
@@ -611,8 +611,8 @@ class Wave2ValidationHarness {
       } else if (artifact.type === 'yaml') {
         const parsed = yaml.parse(await fs.readFile(artifactPath, 'utf8'));
         if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
-          throw new Wave2ValidationHarnessError({
-            code: WAVE2_VALIDATION_ERROR_CODES.YAML_SCHEMA_MISMATCH,
+          throw new ShardDocValidationHarnessError({
+            code: SHARD_DOC_VALIDATION_ERROR_CODES.YAML_SCHEMA_MISMATCH,
             detail: 'YAML artifact root must be a mapping object',
             artifactId: artifact.artifactId,
             fieldPath: '<document>',
@@ -623,8 +623,8 @@ class Wave2ValidationHarness {
         }
         for (const key of artifact.requiredTopLevelKeys || []) {
           if (!Object.prototype.hasOwnProperty.call(parsed, key)) {
-            throw new Wave2ValidationHarnessError({
-              code: WAVE2_VALIDATION_ERROR_CODES.YAML_SCHEMA_MISMATCH,
+            throw new ShardDocValidationHarnessError({
+              code: SHARD_DOC_VALIDATION_ERROR_CODES.YAML_SCHEMA_MISMATCH,
               detail: 'Required YAML key is missing',
               artifactId: artifact.artifactId,
               fieldPath: key,
@@ -664,8 +664,8 @@ class Wave2ValidationHarness {
 
     const inventoryRows = artifactDataById.get(8)?.rows || [];
     if (inventoryRows.length !== this.registry.length) {
-      throw new Wave2ValidationHarnessError({
-        code: WAVE2_VALIDATION_ERROR_CODES.REQUIRED_ROW_MISSING,
+      throw new ShardDocValidationHarnessError({
+        code: SHARD_DOC_VALIDATION_ERROR_CODES.REQUIRED_ROW_MISSING,
         detail: 'Artifact inventory must include one row per required artifact',
         artifactId: 8,
         fieldPath: 'rows',
@@ -699,8 +699,8 @@ class Wave2ValidationHarness {
         Number.isFinite(observedRowCount) &&
         (expectedInventoryRowCount === null ? observedRowCount >= 1 : observedRowCount === expectedInventoryRowCount);
       if (!rowCountIsValid) {
-        throw new Wave2ValidationHarnessError({
-          code: WAVE2_VALIDATION_ERROR_CODES.REQUIRED_ROW_MISSING,
+        throw new ShardDocValidationHarnessError({
+          code: SHARD_DOC_VALIDATION_ERROR_CODES.REQUIRED_ROW_MISSING,
           detail: 'Artifact inventory rowCount does not satisfy deterministic contract',
           artifactId: 8,
           fieldPath: `rows[artifactId=${artifact.artifactId}].rowCount`,
@@ -729,8 +729,8 @@ class Wave2ValidationHarness {
 }
 
 module.exports = {
-  WAVE2_VALIDATION_ERROR_CODES,
-  WAVE2_VALIDATION_ARTIFACT_REGISTRY,
-  Wave2ValidationHarnessError,
-  Wave2ValidationHarness,
+  SHARD_DOC_VALIDATION_ERROR_CODES,
+  SHARD_DOC_VALIDATION_ARTIFACT_REGISTRY,
+  ShardDocValidationHarnessError,
+  ShardDocValidationHarness,
 };

@@ -230,9 +230,9 @@ function validateHelpSidecarContractData(sidecarData, options = {}) {
     missingDependenciesDetail: 'Exemplar sidecar requires an explicit dependencies block.',
     dependenciesObjectDetail: 'Exemplar sidecar requires an explicit dependencies object.',
     dependenciesRequiresArrayDetail: 'Exemplar dependencies.requires must be an array.',
-    dependenciesRequiresNotEmptyDetail: 'Wave-1 exemplar requires explicit zero dependencies: dependencies.requires must be [].',
-    artifactTypeDetail: 'Wave-1 exemplar requires artifactType to equal "task".',
-    moduleDetail: 'Wave-1 exemplar requires module to equal "core".',
+    dependenciesRequiresNotEmptyDetail: 'help exemplar requires explicit zero dependencies: dependencies.requires must be [].',
+    artifactTypeDetail: 'help exemplar requires artifactType to equal "task".',
+    moduleDetail: 'help exemplar requires module to equal "core".',
     requiresMustBeEmpty: true,
   });
 }
@@ -250,9 +250,9 @@ function validateShardDocSidecarContractData(sidecarData, options = {}) {
     missingDependenciesDetail: 'Shard-doc sidecar requires an explicit dependencies block.',
     dependenciesObjectDetail: 'Shard-doc sidecar requires an explicit dependencies object.',
     dependenciesRequiresArrayDetail: 'Shard-doc dependencies.requires must be an array.',
-    dependenciesRequiresNotEmptyDetail: 'Wave-2 shard-doc contract requires explicit zero dependencies: dependencies.requires must be [].',
-    artifactTypeDetail: 'Wave-2 shard-doc contract requires artifactType to equal "task".',
-    moduleDetail: 'Wave-2 shard-doc contract requires module to equal "core".',
+    dependenciesRequiresNotEmptyDetail: 'Shard-doc contract requires explicit zero dependencies: dependencies.requires must be [].',
+    artifactTypeDetail: 'Shard-doc contract requires artifactType to equal "task".',
+    moduleDetail: 'Shard-doc contract requires module to equal "core".',
     requiresMustBeEmpty: true,
   });
 }
