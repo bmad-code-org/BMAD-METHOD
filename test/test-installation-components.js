@@ -4268,6 +4268,24 @@ async function runTests() {
         {
           module: 'core',
           phase: 'anytime',
+          name: 'Help',
+          code: 'BH',
+          sequence: '',
+          'workflow-file': '_bmad/core/tasks/help.md',
+          command: 'bmad-help',
+          required: 'false',
+          'agent-name': '',
+          'agent-command': '',
+          'agent-display-name': '',
+          'agent-title': '',
+          options: '',
+          description: 'Show BMAD help and available resources.',
+          'output-location': '',
+          outputs: '',
+        },
+        {
+          module: 'core',
+          phase: 'anytime',
           name: 'Shard Document',
           code: 'SD',
           sequence: '',
@@ -4395,6 +4413,60 @@ async function runTests() {
       }
     }
     assert(deterministicOutputs, 'Shard-doc validation harness outputs are byte-stable across unchanged repeated runs');
+
+    try {
+      await harness.executeIsolatedReplay({
+        artifactPath: '_bmad/_config/task-manifest.csv',
+        componentPath: 'bmad-fork/tools/cli/installers/lib/core/manifest-generator.js',
+        rowIdentity: '',
+        runtimeFolder: '_bmad',
+      });
+      assert(false, 'Shard-doc replay evidence generation rejects missing claimed rowIdentity');
+    } catch (error) {
+      assert(
+        error.code === SHARD_DOC_VALIDATION_ERROR_CODES.REQUIRED_ROW_MISSING,
+        'Shard-doc replay evidence generation emits deterministic missing-claimed-rowIdentity error code',
+      );
+    }
+
+    try {
+      await harness.executeIsolatedReplay({
+        artifactPath: '_bmad/_config/task-manifest.csv',
+        componentPath: 'bmad-fork/tools/cli/installers/lib/core/installer.js::mergeModuleHelpCatalogs()',
+        rowIdentity: 'issued-artifact:_bmad-_config-task-manifest.csv',
+        runtimeFolder: '_bmad',
+      });
+      assert(false, 'Shard-doc replay evidence generation rejects issuing-component contract mismatch');
+    } catch (error) {
+      assert(
+        error.code === SHARD_DOC_VALIDATION_ERROR_CODES.BINDING_EVIDENCE_INVALID,
+        'Shard-doc replay evidence generation emits deterministic issuing-component contract mismatch code',
+      );
+    }
+
+    const artifactElevenPath = artifactPathsById.get(11);
+    const artifactElevenRows = csv.parse(await fs.readFile(artifactElevenPath, 'utf8'), {
+      columns: true,
+      skip_empty_lines: true,
+    });
+    artifactElevenRows[0].baselineArtifactSha256 = 'not-a-sha';
+    await writeCsv(artifactElevenPath, SHARD_DOC_VALIDATION_ARTIFACT_REGISTRY[10].columns, artifactElevenRows);
+    try {
+      await harness.validateGeneratedArtifacts({ projectDir: tempProjectRoot });
+      assert(false, 'Shard-doc validation harness rejects malformed replay-evidence payloads');
+    } catch (error) {
+      assert(
+        error.code === SHARD_DOC_VALIDATION_ERROR_CODES.REPLAY_EVIDENCE_INVALID,
+        'Shard-doc validation harness emits deterministic replay-evidence validation error code',
+      );
+    }
+
+    await harness.generateAndValidate({
+      projectDir: tempProjectRoot,
+      bmadDir: tempBmadDir,
+      bmadFolderName: '_bmad',
+      shardDocAuthorityRecords: authorityRecords,
+    });
 
     await fs.remove(artifactPathsById.get(8));
     try {
