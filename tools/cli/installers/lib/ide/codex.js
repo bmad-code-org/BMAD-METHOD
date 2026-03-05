@@ -9,10 +9,12 @@ const { TaskToolCommandGenerator } = require('./shared/task-tool-command-generat
 const { getTasksFromBmad } = require('./shared/bmad-artifacts');
 const { toDashPath, customAgentDashName } = require('./shared/path-utils');
 const { normalizeAndResolveExemplarAlias } = require('../core/help-alias-normalizer');
+const { resolveSkillMetadataAuthority } = require('../core/sidecar-contract-validator');
 const prompts = require('../../../lib/prompts');
 
 const CODEX_EXPORT_DERIVATION_ERROR_CODES = Object.freeze({
   SIDECAR_FILE_NOT_FOUND: 'ERR_CODEX_EXPORT_SIDECAR_FILE_NOT_FOUND',
+  SIDECAR_FILENAME_AMBIGUOUS: 'ERR_CODEX_EXPORT_SIDECAR_FILENAME_AMBIGUOUS',
   SIDECAR_PARSE_FAILED: 'ERR_CODEX_EXPORT_SIDECAR_PARSE_FAILED',
   CANONICAL_ID_MISSING: 'ERR_CODEX_EXPORT_CANONICAL_ID_MISSING',
   CANONICAL_ID_DERIVATION_FAILED: 'ERR_CODEX_EXPORT_CANONICAL_ID_DERIVATION_FAILED',
@@ -22,9 +24,9 @@ const CODEX_EXPORT_DERIVATION_ERROR_CODES = Object.freeze({
 const EXEMPLAR_HELP_TASK_MARKDOWN_SOURCE_PATH = 'bmad-fork/src/core/tasks/help.md';
 const EXEMPLAR_SHARD_DOC_TASK_XML_SOURCE_PATH = 'bmad-fork/src/core/tasks/shard-doc.xml';
 const EXEMPLAR_INDEX_DOCS_TASK_XML_SOURCE_PATH = 'bmad-fork/src/core/tasks/index-docs.xml';
-const EXEMPLAR_HELP_SIDECAR_CONTRACT_SOURCE_PATH = 'bmad-fork/src/core/tasks/help.artifact.yaml';
-const EXEMPLAR_SHARD_DOC_SIDECAR_CONTRACT_SOURCE_PATH = 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml';
-const EXEMPLAR_INDEX_DOCS_SIDECAR_CONTRACT_SOURCE_PATH = 'bmad-fork/src/core/tasks/index-docs.artifact.yaml';
+const EXEMPLAR_HELP_SIDECAR_CONTRACT_SOURCE_PATH = 'bmad-fork/src/core/tasks/help/skill-manifest.yaml';
+const EXEMPLAR_SHARD_DOC_SIDECAR_CONTRACT_SOURCE_PATH = 'bmad-fork/src/core/tasks/shard-doc/skill-manifest.yaml';
+const EXEMPLAR_INDEX_DOCS_SIDECAR_CONTRACT_SOURCE_PATH = 'bmad-fork/src/core/tasks/index-docs/skill-manifest.yaml';
 const EXEMPLAR_HELP_EXPORT_DERIVATION_SOURCE_TYPE = 'sidecar-canonical-id';
 const SHARD_DOC_EXPORT_ALIAS_ROWS = Object.freeze([
   Object.freeze({
@@ -71,12 +73,12 @@ const EXEMPLAR_CONVERTED_TASK_EXPORT_TARGETS = Object.freeze({
     taskSourcePath: EXEMPLAR_HELP_TASK_MARKDOWN_SOURCE_PATH,
     sourcePathSuffix: '/core/tasks/help.md',
     sidecarSourcePath: EXEMPLAR_HELP_SIDECAR_CONTRACT_SOURCE_PATH,
-    sidecarSourceCandidates: Object.freeze([
+    sourceFileCandidates: Object.freeze([
       Object.freeze({
-        segments: ['bmad-fork', 'src', 'core', 'tasks', 'help.artifact.yaml'],
+        segments: ['bmad-fork', 'src', 'core', 'tasks', 'help.md'],
       }),
       Object.freeze({
-        segments: ['src', 'core', 'tasks', 'help.artifact.yaml'],
+        segments: ['src', 'core', 'tasks', 'help.md'],
       }),
     ]),
   }),
@@ -85,12 +87,12 @@ const EXEMPLAR_CONVERTED_TASK_EXPORT_TARGETS = Object.freeze({
     sourcePathSuffix: '/core/tasks/shard-doc.xml',
     sidecarSourcePath: EXEMPLAR_SHARD_DOC_SIDECAR_CONTRACT_SOURCE_PATH,
     aliasRows: SHARD_DOC_EXPORT_ALIAS_ROWS,
-    sidecarSourceCandidates: Object.freeze([
+    sourceFileCandidates: Object.freeze([
       Object.freeze({
-        segments: ['bmad-fork', 'src', 'core', 'tasks', 'shard-doc.artifact.yaml'],
+        segments: ['bmad-fork', 'src', 'core', 'tasks', 'shard-doc.xml'],
       }),
       Object.freeze({
-        segments: ['src', 'core', 'tasks', 'shard-doc.artifact.yaml'],
+        segments: ['src', 'core', 'tasks', 'shard-doc.xml'],
       }),
     ]),
   }),
@@ -99,12 +101,12 @@ const EXEMPLAR_CONVERTED_TASK_EXPORT_TARGETS = Object.freeze({
     sourcePathSuffix: '/core/tasks/index-docs.xml',
     sidecarSourcePath: EXEMPLAR_INDEX_DOCS_SIDECAR_CONTRACT_SOURCE_PATH,
     aliasRows: INDEX_DOCS_EXPORT_ALIAS_ROWS,
-    sidecarSourceCandidates: Object.freeze([
+    sourceFileCandidates: Object.freeze([
       Object.freeze({
-        segments: ['bmad-fork', 'src', 'core', 'tasks', 'index-docs.artifact.yaml'],
+        segments: ['bmad-fork', 'src', 'core', 'tasks', 'index-docs.xml'],
       }),
       Object.freeze({
-        segments: ['src', 'core', 'tasks', 'index-docs.artifact.yaml'],
+        segments: ['src', 'core', 'tasks', 'index-docs.xml'],
       }),
     ]),
   }),
@@ -375,58 +377,96 @@ class CodexSetup extends BaseIdeSetup {
   }
 
   async loadConvertedTaskSidecar(projectDir, exportTarget) {
-    for (const candidate of exportTarget.sidecarSourceCandidates) {
-      const sidecarPath = path.join(projectDir, ...candidate.segments);
-      if (await fs.pathExists(sidecarPath)) {
-        let sidecarData;
-        try {
-          sidecarData = yaml.parse(await fs.readFile(sidecarPath, 'utf8'));
-        } catch (error) {
-          this.throwExportDerivationError({
-            code: CODEX_EXPORT_DERIVATION_ERROR_CODES.SIDECAR_PARSE_FAILED,
-            detail: `YAML parse failure: ${error.message}`,
-            fieldPath: '<document>',
-            sourcePath: exportTarget.sidecarSourcePath,
-            observedValue: '<parse-error>',
-            cause: error,
-          });
-        }
+    const sourceCandidates = (exportTarget.sourceFileCandidates || []).map((candidate) => path.join(projectDir, ...candidate.segments));
+    if (sourceCandidates.length === 0) {
+      this.throwExportDerivationError({
+        code: CODEX_EXPORT_DERIVATION_ERROR_CODES.SIDECAR_FILE_NOT_FOUND,
+        detail: 'expected exemplar metadata source candidates are missing',
+        fieldPath: '<file>',
+        sourcePath: exportTarget.sidecarSourcePath,
+        observedValue: projectDir,
+      });
+    }
 
-        if (!sidecarData || typeof sidecarData !== 'object' || Array.isArray(sidecarData)) {
-          this.throwExportDerivationError({
-            code: CODEX_EXPORT_DERIVATION_ERROR_CODES.SIDECAR_PARSE_FAILED,
-            detail: 'sidecar root must be a YAML mapping object',
-            fieldPath: '<document>',
-            sourcePath: exportTarget.sidecarSourcePath,
-            observedValue: typeof sidecarData,
-          });
+    let resolvedMetadataAuthority = null;
+    for (const sourceCandidate of sourceCandidates) {
+      try {
+        const resolution = await resolveSkillMetadataAuthority({
+          sourceFilePath: sourceCandidate,
+          projectRoot: projectDir,
+          ambiguousErrorCode: CODEX_EXPORT_DERIVATION_ERROR_CODES.SIDECAR_FILENAME_AMBIGUOUS,
+        });
+        if (!resolvedMetadataAuthority) {
+          resolvedMetadataAuthority = resolution;
         }
-
-        const canonicalId = String(sidecarData.canonicalId || '').trim();
-        if (canonicalId.length === 0) {
-          this.throwExportDerivationError({
-            code: CODEX_EXPORT_DERIVATION_ERROR_CODES.CANONICAL_ID_MISSING,
-            detail: 'sidecar canonicalId is required for exemplar export derivation',
-            fieldPath: 'canonicalId',
-            sourcePath: exportTarget.sidecarSourcePath,
-            observedValue: canonicalId,
-          });
+        if (resolution.resolvedAbsolutePath && (await fs.pathExists(resolution.resolvedAbsolutePath))) {
+          resolvedMetadataAuthority = resolution;
+          break;
         }
-
-        return {
-          canonicalId,
+      } catch (error) {
+        this.throwExportDerivationError({
+          code: error.code || CODEX_EXPORT_DERIVATION_ERROR_CODES.SIDECAR_FILENAME_AMBIGUOUS,
+          detail: error.detail || error.message,
+          fieldPath: error.fieldPath || '<file>',
           sourcePath: exportTarget.sidecarSourcePath,
-        };
+          observedValue: error.sourcePath || projectDir,
+          cause: error,
+        });
       }
     }
 
-    this.throwExportDerivationError({
-      code: CODEX_EXPORT_DERIVATION_ERROR_CODES.SIDECAR_FILE_NOT_FOUND,
-      detail: 'expected exemplar sidecar metadata file was not found',
-      fieldPath: '<file>',
+    const sidecarPath = resolvedMetadataAuthority.resolvedAbsolutePath;
+    if (!sidecarPath || !(await fs.pathExists(sidecarPath))) {
+      this.throwExportDerivationError({
+        code: CODEX_EXPORT_DERIVATION_ERROR_CODES.SIDECAR_FILE_NOT_FOUND,
+        detail: 'expected exemplar sidecar metadata file was not found',
+        fieldPath: '<file>',
+        sourcePath: exportTarget.sidecarSourcePath,
+        observedValue: projectDir,
+      });
+    }
+
+    let sidecarData;
+    try {
+      sidecarData = yaml.parse(await fs.readFile(sidecarPath, 'utf8'));
+    } catch (error) {
+      this.throwExportDerivationError({
+        code: CODEX_EXPORT_DERIVATION_ERROR_CODES.SIDECAR_PARSE_FAILED,
+        detail: `YAML parse failure: ${error.message}`,
+        fieldPath: '<document>',
+        sourcePath: exportTarget.sidecarSourcePath,
+        observedValue: '<parse-error>',
+        cause: error,
+      });
+    }
+
+    if (!sidecarData || typeof sidecarData !== 'object' || Array.isArray(sidecarData)) {
+      this.throwExportDerivationError({
+        code: CODEX_EXPORT_DERIVATION_ERROR_CODES.SIDECAR_PARSE_FAILED,
+        detail: 'sidecar root must be a YAML mapping object',
+        fieldPath: '<document>',
+        sourcePath: exportTarget.sidecarSourcePath,
+        observedValue: typeof sidecarData,
+      });
+    }
+
+    const canonicalId = String(sidecarData.canonicalId || '').trim();
+    if (canonicalId.length === 0) {
+      this.throwExportDerivationError({
+        code: CODEX_EXPORT_DERIVATION_ERROR_CODES.CANONICAL_ID_MISSING,
+        detail: 'sidecar canonicalId is required for exemplar export derivation',
+        fieldPath: 'canonicalId',
+        sourcePath: exportTarget.sidecarSourcePath,
+        observedValue: canonicalId,
+      });
+    }
+
+    return {
+      canonicalId,
       sourcePath: exportTarget.sidecarSourcePath,
-      observedValue: projectDir,
-    });
+      resolvedFilename: String(resolvedMetadataAuthority.resolvedFilename || ''),
+      derivationMode: String(resolvedMetadataAuthority.derivationMode || ''),
+    };
   }
 
   async resolveSkillIdentityFromArtifact(artifact, projectDir) {

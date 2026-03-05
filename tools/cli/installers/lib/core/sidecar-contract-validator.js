@@ -30,6 +30,7 @@ const HELP_SIDECAR_ERROR_CODES = Object.freeze({
   DEPENDENCIES_REQUIRES_NOT_EMPTY: 'ERR_HELP_SIDECAR_DEPENDENCIES_REQUIRES_NOT_EMPTY',
   MAJOR_VERSION_UNSUPPORTED: 'ERR_SIDECAR_MAJOR_VERSION_UNSUPPORTED',
   SOURCEPATH_BASENAME_MISMATCH: 'ERR_SIDECAR_SOURCEPATH_BASENAME_MISMATCH',
+  METADATA_FILENAME_AMBIGUOUS: 'ERR_HELP_SIDECAR_METADATA_FILENAME_AMBIGUOUS',
 });
 
 const SHARD_DOC_SIDECAR_ERROR_CODES = Object.freeze({
@@ -45,6 +46,7 @@ const SHARD_DOC_SIDECAR_ERROR_CODES = Object.freeze({
   DEPENDENCIES_REQUIRES_NOT_EMPTY: 'ERR_SHARD_DOC_SIDECAR_DEPENDENCIES_REQUIRES_NOT_EMPTY',
   MAJOR_VERSION_UNSUPPORTED: 'ERR_SHARD_DOC_SIDECAR_MAJOR_VERSION_UNSUPPORTED',
   SOURCEPATH_BASENAME_MISMATCH: 'ERR_SHARD_DOC_SIDECAR_SOURCEPATH_BASENAME_MISMATCH',
+  METADATA_FILENAME_AMBIGUOUS: 'ERR_SHARD_DOC_SIDECAR_METADATA_FILENAME_AMBIGUOUS',
 });
 
 const INDEX_DOCS_SIDECAR_ERROR_CODES = Object.freeze({
@@ -60,11 +62,21 @@ const INDEX_DOCS_SIDECAR_ERROR_CODES = Object.freeze({
   DEPENDENCIES_REQUIRES_NOT_EMPTY: 'ERR_INDEX_DOCS_SIDECAR_DEPENDENCIES_REQUIRES_NOT_EMPTY',
   MAJOR_VERSION_UNSUPPORTED: 'ERR_INDEX_DOCS_SIDECAR_MAJOR_VERSION_UNSUPPORTED',
   SOURCEPATH_BASENAME_MISMATCH: 'ERR_INDEX_DOCS_SIDECAR_SOURCEPATH_BASENAME_MISMATCH',
+  METADATA_FILENAME_AMBIGUOUS: 'ERR_INDEX_DOCS_SIDECAR_METADATA_FILENAME_AMBIGUOUS',
 });
 
 const HELP_EXEMPLAR_CANONICAL_SOURCE_PATH = 'bmad-fork/src/core/tasks/help.md';
 const SHARD_DOC_CANONICAL_SOURCE_PATH = 'bmad-fork/src/core/tasks/shard-doc.xml';
 const INDEX_DOCS_CANONICAL_SOURCE_PATH = 'bmad-fork/src/core/tasks/index-docs.xml';
+const SKILL_METADATA_CANONICAL_FILENAME = 'skill-manifest.yaml';
+const SKILL_METADATA_LEGACY_FILENAMES = Object.freeze(['bmad-config.yaml', 'manifest.yaml']);
+const SKILL_METADATA_DERIVATION_MODES = Object.freeze({
+  CANONICAL: 'canonical',
+  LEGACY_FALLBACK: 'legacy-fallback',
+});
+const SKILL_METADATA_RESOLUTION_ERROR_CODES = Object.freeze({
+  AMBIGUOUS_MATCH: 'ERR_SKILL_METADATA_FILENAME_AMBIGUOUS',
+});
 const SIDECAR_SUPPORTED_SCHEMA_MAJOR = 1;
 
 class SidecarContractError extends Error {
@@ -85,8 +97,7 @@ function normalizeSourcePath(value) {
   return String(value).replaceAll('\\', '/');
 }
 
-function toProjectRelativePath(filePath) {
-  const projectRoot = getProjectRoot();
+function toProjectRelativePath(filePath, projectRoot = getProjectRoot()) {
   const relative = path.relative(projectRoot, filePath);
 
   if (!relative || relative.startsWith('..')) {
@@ -94,6 +105,17 @@ function toProjectRelativePath(filePath) {
   }
 
   return normalizeSourcePath(relative);
+}
+
+function dedupeAndSort(values) {
+  const normalized = new Set();
+  for (const value of values || []) {
+    const text = normalizeSourcePath(value).trim();
+    if (text.length > 0) {
+      normalized.add(text);
+    }
+  }
+  return [...normalized].sort((left, right) => left.localeCompare(right));
 }
 
 function hasOwn(obj, key) {
@@ -120,7 +142,169 @@ function parseSchemaMajorVersion(value) {
   return null;
 }
 
-function getExpectedSidecarBasenameFromSourcePath(sourcePathValue) {
+function classifyMetadataFilename(filename) {
+  const normalizedFilename = String(filename || '')
+    .trim()
+    .toLowerCase();
+  if (normalizedFilename === SKILL_METADATA_CANONICAL_FILENAME) {
+    return SKILL_METADATA_DERIVATION_MODES.CANONICAL;
+  }
+  if (SKILL_METADATA_LEGACY_FILENAMES.includes(normalizedFilename) || normalizedFilename.endsWith('.artifact.yaml')) {
+    return SKILL_METADATA_DERIVATION_MODES.LEGACY_FALLBACK;
+  }
+  return SKILL_METADATA_DERIVATION_MODES.LEGACY_FALLBACK;
+}
+
+function getMetadataStemFromSourcePath(sourcePathValue) {
+  const normalizedSourcePath = normalizeSourcePath(sourcePathValue).trim();
+  if (!normalizedSourcePath) return '';
+
+  const sourceBasename = path.posix.basename(normalizedSourcePath);
+  if (!sourceBasename) return '';
+
+  const sourceExt = path.posix.extname(sourceBasename);
+  const baseWithoutExt = sourceExt ? sourceBasename.slice(0, -sourceExt.length) : sourceBasename;
+  return baseWithoutExt.trim();
+}
+
+function buildSkillMetadataResolutionPlan({ sourceFilePath, projectRoot = getProjectRoot() }) {
+  const absoluteSourceFilePath = path.resolve(sourceFilePath);
+  const sourceDirAbsolutePath = path.dirname(absoluteSourceFilePath);
+  const metadataStem = getMetadataStemFromSourcePath(absoluteSourceFilePath);
+  const skillFolderAbsolutePath = path.join(sourceDirAbsolutePath, metadataStem);
+  const canonicalTargetAbsolutePath = path.join(skillFolderAbsolutePath, SKILL_METADATA_CANONICAL_FILENAME);
+
+  const candidateGroups = [
+    {
+      precedenceToken: SKILL_METADATA_CANONICAL_FILENAME,
+      derivationMode: SKILL_METADATA_DERIVATION_MODES.CANONICAL,
+      // Canonical authority is per-skill only; root task-folder canonical files are not eligible.
+      explicitCandidates: [canonicalTargetAbsolutePath],
+      wildcardDirectories: [],
+    },
+    {
+      precedenceToken: 'bmad-config.yaml',
+      derivationMode: SKILL_METADATA_DERIVATION_MODES.LEGACY_FALLBACK,
+      explicitCandidates: [path.join(skillFolderAbsolutePath, 'bmad-config.yaml'), path.join(sourceDirAbsolutePath, 'bmad-config.yaml')],
+      wildcardDirectories: [],
+    },
+    {
+      precedenceToken: 'manifest.yaml',
+      derivationMode: SKILL_METADATA_DERIVATION_MODES.LEGACY_FALLBACK,
+      explicitCandidates: [path.join(skillFolderAbsolutePath, 'manifest.yaml'), path.join(sourceDirAbsolutePath, 'manifest.yaml')],
+      wildcardDirectories: [],
+    },
+    {
+      precedenceToken: `${metadataStem}.artifact.yaml`,
+      derivationMode: SKILL_METADATA_DERIVATION_MODES.LEGACY_FALLBACK,
+      explicitCandidates: [
+        path.join(sourceDirAbsolutePath, `${metadataStem}.artifact.yaml`),
+        path.join(skillFolderAbsolutePath, `${metadataStem}.artifact.yaml`),
+      ],
+      wildcardDirectories: [],
+    },
+  ];
+
+  return {
+    metadataStem,
+    canonicalTargetAbsolutePath,
+    canonicalTargetSourcePath: toProjectRelativePath(canonicalTargetAbsolutePath, projectRoot),
+    candidateGroups,
+  };
+}
+
+async function resolveCandidateGroupMatches(group = {}) {
+  const explicitMatches = [];
+  for (const candidatePath of group.explicitCandidates || []) {
+    if (await fs.pathExists(candidatePath)) {
+      explicitMatches.push(path.resolve(candidatePath));
+    }
+  }
+
+  const wildcardMatches = [];
+  for (const wildcardDirectory of group.wildcardDirectories || []) {
+    if (!(await fs.pathExists(wildcardDirectory))) {
+      continue;
+    }
+    const directoryEntries = await fs.readdir(wildcardDirectory, { withFileTypes: true });
+    for (const entry of directoryEntries) {
+      if (!entry.isFile()) continue;
+      const filename = String(entry.name || '').trim();
+      if (!filename.toLowerCase().endsWith('.artifact.yaml')) continue;
+      wildcardMatches.push(path.join(wildcardDirectory, filename));
+    }
+  }
+
+  return dedupeAndSort([...explicitMatches, ...wildcardMatches]);
+}
+
+async function resolveSkillMetadataAuthority({
+  sourceFilePath,
+  metadataPath = '',
+  metadataSourcePath = '',
+  projectRoot = getProjectRoot(),
+  ambiguousErrorCode = SKILL_METADATA_RESOLUTION_ERROR_CODES.AMBIGUOUS_MATCH,
+}) {
+  const resolutionPlan = buildSkillMetadataResolutionPlan({
+    sourceFilePath,
+    projectRoot,
+  });
+
+  const resolvedMetadataPath = String(metadataPath || '').trim();
+  if (resolvedMetadataPath.length > 0) {
+    const resolvedAbsolutePath = path.resolve(resolvedMetadataPath);
+    const resolvedFilename = path.posix.basename(normalizeSourcePath(resolvedAbsolutePath));
+    return {
+      resolvedAbsolutePath,
+      resolvedSourcePath: normalizeSourcePath(metadataSourcePath || toProjectRelativePath(resolvedAbsolutePath, projectRoot)),
+      resolvedFilename,
+      canonicalTargetFilename: SKILL_METADATA_CANONICAL_FILENAME,
+      canonicalTargetSourcePath: resolutionPlan.canonicalTargetSourcePath,
+      derivationMode: classifyMetadataFilename(resolvedFilename),
+      precedenceToken: resolvedFilename,
+    };
+  }
+
+  for (const group of resolutionPlan.candidateGroups) {
+    const matches = await resolveCandidateGroupMatches(group);
+    if (matches.length === 0) {
+      continue;
+    }
+
+    if (matches.length > 1) {
+      throw new SidecarContractError({
+        code: ambiguousErrorCode,
+        detail: `metadata filename resolution is ambiguous for precedence "${group.precedenceToken}": ${matches.join('|')}`,
+        fieldPath: '<file>',
+        sourcePath: resolutionPlan.canonicalTargetSourcePath,
+      });
+    }
+
+    const resolvedAbsolutePath = matches[0];
+    const resolvedFilename = path.posix.basename(normalizeSourcePath(resolvedAbsolutePath));
+    return {
+      resolvedAbsolutePath,
+      resolvedSourcePath: normalizeSourcePath(toProjectRelativePath(resolvedAbsolutePath, projectRoot)),
+      resolvedFilename,
+      canonicalTargetFilename: SKILL_METADATA_CANONICAL_FILENAME,
+      canonicalTargetSourcePath: resolutionPlan.canonicalTargetSourcePath,
+      derivationMode: group.derivationMode,
+      precedenceToken: group.precedenceToken,
+    };
+  }
+
+  return {
+    resolvedAbsolutePath: '',
+    resolvedSourcePath: '',
+    resolvedFilename: '',
+    canonicalTargetFilename: SKILL_METADATA_CANONICAL_FILENAME,
+    canonicalTargetSourcePath: resolutionPlan.canonicalTargetSourcePath,
+    derivationMode: '',
+    precedenceToken: '',
+  };
+}
+
+function getExpectedLegacyArtifactBasenameFromSourcePath(sourcePathValue) {
   const normalized = normalizeSourcePath(sourcePathValue).trim();
   if (!normalized) return '';
 
@@ -218,11 +402,15 @@ function validateSidecarContractData(sidecarData, options) {
   }
 
   const normalizedDeclaredSourcePath = normalizeSourcePath(sidecarData.sourcePath);
-  const sidecarBasename = path.posix.basename(sourcePath);
-  const expectedSidecarBasename = getExpectedSidecarBasenameFromSourcePath(normalizedDeclaredSourcePath);
+  const sidecarBasename = path.posix.basename(normalizeSourcePath(sourcePath)).toLowerCase();
+  const expectedLegacyArtifactBasename = getExpectedLegacyArtifactBasenameFromSourcePath(normalizedDeclaredSourcePath).toLowerCase();
+  const allowedMetadataBasenames = new Set([SKILL_METADATA_CANONICAL_FILENAME, ...SKILL_METADATA_LEGACY_FILENAMES]);
+  if (expectedLegacyArtifactBasename.length > 0) {
+    allowedMetadataBasenames.add(expectedLegacyArtifactBasename);
+  }
 
   const sourcePathMismatch = normalizedDeclaredSourcePath !== expectedCanonicalSourcePath;
-  const basenameMismatch = !expectedSidecarBasename || sidecarBasename !== expectedSidecarBasename;
+  const basenameMismatch = !allowedMetadataBasenames.has(sidecarBasename);
 
   if (sourcePathMismatch || basenameMismatch) {
     createValidationError(
@@ -235,7 +423,7 @@ function validateSidecarContractData(sidecarData, options) {
 }
 
 function validateHelpSidecarContractData(sidecarData, options = {}) {
-  const sourcePath = normalizeSourcePath(options.errorSourcePath || 'src/core/tasks/help.artifact.yaml');
+  const sourcePath = normalizeSourcePath(options.errorSourcePath || 'src/core/tasks/help/skill-manifest.yaml');
   validateSidecarContractData(sidecarData, {
     sourcePath,
     requiredFields: HELP_SIDECAR_REQUIRED_FIELDS,
@@ -255,7 +443,7 @@ function validateHelpSidecarContractData(sidecarData, options = {}) {
 }
 
 function validateShardDocSidecarContractData(sidecarData, options = {}) {
-  const sourcePath = normalizeSourcePath(options.errorSourcePath || 'src/core/tasks/shard-doc.artifact.yaml');
+  const sourcePath = normalizeSourcePath(options.errorSourcePath || 'src/core/tasks/shard-doc/skill-manifest.yaml');
   validateSidecarContractData(sidecarData, {
     sourcePath,
     requiredFields: SHARD_DOC_SIDECAR_REQUIRED_FIELDS,
@@ -275,7 +463,7 @@ function validateShardDocSidecarContractData(sidecarData, options = {}) {
 }
 
 function validateIndexDocsSidecarContractData(sidecarData, options = {}) {
-  const sourcePath = normalizeSourcePath(options.errorSourcePath || 'src/core/tasks/index-docs.artifact.yaml');
+  const sourcePath = normalizeSourcePath(options.errorSourcePath || 'src/core/tasks/index-docs/skill-manifest.yaml');
   validateSidecarContractData(sidecarData, {
     sourcePath,
     requiredFields: INDEX_DOCS_SIDECAR_REQUIRED_FIELDS,
@@ -294,10 +482,20 @@ function validateIndexDocsSidecarContractData(sidecarData, options = {}) {
   });
 }
 
-async function validateHelpSidecarContractFile(sidecarPath = getSourcePath('core', 'tasks', 'help.artifact.yaml'), options = {}) {
-  const normalizedSourcePath = normalizeSourcePath(options.errorSourcePath || toProjectRelativePath(sidecarPath));
+async function validateHelpSidecarContractFile(sidecarPath = '', options = {}) {
+  const sourceFilePath = options.sourceFilePath || getSourcePath('core', 'tasks', 'help.md');
+  const resolvedMetadataAuthority = await resolveSkillMetadataAuthority({
+    sourceFilePath,
+    metadataPath: sidecarPath,
+    metadataSourcePath: options.errorSourcePath,
+    ambiguousErrorCode: HELP_SIDECAR_ERROR_CODES.METADATA_FILENAME_AMBIGUOUS,
+  });
+  const resolvedSidecarPath = resolvedMetadataAuthority.resolvedAbsolutePath;
+  const normalizedSourcePath = normalizeSourcePath(
+    options.errorSourcePath || resolvedMetadataAuthority.resolvedSourcePath || resolvedMetadataAuthority.canonicalTargetSourcePath,
+  );
 
-  if (!(await fs.pathExists(sidecarPath))) {
+  if (!resolvedSidecarPath || !(await fs.pathExists(resolvedSidecarPath))) {
     createValidationError(
       HELP_SIDECAR_ERROR_CODES.FILE_NOT_FOUND,
       '<file>',
@@ -308,7 +506,7 @@ async function validateHelpSidecarContractFile(sidecarPath = getSourcePath('core
 
   let parsedSidecar;
   try {
-    const sidecarRaw = await fs.readFile(sidecarPath, 'utf8');
+    const sidecarRaw = await fs.readFile(resolvedSidecarPath, 'utf8');
     parsedSidecar = yaml.parse(sidecarRaw);
   } catch (error) {
     createValidationError(
@@ -320,12 +518,23 @@ async function validateHelpSidecarContractFile(sidecarPath = getSourcePath('core
   }
 
   validateHelpSidecarContractData(parsedSidecar, { errorSourcePath: normalizedSourcePath });
+  return resolvedMetadataAuthority;
 }
 
-async function validateShardDocSidecarContractFile(sidecarPath = getSourcePath('core', 'tasks', 'shard-doc.artifact.yaml'), options = {}) {
-  const normalizedSourcePath = normalizeSourcePath(options.errorSourcePath || toProjectRelativePath(sidecarPath));
+async function validateShardDocSidecarContractFile(sidecarPath = '', options = {}) {
+  const sourceFilePath = options.sourceFilePath || getSourcePath('core', 'tasks', 'shard-doc.xml');
+  const resolvedMetadataAuthority = await resolveSkillMetadataAuthority({
+    sourceFilePath,
+    metadataPath: sidecarPath,
+    metadataSourcePath: options.errorSourcePath,
+    ambiguousErrorCode: SHARD_DOC_SIDECAR_ERROR_CODES.METADATA_FILENAME_AMBIGUOUS,
+  });
+  const resolvedSidecarPath = resolvedMetadataAuthority.resolvedAbsolutePath;
+  const normalizedSourcePath = normalizeSourcePath(
+    options.errorSourcePath || resolvedMetadataAuthority.resolvedSourcePath || resolvedMetadataAuthority.canonicalTargetSourcePath,
+  );
 
-  if (!(await fs.pathExists(sidecarPath))) {
+  if (!resolvedSidecarPath || !(await fs.pathExists(resolvedSidecarPath))) {
     createValidationError(
       SHARD_DOC_SIDECAR_ERROR_CODES.FILE_NOT_FOUND,
       '<file>',
@@ -336,7 +545,7 @@ async function validateShardDocSidecarContractFile(sidecarPath = getSourcePath('
 
   let parsedSidecar;
   try {
-    const sidecarRaw = await fs.readFile(sidecarPath, 'utf8');
+    const sidecarRaw = await fs.readFile(resolvedSidecarPath, 'utf8');
     parsedSidecar = yaml.parse(sidecarRaw);
   } catch (error) {
     createValidationError(
@@ -348,15 +557,23 @@ async function validateShardDocSidecarContractFile(sidecarPath = getSourcePath('
   }
 
   validateShardDocSidecarContractData(parsedSidecar, { errorSourcePath: normalizedSourcePath });
+  return resolvedMetadataAuthority;
 }
 
-async function validateIndexDocsSidecarContractFile(
-  sidecarPath = getSourcePath('core', 'tasks', 'index-docs.artifact.yaml'),
-  options = {},
-) {
-  const normalizedSourcePath = normalizeSourcePath(options.errorSourcePath || toProjectRelativePath(sidecarPath));
+async function validateIndexDocsSidecarContractFile(sidecarPath = '', options = {}) {
+  const sourceFilePath = options.sourceFilePath || getSourcePath('core', 'tasks', 'index-docs.xml');
+  const resolvedMetadataAuthority = await resolveSkillMetadataAuthority({
+    sourceFilePath,
+    metadataPath: sidecarPath,
+    metadataSourcePath: options.errorSourcePath,
+    ambiguousErrorCode: INDEX_DOCS_SIDECAR_ERROR_CODES.METADATA_FILENAME_AMBIGUOUS,
+  });
+  const resolvedSidecarPath = resolvedMetadataAuthority.resolvedAbsolutePath;
+  const normalizedSourcePath = normalizeSourcePath(
+    options.errorSourcePath || resolvedMetadataAuthority.resolvedSourcePath || resolvedMetadataAuthority.canonicalTargetSourcePath,
+  );
 
-  if (!(await fs.pathExists(sidecarPath))) {
+  if (!resolvedSidecarPath || !(await fs.pathExists(resolvedSidecarPath))) {
     createValidationError(
       INDEX_DOCS_SIDECAR_ERROR_CODES.FILE_NOT_FOUND,
       '<file>',
@@ -367,7 +584,7 @@ async function validateIndexDocsSidecarContractFile(
 
   let parsedSidecar;
   try {
-    const sidecarRaw = await fs.readFile(sidecarPath, 'utf8');
+    const sidecarRaw = await fs.readFile(resolvedSidecarPath, 'utf8');
     parsedSidecar = yaml.parse(sidecarRaw);
   } catch (error) {
     createValidationError(
@@ -379,6 +596,7 @@ async function validateIndexDocsSidecarContractFile(
   }
 
   validateIndexDocsSidecarContractData(parsedSidecar, { errorSourcePath: normalizedSourcePath });
+  return resolvedMetadataAuthority;
 }
 
 module.exports = {
@@ -388,7 +606,12 @@ module.exports = {
   HELP_SIDECAR_ERROR_CODES,
   SHARD_DOC_SIDECAR_ERROR_CODES,
   INDEX_DOCS_SIDECAR_ERROR_CODES,
+  SKILL_METADATA_CANONICAL_FILENAME,
+  SKILL_METADATA_DERIVATION_MODES,
+  SKILL_METADATA_LEGACY_FILENAMES,
+  SKILL_METADATA_RESOLUTION_ERROR_CODES,
   SidecarContractError,
+  resolveSkillMetadataAuthority,
   validateHelpSidecarContractData,
   validateHelpSidecarContractFile,
   validateShardDocSidecarContractData,

@@ -3,9 +3,11 @@ const fs = require('fs-extra');
 const yaml = require('yaml');
 const csv = require('csv-parse/sync');
 const { getProjectRoot, getSourcePath } = require('../../../lib/project-root');
+const { resolveSkillMetadataAuthority } = require('./sidecar-contract-validator');
 
 const SHARD_DOC_AUTHORITY_VALIDATION_ERROR_CODES = Object.freeze({
   SIDECAR_FILE_NOT_FOUND: 'ERR_SHARD_DOC_AUTHORITY_SIDECAR_FILE_NOT_FOUND',
+  SIDECAR_FILENAME_AMBIGUOUS: 'ERR_SHARD_DOC_AUTHORITY_SIDECAR_FILENAME_AMBIGUOUS',
   SIDECAR_PARSE_FAILED: 'ERR_SHARD_DOC_AUTHORITY_SIDECAR_PARSE_FAILED',
   SIDECAR_INVALID_METADATA: 'ERR_SHARD_DOC_AUTHORITY_SIDECAR_INVALID_METADATA',
   SIDECAR_CANONICAL_ID_MISMATCH: 'ERR_SHARD_DOC_AUTHORITY_SIDECAR_CANONICAL_ID_MISMATCH',
@@ -249,18 +251,38 @@ function buildShardDocAuthorityRecords({ canonicalId, sidecarSourcePath, sourceX
 }
 
 async function validateShardDocAuthoritySplitAndPrecedence(options = {}) {
-  const sidecarPath = options.sidecarPath || getSourcePath('core', 'tasks', 'shard-doc.artifact.yaml');
   const sourceXmlPath = options.sourceXmlPath || getSourcePath('core', 'tasks', 'shard-doc.xml');
   const compatibilityCatalogPath = options.compatibilityCatalogPath || getSourcePath('core', 'module-help.csv');
   const compatibilityWorkflowFilePath = options.compatibilityWorkflowFilePath || '_bmad/core/tasks/shard-doc.xml';
 
-  const sidecarSourcePath = normalizeSourcePath(options.sidecarSourcePath || toProjectRelativePath(sidecarPath));
+  let resolvedMetadataAuthority;
+  try {
+    resolvedMetadataAuthority = await resolveSkillMetadataAuthority({
+      sourceFilePath: sourceXmlPath,
+      metadataPath: options.sidecarPath || '',
+      metadataSourcePath: options.sidecarSourcePath || '',
+      ambiguousErrorCode: SHARD_DOC_AUTHORITY_VALIDATION_ERROR_CODES.SIDECAR_FILENAME_AMBIGUOUS,
+    });
+  } catch (error) {
+    createValidationError(
+      error.code || SHARD_DOC_AUTHORITY_VALIDATION_ERROR_CODES.SIDECAR_FILENAME_AMBIGUOUS,
+      error.detail || error.message,
+      error.fieldPath || '<file>',
+      normalizeSourcePath(error.sourcePath || toProjectRelativePath(sourceXmlPath)),
+    );
+  }
+
+  const sidecarPath = resolvedMetadataAuthority.resolvedAbsolutePath;
+
+  const sidecarSourcePath = normalizeSourcePath(
+    options.sidecarSourcePath || resolvedMetadataAuthority.canonicalTargetSourcePath || resolvedMetadataAuthority.resolvedSourcePath,
+  );
   const sourceXmlSourcePath = normalizeSourcePath(options.sourceXmlSourcePath || toProjectRelativePath(sourceXmlPath));
   const compatibilityCatalogSourcePath = normalizeSourcePath(
     options.compatibilityCatalogSourcePath || toProjectRelativePath(compatibilityCatalogPath),
   );
 
-  if (!(await fs.pathExists(sidecarPath))) {
+  if (!sidecarPath || !(await fs.pathExists(sidecarPath))) {
     createValidationError(
       SHARD_DOC_AUTHORITY_VALIDATION_ERROR_CODES.SIDECAR_FILE_NOT_FOUND,
       'Expected shard-doc sidecar metadata file was not found',
@@ -322,6 +344,13 @@ async function validateShardDocAuthoritySplitAndPrecedence(options = {}) {
     authoritativePresenceKey: SHARD_DOC_LOCKED_AUTHORITATIVE_PRESENCE_KEY,
     authoritativeRecords,
     checkedSurfaces: [sourceXmlSourcePath, compatibilityCatalogSourcePath],
+    metadataAuthority: {
+      resolvedPath: normalizeSourcePath(resolvedMetadataAuthority.resolvedSourcePath || sidecarSourcePath),
+      resolvedFilename: normalizeSourcePath(resolvedMetadataAuthority.resolvedFilename || ''),
+      canonicalTargetFilename: normalizeSourcePath(resolvedMetadataAuthority.canonicalTargetFilename || 'skill-manifest.yaml'),
+      canonicalTargetPath: normalizeSourcePath(resolvedMetadataAuthority.canonicalTargetSourcePath || sidecarSourcePath),
+      derivationMode: normalizeSourcePath(resolvedMetadataAuthority.derivationMode || ''),
+    },
   };
 }
 

@@ -5,6 +5,7 @@ const fs = require('fs-extra');
 const yaml = require('yaml');
 const csv = require('csv-parse/sync');
 const { getSourcePath } = require('../../../lib/project-root');
+const { resolveSkillMetadataAuthority } = require('./sidecar-contract-validator');
 const { normalizeDisplayedCommandLabel } = require('./help-catalog-generator');
 const { ManifestGenerator } = require('./manifest-generator');
 const {
@@ -14,12 +15,13 @@ const {
   validateGithubCopilotHelpLoaderEntries,
 } = require('./projection-compatibility-validator');
 
-const INDEX_DOCS_SIDECAR_SOURCE_PATH = 'bmad-fork/src/core/tasks/index-docs.artifact.yaml';
+const INDEX_DOCS_SIDECAR_SOURCE_PATH = 'bmad-fork/src/core/tasks/index-docs/skill-manifest.yaml';
 const INDEX_DOCS_SOURCE_XML_SOURCE_PATH = 'bmad-fork/src/core/tasks/index-docs.xml';
 const INDEX_DOCS_EVIDENCE_ISSUER_COMPONENT = 'bmad-fork/tools/cli/installers/lib/core/index-docs-validation-harness.js';
 
 const INDEX_DOCS_VALIDATION_ERROR_CODES = Object.freeze({
   REQUIRED_ARTIFACT_MISSING: 'ERR_INDEX_DOCS_VALIDATION_REQUIRED_ARTIFACT_MISSING',
+  METADATA_RESOLUTION_FAILED: 'ERR_INDEX_DOCS_VALIDATION_METADATA_RESOLUTION_FAILED',
   CSV_SCHEMA_MISMATCH: 'ERR_INDEX_DOCS_VALIDATION_CSV_SCHEMA_MISMATCH',
   REQUIRED_ROW_MISSING: 'ERR_INDEX_DOCS_VALIDATION_REQUIRED_ROW_MISSING',
   YAML_SCHEMA_MISMATCH: 'ERR_INDEX_DOCS_VALIDATION_YAML_SCHEMA_MISMATCH',
@@ -889,16 +891,34 @@ class IndexDocsValidationHarness {
     const runtimeFolder = normalizeValue(options.bmadFolderName || '_bmad');
     const bmadDir = path.resolve(options.bmadDir || path.join(outputPaths.projectDir, runtimeFolder));
     const artifactPaths = this.buildArtifactPathsMap(outputPaths);
-    const sidecarPath =
-      options.sidecarPath ||
-      ((await fs.pathExists(path.join(outputPaths.projectDir, INDEX_DOCS_SIDECAR_SOURCE_PATH)))
-        ? path.join(outputPaths.projectDir, INDEX_DOCS_SIDECAR_SOURCE_PATH)
-        : getSourcePath('core', 'tasks', 'index-docs.artifact.yaml'));
     const sourceXmlPath =
       options.sourceXmlPath ||
       ((await fs.pathExists(path.join(outputPaths.projectDir, INDEX_DOCS_SOURCE_XML_SOURCE_PATH)))
         ? path.join(outputPaths.projectDir, INDEX_DOCS_SOURCE_XML_SOURCE_PATH)
         : getSourcePath('core', 'tasks', 'index-docs.xml'));
+    let resolvedMetadataAuthority;
+    try {
+      resolvedMetadataAuthority = await resolveSkillMetadataAuthority({
+        sourceFilePath: sourceXmlPath,
+        metadataPath: options.sidecarPath || '',
+        projectRoot: outputPaths.projectDir,
+        ambiguousErrorCode: INDEX_DOCS_VALIDATION_ERROR_CODES.METADATA_RESOLUTION_FAILED,
+      });
+    } catch (error) {
+      throw new IndexDocsValidationHarnessError({
+        code: INDEX_DOCS_VALIDATION_ERROR_CODES.METADATA_RESOLUTION_FAILED,
+        detail: error.detail || error.message || 'metadata authority resolution failed',
+        artifactId: 1,
+        fieldPath: normalizeValue(error.fieldPath || '<file>'),
+        sourcePath: normalizePath(error.sourcePath || INDEX_DOCS_SIDECAR_SOURCE_PATH),
+        observedValue: normalizeValue(error.code || '<resolution-error>'),
+        expectedValue: 'unambiguous metadata authority candidate',
+      });
+    }
+    const sidecarPath =
+      resolvedMetadataAuthority.resolvedAbsolutePath ||
+      options.sidecarPath ||
+      path.join(path.dirname(sourceXmlPath), path.basename(sourceXmlPath, path.extname(sourceXmlPath)), 'skill-manifest.yaml');
 
     await fs.ensureDir(outputPaths.validationRoot);
 

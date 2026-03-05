@@ -3,9 +3,10 @@ const path = require('node:path');
 const yaml = require('yaml');
 const { getSourcePath, getProjectRoot } = require('../../../lib/project-root');
 const { normalizeAndResolveExemplarAlias } = require('./help-alias-normalizer');
+const { resolveSkillMetadataAuthority } = require('./sidecar-contract-validator');
 
 const EXEMPLAR_HELP_CATALOG_CANONICAL_ID = 'bmad-help';
-const EXEMPLAR_HELP_CATALOG_AUTHORITY_SOURCE_PATH = 'bmad-fork/src/core/tasks/help.artifact.yaml';
+const EXEMPLAR_HELP_CATALOG_AUTHORITY_SOURCE_PATH = 'bmad-fork/src/core/tasks/help/skill-manifest.yaml';
 const EXEMPLAR_HELP_CATALOG_SOURCE_MARKDOWN_SOURCE_PATH = 'bmad-fork/src/core/tasks/help.md';
 const EXEMPLAR_HELP_CATALOG_ISSUING_COMPONENT =
   'bmad-fork/tools/cli/installers/lib/core/help-catalog-generator.js::buildSidecarAwareExemplarHelpRow()';
@@ -13,6 +14,7 @@ const INSTALLER_HELP_CATALOG_MERGE_COMPONENT = 'bmad-fork/tools/cli/installers/l
 
 const HELP_CATALOG_GENERATION_ERROR_CODES = Object.freeze({
   SIDECAR_FILE_NOT_FOUND: 'ERR_HELP_CATALOG_SIDECAR_FILE_NOT_FOUND',
+  SIDECAR_FILENAME_AMBIGUOUS: 'ERR_HELP_CATALOG_SIDECAR_FILENAME_AMBIGUOUS',
   SIDECAR_PARSE_FAILED: 'ERR_HELP_CATALOG_SIDECAR_PARSE_FAILED',
   SIDECAR_INVALID_METADATA: 'ERR_HELP_CATALOG_SIDECAR_INVALID_METADATA',
   CANONICAL_ID_MISMATCH: 'ERR_HELP_CATALOG_CANONICAL_ID_MISMATCH',
@@ -71,9 +73,29 @@ function createGenerationError(code, fieldPath, sourcePath, detail, observedValu
   });
 }
 
-async function loadExemplarHelpSidecar(sidecarPath = getSourcePath('core', 'tasks', 'help.artifact.yaml')) {
-  const sourcePath = normalizeSourcePath(toProjectRelativePath(sidecarPath));
-  if (!(await fs.pathExists(sidecarPath))) {
+async function loadExemplarHelpSidecar(sidecarPath = '') {
+  const sourceMarkdownPath = getSourcePath('core', 'tasks', 'help.md');
+  let resolvedMetadataAuthority;
+  try {
+    resolvedMetadataAuthority = await resolveSkillMetadataAuthority({
+      sourceFilePath: sourceMarkdownPath,
+      metadataPath: sidecarPath,
+      ambiguousErrorCode: HELP_CATALOG_GENERATION_ERROR_CODES.SIDECAR_FILENAME_AMBIGUOUS,
+    });
+  } catch (error) {
+    createGenerationError(
+      error.code || HELP_CATALOG_GENERATION_ERROR_CODES.SIDECAR_FILENAME_AMBIGUOUS,
+      error.fieldPath || '<file>',
+      normalizeSourcePath(error.sourcePath || toProjectRelativePath(sourceMarkdownPath)),
+      error.detail || error.message,
+    );
+  }
+
+  const resolvedMetadataPath = resolvedMetadataAuthority.resolvedAbsolutePath;
+  const sourcePath = normalizeSourcePath(
+    resolvedMetadataAuthority.canonicalTargetSourcePath || resolvedMetadataAuthority.resolvedSourcePath,
+  );
+  if (!resolvedMetadataPath || !(await fs.pathExists(resolvedMetadataPath))) {
     createGenerationError(
       HELP_CATALOG_GENERATION_ERROR_CODES.SIDECAR_FILE_NOT_FOUND,
       '<file>',
@@ -84,7 +106,7 @@ async function loadExemplarHelpSidecar(sidecarPath = getSourcePath('core', 'task
 
   let sidecarData;
   try {
-    sidecarData = yaml.parse(await fs.readFile(sidecarPath, 'utf8'));
+    sidecarData = yaml.parse(await fs.readFile(resolvedMetadataPath, 'utf8'));
   } catch (error) {
     createGenerationError(
       HELP_CATALOG_GENERATION_ERROR_CODES.SIDECAR_PARSE_FAILED,
@@ -128,6 +150,9 @@ async function loadExemplarHelpSidecar(sidecarPath = getSourcePath('core', 'task
     displayName,
     description,
     sourcePath,
+    resolvedFilename: normalizeSourcePath(resolvedMetadataAuthority.resolvedFilename || ''),
+    canonicalTargetFilename: normalizeSourcePath(resolvedMetadataAuthority.canonicalTargetFilename || 'skill-manifest.yaml'),
+    derivationMode: normalizeSourcePath(resolvedMetadataAuthority.derivationMode || ''),
   };
 }
 

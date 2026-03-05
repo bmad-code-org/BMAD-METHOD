@@ -3,9 +3,11 @@ const fs = require('fs-extra');
 const yaml = require('yaml');
 const { getProjectRoot, getSourcePath } = require('../../../lib/project-root');
 const { normalizeAndResolveExemplarAlias } = require('./help-alias-normalizer');
+const { resolveSkillMetadataAuthority } = require('./sidecar-contract-validator');
 
 const HELP_AUTHORITY_VALIDATION_ERROR_CODES = Object.freeze({
   SIDECAR_FILE_NOT_FOUND: 'ERR_HELP_AUTHORITY_SIDECAR_FILE_NOT_FOUND',
+  SIDECAR_FILENAME_AMBIGUOUS: 'ERR_HELP_AUTHORITY_SIDECAR_FILENAME_AMBIGUOUS',
   SIDECAR_PARSE_FAILED: 'ERR_HELP_AUTHORITY_SIDECAR_PARSE_FAILED',
   SIDECAR_INVALID_METADATA: 'ERR_HELP_AUTHORITY_SIDECAR_INVALID_METADATA',
   MARKDOWN_FILE_NOT_FOUND: 'ERR_HELP_AUTHORITY_MARKDOWN_FILE_NOT_FOUND',
@@ -277,17 +279,37 @@ function buildHelpAuthorityRecords({ canonicalId, sidecarSourcePath, sourceMarkd
 }
 
 async function validateHelpAuthoritySplitAndPrecedence(options = {}) {
-  const sidecarPath = options.sidecarPath || getSourcePath('core', 'tasks', 'help.artifact.yaml');
   const sourceMarkdownPath = options.sourceMarkdownPath || getSourcePath('core', 'tasks', 'help.md');
   const runtimeMarkdownPath = options.runtimeMarkdownPath || '';
 
-  const sidecarSourcePath = normalizeSourcePath(options.sidecarSourcePath || toProjectRelativePath(sidecarPath));
+  let resolvedMetadataAuthority;
+  try {
+    resolvedMetadataAuthority = await resolveSkillMetadataAuthority({
+      sourceFilePath: sourceMarkdownPath,
+      metadataPath: options.sidecarPath || '',
+      metadataSourcePath: options.sidecarSourcePath || '',
+      ambiguousErrorCode: HELP_AUTHORITY_VALIDATION_ERROR_CODES.SIDECAR_FILENAME_AMBIGUOUS,
+    });
+  } catch (error) {
+    throw new HelpAuthorityValidationError({
+      code: error.code || HELP_AUTHORITY_VALIDATION_ERROR_CODES.SIDECAR_FILENAME_AMBIGUOUS,
+      detail: error.detail || error.message,
+      fieldPath: error.fieldPath || '<file>',
+      sourcePath: normalizeSourcePath(error.sourcePath || toProjectRelativePath(sourceMarkdownPath)),
+    });
+  }
+
+  const sidecarPath = resolvedMetadataAuthority.resolvedAbsolutePath;
+
+  const sidecarSourcePath = normalizeSourcePath(
+    options.sidecarSourcePath || resolvedMetadataAuthority.canonicalTargetSourcePath || resolvedMetadataAuthority.resolvedSourcePath,
+  );
   const sourceMarkdownSourcePath = normalizeSourcePath(options.sourceMarkdownSourcePath || toProjectRelativePath(sourceMarkdownPath));
   const runtimeMarkdownSourcePath = normalizeSourcePath(
     options.runtimeMarkdownSourcePath || (runtimeMarkdownPath ? toProjectRelativePath(runtimeMarkdownPath) : ''),
   );
 
-  if (!(await fs.pathExists(sidecarPath))) {
+  if (!sidecarPath || !(await fs.pathExists(sidecarPath))) {
     throw new HelpAuthorityValidationError({
       code: HELP_AUTHORITY_VALIDATION_ERROR_CODES.SIDECAR_FILE_NOT_FOUND,
       detail: 'Expected sidecar metadata file was not found',
@@ -359,6 +381,13 @@ async function validateHelpAuthoritySplitAndPrecedence(options = {}) {
     authoritativePresenceKey: `capability:${canonicalId}`,
     authoritativeRecords,
     checkedSurfaces,
+    metadataAuthority: {
+      resolvedPath: normalizeSourcePath(resolvedMetadataAuthority.resolvedSourcePath || sidecarSourcePath),
+      resolvedFilename: normalizeSourcePath(resolvedMetadataAuthority.resolvedFilename || ''),
+      canonicalTargetFilename: normalizeSourcePath(resolvedMetadataAuthority.canonicalTargetFilename || 'skill-manifest.yaml'),
+      canonicalTargetPath: normalizeSourcePath(resolvedMetadataAuthority.canonicalTargetSourcePath || sidecarSourcePath),
+      derivationMode: normalizeSourcePath(resolvedMetadataAuthority.derivationMode || ''),
+    },
   };
 }
 

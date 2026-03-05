@@ -36,6 +36,8 @@ const {
   SHARD_DOC_SIDECAR_ERROR_CODES,
   INDEX_DOCS_SIDECAR_REQUIRED_FIELDS,
   INDEX_DOCS_SIDECAR_ERROR_CODES,
+  SKILL_METADATA_RESOLUTION_ERROR_CODES,
+  resolveSkillMetadataAuthority,
   validateHelpSidecarContractFile,
   validateShardDocSidecarContractFile,
   validateIndexDocsSidecarContractFile,
@@ -255,7 +257,7 @@ async function runTests() {
 
   const tempSidecarRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-help-sidecar-'));
   const tempSidecarPath = path.join(tempSidecarRoot, 'help.artifact.yaml');
-  const deterministicSourcePath = 'bmad-fork/src/core/tasks/help.artifact.yaml';
+  const deterministicSourcePath = 'bmad-fork/src/core/tasks/help/skill-manifest.yaml';
   const expectedUnsupportedMajorDetail = 'sidecar schema major version is unsupported';
   const expectedBasenameMismatchDetail = 'sidecar basename does not match sourcePath basename';
 
@@ -434,7 +436,7 @@ async function runTests() {
 
   const tempShardDocRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-shard-doc-sidecar-'));
   const tempShardDocSidecarPath = path.join(tempShardDocRoot, 'shard-doc.artifact.yaml');
-  const deterministicShardDocSourcePath = 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml';
+  const deterministicShardDocSourcePath = 'bmad-fork/src/core/tasks/shard-doc/skill-manifest.yaml';
 
   const writeTempShardDocSidecar = async (data) => {
     await fs.writeFile(tempShardDocSidecarPath, yaml.stringify(data), 'utf8');
@@ -631,7 +633,7 @@ async function runTests() {
 
   const tempIndexDocsRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-index-docs-sidecar-'));
   const tempIndexDocsSidecarPath = path.join(tempIndexDocsRoot, 'index-docs.artifact.yaml');
-  const deterministicIndexDocsSourcePath = 'bmad-fork/src/core/tasks/index-docs.artifact.yaml';
+  const deterministicIndexDocsSourcePath = 'bmad-fork/src/core/tasks/index-docs/skill-manifest.yaml';
 
   const writeTempIndexDocsSidecar = async (data) => {
     await fs.writeFile(tempIndexDocsSidecarPath, yaml.stringify(data), 'utf8');
@@ -804,6 +806,140 @@ async function runTests() {
   console.log('');
 
   // ============================================================
+  // Test 4d: Skill Metadata Filename Authority Resolution
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 4d: Skill Metadata Filename Authority Resolution${colors.reset}\n`);
+  try {
+    const convertedCapabilitySources = [
+      { label: 'help', sourceFilename: 'help.md', artifactFilename: 'help.artifact.yaml' },
+      { label: 'shard-doc', sourceFilename: 'shard-doc.xml', artifactFilename: 'shard-doc.artifact.yaml' },
+      { label: 'index-docs', sourceFilename: 'index-docs.xml', artifactFilename: 'index-docs.artifact.yaml' },
+    ];
+
+    const withResolverWorkspace = async (sourceFilename, callback) => {
+      const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), `bmad-metadata-authority-${sourceFilename.replaceAll(/\W+/g, '-')}-`));
+      try {
+        const tasksDir = path.join(tempRoot, 'src', 'core', 'tasks');
+        await fs.ensureDir(tasksDir);
+
+        const sourcePath = path.join(tasksDir, sourceFilename);
+        await fs.writeFile(sourcePath, '# source\n', 'utf8');
+
+        const sourceStem = path.basename(sourceFilename, path.extname(sourceFilename));
+        const skillDir = path.join(tasksDir, sourceStem);
+        await fs.ensureDir(skillDir);
+
+        await callback({
+          tempRoot,
+          tasksDir,
+          sourcePath,
+          skillDir,
+        });
+      } finally {
+        await fs.remove(tempRoot);
+      }
+    };
+
+    for (const sourceConfig of convertedCapabilitySources) {
+      const { label, sourceFilename, artifactFilename } = sourceConfig;
+
+      await withResolverWorkspace(sourceFilename, async ({ tempRoot, tasksDir, sourcePath, skillDir }) => {
+        await fs.writeFile(path.join(skillDir, 'skill-manifest.yaml'), 'canonicalId: canonical\n', 'utf8');
+        await fs.writeFile(path.join(skillDir, 'bmad-config.yaml'), 'canonicalId: bmad-config\n', 'utf8');
+        await fs.writeFile(path.join(skillDir, 'manifest.yaml'), 'canonicalId: manifest\n', 'utf8');
+        await fs.writeFile(path.join(tasksDir, artifactFilename), 'canonicalId: artifact\n', 'utf8');
+
+        const resolution = await resolveSkillMetadataAuthority({
+          sourceFilePath: sourcePath,
+          projectRoot: tempRoot,
+        });
+        assert(
+          resolution.resolvedFilename === 'skill-manifest.yaml' && resolution.derivationMode === 'canonical',
+          `${label} resolver prioritizes per-skill canonical skill-manifest.yaml over legacy metadata files`,
+        );
+      });
+
+      await withResolverWorkspace(sourceFilename, async ({ tempRoot, tasksDir, sourcePath, skillDir }) => {
+        await fs.writeFile(path.join(skillDir, 'bmad-config.yaml'), 'canonicalId: bmad-config\n', 'utf8');
+        await fs.writeFile(path.join(skillDir, 'manifest.yaml'), 'canonicalId: manifest\n', 'utf8');
+        await fs.writeFile(path.join(tasksDir, artifactFilename), 'canonicalId: artifact\n', 'utf8');
+
+        const resolution = await resolveSkillMetadataAuthority({
+          sourceFilePath: sourcePath,
+          projectRoot: tempRoot,
+        });
+        assert(
+          resolution.resolvedFilename === 'bmad-config.yaml' && resolution.derivationMode === 'legacy-fallback',
+          `${label} resolver falls back to bmad-config.yaml before manifest.yaml and *.artifact.yaml`,
+        );
+      });
+
+      await withResolverWorkspace(sourceFilename, async ({ tempRoot, tasksDir, sourcePath, skillDir }) => {
+        await fs.writeFile(path.join(skillDir, 'manifest.yaml'), 'canonicalId: manifest\n', 'utf8');
+        await fs.writeFile(path.join(tasksDir, artifactFilename), 'canonicalId: artifact\n', 'utf8');
+
+        const resolution = await resolveSkillMetadataAuthority({
+          sourceFilePath: sourcePath,
+          projectRoot: tempRoot,
+        });
+        assert(
+          resolution.resolvedFilename === 'manifest.yaml' && resolution.derivationMode === 'legacy-fallback',
+          `${label} resolver falls back to manifest.yaml before *.artifact.yaml`,
+        );
+      });
+
+      await withResolverWorkspace(sourceFilename, async ({ tempRoot, tasksDir, sourcePath }) => {
+        await fs.writeFile(path.join(tasksDir, artifactFilename), 'canonicalId: artifact\n', 'utf8');
+
+        const resolution = await resolveSkillMetadataAuthority({
+          sourceFilePath: sourcePath,
+          projectRoot: tempRoot,
+        });
+        assert(
+          resolution.resolvedFilename === artifactFilename && resolution.derivationMode === 'legacy-fallback',
+          `${label} resolver supports capability-scoped *.artifact.yaml fallback`,
+        );
+      });
+
+      await withResolverWorkspace(sourceFilename, async ({ tempRoot, tasksDir, sourcePath }) => {
+        await fs.writeFile(path.join(tasksDir, 'skill-manifest.yaml'), 'canonicalId: root-canonical\n', 'utf8');
+        await fs.writeFile(path.join(tasksDir, artifactFilename), 'canonicalId: artifact\n', 'utf8');
+
+        const resolution = await resolveSkillMetadataAuthority({
+          sourceFilePath: sourcePath,
+          projectRoot: tempRoot,
+        });
+        assert(
+          resolution.resolvedFilename === artifactFilename,
+          `${label} resolver does not treat root task-folder skill-manifest.yaml as per-skill canonical authority`,
+        );
+      });
+
+      await withResolverWorkspace(sourceFilename, async ({ tempRoot, tasksDir, sourcePath, skillDir }) => {
+        await fs.writeFile(path.join(tasksDir, 'bmad-config.yaml'), 'canonicalId: root-bmad-config\n', 'utf8');
+        await fs.writeFile(path.join(skillDir, 'bmad-config.yaml'), 'canonicalId: skill-bmad-config\n', 'utf8');
+
+        try {
+          await resolveSkillMetadataAuthority({
+            sourceFilePath: sourcePath,
+            projectRoot: tempRoot,
+          });
+          assert(false, `${label} resolver rejects ambiguous bmad-config.yaml coexistence across legacy locations`);
+        } catch (error) {
+          assert(
+            error.code === SKILL_METADATA_RESOLUTION_ERROR_CODES.AMBIGUOUS_MATCH,
+            `${label} resolver emits deterministic ambiguity code for bmad-config.yaml coexistence`,
+          );
+        }
+      });
+    }
+  } catch (error) {
+    assert(false, 'Skill metadata filename authority resolver suite setup', error.message);
+  }
+
+  console.log('');
+
+  // ============================================================
   // Test 5: Authority Split and Frontmatter Precedence
   // ============================================================
   console.log(`${colors.yellow}Test Suite 5: Authority Split and Precedence${colors.reset}\n`);
@@ -814,7 +950,7 @@ async function runTests() {
   const tempAuthorityRuntimePath = path.join(tempAuthorityRoot, 'help-runtime.md');
 
   const deterministicAuthorityPaths = {
-    sidecar: 'bmad-fork/src/core/tasks/help.artifact.yaml',
+    sidecar: 'bmad-fork/src/core/tasks/help/skill-manifest.yaml',
     source: 'bmad-fork/src/core/tasks/help.md',
     runtime: '_bmad/core/tasks/help.md',
   };
@@ -1000,7 +1136,7 @@ async function runTests() {
     const tempShardDocModuleHelpPath = path.join(tempAuthorityRoot, 'module-help.csv');
 
     const deterministicShardDocAuthorityPaths = {
-      sidecar: 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml',
+      sidecar: 'bmad-fork/src/core/tasks/shard-doc/skill-manifest.yaml',
       source: 'bmad-fork/src/core/tasks/shard-doc.xml',
       compatibility: 'bmad-fork/src/core/module-help.csv',
       workflowFile: '_bmad/core/tasks/shard-doc.xml',
@@ -1211,7 +1347,7 @@ async function runTests() {
     const tempIndexDocsModuleHelpPath = path.join(tempAuthorityRoot, 'index-docs-module-help.csv');
 
     const deterministicIndexDocsAuthorityPaths = {
-      sidecar: 'bmad-fork/src/core/tasks/index-docs.artifact.yaml',
+      sidecar: 'bmad-fork/src/core/tasks/index-docs/skill-manifest.yaml',
       source: 'bmad-fork/src/core/tasks/index-docs.xml',
       compatibility: 'bmad-fork/src/core/module-help.csv',
       workflowFile: '_bmad/core/tasks/index-docs.xml',
@@ -1546,7 +1682,7 @@ async function runTests() {
 
     // 6b: Shard-doc fail-fast covers Shard-doc negative matrix classes.
     {
-      const deterministicShardDocFailFastSourcePath = 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml';
+      const deterministicShardDocFailFastSourcePath = 'bmad-fork/src/core/tasks/shard-doc/skill-manifest.yaml';
       const shardDocFailureScenarios = [
         {
           label: 'missing shard-doc sidecar file',
@@ -1793,7 +1929,7 @@ async function runTests() {
         const error = new Error('Converted shard-doc sidecar canonicalId must remain locked to bmad-shard-doc');
         error.code = SHARD_DOC_AUTHORITY_VALIDATION_ERROR_CODES.SIDECAR_CANONICAL_ID_MISMATCH;
         error.fieldPath = 'canonicalId';
-        error.sourcePath = 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml';
+        error.sourcePath = 'bmad-fork/src/core/tasks/shard-doc/skill-manifest.yaml';
         throw error;
       };
       installer.validateIndexDocsAuthoritySplitAndPrecedence = async () => {
@@ -1847,7 +1983,7 @@ async function runTests() {
         );
         assert(error.fieldPath === 'canonicalId', 'Installer shard-doc canonical drift returns deterministic field path');
         assert(
-          error.sourcePath === 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml',
+          error.sourcePath === 'bmad-fork/src/core/tasks/shard-doc/skill-manifest.yaml',
           'Installer shard-doc canonical drift returns deterministic source path',
         );
         assert(
@@ -2064,7 +2200,7 @@ async function runTests() {
     const tempAliasConfigDir = path.join(tempAliasAuthorityRoot, '_config');
     const tempAuthorityAliasTablePath = path.join(tempAliasConfigDir, 'canonical-aliases.csv');
     const aliasAuthorityPaths = {
-      sidecar: 'bmad-fork/src/core/tasks/help.artifact.yaml',
+      sidecar: 'bmad-fork/src/core/tasks/help/skill-manifest.yaml',
       source: 'bmad-fork/src/core/tasks/help.md',
       runtime: '_bmad/core/tasks/help.md',
     };
@@ -2443,7 +2579,7 @@ async function runTests() {
         canonicalId: 'bmad-help',
         authoritativePresenceKey: 'capability:bmad-help',
         authoritySourceType: 'sidecar',
-        authoritySourcePath: 'bmad-fork/src/core/tasks/help.artifact.yaml',
+        authoritySourcePath: 'bmad-fork/src/core/tasks/help/skill-manifest.yaml',
         sourcePath: 'bmad-fork/src/core/tasks/help.md',
       },
     ];
@@ -2454,7 +2590,7 @@ async function runTests() {
         canonicalId: 'bmad-shard-doc',
         authoritativePresenceKey: 'capability:bmad-shard-doc',
         authoritySourceType: 'sidecar',
-        authoritySourcePath: 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml',
+        authoritySourcePath: 'bmad-fork/src/core/tasks/shard-doc/skill-manifest.yaml',
         sourcePath: 'bmad-fork/src/core/tasks/shard-doc.xml',
       },
       {
@@ -2462,7 +2598,7 @@ async function runTests() {
         canonicalId: 'bmad-index-docs',
         authoritativePresenceKey: 'capability:bmad-index-docs',
         authoritySourceType: 'sidecar',
-        authoritySourcePath: 'bmad-fork/src/core/tasks/index-docs.artifact.yaml',
+        authoritySourcePath: 'bmad-fork/src/core/tasks/index-docs/skill-manifest.yaml',
         sourcePath: 'bmad-fork/src/core/tasks/index-docs.xml',
       },
     ];
@@ -2495,7 +2631,7 @@ async function runTests() {
     assert(helpTaskRow && helpTaskRow.canonicalId === 'bmad-help', 'Task manifest help row sets canonicalId=bmad-help');
     assert(helpTaskRow && helpTaskRow.authoritySourceType === 'sidecar', 'Task manifest help row sets authoritySourceType=sidecar');
     assert(
-      helpTaskRow && helpTaskRow.authoritySourcePath === 'bmad-fork/src/core/tasks/help.artifact.yaml',
+      helpTaskRow && helpTaskRow.authoritySourcePath === 'bmad-fork/src/core/tasks/help/skill-manifest.yaml',
       'Task manifest help row sets authoritySourcePath to sidecar source path',
     );
 
@@ -2515,7 +2651,7 @@ async function runTests() {
       'Task manifest shard-doc row sets authoritySourceType=sidecar',
     );
     assert(
-      shardDocTaskRow && shardDocTaskRow.authoritySourcePath === 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml',
+      shardDocTaskRow && shardDocTaskRow.authoritySourcePath === 'bmad-fork/src/core/tasks/shard-doc/skill-manifest.yaml',
       'Task manifest shard-doc row sets authoritySourcePath to shard-doc sidecar source path',
     );
     assert(!!indexDocsTaskRow, 'Task manifest includes converted index-docs row');
@@ -2529,7 +2665,7 @@ async function runTests() {
       'Task manifest index-docs row sets authoritySourceType=sidecar',
     );
     assert(
-      indexDocsTaskRow && indexDocsTaskRow.authoritySourcePath === 'bmad-fork/src/core/tasks/index-docs.artifact.yaml',
+      indexDocsTaskRow && indexDocsTaskRow.authoritySourcePath === 'bmad-fork/src/core/tasks/index-docs/skill-manifest.yaml',
       'Task manifest index-docs row sets authoritySourcePath to index-docs sidecar source path',
     );
 
@@ -2642,7 +2778,7 @@ async function runTests() {
 
     assert(
       capturedAuthorityValidationOptions &&
-        capturedAuthorityValidationOptions.sidecarSourcePath === 'bmad-fork/src/core/tasks/help.artifact.yaml',
+        capturedAuthorityValidationOptions.sidecarSourcePath === 'bmad-fork/src/core/tasks/help/skill-manifest.yaml',
       'Installer passes locked sidecar source path to authority validation',
     );
     assert(
@@ -2656,7 +2792,7 @@ async function runTests() {
     );
     assert(
       capturedShardDocAuthorityValidationOptions &&
-        capturedShardDocAuthorityValidationOptions.sidecarSourcePath === 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml',
+        capturedShardDocAuthorityValidationOptions.sidecarSourcePath === 'bmad-fork/src/core/tasks/shard-doc/skill-manifest.yaml',
       'Installer passes locked shard-doc sidecar source path to shard-doc authority validation',
     );
     assert(
@@ -2671,7 +2807,7 @@ async function runTests() {
     );
     assert(
       capturedIndexDocsAuthorityValidationOptions &&
-        capturedIndexDocsAuthorityValidationOptions.sidecarSourcePath === 'bmad-fork/src/core/tasks/index-docs.artifact.yaml',
+        capturedIndexDocsAuthorityValidationOptions.sidecarSourcePath === 'bmad-fork/src/core/tasks/index-docs/skill-manifest.yaml',
       'Installer passes locked index-docs sidecar source path to index-docs authority validation',
     );
     assert(
@@ -2687,7 +2823,7 @@ async function runTests() {
     assert(
       Array.isArray(capturedManifestHelpAuthorityRecords) &&
         capturedManifestHelpAuthorityRecords[0] &&
-        capturedManifestHelpAuthorityRecords[0].authoritySourcePath === 'bmad-fork/src/core/tasks/help.artifact.yaml',
+        capturedManifestHelpAuthorityRecords[0].authoritySourcePath === 'bmad-fork/src/core/tasks/help/skill-manifest.yaml',
       'Installer passes sidecar authority path into manifest generation options',
     );
     assert(
@@ -2697,7 +2833,7 @@ async function runTests() {
             record &&
             record.canonicalId === 'bmad-shard-doc' &&
             record.authoritySourceType === 'sidecar' &&
-            record.authoritySourcePath === 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml',
+            record.authoritySourcePath === 'bmad-fork/src/core/tasks/shard-doc/skill-manifest.yaml',
         ),
       'Installer passes shard-doc sidecar authority records into task-manifest projection options',
     );
@@ -2708,7 +2844,7 @@ async function runTests() {
             record &&
             record.canonicalId === 'bmad-index-docs' &&
             record.authoritySourceType === 'sidecar' &&
-            record.authoritySourcePath === 'bmad-fork/src/core/tasks/index-docs.artifact.yaml',
+            record.authoritySourcePath === 'bmad-fork/src/core/tasks/index-docs/skill-manifest.yaml',
         ),
       'Installer passes index-docs sidecar authority records into task-manifest projection options',
     );
@@ -2741,7 +2877,7 @@ async function runTests() {
         canonicalId: 'bmad-help',
         authoritativePresenceKey: 'capability:bmad-help',
         authoritySourceType: 'sidecar',
-        authoritySourcePath: 'bmad-fork/src/core/tasks/help.artifact.yaml',
+        authoritySourcePath: 'bmad-fork/src/core/tasks/help/skill-manifest.yaml',
         sourcePath: 'bmad-fork/src/core/tasks/help.md',
       },
     ];
@@ -2752,7 +2888,7 @@ async function runTests() {
         canonicalId: 'bmad-shard-doc',
         authoritativePresenceKey: 'capability:bmad-shard-doc',
         authoritySourceType: 'sidecar',
-        authoritySourcePath: 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml',
+        authoritySourcePath: 'bmad-fork/src/core/tasks/shard-doc/skill-manifest.yaml',
         sourcePath: 'bmad-fork/src/core/tasks/shard-doc.xml',
       },
       {
@@ -2760,7 +2896,7 @@ async function runTests() {
         canonicalId: 'bmad-index-docs',
         authoritativePresenceKey: 'capability:bmad-index-docs',
         authoritySourceType: 'sidecar',
-        authoritySourcePath: 'bmad-fork/src/core/tasks/index-docs.artifact.yaml',
+        authoritySourcePath: 'bmad-fork/src/core/tasks/index-docs/skill-manifest.yaml',
         sourcePath: 'bmad-fork/src/core/tasks/index-docs.xml',
       },
     ];
@@ -2797,7 +2933,7 @@ async function runTests() {
           canonicalId: 'bmad-help',
           alias: 'bmad-help',
           aliasType: 'canonical-id',
-          authoritySourcePath: 'bmad-fork/src/core/tasks/help.artifact.yaml',
+          authoritySourcePath: 'bmad-fork/src/core/tasks/help/skill-manifest.yaml',
           normalizedAliasValue: 'bmad-help',
           rawIdentityHasLeadingSlash: 'false',
           resolutionEligibility: 'canonical-id-only',
@@ -2809,7 +2945,7 @@ async function runTests() {
           canonicalId: 'bmad-help',
           alias: 'help',
           aliasType: 'legacy-name',
-          authoritySourcePath: 'bmad-fork/src/core/tasks/help.artifact.yaml',
+          authoritySourcePath: 'bmad-fork/src/core/tasks/help/skill-manifest.yaml',
           normalizedAliasValue: 'help',
           rawIdentityHasLeadingSlash: 'false',
           resolutionEligibility: 'legacy-name-only',
@@ -2821,7 +2957,7 @@ async function runTests() {
           canonicalId: 'bmad-help',
           alias: '/bmad-help',
           aliasType: 'slash-command',
-          authoritySourcePath: 'bmad-fork/src/core/tasks/help.artifact.yaml',
+          authoritySourcePath: 'bmad-fork/src/core/tasks/help/skill-manifest.yaml',
           normalizedAliasValue: 'bmad-help',
           rawIdentityHasLeadingSlash: 'true',
           resolutionEligibility: 'slash-command-only',
@@ -2833,7 +2969,7 @@ async function runTests() {
           canonicalId: 'bmad-shard-doc',
           alias: 'bmad-shard-doc',
           aliasType: 'canonical-id',
-          authoritySourcePath: 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml',
+          authoritySourcePath: 'bmad-fork/src/core/tasks/shard-doc/skill-manifest.yaml',
           normalizedAliasValue: 'bmad-shard-doc',
           rawIdentityHasLeadingSlash: 'false',
           resolutionEligibility: 'canonical-id-only',
@@ -2845,7 +2981,7 @@ async function runTests() {
           canonicalId: 'bmad-shard-doc',
           alias: 'shard-doc',
           aliasType: 'legacy-name',
-          authoritySourcePath: 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml',
+          authoritySourcePath: 'bmad-fork/src/core/tasks/shard-doc/skill-manifest.yaml',
           normalizedAliasValue: 'shard-doc',
           rawIdentityHasLeadingSlash: 'false',
           resolutionEligibility: 'legacy-name-only',
@@ -2857,7 +2993,7 @@ async function runTests() {
           canonicalId: 'bmad-shard-doc',
           alias: '/bmad-shard-doc',
           aliasType: 'slash-command',
-          authoritySourcePath: 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml',
+          authoritySourcePath: 'bmad-fork/src/core/tasks/shard-doc/skill-manifest.yaml',
           normalizedAliasValue: 'bmad-shard-doc',
           rawIdentityHasLeadingSlash: 'true',
           resolutionEligibility: 'slash-command-only',
@@ -2869,7 +3005,7 @@ async function runTests() {
           canonicalId: 'bmad-index-docs',
           alias: 'bmad-index-docs',
           aliasType: 'canonical-id',
-          authoritySourcePath: 'bmad-fork/src/core/tasks/index-docs.artifact.yaml',
+          authoritySourcePath: 'bmad-fork/src/core/tasks/index-docs/skill-manifest.yaml',
           normalizedAliasValue: 'bmad-index-docs',
           rawIdentityHasLeadingSlash: 'false',
           resolutionEligibility: 'canonical-id-only',
@@ -2881,7 +3017,7 @@ async function runTests() {
           canonicalId: 'bmad-index-docs',
           alias: 'index-docs',
           aliasType: 'legacy-name',
-          authoritySourcePath: 'bmad-fork/src/core/tasks/index-docs.artifact.yaml',
+          authoritySourcePath: 'bmad-fork/src/core/tasks/index-docs/skill-manifest.yaml',
           normalizedAliasValue: 'index-docs',
           rawIdentityHasLeadingSlash: 'false',
           resolutionEligibility: 'legacy-name-only',
@@ -2893,7 +3029,7 @@ async function runTests() {
           canonicalId: 'bmad-index-docs',
           alias: '/bmad-index-docs',
           aliasType: 'slash-command',
-          authoritySourcePath: 'bmad-fork/src/core/tasks/index-docs.artifact.yaml',
+          authoritySourcePath: 'bmad-fork/src/core/tasks/index-docs/skill-manifest.yaml',
           normalizedAliasValue: 'bmad-index-docs',
           rawIdentityHasLeadingSlash: 'true',
           resolutionEligibility: 'slash-command-only',
@@ -3006,10 +3142,10 @@ async function runTests() {
           return false;
         }
         if (row.canonicalId === 'bmad-help') {
-          return row.authoritySourcePath === 'bmad-fork/src/core/tasks/help.artifact.yaml';
+          return row.authoritySourcePath === 'bmad-fork/src/core/tasks/help/skill-manifest.yaml';
         }
         if (row.canonicalId === 'bmad-shard-doc') {
-          return row.authoritySourcePath === 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml';
+          return row.authoritySourcePath === 'bmad-fork/src/core/tasks/shard-doc/skill-manifest.yaml';
         }
         return false;
       }),
@@ -3063,7 +3199,7 @@ async function runTests() {
         canonicalId: 'bmad-help',
         authoritativePresenceKey: 'capability:bmad-help',
         authoritySourceType: 'sidecar',
-        authoritySourcePath: 'bmad-fork/src/core/tasks/help.artifact.yaml',
+        authoritySourcePath: 'bmad-fork/src/core/tasks/help/skill-manifest.yaml',
         sourcePath: 'bmad-fork/src/core/tasks/help.md',
       },
     ];
@@ -3165,7 +3301,7 @@ async function runTests() {
     assert(
       helpCommandLabelRow &&
         helpCommandLabelRow.authoritySourceType === 'sidecar' &&
-        helpCommandLabelRow.authoritySourcePath === 'bmad-fork/src/core/tasks/help.artifact.yaml',
+        helpCommandLabelRow.authoritySourcePath === 'bmad-fork/src/core/tasks/help/skill-manifest.yaml',
       'Command-label report includes sidecar provenance linkage',
     );
     assert(
@@ -3177,7 +3313,7 @@ async function runTests() {
     assert(
       shardDocCommandLabelRow &&
         shardDocCommandLabelRow.authoritySourceType === 'sidecar' &&
-        shardDocCommandLabelRow.authoritySourcePath === 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml',
+        shardDocCommandLabelRow.authoritySourcePath === 'bmad-fork/src/core/tasks/shard-doc/skill-manifest.yaml',
       'Command-label report includes shard-doc sidecar provenance linkage',
     );
     assert(
@@ -3189,7 +3325,7 @@ async function runTests() {
     assert(
       indexDocsCommandLabelRow &&
         indexDocsCommandLabelRow.authoritySourceType === 'sidecar' &&
-        indexDocsCommandLabelRow.authoritySourcePath === 'bmad-fork/src/core/tasks/index-docs.artifact.yaml',
+        indexDocsCommandLabelRow.authoritySourcePath === 'bmad-fork/src/core/tasks/index-docs/skill-manifest.yaml',
       'Command-label report includes index-docs sidecar provenance linkage',
     );
     const generatedCommandLabelReportRaw = await fs.readFile(generatedCommandLabelReportPath, 'utf8');
@@ -3224,7 +3360,7 @@ async function runTests() {
     const baselineShardDocLabelContract = evaluateExemplarCommandLabelReportRows(commandLabelRows, {
       canonicalId: 'bmad-shard-doc',
       displayedCommandLabel: '/bmad-shard-doc',
-      authoritySourcePath: 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml',
+      authoritySourcePath: 'bmad-fork/src/core/tasks/shard-doc/skill-manifest.yaml',
     });
     assert(
       baselineShardDocLabelContract.valid,
@@ -3234,7 +3370,7 @@ async function runTests() {
     const baselineIndexDocsLabelContract = evaluateExemplarCommandLabelReportRows(commandLabelRows, {
       canonicalId: 'bmad-index-docs',
       displayedCommandLabel: '/bmad-index-docs',
-      authoritySourcePath: 'bmad-fork/src/core/tasks/index-docs.artifact.yaml',
+      authoritySourcePath: 'bmad-fork/src/core/tasks/index-docs/skill-manifest.yaml',
     });
     assert(
       baselineIndexDocsLabelContract.valid,
@@ -3355,7 +3491,7 @@ async function runTests() {
       {
         canonicalId: 'bmad-shard-doc',
         displayedCommandLabel: '/bmad-shard-doc',
-        authoritySourcePath: 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml',
+        authoritySourcePath: 'bmad-fork/src/core/tasks/shard-doc/skill-manifest.yaml',
       },
     );
     assert(
@@ -3372,14 +3508,14 @@ async function runTests() {
       installedStageRow &&
         installedStageRow.issuingComponent === EXEMPLAR_HELP_CATALOG_ISSUING_COMPONENT &&
         installedStageRow.commandAuthoritySourceType === 'sidecar' &&
-        installedStageRow.commandAuthoritySourcePath === 'bmad-fork/src/core/tasks/help.artifact.yaml',
+        installedStageRow.commandAuthoritySourcePath === 'bmad-fork/src/core/tasks/help/skill-manifest.yaml',
       'Installed compatibility stage row preserves sidecar command provenance and issuing component linkage',
     );
     assert(
       mergedStageRow &&
         mergedStageRow.issuingComponent === INSTALLER_HELP_CATALOG_MERGE_COMPONENT &&
         mergedStageRow.commandAuthoritySourceType === 'sidecar' &&
-        mergedStageRow.commandAuthoritySourcePath === 'bmad-fork/src/core/tasks/help.artifact.yaml',
+        mergedStageRow.commandAuthoritySourcePath === 'bmad-fork/src/core/tasks/help/skill-manifest.yaml',
       'Merged config stage row preserves sidecar command provenance and merge issuing component linkage',
     );
     assert(
@@ -3397,7 +3533,7 @@ async function runTests() {
         generatedPipelineReportRows.every(
           (row) =>
             row.commandAuthoritySourceType === 'sidecar' &&
-            row.commandAuthoritySourcePath === 'bmad-fork/src/core/tasks/help.artifact.yaml',
+            row.commandAuthoritySourcePath === 'bmad-fork/src/core/tasks/help/skill-manifest.yaml',
         ),
       'Installer persists pipeline stage artifact with sidecar command provenance linkage for both stages',
     );
@@ -3546,7 +3682,7 @@ async function runTests() {
     assert(
       exportDerivationRecord &&
         exportDerivationRecord.exportIdDerivationSourceType === EXEMPLAR_HELP_EXPORT_DERIVATION_SOURCE_TYPE &&
-        exportDerivationRecord.exportIdDerivationSourcePath === 'bmad-fork/src/core/tasks/help.artifact.yaml',
+        exportDerivationRecord.exportIdDerivationSourcePath === 'bmad-fork/src/core/tasks/help/skill-manifest.yaml',
       'Codex export records exemplar derivation source metadata from sidecar canonical-id',
     );
 
@@ -3572,7 +3708,7 @@ async function runTests() {
     assert(
       shardDocExportDerivationRecord &&
         shardDocExportDerivationRecord.exportIdDerivationSourceType === EXEMPLAR_HELP_EXPORT_DERIVATION_SOURCE_TYPE &&
-        shardDocExportDerivationRecord.exportIdDerivationSourcePath === 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml' &&
+        shardDocExportDerivationRecord.exportIdDerivationSourcePath === 'bmad-fork/src/core/tasks/shard-doc/skill-manifest.yaml' &&
         shardDocExportDerivationRecord.sourcePath === 'bmad-fork/src/core/tasks/shard-doc.xml',
       'Codex export records shard-doc sidecar-canonical derivation metadata and source path',
     );
@@ -3599,7 +3735,7 @@ async function runTests() {
     assert(
       indexDocsExportDerivationRecord &&
         indexDocsExportDerivationRecord.exportIdDerivationSourceType === EXEMPLAR_HELP_EXPORT_DERIVATION_SOURCE_TYPE &&
-        indexDocsExportDerivationRecord.exportIdDerivationSourcePath === 'bmad-fork/src/core/tasks/index-docs.artifact.yaml' &&
+        indexDocsExportDerivationRecord.exportIdDerivationSourcePath === 'bmad-fork/src/core/tasks/index-docs/skill-manifest.yaml' &&
         indexDocsExportDerivationRecord.sourcePath === 'bmad-fork/src/core/tasks/index-docs.xml',
       'Codex export records index-docs sidecar-canonical derivation metadata and source path',
     );
@@ -3665,7 +3801,7 @@ async function runTests() {
       );
       assert(
         submoduleExportDerivationRecord &&
-          submoduleExportDerivationRecord.exportIdDerivationSourcePath === 'bmad-fork/src/core/tasks/help.artifact.yaml',
+          submoduleExportDerivationRecord.exportIdDerivationSourcePath === 'bmad-fork/src/core/tasks/help/skill-manifest.yaml',
         'Codex export locks exemplar derivation source-path contract when running from submodule root',
       );
     } finally {
@@ -3907,7 +4043,7 @@ async function runTests() {
         legacyName: 'help',
         canonicalId: 'bmad-help',
         authoritySourceType: 'sidecar',
-        authoritySourcePath: 'bmad-fork/src/core/tasks/help.artifact.yaml',
+        authoritySourcePath: 'bmad-fork/src/core/tasks/help/skill-manifest.yaml',
         futureAdditiveField: 'canonical-additive',
       },
       {
@@ -4304,7 +4440,7 @@ async function runTests() {
           legacyName: 'help',
           canonicalId: 'bmad-help',
           authoritySourceType: 'sidecar',
-          authoritySourcePath: 'bmad-fork/src/core/tasks/help.artifact.yaml',
+          authoritySourcePath: 'bmad-fork/src/core/tasks/help/skill-manifest.yaml',
         },
       ],
     );
@@ -4327,7 +4463,7 @@ async function runTests() {
           alias: 'bmad-help',
           aliasType: 'canonical-id',
           authoritySourceType: 'sidecar',
-          authoritySourcePath: 'bmad-fork/src/core/tasks/help.artifact.yaml',
+          authoritySourcePath: 'bmad-fork/src/core/tasks/help/skill-manifest.yaml',
           rowIdentity: 'alias-row:bmad-help:canonical-id',
           normalizedAliasValue: 'bmad-help',
           rawIdentityHasLeadingSlash: 'false',
@@ -4338,7 +4474,7 @@ async function runTests() {
           alias: 'help',
           aliasType: 'legacy-name',
           authoritySourceType: 'sidecar',
-          authoritySourcePath: 'bmad-fork/src/core/tasks/help.artifact.yaml',
+          authoritySourcePath: 'bmad-fork/src/core/tasks/help/skill-manifest.yaml',
           rowIdentity: 'alias-row:bmad-help:legacy-name',
           normalizedAliasValue: 'help',
           rawIdentityHasLeadingSlash: 'false',
@@ -4349,7 +4485,7 @@ async function runTests() {
           alias: '/bmad-help',
           aliasType: 'slash-command',
           authoritySourceType: 'sidecar',
-          authoritySourcePath: 'bmad-fork/src/core/tasks/help.artifact.yaml',
+          authoritySourcePath: 'bmad-fork/src/core/tasks/help/skill-manifest.yaml',
           rowIdentity: 'alias-row:bmad-help:slash-command',
           normalizedAliasValue: 'bmad-help',
           rawIdentityHasLeadingSlash: 'true',
@@ -4520,9 +4656,9 @@ async function runTests() {
           descriptionValue: 'Help command',
           expectedDescriptionValue: 'Help command',
           descriptionAuthoritySourceType: 'sidecar',
-          descriptionAuthoritySourcePath: 'bmad-fork/src/core/tasks/help.artifact.yaml',
+          descriptionAuthoritySourcePath: 'bmad-fork/src/core/tasks/help/skill-manifest.yaml',
           commandAuthoritySourceType: 'sidecar',
-          commandAuthoritySourcePath: 'bmad-fork/src/core/tasks/help.artifact.yaml',
+          commandAuthoritySourcePath: 'bmad-fork/src/core/tasks/help/skill-manifest.yaml',
           issuerOwnerClass: 'installer',
           issuingComponent: 'bmad-fork/tools/cli/installers/lib/core/help-catalog-generator.js::buildSidecarAwareExemplarHelpRow()',
           issuingComponentBindingEvidence: 'deterministic',
@@ -4541,9 +4677,9 @@ async function runTests() {
           descriptionValue: 'Help command',
           expectedDescriptionValue: 'Help command',
           descriptionAuthoritySourceType: 'sidecar',
-          descriptionAuthoritySourcePath: 'bmad-fork/src/core/tasks/help.artifact.yaml',
+          descriptionAuthoritySourcePath: 'bmad-fork/src/core/tasks/help/skill-manifest.yaml',
           commandAuthoritySourceType: 'sidecar',
-          commandAuthoritySourcePath: 'bmad-fork/src/core/tasks/help.artifact.yaml',
+          commandAuthoritySourcePath: 'bmad-fork/src/core/tasks/help/skill-manifest.yaml',
           issuerOwnerClass: 'installer',
           issuingComponent: 'bmad-fork/tools/cli/installers/lib/core/installer.js::mergeModuleHelpCatalogs()',
           issuingComponentBindingEvidence: 'deterministic',
@@ -4575,7 +4711,7 @@ async function runTests() {
           normalizedDisplayedLabel: '/bmad-help',
           rowCountForCanonicalId: '1',
           authoritySourceType: 'sidecar',
-          authoritySourcePath: 'bmad-fork/src/core/tasks/help.artifact.yaml',
+          authoritySourcePath: 'bmad-fork/src/core/tasks/help/skill-manifest.yaml',
           status: 'PASS',
           failureReason: '',
         },
@@ -4734,7 +4870,7 @@ async function runTests() {
           legacyName: 'help',
           canonicalId: 'bmad-help',
           authoritySourceType: 'sidecar',
-          authoritySourcePath: 'bmad-fork/src/core/tasks/help.artifact.yaml',
+          authoritySourcePath: 'bmad-fork/src/core/tasks/help/skill-manifest.yaml',
         },
       ],
     );
@@ -4976,6 +5112,24 @@ async function runTests() {
         'Help validation harness emits deterministic replay-evidence validation error code',
       );
     }
+
+    await fs.writeFile(path.join(tempSourceTasksDir, 'bmad-config.yaml'), 'canonicalId: root-bmad-config\n', 'utf8');
+    await fs.ensureDir(path.join(tempSourceTasksDir, 'help'));
+    await fs.writeFile(path.join(tempSourceTasksDir, 'help', 'bmad-config.yaml'), 'canonicalId: help-bmad-config\n', 'utf8');
+    try {
+      await harness.generateValidationArtifacts({
+        projectDir: tempProjectRoot,
+        bmadDir: tempBmadDir,
+        bmadFolderName: '_bmad',
+        sourceMarkdownPath: path.join(tempSourceTasksDir, 'help.md'),
+      });
+      assert(false, 'Help validation harness normalizes metadata-resolution ambiguity into harness-native deterministic error');
+    } catch (error) {
+      assert(
+        error.code === HELP_VALIDATION_ERROR_CODES.METADATA_RESOLUTION_FAILED,
+        'Help validation harness emits deterministic metadata-resolution error code',
+      );
+    }
   } catch (error) {
     assert(false, 'Deterministic validation artifact suite setup', error.message);
   } finally {
@@ -5033,7 +5187,7 @@ async function runTests() {
         normalizedDisplayedLabel: '/bmad-shard-doc',
         rowCountForCanonicalId: '1',
         authoritySourceType: 'sidecar',
-        authoritySourcePath: 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml',
+        authoritySourcePath: 'bmad-fork/src/core/tasks/shard-doc/skill-manifest.yaml',
         status: 'PASS',
         failureReason: '',
       },
@@ -5075,7 +5229,7 @@ async function runTests() {
           legacyName: 'shard-doc',
           canonicalId: 'bmad-shard-doc',
           authoritySourceType: 'sidecar',
-          authoritySourcePath: 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml',
+          authoritySourcePath: 'bmad-fork/src/core/tasks/shard-doc/skill-manifest.yaml',
         },
       ],
     );
@@ -5159,7 +5313,7 @@ async function runTests() {
           alias: 'bmad-shard-doc',
           aliasType: 'canonical-id',
           authoritySourceType: 'sidecar',
-          authoritySourcePath: 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml',
+          authoritySourcePath: 'bmad-fork/src/core/tasks/shard-doc/skill-manifest.yaml',
           rowIdentity: 'alias-row:bmad-shard-doc:canonical-id',
           normalizedAliasValue: 'bmad-shard-doc',
           rawIdentityHasLeadingSlash: 'false',
@@ -5170,7 +5324,7 @@ async function runTests() {
           alias: 'shard-doc',
           aliasType: 'legacy-name',
           authoritySourceType: 'sidecar',
-          authoritySourcePath: 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml',
+          authoritySourcePath: 'bmad-fork/src/core/tasks/shard-doc/skill-manifest.yaml',
           rowIdentity: 'alias-row:bmad-shard-doc:legacy-name',
           normalizedAliasValue: 'shard-doc',
           rawIdentityHasLeadingSlash: 'false',
@@ -5181,7 +5335,7 @@ async function runTests() {
           alias: '/bmad-shard-doc',
           aliasType: 'slash-command',
           authoritySourceType: 'sidecar',
-          authoritySourcePath: 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml',
+          authoritySourcePath: 'bmad-fork/src/core/tasks/shard-doc/skill-manifest.yaml',
           rowIdentity: 'alias-row:bmad-shard-doc:slash-command',
           normalizedAliasValue: 'bmad-shard-doc',
           rawIdentityHasLeadingSlash: 'true',
@@ -5197,7 +5351,7 @@ async function runTests() {
         canonicalId: 'bmad-shard-doc',
         authoritativePresenceKey: 'capability:bmad-shard-doc',
         authoritySourceType: 'sidecar',
-        authoritySourcePath: 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml',
+        authoritySourcePath: 'bmad-fork/src/core/tasks/shard-doc/skill-manifest.yaml',
       },
       {
         recordType: 'source-body-authority',
@@ -5412,6 +5566,24 @@ async function runTests() {
         'Shard-doc validation harness emits deterministic missing-row error code',
       );
     }
+
+    await fs.writeFile(path.join(tempSourceTasksDir, 'bmad-config.yaml'), 'canonicalId: root-bmad-config\n', 'utf8');
+    await fs.ensureDir(path.join(tempSourceTasksDir, 'shard-doc'));
+    await fs.writeFile(path.join(tempSourceTasksDir, 'shard-doc', 'bmad-config.yaml'), 'canonicalId: shard-doc-bmad-config\n', 'utf8');
+    try {
+      await harness.generateValidationArtifacts({
+        projectDir: tempProjectRoot,
+        bmadDir: tempBmadDir,
+        bmadFolderName: '_bmad',
+        sourceXmlPath: path.join(tempSourceTasksDir, 'shard-doc.xml'),
+      });
+      assert(false, 'Shard-doc validation harness normalizes metadata-resolution ambiguity into harness-native deterministic error');
+    } catch (error) {
+      assert(
+        error.code === SHARD_DOC_VALIDATION_ERROR_CODES.METADATA_RESOLUTION_FAILED,
+        'Shard-doc validation harness emits deterministic metadata-resolution error code',
+      );
+    }
   } catch (error) {
     assert(false, 'Shard-doc validation artifact suite setup', error.message);
   } finally {
@@ -5468,7 +5640,7 @@ async function runTests() {
         normalizedDisplayedLabel: '/bmad-index-docs',
         rowCountForCanonicalId: '1',
         authoritySourceType: 'sidecar',
-        authoritySourcePath: 'bmad-fork/src/core/tasks/index-docs.artifact.yaml',
+        authoritySourcePath: 'bmad-fork/src/core/tasks/index-docs/skill-manifest.yaml',
         status: 'PASS',
         failureReason: '',
       },
@@ -5512,7 +5684,7 @@ async function runTests() {
           legacyName: 'index-docs',
           canonicalId: 'bmad-index-docs',
           authoritySourceType: 'sidecar',
-          authoritySourcePath: 'bmad-fork/src/core/tasks/index-docs.artifact.yaml',
+          authoritySourcePath: 'bmad-fork/src/core/tasks/index-docs/skill-manifest.yaml',
         },
       ],
     );
@@ -5596,7 +5768,7 @@ async function runTests() {
           alias: 'bmad-index-docs',
           aliasType: 'canonical-id',
           authoritySourceType: 'sidecar',
-          authoritySourcePath: 'bmad-fork/src/core/tasks/index-docs.artifact.yaml',
+          authoritySourcePath: 'bmad-fork/src/core/tasks/index-docs/skill-manifest.yaml',
           rowIdentity: 'alias-row:bmad-index-docs:canonical-id',
           normalizedAliasValue: 'bmad-index-docs',
           rawIdentityHasLeadingSlash: 'false',
@@ -5607,7 +5779,7 @@ async function runTests() {
           alias: 'index-docs',
           aliasType: 'legacy-name',
           authoritySourceType: 'sidecar',
-          authoritySourcePath: 'bmad-fork/src/core/tasks/index-docs.artifact.yaml',
+          authoritySourcePath: 'bmad-fork/src/core/tasks/index-docs/skill-manifest.yaml',
           rowIdentity: 'alias-row:bmad-index-docs:legacy-name',
           normalizedAliasValue: 'index-docs',
           rawIdentityHasLeadingSlash: 'false',
@@ -5618,7 +5790,7 @@ async function runTests() {
           alias: '/bmad-index-docs',
           aliasType: 'slash-command',
           authoritySourceType: 'sidecar',
-          authoritySourcePath: 'bmad-fork/src/core/tasks/index-docs.artifact.yaml',
+          authoritySourcePath: 'bmad-fork/src/core/tasks/index-docs/skill-manifest.yaml',
           rowIdentity: 'alias-row:bmad-index-docs:slash-command',
           normalizedAliasValue: 'bmad-index-docs',
           rawIdentityHasLeadingSlash: 'true',
@@ -5634,7 +5806,7 @@ async function runTests() {
         canonicalId: 'bmad-index-docs',
         authoritativePresenceKey: 'capability:bmad-index-docs',
         authoritySourceType: 'sidecar',
-        authoritySourcePath: 'bmad-fork/src/core/tasks/index-docs.artifact.yaml',
+        authoritySourcePath: 'bmad-fork/src/core/tasks/index-docs/skill-manifest.yaml',
       },
       {
         recordType: 'source-body-authority',
@@ -5847,6 +6019,24 @@ async function runTests() {
       assert(
         error.code === INDEX_DOCS_VALIDATION_ERROR_CODES.REQUIRED_ROW_MISSING,
         'Index-docs validation harness emits deterministic missing-row error code',
+      );
+    }
+
+    await fs.writeFile(path.join(tempSourceTasksDir, 'bmad-config.yaml'), 'canonicalId: root-bmad-config\n', 'utf8');
+    await fs.ensureDir(path.join(tempSourceTasksDir, 'index-docs'));
+    await fs.writeFile(path.join(tempSourceTasksDir, 'index-docs', 'bmad-config.yaml'), 'canonicalId: index-docs-bmad-config\n', 'utf8');
+    try {
+      await harness.generateValidationArtifacts({
+        projectDir: tempProjectRoot,
+        bmadDir: tempBmadDir,
+        bmadFolderName: '_bmad',
+        sourceXmlPath: path.join(tempSourceTasksDir, 'index-docs.xml'),
+      });
+      assert(false, 'Index-docs validation harness normalizes metadata-resolution ambiguity into harness-native deterministic error');
+    } catch (error) {
+      assert(
+        error.code === INDEX_DOCS_VALIDATION_ERROR_CODES.METADATA_RESOLUTION_FAILED,
+        'Index-docs validation harness emits deterministic metadata-resolution error code',
       );
     }
   } catch (error) {

@@ -5,7 +5,11 @@ const fs = require('fs-extra');
 const yaml = require('yaml');
 const csv = require('csv-parse/sync');
 const { getSourcePath } = require('../../../lib/project-root');
-const { validateHelpSidecarContractFile, HELP_SIDECAR_ERROR_CODES } = require('./sidecar-contract-validator');
+const {
+  validateHelpSidecarContractFile,
+  HELP_SIDECAR_ERROR_CODES,
+  resolveSkillMetadataAuthority,
+} = require('./sidecar-contract-validator');
 const { validateHelpAuthoritySplitAndPrecedence, HELP_FRONTMATTER_MISMATCH_ERROR_CODES } = require('./help-authority-validator');
 const { ManifestGenerator } = require('./manifest-generator');
 const { buildSidecarAwareExemplarHelpRow } = require('./help-catalog-generator');
@@ -13,6 +17,7 @@ const { CodexSetup } = require('../ide/codex');
 
 const HELP_VALIDATION_ERROR_CODES = Object.freeze({
   REQUIRED_ARTIFACT_MISSING: 'ERR_HELP_VALIDATION_REQUIRED_ARTIFACT_MISSING',
+  METADATA_RESOLUTION_FAILED: 'ERR_HELP_VALIDATION_METADATA_RESOLUTION_FAILED',
   CSV_SCHEMA_MISMATCH: 'ERR_HELP_VALIDATION_CSV_SCHEMA_MISMATCH',
   REQUIRED_ROW_IDENTITY_MISSING: 'ERR_HELP_VALIDATION_REQUIRED_ROW_IDENTITY_MISSING',
   REQUIRED_EVIDENCE_LINK_MISSING: 'ERR_HELP_VALIDATION_REQUIRED_EVIDENCE_LINK_MISSING',
@@ -25,7 +30,7 @@ const HELP_VALIDATION_ERROR_CODES = Object.freeze({
   DECISION_RECORD_PARSE_FAILED: 'ERR_HELP_VALIDATION_DECISION_RECORD_PARSE_FAILED',
 });
 
-const SIDEcar_AUTHORITY_SOURCE_PATH = 'bmad-fork/src/core/tasks/help.artifact.yaml';
+const SIDEcar_AUTHORITY_SOURCE_PATH = 'bmad-fork/src/core/tasks/help/skill-manifest.yaml';
 const SOURCE_MARKDOWN_SOURCE_PATH = 'bmad-fork/src/core/tasks/help.md';
 const EVIDENCE_ISSUER_COMPONENT = 'bmad-fork/tools/cli/installers/lib/core/help-validation-harness.js';
 
@@ -536,15 +541,8 @@ class HelpValidationHarness {
     };
   }
 
-  resolveSourceArtifactPaths(options = {}) {
+  async resolveSourceArtifactPaths(options = {}) {
     const projectDir = path.resolve(options.projectDir || process.cwd());
-
-    const sidecarCandidates = [
-      options.sidecarPath,
-      path.join(projectDir, 'bmad-fork', 'src', 'core', 'tasks', 'help.artifact.yaml'),
-      path.join(projectDir, 'src', 'core', 'tasks', 'help.artifact.yaml'),
-      getSourcePath('core', 'tasks', 'help.artifact.yaml'),
-    ].filter(Boolean);
 
     const sourceMarkdownCandidates = [
       options.sourceMarkdownPath,
@@ -562,12 +560,33 @@ class HelpValidationHarness {
       return candidates[0];
     };
 
-    return Promise.all([resolveExistingPath(sidecarCandidates), resolveExistingPath(sourceMarkdownCandidates)]).then(
-      ([sidecarPath, sourceMarkdownPath]) => ({
-        sidecarPath,
-        sourceMarkdownPath,
-      }),
-    );
+    const sourceMarkdownPath = await resolveExistingPath(sourceMarkdownCandidates);
+
+    let resolvedMetadataAuthority;
+    try {
+      resolvedMetadataAuthority = await resolveSkillMetadataAuthority({
+        sourceFilePath: sourceMarkdownPath,
+        metadataPath: options.sidecarPath || '',
+        projectRoot: projectDir,
+        ambiguousErrorCode: HELP_VALIDATION_ERROR_CODES.METADATA_RESOLUTION_FAILED,
+      });
+    } catch (error) {
+      throw new HelpValidationHarnessError({
+        code: HELP_VALIDATION_ERROR_CODES.METADATA_RESOLUTION_FAILED,
+        detail: error.detail || error.message || 'metadata authority resolution failed',
+        artifactId: 1,
+        fieldPath: normalizeValue(error.fieldPath || '<file>'),
+        sourcePath: normalizePath(error.sourcePath || SIDEcar_AUTHORITY_SOURCE_PATH),
+        observedValue: normalizeValue(error.code || '<resolution-error>'),
+        expectedValue: 'unambiguous metadata authority candidate',
+      });
+    }
+
+    return {
+      sidecarPath: resolvedMetadataAuthority.resolvedAbsolutePath || options.sidecarPath || '',
+      sourceMarkdownPath,
+      metadataAuthority: resolvedMetadataAuthority,
+    };
   }
 
   async readSidecarMetadata(sidecarPath) {

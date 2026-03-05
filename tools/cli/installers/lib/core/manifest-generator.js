@@ -14,9 +14,9 @@ const { validateTaskManifestCompatibilitySurface } = require('./projection-compa
 
 // Load package.json for version info
 const packageJson = require('../../../../../package.json');
-const DEFAULT_EXEMPLAR_HELP_SIDECAR_SOURCE_PATH = 'bmad-fork/src/core/tasks/help.artifact.yaml';
-const DEFAULT_EXEMPLAR_SHARD_DOC_SIDECAR_SOURCE_PATH = 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml';
-const DEFAULT_EXEMPLAR_INDEX_DOCS_SIDECAR_SOURCE_PATH = 'bmad-fork/src/core/tasks/index-docs.artifact.yaml';
+const DEFAULT_EXEMPLAR_HELP_SIDECAR_SOURCE_PATH = 'bmad-fork/src/core/tasks/help/skill-manifest.yaml';
+const DEFAULT_EXEMPLAR_SHARD_DOC_SIDECAR_SOURCE_PATH = 'bmad-fork/src/core/tasks/shard-doc/skill-manifest.yaml';
+const DEFAULT_EXEMPLAR_INDEX_DOCS_SIDECAR_SOURCE_PATH = 'bmad-fork/src/core/tasks/index-docs/skill-manifest.yaml';
 const CANONICAL_ALIAS_TABLE_COLUMNS = Object.freeze([
   'canonicalId',
   'alias',

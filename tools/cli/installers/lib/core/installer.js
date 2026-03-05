@@ -36,13 +36,13 @@ const { CustomHandler } = require('../custom/handler');
 const prompts = require('../../../lib/prompts');
 const { BMAD_FOLDER_NAME } = require('../ide/shared/path-utils');
 
-const EXEMPLAR_HELP_SIDECAR_SOURCE_PATH = 'bmad-fork/src/core/tasks/help.artifact.yaml';
+const EXEMPLAR_HELP_SIDECAR_SOURCE_PATH = 'bmad-fork/src/core/tasks/help/skill-manifest.yaml';
 const EXEMPLAR_HELP_SOURCE_MARKDOWN_SOURCE_PATH = 'bmad-fork/src/core/tasks/help.md';
-const EXEMPLAR_SHARD_DOC_SIDECAR_SOURCE_PATH = 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml';
+const EXEMPLAR_SHARD_DOC_SIDECAR_SOURCE_PATH = 'bmad-fork/src/core/tasks/shard-doc/skill-manifest.yaml';
 const EXEMPLAR_SHARD_DOC_SOURCE_XML_SOURCE_PATH = 'bmad-fork/src/core/tasks/shard-doc.xml';
 const EXEMPLAR_SHARD_DOC_COMPATIBILITY_CATALOG_SOURCE_PATH = 'bmad-fork/src/core/module-help.csv';
 const EXEMPLAR_SHARD_DOC_WORKFLOW_FILE_PATH = '_bmad/core/tasks/shard-doc.xml';
-const EXEMPLAR_INDEX_DOCS_SIDECAR_SOURCE_PATH = 'bmad-fork/src/core/tasks/index-docs.artifact.yaml';
+const EXEMPLAR_INDEX_DOCS_SIDECAR_SOURCE_PATH = 'bmad-fork/src/core/tasks/index-docs/skill-manifest.yaml';
 const EXEMPLAR_INDEX_DOCS_SOURCE_XML_SOURCE_PATH = 'bmad-fork/src/core/tasks/index-docs.xml';
 const EXEMPLAR_INDEX_DOCS_COMPATIBILITY_CATALOG_SOURCE_PATH = 'bmad-fork/src/core/module-help.csv';
 const EXEMPLAR_INDEX_DOCS_WORKFLOW_FILE_PATH = '_bmad/core/tasks/index-docs.xml';

@@ -5,6 +5,7 @@ const fs = require('fs-extra');
 const yaml = require('yaml');
 const csv = require('csv-parse/sync');
 const { getSourcePath } = require('../../../lib/project-root');
+const { resolveSkillMetadataAuthority } = require('./sidecar-contract-validator');
 const { normalizeDisplayedCommandLabel } = require('./help-catalog-generator');
 const { ManifestGenerator } = require('./manifest-generator');
 const {
@@ -14,12 +15,13 @@ const {
   validateGithubCopilotHelpLoaderEntries,
 } = require('./projection-compatibility-validator');
 
-const SHARD_DOC_SIDECAR_SOURCE_PATH = 'bmad-fork/src/core/tasks/shard-doc.artifact.yaml';
+const SHARD_DOC_SIDECAR_SOURCE_PATH = 'bmad-fork/src/core/tasks/shard-doc/skill-manifest.yaml';
 const SHARD_DOC_SOURCE_XML_SOURCE_PATH = 'bmad-fork/src/core/tasks/shard-doc.xml';
 const SHARD_DOC_EVIDENCE_ISSUER_COMPONENT = 'bmad-fork/tools/cli/installers/lib/core/shard-doc-validation-harness.js';
 
 const SHARD_DOC_VALIDATION_ERROR_CODES = Object.freeze({
   REQUIRED_ARTIFACT_MISSING: 'ERR_SHARD_DOC_VALIDATION_REQUIRED_ARTIFACT_MISSING',
+  METADATA_RESOLUTION_FAILED: 'ERR_SHARD_DOC_VALIDATION_METADATA_RESOLUTION_FAILED',
   CSV_SCHEMA_MISMATCH: 'ERR_SHARD_DOC_VALIDATION_CSV_SCHEMA_MISMATCH',
   REQUIRED_ROW_MISSING: 'ERR_SHARD_DOC_VALIDATION_REQUIRED_ROW_MISSING',
   YAML_SCHEMA_MISMATCH: 'ERR_SHARD_DOC_VALIDATION_YAML_SCHEMA_MISMATCH',
@@ -888,16 +890,34 @@ class ShardDocValidationHarness {
     const runtimeFolder = normalizeValue(options.bmadFolderName || '_bmad');
     const bmadDir = path.resolve(options.bmadDir || path.join(outputPaths.projectDir, runtimeFolder));
     const artifactPaths = this.buildArtifactPathsMap(outputPaths);
-    const sidecarPath =
-      options.sidecarPath ||
-      ((await fs.pathExists(path.join(outputPaths.projectDir, SHARD_DOC_SIDECAR_SOURCE_PATH)))
-        ? path.join(outputPaths.projectDir, SHARD_DOC_SIDECAR_SOURCE_PATH)
-        : getSourcePath('core', 'tasks', 'shard-doc.artifact.yaml'));
     const sourceXmlPath =
       options.sourceXmlPath ||
       ((await fs.pathExists(path.join(outputPaths.projectDir, SHARD_DOC_SOURCE_XML_SOURCE_PATH)))
         ? path.join(outputPaths.projectDir, SHARD_DOC_SOURCE_XML_SOURCE_PATH)
         : getSourcePath('core', 'tasks', 'shard-doc.xml'));
+    let resolvedMetadataAuthority;
+    try {
+      resolvedMetadataAuthority = await resolveSkillMetadataAuthority({
+        sourceFilePath: sourceXmlPath,
+        metadataPath: options.sidecarPath || '',
+        projectRoot: outputPaths.projectDir,
+        ambiguousErrorCode: SHARD_DOC_VALIDATION_ERROR_CODES.METADATA_RESOLUTION_FAILED,
+      });
+    } catch (error) {
+      throw new ShardDocValidationHarnessError({
+        code: SHARD_DOC_VALIDATION_ERROR_CODES.METADATA_RESOLUTION_FAILED,
+        detail: error.detail || error.message || 'metadata authority resolution failed',
+        artifactId: 1,
+        fieldPath: normalizeValue(error.fieldPath || '<file>'),
+        sourcePath: normalizePath(error.sourcePath || SHARD_DOC_SIDECAR_SOURCE_PATH),
+        observedValue: normalizeValue(error.code || '<resolution-error>'),
+        expectedValue: 'unambiguous metadata authority candidate',
+      });
+    }
+    const sidecarPath =
+      resolvedMetadataAuthority.resolvedAbsolutePath ||
+      options.sidecarPath ||
+      path.join(path.dirname(sourceXmlPath), path.basename(sourceXmlPath, path.extname(sourceXmlPath)), 'skill-manifest.yaml');
 
     await fs.ensureDir(outputPaths.validationRoot);
 
