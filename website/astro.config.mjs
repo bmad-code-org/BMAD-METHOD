@@ -102,25 +102,29 @@ export default defineConfig({
 
       // Sidebar configuration (Diataxis structure)
       sidebar: [
-        { label: 'Welcome', slug: 'index' },
-        { label: 'Roadmap', slug: 'roadmap' },
+        { label: 'Welcome', translations: { 'zh-CN': '欢迎' }, slug: 'index' },
+        { label: 'Roadmap', translations: { 'zh-CN': '路线图' }, slug: 'roadmap' },
         {
           label: 'Tutorials',
+          translations: { 'zh-CN': '教程' },
           collapsed: false,
           autogenerate: { directory: 'tutorials' },
         },
         {
           label: 'How-To Guides',
+          translations: { 'zh-CN': '操作指南' },
           collapsed: true,
           autogenerate: { directory: 'how-to' },
         },
         {
           label: 'Explanation',
+          translations: { 'zh-CN': '概念说明' },
           collapsed: true,
           autogenerate: { directory: 'explanation' },
         },
         {
           label: 'Reference',
+          translations: { 'zh-CN': '参考' },
           collapsed: true,
           autogenerate: { directory: 'reference' },
         },
