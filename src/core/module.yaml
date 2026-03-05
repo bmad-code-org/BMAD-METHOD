@@ -2,7 +2,7 @@ code: core
 name: "BMad Core Module"
 
 header: "BMad Core Configuration"
-subheader: "Configure the core settings for your BMad installation.\nThese settings will be used across all modules and agents."
+subheader: "Configure the core settings for your BMad installation.\nThese settings will be used across all installed bmad skills, workflows, and agents."
 
 user_name:
   prompt: "What should agents call you? (Use your name or a team name)"
@@ -23,3 +23,13 @@ output_folder:
   prompt: "Where should output files be saved?"
   default: "_bmad-output"
   result: "{project-root}/{value}"
+
+tool_supports_subagents:
+  prompt: "Subagents are supported by the LLM or Tool I will be using?"
+  default: true
+  result: "{value}"
+
+tool_supports_agent_teams:
+  prompt: "Agent Teams are supported by the LLM or Tool I will be using?"
+  default: false
+  result: "{value}"
