@@ -1,5 +1,5 @@
 ---
-description: {{description}}
+description: "{{description}}"
 ---
 
 # {{name}}
