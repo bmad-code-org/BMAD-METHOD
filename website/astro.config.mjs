@@ -41,6 +41,19 @@ export default defineConfig({
       title: 'BMAD Method',
       tagline: 'AI-driven agile development with specialized agents and workflows that scale from bug fixes to enterprise platforms.',
 
+      // i18n: English as root (no URL prefix), Chinese at /zh-cn/
+      defaultLocale: 'root',
+      locales: {
+        root: {
+          label: 'English',
+          lang: 'en',
+        },
+        'zh-cn': {
+          label: '简体中文',
+          lang: 'zh-CN',
+        },
+      },
+
       logo: {
         light: './public/img/bmad-light.png',
         dark: './public/img/bmad-dark.png',

@@ -15,7 +15,7 @@ sidebar:
 - 您希望智能体在每次启动时执行特定操作
 
 :::note[前置条件]
-- 在项目中安装了 BMad（参见[如何安装 BMad](./install-bmad_cn.md)）
+- 在项目中安装了 BMad（参见[如何安装 BMad](./install-bmad.md)）
 - 用于编辑 YAML 文件的文本编辑器
 :::
 

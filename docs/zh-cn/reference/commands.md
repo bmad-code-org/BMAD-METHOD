@@ -83,7 +83,7 @@ BMad 提供两种开始工作的方式，它们服务于不同的目的。
 | `/bmad-agent-bmm-architect` | Winston（架构师） | 设计系统架构 |
 | `/bmad-agent-bmm-sm` | Bob（Scrum Master） | 管理冲刺和故事 |
 
-参见[智能体](./agents_cn.md)获取默认智能体及其触发器的完整列表。
+参见[智能体](./agents.md)获取默认智能体及其触发器的完整列表。
 
 ### 工作流命令
 
@@ -97,7 +97,7 @@ BMad 提供两种开始工作的方式，它们服务于不同的目的。
 | `/bmad-bmm-code-review` | 运行代码审查 |
 | `/bmad-bmm-quick-spec` | 定义临时更改（快速流程） |
 
-参见[工作流地图](./workflow-map_cn.md)获取按阶段组织的完整工作流参考。
+参见[工作流地图](./workflow-map.md)获取按阶段组织的完整工作流参考。
 
 ### 任务和工具命令
 
@@ -140,7 +140,7 @@ BMad 提供两种开始工作的方式，它们服务于不同的目的。
 | `bmad-<module>-<workflow>` | 工作流命令 | `bmad-bmm-create-prd` |
 | `bmad-<name>` | 核心任务或工具 | `bmad-help` |
 
-模块代码：`bmm`（敏捷套件）、`bmb`（构建器）、`tea`（测试架构师）、`cis`（创意智能）、`gds`（游戏开发工作室）。参见[模块](./modules_cn.md)获取描述。
+模块代码：`bmm`（敏捷套件）、`bmb`（构建器）、`tea`（测试架构师）、`cis`（创意智能）、`gds`（游戏开发工作室）。参见[模块](./modules.md)获取描述。
 
 ## 故障排除
 
