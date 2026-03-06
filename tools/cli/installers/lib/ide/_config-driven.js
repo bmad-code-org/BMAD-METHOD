@@ -1,5 +1,6 @@
 const path = require('node:path');
 const fs = require('fs-extra');
+const yaml = require('yaml');
 const { BaseIdeSetup } = require('./_base-ide');
 const prompts = require('../../../lib/prompts');
 const { AgentCommandGenerator } = require('./shared/agent-command-generator');
@@ -39,8 +40,8 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
       const conflict = await this.findAncestorConflict(projectDir);
       if (conflict) {
         await prompts.log.error(
-          `Found existing BMAD commands in ancestor installation: ${conflict}\n` +
-            `  ${this.name} inherits commands from parent directories, so this would cause duplicates.\n` +
+          `Found existing BMAD skills in ancestor installation: ${conflict}\n` +
+            `  ${this.name} inherits skills from parent directories, so this would cause duplicates.\n` +
             `  Please remove the BMAD files from that directory first:\n` +
             `    rm -rf "${conflict}"/bmad*`,
         );
@@ -165,8 +166,13 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
     for (const artifact of artifacts) {
       const content = this.renderTemplate(template, artifact);
       const filename = this.generateFilename(artifact, 'agent', extension);
-      const filePath = path.join(targetPath, filename);
-      await this.writeFile(filePath, content);
+
+      if (config.skill_format) {
+        await this.writeSkillFile(targetPath, artifact, content);
+      } else {
+        const filePath = path.join(targetPath, filename);
+        await this.writeFile(filePath, content);
+      }
       count++;
     }
 
@@ -198,8 +204,13 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
         const { content: template, extension } = await this.loadTemplate(workflowTemplateType, '', config, finalTemplateType);
         const content = this.renderTemplate(template, artifact);
         const filename = this.generateFilename(artifact, 'workflow', extension);
-        const filePath = path.join(targetPath, filename);
-        await this.writeFile(filePath, content);
+
+        if (config.skill_format) {
+          await this.writeSkillFile(targetPath, artifact, content);
+        } else {
+          const filePath = path.join(targetPath, filename);
+          await this.writeFile(filePath, content);
+        }
         count++;
       }
     }
@@ -241,8 +252,13 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
 
       const content = this.renderTemplate(template, artifact);
       const filename = this.generateFilename(artifact, artifact.type, extension);
-      const filePath = path.join(targetPath, filename);
-      await this.writeFile(filePath, content);
+
+      if (config.skill_format) {
+        await this.writeSkillFile(targetPath, artifact, content);
+      } else {
+        const filePath = path.join(targetPath, filename);
+        await this.writeFile(filePath, content);
+      }
 
       if (artifact.type === 'task') {
         taskCount++;
@@ -423,6 +439,71 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
     rendered = rendered.replaceAll('{{bmadFolderName}}', this.bmadFolderName);
 
     return rendered;
+  }
+
+  /**
+   * Write artifact as a skill directory with SKILL.md inside.
+   * Mirrors codex.js writeSkillArtifacts() approach.
+   * @param {string} targetPath - Base skills directory
+   * @param {Object} artifact - Artifact data
+   * @param {string} content - Rendered template content
+   */
+  async writeSkillFile(targetPath, artifact, content) {
+    const { resolveSkillName } = require('./shared/path-utils');
+
+    // Get the skill name (prefers canonicalId, falls back to path-derived) and remove .md
+    const flatName = resolveSkillName(artifact);
+    const skillName = path.basename(flatName.replace(/\.md$/, ''));
+
+    if (!skillName) {
+      throw new Error(`Cannot derive skill name for artifact: ${artifact.relativePath || JSON.stringify(artifact)}`);
+    }
+
+    // Create skill directory
+    const skillDir = path.join(targetPath, skillName);
+    await fs.ensureDir(skillDir);
+
+    // Transform content: rewrite frontmatter for skills format
+    const skillContent = this.transformToSkillFormat(content, skillName);
+
+    await fs.writeFile(path.join(skillDir, 'SKILL.md'), skillContent, 'utf8');
+  }
+
+  /**
+   * Transform artifact content to Agent Skills format.
+   * Rewrites frontmatter to contain only unquoted name and description.
+   * @param {string} content - Original content with YAML frontmatter
+   * @param {string} skillName - Skill name (must match directory name)
+   * @returns {string} Transformed content
+   */
+  transformToSkillFormat(content, skillName) {
+    // Normalize line endings
+    content = content.replaceAll('\r\n', '\n').replaceAll('\r', '\n');
+
+    // Parse frontmatter
+    const fmMatch = content.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
+    if (!fmMatch) {
+      // No frontmatter -- wrap with minimal frontmatter
+      const fm = yaml.stringify({ name: skillName, description: skillName }).trimEnd();
+      return `---\n${fm}\n---\n\n${content}`;
+    }
+
+    const frontmatter = fmMatch[1];
+    const body = fmMatch[2];
+
+    // Parse frontmatter with yaml library to extract description
+    let description;
+    try {
+      const parsed = yaml.parse(frontmatter);
+      const rawDesc = parsed?.description;
+      description = typeof rawDesc === 'string' && rawDesc ? rawDesc : `${skillName} skill`;
+    } catch {
+      description = `${skillName} skill`;
+    }
+
+    // Build new frontmatter with only name and description, unquoted
+    const newFrontmatter = yaml.stringify({ name: skillName, description: String(description) }, { lineWidth: 0 }).trimEnd();
+    return `---\n${newFrontmatter}\n---\n${body}`;
   }
 
   /**
