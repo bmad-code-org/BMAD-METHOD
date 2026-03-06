@@ -50,15 +50,15 @@ Support assumption: full Agent Skills support. BMAD currently installs legacy co
 
 ## Windsurf
 
-Support assumption: full Agent Skills support. BMAD currently installs workflow files to `.windsurf/workflows`; target should move to `.windsurf/skills`.
+Support assumption: full Agent Skills support. Windsurf docs confirm workspace skills at `.windsurf/skills` and global skills at `~/.codeium/windsurf/skills`. BMAD has now migrated from `.windsurf/workflows` to `.windsurf/skills`.
 
-- [ ] Confirm Windsurf native skills directory and inheritance behavior
-- [ ] Implement installer migration to native skills output
-- [ ] Add legacy cleanup for `.windsurf/workflows`
-- [ ] Test fresh install
-- [ ] Test reinstall/upgrade from legacy workflow output
-- [ ] Confirm ancestor conflict protection where applicable
-- [ ] Implement/extend automated tests
+- [x] Confirm Windsurf native skills directory as `.windsurf/skills`
+- [x] Implement installer migration to native skills output
+- [x] Add legacy cleanup for `.windsurf/workflows`
+- [x] Test fresh install
+- [x] Test reinstall/upgrade from legacy workflow output
+- [x] Confirm no ancestor conflict protection is needed because manual Windsurf verification showed child-local `@` skills loaded while a parent-only skill was not inherited
+- [x] Implement/extend automated tests
 - [ ] Commit
 
 ## Cline
