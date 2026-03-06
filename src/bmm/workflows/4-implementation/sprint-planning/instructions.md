@@ -95,6 +95,7 @@ development_status:
 
 ```yaml
 # generated: {date}
+# last_updated: {date}
 # project: {project_name}
 # project_key: {project_key}
 # tracking_system: {tracking_system}
@@ -130,6 +131,7 @@ development_status:
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: { date }
+last_updated: { date }
 project: { project_name }
 project_key: { project_key }
 tracking_system: { tracking_system }
