@@ -228,9 +228,56 @@ async function runTests() {
   console.log('');
 
   // ============================================================
-  // Test 5: QA Agent Compilation
+  // Test 5: Kiro Native Skills Install
   // ============================================================
-  console.log(`${colors.yellow}Test Suite 5: QA Agent Compilation${colors.reset}\n`);
+  console.log(`${colors.yellow}Test Suite 5: Kiro Native Skills${colors.reset}\n`);
+
+  try {
+    clearCache();
+    const platformCodes = await loadPlatformCodes();
+    const kiroInstaller = platformCodes.platforms.kiro?.installer;
+
+    assert(kiroInstaller?.target_dir === '.kiro/skills', 'Kiro target_dir uses native skills path');
+
+    assert(kiroInstaller?.skill_format === true, 'Kiro installer enables native skill output');
+
+    assert(
+      Array.isArray(kiroInstaller?.legacy_targets) && kiroInstaller.legacy_targets.includes('.kiro/steering'),
+      'Kiro installer cleans legacy steering output',
+    );
+
+    const tempProjectDir = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-kiro-test-'));
+    const installedBmadDir = await findInstalledBmadDir(projectRoot);
+    const legacyDir = path.join(tempProjectDir, '.kiro', 'steering', 'bmad-legacy-dir');
+    await fs.ensureDir(legacyDir);
+    await fs.writeFile(path.join(tempProjectDir, '.kiro', 'steering', 'bmad-legacy.md'), 'legacy\n');
+    await fs.writeFile(path.join(legacyDir, 'SKILL.md'), 'legacy\n');
+
+    const ideManager = new IdeManager();
+    await ideManager.ensureInitialized();
+    const result = await ideManager.setup('kiro', tempProjectDir, installedBmadDir, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+
+    assert(result.success === true, 'Kiro setup succeeds against temp project');
+
+    const skillFile = path.join(tempProjectDir, '.kiro', 'skills', 'bmad-master', 'SKILL.md');
+    assert(await fs.pathExists(skillFile), 'Kiro install writes SKILL.md directory output');
+
+    assert(!(await fs.pathExists(path.join(tempProjectDir, '.kiro', 'steering'))), 'Kiro setup removes legacy steering dir');
+
+    await fs.remove(tempProjectDir);
+  } catch (error) {
+    assert(false, 'Kiro native skills migration test succeeds', error.message);
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test 6: QA Agent Compilation
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 6: QA Agent Compilation${colors.reset}\n`);
 
   try {
     const builder = new YamlXmlBuilder();

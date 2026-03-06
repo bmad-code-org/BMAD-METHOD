@@ -137,8 +137,11 @@ platforms:
     category: ide
     description: "Amazon's AI-powered IDE"
     installer:
-      target_dir: .kiro/steering
+      legacy_targets:
+        - .kiro/steering
+      target_dir: .kiro/skills
       template_type: kiro
+      skill_format: true
 
   opencode:
     name: "OpenCode"
