@@ -62,6 +62,7 @@ platforms:
     installer:
       legacy_targets:
         - .codex/prompts
+        - ~/.codex/prompts
       target_dir: .agents/skills
       template_type: default
       skill_format: true
