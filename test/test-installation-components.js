@@ -48,24 +48,37 @@ function assert(condition, testName, errorMessage = '') {
   }
 }
 
-/**
- * Resolve the shared installed BMAD payload for this worktree layout.
- */
-async function findInstalledBmadDir(startDir) {
-  let current = path.resolve(startDir);
+async function createTestBmadFixture() {
+  const fixtureDir = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-fixture-'));
 
-  while (true) {
-    const candidate = path.join(current, '_bmad');
-    if (await fs.pathExists(path.join(candidate, '_config', 'workflow-manifest.csv'))) {
-      return candidate;
-    }
+  // Minimal workflow manifest (generators check for this)
+  await fs.ensureDir(path.join(fixtureDir, '_config'));
+  await fs.writeFile(path.join(fixtureDir, '_config', 'workflow-manifest.csv'), '');
 
-    const parent = path.dirname(current);
-    if (parent === current) {
-      throw new Error(`Could not locate installed _bmad payload from ${startDir}`);
-    }
-    current = parent;
-  }
+  // Minimal compiled agent for core/agents (contains <agent tag and frontmatter)
+  const minimalAgent = [
+    '---',
+    'name: "test agent"',
+    'description: "Minimal test agent fixture"',
+    '---',
+    '',
+    'You are a test agent.',
+    '',
+    '<agent id="test-agent.agent.yaml" name="Test Agent" title="Test Agent">',
+    '<persona>Test persona</persona>',
+    '</agent>',
+  ].join('\n');
+
+  await fs.ensureDir(path.join(fixtureDir, 'core', 'agents'));
+  await fs.writeFile(path.join(fixtureDir, 'core', 'agents', 'bmad-master.md'), minimalAgent);
+  // Skill manifest so the installer uses 'bmad-master' as the canonical skill name
+  await fs.writeFile(path.join(fixtureDir, 'core', 'agents', 'bmad-skill-manifest.yaml'), 'bmad-master.md:\n  canonicalId: bmad-master\n');
+
+  // Minimal compiled agent for bmm module (tests use selectedModules: ['bmm'])
+  await fs.ensureDir(path.join(fixtureDir, 'bmm', 'agents'));
+  await fs.writeFile(path.join(fixtureDir, 'bmm', 'agents', 'test-bmm-agent.md'), minimalAgent);
+
+  return fixtureDir;
 }
 
 /**
@@ -200,7 +213,7 @@ async function runTests() {
     );
 
     const tempProjectDir = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-windsurf-test-'));
-    const installedBmadDir = await findInstalledBmadDir(projectRoot);
+    const installedBmadDir = await createTestBmadFixture();
     const legacyDir = path.join(tempProjectDir, '.windsurf', 'workflows', 'bmad-legacy-dir');
     await fs.ensureDir(legacyDir);
     await fs.writeFile(path.join(tempProjectDir, '.windsurf', 'workflows', 'bmad-legacy.md'), 'legacy\n');
@@ -221,6 +234,7 @@ async function runTests() {
     assert(!(await fs.pathExists(path.join(tempProjectDir, '.windsurf', 'workflows'))), 'Windsurf setup removes legacy workflows dir');
 
     await fs.remove(tempProjectDir);
+    await fs.remove(installedBmadDir);
   } catch (error) {
     assert(false, 'Windsurf native skills migration test succeeds', error.message);
   }
@@ -247,7 +261,7 @@ async function runTests() {
     );
 
     const tempProjectDir = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-kiro-test-'));
-    const installedBmadDir = await findInstalledBmadDir(projectRoot);
+    const installedBmadDir = await createTestBmadFixture();
     const legacyDir = path.join(tempProjectDir, '.kiro', 'steering', 'bmad-legacy-dir');
     await fs.ensureDir(legacyDir);
     await fs.writeFile(path.join(tempProjectDir, '.kiro', 'steering', 'bmad-legacy.md'), 'legacy\n');
@@ -268,6 +282,7 @@ async function runTests() {
     assert(!(await fs.pathExists(path.join(tempProjectDir, '.kiro', 'steering'))), 'Kiro setup removes legacy steering dir');
 
     await fs.remove(tempProjectDir);
+    await fs.remove(installedBmadDir);
   } catch (error) {
     assert(false, 'Kiro native skills migration test succeeds', error.message);
   }
@@ -294,7 +309,7 @@ async function runTests() {
     );
 
     const tempProjectDir = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-antigravity-test-'));
-    const installedBmadDir = await findInstalledBmadDir(projectRoot);
+    const installedBmadDir = await createTestBmadFixture();
     const legacyDir = path.join(tempProjectDir, '.agent', 'workflows', 'bmad-legacy-dir');
     await fs.ensureDir(legacyDir);
     await fs.writeFile(path.join(tempProjectDir, '.agent', 'workflows', 'bmad-legacy.md'), 'legacy\n');
@@ -315,6 +330,7 @@ async function runTests() {
     assert(!(await fs.pathExists(path.join(tempProjectDir, '.agent', 'workflows'))), 'Antigravity setup removes legacy workflows dir');
 
     await fs.remove(tempProjectDir);
+    await fs.remove(installedBmadDir);
   } catch (error) {
     assert(false, 'Antigravity native skills migration test succeeds', error.message);
   }
@@ -346,7 +362,7 @@ async function runTests() {
     );
 
     const tempProjectDir = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-auggie-test-'));
-    const installedBmadDir = await findInstalledBmadDir(projectRoot);
+    const installedBmadDir = await createTestBmadFixture();
     const legacyDir = path.join(tempProjectDir, '.augment', 'commands', 'bmad-legacy-dir');
     await fs.ensureDir(legacyDir);
     await fs.writeFile(path.join(tempProjectDir, '.augment', 'commands', 'bmad-legacy.md'), 'legacy\n');
@@ -367,6 +383,7 @@ async function runTests() {
     assert(!(await fs.pathExists(path.join(tempProjectDir, '.augment', 'commands'))), 'Auggie setup removes legacy commands dir');
 
     await fs.remove(tempProjectDir);
+    await fs.remove(installedBmadDir);
   } catch (error) {
     assert(false, 'Auggie native skills migration test succeeds', error.message);
   }
@@ -398,7 +415,7 @@ async function runTests() {
     );
 
     const tempProjectDir = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-opencode-test-'));
-    const installedBmadDir = await findInstalledBmadDir(projectRoot);
+    const installedBmadDir = await createTestBmadFixture();
     const legacyDirs = [
       path.join(tempProjectDir, '.opencode', 'agents', 'bmad-legacy-agent'),
       path.join(tempProjectDir, '.opencode', 'commands', 'bmad-legacy-command'),
@@ -432,6 +449,7 @@ async function runTests() {
     }
 
     await fs.remove(tempProjectDir);
+    await fs.remove(installedBmadDir);
   } catch (error) {
     assert(false, 'OpenCode native skills migration test succeeds', error.message);
   }
@@ -447,7 +465,7 @@ async function runTests() {
     const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-opencode-ancestor-test-'));
     const parentProjectDir = path.join(tempRoot, 'parent');
     const childProjectDir = path.join(parentProjectDir, 'child');
-    const installedBmadDir = await findInstalledBmadDir(projectRoot);
+    const installedBmadDir = await createTestBmadFixture();
 
     await fs.ensureDir(path.join(parentProjectDir, '.git'));
     await fs.ensureDir(path.join(parentProjectDir, '.opencode', 'skills', 'bmad-existing'));
@@ -470,6 +488,7 @@ async function runTests() {
     );
 
     await fs.remove(tempRoot);
+    await fs.remove(installedBmadDir);
   } catch (error) {
     assert(false, 'OpenCode ancestor conflict protection test succeeds', error.message);
   }
