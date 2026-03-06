@@ -1,3 +1,4 @@
+const os = require('node:os');
 const path = require('node:path');
 const fs = require('fs-extra');
 const yaml = require('yaml');
@@ -645,8 +646,12 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
     if (this.installerConfig?.legacy_targets) {
       if (!options.silent) await prompts.log.message('  Migrating legacy directories...');
       for (const legacyDir of this.installerConfig.legacy_targets) {
-        await this.cleanupTarget(projectDir, legacyDir, options);
-        await this.removeEmptyParents(projectDir, legacyDir);
+        if (this.isGlobalPath(legacyDir)) {
+          await this.warnGlobalLegacy(legacyDir, options);
+        } else {
+          await this.cleanupTarget(projectDir, legacyDir, options);
+          await this.removeEmptyParents(projectDir, legacyDir);
+        }
       }
     }
 
@@ -667,6 +672,41 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
       }
     } else if (this.installerConfig?.target_dir) {
       await this.cleanupTarget(projectDir, this.installerConfig.target_dir, options);
+    }
+  }
+
+  /**
+   * Check if a path is global (starts with ~ or is absolute)
+   * @param {string} p - Path to check
+   * @returns {boolean}
+   */
+  isGlobalPath(p) {
+    return p.startsWith('~') || path.isAbsolute(p);
+  }
+
+  /**
+   * Warn about stale BMAD files in a global legacy directory (never auto-deletes)
+   * @param {string} legacyDir - Legacy directory path (may start with ~)
+   * @param {Object} options - Options (silent, etc.)
+   */
+  async warnGlobalLegacy(legacyDir, options = {}) {
+    try {
+      const expanded = legacyDir.startsWith('~/')
+        ? path.join(os.homedir(), legacyDir.slice(2))
+        : legacyDir === '~'
+          ? os.homedir()
+          : legacyDir;
+
+      if (!(await fs.pathExists(expanded))) return;
+
+      const entries = await fs.readdir(expanded);
+      const bmadFiles = entries.filter((e) => typeof e === 'string' && e.startsWith('bmad'));
+
+      if (bmadFiles.length > 0 && !options.silent) {
+        await prompts.log.warn(`Found ${bmadFiles.length} stale BMAD file(s) in ${expanded}. Remove manually: rm ${expanded}/bmad-*`);
+      }
+    } catch {
+      // Errors reading global paths are silently ignored
     }
   }
 
