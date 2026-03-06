@@ -59,7 +59,7 @@ Support assumption: full Agent Skills support. Windsurf docs confirm workspace s
 - [x] Test reinstall/upgrade from legacy workflow output
 - [x] Confirm no ancestor conflict protection is needed because manual Windsurf verification showed child-local `@` skills loaded while a parent-only skill was not inherited
 - [x] Implement/extend automated tests
-- [ ] Commit
+- [x] Commit
 
 ## Cline
 
@@ -85,7 +85,7 @@ Support assumption: full Agent Skills support. Antigravity docs confirm workspac
 - [x] Test reinstall/upgrade from legacy workflow output
 - [x] Confirm no ancestor conflict protection is needed because manual Antigravity verification in `/tmp/antigravity-ancestor-repro/parent/child` showed only the child-local `child-only` skill, with no inherited parent `.agent/skills` entry
 - [x] Implement/extend automated tests
-- [ ] Commit
+- [x] Commit
 
 ## Auggie
 
@@ -137,7 +137,7 @@ Support assumption: full Agent Skills support. Kiro docs confirm project skills 
 - [x] Test reinstall/upgrade from legacy steering output
 - [x] Confirm no ancestor conflict protection is needed because manual Kiro verification showed Slash-visible skills from the current workspace only, with no ancestor `.kiro/skills` inheritance
 - [x] Implement/extend automated tests
-- [ ] Commit
+- [x] Commit
 
 ## OpenCode
 
