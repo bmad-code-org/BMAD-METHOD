@@ -433,10 +433,11 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
    * @returns {string} Generated filename
    */
   generateFilename(artifact, artifactType, extension = '.md') {
-    const { toDashPath } = require('./shared/path-utils');
+    const { resolveSkillName } = require('./shared/path-utils');
 
     // Reuse central logic to ensure consistent naming conventions
-    const standardName = toDashPath(artifact.relativePath);
+    // Prefers canonicalId from manifest when available, falls back to path-derived name
+    const standardName = resolveSkillName(artifact);
 
     // Clean up potential double extensions from source files (e.g. .yaml.md, .xml.md -> .md)
     // This handles any extensions that might slip through toDashPath()

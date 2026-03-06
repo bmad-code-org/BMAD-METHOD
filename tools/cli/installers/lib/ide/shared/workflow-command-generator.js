@@ -93,6 +93,7 @@ class WorkflowCommandGenerator {
         name: workflow.name,
         description: workflow.description || `${workflow.name} workflow`,
         module: workflow.module,
+        canonicalId: workflow.canonicalId || '',
         relativePath: path.join(workflow.module, 'workflows', `${workflow.name}.md`),
         workflowPath: workflowRelPath, // Relative path to actual workflow file
         content: commandContent,

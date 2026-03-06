@@ -1,0 +1,3 @@
+canonicalId: bmad-dev-story
+type: workflow
+description: "Execute story implementation following a context-filled story spec file"
