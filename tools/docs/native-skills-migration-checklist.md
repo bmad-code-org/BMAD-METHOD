@@ -46,7 +46,7 @@ Support assumption: full Agent Skills support. BMAD currently installs legacy co
 - [x] Test reinstall/upgrade from legacy command output
 - [x] Confirm no ancestor conflict protection is needed because a child workspace surfaced child `.cursor/skills` entries but not a parent-only skill during manual verification
 - [ ] Implement/extend automated tests
-- [ ] Commit
+- [x] Commit
 
 ## Windsurf
 
@@ -76,15 +76,15 @@ Support assumption: full Agent Skills support. BMAD currently installs workflow 
 
 ## Google Antigravity
 
-Support assumption: full Agent Skills support. BMAD currently installs workflows to `.agent/workflows`; target should move to `.agent/skills`.
+Support assumption: full Agent Skills support. Antigravity docs confirm workspace skills at `.agent/skills/<skill-folder>/` and global skills at `~/.gemini/antigravity/skills/<skill-folder>/`. BMAD has now migrated from `.agent/workflows` to `.agent/skills`.
 
-- [ ] Confirm Antigravity native skills path and project/global precedence
-- [ ] Implement installer migration to native skills output
-- [ ] Add legacy cleanup for `.agent/workflows`
-- [ ] Test fresh install
-- [ ] Test reinstall/upgrade from legacy workflow output
-- [ ] Confirm ancestor conflict protection where applicable
-- [ ] Implement/extend automated tests
+- [x] Confirm Antigravity native skills path and project/global precedence
+- [x] Implement installer migration to native skills output
+- [x] Add legacy cleanup for `.agent/workflows`
+- [x] Test fresh install
+- [x] Test reinstall/upgrade from legacy workflow output
+- [ ] Confirm ancestor conflict protection where applicable because Antigravity docs do not state whether parent-directory `.agent/skills` are inherited; `/tmp/antigravity-ancestor-repro` should be used for manual app verification instead of guessing
+- [x] Implement/extend automated tests
 - [ ] Commit
 
 ## Auggie

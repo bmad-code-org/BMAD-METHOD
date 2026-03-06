@@ -20,8 +20,11 @@ platforms:
     category: ide
     description: "Google's AI development environment"
     installer:
-      target_dir: .agent/workflows
+      legacy_targets:
+        - .agent/workflows
+      target_dir: .agent/skills
       template_type: antigravity
+      skill_format: true
 
   auggie:
     name: "Auggie"
