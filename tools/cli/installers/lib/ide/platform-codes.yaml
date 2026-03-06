@@ -65,6 +65,7 @@ platforms:
       target_dir: .agents/skills
       template_type: default
       skill_format: true
+      ancestor_conflict_check: true
       artifact_types: [agents, workflows, tasks]
 
   codebuddy:
