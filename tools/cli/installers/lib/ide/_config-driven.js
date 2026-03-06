@@ -25,6 +25,34 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
     super(platformCode, platformConfig.name, platformConfig.preferred);
     this.platformConfig = platformConfig;
     this.installerConfig = platformConfig.installer || null;
+
+    // Set configDir from target_dir so base-class detect() works
+    if (this.installerConfig?.target_dir) {
+      this.configDir = this.installerConfig.target_dir;
+    }
+  }
+
+  /**
+   * Detect whether this IDE already has configuration in the project.
+   * For skill_format platforms, checks for bmad-prefixed entries in target_dir
+   * (matching old codex.js behavior) instead of just checking directory existence.
+   * @param {string} projectDir - Project directory
+   * @returns {Promise<boolean>}
+   */
+  async detect(projectDir) {
+    if (this.installerConfig?.skill_format && this.configDir) {
+      const dir = path.join(projectDir || process.cwd(), this.configDir);
+      if (await fs.pathExists(dir)) {
+        try {
+          const entries = await fs.readdir(dir);
+          return entries.some((e) => typeof e === 'string' && e.startsWith('bmad'));
+        } catch {
+          return false;
+        }
+      }
+      return false;
+    }
+    return super.detect(projectDir);
   }
 
   /**
@@ -425,25 +453,26 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
       // No default
     }
 
-    let rendered = template
+    // Replace _bmad placeholder with actual folder name BEFORE inserting paths,
+    // so that paths containing '_bmad' are not corrupted by the blanket replacement.
+    let rendered = template.replaceAll('_bmad', this.bmadFolderName);
+
+    // Replace {{bmadFolderName}} placeholder if present
+    rendered = rendered.replaceAll('{{bmadFolderName}}', this.bmadFolderName);
+
+    rendered = rendered
       .replaceAll('{{name}}', artifact.name || '')
       .replaceAll('{{module}}', artifact.module || 'core')
       .replaceAll('{{path}}', pathToUse)
       .replaceAll('{{description}}', artifact.description || `${artifact.name} ${artifact.type || ''}`)
       .replaceAll('{{workflow_path}}', pathToUse);
 
-    // Replace _bmad placeholder with actual folder name
-    rendered = rendered.replaceAll('_bmad', this.bmadFolderName);
-
-    // Replace {{bmadFolderName}} placeholder if present
-    rendered = rendered.replaceAll('{{bmadFolderName}}', this.bmadFolderName);
-
     return rendered;
   }
 
   /**
    * Write artifact as a skill directory with SKILL.md inside.
-   * Mirrors codex.js writeSkillArtifacts() approach.
+   * Writes artifact as a skill directory with SKILL.md inside.
    * @param {string} targetPath - Base skills directory
    * @param {Object} artifact - Artifact data
    * @param {string} content - Rendered template content
@@ -461,12 +490,12 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
 
     // Create skill directory
     const skillDir = path.join(targetPath, skillName);
-    await fs.ensureDir(skillDir);
+    await this.ensureDir(skillDir);
 
     // Transform content: rewrite frontmatter for skills format
     const skillContent = this.transformToSkillFormat(content, skillName);
 
-    await fs.writeFile(path.join(skillDir, 'SKILL.md'), skillContent, 'utf8');
+    await this.writeFile(path.join(skillDir, 'SKILL.md'), skillContent);
   }
 
   /**
@@ -504,6 +533,64 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
     // Build new frontmatter with only name and description, unquoted
     const newFrontmatter = yaml.stringify({ name: skillName, description: String(description) }, { lineWidth: 0 }).trimEnd();
     return `---\n${newFrontmatter}\n---\n${body}`;
+  }
+
+  /**
+   * Install a custom agent launcher.
+   * For skill_format platforms, produces <skillDir>/SKILL.md.
+   * For flat platforms, produces a single file in target_dir.
+   * @param {string} projectDir - Project directory
+   * @param {string} agentName - Agent name (e.g., "fred-commit-poet")
+   * @param {string} agentPath - Path to compiled agent (relative to project root)
+   * @param {Object} metadata - Agent metadata
+   * @returns {Object|null} Info about created file/skill
+   */
+  async installCustomAgentLauncher(projectDir, agentName, agentPath, metadata) {
+    if (!this.installerConfig?.target_dir) return null;
+
+    const { customAgentDashName } = require('./shared/path-utils');
+    const targetPath = path.join(projectDir, this.installerConfig.target_dir);
+    await this.ensureDir(targetPath);
+
+    // Build artifact to reuse existing template rendering.
+    // The default-agent template already includes the _bmad/ prefix before {{path}},
+    // but agentPath is relative to project root (e.g. "_bmad/custom/agents/fred.md").
+    // Strip the bmadFolderName prefix so the template doesn't produce a double path.
+    const bmadPrefix = this.bmadFolderName + '/';
+    const normalizedPath = agentPath.startsWith(bmadPrefix) ? agentPath.slice(bmadPrefix.length) : agentPath;
+
+    const artifact = {
+      type: 'agent-launcher',
+      name: agentName,
+      description: metadata?.description || `${agentName} agent`,
+      agentPath: normalizedPath,
+      relativePath: normalizedPath,
+      module: 'custom',
+    };
+
+    const { content: template } = await this.loadTemplate(
+      this.installerConfig.template_type || 'default',
+      'agent',
+      this.installerConfig,
+      'default-agent',
+    );
+    const content = this.renderTemplate(template, artifact);
+
+    if (this.installerConfig.skill_format) {
+      const skillName = customAgentDashName(agentName).replace(/\.md$/, '');
+      const skillDir = path.join(targetPath, skillName);
+      await this.ensureDir(skillDir);
+      const skillContent = this.transformToSkillFormat(content, skillName);
+      const skillPath = path.join(skillDir, 'SKILL.md');
+      await this.writeFile(skillPath, skillContent);
+      return { path: path.relative(projectDir, skillPath), command: `$${skillName}` };
+    }
+
+    // Flat file output
+    const filename = customAgentDashName(agentName);
+    const filePath = path.join(targetPath, filename);
+    await this.writeFile(filePath, content);
+    return { path: path.relative(projectDir, filePath), command: agentName };
   }
 
   /**
