@@ -156,15 +156,14 @@ platforms:
     description: "OpenCode terminal coding assistant"
     installer:
       legacy_targets:
+        - .opencode/agents
+        - .opencode/commands
         - .opencode/agent
         - .opencode/command
-      targets:
-        - target_dir: .opencode/agents
-          template_type: opencode
-          artifact_types: [agents]
-        - target_dir: .opencode/commands
-          template_type: opencode
-          artifact_types: [workflows, tasks, tools]
+      target_dir: .opencode/skills
+      template_type: opencode
+      skill_format: true
+      ancestor_conflict_check: true
 
   qwen:
     name: "QwenCoder"

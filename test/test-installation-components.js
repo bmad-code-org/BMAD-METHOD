@@ -374,9 +374,112 @@ async function runTests() {
   console.log('');
 
   // ============================================================
-  // Test 8: QA Agent Compilation
+  // Test 8: OpenCode Native Skills Install
   // ============================================================
-  console.log(`${colors.yellow}Test Suite 8: QA Agent Compilation${colors.reset}\n`);
+  console.log(`${colors.yellow}Test Suite 8: OpenCode Native Skills${colors.reset}\n`);
+
+  try {
+    clearCache();
+    const platformCodes = await loadPlatformCodes();
+    const opencodeInstaller = platformCodes.platforms.opencode?.installer;
+
+    assert(opencodeInstaller?.target_dir === '.opencode/skills', 'OpenCode target_dir uses native skills path');
+
+    assert(opencodeInstaller?.skill_format === true, 'OpenCode installer enables native skill output');
+
+    assert(opencodeInstaller?.ancestor_conflict_check === true, 'OpenCode installer enables ancestor conflict checks');
+
+    assert(
+      Array.isArray(opencodeInstaller?.legacy_targets) &&
+        ['.opencode/agents', '.opencode/commands', '.opencode/agent', '.opencode/command'].every((legacyTarget) =>
+          opencodeInstaller.legacy_targets.includes(legacyTarget),
+        ),
+      'OpenCode installer cleans split legacy agent and command output',
+    );
+
+    const tempProjectDir = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-opencode-test-'));
+    const installedBmadDir = await findInstalledBmadDir(projectRoot);
+    const legacyDirs = [
+      path.join(tempProjectDir, '.opencode', 'agents', 'bmad-legacy-agent'),
+      path.join(tempProjectDir, '.opencode', 'commands', 'bmad-legacy-command'),
+      path.join(tempProjectDir, '.opencode', 'agent', 'bmad-legacy-agent-singular'),
+      path.join(tempProjectDir, '.opencode', 'command', 'bmad-legacy-command-singular'),
+    ];
+
+    for (const legacyDir of legacyDirs) {
+      await fs.ensureDir(legacyDir);
+      await fs.writeFile(path.join(legacyDir, 'SKILL.md'), 'legacy\n');
+      await fs.writeFile(path.join(path.dirname(legacyDir), `${path.basename(legacyDir)}.md`), 'legacy\n');
+    }
+
+    const ideManager = new IdeManager();
+    await ideManager.ensureInitialized();
+    const result = await ideManager.setup('opencode', tempProjectDir, installedBmadDir, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+
+    assert(result.success === true, 'OpenCode setup succeeds against temp project');
+
+    const skillFile = path.join(tempProjectDir, '.opencode', 'skills', 'bmad-master', 'SKILL.md');
+    assert(await fs.pathExists(skillFile), 'OpenCode install writes SKILL.md directory output');
+
+    for (const legacyDir of ['agents', 'commands', 'agent', 'command']) {
+      assert(
+        !(await fs.pathExists(path.join(tempProjectDir, '.opencode', legacyDir))),
+        `OpenCode setup removes legacy .opencode/${legacyDir} dir`,
+      );
+    }
+
+    await fs.remove(tempProjectDir);
+  } catch (error) {
+    assert(false, 'OpenCode native skills migration test succeeds', error.message);
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test 9: OpenCode Ancestor Conflict
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 9: OpenCode Ancestor Conflict${colors.reset}\n`);
+
+  try {
+    const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-opencode-ancestor-test-'));
+    const parentProjectDir = path.join(tempRoot, 'parent');
+    const childProjectDir = path.join(parentProjectDir, 'child');
+    const installedBmadDir = await findInstalledBmadDir(projectRoot);
+
+    await fs.ensureDir(path.join(parentProjectDir, '.git'));
+    await fs.ensureDir(path.join(parentProjectDir, '.opencode', 'skills', 'bmad-existing'));
+    await fs.ensureDir(childProjectDir);
+    await fs.writeFile(path.join(parentProjectDir, '.opencode', 'skills', 'bmad-existing', 'SKILL.md'), 'legacy\n');
+
+    const ideManager = new IdeManager();
+    await ideManager.ensureInitialized();
+    const result = await ideManager.setup('opencode', childProjectDir, installedBmadDir, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+    const expectedConflictDir = await fs.realpath(path.join(parentProjectDir, '.opencode', 'skills'));
+
+    assert(result.success === false, 'OpenCode setup refuses install when ancestor skills already exist');
+    assert(result.handlerResult?.reason === 'ancestor-conflict', 'OpenCode ancestor rejection reports ancestor-conflict reason');
+    assert(
+      result.handlerResult?.conflictDir === expectedConflictDir,
+      'OpenCode ancestor rejection points at ancestor .opencode/skills dir',
+    );
+
+    await fs.remove(tempRoot);
+  } catch (error) {
+    assert(false, 'OpenCode ancestor conflict protection test succeeds', error.message);
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test 10: QA Agent Compilation
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 10: QA Agent Compilation${colors.reset}\n`);
 
   try {
     const builder = new YamlXmlBuilder();
