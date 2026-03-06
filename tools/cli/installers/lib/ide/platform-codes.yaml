@@ -59,7 +59,13 @@ platforms:
     preferred: false
     category: cli
     description: "OpenAI Codex integration"
-    # No installer config - uses custom codex.js
+    installer:
+      legacy_targets:
+        - .codex/prompts
+      target_dir: .agents/skills
+      template_type: default
+      skill_format: true
+      artifact_types: [agents, workflows, tasks]
 
   codebuddy:
     name: "CodeBuddy"
