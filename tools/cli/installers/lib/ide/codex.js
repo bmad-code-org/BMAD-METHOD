@@ -7,7 +7,7 @@ const { WorkflowCommandGenerator } = require('./shared/workflow-command-generato
 const { AgentCommandGenerator } = require('./shared/agent-command-generator');
 const { TaskToolCommandGenerator } = require('./shared/task-tool-command-generator');
 const { getTasksFromBmad } = require('./shared/bmad-artifacts');
-const { toDashPath, customAgentDashName } = require('./shared/path-utils');
+const { toDashPath, resolveSkillName, customAgentDashName } = require('./shared/path-utils');
 const prompts = require('../../../lib/prompts');
 
 /**
@@ -65,6 +65,7 @@ class CodexSetup extends BaseIdeSetup {
         name: task.name,
         displayName: task.name,
         module: task.module,
+        canonicalId: task.canonicalId || '',
         path: task.path,
         sourcePath: task.path,
         relativePath: path.join(task.module, 'tasks', `${task.name}.md`),
@@ -216,8 +217,8 @@ class CodexSetup extends BaseIdeSetup {
         continue;
       }
 
-      // Get the dash-format name (e.g., bmad-bmm-create-prd.md) and remove .md
-      const flatName = toDashPath(artifact.relativePath);
+      // Get the skill name (prefers canonicalId, falls back to path-derived) and remove .md
+      const flatName = resolveSkillName(artifact);
       const skillName = flatName.replace(/\.md$/, '');
 
       // Create skill directory
