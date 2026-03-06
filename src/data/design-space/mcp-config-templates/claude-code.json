@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "design-space": {
+      "command": "node",
+      "args": ["{DESIGN_SPACE_MCP_PATH}/index.js"],
+      "env": {
+        "DESIGN_SPACE_URL": "{DESIGN_SPACE_URL}",
+        "DESIGN_SPACE_ANON_KEY": "{DESIGN_SPACE_ANON_KEY}",
+        "AGENT_ID": "{AGENT_ID}",
+        "AGENT_NAME": "{AGENT_NAME}",
+        "AGENT_PLATFORM": "claude-code",
+        "AGENT_PROJECT": "{PROJECT_NAME}",
+        "AGENT_FRAMEWORK": "WDS"
+      }
+    }
+  }
+}

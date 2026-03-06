@@ -49,20 +49,27 @@ D-Design-System/
 │   ├── icons/                   [Icon sets]
 │   ├── images/                  [Photography, illustrations]
 │   └── graphics/                [Custom graphics and elements]
-└── components/                  [Emerges during Phase 4]
-    ├── interactive/             [Buttons, toggles, tabs]
-    ├── form/                    [Inputs, selects, checkboxes]
-    ├── layout/                  [Containers, grids, sections]
-    ├── content/                 [Cards, lists, media blocks]
-    ├── feedback/                [Alerts, toasts, progress]
-    └── navigation/              [Menus, breadcrumbs, links]
+├── atoms/                       [Level 1: smallest building blocks]
+├── molecules/                   [Level 2: groups of atoms]
+├── organisms/                   [Level 3: complex components]
+├── templates/                   [Level 4: page-level layouts]
+├── pages/                       [Level 5: concrete page instances]
+└── catalog.html                 [Visual component catalog — open in browser]
 ```
 
 **01-Visual-Design/** is used early — before or during scenarios — for exploring visual direction. Mood boards, color palettes, typography tests, and AI-generated design concepts live here.
 
 **02-Assets/** holds final, production-ready assets. Logos, icons, images, and graphics that are referenced from page specifications.
 
-**components/** grows organically during Phase 4 as patterns emerge across page specifications.
+**Component folders** use [Atomic Design](https://bradfrost.com/blog/post/atomic-web-design/) (Brad Frost) — five levels that grow organically during Phase 4 as patterns emerge:
+
+1. **atoms/** — Indivisible elements (buttons, badges, labels, icons)
+2. **molecules/** — Functional groups of atoms (form fields, heading groups, CTAs)
+3. **organisms/** — Complex compositions (headers, footers, cards, carousels)
+4. **templates/** — Page-level layouts (page shell, section container, grid layouts)
+5. **pages/** — Concrete instances with real content and data (homepage, contact page)
+
+Each component gets its own `.md` file with a readable ID (e.g., `btn-primary-cta`, `crd-trust`, `hdr-mobile`). The folder IS the classification — no separate grouping needed.
 
 ---
 
@@ -171,6 +178,8 @@ Nine tokens, symmetric around `text-md` (body text). Freya will propose sizes du
 | text-xl | — | Subheadings |
 | text-2xl | — | Section titles, display text |
 | text-3xl | — | Hero headings, page titles |
+
+> **Tailwind CSS projects:** Tailwind's built-in `text-xs`, `text-sm`, `text-lg`, `text-xl` utilities set font-size and collide with these token names. Use `heading-*` as prefix instead: `heading-3xs` through `heading-3xl`. The scale stays identical — only the prefix changes. Body text and captions keep their own names since they don't collide.
 
 <!--
   text-md (body text) is typically 16px or 14px — the most common baseline on the web.

@@ -218,26 +218,11 @@ Hands-on guide to running a complete evolution cycle
 
 ---
 
-## Course Complete
-
-You've learned the full WDS methodology:
-
-1. **Strategy** — Product Brief, Trigger Map, Platform Requirements
-2. **Design** — Scenarios, Sketches, Storyboards, Specifications, Components, Design System
-3. **Build** — Agentic Development, Visual Design, Design Delivery
-4. **Validate** — Usability Testing
-5. **Evolve** — Product Evolution (this module)
-
-Whether you're starting from a blank page or improving a live product, the process is the same. The scope changes. The discipline doesn't.
-
----
-
 ## What's Next?
 
-- **Apply to a real project** — The only way to truly learn is to do
-- **Join the community** — [Discord](https://discord.gg/whiteport)
-- **Contribute** — WDS is open source
-- **Teach others** — Spread creative discipline
+You've learned the full WDS production pipeline. One more module remains:
+
+**[Module 19: Design Space →](../module-19-design-space/module-19-design-space-overview.md)** — The accumulated consciousness behind your design decisions. Learn how agents build design taste through dual embeddings, feedback loops, and cross-project learning.
 
 **You are the linchpin.**
 

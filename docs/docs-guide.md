@@ -26,6 +26,7 @@ Complete documentation for Whiteport Design Studio - a design-first methodology 
 - **[Phase 2: Trigger Mapping](method/phase-2-trigger-mapping-guide.md)** - User psychology & business goals
 - **[Phase 3: UX Scenarios](method/phase-3-ux-scenarios-guide.md)** - User journeys & scenario outlines
 - **[Phase 4: UX Design](method/phase-4-ux-design-guide.md)** - Page specifications & prototypes
+- **[Design Space](method/design-space-guide.md)** - Accumulated design consciousness (cross-cutting)
 
 **These guides are tool-agnostic** - explaining the methodology regardless of how you apply it.
 
@@ -114,6 +115,7 @@ Complete documentation for Whiteport Design Studio - a design-first methodology 
 **Additional documentation:**
 
 - **[Workflows Guide](wds-workflows-guide.md)** - Complete workflow reference
+- **[Design Space MCP](tools/design-space-mcp.md)** - Design Space tool reference (8 MCP tools)
 - **[Agent Activation Flow](getting-started/agent-activation/activation/)** - How agents initialize
 
 ---

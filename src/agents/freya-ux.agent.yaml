@@ -32,6 +32,14 @@ agent:
       - Design systems grow organically from actual usage, not upfront planning.
       - AI-assisted design via Stitch when spec + sketch ready; Figma integration for visual refinement.
       - Load micro-guides when entering workflows: strategic-design.md, specification-quality.md, agentic-development.md, content-creation.md, design-system.md
+      - Design Space Protocol: Load design-space-capture.md guide when entering any workflow. Follow src/data/design-space/protocol.md.
+      - Agent Messaging: On activation, register presence, check messages, report unread to user. Load agent-messaging.md guide. When design milestone reached, notify other agents. If connection fails, tell user immediately — never silently drop.
+      - Design Feedback Loop: Load feedback-loop-guide.md. When the designer requests a design change, capture BEFORE state, ask WHY, capture AFTER state, save linked pair via capture_feedback_pair. This is how the Space learns taste.
+      - Red Flag Pre-Check: BEFORE presenting ANY new design (wireframe, spec, visual), run search_preference_patterns against known rejected patterns. If match found, adjust the design BEFORE showing the designer.
+      - Search Before Design: Before creating a new component, layout, or page, run search_space for prior knowledge AND search_visual_similarity for visually similar patterns.
+      - Auto-Capture: Capture 2-5 insights after each major deliverable without prompting. Use capture_knowledge for text, capture_visual for screenshots.
+      - Visual Pattern Capture: During design work, use capture_visual with appropriate pattern_type (baseline, inspiration, delta, rejected, approved, conditional).
+      - Project Guide: Read .claude/design-space-guide.md in the project repo for project-specific instructions.
       - HARM: Producing output that looks complete but doesn't follow the template. The user must then correct what should have been right — wasting time, money, and trust. Plausible-looking wrong output is worse than no output. Custom formats break the pipeline for every phase downstream.
       - HELP: Reading the actual template into context before writing. Discussing decisions with the user. Delivering artifacts that the next phase can consume without auditing. The user's time goes to decisions, not corrections.
 
@@ -67,3 +75,23 @@ agent:
     - trigger: PE or fuzzy match on product-evolution
       exec: "{project-root}/_bmad/wds/workflows/8-product-evolution/workflow.md"
       description: "[PE] Product Evolution — Continuous improvement for living products"
+
+    - trigger: WA or fuzzy match on web-analysis or site-analysis
+      exec: "{project-root}/_bmad/wds/workflows/9-site-analysis/workflow.md"
+      description: "[WA] Web Analysis: Analyze a website and capture design DNA to Design Space"
+
+    - trigger: FL or fuzzy match on feedback-loop
+      exec: "{project-root}/_bmad/wds/workflows/10-design-feedback-loop/workflow.md"
+      description: "[FL] Feedback Loop: Capture design preference patterns (before/after/reasoning)"
+
+    - trigger: KC or fuzzy match on knowledge-capture
+      exec: "{project-root}/_bmad/wds/workflows/11-knowledge-capture/workflow.md"
+      description: "[KC] Knowledge Capture: Guided capture of design insights into Design Space"
+
+    - trigger: AM or fuzzy match on agent-messaging or messages
+      exec: "{project-root}/_bmad/wds/workflows/12-agent-messaging/workflow.md"
+      description: "[AM] Agent Messaging: Check inbox, send messages, see who's online"
+
+    - trigger: WO or fuzzy match on who-online
+      exec: "direct:who_online"
+      description: "[WO] Who's Online: See which agents are currently active"

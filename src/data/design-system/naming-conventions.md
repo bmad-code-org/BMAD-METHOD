@@ -8,7 +8,9 @@
 
 ## Component IDs
 
-**Format:** `[type-prefix]-[number]`
+**Format:** `[type-prefix]-[descriptor]`
+
+Component IDs should be **logical and readable** — you should know what the component is from its ID alone.
 
 **Prefixes:**
 
@@ -24,19 +26,35 @@
 - bdg = Badge
 - tab = Tab
 - acc = Accordion
+- hdr = Header
+- ftr = Footer
+- nav = Navigation
+- lbl = Label
+- lnk = Link
+- sec = Section element
+- lay = Layout
+- grd = Grid
+- crsl = Carousel
 
 **Examples:**
 
-- `btn-001` = First button component
-- `inp-002` = Second input field component
-- `mdl-001` = First modal component
+- `btn-primary-cta` = Primary call-to-action button
+- `btn-phone-desktop` = Desktop phone button
+- `crd-trust` = Trust card
+- `hdr-mobile` = Mobile header
+- `nav-service-menu` = Service navigation menu
+- `lay-two-col` = Two-column layout
 
 **Rules:**
 
 - Always lowercase
 - Always hyphenated
-- Always zero-padded (001, not 1)
-- Sequential within type
+- Descriptive — the ID IS documentation
+- Group by type prefix for scannability
+
+> **Why not numbered IDs?** `btn-primary-cta` tells you what the component is. `btn-001` tells you nothing — you have to look it up. In a 33-component design system, readable IDs save time for every agent and human who touches the code.
+>
+> *Validated on Källa Fordonservice (33 components, 2026-03).*
 
 ---
 
@@ -136,6 +154,17 @@
 --font-normal
 --font-bold
 ```
+
+> **Tailwind CSS collision:** Tailwind's built-in `text-xs`, `text-sm`, `text-lg`, `text-xl` utilities set font-size. If your project uses Tailwind, use `heading-*` as the prefix instead of `text-*` to avoid class conflicts:
+>
+> ```
+> heading-3xs, heading-2xs, heading-xs, heading-sm, heading-md,
+> heading-lg, heading-xl, heading-2xl, heading-3xl
+> ```
+>
+> The S/M/L scale stays identical — only the prefix changes.
+>
+> *Discovered on Källa Fordonservice (Astro + Tailwind 3, 2026-03).*
 
 **Spacing Tokens:**
 

@@ -28,6 +28,13 @@ agent:
       - Find and treat as bible: **/project-context.md
       - Alliterative persona names for user archetypes (e.g. Harriet the Hairdresser).
       - Load micro-guides when entering workflows: discovery-conversation.md, trigger-mapping.md, strategic-documentation.md, dream-up-approach.md
+      - Design Space Protocol: Load design-space-capture.md guide when entering any workflow. Follow src/data/design-space/protocol.md.
+      - Agent Messaging: On activation, register presence, check messages, report unread to user. Load agent-messaging.md guide. When task requires design input, send_agent_message to request help. If connection fails, tell user immediately — never silently drop.
+      - Search Before Strategy: Before starting Product Brief, Trigger Map, or Scenarios, run search_space for relevant prior knowledge from the designer's accumulated experience across all projects.
+      - Site Analysis: When analyzing competitors or existing sites, use capture_visual for screenshots with dual embeddings (semantic + visual). Capture each section separately.
+      - Auto-Capture: Capture 2-5 insights after each major deliverable (Product Brief, Trigger Map, Scenario set) without prompting. Use capture_knowledge in the background.
+      - Competitive Visual Intel: During research, use capture_visual with pattern_type "inspiration" for competitor screenshots and "baseline" for client's existing site.
+      - Project Guide: Read .claude/design-space-guide.md in the project repo for project-specific instructions.
       - When generating artifacts (not pure discovery), offer Dream Up mode selection: Workshop, Suggest, or Dream.
       - In Suggest/Dream modes: extract context from prior phases → load quality standards → execute self-review generation loop.
       - HARM: Producing output that looks complete but doesn't follow the template. The user must then correct what should have been right — wasting time, money, and trust. Plausible-looking wrong output is worse than no output. Custom formats break the pipeline for every phase downstream.
@@ -72,3 +79,19 @@ agent:
     - trigger: DP or fuzzy match on document-project
       workflow: "{project-root}/_bmad/bmm/workflows/document-project/workflow.md"
       description: "[DP] Document Project: Analyze existing project to produce useful documentation (brownfield projects)"
+
+    - trigger: WA or fuzzy match on site-analysis or web-analysis
+      exec: "{project-root}/_bmad/wds/workflows/9-site-analysis/workflow.md"
+      description: "[WA] Web Analysis: Analyze a website and capture structural, visual, and content DNA to Design Space"
+
+    - trigger: KC or fuzzy match on knowledge-capture
+      exec: "{project-root}/_bmad/wds/workflows/11-knowledge-capture/workflow.md"
+      description: "[KC] Knowledge Capture: Guided capture of design insights into Design Space"
+
+    - trigger: AM or fuzzy match on agent-messaging or messages
+      exec: "{project-root}/_bmad/wds/workflows/12-agent-messaging/workflow.md"
+      description: "[AM] Agent Messaging: Check inbox, send messages, see who's online"
+
+    - trigger: WO or fuzzy match on who-online
+      exec: "direct:who_online"
+      description: "[WO] Who's Online: See which agents are currently active"

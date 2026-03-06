@@ -120,11 +120,17 @@ Each module contains:
 | 17 | [Usability Testing](../module-17-usability-testing/module-17-usability-testing-overview.md) | Freya | 45 min |
 | 18 | [Product Evolution](../module-18-product-evolution/module-18-product-evolution-overview.md) | Freya | 30 min |
 
+### Cross-Cutting (Module 19) — Agents: Saga + Freya
+
+| Module | Title | Agent | Time |
+|--------|-------|-------|------|
+| 19 | [Design Space](../module-19-design-space/module-19-design-space-overview.md) | Saga + Freya | 45 min |
+
 ---
 
 ## Learning Paths
 
-**Complete Course:** All 18 modules (~10 hours)
+**Complete Course:** All 19 modules (~11 hours)
 
 **Quick Start:** Modules 01, 02, 04, 06, 08, 11 (~6 hours)
 
@@ -144,8 +150,8 @@ WDS uses two AI agents, each with a specific domain:
 
 | Agent | Domain | Phase | Modules |
 |-------|--------|-------|---------|
-| **Saga** | Strategy | Strategy | 3-6 |
-| **Freya** | UX, Visual Design, Development & Evolution | Design, Build & Evolve | 7-18 |
+| **Saga** | Strategy | Strategy | 3-6, 19 |
+| **Freya** | UX, Visual Design, Development & Evolution | Design, Build & Evolve | 7-19 |
 
 Each agent maintains focus on their domain while coordinating with the other.
 

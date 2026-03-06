@@ -374,6 +374,8 @@ Button:
 --text-4xl
 ```
 
+> **Tailwind CSS collision:** In Tailwind projects, `text-*` classes already control font-size (`text-xs`, `text-sm`, `text-lg`, etc.). Use `heading-*` as the prefix for the 9-token scale instead: `heading-3xs` through `heading-3xl`. Same S/M/L system, no collision.
+
 ### Spacing
 
 ```

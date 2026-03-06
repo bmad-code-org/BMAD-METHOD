@@ -143,12 +143,12 @@ Colors:
 
 Typography:
 - Font families
-- Font scales (h1-h6, body, caption)
+- Font scales (9-token symmetric: 3xs → md → 3xl)
 - Font weights
 - Line heights
 
 Spacing:
-- Spacing scale (xs, sm, md, lg, xl)
+- Spacing scale (9-token symmetric: 3xs → md → 3xl)
 - Layout scales
 
 Effects:
@@ -161,30 +161,48 @@ Effects:
 
 ---
 
-### 2. Atomic Design Structure
+### 2. Atomic Design Structure (5 Levels)
 
-**Organize from simple → complex:**
+**Organize from simple → complex using Brad Frost's five levels:**
+
+1. **Atoms** — Smallest UI building blocks that can't be broken down further
+2. **Molecules** — Groups of atoms functioning together as a unit
+3. **Organisms** — Complex components composed of molecules and/or atoms
+4. **Templates** — Page-level layouts that place organisms into a structure
+5. **Pages** — Concrete instances of templates with real content and data
 
 ```
 atoms/
-├── button.md
-├── input.md
-├── label.md
-├── icon.md
-└── badge.md
+├── button.md                  btn-primary
+├── input.md                   inp-text
+├── label.md                   lbl-form
+├── icon.md                    btn-icon
+└── badge.md                   bdg-status
 
 molecules/
-├── form-field.md (label + input + error)
-├── card.md (container + content)
-└── search-box.md (input + button + icon)
+├── form-field.md              mol-form-field (label + input + error)
+├── card.md                    crd-base (container + content)
+└── search-box.md              mol-search (input + button + icon)
 
 organisms/
-├── header.md (logo + nav + search + user-menu)
-├── feature-section.md (headline + cards + cta)
-└── form.md (multiple form-fields + submit)
+├── header.md                  hdr-desktop (logo + nav + search + user-menu)
+├── feature-section.md         sec-features (headline + cards + cta)
+└── form.md                    frm-contact (multiple form-fields + submit)
+
+templates/
+├── page-shell.md              lay-page-shell (header → content → footer)
+├── section-container.md       lay-section (full-width bg + constrained content)
+└── two-column-layout.md       lay-two-col (photo + text split)
+
+pages/
+└── homepage.md                page-home (real content, real data)
 ```
 
-**Why this structure:** Clear dependencies, easy to understand, scales well.
+**The folder IS the classification.** A component's folder tells you its Atomic Design level. The `**Type:**` field in each file confirms it for classification. Both serve a purpose — organization vs. identification.
+
+**Why all 5 levels:** Templates and Pages are where real design decisions happen — responsive breakpoints, content flow, sticky stacks. Without explicit documentation, these patterns are implicit and get lost between agents.
+
+> *Validated on Källa Fordonservice (33 components across all 5 levels, 2026-03).*
 
 ---
 
@@ -219,9 +237,9 @@ organisms/
 ## Component Specification Template
 
 ```markdown
-# [Component Name] [COMP-001]
+# [Component Name] `[component-id]`
 
-**Type:** [Atom|Molecule|Organism]
+**Type:** [Atom|Molecule|Organism|Template|Page]
 **Library:** [shadcn Button|Custom|N/A]
 **Figma:** [Link if Mode B]
 
