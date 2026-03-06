@@ -128,15 +128,15 @@ Support assumption: full Agent Skills support. BMAD currently installs commands 
 
 ## Kiro
 
-Support assumption: full Agent Skills support. BMAD currently installs steering files to `.kiro/steering`; target should move to `.kiro/skills`.
+Support assumption: full Agent Skills support. Kiro docs confirm project skills at `.kiro/skills/<skill-name>/SKILL.md` and describe steering as a separate rules mechanism, not a required compatibility layer. BMAD has now migrated from `.kiro/steering` to `.kiro/skills`.
 
-- [ ] Confirm Kiro skills path and verify BMAD should stop writing steering artifacts for this migration
-- [ ] Implement installer migration to native skills output
-- [ ] Add legacy cleanup for `.kiro/steering`
-- [ ] Test fresh install
-- [ ] Test reinstall/upgrade from legacy steering output
-- [ ] Confirm ancestor conflict protection where applicable
-- [ ] Implement/extend automated tests
+- [x] Confirm Kiro skills path and verify BMAD should stop writing steering artifacts for this migration
+- [x] Implement installer migration to native skills output
+- [x] Add legacy cleanup for `.kiro/steering`
+- [x] Test fresh install
+- [x] Test reinstall/upgrade from legacy steering output
+- [ ] Confirm ancestor conflict protection where applicable; docs only confirm workspace and global scopes, so parent-directory inheritance still needs manual app verification before enabling `ancestor_conflict_check`
+- [x] Implement/extend automated tests
 - [ ] Commit
 
 ## OpenCode
