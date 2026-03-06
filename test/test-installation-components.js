@@ -275,9 +275,56 @@ async function runTests() {
   console.log('');
 
   // ============================================================
-  // Test 6: QA Agent Compilation
+  // Test 6: Antigravity Native Skills Install
   // ============================================================
-  console.log(`${colors.yellow}Test Suite 6: QA Agent Compilation${colors.reset}\n`);
+  console.log(`${colors.yellow}Test Suite 6: Antigravity Native Skills${colors.reset}\n`);
+
+  try {
+    clearCache();
+    const platformCodes = await loadPlatformCodes();
+    const antigravityInstaller = platformCodes.platforms.antigravity?.installer;
+
+    assert(antigravityInstaller?.target_dir === '.agent/skills', 'Antigravity target_dir uses native skills path');
+
+    assert(antigravityInstaller?.skill_format === true, 'Antigravity installer enables native skill output');
+
+    assert(
+      Array.isArray(antigravityInstaller?.legacy_targets) && antigravityInstaller.legacy_targets.includes('.agent/workflows'),
+      'Antigravity installer cleans legacy workflow output',
+    );
+
+    const tempProjectDir = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-antigravity-test-'));
+    const installedBmadDir = await findInstalledBmadDir(projectRoot);
+    const legacyDir = path.join(tempProjectDir, '.agent', 'workflows', 'bmad-legacy-dir');
+    await fs.ensureDir(legacyDir);
+    await fs.writeFile(path.join(tempProjectDir, '.agent', 'workflows', 'bmad-legacy.md'), 'legacy\n');
+    await fs.writeFile(path.join(legacyDir, 'SKILL.md'), 'legacy\n');
+
+    const ideManager = new IdeManager();
+    await ideManager.ensureInitialized();
+    const result = await ideManager.setup('antigravity', tempProjectDir, installedBmadDir, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+
+    assert(result.success === true, 'Antigravity setup succeeds against temp project');
+
+    const skillFile = path.join(tempProjectDir, '.agent', 'skills', 'bmad-master', 'SKILL.md');
+    assert(await fs.pathExists(skillFile), 'Antigravity install writes SKILL.md directory output');
+
+    assert(!(await fs.pathExists(path.join(tempProjectDir, '.agent', 'workflows'))), 'Antigravity setup removes legacy workflows dir');
+
+    await fs.remove(tempProjectDir);
+  } catch (error) {
+    assert(false, 'Antigravity native skills migration test succeeds', error.message);
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test 7: QA Agent Compilation
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 7: QA Agent Compilation${colors.reset}\n`);
 
   try {
     const builder = new YamlXmlBuilder();
