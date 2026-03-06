@@ -128,14 +128,14 @@ Support assumption: full Agent Skills support. BMAD currently installs commands 
 
 ## Kiro
 
-Support assumption: full Agent Skills support. Kiro docs confirm project skills at `.kiro/skills/<skill-name>/SKILL.md` and describe steering as a separate rules mechanism, not a required compatibility layer. BMAD has now migrated from `.kiro/steering` to `.kiro/skills`.
+Support assumption: full Agent Skills support. Kiro docs confirm project skills at `.kiro/skills/<skill-name>/SKILL.md` and describe steering as a separate rules mechanism, not a required compatibility layer. BMAD has now migrated from `.kiro/steering` to `.kiro/skills`. Manual app verification also confirmed that Kiro can surface skills in Slash when the relevant UI setting is enabled, and that it does not inherit ancestor `.kiro/skills` directories.
 
 - [x] Confirm Kiro skills path and verify BMAD should stop writing steering artifacts for this migration
 - [x] Implement installer migration to native skills output
 - [x] Add legacy cleanup for `.kiro/steering`
 - [x] Test fresh install
 - [x] Test reinstall/upgrade from legacy steering output
-- [ ] Confirm ancestor conflict protection where applicable; docs only confirm workspace and global scopes, so parent-directory inheritance still needs manual app verification before enabling `ancestor_conflict_check`
+- [x] Confirm no ancestor conflict protection is needed because manual Kiro verification showed Slash-visible skills from the current workspace only, with no ancestor `.kiro/skills` inheritance
 - [x] Implement/extend automated tests
 - [ ] Commit
 
