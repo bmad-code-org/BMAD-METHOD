@@ -91,13 +91,13 @@ Support assumption: full Agent Skills support. Antigravity docs confirm workspac
 
 Support assumption: full Agent Skills support. BMAD currently installs commands to `.augment/commands`; target should move to `.augment/skills`.
 
-- [ ] Confirm Auggie native skills path and whether it also reads `.claude/skills` or `.agents/skills`
-- [ ] Implement installer migration to native skills output
-- [ ] Add legacy cleanup for `.augment/commands`
-- [ ] Test fresh install
-- [ ] Test reinstall/upgrade from legacy command output
-- [ ] Confirm ancestor conflict protection where applicable
-- [ ] Implement/extend automated tests
+- [x] Confirm Auggie native skills path and compatibility loading from `.claude/skills` and `.agents/skills` via Augment docs plus local `auggie --print` repros
+- [x] Implement installer migration to native skills output
+- [x] Add legacy cleanup for `.augment/commands`
+- [x] Test fresh install
+- [x] Test reinstall/upgrade from legacy command output
+- [x] Confirm no ancestor conflict protection is needed because local `auggie --workspace-root` repro showed child-local `.augment/skills` loading `child-only` but not parent `parent-only`
+- [x] Implement/extend automated tests
 - [ ] Commit
 
 ## CodeBuddy

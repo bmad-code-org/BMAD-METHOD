@@ -32,8 +32,11 @@ platforms:
     category: cli
     description: "AI development tool"
     installer:
-      target_dir: .augment/commands
+      legacy_targets:
+        - .augment/commands
+      target_dir: .augment/skills
       template_type: default
+      skill_format: true
 
   claude-code:
     name: "Claude Code"
