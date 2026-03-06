@@ -322,9 +322,61 @@ async function runTests() {
   console.log('');
 
   // ============================================================
-  // Test 7: QA Agent Compilation
+  // Test 7: Auggie Native Skills Install
   // ============================================================
-  console.log(`${colors.yellow}Test Suite 7: QA Agent Compilation${colors.reset}\n`);
+  console.log(`${colors.yellow}Test Suite 7: Auggie Native Skills${colors.reset}\n`);
+
+  try {
+    clearCache();
+    const platformCodes = await loadPlatformCodes();
+    const auggieInstaller = platformCodes.platforms.auggie?.installer;
+
+    assert(auggieInstaller?.target_dir === '.augment/skills', 'Auggie target_dir uses native skills path');
+
+    assert(auggieInstaller?.skill_format === true, 'Auggie installer enables native skill output');
+
+    assert(
+      Array.isArray(auggieInstaller?.legacy_targets) && auggieInstaller.legacy_targets.includes('.augment/commands'),
+      'Auggie installer cleans legacy command output',
+    );
+
+    assert(
+      auggieInstaller?.ancestor_conflict_check !== true,
+      'Auggie installer does not enable ancestor conflict checks without verified inheritance',
+    );
+
+    const tempProjectDir = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-auggie-test-'));
+    const installedBmadDir = await findInstalledBmadDir(projectRoot);
+    const legacyDir = path.join(tempProjectDir, '.augment', 'commands', 'bmad-legacy-dir');
+    await fs.ensureDir(legacyDir);
+    await fs.writeFile(path.join(tempProjectDir, '.augment', 'commands', 'bmad-legacy.md'), 'legacy\n');
+    await fs.writeFile(path.join(legacyDir, 'SKILL.md'), 'legacy\n');
+
+    const ideManager = new IdeManager();
+    await ideManager.ensureInitialized();
+    const result = await ideManager.setup('auggie', tempProjectDir, installedBmadDir, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+
+    assert(result.success === true, 'Auggie setup succeeds against temp project');
+
+    const skillFile = path.join(tempProjectDir, '.augment', 'skills', 'bmad-master', 'SKILL.md');
+    assert(await fs.pathExists(skillFile), 'Auggie install writes SKILL.md directory output');
+
+    assert(!(await fs.pathExists(path.join(tempProjectDir, '.augment', 'commands'))), 'Auggie setup removes legacy commands dir');
+
+    await fs.remove(tempProjectDir);
+  } catch (error) {
+    assert(false, 'Auggie native skills migration test succeeds', error.message);
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test 8: QA Agent Compilation
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 8: QA Agent Compilation${colors.reset}\n`);
 
   try {
     const builder = new YamlXmlBuilder();
