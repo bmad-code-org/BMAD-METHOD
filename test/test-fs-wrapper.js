@@ -405,12 +405,15 @@ async function runTests() {
     const p = path.join(TMP, 'bad.json');
     nativeFs.writeFileSync(p, '{ invalid json }');
     let threw = false;
+    let errorMessage = '';
     try {
       fs.readJsonSync(p);
-    } catch {
+    } catch (error) {
       threw = true;
+      errorMessage = error.message;
     }
     assert(threw, 'readJsonSync did not throw on invalid JSON');
+    assert(errorMessage.includes(p), 'readJsonSync error did not include file path');
   });
 
   test('readJsonSync strips UTF-8 BOM', () => {

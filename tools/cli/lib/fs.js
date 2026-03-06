@@ -166,5 +166,10 @@ module.exports.move = async function move(src, dest) {
  */
 module.exports.readJsonSync = function readJsonSync(filePath) {
   const raw = fs.readFileSync(filePath, 'utf8').replace(/^\uFEFF/, '');
-  return JSON.parse(raw);
+  try {
+    return JSON.parse(raw);
+  } catch (error) {
+    error.message = `Failed to parse JSON in ${filePath}: ${error.message}`;
+    throw error;
+  }
 };
