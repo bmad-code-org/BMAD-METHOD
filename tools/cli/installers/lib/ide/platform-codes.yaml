@@ -197,8 +197,11 @@ platforms:
     category: ide
     description: "AI-powered IDE with cascade flows"
     installer:
-      target_dir: .windsurf/workflows
+      legacy_targets:
+        - .windsurf/workflows
+      target_dir: .windsurf/skills
       template_type: windsurf
+      skill_format: true
 
 # ============================================================================
 # Installer Config Schema

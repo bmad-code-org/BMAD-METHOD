@@ -12,9 +12,12 @@
  */
 
 const path = require('node:path');
+const os = require('node:os');
 const fs = require('fs-extra');
 const { YamlXmlBuilder } = require('../tools/cli/lib/yaml-xml-builder');
 const { ManifestGenerator } = require('../tools/cli/installers/lib/core/manifest-generator');
+const { IdeManager } = require('../tools/cli/installers/lib/ide/manager');
+const { clearCache, loadPlatformCodes } = require('../tools/cli/installers/lib/ide/platform-codes');
 
 // ANSI colors
 const colors = {
@@ -42,6 +45,26 @@ function assert(condition, testName, errorMessage = '') {
       console.log(`  ${colors.dim}${errorMessage}${colors.reset}`);
     }
     failed++;
+  }
+}
+
+/**
+ * Resolve the shared installed BMAD payload for this worktree layout.
+ */
+async function findInstalledBmadDir(startDir) {
+  let current = path.resolve(startDir);
+
+  while (true) {
+    const candidate = path.join(current, '_bmad');
+    if (await fs.pathExists(path.join(candidate, '_config', 'workflow-manifest.csv'))) {
+      return candidate;
+    }
+
+    const parent = path.dirname(current);
+    if (parent === current) {
+      throw new Error(`Could not locate installed _bmad payload from ${startDir}`);
+    }
+    current = parent;
   }
 }
 
@@ -153,6 +176,53 @@ async function runTests() {
     );
   } catch (error) {
     assert(false, 'Path resolution works', error.message);
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test 4: Windsurf Native Skills Install
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 4: Windsurf Native Skills${colors.reset}\n`);
+
+  try {
+    clearCache();
+    const platformCodes = await loadPlatformCodes();
+    const windsurfInstaller = platformCodes.platforms.windsurf?.installer;
+
+    assert(windsurfInstaller?.target_dir === '.windsurf/skills', 'Windsurf target_dir uses native skills path');
+
+    assert(windsurfInstaller?.skill_format === true, 'Windsurf installer enables native skill output');
+
+    assert(
+      Array.isArray(windsurfInstaller?.legacy_targets) && windsurfInstaller.legacy_targets.includes('.windsurf/workflows'),
+      'Windsurf installer cleans legacy workflow output',
+    );
+
+    const tempProjectDir = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-windsurf-test-'));
+    const installedBmadDir = await findInstalledBmadDir(projectRoot);
+    const legacyDir = path.join(tempProjectDir, '.windsurf', 'workflows', 'bmad-legacy-dir');
+    await fs.ensureDir(legacyDir);
+    await fs.writeFile(path.join(tempProjectDir, '.windsurf', 'workflows', 'bmad-legacy.md'), 'legacy\n');
+    await fs.writeFile(path.join(legacyDir, 'SKILL.md'), 'legacy\n');
+
+    const ideManager = new IdeManager();
+    await ideManager.ensureInitialized();
+    const result = await ideManager.setup('windsurf', tempProjectDir, installedBmadDir, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+
+    assert(result.success === true, 'Windsurf setup succeeds against temp project');
+
+    const skillFile = path.join(tempProjectDir, '.windsurf', 'skills', 'bmad-master', 'SKILL.md');
+    assert(await fs.pathExists(skillFile), 'Windsurf install writes SKILL.md directory output');
+
+    assert(!(await fs.pathExists(path.join(tempProjectDir, '.windsurf', 'workflows'))), 'Windsurf setup removes legacy workflows dir');
+
+    await fs.remove(tempProjectDir);
+  } catch (error) {
+    assert(false, 'Windsurf native skills migration test succeeds', error.message);
   }
 
   console.log('');
