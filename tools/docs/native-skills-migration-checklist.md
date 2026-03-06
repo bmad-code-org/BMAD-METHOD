@@ -5,6 +5,7 @@ Branch: `refactor/all-is-skills`
 Scope: migrate the BMAD-supported platforms that fully support the Agent Skills standard from legacy installer outputs to native skills output.
 
 Current branch status:
+
 - `Claude Code` has already been moved to `.claude/skills`
 - `Codex CLI` has already been moved to `.agents/skills`
 
@@ -38,12 +39,12 @@ Support assumption: full Agent Skills support. BMAD has already migrated from `.
 
 Support assumption: full Agent Skills support. BMAD currently installs legacy command files to `.cursor/commands`; target should move to a native skills directory.
 
-- [ ] Confirm current Cursor skills path and whether BMAD should prefer `.cursor/skills` or `.agents/skills`
-- [ ] Implement installer migration to native skills output
-- [ ] Add legacy cleanup for `.cursor/commands`
-- [ ] Test fresh install
-- [ ] Test reinstall/upgrade from legacy command output
-- [ ] Confirm ancestor conflict protection if Cursor inherits parent-directory skills
+- [x] Confirm current Cursor skills path and that BMAD should target `.cursor/skills`
+- [x] Implement installer migration to native skills output
+- [x] Add legacy cleanup for `.cursor/commands`
+- [x] Test fresh install
+- [x] Test reinstall/upgrade from legacy command output
+- [x] Confirm no ancestor conflict protection is needed because a child workspace surfaced child `.cursor/skills` entries but not a parent-only skill during manual verification
 - [ ] Implement/extend automated tests
 - [ ] Commit
 

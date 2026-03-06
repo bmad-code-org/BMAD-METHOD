@@ -93,8 +93,11 @@ platforms:
     category: ide
     description: "AI-first code editor"
     installer:
-      target_dir: .cursor/commands
+      legacy_targets:
+        - .cursor/commands
+      target_dir: .cursor/skills
       template_type: default
+      skill_format: true
 
   gemini:
     name: "Gemini CLI"
