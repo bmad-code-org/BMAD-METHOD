@@ -38,8 +38,11 @@ platforms:
     category: cli
     description: "Anthropic's official CLI for Claude"
     installer:
-      target_dir: .claude/commands
+      legacy_targets:
+        - .claude/commands
+      target_dir: .claude/skills
       template_type: default
+      skill_format: true
       ancestor_conflict_check: true
 
   cline:
@@ -203,9 +206,11 @@ platforms:
 #       artifact_types: [agents, workflows, tasks, tools]
 #   artifact_types: array (optional)      # Filter which artifacts to install (default: all)
 #   skip_existing: boolean (optional)     # Skip files that already exist (default: false)
+#   skill_format: boolean (optional)   # Use directory-per-skill output: <name>/SKILL.md
+#                                     # with clean frontmatter (name + description, unquoted)
 #   ancestor_conflict_check: boolean (optional) # Refuse install when ancestor dir has BMAD files
 #                                                # in the same target_dir (for IDEs that inherit
-#                                                # commands from parent directories)
+#                                                # skills from parent directories)
 
 # ============================================================================
 # Platform Categories
