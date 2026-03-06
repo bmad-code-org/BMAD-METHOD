@@ -83,7 +83,7 @@ Support assumption: full Agent Skills support. Antigravity docs confirm workspac
 - [x] Add legacy cleanup for `.agent/workflows`
 - [x] Test fresh install
 - [x] Test reinstall/upgrade from legacy workflow output
-- [ ] Confirm ancestor conflict protection where applicable because Antigravity docs do not state whether parent-directory `.agent/skills` are inherited; `/tmp/antigravity-ancestor-repro` should be used for manual app verification instead of guessing
+- [x] Confirm no ancestor conflict protection is needed because manual Antigravity verification in `/tmp/antigravity-ancestor-repro/parent/child` showed only the child-local `child-only` skill, with no inherited parent `.agent/skills` entry
 - [x] Implement/extend automated tests
 - [ ] Commit
 
