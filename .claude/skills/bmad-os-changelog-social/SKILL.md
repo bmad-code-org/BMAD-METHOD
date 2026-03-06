@@ -1,6 +1,7 @@
 ---
 name: bmad-os-changelog-social
 description: Generate social media announcements for Discord, Twitter, and LinkedIn from the latest changelog entry. Use when user asks to 'create release announcement' or 'create social posts' or share changelog updates.
+license: MIT
 ---
 
 # Changelog Social

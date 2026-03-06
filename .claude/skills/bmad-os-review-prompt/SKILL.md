@@ -1,6 +1,7 @@
 ---
 name: bmad-os-review-prompt
 description: Review LLM workflow step prompts for known failure modes (silent ignoring, negation fragility, scope creep, etc). Use when user asks to "review a prompt" or "audit a workflow step".
+license: MIT
 ---
 
 # Prompt Review Skill: PromptSentinel v1.2
