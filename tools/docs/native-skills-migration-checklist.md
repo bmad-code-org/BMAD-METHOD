@@ -143,12 +143,12 @@ Support assumption: full Agent Skills support. Kiro docs confirm project skills 
 
 Support assumption: full Agent Skills support. BMAD currently splits output between `.opencode/agents` and `.opencode/commands`; target should consolidate to `.opencode/skills`.
 
-- [x] Confirm OpenCode native skills path and compatibility loading from `.claude/skills` and `.agents/skills` in OpenCode docs
+- [x] Confirm OpenCode native skills path and compatibility loading from `.claude/skills` and `.agents/skills` in OpenCode docs and with local `opencode run` repros
 - [x] Implement installer migration from multi-target legacy output to single native skills target
 - [x] Add legacy cleanup for `.opencode/agents`, `.opencode/commands`, `.opencode/agent`, and `.opencode/command`
 - [x] Test fresh install
 - [x] Test reinstall/upgrade from split legacy output
-- [x] Confirm ancestor conflict protection is required because OpenCode docs state project-local skill discovery walks upward to the git worktree
+- [x] Confirm ancestor conflict protection is required because local `opencode run` repros loaded both child-local `child-only` and ancestor `parent-only`, matching the docs that project-local skill discovery walks upward to the git worktree
 - [x] Implement/extend automated tests
 - [ ] Commit
 
