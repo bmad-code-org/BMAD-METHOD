@@ -93,7 +93,7 @@ x. Proceed / No Further Actions
 
 **Case r (Reshuffle):**
 
-- Select 5 random methods from advanced-elicitation-methods.csv, present new list with same prompt format
+- Select 5 random methods from methods.csv, present new list with same prompt format
 - When selecting, try to think and pick a diverse set of methods covering different categories and approaches, with 1 and 2 being potentially the most useful for the document or section being discovered
 
 **Case x (Proceed):**
