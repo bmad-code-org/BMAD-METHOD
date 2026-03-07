@@ -717,6 +717,25 @@ class Installer {
       config.skipIde = toolSelection.skipIde;
       const ideConfigurations = toolSelection.configurations;
 
+      // Early check: fail fast if ALL selected IDEs are suspended
+      if (config.ides && config.ides.length > 0) {
+        await this.ideManager.ensureInitialized();
+        const suspendedIdes = config.ides.filter((ide) => {
+          const handler = this.ideManager.handlers.get(ide);
+          return handler?.platformConfig?.suspended;
+        });
+
+        if (suspendedIdes.length > 0 && suspendedIdes.length === config.ides.length) {
+          for (const ide of suspendedIdes) {
+            const handler = this.ideManager.handlers.get(ide);
+            await prompts.log.error(`${handler.displayName || ide}: ${handler.platformConfig.suspended}`);
+          }
+          throw new Error(
+            `All selected tool(s) are suspended: ${suspendedIdes.join(', ')}. Installation aborted to prevent upgrading _bmad/ without a working IDE configuration.`,
+          );
+        }
+      }
+
       // Detect IDEs that were previously installed but are NOT in the new selection (to be removed)
       if (config._isUpdate && config._existingInstall) {
         const previouslyInstalledIdes = new Set(config._existingInstall.ides || []);

@@ -1135,82 +1135,59 @@ async function runTests() {
   console.log('');
 
   // ============================================================
-  // Suite 22: KiloCoder Native Skills
+  // Suite 22: KiloCoder Suspended
   // ============================================================
-  console.log(`${colors.yellow}Test Suite 22: KiloCoder Native Skills${colors.reset}\n`);
+  console.log(`${colors.yellow}Test Suite 22: KiloCoder Suspended${colors.reset}\n`);
 
   try {
     clearCache();
     const platformCodes22 = await loadPlatformCodes();
-    const kiloInstaller = platformCodes22.platforms.kilo?.installer;
+    const kiloConfig22 = platformCodes22.platforms.kilo;
 
-    assert(kiloInstaller?.target_dir === '.kilocode/skills', 'KiloCoder target_dir uses native skills path');
+    assert(typeof kiloConfig22?.suspended === 'string', 'KiloCoder has a suspended message in platform config');
 
-    assert(kiloInstaller?.skill_format === true, 'KiloCoder installer enables native skill output');
+    assert(kiloConfig22?.installer?.target_dir === '.kilocode/skills', 'KiloCoder retains target_dir config for future use');
 
-    assert(
-      Array.isArray(kiloInstaller?.legacy_targets) && kiloInstaller.legacy_targets.includes('.kilocode/workflows'),
-      'KiloCoder installer cleans legacy workflows output',
-    );
+    const ideManager22 = new IdeManager();
+    await ideManager22.ensureInitialized();
 
-    // Fresh install test
+    // Should not appear in available IDEs
+    const availableIdes22 = ideManager22.getAvailableIdes();
+    assert(!availableIdes22.some((ide) => ide.value === 'kilo'), 'KiloCoder is hidden from IDE selection');
+
+    // Setup should be blocked but legacy files should be cleaned up
     const tempProjectDir22 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-kilo-test-'));
     const installedBmadDir22 = await createTestBmadFixture();
+
+    // Pre-populate legacy Kilo artifacts that should be cleaned up
     const legacyDir22 = path.join(tempProjectDir22, '.kilocode', 'workflows');
     await fs.ensureDir(legacyDir22);
     await fs.writeFile(path.join(legacyDir22, 'bmad-legacy.md'), 'legacy\n');
 
-    // Create a .kilocodemodes file with BMAD modes and a user mode
-    const kiloModesPath22 = path.join(tempProjectDir22, '.kilocodemodes');
-    const yaml22 = require('yaml');
-    const kiloModesContent = yaml22.stringify({
-      customModes: [
-        { slug: 'bmad-bmm-architect', name: 'BMAD Architect', roleDefinition: 'test' },
-        { slug: 'bmad-core-master', name: 'BMAD Master', roleDefinition: 'test' },
-        { slug: 'user-custom-mode', name: 'My Custom Mode', roleDefinition: 'user mode' },
-      ],
-    });
-    await fs.writeFile(kiloModesPath22, kiloModesContent);
-
-    const ideManager22 = new IdeManager();
-    await ideManager22.ensureInitialized();
     const result22 = await ideManager22.setup('kilo', tempProjectDir22, installedBmadDir22, {
       silent: true,
       selectedModules: ['bmm'],
     });
 
-    assert(result22.success === true, 'KiloCoder setup succeeds against temp project');
+    assert(result22.success === false, 'KiloCoder setup is blocked when suspended');
+    assert(result22.error === 'suspended', 'KiloCoder setup returns suspended error');
 
-    const skillFile22 = path.join(tempProjectDir22, '.kilocode', 'skills', 'bmad-master', 'SKILL.md');
-    assert(await fs.pathExists(skillFile22), 'KiloCoder install writes SKILL.md directory output');
-
-    const skillContent22 = await fs.readFile(skillFile22, 'utf8');
-    const nameMatch22 = skillContent22.match(/^name:\s*(.+)$/m);
-    assert(nameMatch22 && nameMatch22[1].trim() === 'bmad-master', 'KiloCoder skill name frontmatter matches directory name exactly');
-
-    assert(!(await fs.pathExists(path.join(tempProjectDir22, '.kilocode', 'workflows'))), 'KiloCoder setup removes legacy workflows dir');
-
-    // Verify .kilocodemodes cleanup: BMAD modes removed, user mode preserved
-    const cleanedModes22 = yaml22.parse(await fs.readFile(kiloModesPath22, 'utf8'));
+    // Should not write new skill files
     assert(
-      Array.isArray(cleanedModes22.customModes) && cleanedModes22.customModes.length === 1,
-      'KiloCoder cleanup removes BMAD modes from .kilocodemodes',
+      !(await fs.pathExists(path.join(tempProjectDir22, '.kilocode', 'skills'))),
+      'KiloCoder does not create skills directory when suspended',
     );
-    assert(cleanedModes22.customModes[0].slug === 'user-custom-mode', 'KiloCoder cleanup preserves non-BMAD modes in .kilocodemodes');
 
-    // Reinstall test
-    const result22b = await ideManager22.setup('kilo', tempProjectDir22, installedBmadDir22, {
-      silent: true,
-      selectedModules: ['bmm'],
-    });
-
-    assert(result22b.success === true, 'KiloCoder reinstall/upgrade succeeds over existing skills');
-    assert(await fs.pathExists(skillFile22), 'KiloCoder reinstall preserves SKILL.md output');
+    // Legacy files should be cleaned up
+    assert(
+      !(await fs.pathExists(path.join(tempProjectDir22, '.kilocode', 'workflows'))),
+      'KiloCoder legacy workflows are cleaned up even when suspended',
+    );
 
     await fs.remove(tempProjectDir22);
     await fs.remove(installedBmadDir22);
   } catch (error) {
-    assert(false, 'KiloCoder native skills migration test succeeds', error.message);
+    assert(false, 'KiloCoder suspended test succeeds', error.message);
   }
 
   console.log('');

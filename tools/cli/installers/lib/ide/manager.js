@@ -128,6 +128,11 @@ class IdeManager {
         continue;
       }
 
+      // Skip suspended platforms (e.g., IDE doesn't support skills yet)
+      if (handler.platformConfig?.suspended) {
+        continue;
+      }
+
       ides.push({
         value: key,
         name: name,
@@ -175,6 +180,18 @@ class IdeManager {
       await prompts.log.warn(`IDE '${ideName}' is not yet supported`);
       await prompts.log.message(`Supported IDEs: ${[...this.handlers.keys()].join(', ')}`);
       return { success: false, ide: ideName, error: 'unsupported IDE' };
+    }
+
+    // Block suspended platforms — clean up legacy files but don't install
+    if (handler.platformConfig?.suspended) {
+      if (!options.silent) {
+        await prompts.log.warn(`${handler.displayName || ideName}: ${handler.platformConfig.suspended}`);
+      }
+      // Still clean up legacy artifacts so old broken configs don't linger
+      if (typeof handler.cleanup === 'function') {
+        await handler.cleanup(projectDir, { silent: true });
+      }
+      return { success: false, ide: ideName, error: 'suspended' };
     }
 
     try {
