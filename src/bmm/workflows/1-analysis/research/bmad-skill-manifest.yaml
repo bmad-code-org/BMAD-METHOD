@@ -1,0 +1,14 @@
+workflow-domain-research.md:
+  canonicalId: bmad-bmm-domain-research
+  type: workflow
+  description: "Conduct domain and industry research"
+
+workflow-market-research.md:
+  canonicalId: bmad-bmm-market-research
+  type: workflow
+  description: "Conduct market research on competition and customers"
+
+workflow-technical-research.md:
+  canonicalId: bmad-bmm-technical-research
+  type: workflow
+  description: "Conduct technical research on technologies and architecture"
