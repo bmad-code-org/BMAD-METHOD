@@ -194,14 +194,14 @@ Support assumption: full Agent Skills support. BMAD currently uses a custom inst
 **Install:** VS Code extension `GitHub.copilot` — search "GitHub Copilot" in Extensions or `code --install-extension GitHub.copilot`
 
 - [x] Confirm GitHub Copilot native skills path is `.github/skills/{skill-name}/SKILL.md` — also reads `.claude/skills/` automatically
-- [ ] Design the migration away from the custom prompt/agent installer model
-- [ ] Implement native skills output, ideally with shared config-driven code where practical
-- [ ] Add legacy cleanup for `.github/agents`, `.github/prompts`, and any BMAD-owned Copilot instruction file behavior that should be retired
-- [ ] Test fresh install
-- [ ] Test reinstall/upgrade from legacy custom installer output
+- [x] Design the migration away from the custom prompt/agent installer model — replaced 699-line custom installer with config-driven `skill_format: true`
+- [x] Implement native skills output, ideally with shared config-driven code where practical
+- [x] Add legacy cleanup for `.github/agents`, `.github/prompts`, and BMAD markers in `copilot-instructions.md`
+- [x] Test fresh install — 43 skills installed to `.github/skills/`
+- [x] Test reinstall/upgrade from legacy custom installer output — legacy dirs removed, BMAD markers stripped, user content preserved
 - [x] Confirm no ancestor conflict protection is needed because manual Copilot verification showed child-local `child-only` skill loaded while parent-only skill was not inherited
-- [ ] Implement/extend automated tests
-- [ ] Commit
+- [x] Implement/extend automated tests — 11 assertions in test suite 17 including marker cleanup
+- [x] Commit
 
 ## KiloCoder
 
