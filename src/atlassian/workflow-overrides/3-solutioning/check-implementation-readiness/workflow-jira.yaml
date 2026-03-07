@@ -1,27 +1,30 @@
-name: code-review-jira
-description: 'Run code review with results posted to Jira. Use when tracking_system is "jira".'
+name: check-implementation-readiness-jira
+description: 'Validate PRD, UX, Architecture, and Epics are complete. Use when tracking_system is "jira".'
 author: "BMad"
 
 # Critical variables from config
 config_source: "{project-root}/_bmad/atlassian/config.yaml"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
+document_output_language: "{config_source}:document_output_language"
+user_skill_level: "{config_source}:user_skill_level"
 date: system-generated
 
 # Atlassian-specific config
 jira_project_key: "{config_source}:jira_project_key"
+confluence_space_key: "{config_source}:confluence_space_key"
+confluence_parent_page_id: "{config_source}:confluence_parent_page_id"
 key_map_file: "{config_source}:key_map_file"
 status_transitions: "{config_source}:status_transitions"
 
 # Workflow components
-installed_path: "{project-root}/_bmad/atlassian/workflow-overrides/4-implementation/code-review"
+installed_path: "{project-root}/_bmad/atlassian/workflow-overrides/3-solutioning/check-implementation-readiness"
 instructions: "{installed_path}/instructions-jira.md"
-checklist: "{project-root}/_bmad/atlassian/workflows/4-implementation/code-review/checklist.md"
+template: "{project-root}/_bmad/atlassian/templates/readiness-report-template.md"
 
 # Reusable tasks
-transition_task: "{project-root}/_bmad/atlassian/tasks/transition-jira-issue.md"
-lock_task: "{project-root}/_bmad/atlassian/tasks/lock-issue.md"
 context_task: "{project-root}/_bmad/atlassian/tasks/read-jira-context.md"
+write_confluence_task: "{project-root}/_bmad/atlassian/tasks/write-to-confluence.md"
 handoff_task: "{project-root}/_bmad/atlassian/tasks/post-handoff.md"
 
 # Tracking system

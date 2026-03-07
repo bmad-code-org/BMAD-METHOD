@@ -54,9 +54,9 @@ fallback_status_name: "In Progress"
 </step>
 
 <step n="4" goal="Execute implementation">
-<action>Follow the standard bmm dev-story checklist at `{bmm_checklist}`:</action>
+<action>Follow the dev-story checklist at `{checklist}`:</action>
 
-**Critical Dev Agent Rules (unchanged from bmm):**
+**Critical Dev Agent Rules:**
 - READ the entire story BEFORE any implementation
 - Execute tasks/subtasks IN ORDER as written
 - Mark task complete ONLY when both implementation AND tests pass
@@ -70,7 +70,6 @@ fallback_status_name: "In Progress"
 3. Run the full test suite — all tests must pass
 4. Mark the task as complete
 
-<action>If dual-write mode: update the local story file at `{implementation_artifacts}/{story-key}.md` with task completion markers `[x]`</action>
 </step>
 
 <step n="5" goal="Post completion record to Jira">

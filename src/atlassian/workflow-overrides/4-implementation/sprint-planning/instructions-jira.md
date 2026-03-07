@@ -78,7 +78,7 @@ issue_keys: "{selected_story_keys_comma_separated}"
 <action>Invoke `transition-jira-issue` task to transition the Epic from Backlog to In Progress using `{status_transitions.epic.backlog_to_in_progress}`</action>
 </step>
 
-<step n="5" goal="Generate status summary and dual-write">
+<step n="5" goal="Generate status summary">
 <action>Build the sprint status summary:</action>
 
 **Sprint Planning Complete**
@@ -89,25 +89,6 @@ issue_keys: "{selected_story_keys_comma_separated}"
 - **Epics Active:** {active_epic_count}
 
 **Sprint Board:** View in Jira at your project board
-
-<action>If `{output_mode}` is `"dual"`, also write a `sprint-status.yaml` to `{default_output_file}` with the same status information, using the same format as the bmm sprint-status template but with Jira issue keys embedded:</action>
-
-```yaml
-generated: {date}
-last_updated: {date}
-project: {project_name}
-project_key: {jira_project_key}
-tracking_system: jira
-story_location: jira://{jira_project_key}
-sprint: {sprint_name}
-sprint_id: {sprint_id}
-
-development_status:
-  epic-1: in-progress          # PROJ-10
-  1-1-user-authentication: ready-for-dev  # PROJ-12
-  1-2-account-management: backlog         # PROJ-13
-  epic-1-retrospective: optional
-```
 
 **Next Steps:**
 1. Use SM's **Create Story** ([CS]) to prepare stories with dev context

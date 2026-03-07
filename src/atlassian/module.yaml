@@ -1,8 +1,41 @@
 code: atlassian
-name: "Atlassian Jira/Confluence Adapter"
-description: "Routes BMAD artefacts to Jira and Confluence via the Atlassian MCP server"
-default_selected: false
-depends_on: bmm
+name: "BMAD-Jira: Atlassian-Native Agentic Development"
+description: "Jira/Confluence-native implementation of the BMAD agentic development method via Atlassian MCP server"
+default_selected: true
+
+# --- Project Configuration ---
+
+project_name:
+  prompt: "What is your project called?"
+  default: "{directory_name}"
+  result: "{value}"
+
+user_name:
+  prompt: "What is your name?"
+  default: "Developer"
+  result: "{value}"
+
+communication_language:
+  prompt: "What language should agents communicate in?"
+  default: "English"
+  result: "{value}"
+
+document_output_language:
+  prompt: "What language should documents be written in?"
+  default: "English"
+  result: "{value}"
+
+user_skill_level:
+  prompt: "What is your development experience level?"
+  default: "intermediate"
+  result: "{value}"
+  single-select:
+    - value: "beginner"
+      label: "Beginner - Explain things clearly"
+    - value: "intermediate"
+      label: "Intermediate - Balance detail with speed"
+    - value: "expert"
+      label: "Expert - Be direct and technical"
 
 # --- Jira Configuration ---
 
@@ -32,23 +65,8 @@ confluence_parent_page_id:
   default: ""
   result: "{value}"
 
-# --- Output Mode ---
-
-output_mode:
-  prompt:
-    - "How should artefacts be written?"
-    - "Dual mode writes to both Jira/Confluence AND local files. Jira-only skips local files."
-  default: "dual"
-  result: "{value}"
-  single-select:
-    - value: "dual"
-      label: "Dual - Write to Jira/Confluence and local files"
-    - value: "jira-only"
-      label: "Jira Only - Write exclusively to Jira/Confluence"
-
 # --- Status Transition Mapping ---
 # Maps BMAD abstract statuses to Jira transition IDs.
-# Users must populate these for their specific Jira workflow.
 # Run transition-discovery.md to auto-discover these values.
 
 status_transitions:
@@ -76,8 +94,7 @@ lock_label:
   default: "agent-active"
   result: "{value}"
 
-# --- Tracking System Override ---
-# These override the bmm module defaults to route through Jira
+# --- Tracking System ---
 
 tracking_system:
   result: "jira"
@@ -89,7 +106,6 @@ story_location:
   result: "jira://{jira_project_key}"
 
 # --- Key Map ---
-# Local file mapping BMAD identifiers to Jira issue keys and Confluence page IDs
 
 key_map_file:
   result: "{project-root}/_bmad/atlassian/.jira-key-map.yaml"

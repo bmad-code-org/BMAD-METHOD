@@ -5,7 +5,7 @@
 
 ## Overview
 
-Prepares a story with full development context. The analysis steps follow the standard bmm create-story checklist. The output step writes to Jira (updating the Story issue description and adding dev notes as a comment) and transitions the story to "Ready for Dev".
+Prepares a story with full development context. The analysis steps follow the create-story checklist. The output step writes to Jira (updating the Story issue description and adding dev notes as a comment) and transitions the story to "Ready for Dev".
 
 ---
 
@@ -40,7 +40,7 @@ Prepares a story with full development context. The analysis steps follow the st
 </step>
 
 <step n="3" goal="Analyse and prepare story content">
-<action>Follow the standard bmm create-story checklist at `{bmm_checklist}`:</action>
+<action>Follow the create-story checklist at `{checklist}`:</action>
 
 1. Validate the story has clear acceptance criteria
 2. Identify relevant architecture patterns and constraints
@@ -49,7 +49,7 @@ Prepares a story with full development context. The analysis steps follow the st
 5. Check for dependencies on other stories
 6. Identify files and modules that will be touched
 
-<action>Build the enriched story content using the bmm story template at `{bmm_template}` as the structure guide</action>
+<action>Build the enriched story content using the story template at `{template}` as the structure guide</action>
 
 The enriched content includes:
 - **User Story** (from Jira issue description)
@@ -120,10 +120,7 @@ fallback_status_name: "Ready for Dev"
 ```
 </step>
 
-<step n="7" goal="Dual-write and report">
-<action>If `{output_mode}` is `"dual"`:</action>
-<action>Also write the enriched story to local file: `{implementation_artifacts}/{story-key}.md`</action>
-
+<step n="7" goal="Report">
 <action>Report to user:</action>
 
 **Story Prepared: {story_title}**

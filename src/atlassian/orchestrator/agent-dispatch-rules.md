@@ -14,6 +14,19 @@ Rules are evaluated in order. The first matching rule fires. If no rule matches,
 
 <rules>
 
+<rule n="0" name="Handoff Signal Detected">
+<condition>project_state.pending_handoffs is not empty</condition>
+<action>Dispatch the agent indicated by the handoff label</action>
+<procedure>
+  1. Take the first pending handoff from the list
+  2. Read the handoff comment on the issue for context (look for "## Agent Handoff:" comments)
+  3. Dispatch the target agent with the recommended workflow from the handoff comment
+  4. After dispatching, remove the `bmad-handoff-{agent}` label from the issue via Update Issue
+</procedure>
+<message>Handoff detected: {target_agent} should work on {issue_key}. Dispatching.</message>
+<notes>Handoff labels take absolute priority over state-based rules below. This ensures agents respond to explicit signals from the previous agent rather than re-inferring state.</notes>
+</rule>
+
 <rule n="1" name="Blocked — Agent Active">
 <condition>project_state.locked_issues is not empty (after stale lock clearing)</condition>
 <action>WAIT — another agent is currently working</action>

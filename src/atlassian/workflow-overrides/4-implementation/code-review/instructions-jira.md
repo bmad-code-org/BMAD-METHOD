@@ -5,7 +5,7 @@
 
 ## Overview
 
-Runs the standard bmm code review checklist and posts the results as a structured Jira comment on the story. If the review passes, transitions the story to Done. If it fails, adds findings and keeps the story in Review for fixes.
+Runs the code review checklist and posts the results as a structured Jira comment on the story. If the review passes, transitions the story to Done. If it fails, adds findings and keeps the story in Review for fixes.
 
 ---
 
@@ -28,7 +28,7 @@ project = {jira_project_key} AND issuetype = Story AND status = "Review" ORDER B
 <step n="2" goal="Lock the story and run code review">
 <action>Invoke `lock-issue` task with `issue_key: "{selected_issue_key}"`, `action: "lock"`, `agent_name: "code-review"`</action>
 
-<action>Follow the standard bmm code review checklist at `{bmm_checklist}`</action>
+<action>Follow the code review checklist at `{checklist}`</action>
 
 Review the implementation across all quality facets:
 - Code correctness and completeness against acceptance criteria

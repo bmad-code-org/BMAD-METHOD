@@ -1,0 +1,30 @@
+name: create-ux-design-jira
+description: 'Create UX design specification with output to Confluence. Use when tracking_system is "jira".'
+author: "BMad"
+
+# Critical variables from config
+config_source: "{project-root}/_bmad/atlassian/config.yaml"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+document_output_language: "{config_source}:document_output_language"
+user_skill_level: "{config_source}:user_skill_level"
+date: system-generated
+
+# Atlassian-specific config
+jira_project_key: "{config_source}:jira_project_key"
+confluence_space_key: "{config_source}:confluence_space_key"
+confluence_parent_page_id: "{config_source}:confluence_parent_page_id"
+key_map_file: "{config_source}:key_map_file"
+
+# Workflow components
+installed_path: "{project-root}/_bmad/atlassian/workflow-overrides/2-plan-workflows/create-ux-design"
+instructions: "{installed_path}/instructions-jira.md"
+template: "{project-root}/_bmad/atlassian/templates/ux-design-template.md"
+
+# Reusable tasks
+context_task: "{project-root}/_bmad/atlassian/tasks/read-jira-context.md"
+write_confluence_task: "{project-root}/_bmad/atlassian/tasks/write-to-confluence.md"
+handoff_task: "{project-root}/_bmad/atlassian/tasks/post-handoff.md"
+
+# Tracking system
+tracking_system: "jira"

@@ -77,8 +77,6 @@ summary: "BMAD artefact published to Confluence"
 <action>Update `{key_map_file}` under `confluence_pages.{key_map_id}` with the `page_id`</action>
 <action>Update `last_updated` timestamp</action>
 
-**If output_mode is "dual":**
-<action>Also write the content to the local file path as specified by the calling workflow</action>
 </step>
 
 </workflow>

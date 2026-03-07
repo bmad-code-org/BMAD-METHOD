@@ -4,9 +4,8 @@ author: "BMad"
 
 # Critical variables from config
 config_source: "{project-root}/_bmad/atlassian/config.yaml"
-bmm_config: "{project-root}/_bmad/bmm/config.yaml"
-user_name: "{bmm_config}:user_name"
-communication_language: "{bmm_config}:communication_language"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
 date: system-generated
 
 # Atlassian-specific config
@@ -14,11 +13,6 @@ jira_project_key: "{config_source}:jira_project_key"
 jira_board_id: "{config_source}:jira_board_id"
 key_map_file: "{config_source}:key_map_file"
 status_transitions: "{config_source}:status_transitions"
-output_mode: "{config_source}:output_mode"
-
-# BMM config for dual-write fallback
-implementation_artifacts: "{bmm_config}:implementation_artifacts"
-planning_artifacts: "{bmm_config}:planning_artifacts"
 
 # Workflow components
 installed_path: "{project-root}/_bmad/atlassian/workflow-overrides/4-implementation/sprint-planning"
@@ -33,6 +27,4 @@ story_location: "jira://{jira_project_key}"
 transition_task: "{project-root}/_bmad/atlassian/tasks/transition-jira-issue.md"
 lock_task: "{project-root}/_bmad/atlassian/tasks/lock-issue.md"
 context_task: "{project-root}/_bmad/atlassian/tasks/read-jira-context.md"
-
-# Dual-write fallback output
-default_output_file: "{implementation_artifacts}/sprint-status.yaml"
+handoff_task: "{project-root}/_bmad/atlassian/tasks/post-handoff.md"

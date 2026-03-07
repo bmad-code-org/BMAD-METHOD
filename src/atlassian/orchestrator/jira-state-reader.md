@@ -24,9 +24,11 @@ project_state:
   # Planning artefacts (from Confluence)
   artefacts:
     product_brief: { exists: bool, page_id: str }
+    research: { exists: bool, page_ids: [str] }
     prd: { exists: bool, page_id: str }
     ux_design: { exists: bool, page_id: str }
     architecture: { exists: bool, page_id: str }
+    readiness_report: { exists: bool, page_id: str }
 
   # Jira state
   epics:
@@ -41,6 +43,9 @@ project_state:
   # Active work
   locked_issues: [{ key: str, summary: str, locked_since: str }]
   stale_locks: [{ key: str, summary: str, locked_since: str }]
+
+  # Handoff signals
+  pending_handoffs: [{ issue_key: str, target_agent: str, label: str }]
 
   # Sprint
   active_sprint: { exists: bool, name: str, sprint_id: str, story_count: int }
@@ -59,10 +64,12 @@ project_state:
 <action>For any missing entries, search Confluence:</action>
 
 ```
-Search Content: query = "space = {confluence_space_key} AND label = bmad-brief"    → product_brief
-Search Content: query = "space = {confluence_space_key} AND label = bmad-prd"      → prd
-Search Content: query = "space = {confluence_space_key} AND label = bmad-ux"       → ux_design
-Search Content: query = "space = {confluence_space_key} AND label = bmad-architecture" → architecture
+Search Content: query = "space = {confluence_space_key} AND label = bmad-brief"         → product_brief
+Search Content: query = "space = {confluence_space_key} AND label = bmad-research"      → research (may return multiple)
+Search Content: query = "space = {confluence_space_key} AND label = bmad-prd"            → prd
+Search Content: query = "space = {confluence_space_key} AND label = bmad-ux"             → ux_design
+Search Content: query = "space = {confluence_space_key} AND label = bmad-architecture"   → architecture
+Search Content: query = "space = {confluence_space_key} AND label = bmad-readiness"      → readiness_report
 ```
 
 <action>Record existence and page IDs for each</action>
@@ -116,13 +123,27 @@ project = {jira_project_key} AND labels = "{lock_label}"
 <action>Record locked issues and flag stale locks</action>
 </step>
 
-<step n="5" goal="Check active sprint">
+<step n="5" goal="Scan for handoff labels">
+<action>Call `Search Issues` with JQL:</action>
+
+```
+project = {jira_project_key} AND labels in ("bmad-handoff-analyst", "bmad-handoff-pm", "bmad-handoff-ux-designer", "bmad-handoff-architect", "bmad-handoff-sm", "bmad-handoff-dev", "bmad-handoff-qa")
+```
+
+`fields: "summary,labels"`
+
+<action>For each issue with a handoff label, extract the target agent name from the label (e.g., `bmad-handoff-sm` → SM)</action>
+<action>Record in `pending_handoffs` array with issue_key, target_agent, and label</action>
+<action>Handoff labels take priority over state-based dispatch in the agent dispatch rules</action>
+</step>
+
+<step n="6" goal="Check active sprint">
 <action>If `{jira_board_id}` is configured:</action>
 <action>Call `Get Sprints from Board` with `board_id: "{jira_board_id}"` and `state: "active"`</action>
 <action>If active sprint found, call `Get Sprint Issues` with `sprint_id` and count stories</action>
 </step>
 
-<step n="6" goal="Clear stale locks (if any)">
+<step n="7" goal="Clear stale locks (if any)">
 <action>For each stale lock found in step 4:</action>
 <action>Call `Get Issue` with `issue_key` and `fields: "labels"` to get current labels</action>
 <action>Build new labels array without `{lock_label}`</action>
@@ -130,7 +151,7 @@ project = {jira_project_key} AND labels = "{lock_label}"
 <action>Call `Add Comment`: "🔓 Stale lock cleared by orchestrator (locked for >1 hour with no activity)"</action>
 </step>
 
-<step n="7" goal="Sync key map">
+<step n="8" goal="Sync key map">
 <action>Update `{key_map_file}` with any newly discovered Jira keys or Confluence page IDs that weren't previously recorded</action>
 <action>Update `last_updated` timestamp</action>
 </step>

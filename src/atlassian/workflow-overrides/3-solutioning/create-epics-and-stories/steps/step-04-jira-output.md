@@ -88,10 +88,9 @@ summary: "Product Requirements Document"
 ```
 </step>
 
-<step n="4.4" goal="Dual-write to local files (if configured)">
-<action>If `{output_mode}` is `"dual"`:</action>
-<action>Also write the complete epics/stories document to `{planning_artifacts}/epics.md` using the standard bmm template</action>
-<action>This ensures local file access remains available as a cache</action>
+<step n="4.4" goal="Verify key map is updated">
+<action>Confirm all created epic and story keys have been recorded in `{key_map_file}`</action>
+<action>This ensures downstream workflows can look up Jira issue keys</action>
 </step>
 
 <step n="4.5" goal="Report results">

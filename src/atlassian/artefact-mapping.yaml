@@ -1,6 +1,7 @@
 # BMAD Artefact-to-Atlassian Mapping
 # Authoritative reference for how each BMAD artefact maps to Jira/Confluence.
 # Agents consult this file to determine which MCP tool to call for each output.
+# All output goes exclusively to Jira/Confluence — no local file writes.
 
 # ============================================================================
 # PHASE 1 — ANALYSIS (Analyst Agent / Mary)
@@ -9,7 +10,6 @@
 phase_1_analysis:
 
   research_report:
-    bmad_source: "{planning_artifacts}/research-*.md"
     destination: confluence
     mcp_tool: create_page
     parameters:
@@ -20,10 +20,11 @@ phase_1_analysis:
     labels:
       - "{agent_label_prefix}analyst"
       - "bmad-research"
+    template: "{project-root}/_bmad/atlassian/templates/research-template.md"
+    key_map_entry: "confluence_pages.research_{type}"
     notes: "One page per research type (market, domain, technical)"
 
   product_brief:
-    bmad_source: "{planning_artifacts}/product-brief.md"
     destination: confluence
     mcp_tool: create_page
     parameters:
@@ -34,6 +35,8 @@ phase_1_analysis:
     labels:
       - "{agent_label_prefix}analyst"
       - "bmad-brief"
+    template: "{project-root}/_bmad/atlassian/templates/product-brief-template.md"
+    key_map_entry: "confluence_pages.product_brief"
     notes: "Input document for PRD creation. Created once, updated if revised."
 
 # ============================================================================
@@ -43,7 +46,6 @@ phase_1_analysis:
 phase_2_planning:
 
   prd:
-    bmad_source: "{planning_artifacts}/prd.md"
     destination: confluence
     mcp_tool: create_page
     parameters:
@@ -54,6 +56,8 @@ phase_2_planning:
     labels:
       - "{agent_label_prefix}pm"
       - "bmad-prd"
+    template: "{project-root}/_bmad/atlassian/templates/prd-template.md"
+    key_map_entry: "confluence_pages.prd"
     cross_links:
       - type: remote_issue_link
         description: "Link from each Epic back to the PRD page"
@@ -64,7 +68,6 @@ phase_2_planning:
           title: "PRD: {project_name}"
 
   epics:
-    bmad_source: "{planning_artifacts}/epics.md"
     destination: jira
     description: "Each Epic heading becomes a Jira Epic issue"
     creation_flow:
@@ -88,9 +91,9 @@ phase_2_planning:
         key_map_entry: "epics.epic-{N}: {created_issue_key}"
 
   stories:
-    bmad_source: "{planning_artifacts}/epics.md"
     destination: jira
     description: "Each Story under an Epic becomes a Jira Story linked to the parent Epic"
+    template: "{project-root}/_bmad/atlassian/templates/story-template.md"
     creation_flow:
       - step: 1
         action: "Parse story entries from epic section"
@@ -123,7 +126,6 @@ phase_2_planning:
         key_map_entry: "stories.{N}-{M}-{kebab_title}: {created_issue_key}"
 
   ux_design:
-    bmad_source: "{planning_artifacts}/ux-design.md"
     destination: confluence
     mcp_tool: create_page
     parameters:
@@ -134,6 +136,8 @@ phase_2_planning:
     labels:
       - "{agent_label_prefix}ux-designer"
       - "bmad-ux"
+    template: "{project-root}/_bmad/atlassian/templates/ux-design-template.md"
+    key_map_entry: "confluence_pages.ux_design"
     cross_links:
       - type: remote_issue_link
         description: "Link from each Epic back to the UX Design page"
@@ -150,7 +154,6 @@ phase_2_planning:
 phase_3_solutioning:
 
   architecture_decision_doc:
-    bmad_source: "{planning_artifacts}/architecture.md"
     destination: confluence
     mcp_tool: create_page
     parameters:
@@ -161,6 +164,8 @@ phase_3_solutioning:
     labels:
       - "{agent_label_prefix}architect"
       - "bmad-architecture"
+    template: "{project-root}/_bmad/atlassian/templates/architecture-decision-template.md"
+    key_map_entry: "confluence_pages.architecture"
     cross_links:
       - type: remote_issue_link
         description: "Link from relevant Epics back to Architecture page"
@@ -170,6 +175,21 @@ phase_3_solutioning:
           url: "{confluence_page_url}"
           title: "Architecture Decision Document"
 
+  readiness_report:
+    destination: confluence
+    mcp_tool: create_page
+    parameters:
+      space_key: "{confluence_space_key}"
+      title: "[{jira_project_key}] Implementation Readiness Report"
+      content: "{readiness_body_markdown}"
+      parent_id: "{confluence_parent_page_id}"
+    labels:
+      - "{agent_label_prefix}sm"
+      - "bmad-readiness"
+    template: "{project-root}/_bmad/atlassian/templates/readiness-report-template.md"
+    key_map_entry: "confluence_pages.readiness_report"
+    notes: "Cross-references PRD, architecture, and epics/stories for completeness check"
+
 # ============================================================================
 # PHASE 4 — IMPLEMENTATION (SM / Bob, Dev / Amelia, QA / Quinn)
 # ============================================================================
@@ -177,9 +197,8 @@ phase_3_solutioning:
 phase_4_implementation:
 
   sprint:
-    bmad_source: "{implementation_artifacts}/sprint-status.yaml"
     destination: jira
-    description: "Sprint status tracked via Jira Sprints instead of local YAML"
+    description: "Sprint status tracked via Jira Sprints"
     creation_flow:
       - step: 1
         action: "Find or create Jira sprint"
@@ -203,9 +222,9 @@ phase_4_implementation:
           issue_keys: "{selected_story_keys}"
 
   story_preparation:
-    bmad_source: "{implementation_artifacts}/{story-key}.md"
     destination: jira
     description: "SM prepares story by enriching the Jira Story description with dev context"
+    checklist: "{project-root}/_bmad/atlassian/checklists/create-story-checklist.md"
     creation_flow:
       - step: 1
         action: "Look up Jira key from key map"
@@ -233,7 +252,6 @@ phase_4_implementation:
       - "{agent_label_prefix}sm"
 
   story_tasks:
-    bmad_source: "Tasks/subtasks within story file"
     destination: jira
     description: "Each task in the story becomes a Jira Subtask"
     creation_flow:
@@ -255,9 +273,9 @@ phase_4_implementation:
               - "bmad-task"
 
   dev_story_execution:
-    bmad_source: "Dev agent record in story file"
     destination: jira
     description: "Dev agent transitions stories and posts completion notes"
+    checklist: "{project-root}/_bmad/atlassian/checklists/dev-story-checklist.md"
     execution_flow:
       - step: 1
         action: "Find next story to implement"
@@ -302,9 +320,9 @@ phase_4_implementation:
           action: "unlock"
 
   code_review:
-    bmad_source: "Code review results"
     destination: jira
     description: "Code review findings posted as Jira comment on the Story"
+    checklist: "{project-root}/_bmad/atlassian/checklists/code-review-checklist.md"
     execution_flow:
       - step: 1
         action: "Post review findings"
@@ -321,3 +339,64 @@ phase_4_implementation:
     labels:
       - "{agent_label_prefix}dev"
       - "bmad-reviewed"
+
+  retrospective:
+    destination: confluence
+    description: "Epic retrospective findings posted to Confluence, summary on Jira Epic"
+    mcp_tool: create_page
+    parameters:
+      space_key: "{confluence_space_key}"
+      title: "[{jira_project_key}] Retrospective: {epic_title}"
+      content: "{retrospective_body_markdown}"
+      parent_id: "{confluence_parent_page_id}"
+    labels:
+      - "{agent_label_prefix}sm"
+      - "bmad-retrospective"
+    key_map_entry: "confluence_pages.retrospective_{epic_id}"
+    notes: "Also posts summary comment on the Epic and transitions Epic to Done if all stories complete"
+
+  correct_course:
+    destination: jira
+    description: "Course correction changes posted as comments on affected Jira issues"
+    checklist: "{project-root}/_bmad/atlassian/checklists/correct-course-checklist.md"
+    execution_flow:
+      - step: 1
+        action: "Assess current sprint state via JQL"
+      - step: 2
+        action: "Post Sprint Change Proposal as comment on affected issues"
+        mcp_tool: add_comment
+      - step: 3
+        action: "Create new remediation stories if needed"
+        mcp_tool: create_issue
+      - step: 4
+        action: "Update existing story descriptions/ACs"
+        mcp_tool: update_issue
+
+  sprint_status:
+    destination: jira
+    description: "Sprint status read from Jira Sprints API, optionally posted to Confluence"
+    execution_flow:
+      - step: 1
+        action: "Get active sprint and its issues"
+        mcp_tool: get_sprints_from_board
+      - step: 2
+        action: "Get sprint issues"
+        mcp_tool: get_sprint_issues
+      - step: 3
+        action: "Build status dashboard"
+    notes: "Read-only by default. Can optionally post to Confluence."
+
+# ============================================================================
+# CROSS-AGENT COMMUNICATION
+# ============================================================================
+
+cross_agent:
+
+  handoff_notification:
+    destination: jira
+    description: "Structured handoff comment posted on Jira issues when work passes between agents"
+    task: "{project-root}/_bmad/atlassian/tasks/post-handoff.md"
+    mcp_tool: add_comment
+    labels:
+      - "bmad-handoff-{target_agent}"
+    notes: "Orchestrator scans for bmad-handoff-* labels to detect pending handoffs"
