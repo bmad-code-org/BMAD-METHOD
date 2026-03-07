@@ -48,7 +48,7 @@ Support assumption: full Agent Skills support. BMAD currently installs legacy co
 - [x] Test reinstall/upgrade from legacy command output
 - [x] Confirm no ancestor conflict protection is needed because a child workspace surfaced child `.cursor/skills` entries but not a parent-only skill during manual verification
 - [x] Implement/extend automated tests
-- [ ] Commit
+- [x] Commit
 
 ## Windsurf
 
@@ -167,7 +167,7 @@ Support assumption: full Agent Skills support. BMAD currently installs commands 
 - [x] Implement installer migration to native skills output
 - [x] Add legacy cleanup for `.roo/commands`
 - [x] Test fresh install — 43 skills installed, verified in Roo Code v3.51
-- [ ] Test reinstall/upgrade from legacy command output
+- [x] Test reinstall/upgrade from legacy command output
 - [x] Confirm no ancestor conflict protection is needed because manual Roo Code v3.51 verification showed child-local `child-only` skill loaded while parent-only skill was not inherited
 - [x] Implement/extend automated tests — 7 assertions in test suite 13
 - [x] Commit
@@ -193,13 +193,13 @@ Support assumption: full Agent Skills support. BMAD currently uses a custom inst
 
 **Install:** VS Code extension `GitHub.copilot` — search "GitHub Copilot" in Extensions or `code --install-extension GitHub.copilot`
 
-- [ ] Confirm GitHub Copilot native skills path and whether `.github/agents` remains necessary as a compatibility layer
+- [x] Confirm GitHub Copilot native skills path is `.github/skills/{skill-name}/SKILL.md` — also reads `.claude/skills/` automatically
 - [ ] Design the migration away from the custom prompt/agent installer model
 - [ ] Implement native skills output, ideally with shared config-driven code where practical
 - [ ] Add legacy cleanup for `.github/agents`, `.github/prompts`, and any BMAD-owned Copilot instruction file behavior that should be retired
 - [ ] Test fresh install
 - [ ] Test reinstall/upgrade from legacy custom installer output
-- [ ] Confirm ancestor conflict protection where applicable
+- [x] Confirm no ancestor conflict protection is needed because manual Copilot verification showed child-local `child-only` skill loaded while parent-only skill was not inherited
 - [ ] Implement/extend automated tests
 - [ ] Commit
 

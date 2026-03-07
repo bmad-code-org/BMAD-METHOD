@@ -726,6 +726,15 @@ async function runTests() {
 
     assert(!(await fs.pathExists(path.join(tempProjectDir13, '.roo', 'commands'))), 'Roo setup removes legacy commands dir');
 
+    // Reinstall/upgrade: run setup again over existing skills output
+    const result13b = await ideManager13.setup('roo', tempProjectDir13, installedBmadDir13, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+
+    assert(result13b.success === true, 'Roo reinstall/upgrade succeeds over existing skills');
+    assert(await fs.pathExists(skillFile13), 'Roo reinstall preserves SKILL.md output');
+
     await fs.remove(tempProjectDir13);
     await fs.remove(installedBmadDir13);
   } catch (error) {
@@ -798,6 +807,70 @@ async function runTests() {
     }
   } catch (error) {
     assert(false, 'QA compilation test setup', error.message);
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test 17: GitHub Copilot Native Skills Install
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 17: GitHub Copilot Native Skills${colors.reset}\n`);
+
+  try {
+    clearCache();
+    const platformCodes17 = await loadPlatformCodes();
+    const copilotInstaller = platformCodes17.platforms['github-copilot']?.installer;
+
+    assert(copilotInstaller?.target_dir === '.github/skills', 'GitHub Copilot target_dir uses native skills path');
+
+    assert(copilotInstaller?.skill_format === true, 'GitHub Copilot installer enables native skill output');
+
+    assert(
+      Array.isArray(copilotInstaller?.legacy_targets) && copilotInstaller.legacy_targets.includes('.github/agents'),
+      'GitHub Copilot installer cleans legacy agents output',
+    );
+
+    assert(
+      Array.isArray(copilotInstaller?.legacy_targets) && copilotInstaller.legacy_targets.includes('.github/prompts'),
+      'GitHub Copilot installer cleans legacy prompts output',
+    );
+
+    const tempProjectDir17 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-copilot-test-'));
+    const installedBmadDir17 = await createTestBmadFixture();
+
+    // Create legacy .github/agents/ and .github/prompts/ files
+    const legacyAgentsDir17 = path.join(tempProjectDir17, '.github', 'agents');
+    const legacyPromptsDir17 = path.join(tempProjectDir17, '.github', 'prompts');
+    await fs.ensureDir(legacyAgentsDir17);
+    await fs.ensureDir(legacyPromptsDir17);
+    await fs.writeFile(path.join(legacyAgentsDir17, 'bmad-legacy.agent.md'), 'legacy agent\n');
+    await fs.writeFile(path.join(legacyPromptsDir17, 'bmad-legacy.prompt.md'), 'legacy prompt\n');
+
+    const ideManager17 = new IdeManager();
+    await ideManager17.ensureInitialized();
+    const result17 = await ideManager17.setup('github-copilot', tempProjectDir17, installedBmadDir17, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+
+    assert(result17.success === true, 'GitHub Copilot setup succeeds against temp project');
+
+    const skillFile17 = path.join(tempProjectDir17, '.github', 'skills', 'bmad-master', 'SKILL.md');
+    assert(await fs.pathExists(skillFile17), 'GitHub Copilot install writes SKILL.md directory output');
+
+    // Verify name frontmatter matches directory name
+    const skillContent17 = await fs.readFile(skillFile17, 'utf8');
+    const nameMatch17 = skillContent17.match(/^name:\s*(.+)$/m);
+    assert(nameMatch17 && nameMatch17[1].trim() === 'bmad-master', 'GitHub Copilot skill name frontmatter matches directory name exactly');
+
+    assert(!(await fs.pathExists(legacyAgentsDir17)), 'GitHub Copilot setup removes legacy agents dir');
+
+    assert(!(await fs.pathExists(legacyPromptsDir17)), 'GitHub Copilot setup removes legacy prompts dir');
+
+    await fs.remove(tempProjectDir17);
+    await fs.remove(installedBmadDir17);
+  } catch (error) {
+    assert(false, 'GitHub Copilot native skills migration test succeeds', error.message);
   }
 
   console.log('');
