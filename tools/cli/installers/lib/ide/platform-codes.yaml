@@ -96,8 +96,11 @@ platforms:
     category: ide
     description: "AI development assistant"
     installer:
-      target_dir: .crush/commands
+      legacy_targets:
+        - .crush/commands
+      target_dir: .crush/skills
       template_type: default
+      skill_format: true
 
   cursor:
     name: "Cursor"

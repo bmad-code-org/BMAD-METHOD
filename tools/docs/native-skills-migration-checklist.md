@@ -119,18 +119,19 @@ Support assumption: full Agent Skills support. CodeBuddy docs confirm workspace 
 
 ## Crush
 
-Support assumption: full Agent Skills support. BMAD currently installs commands to `.crush/commands`; target should move to the platform's native skills location.
+Support assumption: full Agent Skills support. Crush scans project-local `.crush/skills/` exclusively ([GitHub issue #2072](https://github.com/charmbracelet/crush/issues/2072) confirms this and requests adding `~/.agents/skills/`). BMAD has now migrated from `.crush/commands` to `.crush/skills`.
 
 **Install:** `brew install charmbracelet/tap/crush` (macOS/Linux) or `winget install charmbracelet.crush` (Windows)
 
-- [ ] Confirm Crush project-local versus global skills path and BMAD's preferred install target
-- [ ] Implement installer migration to native skills output
-- [ ] Add legacy cleanup for `.crush/commands`
-- [ ] Test fresh install
-- [ ] Test reinstall/upgrade from legacy command output
-- [ ] Confirm ancestor conflict protection where applicable
-- [ ] Implement/extend automated tests
-- [ ] Commit
+- [x] Confirm Crush project-local skills path is `.crush/skills/{skill-name}/SKILL.md` — per GitHub issue #2072 confirming `.crush/skills/` is the only scan path
+- [x] Implement installer migration to native skills output
+- [x] Add legacy cleanup for `.crush/commands`
+- [x] Test fresh install — 43 skills installed to `.crush/skills/`
+- [x] Test reinstall/upgrade from legacy command output
+- [x] Confirm no ancestor conflict protection is needed because Crush only scans project-local `.crush/skills/`, no ancestor inheritance
+- [ ] **NEEDS MANUAL IDE VERIFICATION** — install Crush via brew and confirm skills appear in UI
+- [x] Implement/extend automated tests — 9 assertions in test suite 20
+- [x] Commit
 
 ## Kiro
 

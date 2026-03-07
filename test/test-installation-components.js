@@ -1016,6 +1016,66 @@ async function runTests() {
   console.log('');
 
   // ============================================================
+  // Test 20: Crush Native Skills Install
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 20: Crush Native Skills${colors.reset}\n`);
+
+  try {
+    clearCache();
+    const platformCodes20 = await loadPlatformCodes();
+    const crushInstaller = platformCodes20.platforms.crush?.installer;
+
+    assert(crushInstaller?.target_dir === '.crush/skills', 'Crush target_dir uses native skills path');
+
+    assert(crushInstaller?.skill_format === true, 'Crush installer enables native skill output');
+
+    assert(
+      Array.isArray(crushInstaller?.legacy_targets) && crushInstaller.legacy_targets.includes('.crush/commands'),
+      'Crush installer cleans legacy command output',
+    );
+
+    const tempProjectDir20 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-crush-test-'));
+    const installedBmadDir20 = await createTestBmadFixture();
+    const legacyDir20 = path.join(tempProjectDir20, '.crush', 'commands', 'bmad-legacy-dir');
+    await fs.ensureDir(legacyDir20);
+    await fs.writeFile(path.join(tempProjectDir20, '.crush', 'commands', 'bmad-legacy.md'), 'legacy\n');
+    await fs.writeFile(path.join(legacyDir20, 'SKILL.md'), 'legacy\n');
+
+    const ideManager20 = new IdeManager();
+    await ideManager20.ensureInitialized();
+    const result20 = await ideManager20.setup('crush', tempProjectDir20, installedBmadDir20, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+
+    assert(result20.success === true, 'Crush setup succeeds against temp project');
+
+    const skillFile20 = path.join(tempProjectDir20, '.crush', 'skills', 'bmad-master', 'SKILL.md');
+    assert(await fs.pathExists(skillFile20), 'Crush install writes SKILL.md directory output');
+
+    const skillContent20 = await fs.readFile(skillFile20, 'utf8');
+    const nameMatch20 = skillContent20.match(/^name:\s*(.+)$/m);
+    assert(nameMatch20 && nameMatch20[1].trim() === 'bmad-master', 'Crush skill name frontmatter matches directory name exactly');
+
+    assert(!(await fs.pathExists(path.join(tempProjectDir20, '.crush', 'commands'))), 'Crush setup removes legacy commands dir');
+
+    const result20b = await ideManager20.setup('crush', tempProjectDir20, installedBmadDir20, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+
+    assert(result20b.success === true, 'Crush reinstall/upgrade succeeds over existing skills');
+    assert(await fs.pathExists(skillFile20), 'Crush reinstall preserves SKILL.md output');
+
+    await fs.remove(tempProjectDir20);
+    await fs.remove(installedBmadDir20);
+  } catch (error) {
+    assert(false, 'Crush native skills migration test succeeds', error.message);
+  }
+
+  console.log('');
+
+  // ============================================================
   // Summary
   // ============================================================
   console.log(`${colors.cyan}========================================`);
