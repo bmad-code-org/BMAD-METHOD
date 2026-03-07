@@ -205,7 +205,7 @@ platforms:
       skill_format: true
 
   roo:
-    name: "Roo Cline"
+    name: "Roo Code"
     preferred: false
     category: ide
     description: "Enhanced Cline fork"

@@ -1,5 +1,3 @@
-const fs = require('fs-extra');
-const path = require('node:path');
 const { BMAD_FOLDER_NAME } = require('./shared/path-utils');
 const prompts = require('../../../lib/prompts');
 
@@ -8,8 +6,7 @@ const prompts = require('../../../lib/prompts');
  * Dynamically discovers and loads IDE handlers
  *
  * Loading strategy:
- * All platforms are now config-driven from platform-codes.yaml.
- * The custom installer file mechanism is retained for future use but currently has no entries.
+ * All platforms are config-driven from platform-codes.yaml.
  */
 class IdeManager {
   constructor() {
@@ -43,48 +40,10 @@ class IdeManager {
   }
 
   /**
-   * Dynamically load all IDE handlers
-   * 1. Load custom installer files first (kilo.js, rovodev.js)
-   * 2. Load config-driven handlers from platform-codes.yaml
+   * Dynamically load all IDE handlers from platform-codes.yaml
    */
   async loadHandlers() {
-    // Load custom installer files
-    await this.loadCustomInstallerFiles();
-
-    // Load config-driven handlers from platform-codes.yaml
     await this.loadConfigDrivenHandlers();
-  }
-
-  /**
-   * Load custom installer files (unique installation logic)
-   * These files have special installation patterns that don't fit the config-driven model
-   * Note: All custom installers (codex, github-copilot, kilo, rovodev) have been migrated to config-driven (platform-codes.yaml)
-   */
-  async loadCustomInstallerFiles() {
-    const ideDir = __dirname;
-    const customFiles = [];
-
-    for (const file of customFiles) {
-      const filePath = path.join(ideDir, file);
-      if (!fs.existsSync(filePath)) continue;
-
-      try {
-        const HandlerModule = require(filePath);
-        const HandlerClass = HandlerModule.default || Object.values(HandlerModule)[0];
-
-        if (HandlerClass) {
-          const instance = new HandlerClass();
-          if (instance.name && typeof instance.name === 'string') {
-            if (typeof instance.setBmadFolderName === 'function') {
-              instance.setBmadFolderName(this.bmadFolderName);
-            }
-            this.handlers.set(instance.name, instance);
-          }
-        }
-      } catch (error) {
-        await prompts.log.warn(`Warning: Could not load ${file}: ${error.message}`);
-      }
-    }
   }
 
   /**
@@ -98,9 +57,6 @@ class IdeManager {
     const { ConfigDrivenIdeSetup } = require('./_config-driven');
 
     for (const [platformCode, platformInfo] of Object.entries(platformConfig.platforms)) {
-      // Skip if already loaded by custom installer
-      if (this.handlers.has(platformCode)) continue;
-
       // Skip if no installer config (platform may not need installation)
       if (!platformInfo.installer) continue;
 
@@ -189,7 +145,11 @@ class IdeManager {
       }
       // Still clean up legacy artifacts so old broken configs don't linger
       if (typeof handler.cleanup === 'function') {
-        await handler.cleanup(projectDir, { silent: true });
+        try {
+          await handler.cleanup(projectDir, { silent: true });
+        } catch {
+          // Best-effort cleanup — don't let stale files block the suspended result
+        }
       }
       return { success: false, ide: ideName, error: 'suspended' };
     }

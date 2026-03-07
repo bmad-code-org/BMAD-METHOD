@@ -793,28 +793,32 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
 
     if (!(await fs.pathExists(filePath))) return;
 
-    const content = await fs.readFile(filePath, 'utf8');
-    const startIdx = content.indexOf('<!-- BMAD:START -->');
-    const endIdx = content.indexOf('<!-- BMAD:END -->');
+    try {
+      const content = await fs.readFile(filePath, 'utf8');
+      const startIdx = content.indexOf('<!-- BMAD:START -->');
+      const endIdx = content.indexOf('<!-- BMAD:END -->');
 
-    if (startIdx === -1 || endIdx === -1 || endIdx <= startIdx) return;
+      if (startIdx === -1 || endIdx === -1 || endIdx <= startIdx) return;
 
-    const cleaned = content.slice(0, startIdx) + content.slice(endIdx + '<!-- BMAD:END -->'.length);
+      const cleaned = content.slice(0, startIdx) + content.slice(endIdx + '<!-- BMAD:END -->'.length);
 
-    if (cleaned.trim().length === 0) {
-      await fs.remove(filePath);
-      const backupPath = `${filePath}.bak`;
-      if (await fs.pathExists(backupPath)) {
-        await fs.rename(backupPath, filePath);
-        if (!options.silent) await prompts.log.message('  Restored copilot-instructions.md from backup');
+      if (cleaned.trim().length === 0) {
+        await fs.remove(filePath);
+        const backupPath = `${filePath}.bak`;
+        if (await fs.pathExists(backupPath)) {
+          await fs.rename(backupPath, filePath);
+          if (!options.silent) await prompts.log.message('  Restored copilot-instructions.md from backup');
+        }
+      } else {
+        await fs.writeFile(filePath, cleaned, 'utf8');
+        const backupPath = `${filePath}.bak`;
+        if (await fs.pathExists(backupPath)) await fs.remove(backupPath);
       }
-    } else {
-      await fs.writeFile(filePath, cleaned, 'utf8');
-      const backupPath = `${filePath}.bak`;
-      if (await fs.pathExists(backupPath)) await fs.remove(backupPath);
-    }
 
-    if (!options.silent) await prompts.log.message('  Cleaned BMAD markers from copilot-instructions.md');
+      if (!options.silent) await prompts.log.message('  Cleaned BMAD markers from copilot-instructions.md');
+    } catch {
+      if (!options.silent) await prompts.log.warn('  Warning: Could not clean BMAD markers from copilot-instructions.md');
+    }
   }
 
   /**
@@ -914,7 +918,9 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
       try {
         if (await fs.pathExists(candidatePath)) {
           const entries = await fs.readdir(candidatePath);
-          const hasBmad = entries.some((e) => typeof e === 'string' && e.toLowerCase().startsWith('bmad'));
+          const hasBmad = entries.some(
+            (e) => typeof e === 'string' && e.toLowerCase().startsWith('bmad') && !e.toLowerCase().startsWith('bmad-os-'),
+          );
           if (hasBmad) {
             return candidatePath;
           }

@@ -221,7 +221,7 @@ Support assumption: full Agent Skills support. BMAD currently uses a custom inst
 
 Support assumption: full Agent Skills support. Gemini CLI docs confirm workspace skills at `.gemini/skills/` and user skills at `~/.gemini/skills/`. Also discovers `.agents/skills/` as an alias. BMAD previously installed TOML files to `.gemini/commands`.
 
-**Install:** `npm install -g @anthropic-ai/gemini-cli` or see [geminicli.com](https://geminicli.com)
+**Install:** `npm install -g @google/gemini-cli` or see [geminicli.com](https://geminicli.com)
 
 - [x] Confirm Gemini CLI native skills path is `.gemini/skills/{skill-name}/SKILL.md` (per [geminicli.com/docs/cli/skills](https://geminicli.com/docs/cli/skills/))
 - [x] Implement native skills output — target_dir `.gemini/skills`, skill_format true, template_type default (replaces TOML templates)

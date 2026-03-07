@@ -713,7 +713,8 @@ class Installer {
       }
 
       // Merge tool selection into config (for both quick update and regular flow)
-      config.ides = toolSelection.ides;
+      // Normalize IDE keys to lowercase so they match handler map keys consistently
+      config.ides = (toolSelection.ides || []).map((ide) => ide.toLowerCase());
       config.skipIde = toolSelection.skipIde;
       const ideConfigurations = toolSelection.configurations;
 
@@ -1354,6 +1355,19 @@ class Installer {
       } catch {
         // Ensure the original error is never swallowed by a logging failure
       }
+
+      // Clean up any temp backup directories that were created before the failure
+      try {
+        if (config._tempBackupDir && (await fs.pathExists(config._tempBackupDir))) {
+          await fs.remove(config._tempBackupDir);
+        }
+        if (config._tempModifiedBackupDir && (await fs.pathExists(config._tempModifiedBackupDir))) {
+          await fs.remove(config._tempModifiedBackupDir);
+        }
+      } catch {
+        // Best-effort cleanup — don't mask the original error
+      }
+
       throw error;
     }
   }
