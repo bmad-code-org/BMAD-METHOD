@@ -457,9 +457,238 @@ async function runTests() {
   console.log('');
 
   // ============================================================
-  // Test 9: OpenCode Ancestor Conflict
+  // Test 9: Claude Code Native Skills Install
   // ============================================================
-  console.log(`${colors.yellow}Test Suite 9: OpenCode Ancestor Conflict${colors.reset}\n`);
+  console.log(`${colors.yellow}Test Suite 9: Claude Code Native Skills${colors.reset}\n`);
+
+  try {
+    clearCache();
+    const platformCodes9 = await loadPlatformCodes();
+    const claudeInstaller = platformCodes9.platforms['claude-code']?.installer;
+
+    assert(claudeInstaller?.target_dir === '.claude/skills', 'Claude Code target_dir uses native skills path');
+
+    assert(claudeInstaller?.skill_format === true, 'Claude Code installer enables native skill output');
+
+    assert(claudeInstaller?.ancestor_conflict_check === true, 'Claude Code installer enables ancestor conflict checks');
+
+    assert(
+      Array.isArray(claudeInstaller?.legacy_targets) && claudeInstaller.legacy_targets.includes('.claude/commands'),
+      'Claude Code installer cleans legacy command output',
+    );
+
+    const tempProjectDir9 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-claude-code-test-'));
+    const installedBmadDir9 = await createTestBmadFixture();
+    const legacyDir9 = path.join(tempProjectDir9, '.claude', 'commands');
+    await fs.ensureDir(legacyDir9);
+    await fs.writeFile(path.join(legacyDir9, 'bmad-legacy.md'), 'legacy\n');
+
+    const ideManager9 = new IdeManager();
+    await ideManager9.ensureInitialized();
+    const result9 = await ideManager9.setup('claude-code', tempProjectDir9, installedBmadDir9, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+
+    assert(result9.success === true, 'Claude Code setup succeeds against temp project');
+
+    const skillFile9 = path.join(tempProjectDir9, '.claude', 'skills', 'bmad-master', 'SKILL.md');
+    assert(await fs.pathExists(skillFile9), 'Claude Code install writes SKILL.md directory output');
+
+    assert(!(await fs.pathExists(legacyDir9)), 'Claude Code setup removes legacy commands dir');
+
+    await fs.remove(tempProjectDir9);
+    await fs.remove(installedBmadDir9);
+  } catch (error) {
+    assert(false, 'Claude Code native skills migration test succeeds', error.message);
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test 10: Claude Code Ancestor Conflict
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 10: Claude Code Ancestor Conflict${colors.reset}\n`);
+
+  try {
+    const tempRoot10 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-claude-code-ancestor-test-'));
+    const parentProjectDir10 = path.join(tempRoot10, 'parent');
+    const childProjectDir10 = path.join(parentProjectDir10, 'child');
+    const installedBmadDir10 = await createTestBmadFixture();
+
+    await fs.ensureDir(path.join(parentProjectDir10, '.git'));
+    await fs.ensureDir(path.join(parentProjectDir10, '.claude', 'skills', 'bmad-existing'));
+    await fs.ensureDir(childProjectDir10);
+    await fs.writeFile(path.join(parentProjectDir10, '.claude', 'skills', 'bmad-existing', 'SKILL.md'), 'legacy\n');
+
+    const ideManager10 = new IdeManager();
+    await ideManager10.ensureInitialized();
+    const result10 = await ideManager10.setup('claude-code', childProjectDir10, installedBmadDir10, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+    const expectedConflictDir10 = await fs.realpath(path.join(parentProjectDir10, '.claude', 'skills'));
+
+    assert(result10.success === false, 'Claude Code setup refuses install when ancestor skills already exist');
+    assert(result10.handlerResult?.reason === 'ancestor-conflict', 'Claude Code ancestor rejection reports ancestor-conflict reason');
+    assert(
+      result10.handlerResult?.conflictDir === expectedConflictDir10,
+      'Claude Code ancestor rejection points at ancestor .claude/skills dir',
+    );
+
+    await fs.remove(tempRoot10);
+    await fs.remove(installedBmadDir10);
+  } catch (error) {
+    assert(false, 'Claude Code ancestor conflict protection test succeeds', error.message);
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test 11: Codex Native Skills Install
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 11: Codex Native Skills${colors.reset}\n`);
+
+  try {
+    clearCache();
+    const platformCodes11 = await loadPlatformCodes();
+    const codexInstaller = platformCodes11.platforms.codex?.installer;
+
+    assert(codexInstaller?.target_dir === '.agents/skills', 'Codex target_dir uses native skills path');
+
+    assert(codexInstaller?.skill_format === true, 'Codex installer enables native skill output');
+
+    assert(codexInstaller?.ancestor_conflict_check === true, 'Codex installer enables ancestor conflict checks');
+
+    assert(
+      Array.isArray(codexInstaller?.legacy_targets) && codexInstaller.legacy_targets.includes('.codex/prompts'),
+      'Codex installer cleans legacy prompt output',
+    );
+
+    const tempProjectDir11 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-codex-test-'));
+    const installedBmadDir11 = await createTestBmadFixture();
+    const legacyDir11 = path.join(tempProjectDir11, '.codex', 'prompts');
+    await fs.ensureDir(legacyDir11);
+    await fs.writeFile(path.join(legacyDir11, 'bmad-legacy.md'), 'legacy\n');
+
+    const ideManager11 = new IdeManager();
+    await ideManager11.ensureInitialized();
+    const result11 = await ideManager11.setup('codex', tempProjectDir11, installedBmadDir11, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+
+    assert(result11.success === true, 'Codex setup succeeds against temp project');
+
+    const skillFile11 = path.join(tempProjectDir11, '.agents', 'skills', 'bmad-master', 'SKILL.md');
+    assert(await fs.pathExists(skillFile11), 'Codex install writes SKILL.md directory output');
+
+    assert(!(await fs.pathExists(legacyDir11)), 'Codex setup removes legacy prompts dir');
+
+    await fs.remove(tempProjectDir11);
+    await fs.remove(installedBmadDir11);
+  } catch (error) {
+    assert(false, 'Codex native skills migration test succeeds', error.message);
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test 12: Codex Ancestor Conflict
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 12: Codex Ancestor Conflict${colors.reset}\n`);
+
+  try {
+    const tempRoot12 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-codex-ancestor-test-'));
+    const parentProjectDir12 = path.join(tempRoot12, 'parent');
+    const childProjectDir12 = path.join(parentProjectDir12, 'child');
+    const installedBmadDir12 = await createTestBmadFixture();
+
+    await fs.ensureDir(path.join(parentProjectDir12, '.git'));
+    await fs.ensureDir(path.join(parentProjectDir12, '.agents', 'skills', 'bmad-existing'));
+    await fs.ensureDir(childProjectDir12);
+    await fs.writeFile(path.join(parentProjectDir12, '.agents', 'skills', 'bmad-existing', 'SKILL.md'), 'legacy\n');
+
+    const ideManager12 = new IdeManager();
+    await ideManager12.ensureInitialized();
+    const result12 = await ideManager12.setup('codex', childProjectDir12, installedBmadDir12, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+    const expectedConflictDir12 = await fs.realpath(path.join(parentProjectDir12, '.agents', 'skills'));
+
+    assert(result12.success === false, 'Codex setup refuses install when ancestor skills already exist');
+    assert(result12.handlerResult?.reason === 'ancestor-conflict', 'Codex ancestor rejection reports ancestor-conflict reason');
+    assert(result12.handlerResult?.conflictDir === expectedConflictDir12, 'Codex ancestor rejection points at ancestor .agents/skills dir');
+
+    await fs.remove(tempRoot12);
+    await fs.remove(installedBmadDir12);
+  } catch (error) {
+    assert(false, 'Codex ancestor conflict protection test succeeds', error.message);
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test 13: Roo Code Native Skills Install
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 13: Roo Code Native Skills${colors.reset}\n`);
+
+  try {
+    clearCache();
+    const platformCodes13 = await loadPlatformCodes();
+    const rooInstaller = platformCodes13.platforms.roo?.installer;
+
+    assert(rooInstaller?.target_dir === '.roo/skills', 'Roo target_dir uses native skills path');
+
+    assert(rooInstaller?.skill_format === true, 'Roo installer enables native skill output');
+
+    assert(
+      Array.isArray(rooInstaller?.legacy_targets) && rooInstaller.legacy_targets.includes('.roo/commands'),
+      'Roo installer cleans legacy command output',
+    );
+
+    const tempProjectDir13 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-roo-test-'));
+    const installedBmadDir13 = await createTestBmadFixture();
+    const legacyDir13 = path.join(tempProjectDir13, '.roo', 'commands', 'bmad-legacy-dir');
+    await fs.ensureDir(legacyDir13);
+    await fs.writeFile(path.join(tempProjectDir13, '.roo', 'commands', 'bmad-legacy.md'), 'legacy\n');
+    await fs.writeFile(path.join(legacyDir13, 'SKILL.md'), 'legacy\n');
+
+    const ideManager13 = new IdeManager();
+    await ideManager13.ensureInitialized();
+    const result13 = await ideManager13.setup('roo', tempProjectDir13, installedBmadDir13, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+
+    assert(result13.success === true, 'Roo setup succeeds against temp project');
+
+    const skillFile13 = path.join(tempProjectDir13, '.roo', 'skills', 'bmad-master', 'SKILL.md');
+    assert(await fs.pathExists(skillFile13), 'Roo install writes SKILL.md directory output');
+
+    // Verify name frontmatter matches directory name (Roo constraint: lowercase alphanumeric + hyphens)
+    const skillContent13 = await fs.readFile(skillFile13, 'utf8');
+    const nameMatch13 = skillContent13.match(/^name:\s*(.+)$/m);
+    assert(
+      nameMatch13 && nameMatch13[1].trim() === 'bmad-master',
+      'Roo skill name frontmatter matches directory name exactly (lowercase alphanumeric + hyphens)',
+    );
+
+    assert(!(await fs.pathExists(path.join(tempProjectDir13, '.roo', 'commands'))), 'Roo setup removes legacy commands dir');
+
+    await fs.remove(tempProjectDir13);
+    await fs.remove(installedBmadDir13);
+  } catch (error) {
+    assert(false, 'Roo native skills migration test succeeds', error.message);
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test 14: OpenCode Ancestor Conflict
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 14: OpenCode Ancestor Conflict${colors.reset}\n`);
 
   try {
     const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-opencode-ancestor-test-'));
@@ -496,9 +725,9 @@ async function runTests() {
   console.log('');
 
   // ============================================================
-  // Test 10: QA Agent Compilation
+  // Test 15: QA Agent Compilation
   // ============================================================
-  console.log(`${colors.yellow}Test Suite 10: QA Agent Compilation${colors.reset}\n`);
+  console.log(`${colors.yellow}Test Suite 15: QA Agent Compilation${colors.reset}\n`);
 
   try {
     const builder = new YamlXmlBuilder();

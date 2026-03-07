@@ -15,25 +15,27 @@ This checklist now includes those completed platforms plus the remaining full-su
 
 Support assumption: full Agent Skills support. BMAD has already migrated from `.claude/commands` to `.claude/skills`.
 
-- [ ] Confirm current implementation still matches Claude Code skills expectations
-- [ ] Confirm legacy cleanup for `.claude/commands`
-- [ ] Test fresh install
-- [ ] Test reinstall/upgrade from legacy command output
-- [ ] Confirm ancestor conflict protection
-- [ ] Implement/extend automated tests as needed
-- [ ] Commit any follow-up fixes if required
+**Install:** `npm install -g @anthropic-ai/claude-code` or `brew install claude-code`
+
+- [x] Confirm current implementation still matches Claude Code skills expectations
+- [x] Confirm legacy cleanup for `.claude/commands`
+- [x] Test fresh install
+- [x] Test reinstall/upgrade from legacy command output
+- [x] Confirm ancestor conflict protection because Claude Code inherits skills from parent directories and `ancestor_conflict_check: true` is set in platform-codes.yaml
+- [x] Implement/extend automated tests as needed
 
 ## Codex CLI
 
 Support assumption: full Agent Skills support. BMAD has already migrated from `.codex/prompts` to `.agents/skills`.
 
-- [ ] Confirm current implementation still matches Codex CLI skills expectations
-- [ ] Confirm legacy cleanup for project and global `.codex/prompts`
-- [ ] Test fresh install
-- [ ] Test reinstall/upgrade from legacy prompt output
+**Install:** `npm install -g @openai/codex`
+
+- [x] Confirm current implementation still matches Codex CLI skills expectations
+- [x] Confirm legacy cleanup for project and global `.codex/prompts`
+- [x] Test fresh install
+- [x] Test reinstall/upgrade from legacy prompt output
 - [x] Confirm ancestor conflict protection because Codex inherits parent-directory `.agents/skills`
-- [ ] Implement/extend automated tests as needed
-- [ ] Commit any follow-up fixes if required
+- [x] Implement/extend automated tests as needed
 
 ## Cursor
 
@@ -46,7 +48,7 @@ Support assumption: full Agent Skills support. BMAD currently installs legacy co
 - [x] Test reinstall/upgrade from legacy command output
 - [x] Confirm no ancestor conflict protection is needed because a child workspace surfaced child `.cursor/skills` entries but not a parent-only skill during manual verification
 - [ ] Implement/extend automated tests
-- [x] Commit
+- [ ] Commit
 
 ## Windsurf
 
@@ -59,11 +61,12 @@ Support assumption: full Agent Skills support. Windsurf docs confirm workspace s
 - [x] Test reinstall/upgrade from legacy workflow output
 - [x] Confirm no ancestor conflict protection is needed because manual Windsurf verification showed child-local `@` skills loaded while a parent-only skill was not inherited
 - [x] Implement/extend automated tests
-- [x] Commit
 
 ## Cline
 
 Support assumption: full Agent Skills support. BMAD currently installs workflow files to `.clinerules/workflows`; target should move to the platform's native skills directory.
+
+**Install:** VS Code extension `saoudrizwan.claude-dev` — search "Cline" in Extensions or `code --install-extension saoudrizwan.claude-dev`
 
 - [ ] Confirm current Cline skills path and whether `.cline/skills` is the correct BMAD target
 - [ ] Implement installer migration to native skills output
@@ -85,7 +88,6 @@ Support assumption: full Agent Skills support. Antigravity docs confirm workspac
 - [x] Test reinstall/upgrade from legacy workflow output
 - [x] Confirm no ancestor conflict protection is needed because manual Antigravity verification in `/tmp/antigravity-ancestor-repro/parent/child` showed only the child-local `child-only` skill, with no inherited parent `.agent/skills` entry
 - [x] Implement/extend automated tests
-- [x] Commit
 
 ## Auggie
 
@@ -104,6 +106,8 @@ Support assumption: full Agent Skills support. BMAD currently installs commands 
 
 Support assumption: full Agent Skills support. BMAD currently installs commands to `.codebuddy/commands`; target should move to `.codebuddy/skills`.
 
+**Install:** Download [Tencent CodeBuddy IDE](https://codebuddyide.net/) or install as VS Code extension `CodebuddyAI.codebuddy-ai`
+
 - [ ] Confirm CodeBuddy native skills path and any naming/frontmatter requirements
 - [ ] Implement installer migration to native skills output
 - [ ] Add legacy cleanup for `.codebuddy/commands`
@@ -116,6 +120,8 @@ Support assumption: full Agent Skills support. BMAD currently installs commands 
 ## Crush
 
 Support assumption: full Agent Skills support. BMAD currently installs commands to `.crush/commands`; target should move to the platform's native skills location.
+
+**Install:** `brew install charmbracelet/tap/crush` (macOS/Linux) or `winget install charmbracelet.crush` (Windows)
 
 - [ ] Confirm Crush project-local versus global skills path and BMAD's preferred install target
 - [ ] Implement installer migration to native skills output
@@ -137,7 +143,6 @@ Support assumption: full Agent Skills support. Kiro docs confirm project skills 
 - [x] Test reinstall/upgrade from legacy steering output
 - [x] Confirm no ancestor conflict protection is needed because manual Kiro verification showed Slash-visible skills from the current workspace only, with no ancestor `.kiro/skills` inheritance
 - [x] Implement/extend automated tests
-- [x] Commit
 
 ## OpenCode
 
@@ -156,18 +161,22 @@ Support assumption: full Agent Skills support. BMAD currently splits output betw
 
 Support assumption: full Agent Skills support. BMAD currently installs commands to `.roo/commands`; target should move to `.roo/skills` or the correct mode-aware skill directories.
 
-- [ ] Confirm Roo native skills path and whether BMAD should use generic or mode-specific skill directories
-- [ ] Implement installer migration to native skills output
-- [ ] Add legacy cleanup for `.roo/commands`
-- [ ] Test fresh install
+**Install:** VS Code extension `RooVeterinaryInc.roo-cline` — search "Roo Code" in Extensions or `code --install-extension RooVeterinaryInc.roo-cline`
+
+- [x] Confirm Roo native skills path is `.roo/skills/{skill-name}/SKILL.md` with `name` frontmatter matching directory exactly (lowercase, alphanumeric + hyphens only)
+- [x] Implement installer migration to native skills output
+- [x] Add legacy cleanup for `.roo/commands`
+- [x] Test fresh install — 43 skills installed, verified in Roo Code v3.51
 - [ ] Test reinstall/upgrade from legacy command output
-- [ ] Confirm ancestor conflict protection where applicable
-- [ ] Implement/extend automated tests
+- [x] Confirm no ancestor conflict protection is needed because manual Roo Code v3.51 verification showed child-local `child-only` skill loaded while parent-only skill was not inherited
+- [x] Implement/extend automated tests — 7 assertions in test suite 13
 - [ ] Commit
 
 ## Trae
 
 Support assumption: full Agent Skills support. BMAD currently installs rule files to `.trae/rules`; target should move to the platform's native skills directory.
+
+**Install:** Download [standalone IDE](https://www.trae.ai/download) (macOS/Windows/Linux) or `winget install -e --id ByteDance.Trae`
 
 - [ ] Confirm Trae native skills path and whether the current `.trae/rules` path is still required for compatibility
 - [ ] Implement installer migration to native skills output
@@ -182,6 +191,8 @@ Support assumption: full Agent Skills support. BMAD currently installs rule file
 
 Support assumption: full Agent Skills support. BMAD currently uses a custom installer that generates `.github/agents`, `.github/prompts`, and `.github/copilot-instructions.md`; target should move to `.github/skills`.
 
+**Install:** VS Code extension `GitHub.copilot` — search "GitHub Copilot" in Extensions or `code --install-extension GitHub.copilot`
+
 - [ ] Confirm GitHub Copilot native skills path and whether `.github/agents` remains necessary as a compatibility layer
 - [ ] Design the migration away from the custom prompt/agent installer model
 - [ ] Implement native skills output, ideally with shared config-driven code where practical
@@ -195,6 +206,8 @@ Support assumption: full Agent Skills support. BMAD currently uses a custom inst
 ## KiloCoder
 
 Support assumption: full Agent Skills support. BMAD currently uses a custom installer that writes `.kilocodemodes` and `.kilocode/workflows`; target should move to native skills output.
+
+**Install:** VS Code extension `kilocode.kilo-code` — search "Kilo Code" in Extensions or `code --install-extension kilocode.kilo-code`
 
 - [ ] Confirm KiloCoder native skills path and whether `.kilocodemodes` should be removed entirely or retained temporarily for compatibility
 - [ ] Design the migration away from modes plus workflow markdown

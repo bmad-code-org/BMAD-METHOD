@@ -180,8 +180,11 @@ platforms:
     category: ide
     description: "Enhanced Cline fork"
     installer:
-      target_dir: .roo/commands
+      legacy_targets:
+        - .roo/commands
+      target_dir: .roo/skills
       template_type: default
+      skill_format: true
 
   rovo-dev:
     name: "Rovo Dev"
