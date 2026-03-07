@@ -118,6 +118,15 @@ fallback_status_name: "Review"
 
 <action>Invoke `lock-issue` task with `issue_key: "{selected_issue_key}"`, `action: "unlock"`, `agent_name: "dev"`</action>
 
+<action>Invoke `post-handoff` task with:</action>
+
+```
+handoff_to: "QA"
+handoff_type: "dev_complete"
+summary: "Implementation complete for {selected_issue_key}. All tests passing. Ready for code review."
+jira_issue_keys: ["{selected_issue_key}"]
+```
+
 <action>Report to user:</action>
 
 **Story Complete: {story_title}**

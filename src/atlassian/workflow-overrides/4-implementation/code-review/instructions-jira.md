@@ -114,8 +114,19 @@ additional_fields:
 <action>Report the specific findings that need to be addressed</action>
 </step>
 
-<step n="5" goal="Unlock and report">
+<step n="5" goal="Unlock, hand off, and report">
 <action>Invoke `lock-issue` task with `issue_key: "{selected_issue_key}"`, `action: "unlock"`, `agent_name: "code-review"`</action>
+
+{if_passed}
+<action>Invoke `post-handoff` task with:</action>
+
+```
+handoff_to: "SM"
+handoff_type: "review_complete"
+summary: "Code review passed for {selected_issue_key}. Story transitioned to Done. SM should check if next story is ready or if retrospective is needed."
+jira_issue_keys: ["{selected_issue_key}"]
+```
+{end_if}
 
 <action>Report to user:</action>
 

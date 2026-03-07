@@ -120,7 +120,16 @@ fallback_status_name: "Ready for Dev"
 ```
 </step>
 
-<step n="7" goal="Report">
+<step n="7" goal="Hand off and report">
+<action>Invoke `post-handoff` task with:</action>
+
+```
+handoff_to: "Dev"
+handoff_type: "story_prepared"
+summary: "Story {selected_issue_key} prepared with full dev context and subtasks. Ready for implementation."
+jira_issue_keys: ["{selected_issue_key}"]
+```
+
 <action>Report to user:</action>
 
 **Story Prepared: {story_title}**
