@@ -1275,6 +1275,160 @@ async function runTests() {
   console.log('');
 
   // ============================================================
+  // Suite 24: iFlow Native Skills
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 24: iFlow Native Skills${colors.reset}\n`);
+
+  try {
+    clearCache();
+    const platformCodes24 = await loadPlatformCodes();
+    const iflowInstaller = platformCodes24.platforms.iflow?.installer;
+
+    assert(iflowInstaller?.target_dir === '.iflow/skills', 'iFlow target_dir uses native skills path');
+    assert(iflowInstaller?.skill_format === true, 'iFlow installer enables native skill output');
+    assert(
+      Array.isArray(iflowInstaller?.legacy_targets) && iflowInstaller.legacy_targets.includes('.iflow/commands'),
+      'iFlow installer cleans legacy commands output',
+    );
+
+    const tempProjectDir24 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-iflow-test-'));
+    const installedBmadDir24 = await createTestBmadFixture();
+    const legacyDir24 = path.join(tempProjectDir24, '.iflow', 'commands');
+    await fs.ensureDir(legacyDir24);
+    await fs.writeFile(path.join(legacyDir24, 'bmad-legacy.md'), 'legacy\n');
+
+    const ideManager24 = new IdeManager();
+    await ideManager24.ensureInitialized();
+    const result24 = await ideManager24.setup('iflow', tempProjectDir24, installedBmadDir24, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+
+    assert(result24.success === true, 'iFlow setup succeeds against temp project');
+
+    const skillFile24 = path.join(tempProjectDir24, '.iflow', 'skills', 'bmad-master', 'SKILL.md');
+    assert(await fs.pathExists(skillFile24), 'iFlow install writes SKILL.md directory output');
+
+    assert(!(await fs.pathExists(path.join(tempProjectDir24, '.iflow', 'commands'))), 'iFlow setup removes legacy commands dir');
+
+    await fs.remove(tempProjectDir24);
+    await fs.remove(installedBmadDir24);
+  } catch (error) {
+    assert(false, 'iFlow native skills migration test succeeds', error.message);
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Suite 25: QwenCoder Native Skills
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 25: QwenCoder Native Skills${colors.reset}\n`);
+
+  try {
+    clearCache();
+    const platformCodes25 = await loadPlatformCodes();
+    const qwenInstaller = platformCodes25.platforms.qwen?.installer;
+
+    assert(qwenInstaller?.target_dir === '.qwen/skills', 'QwenCoder target_dir uses native skills path');
+    assert(qwenInstaller?.skill_format === true, 'QwenCoder installer enables native skill output');
+    assert(
+      Array.isArray(qwenInstaller?.legacy_targets) && qwenInstaller.legacy_targets.includes('.qwen/commands'),
+      'QwenCoder installer cleans legacy commands output',
+    );
+
+    const tempProjectDir25 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-qwen-test-'));
+    const installedBmadDir25 = await createTestBmadFixture();
+    const legacyDir25 = path.join(tempProjectDir25, '.qwen', 'commands');
+    await fs.ensureDir(legacyDir25);
+    await fs.writeFile(path.join(legacyDir25, 'bmad-legacy.md'), 'legacy\n');
+
+    const ideManager25 = new IdeManager();
+    await ideManager25.ensureInitialized();
+    const result25 = await ideManager25.setup('qwen', tempProjectDir25, installedBmadDir25, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+
+    assert(result25.success === true, 'QwenCoder setup succeeds against temp project');
+
+    const skillFile25 = path.join(tempProjectDir25, '.qwen', 'skills', 'bmad-master', 'SKILL.md');
+    assert(await fs.pathExists(skillFile25), 'QwenCoder install writes SKILL.md directory output');
+
+    assert(!(await fs.pathExists(path.join(tempProjectDir25, '.qwen', 'commands'))), 'QwenCoder setup removes legacy commands dir');
+
+    await fs.remove(tempProjectDir25);
+    await fs.remove(installedBmadDir25);
+  } catch (error) {
+    assert(false, 'QwenCoder native skills migration test succeeds', error.message);
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Suite 26: Rovo Dev Native Skills
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 26: Rovo Dev Native Skills${colors.reset}\n`);
+
+  try {
+    clearCache();
+    const platformCodes26 = await loadPlatformCodes();
+    const rovoInstaller = platformCodes26.platforms['rovo-dev']?.installer;
+
+    assert(rovoInstaller?.target_dir === '.rovodev/skills', 'Rovo Dev target_dir uses native skills path');
+    assert(rovoInstaller?.skill_format === true, 'Rovo Dev installer enables native skill output');
+    assert(
+      Array.isArray(rovoInstaller?.legacy_targets) && rovoInstaller.legacy_targets.includes('.rovodev/workflows'),
+      'Rovo Dev installer cleans legacy workflows output',
+    );
+
+    const tempProjectDir26 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-rovodev-test-'));
+    const installedBmadDir26 = await createTestBmadFixture();
+    const legacyDir26 = path.join(tempProjectDir26, '.rovodev', 'workflows');
+    await fs.ensureDir(legacyDir26);
+    await fs.writeFile(path.join(legacyDir26, 'bmad-legacy.md'), 'legacy\n');
+
+    // Create a prompts.yml with BMAD entries and a user entry
+    const yaml26 = require('yaml');
+    const promptsPath26 = path.join(tempProjectDir26, '.rovodev', 'prompts.yml');
+    const promptsContent26 = yaml26.stringify({
+      prompts: [
+        { name: 'bmad-bmm-create-prd', description: 'BMAD workflow', content_file: 'workflows/bmad-bmm-create-prd.md' },
+        { name: 'my-custom-prompt', description: 'User prompt', content_file: 'custom.md' },
+      ],
+    });
+    await fs.writeFile(promptsPath26, promptsContent26);
+
+    const ideManager26 = new IdeManager();
+    await ideManager26.ensureInitialized();
+    const result26 = await ideManager26.setup('rovo-dev', tempProjectDir26, installedBmadDir26, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+
+    assert(result26.success === true, 'Rovo Dev setup succeeds against temp project');
+
+    const skillFile26 = path.join(tempProjectDir26, '.rovodev', 'skills', 'bmad-master', 'SKILL.md');
+    assert(await fs.pathExists(skillFile26), 'Rovo Dev install writes SKILL.md directory output');
+
+    assert(!(await fs.pathExists(path.join(tempProjectDir26, '.rovodev', 'workflows'))), 'Rovo Dev setup removes legacy workflows dir');
+
+    // Verify prompts.yml cleanup: BMAD entries removed, user entry preserved
+    const cleanedPrompts26 = yaml26.parse(await fs.readFile(promptsPath26, 'utf8'));
+    assert(
+      Array.isArray(cleanedPrompts26.prompts) && cleanedPrompts26.prompts.length === 1,
+      'Rovo Dev cleanup removes BMAD entries from prompts.yml',
+    );
+    assert(cleanedPrompts26.prompts[0].name === 'my-custom-prompt', 'Rovo Dev cleanup preserves non-BMAD entries in prompts.yml');
+
+    await fs.remove(tempProjectDir26);
+    await fs.remove(installedBmadDir26);
+  } catch (error) {
+    assert(false, 'Rovo Dev native skills migration test succeeds', error.message);
+  }
+
+  console.log('');
+
+  // ============================================================
   // Summary
   // ============================================================
   console.log(`${colors.cyan}========================================`);

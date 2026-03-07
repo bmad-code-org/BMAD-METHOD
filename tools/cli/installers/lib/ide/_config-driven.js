@@ -665,6 +665,11 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
       await this.cleanupKiloModes(projectDir, options);
     }
 
+    // Strip BMAD entries from .rovodev/prompts.yml if present
+    if (this.name === 'rovo-dev') {
+      await this.cleanupRovoDevPrompts(projectDir, options);
+    }
+
     // Clean all target directories
     if (this.installerConfig?.targets) {
       const parentDirs = new Set();
@@ -844,6 +849,47 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
         if (!options.silent) await prompts.log.message(`  Removed ${removedCount} BMAD modes from .kilocodemodes`);
       } catch {
         if (!options.silent) await prompts.log.warn('  Warning: Could not write .kilocodemodes during cleanup');
+      }
+    }
+  }
+
+  /**
+   * Strip BMAD-owned entries from .rovodev/prompts.yml.
+   * The old custom rovodev.js installer registered workflows in prompts.yml.
+   * Parses YAML, filters out entries with name starting with 'bmad-', rewrites.
+   * Removes the file if no entries remain.
+   */
+  async cleanupRovoDevPrompts(projectDir, options = {}) {
+    const promptsPath = path.join(projectDir, '.rovodev', 'prompts.yml');
+
+    if (!(await fs.pathExists(promptsPath))) return;
+
+    const content = await fs.readFile(promptsPath, 'utf8');
+
+    let config;
+    try {
+      config = yaml.parse(content) || {};
+    } catch {
+      if (!options.silent) await prompts.log.warn('  Warning: Could not parse prompts.yml for cleanup');
+      return;
+    }
+
+    if (!Array.isArray(config.prompts)) return;
+
+    const originalCount = config.prompts.length;
+    config.prompts = config.prompts.filter((entry) => entry && (!entry.name || !entry.name.startsWith('bmad-')));
+    const removedCount = originalCount - config.prompts.length;
+
+    if (removedCount > 0) {
+      try {
+        if (config.prompts.length === 0) {
+          await fs.remove(promptsPath);
+        } else {
+          await fs.writeFile(promptsPath, yaml.stringify(config, { lineWidth: 0 }));
+        }
+        if (!options.silent) await prompts.log.message(`  Removed ${removedCount} BMAD entries from prompts.yml`);
+      } catch {
+        if (!options.silent) await prompts.log.warn('  Warning: Could not write prompts.yml during cleanup');
       }
     }
   }

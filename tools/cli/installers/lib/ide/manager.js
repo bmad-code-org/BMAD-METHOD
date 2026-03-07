@@ -8,8 +8,8 @@ const prompts = require('../../../lib/prompts');
  * Dynamically discovers and loads IDE handlers
  *
  * Loading strategy:
- * 1. Custom installer files (rovodev.js) - for platforms with unique installation logic
- * 2. Config-driven handlers (from platform-codes.yaml) - for standard IDE installation patterns
+ * All platforms are now config-driven from platform-codes.yaml.
+ * The custom installer file mechanism is retained for future use but currently has no entries.
  */
 class IdeManager {
   constructor() {
@@ -58,11 +58,11 @@ class IdeManager {
   /**
    * Load custom installer files (unique installation logic)
    * These files have special installation patterns that don't fit the config-driven model
-   * Note: codex, github-copilot, and kilo were migrated to config-driven (platform-codes.yaml)
+   * Note: All custom installers (codex, github-copilot, kilo, rovodev) have been migrated to config-driven (platform-codes.yaml)
    */
   async loadCustomInstallerFiles() {
     const ideDir = __dirname;
-    const customFiles = ['rovodev.js'];
+    const customFiles = [];
 
     for (const file of customFiles) {
       const filePath = path.join(ideDir, file);

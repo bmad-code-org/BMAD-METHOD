@@ -145,8 +145,11 @@ platforms:
     category: ide
     description: "AI workflow automation"
     installer:
-      target_dir: .iflow/commands
+      legacy_targets:
+        - .iflow/commands
+      target_dir: .iflow/skills
       template_type: default
+      skill_format: true
 
   kilo:
     name: "KiloCoder"
@@ -194,8 +197,11 @@ platforms:
     category: ide
     description: "Qwen AI coding assistant"
     installer:
-      target_dir: .qwen/commands
+      legacy_targets:
+        - .qwen/commands
+      target_dir: .qwen/skills
       template_type: default
+      skill_format: true
 
   roo:
     name: "Roo Cline"
@@ -214,7 +220,12 @@ platforms:
     preferred: false
     category: ide
     description: "Atlassian's Rovo development environment"
-    # No installer config - uses custom rovodev.js (generates prompts.yml manifest)
+    installer:
+      legacy_targets:
+        - .rovodev/workflows
+      target_dir: .rovodev/skills
+      template_type: default
+      skill_format: true
 
   trae:
     name: "Trae"

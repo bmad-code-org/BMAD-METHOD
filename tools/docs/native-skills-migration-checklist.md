@@ -236,10 +236,46 @@ Support assumption: full Agent Skills support. Gemini CLI docs confirm workspace
 - [x] Implement/extend automated tests — 9 assertions in test suite 23 (config, fresh install, legacy cleanup, reinstall)
 - [ ] Commit
 
+## iFlow
+
+Support assumption: full Agent Skills support. iFlow docs confirm workspace skills at `.iflow/skills/` and global skills at `~/.iflow/skills/`. BMAD previously installed flat files to `.iflow/commands`.
+
+- [x] Confirm iFlow native skills path is `.iflow/skills/{skill-name}/SKILL.md`
+- [x] Implement native skills output — target_dir `.iflow/skills`, skill_format true, template_type default
+- [x] Add legacy cleanup for `.iflow/commands` (via `legacy_targets`)
+- [x] Test fresh install — skills written to `.iflow/skills/bmad-master/SKILL.md`
+- [x] Test legacy cleanup — legacy commands dir removed
+- [x] Implement/extend automated tests — 6 assertions in test suite 24
+- [ ] Commit
+
+## QwenCoder
+
+Support assumption: full Agent Skills support. Qwen Code supports workspace skills at `.qwen/skills/` and global skills at `~/.qwen/skills/`. BMAD previously installed flat files to `.qwen/commands`.
+
+- [x] Confirm QwenCoder native skills path is `.qwen/skills/{skill-name}/SKILL.md`
+- [x] Implement native skills output — target_dir `.qwen/skills`, skill_format true, template_type default
+- [x] Add legacy cleanup for `.qwen/commands` (via `legacy_targets`)
+- [x] Test fresh install — skills written to `.qwen/skills/bmad-master/SKILL.md`
+- [x] Test legacy cleanup — legacy commands dir removed
+- [x] Implement/extend automated tests — 6 assertions in test suite 25
+- [ ] Commit
+
+## Rovo Dev
+
+Support assumption: full Agent Skills support. Rovo Dev now supports workspace skills at `.rovodev/skills/` and user skills at `~/.rovodev/skills/`. BMAD previously used a custom 257-line installer that wrote `.rovodev/workflows/` and `prompts.yml`.
+
+- [x] Confirm Rovo Dev native skills path is `.rovodev/skills/{skill-name}/SKILL.md` (per Atlassian blog)
+- [x] Replace 257-line custom `rovodev.js` with config-driven entry in `platform-codes.yaml`
+- [x] Add legacy cleanup for `.rovodev/workflows` (via `legacy_targets`) and BMAD entries in `prompts.yml` (via `cleanupRovoDevPrompts()` in `_config-driven.js`)
+- [x] Test fresh install — skills written to `.rovodev/skills/bmad-master/SKILL.md`
+- [x] Test legacy cleanup — legacy workflows dir removed, `prompts.yml` BMAD entries stripped while preserving user entries
+- [x] Implement/extend automated tests — 8 assertions in test suite 26
+- [ ] Commit
+
 ## Summary Gates
 
-- [ ] All full-support BMAD platforms install `SKILL.md` directory-based output
-- [ ] No full-support platform still emits BMAD command/workflow/rule files as its primary install format
-- [ ] Legacy cleanup paths are defined for every migrated platform
-- [ ] Automated coverage exists for config-driven and custom-installer migrations
+- [x] All full-support BMAD platforms install `SKILL.md` directory-based output
+- [x] No full-support platform still emits BMAD command/workflow/rule files as its primary install format
+- [x] Legacy cleanup paths are defined for every migrated platform
+- [x] Automated coverage exists for config-driven and custom-installer migrations
 - [ ] Installer docs and migration notes updated after code changes land
