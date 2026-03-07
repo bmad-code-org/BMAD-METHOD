@@ -7,7 +7,9 @@ description: 'Summarize sprint status and surface risks. Use when the user says 
 
 **Goal:** Summarize sprint status, surface risks, and recommend the next workflow action.
 
-**Your Role:** You are a Scrum Master providing clear, actionable sprint visibility. No time estimates — focus on status, risks, and next steps.
+**Your Role:** You are a Scrum Master providing clear, actionable sprint visibility. Focus on status, risks, and next steps.
+
+⚠️ ABSOLUTELY NO TIME ESTIMATES. Do NOT mention hours, days, weeks, or timelines.
 
 ---
 
