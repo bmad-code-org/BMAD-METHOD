@@ -8,7 +8,7 @@ const prompts = require('../../../lib/prompts');
  * Dynamically discovers and loads IDE handlers
  *
  * Loading strategy:
- * 1. Custom installer files (kilo.js, rovodev.js) - for platforms with unique installation logic
+ * 1. Custom installer files (rovodev.js) - for platforms with unique installation logic
  * 2. Config-driven handlers (from platform-codes.yaml) - for standard IDE installation patterns
  */
 class IdeManager {
@@ -58,11 +58,11 @@ class IdeManager {
   /**
    * Load custom installer files (unique installation logic)
    * These files have special installation patterns that don't fit the config-driven model
-   * Note: codex and github-copilot were migrated to config-driven (platform-codes.yaml)
+   * Note: codex, github-copilot, and kilo were migrated to config-driven (platform-codes.yaml)
    */
   async loadCustomInstallerFiles() {
     const ideDir = __dirname;
-    const customFiles = ['kilo.js', 'rovodev.js'];
+    const customFiles = ['rovodev.js'];
 
     for (const file of customFiles) {
       const filePath = path.join(ideDir, file);
@@ -189,14 +189,6 @@ class IdeManager {
         if (r.workflows > 0) parts.push(`${r.workflows} workflows`);
         if (r.tasks > 0) parts.push(`${r.tasks} tasks`);
         if (r.tools > 0) parts.push(`${r.tools} tools`);
-        detail = parts.join(', ');
-      } else if (handlerResult && handlerResult.modes !== undefined) {
-        // Kilo handler returns { success, modes, workflows, tasks, tools }
-        const parts = [];
-        if (handlerResult.modes > 0) parts.push(`${handlerResult.modes} modes`);
-        if (handlerResult.workflows > 0) parts.push(`${handlerResult.workflows} workflows`);
-        if (handlerResult.tasks > 0) parts.push(`${handlerResult.tasks} tasks`);
-        if (handlerResult.tools > 0) parts.push(`${handlerResult.tools} tools`);
         detail = parts.join(', ');
       }
       // Propagate handler's success status (default true for backward compat)

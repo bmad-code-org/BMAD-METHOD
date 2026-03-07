@@ -211,14 +211,14 @@ Support assumption: full Agent Skills support. BMAD currently uses a custom inst
 
 **Install:** VS Code extension `kilocode.kilo-code` — search "Kilo Code" in Extensions or `code --install-extension kilocode.kilo-code`
 
-- [ ] Confirm KiloCoder native skills path and whether `.kilocodemodes` should be removed entirely or retained temporarily for compatibility
-- [ ] Design the migration away from modes plus workflow markdown
-- [ ] Implement native skills output
-- [ ] Add legacy cleanup for `.kilocode/workflows` and BMAD-owned entries in `.kilocodemodes`
-- [ ] Test fresh install
-- [ ] Test reinstall/upgrade from legacy custom installer output
-- [ ] Confirm ancestor conflict protection where applicable
-- [ ] Implement/extend automated tests
+- [x] Confirm KiloCoder native skills path is `.kilocode/skills/{skill-name}/SKILL.md` (Kilo forked from Roo Code which uses `.roo/skills/`)
+- [x] Design the migration away from modes plus workflow markdown — replaced 269-line custom kilo.js with config-driven installer entry in platform-codes.yaml
+- [x] Implement native skills output — target_dir `.kilocode/skills`, skill_format true, template_type default
+- [x] Add legacy cleanup for `.kilocode/workflows` (via legacy_targets) and BMAD-owned entries in `.kilocodemodes` (via `cleanupKiloModes()` in `_config-driven.js`, same pattern as `copilot-instructions.md` cleanup)
+- [x] Test fresh install — skills written to `.kilocode/skills/bmad-master/SKILL.md` with correct frontmatter
+- [x] Test reinstall/upgrade from legacy custom installer output — legacy workflows removed, skills installed
+- [x] Confirm no ancestor conflict protection is needed — Kilo Code (like Cline) only scans workspace-local `.kilocode/skills/`, no ancestor directory inheritance
+- [x] Implement/extend automated tests — 11 assertions in test suite 22 (config, fresh install, legacy cleanup, .kilocodemodes cleanup, reinstall)
 - [ ] Commit
 
 ## Summary Gates

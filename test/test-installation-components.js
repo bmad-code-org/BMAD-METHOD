@@ -1135,6 +1135,87 @@ async function runTests() {
   console.log('');
 
   // ============================================================
+  // Suite 22: KiloCoder Native Skills
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 22: KiloCoder Native Skills${colors.reset}\n`);
+
+  try {
+    clearCache();
+    const platformCodes22 = await loadPlatformCodes();
+    const kiloInstaller = platformCodes22.platforms.kilo?.installer;
+
+    assert(kiloInstaller?.target_dir === '.kilocode/skills', 'KiloCoder target_dir uses native skills path');
+
+    assert(kiloInstaller?.skill_format === true, 'KiloCoder installer enables native skill output');
+
+    assert(
+      Array.isArray(kiloInstaller?.legacy_targets) && kiloInstaller.legacy_targets.includes('.kilocode/workflows'),
+      'KiloCoder installer cleans legacy workflows output',
+    );
+
+    // Fresh install test
+    const tempProjectDir22 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-kilo-test-'));
+    const installedBmadDir22 = await createTestBmadFixture();
+    const legacyDir22 = path.join(tempProjectDir22, '.kilocode', 'workflows');
+    await fs.ensureDir(legacyDir22);
+    await fs.writeFile(path.join(legacyDir22, 'bmad-legacy.md'), 'legacy\n');
+
+    // Create a .kilocodemodes file with BMAD modes and a user mode
+    const kiloModesPath22 = path.join(tempProjectDir22, '.kilocodemodes');
+    const yaml22 = require('yaml');
+    const kiloModesContent = yaml22.stringify({
+      customModes: [
+        { slug: 'bmad-bmm-architect', name: 'BMAD Architect', roleDefinition: 'test' },
+        { slug: 'bmad-core-master', name: 'BMAD Master', roleDefinition: 'test' },
+        { slug: 'user-custom-mode', name: 'My Custom Mode', roleDefinition: 'user mode' },
+      ],
+    });
+    await fs.writeFile(kiloModesPath22, kiloModesContent);
+
+    const ideManager22 = new IdeManager();
+    await ideManager22.ensureInitialized();
+    const result22 = await ideManager22.setup('kilo', tempProjectDir22, installedBmadDir22, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+
+    assert(result22.success === true, 'KiloCoder setup succeeds against temp project');
+
+    const skillFile22 = path.join(tempProjectDir22, '.kilocode', 'skills', 'bmad-master', 'SKILL.md');
+    assert(await fs.pathExists(skillFile22), 'KiloCoder install writes SKILL.md directory output');
+
+    const skillContent22 = await fs.readFile(skillFile22, 'utf8');
+    const nameMatch22 = skillContent22.match(/^name:\s*(.+)$/m);
+    assert(nameMatch22 && nameMatch22[1].trim() === 'bmad-master', 'KiloCoder skill name frontmatter matches directory name exactly');
+
+    assert(!(await fs.pathExists(path.join(tempProjectDir22, '.kilocode', 'workflows'))), 'KiloCoder setup removes legacy workflows dir');
+
+    // Verify .kilocodemodes cleanup: BMAD modes removed, user mode preserved
+    const cleanedModes22 = yaml22.parse(await fs.readFile(kiloModesPath22, 'utf8'));
+    assert(
+      Array.isArray(cleanedModes22.customModes) && cleanedModes22.customModes.length === 1,
+      'KiloCoder cleanup removes BMAD modes from .kilocodemodes',
+    );
+    assert(cleanedModes22.customModes[0].slug === 'user-custom-mode', 'KiloCoder cleanup preserves non-BMAD modes in .kilocodemodes');
+
+    // Reinstall test
+    const result22b = await ideManager22.setup('kilo', tempProjectDir22, installedBmadDir22, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+
+    assert(result22b.success === true, 'KiloCoder reinstall/upgrade succeeds over existing skills');
+    assert(await fs.pathExists(skillFile22), 'KiloCoder reinstall preserves SKILL.md output');
+
+    await fs.remove(tempProjectDir22);
+    await fs.remove(installedBmadDir22);
+  } catch (error) {
+    assert(false, 'KiloCoder native skills migration test succeeds', error.message);
+  }
+
+  console.log('');
+
+  // ============================================================
   // Summary
   // ============================================================
   console.log(`${colors.cyan}========================================`);

@@ -660,6 +660,11 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
       await this.cleanupCopilotInstructions(projectDir, options);
     }
 
+    // Strip BMAD modes from .kilocodemodes if present
+    if (this.name === 'kilo') {
+      await this.cleanupKiloModes(projectDir, options);
+    }
+
     // Clean all target directories
     if (this.installerConfig?.targets) {
       const parentDirs = new Set();
@@ -805,6 +810,42 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
     }
 
     if (!options.silent) await prompts.log.message('  Cleaned BMAD markers from copilot-instructions.md');
+  }
+
+  /**
+   * Strip BMAD-owned modes from .kilocodemodes.
+   * The old custom kilo.js installer added modes with slug starting with 'bmad-'.
+   * Parses YAML, filters out BMAD modes, rewrites. Leaves file as-is on parse failure.
+   */
+  async cleanupKiloModes(projectDir, options = {}) {
+    const kiloModesPath = path.join(projectDir, '.kilocodemodes');
+
+    if (!(await fs.pathExists(kiloModesPath))) return;
+
+    const content = await fs.readFile(kiloModesPath, 'utf8');
+
+    let config;
+    try {
+      config = yaml.parse(content) || {};
+    } catch {
+      if (!options.silent) await prompts.log.warn('  Warning: Could not parse .kilocodemodes for cleanup');
+      return;
+    }
+
+    if (!Array.isArray(config.customModes)) return;
+
+    const originalCount = config.customModes.length;
+    config.customModes = config.customModes.filter((mode) => mode && (!mode.slug || !mode.slug.startsWith('bmad-')));
+    const removedCount = originalCount - config.customModes.length;
+
+    if (removedCount > 0) {
+      try {
+        await fs.writeFile(kiloModesPath, yaml.stringify(config, { lineWidth: 0 }));
+        if (!options.silent) await prompts.log.message(`  Removed ${removedCount} BMAD modes from .kilocodemodes`);
+      } catch {
+        if (!options.silent) await prompts.log.warn('  Warning: Could not write .kilocodemodes during cleanup');
+      }
+    }
   }
 
   /**
