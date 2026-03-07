@@ -1,111 +1,113 @@
 ---
-title: Commands
-description: Reference for BMad slash commands — what they are, how they work, and where to find them.
+title: Skills
+description: Reference for BMad skills — what they are, how they work, and where to find them.
 sidebar:
   order: 3
 ---
 
-Slash commands are pre-built prompts that load agents, run workflows, or execute tasks inside your IDE. The BMad installer generates them from your installed modules at install time. If you later add, remove, or change modules, re-run the installer to keep commands in sync (see [Troubleshooting](#troubleshooting)).
+Skills are pre-built prompts that load agents, run workflows, or execute tasks inside your IDE. The BMad installer generates them from your installed modules at install time. If you later add, remove, or change modules, re-run the installer to keep skills in sync (see [Troubleshooting](#troubleshooting)).
 
-## Commands vs. Agent Menu Triggers
+## Skills vs. Agent Menu Triggers
 
 BMad offers two ways to start work, and they serve different purposes.
 
 | Mechanism | How you invoke it | What happens |
 | --- | --- | --- |
-| **Slash command** | Type `/bmad-...` in your IDE | Directly loads an agent, runs a workflow, or executes a task |
+| **Skill** | Type the skill name (e.g. `bmad-help`) in your IDE | Directly loads an agent, runs a workflow, or executes a task |
 | **Agent menu trigger** | Load an agent first, then type a short code (e.g. `DS`) | The agent interprets the code and starts the matching workflow while staying in character |
 
-Agent menu triggers require an active agent session. Use slash commands when you know which workflow you want. Use triggers when you are already working with an agent and want to switch tasks without leaving the conversation.
+Agent menu triggers require an active agent session. Use skills when you know which workflow you want. Use triggers when you are already working with an agent and want to switch tasks without leaving the conversation.
 
-## How Commands Are Generated
+## How Skills Are Generated
 
-When you run `npx bmad-method install`, the installer reads the manifests for every selected module and writes one command file per agent, workflow, task, and tool. Each file is a short markdown prompt that instructs the AI to load the corresponding source file and follow its instructions.
+When you run `npx bmad-method install`, the installer reads the manifests for every selected module and writes one skill per agent, workflow, task, and tool. Each skill is a directory containing a `SKILL.md` file that instructs the AI to load the corresponding source file and follow its instructions.
 
-The installer uses templates for each command type:
+The installer uses templates for each skill type:
 
-| Command type | What the generated file does |
+| Skill type | What the generated file does |
 | --- | --- |
 | **Agent launcher** | Loads the agent persona file, activates its menu, and stays in character |
-| **Workflow command** | Loads the workflow engine (`workflow.xml`) and passes the workflow config |
-| **Task command** | Loads a standalone task file and follows its instructions |
-| **Tool command** | Loads a standalone tool file and follows its instructions |
+| **Workflow skill** | Loads the workflow engine (`workflow.xml`) and passes the workflow config |
+| **Task skill** | Loads a standalone task file and follows its instructions |
+| **Tool skill** | Loads a standalone tool file and follows its instructions |
 
 :::note[Re-running the installer]
-If you add or remove modules, run the installer again. It regenerates all command files to match your current module selection.
+If you add or remove modules, run the installer again. It regenerates all skill files to match your current module selection.
 :::
 
-## Where Command Files Live
+## Where Skill Files Live
 
-The installer writes command files into an IDE-specific directory inside your project. The exact path depends on which IDE you selected during installation.
+The installer writes skill files into an IDE-specific directory inside your project. The exact path depends on which IDE you selected during installation.
 
-| IDE / CLI | Command directory |
+| IDE / CLI | Skills directory |
 | --- | --- |
-| Claude Code | `.claude/commands/` |
-| Cursor | `.cursor/commands/` |
-| Windsurf | `.windsurf/workflows/` |
+| Claude Code | `.claude/skills/` |
+| Cursor | `.cursor/skills/` |
+| Windsurf | `.windsurf/skills/` |
 | Other IDEs | See the installer output for the target path |
 
-All IDEs receive a flat set of command files in their command directory. For example, a Claude Code installation looks like:
+Each skill is a directory containing a `SKILL.md` file. For example, a Claude Code installation looks like:
 
 ```text
-.claude/commands/
-├── bmad-agent-bmm-dev.md
-├── bmad-agent-bmm-pm.md
-├── bmad-bmm-create-prd.md
-├── bmad-editorial-review-prose.md
-├── bmad-help.md
+.claude/skills/
+├── bmad-help/
+│   └── SKILL.md
+├── bmad-create-prd/
+│   └── SKILL.md
+├── bmad-dev/
+│   └── SKILL.md
 └── ...
 ```
 
-The filename determines the slash command name in your IDE. For example, the file `bmad-agent-bmm-dev.md` registers the command `/bmad-agent-bmm-dev`.
+The directory name determines the skill name in your IDE. For example, the directory `bmad-dev/` registers the skill `bmad-dev`.
 
-## How to Discover Your Commands
+## How to Discover Your Skills
 
-Type `/bmad` in your IDE and use autocomplete to browse available commands.
+Type the skill name in your IDE to invoke it. Some platforms require you to enable skills in settings before they appear.
 
-Run `/bmad-help` for context-aware guidance on your next step.
+Run `bmad-help` for context-aware guidance on your next step.
 
 :::tip[Quick discovery]
-The generated command folders in your project are the canonical list. Open them in your file explorer to see every command with its description.
+The generated skill directories in your project are the canonical list. Open them in your file explorer to see every skill with its description.
 :::
 
-## Command Categories
+## Skill Categories
 
-### Agent Commands
+### Agent Skills
 
-Agent commands load a specialized AI persona with a defined role, communication style, and menu of workflows. Once loaded, the agent stays in character and responds to menu triggers.
+Agent skills load a specialized AI persona with a defined role, communication style, and menu of workflows. Once loaded, the agent stays in character and responds to menu triggers.
 
-| Example command | Agent | Role |
+| Example skill | Agent | Role |
 | --- | --- | --- |
-| `/bmad-agent-bmm-dev` | Amelia (Developer) | Implements stories with strict adherence to specs |
-| `/bmad-agent-bmm-pm` | John (Product Manager) | Creates and validates PRDs |
-| `/bmad-agent-bmm-architect` | Winston (Architect) | Designs system architecture |
-| `/bmad-agent-bmm-sm` | Bob (Scrum Master) | Manages sprints and stories |
+| `bmad-dev` | Amelia (Developer) | Implements stories with strict adherence to specs |
+| `bmad-pm` | John (Product Manager) | Creates and validates PRDs |
+| `bmad-architect` | Winston (Architect) | Designs system architecture |
+| `bmad-sm` | Bob (Scrum Master) | Manages sprints and stories |
 
 See [Agents](./agents.md) for the full list of default agents and their triggers.
 
-### Workflow Commands
+### Workflow Skills
 
-Workflow commands run a structured, multi-step process without loading an agent persona first. They load the workflow engine and pass a specific workflow configuration.
+Workflow skills run a structured, multi-step process without loading an agent persona first. They load the workflow engine and pass a specific workflow configuration.
 
-| Example command | Purpose |
+| Example skill | Purpose |
 | --- | --- |
-| `/bmad-bmm-create-prd` | Create a Product Requirements Document |
-| `/bmad-bmm-create-architecture` | Design system architecture |
-| `/bmad-bmm-dev-story` | Implement a story |
-| `/bmad-bmm-code-review` | Run a code review |
-| `/bmad-bmm-quick-spec` | Define an ad-hoc change (Quick Flow) |
+| `bmad-create-prd` | Create a Product Requirements Document |
+| `bmad-create-architecture` | Design system architecture |
+| `bmad-create-epics-and-stories` | Create epics and stories |
+| `bmad-dev-story` | Implement a story |
+| `bmad-code-review` | Run a code review |
+| `bmad-quick-spec` | Define an ad-hoc change (Quick Flow) |
 
 See [Workflow Map](./workflow-map.md) for the complete workflow reference organized by phase.
 
-### Task and Tool Commands
+### Task and Tool Skills
 
 Tasks and tools are standalone operations that do not require an agent or workflow context.
 
 #### BMad-Help: Your Intelligent Guide
 
-**`/bmad-help`** is your primary interface for discovering what to do next. It's not just a lookup tool — it's an intelligent assistant that:
+**`bmad-help`** is your primary interface for discovering what to do next. It's not just a lookup tool — it's an intelligent assistant that:
 
 - **Inspects your project** to see what's already been done
 - **Understands natural language queries** — ask questions in plain English
@@ -116,36 +118,28 @@ Tasks and tools are standalone operations that do not require an agent or workfl
 **Examples:**
 
 ```
-/bmad-help
-/bmad-help I have a SaaS idea and know all the features. Where do I start?
-/bmad-help What are my options for UX design?
-/bmad-help I'm stuck on the PRD workflow
+bmad-help
+bmad-help I have a SaaS idea and know all the features. Where do I start?
+bmad-help What are my options for UX design?
+bmad-help I'm stuck on the PRD workflow
 ```
 
 #### Other Tasks and Tools
 
-| Example command | Purpose |
+| Example skill | Purpose |
 | --- | --- |
-| `/bmad-shard-doc` | Split a large markdown file into smaller sections |
-| `/bmad-index-docs` | Index project documentation |
-| `/bmad-editorial-review-prose` | Review document prose quality |
+| `bmad-shard-doc` | Split a large markdown file into smaller sections |
+| `bmad-index-docs` | Index project documentation |
+| `bmad-editorial-review-prose` | Review document prose quality |
 
 ## Naming Convention
 
-Command names follow a predictable pattern.
-
-| Pattern | Meaning | Example |
-| --- | --- | --- |
-| `bmad-agent-<module>-<name>` | Agent launcher | `bmad-agent-bmm-dev` |
-| `bmad-<module>-<workflow>` | Workflow command | `bmad-bmm-create-prd` |
-| `bmad-<name>` | Core task or tool | `bmad-help` |
-
-Module codes: `bmm` (Agile suite), `bmb` (Builder), `tea` (Test Architect), `cis` (Creative Intelligence), `gds` (Game Dev Studio). See [Modules](./modules.md) for descriptions.
+All skills use the `bmad-` prefix followed by a descriptive name (e.g., `bmad-dev`, `bmad-create-prd`, `bmad-help`). See [Modules](./modules.md) for available modules.
 
 ## Troubleshooting
 
-**Commands not appearing after install.** Restart your IDE or reload the window. Some IDEs cache the command list and require a refresh to pick up new files.
+**Skills not appearing after install.** Some platforms require skills to be explicitly enabled in settings. Check your IDE's documentation or ask your AI assistant how to enable skills. You may also need to restart your IDE or reload the window.
 
-**Expected commands are missing.** The installer only generates commands for modules you selected. Run `npx bmad-method install` again and verify your module selection. Check that the command files exist in the expected directory.
+**Expected skills are missing.** The installer only generates skills for modules you selected. Run `npx bmad-method install` again and verify your module selection. Check that the skill files exist in the expected directory.
 
-**Commands from a removed module still appear.** The installer does not delete old command files automatically. Remove the stale files from your IDE's command directory, or delete the entire command directory and re-run the installer for a clean set.
+**Skills from a removed module still appear.** The installer does not delete old skill files automatically. Remove the stale directories from your IDE's skills directory, or delete the entire skills directory and re-run the installer for a clean set.

@@ -21,12 +21,12 @@ The `project-context.md` file solves this by documenting what agents need to kno
 Every implementation workflow automatically loads `project-context.md` if it exists. The architect workflow also loads it to respect your technical preferences when designing the architecture.
 
 **Loaded by these workflows:**
-- `create-architecture` — respects technical preferences during solutioning
-- `create-story` — informs story creation with project patterns
-- `dev-story` — guides implementation decisions
-- `code-review` — validates against project standards
-- `quick-dev` — applies patterns when implementing tech-specs
-- `sprint-planning`, `retrospective`, `correct-course` — provides project-wide context
+- `bmad-create-architecture` — respects technical preferences during solutioning
+- `bmad-create-story` — informs story creation with project patterns
+- `bmad-dev-story` — guides implementation decisions
+- `bmad-code-review` — validates against project standards
+- `bmad-quick-dev` — applies patterns when implementing tech-specs
+- `bmad-sprint-planning`, `bmad-retrospective`, `bmad-correct-course` — provides project-wide context
 
 ## When to Create It
 
@@ -34,10 +34,10 @@ The `project-context.md` file is useful at any stage of a project:
 
 | Scenario | When to Create | Purpose |
 |----------|----------------|---------|
-| **New project, before architecture** | Manually, before `create-architecture` | Document your technical preferences so the architect respects them |
-| **New project, after architecture** | Via `generate-project-context` or manually | Capture architecture decisions for implementation agents |
-| **Existing project** | Via `generate-project-context` | Discover existing patterns so agents follow established conventions |
-| **Quick Flow project** | Before or during `quick-dev` | Ensure quick implementation respects your patterns |
+| **New project, before architecture** | Manually, before `bmad-create-architecture` | Document your technical preferences so the architect respects them |
+| **New project, after architecture** | Via `bmad-generate-project-context` or manually | Capture architecture decisions for implementation agents |
+| **Existing project** | Via `bmad-generate-project-context` | Discover existing patterns so agents follow established conventions |
+| **Quick Flow project** | Before or during `bmad-quick-dev` | Ensure quick implementation respects your patterns |
 
 :::tip[Recommended]
 For new projects, create it manually before architecture if you have strong technical preferences. Otherwise, generate it after architecture to capture those decisions.
@@ -107,20 +107,20 @@ Edit it with your technology stack and implementation rules. The architect and i
 
 ### Generate After Architecture
 
-Run the `generate-project-context` workflow after completing your architecture:
+Run the `bmad-generate-project-context` workflow after completing your architecture:
 
 ```bash
-/bmad-bmm-generate-project-context
+bmad-generate-project-context
 ```
 
 This scans your architecture document and project files to generate a context file capturing the decisions made.
 
 ### Generate for Existing Projects
 
-For existing projects, run `generate-project-context` to discover existing patterns:
+For existing projects, run `bmad-generate-project-context` to discover existing patterns:
 
 ```bash
-/bmad-bmm-generate-project-context
+bmad-generate-project-context
 ```
 
 The workflow analyzes your codebase to identify conventions, then generates a context file you can review and refine.
@@ -150,7 +150,7 @@ The `project-context.md` file is a living document. Update it when:
 - Patterns evolve during implementation
 - You identify gaps from agent behavior
 
-You can edit it manually at any time, or re-run `generate-project-context` to update it after significant changes.
+You can edit it manually at any time, or re-run `bmad-generate-project-context` to update it after significant changes.
 
 :::note[File Location]
 The default location is `_bmad-output/project-context.md`. Workflows search for it there, and also check `**/project-context.md` anywhere in your project.

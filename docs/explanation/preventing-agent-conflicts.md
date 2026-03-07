@@ -108,5 +108,5 @@ Common decisions that prevent conflicts:
 - Document decisions that cross epic boundaries
 - Focus on conflict-prone areas
 - Update architecture as you learn
-- Use `correct-course` for significant changes
+- Use `bmad-correct-course` for significant changes
 :::
