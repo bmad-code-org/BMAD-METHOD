@@ -1,5 +1,5 @@
 ---
-title: 命令
+title: "命令"
 description: BMad 斜杠命令参考——它们是什么、如何工作以及在哪里找到它们。
 sidebar:
   order: 3
