@@ -219,6 +219,7 @@ Support assumption: full Agent Skills support. BMAD currently uses a custom inst
 - [x] Test reinstall/upgrade from legacy custom installer output — legacy workflows removed, skills installed
 - [x] Confirm no ancestor conflict protection is needed — Kilo Code (like Cline) only scans workspace-local `.kilocode/skills/`, no ancestor directory inheritance
 - [x] Implement/extend automated tests — 11 assertions in test suite 22 (config, fresh install, legacy cleanup, .kilocodemodes cleanup, reinstall)
+- [ ] **NEEDS MANUAL IDE VERIFICATION** — install Kilo Code extension and confirm skills appear in UI and can be triggered
 - [ ] Commit
 
 ## Gemini CLI
@@ -234,6 +235,7 @@ Support assumption: full Agent Skills support. Gemini CLI docs confirm workspace
 - [x] Test reinstall/upgrade from legacy TOML command output — legacy dir removed, skills installed
 - [x] Confirm no ancestor conflict protection is needed — Gemini CLI uses workspace > user > extension precedence, no ancestor directory inheritance
 - [x] Implement/extend automated tests — 9 assertions in test suite 23 (config, fresh install, legacy cleanup, reinstall)
+- [ ] **NEEDS MANUAL IDE VERIFICATION** — run `gemini` CLI in a project with installed skills and confirm they appear and can be triggered
 - [ ] Commit
 
 ## iFlow
@@ -246,6 +248,7 @@ Support assumption: full Agent Skills support. iFlow docs confirm workspace skil
 - [x] Test fresh install — skills written to `.iflow/skills/bmad-master/SKILL.md`
 - [x] Test legacy cleanup — legacy commands dir removed
 - [x] Implement/extend automated tests — 6 assertions in test suite 24
+- [ ] **NEEDS MANUAL IDE VERIFICATION** — install iFlow and confirm skills appear in UI and can be triggered
 - [ ] Commit
 
 ## QwenCoder
@@ -258,6 +261,7 @@ Support assumption: full Agent Skills support. Qwen Code supports workspace skil
 - [x] Test fresh install — skills written to `.qwen/skills/bmad-master/SKILL.md`
 - [x] Test legacy cleanup — legacy commands dir removed
 - [x] Implement/extend automated tests — 6 assertions in test suite 25
+- [ ] **NEEDS MANUAL IDE VERIFICATION** — install QwenCoder and confirm skills appear in UI and can be triggered
 - [ ] Commit
 
 ## Rovo Dev
@@ -270,6 +274,7 @@ Support assumption: full Agent Skills support. Rovo Dev now supports workspace s
 - [x] Test fresh install — skills written to `.rovodev/skills/bmad-master/SKILL.md`
 - [x] Test legacy cleanup — legacy workflows dir removed, `prompts.yml` BMAD entries stripped while preserving user entries
 - [x] Implement/extend automated tests — 8 assertions in test suite 26
+- [ ] **NEEDS MANUAL IDE VERIFICATION** — install Rovo Dev and confirm skills appear in UI and can be triggered
 - [ ] Commit
 
 ## Summary Gates
