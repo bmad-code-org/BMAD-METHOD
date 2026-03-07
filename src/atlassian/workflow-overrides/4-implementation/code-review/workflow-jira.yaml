@@ -16,7 +16,7 @@ status_transitions: "{config_source}:status_transitions"
 # Workflow components
 installed_path: "{project-root}/_bmad/atlassian/workflow-overrides/4-implementation/code-review"
 instructions: "{installed_path}/instructions-jira.md"
-checklist: "{project-root}/_bmad/atlassian/workflows/4-implementation/code-review/checklist.md"
+checklist: "{project-root}/_bmad/atlassian/checklists/code-review-checklist.md"
 
 # Reusable tasks
 transition_task: "{project-root}/_bmad/atlassian/tasks/transition-jira-issue.md"

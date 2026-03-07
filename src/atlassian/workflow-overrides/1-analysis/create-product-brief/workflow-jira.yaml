@@ -19,7 +19,7 @@ key_map_file: "{config_source}:key_map_file"
 # Workflow components
 installed_path: "{project-root}/_bmad/atlassian/workflow-overrides/1-analysis/create-product-brief"
 instructions: "{installed_path}/instructions-jira.md"
-template: "{project-root}/_bmad/atlassian/templates/product-brief.template.md"
+template: "{project-root}/_bmad/atlassian/templates/product-brief-template.md"
 
 # Reusable tasks
 context_task: "{project-root}/_bmad/atlassian/tasks/read-jira-context.md"

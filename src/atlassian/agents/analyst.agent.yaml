@@ -34,27 +34,18 @@ agent:
     - "After completing any workflow, invoke the post-handoff task to record completion and hand off to the next agent"
 
   menu:
-    - trigger: BP or fuzzy match on brainstorm-project
-      exec: "{project-root}/_bmad/atlassian/workflow-overrides/1-analysis/brainstorming/workflow.md"
-      data: "{project-root}/_bmad/atlassian/templates/product-brief-template.md"
-      description: "[BP] Brainstorm Project: Expert Guided Facilitation through a single or multiple techniques with a final report"
-
     - trigger: MR or fuzzy match on market-research
-      exec: "{project-root}/_bmad/atlassian/workflow-overrides/1-analysis/research/workflow-market-research.md"
-      description: "[MR] Market Research: Market analysis, competitive landscape, customer needs and trends"
+      workflow: "{project-root}/_bmad/atlassian/workflow-overrides/1-analysis/research/workflow-jira.yaml"
+      description: "[MR] Market Research: Market analysis, competitive landscape, customer needs and trends (output to Confluence)"
 
     - trigger: DR or fuzzy match on domain-research
-      exec: "{project-root}/_bmad/atlassian/workflow-overrides/1-analysis/research/workflow-domain-research.md"
-      description: "[DR] Domain Research: Industry domain deep dive, subject matter expertise and terminology"
+      workflow: "{project-root}/_bmad/atlassian/workflow-overrides/1-analysis/research/workflow-jira.yaml"
+      description: "[DR] Domain Research: Industry domain deep dive, subject matter expertise and terminology (output to Confluence)"
 
     - trigger: TR or fuzzy match on technical-research
-      exec: "{project-root}/_bmad/atlassian/workflow-overrides/1-analysis/research/workflow-technical-research.md"
-      description: "[TR] Technical Research: Technical feasibility, architecture options and implementation approaches"
+      workflow: "{project-root}/_bmad/atlassian/workflow-overrides/1-analysis/research/workflow-jira.yaml"
+      description: "[TR] Technical Research: Technical feasibility, architecture options and implementation approaches (output to Confluence)"
 
     - trigger: CB or fuzzy match on product-brief
-      exec: "{project-root}/_bmad/atlassian/workflow-overrides/1-analysis/create-product-brief/workflow.md"
-      description: "[CB] Create Brief: A guided experience to nail down your product idea into an executive brief"
-
-    - trigger: DP or fuzzy match on document-project
-      workflow: "{project-root}/_bmad/atlassian/workflow-overrides/1-analysis/document-project/workflow.yaml"
-      description: "[DP] Document Project: Analyze an existing project to produce useful documentation for both human and LLM"
+      workflow: "{project-root}/_bmad/atlassian/workflow-overrides/1-analysis/create-product-brief/workflow-jira.yaml"
+      description: "[CB] Create Brief: A guided experience to nail down your product idea into an executive brief (output to Confluence)"

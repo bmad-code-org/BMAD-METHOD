@@ -38,5 +38,5 @@ agent:
 
   menu:
     - trigger: CU or fuzzy match on ux-design
-      exec: "{project-root}/_bmad/atlassian/workflow-overrides/2-plan-workflows/create-ux-design/workflow.md"
-      description: "[CU] Create UX: Guidance through realizing the plan for your UX to inform architecture and implementation. Provides more details than what was discovered in the PRD"
+      workflow: "{project-root}/_bmad/atlassian/workflow-overrides/2-plan-workflows/create-ux-design/workflow-jira.yaml"
+      description: "[CU] Create UX: Guidance through realizing the plan for your UX to inform architecture and implementation (output to Confluence)"

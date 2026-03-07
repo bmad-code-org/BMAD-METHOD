@@ -21,7 +21,7 @@ research_type: "{research_type}"
 # Workflow components
 installed_path: "{project-root}/_bmad/atlassian/workflow-overrides/1-analysis/research"
 instructions: "{installed_path}/instructions-jira.md"
-template: "{project-root}/_bmad/atlassian/templates/research.template.md"
+template: "{project-root}/_bmad/atlassian/templates/research-template.md"
 
 # Reusable tasks
 context_task: "{project-root}/_bmad/atlassian/tasks/read-jira-context.md"
