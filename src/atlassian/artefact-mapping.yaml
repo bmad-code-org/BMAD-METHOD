@@ -1,0 +1,323 @@
+# BMAD Artefact-to-Atlassian Mapping
+# Authoritative reference for how each BMAD artefact maps to Jira/Confluence.
+# Agents consult this file to determine which MCP tool to call for each output.
+
+# ============================================================================
+# PHASE 1 — ANALYSIS (Analyst Agent / Mary)
+# ============================================================================
+
+phase_1_analysis:
+
+  research_report:
+    bmad_source: "{planning_artifacts}/research-*.md"
+    destination: confluence
+    mcp_tool: create_page
+    parameters:
+      space_key: "{confluence_space_key}"
+      title: "[{jira_project_key}] Research: {research_type}"
+      content: "{report_body_markdown}"
+      parent_id: "{confluence_parent_page_id}"
+    labels:
+      - "{agent_label_prefix}analyst"
+      - "bmad-research"
+    notes: "One page per research type (market, domain, technical)"
+
+  product_brief:
+    bmad_source: "{planning_artifacts}/product-brief.md"
+    destination: confluence
+    mcp_tool: create_page
+    parameters:
+      space_key: "{confluence_space_key}"
+      title: "[{jira_project_key}] Product Brief"
+      content: "{brief_body_markdown}"
+      parent_id: "{confluence_parent_page_id}"
+    labels:
+      - "{agent_label_prefix}analyst"
+      - "bmad-brief"
+    notes: "Input document for PRD creation. Created once, updated if revised."
+
+# ============================================================================
+# PHASE 2 — PLANNING (PM Agent / John + UX Designer / Sally)
+# ============================================================================
+
+phase_2_planning:
+
+  prd:
+    bmad_source: "{planning_artifacts}/prd.md"
+    destination: confluence
+    mcp_tool: create_page
+    parameters:
+      space_key: "{confluence_space_key}"
+      title: "[{jira_project_key}] PRD: {project_name}"
+      content: "{prd_body_markdown}"
+      parent_id: "{confluence_parent_page_id}"
+    labels:
+      - "{agent_label_prefix}pm"
+      - "bmad-prd"
+    cross_links:
+      - type: remote_issue_link
+        description: "Link from each Epic back to the PRD page"
+        mcp_tool: create_remote_issue_link
+        parameters:
+          issue_key: "{epic_issue_key}"
+          url: "{confluence_page_url}"
+          title: "PRD: {project_name}"
+
+  epics:
+    bmad_source: "{planning_artifacts}/epics.md"
+    destination: jira
+    description: "Each Epic heading becomes a Jira Epic issue"
+    creation_flow:
+      - step: 1
+        action: "Parse epic headings from markdown"
+        pattern: "## Epic {N}: {title}"
+      - step: 2
+        action: "Create Jira Epic"
+        mcp_tool: create_issue
+        parameters:
+          project_key: "{jira_project_key}"
+          issue_type: "Epic"
+          summary: "Epic {N}: {title}"
+          description: "{epic_goal_and_fr_coverage}"
+          additional_fields:
+            labels:
+              - "{agent_label_prefix}pm"
+              - "bmad-epic"
+      - step: 3
+        action: "Store epic key in .jira-key-map.yaml"
+        key_map_entry: "epics.epic-{N}: {created_issue_key}"
+
+  stories:
+    bmad_source: "{planning_artifacts}/epics.md"
+    destination: jira
+    description: "Each Story under an Epic becomes a Jira Story linked to the parent Epic"
+    creation_flow:
+      - step: 1
+        action: "Parse story entries from epic section"
+        pattern: "### Story {N}.{M}: {title}"
+      - step: 2
+        action: "Create Jira Story"
+        mcp_tool: create_issue
+        parameters:
+          project_key: "{jira_project_key}"
+          issue_type: "Story"
+          summary: "Story {N}.{M}: {title}"
+          description: |
+            **User Story:**
+            As a {user_type}, I want {capability}, so that {value_benefit}.
+
+            **Acceptance Criteria:**
+            {acceptance_criteria_given_when_then}
+          additional_fields:
+            labels:
+              - "{agent_label_prefix}pm"
+              - "bmad-story"
+      - step: 3
+        action: "Link Story to its Epic"
+        mcp_tool: link_to_epic
+        parameters:
+          issue_key: "{story_issue_key}"
+          epic_key: "{parent_epic_key}"
+      - step: 4
+        action: "Store story key in .jira-key-map.yaml"
+        key_map_entry: "stories.{N}-{M}-{kebab_title}: {created_issue_key}"
+
+  ux_design:
+    bmad_source: "{planning_artifacts}/ux-design.md"
+    destination: confluence
+    mcp_tool: create_page
+    parameters:
+      space_key: "{confluence_space_key}"
+      title: "[{jira_project_key}] UX Design: {project_name}"
+      content: "{ux_design_body_markdown}"
+      parent_id: "{confluence_parent_page_id}"
+    labels:
+      - "{agent_label_prefix}ux-designer"
+      - "bmad-ux"
+    cross_links:
+      - type: remote_issue_link
+        description: "Link from each Epic back to the UX Design page"
+        mcp_tool: create_remote_issue_link
+        parameters:
+          issue_key: "{epic_issue_key}"
+          url: "{confluence_page_url}"
+          title: "UX Design: {project_name}"
+
+# ============================================================================
+# PHASE 3 — SOLUTIONING (Architect Agent / Winston)
+# ============================================================================
+
+phase_3_solutioning:
+
+  architecture_decision_doc:
+    bmad_source: "{planning_artifacts}/architecture.md"
+    destination: confluence
+    mcp_tool: create_page
+    parameters:
+      space_key: "{confluence_space_key}"
+      title: "[{jira_project_key}] Architecture: {project_name}"
+      content: "{architecture_body_markdown}"
+      parent_id: "{confluence_parent_page_id}"
+    labels:
+      - "{agent_label_prefix}architect"
+      - "bmad-architecture"
+    cross_links:
+      - type: remote_issue_link
+        description: "Link from relevant Epics back to Architecture page"
+        mcp_tool: create_remote_issue_link
+        parameters:
+          issue_key: "{epic_issue_key}"
+          url: "{confluence_page_url}"
+          title: "Architecture Decision Document"
+
+# ============================================================================
+# PHASE 4 — IMPLEMENTATION (SM / Bob, Dev / Amelia, QA / Quinn)
+# ============================================================================
+
+phase_4_implementation:
+
+  sprint:
+    bmad_source: "{implementation_artifacts}/sprint-status.yaml"
+    destination: jira
+    description: "Sprint status tracked via Jira Sprints instead of local YAML"
+    creation_flow:
+      - step: 1
+        action: "Find or create Jira sprint"
+        mcp_tool: get_sprints_from_board
+        parameters:
+          board_id: "{jira_board_id}"
+          state: "active"
+      - step: 2
+        action: "Create sprint if none active"
+        mcp_tool: create_sprint
+        parameters:
+          board_id: "{jira_board_id}"
+          name: "{project_name} Sprint {sprint_number}"
+          start_date: "{sprint_start}"
+          end_date: "{sprint_end}"
+      - step: 3
+        action: "Add stories to sprint"
+        mcp_tool: add_issues_to_sprint
+        parameters:
+          sprint_id: "{active_sprint_id}"
+          issue_keys: "{selected_story_keys}"
+
+  story_preparation:
+    bmad_source: "{implementation_artifacts}/{story-key}.md"
+    destination: jira
+    description: "SM prepares story by enriching the Jira Story description with dev context"
+    creation_flow:
+      - step: 1
+        action: "Look up Jira key from key map"
+        lookup: "stories.{story-key}"
+      - step: 2
+        action: "Update story description with dev context"
+        mcp_tool: update_issue
+        parameters:
+          issue_key: "{story_jira_key}"
+          fields:
+            description: "{enriched_story_description}"
+      - step: 3
+        action: "Add dev notes as comment"
+        mcp_tool: add_comment
+        parameters:
+          issue_key: "{story_jira_key}"
+          body: "{dev_notes_and_references}"
+      - step: 4
+        action: "Transition to Ready for Dev"
+        mcp_tool: transition_issue
+        parameters:
+          issue_key: "{story_jira_key}"
+          transition_id: "{status_transitions.story.backlog_to_ready_for_dev}"
+    labels:
+      - "{agent_label_prefix}sm"
+
+  story_tasks:
+    bmad_source: "Tasks/subtasks within story file"
+    destination: jira
+    description: "Each task in the story becomes a Jira Subtask"
+    creation_flow:
+      - step: 1
+        action: "Parse tasks from story content"
+      - step: 2
+        action: "Create subtask for each task"
+        mcp_tool: create_issue
+        parameters:
+          project_key: "{jira_project_key}"
+          issue_type: "Sub-task"
+          summary: "{task_description}"
+          description: "{task_details_and_ac_refs}"
+          additional_fields:
+            parent:
+              key: "{story_jira_key}"
+            labels:
+              - "{agent_label_prefix}sm"
+              - "bmad-task"
+
+  dev_story_execution:
+    bmad_source: "Dev agent record in story file"
+    destination: jira
+    description: "Dev agent transitions stories and posts completion notes"
+    execution_flow:
+      - step: 1
+        action: "Find next story to implement"
+        mcp_tool: search_issues
+        parameters:
+          jql: "project = {jira_project_key} AND issuetype = Story AND status = 'Ready for Dev' ORDER BY rank ASC"
+          fields: "summary,description"
+          limit: 1
+      - step: 2
+        action: "Lock the story"
+        invoke_task: "lock-issue"
+        parameters:
+          issue_key: "{story_jira_key}"
+          action: "lock"
+      - step: 3
+        action: "Transition to In Progress"
+        mcp_tool: transition_issue
+        parameters:
+          issue_key: "{story_jira_key}"
+          transition_id: "{status_transitions.story.ready_for_dev_to_in_progress}"
+      - step: 4
+        action: "Post completion record as comment"
+        mcp_tool: add_comment
+        parameters:
+          issue_key: "{story_jira_key}"
+          body: |
+            **Dev Agent Record**
+            - Agent Model: {agent_model}
+            - Files Changed: {file_list}
+            - Completion Notes: {completion_notes}
+      - step: 5
+        action: "Transition to Review"
+        mcp_tool: transition_issue
+        parameters:
+          issue_key: "{story_jira_key}"
+          transition_id: "{status_transitions.story.in_progress_to_review}"
+      - step: 6
+        action: "Unlock the story"
+        invoke_task: "lock-issue"
+        parameters:
+          issue_key: "{story_jira_key}"
+          action: "unlock"
+
+  code_review:
+    bmad_source: "Code review results"
+    destination: jira
+    description: "Code review findings posted as Jira comment on the Story"
+    execution_flow:
+      - step: 1
+        action: "Post review findings"
+        mcp_tool: add_comment
+        parameters:
+          issue_key: "{story_jira_key}"
+          body: "{code_review_markdown}"
+      - step: 2
+        action: "Transition to Done (if review passes)"
+        mcp_tool: transition_issue
+        parameters:
+          issue_key: "{story_jira_key}"
+          transition_id: "{status_transitions.story.review_to_done}"
+    labels:
+      - "{agent_label_prefix}dev"
+      - "bmad-reviewed"

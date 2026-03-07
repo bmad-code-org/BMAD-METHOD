@@ -1,0 +1,34 @@
+# BMAD Atlassian Key Map
+# Auto-generated and maintained by the Atlassian adapter.
+# Maps BMAD identifiers to Jira issue keys and Confluence page IDs.
+#
+# DO NOT EDIT MANUALLY — this file is updated by agent workflows.
+# If Jira issues are created outside BMAD, run the orchestrator's
+# state reader to refresh this map from Jira via JQL.
+
+project_key: "{jira_project_key}"
+last_updated: "{date}"
+
+# Confluence page IDs (returned by Create Page / Search Content)
+confluence_pages:
+  # product_brief: "page-id"
+  # research_market: "page-id"
+  # research_domain: "page-id"
+  # research_technical: "page-id"
+  # prd: "page-id"
+  # ux_design: "page-id"
+  # architecture: "page-id"
+
+# Jira Epic keys (returned by Create Issue)
+epics:
+  # epic-1: "PROJ-10"
+  # epic-2: "PROJ-11"
+
+# Jira Story keys (returned by Create Issue + Link to Epic)
+stories:
+  # 1-1-user-authentication: "PROJ-12"
+  # 1-2-account-management: "PROJ-13"
+
+# Jira Sprint IDs (returned by Create Sprint / Get Sprints from Board)
+sprints:
+  # sprint-1: "42"

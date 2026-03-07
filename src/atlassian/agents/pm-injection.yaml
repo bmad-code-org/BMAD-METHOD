@@ -1,0 +1,22 @@
+# Atlassian Adapter Injection for PM Agent (John)
+# Appended to pm.agent.yaml critical_actions when atlassian module is installed
+
+target_agent: bmad-pm
+injection_point: critical_actions
+
+inject:
+  - "When tracking_system is 'jira': use Atlassian MCP tools for all artefact output instead of writing local files"
+  - "Read artefact mapping from {project-root}/_bmad/atlassian/artefact-mapping.yaml for output routing"
+  - "Use {key_map_file} for Jira issue key and Confluence page ID lookups"
+  - "PRD output: invoke the write-to-confluence task. Title: '[{jira_project_key}] PRD: {project_name}'. Store page ID as confluence_pages.prd in key map"
+  - "Epic/Story output: use the Jira override step at {project-root}/_bmad/atlassian/workflow-overrides/3-solutioning/create-epics-and-stories/steps/step-04-jira-output.md"
+  - "Create Epics as Jira Epic issues, Stories as Jira Story issues linked to their parent Epic via Link to Epic"
+  - "Include PRD summary in each Epic description. Include acceptance criteria (Given/When/Then) in each Story description"
+  - "Apply label '{agent_label_prefix}pm' to every Jira issue and Confluence page you create"
+  - "After creating Epics: link each one to the PRD Confluence page via Create Remote Issue Link"
+  - "Store all created issue keys in {key_map_file} under epics and stories sections"
+  - "If output_mode is 'dual': also write artefacts to local files as usual"
+
+menu_overrides:
+  - trigger: CE
+    description: "Uses Jira output step instead of local file write for epics/stories"

@@ -1,0 +1,100 @@
+code: atlassian
+name: "Atlassian Jira/Confluence Adapter"
+description: "Routes BMAD artefacts to Jira and Confluence via the Atlassian MCP server"
+default_selected: false
+depends_on: bmm
+
+# --- Jira Configuration ---
+
+jira_project_key:
+  prompt: "What is your Jira project key? (e.g., PROJ, MYAPP)"
+  default: "PROJ"
+  result: "{value}"
+
+jira_board_id:
+  prompt:
+    - "What is your Jira Agile board ID?"
+    - "Run the transition-discovery workflow to find this automatically."
+  default: ""
+  result: "{value}"
+
+# --- Confluence Configuration ---
+
+confluence_space_key:
+  prompt: "What is your Confluence space key?"
+  default: "{jira_project_key}"
+  result: "{value}"
+
+confluence_parent_page_id:
+  prompt:
+    - "What is the Confluence parent page ID under which BMAD artefacts will be created?"
+    - "Leave blank to create pages at the space root."
+  default: ""
+  result: "{value}"
+
+# --- Output Mode ---
+
+output_mode:
+  prompt:
+    - "How should artefacts be written?"
+    - "Dual mode writes to both Jira/Confluence AND local files. Jira-only skips local files."
+  default: "dual"
+  result: "{value}"
+  single-select:
+    - value: "dual"
+      label: "Dual - Write to Jira/Confluence and local files"
+    - value: "jira-only"
+      label: "Jira Only - Write exclusively to Jira/Confluence"
+
+# --- Status Transition Mapping ---
+# Maps BMAD abstract statuses to Jira transition IDs.
+# Users must populate these for their specific Jira workflow.
+# Run transition-discovery.md to auto-discover these values.
+
+status_transitions:
+  prompt: "Status transition mapping (run transition-discovery workflow to populate)"
+  default: |
+    epic:
+      backlog_to_in_progress: ""
+      in_progress_to_done: ""
+    story:
+      backlog_to_ready_for_dev: ""
+      ready_for_dev_to_in_progress: ""
+      in_progress_to_review: ""
+      review_to_done: ""
+  result: "{value}"
+
+# --- Label Conventions ---
+
+agent_label_prefix:
+  prompt: "Prefix for labels applied by BMAD agents to Jira issues"
+  default: "bmad-agent-"
+  result: "{value}"
+
+lock_label:
+  prompt: "Label used to indicate an agent is actively working on an issue"
+  default: "agent-active"
+  result: "{value}"
+
+# --- Tracking System Override ---
+# These override the bmm module defaults to route through Jira
+
+tracking_system:
+  result: "jira"
+
+project_key:
+  result: "{jira_project_key}"
+
+story_location:
+  result: "jira://{jira_project_key}"
+
+# --- Key Map ---
+# Local file mapping BMAD identifiers to Jira issue keys and Confluence page IDs
+
+key_map_file:
+  result: "{project-root}/_bmad/atlassian/.jira-key-map.yaml"
+
+# --- Directories to create during installation ---
+
+directories:
+  - "{project-root}/_bmad/atlassian"

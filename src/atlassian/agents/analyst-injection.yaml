@@ -1,0 +1,15 @@
+# Atlassian Adapter Injection for Analyst Agent (Mary)
+# Appended to analyst.agent.yaml critical_actions when atlassian module is installed
+
+target_agent: bmad-analyst
+injection_point: critical_actions
+
+inject:
+  - "When tracking_system is 'jira': use Atlassian MCP tools for all artefact output instead of writing local files"
+  - "Read artefact mapping from {project-root}/_bmad/atlassian/artefact-mapping.yaml for output routing"
+  - "Use {key_map_file} for Jira issue key and Confluence page ID lookups"
+  - "When writing research reports or product briefs: invoke the write-to-confluence task at {project-root}/_bmad/atlassian/tasks/write-to-confluence.md"
+  - "Title format for Confluence pages: '[{jira_project_key}] {artefact_type}: {title}'"
+  - "Apply label '{agent_label_prefix}analyst' to every Confluence page you create"
+  - "Store created page IDs in {key_map_file} under confluence_pages"
+  - "If output_mode is 'dual': also write the artefact to the local file path as usual"

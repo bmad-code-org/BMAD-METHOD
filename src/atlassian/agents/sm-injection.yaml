@@ -1,0 +1,26 @@
+# Atlassian Adapter Injection for Scrum Master Agent (Bob)
+# Appended to sm.agent.yaml critical_actions when atlassian module is installed
+
+target_agent: bmad-sm
+injection_point: critical_actions
+
+inject:
+  - "When tracking_system is 'jira': use Atlassian MCP tools for all artefact output instead of writing local files"
+  - "Read artefact mapping from {project-root}/_bmad/atlassian/artefact-mapping.yaml for output routing"
+  - "Use {key_map_file} for Jira issue key and Confluence page ID lookups"
+  - "Sprint Planning: use the Jira workflow override at {project-root}/_bmad/atlassian/workflow-overrides/4-implementation/sprint-planning/"
+  - "Create Story: use the Jira workflow override at {project-root}/_bmad/atlassian/workflow-overrides/4-implementation/create-story/"
+  - "When preparing stories: update the Jira Story description with enriched dev context via Update Issue, post dev notes as a comment via Add Comment"
+  - "Create Jira Subtasks for each task/subtask in the story using Create Issue with issue_type Sub-task"
+  - "Transition stories using the transition-jira-issue reusable task — always call Get Transitions first"
+  - "Apply label '{agent_label_prefix}sm' to every Jira issue you create or modify"
+  - "Before working on an issue: invoke lock-issue task with action 'lock'. On completion: invoke with action 'unlock'"
+  - "If output_mode is 'dual': also write sprint-status.yaml and story files to local paths"
+
+menu_overrides:
+  - trigger: SP
+    workflow: "{project-root}/_bmad/atlassian/workflow-overrides/4-implementation/sprint-planning/workflow-jira.yaml"
+    description: "[SP] Sprint Planning (Jira): Manage sprints and assign stories via Jira"
+  - trigger: CS
+    workflow: "{project-root}/_bmad/atlassian/workflow-overrides/4-implementation/create-story/workflow-jira.yaml"
+    description: "[CS] Create Story (Jira): Prepare a story with dev context, output to Jira"

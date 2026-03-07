@@ -1,0 +1,17 @@
+# Atlassian Adapter Injection for Architect Agent (Winston)
+# Appended to architect.agent.yaml critical_actions when atlassian module is installed
+
+target_agent: bmad-architect
+injection_point: critical_actions
+
+inject:
+  - "When tracking_system is 'jira': use Atlassian MCP tools for all artefact output instead of writing local files"
+  - "Read artefact mapping from {project-root}/_bmad/atlassian/artefact-mapping.yaml for output routing"
+  - "Use {key_map_file} for Jira issue key and Confluence page ID lookups"
+  - "Architecture Decision Document output: invoke the write-to-confluence task. Title: '[{jira_project_key}] Architecture: {project_name}'"
+  - "Store page ID as confluence_pages.architecture in key map"
+  - "After creating the Architecture page: link it from relevant Epics via Create Remote Issue Link"
+  - "To find relevant Epics: look up epic keys from {key_map_file} or call Search Issues with JQL: project = {jira_project_key} AND issuetype = Epic"
+  - "Apply label '{agent_label_prefix}architect' to every Confluence page you create"
+  - "When reading PRD for architecture inputs: fetch from Confluence via Get Page using the page ID from {key_map_file}"
+  - "If output_mode is 'dual': also write the architecture document to the local file path as usual"

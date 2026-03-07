@@ -1,0 +1,27 @@
+name: code-review-jira
+description: 'Run code review with results posted to Jira. Use when tracking_system is "jira".'
+author: "BMad"
+
+# Critical variables from config
+config_source: "{project-root}/_bmad/atlassian/config.yaml"
+bmm_config: "{project-root}/_bmad/bmm/config.yaml"
+user_name: "{bmm_config}:user_name"
+communication_language: "{bmm_config}:communication_language"
+date: system-generated
+
+# Atlassian-specific config
+jira_project_key: "{config_source}:jira_project_key"
+key_map_file: "{config_source}:key_map_file"
+status_transitions: "{config_source}:status_transitions"
+
+# Workflow components
+installed_path: "{project-root}/_bmad/atlassian/workflow-overrides/4-implementation/code-review"
+instructions: "{installed_path}/instructions-jira.md"
+bmm_checklist: "{project-root}/_bmad/bmm/workflows/4-implementation/code-review/checklist.md"
+
+# Reusable tasks
+transition_task: "{project-root}/_bmad/atlassian/tasks/transition-jira-issue.md"
+lock_task: "{project-root}/_bmad/atlassian/tasks/lock-issue.md"
+
+# Tracking system
+tracking_system: "jira"
