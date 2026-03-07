@@ -57,8 +57,11 @@ platforms:
     category: ide
     description: "AI coding assistant"
     installer:
-      target_dir: .clinerules/workflows
-      template_type: windsurf
+      legacy_targets:
+        - .clinerules/workflows
+      target_dir: .cline/skills
+      template_type: default
+      skill_format: true
 
   codex:
     name: "Codex"

@@ -64,18 +64,18 @@ Support assumption: full Agent Skills support. Windsurf docs confirm workspace s
 
 ## Cline
 
-Support assumption: full Agent Skills support. BMAD currently installs workflow files to `.clinerules/workflows`; target should move to the platform's native skills directory.
+Support assumption: full Agent Skills support. Cline docs confirm workspace skills at `.cline/skills/<skill-name>/SKILL.md` and global skills at `~/.cline/skills/`. BMAD has now migrated from `.clinerules/workflows` to `.cline/skills`.
 
 **Install:** VS Code extension `saoudrizwan.claude-dev` — search "Cline" in Extensions or `code --install-extension saoudrizwan.claude-dev`
 
-- [ ] Confirm current Cline skills path and whether `.cline/skills` is the correct BMAD target
-- [ ] Implement installer migration to native skills output
-- [ ] Add legacy cleanup for `.clinerules/workflows`
-- [ ] Test fresh install
-- [ ] Test reinstall/upgrade from legacy workflow output
-- [ ] Confirm ancestor conflict protection where applicable
-- [ ] Implement/extend automated tests
-- [ ] Commit
+- [x] Confirm current Cline skills path is `.cline/skills/{skill-name}/SKILL.md` with YAML frontmatter (name + description)
+- [x] Implement installer migration to native skills output
+- [x] Add legacy cleanup for `.clinerules/workflows`
+- [x] Test fresh install — 43 skills installed to `.cline/skills/`
+- [x] Test reinstall/upgrade from legacy workflow output
+- [x] Confirm no ancestor conflict protection is needed because Cline only scans workspace-local `.cline/skills/` and global `~/.cline/skills/`, with no ancestor directory inheritance
+- [x] Implement/extend automated tests — 9 assertions in test suite 18
+- [x] Commit
 
 ## Google Antigravity
 

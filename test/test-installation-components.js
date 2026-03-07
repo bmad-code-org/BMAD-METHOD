@@ -894,6 +894,68 @@ async function runTests() {
   console.log('');
 
   // ============================================================
+  // Test 18: Cline Native Skills Install
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 18: Cline Native Skills${colors.reset}\n`);
+
+  try {
+    clearCache();
+    const platformCodes18 = await loadPlatformCodes();
+    const clineInstaller = platformCodes18.platforms.cline?.installer;
+
+    assert(clineInstaller?.target_dir === '.cline/skills', 'Cline target_dir uses native skills path');
+
+    assert(clineInstaller?.skill_format === true, 'Cline installer enables native skill output');
+
+    assert(
+      Array.isArray(clineInstaller?.legacy_targets) && clineInstaller.legacy_targets.includes('.clinerules/workflows'),
+      'Cline installer cleans legacy workflow output',
+    );
+
+    const tempProjectDir18 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-cline-test-'));
+    const installedBmadDir18 = await createTestBmadFixture();
+    const legacyDir18 = path.join(tempProjectDir18, '.clinerules', 'workflows', 'bmad-legacy-dir');
+    await fs.ensureDir(legacyDir18);
+    await fs.writeFile(path.join(tempProjectDir18, '.clinerules', 'workflows', 'bmad-legacy.md'), 'legacy\n');
+    await fs.writeFile(path.join(legacyDir18, 'SKILL.md'), 'legacy\n');
+
+    const ideManager18 = new IdeManager();
+    await ideManager18.ensureInitialized();
+    const result18 = await ideManager18.setup('cline', tempProjectDir18, installedBmadDir18, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+
+    assert(result18.success === true, 'Cline setup succeeds against temp project');
+
+    const skillFile18 = path.join(tempProjectDir18, '.cline', 'skills', 'bmad-master', 'SKILL.md');
+    assert(await fs.pathExists(skillFile18), 'Cline install writes SKILL.md directory output');
+
+    // Verify name frontmatter matches directory name
+    const skillContent18 = await fs.readFile(skillFile18, 'utf8');
+    const nameMatch18 = skillContent18.match(/^name:\s*(.+)$/m);
+    assert(nameMatch18 && nameMatch18[1].trim() === 'bmad-master', 'Cline skill name frontmatter matches directory name exactly');
+
+    assert(!(await fs.pathExists(path.join(tempProjectDir18, '.clinerules', 'workflows'))), 'Cline setup removes legacy workflows dir');
+
+    // Reinstall/upgrade: run setup again over existing skills output
+    const result18b = await ideManager18.setup('cline', tempProjectDir18, installedBmadDir18, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+
+    assert(result18b.success === true, 'Cline reinstall/upgrade succeeds over existing skills');
+    assert(await fs.pathExists(skillFile18), 'Cline reinstall preserves SKILL.md output');
+
+    await fs.remove(tempProjectDir18);
+    await fs.remove(installedBmadDir18);
+  } catch (error) {
+    assert(false, 'Cline native skills migration test succeeds', error.message);
+  }
+
+  console.log('');
+
+  // ============================================================
   // Summary
   // ============================================================
   console.log(`${colors.cyan}========================================`);
