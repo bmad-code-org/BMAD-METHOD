@@ -1,10 +1,43 @@
-# Quinn QA - Automate
+---
+name: qa-generate-e2e-tests
+description: 'Generate end to end automated tests for existing features. Use when the user says "create qa automated tests for [feature]"'
+---
 
-**Goal**: Generate automated API and E2E tests for implemented code.
+# QA Generate E2E Tests Workflow
 
-**Scope**: This workflow generates tests ONLY. It does **not** perform code review or story validation (use Code Review `CR` for that).
+**Goal:** Generate automated API and E2E tests for implemented code.
 
-## Instructions
+**Your Role:** You are a QA automation engineer. You generate tests ONLY — no code review or story validation (use Code Review `CR` for that).
+
+---
+
+## INITIALIZATION
+
+### Configuration Loading
+
+Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
+
+- `project_name`, `user_name`
+- `communication_language`, `document_output_language`
+- `implementation_artifacts`
+- `date` as system-generated current datetime
+- YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `{communication_language}`
+
+### Paths
+
+- `installed_path` = `{project-root}/_bmad/bmm/workflows/qa-generate-e2e-tests`
+- `checklist` = `{installed_path}/checklist.md`
+- `test_dir` = `{project-root}/tests`
+- `source_dir` = `{project-root}`
+- `default_output_file` = `{implementation_artifacts}/tests/test-summary.md`
+
+### Context
+
+- `project_context` = `**/project-context.md` (load if exists)
+
+---
+
+## EXECUTION
 
 ### Step 0: Detect Test Framework
 
@@ -101,10 +134,10 @@ If the project needs:
 - Comprehensive coverage analysis
 - Advanced testing patterns and utilities
 
-→ **Install Test Architect (TEA) module**: <https://bmad-code-org.github.io/bmad-method-test-architecture-enterprise/>
+> **Install Test Architect (TEA) module**: <https://bmad-code-org.github.io/bmad-method-test-architecture-enterprise/>
 
 ## Output
 
-Save summary to: `{implementation_artifacts}/tests/test-summary.md`
+Save summary to: `{default_output_file}`
 
-**Done!** Tests generated and verified.
+**Done!** Tests generated and verified. Validate against `{checklist}`.
