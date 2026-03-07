@@ -1429,6 +1429,68 @@ async function runTests() {
   console.log('');
 
   // ============================================================
+  // Suite 27: Cleanup preserves bmad-os-* skills
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 27: Cleanup preserves bmad-os-* skills${colors.reset}\n`);
+
+  try {
+    const tempProjectDir27 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-os-preserve-test-'));
+    const installedBmadDir27 = await createTestBmadFixture();
+
+    // Pre-populate .claude/skills with bmad-os-* skills (version-controlled repo skills)
+    const osSkillDir27 = path.join(tempProjectDir27, '.claude', 'skills', 'bmad-os-review-pr');
+    await fs.ensureDir(osSkillDir27);
+    await fs.writeFile(
+      path.join(osSkillDir27, 'SKILL.md'),
+      '---\nname: bmad-os-review-pr\ndescription: Review PRs\n---\nOS skill content\n',
+    );
+
+    const osSkillDir27b = path.join(tempProjectDir27, '.claude', 'skills', 'bmad-os-release-module');
+    await fs.ensureDir(osSkillDir27b);
+    await fs.writeFile(
+      path.join(osSkillDir27b, 'SKILL.md'),
+      '---\nname: bmad-os-release-module\ndescription: Release module\n---\nOS skill content\n',
+    );
+
+    // Also add a regular bmad skill that SHOULD be cleaned up
+    const regularSkillDir27 = path.join(tempProjectDir27, '.claude', 'skills', 'bmad-architect');
+    await fs.ensureDir(regularSkillDir27);
+    await fs.writeFile(
+      path.join(regularSkillDir27, 'SKILL.md'),
+      '---\nname: bmad-architect\ndescription: Architect\n---\nOld skill content\n',
+    );
+
+    // Run Claude Code setup (which triggers cleanup then install)
+    const ideManager27 = new IdeManager();
+    await ideManager27.ensureInitialized();
+    const result27 = await ideManager27.setup('claude-code', tempProjectDir27, installedBmadDir27, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+
+    assert(result27.success === true, 'Claude Code setup succeeds with bmad-os-* skills present');
+
+    // bmad-os-* skills must survive
+    assert(await fs.pathExists(osSkillDir27), 'Cleanup preserves bmad-os-review-pr skill');
+    assert(await fs.pathExists(osSkillDir27b), 'Cleanup preserves bmad-os-release-module skill');
+
+    // bmad-os skill content must be untouched
+    const osContent27 = await fs.readFile(path.join(osSkillDir27, 'SKILL.md'), 'utf8');
+    assert(osContent27.includes('OS skill content'), 'bmad-os-review-pr skill content is unchanged');
+
+    // Regular bmad skill should have been replaced by fresh install
+    const newSkillFile27 = path.join(tempProjectDir27, '.claude', 'skills', 'bmad-master', 'SKILL.md');
+    assert(await fs.pathExists(newSkillFile27), 'Fresh bmad skills are installed alongside preserved bmad-os-* skills');
+
+    await fs.remove(tempProjectDir27);
+    await fs.remove(installedBmadDir27);
+  } catch (error) {
+    assert(false, 'bmad-os-* skill preservation test succeeds', error.message);
+  }
+
+  console.log('');
+
+  // ============================================================
   // Summary
   // ============================================================
   console.log(`${colors.cyan}========================================`);

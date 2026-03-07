@@ -756,7 +756,7 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
       if (!entry || typeof entry !== 'string') {
         continue;
       }
-      if (entry.startsWith('bmad')) {
+      if (entry.startsWith('bmad') && !entry.startsWith('bmad-os-')) {
         const entryPath = path.join(targetPath, entry);
         try {
           await fs.remove(entryPath);
