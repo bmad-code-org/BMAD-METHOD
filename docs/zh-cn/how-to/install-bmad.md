@@ -7,7 +7,7 @@ sidebar:
 
 使用 `npx bmad-method install` 命令在项目中设置 BMad，并选择你需要的模块和 AI 工具。
 
-如果你想使用非交互式安装程序并在命令行中提供所有安装选项，请参阅[本指南](./non-interactive-installation_cn.md)。
+如果你想使用非交互式安装程序并在命令行中提供所有安装选项，请参阅[本指南](./non-interactive-installation.md)。
 
 ## 何时使用
 
@@ -94,7 +94,7 @@ your-project/
 
 **安装程序抛出错误**——将输出复制粘贴到你的 AI 助手中，让它来解决问题。
 
-**安装程序工作正常但后续出现问题**——你的 AI 需要 BMad 上下文才能提供帮助。请参阅[如何获取关于 BMad 的答案](./get-answers-about-bmad_cn.md)了解如何将你的 AI 指向正确的来源。
+**安装程序工作正常但后续出现问题**——你的 AI 需要 BMad 上下文才能提供帮助。请参阅[如何获取关于 BMad 的答案](./get-answers-about-bmad.md)了解如何将你的 AI 指向正确的来源。
 
 ---
 ## 术语说明
