@@ -1336,6 +1336,7 @@ Bob (Scrum Master): "See you all when prep work is done. Meeting adjourned!"
 <action>Find development_status key "epic-{{epic_number}}-retrospective"</action>
 <action>Verify current status (typically "optional" or "pending")</action>
 <action>Update development_status["epic-{{epic_number}}-retrospective"] = "done"</action>
+<action>Update last_updated field to current date</action>
 <action>Save file, preserving ALL comments and structure including STATUS DEFINITIONS</action>
 
 <check if="update successful">

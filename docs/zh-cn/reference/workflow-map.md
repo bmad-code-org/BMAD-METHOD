@@ -86,7 +86,7 @@ BMad Method（BMM）是 BMad 生态系统中的一个模块，旨在遵循上下
 - **手动** — 使用您的技术栈和实施规则创建 `_bmad-output/project-context.md`
 - **生成它** — 运行 `/bmad-bmm-generate-project-context` 以从您的架构或代码库自动生成
 
-[**了解更多关于 project-context.md**](../explanation/project-context_cn.md)
+[**了解更多关于 project-context.md**](../explanation/project-context.md)
 
 ---
 ## 术语说明

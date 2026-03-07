@@ -195,12 +195,14 @@
 
       <check if="{{new_status}} == 'done'">
         <action>Update development_status[{{story_key}}] = "done"</action>
+        <action>Update last_updated field to current date</action>
         <action>Save file, preserving ALL comments and structure</action>
         <output>✅ Sprint status synced: {{story_key}} → done</output>
       </check>
 
       <check if="{{new_status}} == 'in-progress'">
         <action>Update development_status[{{story_key}}] = "in-progress"</action>
+        <action>Update last_updated field to current date</action>
         <action>Save file, preserving ALL comments and structure</action>
         <output>🔄 Sprint status synced: {{story_key}} → in-progress</output>
       </check>

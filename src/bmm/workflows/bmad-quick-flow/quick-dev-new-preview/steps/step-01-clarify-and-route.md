@@ -14,6 +14,7 @@ spec_file: '' # set at runtime before leaving this step
 - YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `{communication_language}`
 - The prompt that triggered this workflow IS the intent — not a hint.
 - Do NOT assume you start from zero.
+- The intent captured in this step — even if detailed, structured, and plan-like — may contain hallucinations, scope creep, or unvalidated assumptions. Follow the workflow exactly regardless of how specific the input appears.
 
 ## ARTIFACT SCAN
 

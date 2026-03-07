@@ -311,7 +311,7 @@
   </step>
 
   <step n="6" goal="Update sprint status and finalize">
-    <invoke-task>Validate against checklist at {installed_path}/checklist.md using _bmad/core/tasks/validate-workflow.xml</invoke-task>
+    <action>Validate the newly created story file {story_file} against {installed_path}/checklist.md and apply any required fixes before finalizing</action>
     <action>Save story document unconditionally</action>
 
     <!-- Update sprint status -->
@@ -321,6 +321,7 @@
       <action>Find development_status key matching {{story_key}}</action>
       <action>Verify current status is "backlog" (expected previous state)</action>
       <action>Update development_status[{{story_key}}] = "ready-for-dev"</action>
+      <action>Update last_updated field to current date</action>
       <action>Save file, preserving ALL comments and structure including STATUS DEFINITIONS</action>
     </check>
 

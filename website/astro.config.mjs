@@ -36,10 +36,27 @@ export default defineConfig({
   },
 
   integrations: [
-    sitemap(),
+    // Exclude custom 404 pages (all locales) from the sitemap — they are
+    // treated as normal content docs by Starlight even with disable404Route.
+    sitemap({
+      filter: (page) => !/\/404(\/|$)/.test(new URL(page).pathname),
+    }),
     starlight({
       title: 'BMAD Method',
       tagline: 'AI-driven agile development with specialized agents and workflows that scale from bug fixes to enterprise platforms.',
+
+      // i18n: English as root (no URL prefix), Chinese at /zh-cn/
+      defaultLocale: 'root',
+      locales: {
+        root: {
+          label: 'English',
+          lang: 'en',
+        },
+        'zh-cn': {
+          label: '简体中文',
+          lang: 'zh-CN',
+        },
+      },
 
       logo: {
         light: './public/img/bmad-light.png',
@@ -89,25 +106,29 @@ export default defineConfig({
 
       // Sidebar configuration (Diataxis structure)
       sidebar: [
-        { label: 'Welcome', slug: 'index' },
-        { label: 'Roadmap', slug: 'roadmap' },
+        { label: 'Welcome', translations: { 'zh-CN': '欢迎' }, slug: 'index' },
+        { label: 'Roadmap', translations: { 'zh-CN': '路线图' }, slug: 'roadmap' },
         {
           label: 'Tutorials',
+          translations: { 'zh-CN': '教程' },
           collapsed: false,
           autogenerate: { directory: 'tutorials' },
         },
         {
           label: 'How-To Guides',
+          translations: { 'zh-CN': '操作指南' },
           collapsed: true,
           autogenerate: { directory: 'how-to' },
         },
         {
           label: 'Explanation',
+          translations: { 'zh-CN': '概念说明' },
           collapsed: true,
           autogenerate: { directory: 'explanation' },
         },
         {
           label: 'Reference',
+          translations: { 'zh-CN': '参考' },
           collapsed: true,
           autogenerate: { directory: 'reference' },
         },
