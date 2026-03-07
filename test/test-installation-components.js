@@ -1076,6 +1076,65 @@ async function runTests() {
   console.log('');
 
   // ============================================================
+  // Test 21: Trae Native Skills Install
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 21: Trae Native Skills${colors.reset}\n`);
+
+  try {
+    clearCache();
+    const platformCodes21 = await loadPlatformCodes();
+    const traeInstaller = platformCodes21.platforms.trae?.installer;
+
+    assert(traeInstaller?.target_dir === '.trae/skills', 'Trae target_dir uses native skills path');
+
+    assert(traeInstaller?.skill_format === true, 'Trae installer enables native skill output');
+
+    assert(
+      Array.isArray(traeInstaller?.legacy_targets) && traeInstaller.legacy_targets.includes('.trae/rules'),
+      'Trae installer cleans legacy rules output',
+    );
+
+    const tempProjectDir21 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-trae-test-'));
+    const installedBmadDir21 = await createTestBmadFixture();
+    const legacyDir21 = path.join(tempProjectDir21, '.trae', 'rules');
+    await fs.ensureDir(legacyDir21);
+    await fs.writeFile(path.join(legacyDir21, 'bmad-legacy.md'), 'legacy\n');
+
+    const ideManager21 = new IdeManager();
+    await ideManager21.ensureInitialized();
+    const result21 = await ideManager21.setup('trae', tempProjectDir21, installedBmadDir21, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+
+    assert(result21.success === true, 'Trae setup succeeds against temp project');
+
+    const skillFile21 = path.join(tempProjectDir21, '.trae', 'skills', 'bmad-master', 'SKILL.md');
+    assert(await fs.pathExists(skillFile21), 'Trae install writes SKILL.md directory output');
+
+    const skillContent21 = await fs.readFile(skillFile21, 'utf8');
+    const nameMatch21 = skillContent21.match(/^name:\s*(.+)$/m);
+    assert(nameMatch21 && nameMatch21[1].trim() === 'bmad-master', 'Trae skill name frontmatter matches directory name exactly');
+
+    assert(!(await fs.pathExists(path.join(tempProjectDir21, '.trae', 'rules'))), 'Trae setup removes legacy rules dir');
+
+    const result21b = await ideManager21.setup('trae', tempProjectDir21, installedBmadDir21, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+
+    assert(result21b.success === true, 'Trae reinstall/upgrade succeeds over existing skills');
+    assert(await fs.pathExists(skillFile21), 'Trae reinstall preserves SKILL.md output');
+
+    await fs.remove(tempProjectDir21);
+    await fs.remove(installedBmadDir21);
+  } catch (error) {
+    assert(false, 'Trae native skills migration test succeeds', error.message);
+  }
+
+  console.log('');
+
+  // ============================================================
   // Summary
   // ============================================================
   console.log(`${colors.cyan}========================================`);

@@ -214,8 +214,11 @@ platforms:
     category: ide
     description: "AI coding tool"
     installer:
-      target_dir: .trae/rules
-      template_type: trae
+      legacy_targets:
+        - .trae/rules
+      target_dir: .trae/skills
+      template_type: default
+      skill_format: true
 
   windsurf:
     name: "Windsurf"

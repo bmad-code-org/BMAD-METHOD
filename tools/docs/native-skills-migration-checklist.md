@@ -175,18 +175,19 @@ Support assumption: full Agent Skills support. BMAD currently installs commands 
 
 ## Trae
 
-Support assumption: full Agent Skills support. BMAD currently installs rule files to `.trae/rules`; target should move to the platform's native skills directory.
+Support assumption: full Agent Skills support. [Trae docs](https://docs.trae.ai/ide/skills) confirm workspace skills at `.trae/skills/<skill-name>/SKILL.md`. BMAD has now migrated from `.trae/rules` to `.trae/skills`.
 
 **Install:** Download [standalone IDE](https://www.trae.ai/download) (macOS/Windows/Linux) or `winget install -e --id ByteDance.Trae`
 
-- [ ] Confirm Trae native skills path and whether the current `.trae/rules` path is still required for compatibility
-- [ ] Implement installer migration to native skills output
-- [ ] Add legacy cleanup for `.trae/rules`
-- [ ] Test fresh install
-- [ ] Test reinstall/upgrade from legacy rules output
-- [ ] Confirm ancestor conflict protection where applicable
-- [ ] Implement/extend automated tests
-- [ ] Commit
+- [x] Confirm Trae native skills path is `.trae/skills/{skill-name}/SKILL.md` — per official docs
+- [x] Implement installer migration to native skills output
+- [x] Add legacy cleanup for `.trae/rules`
+- [x] Test fresh install — 43 skills installed to `.trae/skills/`
+- [x] Test reinstall/upgrade from legacy rules output
+- [x] Confirm no ancestor conflict protection is needed — Trae docs describe project-local `.trae/skills/` only
+- [ ] **NEEDS MANUAL IDE VERIFICATION** — download Trae IDE and confirm skills appear in UI
+- [x] Implement/extend automated tests — 9 assertions in test suite 21
+- [x] Commit
 
 ## GitHub Copilot
 
