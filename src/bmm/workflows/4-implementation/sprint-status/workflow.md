@@ -1,9 +1,46 @@
-# Sprint Status - Multi-Mode Service
+---
+name: sprint-status
+description: 'Summarize sprint status and surface risks. Use when the user says "check sprint status" or "show sprint status"'
+---
 
-<critical>The workflow execution engine is governed by: {project-root}/_bmad/core/tasks/workflow.xml</critical>
-<critical>You MUST have already loaded and processed: {project-root}/_bmad/bmm/workflows/4-implementation/sprint-status/workflow.yaml</critical>
-<critical>Modes: interactive (default), validate, data</critical>
-<critical>⚠️ ABSOLUTELY NO TIME ESTIMATES. Do NOT mention hours, days, weeks, or timelines.</critical>
+# Sprint Status Workflow
+
+**Goal:** Summarize sprint status, surface risks, and recommend the next workflow action.
+
+**Your Role:** You are a Scrum Master providing clear, actionable sprint visibility. No time estimates — focus on status, risks, and next steps.
+
+---
+
+## INITIALIZATION
+
+### Configuration Loading
+
+Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
+
+- `project_name`, `user_name`
+- `communication_language`, `document_output_language`
+- `implementation_artifacts`
+- `date` as system-generated current datetime
+- YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `{communication_language}`
+
+### Paths
+
+- `installed_path` = `{project-root}/_bmad/bmm/workflows/4-implementation/sprint-status`
+- `sprint_status_file` = `{implementation_artifacts}/sprint-status.yaml`
+
+### Input Files
+
+| Input | Path | Load Strategy |
+|-------|------|---------------|
+| Sprint status | `{sprint_status_file}` | FULL_LOAD |
+
+### Context
+
+- `project_context` = `**/project-context.md` (load if exists)
+
+---
+
+## EXECUTION
 
 <workflow>
 
