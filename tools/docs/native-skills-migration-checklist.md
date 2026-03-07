@@ -47,7 +47,7 @@ Support assumption: full Agent Skills support. BMAD currently installs legacy co
 - [x] Test fresh install
 - [x] Test reinstall/upgrade from legacy command output
 - [x] Confirm no ancestor conflict protection is needed because a child workspace surfaced child `.cursor/skills` entries but not a parent-only skill during manual verification
-- [ ] Implement/extend automated tests
+- [x] Implement/extend automated tests
 - [ ] Commit
 
 ## Windsurf
@@ -100,7 +100,7 @@ Support assumption: full Agent Skills support. BMAD currently installs commands 
 - [x] Test reinstall/upgrade from legacy command output
 - [x] Confirm no ancestor conflict protection is needed because local `auggie --workspace-root` repro showed child-local `.augment/skills` loading `child-only` but not parent `parent-only`
 - [x] Implement/extend automated tests
-- [ ] Commit
+- [x] Commit
 
 ## CodeBuddy
 
@@ -155,7 +155,7 @@ Support assumption: full Agent Skills support. BMAD currently splits output betw
 - [x] Test reinstall/upgrade from split legacy output
 - [x] Confirm ancestor conflict protection is required because local `opencode run` repros loaded both child-local `child-only` and ancestor `parent-only`, matching the docs that project-local skill discovery walks upward to the git worktree
 - [x] Implement/extend automated tests
-- [ ] Commit
+- [x] Commit
 
 ## Roo Code
 
@@ -170,7 +170,7 @@ Support assumption: full Agent Skills support. BMAD currently installs commands 
 - [ ] Test reinstall/upgrade from legacy command output
 - [x] Confirm no ancestor conflict protection is needed because manual Roo Code v3.51 verification showed child-local `child-only` skill loaded while parent-only skill was not inherited
 - [x] Implement/extend automated tests — 7 assertions in test suite 13
-- [ ] Commit
+- [x] Commit
 
 ## Trae
 

@@ -630,9 +630,58 @@ async function runTests() {
   console.log('');
 
   // ============================================================
-  // Test 13: Roo Code Native Skills Install
+  // Test 13: Cursor Native Skills Install
   // ============================================================
-  console.log(`${colors.yellow}Test Suite 13: Roo Code Native Skills${colors.reset}\n`);
+  console.log(`${colors.yellow}Test Suite 13: Cursor Native Skills${colors.reset}\n`);
+
+  try {
+    clearCache();
+    const platformCodes13 = await loadPlatformCodes();
+    const cursorInstaller = platformCodes13.platforms.cursor?.installer;
+
+    assert(cursorInstaller?.target_dir === '.cursor/skills', 'Cursor target_dir uses native skills path');
+
+    assert(cursorInstaller?.skill_format === true, 'Cursor installer enables native skill output');
+
+    assert(
+      Array.isArray(cursorInstaller?.legacy_targets) && cursorInstaller.legacy_targets.includes('.cursor/commands'),
+      'Cursor installer cleans legacy command output',
+    );
+
+    assert(!cursorInstaller?.ancestor_conflict_check, 'Cursor installer does not enable ancestor conflict checks');
+
+    const tempProjectDir13c = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-cursor-test-'));
+    const installedBmadDir13c = await createTestBmadFixture();
+    const legacyDir13c = path.join(tempProjectDir13c, '.cursor', 'commands');
+    await fs.ensureDir(legacyDir13c);
+    await fs.writeFile(path.join(legacyDir13c, 'bmad-legacy.md'), 'legacy\n');
+
+    const ideManager13c = new IdeManager();
+    await ideManager13c.ensureInitialized();
+    const result13c = await ideManager13c.setup('cursor', tempProjectDir13c, installedBmadDir13c, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+
+    assert(result13c.success === true, 'Cursor setup succeeds against temp project');
+
+    const skillFile13c = path.join(tempProjectDir13c, '.cursor', 'skills', 'bmad-master', 'SKILL.md');
+    assert(await fs.pathExists(skillFile13c), 'Cursor install writes SKILL.md directory output');
+
+    assert(!(await fs.pathExists(legacyDir13c)), 'Cursor setup removes legacy commands dir');
+
+    await fs.remove(tempProjectDir13c);
+    await fs.remove(installedBmadDir13c);
+  } catch (error) {
+    assert(false, 'Cursor native skills migration test succeeds', error.message);
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test 14: Roo Code Native Skills Install
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 14: Roo Code Native Skills${colors.reset}\n`);
 
   try {
     clearCache();
@@ -686,9 +735,9 @@ async function runTests() {
   console.log('');
 
   // ============================================================
-  // Test 14: OpenCode Ancestor Conflict
+  // Test 15: OpenCode Ancestor Conflict
   // ============================================================
-  console.log(`${colors.yellow}Test Suite 14: OpenCode Ancestor Conflict${colors.reset}\n`);
+  console.log(`${colors.yellow}Test Suite 15: OpenCode Ancestor Conflict${colors.reset}\n`);
 
   try {
     const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-opencode-ancestor-test-'));
@@ -725,9 +774,9 @@ async function runTests() {
   console.log('');
 
   // ============================================================
-  // Test 15: QA Agent Compilation
+  // Test 16: QA Agent Compilation
   // ============================================================
-  console.log(`${colors.yellow}Test Suite 15: QA Agent Compilation${colors.reset}\n`);
+  console.log(`${colors.yellow}Test Suite 16: QA Agent Compilation${colors.reset}\n`);
 
   try {
     const builder = new YamlXmlBuilder();
