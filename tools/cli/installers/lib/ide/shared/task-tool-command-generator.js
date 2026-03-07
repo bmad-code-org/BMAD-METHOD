@@ -50,6 +50,7 @@ class TaskToolCommandGenerator {
         displayName: task.displayName || task.name,
         description: task.description || `Execute ${task.displayName || task.name}`,
         module: task.module,
+        canonicalId: task.canonicalId || '',
         // Use forward slashes for cross-platform consistency (not path.join which uses backslashes on Windows)
         relativePath: `${task.module}/tasks/${task.name}${taskExt}`,
         path: taskPath,
@@ -75,6 +76,7 @@ class TaskToolCommandGenerator {
         displayName: tool.displayName || tool.name,
         description: tool.description || `Execute ${tool.displayName || tool.name}`,
         module: tool.module,
+        canonicalId: tool.canonicalId || '',
         // Use forward slashes for cross-platform consistency (not path.join which uses backslashes on Windows)
         relativePath: `${tool.module}/tools/${tool.name}${toolExt}`,
         path: toolPath,

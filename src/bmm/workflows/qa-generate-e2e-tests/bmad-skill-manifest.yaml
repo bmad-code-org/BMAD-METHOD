@@ -1,0 +1,3 @@
+canonicalId: bmad-qa-generate-e2e-tests
+type: workflow
+description: "Generate end-to-end automated tests for existing features"

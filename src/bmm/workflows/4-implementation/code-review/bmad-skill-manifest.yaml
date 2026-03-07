@@ -1,0 +1,3 @@
+canonicalId: bmad-code-review
+type: workflow
+description: "Perform adversarial code review finding specific issues"

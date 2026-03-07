@@ -1,5 +1,7 @@
+const os = require('node:os');
 const path = require('node:path');
 const fs = require('fs-extra');
+const yaml = require('yaml');
 const { BaseIdeSetup } = require('./_base-ide');
 const prompts = require('../../../lib/prompts');
 const { AgentCommandGenerator } = require('./shared/agent-command-generator');
@@ -24,6 +26,34 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
     super(platformCode, platformConfig.name, platformConfig.preferred);
     this.platformConfig = platformConfig;
     this.installerConfig = platformConfig.installer || null;
+
+    // Set configDir from target_dir so base-class detect() works
+    if (this.installerConfig?.target_dir) {
+      this.configDir = this.installerConfig.target_dir;
+    }
+  }
+
+  /**
+   * Detect whether this IDE already has configuration in the project.
+   * For skill_format platforms, checks for bmad-prefixed entries in target_dir
+   * (matching old codex.js behavior) instead of just checking directory existence.
+   * @param {string} projectDir - Project directory
+   * @returns {Promise<boolean>}
+   */
+  async detect(projectDir) {
+    if (this.installerConfig?.skill_format && this.configDir) {
+      const dir = path.join(projectDir || process.cwd(), this.configDir);
+      if (await fs.pathExists(dir)) {
+        try {
+          const entries = await fs.readdir(dir);
+          return entries.some((e) => typeof e === 'string' && e.startsWith('bmad'));
+        } catch {
+          return false;
+        }
+      }
+      return false;
+    }
+    return super.detect(projectDir);
   }
 
   /**
@@ -39,8 +69,8 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
       const conflict = await this.findAncestorConflict(projectDir);
       if (conflict) {
         await prompts.log.error(
-          `Found existing BMAD commands in ancestor installation: ${conflict}\n` +
-            `  ${this.name} inherits commands from parent directories, so this would cause duplicates.\n` +
+          `Found existing BMAD skills in ancestor installation: ${conflict}\n` +
+            `  ${this.name} inherits skills from parent directories, so this would cause duplicates.\n` +
             `  Please remove the BMAD files from that directory first:\n` +
             `    rm -rf "${conflict}"/bmad*`,
         );
@@ -165,8 +195,13 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
     for (const artifact of artifacts) {
       const content = this.renderTemplate(template, artifact);
       const filename = this.generateFilename(artifact, 'agent', extension);
-      const filePath = path.join(targetPath, filename);
-      await this.writeFile(filePath, content);
+
+      if (config.skill_format) {
+        await this.writeSkillFile(targetPath, artifact, content);
+      } else {
+        const filePath = path.join(targetPath, filename);
+        await this.writeFile(filePath, content);
+      }
       count++;
     }
 
@@ -198,8 +233,13 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
         const { content: template, extension } = await this.loadTemplate(workflowTemplateType, '', config, finalTemplateType);
         const content = this.renderTemplate(template, artifact);
         const filename = this.generateFilename(artifact, 'workflow', extension);
-        const filePath = path.join(targetPath, filename);
-        await this.writeFile(filePath, content);
+
+        if (config.skill_format) {
+          await this.writeSkillFile(targetPath, artifact, content);
+        } else {
+          const filePath = path.join(targetPath, filename);
+          await this.writeFile(filePath, content);
+        }
         count++;
       }
     }
@@ -241,8 +281,13 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
 
       const content = this.renderTemplate(template, artifact);
       const filename = this.generateFilename(artifact, artifact.type, extension);
-      const filePath = path.join(targetPath, filename);
-      await this.writeFile(filePath, content);
+
+      if (config.skill_format) {
+        await this.writeSkillFile(targetPath, artifact, content);
+      } else {
+        const filePath = path.join(targetPath, filename);
+        await this.writeFile(filePath, content);
+      }
 
       if (artifact.type === 'task') {
         taskCount++;
@@ -409,20 +454,144 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
       // No default
     }
 
-    let rendered = template
+    // Replace _bmad placeholder with actual folder name BEFORE inserting paths,
+    // so that paths containing '_bmad' are not corrupted by the blanket replacement.
+    let rendered = template.replaceAll('_bmad', this.bmadFolderName);
+
+    // Replace {{bmadFolderName}} placeholder if present
+    rendered = rendered.replaceAll('{{bmadFolderName}}', this.bmadFolderName);
+
+    rendered = rendered
       .replaceAll('{{name}}', artifact.name || '')
       .replaceAll('{{module}}', artifact.module || 'core')
       .replaceAll('{{path}}', pathToUse)
       .replaceAll('{{description}}', artifact.description || `${artifact.name} ${artifact.type || ''}`)
       .replaceAll('{{workflow_path}}', pathToUse);
 
-    // Replace _bmad placeholder with actual folder name
-    rendered = rendered.replaceAll('_bmad', this.bmadFolderName);
-
-    // Replace {{bmadFolderName}} placeholder if present
-    rendered = rendered.replaceAll('{{bmadFolderName}}', this.bmadFolderName);
-
     return rendered;
+  }
+
+  /**
+   * Write artifact as a skill directory with SKILL.md inside.
+   * Writes artifact as a skill directory with SKILL.md inside.
+   * @param {string} targetPath - Base skills directory
+   * @param {Object} artifact - Artifact data
+   * @param {string} content - Rendered template content
+   */
+  async writeSkillFile(targetPath, artifact, content) {
+    const { resolveSkillName } = require('./shared/path-utils');
+
+    // Get the skill name (prefers canonicalId, falls back to path-derived) and remove .md
+    const flatName = resolveSkillName(artifact);
+    const skillName = path.basename(flatName.replace(/\.md$/, ''));
+
+    if (!skillName) {
+      throw new Error(`Cannot derive skill name for artifact: ${artifact.relativePath || JSON.stringify(artifact)}`);
+    }
+
+    // Create skill directory
+    const skillDir = path.join(targetPath, skillName);
+    await this.ensureDir(skillDir);
+
+    // Transform content: rewrite frontmatter for skills format
+    const skillContent = this.transformToSkillFormat(content, skillName);
+
+    await this.writeFile(path.join(skillDir, 'SKILL.md'), skillContent);
+  }
+
+  /**
+   * Transform artifact content to Agent Skills format.
+   * Rewrites frontmatter to contain only unquoted name and description.
+   * @param {string} content - Original content with YAML frontmatter
+   * @param {string} skillName - Skill name (must match directory name)
+   * @returns {string} Transformed content
+   */
+  transformToSkillFormat(content, skillName) {
+    // Normalize line endings
+    content = content.replaceAll('\r\n', '\n').replaceAll('\r', '\n');
+
+    // Parse frontmatter
+    const fmMatch = content.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
+    if (!fmMatch) {
+      // No frontmatter -- wrap with minimal frontmatter
+      const fm = yaml.stringify({ name: skillName, description: skillName }).trimEnd();
+      return `---\n${fm}\n---\n\n${content}`;
+    }
+
+    const frontmatter = fmMatch[1];
+    const body = fmMatch[2];
+
+    // Parse frontmatter with yaml library to extract description
+    let description;
+    try {
+      const parsed = yaml.parse(frontmatter);
+      const rawDesc = parsed?.description;
+      description = typeof rawDesc === 'string' && rawDesc ? rawDesc : `${skillName} skill`;
+    } catch {
+      description = `${skillName} skill`;
+    }
+
+    // Build new frontmatter with only name and description, unquoted
+    const newFrontmatter = yaml.stringify({ name: skillName, description: String(description) }, { lineWidth: 0 }).trimEnd();
+    return `---\n${newFrontmatter}\n---\n${body}`;
+  }
+
+  /**
+   * Install a custom agent launcher.
+   * For skill_format platforms, produces <skillDir>/SKILL.md.
+   * For flat platforms, produces a single file in target_dir.
+   * @param {string} projectDir - Project directory
+   * @param {string} agentName - Agent name (e.g., "fred-commit-poet")
+   * @param {string} agentPath - Path to compiled agent (relative to project root)
+   * @param {Object} metadata - Agent metadata
+   * @returns {Object|null} Info about created file/skill
+   */
+  async installCustomAgentLauncher(projectDir, agentName, agentPath, metadata) {
+    if (!this.installerConfig?.target_dir) return null;
+
+    const { customAgentDashName } = require('./shared/path-utils');
+    const targetPath = path.join(projectDir, this.installerConfig.target_dir);
+    await this.ensureDir(targetPath);
+
+    // Build artifact to reuse existing template rendering.
+    // The default-agent template already includes the _bmad/ prefix before {{path}},
+    // but agentPath is relative to project root (e.g. "_bmad/custom/agents/fred.md").
+    // Strip the bmadFolderName prefix so the template doesn't produce a double path.
+    const bmadPrefix = this.bmadFolderName + '/';
+    const normalizedPath = agentPath.startsWith(bmadPrefix) ? agentPath.slice(bmadPrefix.length) : agentPath;
+
+    const artifact = {
+      type: 'agent-launcher',
+      name: agentName,
+      description: metadata?.description || `${agentName} agent`,
+      agentPath: normalizedPath,
+      relativePath: normalizedPath,
+      module: 'custom',
+    };
+
+    const { content: template } = await this.loadTemplate(
+      this.installerConfig.template_type || 'default',
+      'agent',
+      this.installerConfig,
+      'default-agent',
+    );
+    const content = this.renderTemplate(template, artifact);
+
+    if (this.installerConfig.skill_format) {
+      const skillName = customAgentDashName(agentName).replace(/\.md$/, '');
+      const skillDir = path.join(targetPath, skillName);
+      await this.ensureDir(skillDir);
+      const skillContent = this.transformToSkillFormat(content, skillName);
+      const skillPath = path.join(skillDir, 'SKILL.md');
+      await this.writeFile(skillPath, skillContent);
+      return { path: path.relative(projectDir, skillPath), command: `$${skillName}` };
+    }
+
+    // Flat file output
+    const filename = customAgentDashName(agentName);
+    const filePath = path.join(targetPath, filename);
+    await this.writeFile(filePath, content);
+    return { path: path.relative(projectDir, filePath), command: agentName };
   }
 
   /**
@@ -433,10 +602,11 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
    * @returns {string} Generated filename
    */
   generateFilename(artifact, artifactType, extension = '.md') {
-    const { toDashPath } = require('./shared/path-utils');
+    const { resolveSkillName } = require('./shared/path-utils');
 
     // Reuse central logic to ensure consistent naming conventions
-    const standardName = toDashPath(artifact.relativePath);
+    // Prefers canonicalId from manifest when available, falls back to path-derived name
+    const standardName = resolveSkillName(artifact);
 
     // Clean up potential double extensions from source files (e.g. .yaml.md, .xml.md -> .md)
     // This handles any extensions that might slip through toDashPath()
@@ -476,8 +646,12 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
     if (this.installerConfig?.legacy_targets) {
       if (!options.silent) await prompts.log.message('  Migrating legacy directories...');
       for (const legacyDir of this.installerConfig.legacy_targets) {
-        await this.cleanupTarget(projectDir, legacyDir, options);
-        await this.removeEmptyParents(projectDir, legacyDir);
+        if (this.isGlobalPath(legacyDir)) {
+          await this.warnGlobalLegacy(legacyDir, options);
+        } else {
+          await this.cleanupTarget(projectDir, legacyDir, options);
+          await this.removeEmptyParents(projectDir, legacyDir);
+        }
       }
     }
 
@@ -498,6 +672,41 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
       }
     } else if (this.installerConfig?.target_dir) {
       await this.cleanupTarget(projectDir, this.installerConfig.target_dir, options);
+    }
+  }
+
+  /**
+   * Check if a path is global (starts with ~ or is absolute)
+   * @param {string} p - Path to check
+   * @returns {boolean}
+   */
+  isGlobalPath(p) {
+    return p.startsWith('~') || path.isAbsolute(p);
+  }
+
+  /**
+   * Warn about stale BMAD files in a global legacy directory (never auto-deletes)
+   * @param {string} legacyDir - Legacy directory path (may start with ~)
+   * @param {Object} options - Options (silent, etc.)
+   */
+  async warnGlobalLegacy(legacyDir, options = {}) {
+    try {
+      const expanded = legacyDir.startsWith('~/')
+        ? path.join(os.homedir(), legacyDir.slice(2))
+        : legacyDir === '~'
+          ? os.homedir()
+          : legacyDir;
+
+      if (!(await fs.pathExists(expanded))) return;
+
+      const entries = await fs.readdir(expanded);
+      const bmadFiles = entries.filter((e) => typeof e === 'string' && e.startsWith('bmad'));
+
+      if (bmadFiles.length > 0 && !options.silent) {
+        await prompts.log.warn(`Found ${bmadFiles.length} stale BMAD file(s) in ${expanded}. Remove manually: rm ${expanded}/bmad-*`);
+      }
+    } catch {
+      // Errors reading global paths are silently ignored
     }
   }
 

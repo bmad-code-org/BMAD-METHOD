@@ -20,8 +20,11 @@ platforms:
     category: ide
     description: "Google's AI development environment"
     installer:
-      target_dir: .agent/workflows
+      legacy_targets:
+        - .agent/workflows
+      target_dir: .agent/skills
       template_type: antigravity
+      skill_format: true
 
   auggie:
     name: "Auggie"
@@ -29,8 +32,11 @@ platforms:
     category: cli
     description: "AI development tool"
     installer:
-      target_dir: .augment/commands
+      legacy_targets:
+        - .augment/commands
+      target_dir: .augment/skills
       template_type: default
+      skill_format: true
 
   claude-code:
     name: "Claude Code"
@@ -38,8 +44,11 @@ platforms:
     category: cli
     description: "Anthropic's official CLI for Claude"
     installer:
-      target_dir: .claude/commands
+      legacy_targets:
+        - .claude/commands
+      target_dir: .claude/skills
       template_type: default
+      skill_format: true
       ancestor_conflict_check: true
 
   cline:
@@ -56,7 +65,15 @@ platforms:
     preferred: false
     category: cli
     description: "OpenAI Codex integration"
-    # No installer config - uses custom codex.js
+    installer:
+      legacy_targets:
+        - .codex/prompts
+        - ~/.codex/prompts
+      target_dir: .agents/skills
+      template_type: default
+      skill_format: true
+      ancestor_conflict_check: true
+      artifact_types: [agents, workflows, tasks]
 
   codebuddy:
     name: "CodeBuddy"
@@ -82,8 +99,11 @@ platforms:
     category: ide
     description: "AI-first code editor"
     installer:
-      target_dir: .cursor/commands
+      legacy_targets:
+        - .cursor/commands
+      target_dir: .cursor/skills
       template_type: default
+      skill_format: true
 
   gemini:
     name: "Gemini CLI"
@@ -123,8 +143,11 @@ platforms:
     category: ide
     description: "Amazon's AI-powered IDE"
     installer:
-      target_dir: .kiro/steering
+      legacy_targets:
+        - .kiro/steering
+      target_dir: .kiro/skills
       template_type: kiro
+      skill_format: true
 
   opencode:
     name: "OpenCode"
@@ -133,15 +156,14 @@ platforms:
     description: "OpenCode terminal coding assistant"
     installer:
       legacy_targets:
+        - .opencode/agents
+        - .opencode/commands
         - .opencode/agent
         - .opencode/command
-      targets:
-        - target_dir: .opencode/agents
-          template_type: opencode
-          artifact_types: [agents]
-        - target_dir: .opencode/commands
-          template_type: opencode
-          artifact_types: [workflows, tasks, tools]
+      target_dir: .opencode/skills
+      template_type: opencode
+      skill_format: true
+      ancestor_conflict_check: true
 
   qwen:
     name: "QwenCoder"
@@ -183,8 +205,11 @@ platforms:
     category: ide
     description: "AI-powered IDE with cascade flows"
     installer:
-      target_dir: .windsurf/workflows
+      legacy_targets:
+        - .windsurf/workflows
+      target_dir: .windsurf/skills
       template_type: windsurf
+      skill_format: true
 
 # ============================================================================
 # Installer Config Schema
@@ -203,9 +228,11 @@ platforms:
 #       artifact_types: [agents, workflows, tasks, tools]
 #   artifact_types: array (optional)      # Filter which artifacts to install (default: all)
 #   skip_existing: boolean (optional)     # Skip files that already exist (default: false)
+#   skill_format: boolean (optional)   # Use directory-per-skill output: <name>/SKILL.md
+#                                     # with clean frontmatter (name + description, unquoted)
 #   ancestor_conflict_check: boolean (optional) # Refuse install when ancestor dir has BMAD files
 #                                                # in the same target_dir (for IDEs that inherit
-#                                                # commands from parent directories)
+#                                                # skills from parent directories)
 
 # ============================================================================
 # Platform Categories
