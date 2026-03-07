@@ -1,0 +1,14 @@
+workflow-create-prd.md:
+  canonicalId: bmad-bmm-create-prd
+  type: workflow
+  description: "Create a PRD from scratch"
+
+workflow-edit-prd.md:
+  canonicalId: bmad-bmm-edit-prd
+  type: workflow
+  description: "Edit an existing PRD"
+
+workflow-validate-prd.md:
+  canonicalId: bmad-bmm-validate-prd
+  type: workflow
+  description: "Validate a PRD against standards"
