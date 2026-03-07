@@ -50,7 +50,7 @@ platforms:
     description: "AI development tool"
 
   roo:
-    name: "Roo Cline"
+    name: "Roo Code"
     preferred: false
     category: ide
     description: "Enhanced Cline fork"

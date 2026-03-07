@@ -713,9 +713,29 @@ class Installer {
       }
 
       // Merge tool selection into config (for both quick update and regular flow)
-      config.ides = toolSelection.ides;
+      // Normalize IDE keys to lowercase so they match handler map keys consistently
+      config.ides = (toolSelection.ides || []).map((ide) => ide.toLowerCase());
       config.skipIde = toolSelection.skipIde;
       const ideConfigurations = toolSelection.configurations;
+
+      // Early check: fail fast if ALL selected IDEs are suspended
+      if (config.ides && config.ides.length > 0) {
+        await this.ideManager.ensureInitialized();
+        const suspendedIdes = config.ides.filter((ide) => {
+          const handler = this.ideManager.handlers.get(ide);
+          return handler?.platformConfig?.suspended;
+        });
+
+        if (suspendedIdes.length > 0 && suspendedIdes.length === config.ides.length) {
+          for (const ide of suspendedIdes) {
+            const handler = this.ideManager.handlers.get(ide);
+            await prompts.log.error(`${handler.displayName || ide}: ${handler.platformConfig.suspended}`);
+          }
+          throw new Error(
+            `All selected tool(s) are suspended: ${suspendedIdes.join(', ')}. Installation aborted to prevent upgrading _bmad/ without a working IDE configuration.`,
+          );
+        }
+      }
 
       // Detect IDEs that were previously installed but are NOT in the new selection (to be removed)
       if (config._isUpdate && config._existingInstall) {
@@ -1335,6 +1355,19 @@ class Installer {
       } catch {
         // Ensure the original error is never swallowed by a logging failure
       }
+
+      // Clean up any temp backup directories that were created before the failure
+      try {
+        if (config._tempBackupDir && (await fs.pathExists(config._tempBackupDir))) {
+          await fs.remove(config._tempBackupDir);
+        }
+        if (config._tempModifiedBackupDir && (await fs.pathExists(config._tempModifiedBackupDir))) {
+          await fs.remove(config._tempModifiedBackupDir);
+        }
+      } catch {
+        // Best-effort cleanup — don't mask the original error
+      }
+
       throw error;
     }
   }
