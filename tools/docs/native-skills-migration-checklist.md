@@ -104,18 +104,18 @@ Support assumption: full Agent Skills support. BMAD currently installs commands 
 
 ## CodeBuddy
 
-Support assumption: full Agent Skills support. BMAD currently installs commands to `.codebuddy/commands`; target should move to `.codebuddy/skills`.
+Support assumption: full Agent Skills support. CodeBuddy docs confirm workspace skills at `.codebuddy/skills/<skill-name>/SKILL.md` and global skills at `~/.codebuddy/commands/`. BMAD has now migrated from `.codebuddy/commands` to `.codebuddy/skills`.
 
 **Install:** Download [Tencent CodeBuddy IDE](https://codebuddyide.net/) or install as VS Code extension `CodebuddyAI.codebuddy-ai`
 
-- [ ] Confirm CodeBuddy native skills path and any naming/frontmatter requirements
-- [ ] Implement installer migration to native skills output
-- [ ] Add legacy cleanup for `.codebuddy/commands`
-- [ ] Test fresh install
-- [ ] Test reinstall/upgrade from legacy command output
-- [ ] Confirm ancestor conflict protection where applicable
-- [ ] Implement/extend automated tests
-- [ ] Commit
+- [x] Confirm CodeBuddy native skills path is `.codebuddy/skills/{skill-name}/SKILL.md` with YAML frontmatter (name + description) — per docs, not IDE-verified
+- [x] Implement installer migration to native skills output
+- [x] Add legacy cleanup for `.codebuddy/commands`
+- [x] Test fresh install — 43 skills installed to `.codebuddy/skills/` (installer output only)
+- [x] Test reinstall/upgrade from legacy command output
+- [ ] **NEEDS MANUAL IDE VERIFICATION** — requires Tencent Cloud account; confirm skills appear in UI and test ancestor inheritance
+- [x] Implement/extend automated tests — 9 assertions in test suite 19
+- [x] Commit
 
 ## Crush
 

@@ -956,6 +956,66 @@ async function runTests() {
   console.log('');
 
   // ============================================================
+  // Test 19: CodeBuddy Native Skills Install
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 19: CodeBuddy Native Skills${colors.reset}\n`);
+
+  try {
+    clearCache();
+    const platformCodes19 = await loadPlatformCodes();
+    const codebuddyInstaller = platformCodes19.platforms.codebuddy?.installer;
+
+    assert(codebuddyInstaller?.target_dir === '.codebuddy/skills', 'CodeBuddy target_dir uses native skills path');
+
+    assert(codebuddyInstaller?.skill_format === true, 'CodeBuddy installer enables native skill output');
+
+    assert(
+      Array.isArray(codebuddyInstaller?.legacy_targets) && codebuddyInstaller.legacy_targets.includes('.codebuddy/commands'),
+      'CodeBuddy installer cleans legacy command output',
+    );
+
+    const tempProjectDir19 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-codebuddy-test-'));
+    const installedBmadDir19 = await createTestBmadFixture();
+    const legacyDir19 = path.join(tempProjectDir19, '.codebuddy', 'commands', 'bmad-legacy-dir');
+    await fs.ensureDir(legacyDir19);
+    await fs.writeFile(path.join(tempProjectDir19, '.codebuddy', 'commands', 'bmad-legacy.md'), 'legacy\n');
+    await fs.writeFile(path.join(legacyDir19, 'SKILL.md'), 'legacy\n');
+
+    const ideManager19 = new IdeManager();
+    await ideManager19.ensureInitialized();
+    const result19 = await ideManager19.setup('codebuddy', tempProjectDir19, installedBmadDir19, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+
+    assert(result19.success === true, 'CodeBuddy setup succeeds against temp project');
+
+    const skillFile19 = path.join(tempProjectDir19, '.codebuddy', 'skills', 'bmad-master', 'SKILL.md');
+    assert(await fs.pathExists(skillFile19), 'CodeBuddy install writes SKILL.md directory output');
+
+    const skillContent19 = await fs.readFile(skillFile19, 'utf8');
+    const nameMatch19 = skillContent19.match(/^name:\s*(.+)$/m);
+    assert(nameMatch19 && nameMatch19[1].trim() === 'bmad-master', 'CodeBuddy skill name frontmatter matches directory name exactly');
+
+    assert(!(await fs.pathExists(path.join(tempProjectDir19, '.codebuddy', 'commands'))), 'CodeBuddy setup removes legacy commands dir');
+
+    const result19b = await ideManager19.setup('codebuddy', tempProjectDir19, installedBmadDir19, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+
+    assert(result19b.success === true, 'CodeBuddy reinstall/upgrade succeeds over existing skills');
+    assert(await fs.pathExists(skillFile19), 'CodeBuddy reinstall preserves SKILL.md output');
+
+    await fs.remove(tempProjectDir19);
+    await fs.remove(installedBmadDir19);
+  } catch (error) {
+    assert(false, 'CodeBuddy native skills migration test succeeds', error.message);
+  }
+
+  console.log('');
+
+  // ============================================================
   // Summary
   // ============================================================
   console.log(`${colors.cyan}========================================`);

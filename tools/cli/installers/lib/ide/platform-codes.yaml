@@ -84,8 +84,11 @@ platforms:
     category: ide
     description: "Tencent Cloud Code Assistant - AI-powered coding companion"
     installer:
-      target_dir: .codebuddy/commands
+      legacy_targets:
+        - .codebuddy/commands
+      target_dir: .codebuddy/skills
       template_type: default
+      skill_format: true
 
   crush:
     name: "Crush"
