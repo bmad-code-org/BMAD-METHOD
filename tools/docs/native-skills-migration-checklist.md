@@ -205,22 +205,17 @@ Support assumption: full Agent Skills support. BMAD currently uses a custom inst
 - [x] Implement/extend automated tests — 11 assertions in test suite 17 including marker cleanup
 - [x] Commit
 
-## KiloCoder
+## KiloCoder — SUSPENDED
 
-Support assumption: full Agent Skills support. BMAD currently uses a custom installer that writes `.kilocodemodes` and `.kilocode/workflows`; target should move to native skills output.
+**Status: Kilo Code does not support the Agent Skills standard.** The original migration assumed skills support because Kilo forked from Roo Code, but manual IDE verification confirmed Kilo has not merged that feature. BMAD support is paused until Kilo implements skills.
 
 **Install:** VS Code extension `kilocode.kilo-code` — search "Kilo Code" in Extensions or `code --install-extension kilocode.kilo-code`
 
-- [x] Confirm KiloCoder native skills path is `.kilocode/skills/{skill-name}/SKILL.md` (Kilo forked from Roo Code which uses `.roo/skills/`)
-- [x] Design the migration away from modes plus workflow markdown — replaced 269-line custom kilo.js with config-driven installer entry in platform-codes.yaml
-- [x] Implement native skills output — target_dir `.kilocode/skills`, skill_format true, template_type default
-- [x] Add legacy cleanup for `.kilocode/workflows` (via legacy_targets) and BMAD-owned entries in `.kilocodemodes` (via `cleanupKiloModes()` in `_config-driven.js`, same pattern as `copilot-instructions.md` cleanup)
-- [x] Test fresh install — skills written to `.kilocode/skills/bmad-master/SKILL.md` with correct frontmatter
-- [x] Test reinstall/upgrade from legacy custom installer output — legacy workflows removed, skills installed
-- [x] Confirm no ancestor conflict protection is needed — Kilo Code (like Cline) only scans workspace-local `.kilocode/skills/`, no ancestor directory inheritance
-- [x] Implement/extend automated tests — 11 assertions in test suite 22 (config, fresh install, legacy cleanup, .kilocodemodes cleanup, reinstall)
-- [ ] **NEEDS MANUAL IDE VERIFICATION** — install Kilo Code extension and confirm skills appear in UI and can be triggered
-- [ ] Commit
+- [x] ~~Confirm KiloCoder native skills path~~ — **FALSE**: assumed from Roo Code fork, not verified. Manual testing showed no skills support in the IDE
+- [x] Config and installer code retained in platform-codes.yaml with `suspended` flag — hidden from IDE picker, setup blocked with explanation
+- [x] Installer fails early (before writing `_bmad/`) if Kilo is the only selected IDE, protecting existing installations
+- [x] Legacy cleanup still runs for `.kilocode/workflows` and `.kilocodemodes` when users switch to a different IDE
+- [x] Automated tests — 7 assertions in suite 22 (suspended config, hidden from picker, setup blocked, no files written, legacy cleanup)
 
 ## Gemini CLI
 
