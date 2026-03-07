@@ -36,7 +36,7 @@ Run `/bmad:bmm:workflows:sprint-planning` to generate it, then rerun sprint-stat
 
 <step n="2" goal="Read and parse sprint-status.yaml">
   <action>Read the FULL file: {sprint_status_file}</action>
-  <action>Parse fields: generated, project, project_key, tracking_system, story_location</action>
+  <action>Parse fields: generated, last_updated, project, project_key, tracking_system, story_location</action>
   <action>Parse development_status map. Classify keys:</action>
   - Epics: keys starting with "epic-" (and not ending with "-retrospective")
   - Retrospectives: keys ending with "-retrospective"
@@ -84,7 +84,7 @@ Enter corrections (e.g., "1=in-progress, 2=backlog") or "skip" to continue witho
 - IF any story has status "review": suggest `/bmad:bmm:workflows:code-review`
 - IF any story has status "in-progress" AND no stories have status "ready-for-dev": recommend staying focused on active story
 - IF all epics have status "backlog" AND no stories have status "ready-for-dev": prompt `/bmad:bmm:workflows:create-story`
-- IF `generated` timestamp is more than 7 days old: warn "sprint-status.yaml may be stale"
+- IF `last_updated` timestamp is more than 7 days old (or `last_updated` is missing, fall back to `generated`): warn "sprint-status.yaml may be stale"
 - IF any story key doesn't match an epic pattern (e.g., story "5-1-..." but no "epic-5"): warn "orphaned story detected"
 - IF any epic has status in-progress but has no associated stories: warn "in-progress epic has no stories"
   </step>
@@ -195,7 +195,7 @@ If the command targets a story, set `story_key={{next_story_id}}` when prompted.
 
 <action>Read and parse {sprint_status_file}</action>
 
-<action>Validate required metadata fields exist: generated, project, project_key, tracking_system, story_location</action>
+<action>Validate required metadata fields exist: generated, project, project_key, tracking_system, story_location (last_updated is optional for backward compatibility)</action>
 <check if="any required field missing">
 <template-output>is_valid = false</template-output>
 <template-output>error = "Missing required field(s): {{missing_fields}}"</template-output>
