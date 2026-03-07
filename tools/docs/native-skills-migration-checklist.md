@@ -221,6 +221,21 @@ Support assumption: full Agent Skills support. BMAD currently uses a custom inst
 - [x] Implement/extend automated tests — 11 assertions in test suite 22 (config, fresh install, legacy cleanup, .kilocodemodes cleanup, reinstall)
 - [ ] Commit
 
+## Gemini CLI
+
+Support assumption: full Agent Skills support. Gemini CLI docs confirm workspace skills at `.gemini/skills/` and user skills at `~/.gemini/skills/`. Also discovers `.agents/skills/` as an alias. BMAD previously installed TOML files to `.gemini/commands`.
+
+**Install:** `npm install -g @anthropic-ai/gemini-cli` or see [geminicli.com](https://geminicli.com)
+
+- [x] Confirm Gemini CLI native skills path is `.gemini/skills/{skill-name}/SKILL.md` (per [geminicli.com/docs/cli/skills](https://geminicli.com/docs/cli/skills/))
+- [x] Implement native skills output — target_dir `.gemini/skills`, skill_format true, template_type default (replaces TOML templates)
+- [x] Add legacy cleanup for `.gemini/commands` (via `legacy_targets`)
+- [x] Test fresh install — skills written to `.gemini/skills/bmad-master/SKILL.md` with correct frontmatter
+- [x] Test reinstall/upgrade from legacy TOML command output — legacy dir removed, skills installed
+- [x] Confirm no ancestor conflict protection is needed — Gemini CLI uses workspace > user > extension precedence, no ancestor directory inheritance
+- [x] Implement/extend automated tests — 9 assertions in test suite 23 (config, fresh install, legacy cleanup, reinstall)
+- [ ] Commit
+
 ## Summary Gates
 
 - [ ] All full-support BMAD platforms install `SKILL.md` directory-based output

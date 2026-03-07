@@ -120,8 +120,11 @@ platforms:
     category: cli
     description: "Google's CLI for Gemini"
     installer:
-      target_dir: .gemini/commands
-      template_type: gemini
+      legacy_targets:
+        - .gemini/commands
+      target_dir: .gemini/skills
+      template_type: default
+      skill_format: true
 
   github-copilot:
     name: "GitHub Copilot"

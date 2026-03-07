@@ -1216,6 +1216,65 @@ async function runTests() {
   console.log('');
 
   // ============================================================
+  // Suite 23: Gemini CLI Native Skills
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 23: Gemini CLI Native Skills${colors.reset}\n`);
+
+  try {
+    clearCache();
+    const platformCodes23 = await loadPlatformCodes();
+    const geminiInstaller = platformCodes23.platforms.gemini?.installer;
+
+    assert(geminiInstaller?.target_dir === '.gemini/skills', 'Gemini target_dir uses native skills path');
+
+    assert(geminiInstaller?.skill_format === true, 'Gemini installer enables native skill output');
+
+    assert(
+      Array.isArray(geminiInstaller?.legacy_targets) && geminiInstaller.legacy_targets.includes('.gemini/commands'),
+      'Gemini installer cleans legacy commands output',
+    );
+
+    const tempProjectDir23 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-gemini-test-'));
+    const installedBmadDir23 = await createTestBmadFixture();
+    const legacyDir23 = path.join(tempProjectDir23, '.gemini', 'commands');
+    await fs.ensureDir(legacyDir23);
+    await fs.writeFile(path.join(legacyDir23, 'bmad-legacy.toml'), 'legacy\n');
+
+    const ideManager23 = new IdeManager();
+    await ideManager23.ensureInitialized();
+    const result23 = await ideManager23.setup('gemini', tempProjectDir23, installedBmadDir23, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+
+    assert(result23.success === true, 'Gemini setup succeeds against temp project');
+
+    const skillFile23 = path.join(tempProjectDir23, '.gemini', 'skills', 'bmad-master', 'SKILL.md');
+    assert(await fs.pathExists(skillFile23), 'Gemini install writes SKILL.md directory output');
+
+    const skillContent23 = await fs.readFile(skillFile23, 'utf8');
+    const nameMatch23 = skillContent23.match(/^name:\s*(.+)$/m);
+    assert(nameMatch23 && nameMatch23[1].trim() === 'bmad-master', 'Gemini skill name frontmatter matches directory name exactly');
+
+    assert(!(await fs.pathExists(path.join(tempProjectDir23, '.gemini', 'commands'))), 'Gemini setup removes legacy commands dir');
+
+    const result23b = await ideManager23.setup('gemini', tempProjectDir23, installedBmadDir23, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+
+    assert(result23b.success === true, 'Gemini reinstall/upgrade succeeds over existing skills');
+    assert(await fs.pathExists(skillFile23), 'Gemini reinstall preserves SKILL.md output');
+
+    await fs.remove(tempProjectDir23);
+    await fs.remove(installedBmadDir23);
+  } catch (error) {
+    assert(false, 'Gemini native skills migration test succeeds', error.message);
+  }
+
+  console.log('');
+
+  // ============================================================
   // Summary
   // ============================================================
   console.log(`${colors.cyan}========================================`);
