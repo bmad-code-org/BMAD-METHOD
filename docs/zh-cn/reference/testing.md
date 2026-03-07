@@ -1,5 +1,5 @@
 ---
-title: 测试选项
+title: "测试选项"
 description: 比较内置 QA 智能体（Quinn）与测试架构师（TEA）模块的测试自动化。
 sidebar:
   order: 5

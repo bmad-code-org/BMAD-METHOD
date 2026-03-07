@@ -1,5 +1,5 @@
 ---
-title: 智能体
+title: "智能体"
 description: 默认 BMM 智能体及其菜单触发器和主要工作流
 sidebar:
   order: 2
