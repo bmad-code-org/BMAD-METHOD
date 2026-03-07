@@ -8,7 +8,7 @@ const prompts = require('../../../lib/prompts');
  * Dynamically discovers and loads IDE handlers
  *
  * Loading strategy:
- * 1. Custom installer files (github-copilot.js, kilo.js, rovodev.js) - for platforms with unique installation logic
+ * 1. Custom installer files (kilo.js, rovodev.js) - for platforms with unique installation logic
  * 2. Config-driven handlers (from platform-codes.yaml) - for standard IDE installation patterns
  */
 class IdeManager {
@@ -44,7 +44,7 @@ class IdeManager {
 
   /**
    * Dynamically load all IDE handlers
-   * 1. Load custom installer files first (github-copilot.js, kilo.js, rovodev.js)
+   * 1. Load custom installer files first (kilo.js, rovodev.js)
    * 2. Load config-driven handlers from platform-codes.yaml
    */
   async loadHandlers() {
@@ -58,11 +58,11 @@ class IdeManager {
   /**
    * Load custom installer files (unique installation logic)
    * These files have special installation patterns that don't fit the config-driven model
-   * Note: codex was migrated to config-driven (platform-codes.yaml) and no longer needs a custom installer
+   * Note: codex and github-copilot were migrated to config-driven (platform-codes.yaml)
    */
   async loadCustomInstallerFiles() {
     const ideDir = __dirname;
-    const customFiles = ['github-copilot.js', 'kilo.js', 'rovodev.js'];
+    const customFiles = ['kilo.js', 'rovodev.js'];
 
     for (const file of customFiles) {
       const filePath = path.join(ideDir, file);

@@ -655,6 +655,11 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
       }
     }
 
+    // Strip BMAD markers from copilot-instructions.md if present
+    if (this.name === 'github-copilot') {
+      await this.cleanupCopilotInstructions(projectDir, options);
+    }
+
     // Clean all target directories
     if (this.installerConfig?.targets) {
       const parentDirs = new Set();
@@ -768,6 +773,40 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
       }
     }
   }
+  /**
+   * Strip BMAD-owned content from .github/copilot-instructions.md.
+   * The old custom installer injected content between <!-- BMAD:START --> and <!-- BMAD:END --> markers.
+   * Deletes the file if nothing remains. Restores .bak backup if one exists.
+   */
+  async cleanupCopilotInstructions(projectDir, options = {}) {
+    const filePath = path.join(projectDir, '.github', 'copilot-instructions.md');
+
+    if (!(await fs.pathExists(filePath))) return;
+
+    const content = await fs.readFile(filePath, 'utf8');
+    const startIdx = content.indexOf('<!-- BMAD:START -->');
+    const endIdx = content.indexOf('<!-- BMAD:END -->');
+
+    if (startIdx === -1 || endIdx === -1 || endIdx <= startIdx) return;
+
+    const cleaned = content.slice(0, startIdx) + content.slice(endIdx + '<!-- BMAD:END -->'.length);
+
+    if (cleaned.trim().length === 0) {
+      await fs.remove(filePath);
+      const backupPath = `${filePath}.bak`;
+      if (await fs.pathExists(backupPath)) {
+        await fs.rename(backupPath, filePath);
+        if (!options.silent) await prompts.log.message('  Restored copilot-instructions.md from backup');
+      }
+    } else {
+      await fs.writeFile(filePath, cleaned, 'utf8');
+      const backupPath = `${filePath}.bak`;
+      if (await fs.pathExists(backupPath)) await fs.remove(backupPath);
+    }
+
+    if (!options.silent) await prompts.log.message('  Cleaned BMAD markers from copilot-instructions.md');
+  }
+
   /**
    * Check ancestor directories for existing BMAD files in the same target_dir.
    * IDEs like Claude Code inherit commands from parent directories, so an existing

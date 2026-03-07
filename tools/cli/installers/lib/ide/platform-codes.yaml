@@ -119,7 +119,13 @@ platforms:
     preferred: false
     category: ide
     description: "GitHub's AI pair programmer"
-    # No installer config - uses custom github-copilot.js
+    installer:
+      legacy_targets:
+        - .github/agents
+        - .github/prompts
+      target_dir: .github/skills
+      template_type: default
+      skill_format: true
 
   iflow:
     name: "iFlow"

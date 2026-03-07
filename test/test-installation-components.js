@@ -846,6 +846,13 @@ async function runTests() {
     await fs.writeFile(path.join(legacyAgentsDir17, 'bmad-legacy.agent.md'), 'legacy agent\n');
     await fs.writeFile(path.join(legacyPromptsDir17, 'bmad-legacy.prompt.md'), 'legacy prompt\n');
 
+    // Create legacy copilot-instructions.md with BMAD markers
+    const copilotInstructionsPath17 = path.join(tempProjectDir17, '.github', 'copilot-instructions.md');
+    await fs.writeFile(
+      copilotInstructionsPath17,
+      'User content before\n<!-- BMAD:START -->\nBMAD generated content\n<!-- BMAD:END -->\nUser content after\n',
+    );
+
     const ideManager17 = new IdeManager();
     await ideManager17.ensureInitialized();
     const result17 = await ideManager17.setup('github-copilot', tempProjectDir17, installedBmadDir17, {
@@ -866,6 +873,17 @@ async function runTests() {
     assert(!(await fs.pathExists(legacyAgentsDir17)), 'GitHub Copilot setup removes legacy agents dir');
 
     assert(!(await fs.pathExists(legacyPromptsDir17)), 'GitHub Copilot setup removes legacy prompts dir');
+
+    // Verify copilot-instructions.md BMAD markers were stripped but user content preserved
+    const cleanedInstructions17 = await fs.readFile(copilotInstructionsPath17, 'utf8');
+    assert(
+      !cleanedInstructions17.includes('BMAD:START') && !cleanedInstructions17.includes('BMAD generated content'),
+      'GitHub Copilot setup strips BMAD markers from copilot-instructions.md',
+    );
+    assert(
+      cleanedInstructions17.includes('User content before') && cleanedInstructions17.includes('User content after'),
+      'GitHub Copilot setup preserves user content in copilot-instructions.md',
+    );
 
     await fs.remove(tempProjectDir17);
     await fs.remove(installedBmadDir17);
