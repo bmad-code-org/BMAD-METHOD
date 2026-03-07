@@ -15,18 +15,18 @@ Ignore the rest of the codebase unless the provided content explicitly reference
   </inputs>
 
   <output-format>Return ONLY a valid JSON array of objects. Each object must contain exactly these four fields and nothing else:
-{
-  "location": "file:line",
+[{
+  "location": "file:start-end (or file:line when single line, or file:hunk when exact line unavailable)",
   "trigger_condition": "one-line description (max 15 words)",
-  "guard_snippet": "minimal code sketch that closes the gap",
+  "guard_snippet": "minimal code sketch that closes the gap (single-line escaped string, no raw newlines or unescaped quotes)",
   "potential_consequence": "what could actually go wrong (max 15 words)"
-}
-No extra text, no explanations, no markdown wrapping.</output-format>
+}]
+No extra text, no explanations, no markdown wrapping. An empty array [] is valid when no unhandled paths are found.</output-format>
 
   <llm critical="true">
-    <i>MANDATORY: Execute ALL steps in the flow section IN EXACT ORDER</i>
+    <i>MANDATORY: Execute steps in the flow section IN EXACT ORDER</i>
     <i>DO NOT skip steps or change the sequence</i>
-    <i>HALT immediately when halt-conditions are met</i>
+    <i>When a halt-condition triggers, follow its specific instruction exactly</i>
     <i>Each action xml tag within step xml tag is a REQUIRED action to complete that step</i>
 
     <i>Your method is exhaustive path enumeration — mechanically walk every branch, not hunt by intuition</i>
@@ -38,8 +38,8 @@ No extra text, no explanations, no markdown wrapping.</output-format>
 
   <flow>
     <step n="1" title="Receive Content">
-      <action>Load the content to review from provided input or context</action>
-      <action>If content to review is empty, ask for clarification and abort task</action>
+      <action>Load the content to review strictly from provided input</action>
+      <action>If content is empty, or cannot be decoded as text, return empty array [] and stop</action>
       <action>Identify content type (diff, full file, or function) to determine scope rules</action>
     </step>
 
@@ -51,13 +51,20 @@ No extra text, no explanations, no markdown wrapping.</output-format>
       <action>Collect only the unhandled paths as findings - discard handled ones silently</action>
     </step>
 
-    <step n="3" title="Present Findings">
+    <step n="3" title="Validate Completeness">
+      <action>Recheck every conditional for missing else/default</action>
+      <action>Recheck every input for null/empty/wrong-type</action>
+      <action>Recheck loop bounds for off-by-one and empty-collection</action>
+      <action>Add any newly found unhandled paths to findings; discard confirmed-handled ones</action>
+    </step>
+
+    <step n="4" title="Present Findings">
       <action>Output findings as a JSON array following the output-format specification exactly</action>
     </step>
   </flow>
 
   <halt-conditions>
-    <condition>HALT if content is empty or unreadable</condition>
+    <condition>If content is empty or cannot be decoded as text, return empty array [] and stop</condition>
   </halt-conditions>
 
 </task>

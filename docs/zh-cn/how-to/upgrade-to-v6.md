@@ -22,7 +22,7 @@ sidebar:
 
 ### 1. 运行安装程序
 
-按照[安装程序说明](./install-bmad_cn.md)操作。
+按照[安装程序说明](./install-bmad.md)操作。
 
 ### 2. 处理旧版安装
 
