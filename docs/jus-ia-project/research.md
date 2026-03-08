@@ -198,39 +198,39 @@ O **Jus IA** é o assistente de inteligência artificial do **Jusbrasil**, a mai
 
 ## 5. Principais Dores dos Advogados com IA
 
-### 3.1. Prompt Engineering é Difícil
+### 5.1. Prompt Engineering é Difícil
 
 Advogados não são técnicos. Não sabem formular prompts eficazes e não têm tempo para aprender por tentativa e erro. O gap entre "ter acesso à ferramenta" e "extrair valor real" é enorme.
 
-### 3.2. Alucinações e Erros
+### 5.2. Alucinações e Erros
 
 A IA inventa jurisprudência, cita artigos errados, confunde legislação. Com taxa de erro de 17-34% (Stanford), o advogado precisa verificar tudo — o que reduz o ganho de produtividade percebido. A recomendação é tratar a IA como "um estagiário talentoso que precisa de supervisão constante".
 
-### 3.3. Sigilo Profissional e LGPD
+### 5.3. Sigilo Profissional e LGPD
 
 Maior medo declarado. Advogados enviam peças estratégicas para IAs públicas cujos termos permitem uso do conteúdo para treinamento. Mesmo sem vazamento explícito, pode ser interpretado como quebra de sigilo. Muitos confiam na marca mas não leem termos de uso, políticas de retenção ou localização de servidores.
 
-### 3.4. IAs Genéricas Falham no Direito Brasileiro
+### 5.4. IAs Genéricas Falham no Direito Brasileiro
 
 ChatGPT e outras IAs internacionais têm dificuldades com termos e leis locais. Abordagem genérica não atende demandas por peças processuais personalizadas ao contexto brasileiro.
 
-### 3.5. Custo Alto para Advogados Solo
+### 5.5. Custo Alto para Advogados Solo
 
 R$139/mês é pesado para profissionais autônomos. Sem métricas claras de ROI, é difícil justificar o investimento continuado.
 
-### 3.6. Curva de Aprendizado
+### 5.6. Curva de Aprendizado
 
 Mesmo com 62% usando IA, poucos extraem o máximo da ferramenta. Falta capacitação prática e direcionada.
 
-### 3.7. Resultados Inconsistentes
+### 5.7. Resultados Inconsistentes
 
 O mesmo prompt gera resultados diferentes a cada execução, o que reduz confiança na ferramenta.
 
-### 3.8. Falta de Conteúdo em Português
+### 5.8. Falta de Conteúdo em Português
 
 Recursos sobre IA jurídica em PT-BR ainda são escassos comparados ao mercado anglófono.
 
-### 3.9. Necessidade de Novas Competências
+### 5.9. Necessidade de Novas Competências
 
 Advogados precisam desenvolver:
 - Alfabetização digital básica
@@ -240,9 +240,219 @@ Advogados precisam desenvolver:
 
 ---
 
-## 6. Fontes
+## 6. Análise Competitiva por Ideia
 
-- **Pesquisa Jusbrasil (dados primários)** — Ago 2025 (n=2.861) e Mar 2026 (n=977)
+### 6.1. Prompt Library — Landscape Competitivo
+
+#### Concorrentes Brasileiros
+
+| Player | Modelo | Preço | Prompts | Diferencial |
+|--------|--------|-------|---------|-------------|
+| **Jus IA Academy (Jusbrasil)** | Bundled c/ assinatura | R$138,90/mês | Curadoria interna | Já existe — conectado à base Jusbrasil |
+| **Banco de Prompts de Direito (ITS Rio)** | Gratuito / comunidade | Free | 119 prompts, 15+ áreas | Nonprofit, open contribution |
+| **Prompts Jurídicos** | Compra única | Variável | Criminal only | Nicho profundo, 10 anos de prática penal |
+| **Biblioteca de Prompt Jurídico** | Freemium | N/D | 100+ prompts | Inclui prompts "criados por juízes" |
+| **Chat Jurídico** | Conteúdo gratuito | Free | Curadoria por área | Organized by practice area |
+| **ADVBOX** | Lead gen (free) | Free | 220 prompts (blog) | Direciona para software de gestão |
+| **Aurum** | Lead gen (free) | Free | 50-60 prompts | Direciona para software de gestão |
+| **Jurídico Ágil** | Gratuito | Free | 70+ GPTs assistentes | Custom GPTs, não prompts tradicionais |
+
+#### Concorrentes Internacionais
+
+| Player | Modelo | Preço | Notas |
+|--------|--------|-------|-------|
+| **The Legal Prompts** | Subscription | Variável (USD) | Claude-focused, US market |
+| **Write.law** | Bundled c/ curso | Bundle | Curso + library integrada |
+| **PromptBase** | Marketplace | $1,99-9,99/prompt | Seção legal fraca, genérico |
+| **AIPRM** | Freemium/SaaS | $0-999/mês | Browser extension, genérico |
+
+#### Modelos de Monetização no Mercado
+
+| Modelo | Viabilidade | Exemplos |
+|--------|-------------|----------|
+| **SaaS bundled (prompts como feature)** | Alta — modelo dominante | Jus IA, ChatADV |
+| **Subscription standalone** | Média — risco de commoditização | The Legal Prompts, AIPRM |
+| **Compra única (niche packs)** | Baixa escala — funciona para nicho | Prompts Jurídicos |
+| **Marketplace (pay-per-prompt)** | Baixa — IP impossível de proteger | PromptBase |
+| **Free / lead gen** | Alta para aquisição, zero receita direta | ADVBOX, Aurum |
+| **Educação + prompts** | Alta willingness to pay (R$599) | Opice Blum Academy |
+
+#### White Space Identificado
+
+1. **Nenhum player conecta prompts a base jurídica verificada** — todos são copy-paste para IAs genéricas
+2. **Nenhum marketplace two-sided para prompts jurídicos BR** com monetização para contribuidores
+3. **Nenhum sistema de validação/certificação de qualidade** de prompts com métricas reais
+4. **Profundidade por área do direito é rasa** — apenas Prompts Jurídicos vai fundo (criminal only)
+5. **Nenhum prompt "vivo"** que puxa contexto do caso automaticamente
+
+#### Veredito
+
+**Oportunidade clara, mas como evolução do Jus IA, não produto separado.** O Jusbrasil já tem a biblioteca nascente + a base de dados + a distribuição. O diferencial defensável é: prompts integrados à base verificada de 90M+ decisões que eliminam alucinações. Nenhum concorrente pode replicar isso.
+
+---
+
+### 6.2. Calculadora Jurídica — Landscape Competitivo
+
+#### Concorrentes Principais
+
+| Player | Áreas | Preço | AI? | Destaque |
+|--------|-------|-------|-----|----------|
+| **Cálculo Jurídico (CJ)** | Prev, Trab, Cível, Trib, Bancário, Penal | Bronze/Prata/Ouro (gated) | Sim (add-on) | +30 tipos de cálculos, o mais completo |
+| **Jusfy (JusCalc)** | Correção monetária, Trab, Pensão, FGTS, Financeiro | Starter/Master/Ultimate | **Sim (core)** — JusGPT | **R$50M+ receita/ano, 118% YoY, valuation ~US$30M** |
+| **Legalcloud** | Prazos processuais, Cível, Trab | R$47-379/ano | Parcial (petições) | **400K+ users** no calculator de prazos |
+| **Previdenciarista** | INSS/Previdenciário | R$119,90/mês | Não | Import CNIS, extensão browser |
+| **eCalculos** | Trabalhista, Correção monetária | Free (≤1 ano serviço) | Não | Freemium |
+| **SOS Cálculos** | Liquidação, Revisional, PIS/PASEP | Pay-per-use | Não | Único modelo pay-per-calculation |
+| **Advoga IA** | Penal, Pensão, Progressão regime | R$52/mês | Sim (core) | AI-first mas calculadoras são secundárias |
+
+#### Ferramentas Institucionais/Gratuitas
+
+| Player | Tipo | Notas |
+|--------|------|-------|
+| **AASP** | Bundled c/ associação | 70+ índices, 70K+ membros |
+| **Projef Web (TRF4)** | Gratuito (tribunal) | ~7.000 cálculos/dia |
+| **TJSP / TJDFT** | Gratuito (tribunal) | Básico, sem AI |
+| **Calcule.net** | Free | Rescisão, férias, FGTS |
+| **Dr. Calc** | Free | Atualização de débitos judiciais |
+
+#### Tipos de Cálculo por Demanda (ranking)
+
+1. **Trabalhista** — rescisão, horas extras, férias, 13º, FGTS (universal)
+2. **Correção monetária** — atualização de débitos com índices oficiais (universal)
+3. **Previdenciário** — tempo contribuição, RMI, aposentadoria (nicho grande)
+4. **Prazos processuais** — CPC, CPP, CLT deadlines (universal)
+5. **Cível** — liquidação de sentença, cumprimento de sentença
+6. **Pensão alimentícia** — valores em atraso com correção
+7. **Bancário/Financeiro** — revisional, amortização, taxa média BACEN
+8. **Honorários** — cálculo sobre valores corrigidos
+9. **Tributário** — correções e atualizações tributárias
+10. **Penal** — dosimetria da pena, progressão de regime (emergente)
+
+#### Dados de Mercado
+
+- **1,3M+ advogados ativos** no Brasil (OAB)
+- **39M novos processos** em 2024 (+46% desde 2020)
+- Mercado de serviços jurídicos BR: **US$6,5B** (2023)
+- TAM estimado para calculadoras: **R$780M-R$1,87B/ano** (1,3M advogados × R$50-120/mês)
+- Penetração atual estimada: 5-15% → receita de R$40-280M/ano no segmento
+- **Jusfy sozinho faturou R$50M+/ano** com 118% de crescimento
+
+#### Estado da IA em Calculadoras
+
+| Nível de integração | Quem faz | O que faz |
+|---------------------|----------|-----------|
+| **AI core (cálculo)** | Jusfy (JusGPT) | Auto-detecta índices/parâmetros, aplica ao cálculo |
+| **AI add-on** | CJ | Revisão de contratos, extração de dados de decisões |
+| **AI adjacente** | Legalcloud, Advoga IA | IA para petições, não para cálculos em si |
+| **Sem AI** | Previdenciarista, eCalculos, SOS | Ferramentas tradicionais |
+
+> **Nenhum player lê uma sentença/PDF e auto-gera a liquidação completa.** Este é o gap mais significativo.
+
+#### White Space para Jusbrasil
+
+1. **End-to-end: sentença PDF → liquidação completa** via IA (ninguém faz)
+2. **Cálculos linkados à jurisprudência** do tribunal específico (qual índice, juros simples/compostos)
+3. **Workflow único:** pesquisa no Jusbrasil → calcula → gera petição no Jus IA (elimina context-switching)
+4. **Process-aware:** auto-puxa dados do processo (partes, valores, datas, tribunal)
+5. **Cenários "what-if":** e se o juiz aplicar IPCA-E em vez de INPC? E se juros da citação vs. ajuizamento?
+6. **Upload CTPS/holerite → cálculo trabalhista completo** (ninguém faz com IA)
+
+#### Veredito
+
+**Mercado maduro e competitivo, mas com gaps significativos para IA.** Jusfy (R$50M+, 118% YoY) prova que há demanda e willingness to pay. O diferencial do Jusbrasil seria a **integração com dados processuais + jurisprudência**, criando o workflow pesquisa→cálculo→petição. Risco: mercado já tem players estabelecidos com 400K+ users (Legalcloud).
+
+---
+
+### 6.3. Dashboard de Produtividade — Landscape Competitivo
+
+#### Estado Atual
+
+- **Apenas 20% das organizações jurídicas medem ROI de IA** (Thomson Reuters)
+- **53% reportam retornos positivos**, mas sem métricas formais
+- IA economiza **1-10 horas/semana** por advogado
+- Redução de até **90% no tempo de document review**, 50-75% em contratos
+- Um caso Harvard: de **16 horas para 4 minutos** com IA
+
+#### Concorrentes (Globais)
+
+| Player | Foco | Modelo |
+|--------|------|--------|
+| **Billables AI** | Time-tracking com IA (Clio, MyCase) | Embeds em plataformas existentes |
+| **Streamline AI** | KPIs para in-house legal | SaaS enterprise |
+| **GC AI** | Task completion, accuracy, custo | In-house counsel |
+| **Clio Manage AI** | Framework ROI 5 passos | Bundled no Clio |
+| **SpotDraft** | Cycle time de contratos, renewals | Bundled |
+
+#### No Brasil
+
+**Nenhum tool brasileiro oferece dashboard de produtividade de IA para advogados.** Existem dashboards operacionais (EasyJur, IA JURIS a R$290,94/mês, Advoco Brasil) mas nenhum mede especificamente o impacto/ROI do uso de IA.
+
+#### Veredito
+
+**Feature, não produto standalone.** O gap de medição é real (80% não medem ROI), mas willingness to pay isoladamente é insuficiente. Faz mais sentido como:
+- Módulo dentro do Jus IA mostrando "você economizou X horas este mês"
+- Ferramenta de retenção para justificar o R$138,90/mês
+- Risco: cada plataforma de IA adicionará analytics próprio (commodity rápido)
+
+---
+
+### 6.4. Comunidade de Prompts — Landscape Competitivo
+
+#### Comunidades Existentes (Brasil)
+
+| Comunidade | Líder | Modelo | Canal |
+|------------|-------|--------|-------|
+| **LEX.IA** | Erik N. | Pago (subscription) | WhatsApp + lives quinzenais |
+| **Super Inteligência Jurídica** | — | Pago | Treinamento avançado |
+| **IA Community (Opice Blum Academy)** | Opice Blum | R$599,99 curso | Vídeo-aulas + ebooks + lives |
+| **Escritório Inteligente** | Raissa Lobo | Pago | "Maior comunidade do Brasil" |
+| **ChatADV Community** | ChatADV | Produto bundled | 200K+ advogados impactados, parcerias OAB |
+
+#### Insights Críticos
+
+- **WhatsApp é rei:** 90% dos advogados BR usam profissionalmente. Todas as comunidades são WhatsApp-first.
+- **Personality-driven:** Comunidades BR são construídas em torno de influenciadores individuais (Erik N., Raissa Lobo). Difícil competir sem nome reconhecido.
+- **Já é crowded:** Pelo menos 4-5 comunidades pagas estabelecidas
+- **Cold start severo:** Advogados são avessos a risco, time-poor (bilham por hora), e exigem credibilidade institucional (parceria OAB é quase obrigatória)
+- **Pago funciona no Brasil:** Comunidades pagas filtram por seriedade e criam exclusividade percebida
+
+#### Veredito
+
+**Não recomendado como produto standalone.** Mercado já tem múltiplos players personality-driven. A oportunidade real é **absorver a comunidade como feature da Prompt Library** — ratings, reviews e contribuições de prompts dentro do Jus IA, sem precisar competir com influenciadores no WhatsApp.
+
+---
+
+## 7. Síntese: Priorização Final com Evidências
+
+### Matriz de Viabilidade
+
+| Critério | Prompt Library | Calculadora | Dashboard | Comunidade |
+|----------|:---:|:---:|:---:|:---:|
+| **Demanda comprovada (pesquisa)** | Alta (66,3% elaboram docs, facilidade de uso +4,2pp) | Alta (Jusfy R$50M+ receita, 118% YoY) | Média (80% não medem ROI mas poucos pagariam) | Média-baixa (indicação de colegas = 4,9%) |
+| **White space competitivo** | **Alto** — ninguém conecta prompts a base verificada | **Médio** — players fortes mas sem IA end-to-end | **Alto** — ninguém faz no Brasil | **Baixo** — 4-5 comunidades pagas existentes |
+| **Defensabilidade (moat)** | **Forte** — 90M+ decisões + base verificada | **Forte** — dados processuais + jurisprudência | **Fraco** — será commodity rápido | **Fraco** — WhatsApp groups são replicáveis |
+| **Fit com Jusbrasil** | **Perfeito** — evolução natural do Jus IA | **Bom** — complementa pesquisa→cálculo→petição | **Bom** — retenção de assinantes | **Médio** — Jusbrasil não é personality-driven |
+| **Complexidade de build** | Baixa-média | Alta (regulatório, índices, tribunais) | Baixa | Baixa |
+| **Potencial de receita** | Alto (upsell assinatura Jus IA) | Muito alto (TAM R$780M-1,87B) | Baixo isolado | Baixo isolado |
+
+### Recomendação de Prioridade
+
+1. **Prompt Library Integrada ao Jus IA** — Maior impacto com menor complexidade. Evolução natural do produto existente. Diferencial defensável (base verificada). Absorve comunidade como feature (ratings/contribuições).
+
+2. **Calculadora Jurídica com IA** — Maior potencial de receita (mercado provado por Jusfy). Complexidade alta mas gaps claros para IA. O workflow pesquisa→cálculo→petição seria único no mercado.
+
+3. **Dashboard como Feature** (não produto) — Módulo "seu impacto" dentro do Jus IA para retenção.
+
+4. **Comunidade como Feature** (não produto) — Camada social na Prompt Library (ratings, reviews, contribuições).
+
+---
+
+## 8. Fontes
+
+### Dados Primários
+- **Pesquisa Jusbrasil** — Ago 2025 (n=2.861) e Mar 2026 (n=977)
+
+### Produto & Cenário Geral
 - [Jus IA | Jusbrasil](https://ia.jusbrasil.com.br/)
 - [FAQ sobre IA no setor jurídico 2026 - Roberto Dias Duarte](https://www.robertodiasduarte.com.br/faq-completo-sobre-o-uso-de-ia-no-setor-juridico-em-2026/)
 - [Desafios do mercado jurídico 2026 - Fenalaw](https://www.fenalaw.com.br/fenalawlab/os-desafios-que-vao-redesenhar-o-mercado-juridico-brasileiro-em-2026/)
@@ -252,3 +462,49 @@ Advogados precisam desenvolver:
 - [Qual a melhor IA para advogados 2026 - Juridico.AI](https://juridico.ai/direito-digital/qual-melhor-inteligencia-artificial-para-advogados/)
 - [10 IAs para Advogados 2026 - Agência Evolux](https://agenciaevolux.com.br/ias-para-advogados/)
 - [Introdução à Jus IA - Jurídico Ágil](https://juridicoagil.com/destaque/introducao-a-jus-ia-a-revolucao-da-inteligencia-artificial-no-direito/)
+
+### Prompt Libraries — Concorrentes
+- [Jus IA Academy - Biblioteca de Prompts](https://ia.jusbrasil.com.br/jusia-academy/biblioteca-de-prompts-do-jus-ia/5552726527)
+- [Banco de Prompts de Direito (ITS Rio)](https://promptsdedireito.com.br/)
+- [Prompts Jurídicos (Criminal)](https://promptsjuridicos.adv.br/)
+- [Biblioteca de Prompt Jurídico](https://bibliotecadepromptjuridico.com.br/prompts/)
+- [Chat Jurídico - Prompts](https://chatjuridico.com.br/ferramentas/prompts-advogados)
+- [The Legal Prompts (US)](https://thelegalprompts.com/)
+- [Write.law Prompt Library](https://write.law/ailibrary)
+- [PromptBase](https://promptbase.com)
+- [AIPRM](https://app.aiprm.com/pricing)
+- [ADVBOX - 220 Prompts](https://advbox.com.br/blog/prompt-juridico-chat-gpt/)
+- [Aurum - Prompt Kit](https://www.aurum.com.br/blog/material/prompt-chatgpt/)
+- [Jurídico Ágil - GPTs](https://juridicoagil.com/gpts-assistentes-juridicos/)
+- [Opice Blum Academy - Engenharia de Prompts](https://opiceblumacademy.com.br/curso/engenharia-de-prompts-para-advogados/)
+- [JusDocs](https://jusdocs.com)
+
+### Calculadoras Jurídicas — Concorrentes
+- [Cálculo Jurídico](https://calculojuridico.com.br/)
+- [Jusfy / JusCalc](https://jusfy.com.br/juscalc/)
+- [Jusfy - Crescimento de receita (Startups.com.br)](https://startups.com.br/negocios/inteligencia-artificial/jusfy-dobra-faturamento-com-avanco-do-jusgpt-entre-advogados)
+- [Legalcloud](https://legalcloud.com.br/)
+- [Previdenciarista](https://previdenciarista.com/)
+- [eCalculos](https://www.ecalculos.com.br/)
+- [SOS Cálculos](https://www.soscalculos.com.br/)
+- [Advoga IA](https://www.advogaia.com.br/)
+- [AASP Cálculos](https://www.aasp.org.br/produtos-servicos/calculos/)
+- [Projef Web - TRF4](https://www.trf4.jus.br/trf4/controlador.php?acao=pagina_visualizar&id_pagina=3219)
+- [6 Sites Cálculo Judicial Gratuito - Jusbrasil](https://www.jusbrasil.com.br/artigos/6-sites-para-calculo-judicial-online-e-calculos-de-debitos-judiciais-gratuitos/1353660824)
+
+### Dashboard & Comunidade
+- [ABA - Legal Industry Report 2025](https://www.americanbar.org/groups/law_practice/resources/law-technology-today/2025/the-legal-industry-report-2025/)
+- [Clio - ROI in Legal AI Implementation](https://www.clio.com/blog/roi-in-legal-ai-implementation/)
+- [Billables AI](https://legaltechnology.com/2025/12/15/startup-corner-billables-ai-for-automated-legal-time-tracking/)
+- [ChatADV](https://chatadv.com.br/)
+- [Comunidade LEX.IA](https://erikn.com.br/comunidade-lex-ia/)
+- [Super Inteligência Jurídica](https://superinteligenciajuridica.com/)
+- [IA Community - Opice Blum Academy](https://opiceblumacademy.com.br/curso/ia-community-ia-para-advogados/)
+- [Escritório Inteligente - Raissa Lobo](https://raissalobo.com.br/escritorio-inteligente/)
+- [OAB-GO / Forlex LIVIA](https://www.oabgo.org.br/)
+
+### Mercado & Tamanho
+- [Brazil Legal Services Market - Grand View Research](https://www.grandviewresearch.com/horizon/outlook/legal-services-market/brazil)
+- [Brazil Legal Services Market - IMARC Group](https://www.imarcgroup.com/brazil-legal-services-market)
+- [All About AI - AI in Law Statistics 2026](https://www.allaboutai.com/resources/ai-statistics/ai-in-law/)
+- [OAB - Demographics](http://www.oab.org.br/noticia/59992/brasil-tem-1-advogado-a-cada-164-habitantes-cfoab-se-preocupa-com-qualidade-dos-cursos-juridicos)
