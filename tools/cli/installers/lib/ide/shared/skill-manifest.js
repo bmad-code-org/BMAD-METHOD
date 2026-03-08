@@ -3,7 +3,7 @@ const fs = require('fs-extra');
 const yaml = require('yaml');
 
 /**
- * Load bmad-skill-manifest.yaml from a directory.
+ * Load skill manifest from a directory.
  * Single-entry manifests (canonicalId at top level) apply to all files in the directory.
  * Multi-entry manifests are keyed by source filename.
  * @param {string} dirPath - Directory to check for bmad-skill-manifest.yaml
@@ -31,18 +31,30 @@ async function loadSkillManifest(dirPath) {
  * @returns {string} canonicalId or empty string
  */
 function getCanonicalId(manifest, filename) {
-  if (!manifest) return '';
+  const manifestEntry = resolveManifestEntry(manifest, filename);
+  return manifestEntry?.canonicalId || '';
+}
+
+/**
+ * Resolve a manifest entry for a source filename.
+ * Handles single-entry manifests and extension fallbacks.
+ * @param {Object|null} manifest - Loaded manifest
+ * @param {string} filename - Source filename
+ * @returns {Object|null} Manifest entry object
+ */
+function resolveManifestEntry(manifest, filename) {
+  if (!manifest) return null;
   // Single-entry manifest applies to all files in the directory
-  if (manifest.__single) return manifest.__single.canonicalId || '';
+  if (manifest.__single) return manifest.__single;
   // Multi-entry: look up by filename directly
-  if (manifest[filename]) return manifest[filename].canonicalId || '';
+  if (manifest[filename]) return manifest[filename];
   // Fallback: try alternate extensions for compiled files
   const baseName = filename.replace(/\.(md|xml)$/i, '');
   const agentKey = `${baseName}.agent.yaml`;
-  if (manifest[agentKey]) return manifest[agentKey].canonicalId || '';
+  if (manifest[agentKey]) return manifest[agentKey];
   const xmlKey = `${baseName}.xml`;
-  if (manifest[xmlKey]) return manifest[xmlKey].canonicalId || '';
-  return '';
+  if (manifest[xmlKey]) return manifest[xmlKey];
+  return null;
 }
 
 module.exports = { loadSkillManifest, getCanonicalId };

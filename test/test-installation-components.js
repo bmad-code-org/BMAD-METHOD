@@ -81,6 +81,61 @@ async function createTestBmadFixture() {
   return fixtureDir;
 }
 
+async function createShardDocPrototypeFixture() {
+  const fixtureDir = await createTestBmadFixture();
+
+  await fs.ensureDir(path.join(fixtureDir, 'core', 'tasks'));
+  await fs.writeFile(
+    path.join(fixtureDir, 'core', 'tasks', 'shard-doc.xml'),
+    '<task id="_bmad/core/tasks/shard-doc" name="Shard Document" description="Test shard-doc task"><objective>Test objective</objective></task>\n',
+  );
+
+  await fs.writeFile(
+    path.join(fixtureDir, 'core', 'tasks', 'bmad-skill-manifest.yaml'),
+    [
+      'shard-doc.xml:',
+      '  canonicalId: bmad-shard-doc',
+      '  type: task',
+      '  description: "Splits large markdown documents into smaller, organized files based on sections"',
+      '',
+    ].join('\n'),
+  );
+
+  await fs.ensureDir(path.join(fixtureDir, 'core', 'tasks', 'bmad-shard-doc-skill-prototype'));
+  await fs.writeFile(
+    path.join(fixtureDir, 'core', 'tasks', 'bmad-shard-doc-skill-prototype', 'SKILL.md'),
+    [
+      '---',
+      'name: bmad-shard-doc-skill-prototype',
+      'description: Source-authored prototype skill',
+      '---',
+      '',
+      '# bmad-shard-doc-skill-prototype',
+      '',
+      'Prototype marker: source-authored-skill',
+      '',
+      'Read and execute from: {project-root}/_bmad/core/tasks/shard-doc.xml',
+      '',
+      'Follow all shard-doc task instructions exactly as written.',
+      '',
+    ].join('\n'),
+  );
+
+  await fs.writeFile(
+    path.join(fixtureDir, '_config', 'task-manifest.csv'),
+    [
+      'name,displayName,description,module,path,standalone,canonicalId',
+      'shard-doc,Shard Document,Test shard-doc task,core,_bmad/core/tasks/shard-doc.xml,true,bmad-shard-doc',
+      '',
+    ].join('\n'),
+  );
+
+  // Ensure tool manifest exists to avoid parser edge-cases in some environments.
+  await fs.writeFile(path.join(fixtureDir, '_config', 'tool-manifest.csv'), '');
+
+  return fixtureDir;
+}
+
 /**
  * Test Suite
  */
@@ -827,6 +882,70 @@ async function runTests() {
   console.log('');
 
   // ============================================================
+  // Test 11: Shard-doc Prototype Duplication (Skill-Format Only)
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 11: Shard-doc Prototype Duplication${colors.reset}\n`);
+
+  let tempCodexProjectDir;
+  let tempGeminiProjectDir;
+  let installedBmadDir;
+  try {
+    clearCache();
+    const platformCodes = await loadPlatformCodes();
+    const codexInstaller = platformCodes.platforms.codex?.installer;
+    const geminiInstaller = platformCodes.platforms.gemini?.installer;
+
+    assert(codexInstaller?.skill_format === true, 'Codex installer uses skill_format output');
+    assert(geminiInstaller?.skill_format === true, 'Gemini installer uses skill_format output');
+
+    tempCodexProjectDir = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-codex-prototype-test-'));
+    tempGeminiProjectDir = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-gemini-prototype-test-'));
+    installedBmadDir = await createShardDocPrototypeFixture();
+
+    const ideManager = new IdeManager();
+    await ideManager.ensureInitialized();
+
+    const codexResult = await ideManager.setup('codex', tempCodexProjectDir, installedBmadDir, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+
+    assert(codexResult.success === true, 'Codex setup succeeds for shard-doc prototype fixture');
+
+    const codexCanonicalSkill = path.join(tempCodexProjectDir, '.agents', 'skills', 'bmad-shard-doc', 'SKILL.md');
+    const codexPrototypeSkill = path.join(tempCodexProjectDir, '.agents', 'skills', 'bmad-shard-doc-skill-prototype', 'SKILL.md');
+    assert(await fs.pathExists(codexCanonicalSkill), 'Codex install writes canonical shard-doc skill');
+    assert(await fs.pathExists(codexPrototypeSkill), 'Codex install writes duplicated shard-doc prototype skill');
+
+    const codexCanonicalContent = await fs.readFile(codexCanonicalSkill, 'utf8');
+    const codexPrototypeContent = await fs.readFile(codexPrototypeSkill, 'utf8');
+    assert(codexCanonicalContent.includes('name: bmad-shard-doc'), 'Canonical shard-doc skill keeps canonical frontmatter name');
+    assert(
+      codexPrototypeContent.includes('name: bmad-shard-doc-skill-prototype'),
+      'Prototype shard-doc skill uses prototype frontmatter name',
+    );
+    assert(
+      codexPrototypeContent.includes('Prototype marker: source-authored-skill'),
+      'Prototype shard-doc skill is copied from source SKILL.md',
+    );
+
+    const geminiResult = await ideManager.setup('gemini', tempGeminiProjectDir, installedBmadDir, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+
+    assert(geminiResult.success === true, 'Gemini setup succeeds for shard-doc prototype fixture');
+
+    const geminiCanonicalSkill = path.join(tempGeminiProjectDir, '.gemini', 'skills', 'bmad-shard-doc', 'SKILL.md');
+    const geminiPrototypeSkill = path.join(tempGeminiProjectDir, '.gemini', 'skills', 'bmad-shard-doc-skill-prototype', 'SKILL.md');
+    assert(await fs.pathExists(geminiCanonicalSkill), 'Gemini install writes canonical shard-doc skill');
+    assert(await fs.pathExists(geminiPrototypeSkill), 'Gemini install writes duplicated shard-doc prototype skill');
+  } catch (error) {
+    assert(false, 'Shard-doc prototype duplication test succeeds', error.message);
+  } finally {
+    await Promise.allSettled([tempCodexProjectDir, tempGeminiProjectDir, installedBmadDir].filter(Boolean).map((dir) => fs.remove(dir)));
+  }
+
   // Test 17: GitHub Copilot Native Skills Install
   // ============================================================
   console.log(`${colors.yellow}Test Suite 17: GitHub Copilot Native Skills${colors.reset}\n`);

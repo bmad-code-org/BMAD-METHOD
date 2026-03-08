@@ -1,0 +1,3 @@
+canonicalId: bmad-shard-doc-skill-prototype
+type: task
+description: "Prototype native skill wrapper for shard-doc during installer transition"
