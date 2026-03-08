@@ -11,13 +11,11 @@ date: 2026-03-08
 author: Gabriel Vaz
 ---
 
-# Product Brief: JusPrompt (nome de trabalho)
-
-> **Nota:** O nome "JusPrompt" é provisório. O Party Mode identificou que "prompt" contradiz a proposta de abstrair o conceito. Nomes candidatos que refletem o resultado (não o mecanismo): JusGuia, JusPeça, Assistente Jus IA. Decisão final pendente.
+# Product Brief: Jus IA Start Kit
 
 ## Executive Summary
 
-O JusPrompt é um assistente conversacional gratuito que guia advogados na construção de pedidos otimizados para o Jus IA, sem exigir qualquer conhecimento de prompt engineering. Através de fluxos híbridos — parte determinísticos (perguntas estruturadas, seleções), parte assistidos por IA (refinamento contextual) — o produto abstrai completamente a complexidade técnica e entrega o advogado diretamente no Jus IA com uma URL parametrizada pronta para gerar resultados de alta qualidade na primeira tentativa.
+O Jus IA Start Kit é um assistente conversacional gratuito que guia advogados na construção de pedidos otimizados para o Jus IA, sem exigir qualquer conhecimento de prompt engineering. Através de fluxos híbridos — parte determinísticos (perguntas estruturadas, seleções), parte assistidos por IA (refinamento contextual) — o produto abstrai completamente a complexidade técnica e entrega o advogado diretamente no Jus IA com uma URL parametrizada pronta para gerar resultados de alta qualidade na primeira tentativa.
 
 O produto funciona como canal de aquisição gratuito para o Jus IA, convertendo advogados que hoje subutilizam IA (ou nem usam) em usuários satisfeitos do ecossistema Jusbrasil.
 
@@ -46,7 +44,7 @@ Advogados brasileiros não sabem formular bons pedidos para ferramentas de IA. 7
 
 ### Proposed Solution
 
-JusPrompt: um assistente web conversacional que funciona como "tradutor de intenção jurídica". O advogado interage com fluxos guiados — responde perguntas sobre seu caso, seleciona opções, fornece contexto — e o sistema constrói por trás um pedido otimizado para o Jus IA.
+Jus IA Start Kit: um assistente web conversacional que funciona como "tradutor de intenção jurídica". O advogado interage com fluxos guiados — responde perguntas sobre seu caso, seleciona opções, fornece contexto — e o sistema constrói por trás um pedido otimizado para o Jus IA.
 
 **Mecânica central:**
 
@@ -69,10 +67,10 @@ JusPrompt: um assistente web conversacional que funciona como "tradutor de inten
 
 ### Party Mode Insights (Riscos e Oportunidades)
 
-- **Nome**: "JusPrompt" é contraditório com a proposta — revisar antes do PRD
+- **Nome**: Definido como "Jus IA Start Kit" — resolve o problema de "prompt" no nome e posiciona como kit de entrada para o ecossistema Jus IA
 - **Limite de URL**: URLs têm limite prático de ~2000 caracteres; validar limite real do Jus IA e alternativas (POST endpoint, deep link)
 - **Custo de IA**: o fluxo híbrido requer LLM no backend para refinamento contextual — quem absorve o custo de inferência se o produto é gratuito?
-- **MVP simplificado**: v1 pode ser apenas fluxo determinístico + templates de prompt, sem IA no backend (IA entra na v2)
+- **MVP com IA**: decisão tomada de incluir refinamento contextual por IA já no MVP (não adiar para v2)
 - **Mobile-first**: 38% dos advogados são autônomos, provavelmente usando celular entre audiências
 - **Framing estratégico**: para não-adotantes resistentes (34,1%), o produto não deve parecer "IA" — deve parecer "ferramenta jurídica"
 
@@ -88,7 +86,7 @@ JusPrompt: um assistente web conversacional que funciona como "tradutor de inten
 - **Dor real**: Gasta 2-3h por petição inicial trabalhista. Sabe que colegas fazem em 40 minutos com IA, mas não sabe por onde começar e não tem tempo para aprender
 - **O que a converteria**: "Comprovação de confiabilidade" (24,6%) + "Facilidade de uso" (+4,2pp). Precisa ver resultado concreto sem investir tempo aprendendo
 - **Frase típica**: "Não tenho tempo para ficar testando ferramenta. Se funcionar de primeira, eu uso."
-- **Momento de entrada no JusPrompt**: Colega manda link pelo WhatsApp: "usa isso aqui pra montar petição, é muito fácil". Carla abre no celular
+- **Momento de entrada no Jus IA Start Kit**: Colega manda link pelo WhatsApp: "usa isso aqui pra montar petição, é muito fácil". Carla abre no celular
 - **Sucesso**: Faz em 40 minutos o que levava 2-3 horas. Assina o Jus IA no mês seguinte
 
 #### Persona 2: Dr. Rafael — "O Sobrecarregado Digital"
@@ -99,8 +97,8 @@ JusPrompt: um assistente web conversacional que funciona como "tradutor de inten
 - **Dor real**: Sabe que IA pode ajudar, mas os resultados são inconsistentes. Itera 3-5 vezes por petição. Não sabe se o problema é a ferramenta ou o pedido dele
 - **O que o converteria**: Resultado consistente na primeira tentativa. Precisa de um atalho que elimine a tentativa-e-erro
 - **Frase típica**: "Eu já uso IA, mas parece que eu não sei pedir direito. Sempre tenho que refazer."
-- **Momento de entrada no JusPrompt**: Descobre via anúncio ou post do Jusbrasil. Testa com um caso real de horas extras
-- **Sucesso**: Para de iterar. Usa JusPrompt como ponto de partida para todo caso trabalhista. Converte para plano completo do Jus IA
+- **Momento de entrada no Jus IA Start Kit**: Descobre via anúncio ou post do Jusbrasil. Testa com um caso real de horas extras
+- **Sucesso**: Para de iterar. Usa Jus IA Start Kit como ponto de partida para todo caso trabalhista. Converte para plano completo do Jus IA
 
 ### Secondary Users
 
@@ -108,7 +106,7 @@ JusPrompt: um assistente web conversacional que funciona como "tradutor de inten
 
 - **Perfil**: Sócio de escritório com 4 advogados, 50 anos, cível e trabalhista
 - **Relação com IA**: Ele não usa, mas sabe que a equipe usa ChatGPT "por fora" (Shadow AI). Preocupado com sigilo e consistência
-- **Interesse no JusPrompt**: Quer padronizar o uso de IA na equipe. Se o JusPrompt canaliza todos para o Jus IA (com base verificada), resolve o problema de Shadow AI e garante qualidade consistente
+- **Interesse no Jus IA Start Kit**: Quer padronizar o uso de IA na equipe. Se o Jus IA Start Kit canaliza todos para o Jus IA (com base verificada), resolve o problema de Shadow AI e garante qualidade consistente
 - **Frase típica**: "Preciso de algo que minha equipe possa usar sem eu ter que ficar supervisionando cada prompt."
 
 ### User Journey (Dra. Carla — fluxo trabalhista)
@@ -252,4 +250,4 @@ Visitante → Inicia fluxo → Completa perguntas → Redirect → Jus IA
 - Comunidade de templates validados por advogados
 - Integração bidirecional com Jus IA (receber feedback de qualidade do resultado)
 
-**Visão de longo prazo**: JusPrompt se torna o "ponto de entrada padrão" para qualquer advogado brasileiro usar IA jurídica — o Google do Jus IA.
+**Visão de longo prazo**: Jus IA Start Kit se torna o "ponto de entrada padrão" para qualquer advogado brasileiro usar IA jurídica — o Google do Jus IA.
