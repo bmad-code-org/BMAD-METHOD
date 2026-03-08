@@ -3,7 +3,6 @@
 <workflow>
 
 <critical>This workflow performs exhaustive deep-dive documentation of specific areas</critical>
-<critical>Called by: ../document-project/instructions.md router</critical>
 <critical>Handles: deep_dive mode only</critical>
 
 <step n="13" goal="Deep-dive documentation of specific area" if="workflow_mode == deep_dive">
