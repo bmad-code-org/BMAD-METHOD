@@ -1,7 +1,7 @@
 # Step 3: Interactive Technique Execution and Facilitation
 
 ---
-advancedElicitationTask: '{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml'
+advancedElicitationTask: '{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.md'
 ---
 
 ## MANDATORY EXECUTION RULES (READ FIRST):
@@ -296,7 +296,7 @@ After final technique element:
 
 #### If 'C' (Move to organization):
 
-- **Append the technique execution content to `{output_folder}/brainstorming/brainstorming-session-{{date}}.md`**
+- **Append the technique execution content to `{brainstorming_session_output_file}`**
 - **Update frontmatter:** `stepsCompleted: [1, 2, 3]`
 - **Load:** `./step-04-idea-organization.md`
 
@@ -356,7 +356,7 @@ _[Short narrative describing the user and AI collaboration journey - what made t
 
 ## APPEND TO DOCUMENT:
 
-When user selects 'C', append the content directly to `{output_folder}/brainstorming/brainstorming-session-{{date}}.md` using the structure from above.
+When user selects 'C', append the content directly to `{brainstorming_session_output_file}` using the structure from above.
 
 ## SUCCESS METRICS:
 

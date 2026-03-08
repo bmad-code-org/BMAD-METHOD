@@ -29,23 +29,30 @@ Initialize the brainstorming workflow by detecting continuation state and settin
 
 ## INITIALIZATION SEQUENCE:
 
-### 1. Check for Existing Workflow
+### 1. Check for Existing Sessions
 
-First, check if the output document already exists:
+First, check the brainstorming sessions folder for existing sessions:
 
-- Look for file at `{output_folder}/brainstorming/brainstorming-session-{{date}}.md`
-- If exists, read the complete file including frontmatter
-- If not exists, this is a fresh workflow
+- List all files in `{output_folder}/brainstorming/`
+- **DO NOT read any file contents** - only list filenames
+- If files exist, identify the most recent by date/time in the filename
+- If no files exist, this is a fresh workflow
 
-### 2. Handle Continuation (If Document Exists)
+### 2. Handle Existing Sessions (If Files Found)
 
-If the document exists and has frontmatter with `stepsCompleted`:
+If existing session files are found:
 
-- **STOP here** and load `./step-01b-continue.md` immediately
-- Do not proceed with any initialization tasks
-- Let step-01b handle the continuation logic
+- Display the most recent session filename (do NOT read its content)
+- Ask the user: "Found existing session: `[filename]`. Would you like to:
+  **[1]** Continue this session
+  **[2]** Start a new session
+  **[3]** See all existing sessions"
 
-### 3. Fresh Workflow Setup (If No Document)
+- If user selects **[1]** (continue): Set `{brainstorming_session_output_file}` to that file path and load `./step-01b-continue.md`
+- If user selects **[2]** (new): Generate new filename with current date/time and proceed to step 3
+- If user selects **[3]** (see all): List all session filenames and ask which to continue or if new
+
+### 3. Fresh Workflow Setup (If No Files or User Chooses New)
 
 If no document exists or no `stepsCompleted` in frontmatter:
 
@@ -55,10 +62,10 @@ Create the brainstorming session document:
 
 ```bash
 # Create directory if needed
-mkdir -p "$(dirname "{output_folder}/brainstorming/brainstorming-session-{{date}}.md")"
+mkdir -p "$(dirname "{brainstorming_session_output_file}")"
 
 # Initialize from template
-cp "{template_path}" "{output_folder}/brainstorming/brainstorming-session-{{date}}.md"
+cp "{template_path}" "{brainstorming_session_output_file}"
 ```
 
 #### B. Context File Check and Loading
@@ -134,7 +141,7 @@ _[Content based on conversation about session parameters and facilitator approac
 
 ## APPEND TO DOCUMENT:
 
-When user selects approach, append the session overview content directly to `{output_folder}/brainstorming/brainstorming-session-{{date}}.md` using the structure from above.
+When user selects approach, append the session overview content directly to `{brainstorming_session_output_file}` using the structure from above.
 
 ### E. Continue to Technique Selection
 
@@ -152,7 +159,7 @@ Which approach appeals to you most? (Enter 1-4)"
 
 #### When user selects approach number:
 
-- **Append initial session overview to `{output_folder}/brainstorming/brainstorming-session-{{date}}.md`**
+- **Append initial session overview to `{brainstorming_session_output_file}`**
 - **Update frontmatter:** `stepsCompleted: [1]`, `selected_approach: '[selected approach]'`
 - **Load the appropriate step-02 file** based on selection
 
@@ -167,7 +174,9 @@ After user selects approach number:
 
 ## SUCCESS METRICS:
 
-✅ Existing workflow detected and continuation handled properly
+✅ Existing sessions detected without reading file contents
+✅ User prompted to continue existing session or start new
+✅ Correct session file selected for continuation
 ✅ Fresh workflow initialized with correct document structure
 ✅ Session context gathered and understood clearly
 ✅ User's approach selection captured and routed correctly
@@ -176,7 +185,9 @@ After user selects approach number:
 
 ## FAILURE MODES:
 
-❌ Not checking for existing document before creating new one
+❌ Reading file contents during session detection (wastes context)
+❌ Not asking user before continuing existing session
+❌ Not properly routing user's continue/new session selection
 ❌ Missing continuation detection leading to duplicate work
 ❌ Insufficient session context gathering
 ❌ Not properly routing user's approach selection
@@ -184,7 +195,9 @@ After user selects approach number:
 
 ## SESSION SETUP PROTOCOLS:
 
-- Always verify document existence before initialization
+- Always list sessions folder WITHOUT reading file contents
+- Ask user before continuing any existing session
+- Only load continue step after user confirms
 - Load brain techniques CSV only when needed for technique presentation
 - Use collaborative facilitation language throughout
 - Maintain psychological safety for creative exploration

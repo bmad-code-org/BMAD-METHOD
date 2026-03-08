@@ -9,7 +9,7 @@ Unlock your creativity through guided exploration.
 
 ## What is Brainstorming?
 
-Run `brainstorming` and you've got a creative facilitator pulling ideas out of you - not generating them for you. The AI acts as coach and guide, using proven techniques to create conditions where your best thinking emerges.
+Run `bmad-brainstorming` and you've got a creative facilitator pulling ideas out of you - not generating them for you. The AI acts as coach and guide, using proven techniques to create conditions where your best thinking emerges.
 
 **Good for:**
 

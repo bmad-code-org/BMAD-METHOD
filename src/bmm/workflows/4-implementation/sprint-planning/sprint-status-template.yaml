@@ -35,6 +35,7 @@
 # EXAMPLE STRUCTURE (your actual epics/stories will replace these):
 
 generated: 05-06-2-2025 21:30
+last_updated: 05-06-2-2025 21:30
 project: My Awesome Project
 project_key: NOKEY
 tracking_system: file-system

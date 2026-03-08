@@ -1,5 +1,20 @@
 # Changelog
 
+## [6.0.4]
+
+### 🎁 Features
+
+* Add edge case hunter review task - new reusable review task that exhaustively traces branching paths and boundary conditions in code, reporting only unhandled gaps. Method-driven analysis complementary to adversarial review (#1790)
+
+### 🐛 Bug Fixes
+
+* Fix brainstorming to not overwrite previous sessions; now prompts to continue existing brainstorming or start a new one when older brainstorming sessions are found
+* Fix installer templates - replace legacy `@` path prefixes with explicit `{project-root}` syntax for consistency (#1769)
+* Fix edge case hunter - remove zero-findings halt condition that was pressuring the LLM to hallucinate findings when none legitimately exist (#1797)
+* Fix broken docs domain references in README and GitHub issue templates (#1777)
+
+---
+
 ## [6.0.3]
 
 ### 🎁 Features

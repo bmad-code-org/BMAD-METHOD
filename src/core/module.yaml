@@ -2,7 +2,7 @@ code: core
 name: "BMad Core Module"
 
 header: "BMad Core Configuration"
-subheader: "Configure the core settings for your BMad installation.\nThese settings will be used across all modules and agents."
+subheader: "Configure the core settings for your BMad installation.\nThese settings will be used across all installed bmad skills, workflows, and agents."
 
 user_name:
   prompt: "What should agents call you? (Use your name or a team name)"

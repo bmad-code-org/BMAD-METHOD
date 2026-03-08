@@ -195,6 +195,7 @@
 
       <check if="current status == 'ready-for-dev' OR review_continuation == true">
         <action>Update the story in the sprint status report to = "in-progress"</action>
+        <action>Update last_updated field to current date</action>
         <output>🚀 Starting work on story {{story_key}}
           Status updated: ready-for-dev → in-progress
         </output>
@@ -348,6 +349,7 @@
       <action>Find development_status key matching {{story_key}}</action>
       <action>Verify current status is "in-progress" (expected previous state)</action>
       <action>Update development_status[{{story_key}}] = "review"</action>
+      <action>Update last_updated field to current date</action>
       <action>Save file, preserving ALL comments and structure including STATUS DEFINITIONS</action>
       <output>✅ Story status updated to "review" in sprint-status.yaml</output>
     </check>

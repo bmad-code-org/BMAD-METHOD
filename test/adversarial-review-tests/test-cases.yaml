@@ -1,9 +1,9 @@
-# Test Cases for review-adversarial-general.xml with also_consider input
+# Test Cases for bmad-review-adversarial-general skill with also_consider input
 #
 # Purpose: Evaluate how the optional also_consider input influences review findings
 # Content: All tests use sample-content.md (User Authentication API docs)
 #
-# To run: Manually invoke the task with each configuration and compare outputs
+# To run: Manually invoke the skill with each configuration and compare outputs
 
 test_cases:
   # BASELINE - No also_consider
