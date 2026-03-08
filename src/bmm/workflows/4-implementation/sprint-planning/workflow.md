@@ -34,7 +34,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 - `story_location` = `{implementation_artifacts}`
 - `story_location_absolute` = `{implementation_artifacts}`
 - `epics_location` = `{planning_artifacts}`
-- `epics_pattern` = `epic*.md`
+- `epics_pattern` = `*epic*.md`
 - `status_file` = `{implementation_artifacts}/sprint-status.yaml`
 
 ### Input Files
@@ -213,7 +213,7 @@ development_status:
 - **File Location:** {status_file}
 - **Total Epics:** {{epic_count}}
 - **Total Stories:** {{story_count}}
-- **Epics In Progress:** {{epics_in_progress_count}}
+- **Epics In Progress:** {{in_progress_count}}
 - **Stories Completed:** {{done_count}}
 
 **Next Steps:**
