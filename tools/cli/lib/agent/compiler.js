@@ -186,7 +186,6 @@ function buildNestedHandlers(triggers) {
 
       // Add handler attributes based on exec data
       if (execData.route) attrs.push(`exec="${execData.route}"`);
-      if (execData['validate-workflow']) attrs.push(`validate-workflow="${execData['validate-workflow']}"`);
       if (execData.action) attrs.push(`action="${execData.action}"`);
       if (execData.data) attrs.push(`data="${execData.data}"`);
       if (execData.tmpl) attrs.push(`tmpl="${execData.tmpl}"`);

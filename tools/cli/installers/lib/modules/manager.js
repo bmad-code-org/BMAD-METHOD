@@ -1088,7 +1088,7 @@ class ModuleManager {
 
         // Parse INSTALL workflow path
         // Example: {project-root}/_bmad/bmgd/workflows/4-production/create-story/workflow.md
-        const installMatch = installWorkflowPath.match(/\{project-root\}\/(_bmad)\/([^/]+)\/workflows\/(.+)/);
+        const installMatch = installWorkflowPath.match(/\{project-root\}\/(?:_bmad)\/([^/]+)\/workflows\/(.+)/);
         if (!installMatch) {
           await prompts.log.warn(`      Could not parse workflow-install path: ${installWorkflowPath}`);
           continue;

@@ -88,7 +88,7 @@ See [Agents](./agents.md) for the full list of default agents and their triggers
 
 ### Workflow Skills
 
-Workflow skills run a structured, multi-step process without loading an agent persona first. They load the workflow engine and pass a specific workflow configuration.
+Workflow skills run a structured, multi-step process without loading an agent persona first. They load a workflow configuration and follow its steps.
 
 | Example skill | Purpose |
 | --- | --- |

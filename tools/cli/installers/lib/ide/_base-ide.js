@@ -326,9 +326,11 @@ class BaseIdeSetup {
   /**
    * Recursively find workflow.md files
    * @param {string} dir - Directory to search
+   * @param {string} [rootDir] - Original root directory (used internally for recursion)
    * @returns {Array} List of workflow file info objects
    */
-  async findWorkflowFiles(dir) {
+  async findWorkflowFiles(dir, rootDir = null) {
+    rootDir = rootDir || dir;
     const workflows = [];
 
     if (!(await fs.pathExists(dir))) {
@@ -342,7 +344,7 @@ class BaseIdeSetup {
 
       if (entry.isDirectory()) {
         // Recursively search subdirectories
-        const subWorkflows = await this.findWorkflowFiles(fullPath);
+        const subWorkflows = await this.findWorkflowFiles(fullPath, rootDir);
         workflows.push(...subWorkflows);
       } else if (entry.isFile() && entry.name === 'workflow.md') {
         // Read workflow.md frontmatter to get name and standalone property
@@ -360,7 +362,7 @@ class BaseIdeSetup {
             workflows.push({
               name: workflowData.name,
               path: fullPath,
-              relativePath: path.relative(dir, fullPath),
+              relativePath: path.relative(rootDir, fullPath),
               filename: entry.name,
               description: workflowData.description || '',
               standalone: standalone,
@@ -379,9 +381,11 @@ class BaseIdeSetup {
    * Scan a directory for files with specific extension(s)
    * @param {string} dir - Directory to scan
    * @param {string|Array<string>} ext - File extension(s) to match (e.g., '.md' or ['.md', '.xml'])
+   * @param {string} [rootDir] - Original root directory (used internally for recursion)
    * @returns {Array} List of file info objects
    */
-  async scanDirectory(dir, ext) {
+  async scanDirectory(dir, ext, rootDir = null) {
+    rootDir = rootDir || dir;
     const files = [];
 
     if (!(await fs.pathExists(dir))) {
@@ -398,7 +402,7 @@ class BaseIdeSetup {
 
       if (entry.isDirectory()) {
         // Recursively scan subdirectories
-        const subFiles = await this.scanDirectory(fullPath, ext);
+        const subFiles = await this.scanDirectory(fullPath, ext, rootDir);
         files.push(...subFiles);
       } else if (entry.isFile()) {
         // Check if file matches any of the extensions
@@ -407,7 +411,7 @@ class BaseIdeSetup {
           files.push({
             name: path.basename(entry.name, matchedExt),
             path: fullPath,
-            relativePath: path.relative(dir, fullPath),
+            relativePath: path.relative(rootDir, fullPath),
             filename: entry.name,
           });
         }
@@ -421,9 +425,11 @@ class BaseIdeSetup {
    * Scan a directory for files with specific extension(s) and check standalone attribute
    * @param {string} dir - Directory to scan
    * @param {string|Array<string>} ext - File extension(s) to match (e.g., '.md' or ['.md', '.xml'])
+   * @param {string} [rootDir] - Original root directory (used internally for recursion)
    * @returns {Array} List of file info objects with standalone property
    */
-  async scanDirectoryWithStandalone(dir, ext) {
+  async scanDirectoryWithStandalone(dir, ext, rootDir = null) {
+    rootDir = rootDir || dir;
     const files = [];
 
     if (!(await fs.pathExists(dir))) {
@@ -440,7 +446,7 @@ class BaseIdeSetup {
 
       if (entry.isDirectory()) {
         // Recursively scan subdirectories
-        const subFiles = await this.scanDirectoryWithStandalone(fullPath, ext);
+        const subFiles = await this.scanDirectoryWithStandalone(fullPath, ext, rootDir);
         files.push(...subFiles);
       } else if (entry.isFile()) {
         // Check if file matches any of the extensions
@@ -484,7 +490,7 @@ class BaseIdeSetup {
           files.push({
             name: path.basename(entry.name, matchedExt),
             path: fullPath,
-            relativePath: path.relative(dir, fullPath),
+            relativePath: path.relative(rootDir, fullPath),
             filename: entry.name,
             standalone: standalone,
           });
