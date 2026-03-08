@@ -44,3 +44,40 @@ A mecânica central é um fluxo híbrido: perguntas estruturadas (determinístic
 1. **"Momento aha" no preview**: a tela que mostra o pedido montado com fundamentação jurídica específica é o ponto de materialização do valor — oportunidade de criar confiança, surprise-and-delight, e conversão.
 2. **Educação implícita via perguntas**: o fluxo ensina o advogado o que é relevante para um bom pedido sem que ele perceba que está aprendendo — o UX pode amplificar esse efeito.
 3. **WhatsApp como experiência de entrada**: OG tags, deep links por área, experiência de "abrir link e já estar no fluxo certo" — a primeira impressão é no mobile via WhatsApp.
+
+---
+
+## Core Experience Definition
+
+### Core User Action
+
+O advogado responde perguntas sobre seu caso e recebe um pedido otimizado pronto para o Jus IA. Do ponto de vista emocional, existem apenas **dois momentos**: "estou respondendo perguntas sobre meu caso" e "recebi meu pedido pronto". Tudo entre eles deve ser invisível.
+
+### Experience Principles
+
+1. **Transição IA invisível**: Perguntas geradas por IA devem ser indistinguíveis das perguntas estruturadas. Quando possível, perguntas da IA devem oferecer opções pré-definidas (seleção), não campos de texto abertos. Quando texto livre for necessário, usar placeholders específicos e contextuais (ex: "Ex: não pagava horas extras e exigia trabalho aos sábados") — nunca campos genéricos vazios. O advogado não deve perceber que mudou de fase determinística para não-determinística.
+
+2. **Velocidade é respeito — quantificada**: O fluxo inteiro (primeiro toque → botão "Gerar no Jus IA") deve ter **no máximo 4-5 telas de perguntas**. Se o advogado conta mais de 5 etapas no indicador de progresso, já parece longo. Perguntas devem ser agrupadas agressivamente por "momento mental" — na mesma tela, perguntas que pertencem ao mesmo contexto decisório (ex: "Regime de Trabalho" + jornada contratual se CLT). Perguntas de momentos mentais diferentes (ex: "Há registro de ponto?" vs "Existem testemunhas?") vão em telas separadas.
+
+3. **Um momento mental por tela**: Cada tela tem uma decisão principal, com sub-perguntas relacionadas agrupadas abaixo. Isso reduz page loads em MPA (de 8-11 para 4-5) mantendo clareza cognitiva. Progressive enhancement com JavaScript para transições sem reload quando disponível.
+
+4. **Preview = fundamentação jurídica como contrato de confiança**: O valor do preview não é mostrar o prompt — é mostrar **artigos, súmulas e jurisprudência** que o advogado reconhece. Quando Dra. Carla vê "art. 59 da CLT, Súmula 85 do TST", pensa: "isso eu conheço, isso é real". A fundamentação jurídica visível é o momento de conversão — a linguagem dela validando a máquina.
+
+5. **Linguagem 100% jurídica**: Zero vocabulário técnico de IA. O produto parece "ferramenta jurídica", não "ferramenta de IA".
+
+### Critical Success Moments
+
+1. **Primeira pergunta (<3 segundos)**: O advogado abre o link (WhatsApp, deep link) e em menos de 3 segundos está respondendo a primeira pergunta relevante sobre seu caso. Sem onboarding, sem cadastro, sem explicação.
+
+2. **Preview com fundamentação jurídica**: A tela que mostra o pedido montado com artigos específicos da CLT e súmulas do TST. Este é o momento de materialização do valor — "a máquina sabe o que é relevante pro meu caso".
+
+3. **Redirecionamento ao Jus IA**: O clique final que leva ao Jus IA com tudo pronto. O resultado gerado na primeira tentativa valida toda a experiência anterior.
+
+4. **Momento de recuperação**: Quando o advogado erra uma resposta ou quer voltar. O botão de voltar deve ser visível e óbvio. O browser back deve funcionar perfeitamente em MPA. Voltar **nunca** pode perder respostas já dadas nas telas seguintes. Confiança quebra quando o advogado sente que perdeu trabalho.
+
+### Effortless Interactions
+
+- **Toque único por decisão**: Cada pergunta deve ser respondível com um toque (seleção, toggle, chip). Texto livre é exceção, não regra.
+- **Agrupamento por momento mental**: 2-3 perguntas relacionadas por tela, máximo 4-5 telas no fluxo completo.
+- **Placeholders contextuais**: Quando texto livre for necessário, exemplos específicos guiam a resposta (ex: "Ex: demissão sem justa causa em 15/01/2026").
+- **Progresso visual claro**: Indicador de progresso mostra 4-5 etapas — nunca mais que isso.
