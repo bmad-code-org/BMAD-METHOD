@@ -1073,7 +1073,7 @@ class ModuleManager {
       await prompts.log.message(`    Processing: ${agentFile}`);
 
       for (const item of workflowInstallItems) {
-        const sourceWorkflowPath = item.workflow; // Where to copy FROM
+        const sourceWorkflowPath = item.exec; // Where to copy FROM
         const installWorkflowPath = item['workflow-install']; // Where to copy TO
 
         // Parse SOURCE workflow path
