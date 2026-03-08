@@ -1,5 +1,5 @@
 ---
-stepsCompleted: [step-01-init, step-02-discovery, step-02b-vision, step-02c-executive-summary, step-03-success, step-04-journeys, step-05-domain, step-06-innovation-skipped, step-07-project-type]
+stepsCompleted: [step-01-init, step-02-discovery, step-02b-vision, step-02c-executive-summary, step-03-success, step-04-journeys, step-05-domain, step-06-innovation-skipped, step-07-project-type, step-08-scoping]
 classification:
   projectType: web_app
   domain: legaltech
@@ -239,3 +239,66 @@ Multi Page Application (MPA) mobile-first. Cada etapa do fluxo é uma página pr
 - **Deep links**: cada fluxo tem URL própria (ex: `/trabalhista/horas-extras`) para compartilhamento direto
 - **Analytics**: client-side tracking (funil, drop-off, origem) — único estado persistente do produto
 - **LLM backend**: endpoint para refinamento contextual — única dependência de infraestrutura além do hosting
+
+## Project Scoping & Phased Development
+
+### MVP Strategy & Philosophy
+
+**MVP Approach:** Problem-solving MVP — validar se fluxos guiados convertem advogados em usuários ativos do Jus IA. Menor investimento possível para testar a hipótese central.
+
+**Resource Requirements:** Equipe enxuta operando separado do Jusbrasil. Frontend (MPA), backend (LLM endpoint), expertise jurídica (templates de prompt).
+
+### MVP Feature Set (Phase 1)
+
+**Core User Journeys Supported:**
+- Jornada 1 (Carla — happy path): fluxo completo trabalhista
+- Jornada 2 (Rafael — frustrado): fluxos especializados por subtipo
+- Jornada 3 (Carla — edge case): overflow de URL com fallback
+- Jornada 4 (Marcos — escritório): deep links por área
+
+**Must-Have Capabilities:**
+
+| # | Capability | Justificativa |
+|---|-----------|--------------|
+| 1 | Seleção de tipo de tarefa | Entrada do fluxo — sem isso não há produto |
+| 2 | 10 fluxos de perguntas estruturadas por subtipo | Core do produto — parte determinística |
+| 3 | Refinamento contextual por IA | Core do produto — parte não-determinística |
+| 4 | Montagem de prompt nos bastidores | Sem isso não há valor — o advogado veria um prompt |
+| 5 | Redirect via URL parametrizada | Mecanismo de entrega ao Jus IA |
+| 6 | Detecção de overflow + fallback copy-paste | Sem isso, casos complexos quebram |
+| 7 | Preview do pedido antes do redirect | Confiança e transparência |
+| 8 | Deep links por fluxo/área | Distribuição (WhatsApp) + governança (Marcos) |
+| 9 | OG tags para WhatsApp preview | Viralidade — >30% tráfego referral |
+| 10 | Analytics de funil + tracking de origem | Medir Go/No-Go (500 redirects + 40% conclusão) |
+| 11 | Mobile-first responsivo | 38% autônomos, celular entre audiências |
+
+**Explicitamente fora do MVP:**
+- Login / contas de usuário
+- Histórico de pedidos
+- Edição do prompt gerado
+- Integração bidirecional com Jus IA
+- Áreas além das 10 definidas
+- A/B testing de prompts
+- Dashboard para escritórios
+
+### Post-MVP Features
+
+**Phase 2 (Growth):**
+- Expansão para mais áreas do direito (penal, tributário, família, empresarial)
+- A/B testing de templates de prompt
+- Sugestão inteligente de fluxo
+- Histórico de pedidos (com login opcional)
+
+**Phase 3 (Expansion):**
+- Comunidade de templates validados por advogados
+- Integração bidirecional com Jus IA (feedback de qualidade)
+
+### Risk Mitigation Strategy
+
+| Risco | Impacto | Mitigação |
+|-------|---------|-----------|
+| **URL excede 2000 chars** | Prompt truncado, experiência quebra | Fallback copy-paste detectado antes do redirect |
+| **Qualidade do prompt gerado** | Resultado ruim no Jus IA, <70% sem reformulação | Templates construídos com expertise jurídica + iteração |
+| **Custo de inferência LLM** | Produto gratuito mas backend custa | Monitorar custo/redirect, definir budget máximo |
+| **Baixa adoção** | <500 redirects/mês → corta | Go/No-Go claro, sem investimento pesado antes de validar |
+| **Limite de 10 fluxos** | Usuários pedem áreas não cobertas | Fallback "tipo não disponível" + priorização por demanda real |
