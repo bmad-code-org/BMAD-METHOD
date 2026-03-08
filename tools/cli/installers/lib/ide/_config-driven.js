@@ -136,14 +136,14 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
       if (!artifact_types || artifact_types.includes('agents')) {
         const agentGen = new AgentCommandGenerator(this.bmadFolderName);
         const { artifacts } = await agentGen.collectAgentArtifacts(bmadDir, selectedModules);
-        results.agents = await this.writeAgentArtifacts(targetPath, artifacts, template_type, config, bmadDir);
+        results.agents = await this.writeAgentArtifacts(targetPath, artifacts, template_type, config);
       }
 
       // Install workflows
       if (!artifact_types || artifact_types.includes('workflows')) {
         const workflowGen = new WorkflowCommandGenerator(this.bmadFolderName);
         const { artifacts } = await workflowGen.collectWorkflowArtifacts(bmadDir);
-        results.workflows = await this.writeWorkflowArtifacts(targetPath, artifacts, template_type, config, bmadDir);
+        results.workflows = await this.writeWorkflowArtifacts(targetPath, artifacts, template_type, config);
       }
 
       // Install tasks and tools using template system (supports TOML for Gemini, MD for others)
@@ -198,7 +198,7 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
    * @param {Object} config - Installation configuration
    * @returns {Promise<number>} Count of artifacts written
    */
-  async writeAgentArtifacts(targetPath, artifacts, templateType, config = {}, bmadDir = null) {
+  async writeAgentArtifacts(targetPath, artifacts, templateType, config = {}) {
     // Try to load platform-specific template, fall back to default-agent
     const { content: template, extension } = await this.loadTemplate(templateType, 'agent', config, 'default-agent');
     let count = 0;
@@ -208,7 +208,7 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
       const filename = this.generateFilename(artifact, 'agent', extension);
 
       if (config.skill_format) {
-        await this.writeSkillFile(targetPath, artifact, content, bmadDir);
+        await this.writeSkillFile(targetPath, artifact, content);
       } else {
         const filePath = path.join(targetPath, filename);
         await this.writeFile(filePath, content);
@@ -227,7 +227,7 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
    * @param {Object} config - Installation configuration
    * @returns {Promise<number>} Count of artifacts written
    */
-  async writeWorkflowArtifacts(targetPath, artifacts, templateType, config = {}, bmadDir = null) {
+  async writeWorkflowArtifacts(targetPath, artifacts, templateType, config = {}) {
     let count = 0;
 
     for (const artifact of artifacts) {
@@ -246,7 +246,7 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
         const filename = this.generateFilename(artifact, 'workflow', extension);
 
         if (config.skill_format) {
-          await this.writeSkillFile(targetPath, artifact, content, bmadDir);
+          await this.writeSkillFile(targetPath, artifact, content);
         } else {
           const filePath = path.join(targetPath, filename);
           await this.writeFile(filePath, content);
@@ -509,81 +509,29 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
 
     await this.writeFile(path.join(skillDir, 'SKILL.md'), skillContent);
 
-    await this.writeShardDocPrototypeSkill(targetPath, artifact, bmadDir, skillName);
+    await this.writeShardDocPrototypeSkill(targetPath, bmadDir, skillName);
   }
 
   /**
    * Copy shard-doc prototype skill during transition when installing skill-format targets.
    * Keeps scope literal for the first PoC without introducing generalized prototype linkage.
    * @param {string} targetPath - Base skills directory
-   * @param {Object} artifact - Artifact metadata
    * @param {string|null} bmadDir - Installed bmad directory
    * @param {string} skillName - Canonical skill name being written
    */
-  async writeShardDocPrototypeSkill(targetPath, artifact, bmadDir, skillName) {
+  async writeShardDocPrototypeSkill(targetPath, bmadDir, skillName) {
     if (!bmadDir || skillName !== 'bmad-shard-doc') return;
 
-    const sourceRef = this.resolveArtifactSourceRef(artifact, bmadDir);
-    if (!sourceRef) return;
-
     const prototypeId = 'bmad-shard-doc-skill-prototype';
-    const sourceSkillContent = await this.readPrototypeSourceSkillContent(sourceRef, prototypeId);
+    const sourceSkillPath = path.join(bmadDir, 'core', 'tasks', prototypeId, 'SKILL.md');
+    if (!(await fs.pathExists(sourceSkillPath))) return;
+
+    const sourceSkillContent = await fs.readFile(sourceSkillPath, 'utf8');
     if (!sourceSkillContent) return;
 
     const prototypeDir = path.join(targetPath, prototypeId);
     await this.ensureDir(prototypeDir);
     await this.writeFile(path.join(prototypeDir, 'SKILL.md'), sourceSkillContent);
-  }
-
-  /**
-   * Read prototype SKILL.md content directly from source when present.
-   * This enables copy-as-is installation for native skill prototypes.
-   * @param {{dirPath: string, filename: string}|null} sourceRef - Resolved source reference
-   * @param {string} prototypeId - Prototype skill ID
-   * @returns {Promise<string|null>} Source SKILL.md content or null
-   */
-  async readPrototypeSourceSkillContent(sourceRef, prototypeId) {
-    if (!sourceRef || typeof prototypeId !== 'string' || !prototypeId.trim()) return null;
-    const sourceSkillPath = path.join(sourceRef.dirPath, prototypeId, 'SKILL.md');
-    if (!(await fs.pathExists(sourceSkillPath))) return null;
-    return fs.readFile(sourceSkillPath, 'utf8');
-  }
-
-  /**
-   * Resolve the artifact source directory + filename within installed bmad tree.
-   * @param {Object} artifact - Artifact metadata
-   * @param {string} bmadDir - Installed bmad directory
-   * @returns {{dirPath: string, filename: string}|null}
-   */
-  resolveArtifactSourceRef(artifact, bmadDir) {
-    if (artifact.type !== 'task' || !artifact.path) return null;
-    const sourcePath = artifact.path;
-    const resolvedBmadDir = path.resolve(bmadDir);
-
-    let normalized = sourcePath.replaceAll('\\', '/');
-    if (path.isAbsolute(normalized)) {
-      normalized = path.relative(bmadDir, normalized).replaceAll('\\', '/');
-    }
-
-    for (const prefix of [`${this.bmadFolderName}/`, '_bmad/', 'bmad/']) {
-      if (normalized.startsWith(prefix)) {
-        normalized = normalized.slice(prefix.length);
-        break;
-      }
-    }
-
-    normalized = normalized.replace(/^\/+/, '');
-    if (!normalized || normalized.startsWith('..')) return null;
-
-    const filename = path.basename(normalized);
-    if (!filename || filename === '.' || filename === '..') return null;
-
-    const relativeDir = path.dirname(normalized);
-    const dirPath = relativeDir === '.' ? resolvedBmadDir : path.resolve(resolvedBmadDir, relativeDir);
-    const relativeToRoot = path.relative(resolvedBmadDir, dirPath);
-    if (relativeToRoot === '..' || relativeToRoot.startsWith(`..${path.sep}`) || path.isAbsolute(relativeToRoot)) return null;
-
-    return { dirPath, filename };
   }
 
   /**
