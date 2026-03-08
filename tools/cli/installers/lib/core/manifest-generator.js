@@ -156,6 +156,10 @@ class ManifestGenerator {
       if (await fs.pathExists(modulePath)) {
         const moduleWorkflows = await this.getWorkflowsFromPath(modulePath, moduleName);
         this.workflows.push(...moduleWorkflows);
+
+        // Also scan tasks/ for type:skill entries (skills can live anywhere)
+        const tasksSkills = await this.getWorkflowsFromPath(modulePath, moduleName, 'tasks');
+        this.workflows.push(...tasksSkills);
       }
     }
   }
@@ -163,9 +167,9 @@ class ManifestGenerator {
   /**
    * Recursively find and parse workflow.yaml and workflow.md files
    */
-  async getWorkflowsFromPath(basePath, moduleName) {
+  async getWorkflowsFromPath(basePath, moduleName, subDir = 'workflows') {
     const workflows = [];
-    const workflowsPath = path.join(basePath, 'workflows');
+    const workflowsPath = path.join(basePath, subDir);
     const debug = process.env.BMAD_DEBUG_MANIFEST === 'true';
 
     if (debug) {
@@ -246,8 +250,8 @@ class ManifestGenerator {
               // Build relative path for installation
               const installPath =
                 moduleName === 'core'
-                  ? `${this.bmadFolderName}/core/workflows/${relativePath}/${entry.name}`
-                  : `${this.bmadFolderName}/${moduleName}/workflows/${relativePath}/${entry.name}`;
+                  ? `${this.bmadFolderName}/core/${subDir}/${relativePath}/${entry.name}`
+                  : `${this.bmadFolderName}/${moduleName}/${subDir}/${relativePath}/${entry.name}`;
 
               // Check if this is a type:skill entry — collect separately, skip workflow CSV
               const artifactType = this.getArtifactType(skillManifest, entry.name);

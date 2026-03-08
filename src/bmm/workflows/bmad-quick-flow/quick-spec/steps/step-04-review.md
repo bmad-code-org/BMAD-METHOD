@@ -151,14 +151,12 @@ b) **HALT and wait for user selection.**
 
 #### Adversarial Review [R] Process:
 
-1. **Invoke Adversarial Review Task**:
-       > With `{finalFile}` constructed, load and follow the review task. If possible, use information asymmetry: load this task, and only it, in a separate subagent or process with read access to the project, but no context except the `{finalFile}`.
-       <invoke-task>Review {finalFile} using {project-root}/_bmad/core/tasks/review-adversarial-general.xml</invoke-task>
-       > **Platform fallback:** If task invocation not available, load the task file and follow its instructions inline, passing `{finalFile}` as the content.
-       > The task should: review `{finalFile}` and return a list of findings.
+1. **Invoke Adversarial Review Skill**:
+       > With `{finalFile}` constructed, invoke the `bmad-review-adversarial-general` skill. If possible, use information asymmetry: invoke the skill in a separate subagent or process with read access to the project, but no context except the `{finalFile}`.
+       > Pass `{finalFile}` as the content to review. The skill should return a list of findings.
 
     2. **Process Findings**:
-       > Capture the findings from the task output.
+       > Capture the findings from the skill output.
        > **If zero findings:** HALT - this is suspicious. Re-analyze or request user guidance.
        > Evaluate severity (Critical, High, Medium, Low) and validity (real, noise, undecided).
        > DO NOT exclude findings based on severity or validity unless explicitly asked to do so.

@@ -6,9 +6,6 @@ main_config: '{project-root}/_bmad/bmm/config.yaml'
 # Related workflows
 advanced_elicitation: '{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.md'
 party_mode_exec: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
-
-# Review building block
-adversarial_review_task: '{project-root}/_bmad/core/tasks/review-adversarial-general.xml'
 ---
 
 # Quick Dev New Preview Workflow
