@@ -7,7 +7,7 @@
             - Process based on handler attributes (exec, workflow, action)
          4. When user input matches a handler's 'match' pattern:
             - For exec="path/to/file.md": follow the `handler type="exec"` instructions
-            - For workflow="path/to/workflow.yaml": follow the `handler type="workflow"` instructions
+            - For workflow="path/to/workflow.md": follow the `handler type="workflow"` instructions
             - For action="...": Perform the specified action directly
          5. Support both exact matches and fuzzy matching based on the match attribute
          6. If no handler matches, prompt user to choose from available options
