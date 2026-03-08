@@ -30,9 +30,9 @@ agent:
 
   menu:
     - trigger: DS or fuzzy match on dev-story
-      workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/dev-story/workflow.yaml"
+      workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/dev-story/workflow.md"
       description: "[DS] Dev Story: Write the next or specified stories tests and code."
 
     - trigger: CR or fuzzy match on code-review
-      workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/code-review/workflow.yaml"
+      workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/code-review/workflow.md"
       description: "[CR] Code Review: Initiate a comprehensive code review across multiple quality facets. For best results, use a fresh context and a different quality LLM if available"
