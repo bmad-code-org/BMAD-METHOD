@@ -28,7 +28,7 @@ agent:
       description: "[CS] Context Story: Prepare a story with all required context for implementation for the developer agent"
 
     - trigger: ER or fuzzy match on epic-retrospective
-      workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/retrospective/workflow.yaml"
+      workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/retrospective/workflow.md"
       data: "{project-root}/_bmad/_config/agent-manifest.csv"
       description: "[ER] Epic Retrospective: Party Mode review of all work completed across an epic."
 

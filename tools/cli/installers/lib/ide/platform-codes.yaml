@@ -57,8 +57,11 @@ platforms:
     category: ide
     description: "AI coding assistant"
     installer:
-      target_dir: .clinerules/workflows
-      template_type: windsurf
+      legacy_targets:
+        - .clinerules/workflows
+      target_dir: .cline/skills
+      template_type: default
+      skill_format: true
 
   codex:
     name: "Codex"
@@ -81,8 +84,11 @@ platforms:
     category: ide
     description: "Tencent Cloud Code Assistant - AI-powered coding companion"
     installer:
-      target_dir: .codebuddy/commands
+      legacy_targets:
+        - .codebuddy/commands
+      target_dir: .codebuddy/skills
       template_type: default
+      skill_format: true
 
   crush:
     name: "Crush"
@@ -90,8 +96,11 @@ platforms:
     category: ide
     description: "AI development assistant"
     installer:
-      target_dir: .crush/commands
+      legacy_targets:
+        - .crush/commands
+      target_dir: .crush/skills
       template_type: default
+      skill_format: true
 
   cursor:
     name: "Cursor"
@@ -111,15 +120,24 @@ platforms:
     category: cli
     description: "Google's CLI for Gemini"
     installer:
-      target_dir: .gemini/commands
-      template_type: gemini
+      legacy_targets:
+        - .gemini/commands
+      target_dir: .gemini/skills
+      template_type: default
+      skill_format: true
 
   github-copilot:
     name: "GitHub Copilot"
     preferred: false
     category: ide
     description: "GitHub's AI pair programmer"
-    # No installer config - uses custom github-copilot.js
+    installer:
+      legacy_targets:
+        - .github/agents
+        - .github/prompts
+      target_dir: .github/skills
+      template_type: default
+      skill_format: true
 
   iflow:
     name: "iFlow"
@@ -127,15 +145,24 @@ platforms:
     category: ide
     description: "AI workflow automation"
     installer:
-      target_dir: .iflow/commands
+      legacy_targets:
+        - .iflow/commands
+      target_dir: .iflow/skills
       template_type: default
+      skill_format: true
 
   kilo:
     name: "KiloCoder"
     preferred: false
     category: ide
     description: "AI coding platform"
-    # No installer config - uses custom kilo.js (creates .kilocodemodes file)
+    suspended: "Kilo Code does not yet support the Agent Skills standard. Support is paused until they implement it. See https://github.com/kilocode/kilo-code/issues for updates."
+    installer:
+      legacy_targets:
+        - .kilocode/workflows
+      target_dir: .kilocode/skills
+      template_type: default
+      skill_format: true
 
   kiro:
     name: "Kiro"
@@ -171,24 +198,35 @@ platforms:
     category: ide
     description: "Qwen AI coding assistant"
     installer:
-      target_dir: .qwen/commands
+      legacy_targets:
+        - .qwen/commands
+      target_dir: .qwen/skills
       template_type: default
+      skill_format: true
 
   roo:
-    name: "Roo Cline"
+    name: "Roo Code"
     preferred: false
     category: ide
     description: "Enhanced Cline fork"
     installer:
-      target_dir: .roo/commands
+      legacy_targets:
+        - .roo/commands
+      target_dir: .roo/skills
       template_type: default
+      skill_format: true
 
   rovo-dev:
     name: "Rovo Dev"
     preferred: false
     category: ide
     description: "Atlassian's Rovo development environment"
-    # No installer config - uses custom rovodev.js (generates prompts.yml manifest)
+    installer:
+      legacy_targets:
+        - .rovodev/workflows
+      target_dir: .rovodev/skills
+      template_type: default
+      skill_format: true
 
   trae:
     name: "Trae"
@@ -196,8 +234,11 @@ platforms:
     category: ide
     description: "AI coding tool"
     installer:
-      target_dir: .trae/rules
-      template_type: trae
+      legacy_targets:
+        - .trae/rules
+      target_dir: .trae/skills
+      template_type: default
+      skill_format: true
 
   windsurf:
     name: "Windsurf"

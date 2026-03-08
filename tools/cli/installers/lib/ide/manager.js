@@ -1,5 +1,3 @@
-const fs = require('fs-extra');
-const path = require('node:path');
 const { BMAD_FOLDER_NAME } = require('./shared/path-utils');
 const prompts = require('../../../lib/prompts');
 
@@ -8,8 +6,7 @@ const prompts = require('../../../lib/prompts');
  * Dynamically discovers and loads IDE handlers
  *
  * Loading strategy:
- * 1. Custom installer files (github-copilot.js, kilo.js, rovodev.js) - for platforms with unique installation logic
- * 2. Config-driven handlers (from platform-codes.yaml) - for standard IDE installation patterns
+ * All platforms are config-driven from platform-codes.yaml.
  */
 class IdeManager {
   constructor() {
@@ -43,48 +40,10 @@ class IdeManager {
   }
 
   /**
-   * Dynamically load all IDE handlers
-   * 1. Load custom installer files first (github-copilot.js, kilo.js, rovodev.js)
-   * 2. Load config-driven handlers from platform-codes.yaml
+   * Dynamically load all IDE handlers from platform-codes.yaml
    */
   async loadHandlers() {
-    // Load custom installer files
-    await this.loadCustomInstallerFiles();
-
-    // Load config-driven handlers from platform-codes.yaml
     await this.loadConfigDrivenHandlers();
-  }
-
-  /**
-   * Load custom installer files (unique installation logic)
-   * These files have special installation patterns that don't fit the config-driven model
-   * Note: codex was migrated to config-driven (platform-codes.yaml) and no longer needs a custom installer
-   */
-  async loadCustomInstallerFiles() {
-    const ideDir = __dirname;
-    const customFiles = ['github-copilot.js', 'kilo.js', 'rovodev.js'];
-
-    for (const file of customFiles) {
-      const filePath = path.join(ideDir, file);
-      if (!fs.existsSync(filePath)) continue;
-
-      try {
-        const HandlerModule = require(filePath);
-        const HandlerClass = HandlerModule.default || Object.values(HandlerModule)[0];
-
-        if (HandlerClass) {
-          const instance = new HandlerClass();
-          if (instance.name && typeof instance.name === 'string') {
-            if (typeof instance.setBmadFolderName === 'function') {
-              instance.setBmadFolderName(this.bmadFolderName);
-            }
-            this.handlers.set(instance.name, instance);
-          }
-        }
-      } catch (error) {
-        await prompts.log.warn(`Warning: Could not load ${file}: ${error.message}`);
-      }
-    }
   }
 
   /**
@@ -98,9 +57,6 @@ class IdeManager {
     const { ConfigDrivenIdeSetup } = require('./_config-driven');
 
     for (const [platformCode, platformInfo] of Object.entries(platformConfig.platforms)) {
-      // Skip if already loaded by custom installer
-      if (this.handlers.has(platformCode)) continue;
-
       // Skip if no installer config (platform may not need installation)
       if (!platformInfo.installer) continue;
 
@@ -125,6 +81,11 @@ class IdeManager {
 
       // Filter out invalid entries (undefined name, empty key, etc.)
       if (!key || !name || typeof key !== 'string' || typeof name !== 'string') {
+        continue;
+      }
+
+      // Skip suspended platforms (e.g., IDE doesn't support skills yet)
+      if (handler.platformConfig?.suspended) {
         continue;
       }
 
@@ -177,6 +138,22 @@ class IdeManager {
       return { success: false, ide: ideName, error: 'unsupported IDE' };
     }
 
+    // Block suspended platforms — clean up legacy files but don't install
+    if (handler.platformConfig?.suspended) {
+      if (!options.silent) {
+        await prompts.log.warn(`${handler.displayName || ideName}: ${handler.platformConfig.suspended}`);
+      }
+      // Still clean up legacy artifacts so old broken configs don't linger
+      if (typeof handler.cleanup === 'function') {
+        try {
+          await handler.cleanup(projectDir, { silent: true });
+        } catch {
+          // Best-effort cleanup — don't let stale files block the suspended result
+        }
+      }
+      return { success: false, ide: ideName, error: 'suspended' };
+    }
+
     try {
       const handlerResult = await handler.setup(projectDir, bmadDir, options);
       // Build detail string from handler-returned data
@@ -189,14 +166,6 @@ class IdeManager {
         if (r.workflows > 0) parts.push(`${r.workflows} workflows`);
         if (r.tasks > 0) parts.push(`${r.tasks} tasks`);
         if (r.tools > 0) parts.push(`${r.tools} tools`);
-        detail = parts.join(', ');
-      } else if (handlerResult && handlerResult.modes !== undefined) {
-        // Kilo handler returns { success, modes, workflows, tasks, tools }
-        const parts = [];
-        if (handlerResult.modes > 0) parts.push(`${handlerResult.modes} modes`);
-        if (handlerResult.workflows > 0) parts.push(`${handlerResult.workflows} workflows`);
-        if (handlerResult.tasks > 0) parts.push(`${handlerResult.tasks} tasks`);
-        if (handlerResult.tools > 0) parts.push(`${handlerResult.tools} tools`);
         detail = parts.join(', ');
       }
       // Propagate handler's success status (default true for backward compat)

@@ -655,6 +655,21 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
       }
     }
 
+    // Strip BMAD markers from copilot-instructions.md if present
+    if (this.name === 'github-copilot') {
+      await this.cleanupCopilotInstructions(projectDir, options);
+    }
+
+    // Strip BMAD modes from .kilocodemodes if present
+    if (this.name === 'kilo') {
+      await this.cleanupKiloModes(projectDir, options);
+    }
+
+    // Strip BMAD entries from .rovodev/prompts.yml if present
+    if (this.name === 'rovo-dev') {
+      await this.cleanupRovoDevPrompts(projectDir, options);
+    }
+
     // Clean all target directories
     if (this.installerConfig?.targets) {
       const parentDirs = new Set();
@@ -741,7 +756,7 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
       if (!entry || typeof entry !== 'string') {
         continue;
       }
-      if (entry.startsWith('bmad')) {
+      if (entry.startsWith('bmad') && !entry.startsWith('bmad-os-')) {
         const entryPath = path.join(targetPath, entry);
         try {
           await fs.remove(entryPath);
@@ -769,6 +784,121 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
     }
   }
   /**
+   * Strip BMAD-owned content from .github/copilot-instructions.md.
+   * The old custom installer injected content between <!-- BMAD:START --> and <!-- BMAD:END --> markers.
+   * Deletes the file if nothing remains. Restores .bak backup if one exists.
+   */
+  async cleanupCopilotInstructions(projectDir, options = {}) {
+    const filePath = path.join(projectDir, '.github', 'copilot-instructions.md');
+
+    if (!(await fs.pathExists(filePath))) return;
+
+    try {
+      const content = await fs.readFile(filePath, 'utf8');
+      const startIdx = content.indexOf('<!-- BMAD:START -->');
+      const endIdx = content.indexOf('<!-- BMAD:END -->');
+
+      if (startIdx === -1 || endIdx === -1 || endIdx <= startIdx) return;
+
+      const cleaned = content.slice(0, startIdx) + content.slice(endIdx + '<!-- BMAD:END -->'.length);
+
+      if (cleaned.trim().length === 0) {
+        await fs.remove(filePath);
+        const backupPath = `${filePath}.bak`;
+        if (await fs.pathExists(backupPath)) {
+          await fs.rename(backupPath, filePath);
+          if (!options.silent) await prompts.log.message('  Restored copilot-instructions.md from backup');
+        }
+      } else {
+        await fs.writeFile(filePath, cleaned, 'utf8');
+        const backupPath = `${filePath}.bak`;
+        if (await fs.pathExists(backupPath)) await fs.remove(backupPath);
+      }
+
+      if (!options.silent) await prompts.log.message('  Cleaned BMAD markers from copilot-instructions.md');
+    } catch {
+      if (!options.silent) await prompts.log.warn('  Warning: Could not clean BMAD markers from copilot-instructions.md');
+    }
+  }
+
+  /**
+   * Strip BMAD-owned modes from .kilocodemodes.
+   * The old custom kilo.js installer added modes with slug starting with 'bmad-'.
+   * Parses YAML, filters out BMAD modes, rewrites. Leaves file as-is on parse failure.
+   */
+  async cleanupKiloModes(projectDir, options = {}) {
+    const kiloModesPath = path.join(projectDir, '.kilocodemodes');
+
+    if (!(await fs.pathExists(kiloModesPath))) return;
+
+    const content = await fs.readFile(kiloModesPath, 'utf8');
+
+    let config;
+    try {
+      config = yaml.parse(content) || {};
+    } catch {
+      if (!options.silent) await prompts.log.warn('  Warning: Could not parse .kilocodemodes for cleanup');
+      return;
+    }
+
+    if (!Array.isArray(config.customModes)) return;
+
+    const originalCount = config.customModes.length;
+    config.customModes = config.customModes.filter((mode) => mode && (!mode.slug || !mode.slug.startsWith('bmad-')));
+    const removedCount = originalCount - config.customModes.length;
+
+    if (removedCount > 0) {
+      try {
+        await fs.writeFile(kiloModesPath, yaml.stringify(config, { lineWidth: 0 }));
+        if (!options.silent) await prompts.log.message(`  Removed ${removedCount} BMAD modes from .kilocodemodes`);
+      } catch {
+        if (!options.silent) await prompts.log.warn('  Warning: Could not write .kilocodemodes during cleanup');
+      }
+    }
+  }
+
+  /**
+   * Strip BMAD-owned entries from .rovodev/prompts.yml.
+   * The old custom rovodev.js installer registered workflows in prompts.yml.
+   * Parses YAML, filters out entries with name starting with 'bmad-', rewrites.
+   * Removes the file if no entries remain.
+   */
+  async cleanupRovoDevPrompts(projectDir, options = {}) {
+    const promptsPath = path.join(projectDir, '.rovodev', 'prompts.yml');
+
+    if (!(await fs.pathExists(promptsPath))) return;
+
+    const content = await fs.readFile(promptsPath, 'utf8');
+
+    let config;
+    try {
+      config = yaml.parse(content) || {};
+    } catch {
+      if (!options.silent) await prompts.log.warn('  Warning: Could not parse prompts.yml for cleanup');
+      return;
+    }
+
+    if (!Array.isArray(config.prompts)) return;
+
+    const originalCount = config.prompts.length;
+    config.prompts = config.prompts.filter((entry) => entry && (!entry.name || !entry.name.startsWith('bmad-')));
+    const removedCount = originalCount - config.prompts.length;
+
+    if (removedCount > 0) {
+      try {
+        if (config.prompts.length === 0) {
+          await fs.remove(promptsPath);
+        } else {
+          await fs.writeFile(promptsPath, yaml.stringify(config, { lineWidth: 0 }));
+        }
+        if (!options.silent) await prompts.log.message(`  Removed ${removedCount} BMAD entries from prompts.yml`);
+      } catch {
+        if (!options.silent) await prompts.log.warn('  Warning: Could not write prompts.yml during cleanup');
+      }
+    }
+  }
+
+  /**
    * Check ancestor directories for existing BMAD files in the same target_dir.
    * IDEs like Claude Code inherit commands from parent directories, so an existing
    * installation in an ancestor would cause duplicate commands.
@@ -788,7 +918,9 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
       try {
         if (await fs.pathExists(candidatePath)) {
           const entries = await fs.readdir(candidatePath);
-          const hasBmad = entries.some((e) => typeof e === 'string' && e.toLowerCase().startsWith('bmad'));
+          const hasBmad = entries.some(
+            (e) => typeof e === 'string' && e.toLowerCase().startsWith('bmad') && !e.toLowerCase().startsWith('bmad-os-'),
+          );
           if (hasBmad) {
             return candidatePath;
           }

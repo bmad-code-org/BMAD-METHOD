@@ -1,5 +1,5 @@
 ---
-title: 非交互式安装
+title: "非交互式安装"
 description: 使用命令行标志安装 BMad，适用于 CI/CD 流水线和自动化部署
 sidebar:
   order: 2

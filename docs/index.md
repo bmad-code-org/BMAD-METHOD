@@ -19,7 +19,7 @@ The fastest way to understand BMad is to try it.
 - **[Workflow Map](./reference/workflow-map.md)** — Visual overview of BMM phases, workflows, and context management
 
 :::tip[Just Want to Dive In?]
-Install BMad and run `/bmad-help` — it will guide you through everything based on your project and installed modules.
+Install BMad and use the `bmad-help` skill — it will guide you through everything based on your project and installed modules.
 :::
 
 ## How to Use These Docs
