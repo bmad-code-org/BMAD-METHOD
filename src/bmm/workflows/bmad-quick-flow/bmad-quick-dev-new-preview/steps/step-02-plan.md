@@ -2,7 +2,7 @@
 name: 'step-02-plan'
 description: 'Investigate, generate spec, present for approval'
 
-templateFile: './tech-spec-template.md'
+templateFile: '../tech-spec-template.md'
 wipFile: '{implementation_artifacts}/tech-spec-wip.md'
 deferred_work_file: '{implementation_artifacts}/deferred-work.md'
 ---
