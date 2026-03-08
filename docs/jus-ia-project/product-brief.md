@@ -1,5 +1,5 @@
 ---
-stepsCompleted: [1, 2]
+stepsCompleted: [1, 2, 3]
 inputDocuments:
   - brainstorm.md
   - research.md
@@ -75,3 +75,59 @@ JusPrompt: um assistente web conversacional que funciona como "tradutor de inten
 - **MVP simplificado**: v1 pode ser apenas fluxo determinístico + templates de prompt, sem IA no backend (IA entra na v2)
 - **Mobile-first**: 38% dos advogados são autônomos, provavelmente usando celular entre audiências
 - **Framing estratégico**: para não-adotantes resistentes (34,1%), o produto não deve parecer "IA" — deve parecer "ferramenta jurídica"
+
+## Target Users
+
+### Primary Users
+
+#### Persona 1: Dra. Carla — "A Resistente Pragmática"
+
+- **Perfil**: Advogada autônoma, 42 anos, trabalhista, 12 anos de experiência
+- **Escritório**: Solo, com uma secretária. Atende ~30 clientes ativos
+- **Relação com IA**: Nunca usou. Ouviu falar do ChatGPT, viu colegas usando, mas "prefere métodos tradicionais". Tem medo de alucinação e não confia em resultado que não pode verificar
+- **Dor real**: Gasta 2-3h por petição inicial trabalhista. Sabe que colegas fazem em 40 minutos com IA, mas não sabe por onde começar e não tem tempo para aprender
+- **O que a converteria**: "Comprovação de confiabilidade" (24,6%) + "Facilidade de uso" (+4,2pp). Precisa ver resultado concreto sem investir tempo aprendendo
+- **Frase típica**: "Não tenho tempo para ficar testando ferramenta. Se funcionar de primeira, eu uso."
+- **Momento de entrada no JusPrompt**: Colega manda link pelo WhatsApp: "usa isso aqui pra montar petição, é muito fácil". Carla abre no celular
+- **Sucesso**: Faz em 40 minutos o que levava 2-3 horas. Assina o Jus IA no mês seguinte
+
+#### Persona 2: Dr. Rafael — "O Sobrecarregado Digital"
+
+- **Perfil**: Advogado autônomo, 29 anos, trabalhista, 3 anos de experiência
+- **Escritório**: Solo, trabalha de coworking jurídico. Atende ~20 clientes
+- **Relação com IA**: Usa ChatGPT diariamente, já tentou Jus IA (plano introdutório R$9,90). Gasta mais tempo reescrevendo prompts do que redigindo. Copia prompts do Google que nunca funcionam direito
+- **Dor real**: Sabe que IA pode ajudar, mas os resultados são inconsistentes. Itera 3-5 vezes por petição. Não sabe se o problema é a ferramenta ou o pedido dele
+- **O que o converteria**: Resultado consistente na primeira tentativa. Precisa de um atalho que elimine a tentativa-e-erro
+- **Frase típica**: "Eu já uso IA, mas parece que eu não sei pedir direito. Sempre tenho que refazer."
+- **Momento de entrada no JusPrompt**: Descobre via anúncio ou post do Jusbrasil. Testa com um caso real de horas extras
+- **Sucesso**: Para de iterar. Usa JusPrompt como ponto de partida para todo caso trabalhista. Converte para plano completo do Jus IA
+
+### Secondary Users
+
+#### Persona 3: Dr. Marcos — "O Dono de Escritório"
+
+- **Perfil**: Sócio de escritório com 4 advogados, 50 anos, cível e trabalhista
+- **Relação com IA**: Ele não usa, mas sabe que a equipe usa ChatGPT "por fora" (Shadow AI). Preocupado com sigilo e consistência
+- **Interesse no JusPrompt**: Quer padronizar o uso de IA na equipe. Se o JusPrompt canaliza todos para o Jus IA (com base verificada), resolve o problema de Shadow AI e garante qualidade consistente
+- **Frase típica**: "Preciso de algo que minha equipe possa usar sem eu ter que ficar supervisionando cada prompt."
+
+### User Journey (Dra. Carla — fluxo trabalhista)
+
+1. **Descoberta**: Colega manda link pelo WhatsApp: "usa isso aqui pra montar petição, é muito fácil". Carla abre no celular
+2. **Primeira tela**: "O que você precisa?" → toca [Petição Inicial]
+3. **Área**: → [Trabalhista] (pré-selecionado se veio por link específico)
+4. **Tipo**: → [Horas Extras]
+5. **Perguntas guiadas** (determinísticas):
+   - Empregador PJ ou PF? → [PJ]
+   - Regime de trabalho? → [CLT]
+   - Jornada contratual? → [44h semanais]
+   - Horas extras estimadas/semana? → [10h]
+   - Período do contrato? → [Jan 2023 – Dez 2025]
+6. **Refinamento IA** (não-determinístico):
+   - "Há registro de ponto ou o empregador não controlava?"
+   - "Existem testemunhas?"
+   - "Houve pagamento parcial de horas extras?"
+7. **Preview**: "Pronto! Montei seu pedido otimizado para o Jus IA. Ele vai gerar uma petição inicial de horas extras com fundamentação no art. 59 da CLT e Súmula 85 do TST."
+8. **Redirect**: Botão "Gerar no Jus IA →" → abre URL parametrizada
+9. **Momento aha**: Petição sai completa, com fundamentação, na primeira tentativa. Carla pensa: "Por que eu não fiz isso antes?"
+10. **Loop**: Volta para o próximo caso. Manda o link para 3 colegas
