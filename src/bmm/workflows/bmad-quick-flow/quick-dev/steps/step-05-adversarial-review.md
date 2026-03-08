@@ -57,15 +57,9 @@ Merge all changes into `{diff_output}`.
 
 ### 2. Invoke Adversarial Review
 
-With `{diff_output}` constructed, load and follow the review task. If possible, use information asymmetry: load this step, and only it, in a separate subagent or process with read access to the project, but no context except the `{diff_output}`.
+With `{diff_output}` constructed, invoke the `bmad-review-adversarial-general` skill. If possible, use information asymmetry: invoke the skill in a separate subagent or process with read access to the project, but no context except the `{diff_output}`.
 
-```xml
-<invoke-task>Review {diff_output} using {project-root}/_bmad/core/tasks/bmad-review-adversarial-general/workflow.md</invoke-task>
-```
-
-**Platform fallback:** If task invocation not available, load the task file and follow its instructions inline, passing `{diff_output}` as the content.
-
-The task should: review `{diff_output}` and return a list of findings.
+Pass `{diff_output}` as the content to review. The skill should return a list of findings.
 
 ---
 
