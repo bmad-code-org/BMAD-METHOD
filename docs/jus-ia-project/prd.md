@@ -1,5 +1,5 @@
 ---
-stepsCompleted: [step-01-init, step-02-discovery, step-02b-vision, step-02c-executive-summary, step-03-success, step-04-journeys, step-05-domain, step-06-innovation-skipped, step-07-project-type, step-08-scoping]
+stepsCompleted: [step-01-init, step-02-discovery, step-02b-vision, step-02c-executive-summary, step-03-success, step-04-journeys, step-05-domain, step-06-innovation-skipped, step-07-project-type, step-08-scoping, step-09-functional]
 classification:
   projectType: web_app
   domain: legaltech
@@ -302,3 +302,60 @@ Multi Page Application (MPA) mobile-first. Cada etapa do fluxo é uma página pr
 | **Custo de inferência LLM** | Produto gratuito mas backend custa | Monitorar custo/redirect, definir budget máximo |
 | **Baixa adoção** | <500 redirects/mês → corta | Go/No-Go claro, sem investimento pesado antes de validar |
 | **Limite de 10 fluxos** | Usuários pedem áreas não cobertas | Fallback "tipo não disponível" + priorização por demanda real |
+
+## Functional Requirements
+
+### Task Selection & Navigation
+
+- **FR1:** Advogado pode selecionar o tipo de tarefa jurídica (petição inicial, contestação, pesquisa de jurisprudência, parecer, contrato)
+- **FR2:** Advogado pode selecionar a área do direito (trabalhista, cível)
+- **FR3:** Advogado pode selecionar o subtipo específico dentro da área (ex: horas extras, rescisão indireta, dano moral dentro de trabalhista)
+- **FR4:** Advogado pode acessar um fluxo específico diretamente via deep link (ex: `/trabalhista/horas-extras`)
+- **FR5:** Advogado pode voltar à seleção anterior durante a navegação do fluxo
+
+### Guided Flow (Deterministic)
+
+- **FR6:** Sistema apresenta perguntas estruturadas específicas para cada subtipo jurídico
+- **FR7:** Sistema adapta as perguntas seguintes com base nas respostas anteriores (interatividade condicional)
+- **FR8:** Advogado pode responder perguntas via seleção (múltipla escolha, sim/não) e campos de texto
+- **FR9:** Sistema valida respostas obrigatórias antes de avançar no fluxo
+- **FR10:** Sistema suporta 10 fluxos de tarefas jurídicas no MVP
+
+### AI Contextual Refinement (Non-Deterministic)
+
+- **FR11:** Sistema envia respostas coletadas ao LLM para refinamento contextual
+- **FR12:** Sistema apresenta perguntas adicionais geradas pela IA para capturar nuances do caso
+- **FR13:** Sistema exibe indicador visual de loading durante chamadas ao LLM
+- **FR14:** Advogado pode responder às perguntas de refinamento da IA
+
+### Prompt Assembly & Delivery
+
+- **FR15:** Sistema monta o prompt otimizado nos bastidores a partir das respostas coletadas
+- **FR16:** Sistema embute fundamentação jurídica relevante no prompt gerado (artigos de lei, súmulas)
+- **FR17:** Advogado pode visualizar preview do pedido montado antes do redirect
+- **FR18:** Sistema gera URL parametrizada para o Jus IA (`ia.jusbrasil.com.br/conversa?q=...&send`)
+- **FR19:** Advogado pode ser redirecionado ao Jus IA com o pedido pronto via botão "Gerar no Jus IA →"
+
+### URL Overflow Handling
+
+- **FR20:** Sistema detecta quando o prompt montado excede o limite de caracteres da URL
+- **FR21:** Sistema apresenta fallback de copy-paste quando URL excede o limite (botão "Copiar pedido" + link direto para Jus IA)
+- **FR22:** Sistema preserva a qualidade completa do pedido independente do método de entrega
+
+### Sharing & Distribution
+
+- **FR23:** Sistema configura OG tags para preview legível quando links são compartilhados no WhatsApp
+- **FR24:** Cada fluxo possui URL própria compartilhável (deep links por área/subtipo)
+
+### Analytics & Tracking
+
+- **FR25:** Sistema rastreia o funil completo: visitante → início de fluxo → conclusão → redirect
+- **FR26:** Sistema identifica em qual pergunta do fluxo o usuário abandona (drop-off por step)
+- **FR27:** Sistema rastreia quais fluxos são mais utilizados
+- **FR28:** Sistema rastreia a origem do tráfego (orgânico, pago, referral/WhatsApp)
+- **FR29:** Sistema contabiliza o total de redirects concluídos (North Star metric)
+
+### Edge Cases & Fallbacks
+
+- **FR30:** Sistema comunica claramente quando um tipo de tarefa não está disponível
+- **FR31:** Sistema oferece alternativa quando o subtipo desejado não existe nos 10 fluxos do MVP
