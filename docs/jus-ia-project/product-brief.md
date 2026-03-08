@@ -1,5 +1,5 @@
 ---
-stepsCompleted: [1, 2, 3]
+stepsCompleted: [1, 2, 3, 4]
 inputDocuments:
   - brainstorm.md
   - research.md
@@ -130,4 +130,50 @@ JusPrompt: um assistente web conversacional que funciona como "tradutor de inten
 7. **Preview**: "Pronto! Montei seu pedido otimizado para o Jus IA. Ele vai gerar uma petição inicial de horas extras com fundamentação no art. 59 da CLT e Súmula 85 do TST."
 8. **Redirect**: Botão "Gerar no Jus IA →" → abre URL parametrizada
 9. **Momento aha**: Petição sai completa, com fundamentação, na primeira tentativa. Carla pensa: "Por que eu não fiz isso antes?"
-10. **Loop**: Volta para o próximo caso. Manda o link para 3 colegas
+10. **Fim**: Carla está no Jus IA com resultado de qualidade
+
+## Success Metrics
+
+### North Star Metric
+
+**Redirects concluídos**: número de usuários que completam o fluxo e são enviados ao Jus IA via URL parametrizada com o pedido montado.
+
+- **Meta**: 1.000 redirects no primeiro mês
+
+### User Success Metrics
+
+| Métrica | O que mede | Meta |
+|---------|-----------|------|
+| Taxa de conclusão de fluxo | % de usuários que iniciam e completam até o redirect | >60% |
+| Tempo médio do fluxo | Minutos do início ao redirect | <5 min |
+| Qualidade do resultado no Jus IA | % de usuários que não precisam reformular após o redirect | >70% |
+
+### Business Objectives
+
+| Métrica | O que mede | Meta (mês 1) |
+|---------|-----------|:---:|
+| Redirects concluídos | Fluxos completos → Jus IA | 1.000 |
+| Visitantes únicos | Alcance do produto | 3.000-5.000 |
+| Taxa de conversão visitante → redirect | Eficácia do funil | >20% |
+| Conversão redirect → assinante Jus IA | Impacto no negócio | A definir com Jusbrasil |
+
+### Key Performance Indicators
+
+**Funil principal (fluxo linear, sem loop):**
+
+```
+Visitante → Inicia fluxo → Completa perguntas → Redirect → Jus IA
+   100%    →     70%      →       50%          →   35%    → 35%
+```
+
+**Indicadores de saúde do produto:**
+
+- **Drop-off por step**: em qual pergunta do fluxo o usuário abandona
+- **Fluxos mais usados**: quais tipos de petição/tarefa têm mais demanda (validação de prioridade para expansão além do trabalhista)
+- **Origem do tráfego**: orgânico vs. pago vs. referral (entender canal de aquisição mais eficiente)
+
+**O que NÃO medimos (fora do escopo):**
+
+- Retenção / retorno do usuário (não é objetivo do produto)
+- Engajamento recorrente (fluxo é one-shot por design)
+- NPS ou satisfação (métrica de vaidade nesta fase)
