@@ -229,12 +229,7 @@ function processExecArray(execArray) {
     }
 
     if (exec.route) {
-      // Determine if it's a workflow or exec based on file extension or context
-      if (exec.route.endsWith('.yaml') || exec.route.endsWith('.yml')) {
-        result.workflow = exec.route;
-      } else {
-        result.route = exec.route;
-      }
+      result.route = exec.route;
     }
 
     if (exec.data !== null && exec.data !== undefined) {

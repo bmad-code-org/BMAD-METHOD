@@ -762,14 +762,8 @@ class ModuleManager {
         }
       }
 
-      // Check if this is a workflow.yaml file
-      if (file.endsWith('workflow.yaml')) {
-        await fs.ensureDir(path.dirname(targetFile));
-        await this.copyWorkflowYamlStripped(sourceFile, targetFile);
-      } else {
-        // Copy the file with placeholder replacement
-        await this.copyFileWithPlaceholderReplacement(sourceFile, targetFile);
-      }
+      // Copy the file with placeholder replacement
+      await this.copyFileWithPlaceholderReplacement(sourceFile, targetFile);
 
       // Track the file if callback provided
       if (fileTrackingCallback) {
@@ -778,91 +772,6 @@ class ModuleManager {
     }
   }
 
-  /**
-   * Copy workflow.yaml file with web_bundle section stripped
-   * Preserves comments, formatting, and line breaks
-   * @param {string} sourceFile - Source workflow.yaml file path
-   * @param {string} targetFile - Target workflow.yaml file path
-   */
-  async copyWorkflowYamlStripped(sourceFile, targetFile) {
-    // Read the source YAML file
-    let yamlContent = await fs.readFile(sourceFile, 'utf8');
-
-    // IMPORTANT: Replace escape sequence and placeholder BEFORE parsing YAML
-    // Otherwise parsing will fail on the placeholder
-    yamlContent = yamlContent.replaceAll('_bmad', this.bmadFolderName);
-
-    try {
-      // First check if web_bundle exists by parsing
-      const workflowConfig = yaml.parse(yamlContent);
-
-      if (workflowConfig.web_bundle === undefined) {
-        // No web_bundle section, just write (placeholders already replaced above)
-        await fs.writeFile(targetFile, yamlContent, 'utf8');
-        return;
-      }
-
-      // Find the line that starts web_bundle
-      const lines = yamlContent.split('\n');
-      let startIdx = -1;
-      let endIdx = -1;
-      let baseIndent = 0;
-
-      // Find the start of web_bundle section
-      for (const [i, line] of lines.entries()) {
-        const match = line.match(/^(\s*)web_bundle:/);
-        if (match) {
-          startIdx = i;
-          baseIndent = match[1].length;
-          break;
-        }
-      }
-
-      if (startIdx === -1) {
-        // web_bundle not found in text (shouldn't happen), copy as-is
-        await fs.writeFile(targetFile, yamlContent, 'utf8');
-        return;
-      }
-
-      // Find the end of web_bundle section
-      // It ends when we find a line with same or less indentation that's not empty/comment
-      endIdx = startIdx;
-      for (let i = startIdx + 1; i < lines.length; i++) {
-        const line = lines[i];
-
-        // Skip empty lines and comments
-        if (line.trim() === '' || line.trim().startsWith('#')) {
-          continue;
-        }
-
-        // Check indentation
-        const indent = line.match(/^(\s*)/)[1].length;
-        if (indent <= baseIndent) {
-          // Found next section at same or lower indentation
-          endIdx = i - 1;
-          break;
-        }
-      }
-
-      // If we didn't find an end, it goes to end of file
-      if (endIdx === startIdx) {
-        endIdx = lines.length - 1;
-      }
-
-      // Remove the web_bundle section (including the line before if it's just a blank line)
-      const newLines = [...lines.slice(0, startIdx), ...lines.slice(endIdx + 1)];
-
-      // Clean up any double blank lines that might result
-      const strippedYaml = newLines.join('\n').replaceAll(/\n\n\n+/g, '\n\n');
-
-      // Placeholders already replaced at the beginning of this function
-      await fs.writeFile(targetFile, strippedYaml, 'utf8');
-    } catch {
-      // If anything fails, just copy the file as-is
-      await prompts.log.warn(`  Could not process ${path.basename(sourceFile)}, copying as-is`);
-      await fs.copy(sourceFile, targetFile, { overwrite: true });
-    }
-  }
 
   /**
    * Compile .agent.yaml files to .md format in modules
@@ -1169,9 +1078,7 @@ class ModuleManager {
         const installWorkflowPath = item['workflow-install']; // Where to copy TO
 
         // Parse SOURCE workflow path
-        // Handle both _bmad placeholder and hardcoded 'bmad'
-        // Example: {project-root}/_bmad/bmm/workflows/4-implementation/create-story/workflow.yaml
-        // Or: {project-root}/bmad/bmm/workflows/4-implementation/create-story/workflow.yaml
+        // Example: {project-root}/_bmad/bmm/workflows/4-implementation/create-story/workflow.md
         const sourceMatch = sourceWorkflowPath.match(/\{project-root\}\/(?:_bmad)\/([^/]+)\/workflows\/(.+)/);
         if (!sourceMatch) {
           await prompts.log.warn(`      Could not parse workflow path: ${sourceWorkflowPath}`);
@@ -1181,8 +1088,7 @@ class ModuleManager {
         const [, sourceModule, sourceWorkflowSubPath] = sourceMatch;
 
         // Parse INSTALL workflow path
-        // Handle_bmad
-        // Example: {project-root}/_bmad/bmgd/workflows/4-production/create-story/workflow.yaml
+        // Example: {project-root}/_bmad/bmgd/workflows/4-production/create-story/workflow.md
         const installMatch = installWorkflowPath.match(/\{project-root\}\/(_bmad)\/([^/]+)\/workflows\/(.+)/);
         if (!installMatch) {
           await prompts.log.warn(`      Could not parse workflow-install path: ${installWorkflowPath}`);
@@ -1192,9 +1098,9 @@ class ModuleManager {
         const installWorkflowSubPath = installMatch[2];
 
         const sourceModulePath = getModulePath(sourceModule);
-        const actualSourceWorkflowPath = path.join(sourceModulePath, 'workflows', sourceWorkflowSubPath.replace(/\/workflow\.yaml$/, ''));
+        const actualSourceWorkflowPath = path.join(sourceModulePath, 'workflows', sourceWorkflowSubPath.replace(/\/workflow\.md$/, ''));
 
-        const actualDestWorkflowPath = path.join(targetPath, 'workflows', installWorkflowSubPath.replace(/\/workflow\.yaml$/, ''));
+        const actualDestWorkflowPath = path.join(targetPath, 'workflows', installWorkflowSubPath.replace(/\/workflow\.md$/, ''));
 
         // Check if source workflow exists
         if (!(await fs.pathExists(actualSourceWorkflowPath))) {
@@ -1204,18 +1110,12 @@ class ModuleManager {
 
         // Copy the entire workflow folder
         await prompts.log.message(
-          `      Vendoring: ${sourceModule}/workflows/${sourceWorkflowSubPath.replace(/\/workflow\.yaml$/, '')} → ${moduleName}/workflows/${installWorkflowSubPath.replace(/\/workflow\.yaml$/, '')}`,
+          `      Vendoring: ${sourceModule}/workflows/${sourceWorkflowSubPath.replace(/\/workflow\.md$/, '')} → ${moduleName}/workflows/${installWorkflowSubPath.replace(/\/workflow\.md$/, '')}`,
         );
 
         await fs.ensureDir(path.dirname(actualDestWorkflowPath));
         // Copy the workflow directory recursively with placeholder replacement
         await this.copyDirectoryWithPlaceholderReplacement(actualSourceWorkflowPath, actualDestWorkflowPath);
-
-        // Update the workflow.yaml config_source reference
-        const workflowYamlPath = path.join(actualDestWorkflowPath, 'workflow.yaml');
-        if (await fs.pathExists(workflowYamlPath)) {
-          await this.updateWorkflowConfigSource(workflowYamlPath, moduleName);
-        }
       }
     }
 
@@ -1224,27 +1124,6 @@ class ModuleManager {
     }
   }
 
-  /**
-   * Update workflow.yaml config_source to point to new module
-   * @param {string} workflowYamlPath - Path to workflow.yaml file
-   * @param {string} newModuleName - New module name to reference
-   */
-  async updateWorkflowConfigSource(workflowYamlPath, newModuleName) {
-    let yamlContent = await fs.readFile(workflowYamlPath, 'utf8');
-
-    // Replace config_source: "{project-root}/_bmad/OLD_MODULE/config.yaml"
-    // with config_source: "{project-root}/_bmad/NEW_MODULE/config.yaml"
-    // Note: At this point _bmad has already been replaced with actual folder name
-    const configSourcePattern = /config_source:\s*["']?\{project-root\}\/[^/]+\/[^/]+\/config\.yaml["']?/g;
-    const newConfigSource = `config_source: "{project-root}/${this.bmadFolderName}/${newModuleName}/config.yaml"`;
-
-    const updatedYaml = yamlContent.replaceAll(configSourcePattern, newConfigSource);
-
-    if (updatedYaml !== yamlContent) {
-      await fs.writeFile(workflowYamlPath, updatedYaml, 'utf8');
-      await prompts.log.message(`      Updated config_source to: ${this.bmadFolderName}/${newModuleName}/config.yaml`);
-    }
-  }
 
   /**
    * Create directories declared in module.yaml's `directories` key
