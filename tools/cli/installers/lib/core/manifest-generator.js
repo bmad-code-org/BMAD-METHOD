@@ -135,6 +135,7 @@ class ManifestGenerator {
     ];
 
     return {
+      skills: this.skills.length,
       workflows: this.workflows.length,
       agents: this.agents.length,
       tasks: this.tasks.length,
@@ -189,7 +190,7 @@ class ManifestGenerator {
             if (workflowFile === 'workflow.yaml') {
               workflow = yaml.parse(content);
             } else {
-              const frontmatterMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+              const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
               if (!frontmatterMatch) {
                 if (debug) console.log(`[DEBUG] collectSkills: skipped (no frontmatter): ${workflowPath}`);
                 continue;
@@ -203,12 +204,18 @@ class ManifestGenerator {
             }
 
             // Build path relative from module root
-            const relativePath = path.relative(modulePath, dir);
+            const relativePath = path.relative(modulePath, dir).split(path.sep).join('/');
             const installPath = relativePath
               ? `${this.bmadFolderName}/${moduleName}/${relativePath}/${workflowFile}`
               : `${this.bmadFolderName}/${moduleName}/${workflowFile}`;
 
-            const canonicalId = this.getCanonicalId(manifest, workflowFile) || path.basename(dir);
+            // Skills derive canonicalId from directory name — never from manifest
+            if (manifest && manifest.__single && manifest.__single.canonicalId) {
+              console.warn(
+                `Warning: Skill manifest at ${dir}/bmad-skill-manifest.yaml contains canonicalId — this field is ignored for skills (directory name is the canonical ID)`,
+              );
+            }
+            const canonicalId = path.basename(dir);
 
             this.skills.push({
               name: workflow.name,
@@ -217,6 +224,14 @@ class ManifestGenerator {
               path: installPath,
               canonicalId,
               install_to_bmad: this.getInstallToBmad(manifest, workflowFile),
+            });
+
+            // Add to files list
+            this.files.push({
+              type: 'skill',
+              name: workflow.name,
+              module: moduleName,
+              path: installPath,
             });
 
             this.skillClaimedDirs.add(dir);
@@ -246,7 +261,9 @@ class ManifestGenerator {
           }
           if (hasSkillType && debug) {
             const hasWorkflow = workflowFilenames.some((f) => entries.some((e) => e.name === f));
-            if (!hasWorkflow) {
+            if (hasWorkflow) {
+              console.log(`[DEBUG] collectSkills: dir has type:skill manifest but workflow file failed to parse: ${dir}`);
+            } else {
               console.log(`[DEBUG] collectSkills: dir has type:skill manifest but no workflow.md/workflow.yaml: ${dir}`);
             }
           }
@@ -347,7 +364,7 @@ class ManifestGenerator {
               workflow = yaml.parse(content);
             } else {
               // Parse MD workflow with YAML frontmatter
-              const frontmatterMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+              const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
               if (!frontmatterMatch) {
                 if (debug) {
                   console.log(`[DEBUG] Skipped (no frontmatter): ${fullPath}`);
@@ -462,6 +479,8 @@ class ManifestGenerator {
    * Only includes compiled .md files (not .agent.yaml source files)
    */
   async getAgentsFromDir(dirPath, moduleName, relativePath = '') {
+    // Skip directories claimed by collectSkills
+    if (this.skillClaimedDirs && this.skillClaimedDirs.has(dirPath)) return [];
     const agents = [];
     const entries = await fs.readdir(dirPath, { withFileTypes: true });
     // Load skill manifest for this directory (if present)

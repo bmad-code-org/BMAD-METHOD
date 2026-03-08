@@ -1605,7 +1605,7 @@ async function runTests() {
     // --- Skill at unusual path: core/custom-area/my-skill/ ---
     const skillDir29 = path.join(tempFixture29, 'core', 'custom-area', 'my-skill');
     await fs.ensureDir(skillDir29);
-    await fs.writeFile(path.join(skillDir29, 'bmad-skill-manifest.yaml'), 'type: skill\ncanonicalId: my-custom-skill\n');
+    await fs.writeFile(path.join(skillDir29, 'bmad-skill-manifest.yaml'), 'type: skill\n');
     await fs.writeFile(
       path.join(skillDir29, 'workflow.md'),
       '---\nname: My Custom Skill\ndescription: A skill at an unusual path\n---\n\nSkill body content\n',
@@ -1620,10 +1620,19 @@ async function runTests() {
       '---\nname: Regular Workflow\ndescription: A regular workflow not a skill\n---\n\nWorkflow body\n',
     );
 
+    // --- Skill inside workflows/ dir: core/workflows/wf-skill/ (exercises findWorkflows skip logic) ---
+    const wfSkillDir29 = path.join(tempFixture29, 'core', 'workflows', 'wf-skill');
+    await fs.ensureDir(wfSkillDir29);
+    await fs.writeFile(path.join(wfSkillDir29, 'bmad-skill-manifest.yaml'), 'type: skill\n');
+    await fs.writeFile(
+      path.join(wfSkillDir29, 'workflow.md'),
+      '---\nname: Workflow Skill\ndescription: A skill inside workflows dir\n---\n\nSkill in workflows\n',
+    );
+
     // --- Skill inside tasks/ dir: core/tasks/task-skill/ ---
     const taskSkillDir29 = path.join(tempFixture29, 'core', 'tasks', 'task-skill');
     await fs.ensureDir(taskSkillDir29);
-    await fs.writeFile(path.join(taskSkillDir29, 'bmad-skill-manifest.yaml'), 'type: skill\ncanonicalId: task-skill\n');
+    await fs.writeFile(path.join(taskSkillDir29, 'bmad-skill-manifest.yaml'), 'type: skill\n');
     await fs.writeFile(
       path.join(taskSkillDir29, 'workflow.md'),
       '---\nname: Task Skill\ndescription: A skill inside tasks dir\n---\n\nSkill in tasks\n',
@@ -1638,7 +1647,7 @@ async function runTests() {
     await generator29.generateManifests(tempFixture29, ['core'], [], { ides: [] });
 
     // Skill at unusual path should be in skills
-    const skillEntry29 = generator29.skills.find((s) => s.canonicalId === 'my-custom-skill');
+    const skillEntry29 = generator29.skills.find((s) => s.canonicalId === 'my-skill');
     assert(skillEntry29 !== undefined, 'Skill at unusual path appears in skills[]');
     assert(skillEntry29 && skillEntry29.name === 'My Custom Skill', 'Skill has correct name from frontmatter');
     assert(
@@ -1665,13 +1674,16 @@ async function runTests() {
     const regularInSkills29 = generator29.skills.find((s) => s.canonicalId === 'regular-wf');
     assert(regularInSkills29 === undefined, 'Regular type:workflow does NOT appear in skills[]');
 
+    // Skill inside workflows/ should be in skills[], NOT in workflows[] (exercises findWorkflows skip at lines 311/322)
+    const wfSkill29 = generator29.skills.find((s) => s.canonicalId === 'wf-skill');
+    assert(wfSkill29 !== undefined, 'Skill in workflows/ dir appears in skills[]');
+    const wfSkillInWorkflows29 = generator29.workflows.find((w) => w.name === 'Workflow Skill');
+    assert(wfSkillInWorkflows29 === undefined, 'Skill in workflows/ dir does NOT appear in workflows[]');
+
     // Test scanInstalledModules recognizes skill-only modules
     const skillOnlyModDir29 = path.join(tempFixture29, 'skill-only-mod');
     await fs.ensureDir(path.join(skillOnlyModDir29, 'deep', 'nested', 'my-skill'));
-    await fs.writeFile(
-      path.join(skillOnlyModDir29, 'deep', 'nested', 'my-skill', 'bmad-skill-manifest.yaml'),
-      'type: skill\ncanonicalId: nested-skill\n',
-    );
+    await fs.writeFile(path.join(skillOnlyModDir29, 'deep', 'nested', 'my-skill', 'bmad-skill-manifest.yaml'), 'type: skill\n');
     await fs.writeFile(
       path.join(skillOnlyModDir29, 'deep', 'nested', 'my-skill', 'workflow.md'),
       '---\nname: Nested Skill\ndescription: desc\n---\nbody\n',
