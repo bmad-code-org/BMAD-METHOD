@@ -192,6 +192,16 @@ platforms:
       skill_format: true
       ancestor_conflict_check: true
 
+  pi:
+    name: "Pi"
+    preferred: false
+    category: cli
+    description: "Provider-agnostic terminal-native AI coding agent"
+    installer:
+      target_dir: .pi/skills
+      template_type: default
+      skill_format: true
+
   qwen:
     name: "QwenCoder"
     preferred: false

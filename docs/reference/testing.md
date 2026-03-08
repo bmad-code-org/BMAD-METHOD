@@ -26,7 +26,7 @@ Most projects should start with Quinn. If you later need test strategy, quality 
 
 Quinn is the built-in QA agent in the BMM (Agile suite) module. It generates working tests quickly using your project's existing test framework -- no configuration or additional installation required.
 
-**Trigger:** `QA` or `bmad-bmm-qa-automate`
+**Trigger:** `QA` or `bmad-qa-generate-e2e-tests`
 
 ### What Quinn Does
 

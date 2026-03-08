@@ -5,7 +5,7 @@ sidebar:
   order: 8
 ---
 
-Use the `shard-doc` tool if you need to split large markdown files into smaller, organized files for better context management.
+Use the `bmad-shard-doc` tool if you need to split large markdown files into smaller, organized files for better context management.
 
 :::caution[Deprecated]
 This is no longer recommended, and soon with updated workflows and most major LLMs and tools supporting subprocesses this will be unnecessary.

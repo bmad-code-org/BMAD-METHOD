@@ -2,7 +2,7 @@
 name: 'step-02-plan'
 description: 'Investigate, generate spec, present for approval'
 
-templateFile: '{installed_path}/tech-spec-template.md'
+templateFile: '../tech-spec-template.md'
 wipFile: '{implementation_artifacts}/tech-spec-wip.md'
 deferred_work_file: '{implementation_artifacts}/deferred-work.md'
 ---
@@ -36,4 +36,4 @@ Present summary. If token count exceeded 1600 and user chose [K], include the to
 
 ## NEXT
 
-Read fully and follow `{installed_path}/steps/step-03-implement.md`
+Read fully and follow `./steps/step-03-implement.md`

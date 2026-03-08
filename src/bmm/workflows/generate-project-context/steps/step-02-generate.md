@@ -29,7 +29,7 @@ This step will generate content and present choices for each rule category:
 
 ## PROTOCOL INTEGRATION:
 
-- When 'A' selected: Execute {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml
+- When 'A' selected: Execute {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.md
 - When 'P' selected: Execute {project-root}/_bmad/core/workflows/party-mode
 - PROTOCOLS always return to display this step's A/P/C menu after the A or P have completed
 - User accepts/rejects protocol changes before proceeding
@@ -267,7 +267,7 @@ After each category, show the generated rules and present choices:
 
 #### If 'A' (Advanced Elicitation):
 
-- Execute advanced-elicitation.xml with current category rules
+- Execute {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.md with current category rules
 - Process enhanced rules that come back
 - Ask user: "Accept these enhanced rules for {{category}}? (y/n)"
 - If yes: Update content, then return to A/P/C menu
