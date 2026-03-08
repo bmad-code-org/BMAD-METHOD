@@ -1505,6 +1505,8 @@ async function runTests() {
   // ============================================================
   console.log(`${colors.yellow}Test Suite 28: Pi Native Skills${colors.reset}\n`);
 
+  let tempProjectDir28;
+  let installedBmadDir28;
   try {
     clearCache();
     const platformCodes28 = await loadPlatformCodes();
@@ -1512,12 +1514,25 @@ async function runTests() {
 
     assert(piInstaller?.target_dir === '.pi/skills', 'Pi target_dir uses native skills path');
     assert(piInstaller?.skill_format === true, 'Pi installer enables native skill output');
+    assert(piInstaller?.template_type === 'default', 'Pi installer uses default skill template');
 
-    const tempProjectDir28 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-pi-test-'));
-    const installedBmadDir28 = await createTestBmadFixture();
+    tempProjectDir28 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-pi-test-'));
+    installedBmadDir28 = await createTestBmadFixture();
 
     const ideManager28 = new IdeManager();
     await ideManager28.ensureInitialized();
+
+    // Verify Pi is selectable in available IDEs list
+    const availableIdes28 = ideManager28.getAvailableIdes();
+    assert(
+      availableIdes28.some((ide) => ide.value === 'pi'),
+      'Pi appears in available IDEs list',
+    );
+
+    // Verify Pi is NOT detected before install
+    const detectedBefore28 = await ideManager28.detectInstalledIdes(tempProjectDir28);
+    assert(!detectedBefore28.includes('pi'), 'Pi is not detected before install');
+
     const result28 = await ideManager28.setup('pi', tempProjectDir28, installedBmadDir28, {
       silent: true,
       selectedModules: ['bmm'],
@@ -1525,18 +1540,52 @@ async function runTests() {
 
     assert(result28.success === true, 'Pi setup succeeds against temp project');
 
+    // Verify Pi IS detected after install
+    const detectedAfter28 = await ideManager28.detectInstalledIdes(tempProjectDir28);
+    assert(detectedAfter28.includes('pi'), 'Pi is detected after install');
+
     const skillFile28 = path.join(tempProjectDir28, '.pi', 'skills', 'bmad-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile28), 'Pi install writes SKILL.md directory output');
 
-    // Verify name frontmatter matches directory name
+    // Parse YAML frontmatter between --- markers
     const skillContent28 = await fs.readFile(skillFile28, 'utf8');
-    const nameMatch28 = skillContent28.match(/^name:\s*(.+)$/m);
-    assert(nameMatch28 && nameMatch28[1].trim() === 'bmad-master', 'Pi skill name frontmatter matches directory name exactly');
+    const fmMatch28 = skillContent28.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
+    assert(fmMatch28, 'Pi SKILL.md contains valid frontmatter delimiters');
 
-    await fs.remove(tempProjectDir28);
-    await fs.remove(installedBmadDir28);
+    const frontmatter28 = fmMatch28[1];
+    const body28 = fmMatch28[2];
+
+    // Verify name in frontmatter matches directory name
+    const fmName28 = frontmatter28.match(/^name:\s*(.+)$/m);
+    assert(fmName28 && fmName28[1].trim() === 'bmad-master', 'Pi skill name frontmatter matches directory name exactly');
+
+    // Verify description exists and is non-empty
+    const fmDesc28 = frontmatter28.match(/^description:\s*(.+)$/m);
+    assert(fmDesc28 && fmDesc28[1].trim().length > 0, 'Pi skill description frontmatter is present and non-empty');
+
+    // Verify frontmatter contains only name and description keys
+    const fmKeys28 = [...frontmatter28.matchAll(/^([a-zA-Z0-9_-]+):/gm)].map((m) => m[1]);
+    assert(
+      fmKeys28.length === 2 && fmKeys28.includes('name') && fmKeys28.includes('description'),
+      'Pi skill frontmatter contains only name and description keys',
+    );
+
+    // Verify body content is non-empty and contains expected activation instructions
+    assert(body28.trim().length > 0, 'Pi skill body content is non-empty');
+    assert(body28.includes('agent-activation'), 'Pi skill body contains expected agent activation instructions');
+
+    // Reinstall/upgrade: run setup again over existing output
+    const result28b = await ideManager28.setup('pi', tempProjectDir28, installedBmadDir28, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+    assert(result28b.success === true, 'Pi reinstall/upgrade succeeds over existing skills');
+    assert(await fs.pathExists(skillFile28), 'Pi reinstall preserves SKILL.md output');
   } catch (error) {
     assert(false, 'Pi native skills test succeeds', error.message);
+  } finally {
+    if (tempProjectDir28) await fs.remove(tempProjectDir28).catch(() => {});
+    if (installedBmadDir28) await fs.remove(installedBmadDir28).catch(() => {});
   }
 
   console.log('');
