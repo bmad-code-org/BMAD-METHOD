@@ -1501,6 +1501,47 @@ async function runTests() {
   console.log('');
 
   // ============================================================
+  // Suite 28: Pi Native Skills
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 28: Pi Native Skills${colors.reset}\n`);
+
+  try {
+    clearCache();
+    const platformCodes28 = await loadPlatformCodes();
+    const piInstaller = platformCodes28.platforms.pi?.installer;
+
+    assert(piInstaller?.target_dir === '.pi/skills', 'Pi target_dir uses native skills path');
+    assert(piInstaller?.skill_format === true, 'Pi installer enables native skill output');
+
+    const tempProjectDir28 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-pi-test-'));
+    const installedBmadDir28 = await createTestBmadFixture();
+
+    const ideManager28 = new IdeManager();
+    await ideManager28.ensureInitialized();
+    const result28 = await ideManager28.setup('pi', tempProjectDir28, installedBmadDir28, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+
+    assert(result28.success === true, 'Pi setup succeeds against temp project');
+
+    const skillFile28 = path.join(tempProjectDir28, '.pi', 'skills', 'bmad-master', 'SKILL.md');
+    assert(await fs.pathExists(skillFile28), 'Pi install writes SKILL.md directory output');
+
+    // Verify name frontmatter matches directory name
+    const skillContent28 = await fs.readFile(skillFile28, 'utf8');
+    const nameMatch28 = skillContent28.match(/^name:\s*(.+)$/m);
+    assert(nameMatch28 && nameMatch28[1].trim() === 'bmad-master', 'Pi skill name frontmatter matches directory name exactly');
+
+    await fs.remove(tempProjectDir28);
+    await fs.remove(installedBmadDir28);
+  } catch (error) {
+    assert(false, 'Pi native skills test succeeds', error.message);
+  }
+
+  console.log('');
+
+  // ============================================================
   // Summary
   // ============================================================
   console.log(`${colors.cyan}========================================`);
