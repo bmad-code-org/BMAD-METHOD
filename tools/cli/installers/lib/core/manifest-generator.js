@@ -444,11 +444,50 @@ class ManifestGenerator {
    */
   async getTasksFromDir(dirPath, moduleName) {
     const tasks = [];
-    const files = await fs.readdir(dirPath);
+    const entries = await fs.readdir(dirPath, { withFileTypes: true });
     // Load skill manifest for this directory (if present)
     const skillManifest = await this.loadSkillManifest(dirPath);
 
-    for (const file of files) {
+    for (const entry of entries) {
+      const fullPath = path.join(dirPath, entry.name);
+
+      // Recurse into subdirectories (supports type:skill task directories)
+      if (entry.isDirectory()) {
+        const subManifest = await this.loadSkillManifest(fullPath);
+        const subArtifactType = this.getArtifactType(subManifest, 'workflow.md');
+
+        if (subArtifactType === 'skill') {
+          // This subdirectory is a type:skill — process its workflow.md
+          const workflowPath = path.join(fullPath, 'workflow.md');
+          if (await fs.pathExists(workflowPath)) {
+            const content = await fs.readFile(workflowPath, 'utf8');
+            const frontmatterMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+            if (frontmatterMatch) {
+              const frontmatter = yaml.parse(frontmatterMatch[1]);
+              if (frontmatter?.name && frontmatter?.description) {
+                const canonicalId = path.basename(fullPath);
+                const installPath =
+                  moduleName === 'core'
+                    ? `${this.bmadFolderName}/core/tasks/${entry.name}/workflow.md`
+                    : `${this.bmadFolderName}/${moduleName}/tasks/${entry.name}/workflow.md`;
+
+                this.skills.push({
+                  name: frontmatter.name,
+                  description: this.cleanForCSV(frontmatter.description),
+                  module: moduleName,
+                  path: installPath,
+                  canonicalId,
+                  install_to_bmad: this.getInstallToBmad(subManifest, 'workflow.md'),
+                });
+              }
+            }
+          }
+        }
+        continue;
+      }
+
+      const file = entry.name;
+
       // Check for both .xml and .md files
       if (file.endsWith('.xml') || file.endsWith('.md')) {
         const filePath = path.join(dirPath, file);

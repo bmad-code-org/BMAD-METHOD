@@ -2,7 +2,7 @@
 name: 'step-04-review'
 description: 'Adversarial review, classify findings, optional spec loop'
 
-adversarial_review_task: '{project-root}/_bmad/core/tasks/review-adversarial-general.xml'
+adversarial_review_task: '{project-root}/_bmad/core/tasks/bmad-review-adversarial-general/workflow.md'
 edge_case_hunter_task: '{project-root}/_bmad/core/tasks/review-edge-case-hunter.xml'
 deferred_work_file: '{implementation_artifacts}/deferred-work.md'
 specLoopIteration: 1

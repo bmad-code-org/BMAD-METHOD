@@ -8,7 +8,7 @@ advanced_elicitation: '{project-root}/_bmad/core/workflows/advanced-elicitation/
 party_mode_exec: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 # Review building block
-adversarial_review_task: '{project-root}/_bmad/core/tasks/review-adversarial-general.xml'
+adversarial_review_task: '{project-root}/_bmad/core/tasks/bmad-review-adversarial-general/workflow.md'
 ---
 
 # Quick Dev New Preview Workflow

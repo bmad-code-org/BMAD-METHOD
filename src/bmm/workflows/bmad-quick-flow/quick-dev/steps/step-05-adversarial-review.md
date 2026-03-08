@@ -60,7 +60,7 @@ Merge all changes into `{diff_output}`.
 With `{diff_output}` constructed, load and follow the review task. If possible, use information asymmetry: load this step, and only it, in a separate subagent or process with read access to the project, but no context except the `{diff_output}`.
 
 ```xml
-<invoke-task>Review {diff_output} using {project-root}/_bmad/core/tasks/review-adversarial-general.xml</invoke-task>
+<invoke-task>Review {diff_output} using {project-root}/_bmad/core/tasks/bmad-review-adversarial-general/workflow.md</invoke-task>
 ```
 
 **Platform fallback:** If task invocation not available, load the task file and follow its instructions inline, passing `{diff_output}` as the content.
