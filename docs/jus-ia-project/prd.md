@@ -1,5 +1,5 @@
 ---
-stepsCompleted: [step-01-init, step-02-discovery, step-02b-vision, step-02c-executive-summary, step-03-success]
+stepsCompleted: [step-01-init, step-02-discovery, step-02b-vision, step-02c-executive-summary, step-03-success, step-04-journeys]
 classification:
   projectType: web_app
   domain: legaltech
@@ -109,3 +109,78 @@ Produto lean — complexidade mínima que funcione.
 
 - Comunidade de templates validados por advogados
 - Integração bidirecional com Jus IA (feedback de qualidade)
+
+## User Journeys
+
+### Jornada 1: Dra. Carla — "A Primeira Vez" (Happy Path)
+
+**Cena inicial:** Sexta-feira, 14h. Carla está entre audiências no fórum trabalhista, celular na mão. Uma colega manda no WhatsApp: "usa isso aqui pra montar petição, é muito fácil" com o link do Start Kit.
+
+**Ação crescente:** Carla abre no celular. Sem login, sem cadastro. Primeira tela: "O que você precisa?" — toca [Petição Inicial]. Seleciona [Trabalhista] → [Horas Extras]. Responde 6 perguntas diretas sobre o caso: empregador PJ, CLT, 44h semanais, 10h extras/semana, período Jan 2023–Dez 2025. O sistema pergunta mais duas coisas contextuais: "Há registro de ponto?" e "Existem testemunhas?".
+
+**Clímax:** Tela de preview: "Pronto! Montei seu pedido otimizado para o Jus IA. Ele vai gerar uma petição inicial de horas extras com fundamentação no art. 59 da CLT e Súmula 85 do TST." Botão "Gerar no Jus IA →".
+
+**Resolução:** Carla toca o botão. Jus IA abre com o pedido pronto. Petição sai completa, com fundamentação, na primeira tentativa. 4 minutos do WhatsApp ao resultado. Carla pensa: "Por que eu não fiz isso antes?" — e encaminha o link para mais 3 colegas.
+
+**Capabilities reveladas:** seleção de tipo de tarefa, fluxo de perguntas estruturadas, refinamento contextual por IA, montagem de prompt nos bastidores, redirect via URL parametrizada, experiência mobile-first, compartilhamento por link direto.
+
+---
+
+### Jornada 2: Dr. Rafael — "O Atalho que Faltava" (Usuário de IA Frustrado)
+
+**Cena inicial:** Rafael está no coworking, com 3 abas abertas: ChatGPT, Google ("prompt petição trabalhista"), e um caso de rescisão indireta que precisa entregar amanhã. Já tentou 4 prompts diferentes, nenhum gerou algo aproveitável.
+
+**Ação crescente:** Vê um post do Jusbrasil sobre o Start Kit. Abre, escolhe [Petição Inicial] → [Trabalhista] → [Rescisão Indireta]. O fluxo faz perguntas que ele não teria pensado em colocar no prompt: "Qual a conduta do empregador que motiva a rescisão?", "Há provas documentais?", "O empregado ainda está trabalhando ou já saiu?".
+
+**Clímax — A Revelação:** O preview mostra um pedido estruturado que cobre fundamentos jurídicos que Rafael não dominava (art. 483 da CLT, alíneas específicas). Nesse momento, Rafael entende: **o problema nunca foi a ferramenta — era o pedido**. Ele estava lutando contra o ChatGPT quando deveria ter formulado melhor a pergunta. O Start Kit fez em 3 minutos o que ele tentava há horas — não porque é mais inteligente, mas porque faz as perguntas certas. Essa revelação muda sua relação com IA: de "ferramenta que não funciona" para "ferramenta que precisa do input certo".
+
+**Resolução:** Redirect para o Jus IA. Resultado sai melhor do que qualquer tentativa anterior. Rafael para de iterar. Quando um colega reclama que "IA não funciona pra direito", Rafael responde: "O problema não é a IA, é como você pede. Usa esse link." — tornando-se evangelista orgânico do produto.
+
+**Capabilities reveladas:** fluxos especializados por subtipo jurídico, perguntas que educam implicitamente (o advogado aprende sem perceber), fundamentação jurídica embutida no prompt gerado.
+
+---
+
+### Jornada 3: Dra. Carla — "O Prompt Grande Demais" (Edge Case Técnico)
+
+**Cena inicial:** Carla volta ao Start Kit para um caso trabalhista complexo: rescisão indireta com acúmulo de função, horas extras, dano moral e assédio. Múltiplos pedidos, muitos fatos.
+
+**Ação crescente:** Seleciona [Petição Inicial] → [Trabalhista] → [Rescisão Indireta]. O fluxo coleta informações normalmente, mas o caso tem muitas nuances: 4 condutas do empregador, 3 testemunhas, histórico detalhado de assédio. Carla responde tudo diligentemente.
+
+**Momento de falha:** O sistema monta o prompt nos bastidores, mas o resultado excede o limite de ~2000 caracteres da URL parametrizada. O botão "Gerar no Jus IA →" não pode simplesmente abrir uma URL truncada — o pedido ficaria incompleto.
+
+**Recuperação:** O sistema detecta o overflow antes do redirect e oferece alternativa: exibe o pedido montado em uma tela de cópia com botão "Copiar pedido" + link direto para o Jus IA. Carla cola manualmente. Experiência levemente pior (2 cliques em vez de 1), mas o pedido chega completo.
+
+**Resolução:** O resultado no Jus IA sai bom porque o pedido estava bem formulado, mesmo com o passo extra. Carla nem percebe que houve um fallback técnico — para ela, foi só "copiar e colar".
+
+**Capabilities reveladas:** detecção de overflow de URL, fallback de copy-paste com link direto, preservação da qualidade do pedido independente do método de entrega, graceful degradation.
+
+---
+
+### Jornada 4: Dr. Marcos — "Padronizando a Equipe" (Secundário)
+
+**Cena inicial:** Marcos descobre que dois advogados juniores da equipe estão usando ChatGPT para rascunhar petições sem supervisão. Um deles citou jurisprudência que não existe. Marcos precisa resolver Shadow AI.
+
+**Ação crescente:** Encontra o Start Kit via colega. Testa com um caso cível de cobrança. Gosta que o fluxo guiado não permite "inventar" — as perguntas estruturadas forçam os dados corretos e o redirect vai para o Jus IA (base verificada, não ChatGPT).
+
+**Clímax — Governança por deep link:** Marcos percebe que pode mandar links específicos por área: link do fluxo trabalhista para a júnior de trabalhista, link do fluxo cível para o júnior de cível. Cada advogado recebe exatamente o fluxo da sua especialidade. Sem admin panel, sem configuração — o deep link É a ferramenta de governança.
+
+**Resolução:** Marcos manda os links no grupo de WhatsApp do escritório: "A partir de agora, usem esses links para montar petições. Sem mais ChatGPT direto." A equipe adota. Marcos não precisa supervisionar cada prompt. Quando os 10 fluxos não bastarem, Marcos considera assinar o Jus IA completo para o escritório.
+
+**Capabilities reveladas:** deep links por fluxo/área como ferramenta de governança, compartilhamento por WhatsApp como canal de distribuição B2B informal, produto funciona como padronização leve de IA sem admin panel.
+
+---
+
+### Journey Requirements Summary
+
+| Capability | Jornadas | Prioridade |
+|-----------|----------|-----------|
+| Seleção de tipo de tarefa (petição, pesquisa, contrato) | 1, 2, 3, 4 | MVP |
+| Fluxo de perguntas estruturadas por subtipo jurídico | 1, 2, 3, 4 | MVP |
+| Refinamento contextual por IA | 1, 2, 3 | MVP |
+| Montagem de prompt e redirect via URL parametrizada | 1, 2, 4 | MVP |
+| Preview do pedido antes do redirect | 1, 2, 3 | MVP |
+| Detecção de overflow de URL + fallback copy-paste | 3 | MVP |
+| Experiência mobile-first | 1, 4 | MVP |
+| Deep links por fluxo/área do direito | 1, 4 | MVP |
+| Tracking de origem/referral (WhatsApp, orgânico, pago) | 1, 2, 4 | MVP |
+| Fundamentação jurídica embutida no prompt | 2 | MVP |
