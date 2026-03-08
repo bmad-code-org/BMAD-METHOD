@@ -306,37 +306,44 @@ O Start Kit combina padrões estabelecidos de forma inovadora:
 
 ### Color System
 
-**Paleta primária — Confiança jurídica:**
+**Paleta primária — Alinhada com Jus IA brand:**
 
 | Token | Cor | Uso |
 |-------|-----|-----|
-| `primary` | Azul escuro (#1E3A5F) | Ações primárias, header, elementos de confiança |
-| `primary-light` | Azul médio (#2E5A8F) | Hover states, links |
-| `accent` | Dourado/âmbar (#D4A843) | Destaque, badges de fundamentação jurídica, CTA secundário |
+| `primary` | Verde escuro (#007A5F) | Ações primárias, botões, CTAs, header — cor principal do Jus IA |
+| `primary-light` | Verde médio (#009B78) | Hover states |
+| `primary-dark` | Verde escuro (#005C47) | Active/pressed states |
+| `accent` | Dourado/âmbar (#D4A843) | Badges de fundamentação jurídica — diferenciador do Start Kit |
 | `surface` | Branco (#FFFFFF) | Background de cards e áreas de conteúdo |
 | `background` | Cinza muito claro (#F8F9FA) | Background geral das páginas |
-| `text-primary` | Cinza escuro (#1A1A2E) | Texto principal |
+| `text-primary` | Azul acinzentado (#5C6F8A) | Texto principal, corpo — padrão Jus IA |
+| `text-dark` | Quase preto (#0F172A) | Headings, texto enfático — padrão Jusbrasil |
 | `text-secondary` | Cinza médio (#6B7280) | Texto auxiliar, placeholders |
+| `border` | Cinza azulado (#B3C0D0) | Bordas de cards, inputs, botões secondary — padrão Jus IA |
 
 **Paleta semântica:**
 
 | Token | Cor | Uso |
 |-------|-----|-----|
-| `success` | Verde (#059669) | Confirmação, progresso completo |
+| `success` | Verde Jusbrasil (#7AB441) | Confirmação, progresso completo — cor do logo Jusbrasil |
 | `warning` | Âmbar (#D97706) | Atenção, fallback copy-paste |
 | `error` | Vermelho (#DC2626) | Erros de validação |
-| `info` | Azul claro (#0284C7) | Dicas, microcopy informativo |
+| `info` | Azul Jusbrasil (#378CC8) | Dicas, microcopy informativo — cor do logo Jusbrasil |
 
-**Rationale:** Azul escuro + dourado = vocabulário visual de escritórios de advocacia, tribunais, e instituições jurídicas brasileiras. Transmite credibilidade e profissionalismo sem parecer tech startup. O dourado/âmbar para badges de fundamentação jurídica cria destaque sem parecer gamificado.
+**Rationale:** Verde (#007A5F) como primary alinha o Start Kit com a identidade visual do Jus IA — continuidade visual natural quando o advogado é redirecionado. O dourado (#D4A843) é mantido exclusivamente para badges de fundamentação jurídica, criando um diferenciador visual do Start Kit que não existe no Jus IA. As cores semânticas (success verde, info azul) remetem ao logo Jusbrasil, reforçando a conexão com o ecossistema.
 
-**Acessibilidade:** Contraste mínimo 4.5:1 para texto normal, 3:1 para texto grande. Primary (#1E3A5F) sobre branco = ratio 8.2:1 (passa AAA).
+**Acessibilidade:** Contraste mínimo 4.5:1 para texto normal, 3:1 para texto grande. Primary (#007A5F) sobre branco = ratio 5.9:1 (passa AA). Text-dark (#0F172A) sobre branco = ratio 16.6:1 (passa AAA).
+
+**Componentes (alinhados com Jus IA):**
+- **Button Primary**: Background `#007A5F`, texto branco, border-radius 8px, shadow `rgba(25, 52, 102, 0.04) 0px 2px 4px`
+- **Button Secondary**: Background branco, texto `#007A5F`, borda `#B3C0D0`, border-radius 8px
 
 ### Typography System
 
 **Typeface:**
 - **Primary (headings)**: Inter — clean, profissional, excelente legibilidade em mobile. Sem serifa para modernidade sem perder seriedade.
 - **Body text**: Inter — mesma família para consistência. Pesos variados para hierarquia.
-- **Fallback**: system-ui, -apple-system, sans-serif
+- **Fallback**: system-ui, -apple-system, Segoe UI, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif (stack Jus IA)
 
 **Type scale (mobile-first):**
 
@@ -353,7 +360,7 @@ O Start Kit combina padrões estabelecidos de forma inovadora:
 
 ### Spacing & Layout Foundation
 
-**Base unit:** 4px (0.25rem)
+**Base unit:** 8px (0.5rem) — alinhado com Jus IA base unit
 
 **Spacing scale:**
 
@@ -369,7 +376,7 @@ O Start Kit combina padrões estabelecidos de forma inovadora:
 **Layout:**
 - **Mobile**: Single column, 100% width com padding lateral de 16px
 - **Desktop**: Max-width 640px centralizado — o fluxo não precisa ser wide, mantém foco
-- **Cards**: Background white, border-radius 12px, padding 16px, sombra sutil
+- **Cards**: Background white, border-radius 6px, padding 16px, shadow `rgba(25, 52, 102, 0.04) 0px 2px 4px` — padrão Jus IA
 - **Chips**: Height 44px mínimo (touch target), border-radius 8px, padding horizontal 16px
 - **Botões**: Height 48px, full-width em mobile, border-radius 8px
 
@@ -396,8 +403,8 @@ Considerando o contexto do produto (MPA mobile-first, público jurídico conserv
 **Elementos-chave:**
 - **Header minimal**: Logo (se houver) + indicador de progresso. Sem navegação, sem menu — o fluxo é linear
 - **Cards de conteúdo**: Fundo branco com sombra sutil sobre background cinza claro. Uma pergunta/agrupamento por card
-- **Chips de seleção**: Azul escuro outline, preenchimento sólido ao selecionar. Cantos arredondados (8px), nunca quadrados
-- **Botão primário**: Azul escuro sólido, full-width em mobile, texto branco. Único CTA por tela
+- **Chips de seleção**: Verde (#007A5F) outline, preenchimento sólido ao selecionar. Cantos arredondados (8px), nunca quadrados
+- **Botão primário**: Verde (#007A5F) sólido, full-width em mobile, texto branco, shadow sutil. Único CTA por tela — mesmo estilo do Jus IA
 - **Preview card**: Fundo branco com borda dourada sutil. Badges de fundamentação jurídica em dourado/âmbar. Visualmente diferente das telas de perguntas para marcar o "momento aha"
 - **Tipografia**: Peso 600 para perguntas (heading-3), peso 400 para helpers. Hierarquia clara
 
@@ -564,7 +571,7 @@ Componentes padrão disponíveis via HTML + Tailwind classes:
 **1. ChipSelector**
 - **Purpose:** Seleção de opções tocáveis (tipo tarefa, área, subtipo, respostas)
 - **Anatomy:** Container com chips em grid/wrap. Cada chip: texto + optional icon + estado selecionado
-- **States:** Default (outline azul), Hover (background azul claro), Selected (fill azul, check icon), Disabled (cinza, opacity 50%)
+- **States:** Default (outline verde #007A5F), Hover (background verde claro), Selected (fill verde, check icon), Disabled (cinza, opacity 50%)
 - **Variants:** Single-select (radio behavior) | Multi-select (checkbox behavior)
 - **Touch target:** Mínimo 44px height, padding 12px 16px
 - **Accessibility:** `role="radiogroup"` ou `role="group"` + `aria-checked` por chip. Navegação por teclado (arrows)
@@ -619,9 +626,9 @@ Componentes padrão disponíveis via HTML + Tailwind classes:
 
 | Nível | Visual | Uso | Exemplo |
 |-------|--------|-----|---------|
-| **Primary** | Fill azul escuro, texto branco, full-width mobile | Ação principal por tela (uma única) | "Continuar →", "Gerar no Jus IA →" |
-| **Secondary** | Outline azul, texto azul | Ação complementar | "Copiar pedido", "Voltar" |
-| **Text** | Sem borda, texto azul, underline | Link contextual | "Seus dados não são armazenados" |
+| **Primary** | Fill verde (#007A5F), texto branco, full-width mobile, shadow sutil | Ação principal por tela (uma única) | "Continuar →", "Gerar no Jus IA →" |
+| **Secondary** | Background branco, texto verde (#007A5F), borda (#B3C0D0) | Ação complementar | "Copiar pedido", "Voltar" |
+| **Text** | Sem borda, texto (#5C6F8A), underline | Link contextual | "Seus dados não são armazenados" |
 
 **Regras:**
 - Máximo 1 botão primary por tela
@@ -733,8 +740,9 @@ Componentes padrão disponíveis via HTML + Tailwind classes:
 | Forms | `<label>` + `<fieldset>` + `<legend>` corretos |
 
 **Color contrast:**
-- Texto primary (#1A1A2E) sobre white: 16:1 (AAA)
-- Primary button (#1E3A5F) texto white: 8.2:1 (AAA)
+- Text-dark (#0F172A) sobre white: 16.6:1 (AAA)
+- Text-primary (#5C6F8A) sobre white: 4.6:1 (AA)
+- Primary button (#007A5F) texto white: 5.9:1 (AA)
 - LegalBadge text sobre accent background: verificar ≥4.5:1
 
 **Keyboard navigation:**
