@@ -1,5 +1,5 @@
 ---
-stepsCompleted: [1, 2, 3, 4]
+stepsCompleted: [1, 2, 3, 4, 5]
 inputDocuments:
   - brainstorm.md
   - research.md
@@ -177,3 +177,79 @@ Visitante → Inicia fluxo → Completa perguntas → Redirect → Jus IA
 - Retenção / retorno do usuário (não é objetivo do produto)
 - Engajamento recorrente (fluxo é one-shot por design)
 - NPS ou satisfação (métrica de vaidade nesta fase)
+
+## MVP Scope
+
+### Core Features
+
+**1. Fluxo Híbrido Completo (Determinístico + IA)**
+- Perguntas estruturadas (seleções, múltipla escolha) para coletar dados do caso
+- Refinamento contextual por IA para capturar nuances que formulários rígidos perdem
+- O advogado nunca vê um "prompt" — interage com perguntas na linguagem jurídica
+
+**2. 10 Fluxos de Tarefas Jurídicas**
+- Petição Inicial Trabalhista (horas extras, rescisão indireta, dano moral)
+- Petição Inicial Cível (cobrança, indenização, obrigação de fazer)
+- Contestação (trabalhista e cível)
+- Pesquisa de Jurisprudência
+- Parecer Jurídico
+- Contrato (revisão/análise)
+
+> Priorização exata dos 10 fluxos será definida no PRD com base em volume de demanda e complexidade de implementação.
+
+**3. Redirect via URL Parametrizada**
+- Montagem automática do pedido otimizado nos bastidores
+- Botão "Gerar no Jus IA →" que abre `ia.jusbrasil.com.br/conversa?q=...&send`
+- Validação do limite de ~2000 caracteres de URL (fallback se necessário)
+
+**4. Experiência Zero Fricção**
+- Sem login, sem cadastro, sem barreira de entrada
+- Mobile-first (38% dos advogados são autônomos, usam celular entre audiências)
+- Domínio independente (ex: jusprompt.com.br ou similar)
+- Compartilhável por WhatsApp (link direto para fluxo específico)
+
+**5. Analytics Básico**
+- Tracking do funil: visitante → início de fluxo → conclusão → redirect
+- Drop-off por step (em qual pergunta o usuário abandona)
+- Fluxos mais usados (validação de prioridade para expansão)
+- Origem do tráfego (orgânico vs. referral)
+
+### Out of Scope for MVP
+
+- **Contas de usuário / login**: fluxo é anônimo e one-shot
+- **Histórico de pedidos**: não salva sessões anteriores
+- **Edição do prompt gerado**: advogado não vê nem edita o prompt — confia no fluxo
+- **Integração bidirecional com Jus IA**: só redirect unidirecional (não recebe dados de volta)
+- **Áreas além das 10 definidas**: penal, tributário, administrativo etc. ficam para v2
+- **Multilíngua**: apenas português brasileiro
+- **App nativo**: web responsiva, sem apps iOS/Android
+- **A/B testing de prompts**: otimização de templates fica para v2
+- **Dashboard para escritórios** (Dr. Marcos): gestão de equipe fica para v2
+
+### MVP Success Criteria
+
+| Gate | Critério | Meta |
+|------|----------|------|
+| **Adoção** | Redirects concluídos no mês 1 | 1.000 |
+| **Eficácia do fluxo** | Taxa de conclusão (início → redirect) | >60% |
+| **Qualidade** | Usuários que não reformulam no Jus IA | >70% |
+| **Velocidade** | Tempo médio do fluxo | <5 min |
+| **Viralidade** | % de tráfego por referral/WhatsApp | >30% |
+
+**Go/No-Go para v2**: Se atingir >500 redirects/mês E taxa de conclusão >40%, validamos a abordagem e expandimos.
+
+### Future Vision
+
+**v2 — Expansão e Inteligência**
+- Mais áreas do direito (penal, tributário, família, empresarial, administrativo)
+- Otimização de templates por A/B testing (qual formulação gera melhor resultado no Jus IA)
+- Histórico de pedidos (com login opcional)
+- Sugestão inteligente de fluxo ("baseado no que você descreveu, recomendo...")
+
+**v3 — Plataforma e Ecossistema**
+- Dashboard para escritórios (Dr. Marcos): gestão de uso da equipe, padronização
+- API para integração em sistemas jurídicos (PJe, Themis, etc.)
+- Comunidade de templates validados por advogados
+- Integração bidirecional com Jus IA (receber feedback de qualidade do resultado)
+
+**Visão de longo prazo**: JusPrompt se torna o "ponto de entrada padrão" para qualquer advogado brasileiro usar IA jurídica — o Google do Jus IA.
