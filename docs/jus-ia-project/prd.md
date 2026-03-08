@@ -1,5 +1,5 @@
 ---
-stepsCompleted: [step-01-init, step-02-discovery, step-02b-vision, step-02c-executive-summary, step-03-success, step-04-journeys, step-05-domain, step-06-innovation-skipped, step-07-project-type, step-08-scoping, step-09-functional]
+stepsCompleted: [step-01-init, step-02-discovery, step-02b-vision, step-02c-executive-summary, step-03-success, step-04-journeys, step-05-domain, step-06-innovation-skipped, step-07-project-type, step-08-scoping, step-09-functional, step-10-nonfunctional]
 classification:
   projectType: web_app
   domain: legaltech
@@ -359,3 +359,29 @@ Multi Page Application (MPA) mobile-first. Cada etapa do fluxo é uma página pr
 
 - **FR30:** Sistema comunica claramente quando um tipo de tarefa não está disponível
 - **FR31:** Sistema oferece alternativa quando o subtipo desejado não existe nos 10 fluxos do MVP
+
+## Non-Functional Requirements
+
+### Performance
+
+- **NFR1:** Páginas do fluxo (MPA) carregam em tempo razoável em conexão 3G/4G mobile
+- **NFR2:** Refinamento contextual por IA exibe loading state durante toda a latência da chamada LLM
+- **NFR3:** Transições entre perguntas determinísticas são page loads normais sem delay perceptível além do carregamento da página
+
+### Security
+
+- **NFR4:** Dados inseridos pelo advogado durante o fluxo não são persistidos em nenhum storage após o redirect
+- **NFR5:** Chamadas ao LLM backend não logam o conteúdo das respostas do advogado
+- **NFR6:** Não há autenticação, cookies de sessão ou tracking de identidade do usuário
+
+### Integration
+
+- **NFR7:** URL parametrizada para o Jus IA respeita o formato `ia.jusbrasil.com.br/conversa?q=...&send`
+- **NFR8:** Sistema valida limite de caracteres da URL antes de tentar o redirect
+- **NFR9:** Fallback copy-paste mantém formatação do prompt idêntica ao que seria enviado via URL
+
+### Compatibility
+
+- **NFR10:** Produto funciona em Chrome, Safari, Firefox e Edge (versões evergreen)
+- **NFR11:** Layout é mobile-first com breakpoints responsivos para desktop
+- **NFR12:** OG tags renderizam preview correto no WhatsApp (título, descrição, imagem)
