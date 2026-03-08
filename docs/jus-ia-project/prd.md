@@ -1,5 +1,5 @@
 ---
-stepsCompleted: [step-01-init, step-02-discovery, step-02b-vision, step-02c-executive-summary, step-03-success, step-04-journeys]
+stepsCompleted: [step-01-init, step-02-discovery, step-02b-vision, step-02c-executive-summary, step-03-success, step-04-journeys, step-05-domain]
 classification:
   projectType: web_app
   domain: legaltech
@@ -184,3 +184,18 @@ Produto lean — complexidade mínima que funcione.
 | Deep links por fluxo/área do direito | 1, 4 | MVP |
 | Tracking de origem/referral (WhatsApp, orgânico, pago) | 1, 2, 4 | MVP |
 | Fundamentação jurídica embutida no prompt | 2 | MVP |
+
+## Domain-Specific Requirements
+
+### Legaltech Domain — Aplicabilidade ao Start Kit
+
+O CSV de domínio classifica legaltech como high complexity com concerns em: ética OAB, regulamentação, retenção de dados, sigilo advocatício e integração com tribunais. **Nenhuma se aplica diretamente ao Start Kit:**
+
+- **Ética OAB / disclaimer de IA**: responsabilidade do Jus IA (destino do redirect), não do Start Kit
+- **Dados do caso durante o fluxo**: sem persistência, sem login, uso por conta e risco do advogado. Dados transitam pelo backend apenas para refinamento contextual por IA e são descartados após o redirect
+- **Fundamentação jurídica nos prompts**: o Start Kit referencia artigos e súmulas nos templates de prompt, mas a interpretação e validação é do Jus IA com sua base de 90M+ decisões verificadas
+- **Integração com tribunais**: inexistente — redirect unidirecional apenas
+
+### Constraint Residual
+
+O único constraint de domínio relevante é que os **templates de prompt por área do direito requerem expertise jurídica específica** para serem construídos corretamente (classificação: domainKnowledge = high). Isso impacta o custo de criação de novos fluxos, não a arquitetura técnica.
