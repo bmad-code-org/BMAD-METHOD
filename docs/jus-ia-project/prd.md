@@ -1,5 +1,11 @@
 ---
-stepsCompleted: [step-01-init]
+stepsCompleted: [step-01-init, step-02-discovery]
+classification:
+  projectType: web_app
+  domain: legaltech
+  complexity: medium
+  domainKnowledge: high
+  projectContext: greenfield
 inputDocuments:
   - product-brief.md
   - brainstorm.md
