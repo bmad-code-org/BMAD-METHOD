@@ -1591,6 +1591,115 @@ async function runTests() {
   console.log('');
 
   // ============================================================
+  // Suite 29: Unified Skill Scanner — collectSkills
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 29: Unified Skill Scanner${colors.reset}\n`);
+
+  let tempFixture29;
+  try {
+    tempFixture29 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-skill-scanner-'));
+
+    // Create _config dir (required by manifest generator)
+    await fs.ensureDir(path.join(tempFixture29, '_config'));
+
+    // --- Skill at unusual path: core/custom-area/my-skill/ ---
+    const skillDir29 = path.join(tempFixture29, 'core', 'custom-area', 'my-skill');
+    await fs.ensureDir(skillDir29);
+    await fs.writeFile(path.join(skillDir29, 'bmad-skill-manifest.yaml'), 'type: skill\n');
+    await fs.writeFile(
+      path.join(skillDir29, 'workflow.md'),
+      '---\nname: My Custom Skill\ndescription: A skill at an unusual path\n---\n\nSkill body content\n',
+    );
+
+    // --- Regular workflow dir: core/workflows/regular-wf/ (type: workflow) ---
+    const wfDir29 = path.join(tempFixture29, 'core', 'workflows', 'regular-wf');
+    await fs.ensureDir(wfDir29);
+    await fs.writeFile(path.join(wfDir29, 'bmad-skill-manifest.yaml'), 'type: workflow\ncanonicalId: regular-wf\n');
+    await fs.writeFile(
+      path.join(wfDir29, 'workflow.md'),
+      '---\nname: Regular Workflow\ndescription: A regular workflow not a skill\n---\n\nWorkflow body\n',
+    );
+
+    // --- Skill inside workflows/ dir: core/workflows/wf-skill/ (exercises findWorkflows skip logic) ---
+    const wfSkillDir29 = path.join(tempFixture29, 'core', 'workflows', 'wf-skill');
+    await fs.ensureDir(wfSkillDir29);
+    await fs.writeFile(path.join(wfSkillDir29, 'bmad-skill-manifest.yaml'), 'type: skill\n');
+    await fs.writeFile(
+      path.join(wfSkillDir29, 'workflow.md'),
+      '---\nname: Workflow Skill\ndescription: A skill inside workflows dir\n---\n\nSkill in workflows\n',
+    );
+
+    // --- Skill inside tasks/ dir: core/tasks/task-skill/ ---
+    const taskSkillDir29 = path.join(tempFixture29, 'core', 'tasks', 'task-skill');
+    await fs.ensureDir(taskSkillDir29);
+    await fs.writeFile(path.join(taskSkillDir29, 'bmad-skill-manifest.yaml'), 'type: skill\n');
+    await fs.writeFile(
+      path.join(taskSkillDir29, 'workflow.md'),
+      '---\nname: Task Skill\ndescription: A skill inside tasks dir\n---\n\nSkill in tasks\n',
+    );
+
+    // Minimal agent so core module is detected
+    await fs.ensureDir(path.join(tempFixture29, 'core', 'agents'));
+    const minimalAgent29 = '<agent name="Test" title="T"><persona>p</persona></agent>';
+    await fs.writeFile(path.join(tempFixture29, 'core', 'agents', 'test.md'), minimalAgent29);
+
+    const generator29 = new ManifestGenerator();
+    await generator29.generateManifests(tempFixture29, ['core'], [], { ides: [] });
+
+    // Skill at unusual path should be in skills
+    const skillEntry29 = generator29.skills.find((s) => s.canonicalId === 'my-skill');
+    assert(skillEntry29 !== undefined, 'Skill at unusual path appears in skills[]');
+    assert(skillEntry29 && skillEntry29.name === 'My Custom Skill', 'Skill has correct name from frontmatter');
+    assert(
+      skillEntry29 && skillEntry29.path.includes('custom-area/my-skill/workflow.md'),
+      'Skill path includes relative path from module root',
+    );
+
+    // Skill should NOT be in workflows
+    const inWorkflows29 = generator29.workflows.find((w) => w.name === 'My Custom Skill');
+    assert(inWorkflows29 === undefined, 'Skill at unusual path does NOT appear in workflows[]');
+
+    // Skill in tasks/ dir should be in skills
+    const taskSkillEntry29 = generator29.skills.find((s) => s.canonicalId === 'task-skill');
+    assert(taskSkillEntry29 !== undefined, 'Skill in tasks/ dir appears in skills[]');
+
+    // Skill in tasks/ should NOT appear in tasks[]
+    const inTasks29 = generator29.tasks.find((t) => t.name === 'Task Skill');
+    assert(inTasks29 === undefined, 'Skill in tasks/ dir does NOT appear in tasks[]');
+
+    // Regular workflow should be in workflows, NOT in skills
+    const regularWf29 = generator29.workflows.find((w) => w.name === 'Regular Workflow');
+    assert(regularWf29 !== undefined, 'Regular type:workflow appears in workflows[]');
+
+    const regularInSkills29 = generator29.skills.find((s) => s.canonicalId === 'regular-wf');
+    assert(regularInSkills29 === undefined, 'Regular type:workflow does NOT appear in skills[]');
+
+    // Skill inside workflows/ should be in skills[], NOT in workflows[] (exercises findWorkflows skip at lines 311/322)
+    const wfSkill29 = generator29.skills.find((s) => s.canonicalId === 'wf-skill');
+    assert(wfSkill29 !== undefined, 'Skill in workflows/ dir appears in skills[]');
+    const wfSkillInWorkflows29 = generator29.workflows.find((w) => w.name === 'Workflow Skill');
+    assert(wfSkillInWorkflows29 === undefined, 'Skill in workflows/ dir does NOT appear in workflows[]');
+
+    // Test scanInstalledModules recognizes skill-only modules
+    const skillOnlyModDir29 = path.join(tempFixture29, 'skill-only-mod');
+    await fs.ensureDir(path.join(skillOnlyModDir29, 'deep', 'nested', 'my-skill'));
+    await fs.writeFile(path.join(skillOnlyModDir29, 'deep', 'nested', 'my-skill', 'bmad-skill-manifest.yaml'), 'type: skill\n');
+    await fs.writeFile(
+      path.join(skillOnlyModDir29, 'deep', 'nested', 'my-skill', 'workflow.md'),
+      '---\nname: Nested Skill\ndescription: desc\n---\nbody\n',
+    );
+
+    const scannedModules29 = await generator29.scanInstalledModules(tempFixture29);
+    assert(scannedModules29.includes('skill-only-mod'), 'scanInstalledModules recognizes skill-only module');
+  } catch (error) {
+    assert(false, 'Unified skill scanner test succeeds', error.message);
+  } finally {
+    if (tempFixture29) await fs.remove(tempFixture29).catch(() => {});
+  }
+
+  console.log('');
+
+  // ============================================================
   // Summary
   // ============================================================
   console.log(`${colors.cyan}========================================`);
