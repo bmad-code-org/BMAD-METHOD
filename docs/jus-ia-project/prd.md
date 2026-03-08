@@ -89,6 +89,14 @@ Produto lean — complexidade mínima que funcione.
 | **Conhecimento de Domínio** | High — fluxos jurídicos por área do direito brasileiro requerem expertise específica |
 | **Contexto** | Greenfield — produto novo, sem legado |
 
+## Target Users
+
+| Persona | Perfil | Relação com IA | Motivação |
+|---------|--------|---------------|-----------|
+| **Dra. Carla** (primária) | Advogada autônoma, 42 anos, trabalhista | Nunca usou — quer resultado sem curva de aprendizado | "Se funcionar de primeira, eu uso" |
+| **Dr. Rafael** (primário) | Advogado autônomo, 29 anos, trabalhista | Usa ChatGPT mas itera 3-5x por petição | Eliminar tentativa-e-erro |
+| **Dr. Marcos** (secundário) | Sócio de escritório, 50 anos, cível/trabalhista | Não usa, mas equipe usa ChatGPT sem governança | Padronizar e eliminar Shadow AI |
+
 ## User Journeys
 
 ### Jornada 1: Dra. Carla — "A Primeira Vez" (Happy Path)
@@ -301,14 +309,14 @@ MPA (Multi Page Application) mobile-first. Cada etapa do fluxo é uma página pr
 
 ### Edge Cases & Fallbacks
 
-- **FR30:** Sistema comunica claramente quando um tipo de tarefa não está disponível
+- **FR30:** Sistema exibe mensagem informando que o tipo de tarefa não está disponível, com sugestão dos fluxos disponíveis
 - **FR31:** Sistema oferece alternativa quando o subtipo desejado não existe nos 10 fluxos do MVP
 
 ## Non-Functional Requirements
 
 ### Performance
 
-- **NFR1:** Páginas do fluxo (MPA) carregam em tempo razoável em conexão 3G/4G mobile
+- **NFR1:** Páginas do fluxo (MPA) carregam em <5s em 3G e <2s em 4G como guideline (não blocker para launch)
 - **NFR2:** Refinamento contextual por IA exibe loading state durante toda a latência da chamada LLM
 - **NFR3:** Transições entre perguntas determinísticas são page loads normais sem delay perceptível além do carregamento da página
 
