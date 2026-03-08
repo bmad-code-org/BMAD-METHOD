@@ -17,6 +17,7 @@ const fs = require('fs-extra');
 const { YamlXmlBuilder } = require('../tools/cli/lib/yaml-xml-builder');
 const { ManifestGenerator } = require('../tools/cli/installers/lib/core/manifest-generator');
 const { IdeManager } = require('../tools/cli/installers/lib/ide/manager');
+const { ConfigDrivenIdeSetup } = require('../tools/cli/installers/lib/ide/_config-driven');
 const { clearCache, loadPlatformCodes } = require('../tools/cli/installers/lib/ide/platform-codes');
 
 // ANSI colors
@@ -117,6 +118,15 @@ async function createShardDocPrototypeFixture() {
       'Read and execute from: {project-root}/_bmad/core/tasks/shard-doc.xml',
       '',
       'Follow all shard-doc task instructions exactly as written.',
+      '',
+    ].join('\n'),
+  );
+  await fs.writeFile(
+    path.join(fixtureDir, 'core', 'tasks', 'bmad-shard-doc-skill-prototype', 'bmad-skill-manifest.yaml'),
+    [
+      'canonicalId: bmad-shard-doc-skill-prototype',
+      'type: task',
+      'description: "Prototype native skill wrapper for shard-doc during installer transition"',
       '',
     ].join('\n'),
   );
@@ -882,68 +892,97 @@ async function runTests() {
   console.log('');
 
   // ============================================================
-  // Test 11: Shard-doc Prototype Duplication (Skill-Format Only)
+  // Test 11: Shard-doc Prototype Duplication (Skill/Non-Skill Scope)
   // ============================================================
   console.log(`${colors.yellow}Test Suite 11: Shard-doc Prototype Duplication${colors.reset}\n`);
 
-  let tempCodexProjectDir;
-  let tempGeminiProjectDir;
+  let tempSkillProjectDir;
+  let tempNonSkillProjectDir;
   let installedBmadDir;
   try {
     clearCache();
     const platformCodes = await loadPlatformCodes();
-    const codexInstaller = platformCodes.platforms.codex?.installer;
-    const geminiInstaller = platformCodes.platforms.gemini?.installer;
+    const skillFormatEntry = Object.entries(platformCodes.platforms || {}).find(([_, platform]) => {
+      const installer = platform?.installer;
+      if (!installer || installer.skill_format !== true || typeof installer.target_dir !== 'string') return false;
+      if (Array.isArray(installer.artifact_types) && !installer.artifact_types.includes('tasks')) return false;
+      return true;
+    });
 
-    assert(codexInstaller?.skill_format === true, 'Codex installer uses skill_format output');
-    assert(geminiInstaller?.skill_format === true, 'Gemini installer uses skill_format output');
+    assert(Boolean(skillFormatEntry), 'Found a skill_format platform that installs task artifacts');
+    if (!skillFormatEntry) throw new Error('No suitable skill_format platform found for shard-doc prototype test');
 
-    tempCodexProjectDir = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-codex-prototype-test-'));
-    tempGeminiProjectDir = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-gemini-prototype-test-'));
+    const [skillFormatPlatformCode, skillFormatPlatform] = skillFormatEntry;
+    const skillInstaller = skillFormatPlatform.installer;
+
+    tempSkillProjectDir = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-skill-prototype-test-'));
+    tempNonSkillProjectDir = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-nonskill-prototype-test-'));
     installedBmadDir = await createShardDocPrototypeFixture();
 
     const ideManager = new IdeManager();
     await ideManager.ensureInitialized();
 
-    const codexResult = await ideManager.setup('codex', tempCodexProjectDir, installedBmadDir, {
+    const skillResult = await ideManager.setup(skillFormatPlatformCode, tempSkillProjectDir, installedBmadDir, {
       silent: true,
       selectedModules: ['bmm'],
     });
 
-    assert(codexResult.success === true, 'Codex setup succeeds for shard-doc prototype fixture');
+    assert(skillResult.success === true, `${skillFormatPlatformCode} setup succeeds for shard-doc prototype fixture`);
 
-    const codexCanonicalSkill = path.join(tempCodexProjectDir, '.agents', 'skills', 'bmad-shard-doc', 'SKILL.md');
-    const codexPrototypeSkill = path.join(tempCodexProjectDir, '.agents', 'skills', 'bmad-shard-doc-skill-prototype', 'SKILL.md');
-    assert(await fs.pathExists(codexCanonicalSkill), 'Codex install writes canonical shard-doc skill');
-    assert(await fs.pathExists(codexPrototypeSkill), 'Codex install writes duplicated shard-doc prototype skill');
+    const canonicalSkillPath = path.join(tempSkillProjectDir, skillInstaller.target_dir, 'bmad-shard-doc', 'SKILL.md');
+    const prototypeSkillPath = path.join(tempSkillProjectDir, skillInstaller.target_dir, 'bmad-shard-doc-skill-prototype', 'SKILL.md');
+    assert(await fs.pathExists(canonicalSkillPath), `${skillFormatPlatformCode} install writes canonical shard-doc skill`);
+    assert(await fs.pathExists(prototypeSkillPath), `${skillFormatPlatformCode} install writes duplicated shard-doc prototype skill`);
 
-    const codexCanonicalContent = await fs.readFile(codexCanonicalSkill, 'utf8');
-    const codexPrototypeContent = await fs.readFile(codexPrototypeSkill, 'utf8');
-    assert(codexCanonicalContent.includes('name: bmad-shard-doc'), 'Canonical shard-doc skill keeps canonical frontmatter name');
+    const canonicalSkillContent = await fs.readFile(canonicalSkillPath, 'utf8');
+    const prototypeSkillContent = await fs.readFile(prototypeSkillPath, 'utf8');
+
+    assert(canonicalSkillContent.includes('name: bmad-shard-doc'), 'Canonical shard-doc skill keeps canonical frontmatter name');
     assert(
-      codexPrototypeContent.includes('name: bmad-shard-doc-skill-prototype'),
+      canonicalSkillContent.includes('Read the entire task file at: {project-root}/_bmad/core/tasks/shard-doc.xml'),
+      'Canonical shard-doc skill points to shard-doc.xml',
+    );
+    assert(
+      prototypeSkillContent.includes('name: bmad-shard-doc-skill-prototype'),
       'Prototype shard-doc skill uses prototype frontmatter name',
     );
     assert(
-      codexPrototypeContent.includes('Prototype marker: source-authored-skill'),
+      prototypeSkillContent.includes('Prototype marker: source-authored-skill'),
       'Prototype shard-doc skill is copied from source SKILL.md',
     );
+    assert(
+      prototypeSkillContent.includes('Read and execute from: {project-root}/_bmad/core/tasks/shard-doc.xml'),
+      'Prototype shard-doc skill preserves source-authored shard-doc.xml reference',
+    );
 
-    const geminiResult = await ideManager.setup('gemini', tempGeminiProjectDir, installedBmadDir, {
+    const nonSkillInstaller = {
+      ...skillInstaller,
+      target_dir: '.legacy/prototype-commands',
+      skill_format: false,
+      artifact_types: ['tasks'],
+    };
+    const nonSkillHandler = new ConfigDrivenIdeSetup('prototype-nonskill-test', {
+      name: 'Prototype Non-Skill Test',
+      preferred: false,
+      installer: nonSkillInstaller,
+    });
+    const nonSkillResult = await nonSkillHandler.setup(tempNonSkillProjectDir, installedBmadDir, {
       silent: true,
       selectedModules: ['bmm'],
     });
 
-    assert(geminiResult.success === true, 'Gemini setup succeeds for shard-doc prototype fixture');
+    assert(nonSkillResult.success === true, 'Synthetic non-skill-format setup succeeds for shard-doc prototype fixture');
 
-    const geminiCanonicalSkill = path.join(tempGeminiProjectDir, '.gemini', 'skills', 'bmad-shard-doc', 'SKILL.md');
-    const geminiPrototypeSkill = path.join(tempGeminiProjectDir, '.gemini', 'skills', 'bmad-shard-doc-skill-prototype', 'SKILL.md');
-    assert(await fs.pathExists(geminiCanonicalSkill), 'Gemini install writes canonical shard-doc skill');
-    assert(await fs.pathExists(geminiPrototypeSkill), 'Gemini install writes duplicated shard-doc prototype skill');
+    const nonSkillTargetDir = path.join(tempNonSkillProjectDir, nonSkillInstaller.target_dir);
+    const nonSkillEntries = await fs.readdir(nonSkillTargetDir);
+    const hasCanonical = nonSkillEntries.some((entry) => /^bmad-shard-doc(\.|$)/.test(entry));
+    const hasPrototype = nonSkillEntries.some((entry) => /^bmad-shard-doc-skill-prototype(\.|$)/.test(entry));
+    assert(hasCanonical, 'Non-skill-format install writes canonical shard-doc artifact');
+    assert(!hasPrototype, 'Non-skill-format install does not write duplicated shard-doc prototype artifact');
   } catch (error) {
     assert(false, 'Shard-doc prototype duplication test succeeds', error.message);
   } finally {
-    await Promise.allSettled([tempCodexProjectDir, tempGeminiProjectDir, installedBmadDir].filter(Boolean).map((dir) => fs.remove(dir)));
+    await Promise.allSettled([tempSkillProjectDir, tempNonSkillProjectDir, installedBmadDir].filter(Boolean).map((dir) => fs.remove(dir)));
   }
 
   // Test 17: GitHub Copilot Native Skills Install

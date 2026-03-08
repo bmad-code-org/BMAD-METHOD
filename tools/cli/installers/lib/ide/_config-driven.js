@@ -558,6 +558,7 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
   resolveArtifactSourceRef(artifact, bmadDir) {
     if (artifact.type !== 'task' || !artifact.path) return null;
     const sourcePath = artifact.path;
+    const resolvedBmadDir = path.resolve(bmadDir);
 
     let normalized = sourcePath.replaceAll('\\', '/');
     if (path.isAbsolute(normalized)) {
@@ -578,7 +579,10 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
     if (!filename || filename === '.' || filename === '..') return null;
 
     const relativeDir = path.dirname(normalized);
-    const dirPath = relativeDir === '.' ? bmadDir : path.join(bmadDir, relativeDir);
+    const dirPath = relativeDir === '.' ? resolvedBmadDir : path.resolve(resolvedBmadDir, relativeDir);
+    const relativeToRoot = path.relative(resolvedBmadDir, dirPath);
+    if (relativeToRoot === '..' || relativeToRoot.startsWith(`..${path.sep}`) || path.isAbsolute(relativeToRoot)) return null;
+
     return { dirPath, filename };
   }
 

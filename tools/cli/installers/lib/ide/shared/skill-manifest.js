@@ -37,7 +37,7 @@ function getCanonicalId(manifest, filename) {
 
 /**
  * Resolve a manifest entry for a source filename.
- * Handles single-entry manifests and extension fallbacks.
+ * Strict by default: supports single-entry manifests and exact filename keys only.
  * @param {Object|null} manifest - Loaded manifest
  * @param {string} filename - Source filename
  * @returns {Object|null} Manifest entry object
@@ -48,12 +48,6 @@ function resolveManifestEntry(manifest, filename) {
   if (manifest.__single) return manifest.__single;
   // Multi-entry: look up by filename directly
   if (manifest[filename]) return manifest[filename];
-  // Fallback: try alternate extensions for compiled files
-  const baseName = filename.replace(/\.(md|xml)$/i, '');
-  const agentKey = `${baseName}.agent.yaml`;
-  if (manifest[agentKey]) return manifest[agentKey];
-  const xmlKey = `${baseName}.xml`;
-  if (manifest[xmlKey]) return manifest[xmlKey];
   return null;
 }
 
@@ -64,18 +58,8 @@ function resolveManifestEntry(manifest, filename) {
  * @returns {string|null} type or null
  */
 function getArtifactType(manifest, filename) {
-  if (!manifest) return null;
-  // Single-entry manifest applies to all files in the directory
-  if (manifest.__single) return manifest.__single.type || null;
-  // Multi-entry: look up by filename directly
-  if (manifest[filename]) return manifest[filename].type || null;
-  // Fallback: try alternate extensions for compiled files
-  const baseName = filename.replace(/\.(md|xml)$/i, '');
-  const agentKey = `${baseName}.agent.yaml`;
-  if (manifest[agentKey]) return manifest[agentKey].type || null;
-  const xmlKey = `${baseName}.xml`;
-  if (manifest[xmlKey]) return manifest[xmlKey].type || null;
-  return null;
+  const manifestEntry = resolveManifestEntry(manifest, filename);
+  return manifestEntry?.type || null;
 }
 
 /**
@@ -85,18 +69,9 @@ function getArtifactType(manifest, filename) {
  * @returns {boolean} install_to_bmad value (defaults to true)
  */
 function getInstallToBmad(manifest, filename) {
-  if (!manifest) return true;
-  // Single-entry manifest applies to all files in the directory
-  if (manifest.__single) return manifest.__single.install_to_bmad !== false;
-  // Multi-entry: look up by filename directly
-  if (manifest[filename]) return manifest[filename].install_to_bmad !== false;
-  // Fallback: try alternate extensions for compiled files
-  const baseName = filename.replace(/\.(md|xml)$/i, '');
-  const agentKey = `${baseName}.agent.yaml`;
-  if (manifest[agentKey]) return manifest[agentKey].install_to_bmad !== false;
-  const xmlKey = `${baseName}.xml`;
-  if (manifest[xmlKey]) return manifest[xmlKey].install_to_bmad !== false;
-  return true;
+  const manifestEntry = resolveManifestEntry(manifest, filename);
+  if (!manifestEntry) return true;
+  return manifestEntry.install_to_bmad !== false;
 }
 
 module.exports = { loadSkillManifest, getCanonicalId, getArtifactType, getInstallToBmad };
