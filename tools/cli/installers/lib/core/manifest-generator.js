@@ -9,6 +9,7 @@ const {
   loadSkillManifest: loadSkillManifestShared,
   getCanonicalId: getCanonicalIdShared,
   getArtifactType: getArtifactTypeShared,
+  getInstallToBmad: getInstallToBmadShared,
 } = require('../ide/shared/skill-manifest');
 
 // Load package.json for version info
@@ -42,6 +43,11 @@ class ManifestGenerator {
   /** Delegate to shared skill-manifest module */
   getArtifactType(manifest, filename) {
     return getArtifactTypeShared(manifest, filename);
+  }
+
+  /** Delegate to shared skill-manifest module */
+  getInstallToBmad(manifest, filename) {
+    return getInstallToBmadShared(manifest, filename);
   }
 
   /**
@@ -249,6 +255,7 @@ class ManifestGenerator {
                   module: moduleName,
                   path: installPath,
                   canonicalId,
+                  install_to_bmad: this.getInstallToBmad(skillManifest, entry.name),
                 });
 
                 if (debug) {
@@ -830,7 +837,7 @@ class ManifestGenerator {
     const csvPath = path.join(cfgDir, 'skill-manifest.csv');
     const escapeCsv = (value) => `"${String(value ?? '').replaceAll('"', '""')}"`;
 
-    let csvContent = 'canonicalId,name,description,module,path\n';
+    let csvContent = 'canonicalId,name,description,module,path,install_to_bmad\n';
 
     for (const skill of this.skills) {
       const row = [
@@ -839,6 +846,7 @@ class ManifestGenerator {
         escapeCsv(skill.description),
         escapeCsv(skill.module),
         escapeCsv(skill.path),
+        escapeCsv(skill.install_to_bmad),
       ].join(',');
       csvContent += row + '\n';
     }

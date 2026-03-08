@@ -702,6 +702,18 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
       count++;
     }
 
+    // Post-install cleanup: remove _bmad/ directories for skills with install_to_bmad === "false"
+    for (const record of records) {
+      if (record.install_to_bmad === 'false') {
+        const relativePath = record.path.replace(new RegExp(`^${bmadFolderName}/`), '');
+        const sourceFile = path.join(bmadDir, relativePath);
+        const sourceDir = path.dirname(sourceFile);
+        if (await fs.pathExists(sourceDir)) {
+          await fs.remove(sourceDir);
+        }
+      }
+    }
+
     return count;
   }
 
