@@ -772,7 +772,6 @@ class ModuleManager {
     }
   }
 
-
   /**
    * Compile .agent.yaml files to .md format in modules
    * @param {string} sourcePath - Source module path
@@ -1123,7 +1122,6 @@ class ModuleManager {
       await prompts.log.success(`  Workflow vendoring complete\n`);
     }
   }
-
 
   /**
    * Create directories declared in module.yaml's `directories` key

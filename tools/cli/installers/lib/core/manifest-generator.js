@@ -183,9 +183,7 @@ class ManifestGenerator {
               const content = rawContent.replaceAll('\r\n', '\n').replaceAll('\r', '\n');
 
               const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
-              if (!frontmatterMatch) {
-                if (debug) console.log(`[DEBUG] collectSkills: skipped (no frontmatter): ${workflowPath}`);
-              } else {
+              if (frontmatterMatch) {
                 const workflow = yaml.parse(frontmatterMatch[1]);
 
                 if (!workflow || !workflow.name || !workflow.description) {
@@ -228,6 +226,8 @@ class ManifestGenerator {
                     console.log(`[DEBUG] collectSkills: claimed skill "${workflow.name}" as ${canonicalId} at ${dir}`);
                   }
                 }
+              } else {
+                if (debug) console.log(`[DEBUG] collectSkills: skipped (no frontmatter): ${workflowPath}`);
               }
             } catch (error) {
               if (debug) console.log(`[DEBUG] collectSkills: failed to parse ${workflowPath}: ${error.message}`);
@@ -334,10 +334,7 @@ class ManifestGenerator {
           // Recurse into subdirectories
           const newRelativePath = relativePath ? `${relativePath}/${entry.name}` : entry.name;
           await findWorkflows(fullPath, newRelativePath);
-        } else if (
-          entry.name === 'workflow.md' ||
-          (entry.name.startsWith('workflow-') && entry.name.endsWith('.md'))
-        ) {
+        } else if (entry.name === 'workflow.md' || (entry.name.startsWith('workflow-') && entry.name.endsWith('.md'))) {
           // Parse workflow file (both YAML and MD formats)
           if (debug) {
             console.log(`[DEBUG] Found workflow file: ${fullPath}`);
