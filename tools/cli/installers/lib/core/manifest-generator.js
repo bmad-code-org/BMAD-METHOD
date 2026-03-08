@@ -5,7 +5,12 @@ const crypto = require('node:crypto');
 const csv = require('csv-parse/sync');
 const { getSourcePath, getModulePath } = require('../../../lib/project-root');
 const prompts = require('../../../lib/prompts');
-const { loadSkillManifest: loadSkillManifestShared, getCanonicalId: getCanonicalIdShared } = require('../ide/shared/skill-manifest');
+const {
+  loadSkillManifest: loadSkillManifestShared,
+  getCanonicalId: getCanonicalIdShared,
+  getArtifactType: getArtifactTypeShared,
+  getInstallToBmad: getInstallToBmadShared,
+} = require('../ide/shared/skill-manifest');
 
 // Load package.json for version info
 const packageJson = require('../../../../../package.json');
@@ -16,6 +21,7 @@ const packageJson = require('../../../../../package.json');
 class ManifestGenerator {
   constructor() {
     this.workflows = [];
+    this.skills = [];
     this.agents = [];
     this.tasks = [];
     this.tools = [];
@@ -32,6 +38,16 @@ class ManifestGenerator {
   /** Delegate to shared skill-manifest module */
   getCanonicalId(manifest, filename) {
     return getCanonicalIdShared(manifest, filename);
+  }
+
+  /** Delegate to shared skill-manifest module */
+  getArtifactType(manifest, filename) {
+    return getArtifactTypeShared(manifest, filename);
+  }
+
+  /** Delegate to shared skill-manifest module */
+  getInstallToBmad(manifest, filename) {
+    return getInstallToBmadShared(manifest, filename);
   }
 
   /**
@@ -89,6 +105,9 @@ class ManifestGenerator {
     // Filter out any undefined/null values from IDE list
     this.selectedIdes = resolvedIdes.filter((ide) => ide && typeof ide === 'string');
 
+    // Reset files list (defensive: prevent stale data if instance is reused)
+    this.files = [];
+
     // Collect workflow data
     await this.collectWorkflows(selectedModules);
 
@@ -105,6 +124,7 @@ class ManifestGenerator {
     const manifestFiles = [
       await this.writeMainManifest(cfgDir),
       await this.writeWorkflowManifest(cfgDir),
+      await this.writeSkillManifest(cfgDir),
       await this.writeAgentManifest(cfgDir),
       await this.writeTaskManifest(cfgDir),
       await this.writeToolManifest(cfgDir),
@@ -127,6 +147,7 @@ class ManifestGenerator {
    */
   async collectWorkflows(selectedModules) {
     this.workflows = [];
+    this.skills = [];
 
     // Use updatedModules which already includes deduplicated 'core' + selectedModules
     for (const moduleName of this.updatedModules) {
@@ -227,6 +248,25 @@ class ManifestGenerator {
                 moduleName === 'core'
                   ? `${this.bmadFolderName}/core/workflows/${relativePath}/${entry.name}`
                   : `${this.bmadFolderName}/${moduleName}/workflows/${relativePath}/${entry.name}`;
+
+              // Check if this is a type:skill entry — collect separately, skip workflow CSV
+              const artifactType = this.getArtifactType(skillManifest, entry.name);
+              if (artifactType === 'skill') {
+                const canonicalId = path.basename(dir);
+                this.skills.push({
+                  name: workflow.name,
+                  description: this.cleanForCSV(workflow.description),
+                  module: moduleName,
+                  path: installPath,
+                  canonicalId,
+                  install_to_bmad: this.getInstallToBmad(skillManifest, entry.name),
+                });
+
+                if (debug) {
+                  console.log(`[DEBUG] ✓ Added skill (skipped workflow CSV): ${workflow.name} as ${canonicalId}`);
+                }
+                continue;
+              }
 
               // Workflows with standalone: false are filtered out above
               workflows.push({
@@ -790,6 +830,32 @@ class ManifestGenerator {
     }
 
     await fs.writeFile(csvPath, csv);
+    return csvPath;
+  }
+
+  /**
+   * Write skill manifest CSV
+   * @returns {string} Path to the manifest file
+   */
+  async writeSkillManifest(cfgDir) {
+    const csvPath = path.join(cfgDir, 'skill-manifest.csv');
+    const escapeCsv = (value) => `"${String(value ?? '').replaceAll('"', '""')}"`;
+
+    let csvContent = 'canonicalId,name,description,module,path,install_to_bmad\n';
+
+    for (const skill of this.skills) {
+      const row = [
+        escapeCsv(skill.canonicalId),
+        escapeCsv(skill.name),
+        escapeCsv(skill.description),
+        escapeCsv(skill.module),
+        escapeCsv(skill.path),
+        escapeCsv(skill.install_to_bmad),
+      ].join(',');
+      csvContent += row + '\n';
+    }
+
+    await fs.writeFile(csvPath, csvContent);
     return csvPath;
   }
 

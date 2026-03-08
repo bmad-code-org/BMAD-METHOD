@@ -21,6 +21,12 @@ description: 'Analyzes what is done and the users query and offers advice on wha
 When `command` field has a value:
 - Show the command prefixed with `/` (e.g., `/bmad-bmm-create-prd`)
 
+### Skill-Referenced Workflows
+When `workflow-file` starts with `skill:`:
+- The value is a skill reference (e.g., `skill:bmad-quick-dev-new-preview`), NOT a file path
+- Do NOT attempt to resolve or load it as a file path
+- Display using the `command` column value prefixed with `/` (same as command-based workflows)
+
 ### Agent-Based Workflows
 When `command` field is empty:
 - User loads agent first via `/agent-command`

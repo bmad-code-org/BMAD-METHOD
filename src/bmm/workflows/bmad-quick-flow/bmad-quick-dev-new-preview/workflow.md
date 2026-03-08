@@ -81,10 +81,9 @@ YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `
 
 ### 2. Paths
 
-- `installed_path` = `{project-root}/_bmad/bmm/workflows/bmad-quick-flow/quick-dev-new-preview`
-- `templateFile` = `{installed_path}/tech-spec-template.md`
+- `templateFile` = `./tech-spec-template.md`
 - `wipFile` = `{implementation_artifacts}/tech-spec-wip.md`
 
 ### 3. First Step Execution
 
-Read fully and follow: `{installed_path}/steps/step-01-clarify-and-route.md` to begin the workflow.
+Read fully and follow: `./steps/step-01-clarify-and-route.md` to begin the workflow.
