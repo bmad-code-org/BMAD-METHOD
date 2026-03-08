@@ -156,7 +156,7 @@ b) **HALT and wait for user selection.**
        > Pass `{finalFile}` as the content to review. The skill should return a list of findings.
 
     2. **Process Findings**:
-       > Capture the findings from the task output.
+       > Capture the findings from the skill output.
        > **If zero findings:** HALT - this is suspicious. Re-analyze or request user guidance.
        > Evaluate severity (Critical, High, Medium, Low) and validity (real, noise, undecided).
        > DO NOT exclude findings based on severity or validity unless explicitly asked to do so.
