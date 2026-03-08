@@ -81,7 +81,7 @@ YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `
 
 ### 2. Paths
 
-- `installed_path` = `{project-root}/_bmad/bmm/workflows/bmad-quick-flow/quick-dev-new-preview`
+- `installed_path` = the directory containing this workflow.md file (the skill's base directory)
 - `templateFile` = `{installed_path}/tech-spec-template.md`
 - `wipFile` = `{implementation_artifacts}/tech-spec-wip.md`
 
