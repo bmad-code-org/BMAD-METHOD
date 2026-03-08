@@ -81,3 +81,13 @@ modules:
     defaultSelected: true
     type: community
     npmPackage: scsa-bmad-agents
+
+  tqm-module:
+    url: https://github.com/SCSA-dev/scsa-bmad-agents.git
+    module-definition: tqm/module.yaml
+    code: tqm
+    name: "Tender Quote Module"
+    description: "Agents and Workflow for Tender Quote Module"
+    defaultSelected: true
+    type: community
+    npmPackage: scsa-bmad-agents
