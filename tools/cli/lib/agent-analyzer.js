@@ -41,9 +41,8 @@ class AgentAnalyzer {
                 if (exec.route) {
                   profile.usedAttributes.add('exec');
                 }
-                if (exec.workflow) profile.usedAttributes.add('workflow');
                 if (exec.action) profile.usedAttributes.add('action');
-                if (exec.type && ['exec', 'action', 'workflow'].includes(exec.type)) {
+                if (exec.type && ['exec', 'action'].includes(exec.type)) {
                   profile.usedAttributes.add(exec.type);
                 }
               }
@@ -52,12 +51,6 @@ class AgentAnalyzer {
         }
       } else {
         // Check for each possible attribute in legacy items
-        if (item.workflow) {
-          profile.usedAttributes.add('workflow');
-        }
-        if (item['validate-workflow']) {
-          profile.usedAttributes.add('validate-workflow');
-        }
         if (item.exec) {
           profile.usedAttributes.add('exec');
         }
