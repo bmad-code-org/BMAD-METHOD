@@ -1,5 +1,5 @@
 ---
-stepsCompleted: [step-01-init, step-02-discovery, step-02b-vision, step-02c-executive-summary, step-03-success, step-04-journeys, step-05-domain, step-06-innovation-skipped]
+stepsCompleted: [step-01-init, step-02-discovery, step-02b-vision, step-02c-executive-summary, step-03-success, step-04-journeys, step-05-domain, step-06-innovation-skipped, step-07-project-type]
 classification:
   projectType: web_app
   domain: legaltech
@@ -199,3 +199,43 @@ O CSV de domínio classifica legaltech como high complexity com concerns em: ét
 ### Constraint Residual
 
 O único constraint de domínio relevante é que os **templates de prompt por área do direito requerem expertise jurídica específica** para serem construídos corretamente (classificação: domainKnowledge = high). Isso impacta o custo de criação de novos fluxos, não a arquitetura técnica.
+
+## Web App Specific Requirements
+
+### Project-Type Overview
+
+Multi Page Application (MPA) mobile-first. Cada etapa do fluxo é uma página própria — simples, sem JavaScript pesado, compatível com qualquer dispositivo. Distribuição por links diretos (WhatsApp, posts Jusbrasil), sem dependência de SEO.
+
+### Technical Architecture Considerations
+
+| Aspecto | Decisão |
+|---------|---------|
+| **Tipo** | MPA (Multi Page Application) |
+| **Abordagem** | Mobile-first, responsivo para desktop |
+| **Browsers** | Evergreen (Chrome, Safari, Firefox, Edge). Sem suporte IE/legacy |
+| **SEO** | Não é prioridade — OG tags para preview no WhatsApp |
+| **Real-time** | Request-response com loading state. Refinamento por IA tem latência — indicador visual de progresso |
+| **Acessibilidade** | Não é prioridade no MVP |
+| **Offline** | Não necessário — produto requer conexão para refinamento por IA e redirect |
+
+### Responsive Design
+
+- **Mobile-first**: layout projetado para telas pequenas primeiro, adaptado para desktop
+- **Touch-friendly**: botões e seleções dimensionados para toque (min 44px)
+- **WhatsApp preview**: OG tags configuradas para preview legível quando link é compartilhado
+
+### Performance Targets
+
+| Aspecto | Meta |
+|---------|------|
+| Carregamento de página | Razoável em 3G/4G (sem meta rígida) |
+| Transição entre perguntas | Page load normal (MPA) |
+| Refinamento por IA | Loading state visível, sem timeout rígido |
+| Redirect para Jus IA | Imediato (URL parametrizada ou copy-paste) |
+
+### Implementation Considerations
+
+- **Stateless**: sem sessão server-side, sem cookies de autenticação, sem banco de dados de usuário
+- **Deep links**: cada fluxo tem URL própria (ex: `/trabalhista/horas-extras`) para compartilhamento direto
+- **Analytics**: client-side tracking (funil, drop-off, origem) — único estado persistente do produto
+- **LLM backend**: endpoint para refinamento contextual — única dependência de infraestrutura além do hosting
