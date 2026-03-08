@@ -1,5 +1,5 @@
 ---
-stepsCompleted: [step-01-init, step-02-discovery, step-02b-vision, step-02c-executive-summary]
+stepsCompleted: [step-01-init, step-02-discovery, step-02b-vision, step-02c-executive-summary, step-03-success]
 classification:
   projectType: web_app
   domain: legaltech
@@ -47,3 +47,65 @@ Bibliotecas estáticas de prompts (ADVBOX, Aurum, ITS Rio) exigem copy-paste e a
 | **Complexidade** | Medium — arquitetura stateless, sem persistência de dados, sem integração com tribunais |
 | **Conhecimento de Domínio** | High — fluxos jurídicos por área do direito brasileiro requerem expertise específica |
 | **Contexto** | Greenfield — produto novo, sem legado |
+
+## Success Criteria
+
+### User Success
+
+O usuário completa o fluxo e chega ao Jus IA com um pedido que gera resultado útil na primeira tentativa. Sucesso = eliminar o ciclo de tentativa-e-erro.
+
+| Critério | Métrica | Meta |
+|----------|---------|------|
+| Fluxo completo | Taxa de conclusão (início → redirect) | >60% |
+| Experiência rápida | Tempo médio do fluxo | <5 min |
+| Resultado útil | Usuários que não reformulam no Jus IA | >70% |
+
+### Business Success
+
+O produto valida se fluxos guiados são um canal eficaz de ativação para o Jus IA. Foco exclusivo em volume de redirects.
+
+| Critério | Métrica | Meta (mês 1) |
+|----------|---------|:---:|
+| North Star | Redirects concluídos | 1.000 |
+| Alcance | Visitantes únicos | 3.000-5.000 |
+| Eficácia do funil | Conversão visitante → redirect | >20% |
+| Viralidade | Tráfego por referral/WhatsApp | >30% |
+
+### Technical Success
+
+Produto lean — complexidade mínima que funcione.
+
+| Critério | Métrica | Meta |
+|----------|---------|------|
+| Disponibilidade | Uptime | Best-effort (sem SLA formal no MVP) |
+| Performance | Carregamento | Razoável em mobile (sem meta rígida) |
+
+### Measurable Outcomes
+
+**Go/No-Go para v2:** Se atingir >500 redirects/mês E taxa de conclusão >40%, validamos a abordagem e expandimos. Abaixo disso, corta.
+
+**O que NÃO medimos no MVP:**
+- Retenção / retorno do usuário (one-shot by design)
+- Conversão redirect → assinante Jus IA (fora do escopo)
+- NPS ou satisfação (métrica de vaidade nesta fase)
+
+## Product Scope
+
+### MVP - Minimum Viable Product
+
+1. **Fluxo híbrido completo** — perguntas estruturadas + refinamento contextual por IA para 10 tipos de tarefa jurídica
+2. **Redirect via URL parametrizada** — montagem automática do pedido, botão "Gerar no Jus IA →"
+3. **Zero fricção** — sem login, sem cadastro, mobile-first, compartilhável por WhatsApp
+4. **Analytics básico** — funil visitante → início → conclusão → redirect, drop-off por step, fluxos mais usados, origem do tráfego
+
+### Growth Features (Post-MVP)
+
+- Expansão para mais áreas do direito (penal, tributário, família, empresarial)
+- A/B testing de templates de prompt (qual formulação gera melhor resultado)
+- Sugestão inteligente de fluxo ("baseado no que você descreveu, recomendo...")
+- Histórico de pedidos (com login opcional)
+
+### Vision (Future)
+
+- Comunidade de templates validados por advogados
+- Integração bidirecional com Jus IA (feedback de qualidade)
