@@ -27,7 +27,7 @@ The installer uses templates for each skill type:
 | Skill type | What the generated file does |
 | --- | --- |
 | **Agent launcher** | Loads the agent persona file, activates its menu, and stays in character |
-| **Workflow skill** | Loads the workflow engine (`workflow.xml`) and passes the workflow config |
+| **Workflow skill** | Loads the workflow config and follows its steps |
 | **Task skill** | Loads a standalone task file and follows its instructions |
 | **Tool skill** | Loads a standalone tool file and follows its instructions |
 
