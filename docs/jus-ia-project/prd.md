@@ -1,5 +1,5 @@
 ---
-stepsCompleted: [step-01-init, step-02-discovery, step-02b-vision, step-02c-executive-summary, step-03-success, step-04-journeys, step-05-domain, step-06-innovation-skipped, step-07-project-type, step-08-scoping, step-09-functional, step-10-nonfunctional]
+stepsCompleted: [step-01-init, step-02-discovery, step-02b-vision, step-02c-executive-summary, step-03-success, step-04-journeys, step-05-domain, step-06-innovation-skipped, step-07-project-type, step-08-scoping, step-09-functional, step-10-nonfunctional, step-11-polish]
 classification:
   projectType: web_app
   domain: legaltech
@@ -38,16 +38,6 @@ O produto combina perguntas diretas sobre o caso com inteligência que adapta o 
 
 Bibliotecas estáticas de prompts (ADVBOX, Aurum, ITS Rio) exigem copy-paste e adaptação manual para IAs genéricas. O Jus IA Start Kit é fundamentalmente diferente: **interatividade condicional**. O sistema ajusta dinamicamente suas perguntas ao contexto do caso, construindo nos bastidores um pedido otimizado que chega ao Jus IA já formulado para aproveitar sua base verificada de 90M+ decisões. O Start Kit garante a qualidade do pedido; o Jus IA garante a qualidade da resposta — com a base jurídica que elimina as taxas de alucinação de 17-34% encontradas em ferramentas genéricas (Stanford). Nenhum concorrente conecta fluxos guiados a uma base verificada dessa escala.
 
-## Project Classification
-
-| Dimensão | Classificação |
-|----------|--------------|
-| **Tipo de Projeto** | Web App |
-| **Domínio** | Legaltech |
-| **Complexidade** | Medium — arquitetura stateless, sem persistência de dados, sem integração com tribunais |
-| **Conhecimento de Domínio** | High — fluxos jurídicos por área do direito brasileiro requerem expertise específica |
-| **Contexto** | Greenfield — produto novo, sem legado |
-
 ## Success Criteria
 
 ### User Success
@@ -80,35 +70,24 @@ Produto lean — complexidade mínima que funcione.
 | Disponibilidade | Uptime | Best-effort (sem SLA formal no MVP) |
 | Performance | Carregamento | Razoável em mobile (sem meta rígida) |
 
-### Measurable Outcomes
+### Go/No-Go & Measurable Outcomes
 
-**Go/No-Go para v2:** Se atingir >500 redirects/mês E taxa de conclusão >40%, validamos a abordagem e expandimos. Abaixo disso, corta.
+**Go/No-Go para v2:** >500 redirects/mês E taxa de conclusão >40% → validamos e expandimos. Abaixo disso, corta.
 
 **O que NÃO medimos no MVP:**
 - Retenção / retorno do usuário (one-shot by design)
 - Conversão redirect → assinante Jus IA (fora do escopo)
 - NPS ou satisfação (métrica de vaidade nesta fase)
 
-## Product Scope
+## Project Classification
 
-### MVP - Minimum Viable Product
-
-1. **Fluxo híbrido completo** — perguntas estruturadas + refinamento contextual por IA para 10 tipos de tarefa jurídica
-2. **Redirect via URL parametrizada** — montagem automática do pedido, botão "Gerar no Jus IA →"
-3. **Zero fricção** — sem login, sem cadastro, mobile-first, compartilhável por WhatsApp
-4. **Analytics básico** — funil visitante → início → conclusão → redirect, drop-off por step, fluxos mais usados, origem do tráfego
-
-### Growth Features (Post-MVP)
-
-- Expansão para mais áreas do direito (penal, tributário, família, empresarial)
-- A/B testing de templates de prompt (qual formulação gera melhor resultado)
-- Sugestão inteligente de fluxo ("baseado no que você descreveu, recomendo...")
-- Histórico de pedidos (com login opcional)
-
-### Vision (Future)
-
-- Comunidade de templates validados por advogados
-- Integração bidirecional com Jus IA (feedback de qualidade)
+| Dimensão | Classificação |
+|----------|--------------|
+| **Tipo de Projeto** | Web App (MPA) |
+| **Domínio** | Legaltech |
+| **Complexidade** | Medium — stateless, sem persistência, sem integração com tribunais |
+| **Conhecimento de Domínio** | High — fluxos jurídicos por área do direito brasileiro requerem expertise específica |
+| **Contexto** | Greenfield — produto novo, sem legado |
 
 ## User Journeys
 
@@ -168,43 +147,17 @@ Produto lean — complexidade mínima que funcione.
 
 **Capabilities reveladas:** deep links por fluxo/área como ferramenta de governança, compartilhamento por WhatsApp como canal de distribuição B2B informal, produto funciona como padronização leve de IA sem admin panel.
 
----
-
-### Journey Requirements Summary
-
-| Capability | Jornadas | Prioridade |
-|-----------|----------|-----------|
-| Seleção de tipo de tarefa (petição, pesquisa, contrato) | 1, 2, 3, 4 | MVP |
-| Fluxo de perguntas estruturadas por subtipo jurídico | 1, 2, 3, 4 | MVP |
-| Refinamento contextual por IA | 1, 2, 3 | MVP |
-| Montagem de prompt e redirect via URL parametrizada | 1, 2, 4 | MVP |
-| Preview do pedido antes do redirect | 1, 2, 3 | MVP |
-| Detecção de overflow de URL + fallback copy-paste | 3 | MVP |
-| Experiência mobile-first | 1, 4 | MVP |
-| Deep links por fluxo/área do direito | 1, 4 | MVP |
-| Tracking de origem/referral (WhatsApp, orgânico, pago) | 1, 2, 4 | MVP |
-| Fundamentação jurídica embutida no prompt | 2 | MVP |
-
 ## Domain-Specific Requirements
 
-### Legaltech Domain — Aplicabilidade ao Start Kit
+Legaltech é classificado como high complexity (ética OAB, retenção de dados, sigilo advocatício, integração com tribunais). **Nenhum se aplica ao Start Kit** — ética e disclaimers são responsabilidade do Jus IA; dados do caso transitam pelo backend apenas para refinamento por IA e são descartados após redirect; não há integração com tribunais.
 
-O CSV de domínio classifica legaltech como high complexity com concerns em: ética OAB, regulamentação, retenção de dados, sigilo advocatício e integração com tribunais. **Nenhuma se aplica diretamente ao Start Kit:**
-
-- **Ética OAB / disclaimer de IA**: responsabilidade do Jus IA (destino do redirect), não do Start Kit
-- **Dados do caso durante o fluxo**: sem persistência, sem login, uso por conta e risco do advogado. Dados transitam pelo backend apenas para refinamento contextual por IA e são descartados após o redirect
-- **Fundamentação jurídica nos prompts**: o Start Kit referencia artigos e súmulas nos templates de prompt, mas a interpretação e validação é do Jus IA com sua base de 90M+ decisões verificadas
-- **Integração com tribunais**: inexistente — redirect unidirecional apenas
-
-### Constraint Residual
-
-O único constraint de domínio relevante é que os **templates de prompt por área do direito requerem expertise jurídica específica** para serem construídos corretamente (classificação: domainKnowledge = high). Isso impacta o custo de criação de novos fluxos, não a arquitetura técnica.
+**Constraint residual:** templates de prompt por área do direito requerem expertise jurídica para construção (domainKnowledge = high). Impacta custo de criação de novos fluxos, não a arquitetura.
 
 ## Web App Specific Requirements
 
 ### Project-Type Overview
 
-Multi Page Application (MPA) mobile-first. Cada etapa do fluxo é uma página própria — simples, sem JavaScript pesado, compatível com qualquer dispositivo. Distribuição por links diretos (WhatsApp, posts Jusbrasil), sem dependência de SEO.
+MPA (Multi Page Application) mobile-first. Cada etapa do fluxo é uma página própria — simples, sem JavaScript pesado, compatível com qualquer dispositivo. Distribuição por links diretos (WhatsApp, posts Jusbrasil), sem dependência de SEO.
 
 ### Technical Architecture Considerations
 
@@ -224,18 +177,9 @@ Multi Page Application (MPA) mobile-first. Cada etapa do fluxo é uma página pr
 - **Touch-friendly**: botões e seleções dimensionados para toque (min 44px)
 - **WhatsApp preview**: OG tags configuradas para preview legível quando link é compartilhado
 
-### Performance Targets
-
-| Aspecto | Meta |
-|---------|------|
-| Carregamento de página | Razoável em 3G/4G (sem meta rígida) |
-| Transição entre perguntas | Page load normal (MPA) |
-| Refinamento por IA | Loading state visível, sem timeout rígido |
-| Redirect para Jus IA | Imediato (URL parametrizada ou copy-paste) |
-
 ### Implementation Considerations
 
-- **Stateless**: sem sessão server-side, sem cookies de autenticação, sem banco de dados de usuário
+- **Stateless**: sem sessão server-side, sem cookies de autenticação, sem banco de dados de usuário. Dados transitam apenas durante o fluxo e são descartados após redirect
 - **Deep links**: cada fluxo tem URL própria (ex: `/trabalhista/horas-extras`) para compartilhamento direto
 - **Analytics**: client-side tracking (funil, drop-off, origem) — único estado persistente do produto
 - **LLM backend**: endpoint para refinamento contextual — única dependência de infraestrutura além do hosting
@@ -269,7 +213,7 @@ Multi Page Application (MPA) mobile-first. Cada etapa do fluxo é uma página pr
 | 7 | Preview do pedido antes do redirect | Confiança e transparência |
 | 8 | Deep links por fluxo/área | Distribuição (WhatsApp) + governança (Marcos) |
 | 9 | OG tags para WhatsApp preview | Viralidade — >30% tráfego referral |
-| 10 | Analytics de funil + tracking de origem | Medir Go/No-Go (500 redirects + 40% conclusão) |
+| 10 | Analytics de funil + tracking de origem | Medir Go/No-Go (>500 redirects + >40% conclusão) |
 | 11 | Mobile-first responsivo | 38% autônomos, celular entre audiências |
 
 **Explicitamente fora do MVP:**
@@ -300,7 +244,7 @@ Multi Page Application (MPA) mobile-first. Cada etapa do fluxo é uma página pr
 | **URL excede 2000 chars** | Prompt truncado, experiência quebra | Fallback copy-paste detectado antes do redirect |
 | **Qualidade do prompt gerado** | Resultado ruim no Jus IA, <70% sem reformulação | Templates construídos com expertise jurídica + iteração |
 | **Custo de inferência LLM** | Produto gratuito mas backend custa | Monitorar custo/redirect, definir budget máximo |
-| **Baixa adoção** | <500 redirects/mês → corta | Go/No-Go claro, sem investimento pesado antes de validar |
+| **Baixa adoção** | Não atinge critérios Go/No-Go → corta | Sem investimento pesado antes de validar |
 | **Limite de 10 fluxos** | Usuários pedem áreas não cobertas | Fallback "tipo não disponível" + priorização por demanda real |
 
 ## Functional Requirements
