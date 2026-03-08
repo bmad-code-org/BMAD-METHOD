@@ -105,6 +105,9 @@ class ManifestGenerator {
     // Filter out any undefined/null values from IDE list
     this.selectedIdes = resolvedIdes.filter((ide) => ide && typeof ide === 'string');
 
+    // Reset files list (defensive: prevent stale data if instance is reused)
+    this.files = [];
+
     // Collect workflow data
     await this.collectWorkflows(selectedModules);
 
@@ -144,6 +147,7 @@ class ManifestGenerator {
    */
   async collectWorkflows(selectedModules) {
     this.workflows = [];
+    this.skills = [];
 
     // Use updatedModules which already includes deduplicated 'core' + selectedModules
     for (const moduleName of this.updatedModules) {

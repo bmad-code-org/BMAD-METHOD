@@ -117,9 +117,10 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
   async installToTarget(projectDir, bmadDir, config, options) {
     const { target_dir, template_type, artifact_types } = config;
 
-    // Skip targets with explicitly empty artifact_types array
+    // Skip targets with explicitly empty artifact_types and no verbatim skills
     // This prevents creating empty directories when no artifacts will be written
-    if (Array.isArray(artifact_types) && artifact_types.length === 0) {
+    const skipStandardArtifacts = Array.isArray(artifact_types) && artifact_types.length === 0;
+    if (skipStandardArtifacts && !config.skill_format) {
       return { success: true, results: { agents: 0, workflows: 0, tasks: 0, tools: 0, skills: 0 } };
     }
 
@@ -129,27 +130,30 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
     const selectedModules = options.selectedModules || [];
     const results = { agents: 0, workflows: 0, tasks: 0, tools: 0, skills: 0 };
 
-    // Install agents
-    if (!artifact_types || artifact_types.includes('agents')) {
-      const agentGen = new AgentCommandGenerator(this.bmadFolderName);
-      const { artifacts } = await agentGen.collectAgentArtifacts(bmadDir, selectedModules);
-      results.agents = await this.writeAgentArtifacts(targetPath, artifacts, template_type, config);
-    }
+    // Install standard artifacts (agents, workflows, tasks, tools)
+    if (!skipStandardArtifacts) {
+      // Install agents
+      if (!artifact_types || artifact_types.includes('agents')) {
+        const agentGen = new AgentCommandGenerator(this.bmadFolderName);
+        const { artifacts } = await agentGen.collectAgentArtifacts(bmadDir, selectedModules);
+        results.agents = await this.writeAgentArtifacts(targetPath, artifacts, template_type, config);
+      }
 
-    // Install workflows
-    if (!artifact_types || artifact_types.includes('workflows')) {
-      const workflowGen = new WorkflowCommandGenerator(this.bmadFolderName);
-      const { artifacts } = await workflowGen.collectWorkflowArtifacts(bmadDir);
-      results.workflows = await this.writeWorkflowArtifacts(targetPath, artifacts, template_type, config);
-    }
+      // Install workflows
+      if (!artifact_types || artifact_types.includes('workflows')) {
+        const workflowGen = new WorkflowCommandGenerator(this.bmadFolderName);
+        const { artifacts } = await workflowGen.collectWorkflowArtifacts(bmadDir);
+        results.workflows = await this.writeWorkflowArtifacts(targetPath, artifacts, template_type, config);
+      }
 
-    // Install tasks and tools using template system (supports TOML for Gemini, MD for others)
-    if (!artifact_types || artifact_types.includes('tasks') || artifact_types.includes('tools')) {
-      const taskToolGen = new TaskToolCommandGenerator(this.bmadFolderName);
-      const { artifacts } = await taskToolGen.collectTaskToolArtifacts(bmadDir);
-      const taskToolResult = await this.writeTaskToolArtifacts(targetPath, artifacts, template_type, config);
-      results.tasks = taskToolResult.tasks || 0;
-      results.tools = taskToolResult.tools || 0;
+      // Install tasks and tools using template system (supports TOML for Gemini, MD for others)
+      if (!artifact_types || artifact_types.includes('tasks') || artifact_types.includes('tools')) {
+        const taskToolGen = new TaskToolCommandGenerator(this.bmadFolderName);
+        const { artifacts } = await taskToolGen.collectTaskToolArtifacts(bmadDir);
+        const taskToolResult = await this.writeTaskToolArtifacts(targetPath, artifacts, template_type, config);
+        results.tasks = taskToolResult.tasks || 0;
+        results.tools = taskToolResult.tools || 0;
+      }
     }
 
     // Install verbatim skills (type: skill)
