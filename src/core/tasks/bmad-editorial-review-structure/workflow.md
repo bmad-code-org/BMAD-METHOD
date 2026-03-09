@@ -105,7 +105,7 @@ When reader_type='llm', optimize for PRECISION and UNAMBIGUITY:
 - Select the most appropriate structural model from Structure Models based on purpose/audience
 - Note reader_type and which principles apply (Human-Reader Principles or LLM-Reader Principles)
 
-### Step 3: Structural Analysis
+### Step 3: Structural Analysis (CRITICAL)
 
 - If style_guide provided, consult style_guide now and note its key requirements -- these override default principles for this analysis
 - Map the document structure: list each major section with its word count
