@@ -220,8 +220,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
   <critical>🔬 EXHAUSTIVE ARTIFACT ANALYSIS - This is where you prevent future developer fuckups!</critical>
 
   <!-- Load all available content through discovery protocol -->
-  <invoke-protocol
-    name="discover_inputs" />
+  <action>Read fully and follow `{installed_path}/discover-inputs.md` to load all input files</action>
   <note>Available content: {epics_content}, {prd_content}, {architecture_content}, {ux_content},
   {project_context}</note>
 

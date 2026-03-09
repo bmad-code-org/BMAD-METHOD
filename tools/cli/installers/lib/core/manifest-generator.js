@@ -148,7 +148,7 @@ class ManifestGenerator {
   /**
    * Recursively walk a module directory tree, collecting skill directories.
    * A skill directory is one that contains both a bmad-skill-manifest.yaml with
-   * type: skill AND a workflow.md (or workflow.yaml) file.
+   * type: skill AND a workflow.md file.
    * Populates this.skills[] and this.skillClaimedDirs (Set of absolute paths).
    */
   async collectSkills() {
@@ -172,76 +172,66 @@ class ManifestGenerator {
         // Check this directory for skill manifest + workflow file
         const manifest = await this.loadSkillManifest(dir);
 
-        // Try both workflow.md and workflow.yaml
-        const workflowFilenames = ['workflow.md', 'workflow.yaml'];
-        for (const workflowFile of workflowFilenames) {
-          const workflowPath = path.join(dir, workflowFile);
-          if (!(await fs.pathExists(workflowPath))) continue;
-
+        const workflowFile = 'workflow.md';
+        const workflowPath = path.join(dir, workflowFile);
+        if (await fs.pathExists(workflowPath)) {
           const artifactType = this.getArtifactType(manifest, workflowFile);
-          if (artifactType !== 'skill') continue;
+          if (artifactType === 'skill') {
+            // Read and parse the workflow file
+            try {
+              const rawContent = await fs.readFile(workflowPath, 'utf8');
+              const content = rawContent.replaceAll('\r\n', '\n').replaceAll('\r', '\n');
 
-          // Read and parse the workflow file
-          try {
-            const rawContent = await fs.readFile(workflowPath, 'utf8');
-            const content = rawContent.replaceAll('\r\n', '\n').replaceAll('\r', '\n');
-
-            let workflow;
-            if (workflowFile === 'workflow.yaml') {
-              workflow = yaml.parse(content);
-            } else {
               const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
-              if (!frontmatterMatch) {
+              if (frontmatterMatch) {
+                const workflow = yaml.parse(frontmatterMatch[1]);
+
+                if (!workflow || !workflow.name || !workflow.description) {
+                  if (debug) console.log(`[DEBUG] collectSkills: skipped (missing name/description): ${workflowPath}`);
+                } else {
+                  // Build path relative from module root
+                  const relativePath = path.relative(modulePath, dir).split(path.sep).join('/');
+                  const installPath = relativePath
+                    ? `${this.bmadFolderName}/${moduleName}/${relativePath}/${workflowFile}`
+                    : `${this.bmadFolderName}/${moduleName}/${workflowFile}`;
+
+                  // Skills derive canonicalId from directory name — never from manifest
+                  if (manifest && manifest.__single && manifest.__single.canonicalId) {
+                    console.warn(
+                      `Warning: Skill manifest at ${dir}/bmad-skill-manifest.yaml contains canonicalId — this field is ignored for skills (directory name is the canonical ID)`,
+                    );
+                  }
+                  const canonicalId = path.basename(dir);
+
+                  this.skills.push({
+                    name: workflow.name,
+                    description: this.cleanForCSV(workflow.description),
+                    module: moduleName,
+                    path: installPath,
+                    canonicalId,
+                    install_to_bmad: this.getInstallToBmad(manifest, workflowFile),
+                  });
+
+                  // Add to files list
+                  this.files.push({
+                    type: 'skill',
+                    name: workflow.name,
+                    module: moduleName,
+                    path: installPath,
+                  });
+
+                  this.skillClaimedDirs.add(dir);
+
+                  if (debug) {
+                    console.log(`[DEBUG] collectSkills: claimed skill "${workflow.name}" as ${canonicalId} at ${dir}`);
+                  }
+                }
+              } else {
                 if (debug) console.log(`[DEBUG] collectSkills: skipped (no frontmatter): ${workflowPath}`);
-                continue;
               }
-              workflow = yaml.parse(frontmatterMatch[1]);
+            } catch (error) {
+              if (debug) console.log(`[DEBUG] collectSkills: failed to parse ${workflowPath}: ${error.message}`);
             }
-
-            if (!workflow || !workflow.name || !workflow.description) {
-              if (debug) console.log(`[DEBUG] collectSkills: skipped (missing name/description): ${workflowPath}`);
-              continue;
-            }
-
-            // Build path relative from module root
-            const relativePath = path.relative(modulePath, dir).split(path.sep).join('/');
-            const installPath = relativePath
-              ? `${this.bmadFolderName}/${moduleName}/${relativePath}/${workflowFile}`
-              : `${this.bmadFolderName}/${moduleName}/${workflowFile}`;
-
-            // Skills derive canonicalId from directory name — never from manifest
-            if (manifest && manifest.__single && manifest.__single.canonicalId) {
-              console.warn(
-                `Warning: Skill manifest at ${dir}/bmad-skill-manifest.yaml contains canonicalId — this field is ignored for skills (directory name is the canonical ID)`,
-              );
-            }
-            const canonicalId = path.basename(dir);
-
-            this.skills.push({
-              name: workflow.name,
-              description: this.cleanForCSV(workflow.description),
-              module: moduleName,
-              path: installPath,
-              canonicalId,
-              install_to_bmad: this.getInstallToBmad(manifest, workflowFile),
-            });
-
-            // Add to files list
-            this.files.push({
-              type: 'skill',
-              name: workflow.name,
-              module: moduleName,
-              path: installPath,
-            });
-
-            this.skillClaimedDirs.add(dir);
-
-            if (debug) {
-              console.log(`[DEBUG] collectSkills: claimed skill "${workflow.name}" as ${canonicalId} at ${dir}`);
-            }
-            break; // Successfully claimed — skip remaining workflow filenames
-          } catch (error) {
-            if (debug) console.log(`[DEBUG] collectSkills: failed to parse ${workflowPath}: ${error.message}`);
           }
         }
 
@@ -260,11 +250,11 @@ class ManifestGenerator {
             }
           }
           if (hasSkillType && debug) {
-            const hasWorkflow = workflowFilenames.some((f) => entries.some((e) => e.name === f));
+            const hasWorkflow = entries.some((e) => e.name === workflowFile);
             if (hasWorkflow) {
               console.log(`[DEBUG] collectSkills: dir has type:skill manifest but workflow file failed to parse: ${dir}`);
             } else {
-              console.log(`[DEBUG] collectSkills: dir has type:skill manifest but no workflow.md/workflow.yaml: ${dir}`);
+              console.log(`[DEBUG] collectSkills: dir has type:skill manifest but no workflow.md: ${dir}`);
             }
           }
         }
@@ -308,7 +298,7 @@ class ManifestGenerator {
   }
 
   /**
-   * Recursively find and parse workflow.yaml and workflow.md files
+   * Recursively find and parse workflow.md files
    */
   async getWorkflowsFromPath(basePath, moduleName, subDir = 'workflows') {
     const workflows = [];
@@ -326,7 +316,7 @@ class ManifestGenerator {
       return workflows;
     }
 
-    // Recursively find workflow.yaml files
+    // Recursively find workflow.md files
     const findWorkflows = async (dir, relativePath = '') => {
       // Skip directories already claimed as skills
       if (this.skillClaimedDirs && this.skillClaimedDirs.has(dir)) return;
@@ -344,11 +334,7 @@ class ManifestGenerator {
           // Recurse into subdirectories
           const newRelativePath = relativePath ? `${relativePath}/${entry.name}` : entry.name;
           await findWorkflows(fullPath, newRelativePath);
-        } else if (
-          entry.name === 'workflow.yaml' ||
-          entry.name === 'workflow.md' ||
-          (entry.name.startsWith('workflow-') && entry.name.endsWith('.md'))
-        ) {
+        } else if (entry.name === 'workflow.md' || (entry.name.startsWith('workflow-') && entry.name.endsWith('.md'))) {
           // Parse workflow file (both YAML and MD formats)
           if (debug) {
             console.log(`[DEBUG] Found workflow file: ${fullPath}`);
@@ -358,21 +344,15 @@ class ManifestGenerator {
             const rawContent = await fs.readFile(fullPath, 'utf8');
             const content = rawContent.replaceAll('\r\n', '\n').replaceAll('\r', '\n');
 
-            let workflow;
-            if (entry.name === 'workflow.yaml') {
-              // Parse YAML workflow
-              workflow = yaml.parse(content);
-            } else {
-              // Parse MD workflow with YAML frontmatter
-              const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
-              if (!frontmatterMatch) {
-                if (debug) {
-                  console.log(`[DEBUG] Skipped (no frontmatter): ${fullPath}`);
-                }
-                continue; // Skip MD files without frontmatter
+            // Parse MD workflow with YAML frontmatter
+            const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
+            if (!frontmatterMatch) {
+              if (debug) {
+                console.log(`[DEBUG] Skipped (no frontmatter): ${fullPath}`);
               }
-              workflow = yaml.parse(frontmatterMatch[1]);
+              continue; // Skip MD files without frontmatter
             }
+            const workflow = yaml.parse(frontmatterMatch[1]);
 
             if (debug) {
               console.log(`[DEBUG] Parsed: name="${workflow.name}", description=${workflow.description ? 'OK' : 'MISSING'}`);
@@ -1343,7 +1323,7 @@ class ManifestGenerator {
     // Check for manifest in this directory
     const manifest = await this.loadSkillManifest(dir);
     if (manifest) {
-      const type = this.getArtifactType(manifest, 'workflow.md') || this.getArtifactType(manifest, 'workflow.yaml');
+      const type = this.getArtifactType(manifest, 'workflow.md');
       if (type === 'skill') return true;
     }
 

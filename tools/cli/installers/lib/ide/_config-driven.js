@@ -232,16 +232,8 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
 
     for (const artifact of artifacts) {
       if (artifact.type === 'workflow-command') {
-        // Use different template based on workflow type (YAML vs MD)
-        // Default to 'default' template type, but allow override via config
-        const workflowTemplateType = artifact.isYamlWorkflow
-          ? config.yaml_workflow_template || `${templateType}-workflow-yaml`
-          : config.md_workflow_template || `${templateType}-workflow`;
-
-        // Fall back to default templates if specific ones don't exist
-        const finalTemplateType = artifact.isYamlWorkflow ? 'default-workflow-yaml' : 'default-workflow';
-        // workflowTemplateType already contains full name (e.g., 'gemini-workflow-yaml'), so pass empty artifactType
-        const { content: template, extension } = await this.loadTemplate(workflowTemplateType, '', config, finalTemplateType);
+        const workflowTemplateType = config.md_workflow_template || `${templateType}-workflow`;
+        const { content: template, extension } = await this.loadTemplate(workflowTemplateType, '', config, 'default-workflow');
         const content = this.renderTemplate(template, artifact);
         const filename = this.generateFilename(artifact, 'workflow', extension);
 
