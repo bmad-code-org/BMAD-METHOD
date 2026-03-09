@@ -280,8 +280,15 @@ class ManifestGenerator {
       if (frontmatterMatch) {
         const skillMeta = yaml.parse(frontmatterMatch[1]);
 
-        if (!skillMeta || typeof skillMeta !== 'object' || !skillMeta.name || !skillMeta.description) {
-          if (debug) console.log(`[DEBUG] parseSkillMd: SKILL.md in "${dir}" is missing name or description — skipping`);
+        if (
+          !skillMeta ||
+          typeof skillMeta !== 'object' ||
+          typeof skillMeta.name !== 'string' ||
+          typeof skillMeta.description !== 'string' ||
+          !skillMeta.name ||
+          !skillMeta.description
+        ) {
+          if (debug) console.log(`[DEBUG] parseSkillMd: SKILL.md in "${dir}" is missing name or description (or wrong type) — skipping`);
           return null;
         }
 
