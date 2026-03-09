@@ -554,7 +554,10 @@ class ModuleManager {
     }
 
     // Check if already installed
-    if (await fs.pathExists(targetPath)) {
+    // When isExtension is true, the caller is merging an extension module on top
+    // of an already-installed base module (same code). Skip removal so that base
+    // files are preserved and the extension's files overlay at the file level.
+    if ((await fs.pathExists(targetPath)) && !options.isExtension) {
       await fs.remove(targetPath);
     }
 
