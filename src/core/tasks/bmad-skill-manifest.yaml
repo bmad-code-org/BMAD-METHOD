@@ -8,11 +8,6 @@ editorial-review-structure.xml:
   type: task
   description: "Structural editor that proposes cuts, reorganization, and simplification while preserving comprehension"
 
-help.md:
-  canonicalId: bmad-help
-  type: task
-  description: "Analyzes what is done and the users query and offers advice on what to do next"
-
 index-docs.xml:
   canonicalId: bmad-index-docs
   type: task
