@@ -81,7 +81,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
     - Missing documentation of what was actually changed
   </action>
 
-  <invoke-protocol name="discover_inputs" />
+  <action>Read fully and follow `{installed_path}/discover-inputs.md` to load all input files</action>
   <action>Load {project_context} for coding standards (if exists)</action>
 </step>
 

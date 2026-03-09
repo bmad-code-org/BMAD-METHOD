@@ -56,16 +56,12 @@ areas:
       - "src/**/workflows/**"
     rules:
       - id: "workflow_entry_point_required"
-        description: "Every workflow folder must have workflow.yaml, workflow.md, or workflow.xml as entry point"
+        description: "Every workflow folder must have workflow.md as entry point"
         severity: "high"
 
       - id: "sharded_workflow_steps_folder"
         description: "Sharded workflows (using workflow.md) must have steps/ folder with numbered files (step-01-*.md, step-02-*.md)"
         severity: "high"
-
-      - id: "standard_workflow_instructions"
-        description: "Standard workflows using workflow.yaml must include instructions.md for execution guidance"
-        severity: "medium"
 
       - id: "workflow_step_limit"
         description: "Workflows should have 5-10 steps maximum to prevent context loss in LLM execution"
@@ -75,11 +71,9 @@ areas:
   # WORKFLOW ENTRY FILE RULES
   # ============================================
   workflow_definitions:
-    description: "Workflow entry files (workflow.yaml, workflow.md, workflow.xml)"
+    description: "Workflow entry files (workflow.md)"
     globs:
-      - "src/**/workflows/**/workflow.yaml"
       - "src/**/workflows/**/workflow.md"
-      - "src/**/workflows/**/workflow.xml"
     rules:
       - id: "workflow_name_required"
         description: "Workflow entry files must define 'name' field in frontmatter or root element"
@@ -88,10 +82,6 @@ areas:
       - id: "workflow_description_required"
         description: "Workflow entry files must include 'description' explaining the workflow's purpose"
         severity: "high"
-
-      - id: "workflow_config_source"
-        description: "Workflows should reference config_source for variable resolution (e.g., {project-root}/_bmad/module/config.yaml)"
-        severity: "medium"
 
       - id: "workflow_installed_path"
         description: "Workflows should define installed_path for relative file references within the workflow"
@@ -150,42 +140,12 @@ areas:
         severity: "high"
 
   # ============================================
-  # XML WORKFLOW/TASK RULES
-  # ============================================
-  xml_workflows:
-    description: "XML-based workflows and tasks"
-    globs:
-      - "src/**/workflows/**/*.xml"
-      - "src/**/tasks/**/*.xml"
-    rules:
-      - id: "xml_task_id_required"
-        description: "XML tasks must have unique 'id' attribute on root task element"
-        severity: "high"
-
-      - id: "xml_llm_instructions"
-        description: "XML workflows should include <llm> section with critical execution instructions for the agent"
-        severity: "medium"
-
-      - id: "xml_step_numbering"
-        description: "XML steps should use n='X' attribute for sequential numbering"
-        severity: "medium"
-
-      - id: "xml_action_tags"
-        description: "Use <action> for required actions, <ask> for user input (must HALT), <goto> for jumps, <check if='...'> for conditionals"
-        severity: "medium"
-
-      - id: "xml_ask_must_halt"
-        description: "<ask> tags require agent to HALT and wait for user response before continuing"
-        severity: "high"
-
-  # ============================================
   # WORKFLOW CONTENT QUALITY
   # ============================================
   workflow_content:
     description: "Content quality and consistency rules for all workflow files"
     globs:
       - "src/**/workflows/**/*.md"
-      - "src/**/workflows/**/*.yaml"
     rules:
       - id: "communication_language_variable"
         description: "Workflows should use {communication_language} variable for agent output language consistency"

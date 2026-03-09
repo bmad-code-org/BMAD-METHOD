@@ -19,6 +19,5 @@ agent:
   menu:
     - trigger: multi-command
       description: Menu item with multiple command targets
-      workflow: path/to/workflow
-      exec: npm test
+      exec: path/to/workflow
       action: perform_action

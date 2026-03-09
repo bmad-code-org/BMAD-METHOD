@@ -32,5 +32,5 @@ agent:
       description: "[QQ] Quick Dev New (Preview): Unified quick flow — clarify intent, plan, implement, review, present (experimental)"
 
     - trigger: CR or fuzzy match on code-review
-      workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/code-review/workflow.md"
+      exec: "{project-root}/_bmad/bmm/workflows/4-implementation/code-review/workflow.md"
       description: "[CR] Code Review: Initiate a comprehensive code review across multiple quality facets. For best results, use a fresh context and a different quality LLM if available"

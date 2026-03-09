@@ -27,8 +27,3 @@ shard-doc.xml:
   canonicalId: bmad-shard-doc
   type: task
   description: "Splits large markdown documents into smaller, organized files based on sections"
-
-workflow.xml:
-  canonicalId: bmad-workflow
-  type: task
-  description: "Execute given workflow by loading its configuration and following instructions"
