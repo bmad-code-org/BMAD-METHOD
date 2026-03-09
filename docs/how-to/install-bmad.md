@@ -51,7 +51,11 @@ Pick which AI tools you use:
 - Cursor
 - Others
 
-Each tool has its own way of integrating commands. The installer creates tiny prompt files to activate workflows and agents — it just puts them where your tool expects to find them.
+Each tool has its own way of integrating skills. The installer creates tiny prompt files to activate workflows and agents — it just puts them where your tool expects to find them.
+
+:::note[Enabling Skills]
+Some platforms require skills to be explicitly enabled in settings before they appear. If you install BMad and don't see the skills, check your platform's settings or ask your AI assistant how to enable skills.
+:::
 
 ### 4. Choose Modules
 
@@ -71,13 +75,19 @@ your-project/
 │   ├── core/           # Required core module
 │   └── ...
 ├── _bmad-output/       # Generated artifacts
-├── .claude/            # Claude Code commands (if using Claude Code)
-└── .kiro/              # Kiro steering files (if using Kiro)
+├── .claude/            # Claude Code skills (if using Claude Code)
+│   └── skills/
+│       ├── bmad-help/
+│       ├── bmad-persona/
+│       └── ...
+└── .cursor/            # Cursor skills (if using Cursor)
+    └── skills/
+        └── ...
 ```
 
 ## Verify Installation
 
-Run `/bmad-help` to verify everything works and see what to do next.
+Run `bmad-help` to verify everything works and see what to do next.
 
 **BMad-Help is your intelligent guide** that will:
 - Confirm your installation is working
@@ -86,8 +96,8 @@ Run `/bmad-help` to verify everything works and see what to do next.
 
 You can also ask it questions:
 ```
-/bmad-help I just installed, what should I do first?
-/bmad-help What are my options for a SaaS project?
+bmad-help I just installed, what should I do first?
+bmad-help What are my options for a SaaS project?
 ```
 
 ## Troubleshooting

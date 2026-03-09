@@ -1,0 +1,14 @@
+workflow-domain-research.md:
+  canonicalId: bmad-domain-research
+  type: workflow
+  description: "Conduct domain and industry research. Use when the user says 'lets create a research report on [domain or industry]'"
+
+workflow-market-research.md:
+  canonicalId: bmad-market-research
+  type: workflow
+  description: "Conduct market research on competition and customers. Use when the user says 'create a market research report about [business idea]'"
+
+workflow-technical-research.md:
+  canonicalId: bmad-technical-research
+  type: workflow
+  description: "Conduct technical research on technologies and architecture. Use when the user says 'create a technical research report on [topic]'"

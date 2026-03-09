@@ -3,7 +3,6 @@
 <workflow>
 
 <critical>This workflow performs complete project documentation (Steps 1-12)</critical>
-<critical>Called by: document-project/instructions.md router</critical>
 <critical>Handles: initial_scan and full_rescan modes</critical>
 
 <step n="0.5" goal="Load documentation requirements data for fresh starts (not needed for resume)" if="resume_mode == false">

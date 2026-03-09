@@ -30,18 +30,18 @@ If you are unsure, start with the DEV agent. You can always escalate to Quick Fl
 
 ## Steps
 
-### 1. Load the DEV Agent
+### 1. Invoke the DEV Agent
 
-Start a **fresh chat** in your AI IDE and load the DEV agent with its slash command:
+Start a **fresh chat** in your AI IDE and invoke the DEV agent skill:
 
 ```text
-/bmad-agent-bmm-dev
+bmad-dev
 ```
 
-This loads the agent's persona and capabilities into the session. If you decide you need Quick Flow instead, load the **Quick Flow Solo Dev** agent in a fresh chat:
+This loads the agent's persona and capabilities into the session. If you decide you need Quick Flow instead, invoke the **Quick Flow Solo Dev** agent skill in a fresh chat:
 
 ```text
-/bmad-agent-bmm-quick-flow-solo-dev
+bmad-quick-flow-solo-dev
 ```
 
 Once the Solo Dev agent is loaded, describe your change and ask it to create a **quick-spec**. The agent drafts a lightweight spec capturing what you want to change and how. After you approve the quick-spec, tell the agent to start the **Quick Flow dev cycle** -- it will implement the change, run tests, and perform a self-review, all guided by the spec you just approved.

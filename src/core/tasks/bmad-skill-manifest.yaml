@@ -1,0 +1,29 @@
+editorial-review-prose.xml:
+  canonicalId: bmad-editorial-review-prose
+  type: task
+  description: "Clinical copy-editor that reviews text for communication issues"
+
+editorial-review-structure.xml:
+  canonicalId: bmad-editorial-review-structure
+  type: task
+  description: "Structural editor that proposes cuts, reorganization, and simplification while preserving comprehension"
+
+help.md:
+  canonicalId: bmad-help
+  type: task
+  description: "Analyzes what is done and the users query and offers advice on what to do next"
+
+index-docs.xml:
+  canonicalId: bmad-index-docs
+  type: task
+  description: "Generates or updates an index.md to reference all docs in the folder"
+
+review-edge-case-hunter.xml:
+  canonicalId: bmad-review-edge-case-hunter
+  type: task
+  description: "Walk every branching path and boundary condition in content, report only unhandled edge cases"
+
+shard-doc.xml:
+  canonicalId: bmad-shard-doc
+  type: task
+  description: "Splits large markdown documents into smaller, organized files based on sections"

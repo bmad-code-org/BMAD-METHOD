@@ -47,6 +47,7 @@ class AgentCommandGenerator {
         name: agent.name,
         description: agent.description || `${agent.name} agent`,
         module: agent.module,
+        canonicalId: agent.canonicalId || '',
         relativePath: path.join(agent.module, 'agents', agentPathInModule), // For command filename
         agentPath: agentRelPath, // Relative path to actual agent file
         content: launcherContent,

@@ -12,6 +12,7 @@
  * - bmm/workflows/plan-project.md → bmad-bmm-plan-project.md
  * - bmm/tasks/create-story.md → bmad-bmm-create-story.md
  * - core/agents/brainstorming.md → bmad-agent-brainstorming.md (core agents skip module name)
+ * - standalone/agents/fred.md → bmad-agent-standalone-fred.md
  */
 
 // Type segments - agents are included in naming, others are filtered out
@@ -26,8 +27,9 @@ const BMAD_FOLDER_NAME = '_bmad';
  * Converts: 'bmm', 'agents', 'pm' → 'bmad-agent-bmm-pm.md'
  * Converts: 'bmm', 'workflows', 'correct-course' → 'bmad-bmm-correct-course.md'
  * Converts: 'core', 'agents', 'brainstorming' → 'bmad-agent-brainstorming.md' (core agents skip module name)
+ * Converts: 'standalone', 'agents', 'fred' → 'bmad-agent-standalone-fred.md'
  *
- * @param {string} module - Module name (e.g., 'bmm', 'core')
+ * @param {string} module - Module name (e.g., 'bmm', 'core', 'standalone')
  * @param {string} type - Artifact type ('agents', 'workflows', 'tasks', 'tools')
  * @param {string} name - Artifact name (e.g., 'pm', 'brainstorming')
  * @returns {string} Flat filename like 'bmad-agent-bmm-pm.md' or 'bmad-bmm-correct-course.md'
@@ -38,6 +40,10 @@ function toDashName(module, type, name) {
   // For core module, skip the module name: use 'bmad-agent-name.md' instead of 'bmad-agent-core-name.md'
   if (module === 'core') {
     return isAgent ? `bmad-agent-${name}.md` : `bmad-${name}.md`;
+  }
+  // For standalone module, include 'standalone' in the name
+  if (module === 'standalone') {
+    return isAgent ? `bmad-agent-standalone-${name}.md` : `bmad-standalone-${name}.md`;
   }
 
   // Module artifacts: bmad-module-name.md or bmad-agent-module-name.md
@@ -63,7 +69,7 @@ function toDashPath(relativePath) {
   }
 
   // Strip common file extensions to avoid double extensions in generated filenames
-  // e.g., 'create-story.xml' → 'create-story', 'workflow.yaml' → 'workflow'
+  // e.g., 'create-story.xml' → 'create-story', 'workflow.md' → 'workflow'
   const withoutExt = relativePath.replace(/\.(md|yaml|yml|json|xml|toml)$/i, '');
   const parts = withoutExt.split(/[/\\]/);
 
@@ -110,6 +116,8 @@ function isDashFormat(filename) {
  * Parses: 'bmad-bmm-correct-course.md' → { prefix: 'bmad', module: 'bmm', type: 'workflows', name: 'correct-course' }
  * Parses: 'bmad-agent-brainstorming.md' → { prefix: 'bmad', module: 'core', type: 'agents', name: 'brainstorming' } (core agents)
  * Parses: 'bmad-brainstorming.md' → { prefix: 'bmad', module: 'core', type: 'workflows', name: 'brainstorming' } (core workflows)
+ * Parses: 'bmad-agent-standalone-fred.md' → { prefix: 'bmad', module: 'standalone', type: 'agents', name: 'fred' }
+ * Parses: 'bmad-standalone-foo.md' → { prefix: 'bmad', module: 'standalone', type: 'workflows', name: 'foo' }
  *
  * @param {string} filename - Dash-formatted filename
  * @returns {Object|null} Parsed parts or null if invalid format
@@ -127,7 +135,16 @@ function parseDashName(filename) {
 
   if (isAgent) {
     // This is an agent file
-    // Format: bmad-agent-name (core) or bmad-agent-module-name
+    // Format: bmad-agent-name (core) or bmad-agent-standalone-name or bmad-agent-module-name
+    if (parts.length >= 4 && parts[2] === 'standalone') {
+      // Standalone agent: bmad-agent-standalone-name
+      return {
+        prefix: parts[0],
+        module: 'standalone',
+        type: 'agents',
+        name: parts.slice(3).join('-'),
+      };
+    }
     if (parts.length === 3) {
       // Core agent: bmad-agent-name
       return {
@@ -158,6 +175,16 @@ function parseDashName(filename) {
     };
   }
 
+  // Check for standalone non-agent: bmad-standalone-name
+  if (parts[1] === 'standalone') {
+    return {
+      prefix: parts[0],
+      module: 'standalone',
+      type: 'workflows', // Default to workflows for non-agent standalone items
+      name: parts.slice(2).join('-'),
+    };
+  }
+
   // Otherwise, it's a module workflow/tool/task (bmad-module-name)
   return {
     prefix: parts[0],
@@ -179,6 +206,9 @@ function toUnderscoreName(module, type, name) {
   const isAgent = type === AGENT_SEGMENT;
   if (module === 'core') {
     return isAgent ? `bmad_agent_${name}.md` : `bmad_${name}.md`;
+  }
+  if (module === 'standalone') {
+    return isAgent ? `bmad_agent_standalone_${name}.md` : `bmad_standalone_${name}.md`;
   }
   return isAgent ? `bmad_${module}_agent_${name}.md` : `bmad_${module}_${name}.md`;
 }
@@ -231,6 +261,15 @@ function parseUnderscoreName(filename) {
 
   if (agentIndex !== -1) {
     if (agentIndex === 1) {
+      // bmad_agent_... - check for standalone
+      if (parts.length >= 4 && parts[2] === 'standalone') {
+        return {
+          prefix: parts[0],
+          module: 'standalone',
+          type: 'agents',
+          name: parts.slice(3).join('_'),
+        };
+      }
       return {
         prefix: parts[0],
         module: 'core',
@@ -256,12 +295,37 @@ function parseUnderscoreName(filename) {
     };
   }
 
+  // Check for standalone non-agent: bmad_standalone_name
+  if (parts[1] === 'standalone') {
+    return {
+      prefix: parts[0],
+      module: 'standalone',
+      type: 'workflows',
+      name: parts.slice(2).join('_'),
+    };
+  }
+
   return {
     prefix: parts[0],
     module: parts[1],
     type: 'workflows',
     name: parts.slice(2).join('_'),
   };
+}
+
+/**
+ * Resolve the skill name for an artifact.
+ * Prefers canonicalId from a bmad-skill-manifest.yaml sidecar when available,
+ * falling back to the path-derived name from toDashPath().
+ *
+ * @param {Object} artifact - Artifact object (must have relativePath; may have canonicalId)
+ * @returns {string} Filename like 'bmad-create-prd.md' or 'bmad-agent-bmm-pm.md'
+ */
+function resolveSkillName(artifact) {
+  if (artifact.canonicalId) {
+    return `${artifact.canonicalId}.md`;
+  }
+  return toDashPath(artifact.relativePath);
 }
 
 // Backward compatibility aliases (colon format was same as underscore)
@@ -275,6 +339,7 @@ module.exports = {
   // New standard (dash-based)
   toDashName,
   toDashPath,
+  resolveSkillName,
   customAgentDashName,
   isDashFormat,
   parseDashName,

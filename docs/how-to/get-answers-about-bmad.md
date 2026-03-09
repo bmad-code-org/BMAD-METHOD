@@ -18,7 +18,7 @@ BMad-Help is more than a lookup tool — it:
 
 ### How to Use BMad-Help
 
-Run it with just the slash command:
+Run it with just the skill name:
 
 ```
 /bmad-help
@@ -81,7 +81,7 @@ https://bmad-code-org.github.io/BMAD-METHOD/llms-full.txt
 :::note[Example]
 **Q:** "Tell me the fastest way to build something with BMad"
 
-**A:** Use Quick Flow: Run `quick-spec` to write a technical specification, then `quick-dev` to implement it—skipping the full planning phases.
+**A:** Use Quick Flow: Run `bmad-quick-spec` to write a technical specification, then `bmad-quick-dev` to implement it—skipping the full planning phases.
 :::
 
 ## What You Get

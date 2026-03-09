@@ -9,9 +9,9 @@ The BMad Method (BMM) is a module in the BMad Ecosystem, targeted at following t
 
 The rationale and concepts come from agile methodologies that have been used across the industry with great success as a mental framework.
 
-If at any time you are unsure what to do, the `/bmad-help` command will help you stay on track or know what to do next. You can always refer to this for reference also - but /bmad-help is fully interactive and much quicker if you have already installed the BMad Method. Additionally, if you are using different modules that have extended the BMad Method or added other complementary non-extension modules - the /bmad-help evolves to know all that is available to give you the best in-the-moment advice.
+If at any time you are unsure what to do, the `bmad-help` skill will help you stay on track or know what to do next. You can always refer to this for reference also - but `bmad-help` is fully interactive and much quicker if you have already installed the BMad Method. Additionally, if you are using different modules that have extended the BMad Method or added other complementary non-extension modules - `bmad-help` evolves to know all that is available to give you the best in-the-moment advice.
 
-Final important note: Every workflow below can be run directly with your tool of choice via slash command or by loading an agent first and using the entry from the agents menu.
+Final important note: Every workflow below can be run directly with your tool of choice via skill or by loading an agent first and using the entry from the agents menu.
 
 <iframe src="/workflow-map-diagram.html" title="BMad Method Workflow Map Diagram" width="100%" height="100%" style="border-radius: 8px; border: 1px solid #334155; min-height: 900px;"></iframe>
 
@@ -26,8 +26,8 @@ Explore the problem space and validate ideas before committing to planning.
 | Workflow                        | Purpose                                                                    | Produces                  |
 | ------------------------------- | -------------------------------------------------------------------------- | ------------------------- |
 | `bmad-brainstorming`            | Brainstorm Project Ideas with guided facilitation of a brainstorming coach | `brainstorming-report.md` |
-| `bmad-bmm-research`             | Validate market, technical, or domain assumptions                          | Research findings         |
-| `bmad-bmm-create-product-brief` | Capture strategic vision                                                   | `product-brief.md`        |
+| `bmad-domain-research`, `bmad-market-research`, `bmad-technical-research` | Validate market, technical, or domain assumptions | Research findings |
+| `bmad-create-product-brief`     | Capture strategic vision                                                   | `product-brief.md`        |
 
 ## Phase 2: Planning
 
@@ -35,8 +35,8 @@ Define what to build and for whom.
 
 | Workflow                    | Purpose                                  | Produces     |
 | --------------------------- | ---------------------------------------- | ------------ |
-| `bmad-bmm-create-prd`       | Define requirements (FRs/NFRs)           | `PRD.md`     |
-| `bmad-bmm-create-ux-design` | Design user experience (when UX matters) | `ux-spec.md` |
+| `bmad-create-prd`    | Define requirements (FRs/NFRs)           | `PRD.md`     |
+| `bmad-create-ux-design`  | Design user experience (when UX matters) | `ux-spec.md` |
 
 ## Phase 3: Solutioning
 
@@ -44,9 +44,9 @@ Decide how to build it and break work into stories.
 
 | Workflow                                  | Purpose                                    | Produces                    |
 | ----------------------------------------- | ------------------------------------------ | --------------------------- |
-| `bmad-bmm-create-architecture`            | Make technical decisions explicit          | `architecture.md` with ADRs |
-| `bmad-bmm-create-epics-and-stories`       | Break requirements into implementable work | Epic files with stories     |
-| `bmad-bmm-check-implementation-readiness` | Gate check before implementation           | PASS/CONCERNS/FAIL decision |
+| `bmad-create-architecture`            | Make technical decisions explicit          | `architecture.md` with ADRs |
+| `bmad-create-epics-and-stories`       | Break requirements into implementable work | Epic files with stories     |
+| `bmad-check-implementation-readiness` | Gate check before implementation           | PASS/CONCERNS/FAIL decision |
 
 ## Phase 4: Implementation
 
@@ -54,13 +54,13 @@ Build it, one story at a time. Coming soon, full phase 4 automation!
 
 | Workflow                   | Purpose                                                                  | Produces                         |
 | -------------------------- | ------------------------------------------------------------------------ | -------------------------------- |
-| `bmad-bmm-sprint-planning` | Initialize tracking (once per project to sequence the dev cycle)         | `sprint-status.yaml`             |
-| `bmad-bmm-create-story`    | Prepare next story for implementation                                    | `story-[slug].md`                |
-| `bmad-bmm-dev-story`       | Implement the story                                                      | Working code + tests             |
-| `bmad-bmm-code-review`     | Validate implementation quality                                          | Approved or changes requested    |
-| `bmad-bmm-correct-course`  | Handle significant mid-sprint changes                                    | Updated plan or re-routing       |
-| `bmad-bmm-automate`        | Generate tests for existing features - Use after a full epic is complete | End to End UI Focused Test suite |
-| `bmad-bmm-retrospective`   | Review after epic completion                                             | Lessons learned                  |
+| `bmad-sprint-planning` | Initialize tracking (once per project to sequence the dev cycle)         | `sprint-status.yaml`          |
+| `bmad-create-story`    | Prepare next story for implementation                                    | `story-[slug].md`             |
+| `bmad-dev-story`       | Implement the story                                                      | Working code + tests          |
+| `bmad-code-review`     | Validate implementation quality                                          | Approved or changes requested |
+| `bmad-correct-course`  | Handle significant mid-sprint changes                                    | Updated plan or re-routing    |
+| `bmad-sprint-status`   | Track sprint progress and story status                                   | Sprint status update          |
+| `bmad-retrospective`   | Review after epic completion                                             | Lessons learned               |
 
 ## Quick Flow (Parallel Track)
 
@@ -68,8 +68,8 @@ Skip phases 1-3 for small, well-understood work.
 
 | Workflow              | Purpose                                    | Produces                                      |
 | --------------------- | ------------------------------------------ | --------------------------------------------- |
-| `bmad-bmm-quick-spec` | Define an ad-hoc change                    | `tech-spec.md` (story file for small changes) |
-| `bmad-bmm-quick-dev`  | Implement from spec or direct instructions | Working code + tests                          |
+| `bmad-quick-spec` | Define an ad-hoc change                    | `tech-spec.md` (story file for small changes) |
+| `bmad-quick-dev`  | Implement from spec or direct instructions | Working code + tests                          |
 
 ## Context Management
 
@@ -84,6 +84,6 @@ Create `project-context.md` to ensure AI agents follow your project's rules and 
 **How to create it:**
 
 - **Manually** — Create `_bmad-output/project-context.md` with your technology stack and implementation rules
-- **Generate it** — Run `/bmad-bmm-generate-project-context` to auto-generate from your architecture or codebase
+- **Generate it** — Run `bmad-generate-project-context` to auto-generate from your architecture or codebase
 
 [**Learn more about project-context.md**](../explanation/project-context.md)

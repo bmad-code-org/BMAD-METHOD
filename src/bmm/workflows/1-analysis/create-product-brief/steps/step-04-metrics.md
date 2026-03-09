@@ -7,7 +7,7 @@ nextStepFile: '{project-root}/_bmad/bmm/workflows/1-analysis/create-product-brie
 outputFile: '{planning_artifacts}/product-brief-{{project_name}}-{{date}}.md'
 
 # Task References
-advancedElicitationTask: '{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml'
+advancedElicitationTask: '{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.md'
 partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 ---
 

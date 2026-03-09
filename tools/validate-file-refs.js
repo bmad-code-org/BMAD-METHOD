@@ -324,6 +324,8 @@ function extractCsvRefs(filePath, content) {
     const raw = record['workflow-file'];
     if (!raw || raw.trim() === '') continue;
     if (!isResolvable(raw)) continue;
+    // skill: prefixed references are resolved by the IDE/CLI, not as file paths
+    if (raw.startsWith('skill:')) continue;
 
     // Line = header (1) + data row index (0-based) + 1
     const line = i + 2;

@@ -77,7 +77,7 @@ sections_completed: ['technology_stack', 'critical_rules']
 Run the workflow in a fresh chat:
 
 ```bash
-/bmad-bmm-generate-project-context
+bmad-generate-project-context
 ```
 
 The workflow scans your architecture document and project files to generate a context file capturing the decisions made.
@@ -87,7 +87,7 @@ The workflow scans your architecture document and project files to generate a co
 For existing projects, run:
 
 ```bash
-/bmad-bmm-generate-project-context
+bmad-generate-project-context
 ```
 
 The workflow analyzes your codebase to identify conventions, then generates a context file you can review and refine.

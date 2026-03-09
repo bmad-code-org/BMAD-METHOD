@@ -22,7 +22,7 @@ agent:
       action: display_help
     - trigger: start-workflow
       description: Start a workflow
-      workflow: path/to/workflow
+      exec: path/to/workflow
     - trigger: execute
       description: Execute command
       exec: npm test

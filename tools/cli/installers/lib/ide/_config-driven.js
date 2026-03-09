@@ -1,10 +1,13 @@
+const os = require('node:os');
 const path = require('node:path');
 const fs = require('fs-extra');
+const yaml = require('yaml');
 const { BaseIdeSetup } = require('./_base-ide');
 const prompts = require('../../../lib/prompts');
 const { AgentCommandGenerator } = require('./shared/agent-command-generator');
 const { WorkflowCommandGenerator } = require('./shared/workflow-command-generator');
 const { TaskToolCommandGenerator } = require('./shared/task-tool-command-generator');
+const csv = require('csv-parse/sync');
 
 /**
  * Config-driven IDE setup handler
@@ -24,6 +27,34 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
     super(platformCode, platformConfig.name, platformConfig.preferred);
     this.platformConfig = platformConfig;
     this.installerConfig = platformConfig.installer || null;
+
+    // Set configDir from target_dir so base-class detect() works
+    if (this.installerConfig?.target_dir) {
+      this.configDir = this.installerConfig.target_dir;
+    }
+  }
+
+  /**
+   * Detect whether this IDE already has configuration in the project.
+   * For skill_format platforms, checks for bmad-prefixed entries in target_dir
+   * (matching old codex.js behavior) instead of just checking directory existence.
+   * @param {string} projectDir - Project directory
+   * @returns {Promise<boolean>}
+   */
+  async detect(projectDir) {
+    if (this.installerConfig?.skill_format && this.configDir) {
+      const dir = path.join(projectDir || process.cwd(), this.configDir);
+      if (await fs.pathExists(dir)) {
+        try {
+          const entries = await fs.readdir(dir);
+          return entries.some((e) => typeof e === 'string' && e.startsWith('bmad'));
+        } catch {
+          return false;
+        }
+      }
+      return false;
+    }
+    return super.detect(projectDir);
   }
 
   /**
@@ -39,8 +70,8 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
       const conflict = await this.findAncestorConflict(projectDir);
       if (conflict) {
         await prompts.log.error(
-          `Found existing BMAD commands in ancestor installation: ${conflict}\n` +
-            `  ${this.name} inherits commands from parent directories, so this would cause duplicates.\n` +
+          `Found existing BMAD skills in ancestor installation: ${conflict}\n` +
+            `  ${this.name} inherits skills from parent directories, so this would cause duplicates.\n` +
             `  Please remove the BMAD files from that directory first:\n` +
             `    rm -rf "${conflict}"/bmad*`,
         );
@@ -86,39 +117,48 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
   async installToTarget(projectDir, bmadDir, config, options) {
     const { target_dir, template_type, artifact_types } = config;
 
-    // Skip targets with explicitly empty artifact_types array
+    // Skip targets with explicitly empty artifact_types and no verbatim skills
     // This prevents creating empty directories when no artifacts will be written
-    if (Array.isArray(artifact_types) && artifact_types.length === 0) {
-      return { success: true, results: { agents: 0, workflows: 0, tasks: 0, tools: 0 } };
+    const skipStandardArtifacts = Array.isArray(artifact_types) && artifact_types.length === 0;
+    if (skipStandardArtifacts && !config.skill_format) {
+      return { success: true, results: { agents: 0, workflows: 0, tasks: 0, tools: 0, skills: 0 } };
     }
 
     const targetPath = path.join(projectDir, target_dir);
     await this.ensureDir(targetPath);
 
     const selectedModules = options.selectedModules || [];
-    const results = { agents: 0, workflows: 0, tasks: 0, tools: 0 };
+    const results = { agents: 0, workflows: 0, tasks: 0, tools: 0, skills: 0 };
 
-    // Install agents
-    if (!artifact_types || artifact_types.includes('agents')) {
-      const agentGen = new AgentCommandGenerator(this.bmadFolderName);
-      const { artifacts } = await agentGen.collectAgentArtifacts(bmadDir, selectedModules);
-      results.agents = await this.writeAgentArtifacts(targetPath, artifacts, template_type, config);
+    // Install standard artifacts (agents, workflows, tasks, tools)
+    if (!skipStandardArtifacts) {
+      // Install agents
+      if (!artifact_types || artifact_types.includes('agents')) {
+        const agentGen = new AgentCommandGenerator(this.bmadFolderName);
+        const { artifacts } = await agentGen.collectAgentArtifacts(bmadDir, selectedModules);
+        results.agents = await this.writeAgentArtifacts(targetPath, artifacts, template_type, config);
+      }
+
+      // Install workflows
+      if (!artifact_types || artifact_types.includes('workflows')) {
+        const workflowGen = new WorkflowCommandGenerator(this.bmadFolderName);
+        const { artifacts } = await workflowGen.collectWorkflowArtifacts(bmadDir);
+        results.workflows = await this.writeWorkflowArtifacts(targetPath, artifacts, template_type, config);
+      }
+
+      // Install tasks and tools using template system (supports TOML for Gemini, MD for others)
+      if (!artifact_types || artifact_types.includes('tasks') || artifact_types.includes('tools')) {
+        const taskToolGen = new TaskToolCommandGenerator(this.bmadFolderName);
+        const { artifacts } = await taskToolGen.collectTaskToolArtifacts(bmadDir);
+        const taskToolResult = await this.writeTaskToolArtifacts(targetPath, artifacts, template_type, config);
+        results.tasks = taskToolResult.tasks || 0;
+        results.tools = taskToolResult.tools || 0;
+      }
     }
 
-    // Install workflows
-    if (!artifact_types || artifact_types.includes('workflows')) {
-      const workflowGen = new WorkflowCommandGenerator(this.bmadFolderName);
-      const { artifacts } = await workflowGen.collectWorkflowArtifacts(bmadDir);
-      results.workflows = await this.writeWorkflowArtifacts(targetPath, artifacts, template_type, config);
-    }
-
-    // Install tasks and tools using template system (supports TOML for Gemini, MD for others)
-    if (!artifact_types || artifact_types.includes('tasks') || artifact_types.includes('tools')) {
-      const taskToolGen = new TaskToolCommandGenerator(this.bmadFolderName);
-      const { artifacts } = await taskToolGen.collectTaskToolArtifacts(bmadDir);
-      const taskToolResult = await this.writeTaskToolArtifacts(targetPath, artifacts, template_type, config);
-      results.tasks = taskToolResult.tasks || 0;
-      results.tools = taskToolResult.tools || 0;
+    // Install verbatim skills (type: skill)
+    if (config.skill_format) {
+      results.skills = await this.installVerbatimSkills(projectDir, bmadDir, targetPath, config);
     }
 
     await this.printSummary(results, target_dir, options);
@@ -134,7 +174,7 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
    * @returns {Promise<Object>} Installation result
    */
   async installToMultipleTargets(projectDir, bmadDir, targets, options) {
-    const allResults = { agents: 0, workflows: 0, tasks: 0, tools: 0 };
+    const allResults = { agents: 0, workflows: 0, tasks: 0, tools: 0, skills: 0 };
 
     for (const target of targets) {
       const result = await this.installToTarget(projectDir, bmadDir, target, options);
@@ -143,6 +183,7 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
         allResults.workflows += result.results.workflows || 0;
         allResults.tasks += result.results.tasks || 0;
         allResults.tools += result.results.tools || 0;
+        allResults.skills += result.results.skills || 0;
       }
     }
 
@@ -165,8 +206,13 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
     for (const artifact of artifacts) {
       const content = this.renderTemplate(template, artifact);
       const filename = this.generateFilename(artifact, 'agent', extension);
-      const filePath = path.join(targetPath, filename);
-      await this.writeFile(filePath, content);
+
+      if (config.skill_format) {
+        await this.writeSkillFile(targetPath, artifact, content);
+      } else {
+        const filePath = path.join(targetPath, filename);
+        await this.writeFile(filePath, content);
+      }
       count++;
     }
 
@@ -186,20 +232,17 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
 
     for (const artifact of artifacts) {
       if (artifact.type === 'workflow-command') {
-        // Use different template based on workflow type (YAML vs MD)
-        // Default to 'default' template type, but allow override via config
-        const workflowTemplateType = artifact.isYamlWorkflow
-          ? config.yaml_workflow_template || `${templateType}-workflow-yaml`
-          : config.md_workflow_template || `${templateType}-workflow`;
-
-        // Fall back to default templates if specific ones don't exist
-        const finalTemplateType = artifact.isYamlWorkflow ? 'default-workflow-yaml' : 'default-workflow';
-        // workflowTemplateType already contains full name (e.g., 'gemini-workflow-yaml'), so pass empty artifactType
-        const { content: template, extension } = await this.loadTemplate(workflowTemplateType, '', config, finalTemplateType);
+        const workflowTemplateType = config.md_workflow_template || `${templateType}-workflow`;
+        const { content: template, extension } = await this.loadTemplate(workflowTemplateType, '', config, 'default-workflow');
         const content = this.renderTemplate(template, artifact);
         const filename = this.generateFilename(artifact, 'workflow', extension);
-        const filePath = path.join(targetPath, filename);
-        await this.writeFile(filePath, content);
+
+        if (config.skill_format) {
+          await this.writeSkillFile(targetPath, artifact, content);
+        } else {
+          const filePath = path.join(targetPath, filename);
+          await this.writeFile(filePath, content);
+        }
         count++;
       }
     }
@@ -241,8 +284,13 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
 
       const content = this.renderTemplate(template, artifact);
       const filename = this.generateFilename(artifact, artifact.type, extension);
-      const filePath = path.join(targetPath, filename);
-      await this.writeFile(filePath, content);
+
+      if (config.skill_format) {
+        await this.writeSkillFile(targetPath, artifact, content);
+      } else {
+        const filePath = path.join(targetPath, filename);
+        await this.writeFile(filePath, content);
+      }
 
       if (artifact.type === 'task') {
         taskCount++;
@@ -409,20 +457,144 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
       // No default
     }
 
-    let rendered = template
+    // Replace _bmad placeholder with actual folder name BEFORE inserting paths,
+    // so that paths containing '_bmad' are not corrupted by the blanket replacement.
+    let rendered = template.replaceAll('_bmad', this.bmadFolderName);
+
+    // Replace {{bmadFolderName}} placeholder if present
+    rendered = rendered.replaceAll('{{bmadFolderName}}', this.bmadFolderName);
+
+    rendered = rendered
       .replaceAll('{{name}}', artifact.name || '')
       .replaceAll('{{module}}', artifact.module || 'core')
       .replaceAll('{{path}}', pathToUse)
       .replaceAll('{{description}}', artifact.description || `${artifact.name} ${artifact.type || ''}`)
       .replaceAll('{{workflow_path}}', pathToUse);
 
-    // Replace _bmad placeholder with actual folder name
-    rendered = rendered.replaceAll('_bmad', this.bmadFolderName);
-
-    // Replace {{bmadFolderName}} placeholder if present
-    rendered = rendered.replaceAll('{{bmadFolderName}}', this.bmadFolderName);
-
     return rendered;
+  }
+
+  /**
+   * Write artifact as a skill directory with SKILL.md inside.
+   * Writes artifact as a skill directory with SKILL.md inside.
+   * @param {string} targetPath - Base skills directory
+   * @param {Object} artifact - Artifact data
+   * @param {string} content - Rendered template content
+   */
+  async writeSkillFile(targetPath, artifact, content) {
+    const { resolveSkillName } = require('./shared/path-utils');
+
+    // Get the skill name (prefers canonicalId, falls back to path-derived) and remove .md
+    const flatName = resolveSkillName(artifact);
+    const skillName = path.basename(flatName.replace(/\.md$/, ''));
+
+    if (!skillName) {
+      throw new Error(`Cannot derive skill name for artifact: ${artifact.relativePath || JSON.stringify(artifact)}`);
+    }
+
+    // Create skill directory
+    const skillDir = path.join(targetPath, skillName);
+    await this.ensureDir(skillDir);
+
+    // Transform content: rewrite frontmatter for skills format
+    const skillContent = this.transformToSkillFormat(content, skillName);
+
+    await this.writeFile(path.join(skillDir, 'SKILL.md'), skillContent);
+  }
+
+  /**
+   * Transform artifact content to Agent Skills format.
+   * Rewrites frontmatter to contain only unquoted name and description.
+   * @param {string} content - Original content with YAML frontmatter
+   * @param {string} skillName - Skill name (must match directory name)
+   * @returns {string} Transformed content
+   */
+  transformToSkillFormat(content, skillName) {
+    // Normalize line endings
+    content = content.replaceAll('\r\n', '\n').replaceAll('\r', '\n');
+
+    // Parse frontmatter
+    const fmMatch = content.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
+    if (!fmMatch) {
+      // No frontmatter -- wrap with minimal frontmatter
+      const fm = yaml.stringify({ name: skillName, description: skillName }).trimEnd();
+      return `---\n${fm}\n---\n\n${content}`;
+    }
+
+    const frontmatter = fmMatch[1];
+    const body = fmMatch[2];
+
+    // Parse frontmatter with yaml library to extract description
+    let description;
+    try {
+      const parsed = yaml.parse(frontmatter);
+      const rawDesc = parsed?.description;
+      description = typeof rawDesc === 'string' && rawDesc ? rawDesc : `${skillName} skill`;
+    } catch {
+      description = `${skillName} skill`;
+    }
+
+    // Build new frontmatter with only name and description, unquoted
+    const newFrontmatter = yaml.stringify({ name: skillName, description: String(description) }, { lineWidth: 0 }).trimEnd();
+    return `---\n${newFrontmatter}\n---\n${body}`;
+  }
+
+  /**
+   * Install a custom agent launcher.
+   * For skill_format platforms, produces <skillDir>/SKILL.md.
+   * For flat platforms, produces a single file in target_dir.
+   * @param {string} projectDir - Project directory
+   * @param {string} agentName - Agent name (e.g., "fred-commit-poet")
+   * @param {string} agentPath - Path to compiled agent (relative to project root)
+   * @param {Object} metadata - Agent metadata
+   * @returns {Object|null} Info about created file/skill
+   */
+  async installCustomAgentLauncher(projectDir, agentName, agentPath, metadata) {
+    if (!this.installerConfig?.target_dir) return null;
+
+    const { customAgentDashName } = require('./shared/path-utils');
+    const targetPath = path.join(projectDir, this.installerConfig.target_dir);
+    await this.ensureDir(targetPath);
+
+    // Build artifact to reuse existing template rendering.
+    // The default-agent template already includes the _bmad/ prefix before {{path}},
+    // but agentPath is relative to project root (e.g. "_bmad/custom/agents/fred.md").
+    // Strip the bmadFolderName prefix so the template doesn't produce a double path.
+    const bmadPrefix = this.bmadFolderName + '/';
+    const normalizedPath = agentPath.startsWith(bmadPrefix) ? agentPath.slice(bmadPrefix.length) : agentPath;
+
+    const artifact = {
+      type: 'agent-launcher',
+      name: agentName,
+      description: metadata?.description || `${agentName} agent`,
+      agentPath: normalizedPath,
+      relativePath: normalizedPath,
+      module: 'custom',
+    };
+
+    const { content: template } = await this.loadTemplate(
+      this.installerConfig.template_type || 'default',
+      'agent',
+      this.installerConfig,
+      'default-agent',
+    );
+    const content = this.renderTemplate(template, artifact);
+
+    if (this.installerConfig.skill_format) {
+      const skillName = customAgentDashName(agentName).replace(/\.md$/, '');
+      const skillDir = path.join(targetPath, skillName);
+      await this.ensureDir(skillDir);
+      const skillContent = this.transformToSkillFormat(content, skillName);
+      const skillPath = path.join(skillDir, 'SKILL.md');
+      await this.writeFile(skillPath, skillContent);
+      return { path: path.relative(projectDir, skillPath), command: `$${skillName}` };
+    }
+
+    // Flat file output
+    const filename = customAgentDashName(agentName);
+    const filePath = path.join(targetPath, filename);
+    await this.writeFile(filePath, content);
+    return { path: path.relative(projectDir, filePath), command: agentName };
   }
 
   /**
@@ -433,10 +605,11 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
    * @returns {string} Generated filename
    */
   generateFilename(artifact, artifactType, extension = '.md') {
-    const { toDashPath } = require('./shared/path-utils');
+    const { resolveSkillName } = require('./shared/path-utils');
 
     // Reuse central logic to ensure consistent naming conventions
-    const standardName = toDashPath(artifact.relativePath);
+    // Prefers canonicalId from manifest when available, falls back to path-derived name
+    const standardName = resolveSkillName(artifact);
 
     // Clean up potential double extensions from source files (e.g. .yaml.md, .xml.md -> .md)
     // This handles any extensions that might slip through toDashPath()
@@ -453,6 +626,80 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
   }
 
   /**
+   * Install verbatim skill directories (type: skill entries from skill-manifest.csv).
+   * Copies the entire source directory as-is into the IDE skill directory.
+   * The source SKILL.md is used directly — no frontmatter transformation or file generation.
+   * @param {string} projectDir - Project directory
+   * @param {string} bmadDir - BMAD installation directory
+   * @param {string} targetPath - Target skills directory
+   * @param {Object} config - Installation configuration
+   * @returns {Promise<number>} Count of skills installed
+   */
+  async installVerbatimSkills(projectDir, bmadDir, targetPath, config) {
+    const bmadFolderName = path.basename(bmadDir);
+    const bmadPrefix = bmadFolderName + '/';
+    const csvPath = path.join(bmadDir, '_config', 'skill-manifest.csv');
+
+    if (!(await fs.pathExists(csvPath))) return 0;
+
+    const csvContent = await fs.readFile(csvPath, 'utf8');
+    const records = csv.parse(csvContent, {
+      columns: true,
+      skip_empty_lines: true,
+    });
+
+    let count = 0;
+
+    for (const record of records) {
+      const canonicalId = record.canonicalId;
+      if (!canonicalId) continue;
+
+      // Derive source directory from path column
+      // path is like "_bmad/bmm/workflows/bmad-quick-flow/bmad-quick-dev-new-preview/SKILL.md"
+      // Strip bmadFolderName prefix and join with bmadDir, then get dirname
+      const relativePath = record.path.startsWith(bmadPrefix) ? record.path.slice(bmadPrefix.length) : record.path;
+      const sourceFile = path.join(bmadDir, relativePath);
+      const sourceDir = path.dirname(sourceFile);
+
+      if (!(await fs.pathExists(sourceDir))) continue;
+
+      // Clean target before copy to prevent stale files
+      const skillDir = path.join(targetPath, canonicalId);
+      await fs.remove(skillDir);
+      await fs.ensureDir(skillDir);
+
+      // Copy all skill files, filtering OS/editor artifacts recursively
+      const skipPatterns = new Set(['.DS_Store', 'Thumbs.db', 'desktop.ini']);
+      const skipSuffixes = ['~', '.swp', '.swo', '.bak'];
+      const filter = (src) => {
+        const name = path.basename(src);
+        if (src === sourceDir) return true;
+        if (skipPatterns.has(name)) return false;
+        if (name.startsWith('.') && name !== '.gitkeep') return false;
+        if (skipSuffixes.some((s) => name.endsWith(s))) return false;
+        return true;
+      };
+      await fs.copy(sourceDir, skillDir, { filter });
+
+      count++;
+    }
+
+    // Post-install cleanup: remove _bmad/ directories for skills with install_to_bmad === "false"
+    for (const record of records) {
+      if (record.install_to_bmad === 'false') {
+        const relativePath = record.path.startsWith(bmadPrefix) ? record.path.slice(bmadPrefix.length) : record.path;
+        const sourceFile = path.join(bmadDir, relativePath);
+        const sourceDir = path.dirname(sourceFile);
+        if (await fs.pathExists(sourceDir)) {
+          await fs.remove(sourceDir);
+        }
+      }
+    }
+
+    return count;
+  }
+
+  /**
    * Print installation summary
    * @param {Object} results - Installation results
    * @param {string} targetDir - Target directory (relative)
@@ -464,6 +711,7 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
     if (results.workflows > 0) parts.push(`${results.workflows} workflows`);
     if (results.tasks > 0) parts.push(`${results.tasks} tasks`);
     if (results.tools > 0) parts.push(`${results.tools} tools`);
+    if (results.skills > 0) parts.push(`${results.skills} skills`);
     await prompts.log.success(`${this.name} configured: ${parts.join(', ')} → ${targetDir}`);
   }
 
@@ -476,9 +724,28 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
     if (this.installerConfig?.legacy_targets) {
       if (!options.silent) await prompts.log.message('  Migrating legacy directories...');
       for (const legacyDir of this.installerConfig.legacy_targets) {
-        await this.cleanupTarget(projectDir, legacyDir, options);
-        await this.removeEmptyParents(projectDir, legacyDir);
+        if (this.isGlobalPath(legacyDir)) {
+          await this.warnGlobalLegacy(legacyDir, options);
+        } else {
+          await this.cleanupTarget(projectDir, legacyDir, options);
+          await this.removeEmptyParents(projectDir, legacyDir);
+        }
       }
+    }
+
+    // Strip BMAD markers from copilot-instructions.md if present
+    if (this.name === 'github-copilot') {
+      await this.cleanupCopilotInstructions(projectDir, options);
+    }
+
+    // Strip BMAD modes from .kilocodemodes if present
+    if (this.name === 'kilo') {
+      await this.cleanupKiloModes(projectDir, options);
+    }
+
+    // Strip BMAD entries from .rovodev/prompts.yml if present
+    if (this.name === 'rovo-dev') {
+      await this.cleanupRovoDevPrompts(projectDir, options);
     }
 
     // Clean all target directories
@@ -498,6 +765,41 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
       }
     } else if (this.installerConfig?.target_dir) {
       await this.cleanupTarget(projectDir, this.installerConfig.target_dir, options);
+    }
+  }
+
+  /**
+   * Check if a path is global (starts with ~ or is absolute)
+   * @param {string} p - Path to check
+   * @returns {boolean}
+   */
+  isGlobalPath(p) {
+    return p.startsWith('~') || path.isAbsolute(p);
+  }
+
+  /**
+   * Warn about stale BMAD files in a global legacy directory (never auto-deletes)
+   * @param {string} legacyDir - Legacy directory path (may start with ~)
+   * @param {Object} options - Options (silent, etc.)
+   */
+  async warnGlobalLegacy(legacyDir, options = {}) {
+    try {
+      const expanded = legacyDir.startsWith('~/')
+        ? path.join(os.homedir(), legacyDir.slice(2))
+        : legacyDir === '~'
+          ? os.homedir()
+          : legacyDir;
+
+      if (!(await fs.pathExists(expanded))) return;
+
+      const entries = await fs.readdir(expanded);
+      const bmadFiles = entries.filter((e) => typeof e === 'string' && e.startsWith('bmad'));
+
+      if (bmadFiles.length > 0 && !options.silent) {
+        await prompts.log.warn(`Found ${bmadFiles.length} stale BMAD file(s) in ${expanded}. Remove manually: rm ${expanded}/bmad-*`);
+      }
+    } catch {
+      // Errors reading global paths are silently ignored
     }
   }
 
@@ -532,7 +834,7 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
       if (!entry || typeof entry !== 'string') {
         continue;
       }
-      if (entry.startsWith('bmad')) {
+      if (entry.startsWith('bmad') && !entry.startsWith('bmad-os-')) {
         const entryPath = path.join(targetPath, entry);
         try {
           await fs.remove(entryPath);
@@ -560,6 +862,121 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
     }
   }
   /**
+   * Strip BMAD-owned content from .github/copilot-instructions.md.
+   * The old custom installer injected content between <!-- BMAD:START --> and <!-- BMAD:END --> markers.
+   * Deletes the file if nothing remains. Restores .bak backup if one exists.
+   */
+  async cleanupCopilotInstructions(projectDir, options = {}) {
+    const filePath = path.join(projectDir, '.github', 'copilot-instructions.md');
+
+    if (!(await fs.pathExists(filePath))) return;
+
+    try {
+      const content = await fs.readFile(filePath, 'utf8');
+      const startIdx = content.indexOf('<!-- BMAD:START -->');
+      const endIdx = content.indexOf('<!-- BMAD:END -->');
+
+      if (startIdx === -1 || endIdx === -1 || endIdx <= startIdx) return;
+
+      const cleaned = content.slice(0, startIdx) + content.slice(endIdx + '<!-- BMAD:END -->'.length);
+
+      if (cleaned.trim().length === 0) {
+        await fs.remove(filePath);
+        const backupPath = `${filePath}.bak`;
+        if (await fs.pathExists(backupPath)) {
+          await fs.rename(backupPath, filePath);
+          if (!options.silent) await prompts.log.message('  Restored copilot-instructions.md from backup');
+        }
+      } else {
+        await fs.writeFile(filePath, cleaned, 'utf8');
+        const backupPath = `${filePath}.bak`;
+        if (await fs.pathExists(backupPath)) await fs.remove(backupPath);
+      }
+
+      if (!options.silent) await prompts.log.message('  Cleaned BMAD markers from copilot-instructions.md');
+    } catch {
+      if (!options.silent) await prompts.log.warn('  Warning: Could not clean BMAD markers from copilot-instructions.md');
+    }
+  }
+
+  /**
+   * Strip BMAD-owned modes from .kilocodemodes.
+   * The old custom kilo.js installer added modes with slug starting with 'bmad-'.
+   * Parses YAML, filters out BMAD modes, rewrites. Leaves file as-is on parse failure.
+   */
+  async cleanupKiloModes(projectDir, options = {}) {
+    const kiloModesPath = path.join(projectDir, '.kilocodemodes');
+
+    if (!(await fs.pathExists(kiloModesPath))) return;
+
+    const content = await fs.readFile(kiloModesPath, 'utf8');
+
+    let config;
+    try {
+      config = yaml.parse(content) || {};
+    } catch {
+      if (!options.silent) await prompts.log.warn('  Warning: Could not parse .kilocodemodes for cleanup');
+      return;
+    }
+
+    if (!Array.isArray(config.customModes)) return;
+
+    const originalCount = config.customModes.length;
+    config.customModes = config.customModes.filter((mode) => mode && (!mode.slug || !mode.slug.startsWith('bmad-')));
+    const removedCount = originalCount - config.customModes.length;
+
+    if (removedCount > 0) {
+      try {
+        await fs.writeFile(kiloModesPath, yaml.stringify(config, { lineWidth: 0 }));
+        if (!options.silent) await prompts.log.message(`  Removed ${removedCount} BMAD modes from .kilocodemodes`);
+      } catch {
+        if (!options.silent) await prompts.log.warn('  Warning: Could not write .kilocodemodes during cleanup');
+      }
+    }
+  }
+
+  /**
+   * Strip BMAD-owned entries from .rovodev/prompts.yml.
+   * The old custom rovodev.js installer registered workflows in prompts.yml.
+   * Parses YAML, filters out entries with name starting with 'bmad-', rewrites.
+   * Removes the file if no entries remain.
+   */
+  async cleanupRovoDevPrompts(projectDir, options = {}) {
+    const promptsPath = path.join(projectDir, '.rovodev', 'prompts.yml');
+
+    if (!(await fs.pathExists(promptsPath))) return;
+
+    const content = await fs.readFile(promptsPath, 'utf8');
+
+    let config;
+    try {
+      config = yaml.parse(content) || {};
+    } catch {
+      if (!options.silent) await prompts.log.warn('  Warning: Could not parse prompts.yml for cleanup');
+      return;
+    }
+
+    if (!Array.isArray(config.prompts)) return;
+
+    const originalCount = config.prompts.length;
+    config.prompts = config.prompts.filter((entry) => entry && (!entry.name || !entry.name.startsWith('bmad-')));
+    const removedCount = originalCount - config.prompts.length;
+
+    if (removedCount > 0) {
+      try {
+        if (config.prompts.length === 0) {
+          await fs.remove(promptsPath);
+        } else {
+          await fs.writeFile(promptsPath, yaml.stringify(config, { lineWidth: 0 }));
+        }
+        if (!options.silent) await prompts.log.message(`  Removed ${removedCount} BMAD entries from prompts.yml`);
+      } catch {
+        if (!options.silent) await prompts.log.warn('  Warning: Could not write prompts.yml during cleanup');
+      }
+    }
+  }
+
+  /**
    * Check ancestor directories for existing BMAD files in the same target_dir.
    * IDEs like Claude Code inherit commands from parent directories, so an existing
    * installation in an ancestor would cause duplicate commands.
@@ -579,7 +996,9 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
       try {
         if (await fs.pathExists(candidatePath)) {
           const entries = await fs.readdir(candidatePath);
-          const hasBmad = entries.some((e) => typeof e === 'string' && e.toLowerCase().startsWith('bmad'));
+          const hasBmad = entries.some(
+            (e) => typeof e === 'string' && e.toLowerCase().startsWith('bmad') && !e.toLowerCase().startsWith('bmad-os-'),
+          );
           if (hasBmad) {
             return candidatePath;
           }
