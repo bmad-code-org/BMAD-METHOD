@@ -1,6 +1,4 @@
 ---
-name: quick-dev-new-preview
-description: 'Unified quick flow - clarify intent, plan, implement, review, present.'
 main_config: '{project-root}/_bmad/bmm/config.yaml'
 
 # Related workflows
