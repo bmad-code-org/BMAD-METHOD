@@ -883,6 +883,8 @@ class Installer {
 
       // For dependency resolution, we only need regular modules (not custom modules)
       // Custom modules are already installed in _bmad and don't need dependency resolution from source
+      // Exception: extension modules (custom modules sharing an ID with an official module) need
+      // resolution so their base module can be installed first, then the extension merged on top
       const regularModulesForResolution = allModules.filter((module) => {
         // Check if this is a custom module
         const isCustom =
@@ -892,7 +894,11 @@ class Installer {
             finalCustomContent.selected &&
             finalCustomContent.selectedFiles &&
             finalCustomContent.selectedFiles.some((f) => f.includes(module)));
-        return !isCustom;
+        if (!isCustom) return true;
+        // Extension modules share a code/ID with an official module the user also selected.
+        // Include them in resolution so the base can be installed first.
+        const isExtension = config.modules && config.modules.includes(module) && customModulePaths.has(module);
+        return isExtension;
       });
 
       // Stop spinner before tasks() takes over progress display
@@ -994,6 +1000,23 @@ class Installer {
               }
 
               if (isCustomModule && customInfo) {
+                // Detect if this is an extension module: a custom module whose code matches an
+                // official module the user also selected. In that case install the base first,
+                // then merge the extension on top (file-level merge, not directory replacement).
+                const isExtension = !!(
+                  config.modules &&
+                  config.modules.includes(moduleName) &&
+                  resolution &&
+                  resolution.byModule &&
+                  resolution.byModule[moduleName]
+                );
+
+                if (isExtension) {
+                  // Install the base module first so all standard files are in place
+                  message(`Installing base ${moduleName}...`);
+                  await this.installModuleWithDependencies(moduleName, bmadDir, resolution.byModule[moduleName]);
+                }
+
                 if (!customModulePaths.has(moduleName) && customInfo.path) {
                   customModulePaths.set(moduleName, customInfo.path);
                   this.moduleManager.setCustomModulePaths(customModulePaths);
@@ -1008,6 +1031,7 @@ class Installer {
                   },
                   {
                     isCustom: true,
+                    isExtension: isExtension,
                     moduleConfig: collectedModuleConfig,
                     isQuickUpdate: isQuickUpdate,
                     installer: this,

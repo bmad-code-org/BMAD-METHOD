@@ -112,5 +112,8 @@ jobs:
       - name: Test agent compilation components
         run: npm run test:install
 
+      - name: Test module extension installer
+        run: npm run test:install:extensions
+
       - name: Validate file references
         run: npm run validate:refs

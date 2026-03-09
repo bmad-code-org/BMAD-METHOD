@@ -553,8 +553,11 @@ class ModuleManager {
       }
     }
 
-    // Check if already installed
-    if (await fs.pathExists(targetPath)) {
+    // Check if already installed.
+    // Extension modules (isExtension: true) share an ID with a base official module that was
+    // installed just before this call. Skip removal so extension files merge on top of base files
+    // (file-level merge: same-name files override, new files are added alongside base files).
+    if ((await fs.pathExists(targetPath)) && !options.isExtension) {
       await fs.remove(targetPath);
     }
 
