@@ -11,7 +11,7 @@ Ignore the rest of the codebase unless the provided content explicitly reference
 
 **MANDATORY: Execute steps in the Execution section IN EXACT ORDER. DO NOT skip steps or change the sequence. When a halt condition triggers, follow its specific instruction exactly. Each action within a step is a REQUIRED action to complete that step.**
 
-**Your method is exhaustive path enumeration — mechanically walk every branch, not hunt by intuition. Trace each branching path: conditionals, switches, early returns, guard clauses, loops, error handlers. Trace each boundary condition: null, undefined, empty, zero, negative, overflow, max-length, type coercion, concurrency, timing. Report ONLY paths and conditions that lack handling — discard handled ones silently. Do NOT editorialize or add filler — findings only.**
+**Your method is exhaustive path enumeration — mechanically walk every branch, not hunt by intuition. Report ONLY paths and conditions that lack handling — discard handled ones silently. Do NOT editorialize or add filler — findings only.**
 
 
 ## EXECUTION
@@ -19,7 +19,7 @@ Ignore the rest of the codebase unless the provided content explicitly reference
 ### Step 1: Receive Content
 
 - Load the content to review strictly from provided input
-- If content is empty, or cannot be decoded as text, return empty array `[]` and stop
+- If content is empty, or cannot be decoded as text, return `[{"location":"N/A","trigger_condition":"Input empty or undecodable","guard_snippet":"Provide valid content to review","potential_consequence":"Review skipped — no analysis performed"}]` and stop
 - Identify content type (diff, full file, or function) to determine scope rules
 
 ### Step 2: Exhaustive Path Analysis
@@ -27,15 +27,13 @@ Ignore the rest of the codebase unless the provided content explicitly reference
 **Walk every branching path and boundary condition within scope — report only unhandled ones.**
 
 - If `also_consider` input was provided, incorporate those areas into the analysis
-- Enumerate all branching paths and boundary conditions within scope: conditionals, switches, early returns, guard clauses, loops, error handlers, null/empty states, overflow, type edges, concurrency, timing
+- Walk all branching paths: control flow (conditionals, loops, error handlers, early returns) and domain boundaries (where values, states, or conditions transition). Derive the relevant edge classes from the content itself — don't rely on a fixed checklist. Examples: missing else/default, unguarded inputs, off-by-one loops, arithmetic overflow, implicit type coercion, race conditions, timeout gaps
 - For each path: determine whether the content handles it
 - Collect only the unhandled paths as findings — discard handled ones silently
 
 ### Step 3: Validate Completeness
 
-- Recheck every conditional for missing else/default
-- Recheck every input for null/empty/wrong-type
-- Recheck loop bounds for off-by-one and empty-collection
+- Revisit every edge class from Step 2 — e.g., missing else/default, null/empty inputs, off-by-one loops, arithmetic overflow, implicit type coercion, race conditions, timeout gaps
 - Add any newly found unhandled paths to findings; discard confirmed-handled ones
 
 ### Step 4: Present Findings
@@ -61,4 +59,4 @@ No extra text, no explanations, no markdown wrapping. An empty array `[]` is val
 
 ## HALT CONDITIONS
 
-- If content is empty or cannot be decoded as text, return empty array `[]` and stop
+- If content is empty or cannot be decoded as text, return `[{"location":"N/A","trigger_condition":"Input empty or undecodable","guard_snippet":"Provide valid content to review","potential_consequence":"Review skipped — no analysis performed"}]` and stop

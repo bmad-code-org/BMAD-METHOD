@@ -132,7 +132,7 @@ Likely tag:
 
 Spawn a subagent that invokes the `bmad-review-edge-case-hunter` skill. Pass the full PR diff as the `content` input. Omit `also_consider` unless the user specified extra focus areas.
 
-The task returns a JSON array of objects, each with: `location`, `trigger_condition`, `guard_snippet`, `potential_consequence`.
+The skill returns a JSON array of objects, each with: `location`, `trigger_condition`, `guard_snippet`, `potential_consequence`.
 
 **Map each JSON finding to the standard finding format:**
 

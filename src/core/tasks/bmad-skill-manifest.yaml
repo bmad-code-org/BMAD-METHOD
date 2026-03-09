@@ -18,11 +18,6 @@ index-docs.xml:
   type: task
   description: "Generates or updates an index.md to reference all docs in the folder"
 
-bmad-review-edge-case-hunter:
-  canonicalId: bmad-review-edge-case-hunter
-  type: skill
-  description: "Walk every branching path and boundary condition in content, report only unhandled edge cases"
-
 shard-doc.xml:
   canonicalId: bmad-shard-doc
   type: task
