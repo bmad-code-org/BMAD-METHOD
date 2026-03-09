@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /health
+
+Sitemap: https://jus-ia.com/sitemap.xml

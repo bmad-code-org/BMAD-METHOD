@@ -1,9 +1,32 @@
 import type { FastifyInstance } from "fastify";
-import { getAreas, getTiposTarefa } from "../config/flows.js";
+import { getAreas, getTiposTarefa, getAllFlows } from "../config/flows.js";
 import { trabalhistaArea } from "../flows/trabalhista/index.js";
 import { civelArea } from "../flows/civel/index.js";
 
+const SITE_URL = process.env.SITE_URL || "https://jus-ia.com";
+
 export async function homeRoutes(app: FastifyInstance): Promise<void> {
+  // GET /sitemap.xml — Dynamic sitemap
+  app.get("/sitemap.xml", async (_request, reply) => {
+    const flows = getAllFlows();
+    const today = new Date().toISOString().split("T")[0];
+
+    const urls = [
+      `  <url><loc>${SITE_URL}/</loc><changefreq>weekly</changefreq><priority>1.0</priority><lastmod>${today}</lastmod></url>`,
+      ...flows.map(
+        (f) =>
+          `  <url><loc>${SITE_URL}/${f.area}/${f.subtipo}</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>`,
+      ),
+    ];
+
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls.join("\n")}
+</urlset>`;
+
+    return reply.type("application/xml").send(xml);
+  });
+
   // GET / — Landing page
   app.get("/", async (_request, reply) => {
     return reply.view("pages/home.njk", {

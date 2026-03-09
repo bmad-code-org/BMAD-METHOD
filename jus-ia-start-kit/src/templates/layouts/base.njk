@@ -5,15 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}Jus IA Start Kit{% endblock %}</title>
 
+  {% block metaDescription %}
+  <meta name="description" content="Responda perguntas sobre seu caso e receba um pedido jurídico otimizado pronto para gerar resultado na primeira tentativa no Jus IA.">
+  {% endblock %}
+
+  {% block robots %}{% endblock %}
+
+  {% block canonical %}{% endblock %}
+
   {% block ogTags %}
   <meta property="og:title" content="Jus IA Start Kit — Monte seu pedido jurídico">
   <meta property="og:description" content="Responda perguntas sobre seu caso e receba um pedido otimizado pronto para gerar resultado na primeira tentativa.">
   <meta property="og:type" content="website">
+  <meta property="og:locale" content="pt_BR">
   <meta property="og:image" content="/images/og-default.png">
   {% endblock %}
 
   <link rel="stylesheet" href="/css/app.css">
-  <link rel="icon" href="/favicon.ico">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 </head>
 <body class="min-h-dvh bg-[var(--color-background)] text-[var(--color-text-primary)] font-sans">
   <main class="mx-auto max-w-[640px] px-4 pb-8">

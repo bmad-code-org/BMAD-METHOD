@@ -1,6 +1,8 @@
 {% extends "layouts/base.njk" %}
 
 {% block title %}{{ stepTitle }} — Jus IA Start Kit{% endblock %}
+{% block robots %}<meta name="robots" content="noindex, nofollow">{% endblock %}
+{% block metaDescription %}{% endblock %}
 
 {% block content %}
 {% set backUrl = backHref %}
