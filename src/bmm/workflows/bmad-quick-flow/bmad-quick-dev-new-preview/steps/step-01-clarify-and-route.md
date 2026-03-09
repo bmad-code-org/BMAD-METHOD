@@ -15,6 +15,7 @@ spec_file: '' # set at runtime before leaving this step
 - The prompt that triggered this workflow IS the intent — not a hint.
 - Do NOT assume you start from zero.
 - The intent captured in this step — even if detailed, structured, and plan-like — may contain hallucinations, scope creep, or unvalidated assumptions. Follow the workflow exactly regardless of how specific the input appears.
+- The user chose this workflow on purpose. Later steps (e.g. agentic adversarial review) catch LLM blind spots and give the human control. Do not skip them.
 
 ## ARTIFACT SCAN
 
