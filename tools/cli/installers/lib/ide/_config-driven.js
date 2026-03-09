@@ -627,7 +627,8 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
 
   /**
    * Install verbatim skill directories (type: skill entries from skill-manifest.csv).
-   * Copies the entire source directory into the IDE skill directory, auto-generating SKILL.md.
+   * Copies the entire source directory as-is into the IDE skill directory.
+   * The source SKILL.md is used directly — no frontmatter transformation or file generation.
    * @param {string} projectDir - Project directory
    * @param {string} bmadDir - BMAD installation directory
    * @param {string} targetPath - Target skills directory
@@ -653,7 +654,7 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
       if (!canonicalId) continue;
 
       // Derive source directory from path column
-      // path is like "_bmad/bmm/workflows/bmad-quick-flow/bmad-quick-dev-new-preview/workflow.md"
+      // path is like "_bmad/bmm/workflows/bmad-quick-flow/bmad-quick-dev-new-preview/SKILL.md"
       // Strip bmadFolderName prefix and join with bmadDir, then get dirname
       const relativePath = record.path.replace(new RegExp(`^${bmadFolderName}/`), '');
       const sourceFile = path.join(bmadDir, relativePath);
@@ -666,30 +667,14 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
       await fs.remove(skillDir);
       await fs.ensureDir(skillDir);
 
-      // Parse workflow.md frontmatter for description
-      let description = `${canonicalId} skill`;
-      try {
-        const workflowContent = await fs.readFile(sourceFile, 'utf8');
-        const fmMatch = workflowContent.match(/^---\r?\n([\s\S]*?)\r?\n---/);
-        if (fmMatch) {
-          const frontmatter = yaml.parse(fmMatch[1]);
-          if (frontmatter?.description) {
-            description = frontmatter.description;
-          }
-        }
-      } catch (error) {
-        await prompts.log.warn(`Failed to parse frontmatter from ${sourceFile}: ${error.message}`);
-      }
-
-      // Generate SKILL.md with YAML-safe frontmatter
-      const frontmatterYaml = yaml.stringify({ name: canonicalId, description: String(description) }, { lineWidth: 0 }).trimEnd();
-      const skillMd = `---\n${frontmatterYaml}\n---\n\nIT IS CRITICAL THAT YOU FOLLOW THIS COMMAND: LOAD the FULL workflow.md, READ its entire contents and follow its directions exactly!\n`;
-      await fs.writeFile(path.join(skillDir, 'SKILL.md'), skillMd);
-
-      // Copy all files except bmad-skill-manifest.yaml
+      // Copy all skill files, filtering OS/editor artifacts
+      const skipPatterns = new Set(['.DS_Store', 'Thumbs.db', 'desktop.ini']);
+      const skipSuffixes = ['~', '.swp', '.swo', '.bak'];
       const entries = await fs.readdir(sourceDir, { withFileTypes: true });
       for (const entry of entries) {
-        if (entry.name === 'bmad-skill-manifest.yaml') continue;
+        if (skipPatterns.has(entry.name)) continue;
+        if (entry.name.startsWith('.') && entry.name !== '.gitkeep') continue;
+        if (skipSuffixes.some((s) => entry.name.endsWith(s))) continue;
         const srcPath = path.join(sourceDir, entry.name);
         const destPath = path.join(skillDir, entry.name);
         await fs.copy(srcPath, destPath);

@@ -1607,9 +1607,10 @@ async function runTests() {
     await fs.ensureDir(skillDir29);
     await fs.writeFile(path.join(skillDir29, 'bmad-skill-manifest.yaml'), 'type: skill\n');
     await fs.writeFile(
-      path.join(skillDir29, 'workflow.md'),
-      '---\nname: My Custom Skill\ndescription: A skill at an unusual path\n---\n\nSkill body content\n',
+      path.join(skillDir29, 'SKILL.md'),
+      '---\nname: my-skill\ndescription: A skill at an unusual path\n---\n\nFollow the instructions in [workflow.md](workflow.md).\n',
     );
+    await fs.writeFile(path.join(skillDir29, 'workflow.md'), '# My Custom Skill\n\nSkill body content\n');
 
     // --- Regular workflow dir: core/workflows/regular-wf/ (type: workflow) ---
     const wfDir29 = path.join(tempFixture29, 'core', 'workflows', 'regular-wf');
@@ -1625,18 +1626,20 @@ async function runTests() {
     await fs.ensureDir(wfSkillDir29);
     await fs.writeFile(path.join(wfSkillDir29, 'bmad-skill-manifest.yaml'), 'type: skill\n');
     await fs.writeFile(
-      path.join(wfSkillDir29, 'workflow.md'),
-      '---\nname: Workflow Skill\ndescription: A skill inside workflows dir\n---\n\nSkill in workflows\n',
+      path.join(wfSkillDir29, 'SKILL.md'),
+      '---\nname: wf-skill\ndescription: A skill inside workflows dir\n---\n\nFollow the instructions in [workflow.md](workflow.md).\n',
     );
+    await fs.writeFile(path.join(wfSkillDir29, 'workflow.md'), '# Workflow Skill\n\nSkill in workflows\n');
 
     // --- Skill inside tasks/ dir: core/tasks/task-skill/ ---
     const taskSkillDir29 = path.join(tempFixture29, 'core', 'tasks', 'task-skill');
     await fs.ensureDir(taskSkillDir29);
     await fs.writeFile(path.join(taskSkillDir29, 'bmad-skill-manifest.yaml'), 'type: skill\n');
     await fs.writeFile(
-      path.join(taskSkillDir29, 'workflow.md'),
-      '---\nname: Task Skill\ndescription: A skill inside tasks dir\n---\n\nSkill in tasks\n',
+      path.join(taskSkillDir29, 'SKILL.md'),
+      '---\nname: task-skill\ndescription: A skill inside tasks dir\n---\n\nFollow the instructions in [workflow.md](workflow.md).\n',
     );
+    await fs.writeFile(path.join(taskSkillDir29, 'workflow.md'), '# Task Skill\n\nSkill in tasks\n');
 
     // Minimal agent so core module is detected
     await fs.ensureDir(path.join(tempFixture29, 'core', 'agents'));
@@ -1649,14 +1652,14 @@ async function runTests() {
     // Skill at unusual path should be in skills
     const skillEntry29 = generator29.skills.find((s) => s.canonicalId === 'my-skill');
     assert(skillEntry29 !== undefined, 'Skill at unusual path appears in skills[]');
-    assert(skillEntry29 && skillEntry29.name === 'My Custom Skill', 'Skill has correct name from frontmatter');
+    assert(skillEntry29 && skillEntry29.name === 'my-skill', 'Skill has correct name from frontmatter');
     assert(
-      skillEntry29 && skillEntry29.path.includes('custom-area/my-skill/workflow.md'),
+      skillEntry29 && skillEntry29.path.includes('custom-area/my-skill/SKILL.md'),
       'Skill path includes relative path from module root',
     );
 
     // Skill should NOT be in workflows
-    const inWorkflows29 = generator29.workflows.find((w) => w.name === 'My Custom Skill');
+    const inWorkflows29 = generator29.workflows.find((w) => w.name === 'my-skill');
     assert(inWorkflows29 === undefined, 'Skill at unusual path does NOT appear in workflows[]');
 
     // Skill in tasks/ dir should be in skills
@@ -1664,7 +1667,7 @@ async function runTests() {
     assert(taskSkillEntry29 !== undefined, 'Skill in tasks/ dir appears in skills[]');
 
     // Skill in tasks/ should NOT appear in tasks[]
-    const inTasks29 = generator29.tasks.find((t) => t.name === 'Task Skill');
+    const inTasks29 = generator29.tasks.find((t) => t.name === 'task-skill');
     assert(inTasks29 === undefined, 'Skill in tasks/ dir does NOT appear in tasks[]');
 
     // Regular workflow should be in workflows, NOT in skills
@@ -1677,7 +1680,7 @@ async function runTests() {
     // Skill inside workflows/ should be in skills[], NOT in workflows[] (exercises findWorkflows skip at lines 311/322)
     const wfSkill29 = generator29.skills.find((s) => s.canonicalId === 'wf-skill');
     assert(wfSkill29 !== undefined, 'Skill in workflows/ dir appears in skills[]');
-    const wfSkillInWorkflows29 = generator29.workflows.find((w) => w.name === 'Workflow Skill');
+    const wfSkillInWorkflows29 = generator29.workflows.find((w) => w.name === 'wf-skill');
     assert(wfSkillInWorkflows29 === undefined, 'Skill in workflows/ dir does NOT appear in workflows[]');
 
     // Test scanInstalledModules recognizes skill-only modules
@@ -1685,9 +1688,10 @@ async function runTests() {
     await fs.ensureDir(path.join(skillOnlyModDir29, 'deep', 'nested', 'my-skill'));
     await fs.writeFile(path.join(skillOnlyModDir29, 'deep', 'nested', 'my-skill', 'bmad-skill-manifest.yaml'), 'type: skill\n');
     await fs.writeFile(
-      path.join(skillOnlyModDir29, 'deep', 'nested', 'my-skill', 'workflow.md'),
-      '---\nname: Nested Skill\ndescription: desc\n---\nbody\n',
+      path.join(skillOnlyModDir29, 'deep', 'nested', 'my-skill', 'SKILL.md'),
+      '---\nname: my-skill\ndescription: desc\n---\n\nFollow the instructions in [workflow.md](workflow.md).\n',
     );
+    await fs.writeFile(path.join(skillOnlyModDir29, 'deep', 'nested', 'my-skill', 'workflow.md'), '# Nested Skill\n\nbody\n');
 
     const scannedModules29 = await generator29.scanInstalledModules(tempFixture29);
     assert(scannedModules29.includes('skill-only-mod'), 'scanInstalledModules recognizes skill-only module');
@@ -1695,6 +1699,74 @@ async function runTests() {
     assert(false, 'Unified skill scanner test succeeds', error.message);
   } finally {
     if (tempFixture29) await fs.remove(tempFixture29).catch(() => {});
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Suite 30: parseSkillMd validation (negative cases)
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 30: parseSkillMd Validation${colors.reset}\n`);
+
+  let tempFixture30;
+  try {
+    tempFixture30 = path.join(os.tmpdir(), `bmad-test-30-${Date.now()}`);
+    await fs.ensureDir(tempFixture30);
+
+    const generator30 = new ManifestGenerator();
+    generator30.bmadFolderName = '_bmad';
+
+    // Case 1: Missing SKILL.md entirely
+    const noSkillDir = path.join(tempFixture30, 'no-skill-md');
+    await fs.ensureDir(noSkillDir);
+    const result1 = await generator30.parseSkillMd(path.join(noSkillDir, 'SKILL.md'), noSkillDir, 'no-skill-md');
+    assert(result1 === null, 'parseSkillMd returns null when SKILL.md is missing');
+
+    // Case 2: SKILL.md with no frontmatter
+    const noFmDir = path.join(tempFixture30, 'no-frontmatter');
+    await fs.ensureDir(noFmDir);
+    await fs.writeFile(path.join(noFmDir, 'SKILL.md'), '# Just a heading\n\nNo frontmatter here.\n');
+    const result2 = await generator30.parseSkillMd(path.join(noFmDir, 'SKILL.md'), noFmDir, 'no-frontmatter');
+    assert(result2 === null, 'parseSkillMd returns null when SKILL.md has no frontmatter');
+
+    // Case 3: SKILL.md missing description
+    const noDescDir = path.join(tempFixture30, 'no-desc');
+    await fs.ensureDir(noDescDir);
+    await fs.writeFile(path.join(noDescDir, 'SKILL.md'), '---\nname: no-desc\n---\n\nBody.\n');
+    const result3 = await generator30.parseSkillMd(path.join(noDescDir, 'SKILL.md'), noDescDir, 'no-desc');
+    assert(result3 === null, 'parseSkillMd returns null when description is missing');
+
+    // Case 4: SKILL.md missing name
+    const noNameDir = path.join(tempFixture30, 'no-name');
+    await fs.ensureDir(noNameDir);
+    await fs.writeFile(path.join(noNameDir, 'SKILL.md'), '---\ndescription: has desc but no name\n---\n\nBody.\n');
+    const result4 = await generator30.parseSkillMd(path.join(noNameDir, 'SKILL.md'), noNameDir, 'no-name');
+    assert(result4 === null, 'parseSkillMd returns null when name is missing');
+
+    // Case 5: Name mismatch
+    const mismatchDir = path.join(tempFixture30, 'actual-dir-name');
+    await fs.ensureDir(mismatchDir);
+    await fs.writeFile(path.join(mismatchDir, 'SKILL.md'), '---\nname: wrong-name\ndescription: A skill\n---\n\nBody.\n');
+    const result5 = await generator30.parseSkillMd(path.join(mismatchDir, 'SKILL.md'), mismatchDir, 'actual-dir-name');
+    assert(result5 === null, 'parseSkillMd returns null when name does not match directory name');
+
+    // Case 6: Valid SKILL.md (positive control)
+    const validDir = path.join(tempFixture30, 'valid-skill');
+    await fs.ensureDir(validDir);
+    await fs.writeFile(path.join(validDir, 'SKILL.md'), '---\nname: valid-skill\ndescription: A valid skill\n---\n\nBody.\n');
+    const result6 = await generator30.parseSkillMd(path.join(validDir, 'SKILL.md'), validDir, 'valid-skill');
+    assert(result6 !== null && result6.name === 'valid-skill', 'parseSkillMd returns metadata for valid SKILL.md');
+
+    // Case 7: Malformed YAML (non-object)
+    const malformedDir = path.join(tempFixture30, 'malformed');
+    await fs.ensureDir(malformedDir);
+    await fs.writeFile(path.join(malformedDir, 'SKILL.md'), '---\njust a string\n---\n\nBody.\n');
+    const result7 = await generator30.parseSkillMd(path.join(malformedDir, 'SKILL.md'), malformedDir, 'malformed');
+    assert(result7 === null, 'parseSkillMd returns null for non-object YAML frontmatter');
+  } catch (error) {
+    assert(false, 'parseSkillMd validation test succeeds', error.message);
+  } finally {
+    if (tempFixture30) await fs.remove(tempFixture30).catch(() => {});
   }
 
   console.log('');
