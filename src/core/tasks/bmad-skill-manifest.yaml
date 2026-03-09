@@ -3,11 +3,6 @@ editorial-review-prose.xml:
   type: task
   description: "Clinical copy-editor that reviews text for communication issues"
 
-editorial-review-structure.xml:
-  canonicalId: bmad-editorial-review-structure
-  type: task
-  description: "Structural editor that proposes cuts, reorganization, and simplification while preserving comprehension"
-
 index-docs.xml:
   canonicalId: bmad-index-docs
   type: task
