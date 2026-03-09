@@ -36,7 +36,7 @@ function toDashName(module, type, name) {
   const isAgent = type === AGENT_SEGMENT;
 
   // For core module, skip the module name: use 'bmad-agent-name.md' instead of 'bmad-agent-core-name.md'
-  if (module === 'core') {
+  if (module === 'core' || module === 'standalone') {
     return isAgent ? `bmad-agent-${name}.md` : `bmad-${name}.md`;
   }
 
@@ -177,7 +177,7 @@ function parseDashName(filename) {
  */
 function toUnderscoreName(module, type, name) {
   const isAgent = type === AGENT_SEGMENT;
-  if (module === 'core') {
+  if (module === 'core' || module === 'standalone') {
     return isAgent ? `bmad_agent_${name}.md` : `bmad_${name}.md`;
   }
   return isAgent ? `bmad_${module}_agent_${name}.md` : `bmad_${module}_${name}.md`;
