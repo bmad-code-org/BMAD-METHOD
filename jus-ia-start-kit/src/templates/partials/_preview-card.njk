@@ -1,0 +1,31 @@
+{# Preview Card — the "aha moment" card #}
+{# Expects: prompt (AssembledPrompt), flow (FlowConfig) #}
+<article class="bg-white rounded-[var(--radius-sm)] border-2 border-[var(--color-accent)]/40 p-5 shadow-[0_2px_4px_rgba(25,52,102,0.04)]">
+  <h2 class="text-[var(--color-text-dark)] font-semibold text-lg mb-3">
+    Seu pedido otimizado para o Jus IA
+  </h2>
+
+  <div class="text-sm text-[var(--color-text-primary)] mb-4 leading-relaxed whitespace-pre-line">
+    {{ promptText | truncate(300) }}
+  </div>
+
+  {# Legal reference badges #}
+  <div class="flex flex-wrap gap-2 mb-5">
+    {% for ref in legalReferences %}
+      {% include "partials/_legal-badge.njk" %}
+    {% endfor %}
+  </div>
+
+  {# Delivery method #}
+  {% if fitsInUrl %}
+    <a href="{{ encodedUrl }}" class="block w-full text-center py-3 px-4 rounded-[var(--radius-md)] bg-[var(--color-primary)] text-white font-semibold text-base no-underline shadow-[0_2px_4px_rgba(25,52,102,0.04)] hover:bg-[var(--color-primary-dark)] transition-colors min-h-[48px] flex items-center justify-center">
+      Gerar no Jus IA →
+    </a>
+  {% else %}
+    {% include "partials/_copy-fallback.njk" %}
+  {% endif %}
+
+  <p class="text-center text-xs text-[var(--color-text-secondary)] mt-3">
+    Seus dados não são armazenados após o redirecionamento
+  </p>
+</article>

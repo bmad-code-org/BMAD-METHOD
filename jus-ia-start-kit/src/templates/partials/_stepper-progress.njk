@@ -1,0 +1,15 @@
+{# Stepper Progress — compact visual indicator #}
+{# Expects: currentVisualStep, totalSteps #}
+<div role="progressbar" aria-valuenow="{{ currentVisualStep }}" aria-valuemax="{{ totalSteps }}" aria-label="Progresso do fluxo" class="flex gap-1.5 items-center">
+  {% for i in range(1, totalSteps + 1) %}
+    <div class="h-1.5 flex-1 rounded-full transition-colors duration-300
+      {% if i < currentVisualStep %}
+        bg-[var(--color-primary)]
+      {% elif i == currentVisualStep %}
+        bg-[var(--color-primary)] animate-pulse
+      {% else %}
+        bg-[var(--color-border)]
+      {% endif %}
+    "></div>
+  {% endfor %}
+</div>

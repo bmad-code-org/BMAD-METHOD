@@ -1,0 +1,25 @@
+{% extends "layouts/base.njk" %}
+
+{% block title %}Fluxo não disponível — Jus IA Start Kit{% endblock %}
+
+{% block content %}
+{% set backUrl = "/" %}
+{% include "partials/_back-button.njk" %}
+
+<div class="mt-8 text-center">
+  <h1 class="text-[var(--color-text-dark)] font-bold text-xl mb-3">
+    Este fluxo ainda não está disponível
+  </h1>
+  <p class="text-[var(--color-text-primary)] text-base mb-6">
+    Estamos trabalhando para adicionar mais fluxos. Veja os que já estão disponíveis:
+  </p>
+
+  <div class="flex flex-wrap justify-center gap-2">
+    {% for flow in availableFlows %}
+      <a href="/{{ flow.area }}/{{ flow.subtipo }}" class="inline-flex items-center px-4 py-2.5 rounded-[var(--radius-md)] border border-[var(--color-border)] text-sm font-medium text-[var(--color-text-primary)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] no-underline min-h-[44px] transition-colors">
+        {{ flow.areaLabel }} — {{ flow.subtipoLabel }}
+      </a>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

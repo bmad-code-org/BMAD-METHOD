@@ -1,0 +1,8 @@
+{# Hidden State — preserves flow state between MPA pages #}
+{# Expects: flowState (FlowState object) #}
+<input type="hidden" name="_area" value="{{ flowState.area }}">
+<input type="hidden" name="_subtipo" value="{{ flowState.subtipo }}">
+<input type="hidden" name="_tipo_tarefa" value="{{ flowState.tipoTarefa }}">
+<input type="hidden" name="_step" value="{{ flowState.currentStep }}">
+<input type="hidden" name="_total_steps" value="{{ flowState.totalSteps }}">
+<input type="hidden" name="_responses" value='{{ serializedResponses }}'>

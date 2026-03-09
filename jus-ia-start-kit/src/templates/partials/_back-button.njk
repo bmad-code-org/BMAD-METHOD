@@ -1,0 +1,10 @@
+{# Back Button — secondary action, top of page #}
+{# Expects: backUrl (string, optional) #}
+{% if backUrl %}
+<a href="{{ backUrl }}" class="inline-flex items-center gap-1 text-sm text-[var(--color-text-primary)] hover:text-[var(--color-primary)] no-underline mb-4 min-h-[44px]">
+  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+  </svg>
+  Voltar
+</a>
+{% endif %}

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Jus IA Start Kit{% endblock %}</title>
+
+  {% block ogTags %}
+  <meta property="og:title" content="Jus IA Start Kit — Monte seu pedido jurídico">
+  <meta property="og:description" content="Responda perguntas sobre seu caso e receba um pedido otimizado pronto para gerar resultado na primeira tentativa.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="/images/og-default.png">
+  {% endblock %}
+
+  <link rel="stylesheet" href="/css/app.css">
+  <link rel="icon" href="/favicon.ico">
+</head>
+<body class="min-h-dvh bg-[var(--color-background)] text-[var(--color-text-primary)] font-sans">
+  <main class="mx-auto max-w-[640px] px-4 pb-8">
+    {% block header %}
+    <header class="py-4 flex items-center justify-between">
+      <a href="/" class="text-[var(--color-text-dark)] font-semibold text-lg no-underline">
+        Jus IA Start Kit
+      </a>
+      {% if totalSteps %}
+        {% include "partials/_stepper-progress.njk" %}
+      {% endif %}
+    </header>
+    {% endblock %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  {% block scripts %}
+  <script src="/js/app.js" defer></script>
+  {% endblock %}
+</body>
+</html>

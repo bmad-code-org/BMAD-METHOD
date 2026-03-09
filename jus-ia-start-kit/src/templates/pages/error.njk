@@ -1,0 +1,24 @@
+{% extends "layouts/base.njk" %}
+
+{% block title %}Erro — Jus IA Start Kit{% endblock %}
+
+{% block content %}
+<div class="mt-8 text-center">
+  <h1 class="text-[var(--color-text-dark)] font-bold text-xl mb-3">
+    {{ errorTitle or "Algo deu errado" }}
+  </h1>
+  <p class="text-[var(--color-text-primary)] text-base mb-6">
+    {{ errorMessage or "Não conseguimos processar seu pedido. Tente novamente." }}
+  </p>
+
+  {% if retryable %}
+    <a href="{{ retryUrl or '/' }}" class="inline-flex items-center justify-center px-6 py-3 rounded-[var(--radius-md)] bg-[var(--color-primary)] text-white font-semibold text-base no-underline shadow-[0_2px_4px_rgba(25,52,102,0.04)] hover:bg-[var(--color-primary-dark)] transition-colors min-h-[48px]">
+      Tentar novamente
+    </a>
+  {% endif %}
+
+  <a href="/" class="block mt-4 text-sm text-[var(--color-text-primary)] underline hover:text-[var(--color-primary)]">
+    Voltar ao início
+  </a>
+</div>
+{% endblock %}

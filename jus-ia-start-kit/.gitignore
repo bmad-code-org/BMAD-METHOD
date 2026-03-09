@@ -1,0 +1,5 @@
+node_modules/
+dist/
+.env
+src/public/css/app.css
+*.tsbuildinfo

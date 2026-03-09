@@ -1,0 +1,51 @@
+{% extends "layouts/base.njk" %}
+
+{% block title %}{{ areaLabel }} — Jus IA Start Kit{% endblock %}
+
+{% block content %}
+{% set backUrl = "/" %}
+{% include "partials/_back-button.njk" %}
+
+<div class="mb-6">
+  <h1 class="text-[var(--color-text-dark)] font-bold text-xl leading-tight mb-2">
+    Que tipo de {{ tipoTarefaLabel | lower }}?
+  </h1>
+  <p class="text-[var(--color-text-primary)] text-sm">
+    {{ areaLabel }}
+  </p>
+</div>
+
+<form method="POST" action="/{{ area }}/iniciar" class="space-y-4">
+  <input type="hidden" name="_tipo_tarefa" value="{{ tipoTarefa }}">
+  <input type="hidden" name="_area" value="{{ area }}">
+
+  <fieldset>
+    <legend class="sr-only">Selecione o subtipo</legend>
+    <div class="flex flex-wrap gap-2">
+      {% for sub in subtipos %}
+        {% if sub.available !== false %}
+          <label class="relative cursor-pointer">
+            <input type="radio" name="subtipo" value="{{ sub.value }}" required class="peer sr-only">
+            <span class="inline-flex items-center px-4 py-2.5 rounded-[var(--radius-md)] border text-sm font-medium transition-all duration-150 min-h-[44px]
+              peer-checked:bg-[var(--color-primary)] peer-checked:text-white peer-checked:border-[var(--color-primary)]
+              peer-focus-visible:ring-2 peer-focus-visible:ring-[var(--color-primary)] peer-focus-visible:ring-offset-2
+              border-[var(--color-border)] text-[var(--color-text-primary)] hover:border-[var(--color-primary)] hover:bg-[var(--color-primary)]/5
+            ">
+              {{ sub.label }}
+            </span>
+          </label>
+        {% else %}
+          <span class="inline-flex items-center px-4 py-2.5 rounded-[var(--radius-md)] border text-sm font-medium min-h-[44px] border-[var(--color-border)]/50 text-[var(--color-text-secondary)] opacity-50 cursor-not-allowed">
+            {{ sub.label }}
+            <span class="ml-1 text-xs">(em breve)</span>
+          </span>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </fieldset>
+
+  <button type="submit" class="w-full py-3 px-4 rounded-[var(--radius-md)] bg-[var(--color-primary)] text-white font-semibold text-base shadow-[0_2px_4px_rgba(25,52,102,0.04)] hover:bg-[var(--color-primary-dark)] transition-colors min-h-[48px]">
+    Continuar →
+  </button>
+</form>
+{% endblock %}

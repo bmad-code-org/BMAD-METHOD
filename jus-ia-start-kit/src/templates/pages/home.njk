@@ -1,0 +1,62 @@
+{% extends "layouts/base.njk" %}
+
+{% block title %}Jus IA Start Kit — Monte seu pedido jurídico{% endblock %}
+
+{% block content %}
+<div class="mt-8 mb-6">
+  <h1 class="text-[var(--color-text-dark)] font-bold text-2xl leading-tight mb-3">
+    O que você precisa?
+  </h1>
+  <p class="text-[var(--color-text-primary)] text-base">
+    Responda algumas perguntas sobre seu caso e receba um pedido otimizado para o Jus IA.
+  </p>
+</div>
+
+<form method="POST" action="/selecionar" class="space-y-6">
+  {# Task type selection #}
+  <fieldset>
+    <legend class="text-[var(--color-text-dark)] font-semibold text-base mb-3">
+      Tipo de tarefa
+    </legend>
+    <div class="flex flex-wrap gap-2">
+      {% for tipo in tiposTarefa %}
+        <label class="relative cursor-pointer">
+          <input type="radio" name="tipo_tarefa" value="{{ tipo.value }}" required class="peer sr-only">
+          <span class="inline-flex items-center px-4 py-2.5 rounded-[var(--radius-md)] border text-sm font-medium transition-all duration-150 min-h-[44px]
+            peer-checked:bg-[var(--color-primary)] peer-checked:text-white peer-checked:border-[var(--color-primary)]
+            peer-focus-visible:ring-2 peer-focus-visible:ring-[var(--color-primary)] peer-focus-visible:ring-offset-2
+            border-[var(--color-border)] text-[var(--color-text-primary)] hover:border-[var(--color-primary)] hover:bg-[var(--color-primary)]/5
+          ">
+            {{ tipo.label }}
+          </span>
+        </label>
+      {% endfor %}
+    </div>
+  </fieldset>
+
+  {# Area selection #}
+  <fieldset>
+    <legend class="text-[var(--color-text-dark)] font-semibold text-base mb-3">
+      Área do direito
+    </legend>
+    <div class="flex flex-wrap gap-2">
+      {% for area in areas %}
+        <label class="relative cursor-pointer">
+          <input type="radio" name="area" value="{{ area.value }}" required class="peer sr-only">
+          <span class="inline-flex items-center px-4 py-2.5 rounded-[var(--radius-md)] border text-sm font-medium transition-all duration-150 min-h-[44px]
+            peer-checked:bg-[var(--color-primary)] peer-checked:text-white peer-checked:border-[var(--color-primary)]
+            peer-focus-visible:ring-2 peer-focus-visible:ring-[var(--color-primary)] peer-focus-visible:ring-offset-2
+            border-[var(--color-border)] text-[var(--color-text-primary)] hover:border-[var(--color-primary)] hover:bg-[var(--color-primary)]/5
+          ">
+            {{ area.label }}
+          </span>
+        </label>
+      {% endfor %}
+    </div>
+  </fieldset>
+
+  <button type="submit" class="w-full py-3 px-4 rounded-[var(--radius-md)] bg-[var(--color-primary)] text-white font-semibold text-base shadow-[0_2px_4px_rgba(25,52,102,0.04)] hover:bg-[var(--color-primary-dark)] transition-colors min-h-[48px]">
+    Continuar →
+  </button>
+</form>
+{% endblock %}

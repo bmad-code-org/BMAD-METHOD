@@ -1,0 +1,74 @@
+{% extends "layouts/base.njk" %}
+
+{% block title %}{{ stepTitle }} — Jus IA Start Kit{% endblock %}
+
+{% block content %}
+{% set backUrl = backHref %}
+{% include "partials/_back-button.njk" %}
+
+<div class="mb-6">
+  <h1 class="text-[var(--color-text-dark)] font-bold text-xl leading-tight mb-1">
+    {{ stepTitle }}
+  </h1>
+  <p class="text-[var(--color-text-secondary)] text-sm">
+    {{ flowLabel }}
+  </p>
+</div>
+
+<form method="POST" action="{{ formAction }}" class="space-y-6">
+  {% include "partials/_hidden-state.njk" %}
+
+  {% for group in groups %}
+    <div class="bg-white rounded-[var(--radius-sm)] border border-[var(--color-border)]/50 p-4 shadow-[0_2px_4px_rgba(25,52,102,0.04)]">
+      <h2 class="text-[var(--color-text-dark)] font-semibold text-sm mb-3 uppercase tracking-wide">
+        {{ group.title }}
+      </h2>
+
+      {% for question in group.questions %}
+        {% if question.type == "select" or question.type == "multiselect" %}
+          {% set selectedValue = flowState.responses[question.id] %}
+          {% include "partials/_chip-selector.njk" %}
+        {% elif question.type == "date" %}
+          <div class="mb-4">
+            <label for="{{ question.id }}" class="block text-[var(--color-text-dark)] font-semibold text-base mb-2">
+              {{ question.text }}
+            </label>
+            <input
+              type="date"
+              id="{{ question.id }}"
+              name="{{ question.id }}"
+              value="{{ flowState.responses[question.id] or '' }}"
+              {% if question.required %}required{% endif %}
+              class="w-full px-3 py-2.5 rounded-[var(--radius-sm)] border border-[var(--color-border)] text-[var(--color-text-primary)] text-sm min-h-[44px] focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] outline-none"
+            >
+          </div>
+        {% elif question.type == "text" %}
+          <div class="mb-4">
+            <label for="{{ question.id }}" class="block text-[var(--color-text-dark)] font-semibold text-base mb-2">
+              {{ question.text }}
+            </label>
+            <input
+              type="text"
+              id="{{ question.id }}"
+              name="{{ question.id }}"
+              value="{{ flowState.responses[question.id] or '' }}"
+              placeholder="{{ question.placeholder or '' }}"
+              {% if question.required %}required{% endif %}
+              maxlength="500"
+              class="w-full px-3 py-2.5 rounded-[var(--radius-sm)] border border-[var(--color-border)] text-[var(--color-text-primary)] text-sm min-h-[44px] focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] outline-none placeholder:text-[var(--color-text-secondary)]"
+            >
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  {% endfor %}
+
+  <button type="submit" class="w-full py-3 px-4 rounded-[var(--radius-md)] bg-[var(--color-primary)] text-white font-semibold text-base shadow-[0_2px_4px_rgba(25,52,102,0.04)] hover:bg-[var(--color-primary-dark)] transition-colors min-h-[48px]">
+    {% if isLastStep %}
+      Ver meu pedido →
+    {% else %}
+      Continuar →
+    {% endif %}
+  </button>
+</form>
+{% endblock %}

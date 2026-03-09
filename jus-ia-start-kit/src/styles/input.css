@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+@theme {
+  /* Brand Colors — Jus IA aligned */
+  --color-primary: #007A5F;
+  --color-primary-light: #009B78;
+  --color-primary-dark: #005C47;
+  --color-accent: #D4A843;
+  --color-surface: #FFFFFF;
+  --color-background: #F8F9FA;
+  --color-text-primary: #5C6F8A;
+  --color-text-dark: #0F172A;
+  --color-text-secondary: #6B7280;
+  --color-border: #B3C0D0;
+
+  /* Semantic Colors */
+  --color-success: #7AB441;
+  --color-warning: #D97706;
+  --color-error: #DC2626;
+  --color-info: #378CC8;
+
+  /* Typography */
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", "Oxygen", "Ubuntu", "Cantarell", "Open Sans", "Helvetica Neue", sans-serif;
+
+  /* Spacing base: 8px */
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-6: 24px;
+  --spacing-8: 32px;
+
+  /* Border Radius */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-full: 9999px;
+}
+
+/* Base styles */
+html {
+  font-family: var(--font-sans);
+  color: var(--color-text-primary);
+  background-color: var(--color-background);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+}
+
+/* Focus visible for keyboard navigation */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Touch target minimum */
+button, a, input, select, [role="radio"], [role="checkbox"] {
+  min-height: 44px;
+}

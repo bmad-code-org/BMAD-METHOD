@@ -1,0 +1,30 @@
+{% extends "layouts/base.njk" %}
+
+{% block title %}Seu pedido está pronto — Jus IA Start Kit{% endblock %}
+
+{% block content %}
+<div class="mt-4 mb-6">
+  <h1 class="text-[var(--color-text-dark)] font-bold text-xl leading-tight mb-2">
+    Pronto!
+  </h1>
+  <p class="text-[var(--color-text-primary)] text-base">
+    Montamos seu pedido otimizado para o Jus IA. Ele vai gerar {{ flowLabel }} com fundamentação jurídica na primeira tentativa.
+  </p>
+</div>
+
+{% include "partials/_preview-card.njk" %}
+
+{# Always show copy option as secondary #}
+{% if fitsInUrl %}
+<div class="mt-4 text-center">
+  <button
+    type="button"
+    id="copy-btn-secondary"
+    class="text-sm text-[var(--color-text-primary)] underline hover:text-[var(--color-primary)] min-h-[44px]"
+    data-prompt-text="{{ promptText | replace('"', '&quot;') }}"
+  >
+    Copiar pedido
+  </button>
+</div>
+{% endif %}
+{% endblock %}

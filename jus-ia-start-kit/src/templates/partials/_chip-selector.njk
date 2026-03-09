@@ -1,0 +1,35 @@
+{# Chip Selector — single or multi select #}
+{# Expects: question (FlowQuestion object), selectedValue (string or array) #}
+<fieldset class="mb-4">
+  <legend class="text-[var(--color-text-dark)] font-semibold text-base mb-3">
+    {{ question.text }}
+  </legend>
+  <div class="flex flex-wrap gap-2">
+    {% for option in question.options %}
+      {% set isSelected = (selectedValue == option) or (selectedValue and option in selectedValue) %}
+      <label class="relative cursor-pointer">
+        <input
+          type="{{ 'checkbox' if question.type == 'multiselect' else 'radio' }}"
+          name="{{ question.id }}"
+          value="{{ option }}"
+          {% if isSelected %}checked{% endif %}
+          {% if question.required %}required{% endif %}
+          class="peer sr-only"
+        >
+        <span class="inline-flex items-center px-4 py-2.5 rounded-[var(--radius-md)] border text-sm font-medium transition-all duration-150 min-h-[44px]
+          peer-checked:bg-[var(--color-primary)] peer-checked:text-white peer-checked:border-[var(--color-primary)]
+          peer-focus-visible:ring-2 peer-focus-visible:ring-[var(--color-primary)] peer-focus-visible:ring-offset-2
+          border-[var(--color-border)] text-[var(--color-text-primary)] hover:border-[var(--color-primary)] hover:bg-[var(--color-primary)]/5
+        ">
+          <span class="peer-checked:hidden">{{ option }}</span>
+          <span class="hidden peer-checked:inline-flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+            </svg>
+            {{ option }}
+          </span>
+        </span>
+      </label>
+    {% endfor %}
+  </div>
+</fieldset>
