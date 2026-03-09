@@ -87,7 +87,7 @@ Offer validation workflows to ensure PRD is ready for implementation:
 
 ### 4. Suggest Next Workflows
 
-PRD complete. Run `/bmad-help`
+PRD complete. Invoke the `bmad-help` skill.
 
 ### 5. Final Completion Confirmation
 

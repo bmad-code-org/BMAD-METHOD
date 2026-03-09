@@ -128,7 +128,7 @@ Recap that the brief captures everything needed to guide subsequent product deve
 
 ### 5. Suggest next steps
 
-Product Brief complete. Run `/bmad-help`
+Product Brief complete. Invoke the `bmad-help` skill.
 
 ---
 

@@ -144,6 +144,6 @@ If all validations pass:
 
 When C is selected, the workflow is complete and the epics.md is ready for development.
 
-Epics and Stories complete. Run `/bmad-help`
+Epics and Stories complete. Invoke the `bmad-help` skill.
 
 Upon Completion of task output: offer to answer any questions about the Epics and Stories.

@@ -41,7 +41,7 @@ completedAt: '{{current_date}}'
 
 ### 3. Next Steps Guidance
 
-Architecture complete. Run `/bmad-help`
+Architecture complete. Invoke the `bmad-help` skill.
 
 Upon Completion of task output: offer to answer any questions about the Architecture Document.
 
