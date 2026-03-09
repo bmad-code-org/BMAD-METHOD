@@ -1,9 +1,57 @@
-# Sprint Planning - Sprint Status Generator
+---
+name: sprint-planning
+description: 'Generate sprint status tracking from epics. Use when the user says "run sprint planning" or "generate sprint plan"'
+---
 
-<critical>The workflow execution engine is governed by: {project-root}/_bmad/core/tasks/workflow.xml</critical>
-<critical>You MUST have already loaded and processed: {project-root}/_bmad/bmm/workflows/4-implementation/sprint-planning/workflow.yaml</critical>
+# Sprint Planning Workflow
 
-## 📚 Document Discovery - Full Epic Loading
+**Goal:** Generate sprint status tracking from epics, detecting current story statuses and building a complete sprint-status.yaml file.
+
+**Your Role:** You are a Scrum Master generating and maintaining sprint tracking. Parse epic files, detect story statuses, and produce a structured sprint-status.yaml.
+
+---
+
+## INITIALIZATION
+
+### Configuration Loading
+
+Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
+
+- `project_name`, `user_name`
+- `communication_language`, `document_output_language`
+- `implementation_artifacts`
+- `planning_artifacts`
+- `date` as system-generated current datetime
+- YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `{communication_language}`
+
+### Paths
+
+- `installed_path` = `{project-root}/_bmad/bmm/workflows/4-implementation/sprint-planning`
+- `template` = `{installed_path}/sprint-status-template.yaml`
+- `checklist` = `{installed_path}/checklist.md`
+- `tracking_system` = `file-system`
+- `project_key` = `NOKEY`
+- `story_location` = `{implementation_artifacts}`
+- `story_location_absolute` = `{implementation_artifacts}`
+- `epics_location` = `{planning_artifacts}`
+- `epics_pattern` = `*epic*.md`
+- `status_file` = `{implementation_artifacts}/sprint-status.yaml`
+
+### Input Files
+
+| Input | Path | Load Strategy |
+|-------|------|---------------|
+| Epics | `{planning_artifacts}/*epic*.md` (whole) or `{planning_artifacts}/*epic*/*.md` (sharded) | FULL_LOAD |
+
+### Context
+
+- `project_context` = `**/project-context.md` (load if exists)
+
+---
+
+## EXECUTION
+
+### Document Discovery - Full Epic Loading
 
 **Strategy**: Sprint planning needs ALL epics and stories to build complete status tracking.
 
@@ -43,11 +91,6 @@
 
 <action>Build complete inventory of all epics and stories from all epic files</action>
 </step>
-
-  <step n="0.5" goal="Discover and load project documents">
-    <invoke-protocol name="discover_inputs" />
-    <note>After discovery, these content variables are available: {epics_content} (all epics loaded - uses FULL_LOAD strategy)</note>
-  </step>
 
 <step n="2" goal="Build sprint status structure">
 <action>For each epic found, create entries in this order:</action>
@@ -170,7 +213,7 @@ development_status:
 - **File Location:** {status_file}
 - **Total Epics:** {{epic_count}}
 - **Total Stories:** {{story_count}}
-- **Epics In Progress:** {{epics_in_progress_count}}
+- **Epics In Progress:** {{in_progress_count}}
 - **Stories Completed:** {{done_count}}
 
 **Next Steps:**

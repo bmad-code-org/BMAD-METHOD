@@ -1501,6 +1501,205 @@ async function runTests() {
   console.log('');
 
   // ============================================================
+  // Suite 28: Pi Native Skills
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 28: Pi Native Skills${colors.reset}\n`);
+
+  let tempProjectDir28;
+  let installedBmadDir28;
+  try {
+    clearCache();
+    const platformCodes28 = await loadPlatformCodes();
+    const piInstaller = platformCodes28.platforms.pi?.installer;
+
+    assert(piInstaller?.target_dir === '.pi/skills', 'Pi target_dir uses native skills path');
+    assert(piInstaller?.skill_format === true, 'Pi installer enables native skill output');
+    assert(piInstaller?.template_type === 'default', 'Pi installer uses default skill template');
+
+    tempProjectDir28 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-pi-test-'));
+    installedBmadDir28 = await createTestBmadFixture();
+
+    const ideManager28 = new IdeManager();
+    await ideManager28.ensureInitialized();
+
+    // Verify Pi is selectable in available IDEs list
+    const availableIdes28 = ideManager28.getAvailableIdes();
+    assert(
+      availableIdes28.some((ide) => ide.value === 'pi'),
+      'Pi appears in available IDEs list',
+    );
+
+    // Verify Pi is NOT detected before install
+    const detectedBefore28 = await ideManager28.detectInstalledIdes(tempProjectDir28);
+    assert(!detectedBefore28.includes('pi'), 'Pi is not detected before install');
+
+    const result28 = await ideManager28.setup('pi', tempProjectDir28, installedBmadDir28, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+
+    assert(result28.success === true, 'Pi setup succeeds against temp project');
+
+    // Verify Pi IS detected after install
+    const detectedAfter28 = await ideManager28.detectInstalledIdes(tempProjectDir28);
+    assert(detectedAfter28.includes('pi'), 'Pi is detected after install');
+
+    const skillFile28 = path.join(tempProjectDir28, '.pi', 'skills', 'bmad-master', 'SKILL.md');
+    assert(await fs.pathExists(skillFile28), 'Pi install writes SKILL.md directory output');
+
+    // Parse YAML frontmatter between --- markers
+    const skillContent28 = await fs.readFile(skillFile28, 'utf8');
+    const fmMatch28 = skillContent28.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
+    assert(fmMatch28, 'Pi SKILL.md contains valid frontmatter delimiters');
+
+    const frontmatter28 = fmMatch28[1];
+    const body28 = fmMatch28[2];
+
+    // Verify name in frontmatter matches directory name
+    const fmName28 = frontmatter28.match(/^name:\s*(.+)$/m);
+    assert(fmName28 && fmName28[1].trim() === 'bmad-master', 'Pi skill name frontmatter matches directory name exactly');
+
+    // Verify description exists and is non-empty
+    const fmDesc28 = frontmatter28.match(/^description:\s*(.+)$/m);
+    assert(fmDesc28 && fmDesc28[1].trim().length > 0, 'Pi skill description frontmatter is present and non-empty');
+
+    // Verify frontmatter contains only name and description keys
+    const fmKeys28 = [...frontmatter28.matchAll(/^([a-zA-Z0-9_-]+):/gm)].map((m) => m[1]);
+    assert(
+      fmKeys28.length === 2 && fmKeys28.includes('name') && fmKeys28.includes('description'),
+      'Pi skill frontmatter contains only name and description keys',
+    );
+
+    // Verify body content is non-empty and contains expected activation instructions
+    assert(body28.trim().length > 0, 'Pi skill body content is non-empty');
+    assert(body28.includes('agent-activation'), 'Pi skill body contains expected agent activation instructions');
+
+    // Reinstall/upgrade: run setup again over existing output
+    const result28b = await ideManager28.setup('pi', tempProjectDir28, installedBmadDir28, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+    assert(result28b.success === true, 'Pi reinstall/upgrade succeeds over existing skills');
+    assert(await fs.pathExists(skillFile28), 'Pi reinstall preserves SKILL.md output');
+  } catch (error) {
+    assert(false, 'Pi native skills test succeeds', error.message);
+  } finally {
+    if (tempProjectDir28) await fs.remove(tempProjectDir28).catch(() => {});
+    if (installedBmadDir28) await fs.remove(installedBmadDir28).catch(() => {});
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Suite 29: Unified Skill Scanner — collectSkills
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 29: Unified Skill Scanner${colors.reset}\n`);
+
+  let tempFixture29;
+  try {
+    tempFixture29 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-skill-scanner-'));
+
+    // Create _config dir (required by manifest generator)
+    await fs.ensureDir(path.join(tempFixture29, '_config'));
+
+    // --- Skill at unusual path: core/custom-area/my-skill/ ---
+    const skillDir29 = path.join(tempFixture29, 'core', 'custom-area', 'my-skill');
+    await fs.ensureDir(skillDir29);
+    await fs.writeFile(path.join(skillDir29, 'bmad-skill-manifest.yaml'), 'type: skill\n');
+    await fs.writeFile(
+      path.join(skillDir29, 'workflow.md'),
+      '---\nname: My Custom Skill\ndescription: A skill at an unusual path\n---\n\nSkill body content\n',
+    );
+
+    // --- Regular workflow dir: core/workflows/regular-wf/ (type: workflow) ---
+    const wfDir29 = path.join(tempFixture29, 'core', 'workflows', 'regular-wf');
+    await fs.ensureDir(wfDir29);
+    await fs.writeFile(path.join(wfDir29, 'bmad-skill-manifest.yaml'), 'type: workflow\ncanonicalId: regular-wf\n');
+    await fs.writeFile(
+      path.join(wfDir29, 'workflow.md'),
+      '---\nname: Regular Workflow\ndescription: A regular workflow not a skill\n---\n\nWorkflow body\n',
+    );
+
+    // --- Skill inside workflows/ dir: core/workflows/wf-skill/ (exercises findWorkflows skip logic) ---
+    const wfSkillDir29 = path.join(tempFixture29, 'core', 'workflows', 'wf-skill');
+    await fs.ensureDir(wfSkillDir29);
+    await fs.writeFile(path.join(wfSkillDir29, 'bmad-skill-manifest.yaml'), 'type: skill\n');
+    await fs.writeFile(
+      path.join(wfSkillDir29, 'workflow.md'),
+      '---\nname: Workflow Skill\ndescription: A skill inside workflows dir\n---\n\nSkill in workflows\n',
+    );
+
+    // --- Skill inside tasks/ dir: core/tasks/task-skill/ ---
+    const taskSkillDir29 = path.join(tempFixture29, 'core', 'tasks', 'task-skill');
+    await fs.ensureDir(taskSkillDir29);
+    await fs.writeFile(path.join(taskSkillDir29, 'bmad-skill-manifest.yaml'), 'type: skill\n');
+    await fs.writeFile(
+      path.join(taskSkillDir29, 'workflow.md'),
+      '---\nname: Task Skill\ndescription: A skill inside tasks dir\n---\n\nSkill in tasks\n',
+    );
+
+    // Minimal agent so core module is detected
+    await fs.ensureDir(path.join(tempFixture29, 'core', 'agents'));
+    const minimalAgent29 = '<agent name="Test" title="T"><persona>p</persona></agent>';
+    await fs.writeFile(path.join(tempFixture29, 'core', 'agents', 'test.md'), minimalAgent29);
+
+    const generator29 = new ManifestGenerator();
+    await generator29.generateManifests(tempFixture29, ['core'], [], { ides: [] });
+
+    // Skill at unusual path should be in skills
+    const skillEntry29 = generator29.skills.find((s) => s.canonicalId === 'my-skill');
+    assert(skillEntry29 !== undefined, 'Skill at unusual path appears in skills[]');
+    assert(skillEntry29 && skillEntry29.name === 'My Custom Skill', 'Skill has correct name from frontmatter');
+    assert(
+      skillEntry29 && skillEntry29.path.includes('custom-area/my-skill/workflow.md'),
+      'Skill path includes relative path from module root',
+    );
+
+    // Skill should NOT be in workflows
+    const inWorkflows29 = generator29.workflows.find((w) => w.name === 'My Custom Skill');
+    assert(inWorkflows29 === undefined, 'Skill at unusual path does NOT appear in workflows[]');
+
+    // Skill in tasks/ dir should be in skills
+    const taskSkillEntry29 = generator29.skills.find((s) => s.canonicalId === 'task-skill');
+    assert(taskSkillEntry29 !== undefined, 'Skill in tasks/ dir appears in skills[]');
+
+    // Skill in tasks/ should NOT appear in tasks[]
+    const inTasks29 = generator29.tasks.find((t) => t.name === 'Task Skill');
+    assert(inTasks29 === undefined, 'Skill in tasks/ dir does NOT appear in tasks[]');
+
+    // Regular workflow should be in workflows, NOT in skills
+    const regularWf29 = generator29.workflows.find((w) => w.name === 'Regular Workflow');
+    assert(regularWf29 !== undefined, 'Regular type:workflow appears in workflows[]');
+
+    const regularInSkills29 = generator29.skills.find((s) => s.canonicalId === 'regular-wf');
+    assert(regularInSkills29 === undefined, 'Regular type:workflow does NOT appear in skills[]');
+
+    // Skill inside workflows/ should be in skills[], NOT in workflows[] (exercises findWorkflows skip at lines 311/322)
+    const wfSkill29 = generator29.skills.find((s) => s.canonicalId === 'wf-skill');
+    assert(wfSkill29 !== undefined, 'Skill in workflows/ dir appears in skills[]');
+    const wfSkillInWorkflows29 = generator29.workflows.find((w) => w.name === 'Workflow Skill');
+    assert(wfSkillInWorkflows29 === undefined, 'Skill in workflows/ dir does NOT appear in workflows[]');
+
+    // Test scanInstalledModules recognizes skill-only modules
+    const skillOnlyModDir29 = path.join(tempFixture29, 'skill-only-mod');
+    await fs.ensureDir(path.join(skillOnlyModDir29, 'deep', 'nested', 'my-skill'));
+    await fs.writeFile(path.join(skillOnlyModDir29, 'deep', 'nested', 'my-skill', 'bmad-skill-manifest.yaml'), 'type: skill\n');
+    await fs.writeFile(
+      path.join(skillOnlyModDir29, 'deep', 'nested', 'my-skill', 'workflow.md'),
+      '---\nname: Nested Skill\ndescription: desc\n---\nbody\n',
+    );
+
+    const scannedModules29 = await generator29.scanInstalledModules(tempFixture29);
+    assert(scannedModules29.includes('skill-only-mod'), 'scanInstalledModules recognizes skill-only module');
+  } catch (error) {
+    assert(false, 'Unified skill scanner test succeeds', error.message);
+  } finally {
+    if (tempFixture29) await fs.remove(tempFixture29).catch(() => {});
+  }
+
+  console.log('');
+
+  // ============================================================
   // Summary
   // ============================================================
   console.log(`${colors.cyan}========================================`);

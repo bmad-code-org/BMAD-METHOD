@@ -48,5 +48,5 @@ spec_file: '' # set at runtime before leaving this step
 
 ## NEXT
 
-- One-shot / ready-for-dev: Read fully and follow `{installed_path}/steps/step-03-implement.md`
-- Plan-code-review: Read fully and follow `{installed_path}/steps/step-02-plan.md`
+- One-shot / ready-for-dev: Read fully and follow `./steps/step-03-implement.md`
+- Plan-code-review: Read fully and follow `./steps/step-02-plan.md`

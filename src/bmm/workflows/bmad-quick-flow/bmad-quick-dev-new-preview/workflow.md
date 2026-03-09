@@ -4,11 +4,8 @@ description: 'Unified quick flow - clarify intent, plan, implement, review, pres
 main_config: '{project-root}/_bmad/bmm/config.yaml'
 
 # Related workflows
-advanced_elicitation: '{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml'
+advanced_elicitation: '{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.md'
 party_mode_exec: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
-
-# Review building block
-adversarial_review_task: '{project-root}/_bmad/core/tasks/review-adversarial-general.xml'
 ---
 
 # Quick Dev New Preview Workflow
@@ -81,10 +78,9 @@ YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `
 
 ### 2. Paths
 
-- `installed_path` = `{project-root}/_bmad/bmm/workflows/bmad-quick-flow/quick-dev-new-preview`
-- `templateFile` = `{installed_path}/tech-spec-template.md`
+- `templateFile` = `./tech-spec-template.md`
 - `wipFile` = `{implementation_artifacts}/tech-spec-wip.md`
 
 ### 3. First Step Execution
 
-Read fully and follow: `{installed_path}/steps/step-01-clarify-and-route.md` to begin the workflow.
+Read fully and follow: `./steps/step-01-clarify-and-route.md` to begin the workflow.

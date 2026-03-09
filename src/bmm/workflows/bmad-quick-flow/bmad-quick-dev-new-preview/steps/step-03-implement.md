@@ -32,4 +32,4 @@ Otherwise (`execution_mode = "plan-code-review"`): hand `{spec_file}` to a sub-a
 
 ## NEXT
 
-Read fully and follow `{installed_path}/steps/step-04-review.md`
+Read fully and follow `./steps/step-04-review.md`

@@ -1,11 +1,83 @@
-# Correct Course - Sprint Change Management Instructions
+---
+name: correct-course
+description: 'Manage significant changes during sprint execution. Use when the user says "correct course" or "propose sprint change"'
+---
 
-<critical>The workflow execution engine is governed by: {project-root}/_bmad/core/tasks/workflow.xml</critical>
-<critical>You MUST have already loaded and processed: {project-root}/_bmad/bmm/workflows/4-implementation/correct-course/workflow.yaml</critical>
-<critical>Communicate all responses in {communication_language} and language MUST be tailored to {user_skill_level}</critical>
-<critical>Generate all documents in {document_output_language}</critical>
+# Correct Course - Sprint Change Management Workflow
 
-<critical>DOCUMENT OUTPUT: Updated epics, stories, or PRD sections. Clear, actionable changes. User skill level ({user_skill_level}) affects conversation style ONLY, not document updates.</critical>
+**Goal:** Manage significant changes during sprint execution by analyzing impact across all project artifacts and producing a structured Sprint Change Proposal.
+
+**Your Role:** You are a Scrum Master navigating change management. Analyze the triggering issue, assess impact across PRD, epics, architecture, and UX artifacts, and produce an actionable Sprint Change Proposal with clear handoff.
+
+---
+
+## INITIALIZATION
+
+### Configuration Loading
+
+Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
+
+- `project_name`, `user_name`
+- `communication_language`, `document_output_language`
+- `user_skill_level`
+- `implementation_artifacts`
+- `planning_artifacts`
+- `project_knowledge`
+- `date` as system-generated current datetime
+- YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `{communication_language}`
+- Language MUST be tailored to `{user_skill_level}`
+- Generate all documents in `{document_output_language}`
+- DOCUMENT OUTPUT: Updated epics, stories, or PRD sections. Clear, actionable changes. User skill level (`{user_skill_level}`) affects conversation style ONLY, not document updates.
+
+### Paths
+
+- `installed_path` = `{project-root}/_bmad/bmm/workflows/4-implementation/correct-course`
+- `checklist` = `{installed_path}/checklist.md`
+- `default_output_file` = `{planning_artifacts}/sprint-change-proposal-{date}.md`
+
+### Input Files
+
+| Input | Path | Load Strategy |
+|-------|------|---------------|
+| PRD | `{planning_artifacts}/*prd*.md` (whole) or `{planning_artifacts}/*prd*/*.md` (sharded) | FULL_LOAD |
+| Epics | `{planning_artifacts}/*epic*.md` (whole) or `{planning_artifacts}/*epic*/*.md` (sharded) | FULL_LOAD |
+| Architecture | `{planning_artifacts}/*architecture*.md` (whole) or `{planning_artifacts}/*architecture*/*.md` (sharded) | FULL_LOAD |
+| UX Design | `{planning_artifacts}/*ux*.md` (whole) or `{planning_artifacts}/*ux*/*.md` (sharded) | FULL_LOAD |
+| Tech Spec | `{planning_artifacts}/*tech-spec*.md` (whole) | FULL_LOAD |
+| Document Project | `{project_knowledge}/index.md` (sharded) | INDEX_GUIDED |
+
+### Context
+
+- `project_context` = `**/project-context.md` (load if exists)
+
+---
+
+## EXECUTION
+
+### Document Discovery - Loading Project Artifacts
+
+**Strategy**: Course correction needs broad project context to assess change impact accurately. Load all available planning artifacts.
+
+**Discovery Process for FULL_LOAD documents (PRD, Epics, Architecture, UX Design, Tech Spec):**
+
+1. **Search for whole document first** - Look for files matching the whole-document pattern (e.g., `*prd*.md`, `*epic*.md`, `*architecture*.md`, `*ux*.md`, `*tech-spec*.md`)
+2. **Check for sharded version** - If whole document not found, look for a directory with `index.md` (e.g., `prd/index.md`, `epics/index.md`)
+3. **If sharded version found**:
+   - Read `index.md` to understand the document structure
+   - Read ALL section files listed in the index
+   - Process the combined content as a single document
+4. **Priority**: If both whole and sharded versions exist, use the whole document
+
+**Discovery Process for INDEX_GUIDED documents (Document Project):**
+
+1. **Search for index file** - Look for `{project_knowledge}/index.md`
+2. **If found**: Read the index to understand available documentation sections
+3. **Selectively load sections** based on relevance to the change being analyzed — do NOT load everything, only sections that relate to the impacted areas
+4. **This document is optional** — skip if `{project_knowledge}` does not exist (greenfield projects)
+
+**Fuzzy matching**: Be flexible with document names — users may use variations like `prd.md`, `bmm-prd.md`, `product-requirements.md`, etc.
+
+**Missing documents**: Not all documents may exist. PRD and Epics are essential; Architecture, UX Design, Tech Spec, and Document Project are loaded if available. HALT if PRD or Epics cannot be found.
 
 <workflow>
 
@@ -26,11 +98,6 @@
 <action if="change trigger is unclear">HALT: "Cannot navigate change without clear understanding of the triggering issue. Please provide specific details about what needs to change and why."</action>
 
 <action if="core documents are unavailable">HALT: "Need access to project documents (PRD, Epics, Architecture, UI/UX) to assess change impact. Please ensure these documents are accessible."</action>
-</step>
-
-<step n="0.5" goal="Discover and load project documents">
-  <invoke-protocol name="discover_inputs" />
-  <note>After discovery, these content variables are available: {prd_content}, {epics_content}, {architecture_content}, {ux_design_content}, {tech_spec_content}, {document_project_content}</note>
 </step>
 
 <step n="2" goal="Execute Change Analysis Checklist">
@@ -200,7 +267,7 @@
 - Specific edit proposals with before/after
 - Implementation handoff plan
 
-<action>Report workflow completion to user with personalized message: "✅ Correct Course workflow complete, {user_name}!"</action>
+<action>Report workflow completion to user with personalized message: "Correct Course workflow complete, {user_name}!"</action>
 <action>Remind user of success criteria and next steps for implementation team</action>
 </step>
 

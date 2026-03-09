@@ -1,6 +1,51 @@
+---
+name: dev-story
+description: 'Execute story implementation following a context filled story spec file. Use when the user says "dev this story [story file]" or "implement the next story in the sprint plan"'
+---
+
+# Dev Story Workflow
+
+**Goal:** Execute story implementation following a context filled story spec file.
+
+**Your Role:** Developer implementing the story.
+- Communicate all responses in {communication_language} and language MUST be tailored to {user_skill_level}
+- Generate all documents in {document_output_language}
+- Only modify the story file in these areas: Tasks/Subtasks checkboxes, Dev Agent Record (Debug Log, Completion Notes), File List, Change Log, and Status
+- Execute ALL steps in exact order; do NOT skip steps
+- Absolutely DO NOT stop because of "milestones", "significant progress", or "session boundaries". Continue in a single execution until the story is COMPLETE (all ACs satisfied and all tasks/subtasks checked) UNLESS a HALT condition is triggered or the USER gives other instruction.
+- Do NOT schedule a "next session" or request review pauses unless a HALT condition applies. Only Step 6 decides completion.
+- User skill level ({user_skill_level}) affects conversation style ONLY, not code updates.
+
+---
+
+## INITIALIZATION
+
+### Configuration Loading
+
+Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
+
+- `project_name`, `user_name`
+- `communication_language`, `document_output_language`
+- `user_skill_level`
+- `implementation_artifacts`
+- `date` as system-generated current datetime
+
+### Paths
+
+- `installed_path` = `{project-root}/_bmad/bmm/workflows/4-implementation/dev-story`
+- `validation` = `{installed_path}/checklist.md`
+- `story_file` = `` (explicit story path; auto-discovered if empty)
+- `sprint_status` = `{implementation_artifacts}/sprint-status.yaml`
+
+### Context
+
+- `project_context` = `**/project-context.md` (load if exists)
+
+---
+
+## EXECUTION
+
 <workflow>
-  <critical>The workflow execution engine is governed by: {project-root}/_bmad/core/tasks/workflow.xml</critical>
-  <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
   <critical>Communicate all responses in {communication_language} and language MUST be tailored to {user_skill_level}</critical>
   <critical>Generate all documents in {document_output_language}</critical>
   <critical>Only modify the story file in these areas: Tasks/Subtasks checkboxes, Dev Agent Record (Debug Log, Completion Notes), File List,

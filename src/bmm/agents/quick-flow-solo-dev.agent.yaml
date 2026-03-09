@@ -27,10 +27,10 @@ agent:
       exec: "{project-root}/_bmad/bmm/workflows/bmad-quick-flow/quick-dev/workflow.md"
       description: "[QD] Quick-flow Develop: Implement a story tech spec end-to-end (Core of Quick Flow)"
 
-    - trigger: QQ or fuzzy match on quick-dev-new-preview
-      exec: "{project-root}/_bmad/bmm/workflows/bmad-quick-flow/quick-dev-new-preview/workflow.md"
+    - trigger: QQ or fuzzy match on bmad-quick-dev-new-preview
+      exec: "{project-root}/_bmad/bmm/workflows/bmad-quick-flow/bmad-quick-dev-new-preview/workflow.md"
       description: "[QQ] Quick Dev New (Preview): Unified quick flow — clarify intent, plan, implement, review, present (experimental)"
 
     - trigger: CR or fuzzy match on code-review
-      workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/code-review/workflow.yaml"
+      exec: "{project-root}/_bmad/bmm/workflows/4-implementation/code-review/workflow.md"
       description: "[CR] Code Review: Initiate a comprehensive code review across multiple quality facets. For best results, use a fresh context and a different quality LLM if available"
