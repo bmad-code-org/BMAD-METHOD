@@ -5,12 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:css\"",
-    "dev:server": "tsx watch src/server.ts",
+    "dev:server": "tsx watch --env-file=.env src/server.ts",
     "dev:css": "npx @tailwindcss/cli -i src/styles/input.css -o src/public/css/app.css --watch",
     "build": "npm run build:css && npm run build:server",
     "build:server": "tsc",
     "build:css": "npx @tailwindcss/cli -i src/styles/input.css -o src/public/css/app.css --minify",
-    "start": "node dist/server.js",
+    "start": "node --env-file=.env dist/server.js",
     "test": "vitest run",
     "test:watch": "vitest"
   },

@@ -67,13 +67,26 @@ Gere perguntas de refinamento para capturar nuances deste caso.`;
         signal: controller.signal,
       });
     } else {
-      // Default: OpenAI-compatible
-      response = await fetch("https://api.openai.com/v1/chat/completions", {
+      // OpenRouter (default) and OpenAI use the same OpenAI-compatible API
+      const baseUrl =
+        config.llm.provider === "openrouter"
+          ? config.llm.baseUrl
+          : "https://api.openai.com/v1";
+
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${config.llm.apiKey}`,
+      };
+
+      // OpenRouter-specific headers
+      if (config.llm.provider === "openrouter") {
+        headers["HTTP-Referer"] = "https://jus-ia-start-kit.app";
+        headers["X-Title"] = "Jus IA Start Kit";
+      }
+
+      response = await fetch(`${baseUrl}/chat/completions`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${config.llm.apiKey}`,
-        },
+        headers,
         body: JSON.stringify({
           model: config.llm.model,
           messages: [
@@ -99,6 +112,7 @@ Gere perguntas de refinamento para capturar nuances deste caso.`;
     if (config.llm.provider === "anthropic") {
       content = data.content?.[0]?.text || "{}";
     } else {
+      // OpenRouter and OpenAI both use the same response format
       content = data.choices?.[0]?.message?.content || "{}";
     }
 

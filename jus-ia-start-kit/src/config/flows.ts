@@ -1,5 +1,16 @@
 import type { FlowConfig } from "../flows/types.js";
+// Trabalhista flows
 import { horasExtrasFlow } from "../flows/trabalhista/horas-extras.js";
+import { rescisaoIndiretaFlow } from "../flows/trabalhista/rescisao-indireta.js";
+import { danoMoralFlow } from "../flows/trabalhista/dano-moral.js";
+import { acumuloFuncaoFlow } from "../flows/trabalhista/acumulo-funcao.js";
+import { contestacaoTrabalhistaFlow } from "../flows/trabalhista/contestacao.js";
+// Cível flows
+import { cobrancaFlow } from "../flows/civel/cobranca.js";
+import { indenizacaoFlow } from "../flows/civel/indenizacao.js";
+import { obrigacaoFazerFlow } from "../flows/civel/obrigacao-fazer.js";
+import { contestacaoCivelFlow } from "../flows/civel/contestacao.js";
+import { contratoRevisaoFlow } from "../flows/civel/contrato.js";
 
 /** Registry of all available flows */
 const flowRegistry: Map<string, FlowConfig> = new Map();
@@ -9,9 +20,19 @@ function registerFlow(flow: FlowConfig): void {
   flowRegistry.set(key, flow);
 }
 
-// Register all flows
+// Register all trabalhista flows
 registerFlow(horasExtrasFlow);
-// TODO: Register remaining 9 flows as they are built
+registerFlow(rescisaoIndiretaFlow);
+registerFlow(danoMoralFlow);
+registerFlow(acumuloFuncaoFlow);
+registerFlow(contestacaoTrabalhistaFlow);
+
+// Register all cível flows
+registerFlow(cobrancaFlow);
+registerFlow(indenizacaoFlow);
+registerFlow(obrigacaoFazerFlow);
+registerFlow(contestacaoCivelFlow);
+registerFlow(contratoRevisaoFlow);
 
 /** Get a flow by area/subtipo */
 export function getFlow(area: string, subtipo: string): FlowConfig | undefined {

@@ -3,9 +3,9 @@ export const trabalhistaArea = {
   label: "Trabalhista",
   subtipos: [
     { value: "horas-extras", label: "Horas Extras" },
-    { value: "rescisao-indireta", label: "Rescisão Indireta", available: false },
-    { value: "dano-moral", label: "Dano Moral", available: false },
-    { value: "acumulo-funcao", label: "Acúmulo de Função", available: false },
-    { value: "contestacao", label: "Contestação Trabalhista", available: false },
+    { value: "rescisao-indireta", label: "Rescisão Indireta" },
+    { value: "dano-moral", label: "Dano Moral" },
+    { value: "acumulo-funcao", label: "Acúmulo de Função" },
+    { value: "contestacao", label: "Contestação Trabalhista" },
   ],
 };
