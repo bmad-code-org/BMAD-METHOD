@@ -1710,8 +1710,7 @@ async function runTests() {
 
   let tempFixture30;
   try {
-    tempFixture30 = path.join(os.tmpdir(), `bmad-test-30-${Date.now()}`);
-    await fs.ensureDir(tempFixture30);
+    tempFixture30 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-test-30-'));
 
     const generator30 = new ManifestGenerator();
     generator30.bmadFolderName = '_bmad';

@@ -637,6 +637,7 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
    */
   async installVerbatimSkills(projectDir, bmadDir, targetPath, config) {
     const bmadFolderName = path.basename(bmadDir);
+    const bmadPrefix = bmadFolderName + '/';
     const csvPath = path.join(bmadDir, '_config', 'skill-manifest.csv');
 
     if (!(await fs.pathExists(csvPath))) return 0;
@@ -656,7 +657,7 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
       // Derive source directory from path column
       // path is like "_bmad/bmm/workflows/bmad-quick-flow/bmad-quick-dev-new-preview/SKILL.md"
       // Strip bmadFolderName prefix and join with bmadDir, then get dirname
-      const relativePath = record.path.replace(new RegExp(`^${bmadFolderName}/`), '');
+      const relativePath = record.path.startsWith(bmadPrefix) ? record.path.slice(bmadPrefix.length) : record.path;
       const sourceFile = path.join(bmadDir, relativePath);
       const sourceDir = path.dirname(sourceFile);
 
@@ -667,18 +668,18 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
       await fs.remove(skillDir);
       await fs.ensureDir(skillDir);
 
-      // Copy all skill files, filtering OS/editor artifacts
+      // Copy all skill files, filtering OS/editor artifacts recursively
       const skipPatterns = new Set(['.DS_Store', 'Thumbs.db', 'desktop.ini']);
       const skipSuffixes = ['~', '.swp', '.swo', '.bak'];
-      const entries = await fs.readdir(sourceDir, { withFileTypes: true });
-      for (const entry of entries) {
-        if (skipPatterns.has(entry.name)) continue;
-        if (entry.name.startsWith('.') && entry.name !== '.gitkeep') continue;
-        if (skipSuffixes.some((s) => entry.name.endsWith(s))) continue;
-        const srcPath = path.join(sourceDir, entry.name);
-        const destPath = path.join(skillDir, entry.name);
-        await fs.copy(srcPath, destPath);
-      }
+      const filter = (src) => {
+        const name = path.basename(src);
+        if (src === sourceDir) return true;
+        if (skipPatterns.has(name)) return false;
+        if (name.startsWith('.') && name !== '.gitkeep') return false;
+        if (skipSuffixes.some((s) => name.endsWith(s))) return false;
+        return true;
+      };
+      await fs.copy(sourceDir, skillDir, { filter });
 
       count++;
     }
@@ -686,7 +687,7 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
     // Post-install cleanup: remove _bmad/ directories for skills with install_to_bmad === "false"
     for (const record of records) {
       if (record.install_to_bmad === 'false') {
-        const relativePath = record.path.replace(new RegExp(`^${bmadFolderName}/`), '');
+        const relativePath = record.path.startsWith(bmadPrefix) ? record.path.slice(bmadPrefix.length) : record.path;
         const sourceFile = path.join(bmadDir, relativePath);
         const sourceDir = path.dirname(sourceFile);
         if (await fs.pathExists(sourceDir)) {
