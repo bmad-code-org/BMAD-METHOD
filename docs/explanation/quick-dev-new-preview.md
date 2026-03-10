@@ -1,71 +1,73 @@
 ---
 title: "Quick Dev New Preview"
-description: Unified quick workflow that clarifies, plans, implements, reviews, and hands off in one run
+description: Reduce human-in-the-loop friction without giving up the checkpoints that protect output quality
 sidebar:
   order: 2
 ---
 
-Use `bmad-quick-dev-new-preview` when you want one workflow to carry a change from raw intent to reviewed code without bouncing between separate planning and implementation skills.
+`bmad-quick-dev-new-preview` is an experimental attempt to radically improve Quick Flow: intent in, code changes out, with lower ceremony and fewer human-in-the-loop turns without sacrificing quality.
 
-This is the experimental unified version of Quick Flow. Instead of running `bmad-quick-spec` and `bmad-quick-dev` as separate phases, you start once and the workflow decides whether to plan first or go straight to implementation.
+It lets the model run longer between checkpoints, then brings the human back only when the task cannot safely continue without human judgment or when it is time to review the end result.
 
-## When to Use It
+![Quick Dev New Preview workflow diagram](/diagrams/quick-dev-diagram.png)
 
-- You have one concrete development goal and want the workflow to manage the handoffs
-- You want planning, coding, and review guardrails without manually switching skills
-- You are working in an existing codebase and need the workflow to validate assumptions before editing
-- You want an adversarial review step before deciding whether to push or open a PR
+## Why This Exists
 
-## When NOT to Use It
+Human-in-the-loop turns are necessary and expensive.
 
-- You need full BMad artifacts like a Product Brief, PRD, Architecture doc, or Epic/Story breakdown
-- The request contains multiple independently shippable goals and should be split first
-- The work needs stakeholder alignment before implementation starts
-- You only want a quick implementation pass and do not want spec generation or review checkpoints
+Current LLMs still fail in predictable ways: they misread intent, fill gaps with confident guesses, drift into unrelated work, and generate noisy review output. At the same time, constant human intervention limits development velocity. Human attention is the bottleneck.
 
-:::note[Experimental by Design]
-This workflow is intentionally stricter than a casual "just implement it" prompt. It treats your request as input, not truth, and still performs investigation, spec generation, and review when the blast radius is non-zero.
-:::
+This experimental version of Quick Flow is an attempt to rebalance that tradeoff. It trusts the model to run unsupervised for longer stretches, but only after the workflow has created a strong enough boundary to make that safe.
 
-## How It Works
+## The Core Design
 
-`bmad-quick-dev-new-preview` always runs the same five-step loop:
+### 1. Compress intent first
 
-1. **Clarify and route**. It checks for resumable artifacts, verifies the working state, clarifies unanswered intent gaps, and routes the request into either a one-shot path or a plan-code-review path.
-2. **Plan**. For anything with meaningful blast radius, it investigates the codebase and generates a full tech spec from the workflow template. The spec is reviewed at a human checkpoint before implementation starts.
-3. **Implement**. The approved spec moves to `in-progress`, a baseline commit is captured for diffing, and implementation happens locally only. The workflow never pushes during this step.
-4. **Review**. It runs adversarial review against the change. On the full path, review findings are classified as intent gaps, bad spec, patchable issues, deferred issues, or noise. Spec defects trigger a loopback instead of papering over the problem.
-5. **Present**. It creates a local commit if needed, marks the spec `done`, summarizes the work, and offers the next remote step instead of auto-pushing.
+The workflow starts by having the human and the model compress the request into one coherent goal. The input can begin as a rough expression of intent, but before the workflow runs autonomously it has to become small enough, clear enough, and contradiction-free enough to execute.
 
-## What Makes It Different
+Intent can come in many forms: a couple of phrases, a bug tracker link, output from plan mode, text copied from a chat session, or even a story number from BMAD's own `epics.md`. In that last case, the workflow will not understand BMAD story-tracking semantics, but it can still take the story itself and run with it.
 
-### One workflow, not two
+This workflow does not eliminate human control. It relocates it to a small number of high-value moments:
 
-Classic Quick Flow separates planning and implementation into `bmad-quick-spec` and `bmad-quick-dev`. Quick Dev New Preview keeps both inside one stateful workflow, so the agent owns routing, artifact management, and review sequencing from start to finish.
+- **Intent clarification** - turning a messy request into one coherent goal without hidden contradictions
+- **Spec approval** - confirming that the frozen understanding is the right thing to build
+- **Review of the final product** - the primary checkpoint, where the human decides whether the result is acceptable at the end
 
-### Approval freezes intent
+### 2. Route to the smallest safe path
 
-After you approve the spec, everything inside the spec's `<frozen-after-approval>` block becomes human-owned intent. If later review reveals that the original intent was incomplete, the workflow is supposed to stop and bring that gap back to you rather than silently changing scope.
+Once the goal is clear, the workflow decides whether this is a true one-shot change or whether it needs the fuller path. Small, zero-blast-radius changes can go straight to implementation. Everything else goes through planning so the model has a stronger boundary before it runs longer on its own.
 
-### Review can force re-derivation
+### 3. Run longer with less supervision
 
-This workflow is opinionated about bad planning. If review shows the code drifted because the spec was weak, it updates the spec, preserves the parts that worked, and re-derives the implementation instead of stacking more patches on top of a flawed plan.
+After that routing decision, the model can carry more of the work on its own. On the fuller path, the approved spec becomes the boundary the model executes against with less supervision, which is the whole point of the experiment.
 
-## Output Artifacts
+### 4. Diagnose failure at the right layer
 
-On the plan-code-review path, the main artifact is a `tech-spec-{slug}.md` file in your implementation artifacts folder. That file records status transitions such as `ready-for-dev`, `in-progress`, `in-review`, and `done`, and it also stores the baseline commit used for diff-based review.
+If the implementation is wrong because the intent was wrong, patching the code is the wrong fix. If the code is wrong because the spec was weak, patching the diff is also the wrong fix. The workflow is designed to diagnose where the failure entered the system, go back to that layer, and regenerate from there.
 
-If the workflow detects extra goals or unrelated issues, it can also append them to `deferred-work.md` so the current run stays focused on one shippable objective.
+Review findings are used to decide whether the problem came from intent, spec generation, or local implementation. Only truly local problems get patched locally.
 
-## Quick Dev New Preview vs Quick Flow
+### 5. Bring the human back only when needed
 
-| Need | Better fit |
-| --- | --- |
-| Small change, but you still want explicit review and artifact state managed for you | `bmad-quick-dev-new-preview` |
-| Separate planning and implementation conversations | `bmad-quick-spec` + `bmad-quick-dev` |
-| Fastest path for well-understood small work using the established Quick Flow pair | `Quick Flow` |
-| Multi-phase product work with broader alignment and architecture decisions | Full BMad Method |
+The intent interview is human-in-the-loop, but it is not the same kind of interruption as a recurring checkpoint. The workflow tries to keep those recurring checkpoints to a minimum. After the initial shaping of intent, the human mainly comes back when the workflow cannot safely continue without judgment and at the end, when it is time to review the result.
 
-## When to Graduate
+- **Intent-gap resolution** - stepping back in when review proves the workflow could not safely infer what was meant
 
-If the workflow surfaces multiple top-level goals, major architectural uncertainty, or repeated intent/spec loopbacks, that is usually a signal to move up a level. Use `bmad-quick-spec` for a cleaner planning pass, or escalate fully into the broader BMad Method when the work clearly needs product and architecture artifacts.
+Everything else is a candidate for longer autonomous execution. That tradeoff is deliberate. Older patterns spend more human attention on continuous supervision. Quick Dev New Preview spends more trust on the model, but saves human attention for the moments where human reasoning has the highest leverage.
+
+## Why the Review System Matters
+
+The review phase is not just there to find bugs. It is there to route correction without destroying momentum.
+
+This workflow works best on a platform that can spawn subagents, or at least invoke another LLM through the command line and wait for a result. If your platform does not support that natively, you can add a skill to do it. Context-free subagents are a cornerstone of the review design.
+
+Agentic reviews often go wrong in two ways:
+
+- They generate too many findings, forcing the human to sift through noise.
+- They derail the current change by surfacing unrelated issues and turning every run into an ad hoc cleanup project.
+
+Quick Dev New Preview addresses both by treating review as triage.
+
+Some findings belong to the current change. Some do not. If a finding is incidental rather than causally tied to the current work, the workflow can defer it instead of forcing the human to handle it immediately. That keeps the run focused and prevents random tangents from consuming the budget of attention.
+
+That triage will sometimes be imperfect. That is acceptable. It is usually better to misjudge some findings than to flood the human with thousands of low-value review comments. The system is optimizing for signal quality, not exhaustive recall.
