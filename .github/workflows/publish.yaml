@@ -9,9 +9,17 @@ on:
       - "package.json"
   workflow_dispatch:
     inputs:
-      bump:
-        description: "Version bump type"
+      channel:
+        description: "Publish channel"
         required: true
+        default: "latest"
+        type: choice
+        options:
+          - latest
+          - next
+      bump:
+        description: "Version bump type (latest channel only)"
+        required: false
         default: "patch"
         type: choice
         options:
@@ -55,6 +63,8 @@ jobs:
           echo "  workflow: ${{ github.workflow }}"
           echo "  workflow_ref: ${{ github.workflow_ref }}"
           echo "  actor: ${{ github.actor }}"
+          echo "  selected_channel: ${{ inputs.channel || 'n/a' }}"
+          echo "  selected_bump: ${{ inputs.bump || 'n/a' }}"
 
           WORKFLOW_FILE=$(node -e "
             const ref = process.argv[1] || '';
@@ -97,7 +107,7 @@ jobs:
           " "$ID_TOKEN"
 
       - name: Configure git user
-        if: github.event_name == 'workflow_dispatch'
+        if: github.event_name == 'workflow_dispatch' && inputs.channel == 'latest'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -109,7 +119,7 @@ jobs:
         run: npm test
 
       - name: Derive next prerelease version
-        if: github.event_name == 'push'
+        if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.channel == 'next')
         run: |
           NEXT_VER=$(npm view bmad-method@next version 2>/dev/null || echo "")
           LATEST_VER=$(npm view bmad-method@latest version 2>/dev/null || echo "")
@@ -132,7 +142,7 @@ jobs:
           npm version prerelease --preid=next --no-git-tag-version
 
       - name: Bump stable version
-        if: github.event_name == 'workflow_dispatch'
+        if: github.event_name == 'workflow_dispatch' && inputs.channel == 'latest'
         run: 'npm version ${{ inputs.bump }} -m "chore(release): v%s [skip ci]"'
 
       - name: Debug publish target and registry state
@@ -147,19 +157,19 @@ jobs:
           npm view bmad-method name version dist-tags --json || true
 
       - name: Publish prerelease to npm
-        if: github.event_name == 'push'
+        if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.channel == 'next')
         run: npm publish --tag next --provenance
 
       - name: Publish stable release to npm
-        if: github.event_name == 'workflow_dispatch'
+        if: github.event_name == 'workflow_dispatch' && inputs.channel == 'latest'
         run: npm publish --tag latest --provenance
 
       - name: Push version commit and tag
-        if: github.event_name == 'workflow_dispatch'
+        if: github.event_name == 'workflow_dispatch' && inputs.channel == 'latest'
         run: git push origin main --follow-tags
 
       - name: Create GitHub Release
-        if: github.event_name == 'workflow_dispatch'
+        if: github.event_name == 'workflow_dispatch' && inputs.channel == 'latest'
         run: |
           TAG="v$(node -p 'require("./package.json").version')"
           gh release create "$TAG" --generate-notes
@@ -167,7 +177,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Notify Discord
-        if: github.event_name == 'workflow_dispatch'
+        if: github.event_name == 'workflow_dispatch' && inputs.channel == 'latest'
         continue-on-error: true
         run: |
           set -o pipefail
