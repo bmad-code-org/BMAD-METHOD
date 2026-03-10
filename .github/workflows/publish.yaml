@@ -1,6 +1,12 @@
-name: Publish Latest
+name: Publish
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "tools/cli/**"
+      - "package.json"
   workflow_dispatch:
     inputs:
       bump:
@@ -14,7 +20,8 @@ on:
           - major
 
 concurrency:
-  group: publish-latest
+  group: publish
+  cancel-in-progress: ${{ github.event_name == 'push' }}
 
 permissions:
   id-token: write
@@ -22,7 +29,7 @@ permissions:
 
 jobs:
   publish:
-    if: github.ref == 'refs/heads/main'
+    if: github.event_name != 'workflow_dispatch' || github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -39,6 +46,7 @@ jobs:
           registry-url: "https://registry.npmjs.org"
 
       - name: Configure git user
+        if: github.event_name == 'workflow_dispatch'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -49,18 +57,47 @@ jobs:
       - name: Run tests
         run: npm test
 
-      - name: Bump version
+      - name: Derive next prerelease version
+        if: github.event_name == 'push'
+        run: |
+          NEXT_VER=$(npm view bmad-method@next version 2>/dev/null || echo "")
+          LATEST_VER=$(npm view bmad-method@latest version 2>/dev/null || echo "")
+
+          # Determine the best base version for the next prerelease.
+          BASE=$(node -e "
+            const semver = require('semver');
+            const next = process.argv[1] || null;
+            const latest = process.argv[2] || null;
+            if (!next && !latest) process.exit(0);
+            if (!next) { console.log(latest); process.exit(0); }
+            if (!latest) { console.log(next); process.exit(0); }
+            const nextBase = next.replace(/-next\.\d+$/, '');
+            console.log(semver.gt(latest, nextBase) ? latest : next);
+          " "$NEXT_VER" "$LATEST_VER")
+
+          if [ -n "$BASE" ]; then
+            npm version "$BASE" --no-git-tag-version --allow-same-version
+          fi
+          npm version prerelease --preid=next --no-git-tag-version
+
+      - name: Bump stable version
+        if: github.event_name == 'workflow_dispatch'
         run: 'npm version ${{ inputs.bump }} -m "chore(release): v%s [skip ci]"'
 
-      - name: Publish to npm
+      - name: Publish prerelease to npm
+        if: github.event_name == 'push'
+        run: npm publish --tag next --provenance
+
+      - name: Publish stable release to npm
+        if: github.event_name == 'workflow_dispatch'
         run: npm publish --tag latest --provenance
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Push version commit and tag
+        if: github.event_name == 'workflow_dispatch'
         run: git push origin main --follow-tags
 
       - name: Create GitHub Release
+        if: github.event_name == 'workflow_dispatch'
         run: |
           TAG="v$(node -p 'require("./package.json").version')"
           gh release create "$TAG" --generate-notes
@@ -68,6 +105,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Notify Discord
+        if: github.event_name == 'workflow_dispatch'
         continue-on-error: true
         run: |
           set -o pipefail
