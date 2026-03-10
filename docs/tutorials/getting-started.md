@@ -95,6 +95,8 @@ Open a terminal in your project directory and run:
 npx bmad-method install
 ```
 
+If you want the newest prerelease build instead of the default release channel, use `npx bmad-method@next install`.
+
 When prompted to select modules, choose **BMad Method**.
 
 The installer creates two folders:

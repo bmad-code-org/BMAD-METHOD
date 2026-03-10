@@ -40,7 +40,7 @@ Traditional AI tools do the thinking for you, producing average results. BMad ag
 npx bmad-method install
 ```
 
-> If you are getting a stale beta version, use: `npx bmad-method@6.0.1 install`
+> Want the newest prerelease build? Use `npx bmad-method@next install`. Expect higher churn than the default install.
 
 Follow the installer prompts, then open your AI IDE (Claude Code, Cursor, etc.) in your project folder.
 
