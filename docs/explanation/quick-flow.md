@@ -7,6 +7,10 @@ sidebar:
 
 Skip the ceremony. Quick Flow takes you from idea to working code in two skills - no Product Brief, no PRD, no Architecture doc.
 
+:::tip[Want a Unified Variant?]
+If you want one workflow to clarify, plan, implement, review, and present in a single run, see [Quick Dev New Preview](./quick-dev-new-preview.md).
+:::
+
 ## When to Use It
 
 - Bug fixes and patches
