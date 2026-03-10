@@ -51,7 +51,21 @@ jobs:
         with:
           node-version-file: ".nvmrc"
           cache: "npm"
-          registry-url: "https://registry.npmjs.org"
+
+      - name: Debug npm auth config surface
+        run: |
+          USERCONFIG=$(npm config get userconfig)
+          echo "npm userconfig: $USERCONFIG"
+          if [ -f "$USERCONFIG" ]; then
+            if rg -n "_authToken|always-auth|registry.npmjs.org" "$USERCONFIG" >/dev/null 2>&1; then
+              echo "npm userconfig contains registry auth-related entries"
+              rg -n "_authToken|always-auth|registry.npmjs.org" "$USERCONFIG" | sed -E 's/(_authToken=).*/\1***MASKED***/'
+            else
+              echo "npm userconfig has no registry auth-related entries"
+            fi
+          else
+            echo "npm userconfig file not found"
+          fi
 
       - name: Debug trusted publishing identity
         run: |
@@ -161,12 +175,14 @@ jobs:
         if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.channel == 'next')
         run: npm publish --tag next --provenance
         env:
+          NPM_CONFIG_USERCONFIG: /dev/null
           NODE_AUTH_TOKEN: ""
 
       - name: Publish stable release to npm
         if: github.event_name == 'workflow_dispatch' && inputs.channel == 'latest'
         run: npm publish --tag latest --provenance
         env:
+          NPM_CONFIG_USERCONFIG: /dev/null
           NODE_AUTH_TOKEN: ""
 
       - name: Print npm debug logs
