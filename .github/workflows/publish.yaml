@@ -65,6 +65,7 @@ jobs:
           echo "  actor: ${{ github.actor }}"
           echo "  selected_channel: ${{ inputs.channel || 'n/a' }}"
           echo "  selected_bump: ${{ inputs.bump || 'n/a' }}"
+          echo "  node_auth_token_present: $([ -n \"$NODE_AUTH_TOKEN\" ] && echo yes || echo no)"
 
           WORKFLOW_FILE=$(node -e "
             const ref = process.argv[1] || '';
@@ -159,10 +160,34 @@ jobs:
       - name: Publish prerelease to npm
         if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.channel == 'next')
         run: npm publish --tag next --provenance
+        env:
+          NODE_AUTH_TOKEN: ""
 
       - name: Publish stable release to npm
         if: github.event_name == 'workflow_dispatch' && inputs.channel == 'latest'
         run: npm publish --tag latest --provenance
+        env:
+          NODE_AUTH_TOKEN: ""
+
+      - name: Print npm debug logs
+        if: always()
+        run: |
+          LOG_DIR="$HOME/.npm/_logs"
+          echo "npm log directory: $LOG_DIR"
+          ls -la "$LOG_DIR" || true
+
+          found=0
+          for file in "$LOG_DIR"/*-debug-0.log; do
+            [ -e "$file" ] || continue
+            found=1
+            echo "::group::npm-debug $(basename "$file")"
+            cat "$file"
+            echo "::endgroup::"
+          done
+
+          if [ "$found" -eq 0 ]; then
+            echo "No npm *-debug-0.log files found."
+          fi
 
       - name: Push version commit and tag
         if: github.event_name == 'workflow_dispatch' && inputs.channel == 'latest'
