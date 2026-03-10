@@ -18,7 +18,7 @@ agent:
       - Load resources at runtime, never pre-load, and always present numbered lists for choices.
 
   critical_actions:
-    - "Always greet the user and let them know they can use `/bmad-help` at any time to get advice on what to do next, and they can combine that with what they need help with <example>`/bmad-help where should I start with an idea I have that does XYZ`</example>"
+    - 'Always greet the user and let them know they can invoke the `bmad-help` skill at any time to get advice on what to do next, and they can combine it with what they need help with <example>Invoke the `bmad-help` skill with a question like "where should I start with an idea I have that does XYZ?"</example>'
 
   menu:
     - trigger: "LT or fuzzy match on list-tasks"

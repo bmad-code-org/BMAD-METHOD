@@ -197,7 +197,7 @@ Display:
 - **IF X (Exit):**
   - Display: "**Validation Report Saved:** {validationReportPath}"
   - Display: "**Summary:** {overall status} - {recommendation}"
-  - PRD Validation complete. Read fully and follow: `{project-root}/_bmad/core/tasks/help.md`
+  - PRD Validation complete. Invoke the `bmad-help` skill.
 
 - **IF Any other:** Help user, then redisplay menu
 
