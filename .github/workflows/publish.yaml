@@ -52,6 +52,13 @@ jobs:
           node-version-file: ".nvmrc"
           cache: "npm"
 
+      - name: Ensure trusted publishing toolchain
+        run: |
+          # npm trusted publishing requires Node >= 22.14.0 and npm >= 11.5.1.
+          npm install --global npm@11.6.2
+          echo "Node: $(node --version)"
+          echo "npm: $(npm --version)"
+
       - name: Debug npm auth config surface
         run: |
           USERCONFIG=$(npm config get userconfig)
