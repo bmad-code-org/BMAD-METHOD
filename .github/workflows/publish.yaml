@@ -45,6 +45,57 @@ jobs:
           cache: "npm"
           registry-url: "https://registry.npmjs.org"
 
+      - name: Debug trusted publishing identity
+        run: |
+          echo "GitHub workflow context:"
+          echo "  repository: ${{ github.repository }}"
+          echo "  repository_owner: ${{ github.repository_owner }}"
+          echo "  ref: ${{ github.ref }}"
+          echo "  event_name: ${{ github.event_name }}"
+          echo "  workflow: ${{ github.workflow }}"
+          echo "  workflow_ref: ${{ github.workflow_ref }}"
+          echo "  actor: ${{ github.actor }}"
+
+          WORKFLOW_FILE=$(node -e "
+            const ref = process.argv[1] || '';
+            const match = ref.match(/\.github\/workflows\/([^@]+)@/);
+            process.stdout.write(match ? match[1] : '');
+          " "${{ github.workflow_ref }}")
+          echo "  workflow_filename_for_npm: ${WORKFLOW_FILE:-unknown}"
+
+          echo "OIDC claims (sanitized):"
+          RESPONSE=$(curl -fsS -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=npm:registry.npmjs.org")
+          ID_TOKEN=$(node -e "
+            const fs = require('fs');
+            const data = JSON.parse(fs.readFileSync(0, 'utf8'));
+            process.stdout.write(data.value || '');
+          " <<<"$RESPONSE")
+
+          node -e "
+            const token = process.argv[1];
+            if (!token) {
+              console.log(JSON.stringify({ error: 'missing_id_token' }, null, 2));
+              process.exit(0);
+            }
+            const payloadPart = token.split('.')[1] || '';
+            const padded = payloadPart.replace(/-/g, '+').replace(/_/g, '/') + '='.repeat((4 - (payloadPart.length % 4)) % 4);
+            const claims = JSON.parse(Buffer.from(padded, 'base64').toString('utf8'));
+            const out = {
+              iss: claims.iss,
+              sub: claims.sub,
+              aud: claims.aud,
+              repository: claims.repository,
+              repository_owner: claims.repository_owner,
+              workflow: claims.workflow,
+              workflow_ref: claims.workflow_ref,
+              job_workflow_ref: claims.job_workflow_ref,
+              ref: claims.ref,
+              environment: claims.environment || null,
+              runner_environment: claims.runner_environment || null,
+            };
+            console.log(JSON.stringify(out, null, 2));
+          " "$ID_TOKEN"
+
       - name: Configure git user
         if: github.event_name == 'workflow_dispatch'
         run: |
@@ -83,6 +134,17 @@ jobs:
       - name: Bump stable version
         if: github.event_name == 'workflow_dispatch'
         run: 'npm version ${{ inputs.bump }} -m "chore(release): v%s [skip ci]"'
+
+      - name: Debug publish target and registry state
+        run: |
+          echo "Local package target:"
+          node -e "
+            const pkg = require('./package.json');
+            console.log(JSON.stringify({ name: pkg.name, version: pkg.version }, null, 2));
+          "
+
+          echo "Registry package view (bmad-method):"
+          npm view bmad-method name version dist-tags --json || true
 
       - name: Publish prerelease to npm
         if: github.event_name == 'push'
