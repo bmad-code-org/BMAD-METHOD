@@ -13,7 +13,7 @@
 
 传统 AI 工具替你思考，产生平庸的结果。BMad 智能体和辅助工作流充当专家协作者，引导你通过结构化流程，与 AI 的合作发挥最佳思维，产出最有效优秀的结果。
 
-- **AI 智能帮助** — 随时使用 `/bmad-help` 获取下一步指导
+- **AI 智能帮助** — 随时使用 `bmad-help` 获取下一步指导
 - **规模-领域自适应** — 根据项目复杂度自动调整规划深度
 - **结构化工作流** — 基于分析、规划、架构和实施的敏捷最佳实践
 - **专业智能体** — 12+ 领域专家（PM、架构师、开发者、UX、Scrum Master 等）
@@ -52,7 +52,7 @@ npx bmad-method install --directory /path/to/project --modules bmm --tools claud
 
 [查看所有安装选项](http://docs.bmad-method.org/how-to/non-interactive-installation/)
 
-> **不确定该做什么？** 运行 `/bmad-help` — 它会准确告诉你下一步做什么以及什么是可选的。你也可以问诸如 `/bmad-help 我刚刚完成了架构设计，接下来该做什么？` 之类的问题。
+> **不确定该做什么？** 运行 `bmad-help` — 它会准确告诉你下一步做什么以及什么是可选的。你也可以问诸如 `bmad-help 我刚刚完成了架构设计，接下来该做什么？` 之类的问题。
 
 ## 模块
 

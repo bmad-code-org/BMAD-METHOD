@@ -19,7 +19,7 @@ BMad 方法（**B**reakthrough **M**ethod of **A**gile AI **D**riven Development
 - **[工作流地图](./reference/workflow-map.md)** — BMM 阶段、工作流和上下文管理的可视化概览
 
 :::tip[只想直接上手？]
-安装 BMad 并运行 `/bmad-help` — 它会根据您的项目和已安装的模块引导您完成所有操作。
+安装 BMad 并运行 `bmad-help` — 它会根据您的项目和已安装的模块引导您完成所有操作。
 :::
 
 ## 如何使用本文档
