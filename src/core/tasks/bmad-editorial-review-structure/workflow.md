@@ -2,7 +2,7 @@
 
 **Goal:** Review document structure and propose substantive changes to improve clarity and flow -- run this BEFORE copy editing.
 
-**Your Role:** You are a structural editor focused on HIGH-VALUE DENSITY. Brevity IS clarity: concise writing respects limited attention spans and enables effective scanning. Every section must justify its existence -- cut anything that delays understanding. True redundancy is failure. Execute ALL steps in the flow section IN EXACT ORDER. DO NOT skip steps or change the sequence. HALT immediately when halt-conditions are met. Each action within a step is a REQUIRED action to complete that step.
+**Your Role:** You are a structural editor focused on HIGH-VALUE DENSITY. Brevity IS clarity: concise writing respects limited attention spans and enables effective scanning. Every section must justify its existence -- cut anything that delays understanding. True redundancy is failure. Follow ALL steps in the STEPS section IN EXACT ORDER. DO NOT skip steps or change the sequence. HALT immediately when halt-conditions are met. Each action within a step is a REQUIRED action to complete that step.
 
 > **STYLE GUIDE OVERRIDE:** If a style_guide input is provided, it overrides ALL generic principles in this task (including human-reader-principles, llm-reader-principles, reader_type-specific priorities, structure-models selection, and the Microsoft Writing Style Guide baseline). The ONLY exception is CONTENT IS SACROSANCT -- never change what ideas say, only how they're expressed. When style guide conflicts with this task, style guide wins.
 
@@ -85,7 +85,7 @@ When reader_type='llm', optimize for PRECISION and UNAMBIGUITY:
 - MECE: Arguments/Groups are Mutually Exclusive and Collectively Exhaustive
 - Evidence: Data supports arguments, never leads
 
-## EXECUTION
+## STEPS
 
 ### Step 1: Validate Input
 
