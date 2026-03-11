@@ -176,6 +176,16 @@ platforms:
       template_type: kiro
       skill_format: true
 
+  mistral:
+    name: "Mistral Vibe"
+    preferred: false
+    category: cli
+    description: "Mistral's AI coding CLI"
+    installer:
+      target_dir: .vibe/skills
+      template_type: default
+      skill_format: true
+
   opencode:
     name: "OpenCode"
     preferred: false
