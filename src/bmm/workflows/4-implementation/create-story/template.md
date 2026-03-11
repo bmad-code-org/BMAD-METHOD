@@ -47,3 +47,19 @@ so that {{benefit}}.
 ### Completion Notes List
 
 ### File List
+
+<!-- Populated during dev-story execution. List ALL new, modified, or deleted files (paths relative to repo root). -->
+
+| Action | File Path |
+|--------|-----------|
+<!-- | Added | src/example/new-file.ts | -->
+<!-- | Modified | src/example/existing-file.ts | -->
+<!-- | Deleted | src/example/removed-file.ts | -->
+
+### Change Log
+
+<!-- Populated during dev-story execution. Summarize what changed and why. -->
+
+| Date | Summary |
+|------|---------|
+<!-- | YYYY-MM-DD | Initial implementation of story tasks | -->
