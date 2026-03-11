@@ -7,7 +7,7 @@ Scope: migrate the BMAD-supported platforms that fully support the Agent Skills 
 Current branch status:
 
 - `Claude Code` has already been moved to `.claude/skills`
-- `Codex CLI` has already been moved to `.agents/skills`
+- `Codex CLI` now uses `.codex/prompts` slash commands (not Agent Skills format)
 
 This checklist now includes those completed platforms plus the remaining full-support platforms.
 
@@ -26,15 +26,16 @@ Support assumption: full Agent Skills support. BMAD has already migrated from `.
 
 ## Codex CLI
 
-Support assumption: full Agent Skills support. BMAD has already migrated from `.codex/prompts` to `.agents/skills`.
+Support assumption: Codex custom slash commands are file-based prompts. BMAD targets `.codex/prompts` and syncs to `~/.codex/prompts` for Codex discovery.
 
 **Install:** `npm install -g @openai/codex`
 
-- [x] Confirm current implementation still matches Codex CLI skills expectations
-- [x] Confirm legacy cleanup for project and global `.codex/prompts`
+- [x] Confirm current implementation matches Codex CLI prompt command expectations
+- [x] Ensure skill-manifest entries (for example `bmad-help`) are also emitted as prompt commands
+- [x] Confirm legacy cleanup for prior project-local `.agents/skills` output and global `~/.codex/prompts` warnings
 - [x] Test fresh install
-- [x] Test reinstall/upgrade from legacy prompt output
-- [x] Confirm ancestor conflict protection because Codex inherits parent-directory `.agents/skills`
+- [x] Test reinstall/upgrade from legacy skills output
+- [x] Confirm ancestor conflict protection because Codex can inherit parent-directory `.codex/prompts`
 - [x] Implement/extend automated tests as needed
 
 ## Cursor

@@ -26,7 +26,7 @@ Requires [Node.js](https://nodejs.org) v20+ and `npx` (included with npm).
 |------|-------------|---------|
 | `--directory <path>` | Installation directory | `--directory ~/projects/myapp` |
 | `--modules <modules>` | Comma-separated module IDs | `--modules bmm,bmb` |
-| `--tools <tools>` | Comma-separated tool/IDE IDs (use `none` to skip) | `--tools claude-code,cursor` or `--tools none` |
+| `--tools <tools>` | Comma-separated tool/IDE IDs (use `none` to skip) | `--tools codex,cursor` or `--tools none` |
 | `--custom-content <paths>` | Comma-separated paths to custom modules | `--custom-content ~/my-module,~/another-module` |
 | `--action <type>` | Action for existing installations: `install` (default), `update`, `quick-update`, or `compile-agents` | `--action quick-update` |
 
@@ -63,11 +63,14 @@ Available tool IDs for the `--tools` flag:
 
 Run `npx bmad-method install` interactively once to see the full current list of supported tools, or check the [platform codes configuration](https://github.com/bmad-code-org/BMAD-METHOD/blob/main/tools/cli/installers/lib/ide/platform-codes.yaml).
 
+For `codex`, BMAD installs slash-command prompt files into `.codex/prompts` and syncs them to `~/.codex/prompts`.
+Use them in Codex CLI as `/prompts:bmad-help`, `/prompts:bmad-master`, etc.
+
 ## Installation Modes
 
 | Mode | Description | Example |
 |------|-------------|---------|
-| Fully non-interactive | Provide all flags to skip all prompts | `npx bmad-method install --directory . --modules bmm --tools claude-code --yes` |
+| Fully non-interactive | Provide all flags to skip all prompts | `npx bmad-method install --directory . --modules bmm --tools codex --yes` |
 | Semi-interactive | Provide some flags; BMad prompts for the rest | `npx bmad-method install --directory . --modules bmm` |
 | Defaults only | Accept all defaults with `-y` | `npx bmad-method install --yes` |
 | Without tools | Skip tool/IDE configuration | `npx bmad-method install --modules bmm --tools none` |
@@ -83,7 +86,7 @@ Run `npx bmad-method install` interactively once to see the full current list of
 npx bmad-method install \
   --directory "${GITHUB_WORKSPACE}" \
   --modules bmm \
-  --tools claude-code \
+  --tools codex \
   --user-name "CI Bot" \
   --communication-language English \
   --document-output-language English \
@@ -115,7 +118,7 @@ npx bmad-method install \
   --directory ~/projects/myapp \
   --modules bmm \
   --custom-content ~/my-custom-module,~/another-module \
-  --tools claude-code
+  --tools codex
 ```
 
 ## What You Get

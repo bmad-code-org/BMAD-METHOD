@@ -26,7 +26,7 @@ sidebar:
 |------|-------------|---------|
 | `--directory <path>` | 安装目录 | `--directory ~/projects/myapp` |
 | `--modules <modules>` | 逗号分隔的模块 ID | `--modules bmm,bmb` |
-| `--tools <tools>` | 逗号分隔的工具/IDE ID（使用 `none` 跳过） | `--tools claude-code,cursor` 或 `--tools none` |
+| `--tools <tools>` | 逗号分隔的工具/IDE ID（使用 `none` 跳过） | `--tools codex,cursor` 或 `--tools none` |
 | `--custom-content <paths>` | 逗号分隔的自定义模块路径 | `--custom-content ~/my-module,~/another-module` |
 | `--action <type>` | 对现有安装的操作：`install`（默认）、`update`、`quick-update` 或 `compile-agents` | `--action quick-update` |
 
@@ -63,11 +63,14 @@ sidebar:
 
 运行一次 `npx bmad-method install` 交互式安装以查看完整的当前支持工具列表，或查看 [平台代码配置](https://github.com/bmad-code-org/BMAD-METHOD/blob/main/tools/cli/installers/lib/ide/platform-codes.yaml)。
 
+对于 `codex`，BMAD 会把 slash 命令提示文件安装到 `.codex/prompts`，并同步到 `~/.codex/prompts`。
+在 Codex CLI 中用 `/prompts:bmad-help`、`/prompts:bmad-master` 等方式调用。
+
 ## 安装模式
 
 | 模式 | 描述 | 示例 |
 |------|-------------|---------|
-| 完全非交互式 | 提供所有标志以跳过所有提示 | `npx bmad-method install --directory . --modules bmm --tools claude-code --yes` |
+| 完全非交互式 | 提供所有标志以跳过所有提示 | `npx bmad-method install --directory . --modules bmm --tools codex --yes` |
 | 半交互式 | 提供部分标志；BMad 提示其余部分 | `npx bmad-method install --directory . --modules bmm` |
 | 仅使用默认值 | 使用 `-y` 接受所有默认值 | `npx bmad-method install --yes` |
 | 不包含工具 | 跳过工具/IDE 配置 | `npx bmad-method install --modules bmm --tools none` |
@@ -83,7 +86,7 @@ sidebar:
 npx bmad-method install \
   --directory "${GITHUB_WORKSPACE}" \
   --modules bmm \
-  --tools claude-code \
+  --tools codex \
   --user-name "CI Bot" \
   --communication-language English \
   --document-output-language English \
@@ -115,7 +118,7 @@ npx bmad-method install \
   --directory ~/projects/myapp \
   --modules bmm \
   --custom-content ~/my-custom-module,~/another-module \
-  --tools claude-code
+  --tools codex
 ```
 
 ## 安装结果

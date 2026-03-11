@@ -47,12 +47,12 @@ npx bmad-method install
 **非交互式安装**（用于 CI/CD）：
 
 ```bash
-npx bmad-method install --directory /path/to/project --modules bmm --tools claude-code --yes
+npx bmad-method install --directory /path/to/project --modules bmm --tools codex --yes
 ```
 
 [查看所有安装选项](http://docs.bmad-method.org/how-to/non-interactive-installation/)
 
-> **不确定该做什么？** 运行 `/bmad-help` — 它会准确告诉你下一步做什么以及什么是可选的。你也可以问诸如 `/bmad-help 我刚刚完成了架构设计，接下来该做什么？` 之类的问题。
+> **不确定该做什么？** 运行 `/bmad-help`（Codex CLI 使用 `/prompts:bmad-help`）— 它会准确告诉你下一步做什么以及什么是可选的。你也可以问诸如 `/bmad-help 我刚刚完成了架构设计，接下来该做什么？` 之类的问题。
 
 ## 模块
 

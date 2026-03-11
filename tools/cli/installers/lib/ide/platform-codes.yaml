@@ -70,13 +70,14 @@ platforms:
     description: "OpenAI Codex integration"
     installer:
       legacy_targets:
-        - .codex/prompts
-        - ~/.codex/prompts
-      target_dir: .agents/skills
+        - .agents/skills
+      target_dir: .codex/prompts
       template_type: default
-      skill_format: true
       ancestor_conflict_check: true
       artifact_types: [agents, workflows, tasks]
+      install_skill_manifest_as_artifacts: true
+      sync_targets:
+        - ~/.codex/prompts
 
   codebuddy:
     name: "CodeBuddy"

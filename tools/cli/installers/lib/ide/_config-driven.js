@@ -43,7 +43,7 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
    */
   async detect(projectDir) {
     if (this.installerConfig?.skill_format && this.configDir) {
-      const dir = path.join(projectDir || process.cwd(), this.configDir);
+      const dir = this.resolveTargetPath(projectDir || process.cwd(), this.configDir);
       if (await fs.pathExists(dir)) {
         try {
           const entries = await fs.readdir(dir);
@@ -70,8 +70,8 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
       const conflict = await this.findAncestorConflict(projectDir);
       if (conflict) {
         await prompts.log.error(
-          `Found existing BMAD skills in ancestor installation: ${conflict}\n` +
-            `  ${this.name} inherits skills from parent directories, so this would cause duplicates.\n` +
+          `Found existing BMAD files in ancestor installation: ${conflict}\n` +
+            `  ${this.name} inherits commands from parent directories, so this would cause duplicates.\n` +
             `  Please remove the BMAD files from that directory first:\n` +
             `    rm -rf "${conflict}"/bmad*`,
         );
@@ -120,11 +120,11 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
     // Skip targets with explicitly empty artifact_types and no verbatim skills
     // This prevents creating empty directories when no artifacts will be written
     const skipStandardArtifacts = Array.isArray(artifact_types) && artifact_types.length === 0;
-    if (skipStandardArtifacts && !config.skill_format) {
+    if (skipStandardArtifacts && !config.skill_format && !config.install_skill_manifest_as_artifacts) {
       return { success: true, results: { agents: 0, workflows: 0, tasks: 0, tools: 0, skills: 0 } };
     }
 
-    const targetPath = path.join(projectDir, target_dir);
+    const targetPath = this.resolveTargetPath(projectDir, target_dir);
     await this.ensureDir(targetPath);
 
     const selectedModules = options.selectedModules || [];
@@ -157,8 +157,18 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
     }
 
     // Install verbatim skills (type: skill)
+    if (config.install_skill_manifest_as_artifacts) {
+      results.skills += await this.installSkillManifestArtifacts(targetPath, bmadDir, template_type, config);
+    }
+
+    // Install verbatim skills (type: skill)
     if (config.skill_format) {
-      results.skills = await this.installVerbatimSkills(projectDir, bmadDir, targetPath, config);
+      results.skills += await this.installVerbatimSkills(projectDir, bmadDir, targetPath, config);
+    }
+
+    // Optionally mirror generated BMAD commands to additional directories.
+    if (Array.isArray(config.sync_targets) && config.sync_targets.length > 0) {
+      await this.syncBmadArtifacts(targetPath, projectDir, config.sync_targets, options);
     }
 
     await this.printSummary(results, target_dir, options);
@@ -638,15 +648,8 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
   async installVerbatimSkills(projectDir, bmadDir, targetPath, config) {
     const bmadFolderName = path.basename(bmadDir);
     const bmadPrefix = bmadFolderName + '/';
-    const csvPath = path.join(bmadDir, '_config', 'skill-manifest.csv');
-
-    if (!(await fs.pathExists(csvPath))) return 0;
-
-    const csvContent = await fs.readFile(csvPath, 'utf8');
-    const records = csv.parse(csvContent, {
-      columns: true,
-      skip_empty_lines: true,
-    });
+    const records = await this.loadSkillManifestRecords(bmadDir);
+    if (!records || records.length === 0) return 0;
 
     let count = 0;
 
@@ -697,6 +700,119 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
     }
 
     return count;
+  }
+
+  /**
+   * Load skill-manifest CSV records.
+   * @param {string} bmadDir - BMAD installation directory
+   * @returns {Promise<Array>} Parsed CSV records
+   */
+  async loadSkillManifestRecords(bmadDir) {
+    const csvPath = path.join(bmadDir, '_config', 'skill-manifest.csv');
+
+    if (!(await fs.pathExists(csvPath))) return [];
+
+    const csvContent = await fs.readFile(csvPath, 'utf8');
+    return csv.parse(csvContent, {
+      columns: true,
+      skip_empty_lines: true,
+    });
+  }
+
+  /**
+   * Install skill-manifest entries as flat command files.
+   * This is useful for platforms that support slash-command prompts but not
+   * native skill directory formats.
+   * @param {string} targetPath - Target directory path
+   * @param {string} bmadDir - BMAD installation directory
+   * @param {string} templateType - Template type to use
+   * @param {Object} config - Installation configuration
+   * @returns {Promise<number>} Count of skills written as command files
+   */
+  async installSkillManifestArtifacts(targetPath, bmadDir, templateType, config = {}) {
+    const records = await this.loadSkillManifestRecords(bmadDir);
+    if (!records || records.length === 0) return 0;
+
+    const { content: template, extension } = await this.loadTemplate(templateType, 'skill', config, 'default-skill');
+
+    const bmadPrefix = `${this.bmadFolderName}/`;
+    let count = 0;
+
+    for (const record of records) {
+      const canonicalId = record?.canonicalId;
+      if (!canonicalId) continue;
+
+      let relativePath = String(record.path || '').replaceAll('\\', '/');
+      if (relativePath.startsWith(bmadPrefix)) {
+        relativePath = relativePath.slice(bmadPrefix.length);
+      } else if (relativePath.startsWith('_bmad/')) {
+        relativePath = relativePath.slice(6);
+      } else if (relativePath.startsWith('bmad/')) {
+        relativePath = relativePath.slice(5);
+      }
+
+      const artifact = {
+        type: 'skill',
+        name: canonicalId,
+        module: record.module || 'core',
+        description: record.description || `${canonicalId} skill`,
+        path: relativePath,
+        relativePath,
+        canonicalId,
+      };
+
+      const content = this.renderTemplate(template, artifact);
+      const filename = this.generateFilename(artifact, 'skill', extension);
+      const filePath = path.join(targetPath, filename);
+
+      await this.writeFile(filePath, content);
+      count++;
+    }
+
+    return count;
+  }
+
+  /**
+   * Mirror generated BMAD files into additional target directories.
+   * Only BMAD-prefixed entries are synced to avoid touching user files.
+   * @param {string} sourcePath - Primary target directory
+   * @param {string} projectDir - Project directory
+   * @param {Array<string>} syncTargets - Additional target directories
+   * @param {Object} options - Setup options
+   */
+  async syncBmadArtifacts(sourcePath, projectDir, syncTargets, options = {}) {
+    let sourceEntries = [];
+    try {
+      sourceEntries = await fs.readdir(sourcePath);
+    } catch {
+      return;
+    }
+
+    const bmadEntries = sourceEntries.filter((entry) => typeof entry === 'string' && entry.startsWith('bmad'));
+    if (bmadEntries.length === 0) return;
+
+    for (const syncTarget of syncTargets) {
+      const targetPath = this.resolveTargetPath(projectDir, syncTarget);
+      if (path.resolve(targetPath) === path.resolve(sourcePath)) continue;
+
+      await this.ensureDir(targetPath);
+
+      // Remove stale BMAD entries before sync so mirrored directories stay exact.
+      const existing = await fs.readdir(targetPath);
+      for (const entry of existing) {
+        if (typeof entry === 'string' && entry.startsWith('bmad') && !entry.startsWith('bmad-os-')) {
+          await fs.remove(path.join(targetPath, entry));
+        }
+      }
+
+      for (const entry of bmadEntries) {
+        await fs.copy(path.join(sourcePath, entry), path.join(targetPath, entry), { overwrite: true });
+      }
+
+      if (!options.silent) {
+        await prompts.log.message(`  Synced BMAD files to ${syncTarget}`);
+      }
+    }
   }
 
   /**
@@ -766,6 +882,13 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
     } else if (this.installerConfig?.target_dir) {
       await this.cleanupTarget(projectDir, this.installerConfig.target_dir, options);
     }
+
+    // Clean any mirrored targets used for command synchronization.
+    if (Array.isArray(this.installerConfig?.sync_targets)) {
+      for (const syncTarget of this.installerConfig.sync_targets) {
+        await this.cleanupTarget(projectDir, syncTarget, options);
+      }
+    }
   }
 
   /**
@@ -775,6 +898,21 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
    */
   isGlobalPath(p) {
     return p.startsWith('~') || path.isAbsolute(p);
+  }
+
+  /**
+   * Resolve a configured target path to an absolute path.
+   * Supports project-relative, absolute, and ~/home-relative targets.
+   * @param {string} projectDir - Project directory
+   * @param {string} targetDir - Configured target directory
+   * @returns {string} Absolute resolved path
+   */
+  resolveTargetPath(projectDir, targetDir) {
+    if (!targetDir) return projectDir;
+    if (targetDir === '~') return os.homedir();
+    if (targetDir.startsWith('~/')) return path.join(os.homedir(), targetDir.slice(2));
+    if (path.isAbsolute(targetDir)) return targetDir;
+    return path.join(projectDir, targetDir);
   }
 
   /**
@@ -809,7 +947,7 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
    * @param {string} targetDir - Target directory to clean
    */
   async cleanupTarget(projectDir, targetDir, options = {}) {
-    const targetPath = path.join(projectDir, targetDir);
+    const targetPath = this.resolveTargetPath(projectDir, targetDir);
 
     if (!(await fs.pathExists(targetPath))) {
       return;
@@ -984,29 +1122,46 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
    * @returns {Promise<string|null>} Path to conflicting directory, or null if clean
    */
   async findAncestorConflict(projectDir) {
-    const targetDir = this.installerConfig?.target_dir;
-    if (!targetDir) return null;
+    const targetDirs = [];
+    if (this.installerConfig?.target_dir) {
+      targetDirs.push(this.installerConfig.target_dir);
+    }
+    if (Array.isArray(this.installerConfig?.targets)) {
+      for (const target of this.installerConfig.targets) {
+        if (target?.target_dir) targetDirs.push(target.target_dir);
+      }
+    }
+
+    if (targetDirs.length === 0) return null;
 
     const resolvedProject = await fs.realpath(path.resolve(projectDir));
-    let current = path.dirname(resolvedProject);
-    const root = path.parse(current).root;
 
-    while (current !== root && current.length > root.length) {
-      const candidatePath = path.join(current, targetDir);
-      try {
-        if (await fs.pathExists(candidatePath)) {
-          const entries = await fs.readdir(candidatePath);
-          const hasBmad = entries.some(
-            (e) => typeof e === 'string' && e.toLowerCase().startsWith('bmad') && !e.toLowerCase().startsWith('bmad-os-'),
-          );
-          if (hasBmad) {
-            return candidatePath;
-          }
-        }
-      } catch {
-        // Can't read directory — skip
+    for (const targetDir of targetDirs) {
+      // Ancestor conflicts only apply to project-relative directories.
+      if (this.isGlobalPath(targetDir) || path.isAbsolute(targetDir)) {
+        continue;
       }
-      current = path.dirname(current);
+
+      let current = path.dirname(resolvedProject);
+      const root = path.parse(current).root;
+
+      while (current !== root && current.length > root.length) {
+        const candidatePath = path.join(current, targetDir);
+        try {
+          if (await fs.pathExists(candidatePath)) {
+            const entries = await fs.readdir(candidatePath);
+            const hasBmad = entries.some(
+              (e) => typeof e === 'string' && e.toLowerCase().startsWith('bmad') && !e.toLowerCase().startsWith('bmad-os-'),
+            );
+            if (hasBmad) {
+              return candidatePath;
+            }
+          }
+        } catch {
+          // Can't read directory — skip
+        }
+        current = path.dirname(current);
+      }
     }
 
     return null;

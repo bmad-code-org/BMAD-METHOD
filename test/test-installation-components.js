@@ -54,6 +54,13 @@ async function createTestBmadFixture() {
   // Minimal workflow manifest (generators check for this)
   await fs.ensureDir(path.join(fixtureDir, '_config'));
   await fs.writeFile(path.join(fixtureDir, '_config', 'workflow-manifest.csv'), '');
+  await fs.writeFile(
+    path.join(fixtureDir, '_config', 'skill-manifest.csv'),
+    [
+      'canonicalId,name,description,module,path,install_to_bmad',
+      '"bmad-help","bmad-help","Help workflow","core","_bmad/core/tasks/bmad-help/SKILL.md","true"',
+    ].join('\n'),
+  );
 
   // Minimal compiled agent for core/agents (contains <agent tag and frontmatter)
   const minimalAgent = [
@@ -77,6 +84,16 @@ async function createTestBmadFixture() {
   // Minimal compiled agent for bmm module (tests use selectedModules: ['bmm'])
   await fs.ensureDir(path.join(fixtureDir, 'bmm', 'agents'));
   await fs.writeFile(path.join(fixtureDir, 'bmm', 'agents', 'test-bmm-agent.md'), minimalAgent);
+
+  // Minimal skill fixture (referenced by skill-manifest.csv)
+  await fs.ensureDir(path.join(fixtureDir, 'core', 'tasks', 'bmad-help'));
+  await fs.writeFile(
+    path.join(fixtureDir, 'core', 'tasks', 'bmad-help', 'SKILL.md'),
+    ['---', 'name: bmad-help', 'description: Help workflow', '---', '', 'Follow the instructions in [workflow.md](workflow.md).', ''].join(
+      '\n',
+    ),
+  );
+  await fs.writeFile(path.join(fixtureDir, 'core', 'tasks', 'bmad-help', 'workflow.md'), '# Help workflow\n');
 
   return fixtureDir;
 }
@@ -550,29 +567,38 @@ async function runTests() {
   console.log('');
 
   // ============================================================
-  // Test 11: Codex Native Skills Install
+  // Test 11: Codex Slash Commands Install
   // ============================================================
-  console.log(`${colors.yellow}Test Suite 11: Codex Native Skills${colors.reset}\n`);
+  console.log(`${colors.yellow}Test Suite 11: Codex Slash Commands${colors.reset}\n`);
 
+  let originalHome11 = process.env.HOME;
+  let tempHome11 = null;
   try {
     clearCache();
     const platformCodes11 = await loadPlatformCodes();
     const codexInstaller = platformCodes11.platforms.codex?.installer;
 
-    assert(codexInstaller?.target_dir === '.agents/skills', 'Codex target_dir uses native skills path');
+    assert(codexInstaller?.target_dir === '.codex/prompts', 'Codex target_dir uses slash command prompt path');
 
-    assert(codexInstaller?.skill_format === true, 'Codex installer enables native skill output');
+    assert(codexInstaller?.skill_format !== true, 'Codex installer uses flat prompt file output');
 
     assert(codexInstaller?.ancestor_conflict_check === true, 'Codex installer enables ancestor conflict checks');
 
     assert(
-      Array.isArray(codexInstaller?.legacy_targets) && codexInstaller.legacy_targets.includes('.codex/prompts'),
-      'Codex installer cleans legacy prompt output',
+      Array.isArray(codexInstaller?.legacy_targets) && codexInstaller.legacy_targets.includes('.agents/skills'),
+      'Codex installer cleans legacy skills output',
+    );
+
+    assert(
+      Array.isArray(codexInstaller?.sync_targets) && codexInstaller.sync_targets.includes('~/.codex/prompts'),
+      'Codex installer syncs prompts to user codex prompt directory',
     );
 
     const tempProjectDir11 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-codex-test-'));
+    tempHome11 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-codex-home-'));
+    process.env.HOME = tempHome11;
     const installedBmadDir11 = await createTestBmadFixture();
-    const legacyDir11 = path.join(tempProjectDir11, '.codex', 'prompts');
+    const legacyDir11 = path.join(tempProjectDir11, '.agents', 'skills');
     await fs.ensureDir(legacyDir11);
     await fs.writeFile(path.join(legacyDir11, 'bmad-legacy.md'), 'legacy\n');
 
@@ -585,20 +611,34 @@ async function runTests() {
 
     assert(result11.success === true, 'Codex setup succeeds against temp project');
 
-    const skillFile11 = path.join(tempProjectDir11, '.agents', 'skills', 'bmad-master', 'SKILL.md');
-    assert(await fs.pathExists(skillFile11), 'Codex install writes SKILL.md directory output');
+    const promptFile11 = path.join(tempProjectDir11, '.codex', 'prompts', 'bmad-master.md');
+    assert(await fs.pathExists(promptFile11), 'Codex install writes slash command prompt files');
 
-    // Verify name frontmatter matches directory name
-    const skillContent11 = await fs.readFile(skillFile11, 'utf8');
-    const nameMatch11 = skillContent11.match(/^name:\s*(.+)$/m);
-    assert(nameMatch11 && nameMatch11[1].trim() === 'bmad-master', 'Codex skill name frontmatter matches directory name exactly');
+    const promptContent11 = await fs.readFile(promptFile11, 'utf8');
+    const nameMatch11 = promptContent11.match(/^name:\s*['"]?bmad-master['"]?\s*$/m);
+    assert(nameMatch11, 'Codex prompt frontmatter keeps bmad command name');
 
-    assert(!(await fs.pathExists(legacyDir11)), 'Codex setup removes legacy prompts dir');
+    const bmadHelpPrompt11 = path.join(tempProjectDir11, '.codex', 'prompts', 'bmad-help.md');
+    assert(await fs.pathExists(bmadHelpPrompt11), 'Codex install converts skill-manifest entries into prompt commands');
+
+    const globalPrompt11 = path.join(tempHome11, '.codex', 'prompts', 'bmad-master.md');
+    assert(await fs.pathExists(globalPrompt11), 'Codex install syncs prompt commands to ~/.codex/prompts');
+
+    const globalHelpPrompt11 = path.join(tempHome11, '.codex', 'prompts', 'bmad-help.md');
+    assert(await fs.pathExists(globalHelpPrompt11), 'Codex global sync includes bmad-help prompt');
+
+    assert(!(await fs.pathExists(legacyDir11)), 'Codex setup removes legacy skills dir');
 
     await fs.remove(tempProjectDir11);
+    await fs.remove(tempHome11);
     await fs.remove(installedBmadDir11);
   } catch (error) {
-    assert(false, 'Codex native skills migration test succeeds', error.message);
+    assert(false, 'Codex slash command migration test succeeds', error.message);
+  } finally {
+    process.env.HOME = originalHome11;
+    if (tempHome11) {
+      await fs.remove(tempHome11);
+    }
   }
 
   console.log('');
@@ -615,9 +655,9 @@ async function runTests() {
     const installedBmadDir12 = await createTestBmadFixture();
 
     await fs.ensureDir(path.join(parentProjectDir12, '.git'));
-    await fs.ensureDir(path.join(parentProjectDir12, '.agents', 'skills', 'bmad-existing'));
+    await fs.ensureDir(path.join(parentProjectDir12, '.codex', 'prompts'));
     await fs.ensureDir(childProjectDir12);
-    await fs.writeFile(path.join(parentProjectDir12, '.agents', 'skills', 'bmad-existing', 'SKILL.md'), 'legacy\n');
+    await fs.writeFile(path.join(parentProjectDir12, '.codex', 'prompts', 'bmad-existing.md'), 'legacy\n');
 
     const ideManager12 = new IdeManager();
     await ideManager12.ensureInitialized();
@@ -625,11 +665,11 @@ async function runTests() {
       silent: true,
       selectedModules: ['bmm'],
     });
-    const expectedConflictDir12 = await fs.realpath(path.join(parentProjectDir12, '.agents', 'skills'));
+    const expectedConflictDir12 = await fs.realpath(path.join(parentProjectDir12, '.codex', 'prompts'));
 
-    assert(result12.success === false, 'Codex setup refuses install when ancestor skills already exist');
+    assert(result12.success === false, 'Codex setup refuses install when ancestor prompts already exist');
     assert(result12.handlerResult?.reason === 'ancestor-conflict', 'Codex ancestor rejection reports ancestor-conflict reason');
-    assert(result12.handlerResult?.conflictDir === expectedConflictDir12, 'Codex ancestor rejection points at ancestor .agents/skills dir');
+    assert(result12.handlerResult?.conflictDir === expectedConflictDir12, 'Codex ancestor rejection points at ancestor .codex/prompts dir');
 
     await fs.remove(tempRoot12);
     await fs.remove(installedBmadDir12);

@@ -47,12 +47,12 @@ Follow the installer prompts, then open your AI IDE (Claude Code, Cursor, etc.) 
 **Non-Interactive Installation** (for CI/CD):
 
 ```bash
-npx bmad-method install --directory /path/to/project --modules bmm --tools claude-code --yes
+npx bmad-method install --directory /path/to/project --modules bmm --tools codex --yes
 ```
 
 [See all installation options](https://docs.bmad-method.org/how-to/non-interactive-installation/)
 
-> **Not sure what to do?** Run `/bmad-help` — it tells you exactly what's next and what's optional. You can also ask questions like `/bmad-help I just finished the architecture, what do I do next?`
+> **Not sure what to do?** Run `/bmad-help` (Codex CLI: `/prompts:bmad-help`) — it tells you exactly what's next and what's optional. You can also ask questions like `/bmad-help I just finished the architecture, what do I do next?`
 
 ## Modules
 
