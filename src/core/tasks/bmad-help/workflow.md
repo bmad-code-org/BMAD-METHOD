@@ -15,24 +15,24 @@
 
 ### Command-Based Workflows
 When `command` field has a value:
-- Show the command prefixed with `/` (e.g., `/bmad-bmm-create-prd`)
+- Show the command as a skill name in backticks (e.g., `bmad-bmm-create-prd`)
 
 ### Skill-Referenced Workflows
 When `workflow-file` starts with `skill:`:
 - The value is a skill reference (e.g., `skill:bmad-quick-dev-new-preview`), NOT a file path
 - Do NOT attempt to resolve or load it as a file path
-- Display using the `command` column value prefixed with `/` (same as command-based workflows)
+- Display using the `command` column value as a skill name in backticks (same as command-based workflows)
 
 ### Agent-Based Workflows
 When `command` field is empty:
-- User loads agent first via `/agent-command`
+- User loads agent first by invoking the agent skill (e.g., `bmad-pm`)
 - Then invokes by referencing the `code` field or describing the `name` field
 - Do NOT show a slash command — show the code value and agent load instruction instead
 
 Example presentation for empty command:
 ```
 Explain Concept (EC)
-Load: /tech-writer, then ask to "EC about [topic]"
+Load: tech-writer agent skill, then ask to "EC about [topic]"
 Agent: Tech Writer
 Description: Create clear technical explanations with examples...
 ```

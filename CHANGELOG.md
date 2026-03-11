@@ -47,7 +47,7 @@
 * Add CodeBuddy platform support with installer configuration (#1483)
 * Add LLM audit prompt for file reference conventions - new audit tool using parallel subagents (#1720)
 * Migrate Codex installer from `.codex/prompts` to `.agents/skills` format to align with Codex CLI changes (#1729)
-* Convert review-pr and audit-file-refs tools to proper bmad-os skills with slash commands `/bmad-os-review-pr` and `/bmad-os-audit-file-refs` (#1732)
+* Convert review-pr and audit-file-refs tools to proper bmad-os skills with slash commands `bmad-os-review-pr` and `bmad-os-audit-file-refs` (#1732)
 
 ### 🐛 Bug Fixes
 
@@ -365,7 +365,7 @@ V6 Stable Release! The End of Beta!
 - TEA documentation restructured using Diátaxis framework (25 docs)
 - Style guide optimized for LLM readers (367 lines, down from 767)
 - Glossary rewritten using table format (123 lines, down from 373)
-- README overhaul with numbered command flows and prominent `/bmad-help` callout
+- README overhaul with numbered command flows and prominent `bmad-help` callout
 - New workflow map diagram with interactive HTML
 - New editorial review tasks for document quality
 - E2E testing methodology for Game Dev Studio
