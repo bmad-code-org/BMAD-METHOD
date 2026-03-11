@@ -19,6 +19,10 @@ platforms:
     preferred: false
     category: ide
     description: "Google's AI development environment"
+    capabilities:
+      sub_agents: false
+      task_tracking: false
+      structured_ask: false
     installer:
       legacy_targets:
         - .agent/workflows
@@ -31,6 +35,10 @@ platforms:
     preferred: false
     category: cli
     description: "AI development tool"
+    capabilities:
+      sub_agents: false
+      task_tracking: false
+      structured_ask: false
     installer:
       legacy_targets:
         - .augment/commands
@@ -43,6 +51,10 @@ platforms:
     preferred: true
     category: cli
     description: "Anthropic's official CLI for Claude"
+    capabilities:
+      sub_agents: true
+      task_tracking: true
+      structured_ask: true
     installer:
       legacy_targets:
         - .claude/commands
@@ -56,6 +68,10 @@ platforms:
     preferred: false
     category: ide
     description: "AI coding assistant"
+    capabilities:
+      sub_agents: false
+      task_tracking: false
+      structured_ask: false
     installer:
       legacy_targets:
         - .clinerules/workflows
@@ -68,6 +84,10 @@ platforms:
     preferred: false
     category: cli
     description: "OpenAI Codex integration"
+    capabilities:
+      sub_agents: false
+      task_tracking: false
+      structured_ask: false
     installer:
       legacy_targets:
         - .codex/prompts
@@ -83,6 +103,10 @@ platforms:
     preferred: false
     category: ide
     description: "Tencent Cloud Code Assistant - AI-powered coding companion"
+    capabilities:
+      sub_agents: false
+      task_tracking: false
+      structured_ask: false
     installer:
       legacy_targets:
         - .codebuddy/commands
@@ -95,6 +119,10 @@ platforms:
     preferred: false
     category: ide
     description: "AI development assistant"
+    capabilities:
+      sub_agents: false
+      task_tracking: false
+      structured_ask: false
     installer:
       legacy_targets:
         - .crush/commands
@@ -107,6 +135,10 @@ platforms:
     preferred: true
     category: ide
     description: "AI-first code editor"
+    capabilities:
+      sub_agents: false
+      task_tracking: false
+      structured_ask: false
     installer:
       legacy_targets:
         - .cursor/commands
@@ -119,6 +151,10 @@ platforms:
     preferred: false
     category: cli
     description: "Google's CLI for Gemini"
+    capabilities:
+      sub_agents: false
+      task_tracking: false
+      structured_ask: false
     installer:
       legacy_targets:
         - .gemini/commands
@@ -131,6 +167,10 @@ platforms:
     preferred: false
     category: ide
     description: "GitHub's AI pair programmer"
+    capabilities:
+      sub_agents: false
+      task_tracking: false
+      structured_ask: false
     installer:
       legacy_targets:
         - .github/agents
@@ -144,6 +184,10 @@ platforms:
     preferred: false
     category: ide
     description: "AI workflow automation"
+    capabilities:
+      sub_agents: false
+      task_tracking: false
+      structured_ask: false
     installer:
       legacy_targets:
         - .iflow/commands
@@ -157,6 +201,10 @@ platforms:
     category: ide
     description: "AI coding platform"
     suspended: "Kilo Code does not yet support the Agent Skills standard. Support is paused until they implement it. See https://github.com/kilocode/kilo-code/issues for updates."
+    capabilities:
+      sub_agents: false
+      task_tracking: false
+      structured_ask: false
     installer:
       legacy_targets:
         - .kilocode/workflows
@@ -169,6 +217,10 @@ platforms:
     preferred: false
     category: ide
     description: "Amazon's AI-powered IDE"
+    capabilities:
+      sub_agents: false
+      task_tracking: false
+      structured_ask: false
     installer:
       legacy_targets:
         - .kiro/steering
@@ -181,6 +233,10 @@ platforms:
     preferred: false
     category: ide
     description: "OpenCode terminal coding assistant"
+    capabilities:
+      sub_agents: false
+      task_tracking: false
+      structured_ask: false
     installer:
       legacy_targets:
         - .opencode/agents
@@ -197,6 +253,10 @@ platforms:
     preferred: false
     category: cli
     description: "Provider-agnostic terminal-native AI coding agent"
+    capabilities:
+      sub_agents: false
+      task_tracking: false
+      structured_ask: false
     installer:
       target_dir: .pi/skills
       template_type: default
@@ -207,6 +267,10 @@ platforms:
     preferred: false
     category: ide
     description: "Qwen AI coding assistant"
+    capabilities:
+      sub_agents: false
+      task_tracking: false
+      structured_ask: false
     installer:
       legacy_targets:
         - .qwen/commands
@@ -219,6 +283,10 @@ platforms:
     preferred: false
     category: ide
     description: "Enhanced Cline fork"
+    capabilities:
+      sub_agents: false
+      task_tracking: false
+      structured_ask: false
     installer:
       legacy_targets:
         - .roo/commands
@@ -231,6 +299,10 @@ platforms:
     preferred: false
     category: ide
     description: "Atlassian's Rovo development environment"
+    capabilities:
+      sub_agents: false
+      task_tracking: false
+      structured_ask: false
     installer:
       legacy_targets:
         - .rovodev/workflows
@@ -243,6 +315,10 @@ platforms:
     preferred: false
     category: ide
     description: "AI coding tool"
+    capabilities:
+      sub_agents: false
+      task_tracking: false
+      structured_ask: false
     installer:
       legacy_targets:
         - .trae/rules
@@ -255,12 +331,31 @@ platforms:
     preferred: false
     category: ide
     description: "AI-powered IDE with cascade flows"
+    capabilities:
+      sub_agents: false
+      task_tracking: false
+      structured_ask: false
     installer:
       legacy_targets:
         - .windsurf/workflows
       target_dir: .windsurf/skills
       template_type: windsurf
       skill_format: true
+
+# ============================================================================
+# Capabilities Schema
+# ============================================================================
+#
+# capabilities:
+#   sub_agents: boolean          # IDE supports launching sub-agents for delegated implementation
+#   task_tracking: boolean       # IDE has built-in task management tools (create/update/list)
+#   structured_ask: boolean      # IDE has a dedicated tool for prompting the user (vs inline text)
+#
+# Capabilities are written to _config/ides/{platform}.yaml at install time.
+# Workflows use these flags to adapt behavior — e.g., delegating to sub-agents
+# when available, or implementing directly when not.
+#
+# Default all to false for new platforms. Set true only when verified.
 
 # ============================================================================
 # Installer Config Schema
