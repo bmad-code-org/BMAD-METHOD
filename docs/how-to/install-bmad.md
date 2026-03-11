@@ -89,7 +89,10 @@ your-project/
 │       ├── bmad-help/
 │       ├── bmad-persona/
 │       └── ...
-└── .cursor/            # Cursor skills (if using Cursor)
+├── .cursor/            # Cursor skills (if using Cursor)
+│   └── skills/
+│       └── ...
+└── .vibe/              # Mistral Vibe skills (if using Mistral Vibe)
     └── skills/
         └── ...
 ```

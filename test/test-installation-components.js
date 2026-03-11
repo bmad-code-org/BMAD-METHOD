@@ -1587,7 +1587,7 @@ async function runTests() {
   // ============================================================
   // Suite 29: Unified Skill Scanner — collectSkills
   // ============================================================
-  console.log(`${colors.yellow}Test Suite 29: Unified Skill Scanner${colors.reset}\n`);
+  console.log(`${colors.yellow}Test Suite 30: Unified Skill Scanner${colors.reset}\n`);
 
   let tempFixture29;
   try {
@@ -1700,7 +1700,7 @@ async function runTests() {
   // ============================================================
   // Suite 30: parseSkillMd validation (negative cases)
   // ============================================================
-  console.log(`${colors.yellow}Test Suite 30: parseSkillMd Validation${colors.reset}\n`);
+  console.log(`${colors.yellow}Test Suite 31: parseSkillMd Validation${colors.reset}\n`);
 
   let tempFixture30;
   try {
@@ -1804,6 +1804,99 @@ async function runTests() {
   } finally {
     if (collisionProjectDir) await fs.remove(collisionProjectDir).catch(() => {});
     if (collisionFixtureRoot) await fs.remove(collisionFixtureRoot).catch(() => {});
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Suite 31: Mistral Vibe CLI Native Skills
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 31: Mistral Vibe CLI Native Skills${colors.reset}\n`);
+
+  let tempProjectDirMistral;
+  let installedBmadDirMistral;
+  try {
+    clearCache();
+    const platformCodesMistral = await loadPlatformCodes();
+    const mistralInstaller = platformCodesMistral.platforms.mistral?.installer;
+
+    assert(mistralInstaller?.target_dir === '.vibe/skills', 'Mistral Vibe target_dir uses native skills path');
+    assert(mistralInstaller?.skill_format === true, 'Mistral Vibe installer enables native skill output');
+    assert(mistralInstaller?.template_type === 'default', 'Mistral Vibe installer uses default skill template');
+    assert(mistralInstaller?.legacy_targets === undefined, 'Mistral Vibe installer has no legacy_targets');
+
+    tempProjectDirMistral = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-mistral-test-'));
+    installedBmadDirMistral = await createTestBmadFixture();
+
+    const ideManagerMistral = new IdeManager();
+    await ideManagerMistral.ensureInitialized();
+
+    // Verify Mistral Vibe is selectable in an available IDEs list
+    const availableIdesMistral = ideManagerMistral.getAvailableIdes();
+    assert(
+      availableIdesMistral.some((ide) => ide.value === 'mistral'),
+      'Mistral Vibe appears in available IDEs list',
+    );
+
+    // Verify Mistral Vibe is NOT detected before install
+    const detectedBeforeMistral = await ideManagerMistral.detectInstalledIdes(tempProjectDirMistral);
+    assert(!detectedBeforeMistral.includes('mistral'), 'Mistral Vibe is not detected before install');
+
+    const resultMistral = await ideManagerMistral.setup('mistral', tempProjectDirMistral, installedBmadDirMistral, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+
+    assert(resultMistral.success === true, 'Mistral Vibe setup succeeds against temp project');
+
+    // Verify Mistral Vibe IS detected after install
+    const detectedAfterMistral = await ideManagerMistral.detectInstalledIdes(tempProjectDirMistral);
+    assert(detectedAfterMistral.includes('mistral'), 'Mistral Vibe is detected after install');
+
+    const skillFileMistral = path.join(tempProjectDirMistral, '.vibe', 'skills', 'bmad-master', 'SKILL.md');
+    assert(await fs.pathExists(skillFileMistral), 'Mistral Vibe install writes SKILL.md directory output');
+
+    // Parse YAML frontmatter between --- markers
+    const skillContentMistral = await fs.readFile(skillFileMistral, 'utf8');
+    const fmMatchMistral = skillContentMistral.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
+    assert(fmMatchMistral, 'Mistral Vibe SKILL.md contains valid frontmatter delimiters');
+
+    const frontmatterMistral = fmMatchMistral[1];
+    const bodyMistral = fmMatchMistral[2];
+
+    // Verify the name in the frontmatter matches the directory name
+    const fmNameMistral = frontmatterMistral.match(/^name:\s*(.+)$/m);
+    assert(
+      fmNameMistral && fmNameMistral[1].trim() === 'bmad-master',
+      'Mistral Vibe skill name frontmatter matches directory name exactly',
+    );
+
+    // Verify description exists and is non-empty
+    const fmDescMistral = frontmatterMistral.match(/^description:\s*(.+)$/m);
+    assert(fmDescMistral && fmDescMistral[1].trim().length > 0, 'Mistral Vibe skill description frontmatter is present and non-empty');
+
+    // Verify frontmatter contains only name and description keys
+    const fmKeysMistral = [...frontmatterMistral.matchAll(/^([a-zA-Z0-9_-]+):/gm)].map((m) => m[1]);
+    assert(
+      fmKeysMistral.length === 2 && fmKeysMistral.includes('name') && fmKeysMistral.includes('description'),
+      'Mistral Vibe skill frontmatter contains only name and description keys',
+    );
+
+    // Verify body content is non-empty
+    assert(bodyMistral.trim().length > 0, 'Mistral Vibe skill body content is non-empty');
+
+    // Reinstall/upgrade: run setup again over existing output
+    const resultMistralb = await ideManagerMistral.setup('mistral', tempProjectDirMistral, installedBmadDirMistral, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+    assert(resultMistralb.success === true, 'Mistral Vibe reinstall/upgrade succeeds over existing skills');
+    assert(await fs.pathExists(skillFileMistral), 'Mistral Vibe reinstall preserves SKILL.md output');
+  } catch (error) {
+    assert(false, 'Mistral Vibe native skills test succeeds', error.message);
+  } finally {
+    if (tempProjectDirMistral) await fs.remove(tempProjectDirMistral).catch(() => {});
+    if (installedBmadDirMistral) await fs.remove(installedBmadDirMistral).catch(() => {});
   }
 
   console.log('');
