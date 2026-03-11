@@ -1415,7 +1415,7 @@ class Installer {
       `    Join our Discord: ${color.dim('https://discord.gg/gk8jAdXWmj')}`,
       `    Star us on GitHub: ${color.dim('https://github.com/bmad-code-org/BMAD-METHOD/')}`,
       `    Subscribe on YouTube: ${color.dim('https://www.youtube.com/@BMadCode')}`,
-      `    Run ${color.cyan('/bmad-help')} with your IDE Agent and ask it how to get started`,
+      `    Invoke the ${color.cyan('bmad-help')} skill in your IDE Agent to get started`,
     );
 
     await prompts.note(lines.join('\n'), 'BMAD is ready to use!');

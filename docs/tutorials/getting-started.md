@@ -22,7 +22,7 @@ Build software faster using AI-powered workflows with specialized agents that gu
 
 :::tip[The Easiest Path]
 **Install** → `npx bmad-method install`
-**Ask** → `/bmad-help what should I do first?`
+**Ask** → `bmad-help what should I do first?`
 **Build** → Let BMad-Help guide you workflow by workflow
 :::
 
@@ -59,7 +59,7 @@ BMad-Help will respond with:
 BMad-Help doesn't just answer questions — **it automatically runs at the end of every workflow** to tell you exactly what to do next. No guessing, no searching docs — just clear guidance on the next required workflow.
 
 :::tip[Start Here]
-After installing BMad, run `/bmad-help` immediately. It will detect what modules you have installed and guide you to the right starting point for your project.
+After installing BMad, invoke the `bmad-help` skill immediately. It will detect what modules you have installed and guide you to the right starting point for your project.
 :::
 
 ## Understanding BMad
@@ -105,14 +105,14 @@ The installer creates two folders:
 Open your AI IDE in the project folder and run:
 
 ```
-/bmad-help
+bmad-help
 ```
 
 BMad-Help will detect what you've completed and recommend exactly what to do next. You can also ask it questions like "What are my options?" or "I have a SaaS idea, where should I start?"
 :::
 
 :::note[How to Load Agents and Run Workflows]
-Each workflow has a **skill** you invoke in your IDE (e.g., `/bmad-create-prd`). Running a workflow skill automatically loads the appropriate agent — you don't need to load agents separately. You can also invoke an agent directly for general conversation (e.g., `/bmad-pm` for the PM agent).
+Each workflow has a **skill** you invoke by name in your IDE (e.g., `bmad-create-prd`). Your AI tool will recognize the `bmad-*` name and run it — you don't need to load agents separately. You can also invoke an agent skill directly for general conversation (e.g., `bmad-pm` for the PM agent).
 :::
 
 :::caution[Fresh Chats]
@@ -249,7 +249,7 @@ Not strictly. Once you learn the flow, you can run workflows directly using the 
 ## Getting Help
 
 :::tip[First Stop: BMad-Help]
-**Run `/bmad-help` anytime** — it's the fastest way to get unstuck. Ask it anything:
+**Invoke `bmad-help` anytime** — it's the fastest way to get unstuck. Ask it anything:
 - "What should I do after installing?"
 - "I'm stuck on workflow X"
 - "What are my options for Y?"
@@ -264,10 +264,10 @@ BMad-Help inspects your project, detects what you've completed, and tells you ex
 ## Key Takeaways
 
 :::tip[Remember These]
-- **Start with `/bmad-help`** — Your intelligent guide that knows your project and options
+- **Start with `bmad-help`** — Your intelligent guide that knows your project and options
 - **Always use fresh chats** — Start a new chat for each workflow
 - **Track matters** — Quick Flow uses quick-spec; Method/Enterprise need PRD and architecture
 - **BMad-Help runs automatically** — Every workflow ends with guidance on what's next
 :::
 
-Ready to start? Install BMad, run `/bmad-help`, and let your intelligent guide lead the way.
+Ready to start? Install BMad, invoke `bmad-help`, and let your intelligent guide lead the way.
