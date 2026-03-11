@@ -291,7 +291,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
     <check if="{capabilities.sub_agents} is available">
       <!-- Agent Selection -->
       <action>Identify target file types and task domain for the current task/subtask</action>
-      <action>Check for a specialized agent in .claude/agents/ (or IDE equivalent) whose description matches the target file types and task domain</action>
+      <action>Check for a specialized agent in the IDE's agents directory (e.g., .claude/agents/ for Claude Code) whose description matches the target file types and task domain</action>
       <action>If no specialized agent matches, use a general-purpose agent as fallback</action>
 
       <!-- Tracking Update -->

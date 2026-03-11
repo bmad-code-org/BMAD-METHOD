@@ -58,7 +58,7 @@ For each task:
 ### 1. Select Agent (when sub_agents available)
 
 - Identify target file types and task nature
-- Check for a specialized agent whose description matches (scan both global and project-level `.claude/agents/` directories or equivalent)
+- Check for a specialized agent whose description matches (scan the IDE's agents directory, e.g., `.claude/agents/` for Claude Code)
 - If a specialized agent matches, use it
 - If no match, use a general-purpose agent
 
