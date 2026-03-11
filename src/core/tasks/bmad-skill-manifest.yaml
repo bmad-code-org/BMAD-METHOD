@@ -1,4 +1,0 @@
-shard-doc.xml:
-  canonicalId: bmad-shard-doc
-  type: task
-  description: "Splits large markdown documents into smaller, organized files based on sections"
