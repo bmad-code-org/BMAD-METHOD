@@ -48,8 +48,6 @@ Do NOT `git add` anything — this is read-only inspection.
    - **patch** — Auto-fix. These are the only findings that survive loopbacks.
    - **defer** — Append to `{deferred_work_file}`.
    - **reject** — Drop silently.
-4. Commit.
-
 ## NEXT
 
 Read fully and follow `./steps/step-05-present.md`
