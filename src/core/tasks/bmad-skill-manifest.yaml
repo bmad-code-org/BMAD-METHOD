@@ -1,8 +1,3 @@
-editorial-review-prose.xml:
-  canonicalId: bmad-editorial-review-prose
-  type: task
-  description: "Clinical copy-editor that reviews text for communication issues"
-
 index-docs.xml:
   canonicalId: bmad-index-docs
   type: task
