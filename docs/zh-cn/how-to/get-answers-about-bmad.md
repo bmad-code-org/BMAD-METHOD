@@ -21,16 +21,16 @@ BMad-Help 不仅仅是一个查询工具——它：
 只需使用斜杠命令运行它：
 
 ```
-/bmad-help
+bmad-help
 ```
 
 或者结合自然语言查询：
 
 ```
-/bmad-help 我有一个 SaaS 想法并且知道所有功能。我应该从哪里开始？
-/bmad-help 我在 UX 设计方面有哪些选择？
-/bmad-help 我在 PRD 工作流上卡住了
-/bmad-help 向我展示到目前为止已完成的内容
+bmad-help 我有一个 SaaS 想法并且知道所有功能。我应该从哪里开始？
+bmad-help 我在 UX 设计方面有哪些选择？
+bmad-help 我在 PRD 工作流上卡住了
+bmad-help 向我展示到目前为止已完成的内容
 ```
 
 BMad-Help 会回应：

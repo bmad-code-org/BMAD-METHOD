@@ -68,9 +68,9 @@ sidebar:
 - 理解自然语言查询
 
 ```
-/bmad-help 我有一个现有的 Rails 应用，我应该从哪里开始？
-/bmad-help quick-flow 和完整方法有什么区别？
-/bmad-help 显示我有哪些可用的工作流程
+bmad-help 我有一个现有的 Rails 应用，我应该从哪里开始？
+bmad-help quick-flow 和完整方法有什么区别？
+bmad-help 显示我有哪些可用的工作流程
 ```
 
 BMad-Help 还会在**每个工作流程结束时自动运行**，提供关于下一步该做什么的清晰指导。
