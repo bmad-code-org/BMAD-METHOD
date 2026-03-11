@@ -56,7 +56,7 @@ _bmad-output
 .qwen
 .rovodev
 .kilocodemodes
-.claude/commands
+.claude
 .codex
 .github/chatmodes
 .github/agents
