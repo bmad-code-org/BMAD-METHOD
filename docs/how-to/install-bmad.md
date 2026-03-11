@@ -29,6 +29,15 @@ If you want to use a non interactive installer and provide all install options o
 npx bmad-method install
 ```
 
+:::tip[Want the newest prerelease build?]
+Use the `next` dist-tag:
+```bash
+npx bmad-method@next install
+```
+
+This gets you newer changes earlier, with a higher chance of churn than the default install.
+:::
+
 :::tip[Bleeding edge]
 To install the latest from the main branch (may be unstable):
 ```bash
