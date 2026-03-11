@@ -1,8 +1,3 @@
-index-docs.xml:
-  canonicalId: bmad-index-docs
-  type: task
-  description: "Generates or updates an index.md to reference all docs in the folder"
-
 shard-doc.xml:
   canonicalId: bmad-shard-doc
   type: task
