@@ -735,12 +735,13 @@ class ConfigCollector {
       // Skip prompts mode: use all defaults without asking
       if (this.skipPrompts) {
         await prompts.log.info(`Using default configuration for ${moduleDisplayName}`);
-        // Use defaults for all questions
+        // Use defaults for all questions; use empty string for fields without defaults
         for (const question of questions) {
-          const hasDefault = question.default !== undefined && question.default !== null && question.default !== '';
-          if (hasDefault && typeof question.default !== 'function') {
-            allAnswers[question.name] = question.default;
+          if (typeof question.default === 'function') {
+            continue;
           }
+          const hasDefault = question.default !== undefined && question.default !== null && question.default !== '';
+          allAnswers[question.name] = hasDefault ? question.default : '';
         }
       } else {
         if (!this._silentConfig) await prompts.log.step(`Configuring ${moduleDisplayName}`);
