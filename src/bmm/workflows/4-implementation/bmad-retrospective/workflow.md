@@ -1,5 +1,5 @@
 ---
-name: retrospective
+name: bmad-retrospective
 description: 'Post-epic review to extract lessons and assess success. Use when the user says "run a retrospective" or "lets retro the epic [epic]"'
 ---
 
@@ -42,7 +42,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
 ### Paths
 
-- `installed_path` = `{project-root}/_bmad/bmm/workflows/4-implementation/retrospective`
+- `installed_path` = `.`
 - `sprint_status_file` = `{implementation_artifacts}/sprint-status.yaml`
 
 ### Input Files
