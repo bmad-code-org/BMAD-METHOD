@@ -2,15 +2,15 @@
 # allowing us to keep the source of these projects in separate repos.
 
 modules:
-  bmad-builder:
-    url: https://github.com/bmad-code-org/bmad-builder
-    module-definition: src/module.yaml
-    code: bmb
-    name: "BMad Builder"
-    description: "Agent, Workflow and Module Builder"
-    defaultSelected: false
-    type: bmad-org
-    npmPackage: bmad-builder
+  # bmad-builder:
+  #   url: https://github.com/bmad-code-org/bmad-builder
+  #   module-definition: src/module.yaml
+  #   code: bmb
+  #   name: "BMad Builder"
+  #   description: "Agent, Workflow and Module Builder"
+  #   defaultSelected: false
+  #   type: bmad-org
+  #   npmPackage: bmad-builder
 
   bmad-creative-intelligence-suite:
     url: https://github.com/bmad-code-org/bmad-module-creative-intelligence-suite
