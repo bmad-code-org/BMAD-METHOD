@@ -30,7 +30,7 @@ agent:
 
   menu:
     - trigger: DS or fuzzy match on dev-story
-      exec: "{project-root}/_bmad/bmm/workflows/4-implementation/dev-story/workflow.md"
+      exec: "{project-root}/_bmad/bmm/workflows/4-implementation/bmad-dev-story/workflow.md"
       description: "[DS] Dev Story: Write the next or specified stories tests and code."
 
     - trigger: CR or fuzzy match on code-review

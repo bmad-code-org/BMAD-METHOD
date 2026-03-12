@@ -1,5 +1,5 @@
 ---
-name: dev-story
+name: bmad-dev-story
 description: 'Execute story implementation following a context filled story spec file. Use when the user says "dev this story [story file]" or "implement the next story in the sprint plan"'
 ---
 
@@ -32,8 +32,8 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
 ### Paths
 
-- `installed_path` = `{project-root}/_bmad/bmm/workflows/4-implementation/dev-story`
-- `validation` = `{installed_path}/checklist.md`
+- `installed_path` = `.`
+- `validation` = `./checklist.md`
 - `story_file` = `` (explicit story path; auto-discovered if empty)
 - `sprint_status` = `{implementation_artifacts}/sprint-status.yaml`
 
