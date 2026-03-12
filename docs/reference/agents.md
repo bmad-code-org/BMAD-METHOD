@@ -26,3 +26,33 @@ This page lists the default BMM (Agile suite) agents that install with BMad Meth
 | Quick Flow Solo Dev (Barry) | `bmad-master`        | `QS`, `QD`, `CR`                   | Quick Spec, Quick Dev, Code Review                                                                  |
 | UX Designer (Sally)         | `bmad-ux-designer`   | `CU`                               | Create UX Design                                                                                    |
 | Technical Writer (Paige)    | `bmad-tech-writer`   | `DP`, `WD`, `US`, `MG`, `VD`, `EC` | Document Project, Write Document, Update Standards, Mermaid Generate, Validate Doc, Explain Concept |
+
+## Trigger Types
+
+Agent menu triggers use two different invocation types. Knowing which type a trigger uses helps you provide the right input.
+
+### Workflow triggers (no arguments needed)
+
+Most triggers load a structured workflow file. Type the trigger code and the agent starts the workflow, prompting you for input at each step.
+
+Examples: `CP` (Create PRD), `DS` (Dev Story), `CA` (Create Architecture), `QS` (Quick Spec)
+
+### Conversational triggers (arguments required)
+
+Some triggers start a free-form conversation instead of a structured workflow. These expect you to describe what you need alongside the trigger code.
+
+| Agent | Trigger | What to provide |
+| --- | --- | --- |
+| Technical Writer (Paige) | `WD` | Description of the document to write |
+| Technical Writer (Paige) | `US` | Preferences or conventions to add to standards |
+| Technical Writer (Paige) | `MG` | Diagram description and type (sequence, flowchart, etc.) |
+| Technical Writer (Paige) | `VD` | Document to validate and focus areas |
+| Technical Writer (Paige) | `EC` | Concept name to explain |
+
+**Example:**
+
+```text
+WD Write a deployment guide for our Docker setup
+MG Create a sequence diagram showing the auth flow
+EC Explain how the module system works
+```
