@@ -9,7 +9,7 @@ domainComplexityCSV: '{project-root}/_bmad/bmm/workflows/2-plan-workflows/create
 
 # Task References
 advancedElicitationTask: '{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.md'
-partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
+partyModeWorkflow: '{project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md'
 ---
 
 # Step 5: Domain-Specific Requirements (Optional)

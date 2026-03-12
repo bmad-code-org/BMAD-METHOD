@@ -33,7 +33,7 @@ This step will generate content and present choices:
 ## PROTOCOL INTEGRATION:
 
 - When 'A' selected: Read fully and follow: {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.md
-- When 'P' selected: Read fully and follow: {project-root}/_bmad/core/workflows/party-mode/workflow.md
+- When 'P' selected: Read fully and follow: {project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md
 - PROTOCOLS always return to display this step's A/P/C menu after the A or P have completed
 - User accepts/rejects protocol changes before proceeding
 
@@ -333,7 +333,7 @@ Show the generated project structure content and present choices:
 
 #### If 'P' (Party Mode):
 
-- Read fully and follow: {project-root}/_bmad/core/workflows/party-mode/workflow.md with project structure context
+- Read fully and follow: {project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md with project structure context
 - Process collaborative insights about organization trade-offs
 - Ask user: "Accept these changes to the project structure? (y/n)"
 - If yes: Update content, then return to A/P/C menu

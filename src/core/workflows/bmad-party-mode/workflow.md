@@ -1,5 +1,5 @@
 ---
-name: party-mode
+name: bmad-party-mode
 description: 'Orchestrates group discussions between all installed BMAD agents, enabling natural multi-agent conversations. Use when user requests party mode.'
 ---
 
@@ -36,7 +36,6 @@ Load config from `{project-root}/_bmad/core/config.yaml` and resolve:
 
 ### Paths
 
-- `installed_path` = `{project-root}/_bmad/core/workflows/party-mode`
 - `agent_manifest_path` = `{project-root}/_bmad/_config/agent-manifest.csv`
 - `standalone_mode` = `true` (party mode is an interactive workflow)
 
