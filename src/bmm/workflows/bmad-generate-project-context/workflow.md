@@ -1,5 +1,5 @@
 ---
-name: generate-project-context
+name: bmad-generate-project-context
 description: 'Create project-context.md with AI rules. Use when the user says "generate project context" or "create project context"'
 ---
 
@@ -37,14 +37,14 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
 ### Paths
 
-- `installed_path` = `{project-root}/_bmad/bmm/workflows/generate-project-context`
-- `template_path` = `{installed_path}/project-context-template.md`
+- `installed_path` = `.`
+- `template_path` = `./project-context-template.md`
 - `output_file` = `{output_folder}/project-context.md`
 
 ---
 
 ## EXECUTION
 
-Load and execute `{project-root}/_bmad/bmm/workflows/generate-project-context/steps/step-01-discover.md` to begin the workflow.
+Load and execute `./steps/step-01-discover.md` to begin the workflow.
 
 **Note:** Input document discovery and initialization protocols are handled in step-01-discover.md.
