@@ -35,7 +35,7 @@ agent:
       description: "[TR] Technical Research: Technical feasibility, architecture options and implementation approaches"
 
     - trigger: CB or fuzzy match on product-brief
-      exec: "{project-root}/_bmad/bmm/workflows/1-analysis/create-product-brief/workflow.md"
+      exec: "{project-root}/_bmad/bmm/workflows/1-analysis/bmad-create-product-brief/workflow.md"
       description: "[CB] Create Brief: A guided experience to nail down your product idea into an executive brief"
 
     - trigger: DP or fuzzy match on document-project

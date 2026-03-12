@@ -1,5 +1,5 @@
 ---
-name: create-product-brief
+name: bmad-create-product-brief
 description: 'Create product brief through collaborative discovery. Use when the user says "lets create a product brief" or "help me create a project brief"'
 ---
 
@@ -54,4 +54,4 @@ Load and read full config from {project-root}/_bmad/bmm/config.yaml and resolve:
 
 ### 2. First Step EXECUTION
 
-Read fully and follow: `{project-root}/_bmad/bmm/workflows/1-analysis/create-product-brief/steps/step-01-init.md` to begin the workflow.
+Read fully and follow: `./steps/step-01-init.md` to begin the workflow.
