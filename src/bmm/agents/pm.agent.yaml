@@ -32,7 +32,7 @@ agent:
       description: "[EP] Edit PRD: Update an existing Product Requirements Document"
 
     - trigger: CE or fuzzy match on epics-stories
-      exec: "{project-root}/_bmad/bmm/workflows/3-solutioning/create-epics-and-stories/workflow.md"
+      exec: "{project-root}/_bmad/bmm/workflows/3-solutioning/bmad-create-epics-and-stories/workflow.md"
       description: "[CE] Create Epics and Stories: Create the Epics and Stories Listing, these are the specs that will drive development"
 
     - trigger: IR or fuzzy match on implementation-readiness
