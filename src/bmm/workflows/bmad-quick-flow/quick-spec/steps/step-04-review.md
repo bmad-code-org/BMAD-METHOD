@@ -120,6 +120,12 @@ Saved to: {finalFile}
 [D] Done - exit workflow
 [P] Party Mode - get expert feedback before dev
 
+To run adversarial review in a fresh context (recommended for information asymmetry):
+
+\`\`\`
+/bmad-review-adversarial-general {finalFile}
+\`\`\`
+
 ---
 
 Once you are fully satisfied with the spec (ideally after **Adversarial Review** and maybe a few rounds of **Advanced Elicitation**), it is recommended to run implementation in a FRESH CONTEXT for best results.
