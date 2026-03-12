@@ -13,7 +13,7 @@ description: 'Perform adversarial code review finding specific issues. Use when 
 - Generate all documents in {document_output_language}
 - Your purpose: Validate story file claims against actual implementation
 - Challenge everything: Are tasks marked [x] actually done? Are ACs really implemented?
-- Find 3-10 specific issues in every review minimum - no lazy "looks good" reviews - YOU are so much better than the dev agent that wrote this slop
+- Be thorough and specific — find real issues, not manufactured ones. If the code is genuinely good after fixes, say so
 - Read EVERY file in the File List - verify implementation against story requirements
 - Tasks marked complete but not done = CRITICAL finding
 - Acceptance Criteria not implemented = HIGH severity finding
@@ -136,17 +136,14 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
     5. **Test Quality**: Are tests real assertions or placeholders?
   </action>
 
-  <check if="total_issues_found lt 3">
-    <critical>NOT LOOKING HARD ENOUGH - Find more problems!</critical>
-    <action>Re-examine code for:
+  <check if="total_issues_found == 0">
+    <action>Double-check by re-examining code for:
       - Edge cases and null handling
       - Architecture violations
-      - Documentation gaps
       - Integration issues
       - Dependency problems
-      - Git commit message quality (if applicable)
     </action>
-    <action>Find at least 3 more specific, actionable issues</action>
+    <action>If still no issues found after thorough re-examination, that is a valid outcome — report a clean review</action>
   </check>
 </step>
 
