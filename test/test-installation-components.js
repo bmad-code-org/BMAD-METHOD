@@ -132,7 +132,7 @@ async function createSkillCollisionFixture() {
     ),
   );
 
-  return fixtureDir;
+  return { root: fixtureRoot, bmadDir: fixtureDir };
 }
 
 /**
@@ -1829,17 +1829,18 @@ async function runTests() {
   // ============================================================
   console.log(`${colors.yellow}Test Suite 31: Skill Count Reporting${colors.reset}\n`);
 
-  let collisionFixture = null;
+  let collisionFixtureRoot = null;
   let collisionProjectDir = null;
 
   try {
     clearCache();
-    collisionFixture = await createSkillCollisionFixture();
+    const collisionFixture = await createSkillCollisionFixture();
+    collisionFixtureRoot = collisionFixture.root;
     collisionProjectDir = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-antigravity-test-'));
 
     const ideManager = new IdeManager();
     await ideManager.ensureInitialized();
-    const result = await ideManager.setup('antigravity', collisionProjectDir, collisionFixture, {
+    const result = await ideManager.setup('antigravity', collisionProjectDir, collisionFixture.bmadDir, {
       silent: true,
       selectedModules: ['core'],
     });
@@ -1862,7 +1863,7 @@ async function runTests() {
     assert(false, 'Skill-format unique count test succeeds', error.message);
   } finally {
     if (collisionProjectDir) await fs.remove(collisionProjectDir).catch(() => {});
-    if (collisionFixture) await fs.remove(collisionFixture).catch(() => {});
+    if (collisionFixtureRoot) await fs.remove(collisionFixtureRoot).catch(() => {});
   }
 
   console.log('');
