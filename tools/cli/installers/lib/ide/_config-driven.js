@@ -150,7 +150,7 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
       if (!artifact_types || artifact_types.includes('tasks') || artifact_types.includes('tools')) {
         const taskToolGen = new TaskToolCommandGenerator(this.bmadFolderName);
         const { artifacts } = await taskToolGen.collectTaskToolArtifacts(bmadDir);
-        const taskToolResult = await this.writeTaskToolArtifacts(targetPath, artifacts, template_type, config);
+        const taskToolResult = await this.writeTaskToolArtifacts(targetPath, artifacts, template_type, config, bmadDir);
         results.tasks = taskToolResult.tasks || 0;
         results.tools = taskToolResult.tools || 0;
       }
@@ -258,7 +258,7 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
    * @param {Object} config - Installation configuration
    * @returns {Promise<Object>} Counts of tasks and tools written
    */
-  async writeTaskToolArtifacts(targetPath, artifacts, templateType, config = {}) {
+  async writeTaskToolArtifacts(targetPath, artifacts, templateType, config = {}, bmadDir = null) {
     let taskCount = 0;
     let toolCount = 0;
 
@@ -286,7 +286,7 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
       const filename = this.generateFilename(artifact, artifact.type, extension);
 
       if (config.skill_format) {
-        await this.writeSkillFile(targetPath, artifact, content);
+        await this.writeSkillFile(targetPath, artifact, content, bmadDir);
       } else {
         const filePath = path.join(targetPath, filename);
         await this.writeFile(filePath, content);
@@ -481,7 +481,7 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
    * @param {Object} artifact - Artifact data
    * @param {string} content - Rendered template content
    */
-  async writeSkillFile(targetPath, artifact, content) {
+  async writeSkillFile(targetPath, artifact, content, bmadDir = null) {
     const { resolveSkillName } = require('./shared/path-utils');
 
     // Get the skill name (prefers canonicalId, falls back to path-derived) and remove .md
@@ -500,6 +500,30 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
     const skillContent = this.transformToSkillFormat(content, skillName);
 
     await this.writeFile(path.join(skillDir, 'SKILL.md'), skillContent);
+
+    await this.writeShardDocPrototypeSkill(targetPath, bmadDir, skillName);
+  }
+
+  /**
+   * Copy shard-doc prototype skill during transition when installing skill-format targets.
+   * Keeps scope literal for the first PoC without introducing generalized prototype linkage.
+   * @param {string} targetPath - Base skills directory
+   * @param {string|null} bmadDir - Installed bmad directory
+   * @param {string} skillName - Canonical skill name being written
+   */
+  async writeShardDocPrototypeSkill(targetPath, bmadDir, skillName) {
+    if (!bmadDir || skillName !== 'bmad-shard-doc') return;
+
+    const prototypeId = 'bmad-shard-doc-skill-prototype';
+    const sourceSkillPath = path.join(bmadDir, 'core', 'tasks', prototypeId, 'SKILL.md');
+    if (!(await fs.pathExists(sourceSkillPath))) return;
+
+    const sourceSkillContent = await fs.readFile(sourceSkillPath, 'utf8');
+    if (!sourceSkillContent) return;
+
+    const prototypeDir = path.join(targetPath, prototypeId);
+    await this.ensureDir(prototypeDir);
+    await this.writeFile(path.join(prototypeDir, 'SKILL.md'), sourceSkillContent);
   }
 
   /**

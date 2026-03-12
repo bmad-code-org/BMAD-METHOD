@@ -17,6 +17,7 @@ const fs = require('fs-extra');
 const { YamlXmlBuilder } = require('../tools/cli/lib/yaml-xml-builder');
 const { ManifestGenerator } = require('../tools/cli/installers/lib/core/manifest-generator');
 const { IdeManager } = require('../tools/cli/installers/lib/ide/manager');
+const { ConfigDrivenIdeSetup } = require('../tools/cli/installers/lib/ide/_config-driven');
 const { clearCache, loadPlatformCodes } = require('../tools/cli/installers/lib/ide/platform-codes');
 
 // ANSI colors
@@ -77,6 +78,70 @@ async function createTestBmadFixture() {
   // Minimal compiled agent for bmm module (tests use selectedModules: ['bmm'])
   await fs.ensureDir(path.join(fixtureDir, 'bmm', 'agents'));
   await fs.writeFile(path.join(fixtureDir, 'bmm', 'agents', 'test-bmm-agent.md'), minimalAgent);
+
+  return fixtureDir;
+}
+
+async function createShardDocPrototypeFixture() {
+  const fixtureDir = await createTestBmadFixture();
+
+  await fs.ensureDir(path.join(fixtureDir, 'core', 'tasks'));
+  await fs.writeFile(
+    path.join(fixtureDir, 'core', 'tasks', 'shard-doc.xml'),
+    '<task id="_bmad/core/tasks/shard-doc" name="Shard Document" description="Test shard-doc task"><objective>Test objective</objective></task>\n',
+  );
+
+  await fs.writeFile(
+    path.join(fixtureDir, 'core', 'tasks', 'bmad-skill-manifest.yaml'),
+    [
+      'shard-doc.xml:',
+      '  canonicalId: bmad-shard-doc',
+      '  type: task',
+      '  description: "Splits large markdown documents into smaller, organized files based on sections"',
+      '',
+    ].join('\n'),
+  );
+
+  await fs.ensureDir(path.join(fixtureDir, 'core', 'tasks', 'bmad-shard-doc-skill-prototype'));
+  await fs.writeFile(
+    path.join(fixtureDir, 'core', 'tasks', 'bmad-shard-doc-skill-prototype', 'SKILL.md'),
+    [
+      '---',
+      'name: bmad-shard-doc-skill-prototype',
+      'description: Source-authored prototype skill',
+      '---',
+      '',
+      '# bmad-shard-doc-skill-prototype',
+      '',
+      'Prototype marker: source-authored-skill',
+      '',
+      'Read and execute from: {project-root}/_bmad/core/tasks/shard-doc.xml',
+      '',
+      'Follow all shard-doc task instructions exactly as written.',
+      '',
+    ].join('\n'),
+  );
+  await fs.writeFile(
+    path.join(fixtureDir, 'core', 'tasks', 'bmad-shard-doc-skill-prototype', 'bmad-skill-manifest.yaml'),
+    [
+      'canonicalId: bmad-shard-doc-skill-prototype',
+      'type: task',
+      'description: "Prototype native skill wrapper for shard-doc during installer transition"',
+      '',
+    ].join('\n'),
+  );
+
+  await fs.writeFile(
+    path.join(fixtureDir, '_config', 'task-manifest.csv'),
+    [
+      'name,displayName,description,module,path,standalone,canonicalId',
+      'shard-doc,Shard Document,Test shard-doc task,core,_bmad/core/tasks/shard-doc.xml,true,bmad-shard-doc',
+      '',
+    ].join('\n'),
+  );
+
+  // Ensure tool manifest exists to avoid parser edge-cases in some environments.
+  await fs.writeFile(path.join(fixtureDir, '_config', 'tool-manifest.csv'), '');
 
   return fixtureDir;
 }
@@ -827,6 +892,99 @@ async function runTests() {
   console.log('');
 
   // ============================================================
+  // Test 11: Shard-doc Prototype Duplication (Skill/Non-Skill Scope)
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 11: Shard-doc Prototype Duplication${colors.reset}\n`);
+
+  let tempSkillProjectDir;
+  let tempNonSkillProjectDir;
+  let installedBmadDir;
+  try {
+    clearCache();
+    const platformCodes = await loadPlatformCodes();
+    const skillFormatEntry = Object.entries(platformCodes.platforms || {}).find(([_, platform]) => {
+      const installer = platform?.installer;
+      if (!installer || installer.skill_format !== true || typeof installer.target_dir !== 'string') return false;
+      if (Array.isArray(installer.artifact_types) && !installer.artifact_types.includes('tasks')) return false;
+      return true;
+    });
+
+    assert(Boolean(skillFormatEntry), 'Found a skill_format platform that installs task artifacts');
+    if (!skillFormatEntry) throw new Error('No suitable skill_format platform found for shard-doc prototype test');
+
+    const [skillFormatPlatformCode, skillFormatPlatform] = skillFormatEntry;
+    const skillInstaller = skillFormatPlatform.installer;
+
+    tempSkillProjectDir = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-skill-prototype-test-'));
+    tempNonSkillProjectDir = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-nonskill-prototype-test-'));
+    installedBmadDir = await createShardDocPrototypeFixture();
+
+    const ideManager = new IdeManager();
+    await ideManager.ensureInitialized();
+
+    const skillResult = await ideManager.setup(skillFormatPlatformCode, tempSkillProjectDir, installedBmadDir, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+
+    assert(skillResult.success === true, `${skillFormatPlatformCode} setup succeeds for shard-doc prototype fixture`);
+
+    const canonicalSkillPath = path.join(tempSkillProjectDir, skillInstaller.target_dir, 'bmad-shard-doc', 'SKILL.md');
+    const prototypeSkillPath = path.join(tempSkillProjectDir, skillInstaller.target_dir, 'bmad-shard-doc-skill-prototype', 'SKILL.md');
+    assert(await fs.pathExists(canonicalSkillPath), `${skillFormatPlatformCode} install writes canonical shard-doc skill`);
+    assert(await fs.pathExists(prototypeSkillPath), `${skillFormatPlatformCode} install writes duplicated shard-doc prototype skill`);
+
+    const canonicalSkillContent = await fs.readFile(canonicalSkillPath, 'utf8');
+    const prototypeSkillContent = await fs.readFile(prototypeSkillPath, 'utf8');
+
+    assert(canonicalSkillContent.includes('name: bmad-shard-doc'), 'Canonical shard-doc skill keeps canonical frontmatter name');
+    assert(
+      canonicalSkillContent.includes('Read the entire task file at: {project-root}/_bmad/core/tasks/shard-doc.xml'),
+      'Canonical shard-doc skill points to shard-doc.xml',
+    );
+    assert(
+      prototypeSkillContent.includes('name: bmad-shard-doc-skill-prototype'),
+      'Prototype shard-doc skill uses prototype frontmatter name',
+    );
+    assert(
+      prototypeSkillContent.includes('Prototype marker: source-authored-skill'),
+      'Prototype shard-doc skill is copied from source SKILL.md',
+    );
+    assert(
+      prototypeSkillContent.includes('Read and execute from: {project-root}/_bmad/core/tasks/shard-doc.xml'),
+      'Prototype shard-doc skill preserves source-authored shard-doc.xml reference',
+    );
+
+    const nonSkillInstaller = {
+      ...skillInstaller,
+      target_dir: '.legacy/prototype-commands',
+      skill_format: false,
+      artifact_types: ['tasks'],
+    };
+    const nonSkillHandler = new ConfigDrivenIdeSetup('prototype-nonskill-test', {
+      name: 'Prototype Non-Skill Test',
+      preferred: false,
+      installer: nonSkillInstaller,
+    });
+    const nonSkillResult = await nonSkillHandler.setup(tempNonSkillProjectDir, installedBmadDir, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+
+    assert(nonSkillResult.success === true, 'Synthetic non-skill-format setup succeeds for shard-doc prototype fixture');
+
+    const nonSkillTargetDir = path.join(tempNonSkillProjectDir, nonSkillInstaller.target_dir);
+    const nonSkillEntries = await fs.readdir(nonSkillTargetDir);
+    const hasCanonical = nonSkillEntries.some((entry) => /^bmad-shard-doc(\.|$)/.test(entry));
+    const hasPrototype = nonSkillEntries.some((entry) => /^bmad-shard-doc-skill-prototype(\.|$)/.test(entry));
+    assert(hasCanonical, 'Non-skill-format install writes canonical shard-doc artifact');
+    assert(!hasPrototype, 'Non-skill-format install does not write duplicated shard-doc prototype artifact');
+  } catch (error) {
+    assert(false, 'Shard-doc prototype duplication test succeeds', error.message);
+  } finally {
+    await Promise.allSettled([tempSkillProjectDir, tempNonSkillProjectDir, installedBmadDir].filter(Boolean).map((dir) => fs.remove(dir)));
+  }
+
   // Test 17: GitHub Copilot Native Skills Install
   // ============================================================
   console.log(`${colors.yellow}Test Suite 17: GitHub Copilot Native Skills${colors.reset}\n`);
