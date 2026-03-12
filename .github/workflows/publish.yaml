@@ -37,7 +37,7 @@ permissions:
 
 jobs:
   publish:
-    if: github.event_name != 'workflow_dispatch' || github.ref == 'refs/heads/main'
+    if: github.repository == 'bmad-code-org/BMAD-METHOD' && (github.event_name != 'workflow_dispatch' || github.ref == 'refs/heads/main')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
