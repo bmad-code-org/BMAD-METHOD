@@ -1,5 +1,5 @@
 const yaml = require('yaml');
-const fs = require('fs-extra');
+const fs = require('./fs');
 
 /**
  * Analyzes agent YAML files to detect which handlers are needed

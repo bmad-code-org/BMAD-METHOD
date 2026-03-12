@@ -4,7 +4,7 @@
  * and can be checked into source control
  */
 
-const fs = require('fs-extra');
+const fs = require('../../../lib/fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
 const prompts = require('../../../lib/prompts');

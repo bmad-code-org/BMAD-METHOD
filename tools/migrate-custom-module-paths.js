@@ -3,7 +3,7 @@
  * This should be run once to update existing installations
  */
 
-const fs = require('fs-extra');
+const fs = require('./cli/lib/fs');
 const path = require('node:path');
 const yaml = require('yaml');
 const chalk = require('chalk');

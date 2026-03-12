@@ -19,7 +19,7 @@ module.exports = {
       const { bmadDir } = await installer.findBmadDir(projectDir);
 
       // Check if bmad directory exists
-      const fs = require('fs-extra');
+      const fs = require('../lib/fs');
       if (!(await fs.pathExists(bmadDir))) {
         await prompts.log.warn('No BMAD installation found in the current directory.');
         await prompts.log.message(`Expected location: ${bmadDir}`);

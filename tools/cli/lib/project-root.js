@@ -1,5 +1,5 @@
 const path = require('node:path');
-const fs = require('fs-extra');
+const fs = require('./fs');
 
 /**
  * Find the BMAD project root directory by looking for package.json

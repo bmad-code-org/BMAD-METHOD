@@ -1,4 +1,4 @@
-const fs = require('fs-extra');
+const fs = require('./fs');
 const yaml = require('yaml');
 const path = require('node:path');
 const packageJson = require('../../../package.json');

@@ -1,4 +1,4 @@
-const fs = require('fs-extra');
+const fs = require('./fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
 

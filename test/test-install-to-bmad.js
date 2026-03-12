@@ -14,7 +14,7 @@
 
 const path = require('node:path');
 const os = require('node:os');
-const fs = require('fs-extra');
+const fs = require('../tools/cli/lib/fs');
 const { loadSkillManifest, getInstallToBmad } = require('../tools/cli/installers/lib/ide/shared/skill-manifest');
 
 // ANSI colors

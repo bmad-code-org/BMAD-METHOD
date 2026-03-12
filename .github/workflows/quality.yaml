@@ -7,6 +7,7 @@ name: Quality & Validation
 # - Schema validation (YAML structure)
 # - Agent schema tests (fixture-based validation)
 # - Installation component tests (compilation)
+# - fs wrapper tests (native fs replacement)
 # - Bundle validation (web bundle integrity)
 
 "on":
@@ -111,6 +112,9 @@ jobs:
 
       - name: Test agent compilation components
         run: npm run test:install
+
+      - name: Test fs wrapper
+        run: npm run test:fs
 
       - name: Validate file references
         run: npm run validate:refs
