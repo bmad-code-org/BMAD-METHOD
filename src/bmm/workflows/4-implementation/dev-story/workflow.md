@@ -273,9 +273,17 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
     <action>Review the current task/subtask from the story file - this is your authoritative implementation guide</action>
     <action>Plan implementation following red-green-refactor cycle</action>
 
-    <!-- RED PHASE -->
-    <action>Write FAILING tests first for the task/subtask functionality</action>
-    <action>Confirm tests fail before implementation - this validates test correctness</action>
+    <!-- RED PHASE (ATDD-aware) -->
+    <check if="test files with test.fixme() or test.skip() exist for this story (check story Dev Notes for ATDD test file paths, or search project test directories for files referencing this story's acceptance criteria)">
+      <action>Identify test files containing test.fixme() or test.skip() that map to the current task/subtask</action>
+      <action>Convert matching test.fixme()/test.skip() calls to regular test() calls to activate them</action>
+      <action>Run activated tests to confirm they FAIL due to missing implementation (RED phase verified)</action>
+      <action>If a test passes unexpectedly before implementation, investigate — it may not be validating real behavior</action>
+    </check>
+    <check if="no pre-existing test.fixme()/test.skip() tests found for this task">
+      <action>Write FAILING tests first for the task/subtask functionality</action>
+      <action>Confirm tests fail before implementation - this validates test correctness</action>
+    </check>
 
     <!-- GREEN PHASE -->
     <action>Implement MINIMAL code to make tests pass</action>
@@ -386,6 +394,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
       - Dev Agent Record contains implementation notes
       - Change Log includes summary of changes
       - Only permitted story sections were modified
+      - No test.fixme() or test.skip() calls remain for completed tasks (all ATDD tests activated and passing)
     </action>
 
     <!-- Mark story ready for review - sprint status conditional -->
