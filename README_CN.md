@@ -40,7 +40,7 @@
 npx bmad-method install
 ```
 
-> 如果你获得的是过时的测试版，请使用：`npx bmad-method@6.0.1 install`
+> 想要最新的预发布版本？使用 `npx bmad-method@next install`。相比默认安装，可能会有更多变更。
 
 按照安装程序提示操作，然后在项目文件夹中打开你的 AI IDE（Claude Code、Cursor 等）。
 
@@ -62,7 +62,7 @@ BMad 方法通过官方模块扩展到专业领域。可在安装期间或之后
 | ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
 | **[BMad Method (BMM)](https://github.com/bmad-code-org/BMAD-METHOD)**                                             | 包含 34+ 工作流的核心框架                         |
 | **[BMad Builder (BMB)](https://github.com/bmad-code-org/bmad-builder)**                                           | 创建自定义 BMad 智能体和工作流                     |
-| **[Test Architect (TEA)](https://github.com/bmad-code-org/tea)**                                                  | 基于风险的测试策略和自动化                         |
+| **[Test Architect (TEA)](https://github.com/bmad-code-org/bmad-method-test-architecture-enterprise)**             | 基于风险的测试策略和自动化                         |
 | **[Game Dev Studio (BMGD)](https://github.com/bmad-code-org/bmad-module-game-dev-studio)**                        | 游戏开发工作流（Unity、Unreal、Godot）             |
 | **[Creative Intelligence Suite (CIS)](https://github.com/bmad-code-org/bmad-module-creative-intelligence-suite)** | 创新、头脑风暴、设计思维                           |
 
