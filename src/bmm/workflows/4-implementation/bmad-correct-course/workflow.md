@@ -1,5 +1,5 @@
 ---
-name: correct-course
+name: bmad-correct-course
 description: 'Manage significant changes during sprint execution. Use when the user says "correct course" or "propose sprint change"'
 ---
 
@@ -31,7 +31,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
 ### Paths
 
-- `installed_path` = `{project-root}/_bmad/bmm/workflows/4-implementation/correct-course`
+- `installed_path` = `.`
 - `checklist` = `{installed_path}/checklist.md`
 - `default_output_file` = `{planning_artifacts}/sprint-change-proposal-{date}.md`
 
