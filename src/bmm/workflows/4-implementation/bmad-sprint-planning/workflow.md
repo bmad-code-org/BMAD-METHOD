@@ -1,5 +1,5 @@
 ---
-name: sprint-planning
+name: bmad-sprint-planning
 description: 'Generate sprint status tracking from epics. Use when the user says "run sprint planning" or "generate sprint plan"'
 ---
 
@@ -26,7 +26,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
 ### Paths
 
-- `installed_path` = `{project-root}/_bmad/bmm/workflows/4-implementation/sprint-planning`
+- `installed_path` = `.`
 - `template` = `{installed_path}/sprint-status-template.yaml`
 - `checklist` = `{installed_path}/checklist.md`
 - `tracking_system` = `file-system`
