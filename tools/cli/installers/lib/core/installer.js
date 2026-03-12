@@ -1227,7 +1227,9 @@ class Installer {
                 });
 
                 if (ideConfigurations[ide] && !ideConfigurations[ide]._alreadyConfigured) {
-                  await this.ideConfigManager.saveIdeConfig(bmadDir, ide, ideConfigurations[ide]);
+                  const handler = this.ideManager.handlers.get(ide);
+                  const capabilities = handler?.platformConfig?.capabilities;
+                  await this.ideConfigManager.saveIdeConfig(bmadDir, ide, ideConfigurations[ide], capabilities);
                 }
 
                 if (setupResult.success) {

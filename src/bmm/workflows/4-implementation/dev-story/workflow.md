@@ -41,6 +41,10 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
 - `project_context` = `**/project-context.md` (load if exists)
 
+### Capabilities
+
+- `capabilities` = Load from `{project-root}/_bmad/_config/ides/*.yaml` → `capabilities` block
+
 ---
 
 ## EXECUTION
@@ -265,26 +269,70 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
       <output>ℹ️ No sprint status file exists - story progress will be tracked in story file only</output>
       <action>Set {{current_sprint_status}} = "no-sprint-tracking"</action>
     </check>
+
+    <!-- Register tasks for structured progress tracking (capability-conditional) -->
+    <check if="{capabilities.task_tracking} is available">
+      <action>For each unchecked [ ] task and subtask in the story's Tasks/Subtasks section:
+        - Register with the IDE's task tracking tool using the task description and pending status
+        - Store the mapping between story checkbox items and tracked task IDs
+      </action>
+      <action>If review_continuation == true, also register unchecked review follow-up items</action>
+      <critical>Throughout steps 5-8, update task status to in_progress when starting and completed when marking [x]</critical>
+    </check>
   </step>
 
   <step n="5" goal="Implement task following red-green-refactor cycle">
     <critical>FOLLOW THE STORY FILE TASKS/SUBTASKS SEQUENCE EXACTLY AS WRITTEN - NO DEVIATION</critical>
+    <critical>If {capabilities.sub_agents} is available, the main session is the ORCHESTRATOR - delegate actual implementation to agents, do not implement directly. Otherwise, implement directly in the main session.</critical>
 
     <action>Review the current task/subtask from the story file - this is your authoritative implementation guide</action>
-    <action>Plan implementation following red-green-refactor cycle</action>
 
-    <!-- RED PHASE -->
-    <action>Write FAILING tests first for the task/subtask functionality</action>
-    <action>Confirm tests fail before implementation - this validates test correctness</action>
+    <!-- DELEGATED IMPLEMENTATION (when sub_agents available) -->
+    <check if="{capabilities.sub_agents} is available">
+      <!-- Agent Selection -->
+      <action>Identify target file types and task domain for the current task/subtask</action>
+      <action>Check for a specialized agent in the IDE's agents directory (e.g., .claude/agents/ for Claude Code) whose description matches the target file types and task domain</action>
+      <action>If no specialized agent matches, use a general-purpose agent as fallback</action>
 
-    <!-- GREEN PHASE -->
-    <action>Implement MINIMAL code to make tests pass</action>
-    <action>Run tests to confirm they now pass</action>
-    <action>Handle error conditions and edge cases as specified in task/subtask</action>
+      <!-- Tracking Update -->
+      <check if="{capabilities.task_tracking} is available">
+        <action>Set the current task to in_progress in the IDE's task tracking tool</action>
+      </check>
 
-    <!-- REFACTOR PHASE -->
-    <action>Improve code structure while keeping tests green</action>
-    <action>Ensure code follows architecture patterns and coding standards from Dev Notes</action>
+      <!-- Delegation -->
+      <action>Launch the selected agent with a detailed prompt containing:
+        - Task description and acceptance criteria from the story file
+        - Target file paths and expected changes
+        - Red-green-refactor instructions: write failing tests first, implement minimal code to pass, then refactor
+        - Architecture patterns and coding standards from Dev Notes
+        - Project conventions from {project_context}
+      </action>
+
+      <!-- Validation -->
+      <action>When the agent completes, verify:
+        - Implementation matches the task/subtask specification exactly
+        - Tests exist and pass for the implemented functionality
+        - Code follows architecture patterns and coding standards from Dev Notes
+      </action>
+    </check>
+
+    <!-- DIRECT IMPLEMENTATION (when sub_agents NOT available) -->
+    <check if="{capabilities.sub_agents} is NOT available">
+      <action>Plan implementation following red-green-refactor cycle</action>
+
+      <!-- RED PHASE -->
+      <action>Write FAILING tests first for the task/subtask functionality</action>
+      <action>Confirm tests fail before implementation - this validates test correctness</action>
+
+      <!-- GREEN PHASE -->
+      <action>Implement MINIMAL code to make tests pass</action>
+      <action>Run tests to confirm they now pass</action>
+      <action>Handle error conditions and edge cases as specified in task/subtask</action>
+
+      <!-- REFACTOR PHASE -->
+      <action>Improve code structure while keeping tests green</action>
+      <action>Ensure code follows architecture patterns and coding standards from Dev Notes</action>
+    </check>
 
     <action>Document technical approach and decisions in Dev Agent Record → Implementation Plan</action>
 

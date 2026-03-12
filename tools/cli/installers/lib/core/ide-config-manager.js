@@ -34,8 +34,9 @@ class IdeConfigManager {
    * @param {string} bmadDir - BMAD installation directory
    * @param {string} ideName - IDE name
    * @param {Object} configuration - IDE-specific configuration object
+   * @param {Object} [capabilities] - Platform capability flags (sub_agents, task_tracking, structured_ask)
    */
-  async saveIdeConfig(bmadDir, ideName, configuration) {
+  async saveIdeConfig(bmadDir, ideName, configuration, capabilities) {
     const configDir = this.getIdeConfigDir(bmadDir);
     await fs.ensureDir(configDir);
 
@@ -59,6 +60,7 @@ class IdeConfigManager {
       ide: ideName,
       configured_date: configuredDate,
       last_updated: now,
+      ...(capabilities && Object.keys(capabilities).length > 0 ? { capabilities } : {}),
       configuration: configuration || {},
     };
 
