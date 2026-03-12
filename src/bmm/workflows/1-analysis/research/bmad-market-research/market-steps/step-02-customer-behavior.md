@@ -179,7 +179,7 @@ _Source: [URL]_
 
 - **CONTENT ALREADY WRITTEN TO DOCUMENT**
 - Update frontmatter: `stepsCompleted: [1, 2]`
-- Load: `./market-steps/step-03-customer-pain-points.md`
+- Load: `./step-03-customer-pain-points.md`
 
 ## APPEND TO DOCUMENT:
 

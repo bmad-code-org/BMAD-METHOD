@@ -190,7 +190,7 @@ _Source: [URL]_
 
 - **CONTENT ALREADY WRITTEN TO DOCUMENT**
 - Update frontmatter: `stepsCompleted: [1, 2, 3]`
-- Load: `./market-steps/step-04-customer-decisions.md`
+- Load: `./step-04-customer-decisions.md`
 
 ## APPEND TO DOCUMENT:
 

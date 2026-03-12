@@ -200,7 +200,7 @@ _Source: [URL]_
 
 - **CONTENT ALREADY WRITTEN TO DOCUMENT**
 - Update frontmatter: `stepsCompleted: [1, 2, 3, 4]`
-- Load: `./market-steps/step-05-competitive-analysis.md`
+- Load: `./step-05-competitive-analysis.md`
 
 ## APPEND TO DOCUMENT:
 
