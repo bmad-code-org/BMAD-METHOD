@@ -712,15 +712,10 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
   async printSummary(results, targetDir, options = {}) {
     if (options.silent) return;
     const parts = [];
-    if (results.skillDirectories > 0) {
-      parts.push(`${results.skillDirectories} skills`);
-    } else {
-      if (results.agents > 0) parts.push(`${results.agents} agents`);
-      if (results.workflows > 0) parts.push(`${results.workflows} workflows`);
-      if (results.tasks > 0) parts.push(`${results.tasks} tasks`);
-      if (results.tools > 0) parts.push(`${results.tools} tools`);
-      if (results.skills > 0) parts.push(`${results.skills} skills`);
-    }
+    const totalSkills =
+      results.skillDirectories || (results.workflows || 0) + (results.tasks || 0) + (results.tools || 0) + (results.skills || 0);
+    if (totalSkills > 0) parts.push(`${totalSkills} skills`);
+    if (results.agents > 0) parts.push(`${results.agents} agents`);
     await prompts.log.success(`${this.name} configured: ${parts.join(', ')} → ${targetDir}`);
   }
 

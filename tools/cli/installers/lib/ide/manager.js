@@ -162,15 +162,9 @@ class IdeManager {
         // Config-driven handlers return { success, results: { agents, workflows, tasks, tools } }
         const r = handlerResult.results;
         const parts = [];
-        if (r.skillDirectories > 0) {
-          parts.push(`${r.skillDirectories} skills`);
-        } else {
-          if (r.agents > 0) parts.push(`${r.agents} agents`);
-          if (r.workflows > 0) parts.push(`${r.workflows} workflows`);
-          if (r.tasks > 0) parts.push(`${r.tasks} tasks`);
-          if (r.tools > 0) parts.push(`${r.tools} tools`);
-          if (r.skills > 0) parts.push(`${r.skills} skills`);
-        }
+        const totalSkills = r.skillDirectories || (r.workflows || 0) + (r.tasks || 0) + (r.tools || 0) + (r.skills || 0);
+        if (totalSkills > 0) parts.push(`${totalSkills} skills`);
+        if (r.agents > 0) parts.push(`${r.agents} agents`);
         detail = parts.join(', ');
       }
       // Propagate handler's success status (default true for backward compat)

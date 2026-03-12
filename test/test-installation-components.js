@@ -1845,7 +1845,7 @@ async function runTests() {
     });
 
     assert(result.success === true, 'Antigravity setup succeeds with overlapping skill names');
-    assert(result.detail === '2 skills', 'Installer detail reports unique installed skill directories');
+    assert(result.detail === '2 skills, 2 agents', 'Installer detail reports total skills and total agents');
     assert(result.handlerResult.results.skillDirectories === 2, 'Result exposes unique skill directory count');
     assert(result.handlerResult.results.agents === 2, 'Result retains generated agent write count');
     assert(result.handlerResult.results.workflows === 1, 'Result retains generated workflow count');
@@ -1854,7 +1854,10 @@ async function runTests() {
       await fs.pathExists(path.join(collisionProjectDir, '.agent', 'skills', 'bmad-agent-bmad-master', 'SKILL.md')),
       'Agent skill directory is created',
     );
-    assert(await fs.pathExists(path.join(collisionProjectDir, '.agent', 'skills', 'bmad-help', 'SKILL.md')), 'Overlapping skill directory is created once');
+    assert(
+      await fs.pathExists(path.join(collisionProjectDir, '.agent', 'skills', 'bmad-help', 'SKILL.md')),
+      'Overlapping skill directory is created once',
+    );
   } catch (error) {
     assert(false, 'Skill-format unique count test succeeds', error.message);
   } finally {
