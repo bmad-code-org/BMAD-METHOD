@@ -141,16 +141,6 @@ class UI {
         default: 'design-process',
       },
       {
-        type: 'list',
-        name: 'starting_point',
-        message: 'Do you need to create a pitch deck & project contract before starting the project?',
-        choices: [
-          { name: 'No, start directly with the Product Brief', value: 'brief' },
-          { name: 'Yes, start with a project pitch', value: 'pitch' },
-        ],
-        default: 'brief',
-      },
-      {
         type: 'checkbox',
         name: 'ides',
         message: 'Which tools/IDEs are you using? (use spacebar to select)',

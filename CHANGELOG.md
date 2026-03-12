@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.4 (unreleased)
+
+### Fixes
+- **Pitch deck question removed from installer** - The "start with pitch or Product Brief?" prompt was a config-time decision that should be runtime. Removed from installer; Saga now asks at activation when relevant. Supports monorepo workflows where multiple products have different starting points.
+- **Skills file format** - Skills were installed to `.claude/skills/wds/saga.md` but Claude Code expects `.claude/skills/{name}/SKILL.md`. Fixed paths to `.claude/skills/saga/SKILL.md` and `.claude/skills/freya/SKILL.md`.
+- **Learning material location** - `_wds-learn/` moved from project root into `_bmad/wds/learn/` to reduce root-level noise, especially in monorepos.
+
 ## 0.3.0 (2026-03-01)
 
 ### Breaking Changes

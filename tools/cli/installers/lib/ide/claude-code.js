@@ -8,7 +8,7 @@ const chalk = require('chalk');
 class ClaudeCodeSetup extends BaseIdeSetup {
   constructor() {
     super('claude-code', 'Claude Code', true); // preferred IDE
-    this.configDir = '.claude/skills/wds';
+    this.configDir = '.claude/skills';
   }
 
   /**
@@ -18,10 +18,6 @@ class ClaudeCodeSetup extends BaseIdeSetup {
    * @param {Object} options - Setup options
    */
   async setup(projectDir, wdsDir, options = {}) {
-    // Create .claude/skills/wds directory
-    const targetDir = path.join(projectDir, this.configDir);
-    await this.ensureDir(targetDir);
-
     // Get all WDS agents
     const agents = await this.getAgents(wdsDir);
 
@@ -29,7 +25,8 @@ class ClaudeCodeSetup extends BaseIdeSetup {
       throw new Error('No agents found in WDS installation');
     }
 
-    // Create launcher file for each agent
+    // Create launcher file for each agent in .claude/skills/{slug}/SKILL.md
+    const skillsDir = path.join(projectDir, this.configDir);
     let agentCount = 0;
     for (const agent of agents) {
       // Create launcher content that references the compiled agent
@@ -38,8 +35,10 @@ class ClaudeCodeSetup extends BaseIdeSetup {
       // Add Claude Code-specific YAML frontmatter
       const content = this.processContent(launcher, agent.metadata);
 
-      // Write launcher file
-      const filePath = path.join(targetDir, `${agent.slug}.md`);
+      // Write launcher file as .claude/skills/{slug}/SKILL.md
+      const agentDir = path.join(skillsDir, agent.slug);
+      await this.ensureDir(agentDir);
+      const filePath = path.join(agentDir, 'SKILL.md');
       await this.writeFile(filePath, content);
       agentCount++;
     }
@@ -84,11 +83,20 @@ description: ${description}
    * @param {string} projectDir - Project directory
    */
   async cleanup(projectDir) {
-    const wdsPath = path.join(projectDir, this.configDir);
+    // Remove per-agent skill directories
+    const agents = ['saga', 'freya'];
+    for (const slug of agents) {
+      const skillPath = path.join(projectDir, this.configDir, slug);
+      if (await this.exists(skillPath)) {
+        await this.remove(skillPath);
+      }
+    }
 
-    if (await this.exists(wdsPath)) {
-      await this.remove(wdsPath);
-      console.log(chalk.dim(`Removed Claude Code WDS configuration`));
+    // Also clean up legacy .claude/skills/wds/ if present
+    const legacyPath = path.join(projectDir, '.claude/skills/wds');
+    if (await this.exists(legacyPath)) {
+      await this.remove(legacyPath);
+      console.log(chalk.dim(`Removed legacy Claude Code WDS configuration`));
     }
   }
 

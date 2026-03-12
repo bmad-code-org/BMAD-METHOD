@@ -166,7 +166,7 @@ class Installer {
       const learnSpinner = ora('Copying learning & reference material...').start();
       try {
         await this.copyLearningMaterial(projectDir);
-        learnSpinner.succeed('Learning material added to _wds-learn/ (safe to remove when no longer needed)');
+        learnSpinner.succeed('Learning material added to _bmad/wds/learn/ (safe to remove when no longer needed)');
       } catch (error) {
         learnSpinner.fail('Failed to copy learning material');
         throw error;
@@ -225,7 +225,6 @@ class Installer {
     const configData = {
       user_name: getUserName(),
       project_name: config.project_name || 'Untitled Project',
-      starting_point: config.starting_point || 'brief',
       communication_language: 'en',
       document_output_language: 'en',
       output_folder: config.root_folder || 'design-process',
@@ -260,7 +259,7 @@ class Installer {
    * Users can safely delete this folder without affecting agents or workflows.
    */
   async copyLearningMaterial(projectDir) {
-    const learnDir = path.join(projectDir, '_wds-learn');
+    const learnDir = path.join(projectDir, '_bmad/wds/learn');
     const learningDirs = ['getting-started', 'learn', 'method', 'models', 'tools'];
     const excludeDirs = new Set(['course-explainers', 'Webinars']);
 
