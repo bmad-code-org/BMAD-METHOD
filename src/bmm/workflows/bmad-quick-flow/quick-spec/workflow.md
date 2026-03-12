@@ -4,7 +4,7 @@ description: 'Very quick process to create implementation-ready quick specs for 
 main_config: '{project-root}/_bmad/bmm/config.yaml'
 
 # Checkpoint handler paths
-advanced_elicitation: '{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.md'
+advanced_elicitation: 'skill:bmad-advanced-elicitation'
 party_mode_exec: '{project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md'
 quick_dev_workflow: '{project-root}/_bmad/bmm/workflows/bmad-quick-flow/quick-dev/workflow.md'
 ---

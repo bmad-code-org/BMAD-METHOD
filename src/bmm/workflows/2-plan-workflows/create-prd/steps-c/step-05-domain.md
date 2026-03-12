@@ -8,7 +8,7 @@ outputFile: '{planning_artifacts}/prd.md'
 domainComplexityCSV: '{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-prd/data/domain-complexity.csv'
 
 # Task References
-advancedElicitationTask: '{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.md'
+advancedElicitationTask: 'skill:bmad-advanced-elicitation'
 partyModeWorkflow: '{project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md'
 ---
 

@@ -41,7 +41,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
 - `quick_spec_workflow` = `{project-root}/_bmad/bmm/workflows/bmad-quick-flow/quick-spec/workflow.md`
 - `party_mode_exec` = `{project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md`
-- `advanced_elicitation` = `{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.md`
+- `advanced_elicitation` = `skill:bmad-advanced-elicitation`
 
 ---
 
