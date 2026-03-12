@@ -95,11 +95,11 @@ TEA also supports P0-P3 risk-based prioritization and optional integrations with
 
 ## How Testing Fits into Workflows
 
-Quinn's Automate workflow appears in Phase 4 (Implementation) of the BMad Method workflow map. A typical sequence:
+Quinn's Automate workflow appears in Phase 4 (Implementation) of the BMad Method workflow map. It is designed to run **after a full epic is complete** — once all stories in an epic have been implemented and code-reviewed. A typical sequence:
 
-1. Implement a story with the Dev workflow (`DS`)
-2. Generate tests with Quinn (`QA`) or TEA's Automate workflow
-3. Validate implementation with Code Review (`CR`)
+1. For each story in the epic: implement with Dev (`DS`), then validate with Code Review (`CR`)
+2. After the epic is complete: generate tests with Quinn (`QA`) or TEA's Automate workflow
+3. Run retrospective (`bmad-retrospective`) to capture lessons learned
 
 Quinn works directly from source code without loading planning documents (PRD, architecture). TEA workflows can integrate with upstream planning artifacts for traceability.
 
