@@ -27,7 +27,7 @@ agent:
       description: "[MR] Market Research: Market analysis, competitive landscape, customer needs and trends"
 
     - trigger: DR or fuzzy match on domain-research
-      exec: "{project-root}/_bmad/bmm/workflows/1-analysis/research/workflow-domain-research.md"
+      exec: "{project-root}/_bmad/bmm/workflows/1-analysis/research/bmad-domain-research/workflow.md"
       description: "[DR] Domain Research: Industry domain deep dive, subject matter expertise and terminology"
 
     - trigger: TR or fuzzy match on technical-research
