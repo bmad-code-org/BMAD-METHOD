@@ -1,5 +1,5 @@
 ---
-name: brainstorming
+name: bmad-brainstorming
 description: 'Facilitate interactive brainstorming sessions using diverse creative techniques and ideation methods. Use when the user says help me brainstorm or help me ideate.'
 context_file: '' # Optional context file path for project-specific guidance
 ---
@@ -42,9 +42,8 @@ Load config from `{project-root}/_bmad/core/config.yaml` and resolve:
 
 ### Paths
 
-- `installed_path` = `{project-root}/_bmad/core/workflows/brainstorming`
-- `template_path` = `{installed_path}/template.md`
-- `brain_techniques_path` = `{installed_path}/brain-methods.csv`
+- `template_path` = `./template.md`
+- `brain_techniques_path` = `./brain-methods.csv`
 - `brainstorming_session_output_file` = `{output_folder}/brainstorming/brainstorming-session-{{date}}-{{time}}.md` (evaluated once at workflow start)
 
 All steps MUST reference `{brainstorming_session_output_file}` instead of the full path pattern.
