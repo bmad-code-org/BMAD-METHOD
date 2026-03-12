@@ -162,8 +162,9 @@ class IdeManager {
         // Config-driven handlers return { success, results: { agents, workflows, tasks, tools } }
         const r = handlerResult.results;
         const parts = [];
-        const totalSkills = r.skillDirectories || (r.workflows || 0) + (r.tasks || 0) + (r.tools || 0) + (r.skills || 0);
-        if (totalSkills > 0) parts.push(`${totalSkills} skills`);
+        const totalDirs = r.skillDirectories || (r.workflows || 0) + (r.tasks || 0) + (r.tools || 0) + (r.skills || 0);
+        const skillCount = totalDirs - (r.agents || 0);
+        if (skillCount > 0) parts.push(`${skillCount} skills`);
         if (r.agents > 0) parts.push(`${r.agents} agents`);
         detail = parts.join(', ');
       }

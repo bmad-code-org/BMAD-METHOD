@@ -1846,7 +1846,7 @@ async function runTests() {
     });
 
     assert(result.success === true, 'Antigravity setup succeeds with overlapping skill names');
-    assert(result.detail === '2 skills, 2 agents', 'Installer detail reports total skills and total agents');
+    assert(result.detail === '2 agents', 'Installer detail reports agents separately from skills');
     assert(result.handlerResult.results.skillDirectories === 2, 'Result exposes unique skill directory count');
     assert(result.handlerResult.results.agents === 2, 'Result retains generated agent write count');
     assert(result.handlerResult.results.workflows === 1, 'Result retains generated workflow count');
