@@ -31,7 +31,7 @@ This step will generate content and present choices:
 ## PROTOCOL INTEGRATION:
 
 - When 'A' selected: Read fully and follow: {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.md
-- When 'P' selected: Read fully and follow: {project-root}/_bmad/core/workflows/party-mode/workflow.md
+- When 'P' selected: Read fully and follow: {project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md
 - PROTOCOLS always return to this step's A/P/C menu
 - User accepts/rejects protocol changes before proceeding
 
@@ -205,7 +205,7 @@ Show the generated design system content and present choices:
 
 #### If 'P' (Party Mode):
 
-- Read fully and follow: {project-root}/_bmad/core/workflows/party-mode/workflow.md with the current design system choice
+- Read fully and follow: {project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md with the current design system choice
 - Process the collaborative design system insights that come back
 - Ask user: "Accept these changes to the design system decision? (y/n)"
 - If yes: Update content with improvements, then return to A/P/C menu
