@@ -1,5 +1,5 @@
 ---
-name: create-story
+name: bmad-create-story
 description: 'Creates a dedicated story file with all the context the agent will need to implement it later. Use when the user says "create the next story" or "create story [story identifier]"'
 ---
 
@@ -32,9 +32,9 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
 ### Paths
 
-- `installed_path` = `{project-root}/_bmad/bmm/workflows/4-implementation/create-story`
-- `template` = `{installed_path}/template.md`
-- `validation` = `{installed_path}/checklist.md`
+- `installed_path` = `.`
+- `template` = `./template.md`
+- `validation` = `./checklist.md`
 - `sprint_status` = `{implementation_artifacts}/sprint-status.yaml`
 - `epics_file` = `{planning_artifacts}/epics.md`
 - `prd_file` = `{planning_artifacts}/prd.md`
