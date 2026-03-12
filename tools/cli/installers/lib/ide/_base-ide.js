@@ -1,5 +1,6 @@
 const path = require('node:path');
 const fs = require('fs-extra');
+const yaml = require('yaml');
 const { XmlHandler } = require('../../../lib/xml-handler');
 const prompts = require('../../../lib/prompts');
 const { getSourcePath } = require('../../../lib/project-root');
@@ -339,6 +340,10 @@ class BaseIdeSetup {
 
     const entries = await fs.readdir(dir, { withFileTypes: true });
 
+    if (await this.isSkillDirectory(dir)) {
+      return workflows;
+    }
+
     for (const entry of entries) {
       const fullPath = path.join(dir, entry.name);
 
@@ -349,7 +354,6 @@ class BaseIdeSetup {
       } else if (entry.isFile() && entry.name === 'workflow.md') {
         // Read workflow.md frontmatter to get name and standalone property
         try {
-          const yaml = require('yaml');
           const content = await fs.readFile(fullPath, 'utf8');
           const frontmatterMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
           if (!frontmatterMatch) continue;
@@ -375,6 +379,37 @@ class BaseIdeSetup {
     }
 
     return workflows;
+  }
+
+  /**
+   * Check whether a directory is claimed by a native skill.
+   * Skill directories should be surfaced via SKILL.md, not workflow.md metadata.
+   * @param {string} dir - Directory path
+   * @returns {boolean}
+   */
+  async isSkillDirectory(dir) {
+    const manifestPath = path.join(dir, 'bmad-skill-manifest.yaml');
+    const skillPath = path.join(dir, 'SKILL.md');
+
+    if (!(await fs.pathExists(manifestPath)) || !(await fs.pathExists(skillPath))) {
+      return false;
+    }
+
+    try {
+      const manifest = yaml.parse(await fs.readFile(manifestPath, 'utf8'));
+
+      if (!manifest || typeof manifest !== 'object') {
+        return false;
+      }
+
+      if (manifest.__single) {
+        return manifest.__single.type === 'skill';
+      }
+
+      return Object.values(manifest).some((entry) => entry && typeof entry === 'object' && entry.type === 'skill');
+    } catch {
+      return false;
+    }
   }
 
   /**
