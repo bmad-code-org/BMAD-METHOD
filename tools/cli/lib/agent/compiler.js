@@ -157,7 +157,7 @@ function buildMenuXml(menuItems) {
     }
   }
 
-  xml += `    <item cmd="PM or fuzzy match on party-mode" exec="{project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md">[PM] Start Party Mode</item>\n`;
+  xml += `    <item cmd="PM or fuzzy match on party-mode" exec="skill:bmad-party-mode">[PM] Start Party Mode</item>\n`;
   xml += `    <item cmd="DA or fuzzy match on exit, leave, goodbye or dismiss agent">[DA] Dismiss Agent</item>\n`;
 
   xml += '  </menu>\n';
