@@ -14,7 +14,7 @@ epicsTemplate: '{workflow_path}/templates/epics-template.md'
 
 # Task References
 advancedElicitationTask: '{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.md'
-partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
+partyModeWorkflow: '{project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md'
 
 # Template References
 epicsTemplate: '{workflow_path}/templates/epics-template.md'
@@ -154,20 +154,31 @@ Review the Architecture document for technical requirements that impact epic and
 ...
 ```
 
-### 6. Extract Additional Requirements from UX (if exists)
+### 6. Extract UX Design Requirements (if UX document exists)
 
-Review the UX document for requirements that affect epic and story creation:
+**IMPORTANT**: The UX Design Specification is a first-class input document, not supplementary material. Requirements from the UX spec must be extracted with the same rigor as PRD functional requirements.
+
+Read the FULL UX Design document and extract ALL actionable work items:
 
 **Look for:**
 
-- Responsive design requirements
-- Accessibility requirements
-- Browser/device compatibility
-- User interaction patterns that need implementation
-- Animation or transition requirements
-- Error handling UX requirements
+- **Design token work**: Color systems, spacing scales, typography tokens that need implementation or consolidation
+- **Component proposals**: Reusable UI components identified in the UX spec (e.g., ConfirmActions, StatusMessage, EmptyState, FocusIndicator)
+- **Visual standardization**: Semantic CSS classes, consistent color palette usage, design pattern consolidation
+- **Accessibility requirements**: Contrast audit fixes, ARIA patterns, keyboard navigation, screen reader support
+- **Responsive design requirements**: Breakpoints, layout adaptations, mobile-specific interactions
+- **Interaction patterns**: Animations, transitions, loading states, error handling UX
+- **Browser/device compatibility**: Target platforms, progressive enhancement requirements
 
-**Add these to Additional Requirements list.**
+**Format UX Design Requirements as a SEPARATE section (not merged into Additional Requirements):**
+
+```
+UX-DR1: [Actionable UX design requirement with clear implementation scope]
+UX-DR2: [Actionable UX design requirement with clear implementation scope]
+...
+```
+
+**🚨 CRITICAL**: Do NOT reduce UX requirements to vague summaries. Each UX-DR must be specific enough to generate a story with testable acceptance criteria. If the UX spec identifies 6 reusable components, list all 6 — not "create reusable components."
 
 ### 7. Load and Initialize Template
 
@@ -178,7 +189,8 @@ Load {epicsTemplate} and initialize {outputFile}:
 3. Replace placeholder sections with extracted requirements:
    - {{fr_list}} → extracted FRs
    - {{nfr_list}} → extracted NFRs
-   - {{additional_requirements}} → extracted additional requirements
+   - {{additional_requirements}} → extracted additional requirements (from Architecture)
+   - {{ux_design_requirements}} → extracted UX Design Requirements (if UX document exists)
 4. Leave {{requirements_coverage_map}} and {{epics_list}} as placeholders for now
 
 ### 8. Present Extracted Requirements
@@ -197,11 +209,16 @@ Display to user:
 - Display key NFRs
 - Ask if any constraints were missed
 
-**Additional Requirements:**
+**Additional Requirements (Architecture):**
 
 - Summarize technical requirements from Architecture
-- Summarize UX requirements (if applicable)
 - Verify completeness
+
+**UX Design Requirements (if applicable):**
+
+- Show count of UX-DRs found
+- Display key UX Design requirements (design tokens, components, accessibility)
+- Verify each UX-DR is specific enough for story creation
 
 ### 9. Get User Confirmation
 
@@ -216,6 +233,7 @@ After extraction and confirmation, update {outputFile} with:
 - Complete FR list in {{fr_list}} section
 - Complete NFR list in {{nfr_list}} section
 - All additional requirements in {{additional_requirements}} section
+- UX Design requirements in {{ux_design_requirements}} section (if UX document exists)
 
 ### 10. Present MENU OPTIONS
 

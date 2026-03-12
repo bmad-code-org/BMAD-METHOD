@@ -3,7 +3,7 @@ main_config: '{project-root}/_bmad/bmm/config.yaml'
 
 # Related workflows
 advanced_elicitation: '{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.md'
-party_mode_exec: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
+party_mode_exec: '{project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md'
 ---
 
 # Quick Dev New Preview Workflow

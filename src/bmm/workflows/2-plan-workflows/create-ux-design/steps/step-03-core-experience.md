@@ -31,7 +31,7 @@ This step will generate content and present choices:
 ## PROTOCOL INTEGRATION:
 
 - When 'A' selected: Read fully and follow: {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.md
-- When 'P' selected: Read fully and follow: {project-root}/_bmad/core/workflows/party-mode/workflow.md
+- When 'P' selected: Read fully and follow: {project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md
 - PROTOCOLS always return to this step's A/P/C menu
 - User accepts/rejects protocol changes before proceeding
 
@@ -169,7 +169,7 @@ Show the generated core experience content and present choices:
 
 #### If 'P' (Party Mode):
 
-- Read fully and follow: {project-root}/_bmad/core/workflows/party-mode/workflow.md with the current core experience definition
+- Read fully and follow: {project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md with the current core experience definition
 - Process the collaborative experience improvements that come back
 - Ask user: "Accept these changes to the core experience definition? (y/n)"
 - If yes: Update content with improvements, then return to A/P/C menu

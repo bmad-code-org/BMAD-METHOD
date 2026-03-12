@@ -9,7 +9,7 @@ purposeFile: '{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-prd/dat
 
 # Task References
 advancedElicitationTask: '{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.md'
-partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
+partyModeWorkflow: '{project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md'
 ---
 
 # Step 11: Document Polish
@@ -98,6 +98,22 @@ Review the entire document with PRD purpose principles in mind:
 - Is the language consistent throughout?
 - Are technical terms used appropriately?
 - Would stakeholders find this easy to understand?
+
+### 2b. Brainstorming Reconciliation (if brainstorming input exists)
+
+**Check the PRD frontmatter `inputDocuments` for any brainstorming document** (e.g., `brainstorming-session*.md`, `brainstorming-report.md`). If a brainstorming document was used as input:
+
+1. **Load the brainstorming document** and extract all distinct ideas, themes, and recommendations
+2. **Cross-reference against the PRD** — for each brainstorming idea, check if it landed in any PRD section (requirements, success criteria, user journeys, scope, etc.)
+3. **Identify dropped ideas** — ideas from brainstorming that do not appear anywhere in the PRD. Pay special attention to:
+   - Tone, personality, and interaction design ideas (these are most commonly lost)
+   - Design philosophy and coaching approach ideas
+   - "What should this feel like" ideas (UX feel, not just UX function)
+   - Qualitative/soft ideas that don't map cleanly to functional requirements
+4. **Present findings to user**: "These brainstorming ideas did not make it into the PRD: [list]. Should any be incorporated?"
+5. **If user wants to incorporate dropped ideas**: Add them to the most appropriate PRD section (success criteria, non-functional requirements, or a new section if needed)
+
+**Why this matters**: Brainstorming documents are often long, and the PRD's structured template has an implicit bias toward concrete/structural ideas. Soft ideas (tone, philosophy, interaction feel) frequently get silently dropped because they don't map cleanly to FR/NFR format.
 
 ### 3. Optimization Actions
 
@@ -193,6 +209,7 @@ When user selects 'C', replace the entire document content with the polished ver
 ✅ User's voice and intent preserved
 ✅ Document is more readable and professional
 ✅ A/P/C menu presented and handled correctly
+✅ Brainstorming reconciliation completed (if brainstorming input exists)
 ✅ Polished document saved when C selected
 
 ## FAILURE MODES:
