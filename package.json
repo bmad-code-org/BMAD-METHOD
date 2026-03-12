@@ -95,7 +95,7 @@
     "ignore": "^7.0.5",
     "jest": "^30.0.4",
     "lint-staged": "^16.1.1",
-    "markdownlint-cli2": "^0.19.1",
+    "markdownlint-cli2": "^0.21.0",
     "prettier": "^3.7.4",
     "prettier-plugin-packagejson": "^2.5.19",
     "semver": "^7.6.3",
