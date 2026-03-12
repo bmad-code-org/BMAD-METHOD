@@ -21,7 +21,7 @@ agent:
 
   menu:
     - trigger: CA or fuzzy match on create-architecture
-      exec: "{project-root}/_bmad/bmm/workflows/3-solutioning/create-architecture/workflow.md"
+      exec: "{project-root}/_bmad/bmm/workflows/3-solutioning/bmad-create-architecture/workflow.md"
       description: "[CA] Create Architecture: Guided Workflow to document technical decisions to keep implementation on track"
 
     - trigger: IR or fuzzy match on implementation-readiness
