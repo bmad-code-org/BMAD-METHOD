@@ -34,5 +34,5 @@ agent:
       description: "[DS] Dev Story: Write the next or specified stories tests and code."
 
     - trigger: CR or fuzzy match on code-review
-      exec: "{project-root}/_bmad/bmm/workflows/4-implementation/code-review/workflow.md"
+      exec: "{project-root}/_bmad/bmm/workflows/4-implementation/bmad-code-review/workflow.md"
       description: "[CR] Code Review: Initiate a comprehensive code review across multiple quality facets. For best results, use a fresh context and a different quality LLM if available"

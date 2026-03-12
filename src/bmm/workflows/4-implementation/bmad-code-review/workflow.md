@@ -1,5 +1,5 @@
 ---
-name: code-review
+name: bmad-code-review
 description: 'Perform adversarial code review finding specific issues. Use when the user says "run code review" or "review this code"'
 ---
 
@@ -35,7 +35,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
 ### Paths
 
-- `installed_path` = `{project-root}/_bmad/bmm/workflows/4-implementation/code-review`
+- `installed_path` = `.`
 - `sprint_status` = `{implementation_artifacts}/sprint-status.yaml`
 - `validation` = `{installed_path}/checklist.md`
 
