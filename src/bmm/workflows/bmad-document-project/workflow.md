@@ -1,5 +1,5 @@
 ---
-name: document-project
+name: bmad-document-project
 description: 'Document brownfield projects for AI context. Use when the user says "document this project" or "generate project docs"'
 ---
 
@@ -27,7 +27,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
 ### Paths
 
-- `installed_path` = `{project-root}/_bmad/bmm/workflows/document-project`
+- `installed_path` = `.`
 - `instructions` = `{installed_path}/instructions.md`
 - `validation` = `{installed_path}/checklist.md`
 - `documentation_requirements_csv` = `{installed_path}/documentation-requirements.csv`

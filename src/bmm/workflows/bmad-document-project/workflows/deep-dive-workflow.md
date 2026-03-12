@@ -28,10 +28,10 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
 ### Paths
 
-- `installed_path` = `{project-root}/_bmad/bmm/workflows/document-project/workflows`
+- `installed_path` = `.`
 - `instructions` = `{installed_path}/deep-dive-instructions.md`
-- `validation` = `{project-root}/_bmad/bmm/workflows/document-project/checklist.md`
-- `deep_dive_template` = `{project-root}/_bmad/bmm/workflows/document-project/templates/deep-dive-template.md`
+- `validation` = `../checklist.md`
+- `deep_dive_template` = `../templates/deep-dive-template.md`
 
 ### Runtime Inputs
 
