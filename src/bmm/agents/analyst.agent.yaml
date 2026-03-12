@@ -23,7 +23,7 @@ agent:
       description: "[BP] Brainstorm Project: Expert Guided Facilitation through a single or multiple techniques with a final report"
 
     - trigger: MR or fuzzy match on market-research
-      exec: "{project-root}/_bmad/bmm/workflows/1-analysis/research/workflow-market-research.md"
+      exec: "{project-root}/_bmad/bmm/workflows/1-analysis/research/bmad-market-research/workflow.md"
       description: "[MR] Market Research: Market analysis, competitive landscape, customer needs and trends"
 
     - trigger: DR or fuzzy match on domain-research
