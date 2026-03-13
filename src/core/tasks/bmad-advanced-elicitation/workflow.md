@@ -1,6 +1,4 @@
 ---
-name: bmad-advanced-elicitation
-description: 'Push the LLM to reconsider refine and improve its recent output.'
 methods: './methods.csv'
 agent_party: '{project-root}/_bmad/_config/agent-manifest.csv'
 ---
