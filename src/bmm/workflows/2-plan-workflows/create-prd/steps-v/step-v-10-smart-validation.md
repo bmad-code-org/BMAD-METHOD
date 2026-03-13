@@ -6,7 +6,6 @@ description: 'SMART Requirements Validation - Validate Functional Requirements m
 nextStepFile: './step-v-11-holistic-quality-validation.md'
 prdFile: '{prd_file_path}'
 validationReportPath: '{validation_report_path}'
-advancedElicitationTask: 'skill:bmad-advanced-elicitation'
 ---
 
 # Step 10: SMART Requirements Validation
