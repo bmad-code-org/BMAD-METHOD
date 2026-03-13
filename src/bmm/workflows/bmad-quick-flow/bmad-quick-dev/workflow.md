@@ -29,7 +29,6 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
 ### Paths
 
-- `installed_path` = `.`
 - `project_context` = `**/project-context.md` (load if exists)
 
 ### Related Workflows
