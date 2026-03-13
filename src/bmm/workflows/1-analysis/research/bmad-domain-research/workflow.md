@@ -1,8 +1,3 @@
----
-name: domain-research
-description: 'Conduct domain and industry research. Use when the user says "lets create a research report on [domain or industry]"'
----
-
 # Domain Research Workflow
 
 **Goal:** Conduct comprehensive domain/industry research using current web data and verified sources to produce complete research documents with compelling narratives and proper citations.
