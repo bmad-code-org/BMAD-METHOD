@@ -3,7 +3,7 @@ name: 'step-02-vision'
 description: 'Discover and define the core product vision, problem statement, and unique value proposition'
 
 # File References
-nextStepFile: './steps/step-03-users.md'
+nextStepFile: './step-03-users.md'
 outputFile: '{planning_artifacts}/product-brief-{{project_name}}-{{date}}.md'
 
 # Task References
