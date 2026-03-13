@@ -20,6 +20,10 @@ build/*.txt
 # Environment variables
 .env
 
+# Python
+__pycache__/
+.pytest_cache/
+
 # System files
 .DS_Store
 Thumbs.db
@@ -40,6 +44,7 @@ CLAUDE.local.md
 .agents/
 
 z*/
+!docs/zh-cn/
 
 _bmad
 _bmad-output
@@ -55,7 +60,7 @@ _bmad-output
 .qwen
 .rovodev
 .kilocodemodes
-.claude/commands
+.claude
 .codex
 .github/chatmodes
 .github/agents

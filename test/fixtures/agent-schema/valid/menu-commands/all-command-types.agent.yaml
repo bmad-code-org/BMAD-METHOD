@@ -19,7 +19,7 @@ agent:
   menu:
     - trigger: workflow-test
       description: Test workflow command
-      workflow: path/to/workflow
+      exec: path/to/workflow
     - trigger: validate-test
       description: Test validate-workflow command
       validate-workflow: path/to/validation

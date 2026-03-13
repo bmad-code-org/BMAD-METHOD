@@ -1,4 +1,4 @@
-description = """{{description}}"""
+description = '{{description}}'
 prompt = """
 Execute the BMAD '{{name}}' workflow.
 

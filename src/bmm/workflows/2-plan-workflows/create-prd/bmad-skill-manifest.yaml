@@ -1,0 +1,14 @@
+workflow-create-prd.md:
+  canonicalId: bmad-create-prd
+  type: workflow
+  description: "Create a PRD from scratch. Use when the user says 'lets create a product requirements document' or 'I want to create a new PRD'"
+
+workflow-edit-prd.md:
+  canonicalId: bmad-edit-prd
+  type: workflow
+  description: "Edit an existing PRD. Use when the user says 'edit this PRD'"
+
+workflow-validate-prd.md:
+  canonicalId: bmad-validate-prd
+  type: workflow
+  description: "Validate a PRD against standards. Use when the user says 'validate this PRD' or 'run PRD validation'"

@@ -11,8 +11,8 @@ workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{planning_artifacts}/epics.md'
 
 # Task References
-advancedElicitationTask: '{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml'
-partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
+advancedElicitationTask: 'skill:bmad-advanced-elicitation'
+partyModeWorkflow: '{project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md'
 
 # Template References
 epicsTemplate: '{workflow_path}/templates/epics-template.md'
@@ -144,6 +144,6 @@ If all validations pass:
 
 When C is selected, the workflow is complete and the epics.md is ready for development.
 
-Epics and Stories complete. Read fully and follow: `{project-root}/_bmad/core/tasks/help.md` with argument `Create Epics and Stories`.
+Epics and Stories complete. Invoke the `bmad-help` skill.
 
 Upon Completion of task output: offer to answer any questions about the Epics and Stories.

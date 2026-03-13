@@ -1,5 +1,5 @@
 ---
-name: '{{name}}'
+mode: all
 description: '{{description}}'
 ---
 

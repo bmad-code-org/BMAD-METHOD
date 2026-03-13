@@ -7,7 +7,7 @@ sidebar:
 
 ## Start Here: BMad-Help
 
-**The fastest way to get answers about BMad is `/bmad-help`.** This intelligent guide will answer upwards of 80% of all questions and is available to you directly in your IDE as you work.
+**The fastest way to get answers about BMad is the `bmad-help` skill.** This intelligent guide will answer upwards of 80% of all questions and is available to you directly in your IDE as you work.
 
 BMad-Help is more than a lookup tool — it:
 - **Inspects your project** to see what's already been completed
@@ -18,19 +18,23 @@ BMad-Help is more than a lookup tool — it:
 
 ### How to Use BMad-Help
 
-Run it with just the slash command:
+Call it by name in your AI session:
 
 ```
-/bmad-help
+bmad-help
 ```
 
-Or combine it with a natural language query:
+:::tip
+You can also use `/bmad-help` or `$bmad-help` depending on your platform, but just `bmad-help` should work everywhere.
+:::
+
+Combine it with a natural language query:
 
 ```
-/bmad-help I have a SaaS idea and know all the features. Where do I start?
-/bmad-help What are my options for UX design?
-/bmad-help I'm stuck on the PRD workflow
-/bmad-help Show me what's been done so far
+bmad-help I have a SaaS idea and know all the features. Where do I start?
+bmad-help What are my options for UX design?
+bmad-help I'm stuck on the PRD workflow
+bmad-help Show me what's been done so far
 ```
 
 BMad-Help responds with:
@@ -81,7 +85,7 @@ https://bmad-code-org.github.io/BMAD-METHOD/llms-full.txt
 :::note[Example]
 **Q:** "Tell me the fastest way to build something with BMad"
 
-**A:** Use Quick Flow: Run `quick-spec` to write a technical specification, then `quick-dev` to implement it—skipping the full planning phases.
+**A:** Use Quick Flow: Run `bmad-quick-spec` to write a technical specification, then `bmad-quick-dev` to implement it—skipping the full planning phases.
 :::
 
 ## What You Get

@@ -367,15 +367,6 @@ class YamlXmlBuilder {
           const attrs = [`cmd="${trigger}"`];
 
           // Add handler attributes
-          // If workflow-install exists, use its value for workflow attribute (vendoring)
-          // workflow-install is build-time metadata - tells installer where to copy workflows
-          // The final XML should only have workflow pointing to the install location
-          if (item['workflow-install']) {
-            attrs.push(`workflow="${item['workflow-install']}"`);
-          } else if (item.workflow) {
-            attrs.push(`workflow="${item.workflow}"`);
-          }
-
           if (item['validate-workflow']) attrs.push(`validate-workflow="${item['validate-workflow']}"`);
           if (item.exec) attrs.push(`exec="${item.exec}"`);
           if (item.tmpl) attrs.push(`tmpl="${item.tmpl}"`);
@@ -417,8 +408,6 @@ class YamlXmlBuilder {
 
         // Add handler attributes based on exec data
         if (execData.route) attrs.push(`exec="${execData.route}"`);
-        if (execData.workflow) attrs.push(`workflow="${execData.workflow}"`);
-        if (execData['validate-workflow']) attrs.push(`validate-workflow="${execData['validate-workflow']}"`);
         if (execData.action) attrs.push(`action="${execData.action}"`);
         if (execData.data) attrs.push(`data="${execData.data}"`);
         if (execData.tmpl) attrs.push(`tmpl="${execData.tmpl}"`);
@@ -442,7 +431,6 @@ class YamlXmlBuilder {
     const result = {
       description: '',
       route: null,
-      workflow: null,
       data: null,
       action: null,
       type: null,
@@ -459,12 +447,7 @@ class YamlXmlBuilder {
       }
 
       if (exec.route) {
-        // Determine if it's a workflow or exec based on file extension or context
-        if (exec.route.endsWith('.yaml') || exec.route.endsWith('.yml')) {
-          result.workflow = exec.route;
-        } else {
-          result.route = exec.route;
-        }
+        result.route = exec.route;
       }
 
       if (exec.data !== null && exec.data !== undefined) {
