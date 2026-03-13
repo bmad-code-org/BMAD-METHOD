@@ -89,7 +89,7 @@ Proceeding to adversarial code review...
 
 ## NEXT STEP
 
-Proceed immediately to `./steps/step-05-adversarial-review.md`.
+Proceed immediately to `{nextStepFile}`.
 
 ---
 
