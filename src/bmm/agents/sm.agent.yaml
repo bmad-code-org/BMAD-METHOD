@@ -24,7 +24,7 @@ agent:
       description: "[SP] Sprint Planning: Generate or update the record that will sequence the tasks to complete the full project that the dev agent will follow"
 
     - trigger: CS or fuzzy match on create-story
-      exec: "{project-root}/_bmad/bmm/workflows/4-implementation/create-story/workflow.md"
+      exec: "skill:bmad-create-story"
       description: "[CS] Context Story: Prepare a story with all required context for implementation for the developer agent"
 
     - trigger: ER or fuzzy match on epic-retrospective
