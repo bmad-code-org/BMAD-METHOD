@@ -1,8 +1,3 @@
----
-name: quick-dev
-description: 'Implement a Quick Tech Spec for small changes or features. Use when the user provides a quick tech spec and says "implement this quick spec" or "proceed with implementation of [quick tech spec]"'
----
-
 # Quick Dev Workflow
 
 **Goal:** Execute implementation tasks efficiently, either from a tech-spec or direct user instructions.
@@ -34,12 +29,11 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
 ### Paths
 
-- `installed_path` = `{project-root}/_bmad/bmm/workflows/bmad-quick-flow/quick-dev`
 - `project_context` = `**/project-context.md` (load if exists)
 
 ### Related Workflows
 
-- `quick_spec_workflow` = `{project-root}/_bmad/bmm/workflows/bmad-quick-flow/quick-spec/workflow.md`
+- `quick_spec_workflow` = `../quick-spec/workflow.md`
 - `party_mode_exec` = `{project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md`
 - `advanced_elicitation` = `skill:bmad-advanced-elicitation`
 
@@ -47,4 +41,4 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
 ## EXECUTION
 
-Read fully and follow: `{project-root}/_bmad/bmm/workflows/bmad-quick-flow/quick-dev/steps/step-01-mode-detection.md` to begin the workflow.
+Read fully and follow: `./steps/step-01-mode-detection.md` to begin the workflow.

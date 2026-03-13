@@ -6,7 +6,6 @@ main_config: '{project-root}/_bmad/bmm/config.yaml'
 # Checkpoint handler references
 advanced_elicitation: 'skill:bmad-advanced-elicitation'
 party_mode_exec: '{project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md'
-quick_dev_workflow: '{project-root}/_bmad/bmm/workflows/bmad-quick-flow/quick-dev/workflow.md'
 ---
 
 # Quick-Spec Workflow
