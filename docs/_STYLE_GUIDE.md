@@ -59,13 +59,13 @@ Critical warnings only — data loss, security issues
 | 2     | Planning | Requirements — PRD or tech-spec *(required)* |
 ```
 
-**Commands:**
+**Skills:**
 
 ```md
-| Command      | Agent   | Purpose                              |
+| Skill        | Agent   | Purpose                              |
 | ------------ | ------- | ------------------------------------ |
-| `brainstorm` | Analyst | Brainstorm a new project             |
-| `prd`        | PM      | Create Product Requirements Document |
+| `bmad-brainstorming` | Analyst | Brainstorm a new project             |
+| `bmad-create-prd`        | PM      | Create Product Requirements Document |
 ```
 
 ## Folder Structure Blocks
@@ -99,7 +99,7 @@ your-project/
 9. Step 2: [Second Major Task]
 10. Step 3: [Third Major Task]
 11. What You've Accomplished (summary + folder structure)
-12. Quick Reference (commands table)
+12. Quick Reference (skills table)
 13. Common Questions (FAQ format)
 14. Getting Help (community links)
 15. Key Takeaways (tip admonition)
@@ -111,7 +111,7 @@ your-project/
 - [ ] "What You'll Learn" section present
 - [ ] Prerequisites in admonition
 - [ ] Quick Path TL;DR admonition at top
-- [ ] Tables for phases, commands, agents
+- [ ] Tables for phases, skills, agents
 - [ ] "What You've Accomplished" section present
 - [ ] Quick Reference table present
 - [ ] Common Questions section present
@@ -243,7 +243,7 @@ your-project/
 1. Title + Hook
 2. Items (## for each item)
    - Brief description (one sentence)
-   - **Commands:** or **Key Info:** as flat list
+   - **Skills:** or **Key Info:** as flat list
 3. Universal/Shared (## section) (optional)
 ```
 
@@ -252,7 +252,7 @@ your-project/
 ```text
 1. Title + Hook (one sentence purpose)
 2. Quick Facts (optional note admonition)
-   - Module, Command, Input, Output as list
+   - Module, Skill, Input, Output as list
 3. Purpose/Overview (## section)
 4. How to Invoke (code block)
 5. Key Sections (## for each aspect)
@@ -280,7 +280,7 @@ your-project/
    - Diagram or table showing organization
 3. Major Sections (## for each phase/category)
    - Items (### for each item)
-   - Standardized fields: Command, Agent, Input, Output, Description
+   - Standardized fields: Skill, Agent, Input, Output, Description
 4. Next Steps (optional)
 ```
 
@@ -353,7 +353,7 @@ Only for BMad Method and Enterprise tracks. Quick Flow skips to implementation.
 
 ### Can I change my plan later?
 
-Yes. The SM agent has a `correct-course` workflow for handling scope changes.
+Yes. The SM agent has a `bmad-correct-course` workflow for handling scope changes.
 
 **Have a question not answered here?** [Open an issue](...) or ask in [Discord](...).
 ```

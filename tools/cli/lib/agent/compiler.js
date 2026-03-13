@@ -147,7 +147,6 @@ function buildMenuXml(menuItems) {
         const attrs = [`cmd="${trigger}"`];
 
         // Add handler attributes
-        if (item.workflow) attrs.push(`workflow="${item.workflow}"`);
         if (item.exec) attrs.push(`exec="${item.exec}"`);
         if (item.tmpl) attrs.push(`tmpl="${item.tmpl}"`);
         if (item.data) attrs.push(`data="${item.data}"`);
@@ -158,7 +157,7 @@ function buildMenuXml(menuItems) {
     }
   }
 
-  xml += `    <item cmd="PM or fuzzy match on party-mode" exec="{project-root}/_bmad/core/workflows/party-mode/workflow.md">[PM] Start Party Mode</item>\n`;
+  xml += `    <item cmd="PM or fuzzy match on party-mode" exec="skill:bmad-party-mode">[PM] Start Party Mode</item>\n`;
   xml += `    <item cmd="DA or fuzzy match on exit, leave, goodbye or dismiss agent">[DA] Dismiss Agent</item>\n`;
 
   xml += '  </menu>\n';
@@ -187,8 +186,6 @@ function buildNestedHandlers(triggers) {
 
       // Add handler attributes based on exec data
       if (execData.route) attrs.push(`exec="${execData.route}"`);
-      if (execData.workflow) attrs.push(`workflow="${execData.workflow}"`);
-      if (execData['validate-workflow']) attrs.push(`validate-workflow="${execData['validate-workflow']}"`);
       if (execData.action) attrs.push(`action="${execData.action}"`);
       if (execData.data) attrs.push(`data="${execData.data}"`);
       if (execData.tmpl) attrs.push(`tmpl="${execData.tmpl}"`);
@@ -212,7 +209,6 @@ function processExecArray(execArray) {
   const result = {
     description: '',
     route: null,
-    workflow: null,
     data: null,
     action: null,
     type: null,
@@ -229,12 +225,7 @@ function processExecArray(execArray) {
     }
 
     if (exec.route) {
-      // Determine if it's a workflow or exec based on file extension or context
-      if (exec.route.endsWith('.yaml') || exec.route.endsWith('.yml')) {
-        result.workflow = exec.route;
-      } else {
-        result.route = exec.route;
-      }
+      result.route = exec.route;
     }
 
     if (exec.data !== null && exec.data !== undefined) {

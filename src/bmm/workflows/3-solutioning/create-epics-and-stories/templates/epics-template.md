@@ -23,6 +23,10 @@ This document provides the complete epic and story breakdown for {{project_name}
 
 {{additional_requirements}}
 
+### UX Design Requirements
+
+{{ux_design_requirements}}
+
 ### FR Coverage Map
 
 {{requirements_coverage_map}}

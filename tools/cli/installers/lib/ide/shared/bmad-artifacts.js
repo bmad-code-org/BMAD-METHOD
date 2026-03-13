@@ -1,5 +1,6 @@
 const path = require('node:path');
 const fs = require('fs-extra');
+const { loadSkillManifest, getCanonicalId } = require('./skill-manifest');
 
 /**
  * Helpers for gathering BMAD agents/tasks from the installed tree.
@@ -34,6 +35,7 @@ async function getAgentsFromBmad(bmadDir, selectedModules = []) {
 
       const agentDirPath = path.join(standaloneAgentsDir, agentDir.name);
       const agentFiles = await fs.readdir(agentDirPath);
+      const skillManifest = await loadSkillManifest(agentDirPath);
 
       for (const file of agentFiles) {
         if (!file.endsWith('.md')) continue;
@@ -48,6 +50,7 @@ async function getAgentsFromBmad(bmadDir, selectedModules = []) {
           path: filePath,
           name: file.replace('.md', ''),
           module: 'standalone', // Mark as standalone agent
+          canonicalId: getCanonicalId(skillManifest, file),
         });
       }
     }
@@ -84,6 +87,7 @@ async function getAgentsFromDir(dirPath, moduleName, relativePath = '') {
   }
 
   const entries = await fs.readdir(dirPath, { withFileTypes: true });
+  const skillManifest = await loadSkillManifest(dirPath);
 
   for (const entry of entries) {
     // Skip if entry.name is undefined or not a string
@@ -124,6 +128,7 @@ async function getAgentsFromDir(dirPath, moduleName, relativePath = '') {
         name: entry.name.replace('.md', ''),
         module: moduleName,
         relativePath: newRelativePath, // Keep the .md extension for the full path
+        canonicalId: getCanonicalId(skillManifest, entry.name),
       });
     }
   }
@@ -139,6 +144,7 @@ async function getTasksFromDir(dirPath, moduleName) {
   }
 
   const files = await fs.readdir(dirPath);
+  const skillManifest = await loadSkillManifest(dirPath);
 
   for (const file of files) {
     // Include both .md and .xml task files
@@ -160,6 +166,7 @@ async function getTasksFromDir(dirPath, moduleName) {
       path: filePath,
       name: file.replace(ext, ''),
       module: moduleName,
+      canonicalId: getCanonicalId(skillManifest, file),
     });
   }
 

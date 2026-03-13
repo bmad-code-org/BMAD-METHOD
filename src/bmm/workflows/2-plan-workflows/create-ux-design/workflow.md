@@ -1,6 +1,6 @@
 ---
 name: create-ux-design
-description: Work with a peer UX Design expert to plan your applications UX patterns, look and feel.
+description: 'Plan UX patterns and design specifications. Use when the user says "lets create UX design" or "create UX specifications" or "help me plan the UX"'
 ---
 
 # Create UX Design Workflow

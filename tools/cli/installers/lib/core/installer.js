@@ -713,9 +713,29 @@ class Installer {
       }
 
       // Merge tool selection into config (for both quick update and regular flow)
-      config.ides = toolSelection.ides;
+      // Normalize IDE keys to lowercase so they match handler map keys consistently
+      config.ides = (toolSelection.ides || []).map((ide) => ide.toLowerCase());
       config.skipIde = toolSelection.skipIde;
       const ideConfigurations = toolSelection.configurations;
+
+      // Early check: fail fast if ALL selected IDEs are suspended
+      if (config.ides && config.ides.length > 0) {
+        await this.ideManager.ensureInitialized();
+        const suspendedIdes = config.ides.filter((ide) => {
+          const handler = this.ideManager.handlers.get(ide);
+          return handler?.platformConfig?.suspended;
+        });
+
+        if (suspendedIdes.length > 0 && suspendedIdes.length === config.ides.length) {
+          for (const ide of suspendedIdes) {
+            const handler = this.ideManager.handlers.get(ide);
+            await prompts.log.error(`${handler.displayName || ide}: ${handler.platformConfig.suspended}`);
+          }
+          throw new Error(
+            `All selected tool(s) are suspended: ${suspendedIdes.join(', ')}. Installation aborted to prevent upgrading _bmad/ without a working IDE configuration.`,
+          );
+        }
+      }
 
       // Detect IDEs that were previously installed but are NOT in the new selection (to be removed)
       if (config._isUpdate && config._existingInstall) {
@@ -1133,12 +1153,6 @@ class Installer {
             preservedModules: modulesForCsvPreserve,
           });
 
-          addResult(
-            'Manifests',
-            'ok',
-            `${manifestStats.workflows} workflows, ${manifestStats.agents} agents, ${manifestStats.tasks} tasks, ${manifestStats.tools} tools`,
-          );
-
           // Merge help catalogs
           message('Generating help catalog...');
           await this.mergeModuleHelpCatalogs(bmadDir);
@@ -1335,6 +1349,19 @@ class Installer {
       } catch {
         // Ensure the original error is never swallowed by a logging failure
       }
+
+      // Clean up any temp backup directories that were created before the failure
+      try {
+        if (config._tempBackupDir && (await fs.pathExists(config._tempBackupDir))) {
+          await fs.remove(config._tempBackupDir);
+        }
+        if (config._tempModifiedBackupDir && (await fs.pathExists(config._tempModifiedBackupDir))) {
+          await fs.remove(config._tempModifiedBackupDir);
+        }
+      } catch {
+        // Best-effort cleanup — don't mask the original error
+      }
+
       throw error;
     }
   }
@@ -1346,10 +1373,27 @@ class Installer {
    */
   async renderInstallSummary(results, context = {}) {
     const color = await prompts.getColor();
+    const selectedIdes = new Set((context.ides || []).map((ide) => String(ide).toLowerCase()));
 
     // Build step lines with status indicators
     const lines = [];
     for (const r of results) {
+      let stepLabel = null;
+
+      if (r.status !== 'ok') {
+        stepLabel = r.step;
+      } else if (r.step === 'Core') {
+        stepLabel = 'BMAD';
+      } else if (r.step.startsWith('Module: ')) {
+        stepLabel = r.step;
+      } else if (selectedIdes.has(String(r.step).toLowerCase())) {
+        stepLabel = r.step;
+      }
+
+      if (!stepLabel) {
+        continue;
+      }
+
       let icon;
       if (r.status === 'ok') {
         icon = color.green('\u2713');
@@ -1359,7 +1403,11 @@ class Installer {
         icon = color.red('\u2717');
       }
       const detail = r.detail ? color.dim(` (${r.detail})`) : '';
-      lines.push(`  ${icon}  ${r.step}${detail}`);
+      lines.push(`  ${icon}  ${stepLabel}${detail}`);
+    }
+
+    if ((context.ides || []).length === 0) {
+      lines.push(`  ${color.green('\u2713')}  No IDE selected ${color.dim('(installed in _bmad only)')}`);
     }
 
     // Context and warnings
@@ -1382,8 +1430,10 @@ class Installer {
       `    Join our Discord: ${color.dim('https://discord.gg/gk8jAdXWmj')}`,
       `    Star us on GitHub: ${color.dim('https://github.com/bmad-code-org/BMAD-METHOD/')}`,
       `    Subscribe on YouTube: ${color.dim('https://www.youtube.com/@BMadCode')}`,
-      `    Run ${color.cyan('/bmad-help')} with your IDE Agent and ask it how to get started`,
     );
+    if (context.ides && context.ides.length > 0) {
+      lines.push(`    Invoke the ${color.cyan('bmad-help')} skill in your IDE Agent to get started`);
+    }
 
     await prompts.note(lines.join('\n'), 'BMAD is ready to use!');
   }

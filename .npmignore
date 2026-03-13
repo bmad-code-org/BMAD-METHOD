@@ -1,0 +1,40 @@
+# Development & Testing
+test/
+.husky/
+.github/
+.vscode/
+.augment/
+coverage/
+test-output/
+
+# Documentation site (users access docs online)
+docs/
+website/
+
+# Configuration files (development only)
+.coderabbit.yaml
+.markdownlint-cli2.yaml
+.prettierignore
+.nvmrc
+eslint.config.mjs
+prettier.config.mjs
+
+# Build tools (not needed at runtime)
+tools/build-docs.mjs
+tools/fix-doc-links.js
+tools/validate-doc-links.js
+tools/validate-file-refs.js
+tools/validate-agent-schema.js
+
+# Images (branding/marketing only)
+banner-bmad-method.png
+Wordmark.png
+
+# Repository metadata
+CONTRIBUTING.md
+CONTRIBUTORS.md
+SECURITY.md
+TRADEMARK.md
+CHANGELOG.md
+CNAME
+CODE_OF_CONDUCT.md

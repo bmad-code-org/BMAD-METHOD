@@ -1,5 +1,119 @@
 # Changelog
 
+## [6.1.0] - 2026-03-12
+
+### Highlights
+
+* Whiteport Design Studio (WDS) module enabled in the installer
+* Support @next installation channel (`npx bmad-method@next install`) — get the latest tip of main instead of waiting for the next stable published version
+* Everything now installs as a skill — all workflows, agents, and tasks converted to markdown with SKILL.md entrypoints (not yet optimized skills, but unified format)
+* An experimental preview of the new Quick Dev is available, which will become the main Phase 4 development tool
+* Edge Case Hunter added as a parallel code review layer in Phase 4, improving code quality by exhaustively tracing branching paths and boundary conditions (#1791)
+* Documentation now available in Chinese (zh-CN) with complete translation (#1822, #1795)
+
+### 💥 Breaking Changes
+
+* Convert entire BMAD method to skills-based architecture with unified skill manifests (#1834)
+* Convert all core workflows from YAML+instructions to single workflow.md format
+* Migrate all remaining platforms to native Agent Skills format (#1841)
+* Remove legacy YAML/XML workflow engine plumbing (#1864)
+
+### 🎁 Features
+
+* Add Pi coding agent as supported platform (#1854)
+* Add unified skill scanner decoupled from legacy collectors (#1859)
+* Add continuous delivery workflows for npm publishing with trusted OIDC publishing (#1872)
+
+### ♻️ Refactoring
+
+* Update terminology from "commands" to "skills" across all documentation (#1850)
+
+### 🐛 Bug Fixes
+
+* Fix code review removing mandatory minimum issue count that caused infinite review loops (#1913)
+* Fix silent loss of brainstorming ideas in PRD by adding reconciliation step (#1914)
+* Reduce npm tarball from 533 to 348 files (91% size reduction, 6.2 MB → 555 KB) via .npmignore (#1900)
+* Fix party-mode skill conversion review findings (#1919)
+
+---
+
+## [6.0.4]
+
+### 🎁 Features
+
+* Add edge case hunter review task - new reusable review task that exhaustively traces branching paths and boundary conditions in code, reporting only unhandled gaps. Method-driven analysis complementary to adversarial review (#1790)
+
+### 🐛 Bug Fixes
+
+* Fix brainstorming to not overwrite previous sessions; now prompts to continue existing brainstorming or start a new one when older brainstorming sessions are found
+* Fix installer templates - replace legacy `@` path prefixes with explicit `{project-root}` syntax for consistency (#1769)
+* Fix edge case hunter - remove zero-findings halt condition that was pressuring the LLM to hallucinate findings when none legitimately exist (#1797)
+* Fix broken docs domain references in README and GitHub issue templates (#1777)
+
+---
+
+## [6.0.3]
+
+### 🎁 Features
+
+* Add bmad-os-root-cause-analysis skill for analyzing bug-fix commits and producing structured root cause analysis reports with pyramid communication format (#1741)
+
+### 🐛 Bug Fixes
+
+* Fix installer to refuse installation when ancestor directory has BMAD commands, preventing duplicate command autocompletion in nested directories (#1735)
+* Fix OpenCode integration by replacing unsupported `name` frontmatter with `mode: all` and update directory names to plural form (#1764)
+* Fix CSV manifest pipeline double-escaping of quotes that was corrupting output files; switch Gemini templates to single quotes (#1746)
+* Fix workflow descriptions to use proper quotes so they format better in skill conversion and don't break yaml front matter
+* Fix workflow help task chaining by removing ambiguous "with-argument" clause that caused LLMs to misinterpret help.md as skill calls (#1740)
+
+### ♻️ Refactoring
+
+* Standardize all workflow descriptions to use proper quotes to prevent breaking command or skill front matter during skill conversion
+
+### 📚 Documentation
+
+* Fix broken TEA hyperlinks to point to new repository URL (#1772)
+* Rebrand BMAD acronym to "Build More Architect Dreams" across documentation (#1765)
+
+---
+
+## [6.0.2]
+
+### 🎁 Features
+
+* Add CodeBuddy platform support with installer configuration (#1483)
+* Add LLM audit prompt for file reference conventions - new audit tool using parallel subagents (#1720)
+* Migrate Codex installer from `.codex/prompts` to `.agents/skills` format to align with Codex CLI changes (#1729)
+* Convert review-pr and audit-file-refs tools to proper bmad-os skills with slash commands `bmad-os-review-pr` and `bmad-os-audit-file-refs` (#1732)
+
+### 🐛 Bug Fixes
+
+* Fix 24 broken step references in create-architecture workflow after directory rename (#1734)
+* Fix step file path references in check-implementation-readiness workflow (#1709, #1716)
+* Fix 3 broken file references and enable strict file reference validation in CI (#1717)
+* Fix Rovo Dev integration with custom installer that generates prompts.yml manifest (#1701)
+* Fix 104 relative step file references to use standardized `{project-root}/_bmad/` paths across 68 files (#1722)
+* Fix code fence imbalance in step-03-starter.md that caused rendering issues (#1724)
+* Remove Windsurf from recommended/preferred IDEs list (#1727)
+* Fix default Codex install location from global to project for better defaults (#1698)
+* Add npx cache workaround to Quick Start for stale beta versions (#1685)
+* Add language instructions to replace placeholder text in Research overview (#1703)
+* Ignore `.junie/` IDE integration folder in git and prettier configs (#1719)
+
+### ♻️ Refactoring
+
+* Update open source tool skills structure for future plugin migration
+* Standardize all workflow descriptions for skill generation with concise format and explicit trigger phrases
+* Remove `disable-model-invocation` flag from all IDE installer templates to enable workflow skill calls
+
+### 📚 Documentation
+
+* Elevate `bmad-help` as primary on-ramp across all documentation
+* Update workflow names with `bmad-bmm-` prefix and standardize table formatting
+* Clarify phase routing and catalog path in help task
+
+---
+
 ## [6.0.0]
 
 V6 Stable Release! The End of Beta!
@@ -288,7 +402,7 @@ V6 Stable Release! The End of Beta!
 - TEA documentation restructured using Diátaxis framework (25 docs)
 - Style guide optimized for LLM readers (367 lines, down from 767)
 - Glossary rewritten using table format (123 lines, down from 373)
-- README overhaul with numbered command flows and prominent `/bmad-help` callout
+- README overhaul with numbered command flows and prominent `bmad-help` callout
 - New workflow map diagram with interactive HTML
 - New editorial review tasks for document quality
 - E2E testing methodology for Game Dev Studio
