@@ -28,10 +28,10 @@ quick-flow-solo-dev.agent.yaml:
   type: agent
   description: "Quick Flow Solo Dev for rapid spec creation and lean implementation"
 
-sm.agent.yaml:
-  canonicalId: bmad-sm
+adl.agent.yaml:
+  canonicalId: bmad-adl
   type: agent
-  description: "Scrum Master for sprint planning, story preparation, and agile ceremonies"
+  description: "Agile Delivery Lead for sprint planning, story preparation, and agile ceremonies"
 
 ux-designer.agent.yaml:
   canonicalId: bmad-ux-designer

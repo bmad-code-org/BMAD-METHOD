@@ -15,17 +15,17 @@ This page lists the default BMM (Agile suite) agents that install with BMad Meth
 - Triggers are the short menu codes (e.g., `CP`) and fuzzy matches shown in each agent menu.
 - QA (Quinn) is the lightweight test automation agent in BMM. The full Test Architect (TEA) lives in its own module.
 
-| Agent                       | Skill ID             | Triggers                           | Primary workflows                                                                                   |
-| --------------------------- | -------------------- | ---------------------------------- | --------------------------------------------------------------------------------------------------- |
-| Analyst (Mary)              | `bmad-analyst`       | `BP`, `RS`, `CB`, `DP`             | Brainstorm Project, Research, Create Brief, Document Project                                        |
-| Product Manager (John)      | `bmad-pm`            | `CP`, `VP`, `EP`, `CE`, `IR`, `CC` | Create/Validate/Edit PRD, Create Epics and Stories, Implementation Readiness, Correct Course        |
-| Architect (Winston)         | `bmad-architect`     | `CA`, `IR`                         | Create Architecture, Implementation Readiness                                                       |
-| Scrum Master (Bob)          | `bmad-sm`            | `SP`, `CS`, `ER`, `CC`             | Sprint Planning, Create Story, Epic Retrospective, Correct Course                                   |
-| Developer (Amelia)          | `bmad-dev`           | `DS`, `CR`                         | Dev Story, Code Review                                                                              |
-| QA Engineer (Quinn)         | `bmad-qa`            | `QA`                               | Automate (generate tests for existing features)                                                     |
-| Quick Flow Solo Dev (Barry) | `bmad-master`        | `QS`, `QD`, `CR`                   | Quick Spec, Quick Dev, Code Review                                                                  |
-| UX Designer (Sally)         | `bmad-ux-designer`   | `CU`                               | Create UX Design                                                                                    |
-| Technical Writer (Paige)    | `bmad-tech-writer`   | `DP`, `WD`, `US`, `MG`, `VD`, `EC` | Document Project, Write Document, Update Standards, Mermaid Generate, Validate Doc, Explain Concept |
+| Agent                       | Skill ID           | Triggers                           | Primary workflows                                                                                   |
+| --------------------------- | ------------------ | ---------------------------------- | --------------------------------------------------------------------------------------------------- |
+| Analyst (Mary)              | `bmad-analyst`     | `BP`, `RS`, `CB`, `DP`             | Brainstorm Project, Research, Create Brief, Document Project                                        |
+| Product Manager (John)      | `bmad-pm`          | `CP`, `VP`, `EP`, `CE`, `IR`, `CC` | Create/Validate/Edit PRD, Create Epics and Stories, Implementation Readiness, Correct Course        |
+| Architect (Winston)         | `bmad-architect`   | `CA`, `IR`                         | Create Architecture, Implementation Readiness                                                       |
+| Agile Delivery Lead (Bob)   | `bmad-adl`         | `SP`, `CS`, `ER`, `CC`             | Sprint Planning, Create Story, Epic Retrospective, Correct Course                                   |
+| Developer (Amelia)          | `bmad-dev`         | `DS`, `CR`                         | Dev Story, Code Review                                                                              |
+| QA Engineer (Quinn)         | `bmad-qa`          | `QA`                               | Automate (generate tests for existing features)                                                     |
+| Quick Flow Solo Dev (Barry) | `bmad-master`      | `QS`, `QD`, `CR`                   | Quick Spec, Quick Dev, Code Review                                                                  |
+| UX Designer (Sally)         | `bmad-ux-designer` | `CU`                               | Create UX Design                                                                                    |
+| Technical Writer (Paige)    | `bmad-tech-writer` | `DP`, `WD`, `US`, `MG`, `VD`, `EC` | Document Project, Write Document, Update Standards, Mermaid Generate, Validate Doc, Explain Concept |
 
 ## Trigger Types
 
@@ -41,13 +41,13 @@ Examples: `CP` (Create PRD), `DS` (Dev Story), `CA` (Create Architecture), `QS` 
 
 Some triggers start a free-form conversation instead of a structured workflow. These expect you to describe what you need alongside the trigger code.
 
-| Agent | Trigger | What to provide |
-| --- | --- | --- |
-| Technical Writer (Paige) | `WD` | Description of the document to write |
-| Technical Writer (Paige) | `US` | Preferences or conventions to add to standards |
-| Technical Writer (Paige) | `MG` | Diagram description and type (sequence, flowchart, etc.) |
-| Technical Writer (Paige) | `VD` | Document to validate and focus areas |
-| Technical Writer (Paige) | `EC` | Concept name to explain |
+| Agent                    | Trigger | What to provide                                          |
+| ------------------------ | ------- | -------------------------------------------------------- |
+| Technical Writer (Paige) | `WD`    | Description of the document to write                     |
+| Technical Writer (Paige) | `US`    | Preferences or conventions to add to standards           |
+| Technical Writer (Paige) | `MG`    | Diagram description and type (sequence, flowchart, etc.) |
+| Technical Writer (Paige) | `VD`    | Document to validate and focus areas                     |
+| Technical Writer (Paige) | `EC`    | Concept name to explain                                  |
 
 **Example:**
 

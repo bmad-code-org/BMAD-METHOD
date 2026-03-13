@@ -1,5 +1,5 @@
 ---
-title: "Documentation Style Guide"
+title: 'Documentation Style Guide'
 description: Project-specific documentation conventions based on Google style and Diataxis structure
 ---
 
@@ -55,8 +55,8 @@ Critical warnings only — data loss, security issues
 ```md
 | Phase | Name     | What Happens                                 |
 | ----- | -------- | -------------------------------------------- |
-| 1     | Analysis | Brainstorm, research *(optional)*            |
-| 2     | Planning | Requirements — PRD or tech-spec *(required)* |
+| 1     | Analysis | Brainstorm, research _(optional)_            |
+| 2     | Planning | Requirements — PRD or tech-spec _(required)_ |
 ```
 
 **Commands:**
@@ -353,7 +353,7 @@ Only for BMad Method and Enterprise tracks. Quick Flow skips to implementation.
 
 ### Can I change my plan later?
 
-Yes. The SM agent has a `correct-course` workflow for handling scope changes.
+Yes. The ADL agent has a `correct-course` workflow for handling scope changes.
 
 **Have a question not answered here?** [Open an issue](...) or ask in [Discord](...).
 ```
