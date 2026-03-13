@@ -32,7 +32,6 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
 ### Paths
 
-- `installed_path` = `.`
 - `validation` = `./checklist.md`
 - `story_file` = `` (explicit story path; auto-discovered if empty)
 - `sprint_status` = `{implementation_artifacts}/sprint-status.yaml`
