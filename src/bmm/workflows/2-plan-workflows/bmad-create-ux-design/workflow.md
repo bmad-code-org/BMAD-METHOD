@@ -1,8 +1,3 @@
----
-name: bmad-create-ux-design
-description: 'Plan UX patterns and design specifications. Use when the user says "lets create UX design" or "create UX specifications" or "help me plan the UX"'
----
-
 # Create UX Design Workflow
 
 **Goal:** Create comprehensive UX design specifications through collaborative visual exploration and informed decision-making where you act as a UX facilitator working with a product stakeholder.

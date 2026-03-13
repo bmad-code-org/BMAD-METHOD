@@ -217,7 +217,7 @@ Show the generated defining experience content and present choices:
 
 - Append the final content to `{planning_artifacts}/ux-design-specification.md`
 - Update frontmatter: append step to end of stepsCompleted array
-- Load `./steps/step-08-visual-foundation.md`
+- Load `./step-08-visual-foundation.md`
 
 ## APPEND TO DOCUMENT:
 
@@ -249,6 +249,6 @@ When user selects 'C', append the content directly to the document using the str
 
 ## NEXT STEP:
 
-After user selects 'C' and content is saved to document, load `./steps/step-08-visual-foundation.md` to establish visual design foundation.
+After user selects 'C' and content is saved to document, load `./step-08-visual-foundation.md` to establish visual design foundation.
 
 Remember: Do NOT proceed to step-08 until user explicitly selects 'C' from the A/P/C menu and content is saved!
