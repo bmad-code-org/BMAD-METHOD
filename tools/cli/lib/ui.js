@@ -47,6 +47,10 @@ class UI {
       }
       confirmedDirectory = expandedDir;
       await prompts.log.info(`Using directory from command-line: ${confirmedDirectory}`);
+    } else if (options.yes) {
+      // Default to current directory when --yes flag is set
+      confirmedDirectory = process.cwd();
+      await prompts.log.info(`Using current directory (--yes flag): ${confirmedDirectory}`);
     } else {
       confirmedDirectory = await this.getConfirmedDirectory();
     }
@@ -848,6 +852,43 @@ class UI {
    * @param {Object} options - Command-line options
    * @returns {Object} Core configuration
    */
+  /**
+   * Get default core config values by reading from src/core/module.yaml
+   * @returns {Object} Default core config with user_name, communication_language, document_output_language, output_folder
+   */
+  getDefaultCoreConfig() {
+    const { getModulePath } = require('./project-root');
+    const yaml = require('yaml');
+
+    let safeUsername;
+    try {
+      safeUsername = os.userInfo().username;
+    } catch {
+      safeUsername = process.env.USER || process.env.USERNAME || 'User';
+    }
+    const defaultUsername = safeUsername.charAt(0).toUpperCase() + safeUsername.slice(1);
+
+    // Read defaults from core module.yaml (single source of truth)
+    try {
+      const moduleYamlPath = path.join(getModulePath('core'), 'module.yaml');
+      const moduleConfig = yaml.parse(fs.readFileSync(moduleYamlPath, 'utf8'));
+      return {
+        user_name: defaultUsername,
+        communication_language: moduleConfig.communication_language?.default || 'English',
+        document_output_language: moduleConfig.document_output_language?.default || 'English',
+        output_folder: moduleConfig.output_folder?.default || '_bmad-output',
+      };
+    } catch {
+      // Fallback if module.yaml is unreadable
+      return {
+        user_name: defaultUsername,
+        communication_language: 'English',
+        document_output_language: 'English',
+        output_folder: '_bmad-output',
+      };
+    }
+  }
+
   async collectCoreConfig(directory, options = {}) {
     const { ConfigCollector } = require('../installers/lib/core/config-collector');
     const configCollector = new ConfigCollector();
@@ -885,6 +926,14 @@ class UI {
         (!options.userName || !options.communicationLanguage || !options.documentOutputLanguage || !options.outputFolder)
       ) {
         await configCollector.collectModuleConfig('core', directory, false, true);
+      } else if (options.yes) {
+        // Fill in defaults for any fields not provided via command-line or existing config
+        const defaults = this.getDefaultCoreConfig();
+        for (const [key, value] of Object.entries(defaults)) {
+          if (!configCollector.collectedConfig.core[key]) {
+            configCollector.collectedConfig.core[key] = value;
+          }
+        }
       }
     } else if (options.yes) {
       // Use all defaults when --yes flag is set
@@ -893,19 +942,7 @@ class UI {
 
       // If no existing config, use defaults
       if (Object.keys(existingConfig).length === 0) {
-        let safeUsername;
-        try {
-          safeUsername = os.userInfo().username;
-        } catch {
-          safeUsername = process.env.USER || process.env.USERNAME || 'User';
-        }
-        const defaultUsername = safeUsername.charAt(0).toUpperCase() + safeUsername.slice(1);
-        configCollector.collectedConfig.core = {
-          user_name: defaultUsername,
-          communication_language: 'English',
-          document_output_language: 'English',
-          output_folder: '_bmad-output',
-        };
+        configCollector.collectedConfig.core = this.getDefaultCoreConfig();
         await prompts.log.info('Using default configuration (--yes flag)');
       }
     } else {
