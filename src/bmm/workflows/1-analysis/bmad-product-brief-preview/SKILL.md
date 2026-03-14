@@ -1,6 +1,7 @@
 ---
-name: bmad-bmm-product-brief-preview
+name: bmad-product-brief-preview
 description: Create or update product briefs through guided or autonomous discovery. Use when the user requests to 'create a product brief', 'help me create a project brief', or 'update my product brief'.
+argument-hint: "[optional --create, --edit, --optimize, --distillate, --inputs, --headless] [brief idea]"
 ---
 
 # Create Product Brief
