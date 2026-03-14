@@ -2,21 +2,16 @@
 name: 'step-03-create-stories'
 description: 'Generate all epics with their stories following the template structure'
 
-# Path Definitions
-workflow_path: '.'
-
 # File References
 thisStepFile: './step-03-create-stories.md'
 nextStepFile: './step-04-final-validation.md'
-workflowFile: '{workflow_path}/workflow.md'
+workflowFile: '../workflow.md'
 outputFile: '{planning_artifacts}/epics.md'
+epicsTemplate: '../templates/epics-template.md'
 
 # Task References
 advancedElicitationTask: 'skill:bmad-advanced-elicitation'
 partyModeWorkflow: '{project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md'
-
-# Template References
-epicsTemplate: '{workflow_path}/templates/epics-template.md'
 ---
 
 # Step 3: Generate Epics and Stories

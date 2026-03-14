@@ -2,20 +2,15 @@
 name: 'step-04-final-validation'
 description: 'Validate complete coverage of all requirements and ensure implementation readiness'
 
-# Path Definitions
-workflow_path: '.'
-
 # File References
 thisStepFile: './step-04-final-validation.md'
-workflowFile: '{workflow_path}/workflow.md'
+workflowFile: '../workflow.md'
 outputFile: '{planning_artifacts}/epics.md'
+epicsTemplate: '../templates/epics-template.md'
 
 # Task References
 advancedElicitationTask: 'skill:bmad-advanced-elicitation'
 partyModeWorkflow: '{project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md'
-
-# Template References
-epicsTemplate: '{workflow_path}/templates/epics-template.md'
 ---
 
 # Step 4: Final Validation
