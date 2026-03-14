@@ -4,10 +4,6 @@ description: 'Validate complete coverage of all requirements and ensure implemen
 
 # File References
 outputFile: '{planning_artifacts}/epics.md'
-
-# Task References
-advancedElicitationTask: 'skill:bmad-advanced-elicitation'
-partyModeWorkflow: '{project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md'
 ---
 
 # Step 4: Final Validation

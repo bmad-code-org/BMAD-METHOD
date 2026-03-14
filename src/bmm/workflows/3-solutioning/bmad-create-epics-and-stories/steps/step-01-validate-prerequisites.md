@@ -6,10 +6,6 @@ description: 'Validate required documents exist and extract all requirements for
 nextStepFile: './step-02-design-epics.md'
 outputFile: '{planning_artifacts}/epics.md'
 epicsTemplate: '../templates/epics-template.md'
-
-# Task References
-advancedElicitationTask: 'skill:bmad-advanced-elicitation'
-partyModeWorkflow: '{project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md'
 ---
 
 # Step 1: Validate Prerequisites and Extract Requirements

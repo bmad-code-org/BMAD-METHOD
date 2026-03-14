@@ -8,7 +8,7 @@ outputFile: '{planning_artifacts}/epics.md'
 
 # Task References
 advancedElicitationTask: 'skill:bmad-advanced-elicitation'
-partyModeWorkflow: '{project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md'
+partyModeWorkflow: 'skill:bmad-party-mode'
 ---
 
 # Step 3: Generate Epics and Stories
