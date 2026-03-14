@@ -1,8 +1,4 @@
 ---
-name: 'step-03-epic-coverage-validation'
-description: 'Validate that all PRD FRs are covered in epics and stories'
-
-nextStepFile: './step-04-ux-alignment.md'
 outputFile: '{planning_artifacts}/implementation-readiness-report-{{date}}.md'
 ---
 
@@ -150,7 +146,7 @@ After coverage validation complete, immediately load next step.
 
 ## PROCEEDING TO UX ALIGNMENT
 
-Epic coverage validation complete. Loading next step for UX alignment.
+Epic coverage validation complete. Read fully and follow: `./step-04-ux-alignment.md`
 
 ---
 

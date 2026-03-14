@@ -1,8 +1,3 @@
----
-name: 'step-04-final-validation'
-description: 'Validate complete coverage of all requirements and ensure implementation readiness'
----
-
 # Step 4: Final Validation
 
 ## STEP GOAL:
@@ -126,6 +121,8 @@ If all validations pass:
 
 **Present Final Menu:**
 **All validations complete!** [C] Complete Workflow
+
+HALT — wait for user input before proceeding.
 
 When C is selected, the workflow is complete and the epics.md is ready for development.
 
