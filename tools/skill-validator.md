@@ -59,7 +59,15 @@ If no findings are generated, the skill passes validation.
 - **Detection:** Regex test: `^[a-z0-9][a-z0-9-]{0,62}[a-z0-9]$`. String search for forbidden substrings.
 - **Fix:** Rename to comply with the format.
 
-### SKILL-05 — `description` Quality
+### SKILL-05 — `name` Must Match Directory Name
+
+- **Severity:** HIGH
+- **Applies to:** `SKILL.md`
+- **Rule:** The `name` value in SKILL.md frontmatter must exactly match the skill directory name. The directory name is the canonical identifier used by installers, manifests, and `skill:` references throughout the project.
+- **Detection:** Compare the `name:` frontmatter value against the basename of the skill directory (i.e., the immediate parent directory of `SKILL.md`).
+- **Fix:** Change the `name:` value to match the directory name, or rename the directory to match — prefer changing `name:` unless other references depend on the current value.
+
+### SKILL-06 — `description` Quality
 
 - **Severity:** MEDIUM
 - **Applies to:** `SKILL.md`
@@ -225,7 +233,22 @@ If no findings are generated, the skill passes validation.
 
 ---
 
-### REF-01 — File References Must Resolve
+### REF-01 — Variable References Must Be Defined
+
+- **Severity:** HIGH
+- **Applies to:** all files
+- **Rule:** Every `{variable_name}` reference in any file (body text, frontmatter values, inline instructions) must resolve to a defined source. Valid sources are:
+  1. A frontmatter variable in the same file
+  2. A frontmatter variable in the skill's `workflow.md` (workflow-level variables are available to all steps)
+  3. A known config variable from the project config (e.g., `project-root`, `planning_artifacts`, `implementation_artifacts`, `communication_language`)
+  4. A known runtime variable set during execution (e.g., `date`, `status`, `project_name`, user-provided input variables)
+- **Detection:** Collect all `{...}` tokens in the file. For each, check whether it is defined in the file's own frontmatter, in `workflow.md` frontmatter, or is a recognized config/runtime variable. Flag any token that cannot be traced to a source. Use the config variable list from the project's `config.yaml` as the reference for recognized config variables. Runtime variables are those explicitly described as user-provided or set during execution in the workflow instructions.
+- **Exceptions:**
+  - Double-curly `{{variable}}` — these are template placeholders intended to survive into generated output (e.g., `{{project_name}}` in a template file). Do not flag these.
+  - Variables inside fenced code blocks that are clearly illustrative examples.
+- **Fix:** Either define the variable in the appropriate frontmatter, or replace the reference with a literal value. If the variable is a config variable that was misspelled, correct the spelling.
+
+### REF-02 — File References Must Resolve
 
 - **Severity:** HIGH
 - **Applies to:** all files
