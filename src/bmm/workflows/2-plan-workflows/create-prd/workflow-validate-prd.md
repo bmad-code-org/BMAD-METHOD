@@ -55,6 +55,7 @@ Load and read full config from {main_config} and resolve:
 - `date` as system-generated current datetime
 
 ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the configured `{communication_language}`.
+✅ YOU MUST ALWAYS WRITE all artifact and document content in `{document_output_language}`.
 
 ### 2. Route to Validate Workflow
 

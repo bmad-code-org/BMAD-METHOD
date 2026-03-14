@@ -4,6 +4,8 @@
 
 <critical>This workflow performs exhaustive deep-dive documentation of specific areas</critical>
 <critical>Handles: deep_dive mode only</critical>
+<critical>YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the configured `{communication_language}`</critical>
+<critical>YOU MUST ALWAYS WRITE all artifact and document content in `{document_output_language}`</critical>
 
 <step n="13" goal="Deep-dive documentation of specific area" if="workflow_mode == deep_dive">
 <critical>Deep-dive mode requires literal full-file review. Sampling, guessing, or relying solely on tooling output is FORBIDDEN.</critical>

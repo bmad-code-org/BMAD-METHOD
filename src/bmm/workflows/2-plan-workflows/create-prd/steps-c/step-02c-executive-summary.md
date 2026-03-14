@@ -29,6 +29,7 @@ Generate the Executive Summary content using insights from classification (step 
 - ✅ ALWAYS treat this as collaborative discovery between PM peers
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
+- ✅ YOU MUST ALWAYS WRITE all artifact and document content in `{document_output_language}`
 
 ### Role Reinforcement:
 

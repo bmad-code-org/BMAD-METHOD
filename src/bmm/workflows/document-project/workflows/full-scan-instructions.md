@@ -4,6 +4,8 @@
 
 <critical>This workflow performs complete project documentation (Steps 1-12)</critical>
 <critical>Handles: initial_scan and full_rescan modes</critical>
+<critical>YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the configured `{communication_language}`</critical>
+<critical>YOU MUST ALWAYS WRITE all artifact and document content in `{document_output_language}`</critical>
 
 <step n="0.5" goal="Load documentation requirements data for fresh starts (not needed for resume)" if="resume_mode == false">
 <critical>DATA LOADING STRATEGY - Understanding the Documentation Requirements System:</critical>

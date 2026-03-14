@@ -11,6 +11,7 @@
 - 💬 FOCUS on generating and evaluating design direction variations
 - 🎯 COLLABORATIVE exploration, not assumption-based design
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
+- ✅ YOU MUST ALWAYS WRITE all artifact and document content in `{document_output_language}`
 
 ## EXECUTION PROTOCOLS:
 
