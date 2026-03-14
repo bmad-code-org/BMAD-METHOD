@@ -1,8 +1,3 @@
----
-name: 'step-03-create-stories'
-description: 'Generate all epics with their stories following the template structure'
----
-
 # Step 3: Generate Epics and Stories
 
 ## STEP GOAL:
