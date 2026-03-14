@@ -7,7 +7,7 @@ name: Quality & Validation
 # - Schema validation (YAML structure)
 # - Agent schema tests (fixture-based validation)
 # - Installation component tests (compilation)
-# - Bundle validation (web bundle integrity)
+# Keep this workflow aligned with `npm run quality` in `package.json`.
 
 "on":
   pull_request:
