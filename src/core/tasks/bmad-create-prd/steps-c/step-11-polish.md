@@ -1,17 +1,3 @@
----
-name: 'step-11-polish'
-description: 'Optimize and polish the complete PRD document for flow, coherence, and readability'
-
-# File References
-nextStepFile: './step-12-complete.md'
-outputFile: '{planning_artifacts}/prd.md'
-purposeFile: '../data/prd-purpose.md'
-
-# Task References
-advancedElicitationTask: 'skill:bmad-advanced-elicitation'
-partyModeWorkflow: '{project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md'
----
-
 # Step 11: Document Polish
 
 **Progress: Step 11 of 12** - Next: Complete PRD
@@ -56,7 +42,7 @@ Optimize the complete PRD document for flow, coherence, and professional present
 
 **CRITICAL:** Load the PRD purpose document first:
 
-- Read `{purposeFile}` to understand what makes a great BMAD PRD
+- Read `../data/prd-purpose.md` to understand what makes a great BMAD PRD
 - Internalize the philosophy: information density, traceability, measurable requirements
 - Keep the dual-audience nature (humans + LLMs) in mind
 
@@ -186,9 +172,9 @@ Present the polished document for review, then display menu:
 Display: "**Select:** [A] Advanced Elicitation [P] Party Mode [C] Continue to Complete PRD (Step 12 of 12)"
 
 #### Menu Handling Logic:
-- IF A: Read fully and follow: {advancedElicitationTask} with the polished document, process the enhanced refinements that come back, ask user "Accept these polish improvements? (y/n)", if yes update content with improvements then redisplay menu, if no keep original polish then redisplay menu
-- IF P: Read fully and follow: {partyModeWorkflow} with the polished document, process the collaborative refinements to flow and coherence, ask user "Accept these polish changes? (y/n)", if yes update content with improvements then redisplay menu, if no keep original polish then redisplay menu
-- IF C: Save the polished document to {outputFile}, update frontmatter by adding this step name to the end of the stepsCompleted array, then read fully and follow: {nextStepFile}
+- IF A: Read fully and follow: skill:bmad-advanced-elicitation with the polished document, process the enhanced refinements that come back, ask user "Accept these polish improvements? (y/n)", if yes update content with improvements then redisplay menu, if no keep original polish then redisplay menu
+- IF P: Read fully and follow: {project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md with the polished document, process the collaborative refinements to flow and coherence, ask user "Accept these polish changes? (y/n)", if yes update content with improvements then redisplay menu, if no keep original polish then redisplay menu
+- IF C: Save the polished document to {outputFile}, update frontmatter by adding this step name to the end of the stepsCompleted array, then read fully and follow: ./step-12-complete.md
 - IF Any other: help user respond, then redisplay menu
 
 #### EXECUTION RULES:

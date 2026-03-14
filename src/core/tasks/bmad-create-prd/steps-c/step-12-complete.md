@@ -1,12 +1,3 @@
----
-name: 'step-12-complete'
-description: 'Complete the PRD workflow, update status files, and suggest next steps including validation'
-
-# File References
-outputFile: '{planning_artifacts}/prd.md'
-# validationFlow: lives in the validate-prd workflow (separate skill)
----
-
 # Step 12: Workflow Completion
 
 **Final Step - Complete the PRD**
@@ -60,8 +51,8 @@ Inform user that the PRD is complete and polished:
 
 Update the main workflow status file if there is one:
 
-- Load `{status_file}` from workflow configuration (if exists)
-- Update workflow_status["prd"] = "{default_output_file}"
+- Check workflow configuration for a status file (if one exists)
+- Update workflow_status["prd"] = "{outputFile}"
 - Save file, preserving all comments and structure
 - Mark current timestamp as completion time
 
@@ -71,7 +62,7 @@ Offer validation workflows to ensure PRD is ready for implementation:
 
 **Available Validation Workflows:**
 
-**Option 1: Check Implementation Readiness** (`{checkImplementationReadinessWorkflow}`)
+**Option 1: Check Implementation Readiness** (`skill:bmad-check-implementation-readiness`)
 - Validates PRD has all information needed for development
 - Checks epic coverage completeness
 - Reviews UX alignment with requirements

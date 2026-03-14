@@ -1,6 +1,6 @@
 ---
 main_config: '{project-root}/_bmad/bmm/config.yaml'
-nextStep: './steps-c/step-01-init.md'
+outputFile: '{planning_artifacts}/prd.md'
 ---
 
 # PRD Create Workflow
@@ -59,4 +59,4 @@ Load and read full config from {main_config} and resolve:
 
 "**Create Mode: Creating a new PRD from scratch.**"
 
-Read fully and follow: `{nextStep}` (steps-c/step-01-init.md)
+Read fully and follow: `./steps-c/step-01-init.md`

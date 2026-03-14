@@ -1,19 +1,3 @@
----
-name: 'step-06-innovation'
-description: 'Detect and explore innovative aspects of the product (optional step)'
-
-# File References
-nextStepFile: './step-07-project-type.md'
-outputFile: '{planning_artifacts}/prd.md'
-
-# Data Files
-projectTypesCSV: '../data/project-types.csv'
-
-# Task References
-advancedElicitationTask: 'skill:bmad-advanced-elicitation'
-partyModeWorkflow: '{project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md'
----
-
 # Step 6: Innovation Discovery
 
 **Progress: Step 6 of 11** - Next: Project Type Analysis
@@ -65,7 +49,7 @@ Detect and explore innovation patterns in the product, focusing on what makes it
 
 Load innovation signals specific to this project type:
 
-- Load `{projectTypesCSV}` completely
+- Load `../data/project-types.csv` completely
 - Find the row where `project_type` matches detected type from step-02
 - Extract `innovation_signals` (semicolon-separated list)
 - Extract `web_search_triggers` for potential innovation research
@@ -156,9 +140,9 @@ Present the innovation content for review, then display menu:
 Display: "**Select:** [A] Advanced Elicitation [P] Party Mode [C] Continue to Project Type Analysis (Step 7 of 11)"
 
 #### Menu Handling Logic:
-- IF A: Read fully and follow: {advancedElicitationTask} with the current innovation content, process the enhanced innovation insights that come back, ask user "Accept these improvements to the innovation analysis? (y/n)", if yes update content with improvements then redisplay menu, if no keep original content then redisplay menu
-- IF P: Read fully and follow: {partyModeWorkflow} with the current innovation content, process the collaborative innovation exploration and ideation, ask user "Accept these changes to the innovation analysis? (y/n)", if yes update content with improvements then redisplay menu, if no keep original content then redisplay menu
-- IF C: Append the final content to {outputFile}, update frontmatter by adding this step name to the end of the stepsCompleted array, then read fully and follow: {nextStepFile}
+- IF A: Read fully and follow: skill:bmad-advanced-elicitation with the current innovation content, process the enhanced innovation insights that come back, ask user "Accept these improvements to the innovation analysis? (y/n)", if yes update content with improvements then redisplay menu, if no keep original content then redisplay menu
+- IF P: Read fully and follow: {project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md with the current innovation content, process the collaborative innovation exploration and ideation, ask user "Accept these changes to the innovation analysis? (y/n)", if yes update content with improvements then redisplay menu, if no keep original content then redisplay menu
+- IF C: Append the final content to {outputFile}, update frontmatter by adding this step name to the end of the stepsCompleted array, then read fully and follow: ./step-07-project-type.md
 - IF Any other: help user respond, then redisplay menu
 
 #### EXECUTION RULES:
@@ -177,7 +161,7 @@ Display: "**Select:** [A] Advanced Elicitation - Let's try to find innovative an
 
 ### Menu Handling Logic:
 - IF A: Proceed with content generation anyway, then return to menu
-- IF C: Skip this step, then read fully and follow: {nextStepFile}
+- IF C: Skip this step, then read fully and follow: ./step-07-project-type.md
 
 ### EXECUTION RULES:
 - ALWAYS halt and wait for user input after presenting menu
@@ -213,7 +197,7 @@ When user selects 'C', append the content directly to the document using the str
 
 ## SKIP CONDITIONS:
 
-Skip this step and load `{nextStepFile}` if:
+Skip this step and load `./step-07-project-type.md` if:
 
 - No innovation signals detected in conversation
 - Product is incremental improvement rather than breakthrough
@@ -222,6 +206,6 @@ Skip this step and load `{nextStepFile}` if:
 
 ## NEXT STEP:
 
-After user selects 'C' and content is saved to document (or step is skipped), load `{nextStepFile}`.
+After user selects 'C' and content is saved to document (or step is skipped), load `./step-07-project-type.md`.
 
 Remember: Do NOT proceed to step-07 until user explicitly selects 'C' from the A/P/C menu (or confirms step skip)!

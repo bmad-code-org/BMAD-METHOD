@@ -1,20 +1,3 @@
----
-name: 'step-02-discovery'
-description: 'Discover project type, domain, and context through collaborative dialogue'
-
-# File References
-nextStepFile: './step-02b-vision.md'
-outputFile: '{planning_artifacts}/prd.md'
-
-# Data Files
-projectTypesCSV: '../data/project-types.csv'
-domainComplexityCSV: '../data/domain-complexity.csv'
-
-# Task References
-advancedElicitationTask: 'skill:bmad-advanced-elicitation'
-partyModeWorkflow: '{project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md'
----
-
 # Step 2: Project Discovery
 
 **Progress: Step 2 of 13** - Next: Product Vision
@@ -97,7 +80,7 @@ Read the frontmatter from `{outputFile}` to get document counts:
 **Attempt subprocess data lookup:**
 
 **Project Type Lookup:**
-"Your task: Lookup data in {projectTypesCSV}
+"Your task: Lookup data in ../data/project-types.csv
 
 **Search criteria:**
 - Find row where project_type matches {{detectedProjectType}}
@@ -109,7 +92,7 @@ project_type, detection_signals
 **Do NOT return the entire CSV - only the matching row.**"
 
 **Domain Complexity Lookup:**
-"Your task: Lookup data in {domainComplexityCSV}
+"Your task: Lookup data in ../data/domain-complexity.csv
 
 **Search criteria:**
 - Find row where domain matches {{detectedDomain}}
@@ -186,9 +169,9 @@ Present the project classification for review, then display menu:
 Display: "**Select:** [A] Advanced Elicitation [P] Party Mode [C] Continue to Product Vision (Step 2b of 13)"
 
 #### Menu Handling Logic:
-- IF A: Read fully and follow: {advancedElicitationTask} with the current classification, process the enhanced insights that come back, ask user if they accept the improvements, if yes update classification then redisplay menu, if no keep original classification then redisplay menu
-- IF P: Read fully and follow: {partyModeWorkflow} with the current classification, process the collaborative insights, ask user if they accept the changes, if yes update classification then redisplay menu, if no keep original classification then redisplay menu
-- IF C: Save classification to {outputFile} frontmatter, add this step name to the end of stepsCompleted array, then read fully and follow: {nextStepFile}
+- IF A: Read fully and follow: skill:bmad-advanced-elicitation with the current classification, process the enhanced insights that come back, ask user if they accept the improvements, if yes update classification then redisplay menu, if no keep original classification then redisplay menu
+- IF P: Read fully and follow: {project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md with the current classification, process the collaborative insights, ask user if they accept the changes, if yes update classification then redisplay menu, if no keep original classification then redisplay menu
+- IF C: Save classification to {outputFile} frontmatter, add this step name to the end of stepsCompleted array, then read fully and follow: ./step-02b-vision.md
 - IF Any other: help user respond, then redisplay menu
 
 #### EXECUTION RULES:
@@ -198,7 +181,7 @@ Display: "**Select:** [A] Advanced Elicitation [P] Party Mode [C] Continue to Pr
 
 ## CRITICAL STEP COMPLETION NOTE
 
-ONLY WHEN [C continue option] is selected and [classification saved to frontmatter], will you then read fully and follow: `{nextStepFile}` to explore product vision.
+ONLY WHEN [C continue option] is selected and [classification saved to frontmatter], will you then read fully and follow: `./step-02b-vision.md` to explore product vision.
 
 ---
 

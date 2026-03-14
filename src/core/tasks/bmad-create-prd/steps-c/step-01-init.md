@@ -1,16 +1,3 @@
----
-name: 'step-01-init'
-description: 'Initialize the PRD workflow by detecting continuation state and setting up the document'
-
-# File References
-nextStepFile: './step-02-discovery.md'
-continueStepFile: './step-01b-continue.md'
-outputFile: '{planning_artifacts}/prd.md'
-
-# Template Reference
-prdTemplate: '../templates/prd-template.md'
----
-
 # Step 1: Workflow Initialization
 
 **Progress: Step 1 of 11** - Next: Project Discovery
@@ -71,11 +58,11 @@ First, check if the output document already exists:
 
 ### 2. Handle Continuation (If Document Exists)
 
-If the document exists and has frontmatter with `stepsCompleted` BUT `step-11-complete` is NOT in the list, follow the Continuation Protocol since the document is incomplete:
+If the document exists and has frontmatter with `stepsCompleted` BUT `step-12-complete` is NOT in the list, follow the Continuation Protocol since the document is incomplete:
 
 **Continuation Protocol:**
 
-- **STOP immediately** and load `{continueStepFile}`
+- **STOP immediately** and load `./step-01b-continue.md`
 - Do not proceed with any initialization tasks
 - Let step-01b handle all continuation logic
 - This is an auto-proceed situation - no user choice needed
@@ -89,7 +76,7 @@ If no document exists or no `stepsCompleted` in frontmatter:
 Discover and load context documents using smart discovery. Documents can be in the following locations:
 - {planning_artifacts}/**
 - {output_folder}/**
-- {product_knowledge}/**
+- {project_knowledge}/**
 - docs/**
 
 Also - when searching - documents can be a single markdown file, or a folder with an index and multiple files. For Example, if searching for `*foo*.md` and not found, also search for a folder called *foo*/index.md (which indicates sharded content)
@@ -97,7 +84,7 @@ Also - when searching - documents can be a single markdown file, or a folder wit
 Try to discover the following:
 - Product Brief (`*brief*.md`)
 - Research Documents (`/*research*.md`)
-- Project Documentation (generally multiple documents might be found for this in the `{product_knowledge}` or `docs` folder.)
+- Project Documentation (generally multiple documents might be found for this in the `{project_knowledge}` or `docs` folder.)
 - Project Context (`**/project-context.md`)
 
 <critical>Confirm what you have found with the user, along with asking if the user wants to provide anything else. Only after this confirmation will you proceed to follow the loading rules</critical>
@@ -114,7 +101,7 @@ Try to discover the following:
 
 **Document Setup:**
 
-- Copy the template from `{prdTemplate}` to `{outputFile}`
+- Copy the template from `../templates/prd-template.md` to `{outputFile}`
 - Initialize frontmatter with proper structure including inputDocuments array.
 
 #### C. Present Initialization Results
@@ -151,7 +138,7 @@ Display menu after setup report:
 
 #### Menu Handling Logic:
 
-- IF C: Update output file frontmatter, adding this step name to the end of the list of stepsCompleted, then read fully and follow: {nextStepFile}
+- IF C: Update output file frontmatter, adding this step name to the end of the list of stepsCompleted, then read fully and follow: ./step-02-discovery.md
 - IF user provides additional files: Load them, update inputDocuments and documentCounts, redisplay report
 - IF user asks questions: Answer and redisplay menu
 
@@ -162,7 +149,7 @@ Display menu after setup report:
 
 ## CRITICAL STEP COMPLETION NOTE
 
-ONLY WHEN [C continue option] is selected and [frontmatter properly updated with this step added to stepsCompleted and documentCounts], will you then read fully and follow: `{nextStepFile}` to begin project discovery.
+ONLY WHEN [C continue option] is selected and [frontmatter properly updated with this step added to stepsCompleted and documentCounts], will you then read fully and follow: `./step-02-discovery.md` to begin project discovery.
 
 ---
 
