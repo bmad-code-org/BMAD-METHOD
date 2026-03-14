@@ -1,7 +1,3 @@
-name: bmad-qa-generate-e2e-tests
-description: 'Generate end to end automated tests for existing features. Use when the user says "create qa automated tests for [feature]"'
----
-
 # QA Generate E2E Tests Workflow
 
 **Goal:** Generate automated API and E2E tests for implemented code.
@@ -24,8 +20,8 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
 ### Paths
 
-- `installed_path` = `{project-root}/_bmad/bmm/workflows/bmad-qa-generate-e2e-tests`
-- `checklist` = `{installed_path}/checklist.md`
+- `installed_path` = `.`
+- `checklist` = `./checklist.md`
 - `test_dir` = `{project-root}/tests`
 - `source_dir` = `{project-root}`
 - `default_output_file` = `{implementation_artifacts}/tests/test-summary.md`
