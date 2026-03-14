@@ -20,13 +20,6 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the configured `{communication_language}`.
 ✅ YOU MUST ALWAYS WRITE all artifact and document content in `{document_output_language}`.
 
-### Paths
-
-- `installed_path` = `.`
-- `instructions` = `{installed_path}/full-scan-instructions.md`
-- `validation` = `../checklist.md`
-- `documentation_requirements_csv` = `../documentation-requirements.csv`
-
 ### Runtime Inputs
 
 - `workflow_mode` = `""` (set by parent: `initial_scan` or `full_rescan`)
@@ -38,4 +31,4 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
 ## EXECUTION
 
-Read fully and follow: `{installed_path}/full-scan-instructions.md`
+Read fully and follow: `./full-scan-instructions.md`

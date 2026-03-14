@@ -20,15 +20,8 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 - `user_skill_level`
 - `date` as system-generated current datetime
 
-### Paths
-
-- `installed_path` = `.`
-- `instructions` = `{installed_path}/instructions.md`
-- `validation` = `{installed_path}/checklist.md`
-- `documentation_requirements_csv` = `{installed_path}/documentation-requirements.csv`
-
 ---
 
 ## EXECUTION
 
-Read fully and follow: `{installed_path}/instructions.md`
+Read fully and follow: `./instructions.md`

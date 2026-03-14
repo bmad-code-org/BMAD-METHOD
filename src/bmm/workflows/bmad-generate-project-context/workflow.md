@@ -32,8 +32,6 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
 ### Paths
 
-- `installed_path` = `.`
-- `template_path` = `./project-context-template.md`
 - `output_file` = `{output_folder}/project-context.md`
 
 ---

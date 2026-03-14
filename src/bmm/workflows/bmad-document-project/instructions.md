@@ -40,18 +40,18 @@
     <action>Load cached project_type_id(s) from state file</action>
 
     <critical>CONDITIONAL CSV LOADING FOR RESUME:</critical>
-    <action>For each cached project_type_id, load ONLY the corresponding row from: {documentation_requirements_csv}</action>
+    <action>For each cached project_type_id, load ONLY the corresponding row from: ./documentation-requirements.csv</action>
     <action>Skip loading project-types.csv and architecture_registry.csv (not needed on resume)</action>
     <action>Store loaded doc requirements for use in remaining steps</action>
 
     <action>Display: "Resuming {{workflow_mode}} from {{current_step}} with cached project type(s): {{cached_project_types}}"</action>
 
     <check if="workflow_mode == deep_dive">
-      <action>Read fully and follow: {installed_path}/workflows/deep-dive-workflow.md with resume context</action>
+      <action>Read fully and follow: ./workflows/deep-dive-workflow.md with resume context</action>
     </check>
 
     <check if="workflow_mode == initial_scan OR workflow_mode == full_rescan">
-      <action>Read fully and follow: {installed_path}/workflows/full-scan-workflow.md with resume context</action>
+      <action>Read fully and follow: ./workflows/full-scan-workflow.md with resume context</action>
     </check>
 
   </check>
@@ -98,7 +98,7 @@ Your choice [1/2/3]:
   <check if="user selects 1">
     <action>Set workflow_mode = "full_rescan"</action>
     <action>Display: "Starting full project rescan..."</action>
-    <action>Read fully and follow: {installed_path}/workflows/full-scan-workflow.md</action>
+    <action>Read fully and follow: ./workflows/full-scan-workflow.md</action>
     <action>After sub-workflow completes, continue to Step 4</action>
   </check>
 
@@ -106,7 +106,7 @@ Your choice [1/2/3]:
     <action>Set workflow_mode = "deep_dive"</action>
     <action>Set scan_level = "exhaustive"</action>
     <action>Display: "Starting deep-dive documentation mode..."</action>
-    <action>Read fully and follow: {installed_path}/workflows/deep-dive-workflow.md</action>
+    <action>Read fully and follow: ./workflows/deep-dive-workflow.md</action>
     <action>After sub-workflow completes, continue to Step 4</action>
   </check>
 
@@ -119,7 +119,7 @@ Your choice [1/2/3]:
 <check if="index.md does not exist">
   <action>Set workflow_mode = "initial_scan"</action>
   <action>Display: "No existing documentation found. Starting initial project scan..."</action>
-  <action>Read fully and follow: {installed_path}/workflows/full-scan-workflow.md</action>
+  <action>Read fully and follow: ./workflows/full-scan-workflow.md</action>
   <action>After sub-workflow completes, continue to Step 4</action>
 </check>
 
