@@ -1,8 +1,3 @@
----
-name: sprint-status
-description: 'Summarize sprint status and surface risks. Use when the user says "check sprint status" or "show sprint status"'
----
-
 # Sprint Status Workflow
 
 **Goal:** Summarize sprint status, surface risks, and recommend the next workflow action.
@@ -25,7 +20,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
 ### Paths
 
-- `installed_path` = `{project-root}/_bmad/bmm/workflows/4-implementation/sprint-status`
+- `installed_path` = `.`
 - `sprint_status_file` = `{implementation_artifacts}/sprint-status.yaml`
 
 ### Input Files
