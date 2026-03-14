@@ -1,7 +1,5 @@
 ---
-name: market-research
-description: 'Conduct market research on competition and customers. Use when the user says "create a market research report about [business idea]".'
-standalone: false
+{}
 ---
 
 # Market Research Workflow
