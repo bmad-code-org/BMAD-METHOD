@@ -30,7 +30,7 @@ Check activation context immediately:
 
 ## On Activation
 
-1. **Load config via bmad-init skill** (module: `bmm`) — Store all returned vars:
+1. Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve::
    - Use `{user_name}` for greeting
    - Use `{communication_language}` for all communications
    - Use `{document_output_language}` for output documents
