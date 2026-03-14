@@ -1,8 +1,3 @@
----
-name: bmad-code-review
-description: 'Perform adversarial code review finding specific issues. Use when the user says "run code review" or "review this code"'
----
-
 # Code Review Workflow
 
 **Goal:** Perform adversarial code review finding specific issues.
