@@ -3,9 +3,7 @@ name: 'step-01-validate-prerequisites'
 description: 'Validate required documents exist and extract all requirements for epic and story creation'
 
 # File References
-thisStepFile: './step-01-validate-prerequisites.md'
 nextStepFile: './step-02-design-epics.md'
-workflowFile: '../workflow.md'
 outputFile: '{planning_artifacts}/epics.md'
 epicsTemplate: '../templates/epics-template.md'
 

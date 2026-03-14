@@ -3,11 +3,8 @@ name: 'step-02-design-epics'
 description: 'Design and approve the epics_list that will organize all requirements into user-value-focused epics'
 
 # File References
-thisStepFile: './step-02-design-epics.md'
 nextStepFile: './step-03-create-stories.md'
-workflowFile: '../workflow.md'
 outputFile: '{planning_artifacts}/epics.md'
-epicsTemplate: '../templates/epics-template.md'
 
 # Task References
 advancedElicitationTask: 'skill:bmad-advanced-elicitation'

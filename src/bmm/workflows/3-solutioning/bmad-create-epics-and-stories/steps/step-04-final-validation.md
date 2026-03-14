@@ -3,10 +3,7 @@ name: 'step-04-final-validation'
 description: 'Validate complete coverage of all requirements and ensure implementation readiness'
 
 # File References
-thisStepFile: './step-04-final-validation.md'
-workflowFile: '../workflow.md'
 outputFile: '{planning_artifacts}/epics.md'
-epicsTemplate: '../templates/epics-template.md'
 
 # Task References
 advancedElicitationTask: 'skill:bmad-advanced-elicitation'

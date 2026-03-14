@@ -3,11 +3,8 @@ name: 'step-03-create-stories'
 description: 'Generate all epics with their stories following the template structure'
 
 # File References
-thisStepFile: './step-03-create-stories.md'
 nextStepFile: './step-04-final-validation.md'
-workflowFile: '../workflow.md'
 outputFile: '{planning_artifacts}/epics.md'
-epicsTemplate: '../templates/epics-template.md'
 
 # Task References
 advancedElicitationTask: 'skill:bmad-advanced-elicitation'
