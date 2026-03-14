@@ -1,8 +1,4 @@
 ---
-name: 'step-03-execute'
-description: 'Execute implementation - iterate through tasks, write code, run tests'
-
-nextStepFile: './step-04-self-check.md'
 ---
 
 # Step 3: Execute Implementation
@@ -89,7 +85,7 @@ For each task:
 
 ## NEXT STEP
 
-When ALL tasks are complete (or halted on blocker), read fully and follow: `{nextStepFile}`.
+When ALL tasks are complete (or halted on blocker), read fully and follow: `./step-04-self-check.md`.
 
 ---
 

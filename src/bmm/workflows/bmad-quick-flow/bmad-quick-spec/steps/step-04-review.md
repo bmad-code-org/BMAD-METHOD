@@ -1,7 +1,4 @@
 ---
-name: 'step-04-review'
-description: 'Review and finalize the tech-spec'
-
 wipFile: '{implementation_artifacts}/tech-spec-wip.md'
 ---
 
