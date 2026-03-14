@@ -1,7 +1,4 @@
 ---
-name: 'step-01-clarify-and-route'
-description: 'Capture intent, route to execution path'
-
 wipFile: '{implementation_artifacts}/tech-spec-wip.md'
 deferred_work_file: '{implementation_artifacts}/deferred-work.md'
 spec_file: '' # set at runtime before leaving this step
@@ -50,5 +47,5 @@ spec_file: '' # set at runtime before leaving this step
 
 ## NEXT
 
-- One-shot / ready-for-dev: Read fully and follow `./steps/step-03-implement.md`
-- Plan-code-review: Read fully and follow `./steps/step-02-plan.md`
+- One-shot / ready-for-dev: Read fully and follow `./step-03-implement.md`
+- Plan-code-review: Read fully and follow `./step-02-plan.md`
