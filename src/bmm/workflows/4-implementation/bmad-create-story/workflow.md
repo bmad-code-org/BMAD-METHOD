@@ -27,9 +27,6 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
 ### Paths
 
-- `installed_path` = `.`
-- `template` = `./template.md`
-- `validation` = `./checklist.md`
 - `sprint_status` = `{implementation_artifacts}/sprint-status.yaml`
 - `epics_file` = `{planning_artifacts}/epics.md`
 - `prd_file` = `{planning_artifacts}/prd.md`
