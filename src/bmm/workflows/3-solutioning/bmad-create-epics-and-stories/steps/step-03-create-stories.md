@@ -1,14 +1,6 @@
 ---
 name: 'step-03-create-stories'
 description: 'Generate all epics with their stories following the template structure'
-
-# File References
-nextStepFile: './step-04-final-validation.md'
-outputFile: '{planning_artifacts}/epics.md'
-
-# Task References
-advancedElicitationTask: 'skill:bmad-advanced-elicitation'
-partyModeWorkflow: 'skill:bmad-party-mode'
 ---
 
 # Step 3: Generate Epics and Stories
@@ -46,7 +38,7 @@ To generate all epics with their stories based on the approved epics_list, follo
 ## EXECUTION PROTOCOLS:
 
 - 🎯 Generate stories collaboratively with user input
-- 💾 Append epics and stories to {outputFile} following template
+- 💾 Append epics and stories to {planning_artifacts}/epics.md following template
 - 📖 Process epics one at a time in sequence
 - 🚫 FORBIDDEN to skip any epic or rush through stories
 
@@ -54,7 +46,7 @@ To generate all epics with their stories based on the approved epics_list, follo
 
 ### 1. Load Approved Epic Structure
 
-Load {outputFile} and review:
+Load {planning_artifacts}/epics.md and review:
 
 - Approved epics_list from Step 2
 - FR coverage map
@@ -178,7 +170,7 @@ After writing each story:
 
 When story is approved:
 
-- Append it to {outputFile} following template structure
+- Append it to {planning_artifacts}/epics.md following template structure
 - Use correct numbering (Epic N, Story M)
 - Maintain proper markdown formatting
 
@@ -207,7 +199,7 @@ After all epics and stories are generated:
 
 ## TEMPLATE STRUCTURE COMPLIANCE:
 
-The final {outputFile} must follow this structure exactly:
+The final {planning_artifacts}/epics.md must follow this structure exactly:
 
 1. **Overview** section with project name
 2. **Requirements Inventory** with all three subsections populated
@@ -227,9 +219,9 @@ Display: "**Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Cont
 
 #### Menu Handling Logic:
 
-- IF A: Read fully and follow: {advancedElicitationTask}
-- IF P: Read fully and follow: {partyModeWorkflow}
-- IF C: Save content to {outputFile}, update frontmatter, then read fully and follow: {nextStepFile}
+- IF A: Invoke the `bmad-advanced-elicitation` skill
+- IF P: Invoke the `bmad-party-mode` skill
+- IF C: Save content to {planning_artifacts}/epics.md, update frontmatter, then read fully and follow: ./step-04-final-validation.md
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options](#7-present-final-menu-options)
 
 #### EXECUTION RULES:
@@ -241,7 +233,7 @@ Display: "**Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Cont
 
 ## CRITICAL STEP COMPLETION NOTE
 
-ONLY WHEN [C continue option] is selected and [all epics and stories saved to document following the template structure exactly], will you then read fully and follow: `{nextStepFile}` to begin final validation phase.
+ONLY WHEN [C continue option] is selected and [all epics and stories saved to document following the template structure exactly], will you then read fully and follow: `./step-04-final-validation.md` to begin final validation phase.
 
 ---
 

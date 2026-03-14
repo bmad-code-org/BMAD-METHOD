@@ -1,9 +1,6 @@
 ---
 name: 'step-04-final-validation'
 description: 'Validate complete coverage of all requirements and ensure implementation readiness'
-
-# File References
-outputFile: '{planning_artifacts}/epics.md'
 ---
 
 # Step 4: Final Validation
