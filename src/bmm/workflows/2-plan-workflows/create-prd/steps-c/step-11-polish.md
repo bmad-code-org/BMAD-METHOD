@@ -152,7 +152,7 @@ Make targeted improvements:
 - All user success criteria
 - All functional requirements (capability contract)
 - All user journey narratives
-- All scope decisions (MVP, Growth, Vision)
+- All scope decisions (whether phased or single-release)
 - All non-functional requirements
 - Product differentiator and vision
 - Domain-specific requirements
