@@ -26,8 +26,6 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
 ### Paths
 
-- `installed_path` = `.`
-- `checklist` = `{installed_path}/checklist.md`
 - `default_output_file` = `{planning_artifacts}/sprint-change-proposal-{date}.md`
 
 ### Input Files
@@ -43,7 +41,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
 ### Context
 
-- `project_context` = `**/project-context.md` (load if exists)
+- Load `**/project-context.md` if it exists
 
 ---
 
@@ -77,7 +75,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 <workflow>
 
 <step n="1" goal="Initialize Change Navigation">
-  <action>Load {project_context} for coding standards and project-wide patterns (if exists)</action>
+  <action>Load **/project-context.md for coding standards and project-wide patterns (if exists)</action>
   <action>Confirm change trigger and gather user description of the issue</action>
   <action>Ask: "What specific issue or change has been identified that requires navigation?"</action>
   <action>Verify access to required project documents:</action>
@@ -96,7 +94,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 </step>
 
 <step n="2" goal="Execute Change Analysis Checklist">
-  <action>Read fully and follow the systematic analysis from: {checklist}</action>
+  <action>Read fully and follow the systematic analysis from: checklist.md</action>
   <action>Work through each checklist section interactively with the user</action>
   <action>Record status for each checklist item:</action>
     - [x] Done - Item completed successfully
