@@ -21,13 +21,6 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the configured `{communication_language}`.
 ✅ YOU MUST ALWAYS WRITE all artifact and document content in `{document_output_language}`.
 
-### Paths
-
-- `installed_path` = `.`
-- `instructions` = `{installed_path}/deep-dive-instructions.md`
-- `validation` = `../checklist.md`
-- `deep_dive_template` = `../templates/deep-dive-template.md`
-
 ### Runtime Inputs
 
 - `workflow_mode` = `deep_dive`
@@ -38,4 +31,4 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
 ## EXECUTION
 
-Read fully and follow: `{installed_path}/deep-dive-instructions.md`
+Read fully and follow: `./deep-dive-instructions.md`
