@@ -1,9 +1,5 @@
 ---
-name: 'step-03-users'
-description: 'Define target users with rich personas and map their key interactions with the product'
-
 # File References
-nextStepFile: './step-04-metrics.md'
 outputFile: '{planning_artifacts}/product-brief-{{project_name}}-{{date}}.md'
 
 # Task References
@@ -162,7 +158,7 @@ Prepare the following structure for document append:
 
 - IF A: Read fully and follow: {advancedElicitationTask} with current user content to dive deeper into personas and journeys
 - IF P: Read fully and follow: {partyModeWorkflow} to bring different perspectives to validate user understanding
-- IF C: Save content to {outputFile}, update frontmatter with stepsCompleted: [1, 2, 3], then read fully and follow: {nextStepFile}
+- IF C: Save content to {outputFile}, update frontmatter with stepsCompleted: [1, 2, 3], then read fully and follow: ./step-04-metrics.md
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options](#6-present-menu-options)
 
 #### EXECUTION RULES:
@@ -174,7 +170,7 @@ Prepare the following structure for document append:
 
 ## CRITICAL STEP COMPLETION NOTE
 
-ONLY WHEN [C continue option] is selected and [user personas finalized and saved to document with frontmatter updated], will you then read fully and follow: `{nextStepFile}` to begin success metrics definition.
+ONLY WHEN [C continue option] is selected and [user personas finalized and saved to document with frontmatter updated], will you then read fully and follow: `./step-04-metrics.md` to begin success metrics definition.
 
 ---
 
