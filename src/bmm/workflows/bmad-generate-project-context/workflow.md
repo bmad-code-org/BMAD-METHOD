@@ -1,8 +1,3 @@
----
-name: bmad-generate-project-context
-description: 'Create project-context.md with AI rules. Use when the user says "generate project context" or "create project context"'
----
-
 # Generate Project Context Workflow
 
 **Goal:** Create a concise, optimized `project-context.md` file containing critical rules, patterns, and guidelines that AI agents must follow when implementing code. This file focuses on unobvious details that LLMs need to be reminded of.
