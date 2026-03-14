@@ -1,23 +1,6 @@
 ---
 name: 'step-01-validate-prerequisites'
 description: 'Validate required documents exist and extract all requirements for epic and story creation'
-
-# Path Definitions
-workflow_path: '{project-root}/_bmad/bmm/workflows/3-solutioning/create-epics-and-stories'
-
-# File References
-thisStepFile: './step-01-validate-prerequisites.md'
-nextStepFile: './step-02-design-epics.md'
-workflowFile: '{workflow_path}/workflow.md'
-outputFile: '{planning_artifacts}/epics.md'
-epicsTemplate: '{workflow_path}/templates/epics-template.md'
-
-# Task References
-advancedElicitationTask: 'skill:bmad-advanced-elicitation'
-partyModeWorkflow: '{project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md'
-
-# Template References
-epicsTemplate: '{workflow_path}/templates/epics-template.md'
 ---
 
 # Step 1: Validate Prerequisites and Extract Requirements
@@ -54,7 +37,7 @@ To validate that all required input documents exist and extract all requirements
 ## EXECUTION PROTOCOLS:
 
 - 🎯 Extract requirements systematically from all documents
-- 💾 Populate {outputFile} with extracted requirements
+- 💾 Populate {planning_artifacts}/epics.md with extracted requirements
 - 📖 Update frontmatter with extraction progress
 - 🚫 FORBIDDEN to load next step until user selects 'C' and requirements are extracted
 
@@ -91,7 +74,7 @@ Search for required documents using these patterns (sharded means a large docume
 1. `{planning_artifacts}/*ux*.md` (whole document)
 2. `{planning_artifacts}/*ux*/index.md` (sharded version)
 
-Before proceeding, Ask the user if there are any other documents to include for analysis, and if anything found should be excluded. Wait for user confirmation. Once confirmed, create the {outputFile} from the {epicsTemplate} and in the front matter list the files in the array of `inputDocuments: []`.
+Before proceeding, Ask the user if there are any other documents to include for analysis, and if anything found should be excluded. Wait for user confirmation. Once confirmed, create the {planning_artifacts}/epics.md from the ../templates/epics-template.md and in the front matter list the files in the array of `inputDocuments: []`.
 
 ### 3. Extract Functional Requirements (FRs)
 
@@ -182,9 +165,9 @@ UX-DR2: [Actionable UX design requirement with clear implementation scope]
 
 ### 7. Load and Initialize Template
 
-Load {epicsTemplate} and initialize {outputFile}:
+Load ../templates/epics-template.md and initialize {planning_artifacts}/epics.md:
 
-1. Copy the entire template to {outputFile}
+1. Copy the entire template to {planning_artifacts}/epics.md
 2. Replace {{project_name}} with the actual project name
 3. Replace placeholder sections with extracted requirements:
    - {{fr_list}} → extracted FRs
@@ -228,7 +211,7 @@ Update the requirements based on user feedback until confirmation is received.
 
 ## CONTENT TO SAVE TO DOCUMENT:
 
-After extraction and confirmation, update {outputFile} with:
+After extraction and confirmation, update {planning_artifacts}/epics.md with:
 
 - Complete FR list in {{fr_list}} section
 - Complete NFR list in {{nfr_list}} section
@@ -247,12 +230,12 @@ Display: `**Confirm the Requirements are complete and correct to [C] continue:**
 
 #### Menu Handling Logic:
 
-- IF C: Save all to {outputFile}, update frontmatter, then read fully and follow: {nextStepFile}
+- IF C: Save all to {planning_artifacts}/epics.md, update frontmatter, then read fully and follow: ./step-02-design-epics.md
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options](#10-present-menu-options)
 
 ## CRITICAL STEP COMPLETION NOTE
 
-ONLY WHEN C is selected and all requirements are saved to document and frontmatter is updated, will you then read fully and follow: {nextStepFile} to begin epic design step.
+ONLY WHEN C is selected and all requirements are saved to document and frontmatter is updated, will you then read fully and follow: ./step-02-design-epics.md to begin epic design step.
 
 ---
 
