@@ -122,9 +122,15 @@ Saved to: {finalFile}
 
 ---
 
-Once you are fully satisfied with the spec (ideally after **Adversarial Review** and maybe a few rounds of **Advanced Elicitation**), it is recommended to run implementation in a FRESH CONTEXT for best results.
+For best results, run **Adversarial Review** in a separate session so the reviewer only sees the spec, not your design rationale. Open a new chat/session and run:
 
-Copy this prompt to start dev:
+\`\`\`
+bmad-review-adversarial-general {finalFile}
+\`\`\`
+
+Bring the findings back to this session to triage and apply fixes before moving to development.
+
+Once you are fully satisfied with the spec (ideally after **Adversarial Review** and maybe a few rounds of **Advanced Elicitation**), open a new chat/session and run implementation for best results:
 
 \`\`\`
 quick-dev {finalFile}
