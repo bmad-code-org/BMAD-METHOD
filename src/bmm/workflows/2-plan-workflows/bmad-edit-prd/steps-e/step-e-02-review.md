@@ -1,13 +1,9 @@
 ---
-name: 'step-e-02-review'
-description: 'Deep Review & Analysis - Thoroughly review existing PRD and prepare detailed change plan'
-
-# File references (ONLY variables used in this step)
-nextStepFile: './step-e-03-edit.md'
 prdFile: '{prd_file_path}'
 validationReport: '{validation_report_path}'  # If provided
 prdPurpose: '{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-prd/data/prd-purpose.md'
 advancedElicitationTask: 'skill:bmad-advanced-elicitation'
+partyModeWorkflow: '{project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md'
 ---
 
 # Step E-2: Deep Review & Analysis
@@ -205,7 +201,7 @@ Display: "**Change Plan Approved**
 
 **Proceeding to edit step...**"
 
-Read fully and follow: {nextStepFile} (step-e-03-edit.md)
+Read fully and follow: ./step-e-03-edit.md
 
 ### 7. Present MENU OPTIONS (If User Wants Discussion)
 
@@ -222,7 +218,7 @@ Read fully and follow: {nextStepFile} (step-e-03-edit.md)
 
 - IF A: Read fully and follow: {advancedElicitationTask}, then return to discussion
 - IF P: Read fully and follow: {partyModeWorkflow}, then return to discussion
-- IF C: Document approval, then load {nextStepFile}
+- IF C: Document approval, then load ./step-e-03-edit.md
 - IF Any other: discuss, then redisplay menu
 
 ---

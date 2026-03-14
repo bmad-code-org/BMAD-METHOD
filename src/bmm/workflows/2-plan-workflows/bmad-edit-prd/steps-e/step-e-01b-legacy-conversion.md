@@ -1,9 +1,4 @@
 ---
-name: 'step-e-01b-legacy-conversion'
-description: 'Legacy PRD Conversion Assessment - Analyze legacy PRD and propose conversion strategy'
-
-# File references (ONLY variables used in this step)
-nextStepFile: './step-e-02-review.md'
 prdFile: '{prd_file_path}'
 prdPurpose: '{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-prd/data/prd-purpose.md'
 ---
@@ -182,7 +177,7 @@ Edit goals: {summary}
 
 **Proceeding to deep review...**"
 
-Read fully and follow: {nextStepFile} (step-e-02-review.md)
+Read fully and follow: ./step-e-02-review.md
 
 ---
 
