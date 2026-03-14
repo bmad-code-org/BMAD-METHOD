@@ -1,8 +1,3 @@
----
-name: 'step-01-validate-prerequisites'
-description: 'Validate required documents exist and extract all requirements for epic and story creation'
----
-
 # Step 1: Validate Prerequisites and Extract Requirements
 
 ## STEP GOAL:
