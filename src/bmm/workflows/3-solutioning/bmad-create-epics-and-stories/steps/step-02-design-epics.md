@@ -1,8 +1,3 @@
----
-name: 'step-02-design-epics'
-description: 'Design and approve the epics_list that will organize all requirements into user-value-focused epics'
----
-
 # Step 2: Design Epic List
 
 ## STEP GOAL:
