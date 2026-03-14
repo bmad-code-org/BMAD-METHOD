@@ -1,8 +1,3 @@
----
-name: bmad-correct-course
-description: 'Manage significant changes during sprint execution. Use when the user says "correct course" or "propose sprint change"'
----
-
 # Correct Course - Sprint Change Management Workflow
 
 **Goal:** Manage significant changes during sprint execution by analyzing impact across all project artifacts and producing a structured Sprint Change Proposal.
