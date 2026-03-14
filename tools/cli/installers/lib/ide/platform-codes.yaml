@@ -214,6 +214,18 @@ platforms:
       template_type: default
       skill_format: true
 
+  qoder:
+    name: "Qoder"
+    preferred: false
+    category: ide
+    description: "Qoder AI coding assistant"
+    installer:
+      legacy_targets:
+        - .qoder/commands
+      target_dir: .qoder/skills
+      template_type: default
+      skill_format: true
+
   roo:
     name: "Roo Code"
     preferred: false
