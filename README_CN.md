@@ -20,7 +20,7 @@
 - **派对模式** — 将多个智能体角色带入一个会话进行协作和讨论
 - **完整生命周期** — 从想法开始（头脑风暴）到部署发布
 
-[在 **docs.bmad-method.org** 了解更多](http://docs.bmad-method.org)
+[在 **docs.bmad-method.org** 了解更多](https://docs.bmad-method.org)
 
 ---
 
@@ -28,7 +28,7 @@
 
 **V6 已到来，我们才刚刚开始！** BMad 方法正在快速发展，包括跨平台智能体团队和子智能体集成、技能架构、BMad Builder v1、开发循环自动化等优化，以及更多正在开发中的功能。
 
-**[📍 查看完整路线图 →](http://docs.bmad-method.org/roadmap/)**
+**[📍 查看完整路线图 →](https://docs.bmad-method.org/roadmap/)**
 
 ---
 
@@ -50,7 +50,7 @@ npx bmad-method install
 npx bmad-method install --directory /path/to/project --modules bmm --tools claude-code --yes
 ```
 
-[查看所有安装选项](http://docs.bmad-method.org/how-to/non-interactive-installation/)
+[查看所有安装选项](https://docs.bmad-method.org/how-to/non-interactive-installation/)
 
 > **不确定该做什么？** 运行 `bmad-help` — 它会准确告诉你下一步做什么以及什么是可选的。你也可以问诸如 `bmad-help 我刚刚完成了架构设计，接下来该做什么？` 之类的问题。
 
@@ -68,11 +68,11 @@ BMad 方法通过官方模块扩展到专业领域。可在安装期间或之后
 
 ## 文档
 
-[BMad 方法文档站点](http://docs.bmad-method.org) — 教程、指南、概念和参考
+[BMad 方法文档站点](https://docs.bmad-method.org) — 教程、指南、概念和参考
 
 **快速链接：**
-- [入门教程](http://docs.bmad-method.org/tutorials/getting-started/)
-- [从先前版本升级](http://docs.bmad-method.org/how-to/upgrade-to-v6/)
+- [入门教程](https://docs.bmad-method.org/tutorials/getting-started/)
+- [从先前版本升级](https://docs.bmad-method.org/how-to/upgrade-to-v6/)
 - [测试架构师文档](https://bmad-code-org.github.io/bmad-method-test-architecture-enterprise/)
 
 
