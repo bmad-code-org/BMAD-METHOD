@@ -11,6 +11,7 @@
 - 💬 FOCUS on designing user flows and journey interactions
 - 🎯 COLLABORATIVE flow design, not assumption-based layouts
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
+- ✅ YOU MUST ALWAYS WRITE all artifact and document content in `{document_output_language}`
 
 ## EXECUTION PROTOCOLS:
 

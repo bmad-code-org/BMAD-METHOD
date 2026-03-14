@@ -26,6 +26,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/bmad-party-mode/workflow
 - 💬 FOCUS on quality attributes that matter for THIS specific product
 - 🎯 SELECTIVE: Only document NFRs that actually apply to the product
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
+- ✅ YOU MUST ALWAYS WRITE all artifact and document content in `{document_output_language}`
 
 ## EXECUTION PROTOCOLS:
 
