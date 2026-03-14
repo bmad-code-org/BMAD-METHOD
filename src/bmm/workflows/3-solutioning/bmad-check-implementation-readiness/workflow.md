@@ -1,8 +1,3 @@
----
-name: check-implementation-readiness
-description: 'Validate PRD, UX, Architecture and Epics specs are complete. Use when the user says "check implementation readiness".'
----
-
 # Implementation Readiness
 
 **Goal:** Validate that PRD, Architecture, Epics and Stories are complete and aligned before Phase 4 implementation starts, with a focus on ensuring epics and stories are logical and have accounted for all requirements and planning.

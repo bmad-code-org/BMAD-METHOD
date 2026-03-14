@@ -29,6 +29,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/bmad-party-mode/workflow
 - 💬 FOCUS on detecting and exploring innovative aspects of the product
 - 🎯 OPTIONAL STEP: Only proceed if innovation signals are detected
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
+- ✅ YOU MUST ALWAYS WRITE all artifact and document content in `{document_output_language}`
 
 ## EXECUTION PROTOCOLS:
 

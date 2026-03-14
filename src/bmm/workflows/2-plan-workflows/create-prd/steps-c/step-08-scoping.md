@@ -26,6 +26,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/bmad-party-mode/workflow
 - 💬 FOCUS on strategic scope decisions that keep projects viable
 - 🎯 EMPHASIZE lean MVP thinking while preserving long-term vision
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
+- ✅ YOU MUST ALWAYS WRITE all artifact and document content in `{document_output_language}`
 
 ## EXECUTION PROTOCOLS:
 
