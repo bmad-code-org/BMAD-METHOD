@@ -1,8 +1,3 @@
----
-name: sprint-planning
-description: 'Generate sprint status tracking from epics. Use when the user says "run sprint planning" or "generate sprint plan"'
----
-
 # Sprint Planning Workflow
 
 **Goal:** Generate sprint status tracking from epics, detecting current story statuses and building a complete sprint-status.yaml file.
@@ -26,7 +21,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
 ### Paths
 
-- `installed_path` = `{project-root}/_bmad/bmm/workflows/4-implementation/sprint-planning`
+- `installed_path` = `.`
 - `template` = `{installed_path}/sprint-status-template.yaml`
 - `checklist` = `{installed_path}/checklist.md`
 - `tracking_system` = `file-system`
