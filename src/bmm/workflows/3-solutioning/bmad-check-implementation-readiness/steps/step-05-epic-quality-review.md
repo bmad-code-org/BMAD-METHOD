@@ -1,8 +1,4 @@
 ---
-name: 'step-05-epic-quality-review'
-description: 'Validate epics and stories against create-epics-and-stories best practices'
-
-nextStepFile: './step-06-final-assessment.md'
 outputFile: '{planning_artifacts}/implementation-readiness-report-{{date}}.md'
 ---
 
@@ -217,11 +213,11 @@ After completing epic quality review:
 - Update {outputFile} with all quality findings
 - Document specific best practices violations
 - Provide actionable recommendations
-- Load {nextStepFile} for final readiness assessment
+- Load ./step-06-final-assessment.md for final readiness assessment
 
 ## CRITICAL STEP COMPLETION NOTE
 
-This step executes autonomously. Load {nextStepFile} only after complete epic quality review is documented.
+This step executes autonomously. Load ./step-06-final-assessment.md only after complete epic quality review is documented.
 
 ---
 

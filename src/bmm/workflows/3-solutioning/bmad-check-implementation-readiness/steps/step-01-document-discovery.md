@@ -1,10 +1,5 @@
 ---
-name: 'step-01-document-discovery'
-description: 'Discover and inventory all project documents, handling duplicates and organizing file structure'
-
-nextStepFile: './step-02-prd-analysis.md'
 outputFile: '{planning_artifacts}/implementation-readiness-report-{{date}}.md'
-templateFile: '../templates/readiness-report-template.md'
 ---
 
 # Step 1: Document Discovery
@@ -122,7 +117,7 @@ If required documents not found:
 
 ### 5. Add Initial Report Section
 
-Initialize {outputFile} with {templateFile}.
+Initialize {outputFile} with ../templates/readiness-report-template.md.
 
 ### 6. Present Findings and Get Confirmation
 
@@ -156,12 +151,12 @@ Display: **Select an Option:** [C] Continue to File Validation
 
 #### Menu Handling Logic:
 
-- IF C: Save document inventory to {outputFile}, update frontmatter with completed step and files being included, and then read fully and follow: {nextStepFile}
+- IF C: Save document inventory to {outputFile}, update frontmatter with completed step and files being included, and then read fully and follow: ./step-02-prd-analysis.md
 - IF Any other comments or queries: help user respond then redisplay menu
 
 ## CRITICAL STEP COMPLETION NOTE
 
-ONLY WHEN C is selected and document inventory is saved will you load {nextStepFile} to begin file validation.
+ONLY WHEN C is selected and document inventory is saved will you load ./step-02-prd-analysis.md to begin file validation.
 
 ---
 

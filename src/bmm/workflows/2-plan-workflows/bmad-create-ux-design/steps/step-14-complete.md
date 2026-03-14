@@ -75,8 +75,8 @@ This specification is now ready to guide visual design, implementation, and deve
 
 Update the main workflow status file:
 
-- Load `{status_file}` from workflow configuration (if exists)
-- Update workflow_status["create-ux-design"] = "{default_output_file}"
+- Load the project's workflow status file (if one exists)
+- Update workflow_status["create-ux-design"] = `{planning_artifacts}/ux-design-specification.md`
 - Save file, preserving all comments and structure
 - Mark current timestamp as completion time
 
