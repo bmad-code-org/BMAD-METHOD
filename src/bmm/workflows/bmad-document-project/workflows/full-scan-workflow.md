@@ -1,8 +1,3 @@
----
-name: document-project-full-scan
-description: 'Complete project documentation workflow (initial scan or full rescan)'
----
-
 # Full Project Scan Sub-Workflow
 
 **Goal:** Complete project documentation (initial scan or full rescan).
@@ -27,10 +22,10 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
 ### Paths
 
-- `installed_path` = `{project-root}/_bmad/bmm/workflows/document-project/workflows`
+- `installed_path` = `.`
 - `instructions` = `{installed_path}/full-scan-instructions.md`
-- `validation` = `{project-root}/_bmad/bmm/workflows/document-project/checklist.md`
-- `documentation_requirements_csv` = `{project-root}/_bmad/bmm/workflows/document-project/documentation-requirements.csv`
+- `validation` = `../checklist.md`
+- `documentation_requirements_csv` = `../documentation-requirements.csv`
 
 ### Runtime Inputs
 
