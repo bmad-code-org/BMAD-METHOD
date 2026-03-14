@@ -1,8 +1,4 @@
 ---
-name: 'step-02-prd-analysis'
-description: 'Read and analyze PRD to extract all FRs and NFRs for coverage validation'
-
-nextStepFile: './step-03-epic-coverage-validation.md'
 outputFile: '{planning_artifacts}/implementation-readiness-report-{{date}}.md'
 epicsFile: '{planning_artifacts}/*epic*.md' # Will be resolved to actual file
 ---
@@ -149,7 +145,7 @@ After PRD analysis complete, immediately load next step for epic coverage valida
 
 ## PROCEEDING TO EPIC COVERAGE VALIDATION
 
-PRD analysis complete. Loading next step to validate epic coverage.
+PRD analysis complete. Read fully and follow: `./step-03-epic-coverage-validation.md`
 
 ---
 
