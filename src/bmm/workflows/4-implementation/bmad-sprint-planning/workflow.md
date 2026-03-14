@@ -21,9 +21,6 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
 ### Paths
 
-- `installed_path` = `.`
-- `template` = `{installed_path}/sprint-status-template.yaml`
-- `checklist` = `{installed_path}/checklist.md`
 - `tracking_system` = `file-system`
 - `project_key` = `NOKEY`
 - `story_location` = `{implementation_artifacts}`
