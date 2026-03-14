@@ -36,7 +36,7 @@ agent:
       description: "[CE] Create Epics and Stories: Create the Epics and Stories Listing, these are the specs that will drive development"
 
     - trigger: IR or fuzzy match on implementation-readiness
-      exec: "{project-root}/_bmad/bmm/workflows/3-solutioning/bmad-check-implementation-readiness/workflow.md"
+      exec: "skill:bmad-check-implementation-readiness"
       description: "[IR] Implementation Readiness: Ensure the PRD, UX, and Architecture and Epics and Stories List are all aligned"
 
     - trigger: CC or fuzzy match on correct-course
