@@ -1,7 +1,4 @@
 ---
-name: create-prd
-description: 'Create a PRD from scratch. Use when the user says "lets create a product requirements document" or "I want to create a new PRD"'
-standalone: false
 main_config: '{project-root}/_bmad/bmm/config.yaml'
 nextStep: './steps-c/step-01-init.md'
 ---
