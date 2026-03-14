@@ -1,8 +1,3 @@
----
-name: document-project-deep-dive
-description: 'Exhaustive deep-dive documentation of specific project areas'
----
-
 # Deep-Dive Documentation Sub-Workflow
 
 **Goal:** Exhaustive deep-dive documentation of specific project areas.
