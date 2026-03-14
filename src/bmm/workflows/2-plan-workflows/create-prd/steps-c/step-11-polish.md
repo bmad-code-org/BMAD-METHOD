@@ -8,7 +8,7 @@ outputFile: '{planning_artifacts}/prd.md'
 purposeFile: '{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-prd/data/prd-purpose.md'
 
 # Task References
-advancedElicitationTask: '{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.md'
+advancedElicitationTask: 'skill:bmad-advanced-elicitation'
 partyModeWorkflow: '{project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md'
 ---
 
@@ -26,6 +26,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/bmad-party-mode/workflow
 - 💬 PRESERVE user's voice and intent
 - 🎯 MAINTAIN all essential information while improving presentation
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
+- ✅ YOU MUST ALWAYS WRITE all artifact and document content in `{document_output_language}`
 
 ## EXECUTION PROTOCOLS:
 

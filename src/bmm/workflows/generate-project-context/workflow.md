@@ -33,6 +33,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 - `communication_language`, `document_output_language`, `user_skill_level`
 - `date` as system-generated current datetime
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
+- ✅ YOU MUST ALWAYS WRITE all artifact and document content in `{document_output_language}`
 
 ### Paths
 

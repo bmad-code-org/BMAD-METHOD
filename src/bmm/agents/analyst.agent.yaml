@@ -18,7 +18,7 @@ agent:
 
   menu:
     - trigger: BP or fuzzy match on brainstorm-project
-      exec: "{project-root}/_bmad/core/workflows/brainstorming/workflow.md"
+      exec: "skill:bmad-brainstorming"
       data: "{project-root}/_bmad/bmm/data/project-context-template.md"
       description: "[BP] Brainstorm Project: Expert Guided Facilitation through a single or multiple techniques with a final report"
 
@@ -27,7 +27,7 @@ agent:
       description: "[MR] Market Research: Market analysis, competitive landscape, customer needs and trends"
 
     - trigger: DR or fuzzy match on domain-research
-      exec: "{project-root}/_bmad/bmm/workflows/1-analysis/research/workflow-domain-research.md"
+      exec: "skill:bmad-domain-research"
       description: "[DR] Domain Research: Industry domain deep dive, subject matter expertise and terminology"
 
     - trigger: TR or fuzzy match on technical-research
@@ -35,7 +35,7 @@ agent:
       description: "[TR] Technical Research: Technical feasibility, architecture options and implementation approaches"
 
     - trigger: CB or fuzzy match on product-brief
-      exec: "{project-root}/_bmad/bmm/workflows/1-analysis/create-product-brief/workflow.md"
+      exec: "skill:bmad-create-product-brief"
       description: "[CB] Create Brief: A guided experience to nail down your product idea into an executive brief"
 
     - trigger: DP or fuzzy match on document-project

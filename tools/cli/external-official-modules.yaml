@@ -42,12 +42,12 @@ modules:
     type: bmad-org
     npmPackage: bmad-method-test-architecture-enterprise
 
-  # whiteport-design-system:
-  #   url: https://github.com/bmad-code-org/bmad-method-wds-expansion
-  #   module-definition: src/module.yaml
-  #   code: wds
-  #   name: "Whiteport UX Design System"
-  #   description: "UX design framework with Figma integration"
-  #   defaultSelected: false
-  #   type: community
-  #   npmPackage: bmad-method-wds-expansion
+  whiteport-design-studio:
+    url: https://github.com/bmad-code-org/bmad-method-wds-expansion
+    module-definition: src/module.yaml
+    code: wds
+    name: "Whiteport Design Studio (For UX Professionals)"
+    description: "Whiteport Design Studio (For UX Professionals)"
+    defaultSelected: false
+    type: community
+    npmPackage: bmad-method-wds-expansion

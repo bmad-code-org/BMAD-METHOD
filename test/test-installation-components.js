@@ -81,6 +81,60 @@ async function createTestBmadFixture() {
   return fixtureDir;
 }
 
+async function createSkillCollisionFixture() {
+  const fixtureRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-skill-collision-'));
+  const fixtureDir = path.join(fixtureRoot, '_bmad');
+  const configDir = path.join(fixtureDir, '_config');
+  await fs.ensureDir(configDir);
+
+  await fs.writeFile(
+    path.join(configDir, 'agent-manifest.csv'),
+    [
+      'name,displayName,title,icon,capabilities,role,identity,communicationStyle,principles,module,path,canonicalId',
+      '"bmad-master","BMAD Master","","","","","","","","core","_bmad/core/agents/bmad-master.md","bmad-master"',
+      '',
+    ].join('\n'),
+  );
+
+  await fs.writeFile(
+    path.join(configDir, 'workflow-manifest.csv'),
+    [
+      'name,description,module,path,canonicalId',
+      '"help","Workflow help","core","_bmad/core/workflows/help/workflow.md","bmad-help"',
+      '',
+    ].join('\n'),
+  );
+
+  await fs.writeFile(path.join(configDir, 'task-manifest.csv'), 'name,displayName,description,module,path,standalone,canonicalId\n');
+  await fs.writeFile(path.join(configDir, 'tool-manifest.csv'), 'name,displayName,description,module,path,standalone,canonicalId\n');
+  await fs.writeFile(
+    path.join(configDir, 'skill-manifest.csv'),
+    [
+      'canonicalId,name,description,module,path,install_to_bmad',
+      '"bmad-help","bmad-help","Native help skill","core","_bmad/core/tasks/bmad-help/SKILL.md","true"',
+      '',
+    ].join('\n'),
+  );
+
+  const skillDir = path.join(fixtureDir, 'core', 'tasks', 'bmad-help');
+  await fs.ensureDir(skillDir);
+  await fs.writeFile(
+    path.join(skillDir, 'SKILL.md'),
+    ['---', 'name: bmad-help', 'description: Native help skill', '---', '', 'Use this skill directly.'].join('\n'),
+  );
+
+  const agentDir = path.join(fixtureDir, 'core', 'agents');
+  await fs.ensureDir(agentDir);
+  await fs.writeFile(
+    path.join(agentDir, 'bmad-master.md'),
+    ['---', 'name: BMAD Master', 'description: Master agent', '---', '', '<agent name="BMAD Master" title="Master">', '</agent>'].join(
+      '\n',
+    ),
+  );
+
+  return { root: fixtureRoot, bmadDir: fixtureDir };
+}
+
 /**
  * Test Suite
  */
@@ -1766,6 +1820,50 @@ async function runTests() {
     assert(false, 'parseSkillMd validation test succeeds', error.message);
   } finally {
     if (tempFixture30) await fs.remove(tempFixture30).catch(() => {});
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test 31: Skill-format installs report unique skill directories
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 31: Skill Count Reporting${colors.reset}\n`);
+
+  let collisionFixtureRoot = null;
+  let collisionProjectDir = null;
+
+  try {
+    clearCache();
+    const collisionFixture = await createSkillCollisionFixture();
+    collisionFixtureRoot = collisionFixture.root;
+    collisionProjectDir = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-antigravity-test-'));
+
+    const ideManager = new IdeManager();
+    await ideManager.ensureInitialized();
+    const result = await ideManager.setup('antigravity', collisionProjectDir, collisionFixture.bmadDir, {
+      silent: true,
+      selectedModules: ['core'],
+    });
+
+    assert(result.success === true, 'Antigravity setup succeeds with overlapping skill names');
+    assert(result.detail === '2 agents', 'Installer detail reports agents separately from skills');
+    assert(result.handlerResult.results.skillDirectories === 2, 'Result exposes unique skill directory count');
+    assert(result.handlerResult.results.agents === 2, 'Result retains generated agent write count');
+    assert(result.handlerResult.results.workflows === 1, 'Result retains generated workflow count');
+    assert(result.handlerResult.results.skills === 1, 'Result retains verbatim skill count');
+    assert(
+      await fs.pathExists(path.join(collisionProjectDir, '.agent', 'skills', 'bmad-agent-bmad-master', 'SKILL.md')),
+      'Agent skill directory is created',
+    );
+    assert(
+      await fs.pathExists(path.join(collisionProjectDir, '.agent', 'skills', 'bmad-help', 'SKILL.md')),
+      'Overlapping skill directory is created once',
+    );
+  } catch (error) {
+    assert(false, 'Skill-format unique count test succeeds', error.message);
+  } finally {
+    if (collisionProjectDir) await fs.remove(collisionProjectDir).catch(() => {});
+    if (collisionFixtureRoot) await fs.remove(collisionFixtureRoot).catch(() => {});
   }
 
   console.log('');

@@ -7,7 +7,7 @@ nextStepFile: '{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-prd/st
 outputFile: '{planning_artifacts}/prd.md'
 
 # Task References
-advancedElicitationTask: '{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.md'
+advancedElicitationTask: 'skill:bmad-advanced-elicitation'
 partyModeWorkflow: '{project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md'
 ---
 
@@ -26,6 +26,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/bmad-party-mode/workflow
 - 💬 FOCUS on quality attributes that matter for THIS specific product
 - 🎯 SELECTIVE: Only document NFRs that actually apply to the product
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
+- ✅ YOU MUST ALWAYS WRITE all artifact and document content in `{document_output_language}`
 
 ## EXECUTION PROTOCOLS:
 

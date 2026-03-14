@@ -129,6 +129,7 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
 
     const selectedModules = options.selectedModules || [];
     const results = { agents: 0, workflows: 0, tasks: 0, tools: 0, skills: 0 };
+    this.skillWriteTracker = config.skill_format ? new Set() : null;
 
     // Install standard artifacts (agents, workflows, tasks, tools)
     if (!skipStandardArtifacts) {
@@ -159,9 +160,11 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
     // Install verbatim skills (type: skill)
     if (config.skill_format) {
       results.skills = await this.installVerbatimSkills(projectDir, bmadDir, targetPath, config);
+      results.skillDirectories = this.skillWriteTracker ? this.skillWriteTracker.size : 0;
     }
 
     await this.printSummary(results, target_dir, options);
+    this.skillWriteTracker = null;
     return { success: true, results };
   }
 
@@ -495,6 +498,7 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
     // Create skill directory
     const skillDir = path.join(targetPath, skillName);
     await this.ensureDir(skillDir);
+    this.skillWriteTracker?.add(skillName);
 
     // Transform content: rewrite frontmatter for skills format
     const skillContent = this.transformToSkillFormat(content, skillName);
@@ -667,6 +671,7 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
       const skillDir = path.join(targetPath, canonicalId);
       await fs.remove(skillDir);
       await fs.ensureDir(skillDir);
+      this.skillWriteTracker?.add(canonicalId);
 
       // Copy all skill files, filtering OS/editor artifacts recursively
       const skipPatterns = new Set(['.DS_Store', 'Thumbs.db', 'desktop.ini']);
@@ -707,11 +712,11 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
   async printSummary(results, targetDir, options = {}) {
     if (options.silent) return;
     const parts = [];
+    const totalDirs =
+      results.skillDirectories || (results.workflows || 0) + (results.tasks || 0) + (results.tools || 0) + (results.skills || 0);
+    const skillCount = totalDirs - (results.agents || 0);
+    if (skillCount > 0) parts.push(`${skillCount} skills`);
     if (results.agents > 0) parts.push(`${results.agents} agents`);
-    if (results.workflows > 0) parts.push(`${results.workflows} workflows`);
-    if (results.tasks > 0) parts.push(`${results.tasks} tasks`);
-    if (results.tools > 0) parts.push(`${results.tools} tools`);
-    if (results.skills > 0) parts.push(`${results.skills} skills`);
     await prompts.log.success(`${this.name} configured: ${parts.join(', ')} → ${targetDir}`);
   }
 

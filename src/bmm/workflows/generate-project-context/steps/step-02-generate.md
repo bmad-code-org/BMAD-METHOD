@@ -9,6 +9,7 @@
 - 🎯 KEEP CONTENT LEAN - optimize for LLM context efficiency
 - ⚠️ ABSOLUTELY NO TIME ESTIMATES - AI development speed has fundamentally changed
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
+- ✅ YOU MUST ALWAYS WRITE all artifact and document content in `{document_output_language}`
 
 ## EXECUTION PROTOCOLS:
 
@@ -29,7 +30,7 @@ This step will generate content and present choices for each rule category:
 
 ## PROTOCOL INTEGRATION:
 
-- When 'A' selected: Execute {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.md
+- When 'A' selected: Execute skill:bmad-advanced-elicitation
 - When 'P' selected: Execute {project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md
 - PROTOCOLS always return to display this step's A/P/C menu after the A or P have completed
 - User accepts/rejects protocol changes before proceeding
@@ -267,7 +268,7 @@ After each category, show the generated rules and present choices:
 
 #### If 'A' (Advanced Elicitation):
 
-- Execute {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.md with current category rules
+- Execute skill:bmad-advanced-elicitation with current category rules
 - Process enhanced rules that come back
 - Ask user: "Accept these enhanced rules for {{category}}? (y/n)"
 - If yes: Update content, then return to A/P/C menu
