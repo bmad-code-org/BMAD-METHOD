@@ -28,7 +28,7 @@ agent:
       description: "[VP] Validate PRD: Validate a Product Requirements Document is comprehensive, lean, well organized and cohesive"
 
     - trigger: EP or fuzzy match on edit-prd
-      exec: "{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-prd/workflow-edit-prd.md"
+      exec: "skill:bmad-edit-prd"
       description: "[EP] Edit PRD: Update an existing Product Requirements Document"
 
     - trigger: CE or fuzzy match on epics-stories

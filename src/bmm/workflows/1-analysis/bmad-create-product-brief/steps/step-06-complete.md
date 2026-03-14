@@ -1,7 +1,4 @@
 ---
-name: 'step-06-complete'
-description: 'Complete the product brief workflow, update status files, and suggest next steps for the project'
-
 # File References
 outputFile: '{planning_artifacts}/product-brief-{{project_name}}-{{date}}.md'
 ---

@@ -27,8 +27,6 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
 ### Paths
 
-- `installed_path` = `.`
-- `template_path` = `{installed_path}/ux-design-template.md`
 - `default_output_file` = `{planning_artifacts}/ux-design-specification.md`
 
 ## EXECUTION
