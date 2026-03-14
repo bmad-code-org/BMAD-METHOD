@@ -176,6 +176,16 @@ platforms:
       template_type: kiro
       skill_format: true
 
+  ona:
+    name: "Ona"
+    preferred: false
+    category: ide
+    description: "Ona AI development environment"
+    installer:
+      target_dir: .ona/skills
+      template_type: default
+      skill_format: true
+
   opencode:
     name: "OpenCode"
     preferred: false

@@ -127,6 +127,12 @@ platforms:
     category: ide
     description: "AI-powered IDE with cascade flows"
 
+  ona:
+    name: "Ona"
+    preferred: false
+    category: ide
+    description: "Ona AI development environment"
+
 # Platform categories
 categories:
   ide:
