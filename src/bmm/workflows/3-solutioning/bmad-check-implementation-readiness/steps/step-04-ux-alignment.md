@@ -1,8 +1,4 @@
 ---
-name: 'step-04-ux-alignment'
-description: 'Check for UX document and validate alignment with PRD and Architecture'
-
-nextStepFile: './step-05-epic-quality-review.md'
 outputFile: '{planning_artifacts}/implementation-readiness-report-{{date}}.md'
 ---
 
@@ -113,7 +109,7 @@ After UX assessment complete, immediately load next step.
 
 ## PROCEEDING TO EPIC QUALITY REVIEW
 
-UX alignment assessment complete. Loading next step for epic quality review.
+UX alignment assessment complete. Read fully and follow: `./step-05-epic-quality-review.md`
 
 ---
 

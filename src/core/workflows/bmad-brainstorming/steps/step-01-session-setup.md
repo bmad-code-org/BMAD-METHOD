@@ -65,7 +65,7 @@ Create the brainstorming session document:
 mkdir -p "$(dirname "{brainstorming_session_output_file}")"
 
 # Initialize from template
-cp "{template_path}" "{brainstorming_session_output_file}"
+cp "../template.md" "{brainstorming_session_output_file}"
 ```
 
 #### B. Context File Check and Loading

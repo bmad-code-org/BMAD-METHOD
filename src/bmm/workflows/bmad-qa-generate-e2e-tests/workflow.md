@@ -20,8 +20,6 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
 ### Paths
 
-- `installed_path` = `.`
-- `checklist` = `./checklist.md`
 - `test_dir` = `{project-root}/tests`
 - `source_dir` = `{project-root}`
 - `default_output_file` = `{implementation_artifacts}/tests/test-summary.md`
@@ -135,4 +133,4 @@ If the project needs:
 
 Save summary to: `{default_output_file}`
 
-**Done!** Tests generated and verified. Validate against `{checklist}`.
+**Done!** Tests generated and verified. Validate against `./checklist.md`.
