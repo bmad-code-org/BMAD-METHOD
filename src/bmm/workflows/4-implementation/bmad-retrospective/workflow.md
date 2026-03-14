@@ -37,7 +37,6 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
 ### Paths
 
-- `installed_path` = `.`
 - `sprint_status_file` = `{implementation_artifacts}/sprint-status.yaml`
 
 ### Input Files

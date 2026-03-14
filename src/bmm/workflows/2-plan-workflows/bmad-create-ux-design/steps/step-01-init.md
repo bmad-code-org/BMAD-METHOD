@@ -58,7 +58,7 @@ Discover and load context documents using smart discovery. Documents can be in t
 - {planning_artifacts}/**
 - {output_folder}/**
 - {product_knowledge}/**
-- docs/**
+- {project-root}/docs/**
 
 Also - when searching - documents can be a single markdown file, or a folder with an index and multiple files. For Example, if searching for `*foo*.md` and not found, also search for a folder called *foo*/index.md (which indicates sharded content)
 
@@ -80,7 +80,7 @@ Try to discover the following:
 
 #### B. Create Initial Document
 
-Copy the template from `{installed_path}/ux-design-template.md` to `{planning_artifacts}/ux-design-specification.md`
+Copy the template from `../ux-design-template.md` to `{planning_artifacts}/ux-design-specification.md`
 Initialize frontmatter in the template.
 
 #### C. Complete Initialization and Report

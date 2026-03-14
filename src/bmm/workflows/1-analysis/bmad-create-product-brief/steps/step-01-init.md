@@ -1,13 +1,6 @@
 ---
-name: 'step-01-init'
-description: 'Initialize the product brief workflow by detecting continuation state and setting up the document'
-
 # File References
-nextStepFile: './step-02-vision.md'
 outputFile: '{planning_artifacts}/product-brief-{{project_name}}-{{date}}.md'
-
-# Template References
-productBriefTemplate: '../product-brief.template.md'
 ---
 
 # Step 1: Product Brief Initialization
@@ -88,7 +81,7 @@ load context documents using smart discovery. Documents can be in the following 
 - {planning_artifacts}/**
 - {output_folder}/**
 - {product_knowledge}/**
-- docs/**
+- {project-root}/docs/**
 
 Also - when searching - documents can be a single markdown file, or a folder with an index and multiple files. For Example, if searching for `*foo*.md` and not found, also search for a folder called *foo*/index.md (which indicates sharded content)
 
@@ -112,7 +105,7 @@ Try to discover the following:
 
 **Document Setup:**
 
-- Copy the template from `{productBriefTemplate}` to `{outputFile}`, and update the frontmatter fields
+- Copy the template from `../product-brief.template.md` to `{outputFile}`, and update the frontmatter fields
 
 #### C. Present Initialization Results
 
@@ -141,7 +134,7 @@ Display: "**Proceeding to product vision discovery...**"
 
 #### Menu Handling Logic:
 
-- After setup report is presented, without delay, read fully and follow: {nextStepFile}
+- After setup report is presented, without delay, read fully and follow: ./step-02-vision.md
 
 #### EXECUTION RULES:
 
@@ -150,7 +143,7 @@ Display: "**Proceeding to product vision discovery...**"
 
 ## CRITICAL STEP COMPLETION NOTE
 
-ONLY WHEN [setup completion is achieved and frontmatter properly updated], will you then read fully and follow: `{nextStepFile}` to begin product vision discovery.
+ONLY WHEN [setup completion is achieved and frontmatter properly updated], will you then read fully and follow: `./step-02-vision.md` to begin product vision discovery.
 
 ---
 

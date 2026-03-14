@@ -72,7 +72,6 @@ YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `
 
 ### 2. Paths
 
-- `templateFile` = `./tech-spec-template.md`
 - `wipFile` = `{implementation_artifacts}/tech-spec-wip.md`
 
 ### 3. First Step Execution

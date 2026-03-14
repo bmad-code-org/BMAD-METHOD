@@ -193,7 +193,7 @@ This will read EVERY file in this area. Proceed? [y/n]
     - Combine recommended test commands into {{suggested_tests}}
   </action>
 
-<action>Load complete deep-dive template from: {installed_path}/templates/deep-dive-template.md</action>
+<action>Load complete deep-dive template from: ../templates/deep-dive-template.md</action>
 <action>Fill template with all collected data from steps 13b-13d</action>
 <action>Write filled template to: {project_knowledge}/deep-dive-{{sanitized_target_name}}.md</action>
 <action>Validate deep-dive document completeness</action>

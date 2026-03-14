@@ -1,7 +1,4 @@
 ---
-name: 'step-06-final-assessment'
-description: 'Compile final assessment and polish the readiness report'
-
 outputFile: '{planning_artifacts}/implementation-readiness-report-{{date}}.md'
 ---
 

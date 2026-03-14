@@ -1,8 +1,4 @@
 ---
-name: 'step-01-understand'
-description: 'Analyze the requirement delta between current state and what user wants to build'
-
-templateFile: '../tech-spec-template.md'
 wipFile: '{implementation_artifacts}/tech-spec-wip.md'
 ---
 
@@ -125,7 +121,7 @@ b) **Ask the user to confirm the captured understanding before proceeding.**
 
 a) **Create the tech-spec WIP file:**
 
-1. Copy template from `{templateFile}`
+1. Copy template from `../tech-spec-template.md`
 2. Write to `{wipFile}`
 3. Update frontmatter with captured values:
    ```yaml

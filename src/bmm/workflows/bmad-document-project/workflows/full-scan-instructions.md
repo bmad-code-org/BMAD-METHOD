@@ -16,7 +16,7 @@
 
 This workflow uses a single comprehensive CSV file to intelligently document your project:
 
-**documentation-requirements.csv** ({documentation_requirements_csv})
+**documentation-requirements.csv** (../documentation-requirements.csv)
 
 - Contains 12 project types (web, mobile, backend, cli, library, desktop, game, data, extension, infra, embedded)
 - 24-column schema combining project type detection AND documentation requirements
@@ -36,7 +36,7 @@ This workflow uses a single comprehensive CSV file to intelligently document you
 
 <action>Now loading documentation requirements data for fresh start...</action>
 
-<action>Load documentation-requirements.csv from: {documentation_requirements_csv}</action>
+<action>Load documentation-requirements.csv from: ../documentation-requirements.csv</action>
 <action>Store all 12 rows indexed by project_type_id for project detection and requirements lookup</action>
 <action>Display: "Loaded documentation requirements for 12 project types (web, mobile, backend, cli, library, desktop, game, data, extension, infra, embedded)"</action>
 
@@ -810,7 +810,7 @@ Generated in {{project_knowledge}}/:
 {{file_list_with_sizes}}
 </action>
 
-<action>Run validation checklist from {validation}</action>
+<action>Run validation checklist from ../checklist.md</action>
 
 <critical>INCOMPLETE DOCUMENTATION DETECTION:
 
