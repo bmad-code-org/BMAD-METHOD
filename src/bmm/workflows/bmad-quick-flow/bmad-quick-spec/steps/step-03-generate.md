@@ -112,7 +112,7 @@ stepsCompleted: [1, 2, 3]
 ---
 ```
 
-c) **Read fully and follow: `./steps/step-04-review.md` (Step 4)**
+c) **Read fully and follow: `./step-04-review.md` (Step 4)**
 
 ## REQUIRED OUTPUTS:
 
