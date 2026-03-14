@@ -686,6 +686,24 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
       };
       await fs.copy(sourceDir, skillDir, { filter });
 
+      // Rewrite relative workflow.md references to use {project-root} absolute paths.
+      // Some AI tools resolve relative paths from CWD instead of the skill file's
+      // directory, causing co-located files like workflow.md to not be found.
+      try {
+        const skillMdPath = path.join(skillDir, 'SKILL.md');
+        if (await fs.pathExists(skillMdPath)) {
+          let skillContent = await fs.readFile(skillMdPath, 'utf8');
+          const workflowLinkPattern = /\]\((?:\.\/)?workflow\.md\)/g;
+          if (workflowLinkPattern.test(skillContent)) {
+            const skillRelativePath = path.relative(projectDir, skillDir).split(path.sep).join('/');
+            skillContent = skillContent.replaceAll(/\]\((?:\.\/)?workflow\.md\)/g, `]({project-root}/${skillRelativePath}/workflow.md)`);
+            await fs.writeFile(skillMdPath, skillContent, 'utf8');
+          }
+        }
+      } catch {
+        // Non-fatal: skip rewrite for this skill and continue installing remaining skills
+      }
+
       count++;
     }
 
