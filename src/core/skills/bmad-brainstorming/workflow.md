@@ -48,6 +48,6 @@ All steps MUST reference `{brainstorming_session_output_file}` instead of the fu
 
 ## EXECUTION
 
-Read fully and follow: `steps/step-01-session-setup.md` to begin the workflow.
+Read fully and follow: `./steps/step-01-session-setup.md` to begin the workflow.
 
 **Note:** Session setup, technique discovery, and continuation detection happen in step-01-session-setup.md.

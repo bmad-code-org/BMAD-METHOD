@@ -200,7 +200,7 @@ Display: "**Change Plan Approved**
 
 **Proceeding to edit step...**"
 
-Read fully and follow: step-e-03-edit.md
+Read fully and follow: `./step-e-03-edit.md`
 
 ### 7. Present MENU OPTIONS (If User Wants Discussion)
 
