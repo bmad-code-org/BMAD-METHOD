@@ -31,7 +31,7 @@ This step will generate content and present choices:
 
 ## PROTOCOL INTEGRATION:
 
-- When 'A' selected: Read fully and follow: skill:bmad-advanced-elicitation
+- When 'A' selected: Invoke the `bmad-advanced-elicitation` skill
 - When 'P' selected: Invoke the `bmad-party-mode` skill
 - PROTOCOLS always return to this step's A/P/C menu
 - User accepts/rejects protocol changes before proceeding
@@ -188,7 +188,7 @@ Show the generated user journey content and present choices:
 
 #### If 'A' (Advanced Elicitation):
 
-- Read fully and follow: skill:bmad-advanced-elicitation with the current user journey content
+- Invoke the `bmad-advanced-elicitation` skill with the current user journey content
 - Process the enhanced journey insights that come back
 - Ask user: "Accept these improvements to the user journeys? (y/n)"
 - If yes: Update content with improvements, then return to A/P/C menu

@@ -101,8 +101,8 @@ Present your understanding of the product vision for review, then display menu:
 Display: "**Select:** [A] Advanced Elicitation [P] Party Mode [C] Continue to Executive Summary (Step 2c of 13)"
 
 #### Menu Handling Logic:
-- IF A: Read fully and follow: skill:bmad-advanced-elicitation with the current vision insights, process the enhanced insights that come back, ask user if they accept the improvements, if yes update understanding then redisplay menu, if no keep original understanding then redisplay menu
-- IF P: Read fully and follow: {project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md with the current vision insights, process the collaborative insights, ask user if they accept the changes, if yes update understanding then redisplay menu, if no keep original understanding then redisplay menu
+- IF A: Invoke the `bmad-advanced-elicitation` skill with the current vision insights, process the enhanced insights that come back, ask user if they accept the improvements, if yes update understanding then redisplay menu, if no keep original understanding then redisplay menu
+- IF P: Invoke the `bmad-party-mode` skill with the current vision insights, process the collaborative insights, ask user if they accept the changes, if yes update understanding then redisplay menu, if no keep original understanding then redisplay menu
 - IF C: Update {outputFile} frontmatter by adding this step name to the end of stepsCompleted array, then read fully and follow: ./step-02c-executive-summary.md
 - IF Any other: help user respond, then redisplay menu
 

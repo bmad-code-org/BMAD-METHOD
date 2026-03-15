@@ -30,7 +30,7 @@ This step will generate content and present choices:
 
 ## PROTOCOL INTEGRATION:
 
-- When 'A' selected: Read fully and follow: skill:bmad-advanced-elicitation
+- When 'A' selected: Invoke the `bmad-advanced-elicitation` skill
 - When 'P' selected: Invoke the `bmad-party-mode` skill
 - PROTOCOLS always return to this step's A/P/C menu
 - User accepts/rejects protocol changes before proceeding

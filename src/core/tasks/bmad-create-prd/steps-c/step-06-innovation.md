@@ -140,8 +140,8 @@ Present the innovation content for review, then display menu:
 Display: "**Select:** [A] Advanced Elicitation [P] Party Mode [C] Continue to Project Type Analysis (Step 7 of 11)"
 
 #### Menu Handling Logic:
-- IF A: Read fully and follow: skill:bmad-advanced-elicitation with the current innovation content, process the enhanced innovation insights that come back, ask user "Accept these improvements to the innovation analysis? (y/n)", if yes update content with improvements then redisplay menu, if no keep original content then redisplay menu
-- IF P: Read fully and follow: {project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md with the current innovation content, process the collaborative innovation exploration and ideation, ask user "Accept these changes to the innovation analysis? (y/n)", if yes update content with improvements then redisplay menu, if no keep original content then redisplay menu
+- IF A: Invoke the `bmad-advanced-elicitation` skill with the current innovation content, process the enhanced innovation insights that come back, ask user "Accept these improvements to the innovation analysis? (y/n)", if yes update content with improvements then redisplay menu, if no keep original content then redisplay menu
+- IF P: Invoke the `bmad-party-mode` skill with the current innovation content, process the collaborative innovation exploration and ideation, ask user "Accept these changes to the innovation analysis? (y/n)", if yes update content with improvements then redisplay menu, if no keep original content then redisplay menu
 - IF C: Append the final content to {outputFile}, update frontmatter by adding this step name to the end of the stepsCompleted array, then read fully and follow: ./step-07-project-type.md
 - IF Any other: help user respond, then redisplay menu
 

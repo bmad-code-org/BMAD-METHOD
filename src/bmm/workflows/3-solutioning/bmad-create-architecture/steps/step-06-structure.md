@@ -32,7 +32,7 @@ This step will generate content and present choices:
 
 ## PROTOCOL INTEGRATION:
 
-- When 'A' selected: Read fully and follow: skill:bmad-advanced-elicitation
+- When 'A' selected: Invoke the `bmad-advanced-elicitation` skill
 - When 'P' selected: Invoke the `bmad-party-mode` skill
 - PROTOCOLS always return to display this step's A/P/C menu after the A or P have completed
 - User accepts/rejects protocol changes before proceeding
@@ -325,7 +325,7 @@ Show the generated project structure content and present choices:
 
 #### If 'A' (Advanced Elicitation):
 
-- Read fully and follow: skill:bmad-advanced-elicitation with current project structure
+- Invoke the `bmad-advanced-elicitation` skill with current project structure
 - Process enhanced organizational insights that come back
 - Ask user: "Accept these changes to the project structure? (y/n)"
 - If yes: Update content, then return to A/P/C menu
