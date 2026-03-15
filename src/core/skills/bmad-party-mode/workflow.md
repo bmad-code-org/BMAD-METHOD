@@ -178,7 +178,7 @@ If conversation naturally concludes:
 
 **Quality Control:**
 
-- If discussion becomes circular, have bmad-master summarize and redirect
+- If discussion becomes circular, summarize and redirect the discussion
 - Balance fun and productivity based on conversation tone
 - Ensure all agents stay true to their merged personalities
 - Exit gracefully when user indicates completion

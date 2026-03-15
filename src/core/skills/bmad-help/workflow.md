@@ -25,15 +25,13 @@ When `workflow-file` starts with `skill:`:
 
 ### Agent-Based Workflows
 When `command` field is empty:
-- User loads agent first by invoking the agent skill (e.g., `bmad-pm`)
-- Then invokes by referencing the `code` field or describing the `name` field
-- Do NOT show a slash command — show the code value and agent load instruction instead
+- The workflow is accessed by referencing the `code` field or describing the `name` field
+- Do NOT show a slash command — show the code value and instructions instead
 
 Example presentation for empty command:
 ```
 Explain Concept (EC)
-Load: tech-writer agent skill, then ask to "EC about [topic]"
-Agent: Tech Writer
+Ask: "EC about [topic]"
 Description: Create clear technical explanations with examples...
 ```
 

@@ -168,7 +168,7 @@ Check for exit conditions before continuing:
 
 **Quality Control:**
 
-- If discussion becomes circular, have bmad-master summarize and redirect
+- If discussion becomes circular, summarize and redirect the discussion
 - Ensure all agents stay true to their merged personalities
 - Handle disagreements constructively and professionally
 - Maintain respectful and inclusive conversation environment

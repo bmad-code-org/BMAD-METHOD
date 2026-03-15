@@ -152,13 +152,13 @@ async function runTests() {
 
   try {
     const builder = new YamlXmlBuilder();
-    const pmAgentPath = path.join(projectRoot, 'src/bmm/agents/pm.agent.yaml');
+    const analystAgentPath = path.join(projectRoot, 'src/bmm/agents/analyst.agent.yaml');
 
     // Create temp output path
-    const tempOutput = path.join(__dirname, 'temp-pm-agent.md');
+    const tempOutput = path.join(__dirname, 'temp-analyst-agent.md');
 
     try {
-      const result = await builder.buildAgent(pmAgentPath, null, tempOutput, { includeMetadata: true });
+      const result = await builder.buildAgent(analystAgentPath, null, tempOutput, { includeMetadata: true });
 
       assert(result && result.outputPath === tempOutput, 'Agent compilation returns result object with outputPath');
 
@@ -171,7 +171,7 @@ async function runTests() {
 
       assert(compiled.includes('<menu>'), 'Compiled agent contains <menu> tag');
 
-      assert(compiled.includes('Product Manager'), 'Compiled agent contains agent title');
+      assert(compiled.includes('Business Analyst'), 'Compiled agent contains agent title');
 
       // Cleanup
       await fs.remove(tempOutput);
@@ -852,30 +852,28 @@ async function runTests() {
   console.log('');
 
   // ============================================================
-  // Test 16: QA Agent Compilation
+  // Test 16: Analyst Agent Compilation
   // ============================================================
-  console.log(`${colors.yellow}Test Suite 16: QA Agent Compilation${colors.reset}\n`);
+  console.log(`${colors.yellow}Test Suite 16: Analyst Agent Compilation${colors.reset}\n`);
 
   try {
     const builder = new YamlXmlBuilder();
-    const qaAgentPath = path.join(projectRoot, 'src/bmm/agents/qa.agent.yaml');
-    const tempOutput = path.join(__dirname, 'temp-qa-agent.md');
+    const analystAgentPath = path.join(projectRoot, 'src/bmm/agents/analyst.agent.yaml');
+    const tempOutput = path.join(__dirname, 'temp-analyst-agent.md');
 
     try {
-      const result = await builder.buildAgent(qaAgentPath, null, tempOutput, { includeMetadata: true });
+      const result = await builder.buildAgent(analystAgentPath, null, tempOutput, { includeMetadata: true });
       const compiled = await fs.readFile(tempOutput, 'utf8');
 
-      assert(compiled.includes('QA Engineer'), 'QA agent compilation includes agent title');
-
-      assert(compiled.includes('qa-generate-e2e-tests'), 'QA agent menu includes automate workflow');
+      assert(compiled.includes('Business Analyst'), 'Analyst agent compilation includes agent title');
 
       // Cleanup
       await fs.remove(tempOutput);
     } catch (error) {
-      assert(false, 'QA agent compiles successfully', error.message);
+      assert(false, 'Analyst agent compiles successfully', error.message);
     }
   } catch (error) {
-    assert(false, 'QA compilation test setup', error.message);
+    assert(false, 'Analyst compilation test setup', error.message);
   }
 
   console.log('');
