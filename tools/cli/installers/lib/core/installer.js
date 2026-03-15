@@ -1153,12 +1153,6 @@ class Installer {
             preservedModules: modulesForCsvPreserve,
           });
 
-          addResult(
-            'Manifests',
-            'ok',
-            `${manifestStats.workflows} workflows, ${manifestStats.agents} agents, ${manifestStats.tasks} tasks, ${manifestStats.tools} tools`,
-          );
-
           // Merge help catalogs
           message('Generating help catalog...');
           await this.mergeModuleHelpCatalogs(bmadDir);
@@ -1379,10 +1373,27 @@ class Installer {
    */
   async renderInstallSummary(results, context = {}) {
     const color = await prompts.getColor();
+    const selectedIdes = new Set((context.ides || []).map((ide) => String(ide).toLowerCase()));
 
     // Build step lines with status indicators
     const lines = [];
     for (const r of results) {
+      let stepLabel = null;
+
+      if (r.status !== 'ok') {
+        stepLabel = r.step;
+      } else if (r.step === 'Core') {
+        stepLabel = 'BMAD';
+      } else if (r.step.startsWith('Module: ')) {
+        stepLabel = r.step;
+      } else if (selectedIdes.has(String(r.step).toLowerCase())) {
+        stepLabel = r.step;
+      }
+
+      if (!stepLabel) {
+        continue;
+      }
+
       let icon;
       if (r.status === 'ok') {
         icon = color.green('\u2713');
@@ -1392,7 +1403,11 @@ class Installer {
         icon = color.red('\u2717');
       }
       const detail = r.detail ? color.dim(` (${r.detail})`) : '';
-      lines.push(`  ${icon}  ${r.step}${detail}`);
+      lines.push(`  ${icon}  ${stepLabel}${detail}`);
+    }
+
+    if ((context.ides || []).length === 0) {
+      lines.push(`  ${color.green('\u2713')}  No IDE selected ${color.dim('(installed in _bmad only)')}`);
     }
 
     // Context and warnings
@@ -1415,8 +1430,10 @@ class Installer {
       `    Join our Discord: ${color.dim('https://discord.gg/gk8jAdXWmj')}`,
       `    Star us on GitHub: ${color.dim('https://github.com/bmad-code-org/BMAD-METHOD/')}`,
       `    Subscribe on YouTube: ${color.dim('https://www.youtube.com/@BMadCode')}`,
-      `    Invoke the ${color.cyan('bmad-help')} skill in your IDE Agent to get started`,
     );
+    if (context.ides && context.ides.length > 0) {
+      lines.push(`    Invoke the ${color.cyan('bmad-help')} skill in your IDE Agent to get started`);
+    }
 
     await prompts.note(lines.join('\n'), 'BMAD is ready to use!');
   }

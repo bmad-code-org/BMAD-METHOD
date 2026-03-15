@@ -1,5 +1,42 @@
 # Changelog
 
+## [6.1.0] - 2026-03-12
+
+### Highlights
+
+* Whiteport Design Studio (WDS) module enabled in the installer
+* Support @next installation channel (`npx bmad-method@next install`) — get the latest tip of main instead of waiting for the next stable published version
+* Everything now installs as a skill — all workflows, agents, and tasks converted to markdown with SKILL.md entrypoints (not yet optimized skills, but unified format)
+* An experimental preview of the new Quick Dev is available, which will become the main Phase 4 development tool
+* Edge Case Hunter added as a parallel code review layer in Phase 4, improving code quality by exhaustively tracing branching paths and boundary conditions (#1791)
+* Documentation now available in Chinese (zh-CN) with complete translation (#1822, #1795)
+
+### 💥 Breaking Changes
+
+* Convert entire BMAD method to skills-based architecture with unified skill manifests (#1834)
+* Convert all core workflows from YAML+instructions to single workflow.md format
+* Migrate all remaining platforms to native Agent Skills format (#1841)
+* Remove legacy YAML/XML workflow engine plumbing (#1864)
+
+### 🎁 Features
+
+* Add Pi coding agent as supported platform (#1854)
+* Add unified skill scanner decoupled from legacy collectors (#1859)
+* Add continuous delivery workflows for npm publishing with trusted OIDC publishing (#1872)
+
+### ♻️ Refactoring
+
+* Update terminology from "commands" to "skills" across all documentation (#1850)
+
+### 🐛 Bug Fixes
+
+* Fix code review removing mandatory minimum issue count that caused infinite review loops (#1913)
+* Fix silent loss of brainstorming ideas in PRD by adding reconciliation step (#1914)
+* Reduce npm tarball from 533 to 348 files (91% size reduction, 6.2 MB → 555 KB) via .npmignore (#1900)
+* Fix party-mode skill conversion review findings (#1919)
+
+---
+
 ## [6.0.4]
 
 ### 🎁 Features

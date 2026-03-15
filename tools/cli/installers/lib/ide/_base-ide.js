@@ -349,7 +349,6 @@ class BaseIdeSetup {
       } else if (entry.isFile() && entry.name === 'workflow.md') {
         // Read workflow.md frontmatter to get name and standalone property
         try {
-          const yaml = require('yaml');
           const content = await fs.readFile(fullPath, 'utf8');
           const frontmatterMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
           if (!frontmatterMatch) continue;

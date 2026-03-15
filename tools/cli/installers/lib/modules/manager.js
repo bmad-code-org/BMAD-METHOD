@@ -1077,7 +1077,7 @@ class ModuleManager {
         const installWorkflowPath = item['workflow-install']; // Where to copy TO
 
         // Parse SOURCE workflow path
-        // Example: {project-root}/_bmad/bmm/workflows/4-implementation/create-story/workflow.md
+        // Example: {project-root}/_bmad/bmm/workflows/4-implementation/bmad-create-story/workflow.md
         const sourceMatch = sourceWorkflowPath.match(/\{project-root\}\/(?:_bmad)\/([^/]+)\/workflows\/(.+)/);
         if (!sourceMatch) {
           await prompts.log.warn(`      Could not parse workflow path: ${sourceWorkflowPath}`);
