@@ -270,6 +270,14 @@ If no findings are generated, the skill passes validation.
 - **Detection:** For internal references, verify the target file exists in the skill directory. For external references using config variables, verify the path structure is plausible (you cannot resolve config variables, but you can check that the path after the variable looks reasonable — e.g., `{planning_artifacts}/*.md` is plausible, `{planning_artifacts}/../../etc/passwd` is not).
 - **Fix:** Correct the path or remove the dead reference.
 
+### REF-03 — Skill Invocation Must Use "Invoke" Language
+
+- **Severity:** HIGH
+- **Applies to:** all files
+- **Rule:** When a skill references another skill via `skill:skill-name`, the surrounding instruction must use the word "invoke" (e.g., `Invoke skill:bmad-party-mode`). Phrases like "Read fully and follow", "Execute", "Run", "Load", "Open", or "Follow" are invalid — they imply file-level operations on a document, not skill invocation. A skill is a unit that is invoked, not a file that is read.
+- **Detection:** Find all `skill:` references in body text and frontmatter. Check the surrounding instruction text (same sentence or directive) for file-oriented verbs: "read", "follow", "load", "execute", "run", "open". Flag any that do not use "invoke" (or a close synonym like "activate" or "launch").
+- **Fix:** Replace the instruction with `Invoke skill:skill-name` or `Invoke the \`skill-name\` skill`. Remove any "read fully and follow" or similar file-oriented phrasing.
+
 ---
 
 ## Report Template
