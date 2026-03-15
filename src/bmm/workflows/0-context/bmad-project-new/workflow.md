@@ -20,13 +20,15 @@ The context file is the default hidden project selector file in `{project-root}/
    - Ask: `What should the new project be called?`
    - Wait for input.
 3. **Validate Project Name**
-   - **Cleanup**: Remove leading and trailing slashes and any occurrences of `_bmad-output/`.
+   - **Validate - No Absolute**: Check the raw user input before cleanup. Reject if it starts with `/`, starts with `\\`, or starts with a drive letter such as `C:`.
+   - **Cleanup**: If the raw value starts with `_bmad-output/`, remove that single leading prefix once. Then trim leading and trailing slashes.
    - **Validate - No Traversal**: Reject if path contains `..`.
-   - **Validate - No Absolute**: Reject if path starts with `/` or a drive letter such as `C:`.
-   - **Validate - Empty/Whitespace**: Reject if empty or only whitespace.
-   - **Validate - Whitelist**: Match against regex `^[-a-zA-Z0-9._/]+$`.
+   - **Validate - No Separators**: Reject if the sanitized value still contains `/` or `\`. Project names must be single directory names, not nested paths.
+   - **Validate - Empty/Whitespace**: Reject if empty, only whitespace, or exactly `.`.
+   - **Validate - Whitelist**: Match against regex `^[-a-zA-Z0-9._]+$`.
+   - **Validate - Reserved Names**: Reject if the sanitized value is any reserved BMAD artifact directory name: `planning-artifacts`, `implementation-artifacts`, `test-artifacts`, `knowledge`, `docs`, `assets`.
    - If invalid:
-     - Output: `Error: Invalid project name — must be a relative path and contain only alphanumeric characters, dots, dashes, underscores, or slashes. Traversal (..) is strictly forbidden.`
+     - Output: `Error: Invalid project name — use a single directory name containing only alphanumeric characters, dots, dashes, or underscores. Nested paths, reserved artifact names, absolute paths, and traversal (..) are forbidden.`
      - Halt.
 4. **Check for Existing Project**
    - Check if `{project-root}/_bmad-output/<sanitized_path>` already exists.

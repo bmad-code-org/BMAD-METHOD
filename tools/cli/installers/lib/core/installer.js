@@ -816,6 +816,7 @@ class Installer {
       // Create bmad directory structure
       spinner.message('Creating directory structure...');
       await this.createDirectoryStructure(bmadDir);
+      await this.ensureProjectGitignore(projectDir);
 
       // Cache custom modules if any
       if (customModulePaths && customModulePaths.size > 0) {
@@ -1455,6 +1456,8 @@ class Installer {
         throw new Error(`No BMAD installation found at ${bmadDir}`);
       }
 
+      await this.ensureProjectGitignore(projectDir);
+
       spinner.message('Analyzing update requirements...');
 
       // Compare versions and determine what needs updating
@@ -1982,6 +1985,35 @@ class Installer {
   }
 
   /**
+   * Ensure local-only BMAD state is ignored by version control.
+   * @param {string} projectDir - Project root directory
+   */
+  async ensureProjectGitignore(projectDir) {
+    const gitignorePath = path.join(projectDir, '.gitignore');
+    const ignoreEntry = `${BMAD_FOLDER_NAME}/.current_project`;
+
+    let existingContent = '';
+    if (await fs.pathExists(gitignorePath)) {
+      existingContent = await fs.readFile(gitignorePath, 'utf8');
+    }
+
+    const existingLines = new Set(
+      existingContent
+        .split(/\r?\n/)
+        .map((line) => line.trim())
+        .filter(Boolean),
+    );
+
+    if (existingLines.has(ignoreEntry) || existingLines.has(`/${ignoreEntry}`)) {
+      return;
+    }
+
+    const separator = existingContent === '' || existingContent.endsWith('\n') ? '' : '\n';
+    const nextContent = `${existingContent}${separator}${ignoreEntry}\n`;
+    await fs.writeFile(gitignorePath, nextContent, 'utf8');
+  }
+
+  /**
    * Generate clean config.yaml files for each installed module
    * @param {string} bmadDir - BMAD installation directory
    * @param {Object} moduleConfigs - Collected configuration values
@@ -2069,8 +2101,13 @@ class Installer {
 
         const staticConfigBlocks = await this.getStaticConfigBlocks(moduleName);
         if (staticConfigBlocks.length > 0) {
-          yamlContent = yamlContent.trimEnd();
-          yamlContent += `\n\n${staticConfigBlocks.join('\n\n')}\n`;
+          const trimmedYamlContent = yamlContent.trim();
+          if (trimmedYamlContent === '' || trimmedYamlContent === '{}') {
+            yamlContent = `${staticConfigBlocks.join('\n\n')}\n`;
+          } else {
+            yamlContent = yamlContent.trimEnd();
+            yamlContent += `\n\n${staticConfigBlocks.join('\n\n')}\n`;
+          }
         }
 
         // Write the clean config file with POSIX-compliant final newline
@@ -2106,6 +2143,10 @@ class Installer {
    * @returns {Promise<string|null>} Path to module.yaml or null if not found
    */
   async resolveModuleSchemaPath(moduleName) {
+    if (this.moduleManager.customModulePaths?.has(moduleName)) {
+      return path.join(this.moduleManager.customModulePaths.get(moduleName), 'module.yaml');
+    }
+
     if (this.configCollector.customModulePaths?.has(moduleName)) {
       return path.join(this.configCollector.customModulePaths.get(moduleName), 'module.yaml');
     }
@@ -2125,17 +2166,17 @@ class Installer {
    * @returns {string|null} Preserved block or null when absent
    */
   extractMonorepoContextBlock(content) {
-    // Capture from the header comment through to the end of the monorepo_context YAML block.
-    // The block is expected at the end of the file, after any other config sections.
     const headerIndex = content.indexOf('# --- Monorepo / Multi-Project Context Support ---');
     if (headerIndex === -1) {
       return null;
     }
 
-    const block = content.slice(headerIndex).trimEnd();
+    const afterHeader = content.slice(headerIndex);
+    const nextSectionMatch = afterHeader.slice(1).match(/\n# --- .+ ---/);
+    const endIndex = nextSectionMatch ? headerIndex + 1 + nextSectionMatch.index : content.length;
+    const block = content.slice(headerIndex, endIndex).trimEnd();
 
-    // Sanity check: the block must contain the structured YAML key
-    if (!block.includes('monorepo_context:')) {
+    if (!/^\s*monorepo_context\s*:/m.test(block)) {
       return null;
     }
 

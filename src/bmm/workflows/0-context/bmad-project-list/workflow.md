@@ -8,15 +8,17 @@
 
 ### 1. Identify Projects
 
-- Use your file listing or system capabilities to examine the `{project-root}/_bmad-output/` directory.
-- Identify all subdirectories within this path. Each subdirectory represents an available project context, except:
+- First check whether `{project-root}/_bmad-output/` exists and is readable.
+- If it does not exist, or listing it returns an `ENOENT`-style not-found error, treat the available project list as empty and continue with only `default (root)`.
+- If it exists, use your file listing or system capabilities to examine the `{project-root}/_bmad-output/` directory.
+- Identify all direct child subdirectories within this path. Each subdirectory represents an available project context, except:
   - Ignore hidden directories starting with `.`
   - Ignore standard BMAD artifact directories: `planning-artifacts`, `implementation-artifacts`, `test-artifacts`, `knowledge`, `docs`, `assets`
 - The root `_bmad-output/` directory itself represents the `default (root)` unset project context.
 
 ### 2. Output Results
 
-1. Display a formatted numbered list of the existing projects you found.
+1. Display a formatted numbered list of the existing projects you found. If none exist yet, show only `default (root)`.
 2. Clearly indicate the `default (root)` project context, usually as `[0]`.
 3. Check whether an active project is currently set by reading the active project selector file in `{project-root}/_bmad/` (or as configured in `monorepo_context.context_file`). If it exists, indicate which project from the list is active, for example by adding `(ACTIVE)` next to the entry.
 4. Inform the user that they can switch projects with PS (Project Switch) or create a new one with PN (Project New).

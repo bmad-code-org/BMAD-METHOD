@@ -17,9 +17,11 @@ The context file is the default hidden project selector file in `{project-root}/
 
 1. **Analyze Request**: Determine the requested project name from the user's initial invocation, such as "switch project my-app".
 2. **Wait for Input (If Missing)**: If the user did not provide a project name:
-   - Use your file listing capabilities to examine the `{project-root}/_bmad-output/` directory.
+   - First check whether `{project-root}/_bmad-output/` exists and is readable.
+   - If it exists, use your file listing capabilities to examine that directory.
    - Output a formatted list of the existing projects you found, explicitly noting the `default (root)` project context.
      Exclude hidden directories and standard BMAD artifact folders: `planning-artifacts`, `implementation-artifacts`, `test-artifacts`, `knowledge`, `docs`, `assets`.
+   - If `{project-root}/_bmad-output/` does not exist or is unreadable because it is missing, show only the `default (root)` project context.
    - Present options in a numbered list format:
 
 ```text
@@ -44,17 +46,19 @@ Enter a number to select, type an existing project name, or enter 'CLEAR' to res
      - If the number is out of range, show an error and ask again.
      - If valid, use that project name as the path.
    - **Case: Path Provided** (text input)
-     - **Cleanup**: Remove leading and trailing slashes and any occurrences of `_bmad-output/`.
+     - **Validate - No Absolute**: Check the raw user input before cleanup. Reject if it starts with `/`, starts with `\\`, or starts with a drive letter such as `C:`.
+     - **Cleanup**: If the raw value starts with `_bmad-output/`, remove that single leading prefix once. Then trim leading and trailing slashes.
      - **Validate - No Traversal**: Reject if path contains `..`.
-     - **Validate - No Absolute**: Reject if path starts with `/` or a drive letter such as `C:`.
-     - **Validate - Empty/Whitespace**: Reject if empty or only whitespace.
-     - **Validate - Whitelist**: Match against regex `^[-a-zA-Z0-9._/]+$`.
+     - **Validate - No Separators**: Reject if the sanitized value still contains `/` or `\`. Project names must be single directory names, not nested paths.
+     - **Validate - Empty/Whitespace**: Reject if empty, only whitespace, or exactly `.`.
+     - **Validate - Whitelist**: Match against regex `^[-a-zA-Z0-9._]+$`.
+     - **Validate - Reserved Names**: Reject if the sanitized value is any reserved BMAD artifact directory name: `planning-artifacts`, `implementation-artifacts`, `test-artifacts`, `knowledge`, `docs`, `assets`.
      - **Check Results**
        - If invalid:
-         - Output: `Error: Invalid project name — must be a relative path and contain only alphanumeric characters, dots, dashes, underscores, or slashes. Traversal (..) is strictly forbidden.`
+         - Output: `Error: Invalid project name — use a single directory name containing only alphanumeric characters, dots, dashes, or underscores. Nested paths, reserved artifact names, absolute paths, and traversal (..) are forbidden.`
          - Halt.
-     - **Validate Existence**: Check if `{project-root}/_bmad-output/<sanitized_path>` exists on disk.
-       - If it does not exist:
+     - **Validate Existence**: Check if `{project-root}/_bmad-output/<sanitized_path>` exists and is a directory.
+       - If it does not exist, or exists but is not a directory:
          - Output: `Error: Project <sanitized_path> does not exist. Use PN (Project New) to create it first, or PL (Project List) to see available projects.`
          - Halt.
      - Write the active project selector file in `{project-root}/_bmad/` with content `<sanitized_path>`

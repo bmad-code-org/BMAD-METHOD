@@ -11,7 +11,7 @@ BMAD supports running multiple independent projects within a single installation
 
 ## How It Works
 
-A `.current_project` file in your `_bmad/` directory stores the active project name. When set, all artifact output paths are redirected to project-specific subdirectories.
+A `.current_project` file in your `_bmad/` directory stores the active project name. This file is mutable local state: it should never be committed, because committing it can silently flip the active project context for other contributors and CI. Add `_bmad/.current_project` to your VCS ignore file, for example `.gitignore`. When set, all artifact output paths are redirected to project-specific subdirectories.
 
 ## Quick Start
 
@@ -45,4 +45,4 @@ Temporarily target a different project without changing the global context:
 
 - Path traversal (`..`) is rejected
 - Absolute paths are rejected
-- Only alphanumeric characters, dots, dashes, underscores, and forward slashes are allowed
+- Only alphanumeric characters, dots, dashes, and underscores are allowed
