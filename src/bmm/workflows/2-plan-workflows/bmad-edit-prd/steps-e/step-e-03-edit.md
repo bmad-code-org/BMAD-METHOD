@@ -207,8 +207,10 @@ Display:
 
 ### 8. Present MENU OPTIONS
 
-**[C] Continue** - Proceed to completion and next steps
+**[V] Run Validation** - Execute full validation workflow (./steps-v/step-v-01-discovery.md)
+**[S] Summary Only** - End with summary of changes (no validation)
 **[A] Adjust** - Make additional edits
+**[X] Exit** - Exit edit workflow
 
 #### EXECUTION RULES:
 
@@ -217,8 +219,10 @@ Display:
 
 #### Menu Handling Logic:
 
-- IF C (Continue): Read fully and follow: `./step-e-04-complete.md`
+- IF V (Validate): Display "Starting validation workflow..." then read fully and follow: `./steps-v/step-v-01-discovery.md`
+- IF S (Summary): Present edit summary and exit
 - IF A (Adjust): Accept additional requirements, loop back to editing
+- IF X (Exit): Display summary and exit
 
 ---
 
@@ -231,7 +235,8 @@ Display:
 - Restructuring completed (if needed)
 - Frontmatter updated accurately
 - Final verification confirms changes
-- User can proceed to completion step or adjust edits
+- User can proceed to validation or exit with summary
+- Option to run validation seamlessly integrates edit and validate modes
 
 ### ❌ SYSTEM FAILURE:
 
@@ -242,4 +247,4 @@ Display:
 - No final verification
 - Not saving updated PRD
 
-**Master Rule:** Execute the plan exactly as approved. PRD is now ready for validation or downstream use.
+**Master Rule:** Execute the plan exactly as approved. PRD is now ready for validation or downstream use. Validation integration ensures quality.
