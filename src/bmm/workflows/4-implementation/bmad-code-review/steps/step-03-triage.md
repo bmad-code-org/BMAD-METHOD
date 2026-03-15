@@ -26,7 +26,10 @@ description: 'Normalize, deduplicate, and classify all review findings into acti
    - `detail` -- full description
    - `location` -- file and line reference (if available)
 
-2. **Deduplicate.** If two findings describe the same issue, keep the one with more specificity (prefer edge-case JSON with location over adversarial prose). Note merged sources on the surviving finding.
+2. **Deduplicate.** If two or more findings describe the same issue, merge them into one:
+   - Use the most specific finding as the base (prefer edge-case JSON with location over adversarial prose).
+   - Append any unique detail, reasoning, or location references from the other finding(s) into the surviving `detail` field.
+   - Set `source` to the merged sources (e.g., `blind+edge`).
 
 3. **Classify** each finding into exactly one bucket:
    - **intent_gap** -- The spec/intent is incomplete; cannot resolve from existing information. Only possible if `{review_mode}` = `"full"`.
@@ -46,4 +49,4 @@ description: 'Normalize, deduplicate, and classify all review findings into acti
 
 ## NEXT
 
-Read fully and follow `./steps/step-04-present.md`
+Read fully and follow `./step-04-present.md`
