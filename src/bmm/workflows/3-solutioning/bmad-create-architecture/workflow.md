@@ -29,12 +29,6 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 - `date` as system-generated current datetime
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
-### Paths
-
-- `installed_path` = `.`
-- `template_path` = `{installed_path}/architecture-decision-template.md`
-- `data_files_path` = `{installed_path}/data/`
-
 ---
 
 ## EXECUTION

@@ -47,6 +47,9 @@ Load and read full config from {project-root}/_bmad/bmm/config.yaml and resolve:
 
 - `project_name`, `output_folder`, `planning_artifacts`, `user_name`, `communication_language`, `document_output_language`, `user_skill_level`
 
+✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the configured `{communication_language}`.
+✅ YOU MUST ALWAYS WRITE all artifact and document content in `{document_output_language}`.
+
 ### 2. First Step EXECUTION
 
 Read fully and follow: `./steps/step-01-init.md` to begin the workflow.

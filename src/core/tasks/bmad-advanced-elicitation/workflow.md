@@ -1,5 +1,4 @@
 ---
-methods: './methods.csv'
 agent_party: '{project-root}/_bmad/_config/agent-manifest.csv'
 ---
 
@@ -35,7 +34,7 @@ When invoked from another prompt or process:
 
 ### Step 1: Method Registry Loading
 
-**Action:** Load and read `{methods}` and `{agent_party}`
+**Action:** Load and read `./methods.csv` and `{agent_party}`
 
 #### CSV Structure
 
