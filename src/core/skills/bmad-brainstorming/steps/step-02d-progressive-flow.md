@@ -175,6 +175,8 @@ Show the full progressive flow with timing and transitions:
 [Details] - Tell me more about any specific phase or technique
 [Back] - Return to approach selection
 
+**HALT — wait for user selection before proceeding.**
+
 ### 4. Handle Customization Requests
 
 If user wants customization:

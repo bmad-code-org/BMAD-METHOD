@@ -142,6 +142,8 @@ Provide deeper insight into each recommended technique:
 [Details] - Tell me more about any specific technique
 [Back] - Return to approach selection
 
+**HALT — wait for user selection before proceeding.**
+
 ### 6. Handle User Response
 
 #### If [C] Continue:

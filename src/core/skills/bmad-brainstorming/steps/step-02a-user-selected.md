@@ -87,6 +87,8 @@ Show available categories with brief descriptions:
 
 **Which category interests you most? Enter 1-7, or tell me what type of thinking you're drawn to.**"
 
+**HALT — wait for user selection before proceeding.**
+
 ### 3. Handle Category Selection
 
 After user selects category:
@@ -153,6 +155,8 @@ This combination will focus on [expected outcomes].
 **Confirm these choices?**
 [C] Continue - Begin technique execution
 [Back] - Modify technique selection"
+
+**HALT — wait for user selection before proceeding.**
 
 ### 6. Update Frontmatter and Continue
 
