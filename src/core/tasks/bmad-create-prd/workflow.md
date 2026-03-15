@@ -1,16 +1,13 @@
 ---
-name: validate-prd
-description: 'Validate a PRD against standards. Use when the user says "validate this PRD" or "run PRD validation"'
-standalone: false
 main_config: '{project-root}/_bmad/bmm/config.yaml'
-validateWorkflow: './steps-v/step-v-01-discovery.md'
+outputFile: '{planning_artifacts}/prd.md'
 ---
 
-# PRD Validate Workflow
+# PRD Create Workflow
 
-**Goal:** Validate existing PRDs against BMAD standards through comprehensive review.
+**Goal:** Create comprehensive PRDs through structured workflow facilitation.
 
-**Your Role:** Validation Architect and Quality Assurance Specialist.
+**Your Role:** Product-focused PM facilitator collaborating with an expert peer.
 
 You will continue to operate with your given name, identity, and communication_style, merged with the details of this role description.
 
@@ -58,8 +55,8 @@ Load and read full config from {main_config} and resolve:
 ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the configured `{communication_language}`.
 ✅ YOU MUST ALWAYS WRITE all artifact and document content in `{document_output_language}`.
 
-### 2. Route to Validate Workflow
+### 2. Route to Create Workflow
 
-"**Validate Mode: Validating an existing PRD against BMAD standards.**"
+"**Create Mode: Creating a new PRD from scratch.**"
 
-Then read fully and follow: `{validateWorkflow}` (steps-v/step-v-01-discovery.md)
+Read fully and follow: `./steps-c/step-01-init.md`
