@@ -192,12 +192,12 @@ Bob (Scrum Master): "Perfect. Epic {{epic_number}} is complete and ready for ret
 
 </step>
 
-<step n="2" goal="Discover and load project documents">
+<step n="0.5" goal="Discover and load project documents">
   <action>Load input files according to the Input Files table in INITIALIZATION. For SELECTIVE_LOAD inputs, load only the epic matching {{epic_number}}. For FULL_LOAD inputs, load the complete document. For INDEX_GUIDED inputs, check the index first and load relevant sections. After discovery, these content variables are available: {epics_content} (selective load for this epic), {architecture_content}, {prd_content}, {document_project_content}</action>
   <note>After discovery, these content variables are available: {epics_content} (selective load for this epic), {architecture_content}, {prd_content}, {document_project_content}</note>
 </step>
 
-<step n="3" goal="Deep Story Analysis - Extract Lessons from Implementation">
+<step n="2" goal="Deep Story Analysis - Extract Lessons from Implementation">
 
 <output>
 Bob (Scrum Master): "Before we start the team discussion, let me review all the story records to surface key themes. This'll help us have a richer conversation."
@@ -291,7 +291,7 @@ Bob (Scrum Master): "We'll get to all of it. But first, let me load the previous
 
 </step>
 
-<step n="4" goal="Load and Integrate Previous Epic Retrospective">
+<step n="3" goal="Load and Integrate Previous Epic Retrospective">
 
 <action>Calculate previous epic number: {{prev_epic_num}} = {{epic_number}} - 1</action>
 
@@ -387,7 +387,7 @@ Charlie (Senior Dev): "First epic, first retro. Let's make it count."
 
 </step>
 
-<step n="5" goal="Preview Next Epic with Change Detection">
+<step n="4" goal="Preview Next Epic with Change Detection">
 
 <action>Calculate next epic number: {{next_epic_num}} = {{epic_number}} + 1</action>
 
@@ -476,7 +476,7 @@ Bob (Scrum Master): "No problem. We'll still do a thorough retro on Epic {{epic_
 
 </step>
 
-<step n="6" goal="Initialize Retrospective with Rich Context">
+<step n="5" goal="Initialize Retrospective with Rich Context">
 
 <action>Load agent configurations from {agent_manifest}</action>
 <action>Identify which agents participated in Epic {{epic_number}} based on story records</action>
@@ -566,7 +566,7 @@ Bob (Scrum Master): "Exactly. {user_name}, any questions before we dive in?"
 
 </step>
 
-<step n="7" goal="Epic Review Discussion - What Went Well, What Didn't">
+<step n="6" goal="Epic Review Discussion - What Went Well, What Didn't">
 
 <output>
 Bob (Scrum Master): "Let's start with the good stuff. What went well in Epic {{epic_number}}?"
@@ -711,13 +711,13 @@ Bob (Scrum Master): "Does that capture it? Anyone have something important we mi
 
 </step>
 
-<step n="8" goal="Next Epic Preparation Discussion - Interactive and Collaborative">
+<step n="7" goal="Next Epic Preparation Discussion - Interactive and Collaborative">
 
 <check if="{{next_epic_exists}} == false">
   <output>
 Bob (Scrum Master): "Normally we'd discuss preparing for the next epic, but since Epic {{next_epic_num}} isn't defined yet, let's skip to action items."
   </output>
-  <action>Skip to Step 9</action>
+  <action>Skip to Step 8</action>
 </check>
 
 <output>
@@ -835,7 +835,7 @@ Bob (Scrum Master): "{user_name}, does this preparation plan work for you?"
 
 </step>
 
-<step n="9" goal="Synthesize Action Items with Significant Change Detection">
+<step n="8" goal="Synthesize Action Items with Significant Change Detection">
 
 <output>
 Bob (Scrum Master): "Let's capture concrete action items from everything we've discussed."
@@ -1076,7 +1076,7 @@ Bob (Scrum Master): "Everyone clear on what they own?"
 
 </step>
 
-<step n="10" goal="Critical Readiness Exploration - Interactive Deep Dive">
+<step n="9" goal="Critical Readiness Exploration - Interactive Deep Dive">
 
 <output>
 Bob (Scrum Master): "Before we close, I want to do a final readiness check."
@@ -1259,7 +1259,7 @@ Charlie (Senior Dev): "Better to catch this now than three stories into the next
 
 </step>
 
-<step n="11" goal="Retrospective Closure with Celebration and Commitment">
+<step n="10" goal="Retrospective Closure with Celebration and Commitment">
 
 <output>
 Bob (Scrum Master): "We've covered a lot of ground today. Let me bring this retrospective to a close."
@@ -1335,7 +1335,7 @@ Bob (Scrum Master): "See you all when prep work is done. Meeting adjourned!"
 
 </step>
 
-<step n="12" goal="Save Retrospective and Update Sprint Status">
+<step n="11" goal="Save Retrospective and Update Sprint Status">
 
 <action>Ensure retrospectives folder exists: {implementation_artifacts}</action>
 <action>Create folder if it doesn't exist</action>
@@ -1392,7 +1392,7 @@ Retrospective document was saved successfully, but {sprint_status_file} may need
 
 </step>
 
-<step n="13" goal="Final Summary and Handoff">
+<step n="12" goal="Final Summary and Handoff">
 
 <output>
 **✅ Retrospective Complete, {user_name}!**

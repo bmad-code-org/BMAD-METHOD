@@ -18,8 +18,8 @@ spec_file: '' # set at runtime before leaving this step
 
 - `{wipFile}` exists? → Offer resume or archive.
 - Active specs (`ready-for-dev`, `in-progress`, `in-review`) in `{implementation_artifacts}`? → List them and HALT. Ask user which to resume (or `[N]` for new).
-  - If `ready-for-dev` or `in-progress` selected: Set `spec_file`, set `execution_mode = "plan-code-review"`, proceed to step 3.
-  - If `in-review` selected: Set `spec_file`, set `execution_mode = "plan-code-review"`, proceed to step 4.
+  - If `ready-for-dev` or `in-progress` selected: Set `spec_file`, set `execution_mode = "plan-code-review"`, skip to step 3.
+  - If `in-review` selected: Set `spec_file`, set `execution_mode = "plan-code-review"`, skip to step 4.
 - Unformatted spec or intent file lacking `status` frontmatter in `{implementation_artifacts}`? → Suggest to the user to treat its contents as the starting intent for this workflow. DO NOT attempt to infer a state and resume it.
 
 ## INSTRUCTIONS

@@ -86,7 +86,7 @@ d) **Build mental model:**
 - What's the likely scope based on what you found?
 - What questions do you NOW have, informed by the code?
 
-**Just enough to ask smart questions.**
+**This scan should take < 30 seconds. Just enough to ask smart questions.**
 
 ### 3. Ask Informed Questions
 

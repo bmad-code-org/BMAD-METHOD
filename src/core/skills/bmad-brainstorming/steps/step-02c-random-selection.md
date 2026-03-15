@@ -74,23 +74,27 @@ Reveal the randomly selected techniques with enthusiasm:
 "**🎲 Your Randomly Selected Creative Techniques! 🎲**
 
 **Phase 1: Exploration**
-**[Random Technique 1]** from [Category]
+**[Random Technique 1]** from [Category] (Duration: [time], Energy: [level])
+
 - **Description:** [Technique description]
 - **Why this is exciting:** [What makes this technique surprising or powerful]
 - **Random discovery bonus:** [Unexpected insight about this technique]
 
 **Phase 2: Connection**
-**[Random Technique 2]** from [Category]
+**[Random Technique 2]** from [Category] (Duration: [time], Energy: [level])
+
 - **Description:** [Technique description]
 - **Why this complements the first:** [How these techniques might work together]
 - **Random discovery bonus:** [Unexpected insight about this combination]
 
 **Phase 3: Synthesis**
-**[Random Technique 3]** from [Category]
+**[Random Technique 3]** from [Category] (Duration: [time], Energy: [level])
+
 - **Description:** [Technique description]
 - **Why this completes the journey:** [How this ties the sequence together]
 - **Random discovery bonus:** [Unexpected insight about the overall flow]
 
+**Total Random Session Time:** [Combined duration]
 **Serendipity Factor:** [Enthusiastic description of creative potential]"
 
 ### 4. Highlight the Creative Potential

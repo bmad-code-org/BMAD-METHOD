@@ -76,6 +76,12 @@ Analyze user's session context across multiple dimensions:
 - User language playful → creative, theatrical, wild techniques
 - User language reflective → introspective_delight, deep techniques
 
+**4. Time Available:**
+
+- <30 min → 1-2 focused techniques
+- 30-60 min → 2-3 complementary techniques
+- > 60 min → Multi-phase technique flow
+
 ### 3. Generate Technique Recommendations
 
 Based on context analysis, create tailored recommendations:
@@ -85,20 +91,24 @@ Based on context analysis, create tailored recommendations:
 Based on your session context, I recommend this customized technique sequence:
 
 **Phase 1: Foundation Setting**
-**[Technique Name]** from [Category]
+**[Technique Name]** from [Category] (Duration: [time], Energy: [level])
+
 - **Why this fits:** [Specific connection to user's goals/context]
 - **Expected outcome:** [What this will accomplish for their session]
 
 **Phase 2: Idea Generation**
-**[Technique Name]** from [Category]
+**[Technique Name]** from [Category] (Duration: [time], Energy: [level])
+
 - **Why this builds on Phase 1:** [Complementary effect explanation]
 - **Expected outcome:** [How this develops the foundation]
 
 **Phase 3: Refinement & Action** (If time allows)
-**[Technique Name]** from [Category]
+**[Technique Name]** from [Category] (Duration: [time], Energy: [level])
+
 - **Why this concludes effectively:** [Final phase rationale]
 - **Expected outcome:** [How this leads to actionable results]
 
+**Total Estimated Time:** [Sum of durations]
 **Session Focus:** [Primary benefit and outcome description]"
 
 ### 4. Present Recommendation Details

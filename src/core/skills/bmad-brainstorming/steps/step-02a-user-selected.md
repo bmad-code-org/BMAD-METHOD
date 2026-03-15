@@ -102,19 +102,19 @@ After user selects category:
 **Present 3-5 techniques from selected category:**
 For each technique:
 
-- **Technique Name**
+- **Technique Name** (Duration: [time], Energy: [level])
 - Description: [Brief clear description]
 - Best for: [What this technique excels at]
 - Example prompt: [Sample facilitation prompt]
 
 **Example presentation format:**
-"**1. SCAMPER Method**
+"**1. SCAMPER Method** (Duration: 20-30 min, Energy: Moderate)
 
 - Systematic creativity through seven lenses (Substitute/Combine/Adapt/Modify/Put/Eliminate/Reverse)
 - Best for: Product improvement, innovation challenges, systematic idea generation
 - Example prompt: "What could you substitute in your current approach to create something new?"
 
-**2. Six Thinking Hats**
+**2. Six Thinking Hats** (Duration: 15-25 min, Energy: Moderate)
 
 - Explore problems through six distinct perspectives for comprehensive analysis
 - Best for: Complex decisions, team alignment, thorough exploration
@@ -150,7 +150,7 @@ When user selects techniques:
 - [Technique 3]: [If selected, how it builds on others]
 
 **Session Plan:**
-This combination will focus on [expected outcomes].
+This combination will take approximately [total_time] and focus on [expected outcomes].
 
 **Confirm these choices?**
 [C] Continue - Begin technique execution
