@@ -385,6 +385,8 @@ _This comprehensive market research document serves as an authoritative market r
 **Ready to complete this comprehensive market research document?**
 [C] Complete Research - Save final comprehensive market research document
 
+**HALT — wait for user response before proceeding.**
+
 ### 6. Handle Complete Selection
 
 #### If 'C' (Complete Research):

@@ -109,15 +109,17 @@ Show the generated competitive analysis and present complete option:
 - Competitive threats and challenges documented
 
 **Ready to complete the market research?**
-[C] Complete Research - Save final document and conclude
+[C] Complete Research - Save competitive analysis and proceed to research completion
+
+**HALT — wait for user response before proceeding.**
 
 ### 4. Handle Complete Selection
 
 #### If 'C' (Complete Research):
 
 - Append the final content to the research document
-- Update frontmatter: `stepsCompleted: [1, 2, 3]`
-- Complete the market research workflow
+- Update frontmatter: `stepsCompleted: [1, 2, 3, 4, 5]`
+- Load: `./step-06-research-completion.md`
 
 ## APPEND TO DOCUMENT:
 
@@ -166,12 +168,6 @@ When 'C' is selected:
 - Market research workflow status updated
 - Final recommendations provided to user
 
-## NEXT STEPS:
+## NEXT STEP:
 
-Market research workflow complete. User may:
-
-- Use market research to inform product development strategies
-- Conduct additional competitive research on specific companies
-- Combine market research with other research types for comprehensive insights
-
-Congratulations on completing comprehensive market research! 🎉
+After user selects 'C', load `./step-06-research-completion.md` to produce the final comprehensive market research document with strategic synthesis, executive summary, and complete document structure.

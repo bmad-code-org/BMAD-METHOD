@@ -184,6 +184,8 @@ _Source: [URL]_
 **Ready to proceed to customer decision processes?**
 [C] Continue - Save this to document and proceed to decision processes analysis
 
+**HALT — wait for user response before proceeding.**
+
 ### 6. Handle Continue Selection
 
 #### If 'C' (Continue):

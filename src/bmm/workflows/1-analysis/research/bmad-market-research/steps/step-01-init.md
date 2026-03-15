@@ -132,6 +132,8 @@ Show initial scope document and present continue option:
 [C] Continue - Confirm scope and proceed to customer insights analysis
 [Modify] Suggest changes to research scope before proceeding
 
+**HALT — wait for user response before proceeding.**
+
 ### 5. Handle User Response
 
 #### If 'C' (Continue):

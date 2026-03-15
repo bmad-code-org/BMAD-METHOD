@@ -194,6 +194,8 @@ _Source: [URL]_
 **Ready to proceed to competitive analysis?**
 [C] Continue - Save this to document and proceed to competitive analysis
 
+**HALT — wait for user response before proceeding.**
+
 ### 6. Handle Continue Selection
 
 #### If 'C' (Continue):
