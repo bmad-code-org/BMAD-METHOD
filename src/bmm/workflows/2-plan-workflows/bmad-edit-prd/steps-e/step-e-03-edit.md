@@ -3,7 +3,6 @@ name: 'step-e-03-edit'
 description: 'Edit & Update - Apply changes to PRD following approved change plan'
 
 # File references (ONLY variables used in this step)
-nextStepFile: './step-e-04-complete.md'
 prdFile: '{prd_file_path}'
 prdPurpose: '{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-prd/data/prd-purpose.md'
 ---
@@ -211,10 +210,8 @@ Display:
 
 ### 8. Present MENU OPTIONS
 
-**[V] Run Validation** - Execute full validation workflow (steps-v/step-v-01-discovery.md)
-**[S] Summary Only** - End with summary of changes (no validation)
+**[C] Continue** - Proceed to completion and next steps
 **[A] Adjust** - Make additional edits
-**[X] Exit** - Exit edit workflow
 
 #### EXECUTION RULES:
 
@@ -223,10 +220,8 @@ Display:
 
 #### Menu Handling Logic:
 
-- IF V (Validate): Display "Starting validation workflow..." then read fully and follow: steps-v/step-v-01-discovery.md
-- IF S (Summary): Present edit summary and exit
+- IF C (Continue): Read fully and follow: [step-e-04-complete.md](step-e-04-complete.md)
 - IF A (Adjust): Accept additional requirements, loop back to editing
-- IF X (Exit): Display summary and exit
 
 ---
 
@@ -239,8 +234,7 @@ Display:
 - Restructuring completed (if needed)
 - Frontmatter updated accurately
 - Final verification confirms changes
-- User can proceed to validation or exit with summary
-- Option to run validation seamlessly integrates edit and validate modes
+- User can proceed to completion step or adjust edits
 
 ### ❌ SYSTEM FAILURE:
 
@@ -251,4 +245,4 @@ Display:
 - No final verification
 - Not saving updated PRD
 
-**Master Rule:** Execute the plan exactly as approved. PRD is now ready for validation or downstream use. Validation integration ensures quality.
+**Master Rule:** Execute the plan exactly as approved. PRD is now ready for validation or downstream use.

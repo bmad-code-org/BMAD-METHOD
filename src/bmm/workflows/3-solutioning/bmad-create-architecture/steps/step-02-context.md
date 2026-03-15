@@ -96,15 +96,15 @@ Present your analysis back to user for validation:
 
 "I'm reviewing your project documentation for {{project_name}}.
 
-{if_epics_loaded}I see {{epic_count}} epics with {{story_count}} total stories.{/if_epics_loaded}
-{if_no_epics}I found {{fr_count}} functional requirements organized into {{fr_category_list}}.{/if_no_epics}
-{if_ux_loaded}I also found your UX specification which defines the user experience requirements.{/if_ux_loaded}
+{{if_epics_loaded}}I see {{epic_count}} epics with {{story_count}} total stories.{{/if_epics_loaded}}
+{{if_no_epics}}I found {{fr_count}} functional requirements organized into {{fr_category_list}}.{{/if_no_epics}}
+{{if_ux_loaded}}I also found your UX specification which defines the user experience requirements.{{/if_ux_loaded}}
 
 **Key architectural aspects I notice:**
 
 - [Summarize core functionality from FRs]
 - [Note critical NFRs that will shape architecture]
-- {if_ux_loaded}[Note UX complexity and technical requirements]{/if_ux_loaded}
+- {{if_ux_loaded}}[Note UX complexity and technical requirements]{{/if_ux_loaded}}
 - [Identify unique technical challenges or constraints]
 - [Highlight any regulatory or compliance requirements]
 

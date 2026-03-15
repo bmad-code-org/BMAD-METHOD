@@ -26,8 +26,8 @@ Do NOT `git add` anything — this is read-only inspection.
 
 **Plan-code-review:** Launch three subagents without conversation context. If no sub-agents are available, generate three review prompt files in `{implementation_artifacts}` — one per reviewer role below — and HALT. Ask the human to run each in a separate session (ideally a different LLM) and paste back the findings.
 
-- **Blind hunter** — receives `{diff_output}` only. No spec, no context docs, no project access. Invoke via the `bmad-review-adversarial-general` skill.
-- **Edge case hunter** — receives `{diff_output}` and read access to the project. Invoke via the `bmad-review-edge-case-hunter` skill.
+- **Blind hunter** — receives `{diff_output}` only. No spec, no context docs, no project access. Invoke the `bmad-review-adversarial-general` skill.
+- **Edge case hunter** — receives `{diff_output}` and read access to the project. Invoke the `bmad-review-edge-case-hunter` skill.
 - **Acceptance auditor** — receives `{diff_output}`, `{spec_file}`, and read access to the project. Must also read the docs listed in `{spec_file}` frontmatter `context`. Checks for violations of acceptance criteria, rules, and principles from the spec and context docs.
 
 ### Classify

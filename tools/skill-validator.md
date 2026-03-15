@@ -274,9 +274,9 @@ If no findings are generated, the skill passes validation.
 
 - **Severity:** HIGH
 - **Applies to:** all files
-- **Rule:** When a skill references another skill via `skill:skill-name`, the surrounding instruction must use the word "invoke" (e.g., `Invoke skill:bmad-party-mode`). Phrases like "Read fully and follow", "Execute", "Run", "Load", "Open", or "Follow" are invalid — they imply file-level operations on a document, not skill invocation. A skill is a unit that is invoked, not a file that is read.
-- **Detection:** Find all `skill:` references in body text and frontmatter. Check the surrounding instruction text (same sentence or directive) for file-oriented verbs: "read", "follow", "load", "execute", "run", "open". Flag any that do not use "invoke" (or a close synonym like "activate" or "launch").
-- **Fix:** Replace the instruction with `Invoke skill:skill-name` or `Invoke the \`skill-name\` skill`. Remove any "read fully and follow" or similar file-oriented phrasing.
+- **Rule:** When a skill references another skill by name, the surrounding instruction must use the word "invoke". The canonical form is `Invoke the \`skill-name\` skill`. Phrases like "Read fully and follow", "Execute", "Run", "Load", "Open", or "Follow" are invalid — they imply file-level operations on a document, not skill invocation. A skill is a unit that is invoked, not a file that is read.
+- **Detection:** Find all references to other skills by name (typically backtick-quoted skill names like \`bmad-foo\`). Check the surrounding instruction text (same sentence or directive) for file-oriented verbs: "read", "follow", "load", "execute", "run", "open". Flag any that do not use "invoke" (or a close synonym like "activate" or "launch").
+- **Fix:** Replace the instruction with `Invoke the \`skill-name\` skill`. Remove any "read fully and follow" or similar file-oriented phrasing. Do NOT add a `skill:` prefix to the name — use natural language.
 
 ---
 

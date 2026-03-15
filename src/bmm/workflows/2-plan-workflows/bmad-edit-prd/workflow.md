@@ -1,6 +1,5 @@
 ---
 main_config: '{project-root}/_bmad/bmm/config.yaml'
-editWorkflow: './steps-e/step-e-01-discovery.md'
 ---
 
 # PRD Edit Workflow
@@ -61,4 +60,4 @@ Load and read full config from {main_config} and resolve:
 
 Prompt for PRD path: "Which PRD would you like to edit? Please provide the path to the PRD.md file."
 
-Then read fully and follow: `{editWorkflow}` (steps-e/step-e-01-discovery.md)
+Then read fully and follow: [steps-e/step-e-01-discovery.md](steps-e/step-e-01-discovery.md)

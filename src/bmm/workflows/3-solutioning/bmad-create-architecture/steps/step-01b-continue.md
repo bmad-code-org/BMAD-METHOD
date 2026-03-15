@@ -64,13 +64,13 @@ Show the user their current progress:
 - Input documents loaded: {{number of inputDocuments}} files
 
 **Document Sections Found:**
-{list all H2/H3 sections found in the document}
+{{list_of_h2_h3_sections_found_in_document}}
 
-{if_incomplete_sections}
+{{if_incomplete_sections}}
 **Incomplete Areas:**
 
-- {areas that appear incomplete or have placeholders}
-  {/if_incomplete_sections}
+- {{areas_that_appear_incomplete_or_have_placeholders}}
+  {{/if_incomplete_sections}}
 
 **What would you like to do?**
 [R] Resume from where we left off

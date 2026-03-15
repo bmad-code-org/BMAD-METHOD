@@ -47,7 +47,7 @@ Create anticipation for serendipitous technique discovery:
 
 **Load CSV and parse:**
 
-- Read `brain-methods.csv`
+- Read `../brain-methods.csv`
 - Parse: category, technique_name, description, facilitation_prompts, best_for, energy_level, typical_duration
 - Prepare for intelligent random selection
 

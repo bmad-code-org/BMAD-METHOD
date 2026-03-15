@@ -8,7 +8,7 @@
 
 ## Step 1: Draft the Executive Brief
 
-Use `resources/brief-template.md` as a guide — adapt structure to fit the product's story.
+Use `../resources/brief-template.md` as a guide — adapt structure to fit the product's story.
 
 **Writing principles:**
 - **Executive audience** — persuasive, clear, concise. 1-2 pages.
@@ -36,9 +36,9 @@ Before showing the draft to the user, run it through multiple review lenses in p
 
 **Launch in parallel:**
 
-1. **Skeptic Reviewer** (`agents/skeptic-reviewer.md`) — "What's missing? What assumptions are untested? What could go wrong? Where is the brief vague or hand-wavy?"
+1. **Skeptic Reviewer** (`../agents/skeptic-reviewer.md`) — "What's missing? What assumptions are untested? What could go wrong? Where is the brief vague or hand-wavy?"
 
-2. **Opportunity Reviewer** (`agents/opportunity-reviewer.md`) — "What adjacent value propositions are being missed? What market angles or partnerships could strengthen this? What's underemphasized?"
+2. **Opportunity Reviewer** (`../agents/opportunity-reviewer.md`) — "What adjacent value propositions are being missed? What market angles or partnerships could strengthen this? What's underemphasized?"
 
 3. **Contextual Reviewer** — You (the main agent) pick the most useful third lens based on THIS specific product. Choose the lens that addresses the SINGLE BIGGEST RISK that the skeptic and opportunity reviewers won't naturally catch. Examples:
    - For healthtech: "Regulatory and compliance risk reviewer"
@@ -65,7 +65,7 @@ After all reviews complete:
 
 ## Step 4: Present to User
 
-**Headless mode:** Skip to `prompts/finalize.md` — no user interaction. Save the improved draft directly.
+**Headless mode:** Skip to `finalize.md` — no user interaction. Save the improved draft directly.
 
 **Yolo and Guided modes:**
 
@@ -83,4 +83,4 @@ Present reviewer findings with brief rationale, then offer: "Want me to dig into
 
 ## Stage Complete
 
-This stage is complete when: (a) the draft has been reviewed by all three lenses and improvements integrated, AND either (autonomous) save and route directly, or (guided/yolo) the user is satisfied. Route to `prompts/finalize.md`.
+This stage is complete when: (a) the draft has been reviewed by all three lenses and improvements integrated, AND either (autonomous) save and route directly, or (guided/yolo) the user is satisfied. Route to `finalize.md`.
