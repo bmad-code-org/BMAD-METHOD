@@ -6,7 +6,7 @@
       "name": "create-brief",
       "menu-code": "CB",
       "description": "Produces executive product brief and optional LLM distillate for PRD input.",
-      "supports-autonomous": true,
+      "supports-headless": true,
       "phase-name": "1-analysis",
       "after": ["brainstorming, perform-research"],
       "before": ["create-prd"],
