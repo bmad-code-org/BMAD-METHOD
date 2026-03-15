@@ -1,11 +1,3 @@
----
-name: 'step-01b-continue'
-description: 'Resume an interrupted PRD workflow from the last completed step'
-
-# File References
-outputFile: '{planning_artifacts}/prd.md'
----
-
 # Step 1B: Workflow Continuation
 
 ## STEP GOAL:
@@ -70,21 +62,38 @@ Review the frontmatter to understand:
 
 ### 3. Determine Next Step
 
-**Simplified Next Step Logic:**
-1. Get the last element from the `stepsCompleted` array (this is the filename of the last completed step, e.g., "step-03-success.md")
-2. Load that step file and read its frontmatter
-3. Extract the `nextStepFile` value from the frontmatter
-4. That's the next step to load!
+**Step Sequence Lookup:**
+
+Use the following ordered sequence to determine the next step from the last completed step:
+
+| Last Completed | Next Step |
+|---|---|
+| step-01-init.md | step-02-discovery.md |
+| step-02-discovery.md | step-02b-vision.md |
+| step-02b-vision.md | step-02c-executive-summary.md |
+| step-02c-executive-summary.md | step-03-success.md |
+| step-03-success.md | step-04-journeys.md |
+| step-04-journeys.md | step-05-domain.md |
+| step-05-domain.md | step-06-innovation.md |
+| step-06-innovation.md | step-07-project-type.md |
+| step-07-project-type.md | step-08-scoping.md |
+| step-08-scoping.md | step-09-functional.md |
+| step-09-functional.md | step-10-nonfunctional.md |
+| step-10-nonfunctional.md | step-11-polish.md |
+| step-11-polish.md | step-12-complete.md |
+
+1. Get the last element from the `stepsCompleted` array
+2. Look it up in the table above to find the next step
+3. That's the next step to load!
 
 **Example:**
 - If `stepsCompleted = ["step-01-init.md", "step-02-discovery.md", "step-03-success.md"]`
 - Last element is `"step-03-success.md"`
-- Load `{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-prd/steps-c/step-03-success.md`, read its frontmatter
-- Read fully and follow: `{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-prd/steps-c/step-04-journeys.md`
+- Table lookup → next step is `./step-04-journeys.md`
 
 ### 4. Handle Workflow Completion
 
-**If `stepsCompleted` array contains `"step-11-complete.md"`:**
+**If `stepsCompleted` array contains `"step-12-complete.md"`:**
 "Great news! It looks like we've already completed the PRD workflow for {{project_name}}.
 
 The final document is ready at `{outputFile}` with all sections completed.
@@ -104,7 +113,7 @@ What would be most helpful?"
 
 **Current Progress:**
 - Last completed: {last step filename from stepsCompleted array}
-- Next up: {nextStepFile determined from that step's frontmatter}
+- Next up: {next step from lookup table}
 - Context documents available: {len(inputDocuments)} files
 
 **Document Status:**
@@ -119,7 +128,7 @@ Display: "**Select an Option:** [C] Continue to {next step name}"
 
 #### Menu Handling Logic:
 
-- IF C: Read fully and follow the {nextStepFile} determined in step 3
+- IF C: Read fully and follow the next step determined from the lookup table in step 3
 - IF Any other comments or queries: respond and redisplay menu
 
 #### EXECUTION RULES:
@@ -129,7 +138,7 @@ Display: "**Select an Option:** [C] Continue to {next step name}"
 
 ## CRITICAL STEP COMPLETION NOTE
 
-ONLY WHEN [C continue option] is selected and [current state confirmed], will you then read fully and follow: {nextStepFile} to resume the workflow.
+ONLY WHEN [C continue option] is selected and [current state confirmed], will you then read fully and follow the next step (from the lookup table) to resume the workflow.
 
 ---
 
@@ -146,7 +155,7 @@ ONLY WHEN [C continue option] is selected and [current state confirmed], will yo
 
 - Discovering new input documents instead of reloading existing ones
 - Modifying content from already completed steps
-- Failing to extract nextStepFile from the last completed step's frontmatter
+- Failing to determine the next step from the lookup table
 - Proceeding without user confirmation of current state
 
 **Master Rule:** Skipping steps, optimizing sequences, or not following exact instructions is FORBIDDEN and constitutes SYSTEM FAILURE.

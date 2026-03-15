@@ -20,7 +20,7 @@ agent:
 
   menu:
     - trigger: CP or fuzzy match on create-prd
-      exec: "{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-prd/workflow-create-prd.md"
+      exec: "skill:bmad-create-prd"
       description: "[CP] Create PRD: Expert led facilitation to produce your Product Requirements Document"
 
     - trigger: VP or fuzzy match on validate-prd

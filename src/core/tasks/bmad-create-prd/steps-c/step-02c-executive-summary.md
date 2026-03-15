@@ -1,16 +1,3 @@
----
-name: 'step-02c-executive-summary'
-description: 'Generate and append the Executive Summary section to the PRD document'
-
-# File References
-nextStepFile: '{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-prd/steps-c/step-03-success.md'
-outputFile: '{planning_artifacts}/prd.md'
-
-# Task References
-advancedElicitationTask: 'skill:bmad-advanced-elicitation'
-partyModeWorkflow: '{project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md'
----
-
 # Step 2c: Executive Summary Generation
 
 **Progress: Step 2c of 13** - Next: Success Criteria
@@ -104,9 +91,9 @@ Present the executive summary content for user review, then display menu:
 Display: "**Select:** [A] Advanced Elicitation [P] Party Mode [C] Continue to Success Criteria (Step 3 of 13)"
 
 #### Menu Handling Logic:
-- IF A: Read fully and follow: {advancedElicitationTask} with the current executive summary content, process the enhanced content that comes back, ask user if they accept the improvements, if yes update content then redisplay menu, if no keep original content then redisplay menu
-- IF P: Read fully and follow: {partyModeWorkflow} with the current executive summary content, process the collaborative improvements, ask user if they accept the changes, if yes update content then redisplay menu, if no keep original content then redisplay menu
-- IF C: Append the final content to {outputFile}, update frontmatter by adding this step name to the end of the stepsCompleted array, then read fully and follow: {nextStepFile}
+- IF A: Read fully and follow: skill:bmad-advanced-elicitation with the current executive summary content, process the enhanced content that comes back, ask user if they accept the improvements, if yes update content then redisplay menu, if no keep original content then redisplay menu
+- IF P: Read fully and follow: {project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md with the current executive summary content, process the collaborative improvements, ask user if they accept the changes, if yes update content then redisplay menu, if no keep original content then redisplay menu
+- IF C: Append the final content to {outputFile}, update frontmatter by adding this step name to the end of the stepsCompleted array, then read fully and follow: ./step-03-success.md
 - IF Any other: help user respond, then redisplay menu
 
 #### EXECUTION RULES:
@@ -139,7 +126,7 @@ Where:
 
 ## CRITICAL STEP COMPLETION NOTE
 
-ONLY WHEN [C continue option] is selected and [content appended to document], will you then read fully and follow: `{nextStepFile}` to define success criteria.
+ONLY WHEN [C continue option] is selected and [content appended to document], will you then read fully and follow: `./step-03-success.md` to define success criteria.
 
 ---
 

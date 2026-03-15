@@ -1,24 +1,10 @@
----
-name: 'step-05-domain'
-description: 'Explore domain-specific requirements for complex domains (optional step)'
-
-# File References
-nextStepFile: '{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-prd/steps-c/step-06-innovation.md'
-outputFile: '{planning_artifacts}/prd.md'
-domainComplexityCSV: '{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-prd/data/domain-complexity.csv'
-
-# Task References
-advancedElicitationTask: 'skill:bmad-advanced-elicitation'
-partyModeWorkflow: '{project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md'
----
-
 # Step 5: Domain-Specific Requirements (Optional)
 
 **Progress: Step 5 of 13** - Next: Innovation Focus
 
 ## STEP GOAL:
 
-For complex domains only that have a mapping in {domainComplexityCSV}, explore domain-specific constraints, compliance requirements, and technical considerations that shape the product.
+For complex domains only that have a mapping in ../data/domain-complexity.csv, explore domain-specific constraints, compliance requirements, and technical considerations that shape the product.
 
 ## MANDATORY EXECUTION RULES (READ FIRST):
 
@@ -93,7 +79,7 @@ Proceed with domain exploration.
 
 **Attempt subprocess data lookup:**
 
-"Your task: Lookup data in {domainComplexityCSV}
+"Your task: Lookup data in ../data/domain-complexity.csv
 
 **Search criteria:**
 - Find row where domain matches {{domainFromStep02}}
@@ -155,9 +141,9 @@ Acknowledge the domain and explore what makes it complex:
 Display: "**Select:** [A] Advanced Elicitation [P] Party Mode [C] Continue - Save and Proceed to Innovation (Step 6 of 13)"
 
 #### Menu Handling Logic:
-- IF A: Read fully and follow: {advancedElicitationTask}, and when finished redisplay the menu
-- IF P: Read fully and follow: {partyModeWorkflow}, and when finished redisplay the menu
-- IF C: Save content to {outputFile}, update frontmatter, then read fully and follow: {nextStepFile}
+- IF A: Read fully and follow: skill:bmad-advanced-elicitation, and when finished redisplay the menu
+- IF P: Read fully and follow: `{project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md` and when finished redisplay the menu
+- IF C: Save content to {outputFile}, update frontmatter, then read fully and follow: ./step-06-innovation.md
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options](#n-present-menu-options)
 
 #### EXECUTION RULES:
@@ -179,7 +165,7 @@ If step was skipped, append nothing and proceed.
 
 ## CRITICAL STEP COMPLETION NOTE
 
-ONLY WHEN [C continue option] is selected and [content saved or skipped], will you then read fully and follow: `{nextStepFile}` to explore innovation.
+ONLY WHEN [C continue option] is selected and [content saved or skipped], will you then read fully and follow: `./step-06-innovation.md` to explore innovation.
 
 ---
 
