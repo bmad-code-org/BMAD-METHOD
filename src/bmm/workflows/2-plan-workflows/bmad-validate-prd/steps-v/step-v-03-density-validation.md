@@ -1,7 +1,4 @@
 ---
-name: 'step-v-03-density-validation'
-description: 'Information Density Check - Scan for anti-patterns that violate information density principles'
-
 # File references (ONLY variables used in this step)
 nextStepFile: './step-v-04-brief-coverage-validation.md'
 prdFile: '{prd_file_path}'

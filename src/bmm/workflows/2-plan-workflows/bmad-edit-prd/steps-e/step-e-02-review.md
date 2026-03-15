@@ -1,7 +1,4 @@
 ---
-name: 'step-e-02-review'
-description: 'Deep Review & Analysis - Thoroughly review existing PRD and prepare detailed change plan'
-
 # File references (ONLY variables used in this step)
 prdFile: '{prd_file_path}'
 validationReport: '{validation_report_path}'  # If provided

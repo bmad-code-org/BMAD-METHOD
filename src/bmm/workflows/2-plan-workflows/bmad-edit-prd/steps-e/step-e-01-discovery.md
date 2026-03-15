@@ -1,7 +1,4 @@
 ---
-name: 'step-e-01-discovery'
-description: 'Discovery & Understanding - Understand what user wants to edit and detect PRD format'
-
 # File references (ONLY variables used in this step)
 prdPurpose: '{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-prd/data/prd-purpose.md'
 ---

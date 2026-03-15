@@ -1,7 +1,4 @@
 ---
-name: 'step-e-03-edit'
-description: 'Edit & Update - Apply changes to PRD following approved change plan'
-
 # File references (ONLY variables used in this step)
 prdFile: '{prd_file_path}'
 prdPurpose: '{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-prd/data/prd-purpose.md'

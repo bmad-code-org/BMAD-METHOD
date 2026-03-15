@@ -1,7 +1,4 @@
 ---
-name: 'step-v-05-measurability-validation'
-description: 'Measurability Validation - Validate that all requirements (FRs and NFRs) are measurable and testable'
-
 # File references (ONLY variables used in this step)
 nextStepFile: './step-v-06-traceability-validation.md'
 prdFile: '{prd_file_path}'

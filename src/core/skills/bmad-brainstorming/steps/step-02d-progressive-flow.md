@@ -67,7 +67,7 @@ Explain the value of systematic creative progression:
 **Load CSV and parse:**
 
 - Read `../brain-methods.csv`
-- Parse: category, technique_name, description, facilitation_prompts, best_for, energy_level, typical_duration
+- Parse: category, technique_name, description
 - Map techniques to each phase of the creative journey
 
 ### 2. Design Phase-Specific Technique Selection
@@ -128,10 +128,9 @@ Show the full progressive flow with timing and transitions:
 
 "**Your Complete Creative Journey Map:**
 
-**⏰ Total Journey Time:** [Combined duration]
 **🎯 Session Focus:** Systematic development from ideas to action
 
-**Phase 1: Expansive Exploration** ([duration])
+**Phase 1: Expansive Exploration**
 
 - **Technique:** [Selected technique]
 - **Goal:** Generate [number]+ diverse ideas without limits
@@ -139,7 +138,7 @@ Show the full progressive flow with timing and transitions:
 
 **→ Phase Transition:** We'll review and cluster ideas before moving deeper
 
-**Phase 2: Pattern Recognition** ([duration])
+**Phase 2: Pattern Recognition**
 
 - **Technique:** [Selected technique]
 - **Goal:** Identify themes and prioritize most promising directions
@@ -147,7 +146,7 @@ Show the full progressive flow with timing and transitions:
 
 **→ Phase Transition:** Select top concepts for detailed development
 
-**Phase 3: Idea Development** ([duration])
+**Phase 3: Idea Development**
 
 - **Technique:** [Selected technique]
 - **Goal:** Refine priority ideas with depth and practicality
@@ -155,7 +154,7 @@ Show the full progressive flow with timing and transitions:
 
 **→ Phase Transition:** Choose final concepts for implementation planning
 
-**Phase 4: Action Planning** ([duration])
+**Phase 4: Action Planning**
 
 - **Technique:** [Selected technique]
 - **Goal:** Create concrete implementation plans and next steps

@@ -1,7 +1,4 @@
 ---
-name: 'step-v-01-discovery'
-description: 'Document Discovery & Confirmation - Handle fresh context validation, confirm PRD path, discover input documents'
-
 # File references (ONLY variables used in this step)
 nextStepFile: './step-v-02-format-detection.md'
 prdPurpose: '../data/prd-purpose.md'

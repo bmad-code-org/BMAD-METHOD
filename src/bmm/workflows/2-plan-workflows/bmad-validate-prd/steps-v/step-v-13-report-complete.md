@@ -1,7 +1,4 @@
 ---
-name: 'step-v-13-report-complete'
-description: 'Validation Report Complete - Finalize report, summarize findings, present to user, offer next steps'
-
 # File references (ONLY variables used in this step)
 validationReportPath: '{validation_report_path}'
 prdFile: '{prd_file_path}'

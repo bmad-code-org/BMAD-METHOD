@@ -12,7 +12,7 @@
 - 🧠 **THOUGHT BEFORE INK (CoT):** Before generating each idea, you must internally reason: "What domain haven't we explored yet? What would make this idea surprising or 'uncomfortable' for the user?"
 - 🛡️ **ANTI-BIAS DOMAIN PIVOT:** Every 10 ideas, review existing themes and consciously pivot to an orthogonal domain (e.g., UX -> Business -> Physics -> Social Impact).
 - 🌡️ **SIMULATED TEMPERATURE:** Act as if your creativity is set to 0.85 - take wilder leaps and suggest "provocative" concepts.
-- ⏱️ Spend minimum 30-45 minutes in active ideation before offering to conclude
+- ⏱️ Generate at least 100 ideas in active ideation before offering to conclude
 - 🎯 EXECUTE ONE TECHNIQUE ELEMENT AT A TIME with interactive exploration
 - 📋 RESPOND DYNAMICALLY to user insights and build upon their ideas
 - 🔍 ADAPT FACILITATION based on user engagement and emerging directions
@@ -176,7 +176,7 @@ Remember: The goal is quantity first - we can organize later. What feels right?"
 **IMPORTANT:** Default to continuing exploration. Only suggest organization if:
 
 - User has explicitly asked to wrap up, OR
-- You've been exploring for 45+ minutes AND generated 100+ ideas, OR
+- You've generated 100+ ideas, OR
 - User's energy is clearly depleted (short responses, "I don't know", etc.)
 
 ### 4a. Handle Immediate Technique Transition

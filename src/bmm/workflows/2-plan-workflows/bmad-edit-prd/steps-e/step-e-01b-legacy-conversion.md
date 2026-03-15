@@ -1,7 +1,4 @@
 ---
-name: 'step-e-01b-legacy-conversion'
-description: 'Legacy PRD Conversion Assessment - Analyze legacy PRD and propose conversion strategy'
-
 # File references (ONLY variables used in this step)
 prdFile: '{prd_file_path}'
 prdPurpose: '{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-prd/data/prd-purpose.md'

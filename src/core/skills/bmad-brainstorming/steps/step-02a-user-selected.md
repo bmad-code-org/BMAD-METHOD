@@ -41,7 +41,7 @@ Load techniques from CSV on-demand:
 **Load CSV and parse:**
 
 - Read `../brain-methods.csv`
-- Parse: category, technique_name, description, facilitation_prompts, best_for, energy_level, typical_duration
+- Parse: category, technique_name, description
 - Organize by categories for browsing
 
 ### 2. Present Technique Categories
@@ -100,19 +100,19 @@ After user selects category:
 **Present 3-5 techniques from selected category:**
 For each technique:
 
-- **Technique Name** (Duration: [time], Energy: [level])
+- **Technique Name**
 - Description: [Brief clear description]
 - Best for: [What this technique excels at]
 - Example prompt: [Sample facilitation prompt]
 
 **Example presentation format:**
-"**1. SCAMPER Method** (Duration: 20-30 min, Energy: Moderate)
+"**1. SCAMPER Method**
 
 - Systematic creativity through seven lenses (Substitute/Combine/Adapt/Modify/Put/Eliminate/Reverse)
 - Best for: Product improvement, innovation challenges, systematic idea generation
 - Example prompt: "What could you substitute in your current approach to create something new?"
 
-**2. Six Thinking Hats** (Duration: 15-25 min, Energy: Moderate)
+**2. Six Thinking Hats**
 
 - Explore problems through six distinct perspectives for comprehensive analysis
 - Best for: Complex decisions, team alignment, thorough exploration
@@ -148,7 +148,7 @@ When user selects techniques:
 - [Technique 3]: [If selected, how it builds on others]
 
 **Session Plan:**
-This combination will take approximately [total_time] and focus on [expected outcomes].
+This combination will focus on [expected outcomes].
 
 **Confirm these choices?**
 [C] Continue - Begin technique execution
