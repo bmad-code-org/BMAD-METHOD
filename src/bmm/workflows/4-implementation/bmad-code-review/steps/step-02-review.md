@@ -1,6 +1,5 @@
 ---
-name: Review
-description: 'Launch parallel adversarial review layers and collect findings.'
+failed_layers: '' # set at runtime: comma-separated list of layers that failed or returned empty
 ---
 
 # Step 2: Review
@@ -23,16 +22,18 @@ description: 'Launch parallel adversarial review layers and collect findings.'
    - **Acceptance Auditor** (only if `{review_mode}` = `"full"`) -- A subagent that receives `{diff_output}`, the content of the file at `{spec_file}`, and any loaded context docs. Its prompt:
      > You are an Acceptance Auditor. Review this diff against the spec and context docs. Check for: violations of acceptance criteria, deviations from spec intent, missing implementation of specified behavior, contradictions between spec constraints and actual code. Output findings as a markdown list. Each finding: one-line title, which AC/constraint it violates, and evidence from the diff.
 
-2. **Subagent failure handling**: If any subagent fails, times out, or returns empty results, note the failed layer and proceed with findings from the remaining layers. Report the failure to the user in the next step.
+2. **Subagent failure handling**: If any subagent fails, times out, or returns empty results, append the layer name to `{failed_layers}` (comma-separated) and proceed with findings from the remaining layers.
 
-3. **Fallback** (if subagents are not available): Generate prompt files in `{implementation_artifacts}` -- one per active reviewer:
+3. If `{review_mode}` = `"no-spec"`, note to the user: "Acceptance Auditor skipped — no spec file provided."
+
+4. **Fallback** (if subagents are not available): Generate prompt files in `{implementation_artifacts}` -- one per active reviewer:
    - `review-blind-hunter.md` (always)
    - `review-edge-case-hunter.md` (always)
    - `review-acceptance-auditor.md` (only if `{review_mode}` = `"full"`)
 
    HALT. Tell the user to run each prompt in a separate session and paste back findings. When findings are pasted, resume from this point and proceed to step 3.
 
-4. Collect all findings from the completed layers.
+5. Collect all findings from the completed layers.
 
 
 ## NEXT

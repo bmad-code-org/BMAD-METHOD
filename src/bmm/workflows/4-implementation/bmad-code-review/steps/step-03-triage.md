@@ -1,6 +1,4 @@
 ---
-name: Triage
-description: 'Normalize, deduplicate, and classify all review findings into actionable categories.'
 ---
 
 # Step 3: Triage
@@ -42,9 +40,9 @@ description: 'Normalize, deduplicate, and classify all review findings into acti
 
 4. **Drop** all `reject` findings. Record the reject count for the summary.
 
-5. If zero findings remain after dropping rejects, note clean review.
+5. If `{failed_layers}` is non-empty, report which layers failed before announcing results. If zero findings remain after dropping rejects AND `{failed_layers}` is non-empty, warn the user that the review may be incomplete rather than announcing a clean review.
 
-6. If any review layer failed or returned empty (noted in step 2), report this to the user now.
+6. If zero findings remain after dropping rejects and no layers failed, note clean review.
 
 
 ## NEXT
