@@ -1,7 +1,4 @@
 ---
-name: 'step-v-10-smart-validation'
-description: 'SMART Requirements Validation - Validate Functional Requirements meet SMART quality criteria'
-
 # File references (ONLY variables used in this step)
 nextStepFile: './step-v-11-holistic-quality-validation.md'
 prdFile: '{prd_file_path}'

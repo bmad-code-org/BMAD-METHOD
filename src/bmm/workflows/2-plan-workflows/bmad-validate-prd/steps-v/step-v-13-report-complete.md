@@ -1,7 +1,4 @@
 ---
-name: 'step-v-13-report-complete'
-description: 'Validation Report Complete - Finalize report, summarize findings, present to user, offer next steps'
-
 # File references (ONLY variables used in this step)
 validationReportPath: '{validation_report_path}'
 prdFile: '{prd_file_path}'
@@ -180,9 +177,9 @@ Display:
   - After review, return to menu
 
 - **IF E (Use Edit Workflow):**
-  - Explain: "The Edit workflow (steps-e/) can use this validation report to systematically address issues. Edit mode will guide you through discovering what to edit, reviewing the PRD, and applying targeted improvements."
+  - Explain: "The Edit workflow can use this validation report to systematically address issues. Edit mode will guide you through discovering what to edit, reviewing the PRD, and applying targeted improvements."
   - Offer: "Would you like to launch Edit mode now? It will help you fix validation findings systematically."
-  - If yes: Read fully and follow: steps-e/step-e-01-discovery.md
+  - If yes: Invoke the `bmad-edit-prd` skill, passing the validation report path as context
   - If no: Return to menu
 
 - **IF F (Fix Simpler Items):**

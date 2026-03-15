@@ -1,7 +1,4 @@
 ---
-name: 'step-v-11-holistic-quality-validation'
-description: 'Holistic Quality Assessment - Assess PRD as cohesive, compelling document - is it a good PRD?'
-
 # File references (ONLY variables used in this step)
 nextStepFile: './step-v-12-completeness-validation.md'
 prdFile: '{prd_file_path}'

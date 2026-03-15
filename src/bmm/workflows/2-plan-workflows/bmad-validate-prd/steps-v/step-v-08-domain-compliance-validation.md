@@ -1,7 +1,4 @@
 ---
-name: 'step-v-08-domain-compliance-validation'
-description: 'Domain Compliance Validation - Validate domain-specific requirements are present for high-complexity domains'
-
 # File references (ONLY variables used in this step)
 nextStepFile: './step-v-09-project-type-validation.md'
 prdFile: '{prd_file_path}'

@@ -66,7 +66,7 @@ Explain the value of systematic creative progression:
 
 **Load CSV and parse:**
 
-- Read `brain-methods.csv`
+- Read `../brain-methods.csv`
 - Parse: category, technique_name, description, facilitation_prompts, best_for, energy_level, typical_duration
 - Map techniques to each phase of the creative journey
 
@@ -175,6 +175,8 @@ Show the full progressive flow with timing and transitions:
 [Customize] - I'd like to modify any phase techniques
 [Details] - Tell me more about any specific phase or technique
 [Back] - Return to approach selection
+
+**HALT — wait for user selection before proceeding.**
 
 ### 4. Handle Customization Requests
 

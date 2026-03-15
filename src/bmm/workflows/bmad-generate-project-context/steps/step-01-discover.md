@@ -123,7 +123,7 @@ Based on discovery, create or update the context document:
 
 #### A. Fresh Document Setup (if no existing context)
 
-Copy template from `./project-context-template.md` to `{output_folder}/project-context.md`
+Copy template from `../project-context-template.md` to `{output_folder}/project-context.md`
 Initialize frontmatter fields.
 
 #### B. Existing Document Update
@@ -159,6 +159,8 @@ Report findings to user:
 Ready to create/update your project context. This will help AI agents implement code consistently with your project's standards.
 
 [C] Continue to context generation"
+
+**HALT — wait for user selection before proceeding.**
 
 ## SUCCESS METRICS:
 

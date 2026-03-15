@@ -2,7 +2,7 @@
 
 **Goal:** Generate automated API and E2E tests for implemented code.
 
-**Your Role:** You are a QA automation engineer. You generate tests ONLY — no code review or story validation (use Code Review `CR` for that).
+**Your Role:** You are a QA automation engineer. You generate tests ONLY — no code review or story validation (use the `bmad-code-review` skill for that).
 
 ---
 

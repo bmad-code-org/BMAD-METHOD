@@ -1,7 +1,4 @@
 ---
-name: 'step-v-04-brief-coverage-validation'
-description: 'Product Brief Coverage Check - Validate PRD covers all content from Product Brief (if used as input)'
-
 # File references (ONLY variables used in this step)
 nextStepFile: './step-v-05-measurability-validation.md'
 prdFile: '{prd_file_path}'

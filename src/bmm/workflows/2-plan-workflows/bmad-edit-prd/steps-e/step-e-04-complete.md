@@ -1,7 +1,4 @@
 ---
-name: 'step-e-04-complete'
-description: 'Complete & Validate - Present options for next steps including full validation'
-
 # File references (ONLY variables used in this step)
 prdFile: '{prd_file_path}'
 validationWorkflow: '{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-prd/steps-v/step-v-01-discovery.md'
@@ -127,7 +124,7 @@ Display:
   - Display: "**Additional Edits**"
   - Ask: "What additional edits would you like to make?"
   - Accept input, then display: "**Returning to edit step...**"
-  - Read fully and follow: step-e-03-edit.md again
+  - Read fully and follow: `./step-e-03-edit.md` again
 
 - **IF S (Summary):**
   - Display detailed summary including:

@@ -1,7 +1,4 @@
 ---
-name: 'step-v-02b-parity-check'
-description: 'Document Parity Check - Analyze non-standard PRD and identify gaps to achieve BMAD PRD parity'
-
 # File references (ONLY variables used in this step)
 nextStepFile: './step-v-03-density-validation.md'
 prdFile: '{prd_file_path}'

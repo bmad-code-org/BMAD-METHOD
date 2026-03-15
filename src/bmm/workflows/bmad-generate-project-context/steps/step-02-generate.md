@@ -264,6 +264,8 @@ After each category, show the generated rules and present choices:
 [P] Party Mode - Review from different implementation perspectives
 [C] Continue - Save these rules and move to next category"
 
+**HALT — wait for user selection before proceeding.**
+
 ### 10. Handle Menu Selection
 
 #### If 'A' (Advanced Elicitation):

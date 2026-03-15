@@ -290,6 +290,8 @@ After final technique element:
 [B] **Take a quick break** - Pause and return with fresh energy
 [C] **Move to organization** - Only when you feel we've thoroughly explored
 
+**HALT — wait for user selection before proceeding.**
+
 **Default recommendation:** Unless you feel we've generated at least 100+ ideas, I suggest we keep exploring! The best insights often come after the obvious ideas are exhausted.
 
 ### 8. Handle Menu Selection
