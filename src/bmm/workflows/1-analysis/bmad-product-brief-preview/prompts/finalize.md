@@ -47,7 +47,7 @@ purpose: "Token-efficient context for downstream PRD creation"
   - **Scope signals** — what the user indicated is in/out/maybe for MVP
 - Token-conscious: be concise, but give enough context per bullet so an LLM reading this later understands WHY each point matters
 
-**Autonomous mode:** Always create the distillate automatically — unless the session was too brief to capture meaningful overflow (in that case, note this in the completion output instead of creating an empty file).
+**Headless mode:** Always create the distillate automatically — unless the session was too brief to capture meaningful overflow (in that case, note this in the completion output instead of creating an empty file).
 
 ## Step 3: Present Completion
 
@@ -59,7 +59,7 @@ purpose: "Token-efficient context for downstream PRD creation"
 **Recommended next step:** Use the product brief (and detail pack) as input for PRD creation — tell your assistant 'create a PRD' and point it to these files."
 [If distillate created:] "The detail pack contains all the overflow context (requirements hints, rejected ideas, technical constraints) specifically structured for the PRD workflow to consume."
 
-**Autonomous mode:** Output the file paths as structured JSON and exit:
+**Headless mode:** Output the file paths as structured JSON and exit:
 ```json
 {
   "status": "complete",

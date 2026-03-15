@@ -65,7 +65,7 @@ After all reviews complete:
 
 ## Step 4: Present to User
 
-**Autonomous mode:** Skip to `prompts/finalize.md` — no user interaction. Save the improved draft directly.
+**Headless mode:** Skip to `prompts/finalize.md` — no user interaction. Save the improved draft directly.
 
 **Yolo and Guided modes:**
 

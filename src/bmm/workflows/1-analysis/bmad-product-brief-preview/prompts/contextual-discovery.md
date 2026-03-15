@@ -45,7 +45,7 @@ Once subagent results return (or inline scanning completes):
 - Skip directly to `prompts/draft-and-review.md` — you have enough to draft
 - The user will refine later
 
-**Autonomous mode:**
+**Headless mode:**
 - Absorb all findings
 - Skip directly to `prompts/draft-and-review.md`
 - No interaction
@@ -54,4 +54,4 @@ Once subagent results return (or inline scanning completes):
 
 This stage is complete when subagent results (or inline scanning fallback) have returned and findings are merged with user context. Route per mode:
 - **Guided** → `prompts/guided-elicitation.md`
-- **Yolo / Autonomous** → `prompts/draft-and-review.md`
+- **Yolo / Headless** → `prompts/draft-and-review.md`
