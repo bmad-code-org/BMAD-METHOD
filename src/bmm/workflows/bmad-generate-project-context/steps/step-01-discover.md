@@ -160,6 +160,8 @@ Ready to create/update your project context. This will help AI agents implement 
 
 [C] Continue to context generation"
 
+**HALT — wait for user selection before proceeding.**
+
 ## SUCCESS METRICS:
 
 ✅ Existing project context properly detected and handled
