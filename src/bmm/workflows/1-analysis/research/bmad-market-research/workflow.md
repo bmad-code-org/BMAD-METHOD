@@ -1,8 +1,3 @@
----
-name: market-research
-description: 'Conduct market research on competition and customers. Use when the user says "create a market research report about [business idea]".'
----
-
 # Market Research Workflow
 
 **Goal:** Conduct comprehensive market research using current web data and verified sources to produce complete research documents with compelling narratives and proper citations.
@@ -47,7 +42,7 @@ After gathering the topic and goals:
 2. Set `research_topic = [discovered topic from discussion]`
 3. Set `research_goals = [discovered goals from discussion]`
 4. Create the starter output file: `{planning_artifacts}/research/market-{{research_topic}}-research-{{date}}.md` with exact copy of the `./research.template.md` contents
-5. Load: `./market-steps/step-01-init.md` with topic context
+5. Load: `./steps/step-01-init.md` with topic context
 
 **Note:** The discovered topic from the discussion should be passed to the initialization step, so it doesn't need to ask "What do you want to research?" again - it can focus on refining the scope for market research.
 
