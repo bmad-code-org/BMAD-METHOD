@@ -96,9 +96,9 @@ x. Proceed / No Further Actions
 **Case x (Proceed):**
 
 - Complete elicitation and proceed
-- Return the fully enhanced content back to create-doc.md
+- Return the fully enhanced content back to the invoking skill
 - The enhanced content becomes the final version for that section
-- Signal completion back to create-doc.md to continue with next section
+- Signal completion back to the invoking skill to continue with next section
 
 **Case a (List All):**
 

@@ -47,7 +47,7 @@ Create anticipation for serendipitous technique discovery:
 
 **Load CSV and parse:**
 
-- Read `brain-methods.csv`
+- Read `../brain-methods.csv`
 - Parse: category, technique_name, description, facilitation_prompts, best_for, energy_level, typical_duration
 - Prepare for intelligent random selection
 
@@ -123,6 +123,8 @@ You're about to experience brainstorming in a completely new way. These unexpect
 [Shuffle] - Randomize another combination for different adventure
 [Details] - Tell me more about any specific technique
 [Back] - Return to approach selection
+
+**HALT — wait for user selection before proceeding.**
 
 ### 5. Handle User Response
 

@@ -182,7 +182,7 @@ Display:
 - **IF E (Use Edit Workflow):**
   - Explain: "The Edit workflow (steps-e/) can use this validation report to systematically address issues. Edit mode will guide you through discovering what to edit, reviewing the PRD, and applying targeted improvements."
   - Offer: "Would you like to launch Edit mode now? It will help you fix validation findings systematically."
-  - If yes: Read fully and follow: steps-e/step-e-01-discovery.md
+  - If yes: Read fully and follow: `./steps-e/step-e-01-discovery.md`
   - If no: Return to menu
 
 - **IF F (Fix Simpler Items):**

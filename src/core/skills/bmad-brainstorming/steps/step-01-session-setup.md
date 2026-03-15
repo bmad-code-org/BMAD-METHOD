@@ -48,6 +48,8 @@ If existing session files are found:
   **[2]** Start a new session
   **[3]** See all existing sessions"
 
+**HALT — wait for user selection before proceeding.**
+
 - If user selects **[1]** (continue): Set `{brainstorming_session_output_file}` to that file path and load `./step-01b-continue.md`
 - If user selects **[2]** (new): Generate new filename with current date/time and proceed to step 3
 - If user selects **[3]** (see all): List all session filenames and ask which to continue or if new
@@ -154,6 +156,8 @@ When user selects approach, append the session overview content directly to `{br
 [4] Progressive Technique Flow - Start broad, then systematically narrow focus
 
 Which approach appeals to you most? (Enter 1-4)"
+
+**HALT — wait for user selection before proceeding.**
 
 ### 4. Handle User Selection and Initial Document Append
 

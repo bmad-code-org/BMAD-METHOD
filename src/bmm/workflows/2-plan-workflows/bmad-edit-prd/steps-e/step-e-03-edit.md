@@ -1,9 +1,5 @@
 ---
-name: 'step-e-03-edit'
-description: 'Edit & Update - Apply changes to PRD following approved change plan'
-
 # File references (ONLY variables used in this step)
-nextStepFile: './step-e-04-complete.md'
 prdFile: '{prd_file_path}'
 prdPurpose: '{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-prd/data/prd-purpose.md'
 ---
@@ -211,7 +207,7 @@ Display:
 
 ### 8. Present MENU OPTIONS
 
-**[V] Run Validation** - Execute full validation workflow (steps-v/step-v-01-discovery.md)
+**[V] Run Validation** - Execute full validation workflow (./steps-v/step-v-01-discovery.md)
 **[S] Summary Only** - End with summary of changes (no validation)
 **[A] Adjust** - Make additional edits
 **[X] Exit** - Exit edit workflow
@@ -223,7 +219,7 @@ Display:
 
 #### Menu Handling Logic:
 
-- IF V (Validate): Display "Starting validation workflow..." then read fully and follow: steps-v/step-v-01-discovery.md
+- IF V (Validate): Display "Starting validation workflow..." then read fully and follow: `./steps-v/step-v-01-discovery.md`
 - IF S (Summary): Present edit summary and exit
 - IF A (Adjust): Accept additional requirements, loop back to editing
 - IF X (Exit): Display summary and exit

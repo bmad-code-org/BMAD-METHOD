@@ -344,7 +344,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 </step>
 
 <step n="6" goal="Update sprint status and finalize">
-  <action>Validate the newly created story file {story_file} against `./checklist.md` and apply any required fixes before finalizing</action>
+  <action>Validate the newly created story file {default_output_file} against `./checklist.md` and apply any required fixes before finalizing</action>
   <action>Save story document unconditionally</action>
 
   <!-- Update sprint status -->

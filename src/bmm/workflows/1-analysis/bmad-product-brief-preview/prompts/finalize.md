@@ -72,4 +72,4 @@ purpose: "Token-efficient context for downstream PRD creation"
 
 ## Stage Complete
 
-This is the terminal stage. After delivering the completion message and file paths, the workflow is done. If the user requests further revisions, loop back to `prompts/draft-and-review.md`. Otherwise, exit.
+This is the terminal stage. After delivering the completion message and file paths, the workflow is done. If the user requests further revisions, loop back to `draft-and-review.md`. Otherwise, exit.

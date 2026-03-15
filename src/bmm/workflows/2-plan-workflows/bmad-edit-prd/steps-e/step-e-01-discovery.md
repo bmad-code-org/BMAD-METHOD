@@ -1,9 +1,5 @@
 ---
-name: 'step-e-01-discovery'
-description: 'Discovery & Understanding - Understand what user wants to edit and detect PRD format'
-
 # File references (ONLY variables used in this step)
-altStepFile: './step-e-01b-legacy-conversion.md'
 prdPurpose: '{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-prd/data/prd-purpose.md'
 ---
 
@@ -188,7 +184,7 @@ Display: "**Edit Requirements Understood**
 
 **Proceeding to deep review and analysis...**"
 
-Read fully and follow: next step (step-e-02-review.md)
+Read fully and follow: `./step-e-02-review.md`
 
 **IF PRD is Legacy (Non-Standard) AND no validation report:**
 
@@ -215,7 +211,7 @@ Present MENU OPTIONS below for user selection
 
 #### Menu Handling Logic:
 
-- IF C (Convert): Read fully and follow: {altStepFile} (step-e-01b-legacy-conversion.md)
+- IF C (Convert): Read fully and follow: `./step-e-01b-legacy-conversion.md`
 - IF E (Edit As-Is): Display "Proceeding with edits..." then load next step
 - IF X (Exit): Display summary and exit
 - IF Any other: help user, then redisplay menu

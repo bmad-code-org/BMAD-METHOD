@@ -1,7 +1,4 @@
 ---
-name: 'step-v-06-traceability-validation'
-description: 'Traceability Validation - Validate the traceability chain from vision → success → journeys → FRs is intact'
-
 # File references (ONLY variables used in this step)
 nextStepFile: './step-v-07-implementation-leakage-validation.md'
 prdFile: '{prd_file_path}'

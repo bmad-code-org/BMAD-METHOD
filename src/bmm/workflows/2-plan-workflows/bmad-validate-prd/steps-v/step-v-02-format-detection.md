@@ -1,7 +1,4 @@
 ---
-name: 'step-v-02-format-detection'
-description: 'Format Detection & Structure Analysis - Classify PRD format and route appropriately'
-
 # File references (ONLY variables used in this step)
 nextStepFile: './step-v-03-density-validation.md'
 altStepFile: './step-v-02b-parity-check.md'
