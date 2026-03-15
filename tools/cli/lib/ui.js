@@ -47,6 +47,15 @@ class UI {
       }
       confirmedDirectory = expandedDir;
       await prompts.log.info(`Using directory from command-line: ${confirmedDirectory}`);
+    } else if (options.yes) {
+      // Default to current directory when --yes flag is set
+      const cwd = process.cwd();
+      const validation = this.validateDirectorySync(cwd);
+      if (validation) {
+        throw new Error(`Invalid current directory: ${validation}`);
+      }
+      confirmedDirectory = cwd;
+      await prompts.log.info(`Using current directory (--yes flag): ${confirmedDirectory}`);
     } else {
       confirmedDirectory = await this.getConfirmedDirectory();
     }
@@ -843,6 +852,45 @@ class UI {
   }
 
   /**
+   * Get default core config values by reading from src/core/module.yaml
+   * @returns {Object} Default core config with user_name, communication_language, document_output_language, output_folder
+   */
+  getDefaultCoreConfig() {
+    const { getModulePath } = require('./project-root');
+    const yaml = require('yaml');
+
+    let safeUsername;
+    try {
+      safeUsername = os.userInfo().username;
+    } catch {
+      safeUsername = process.env.USER || process.env.USERNAME || 'User';
+    }
+    const osUsername = safeUsername.charAt(0).toUpperCase() + safeUsername.slice(1);
+
+    const norm = (value, fallback) => (typeof value === 'string' && value.trim() !== '' ? value.trim() : fallback);
+
+    // Read defaults from core module.yaml (single source of truth)
+    try {
+      const moduleYamlPath = path.join(getModulePath('core'), 'module.yaml');
+      const moduleConfig = yaml.parse(fs.readFileSync(moduleYamlPath, 'utf8'));
+      return {
+        user_name: norm(moduleConfig.user_name?.default, osUsername),
+        communication_language: norm(moduleConfig.communication_language?.default, 'English'),
+        document_output_language: norm(moduleConfig.document_output_language?.default, 'English'),
+        output_folder: norm(moduleConfig.output_folder?.default, '_bmad-output'),
+      };
+    } catch (error) {
+      console.warn(`Failed to load module.yaml, falling back to defaults: ${error.message}`);
+      return {
+        user_name: osUsername,
+        communication_language: 'English',
+        document_output_language: 'English',
+        output_folder: '_bmad-output',
+      };
+    }
+  }
+
+  /**
    * Collect core configuration
    * @param {string} directory - Installation directory
    * @param {Object} options - Command-line options
@@ -885,27 +933,33 @@ class UI {
         (!options.userName || !options.communicationLanguage || !options.documentOutputLanguage || !options.outputFolder)
       ) {
         await configCollector.collectModuleConfig('core', directory, false, true);
+      } else if (options.yes) {
+        // Fill in defaults for any fields not provided via command-line or existing config
+        const isMissingOrUnresolved = (v) => v == null || (typeof v === 'string' && (v.trim() === '' || /^\{[^}]+\}$/.test(v.trim())));
+
+        const defaults = this.getDefaultCoreConfig();
+        for (const [key, value] of Object.entries(defaults)) {
+          if (isMissingOrUnresolved(configCollector.collectedConfig.core[key])) {
+            configCollector.collectedConfig.core[key] = value;
+          }
+        }
       }
     } else if (options.yes) {
-      // Use all defaults when --yes flag is set
+      // Use all defaults when --yes flag is set, merging with any existing config
       await configCollector.loadExistingConfig(directory);
       const existingConfig = configCollector.collectedConfig.core || {};
+      const defaults = this.getDefaultCoreConfig();
+      configCollector.collectedConfig.core = { ...defaults, ...existingConfig };
 
-      // If no existing config, use defaults
-      if (Object.keys(existingConfig).length === 0) {
-        let safeUsername;
-        try {
-          safeUsername = os.userInfo().username;
-        } catch {
-          safeUsername = process.env.USER || process.env.USERNAME || 'User';
+      // Clean up any unresolved placeholder tokens from existing config
+      const isMissingOrUnresolved = (v) => v == null || (typeof v === 'string' && (v.trim() === '' || /^\{[^}]+\}$/.test(v.trim())));
+      for (const [key, value] of Object.entries(configCollector.collectedConfig.core)) {
+        if (isMissingOrUnresolved(value)) {
+          configCollector.collectedConfig.core[key] = defaults[key];
         }
-        const defaultUsername = safeUsername.charAt(0).toUpperCase() + safeUsername.slice(1);
-        configCollector.collectedConfig.core = {
-          user_name: defaultUsername,
-          communication_language: 'English',
-          document_output_language: 'English',
-          output_folder: '_bmad-output',
-        };
+      }
+
+      if (Object.keys(existingConfig).length === 0) {
         await prompts.log.info('Using default configuration (--yes flag)');
       }
     } else {
