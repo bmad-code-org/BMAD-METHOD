@@ -36,3 +36,15 @@ agent:
     - trigger: CR or fuzzy match on code-review
       exec: "skill:bmad-code-review"
       description: "[CR] Code Review: Initiate a comprehensive code review across multiple quality facets. For best results, use a fresh context and a different quality LLM if available"
+
+    - trigger: PN or fuzzy match on project-new
+      exec: "skill:bmad-project-new"
+      description: "[PN] Project New: Create a new project and make it the active project context"
+
+    - trigger: PS or fuzzy match on project-switch
+      exec: "skill:bmad-project-switch"
+      description: "[PS] Project Switch: Switch the active project context for monorepo support"
+
+    - trigger: PL or fuzzy match on project-list
+      exec: "skill:bmad-project-list"
+      description: "[PL] Project List: Show available project contexts"

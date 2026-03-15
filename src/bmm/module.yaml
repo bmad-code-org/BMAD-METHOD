@@ -48,3 +48,36 @@ directories:
   - "{planning_artifacts}"
   - "{implementation_artifacts}"
   - "{project_knowledge}"
+
+# --- Monorepo / Multi-Project Context Support ---
+# IMPORTANT: When loading this config, apply monorepo context resolution BEFORE using any path variables.
+#
+# Resolution order:
+# 1. INLINE OVERRIDE: Scan user's invocation for #project:NAME or #p:NAME (case-insensitive).
+#    If found, set project_suffix = NAME.
+# 2. FILE FALLBACK: If no inline override, check if {project-root}/_bmad/.current_project exists.
+#    If so, read its single-line content as project_suffix (trim whitespace/newlines).
+# 3. VALIDATE (if project_suffix is set):
+#    - REJECT if empty, equals '.', contains '..', starts with '/' or drive letter (e.g. C:)
+#    - REJECT if it contains '/' or '\' because project_suffix must be a single directory name
+#    - REJECT if fails whitelist regex: ^[a-zA-Z0-9._-]+$
+#    - On rejection: output "Security Error: Invalid project context" and HALT
+# 4. OVERRIDE PATHS (if valid project_suffix):
+#    - output_folder = {project-root}/_bmad-output/{project_suffix}
+#    - planning_artifacts = {output_folder}/planning-artifacts
+#    - implementation_artifacts = {output_folder}/implementation-artifacts
+#    - project_knowledge = {output_folder}/knowledge
+#    - sprint_status_file = {output_folder}/sprint-status.yaml
+#    - project_name = {project_suffix}
+# 5. If no project_suffix is set, use the default paths from config as-is.
+
+monorepo_context:
+  enabled: true
+  context_file: ".current_project"
+  inline_override_patterns:
+    - "#project:"
+    - "#p:"
+  validation:
+    whitelist_regex: "^[a-zA-Z0-9._-]+$"
+    reject_traversal: true
+    reject_absolute: true
