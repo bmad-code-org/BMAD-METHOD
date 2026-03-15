@@ -48,8 +48,8 @@ Display: "**Select:** [C] Continue [E] Edit [Q] Questions [A] Advanced Elicitati
 - IF C: Proceed to Section 3 (Finalize the Spec)
 - IF E: Proceed to Section 2 (Handle Review Feedback), then return here and redisplay menu
 - IF Q: Answer questions, then redisplay this menu
-- IF A: Read fully and follow: `{advanced_elicitation}` with current spec content, process enhanced insights, ask user "Accept improvements? (y/n)", if yes update spec then redisplay menu, if no keep original then redisplay menu
-- IF P: Read fully and follow: `{party_mode_exec}` with current spec content, process collaborative insights, ask user "Accept changes? (y/n)", if yes update spec then redisplay menu, if no keep original then redisplay menu
+- IF A: Invoke the `bmad-advanced-elicitation` skill with current spec content, process enhanced insights, ask user "Accept improvements? (y/n)", if yes update spec then redisplay menu, if no keep original then redisplay menu
+- IF P: Invoke the `bmad-party-mode` skill with current spec content, process collaborative insights, ask user "Accept changes? (y/n)", if yes update spec then redisplay menu, if no keep original then redisplay menu
 - IF Any other comments or queries: respond helpfully then redisplay menu
 
 #### EXECUTION RULES:
@@ -134,10 +134,10 @@ b) **HALT and wait for user selection.**
 
 #### Menu Handling Logic:
 
-- IF A: Read fully and follow: `{advanced_elicitation}` with current spec content, process enhanced insights, ask user "Accept improvements? (y/n)", if yes update spec then redisplay menu, if no keep original then redisplay menu
+- IF A: Invoke the `bmad-advanced-elicitation` skill with current spec content, process enhanced insights, ask user "Accept improvements? (y/n)", if yes update spec then redisplay menu, if no keep original then redisplay menu
 - IF B: Invoke the `bmad-quick-dev` skill with `{finalFile}` in a fresh context if possible (warn: fresh context is better)
 - IF D: Exit workflow - display final confirmation and path to spec
-- IF P: Read fully and follow: `{party_mode_exec}` with current spec content, process collaborative insights, ask user "Accept changes? (y/n)", if yes update spec then redisplay menu, if no keep original then redisplay menu
+- IF P: Invoke the `bmad-party-mode` skill with current spec content, process collaborative insights, ask user "Accept changes? (y/n)", if yes update spec then redisplay menu, if no keep original then redisplay menu
 - IF R: Execute Adversarial Review (see below)
 - IF Any other comments or queries: respond helpfully then redisplay menu
 

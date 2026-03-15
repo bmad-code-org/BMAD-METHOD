@@ -2,9 +2,6 @@
 # File References
 outputFile: '{planning_artifacts}/product-brief-{{project_name}}-{{date}}.md'
 
-# Task References
-advancedElicitationTask: 'skill:bmad-advanced-elicitation'
-partyModeWorkflow: 'skill:bmad-party-mode'
 ---
 
 # Step 2: Product Vision Discovery
@@ -153,8 +150,8 @@ Prepare the following structure for document append:
 
 #### Menu Handling Logic:
 
-- IF A: Read fully and follow: {advancedElicitationTask} with current vision content to dive deeper and refine
-- IF P: Read fully and follow: {partyModeWorkflow} to bring different perspectives to positioning and differentiation
+- IF A: Invoke the `bmad-advanced-elicitation` skill with current vision content to dive deeper and refine
+- IF P: Invoke the `bmad-party-mode` skill to bring different perspectives to positioning and differentiation
 - IF C: Save content to {outputFile}, update frontmatter with stepsCompleted: [1, 2], then read fully and follow: ./step-03-users.md
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options](#7-present-menu-options)
 

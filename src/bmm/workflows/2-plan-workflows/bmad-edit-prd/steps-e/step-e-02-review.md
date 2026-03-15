@@ -7,7 +7,6 @@ nextStepFile: './step-e-03-edit.md'
 prdFile: '{prd_file_path}'
 validationReport: '{validation_report_path}'  # If provided
 prdPurpose: '{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-prd/data/prd-purpose.md'
-advancedElicitationTask: 'skill:bmad-advanced-elicitation'
 ---
 
 # Step E-2: Deep Review & Analysis
@@ -220,8 +219,8 @@ Read fully and follow: {nextStepFile} (step-e-03-edit.md)
 
 #### Menu Handling Logic:
 
-- IF A: Read fully and follow: {advancedElicitationTask}, then return to discussion
-- IF P: Read fully and follow: {partyModeWorkflow}, then return to discussion
+- IF A: Invoke the `bmad-advanced-elicitation` skill, then return to discussion
+- IF P: Invoke the `bmad-party-mode` skill, then return to discussion
 - IF C: Document approval, then load {nextStepFile}
 - IF Any other: discuss, then redisplay menu
 

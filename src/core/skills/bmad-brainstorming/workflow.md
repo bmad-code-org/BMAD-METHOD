@@ -44,8 +44,6 @@ Load config from `{project-root}/_bmad/core/config.yaml` and resolve:
 
 All steps MUST reference `{brainstorming_session_output_file}` instead of the full path pattern.
 - `context_file` = Optional context file path from workflow invocation for project-specific guidance
-- `advancedElicitationTask` = `skill:bmad-advanced-elicitation`
-
 ---
 
 ## EXECUTION

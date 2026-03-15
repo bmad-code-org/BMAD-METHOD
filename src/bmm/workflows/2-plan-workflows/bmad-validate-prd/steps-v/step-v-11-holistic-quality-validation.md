@@ -6,7 +6,6 @@ description: 'Holistic Quality Assessment - Assess PRD as cohesive, compelling d
 nextStepFile: './step-v-12-completeness-validation.md'
 prdFile: '{prd_file_path}'
 validationReportPath: '{validation_report_path}'
-advancedElicitationTask: 'skill:bmad-advanced-elicitation'
 ---
 
 # Step 11: Holistic Quality Assessment
@@ -67,8 +66,8 @@ Assess the PRD as a cohesive, compelling document - evaluating document flow, du
 
 "Perform holistic quality assessment on this PRD using multi-perspective evaluation:
 
-**Read fully and follow the Advanced Elicitation workflow:**
-{advancedElicitationTask}
+**Advanced Elicitation workflow:**
+Invoke the `bmad-advanced-elicitation` skill
 
 **Evaluate the PRD from these perspectives:**
 
