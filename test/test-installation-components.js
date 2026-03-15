@@ -15,6 +15,7 @@ const path = require('node:path');
 const os = require('node:os');
 const fs = require('fs-extra');
 const { YamlXmlBuilder } = require('../tools/cli/lib/yaml-xml-builder');
+const { Installer } = require('../tools/cli/installers/lib/core/installer');
 const { ManifestGenerator } = require('../tools/cli/installers/lib/core/manifest-generator');
 const { IdeManager } = require('../tools/cli/installers/lib/ide/manager');
 const { clearCache, loadPlatformCodes } = require('../tools/cli/installers/lib/ide/platform-codes');
@@ -1864,6 +1865,118 @@ async function runTests() {
   } finally {
     if (collisionProjectDir) await fs.remove(collisionProjectDir).catch(() => {});
     if (collisionFixtureRoot) await fs.remove(collisionFixtureRoot).catch(() => {});
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test 32: Monorepo config block emission
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 32: Monorepo Config Generation${colors.reset}\n`);
+
+  let tempFixture32;
+  try {
+    tempFixture32 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-monorepo-config-'));
+    await fs.ensureDir(path.join(tempFixture32, 'bmm'));
+
+    const installer32 = new Installer();
+    const sourceModule32 = await fs.readFile(path.join(projectRoot, 'src', 'bmm', 'module.yaml'), 'utf8');
+    const extractedBlock32 = installer32.extractMonorepoContextBlock(sourceModule32);
+
+    assert(
+      extractedBlock32 && extractedBlock32.includes('monorepo_context:'),
+      'Installer extracts monorepo context block from module schema',
+    );
+    assert(extractedBlock32 && extractedBlock32.includes('INLINE OVERRIDE'), 'Extracted monorepo block preserves instructional comments');
+
+    await installer32.generateModuleConfigs(tempFixture32, {
+      core: {
+        user_name: 'TestUser',
+        communication_language: 'English',
+        document_output_language: 'English',
+        output_folder: '_bmad-output',
+      },
+      bmm: {
+        project_name: 'demo-project',
+        user_skill_level: 'intermediate',
+        planning_artifacts: '{project-root}/_bmad-output/planning-artifacts',
+        implementation_artifacts: '{project-root}/_bmad-output/implementation-artifacts',
+        project_knowledge: '{project-root}/docs',
+      },
+    });
+
+    const generatedConfig32 = await fs.readFile(path.join(tempFixture32, 'bmm', 'config.yaml'), 'utf8');
+    assert(
+      generatedConfig32.includes('# --- Monorepo / Multi-Project Context Support ---'),
+      'Generated bmm config preserves monorepo instruction header',
+    );
+    assert(generatedConfig32.includes('monorepo_context:'), 'Generated bmm config includes monorepo_context YAML');
+    assert(
+      generatedConfig32.includes('inline_override_patterns:') && generatedConfig32.includes('- "#p:"'),
+      'Generated bmm config preserves monorepo override patterns',
+    );
+  } catch (error) {
+    assert(false, 'Monorepo config generation test succeeds', error.message);
+  } finally {
+    if (tempFixture32) await fs.remove(tempFixture32).catch(() => {});
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test 33: Context skills are discoverable as skills
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 33: Context Skill Discovery${colors.reset}\n`);
+
+  let tempFixture33;
+  try {
+    tempFixture33 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-context-skills-'));
+    await fs.ensureDir(path.join(tempFixture33, '_config'));
+    await fs.ensureDir(path.join(tempFixture33, 'bmm', 'agents'));
+    await fs.writeFile(path.join(tempFixture33, 'bmm', 'agents', 'test.md'), '<agent name="Test" title="T"><persona>p</persona></agent>');
+
+    const sourceContextDir33 = path.join(projectRoot, 'src', 'bmm', 'workflows', '0-context');
+    const targetContextDir33 = path.join(tempFixture33, 'bmm', 'workflows', '0-context');
+    await fs.copy(sourceContextDir33, targetContextDir33);
+
+    const generator33 = new ManifestGenerator();
+    await generator33.generateManifests(tempFixture33, ['bmm'], [], { ides: [] });
+
+    const newProjectSkill33 = generator33.skills.find((skill) => skill.canonicalId === 'bmad-project-new');
+    const setProjectSkill33 = generator33.skills.find((skill) => skill.canonicalId === 'bmad-project-switch');
+    const listProjectsSkill33 = generator33.skills.find((skill) => skill.canonicalId === 'bmad-project-list');
+
+    assert(newProjectSkill33 !== undefined, 'New project skill appears in skills[]');
+    assert(setProjectSkill33 !== undefined, 'Set project context skill appears in skills[]');
+    assert(listProjectsSkill33 !== undefined, 'List projects skill appears in skills[]');
+    assert(
+      newProjectSkill33 && newProjectSkill33.path.includes('workflows/0-context/bmad-project-new/SKILL.md'),
+      'New project skill keeps its workflow directory path',
+    );
+    assert(
+      setProjectSkill33 && setProjectSkill33.path.includes('workflows/0-context/bmad-project-switch/SKILL.md'),
+      'Set project skill keeps its workflow directory path',
+    );
+    assert(
+      listProjectsSkill33 && listProjectsSkill33.path.includes('workflows/0-context/bmad-project-list/SKILL.md'),
+      'List projects skill keeps its workflow directory path',
+    );
+    assert(
+      !generator33.workflows.some((workflow) => workflow.path.includes('0-context/bmad-project-new')),
+      'New project skill does not appear in workflows[]',
+    );
+    assert(
+      !generator33.workflows.some((workflow) => workflow.path.includes('0-context/bmad-project-switch')),
+      'Set project context skill does not appear in workflows[]',
+    );
+    assert(
+      !generator33.workflows.some((workflow) => workflow.path.includes('0-context/bmad-project-list')),
+      'List projects skill does not appear in workflows[]',
+    );
+  } catch (error) {
+    assert(false, 'Context skill discovery test succeeds', error.message);
+  } finally {
+    if (tempFixture33) await fs.remove(tempFixture33).catch(() => {});
   }
 
   console.log('');

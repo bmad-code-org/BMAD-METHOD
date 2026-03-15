@@ -2067,6 +2067,12 @@ class Installer {
           }
         }
 
+        const staticConfigBlocks = await this.getStaticConfigBlocks(moduleName);
+        if (staticConfigBlocks.length > 0) {
+          yamlContent = yamlContent.trimEnd();
+          yamlContent += `\n\n${staticConfigBlocks.join('\n\n')}\n`;
+        }
+
         // Write the clean config file with POSIX-compliant final newline
         const content = header + yamlContent;
         await fs.writeFile(configPath, content.endsWith('\n') ? content : content + '\n', 'utf8');
@@ -2075,6 +2081,65 @@ class Installer {
         this.installedFiles.add(configPath);
       }
     }
+  }
+
+  /**
+   * Return static config blocks that should be preserved from a module schema
+   * even though they are not collected interactively.
+   * @param {string} moduleName - Module name
+   * @returns {Promise<string[]>} Raw YAML/comment blocks to append to config.yaml
+   */
+  async getStaticConfigBlocks(moduleName) {
+    const moduleSchemaPath = await this.resolveModuleSchemaPath(moduleName);
+    if (!moduleSchemaPath || !(await fs.pathExists(moduleSchemaPath))) {
+      return [];
+    }
+
+    const content = await fs.readFile(moduleSchemaPath, 'utf8');
+    const monorepoBlock = this.extractMonorepoContextBlock(content);
+    return monorepoBlock ? [monorepoBlock] : [];
+  }
+
+  /**
+   * Resolve the source module.yaml path for a module.
+   * @param {string} moduleName - Module name
+   * @returns {Promise<string|null>} Path to module.yaml or null if not found
+   */
+  async resolveModuleSchemaPath(moduleName) {
+    if (this.configCollector.customModulePaths?.has(moduleName)) {
+      return path.join(this.configCollector.customModulePaths.get(moduleName), 'module.yaml');
+    }
+
+    const standardPath = path.join(getModulePath(moduleName), 'module.yaml');
+    if (await fs.pathExists(standardPath)) {
+      return standardPath;
+    }
+
+    const moduleSourcePath = await this.moduleManager.findModuleSource(moduleName, { silent: true });
+    return moduleSourcePath ? path.join(moduleSourcePath, 'module.yaml') : null;
+  }
+
+  /**
+   * Extract the monorepo context instructions and YAML block from module.yaml.
+   * @param {string} content - Raw module.yaml content
+   * @returns {string|null} Preserved block or null when absent
+   */
+  extractMonorepoContextBlock(content) {
+    // Capture from the header comment through to the end of the monorepo_context YAML block.
+    // The block is expected at the end of the file, after any other config sections.
+    const headerIndex = content.indexOf('# --- Monorepo / Multi-Project Context Support ---');
+    if (headerIndex === -1) {
+      return null;
+    }
+
+    const block = content.slice(headerIndex).trimEnd();
+
+    // Sanity check: the block must contain the structured YAML key
+    if (!block.includes('monorepo_context:')) {
+      return null;
+    }
+
+    return block;
   }
 
   /**
