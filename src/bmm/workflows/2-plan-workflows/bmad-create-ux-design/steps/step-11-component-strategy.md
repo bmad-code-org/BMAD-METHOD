@@ -31,8 +31,8 @@ This step will generate content and present choices:
 
 ## PROTOCOL INTEGRATION:
 
-- When 'A' selected: Read fully and follow: skill:bmad-advanced-elicitation
-- When 'P' selected: Read fully and follow: {project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md
+- When 'A' selected: Invoke the `bmad-advanced-elicitation` skill
+- When 'P' selected: Invoke the `bmad-party-mode` skill
 - PROTOCOLS always return to this step's A/P/C menu
 - User accepts/rejects protocol changes before proceeding
 
@@ -194,7 +194,7 @@ Show the generated component strategy content and present choices:
 
 #### If 'A' (Advanced Elicitation):
 
-- Read fully and follow: skill:bmad-advanced-elicitation with the current component strategy content
+- Invoke the `bmad-advanced-elicitation` skill with the current component strategy content
 - Process the enhanced component insights that come back
 - Ask user: "Accept these improvements to the component strategy? (y/n)"
 - If yes: Update content with improvements, then return to A/P/C menu
@@ -202,7 +202,7 @@ Show the generated component strategy content and present choices:
 
 #### If 'P' (Party Mode):
 
-- Read fully and follow: {project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md with the current component strategy
+- Invoke the `bmad-party-mode` skill with the current component strategy
 - Process the collaborative component insights that come back
 - Ask user: "Accept these changes to the component strategy? (y/n)"
 - If yes: Update content with improvements, then return to A/P/C menu

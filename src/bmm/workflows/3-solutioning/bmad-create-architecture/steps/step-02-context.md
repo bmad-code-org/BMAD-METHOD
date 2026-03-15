@@ -32,7 +32,7 @@ This step will generate content and present choices:
 ## PROTOCOL INTEGRATION:
 
 - When 'A' selected: Invoke the `bmad-advanced-elicitation` skill
-- When 'P' selected: Read fully and follow: {project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md
+- When 'P' selected: Invoke the `bmad-party-mode` skill
 - PROTOCOLS always return to display this step's A/P/C menu after the A or P have completed
 - User accepts/rejects protocol changes before proceeding
 
@@ -178,7 +178,7 @@ Show the generated content and present choices:
 
 #### If 'P' (Party Mode):
 
-- Read fully and follow: {project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md with the current project context
+- Invoke the `bmad-party-mode` skill with the current project context
 - Process the collaborative improvements to architectural understanding
 - Ask user: "Accept these changes to the project context analysis? (y/n)"
 - If yes: Update content with improvements, then return to A/P/C menu

@@ -31,8 +31,8 @@ This step will generate content and present choices:
 
 ## PROTOCOL INTEGRATION:
 
-- When 'A' selected: Read fully and follow: skill:bmad-advanced-elicitation
-- When 'P' selected: Read fully and follow: {project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md
+- When 'A' selected: Invoke the `bmad-advanced-elicitation` skill
+- When 'P' selected: Invoke the `bmad-party-mode` skill
 - PROTOCOLS always return to this step's A/P/C menu
 - User accepts/rejects protocol changes before proceeding
 
@@ -210,7 +210,7 @@ Show the generated responsive and accessibility content and present choices:
 
 #### If 'A' (Advanced Elicitation):
 
-- Read fully and follow: skill:bmad-advanced-elicitation with the current responsive/accessibility content
+- Invoke the `bmad-advanced-elicitation` skill with the current responsive/accessibility content
 - Process the enhanced insights that come back
 - Ask user: "Accept these improvements to the responsive/accessibility strategy? (y/n)"
 - If yes: Update content with improvements, then return to A/P/C menu
@@ -218,7 +218,7 @@ Show the generated responsive and accessibility content and present choices:
 
 #### If 'P' (Party Mode):
 
-- Read fully and follow: {project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md with the current responsive/accessibility strategy
+- Invoke the `bmad-party-mode` skill with the current responsive/accessibility strategy
 - Process the collaborative insights that come back
 - Ask user: "Accept these changes to the responsive/accessibility strategy? (y/n)"
 - If yes: Update content with improvements, then return to A/P/C menu
