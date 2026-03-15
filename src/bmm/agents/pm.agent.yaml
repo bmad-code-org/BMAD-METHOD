@@ -24,7 +24,7 @@ agent:
       description: "[CP] Create PRD: Expert led facilitation to produce your Product Requirements Document"
 
     - trigger: VP or fuzzy match on validate-prd
-      exec: "{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-prd/workflow-validate-prd.md"
+      exec: "skill:bmad-validate-prd"
       description: "[VP] Validate PRD: Validate a Product Requirements Document is comprehensive, lean, well organized and cohesive"
 
     - trigger: EP or fuzzy match on edit-prd
