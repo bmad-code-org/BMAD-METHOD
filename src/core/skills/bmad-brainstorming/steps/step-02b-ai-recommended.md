@@ -48,7 +48,7 @@ Load techniques from CSV for analysis:
 **Load CSV and parse:**
 
 - Read `../brain-methods.csv`
-- Parse: category, technique_name, description
+- Parse: category, technique_name, description, facilitation_prompts, best_for, energy_level, typical_duration
 
 ### 2. Context Analysis for Technique Matching
 

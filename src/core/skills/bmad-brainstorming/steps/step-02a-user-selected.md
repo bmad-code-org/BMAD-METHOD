@@ -41,7 +41,7 @@ Load techniques from CSV on-demand:
 **Load CSV and parse:**
 
 - Read `../brain-methods.csv`
-- Parse: category, technique_name, description
+- Parse: category, technique_name, description, facilitation_prompts, best_for, energy_level, typical_duration
 - Organize by categories for browsing
 
 ### 2. Present Technique Categories
