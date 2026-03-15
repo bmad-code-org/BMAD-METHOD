@@ -4,7 +4,7 @@ outputFile: '{planning_artifacts}/product-brief-{{project_name}}-{{date}}.md'
 
 # Task References
 advancedElicitationTask: 'skill:bmad-advanced-elicitation'
-partyModeWorkflow: '{project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md'
+partyModeWorkflow: 'skill:bmad-party-mode'
 ---
 
 # Step 3: Target Users Discovery
