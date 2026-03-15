@@ -1,16 +1,3 @@
----
-name: 'step-09-functional'
-description: 'Synthesize all discovery into comprehensive functional requirements'
-
-# File References
-nextStepFile: '{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-prd/steps-c/step-10-nonfunctional.md'
-outputFile: '{planning_artifacts}/prd.md'
-
-# Task References
-advancedElicitationTask: 'skill:bmad-advanced-elicitation'
-partyModeWorkflow: '{project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md'
----
-
 # Step 9: Functional Requirements Synthesis
 
 **Progress: Step 9 of 11** - Next: Non-Functional Requirements
@@ -182,9 +169,9 @@ Present the functional requirements for review, then display menu:
 Display: "**Select:** [A] Advanced Elicitation [P] Party Mode [C] Continue to Non-Functional Requirements (Step 10 of 11)"
 
 #### Menu Handling Logic:
-- IF A: Read fully and follow: {advancedElicitationTask} with the current FR list, process the enhanced capability coverage that comes back, ask user if they accept the additions, if yes update content then redisplay menu, if no keep original content then redisplay menu
-- IF P: Read fully and follow: {partyModeWorkflow} with the current FR list, process the collaborative capability validation and additions, ask user if they accept the changes, if yes update content then redisplay menu, if no keep original content then redisplay menu
-- IF C: Append the final content to {outputFile}, update frontmatter by adding this step name to the end of the stepsCompleted array, then read fully and follow: {nextStepFile}
+- IF A: Read fully and follow: skill:bmad-advanced-elicitation with the current FR list, process the enhanced capability coverage that comes back, ask user if they accept the additions, if yes update content then redisplay menu, if no keep original content then redisplay menu
+- IF P: Read fully and follow: {project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md with the current FR list, process the collaborative capability validation and additions, ask user if they accept the changes, if yes update content then redisplay menu, if no keep original content then redisplay menu
+- IF C: Append the final content to {outputFile}, update frontmatter by adding this step name to the end of the stepsCompleted array, then read fully and follow: ./step-10-nonfunctional.md
 - IF Any other: help user respond, then redisplay menu
 
 #### EXECUTION RULES:
@@ -227,6 +214,6 @@ Emphasize to user: "This FR list is now binding. Any feature not listed here wil
 
 ## NEXT STEP:
 
-After user selects 'C' and content is saved to document, load {nextStepFile} to define non-functional requirements.
+After user selects 'C' and content is saved to document, load ./step-10-nonfunctional.md to define non-functional requirements.
 
 Remember: Do NOT proceed to step-10 until user explicitly selects 'C' from the A/P/C menu and content is saved!

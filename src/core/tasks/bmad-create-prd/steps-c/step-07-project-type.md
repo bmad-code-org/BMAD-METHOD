@@ -1,19 +1,3 @@
----
-name: 'step-07-project-type'
-description: 'Conduct project-type specific discovery using CSV-driven guidance'
-
-# File References
-nextStepFile: '{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-prd/steps-c/step-08-scoping.md'
-outputFile: '{planning_artifacts}/prd.md'
-
-# Data Files
-projectTypesCSV: '../data/project-types.csv'
-
-# Task References
-advancedElicitationTask: 'skill:bmad-advanced-elicitation'
-partyModeWorkflow: '{project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md'
----
-
 # Step 7: Project-Type Deep Dive
 
 **Progress: Step 7 of 11** - Next: Scoping
@@ -56,7 +40,7 @@ Conduct project-type specific discovery using CSV-driven guidance to define tech
 
 **Attempt subprocess data lookup:**
 
-"Your task: Lookup data in {projectTypesCSV}
+"Your task: Lookup data in ../data/project-types.csv
 
 **Search criteria:**
 - Find row where project_type matches {{projectTypeFromStep02}}
@@ -173,9 +157,9 @@ Present the project-type content for review, then display menu:
 Display: "**Select:** [A] Advanced Elicitation [P] Party Mode [C] Continue to Scoping (Step 8 of 11)"
 
 #### Menu Handling Logic:
-- IF A: Read fully and follow: {advancedElicitationTask} with the current project-type content, process the enhanced technical insights that come back, ask user "Accept these improvements to the technical requirements? (y/n)", if yes update content with improvements then redisplay menu, if no keep original content then redisplay menu
-- IF P: Read fully and follow: {partyModeWorkflow} with the current project-type requirements, process the collaborative technical expertise and validation, ask user "Accept these changes to the technical requirements? (y/n)", if yes update content with improvements then redisplay menu, if no keep original content then redisplay menu
-- IF C: Append the final content to {outputFile}, update frontmatter by adding this step name to the end of the stepsCompleted array, then read fully and follow: {nextStepFile}
+- IF A: Read fully and follow: skill:bmad-advanced-elicitation with the current project-type content, process the enhanced technical insights that come back, ask user "Accept these improvements to the technical requirements? (y/n)", if yes update content with improvements then redisplay menu, if no keep original content then redisplay menu
+- IF P: Read fully and follow: {project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md with the current project-type requirements, process the collaborative technical expertise and validation, ask user "Accept these changes to the technical requirements? (y/n)", if yes update content with improvements then redisplay menu, if no keep original content then redisplay menu
+- IF C: Append the final content to {outputFile}, update frontmatter by adding this step name to the end of the stepsCompleted array, then read fully and follow: ./step-08-scoping.md
 - IF Any other: help user respond, then redisplay menu
 
 #### EXECUTION RULES:
@@ -233,6 +217,6 @@ When user selects 'C', append the content directly to the document using the str
 
 ## NEXT STEP:
 
-After user selects 'C' and content is saved to document, load `{nextStepFile}` to define project scope.
+After user selects 'C' and content is saved to document, load `./step-08-scoping.md` to define project scope.
 
 Remember: Do NOT proceed to step-08 (Scoping) until user explicitly selects 'C' from the A/P/C menu and content is saved!
