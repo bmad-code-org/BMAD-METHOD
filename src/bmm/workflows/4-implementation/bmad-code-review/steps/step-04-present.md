@@ -1,6 +1,4 @@
 ---
-name: Present
-description: 'Present triaged findings grouped by category with actionable recommendations.'
 ---
 
 # Step 4: Present
@@ -33,7 +31,7 @@ description: 'Present triaged findings grouped by category with actionable recom
 4. If clean review (zero findings across all layers after triage): state that N findings were raised but all were classified as noise, or that no findings were raised at all (as applicable).
 
 5. Offer the user next steps (recommendations, not automated actions):
-   - If `patch` findings exist: "You can ask me to apply these patches, or address them manually."
+   - If `patch` findings exist: "These can be addressed in a follow-up implementation pass or manually."
    - If `intent_gap` or `bad_spec` findings exist: "Consider running the planning workflow to clarify intent or amend the spec before continuing."
    - If only `defer` findings remain: "No action needed for this change. Deferred items are noted for future attention."
 
