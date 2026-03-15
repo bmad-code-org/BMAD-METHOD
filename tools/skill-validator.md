@@ -100,10 +100,10 @@ If no findings are generated, the skill passes validation.
 - **Rule:** Every variable defined in workflow.md frontmatter must be either:
   - A config variable (value references `{project-root}` or a config-derived variable like `{planning_artifacts}`)
   - A runtime variable (value is empty, a placeholder, or set during execution)
-  - A legitimate external path expression
+  - A legitimate external path expression (must not violate PATH-05 — no paths into another skill's directory)
 
-  It must NOT be a path to a file within the skill directory.
-- **Detection:** For each frontmatter variable, check if its value resolves to a file inside the skill (e.g., starts with `./`, `{installed_path}`, or is a bare relative path to a sibling file). If so, it is an intra-skill path variable.
+  It must NOT be a path to a file within the skill directory (see PATH-04), nor a path into another skill's directory (see PATH-05).
+- **Detection:** For each frontmatter variable, check if its value resolves to a file inside the skill (e.g., starts with `./`, `{installed_path}`, or is a bare relative path to a sibling file). If so, it is an intra-skill path variable. Also check if the value is a path into another skill's directory — if so, it violates PATH-05 and is not a legitimate external path.
 - **Fix:** Remove the variable. Use a hardcoded relative path inline where the file is referenced.
 
 ---
@@ -144,6 +144,20 @@ If no findings are generated, the skill passes validation.
 - **Rule:** References to files outside the skill directory must use `{project-root}/...` or a config-derived variable path (e.g., `{planning_artifacts}/...`, `{implementation_artifacts}/...`).
 - **Detection:** Identify file references that point outside the skill. Verify they start with `{project-root}` or a known config variable. Flag absolute paths, home-relative paths (`~/`), or bare paths that resolve outside the skill.
 - **Fix:** Replace with `{project-root}/...` or the appropriate config variable.
+
+### PATH-05 — No File Path References Into Another Skill
+
+- **Severity:** HIGH
+- **Applies to:** all files in the skill
+- **Rule:** A skill must never reference any file inside another skill's directory by file path. Skill directories are encapsulated — their internal files (steps, templates, checklists, data files, workflow.md) are private implementation details. The only valid way to reference another skill is via `skill:skill-name` syntax, which invokes the skill as a unit. Reaching into another skill to cherry-pick an internal file (e.g., a template, a step, or even its workflow.md) breaks encapsulation and creates fragile coupling that breaks when the target skill is moved or reorganized.
+- **Detection:** For each external file reference (frontmatter values, markdown links, inline paths), check whether the resolved path points into a directory that is or contains a skill (has a `SKILL.md`). Patterns to flag:
+  - `{project-root}/_bmad/.../other-skill/anything.md`
+  - `{project-root}/_bmad/.../other-skill/steps/...`
+  - `{project-root}/_bmad/.../other-skill/templates/...`
+  - References to old pre-conversion locations that were skill directories (e.g., `core/workflows/skill-name/` when the skill has since moved to `core/skills/skill-name/`)
+- **Fix:**
+  - If the intent is to invoke the other skill: replace with `skill:skill-name`.
+  - If the intent is to use a shared resource (template, data file): the resource should be extracted to a shared location outside both skills (e.g., `core/data/`, `bmm/data/`, or a config-referenced path) — not reached into from across skill boundaries.
 
 ### PATH-04 — No Intra-Skill Path Variables
 
