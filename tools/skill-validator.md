@@ -118,7 +118,7 @@ If no findings are generated, the skill passes validation.
   - CORRECT: `./steps/step-01-init.md` (from workflow.md at skill root to a step)
   - CORRECT: `./template.md` (from workflow.md to a sibling)
   - CORRECT: `../template.md` (from steps/step-01.md to a skill-root file)
-  - CORRECT: `[workflow.md](workflow.md)` (markdown link to sibling — bare relative)
+  - CORRECT: `workflow.md` (bare relative filename for sibling)
   - CORRECT: `./step-02-plan.md` (from steps/step-01.md to a sibling step)
   - WRONG: `./steps/step-02-plan.md` (from a file already inside steps/ — resolves to steps/steps/)
   - WRONG: `{installed_path}/template.md`
