@@ -178,7 +178,7 @@ Edit goals: {summary}
 
 **Proceeding to deep review...**"
 
-Read fully and follow: [step-e-02-review.md](step-e-02-review.md)
+Read fully and follow: step-e-02-review.md
 
 ---
 

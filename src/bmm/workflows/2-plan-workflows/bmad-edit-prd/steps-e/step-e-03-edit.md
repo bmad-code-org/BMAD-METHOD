@@ -217,7 +217,7 @@ Display:
 
 #### Menu Handling Logic:
 
-- IF C (Continue): Read fully and follow: [step-e-04-complete.md](step-e-04-complete.md)
+- IF C (Continue): Read fully and follow: step-e-04-complete.md
 - IF A (Adjust): Accept additional requirements, loop back to editing
 
 ---

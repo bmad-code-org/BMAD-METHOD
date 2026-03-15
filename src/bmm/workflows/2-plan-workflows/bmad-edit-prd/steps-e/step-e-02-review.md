@@ -200,7 +200,7 @@ Display: "**Change Plan Approved**
 
 **Proceeding to edit step...**"
 
-Read fully and follow: [step-e-03-edit.md](step-e-03-edit.md)
+Read fully and follow: step-e-03-edit.md
 
 ### 7. Present MENU OPTIONS (If User Wants Discussion)
 
@@ -217,7 +217,7 @@ Read fully and follow: [step-e-03-edit.md](step-e-03-edit.md)
 
 - IF A: Invoke the `bmad-advanced-elicitation` skill, then return to discussion
 - IF P: Invoke the `bmad-party-mode` skill, then return to discussion
-- IF C: Document approval, then load [step-e-03-edit.md](step-e-03-edit.md)
+- IF C: Document approval, then load step-e-03-edit.md
 - IF Any other: discuss, then redisplay menu
 
 ---

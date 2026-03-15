@@ -124,7 +124,7 @@ Display:
   - Display: "**Additional Edits**"
   - Ask: "What additional edits would you like to make?"
   - Accept input, then display: "**Returning to edit step...**"
-  - Read fully and follow: [step-e-03-edit.md](step-e-03-edit.md) again
+  - Read fully and follow: step-e-03-edit.md again
 
 - **IF S (Summary):**
   - Display detailed summary including:
