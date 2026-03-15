@@ -1869,6 +1869,96 @@ async function runTests() {
   console.log('');
 
   // ============================================================
+  // Suite 32: Ona Native Skills
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 32: Ona Native Skills${colors.reset}\n`);
+
+  let tempProjectDir32;
+  let installedBmadDir32;
+  try {
+    clearCache();
+    const platformCodes32 = await loadPlatformCodes();
+    const onaInstaller = platformCodes32.platforms.ona?.installer;
+
+    assert(onaInstaller?.target_dir === '.ona/skills', 'Ona target_dir uses native skills path');
+    assert(onaInstaller?.skill_format === true, 'Ona installer enables native skill output');
+    assert(onaInstaller?.template_type === 'default', 'Ona installer uses default skill template');
+
+    tempProjectDir32 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-ona-test-'));
+    installedBmadDir32 = await createTestBmadFixture();
+
+    const ideManager32 = new IdeManager();
+    await ideManager32.ensureInitialized();
+
+    // Verify Ona is selectable in available IDEs list
+    const availableIdes32 = ideManager32.getAvailableIdes();
+    assert(
+      availableIdes32.some((ide) => ide.value === 'ona'),
+      'Ona appears in available IDEs list',
+    );
+
+    // Verify Ona is NOT detected before install
+    const detectedBefore32 = await ideManager32.detectInstalledIdes(tempProjectDir32);
+    assert(!detectedBefore32.includes('ona'), 'Ona is not detected before install');
+
+    const result32 = await ideManager32.setup('ona', tempProjectDir32, installedBmadDir32, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+
+    assert(result32.success === true, 'Ona setup succeeds against temp project');
+
+    // Verify Ona IS detected after install
+    const detectedAfter32 = await ideManager32.detectInstalledIdes(tempProjectDir32);
+    assert(detectedAfter32.includes('ona'), 'Ona is detected after install');
+
+    const skillFile32 = path.join(tempProjectDir32, '.ona', 'skills', 'bmad-master', 'SKILL.md');
+    assert(await fs.pathExists(skillFile32), 'Ona install writes SKILL.md directory output');
+
+    // Parse YAML frontmatter between --- markers
+    const skillContent32 = await fs.readFile(skillFile32, 'utf8');
+    const fmMatch32 = skillContent32.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
+    assert(fmMatch32, 'Ona SKILL.md contains valid frontmatter delimiters');
+
+    const frontmatter32 = fmMatch32[1];
+    const body32 = fmMatch32[2];
+
+    // Verify name in frontmatter matches directory name
+    const fmName32 = frontmatter32.match(/^name:\s*(.+)$/m);
+    assert(fmName32 && fmName32[1].trim() === 'bmad-master', 'Ona skill name frontmatter matches directory name exactly');
+
+    // Verify description exists and is non-empty
+    const fmDesc32 = frontmatter32.match(/^description:\s*(.+)$/m);
+    assert(fmDesc32 && fmDesc32[1].trim().length > 0, 'Ona skill description frontmatter is present and non-empty');
+
+    // Verify frontmatter contains only name and description keys
+    const fmKeys32 = [...frontmatter32.matchAll(/^([a-zA-Z0-9_-]+):/gm)].map((m) => m[1]);
+    assert(
+      fmKeys32.length === 2 && fmKeys32.includes('name') && fmKeys32.includes('description'),
+      'Ona skill frontmatter contains only name and description keys',
+    );
+
+    // Verify body content is non-empty and contains expected activation instructions
+    assert(body32.trim().length > 0, 'Ona skill body content is non-empty');
+    assert(body32.includes('agent-activation'), 'Ona skill body contains expected agent activation instructions');
+
+    // Reinstall/upgrade: run setup again over existing output
+    const result32b = await ideManager32.setup('ona', tempProjectDir32, installedBmadDir32, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+    assert(result32b.success === true, 'Ona reinstall/upgrade succeeds over existing skills');
+    assert(await fs.pathExists(skillFile32), 'Ona reinstall preserves SKILL.md output');
+  } catch (error) {
+    assert(false, 'Ona native skills test succeeds', error.message);
+  } finally {
+    if (tempProjectDir32) await fs.remove(tempProjectDir32).catch(() => {});
+    if (installedBmadDir32) await fs.remove(installedBmadDir32).catch(() => {});
+  }
+
+  console.log('');
+
+  // ============================================================
   // Summary
   // ============================================================
   console.log(`${colors.cyan}========================================`);
