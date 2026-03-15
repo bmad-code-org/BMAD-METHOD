@@ -112,13 +112,13 @@ Report what was found:
 
 **Documents Found:**
 
-- PRD: {{number_of_prd_files_loaded_or_none}}
-- UX Design: {{number_of_ux_files_loaded_or_none}}
-- Research: {{number_of_research_files_loaded_or_none}}
-- Project docs: {{number_of_project_files_loaded_or_none}}
-- Project context: {{project_context_rules_count}}
+- PRD: {number of PRD files loaded or "None found - REQUIRED"}
+- UX Design: {number of UX files loaded or "None found"}
+- Research: {number of research files loaded or "None found"}
+- Project docs: {number of project files loaded or "None found"}
+- Project context: {project_context_rules count of rules for AI agents found}
 
-**Files loaded:** {{list_of_loaded_file_names}}
+**Files loaded:** {list of specific file names or "No additional documents found"}
 
 Ready to begin architectural decision making. Do you have any other documents you'd like me to include?
 

@@ -84,5 +84,5 @@ Check activation context immediately:
 
 ## External Skills
 
-This workflow may invoke:
-- `bmad-init` — Invoke for configuration loading (module: bmm)
+This workflow uses:
+- `bmad-init` — Configuration loading (module: bmm)

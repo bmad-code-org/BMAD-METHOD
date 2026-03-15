@@ -79,18 +79,18 @@ Stories must be independently completable in sequence:
 **STORY FORMAT (from template):**
 
 ```
-### Story {{N}}.{{M}}: {{story_title}}
+### Story {N}.{M}: {story_title}
 
-As a {{user_type}},
-I want {{capability}},
-So that {{value_benefit}}.
+As a {user_type},
+I want {capability},
+So that {value_benefit}.
 
 **Acceptance Criteria:**
 
-**Given** {{precondition}}
-**When** {{action}}
-**Then** {{expected_outcome}}
-**And** {{additional_criteria}}
+**Given** {precondition}
+**When** {action}
+**Then** {expected_outcome}
+**And** {additional_criteria}
 ```
 
 **✅ GOOD STORY EXAMPLES:**
