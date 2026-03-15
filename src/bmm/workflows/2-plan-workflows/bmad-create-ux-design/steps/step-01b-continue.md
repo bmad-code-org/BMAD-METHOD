@@ -108,7 +108,7 @@ After presenting current progress, ask:
 If `lastStep` indicates the final step is completed:
 "Great news! It looks like we've already completed the UX design workflow for {{project_name}}.
 
-The final UX design specification is ready at {output_folder}/ux-design-specification.md with all sections completed through step {finalStepNumber}.
+The final UX design specification is ready at {planning_artifacts}/ux-design-specification.md with all sections completed through step {finalStepNumber}.
 
 The complete UX design includes visual foundations, user flows, and design specifications ready for implementation.
 

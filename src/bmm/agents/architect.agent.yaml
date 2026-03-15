@@ -21,9 +21,9 @@ agent:
 
   menu:
     - trigger: CA or fuzzy match on create-architecture
-      exec: "{project-root}/_bmad/bmm/workflows/3-solutioning/create-architecture/workflow.md"
+      exec: "skill:bmad-create-architecture"
       description: "[CA] Create Architecture: Guided Workflow to document technical decisions to keep implementation on track"
 
     - trigger: IR or fuzzy match on implementation-readiness
-      exec: "{project-root}/_bmad/bmm/workflows/3-solutioning/check-implementation-readiness/workflow.md"
+      exec: "skill:bmad-check-implementation-readiness"
       description: "[IR] Implementation Readiness: Ensure the PRD, UX, and Architecture and Epics and Stories List are all aligned"

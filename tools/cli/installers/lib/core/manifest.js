@@ -267,9 +267,11 @@ class Manifest {
    * @param {Object} options - Optional version info
    */
   async addModule(bmadDir, moduleName, options = {}) {
-    const manifest = await this._readRaw(bmadDir);
+    let manifest = await this._readRaw(bmadDir);
     if (!manifest) {
-      throw new Error('No manifest found');
+      // Bootstrap a minimal manifest if it doesn't exist yet
+      // (e.g., skill-only modules with no agents to compile)
+      manifest = { modules: [] };
     }
 
     if (!manifest.modules) {

@@ -1,8 +1,4 @@
 ---
-name: 'step-04-self-check'
-description: 'Self-audit implementation against tasks, tests, AC, and patterns'
-
-nextStepFile: './step-05-adversarial-review.md'
 ---
 
 # Step 4: Self-Check
@@ -89,7 +85,7 @@ Proceeding to adversarial code review...
 
 ## NEXT STEP
 
-Proceed immediately to `{nextStepFile}`.
+Proceed immediately to `./step-05-adversarial-review.md`.
 
 ---
 

@@ -1,14 +1,10 @@
 ---
-name: 'step-04-metrics'
-description: 'Define comprehensive success metrics that include user success, business objectives, and key performance indicators'
-
 # File References
-nextStepFile: './step-05-scope.md'
 outputFile: '{planning_artifacts}/product-brief-{{project_name}}-{{date}}.md'
 
 # Task References
 advancedElicitationTask: 'skill:bmad-advanced-elicitation'
-partyModeWorkflow: '{project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md'
+partyModeWorkflow: 'skill:bmad-party-mode'
 ---
 
 # Step 4: Success Metrics Definition
@@ -26,6 +22,7 @@ Define comprehensive success metrics that include user success, business objecti
 - 🔄 CRITICAL: When loading next step with 'C', ensure entire file is read
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
+- ✅ YOU MUST ALWAYS WRITE all artifact and document content in `{document_output_language}`
 
 ### Role Reinforcement:
 
@@ -164,7 +161,7 @@ Prepare the following structure for document append:
 
 - IF A: Read fully and follow: {advancedElicitationTask} with current metrics content to dive deeper into success metric insights
 - IF P: Read fully and follow: {partyModeWorkflow} to bring different perspectives to validate comprehensive metrics
-- IF C: Save content to {outputFile}, update frontmatter with stepsCompleted: [1, 2, 3, 4], then read fully and follow: {nextStepFile}
+- IF C: Save content to {outputFile}, update frontmatter with stepsCompleted: [1, 2, 3, 4], then read fully and follow: ./step-05-scope.md
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options](#7-present-menu-options)
 
 #### EXECUTION RULES:
@@ -176,7 +173,7 @@ Prepare the following structure for document append:
 
 ## CRITICAL STEP COMPLETION NOTE
 
-ONLY WHEN [C continue option] is selected and [success metrics finalized and saved to document with frontmatter updated], will you then read fully and follow: `{nextStepFile}` to begin MVP scope definition.
+ONLY WHEN [C continue option] is selected and [success metrics finalized and saved to document with frontmatter updated], will you then read fully and follow: `./step-05-scope.md` to begin MVP scope definition.
 
 ---
 
