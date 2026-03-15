@@ -406,8 +406,8 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
   getDefaultTemplate(artifactType) {
     if (artifactType === 'agent') {
       return `---
-name: '{{name}}'
-description: '{{description}}'
+name: "{{name}}"
+description: "{{description}}"
 disable-model-invocation: true
 ---
 
@@ -421,8 +421,8 @@ You must fully embody this agent's persona and follow all activation instruction
 `;
     }
     return `---
-name: '{{name}}'
-description: '{{description}}'
+name: "{{name}}"
+description: "{{description}}"
 ---
 
 # {{name}}
@@ -471,7 +471,7 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
       .replaceAll('{{name}}', artifact.name || '')
       .replaceAll('{{module}}', artifact.module || 'core')
       .replaceAll('{{path}}', pathToUse)
-      .replaceAll('{{description}}', artifact.description || `${artifact.name} ${artifact.type || ''}`)
+      .replaceAll('{{description}}', (artifact.description || `${artifact.name} ${artifact.type || ''}`).replaceAll('"', String.raw`\"`))
       .replaceAll('{{workflow_path}}', pathToUse);
 
     return rendered;
