@@ -2,9 +2,6 @@
 # File References
 outputFile: '{planning_artifacts}/product-brief-{{project_name}}-{{date}}.md'
 
-# Task References
-advancedElicitationTask: 'skill:bmad-advanced-elicitation'
-partyModeWorkflow: 'skill:bmad-party-mode'
 ---
 
 # Step 5: MVP Scope Definition
@@ -173,8 +170,8 @@ Prepare the following structure for document append:
 
 #### Menu Handling Logic:
 
-- IF A: Read fully and follow: {advancedElicitationTask} with current scope content to optimize scope definition
-- IF P: Read fully and follow: {partyModeWorkflow} to bring different perspectives to validate MVP scope
+- IF A: Invoke the `bmad-advanced-elicitation` skill with current scope content to optimize scope definition
+- IF P: Invoke the `bmad-party-mode` skill to bring different perspectives to validate MVP scope
 - IF C: Save content to {outputFile}, update frontmatter with stepsCompleted: [1, 2, 3, 4, 5], then read fully and follow: ./step-06-complete.md
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options](#7-present-menu-options)
 

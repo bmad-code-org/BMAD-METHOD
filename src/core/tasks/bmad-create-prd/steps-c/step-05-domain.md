@@ -142,7 +142,7 @@ Display: "**Select:** [A] Advanced Elicitation [P] Party Mode [C] Continue - Sav
 
 #### Menu Handling Logic:
 - IF A: Invoke the `bmad-advanced-elicitation` skill, and when finished redisplay the menu
-- IF P: Read fully and follow: `skill:bmad-party-mode` and when finished redisplay the menu
+- IF P: Invoke the `bmad-party-mode` skill, and when finished redisplay the menu
 - IF C: Save content to {outputFile}, update frontmatter, then read fully and follow: ./step-06-innovation.md
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options](#n-present-menu-options)
 

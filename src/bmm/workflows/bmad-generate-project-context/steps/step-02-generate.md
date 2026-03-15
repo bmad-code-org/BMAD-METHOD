@@ -30,8 +30,8 @@ This step will generate content and present choices for each rule category:
 
 ## PROTOCOL INTEGRATION:
 
-- When 'A' selected: Execute skill:bmad-advanced-elicitation
-- When 'P' selected: Execute skill:bmad-party-mode
+- When 'A' selected: Invoke the `bmad-advanced-elicitation` skill
+- When 'P' selected: Invoke the `bmad-party-mode` skill
 - PROTOCOLS always return to display this step's A/P/C menu after the A or P have completed
 - User accepts/rejects protocol changes before proceeding
 
@@ -268,7 +268,7 @@ After each category, show the generated rules and present choices:
 
 #### If 'A' (Advanced Elicitation):
 
-- Execute skill:bmad-advanced-elicitation with current category rules
+- Invoke the `bmad-advanced-elicitation` skill with current category rules
 - Process enhanced rules that come back
 - Ask user: "Accept these enhanced rules for {{category}}? (y/n)"
 - If yes: Update content, then return to A/P/C menu
@@ -276,7 +276,7 @@ After each category, show the generated rules and present choices:
 
 #### If 'P' (Party Mode):
 
-- Execute skill:bmad-party-mode with category rules context
+- Invoke the `bmad-party-mode` skill with category rules context
 - Process collaborative insights on implementation patterns
 - Ask user: "Accept these changes to {{category}} rules? (y/n)"
 - If yes: Update content, then return to A/P/C menu
