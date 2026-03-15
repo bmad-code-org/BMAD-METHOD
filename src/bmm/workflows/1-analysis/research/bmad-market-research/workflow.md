@@ -1,7 +1,3 @@
----
-{}
----
-
 # Market Research Workflow
 
 **Goal:** Conduct comprehensive market research using current web data and verified sources to produce complete research documents with compelling narratives and proper citations.
