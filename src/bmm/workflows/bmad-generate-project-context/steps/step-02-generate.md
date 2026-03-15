@@ -31,7 +31,7 @@ This step will generate content and present choices for each rule category:
 ## PROTOCOL INTEGRATION:
 
 - When 'A' selected: Execute skill:bmad-advanced-elicitation
-- When 'P' selected: Execute {project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md
+- When 'P' selected: Execute skill:bmad-party-mode
 - PROTOCOLS always return to display this step's A/P/C menu after the A or P have completed
 - User accepts/rejects protocol changes before proceeding
 
@@ -276,7 +276,7 @@ After each category, show the generated rules and present choices:
 
 #### If 'P' (Party Mode):
 
-- Execute party-mode workflow with category rules context
+- Execute skill:bmad-party-mode with category rules context
 - Process collaborative insights on implementation patterns
 - Ask user: "Accept these changes to {{category}} rules? (y/n)"
 - If yes: Update content, then return to A/P/C menu
