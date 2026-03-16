@@ -145,42 +145,7 @@ async function runTests() {
 
   const projectRoot = path.join(__dirname, '..');
 
-  // ============================================================
-  // Test 1: YAML → XML Agent Compilation (In-Memory)
-  // ============================================================
-  console.log(`${colors.yellow}Test Suite 1: Agent Compilation${colors.reset}\n`);
-
-  try {
-    const builder = new YamlXmlBuilder();
-    const analystAgentPath = path.join(projectRoot, 'src/bmm/agents/analyst.agent.yaml');
-
-    // Create temp output path
-    const tempOutput = path.join(__dirname, 'temp-analyst-agent.md');
-
-    try {
-      const result = await builder.buildAgent(analystAgentPath, null, tempOutput, { includeMetadata: true });
-
-      assert(result && result.outputPath === tempOutput, 'Agent compilation returns result object with outputPath');
-
-      // Read the output
-      const compiled = await fs.readFile(tempOutput, 'utf8');
-
-      assert(compiled.includes('<agent'), 'Compiled agent contains <agent> tag');
-
-      assert(compiled.includes('<persona>'), 'Compiled agent contains <persona> tag');
-
-      assert(compiled.includes('<menu>'), 'Compiled agent contains <menu> tag');
-
-      assert(compiled.includes('Business Analyst'), 'Compiled agent contains agent title');
-
-      // Cleanup
-      await fs.remove(tempOutput);
-    } catch (error) {
-      assert(false, 'Agent compilation succeeds', error.message);
-    }
-  } catch (error) {
-    assert(false, 'YamlXmlBuilder instantiates', error.message);
-  }
+  // Test 1: Removed — old YAML→XML agent compilation no longer applies (agents now use SKILL.md format)
 
   console.log('');
 
@@ -851,30 +816,7 @@ async function runTests() {
 
   console.log('');
 
-  // ============================================================
-  // Test 16: Analyst Agent Compilation
-  // ============================================================
-  console.log(`${colors.yellow}Test Suite 16: Analyst Agent Compilation${colors.reset}\n`);
-
-  try {
-    const builder = new YamlXmlBuilder();
-    const analystAgentPath = path.join(projectRoot, 'src/bmm/agents/analyst.agent.yaml');
-    const tempOutput = path.join(__dirname, 'temp-analyst-agent.md');
-
-    try {
-      const result = await builder.buildAgent(analystAgentPath, null, tempOutput, { includeMetadata: true });
-      const compiled = await fs.readFile(tempOutput, 'utf8');
-
-      assert(compiled.includes('Business Analyst'), 'Analyst agent compilation includes agent title');
-
-      // Cleanup
-      await fs.remove(tempOutput);
-    } catch (error) {
-      assert(false, 'Analyst agent compiles successfully', error.message);
-    }
-  } catch (error) {
-    assert(false, 'Analyst compilation test setup', error.message);
-  }
+  // Test 16: Removed — old YAML→XML QA agent compilation no longer applies (agents now use SKILL.md format)
 
   console.log('');
 
