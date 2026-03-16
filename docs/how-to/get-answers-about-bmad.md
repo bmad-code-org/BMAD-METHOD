@@ -56,7 +56,7 @@ Use this section when:
 
 | Source               | Best For                                  | Examples                     |
 | -------------------- | ----------------------------------------- | ---------------------------- |
-| **`_bmad` folder**   | How BMad works—agents, workflows, prompts | "What does the PM agent do?" |
+| **`_bmad` folder**   | How BMad works—agents, workflows, prompts | "What does the Analyst agent do?" |
 | **Full GitHub repo** | History, installer, architecture          | "What changed in v6?"        |
 | **`llms-full.txt`**  | Quick overview from docs                  | "Explain BMad's four phases" |
 

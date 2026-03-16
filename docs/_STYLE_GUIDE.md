@@ -353,7 +353,7 @@ Only for BMad Method and Enterprise tracks. Quick Flow skips to implementation.
 
 ### Can I change my plan later?
 
-Yes. The SM agent has a `bmad-correct-course` workflow for handling scope changes.
+Yes. Use `bmad-correct-course` for handling scope changes.
 
 **Have a question not answered here?** [Open an issue](...) or ask in [Discord](...).
 ```

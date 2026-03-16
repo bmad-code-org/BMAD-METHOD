@@ -58,7 +58,7 @@ Structured game development workflows adapted for Unity, Unreal, Godot, and cust
 
 ## Test Architect (TEA)
 
-Enterprise-grade test strategy, automation guidance, and release gate decisions through an expert agent and nine structured workflows. TEA goes well beyond the built-in QA agent with risk-based prioritization and requirements traceability.
+Enterprise-grade test strategy, automation guidance, and release gate decisions through an expert agent and nine structured workflows. TEA goes well beyond the built-in QA workflow with risk-based prioritization and requirements traceability.
 
 - **Code:** `tea`
 - **npm:** [`bmad-method-test-architecture-enterprise`](https://www.npmjs.com/package/bmad-method-test-architecture-enterprise)

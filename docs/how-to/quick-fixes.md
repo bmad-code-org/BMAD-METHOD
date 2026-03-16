@@ -5,7 +5,7 @@ sidebar:
   order: 5
 ---
 
-Use the **DEV agent** directly for bug fixes, refactorings, or small targeted changes that don't require the full BMad Method or Quick Flow.
+Use **workflow skills** directly for bug fixes, refactorings, or small targeted changes that don't require the full BMad Method or Quick Flow.
 
 ## When to Use This
 
@@ -21,30 +21,30 @@ Use the **DEV agent** directly for bug fixes, refactorings, or small targeted ch
 
 ## Choose Your Approach
 
-| Situation | Agent | Why |
+| Situation | Workflow skill | Why |
 | --- | --- | --- |
-| Fix a specific bug or make a small, scoped change | **DEV agent** | Jumps straight into implementation without planning overhead |
-| Change touches several files or you want a written plan first | **Quick Flow Solo Dev** | Creates a quick-spec before implementation so the agent stays aligned to your standards |
+| Fix a specific bug or make a small, scoped change | `bmad-dev-story` | Jumps straight into implementation without planning overhead |
+| Change touches several files or you want a written plan first | `bmad-quick-spec` then `bmad-quick-dev` | Creates a quick-spec before implementation so the AI stays aligned to your standards |
 
-If you are unsure, start with the DEV agent. You can always escalate to Quick Flow if the change grows.
+If you are unsure, start with `bmad-dev-story` or describe the change directly to your AI assistant. You can always escalate to Quick Flow if the change grows.
 
 ## Steps
 
-### 1. Invoke the DEV Agent
+### 1. Invoke a Workflow Skill
 
-Start a **fresh chat** in your AI IDE and invoke the DEV agent skill:
-
-```text
-bmad-dev
-```
-
-This loads the agent's persona and capabilities into the session. If you decide you need Quick Flow instead, invoke the **Quick Flow Solo Dev** agent skill in a fresh chat:
+Start a **fresh chat** in your AI IDE and invoke the dev story workflow skill:
 
 ```text
-bmad-quick-flow-solo-dev
+bmad-dev-story
 ```
 
-Once the Solo Dev agent is loaded, describe your change and ask it to create a **quick-spec**. The agent drafts a lightweight spec capturing what you want to change and how. After you approve the quick-spec, tell the agent to start the **Quick Flow dev cycle** -- it will implement the change, run tests, and perform a self-review, all guided by the spec you just approved.
+This loads the implementation workflow into the session. If you decide you need a plan first, use Quick Flow in a fresh chat:
+
+```text
+bmad-quick-spec
+```
+
+The quick-spec workflow walks you through creating a lightweight spec capturing what you want to change and how. After you approve the spec, invoke `bmad-quick-dev` in a fresh chat to implement -- it will execute the change, run tests, and perform a self-review, all guided by the spec you just approved.
 
 :::tip[Fresh Chats]
 Always start a new chat session when loading an agent. Reusing a session from a previous workflow can cause context conflicts.
@@ -64,18 +64,18 @@ Tell the agent what you need in plain language. Be specific about the problem an
 **Dependency update** -- "Upgrade the express dependency to the latest v5 release and fix any breaking changes."
 :::
 
-You don't need to provide every detail. The agent will read the relevant source files and ask clarifying questions when needed.
+You don't need to provide every detail. The AI will read the relevant source files and ask clarifying questions when needed.
 
-### 3. Let the Agent Work
+### 3. Let the AI Work
 
-The agent will:
+The AI will:
 
 - Read and analyze the relevant source files
 - Propose a solution and explain its reasoning
 - Implement the change across the affected files
 - Run your project's test suite if one exists
 
-If your project has tests, the agent runs them automatically after making changes and iterates until tests pass. For projects without a test suite, verify the change manually (run the app, hit the endpoint, check the output).
+If your project has tests, the AI runs them automatically after making changes and iterates until tests pass. For projects without a test suite, verify the change manually (run the app, hit the endpoint, check the output).
 
 ### 4. Review and Verify
 
@@ -83,17 +83,17 @@ Before committing, review what changed:
 
 - Read through the diff to confirm the change matches your intent
 - Run the application or tests yourself to double-check
-- If something looks wrong, tell the agent what to fix -- it can iterate in the same session
+- If something looks wrong, tell the AI what to fix -- it can iterate in the same session
 
 Once satisfied, commit the changes with a clear message describing the fix.
 
 :::caution[If Something Breaks]
-If a committed change causes unexpected issues, use `git revert HEAD` to undo the last commit cleanly. Then start a fresh chat with the DEV agent to try a different approach.
+If a committed change causes unexpected issues, use `git revert HEAD` to undo the last commit cleanly. Then start a fresh chat to try a different approach.
 :::
 
 ## Learning Your Codebase
 
-The DEV agent is also useful for exploring unfamiliar code. Load it in a fresh chat and ask questions:
+Your AI assistant is also useful for exploring unfamiliar code. Start a fresh chat and ask questions:
 
 :::note[Example Prompts]
 "Explain how the authentication system works in this codebase."
@@ -103,7 +103,7 @@ The DEV agent is also useful for exploring unfamiliar code. Load it in a fresh c
 "What does the `ProcessOrder` function do and what calls it?"
 :::
 
-Use the agent to learn about your project, understand how components connect, and explore unfamiliar areas before making changes.
+Use your AI assistant to learn about your project, understand how components connect, and explore unfamiliar areas before making changes.
 
 ## What You Get
 

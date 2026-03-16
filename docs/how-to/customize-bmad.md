@@ -31,9 +31,8 @@ After installation, find one `.customize.yaml` file per agent in:
 
 ```text
 _bmad/_config/agents/
-├── core-bmad-master.customize.yaml
-├── bmm-dev.customize.yaml
-├── bmm-pm.customize.yaml
+├── bmm-analyst.customize.yaml
+├── bmm-architect.customize.yaml
 └── ... (one file per installed agent)
 ```
 
@@ -59,7 +58,7 @@ Change how the agent introduces itself:
 ```yaml
 agent:
   metadata:
-    name: 'Spongebob' # Default: "Amelia"
+    name: 'Spongebob' # Default: "Mary"
 ```
 
 **Persona**
