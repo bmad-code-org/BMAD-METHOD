@@ -191,7 +191,8 @@ class ManifestGenerator {
               : `${this.bmadFolderName}/${moduleName}/${skillFile}`;
 
             // Skills derive canonicalId from directory name — never from manifest
-            if (manifest && manifest.__single && manifest.__single.canonicalId) {
+            // (agent-type skills legitimately use canonicalId for agent-manifest mapping, so skip warning)
+            if (manifest && manifest.__single && manifest.__single.canonicalId && artifactType !== 'agent') {
               console.warn(
                 `Warning: Skill manifest at ${dir}/bmad-skill-manifest.yaml contains canonicalId — this field is ignored for skills (directory name is the canonical ID)`,
               );
