@@ -8,6 +8,11 @@ architect.agent.yaml:
   type: agent
   description: "Architect for distributed systems, cloud infrastructure, and API design"
 
+pm.agent.yaml:
+  canonicalId: bmad-pm
+  type: agent
+  description: "Product Manager for PRD creation, requirements discovery, and stakeholder alignment"
+
 ux-designer.agent.yaml:
   canonicalId: bmad-ux-designer
   type: agent
