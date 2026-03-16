@@ -13,25 +13,16 @@ This skill is the configuration entry point for all BMad skills. It has two mode
 
 Every BMad skill should call this on activation to get its config vars. The caller never needs to know whether init happened — they just get their config back.
 
+The script `bmad_init.py` is located in this skill's `scripts/` directory. Locate and run it using python for all commands below.
+
 ## On Activation — Fast Path
 
-Run the loader script. If a module code was provided by the calling skill, include it. Otherwise core vars are returned.
+Run the `bmad_init.py` script with the `load` subcommand. Pass `--project-root` set to the project root directory.
 
-```bash
-python scripts/bmad_init.py load --module {module_code} --all --project-root {project-root}
-```
-
-Or for core only (no module specified):
-
-```bash
-python scripts/bmad_init.py load --all --project-root {project-root}
-```
-
-To request specific variables with defaults:
-
-```bash
-python scripts/bmad_init.py load --module {module_code} --vars var1:default1,var2 --project-root {project-root}
-```
+- If a module code was provided by the calling skill, include `--module {module_code}`
+- To load all vars, include `--all`
+- To request specific variables with defaults, use `--vars var1:default1,var2`
+- If no module was specified, omit `--module` to get core vars only
 
 **If the script returns JSON vars** — store them as `{var-name}` and return to the calling skill. Done.
 
@@ -43,9 +34,7 @@ When the fast path fails (config missing for a module), run this init flow.
 
 ### Step 1: Check what needs setup
 
-```bash
-python scripts/bmad_init.py check --module {module_code} --skill-path {calling_skill_path} --project-root {project-root}
-```
+Run `bmad_init.py` with the `check` subcommand, passing `--module {module_code}`, `--skill-path {calling_skill_path}`, and `--project-root`.
 
 The response tells you what's needed:
 
@@ -73,21 +62,14 @@ The check response includes `core_module` with header, subheader, and variable d
 
 The check response includes `target_module` with the module's questions. Variables may reference core answers in their defaults (e.g., `{output_folder}`).
 
-1. Resolve defaults using core answers:
-```bash
-python scripts/bmad_init.py resolve-defaults --module {module_code} --core-answers '{core_answers_json}' --project-root {project-root}
-```
+1. Resolve defaults by running `bmad_init.py` with the `resolve-defaults` subcommand, passing `--module {module_code}`, `--core-answers '{core_answers_json}'`, and `--project-root`
 2. Show the module's `header` and `subheader`
 3. For each variable, present the prompt with resolved default
 4. For `single-select` variables, show options as a numbered list
 
 ### Step 4: Write config
 
-Collect all answers and write them:
-
-```bash
-python scripts/bmad_init.py write --answers '{all_answers_json}' --project-root {project-root}
-```
+Collect all answers and run `bmad_init.py` with the `write` subcommand, passing `--answers '{all_answers_json}'` and `--project-root`.
 
 The `--answers` JSON format:
 
@@ -115,10 +97,4 @@ The script:
 
 ### Step 5: Return vars
 
-After writing, re-run the fast-path loader to return resolved vars:
-
-```bash
-python scripts/bmad_init.py load --module {module_code} --all --project-root {project-root}
-```
-
-Store returned vars as `{var-name}` and return them to the calling skill.
+After writing, re-run `bmad_init.py` with the `load` subcommand (same as the fast path) to return resolved vars. Store returned vars as `{var-name}` and return them to the calling skill.

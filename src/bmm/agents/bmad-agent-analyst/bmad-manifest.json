@@ -31,8 +31,8 @@
     {
       "name": "create-brief",
       "menu-code": "CB",
-      "description": "Guided experience to nail down your product idea into an executive brief.",
-      "skill-name": "bmad-create-product-brief"
+      "description": "NEW PREVIEW — Create or update product briefs through guided, autonomous, or yolo discovery modes. Try it and share feedback!",
+      "skill-name": "bmad-product-brief-preview"
     },
     {
       "name": "document-project",
