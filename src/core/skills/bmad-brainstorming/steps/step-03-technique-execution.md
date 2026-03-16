@@ -1,7 +1,7 @@
 # Step 3: Interactive Technique Execution and Facilitation
 
 ---
-advancedElicitationTask: 'skill:bmad-advanced-elicitation'
+
 ---
 
 ## MANDATORY EXECUTION RULES (READ FIRST):
@@ -290,6 +290,8 @@ After final technique element:
 [B] **Take a quick break** - Pause and return with fresh energy
 [C] **Move to organization** - Only when you feel we've thoroughly explored
 
+**HALT — wait for user selection before proceeding.**
+
 **Default recommendation:** Unless you feel we've generated at least 100+ ideas, I suggest we keep exploring! The best insights often come after the obvious ideas are exhausted.
 
 ### 8. Handle Menu Selection
@@ -303,7 +305,7 @@ After final technique element:
 #### If 'K', 'T', 'A', or 'B' (Continue Exploring):
 
 - **Stay in Step 3** and restart the facilitation loop for the chosen path (or pause if break requested).
-- For option A, invoke Advanced Elicitation: `{advancedElicitationTask}`
+- For option A: Invoke the `bmad-advanced-elicitation` skill
 
 ### 9. Update Documentation
 

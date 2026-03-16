@@ -1,7 +1,4 @@
 ---
-name: 'step-v-09-project-type-validation'
-description: 'Project-Type Compliance Validation - Validate project-type specific requirements are properly documented'
-
 # File references (ONLY variables used in this step)
 nextStepFile: './step-v-10-smart-validation.md'
 prdFile: '{prd_file_path}'

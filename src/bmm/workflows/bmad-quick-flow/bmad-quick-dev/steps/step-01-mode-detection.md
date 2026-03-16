@@ -85,7 +85,7 @@ Display: "**Select:** [P] Plan first (tech-spec) [E] Execute directly"
 
 #### Menu Handling Logic:
 
-- IF P: Direct user to `{quick_spec_workflow}`. **EXIT Quick Dev.**
+- IF P: Direct user to invoke the `bmad-quick-spec` skill. **EXIT Quick Dev.**
 - IF E: Ask for any additional guidance, then **NEXT:** Read fully and follow: `./step-02-context-gathering.md`
 
 #### EXECUTION RULES:
@@ -107,7 +107,7 @@ Display:
 
 #### Menu Handling Logic:
 
-- IF P: Direct to `{quick_spec_workflow}`. **EXIT Quick Dev.**
+- IF P: Direct user to invoke the `bmad-quick-spec` skill. **EXIT Quick Dev.**
 - IF W: Direct user to run the PRD workflow instead. **EXIT Quick Dev.**
 - IF E: Ask for guidance, then **NEXT:** Read fully and follow: `./step-02-context-gathering.md`
 
@@ -130,7 +130,7 @@ Display:
 
 #### Menu Handling Logic:
 
-- IF P: Direct to `{quick_spec_workflow}`. **EXIT Quick Dev.**
+- IF P: Direct user to invoke the `bmad-quick-spec` skill. **EXIT Quick Dev.**
 - IF W: Direct user to run the PRD workflow instead. **EXIT Quick Dev.**
 - IF E: Ask for guidance, then **NEXT:** Read fully and follow: `./step-02-context-gathering.md`
 

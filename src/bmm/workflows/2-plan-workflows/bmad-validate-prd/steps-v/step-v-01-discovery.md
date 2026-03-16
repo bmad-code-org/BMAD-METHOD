@@ -1,11 +1,6 @@
 ---
-name: 'step-v-01-discovery'
-description: 'Document Discovery & Confirmation - Handle fresh context validation, confirm PRD path, discover input documents'
-
 # File references (ONLY variables used in this step)
 nextStepFile: './step-v-02-format-detection.md'
-advancedElicitationTask: 'skill:bmad-advanced-elicitation'
-partyModeWorkflow: 'skill:bmad-party-mode'
 prdPurpose: '../data/prd-purpose.md'
 ---
 
@@ -195,8 +190,8 @@ Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Conti
 
 #### Menu Handling Logic:
 
-- IF A: Read fully and follow: {advancedElicitationTask}, and when finished redisplay the menu
-- IF P: Read fully and follow: {partyModeWorkflow}, and when finished redisplay the menu
+- IF A: Invoke the `bmad-advanced-elicitation` skill, and when finished redisplay the menu
+- IF P: Invoke the `bmad-party-mode` skill, and when finished redisplay the menu
 - IF C: Read fully and follow: {nextStepFile} to begin format detection
 - IF user provides additional document: Load it, update report, redisplay summary
 - IF Any other: help user, then redisplay menu

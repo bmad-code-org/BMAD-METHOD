@@ -176,7 +176,7 @@ class ManifestGenerator {
         const skillFile = 'SKILL.md';
         const artifactType = this.getArtifactType(manifest, skillFile);
 
-        if (artifactType === 'skill') {
+        if (artifactType === 'skill' || artifactType === 'agent') {
           const skillMdPath = path.join(dir, 'SKILL.md');
           const dirName = path.basename(dir);
 
@@ -191,7 +191,8 @@ class ManifestGenerator {
               : `${this.bmadFolderName}/${moduleName}/${skillFile}`;
 
             // Skills derive canonicalId from directory name — never from manifest
-            if (manifest && manifest.__single && manifest.__single.canonicalId) {
+            // (agent-type skills legitimately use canonicalId for agent-manifest mapping, so skip warning)
+            if (manifest && manifest.__single && manifest.__single.canonicalId && artifactType !== 'agent') {
               console.warn(
                 `Warning: Skill manifest at ${dir}/bmad-skill-manifest.yaml contains canonicalId — this field is ignored for skills (directory name is the canonical ID)`,
               );
@@ -227,10 +228,10 @@ class ManifestGenerator {
         if (manifest && !this.skillClaimedDirs.has(dir)) {
           let hasSkillType = false;
           if (manifest.__single) {
-            hasSkillType = manifest.__single.type === 'skill';
+            hasSkillType = manifest.__single.type === 'skill' || manifest.__single.type === 'agent';
           } else {
             for (const key of Object.keys(manifest)) {
-              if (manifest[key]?.type === 'skill') {
+              if (manifest[key]?.type === 'skill' || manifest[key]?.type === 'agent') {
                 hasSkillType = true;
                 break;
               }
@@ -503,8 +504,45 @@ class ManifestGenerator {
       const fullPath = path.join(dirPath, entry.name);
 
       if (entry.isDirectory()) {
-        // Skip directories claimed by collectSkills
+        // Check for new-format agent: bmad-skill-manifest.yaml with type: agent
+        // Note: type:agent dirs may also be claimed by collectSkills for IDE installation,
+        // but we still need to process them here for agent-manifest.csv
+        const dirManifest = await this.loadSkillManifest(fullPath);
+        if (dirManifest && dirManifest.__single && dirManifest.__single.type === 'agent') {
+          const m = dirManifest.__single;
+          const dirRelativePath = relativePath ? `${relativePath}/${entry.name}` : entry.name;
+          const installPath =
+            moduleName === 'core'
+              ? `${this.bmadFolderName}/core/agents/${dirRelativePath}`
+              : `${this.bmadFolderName}/${moduleName}/agents/${dirRelativePath}`;
+
+          agents.push({
+            name: m.name || entry.name,
+            displayName: m.displayName || m.name || entry.name,
+            title: m.title || '',
+            icon: m.icon || '',
+            capabilities: m.capabilities ? this.cleanForCSV(m.capabilities) : '',
+            role: m.role ? this.cleanForCSV(m.role) : '',
+            identity: m.identity ? this.cleanForCSV(m.identity) : '',
+            communicationStyle: m.communicationStyle ? this.cleanForCSV(m.communicationStyle) : '',
+            principles: m.principles ? this.cleanForCSV(m.principles) : '',
+            module: m.module || moduleName,
+            path: installPath,
+            canonicalId: m.canonicalId || '',
+          });
+
+          this.files.push({
+            type: 'agent',
+            name: m.name || entry.name,
+            module: moduleName,
+            path: installPath,
+          });
+          continue;
+        }
+
+        // Skip directories claimed by collectSkills (non-agent type skills)
         if (this.skillClaimedDirs && this.skillClaimedDirs.has(fullPath)) continue;
+
         // Recurse into subdirectories
         const newRelativePath = relativePath ? `${relativePath}/${entry.name}` : entry.name;
         const subDirAgents = await this.getAgentsFromDir(fullPath, moduleName, newRelativePath);

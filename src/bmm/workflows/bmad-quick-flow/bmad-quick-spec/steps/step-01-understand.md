@@ -161,8 +161,8 @@ b) **HALT and wait for user selection.**
 
 #### Menu Handling Logic:
 
-- IF A: Read fully and follow: `{advanced_elicitation}` with current tech-spec content, process enhanced insights, ask user "Accept improvements? (y/n)", if yes update WIP file then redisplay menu, if no keep original then redisplay menu
-- IF P: Read fully and follow: `{party_mode_exec}` with current tech-spec content, process collaborative insights, ask user "Accept changes? (y/n)", if yes update WIP file then redisplay menu, if no keep original then redisplay menu
+- IF A: Invoke the `bmad-advanced-elicitation` skill with current tech-spec content, process enhanced insights, ask user "Accept improvements? (y/n)", if yes update WIP file then redisplay menu, if no keep original then redisplay menu
+- IF P: Invoke the `bmad-party-mode` skill with current tech-spec content, process collaborative insights, ask user "Accept changes? (y/n)", if yes update WIP file then redisplay menu, if no keep original then redisplay menu
 - IF C: Verify `{wipFile}` has `stepsCompleted: [1]`, then read fully and follow: `./step-02-investigate.md`
 - IF Any other comments or queries: respond helpfully then redisplay menu
 

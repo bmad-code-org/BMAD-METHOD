@@ -118,7 +118,7 @@ If no findings are generated, the skill passes validation.
   - CORRECT: `./steps/step-01-init.md` (from workflow.md at skill root to a step)
   - CORRECT: `./template.md` (from workflow.md to a sibling)
   - CORRECT: `../template.md` (from steps/step-01.md to a skill-root file)
-  - CORRECT: `[workflow.md](workflow.md)` (markdown link to sibling — bare relative)
+  - CORRECT: `workflow.md` (bare relative filename for sibling)
   - CORRECT: `./step-02-plan.md` (from steps/step-01.md to a sibling step)
   - WRONG: `./steps/step-02-plan.md` (from a file already inside steps/ — resolves to steps/steps/)
   - WRONG: `{installed_path}/template.md`
@@ -274,9 +274,9 @@ If no findings are generated, the skill passes validation.
 
 - **Severity:** HIGH
 - **Applies to:** all files
-- **Rule:** When a skill references another skill via `skill:skill-name`, the surrounding instruction must use the word "invoke" (e.g., `Invoke skill:bmad-party-mode`). Phrases like "Read fully and follow", "Execute", "Run", "Load", "Open", or "Follow" are invalid — they imply file-level operations on a document, not skill invocation. A skill is a unit that is invoked, not a file that is read.
-- **Detection:** Find all `skill:` references in body text and frontmatter. Check the surrounding instruction text (same sentence or directive) for file-oriented verbs: "read", "follow", "load", "execute", "run", "open". Flag any that do not use "invoke" (or a close synonym like "activate" or "launch").
-- **Fix:** Replace the instruction with `Invoke skill:skill-name` or `Invoke the \`skill-name\` skill`. Remove any "read fully and follow" or similar file-oriented phrasing.
+- **Rule:** When a skill references another skill by name, the surrounding instruction must use the word "invoke". The canonical form is `Invoke the \`skill-name\` skill`. Phrases like "Read fully and follow", "Execute", "Run", "Load", "Open", or "Follow" are invalid — they imply file-level operations on a document, not skill invocation. A skill is a unit that is invoked, not a file that is read.
+- **Detection:** Find all references to other skills by name (typically backtick-quoted skill names like \`bmad-foo\`). Check the surrounding instruction text (same sentence or directive) for file-oriented verbs: "read", "follow", "load", "execute", "run", "open". Flag any that do not use "invoke" (or a close synonym like "activate" or "launch").
+- **Fix:** Replace the instruction with `Invoke the \`skill-name\` skill`. Remove any "read fully and follow" or similar file-oriented phrasing. Do NOT add a `skill:` prefix to the name — use natural language.
 
 ---
 
@@ -320,3 +320,37 @@ When reporting findings, use this format:
 ```
 
 If zero findings: report "All {N} rules passed. No findings." and list all passed rule IDs.
+
+---
+
+## Skill Spec Cheatsheet
+
+Quick-reference for the Agent Skills open standard.
+For the full standard, see: [Agent Skills specification](https://agentskills.io/specification)
+
+### Structure
+- Every skill is a directory with `SKILL.md` as the required entrypoint
+- YAML frontmatter between `---` markers provides metadata; markdown body provides instructions
+- Supporting files (scripts, templates, references) live alongside SKILL.md
+
+### Path resolution
+- Relative file references resolve from the directory of the file that contains the reference, not from the skill root
+- Example: from `branch-a/deep/next.md`, `./deeper/final.md` resolves to `branch-a/deep/deeper/final.md`
+- Example: from `branch-a/deep/next.md`, `./branch-b/alt/leaf.md` incorrectly resolves to `branch-a/deep/branch-b/alt/leaf.md`
+
+### Frontmatter fields (standard)
+- `name`: lowercase letters, numbers, hyphens only; max 64 chars; no "anthropic" or "claude"
+- `description`: required, max 1024 chars; should state what the skill does AND when to use it
+
+### Progressive disclosure — three loading levels
+- **L1 Metadata** (~100 tokens): `name` + `description` loaded at startup into system prompt
+- **L2 Instructions** (<5k tokens): SKILL.md body loaded only when skill is triggered
+- **L3 Resources** (unlimited): additional files + scripts loaded/executed on demand; script output enters context, script code does not
+
+### Key design principle
+- Skills are filesystem-based directories, not API payloads — Claude reads them via bash/file tools
+- Keep SKILL.md focused; offload detailed reference to separate files
+
+### Practical tips
+- Keep SKILL.md under 500 lines
+- `description` drives auto-discovery — use keywords users would naturally say

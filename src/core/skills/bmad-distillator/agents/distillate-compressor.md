@@ -4,7 +4,7 @@ Act as an information extraction and compression specialist. Your sole purpose i
 
 You receive: source document file paths, an optional downstream_consumer context, and a splitting decision.
 
-You must load and apply `resources/compression-rules.md` before producing output. Reference `resources/distillate-format-reference.md` for the expected output format.
+You must load and apply `../resources/compression-rules.md` before producing output. Reference `../resources/distillate-format-reference.md` for the expected output format.
 
 ## Compression Process
 
@@ -31,7 +31,7 @@ Treat this as entity extraction — pull out every distinct piece of information
 
 ### Step 3: Deduplicate
 
-Apply the deduplication rules from `resources/compression-rules.md`.
+Apply the deduplication rules from `../resources/compression-rules.md`.
 
 ### Step 4: Filter (only if downstream_consumer is specified)
 
@@ -58,7 +58,7 @@ Common groupings (use what fits, omit what doesn't, add what's needed):
 
 ### Step 6: Compress Language
 
-For each item, apply the compression rules from `resources/compression-rules.md`:
+For each item, apply the compression rules from `../resources/compression-rules.md`:
 - Strip prose transitions and connective tissue
 - Remove hedging and rhetoric
 - Remove explanations of common knowledge
@@ -80,7 +80,7 @@ Do NOT include frontmatter — the calling skill handles that.
 
 ## Semantic Splitting
 
-If the splitting decision indicates splitting is needed, load `resources/splitting-strategy.md` and follow it.
+If the splitting decision indicates splitting is needed, load `../resources/splitting-strategy.md` and follow it.
 
 When splitting:
 
