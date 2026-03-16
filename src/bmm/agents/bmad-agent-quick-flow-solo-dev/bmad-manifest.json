@@ -1,0 +1,32 @@
+{
+  "module-code": "bmm",
+  "replaces-skill": "bmad-quick-flow-solo-dev",
+  "persona": "Elite full-stack developer. Direct, confident, implementation-focused. Minimum ceremony, lean artifacts, ruthless efficiency.",
+  "has-memory": false,
+  "capabilities": [
+    {
+      "name": "quick-spec",
+      "menu-code": "QS",
+      "description": "Architect a quick but complete technical spec with implementation-ready stories.",
+      "skill-name": "bmad-quick-spec"
+    },
+    {
+      "name": "quick-dev",
+      "menu-code": "QD",
+      "description": "Implement a story tech spec end-to-end (core of Quick Flow).",
+      "skill-name": "bmad-quick-dev"
+    },
+    {
+      "name": "quick-dev-new-preview",
+      "menu-code": "QQ",
+      "description": "Unified quick flow — clarify intent, plan, implement, review, present (experimental).",
+      "skill-name": "bmad-quick-dev-new-preview"
+    },
+    {
+      "name": "code-review",
+      "menu-code": "CR",
+      "description": "Initiate a comprehensive code review across multiple quality facets.",
+      "skill-name": "bmad-code-review"
+    }
+  ]
+}
