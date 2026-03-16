@@ -176,7 +176,7 @@ class ManifestGenerator {
         const skillFile = 'SKILL.md';
         const artifactType = this.getArtifactType(manifest, skillFile);
 
-        if (artifactType === 'skill') {
+        if (artifactType === 'skill' || artifactType === 'agent') {
           const skillMdPath = path.join(dir, 'SKILL.md');
           const dirName = path.basename(dir);
 
@@ -227,10 +227,10 @@ class ManifestGenerator {
         if (manifest && !this.skillClaimedDirs.has(dir)) {
           let hasSkillType = false;
           if (manifest.__single) {
-            hasSkillType = manifest.__single.type === 'skill';
+            hasSkillType = manifest.__single.type === 'skill' || manifest.__single.type === 'agent';
           } else {
             for (const key of Object.keys(manifest)) {
-              if (manifest[key]?.type === 'skill') {
+              if (manifest[key]?.type === 'skill' || manifest[key]?.type === 'agent') {
                 hasSkillType = true;
                 break;
               }
@@ -503,10 +503,9 @@ class ManifestGenerator {
       const fullPath = path.join(dirPath, entry.name);
 
       if (entry.isDirectory()) {
-        // Skip directories claimed by collectSkills
-        if (this.skillClaimedDirs && this.skillClaimedDirs.has(fullPath)) continue;
-
         // Check for new-format agent: bmad-skill-manifest.yaml with type: agent
+        // Note: type:agent dirs may also be claimed by collectSkills for IDE installation,
+        // but we still need to process them here for agent-manifest.csv
         const dirManifest = await this.loadSkillManifest(fullPath);
         if (dirManifest && dirManifest.__single && dirManifest.__single.type === 'agent') {
           const m = dirManifest.__single;
@@ -539,6 +538,9 @@ class ManifestGenerator {
           });
           continue;
         }
+
+        // Skip directories claimed by collectSkills (non-agent type skills)
+        if (this.skillClaimedDirs && this.skillClaimedDirs.has(fullPath)) continue;
 
         // Recurse into subdirectories
         const newRelativePath = relativePath ? `${relativePath}/${entry.name}` : entry.name;
