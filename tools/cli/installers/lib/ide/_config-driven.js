@@ -487,7 +487,7 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
   async writeSkillFile(targetPath, artifact, content) {
     const { resolveSkillName } = require('./shared/path-utils');
 
-    // Get the skill name (prefers canonicalId, falls back to path-derived) and remove .md
+    // Get the skill name (path-derived) and remove .md
     const flatName = resolveSkillName(artifact);
     const skillName = path.basename(flatName.replace(/\.md$/, ''));
 
@@ -612,7 +612,7 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
     const { resolveSkillName } = require('./shared/path-utils');
 
     // Reuse central logic to ensure consistent naming conventions
-    // Prefers canonicalId from manifest when available, falls back to path-derived name
+    // Uses path-derived name via toDashPath()
     const standardName = resolveSkillName(artifact);
 
     // Clean up potential double extensions from source files (e.g. .yaml.md, .xml.md -> .md)

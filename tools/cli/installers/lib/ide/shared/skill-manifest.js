@@ -33,15 +33,28 @@ async function loadSkillManifest(dirPath) {
 function getCanonicalId(manifest, filename) {
   if (!manifest) return '';
   // Single-entry manifest applies to all files in the directory
-  if (manifest.__single) return manifest.__single.canonicalId || '';
+  // Agent-type manifests derive canonicalId from directory name — never from YAML
+  if (manifest.__single) {
+    if (manifest.__single.type === 'agent') return '';
+    return manifest.__single.canonicalId || '';
+  }
   // Multi-entry: look up by filename directly
-  if (manifest[filename]) return manifest[filename].canonicalId || '';
+  if (manifest[filename]) {
+    if (manifest[filename].type === 'agent') return '';
+    return manifest[filename].canonicalId || '';
+  }
   // Fallback: try alternate extensions for compiled files
   const baseName = filename.replace(/\.(md|xml)$/i, '');
   const agentKey = `${baseName}.agent.yaml`;
-  if (manifest[agentKey]) return manifest[agentKey].canonicalId || '';
+  if (manifest[agentKey]) {
+    if (manifest[agentKey].type === 'agent') return '';
+    return manifest[agentKey].canonicalId || '';
+  }
   const xmlKey = `${baseName}.xml`;
-  if (manifest[xmlKey]) return manifest[xmlKey].canonicalId || '';
+  if (manifest[xmlKey]) {
+    if (manifest[xmlKey].type === 'agent') return '';
+    return manifest[xmlKey].canonicalId || '';
+  }
   return '';
 }
 

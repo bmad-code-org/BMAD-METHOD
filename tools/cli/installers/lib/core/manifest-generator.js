@@ -191,8 +191,7 @@ class ManifestGenerator {
               : `${this.bmadFolderName}/${moduleName}/${skillFile}`;
 
             // Skills derive canonicalId from directory name — never from manifest
-            // (agent-type skills legitimately use canonicalId for agent-manifest mapping, so skip warning)
-            if (manifest && manifest.__single && manifest.__single.canonicalId && artifactType !== 'agent') {
+            if (manifest && manifest.__single && manifest.__single.canonicalId) {
               console.warn(
                 `Warning: Skill manifest at ${dir}/bmad-skill-manifest.yaml contains canonicalId — this field is ignored for skills (directory name is the canonical ID)`,
               );
@@ -516,9 +515,13 @@ class ManifestGenerator {
               ? `${this.bmadFolderName}/core/agents/${dirRelativePath}`
               : `${this.bmadFolderName}/${moduleName}/agents/${dirRelativePath}`;
 
+          // Derive identity from directory name — never from manifest YAML
+          const derivedName = entry.name.replace(/^bmad-agent-/, '');
+          const derivedCanonicalId = entry.name;
+
           agents.push({
-            name: m.name || entry.name,
-            displayName: m.displayName || m.name || entry.name,
+            name: derivedName,
+            displayName: m.displayName || derivedName,
             title: m.title || '',
             icon: m.icon || '',
             capabilities: m.capabilities ? this.cleanForCSV(m.capabilities) : '',
@@ -526,14 +529,14 @@ class ManifestGenerator {
             identity: m.identity ? this.cleanForCSV(m.identity) : '',
             communicationStyle: m.communicationStyle ? this.cleanForCSV(m.communicationStyle) : '',
             principles: m.principles ? this.cleanForCSV(m.principles) : '',
-            module: m.module || moduleName,
+            module: moduleName,
             path: installPath,
-            canonicalId: m.canonicalId || '',
+            canonicalId: derivedCanonicalId,
           });
 
           this.files.push({
             type: 'agent',
-            name: m.name || entry.name,
+            name: derivedName,
             module: moduleName,
             path: installPath,
           });

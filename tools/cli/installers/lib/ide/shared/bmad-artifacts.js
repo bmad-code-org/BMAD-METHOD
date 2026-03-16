@@ -50,7 +50,8 @@ async function getAgentsFromBmad(bmadDir, selectedModules = []) {
           path: filePath,
           name: file.replace('.md', ''),
           module: 'standalone', // Mark as standalone agent
-          canonicalId: getCanonicalId(skillManifest, file),
+          canonicalId: agentDir.name, // Derive from directory name
+          relativePath: `agents/${agentDir.name}/${file}`,
         });
       }
     }
@@ -128,7 +129,7 @@ async function getAgentsFromDir(dirPath, moduleName, relativePath = '') {
         name: entry.name.replace('.md', ''),
         module: moduleName,
         relativePath: newRelativePath, // Keep the .md extension for the full path
-        canonicalId: getCanonicalId(skillManifest, entry.name),
+        canonicalId: entry.name.replace('.md', ''), // Derive from filename
       });
     }
   }
