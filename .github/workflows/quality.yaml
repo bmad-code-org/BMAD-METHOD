@@ -1,6 +1,6 @@
 name: Quality & Validation
 
-# Runs comprehensive quality checks on all PRs:
+# Runs comprehensive quality checks on all PRs and pushes to main:
 # - Prettier (formatting)
 # - ESLint (linting)
 # - markdownlint (markdown quality)
@@ -10,6 +10,8 @@ name: Quality & Validation
 # Keep this workflow aligned with `npm run quality` in `package.json`.
 
 "on":
+  push:
+    branches: [main]
   pull_request:
     branches: ["**"]
   workflow_dispatch:
