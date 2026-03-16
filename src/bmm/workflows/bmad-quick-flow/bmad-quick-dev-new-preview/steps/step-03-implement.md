@@ -1,6 +1,4 @@
 ---
-name: 'step-03-implement'
-description: 'Execute implementation directly or via sub-agent. Local only.'
 ---
 
 # Step 3: Implement
@@ -32,4 +30,4 @@ Otherwise (`execution_mode = "plan-code-review"`): hand `{spec_file}` to a sub-a
 
 ## NEXT
 
-Read fully and follow `./steps/step-04-review.md`
+Read fully and follow `./step-04-review.md`

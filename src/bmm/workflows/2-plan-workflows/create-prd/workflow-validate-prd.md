@@ -1,6 +1,7 @@
 ---
 name: validate-prd
 description: 'Validate a PRD against standards. Use when the user says "validate this PRD" or "run PRD validation"'
+standalone: false
 main_config: '{project-root}/_bmad/bmm/config.yaml'
 validateWorkflow: './steps-v/step-v-01-discovery.md'
 ---
@@ -55,6 +56,7 @@ Load and read full config from {main_config} and resolve:
 - `date` as system-generated current datetime
 
 ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the configured `{communication_language}`.
+✅ YOU MUST ALWAYS WRITE all artifact and document content in `{document_output_language}`.
 
 ### 2. Route to Validate Workflow
 

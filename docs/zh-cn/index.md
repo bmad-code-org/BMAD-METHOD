@@ -8,7 +8,7 @@ BMad 方法（**B**reakthrough **M**ethod of **A**gile AI **D**riven Development
 如果您熟悉使用 Claude、Cursor 或 GitHub Copilot 等 AI 编码助手，就可以开始使用了。
 
 :::note[🚀 V6 已发布，我们才刚刚起步！]
-技能架构、BMad Builder v1、开发循环自动化以及更多功能正在开发中。**[查看路线图 →](/roadmap/)**
+技能架构、BMad Builder v1、开发循环自动化以及更多功能正在开发中。**[查看路线图 →](/zh-cn/roadmap/)**
 :::
 
 ## 新手入门？从教程开始
@@ -35,7 +35,7 @@ BMad 方法（**B**reakthrough **M**ethod of **A**gile AI **D**riven Development
 
 ## 扩展和自定义
 
-想要使用自己的智能体、工作流或模块来扩展 BMad 吗？**[BMad Builder](https://bmad-builder-docs.bmad-method.org/)** 提供了创建自定义扩展的框架和工具，无论是为 BMad 添加新功能还是从头开始构建全新的模块。
+想要使用自己的智能体、工作流或模块来扩展 BMad 吗？**[BMad Builder（英文）](https://bmad-builder-docs.bmad-method.org/)** 提供了创建自定义扩展的框架和工具，无论是为 BMad 添加新功能还是从头开始构建全新的模块。
 
 ## 您需要什么
 

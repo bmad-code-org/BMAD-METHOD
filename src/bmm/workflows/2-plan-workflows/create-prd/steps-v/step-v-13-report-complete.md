@@ -22,6 +22,7 @@ Finalize validation report, summarize all findings from steps 1-12, present summ
 - 🔄 CRITICAL: When loading next step with 'C', ensure entire file is read
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
+- ✅ YOU MUST ALWAYS WRITE all artifact and document content in `{document_output_language}`
 
 ### Role Reinforcement:
 
@@ -181,7 +182,7 @@ Display:
 - **IF E (Use Edit Workflow):**
   - Explain: "The Edit workflow (steps-e/) can use this validation report to systematically address issues. Edit mode will guide you through discovering what to edit, reviewing the PRD, and applying targeted improvements."
   - Offer: "Would you like to launch Edit mode now? It will help you fix validation findings systematically."
-  - If yes: Read fully and follow: steps-e/step-e-01-discovery.md
+  - If yes: Read fully and follow: `./steps-e/step-e-01-discovery.md`
   - If no: Return to menu
 
 - **IF F (Fix Simpler Items):**

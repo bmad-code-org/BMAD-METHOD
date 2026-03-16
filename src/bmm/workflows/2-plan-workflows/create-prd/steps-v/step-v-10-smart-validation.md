@@ -6,7 +6,6 @@ description: 'SMART Requirements Validation - Validate Functional Requirements m
 nextStepFile: './step-v-11-holistic-quality-validation.md'
 prdFile: '{prd_file_path}'
 validationReportPath: '{validation_report_path}'
-advancedElicitationTask: '{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.md'
 ---
 
 # Step 10: SMART Requirements Validation
@@ -24,6 +23,7 @@ Validate Functional Requirements meet SMART quality criteria (Specific, Measurab
 - 🔄 CRITICAL: When loading next step with 'C', ensure entire file is read
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
+- ✅ YOU MUST ALWAYS WRITE all artifact and document content in `{document_output_language}`
 
 ### Role Reinforcement:
 
