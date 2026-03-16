@@ -1,14 +1,7 @@
 ---
-name: 'step-05-scope'
-description: 'Define MVP scope with clear boundaries and outline future vision while managing scope creep'
-
 # File References
-nextStepFile: './step-06-complete.md'
 outputFile: '{planning_artifacts}/product-brief-{{project_name}}-{{date}}.md'
 
-# Task References
-advancedElicitationTask: 'skill:bmad-advanced-elicitation'
-partyModeWorkflow: '{project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md'
 ---
 
 # Step 5: MVP Scope Definition
@@ -26,6 +19,7 @@ Define MVP scope with clear boundaries and outline future vision through collabo
 - 🔄 CRITICAL: When loading next step with 'C', ensure entire file is read
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
+- ✅ YOU MUST ALWAYS WRITE all artifact and document content in `{document_output_language}`
 
 ### Role Reinforcement:
 
@@ -176,9 +170,9 @@ Prepare the following structure for document append:
 
 #### Menu Handling Logic:
 
-- IF A: Read fully and follow: {advancedElicitationTask} with current scope content to optimize scope definition
-- IF P: Read fully and follow: {partyModeWorkflow} to bring different perspectives to validate MVP scope
-- IF C: Save content to {outputFile}, update frontmatter with stepsCompleted: [1, 2, 3, 4, 5], then read fully and follow: {nextStepFile}
+- IF A: Invoke the `bmad-advanced-elicitation` skill with current scope content to optimize scope definition
+- IF P: Invoke the `bmad-party-mode` skill to bring different perspectives to validate MVP scope
+- IF C: Save content to {outputFile}, update frontmatter with stepsCompleted: [1, 2, 3, 4, 5], then read fully and follow: ./step-06-complete.md
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options](#7-present-menu-options)
 
 #### EXECUTION RULES:
@@ -190,7 +184,7 @@ Prepare the following structure for document append:
 
 ## CRITICAL STEP COMPLETION NOTE
 
-ONLY WHEN [C continue option] is selected and [MVP scope finalized and saved to document with frontmatter updated], will you then read fully and follow: `{nextStepFile}` to complete the product brief workflow.
+ONLY WHEN [C continue option] is selected and [MVP scope finalized and saved to document with frontmatter updated], will you then read fully and follow: `./step-06-complete.md` to complete the product brief workflow.
 
 ---
 

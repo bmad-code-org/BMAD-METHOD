@@ -1,8 +1,3 @@
----
-name: bmad-create-story
-description: 'Creates a dedicated story file with all the context the agent will need to implement it later. Use when the user says "create the next story" or "create story [story identifier]"'
----
-
 # Create Story Workflow
 
 **Goal:** Create a comprehensive story file that gives the dev agent everything needed for flawless implementation.
@@ -32,9 +27,6 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
 ### Paths
 
-- `installed_path` = `.`
-- `template` = `./template.md`
-- `validation` = `./checklist.md`
 - `sprint_status` = `{implementation_artifacts}/sprint-status.yaml`
 - `epics_file` = `{planning_artifacts}/epics.md`
 - `prd_file` = `{planning_artifacts}/prd.md`
@@ -217,10 +209,10 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 </step>
 
 <step n="2" goal="Load and analyze core artifacts">
-  <critical>🔬 EXHAUSTIVE ARTIFACT ANALYSIS - This is where you prevent future developer fuckups!</critical>
+  <critical>🔬 EXHAUSTIVE ARTIFACT ANALYSIS - This is where you prevent future developer mistakes!</critical>
 
   <!-- Load all available content through discovery protocol -->
-  <action>Read fully and follow `{installed_path}/discover-inputs.md` to load all input files</action>
+  <action>Read fully and follow `./discover-inputs.md` to load all input files</action>
   <note>Available content: {epics_content}, {prd_content}, {architecture_content}, {ux_content},
   {project_context}</note>
 
@@ -352,7 +344,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 </step>
 
 <step n="6" goal="Update sprint status and finalize">
-  <action>Validate the newly created story file {story_file} against {installed_path}/checklist.md and apply any required fixes before finalizing</action>
+  <action>Validate the newly created story file {default_output_file} against `./checklist.md` and apply any required fixes before finalizing</action>
   <action>Save story document unconditionally</action>
 
   <!-- Update sprint status -->

@@ -31,8 +31,8 @@ This step will generate content and present choices:
 
 ## PROTOCOL INTEGRATION:
 
-- When 'A' selected: Read fully and follow: skill:bmad-advanced-elicitation
-- When 'P' selected: Read fully and follow: {project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md
+- When 'A' selected: Invoke the `bmad-advanced-elicitation` skill
+- When 'P' selected: Invoke the `bmad-party-mode` skill
 - PROTOCOLS always return to display this step's A/P/C menu after the A or P have completed
 - User accepts/rejects protocol changes before proceeding
 
@@ -276,7 +276,7 @@ Show the generated content and present choices:
 
 #### If 'A' (Advanced Elicitation):
 
-- Read fully and follow: skill:bmad-advanced-elicitation with current starter analysis
+- Invoke the `bmad-advanced-elicitation` skill with current starter analysis
 - Process enhanced insights about starter options or custom approaches
 - Ask user: "Accept these changes to the starter template evaluation? (y/n)"
 - If yes: Update content, then return to A/P/C menu
@@ -284,7 +284,7 @@ Show the generated content and present choices:
 
 #### If 'P' (Party Mode):
 
-- Read fully and follow: {project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md with starter evaluation context
+- Invoke the `bmad-party-mode` skill with starter evaluation context
 - Process collaborative insights about starter trade-offs
 - Ask user: "Accept these changes to the starter template evaluation? (y/n)"
 - If yes: Update content, then return to A/P/C menu

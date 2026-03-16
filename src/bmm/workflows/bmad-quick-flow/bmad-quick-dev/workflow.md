@@ -31,12 +31,6 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
 - `project_context` = `**/project-context.md` (load if exists)
 
-### Related Workflows
-
-- `quick_spec_workflow` = `../quick-spec/workflow.md`
-- `party_mode_exec` = `{project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md`
-- `advanced_elicitation` = `skill:bmad-advanced-elicitation`
-
 ---
 
 ## EXECUTION

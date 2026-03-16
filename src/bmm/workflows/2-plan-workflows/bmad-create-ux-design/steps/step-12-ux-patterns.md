@@ -11,6 +11,7 @@
 - 💬 FOCUS on establishing consistency patterns for common UX situations
 - 🎯 COLLABORATIVE pattern definition, not assumption-based design
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
+- ✅ YOU MUST ALWAYS WRITE all artifact and document content in `{document_output_language}`
 
 ## EXECUTION PROTOCOLS:
 
@@ -30,8 +31,8 @@ This step will generate content and present choices:
 
 ## PROTOCOL INTEGRATION:
 
-- When 'A' selected: Read fully and follow: skill:bmad-advanced-elicitation
-- When 'P' selected: Read fully and follow: {project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md
+- When 'A' selected: Invoke the `bmad-advanced-elicitation` skill
+- When 'P' selected: Invoke the `bmad-party-mode` skill
 - PROTOCOLS always return to this step's A/P/C menu
 - User accepts/rejects protocol changes before proceeding
 
@@ -182,7 +183,7 @@ Show the generated UX patterns content and present choices:
 
 #### If 'A' (Advanced Elicitation):
 
-- Read fully and follow: skill:bmad-advanced-elicitation with the current UX patterns content
+- Invoke the `bmad-advanced-elicitation` skill with the current UX patterns content
 - Process the enhanced pattern insights that come back
 - Ask user: "Accept these improvements to the UX patterns? (y/n)"
 - If yes: Update content with improvements, then return to A/P/C menu
@@ -190,7 +191,7 @@ Show the generated UX patterns content and present choices:
 
 #### If 'P' (Party Mode):
 
-- Read fully and follow: {project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md with the current UX patterns
+- Invoke the `bmad-party-mode` skill with the current UX patterns
 - Process the collaborative pattern insights that come back
 - Ask user: "Accept these changes to the UX patterns? (y/n)"
 - If yes: Update content with improvements, then return to A/P/C menu

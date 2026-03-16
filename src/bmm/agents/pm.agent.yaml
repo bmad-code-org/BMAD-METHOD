@@ -20,25 +20,25 @@ agent:
 
   menu:
     - trigger: CP or fuzzy match on create-prd
-      exec: "{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-prd/workflow-create-prd.md"
+      exec: "skill:bmad-create-prd"
       description: "[CP] Create PRD: Expert led facilitation to produce your Product Requirements Document"
 
     - trigger: VP or fuzzy match on validate-prd
-      exec: "{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-prd/workflow-validate-prd.md"
+      exec: "skill:bmad-validate-prd"
       description: "[VP] Validate PRD: Validate a Product Requirements Document is comprehensive, lean, well organized and cohesive"
 
     - trigger: EP or fuzzy match on edit-prd
-      exec: "{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-prd/workflow-edit-prd.md"
+      exec: "skill:bmad-edit-prd"
       description: "[EP] Edit PRD: Update an existing Product Requirements Document"
 
     - trigger: CE or fuzzy match on epics-stories
-      exec: "{project-root}/_bmad/bmm/workflows/3-solutioning/create-epics-and-stories/workflow.md"
+      exec: "skill:bmad-create-epics-and-stories"
       description: "[CE] Create Epics and Stories: Create the Epics and Stories Listing, these are the specs that will drive development"
 
     - trigger: IR or fuzzy match on implementation-readiness
-      exec: "{project-root}/_bmad/bmm/workflows/3-solutioning/check-implementation-readiness/workflow.md"
+      exec: "skill:bmad-check-implementation-readiness"
       description: "[IR] Implementation Readiness: Ensure the PRD, UX, and Architecture and Epics and Stories List are all aligned"
 
     - trigger: CC or fuzzy match on correct-course
-      exec: "{project-root}/_bmad/bmm/workflows/4-implementation/correct-course/workflow.md"
+      exec: "skill:bmad-correct-course"
       description: "[CC] Course Correction: Use this so we can determine how to proceed if major need for change is discovered mid implementation"

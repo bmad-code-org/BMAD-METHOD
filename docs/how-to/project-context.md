@@ -5,7 +5,7 @@ sidebar:
   order: 7
 ---
 
-Use the `project-context.md` file to ensure AI agents follow your project's technical preferences and implementation rules throughout all workflows.
+Use the `project-context.md` file to ensure AI agents follow your project's technical preferences and implementation rules throughout all workflows. To make sure this is always available, you can also add the line `Important project context and conventions are located in [path to project context]/project-context.md` to your tools context or always rules file (such as `AGENTS.md`)
 
 :::note[Prerequisites]
 - BMad Method installed
@@ -114,20 +114,11 @@ A `project-context.md` file that:
 
 ## Tips
 
-:::tip[Focus on the Unobvious]
-Document patterns agents might miss such as "Use JSDoc style comments on every public class, function and variable", not universal practices like "use meaningful variable names" which LLMs know at this point.
-:::
-
-:::tip[Keep It Lean]
-This file is loaded by every implementation workflow. Long files waste context. Do not include content that only applies to narrow scope or specific stories or features.
-:::
-
-:::tip[Update as Needed]
-Edit manually when patterns change, or re-generate after significant architecture changes.
-:::
-
-:::tip[Works for All Project Types]
-Just as useful for Quick Flow as for full BMad Method projects.
+:::tip[Best Practices]
+- **Focus on the unobvious** — Document patterns agents might miss (e.g., "Use JSDoc on every public class"), not universal practices like "use meaningful variable names."
+- **Keep it lean** — This file is loaded by every implementation workflow. Long files waste context. Exclude content that only applies to narrow scope or specific stories.
+- **Update as needed** — Edit manually when patterns change, or re-generate after significant architecture changes.
+- Works for Quick Flow and full BMad Method projects alike.
 :::
 
 ## Next Steps

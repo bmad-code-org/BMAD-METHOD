@@ -32,8 +32,8 @@ This step will generate content and present choices for each decision category:
 
 ## PROTOCOL INTEGRATION:
 
-- When 'A' selected: Read fully and follow: skill:bmad-advanced-elicitation
-- When 'P' selected: Read fully and follow: {project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md
+- When 'A' selected: Invoke the `bmad-advanced-elicitation` skill
+- When 'P' selected: Invoke the `bmad-party-mode` skill
 - PROTOCOLS always return to display this step's A/P/C menu after the A or P have completed
 - User accepts/rejects protocol changes before proceeding
 
@@ -264,7 +264,7 @@ Show the generated decisions content and present choices:
 
 #### If 'A' (Advanced Elicitation):
 
-- Read fully and follow: skill:bmad-advanced-elicitation with specific decision categories
+- Invoke the `bmad-advanced-elicitation` skill with specific decision categories
 - Process enhanced insights about particular decisions
 - Ask user: "Accept these enhancements to the architectural decisions? (y/n)"
 - If yes: Update content, then return to A/P/C menu
@@ -272,7 +272,7 @@ Show the generated decisions content and present choices:
 
 #### If 'P' (Party Mode):
 
-- Read fully and follow: {project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md with architectural decisions context
+- Invoke the `bmad-party-mode` skill with architectural decisions context
 - Process collaborative insights about decision trade-offs
 - Ask user: "Accept these changes to the architectural decisions? (y/n)"
 - If yes: Update content, then return to A/P/C menu

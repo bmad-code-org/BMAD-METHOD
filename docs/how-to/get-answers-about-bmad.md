@@ -42,8 +42,6 @@ BMad-Help responds with:
 - What the first required task is
 - What the rest of the process looks like
 
----
-
 ## When to Use This Guide
 
 Use this section when:

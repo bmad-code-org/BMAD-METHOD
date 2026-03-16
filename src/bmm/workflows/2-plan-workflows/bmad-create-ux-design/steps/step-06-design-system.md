@@ -11,6 +11,7 @@
 - 💬 FOCUS on choosing appropriate design system approach
 - 🎯 COLLABORATIVE decision-making, not recommendation-only
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
+- ✅ YOU MUST ALWAYS WRITE all artifact and document content in `{document_output_language}`
 
 ## EXECUTION PROTOCOLS:
 
@@ -30,8 +31,8 @@ This step will generate content and present choices:
 
 ## PROTOCOL INTEGRATION:
 
-- When 'A' selected: Read fully and follow: skill:bmad-advanced-elicitation
-- When 'P' selected: Read fully and follow: {project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md
+- When 'A' selected: Invoke the `bmad-advanced-elicitation` skill
+- When 'P' selected: Invoke the `bmad-party-mode` skill
 - PROTOCOLS always return to this step's A/P/C menu
 - User accepts/rejects protocol changes before proceeding
 
@@ -197,7 +198,7 @@ Show the generated design system content and present choices:
 
 #### If 'A' (Advanced Elicitation):
 
-- Read fully and follow: skill:bmad-advanced-elicitation with the current design system content
+- Invoke the `bmad-advanced-elicitation` skill with the current design system content
 - Process the enhanced design system insights that come back
 - Ask user: "Accept these improvements to the design system decision? (y/n)"
 - If yes: Update content with improvements, then return to A/P/C menu
@@ -205,7 +206,7 @@ Show the generated design system content and present choices:
 
 #### If 'P' (Party Mode):
 
-- Read fully and follow: {project-root}/_bmad/core/workflows/bmad-party-mode/workflow.md with the current design system choice
+- Invoke the `bmad-party-mode` skill with the current design system choice
 - Process the collaborative design system insights that come back
 - Ask user: "Accept these changes to the design system decision? (y/n)"
 - If yes: Update content with improvements, then return to A/P/C menu
