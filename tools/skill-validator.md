@@ -320,3 +320,37 @@ When reporting findings, use this format:
 ```
 
 If zero findings: report "All {N} rules passed. No findings." and list all passed rule IDs.
+
+---
+
+## Skill Spec Cheatsheet
+
+Quick-reference for the Agent Skills open standard.
+For the full standard, see: [Agent Skills specification](https://agentskills.io/specification)
+
+### Structure
+- Every skill is a directory with `SKILL.md` as the required entrypoint
+- YAML frontmatter between `---` markers provides metadata; markdown body provides instructions
+- Supporting files (scripts, templates, references) live alongside SKILL.md
+
+### Path resolution
+- Relative file references resolve from the directory of the file that contains the reference, not from the skill root
+- Example: from `branch-a/deep/next.md`, `./deeper/final.md` resolves to `branch-a/deep/deeper/final.md`
+- Example: from `branch-a/deep/next.md`, `./branch-b/alt/leaf.md` incorrectly resolves to `branch-a/deep/branch-b/alt/leaf.md`
+
+### Frontmatter fields (standard)
+- `name`: lowercase letters, numbers, hyphens only; max 64 chars; no "anthropic" or "claude"
+- `description`: required, max 1024 chars; should state what the skill does AND when to use it
+
+### Progressive disclosure — three loading levels
+- **L1 Metadata** (~100 tokens): `name` + `description` loaded at startup into system prompt
+- **L2 Instructions** (<5k tokens): SKILL.md body loaded only when skill is triggered
+- **L3 Resources** (unlimited): additional files + scripts loaded/executed on demand; script output enters context, script code does not
+
+### Key design principle
+- Skills are filesystem-based directories, not API payloads — Claude reads them via bash/file tools
+- Keep SKILL.md focused; offload detailed reference to separate files
+
+### Practical tips
+- Keep SKILL.md under 500 lines
+- `description` drives auto-discovery — use keywords users would naturally say
