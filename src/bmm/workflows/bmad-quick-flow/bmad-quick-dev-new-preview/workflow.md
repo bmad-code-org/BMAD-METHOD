@@ -76,4 +76,4 @@ YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `
 
 ### 3. First Step Execution
 
-Read fully and follow: `./steps/step-01-clarify-and-route.md` to begin the workflow.
+Read fully and follow: `./step-01-clarify-and-route.md` to begin the workflow.
