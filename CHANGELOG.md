@@ -1,5 +1,36 @@
 # Changelog
 
+## v6.2.0 - 2026-03-15
+
+### 🎁 Highlights
+
+* Fix manifest generation so BMad Builder installs correctly when a module has no agents (#1998)
+* Prototype preview of bmad-product-brief-preview skill — try `/bmad-product-brief-preview` and share feedback! (#1959)
+* All skills now use native skill directory format for improved modularity and maintainability (#1931, #1945, #1946, #1949, #1950, #1984, #1985, #1988, #1994)
+
+### 🎁 Features
+
+* Rewrite code-review skill with sharded step-file architecture and auto-detect review intent from invocation args (#2007, #2013)
+* Add inference-based skill validator with comprehensive rules for naming, variables, paths, and invocation syntax (#1981)
+* Add REF-03 skill invocation language rule and PATH-05 skill encapsulation rule to validator (#2004)
+
+### 🐛 Bug Fixes
+
+* Validation pass 2 — fix path, variable, and sequence issues across 32 files (#2008)
+* Replace broken party-mode workflow refs with skill syntax (#2000)
+* Improve bmad-help description for accurate trigger matching (#2012)
+* Point zh-cn doc links to Chinese pages instead of English (#2010)
+* Validation cleanup for bmad-quick-flow (#1997), 6 skills batch (#1996), bmad-sprint-planning (#1995), bmad-retrospective (#1993), bmad-dev-story (#1992), bmad-create-story (#1991), bmad-code-review (#1990), bmad-create-epics-and-stories (#1989), bmad-create-architecture (#1987), bmad-check-implementation-readiness (#1986), bmad-create-ux-design (#1983), bmad-create-product-brief (#1982)
+
+### 🔧 Maintenance
+
+* Normalize skill invocation syntax to `Invoke the skill` pattern repo-wide (#2004)
+
+### 📚 Documentation
+
+* Add Chinese translation for core-tools reference (#2002)
+* Update version hint, TEA module link, and HTTP→HTTPS links in Chinese README (#1922, #1921)
+
 ## [6.1.0] - 2026-03-12
 
 ### Highlights
