@@ -258,19 +258,20 @@ class UI {
             const sources = [];
             for (const customPath of paths) {
               const expandedPath = this.expandUserPath(customPath);
-              const validation = this.validateCustomContentPathSync(expandedPath);
-              if (validation) continue;
-              let moduleMeta;
-              try {
-                const moduleYamlPath = path.join(expandedPath, 'module.yaml');
-                moduleMeta = require('yaml').parse(await fs.readFile(moduleYamlPath, 'utf-8'));
-              } catch {
-                continue;
+              const resolvedPaths = this.resolveCustomContentPaths(expandedPath);
+              for (const modulePath of resolvedPaths) {
+                let moduleMeta;
+                try {
+                  const moduleYamlPath = path.join(modulePath, 'module.yaml');
+                  moduleMeta = require('yaml').parse(await fs.readFile(moduleYamlPath, 'utf-8'));
+                } catch {
+                  continue;
+                }
+                if (!moduleMeta?.code) continue;
+                customPaths.push(modulePath);
+                selectedModuleIds.push(moduleMeta.code);
+                sources.push({ path: modulePath, id: moduleMeta.code, name: moduleMeta.name || moduleMeta.code });
               }
-              if (!moduleMeta?.code) continue;
-              customPaths.push(expandedPath);
-              selectedModuleIds.push(moduleMeta.code);
-              sources.push({ path: expandedPath, id: moduleMeta.code, name: moduleMeta.name || moduleMeta.code });
             }
             if (customPaths.length > 0) {
               customContentForQuickUpdate = {
@@ -346,41 +347,52 @@ class UI {
 
           for (const customPath of paths) {
             const expandedPath = this.expandUserPath(customPath);
-            const validation = this.validateCustomContentPathSync(expandedPath);
-            if (validation) {
-              await prompts.log.warn(`Skipping invalid custom content path: ${customPath} - ${validation}`);
+
+            // Resolve path to module directories (supports parent dirs with subdirectories)
+            const resolvedPaths = this.resolveCustomContentPaths(expandedPath);
+
+            if (resolvedPaths.length === 0) {
+              await prompts.log.warn(
+                `Skipping custom content path: ${customPath} - no module.yaml found (checked root and immediate subdirectories)`,
+              );
               continue;
             }
 
-            // Read module metadata
-            let moduleMeta;
-            try {
-              const moduleYamlPath = path.join(expandedPath, 'module.yaml');
-              const moduleYaml = await fs.readFile(moduleYamlPath, 'utf-8');
-              const yaml = require('yaml');
-              moduleMeta = yaml.parse(moduleYaml);
-            } catch (error) {
-              await prompts.log.warn(`Skipping custom content path: ${customPath} - failed to read module.yaml: ${error.message}`);
-              continue;
+            if (resolvedPaths.length > 1) {
+              await prompts.log.info(`Found ${resolvedPaths.length} modules in ${customPath}`);
             }
 
-            if (!moduleMeta) {
-              await prompts.log.warn(`Skipping custom content path: ${customPath} - module.yaml is empty`);
-              continue;
-            }
+            for (const modulePath of resolvedPaths) {
+              // Read module metadata
+              let moduleMeta;
+              try {
+                const moduleYamlPath = path.join(modulePath, 'module.yaml');
+                const moduleYaml = await fs.readFile(moduleYamlPath, 'utf-8');
+                const yaml = require('yaml');
+                moduleMeta = yaml.parse(moduleYaml);
+              } catch (error) {
+                await prompts.log.warn(`Skipping custom content path: ${modulePath} - failed to read module.yaml: ${error.message}`);
+                continue;
+              }
 
-            if (!moduleMeta.code) {
-              await prompts.log.warn(`Skipping custom content path: ${customPath} - module.yaml missing 'code' field`);
-              continue;
-            }
+              if (!moduleMeta) {
+                await prompts.log.warn(`Skipping custom content path: ${modulePath} - module.yaml is empty`);
+                continue;
+              }
 
-            customPaths.push(expandedPath);
-            selectedModuleIds.push(moduleMeta.code);
-            sources.push({
-              path: expandedPath,
-              id: moduleMeta.code,
-              name: moduleMeta.name || moduleMeta.code,
-            });
+              if (!moduleMeta.code) {
+                await prompts.log.warn(`Skipping custom content path: ${modulePath} - module.yaml missing 'code' field`);
+                continue;
+              }
+
+              customPaths.push(modulePath);
+              selectedModuleIds.push(moduleMeta.code);
+              sources.push({
+                path: modulePath,
+                id: moduleMeta.code,
+                name: moduleMeta.name || moduleMeta.code,
+              });
+            }
           }
 
           if (customPaths.length > 0) {
@@ -500,41 +512,52 @@ class UI {
 
       for (const customPath of paths) {
         const expandedPath = this.expandUserPath(customPath);
-        const validation = this.validateCustomContentPathSync(expandedPath);
-        if (validation) {
-          await prompts.log.warn(`Skipping invalid custom content path: ${customPath} - ${validation}`);
+
+        // Resolve path to module directories (supports parent dirs with subdirectories)
+        const resolvedPaths = this.resolveCustomContentPaths(expandedPath);
+
+        if (resolvedPaths.length === 0) {
+          await prompts.log.warn(
+            `Skipping custom content path: ${customPath} - no module.yaml found (checked root and immediate subdirectories)`,
+          );
           continue;
         }
 
-        // Read module metadata
-        let moduleMeta;
-        try {
-          const moduleYamlPath = path.join(expandedPath, 'module.yaml');
-          const moduleYaml = await fs.readFile(moduleYamlPath, 'utf-8');
-          const yaml = require('yaml');
-          moduleMeta = yaml.parse(moduleYaml);
-        } catch (error) {
-          await prompts.log.warn(`Skipping custom content path: ${customPath} - failed to read module.yaml: ${error.message}`);
-          continue;
+        if (resolvedPaths.length > 1) {
+          await prompts.log.info(`Found ${resolvedPaths.length} modules in ${customPath}`);
         }
 
-        if (!moduleMeta) {
-          await prompts.log.warn(`Skipping custom content path: ${customPath} - module.yaml is empty`);
-          continue;
-        }
+        for (const modulePath of resolvedPaths) {
+          // Read module metadata
+          let moduleMeta;
+          try {
+            const moduleYamlPath = path.join(modulePath, 'module.yaml');
+            const moduleYaml = await fs.readFile(moduleYamlPath, 'utf-8');
+            const yaml = require('yaml');
+            moduleMeta = yaml.parse(moduleYaml);
+          } catch (error) {
+            await prompts.log.warn(`Skipping custom content path: ${modulePath} - failed to read module.yaml: ${error.message}`);
+            continue;
+          }
 
-        if (!moduleMeta.code) {
-          await prompts.log.warn(`Skipping custom content path: ${customPath} - module.yaml missing 'code' field`);
-          continue;
-        }
+          if (!moduleMeta) {
+            await prompts.log.warn(`Skipping custom content path: ${modulePath} - module.yaml is empty`);
+            continue;
+          }
 
-        customPaths.push(expandedPath);
-        selectedModuleIds.push(moduleMeta.code);
-        sources.push({
-          path: expandedPath,
-          id: moduleMeta.code,
-          name: moduleMeta.name || moduleMeta.code,
-        });
+          if (!moduleMeta.code) {
+            await prompts.log.warn(`Skipping custom content path: ${modulePath} - module.yaml missing 'code' field`);
+            continue;
+          }
+
+          customPaths.push(modulePath);
+          selectedModuleIds.push(moduleMeta.code);
+          sources.push({
+            path: modulePath,
+            id: moduleMeta.code,
+            name: moduleMeta.name || moduleMeta.code,
+          });
+        }
       }
 
       if (customPaths.length > 0) {
@@ -1451,6 +1474,54 @@ class UI {
   }
 
   /**
+   * Resolve a custom content path to an array of module paths.
+   * If the path contains module.yaml at root, returns [path].
+   * If not, scans immediate subdirectories (1 level) for module.yaml.
+   * Returns an empty array if no modules are found.
+   * @param {string} inputPath - Absolute path to resolve
+   * @returns {string[]} Array of resolved module directory paths
+   */
+  resolveCustomContentPaths(inputPath) {
+    // Direct module path
+    const moduleYamlPath = path.join(inputPath, 'module.yaml');
+    if (fs.pathExistsSync(moduleYamlPath)) {
+      return [inputPath];
+    }
+
+    // Scan immediate subdirectories (1 level only)
+    if (!fs.pathExistsSync(inputPath)) {
+      return [];
+    }
+
+    const resolved = [];
+    try {
+      const entries = fs.readdirSync(inputPath, { withFileTypes: true });
+      for (const entry of entries) {
+        if (entry.isDirectory()) {
+          const subModuleYaml = path.join(inputPath, entry.name, 'module.yaml');
+          if (fs.pathExistsSync(subModuleYaml)) {
+            // Validate the module.yaml has a code field
+            try {
+              const yaml = require('yaml');
+              const content = fs.readFileSync(subModuleYaml, 'utf8');
+              const moduleData = yaml.parse(content);
+              if (moduleData && moduleData.code) {
+                resolved.push(path.join(inputPath, entry.name));
+              }
+            } catch {
+              // Skip invalid module.yaml files
+            }
+          }
+        }
+      }
+    } catch {
+      // Directory read failed
+    }
+
+    return resolved;
+  }
+
+  /**
    * Validate custom content path synchronously
    * @param {string} input - User input path
    * @returns {string|undefined} Error message or undefined if valid
@@ -1479,7 +1550,12 @@ class UI {
       // Check for module.yaml in the root
       const moduleYamlPath = path.join(expandedPath, 'module.yaml');
       if (!fs.pathExistsSync(moduleYamlPath)) {
-        return 'Directory must contain a module.yaml file in the root';
+        // No module.yaml at root — scan immediate subdirectories (1 level)
+        const resolved = this.resolveCustomContentPaths(expandedPath);
+        if (resolved.length > 0) {
+          return; // Valid — parent directory contains module subdirectories
+        }
+        return 'Directory must contain a module.yaml file (in root or in immediate subdirectories)';
       }
 
       // Try to parse the module.yaml to get the module ID
