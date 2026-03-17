@@ -60,6 +60,13 @@ reviews:
     - "!**/validation-report-*.md"
     - "!CHANGELOG.md"
   path_instructions:
+    - path: "src/**"
+      instructions: |
+        Source file changed. Check whether documentation under docs/ needs
+        a corresponding update — new features, changed behavior, renamed
+        concepts, altered CLI flags, or modified configuration options should
+        all be reflected in the relevant doc pages. Flag missing or outdated
+        docs as a review comment.
     - path: "src/**/skills/**"
       instructions: |
         Skill file. Apply the full rule catalog defined in tools/skill-validator.md.
