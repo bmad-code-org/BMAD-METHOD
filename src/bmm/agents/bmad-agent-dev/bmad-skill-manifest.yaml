@@ -1,4 +1,4 @@
-type: agent
+type: skill
 name: bmad-agent-dev
 displayName: Amelia
 title: Developer Agent
