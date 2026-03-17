@@ -56,7 +56,7 @@ When there is only one concern, omit the bold label — just list the stops dire
 1. **Plan-code-review:** Change `{spec_file}` status to `done` in the frontmatter.
 2. If version control is available and the tree is dirty, create a local commit with a conventional message derived from the spec title (plan-code-review) or the intent (one-shot).
 3. Open the spec in the user's editor so they can click through the Suggested Review Order:
-   - Run `code -r {spec_file}` to open the spec in the current VS Code window (reuses the window where the project or worktree is open).
+   - Run `code -r "{spec_file}"` to open the spec in the current VS Code window (reuses the window where the project or worktree is open). Always double-quote the path to handle spaces and special characters.
    - If `code` is not available (command fails), skip gracefully and tell the user the spec file path instead.
 4. Display summary of your work to the user, including the commit hash if one was created. Include:
    - A note that the spec is open in their editor (or the file path if it couldn't be opened).
