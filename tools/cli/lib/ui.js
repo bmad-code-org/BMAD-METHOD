@@ -1500,17 +1500,7 @@ class UI {
         if (entry.isDirectory()) {
           const subModuleYaml = path.join(inputPath, entry.name, 'module.yaml');
           if (fs.pathExistsSync(subModuleYaml)) {
-            // Validate the module.yaml has a code field
-            try {
-              const yaml = require('yaml');
-              const content = fs.readFileSync(subModuleYaml, 'utf8');
-              const moduleData = yaml.parse(content);
-              if (moduleData && moduleData.code) {
-                resolved.push(path.join(inputPath, entry.name));
-              }
-            } catch {
-              // Skip invalid module.yaml files
-            }
+            resolved.push(path.join(inputPath, entry.name));
           }
         }
       }
@@ -1624,20 +1614,45 @@ class UI {
         isValid = true;
       }
 
-      // Read module.yaml to get module info
-      const yaml = require('yaml');
-      const moduleYamlPath = path.join(sourcePath, 'module.yaml');
-      const moduleContent = await fs.readFile(moduleYamlPath, 'utf8');
-      const moduleData = yaml.parse(moduleContent);
+      // Resolve path to module directories (supports parent dirs with subdirectories)
+      const resolvedPaths = this.resolveCustomContentPaths(sourcePath);
 
-      // Add to sources
-      customContentConfig.sources.push({
-        path: sourcePath,
-        id: moduleData.code,
-        name: moduleData.name || moduleData.code,
-      });
+      if (resolvedPaths.length === 0) {
+        await prompts.log.warn(`No module.yaml found in ${sourcePath} (checked root and immediate subdirectories)`);
+        continue;
+      }
 
-      await prompts.log.success(`Confirmed local custom module: ${moduleData.name || moduleData.code}`);
+      if (resolvedPaths.length > 1) {
+        await prompts.log.info(`Found ${resolvedPaths.length} modules in ${sourcePath}`);
+      }
+
+      for (const modulePath of resolvedPaths) {
+        // Read module.yaml to get module info
+        const yaml = require('yaml');
+        const moduleYamlPath = path.join(modulePath, 'module.yaml');
+        let moduleData;
+        try {
+          const moduleContent = await fs.readFile(moduleYamlPath, 'utf8');
+          moduleData = yaml.parse(moduleContent);
+        } catch (error) {
+          await prompts.log.warn(`Skipping ${modulePath} - failed to read module.yaml: ${error.message}`);
+          continue;
+        }
+
+        if (!moduleData || !moduleData.code) {
+          await prompts.log.warn(`Skipping ${modulePath} - module.yaml missing 'code' field`);
+          continue;
+        }
+
+        // Add to sources
+        customContentConfig.sources.push({
+          path: modulePath,
+          id: moduleData.code,
+          name: moduleData.name || moduleData.code,
+        });
+
+        await prompts.log.success(`Confirmed local custom module: ${moduleData.name || moduleData.code}`);
+      }
     }
 
     // Ask if user wants to add these to the installation

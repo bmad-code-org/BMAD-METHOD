@@ -67,6 +67,10 @@ async function createParentDirFixture() {
   await fs.ensureDir(path.join(parentDir, 'not-a-module'));
   await fs.writeFile(path.join(parentDir, 'not-a-module', 'readme.md'), '# Not a module\n');
 
+  // Module with missing code field (invalid)
+  await fs.ensureDir(path.join(parentDir, 'bad-module'));
+  await fs.writeFile(path.join(parentDir, 'bad-module', 'module.yaml'), 'name: Bad Module\n');
+
   return parentDir;
 }
 
@@ -154,21 +158,25 @@ async function runTests() {
       `Expected ${directModuleDir}, got ${directPaths[0]}`,
     );
 
-    // Parent dir expands to individual module subdirs
+    // Parent dir expands to individual module subdirs (any dir with module.yaml)
     const parentPaths = ui.resolveCustomContentPaths(parentDir);
     assert(Array.isArray(parentPaths), 'resolveCustomContentPaths returns an array for parent dir');
     assert(
-      parentPaths.length === 2,
-      'Parent dir resolves to 2 module paths (skips not-a-module)',
-      `Expected 2, got ${parentPaths.length}: ${JSON.stringify(parentPaths)}`,
+      parentPaths.length === 3,
+      'Parent dir resolves to 3 module paths (skips not-a-module which has no module.yaml)',
+      `Expected 3, got ${parentPaths.length}: ${JSON.stringify(parentPaths)}`,
     );
 
     const resolvedNames = parentPaths.map((p) => path.basename(p)).sort();
     assert(
-      resolvedNames[0] === 'module-a' && resolvedNames[1] === 'module-b',
-      'Parent dir resolves to module-a and module-b',
+      resolvedNames.includes('module-a') && resolvedNames.includes('module-b'),
+      'Parent dir includes module-a and module-b',
       `Got: ${JSON.stringify(resolvedNames)}`,
     );
+
+    // bad-module has module.yaml but no code field — resolveCustomContentPaths includes it
+    // (callers are responsible for filtering invalid modules)
+    assert(resolvedNames.includes('bad-module'), 'Parent dir includes bad-module (has module.yaml, callers filter by code)');
 
     // Empty dir returns empty array
     const emptyPaths = ui.resolveCustomContentPaths(emptyDir);
@@ -183,6 +191,55 @@ async function runTests() {
     if (parentDir) await fs.remove(parentDir).catch(() => {});
     if (directModuleDir) await fs.remove(directModuleDir).catch(() => {});
     if (emptyDir) await fs.remove(emptyDir).catch(() => {});
+  }
+
+  // ============================================================
+  // Test Suite 3: Edge cases
+  // ============================================================
+  console.log(`\n${colors.yellow}Test Suite 3: Edge cases${colors.reset}\n`);
+
+  let parentWithBadModule;
+  let directModule2;
+
+  try {
+    // Parent dir where only subdir has module.yaml without code field
+    parentWithBadModule = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-bad-'));
+    await fs.ensureDir(path.join(parentWithBadModule, 'no-code-module'));
+    await fs.writeFile(path.join(parentWithBadModule, 'no-code-module', 'module.yaml'), 'name: No Code Module\n');
+
+    // resolveCustomContentPaths includes it (callers filter)
+    const badPaths = ui.resolveCustomContentPaths(parentWithBadModule);
+    assert(badPaths.length === 1, 'Dir with only code-less module.yaml still resolves (callers filter)');
+
+    // validateCustomContentPathSync accepts it (has module.yaml in subdir)
+    const badValidation = ui.validateCustomContentPathSync(parentWithBadModule);
+    assert(
+      badValidation === undefined,
+      'Parent dir with code-less module.yaml passes validation (callers handle filtering)',
+      `Got error: ${badValidation}`,
+    );
+
+    // Subdir with malformed YAML
+    await fs.ensureDir(path.join(parentWithBadModule, 'malformed'));
+    await fs.writeFile(path.join(parentWithBadModule, 'malformed', 'module.yaml'), '{{invalid yaml');
+    const malformedPaths = ui.resolveCustomContentPaths(parentWithBadModule);
+    assert(malformedPaths.length === 2, 'Subdirs with malformed YAML are still resolved (callers handle parse errors)');
+
+    // Direct module alongside parent dir (simulates comma-separated usage)
+    directModule2 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-direct2-'));
+    await fs.writeFile(path.join(directModule2, 'module.yaml'), 'code: direct-2\nname: Direct Two\n');
+
+    const directPaths2 = ui.resolveCustomContentPaths(directModule2);
+    const parentPaths2 = ui.resolveCustomContentPaths(parentWithBadModule);
+    const combined = [...directPaths2, ...parentPaths2];
+    assert(
+      combined.length === 3,
+      'Mixed direct + parent paths combine correctly (1 direct + 2 from parent)',
+      `Expected 3, got ${combined.length}`,
+    );
+  } finally {
+    if (parentWithBadModule) await fs.remove(parentWithBadModule).catch(() => {});
+    if (directModule2) await fs.remove(directModule2).catch(() => {});
   }
 
   // ============================================================
