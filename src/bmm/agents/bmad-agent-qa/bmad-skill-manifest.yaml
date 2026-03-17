@@ -1,4 +1,4 @@
-type: agent
+type: skill
 name: bmad-agent-qa
 displayName: Quinn
 title: QA Engineer
