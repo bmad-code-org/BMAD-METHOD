@@ -27,7 +27,7 @@ Build the trail as an ordered sequence of **stops** — clickable `path:line` re
 2. **Lead with the entry point** — the single highest-leverage file:line a reviewer should look at first to grasp the design intent.
 3. **Inside each concern**, order stops from most important / architecturally interesting to supporting. Lightly bias toward higher-risk or boundary-crossing stops.
 4. **End with peripherals** — tests, config, types, and other supporting changes come last.
-5. **Every code reference is a clickable `vscode://file/` link.** Format each stop as a markdown link: `[short-name:line](vscode://file/absolute/path:line:1)`. Use the file's basename (or shortest unambiguous suffix) as the link text.
+5. **Every code reference is a clickable workspace-relative link.** Format each stop as a markdown link: `[short-name:line](/project-root-relative/path/to/file.ts#L42)`. The link target uses a leading `/` (workspace root) with a `#L` line anchor. Use the file's basename (or shortest unambiguous suffix) plus line number as the link text.
 6. **Each stop gets one ultra-concise line of framing** (≤15 words) — why this approach was chosen here and what it achieves in the context of the change. No paragraphs.
 
 Format each stop as framing first, link on the next indented line:
@@ -38,15 +38,15 @@ Format each stop as framing first, link on the next indented line:
 **{Concern name}**
 
 - {one-line framing}
-  [`file.ts:42`](vscode://file/absolute/path/to/file.ts:42:1)
+  [`file.ts:42`](/src/path/to/file.ts#L42)
 
 - {one-line framing}
-  [`other.ts:17`](vscode://file/absolute/path/to/other.ts:17:1)
+  [`other.ts:17`](/src/path/to/other.ts#L17)
 
 **{Next concern}**
 
 - {one-line framing}
-  [`file.ts:88`](vscode://file/absolute/path/to/file.ts:88:1)
+  [`file.ts:88`](/src/path/to/file.ts#L88)
 ```
 
 When there is only one concern, omit the bold label — just list the stops directly.
@@ -55,6 +55,13 @@ When there is only one concern, omit the bold label — just list the stops dire
 
 1. **Plan-code-review:** Change `{spec_file}` status to `done` in the frontmatter.
 2. If version control is available and the tree is dirty, create a local commit with a conventional message derived from the spec title (plan-code-review) or the intent (one-shot).
-3. Display summary of your work to the user, including the commit hash if one was created. Advise on how to review the changes — for plan-code-review, mention that `{spec_file}` now contains a Suggested Review Order. Offer to push and/or create a pull request.
+3. Open the spec in the user's editor so they can click through the Suggested Review Order:
+   - Run `code -r {spec_file}` to open the spec in the current VS Code window (reuses the window where the project or worktree is open).
+   - If `code` is not available (command fails), skip gracefully and tell the user the spec file path instead.
+4. Display summary of your work to the user, including the commit hash if one was created. Include:
+   - A note that the spec is open in their editor (or the file path if it couldn't be opened).
+   - **Navigation tip:** "Ctrl+click (Cmd+click on macOS) the links in the Suggested Review Order to jump to each stop."
+   - For plan-code-review, mention that `{spec_file}` now contains a Suggested Review Order.
+   - Offer to push and/or create a pull request.
 
 Workflow complete.
