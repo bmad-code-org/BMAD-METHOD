@@ -42,9 +42,8 @@ const positionalArgs = args.filter((a) => !a.startsWith('--'));
 
 // --- Constants ---
 
-const NAME_REGEX = /^[a-z0-9][a-z0-9-]{0,62}[a-z0-9]$/;
+const NAME_REGEX = /^bmad-[a-z0-9]+(-[a-z0-9]+)*$/;
 const STEP_FILENAME_REGEX = /^step-\d{2}[a-z]?-[a-z0-9-]+\.md$/;
-const FORBIDDEN_NAME_SUBSTRINGS = ['anthropic', 'claude'];
 const TIME_ESTIMATE_PATTERNS = [/takes?\s+\d+\s*min/i, /~\s*\d+\s*min/i, /estimated\s+time/i, /\bETA\b/];
 
 const SEVERITY_ORDER = { CRITICAL: 0, HIGH: 1, MEDIUM: 2, LOW: 3 };
@@ -314,30 +313,15 @@ function validateSkill(skillDir) {
   const description = skillFm && skillFm.description;
 
   // --- SKILL-04: name format ---
-  if (name) {
-    if (!NAME_REGEX.test(name)) {
-      findings.push({
-        rule: 'SKILL-04',
-        title: 'name Format',
-        severity: 'HIGH',
-        file: 'SKILL.md',
-        detail: `name "${name}" does not match pattern: ${NAME_REGEX}`,
-        fix: 'Rename to comply with lowercase letters, numbers, and hyphens only (max 64 chars).',
-      });
-    }
-
-    for (const forbidden of FORBIDDEN_NAME_SUBSTRINGS) {
-      if (name.toLowerCase().includes(forbidden)) {
-        findings.push({
-          rule: 'SKILL-04',
-          title: 'name Format',
-          severity: 'HIGH',
-          file: 'SKILL.md',
-          detail: `name "${name}" contains forbidden substring "${forbidden}".`,
-          fix: `Remove "${forbidden}" from the name.`,
-        });
-      }
-    }
+  if (name && !NAME_REGEX.test(name)) {
+    findings.push({
+      rule: 'SKILL-04',
+      title: 'name Format',
+      severity: 'HIGH',
+      file: 'SKILL.md',
+      detail: `name "${name}" does not match pattern: ${NAME_REGEX}`,
+      fix: 'Rename to comply with lowercase letters, numbers, and hyphens only (max 64 chars).',
+    });
   }
 
   // --- SKILL-05: name matches directory ---
@@ -404,30 +388,39 @@ function validateSkill(skillDir) {
     }
   }
 
-  // --- WF-01 / WF-02: workflow.md must NOT have name/description ---
-  if (fs.existsSync(workflowMdPath)) {
-    const wfContent = safeReadFile(workflowMdPath, findings, 'workflow.md');
-    const wfFm = wfContent ? parseFrontmatter(wfContent) : null;
+  // --- WF-01 / WF-02: non-SKILL.md files must NOT have name/description ---
+  // TODO: bmad-agent-tech-writer has sub-skill files with intentional name/description
+  const WF_SKIP_SKILLS = new Set(['bmad-agent-tech-writer']);
+  for (const filePath of allFiles) {
+    if (path.extname(filePath) !== '.md') continue;
+    if (path.basename(filePath) === 'SKILL.md') continue;
+    if (WF_SKIP_SKILLS.has(dirName)) continue;
 
-    if (wfFm && 'name' in wfFm) {
+    const relFile = path.relative(skillDir, filePath);
+    const content = safeReadFile(filePath, findings, relFile);
+    if (content === null) continue;
+    const fm = parseFrontmatter(content);
+    if (!fm) continue;
+
+    if ('name' in fm) {
       findings.push({
         rule: 'WF-01',
-        title: 'workflow.md Must NOT Have name in Frontmatter',
+        title: 'Only SKILL.md May Have name in Frontmatter',
         severity: 'HIGH',
-        file: 'workflow.md',
-        detail: 'workflow.md frontmatter contains `name` — this belongs only in SKILL.md.',
-        fix: 'Remove the `name:` line from workflow.md frontmatter.',
+        file: relFile,
+        detail: `${relFile} frontmatter contains \`name\` — this belongs only in SKILL.md.`,
+        fix: "Remove the `name:` line from this file's frontmatter.",
       });
     }
 
-    if (wfFm && 'description' in wfFm) {
+    if ('description' in fm) {
       findings.push({
         rule: 'WF-02',
-        title: 'workflow.md Must NOT Have description in Frontmatter',
+        title: 'Only SKILL.md May Have description in Frontmatter',
         severity: 'HIGH',
-        file: 'workflow.md',
-        detail: 'workflow.md frontmatter contains `description` — this belongs only in SKILL.md.',
-        fix: 'Remove the `description:` line from workflow.md frontmatter.',
+        file: relFile,
+        detail: `${relFile} frontmatter contains \`description\` — this belongs only in SKILL.md.`,
+        fix: "Remove the `description:` line from this file's frontmatter.",
       });
     }
   }

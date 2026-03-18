@@ -10,7 +10,7 @@ Before running inference-based validation, run the deterministic validator:
 node tools/validate-skills.js --json path/to/skill-dir
 ```
 
-This checks 13 rules deterministically: SKILL-01, SKILL-02, SKILL-03, SKILL-04, SKILL-05, SKILL-06, WF-01, WF-02, PATH-02, STEP-01, STEP-06, STEP-07, SEQ-02.
+This checks 14 rules deterministically: SKILL-01, SKILL-02, SKILL-03, SKILL-04, SKILL-05, SKILL-06, SKILL-07, WF-01, WF-02, PATH-02, STEP-01, STEP-06, STEP-07, SEQ-02.
 
 Review its JSON output. For any rule that produced **zero findings** in the first pass, **skip it** during inference-based validation below — it has already been verified. If a rule produced any findings, the inference validator should still review that rule (some rules like SKILL-04 and SKILL-06 have sub-checks that benefit from judgment). Focus your inference effort on the remaining rules that require judgment (PATH-01, PATH-03, PATH-04, PATH-05, WF-03, STEP-02, STEP-03, STEP-04, STEP-05, SEQ-01, REF-01, REF-02, REF-03).
 
@@ -68,9 +68,9 @@ If no findings are generated (from either pass), the skill passes validation.
 
 - **Severity:** HIGH
 - **Applies to:** `SKILL.md`
-- **Rule:** The `name` value must use only lowercase letters, numbers, and hyphens. Max 64 characters. Must not contain "anthropic" or "claude".
-- **Detection:** Regex test: `^[a-z0-9][a-z0-9-]{0,62}[a-z0-9]$`. String search for forbidden substrings.
-- **Fix:** Rename to comply with the format.
+- **Rule:** The `name` value must start with `bmad-`, use only lowercase letters, numbers, and single hyphens between segments.
+- **Detection:** Regex test: `^bmad-[a-z0-9]+(-[a-z0-9]+)*$`.
+- **Fix:** Rename to comply with the format (e.g., `bmad-my-skill`).
 
 ### SKILL-05 — `name` Must Match Directory Name
 
@@ -88,23 +88,33 @@ If no findings are generated (from either pass), the skill passes validation.
 - **Detection:** Check length. Look for trigger phrases like "Use when" or "Use if" — their absence suggests the description only says _what_ but not _when_.
 - **Fix:** Append a "Use when..." clause to the description.
 
+### SKILL-07 — SKILL.md Must Have Body Content
+
+- **Severity:** HIGH
+- **Applies to:** `SKILL.md`
+- **Rule:** SKILL.md must have non-empty markdown body content after the frontmatter. The body provides L2 instructions — a SKILL.md with only frontmatter is incomplete.
+- **Detection:** Extract content after the closing `---` frontmatter delimiter and check it is non-empty after trimming whitespace.
+- **Fix:** Add markdown body with skill instructions after the closing `---`.
+
 ---
 
-### WF-01 — workflow.md Must NOT Have `name` in Frontmatter
+### WF-01 — Only SKILL.md May Have `name` in Frontmatter
 
 - **Severity:** HIGH
-- **Applies to:** `workflow.md` (if it exists)
-- **Rule:** The `name` field belongs only in `SKILL.md`. If `workflow.md` has YAML frontmatter, it must not contain `name:`.
-- **Detection:** Parse frontmatter and check for `name:` key.
-- **Fix:** Remove the `name:` line from workflow.md frontmatter.
+- **Applies to:** all `.md` files except `SKILL.md`
+- **Rule:** The `name` field belongs only in `SKILL.md`. No other markdown file in the skill directory may have `name:` in its frontmatter.
+- **Detection:** Parse frontmatter of every non-SKILL.md markdown file and check for `name:` key.
+- **Fix:** Remove the `name:` line from the file's frontmatter.
+- **Exception:** `bmad-agent-tech-writer` — has sub-skill files with intentional `name` fields (to be revisited).
 
-### WF-02 — workflow.md Must NOT Have `description` in Frontmatter
+### WF-02 — Only SKILL.md May Have `description` in Frontmatter
 
 - **Severity:** HIGH
-- **Applies to:** `workflow.md` (if it exists)
-- **Rule:** The `description` field belongs only in `SKILL.md`. If `workflow.md` has YAML frontmatter, it must not contain `description:`.
-- **Detection:** Parse frontmatter and check for `description:` key.
-- **Fix:** Remove the `description:` line from workflow.md frontmatter.
+- **Applies to:** all `.md` files except `SKILL.md`
+- **Rule:** The `description` field belongs only in `SKILL.md`. No other markdown file in the skill directory may have `description:` in its frontmatter.
+- **Detection:** Parse frontmatter of every non-SKILL.md markdown file and check for `description:` key.
+- **Fix:** Remove the `description:` line from the file's frontmatter.
+- **Exception:** `bmad-agent-tech-writer` — has sub-skill files with intentional `description` fields (to be revisited).
 
 ### WF-03 — workflow.md Frontmatter Variables Must Be Config or Runtime Only
 
