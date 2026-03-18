@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.4.0 (2026-03-18)
+## 0.3.4 (2026-03-18)
 
 ### Features
 - **Material Analysis Phase** — When users provide existing documents (PRD, brief, research, guidelines), Saga now analyzes them before asking any questions. New protocol: Read → Extract into categories → Present findings one at a time for user confirmation → Identify gaps → Only ask about what's missing. Turns a 60-minute discovery session into a 15-minute confirmation + gap-fill when materials are comprehensive.
