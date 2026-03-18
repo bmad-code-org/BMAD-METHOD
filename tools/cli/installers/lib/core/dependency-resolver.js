@@ -82,11 +82,11 @@ class DependencyResolver {
       // Check if this is a source directory (has 'src' subdirectory)
       const srcDir = path.join(bmadDir, 'src');
       if (await fs.pathExists(srcDir)) {
-        // Source directory structure: src/core or src/bmm
+        // Source directory structure: src/core-skills or src/bmm-skills
         if (module === 'core') {
-          moduleDir = path.join(srcDir, 'core');
+          moduleDir = path.join(srcDir, 'core-skills');
         } else if (module === 'bmm') {
-          moduleDir = path.join(srcDir, 'bmm');
+          moduleDir = path.join(srcDir, 'bmm-skills');
         }
       }
 
@@ -401,8 +401,8 @@ class DependencyResolver {
         const bmadPath = dep.dependency.replace(/^bmad\//, '');
 
         // Try to resolve as if it's in src structure
-        // bmad/core/tasks/foo.md -> src/core/tasks/foo.md
-        // bmad/bmm/tasks/bar.md -> src/bmm/tasks/bar.md (bmm is directly under src/)
+        // bmad/core/tasks/foo.md -> src/core-skills/tasks/foo.md
+        // bmad/bmm/tasks/bar.md -> src/bmm-skills/tasks/bar.md (bmm is directly under src/)
         // bmad/cis/agents/bar.md -> src/modules/cis/agents/bar.md
 
         if (bmadPath.startsWith('core/')) {
@@ -584,11 +584,11 @@ class DependencyResolver {
     const relative = path.relative(bmadDir, filePath);
     const parts = relative.split(path.sep);
 
-    // Handle source directory structure (src/core, src/bmm, or src/modules/xxx)
+    // Handle source directory structure (src/core-skills, src/bmm-skills, or src/modules/xxx)
     if (parts[0] === 'src') {
-      if (parts[1] === 'core') {
+      if (parts[1] === 'core-skills') {
         return 'core';
-      } else if (parts[1] === 'bmm') {
+      } else if (parts[1] === 'bmm-skills') {
         return 'bmm';
       } else if (parts[1] === 'modules' && parts.length > 2) {
         return parts[2];
@@ -631,11 +631,11 @@ class DependencyResolver {
       let moduleBase;
 
       // Check if file is in source directory structure
-      if (file.includes('/src/core/') || file.includes('/src/bmm/')) {
+      if (file.includes('/src/core-skills/') || file.includes('/src/bmm-skills/')) {
         if (module === 'core') {
-          moduleBase = path.join(bmadDir, 'src', 'core');
+          moduleBase = path.join(bmadDir, 'src', 'core-skills');
         } else if (module === 'bmm') {
-          moduleBase = path.join(bmadDir, 'src', 'bmm');
+          moduleBase = path.join(bmadDir, 'src', 'bmm-skills');
         }
       } else {
         moduleBase = module === 'core' ? path.join(bmadDir, 'core') : path.join(bmadDir, 'modules', module);

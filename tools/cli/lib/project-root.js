@@ -16,7 +16,7 @@ function findProjectRoot(startPath = __dirname) {
       try {
         const pkg = fs.readJsonSync(packagePath);
         // Check if this is the BMAD project
-        if (pkg.name === 'bmad-method' || fs.existsSync(path.join(currentPath, 'src', 'core'))) {
+        if (pkg.name === 'bmad-method' || fs.existsSync(path.join(currentPath, 'src', 'core-skills'))) {
           return currentPath;
         }
       } catch {
@@ -24,8 +24,8 @@ function findProjectRoot(startPath = __dirname) {
       }
     }
 
-    // Also check for src/core as a marker
-    if (fs.existsSync(path.join(currentPath, 'src', 'core', 'agents'))) {
+    // Also check for src/core-skills as a marker
+    if (fs.existsSync(path.join(currentPath, 'src', 'core-skills'))) {
       return currentPath;
     }
 
@@ -55,16 +55,16 @@ function getSourcePath(...segments) {
 
 /**
  * Get path to a module's directory
- * bmm is a built-in module directly under src/
- * core is also directly under src/
+ * bmm is a built-in module directly under src/bmm-skills
+ * core is also directly under src/core-skills
  * All other modules are stored remote
  */
 function getModulePath(moduleName, ...segments) {
   if (moduleName === 'core') {
-    return getSourcePath('core', ...segments);
+    return getSourcePath('core-skills', ...segments);
   }
   if (moduleName === 'bmm') {
-    return getSourcePath('bmm', ...segments);
+    return getSourcePath('bmm-skills', ...segments);
   }
   return getSourcePath('modules', moduleName, ...segments);
 }

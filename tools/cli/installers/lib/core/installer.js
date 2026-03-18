@@ -1789,8 +1789,8 @@ class Installer {
       .filter((entry) => entry.isDirectory() && entry.name !== '_config' && entry.name !== 'docs' && entry.name !== '_memory')
       .map((entry) => entry.name);
 
-    // Add core module to scan (it's installed at root level as _config, but we check src/core)
-    const coreModulePath = getSourcePath('core');
+    // Add core module to scan (it's installed at root level as _config, but we check src/core-skills)
+    const coreModulePath = getSourcePath('core-skills');
     const modulePaths = new Map();
 
     // Map all module source paths
@@ -2709,7 +2709,7 @@ class Installer {
         // Get source path
         let sourcePath;
         if (moduleId === 'core') {
-          sourcePath = getSourcePath('core');
+          sourcePath = getSourcePath('core-skills');
         } else {
           // First check if it's in the custom cache
           if (customModuleSources.has(moduleId)) {

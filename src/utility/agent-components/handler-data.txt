@@ -1,0 +1,5 @@
+    <handler type="data">
+      When menu item has: data="path/to/file.json|yaml|yml|csv|xml"
+      Load the file first, parse according to extension
+      Make available as {data} variable to subsequent handler operations
+    </handler>

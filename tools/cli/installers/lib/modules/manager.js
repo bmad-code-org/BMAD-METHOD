@@ -195,10 +195,10 @@ class ModuleManager {
     const modules = [];
     const customModules = [];
 
-    // Add built-in bmm module (directly under src/bmm)
-    const bmmPath = getSourcePath('bmm');
+    // Add built-in bmm module (directly under src/bmm-skills)
+    const bmmPath = getSourcePath('bmm-skills');
     if (await fs.pathExists(bmmPath)) {
-      const bmmInfo = await this.getModuleInfo(bmmPath, 'bmm', 'src/bmm');
+      const bmmInfo = await this.getModuleInfo(bmmPath, 'bmm', 'src/bmm-skills');
       if (bmmInfo) {
         modules.push(bmmInfo);
       }
@@ -250,8 +250,8 @@ class ModuleManager {
       return null;
     }
 
-    // Mark as custom if it's using custom.yaml OR if it's outside src/bmm or src/core
-    const isCustomSource = sourceDescription !== 'src/bmm' && sourceDescription !== 'src/core' && sourceDescription !== 'src/modules';
+    // Mark as custom if it's using custom.yaml OR if it's outside src/bmm-skills or src/core-skills
+    const isCustomSource = sourceDescription !== 'src/bmm-skills' && sourceDescription !== 'src/core-skills' && sourceDescription !== 'src/modules';
     const moduleInfo = {
       id: defaultName,
       path: modulePath,
@@ -300,9 +300,9 @@ class ModuleManager {
       return this.customModulePaths.get(moduleCode);
     }
 
-    // Check for built-in bmm module (directly under src/bmm)
+    // Check for built-in bmm module (directly under src/bmm-skills)
     if (moduleCode === 'bmm') {
-      const bmmPath = getSourcePath('bmm');
+      const bmmPath = getSourcePath('bmm-skills');
       if (await fs.pathExists(bmmPath)) {
         return bmmPath;
       }
@@ -1141,10 +1141,10 @@ class ModuleManager {
     const projectRoot = path.dirname(bmadDir);
     const emptyResult = { createdDirs: [], movedDirs: [], createdWdsFolders: [] };
 
-    // Special handling for core module - it's in src/core not src/modules
+    // Special handling for core module - it's in src/core-skills not src/modules
     let sourcePath;
     if (moduleName === 'core') {
-      sourcePath = getSourcePath('core');
+      sourcePath = getSourcePath('core-skills');
     } else {
       sourcePath = await this.findModuleSource(moduleName, { silent: true });
       if (!sourcePath) {
