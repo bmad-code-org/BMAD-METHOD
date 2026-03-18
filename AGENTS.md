@@ -9,3 +9,4 @@ Open source framework for structured, agent-assisted software delivery.
   `quality` mirrors the checks in `.github/workflows/quality.yaml`.
 
 - Skill validation rules are in `tools/skill-validator.md`.
+- Deterministic skill checks run via `npm run validate:skills` (included in `quality`).
