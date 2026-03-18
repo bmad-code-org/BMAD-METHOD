@@ -1,7 +1,7 @@
 ---
 # File references (ONLY variables used in this step)
 prdFile: '{prd_file_path}'
-validationWorkflow: '{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-prd/steps-v/step-v-01-discovery.md'
+validationWorkflow: '{project-root}/_bmad/bmm-skills/2-plan-workflows/create-prd/steps-v/step-v-01-discovery.md'
 ---
 
 # Step E-4: Complete & Validate

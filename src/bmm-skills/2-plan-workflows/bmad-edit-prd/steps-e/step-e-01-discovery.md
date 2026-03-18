@@ -1,6 +1,6 @@
 ---
 # File references (ONLY variables used in this step)
-prdPurpose: '{project-root}/_bmad/bmm/workflows/2-plan-workflows/create-prd/data/prd-purpose.md'
+prdPurpose: '{project-root}/_bmad/bmm-skills/2-plan-workflows/create-prd/data/prd-purpose.md'
 ---
 
 # Step E-1: Discovery & Understanding
