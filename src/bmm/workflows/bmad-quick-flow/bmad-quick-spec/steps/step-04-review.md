@@ -127,6 +127,8 @@ bmad-review-adversarial-general {finalFile}
 
 Bring the findings back to this session to triage and apply fixes before moving to development.
 
+If you make material changes via **Advanced Elicitation** or **Party Mode**, rerun **Adversarial Review** before moving to development.
+
 Once you are fully satisfied with the spec (ideally after **Adversarial Review** and maybe a few rounds of **Advanced Elicitation**), open a new chat/session and run implementation for best results:
 
 \`\`\`
@@ -141,7 +143,10 @@ b) **HALT and wait for user selection.**
 #### Menu Handling Logic:
 
 - IF A: Invoke the `bmad-advanced-elicitation` skill with current spec content, process enhanced insights, ask user "Accept improvements? (y/n)", if yes update spec then redisplay menu, if no keep original then redisplay menu
-- IF B: Invoke the `bmad-quick-dev` skill with `{finalFile}` in a fresh context if possible (warn: fresh context is better)
+- IF B: Display the copy-paste command for running dev in a fresh context and HALT (do NOT start development in the current session):
+  ```
+  quick-dev {finalFile}
+  ```
 - IF D: Exit workflow - display final confirmation and path to spec
 - IF P: Invoke the `bmad-party-mode` skill with current spec content, process collaborative insights, ask user "Accept changes? (y/n)", if yes update spec then redisplay menu, if no keep original then redisplay menu
 - IF R: Execute Adversarial Review (see below)
@@ -155,7 +160,7 @@ b) **HALT and wait for user selection.**
 #### Adversarial Review [R] Process:
 
 1. **Invoke Adversarial Review Skill**:
-       > With `{finalFile}` constructed, invoke the `bmad-review-adversarial-general` skill. If possible, use information asymmetry: invoke the skill in a separate subagent or process with read access to the project, but no context except the `{finalFile}`.
+       > With `{finalFile}` constructed, invoke the `bmad-review-adversarial-general` skill. If possible, use information asymmetry: invoke the skill in a separate subagent or process that is ideally only provided the spec (`{finalFile}`) — note that project read access may still exist, but the reviewer should focus solely on the spec content.
        > Pass `{finalFile}` as the content to review. The skill should return a list of findings.
 
     2. **Process Findings**:
@@ -177,7 +182,13 @@ b) **HALT and wait for user selection.**
 
 `{finalFile}`
 
-When you're ready to implement, run:
+If you haven't run an adversarial review yet, open a new chat/session and run:
+
+```
+bmad-review-adversarial-general {finalFile}
+```
+
+When you're ready to implement, open a new chat/session and run:
 
 ```
 quick-dev {finalFile}
