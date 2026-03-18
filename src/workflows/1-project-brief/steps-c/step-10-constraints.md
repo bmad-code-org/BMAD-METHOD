@@ -47,6 +47,19 @@ Help user identify constraints as design parameters.
 
 ## Sequence of Instructions (Do not deviate, skip, or optimize)
 
+### 0. Check Material Analysis Status
+
+**If constraints were already confirmed during the Material Analysis Phase (Step 1):**
+Run in **Confirmation Mode** — do NOT re-run the full exploratory conversation:
+1. Reference the confirmed constraints: "We confirmed your constraints as [synthesis from analysis phase]."
+2. Ask: "Anything to add or refine before I document it?"
+3. If nothing: synthesize, document, and advance to the Design Log / State Update step
+4. If additions: capture them, update the synthesis, confirm, then advance
+5. Skip the exploratory substeps below — they are for discovery, not re-discovery
+
+**If no materials exist or constraints were not covered in materials:**
+Run the full exploration below.
+
 ### 1. Frame Positively
 Design parameters.
 

@@ -54,6 +54,19 @@ Help the user define their ideal customer profile by exploring who we are design
 
 ## Sequence of Instructions (Do not deviate, skip, or optimize)
 
+### 0. Check Material Analysis Status
+
+**If target users were already confirmed during the Material Analysis Phase (Step 1):**
+Run in **Confirmation Mode** — do NOT re-run the full exploratory conversation:
+1. Reference the confirmed target users: "We confirmed your target users as [synthesis from analysis phase]."
+2. Ask: "Anything to add or refine before I document it?"
+3. If nothing: synthesize, document, and advance to the Design Log / State Update step
+4. If additions: capture them, update the synthesis, confirm, then advance
+5. Skip the exploratory substeps below — they are for discovery, not re-discovery
+
+**If no materials exist or target users were not covered in materials:**
+Run the full exploration below.
+
 ### 1. Guide User Description
 Guide user to describe their ideal users in detail. Ask about their role, demographics, daily experience, frustrations, goals, and current solutions. Also identify any secondary users or stakeholders.
 

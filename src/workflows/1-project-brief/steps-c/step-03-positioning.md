@@ -48,6 +48,19 @@ Help the user explore and articulate their positioning through natural conversat
 
 ## Sequence of Instructions (Do not deviate, skip, or optimize)
 
+### 0. Check Material Analysis Status
+
+**If positioning was already confirmed during the Material Analysis Phase (Step 1):**
+Run in **Confirmation Mode** — do NOT re-run the full exploratory conversation:
+1. Reference the confirmed positioning: "We confirmed your positioning as [synthesis from analysis phase]."
+2. Ask: "Anything to add or refine before I document it?"
+3. If nothing: synthesize, document, and advance to the Design Log / State Update step
+4. If additions: capture them, update the synthesis, confirm, then advance
+5. Skip the exploratory substeps below — they are for discovery, not re-discovery
+
+**If no materials exist or positioning was not covered in materials:**
+Run the full exploration below.
+
 ### 1. Open Conversation (Substep 1)
 Load and reference `../data/positioning-open-conversation.md`. Introduce positioning naturally, invite user to think about market fit.
 

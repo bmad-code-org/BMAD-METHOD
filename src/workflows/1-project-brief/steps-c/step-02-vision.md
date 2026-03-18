@@ -48,6 +48,19 @@ Help the user explore and articulate their vision through natural conversation, 
 
 ## Sequence of Instructions (Do not deviate, skip, or optimize)
 
+### 0. Check Material Analysis Status
+
+**If vision was already confirmed during the Material Analysis Phase (Step 1):**
+Run in **Confirmation Mode** — do NOT re-run the full exploratory conversation:
+1. Reference the confirmed vision: "We confirmed your vision as [synthesis from analysis phase]."
+2. Ask: "Anything to add or refine before I document it?"
+3. If nothing: synthesize, document, and advance to Step 5 (State Update)
+4. If additions: capture them, update the synthesis, confirm, then advance
+5. Skip substeps 1-3 below — they are for discovery, not re-discovery
+
+**If no materials exist or vision was not covered:**
+Run the full exploration below.
+
 ### 1. Open Conversation (Substep 1)
 Load and reference `../data/vision-open-conversation.md`. Adapt opening question to context, invite user to think out loud about what they are building and why it matters.
 

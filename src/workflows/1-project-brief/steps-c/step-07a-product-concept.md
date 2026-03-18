@@ -54,6 +54,19 @@ Capture the designer's STRUCTURAL vision — the founding idea, key concept, or 
 
 ## Sequence of Instructions (Do not deviate, skip, or optimize)
 
+### 0. Check Material Analysis Status
+
+**If product concept was already confirmed during the Material Analysis Phase (Step 1):**
+Run in **Confirmation Mode** — do NOT re-run the full exploratory conversation:
+1. Reference the confirmed product concept: "We confirmed your product concept as [synthesis from analysis phase]."
+2. Ask: "Anything to add or refine before I document it?"
+3. If nothing: synthesize, document, and advance to the Design Log / State Update step
+4. If additions: capture them, update the synthesis, confirm, then advance
+5. Skip the exploratory substeps below — they are for discovery, not re-discovery
+
+**If no materials exist or product concept was not covered in materials:**
+Run the full exploration below.
+
 ### 1. Open the Concept Conversation
 Check for existing materials first. Without materials: Ask about the core concept, the structural idea, what everything builds from. With materials: Reference what they mention and probe deeper.
 

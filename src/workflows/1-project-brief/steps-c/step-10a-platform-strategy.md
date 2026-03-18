@@ -47,6 +47,19 @@ Establish the technical platform strategy and device support requirements that w
 
 ## Sequence of Instructions (Do not deviate, skip, or optimize)
 
+### 0. Check Material Analysis Status
+
+**If platform strategy was already confirmed during the Material Analysis Phase (Step 1):**
+Run in **Confirmation Mode** — do NOT re-run the full exploratory conversation:
+1. Reference the confirmed platform strategy: "We confirmed your platform strategy as [synthesis from analysis phase]."
+2. Ask: "Anything to add or refine before I document it?"
+3. If nothing: synthesize, document, and advance to the Design Log / State Update step
+4. If additions: capture them, update the synthesis, confirm, then advance
+5. Skip the exploratory substeps below — they are for discovery, not re-discovery
+
+**If no materials exist or platform strategy was not covered in materials:**
+Run the full exploration below.
+
 ### 1. Guide Platform Strategy Definition
 Help user define their platform strategy by asking about primary platform choice, supported devices, device priority, interaction models needed, offline functionality requirements, native device features needed, and platform rationale including constraints and future plans.
 

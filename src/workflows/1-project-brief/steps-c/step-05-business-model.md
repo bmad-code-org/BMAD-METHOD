@@ -48,6 +48,19 @@ Help the user identify and understand their business model (B2B, B2C, or both) t
 
 ## Sequence of Instructions (Do not deviate, skip, or optimize)
 
+### 0. Check Material Analysis Status
+
+**If business model was already confirmed during the Material Analysis Phase (Step 1):**
+Run in **Confirmation Mode** — do NOT re-run the full exploratory conversation:
+1. Reference the confirmed business model: "We confirmed your business model as [synthesis from analysis phase]."
+2. Ask: "Anything to add or refine before I document it?"
+3. If nothing: synthesize, document, and advance to the Design Log / State Update step
+4. If additions: capture them, update the synthesis, confirm, then advance
+5. Skip the exploratory substeps below — they are for discovery, not re-discovery
+
+**If no materials exist or business model was not covered in materials:**
+Run the full exploration below.
+
 ### 1. Open the Conversation
 Start naturally based on context. If they have mentioned customers already, reference that. If unclear, ask about who pays for the product. Adapt tone to stakes level.
 

@@ -56,9 +56,28 @@ Welcome the user and explain that this is their strategic foundation. This workf
 - Competitive landscape (what alternatives exist)
 - Constraints & context (real-world limitations)
 
-Set time expectations (30-60 minutes) and ask about any existing context that should be considered.
+Set time expectations and ask about any existing context that should be considered.
 
-### 2. Design Log Update
+If the user provides or has provided existing materials (PRD, brief, research, website, guidelines), acknowledge them and tell the user you will analyze them before starting the strategic conversation.
+
+### 2. Material Analysis Phase (if materials exist)
+
+**MANDATORY when `existing_materials.has_materials` is true or when the user provides documents during this step.**
+
+Load and follow `src/data/agent-guides/saga/working-with-existing-materials.md` — specifically the **Material Analysis Phase** (Steps A through D).
+
+This means:
+1. **Read** every provided document completely
+2. **Extract** information into categories (vision, positioning, users, business model, etc.)
+3. **Present** your findings ONE category at a time — quote the source, add your interpretation, ask the user to confirm/refine/reject each one
+4. **Identify gaps** — tell the user which topics are not covered in their materials
+5. **Plan the workflow** — tell the user which steps will be quick confirmations vs. full conversations
+
+**Time estimate adjustment:** If materials are comprehensive, tell the user: "Since you've already done a lot of the thinking, this will be faster — probably 15-20 minutes to confirm and fill gaps, rather than a full 60-minute discovery."
+
+**CRITICAL:** Do NOT skip this phase and jump to Step 2 (Vision). The analysis must happen here, before any step-by-step workflow begins. If you acknowledge the materials and then proceed to ask "What's your vision?" — that is a SYSTEM FAILURE.
+
+### 3. Design Log Update
 **Mandatory:** Update `dialog/00-context.md` before marking this step complete.
 
 Fill in:
@@ -89,8 +108,9 @@ ONLY WHEN user confirms readiness will you then load and read fully `{nextStepFi
 
 ### ✅ SUCCESS:
 - User welcomed and expectations set
-- Time estimate communicated (30-60 minutes)
+- Time estimate communicated
 - Existing context gathered (or noted as none)
+- If materials provided: Material Analysis Phase completed (extract → present → confirm → identify gaps → plan workflow)
 - Design log updated with project metadata
 - User confirms readiness to proceed
 
@@ -99,5 +119,8 @@ ONLY WHEN user confirms readiness will you then load and read fully `{nextStepFi
 - Generated content without user input
 - Skipped design log update
 - Did not wait for user confirmation before proceeding
+- Materials provided but NOT analyzed (acknowledged and moved on = FAILURE)
+- Materials analyzed but NOT presented to user for confirmation (pocketed silently = FAILURE)
+- Asked questions whose answers are clearly in the provided documents
 
 **Master Rule:** Skipping steps, optimizing sequences, or not following exact instructions is FORBIDDEN and constitutes SYSTEM FAILURE.

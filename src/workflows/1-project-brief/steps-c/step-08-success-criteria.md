@@ -47,6 +47,19 @@ Help the user explore and define what success looks like through conversational 
 
 ## Sequence of Instructions (Do not deviate, skip, or optimize)
 
+### 0. Check Material Analysis Status
+
+**If success criteria were already confirmed during the Material Analysis Phase (Step 1):**
+Run in **Confirmation Mode** — do NOT re-run the full exploratory conversation:
+1. Reference the confirmed success criteria: "We confirmed your success criteria as [synthesis from analysis phase]."
+2. Ask: "Anything to add or refine before I document it?"
+3. If nothing: synthesize, document, and advance to the Design Log / State Update step
+4. If additions: capture them, update the synthesis, confirm, then advance
+5. Skip the exploratory substeps below — they are for discovery, not re-discovery
+
+**If no materials exist or success criteria were not covered in materials:**
+Run the full exploration below.
+
 ### 1. Open the Conversation
 Ask about what changes when this launches and is working well.
 
