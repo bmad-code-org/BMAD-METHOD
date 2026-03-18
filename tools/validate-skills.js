@@ -135,6 +135,8 @@ function parseFrontmatterMultiline(content) {
       currentKey = line.slice(0, colonIndex).trim();
       currentValue = line.slice(colonIndex + 1);
     } else if (currentKey !== null) {
+      // Skip YAML comment lines
+      if (line.trimStart().startsWith('#')) continue;
       // Continuation of multiline value
       currentValue += '\n' + line;
     }
@@ -448,19 +450,19 @@ function validateSkill(skillDir) {
       });
     }
 
-    // Check content for {installed_path}
+    // Check content for any mention of installed_path (variable ref, prose, bare text)
     const stripped = stripCodeBlocks(content);
     const lines = stripped.split('\n');
     for (const [i, line] of lines.entries()) {
-      if (line.includes('{installed_path}')) {
+      if (/installed_path/i.test(line)) {
         findings.push({
           rule: 'PATH-02',
           title: 'No installed_path Variable',
           severity: 'HIGH',
           file: relFile,
           line: i + 1,
-          detail: '`{installed_path}` reference found in content.',
-          fix: 'Replace `{installed_path}/path` with a relative path (`./path` or `../path`).',
+          detail: '`installed_path` reference found in content.',
+          fix: 'Remove all installed_path usage. Use relative paths (`./path` or `../path`) instead.',
         });
       }
     }
