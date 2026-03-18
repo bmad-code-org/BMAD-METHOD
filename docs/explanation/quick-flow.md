@@ -5,11 +5,7 @@ sidebar:
   order: 1
 ---
 
-Skip the ceremony. Quick Flow takes you from idea to working code in two skills - no Product Brief, no PRD, no Architecture doc.
-
-:::tip[Want a Unified Variant?]
-If you want one workflow to clarify, plan, implement, review, and present in a single run, see [Quick Dev New Preview](./quick-dev-new-preview.md).
-:::
+Skip the ceremony. Quick Flow takes you from intent to working code in a single workflow — no Product Brief, no PRD, no Architecture doc.
 
 ## When to Use It
 
@@ -32,31 +28,33 @@ If you start a Quick Flow and realize the scope is bigger than expected, `bmad-q
 
 ## How It Works
 
-Quick Flow has two skills, each backed by a structured workflow. You can run them together or independently.
+Run `bmad-quick-dev` and the workflow handles everything — clarifying intent, planning, implementing, reviewing, and presenting results.
 
-### quick-spec: Plan
+### 1. Clarify intent
 
-Run `bmad-quick-spec` and Barry (the Quick Flow agent) walks you through a conversational discovery process:
+You describe what you want. The workflow compresses your request into one coherent goal — small enough, clear enough, and contradiction-free enough to execute safely. Intent can come from many sources: a few phrases, a bug tracker link, plan mode output, chat session text, or even a story number from your epics.
 
-1. **Understand** - You describe what you want to build. Barry scans the codebase to ask informed questions, then captures a problem statement, solution approach, and scope boundaries.
-2. **Investigate** - Barry reads relevant files, maps code patterns, identifies files to modify, and documents the technical context.
-3. **Generate** - Produces a complete tech-spec with ordered implementation tasks (specific file paths and actions), acceptance criteria in Given/When/Then format, testing strategy, and dependencies.
-4. **Review** - Presents the full spec for your sign-off. You can edit, ask questions, run adversarial review, or refine with advanced elicitation before finalizing.
+### 2. Route to the smallest safe path
 
-The output is a `tech-spec-{slug}.md` file saved to your project's implementation artifacts folder. It contains everything a fresh agent needs to implement the feature - no conversation history required.
+Once the goal is clear, the workflow decides whether this is a true one-shot change or needs the fuller path. Small, zero-blast-radius changes go straight to implementation. Everything else goes through planning so the model has a stronger boundary before running autonomously.
 
-### quick-dev: Build
+### 3. Plan and implement
 
-Run `bmad-quick-dev` and Barry implements the work. It operates in two modes:
+On the planning path, the workflow produces a complete tech-spec with ordered implementation tasks, acceptance criteria in Given/When/Then format, and testing strategy. After you approve the spec, it becomes the boundary the model executes against with less supervision.
 
-- **Tech-spec mode** - Point it at a spec file (`quick-dev tech-spec-auth.md`) and it executes every task in order, writes tests, and verifies acceptance criteria.
-- **Direct mode** - Give it instructions directly (`quick-dev "refactor the auth middleware"`) and it gathers context, builds a mental plan, and executes.
+### 4. Review and present
 
-After implementation, `bmad-quick-dev` runs a self-check audit against all tasks and acceptance criteria, then triggers an adversarial code review of the diff. Findings are presented for you to resolve before wrapping up.
+After implementation, the workflow runs a self-check audit and adversarial code review of the diff. Review acts as triage — findings tied to the current change are addressed, while incidental findings are deferred to keep the run focused. Results are presented for your sign-off.
 
-:::tip[Fresh Context]
-For best results, run `bmad-quick-dev` in a new conversation after finishing `bmad-quick-spec`. This gives the implementation agent clean context focused solely on building.
-:::
+### Human-in-the-loop checkpoints
+
+The workflow relocates human control to a small number of high-value moments:
+
+- **Intent clarification** — turning a messy request into one coherent goal
+- **Spec approval** — confirming the frozen understanding is the right thing to build
+- **Final review** — deciding whether the result is acceptable
+
+Between these checkpoints, the model runs longer with less supervision. This is deliberate — it trades continuous supervision for focused human attention at moments with the highest leverage.
 
 ## What Quick Flow Skips
 
@@ -69,9 +67,9 @@ The full BMad Method produces a Product Brief, PRD, Architecture doc, and Epic/S
 
 ## Escalating to Full BMad Method
 
-Quick Flow includes built-in guardrails for scope detection. When you run `bmad-quick-dev` with a direct request, it evaluates signals like multi-component mentions, system-level language, and uncertainty about approach. If it detects the work is bigger than a quick flow:
+Quick Flow includes built-in guardrails for scope detection. When you run `bmad-quick-dev`, it evaluates signals like multi-component mentions, system-level language, and uncertainty about approach. If it detects the work is bigger than a quick flow:
 
-- **Light escalation** - Recommends running `bmad-quick-spec` first to create a plan
-- **Heavy escalation** - Recommends switching to the full BMad Method PRD process
+- **Light escalation** — Recommends creating a plan before implementation
+- **Heavy escalation** — Recommends switching to the full BMad Method PRD process
 
-You can also escalate manually at any time. Your tech-spec work carries forward - it becomes input for the broader planning process rather than being discarded.
+You can also escalate manually at any time. Your tech-spec work carries forward — it becomes input for the broader planning process rather than being discarded.

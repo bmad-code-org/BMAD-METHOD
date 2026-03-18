@@ -83,7 +83,7 @@ https://bmad-code-org.github.io/BMAD-METHOD/llms-full.txt
 :::note[Example]
 **Q:** "Tell me the fastest way to build something with BMad"
 
-**A:** Use Quick Flow: Run `bmad-quick-spec` to write a technical specification, then `bmad-quick-dev` to implement it—skipping the full planning phases.
+**A:** Use Quick Flow: Run `bmad-quick-dev` — it clarifies your intent, plans, implements, reviews, and presents results in a single workflow, skipping the full planning phases.
 :::
 
 ## What You Get

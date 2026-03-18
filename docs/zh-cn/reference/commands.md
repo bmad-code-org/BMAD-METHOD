@@ -95,7 +95,7 @@ BMad 提供两种开始工作的方式，它们服务于不同的目的。
 | `bmad-bmm-create-architecture` | 设计系统架构 |
 | `bmad-bmm-dev-story` | 实现故事 |
 | `bmad-bmm-code-review` | 运行代码审查 |
-| `bmad-bmm-quick-spec` | 定义临时更改（快速流程） |
+| `bmad-bmm-quick-dev` | 统一快速流程 — 澄清意图、规划、实现、审查、呈现 |
 
 参见[工作流地图](./workflow-map.md)获取按阶段组织的完整工作流参考。
 
