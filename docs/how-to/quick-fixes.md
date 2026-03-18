@@ -24,7 +24,7 @@ Use the **DEV agent** directly for bug fixes, refactorings, or small targeted ch
 | Situation | Agent | Why |
 | --- | --- | --- |
 | Fix a specific bug or make a small, scoped change | **DEV agent** | Jumps straight into implementation without planning overhead |
-| Change touches several files or you want a written plan first | **Quick Flow Solo Dev** | Creates a quick-spec before implementation so the agent stays aligned to your standards |
+| Change touches several files or you want a written plan first | **Quick Flow Solo Dev** | Clarifies intent, plans, implements, and reviews in a single workflow so the agent stays aligned to your standards |
 
 If you are unsure, start with the DEV agent. You can always escalate to Quick Flow if the change grows.
 
@@ -44,7 +44,7 @@ This loads the agent's persona and capabilities into the session. If you decide 
 bmad-quick-flow-solo-dev
 ```
 
-Once the Solo Dev agent is loaded, describe your change and ask it to create a **quick-spec**. The agent drafts a lightweight spec capturing what you want to change and how. After you approve the quick-spec, tell the agent to start the **Quick Flow dev cycle** -- it will implement the change, run tests, and perform a self-review, all guided by the spec you just approved.
+Once the Solo Dev agent is loaded, describe your change and tell it to run **quick-dev**. The workflow will clarify your intent, create a plan, implement the change, run a code review, and present results — all in a single run.
 
 :::tip[Fresh Chats]
 Always start a new chat session when loading an agent. Reusing a session from a previous workflow can cause context conflicts.

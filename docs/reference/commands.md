@@ -97,7 +97,7 @@ Workflow skills run a structured, multi-step process without loading an agent pe
 | `bmad-create-epics-and-stories` | Create epics and stories |
 | `bmad-dev-story` | Implement a story |
 | `bmad-code-review` | Run a code review |
-| `bmad-quick-spec` | Define an ad-hoc change (Quick Flow) |
+| `bmad-quick-dev` | Unified quick flow — clarify intent, plan, implement, review, present |
 
 See [Workflow Map](./workflow-map.md) for the complete workflow reference organized by phase.
 

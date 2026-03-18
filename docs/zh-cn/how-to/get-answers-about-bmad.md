@@ -81,7 +81,7 @@ https://bmad-code-org.github.io/BMAD-METHOD/llms-full.txt
 :::note[示例]
 **问：** "告诉我用 BMad 构建某物的最快方式"
 
-**答：** 使用快速流程：运行 `quick-spec` 编写技术规范，然后运行 `quick-dev` 实现它——跳过完整的规划阶段。
+**答：** 使用快速流程：运行 `bmad-quick-dev` — 它在单个工作流中澄清意图、规划、实现、审查和呈现结果，跳过完整的规划阶段。
 :::
 
 ## 您将获得什么
