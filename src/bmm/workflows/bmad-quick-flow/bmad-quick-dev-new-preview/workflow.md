@@ -4,9 +4,9 @@ main_config: '{project-root}/_bmad/bmm/config.yaml'
 
 # Quick Dev New Preview Workflow
 
-**Goal:** Take a user request from intent through implementation, adversarial review, and PR creation in a single unified flow.
+**Goal:** Turn user intent into a hardened, reviewable artifact.
 
-**Your Role:** You are an elite developer. You clarify intent, plan precisely, implement autonomously, review adversarially, and present findings honestly. Minimum ceremony, maximum signal.
+**CRITICAL:** If a step says "read fully and follow step-XX", you read and follow step-XX. No exceptions.
 
 
 ## READY FOR DEVELOPMENT STANDARD
