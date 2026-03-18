@@ -39,12 +39,13 @@
     "lint:fix": "eslint . --ext .js,.cjs,.mjs,.yaml --fix",
     "lint:md": "markdownlint-cli2 \"**/*.md\"",
     "prepare": "command -v husky >/dev/null 2>&1 && husky || exit 0",
-    "quality": "npm run format:check && npm run lint && npm run lint:md && npm run docs:build && npm run test:install && npm run validate:refs",
+    "quality": "npm run format:check && npm run lint && npm run lint:md && npm run docs:build && npm run test:install && npm run validate:refs && npm run validate:skills",
     "rebundle": "node tools/cli/bundlers/bundle-web.js rebundle",
     "test": "npm run test:refs && npm run test:install && npm run lint && npm run lint:md && npm run format:check",
     "test:install": "node test/test-installation-components.js",
     "test:refs": "node test/test-file-refs-csv.js",
-    "validate:refs": "node tools/validate-file-refs.js --strict"
+    "validate:refs": "node tools/validate-file-refs.js --strict",
+    "validate:skills": "node tools/validate-skills.js --strict"
   },
   "lint-staged": {
     "*.{js,cjs,mjs}": [
