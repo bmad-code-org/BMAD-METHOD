@@ -41,11 +41,6 @@ const positionalArgs = args.filter((a) => !a.startsWith('--'));
 
 // --- Constants ---
 
-const SKILL_LOCATIONS = [path.join(SRC_DIR, 'core', 'skills'), path.join(SRC_DIR, 'core', 'tasks'), path.join(SRC_DIR, 'bmm', 'workflows')];
-
-// Agent skills live separately
-const AGENT_LOCATION = path.join(SRC_DIR, 'bmm', 'agents');
-
 const NAME_REGEX = /^[a-z0-9][a-z0-9-]{0,62}[a-z0-9]$/;
 const STEP_FILENAME_REGEX = /^step-\d{2}[a-z]?-[a-z0-9-]+\.md$/;
 const FORBIDDEN_NAME_SUBSTRINGS = ['anthropic', 'claude'];
@@ -675,8 +670,7 @@ if (require.main === module) {
     skillDirs = [target];
   } else {
     // Discover all skills
-    const allLocations = [...SKILL_LOCATIONS, AGENT_LOCATION];
-    skillDirs = discoverSkillDirs(allLocations);
+    skillDirs = discoverSkillDirs([SRC_DIR]);
   }
 
   if (skillDirs.length === 0) {
