@@ -1,5 +1,32 @@
 # Changelog
 
+## 0.4.0 (2026-03-18)
+
+### Features
+- **Material Analysis Phase** — When users provide existing documents (PRD, brief, research, guidelines), Saga now analyzes them before asking any questions. New protocol: Read → Extract into categories → Present findings one at a time for user confirmation → Identify gaps → Only ask about what's missing. Turns a 60-minute discovery session into a 15-minute confirmation + gap-fill when materials are comprehensive.
+- **Confirmation Mode for all PB steps** — Steps 02–11 now check whether their topic was already confirmed during Material Analysis. If so, they run in Confirmation Mode (quick pass-through) instead of full exploratory conversation. No more re-asking questions whose answers are in the provided documents.
+- **Updated working-with-existing-materials guide** — Complete rewrite of Saga's material handling guide. Old pattern (reference → ask) replaced with new pattern (analyze → present → confirm → fill gaps). Includes explicit failure conditions: acknowledging materials without analyzing them is now defined as a system failure.
+
+### Fixes
+- **"Black hole" problem** — Previously, Saga would accept uploaded documents, say thank you, and proceed as if nothing was provided. Users had to repeat information that was clearly in their documents. The Material Analysis Phase eliminates this entirely.
+
+## 0.3.3 (2026-03-15)
+
+### Changes
+- Remove Idunn agent — Freya takes over PM responsibilities
+- Bump version
+
+## 0.3.2 (2026-03-12)
+
+### Fixes
+- Fix stale folder references in README
+
+## 0.3.1 (2026-03-08)
+
+### Fixes
+- Fix IDE setup crash: yaml module not found in production
+- Fix legacy migration bug
+
 ## 0.3.0 (2026-03-01)
 
 ### Breaking Changes
