@@ -1,0 +1,27 @@
+{
+  "name": "wds-saga",
+  "version": "0.3.4",
+  "description": "Strategic business analyst and product discovery partner",
+  "capabilities": [
+    {
+      "name": "product-brief",
+      "menu-code": "PB",
+      "description": "Create or update the Product Brief (Phase 1)"
+    },
+    {
+      "name": "trigger-map",
+      "menu-code": "TM",
+      "description": "Create Trigger Map from Product Brief (Phase 2)"
+    },
+    {
+      "name": "alignment-signoff",
+      "menu-code": "AS",
+      "description": "Secure stakeholder alignment (pre-Phase 1)"
+    },
+    {
+      "name": "workflow-status",
+      "menu-code": "WS",
+      "description": "Check overall WDS workflow status"
+    }
+  ]
+}

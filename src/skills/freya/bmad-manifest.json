@@ -1,0 +1,22 @@
+{
+  "name": "wds-freya",
+  "version": "0.3.4",
+  "description": "UX designer, scenario facilitator, and visual design partner",
+  "capabilities": [
+    {
+      "name": "scenarios",
+      "menu-code": "SC",
+      "description": "Create UX scenarios from Trigger Map (Phase 3)"
+    },
+    {
+      "name": "ux-design",
+      "menu-code": "UX",
+      "description": "Create wireframes, page specs, and visual design (Phase 4)"
+    },
+    {
+      "name": "workflow-status",
+      "menu-code": "WS",
+      "description": "Check overall WDS workflow status"
+    }
+  ]
+}
