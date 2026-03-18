@@ -764,10 +764,10 @@ class Manifest {
     const configs = {};
 
     for (const moduleName of modules) {
-      // Handle core module differently - it's in src/core not src/modules/core
+      // Handle core module differently - it's in src/core-skills not src/modules/core
       const configPath =
         moduleName === 'core'
-          ? path.join(process.cwd(), 'src', 'core', 'config.yaml')
+          ? path.join(process.cwd(), 'src', 'core-skills', 'config.yaml')
           : path.join(process.cwd(), 'src', 'modules', moduleName, 'config.yaml');
 
       try {

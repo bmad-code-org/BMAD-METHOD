@@ -495,7 +495,7 @@ class YamlXmlBuilder {
 
     // Extract module from path (e.g., /path/to/modules/bmm/agents/pm.yaml -> bmm)
     // or /path/to/bmad/bmm/agents/pm.yaml -> bmm
-    // or /path/to/src/bmm/agents/pm.yaml -> bmm
+    // or /path/to/src/bmm-skills/agents/pm.yaml -> bmm
     let module = 'core'; // default to core
     const pathParts = agentYamlPath.split(path.sep);
 
@@ -515,10 +515,12 @@ class YamlXmlBuilder {
         module = potentialModule;
       }
     } else if (srcIndex !== -1 && pathParts[srcIndex + 1]) {
-      // Path contains /src/{module}/ (bmm and core are directly under src/)
+      // Path contains /src/{module}/ (bmm-skills and core-skills are directly under src/)
       const potentialModule = pathParts[srcIndex + 1];
-      if (potentialModule === 'bmm' || potentialModule === 'core') {
-        module = potentialModule;
+      if (potentialModule === 'bmm-skills') {
+        module = 'bmm';
+      } else if (potentialModule === 'core-skills') {
+        module = 'core';
       }
     }
 
