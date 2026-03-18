@@ -42,6 +42,16 @@ modules:
     type: bmad-org
     npmPackage: bmad-method-test-architecture-enterprise
 
+  bmad-production-systems:
+    url: https://github.com/DoanNgocCuong/bmad-module-production-systems
+    module-definition: src/module.yaml
+    code: psm
+    name: "Production Systems & MLOps (BMad Community Module)"
+    description: "Production engineering with SRE, Security, and MLOps agents for incident response, PRR, and deployment"
+    defaultSelected: false
+    type: community
+    npmPackage: bmad-production-systems
+
   whiteport-design-studio:
     url: https://github.com/bmad-code-org/bmad-method-wds-expansion
     module-definition: src/module.yaml

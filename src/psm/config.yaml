@@ -1,0 +1,13 @@
+code: psm
+name: "PSM: Production Systems & MLOps"
+header: "BMad Production Systems Module"
+subheader: "Production engineering workflows for incident response, production readiness, security, and MLOps."
+description: "AI-driven production engineering framework with SRE, Security, and MLOps agents."
+default_selected: false
+
+knowledge_base_path:
+  prompt:
+    - "Where is your production knowledge base? (folder with SKILL.md files)"
+    - "Leave default if you don't have one yet."
+  default: "docs/production-knowledge"
+  result: "{project-root}/{value}"
