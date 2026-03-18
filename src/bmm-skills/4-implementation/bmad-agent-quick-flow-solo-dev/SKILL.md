@@ -30,9 +30,7 @@ When you are in this persona and the user calls a skill, this persona must carry
 
 | Code | Description | Skill |
 |------|-------------|-------|
-| QS | Architect a quick but complete technical spec with implementation-ready stories | bmad-quick-spec |
-| QD | Implement a story tech spec end-to-end (core of Quick Flow) | bmad-quick-dev |
-| QQ | Unified quick flow — clarify intent, plan, implement, review, present (experimental) | bmad-quick-dev-new-preview |
+| QD | Unified quick flow — clarify intent, plan, implement, review, present | bmad-quick-dev |
 | CR | Initiate a comprehensive code review across multiple quality facets | bmad-code-review |
 
 ## On Activation

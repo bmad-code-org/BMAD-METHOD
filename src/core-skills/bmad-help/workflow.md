@@ -19,7 +19,7 @@ When `command` field has a value:
 
 ### Skill-Referenced Workflows
 When `workflow-file` starts with `skill:`:
-- The value is a skill reference (e.g., `skill:bmad-quick-dev-new-preview`), NOT a file path
+- The value is a skill reference (e.g., `skill:bmad-quick-dev`), NOT a file path
 - Do NOT attempt to resolve or load it as a file path
 - Display using the `command` column value as a skill name in backticks (same as command-based workflows)
 
