@@ -1,7 +1,0 @@
-# Powered by BMAD-CORE™
-bundle:
-  name: Production Operations Team
-  icon: ⚙️
-  description: Production engineering team for incident response, security, and MLOps
-agents: "*"
-party: "./default-party.csv"
