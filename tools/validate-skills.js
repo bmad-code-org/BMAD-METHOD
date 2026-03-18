@@ -1,7 +1,7 @@
 /**
  * Deterministic Skill Validator
  *
- * Validates 13 deterministic rules across all skill directories.
+ * Validates 14 deterministic rules across all skill directories.
  * Acts as a fast first-pass complement to the inference-based skill validator.
  *
  * What it checks:
@@ -11,6 +11,7 @@
  * - SKILL-04: name format (lowercase, hyphens, no forbidden substrings)
  * - SKILL-05: name matches directory basename
  * - SKILL-06: description quality (length, "Use when"/"Use if")
+ * - SKILL-07: SKILL.md has body content after frontmatter
  * - WF-01: workflow.md frontmatter has no name
  * - WF-02: workflow.md frontmatter has no description
  * - PATH-02: no installed_path variable
@@ -68,8 +69,15 @@ function parseFrontmatter(content) {
   const trimmed = content.trimStart();
   if (!trimmed.startsWith('---')) return null;
 
-  const endIndex = trimmed.indexOf('\n---', 3);
-  if (endIndex === -1) return null;
+  let endIndex = trimmed.indexOf('\n---\n', 3);
+  if (endIndex === -1) {
+    // Handle file ending with \n---
+    if (trimmed.endsWith('\n---')) {
+      endIndex = trimmed.length - 4;
+    } else {
+      return null;
+    }
+  }
 
   const fmBlock = trimmed.slice(3, endIndex).trim();
   if (fmBlock === '') return {};
@@ -100,8 +108,15 @@ function parseFrontmatterMultiline(content) {
   const trimmed = content.trimStart();
   if (!trimmed.startsWith('---')) return null;
 
-  const endIndex = trimmed.indexOf('\n---', 3);
-  if (endIndex === -1) return null;
+  let endIndex = trimmed.indexOf('\n---\n', 3);
+  if (endIndex === -1) {
+    // Handle file ending with \n---
+    if (trimmed.endsWith('\n---')) {
+      endIndex = trimmed.length - 4;
+    } else {
+      return null;
+    }
+  }
 
   const fmBlock = trimmed.slice(3, endIndex).trim();
   if (fmBlock === '') return {};
@@ -245,7 +260,7 @@ function validateSkill(skillDir) {
       detail: 'SKILL.md not found in skill directory.',
       fix: 'Create SKILL.md as the skill entrypoint.',
     });
-    // Cannot check SKILL-02 through SKILL-06 without SKILL.md
+    // Cannot check SKILL-02 through SKILL-07 without SKILL.md
     return findings;
   }
 
@@ -358,6 +373,33 @@ function validateSkill(skillDir) {
         file: 'SKILL.md',
         detail: 'description does not contain "Use when" or "Use if" trigger phrase.',
         fix: 'Append a "Use when..." clause to explain when to invoke this skill.',
+      });
+    }
+  }
+
+  // --- SKILL-07: SKILL.md must have body content after frontmatter ---
+  {
+    const trimmed = skillContent.trimStart();
+    let bodyStart = -1;
+    if (trimmed.startsWith('---')) {
+      let endIdx = trimmed.indexOf('\n---\n', 3);
+      if (endIdx !== -1) {
+        bodyStart = endIdx + 4;
+      } else if (trimmed.endsWith('\n---')) {
+        bodyStart = trimmed.length; // no body at all
+      }
+    } else {
+      bodyStart = 0; // no frontmatter, entire file is body
+    }
+    const body = bodyStart >= 0 ? trimmed.slice(bodyStart).trim() : '';
+    if (body === '') {
+      findings.push({
+        rule: 'SKILL-07',
+        title: 'SKILL.md Must Have Body Content',
+        severity: 'HIGH',
+        file: 'SKILL.md',
+        detail: 'SKILL.md has no content after frontmatter. L2 instructions are required.',
+        fix: 'Add markdown body with skill instructions after the closing ---.',
       });
     }
   }
