@@ -32,8 +32,11 @@ async function loadSkillManifest(dirPath) {
  */
 function getCanonicalId(manifest, filename) {
   if (!manifest) return '';
-  // Single-entry manifest applies to all files in the directory
-  if (manifest.__single) return manifest.__single.canonicalId || '';
+  // Single-entry manifest (agent-type entries) — identity is derived from directory name, not manifest
+  if (manifest.__single) {
+    if (manifest.__single.type) return '';
+    return manifest.__single.canonicalId || '';
+  }
   // Multi-entry: look up by filename directly
   if (manifest[filename]) return manifest[filename].canonicalId || '';
   // Fallback: try alternate extensions for compiled files

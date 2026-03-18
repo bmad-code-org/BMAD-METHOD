@@ -71,8 +71,7 @@ async function createTestBmadFixture() {
 
   await fs.ensureDir(path.join(fixtureDir, 'core', 'agents'));
   await fs.writeFile(path.join(fixtureDir, 'core', 'agents', 'bmad-master.md'), minimalAgent);
-  // Skill manifest so the installer uses 'bmad-master' as the canonical skill name
-  await fs.writeFile(path.join(fixtureDir, 'core', 'agents', 'bmad-skill-manifest.yaml'), 'bmad-master.md:\n  canonicalId: bmad-master\n');
+  // No sidecar manifest needed — agent identity is derived from directory name
 
   // Minimal compiled agent for bmm module (tests use selectedModules: ['bmm'])
   await fs.ensureDir(path.join(fixtureDir, 'bmm', 'agents'));
@@ -91,7 +90,7 @@ async function createSkillCollisionFixture() {
     path.join(configDir, 'agent-manifest.csv'),
     [
       'name,displayName,title,icon,capabilities,role,identity,communicationStyle,principles,module,path,canonicalId',
-      '"bmad-master","BMAD Master","","","","","","","","core","_bmad/core/agents/bmad-master.md","bmad-master"',
+      '"bmad-master","BMAD Master","","","","","","","","core","_bmad/core/agents/bmad-master.md",""',
       '',
     ].join('\n'),
   );
@@ -247,7 +246,7 @@ async function runTests() {
 
     assert(result.success === true, 'Windsurf setup succeeds against temp project');
 
-    const skillFile = path.join(tempProjectDir, '.windsurf', 'skills', 'bmad-master', 'SKILL.md');
+    const skillFile = path.join(tempProjectDir, '.windsurf', 'skills', 'bmad-agent-bmad-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile), 'Windsurf install writes SKILL.md directory output');
 
     assert(!(await fs.pathExists(path.join(tempProjectDir, '.windsurf', 'workflows'))), 'Windsurf setup removes legacy workflows dir');
@@ -295,7 +294,7 @@ async function runTests() {
 
     assert(result.success === true, 'Kiro setup succeeds against temp project');
 
-    const skillFile = path.join(tempProjectDir, '.kiro', 'skills', 'bmad-master', 'SKILL.md');
+    const skillFile = path.join(tempProjectDir, '.kiro', 'skills', 'bmad-agent-bmad-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile), 'Kiro install writes SKILL.md directory output');
 
     assert(!(await fs.pathExists(path.join(tempProjectDir, '.kiro', 'steering'))), 'Kiro setup removes legacy steering dir');
@@ -343,7 +342,7 @@ async function runTests() {
 
     assert(result.success === true, 'Antigravity setup succeeds against temp project');
 
-    const skillFile = path.join(tempProjectDir, '.agent', 'skills', 'bmad-master', 'SKILL.md');
+    const skillFile = path.join(tempProjectDir, '.agent', 'skills', 'bmad-agent-bmad-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile), 'Antigravity install writes SKILL.md directory output');
 
     assert(!(await fs.pathExists(path.join(tempProjectDir, '.agent', 'workflows'))), 'Antigravity setup removes legacy workflows dir');
@@ -396,7 +395,7 @@ async function runTests() {
 
     assert(result.success === true, 'Auggie setup succeeds against temp project');
 
-    const skillFile = path.join(tempProjectDir, '.augment', 'skills', 'bmad-master', 'SKILL.md');
+    const skillFile = path.join(tempProjectDir, '.augment', 'skills', 'bmad-agent-bmad-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile), 'Auggie install writes SKILL.md directory output');
 
     assert(!(await fs.pathExists(path.join(tempProjectDir, '.augment', 'commands'))), 'Auggie setup removes legacy commands dir');
@@ -457,7 +456,7 @@ async function runTests() {
 
     assert(result.success === true, 'OpenCode setup succeeds against temp project');
 
-    const skillFile = path.join(tempProjectDir, '.opencode', 'skills', 'bmad-master', 'SKILL.md');
+    const skillFile = path.join(tempProjectDir, '.opencode', 'skills', 'bmad-agent-bmad-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile), 'OpenCode install writes SKILL.md directory output');
 
     for (const legacyDir of ['agents', 'commands', 'agent', 'command']) {
@@ -511,13 +510,16 @@ async function runTests() {
 
     assert(result9.success === true, 'Claude Code setup succeeds against temp project');
 
-    const skillFile9 = path.join(tempProjectDir9, '.claude', 'skills', 'bmad-master', 'SKILL.md');
+    const skillFile9 = path.join(tempProjectDir9, '.claude', 'skills', 'bmad-agent-bmad-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile9), 'Claude Code install writes SKILL.md directory output');
 
     // Verify name frontmatter matches directory name
     const skillContent9 = await fs.readFile(skillFile9, 'utf8');
     const nameMatch9 = skillContent9.match(/^name:\s*(.+)$/m);
-    assert(nameMatch9 && nameMatch9[1].trim() === 'bmad-master', 'Claude Code skill name frontmatter matches directory name exactly');
+    assert(
+      nameMatch9 && nameMatch9[1].trim() === 'bmad-agent-bmad-master',
+      'Claude Code skill name frontmatter matches directory name exactly',
+    );
 
     assert(!(await fs.pathExists(legacyDir9)), 'Claude Code setup removes legacy commands dir');
 
@@ -604,13 +606,16 @@ async function runTests() {
 
     assert(result11.success === true, 'Codex setup succeeds against temp project');
 
-    const skillFile11 = path.join(tempProjectDir11, '.agents', 'skills', 'bmad-master', 'SKILL.md');
+    const skillFile11 = path.join(tempProjectDir11, '.agents', 'skills', 'bmad-agent-bmad-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile11), 'Codex install writes SKILL.md directory output');
 
     // Verify name frontmatter matches directory name
     const skillContent11 = await fs.readFile(skillFile11, 'utf8');
     const nameMatch11 = skillContent11.match(/^name:\s*(.+)$/m);
-    assert(nameMatch11 && nameMatch11[1].trim() === 'bmad-master', 'Codex skill name frontmatter matches directory name exactly');
+    assert(
+      nameMatch11 && nameMatch11[1].trim() === 'bmad-agent-bmad-master',
+      'Codex skill name frontmatter matches directory name exactly',
+    );
 
     assert(!(await fs.pathExists(legacyDir11)), 'Codex setup removes legacy prompts dir');
 
@@ -694,13 +699,16 @@ async function runTests() {
 
     assert(result13c.success === true, 'Cursor setup succeeds against temp project');
 
-    const skillFile13c = path.join(tempProjectDir13c, '.cursor', 'skills', 'bmad-master', 'SKILL.md');
+    const skillFile13c = path.join(tempProjectDir13c, '.cursor', 'skills', 'bmad-agent-bmad-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile13c), 'Cursor install writes SKILL.md directory output');
 
     // Verify name frontmatter matches directory name
     const skillContent13c = await fs.readFile(skillFile13c, 'utf8');
     const nameMatch13c = skillContent13c.match(/^name:\s*(.+)$/m);
-    assert(nameMatch13c && nameMatch13c[1].trim() === 'bmad-master', 'Cursor skill name frontmatter matches directory name exactly');
+    assert(
+      nameMatch13c && nameMatch13c[1].trim() === 'bmad-agent-bmad-master',
+      'Cursor skill name frontmatter matches directory name exactly',
+    );
 
     assert(!(await fs.pathExists(legacyDir13c)), 'Cursor setup removes legacy commands dir');
 
@@ -747,14 +755,14 @@ async function runTests() {
 
     assert(result13.success === true, 'Roo setup succeeds against temp project');
 
-    const skillFile13 = path.join(tempProjectDir13, '.roo', 'skills', 'bmad-master', 'SKILL.md');
+    const skillFile13 = path.join(tempProjectDir13, '.roo', 'skills', 'bmad-agent-bmad-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile13), 'Roo install writes SKILL.md directory output');
 
     // Verify name frontmatter matches directory name (Roo constraint: lowercase alphanumeric + hyphens)
     const skillContent13 = await fs.readFile(skillFile13, 'utf8');
     const nameMatch13 = skillContent13.match(/^name:\s*(.+)$/m);
     assert(
-      nameMatch13 && nameMatch13[1].trim() === 'bmad-master',
+      nameMatch13 && nameMatch13[1].trim() === 'bmad-agent-bmad-master',
       'Roo skill name frontmatter matches directory name exactly (lowercase alphanumeric + hyphens)',
     );
 
@@ -871,13 +879,16 @@ async function runTests() {
 
     assert(result17.success === true, 'GitHub Copilot setup succeeds against temp project');
 
-    const skillFile17 = path.join(tempProjectDir17, '.github', 'skills', 'bmad-master', 'SKILL.md');
+    const skillFile17 = path.join(tempProjectDir17, '.github', 'skills', 'bmad-agent-bmad-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile17), 'GitHub Copilot install writes SKILL.md directory output');
 
     // Verify name frontmatter matches directory name
     const skillContent17 = await fs.readFile(skillFile17, 'utf8');
     const nameMatch17 = skillContent17.match(/^name:\s*(.+)$/m);
-    assert(nameMatch17 && nameMatch17[1].trim() === 'bmad-master', 'GitHub Copilot skill name frontmatter matches directory name exactly');
+    assert(
+      nameMatch17 && nameMatch17[1].trim() === 'bmad-agent-bmad-master',
+      'GitHub Copilot skill name frontmatter matches directory name exactly',
+    );
 
     assert(!(await fs.pathExists(legacyAgentsDir17)), 'GitHub Copilot setup removes legacy agents dir');
 
@@ -937,13 +948,16 @@ async function runTests() {
 
     assert(result18.success === true, 'Cline setup succeeds against temp project');
 
-    const skillFile18 = path.join(tempProjectDir18, '.cline', 'skills', 'bmad-master', 'SKILL.md');
+    const skillFile18 = path.join(tempProjectDir18, '.cline', 'skills', 'bmad-agent-bmad-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile18), 'Cline install writes SKILL.md directory output');
 
     // Verify name frontmatter matches directory name
     const skillContent18 = await fs.readFile(skillFile18, 'utf8');
     const nameMatch18 = skillContent18.match(/^name:\s*(.+)$/m);
-    assert(nameMatch18 && nameMatch18[1].trim() === 'bmad-master', 'Cline skill name frontmatter matches directory name exactly');
+    assert(
+      nameMatch18 && nameMatch18[1].trim() === 'bmad-agent-bmad-master',
+      'Cline skill name frontmatter matches directory name exactly',
+    );
 
     assert(!(await fs.pathExists(path.join(tempProjectDir18, '.clinerules', 'workflows'))), 'Cline setup removes legacy workflows dir');
 
@@ -999,12 +1013,15 @@ async function runTests() {
 
     assert(result19.success === true, 'CodeBuddy setup succeeds against temp project');
 
-    const skillFile19 = path.join(tempProjectDir19, '.codebuddy', 'skills', 'bmad-master', 'SKILL.md');
+    const skillFile19 = path.join(tempProjectDir19, '.codebuddy', 'skills', 'bmad-agent-bmad-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile19), 'CodeBuddy install writes SKILL.md directory output');
 
     const skillContent19 = await fs.readFile(skillFile19, 'utf8');
     const nameMatch19 = skillContent19.match(/^name:\s*(.+)$/m);
-    assert(nameMatch19 && nameMatch19[1].trim() === 'bmad-master', 'CodeBuddy skill name frontmatter matches directory name exactly');
+    assert(
+      nameMatch19 && nameMatch19[1].trim() === 'bmad-agent-bmad-master',
+      'CodeBuddy skill name frontmatter matches directory name exactly',
+    );
 
     assert(!(await fs.pathExists(path.join(tempProjectDir19, '.codebuddy', 'commands'))), 'CodeBuddy setup removes legacy commands dir');
 
@@ -1059,12 +1076,15 @@ async function runTests() {
 
     assert(result20.success === true, 'Crush setup succeeds against temp project');
 
-    const skillFile20 = path.join(tempProjectDir20, '.crush', 'skills', 'bmad-master', 'SKILL.md');
+    const skillFile20 = path.join(tempProjectDir20, '.crush', 'skills', 'bmad-agent-bmad-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile20), 'Crush install writes SKILL.md directory output');
 
     const skillContent20 = await fs.readFile(skillFile20, 'utf8');
     const nameMatch20 = skillContent20.match(/^name:\s*(.+)$/m);
-    assert(nameMatch20 && nameMatch20[1].trim() === 'bmad-master', 'Crush skill name frontmatter matches directory name exactly');
+    assert(
+      nameMatch20 && nameMatch20[1].trim() === 'bmad-agent-bmad-master',
+      'Crush skill name frontmatter matches directory name exactly',
+    );
 
     assert(!(await fs.pathExists(path.join(tempProjectDir20, '.crush', 'commands'))), 'Crush setup removes legacy commands dir');
 
@@ -1118,12 +1138,12 @@ async function runTests() {
 
     assert(result21.success === true, 'Trae setup succeeds against temp project');
 
-    const skillFile21 = path.join(tempProjectDir21, '.trae', 'skills', 'bmad-master', 'SKILL.md');
+    const skillFile21 = path.join(tempProjectDir21, '.trae', 'skills', 'bmad-agent-bmad-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile21), 'Trae install writes SKILL.md directory output');
 
     const skillContent21 = await fs.readFile(skillFile21, 'utf8');
     const nameMatch21 = skillContent21.match(/^name:\s*(.+)$/m);
-    assert(nameMatch21 && nameMatch21[1].trim() === 'bmad-master', 'Trae skill name frontmatter matches directory name exactly');
+    assert(nameMatch21 && nameMatch21[1].trim() === 'bmad-agent-bmad-master', 'Trae skill name frontmatter matches directory name exactly');
 
     assert(!(await fs.pathExists(path.join(tempProjectDir21, '.trae', 'rules'))), 'Trae setup removes legacy rules dir');
 
@@ -1235,12 +1255,15 @@ async function runTests() {
 
     assert(result23.success === true, 'Gemini setup succeeds against temp project');
 
-    const skillFile23 = path.join(tempProjectDir23, '.gemini', 'skills', 'bmad-master', 'SKILL.md');
+    const skillFile23 = path.join(tempProjectDir23, '.gemini', 'skills', 'bmad-agent-bmad-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile23), 'Gemini install writes SKILL.md directory output');
 
     const skillContent23 = await fs.readFile(skillFile23, 'utf8');
     const nameMatch23 = skillContent23.match(/^name:\s*(.+)$/m);
-    assert(nameMatch23 && nameMatch23[1].trim() === 'bmad-master', 'Gemini skill name frontmatter matches directory name exactly');
+    assert(
+      nameMatch23 && nameMatch23[1].trim() === 'bmad-agent-bmad-master',
+      'Gemini skill name frontmatter matches directory name exactly',
+    );
 
     assert(!(await fs.pathExists(path.join(tempProjectDir23, '.gemini', 'commands'))), 'Gemini setup removes legacy commands dir');
 
@@ -1292,13 +1315,16 @@ async function runTests() {
 
     assert(result24.success === true, 'iFlow setup succeeds against temp project');
 
-    const skillFile24 = path.join(tempProjectDir24, '.iflow', 'skills', 'bmad-master', 'SKILL.md');
+    const skillFile24 = path.join(tempProjectDir24, '.iflow', 'skills', 'bmad-agent-bmad-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile24), 'iFlow install writes SKILL.md directory output');
 
     // Verify name frontmatter matches directory name
     const skillContent24 = await fs.readFile(skillFile24, 'utf8');
     const nameMatch24 = skillContent24.match(/^name:\s*(.+)$/m);
-    assert(nameMatch24 && nameMatch24[1].trim() === 'bmad-master', 'iFlow skill name frontmatter matches directory name exactly');
+    assert(
+      nameMatch24 && nameMatch24[1].trim() === 'bmad-agent-bmad-master',
+      'iFlow skill name frontmatter matches directory name exactly',
+    );
 
     assert(!(await fs.pathExists(path.join(tempProjectDir24, '.iflow', 'commands'))), 'iFlow setup removes legacy commands dir');
 
@@ -1342,13 +1368,16 @@ async function runTests() {
 
     assert(result25.success === true, 'QwenCoder setup succeeds against temp project');
 
-    const skillFile25 = path.join(tempProjectDir25, '.qwen', 'skills', 'bmad-master', 'SKILL.md');
+    const skillFile25 = path.join(tempProjectDir25, '.qwen', 'skills', 'bmad-agent-bmad-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile25), 'QwenCoder install writes SKILL.md directory output');
 
     // Verify name frontmatter matches directory name
     const skillContent25 = await fs.readFile(skillFile25, 'utf8');
     const nameMatch25 = skillContent25.match(/^name:\s*(.+)$/m);
-    assert(nameMatch25 && nameMatch25[1].trim() === 'bmad-master', 'QwenCoder skill name frontmatter matches directory name exactly');
+    assert(
+      nameMatch25 && nameMatch25[1].trim() === 'bmad-agent-bmad-master',
+      'QwenCoder skill name frontmatter matches directory name exactly',
+    );
 
     assert(!(await fs.pathExists(path.join(tempProjectDir25, '.qwen', 'commands'))), 'QwenCoder setup removes legacy commands dir');
 
@@ -1403,13 +1432,16 @@ async function runTests() {
 
     assert(result26.success === true, 'Rovo Dev setup succeeds against temp project');
 
-    const skillFile26 = path.join(tempProjectDir26, '.rovodev', 'skills', 'bmad-master', 'SKILL.md');
+    const skillFile26 = path.join(tempProjectDir26, '.rovodev', 'skills', 'bmad-agent-bmad-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile26), 'Rovo Dev install writes SKILL.md directory output');
 
     // Verify name frontmatter matches directory name
     const skillContent26 = await fs.readFile(skillFile26, 'utf8');
     const nameMatch26 = skillContent26.match(/^name:\s*(.+)$/m);
-    assert(nameMatch26 && nameMatch26[1].trim() === 'bmad-master', 'Rovo Dev skill name frontmatter matches directory name exactly');
+    assert(
+      nameMatch26 && nameMatch26[1].trim() === 'bmad-agent-bmad-master',
+      'Rovo Dev skill name frontmatter matches directory name exactly',
+    );
 
     assert(!(await fs.pathExists(path.join(tempProjectDir26, '.rovodev', 'workflows'))), 'Rovo Dev setup removes legacy workflows dir');
 
@@ -1480,7 +1512,7 @@ async function runTests() {
     assert(osContent27.includes('OS skill content'), 'bmad-os-review-pr skill content is unchanged');
 
     // Regular bmad skill should have been replaced by fresh install
-    const newSkillFile27 = path.join(tempProjectDir27, '.claude', 'skills', 'bmad-master', 'SKILL.md');
+    const newSkillFile27 = path.join(tempProjectDir27, '.claude', 'skills', 'bmad-agent-bmad-master', 'SKILL.md');
     assert(await fs.pathExists(newSkillFile27), 'Fresh bmad skills are installed alongside preserved bmad-os-* skills');
 
     // Stale non-bmad-os skill must have been removed by cleanup
@@ -1538,7 +1570,7 @@ async function runTests() {
     const detectedAfter28 = await ideManager28.detectInstalledIdes(tempProjectDir28);
     assert(detectedAfter28.includes('pi'), 'Pi is detected after install');
 
-    const skillFile28 = path.join(tempProjectDir28, '.pi', 'skills', 'bmad-master', 'SKILL.md');
+    const skillFile28 = path.join(tempProjectDir28, '.pi', 'skills', 'bmad-agent-bmad-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile28), 'Pi install writes SKILL.md directory output');
 
     // Parse YAML frontmatter between --- markers
@@ -1551,7 +1583,7 @@ async function runTests() {
 
     // Verify name in frontmatter matches directory name
     const fmName28 = frontmatter28.match(/^name:\s*(.+)$/m);
-    assert(fmName28 && fmName28[1].trim() === 'bmad-master', 'Pi skill name frontmatter matches directory name exactly');
+    assert(fmName28 && fmName28[1].trim() === 'bmad-agent-bmad-master', 'Pi skill name frontmatter matches directory name exactly');
 
     // Verify description exists and is non-empty
     const fmDesc28 = frontmatter28.match(/^description:\s*(.+)$/m);
@@ -1852,7 +1884,7 @@ async function runTests() {
     const detectedAfter32 = await ideManager32.detectInstalledIdes(tempProjectDir32);
     assert(detectedAfter32.includes('ona'), 'Ona is detected after install');
 
-    const skillFile32 = path.join(tempProjectDir32, '.ona', 'skills', 'bmad-master', 'SKILL.md');
+    const skillFile32 = path.join(tempProjectDir32, '.ona', 'skills', 'bmad-agent-bmad-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile32), 'Ona install writes SKILL.md directory output');
 
     // Parse YAML frontmatter between --- markers
@@ -1865,7 +1897,7 @@ async function runTests() {
 
     // Verify name in frontmatter matches directory name
     const fmName32 = frontmatter32.match(/^name:\s*(.+)$/m);
-    assert(fmName32 && fmName32[1].trim() === 'bmad-master', 'Ona skill name frontmatter matches directory name exactly');
+    assert(fmName32 && fmName32[1].trim() === 'bmad-agent-bmad-master', 'Ona skill name frontmatter matches directory name exactly');
 
     // Verify description exists and is non-empty
     const fmDesc32 = frontmatter32.match(/^description:\s*(.+)$/m);

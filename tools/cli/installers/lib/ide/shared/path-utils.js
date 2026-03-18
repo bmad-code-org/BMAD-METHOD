@@ -315,16 +315,12 @@ function parseUnderscoreName(filename) {
 
 /**
  * Resolve the skill name for an artifact.
- * Prefers canonicalId from a bmad-skill-manifest.yaml sidecar when available,
- * falling back to the path-derived name from toDashPath().
+ * Always derives the name from the artifact's relativePath via toDashPath().
  *
- * @param {Object} artifact - Artifact object (must have relativePath; may have canonicalId)
+ * @param {Object} artifact - Artifact object (must have relativePath)
  * @returns {string} Filename like 'bmad-create-prd.md' or 'bmad-agent-bmm-pm.md'
  */
 function resolveSkillName(artifact) {
-  if (artifact.canonicalId) {
-    return `${artifact.canonicalId}.md`;
-  }
   return toDashPath(artifact.relativePath);
 }
 
