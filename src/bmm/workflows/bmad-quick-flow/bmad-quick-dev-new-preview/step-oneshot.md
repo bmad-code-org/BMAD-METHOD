@@ -1,7 +1,4 @@
 ---
-name: 'step-oneshot'
-description: 'Self-contained one-shot: implement, review, classify, commit, present'
-
 deferred_work_file: '{implementation_artifacts}/deferred-work.md'
 ---
 
@@ -39,7 +36,7 @@ If version control is available and the tree is dirty, create a local commit wit
 ### Present
 
 1. Open all changed files in the user's editor so they can review the code directly:
-   - Run `code -r "{project_root}" {changed_files}` — the project root as the first argument, then each changed file path. Always double-quote paths with spaces.
+   - Run `code -r "{project-root}" <changed-file-paths>` — the project root as the first argument, then each changed file path. Always double-quote paths with spaces.
    - If `code` is not available (command fails), skip gracefully and list the file paths instead.
 2. Display a summary in conversation output, including:
    - The commit hash (if one was created).

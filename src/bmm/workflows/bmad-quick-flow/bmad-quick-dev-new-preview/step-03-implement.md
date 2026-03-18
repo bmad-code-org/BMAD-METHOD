@@ -1,6 +1,4 @@
 ---
-name: 'step-03-implement'
-description: 'Plan-code-review implementation via sub-agent. Local only.'
 ---
 
 # Step 3: Implement
