@@ -16,7 +16,7 @@ Verify `{spec_file}` resolves to a non-empty path and the file exists on disk. I
 
 ## INSTRUCTIONS
 
-### Baseline (plan-code-review only)
+### Baseline
 
 Capture `baseline_commit` (current HEAD, or `NO_VCS` if version control is unavailable) into `{spec_file}` frontmatter before making any changes.
 
@@ -24,9 +24,7 @@ Capture `baseline_commit` (current HEAD, or `NO_VCS` if version control is unava
 
 Change `{spec_file}` status to `in-progress` in the frontmatter before starting implementation.
 
-`execution_mode = "one-shot"` or no sub-agents/tasks available: implement the intent.
-
-Otherwise (`execution_mode = "plan-code-review"`): hand `{spec_file}` to a sub-agent/task and let it implement.
+Hand `{spec_file}` to a sub-agent/task and let it implement. If no sub-agents are available, implement directly.
 
 ## NEXT
 
