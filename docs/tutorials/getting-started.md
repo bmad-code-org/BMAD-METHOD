@@ -146,7 +146,7 @@ All workflows in this phase are optional:
 3. Output: `PRD.md`
 
 **For Quick Flow track:**
-- Use the `bmad-quick-spec` workflow (`bmad-quick-spec`) instead of PRD, then skip to implementation
+- Run `bmad-quick-dev` — it handles planning and implementation in a single workflow, skip to implementation
 
 :::note[UX Design (Optional)]
 If your project has a user interface, invoke the **UX-Designer agent** (`bmad-ux-designer`) and run the UX design workflow (`bmad-create-ux-design`) after creating your PRD.
@@ -268,7 +268,7 @@ BMad-Help inspects your project, detects what you've completed, and tells you ex
 :::tip[Remember These]
 - **Start with `bmad-help`** — Your intelligent guide that knows your project and options
 - **Always use fresh chats** — Start a new chat for each workflow
-- **Track matters** — Quick Flow uses quick-spec; Method/Enterprise need PRD and architecture
+- **Track matters** — Quick Flow uses `bmad-quick-dev`; Method/Enterprise need PRD and architecture
 - **BMad-Help runs automatically** — Every workflow ends with guidance on what's next
 :::
 

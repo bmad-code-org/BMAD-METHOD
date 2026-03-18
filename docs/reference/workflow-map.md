@@ -66,10 +66,9 @@ Build it, one story at a time. Coming soon, full phase 4 automation!
 
 Skip phases 1-3 for small, well-understood work.
 
-| Workflow              | Purpose                                    | Produces                                      |
-| --------------------- | ------------------------------------------ | --------------------------------------------- |
-| `bmad-quick-spec` | Define an ad-hoc change                    | `tech-spec.md` (story file for small changes) |
-| `bmad-quick-dev`  | Implement from spec or direct instructions | Working code + tests                          |
+| Workflow           | Purpose                                                                     | Produces               |
+| ------------------ | --------------------------------------------------------------------------- | ---------------------- |
+| `bmad-quick-dev`   | Unified quick flow — clarify intent, plan, implement, review, and present   | `tech-spec.md` + code  |
 
 ## Context Management
 
