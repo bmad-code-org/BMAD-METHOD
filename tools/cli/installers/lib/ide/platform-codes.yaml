@@ -193,13 +193,17 @@ platforms:
     description: "OpenCode terminal coding assistant"
     installer:
       legacy_targets:
-        - .opencode/agents
-        - .opencode/commands
+        - .opencode/skills
         - .opencode/agent
         - .opencode/command
-      target_dir: .opencode/skills
-      template_type: opencode
-      skill_format: true
+      target_dir: .opencode/agents # For detection; actual output uses targets below
+      targets:
+        - target_dir: .opencode/agents
+          template_type: opencode
+          artifact_types: [agents]
+        - target_dir: .opencode/commands
+          template_type: opencode
+          artifact_types: [workflows, tasks, tools]
       ancestor_conflict_check: true
 
   pi:

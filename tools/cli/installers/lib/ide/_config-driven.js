@@ -36,8 +36,8 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
 
   /**
    * Detect whether this IDE already has configuration in the project.
-   * For skill_format platforms, checks for bmad-prefixed entries in target_dir
-   * (matching old codex.js behavior) instead of just checking directory existence.
+   * For skill_format platforms, checks for bmad-prefixed entries in target_dir.
+   * For multi-target platforms, checks all target directories for bmad-prefixed entries.
    * @param {string} projectDir - Project directory
    * @returns {Promise<boolean>}
    */
@@ -54,6 +54,25 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
       }
       return false;
     }
+
+    // For multi-target platforms, check all target directories for bmad-prefixed entries
+    if (this.installerConfig?.targets) {
+      for (const target of this.installerConfig.targets) {
+        const dir = path.join(projectDir || process.cwd(), target.target_dir);
+        if (await fs.pathExists(dir)) {
+          try {
+            const entries = await fs.readdir(dir);
+            if (entries.some((e) => typeof e === 'string' && e.startsWith('bmad'))) {
+              return true;
+            }
+          } catch {
+            // Skip unreadable directories
+          }
+        }
+      }
+      return false;
+    }
+
     return super.detect(projectDir);
   }
 
@@ -982,34 +1001,48 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
   }
 
   /**
-   * Check ancestor directories for existing BMAD files in the same target_dir.
-   * IDEs like Claude Code inherit commands from parent directories, so an existing
-   * installation in an ancestor would cause duplicate commands.
+   * Check ancestor directories for existing BMAD files in target directories.
+   * IDEs like Claude Code and OpenCode inherit commands from parent directories,
+   * so an existing installation in an ancestor would cause duplicate commands.
+   * Supports both single target_dir and multi-target configurations.
    * @param {string} projectDir - Project directory being installed to
    * @returns {Promise<string|null>} Path to conflicting directory, or null if clean
    */
   async findAncestorConflict(projectDir) {
-    const targetDir = this.installerConfig?.target_dir;
-    if (!targetDir) return null;
+    // Collect all target directories to check
+    const targetDirs = [];
+    if (this.installerConfig?.target_dir) {
+      targetDirs.push(this.installerConfig.target_dir);
+    }
+    if (this.installerConfig?.targets) {
+      for (const target of this.installerConfig.targets) {
+        if (target.target_dir && !targetDirs.includes(target.target_dir)) {
+          targetDirs.push(target.target_dir);
+        }
+      }
+    }
+    if (targetDirs.length === 0) return null;
 
     const resolvedProject = await fs.realpath(path.resolve(projectDir));
     let current = path.dirname(resolvedProject);
     const root = path.parse(current).root;
 
     while (current !== root && current.length > root.length) {
-      const candidatePath = path.join(current, targetDir);
-      try {
-        if (await fs.pathExists(candidatePath)) {
-          const entries = await fs.readdir(candidatePath);
-          const hasBmad = entries.some(
-            (e) => typeof e === 'string' && e.toLowerCase().startsWith('bmad') && !e.toLowerCase().startsWith('bmad-os-'),
-          );
-          if (hasBmad) {
-            return candidatePath;
+      for (const targetDir of targetDirs) {
+        const candidatePath = path.join(current, targetDir);
+        try {
+          if (await fs.pathExists(candidatePath)) {
+            const entries = await fs.readdir(candidatePath);
+            const hasBmad = entries.some(
+              (e) => typeof e === 'string' && e.toLowerCase().startsWith('bmad') && !e.toLowerCase().startsWith('bmad-os-'),
+            );
+            if (hasBmad) {
+              return candidatePath;
+            }
           }
+        } catch {
+          // Can't read directory — skip
         }
-      } catch {
-        // Can't read directory — skip
       }
       current = path.dirname(current);
     }
