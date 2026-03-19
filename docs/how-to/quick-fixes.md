@@ -115,7 +115,7 @@ No planning artifacts are produced -- that's the point of this approach.
 
 ## When to Upgrade to Formal Planning
 
-Consider using [Quick Flow](../explanation/quick-flow.md) or the full BMad Method when:
+Consider using [Quick Dev](../explanation/quick-dev.md) or the full BMad Method when:
 
 - The change affects multiple systems or requires coordinated updates across many files
 - You are unsure about the scope and need a spec to think it through

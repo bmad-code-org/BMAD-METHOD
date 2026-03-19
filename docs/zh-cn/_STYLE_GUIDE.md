@@ -148,7 +148,7 @@ your-project/
 | ----------------- | ----------------------------- |
 | **Index/Landing** | `core-concepts/index.md`      |
 | **Concept**       | `what-are-agents.md`          |
-| **Feature**       | `quick-flow.md`               |
+| **Feature**       | `quick-dev.md`                |
 | **Philosophy**    | `why-solutioning-matters.md`  |
 | **FAQ**           | `established-projects-faq.md` |
 

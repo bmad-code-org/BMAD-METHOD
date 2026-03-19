@@ -23,7 +23,7 @@ sidebar:
 | Scrum Master (Bob)          | `SP`, `CS`, `ER`, `CC`            | 冲刺规划、创建用户故事、史诗回顾、纠正方向                                                           |
 | Developer (Amelia)          | `DS`, `CR`                        | 开发用户故事、代码评审                                                                               |
 | QA Engineer (Quinn)         | `QA`                              | 自动化（为现有功能生成测试）                                                                         |
-| Quick Flow Solo Dev (Barry) | `QS`, `QD`, `CR`                  | 快速规格、快速开发、代码评审                                                                         |
+| Quick Flow Solo Dev (Barry) | `QD`, `CR`                         | 快速开发、代码评审                                                                                   |
 | UX Designer (Sally)         | `CU`                              | 创建 UX 设计                                                                                         |
 | Technical Writer (Paige)    | `DP`, `WD`, `US`, `MG`, `VD`, `EC` | 文档化项目、撰写文档、更新标准、Mermaid 生成、验证文档、解释概念                                      |
 
