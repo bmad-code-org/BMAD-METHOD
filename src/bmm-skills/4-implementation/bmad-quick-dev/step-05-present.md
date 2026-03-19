@@ -22,7 +22,7 @@ Build the trail as an ordered sequence of **stops** — clickable `path:line` re
 2. **Lead with the entry point** — the single highest-leverage file:line a reviewer should look at first to grasp the design intent.
 3. **Inside each concern**, order stops from most important / architecturally interesting to supporting. Lightly bias toward higher-risk or boundary-crossing stops.
 4. **End with peripherals** — tests, config, types, and other supporting changes come last.
-5. **Every code reference is a clickable workspace-relative link.** Format each stop as a markdown link: `[short-name:line](/project-root-relative/path/to/file.ts#L42)`. The link target uses a leading `/` (workspace root) with a `#L` line anchor. Use the file's basename (or shortest unambiguous suffix) plus line number as the link text.
+5. **Every code reference is a clickable workspace-relative link** (project-root-relative for clickability in the editor). Format each stop as a markdown link: `[short-name:line](/project-root-relative/path/to/file.ts#L42)`. The link target uses a leading `/` (workspace root) with a `#L` line anchor. Use the file's basename (or shortest unambiguous suffix) plus line number as the link text.
 6. **Each stop gets one ultra-concise line of framing** (≤15 words) — why this approach was chosen here and what it achieves in the context of the change. No paragraphs.
 
 Format each stop as framing first, link on the next indented line:
@@ -53,7 +53,7 @@ When there is only one concern, omit the bold label — just list the stops dire
 3. Open the spec in the user's editor so they can click through the Suggested Review Order:
    - Run `code -r "{spec_file}"` to open the spec in the current VS Code window (reuses the window where the project or worktree is open). Always double-quote the path to handle spaces and special characters.
    - If `code` is not available (command fails), skip gracefully and tell the user the spec file path instead.
-4. Display summary of your work to the user, including the commit hash if one was created. Include:
+4. Display summary of your work to the user, including the commit hash if one was created. Any file paths shown in conversation/terminal output must use CWD-relative format (no leading `/`) for terminal clickability — this differs from spec-file links which use project-root-relative paths. Include:
    - A note that the spec is open in their editor (or the file path if it couldn't be opened). Mention that `{spec_file}` now contains a Suggested Review Order.
    - **Navigation tip:** "Ctrl+click (Cmd+click on macOS) the links in the Suggested Review Order to jump to each stop."
    - Offer to push and/or create a pull request.

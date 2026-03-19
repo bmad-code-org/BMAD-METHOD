@@ -108,3 +108,6 @@ jobs:
 
       - name: Validate file references
         run: npm run validate:refs
+
+      - name: Validate skills
+        run: npm run validate:skills
