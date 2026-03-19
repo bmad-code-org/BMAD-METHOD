@@ -1,6 +1,6 @@
 ---
-name: bmad-product-brief-preview
-description: Create or update product briefs through guided or autonomous discovery. Use when the user requests to 'create a product brief', 'help me create a project brief', or 'update my product brief'.
+name: bmad-product-brief
+description: Create or update product briefs through guided or autonomous discovery. Use when the user requests any help with creation update or review of a product brief.
 argument-hint: "[optional --create, --edit, --optimize, --distillate, --inputs, --headless] [brief idea]"
 ---
 
@@ -81,8 +81,3 @@ Check activation context immediately:
 | 3 | Guided Elicitation | Fill gaps through smart questioning | `prompts/guided-elicitation.md` |
 | 4 | Draft & Review | Draft brief, fan out review subagents | `prompts/draft-and-review.md` |
 | 5 | Finalize | Polish, output, offer distillate | `prompts/finalize.md` |
-
-## External Skills
-
-This workflow uses:
-- `bmad-init` — Configuration loading (module: bmm)
