@@ -22,7 +22,7 @@ module.exports = {
       const result = await installer.install(config);
 
       if (result && result.success) {
-        ui.displaySuccess(config.wdsFolder, config.ides);
+        ui.displaySuccess(config.wdsFolder, config.ides, config.install_design_space, config.ds_name, config.ds_backend);
         process.exit(0);
       }
     } catch (error) {

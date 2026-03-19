@@ -191,9 +191,30 @@ class UI {
       },
     ]);
 
+    // --- Design Space (optional) ---
+    console.log('');
+    console.log(chalk.white.bold('  Design Space'));
+    console.log(chalk.dim('  Shared knowledge base and agent communication layer.'));
+    console.log(chalk.dim('  Agents can search design knowledge, message each other, and track work.\n'));
+
+    const dsAnswers = await inquirer.prompt([
+      {
+        type: 'confirm',
+        name: 'install_design_space',
+        message: 'Install Design Space?',
+        default: true,
+      },
+    ]);
+
+    let dsConfig = {};
+    if (dsAnswers.install_design_space) {
+      dsConfig = await this.promptDesignSpace();
+    }
+
     return {
       projectDir,
       ...answers,
+      ...dsConfig,
       wdsFolder,
       _detection: detection,
       _action: action,
@@ -202,9 +223,97 @@ class UI {
   }
 
   /**
+   * Prompt for Design Space configuration
+   */
+  async promptDesignSpace() {
+    const answers = await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'ds_name',
+        message: 'Name your space:',
+        default: 'design-space',
+      },
+      {
+        type: 'list',
+        name: 'ds_mode',
+        message: 'Connect to an existing space or create a new one?',
+        choices: [
+          { name: 'Create new (set up fresh)', value: 'create' },
+          { name: 'Connect to existing (I have credentials)', value: 'connect' },
+        ],
+      },
+    ]);
+
+    if (answers.ds_mode === 'connect') {
+      const connectAnswers = await inquirer.prompt([
+        {
+          type: 'list',
+          name: 'ds_backend',
+          message: 'What backend does it use?',
+          choices: [
+            { name: 'Supabase (team/cloud)', value: 'supabase' },
+            { name: 'SQLite (local file)', value: 'sqlite' },
+          ],
+        },
+        {
+          type: 'input',
+          name: 'ds_url',
+          message: 'Base URL:',
+          when: (a) => a.ds_backend === 'supabase',
+          validate: (v) => (v.includes('supabase.co') || v.startsWith('http') ? true : 'Enter a valid URL'),
+        },
+        {
+          type: 'input',
+          name: 'ds_key',
+          message: 'Anon key:',
+          when: (a) => a.ds_backend === 'supabase',
+          validate: (v) => (v.length > 20 ? true : 'Enter the Supabase anon key'),
+        },
+        {
+          type: 'input',
+          name: 'ds_db_path',
+          message: 'Path to .db file:',
+          when: (a) => a.ds_backend === 'sqlite',
+          default: './design-space.db',
+        },
+      ]);
+
+      return {
+        install_design_space: true,
+        ds_name: answers.ds_name,
+        ds_mode: 'connect',
+        ds_backend: connectAnswers.ds_backend,
+        ds_url: connectAnswers.ds_url,
+        ds_key: connectAnswers.ds_key,
+        ds_db_path: connectAnswers.ds_db_path,
+      };
+    }
+
+    // Create new
+    const createAnswers = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'ds_backend',
+        message: 'Which database?',
+        choices: [
+          { name: 'SQLite — local file, zero infrastructure, data stays on your machine', value: 'sqlite' },
+          { name: 'Supabase — cloud database, team collaboration, multi-machine', value: 'supabase' },
+        ],
+      },
+    ]);
+
+    return {
+      install_design_space: true,
+      ds_name: answers.ds_name,
+      ds_mode: 'create',
+      ds_backend: createAnswers.ds_backend,
+    };
+  }
+
+  /**
    * Display success message with next steps
    */
-  displaySuccess(wdsFolder, ides = ['windsurf']) {
+  displaySuccess(wdsFolder, ides = ['windsurf'], dsInstalled = false, dsName = '', dsBackend = '') {
     const ideNames = {
       'rovo-dev': 'Atlassian Rovo Dev',
       auggie: 'Auggie CLI',
@@ -256,6 +365,9 @@ class UI {
     console.log(chalk.dim('  ─────────────────────────────────────────────────'));
     console.log('');
     console.log(chalk.dim(`  Available agents: Saga (Analyst), Freya (Designer)`));
+    if (dsInstalled) {
+      console.log(chalk.dim(`  Design Space: ${dsName} (${dsBackend})`));
+    }
     console.log(chalk.dim(`  Need development? Install BMM: npx bmad-builder install`));
     console.log(chalk.dim('  Docs: https://github.com/whiteport-collective/whiteport-design-studio'));
     console.log('');
