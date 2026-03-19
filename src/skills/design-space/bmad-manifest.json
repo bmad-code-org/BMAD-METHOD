@@ -1,0 +1,42 @@
+{
+  "name": "wds-design-space",
+  "version": "0.3.5",
+  "description": "Shared knowledge base and agent messaging system",
+  "capabilities": [
+    {
+      "name": "search",
+      "menu-code": "S",
+      "description": "Search design knowledge by semantic query"
+    },
+    {
+      "name": "capture",
+      "menu-code": "C",
+      "description": "Capture a design decision, pattern, or insight"
+    },
+    {
+      "name": "check",
+      "menu-code": "M",
+      "description": "Check for unread agent messages"
+    },
+    {
+      "name": "send",
+      "menu-code": "T",
+      "description": "Send a message to another agent"
+    },
+    {
+      "name": "work-orders",
+      "menu-code": "W",
+      "description": "Post, claim, list, or update work orders"
+    },
+    {
+      "name": "who-online",
+      "menu-code": "O",
+      "description": "Check which agents are currently active"
+    },
+    {
+      "name": "register",
+      "menu-code": "R",
+      "description": "Register agent presence with session ID"
+    }
+  ]
+}

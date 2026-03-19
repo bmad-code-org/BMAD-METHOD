@@ -1,5 +1,27 @@
 # Changelog
 
+## 0.3.5 (2026-03-19)
+
+### Features
+- **Design Space** — Agent Space is now a core WDS skill. Semantic knowledge search, design capture, cross-agent messaging, session-scoped presence (agent-2567), work orders, and online roster. Self-contained skill with embedded HTTP credentials — works everywhere without MCP.
+- **BMad skill conversion** — Saga and Freya converted to BMad-compliant self-contained SKILL.md format with progressive disclosure, activation mode detection (headless/yolo/guided), bmad-manifest.json capability menus, and references bundled into each skill directory. No more SKILL.md → workflow.md routing.
+
+### Structure
+```
+src/skills/
+├── saga/          # Strategic analyst — PB + Trigger Map
+│   ├── SKILL.md
+│   ├── bmad-manifest.json
+│   └── references/
+├── freya/         # UX designer — Scenarios + Design Loop
+│   ├── SKILL.md
+│   ├── bmad-manifest.json
+│   └── references/
+└── design-space/  # Agent Space — knowledge + messaging + work orders
+    ├── SKILL.md
+    └── bmad-manifest.json
+```
+
 ## 0.3.4 (2026-03-18)
 
 ### Features
