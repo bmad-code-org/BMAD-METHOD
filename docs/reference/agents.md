@@ -23,7 +23,7 @@ This page lists the default BMM (Agile suite) agents that install with BMad Meth
 | Scrum Master (Bob)          | `bmad-sm`            | `SP`, `CS`, `ER`, `CC`             | Sprint Planning, Create Story, Epic Retrospective, Correct Course                                   |
 | Developer (Amelia)          | `bmad-dev`           | `DS`, `CR`                         | Dev Story, Code Review                                                                              |
 | QA Engineer (Quinn)         | `bmad-qa`            | `QA`                               | Automate (generate tests for existing features)                                                     |
-| Quick Flow Solo Dev (Barry) | `bmad-master`        | `QS`, `QD`, `CR`                   | Quick Spec, Quick Dev, Code Review                                                                  |
+| Quick Flow Solo Dev (Barry) | `bmad-master`        | `QD`, `CR`                          | Quick Dev, Code Review                                                                              |
 | UX Designer (Sally)         | `bmad-ux-designer`   | `CU`                               | Create UX Design                                                                                    |
 | Technical Writer (Paige)    | `bmad-tech-writer`   | `DP`, `WD`, `US`, `MG`, `VD`, `EC` | Document Project, Write Document, Update Standards, Mermaid Generate, Validate Doc, Explain Concept |
 
@@ -35,7 +35,7 @@ Agent menu triggers use two different invocation types. Knowing which type a tri
 
 Most triggers load a structured workflow file. Type the trigger code and the agent starts the workflow, prompting you for input at each step.
 
-Examples: `CP` (Create PRD), `DS` (Dev Story), `CA` (Create Architecture), `QS` (Quick Spec)
+Examples: `CP` (Create PRD), `DS` (Dev Story), `CA` (Create Architecture), `QD` (Quick Dev)
 
 ### Conversational triggers (arguments required)
 
