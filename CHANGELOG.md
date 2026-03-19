@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.3.5 (2026-03-19)
+## 0.4.0 (2026-03-19)
 
 ### Features
 - **Design Space** — Agent Space is now a core WDS skill. Semantic knowledge search, design capture, cross-agent messaging, session-scoped presence (agent-2567), work orders, and online roster. Self-contained skill with embedded HTTP credentials — works everywhere without MCP.
