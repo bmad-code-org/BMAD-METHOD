@@ -5,6 +5,8 @@
 ### Features
 - **Design Space** — Agent Space is now a core WDS skill. Semantic knowledge search, design capture, cross-agent messaging, session-scoped presence (agent-2567), work orders, and online roster. Self-contained skill with embedded HTTP credentials — works everywhere without MCP.
 - **BMad skill conversion** — Saga and Freya converted to BMad-compliant self-contained SKILL.md format with progressive disclosure, activation mode detection (headless/yolo/guided), bmad-manifest.json capability menus, and references bundled into each skill directory. No more SKILL.md → workflow.md routing.
+- **Platform Requirements → Build Specification** — Steps 27-32 rewritten. Platform Requirements no longer produces a technology shopping list — it produces a complete build specification that a coding agent can execute autonomously. Three new steps: 28a (complete database schema with every column, type, constraint), 28b (state machines for every entity lifecycle with per-phase actions), 28c (business logic as pseudocode, event system, complete API surface). Step 32 now includes the Litmus Test: "Can a coding agent build the entire platform from this document alone?"
+- **Material Analysis Phase** (from 0.3.4) — When users provide existing documents, Saga analyzes them before asking questions. Extract → Present → Confirm → Fill gaps.
 
 ### Structure
 ```
@@ -24,10 +26,8 @@ src/skills/
 
 ## 0.3.4 (2026-03-18)
 
-### Features
-- **Material Analysis Phase** — When users provide existing documents (PRD, brief, research, guidelines), Saga now analyzes them before asking any questions. New protocol: Read → Extract into categories → Present findings one at a time for user confirmation → Identify gaps → Only ask about what's missing. Turns a 60-minute discovery session into a 15-minute confirmation + gap-fill when materials are comprehensive.
-- **Confirmation Mode for all PB steps** — Steps 02–11 now check whether their topic was already confirmed during Material Analysis. If so, they run in Confirmation Mode (quick pass-through) instead of full exploratory conversation. No more re-asking questions whose answers are in the provided documents.
-- **Updated working-with-existing-materials guide** — Complete rewrite of Saga's material handling guide. Old pattern (reference → ask) replaced with new pattern (analyze → present → confirm → fill gaps). Includes explicit failure conditions: acknowledging materials without analyzing them is now defined as a system failure.
+### Fixes
+- **"Black hole" problem** — Saga acknowledged uploaded documents but then asked questions whose answers were in those documents. Fixed by Material Analysis Phase (now in 0.4.0).
 
 ### Fixes
 - **"Black hole" problem** — Previously, Saga would accept uploaded documents, say thank you, and proceed as if nothing was provided. Users had to repeat information that was clearly in their documents. The Material Analysis Phase eliminates this entirely.
