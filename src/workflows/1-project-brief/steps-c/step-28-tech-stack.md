@@ -1,17 +1,17 @@
 ---
 name: 'step-28-tech-stack'
-description: 'Capture core technology decisions'
+description: 'Capture core technology decisions and architecture approach'
 
 # File References
-nextStepFile: './step-29-integrations.md'
+nextStepFile: './step-28a-data-model.md'
 workflowFile: '../workflow.md'
 activityWorkflowFile: '../workflow.md'
 ---
 
-# Step 28: Technology Stack
+# Step 28: Technology Stack & Architecture
 
 ## STEP GOAL:
-Capture core technology decisions for the project including CMS/framework, frontend, styling, and hosting.
+Capture core technology decisions — frontend, backend, database, hosting, and the overall architectural approach. This is the foundation that all subsequent build specification steps build on.
 
 ## MANDATORY EXECUTION RULES (READ FIRST):
 
@@ -23,85 +23,91 @@ Capture core technology decisions for the project including CMS/framework, front
 - YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `{communication_language}`
 
 ### Role Reinforcement:
-- You are a Strategic Business Analyst guiding technology choices with clear trade-off explanations
+- You are a Strategic Business Analyst and Systems Architect guiding technology choices with clear trade-off explanations
 - If you already have been given a name, communication_style and persona, continue to use those while playing this new role
 - We engage in collaborative dialogue, not command-response
-- You bring structured thinking and facilitation skills, user brings domain expertise and product vision
 - Maintain collaborative and strategic tone throughout
 
 ### Step-Specific Rules:
-- Focus: CMS/Framework, frontend tech, styling approach, hosting decisions
+- Focus: Frontend framework, backend language, database, hosting, architecture pattern
 - FORBIDDEN: Do not recommend technology without explaining trade-offs at user's technical level
 - Approach: Present options with trade-offs, explain at appropriate level, document rationale
-
-## EXECUTION PROTOCOLS:
-- Primary goal: Technology stack documented with rationale
-- Save/document outputs appropriately
-- Avoid generating content without user input
-
-## CONTEXT BOUNDARIES:
-- Available context: Product Brief, platform initialization, user's technical level
-- Focus: Core technology choices
-- Limits: Strategic technology direction, not detailed implementation
-- Dependencies: Step 27 completed
+- For app-type products: always ask about API architecture (REST vs GraphQL vs RPC)
+- For web-only: simpler choices, static vs dynamic, CMS vs custom
 
 ## Sequence of Instructions (Do not deviate, skip, or optimize)
 
-### 1. CMS/Framework Selection
+### 0. Check Material Analysis Status
 
-If not already decided, ask:
-- "What type of site are we building?" (reference Product Brief)
-- Present options appropriate to project:
-  - **WordPress** - Content-focused, client can update, huge ecosystem
-  - **Next.js/React** - Dynamic, app-like, developer-maintained
-  - **Static (HTML/11ty)** - Simple, fast, minimal maintenance
-  - **Other** - Based on specific requirements
+**If technology stack was already confirmed during the Material Analysis Phase (Step 1):**
+Run in **Confirmation Mode** — do NOT re-run the full exploratory conversation:
+1. Reference the confirmed stack: "We confirmed your technology stack as [synthesis from analysis phase]."
+2. Ask: "Anything to add or refine before I document it?"
+3. If nothing: synthesize, document, and advance
+4. If additions: capture them, update the synthesis, confirm, then advance
 
-### 2. Theme/Styling Approach
+**If no materials exist or tech stack was not covered in materials:**
+Run the full exploration below.
 
-For WordPress:
-- **Block Theme (Gutenberg)** - Modern, visual editing, limited flexibility
-- **Classic Theme + Tailwind** - Developer control, Tailwind utility classes
-- **Classic Theme + Custom CSS** - Full control, more maintenance
-- **Existing Theme** - Faster start, less unique
+### 1. Architecture Pattern
 
-For React/Next:
-- **Tailwind CSS** - Utility-first, rapid development
-- **CSS Modules** - Component-scoped styles
-- **Styled Components** - CSS-in-JS approach
+Based on the Product Brief, determine what we're building:
+- **Static site** — Marketing site, blog, portfolio (Astro, 11ty, Hugo)
+- **Server-rendered app** — Dynamic pages, SEO-critical (Next.js, Nuxt, SvelteKit)
+- **SPA + API** — Application with separate frontend and backend (React/Vue + REST/GraphQL)
+- **Cross-platform app** — Mobile + web from one codebase (Flutter, React Native)
+- **Backend service** — API-first, headless (Go, Node, Python, Rust)
 
-### 3. Document Rationale
-- Why this choice fits the project
+Ask: "Based on your product concept, what kind of system are we building?"
+
+### 2. Frontend Technology
+
+Based on architecture pattern:
+- Framework choice and rationale
+- Styling approach (Tailwind, CSS modules, styled-components)
+- State management approach (if SPA/app)
+- Mobile considerations (responsive, PWA, native)
+
+### 3. Backend Technology
+
+- Language and framework (Go, Node/Express, Python/FastAPI, etc.)
+- API style (REST, GraphQL, gRPC, tRPC)
+- Authentication approach (JWT, sessions, OAuth providers)
+- Background job processing (if needed)
+
+### 4. Database
+
+- Primary database (PostgreSQL, MySQL, SQLite, MongoDB)
+- Caching layer (Redis, in-memory)
+- Search (built-in, Elasticsearch, Meilisearch)
+- File storage (S3, local, CDN)
+
+### 5. Hosting & Deployment
+
+- Where it runs (cloud provider, VPS, serverless, PaaS)
+- CI/CD approach
+- Environment strategy (dev, staging, production)
+- Domain and DNS
+
+### 6. Document Rationale
+
+For each choice:
+- Why this fits the project
 - Trade-offs acknowledged
-- Client maintenance implications
+- Scaling implications
+- Team skill alignment
 
-### 4. Capture in Template
-- Fill in Technology Stack section of output document
+### 7. Design Log Update
 
-### 5. Design Log Update
-After completing this step, update the design log:
-
-```markdown
-### Step 28: Technology Stack
-**Q:** CMS/framework, styling approach, hosting?
-**A:** [User responses - summarized]
-**Documented in:** platform-requirements.md (Technology Stack section)
-**Key insights:** [Important decisions or revelations]
-**Status:** Complete
-**Timestamp:** [HH:MM]
-```
+Update design log with technology decisions and rationale.
 
 ### N. Present MENU OPTIONS
-Display: "**Select an Option:** [C] Continue to next step"
+Display: "**Select an Option:** [C] Continue to Data Model"
 
 #### Menu Handling Logic:
 - IF C: Load, read entire file, then execute {nextStepFile}
-- IF M: Return to {workflowFile} or {activityWorkflowFile}
+- IF M: Return to {workflowFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options]
-
-#### EXECUTION RULES:
-- ALWAYS halt and wait for user input after presenting menu
-- User can chat or ask questions - always respond and then redisplay menu options
 
 ## CRITICAL STEP COMPLETION NOTE
 ONLY WHEN step objectives are met and user confirms will you then load and read fully `{nextStepFile}`.
@@ -111,15 +117,14 @@ ONLY WHEN step objectives are met and user confirms will you then load and read 
 ## SYSTEM SUCCESS/FAILURE METRICS
 
 ### SUCCESS:
-- CMS/framework choice documented with rationale
-- Styling approach defined
-- Trade-offs acknowledged
-- Client maintenance implications noted
+- Architecture pattern identified
+- Frontend, backend, database, hosting decisions documented
+- Rationale captured for each choice
 - User confirmed
 
 ### FAILURE:
 - Recommended technology without trade-off explanation
-- Used overly technical language for non-technical user
+- Skipped database or API architecture for an app-type product
 - Generated tech stack without user input
 
 **Master Rule:** Skipping steps, optimizing sequences, or not following exact instructions is FORBIDDEN and constitutes SYSTEM FAILURE.

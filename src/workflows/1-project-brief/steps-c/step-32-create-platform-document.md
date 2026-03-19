@@ -1,6 +1,6 @@
 ---
 name: 'step-32-create-platform-document'
-description: 'Complete the Platform Requirements document and prepare for next steps'
+description: 'Finalize the Platform Requirements as a complete build specification'
 
 # File References
 nextStepFile: './step-33-analyze-brief.md'
@@ -8,129 +8,129 @@ workflowFile: '../workflow.md'
 activityWorkflowFile: '../workflow.md'
 ---
 
-# Step 32: Create Platform Requirements Document
+# Step 32: Finalize Platform Requirements
 
 ## STEP GOAL:
-Complete the Platform Requirements document, document maintenance ownership, and prepare for next steps.
+Complete the Platform Requirements document and verify it passes the build specification litmus test. This is the final gate before the document ships — everything must be actionable.
 
 ## MANDATORY EXECUTION RULES (READ FIRST):
 
 ### Universal Rules:
 - NEVER generate content without user input
 - CRITICAL: Read the complete step file before taking any action
-- CRITICAL: When loading next step with 'C', ensure entire file is read
 - YOU ARE A FACILITATOR, not a content generator
 - YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `{communication_language}`
 
 ### Role Reinforcement:
-- You are a Strategic Business Analyst finalizing platform requirements for handoff
-- If you already have been given a name, communication_style and persona, continue to use those while playing this new role
-- We engage in collaborative dialogue, not command-response
-- You bring structured thinking and facilitation skills, user brings domain expertise and product vision
-- Maintain collaborative and strategic tone throughout
-
-### Step-Specific Rules:
-- Focus: Review completeness, document maintenance ownership, development handoff notes, confirm
-- FORBIDDEN: Do not skip maintenance ownership documentation
-- Approach: Review all sections, capture maintenance plan, present summary, confirm
-
-## EXECUTION PROTOCOLS:
-- Primary goal: Platform Requirements document finalized and confirmed
-- Save/document outputs appropriately
-- Avoid generating content without user input
-
-## CONTEXT BOUNDARIES:
-- Available context: Steps 27-31 (tech stack, integrations, contact, multilingual, SEO)
-- Focus: Synthesis and practical handoff
-- Limits: Finalizing what was captured, not adding major new elements
-- Dependencies: Steps 27-31 completed
+- You are a Systems Architect performing final review of a build specification
+- Your job is quality assurance — find gaps that would block a coding agent
 
 ## Sequence of Instructions (Do not deviate, skip, or optimize)
 
-### 1. Review Completeness
+### 1. Completeness Checklist
 
-Check that all sections are filled:
-- [ ] Technology Stack
-- [ ] Plugin/Package Stack
-- [ ] Integrations
-- [ ] Contact Strategy
-- [ ] UX Constraints
-- [ ] Multilingual Requirements
-- [ ] SEO Requirements
-- [ ] Maintenance & Ownership
+Verify all sections are present and substantive:
 
-### 2. Document Maintenance Ownership
+**Architecture & Technology:**
+- [ ] Architecture pattern and system diagram
+- [ ] Frontend framework, styling, state management
+- [ ] Backend language, framework, API style
+- [ ] Database choice with exact column types
+- [ ] Hosting, CI/CD, environments
 
-Ask: "Who will maintain the site after launch?"
-- Content updates - client or agency?
-- Technical maintenance - developer or managed?
-- Plugin updates - automatic or manual review?
+**Build Specification (the new core):**
+- [ ] Complete database schema — every table, every column, types, defaults, constraints, relationships
+- [ ] State machines — every stateful entity has states, transitions, triggers, per-phase actions
+- [ ] Business logic — every calculation as pseudocode, not prose
+- [ ] Event system — scheduled jobs, webhook handlers, user events with preconditions and effects
+- [ ] Notification rules — triggers, channels, timing, deduplication
+- [ ] API surface — every endpoint with method, path, auth, request shape, response shape
+- [ ] Authentication and authorization — method, token lifecycle, roles, RLS rules
 
-Fill in Maintenance & Ownership section.
+**Integration & Operations:**
+- [ ] Third-party integrations with purpose and config
+- [ ] Contact/communication strategy
+- [ ] Multilingual requirements (if applicable)
+- [ ] SEO technical requirements (if applicable)
+- [ ] Release phase feature gating (if applicable)
+- [ ] Maintenance ownership
 
-### 3. Development Handoff Notes
+### 2. The Litmus Test
 
-Capture any important notes for developers:
-- Environment setup requirements
-- Deployment process expectations
-- Special considerations
+Read through the entire document and answer these questions honestly:
 
-### 4. Present Summary
+**Can a coding agent build from this?**
+1. Can it create ALL database migrations from the schema section? (Every table, column, type, constraint)
+2. Can it implement ALL state machines from the state machine section? (Every transition, trigger, action)
+3. Can it write ALL API endpoints from the API section? (Every route, request, response)
+4. Can it implement ALL business calculations from the business logic section?
+5. Can it set up ALL scheduled jobs from the event system?
+6. Can it handle ALL webhooks from the webhook section?
+7. Can it send ALL notifications with correct timing and content?
 
-Show the user a summary table:
+**If ANY answer is "no" — the document has gaps. Go back and fill them.**
+
+Present the litmus test results to the user:
+```
+Build Specification Litmus Test:
+✓ Database migrations: [complete/gaps in X]
+✓ State machines: [complete/gaps in X]
+✓ API endpoints: [complete/gaps in X]
+✓ Business logic: [complete/gaps in X]
+✓ Event handlers: [complete/gaps in X]
+✓ Webhooks: [complete/gaps in X]
+✓ Notifications: [complete/gaps in X]
+```
+
+### 3. Summary
+
+Present a high-level summary table:
 
 ```
 Platform Requirements Summary
----
-Tech Stack:     [CMS/Framework]
-Styling:        [Approach]
-Languages:      [List]
-Contact:        [Primary method]
-SEO:            [Plugin choice]
-Key Constraint: [Most important UX constraint]
+─────────────────────────────
+Architecture:   [pattern] — [frontend] + [backend] + [database]
+Tables:         [N] database tables defined
+State Machines: [N] entity lifecycles mapped
+API Endpoints:  [N] endpoints specified
+Event Handlers: [N] scheduled + [N] webhook + [N] user events
+Integrations:   [list]
+Release Phases: [N] phases with feature gating
 ```
 
-### 5. Confirm and Save
+### 4. Confirm and Save
 
-Ask: "Does this capture all the platform decisions?"
-- If changes needed, update document
-- If complete, finalize
+Ask: "This document should enable a coding agent to build the entire platform without asking questions. Does it?"
 
-### 6. Next Steps Guidance
+- If gaps found: go back to the relevant step and fill them
+- If complete: finalize the document
 
-Explain what's next:
-- "Platform Requirements will constrain UX design in Phase 4"
-- "Developers will use this in Phase 6 for handoff"
+### 5. Design Log Update
+
+Update design log marking Platform Requirements as complete.
 
 ### N. Present MENU OPTIONS
-Display: "**Select an Option:** [C] Continue to next step"
-
-#### Menu Handling Logic:
-- IF C: Load, read entire file, then execute {nextStepFile}
-- IF M: Return to {workflowFile} or {activityWorkflowFile}
-- IF Any other comments or queries: help user respond then [Redisplay Menu Options]
-
-#### EXECUTION RULES:
-- ALWAYS halt and wait for user input after presenting menu
-- User can chat or ask questions - always respond and then redisplay menu options
+Display: "**Select an Option:** [C] Continue to Analysis"
 
 ## CRITICAL STEP COMPLETION NOTE
-ONLY WHEN step objectives are met and user confirms will you then load and read fully `{nextStepFile}`.
+ONLY WHEN the litmus test passes and user confirms will you proceed.
 
 ---
 
 ## SYSTEM SUCCESS/FAILURE METRICS
 
 ### SUCCESS:
-- All sections reviewed for completeness
-- Maintenance ownership documented
-- Development handoff notes captured
+- All checklist items verified as present
+- Litmus test passed — every section is actionable by a coding agent
 - Summary presented and confirmed by user
-- Document finalized and saved
+- Document finalized
 
 ### FAILURE:
-- Skipped maintenance ownership
-- Left sections incomplete
-- Did not present summary for confirmation
+- Passed a document with vague sections ("we'll figure out the API later")
+- Did not run the litmus test
+- Left the document as a planning document instead of a build specification
+- Accepted "tech stack + integrations list" as complete Platform Requirements
+
+**THE GOLDEN RULE:** A Platform Requirements document that a coding agent can't build from is not a Platform Requirements document. It's a wish list.
 
 **Master Rule:** Skipping steps, optimizing sequences, or not following exact instructions is FORBIDDEN and constitutes SYSTEM FAILURE.

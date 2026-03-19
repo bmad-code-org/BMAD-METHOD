@@ -4,6 +4,7 @@ description: 'Document required integrations and third-party services'
 
 # File References
 nextStepFile: './step-30-contact-strategy.md'
+# Note: Step 29 now follows Step 28c (business logic), not Step 28 directly
 workflowFile: '../workflow.md'
 activityWorkflowFile: '../workflow.md'
 ---
