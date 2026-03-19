@@ -1722,6 +1722,21 @@ async function runTests() {
     const rescannedModules29 = await generator29.scanInstalledModules(tempFixture29);
     assert(rescannedModules29.includes('agent-only-mod'), 'scanInstalledModules recognizes native-agent-only module');
 
+    // Test scanInstalledModules recognizes multi-entry manifests keyed under SKILL.md
+    const multiEntryModDir29 = path.join(tempFixture29, 'multi-entry-mod');
+    await fs.ensureDir(path.join(multiEntryModDir29, 'deep', 'nested', 'bmad-tea'));
+    await fs.writeFile(
+      path.join(multiEntryModDir29, 'deep', 'nested', 'bmad-tea', 'bmad-skill-manifest.yaml'),
+      'SKILL.md:\n  type: agent\n  canonicalId: bmad-tea\n',
+    );
+    await fs.writeFile(
+      path.join(multiEntryModDir29, 'deep', 'nested', 'bmad-tea', 'SKILL.md'),
+      '---\nname: bmad-tea\ndescription: desc\n---\n\nAgent menu.\n',
+    );
+
+    const rescannedModules29b = await generator29.scanInstalledModules(tempFixture29);
+    assert(rescannedModules29b.includes('multi-entry-mod'), 'scanInstalledModules recognizes multi-entry native-agent module');
+
     // skill-manifest.csv should include the native agent entrypoint
     const skillManifestCsv29 = await fs.readFile(path.join(tempFixture29, '_config', 'skill-manifest.csv'), 'utf8');
     assert(skillManifestCsv29.includes('bmad-tea'), 'skill-manifest.csv includes native type:agent SKILL.md entrypoint');
