@@ -5,7 +5,7 @@ sidebar:
   order: 2
 ---
 
-`bmad-quick-dev` reduces Quick Flow ceremony: intent in, code changes out, with fewer human-in-the-loop turns without sacrificing quality.
+Intent in, code changes out, with as few human-in-the-loop turns as possible — without sacrificing quality.
 
 It lets the model run longer between checkpoints, then brings the human back only when the task cannot safely continue without human judgment or when it is time to review the end result.
 
