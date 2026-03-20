@@ -30,19 +30,18 @@
    - Set `source` to the merged sources (e.g., `blind+edge`).
 
 3. **Classify** each finding into exactly one bucket:
-   - **intent_gap** -- The spec/intent is incomplete; cannot resolve from existing information. Only possible if `{review_mode}` = `"full"`.
-   - **bad_spec** -- The spec should have prevented this; spec is wrong or ambiguous. Only possible if `{review_mode}` = `"full"`.
-   - **patch** -- Code issue that is trivially fixable without human input. Just needs a code change.
+   - **decision_needed** -- There is an ambiguous choice that requires human input. The code cannot be correctly patched without knowing the user's intent. Only possible if `{review_mode}` = `"full"`.
+   - **patch** -- Code issue that is fixable without human input. The correct fix is unambiguous.
    - **defer** -- Pre-existing issue not caused by the current change. Real but not actionable now.
-   - **reject** -- Noise, false positive, or handled elsewhere.
+   - **dismiss** -- Noise, false positive, or handled elsewhere.
 
-   If `{review_mode}` = `"no-spec"` and a finding would otherwise be `intent_gap` or `bad_spec`, reclassify it as `patch` (if code-fixable) or `defer` (if not).
+   If `{review_mode}` = `"no-spec"` and a finding would otherwise be `decision_needed`, reclassify it as `patch` (if the fix is unambiguous) or `defer` (if not).
 
-4. **Drop** all `reject` findings. Record the reject count for the summary.
+4. **Drop** all `dismiss` findings. Record the dismiss count for the summary.
 
-5. If `{failed_layers}` is non-empty, report which layers failed before announcing results. If zero findings remain after dropping rejects AND `{failed_layers}` is non-empty, warn the user that the review may be incomplete rather than announcing a clean review.
+5. If `{failed_layers}` is non-empty, report which layers failed before announcing results. If zero findings remain after dropping dismissed AND `{failed_layers}` is non-empty, warn the user that the review may be incomplete rather than announcing a clean review.
 
-6. If zero findings remain after dropping rejects and no layers failed, note clean review.
+6. If zero findings remain after triage (all rejected or none raised): state "✅ Clean review — all layers passed." (Step 3 already warned if any review layers failed via `{failed_layers}`.)
 
 
 ## NEXT
