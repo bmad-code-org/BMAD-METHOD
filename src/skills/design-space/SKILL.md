@@ -220,53 +220,37 @@ See the full conversation thread for a message.
 }
 ```
 
-### Work Orders
+### Work Orders (via unified messaging)
 
-Post, claim, list, and update tasks across agents.
+Work orders are just messages with `message_type: "work-order"`. No separate actions needed.
 
-**Post a work order:**
+**Send a work order:**
 ```json
 {
-  "action": "post-task",
+  "action": "send",
   "from_agent": "saga",
+  "to_agent": "codex",
+  "message_type": "work-order",
   "title": "Implement login flow",
   "content": "Based on scenario SC-03, implement the login/signup flow...",
-  "assignee": "codex",
-  "project": "ugc-app",
-  "priority": "normal"
-}
-```
-
-**List work orders:**
-```json
-{
-  "action": "list-tasks",
   "project": "ugc-app",
   "status": "ready"
 }
 ```
 
-**Claim a work order:**
+**Update status on any message:**
 ```json
 {
-  "action": "claim-task",
-  "task_id": "<uuid>",
-  "agent_id": "codex"
-}
-```
-
-**Update work order status:**
-```json
-{
-  "action": "update-task",
-  "task_id": "<uuid>",
+  "action": "update-status",
+  "message_id": "<uuid>",
   "agent_id": "codex",
-  "status": "done",
-  "result": "Implemented in PR #42"
+  "status": "in-progress"
 }
 ```
 
 **Status lifecycle:** `ready` → `in-progress` → `done` / `blocked`
+
+Work orders appear in the regular message stream — check returns them alongside all other messages. Signal strength highlights relevance but nothing is hidden.
 
 ### Visual Capture (desktop only)
 

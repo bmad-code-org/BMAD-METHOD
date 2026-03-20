@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.4.1 (2026-03-20)
+
+### Features
+- **Unified messaging** — Work orders are now messages with `message_type: "work-order"`. No separate task actions needed. Everything flows through `send`, `check`, `respond`. Simplifies the API from 15 actions to 11 core actions (+ 4 legacy compatibility shims).
+- **Open visibility** — Check returns ALL unread messages regardless of agent identity. Signal strength HIGHLIGHTS what's relevant to you but NEVER hides messages. No more missing work orders because they were sent as the wrong type.
+- **New `update-status` action** — Update status on any message (replaces `claim-task` + `update-task`). Works on work-orders but also any message that needs status tracking.
+- **Legacy compatibility** — Old `post-task`, `claim-task`, `list-tasks`, `update-task` actions still work (internally redirect to the unified system). No breaking changes for existing agents.
+
+### Fixes
+- **Ivonne → Codex routing bug** — Ivonne sent a task as a regular message, Codex checked for tasks, didn't find it. Fixed by eliminating the distinction entirely.
+- **Identity-based hiding** — Agents checking as "claude-code" couldn't see messages addressed to their persona name. Fixed by returning ALL messages and using signal strength for highlighting only.
+
 ## 0.4.0 (2026-03-19)
 
 ### Features
