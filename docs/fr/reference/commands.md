@@ -54,12 +54,12 @@ Chaque skill est un répertoire contenant un fichier `SKILL.md`. Par exemple, un
 │   └── SKILL.md
 ├── bmad-create-prd/
 │   └── SKILL.md
-├── bmad-dev/
+├── bmad-analyst/
 │   └── SKILL.md
 └── ...
 ```
 
-Le nom du répertoire détermine le nom du skill dans votre IDE. Par exemple, le répertoire `bmad-dev/` enregistre le skill `bmad-dev`.
+Le nom du répertoire détermine le nom du skill dans votre IDE. Par exemple, le répertoire `bmad-analyst/` enregistre le skill `bmad-analyst`.
 
 ## Comment découvrir vos skills
 
@@ -79,10 +79,10 @@ Les skills d'agent chargent une persona[^2] IA spécialisée avec un rôle défi
 
 | Exemple de skill | Agent | Rôle |
 | --- | --- | --- |
-| `bmad-dev` | Amelia (Développeur) | Implémente les stories en respectant strictement les spécifications |
-| `bmad-pm` | John (Product Manager) | Crée et valide les PRD[^1] |
+| `bmad-analyst` | Mary (Analyste) | Brainstorming de projets, recherche, création de briefs |
 | `bmad-architect` | Winston (Architecte) | Conçoit l'architecture système |
-| `bmad-sm` | Bob (Scrum Master) | Gère les sprints et les stories |
+| `bmad-ux-designer` | Sally (Designer UX) | Crée les designs UX |
+| `bmad-tech-writer` | Paige (Rédacteur Technique) | Documente les projets, rédige des guides, génère des diagrammes |
 
 Consultez [Agents](./agents.md) pour la liste complète des agents par défaut et leurs déclencheurs.
 
@@ -123,7 +123,7 @@ Le module principal inclut 11 outils intégrés — revues, compression, brainst
 
 ## Convention de nommage
 
-Tous les skills utilisent le préfixe `bmad-` suivi d'un nom descriptif (ex. `bmad-dev`, `bmad-create-prd`, `bmad-help`). Consultez [Modules](./modules.md) pour les modules disponibles.
+Tous les skills utilisent le préfixe `bmad-` suivi d'un nom descriptif (ex. `bmad-analyst`, `bmad-create-prd`, `bmad-help`). Consultez [Modules](./modules.md) pour les modules disponibles.
 
 ## Dépannage
 
@@ -136,4 +136,4 @@ Tous les skills utilisent le préfixe `bmad-` suivi d'un nom descriptif (ex. `bm
 ## Glossaire
 
 [^1]: PRD (Product Requirements Document) : document de référence qui décrit les objectifs du produit, les besoins utilisateurs, les fonctionnalités attendues, les contraintes et les critères de succès, afin d’aligner les équipes sur ce qui doit être construit et pourquoi.
-[^2]: Persona : dans le contexte de BMad, une persona désigne un agent IA avec un rôle défini, un style de communication et une expertise spécifiques (ex. Amelia la développeuse, John le product manager). Chaque persona garde son "caractère" pendant les interactions.
+[^2]: Persona : dans le contexte de BMad, une persona désigne un agent IA avec un rôle défini, un style de communication et une expertise spécifiques (ex. Mary l'analyste, Winston l'architecte). Chaque persona garde son "caractère" pendant les interactions.

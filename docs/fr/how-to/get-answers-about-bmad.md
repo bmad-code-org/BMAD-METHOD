@@ -54,11 +54,11 @@ Utilisez cette section lorsque :
 
 ### 1. Choisissez votre source
 
-| Source               | Idéal pour                                  | Exemples                     |
-| -------------------- | ------------------------------------------- | ---------------------------- |
-| **Dossier `_bmad`**  | Comment fonctionne BMad — agents, workflows, prompts | "Que fait l'agent PM ?" |
-| **Repo GitHub complet** | Historique, installateur, architecture          | "Qu'est-ce qui a changé dans la v6 ?"        |
-| **`llms-full.txt`**  | Aperçu rapide depuis la documentation                  | "Expliquez les quatre phases de BMad" |
+| Source                  | Idéal pour                                           | Exemples                              |
+|-------------------------|------------------------------------------------------|---------------------------------------|
+| **Dossier `_bmad`**     | Comment fonctionne BMad — agents, workflows, prompts | "Que fait l'agent Analyste ?"         |
+| **Repo GitHub complet** | Historique, installateur, architecture               | "Qu'est-ce qui a changé dans la v6 ?" |
+| **`llms-full.txt`**     | Aperçu rapide depuis la documentation                | "Expliquez les quatre phases de BMad" |
 
 Le dossier `_bmad` est créé lorsque vous installez BMad. Si vous ne l'avez pas encore, clonez le repo à la place.
 
