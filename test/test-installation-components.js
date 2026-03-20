@@ -49,34 +49,37 @@ function assert(condition, testName, errorMessage = '') {
 }
 
 async function createTestBmadFixture() {
-  const fixtureDir = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-fixture-'));
+  const fixtureRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-fixture-'));
+  const fixtureDir = path.join(fixtureRoot, '_bmad');
+  await fs.ensureDir(fixtureDir);
 
-  // Minimal workflow manifest (generators check for this)
+  // Skill manifest CSV — the sole source of truth for IDE skill installation
   await fs.ensureDir(path.join(fixtureDir, '_config'));
-  await fs.writeFile(path.join(fixtureDir, '_config', 'workflow-manifest.csv'), '');
+  await fs.writeFile(
+    path.join(fixtureDir, '_config', 'skill-manifest.csv'),
+    [
+      'canonicalId,name,description,module,path,install_to_bmad',
+      '"bmad-master","bmad-master","Minimal test agent fixture","core","_bmad/core/bmad-master/SKILL.md","true"',
+      '',
+    ].join('\n'),
+  );
 
-  // Minimal compiled agent for core/agents (contains <agent tag and frontmatter)
-  const minimalAgent = [
-    '---',
-    'name: "test agent"',
-    'description: "Minimal test agent fixture"',
-    '---',
-    '',
-    'You are a test agent.',
-    '',
-    '<agent id="test-agent.agent.yaml" name="Test Agent" title="Test Agent">',
-    '<persona>Test persona</persona>',
-    '</agent>',
-  ].join('\n');
-
-  await fs.ensureDir(path.join(fixtureDir, 'core', 'agents'));
-  await fs.writeFile(path.join(fixtureDir, 'core', 'agents', 'bmad-master.md'), minimalAgent);
-  // Skill manifest so the installer uses 'bmad-master' as the canonical skill name
-  await fs.writeFile(path.join(fixtureDir, 'core', 'agents', 'bmad-skill-manifest.yaml'), 'bmad-master.md:\n  canonicalId: bmad-master\n');
-
-  // Minimal compiled agent for bmm module (tests use selectedModules: ['bmm'])
-  await fs.ensureDir(path.join(fixtureDir, 'bmm', 'agents'));
-  await fs.writeFile(path.join(fixtureDir, 'bmm', 'agents', 'test-bmm-agent.md'), minimalAgent);
+  // Minimal SKILL.md for the skill entry
+  const skillDir = path.join(fixtureDir, 'core', 'bmad-master');
+  await fs.ensureDir(skillDir);
+  await fs.writeFile(
+    path.join(skillDir, 'SKILL.md'),
+    [
+      '---',
+      'name: bmad-master',
+      'description: Minimal test agent fixture',
+      '---',
+      '',
+      '<!-- agent-activation -->',
+      'You are a test agent.',
+    ].join('\n'),
+  );
+  await fs.writeFile(path.join(skillDir, 'bmad-skill-manifest.yaml'), 'SKILL.md:\n  type: skill\n');
 
   return fixtureDir;
 }
@@ -1837,18 +1840,12 @@ async function runTests() {
     });
 
     assert(result.success === true, 'Antigravity setup succeeds with overlapping skill names');
-    assert(result.detail === '2 agents', 'Installer detail reports agents separately from skills');
-    assert(result.handlerResult.results.skillDirectories === 2, 'Result exposes unique skill directory count');
-    assert(result.handlerResult.results.agents === 2, 'Result retains generated agent write count');
-    assert(result.handlerResult.results.workflows === 1, 'Result retains generated workflow count');
+    assert(result.detail === '1 skills', 'Installer detail reports skill count');
+    assert(result.handlerResult.results.skillDirectories === 1, 'Result exposes unique skill directory count');
     assert(result.handlerResult.results.skills === 1, 'Result retains verbatim skill count');
     assert(
-      await fs.pathExists(path.join(collisionProjectDir, '.agent', 'skills', 'bmad-agent-bmad-master', 'SKILL.md')),
-      'Agent skill directory is created',
-    );
-    assert(
       await fs.pathExists(path.join(collisionProjectDir, '.agent', 'skills', 'bmad-help', 'SKILL.md')),
-      'Overlapping skill directory is created once',
+      'Skill directory is created from skill-manifest',
     );
   } catch (error) {
     assert(false, 'Skill-format unique count test succeeds', error.message);
