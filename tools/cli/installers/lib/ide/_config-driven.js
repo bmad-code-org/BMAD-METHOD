@@ -630,7 +630,7 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
   }
 
   /**
-   * Install verbatim skill directories (type: skill entries from skill-manifest.csv).
+   * Install verbatim native SKILL.md directories from skill-manifest.csv.
    * Copies the entire source directory as-is into the IDE skill directory.
    * The source SKILL.md is used directly — no frontmatter transformation or file generation.
    * @param {string} projectDir - Project directory

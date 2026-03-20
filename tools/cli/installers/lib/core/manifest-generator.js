@@ -51,6 +51,29 @@ class ManifestGenerator {
   }
 
   /**
+   * Native SKILL.md entrypoints can be packaged as either skills or agents.
+   * Both need verbatim installation for skill-format IDEs.
+   * @param {string|null} artifactType - Manifest type resolved for SKILL.md
+   * @returns {boolean} True when the directory should be installed verbatim
+   */
+  isNativeSkillDirType(artifactType) {
+    return artifactType === 'skill' || artifactType === 'agent';
+  }
+
+  /**
+   * Check whether a loaded bmad-skill-manifest.yaml declares a native
+   * SKILL.md entrypoint, either as a single-entry manifest or a multi-entry map.
+   * @param {Object|null} manifest - Loaded manifest
+   * @returns {boolean} True when the manifest contains a native skill/agent entrypoint
+   */
+  hasNativeSkillManifest(manifest) {
+    if (!manifest) return false;
+    if (manifest.__single) return this.isNativeSkillDirType(manifest.__single.type);
+
+    return Object.values(manifest).some((entry) => this.isNativeSkillDirType(entry?.type));
+  }
+
+  /**
    * Clean text for CSV output by normalizing whitespace.
    * Note: Quote escaping is handled by escapeCsv() at write time.
    * @param {string} text - Text to clean
@@ -146,9 +169,10 @@ class ManifestGenerator {
   }
 
   /**
-   * Recursively walk a module directory tree, collecting skill directories.
-   * A skill directory is one that contains both a bmad-skill-manifest.yaml with
-   * type: skill AND a SKILL.md file with name/description frontmatter.
+   * Recursively walk a module directory tree, collecting native SKILL.md entrypoints.
+   * A native entrypoint directory is one that contains both a
+   * bmad-skill-manifest.yaml with type: skill or type: agent AND a SKILL.md file
+   * with name/description frontmatter.
    * Populates this.skills[] and this.skillClaimedDirs (Set of absolute paths).
    */
   async collectSkills() {
@@ -172,11 +196,11 @@ class ManifestGenerator {
         // Check this directory for skill manifest
         const manifest = await this.loadSkillManifest(dir);
 
-        // Determine if this directory is a skill (type: skill in manifest)
+        // Determine if this directory is a native SKILL.md entrypoint
         const skillFile = 'SKILL.md';
         const artifactType = this.getArtifactType(manifest, skillFile);
 
-        if (artifactType === 'skill' || artifactType === 'agent') {
+        if (this.isNativeSkillDirType(artifactType)) {
           const skillMdPath = path.join(dir, 'SKILL.md');
           const dirName = path.basename(dir);
 
@@ -190,11 +214,12 @@ class ManifestGenerator {
               ? `${this.bmadFolderName}/${moduleName}/${relativePath}/${skillFile}`
               : `${this.bmadFolderName}/${moduleName}/${skillFile}`;
 
-            // Skills derive canonicalId from directory name — never from manifest
-            // (agent-type skills legitimately use canonicalId for agent-manifest mapping, so skip warning)
+            // Native SKILL.md entrypoints derive canonicalId from directory name.
+            // Agent entrypoints may keep canonicalId metadata for compatibility, so
+            // only warn for non-agent SKILL.md directories.
             if (manifest && manifest.__single && manifest.__single.canonicalId && artifactType !== 'agent') {
               console.warn(
-                `Warning: Skill manifest at ${dir}/bmad-skill-manifest.yaml contains canonicalId — this field is ignored for skills (directory name is the canonical ID)`,
+                `Warning: Native entrypoint manifest at ${dir}/bmad-skill-manifest.yaml contains canonicalId — this field is ignored for SKILL.md directories (directory name is the canonical ID)`,
               );
             }
             const canonicalId = dirName;
@@ -224,21 +249,21 @@ class ManifestGenerator {
           }
         }
 
-        // Warn if manifest says type:skill but directory was not claimed
+        // Warn if manifest says this is a native entrypoint but the directory was not claimed
         if (manifest && !this.skillClaimedDirs.has(dir)) {
-          let hasSkillType = false;
+          let hasNativeSkillType = false;
           if (manifest.__single) {
-            hasSkillType = manifest.__single.type === 'skill' || manifest.__single.type === 'agent';
+            hasNativeSkillType = this.isNativeSkillDirType(manifest.__single.type);
           } else {
             for (const key of Object.keys(manifest)) {
-              if (manifest[key]?.type === 'skill' || manifest[key]?.type === 'agent') {
-                hasSkillType = true;
+              if (this.isNativeSkillDirType(manifest[key]?.type)) {
+                hasNativeSkillType = true;
                 break;
               }
             }
           }
-          if (hasSkillType && debug) {
-            console.log(`[DEBUG] collectSkills: dir has type:skill manifest but failed validation: ${dir}`);
+          if (hasNativeSkillType && debug) {
+            console.log(`[DEBUG] collectSkills: dir has native SKILL.md manifest but failed validation: ${dir}`);
           }
         }
 
@@ -1359,7 +1384,8 @@ class ManifestGenerator {
         const hasTasks = await fs.pathExists(path.join(modulePath, 'tasks'));
         const hasTools = await fs.pathExists(path.join(modulePath, 'tools'));
 
-        // Check for skill-only modules: recursive scan for bmad-skill-manifest.yaml with type: skill
+        // Check for native-entrypoint-only modules: recursive scan for
+        // bmad-skill-manifest.yaml with type: skill or type: agent
         let hasSkills = false;
         if (!hasAgents && !hasWorkflows && !hasTasks && !hasTools) {
           hasSkills = await this._hasSkillManifestRecursive(modulePath);
@@ -1378,7 +1404,8 @@ class ManifestGenerator {
   }
 
   /**
-   * Recursively check if a directory tree contains a bmad-skill-manifest.yaml with type: skill.
+   * Recursively check if a directory tree contains a bmad-skill-manifest.yaml that
+   * declares a native SKILL.md entrypoint (type: skill or type: agent).
    * Skips directories starting with . or _.
    * @param {string} dir - Directory to search
    * @returns {boolean} True if a skill manifest is found
@@ -1393,10 +1420,7 @@ class ManifestGenerator {
 
     // Check for manifest in this directory
     const manifest = await this.loadSkillManifest(dir);
-    if (manifest) {
-      const type = this.getArtifactType(manifest, 'workflow.md');
-      if (type === 'skill') return true;
-    }
+    if (this.hasNativeSkillManifest(manifest)) return true;
 
     // Recurse into subdirectories
     for (const entry of entries) {

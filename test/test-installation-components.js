@@ -1635,6 +1635,15 @@ async function runTests() {
     );
     await fs.writeFile(path.join(taskSkillDir29, 'workflow.md'), '# Task Skill\n\nSkill in tasks\n');
 
+    // --- Native agent entrypoint inside agents/: core/agents/bmad-tea/ ---
+    const nativeAgentDir29 = path.join(tempFixture29, 'core', 'agents', 'bmad-tea');
+    await fs.ensureDir(nativeAgentDir29);
+    await fs.writeFile(path.join(nativeAgentDir29, 'bmad-skill-manifest.yaml'), 'type: agent\ncanonicalId: bmad-tea\n');
+    await fs.writeFile(
+      path.join(nativeAgentDir29, 'SKILL.md'),
+      '---\nname: bmad-tea\ndescription: Native agent entrypoint\n---\n\nPresent a capability menu.\n',
+    );
+
     // Minimal agent so core module is detected
     await fs.ensureDir(path.join(tempFixture29, 'core', 'agents'));
     const minimalAgent29 = '<agent name="Test" title="T"><persona>p</persona></agent>';
@@ -1664,6 +1673,17 @@ async function runTests() {
     const inTasks29 = generator29.tasks.find((t) => t.name === 'task-skill');
     assert(inTasks29 === undefined, 'Skill in tasks/ dir does NOT appear in tasks[]');
 
+    // Native agent entrypoint should be installed as a verbatim skill and also
+    // remain visible to the agent manifest pipeline.
+    const nativeAgentEntry29 = generator29.skills.find((s) => s.canonicalId === 'bmad-tea');
+    assert(nativeAgentEntry29 !== undefined, 'Native type:agent SKILL.md dir appears in skills[]');
+    assert(
+      nativeAgentEntry29 && nativeAgentEntry29.path.includes('agents/bmad-tea/SKILL.md'),
+      'Native type:agent SKILL.md path points to the agent directory entrypoint',
+    );
+    const nativeAgentManifest29 = generator29.agents.find((a) => a.name === 'bmad-tea');
+    assert(nativeAgentManifest29 !== undefined, 'Native type:agent SKILL.md dir appears in agents[] for agent metadata');
+
     // Regular workflow should be in workflows, NOT in skills
     const regularWf29 = generator29.workflows.find((w) => w.name === 'Regular Workflow');
     assert(regularWf29 !== undefined, 'Regular type:workflow appears in workflows[]');
@@ -1689,6 +1709,37 @@ async function runTests() {
 
     const scannedModules29 = await generator29.scanInstalledModules(tempFixture29);
     assert(scannedModules29.includes('skill-only-mod'), 'scanInstalledModules recognizes skill-only module');
+
+    // Test scanInstalledModules recognizes native-agent-only modules too
+    const agentOnlyModDir29 = path.join(tempFixture29, 'agent-only-mod');
+    await fs.ensureDir(path.join(agentOnlyModDir29, 'deep', 'nested', 'bmad-tea'));
+    await fs.writeFile(path.join(agentOnlyModDir29, 'deep', 'nested', 'bmad-tea', 'bmad-skill-manifest.yaml'), 'type: agent\n');
+    await fs.writeFile(
+      path.join(agentOnlyModDir29, 'deep', 'nested', 'bmad-tea', 'SKILL.md'),
+      '---\nname: bmad-tea\ndescription: desc\n---\n\nAgent menu.\n',
+    );
+
+    const rescannedModules29 = await generator29.scanInstalledModules(tempFixture29);
+    assert(rescannedModules29.includes('agent-only-mod'), 'scanInstalledModules recognizes native-agent-only module');
+
+    // Test scanInstalledModules recognizes multi-entry manifests keyed under SKILL.md
+    const multiEntryModDir29 = path.join(tempFixture29, 'multi-entry-mod');
+    await fs.ensureDir(path.join(multiEntryModDir29, 'deep', 'nested', 'bmad-tea'));
+    await fs.writeFile(
+      path.join(multiEntryModDir29, 'deep', 'nested', 'bmad-tea', 'bmad-skill-manifest.yaml'),
+      'SKILL.md:\n  type: agent\n  canonicalId: bmad-tea\n',
+    );
+    await fs.writeFile(
+      path.join(multiEntryModDir29, 'deep', 'nested', 'bmad-tea', 'SKILL.md'),
+      '---\nname: bmad-tea\ndescription: desc\n---\n\nAgent menu.\n',
+    );
+
+    const rescannedModules29b = await generator29.scanInstalledModules(tempFixture29);
+    assert(rescannedModules29b.includes('multi-entry-mod'), 'scanInstalledModules recognizes multi-entry native-agent module');
+
+    // skill-manifest.csv should include the native agent entrypoint
+    const skillManifestCsv29 = await fs.readFile(path.join(tempFixture29, '_config', 'skill-manifest.csv'), 'utf8');
+    assert(skillManifestCsv29.includes('bmad-tea'), 'skill-manifest.csv includes native type:agent SKILL.md entrypoint');
   } catch (error) {
     assert(false, 'Unified skill scanner test succeeds', error.message);
   } finally {
