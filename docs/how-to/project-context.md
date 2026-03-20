@@ -2,7 +2,7 @@
 title: "Manage Project Context"
 description: Create and maintain project-context.md to guide AI agents
 sidebar:
-  order: 7
+  order: 8
 ---
 
 Use the `project-context.md` file to ensure AI agents follow your project's technical preferences and implementation rules throughout all workflows. To make sure this is always available, you can also add the line `Important project context and conventions are located in [path to project context]/project-context.md` to your tools context or always rules file (such as `AGENTS.md`)
