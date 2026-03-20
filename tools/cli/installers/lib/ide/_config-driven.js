@@ -115,7 +115,7 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
     const { target_dir } = config;
 
     if (!config.skill_format) {
-      return { success: true, results: { skills: 0 } };
+      return { success: false, reason: 'missing-skill-format', error: 'Installer config missing skill_format — cannot install skills' };
     }
 
     const targetPath = path.join(projectDir, target_dir);
