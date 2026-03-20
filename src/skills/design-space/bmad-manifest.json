@@ -1,7 +1,7 @@
 {
   "name": "wds-design-space",
-  "version": "0.4.0",
-  "description": "Shared knowledge base and agent messaging system",
+  "version": "0.4.1",
+  "description": "Shared knowledge base and unified agent messaging",
   "capabilities": [
     {
       "name": "search",
@@ -16,17 +16,17 @@
     {
       "name": "check",
       "menu-code": "M",
-      "description": "Check for unread agent messages"
+      "description": "Check all unread messages — notifications, questions, work orders, handoffs"
     },
     {
       "name": "send",
       "menu-code": "T",
-      "description": "Send a message to another agent"
+      "description": "Send any message type: notification, question, work-order, handoff, broadcast"
     },
     {
-      "name": "work-orders",
-      "menu-code": "W",
-      "description": "Post, claim, list, or update work orders"
+      "name": "update-status",
+      "menu-code": "U",
+      "description": "Update status on a work order or any message (ready → in-progress → done)"
     },
     {
       "name": "who-online",

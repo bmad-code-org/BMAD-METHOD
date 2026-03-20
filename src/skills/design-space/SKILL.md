@@ -277,20 +277,44 @@ When invoked with no arguments (`/u` or `/design-space`):
 
 ## Quick Reference
 
-| I want to... | Command |
+| I want to... | How |
 |---|---|
 | Find what we know about X | `search <query>` |
 | Save a design decision | `capture <text>` |
-| Check if agents left messages | `check` or just `/u` |
+| Check messages | `check` or just `/u` |
 | Tell another agent something | `send <agent> <message>` |
+| Give someone a task | `send <agent> <description>` with `message_type: "work-order"` |
+| Claim or update a task | `update-status` on the message |
 | See who's online | `who` |
-| Log an experiment result | `capture` with `failed_experiment` or `successful_pattern` |
-| Post a task for another agent | `work post <title>` |
-| See available tasks | `work list` |
+
+## For Agents Without Specific Instructions
+
+If you are an agent entering Design Space without persona-specific instructions (no Saga, Freya, Codex, or Ivonne activation), here is how to use the system:
+
+**Everything is a message.** There are no separate "tasks" or "work orders" — just messages with different types. When you check for messages, you see ALL unread messages from all agents. Signal strength tells you what's most relevant to you, but nothing is hidden.
+
+**Message types:**
+- `notification` — FYI, no action needed
+- `question` — someone is asking something, consider responding
+- `work-order` — a task with status (ready → in-progress → done). Claim it by updating status.
+- `handoff` — an agent is passing work to you or another agent
+- `answer` — a response to a previous message
+- `broadcast` — general announcement to everyone
+
+**Your identity:** Use your agent name (or "claude-code" as fallback) when sending and checking. Register on session start to get a session ID and see who else is online.
+
+**Core workflow:**
+1. Register: `{"action": "register", "agent_id": "your-name"}`
+2. Check messages: `{"action": "check", "agent_id": "your-name"}`
+3. Read messages sorted by signal strength (strong = for you, available = ambient)
+4. Respond, capture insights, or send new messages as needed
+5. Mark messages read when done: `{"action": "mark-read", "message_ids": [...], "agent_id": "your-name"}`
+
+**Principle:** You can see everything. Signal strength helps you prioritize. Work orders are just messages you can claim. Capture your learnings so the next agent benefits.
 
 ## End-of-Turn Convention
 
-When any WDS agent finishes a task, it should:
+When any agent finishes a task, it should:
 1. Check Design Space for unread messages
 2. Capture any meaningful decisions or insights from the work just completed
 
