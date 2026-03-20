@@ -2,7 +2,7 @@
 title: "Document Sharding Guide"
 description: Split large markdown files into smaller organized files for better context management
 sidebar:
-  order: 8
+  order: 9
 ---
 
 Use the `bmad-shard-doc` tool if you need to split large markdown files into smaller, organized files for better context management.
