@@ -8,10 +8,10 @@ sidebar:
 
 ## 问题
 
-- [我必须先运行 document-project 吗？](#do-i-have-to-run-document-project-first)
-- [如果我忘记运行 document-project 怎么办？](#what-if-i-forget-to-run-document-project)
-- [我可以在既有项目上使用快速流程吗？](#can-i-use-quick-flow-for-established-projects)
-- [如果我的现有代码不遵循最佳实践怎么办？](#what-if-my-existing-code-doesnt-follow-best-practices)
+- [我必须先运行 document-project 吗？](#我必须先运行-document-project-吗)
+- [如果我忘记运行 document-project 怎么办？](#如果我忘记运行-document-project-怎么办)
+- [我可以在既有项目上使用快速流程吗？](#我可以在既有项目上使用快速流程吗)
+- [如果我的现有代码不遵循最佳实践怎么办？](#如果我的现有代码不遵循最佳实践怎么办)
 
 ### 我必须先运行 document-project 吗？
 

@@ -2,7 +2,7 @@
 title: "管理项目上下文"
 description: 创建并维护 project-context.md 以指导 AI 智能体
 sidebar:
-  order: 7
+  order: 8
 ---
 
 使用 `project-context.md` 文件确保 AI 智能体在所有工作流程中遵循项目的技术偏好和实现规则。

@@ -2,7 +2,7 @@
 title: "文档分片指南"
 description: 将大型 Markdown 文件拆分为更小的组织化文件，以更好地管理上下文
 sidebar:
-  order: 8
+  order: 9
 ---
 
 如果需要将大型 Markdown 文件拆分为更小、组织良好的文件以更好地管理上下文，请使用 `shard-doc` 工具。
