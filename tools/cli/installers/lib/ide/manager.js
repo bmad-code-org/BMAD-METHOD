@@ -159,14 +159,9 @@ class IdeManager {
       // Build detail string from handler-returned data
       let detail = '';
       if (handlerResult && handlerResult.results) {
-        // Config-driven handlers return { success, results: { agents, workflows, tasks, tools } }
         const r = handlerResult.results;
-        const parts = [];
-        const totalDirs = r.skillDirectories || (r.workflows || 0) + (r.tasks || 0) + (r.tools || 0) + (r.skills || 0);
-        const skillCount = totalDirs - (r.agents || 0);
-        if (skillCount > 0) parts.push(`${skillCount} skills`);
-        if (r.agents > 0) parts.push(`${r.agents} agents`);
-        detail = parts.join(', ');
+        const count = r.skillDirectories || r.skills || 0;
+        if (count > 0) detail = `${count} skills`;
       }
       // Propagate handler's success status (default true for backward compat)
       const success = handlerResult?.success !== false;

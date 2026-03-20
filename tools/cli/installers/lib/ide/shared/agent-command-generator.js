@@ -4,7 +4,6 @@ const { toColonPath, toDashPath, customAgentColonName, customAgentDashName, BMAD
 
 /**
  * Generates launcher command files for each agent
- * Similar to WorkflowCommandGenerator but for agents
  */
 class AgentCommandGenerator {
   constructor(bmadFolderName = BMAD_FOLDER_NAME) {

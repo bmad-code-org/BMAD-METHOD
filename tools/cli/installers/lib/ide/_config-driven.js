@@ -4,9 +4,6 @@ const fs = require('fs-extra');
 const yaml = require('yaml');
 const { BaseIdeSetup } = require('./_base-ide');
 const prompts = require('../../../lib/prompts');
-const { AgentCommandGenerator } = require('./shared/agent-command-generator');
-const { WorkflowCommandGenerator } = require('./shared/workflow-command-generator');
-const { TaskToolCommandGenerator } = require('./shared/task-tool-command-generator');
 const csv = require('csv-parse/sync');
 
 /**
@@ -115,53 +112,20 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
    * @returns {Promise<Object>} Installation result
    */
   async installToTarget(projectDir, bmadDir, config, options) {
-    const { target_dir, template_type, artifact_types } = config;
+    const { target_dir } = config;
 
-    // Skip targets with explicitly empty artifact_types and no verbatim skills
-    // This prevents creating empty directories when no artifacts will be written
-    const skipStandardArtifacts = Array.isArray(artifact_types) && artifact_types.length === 0;
-    if (skipStandardArtifacts && !config.skill_format) {
-      return { success: true, results: { agents: 0, workflows: 0, tasks: 0, tools: 0, skills: 0 } };
+    if (!config.skill_format) {
+      return { success: false, reason: 'missing-skill-format', error: 'Installer config missing skill_format — cannot install skills' };
     }
 
     const targetPath = path.join(projectDir, target_dir);
     await this.ensureDir(targetPath);
 
-    const selectedModules = options.selectedModules || [];
-    const results = { agents: 0, workflows: 0, tasks: 0, tools: 0, skills: 0 };
-    this.skillWriteTracker = config.skill_format ? new Set() : null;
+    this.skillWriteTracker = new Set();
+    const results = { skills: 0 };
 
-    // Install standard artifacts (agents, workflows, tasks, tools)
-    if (!skipStandardArtifacts) {
-      // Install agents
-      if (!artifact_types || artifact_types.includes('agents')) {
-        const agentGen = new AgentCommandGenerator(this.bmadFolderName);
-        const { artifacts } = await agentGen.collectAgentArtifacts(bmadDir, selectedModules);
-        results.agents = await this.writeAgentArtifacts(targetPath, artifacts, template_type, config);
-      }
-
-      // Install workflows
-      if (!artifact_types || artifact_types.includes('workflows')) {
-        const workflowGen = new WorkflowCommandGenerator(this.bmadFolderName);
-        const { artifacts } = await workflowGen.collectWorkflowArtifacts(bmadDir);
-        results.workflows = await this.writeWorkflowArtifacts(targetPath, artifacts, template_type, config);
-      }
-
-      // Install tasks and tools using template system (supports TOML for Gemini, MD for others)
-      if (!artifact_types || artifact_types.includes('tasks') || artifact_types.includes('tools')) {
-        const taskToolGen = new TaskToolCommandGenerator(this.bmadFolderName);
-        const { artifacts } = await taskToolGen.collectTaskToolArtifacts(bmadDir);
-        const taskToolResult = await this.writeTaskToolArtifacts(targetPath, artifacts, template_type, config);
-        results.tasks = taskToolResult.tasks || 0;
-        results.tools = taskToolResult.tools || 0;
-      }
-    }
-
-    // Install verbatim skills (type: skill)
-    if (config.skill_format) {
-      results.skills = await this.installVerbatimSkills(projectDir, bmadDir, targetPath, config);
-      results.skillDirectories = this.skillWriteTracker ? this.skillWriteTracker.size : 0;
-    }
+    results.skills = await this.installVerbatimSkills(projectDir, bmadDir, targetPath, config);
+    results.skillDirectories = this.skillWriteTracker.size;
 
     await this.printSummary(results, target_dir, options);
     this.skillWriteTracker = null;
@@ -177,132 +141,16 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
    * @returns {Promise<Object>} Installation result
    */
   async installToMultipleTargets(projectDir, bmadDir, targets, options) {
-    const allResults = { agents: 0, workflows: 0, tasks: 0, tools: 0, skills: 0 };
+    const allResults = { skills: 0 };
 
     for (const target of targets) {
       const result = await this.installToTarget(projectDir, bmadDir, target, options);
       if (result.success) {
-        allResults.agents += result.results.agents || 0;
-        allResults.workflows += result.results.workflows || 0;
-        allResults.tasks += result.results.tasks || 0;
-        allResults.tools += result.results.tools || 0;
         allResults.skills += result.results.skills || 0;
       }
     }
 
     return { success: true, results: allResults };
-  }
-
-  /**
-   * Write agent artifacts to target directory
-   * @param {string} targetPath - Target directory path
-   * @param {Array} artifacts - Agent artifacts
-   * @param {string} templateType - Template type to use
-   * @param {Object} config - Installation configuration
-   * @returns {Promise<number>} Count of artifacts written
-   */
-  async writeAgentArtifacts(targetPath, artifacts, templateType, config = {}) {
-    // Try to load platform-specific template, fall back to default-agent
-    const { content: template, extension } = await this.loadTemplate(templateType, 'agent', config, 'default-agent');
-    let count = 0;
-
-    for (const artifact of artifacts) {
-      const content = this.renderTemplate(template, artifact);
-      const filename = this.generateFilename(artifact, 'agent', extension);
-
-      if (config.skill_format) {
-        await this.writeSkillFile(targetPath, artifact, content);
-      } else {
-        const filePath = path.join(targetPath, filename);
-        await this.writeFile(filePath, content);
-      }
-      count++;
-    }
-
-    return count;
-  }
-
-  /**
-   * Write workflow artifacts to target directory
-   * @param {string} targetPath - Target directory path
-   * @param {Array} artifacts - Workflow artifacts
-   * @param {string} templateType - Template type to use
-   * @param {Object} config - Installation configuration
-   * @returns {Promise<number>} Count of artifacts written
-   */
-  async writeWorkflowArtifacts(targetPath, artifacts, templateType, config = {}) {
-    let count = 0;
-
-    for (const artifact of artifacts) {
-      if (artifact.type === 'workflow-command') {
-        const workflowTemplateType = config.md_workflow_template || `${templateType}-workflow`;
-        const { content: template, extension } = await this.loadTemplate(workflowTemplateType, '', config, 'default-workflow');
-        const content = this.renderTemplate(template, artifact);
-        const filename = this.generateFilename(artifact, 'workflow', extension);
-
-        if (config.skill_format) {
-          await this.writeSkillFile(targetPath, artifact, content);
-        } else {
-          const filePath = path.join(targetPath, filename);
-          await this.writeFile(filePath, content);
-        }
-        count++;
-      }
-    }
-
-    return count;
-  }
-
-  /**
-   * Write task/tool artifacts to target directory using templates
-   * @param {string} targetPath - Target directory path
-   * @param {Array} artifacts - Task/tool artifacts
-   * @param {string} templateType - Template type to use
-   * @param {Object} config - Installation configuration
-   * @returns {Promise<Object>} Counts of tasks and tools written
-   */
-  async writeTaskToolArtifacts(targetPath, artifacts, templateType, config = {}) {
-    let taskCount = 0;
-    let toolCount = 0;
-
-    // Pre-load templates to avoid repeated file I/O in the loop
-    const taskTemplate = await this.loadTemplate(templateType, 'task', config, 'default-task');
-    const toolTemplate = await this.loadTemplate(templateType, 'tool', config, 'default-tool');
-
-    const { artifact_types } = config;
-
-    for (const artifact of artifacts) {
-      if (artifact.type !== 'task' && artifact.type !== 'tool') {
-        continue;
-      }
-
-      // Skip if the specific artifact type is not requested in config
-      if (artifact_types) {
-        if (artifact.type === 'task' && !artifact_types.includes('tasks')) continue;
-        if (artifact.type === 'tool' && !artifact_types.includes('tools')) continue;
-      }
-
-      // Use pre-loaded template based on artifact type
-      const { content: template, extension } = artifact.type === 'task' ? taskTemplate : toolTemplate;
-
-      const content = this.renderTemplate(template, artifact);
-      const filename = this.generateFilename(artifact, artifact.type, extension);
-
-      if (config.skill_format) {
-        await this.writeSkillFile(targetPath, artifact, content);
-      } else {
-        const filePath = path.join(targetPath, filename);
-        await this.writeFile(filePath, content);
-      }
-
-      if (artifact.type === 'task') {
-        taskCount++;
-      } else {
-        toolCount++;
-      }
-    }
-
-    return { tasks: taskCount, tools: toolCount };
   }
 
   /**
@@ -711,13 +559,10 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
    */
   async printSummary(results, targetDir, options = {}) {
     if (options.silent) return;
-    const parts = [];
-    const totalDirs =
-      results.skillDirectories || (results.workflows || 0) + (results.tasks || 0) + (results.tools || 0) + (results.skills || 0);
-    const skillCount = totalDirs - (results.agents || 0);
-    if (skillCount > 0) parts.push(`${skillCount} skills`);
-    if (results.agents > 0) parts.push(`${results.agents} agents`);
-    await prompts.log.success(`${this.name} configured: ${parts.join(', ')} → ${targetDir}`);
+    const count = results.skillDirectories || results.skills || 0;
+    if (count > 0) {
+      await prompts.log.success(`${this.name} configured: ${count} skills → ${targetDir}`);
+    }
   }
 
   /**
