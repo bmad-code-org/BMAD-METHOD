@@ -85,7 +85,7 @@ If `{spec_file}` is **not** set, present only options 1 and 3 (omit option 2 —
 
 ### 6. Update story status and sync sprint tracking
 
-Skip this section if `{spec_file}` is not set or `{story_key}` is not set.
+Skip this section if `{spec_file}` is not set.
 
 #### Determine new status based on review outcome
 
@@ -95,6 +95,8 @@ Skip this section if `{spec_file}` is not set or `{story_key}` is not set.
 Save the story file.
 
 #### Sync sprint-status.yaml
+
+If `{story_key}` is not set, skip this subsection and note that sprint status was not synced because no story key was available.
 
 If `{sprint_status}` file exists:
 
@@ -123,3 +125,5 @@ Present the user with follow-up options:
 > 1. **Start the next story** — run `dev-story` to pick up the next `ready-for-dev` story
 > 2. **Re-run code review** — address findings and review again
 > 3. **Done** — end the workflow
+
+**HALT** — I am waiting for your choice. Do not proceed until the user selects an option.
