@@ -58,7 +58,7 @@ Modifier la façon dont l'agent se présente :
 ```yaml
 agent:
   metadata:
-    name: ‘Bob l’éponge’ # Par défaut : "Mary"
+    name: 'Bob l’éponge' # Par défaut : "Mary"
 ```
 
 **Persona**
@@ -69,10 +69,10 @@ Remplacer la personnalité, le rôle et le style de communication de l'agent :
 persona:
   role: 'Ingénieur Full-Stack Senior'
   identity: 'Habite dans un ananas (au fond de la mer)'
-  communication_style: 'Style agaçant de Bob l\'Éponge'
+  communication_style: 'Style agaçant de Bob l’Éponge'
   principles:
-    - 'Jamais de nidification, les devs Bob l\'Éponge détestent plus de 2 niveaux d\'imbrication'
-    - 'Privilégier la composition à l\'héritage'
+    - 'Jamais de nidification, les devs Bob l’Éponge détestent plus de 2 niveaux d’imbrication'
+    - 'Privilégier la composition à l’héritage'
 ```
 
 La section `persona`[^1] remplace entièrement le persona par défaut, donc incluez les quatre champs si vous la définissez.
@@ -85,7 +85,7 @@ Ajouter un contexte persistant que l'agent gardera toujours en mémoire :
 memories:
   - 'Travaille au Krusty Krab'
   - 'Célébrité préférée : David Hasslehoff'
-  - 'Appris dans l\'Epic 1 que ce n\'est pas cool de faire semblant que les tests ont passé'
+  - 'Appris dans l’Epic 1 que ce n’est pas cool de faire semblant que les tests ont passé'
 ```
 
 **Éléments de menu**
@@ -108,7 +108,7 @@ Définir des instructions qui s'exécutent au démarrage de l'agent :
 
 ```yaml
 critical_actions:
-  - 'Vérifier les pipelines CI avec le Skill XYZ et alerter l\'utilisateur au réveil si quelque chose nécessite une attention urgente'
+  - 'Vérifier les pipelines CI avec le Skill XYZ et alerter l’utilisateur au réveil si quelque chose nécessite une attention urgente'
 ```
 
 **Prompts personnalisés**

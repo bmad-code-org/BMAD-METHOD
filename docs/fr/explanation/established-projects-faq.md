@@ -43,7 +43,7 @@ Parfait pour les corrections de bugs et les petites fonctionnalités dans des ba
 Quick Dev détecte vos conventions et demande : « Dois-je suivre ces conventions existantes ? » Vous décidez :
 
 - **Oui** → Maintenir la cohérence avec la base de code actuelle
-- **Non** → Établir de nouvelles normes (documenter pourquoi dans le spécification technique)
+- **Non** → Établir de nouvelles normes (documenter pourquoi dans la spécification technique)
 
 BMM respecte votre choix — il ne forcera pas la modernisation, mais la proposera.
 

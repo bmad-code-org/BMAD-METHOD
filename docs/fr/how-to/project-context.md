@@ -25,7 +25,7 @@ Utilisez le fichier `project-context.md` pour garantir que les agents IA respect
 
 **Génération après l'architecture** — Idéal pour capturer les décisions prises lors du solutioning
 
-**Génération pour les projets existants** — Idéal pour découvrir les patterns dans les base de code existantes
+**Génération pour les projets existants** — Idéal pour découvrir les patterns dans les bases de code existantes
 
 ## Étape 2 : Créez le fichier
 
