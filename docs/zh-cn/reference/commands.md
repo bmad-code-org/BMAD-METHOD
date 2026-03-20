@@ -13,7 +13,7 @@ BMad 提供两种开始工作的方式，它们服务于不同的目的。
 
 | 机制 | 调用方式 | 发生什么 |
 | --- | --- | --- |
-| **斜杠命令** | 在 IDE 中输入 `/bmad-...` | 直接加载智能体、运行工作流或执行任务 |
+| **斜杠命令** | 在 IDE 中输入 `bmad-...` | 直接加载智能体、运行工作流或执行任务 |
 | **智能体菜单触发器** | 先加载智能体，然后输入简短代码（例如 `DS`） | 智能体解释代码并启动匹配的工作流，同时保持角色设定 |
 
 智能体菜单触发器需要活动的智能体会话。当您知道要使用哪个工作流时，使用斜杠命令。当您已经与智能体一起工作并希望在不离开对话的情况下切换任务时，使用触发器。
@@ -58,13 +58,13 @@ BMad 提供两种开始工作的方式，它们服务于不同的目的。
 └── ...
 ```
 
-文件名决定了 IDE 中的斜杠命令名称。例如，文件 `bmad-agent-bmm-dev.md` 注册命令 `/bmad-agent-bmm-dev`。
+文件名决定了 IDE 中的技能名称。例如，文件 `bmad-agent-bmm-dev.md` 注册技能 `bmad-agent-bmm-dev`。
 
 ## 如何发现您的命令
 
 在 IDE 中输入 `/bmad` 并使用自动完成功能浏览可用命令。
 
-运行 `/bmad-help` 获取关于下一步的上下文感知指导。
+运行 `bmad-help` 获取关于下一步的上下文感知指导。
 
 :::tip[快速发现]
 项目中生成的命令文件夹是权威列表。在文件资源管理器中打开它们以查看每个命令及其描述。
@@ -78,10 +78,10 @@ BMad 提供两种开始工作的方式，它们服务于不同的目的。
 
 | 示例命令 | 智能体 | 角色 |
 | --- | --- | --- |
-| `/bmad-agent-bmm-dev` | Amelia（开发者） | 严格按照规范实现故事 |
-| `/bmad-agent-bmm-pm` | John（产品经理） | 创建和验证 PRD |
-| `/bmad-agent-bmm-architect` | Winston（架构师） | 设计系统架构 |
-| `/bmad-agent-bmm-sm` | Bob（Scrum Master） | 管理冲刺和故事 |
+| `bmad-agent-bmm-dev` | Amelia（开发者） | 严格按照规范实现故事 |
+| `bmad-agent-bmm-pm` | John（产品经理） | 创建和验证 PRD |
+| `bmad-agent-bmm-architect` | Winston（架构师） | 设计系统架构 |
+| `bmad-agent-bmm-sm` | Bob（Scrum Master） | 管理冲刺和故事 |
 
 参见[智能体](./agents.md)获取默认智能体及其触发器的完整列表。
 
@@ -91,11 +91,11 @@ BMad 提供两种开始工作的方式，它们服务于不同的目的。
 
 | 示例命令 | 目的 |
 | --- | --- |
-| `/bmad-bmm-create-prd` | 创建产品需求文档 |
-| `/bmad-bmm-create-architecture` | 设计系统架构 |
-| `/bmad-bmm-dev-story` | 实现故事 |
-| `/bmad-bmm-code-review` | 运行代码审查 |
-| `/bmad-bmm-quick-spec` | 定义临时更改（快速流程） |
+| `bmad-bmm-create-prd` | 创建产品需求文档 |
+| `bmad-bmm-create-architecture` | 设计系统架构 |
+| `bmad-bmm-dev-story` | 实现故事 |
+| `bmad-bmm-code-review` | 运行代码审查 |
+| `bmad-bmm-quick-spec` | 定义临时更改（快速流程） |
 
 参见[工作流地图](./workflow-map.md)获取按阶段组织的完整工作流参考。
 
@@ -105,7 +105,7 @@ BMad 提供两种开始工作的方式，它们服务于不同的目的。
 
 #### BMad-Help：您的智能向导
 
-**`/bmad-help`** 是您发现下一步操作的主要界面。它不仅仅是一个查找工具——它是一个智能助手，可以：
+**`bmad-help`** 是您发现下一步操作的主要界面。它不仅仅是一个查找工具——它是一个智能助手，可以：
 
 - **检查您的项目**以查看已经完成的工作
 - **理解自然语言查询**——用简单的英语提问
@@ -116,19 +116,19 @@ BMad 提供两种开始工作的方式，它们服务于不同的目的。
 **示例：**
 
 ```
-/bmad-help
-/bmad-help 我有一个 SaaS 想法并且知道所有功能。我应该从哪里开始？
-/bmad-help 我在 UX 设计方面有哪些选择？
-/bmad-help 我在 PRD 工作流上卡住了
+bmad-help
+bmad-help 我有一个 SaaS 想法并且知道所有功能。我应该从哪里开始？
+bmad-help 我在 UX 设计方面有哪些选择？
+bmad-help 我在 PRD 工作流上卡住了
 ```
 
 #### 其他任务和工具
 
 | 示例命令 | 目的 |
 | --- | --- |
-| `/bmad-shard-doc` | 将大型 Markdown 文件拆分为较小的部分 |
-| `/bmad-index-docs` | 索引项目文档 |
-| `/bmad-editorial-review-prose` | 审查文档散文质量 |
+| `bmad-shard-doc` | 将大型 Markdown 文件拆分为较小的部分 |
+| `bmad-index-docs` | 索引项目文档 |
+| `bmad-editorial-review-prose` | 审查文档散文质量 |
 
 ## 命名约定
 

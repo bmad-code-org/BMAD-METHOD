@@ -13,7 +13,7 @@
 
 Traditional AI tools do the thinking for you, producing average results. BMad agents and facilitated workflows act as expert collaborators who guide you through a structured process to bring out your best thinking in partnership with the AI.
 
-- **AI Intelligent Help** — Ask `/bmad-help` anytime for guidance on what's next
+- **AI Intelligent Help** — Invoke the `bmad-help` skill anytime for guidance on what's next
 - **Scale-Domain-Adaptive** — Automatically adjusts planning depth based on project complexity
 - **Structured Workflows** — Grounded in agile best practices across analysis, planning, architecture, and implementation
 - **Specialized Agents** — 12+ domain experts (PM, Architect, Developer, UX, Scrum Master, and more)
@@ -40,7 +40,7 @@ Traditional AI tools do the thinking for you, producing average results. BMad ag
 npx bmad-method install
 ```
 
-> If you are getting a stale beta version, use: `npx bmad-method@6.0.1 install`
+> Want the newest prerelease build? Use `npx bmad-method@next install`. Expect higher churn than the default install.
 
 Follow the installer prompts, then open your AI IDE (Claude Code, Cursor, etc.) in your project folder.
 
@@ -52,7 +52,7 @@ npx bmad-method install --directory /path/to/project --modules bmm --tools claud
 
 [See all installation options](https://docs.bmad-method.org/how-to/non-interactive-installation/)
 
-> **Not sure what to do?** Run `/bmad-help` — it tells you exactly what's next and what's optional. You can also ask questions like `/bmad-help I just finished the architecture, what do I do next?`
+> **Not sure what to do?** Ask `bmad-help` — it tells you exactly what's next and what's optional. You can also ask questions like `bmad-help I just finished the architecture, what do I do next?`
 
 ## Modules
 

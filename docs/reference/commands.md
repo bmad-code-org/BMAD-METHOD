@@ -27,7 +27,7 @@ The installer uses templates for each skill type:
 | Skill type | What the generated file does |
 | --- | --- |
 | **Agent launcher** | Loads the agent persona file, activates its menu, and stays in character |
-| **Workflow skill** | Loads the workflow engine (`workflow.xml`) and passes the workflow config |
+| **Workflow skill** | Loads the workflow config and follows its steps |
 | **Task skill** | Loads a standalone task file and follows its instructions |
 | **Tool skill** | Loads a standalone tool file and follows its instructions |
 
@@ -88,7 +88,7 @@ See [Agents](./agents.md) for the full list of default agents and their triggers
 
 ### Workflow Skills
 
-Workflow skills run a structured, multi-step process without loading an agent persona first. They load the workflow engine and pass a specific workflow configuration.
+Workflow skills run a structured, multi-step process without loading an agent persona first. They load a workflow configuration and follow its steps.
 
 | Example skill | Purpose |
 | --- | --- |
@@ -105,32 +105,21 @@ See [Workflow Map](./workflow-map.md) for the complete workflow reference organi
 
 Tasks and tools are standalone operations that do not require an agent or workflow context.
 
-#### BMad-Help: Your Intelligent Guide
+**BMad-Help: Your Intelligent Guide**
 
-**`bmad-help`** is your primary interface for discovering what to do next. It's not just a lookup tool — it's an intelligent assistant that:
+`bmad-help` is your primary interface for discovering what to do next. It inspects your project, understands natural language queries, and recommends the next required or optional step based on your installed modules.
 
-- **Inspects your project** to see what's already been done
-- **Understands natural language queries** — ask questions in plain English
-- **Varies by installed modules** — shows options based on what you have
-- **Auto-invokes after workflows** — every workflow ends with clear next steps
-- **Recommends the first required task** — no guessing where to start
-
-**Examples:**
-
+:::note[Example]
 ```
 bmad-help
 bmad-help I have a SaaS idea and know all the features. Where do I start?
 bmad-help What are my options for UX design?
-bmad-help I'm stuck on the PRD workflow
 ```
+:::
 
-#### Other Tasks and Tools
+**Other Core Tasks and Tools**
 
-| Example skill | Purpose |
-| --- | --- |
-| `bmad-shard-doc` | Split a large markdown file into smaller sections |
-| `bmad-index-docs` | Index project documentation |
-| `bmad-editorial-review-prose` | Review document prose quality |
+The core module includes 11 built-in tools — reviews, compression, brainstorming, document management, and more. See [Core Tools](./core-tools.md) for the complete reference.
 
 ## Naming Convention
 

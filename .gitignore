@@ -17,8 +17,14 @@ npm-debug.log*
 # Build output
 build/*.txt
 
+design-artifacts/
+
 # Environment variables
 .env
+
+# Python
+__pycache__/
+.pytest_cache/
 
 # System files
 .DS_Store
@@ -56,7 +62,7 @@ _bmad-output
 .qwen
 .rovodev
 .kilocodemodes
-.claude/commands
+.claude
 .codex
 .github/chatmodes
 .github/agents

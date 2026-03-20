@@ -1,5 +1,73 @@
 # Changelog
 
+## v6.2.0 - 2026-03-15
+
+### 🎁 Highlights
+
+* Fix manifest generation so BMad Builder installs correctly when a module has no agents (#1998)
+* Prototype preview of bmad-product-brief-preview skill — try `/bmad-product-brief-preview` and share feedback! (#1959)
+* All skills now use native skill directory format for improved modularity and maintainability (#1931, #1945, #1946, #1949, #1950, #1984, #1985, #1988, #1994)
+
+### 🎁 Features
+
+* Rewrite code-review skill with sharded step-file architecture and auto-detect review intent from invocation args (#2007, #2013)
+* Add inference-based skill validator with comprehensive rules for naming, variables, paths, and invocation syntax (#1981)
+* Add REF-03 skill invocation language rule and PATH-05 skill encapsulation rule to validator (#2004)
+
+### 🐛 Bug Fixes
+
+* Validation pass 2 — fix path, variable, and sequence issues across 32 files (#2008)
+* Replace broken party-mode workflow refs with skill syntax (#2000)
+* Improve bmad-help description for accurate trigger matching (#2012)
+* Point zh-cn doc links to Chinese pages instead of English (#2010)
+* Validation cleanup for bmad-quick-flow (#1997), 6 skills batch (#1996), bmad-sprint-planning (#1995), bmad-retrospective (#1993), bmad-dev-story (#1992), bmad-create-story (#1991), bmad-code-review (#1990), bmad-create-epics-and-stories (#1989), bmad-create-architecture (#1987), bmad-check-implementation-readiness (#1986), bmad-create-ux-design (#1983), bmad-create-product-brief (#1982)
+
+### 🔧 Maintenance
+
+* Normalize skill invocation syntax to `Invoke the skill` pattern repo-wide (#2004)
+
+### 📚 Documentation
+
+* Add Chinese translation for core-tools reference (#2002)
+* Update version hint, TEA module link, and HTTP→HTTPS links in Chinese README (#1922, #1921)
+
+## [6.1.0] - 2026-03-12
+
+### Highlights
+
+* Whiteport Design Studio (WDS) module enabled in the installer
+* Support @next installation channel (`npx bmad-method@next install`) — get the latest tip of main instead of waiting for the next stable published version
+* Everything now installs as a skill — all workflows, agents, and tasks converted to markdown with SKILL.md entrypoints (not yet optimized skills, but unified format)
+* An experimental preview of the new Quick Dev is available, which will become the main Phase 4 development tool
+* Edge Case Hunter added as a parallel code review layer in Phase 4, improving code quality by exhaustively tracing branching paths and boundary conditions (#1791)
+* Documentation now available in Chinese (zh-CN) with complete translation (#1822, #1795)
+
+### 💥 Breaking Changes
+
+* Convert entire BMAD method to skills-based architecture with unified skill manifests (#1834)
+* Convert all core workflows from YAML+instructions to single workflow.md format
+* Migrate all remaining platforms to native Agent Skills format (#1841)
+* Remove legacy YAML/XML workflow engine plumbing (#1864)
+
+### 🎁 Features
+
+* Add Pi coding agent as supported platform (#1854)
+* Add unified skill scanner decoupled from legacy collectors (#1859)
+* Add continuous delivery workflows for npm publishing with trusted OIDC publishing (#1872)
+
+### ♻️ Refactoring
+
+* Update terminology from "commands" to "skills" across all documentation (#1850)
+
+### 🐛 Bug Fixes
+
+* Fix code review removing mandatory minimum issue count that caused infinite review loops (#1913)
+* Fix silent loss of brainstorming ideas in PRD by adding reconciliation step (#1914)
+* Reduce npm tarball from 533 to 348 files (91% size reduction, 6.2 MB → 555 KB) via .npmignore (#1900)
+* Fix party-mode skill conversion review findings (#1919)
+
+---
+
 ## [6.0.4]
 
 ### 🎁 Features
@@ -47,7 +115,7 @@
 * Add CodeBuddy platform support with installer configuration (#1483)
 * Add LLM audit prompt for file reference conventions - new audit tool using parallel subagents (#1720)
 * Migrate Codex installer from `.codex/prompts` to `.agents/skills` format to align with Codex CLI changes (#1729)
-* Convert review-pr and audit-file-refs tools to proper bmad-os skills with slash commands `/bmad-os-review-pr` and `/bmad-os-audit-file-refs` (#1732)
+* Convert review-pr and audit-file-refs tools to proper bmad-os skills with slash commands `bmad-os-review-pr` and `bmad-os-audit-file-refs` (#1732)
 
 ### 🐛 Bug Fixes
 
@@ -365,7 +433,7 @@ V6 Stable Release! The End of Beta!
 - TEA documentation restructured using Diátaxis framework (25 docs)
 - Style guide optimized for LLM readers (367 lines, down from 767)
 - Glossary rewritten using table format (123 lines, down from 373)
-- README overhaul with numbered command flows and prominent `/bmad-help` callout
+- README overhaul with numbered command flows and prominent `bmad-help` callout
 - New workflow map diagram with interactive HTML
 - New editorial review tasks for document quality
 - E2E testing methodology for Game Dev Studio

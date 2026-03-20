@@ -1,0 +1,141 @@
+name: Publish
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "tools/cli/**"
+      - "package.json"
+  workflow_dispatch:
+    inputs:
+      channel:
+        description: "Publish channel"
+        required: true
+        default: "latest"
+        type: choice
+        options:
+          - latest
+          - next
+      bump:
+        description: "Version bump type (latest channel only)"
+        required: false
+        default: "patch"
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+concurrency:
+  group: publish
+  cancel-in-progress: ${{ github.event_name == 'push' }}
+
+permissions:
+  id-token: write
+  contents: write
+
+jobs:
+  publish:
+    if: github.repository == 'bmad-code-org/BMAD-METHOD' && (github.event_name != 'workflow_dispatch' || github.ref == 'refs/heads/main')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate GitHub App token
+        id: app-token
+        if: github.event_name == 'workflow_dispatch' && inputs.channel == 'latest'
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.RELEASE_APP_ID }}
+          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ steps.app-token.outputs.token || secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          cache: "npm"
+
+      - name: Ensure trusted publishing toolchain
+        run: |
+          # npm trusted publishing requires Node >= 22.14.0 and npm >= 11.5.1.
+          npm install --global npm@11.6.2
+
+      - name: Configure git user
+        if: github.event_name == 'workflow_dispatch' && inputs.channel == 'latest'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Derive next prerelease version
+        if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.channel == 'next')
+        run: |
+          NEXT_VER=$(npm view bmad-method@next version 2>/dev/null || echo "")
+          LATEST_VER=$(npm view bmad-method@latest version 2>/dev/null || echo "")
+
+          # Determine the best base version for the next prerelease.
+          BASE=$(node -e "
+            const semver = require('semver');
+            const next = process.argv[1] || null;
+            const latest = process.argv[2] || null;
+            if (!next && !latest) process.exit(0);
+            if (!next) { console.log(latest); process.exit(0); }
+            if (!latest) { console.log(next); process.exit(0); }
+            const nextBase = next.replace(/-next\.\d+$/, '');
+            console.log(semver.gt(latest, nextBase) ? latest : next);
+          " "$NEXT_VER" "$LATEST_VER")
+
+          if [ -n "$BASE" ]; then
+            npm version "$BASE" --no-git-tag-version --allow-same-version
+          fi
+          npm version prerelease --preid=next --no-git-tag-version
+
+      - name: Bump stable version
+        if: github.event_name == 'workflow_dispatch' && inputs.channel == 'latest'
+        run: 'npm version ${{ inputs.bump }} -m "chore(release): v%s [skip ci]"'
+
+      - name: Publish prerelease to npm
+        if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.channel == 'next')
+        run: npm publish --tag next --provenance
+
+      - name: Publish stable release to npm
+        if: github.event_name == 'workflow_dispatch' && inputs.channel == 'latest'
+        run: npm publish --tag latest --provenance
+
+      - name: Push version commit and tag
+        if: github.event_name == 'workflow_dispatch' && inputs.channel == 'latest'
+        run: git push origin main --follow-tags
+
+      - name: Create GitHub Release
+        if: github.event_name == 'workflow_dispatch' && inputs.channel == 'latest'
+        run: |
+          TAG="v$(node -p 'require("./package.json").version')"
+          gh release create "$TAG" --generate-notes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Notify Discord
+        if: github.event_name == 'workflow_dispatch' && inputs.channel == 'latest'
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          source .github/scripts/discord-helpers.sh
+          [ -z "$WEBHOOK" ] && exit 0
+
+          VERSION=$(node -p 'require("./package.json").version')
+          RELEASE_URL="${{ github.server_url }}/${{ github.repository }}/releases/tag/v${VERSION}"
+          MSG=$(printf '📦 **[bmad-method v%s released](<%s>)**' "$VERSION" "$RELEASE_URL" | esc)
+
+          jq -n --arg content "$MSG" '{content: $content}' | curl -sf --retry 2 -X POST "$WEBHOOK" -H "Content-Type: application/json" -d @-
+        env:
+          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}

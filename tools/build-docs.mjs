@@ -161,6 +161,7 @@ function generateLlmsTxt(outputDir) {
     '## Core Concepts',
     '',
     `- **[Quick Flow](${siteUrl}/explanation/quick-flow/)** - Fast development workflow`,
+    `- **[Quick Dev New Preview](${siteUrl}/explanation/quick-dev-new-preview/)** - Unified quick workflow with planning, implementation, and review in one run`,
     `- **[Party Mode](${siteUrl}/explanation/party-mode/)** - Multi-agent collaboration`,
     `- **[Workflow Map](${siteUrl}/reference/workflow-map/)** - Visual overview of phases and workflows`,
     '',

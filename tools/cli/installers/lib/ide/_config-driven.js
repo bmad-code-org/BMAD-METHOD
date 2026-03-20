@@ -129,6 +129,7 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
 
     const selectedModules = options.selectedModules || [];
     const results = { agents: 0, workflows: 0, tasks: 0, tools: 0, skills: 0 };
+    this.skillWriteTracker = config.skill_format ? new Set() : null;
 
     // Install standard artifacts (agents, workflows, tasks, tools)
     if (!skipStandardArtifacts) {
@@ -159,9 +160,11 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
     // Install verbatim skills (type: skill)
     if (config.skill_format) {
       results.skills = await this.installVerbatimSkills(projectDir, bmadDir, targetPath, config);
+      results.skillDirectories = this.skillWriteTracker ? this.skillWriteTracker.size : 0;
     }
 
     await this.printSummary(results, target_dir, options);
+    this.skillWriteTracker = null;
     return { success: true, results };
   }
 
@@ -232,16 +235,8 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
 
     for (const artifact of artifacts) {
       if (artifact.type === 'workflow-command') {
-        // Use different template based on workflow type (YAML vs MD)
-        // Default to 'default' template type, but allow override via config
-        const workflowTemplateType = artifact.isYamlWorkflow
-          ? config.yaml_workflow_template || `${templateType}-workflow-yaml`
-          : config.md_workflow_template || `${templateType}-workflow`;
-
-        // Fall back to default templates if specific ones don't exist
-        const finalTemplateType = artifact.isYamlWorkflow ? 'default-workflow-yaml' : 'default-workflow';
-        // workflowTemplateType already contains full name (e.g., 'gemini-workflow-yaml'), so pass empty artifactType
-        const { content: template, extension } = await this.loadTemplate(workflowTemplateType, '', config, finalTemplateType);
+        const workflowTemplateType = config.md_workflow_template || `${templateType}-workflow`;
+        const { content: template, extension } = await this.loadTemplate(workflowTemplateType, '', config, 'default-workflow');
         const content = this.renderTemplate(template, artifact);
         const filename = this.generateFilename(artifact, 'workflow', extension);
 
@@ -503,6 +498,7 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
     // Create skill directory
     const skillDir = path.join(targetPath, skillName);
     await this.ensureDir(skillDir);
+    this.skillWriteTracker?.add(skillName);
 
     // Transform content: rewrite frontmatter for skills format
     const skillContent = this.transformToSkillFormat(content, skillName);
@@ -635,7 +631,8 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
 
   /**
    * Install verbatim skill directories (type: skill entries from skill-manifest.csv).
-   * Copies the entire source directory into the IDE skill directory, auto-generating SKILL.md.
+   * Copies the entire source directory as-is into the IDE skill directory.
+   * The source SKILL.md is used directly — no frontmatter transformation or file generation.
    * @param {string} projectDir - Project directory
    * @param {string} bmadDir - BMAD installation directory
    * @param {string} targetPath - Target skills directory
@@ -644,6 +641,7 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
    */
   async installVerbatimSkills(projectDir, bmadDir, targetPath, config) {
     const bmadFolderName = path.basename(bmadDir);
+    const bmadPrefix = bmadFolderName + '/';
     const csvPath = path.join(bmadDir, '_config', 'skill-manifest.csv');
 
     if (!(await fs.pathExists(csvPath))) return 0;
@@ -661,9 +659,9 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
       if (!canonicalId) continue;
 
       // Derive source directory from path column
-      // path is like "_bmad/bmm/workflows/bmad-quick-flow/bmad-quick-dev-new-preview/workflow.md"
+      // path is like "_bmad/bmm/workflows/bmad-quick-flow/bmad-quick-dev-new-preview/SKILL.md"
       // Strip bmadFolderName prefix and join with bmadDir, then get dirname
-      const relativePath = record.path.replace(new RegExp(`^${bmadFolderName}/`), '');
+      const relativePath = record.path.startsWith(bmadPrefix) ? record.path.slice(bmadPrefix.length) : record.path;
       const sourceFile = path.join(bmadDir, relativePath);
       const sourceDir = path.dirname(sourceFile);
 
@@ -673,35 +671,20 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
       const skillDir = path.join(targetPath, canonicalId);
       await fs.remove(skillDir);
       await fs.ensureDir(skillDir);
+      this.skillWriteTracker?.add(canonicalId);
 
-      // Parse workflow.md frontmatter for description
-      let description = `${canonicalId} skill`;
-      try {
-        const workflowContent = await fs.readFile(sourceFile, 'utf8');
-        const fmMatch = workflowContent.match(/^---\r?\n([\s\S]*?)\r?\n---/);
-        if (fmMatch) {
-          const frontmatter = yaml.parse(fmMatch[1]);
-          if (frontmatter?.description) {
-            description = frontmatter.description;
-          }
-        }
-      } catch (error) {
-        await prompts.log.warn(`Failed to parse frontmatter from ${sourceFile}: ${error.message}`);
-      }
-
-      // Generate SKILL.md with YAML-safe frontmatter
-      const frontmatterYaml = yaml.stringify({ name: canonicalId, description: String(description) }, { lineWidth: 0 }).trimEnd();
-      const skillMd = `---\n${frontmatterYaml}\n---\n\nIT IS CRITICAL THAT YOU FOLLOW THIS COMMAND: LOAD the FULL workflow.md, READ its entire contents and follow its directions exactly!\n`;
-      await fs.writeFile(path.join(skillDir, 'SKILL.md'), skillMd);
-
-      // Copy all files except bmad-skill-manifest.yaml
-      const entries = await fs.readdir(sourceDir, { withFileTypes: true });
-      for (const entry of entries) {
-        if (entry.name === 'bmad-skill-manifest.yaml') continue;
-        const srcPath = path.join(sourceDir, entry.name);
-        const destPath = path.join(skillDir, entry.name);
-        await fs.copy(srcPath, destPath);
-      }
+      // Copy all skill files, filtering OS/editor artifacts recursively
+      const skipPatterns = new Set(['.DS_Store', 'Thumbs.db', 'desktop.ini']);
+      const skipSuffixes = ['~', '.swp', '.swo', '.bak'];
+      const filter = (src) => {
+        const name = path.basename(src);
+        if (src === sourceDir) return true;
+        if (skipPatterns.has(name)) return false;
+        if (name.startsWith('.') && name !== '.gitkeep') return false;
+        if (skipSuffixes.some((s) => name.endsWith(s))) return false;
+        return true;
+      };
+      await fs.copy(sourceDir, skillDir, { filter });
 
       count++;
     }
@@ -709,7 +692,7 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
     // Post-install cleanup: remove _bmad/ directories for skills with install_to_bmad === "false"
     for (const record of records) {
       if (record.install_to_bmad === 'false') {
-        const relativePath = record.path.replace(new RegExp(`^${bmadFolderName}/`), '');
+        const relativePath = record.path.startsWith(bmadPrefix) ? record.path.slice(bmadPrefix.length) : record.path;
         const sourceFile = path.join(bmadDir, relativePath);
         const sourceDir = path.dirname(sourceFile);
         if (await fs.pathExists(sourceDir)) {
@@ -729,11 +712,11 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
   async printSummary(results, targetDir, options = {}) {
     if (options.silent) return;
     const parts = [];
+    const totalDirs =
+      results.skillDirectories || (results.workflows || 0) + (results.tasks || 0) + (results.tools || 0) + (results.skills || 0);
+    const skillCount = totalDirs - (results.agents || 0);
+    if (skillCount > 0) parts.push(`${skillCount} skills`);
     if (results.agents > 0) parts.push(`${results.agents} agents`);
-    if (results.workflows > 0) parts.push(`${results.workflows} workflows`);
-    if (results.tasks > 0) parts.push(`${results.tasks} tasks`);
-    if (results.tools > 0) parts.push(`${results.tools} tools`);
-    if (results.skills > 0) parts.push(`${results.skills} skills`);
     await prompts.log.success(`${this.name} configured: ${parts.join(', ')} → ${targetDir}`);
   }
 
