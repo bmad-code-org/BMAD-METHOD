@@ -2,6 +2,7 @@
 diff_output: '' # set at runtime
 spec_file: '' # set at runtime (path or empty)
 review_mode: '' # set at runtime: "full" or "no-spec"
+story_key: '' # set at runtime when discovered from sprint status
 ---
 
 # Step 1: Gather Context
@@ -23,8 +24,8 @@ review_mode: '' # set at runtime: "full" or "no-spec"
    - When multiple phrases match, prefer the most specific match (e.g., "branch diff" over bare "diff").
    - **If a clear match is found:** Announce the detected mode (e.g., "Detected intent: review staged changes only") and proceed directly to constructing `{diff_output}` using the corresponding sub-case from instruction 3. Skip to instruction 4 (spec question).
    - **If no match from invocation text, check sprint tracking.** Look for a sprint status file (`*sprint-status*`) in `{implementation_artifacts}` or `{planning_artifacts}`. If found, scan for any story with status `review`. Handle as follows:
-     - **Exactly one `review` story:** Suggest it: "I found story {{story-id}} in `review` status. Would you like to review its changes? [Y] Yes / [N] No, let me choose". If confirmed, use the story context to determine the diff source (branch name derived from story slug, or uncommitted changes). If declined, fall through to instruction 2.
-     - **Multiple `review` stories:** Present them as numbered options alongside a manual choice option. Wait for user selection. Then use the selected story's context to determine the diff source as in the single-story case above, and proceed to instruction 3.
+     - **Exactly one `review` story:** Set `{story_key}` to the story's key (e.g., `1-2-user-auth`). Suggest it: "I found story {{story-id}} in `review` status. Would you like to review its changes? [Y] Yes / [N] No, let me choose". If confirmed, use the story context to determine the diff source (branch name derived from story slug, or uncommitted changes). If declined, clear `{story_key}` and fall through to instruction 2.
+     - **Multiple `review` stories:** Present them as numbered options alongside a manual choice option. Wait for user selection. If the user selects a story, set `{story_key}` to the selected story's key and use the selected story's context to determine the diff source as in the single-story case above, and proceed to instruction 3. If the user selects the manual choice, clear `{story_key}` and fall through to instruction 2.
    - **If no match and no sprint tracking:** Fall through to instruction 2.
 
 2. HALT. Ask the user: **What do you want to review?** Present these options:
