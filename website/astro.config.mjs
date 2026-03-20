@@ -45,7 +45,7 @@ export default defineConfig({
       title: 'BMAD Method',
       tagline: 'AI-driven agile development with specialized agents and workflows that scale from bug fixes to enterprise platforms.',
 
-      // i18n: English as root (no URL prefix), Chinese at /zh-cn/
+      // i18n: English as root (no URL prefix), Chinese at /zh-cn/, French at /fr/
       defaultLocale: 'root',
       locales: {
         root: {
@@ -55,6 +55,10 @@ export default defineConfig({
         'zh-cn': {
           label: '简体中文',
           lang: 'zh-CN',
+        },
+        fr: {
+          label: 'Français',
+          lang: 'fr-FR',
         },
       },
 
@@ -106,29 +110,29 @@ export default defineConfig({
 
       // Sidebar configuration (Diataxis structure)
       sidebar: [
-        { label: 'Welcome', translations: { 'zh-CN': '欢迎' }, slug: 'index' },
-        { label: 'Roadmap', translations: { 'zh-CN': '路线图' }, slug: 'roadmap' },
+        { label: 'Welcome', translations: { 'zh-CN': '欢迎', 'fr-FR': 'Bienvenue' }, slug: 'index' },
+        { label: 'Roadmap', translations: { 'zh-CN': '路线图', 'fr-FR': 'Feuille de route' }, slug: 'roadmap' },
         {
           label: 'Tutorials',
-          translations: { 'zh-CN': '教程' },
+          translations: { 'zh-CN': '教程', 'fr-FR': 'Tutoriels' },
           collapsed: false,
           autogenerate: { directory: 'tutorials' },
         },
         {
           label: 'How-To Guides',
-          translations: { 'zh-CN': '操作指南' },
+          translations: { 'zh-CN': '操作指南', 'fr-FR': 'Guides pratiques' },
           collapsed: true,
           autogenerate: { directory: 'how-to' },
         },
         {
           label: 'Explanation',
-          translations: { 'zh-CN': '概念说明' },
+          translations: { 'zh-CN': '概念说明', 'fr-FR': 'Explications' },
           collapsed: true,
           autogenerate: { directory: 'explanation' },
         },
         {
           label: 'Reference',
-          translations: { 'zh-CN': '参考' },
+          translations: { 'zh-CN': '参考', 'fr-FR': 'Référence' },
           collapsed: true,
           autogenerate: { directory: 'reference' },
         },
