@@ -38,6 +38,7 @@ function assert(condition, testName, errorMessage = '') {
     console.log(`${colors.red}✗${colors.reset} ${testName}`);
     if (errorMessage) console.log(`  ${colors.dim}${errorMessage}${colors.reset}`);
     failed++;
+    throw new Error(`${testName}${errorMessage ? ': ' + errorMessage : ''}`);
   }
 }
 
@@ -88,6 +89,17 @@ async function createExtensionModuleSource(tmpDir) {
   return src;
 }
 
+/**
+ * Create a minimal manifest so manager.install() can record module metadata.
+ */
+async function createMinimalManifest(bmadDir) {
+  await fs.ensureDir(path.join(bmadDir, '_config'));
+  await fs.writeFile(
+    path.join(bmadDir, '_config', 'manifest.yaml'),
+    'installation:\n  version: "0.0.0"\n  installDate: "2026-01-01T00:00:00.000Z"\n  lastUpdated: "2026-01-01T00:00:00.000Z"\nmodules: []\nides: []\n',
+  );
+}
+
 async function runTests() {
   console.log(`${colors.cyan}========================================`);
   console.log('Extension Module Merge — Issue #1667');
@@ -107,22 +119,16 @@ async function runTests() {
       const bmadDir = path.join(tmpDir, '_bmad');
       const targetPath = path.join(bmadDir, 'bmm');
 
+      await createMinimalManifest(bmadDir);
       const manager = new ModuleManager();
-      // Register extension as the 'bmm' custom module path
+
+      // Step 1: Install base module via manager.install()
+      manager.setCustomModulePaths(new Map([['bmm', baseSrc]]));
+      await manager.install('bmm', bmadDir, null, { silent: true, skipModuleInstaller: true });
+
+      // Step 2: Install extension WITHOUT isExtension flag (old/broken behavior: wipes directory)
       manager.setCustomModulePaths(new Map([['bmm', extSrc]]));
-
-      // Simulate base install (not custom)
-      await fs.ensureDir(path.join(targetPath, 'agents'));
-      await fs.copy(path.join(baseSrc, 'agents', 'analyst.md'), path.join(targetPath, 'agents', 'analyst.md'));
-      await fs.copy(path.join(baseSrc, 'agents', 'pm.md'), path.join(targetPath, 'agents', 'pm.md'));
-
-      // Simulate extension install WITHOUT isExtension flag (old/broken behavior)
-      if (await fs.pathExists(targetPath)) {
-        await fs.remove(targetPath); // This is what the old code did unconditionally
-      }
-      await fs.ensureDir(path.join(targetPath, 'agents'));
-      await fs.copy(path.join(extSrc, 'agents', 'pm.md'), path.join(targetPath, 'agents', 'pm.md'));
-      await fs.copy(path.join(extSrc, 'agents', 'my-agent.md'), path.join(targetPath, 'agents', 'my-agent.md'));
+      await manager.install('bmm', bmadDir, null, { silent: true, skipModuleInstaller: true });
 
       const analystExists = await fs.pathExists(path.join(targetPath, 'agents', 'analyst.md'));
       const myAgentExists = await fs.pathExists(path.join(targetPath, 'agents', 'my-agent.md'));
@@ -149,23 +155,16 @@ async function runTests() {
       const bmadDir = path.join(tmpDir, '_bmad');
       const targetPath = path.join(bmadDir, 'bmm');
 
+      await createMinimalManifest(bmadDir);
       const manager = new ModuleManager();
+
+      // Step 1: Install base module via manager.install()
+      manager.setCustomModulePaths(new Map([['bmm', baseSrc]]));
+      await manager.install('bmm', bmadDir, null, { silent: true, skipModuleInstaller: true });
+
+      // Step 2: Install extension with isExtension:true → should MERGE on top of base
       manager.setCustomModulePaths(new Map([['bmm', extSrc]]));
-
-      // Step 1: Install base module (normal, no isExtension)
-      await fs.ensureDir(path.join(targetPath, 'agents'));
-      await fs.copy(path.join(baseSrc, 'agents', 'analyst.md'), path.join(targetPath, 'agents', 'analyst.md'));
-      await fs.copy(path.join(baseSrc, 'agents', 'pm.md'), path.join(targetPath, 'agents', 'pm.md'));
-
-      // Step 2: Install extension with isExtension:true → should MERGE
-      // (reproduce what manager.install does: skip removal, then copy)
-      const skipRemoval = true; // isExtension:true skips fs.remove
-      if ((await fs.pathExists(targetPath)) && !skipRemoval) {
-        await fs.remove(targetPath);
-      }
-      // Copy extension files over (overwrite same-named, add unique)
-      await fs.copy(path.join(extSrc, 'agents', 'pm.md'), path.join(targetPath, 'agents', 'pm.md'), { overwrite: true });
-      await fs.copy(path.join(extSrc, 'agents', 'my-agent.md'), path.join(targetPath, 'agents', 'my-agent.md'));
+      await manager.install('bmm', bmadDir, null, { isExtension: true, silent: true, skipModuleInstaller: true });
 
       const analystExists = await fs.pathExists(path.join(targetPath, 'agents', 'analyst.md'));
       const myAgentExists = await fs.pathExists(path.join(targetPath, 'agents', 'my-agent.md'));
@@ -189,29 +188,33 @@ async function runTests() {
   {
     const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-ext-test-'));
     try {
+      const baseSrc = await createBaseModuleSource(tmpDir);
       const bmadDir = path.join(tmpDir, '_bmad');
       const targetPath = path.join(bmadDir, 'bmm');
 
-      // Pre-populate target with base files (simulates base module already installed)
-      await fs.ensureDir(path.join(targetPath, 'agents'));
-      await fs.writeFile(path.join(targetPath, 'agents', 'analyst.md'), minimalAgentMd('analyst'));
-      await fs.writeFile(path.join(targetPath, 'agents', 'pm.md'), minimalAgentMd('pm-base'));
+      await createMinimalManifest(bmadDir);
+      const manager = new ModuleManager();
+      manager.setCustomModulePaths(new Map([['bmm', baseSrc]]));
 
-      // Verify pre-condition
+      // Install base so target directory exists
+      await manager.install('bmm', bmadDir, null, { silent: true, skipModuleInstaller: true });
+
+      // Add a sentinel file that simulates a file the user placed in the installed module
+      await fs.writeFile(path.join(targetPath, 'sentinel.txt'), 'user data');
+      assert(await fs.pathExists(path.join(targetPath, 'sentinel.txt')), 'Pre-condition: sentinel.txt exists before extension install');
+
+      // With isExtension:true → fs.remove is skipped; sentinel must survive
+      await manager.install('bmm', bmadDir, null, { isExtension: true, silent: true, skipModuleInstaller: true });
       assert(
-        await fs.pathExists(path.join(targetPath, 'agents', 'analyst.md')),
-        'Pre-condition: base analyst.md exists before extension install',
+        await fs.pathExists(path.join(targetPath, 'sentinel.txt')),
+        'With isExtension:true: sentinel.txt PRESERVED (fs.remove was skipped)',
       );
 
-      // Now check that isExtension:true in options causes skip of fs.remove
-      // by reading the manager source and verifying the condition
-      const managerSrc = await fs.readFile(path.join(__dirname, '../tools/cli/installers/lib/modules/manager.js'), 'utf8');
-
-      const hasExtensionGuard = managerSrc.includes('!options.isExtension');
+      // Without isExtension → fs.remove runs; sentinel must be gone
+      await manager.install('bmm', bmadDir, null, { silent: true, skipModuleInstaller: true });
       assert(
-        hasExtensionGuard,
-        'manager.js guards fs.remove with !options.isExtension',
-        'Expected: if ((await fs.pathExists(targetPath)) && !options.isExtension)',
+        !(await fs.pathExists(path.join(targetPath, 'sentinel.txt'))),
+        'Without isExtension: sentinel.txt REMOVED (directory was cleared by fs.remove)',
       );
     } finally {
       await fs.remove(tmpDir);
@@ -237,11 +240,7 @@ async function runTests() {
       const bmadDir = path.join(tmpDir, '_bmad');
 
       // Pre-create a minimal manifest so moduleManager.install can record the module
-      await fs.ensureDir(path.join(bmadDir, '_config'));
-      await fs.writeFile(
-        path.join(bmadDir, '_config', 'manifest.yaml'),
-        'installation:\n  version: "0.0.0"\n  installDate: "2026-01-01T00:00:00.000Z"\n  lastUpdated: "2026-01-01T00:00:00.000Z"\nmodules: []\nides: []\n',
-      );
+      await createMinimalManifest(bmadDir);
 
       const installer = new Installer();
 
@@ -281,6 +280,74 @@ async function runTests() {
       );
       const pmContent = await fs.readFile(path.join(targetPath, 'agents', 'pm.md'), 'utf8');
       assert(pmContent.includes('pm-override'), 'E2E: extension pm.md OVERRIDES base pm.md (same-name wins)');
+
+      // Verify manifest has exactly one 'bmm' entry (no duplicates)
+      const yaml = require('yaml');
+      const manifestRaw = await fs.readFile(path.join(bmadDir, '_config', 'manifest.yaml'), 'utf8');
+      const manifest = yaml.parse(manifestRaw);
+      const bmmEntries = (manifest.modules || []).filter((m) => m.name === 'bmm');
+      assert(bmmEntries.length === 1, 'E2E: manifest contains exactly one bmm entry (no duplicates)');
+    } finally {
+      await fs.remove(tmpDir);
+    }
+  }
+
+  console.log('');
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // Test 5 (E2E update): user-modified files are preserved when extension
+  //                      overlay is applied with isExtension:true
+  // ─────────────────────────────────────────────────────────────────────────
+  console.log(`${colors.yellow}Scenario E: user-modified sentinel file is preserved during extension overlay${colors.reset}\n`);
+
+  {
+    const { Installer } = require('../tools/cli/installers/lib/core/installer');
+    const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-e2e-update-'));
+    try {
+      const baseSrc = await createBaseModuleSource(tmpDir);
+      const extSrc = await createExtensionModuleSource(tmpDir);
+      const bmadDir = path.join(tmpDir, '_bmad');
+
+      await createMinimalManifest(bmadDir);
+      const installer = new Installer();
+      installer.moduleManager.setCustomModulePaths(new Map([['bmm', baseSrc]]));
+
+      // Step 1: Install base module
+      await installer.installModuleWithDependencies('bmm', bmadDir, {});
+
+      const targetPath = path.join(bmadDir, 'bmm');
+
+      // Step 2: Simulate a user adding a file to the installed module
+      await fs.writeFile(path.join(targetPath, 'user-modified.txt'), 'my custom content');
+      // Also record the original pm.md content so we can confirm the extension overrides it
+      assert(
+        await fs.pathExists(path.join(targetPath, 'agents', 'analyst.md')),
+        'Update pre-condition: base analyst.md is present before extension overlay',
+      );
+
+      // Step 3: Apply extension overlay (isExtension:true → skip fs.remove)
+      installer.moduleManager.setCustomModulePaths(new Map([['bmm', extSrc]]));
+      await installer.moduleManager.install('bmm', bmadDir, null, {
+        isExtension: true,
+        skipModuleInstaller: true,
+        silent: true,
+      });
+
+      // User-added file must survive because isExtension skips directory removal
+      assert(
+        await fs.pathExists(path.join(targetPath, 'user-modified.txt')),
+        'Update: user-modified.txt is PRESERVED (extension overlay did not wipe the directory)',
+      );
+      // Base file must also survive
+      assert(
+        await fs.pathExists(path.join(targetPath, 'agents', 'analyst.md')),
+        'Update: base analyst.md is PRESERVED after extension overlay',
+      );
+      // Extension-specific file must be present
+      assert(await fs.pathExists(path.join(targetPath, 'agents', 'my-agent.md')), 'Update: extension my-agent.md is ADDED by the overlay');
+      // Extension pm.md overrides the base version
+      const pmUpdated = await fs.readFile(path.join(targetPath, 'agents', 'pm.md'), 'utf8');
+      assert(pmUpdated.includes('pm-override'), 'Update: extension pm.md OVERRIDES base pm.md during overlay');
     } finally {
       await fs.remove(tmpDir);
     }

@@ -1001,32 +1001,37 @@ class Installer {
                 // If a base source exists at a different path, install it first so the
                 // extension merges on top instead of replacing the entire directory (#1667).
                 const customSourcePath = customModulePaths.get(moduleName);
-                const baseSourcePath = getModulePath(moduleName);
-                const hasBaseModule =
-                  customSourcePath &&
-                  baseSourcePath !== customSourcePath &&
-                  (await fs.pathExists(path.join(baseSourcePath, 'module.yaml')));
+                // Temporarily remove the custom path so findModuleSource resolves the real
+                // base, including external official modules that getModulePath() misses.
+                customModulePaths.delete(moduleName);
+                this.moduleManager.setCustomModulePaths(customModulePaths);
+                let hasBaseModule = false;
+                try {
+                  const baseSourcePath = await this.moduleManager.findModuleSource(moduleName, { silent: true });
+                  hasBaseModule =
+                    !!customSourcePath &&
+                    !!baseSourcePath &&
+                    baseSourcePath !== customSourcePath &&
+                    (await fs.pathExists(path.join(baseSourcePath, 'module.yaml')));
 
-                if (hasBaseModule) {
-                  // Temporarily clear custom path so findModuleSource resolves to the base
-                  customModulePaths.delete(moduleName);
-                  this.moduleManager.setCustomModulePaths(customModulePaths);
-
-                  // Install the base module first (clean install, removes any prior version)
-                  if (resolution && resolution.byModule && resolution.byModule[moduleName]) {
-                    await this.installModuleWithDependencies(moduleName, bmadDir, resolution.byModule[moduleName]);
-                  } else {
-                    await this.moduleManager.install(
-                      moduleName,
-                      bmadDir,
-                      (filePath) => {
-                        this.installedFiles.add(filePath);
-                      },
-                      { installer: this, silent: true },
-                    );
+                  if (hasBaseModule) {
+                    // Install the base module first (clean install, removes any prior version).
+                    // Custom path is already cleared above so findModuleSource resolves to the base.
+                    if (resolution && resolution.byModule && resolution.byModule[moduleName]) {
+                      await this.installModuleWithDependencies(moduleName, bmadDir, resolution.byModule[moduleName]);
+                    } else {
+                      await this.moduleManager.install(
+                        moduleName,
+                        bmadDir,
+                        (filePath) => {
+                          this.installedFiles.add(filePath);
+                        },
+                        { installer: this, silent: true, moduleConfig: {} },
+                      );
+                    }
                   }
-
-                  // Restore the custom path for the extension overlay
+                } finally {
+                  // Always restore the custom path so the extension overlay resolves correctly.
                   customModulePaths.set(moduleName, customSourcePath);
                   this.moduleManager.setCustomModulePaths(customModulePaths);
                 }
