@@ -40,7 +40,7 @@ If version control is available and the tree is dirty, create a local commit wit
    - If `code` is not available (command fails), skip gracefully and list the file paths instead.
 2. Display a summary in conversation output, including:
    - The commit hash (if one was created).
-   - List of files changed with one-line descriptions.
+   - List of files changed with one-line descriptions. Use CWD-relative paths with `:line` notation (e.g., `src/path/file.ts:42`) for terminal clickability. No leading `/`.
    - Review findings breakdown: patches applied, items deferred, items rejected. If all findings were rejected, say so.
 3. Offer to push and/or create a pull request.
 
