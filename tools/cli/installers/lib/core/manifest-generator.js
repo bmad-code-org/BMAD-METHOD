@@ -704,21 +704,12 @@ class ManifestGenerator {
           continue;
         }
 
-        // Check if this looks like a module (has agents, workflows, or tasks directory)
+        // Check if this looks like a module (has agents directory or skill manifests)
         const modulePath = path.join(bmadDir, entry.name);
         const hasAgents = await fs.pathExists(path.join(modulePath, 'agents'));
-        const hasWorkflows = await fs.pathExists(path.join(modulePath, 'workflows'));
-        const hasTasks = await fs.pathExists(path.join(modulePath, 'tasks'));
-        const hasTools = await fs.pathExists(path.join(modulePath, 'tools'));
+        const hasSkills = await this._hasSkillMdRecursive(modulePath);
 
-        // Check for native-entrypoint-only modules: recursive scan for SKILL.md
-        let hasSkills = false;
-        if (!hasAgents && !hasWorkflows && !hasTasks && !hasTools) {
-          hasSkills = await this._hasSkillMdRecursive(modulePath);
-        }
-
-        // If it has any of these directories or skill manifests, it's likely a module
-        if (hasAgents || hasWorkflows || hasTasks || hasTools || hasSkills) {
+        if (hasAgents || hasSkills) {
           modules.push(entry.name);
         }
       }
