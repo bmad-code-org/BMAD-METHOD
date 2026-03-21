@@ -85,7 +85,7 @@ Add persistent context the agent will always remember:
 ```yaml
 memories:
   - 'Works at Krusty Krab'
-  - 'Favorite Celebrity: David Hasslehoff'
+  - 'Favorite Celebrity: David Hasselhoff'
   - 'Learned in Epic 1 that it is not cool to just pretend that tests have passed'
 ```
 
