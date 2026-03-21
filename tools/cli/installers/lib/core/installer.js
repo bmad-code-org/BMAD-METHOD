@@ -54,131 +54,13 @@ class Installer {
     const paths = await InstallPaths.create(config);
     const { projectRoot, bmadDir, srcDir } = paths;
 
-    // If core config was pre-collected (from interactive mode), use it
-    if (config.coreConfig && Object.keys(config.coreConfig).length > 0) {
-      this.configCollector.collectedConfig.core = config.coreConfig;
-      // Also store in allAnswers for cross-referencing
-      this.configCollector.allAnswers = {};
-      for (const [key, value] of Object.entries(config.coreConfig)) {
-        this.configCollector.allAnswers[`core_${key}`] = value;
-      }
-    }
+    // Collect configurations for official modules
+    const moduleConfigs = await this._collectConfigs(config, paths);
 
-    // Collect configurations for modules (skip if quick update already collected them)
-    let moduleConfigs;
-    let customModulePaths = new Map();
+    // Custom module path discovery (will move to its own phase later)
+    const customModulePaths = await this._discoverCustomModulePaths(config, paths);
 
-    if (config._quickUpdate) {
-      // Quick update already collected all configs, use them directly
-      moduleConfigs = this.configCollector.collectedConfig;
-
-      // For quick update, populate customModulePaths from _customModuleSources
-      if (config._customModuleSources) {
-        for (const [moduleId, customInfo] of config._customModuleSources) {
-          customModulePaths.set(moduleId, customInfo.sourcePath);
-        }
-      }
-    } else {
-      // For regular updates (modify flow), check manifest for custom module sources
-      if (config._isUpdate && config._existingInstall && config._existingInstall.customModules) {
-        for (const customModule of config._existingInstall.customModules) {
-          // Ensure we have an absolute sourcePath
-          let absoluteSourcePath = customModule.sourcePath;
-
-          // Check if sourcePath is a cache-relative path (starts with _config)
-          if (absoluteSourcePath && absoluteSourcePath.startsWith('_config')) {
-            // Convert cache-relative path to absolute path
-            absoluteSourcePath = path.join(bmadDir, absoluteSourcePath);
-          }
-          // If no sourcePath but we have relativePath, convert it
-          else if (!absoluteSourcePath && customModule.relativePath) {
-            // relativePath is relative to the project root (parent of bmad dir)
-            absoluteSourcePath = path.resolve(projectRoot, customModule.relativePath);
-          }
-          // Ensure sourcePath is absolute for anything else
-          else if (absoluteSourcePath && !path.isAbsolute(absoluteSourcePath)) {
-            absoluteSourcePath = path.resolve(absoluteSourcePath);
-          }
-
-          if (absoluteSourcePath) {
-            customModulePaths.set(customModule.id, absoluteSourcePath);
-          }
-        }
-      }
-
-      // Build custom module paths map from customContent
-
-      // Handle selectedFiles (from existing install path or manual directory input)
-      if (config.customContent && config.customContent.selected && config.customContent.selectedFiles) {
-        const customHandler = new CustomHandler();
-        for (const customFile of config.customContent.selectedFiles) {
-          const customInfo = await customHandler.getCustomInfo(customFile, projectRoot);
-          if (customInfo && customInfo.id) {
-            customModulePaths.set(customInfo.id, customInfo.path);
-          }
-        }
-      }
-
-      // Handle new custom content sources from UI
-      if (config.customContent && config.customContent.sources) {
-        for (const source of config.customContent.sources) {
-          customModulePaths.set(source.id, source.path);
-        }
-      }
-
-      // Handle cachedModules (from new install path where modules are cached)
-      // Only include modules that were actually selected for installation
-      if (config.customContent && config.customContent.cachedModules) {
-        // Get selected cached module IDs (if available)
-        const selectedCachedIds = config.customContent.selectedCachedModules || [];
-        // If no selection info, include all cached modules (for backward compatibility)
-        const shouldIncludeAll = selectedCachedIds.length === 0 && config.customContent.selected;
-
-        for (const cachedModule of config.customContent.cachedModules) {
-          // For cached modules, the path is the cachePath which contains the module.yaml
-          if (
-            cachedModule.id &&
-            cachedModule.cachePath && // Include if selected or if we should include all
-            (shouldIncludeAll || selectedCachedIds.includes(cachedModule.id))
-          ) {
-            customModulePaths.set(cachedModule.id, cachedModule.cachePath);
-          }
-        }
-      }
-
-      // Get list of all modules including custom modules
-      // Order: core first, then official modules, then custom modules
-      const allModulesForConfig = ['core'];
-
-      // Add official modules (excluding core and any custom modules)
-      const officialModules = (config.modules || []).filter((m) => m !== 'core' && !customModulePaths.has(m));
-      allModulesForConfig.push(...officialModules);
-
-      // Add custom modules at the end
-      for (const [moduleId] of customModulePaths) {
-        if (!allModulesForConfig.includes(moduleId)) {
-          allModulesForConfig.push(moduleId);
-        }
-      }
-
-      // Check if core was already collected in UI
-      if (config.coreConfig && Object.keys(config.coreConfig).length > 0) {
-        // Core already collected, skip it in config collection
-        const modulesWithoutCore = allModulesForConfig.filter((m) => m !== 'core');
-        moduleConfigs = await this.configCollector.collectAllConfigurations(modulesWithoutCore, projectRoot, {
-          customModulePaths,
-          skipPrompts: config.skipPrompts,
-        });
-      } else {
-        // Core not collected yet, include it
-        moduleConfigs = await this.configCollector.collectAllConfigurations(allModulesForConfig, projectRoot, {
-          customModulePaths,
-          skipPrompts: config.skipPrompts,
-        });
-      }
-    }
-
-    // Set bmad folder name on module manager and IDE manager for placeholder replacement
+    // Wire configs into managers
     this.moduleManager.setBmadFolderName(BMAD_FOLDER_NAME);
     this.moduleManager.setCoreConfig(moduleConfigs.core || {});
     this.moduleManager.setCustomModulePaths(customModulePaths);
@@ -1141,6 +1023,102 @@ class Installer {
 
       throw error;
     }
+  }
+
+  /**
+   * Collect configurations for official modules (core + selected).
+   * Custom module configs are handled separately in _discoverCustomModulePaths.
+   */
+  async _collectConfigs(config, paths) {
+    // Seed core config if pre-collected from interactive UI
+    if (config.coreConfig && Object.keys(config.coreConfig).length > 0) {
+      this.configCollector.collectedConfig.core = config.coreConfig;
+      this.configCollector.allAnswers = {};
+      for (const [key, value] of Object.entries(config.coreConfig)) {
+        this.configCollector.allAnswers[`core_${key}`] = value;
+      }
+    }
+
+    // Quick update already collected everything
+    if (config._quickUpdate) {
+      return this.configCollector.collectedConfig;
+    }
+
+    // Official modules: core + selected (excluding core if already collected)
+    const officialModules = (config.modules || []).filter((m) => m !== 'core');
+    const toCollect = config.coreConfig && Object.keys(config.coreConfig).length > 0 ? officialModules : ['core', ...officialModules];
+
+    return await this.configCollector.collectAllConfigurations(toCollect, paths.projectRoot, {
+      skipPrompts: config.skipPrompts,
+    });
+  }
+
+  /**
+   * Discover custom module source paths from all available sources.
+   * This is a temporary home — will move to a dedicated custom module phase.
+   */
+  async _discoverCustomModulePaths(config, paths) {
+    const customModulePaths = new Map();
+
+    if (config._quickUpdate) {
+      if (config._customModuleSources) {
+        for (const [moduleId, customInfo] of config._customModuleSources) {
+          customModulePaths.set(moduleId, customInfo.sourcePath);
+        }
+      }
+      return customModulePaths;
+    }
+
+    // From manifest (regular updates)
+    if (config._isUpdate && config._existingInstall && config._existingInstall.customModules) {
+      for (const customModule of config._existingInstall.customModules) {
+        let absoluteSourcePath = customModule.sourcePath;
+
+        if (absoluteSourcePath && absoluteSourcePath.startsWith('_config')) {
+          absoluteSourcePath = path.join(paths.bmadDir, absoluteSourcePath);
+        } else if (!absoluteSourcePath && customModule.relativePath) {
+          absoluteSourcePath = path.resolve(paths.projectRoot, customModule.relativePath);
+        } else if (absoluteSourcePath && !path.isAbsolute(absoluteSourcePath)) {
+          absoluteSourcePath = path.resolve(absoluteSourcePath);
+        }
+
+        if (absoluteSourcePath) {
+          customModulePaths.set(customModule.id, absoluteSourcePath);
+        }
+      }
+    }
+
+    // From UI: selectedFiles
+    if (config.customContent && config.customContent.selected && config.customContent.selectedFiles) {
+      const customHandler = new CustomHandler();
+      for (const customFile of config.customContent.selectedFiles) {
+        const customInfo = await customHandler.getCustomInfo(customFile, paths.projectRoot);
+        if (customInfo && customInfo.id) {
+          customModulePaths.set(customInfo.id, customInfo.path);
+        }
+      }
+    }
+
+    // From UI: sources
+    if (config.customContent && config.customContent.sources) {
+      for (const source of config.customContent.sources) {
+        customModulePaths.set(source.id, source.path);
+      }
+    }
+
+    // From UI: cachedModules
+    if (config.customContent && config.customContent.cachedModules) {
+      const selectedCachedIds = config.customContent.selectedCachedModules || [];
+      const shouldIncludeAll = selectedCachedIds.length === 0 && config.customContent.selected;
+
+      for (const cachedModule of config.customContent.cachedModules) {
+        if (cachedModule.id && cachedModule.cachePath && (shouldIncludeAll || selectedCachedIds.includes(cachedModule.id))) {
+          customModulePaths.set(cachedModule.id, cachedModule.cachePath);
+        }
+      }
+    }
+
+    return customModulePaths;
   }
 
   /**
