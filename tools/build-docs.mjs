@@ -41,6 +41,10 @@ const LLM_EXCLUDE_PATTERNS = [
   // Note: Files/dirs starting with _ (like _STYLE_GUIDE.md, _archive/) are excluded in shouldExcludeFromLlm()
 ];
 
+// Non-root locales — their docs duplicate English content and should not appear in llms-full.txt.
+// Update this list when adding new i18n locales in website/astro.config.mjs.
+const LLM_EXCLUDE_LOCALES = ['zh-cn', 'fr'];
+
 // =============================================================================
 // Main Entry Point
 /**
@@ -287,6 +291,9 @@ function shouldExcludeFromLlm(filePath) {
   // (e.g., _STYLE_GUIDE.md, _archive/file.md, dir/_STYLE_GUIDE.md)
   const pathParts = filePath.split(path.sep);
   if (pathParts.some((part) => part.startsWith('_'))) return true;
+
+  // Exclude non-root locale directories (translations duplicate English content)
+  if (LLM_EXCLUDE_LOCALES.some((locale) => filePath.startsWith(`${locale}/`) || filePath.startsWith(`${locale}${path.sep}`))) return true;
 
   // Check configured patterns
   return LLM_EXCLUDE_PATTERNS.some((pattern) => filePath.includes(pattern));
