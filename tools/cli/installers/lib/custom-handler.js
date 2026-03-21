@@ -1,7 +1,7 @@
 const path = require('node:path');
 const fs = require('fs-extra');
 const yaml = require('yaml');
-const prompts = require('../../../lib/prompts');
+const prompts = require('../../lib/prompts');
 /**
  * Handler for custom content (custom.yaml)
  * Discovers custom agents and workflows in the project
