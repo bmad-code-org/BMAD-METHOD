@@ -99,17 +99,6 @@ async function createSkillCollisionFixture() {
   );
 
   await fs.writeFile(
-    path.join(configDir, 'workflow-manifest.csv'),
-    [
-      'name,description,module,path,canonicalId',
-      '"help","Workflow help","core","_bmad/core/workflows/help/workflow.md","bmad-help"',
-      '',
-    ].join('\n'),
-  );
-
-  await fs.writeFile(path.join(configDir, 'task-manifest.csv'), 'name,displayName,description,module,path,standalone,canonicalId\n');
-  await fs.writeFile(path.join(configDir, 'tool-manifest.csv'), 'name,displayName,description,module,path,standalone,canonicalId\n');
-  await fs.writeFile(
     path.join(configDir, 'skill-manifest.csv'),
     [
       'canonicalId,name,description,module,path,install_to_bmad',
@@ -1549,7 +1538,7 @@ async function runTests() {
       '---\nname: Regular Workflow\ndescription: A regular workflow not a skill\n---\n\nWorkflow body\n',
     );
 
-    // --- Skill inside workflows/ dir: core/workflows/wf-skill/ (exercises findWorkflows skip logic) ---
+    // --- Skill inside workflows/ dir: core/workflows/wf-skill/ ---
     const wfSkillDir29 = path.join(tempFixture29, 'core', 'workflows', 'wf-skill');
     await fs.ensureDir(wfSkillDir29);
     await fs.writeFile(
@@ -1593,17 +1582,9 @@ async function runTests() {
       'Skill path includes relative path from module root',
     );
 
-    // Skill should NOT be in workflows
-    const inWorkflows29 = generator29.workflows.find((w) => w.name === 'my-skill');
-    assert(inWorkflows29 === undefined, 'Skill at unusual path does NOT appear in workflows[]');
-
     // Skill in tasks/ dir should be in skills
     const taskSkillEntry29 = generator29.skills.find((s) => s.canonicalId === 'task-skill');
     assert(taskSkillEntry29 !== undefined, 'Skill in tasks/ dir appears in skills[]');
-
-    // Skill in tasks/ should NOT appear in tasks[]
-    const inTasks29 = generator29.tasks.find((t) => t.name === 'task-skill');
-    assert(inTasks29 === undefined, 'Skill in tasks/ dir does NOT appear in tasks[]');
 
     // Native agent entrypoint should be installed as a verbatim skill and also
     // remain visible to the agent manifest pipeline.
@@ -1616,18 +1597,13 @@ async function runTests() {
     const nativeAgentManifest29 = generator29.agents.find((a) => a.name === 'bmad-tea');
     assert(nativeAgentManifest29 !== undefined, 'Native type:agent SKILL.md dir appears in agents[] for agent metadata');
 
-    // Regular workflow should be in workflows, NOT in skills
-    const regularWf29 = generator29.workflows.find((w) => w.name === 'Regular Workflow');
-    assert(regularWf29 !== undefined, 'Regular type:workflow appears in workflows[]');
-
+    // Regular type:workflow should NOT appear in skills[]
     const regularInSkills29 = generator29.skills.find((s) => s.canonicalId === 'regular-wf');
     assert(regularInSkills29 === undefined, 'Regular type:workflow does NOT appear in skills[]');
 
-    // Skill inside workflows/ should be in skills[], NOT in workflows[] (exercises findWorkflows skip at lines 311/322)
+    // Skill inside workflows/ should be in skills[]
     const wfSkill29 = generator29.skills.find((s) => s.canonicalId === 'wf-skill');
     assert(wfSkill29 !== undefined, 'Skill in workflows/ dir appears in skills[]');
-    const wfSkillInWorkflows29 = generator29.workflows.find((w) => w.name === 'wf-skill');
-    assert(wfSkillInWorkflows29 === undefined, 'Skill in workflows/ dir does NOT appear in workflows[]');
 
     // Test scanInstalledModules recognizes skill-only modules
     const skillOnlyModDir29 = path.join(tempFixture29, 'skill-only-mod');
