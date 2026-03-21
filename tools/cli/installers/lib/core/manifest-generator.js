@@ -515,7 +515,7 @@ class ManifestGenerator {
 
   /**
    * Get agents from a directory recursively
-   * Only includes compiled .md files (not .agent.yaml source files)
+   * Only includes .md files with agent content
    */
   async getAgentsFromDir(dirPath, moduleName, relativePath = '') {
     // Skip directories claimed by collectSkills
@@ -572,7 +572,7 @@ class ManifestGenerator {
         const newRelativePath = relativePath ? `${relativePath}/${entry.name}` : entry.name;
         const subDirAgents = await this.getAgentsFromDir(fullPath, moduleName, newRelativePath);
         agents.push(...subDirAgents);
-      } else if (entry.name.endsWith('.md') && !entry.name.endsWith('.agent.yaml') && entry.name.toLowerCase() !== 'readme.md') {
+      } else if (entry.name.endsWith('.md') && entry.name.toLowerCase() !== 'readme.md') {
         const content = await fs.readFile(fullPath, 'utf8');
 
         // Skip files that don't contain <agent> tag (e.g., README files)
