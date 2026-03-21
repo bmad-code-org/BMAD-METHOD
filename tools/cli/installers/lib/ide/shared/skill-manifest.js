@@ -27,7 +27,7 @@ async function loadSkillManifest(dirPath) {
 /**
  * Get the canonicalId for a specific file from a loaded skill manifest.
  * @param {Object|null} manifest - Loaded manifest (from loadSkillManifest)
- * @param {string} filename - Source filename to look up (e.g., 'pm.md', 'help.md', 'pm.agent.yaml')
+ * @param {string} filename - Source filename to look up (e.g., 'pm.md', 'help.md')
  * @returns {string} canonicalId or empty string
  */
 function getCanonicalId(manifest, filename) {
@@ -36,12 +36,6 @@ function getCanonicalId(manifest, filename) {
   if (manifest.__single) return manifest.__single.canonicalId || '';
   // Multi-entry: look up by filename directly
   if (manifest[filename]) return manifest[filename].canonicalId || '';
-  // Fallback: try alternate extensions for compiled files
-  const baseName = filename.replace(/\.(md|xml)$/i, '');
-  const agentKey = `${baseName}.agent.yaml`;
-  if (manifest[agentKey]) return manifest[agentKey].canonicalId || '';
-  const xmlKey = `${baseName}.xml`;
-  if (manifest[xmlKey]) return manifest[xmlKey].canonicalId || '';
   return '';
 }
 
@@ -57,12 +51,6 @@ function getArtifactType(manifest, filename) {
   if (manifest.__single) return manifest.__single.type || null;
   // Multi-entry: look up by filename directly
   if (manifest[filename]) return manifest[filename].type || null;
-  // Fallback: try alternate extensions for compiled files
-  const baseName = filename.replace(/\.(md|xml)$/i, '');
-  const agentKey = `${baseName}.agent.yaml`;
-  if (manifest[agentKey]) return manifest[agentKey].type || null;
-  const xmlKey = `${baseName}.xml`;
-  if (manifest[xmlKey]) return manifest[xmlKey].type || null;
   return null;
 }
 
@@ -78,12 +66,6 @@ function getInstallToBmad(manifest, filename) {
   if (manifest.__single) return manifest.__single.install_to_bmad !== false;
   // Multi-entry: look up by filename directly
   if (manifest[filename]) return manifest[filename].install_to_bmad !== false;
-  // Fallback: try alternate extensions for compiled files
-  const baseName = filename.replace(/\.(md|xml)$/i, '');
-  const agentKey = `${baseName}.agent.yaml`;
-  if (manifest[agentKey]) return manifest[agentKey].install_to_bmad !== false;
-  const xmlKey = `${baseName}.xml`;
-  if (manifest[xmlKey]) return manifest[xmlKey].install_to_bmad !== false;
   return true;
 }
 
