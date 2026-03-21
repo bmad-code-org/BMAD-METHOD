@@ -36,11 +36,11 @@ If version control is available and the tree is dirty, create a local commit wit
 ### Present
 
 1. Open all changed files in the user's editor so they can review the code directly:
-   - Run `code -r "{project-root}" <changed-file-paths>` — the project root as the first argument, then each changed file path. Always double-quote paths with spaces.
+   - Resolve two sets of absolute paths: (1) the repository root (`git rev-parse --show-toplevel` — returns the worktree root when in a worktree, project root otherwise; if this fails, fall back to the current working directory), (2) each changed file. Run `code -r "{absolute-root}" <absolute-changed-file-paths>` — the root first so VS Code opens in the right context, then each changed file. Always double-quote paths to handle spaces and special characters.
    - If `code` is not available (command fails), skip gracefully and list the file paths instead.
 2. Display a summary in conversation output, including:
    - The commit hash (if one was created).
-   - List of files changed with one-line descriptions.
+   - List of files changed with one-line descriptions. Use CWD-relative paths with `:line` notation (e.g., `src/path/file.ts:42`) for terminal clickability. No leading `/`.
    - Review findings breakdown: patches applied, items deferred, items rejected. If all findings were rejected, say so.
 3. Offer to push and/or create a pull request.
 
