@@ -59,6 +59,9 @@ class Installer {
       hasCoreConfig() {
         return this.coreConfig && Object.keys(this.coreConfig).length > 0;
       },
+      isQuickUpdate() {
+        return originalConfig._quickUpdate || false;
+      },
     };
   }
 
@@ -76,8 +79,7 @@ class Installer {
     const paths = await InstallPaths.create(config);
 
     // Collect configurations for official modules
-    // Quick update already collected everything — skip
-    const moduleConfigs = customConfig._quickUpdate ? this.configCollector.collectedConfig : await this._collectConfigs(config, paths);
+    const moduleConfigs = await this._collectConfigs(config, paths);
 
     await this.customModules.discoverPaths(config, paths);
     this.ideManager.setBmadFolderName(BMAD_FOLDER_NAME);
@@ -92,7 +94,7 @@ class Installer {
       spinner.message('Checking for existing installation...');
       const existingInstall = await this.detector.detect(paths.bmadDir);
 
-      if (existingInstall.installed && !config.force && !customConfig._quickUpdate) {
+      if (existingInstall.installed && !config.force && !config.isQuickUpdate()) {
         spinner.stop('Existing installation detected');
 
         // Check if user already decided what to do (from early menu in ui.js)
@@ -274,7 +276,7 @@ class Installer {
             customConfig._tempModifiedBackupDir = tempModifiedBackupDir;
           }
         }
-      } else if (existingInstall.installed && customConfig._quickUpdate) {
+      } else if (existingInstall.installed && config.isQuickUpdate()) {
         // Quick update mode - automatically treat as update without prompting
         spinner.message('Preparing quick update...');
         customConfig._isUpdate = true;
@@ -358,7 +360,7 @@ class Installer {
       // Skip for quick update since we already have the IDE list
       spinner.stop('Pre-checks complete');
       let toolSelection;
-      if (customConfig._quickUpdate) {
+      if (config.isQuickUpdate()) {
         // Quick update already has IDEs configured, use saved configurations
         const preConfiguredIdes = {};
         const savedIdeConfigs = customConfig._savedIdeConfigs || {};
@@ -556,7 +558,7 @@ class Installer {
       // ─────────────────────────────────────────────────────────────────────────
       // FIRST TASKS BLOCK: Core installation through manifests (non-interactive)
       // ─────────────────────────────────────────────────────────────────────────
-      const isQuickUpdate = customConfig._quickUpdate || false;
+      const isQuickUpdate = config.isQuickUpdate();
 
       // Collect directory creation results for output after tasks() completes
       const dirResults = { createdDirs: [], movedDirs: [], createdWdsFolders: [] };
@@ -639,14 +641,14 @@ class Installer {
           message('Generating manifests...');
           const manifestGen = new ManifestGenerator();
 
-          const allModulesForManifest = customConfig._quickUpdate
+          const allModulesForManifest = config.isQuickUpdate()
             ? customConfig._existingModules || allModules || []
             : customConfig._preserveModules
               ? [...allModules, ...customConfig._preserveModules]
               : allModules || [];
 
           let modulesForCsvPreserve;
-          if (customConfig._quickUpdate) {
+          if (config.isQuickUpdate()) {
             modulesForCsvPreserve = customConfig._existingModules || allModules || [];
           } else {
             modulesForCsvPreserve = customConfig._preserveModules ? [...allModules, ...customConfig._preserveModules] : allModules;
@@ -880,6 +882,11 @@ class Installer {
       for (const [key, value] of Object.entries(config.coreConfig)) {
         this.configCollector.allAnswers[`core_${key}`] = value;
       }
+    }
+
+    // Quick update already collected everything
+    if (config.isQuickUpdate()) {
+      return this.configCollector.collectedConfig;
     }
 
     // Modules to collect — skip core if its config was pre-collected
