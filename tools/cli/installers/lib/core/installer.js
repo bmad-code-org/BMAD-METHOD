@@ -76,7 +76,8 @@ class Installer {
     const paths = await InstallPaths.create(config);
 
     // Collect configurations for official modules
-    const moduleConfigs = await this._collectConfigs(customConfig, paths);
+    // Quick update already collected everything — skip
+    const moduleConfigs = customConfig._quickUpdate ? this.configCollector.collectedConfig : await this._collectConfigs(config, paths);
 
     await this.customModules.discoverPaths(config, paths);
     this.ideManager.setBmadFolderName(BMAD_FOLDER_NAME);
@@ -871,27 +872,21 @@ class Installer {
    * Collect configurations for official modules (core + selected).
    * Custom module configs are handled separately in CustomModules.discoverPaths.
    */
-  async _collectConfigs(customConfig, paths) {
+  async _collectConfigs(config, paths) {
     // Seed core config if pre-collected from interactive UI
-    const hasCoreConfig = customConfig.coreConfig && Object.keys(customConfig.coreConfig).length > 0;
-    if (hasCoreConfig) {
-      this.configCollector.collectedConfig.core = customConfig.coreConfig;
+    if (config.hasCoreConfig()) {
+      this.configCollector.collectedConfig.core = config.coreConfig;
       this.configCollector.allAnswers = {};
-      for (const [key, value] of Object.entries(customConfig.coreConfig)) {
+      for (const [key, value] of Object.entries(config.coreConfig)) {
         this.configCollector.allAnswers[`core_${key}`] = value;
       }
     }
 
-    // Quick update already collected everything
-    if (customConfig._quickUpdate) {
-      return this.configCollector.collectedConfig;
-    }
-
-    // Modules to collect configs for — skip core if its config was pre-collected from UI
-    const toCollect = hasCoreConfig ? (customConfig.modules || []).filter((m) => m !== 'core') : [...(customConfig.modules || [])];
+    // Modules to collect — skip core if its config was pre-collected
+    const toCollect = config.hasCoreConfig() ? config.modules.filter((m) => m !== 'core') : [...config.modules];
 
     return await this.configCollector.collectAllConfigurations(toCollect, paths.projectRoot, {
-      skipPrompts: customConfig.skipPrompts,
+      skipPrompts: config.skipPrompts,
     });
   }
 
