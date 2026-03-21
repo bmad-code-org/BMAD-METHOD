@@ -59,7 +59,7 @@ class Installer {
     const moduleConfigs = await this._collectConfigs(config, paths);
 
     // Custom module path discovery (will move to its own phase later)
-    const customModulePaths = await this._discoverCustomModulePaths(config, paths);
+    const customModulePaths = await this.customModules.discoverPaths(config, paths);
 
     // Wire configs into managers
     this.customModules.setPaths(customModulePaths);
@@ -898,7 +898,7 @@ class Installer {
 
   /**
    * Collect configurations for official modules (core + selected).
-   * Custom module configs are handled separately in _discoverCustomModulePaths.
+   * Custom module configs are handled separately in CustomModules.discoverPaths.
    */
   async _collectConfigs(config, paths) {
     // Seed core config if pre-collected from interactive UI
@@ -922,74 +922,6 @@ class Installer {
     return await this.configCollector.collectAllConfigurations(toCollect, paths.projectRoot, {
       skipPrompts: config.skipPrompts,
     });
-  }
-
-  /**
-   * Discover custom module source paths from all available sources.
-   * This is a temporary home — will move to a dedicated custom module phase.
-   */
-  async _discoverCustomModulePaths(config, paths) {
-    const customModulePaths = new Map();
-
-    if (config._quickUpdate) {
-      if (config._customModuleSources) {
-        for (const [moduleId, customInfo] of config._customModuleSources) {
-          customModulePaths.set(moduleId, customInfo.sourcePath);
-        }
-      }
-      return customModulePaths;
-    }
-
-    // From manifest (regular updates)
-    if (config._isUpdate && config._existingInstall && config._existingInstall.customModules) {
-      for (const customModule of config._existingInstall.customModules) {
-        let absoluteSourcePath = customModule.sourcePath;
-
-        if (absoluteSourcePath && absoluteSourcePath.startsWith('_config')) {
-          absoluteSourcePath = path.join(paths.bmadDir, absoluteSourcePath);
-        } else if (!absoluteSourcePath && customModule.relativePath) {
-          absoluteSourcePath = path.resolve(paths.projectRoot, customModule.relativePath);
-        } else if (absoluteSourcePath && !path.isAbsolute(absoluteSourcePath)) {
-          absoluteSourcePath = path.resolve(absoluteSourcePath);
-        }
-
-        if (absoluteSourcePath) {
-          customModulePaths.set(customModule.id, absoluteSourcePath);
-        }
-      }
-    }
-
-    // From UI: selectedFiles
-    if (config.customContent && config.customContent.selected && config.customContent.selectedFiles) {
-      const customHandler = new CustomHandler();
-      for (const customFile of config.customContent.selectedFiles) {
-        const customInfo = await customHandler.getCustomInfo(customFile, paths.projectRoot);
-        if (customInfo && customInfo.id) {
-          customModulePaths.set(customInfo.id, customInfo.path);
-        }
-      }
-    }
-
-    // From UI: sources
-    if (config.customContent && config.customContent.sources) {
-      for (const source of config.customContent.sources) {
-        customModulePaths.set(source.id, source.path);
-      }
-    }
-
-    // From UI: cachedModules
-    if (config.customContent && config.customContent.cachedModules) {
-      const selectedCachedIds = config.customContent.selectedCachedModules || [];
-      const shouldIncludeAll = selectedCachedIds.length === 0 && config.customContent.selected;
-
-      for (const cachedModule of config.customContent.cachedModules) {
-        if (cachedModule.id && cachedModule.cachePath && (shouldIncludeAll || selectedCachedIds.includes(cachedModule.id))) {
-          customModulePaths.set(cachedModule.id, cachedModule.cachePath);
-        }
-      }
-    }
-
-    return customModulePaths;
   }
 
   /**
