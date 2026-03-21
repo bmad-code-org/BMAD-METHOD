@@ -14,6 +14,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { getSiteUrl } from '../website/src/lib/site-url.mjs';
+import { translatedLocales } from '../website/src/lib/locales.mjs';
 
 // =============================================================================
 // Configuration
@@ -40,10 +41,6 @@ const LLM_EXCLUDE_PATTERNS = [
   'bmgd/',
   // Note: Files/dirs starting with _ (like _STYLE_GUIDE.md, _archive/) are excluded in shouldExcludeFromLlm()
 ];
-
-// Non-root locales — their docs duplicate English content and should not appear in llms-full.txt.
-// Update this list when adding new i18n locales in website/astro.config.mjs.
-const LLM_EXCLUDE_LOCALES = ['zh-cn', 'fr'];
 
 // =============================================================================
 // Main Entry Point
@@ -293,7 +290,7 @@ function shouldExcludeFromLlm(filePath) {
   if (pathParts.some((part) => part.startsWith('_'))) return true;
 
   // Exclude non-root locale directories (translations duplicate English content)
-  if (LLM_EXCLUDE_LOCALES.some((locale) => filePath.startsWith(`${locale}/`) || filePath.startsWith(`${locale}${path.sep}`))) return true;
+  if (translatedLocales.some((locale) => filePath.startsWith(`${locale}/`) || filePath.startsWith(`${locale}${path.sep}`))) return true;
 
   // Check configured patterns
   return LLM_EXCLUDE_PATTERNS.some((pattern) => filePath.includes(pattern));
