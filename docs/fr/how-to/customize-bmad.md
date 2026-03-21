@@ -127,7 +127,7 @@ prompts:
 
 ### 3. Appliquer vos modifications
 
-Après modification, recompilez l'agent pour appliquer les changements :
+Après modification, réinstallez pour appliquer les changements :
 
 ```bash
 npx bmad-method install
@@ -137,17 +137,16 @@ L'installateur détecte l'installation existante et propose ces options :
 
 | Option                              | Ce qu'elle fait                                                        |
 | ----------------------------------- | ---------------------------------------------------------------------- |
-| **Quick Update**                    | Met à jour tous les modules vers la dernière version et recompile tous les agents |
-| **Recompile Agents**                | Applique uniquement les personnalisations, sans mettre à jour les fichiers de modules |
+| **Quick Update**                    | Met à jour tous les modules vers la dernière version et applique les personnalisations |
 | **Modify BMad Installation**        | Flux d'installation complet pour ajouter ou supprimer des modules     |
 
-Pour des modifications de personnalisation uniquement, **Recompile Agents** est l'option la plus rapide.
+Pour des modifications de personnalisation uniquement, **Quick Update** est l'option la plus rapide.
 
 ## Résolution des problèmes
 
 **Les modifications n'apparaissent pas ?**
 
-- Exécutez `npx bmad-method install` et sélectionnez **Recompile Agents** pour appliquer les modifications
+- Exécutez `npx bmad-method install` et sélectionnez **Quick Update** pour appliquer les modifications
 - Vérifiez que votre syntaxe YAML est valide (l'indentation compte)
 - Assurez-vous d'avoir modifié le bon fichier `.customize.yaml` pour l'agent
 
@@ -160,7 +159,7 @@ Pour des modifications de personnalisation uniquement, **Recompile Agents** est 
 **Besoin de réinitialiser un agent ?**
 
 - Effacez ou supprimez le fichier `.customize.yaml` de l'agent
-- Exécutez `npx bmad-method install` et sélectionnez **Recompile Agents** pour restaurer les valeurs par défaut
+- Exécutez `npx bmad-method install` et sélectionnez **Quick Update** pour restaurer les valeurs par défaut
 
 ## Personnalisation des workflows
 

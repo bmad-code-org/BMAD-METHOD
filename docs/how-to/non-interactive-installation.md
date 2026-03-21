@@ -28,7 +28,7 @@ Requires [Node.js](https://nodejs.org) v20+ and `npx` (included with npm).
 | `--modules <modules>` | Comma-separated module IDs | `--modules bmm,bmb` |
 | `--tools <tools>` | Comma-separated tool/IDE IDs (use `none` to skip) | `--tools claude-code,cursor` or `--tools none` |
 | `--custom-content <paths>` | Comma-separated paths to custom modules | `--custom-content ~/my-module,~/another-module` |
-| `--action <type>` | Action for existing installations: `install` (default), `update`, `quick-update`, or `compile-agents` | `--action quick-update` |
+| `--action <type>` | Action for existing installations: `install` (default), `update`, or `quick-update` | `--action quick-update` |
 
 ### Core Configuration
 
@@ -121,7 +121,7 @@ npx bmad-method install \
 ## What You Get
 
 - A fully configured `_bmad/` directory in your project
-- Compiled agents and workflows for your selected modules and tools
+- Agents and workflows configured for your selected modules and tools
 - A `_bmad-output/` folder for generated artifacts
 
 ## Validation and Error Handling
@@ -132,7 +132,7 @@ BMad validates all provided flags:
 - **Modules** — Warns about invalid module IDs (but won't fail)
 - **Tools** — Warns about invalid tool IDs (but won't fail)
 - **Custom Content** — Each path must contain a valid `module.yaml` file
-- **Action** — Must be one of: `install`, `update`, `quick-update`, `compile-agents`
+- **Action** — Must be one of: `install`, `update`, `quick-update`
 
 Invalid values will either:
 1. Show an error and exit (for critical options like directory)

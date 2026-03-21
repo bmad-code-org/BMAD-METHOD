@@ -457,10 +457,6 @@ class ModuleManager {
       await fs.remove(targetPath);
     }
 
-    // Vendor cross-module workflows BEFORE copying
-    // This reads source agent.yaml files and copies referenced workflows
-    await this.vendorCrossModuleWorkflows(sourcePath, targetPath, moduleName);
-
     // Copy module files with filtering
     await this.copyModuleWithFiltering(sourcePath, targetPath, fileTrackingCallback, options.moduleConfig);
 
@@ -606,9 +602,7 @@ class ModuleManager {
         continue;
       }
 
-      // Only skip sidecar directories - they are handled separately during agent compilation
-      // But still allow other files in agent directories
-      const isInAgentDirectory = file.startsWith('agents/');
+      // Skip sidecar directories - these contain agent-specific assets not needed at install time
       const isInSidecarDirectory = path
         .dirname(file)
         .split('/')
@@ -627,11 +621,6 @@ class ModuleManager {
       // Workflow-level config.yaml (e.g. workflows/orchestrate-story/config.yaml) must be copied
       // for custom modules that use workflow-specific configuration
       if (file === 'config.yaml') {
-        continue;
-      }
-
-      // Skip .agent.yaml files - they will be compiled separately
-      if (file.endsWith('.agent.yaml')) {
         continue;
       }
 
@@ -685,101 +674,6 @@ class ModuleManager {
 
     await searchDirectory(dir);
     return agentFiles;
-  }
-
-  /**
-   * Vendor cross-module workflows referenced in agent files
-   * Scans SOURCE agent.yaml files for workflow-install and copies workflows to destination
-   * @param {string} sourcePath - Source module path
-   * @param {string} targetPath - Target module path (destination)
-   * @param {string} moduleName - Module name being installed
-   */
-  async vendorCrossModuleWorkflows(sourcePath, targetPath, moduleName) {
-    const sourceAgentsPath = path.join(sourcePath, 'agents');
-
-    // Check if source agents directory exists
-    if (!(await fs.pathExists(sourceAgentsPath))) {
-      return; // No agents to process
-    }
-
-    // Get all agent YAML files from source
-    const agentFiles = await fs.readdir(sourceAgentsPath);
-    const yamlFiles = agentFiles.filter((f) => f.endsWith('.agent.yaml') || f.endsWith('.yaml'));
-
-    if (yamlFiles.length === 0) {
-      return; // No YAML agent files
-    }
-
-    let workflowsVendored = false;
-
-    for (const agentFile of yamlFiles) {
-      const agentPath = path.join(sourceAgentsPath, agentFile);
-      const agentYaml = yaml.parse(await fs.readFile(agentPath, 'utf8'));
-
-      // Check if agent has menu items with workflow-install
-      const menuItems = agentYaml?.agent?.menu || [];
-      const workflowInstallItems = menuItems.filter((item) => item['workflow-install']);
-
-      if (workflowInstallItems.length === 0) {
-        continue; // No workflow-install in this agent
-      }
-
-      if (!workflowsVendored) {
-        await prompts.log.info(`\n  Vendoring cross-module workflows for ${moduleName}...`);
-        workflowsVendored = true;
-      }
-
-      await prompts.log.message(`    Processing: ${agentFile}`);
-
-      for (const item of workflowInstallItems) {
-        const sourceWorkflowPath = item.exec; // Where to copy FROM
-        const installWorkflowPath = item['workflow-install']; // Where to copy TO
-
-        // Parse SOURCE workflow path
-        // Example: {project-root}/_bmad/bmm/workflows/4-implementation/bmad-create-story/workflow.md
-        const sourceMatch = sourceWorkflowPath.match(/\{project-root\}\/(?:_bmad)\/([^/]+)\/workflows\/(.+)/);
-        if (!sourceMatch) {
-          await prompts.log.warn(`      Could not parse workflow path: ${sourceWorkflowPath}`);
-          continue;
-        }
-
-        const [, sourceModule, sourceWorkflowSubPath] = sourceMatch;
-
-        // Parse INSTALL workflow path
-        // Example: {project-root}/_bmad/bmgd/workflows/4-production/create-story/workflow.md
-        const installMatch = installWorkflowPath.match(/\{project-root\}\/(?:_bmad)\/([^/]+)\/workflows\/(.+)/);
-        if (!installMatch) {
-          await prompts.log.warn(`      Could not parse workflow-install path: ${installWorkflowPath}`);
-          continue;
-        }
-
-        const installWorkflowSubPath = installMatch[2];
-
-        const sourceModulePath = getModulePath(sourceModule);
-        const actualSourceWorkflowPath = path.join(sourceModulePath, 'workflows', sourceWorkflowSubPath.replace(/\/workflow\.md$/, ''));
-
-        const actualDestWorkflowPath = path.join(targetPath, 'workflows', installWorkflowSubPath.replace(/\/workflow\.md$/, ''));
-
-        // Check if source workflow exists
-        if (!(await fs.pathExists(actualSourceWorkflowPath))) {
-          await prompts.log.warn(`      Source workflow not found: ${actualSourceWorkflowPath}`);
-          continue;
-        }
-
-        // Copy the entire workflow folder
-        await prompts.log.message(
-          `      Vendoring: ${sourceModule}/workflows/${sourceWorkflowSubPath.replace(/\/workflow\.md$/, '')} → ${moduleName}/workflows/${installWorkflowSubPath.replace(/\/workflow\.md$/, '')}`,
-        );
-
-        await fs.ensureDir(path.dirname(actualDestWorkflowPath));
-        // Copy the workflow directory recursively with placeholder replacement
-        await this.copyDirectoryWithPlaceholderReplacement(actualSourceWorkflowPath, actualDestWorkflowPath);
-      }
-    }
-
-    if (workflowsVendored) {
-      await prompts.log.success(`  Workflow vendoring complete\n`);
-    }
   }
 
   /**

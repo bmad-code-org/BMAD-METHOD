@@ -28,7 +28,7 @@ Nécessite [Node.js](https://nodejs.org) v20+ et `npx` (inclus avec npm).
 | `--modules <modules>` | IDs de modules séparés par des virgules | `--modules bmm,bmb` |
 | `--tools <outils>` | IDs d'outils/IDE séparés par des virgules (utilisez `none` pour ignorer) | `--tools claude-code,cursor` ou `--tools none` |
 | `--custom-content <chemins>` | Chemins vers des modules personnalisés séparés par des virgules | `--custom-content ~/my-module,~/another-module` |
-| `--action <type>` | Action pour les installations existantes : `install` (par défaut), `update`, `quick-update`, ou `compile-agents` | `--action quick-update` |
+| `--action <type>` | Action pour les installations existantes : `install` (par défaut), `update`, ou `quick-update` | `--action quick-update` |
 
 ### Configuration principale
 
@@ -121,7 +121,7 @@ npx bmad-method install \
 ## Ce que vous obtenez
 
 - Un répertoire `_bmad/` entièrement configuré dans votre projet
-- Des agents et des flux de travail compilés pour vos modules et outils sélectionnés
+- Des agents et des flux de travail configurés pour vos modules et outils sélectionnés
 - Un dossier `_bmad-output/` pour les artefacts générés
 
 ## Validation et gestion des erreurs
@@ -132,7 +132,7 @@ BMad valide toutes les options fournis :
 - **Modules** — Avertit des IDs de modules invalides (mais n'échoue pas)
 - **Tools** — Avertit des IDs d'outils invalides (mais n'échoue pas)
 - **Custom Content** — Chaque chemin doit contenir un fichier `module.yaml` valide
-- **Action** — Doit être l'une des suivantes : `install`, `update`, `quick-update`, `compile-agents`
+- **Action** — Doit être l'une des suivantes : `install`, `update`, `quick-update`
 
 Les valeurs invalides entraîneront soit :
 1. L’affichage d’un message d'erreur suivi d’un exit (pour les options critiques comme le répertoire)
