@@ -16,6 +16,15 @@ const prompts = require('../../../lib/prompts');
 const { BMAD_FOLDER_NAME } = require('../ide/shared/path-utils');
 const { InstallPaths } = require('./install-paths');
 
+let _externalManager;
+function getExternalManager() {
+  if (!_externalManager) {
+    const { ExternalModuleManager } = require('../modules/external-manager');
+    _externalManager = new ExternalModuleManager();
+  }
+  return _externalManager;
+}
+
 class Installer {
   constructor() {
     this.detector = new Detector();
@@ -204,7 +213,7 @@ class Installer {
               }
 
               // Check if this is an external official module - skip cache for those
-              const isExternal = await this.moduleManager.isExternalModule(moduleId);
+              const isExternal = await getExternalManager().hasModule(moduleId);
               if (isExternal) {
                 // External modules are handled via cloneExternalModule, not from cache
                 continue;
@@ -288,7 +297,7 @@ class Installer {
             }
 
             // Check if this is an external official module - skip cache for those
-            const isExternal = await this.moduleManager.isExternalModule(moduleId);
+            const isExternal = await getExternalManager().hasModule(moduleId);
             if (isExternal) {
               // External modules are handled via cloneExternalModule, not from cache
               continue;
@@ -1834,7 +1843,7 @@ class Installer {
           }
 
           // Check if this is an external official module - skip cache for those
-          const isExternal = await this.moduleManager.isExternalModule(moduleId);
+          const isExternal = await getExternalManager().hasModule(moduleId);
           if (isExternal) {
             // External modules are handled via cloneExternalModule, not from cache
             continue;
@@ -2060,7 +2069,7 @@ class Installer {
             }
 
             // Check if this is an external official module - skip cache for those
-            const isExternal = await this.moduleManager.isExternalModule(moduleId);
+            const isExternal = await getExternalManager().hasModule(moduleId);
             if (isExternal) {
               // External modules are handled via cloneExternalModule, not from cache
               continue;
