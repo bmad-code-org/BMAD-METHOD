@@ -9,3 +9,19 @@ const { Content } = await entry.render();
 <StarlightPage frontmatter={{ title: entry.data.title, template: entry.data.template }}>
   <Content />
 </StarlightPage>
+
+<!-- GitHub Pages serves this single 404.html for all paths.
+     Redirect to the locale-specific 404 page when the URL has a locale prefix. -->
+<script is:inline>
+  (function () {
+    var locales = ['zh-cn', 'fr'];
+    var path = window.location.pathname;
+    for (var i = 0; i < locales.length; i++) {
+      var prefix = '/' + locales[i] + '/';
+      if (path.startsWith(prefix) && path !== prefix + '404/') {
+        window.location.replace(prefix + '404/');
+        return;
+      }
+    }
+  })();
+</script>
