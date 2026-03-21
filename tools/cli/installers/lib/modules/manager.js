@@ -3,32 +3,11 @@ const fs = require('fs-extra');
 const yaml = require('yaml');
 const prompts = require('../../../lib/prompts');
 const { getProjectRoot, getSourcePath, getModulePath } = require('../../../lib/project-root');
+const { ExternalModuleManager } = require('./external-manager');
 
-let _externalManager;
-function getExternalManager() {
-  if (!_externalManager) {
-    const { ExternalModuleManager } = require('./external-manager');
-    _externalManager = new ExternalModuleManager();
-  }
-  return _externalManager;
-}
-
-/**
- * Manages the installation, updating, and removal of BMAD modules.
- * Handles module discovery, dependency resolution, and configuration processing.
- *
- * @class ModuleManager
- * @requires fs-extra
- * @requires yaml
- * @requires prompts
- *
- * @example
- * const manager = new ModuleManager();
- * const modules = await manager.listAvailable();
- * await manager.install('core-module', '/path/to/bmad');
- */
 class ModuleManager {
   constructor(options = {}) {
+    this.externalModuleManager = new ExternalModuleManager();
     this.customModulePaths = new Map();
   }
 
@@ -178,7 +157,7 @@ class ModuleManager {
     }
 
     // Check external official modules
-    const externalSource = await getExternalManager().findExternalModuleSource(moduleCode, options);
+    const externalSource = await this.externalModuleManager.findExternalModuleSource(moduleCode, options);
     if (externalSource) {
       return externalSource;
     }
