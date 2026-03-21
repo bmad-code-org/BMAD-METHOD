@@ -10,19 +10,19 @@ class ConfigCollector {
     this.collectedConfig = {};
     this.existingConfig = null;
     this.currentProjectDir = null;
-    this._moduleManagerInstance = null;
+    this._officialModulesInstance = null;
   }
 
   /**
-   * Get or create a cached ModuleManager instance (lazy initialization)
-   * @returns {Object} ModuleManager instance
+   * Get or create a cached OfficialModules instance (lazy initialization)
+   * @returns {Object} OfficialModules instance
    */
-  _getModuleManager() {
-    if (!this._moduleManagerInstance) {
-      const { ModuleManager } = require('../modules/manager');
-      this._moduleManagerInstance = new ModuleManager();
+  _getOfficialModules() {
+    if (!this._officialModulesInstance) {
+      const { OfficialModules } = require('../modules/official-modules');
+      this._officialModulesInstance = new OfficialModules();
     }
-    return this._moduleManagerInstance;
+    return this._officialModulesInstance;
   }
 
   /**
@@ -153,7 +153,7 @@ class ConfigCollector {
     const results = [];
 
     for (const moduleName of modules) {
-      // Resolve module.yaml path - custom paths first, then standard location, then ModuleManager search
+      // Resolve module.yaml path - custom paths first, then standard location, then OfficialModules search
       let moduleConfigPath = null;
       const customPath = this.customModulePaths?.get(moduleName);
       if (customPath) {
@@ -163,7 +163,7 @@ class ConfigCollector {
         if (await fs.pathExists(standardPath)) {
           moduleConfigPath = standardPath;
         } else {
-          const moduleSourcePath = await this._getModuleManager().findModuleSource(moduleName, { silent: true });
+          const moduleSourcePath = await this._getOfficialModules().findModuleSource(moduleName, { silent: true });
           if (moduleSourcePath) {
             moduleConfigPath = path.join(moduleSourcePath, 'module.yaml');
           }
@@ -364,7 +364,7 @@ class ConfigCollector {
 
     // If not found in src/modules, we need to find it by searching the project
     if (!(await fs.pathExists(moduleConfigPath))) {
-      const moduleSourcePath = await this._getModuleManager().findModuleSource(moduleName, { silent: true });
+      const moduleSourcePath = await this._getOfficialModules().findModuleSource(moduleName, { silent: true });
 
       if (moduleSourcePath) {
         moduleConfigPath = path.join(moduleSourcePath, 'module.yaml');
@@ -378,7 +378,7 @@ class ConfigCollector {
       configPath = moduleConfigPath;
     } else {
       // Check if this is a custom module with custom.yaml
-      const moduleSourcePath = await this._getModuleManager().findModuleSource(moduleName, { silent: true });
+      const moduleSourcePath = await this._getOfficialModules().findModuleSource(moduleName, { silent: true });
 
       if (moduleSourcePath) {
         const rootCustomConfigPath = path.join(moduleSourcePath, 'custom.yaml');
@@ -674,7 +674,7 @@ class ConfigCollector {
 
     // If not found in src/modules or custom paths, search the project
     if (!(await fs.pathExists(moduleConfigPath))) {
-      const moduleSourcePath = await this._getModuleManager().findModuleSource(moduleName, { silent: true });
+      const moduleSourcePath = await this._getOfficialModules().findModuleSource(moduleName, { silent: true });
 
       if (moduleSourcePath) {
         moduleConfigPath = path.join(moduleSourcePath, 'module.yaml');

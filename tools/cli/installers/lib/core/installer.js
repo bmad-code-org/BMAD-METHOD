@@ -2,7 +2,8 @@ const path = require('node:path');
 const fs = require('fs-extra');
 const { Detector } = require('./detector');
 const { Manifest } = require('./manifest');
-const { ModuleManager } = require('../modules/manager');
+const { OfficialModules } = require('../modules/official-modules');
+const { CustomModules } = require('../modules/custom-modules');
 const { IdeManager } = require('../ide/manager');
 const { FileOps } = require('../../../lib/file-ops');
 const { Config } = require('../../../lib/config');
@@ -22,7 +23,8 @@ class Installer {
     this.externalModuleManager = new ExternalModuleManager();
     this.detector = new Detector();
     this.manifest = new Manifest();
-    this.moduleManager = new ModuleManager();
+    this.officialModules = new OfficialModules();
+    this.customModules = new CustomModules();
     this.ideManager = new IdeManager();
     this.fileOps = new FileOps();
     this.config = new Config();
@@ -60,7 +62,7 @@ class Installer {
     const customModulePaths = await this._discoverCustomModulePaths(config, paths);
 
     // Wire configs into managers
-    this.moduleManager.setCustomModulePaths(customModulePaths);
+    this.customModules.setPaths(customModulePaths);
     this.ideManager.setBmadFolderName(BMAD_FOLDER_NAME);
 
     // Tool selection will be collected after we determine if it's a reinstall/update/new install
@@ -220,7 +222,7 @@ class Installer {
             }
 
             // Update module manager with the new custom module paths from cache
-            this.moduleManager.setCustomModulePaths(customModulePaths);
+            this.customModules.setPaths(customModulePaths);
           }
 
           // If there are custom files, back them up temporarily
@@ -304,7 +306,7 @@ class Installer {
           }
 
           // Update module manager with the new custom module paths from cache
-          this.moduleManager.setCustomModulePaths(customModulePaths);
+          this.customModules.setPaths(customModulePaths);
         }
 
         // Back up custom files
@@ -494,18 +496,14 @@ class Installer {
         }
 
         // Update module manager with the cached paths
-        this.moduleManager.setCustomModulePaths(customModulePaths);
+        this.customModules.setPaths(customModulePaths);
         addResult('Custom modules cached', 'ok');
       }
 
       // Custom content is already handled in UI before module selection
       const finalCustomContent = config.customContent;
 
-      // Official modules to install (filter out core — handled separately by installCore)
-      const officialModules = config.installCore ? (config.modules || []).filter((m) => m !== 'core') : [...(config.modules || [])];
-
-      // Build combined list for manifest generation and IDE setup
-      const allModules = [...officialModules];
+      // Build custom module ID set first (needed to filter official list)
       const customModuleIds = new Set();
       for (const id of customModulePaths.keys()) {
         customModuleIds.add(id);
@@ -531,6 +529,11 @@ class Installer {
           }
         }
       }
+      // Official modules: from config.modules, excluding core (handled separately) and custom modules
+      const officialModules = (config.modules || []).filter((m) => !(config.installCore && m === 'core') && !customModuleIds.has(m));
+
+      // Combined list for manifest generation and IDE setup
+      const allModules = [...officialModules];
       for (const id of customModuleIds) {
         if (!allModules.includes(id)) {
           allModules.push(id);
@@ -608,7 +611,7 @@ class Installer {
 
           // Core module directories
           if (config.installCore) {
-            const result = await this.moduleManager.createModuleDirectories('core', paths.bmadDir, {
+            const result = await this.officialModules.createModuleDirectories('core', paths.bmadDir, {
               installedIDEs: config.ides || [],
               moduleConfig: moduleConfigs.core || {},
               existingModuleConfig: this.configCollector.existingConfig?.core || {},
@@ -627,7 +630,7 @@ class Installer {
           if (config.modules && config.modules.length > 0) {
             for (const moduleName of config.modules) {
               message(`Setting up ${moduleName}...`);
-              const result = await this.moduleManager.createModuleDirectories(moduleName, paths.bmadDir, {
+              const result = await this.officialModules.createModuleDirectories(moduleName, paths.bmadDir, {
                 installedIDEs: config.ides || [],
                 moduleConfig: moduleConfigs[moduleName] || {},
                 existingModuleConfig: this.configCollector.existingConfig?.[moduleName] || {},
@@ -1012,7 +1015,7 @@ class Installer {
         await this.installCore(paths.bmadDir);
       } else {
         const moduleConfig = this.configCollector.collectedConfig[moduleName] || {};
-        await this.moduleManager.install(
+        await this.officialModules.install(
           moduleName,
           paths.bmadDir,
           (filePath) => {
@@ -1096,11 +1099,11 @@ class Installer {
 
       if (!customModulePaths.has(moduleName) && customInfo.path) {
         customModulePaths.set(moduleName, customInfo.path);
-        this.moduleManager.setCustomModulePaths(customModulePaths);
+        this.customModules.setPaths(customModulePaths);
       }
 
       const collectedModuleConfig = moduleConfigs[moduleName] || {};
-      await this.moduleManager.install(
+      await this.officialModules.install(
         moduleName,
         paths.bmadDir,
         (filePath) => {
@@ -1112,6 +1115,7 @@ class Installer {
           isQuickUpdate: isQuickUpdate,
           installer: this,
           silent: true,
+          sourcePath: customInfo.path,
         },
       );
       await this.generateModuleConfigs(paths.bmadDir, {
@@ -1860,7 +1864,7 @@ class Installer {
       const savedIdeConfigs = await this.ideConfigManager.loadAllIdeConfigs(bmadDir);
 
       // Get available modules (what we have source for)
-      const availableModulesData = await this.moduleManager.listAvailable();
+      const availableModulesData = await this.officialModules.listAvailable();
       const availableModules = [...availableModulesData.modules, ...availableModulesData.customModules];
 
       // Add external official modules to available modules
@@ -2125,7 +2129,7 @@ class Installer {
 
       for (const module of existingInstall.modules) {
         spinner.message(`Updating module: ${module.id}...`);
-        await this.moduleManager.update(module.id, bmadDir, config.force, { installer: this });
+        await this.officialModules.update(module.id, bmadDir, config.force, { installer: this });
       }
 
       // Update manifest
@@ -2265,7 +2269,7 @@ class Installer {
    * Get available modules
    */
   async getAvailableModules() {
-    return await this.moduleManager.listAvailable();
+    return await this.officialModules.listAvailable();
   }
 
   /**

@@ -5,18 +5,9 @@ const prompts = require('../../../lib/prompts');
 const { getProjectRoot, getSourcePath, getModulePath } = require('../../../lib/project-root');
 const { ExternalModuleManager } = require('./external-manager');
 
-class ModuleManager {
+class OfficialModules {
   constructor(options = {}) {
     this.externalModuleManager = new ExternalModuleManager();
-    this.customModulePaths = new Map();
-  }
-
-  /**
-   * Set custom module paths for priority lookup
-   * @param {Map<string, string>} customModulePaths - Map of module ID to source path
-   */
-  setCustomModulePaths(customModulePaths) {
-    this.customModulePaths = customModulePaths;
   }
 
   /**
@@ -25,7 +16,7 @@ class ModuleManager {
    * @param {string} targetPath - Target file path
    * @param {boolean} overwrite - Whether to overwrite existing files (default: true)
    */
-  async copyFileWithPlaceholderReplacement(sourcePath, targetPath, overwrite = true) {
+  async copyFile(sourcePath, targetPath, overwrite = true) {
     await fs.copy(sourcePath, targetPath, { overwrite });
   }
 
@@ -35,7 +26,7 @@ class ModuleManager {
    * @param {string} targetDir - Target directory path
    * @param {boolean} overwrite - Whether to overwrite existing files (default: true)
    */
-  async copyDirectoryWithPlaceholderReplacement(sourceDir, targetDir, overwrite = true) {
+  async copyDirectory(sourceDir, targetDir, overwrite = true) {
     await fs.ensureDir(targetDir);
     const entries = await fs.readdir(sourceDir, { withFileTypes: true });
 
@@ -44,9 +35,9 @@ class ModuleManager {
       const targetPath = path.join(targetDir, entry.name);
 
       if (entry.isDirectory()) {
-        await this.copyDirectoryWithPlaceholderReplacement(sourcePath, targetPath, overwrite);
+        await this.copyDirectory(sourcePath, targetPath, overwrite);
       } else {
-        await this.copyFileWithPlaceholderReplacement(sourcePath, targetPath, overwrite);
+        await this.copyFile(sourcePath, targetPath, overwrite);
       }
     }
   }
@@ -143,9 +134,12 @@ class ModuleManager {
   async findModuleSource(moduleCode, options = {}) {
     const projectRoot = getProjectRoot();
 
-    // First check custom module paths if they exist
-    if (this.customModulePaths && this.customModulePaths.has(moduleCode)) {
-      return this.customModulePaths.get(moduleCode);
+    // Check for core module (directly under src/core-skills)
+    if (moduleCode === 'core') {
+      const corePath = getSourcePath('core-skills');
+      if (await fs.pathExists(corePath)) {
+        return corePath;
+      }
     }
 
     // Check for built-in bmm module (directly under src/bmm-skills)
@@ -176,7 +170,7 @@ class ModuleManager {
    * @param {Object} options.logger - Logger instance for output
    */
   async install(moduleName, bmadDir, fileTrackingCallback = null, options = {}) {
-    const sourcePath = await this.findModuleSource(moduleName, { silent: options.silent });
+    const sourcePath = options.sourcePath || (await this.findModuleSource(moduleName, { silent: options.silent }));
     const targetPath = path.join(bmadDir, moduleName);
 
     // Check if source module exists
@@ -397,7 +391,7 @@ class ModuleManager {
       }
 
       // Copy the file with placeholder replacement
-      await this.copyFileWithPlaceholderReplacement(sourceFile, targetFile);
+      await this.copyFile(sourceFile, targetFile);
 
       // Track the file if callback provided
       if (fileTrackingCallback) {
@@ -652,7 +646,7 @@ class ModuleManager {
       }
 
       // Copy file with placeholder replacement
-      await this.copyFileWithPlaceholderReplacement(sourceFile, targetFile);
+      await this.copyFile(sourceFile, targetFile);
     }
   }
 
@@ -681,4 +675,4 @@ class ModuleManager {
   }
 }
 
-module.exports = { ModuleManager };
+module.exports = { OfficialModules };

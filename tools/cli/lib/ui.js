@@ -935,9 +935,9 @@ class UI {
     }
 
     // Add official modules
-    const { ModuleManager } = require('../installers/lib/modules/manager');
-    const moduleManager = new ModuleManager();
-    const { modules: availableModules, customModules: customModulesFromCache } = await moduleManager.listAvailable();
+    const { OfficialModules } = require('../installers/lib/modules/official-modules');
+    const officialModules = new OfficialModules();
+    const { modules: availableModules, customModules: customModulesFromCache } = await officialModules.listAvailable();
 
     // First, add all items to appropriate sections
     const allCustomModules = [];
@@ -992,9 +992,9 @@ class UI {
    * @returns {Array} Selected module codes (excluding core)
    */
   async selectAllModules(installedModuleIds = new Set()) {
-    const { ModuleManager } = require('../installers/lib/modules/manager');
-    const moduleManager = new ModuleManager();
-    const { modules: localModules } = await moduleManager.listAvailable();
+    const { OfficialModules } = require('../installers/lib/modules/official-modules');
+    const officialModulesSource = new OfficialModules();
+    const { modules: localModules } = await officialModulesSource.listAvailable();
 
     // Get external modules
     const externalManager = new ExternalModuleManager();
@@ -1089,9 +1089,9 @@ class UI {
    * @returns {Array} Default module codes
    */
   async getDefaultModules(installedModuleIds = new Set()) {
-    const { ModuleManager } = require('../installers/lib/modules/manager');
-    const moduleManager = new ModuleManager();
-    const { modules: localModules } = await moduleManager.listAvailable();
+    const { OfficialModules } = require('../installers/lib/modules/official-modules');
+    const officialModules = new OfficialModules();
+    const { modules: localModules } = await officialModules.listAvailable();
 
     const defaultModules = [];
 
