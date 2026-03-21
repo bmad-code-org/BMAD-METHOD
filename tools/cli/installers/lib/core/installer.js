@@ -33,190 +33,6 @@ class Installer {
   }
 
   /**
-   * Find the bmad installation directory in a project
-   * Always uses the standard _bmad folder name
-   * Also checks for legacy _cfg folder for migration
-   * @param {string} projectDir - Project directory
-   * @returns {Promise<Object>} { bmadDir: string, hasLegacyCfg: boolean }
-   */
-  async findBmadDir(projectDir) {
-    const bmadDir = path.join(projectDir, BMAD_FOLDER_NAME);
-
-    // Check if project directory exists
-    if (!(await fs.pathExists(projectDir))) {
-      // Project doesn't exist yet, return default
-      return { bmadDir, hasLegacyCfg: false };
-    }
-
-    // Check for legacy _cfg folder if bmad directory exists
-    let hasLegacyCfg = false;
-    if (await fs.pathExists(bmadDir)) {
-      const legacyCfgPath = path.join(bmadDir, '_cfg');
-      if (await fs.pathExists(legacyCfgPath)) {
-        hasLegacyCfg = true;
-      }
-    }
-
-    return { bmadDir, hasLegacyCfg };
-  }
-
-  /**
-   * @function copyFileWithPlaceholderReplacement
-   * @intent Copy files from BMAD source to installation directory with dynamic content transformation
-   * @why Enables installation-time customization: _bmad replacement
-   * @param {string} sourcePath - Absolute path to source file in BMAD repository
-   * @param {string} targetPath - Absolute path to destination file in user's project
-   * @param {string} bmadFolderName - User's chosen bmad folder name (default: 'bmad')
-   * @returns {Promise<void>} Resolves when file copy and transformation complete
-   * @sideeffects Writes transformed file to targetPath, creates parent directories if needed
-   * @edgecases Binary files bypass transformation, falls back to raw copy if UTF-8 read fails
-   * @calledby installCore(), installModule(), IDE installers during file vendoring
-   * @calls fs.readFile(), fs.writeFile(), fs.copy()
-   *
-
-   *
-   * 3. Document marker in instructions.md (if applicable)
-   */
-  async copyFileWithPlaceholderReplacement(sourcePath, targetPath) {
-    // List of text file extensions that should have placeholder replacement
-    const textExtensions = ['.md', '.yaml', '.yml', '.txt', '.json', '.js', '.ts', '.html', '.css', '.sh', '.bat', '.csv', '.xml'];
-    const ext = path.extname(sourcePath).toLowerCase();
-
-    // Check if this is a text file that might contain placeholders
-    if (textExtensions.includes(ext)) {
-      try {
-        // Read the file content
-        let content = await fs.readFile(sourcePath, 'utf8');
-
-        // Write to target with replaced content
-        await fs.ensureDir(path.dirname(targetPath));
-        await fs.writeFile(targetPath, content, 'utf8');
-      } catch {
-        // If reading as text fails (might be binary despite extension), fall back to regular copy
-        await fs.copy(sourcePath, targetPath, { overwrite: true });
-      }
-    } else {
-      // Binary file or other file type - just copy directly
-      await fs.copy(sourcePath, targetPath, { overwrite: true });
-    }
-  }
-
-  /**
-   * Collect Tool/IDE configurations after module configuration
-   * @param {string} projectDir - Project directory
-   * @param {Array} selectedModules - Selected modules from configuration
-   * @param {boolean} isFullReinstall - Whether this is a full reinstall
-   * @param {Array} previousIdes - Previously configured IDEs (for reinstalls)
-   * @param {Array} preSelectedIdes - Pre-selected IDEs from early prompt (optional)
-   * @param {boolean} skipPrompts - Skip prompts and use defaults (for --yes flag)
-   * @returns {Object} Tool/IDE selection and configurations
-   */
-  async collectToolConfigurations(
-    projectDir,
-    selectedModules,
-    isFullReinstall = false,
-    previousIdes = [],
-    preSelectedIdes = null,
-    skipPrompts = false,
-  ) {
-    // Use pre-selected IDEs if provided, otherwise prompt
-    let toolConfig;
-    if (preSelectedIdes === null) {
-      // Fallback: prompt for tool selection (backwards compatibility)
-      const { UI } = require('../../../lib/ui');
-      const ui = new UI();
-      toolConfig = await ui.promptToolSelection(projectDir);
-    } else {
-      // IDEs were already selected during initial prompts
-      toolConfig = {
-        ides: preSelectedIdes,
-        skipIde: !preSelectedIdes || preSelectedIdes.length === 0,
-      };
-    }
-
-    // Check for already configured IDEs
-    const { Detector } = require('./detector');
-    const detector = new Detector();
-    const bmadDir = path.join(projectDir, BMAD_FOLDER_NAME);
-
-    // During full reinstall, use the saved previous IDEs since bmad dir was deleted
-    // Otherwise detect from existing installation
-    let previouslyConfiguredIdes;
-    if (isFullReinstall) {
-      // During reinstall, treat all IDEs as new (need configuration)
-      previouslyConfiguredIdes = [];
-    } else {
-      const existingInstall = await detector.detect(bmadDir);
-      previouslyConfiguredIdes = existingInstall.ides || [];
-    }
-
-    // Load saved IDE configurations for already-configured IDEs
-    const savedIdeConfigs = await this.ideConfigManager.loadAllIdeConfigs(bmadDir);
-
-    // Collect IDE-specific configurations if any were selected
-    const ideConfigurations = {};
-
-    // First, add saved configs for already-configured IDEs
-    for (const ide of toolConfig.ides || []) {
-      if (previouslyConfiguredIdes.includes(ide) && savedIdeConfigs[ide]) {
-        ideConfigurations[ide] = savedIdeConfigs[ide];
-      }
-    }
-
-    if (!toolConfig.skipIde && toolConfig.ides && toolConfig.ides.length > 0) {
-      // Ensure IDE manager is initialized
-      await this.ideManager.ensureInitialized();
-
-      // Determine which IDEs are newly selected (not previously configured)
-      const newlySelectedIdes = toolConfig.ides.filter((ide) => !previouslyConfiguredIdes.includes(ide));
-
-      if (newlySelectedIdes.length > 0) {
-        // Collect configuration for IDEs that support it
-        for (const ide of newlySelectedIdes) {
-          try {
-            const handler = this.ideManager.handlers.get(ide);
-
-            if (!handler) {
-              await prompts.log.warn(`Warning: IDE '${ide}' handler not found`);
-              continue;
-            }
-
-            // Check if this IDE handler has a collectConfiguration method
-            // (custom installers like Codex, Kilo may have this)
-            if (typeof handler.collectConfiguration === 'function') {
-              await prompts.log.info(`Configuring ${ide}...`);
-              ideConfigurations[ide] = await handler.collectConfiguration({
-                selectedModules: selectedModules || [],
-                projectDir,
-                bmadDir,
-                skipPrompts,
-              });
-            } else {
-              // Config-driven IDEs don't need configuration - mark as ready
-              ideConfigurations[ide] = { _noConfigNeeded: true };
-            }
-          } catch (error) {
-            // IDE doesn't support configuration or has an error
-            await prompts.log.warn(`Warning: Could not load configuration for ${ide}: ${error.message}`);
-          }
-        }
-      }
-
-      // Log which IDEs are already configured and being kept
-      const keptIdes = toolConfig.ides.filter((ide) => previouslyConfiguredIdes.includes(ide));
-      if (keptIdes.length > 0) {
-        await prompts.log.message(`Keeping existing configuration for: ${keptIdes.join(', ')}`);
-      }
-    }
-
-    return {
-      ides: toolConfig.ides,
-      skipIde: toolConfig.skipIde,
-      configurations: ideConfigurations,
-    };
-  }
-
-  /**
    * Main installation method
    * @param {Object} config - Installation configuration
    * @param {string} config.directory - Target directory
@@ -1328,374 +1144,534 @@ class Installer {
   }
 
   /**
-   * Render a consolidated install summary using prompts.note()
-   * @param {Array} results - Array of {step, status: 'ok'|'error'|'warn', detail}
-   * @param {Object} context - {bmadDir, modules, ides, customFiles, modifiedFiles}
+   * Collect Tool/IDE configurations after module configuration
+   * @param {string} projectDir - Project directory
+   * @param {Array} selectedModules - Selected modules from configuration
+   * @param {boolean} isFullReinstall - Whether this is a full reinstall
+   * @param {Array} previousIdes - Previously configured IDEs (for reinstalls)
+   * @param {Array} preSelectedIdes - Pre-selected IDEs from early prompt (optional)
+   * @param {boolean} skipPrompts - Skip prompts and use defaults (for --yes flag)
+   * @returns {Object} Tool/IDE selection and configurations
    */
-  async renderInstallSummary(results, context = {}) {
-    const color = await prompts.getColor();
-    const selectedIdes = new Set((context.ides || []).map((ide) => String(ide).toLowerCase()));
+  async collectToolConfigurations(
+    projectDir,
+    selectedModules,
+    isFullReinstall = false,
+    previousIdes = [],
+    preSelectedIdes = null,
+    skipPrompts = false,
+  ) {
+    // Use pre-selected IDEs if provided, otherwise prompt
+    let toolConfig;
+    if (preSelectedIdes === null) {
+      // Fallback: prompt for tool selection (backwards compatibility)
+      const { UI } = require('../../../lib/ui');
+      const ui = new UI();
+      toolConfig = await ui.promptToolSelection(projectDir);
+    } else {
+      // IDEs were already selected during initial prompts
+      toolConfig = {
+        ides: preSelectedIdes,
+        skipIde: !preSelectedIdes || preSelectedIdes.length === 0,
+      };
+    }
 
-    // Build step lines with status indicators
-    const lines = [];
-    for (const r of results) {
-      let stepLabel = null;
+    // Check for already configured IDEs
+    const { Detector } = require('./detector');
+    const detector = new Detector();
+    const bmadDir = path.join(projectDir, BMAD_FOLDER_NAME);
 
-      if (r.status !== 'ok') {
-        stepLabel = r.step;
-      } else if (r.step === 'Core') {
-        stepLabel = 'BMAD';
-      } else if (r.step.startsWith('Module: ')) {
-        stepLabel = r.step;
-      } else if (selectedIdes.has(String(r.step).toLowerCase())) {
-        stepLabel = r.step;
+    // During full reinstall, use the saved previous IDEs since bmad dir was deleted
+    // Otherwise detect from existing installation
+    let previouslyConfiguredIdes;
+    if (isFullReinstall) {
+      // During reinstall, treat all IDEs as new (need configuration)
+      previouslyConfiguredIdes = [];
+    } else {
+      const existingInstall = await detector.detect(bmadDir);
+      previouslyConfiguredIdes = existingInstall.ides || [];
+    }
+
+    // Load saved IDE configurations for already-configured IDEs
+    const savedIdeConfigs = await this.ideConfigManager.loadAllIdeConfigs(bmadDir);
+
+    // Collect IDE-specific configurations if any were selected
+    const ideConfigurations = {};
+
+    // First, add saved configs for already-configured IDEs
+    for (const ide of toolConfig.ides || []) {
+      if (previouslyConfiguredIdes.includes(ide) && savedIdeConfigs[ide]) {
+        ideConfigurations[ide] = savedIdeConfigs[ide];
+      }
+    }
+
+    if (!toolConfig.skipIde && toolConfig.ides && toolConfig.ides.length > 0) {
+      // Ensure IDE manager is initialized
+      await this.ideManager.ensureInitialized();
+
+      // Determine which IDEs are newly selected (not previously configured)
+      const newlySelectedIdes = toolConfig.ides.filter((ide) => !previouslyConfiguredIdes.includes(ide));
+
+      if (newlySelectedIdes.length > 0) {
+        // Collect configuration for IDEs that support it
+        for (const ide of newlySelectedIdes) {
+          try {
+            const handler = this.ideManager.handlers.get(ide);
+
+            if (!handler) {
+              await prompts.log.warn(`Warning: IDE '${ide}' handler not found`);
+              continue;
+            }
+
+            // Check if this IDE handler has a collectConfiguration method
+            // (custom installers like Codex, Kilo may have this)
+            if (typeof handler.collectConfiguration === 'function') {
+              await prompts.log.info(`Configuring ${ide}...`);
+              ideConfigurations[ide] = await handler.collectConfiguration({
+                selectedModules: selectedModules || [],
+                projectDir,
+                bmadDir,
+                skipPrompts,
+              });
+            } else {
+              // Config-driven IDEs don't need configuration - mark as ready
+              ideConfigurations[ide] = { _noConfigNeeded: true };
+            }
+          } catch (error) {
+            // IDE doesn't support configuration or has an error
+            await prompts.log.warn(`Warning: Could not load configuration for ${ide}: ${error.message}`);
+          }
+        }
       }
 
-      if (!stepLabel) {
-        continue;
+      // Log which IDEs are already configured and being kept
+      const keptIdes = toolConfig.ides.filter((ide) => previouslyConfiguredIdes.includes(ide));
+      if (keptIdes.length > 0) {
+        await prompts.log.message(`Keeping existing configuration for: ${keptIdes.join(', ')}`);
       }
-
-      let icon;
-      if (r.status === 'ok') {
-        icon = color.green('\u2713');
-      } else if (r.status === 'warn') {
-        icon = color.yellow('!');
-      } else {
-        icon = color.red('\u2717');
-      }
-      const detail = r.detail ? color.dim(` (${r.detail})`) : '';
-      lines.push(`  ${icon}  ${stepLabel}${detail}`);
     }
 
-    if ((context.ides || []).length === 0) {
-      lines.push(`  ${color.green('\u2713')}  No IDE selected ${color.dim('(installed in _bmad only)')}`);
-    }
-
-    // Context and warnings
-    lines.push('');
-    if (context.bmadDir) {
-      lines.push(`  Installed to: ${color.dim(context.bmadDir)}`);
-    }
-    if (context.customFiles && context.customFiles.length > 0) {
-      lines.push(`  ${color.cyan(`Custom files preserved: ${context.customFiles.length}`)}`);
-    }
-    if (context.modifiedFiles && context.modifiedFiles.length > 0) {
-      lines.push(`  ${color.yellow(`Modified files backed up (.bak): ${context.modifiedFiles.length}`)}`);
-    }
-
-    // Next steps
-    lines.push(
-      '',
-      '  Next steps:',
-      `    Read our new Docs Site: ${color.dim('https://docs.bmad-method.org/')}`,
-      `    Join our Discord: ${color.dim('https://discord.gg/gk8jAdXWmj')}`,
-      `    Star us on GitHub: ${color.dim('https://github.com/bmad-code-org/BMAD-METHOD/')}`,
-      `    Subscribe on YouTube: ${color.dim('https://www.youtube.com/@BMadCode')}`,
-    );
-    if (context.ides && context.ides.length > 0) {
-      lines.push(`    Invoke the ${color.cyan('bmad-help')} skill in your IDE Agent to get started`);
-    }
-
-    await prompts.note(lines.join('\n'), 'BMAD is ready to use!');
+    return {
+      ides: toolConfig.ides,
+      skipIde: toolConfig.skipIde,
+      configurations: ideConfigurations,
+    };
   }
 
   /**
-   * Update existing installation
+   * Private: Prompt for update action
    */
-  async update(config) {
-    const spinner = await prompts.spinner();
-    spinner.start('Checking installation...');
+  async promptUpdateAction() {
+    const action = await prompts.select({
+      message: 'What would you like to do?',
+      choices: [{ name: 'Update existing installation', value: 'update' }],
+    });
+    return { action };
+  }
+
+  /**
+   * Read files-manifest.csv
+   * @param {string} bmadDir - BMAD installation directory
+   * @returns {Array} Array of file entries from files-manifest.csv
+   */
+  async readFilesManifest(bmadDir) {
+    const filesManifestPath = path.join(bmadDir, '_config', 'files-manifest.csv');
+    if (!(await fs.pathExists(filesManifestPath))) {
+      return [];
+    }
 
     try {
-      const projectDir = path.resolve(config.directory);
-      const { bmadDir } = await this.findBmadDir(projectDir);
-      const existingInstall = await this.detector.detect(bmadDir);
+      const content = await fs.readFile(filesManifestPath, 'utf8');
+      const lines = content.split('\n');
+      const files = [];
 
-      if (!existingInstall.installed) {
-        spinner.stop('No BMAD installation found');
-        throw new Error(`No BMAD installation found at ${bmadDir}`);
-      }
+      for (let i = 1; i < lines.length; i++) {
+        // Skip header
+        const line = lines[i].trim();
+        if (!line) continue;
 
-      spinner.message('Analyzing update requirements...');
+        // Parse CSV line properly handling quoted values
+        const parts = [];
+        let current = '';
+        let inQuotes = false;
 
-      // Compare versions and determine what needs updating
-      const currentVersion = existingInstall.version;
-      const newVersion = require(path.join(getProjectRoot(), 'package.json')).version;
-
-      // Check for custom modules with missing sources before update
-      const customModuleSources = new Map();
-
-      // Check manifest for backward compatibility
-      if (existingInstall.customModules) {
-        for (const customModule of existingInstall.customModules) {
-          customModuleSources.set(customModule.id, customModule);
-        }
-      }
-
-      // Also check cache directory
-      const cacheDir = path.join(bmadDir, '_config', 'custom');
-      if (await fs.pathExists(cacheDir)) {
-        const cachedModules = await fs.readdir(cacheDir, { withFileTypes: true });
-
-        for (const cachedModule of cachedModules) {
-          if (cachedModule.isDirectory()) {
-            const moduleId = cachedModule.name;
-
-            // Skip if we already have this module
-            if (customModuleSources.has(moduleId)) {
-              continue;
-            }
-
-            // Check if this is an external official module - skip cache for those
-            const isExternal = await this.moduleManager.isExternalModule(moduleId);
-            if (isExternal) {
-              // External modules are handled via cloneExternalModule, not from cache
-              continue;
-            }
-
-            const cachedPath = path.join(cacheDir, moduleId);
-
-            // Check if this is actually a custom module (has module.yaml)
-            const moduleYamlPath = path.join(cachedPath, 'module.yaml');
-            if (await fs.pathExists(moduleYamlPath)) {
-              customModuleSources.set(moduleId, {
-                id: moduleId,
-                name: moduleId,
-                sourcePath: path.join('_config', 'custom', moduleId), // Relative path
-                cached: true,
-              });
-            }
+        for (const char of line) {
+          if (char === '"') {
+            inQuotes = !inQuotes;
+          } else if (char === ',' && !inQuotes) {
+            parts.push(current);
+            current = '';
+          } else {
+            current += char;
           }
         }
-      }
+        parts.push(current); // Add last part
 
-      if (customModuleSources.size > 0) {
-        spinner.stop('Update analysis complete');
-        await prompts.log.warn('Checking custom module sources before update...');
-
-        const projectRoot = getProjectRoot();
-        await this.handleMissingCustomSources(
-          customModuleSources,
-          bmadDir,
-          projectRoot,
-          'update',
-          existingInstall.modules.map((m) => m.id),
-          config.skipPrompts || false,
-        );
-
-        spinner.start('Preparing update...');
-      }
-
-      if (config.dryRun) {
-        spinner.stop('Dry run analysis complete');
-        let dryRunContent = `Current version: ${currentVersion}\n`;
-        dryRunContent += `New version: ${newVersion}\n`;
-        dryRunContent += `Core: ${existingInstall.hasCore ? 'Will be updated' : 'Not installed'}`;
-
-        if (existingInstall.modules.length > 0) {
-          dryRunContent += '\n\nModules to update:';
-          for (const mod of existingInstall.modules) {
-            dryRunContent += `\n  - ${mod.id}`;
-          }
+        if (parts.length >= 4) {
+          files.push({
+            type: parts[0],
+            name: parts[1],
+            module: parts[2],
+            path: parts[3],
+            hash: parts[4] || null, // Hash may not exist in old manifests
+          });
         }
-        await prompts.note(dryRunContent, 'Update Preview (Dry Run)');
-        return;
       }
 
-      // Perform actual update
-      if (existingInstall.hasCore) {
-        spinner.message('Updating core...');
-        await this.updateCore(bmadDir, config.force);
-      }
-
-      for (const module of existingInstall.modules) {
-        spinner.message(`Updating module: ${module.id}...`);
-        await this.moduleManager.update(module.id, bmadDir, config.force, { installer: this });
-      }
-
-      // Update manifest
-      spinner.message('Updating manifest...');
-      await this.manifest.update(bmadDir, {
-        version: newVersion,
-        updateDate: new Date().toISOString(),
-      });
-
-      spinner.stop('Update complete');
-      return { success: true };
+      return files;
     } catch (error) {
-      spinner.error('Update failed');
-      throw error;
+      await prompts.log.warn('Could not read files-manifest.csv: ' + error.message);
+      return [];
     }
   }
 
   /**
-   * Get installation status
-   */
-  async getStatus(directory) {
-    const projectDir = path.resolve(directory);
-    const { bmadDir } = await this.findBmadDir(projectDir);
-    return await this.detector.detect(bmadDir);
-  }
-
-  /**
-   * Get available modules
-   */
-  async getAvailableModules() {
-    return await this.moduleManager.listAvailable();
-  }
-
-  /**
-   * Uninstall BMAD with selective removal options
-   * @param {string} directory - Project directory
-   * @param {Object} options - Uninstall options
-   * @param {boolean} [options.removeModules=true] - Remove _bmad/ directory
-   * @param {boolean} [options.removeIdeConfigs=true] - Remove IDE configurations
-   * @param {boolean} [options.removeOutputFolder=false] - Remove user artifacts output folder
-   * @returns {Object} Result with success status and removed components
-   */
-  async uninstall(directory, options = {}) {
-    const projectDir = path.resolve(directory);
-    const { bmadDir } = await this.findBmadDir(projectDir);
-
-    if (!(await fs.pathExists(bmadDir))) {
-      return { success: false, reason: 'not-installed' };
-    }
-
-    // 1. DETECT: Read state BEFORE deleting anything
-    const existingInstall = await this.detector.detect(bmadDir);
-    const outputFolder = await this._readOutputFolder(bmadDir);
-
-    const removed = { modules: false, ideConfigs: false, outputFolder: false };
-
-    // 2. IDE CLEANUP (before _bmad/ deletion so configs are accessible)
-    if (options.removeIdeConfigs !== false) {
-      await this.uninstallIdeConfigs(projectDir, existingInstall, { silent: options.silent });
-      removed.ideConfigs = true;
-    }
-
-    // 3. OUTPUT FOLDER (only if explicitly requested)
-    if (options.removeOutputFolder === true && outputFolder) {
-      removed.outputFolder = await this.uninstallOutputFolder(projectDir, outputFolder);
-    }
-
-    // 4. BMAD DIRECTORY (last, after everything that needs it)
-    if (options.removeModules !== false) {
-      removed.modules = await this.uninstallModules(projectDir);
-    }
-
-    return { success: true, removed, version: existingInstall.version };
-  }
-
-  /**
-   * Uninstall IDE configurations only
-   * @param {string} projectDir - Project directory
-   * @param {Object} existingInstall - Detection result from detector.detect()
-   * @param {Object} [options] - Options (e.g. { silent: true })
-   * @returns {Promise<Object>} Results from IDE cleanup
-   */
-  async uninstallIdeConfigs(projectDir, existingInstall, options = {}) {
-    await this.ideManager.ensureInitialized();
-    const cleanupOptions = { isUninstall: true, silent: options.silent };
-    const ideList = existingInstall.ides || [];
-    if (ideList.length > 0) {
-      return this.ideManager.cleanupByList(projectDir, ideList, cleanupOptions);
-    }
-    return this.ideManager.cleanup(projectDir, cleanupOptions);
-  }
-
-  /**
-   * Remove user artifacts output folder
-   * @param {string} projectDir - Project directory
-   * @param {string} outputFolder - Output folder name (relative)
-   * @returns {Promise<boolean>} Whether the folder was removed
-   */
-  async uninstallOutputFolder(projectDir, outputFolder) {
-    if (!outputFolder) return false;
-    const resolvedProject = path.resolve(projectDir);
-    const outputPath = path.resolve(resolvedProject, outputFolder);
-    if (!outputPath.startsWith(resolvedProject + path.sep)) {
-      return false;
-    }
-    if (await fs.pathExists(outputPath)) {
-      await fs.remove(outputPath);
-      return true;
-    }
-    return false;
-  }
-
-  /**
-   * Remove the _bmad/ directory
-   * @param {string} projectDir - Project directory
-   * @returns {Promise<boolean>} Whether the directory was removed
-   */
-  async uninstallModules(projectDir) {
-    const { bmadDir } = await this.findBmadDir(projectDir);
-    if (await fs.pathExists(bmadDir)) {
-      await fs.remove(bmadDir);
-      return true;
-    }
-    return false;
-  }
-
-  /**
-   * Get the configured output folder name for a project
-   * Resolves bmadDir internally from projectDir
-   * @param {string} projectDir - Project directory
-   * @returns {string} Output folder name (relative, default: '_bmad-output')
-   */
-  async getOutputFolder(projectDir) {
-    const { bmadDir } = await this.findBmadDir(projectDir);
-    return this._readOutputFolder(bmadDir);
-  }
-
-  /**
-   * Read the output_folder setting from module config files
-   * Checks bmm/config.yaml first, then other module configs
+   * Detect custom and modified files
    * @param {string} bmadDir - BMAD installation directory
-   * @returns {string} Output folder path or default
+   * @param {Array} existingFilesManifest - Previous files from files-manifest.csv
+   * @returns {Object} Object with customFiles and modifiedFiles arrays
    */
-  async _readOutputFolder(bmadDir) {
-    const yaml = require('yaml');
+  async detectCustomFiles(bmadDir, existingFilesManifest) {
+    const customFiles = [];
+    const modifiedFiles = [];
 
-    // Check bmm/config.yaml first (most common)
-    const bmmConfigPath = path.join(bmadDir, 'bmm', 'config.yaml');
-    if (await fs.pathExists(bmmConfigPath)) {
+    // Memory is always in _bmad/_memory
+    const bmadMemoryPath = '_memory';
+
+    // Check if the manifest has hashes - if not, we can't detect modifications
+    let manifestHasHashes = false;
+    if (existingFilesManifest && existingFilesManifest.length > 0) {
+      manifestHasHashes = existingFilesManifest.some((f) => f.hash);
+    }
+
+    // Build map of previously installed files from files-manifest.csv with their hashes
+    const installedFilesMap = new Map();
+    for (const fileEntry of existingFilesManifest) {
+      if (fileEntry.path) {
+        const absolutePath = path.join(bmadDir, fileEntry.path);
+        installedFilesMap.set(path.normalize(absolutePath), {
+          hash: fileEntry.hash,
+          relativePath: fileEntry.path,
+        });
+      }
+    }
+
+    // Recursively scan bmadDir for all files
+    const scanDirectory = async (dir) => {
       try {
-        const content = await fs.readFile(bmmConfigPath, 'utf8');
-        const config = yaml.parse(content);
-        if (config && config.output_folder) {
-          // Strip {project-root}/ prefix if present
-          return config.output_folder.replace(/^\{project-root\}[/\\]/, '');
+        const entries = await fs.readdir(dir, { withFileTypes: true });
+        for (const entry of entries) {
+          const fullPath = path.join(dir, entry.name);
+
+          if (entry.isDirectory()) {
+            // Skip certain directories
+            if (entry.name === 'node_modules' || entry.name === '.git') {
+              continue;
+            }
+            await scanDirectory(fullPath);
+          } else if (entry.isFile()) {
+            const normalizedPath = path.normalize(fullPath);
+            const fileInfo = installedFilesMap.get(normalizedPath);
+
+            // Skip certain system files that are auto-generated
+            const relativePath = path.relative(bmadDir, fullPath);
+            const fileName = path.basename(fullPath);
+
+            // Skip _config directory EXCEPT for modified agent customizations
+            if (relativePath.startsWith('_config/') || relativePath.startsWith('_config\\')) {
+              // Special handling for .customize.yaml files - only preserve if modified
+              if (relativePath.includes('/agents/') && fileName.endsWith('.customize.yaml')) {
+                // Check if the customization file has been modified from manifest
+                const manifestPath = path.join(bmadDir, '_config', 'manifest.yaml');
+                if (await fs.pathExists(manifestPath)) {
+                  const crypto = require('node:crypto');
+                  const currentContent = await fs.readFile(fullPath, 'utf8');
+                  const currentHash = crypto.createHash('sha256').update(currentContent).digest('hex');
+
+                  const yaml = require('yaml');
+                  const manifestContent = await fs.readFile(manifestPath, 'utf8');
+                  const manifestData = yaml.parse(manifestContent);
+                  const originalHash = manifestData.agentCustomizations?.[relativePath];
+
+                  // Only add to customFiles if hash differs (user modified)
+                  if (originalHash && currentHash !== originalHash) {
+                    customFiles.push(fullPath);
+                  }
+                }
+              }
+              continue;
+            }
+
+            if (relativePath.startsWith(bmadMemoryPath + '/') && path.dirname(relativePath).includes('-sidecar')) {
+              continue;
+            }
+
+            // Skip config.yaml files - these are regenerated on each install/update
+            if (fileName === 'config.yaml') {
+              continue;
+            }
+
+            if (!fileInfo) {
+              // File not in manifest = custom file
+              // EXCEPT: Agent .md files in module folders are generated files, not custom
+              // Only treat .md files under _config/agents/ as custom
+              if (!(fileName.endsWith('.md') && relativePath.includes('/agents/') && !relativePath.startsWith('_config/'))) {
+                customFiles.push(fullPath);
+              }
+            } else if (manifestHasHashes && fileInfo.hash) {
+              // File in manifest with hash - check if it was modified
+              const currentHash = await this.manifest.calculateFileHash(fullPath);
+              if (currentHash && currentHash !== fileInfo.hash) {
+                // Hash changed = file was modified
+                modifiedFiles.push({
+                  path: fullPath,
+                  relativePath: fileInfo.relativePath,
+                });
+              }
+            }
+          }
         }
       } catch {
-        // Fall through to other modules
+        // Ignore errors scanning directories
       }
-    }
+    };
 
-    // Scan other module config.yaml files
-    try {
-      const entries = await fs.readdir(bmadDir, { withFileTypes: true });
-      for (const entry of entries) {
-        if (!entry.isDirectory() || entry.name === 'bmm' || entry.name.startsWith('_')) continue;
-        const configPath = path.join(bmadDir, entry.name, 'config.yaml');
-        if (await fs.pathExists(configPath)) {
-          try {
-            const content = await fs.readFile(configPath, 'utf8');
-            const config = yaml.parse(content);
-            if (config && config.output_folder) {
-              return config.output_folder.replace(/^\{project-root\}[/\\]/, '');
-            }
-          } catch {
-            // Continue scanning
-          }
+    await scanDirectory(bmadDir);
+    return { customFiles, modifiedFiles };
+  }
+
+  /**
+   * Install core with resolved dependencies
+   * @param {string} bmadDir - BMAD installation directory
+   * @param {Object} coreFiles - Core files to install
+   */
+  async installCoreWithDependencies(bmadDir, coreFiles) {
+    const sourcePath = getModulePath('core');
+    const targetPath = path.join(bmadDir, 'core');
+    await this.installCore(bmadDir);
+  }
+
+  /**
+   * Install module with resolved dependencies
+   * @param {string} moduleName - Module name
+   * @param {string} bmadDir - BMAD installation directory
+   * @param {Object} moduleFiles - Module files to install
+   */
+  async installModuleWithDependencies(moduleName, bmadDir, moduleFiles) {
+    // Get module configuration for conditional installation
+    const moduleConfig = this.configCollector.collectedConfig[moduleName] || {};
+
+    // Use existing module manager for full installation with file tracking
+    // Note: Module-specific installers are called separately after IDE setup
+    await this.moduleManager.install(
+      moduleName,
+      bmadDir,
+      (filePath) => {
+        this.installedFiles.add(filePath);
+      },
+      {
+        skipModuleInstaller: true, // We'll run it later after IDE setup
+        moduleConfig: moduleConfig, // Pass module config for conditional filtering
+        installer: this,
+        silent: true,
+      },
+    );
+
+    // Dependencies are already included in full module install
+  }
+
+  /**
+   * Install partial module (only dependencies needed by other modules)
+   */
+  async installPartialModule(moduleName, bmadDir, files) {
+    const sourceBase = getModulePath(moduleName);
+    const targetBase = path.join(bmadDir, moduleName);
+
+    // Create module directory
+    await fs.ensureDir(targetBase);
+
+    // Copy only the required dependency files
+    if (files.agents && files.agents.length > 0) {
+      const agentsDir = path.join(targetBase, 'agents');
+      await fs.ensureDir(agentsDir);
+
+      for (const agentPath of files.agents) {
+        const fileName = path.basename(agentPath);
+        const sourcePath = path.join(sourceBase, 'agents', fileName);
+        const targetPath = path.join(agentsDir, fileName);
+
+        if (await fs.pathExists(sourcePath)) {
+          await this.copyFileWithPlaceholderReplacement(sourcePath, targetPath);
+          this.installedFiles.add(targetPath);
         }
       }
-    } catch {
-      // Directory scan failed
     }
 
-    // Default fallback
-    return '_bmad-output';
+    if (files.tasks && files.tasks.length > 0) {
+      const tasksDir = path.join(targetBase, 'tasks');
+      await fs.ensureDir(tasksDir);
+
+      for (const taskPath of files.tasks) {
+        const fileName = path.basename(taskPath);
+        const sourcePath = path.join(sourceBase, 'tasks', fileName);
+        const targetPath = path.join(tasksDir, fileName);
+
+        if (await fs.pathExists(sourcePath)) {
+          await this.copyFileWithPlaceholderReplacement(sourcePath, targetPath);
+          this.installedFiles.add(targetPath);
+        }
+      }
+    }
+
+    if (files.tools && files.tools.length > 0) {
+      const toolsDir = path.join(targetBase, 'tools');
+      await fs.ensureDir(toolsDir);
+
+      for (const toolPath of files.tools) {
+        const fileName = path.basename(toolPath);
+        const sourcePath = path.join(sourceBase, 'tools', fileName);
+        const targetPath = path.join(toolsDir, fileName);
+
+        if (await fs.pathExists(sourcePath)) {
+          await this.copyFileWithPlaceholderReplacement(sourcePath, targetPath);
+          this.installedFiles.add(targetPath);
+        }
+      }
+    }
+
+    if (files.templates && files.templates.length > 0) {
+      const templatesDir = path.join(targetBase, 'templates');
+      await fs.ensureDir(templatesDir);
+
+      for (const templatePath of files.templates) {
+        const fileName = path.basename(templatePath);
+        const sourcePath = path.join(sourceBase, 'templates', fileName);
+        const targetPath = path.join(templatesDir, fileName);
+
+        if (await fs.pathExists(sourcePath)) {
+          await this.copyFileWithPlaceholderReplacement(sourcePath, targetPath);
+          this.installedFiles.add(targetPath);
+        }
+      }
+    }
+
+    if (files.data && files.data.length > 0) {
+      for (const dataPath of files.data) {
+        // Preserve directory structure for data files
+        const relative = path.relative(sourceBase, dataPath);
+        const targetPath = path.join(targetBase, relative);
+
+        await fs.ensureDir(path.dirname(targetPath));
+
+        if (await fs.pathExists(dataPath)) {
+          await this.copyFileWithPlaceholderReplacement(dataPath, targetPath);
+          this.installedFiles.add(targetPath);
+        }
+      }
+    }
+
+    // Create a marker file to indicate this is a partial installation
+    const markerPath = path.join(targetBase, '.partial');
+    await fs.writeFile(
+      markerPath,
+      `This module contains only dependencies required by other modules.\nInstalled: ${new Date().toISOString()}\n`,
+    );
+  }
+
+  /**
+   * Generate clean config.yaml files for each installed module
+   * @param {string} bmadDir - BMAD installation directory
+   * @param {Object} moduleConfigs - Collected configuration values
+   */
+  async generateModuleConfigs(bmadDir, moduleConfigs) {
+    const yaml = require('yaml');
+
+    // Extract core config values to share with other modules
+    const coreConfig = moduleConfigs.core || {};
+
+    // Get all installed module directories
+    const entries = await fs.readdir(bmadDir, { withFileTypes: true });
+    const installedModules = entries
+      .filter((entry) => entry.isDirectory() && entry.name !== '_config' && entry.name !== 'docs')
+      .map((entry) => entry.name);
+
+    // Generate config.yaml for each installed module
+    for (const moduleName of installedModules) {
+      const modulePath = path.join(bmadDir, moduleName);
+
+      // Get module-specific config or use empty object if none
+      const config = moduleConfigs[moduleName] || {};
+
+      if (await fs.pathExists(modulePath)) {
+        const configPath = path.join(modulePath, 'config.yaml');
+
+        // Create header
+        const packageJson = require(path.join(getProjectRoot(), 'package.json'));
+        const header = `# ${moduleName.toUpperCase()} Module Configuration
+# Generated by BMAD installer
+# Version: ${packageJson.version}
+# Date: ${new Date().toISOString()}
+
+`;
+
+        // For non-core modules, add core config values directly
+        let finalConfig = { ...config };
+        let coreSection = '';
+
+        if (moduleName !== 'core' && coreConfig && Object.keys(coreConfig).length > 0) {
+          // Add core values directly to the module config
+          // These will be available for reference in the module
+          finalConfig = {
+            ...config,
+            ...coreConfig, // Spread core config values directly into the module config
+          };
+
+          // Create a comment section to identify core values
+          coreSection = '\n# Core Configuration Values\n';
+        }
+
+        // Clean the config to remove any non-serializable values (like functions)
+        const cleanConfig = structuredClone(finalConfig);
+
+        // Convert config to YAML
+        let yamlContent = yaml.stringify(cleanConfig, {
+          indent: 2,
+          lineWidth: 0,
+          minContentWidth: 0,
+        });
+
+        // If we have core values, reorganize the YAML to group them with their comment
+        if (coreSection && moduleName !== 'core') {
+          // Split the YAML into lines
+          const lines = yamlContent.split('\n');
+          const moduleConfigLines = [];
+          const coreConfigLines = [];
+
+          // Separate module-specific and core config lines
+          for (const line of lines) {
+            const key = line.split(':')[0].trim();
+            if (Object.prototype.hasOwnProperty.call(coreConfig, key)) {
+              coreConfigLines.push(line);
+            } else {
+              moduleConfigLines.push(line);
+            }
+          }
+
+          // Rebuild YAML with module config first, then core config with comment
+          yamlContent = moduleConfigLines.join('\n');
+          if (coreConfigLines.length > 0) {
+            yamlContent += coreSection + coreConfigLines.join('\n');
+          }
+        }
+
+        // Write the clean config file with POSIX-compliant final newline
+        const content = header + yamlContent;
+        await fs.writeFile(configPath, content.endsWith('\n') ? content : content + '\n', 'utf8');
+
+        // Track the config file in installedFiles
+        this.installedFiles.add(configPath);
+      }
+    }
   }
 
   /**
@@ -1885,384 +1861,75 @@ class Installer {
   }
 
   /**
-   * Parse a CSV line, handling quoted fields
-   * @param {string} line - CSV line to parse
-   * @returns {Array} Array of field values
+   * Render a consolidated install summary using prompts.note()
+   * @param {Array} results - Array of {step, status: 'ok'|'error'|'warn', detail}
+   * @param {Object} context - {bmadDir, modules, ides, customFiles, modifiedFiles}
    */
-  parseCSVLine(line) {
-    const result = [];
-    let current = '';
-    let inQuotes = false;
+  async renderInstallSummary(results, context = {}) {
+    const color = await prompts.getColor();
+    const selectedIdes = new Set((context.ides || []).map((ide) => String(ide).toLowerCase()));
 
-    for (let i = 0; i < line.length; i++) {
-      const char = line[i];
-      const nextChar = line[i + 1];
+    // Build step lines with status indicators
+    const lines = [];
+    for (const r of results) {
+      let stepLabel = null;
 
-      if (char === '"') {
-        if (inQuotes && nextChar === '"') {
-          // Escaped quote
-          current += '"';
-          i++; // Skip next quote
-        } else {
-          // Toggle quote mode
-          inQuotes = !inQuotes;
-        }
-      } else if (char === ',' && !inQuotes) {
-        result.push(current);
-        current = '';
+      if (r.status !== 'ok') {
+        stepLabel = r.step;
+      } else if (r.step === 'Core') {
+        stepLabel = 'BMAD';
+      } else if (r.step.startsWith('Module: ')) {
+        stepLabel = r.step;
+      } else if (selectedIdes.has(String(r.step).toLowerCase())) {
+        stepLabel = r.step;
+      }
+
+      if (!stepLabel) {
+        continue;
+      }
+
+      let icon;
+      if (r.status === 'ok') {
+        icon = color.green('\u2713');
+      } else if (r.status === 'warn') {
+        icon = color.yellow('!');
       } else {
-        current += char;
+        icon = color.red('\u2717');
       }
+      const detail = r.detail ? color.dim(` (${r.detail})`) : '';
+      lines.push(`  ${icon}  ${stepLabel}${detail}`);
     }
-    result.push(current);
-    return result;
-  }
 
-  /**
-   * Escape a CSV field if it contains special characters
-   * @param {string} field - Field value to escape
-   * @returns {string} Escaped field
-   */
-  escapeCSVField(field) {
-    if (field === null || field === undefined) {
-      return '';
+    if ((context.ides || []).length === 0) {
+      lines.push(`  ${color.green('\u2713')}  No IDE selected ${color.dim('(installed in _bmad only)')}`);
     }
-    const str = String(field);
-    // If field contains comma, quote, or newline, wrap in quotes and escape inner quotes
-    if (str.includes(',') || str.includes('"') || str.includes('\n')) {
-      return `"${str.replaceAll('"', '""')}"`;
+
+    // Context and warnings
+    lines.push('');
+    if (context.bmadDir) {
+      lines.push(`  Installed to: ${color.dim(context.bmadDir)}`);
     }
-    return str;
-  }
-
-  async createDirectoryStructure(bmadDir) {
-    await fs.ensureDir(bmadDir);
-    await fs.ensureDir(path.join(bmadDir, '_config'));
-    await fs.ensureDir(path.join(bmadDir, '_config', 'agents'));
-    await fs.ensureDir(path.join(bmadDir, '_config', 'custom'));
-  }
-
-  /**
-   * Generate clean config.yaml files for each installed module
-   * @param {string} bmadDir - BMAD installation directory
-   * @param {Object} moduleConfigs - Collected configuration values
-   */
-  async generateModuleConfigs(bmadDir, moduleConfigs) {
-    const yaml = require('yaml');
-
-    // Extract core config values to share with other modules
-    const coreConfig = moduleConfigs.core || {};
-
-    // Get all installed module directories
-    const entries = await fs.readdir(bmadDir, { withFileTypes: true });
-    const installedModules = entries
-      .filter((entry) => entry.isDirectory() && entry.name !== '_config' && entry.name !== 'docs')
-      .map((entry) => entry.name);
-
-    // Generate config.yaml for each installed module
-    for (const moduleName of installedModules) {
-      const modulePath = path.join(bmadDir, moduleName);
-
-      // Get module-specific config or use empty object if none
-      const config = moduleConfigs[moduleName] || {};
-
-      if (await fs.pathExists(modulePath)) {
-        const configPath = path.join(modulePath, 'config.yaml');
-
-        // Create header
-        const packageJson = require(path.join(getProjectRoot(), 'package.json'));
-        const header = `# ${moduleName.toUpperCase()} Module Configuration
-# Generated by BMAD installer
-# Version: ${packageJson.version}
-# Date: ${new Date().toISOString()}
-
-`;
-
-        // For non-core modules, add core config values directly
-        let finalConfig = { ...config };
-        let coreSection = '';
-
-        if (moduleName !== 'core' && coreConfig && Object.keys(coreConfig).length > 0) {
-          // Add core values directly to the module config
-          // These will be available for reference in the module
-          finalConfig = {
-            ...config,
-            ...coreConfig, // Spread core config values directly into the module config
-          };
-
-          // Create a comment section to identify core values
-          coreSection = '\n# Core Configuration Values\n';
-        }
-
-        // Clean the config to remove any non-serializable values (like functions)
-        const cleanConfig = structuredClone(finalConfig);
-
-        // Convert config to YAML
-        let yamlContent = yaml.stringify(cleanConfig, {
-          indent: 2,
-          lineWidth: 0,
-          minContentWidth: 0,
-        });
-
-        // If we have core values, reorganize the YAML to group them with their comment
-        if (coreSection && moduleName !== 'core') {
-          // Split the YAML into lines
-          const lines = yamlContent.split('\n');
-          const moduleConfigLines = [];
-          const coreConfigLines = [];
-
-          // Separate module-specific and core config lines
-          for (const line of lines) {
-            const key = line.split(':')[0].trim();
-            if (Object.prototype.hasOwnProperty.call(coreConfig, key)) {
-              coreConfigLines.push(line);
-            } else {
-              moduleConfigLines.push(line);
-            }
-          }
-
-          // Rebuild YAML with module config first, then core config with comment
-          yamlContent = moduleConfigLines.join('\n');
-          if (coreConfigLines.length > 0) {
-            yamlContent += coreSection + coreConfigLines.join('\n');
-          }
-        }
-
-        // Write the clean config file with POSIX-compliant final newline
-        const content = header + yamlContent;
-        await fs.writeFile(configPath, content.endsWith('\n') ? content : content + '\n', 'utf8');
-
-        // Track the config file in installedFiles
-        this.installedFiles.add(configPath);
-      }
+    if (context.customFiles && context.customFiles.length > 0) {
+      lines.push(`  ${color.cyan(`Custom files preserved: ${context.customFiles.length}`)}`);
     }
-  }
+    if (context.modifiedFiles && context.modifiedFiles.length > 0) {
+      lines.push(`  ${color.yellow(`Modified files backed up (.bak): ${context.modifiedFiles.length}`)}`);
+    }
 
-  /**
-   * Install core with resolved dependencies
-   * @param {string} bmadDir - BMAD installation directory
-   * @param {Object} coreFiles - Core files to install
-   */
-  async installCoreWithDependencies(bmadDir, coreFiles) {
-    const sourcePath = getModulePath('core');
-    const targetPath = path.join(bmadDir, 'core');
-    await this.installCore(bmadDir);
-  }
-
-  /**
-   * Install module with resolved dependencies
-   * @param {string} moduleName - Module name
-   * @param {string} bmadDir - BMAD installation directory
-   * @param {Object} moduleFiles - Module files to install
-   */
-  async installModuleWithDependencies(moduleName, bmadDir, moduleFiles) {
-    // Get module configuration for conditional installation
-    const moduleConfig = this.configCollector.collectedConfig[moduleName] || {};
-
-    // Use existing module manager for full installation with file tracking
-    // Note: Module-specific installers are called separately after IDE setup
-    await this.moduleManager.install(
-      moduleName,
-      bmadDir,
-      (filePath) => {
-        this.installedFiles.add(filePath);
-      },
-      {
-        skipModuleInstaller: true, // We'll run it later after IDE setup
-        moduleConfig: moduleConfig, // Pass module config for conditional filtering
-        installer: this,
-        silent: true,
-      },
+    // Next steps
+    lines.push(
+      '',
+      '  Next steps:',
+      `    Read our new Docs Site: ${color.dim('https://docs.bmad-method.org/')}`,
+      `    Join our Discord: ${color.dim('https://discord.gg/gk8jAdXWmj')}`,
+      `    Star us on GitHub: ${color.dim('https://github.com/bmad-code-org/BMAD-METHOD/')}`,
+      `    Subscribe on YouTube: ${color.dim('https://www.youtube.com/@BMadCode')}`,
     );
-
-    // Dependencies are already included in full module install
-  }
-
-  /**
-   * Install partial module (only dependencies needed by other modules)
-   */
-  async installPartialModule(moduleName, bmadDir, files) {
-    const sourceBase = getModulePath(moduleName);
-    const targetBase = path.join(bmadDir, moduleName);
-
-    // Create module directory
-    await fs.ensureDir(targetBase);
-
-    // Copy only the required dependency files
-    if (files.agents && files.agents.length > 0) {
-      const agentsDir = path.join(targetBase, 'agents');
-      await fs.ensureDir(agentsDir);
-
-      for (const agentPath of files.agents) {
-        const fileName = path.basename(agentPath);
-        const sourcePath = path.join(sourceBase, 'agents', fileName);
-        const targetPath = path.join(agentsDir, fileName);
-
-        if (await fs.pathExists(sourcePath)) {
-          await this.copyFileWithPlaceholderReplacement(sourcePath, targetPath);
-          this.installedFiles.add(targetPath);
-        }
-      }
+    if (context.ides && context.ides.length > 0) {
+      lines.push(`    Invoke the ${color.cyan('bmad-help')} skill in your IDE Agent to get started`);
     }
 
-    if (files.tasks && files.tasks.length > 0) {
-      const tasksDir = path.join(targetBase, 'tasks');
-      await fs.ensureDir(tasksDir);
-
-      for (const taskPath of files.tasks) {
-        const fileName = path.basename(taskPath);
-        const sourcePath = path.join(sourceBase, 'tasks', fileName);
-        const targetPath = path.join(tasksDir, fileName);
-
-        if (await fs.pathExists(sourcePath)) {
-          await this.copyFileWithPlaceholderReplacement(sourcePath, targetPath);
-          this.installedFiles.add(targetPath);
-        }
-      }
-    }
-
-    if (files.tools && files.tools.length > 0) {
-      const toolsDir = path.join(targetBase, 'tools');
-      await fs.ensureDir(toolsDir);
-
-      for (const toolPath of files.tools) {
-        const fileName = path.basename(toolPath);
-        const sourcePath = path.join(sourceBase, 'tools', fileName);
-        const targetPath = path.join(toolsDir, fileName);
-
-        if (await fs.pathExists(sourcePath)) {
-          await this.copyFileWithPlaceholderReplacement(sourcePath, targetPath);
-          this.installedFiles.add(targetPath);
-        }
-      }
-    }
-
-    if (files.templates && files.templates.length > 0) {
-      const templatesDir = path.join(targetBase, 'templates');
-      await fs.ensureDir(templatesDir);
-
-      for (const templatePath of files.templates) {
-        const fileName = path.basename(templatePath);
-        const sourcePath = path.join(sourceBase, 'templates', fileName);
-        const targetPath = path.join(templatesDir, fileName);
-
-        if (await fs.pathExists(sourcePath)) {
-          await this.copyFileWithPlaceholderReplacement(sourcePath, targetPath);
-          this.installedFiles.add(targetPath);
-        }
-      }
-    }
-
-    if (files.data && files.data.length > 0) {
-      for (const dataPath of files.data) {
-        // Preserve directory structure for data files
-        const relative = path.relative(sourceBase, dataPath);
-        const targetPath = path.join(targetBase, relative);
-
-        await fs.ensureDir(path.dirname(targetPath));
-
-        if (await fs.pathExists(dataPath)) {
-          await this.copyFileWithPlaceholderReplacement(dataPath, targetPath);
-          this.installedFiles.add(targetPath);
-        }
-      }
-    }
-
-    // Create a marker file to indicate this is a partial installation
-    const markerPath = path.join(targetBase, '.partial');
-    await fs.writeFile(
-      markerPath,
-      `This module contains only dependencies required by other modules.\nInstalled: ${new Date().toISOString()}\n`,
-    );
-  }
-
-  /**
-   * Private: Install core
-   * @param {string} bmadDir - BMAD installation directory
-   */
-  async installCore(bmadDir) {
-    const sourcePath = getModulePath('core');
-    const targetPath = path.join(bmadDir, 'core');
-
-    // Copy core files
-    await this.copyCoreFiles(sourcePath, targetPath);
-  }
-
-  /**
-   * Copy core files (similar to copyModuleWithFiltering but for core)
-   * @param {string} sourcePath - Source path
-   * @param {string} targetPath - Target path
-   */
-  async copyCoreFiles(sourcePath, targetPath) {
-    // Get all files in source
-    const files = await this.getFileList(sourcePath);
-
-    for (const file of files) {
-      // Skip sub-modules directory - these are IDE-specific and handled separately
-      if (file.startsWith('sub-modules/')) {
-        continue;
-      }
-
-      // Skip module.yaml at root - it's only needed at install time
-      if (file === 'module.yaml') {
-        continue;
-      }
-
-      // Skip config.yaml templates - we'll generate clean ones with actual values
-      if (file === 'config.yaml' || file.endsWith('/config.yaml') || file === 'custom.yaml' || file.endsWith('/custom.yaml')) {
-        continue;
-      }
-
-      const sourceFile = path.join(sourcePath, file);
-      const targetFile = path.join(targetPath, file);
-
-      // Copy the file with placeholder replacement
-      await fs.ensureDir(path.dirname(targetFile));
-      await this.copyFileWithPlaceholderReplacement(sourceFile, targetFile);
-
-      // Track the installed file
-      this.installedFiles.add(targetFile);
-    }
-  }
-
-  /**
-   * Get list of all files in a directory recursively
-   * @param {string} dir - Directory path
-   * @param {string} baseDir - Base directory for relative paths
-   * @returns {Array} List of relative file paths
-   */
-  async getFileList(dir, baseDir = dir) {
-    const files = [];
-    const entries = await fs.readdir(dir, { withFileTypes: true });
-
-    for (const entry of entries) {
-      const fullPath = path.join(dir, entry.name);
-
-      if (entry.isDirectory()) {
-        const subFiles = await this.getFileList(fullPath, baseDir);
-        files.push(...subFiles);
-      } else {
-        files.push(path.relative(baseDir, fullPath));
-      }
-    }
-
-    return files;
-  }
-
-  /**
-   * Private: Update core
-   */
-  async updateCore(bmadDir, force = false) {
-    const sourcePath = getModulePath('core');
-    const targetPath = path.join(bmadDir, 'core');
-
-    if (force) {
-      await fs.remove(targetPath);
-      await this.installCore(bmadDir);
-    } else {
-      // Selective update - preserve user modifications
-      await this.fileOps.syncDirectory(sourcePath, targetPath);
-    }
+    await prompts.note(lines.join('\n'), 'BMAD is ready to use!');
   }
 
   /**
@@ -2507,14 +2174,268 @@ class Installer {
   }
 
   /**
-   * Private: Prompt for update action
+   * Update existing installation
    */
-  async promptUpdateAction() {
-    const action = await prompts.select({
-      message: 'What would you like to do?',
-      choices: [{ name: 'Update existing installation', value: 'update' }],
-    });
-    return { action };
+  async update(config) {
+    const spinner = await prompts.spinner();
+    spinner.start('Checking installation...');
+
+    try {
+      const projectDir = path.resolve(config.directory);
+      const { bmadDir } = await this.findBmadDir(projectDir);
+      const existingInstall = await this.detector.detect(bmadDir);
+
+      if (!existingInstall.installed) {
+        spinner.stop('No BMAD installation found');
+        throw new Error(`No BMAD installation found at ${bmadDir}`);
+      }
+
+      spinner.message('Analyzing update requirements...');
+
+      // Compare versions and determine what needs updating
+      const currentVersion = existingInstall.version;
+      const newVersion = require(path.join(getProjectRoot(), 'package.json')).version;
+
+      // Check for custom modules with missing sources before update
+      const customModuleSources = new Map();
+
+      // Check manifest for backward compatibility
+      if (existingInstall.customModules) {
+        for (const customModule of existingInstall.customModules) {
+          customModuleSources.set(customModule.id, customModule);
+        }
+      }
+
+      // Also check cache directory
+      const cacheDir = path.join(bmadDir, '_config', 'custom');
+      if (await fs.pathExists(cacheDir)) {
+        const cachedModules = await fs.readdir(cacheDir, { withFileTypes: true });
+
+        for (const cachedModule of cachedModules) {
+          if (cachedModule.isDirectory()) {
+            const moduleId = cachedModule.name;
+
+            // Skip if we already have this module
+            if (customModuleSources.has(moduleId)) {
+              continue;
+            }
+
+            // Check if this is an external official module - skip cache for those
+            const isExternal = await this.moduleManager.isExternalModule(moduleId);
+            if (isExternal) {
+              // External modules are handled via cloneExternalModule, not from cache
+              continue;
+            }
+
+            const cachedPath = path.join(cacheDir, moduleId);
+
+            // Check if this is actually a custom module (has module.yaml)
+            const moduleYamlPath = path.join(cachedPath, 'module.yaml');
+            if (await fs.pathExists(moduleYamlPath)) {
+              customModuleSources.set(moduleId, {
+                id: moduleId,
+                name: moduleId,
+                sourcePath: path.join('_config', 'custom', moduleId), // Relative path
+                cached: true,
+              });
+            }
+          }
+        }
+      }
+
+      if (customModuleSources.size > 0) {
+        spinner.stop('Update analysis complete');
+        await prompts.log.warn('Checking custom module sources before update...');
+
+        const projectRoot = getProjectRoot();
+        await this.handleMissingCustomSources(
+          customModuleSources,
+          bmadDir,
+          projectRoot,
+          'update',
+          existingInstall.modules.map((m) => m.id),
+          config.skipPrompts || false,
+        );
+
+        spinner.start('Preparing update...');
+      }
+
+      if (config.dryRun) {
+        spinner.stop('Dry run analysis complete');
+        let dryRunContent = `Current version: ${currentVersion}\n`;
+        dryRunContent += `New version: ${newVersion}\n`;
+        dryRunContent += `Core: ${existingInstall.hasCore ? 'Will be updated' : 'Not installed'}`;
+
+        if (existingInstall.modules.length > 0) {
+          dryRunContent += '\n\nModules to update:';
+          for (const mod of existingInstall.modules) {
+            dryRunContent += `\n  - ${mod.id}`;
+          }
+        }
+        await prompts.note(dryRunContent, 'Update Preview (Dry Run)');
+        return;
+      }
+
+      // Perform actual update
+      if (existingInstall.hasCore) {
+        spinner.message('Updating core...');
+        await this.updateCore(bmadDir, config.force);
+      }
+
+      for (const module of existingInstall.modules) {
+        spinner.message(`Updating module: ${module.id}...`);
+        await this.moduleManager.update(module.id, bmadDir, config.force, { installer: this });
+      }
+
+      // Update manifest
+      spinner.message('Updating manifest...');
+      await this.manifest.update(bmadDir, {
+        version: newVersion,
+        updateDate: new Date().toISOString(),
+      });
+
+      spinner.stop('Update complete');
+      return { success: true };
+    } catch (error) {
+      spinner.error('Update failed');
+      throw error;
+    }
+  }
+
+  /**
+   * Private: Update core
+   */
+  async updateCore(bmadDir, force = false) {
+    const sourcePath = getModulePath('core');
+    const targetPath = path.join(bmadDir, 'core');
+
+    if (force) {
+      await fs.remove(targetPath);
+      await this.installCore(bmadDir);
+    } else {
+      // Selective update - preserve user modifications
+      await this.fileOps.syncDirectory(sourcePath, targetPath);
+    }
+  }
+
+  /**
+   * Uninstall BMAD with selective removal options
+   * @param {string} directory - Project directory
+   * @param {Object} options - Uninstall options
+   * @param {boolean} [options.removeModules=true] - Remove _bmad/ directory
+   * @param {boolean} [options.removeIdeConfigs=true] - Remove IDE configurations
+   * @param {boolean} [options.removeOutputFolder=false] - Remove user artifacts output folder
+   * @returns {Object} Result with success status and removed components
+   */
+  async uninstall(directory, options = {}) {
+    const projectDir = path.resolve(directory);
+    const { bmadDir } = await this.findBmadDir(projectDir);
+
+    if (!(await fs.pathExists(bmadDir))) {
+      return { success: false, reason: 'not-installed' };
+    }
+
+    // 1. DETECT: Read state BEFORE deleting anything
+    const existingInstall = await this.detector.detect(bmadDir);
+    const outputFolder = await this._readOutputFolder(bmadDir);
+
+    const removed = { modules: false, ideConfigs: false, outputFolder: false };
+
+    // 2. IDE CLEANUP (before _bmad/ deletion so configs are accessible)
+    if (options.removeIdeConfigs !== false) {
+      await this.uninstallIdeConfigs(projectDir, existingInstall, { silent: options.silent });
+      removed.ideConfigs = true;
+    }
+
+    // 3. OUTPUT FOLDER (only if explicitly requested)
+    if (options.removeOutputFolder === true && outputFolder) {
+      removed.outputFolder = await this.uninstallOutputFolder(projectDir, outputFolder);
+    }
+
+    // 4. BMAD DIRECTORY (last, after everything that needs it)
+    if (options.removeModules !== false) {
+      removed.modules = await this.uninstallModules(projectDir);
+    }
+
+    return { success: true, removed, version: existingInstall.version };
+  }
+
+  /**
+   * Uninstall IDE configurations only
+   * @param {string} projectDir - Project directory
+   * @param {Object} existingInstall - Detection result from detector.detect()
+   * @param {Object} [options] - Options (e.g. { silent: true })
+   * @returns {Promise<Object>} Results from IDE cleanup
+   */
+  async uninstallIdeConfigs(projectDir, existingInstall, options = {}) {
+    await this.ideManager.ensureInitialized();
+    const cleanupOptions = { isUninstall: true, silent: options.silent };
+    const ideList = existingInstall.ides || [];
+    if (ideList.length > 0) {
+      return this.ideManager.cleanupByList(projectDir, ideList, cleanupOptions);
+    }
+    return this.ideManager.cleanup(projectDir, cleanupOptions);
+  }
+
+  /**
+   * Remove user artifacts output folder
+   * @param {string} projectDir - Project directory
+   * @param {string} outputFolder - Output folder name (relative)
+   * @returns {Promise<boolean>} Whether the folder was removed
+   */
+  async uninstallOutputFolder(projectDir, outputFolder) {
+    if (!outputFolder) return false;
+    const resolvedProject = path.resolve(projectDir);
+    const outputPath = path.resolve(resolvedProject, outputFolder);
+    if (!outputPath.startsWith(resolvedProject + path.sep)) {
+      return false;
+    }
+    if (await fs.pathExists(outputPath)) {
+      await fs.remove(outputPath);
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Remove the _bmad/ directory
+   * @param {string} projectDir - Project directory
+   * @returns {Promise<boolean>} Whether the directory was removed
+   */
+  async uninstallModules(projectDir) {
+    const { bmadDir } = await this.findBmadDir(projectDir);
+    if (await fs.pathExists(bmadDir)) {
+      await fs.remove(bmadDir);
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Get installation status
+   */
+  async getStatus(directory) {
+    const projectDir = path.resolve(directory);
+    const { bmadDir } = await this.findBmadDir(projectDir);
+    return await this.detector.detect(bmadDir);
+  }
+
+  /**
+   * Get available modules
+   */
+  async getAvailableModules() {
+    return await this.moduleManager.listAvailable();
+  }
+
+  /**
+   * Get the configured output folder name for a project
+   * Resolves bmadDir internally from projectDir
+   * @param {string} projectDir - Project directory
+   * @returns {string} Output folder name (relative, default: '_bmad-output')
+   */
+  async getOutputFolder(projectDir) {
+    const { bmadDir } = await this.findBmadDir(projectDir);
+    return this._readOutputFolder(bmadDir);
   }
 
   /**
@@ -2557,177 +2478,6 @@ class Installer {
     }
 
     await prompts.log.warn('Proceeding with installation despite legacy v4 folder');
-  }
-
-  /**
-   * Read files-manifest.csv
-   * @param {string} bmadDir - BMAD installation directory
-   * @returns {Array} Array of file entries from files-manifest.csv
-   */
-  async readFilesManifest(bmadDir) {
-    const filesManifestPath = path.join(bmadDir, '_config', 'files-manifest.csv');
-    if (!(await fs.pathExists(filesManifestPath))) {
-      return [];
-    }
-
-    try {
-      const content = await fs.readFile(filesManifestPath, 'utf8');
-      const lines = content.split('\n');
-      const files = [];
-
-      for (let i = 1; i < lines.length; i++) {
-        // Skip header
-        const line = lines[i].trim();
-        if (!line) continue;
-
-        // Parse CSV line properly handling quoted values
-        const parts = [];
-        let current = '';
-        let inQuotes = false;
-
-        for (const char of line) {
-          if (char === '"') {
-            inQuotes = !inQuotes;
-          } else if (char === ',' && !inQuotes) {
-            parts.push(current);
-            current = '';
-          } else {
-            current += char;
-          }
-        }
-        parts.push(current); // Add last part
-
-        if (parts.length >= 4) {
-          files.push({
-            type: parts[0],
-            name: parts[1],
-            module: parts[2],
-            path: parts[3],
-            hash: parts[4] || null, // Hash may not exist in old manifests
-          });
-        }
-      }
-
-      return files;
-    } catch (error) {
-      await prompts.log.warn('Could not read files-manifest.csv: ' + error.message);
-      return [];
-    }
-  }
-
-  /**
-   * Detect custom and modified files
-   * @param {string} bmadDir - BMAD installation directory
-   * @param {Array} existingFilesManifest - Previous files from files-manifest.csv
-   * @returns {Object} Object with customFiles and modifiedFiles arrays
-   */
-  async detectCustomFiles(bmadDir, existingFilesManifest) {
-    const customFiles = [];
-    const modifiedFiles = [];
-
-    // Memory is always in _bmad/_memory
-    const bmadMemoryPath = '_memory';
-
-    // Check if the manifest has hashes - if not, we can't detect modifications
-    let manifestHasHashes = false;
-    if (existingFilesManifest && existingFilesManifest.length > 0) {
-      manifestHasHashes = existingFilesManifest.some((f) => f.hash);
-    }
-
-    // Build map of previously installed files from files-manifest.csv with their hashes
-    const installedFilesMap = new Map();
-    for (const fileEntry of existingFilesManifest) {
-      if (fileEntry.path) {
-        const absolutePath = path.join(bmadDir, fileEntry.path);
-        installedFilesMap.set(path.normalize(absolutePath), {
-          hash: fileEntry.hash,
-          relativePath: fileEntry.path,
-        });
-      }
-    }
-
-    // Recursively scan bmadDir for all files
-    const scanDirectory = async (dir) => {
-      try {
-        const entries = await fs.readdir(dir, { withFileTypes: true });
-        for (const entry of entries) {
-          const fullPath = path.join(dir, entry.name);
-
-          if (entry.isDirectory()) {
-            // Skip certain directories
-            if (entry.name === 'node_modules' || entry.name === '.git') {
-              continue;
-            }
-            await scanDirectory(fullPath);
-          } else if (entry.isFile()) {
-            const normalizedPath = path.normalize(fullPath);
-            const fileInfo = installedFilesMap.get(normalizedPath);
-
-            // Skip certain system files that are auto-generated
-            const relativePath = path.relative(bmadDir, fullPath);
-            const fileName = path.basename(fullPath);
-
-            // Skip _config directory EXCEPT for modified agent customizations
-            if (relativePath.startsWith('_config/') || relativePath.startsWith('_config\\')) {
-              // Special handling for .customize.yaml files - only preserve if modified
-              if (relativePath.includes('/agents/') && fileName.endsWith('.customize.yaml')) {
-                // Check if the customization file has been modified from manifest
-                const manifestPath = path.join(bmadDir, '_config', 'manifest.yaml');
-                if (await fs.pathExists(manifestPath)) {
-                  const crypto = require('node:crypto');
-                  const currentContent = await fs.readFile(fullPath, 'utf8');
-                  const currentHash = crypto.createHash('sha256').update(currentContent).digest('hex');
-
-                  const yaml = require('yaml');
-                  const manifestContent = await fs.readFile(manifestPath, 'utf8');
-                  const manifestData = yaml.parse(manifestContent);
-                  const originalHash = manifestData.agentCustomizations?.[relativePath];
-
-                  // Only add to customFiles if hash differs (user modified)
-                  if (originalHash && currentHash !== originalHash) {
-                    customFiles.push(fullPath);
-                  }
-                }
-              }
-              continue;
-            }
-
-            if (relativePath.startsWith(bmadMemoryPath + '/') && path.dirname(relativePath).includes('-sidecar')) {
-              continue;
-            }
-
-            // Skip config.yaml files - these are regenerated on each install/update
-            if (fileName === 'config.yaml') {
-              continue;
-            }
-
-            if (!fileInfo) {
-              // File not in manifest = custom file
-              // EXCEPT: Agent .md files in module folders are generated files, not custom
-              // Only treat .md files under _config/agents/ as custom
-              if (!(fileName.endsWith('.md') && relativePath.includes('/agents/') && !relativePath.startsWith('_config/'))) {
-                customFiles.push(fullPath);
-              }
-            } else if (manifestHasHashes && fileInfo.hash) {
-              // File in manifest with hash - check if it was modified
-              const currentHash = await this.manifest.calculateFileHash(fullPath);
-              if (currentHash && currentHash !== fileInfo.hash) {
-                // Hash changed = file was modified
-                modifiedFiles.push({
-                  path: fullPath,
-                  relativePath: fileInfo.relativePath,
-                });
-              }
-            }
-          }
-        }
-      } catch {
-        // Ignore errors scanning directories
-      }
-    };
-
-    await scanDirectory(bmadDir);
-    return { customFiles, modifiedFiles };
   }
 
   /**
@@ -2961,6 +2711,256 @@ class Installer {
       validCustomModules,
       keptModulesWithoutSources,
     };
+  }
+
+  /**
+   * Find the bmad installation directory in a project
+   * Always uses the standard _bmad folder name
+   * Also checks for legacy _cfg folder for migration
+   * @param {string} projectDir - Project directory
+   * @returns {Promise<Object>} { bmadDir: string, hasLegacyCfg: boolean }
+   */
+  async findBmadDir(projectDir) {
+    const bmadDir = path.join(projectDir, BMAD_FOLDER_NAME);
+
+    // Check if project directory exists
+    if (!(await fs.pathExists(projectDir))) {
+      // Project doesn't exist yet, return default
+      return { bmadDir, hasLegacyCfg: false };
+    }
+
+    // Check for legacy _cfg folder if bmad directory exists
+    let hasLegacyCfg = false;
+    if (await fs.pathExists(bmadDir)) {
+      const legacyCfgPath = path.join(bmadDir, '_cfg');
+      if (await fs.pathExists(legacyCfgPath)) {
+        hasLegacyCfg = true;
+      }
+    }
+
+    return { bmadDir, hasLegacyCfg };
+  }
+
+  async createDirectoryStructure(bmadDir) {
+    await fs.ensureDir(bmadDir);
+    await fs.ensureDir(path.join(bmadDir, '_config'));
+    await fs.ensureDir(path.join(bmadDir, '_config', 'agents'));
+    await fs.ensureDir(path.join(bmadDir, '_config', 'custom'));
+  }
+
+  /**
+   * Read the output_folder setting from module config files
+   * Checks bmm/config.yaml first, then other module configs
+   * @param {string} bmadDir - BMAD installation directory
+   * @returns {string} Output folder path or default
+   */
+  async _readOutputFolder(bmadDir) {
+    const yaml = require('yaml');
+
+    // Check bmm/config.yaml first (most common)
+    const bmmConfigPath = path.join(bmadDir, 'bmm', 'config.yaml');
+    if (await fs.pathExists(bmmConfigPath)) {
+      try {
+        const content = await fs.readFile(bmmConfigPath, 'utf8');
+        const config = yaml.parse(content);
+        if (config && config.output_folder) {
+          // Strip {project-root}/ prefix if present
+          return config.output_folder.replace(/^\{project-root\}[/\\]/, '');
+        }
+      } catch {
+        // Fall through to other modules
+      }
+    }
+
+    // Scan other module config.yaml files
+    try {
+      const entries = await fs.readdir(bmadDir, { withFileTypes: true });
+      for (const entry of entries) {
+        if (!entry.isDirectory() || entry.name === 'bmm' || entry.name.startsWith('_')) continue;
+        const configPath = path.join(bmadDir, entry.name, 'config.yaml');
+        if (await fs.pathExists(configPath)) {
+          try {
+            const content = await fs.readFile(configPath, 'utf8');
+            const config = yaml.parse(content);
+            if (config && config.output_folder) {
+              return config.output_folder.replace(/^\{project-root\}[/\\]/, '');
+            }
+          } catch {
+            // Continue scanning
+          }
+        }
+      }
+    } catch {
+      // Directory scan failed
+    }
+
+    // Default fallback
+    return '_bmad-output';
+  }
+
+  /**
+   * Private: Install core
+   * @param {string} bmadDir - BMAD installation directory
+   */
+  async installCore(bmadDir) {
+    const sourcePath = getModulePath('core');
+    const targetPath = path.join(bmadDir, 'core');
+
+    // Copy core files
+    await this.copyCoreFiles(sourcePath, targetPath);
+  }
+
+  /**
+   * Copy core files (similar to copyModuleWithFiltering but for core)
+   * @param {string} sourcePath - Source path
+   * @param {string} targetPath - Target path
+   */
+  async copyCoreFiles(sourcePath, targetPath) {
+    // Get all files in source
+    const files = await this.getFileList(sourcePath);
+
+    for (const file of files) {
+      // Skip sub-modules directory - these are IDE-specific and handled separately
+      if (file.startsWith('sub-modules/')) {
+        continue;
+      }
+
+      // Skip module.yaml at root - it's only needed at install time
+      if (file === 'module.yaml') {
+        continue;
+      }
+
+      // Skip config.yaml templates - we'll generate clean ones with actual values
+      if (file === 'config.yaml' || file.endsWith('/config.yaml') || file === 'custom.yaml' || file.endsWith('/custom.yaml')) {
+        continue;
+      }
+
+      const sourceFile = path.join(sourcePath, file);
+      const targetFile = path.join(targetPath, file);
+
+      // Copy the file with placeholder replacement
+      await fs.ensureDir(path.dirname(targetFile));
+      await this.copyFileWithPlaceholderReplacement(sourceFile, targetFile);
+
+      // Track the installed file
+      this.installedFiles.add(targetFile);
+    }
+  }
+
+  /**
+   * @function copyFileWithPlaceholderReplacement
+   * @intent Copy files from BMAD source to installation directory with dynamic content transformation
+   * @why Enables installation-time customization: _bmad replacement
+   * @param {string} sourcePath - Absolute path to source file in BMAD repository
+   * @param {string} targetPath - Absolute path to destination file in user's project
+   * @param {string} bmadFolderName - User's chosen bmad folder name (default: 'bmad')
+   * @returns {Promise<void>} Resolves when file copy and transformation complete
+   * @sideeffects Writes transformed file to targetPath, creates parent directories if needed
+   * @edgecases Binary files bypass transformation, falls back to raw copy if UTF-8 read fails
+   * @calledby installCore(), installModule(), IDE installers during file vendoring
+   * @calls fs.readFile(), fs.writeFile(), fs.copy()
+   *
+
+   *
+   * 3. Document marker in instructions.md (if applicable)
+   */
+  async copyFileWithPlaceholderReplacement(sourcePath, targetPath) {
+    // List of text file extensions that should have placeholder replacement
+    const textExtensions = ['.md', '.yaml', '.yml', '.txt', '.json', '.js', '.ts', '.html', '.css', '.sh', '.bat', '.csv', '.xml'];
+    const ext = path.extname(sourcePath).toLowerCase();
+
+    // Check if this is a text file that might contain placeholders
+    if (textExtensions.includes(ext)) {
+      try {
+        // Read the file content
+        let content = await fs.readFile(sourcePath, 'utf8');
+
+        // Write to target with replaced content
+        await fs.ensureDir(path.dirname(targetPath));
+        await fs.writeFile(targetPath, content, 'utf8');
+      } catch {
+        // If reading as text fails (might be binary despite extension), fall back to regular copy
+        await fs.copy(sourcePath, targetPath, { overwrite: true });
+      }
+    } else {
+      // Binary file or other file type - just copy directly
+      await fs.copy(sourcePath, targetPath, { overwrite: true });
+    }
+  }
+
+  /**
+   * Get list of all files in a directory recursively
+   * @param {string} dir - Directory path
+   * @param {string} baseDir - Base directory for relative paths
+   * @returns {Array} List of relative file paths
+   */
+  async getFileList(dir, baseDir = dir) {
+    const files = [];
+    const entries = await fs.readdir(dir, { withFileTypes: true });
+
+    for (const entry of entries) {
+      const fullPath = path.join(dir, entry.name);
+
+      if (entry.isDirectory()) {
+        const subFiles = await this.getFileList(fullPath, baseDir);
+        files.push(...subFiles);
+      } else {
+        files.push(path.relative(baseDir, fullPath));
+      }
+    }
+
+    return files;
+  }
+
+  /**
+   * Parse a CSV line, handling quoted fields
+   * @param {string} line - CSV line to parse
+   * @returns {Array} Array of field values
+   */
+  parseCSVLine(line) {
+    const result = [];
+    let current = '';
+    let inQuotes = false;
+
+    for (let i = 0; i < line.length; i++) {
+      const char = line[i];
+      const nextChar = line[i + 1];
+
+      if (char === '"') {
+        if (inQuotes && nextChar === '"') {
+          // Escaped quote
+          current += '"';
+          i++; // Skip next quote
+        } else {
+          // Toggle quote mode
+          inQuotes = !inQuotes;
+        }
+      } else if (char === ',' && !inQuotes) {
+        result.push(current);
+        current = '';
+      } else {
+        current += char;
+      }
+    }
+    result.push(current);
+    return result;
+  }
+
+  /**
+   * Escape a CSV field if it contains special characters
+   * @param {string} field - Field value to escape
+   * @returns {string} Escaped field
+   */
+  escapeCSVField(field) {
+    if (field === null || field === undefined) {
+      return '';
+    }
+    const str = String(field);
+    // If field contains comma, quote, or newline, wrap in quotes and escape inner quotes
+    if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+      return `"${str.replaceAll('"', '""')}"`;
+    }
+    return str;
   }
 }
 
