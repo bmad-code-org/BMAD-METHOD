@@ -6,7 +6,6 @@ const { ModuleManager } = require('../modules/manager');
 const { IdeManager } = require('../ide/manager');
 const { FileOps } = require('../../../lib/file-ops');
 const { Config } = require('../../../lib/config');
-const { DependencyResolver } = require('./dependency-resolver');
 const { ConfigCollector } = require('./config-collector');
 const { getProjectRoot, getSourcePath, getModulePath } = require('../../../lib/project-root');
 const { CLIUtils } = require('../../../lib/cli-utils');
@@ -25,7 +24,6 @@ class Installer {
     this.ideManager = new IdeManager();
     this.fileOps = new FileOps();
     this.config = new Config();
-    this.dependencyResolver = new DependencyResolver();
     this.configCollector = new ConfigCollector();
     this.ideConfigManager = new IdeConfigManager();
     this.installedFiles = new Set(); // Track all installed files
@@ -543,20 +541,6 @@ class Installer {
         allModules = allModules.filter((m) => m !== 'core');
       }
 
-      // For dependency resolution, we only need regular modules (not custom modules)
-      // Custom modules are already installed in _bmad and don't need dependency resolution from source
-      const regularModulesForResolution = allModules.filter((module) => {
-        // Check if this is a custom module
-        const isCustom =
-          customModulePaths.has(module) ||
-          (finalCustomContent && finalCustomContent.cachedModules && finalCustomContent.cachedModules.some((cm) => cm.id === module)) ||
-          (finalCustomContent &&
-            finalCustomContent.selected &&
-            finalCustomContent.selectedFiles &&
-            finalCustomContent.selectedFiles.some((f) => f.includes(module)));
-        return !isCustom;
-      });
-
       // Stop spinner before tasks() takes over progress display
       spinner.stop('Preparation complete');
 
@@ -564,9 +548,6 @@ class Installer {
       // FIRST TASKS BLOCK: Core installation through manifests (non-interactive)
       // ─────────────────────────────────────────────────────────────────────────
       const isQuickUpdate = config._quickUpdate || false;
-
-      // Shared resolution result across task callbacks (closure-scoped, not on `this`)
-      let taskResolution;
 
       // Collect directory creation results for output after tasks() completes
       const dirResults = { createdDirs: [], movedDirs: [], createdWdsFolders: [] };
@@ -579,7 +560,7 @@ class Installer {
         installTasks.push({
           title: isQuickUpdate ? 'Updating BMAD core' : 'Installing BMAD core',
           task: async (message) => {
-            await this.installCoreWithDependencies(bmadDir, { core: {} });
+            await this.installCore(bmadDir);
             addResult('Core', 'ok', isQuickUpdate ? 'updated' : 'installed');
             await this.generateModuleConfigs(bmadDir, { core: config.coreConfig || {} });
             return isQuickUpdate ? 'Core updated' : 'Core installed';
@@ -587,29 +568,11 @@ class Installer {
         });
       }
 
-      // Dependency resolution task
-      installTasks.push({
-        title: 'Resolving dependencies',
-        task: async (message) => {
-          // Create a temporary module manager that knows about custom content locations
-          const tempModuleManager = new ModuleManager({
-            bmadDir: bmadDir,
-          });
-
-          taskResolution = await this.dependencyResolver.resolve(srcDir, regularModulesForResolution, {
-            verbose: config.verbose,
-            moduleManager: tempModuleManager,
-          });
-          return 'Dependencies resolved';
-        },
-      });
-
       // Module installation task
       if (allModules && allModules.length > 0) {
         installTasks.push({
           title: isQuickUpdate ? `Updating ${allModules.length} module(s)` : `Installing ${allModules.length} module(s)`,
           task: async (message) => {
-            const resolution = taskResolution;
             const installedModuleNames = new Set();
 
             for (const moduleName of allModules) {
@@ -680,38 +643,28 @@ class Installer {
                   [moduleName]: { ...config.coreConfig, ...customInfo.config, ...collectedModuleConfig },
                 });
               } else {
-                if (!resolution || !resolution.byModule) {
-                  addResult(`Module: ${moduleName}`, 'warn', 'skipped (no resolution data)');
-                  continue;
-                }
+                // Official module — copy entire module directory
                 if (moduleName === 'core') {
-                  await this.installCoreWithDependencies(bmadDir, resolution.byModule[moduleName]);
+                  await this.installCore(bmadDir);
                 } else {
-                  await this.installModuleWithDependencies(moduleName, bmadDir, resolution.byModule[moduleName]);
+                  const moduleConfig = this.configCollector.collectedConfig[moduleName] || {};
+                  await this.moduleManager.install(
+                    moduleName,
+                    bmadDir,
+                    (filePath) => {
+                      this.installedFiles.add(filePath);
+                    },
+                    {
+                      skipModuleInstaller: true,
+                      moduleConfig: moduleConfig,
+                      installer: this,
+                      silent: true,
+                    },
+                  );
                 }
               }
 
               addResult(`Module: ${moduleName}`, 'ok', isQuickUpdate ? 'updated' : 'installed');
-            }
-
-            // Install partial modules (only dependencies)
-            if (!resolution || !resolution.byModule) {
-              return `${allModules.length} module(s) ${isQuickUpdate ? 'updated' : 'installed'}`;
-            }
-            for (const [module, files] of Object.entries(resolution.byModule)) {
-              if (!allModules.includes(module) && module !== 'core') {
-                const totalFiles =
-                  files.agents.length +
-                  files.tasks.length +
-                  files.tools.length +
-                  files.templates.length +
-                  files.data.length +
-                  files.other.length;
-                if (totalFiles > 0) {
-                  message(`Installing ${module} dependencies...`);
-                  await this.installPartialModule(module, bmadDir, files);
-                }
-              }
             }
 
             return `${allModules.length} module(s) ${isQuickUpdate ? 'updated' : 'installed'}`;
@@ -723,11 +676,6 @@ class Installer {
       installTasks.push({
         title: 'Creating module directories',
         task: async (message) => {
-          const resolution = taskResolution;
-          if (!resolution || !resolution.byModule) {
-            addResult('Module directories', 'warn', 'no resolution data');
-            return 'Module directories skipped (no resolution data)';
-          }
           const verboseMode = process.env.BMAD_VERBOSE_INSTALL === 'true' || config.verbose;
           const moduleLogger = {
             log: async (msg) => (verboseMode ? await prompts.log.message(msg) : undefined),
@@ -736,7 +684,7 @@ class Installer {
           };
 
           // Core module directories
-          if (config.installCore || resolution.byModule.core) {
+          if (config.installCore) {
             const result = await this.moduleManager.createModuleDirectories('core', bmadDir, {
               installedIDEs: config.ides || [],
               moduleConfig: moduleConfigs.core || {},
@@ -843,9 +791,6 @@ class Installer {
 
       // Now run configuration generation
       await prompts.tasks([configTask]);
-
-      // Resolution is now available via closure-scoped taskResolution
-      const resolution = taskResolution;
 
       // ─────────────────────────────────────────────────────────────────────────
       // IDE SETUP: Keep as spinner since it may prompt for user input
@@ -1416,144 +1361,6 @@ class Installer {
 
     await scanDirectory(bmadDir);
     return { customFiles, modifiedFiles };
-  }
-
-  /**
-   * Install core with resolved dependencies
-   * @param {string} bmadDir - BMAD installation directory
-   * @param {Object} coreFiles - Core files to install
-   */
-  async installCoreWithDependencies(bmadDir, coreFiles) {
-    const sourcePath = getModulePath('core');
-    const targetPath = path.join(bmadDir, 'core');
-    await this.installCore(bmadDir);
-  }
-
-  /**
-   * Install module with resolved dependencies
-   * @param {string} moduleName - Module name
-   * @param {string} bmadDir - BMAD installation directory
-   * @param {Object} moduleFiles - Module files to install
-   */
-  async installModuleWithDependencies(moduleName, bmadDir, moduleFiles) {
-    // Get module configuration for conditional installation
-    const moduleConfig = this.configCollector.collectedConfig[moduleName] || {};
-
-    // Use existing module manager for full installation with file tracking
-    // Note: Module-specific installers are called separately after IDE setup
-    await this.moduleManager.install(
-      moduleName,
-      bmadDir,
-      (filePath) => {
-        this.installedFiles.add(filePath);
-      },
-      {
-        skipModuleInstaller: true, // We'll run it later after IDE setup
-        moduleConfig: moduleConfig, // Pass module config for conditional filtering
-        installer: this,
-        silent: true,
-      },
-    );
-
-    // Dependencies are already included in full module install
-  }
-
-  /**
-   * Install partial module (only dependencies needed by other modules)
-   */
-  async installPartialModule(moduleName, bmadDir, files) {
-    const sourceBase = getModulePath(moduleName);
-    const targetBase = path.join(bmadDir, moduleName);
-
-    // Create module directory
-    await fs.ensureDir(targetBase);
-
-    // Copy only the required dependency files
-    if (files.agents && files.agents.length > 0) {
-      const agentsDir = path.join(targetBase, 'agents');
-      await fs.ensureDir(agentsDir);
-
-      for (const agentPath of files.agents) {
-        const fileName = path.basename(agentPath);
-        const sourcePath = path.join(sourceBase, 'agents', fileName);
-        const targetPath = path.join(agentsDir, fileName);
-
-        if (await fs.pathExists(sourcePath)) {
-          await this.copyFile(sourcePath, targetPath);
-          this.installedFiles.add(targetPath);
-        }
-      }
-    }
-
-    if (files.tasks && files.tasks.length > 0) {
-      const tasksDir = path.join(targetBase, 'tasks');
-      await fs.ensureDir(tasksDir);
-
-      for (const taskPath of files.tasks) {
-        const fileName = path.basename(taskPath);
-        const sourcePath = path.join(sourceBase, 'tasks', fileName);
-        const targetPath = path.join(tasksDir, fileName);
-
-        if (await fs.pathExists(sourcePath)) {
-          await this.copyFile(sourcePath, targetPath);
-          this.installedFiles.add(targetPath);
-        }
-      }
-    }
-
-    if (files.tools && files.tools.length > 0) {
-      const toolsDir = path.join(targetBase, 'tools');
-      await fs.ensureDir(toolsDir);
-
-      for (const toolPath of files.tools) {
-        const fileName = path.basename(toolPath);
-        const sourcePath = path.join(sourceBase, 'tools', fileName);
-        const targetPath = path.join(toolsDir, fileName);
-
-        if (await fs.pathExists(sourcePath)) {
-          await this.copyFile(sourcePath, targetPath);
-          this.installedFiles.add(targetPath);
-        }
-      }
-    }
-
-    if (files.templates && files.templates.length > 0) {
-      const templatesDir = path.join(targetBase, 'templates');
-      await fs.ensureDir(templatesDir);
-
-      for (const templatePath of files.templates) {
-        const fileName = path.basename(templatePath);
-        const sourcePath = path.join(sourceBase, 'templates', fileName);
-        const targetPath = path.join(templatesDir, fileName);
-
-        if (await fs.pathExists(sourcePath)) {
-          await this.copyFile(sourcePath, targetPath);
-          this.installedFiles.add(targetPath);
-        }
-      }
-    }
-
-    if (files.data && files.data.length > 0) {
-      for (const dataPath of files.data) {
-        // Preserve directory structure for data files
-        const relative = path.relative(sourceBase, dataPath);
-        const targetPath = path.join(targetBase, relative);
-
-        await fs.ensureDir(path.dirname(targetPath));
-
-        if (await fs.pathExists(dataPath)) {
-          await this.copyFile(dataPath, targetPath);
-          this.installedFiles.add(targetPath);
-        }
-      }
-    }
-
-    // Create a marker file to indicate this is a partial installation
-    const markerPath = path.join(targetBase, '.partial');
-    await fs.writeFile(
-      markerPath,
-      `This module contains only dependencies required by other modules.\nInstalled: ${new Date().toISOString()}\n`,
-    );
   }
 
   /**
