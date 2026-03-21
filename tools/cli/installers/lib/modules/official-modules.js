@@ -43,14 +43,22 @@ class OfficialModules {
   }
 
   /**
-   * List all available modules (excluding core which is always installed)
-   * bmm is the only built-in module, directly under src/bmm-skills
+   * List all available built-in modules (core and bmm).
    * All other modules come from external-official-modules.yaml
    * @returns {Object} Object with modules array and customModules array
    */
   async listAvailable() {
     const modules = [];
     const customModules = [];
+
+    // Add built-in core module (directly under src/core-skills)
+    const corePath = getSourcePath('core-skills');
+    if (await fs.pathExists(corePath)) {
+      const coreInfo = await this.getModuleInfo(corePath, 'core', 'src/core-skills');
+      if (coreInfo) {
+        modules.push(coreInfo);
+      }
+    }
 
     // Add built-in bmm module (directly under src/bmm-skills)
     const bmmPath = getSourcePath('bmm-skills');

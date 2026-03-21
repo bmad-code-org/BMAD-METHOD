@@ -423,8 +423,10 @@ class UI {
           selectedModules.push(...customModuleResult.selectedCustomModules);
         }
 
-        // Filter out core - it's always installed via installCore flag
-        selectedModules = selectedModules.filter((m) => m !== 'core');
+        // Ensure core is in the modules list
+        if (!selectedModules.includes('core')) {
+          selectedModules.unshift('core');
+        }
 
         // Get tool selection
         const toolSelection = await this.promptToolSelection(confirmedDirectory, options);
@@ -434,7 +436,6 @@ class UI {
         return {
           actionType: 'update',
           directory: confirmedDirectory,
-          installCore: true,
           modules: selectedModules,
           ides: toolSelection.ides,
           skipIde: toolSelection.skipIde,
@@ -543,14 +544,16 @@ class UI {
       selectedModules.push(...customContentConfig.selectedModuleIds);
     }
 
-    selectedModules = selectedModules.filter((m) => m !== 'core');
+    // Ensure core is in the modules list
+    if (!selectedModules.includes('core')) {
+      selectedModules.unshift('core');
+    }
     let toolSelection = await this.promptToolSelection(confirmedDirectory, options);
     const coreConfig = await this.collectCoreConfig(confirmedDirectory, options);
 
     return {
       actionType: 'install',
       directory: confirmedDirectory,
-      installCore: true,
       modules: selectedModules,
       ides: toolSelection.ides,
       skipIde: toolSelection.skipIde,
@@ -1069,7 +1072,7 @@ class UI {
       maxItems: allOptions.length,
     });
 
-    const result = selected ? selected.filter((m) => m !== 'core') : [];
+    const result = selected ? [...selected] : [];
 
     // Display selected modules as bulleted list
     if (result.length > 0) {
