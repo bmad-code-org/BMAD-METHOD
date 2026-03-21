@@ -41,30 +41,6 @@ class Installer {
    * @param {string[]} config.modules - Modules to install (including 'core')
    * @param {string[]} config.ides - IDEs to configure
    */
-  _buildConfig(originalConfig) {
-    const modules = [...(originalConfig.modules || [])];
-    if (originalConfig.installCore && !modules.includes('core')) {
-      modules.unshift('core');
-    }
-
-    return {
-      directory: originalConfig.directory,
-      modules,
-      ides: originalConfig.skipIde ? [] : [...(originalConfig.ides || [])],
-      skipPrompts: originalConfig.skipPrompts || false,
-      verbose: originalConfig.verbose || false,
-      force: originalConfig.force || false,
-      actionType: originalConfig.actionType,
-      coreConfig: originalConfig.coreConfig || {},
-      hasCoreConfig() {
-        return this.coreConfig && Object.keys(this.coreConfig).length > 0;
-      },
-      isQuickUpdate() {
-        return originalConfig._quickUpdate || false;
-      },
-    };
-  }
-
   async install(originalConfig) {
     const config = this._buildConfig(originalConfig);
 
@@ -868,6 +844,30 @@ class Installer {
 
       throw error;
     }
+  }
+
+  _buildConfig(originalConfig) {
+    const modules = [...(originalConfig.modules || [])];
+    if (originalConfig.installCore && !modules.includes('core')) {
+      modules.unshift('core');
+    }
+
+    return {
+      directory: originalConfig.directory,
+      modules,
+      ides: originalConfig.skipIde ? [] : [...(originalConfig.ides || [])],
+      skipPrompts: originalConfig.skipPrompts || false,
+      verbose: originalConfig.verbose || false,
+      force: originalConfig.force || false,
+      actionType: originalConfig.actionType,
+      coreConfig: originalConfig.coreConfig || {},
+      hasCoreConfig() {
+        return this.coreConfig && Object.keys(this.coreConfig).length > 0;
+      },
+      isQuickUpdate() {
+        return originalConfig._quickUpdate || false;
+      },
+    };
   }
 
   /**
