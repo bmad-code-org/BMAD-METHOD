@@ -1501,7 +1501,7 @@ class Installer {
         const targetPath = path.join(agentsDir, fileName);
 
         if (await fs.pathExists(sourcePath)) {
-          await this.copyFileWithPlaceholderReplacement(sourcePath, targetPath);
+          await this.copyFile(sourcePath, targetPath);
           this.installedFiles.add(targetPath);
         }
       }
@@ -1517,7 +1517,7 @@ class Installer {
         const targetPath = path.join(tasksDir, fileName);
 
         if (await fs.pathExists(sourcePath)) {
-          await this.copyFileWithPlaceholderReplacement(sourcePath, targetPath);
+          await this.copyFile(sourcePath, targetPath);
           this.installedFiles.add(targetPath);
         }
       }
@@ -1533,7 +1533,7 @@ class Installer {
         const targetPath = path.join(toolsDir, fileName);
 
         if (await fs.pathExists(sourcePath)) {
-          await this.copyFileWithPlaceholderReplacement(sourcePath, targetPath);
+          await this.copyFile(sourcePath, targetPath);
           this.installedFiles.add(targetPath);
         }
       }
@@ -1549,7 +1549,7 @@ class Installer {
         const targetPath = path.join(templatesDir, fileName);
 
         if (await fs.pathExists(sourcePath)) {
-          await this.copyFileWithPlaceholderReplacement(sourcePath, targetPath);
+          await this.copyFile(sourcePath, targetPath);
           this.installedFiles.add(targetPath);
         }
       }
@@ -1564,7 +1564,7 @@ class Installer {
         await fs.ensureDir(path.dirname(targetPath));
 
         if (await fs.pathExists(dataPath)) {
-          await this.copyFileWithPlaceholderReplacement(dataPath, targetPath);
+          await this.copyFile(dataPath, targetPath);
           this.installedFiles.add(targetPath);
         }
       }
@@ -2840,52 +2840,15 @@ class Installer {
 
       // Copy the file with placeholder replacement
       await fs.ensureDir(path.dirname(targetFile));
-      await this.copyFileWithPlaceholderReplacement(sourceFile, targetFile);
+      await this.copyFile(sourceFile, targetFile);
 
       // Track the installed file
       this.installedFiles.add(targetFile);
     }
   }
 
-  /**
-   * @function copyFileWithPlaceholderReplacement
-   * @intent Copy files from BMAD source to installation directory with dynamic content transformation
-   * @why Enables installation-time customization: _bmad replacement
-   * @param {string} sourcePath - Absolute path to source file in BMAD repository
-   * @param {string} targetPath - Absolute path to destination file in user's project
-   * @param {string} bmadFolderName - User's chosen bmad folder name (default: 'bmad')
-   * @returns {Promise<void>} Resolves when file copy and transformation complete
-   * @sideeffects Writes transformed file to targetPath, creates parent directories if needed
-   * @edgecases Binary files bypass transformation, falls back to raw copy if UTF-8 read fails
-   * @calledby installCore(), installModule(), IDE installers during file vendoring
-   * @calls fs.readFile(), fs.writeFile(), fs.copy()
-   *
-
-   *
-   * 3. Document marker in instructions.md (if applicable)
-   */
-  async copyFileWithPlaceholderReplacement(sourcePath, targetPath) {
-    // List of text file extensions that should have placeholder replacement
-    const textExtensions = ['.md', '.yaml', '.yml', '.txt', '.json', '.js', '.ts', '.html', '.css', '.sh', '.bat', '.csv', '.xml'];
-    const ext = path.extname(sourcePath).toLowerCase();
-
-    // Check if this is a text file that might contain placeholders
-    if (textExtensions.includes(ext)) {
-      try {
-        // Read the file content
-        let content = await fs.readFile(sourcePath, 'utf8');
-
-        // Write to target with replaced content
-        await fs.ensureDir(path.dirname(targetPath));
-        await fs.writeFile(targetPath, content, 'utf8');
-      } catch {
-        // If reading as text fails (might be binary despite extension), fall back to regular copy
-        await fs.copy(sourcePath, targetPath, { overwrite: true });
-      }
-    } else {
-      // Binary file or other file type - just copy directly
-      await fs.copy(sourcePath, targetPath, { overwrite: true });
-    }
+  async copyFile(sourcePath, targetPath) {
+    await fs.copy(sourcePath, targetPath, { overwrite: true });
   }
 
   /**
