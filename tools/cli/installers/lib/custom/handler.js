@@ -3,7 +3,6 @@ const fs = require('fs-extra');
 const yaml = require('yaml');
 const prompts = require('../../../lib/prompts');
 const { FileOps } = require('../../../lib/file-ops');
-const { XmlHandler } = require('../../../lib/xml-handler');
 
 /**
  * Handler for custom content (custom.yaml)
@@ -12,7 +11,6 @@ const { XmlHandler } = require('../../../lib/xml-handler');
 class CustomHandler {
   constructor() {
     this.fileOps = new FileOps();
-    this.xmlHandler = new XmlHandler();
   }
 
   /**
@@ -143,13 +141,13 @@ class CustomHandler {
       await fs.ensureDir(bmadAgentsDir);
       await fs.ensureDir(bmadWorkflowsDir);
 
-      // Process agents - compile and copy agents
+      // Copy agents directory
       const agentsDir = path.join(customPath, 'agents');
       if (await fs.pathExists(agentsDir)) {
-        await this.compileAndCopyAgents(agentsDir, bmadAgentsDir, bmadDir, config, fileTrackingCallback, results);
+        await this.copyDirectory(agentsDir, bmadAgentsDir, results, fileTrackingCallback, config);
 
         // Count agent files
-        const agentFiles = await this.findFilesRecursively(agentsDir, ['.agent.yaml', '.md']);
+        const agentFiles = await this.findFilesRecursively(agentsDir, ['.md']);
         results.agentsInstalled = agentFiles.length;
       }
 
@@ -278,78 +276,6 @@ class CustomHandler {
         } catch (error) {
           results.errors.push(`Failed to copy ${entry.name}: ${error.message}`);
         }
-      }
-    }
-  }
-
-  /**
-   * Compile .agent.yaml files to .md format and handle sidecars
-   * @param {string} sourceAgentsPath - Source agents directory
-   * @param {string} targetAgentsPath - Target agents directory
-   * @param {string} bmadDir - BMAD installation directory
-   * @param {Object} config - Configuration for placeholder replacement
-   * @param {Function} fileTrackingCallback - Optional callback to track installed files
-   * @param {Object} results - Results object to update
-   */
-  async compileAndCopyAgents(sourceAgentsPath, targetAgentsPath, bmadDir, config, fileTrackingCallback, results) {
-    // Get all .agent.yaml files recursively
-    const agentFiles = await this.findFilesRecursively(sourceAgentsPath, ['.agent.yaml']);
-
-    for (const agentFile of agentFiles) {
-      const relativePath = path.relative(sourceAgentsPath, agentFile).split(path.sep).join('/');
-      const targetDir = path.join(targetAgentsPath, path.dirname(relativePath));
-
-      await fs.ensureDir(targetDir);
-
-      const agentName = path.basename(agentFile, '.agent.yaml');
-      const targetMdPath = path.join(targetDir, `${agentName}.md`);
-      // Use the actual bmadDir if available (for when installing to temp dir)
-      const actualBmadDir = config._bmadDir || bmadDir;
-      const customizePath = path.join(actualBmadDir, '_config', 'agents', `custom-${agentName}.customize.yaml`);
-
-      // Read and compile the YAML
-      try {
-        const yamlContent = await fs.readFile(agentFile, 'utf8');
-        const { compileAgent } = require('../../../lib/agent/compiler');
-
-        // Create customize template if it doesn't exist
-        if (!(await fs.pathExists(customizePath))) {
-          const { getSourcePath } = require('../../../lib/project-root');
-          const genericTemplatePath = getSourcePath('utility', 'agent-components', 'agent.customize.template.yaml');
-          if (await fs.pathExists(genericTemplatePath)) {
-            let templateContent = await fs.readFile(genericTemplatePath, 'utf8');
-            await fs.writeFile(customizePath, templateContent, 'utf8');
-            // Only show customize creation in verbose mode
-            if (process.env.BMAD_VERBOSE_INSTALL === 'true') {
-              await prompts.log.message('  Created customize: custom-' + agentName + '.customize.yaml');
-            }
-          }
-        }
-
-        // Compile the agent
-        const { xml } = compileAgent(yamlContent, {}, agentName, relativePath, { config });
-
-        // Replace placeholders in the compiled content
-        let processedXml = xml;
-        processedXml = processedXml.replaceAll('{user_name}', config.user_name || 'User');
-        processedXml = processedXml.replaceAll('{communication_language}', config.communication_language || 'English');
-        processedXml = processedXml.replaceAll('{output_folder}', config.output_folder || 'docs');
-
-        // Write the compiled MD file
-        await fs.writeFile(targetMdPath, processedXml, 'utf8');
-
-        // Track the file
-        if (fileTrackingCallback) {
-          fileTrackingCallback(targetMdPath);
-        }
-
-        // Only show compilation details in verbose mode
-        if (process.env.BMAD_VERBOSE_INSTALL === 'true') {
-          await prompts.log.message('    Compiled agent: ' + agentName + ' -> ' + path.relative(targetAgentsPath, targetMdPath));
-        }
-      } catch (error) {
-        await prompts.log.warn('    Failed to compile agent ' + agentName + ': ' + error.message);
-        results.errors.push(`Failed to compile agent ${agentName}: ${error.message}`);
       }
     }
   }

@@ -1,6 +1,5 @@
 const path = require('node:path');
 const fs = require('fs-extra');
-const { XmlHandler } = require('../../../lib/xml-handler');
 const prompts = require('../../../lib/prompts');
 const { getSourcePath } = require('../../../lib/project-root');
 const { BMAD_FOLDER_NAME } = require('./shared/path-utils');
@@ -18,7 +17,6 @@ class BaseIdeSetup {
     this.rulesDir = null; // Override in subclasses
     this.configFile = null; // Override in subclasses when detection is file-based
     this.detectionPaths = []; // Additional paths that indicate the IDE is configured
-    this.xmlHandler = new XmlHandler();
     this.bmadFolderName = BMAD_FOLDER_NAME; // Default, can be overridden
   }
 
@@ -28,15 +26,6 @@ class BaseIdeSetup {
    */
   setBmadFolderName(bmadFolderName) {
     this.bmadFolderName = bmadFolderName;
-  }
-
-  /**
-   * Get the agent command activation header from the central template
-   * @returns {string} The activation header text
-   */
-  async getAgentCommandHeader() {
-    const headerPath = getSourcePath('utility', 'agent-components', 'agent-command-header.md');
-    return await fs.readFile(headerPath, 'utf8');
   }
 
   /**
@@ -510,11 +499,6 @@ class BaseIdeSetup {
   processContent(content, metadata = {}, projectDir = null) {
     // Replace placeholders
     let processed = content;
-
-    // Inject activation block for agent files FIRST (before replacements)
-    if (metadata.name && content.includes('<agent')) {
-      processed = this.xmlHandler.injectActivationSimple(processed, metadata);
-    }
 
     // Only replace {project-root} if a specific projectDir is provided
     // Otherwise leave the placeholder intact

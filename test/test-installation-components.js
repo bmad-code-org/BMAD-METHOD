@@ -14,7 +14,6 @@
 const path = require('node:path');
 const os = require('node:os');
 const fs = require('fs-extra');
-const { YamlXmlBuilder } = require('../tools/cli/lib/yaml-xml-builder');
 const { ManifestGenerator } = require('../tools/cli/installers/lib/core/manifest-generator');
 const { IdeManager } = require('../tools/cli/installers/lib/ide/manager');
 const { clearCache, loadPlatformCodes } = require('../tools/cli/installers/lib/ide/platform-codes');
@@ -149,77 +148,10 @@ async function runTests() {
 
   const projectRoot = path.join(__dirname, '..');
 
-  // Test 1: Removed — old YAML→XML agent compilation no longer applies (agents now use SKILL.md format)
-
-  console.log('');
-
   // ============================================================
-  // Test 2: Customization Merging
+  // Test 1: Windsurf Native Skills Install
   // ============================================================
-  console.log(`${colors.yellow}Test Suite 2: Customization Merging${colors.reset}\n`);
-
-  try {
-    const builder = new YamlXmlBuilder();
-
-    // Test deepMerge function
-    const base = {
-      agent: {
-        metadata: { name: 'John', title: 'PM' },
-        persona: { role: 'Product Manager', style: 'Analytical' },
-      },
-    };
-
-    const customize = {
-      agent: {
-        metadata: { name: 'Sarah' }, // Override name only
-        persona: { style: 'Concise' }, // Override style only
-      },
-    };
-
-    const merged = builder.deepMerge(base, customize);
-
-    assert(merged.agent.metadata.name === 'Sarah', 'Deep merge overrides customized name');
-
-    assert(merged.agent.metadata.title === 'PM', 'Deep merge preserves non-overridden title');
-
-    assert(merged.agent.persona.role === 'Product Manager', 'Deep merge preserves non-overridden role');
-
-    assert(merged.agent.persona.style === 'Concise', 'Deep merge overrides customized style');
-  } catch (error) {
-    assert(false, 'Customization merging works', error.message);
-  }
-
-  console.log('');
-
-  // ============================================================
-  // Test 3: Path Resolution
-  // ============================================================
-  console.log(`${colors.yellow}Test Suite 3: Path Variable Resolution${colors.reset}\n`);
-
-  try {
-    const builder = new YamlXmlBuilder();
-
-    // Test path resolution logic (if exposed)
-    // This would test {project-root}, {installed_path}, {config_source} resolution
-
-    const testPath = '{project-root}/bmad/bmm/config.yaml';
-    const expectedPattern = /\/bmad\/bmm\/config\.yaml$/;
-
-    assert(
-      true, // Placeholder - would test actual resolution
-      'Path variable resolution pattern matches expected format',
-      'Note: This test validates path resolution logic exists',
-    );
-  } catch (error) {
-    assert(false, 'Path resolution works', error.message);
-  }
-
-  console.log('');
-
-  // ============================================================
-  // Test 4: Windsurf Native Skills Install
-  // ============================================================
-  console.log(`${colors.yellow}Test Suite 4: Windsurf Native Skills${colors.reset}\n`);
+  console.log(`${colors.yellow}Test Suite 1: Windsurf Native Skills${colors.reset}\n`);
 
   try {
     clearCache();
