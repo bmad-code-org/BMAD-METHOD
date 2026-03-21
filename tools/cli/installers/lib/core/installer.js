@@ -1124,11 +1124,9 @@ class Installer {
           // Pre-register manifest files
           const cfgDir = path.join(bmadDir, '_config');
           this.installedFiles.add(path.join(cfgDir, 'manifest.yaml'));
-          this.installedFiles.add(path.join(cfgDir, 'workflow-manifest.csv'));
           this.installedFiles.add(path.join(cfgDir, 'agent-manifest.csv'));
-          this.installedFiles.add(path.join(cfgDir, 'task-manifest.csv'));
 
-          // Generate CSV manifests for workflows, agents, tasks AND ALL FILES with hashes
+          // Generate CSV manifests for agents, skills AND ALL FILES with hashes
           // This must happen BEFORE mergeModuleHelpCatalogs because it depends on agent-manifest.csv
           message('Generating manifests...');
           const manifestGen = new ManifestGenerator();
