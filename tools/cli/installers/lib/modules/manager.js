@@ -4,7 +4,6 @@ const yaml = require('yaml');
 const prompts = require('../../../lib/prompts');
 const { getProjectRoot, getSourcePath, getModulePath } = require('../../../lib/project-root');
 const { ExternalModuleManager } = require('./external-manager');
-const { BMAD_FOLDER_NAME } = require('../ide/shared/path-utils');
 
 /**
  * Manages the installation, updating, and removal of BMAD modules.
@@ -22,25 +21,8 @@ const { BMAD_FOLDER_NAME } = require('../ide/shared/path-utils');
  */
 class ModuleManager {
   constructor(options = {}) {
-    this.bmadFolderName = BMAD_FOLDER_NAME; // Default, can be overridden
-    this.customModulePaths = new Map(); // Initialize custom module paths
-    this.externalModuleManager = new ExternalModuleManager(); // For external official modules
-  }
-
-  /**
-   * Set the bmad folder name for placeholder replacement
-   * @param {string} bmadFolderName - The bmad folder name
-   */
-  setBmadFolderName(bmadFolderName) {
-    this.bmadFolderName = bmadFolderName;
-  }
-
-  /**
-   * Set the core configuration for access during module installation
-   * @param {Object} coreConfig - Core configuration object
-   */
-  setCoreConfig(coreConfig) {
-    this.coreConfig = coreConfig;
+    this.customModulePaths = new Map();
+    this.externalModuleManager = new ExternalModuleManager();
   }
 
   /**
@@ -99,25 +81,6 @@ class ModuleManager {
       const bmmInfo = await this.getModuleInfo(bmmPath, 'bmm', 'src/bmm-skills');
       if (bmmInfo) {
         modules.push(bmmInfo);
-      }
-    }
-
-    // Check for cached custom modules in _config/custom/
-    if (this.bmadDir) {
-      const customCacheDir = path.join(this.bmadDir, '_config', 'custom');
-      if (await fs.pathExists(customCacheDir)) {
-        const cacheEntries = await fs.readdir(customCacheDir, { withFileTypes: true });
-        for (const entry of cacheEntries) {
-          if (entry.isDirectory()) {
-            const cachePath = path.join(customCacheDir, entry.name);
-            const moduleInfo = await this.getModuleInfo(cachePath, entry.name, '_config/custom');
-            if (moduleInfo && !modules.some((m) => m.id === moduleInfo.id) && !customModules.some((m) => m.id === moduleInfo.id)) {
-              moduleInfo.isCustom = true;
-              moduleInfo.fromCache = true;
-              customModules.push(moduleInfo);
-            }
-          }
-        }
       }
     }
 

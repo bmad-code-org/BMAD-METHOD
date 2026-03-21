@@ -58,8 +58,6 @@ class Installer {
     const customModulePaths = await this._discoverCustomModulePaths(config, paths);
 
     // Wire configs into managers
-    this.moduleManager.setBmadFolderName(BMAD_FOLDER_NAME);
-    this.moduleManager.setCoreConfig(moduleConfigs.core || {});
     this.moduleManager.setCustomModulePaths(customModulePaths);
     this.ideManager.setBmadFolderName(BMAD_FOLDER_NAME);
 
