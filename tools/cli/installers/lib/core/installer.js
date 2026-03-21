@@ -41,15 +41,13 @@ class Installer {
    * @param {string[]} config.modules - Modules to install (including 'core')
    * @param {string[]} config.ides - IDEs to configure
    */
-  async install(originalConfig) {
-    // Build a normalized config with explicit fields — no opaque spread
-    // Clean config for the official module install path
+  _buildConfig(originalConfig) {
     const modules = [...(originalConfig.modules || [])];
     if (originalConfig.installCore && !modules.includes('core')) {
       modules.unshift('core');
     }
 
-    const config = {
+    return {
       directory: originalConfig.directory,
       modules,
       ides: originalConfig.skipIde ? [] : [...(originalConfig.ides || [])],
@@ -58,14 +56,20 @@ class Installer {
       force: originalConfig.force || false,
       actionType: originalConfig.actionType,
       coreConfig: originalConfig.coreConfig || {},
+      hasCoreConfig() {
+        return this.coreConfig && Object.keys(this.coreConfig).length > 0;
+      },
     };
+  }
 
-    // Everything — custom modules, quick-update state, the whole mess
+  async install(originalConfig) {
+    const config = this._buildConfig(originalConfig);
+
+    // Everything else — custom modules, quick-update state, the whole mess
     const customConfig = { ...originalConfig };
 
     // if core config isn't collected, we haven't run the UI -> display logo/version
-    const hasCoreConfig = config.coreConfig && Object.keys(config.coreConfig).length > 0;
-    if (!hasCoreConfig) {
+    if (!config.hasCoreConfig()) {
       await CLIUtils.displayLogo();
     }
 
@@ -869,7 +873,8 @@ class Installer {
    */
   async _collectConfigs(customConfig, paths) {
     // Seed core config if pre-collected from interactive UI
-    if (customConfig.coreConfig && Object.keys(customConfig.coreConfig).length > 0) {
+    const hasCoreConfig = customConfig.coreConfig && Object.keys(customConfig.coreConfig).length > 0;
+    if (hasCoreConfig) {
       this.configCollector.collectedConfig.core = customConfig.coreConfig;
       this.configCollector.allAnswers = {};
       for (const [key, value] of Object.entries(customConfig.coreConfig)) {
@@ -883,7 +888,6 @@ class Installer {
     }
 
     // Modules to collect configs for — skip core if its config was pre-collected from UI
-    const hasCoreConfig = customConfig.coreConfig && Object.keys(customConfig.coreConfig).length > 0;
     const toCollect = hasCoreConfig ? (customConfig.modules || []).filter((m) => m !== 'core') : [...(customConfig.modules || [])];
 
     return await this.configCollector.collectAllConfigurations(toCollect, paths.projectRoot, {
