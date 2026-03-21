@@ -58,7 +58,7 @@ class Installer {
     // Collect configurations for official modules
     const moduleConfigs = await this._collectConfigs(config, paths);
 
-    const customModulePaths = await this.customModules.discoverPaths(config, paths);
+    await this.customModules.discoverPaths(config, paths);
     this.ideManager.setBmadFolderName(BMAD_FOLDER_NAME);
 
     // Tool selection will be collected after we determine if it's a reinstall/update/new install
@@ -199,7 +199,7 @@ class Installer {
               }
 
               // Skip if we already have this module from manifest
-              if (customModulePaths.has(moduleId)) {
+              if (this.customModules.paths.has(moduleId)) {
                 continue;
               }
 
@@ -213,11 +213,11 @@ class Installer {
               // Check if this is actually a custom module (has module.yaml)
               const moduleYamlPath = path.join(cachedPath, 'module.yaml');
               if (await fs.pathExists(moduleYamlPath)) {
-                customModulePaths.set(moduleId, cachedPath);
+                this.customModules.paths.set(moduleId, cachedPath);
               }
             }
 
-            // customModulePaths is this.customModules.paths — .set() above updates it in place
+            // .set() above updates this.customModules.paths in place
           }
 
           // If there are custom files, back them up temporarily
@@ -282,7 +282,7 @@ class Installer {
             }
 
             // Skip if we already have this module from manifest
-            if (customModulePaths.has(moduleId)) {
+            if (this.customModules.paths.has(moduleId)) {
               continue;
             }
 
@@ -296,7 +296,7 @@ class Installer {
             // Check if this is actually a custom module (has module.yaml)
             const moduleYamlPath = path.join(cachedPath, 'module.yaml');
             if (await fs.pathExists(moduleYamlPath)) {
-              customModulePaths.set(moduleId, cachedPath);
+              this.customModules.paths.set(moduleId, cachedPath);
             }
           }
         }
@@ -473,18 +473,18 @@ class Installer {
       }
 
       // Cache custom modules if any
-      if (customModulePaths && customModulePaths.size > 0) {
+      if (this.customModules.paths && this.customModules.paths.size > 0) {
         spinner.message('Caching custom modules...');
         const { CustomModuleCache } = require('./custom-module-cache');
         const customCache = new CustomModuleCache(paths.bmadDir);
 
-        for (const [moduleId, sourcePath] of customModulePaths) {
+        for (const [moduleId, sourcePath] of this.customModules.paths) {
           const cachedInfo = await customCache.cacheModule(moduleId, sourcePath, {
             sourcePath: sourcePath, // Store original path for updates
           });
 
-          // Update the customModulePaths to use the cached location
-          customModulePaths.set(moduleId, cachedInfo.cachePath);
+          // Update cached path to use the local cache location
+          this.customModules.paths.set(moduleId, cachedInfo.cachePath);
         }
 
         addResult('Custom modules cached', 'ok');
@@ -495,7 +495,7 @@ class Installer {
 
       // Build custom module ID set first (needed to filter official list)
       const customModuleIds = new Set();
-      for (const id of customModulePaths.keys()) {
+      for (const id of this.customModules.paths.keys()) {
         customModuleIds.add(id);
       }
       if (config._customModuleSources) {
@@ -569,19 +569,10 @@ class Installer {
               installedModuleNames,
             });
 
-            await this._installCustomModules(
-              config,
-              paths,
-              moduleConfigs,
-              customModulePaths,
-              finalCustomContent,
-              addResult,
-              isQuickUpdate,
-              {
-                message,
-                installedModuleNames,
-              },
-            );
+            await this._installCustomModules(config, paths, moduleConfigs, finalCustomContent, addResult, isQuickUpdate, {
+              message,
+              installedModuleNames,
+            });
 
             return `${allModules.length} module(s) ${isQuickUpdate ? 'updated' : 'installed'}`;
           },
@@ -961,13 +952,12 @@ class Installer {
    * @param {Object} config - Installation configuration
    * @param {Object} paths - InstallPaths instance
    * @param {Object} moduleConfigs - Collected module configurations
-   * @param {Map} customModulePaths - Map of custom module ID to source path
    * @param {Object|undefined} finalCustomContent - Custom content from config
    * @param {Function} addResult - Callback to record installation results
    * @param {boolean} isQuickUpdate - Whether this is a quick update
    * @param {Object} ctx - Shared context: { message, installedModuleNames }
    */
-  async _installCustomModules(config, paths, moduleConfigs, customModulePaths, finalCustomContent, addResult, isQuickUpdate, ctx) {
+  async _installCustomModules(config, paths, moduleConfigs, finalCustomContent, addResult, isQuickUpdate, ctx) {
     const { message, installedModuleNames } = ctx;
 
     // Collect all custom module IDs with their info from all sources
@@ -1006,8 +996,8 @@ class Installer {
       }
     }
 
-    // Fourth: any remaining custom modules from customModulePaths not yet covered
-    for (const [moduleId, modulePath] of customModulePaths) {
+    // Fourth: any remaining custom modules not yet covered
+    for (const [moduleId, modulePath] of this.customModules.paths) {
       if (!customModules.has(moduleId)) {
         customModules.set(moduleId, { id: moduleId, path: modulePath, config: {} });
       }
@@ -1019,8 +1009,8 @@ class Installer {
 
       message(`${isQuickUpdate ? 'Updating' : 'Installing'} ${moduleName}...`);
 
-      if (!customModulePaths.has(moduleName) && customInfo.path) {
-        customModulePaths.set(moduleName, customInfo.path);
+      if (!this.customModules.paths.has(moduleName) && customInfo.path) {
+        this.customModules.paths.set(moduleName, customInfo.path);
       }
 
       const collectedModuleConfig = moduleConfigs[moduleName] || {};
