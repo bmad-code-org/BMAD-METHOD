@@ -16,10 +16,9 @@ const CLIUtils = {
   },
 
   /**
-   * Display BMAD logo using @clack intro + box
-   * @param {boolean} _clearScreen - Deprecated, ignored (no longer clears screen)
+   * Display BMAD logo and version using @clack intro + box
    */
-  async displayLogo(_clearScreen = true) {
+  async displayLogo() {
     const version = this.getVersion();
     const color = await prompts.getColor();
 
