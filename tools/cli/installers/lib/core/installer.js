@@ -58,11 +58,7 @@ class Installer {
     // Collect configurations for official modules
     const moduleConfigs = await this._collectConfigs(config, paths);
 
-    // Custom module path discovery (will move to its own phase later)
     const customModulePaths = await this.customModules.discoverPaths(config, paths);
-
-    // Wire configs into managers
-    this.customModules.setPaths(customModulePaths);
     this.ideManager.setBmadFolderName(BMAD_FOLDER_NAME);
 
     // Tool selection will be collected after we determine if it's a reinstall/update/new install
@@ -221,8 +217,7 @@ class Installer {
               }
             }
 
-            // Update module manager with the new custom module paths from cache
-            this.customModules.setPaths(customModulePaths);
+            // customModulePaths is this.customModules.paths — .set() above updates it in place
           }
 
           // If there are custom files, back them up temporarily
@@ -304,9 +299,6 @@ class Installer {
               customModulePaths.set(moduleId, cachedPath);
             }
           }
-
-          // Update module manager with the new custom module paths from cache
-          this.customModules.setPaths(customModulePaths);
         }
 
         // Back up custom files
@@ -495,8 +487,6 @@ class Installer {
           customModulePaths.set(moduleId, cachedInfo.cachePath);
         }
 
-        // Update module manager with the cached paths
-        this.customModules.setPaths(customModulePaths);
         addResult('Custom modules cached', 'ok');
       }
 
@@ -1031,7 +1021,6 @@ class Installer {
 
       if (!customModulePaths.has(moduleName) && customInfo.path) {
         customModulePaths.set(moduleName, customInfo.path);
-        this.customModules.setPaths(customModulePaths);
       }
 
       const collectedModuleConfig = moduleConfigs[moduleName] || {};

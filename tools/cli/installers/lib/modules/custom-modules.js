@@ -6,10 +6,6 @@ class CustomModules {
     this.paths = new Map();
   }
 
-  setPaths(customModulePaths) {
-    this.paths = customModulePaths;
-  }
-
   has(moduleCode) {
     return this.paths.has(moduleCode);
   }
@@ -29,15 +25,15 @@ class CustomModules {
    * @returns {Map<string, string>} Map of module ID to source path
    */
   async discoverPaths(config, paths) {
-    const result = new Map();
+    this.paths = new Map();
 
     if (config._quickUpdate) {
       if (config._customModuleSources) {
         for (const [moduleId, customInfo] of config._customModuleSources) {
-          result.set(moduleId, customInfo.sourcePath);
+          this.paths.set(moduleId, customInfo.sourcePath);
         }
       }
-      return result;
+      return this.paths;
     }
 
     // From manifest (regular updates)
@@ -54,7 +50,7 @@ class CustomModules {
         }
 
         if (absoluteSourcePath) {
-          result.set(customModule.id, absoluteSourcePath);
+          this.paths.set(customModule.id, absoluteSourcePath);
         }
       }
     }
@@ -65,7 +61,7 @@ class CustomModules {
       for (const customFile of config.customContent.selectedFiles) {
         const customInfo = await customHandler.getCustomInfo(customFile, paths.projectRoot);
         if (customInfo && customInfo.id) {
-          result.set(customInfo.id, customInfo.path);
+          this.paths.set(customInfo.id, customInfo.path);
         }
       }
     }
@@ -73,7 +69,7 @@ class CustomModules {
     // From UI: sources
     if (config.customContent && config.customContent.sources) {
       for (const source of config.customContent.sources) {
-        result.set(source.id, source.path);
+        this.paths.set(source.id, source.path);
       }
     }
 
@@ -84,12 +80,12 @@ class CustomModules {
 
       for (const cachedModule of config.customContent.cachedModules) {
         if (cachedModule.id && cachedModule.cachePath && (shouldIncludeAll || selectedCachedIds.includes(cachedModule.id))) {
-          result.set(cachedModule.id, cachedModule.cachePath);
+          this.paths.set(cachedModule.id, cachedModule.cachePath);
         }
       }
     }
 
-    return result;
+    return this.paths;
   }
 }
 
