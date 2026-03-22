@@ -24,9 +24,9 @@ BMad-Help 不只是查表工具，它还能：
 bmad-help
 ```
 
-::::tip
+:::tip
 按平台不同，你也可以使用 `/bmad-help` 或 `$bmad-help`。但大多数情况下直接输入 `bmad-help` 就能工作。
-::::
+:::
 
 也可以结合自然语言问题一起调用：
 
