@@ -76,6 +76,9 @@ npx github:bmad-code-org/BMAD-METHOD install
 
 ## 你将获得
 
+以下目录结构仅作示例。工具相关目录会随你选择的平台变化（例如可能是
+`.claude/skills`、`.cursor/skills` 或 `.kiro/skills`），并不一定会同时出现。
+
 ```text
 your-project/
 ├── _bmad/

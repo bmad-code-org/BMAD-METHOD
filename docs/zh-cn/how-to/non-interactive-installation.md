@@ -1,6 +1,6 @@
 ---
 title: "非交互式安装"
-description: 使用命令行标志安装 BMad，适用于 CI/CD 流水线和自动化部署
+description: 使用命令行参数安装 BMad，适用于 CI/CD 流水线和自动化部署
 sidebar:
   order: 2
 ---
@@ -67,8 +67,8 @@ sidebar:
 
 | 模式 | 描述 | 示例 |
 |------|-------------|---------|
-| 完全非交互式 | 提供所有标志以跳过所有提示 | `npx bmad-method install --directory . --modules bmm --tools claude-code --yes` |
-| 半交互式 | 提供部分标志；BMad 提示其余部分 | `npx bmad-method install --directory . --modules bmm` |
+| 完全非交互式 | 提供所有参数以跳过所有提示 | `npx bmad-method install --directory . --modules bmm --tools claude-code --yes` |
+| 半交互式 | 提供部分参数；BMad 提示其余部分 | `npx bmad-method install --directory . --modules bmm` |
 | 仅使用默认值 | 使用 `-y` 接受所有默认值 | `npx bmad-method install --yes` |
 | 不包含工具 | 跳过工具/IDE 配置 | `npx bmad-method install --modules bmm --tools none` |
 
@@ -141,7 +141,7 @@ BMad 会验证你提供的所有参数：
 
 :::tip[最佳实践]
 - 为 `--directory` 使用绝对路径以避免歧义
-- 在 CI/CD 流水线中使用前先在本地测试标志
+- 在 CI/CD 流水线中使用前先在本地测试参数
 - 结合 `-y` 实现真正的无人值守安装
 - 如果在安装过程中遇到问题，使用 `--debug`
 :::
