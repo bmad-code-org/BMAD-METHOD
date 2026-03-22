@@ -9,7 +9,6 @@ const { FileOps } = require('../../../lib/file-ops');
 const { Config } = require('../../../lib/config');
 const { ConfigCollector } = require('./config-collector');
 const { getProjectRoot, getSourcePath, getModulePath } = require('../../../lib/project-root');
-const { CLIUtils } = require('../../../lib/cli-utils');
 const { ManifestGenerator } = require('./manifest-generator');
 const { IdeConfigManager } = require('./ide-config-manager');
 const { CustomHandler } = require('../custom-handler');
@@ -47,18 +46,12 @@ class Installer {
     // Everything else — custom modules, quick-update state, the whole mess
     const customConfig = { ...originalConfig };
 
-    // if core config isn't collected, we haven't run the UI -> display logo/version
-    if (!config.hasCoreConfig()) {
-      await CLIUtils.displayLogo();
-    }
-
     const paths = await InstallPaths.create(config);
 
     // Collect configurations for official modules
     const moduleConfigs = await this._collectConfigs(config, paths);
 
     await this.customModules.discoverPaths(config, paths);
-    this.ideManager.setBmadFolderName(BMAD_FOLDER_NAME);
 
     try {
       const existingInstall = await this.detector.detect(paths.bmadDir);
