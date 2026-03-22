@@ -37,7 +37,7 @@ class CustomModules {
     }
 
     // From manifest (regular updates)
-    if (config._isUpdate && config._existingInstall && config._existingInstall.customModules) {
+    if (config._isUpdate && config._existingInstall) {
       for (const customModule of config._existingInstall.customModules) {
         let absoluteSourcePath = customModule.sourcePath;
 

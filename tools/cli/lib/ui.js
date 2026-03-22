@@ -51,125 +51,11 @@ class UI {
       confirmedDirectory = await this.getConfirmedDirectory();
     }
 
-    // Preflight: Check for legacy BMAD v4 footprints immediately after getting directory
-    const { Detector } = require('../installers/lib/core/detector');
     const { Installer } = require('../installers/lib/core/installer');
-    const detector = new Detector();
     const installer = new Installer();
-    const legacyV4 = await detector.detectLegacyV4(confirmedDirectory);
-    if (legacyV4.hasLegacyV4) {
-      await installer.handleLegacyV4Migration(confirmedDirectory, legacyV4);
-    }
+    const { bmadDir } = await installer.findBmadDir(confirmedDirectory);
 
-    // Check for legacy folders and prompt for rename before showing any menus
-    let hasLegacyCfg = false;
-    let hasLegacyBmadFolder = false;
-    let bmadDir = null;
-    let legacyBmadPath = null;
-
-    // First check for legacy .bmad folder (instead of _bmad)
-    // Only check if directory exists
-    if (await fs.pathExists(confirmedDirectory)) {
-      const entries = await fs.readdir(confirmedDirectory, { withFileTypes: true });
-      for (const entry of entries) {
-        if (entry.isDirectory() && (entry.name === '.bmad' || entry.name === 'bmad')) {
-          hasLegacyBmadFolder = true;
-          legacyBmadPath = path.join(confirmedDirectory, entry.name);
-          bmadDir = legacyBmadPath;
-
-          // Check if it has _cfg folder
-          const cfgPath = path.join(legacyBmadPath, '_cfg');
-          if (await fs.pathExists(cfgPath)) {
-            hasLegacyCfg = true;
-          }
-          break;
-        }
-      }
-    }
-
-    // If no .bmad or bmad found, check for current installations _bmad
-    if (!hasLegacyBmadFolder) {
-      const bmadResult = await installer.findBmadDir(confirmedDirectory);
-      bmadDir = bmadResult.bmadDir;
-      hasLegacyCfg = bmadResult.hasLegacyCfg;
-    }
-
-    // Handle legacy .bmad or _cfg folder - these are very old (v4 or alpha)
-    // Show version warning instead of offering conversion
-    if (hasLegacyBmadFolder || hasLegacyCfg) {
-      await prompts.log.warn('LEGACY INSTALLATION DETECTED');
-      await prompts.note(
-        'Found a ".bmad"/"bmad" folder, or a legacy "_cfg" folder under the bmad folder -\n' +
-          'this is from an old BMAD version that is out of date for automatic upgrade,\n' +
-          'manual intervention required.\n\n' +
-          'You have a legacy version installed (v4 or alpha).\n' +
-          'Legacy installations may have compatibility issues.\n\n' +
-          'For the best experience, we strongly recommend:\n' +
-          '  1. Delete your current BMAD installation folder (.bmad or bmad)\n' +
-          '  2. Run a fresh installation\n\n' +
-          'If you do not want to start fresh, you can attempt to proceed beyond this\n' +
-          'point IF you have ensured the bmad folder is named _bmad, and under it there\n' +
-          'is a _config folder. If you have a folder under your bmad folder named _cfg,\n' +
-          'you would need to rename it _config, and then restart the installer.\n\n' +
-          'Benefits of a fresh install:\n' +
-          '  \u2022 Cleaner configuration without legacy artifacts\n' +
-          '  \u2022 All new features properly configured\n' +
-          '  \u2022 Fewer potential conflicts\n\n' +
-          'If you have already produced output from an earlier alpha version, you can\n' +
-          'still retain those artifacts. After installation, ensure you configured during\n' +
-          'install the proper file locations for artifacts depending on the module you\n' +
-          'are using, or move the files to the proper locations.',
-        'Legacy Installation Detected',
-      );
-
-      const proceed = await prompts.select({
-        message: 'How would you like to proceed?',
-        choices: [
-          {
-            name: 'Cancel and do a fresh install (recommended)',
-            value: 'cancel',
-          },
-          {
-            name: 'Proceed anyway (will attempt update, potentially may fail or have unstable behavior)',
-            value: 'proceed',
-          },
-        ],
-        default: 'cancel',
-      });
-
-      if (proceed === 'cancel') {
-        await prompts.note('1. Delete the existing bmad folder in your project\n' + "2. Run 'bmad install' again", 'To do a fresh install');
-        process.exit(0);
-        return;
-      }
-
-      const s = await prompts.spinner();
-      s.start('Updating folder structure...');
-      try {
-        // Handle .bmad folder
-        if (hasLegacyBmadFolder) {
-          const newBmadPath = path.join(confirmedDirectory, '_bmad');
-          await fs.move(legacyBmadPath, newBmadPath);
-          bmadDir = newBmadPath;
-          s.stop(`Renamed "${path.basename(legacyBmadPath)}" to "_bmad"`);
-        }
-
-        // Handle _cfg folder (either from .bmad or standalone)
-        const cfgPath = path.join(bmadDir, '_cfg');
-        if (await fs.pathExists(cfgPath)) {
-          s.start('Renaming configuration folder...');
-          const newCfgPath = path.join(bmadDir, '_config');
-          await fs.move(cfgPath, newCfgPath);
-          s.stop('Renamed "_cfg" to "_config"');
-        }
-      } catch (error) {
-        s.stop('Failed to update folder structure');
-        await prompts.log.error(`Error: ${error.message}`);
-        process.exit(1);
-      }
-    }
-
-    // Check if there's an existing BMAD installation (after any folder renames)
+    // Check if there's an existing BMAD installation
     const hasExistingInstall = await fs.pathExists(bmadDir);
 
     let customContentConfig = { hasCustomContent: false };
@@ -187,15 +73,6 @@ class UI {
       const packageJsonPath = path.join(__dirname, '../../../package.json');
       const currentVersion = require(packageJsonPath).version;
       const installedVersion = existingInstall.version || 'unknown';
-
-      // Check if version is pre beta
-      const shouldProceed = await this.showLegacyVersionWarning(installedVersion, currentVersion, path.basename(bmadDir), options);
-
-      // If user chose to cancel, exit the installer
-      if (!shouldProceed) {
-        process.exit(0);
-        return;
-      }
 
       // Build menu choices dynamically
       const choices = [];
@@ -575,15 +452,12 @@ class UI {
    * @returns {Object} Tool configuration
    */
   async promptToolSelection(projectDir, options = {}) {
-    // Check for existing configured IDEs - use findBmadDir to detect custom folder names
-    const { Detector } = require('../installers/lib/core/detector');
+    const { ExistingInstall } = require('../installers/lib/core/existing-install');
     const { Installer } = require('../installers/lib/core/installer');
-    const detector = new Detector();
     const installer = new Installer();
-    const bmadResult = await installer.findBmadDir(projectDir || process.cwd());
-    const bmadDir = bmadResult.bmadDir;
-    const existingInstall = await detector.detect(bmadDir);
-    const configuredIdes = existingInstall.ides || [];
+    const { bmadDir } = await installer.findBmadDir(projectDir || process.cwd());
+    const existingInstall = await ExistingInstall.detect(bmadDir);
+    const configuredIdes = existingInstall.ides;
 
     // Get IDE manager to fetch available IDEs dynamically
     const { IdeManager } = require('../installers/lib/ide/manager');
@@ -816,14 +690,12 @@ class UI {
    * @returns {Object} Object with existingInstall, installedModuleIds, and bmadDir
    */
   async getExistingInstallation(directory) {
-    const { Detector } = require('../installers/lib/core/detector');
+    const { ExistingInstall } = require('../installers/lib/core/existing-install');
     const { Installer } = require('../installers/lib/core/installer');
-    const detector = new Detector();
     const installer = new Installer();
-    const bmadDirResult = await installer.findBmadDir(directory);
-    const bmadDir = bmadDirResult.bmadDir;
-    const existingInstall = await detector.detect(bmadDir);
-    const installedModuleIds = new Set(existingInstall.modules.map((mod) => mod.id));
+    const { bmadDir } = await installer.findBmadDir(directory);
+    const existingInstall = await ExistingInstall.detect(bmadDir);
+    const installedModuleIds = new Set(existingInstall.moduleIds);
 
     return { existingInstall, installedModuleIds, bmadDir };
   }
@@ -1393,13 +1265,12 @@ class UI {
    * @returns {Array} List of configured IDEs
    */
   async getConfiguredIdes(directory) {
-    const { Detector } = require('../installers/lib/core/detector');
+    const { ExistingInstall } = require('../installers/lib/core/existing-install');
     const { Installer } = require('../installers/lib/core/installer');
-    const detector = new Detector();
     const installer = new Installer();
-    const bmadResult = await installer.findBmadDir(directory);
-    const existingInstall = await detector.detect(bmadResult.bmadDir);
-    return existingInstall.ides || [];
+    const { bmadDir } = await installer.findBmadDir(directory);
+    const existingInstall = await ExistingInstall.detect(bmadDir);
+    return existingInstall.ides;
   }
 
   /**
@@ -1676,82 +1547,6 @@ class UI {
     }
 
     return result;
-  }
-
-  /**
-   * Check if installed version is a legacy version that needs fresh install
-   * @param {string} installedVersion - The installed version
-   * @returns {boolean} True if legacy (v4 or any alpha)
-   */
-  isLegacyVersion(installedVersion) {
-    if (!installedVersion || installedVersion === 'unknown') {
-      return true; // Treat unknown as legacy for safety
-    }
-    // Check if version string contains -alpha or -Alpha (any v6 alpha)
-    return /-alpha\./i.test(installedVersion);
-  }
-
-  /**
-   * Show warning for legacy version (v4 or alpha) and ask if user wants to proceed
-   * @param {string} installedVersion - The installed version
-   * @param {string} currentVersion - The current version
-   * @param {string} bmadFolderName - Name of the BMAD folder
-   * @returns {Promise<boolean>} True if user wants to proceed, false if they cancel
-   */
-  async showLegacyVersionWarning(installedVersion, currentVersion, bmadFolderName, options = {}) {
-    if (!this.isLegacyVersion(installedVersion)) {
-      return true; // Not legacy, proceed
-    }
-
-    let warningContent;
-    if (installedVersion === 'unknown') {
-      warningContent = 'Unable to detect your installed BMAD version.\n' + 'This appears to be a legacy or unsupported installation.';
-    } else {
-      warningContent =
-        `You are updating from ${installedVersion} to ${currentVersion}.\n` + 'You have a legacy version installed (v4 or alpha).';
-    }
-
-    warningContent +=
-      '\n\nFor the best experience, we recommend:\n' +
-      '  1. Delete your current BMAD installation folder\n' +
-      `     (the "${bmadFolderName}/" folder in your project)\n` +
-      '  2. Run a fresh installation\n\n' +
-      'Benefits of a fresh install:\n' +
-      '  \u2022 Cleaner configuration without legacy artifacts\n' +
-      '  \u2022 All new features properly configured\n' +
-      '  \u2022 Fewer potential conflicts';
-
-    await prompts.log.warn('VERSION WARNING');
-    await prompts.note(warningContent, 'Version Warning');
-
-    if (options.yes) {
-      await prompts.log.warn('Non-interactive mode (--yes): auto-proceeding with legacy update');
-      return true;
-    }
-
-    const proceed = await prompts.select({
-      message: 'How would you like to proceed?',
-      choices: [
-        {
-          name: 'Proceed with update anyway (may have issues)',
-          value: 'proceed',
-        },
-        {
-          name: 'Cancel (recommended - do a fresh install instead)',
-          value: 'cancel',
-        },
-      ],
-      default: 'cancel',
-    });
-
-    if (proceed === 'cancel') {
-      await prompts.note(
-        `1. Delete the "${bmadFolderName}/" folder in your project\n` + "2. Run 'bmad install' again",
-        'To do a fresh install',
-      );
-    }
-
-    return proceed === 'proceed';
   }
 
   /**

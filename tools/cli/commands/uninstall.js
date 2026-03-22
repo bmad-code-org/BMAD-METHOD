@@ -63,8 +63,8 @@ module.exports = {
 
       const existingInstall = await installer.getStatus(projectDir);
       const version = existingInstall.version || 'unknown';
-      const modules = (existingInstall.modules || []).map((m) => m.id || m.name).join(', ');
-      const ides = (existingInstall.ides || []).join(', ');
+      const modules = existingInstall.moduleIds.join(', ');
+      const ides = existingInstall.ides.join(', ');
 
       const outputFolder = await installer.getOutputFolder(projectDir);
 

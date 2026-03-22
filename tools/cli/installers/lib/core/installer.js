@@ -1,12 +1,11 @@
 const path = require('node:path');
 const fs = require('fs-extra');
-const { Detector } = require('./detector');
 const { Manifest } = require('./manifest');
 const { OfficialModules } = require('../modules/official-modules');
 const { CustomModules } = require('../modules/custom-modules');
 const { IdeManager } = require('../ide/manager');
 const { FileOps } = require('../../../lib/file-ops');
-const { Config } = require('../../../lib/config');
+const { Config } = require('./config');
 const { getProjectRoot, getSourcePath, getModulePath } = require('../../../lib/project-root');
 const { ManifestGenerator } = require('./manifest-generator');
 const { IdeConfigManager } = require('./ide-config-manager');
@@ -16,16 +15,15 @@ const { BMAD_FOLDER_NAME } = require('../ide/shared/path-utils');
 const { InstallPaths } = require('./install-paths');
 const { ExternalModuleManager } = require('../modules/external-manager');
 
+const { ExistingInstall } = require('./existing-install');
+
 class Installer {
   constructor() {
     this.externalModuleManager = new ExternalModuleManager();
-    this.detector = new Detector();
     this.manifest = new Manifest();
-    this.officialModules = new OfficialModules();
     this.customModules = new CustomModules();
     this.ideManager = new IdeManager();
     this.fileOps = new FileOps();
-    this.config = new Config();
     this.ideConfigManager = new IdeConfigManager();
     this.installedFiles = new Set(); // Track all installed files
     this.bmadFolderName = BMAD_FOLDER_NAME;
@@ -39,26 +37,22 @@ class Installer {
    * @param {string[]} config.ides - IDEs to configure
    */
   async install(originalConfig) {
-    const config = this._buildConfig(originalConfig);
-
-    // Everything else — custom modules, quick-update state, the whole mess
     const customConfig = { ...originalConfig };
 
-    const paths = await InstallPaths.create(config);
-
-    // Collect configurations for official modules
-    await this.officialModules.collectConfigs(config, paths);
-
-    await this.customModules.discoverPaths(config, paths);
-
     try {
-      const existingInstall = await this.detector.detect(paths.bmadDir);
+      const config = Config.build(originalConfig);
+      const paths = await InstallPaths.create(config);
+      const officialModules = await OfficialModules.build(config, paths);
+
+      const existingInstall = await ExistingInstall.detect(paths.bmadDir);
+
+      await this.customModules.discoverPaths(config, paths);
 
       if (existingInstall.installed && !config.force) {
         if (!config.isQuickUpdate()) {
           await this._removeDeselectedModules(existingInstall, config, paths);
         }
-        await this._prepareUpdateState(paths, config, customConfig, existingInstall);
+        await this._prepareUpdateState(paths, config, customConfig, existingInstall, officialModules);
       }
 
       const ideConfigurations = await this._loadIdeConfigurations(config, customConfig, paths);
@@ -74,8 +68,8 @@ class Installer {
 
       await this._cacheCustomModules(paths, addResult);
 
-      const { officialModules, allModules } = await this._buildModuleLists(config, customConfig, paths);
-      await this._installAndConfigure(config, customConfig, paths, officialModules, allModules, addResult);
+      const { officialModuleIds, allModules } = await this._buildModuleLists(config, customConfig, paths);
+      await this._installAndConfigure(config, customConfig, paths, officialModuleIds, allModules, addResult, officialModules);
 
       await this._setupIdes(config, ideConfigurations, allModules, paths, addResult);
 
@@ -123,7 +117,7 @@ class Installer {
    * No confirmation — the user's module selection is the decision.
    */
   async _removeDeselectedModules(existingInstall, config, paths) {
-    const previouslyInstalled = new Set(existingInstall.modules.map((m) => m.id));
+    const previouslyInstalled = new Set(existingInstall.moduleIds);
     const newlySelected = new Set(config.modules || []);
     const toRemove = [...previouslyInstalled].filter((m) => !newlySelected.has(m) && m !== 'core');
 
@@ -156,10 +150,8 @@ class Installer {
       const bmadDir = paths.bmadDir;
       const savedIdeConfigs = await this.ideConfigManager.loadAllIdeConfigs(bmadDir);
 
-      const { Detector } = require('./detector');
-      const detector = new Detector();
-      const existingInstall = await detector.detect(bmadDir);
-      const previouslyConfigured = existingInstall.ides || [];
+      const existingInstall = await ExistingInstall.detect(bmadDir);
+      const previouslyConfigured = existingInstall.ides;
 
       for (const ide of config.ides || []) {
         if (previouslyConfigured.includes(ide) && savedIdeConfigs[ide]) {
@@ -201,7 +193,7 @@ class Installer {
    * No confirmation — the user's IDE selection is the decision.
    */
   async _removeDeselectedIdes(existingInstall, config, ideConfigurations, paths) {
-    const previouslyInstalled = new Set(existingInstall.ides || []);
+    const previouslyInstalled = new Set(existingInstall.ides);
     const newlySelected = new Set(config.ides || []);
     const toRemove = [...previouslyInstalled].filter((ide) => !newlySelected.has(ide));
 
@@ -243,7 +235,7 @@ class Installer {
 
   /**
    * Build the official and combined module lists from config and custom sources.
-   * @returns {{ officialModules: string[], allModules: string[] }}
+   * @returns {{ officialModuleIds: string[], allModules: string[] }}
    */
   async _buildModuleLists(config, customConfig, paths) {
     const finalCustomContent = customConfig.customContent;
@@ -274,25 +266,25 @@ class Installer {
       }
     }
 
-    const officialModules = (config.modules || []).filter((m) => !customModuleIds.has(m));
+    const officialModuleIds = (config.modules || []).filter((m) => !customModuleIds.has(m));
 
-    const allModules = [...officialModules];
+    const allModules = [...officialModuleIds];
     for (const id of customModuleIds) {
       if (!allModules.includes(id)) {
         allModules.push(id);
       }
     }
 
-    return { officialModules, allModules };
+    return { officialModuleIds, allModules };
   }
 
   /**
    * Install modules, create directories, generate configs and manifests.
    */
-  async _installAndConfigure(config, customConfig, paths, officialModules, allModules, addResult) {
+  async _installAndConfigure(config, customConfig, paths, officialModuleIds, allModules, addResult, officialModules) {
     const isQuickUpdate = config.isQuickUpdate();
     const finalCustomContent = customConfig.customContent;
-    const moduleConfigs = this.officialModules.moduleConfigs;
+    const moduleConfigs = officialModules.moduleConfigs;
 
     const dirResults = { createdDirs: [], movedDirs: [], createdWdsFolders: [] };
 
@@ -304,12 +296,12 @@ class Installer {
         task: async (message) => {
           const installedModuleNames = new Set();
 
-          await this._installOfficialModules(config, paths, officialModules, addResult, isQuickUpdate, {
+          await this._installOfficialModules(config, paths, officialModuleIds, addResult, isQuickUpdate, officialModules, {
             message,
             installedModuleNames,
           });
 
-          await this._installCustomModules(customConfig, paths, finalCustomContent, addResult, isQuickUpdate, {
+          await this._installCustomModules(customConfig, paths, finalCustomContent, addResult, isQuickUpdate, officialModules, {
             message,
             installedModuleNames,
           });
@@ -332,10 +324,10 @@ class Installer {
         if (config.modules && config.modules.length > 0) {
           for (const moduleName of config.modules) {
             message(`Setting up ${moduleName}...`);
-            const result = await this.officialModules.createModuleDirectories(moduleName, paths.bmadDir, {
+            const result = await officialModules.createModuleDirectories(moduleName, paths.bmadDir, {
               installedIDEs: config.ides || [],
               moduleConfig: moduleConfigs[moduleName] || {},
-              existingModuleConfig: this.officialModules.existingConfig?.[moduleName] || {},
+              existingModuleConfig: officialModules.existingConfig?.[moduleName] || {},
               coreConfig: moduleConfigs.core || {},
               logger: moduleLogger,
               silent: true,
@@ -526,31 +518,6 @@ class Installer {
     ]);
   }
 
-  _buildConfig(originalConfig) {
-    const modules = [...(originalConfig.modules || [])];
-    if (originalConfig.installCore && !modules.includes('core')) {
-      modules.unshift('core');
-    }
-
-    return {
-      directory: originalConfig.directory,
-      modules,
-      ides: originalConfig.skipIde ? [] : [...(originalConfig.ides || [])],
-      skipPrompts: originalConfig.skipPrompts || false,
-      verbose: originalConfig.verbose || false,
-      force: originalConfig.force || false,
-      actionType: originalConfig.actionType,
-      coreConfig: originalConfig.coreConfig || {},
-      moduleConfigs: originalConfig.moduleConfigs || null,
-      hasCoreConfig() {
-        return this.coreConfig && Object.keys(this.coreConfig).length > 0;
-      },
-      isQuickUpdate() {
-        return originalConfig._quickUpdate || false;
-      },
-    };
-  }
-
   /**
    * Scan the custom module cache directory and register any cached custom modules
    * that aren't already known from the manifest or external module list.
@@ -600,7 +567,7 @@ class Installer {
    * @param {Object} customConfig - Full config bag (mutated with update state)
    * @param {Object} existingInstall - Detection result from detector.detect()
    */
-  async _prepareUpdateState(paths, config, customConfig, existingInstall) {
+  async _prepareUpdateState(paths, config, customConfig, existingInstall, officialModules) {
     customConfig._isUpdate = true;
     customConfig._existingInstall = existingInstall;
 
@@ -622,7 +589,7 @@ class Installer {
 
         config.coreConfig = existingCoreConfig;
         customConfig.coreConfig = existingCoreConfig;
-        this.officialModules.moduleConfigs.core = existingCoreConfig;
+        officialModules.moduleConfigs.core = existingCoreConfig;
       } catch (error) {
         await prompts.log.warn(`Warning: Could not read existing core config: ${error.message}`);
       }
@@ -678,22 +645,22 @@ class Installer {
    * Install official (non-custom) modules.
    * @param {Object} config - Installation configuration
    * @param {Object} paths - InstallPaths instance
-   * @param {string[]} officialModules - Official module IDs to install
+   * @param {string[]} officialModuleIds - Official module IDs to install
    * @param {Function} addResult - Callback to record installation results
    * @param {boolean} isQuickUpdate - Whether this is a quick update
    * @param {Object} ctx - Shared context: { message, installedModuleNames }
    */
-  async _installOfficialModules(config, paths, officialModules, addResult, isQuickUpdate, ctx) {
+  async _installOfficialModules(config, paths, officialModuleIds, addResult, isQuickUpdate, officialModules, ctx) {
     const { message, installedModuleNames } = ctx;
 
-    for (const moduleName of officialModules) {
+    for (const moduleName of officialModuleIds) {
       if (installedModuleNames.has(moduleName)) continue;
       installedModuleNames.add(moduleName);
 
       message(`${isQuickUpdate ? 'Updating' : 'Installing'} ${moduleName}...`);
 
-      const moduleConfig = this.officialModules.moduleConfigs[moduleName] || {};
-      await this.officialModules.install(
+      const moduleConfig = officialModules.moduleConfigs[moduleName] || {};
+      await officialModules.install(
         moduleName,
         paths.bmadDir,
         (filePath) => {
@@ -720,7 +687,7 @@ class Installer {
    * @param {boolean} isQuickUpdate - Whether this is a quick update
    * @param {Object} ctx - Shared context: { message, installedModuleNames }
    */
-  async _installCustomModules(customConfig, paths, finalCustomContent, addResult, isQuickUpdate, ctx) {
+  async _installCustomModules(customConfig, paths, finalCustomContent, addResult, isQuickUpdate, officialModules, ctx) {
     const { message, installedModuleNames } = ctx;
 
     // Collect all custom module IDs with their info from all sources
@@ -776,8 +743,8 @@ class Installer {
         this.customModules.paths.set(moduleName, customInfo.path);
       }
 
-      const collectedModuleConfig = this.officialModules.moduleConfigs[moduleName] || {};
-      await this.officialModules.install(
+      const collectedModuleConfig = officialModules.moduleConfigs[moduleName] || {};
+      await officialModules.install(
         moduleName,
         paths.bmadDir,
         (filePath) => {
@@ -834,19 +801,16 @@ class Installer {
     }
 
     // Check for already configured IDEs
-    const { Detector } = require('./detector');
-    const detector = new Detector();
     const bmadDir = path.join(projectDir, BMAD_FOLDER_NAME);
 
     // During full reinstall, use the saved previous IDEs since bmad dir was deleted
     // Otherwise detect from existing installation
     let previouslyConfiguredIdes;
     if (isFullReinstall) {
-      // During reinstall, treat all IDEs as new (need configuration)
       previouslyConfiguredIdes = [];
     } else {
-      const existingInstall = await detector.detect(bmadDir);
-      previouslyConfiguredIdes = existingInstall.ides || [];
+      const existingInstall = await ExistingInstall.detect(bmadDir);
+      previouslyConfiguredIdes = existingInstall.ides;
     }
 
     // Load saved IDE configurations for already-configured IDEs
@@ -1467,9 +1431,9 @@ class Installer {
       }
 
       // Detect existing installation
-      const existingInstall = await this.detector.detect(bmadDir);
-      const installedModules = existingInstall.modules.map((m) => m.id);
-      const configuredIdes = existingInstall.ides || [];
+      const existingInstall = await ExistingInstall.detect(bmadDir);
+      const installedModules = existingInstall.moduleIds;
+      const configuredIdes = existingInstall.ides;
       const projectRoot = path.dirname(bmadDir);
 
       // Get custom module sources: first from --custom-content (re-cache from source), then from cache
@@ -1532,7 +1496,7 @@ class Installer {
       const savedIdeConfigs = await this.ideConfigManager.loadAllIdeConfigs(bmadDir);
 
       // Get available modules (what we have source for)
-      const availableModulesData = await this.officialModules.listAvailable();
+      const availableModulesData = await new OfficialModules().listAvailable();
       const availableModules = [...availableModulesData.modules, ...availableModulesData.customModules];
 
       // Add external official modules to available modules
@@ -1612,19 +1576,20 @@ class Installer {
 
       // Load existing configs and collect new fields (if any)
       await prompts.log.info('Checking for new configuration options...');
-      await this.officialModules.loadExistingConfig(projectDir);
+      const quickModules = new OfficialModules();
+      await quickModules.loadExistingConfig(projectDir);
 
       let promptedForNewFields = false;
 
       // Check core config for new fields
-      const corePrompted = await this.officialModules.collectModuleConfigQuick('core', projectDir, true);
+      const corePrompted = await quickModules.collectModuleConfigQuick('core', projectDir, true);
       if (corePrompted) {
         promptedForNewFields = true;
       }
 
       // Check each module we're updating for new fields (NOT skipped modules)
       for (const moduleName of modulesToUpdate) {
-        const modulePrompted = await this.officialModules.collectModuleConfigQuick(moduleName, projectDir, true);
+        const modulePrompted = await quickModules.collectModuleConfigQuick(moduleName, projectDir, true);
         if (modulePrompted) {
           promptedForNewFields = true;
         }
@@ -1635,7 +1600,7 @@ class Installer {
       }
 
       // Add metadata
-      this.officialModules.collectedConfig._meta = {
+      quickModules.collectedConfig._meta = {
         version: require(path.join(getProjectRoot(), 'package.json')).version,
         installDate: new Date().toISOString(),
         lastModified: new Date().toISOString(),
@@ -1646,7 +1611,8 @@ class Installer {
         directory: projectDir,
         modules: modulesToUpdate, // Only update modules we have source for (includes core)
         ides: configuredIdes,
-        coreConfig: this.officialModules.collectedConfig.core,
+        coreConfig: quickModules.collectedConfig.core,
+        moduleConfigs: quickModules.collectedConfig, // Pass collected configs so build() picks them up
         actionType: 'install', // Use regular install flow
         _quickUpdate: true, // Flag to skip certain prompts
         _preserveModules: skippedModules, // Preserve these in manifest even though we didn't update them
@@ -1679,7 +1645,7 @@ class Installer {
     try {
       const projectDir = path.resolve(config.directory);
       const { bmadDir } = await this.findBmadDir(projectDir);
-      const existingInstall = await this.detector.detect(bmadDir);
+      const existingInstall = await ExistingInstall.detect(bmadDir);
 
       if (!existingInstall.installed) {
         throw new Error(`No BMAD installation found at ${bmadDir}`);
@@ -1692,11 +1658,8 @@ class Installer {
       // Check for custom modules with missing sources before update
       const customModuleSources = new Map();
 
-      // Check manifest for backward compatibility
-      if (existingInstall.customModules) {
-        for (const customModule of existingInstall.customModules) {
-          customModuleSources.set(customModule.id, customModule);
-        }
+      for (const customModule of existingInstall.customModules) {
+        customModuleSources.set(customModule.id, customModule);
       }
 
       // Also check cache directory
@@ -1745,7 +1708,7 @@ class Installer {
           bmadDir,
           projectRoot,
           'update',
-          existingInstall.modules.map((m) => m.id),
+          existingInstall.moduleIds,
           config.skipPrompts || false,
         );
       }
@@ -1770,8 +1733,9 @@ class Installer {
         await this.updateCore(bmadDir, config.force);
       }
 
+      const updateModules = new OfficialModules();
       for (const module of existingInstall.modules) {
-        await this.officialModules.update(module.id, bmadDir, config.force, { installer: this });
+        await updateModules.update(module.id, bmadDir, config.force, { installer: this });
       }
 
       // Update manifest
@@ -1791,7 +1755,7 @@ class Installer {
    */
   async updateCore(bmadDir, force = false) {
     if (force) {
-      await this.officialModules.install('core', bmadDir, (filePath) => this.installedFiles.add(filePath), {
+      await new OfficialModules().install('core', bmadDir, (filePath) => this.installedFiles.add(filePath), {
         skipModuleInstaller: true,
         silent: true,
       });
@@ -1821,7 +1785,7 @@ class Installer {
     }
 
     // 1. DETECT: Read state BEFORE deleting anything
-    const existingInstall = await this.detector.detect(bmadDir);
+    const existingInstall = await ExistingInstall.detect(bmadDir);
     const outputFolder = await this._readOutputFolder(bmadDir);
 
     const removed = { modules: false, ideConfigs: false, outputFolder: false };
@@ -1855,7 +1819,7 @@ class Installer {
   async uninstallIdeConfigs(projectDir, existingInstall, options = {}) {
     await this.ideManager.ensureInitialized();
     const cleanupOptions = { isUninstall: true, silent: options.silent };
-    const ideList = existingInstall.ides || [];
+    const ideList = existingInstall.ides;
     if (ideList.length > 0) {
       return this.ideManager.cleanupByList(projectDir, ideList, cleanupOptions);
     }
@@ -1902,14 +1866,14 @@ class Installer {
   async getStatus(directory) {
     const projectDir = path.resolve(directory);
     const { bmadDir } = await this.findBmadDir(projectDir);
-    return await this.detector.detect(bmadDir);
+    return await ExistingInstall.detect(bmadDir);
   }
 
   /**
    * Get available modules
    */
   async getAvailableModules() {
-    return await this.officialModules.listAvailable();
+    return await new OfficialModules().listAvailable();
   }
 
   /**
@@ -1921,48 +1885,6 @@ class Installer {
   async getOutputFolder(projectDir) {
     const { bmadDir } = await this.findBmadDir(projectDir);
     return this._readOutputFolder(bmadDir);
-  }
-
-  /**
-   * Handle legacy BMAD v4 detection with simple warning
-   * @param {string} _projectDir - Project directory (unused in simplified version)
-   * @param {Object} _legacyV4 - Legacy V4 detection result (unused in simplified version)
-   */
-  async handleLegacyV4Migration(_projectDir, _legacyV4) {
-    await prompts.note(
-      'Found .bmad-method folder from BMAD v4 installation.\n\n' +
-        'Before continuing with installation, we recommend:\n' +
-        '  1. Remove the .bmad-method folder, OR\n' +
-        '  2. Back it up by renaming it to another name (e.g., bmad-method-backup)\n\n' +
-        'If your v4 installation set up rules or commands, you should remove those as well.',
-      'Legacy BMAD v4 detected',
-    );
-
-    const proceed = await prompts.select({
-      message: 'What would you like to do?',
-      choices: [
-        {
-          name: 'Exit and clean up manually (recommended)',
-          value: 'exit',
-          hint: 'Exit installation',
-        },
-        {
-          name: 'Continue with installation anyway',
-          value: 'continue',
-          hint: 'Continue',
-        },
-      ],
-      default: 'exit',
-    });
-
-    if (proceed === 'exit') {
-      await prompts.log.info('Please remove the .bmad-method folder and any v4 rules/commands, then run the installer again.');
-      // Allow event loop to flush pending I/O before exit
-      setImmediate(() => process.exit(0));
-      return;
-    }
-
-    await prompts.log.warn('Proceeding with installation despite legacy v4 folder');
   }
 
   /**
@@ -2201,29 +2123,12 @@ class Installer {
   /**
    * Find the bmad installation directory in a project
    * Always uses the standard _bmad folder name
-   * Also checks for legacy _cfg folder for migration
    * @param {string} projectDir - Project directory
-   * @returns {Promise<Object>} { bmadDir: string, hasLegacyCfg: boolean }
+   * @returns {Promise<Object>} { bmadDir: string }
    */
   async findBmadDir(projectDir) {
     const bmadDir = path.join(projectDir, BMAD_FOLDER_NAME);
-
-    // Check if project directory exists
-    if (!(await fs.pathExists(projectDir))) {
-      // Project doesn't exist yet, return default
-      return { bmadDir, hasLegacyCfg: false };
-    }
-
-    // Check for legacy _cfg folder if bmad directory exists
-    let hasLegacyCfg = false;
-    if (await fs.pathExists(bmadDir)) {
-      const legacyCfgPath = path.join(bmadDir, '_cfg');
-      if (await fs.pathExists(legacyCfgPath)) {
-        hasLegacyCfg = true;
-      }
-    }
-
-    return { bmadDir, hasLegacyCfg };
+    return { bmadDir };
   }
 
   async createDirectoryStructure(bmadDir) {
