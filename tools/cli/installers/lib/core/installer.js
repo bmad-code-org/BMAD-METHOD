@@ -8,7 +8,6 @@ const { FileOps } = require('../../../lib/file-ops');
 const { Config } = require('./config');
 const { getProjectRoot, getSourcePath, getModulePath } = require('../../../lib/project-root');
 const { ManifestGenerator } = require('./manifest-generator');
-const { IdeConfigManager } = require('./ide-config-manager');
 const { CustomHandler } = require('../custom-handler');
 const prompts = require('../../../lib/prompts');
 const { BMAD_FOLDER_NAME } = require('../ide/shared/path-utils');
@@ -24,7 +23,6 @@ class Installer {
     this.customModules = new CustomModules();
     this.ideManager = new IdeManager();
     this.fileOps = new FileOps();
-    this.ideConfigManager = new IdeConfigManager();
     this.installedFiles = new Set(); // Track all installed files
     this.bmadFolderName = BMAD_FOLDER_NAME;
   }
@@ -53,11 +51,10 @@ class Installer {
         await this._prepareUpdateState(paths, config, customConfig, existingInstall, officialModules);
       }
 
-      const ideConfigurations = await this._loadIdeConfigurations(config, customConfig, paths);
       await this._validateIdeSelection(config);
 
       if (customConfig._isUpdate && customConfig._existingInstall) {
-        await this._removeDeselectedIdes(customConfig._existingInstall, config, ideConfigurations, paths);
+        await this._removeDeselectedIdes(customConfig._existingInstall, config, paths);
       }
 
       // Results collector for consolidated summary
@@ -69,7 +66,7 @@ class Installer {
       const { officialModuleIds, allModules } = await this._buildModuleLists(config, customConfig, paths);
       await this._installAndConfigure(config, customConfig, paths, officialModuleIds, allModules, addResult, officialModules);
 
-      await this._setupIdes(config, ideConfigurations, allModules, paths, addResult);
+      await this._setupIdes(config, allModules, paths, addResult);
 
       await this._restoreUserFiles(paths, customConfig);
 
@@ -132,38 +129,6 @@ class Installer {
   }
 
   /**
-   * Load IDE configurations from saved state. No prompts.
-   */
-  async _loadIdeConfigurations(config, customConfig, paths) {
-    const ideConfigurations = {};
-
-    if (config.isQuickUpdate()) {
-      const savedIdeConfigs = customConfig._savedIdeConfigs || {};
-      for (const ide of config.ides || []) {
-        ideConfigurations[ide] = savedIdeConfigs[ide] || { _alreadyConfigured: true };
-      }
-    } else {
-      // Load saved configs for previously configured IDEs
-      await this.ideManager.ensureInitialized();
-      const bmadDir = paths.bmadDir;
-      const savedIdeConfigs = await this.ideConfigManager.loadAllIdeConfigs(bmadDir);
-
-      const existingInstall = await ExistingInstall.detect(bmadDir);
-      const previouslyConfigured = existingInstall.ides;
-
-      for (const ide of config.ides || []) {
-        if (previouslyConfigured.includes(ide) && savedIdeConfigs[ide]) {
-          ideConfigurations[ide] = savedIdeConfigs[ide];
-        } else {
-          ideConfigurations[ide] = { _noConfigNeeded: true };
-        }
-      }
-    }
-
-    return ideConfigurations;
-  }
-
-  /**
    * Fail fast if all selected IDEs are suspended.
    */
   async _validateIdeSelection(config) {
@@ -190,7 +155,7 @@ class Installer {
    * Remove IDEs that were previously installed but are no longer selected.
    * No confirmation — the user's IDE selection is the decision.
    */
-  async _removeDeselectedIdes(existingInstall, config, ideConfigurations, paths) {
+  async _removeDeselectedIdes(existingInstall, config, paths) {
     const previouslyInstalled = new Set(existingInstall.ides);
     const newlySelected = new Set(config.ides || []);
     const toRemove = [...previouslyInstalled].filter((ide) => !newlySelected.has(ide));
@@ -204,7 +169,6 @@ class Installer {
         if (handler) {
           await handler.cleanup(paths.projectRoot);
         }
-        await this.ideConfigManager.deleteIdeConfig(paths.bmadDir, ide);
       } catch (error) {
         await prompts.log.warn(`Warning: Failed to remove ${ide}: ${error.message}`);
       }
@@ -406,7 +370,7 @@ class Installer {
   /**
    * Set up IDE integrations for each selected IDE.
    */
-  async _setupIdes(config, ideConfigurations, allModules, paths, addResult) {
+  async _setupIdes(config, allModules, paths, addResult) {
     if (config.skipIde || !config.ides || config.ides.length === 0) return;
 
     await this.ideManager.ensureInitialized();
@@ -418,30 +382,15 @@ class Installer {
     }
 
     for (const ide of validIdes) {
-      const ideHasConfig = Boolean(ideConfigurations[ide]);
-      const originalLog = console.log;
-      if (!config.verbose && ideHasConfig) {
-        console.log = () => {};
-      }
-      try {
-        const setupResult = await this.ideManager.setup(ide, paths.projectRoot, paths.bmadDir, {
-          selectedModules: allModules || [],
-          preCollectedConfig: ideConfigurations[ide] || null,
-          verbose: config.verbose,
-          silent: ideHasConfig,
-        });
+      const setupResult = await this.ideManager.setup(ide, paths.projectRoot, paths.bmadDir, {
+        selectedModules: allModules || [],
+        verbose: config.verbose,
+      });
 
-        if (ideConfigurations[ide] && !ideConfigurations[ide]._alreadyConfigured) {
-          await this.ideConfigManager.saveIdeConfig(paths.bmadDir, ide, ideConfigurations[ide]);
-        }
-
-        if (setupResult.success) {
-          addResult(ide, 'ok', setupResult.detail || '');
-        } else {
-          addResult(ide, 'error', setupResult.error || 'failed');
-        }
-      } finally {
-        console.log = originalLog;
+      if (setupResult.success) {
+        addResult(ide, 'ok', setupResult.detail || '');
+      } else {
+        addResult(ide, 'error', setupResult.error || 'failed');
       }
     }
   }
@@ -768,115 +717,6 @@ class Installer {
   /**
    * Collect Tool/IDE configurations after module configuration
    * @param {string} projectDir - Project directory
-   * @param {Array} selectedModules - Selected modules from configuration
-   * @param {boolean} isFullReinstall - Whether this is a full reinstall
-   * @param {Array} previousIdes - Previously configured IDEs (for reinstalls)
-   * @param {Array} preSelectedIdes - Pre-selected IDEs from early prompt (optional)
-   * @param {boolean} skipPrompts - Skip prompts and use defaults (for --yes flag)
-   * @returns {Object} Tool/IDE selection and configurations
-   */
-  async collectToolConfigurations(
-    projectDir,
-    selectedModules,
-    isFullReinstall = false,
-    previousIdes = [],
-    preSelectedIdes = null,
-    skipPrompts = false,
-  ) {
-    // Use pre-selected IDEs if provided, otherwise prompt
-    let toolConfig;
-    if (preSelectedIdes === null) {
-      // Fallback: prompt for tool selection (backwards compatibility)
-      const { UI } = require('../../../lib/ui');
-      const ui = new UI();
-      toolConfig = await ui.promptToolSelection(projectDir);
-    } else {
-      // IDEs were already selected during initial prompts
-      toolConfig = {
-        ides: preSelectedIdes,
-        skipIde: !preSelectedIdes || preSelectedIdes.length === 0,
-      };
-    }
-
-    // Check for already configured IDEs
-    const bmadDir = path.join(projectDir, BMAD_FOLDER_NAME);
-
-    // During full reinstall, use the saved previous IDEs since bmad dir was deleted
-    // Otherwise detect from existing installation
-    let previouslyConfiguredIdes;
-    if (isFullReinstall) {
-      previouslyConfiguredIdes = [];
-    } else {
-      const existingInstall = await ExistingInstall.detect(bmadDir);
-      previouslyConfiguredIdes = existingInstall.ides;
-    }
-
-    // Load saved IDE configurations for already-configured IDEs
-    const savedIdeConfigs = await this.ideConfigManager.loadAllIdeConfigs(bmadDir);
-
-    // Collect IDE-specific configurations if any were selected
-    const ideConfigurations = {};
-
-    // First, add saved configs for already-configured IDEs
-    for (const ide of toolConfig.ides || []) {
-      if (previouslyConfiguredIdes.includes(ide) && savedIdeConfigs[ide]) {
-        ideConfigurations[ide] = savedIdeConfigs[ide];
-      }
-    }
-
-    if (!toolConfig.skipIde && toolConfig.ides && toolConfig.ides.length > 0) {
-      // Ensure IDE manager is initialized
-      await this.ideManager.ensureInitialized();
-
-      // Determine which IDEs are newly selected (not previously configured)
-      const newlySelectedIdes = toolConfig.ides.filter((ide) => !previouslyConfiguredIdes.includes(ide));
-
-      if (newlySelectedIdes.length > 0) {
-        // Collect configuration for IDEs that support it
-        for (const ide of newlySelectedIdes) {
-          try {
-            const handler = this.ideManager.handlers.get(ide);
-
-            if (!handler) {
-              await prompts.log.warn(`Warning: IDE '${ide}' handler not found`);
-              continue;
-            }
-
-            // Check if this IDE handler has a collectConfiguration method
-            // (custom installers like Codex, Kilo may have this)
-            if (typeof handler.collectConfiguration === 'function') {
-              await prompts.log.info(`Configuring ${ide}...`);
-              ideConfigurations[ide] = await handler.collectConfiguration({
-                selectedModules: selectedModules || [],
-                projectDir,
-                bmadDir,
-                skipPrompts,
-              });
-            } else {
-              // Config-driven IDEs don't need configuration - mark as ready
-              ideConfigurations[ide] = { _noConfigNeeded: true };
-            }
-          } catch (error) {
-            // IDE doesn't support configuration or has an error
-            await prompts.log.warn(`Warning: Could not load configuration for ${ide}: ${error.message}`);
-          }
-        }
-      }
-
-      // Log which IDEs are already configured and being kept
-      const keptIdes = toolConfig.ides.filter((ide) => previouslyConfiguredIdes.includes(ide));
-      if (keptIdes.length > 0) {
-        await prompts.log.message(`Keeping existing configuration for: ${keptIdes.join(', ')}`);
-      }
-    }
-
-    return {
-      ides: toolConfig.ides,
-      skipIde: toolConfig.skipIde,
-      configurations: ideConfigurations,
-    };
-  }
-
   /**
    * Private: Prompt for update action
    */
@@ -1490,9 +1330,6 @@ class Installer {
         }
       }
 
-      // Load saved IDE configurations
-      const savedIdeConfigs = await this.ideConfigManager.loadAllIdeConfigs(bmadDir);
-
       // Get available modules (what we have source for)
       const availableModulesData = await new OfficialModules().listAvailable();
       const availableModules = [...availableModulesData.modules, ...availableModulesData.customModules];
@@ -1614,7 +1451,6 @@ class Installer {
         actionType: 'install', // Use regular install flow
         _quickUpdate: true, // Flag to skip certain prompts
         _preserveModules: skippedModules, // Preserve these in manifest even though we didn't update them
-        _savedIdeConfigs: savedIdeConfigs, // Pass saved IDE configs to installer
         _customModuleSources: customModuleSources, // Pass custom module sources for updates
         _existingModules: installedModules, // Pass all installed modules for manifest generation
         customContent: config.customContent, // Pass through for re-caching from source
