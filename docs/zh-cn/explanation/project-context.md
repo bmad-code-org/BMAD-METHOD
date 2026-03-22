@@ -89,6 +89,8 @@ sidebar:
 
 ## 继续阅读
 
+如需可执行步骤说明，请阅读 [How-to：项目上下文](../how-to/project-context.md)；如果你在既有项目落地这套机制，可参考 [既有项目常见问题](./established-projects-faq.md)。整体流程定位见 [工作流地图](../reference/workflow-map.md)。
+
 - [管理项目上下文（How-to）](../how-to/project-context.md)
 - [既有项目常见问题](./established-projects-faq.md)
 - [工作流地图](../reference/workflow-map.md)

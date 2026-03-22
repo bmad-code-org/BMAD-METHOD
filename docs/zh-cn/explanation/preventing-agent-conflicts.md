@@ -104,10 +104,12 @@ architecture: "如何做"
 
 :::tip[更稳妥的做法]
 - 先记录跨 `epic`、高冲突概率的决策
-- 把精力放在“会影响多个 story 的规则”
+- 把精力放在”会影响多个 story 的规则”
 - 随着项目演进持续更新架构文档
 - 出现重大偏移时使用 `bmad-correct-course`
 :::
+
+如需先理解为什么要在实施前做 solutioning，可阅读 [为什么解决方案设计很重要](./why-solutioning-matters.md)；如果你想把这些约束落地到项目执行，可继续看 [项目上下文](./project-context.md)。流程全景见 [工作流地图](../reference/workflow-map.md)。
 
 ## 继续阅读
 
