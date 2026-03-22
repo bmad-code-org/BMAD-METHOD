@@ -5,56 +5,56 @@ sidebar:
   order: 7
 ---
 
-使用 `.customize.yaml` 文件来调整智能体行为、角色和菜单，同时在更新过程中保留您的更改。
+使用 `.customize.yaml` 文件，自定义智能体（agent）的行为、角色（persona）和菜单，同时在后续更新中保留你的改动。
 
 ## 何时使用此功能
 
-- 您想要更改智能体的名称、个性或沟通风格
-- 您需要智能体记住项目特定的上下文
-- 您想要添加自定义菜单项来触发您自己的工作流或提示
-- 您希望智能体在每次启动时执行特定操作
+- 你想修改智能体名称、身份设定或沟通风格
+- 你需要让智能体长期记住项目约束和背景信息
+- 你希望增加自定义菜单项，触发自己的工作流或提示
+- 你希望智能体每次启动都先执行固定动作
 
 :::note[前置条件]
-- 在项目中安装了 BMad（参见[如何安装 BMad](./install-bmad.md)）
+- 已在项目中安装 BMad（参见[如何安装 BMad](./install-bmad.md)）
 - 用于编辑 YAML 文件的文本编辑器
 :::
 
 :::caution[保护您的自定义配置]
-始终使用此处描述的 `.customize.yaml` 文件，而不是直接编辑智能体文件。安装程序在更新期间会覆盖智能体文件，但会保留您的 `.customize.yaml` 更改。
+始终通过 `.customize.yaml` 自定义，不要直接改动智能体源文件。安装程序在更新时会覆盖智能体文件，但会保留 `.customize.yaml` 的内容。
 :::
 
 ## 步骤
 
 ### 1. 定位自定义文件
 
-安装后，在以下位置为每个智能体找到一个 `.customize.yaml` 文件：
+安装完成后，每个已安装智能体都会在下面目录生成一个 `.customize.yaml`：
 
 ```text
 _bmad/_config/agents/
 ├── core-bmad-master.customize.yaml
 ├── bmm-dev.customize.yaml
 ├── bmm-pm.customize.yaml
-└── ...（每个已安装的智能体一个文件）
+└── ...（每个已安装智能体一个文件）
 ```
 
 ### 2. 编辑自定义文件
 
-打开您想要修改的智能体的 `.customize.yaml` 文件。每个部分都是可选的——只自定义您需要的内容。
+打开目标智能体的 `.customize.yaml`。各段都可选，只改你需要的部分即可。
 
-| 部分               | 行为     | 用途                                           |
+| 部分 | 作用方式 | 用途 |
 | ------------------ | -------- | ---------------------------------------------- |
-| `agent.metadata`   | 替换     | 覆盖智能体的显示名称                           |
-| `persona`          | 替换     | 设置角色、身份、风格和原则                     |
-| `memories`         | 追加     | 添加智能体始终会记住的持久上下文               |
-| `menu`             | 追加     | 为工作流或提示添加自定义菜单项                 |
-| `critical_actions` | 追加     | 定义智能体的启动指令                           |
-| `prompts`          | 追加     | 创建可重复使用的提示供菜单操作使用             |
+| `agent.metadata` | 覆盖 | 覆盖智能体显示名称 |
+| `persona` | 覆盖 | 设置角色、身份、风格和原则 |
+| `memories` | 追加 | 添加智能体长期记忆的上下文 |
+| `menu` | 追加 | 增加指向工作流或提示的菜单项 |
+| `critical_actions` | 追加 | 定义智能体启动时要执行的动作 |
+| `prompts` | 追加 | 创建可复用提示，供菜单 `action` 引用 |
 
-标记为 **替换** 的部分会完全覆盖智能体的默认设置。标记为 **追加** 的部分会添加到现有配置中。
+标记为 **覆盖** 的部分会完全替换默认配置；标记为 **追加** 的部分会在默认配置基础上累加。
 
-**智能体名称**
+**智能体名称（`agent.metadata`）**
 
-更改智能体的自我介绍方式：
+修改智能体的显示名称：
 
 ```yaml
 agent:
@@ -62,9 +62,9 @@ agent:
     name: 'Spongebob' # 默认值："Amelia"
 ```
 
-**角色**
+**角色（`persona`）**
 
-替换智能体的个性、角色和沟通风格：
+替换智能体的人设、职责和沟通风格：
 
 ```yaml
 persona:
@@ -76,11 +76,11 @@ persona:
     - 'Favor composition over inheritance'
 ```
 
-`persona` 部分会替换整个默认角色，因此如果您设置它，请包含所有四个字段。
+`persona` 会覆盖默认整段配置，所以启用时请把四个字段都填全。
 
-**记忆**
+**记忆（`memories`）**
 
-添加智能体将始终记住的持久上下文：
+添加智能体会长期记住的上下文：
 
 ```yaml
 memories:
@@ -89,9 +89,9 @@ memories:
   - 'Learned in Epic 1 that it is not cool to just pretend that tests have passed'
 ```
 
-**菜单项**
+**菜单项（`menu`）**
 
-向智能体的显示菜单添加自定义条目。每个条目需要一个 `trigger`、一个目标（`workflow` 路径或 `action` 引用）和一个 `description`：
+给智能体菜单添加自定义项。每个条目都需要 `trigger`、目标（`workflow` 路径或 `action` 引用）和 `description`：
 
 ```yaml
 menu:
@@ -103,18 +103,18 @@ menu:
     description: Deploy to production
 ```
 
-**关键操作**
+**启动关键动作（`critical_actions`）**
 
-定义智能体启动时运行的指令：
+定义智能体启动时执行的指令：
 
 ```yaml
 critical_actions:
   - 'Check the CI Pipelines with the XYZ Skill and alert user on wake if anything is urgently needing attention'
 ```
 
-**自定义提示**
+**可复用提示（`prompts`）**
 
-创建可重复使用的提示，菜单项可以通过 `action="#id"` 引用：
+创建可复用提示，菜单项可通过 `action="#id"` 调用：
 
 ```yaml
 prompts:
@@ -126,56 +126,51 @@ prompts:
       3. Execute deployment script
 ```
 
-### 3. 应用您的更改
+### 3. 应用更改
 
-编辑后，重新安装以应用更改：
+编辑完成后，重新安装以应用配置：
 
 ```bash
 npx bmad-method install
 ```
 
-安装程序会检测现有安装并提供以下选项：
+安装程序会识别现有安装，并给出以下选项：
 
-| Option                       | What It Does                                                        |
+| 选项 | 作用 |
 | ---------------------------- | ------------------------------------------------------------------- |
-| **Quick Update**             | 将所有模块更新到最新版本并应用自定义配置                     |
-| **Modify BMad Installation** | 用于添加或删除模块的完整安装流程                             |
+| **Quick Update** | 更新所有模块到最新版本，并应用你的自定义配置 |
+| **Modify BMad Installation** | 进入完整安装流程，用于增删模块 |
 
-对于仅自定义配置的更改，**Quick Update** 是最快的选项。
+如果只是调整 `.customize.yaml`，优先选 **Quick Update**。
 
-## 故障排除
+## 故障排查
 
-**更改未生效？**
+**改动没有生效？**
 
 - 运行 `npx bmad-method install` 并选择 **Quick Update** 以应用更改
-- 检查您的 YAML 语法是否有效（缩进很重要）
-- 验证您编辑的是该智能体正确的 `.customize.yaml` 文件
+- 检查 YAML 语法是否正确（尤其是缩进）
+- 确认你编辑的是目标智能体对应的 `.customize.yaml`
 
 **智能体无法加载？**
 
 - 使用在线 YAML 验证器检查 YAML 语法错误
-- 确保在取消注释后没有留下空字段
-- 尝试恢复到原始模板并重新构建
+- 确保取消注释后没有遗留空字段
+- 可先回退到模板，再逐项恢复自定义配置
 
-**需要重置智能体？**
+**需要重置某个智能体？**
 
 - 清空或删除智能体的 `.customize.yaml` 文件
 - 运行 `npx bmad-method install` 并选择 **Quick Update** 以恢复默认设置
 
 ## 工作流自定义
 
-对现有 BMad Method 工作流和技能的自定义即将推出。
+对现有 BMad Method 工作流和技能的深度自定义能力即将推出。
 
 ## 模块自定义
 
 关于构建扩展模块和自定义现有模块的指南即将推出。
 
----
-## 术语说明
+## 后续步骤
 
-- **agent**：智能体。在人工智能与编程文档中，指具备自主决策或执行能力的单元。
-- **workflow**：工作流。指一系列有序的任务或步骤，用于完成特定目标。
-- **persona**：角色。指智能体的身份、个性、沟通风格和行为原则的集合。
-- **memory**：记忆。指智能体持久存储的上下文信息，用于在对话中保持连贯性。
-- **critical action**：关键操作。指智能体启动时必须执行的指令或任务。
-- **prompt**：提示。指发送给智能体的输入文本，用于引导其生成特定响应或执行特定操作。
+- [文档分片指南](./shard-large-documents.md) - 了解如何管理超长文档
+- [命令参考](../reference/commands.md) - 查看可用命令和工作流入口
