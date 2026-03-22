@@ -272,144 +272,8 @@ class Installer {
 
       await this._cacheCustomModules(paths, addResult);
 
-      const finalCustomContent = customConfig.customContent;
       const { officialModules, allModules } = await this._buildModuleLists(config, customConfig, paths);
-
-      // ─────────────────────────────────────────────────────────────────────────
-      // FIRST TASKS BLOCK: Core installation through manifests (non-interactive)
-      // ─────────────────────────────────────────────────────────────────────────
-      const isQuickUpdate = config.isQuickUpdate();
-
-      // Collect directory creation results for output after tasks() completes
-      const dirResults = { createdDirs: [], movedDirs: [], createdWdsFolders: [] };
-
-      // Build task list conditionally
-      const installTasks = [];
-
-      // Module installation task (core is just another module in the list)
-      if (allModules.length > 0) {
-        installTasks.push({
-          title: isQuickUpdate ? `Updating ${allModules.length} module(s)` : `Installing ${allModules.length} module(s)`,
-          task: async (message) => {
-            const installedModuleNames = new Set();
-
-            await this._installOfficialModules(config, paths, moduleConfigs, officialModules, addResult, isQuickUpdate, {
-              message,
-              installedModuleNames,
-            });
-
-            await this._installCustomModules(customConfig, paths, moduleConfigs, finalCustomContent, addResult, isQuickUpdate, {
-              message,
-              installedModuleNames,
-            });
-
-            return `${allModules.length} module(s) ${isQuickUpdate ? 'updated' : 'installed'}`;
-          },
-        });
-      }
-
-      // Module directory creation task
-      installTasks.push({
-        title: 'Creating module directories',
-        task: async (message) => {
-          const verboseMode = process.env.BMAD_VERBOSE_INSTALL === 'true' || config.verbose;
-          const moduleLogger = {
-            log: async (msg) => (verboseMode ? await prompts.log.message(msg) : undefined),
-            error: async (msg) => await prompts.log.error(msg),
-            warn: async (msg) => await prompts.log.warn(msg),
-          };
-
-          // Module directories (core is in config.modules like any other module)
-          if (config.modules && config.modules.length > 0) {
-            for (const moduleName of config.modules) {
-              message(`Setting up ${moduleName}...`);
-              const result = await this.officialModules.createModuleDirectories(moduleName, paths.bmadDir, {
-                installedIDEs: config.ides || [],
-                moduleConfig: moduleConfigs[moduleName] || {},
-                existingModuleConfig: this.configCollector.existingConfig?.[moduleName] || {},
-                coreConfig: moduleConfigs.core || {},
-                logger: moduleLogger,
-                silent: true,
-              });
-              if (result) {
-                dirResults.createdDirs.push(...result.createdDirs);
-                dirResults.movedDirs.push(...(result.movedDirs || []));
-                dirResults.createdWdsFolders.push(...result.createdWdsFolders);
-              }
-            }
-          }
-
-          addResult('Module directories', 'ok');
-          return 'Module directories created';
-        },
-      });
-
-      // Configuration generation task (stored as named reference for deferred execution)
-      const configTask = {
-        title: 'Generating configurations',
-        task: async (message) => {
-          // Generate clean config.yaml files for each installed module
-          await this.generateModuleConfigs(paths.bmadDir, moduleConfigs);
-          addResult('Configurations', 'ok', 'generated');
-
-          // Pre-register manifest files
-          this.installedFiles.add(paths.manifestFile());
-          this.installedFiles.add(paths.agentManifest());
-
-          // Generate CSV manifests for agents, skills AND ALL FILES with hashes
-          // This must happen BEFORE mergeModuleHelpCatalogs because it depends on agent-manifest.csv
-          message('Generating manifests...');
-          const manifestGen = new ManifestGenerator();
-
-          const allModulesForManifest = config.isQuickUpdate()
-            ? customConfig._existingModules || allModules || []
-            : customConfig._preserveModules
-              ? [...allModules, ...customConfig._preserveModules]
-              : allModules || [];
-
-          let modulesForCsvPreserve;
-          if (config.isQuickUpdate()) {
-            modulesForCsvPreserve = customConfig._existingModules || allModules || [];
-          } else {
-            modulesForCsvPreserve = customConfig._preserveModules ? [...allModules, ...customConfig._preserveModules] : allModules;
-          }
-
-          const manifestStats = await manifestGen.generateManifests(paths.bmadDir, allModulesForManifest, [...this.installedFiles], {
-            ides: config.ides || [],
-            preservedModules: modulesForCsvPreserve,
-          });
-
-          // Merge help catalogs
-          message('Generating help catalog...');
-          await this.mergeModuleHelpCatalogs(paths.bmadDir);
-          addResult('Help catalog', 'ok');
-
-          return 'Configurations generated';
-        },
-      };
-      installTasks.push(configTask);
-
-      // Run all tasks except config (which runs after directory output)
-      const mainTasks = installTasks.filter((t) => t !== configTask);
-      await prompts.tasks(mainTasks);
-
-      // Render directory creation output right after directory task
-      const color = await prompts.getColor();
-      if (dirResults.movedDirs.length > 0) {
-        const lines = dirResults.movedDirs.map((d) => `  ${d}`).join('\n');
-        await prompts.log.message(color.cyan(`Moved directories:\n${lines}`));
-      }
-      if (dirResults.createdDirs.length > 0) {
-        const lines = dirResults.createdDirs.map((d) => `  ${d}`).join('\n');
-        await prompts.log.message(color.yellow(`Created directories:\n${lines}`));
-      }
-      if (dirResults.createdWdsFolders.length > 0) {
-        const lines = dirResults.createdWdsFolders.map((f) => color.dim(`  \u2713 ${f}/`)).join('\n');
-        await prompts.log.message(color.cyan(`Created WDS folder structure:\n${lines}`));
-      }
-
-      // Now run configuration generation
-      await prompts.tasks([configTask]);
+      await this._installAndConfigure(config, customConfig, paths, moduleConfigs, officialModules, allModules, addResult);
 
       await this._setupIdes(config, ideConfigurations, allModules, paths, addResult);
 
@@ -515,6 +379,132 @@ class Installer {
     }
 
     return { officialModules, allModules };
+  }
+
+  /**
+   * Install modules, create directories, generate configs and manifests.
+   */
+  async _installAndConfigure(config, customConfig, paths, moduleConfigs, officialModules, allModules, addResult) {
+    const isQuickUpdate = config.isQuickUpdate();
+    const finalCustomContent = customConfig.customContent;
+
+    const dirResults = { createdDirs: [], movedDirs: [], createdWdsFolders: [] };
+
+    const installTasks = [];
+
+    if (allModules.length > 0) {
+      installTasks.push({
+        title: isQuickUpdate ? `Updating ${allModules.length} module(s)` : `Installing ${allModules.length} module(s)`,
+        task: async (message) => {
+          const installedModuleNames = new Set();
+
+          await this._installOfficialModules(config, paths, moduleConfigs, officialModules, addResult, isQuickUpdate, {
+            message,
+            installedModuleNames,
+          });
+
+          await this._installCustomModules(customConfig, paths, moduleConfigs, finalCustomContent, addResult, isQuickUpdate, {
+            message,
+            installedModuleNames,
+          });
+
+          return `${allModules.length} module(s) ${isQuickUpdate ? 'updated' : 'installed'}`;
+        },
+      });
+    }
+
+    installTasks.push({
+      title: 'Creating module directories',
+      task: async (message) => {
+        const verboseMode = process.env.BMAD_VERBOSE_INSTALL === 'true' || config.verbose;
+        const moduleLogger = {
+          log: async (msg) => (verboseMode ? await prompts.log.message(msg) : undefined),
+          error: async (msg) => await prompts.log.error(msg),
+          warn: async (msg) => await prompts.log.warn(msg),
+        };
+
+        if (config.modules && config.modules.length > 0) {
+          for (const moduleName of config.modules) {
+            message(`Setting up ${moduleName}...`);
+            const result = await this.officialModules.createModuleDirectories(moduleName, paths.bmadDir, {
+              installedIDEs: config.ides || [],
+              moduleConfig: moduleConfigs[moduleName] || {},
+              existingModuleConfig: this.configCollector.existingConfig?.[moduleName] || {},
+              coreConfig: moduleConfigs.core || {},
+              logger: moduleLogger,
+              silent: true,
+            });
+            if (result) {
+              dirResults.createdDirs.push(...result.createdDirs);
+              dirResults.movedDirs.push(...(result.movedDirs || []));
+              dirResults.createdWdsFolders.push(...result.createdWdsFolders);
+            }
+          }
+        }
+
+        addResult('Module directories', 'ok');
+        return 'Module directories created';
+      },
+    });
+
+    const configTask = {
+      title: 'Generating configurations',
+      task: async (message) => {
+        await this.generateModuleConfigs(paths.bmadDir, moduleConfigs);
+        addResult('Configurations', 'ok', 'generated');
+
+        this.installedFiles.add(paths.manifestFile());
+        this.installedFiles.add(paths.agentManifest());
+
+        message('Generating manifests...');
+        const manifestGen = new ManifestGenerator();
+
+        const allModulesForManifest = config.isQuickUpdate()
+          ? customConfig._existingModules || allModules || []
+          : customConfig._preserveModules
+            ? [...allModules, ...customConfig._preserveModules]
+            : allModules || [];
+
+        let modulesForCsvPreserve;
+        if (config.isQuickUpdate()) {
+          modulesForCsvPreserve = customConfig._existingModules || allModules || [];
+        } else {
+          modulesForCsvPreserve = customConfig._preserveModules ? [...allModules, ...customConfig._preserveModules] : allModules;
+        }
+
+        await manifestGen.generateManifests(paths.bmadDir, allModulesForManifest, [...this.installedFiles], {
+          ides: config.ides || [],
+          preservedModules: modulesForCsvPreserve,
+        });
+
+        message('Generating help catalog...');
+        await this.mergeModuleHelpCatalogs(paths.bmadDir);
+        addResult('Help catalog', 'ok');
+
+        return 'Configurations generated';
+      },
+    };
+    installTasks.push(configTask);
+
+    // Run install + dirs first, then render dir output, then run config generation
+    const mainTasks = installTasks.filter((t) => t !== configTask);
+    await prompts.tasks(mainTasks);
+
+    const color = await prompts.getColor();
+    if (dirResults.movedDirs.length > 0) {
+      const lines = dirResults.movedDirs.map((d) => `  ${d}`).join('\n');
+      await prompts.log.message(color.cyan(`Moved directories:\n${lines}`));
+    }
+    if (dirResults.createdDirs.length > 0) {
+      const lines = dirResults.createdDirs.map((d) => `  ${d}`).join('\n');
+      await prompts.log.message(color.yellow(`Created directories:\n${lines}`));
+    }
+    if (dirResults.createdWdsFolders.length > 0) {
+      const lines = dirResults.createdWdsFolders.map((f) => color.dim(`  \u2713 ${f}/`)).join('\n');
+      await prompts.log.message(color.cyan(`Created WDS folder structure:\n${lines}`));
+    }
+
+    await prompts.tasks([configTask]);
   }
 
   /**
