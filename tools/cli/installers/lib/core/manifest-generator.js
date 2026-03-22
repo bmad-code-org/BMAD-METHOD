@@ -16,15 +16,12 @@ const {
 const packageJson = require('../../../../../package.json');
 
 /**
- * Generates manifest files for installed workflows, agents, and tasks
+ * Generates manifest files for installed skills and agents
  */
 class ManifestGenerator {
   constructor() {
-    this.workflows = [];
     this.skills = [];
     this.agents = [];
-    this.tasks = [];
-    this.tools = [];
     this.modules = [];
     this.files = [];
     this.selectedIdes = [];
@@ -48,29 +45,6 @@ class ManifestGenerator {
   /** Delegate to shared skill-manifest module */
   getInstallToBmad(manifest, filename) {
     return getInstallToBmadShared(manifest, filename);
-  }
-
-  /**
-   * Native SKILL.md entrypoints can be packaged as either skills or agents.
-   * Both need verbatim installation for skill-format IDEs.
-   * @param {string|null} artifactType - Manifest type resolved for SKILL.md
-   * @returns {boolean} True when the directory should be installed verbatim
-   */
-  isNativeSkillDirType(artifactType) {
-    return artifactType === 'skill' || artifactType === 'agent';
-  }
-
-  /**
-   * Check whether a loaded bmad-skill-manifest.yaml declares a native
-   * SKILL.md entrypoint, either as a single-entry manifest or a multi-entry map.
-   * @param {Object|null} manifest - Loaded manifest
-   * @returns {boolean} True when the manifest contains a native skill/agent entrypoint
-   */
-  hasNativeSkillManifest(manifest) {
-    if (!manifest) return false;
-    if (manifest.__single) return this.isNativeSkillDirType(manifest.__single.type);
-
-    return Object.values(manifest).some((entry) => this.isNativeSkillDirType(entry?.type));
   }
 
   /**
@@ -108,10 +82,6 @@ class ManifestGenerator {
     this.modules = allModules;
     this.updatedModules = allModules; // Include ALL modules (including custom) for scanning
 
-    // For CSV manifests, we need to include ALL modules that are installed
-    // preservedModules controls which modules stay as-is in the CSV (don't get rescanned)
-    // But all modules should be included in the final manifest
-    this.preservedModules = allModules; // Include ALL modules (including custom)
     this.bmadDir = bmadDir;
     this.bmadFolderName = path.basename(bmadDir); // Get the actual folder name (e.g., '_bmad' or 'bmad')
     this.allInstalledFiles = installedFiles;
@@ -134,35 +104,20 @@ class ManifestGenerator {
     // Collect skills first (populates skillClaimedDirs before legacy collectors run)
     await this.collectSkills();
 
-    // Collect workflow data
-    await this.collectWorkflows(selectedModules);
-
     // Collect agent data - use updatedModules which includes all installed modules
     await this.collectAgents(this.updatedModules);
-
-    // Collect task data
-    await this.collectTasks(this.updatedModules);
-
-    // Collect tool data
-    await this.collectTools(this.updatedModules);
 
     // Write manifest files and collect their paths
     const manifestFiles = [
       await this.writeMainManifest(cfgDir),
-      await this.writeWorkflowManifest(cfgDir),
       await this.writeSkillManifest(cfgDir),
       await this.writeAgentManifest(cfgDir),
-      await this.writeTaskManifest(cfgDir),
-      await this.writeToolManifest(cfgDir),
       await this.writeFilesManifest(cfgDir),
     ];
 
     return {
       skills: this.skills.length,
-      workflows: this.workflows.length,
       agents: this.agents.length,
-      tasks: this.tasks.length,
-      tools: this.tools.length,
       files: this.files.length,
       manifestFiles: manifestFiles,
     };
@@ -170,9 +125,9 @@ class ManifestGenerator {
 
   /**
    * Recursively walk a module directory tree, collecting native SKILL.md entrypoints.
-   * A native entrypoint directory is one that contains both a
-   * bmad-skill-manifest.yaml with type: skill or type: agent AND a SKILL.md file
-   * with name/description frontmatter.
+   * A directory is discovered as a skill when it contains a SKILL.md file with
+   * valid name/description frontmatter (name must match directory name).
+   * Manifest YAML is loaded only when present — for install_to_bmad and agent metadata.
    * Populates this.skills[] and this.skillClaimedDirs (Set of absolute paths).
    */
   async collectSkills() {
@@ -193,77 +148,55 @@ class ManifestGenerator {
           return;
         }
 
-        // Check this directory for skill manifest
-        const manifest = await this.loadSkillManifest(dir);
-
-        // Determine if this directory is a native SKILL.md entrypoint
+        // SKILL.md with valid frontmatter is the primary discovery gate
         const skillFile = 'SKILL.md';
-        const artifactType = this.getArtifactType(manifest, skillFile);
+        const skillMdPath = path.join(dir, skillFile);
+        const dirName = path.basename(dir);
 
-        if (this.isNativeSkillDirType(artifactType)) {
-          const skillMdPath = path.join(dir, 'SKILL.md');
-          const dirName = path.basename(dir);
+        const skillMeta = await this.parseSkillMd(skillMdPath, dir, dirName, debug);
 
-          // Validate and parse SKILL.md
-          const skillMeta = await this.parseSkillMd(skillMdPath, dir, dirName, debug);
+        if (skillMeta) {
+          // Load manifest when present (for install_to_bmad and agent metadata)
+          const manifest = await this.loadSkillManifest(dir);
+          const artifactType = this.getArtifactType(manifest, skillFile);
 
-          if (skillMeta) {
-            // Build path relative from module root (points to SKILL.md — the permanent entrypoint)
-            const relativePath = path.relative(modulePath, dir).split(path.sep).join('/');
-            const installPath = relativePath
-              ? `${this.bmadFolderName}/${moduleName}/${relativePath}/${skillFile}`
-              : `${this.bmadFolderName}/${moduleName}/${skillFile}`;
+          // Build path relative from module root (points to SKILL.md — the permanent entrypoint)
+          const relativePath = path.relative(modulePath, dir).split(path.sep).join('/');
+          const installPath = relativePath
+            ? `${this.bmadFolderName}/${moduleName}/${relativePath}/${skillFile}`
+            : `${this.bmadFolderName}/${moduleName}/${skillFile}`;
 
-            // Native SKILL.md entrypoints derive canonicalId from directory name.
-            // Agent entrypoints may keep canonicalId metadata for compatibility, so
-            // only warn for non-agent SKILL.md directories.
-            if (manifest && manifest.__single && manifest.__single.canonicalId && artifactType !== 'agent') {
-              console.warn(
-                `Warning: Native entrypoint manifest at ${dir}/bmad-skill-manifest.yaml contains canonicalId — this field is ignored for SKILL.md directories (directory name is the canonical ID)`,
-              );
-            }
-            const canonicalId = dirName;
-
-            this.skills.push({
-              name: skillMeta.name,
-              description: this.cleanForCSV(skillMeta.description),
-              module: moduleName,
-              path: installPath,
-              canonicalId,
-              install_to_bmad: this.getInstallToBmad(manifest, skillFile),
-            });
-
-            // Add to files list
-            this.files.push({
-              type: 'skill',
-              name: skillMeta.name,
-              module: moduleName,
-              path: installPath,
-            });
-
-            this.skillClaimedDirs.add(dir);
-
-            if (debug) {
-              console.log(`[DEBUG] collectSkills: claimed skill "${skillMeta.name}" as ${canonicalId} at ${dir}`);
-            }
+          // Native SKILL.md entrypoints derive canonicalId from directory name.
+          // Agent entrypoints may keep canonicalId metadata for compatibility, so
+          // only warn for non-agent SKILL.md directories.
+          if (manifest && manifest.__single && manifest.__single.canonicalId && artifactType !== 'agent') {
+            console.warn(
+              `Warning: Native entrypoint manifest at ${dir}/bmad-skill-manifest.yaml contains canonicalId — this field is ignored for SKILL.md directories (directory name is the canonical ID)`,
+            );
           }
-        }
+          const canonicalId = dirName;
 
-        // Warn if manifest says this is a native entrypoint but the directory was not claimed
-        if (manifest && !this.skillClaimedDirs.has(dir)) {
-          let hasNativeSkillType = false;
-          if (manifest.__single) {
-            hasNativeSkillType = this.isNativeSkillDirType(manifest.__single.type);
-          } else {
-            for (const key of Object.keys(manifest)) {
-              if (this.isNativeSkillDirType(manifest[key]?.type)) {
-                hasNativeSkillType = true;
-                break;
-              }
-            }
-          }
-          if (hasNativeSkillType && debug) {
-            console.log(`[DEBUG] collectSkills: dir has native SKILL.md manifest but failed validation: ${dir}`);
+          this.skills.push({
+            name: skillMeta.name,
+            description: this.cleanForCSV(skillMeta.description),
+            module: moduleName,
+            path: installPath,
+            canonicalId,
+            install_to_bmad: this.getInstallToBmad(manifest, skillFile),
+          });
+
+          // Add to files list
+          this.files.push({
+            type: 'skill',
+            name: skillMeta.name,
+            module: moduleName,
+            path: installPath,
+          });
+
+          this.skillClaimedDirs.add(dir);
+
+          if (debug) {
+            console.log(`[DEBUG] collectSkills: claimed skill "${skillMeta.name}" as ${canonicalId} at ${dir}`);
           }
         }
 
@@ -335,153 +268,6 @@ class ManifestGenerator {
   }
 
   /**
-   * Collect all workflows from core and selected modules
-   * Scans the INSTALLED bmad directory, not the source
-   */
-  async collectWorkflows(selectedModules) {
-    this.workflows = [];
-
-    // Use updatedModules which already includes deduplicated 'core' + selectedModules
-    for (const moduleName of this.updatedModules) {
-      const modulePath = path.join(this.bmadDir, moduleName);
-
-      if (await fs.pathExists(modulePath)) {
-        const moduleWorkflows = await this.getWorkflowsFromPath(modulePath, moduleName);
-        this.workflows.push(...moduleWorkflows);
-
-        // Also scan tasks/ for type:skill entries (skills can live anywhere)
-        const tasksSkills = await this.getWorkflowsFromPath(modulePath, moduleName, 'tasks');
-        this.workflows.push(...tasksSkills);
-      }
-    }
-  }
-
-  /**
-   * Recursively find and parse workflow.md files
-   */
-  async getWorkflowsFromPath(basePath, moduleName, subDir = 'workflows') {
-    const workflows = [];
-    const workflowsPath = path.join(basePath, subDir);
-    const debug = process.env.BMAD_DEBUG_MANIFEST === 'true';
-
-    if (debug) {
-      console.log(`[DEBUG] Scanning workflows in: ${workflowsPath}`);
-    }
-
-    if (!(await fs.pathExists(workflowsPath))) {
-      if (debug) {
-        console.log(`[DEBUG] Workflows path does not exist: ${workflowsPath}`);
-      }
-      return workflows;
-    }
-
-    // Recursively find workflow.md files
-    const findWorkflows = async (dir, relativePath = '') => {
-      // Skip directories already claimed as skills
-      if (this.skillClaimedDirs && this.skillClaimedDirs.has(dir)) return;
-
-      const entries = await fs.readdir(dir, { withFileTypes: true });
-      // Load skill manifest for this directory (if present)
-      const skillManifest = await this.loadSkillManifest(dir);
-
-      for (const entry of entries) {
-        const fullPath = path.join(dir, entry.name);
-
-        if (entry.isDirectory()) {
-          // Skip directories claimed by collectSkills
-          if (this.skillClaimedDirs && this.skillClaimedDirs.has(fullPath)) continue;
-          // Recurse into subdirectories
-          const newRelativePath = relativePath ? `${relativePath}/${entry.name}` : entry.name;
-          await findWorkflows(fullPath, newRelativePath);
-        } else if (entry.name === 'workflow.md' || (entry.name.startsWith('workflow-') && entry.name.endsWith('.md'))) {
-          // Parse workflow file (both YAML and MD formats)
-          if (debug) {
-            console.log(`[DEBUG] Found workflow file: ${fullPath}`);
-          }
-          try {
-            // Read and normalize line endings (fix Windows CRLF issues)
-            const rawContent = await fs.readFile(fullPath, 'utf8');
-            const content = rawContent.replaceAll('\r\n', '\n').replaceAll('\r', '\n');
-
-            // Parse MD workflow with YAML frontmatter
-            const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
-            if (!frontmatterMatch) {
-              if (debug) {
-                console.log(`[DEBUG] Skipped (no frontmatter): ${fullPath}`);
-              }
-              continue; // Skip MD files without frontmatter
-            }
-            const workflow = yaml.parse(frontmatterMatch[1]);
-
-            if (debug) {
-              console.log(`[DEBUG] Parsed: name="${workflow.name}", description=${workflow.description ? 'OK' : 'MISSING'}`);
-            }
-
-            // Skip template workflows (those with placeholder values)
-            if (workflow.name && workflow.name.includes('{') && workflow.name.includes('}')) {
-              if (debug) {
-                console.log(`[DEBUG] Skipped (template placeholder): ${workflow.name}`);
-              }
-              continue;
-            }
-
-            // Skip workflows marked as non-standalone (reference/example workflows)
-            if (workflow.standalone === false) {
-              if (debug) {
-                console.log(`[DEBUG] Skipped (standalone=false): ${workflow.name}`);
-              }
-              continue;
-            }
-
-            if (workflow.name && workflow.description) {
-              // Build relative path for installation
-              const installPath =
-                moduleName === 'core'
-                  ? `${this.bmadFolderName}/core/${subDir}/${relativePath}/${entry.name}`
-                  : `${this.bmadFolderName}/${moduleName}/${subDir}/${relativePath}/${entry.name}`;
-
-              // Workflows with standalone: false are filtered out above
-              workflows.push({
-                name: workflow.name,
-                description: this.cleanForCSV(workflow.description),
-                module: moduleName,
-                path: installPath,
-                canonicalId: this.getCanonicalId(skillManifest, entry.name),
-              });
-
-              // Add to files list
-              this.files.push({
-                type: 'workflow',
-                name: workflow.name,
-                module: moduleName,
-                path: installPath,
-              });
-
-              if (debug) {
-                console.log(`[DEBUG] ✓ Added workflow: ${workflow.name} (${moduleName})`);
-              }
-            } else {
-              if (debug) {
-                console.log(`[DEBUG] Skipped (missing name or description): ${fullPath}`);
-              }
-            }
-          } catch (error) {
-            await prompts.log.warn(`Failed to parse workflow at ${fullPath}: ${error.message}`);
-          }
-        }
-      }
-    };
-
-    await findWorkflows(workflowsPath);
-
-    if (debug) {
-      console.log(`[DEBUG] Total workflows found in ${moduleName}: ${workflows.length}`);
-    }
-
-    return workflows;
-  }
-
-  /**
    * Collect all agents from core and selected modules
    * Scans the INSTALLED bmad directory, not the source
    */
@@ -515,7 +301,7 @@ class ManifestGenerator {
 
   /**
    * Get agents from a directory recursively
-   * Only includes compiled .md files (not .agent.yaml source files)
+   * Only includes .md files with agent content
    */
   async getAgentsFromDir(dirPath, moduleName, relativePath = '') {
     // Skip directories claimed by collectSkills
@@ -572,7 +358,7 @@ class ManifestGenerator {
         const newRelativePath = relativePath ? `${relativePath}/${entry.name}` : entry.name;
         const subDirAgents = await this.getAgentsFromDir(fullPath, moduleName, newRelativePath);
         agents.push(...subDirAgents);
-      } else if (entry.name.endsWith('.md') && !entry.name.endsWith('.agent.yaml') && entry.name.toLowerCase() !== 'readme.md') {
+      } else if (entry.name.endsWith('.md') && entry.name.toLowerCase() !== 'readme.md') {
         const content = await fs.readFile(fullPath, 'utf8');
 
         // Skip files that don't contain <agent> tag (e.g., README files)
@@ -632,212 +418,6 @@ class ManifestGenerator {
     }
 
     return agents;
-  }
-
-  /**
-   * Collect all tasks from core and selected modules
-   * Scans the INSTALLED bmad directory, not the source
-   */
-  async collectTasks(selectedModules) {
-    this.tasks = [];
-
-    // Use updatedModules which already includes deduplicated 'core' + selectedModules
-    for (const moduleName of this.updatedModules) {
-      const tasksPath = path.join(this.bmadDir, moduleName, 'tasks');
-
-      if (await fs.pathExists(tasksPath)) {
-        const moduleTasks = await this.getTasksFromDir(tasksPath, moduleName);
-        this.tasks.push(...moduleTasks);
-      }
-    }
-  }
-
-  /**
-   * Get tasks from a directory
-   */
-  async getTasksFromDir(dirPath, moduleName) {
-    // Skip directories claimed by collectSkills
-    if (this.skillClaimedDirs && this.skillClaimedDirs.has(dirPath)) return [];
-    const tasks = [];
-    const files = await fs.readdir(dirPath);
-    // Load skill manifest for this directory (if present)
-    const skillManifest = await this.loadSkillManifest(dirPath);
-
-    for (const file of files) {
-      // Check for both .xml and .md files
-      if (file.endsWith('.xml') || file.endsWith('.md')) {
-        const filePath = path.join(dirPath, file);
-        const content = await fs.readFile(filePath, 'utf8');
-
-        // Skip internal/engine files (not user-facing tasks)
-        if (content.includes('internal="true"')) {
-          continue;
-        }
-
-        let name = file.replace(/\.(xml|md)$/, '');
-        let displayName = name;
-        let description = '';
-        let standalone = false;
-
-        if (file.endsWith('.md')) {
-          // Parse YAML frontmatter for .md tasks
-          const frontmatterMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
-          if (frontmatterMatch) {
-            try {
-              const frontmatter = yaml.parse(frontmatterMatch[1]);
-              name = frontmatter.name || name;
-              displayName = frontmatter.displayName || frontmatter.name || name;
-              description = this.cleanForCSV(frontmatter.description || '');
-              // Tasks are standalone by default unless explicitly false (internal=true is already filtered above)
-              standalone = frontmatter.standalone !== false && frontmatter.standalone !== 'false';
-            } catch {
-              // If YAML parsing fails, use defaults
-              standalone = true; // Default to standalone
-            }
-          } else {
-            standalone = true; // No frontmatter means standalone
-          }
-        } else {
-          // For .xml tasks, extract from tag attributes
-          const nameMatch = content.match(/name="([^"]+)"/);
-          displayName = nameMatch ? nameMatch[1] : name;
-
-          const descMatch = content.match(/description="([^"]+)"/);
-          const objMatch = content.match(/<objective>([^<]+)<\/objective>/);
-          description = this.cleanForCSV(descMatch ? descMatch[1] : objMatch ? objMatch[1].trim() : '');
-
-          const standaloneFalseMatch = content.match(/<task[^>]+standalone="false"/);
-          standalone = !standaloneFalseMatch;
-        }
-
-        // Build relative path for installation
-        const installPath =
-          moduleName === 'core' ? `${this.bmadFolderName}/core/tasks/${file}` : `${this.bmadFolderName}/${moduleName}/tasks/${file}`;
-
-        tasks.push({
-          name: name,
-          displayName: displayName,
-          description: description,
-          module: moduleName,
-          path: installPath,
-          standalone: standalone,
-          canonicalId: this.getCanonicalId(skillManifest, file),
-        });
-
-        // Add to files list
-        this.files.push({
-          type: 'task',
-          name: name,
-          module: moduleName,
-          path: installPath,
-        });
-      }
-    }
-
-    return tasks;
-  }
-
-  /**
-   * Collect all tools from core and selected modules
-   * Scans the INSTALLED bmad directory, not the source
-   */
-  async collectTools(selectedModules) {
-    this.tools = [];
-
-    // Use updatedModules which already includes deduplicated 'core' + selectedModules
-    for (const moduleName of this.updatedModules) {
-      const toolsPath = path.join(this.bmadDir, moduleName, 'tools');
-
-      if (await fs.pathExists(toolsPath)) {
-        const moduleTools = await this.getToolsFromDir(toolsPath, moduleName);
-        this.tools.push(...moduleTools);
-      }
-    }
-  }
-
-  /**
-   * Get tools from a directory
-   */
-  async getToolsFromDir(dirPath, moduleName) {
-    // Skip directories claimed by collectSkills
-    if (this.skillClaimedDirs && this.skillClaimedDirs.has(dirPath)) return [];
-    const tools = [];
-    const files = await fs.readdir(dirPath);
-    // Load skill manifest for this directory (if present)
-    const skillManifest = await this.loadSkillManifest(dirPath);
-
-    for (const file of files) {
-      // Check for both .xml and .md files
-      if (file.endsWith('.xml') || file.endsWith('.md')) {
-        const filePath = path.join(dirPath, file);
-        const content = await fs.readFile(filePath, 'utf8');
-
-        // Skip internal tools (same as tasks)
-        if (content.includes('internal="true"')) {
-          continue;
-        }
-
-        let name = file.replace(/\.(xml|md)$/, '');
-        let displayName = name;
-        let description = '';
-        let standalone = false;
-
-        if (file.endsWith('.md')) {
-          // Parse YAML frontmatter for .md tools
-          const frontmatterMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
-          if (frontmatterMatch) {
-            try {
-              const frontmatter = yaml.parse(frontmatterMatch[1]);
-              name = frontmatter.name || name;
-              displayName = frontmatter.displayName || frontmatter.name || name;
-              description = this.cleanForCSV(frontmatter.description || '');
-              // Tools are standalone by default unless explicitly false (internal=true is already filtered above)
-              standalone = frontmatter.standalone !== false && frontmatter.standalone !== 'false';
-            } catch {
-              // If YAML parsing fails, use defaults
-              standalone = true; // Default to standalone
-            }
-          } else {
-            standalone = true; // No frontmatter means standalone
-          }
-        } else {
-          // For .xml tools, extract from tag attributes
-          const nameMatch = content.match(/name="([^"]+)"/);
-          displayName = nameMatch ? nameMatch[1] : name;
-
-          const descMatch = content.match(/description="([^"]+)"/);
-          const objMatch = content.match(/<objective>([^<]+)<\/objective>/);
-          description = this.cleanForCSV(descMatch ? descMatch[1] : objMatch ? objMatch[1].trim() : '');
-
-          const standaloneFalseMatch = content.match(/<tool[^>]+standalone="false"/);
-          standalone = !standaloneFalseMatch;
-        }
-
-        // Build relative path for installation
-        const installPath =
-          moduleName === 'core' ? `${this.bmadFolderName}/core/tools/${file}` : `${this.bmadFolderName}/${moduleName}/tools/${file}`;
-
-        tools.push({
-          name: name,
-          displayName: displayName,
-          description: description,
-          module: moduleName,
-          path: installPath,
-          standalone: standalone,
-          canonicalId: this.getCanonicalId(skillManifest, file),
-        });
-
-        // Add to files list
-        this.files.push({
-          type: 'tool',
-          name: name,
-          module: moduleName,
-          path: installPath,
-        });
-      }
-    }
-
-    return tools;
   }
 
   /**
@@ -923,131 +503,6 @@ class ManifestGenerator {
     const content = yamlStr.endsWith('\n') ? yamlStr : yamlStr + '\n';
     await fs.writeFile(manifestPath, content);
     return manifestPath;
-  }
-
-  /**
-   * Read existing CSV and preserve rows for modules NOT being updated
-   * @param {string} csvPath - Path to existing CSV file
-   * @param {number} moduleColumnIndex - Which column contains the module name (0-indexed)
-   * @param {Array<string>} expectedColumns - Expected column names in order
-   * @param {Object} defaultValues - Default values for missing columns
-   * @returns {Array} Preserved CSV rows (without header), upgraded to match expected columns
-   */
-  async getPreservedCsvRows(csvPath, moduleColumnIndex, expectedColumns, defaultValues = {}) {
-    if (!(await fs.pathExists(csvPath)) || this.preservedModules.length === 0) {
-      return [];
-    }
-
-    try {
-      const content = await fs.readFile(csvPath, 'utf8');
-      const lines = content.trim().split('\n');
-
-      if (lines.length < 2) {
-        return []; // No data rows
-      }
-
-      // Parse header to understand old schema
-      const header = lines[0];
-      const headerColumns = header.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || [];
-      const oldColumns = headerColumns.map((c) => c.replaceAll(/^"|"$/g, ''));
-
-      // Skip header row for data
-      const dataRows = lines.slice(1);
-      const preservedRows = [];
-
-      for (const row of dataRows) {
-        // Simple CSV parsing (handles quoted values)
-        const columns = row.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || [];
-        const cleanColumns = columns.map((c) => c.replaceAll(/^"|"$/g, ''));
-
-        const moduleValue = cleanColumns[moduleColumnIndex];
-
-        // Keep this row if it belongs to a preserved module
-        if (this.preservedModules.includes(moduleValue)) {
-          // Upgrade row to match expected schema
-          const upgradedRow = this.upgradeRowToSchema(cleanColumns, oldColumns, expectedColumns, defaultValues);
-          preservedRows.push(upgradedRow);
-        }
-      }
-
-      return preservedRows;
-    } catch (error) {
-      await prompts.log.warn(`Failed to read existing CSV ${csvPath}: ${error.message}`);
-      return [];
-    }
-  }
-
-  /**
-   * Upgrade a CSV row from old schema to new schema
-   * @param {Array<string>} rowValues - Values from old row
-   * @param {Array<string>} oldColumns - Old column names
-   * @param {Array<string>} newColumns - New column names
-   * @param {Object} defaultValues - Default values for missing columns
-   * @returns {string} Upgraded CSV row
-   */
-  upgradeRowToSchema(rowValues, oldColumns, newColumns, defaultValues) {
-    const upgradedValues = [];
-
-    for (const newCol of newColumns) {
-      const oldIndex = oldColumns.indexOf(newCol);
-
-      if (oldIndex !== -1 && oldIndex < rowValues.length) {
-        // Column exists in old schema, use its value
-        upgradedValues.push(rowValues[oldIndex]);
-      } else if (defaultValues[newCol] === undefined) {
-        // Column missing, no default provided
-        upgradedValues.push('');
-      } else {
-        // Column missing, use default value
-        upgradedValues.push(defaultValues[newCol]);
-      }
-    }
-
-    // Properly quote values and join
-    return upgradedValues.map((v) => `"${v}"`).join(',');
-  }
-
-  /**
-   * Write workflow manifest CSV
-   * @returns {string} Path to the manifest file
-   */
-  async writeWorkflowManifest(cfgDir) {
-    const csvPath = path.join(cfgDir, 'workflow-manifest.csv');
-    const escapeCsv = (value) => `"${String(value ?? '').replaceAll('"', '""')}"`;
-
-    // Create CSV header - standalone column removed, canonicalId added as optional column
-    let csv = 'name,description,module,path,canonicalId\n';
-
-    // Build workflows map from discovered workflows only
-    // Old entries are NOT preserved - the manifest reflects what actually exists on disk
-    const allWorkflows = new Map();
-
-    // Only add workflows that were actually discovered in this scan
-    for (const workflow of this.workflows) {
-      const key = `${workflow.module}:${workflow.name}`;
-      allWorkflows.set(key, {
-        name: workflow.name,
-        description: workflow.description,
-        module: workflow.module,
-        path: workflow.path,
-        canonicalId: workflow.canonicalId || '',
-      });
-    }
-
-    // Write all workflows
-    for (const [, value] of allWorkflows) {
-      const row = [
-        escapeCsv(value.name),
-        escapeCsv(value.description),
-        escapeCsv(value.module),
-        escapeCsv(value.path),
-        escapeCsv(value.canonicalId),
-      ].join(',');
-      csv += row + '\n';
-    }
-
-    await fs.writeFile(csvPath, csv);
-    return csvPath;
   }
 
   /**
@@ -1141,134 +596,6 @@ class ManifestGenerator {
         escapeCsv(record.principles),
         escapeCsv(record.module),
         escapeCsv(record.path),
-        escapeCsv(record.canonicalId),
-      ].join(',');
-      csvContent += row + '\n';
-    }
-
-    await fs.writeFile(csvPath, csvContent);
-    return csvPath;
-  }
-
-  /**
-   * Write task manifest CSV
-   * @returns {string} Path to the manifest file
-   */
-  async writeTaskManifest(cfgDir) {
-    const csvPath = path.join(cfgDir, 'task-manifest.csv');
-    const escapeCsv = (value) => `"${String(value ?? '').replaceAll('"', '""')}"`;
-
-    // Read existing manifest to preserve entries
-    const existingEntries = new Map();
-    if (await fs.pathExists(csvPath)) {
-      const content = await fs.readFile(csvPath, 'utf8');
-      const records = csv.parse(content, {
-        columns: true,
-        skip_empty_lines: true,
-      });
-      for (const record of records) {
-        existingEntries.set(`${record.module}:${record.name}`, record);
-      }
-    }
-
-    // Create CSV header with standalone and canonicalId columns
-    let csvContent = 'name,displayName,description,module,path,standalone,canonicalId\n';
-
-    // Combine existing and new tasks
-    const allTasks = new Map();
-
-    // Add existing entries
-    for (const [key, value] of existingEntries) {
-      allTasks.set(key, value);
-    }
-
-    // Add/update new tasks
-    for (const task of this.tasks) {
-      const key = `${task.module}:${task.name}`;
-      allTasks.set(key, {
-        name: task.name,
-        displayName: task.displayName,
-        description: task.description,
-        module: task.module,
-        path: task.path,
-        standalone: task.standalone,
-        canonicalId: task.canonicalId || '',
-      });
-    }
-
-    // Write all tasks
-    for (const [, record] of allTasks) {
-      const row = [
-        escapeCsv(record.name),
-        escapeCsv(record.displayName),
-        escapeCsv(record.description),
-        escapeCsv(record.module),
-        escapeCsv(record.path),
-        escapeCsv(record.standalone),
-        escapeCsv(record.canonicalId),
-      ].join(',');
-      csvContent += row + '\n';
-    }
-
-    await fs.writeFile(csvPath, csvContent);
-    return csvPath;
-  }
-
-  /**
-   * Write tool manifest CSV
-   * @returns {string} Path to the manifest file
-   */
-  async writeToolManifest(cfgDir) {
-    const csvPath = path.join(cfgDir, 'tool-manifest.csv');
-    const escapeCsv = (value) => `"${String(value ?? '').replaceAll('"', '""')}"`;
-
-    // Read existing manifest to preserve entries
-    const existingEntries = new Map();
-    if (await fs.pathExists(csvPath)) {
-      const content = await fs.readFile(csvPath, 'utf8');
-      const records = csv.parse(content, {
-        columns: true,
-        skip_empty_lines: true,
-      });
-      for (const record of records) {
-        existingEntries.set(`${record.module}:${record.name}`, record);
-      }
-    }
-
-    // Create CSV header with standalone and canonicalId columns
-    let csvContent = 'name,displayName,description,module,path,standalone,canonicalId\n';
-
-    // Combine existing and new tools
-    const allTools = new Map();
-
-    // Add existing entries
-    for (const [key, value] of existingEntries) {
-      allTools.set(key, value);
-    }
-
-    // Add/update new tools
-    for (const tool of this.tools) {
-      const key = `${tool.module}:${tool.name}`;
-      allTools.set(key, {
-        name: tool.name,
-        displayName: tool.displayName,
-        description: tool.description,
-        module: tool.module,
-        path: tool.path,
-        standalone: tool.standalone,
-        canonicalId: tool.canonicalId || '',
-      });
-    }
-
-    // Write all tools
-    for (const [, record] of allTools) {
-      const row = [
-        escapeCsv(record.name),
-        escapeCsv(record.displayName),
-        escapeCsv(record.description),
-        escapeCsv(record.module),
-        escapeCsv(record.path),
-        escapeCsv(record.standalone),
         escapeCsv(record.canonicalId),
       ].join(',');
       csvContent += row + '\n';
@@ -1377,22 +704,12 @@ class ManifestGenerator {
           continue;
         }
 
-        // Check if this looks like a module (has agents, workflows, or tasks directory)
+        // Check if this looks like a module (has agents directory or skill manifests)
         const modulePath = path.join(bmadDir, entry.name);
         const hasAgents = await fs.pathExists(path.join(modulePath, 'agents'));
-        const hasWorkflows = await fs.pathExists(path.join(modulePath, 'workflows'));
-        const hasTasks = await fs.pathExists(path.join(modulePath, 'tasks'));
-        const hasTools = await fs.pathExists(path.join(modulePath, 'tools'));
+        const hasSkills = await this._hasSkillMdRecursive(modulePath);
 
-        // Check for native-entrypoint-only modules: recursive scan for
-        // bmad-skill-manifest.yaml with type: skill or type: agent
-        let hasSkills = false;
-        if (!hasAgents && !hasWorkflows && !hasTasks && !hasTools) {
-          hasSkills = await this._hasSkillManifestRecursive(modulePath);
-        }
-
-        // If it has any of these directories or skill manifests, it's likely a module
-        if (hasAgents || hasWorkflows || hasTasks || hasTools || hasSkills) {
+        if (hasAgents || hasSkills) {
           modules.push(entry.name);
         }
       }
@@ -1404,13 +721,12 @@ class ManifestGenerator {
   }
 
   /**
-   * Recursively check if a directory tree contains a bmad-skill-manifest.yaml that
-   * declares a native SKILL.md entrypoint (type: skill or type: agent).
+   * Recursively check if a directory tree contains a SKILL.md file.
    * Skips directories starting with . or _.
    * @param {string} dir - Directory to search
-   * @returns {boolean} True if a skill manifest is found
+   * @returns {boolean} True if a SKILL.md is found
    */
-  async _hasSkillManifestRecursive(dir) {
+  async _hasSkillMdRecursive(dir) {
     let entries;
     try {
       entries = await fs.readdir(dir, { withFileTypes: true });
@@ -1418,15 +734,14 @@ class ManifestGenerator {
       return false;
     }
 
-    // Check for manifest in this directory
-    const manifest = await this.loadSkillManifest(dir);
-    if (this.hasNativeSkillManifest(manifest)) return true;
+    // Check for SKILL.md in this directory
+    if (entries.some((e) => !e.isDirectory() && e.name === 'SKILL.md')) return true;
 
     // Recurse into subdirectories
     for (const entry of entries) {
       if (!entry.isDirectory()) continue;
       if (entry.name.startsWith('.') || entry.name.startsWith('_')) continue;
-      if (await this._hasSkillManifestRecursive(path.join(dir, entry.name))) return true;
+      if (await this._hasSkillMdRecursive(path.join(dir, entry.name))) return true;
     }
 
     return false;

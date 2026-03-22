@@ -28,7 +28,7 @@ sidebar:
 | `--modules <modules>` | 逗号分隔的模块 ID | `--modules bmm,bmb` |
 | `--tools <tools>` | 逗号分隔的工具/IDE ID（使用 `none` 跳过） | `--tools claude-code,cursor` 或 `--tools none` |
 | `--custom-content <paths>` | 逗号分隔的自定义模块路径 | `--custom-content ~/my-module,~/another-module` |
-| `--action <type>` | 对现有安装的操作：`install`（默认）、`update`、`quick-update` 或 `compile-agents` | `--action quick-update` |
+| `--action <type>` | 对现有安装的操作：`install`（默认）、`update` 或 `quick-update` | `--action quick-update` |
 
 ### 核心配置
 
@@ -121,7 +121,7 @@ npx bmad-method install \
 ## 安装结果
 
 - 项目中完全配置的 `_bmad/` 目录
-- 为所选模块和工具编译的智能体和工作流
+- 为所选模块和工具配置的智能体和工作流
 - 用于生成产物的 `_bmad-output/` 文件夹
 
 ## 验证和错误处理
@@ -132,7 +132,7 @@ BMad 会验证所有提供的标志：
 - **模块** — 对无效的模块 ID 发出警告（但不会失败）
 - **工具** — 对无效的工具 ID 发出警告（但不会失败）
 - **自定义内容** — 每个路径必须包含有效的 `module.yaml` 文件
-- **操作** — 必须是以下之一：`install`、`update`、`quick-update`、`compile-agents`
+- **操作** — 必须是以下之一：`install`、`update`、`quick-update`
 
 无效值将：
 1. 显示错误并退出（对于目录等关键选项）

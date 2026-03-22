@@ -85,7 +85,7 @@ persona:
 ```yaml
 memories:
   - 'Works at Krusty Krab'
-  - 'Favorite Celebrity: David Hasslehoff'
+  - 'Favorite Celebrity: David Hasselhoff'
   - 'Learned in Epic 1 that it is not cool to just pretend that tests have passed'
 ```
 
@@ -128,7 +128,7 @@ prompts:
 
 ### 3. 应用您的更改
 
-编辑后，重新编译智能体以应用更改：
+编辑后，重新安装以应用更改：
 
 ```bash
 npx bmad-method install
@@ -138,17 +138,16 @@ npx bmad-method install
 
 | Option                       | What It Does                                                        |
 | ---------------------------- | ------------------------------------------------------------------- |
-| **Quick Update**             | 将所有模块更新到最新版本并重新编译所有智能体                 |
-| **Recompile Agents**         | 仅应用自定义配置，不更新模块文件                             |
+| **Quick Update**             | 将所有模块更新到最新版本并应用自定义配置                     |
 | **Modify BMad Installation** | 用于添加或删除模块的完整安装流程                             |
 
-对于仅自定义配置的更改，**Recompile Agents** 是最快的选项。
+对于仅自定义配置的更改，**Quick Update** 是最快的选项。
 
 ## 故障排除
 
 **更改未生效？**
 
-- 运行 `npx bmad-method install` 并选择 **Recompile Agents** 以应用更改
+- 运行 `npx bmad-method install` 并选择 **Quick Update** 以应用更改
 - 检查您的 YAML 语法是否有效（缩进很重要）
 - 验证您编辑的是该智能体正确的 `.customize.yaml` 文件
 
@@ -161,7 +160,7 @@ npx bmad-method install
 **需要重置智能体？**
 
 - 清空或删除智能体的 `.customize.yaml` 文件
-- 运行 `npx bmad-method install` 并选择 **Recompile Agents** 以恢复默认设置
+- 运行 `npx bmad-method install` 并选择 **Quick Update** 以恢复默认设置
 
 ## 工作流自定义
 

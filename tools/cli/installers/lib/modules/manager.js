@@ -2,22 +2,18 @@ const path = require('node:path');
 const fs = require('fs-extra');
 const yaml = require('yaml');
 const prompts = require('../../../lib/prompts');
-const { XmlHandler } = require('../../../lib/xml-handler');
 const { getProjectRoot, getSourcePath, getModulePath } = require('../../../lib/project-root');
-const { filterCustomizationData } = require('../../../lib/agent/compiler');
 const { ExternalModuleManager } = require('./external-manager');
 const { BMAD_FOLDER_NAME } = require('../ide/shared/path-utils');
 
 /**
  * Manages the installation, updating, and removal of BMAD modules.
- * Handles module discovery, dependency resolution, configuration processing,
- * and agent file management including XML activation block injection.
+ * Handles module discovery, dependency resolution, and configuration processing.
  *
  * @class ModuleManager
  * @requires fs-extra
  * @requires yaml
  * @requires prompts
- * @requires XmlHandler
  *
  * @example
  * const manager = new ModuleManager();
@@ -26,7 +22,6 @@ const { BMAD_FOLDER_NAME } = require('../ide/shared/path-utils');
  */
 class ModuleManager {
   constructor(options = {}) {
-    this.xmlHandler = new XmlHandler();
     this.bmadFolderName = BMAD_FOLDER_NAME; // Default, can be overridden
     this.customModulePaths = new Map(); // Initialize custom module paths
     this.externalModuleManager = new ExternalModuleManager(); // For external official modules
@@ -86,103 +81,6 @@ class ModuleManager {
         await this.copyFileWithPlaceholderReplacement(sourcePath, targetPath, overwrite);
       }
     }
-  }
-
-  /**
-   * Copy sidecar directory to _bmad/_memory location with update-safe handling
-   * @param {string} sourceSidecarPath - Source sidecar directory path
-   * @param {string} agentName - Name of the agent (for naming)
-   * @param {string} bmadMemoryPath - This should ALWAYS be _bmad/_memory
-   * @param {boolean} isUpdate - Whether this is an update (default: false)
-   * @param {string} bmadDir - BMAD installation directory
-   * @param {Object} installer - Installer instance for file tracking
-   */
-  async copySidecarToMemory(sourceSidecarPath, agentName, bmadMemoryPath, isUpdate = false, bmadDir = null, installer = null) {
-    const crypto = require('node:crypto');
-    const sidecarTargetDir = path.join(bmadMemoryPath, `${agentName}-sidecar`);
-
-    // Ensure target directory exists
-    await fs.ensureDir(bmadMemoryPath);
-    await fs.ensureDir(sidecarTargetDir);
-
-    // Get existing files manifest for update checking
-    let existingFilesManifest = [];
-    if (isUpdate && installer) {
-      existingFilesManifest = await installer.readFilesManifest(bmadDir);
-    }
-
-    // Build map of existing sidecar files with their hashes
-    const existingSidecarFiles = new Map();
-    for (const fileEntry of existingFilesManifest) {
-      if (fileEntry.path && fileEntry.path.includes(`${agentName}-sidecar/`)) {
-        existingSidecarFiles.set(fileEntry.path, fileEntry.hash);
-      }
-    }
-
-    // Get all files in source sidecar
-    const sourceFiles = await this.getFileList(sourceSidecarPath);
-
-    for (const file of sourceFiles) {
-      const sourceFilePath = path.join(sourceSidecarPath, file);
-      const targetFilePath = path.join(sidecarTargetDir, file);
-
-      // Calculate current source file hash
-      const sourceHash = crypto
-        .createHash('sha256')
-        .update(await fs.readFile(sourceFilePath))
-        .digest('hex');
-
-      // Path relative to bmad directory
-      const relativeToBmad = path.join('_memory', `${agentName}-sidecar`, file);
-
-      if (isUpdate && (await fs.pathExists(targetFilePath))) {
-        // Calculate current target file hash
-        const currentTargetHash = crypto
-          .createHash('sha256')
-          .update(await fs.readFile(targetFilePath))
-          .digest('hex');
-
-        // Get the last known hash from files-manifest
-        const lastKnownHash = existingSidecarFiles.get(relativeToBmad);
-
-        if (lastKnownHash) {
-          // We have a record of this file
-          if (currentTargetHash === lastKnownHash) {
-            // File hasn't been modified by user, safe to update
-            await this.copyFileWithPlaceholderReplacement(sourceFilePath, targetFilePath, true);
-            if (process.env.BMAD_VERBOSE_INSTALL === 'true') {
-              await prompts.log.message(`    Updated sidecar file: ${relativeToBmad}`);
-            }
-          } else {
-            // User has modified the file, preserve it
-            if (process.env.BMAD_VERBOSE_INSTALL === 'true') {
-              await prompts.log.message(`    Preserving user-modified file: ${relativeToBmad}`);
-            }
-          }
-        } else {
-          // First time seeing this file in manifest, copy it
-          await this.copyFileWithPlaceholderReplacement(sourceFilePath, targetFilePath, true);
-          if (process.env.BMAD_VERBOSE_INSTALL === 'true') {
-            await prompts.log.message(`    Added new sidecar file: ${relativeToBmad}`);
-          }
-        }
-      } else {
-        // New installation
-        await this.copyFileWithPlaceholderReplacement(sourceFilePath, targetFilePath, true);
-        if (process.env.BMAD_VERBOSE_INSTALL === 'true') {
-          await prompts.log.message(`    Copied sidecar file: ${relativeToBmad}`);
-        }
-      }
-
-      // Track the file in the installer's file tracking system
-      if (installer && installer.installedFiles) {
-        installer.installedFiles.add(targetFilePath);
-      }
-    }
-
-    // Return list of files that were processed
-    const processedFiles = sourceFiles.map((file) => path.join('_memory', `${agentName}-sidecar`, file));
-    return processedFiles;
   }
 
   /**
@@ -559,18 +457,8 @@ class ModuleManager {
       await fs.remove(targetPath);
     }
 
-    // Vendor cross-module workflows BEFORE copying
-    // This reads source agent.yaml files and copies referenced workflows
-    await this.vendorCrossModuleWorkflows(sourcePath, targetPath, moduleName);
-
     // Copy module files with filtering
     await this.copyModuleWithFiltering(sourcePath, targetPath, fileTrackingCallback, options.moduleConfig);
-
-    // Compile any .agent.yaml files to .md format
-    await this.compileModuleAgents(sourcePath, targetPath, moduleName, bmadDir, options.installer);
-
-    // Process agent files to inject activation block
-    await this.processAgentFiles(targetPath, moduleName);
 
     // Create directories declared in module.yaml (unless explicitly skipped)
     if (!options.skipModuleInstaller) {
@@ -624,10 +512,6 @@ class ModuleManager {
     } else {
       // Selective update - preserve user modifications
       await this.syncModule(sourcePath, targetPath);
-
-      // Recompile agents (#1133)
-      await this.compileModuleAgents(sourcePath, targetPath, moduleName, bmadDir, options.installer);
-      await this.processAgentFiles(targetPath, moduleName);
     }
 
     return {
@@ -718,9 +602,7 @@ class ModuleManager {
         continue;
       }
 
-      // Only skip sidecar directories - they are handled separately during agent compilation
-      // But still allow other files in agent directories
-      const isInAgentDirectory = file.startsWith('agents/');
+      // Skip sidecar directories - these contain agent-specific assets not needed at install time
       const isInSidecarDirectory = path
         .dirname(file)
         .split('/')
@@ -739,11 +621,6 @@ class ModuleManager {
       // Workflow-level config.yaml (e.g. workflows/orchestrate-story/config.yaml) must be copied
       // for custom modules that use workflow-specific configuration
       if (file === 'config.yaml') {
-        continue;
-      }
-
-      // Skip .agent.yaml files - they will be compiled separately
-      if (file.endsWith('.agent.yaml')) {
         continue;
       }
 
@@ -774,236 +651,6 @@ class ModuleManager {
   }
 
   /**
-   * Compile .agent.yaml files to .md format in modules
-   * @param {string} sourcePath - Source module path
-   * @param {string} targetPath - Target module path
-   * @param {string} moduleName - Module name
-   * @param {string} bmadDir - BMAD installation directory
-   * @param {Object} installer - Installer instance for file tracking
-   */
-  async compileModuleAgents(sourcePath, targetPath, moduleName, bmadDir, installer = null) {
-    const sourceAgentsPath = path.join(sourcePath, 'agents');
-    const targetAgentsPath = path.join(targetPath, 'agents');
-    const cfgAgentsDir = path.join(bmadDir, '_config', 'agents');
-
-    // Check if agents directory exists in source
-    if (!(await fs.pathExists(sourceAgentsPath))) {
-      return; // No agents to compile
-    }
-
-    // Get all agent YAML files recursively
-    const agentFiles = await this.findAgentFiles(sourceAgentsPath);
-
-    for (const agentFile of agentFiles) {
-      if (!agentFile.endsWith('.agent.yaml')) continue;
-
-      const relativePath = path.relative(sourceAgentsPath, agentFile).split(path.sep).join('/');
-      const targetDir = path.join(targetAgentsPath, path.dirname(relativePath));
-
-      await fs.ensureDir(targetDir);
-
-      const agentName = path.basename(agentFile, '.agent.yaml');
-      const sourceYamlPath = agentFile;
-      const targetMdPath = path.join(targetDir, `${agentName}.md`);
-      const customizePath = path.join(cfgAgentsDir, `${moduleName}-${agentName}.customize.yaml`);
-
-      // Read and compile the YAML
-      try {
-        const yamlContent = await fs.readFile(sourceYamlPath, 'utf8');
-        const { compileAgent } = require('../../../lib/agent/compiler');
-
-        // Create customize template if it doesn't exist
-        if (!(await fs.pathExists(customizePath))) {
-          const { getSourcePath } = require('../../../lib/project-root');
-          const genericTemplatePath = getSourcePath('utility', 'agent-components', 'agent.customize.template.yaml');
-          if (await fs.pathExists(genericTemplatePath)) {
-            await this.copyFileWithPlaceholderReplacement(genericTemplatePath, customizePath);
-            // Only show customize creation in verbose mode
-            if (process.env.BMAD_VERBOSE_INSTALL === 'true') {
-              await prompts.log.message(`  Created customize: ${moduleName}-${agentName}.customize.yaml`);
-            }
-
-            // Store original hash for modification detection
-            const crypto = require('node:crypto');
-            const customizeContent = await fs.readFile(customizePath, 'utf8');
-            const originalHash = crypto.createHash('sha256').update(customizeContent).digest('hex');
-
-            // Store in main manifest
-            const manifestPath = path.join(bmadDir, '_config', 'manifest.yaml');
-            let manifestData = {};
-            if (await fs.pathExists(manifestPath)) {
-              const manifestContent = await fs.readFile(manifestPath, 'utf8');
-              const yaml = require('yaml');
-              manifestData = yaml.parse(manifestContent);
-            }
-            if (!manifestData.agentCustomizations) {
-              manifestData.agentCustomizations = {};
-            }
-            manifestData.agentCustomizations[path.relative(bmadDir, customizePath)] = originalHash;
-
-            // Write back to manifest
-            const yaml = require('yaml');
-            // Clean the manifest data to remove any non-serializable values
-            const cleanManifestData = structuredClone(manifestData);
-
-            const updatedContent = yaml.stringify(cleanManifestData, {
-              indent: 2,
-              lineWidth: 0,
-            });
-            await fs.writeFile(manifestPath, updatedContent, 'utf8');
-          }
-        }
-
-        // Check for customizations and build answers object
-        let customizedFields = [];
-        let answers = {};
-        if (await fs.pathExists(customizePath)) {
-          const customizeContent = await fs.readFile(customizePath, 'utf8');
-          const customizeData = yaml.parse(customizeContent);
-          customizedFields = customizeData.customized_fields || [];
-
-          // Build answers object from customizations
-          if (customizeData.persona) {
-            answers.persona = customizeData.persona;
-          }
-          if (customizeData.agent?.metadata) {
-            const filteredMetadata = filterCustomizationData(customizeData.agent.metadata);
-            if (Object.keys(filteredMetadata).length > 0) {
-              Object.assign(answers, { metadata: filteredMetadata });
-            }
-          }
-          if (customizeData.critical_actions && customizeData.critical_actions.length > 0) {
-            answers.critical_actions = customizeData.critical_actions;
-          }
-          if (customizeData.memories && customizeData.memories.length > 0) {
-            answers.memories = customizeData.memories;
-          }
-          if (customizeData.menu && customizeData.menu.length > 0) {
-            answers.menu = customizeData.menu;
-          }
-          if (customizeData.prompts && customizeData.prompts.length > 0) {
-            answers.prompts = customizeData.prompts;
-          }
-        }
-
-        // Check if agent has sidecar
-        let hasSidecar = false;
-        try {
-          const agentYaml = yaml.parse(yamlContent);
-          hasSidecar = agentYaml?.agent?.metadata?.hasSidecar === true;
-        } catch {
-          // Continue without sidecar processing
-        }
-
-        // Compile with customizations if any
-        const { xml } = await compileAgent(yamlContent, answers, agentName, relativePath, { config: this.coreConfig || {} });
-
-        // Write the compiled agent
-        await fs.writeFile(targetMdPath, xml, 'utf8');
-
-        // Handle sidecar copying if present
-        if (hasSidecar) {
-          // Get the agent's directory to look for sidecar
-          const agentDir = path.dirname(agentFile);
-          const sidecarDirName = `${agentName}-sidecar`;
-          const sourceSidecarPath = path.join(agentDir, sidecarDirName);
-
-          // Check if sidecar directory exists
-          if (await fs.pathExists(sourceSidecarPath)) {
-            // Memory is always in _bmad/_memory
-            const bmadMemoryPath = path.join(bmadDir, '_memory');
-
-            // Determine if this is an update (by checking if agent already exists)
-            const isUpdate = await fs.pathExists(targetMdPath);
-
-            // Copy sidecar to memory location with update-safe handling
-            const copiedFiles = await this.copySidecarToMemory(sourceSidecarPath, agentName, bmadMemoryPath, isUpdate, bmadDir, installer);
-
-            if (process.env.BMAD_VERBOSE_INSTALL === 'true' && copiedFiles.length > 0) {
-              await prompts.log.message(`    Sidecar files processed: ${copiedFiles.length} files`);
-            }
-          } else if (process.env.BMAD_VERBOSE_INSTALL === 'true') {
-            await prompts.log.warn(`    Agent marked as having sidecar but ${sidecarDirName} directory not found`);
-          }
-        }
-
-        // Copy any non-sidecar files from agent directory (e.g., foo.md)
-        const agentDir = path.dirname(agentFile);
-        const agentEntries = await fs.readdir(agentDir, { withFileTypes: true });
-
-        for (const entry of agentEntries) {
-          if (entry.isFile() && !entry.name.endsWith('.agent.yaml') && !entry.name.endsWith('.md')) {
-            // Copy additional files (like foo.md) to the agent target directory
-            const sourceFile = path.join(agentDir, entry.name);
-            const targetFile = path.join(targetDir, entry.name);
-            await this.copyFileWithPlaceholderReplacement(sourceFile, targetFile);
-          }
-        }
-
-        // Only show compilation details in verbose mode
-        if (process.env.BMAD_VERBOSE_INSTALL === 'true') {
-          await prompts.log.message(
-            `    Compiled agent: ${agentName} -> ${path.relative(targetPath, targetMdPath)}${hasSidecar ? ' (with sidecar)' : ''}`,
-          );
-        }
-      } catch (error) {
-        await prompts.log.warn(`    Failed to compile agent ${agentName}: ${error.message}`);
-      }
-    }
-  }
-
-  /**
-   * Find all .agent.yaml files recursively in a directory
-   * @param {string} dir - Directory to search
-   * @returns {Array} List of .agent.yaml file paths
-   */
-  async findAgentFiles(dir) {
-    const agentFiles = [];
-
-    async function searchDirectory(searchDir) {
-      const entries = await fs.readdir(searchDir, { withFileTypes: true });
-
-      for (const entry of entries) {
-        const fullPath = path.join(searchDir, entry.name);
-
-        if (entry.isFile() && entry.name.endsWith('.agent.yaml')) {
-          agentFiles.push(fullPath);
-        } else if (entry.isDirectory()) {
-          await searchDirectory(fullPath);
-        }
-      }
-    }
-
-    await searchDirectory(dir);
-    return agentFiles;
-  }
-
-  /**
-   * Process agent files to inject activation block
-   * @param {string} modulePath - Path to installed module
-   * @param {string} moduleName - Module name
-   */
-  async processAgentFiles(modulePath, moduleName) {
-    // const agentsPath = path.join(modulePath, 'agents');
-    // // Check if agents directory exists
-    // if (!(await fs.pathExists(agentsPath))) {
-    //   return; // No agents to process
-    // }
-    // // Get all agent MD files recursively
-    // const agentFiles = await this.findAgentMdFiles(agentsPath);
-    // for (const agentFile of agentFiles) {
-    //   if (!agentFile.endsWith('.md')) continue;
-    //   let content = await fs.readFile(agentFile, 'utf8');
-    //   // Check if content has agent XML and no activation block
-    //   if (content.includes('<agent') && !content.includes('<activation')) {
-    //     // Inject the activation block using XML handler
-    //     content = this.xmlHandler.injectActivationSimple(content);
-    //     await fs.writeFile(agentFile, content, 'utf8');
-    //   }
-    // }
-  }
-
-  /**
    * Find all .md agent files recursively in a directory
    * @param {string} dir - Directory to search
    * @returns {Array} List of .md agent file paths
@@ -1027,101 +674,6 @@ class ModuleManager {
 
     await searchDirectory(dir);
     return agentFiles;
-  }
-
-  /**
-   * Vendor cross-module workflows referenced in agent files
-   * Scans SOURCE agent.yaml files for workflow-install and copies workflows to destination
-   * @param {string} sourcePath - Source module path
-   * @param {string} targetPath - Target module path (destination)
-   * @param {string} moduleName - Module name being installed
-   */
-  async vendorCrossModuleWorkflows(sourcePath, targetPath, moduleName) {
-    const sourceAgentsPath = path.join(sourcePath, 'agents');
-
-    // Check if source agents directory exists
-    if (!(await fs.pathExists(sourceAgentsPath))) {
-      return; // No agents to process
-    }
-
-    // Get all agent YAML files from source
-    const agentFiles = await fs.readdir(sourceAgentsPath);
-    const yamlFiles = agentFiles.filter((f) => f.endsWith('.agent.yaml') || f.endsWith('.yaml'));
-
-    if (yamlFiles.length === 0) {
-      return; // No YAML agent files
-    }
-
-    let workflowsVendored = false;
-
-    for (const agentFile of yamlFiles) {
-      const agentPath = path.join(sourceAgentsPath, agentFile);
-      const agentYaml = yaml.parse(await fs.readFile(agentPath, 'utf8'));
-
-      // Check if agent has menu items with workflow-install
-      const menuItems = agentYaml?.agent?.menu || [];
-      const workflowInstallItems = menuItems.filter((item) => item['workflow-install']);
-
-      if (workflowInstallItems.length === 0) {
-        continue; // No workflow-install in this agent
-      }
-
-      if (!workflowsVendored) {
-        await prompts.log.info(`\n  Vendoring cross-module workflows for ${moduleName}...`);
-        workflowsVendored = true;
-      }
-
-      await prompts.log.message(`    Processing: ${agentFile}`);
-
-      for (const item of workflowInstallItems) {
-        const sourceWorkflowPath = item.exec; // Where to copy FROM
-        const installWorkflowPath = item['workflow-install']; // Where to copy TO
-
-        // Parse SOURCE workflow path
-        // Example: {project-root}/_bmad/bmm/workflows/4-implementation/bmad-create-story/workflow.md
-        const sourceMatch = sourceWorkflowPath.match(/\{project-root\}\/(?:_bmad)\/([^/]+)\/workflows\/(.+)/);
-        if (!sourceMatch) {
-          await prompts.log.warn(`      Could not parse workflow path: ${sourceWorkflowPath}`);
-          continue;
-        }
-
-        const [, sourceModule, sourceWorkflowSubPath] = sourceMatch;
-
-        // Parse INSTALL workflow path
-        // Example: {project-root}/_bmad/bmgd/workflows/4-production/create-story/workflow.md
-        const installMatch = installWorkflowPath.match(/\{project-root\}\/(?:_bmad)\/([^/]+)\/workflows\/(.+)/);
-        if (!installMatch) {
-          await prompts.log.warn(`      Could not parse workflow-install path: ${installWorkflowPath}`);
-          continue;
-        }
-
-        const installWorkflowSubPath = installMatch[2];
-
-        const sourceModulePath = getModulePath(sourceModule);
-        const actualSourceWorkflowPath = path.join(sourceModulePath, 'workflows', sourceWorkflowSubPath.replace(/\/workflow\.md$/, ''));
-
-        const actualDestWorkflowPath = path.join(targetPath, 'workflows', installWorkflowSubPath.replace(/\/workflow\.md$/, ''));
-
-        // Check if source workflow exists
-        if (!(await fs.pathExists(actualSourceWorkflowPath))) {
-          await prompts.log.warn(`      Source workflow not found: ${actualSourceWorkflowPath}`);
-          continue;
-        }
-
-        // Copy the entire workflow folder
-        await prompts.log.message(
-          `      Vendoring: ${sourceModule}/workflows/${sourceWorkflowSubPath.replace(/\/workflow\.md$/, '')} → ${moduleName}/workflows/${installWorkflowSubPath.replace(/\/workflow\.md$/, '')}`,
-        );
-
-        await fs.ensureDir(path.dirname(actualDestWorkflowPath));
-        // Copy the workflow directory recursively with placeholder replacement
-        await this.copyDirectoryWithPlaceholderReplacement(actualSourceWorkflowPath, actualDestWorkflowPath);
-      }
-    }
-
-    if (workflowsVendored) {
-      await prompts.log.success(`  Workflow vendoring complete\n`);
-    }
   }
 
   /**

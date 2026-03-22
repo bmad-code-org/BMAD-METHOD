@@ -6,7 +6,6 @@ const { ModuleManager } = require('../modules/manager');
 const { IdeManager } = require('../ide/manager');
 const { FileOps } = require('../../../lib/file-ops');
 const { Config } = require('../../../lib/config');
-const { XmlHandler } = require('../../../lib/xml-handler');
 const { DependencyResolver } = require('./dependency-resolver');
 const { ConfigCollector } = require('./config-collector');
 const { getProjectRoot, getSourcePath, getModulePath } = require('../../../lib/project-root');
@@ -25,7 +24,6 @@ class Installer {
     this.ideManager = new IdeManager();
     this.fileOps = new FileOps();
     this.config = new Config();
-    this.xmlHandler = new XmlHandler();
     this.dependencyResolver = new DependencyResolver();
     this.configCollector = new ConfigCollector();
     this.ideConfigManager = new IdeConfigManager();
@@ -1126,11 +1124,9 @@ class Installer {
           // Pre-register manifest files
           const cfgDir = path.join(bmadDir, '_config');
           this.installedFiles.add(path.join(cfgDir, 'manifest.yaml'));
-          this.installedFiles.add(path.join(cfgDir, 'workflow-manifest.csv'));
           this.installedFiles.add(path.join(cfgDir, 'agent-manifest.csv'));
-          this.installedFiles.add(path.join(cfgDir, 'task-manifest.csv'));
 
-          // Generate CSV manifests for workflows, agents, tasks AND ALL FILES with hashes
+          // Generate CSV manifests for agents, skills AND ALL FILES with hashes
           // This must happen BEFORE mergeModuleHelpCatalogs because it depends on agent-manifest.csv
           message('Generating manifests...');
           const manifestGen = new ManifestGenerator();
@@ -2114,10 +2110,6 @@ class Installer {
       },
     );
 
-    // Process agent files to build YAML agents and create customize templates
-    const modulePath = path.join(bmadDir, moduleName);
-    await this.processAgentFiles(modulePath, moduleName);
-
     // Dependencies are already included in full module install
   }
 
@@ -2227,16 +2219,8 @@ class Installer {
     const sourcePath = getModulePath('core');
     const targetPath = path.join(bmadDir, 'core');
 
-    // Copy core files (skip .agent.yaml files like modules do)
+    // Copy core files
     await this.copyCoreFiles(sourcePath, targetPath);
-
-    // Compile agents using the same compiler as modules
-    const { ModuleManager } = require('../modules/manager');
-    const moduleManager = new ModuleManager();
-    await moduleManager.compileModuleAgents(sourcePath, targetPath, 'core', bmadDir, this);
-
-    // Process agent files to inject activation block
-    await this.processAgentFiles(targetPath, 'core');
   }
 
   /**
@@ -2254,16 +2238,6 @@ class Installer {
         continue;
       }
 
-      // Skip sidecar directories - they are handled separately during agent compilation
-      if (
-        path
-          .dirname(file)
-          .split('/')
-          .some((dir) => dir.toLowerCase().includes('sidecar'))
-      ) {
-        continue;
-      }
-
       // Skip module.yaml at root - it's only needed at install time
       if (file === 'module.yaml') {
         continue;
@@ -2274,26 +2248,8 @@ class Installer {
         continue;
       }
 
-      // Skip .agent.yaml files - they will be compiled separately
-      if (file.endsWith('.agent.yaml')) {
-        continue;
-      }
-
       const sourceFile = path.join(sourcePath, file);
       const targetFile = path.join(targetPath, file);
-
-      // Check if this is an agent file
-      if (file.startsWith('agents/') && file.endsWith('.md')) {
-        // Read the file to check for localskip
-        const content = await fs.readFile(sourceFile, 'utf8');
-
-        // Check for localskip="true" in the agent tag
-        const agentMatch = content.match(/<agent[^>]*\slocalskip="true"[^>]*>/);
-        if (agentMatch) {
-          await prompts.log.message(`  Skipping web-only agent: ${path.basename(file)}`);
-          continue; // Skip this agent
-        }
-      }
 
       // Copy the file with placeholder replacement
       await fs.ensureDir(path.dirname(targetFile));
@@ -2329,58 +2285,6 @@ class Installer {
   }
 
   /**
-   * Process agent files to build YAML agents and inject activation blocks
-   * @param {string} modulePath - Path to module in bmad/ installation
-   * @param {string} moduleName - Module name
-   */
-  async processAgentFiles(modulePath, moduleName) {
-    const agentsPath = path.join(modulePath, 'agents');
-
-    // Check if agents directory exists
-    if (!(await fs.pathExists(agentsPath))) {
-      return; // No agents to process
-    }
-
-    // Determine project directory (parent of bmad/ directory)
-    const bmadDir = path.dirname(modulePath);
-    const cfgAgentsDir = path.join(bmadDir, '_config', 'agents');
-
-    // Ensure _config/agents directory exists
-    await fs.ensureDir(cfgAgentsDir);
-
-    // Get all agent files
-    const agentFiles = await fs.readdir(agentsPath);
-
-    for (const agentFile of agentFiles) {
-      // Skip .agent.yaml files - they should already be compiled by compileModuleAgents
-      if (agentFile.endsWith('.agent.yaml')) {
-        continue;
-      }
-
-      // Only process .md files (already compiled from YAML)
-      if (!agentFile.endsWith('.md')) {
-        continue;
-      }
-
-      const agentName = agentFile.replace('.md', '');
-      const mdPath = path.join(agentsPath, agentFile);
-      const customizePath = path.join(cfgAgentsDir, `${moduleName}-${agentName}.customize.yaml`);
-
-      // For .md files that are already compiled, we don't need to do much
-      // Just ensure the customize template exists
-      if (!(await fs.pathExists(customizePath))) {
-        const genericTemplatePath = getSourcePath('utility', 'agent-components', 'agent.customize.template.yaml');
-        if (await fs.pathExists(genericTemplatePath)) {
-          await this.copyFileWithPlaceholderReplacement(genericTemplatePath, customizePath);
-          if (process.env.BMAD_VERBOSE_INSTALL === 'true') {
-            await prompts.log.message(`  Created customize: ${moduleName}-${agentName}.customize.yaml`);
-          }
-        }
-      }
-    }
-  }
-
-  /**
    * Private: Update core
    */
   async updateCore(bmadDir, force = false) {
@@ -2393,12 +2297,6 @@ class Installer {
     } else {
       // Selective update - preserve user modifications
       await this.fileOps.syncDirectory(sourcePath, targetPath);
-
-      // Recompile agents (#1133)
-      const { ModuleManager } = require('../modules/manager');
-      const moduleManager = new ModuleManager();
-      await moduleManager.compileModuleAgents(sourcePath, targetPath, 'core', bmadDir, this);
-      await this.processAgentFiles(targetPath, 'core');
     }
   }
 
@@ -2639,114 +2537,6 @@ class Installer {
       };
     } catch (error) {
       spinner.error('Quick update failed');
-      throw error;
-    }
-  }
-
-  /**
-   * Compile agents with customizations only
-   * @param {Object} config - Configuration with directory
-   * @returns {Object} Compilation result
-   */
-  async compileAgents(config) {
-    // Using @clack prompts
-    const { ModuleManager } = require('../modules/manager');
-    const { getSourcePath } = require('../../../lib/project-root');
-
-    const spinner = await prompts.spinner();
-    spinner.start('Recompiling agents with customizations...');
-
-    try {
-      const projectDir = path.resolve(config.directory);
-      const { bmadDir } = await this.findBmadDir(projectDir);
-
-      // Check if bmad directory exists
-      if (!(await fs.pathExists(bmadDir))) {
-        spinner.stop('No BMAD installation found');
-        throw new Error(`BMAD not installed at ${bmadDir}. Use regular install for first-time setup.`);
-      }
-
-      // Detect existing installation
-      const existingInstall = await this.detector.detect(bmadDir);
-      const installedModules = existingInstall.modules.map((m) => m.id);
-
-      // Initialize module manager
-      const moduleManager = new ModuleManager();
-      moduleManager.setBmadFolderName(path.basename(bmadDir));
-
-      let totalAgentCount = 0;
-
-      // Get custom module sources from cache
-      const customModuleSources = new Map();
-      const cacheDir = path.join(bmadDir, '_config', 'custom');
-      if (await fs.pathExists(cacheDir)) {
-        const cachedModules = await fs.readdir(cacheDir, { withFileTypes: true });
-
-        for (const cachedModule of cachedModules) {
-          if (cachedModule.isDirectory()) {
-            const moduleId = cachedModule.name;
-            const cachedPath = path.join(cacheDir, moduleId);
-            const moduleYamlPath = path.join(cachedPath, 'module.yaml');
-
-            // Check if this is actually a custom module
-            if (await fs.pathExists(moduleYamlPath)) {
-              // Check if this is an external official module - skip cache for those
-              const isExternal = await this.moduleManager.isExternalModule(moduleId);
-              if (isExternal) {
-                // External modules are handled via cloneExternalModule, not from cache
-                continue;
-              }
-              customModuleSources.set(moduleId, cachedPath);
-            }
-          }
-        }
-      }
-
-      // Process each installed module
-      for (const moduleId of installedModules) {
-        spinner.message(`Recompiling agents in ${moduleId}...`);
-
-        // Get source path
-        let sourcePath;
-        if (moduleId === 'core') {
-          sourcePath = getSourcePath('core-skills');
-        } else {
-          // First check if it's in the custom cache
-          if (customModuleSources.has(moduleId)) {
-            sourcePath = customModuleSources.get(moduleId);
-          } else {
-            sourcePath = await moduleManager.findModuleSource(moduleId);
-          }
-        }
-
-        if (!sourcePath) {
-          await prompts.log.warn(`Source not found for module ${moduleId}, skipping...`);
-          continue;
-        }
-
-        const targetPath = path.join(bmadDir, moduleId);
-
-        // Compile agents for this module
-        await moduleManager.compileModuleAgents(sourcePath, targetPath, moduleId, bmadDir, this);
-
-        // Count agents (rough estimate based on files)
-        const agentsPath = path.join(targetPath, 'agents');
-        if (await fs.pathExists(agentsPath)) {
-          const agentFiles = await fs.readdir(agentsPath);
-          const agentCount = agentFiles.filter((f) => f.endsWith('.md')).length;
-          totalAgentCount += agentCount;
-        }
-      }
-
-      spinner.stop('Agent recompilation complete!');
-
-      return {
-        success: true,
-        agentCount: totalAgentCount,
-        modules: installedModules,
-      };
-    } catch (error) {
-      spinner.error('Agent recompilation failed');
       throw error;
     }
   }
