@@ -20,8 +20,8 @@
   "author": "Brian (BMad) Madison",
   "main": "tools/cli/bmad-cli.js",
   "bin": {
-    "bmad": "tools/bmad-npx-wrapper.js",
-    "bmad-method": "tools/bmad-npx-wrapper.js"
+    "bmad": "tools/cli/bmad-cli.js",
+    "bmad-method": "tools/cli/bmad-cli.js"
   },
   "scripts": {
     "bmad:install": "node tools/cli/bmad-cli.js install",
