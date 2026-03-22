@@ -30,41 +30,37 @@ class OfficialModules {
   }
 
   /**
-   * Load module configurations. If pre-collected configs are provided (from UI),
-   * stores them directly. Otherwise falls back to headless collection for
-   * programmatic callers (quick-update, tests).
-   * @param {Object} config - Clean install config
+   * Build a configured OfficialModules instance from install config.
+   * @param {Object} config - Clean install config (from Config.build)
    * @param {Object} paths - InstallPaths instance
-   * @returns {Object} Module configurations (also available as this.moduleConfigs)
+   * @returns {OfficialModules}
    */
-  async collectConfigs(config, paths) {
-    // Pre-collected by UI — just store them
+  static async build(config, paths) {
+    const instance = new OfficialModules();
+
+    // Pre-collected by UI or quickUpdate — store and load existing for path-change detection
     if (config.moduleConfigs) {
-      this.collectedConfig = config.moduleConfigs;
-      // Load existing config for path-change detection in createModuleDirectories
-      await this.loadExistingConfig(paths.projectRoot);
-      return this.moduleConfigs;
+      instance.collectedConfig = config.moduleConfigs;
+      await instance.loadExistingConfig(paths.projectRoot);
+      return instance;
     }
 
-    // Quick update already collected everything via quickUpdate()
-    if (config.isQuickUpdate()) {
-      return this.moduleConfigs;
-    }
-
-    // Fallback: headless collection (--yes flag from CLI without UI, tests)
+    // Headless collection (--yes flag from CLI without UI, tests)
     if (config.hasCoreConfig()) {
-      this.collectedConfig.core = config.coreConfig;
-      this.allAnswers = {};
+      instance.collectedConfig.core = config.coreConfig;
+      instance.allAnswers = {};
       for (const [key, value] of Object.entries(config.coreConfig)) {
-        this.allAnswers[`core_${key}`] = value;
+        instance.allAnswers[`core_${key}`] = value;
       }
     }
 
     const toCollect = config.hasCoreConfig() ? config.modules.filter((m) => m !== 'core') : [...config.modules];
 
-    return await this.collectAllConfigurations(toCollect, paths.projectRoot, {
+    await instance.collectAllConfigurations(toCollect, paths.projectRoot, {
       skipPrompts: config.skipPrompts,
     });
+
+    return instance;
   }
 
   /**
@@ -304,30 +300,20 @@ class OfficialModules {
    * Update an existing module
    * @param {string} moduleName - Name of the module to update
    * @param {string} bmadDir - Target bmad directory
-   * @param {boolean} force - Force update (overwrite modifications)
    */
-  async update(moduleName, bmadDir, force = false, options = {}) {
+  async update(moduleName, bmadDir) {
     const sourcePath = await this.findModuleSource(moduleName);
     const targetPath = path.join(bmadDir, moduleName);
 
-    // Check if source module exists
     if (!sourcePath) {
       throw new Error(`Module '${moduleName}' not found in any source location`);
     }
 
-    // Check if module is installed
     if (!(await fs.pathExists(targetPath))) {
       throw new Error(`Module '${moduleName}' is not installed`);
     }
 
-    if (force) {
-      // Force update - remove and reinstall
-      await fs.remove(targetPath);
-      return await this.install(moduleName, bmadDir, null, { installer: options.installer });
-    } else {
-      // Selective update - preserve user modifications
-      await this.syncModule(sourcePath, targetPath);
-    }
+    await this.syncModule(sourcePath, targetPath);
 
     return {
       success: true,

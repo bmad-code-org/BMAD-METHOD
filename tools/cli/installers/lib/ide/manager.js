@@ -227,23 +227,6 @@ class IdeManager {
   }
 
   /**
-   * Get list of supported IDEs
-   * @returns {Array} List of supported IDE names
-   */
-  getSupportedIdes() {
-    return [...this.handlers.keys()];
-  }
-
-  /**
-   * Check if an IDE is supported
-   * @param {string} ideName - Name of the IDE
-   * @returns {boolean} True if IDE is supported
-   */
-  isSupported(ideName) {
-    return this.handlers.has(ideName.toLowerCase());
-  }
-
-  /**
    * Detect installed IDEs
    * @param {string} projectDir - Project directory
    * @returns {Array} List of detected IDEs
@@ -258,41 +241,6 @@ class IdeManager {
     }
 
     return detected;
-  }
-
-  /**
-   * Install custom agent launchers for specified IDEs
-   * @param {Array} ides - List of IDE names to install for
-   * @param {string} projectDir - Project directory
-   * @param {string} agentName - Agent name (e.g., "fred-commit-poet")
-   * @param {string} agentPath - Path to compiled agent (relative to project root)
-   * @param {Object} metadata - Agent metadata
-   * @returns {Object} Results for each IDE
-   */
-  async installCustomAgentLaunchers(ides, projectDir, agentName, agentPath, metadata) {
-    const results = {};
-
-    for (const ideName of ides) {
-      const handler = this.handlers.get(ideName.toLowerCase());
-
-      if (!handler) {
-        await prompts.log.warn(`IDE '${ideName}' is not yet supported for custom agent installation`);
-        continue;
-      }
-
-      try {
-        if (typeof handler.installCustomAgentLauncher === 'function') {
-          const result = await handler.installCustomAgentLauncher(projectDir, agentName, agentPath, metadata);
-          if (result) {
-            results[ideName] = result;
-          }
-        }
-      } catch (error) {
-        await prompts.log.warn(`Failed to install ${ideName} launcher: ${error.message}`);
-      }
-    }
-
-    return results;
   }
 }
 

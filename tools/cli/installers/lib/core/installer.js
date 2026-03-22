@@ -48,10 +48,8 @@ class Installer {
 
       await this.customModules.discoverPaths(config, paths);
 
-      if (existingInstall.installed && !config.force) {
-        if (!config.isQuickUpdate()) {
-          await this._removeDeselectedModules(existingInstall, config, paths);
-        }
+      if (existingInstall.installed) {
+        await this._removeDeselectedModules(existingInstall, config, paths);
         await this._prepareUpdateState(paths, config, customConfig, existingInstall, officialModules);
       }
 
@@ -1730,12 +1728,12 @@ class Installer {
 
       // Perform actual update
       if (existingInstall.hasCore) {
-        await this.updateCore(bmadDir, config.force);
+        await this.updateCore(bmadDir);
       }
 
       const updateModules = new OfficialModules();
       for (const module of existingInstall.modules) {
-        await updateModules.update(module.id, bmadDir, config.force, { installer: this });
+        await updateModules.update(module.id, bmadDir, { installer: this });
       }
 
       // Update manifest
@@ -1753,18 +1751,10 @@ class Installer {
   /**
    * Private: Update core
    */
-  async updateCore(bmadDir, force = false) {
-    if (force) {
-      await new OfficialModules().install('core', bmadDir, (filePath) => this.installedFiles.add(filePath), {
-        skipModuleInstaller: true,
-        silent: true,
-      });
-    } else {
-      // Selective update - preserve user modifications
-      const sourcePath = getModulePath('core');
-      const targetPath = path.join(bmadDir, 'core');
-      await this.fileOps.syncDirectory(sourcePath, targetPath);
-    }
+  async updateCore(bmadDir) {
+    const sourcePath = getModulePath('core');
+    const targetPath = path.join(bmadDir, 'core');
+    await this.fileOps.syncDirectory(sourcePath, targetPath);
   }
 
   /**

@@ -148,8 +148,6 @@ async function runTests() {
 
     assert(windsurfInstaller?.target_dir === '.windsurf/skills', 'Windsurf target_dir uses native skills path');
 
-    assert(windsurfInstaller?.skill_format === true, 'Windsurf installer enables native skill output');
-
     assert(
       Array.isArray(windsurfInstaller?.legacy_targets) && windsurfInstaller.legacy_targets.includes('.windsurf/workflows'),
       'Windsurf installer cleans legacy workflow output',
@@ -195,8 +193,6 @@ async function runTests() {
     const kiroInstaller = platformCodes.platforms.kiro?.installer;
 
     assert(kiroInstaller?.target_dir === '.kiro/skills', 'Kiro target_dir uses native skills path');
-
-    assert(kiroInstaller?.skill_format === true, 'Kiro installer enables native skill output');
 
     assert(
       Array.isArray(kiroInstaller?.legacy_targets) && kiroInstaller.legacy_targets.includes('.kiro/steering'),
@@ -244,8 +240,6 @@ async function runTests() {
 
     assert(antigravityInstaller?.target_dir === '.agent/skills', 'Antigravity target_dir uses native skills path');
 
-    assert(antigravityInstaller?.skill_format === true, 'Antigravity installer enables native skill output');
-
     assert(
       Array.isArray(antigravityInstaller?.legacy_targets) && antigravityInstaller.legacy_targets.includes('.agent/workflows'),
       'Antigravity installer cleans legacy workflow output',
@@ -291,8 +285,6 @@ async function runTests() {
     const auggieInstaller = platformCodes.platforms.auggie?.installer;
 
     assert(auggieInstaller?.target_dir === '.augment/skills', 'Auggie target_dir uses native skills path');
-
-    assert(auggieInstaller?.skill_format === true, 'Auggie installer enables native skill output');
 
     assert(
       Array.isArray(auggieInstaller?.legacy_targets) && auggieInstaller.legacy_targets.includes('.augment/commands'),
@@ -344,8 +336,6 @@ async function runTests() {
     const opencodeInstaller = platformCodes.platforms.opencode?.installer;
 
     assert(opencodeInstaller?.target_dir === '.opencode/skills', 'OpenCode target_dir uses native skills path');
-
-    assert(opencodeInstaller?.skill_format === true, 'OpenCode installer enables native skill output');
 
     assert(opencodeInstaller?.ancestor_conflict_check === true, 'OpenCode installer enables ancestor conflict checks');
 
@@ -410,8 +400,6 @@ async function runTests() {
     const claudeInstaller = platformCodes9.platforms['claude-code']?.installer;
 
     assert(claudeInstaller?.target_dir === '.claude/skills', 'Claude Code target_dir uses native skills path');
-
-    assert(claudeInstaller?.skill_format === true, 'Claude Code installer enables native skill output');
 
     assert(claudeInstaller?.ancestor_conflict_check === true, 'Claude Code installer enables ancestor conflict checks');
 
@@ -504,8 +492,6 @@ async function runTests() {
 
     assert(codexInstaller?.target_dir === '.agents/skills', 'Codex target_dir uses native skills path');
 
-    assert(codexInstaller?.skill_format === true, 'Codex installer enables native skill output');
-
     assert(codexInstaller?.ancestor_conflict_check === true, 'Codex installer enables ancestor conflict checks');
 
     assert(
@@ -594,8 +580,6 @@ async function runTests() {
 
     assert(cursorInstaller?.target_dir === '.cursor/skills', 'Cursor target_dir uses native skills path');
 
-    assert(cursorInstaller?.skill_format === true, 'Cursor installer enables native skill output');
-
     assert(
       Array.isArray(cursorInstaller?.legacy_targets) && cursorInstaller.legacy_targets.includes('.cursor/commands'),
       'Cursor installer cleans legacy command output',
@@ -647,8 +631,6 @@ async function runTests() {
     const rooInstaller = platformCodes13.platforms.roo?.installer;
 
     assert(rooInstaller?.target_dir === '.roo/skills', 'Roo target_dir uses native skills path');
-
-    assert(rooInstaller?.skill_format === true, 'Roo installer enables native skill output');
 
     assert(
       Array.isArray(rooInstaller?.legacy_targets) && rooInstaller.legacy_targets.includes('.roo/commands'),
@@ -756,8 +738,6 @@ async function runTests() {
 
     assert(copilotInstaller?.target_dir === '.github/skills', 'GitHub Copilot target_dir uses native skills path');
 
-    assert(copilotInstaller?.skill_format === true, 'GitHub Copilot installer enables native skill output');
-
     assert(
       Array.isArray(copilotInstaller?.legacy_targets) && copilotInstaller.legacy_targets.includes('.github/agents'),
       'GitHub Copilot installer cleans legacy agents output',
@@ -838,8 +818,6 @@ async function runTests() {
 
     assert(clineInstaller?.target_dir === '.cline/skills', 'Cline target_dir uses native skills path');
 
-    assert(clineInstaller?.skill_format === true, 'Cline installer enables native skill output');
-
     assert(
       Array.isArray(clineInstaller?.legacy_targets) && clineInstaller.legacy_targets.includes('.clinerules/workflows'),
       'Cline installer cleans legacy workflow output',
@@ -900,8 +878,6 @@ async function runTests() {
 
     assert(codebuddyInstaller?.target_dir === '.codebuddy/skills', 'CodeBuddy target_dir uses native skills path');
 
-    assert(codebuddyInstaller?.skill_format === true, 'CodeBuddy installer enables native skill output');
-
     assert(
       Array.isArray(codebuddyInstaller?.legacy_targets) && codebuddyInstaller.legacy_targets.includes('.codebuddy/commands'),
       'CodeBuddy installer cleans legacy command output',
@@ -960,8 +936,6 @@ async function runTests() {
 
     assert(crushInstaller?.target_dir === '.crush/skills', 'Crush target_dir uses native skills path');
 
-    assert(crushInstaller?.skill_format === true, 'Crush installer enables native skill output');
-
     assert(
       Array.isArray(crushInstaller?.legacy_targets) && crushInstaller.legacy_targets.includes('.crush/commands'),
       'Crush installer cleans legacy command output',
@@ -1019,8 +993,6 @@ async function runTests() {
     const traeInstaller = platformCodes21.platforms.trae?.installer;
 
     assert(traeInstaller?.target_dir === '.trae/skills', 'Trae target_dir uses native skills path');
-
-    assert(traeInstaller?.skill_format === true, 'Trae installer enables native skill output');
 
     assert(
       Array.isArray(traeInstaller?.legacy_targets) && traeInstaller.legacy_targets.includes('.trae/rules'),
@@ -1137,8 +1109,6 @@ async function runTests() {
 
     assert(geminiInstaller?.target_dir === '.gemini/skills', 'Gemini target_dir uses native skills path');
 
-    assert(geminiInstaller?.skill_format === true, 'Gemini installer enables native skill output');
-
     assert(
       Array.isArray(geminiInstaller?.legacy_targets) && geminiInstaller.legacy_targets.includes('.gemini/commands'),
       'Gemini installer cleans legacy commands output',
@@ -1195,7 +1165,6 @@ async function runTests() {
     const iflowInstaller = platformCodes24.platforms.iflow?.installer;
 
     assert(iflowInstaller?.target_dir === '.iflow/skills', 'iFlow target_dir uses native skills path');
-    assert(iflowInstaller?.skill_format === true, 'iFlow installer enables native skill output');
     assert(
       Array.isArray(iflowInstaller?.legacy_targets) && iflowInstaller.legacy_targets.includes('.iflow/commands'),
       'iFlow installer cleans legacy commands output',
@@ -1245,7 +1214,6 @@ async function runTests() {
     const qwenInstaller = platformCodes25.platforms.qwen?.installer;
 
     assert(qwenInstaller?.target_dir === '.qwen/skills', 'QwenCoder target_dir uses native skills path');
-    assert(qwenInstaller?.skill_format === true, 'QwenCoder installer enables native skill output');
     assert(
       Array.isArray(qwenInstaller?.legacy_targets) && qwenInstaller.legacy_targets.includes('.qwen/commands'),
       'QwenCoder installer cleans legacy commands output',
@@ -1295,7 +1263,6 @@ async function runTests() {
     const rovoInstaller = platformCodes26.platforms['rovo-dev']?.installer;
 
     assert(rovoInstaller?.target_dir === '.rovodev/skills', 'Rovo Dev target_dir uses native skills path');
-    assert(rovoInstaller?.skill_format === true, 'Rovo Dev installer enables native skill output');
     assert(
       Array.isArray(rovoInstaller?.legacy_targets) && rovoInstaller.legacy_targets.includes('.rovodev/workflows'),
       'Rovo Dev installer cleans legacy workflows output',
@@ -1431,8 +1398,6 @@ async function runTests() {
     const piInstaller = platformCodes28.platforms.pi?.installer;
 
     assert(piInstaller?.target_dir === '.pi/skills', 'Pi target_dir uses native skills path');
-    assert(piInstaller?.skill_format === true, 'Pi installer enables native skill output');
-    assert(piInstaller?.template_type === 'default', 'Pi installer uses default skill template');
 
     tempProjectDir28 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-pi-test-'));
     installedBmadDir28 = await createTestBmadFixture();
@@ -1773,8 +1738,6 @@ async function runTests() {
     const onaInstaller = platformCodes32.platforms.ona?.installer;
 
     assert(onaInstaller?.target_dir === '.ona/skills', 'Ona target_dir uses native skills path');
-    assert(onaInstaller?.skill_format === true, 'Ona installer enables native skill output');
-    assert(onaInstaller?.template_type === 'default', 'Ona installer uses default skill template');
 
     tempProjectDir32 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-ona-test-'));
     installedBmadDir32 = await createTestBmadFixture();

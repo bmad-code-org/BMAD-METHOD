@@ -23,8 +23,6 @@ platforms:
       legacy_targets:
         - .agent/workflows
       target_dir: .agent/skills
-      template_type: antigravity
-      skill_format: true
 
   auggie:
     name: "Auggie"
@@ -35,8 +33,6 @@ platforms:
       legacy_targets:
         - .augment/commands
       target_dir: .augment/skills
-      template_type: default
-      skill_format: true
 
   claude-code:
     name: "Claude Code"
@@ -47,8 +43,6 @@ platforms:
       legacy_targets:
         - .claude/commands
       target_dir: .claude/skills
-      template_type: default
-      skill_format: true
       ancestor_conflict_check: true
 
   cline:
@@ -60,8 +54,6 @@ platforms:
       legacy_targets:
         - .clinerules/workflows
       target_dir: .cline/skills
-      template_type: default
-      skill_format: true
 
   codex:
     name: "Codex"
@@ -73,10 +65,7 @@ platforms:
         - .codex/prompts
         - ~/.codex/prompts
       target_dir: .agents/skills
-      template_type: default
-      skill_format: true
       ancestor_conflict_check: true
-      artifact_types: [agents, workflows, tasks]
 
   codebuddy:
     name: "CodeBuddy"
@@ -87,8 +76,6 @@ platforms:
       legacy_targets:
         - .codebuddy/commands
       target_dir: .codebuddy/skills
-      template_type: default
-      skill_format: true
 
   crush:
     name: "Crush"
@@ -99,8 +86,6 @@ platforms:
       legacy_targets:
         - .crush/commands
       target_dir: .crush/skills
-      template_type: default
-      skill_format: true
 
   cursor:
     name: "Cursor"
@@ -111,8 +96,6 @@ platforms:
       legacy_targets:
         - .cursor/commands
       target_dir: .cursor/skills
-      template_type: default
-      skill_format: true
 
   gemini:
     name: "Gemini CLI"
@@ -123,8 +106,6 @@ platforms:
       legacy_targets:
         - .gemini/commands
       target_dir: .gemini/skills
-      template_type: default
-      skill_format: true
 
   github-copilot:
     name: "GitHub Copilot"
@@ -136,8 +117,6 @@ platforms:
         - .github/agents
         - .github/prompts
       target_dir: .github/skills
-      template_type: default
-      skill_format: true
 
   iflow:
     name: "iFlow"
@@ -148,8 +127,6 @@ platforms:
       legacy_targets:
         - .iflow/commands
       target_dir: .iflow/skills
-      template_type: default
-      skill_format: true
 
   kilo:
     name: "KiloCoder"
@@ -161,8 +138,6 @@ platforms:
       legacy_targets:
         - .kilocode/workflows
       target_dir: .kilocode/skills
-      template_type: default
-      skill_format: true
 
   kiro:
     name: "Kiro"
@@ -173,8 +148,6 @@ platforms:
       legacy_targets:
         - .kiro/steering
       target_dir: .kiro/skills
-      template_type: kiro
-      skill_format: true
 
   ona:
     name: "Ona"
@@ -183,8 +156,6 @@ platforms:
     description: "Ona AI development environment"
     installer:
       target_dir: .ona/skills
-      template_type: default
-      skill_format: true
 
   opencode:
     name: "OpenCode"
@@ -198,8 +169,6 @@ platforms:
         - .opencode/agent
         - .opencode/command
       target_dir: .opencode/skills
-      template_type: opencode
-      skill_format: true
       ancestor_conflict_check: true
 
   pi:
@@ -209,8 +178,6 @@ platforms:
     description: "Provider-agnostic terminal-native AI coding agent"
     installer:
       target_dir: .pi/skills
-      template_type: default
-      skill_format: true
 
   qoder:
     name: "Qoder"
@@ -219,8 +186,6 @@ platforms:
     description: "Qoder AI coding assistant"
     installer:
       target_dir: .qoder/skills
-      template_type: default
-      skill_format: true
 
   qwen:
     name: "QwenCoder"
@@ -231,8 +196,6 @@ platforms:
       legacy_targets:
         - .qwen/commands
       target_dir: .qwen/skills
-      template_type: default
-      skill_format: true
 
   roo:
     name: "Roo Code"
@@ -243,8 +206,6 @@ platforms:
       legacy_targets:
         - .roo/commands
       target_dir: .roo/skills
-      template_type: default
-      skill_format: true
 
   rovo-dev:
     name: "Rovo Dev"
@@ -255,8 +216,6 @@ platforms:
       legacy_targets:
         - .rovodev/workflows
       target_dir: .rovodev/skills
-      template_type: default
-      skill_format: true
 
   trae:
     name: "Trae"
@@ -267,8 +226,6 @@ platforms:
       legacy_targets:
         - .trae/rules
       target_dir: .trae/skills
-      template_type: default
-      skill_format: true
 
   windsurf:
     name: "Windsurf"
@@ -279,31 +236,18 @@ platforms:
       legacy_targets:
         - .windsurf/workflows
       target_dir: .windsurf/skills
-      template_type: windsurf
-      skill_format: true
 
 # ============================================================================
 # Installer Config Schema
 # ============================================================================
 #
 # installer:
-#   target_dir: string                    # Directory where artifacts are installed
-#   template_type: string                 # Default template type to use
-#   header_template: string (optional)    # Override for header/frontmatter template
-#   body_template: string (optional)      # Override for body/content template
-#   legacy_targets: array (optional)      # Old target dirs to clean up on reinstall (migration)
-#     - string                            # Relative path, e.g. .opencode/agent
-#   targets: array (optional)             # For multi-target installations
-#     - target_dir: string
-#       template_type: string
-#       artifact_types: [agents, workflows, tasks, tools]
-#   artifact_types: array (optional)      # Filter which artifacts to install (default: all)
-#   skip_existing: boolean (optional)     # Skip files that already exist (default: false)
-#   skill_format: boolean (optional)   # Use directory-per-skill output: <name>/SKILL.md
-#                                     # with clean frontmatter (name + description, unquoted)
+#   target_dir: string                         # Directory where skill directories are installed
+#   legacy_targets: array (optional)           # Old target dirs to clean up on reinstall (migration)
+#     - string                                 # Relative path, e.g. .opencode/agent
 #   ancestor_conflict_check: boolean (optional) # Refuse install when ancestor dir has BMAD files
-#                                                # in the same target_dir (for IDEs that inherit
-#                                                # skills from parent directories)
+#                                               # in the same target_dir (for IDEs that inherit
+#                                               # skills from parent directories)
 
 # ============================================================================
 # Platform Categories
