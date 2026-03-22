@@ -91,10 +91,6 @@ class Installer {
         }
 
         if (action === 'update') {
-          // Store that we're updating for later processing
-          customConfig._isUpdate = true;
-          customConfig._existingInstall = existingInstall;
-
           // Detect modules that were previously installed but are NOT in the new selection (to be removed)
           const previouslyInstalledModules = new Set(existingInstall.modules.map((m) => m.id));
           const newlySelectedModules = new Set(config.modules || []);
@@ -157,55 +153,12 @@ class Installer {
             }
           }
 
-          // Detect custom and modified files BEFORE updating (compare current files vs files-manifest.csv)
-          const existingFilesManifest = await this.readFilesManifest(paths.bmadDir);
-          const { customFiles, modifiedFiles } = await this.detectCustomFiles(paths.bmadDir, existingFilesManifest);
-
-          customConfig._customFiles = customFiles;
-          customConfig._modifiedFiles = modifiedFiles;
-
-          // Preserve existing core configuration during updates
-          // Read the current core config.yaml to maintain user's settings
-          const coreConfigPath = paths.moduleConfig('core');
-          if ((await fs.pathExists(coreConfigPath)) && (!config.coreConfig || Object.keys(config.coreConfig).length === 0)) {
-            try {
-              const yaml = require('yaml');
-              const coreConfigContent = await fs.readFile(coreConfigPath, 'utf8');
-              const existingCoreConfig = yaml.parse(coreConfigContent);
-
-              // Preserve through the installation
-              config.coreConfig = existingCoreConfig;
-              customConfig.coreConfig = existingCoreConfig;
-              this.configCollector.collectedConfig.core = existingCoreConfig;
-            } catch (error) {
-              await prompts.log.warn(`Warning: Could not read existing core config: ${error.message}`);
-            }
-          }
-
-          await this._scanCachedCustomModules(paths);
-
-          const backupDirs = await this._backupUserFiles(paths, customFiles, modifiedFiles, spinner);
-          customConfig._tempBackupDir = backupDirs.tempBackupDir;
-          customConfig._tempModifiedBackupDir = backupDirs.tempModifiedBackupDir;
+          await this._prepareUpdateState(paths, config, customConfig, existingInstall, spinner);
         }
       } else if (existingInstall.installed && config.isQuickUpdate()) {
         // Quick update mode - automatically treat as update without prompting
         spinner.message('Preparing quick update...');
-        customConfig._isUpdate = true;
-        customConfig._existingInstall = existingInstall;
-
-        // Detect custom and modified files BEFORE updating
-        const existingFilesManifest = await this.readFilesManifest(paths.bmadDir);
-        const { customFiles, modifiedFiles } = await this.detectCustomFiles(paths.bmadDir, existingFilesManifest);
-
-        customConfig._customFiles = customFiles;
-        customConfig._modifiedFiles = modifiedFiles;
-
-        await this._scanCachedCustomModules(paths);
-
-        const backupDirs = await this._backupUserFiles(paths, customFiles, modifiedFiles, spinner);
-        customConfig._tempBackupDir = backupDirs.tempBackupDir;
-        customConfig._tempModifiedBackupDir = backupDirs.tempModifiedBackupDir;
+        await this._prepareUpdateState(paths, config, customConfig, existingInstall, spinner);
       }
 
       // Now collect tool configurations after we know if it's a reinstall
@@ -812,6 +765,50 @@ class Installer {
         this.customModules.paths.set(moduleId, cachedPath);
       }
     }
+  }
+
+  /**
+   * Common update preparation: detect files, preserve core config, scan cache, back up.
+   * Used by both regular update and quick-update branches.
+   * @param {Object} paths - InstallPaths instance
+   * @param {Object} config - Clean config (may have coreConfig updated)
+   * @param {Object} customConfig - Full config bag (mutated with update state)
+   * @param {Object} existingInstall - Detection result from detector.detect()
+   * @param {Object} spinner - Spinner instance for progress display
+   */
+  async _prepareUpdateState(paths, config, customConfig, existingInstall, spinner) {
+    customConfig._isUpdate = true;
+    customConfig._existingInstall = existingInstall;
+
+    // Detect custom and modified files BEFORE updating (compare current files vs files-manifest.csv)
+    const existingFilesManifest = await this.readFilesManifest(paths.bmadDir);
+    const { customFiles, modifiedFiles } = await this.detectCustomFiles(paths.bmadDir, existingFilesManifest);
+
+    customConfig._customFiles = customFiles;
+    customConfig._modifiedFiles = modifiedFiles;
+
+    // Preserve existing core configuration during updates
+    // (no-op for quick-update which already has core config from collectModuleConfigQuick)
+    const coreConfigPath = paths.moduleConfig('core');
+    if ((await fs.pathExists(coreConfigPath)) && (!config.coreConfig || Object.keys(config.coreConfig).length === 0)) {
+      try {
+        const yaml = require('yaml');
+        const coreConfigContent = await fs.readFile(coreConfigPath, 'utf8');
+        const existingCoreConfig = yaml.parse(coreConfigContent);
+
+        config.coreConfig = existingCoreConfig;
+        customConfig.coreConfig = existingCoreConfig;
+        this.configCollector.collectedConfig.core = existingCoreConfig;
+      } catch (error) {
+        await prompts.log.warn(`Warning: Could not read existing core config: ${error.message}`);
+      }
+    }
+
+    await this._scanCachedCustomModules(paths);
+
+    const backupDirs = await this._backupUserFiles(paths, customFiles, modifiedFiles, spinner);
+    customConfig._tempBackupDir = backupDirs.tempBackupDir;
+    customConfig._tempModifiedBackupDir = backupDirs.tempModifiedBackupDir;
   }
 
   /**
