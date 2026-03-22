@@ -231,52 +231,25 @@ class OfficialModules {
    * @param {Object} options.logger - Logger instance for output
    */
   async install(moduleName, bmadDir, fileTrackingCallback = null, options = {}) {
-    const sourcePath = options.sourcePath || (await this.findModuleSource(moduleName, { silent: options.silent }));
+    const sourcePath = await this.findModuleSource(moduleName, { silent: options.silent });
     const targetPath = path.join(bmadDir, moduleName);
 
-    // Check if source module exists
     if (!sourcePath) {
-      // Provide a more user-friendly error message
       throw new Error(
         `Source for module '${moduleName}' is not available. It will be retained but cannot be updated without its source files.`,
       );
     }
 
-    // Check if this is a custom module and read its custom.yaml values
-    let customConfig = null;
-    const rootCustomConfigPath = path.join(sourcePath, 'custom.yaml');
-
-    if (await fs.pathExists(rootCustomConfigPath)) {
-      try {
-        const customContent = await fs.readFile(rootCustomConfigPath, 'utf8');
-        customConfig = yaml.parse(customContent);
-      } catch (error) {
-        await prompts.log.warn(`Failed to read custom.yaml for ${moduleName}: ${error.message}`);
-      }
-    }
-
-    // If this is a custom module, merge its values into the module config
-    if (customConfig) {
-      options.moduleConfig = { ...options.moduleConfig, ...customConfig };
-      if (options.logger) {
-        await options.logger.log(`  Merged custom configuration for ${moduleName}`);
-      }
-    }
-
-    // Check if already installed
     if (await fs.pathExists(targetPath)) {
       await fs.remove(targetPath);
     }
 
-    // Copy module files with filtering
     await this.copyModuleWithFiltering(sourcePath, targetPath, fileTrackingCallback, options.moduleConfig);
 
-    // Create directories declared in module.yaml (unless explicitly skipped)
     if (!options.skipModuleInstaller) {
       await this.createModuleDirectories(moduleName, bmadDir, options);
     }
 
-    // Capture version info for manifest
     const { Manifest } = require('../core/manifest');
     const manifestObj = new Manifest();
     const versionInfo = await manifestObj.getModuleVersionInfo(moduleName, bmadDir, sourcePath);
@@ -288,12 +261,7 @@ class OfficialModules {
       repoUrl: versionInfo.repoUrl,
     });
 
-    return {
-      success: true,
-      module: moduleName,
-      path: targetPath,
-      versionInfo,
-    };
+    return { success: true, module: moduleName, path: targetPath, versionInfo };
   }
 
   /**

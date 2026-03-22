@@ -8,7 +8,6 @@ const { FileOps } = require('../../../lib/file-ops');
 const { Config } = require('./config');
 const { getProjectRoot, getSourcePath, getModulePath } = require('../../../lib/project-root');
 const { ManifestGenerator } = require('./manifest-generator');
-const { CustomHandler } = require('../custom-handler');
 const prompts = require('../../../lib/prompts');
 const { BMAD_FOLDER_NAME } = require('../ide/shared/path-utils');
 const { InstallPaths } = require('./install-paths');
@@ -41,7 +40,6 @@ class Installer {
       const config = Config.build(originalConfig);
       const paths = await InstallPaths.create(config);
       const officialModules = await OfficialModules.build(config, paths);
-
       const existingInstall = await ExistingInstall.detect(paths.bmadDir);
 
       await this.customModules.discoverPaths(config, paths);
@@ -63,7 +61,11 @@ class Installer {
 
       await this._cacheCustomModules(paths, addResult);
 
-      const { officialModuleIds, allModules } = await this._buildModuleLists(config, customConfig, paths);
+      // Compute module lists: official = selected minus custom, all = both
+      const customModuleIds = new Set(this.customModules.paths.keys());
+      const officialModuleIds = (config.modules || []).filter((m) => !customModuleIds.has(m));
+      const allModules = [...officialModuleIds, ...[...customModuleIds].filter((id) => !officialModuleIds.includes(id))];
+
       await this._installAndConfigure(config, customConfig, paths, officialModuleIds, allModules, addResult, officialModules);
 
       await this._setupIdes(config, allModules, paths, addResult);
@@ -196,51 +198,6 @@ class Installer {
   }
 
   /**
-   * Build the official and combined module lists from config and custom sources.
-   * @returns {{ officialModuleIds: string[], allModules: string[] }}
-   */
-  async _buildModuleLists(config, customConfig, paths) {
-    const finalCustomContent = customConfig.customContent;
-
-    const customModuleIds = new Set();
-    for (const id of this.customModules.paths.keys()) {
-      customModuleIds.add(id);
-    }
-    if (customConfig._customModuleSources) {
-      for (const [moduleId, customInfo] of customConfig._customModuleSources) {
-        if (!customModuleIds.has(moduleId) && (await fs.pathExists(customInfo.sourcePath))) {
-          customModuleIds.add(moduleId);
-        }
-      }
-    }
-    if (finalCustomContent && finalCustomContent.cachedModules) {
-      for (const cachedModule of finalCustomContent.cachedModules) {
-        customModuleIds.add(cachedModule.id);
-      }
-    }
-    if (finalCustomContent && finalCustomContent.selected && finalCustomContent.selectedFiles) {
-      const customHandler = new CustomHandler();
-      for (const customFile of finalCustomContent.selectedFiles) {
-        const customInfo = await customHandler.getCustomInfo(customFile, paths.projectRoot);
-        if (customInfo && customInfo.id) {
-          customModuleIds.add(customInfo.id);
-        }
-      }
-    }
-
-    const officialModuleIds = (config.modules || []).filter((m) => !customModuleIds.has(m));
-
-    const allModules = [...officialModuleIds];
-    for (const id of customModuleIds) {
-      if (!allModules.includes(id)) {
-        allModules.push(id);
-      }
-    }
-
-    return { officialModuleIds, allModules };
-  }
-
-  /**
    * Install modules, create directories, generate configs and manifests.
    */
   async _installAndConfigure(config, customConfig, paths, officialModuleIds, allModules, addResult, officialModules) {
@@ -263,7 +220,7 @@ class Installer {
             installedModuleNames,
           });
 
-          await this._installCustomModules(customConfig, paths, finalCustomContent, addResult, isQuickUpdate, officialModules, {
+          await this._installCustomModules(config, paths, addResult, officialModules, {
             message,
             installedModuleNames,
           });
@@ -626,88 +583,27 @@ class Installer {
   }
 
   /**
-   * Install custom modules from all custom module sources.
-   * @param {Object} config - Installation configuration
-   * @param {Object} paths - InstallPaths instance
-   * @param {Object|undefined} finalCustomContent - Custom content from config
-   * @param {Function} addResult - Callback to record installation results
-   * @param {boolean} isQuickUpdate - Whether this is a quick update
-   * @param {Object} ctx - Shared context: { message, installedModuleNames }
+   * Install custom modules using CustomModules.install().
+   * Source paths come from this.customModules.paths (populated by discoverPaths).
    */
-  async _installCustomModules(customConfig, paths, finalCustomContent, addResult, isQuickUpdate, officialModules, ctx) {
+  async _installCustomModules(config, paths, addResult, officialModules, ctx) {
     const { message, installedModuleNames } = ctx;
+    const isQuickUpdate = config.isQuickUpdate();
 
-    // Collect all custom module IDs with their info from all sources
-    const customModules = new Map();
-
-    // First: cached modules from finalCustomContent
-    if (finalCustomContent && finalCustomContent.cachedModules) {
-      for (const cachedModule of finalCustomContent.cachedModules) {
-        if (!customModules.has(cachedModule.id)) {
-          customModules.set(cachedModule.id, { id: cachedModule.id, path: cachedModule.cachePath, config: {} });
-        }
-      }
-    }
-
-    // Second: custom module sources from manifest (for quick update)
-    if (customConfig._customModuleSources) {
-      for (const [moduleId, customInfo] of customConfig._customModuleSources) {
-        if (!customModules.has(moduleId)) {
-          const info = { ...customInfo };
-          if (info.sourcePath && !info.path) {
-            info.path = path.isAbsolute(info.sourcePath) ? info.sourcePath : path.join(paths.bmadDir, info.sourcePath);
-          }
-          customModules.set(moduleId, info);
-        }
-      }
-    }
-
-    // Third: regular custom content from user input (non-cached)
-    if (finalCustomContent && finalCustomContent.selected && finalCustomContent.selectedFiles) {
-      const customHandler = new CustomHandler();
-      for (const customFile of finalCustomContent.selectedFiles) {
-        const info = await customHandler.getCustomInfo(customFile, paths.projectRoot);
-        if (info && info.id && !customModules.has(info.id)) {
-          customModules.set(info.id, info);
-        }
-      }
-    }
-
-    // Fourth: any remaining custom modules not yet covered
-    for (const [moduleId, modulePath] of this.customModules.paths) {
-      if (!customModules.has(moduleId)) {
-        customModules.set(moduleId, { id: moduleId, path: modulePath, config: {} });
-      }
-    }
-
-    for (const [moduleName, customInfo] of customModules) {
+    for (const [moduleName, sourcePath] of this.customModules.paths) {
       if (installedModuleNames.has(moduleName)) continue;
       installedModuleNames.add(moduleName);
 
       message(`${isQuickUpdate ? 'Updating' : 'Installing'} ${moduleName}...`);
 
-      if (!this.customModules.paths.has(moduleName) && customInfo.path) {
-        this.customModules.paths.set(moduleName, customInfo.path);
-      }
-
       const collectedModuleConfig = officialModules.moduleConfigs[moduleName] || {};
-      await officialModules.install(
-        moduleName,
-        paths.bmadDir,
-        (filePath) => {
-          this.installedFiles.add(filePath);
-        },
-        {
-          isCustom: true,
-          moduleConfig: collectedModuleConfig,
-          isQuickUpdate: isQuickUpdate,
-          installer: this,
-          silent: true,
-          sourcePath: customInfo.path,
-        },
-      );
+      const result = await this.customModules.install(moduleName, paths.bmadDir, (filePath) => this.installedFiles.add(filePath), {
+        moduleConfig: collectedModuleConfig,
+      });
+
+      // Generate runtime config.yaml with merged values
       await this.generateModuleConfigs(paths.bmadDir, {
-        [moduleName]: { ...customConfig.coreConfig, ...customInfo.config, ...collectedModuleConfig },
+        [moduleName]: { ...config.coreConfig, ...result.moduleConfig, ...collectedModuleConfig },
       });
 
       addResult(`Module: ${moduleName}`, 'ok', isQuickUpdate ? 'updated' : 'installed');
