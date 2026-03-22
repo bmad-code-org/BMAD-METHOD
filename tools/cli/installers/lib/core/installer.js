@@ -184,39 +184,9 @@ class Installer {
 
           await this._scanCachedCustomModules(paths);
 
-          // If there are custom files, back them up temporarily
-          if (customFiles.length > 0) {
-            const tempBackupDir = path.join(paths.projectRoot, '_bmad-custom-backup-temp');
-            await fs.ensureDir(tempBackupDir);
-
-            spinner.start(`Backing up ${customFiles.length} custom files...`);
-            for (const customFile of customFiles) {
-              const relativePath = path.relative(paths.bmadDir, customFile);
-              const backupPath = path.join(tempBackupDir, relativePath);
-              await fs.ensureDir(path.dirname(backupPath));
-              await fs.copy(customFile, backupPath);
-            }
-            spinner.stop(`Backed up ${customFiles.length} custom files`);
-
-            customConfig._tempBackupDir = tempBackupDir;
-          }
-
-          // For modified files, back them up to temp directory (will be restored as .bak files after install)
-          if (modifiedFiles.length > 0) {
-            const tempModifiedBackupDir = path.join(paths.projectRoot, '_bmad-modified-backup-temp');
-            await fs.ensureDir(tempModifiedBackupDir);
-
-            spinner.start(`Backing up ${modifiedFiles.length} modified files...`);
-            for (const modifiedFile of modifiedFiles) {
-              const relativePath = path.relative(paths.bmadDir, modifiedFile.path);
-              const tempBackupPath = path.join(tempModifiedBackupDir, relativePath);
-              await fs.ensureDir(path.dirname(tempBackupPath));
-              await fs.copy(modifiedFile.path, tempBackupPath, { overwrite: true });
-            }
-            spinner.stop(`Backed up ${modifiedFiles.length} modified files`);
-
-            customConfig._tempModifiedBackupDir = tempModifiedBackupDir;
-          }
+          const backupDirs = await this._backupUserFiles(paths, customFiles, modifiedFiles, spinner);
+          customConfig._tempBackupDir = backupDirs.tempBackupDir;
+          customConfig._tempModifiedBackupDir = backupDirs.tempModifiedBackupDir;
         }
       } else if (existingInstall.installed && config.isQuickUpdate()) {
         // Quick update mode - automatically treat as update without prompting
@@ -233,37 +203,9 @@ class Installer {
 
         await this._scanCachedCustomModules(paths);
 
-        // Back up custom files
-        if (customFiles.length > 0) {
-          const tempBackupDir = path.join(paths.projectRoot, '_bmad-custom-backup-temp');
-          await fs.ensureDir(tempBackupDir);
-
-          spinner.start(`Backing up ${customFiles.length} custom files...`);
-          for (const customFile of customFiles) {
-            const relativePath = path.relative(paths.bmadDir, customFile);
-            const backupPath = path.join(tempBackupDir, relativePath);
-            await fs.ensureDir(path.dirname(backupPath));
-            await fs.copy(customFile, backupPath);
-          }
-          spinner.stop(`Backed up ${customFiles.length} custom files`);
-          customConfig._tempBackupDir = tempBackupDir;
-        }
-
-        // Back up modified files
-        if (modifiedFiles.length > 0) {
-          const tempModifiedBackupDir = path.join(paths.projectRoot, '_bmad-modified-backup-temp');
-          await fs.ensureDir(tempModifiedBackupDir);
-
-          spinner.start(`Backing up ${modifiedFiles.length} modified files...`);
-          for (const modifiedFile of modifiedFiles) {
-            const relativePath = path.relative(paths.bmadDir, modifiedFile.path);
-            const tempBackupPath = path.join(tempModifiedBackupDir, relativePath);
-            await fs.ensureDir(path.dirname(tempBackupPath));
-            await fs.copy(modifiedFile.path, tempBackupPath, { overwrite: true });
-          }
-          spinner.stop(`Backed up ${modifiedFiles.length} modified files`);
-          customConfig._tempModifiedBackupDir = tempModifiedBackupDir;
-        }
+        const backupDirs = await this._backupUserFiles(paths, customFiles, modifiedFiles, spinner);
+        customConfig._tempBackupDir = backupDirs.tempBackupDir;
+        customConfig._tempModifiedBackupDir = backupDirs.tempModifiedBackupDir;
       }
 
       // Now collect tool configurations after we know if it's a reinstall
@@ -870,6 +812,50 @@ class Installer {
         this.customModules.paths.set(moduleId, cachedPath);
       }
     }
+  }
+
+  /**
+   * Back up custom and modified files to temp directories before overwriting.
+   * Returns the temp directory paths (or undefined if no files to back up).
+   * @param {Object} paths - InstallPaths instance
+   * @param {string[]} customFiles - Absolute paths of custom (user-added) files
+   * @param {Object[]} modifiedFiles - Array of { path, relativePath } for modified files
+   * @param {Object} spinner - Spinner instance for progress display
+   * @returns {Object} { tempBackupDir, tempModifiedBackupDir } — undefined if no files
+   */
+  async _backupUserFiles(paths, customFiles, modifiedFiles, spinner) {
+    let tempBackupDir;
+    let tempModifiedBackupDir;
+
+    if (customFiles.length > 0) {
+      tempBackupDir = path.join(paths.projectRoot, '_bmad-custom-backup-temp');
+      await fs.ensureDir(tempBackupDir);
+
+      spinner.start(`Backing up ${customFiles.length} custom files...`);
+      for (const customFile of customFiles) {
+        const relativePath = path.relative(paths.bmadDir, customFile);
+        const backupPath = path.join(tempBackupDir, relativePath);
+        await fs.ensureDir(path.dirname(backupPath));
+        await fs.copy(customFile, backupPath);
+      }
+      spinner.stop(`Backed up ${customFiles.length} custom files`);
+    }
+
+    if (modifiedFiles.length > 0) {
+      tempModifiedBackupDir = path.join(paths.projectRoot, '_bmad-modified-backup-temp');
+      await fs.ensureDir(tempModifiedBackupDir);
+
+      spinner.start(`Backing up ${modifiedFiles.length} modified files...`);
+      for (const modifiedFile of modifiedFiles) {
+        const relativePath = path.relative(paths.bmadDir, modifiedFile.path);
+        const tempBackupPath = path.join(tempModifiedBackupDir, relativePath);
+        await fs.ensureDir(path.dirname(tempBackupPath));
+        await fs.copy(modifiedFile.path, tempBackupPath, { overwrite: true });
+      }
+      spinner.stop(`Backed up ${modifiedFiles.length} modified files`);
+    }
+
+    return { tempBackupDir, tempModifiedBackupDir };
   }
 
   /**
