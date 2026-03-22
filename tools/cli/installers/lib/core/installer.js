@@ -60,210 +60,21 @@ class Installer {
     await this.customModules.discoverPaths(config, paths);
     this.ideManager.setBmadFolderName(BMAD_FOLDER_NAME);
 
-    // Tool selection will be collected after we determine if it's a reinstall/update/new install
-
     try {
       const existingInstall = await this.detector.detect(paths.bmadDir);
 
-      if (existingInstall.installed && !config.force && !config.isQuickUpdate()) {
-        // Check if user already decided what to do (from early menu in ui.js)
-        let action = null;
-        if (config.actionType === 'update') {
-          action = 'update';
-        } else if (config.skipPrompts) {
-          // Non-interactive mode: default to update
-          action = 'update';
-        } else {
-          // Fallback: Ask the user (backwards compatibility for other code paths)
-          await prompts.log.warn('Existing BMAD installation detected');
-          await prompts.log.message(`  Location: ${paths.bmadDir}`);
-          await prompts.log.message(`  Version: ${existingInstall.version}`);
-
-          const promptResult = await this.promptUpdateAction();
-          action = promptResult.action;
+      if (existingInstall.installed && !config.force) {
+        if (!config.isQuickUpdate()) {
+          await this._removeDeselectedModules(existingInstall, config, paths);
         }
-
-        if (action === 'update') {
-          // Detect modules that were previously installed but are NOT in the new selection (to be removed)
-          const previouslyInstalledModules = new Set(existingInstall.modules.map((m) => m.id));
-          const newlySelectedModules = new Set(config.modules || []);
-
-          // Find modules to remove (installed but not in new selection)
-          // Exclude 'core' from being removable
-          const modulesToRemove = [...previouslyInstalledModules].filter((m) => !newlySelectedModules.has(m) && m !== 'core');
-
-          // If there are modules to remove, ask for confirmation
-          if (modulesToRemove.length > 0) {
-            if (config.skipPrompts) {
-              // Non-interactive mode: preserve modules (matches prompt default: false)
-              for (const moduleId of modulesToRemove) {
-                if (!config.modules) config.modules = [];
-                config.modules.push(moduleId);
-              }
-            } else {
-              await prompts.log.warn('Modules to be removed:');
-              for (const moduleId of modulesToRemove) {
-                const moduleInfo = existingInstall.modules.find((m) => m.id === moduleId);
-                const displayName = moduleInfo?.name || moduleId;
-                const modulePath = paths.moduleDir(moduleId);
-                await prompts.log.error(`  - ${displayName} (${modulePath})`);
-              }
-
-              const confirmRemoval = await prompts.confirm({
-                message: `Remove ${modulesToRemove.length} module(s) from BMAD installation?`,
-                default: false,
-              });
-
-              if (confirmRemoval) {
-                // Remove module folders
-                for (const moduleId of modulesToRemove) {
-                  const modulePath = paths.moduleDir(moduleId);
-                  try {
-                    if (await fs.pathExists(modulePath)) {
-                      await fs.remove(modulePath);
-                      await prompts.log.message(`  Removed: ${moduleId}`);
-                    }
-                  } catch (error) {
-                    await prompts.log.warn(`  Warning: Failed to remove ${moduleId}: ${error.message}`);
-                  }
-                }
-                await prompts.log.success(`  Removed ${modulesToRemove.length} module(s)`);
-              } else {
-                await prompts.log.message('  Module removal cancelled');
-                // Add the modules back to the selection since user cancelled removal
-                for (const moduleId of modulesToRemove) {
-                  if (!config.modules) config.modules = [];
-                  config.modules.push(moduleId);
-                }
-              }
-            }
-          }
-
-          await this._prepareUpdateState(paths, config, customConfig, existingInstall);
-        }
-      } else if (existingInstall.installed && config.isQuickUpdate()) {
         await this._prepareUpdateState(paths, config, customConfig, existingInstall);
       }
 
-      // Now collect tool configurations after we know if it's a reinstall
-      // Skip for quick update since we already have the IDE list
-      let toolSelection;
-      if (config.isQuickUpdate()) {
-        // Quick update already has IDEs configured, use saved configurations
-        const preConfiguredIdes = {};
-        const savedIdeConfigs = customConfig._savedIdeConfigs || {};
+      const ideConfigurations = await this._loadIdeConfigurations(config, customConfig, paths);
+      await this._validateIdeSelection(config);
 
-        for (const ide of config.ides || []) {
-          // Use saved config if available, otherwise mark as already configured (legacy)
-          if (savedIdeConfigs[ide]) {
-            preConfiguredIdes[ide] = savedIdeConfigs[ide];
-          } else {
-            preConfiguredIdes[ide] = { _alreadyConfigured: true };
-          }
-        }
-        toolSelection = {
-          ides: config.ides || [],
-          skipIde: !config.ides || config.ides.length === 0,
-          configurations: preConfiguredIdes,
-        };
-      } else {
-        // Pass pre-selected IDEs from early prompt (if available)
-        // This allows IDE selection to happen before file copying, improving UX
-        // Use config.ides if it's an array (even if empty), null means prompt
-        const preSelectedIdes = Array.isArray(config.ides) ? config.ides : null;
-        toolSelection = await this.collectToolConfigurations(
-          paths.projectRoot,
-          config.modules,
-          customConfig._isFullReinstall || false,
-          customConfig._previouslyConfiguredIdes || [],
-          preSelectedIdes,
-          config.skipPrompts || false,
-        );
-      }
-
-      // Merge tool selection into config (for both quick update and regular flow)
-      // Normalize IDE keys to lowercase so they match handler map keys consistently
-      config.ides = (toolSelection.ides || []).map((ide) => ide.toLowerCase());
-      config.skipIde = toolSelection.skipIde;
-      const ideConfigurations = toolSelection.configurations;
-
-      // Early check: fail fast if ALL selected IDEs are suspended
-      if (config.ides && config.ides.length > 0) {
-        await this.ideManager.ensureInitialized();
-        const suspendedIdes = config.ides.filter((ide) => {
-          const handler = this.ideManager.handlers.get(ide);
-          return handler?.platformConfig?.suspended;
-        });
-
-        if (suspendedIdes.length > 0 && suspendedIdes.length === config.ides.length) {
-          for (const ide of suspendedIdes) {
-            const handler = this.ideManager.handlers.get(ide);
-            await prompts.log.error(`${handler.displayName || ide}: ${handler.platformConfig.suspended}`);
-          }
-          throw new Error(
-            `All selected tool(s) are suspended: ${suspendedIdes.join(', ')}. Installation aborted to prevent upgrading _bmad/ without a working IDE configuration.`,
-          );
-        }
-      }
-
-      // Detect IDEs that were previously installed but are NOT in the new selection (to be removed)
       if (customConfig._isUpdate && customConfig._existingInstall) {
-        const previouslyInstalledIdes = new Set(customConfig._existingInstall.ides || []);
-        const newlySelectedIdes = new Set(config.ides || []);
-
-        const idesToRemove = [...previouslyInstalledIdes].filter((ide) => !newlySelectedIdes.has(ide));
-
-        if (idesToRemove.length > 0) {
-          if (config.skipPrompts) {
-            // Non-interactive mode: silently preserve existing IDE configs
-            if (!config.ides) config.ides = [];
-            const savedIdeConfigs = await this.ideConfigManager.loadAllIdeConfigs(paths.bmadDir);
-            for (const ide of idesToRemove) {
-              config.ides.push(ide);
-              if (savedIdeConfigs[ide] && !ideConfigurations[ide]) {
-                ideConfigurations[ide] = savedIdeConfigs[ide];
-              }
-            }
-          } else {
-            await prompts.log.warn('IDEs to be removed:');
-            for (const ide of idesToRemove) {
-              await prompts.log.error(`  - ${ide}`);
-            }
-
-            const confirmRemoval = await prompts.confirm({
-              message: `Remove BMAD configuration for ${idesToRemove.length} IDE(s)?`,
-              default: false,
-            });
-
-            if (confirmRemoval) {
-              await this.ideManager.ensureInitialized();
-              for (const ide of idesToRemove) {
-                try {
-                  const handler = this.ideManager.handlers.get(ide);
-                  if (handler) {
-                    await handler.cleanup(paths.projectRoot);
-                  }
-                  await this.ideConfigManager.deleteIdeConfig(paths.bmadDir, ide);
-                  await prompts.log.message(`  Removed: ${ide}`);
-                } catch (error) {
-                  await prompts.log.warn(`  Warning: Failed to remove ${ide}: ${error.message}`);
-                }
-              }
-              await prompts.log.success(`  Removed ${idesToRemove.length} IDE(s)`);
-            } else {
-              await prompts.log.message('  IDE removal cancelled');
-              // Add IDEs back to selection and restore their saved configurations
-              if (!config.ides) config.ides = [];
-              const savedIdeConfigs = await this.ideConfigManager.loadAllIdeConfigs(paths.bmadDir);
-              for (const ide of idesToRemove) {
-                config.ides.push(ide);
-                if (savedIdeConfigs[ide] && !ideConfigurations[ide]) {
-                  ideConfigurations[ide] = savedIdeConfigs[ide];
-                }
-              }
-            }
-          }
-        }
+        await this._removeDeselectedIdes(customConfig._existingInstall, config, ideConfigurations, paths);
       }
 
       // Results collector for consolidated summary
@@ -313,6 +124,109 @@ class Installer {
       }
 
       throw error;
+    }
+  }
+
+  /**
+   * Remove modules that were previously installed but are no longer selected.
+   * No confirmation — the user's module selection is the decision.
+   */
+  async _removeDeselectedModules(existingInstall, config, paths) {
+    const previouslyInstalled = new Set(existingInstall.modules.map((m) => m.id));
+    const newlySelected = new Set(config.modules || []);
+    const toRemove = [...previouslyInstalled].filter((m) => !newlySelected.has(m) && m !== 'core');
+
+    for (const moduleId of toRemove) {
+      const modulePath = paths.moduleDir(moduleId);
+      try {
+        if (await fs.pathExists(modulePath)) {
+          await fs.remove(modulePath);
+        }
+      } catch (error) {
+        await prompts.log.warn(`Warning: Failed to remove ${moduleId}: ${error.message}`);
+      }
+    }
+  }
+
+  /**
+   * Load IDE configurations from saved state. No prompts.
+   */
+  async _loadIdeConfigurations(config, customConfig, paths) {
+    const ideConfigurations = {};
+
+    if (config.isQuickUpdate()) {
+      const savedIdeConfigs = customConfig._savedIdeConfigs || {};
+      for (const ide of config.ides || []) {
+        ideConfigurations[ide] = savedIdeConfigs[ide] || { _alreadyConfigured: true };
+      }
+    } else {
+      // Load saved configs for previously configured IDEs
+      await this.ideManager.ensureInitialized();
+      const bmadDir = paths.bmadDir;
+      const savedIdeConfigs = await this.ideConfigManager.loadAllIdeConfigs(bmadDir);
+
+      const { Detector } = require('./detector');
+      const detector = new Detector();
+      const existingInstall = await detector.detect(bmadDir);
+      const previouslyConfigured = existingInstall.ides || [];
+
+      for (const ide of config.ides || []) {
+        if (previouslyConfigured.includes(ide) && savedIdeConfigs[ide]) {
+          ideConfigurations[ide] = savedIdeConfigs[ide];
+        } else {
+          ideConfigurations[ide] = { _noConfigNeeded: true };
+        }
+      }
+    }
+
+    return ideConfigurations;
+  }
+
+  /**
+   * Fail fast if all selected IDEs are suspended.
+   */
+  async _validateIdeSelection(config) {
+    if (!config.ides || config.ides.length === 0) return;
+
+    await this.ideManager.ensureInitialized();
+    const suspendedIdes = config.ides.filter((ide) => {
+      const handler = this.ideManager.handlers.get(ide);
+      return handler?.platformConfig?.suspended;
+    });
+
+    if (suspendedIdes.length > 0 && suspendedIdes.length === config.ides.length) {
+      for (const ide of suspendedIdes) {
+        const handler = this.ideManager.handlers.get(ide);
+        await prompts.log.error(`${handler.displayName || ide}: ${handler.platformConfig.suspended}`);
+      }
+      throw new Error(
+        `All selected tool(s) are suspended: ${suspendedIdes.join(', ')}. Installation aborted to prevent upgrading _bmad/ without a working IDE configuration.`,
+      );
+    }
+  }
+
+  /**
+   * Remove IDEs that were previously installed but are no longer selected.
+   * No confirmation — the user's IDE selection is the decision.
+   */
+  async _removeDeselectedIdes(existingInstall, config, ideConfigurations, paths) {
+    const previouslyInstalled = new Set(existingInstall.ides || []);
+    const newlySelected = new Set(config.ides || []);
+    const toRemove = [...previouslyInstalled].filter((ide) => !newlySelected.has(ide));
+
+    if (toRemove.length === 0) return;
+
+    await this.ideManager.ensureInitialized();
+    for (const ide of toRemove) {
+      try {
+        const handler = this.ideManager.handlers.get(ide);
+        if (handler) {
+          await handler.cleanup(paths.projectRoot);
+        }
+        await this.ideConfigManager.deleteIdeConfig(paths.bmadDir, ide);
+      } catch (error) {
+        await prompts.log.warn(`Warning: Failed to remove ${ide}: ${error.message}`);
+      }
     }
   }
 
