@@ -135,7 +135,7 @@ Créez-le manuellement dans `_bmad-output/project-context.md` ou générez-le ap
 
 Tous les workflows de cette phase sont optionnels :
 - **brainstorming** (`bmad-brainstorming`) — Idéation guidée
-- **research** (`bmad-research`) — Recherche marché et technique
+- **research** (`bmad-market-research` / `bmad-domain-research` / `bmad-technical-research`) — Recherche marché, domaine et technique
 - **create-product-brief** (`bmad-create-product-brief`) — Document de base recommandé
 
 ### Phase 2 : Planification (Requis)
@@ -239,7 +239,7 @@ Uniquement pour les voies méthode BMad et Enterprise. Quick Dev passe directeme
 Oui. Utilisez `bmad-correct-course` pour gérer les changements de périmètre.
 
 **Et si je veux d'abord faire du brainstorming ?**
-Invoquez l'agent Analyst (`bmad-analyst`) et exécutez `bmad-brainstorming` (`bmad-brainstorming`) avant de commencer votre PRD.
+Invoquez l'agent Analyst (`bmad-agent-analyst`) et exécutez `bmad-brainstorming` (`bmad-brainstorming`) avant de commencer votre PRD.
 
 **Dois-je suivre un ordre strict ?**
 Pas strictement. Une fois que vous maîtrisez le flux, vous pouvez exécuter les workflows directement en utilisant la référence rapide ci-dessus.
