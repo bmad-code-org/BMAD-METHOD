@@ -1,24 +1,18 @@
 # BMAD Platform Codes Configuration
-# Central configuration for all platform/IDE codes used in the BMAD system
 #
-# This file defines:
-# 1. Platform metadata (name, preferred status, category, description)
-# 2. Installer configuration (target directories, templates, artifact types)
-#
-# Format:
-#   code: Platform identifier used internally
+# Each platform entry has:
 #   name: Display name shown to users
-#   preferred: Whether this platform is shown as a recommended option on install
-#   category: Type of platform (ide, cli, tool, service)
-#   description: Brief description of the platform
-#   installer: Installation configuration (optional - omit for custom installers)
+#   preferred: Whether shown as a recommended option on install
+#   suspended: (optional) Message explaining why install is blocked
+#   installer:
+#     target_dir: Directory where skill directories are installed
+#     legacy_targets: (optional) Old target dirs to clean up on reinstall
+#     ancestor_conflict_check: (optional) Refuse install when ancestor dir has BMAD files
 
 platforms:
   antigravity:
     name: "Google Antigravity"
     preferred: false
-    category: ide
-    description: "Google's AI development environment"
     installer:
       legacy_targets:
         - .agent/workflows
@@ -27,8 +21,6 @@ platforms:
   auggie:
     name: "Auggie"
     preferred: false
-    category: cli
-    description: "AI development tool"
     installer:
       legacy_targets:
         - .augment/commands
@@ -37,8 +29,6 @@ platforms:
   claude-code:
     name: "Claude Code"
     preferred: true
-    category: cli
-    description: "Anthropic's official CLI for Claude"
     installer:
       legacy_targets:
         - .claude/commands
@@ -48,8 +38,6 @@ platforms:
   cline:
     name: "Cline"
     preferred: false
-    category: ide
-    description: "AI coding assistant"
     installer:
       legacy_targets:
         - .clinerules/workflows
@@ -58,8 +46,6 @@ platforms:
   codex:
     name: "Codex"
     preferred: false
-    category: cli
-    description: "OpenAI Codex integration"
     installer:
       legacy_targets:
         - .codex/prompts
@@ -70,8 +56,6 @@ platforms:
   codebuddy:
     name: "CodeBuddy"
     preferred: false
-    category: ide
-    description: "Tencent Cloud Code Assistant - AI-powered coding companion"
     installer:
       legacy_targets:
         - .codebuddy/commands
@@ -80,8 +64,6 @@ platforms:
   crush:
     name: "Crush"
     preferred: false
-    category: ide
-    description: "AI development assistant"
     installer:
       legacy_targets:
         - .crush/commands
@@ -90,8 +72,6 @@ platforms:
   cursor:
     name: "Cursor"
     preferred: true
-    category: ide
-    description: "AI-first code editor"
     installer:
       legacy_targets:
         - .cursor/commands
@@ -100,8 +80,6 @@ platforms:
   gemini:
     name: "Gemini CLI"
     preferred: false
-    category: cli
-    description: "Google's CLI for Gemini"
     installer:
       legacy_targets:
         - .gemini/commands
@@ -110,8 +88,6 @@ platforms:
   github-copilot:
     name: "GitHub Copilot"
     preferred: false
-    category: ide
-    description: "GitHub's AI pair programmer"
     installer:
       legacy_targets:
         - .github/agents
@@ -121,8 +97,6 @@ platforms:
   iflow:
     name: "iFlow"
     preferred: false
-    category: ide
-    description: "AI workflow automation"
     installer:
       legacy_targets:
         - .iflow/commands
@@ -131,8 +105,6 @@ platforms:
   kilo:
     name: "KiloCoder"
     preferred: false
-    category: ide
-    description: "AI coding platform"
     suspended: "Kilo Code does not yet support the Agent Skills standard. Support is paused until they implement it. See https://github.com/kilocode/kilo-code/issues for updates."
     installer:
       legacy_targets:
@@ -142,8 +114,6 @@ platforms:
   kiro:
     name: "Kiro"
     preferred: false
-    category: ide
-    description: "Amazon's AI-powered IDE"
     installer:
       legacy_targets:
         - .kiro/steering
@@ -152,16 +122,12 @@ platforms:
   ona:
     name: "Ona"
     preferred: false
-    category: ide
-    description: "Ona AI development environment"
     installer:
       target_dir: .ona/skills
 
   opencode:
     name: "OpenCode"
     preferred: false
-    category: ide
-    description: "OpenCode terminal coding assistant"
     installer:
       legacy_targets:
         - .opencode/agents
@@ -174,24 +140,18 @@ platforms:
   pi:
     name: "Pi"
     preferred: false
-    category: cli
-    description: "Provider-agnostic terminal-native AI coding agent"
     installer:
       target_dir: .pi/skills
 
   qoder:
     name: "Qoder"
     preferred: false
-    category: ide
-    description: "Qoder AI coding assistant"
     installer:
       target_dir: .qoder/skills
 
   qwen:
     name: "QwenCoder"
     preferred: false
-    category: ide
-    description: "Qwen AI coding assistant"
     installer:
       legacy_targets:
         - .qwen/commands
@@ -200,8 +160,6 @@ platforms:
   roo:
     name: "Roo Code"
     preferred: false
-    category: ide
-    description: "Enhanced Cline fork"
     installer:
       legacy_targets:
         - .roo/commands
@@ -210,8 +168,6 @@ platforms:
   rovo-dev:
     name: "Rovo Dev"
     preferred: false
-    category: ide
-    description: "Atlassian's Rovo development environment"
     installer:
       legacy_targets:
         - .rovodev/workflows
@@ -220,8 +176,6 @@ platforms:
   trae:
     name: "Trae"
     preferred: false
-    category: ide
-    description: "AI coding tool"
     installer:
       legacy_targets:
         - .trae/rules
@@ -230,56 +184,7 @@ platforms:
   windsurf:
     name: "Windsurf"
     preferred: false
-    category: ide
-    description: "AI-powered IDE with cascade flows"
     installer:
       legacy_targets:
         - .windsurf/workflows
       target_dir: .windsurf/skills
-
-# ============================================================================
-# Installer Config Schema
-# ============================================================================
-#
-# installer:
-#   target_dir: string                         # Directory where skill directories are installed
-#   legacy_targets: array (optional)           # Old target dirs to clean up on reinstall (migration)
-#     - string                                 # Relative path, e.g. .opencode/agent
-#   ancestor_conflict_check: boolean (optional) # Refuse install when ancestor dir has BMAD files
-#                                               # in the same target_dir (for IDEs that inherit
-#                                               # skills from parent directories)
-
-# ============================================================================
-# Platform Categories
-# ============================================================================
-
-categories:
-  ide:
-    name: "Integrated Development Environment"
-    description: "Full-featured code editors with AI assistance"
-
-  cli:
-    name: "Command Line Interface"
-    description: "Terminal-based tools"
-
-  tool:
-    name: "Development Tool"
-    description: "Standalone development utilities"
-
-  service:
-    name: "Cloud Service"
-    description: "Cloud-based development platforms"
-
-  extension:
-    name: "Editor Extension"
-    description: "Plugins for existing editors"
-
-# ============================================================================
-# Naming Conventions and Rules
-# ============================================================================
-
-conventions:
-  code_format: "lowercase-kebab-case"
-  name_format: "Title Case"
-  max_code_length: 20
-  allowed_characters: "a-z0-9-"
