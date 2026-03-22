@@ -50,7 +50,7 @@ npx bmad-method install
 npx bmad-method install --directory /path/to/project --modules bmm --tools claude-code --yes
 ```
 
-[查看完整安装选项](https://docs.bmad-method.org/zh-cn/how-to/non-interactive-installation/)
+[查看非交互式安装选项](https://docs.bmad-method.org/zh-cn/how-to/non-interactive-installation/)
 
 > **不确定下一步？** 直接问 `bmad-help`。它会告诉你“必做什么、可选什么”，例如：`bmad-help 我刚完成架构设计，接下来做什么？`
 
