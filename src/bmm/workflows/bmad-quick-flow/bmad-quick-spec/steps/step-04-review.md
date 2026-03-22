@@ -119,7 +119,7 @@ Saved to: {finalFile}
 
 ---
 
-For best results, run **Adversarial Review** in a separate session so the reviewer only sees the spec, not your design rationale. Open a new chat/session and run:
+For best results, run **Adversarial Review** in a separate session so the reviewer should only be provided the spec (`{finalFile}`) when possible. Note that project read access may still exist, but the reviewer should focus solely on the spec content rather than your design rationale. Open a new chat/session and run:
 
 \`\`\`
 bmad-review-adversarial-general {finalFile}
@@ -182,7 +182,7 @@ b) **HALT and wait for user selection.**
 
 `{finalFile}`
 
-If you haven't run an adversarial review yet, open a new chat/session and run:
+If you haven't run an adversarial review yet, open a new chat/session (the reviewer should only be provided the spec when possible -- project read access may still exist, but the focus should be solely on the spec content) and run:
 
 ```
 bmad-review-adversarial-general {finalFile}
