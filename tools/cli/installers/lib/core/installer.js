@@ -62,17 +62,10 @@ class Installer {
 
     // Tool selection will be collected after we determine if it's a reinstall/update/new install
 
-    const spinner = await prompts.spinner();
-    spinner.start('Preparing installation...');
-
     try {
-      // Check existing installation
-      spinner.message('Checking for existing installation...');
       const existingInstall = await this.detector.detect(paths.bmadDir);
 
       if (existingInstall.installed && !config.force && !config.isQuickUpdate()) {
-        spinner.stop('Existing installation detected');
-
         // Check if user already decided what to do (from early menu in ui.js)
         let action = null;
         if (config.actionType === 'update') {
@@ -107,12 +100,7 @@ class Installer {
                 if (!config.modules) config.modules = [];
                 config.modules.push(moduleId);
               }
-              spinner.start('Preparing update...');
             } else {
-              if (spinner.isSpinning) {
-                spinner.stop('Module changes reviewed');
-              }
-
               await prompts.log.warn('Modules to be removed:');
               for (const moduleId of modulesToRemove) {
                 const moduleInfo = existingInstall.modules.find((m) => m.id === moduleId);
@@ -148,22 +136,17 @@ class Installer {
                   config.modules.push(moduleId);
                 }
               }
-
-              spinner.start('Preparing update...');
             }
           }
 
-          await this._prepareUpdateState(paths, config, customConfig, existingInstall, spinner);
+          await this._prepareUpdateState(paths, config, customConfig, existingInstall);
         }
       } else if (existingInstall.installed && config.isQuickUpdate()) {
-        // Quick update mode - automatically treat as update without prompting
-        spinner.message('Preparing quick update...');
-        await this._prepareUpdateState(paths, config, customConfig, existingInstall, spinner);
+        await this._prepareUpdateState(paths, config, customConfig, existingInstall);
       }
 
       // Now collect tool configurations after we know if it's a reinstall
       // Skip for quick update since we already have the IDE list
-      spinner.stop('Pre-checks complete');
       let toolSelection;
       if (config.isQuickUpdate()) {
         // Quick update already has IDEs configured, use saved configurations
@@ -242,10 +225,6 @@ class Installer {
               }
             }
           } else {
-            if (spinner.isSpinning) {
-              spinner.stop('IDE changes reviewed');
-            }
-
             await prompts.log.warn('IDEs to be removed:');
             for (const ide of idesToRemove) {
               await prompts.log.error(`  - ${ide}`);
@@ -283,8 +262,6 @@ class Installer {
                 }
               }
             }
-
-            spinner.start('Preparing installation...');
           }
         }
       }
@@ -293,72 +270,10 @@ class Installer {
       const results = [];
       const addResult = (step, status, detail = '') => results.push({ step, status, detail });
 
-      if (spinner.isSpinning) {
-        spinner.message('Preparing installation...');
-      } else {
-        spinner.start('Preparing installation...');
-      }
+      await this._cacheCustomModules(paths, addResult);
 
-      // Cache custom modules if any
-      if (this.customModules.paths && this.customModules.paths.size > 0) {
-        spinner.message('Caching custom modules...');
-        const { CustomModuleCache } = require('./custom-module-cache');
-        const customCache = new CustomModuleCache(paths.bmadDir);
-
-        for (const [moduleId, sourcePath] of this.customModules.paths) {
-          const cachedInfo = await customCache.cacheModule(moduleId, sourcePath, {
-            sourcePath: sourcePath, // Store original path for updates
-          });
-
-          // Update cached path to use the local cache location
-          this.customModules.paths.set(moduleId, cachedInfo.cachePath);
-        }
-
-        addResult('Custom modules cached', 'ok');
-      }
-
-      // Custom content is already handled in UI before module selection
       const finalCustomContent = customConfig.customContent;
-
-      // Build custom module ID set first (needed to filter official list)
-      const customModuleIds = new Set();
-      for (const id of this.customModules.paths.keys()) {
-        customModuleIds.add(id);
-      }
-      if (customConfig._customModuleSources) {
-        for (const [moduleId, customInfo] of customConfig._customModuleSources) {
-          if (!customModuleIds.has(moduleId) && (await fs.pathExists(customInfo.sourcePath))) {
-            customModuleIds.add(moduleId);
-          }
-        }
-      }
-      if (finalCustomContent && finalCustomContent.cachedModules) {
-        for (const cachedModule of finalCustomContent.cachedModules) {
-          customModuleIds.add(cachedModule.id);
-        }
-      }
-      if (finalCustomContent && finalCustomContent.selected && finalCustomContent.selectedFiles) {
-        const customHandler = new CustomHandler();
-        for (const customFile of finalCustomContent.selectedFiles) {
-          const customInfo = await customHandler.getCustomInfo(customFile, paths.projectRoot);
-          if (customInfo && customInfo.id) {
-            customModuleIds.add(customInfo.id);
-          }
-        }
-      }
-      // Official modules: from config.modules, excluding core (handled separately) and custom modules
-      const officialModules = (config.modules || []).filter((m) => !customModuleIds.has(m));
-
-      // Combined list for manifest generation and IDE setup
-      const allModules = [...officialModules];
-      for (const id of customModuleIds) {
-        if (!allModules.includes(id)) {
-          allModules.push(id);
-        }
-      }
-
-      // Stop spinner before tasks() takes over progress display
-      spinner.stop('Preparation complete');
+      const { officialModules, allModules } = await this._buildModuleLists(config, customConfig, paths);
 
       // ─────────────────────────────────────────────────────────────────────────
       // FIRST TASKS BLOCK: Core installation through manifests (non-interactive)
@@ -496,143 +411,13 @@ class Installer {
       // Now run configuration generation
       await prompts.tasks([configTask]);
 
-      // ─────────────────────────────────────────────────────────────────────────
-      // IDE SETUP: Keep as spinner since it may prompt for user input
-      // ─────────────────────────────────────────────────────────────────────────
-      if (!config.skipIde && config.ides && config.ides.length > 0) {
-        await this.ideManager.ensureInitialized();
-        const validIdes = config.ides.filter((ide) => ide && typeof ide === 'string');
+      await this._setupIdes(config, ideConfigurations, allModules, paths, addResult);
 
-        if (validIdes.length === 0) {
-          addResult('IDE configuration', 'warn', 'no valid IDEs selected');
-        } else {
-          const needsPrompting = validIdes.some((ide) => !ideConfigurations[ide]);
-          const ideSpinner = await prompts.spinner();
-          ideSpinner.start('Configuring tools...');
-
-          try {
-            for (const ide of validIdes) {
-              if (!needsPrompting || ideConfigurations[ide]) {
-                ideSpinner.message(`Configuring ${ide}...`);
-              } else {
-                if (ideSpinner.isSpinning) {
-                  ideSpinner.stop('Ready for IDE configuration');
-                }
-              }
-
-              // Suppress stray console output for pre-configured IDEs (no user interaction)
-              const ideHasConfig = Boolean(ideConfigurations[ide]);
-              const originalLog = console.log;
-              if (!config.verbose && ideHasConfig) {
-                console.log = () => {};
-              }
-              try {
-                const setupResult = await this.ideManager.setup(ide, paths.projectRoot, paths.bmadDir, {
-                  selectedModules: allModules || [],
-                  preCollectedConfig: ideConfigurations[ide] || null,
-                  verbose: config.verbose,
-                  silent: ideHasConfig,
-                });
-
-                if (ideConfigurations[ide] && !ideConfigurations[ide]._alreadyConfigured) {
-                  await this.ideConfigManager.saveIdeConfig(paths.bmadDir, ide, ideConfigurations[ide]);
-                }
-
-                if (setupResult.success) {
-                  addResult(ide, 'ok', setupResult.detail || '');
-                } else {
-                  addResult(ide, 'error', setupResult.error || 'failed');
-                }
-              } finally {
-                console.log = originalLog;
-              }
-
-              if (needsPrompting && !ideSpinner.isSpinning) {
-                ideSpinner.start('Configuring tools...');
-              }
-            }
-          } finally {
-            if (ideSpinner.isSpinning) {
-              ideSpinner.stop('Tool configuration complete');
-            }
-          }
-        }
-      }
-
-      // ─────────────────────────────────────────────────────────────────────────
-      // SECOND TASKS BLOCK: Post-IDE operations (non-interactive)
-      // ─────────────────────────────────────────────────────────────────────────
-      const postIdeTasks = [];
-
-      // File restoration task (only for updates)
-      if (
-        customConfig._isUpdate &&
-        ((customConfig._customFiles && customConfig._customFiles.length > 0) ||
-          (customConfig._modifiedFiles && customConfig._modifiedFiles.length > 0))
-      ) {
-        postIdeTasks.push({
-          title: 'Finalizing installation',
-          task: async (message) => {
-            let customFiles = [];
-            let modifiedFiles = [];
-
-            if (customConfig._customFiles && customConfig._customFiles.length > 0) {
-              message(`Restoring ${customConfig._customFiles.length} custom files...`);
-
-              for (const originalPath of customConfig._customFiles) {
-                const relativePath = path.relative(paths.bmadDir, originalPath);
-                const backupPath = path.join(customConfig._tempBackupDir, relativePath);
-
-                if (await fs.pathExists(backupPath)) {
-                  await fs.ensureDir(path.dirname(originalPath));
-                  await fs.copy(backupPath, originalPath, { overwrite: true });
-                }
-              }
-
-              if (customConfig._tempBackupDir && (await fs.pathExists(customConfig._tempBackupDir))) {
-                await fs.remove(customConfig._tempBackupDir);
-              }
-
-              customFiles = customConfig._customFiles;
-            }
-
-            if (customConfig._modifiedFiles && customConfig._modifiedFiles.length > 0) {
-              modifiedFiles = customConfig._modifiedFiles;
-
-              if (customConfig._tempModifiedBackupDir && (await fs.pathExists(customConfig._tempModifiedBackupDir))) {
-                message(`Restoring ${modifiedFiles.length} modified files as .bak...`);
-
-                for (const modifiedFile of modifiedFiles) {
-                  const relativePath = path.relative(paths.bmadDir, modifiedFile.path);
-                  const tempBackupPath = path.join(customConfig._tempModifiedBackupDir, relativePath);
-                  const bakPath = modifiedFile.path + '.bak';
-
-                  if (await fs.pathExists(tempBackupPath)) {
-                    await fs.ensureDir(path.dirname(bakPath));
-                    await fs.copy(tempBackupPath, bakPath, { overwrite: true });
-                  }
-                }
-
-                await fs.remove(customConfig._tempModifiedBackupDir);
-              }
-            }
-
-            // Store for summary access
-            customConfig._restoredCustomFiles = customFiles;
-            customConfig._restoredModifiedFiles = modifiedFiles;
-
-            return 'Installation finalized';
-          },
-        });
-      }
-
-      await prompts.tasks(postIdeTasks);
-
-      // Retrieve restored file info for summary
-      const customFiles = customConfig._restoredCustomFiles || [];
-      const modifiedFiles = customConfig._restoredModifiedFiles || [];
+      await this._restoreUserFiles(paths, customConfig);
 
       // Render consolidated summary
+      const customFiles = customConfig._restoredCustomFiles || [];
+      const modifiedFiles = customConfig._restoredModifiedFiles || [];
       await this.renderInstallSummary(results, {
         bmadDir: paths.bmadDir,
         modules: config.modules,
@@ -649,15 +434,7 @@ class Installer {
         projectDir: paths.projectRoot,
       };
     } catch (error) {
-      try {
-        if (spinner.isSpinning) {
-          spinner.error('Installation failed');
-        } else {
-          await prompts.log.error('Installation failed');
-        }
-      } catch {
-        // Ensure the original error is never swallowed by a logging failure
-      }
+      await prompts.log.error('Installation failed');
 
       // Clean up any temp backup directories that were created before the failure
       try {
@@ -673,6 +450,184 @@ class Installer {
 
       throw error;
     }
+  }
+
+  /**
+   * Cache custom modules into the local cache directory.
+   * Updates this.customModules.paths in place with cached locations.
+   */
+  async _cacheCustomModules(paths, addResult) {
+    if (!this.customModules.paths || this.customModules.paths.size === 0) return;
+
+    const { CustomModuleCache } = require('./custom-module-cache');
+    const customCache = new CustomModuleCache(paths.bmadDir);
+
+    for (const [moduleId, sourcePath] of this.customModules.paths) {
+      const cachedInfo = await customCache.cacheModule(moduleId, sourcePath, {
+        sourcePath: sourcePath,
+      });
+      this.customModules.paths.set(moduleId, cachedInfo.cachePath);
+    }
+
+    addResult('Custom modules cached', 'ok');
+  }
+
+  /**
+   * Build the official and combined module lists from config and custom sources.
+   * @returns {{ officialModules: string[], allModules: string[] }}
+   */
+  async _buildModuleLists(config, customConfig, paths) {
+    const finalCustomContent = customConfig.customContent;
+
+    const customModuleIds = new Set();
+    for (const id of this.customModules.paths.keys()) {
+      customModuleIds.add(id);
+    }
+    if (customConfig._customModuleSources) {
+      for (const [moduleId, customInfo] of customConfig._customModuleSources) {
+        if (!customModuleIds.has(moduleId) && (await fs.pathExists(customInfo.sourcePath))) {
+          customModuleIds.add(moduleId);
+        }
+      }
+    }
+    if (finalCustomContent && finalCustomContent.cachedModules) {
+      for (const cachedModule of finalCustomContent.cachedModules) {
+        customModuleIds.add(cachedModule.id);
+      }
+    }
+    if (finalCustomContent && finalCustomContent.selected && finalCustomContent.selectedFiles) {
+      const customHandler = new CustomHandler();
+      for (const customFile of finalCustomContent.selectedFiles) {
+        const customInfo = await customHandler.getCustomInfo(customFile, paths.projectRoot);
+        if (customInfo && customInfo.id) {
+          customModuleIds.add(customInfo.id);
+        }
+      }
+    }
+
+    const officialModules = (config.modules || []).filter((m) => !customModuleIds.has(m));
+
+    const allModules = [...officialModules];
+    for (const id of customModuleIds) {
+      if (!allModules.includes(id)) {
+        allModules.push(id);
+      }
+    }
+
+    return { officialModules, allModules };
+  }
+
+  /**
+   * Set up IDE integrations for each selected IDE.
+   */
+  async _setupIdes(config, ideConfigurations, allModules, paths, addResult) {
+    if (config.skipIde || !config.ides || config.ides.length === 0) return;
+
+    await this.ideManager.ensureInitialized();
+    const validIdes = config.ides.filter((ide) => ide && typeof ide === 'string');
+
+    if (validIdes.length === 0) {
+      addResult('IDE configuration', 'warn', 'no valid IDEs selected');
+      return;
+    }
+
+    for (const ide of validIdes) {
+      const ideHasConfig = Boolean(ideConfigurations[ide]);
+      const originalLog = console.log;
+      if (!config.verbose && ideHasConfig) {
+        console.log = () => {};
+      }
+      try {
+        const setupResult = await this.ideManager.setup(ide, paths.projectRoot, paths.bmadDir, {
+          selectedModules: allModules || [],
+          preCollectedConfig: ideConfigurations[ide] || null,
+          verbose: config.verbose,
+          silent: ideHasConfig,
+        });
+
+        if (ideConfigurations[ide] && !ideConfigurations[ide]._alreadyConfigured) {
+          await this.ideConfigManager.saveIdeConfig(paths.bmadDir, ide, ideConfigurations[ide]);
+        }
+
+        if (setupResult.success) {
+          addResult(ide, 'ok', setupResult.detail || '');
+        } else {
+          addResult(ide, 'error', setupResult.error || 'failed');
+        }
+      } finally {
+        console.log = originalLog;
+      }
+    }
+  }
+
+  /**
+   * Restore custom and modified files that were backed up before the update.
+   * No-op for fresh installs.
+   */
+  async _restoreUserFiles(paths, customConfig) {
+    if (
+      !customConfig._isUpdate ||
+      ((!customConfig._customFiles || customConfig._customFiles.length === 0) &&
+        (!customConfig._modifiedFiles || customConfig._modifiedFiles.length === 0))
+    ) {
+      return;
+    }
+
+    await prompts.tasks([
+      {
+        title: 'Finalizing installation',
+        task: async (message) => {
+          let customFiles = [];
+          let modifiedFiles = [];
+
+          if (customConfig._customFiles && customConfig._customFiles.length > 0) {
+            message(`Restoring ${customConfig._customFiles.length} custom files...`);
+
+            for (const originalPath of customConfig._customFiles) {
+              const relativePath = path.relative(paths.bmadDir, originalPath);
+              const backupPath = path.join(customConfig._tempBackupDir, relativePath);
+
+              if (await fs.pathExists(backupPath)) {
+                await fs.ensureDir(path.dirname(originalPath));
+                await fs.copy(backupPath, originalPath, { overwrite: true });
+              }
+            }
+
+            if (customConfig._tempBackupDir && (await fs.pathExists(customConfig._tempBackupDir))) {
+              await fs.remove(customConfig._tempBackupDir);
+            }
+
+            customFiles = customConfig._customFiles;
+          }
+
+          if (customConfig._modifiedFiles && customConfig._modifiedFiles.length > 0) {
+            modifiedFiles = customConfig._modifiedFiles;
+
+            if (customConfig._tempModifiedBackupDir && (await fs.pathExists(customConfig._tempModifiedBackupDir))) {
+              message(`Restoring ${modifiedFiles.length} modified files as .bak...`);
+
+              for (const modifiedFile of modifiedFiles) {
+                const relativePath = path.relative(paths.bmadDir, modifiedFile.path);
+                const tempBackupPath = path.join(customConfig._tempModifiedBackupDir, relativePath);
+                const bakPath = modifiedFile.path + '.bak';
+
+                if (await fs.pathExists(tempBackupPath)) {
+                  await fs.ensureDir(path.dirname(bakPath));
+                  await fs.copy(tempBackupPath, bakPath, { overwrite: true });
+                }
+              }
+
+              await fs.remove(customConfig._tempModifiedBackupDir);
+            }
+          }
+
+          customConfig._restoredCustomFiles = customFiles;
+          customConfig._restoredModifiedFiles = modifiedFiles;
+
+          return 'Installation finalized';
+        },
+      },
+    ]);
   }
 
   _buildConfig(originalConfig) {
@@ -774,9 +729,8 @@ class Installer {
    * @param {Object} config - Clean config (may have coreConfig updated)
    * @param {Object} customConfig - Full config bag (mutated with update state)
    * @param {Object} existingInstall - Detection result from detector.detect()
-   * @param {Object} spinner - Spinner instance for progress display
    */
-  async _prepareUpdateState(paths, config, customConfig, existingInstall, spinner) {
+  async _prepareUpdateState(paths, config, customConfig, existingInstall) {
     customConfig._isUpdate = true;
     customConfig._existingInstall = existingInstall;
 
@@ -806,7 +760,7 @@ class Installer {
 
     await this._scanCachedCustomModules(paths);
 
-    const backupDirs = await this._backupUserFiles(paths, customFiles, modifiedFiles, spinner);
+    const backupDirs = await this._backupUserFiles(paths, customFiles, modifiedFiles);
     customConfig._tempBackupDir = backupDirs.tempBackupDir;
     customConfig._tempModifiedBackupDir = backupDirs.tempModifiedBackupDir;
   }
@@ -817,10 +771,9 @@ class Installer {
    * @param {Object} paths - InstallPaths instance
    * @param {string[]} customFiles - Absolute paths of custom (user-added) files
    * @param {Object[]} modifiedFiles - Array of { path, relativePath } for modified files
-   * @param {Object} spinner - Spinner instance for progress display
    * @returns {Object} { tempBackupDir, tempModifiedBackupDir } — undefined if no files
    */
-  async _backupUserFiles(paths, customFiles, modifiedFiles, spinner) {
+  async _backupUserFiles(paths, customFiles, modifiedFiles) {
     let tempBackupDir;
     let tempModifiedBackupDir;
 
@@ -828,28 +781,24 @@ class Installer {
       tempBackupDir = path.join(paths.projectRoot, '_bmad-custom-backup-temp');
       await fs.ensureDir(tempBackupDir);
 
-      spinner.start(`Backing up ${customFiles.length} custom files...`);
       for (const customFile of customFiles) {
         const relativePath = path.relative(paths.bmadDir, customFile);
         const backupPath = path.join(tempBackupDir, relativePath);
         await fs.ensureDir(path.dirname(backupPath));
         await fs.copy(customFile, backupPath);
       }
-      spinner.stop(`Backed up ${customFiles.length} custom files`);
     }
 
     if (modifiedFiles.length > 0) {
       tempModifiedBackupDir = path.join(paths.projectRoot, '_bmad-modified-backup-temp');
       await fs.ensureDir(tempModifiedBackupDir);
 
-      spinner.start(`Backing up ${modifiedFiles.length} modified files...`);
       for (const modifiedFile of modifiedFiles) {
         const relativePath = path.relative(paths.bmadDir, modifiedFile.path);
         const tempBackupPath = path.join(tempModifiedBackupDir, relativePath);
         await fs.ensureDir(path.dirname(tempBackupPath));
         await fs.copy(modifiedFile.path, tempBackupPath, { overwrite: true });
       }
-      spinner.stop(`Backed up ${modifiedFiles.length} modified files`);
     }
 
     return { tempBackupDir, tempModifiedBackupDir };
@@ -1640,20 +1589,14 @@ class Installer {
    * @returns {Object} Update result
    */
   async quickUpdate(config) {
-    const spinner = await prompts.spinner();
-    spinner.start('Starting quick update...');
-
     try {
       const projectDir = path.resolve(config.directory);
       const { bmadDir } = await this.findBmadDir(projectDir);
 
       // Check if bmad directory exists
       if (!(await fs.pathExists(bmadDir))) {
-        spinner.stop('No BMAD installation found');
         throw new Error(`BMAD not installed at ${bmadDir}. Use regular install for first-time setup.`);
       }
-
-      spinner.message('Detecting installed modules and configuration...');
 
       // Detect existing installation
       const existingInstall = await this.detector.detect(bmadDir);
@@ -1795,8 +1738,6 @@ class Installer {
         }
       }
 
-      spinner.stop(`Found ${modulesToUpdate.length} module(s) to update and ${configuredIdes.length} configured tool(s)`);
-
       if (skippedModules.length > 0) {
         await prompts.log.warn(`Skipping ${skippedModules.length} module(s) - no source available: ${skippedModules.join(', ')}`);
       }
@@ -1850,12 +1791,6 @@ class Installer {
       // Call the standard install method
       const result = await this.install(installConfig);
 
-      // Only succeed the spinner if it's still spinning
-      // (install method might have stopped it if folder name changed)
-      if (spinner.isSpinning) {
-        spinner.stop('Quick update complete!');
-      }
-
       return {
         success: true,
         moduleCount: modulesToUpdate.length,
@@ -1865,7 +1800,6 @@ class Installer {
         ides: configuredIdes,
       };
     } catch (error) {
-      spinner.error('Quick update failed');
       throw error;
     }
   }
@@ -1874,20 +1808,14 @@ class Installer {
    * Update existing installation
    */
   async update(config) {
-    const spinner = await prompts.spinner();
-    spinner.start('Checking installation...');
-
     try {
       const projectDir = path.resolve(config.directory);
       const { bmadDir } = await this.findBmadDir(projectDir);
       const existingInstall = await this.detector.detect(bmadDir);
 
       if (!existingInstall.installed) {
-        spinner.stop('No BMAD installation found');
         throw new Error(`No BMAD installation found at ${bmadDir}`);
       }
-
-      spinner.message('Analyzing update requirements...');
 
       // Compare versions and determine what needs updating
       const currentVersion = existingInstall.version;
@@ -1941,7 +1869,6 @@ class Installer {
       }
 
       if (customModuleSources.size > 0) {
-        spinner.stop('Update analysis complete');
         await prompts.log.warn('Checking custom module sources before update...');
 
         const projectRoot = getProjectRoot();
@@ -1953,12 +1880,9 @@ class Installer {
           existingInstall.modules.map((m) => m.id),
           config.skipPrompts || false,
         );
-
-        spinner.start('Preparing update...');
       }
 
       if (config.dryRun) {
-        spinner.stop('Dry run analysis complete');
         let dryRunContent = `Current version: ${currentVersion}\n`;
         dryRunContent += `New version: ${newVersion}\n`;
         dryRunContent += `Core: ${existingInstall.hasCore ? 'Will be updated' : 'Not installed'}`;
@@ -1975,26 +1899,21 @@ class Installer {
 
       // Perform actual update
       if (existingInstall.hasCore) {
-        spinner.message('Updating core...');
         await this.updateCore(bmadDir, config.force);
       }
 
       for (const module of existingInstall.modules) {
-        spinner.message(`Updating module: ${module.id}...`);
         await this.officialModules.update(module.id, bmadDir, config.force, { installer: this });
       }
 
       // Update manifest
-      spinner.message('Updating manifest...');
       await this.manifest.update(bmadDir, {
         version: newVersion,
         updateDate: new Date().toISOString(),
       });
 
-      spinner.stop('Update complete');
       return { success: true };
     } catch (error) {
-      spinner.error('Update failed');
       throw error;
     }
   }
