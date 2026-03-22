@@ -5,7 +5,7 @@ sidebar:
   order: 2
 ---
 
-使用命令行标志以非交互方式安装 BMad。这适用于：
+使用命令行参数（flags）以非交互方式安装 BMad。适用于以下场景：
 
 ## 使用场景
 
@@ -18,11 +18,11 @@ sidebar:
 需要 [Node.js](https://nodejs.org) v20+ 和 `npx`（随 npm 附带）。
 :::
 
-## 可用标志
+## 可用参数（Flags）
 
 ### 安装选项
 
-| 标志 | 描述 | 示例 |
+| 参数 | 描述 | 示例 |
 |------|-------------|---------|
 | `--directory <path>` | 安装目录 | `--directory ~/projects/myapp` |
 | `--modules <modules>` | 逗号分隔的模块 ID | `--modules bmm,bmb` |
@@ -32,7 +32,7 @@ sidebar:
 
 ### 核心配置
 
-| 标志 | 描述 | 默认值 |
+| 参数 | 描述 | 默认值 |
 |------|-------------|---------|
 | `--user-name <name>` | 智能体使用的名称 | 系统用户名 |
 | `--communication-language <lang>` | 智能体通信语言 | 英语 |
@@ -41,14 +41,14 @@ sidebar:
 
 ### 其他选项
 
-| 标志 | 描述 |
+| 参数 | 描述 |
 |------|-------------|
 | `-y, --yes` | 接受所有默认值并跳过提示 |
 | `-d, --debug` | 启用清单生成的调试输出 |
 
 ## 模块 ID
 
-`--modules` 标志可用的模块 ID：
+`--modules` 参数可用的模块 ID：
 
 - `bmm` — BMad Method Master
 - `bmb` — BMad Builder
@@ -57,7 +57,7 @@ sidebar:
 
 ## 工具/IDE ID
 
-`--tools` 标志可用的工具 ID：
+`--tools` 参数可用的工具 ID：
 
 **推荐：** `claude-code`、`cursor`
 
@@ -124,9 +124,9 @@ npx bmad-method install \
 - 为所选模块和工具配置的智能体和工作流
 - 用于生成产物的 `_bmad-output/` 文件夹
 
-## 验证和错误处理
+## 参数校验与错误处理
 
-BMad 会验证所有提供的标志：
+BMad 会验证你提供的所有参数：
 
 - **目录** — 必须是具有写入权限的有效路径
 - **模块** — 对无效的模块 ID 发出警告（但不会失败）
@@ -148,7 +148,7 @@ BMad 会验证所有提供的标志：
 
 ## 故障排除
 
-### 安装失败，提示"Invalid directory"
+### 安装失败，提示 `Invalid directory`
 
 - 目录路径必须存在（或其父目录必须存在）
 - 您需要写入权限
@@ -167,15 +167,6 @@ BMad 会验证所有提供的标志：
 - 在 `module.yaml` 中有 `code` 字段
 
 :::note[仍然卡住了？]
-使用 `--debug` 运行以获取详细输出，尝试交互模式以隔离问题，或在 <https://github.com/bmad-code-org/BMAD-METHOD/issues> 报告。
+使用 `--debug` 获取详细输出，尝试交互模式定位问题，或在 <https://github.com/bmad-code-org/BMAD-METHOD/issues> 提交反馈。
 :::
 
----
-## 术语说明
-
-- **CI/CD**：持续集成/持续部署。一种自动化软件开发流程的实践，用于频繁集成代码更改并自动部署到生产环境。
-- **agent**：智能体。在人工智能与编程文档中，指具备自主决策或执行能力的单元。
-- **module**：模块。软件系统中可独立开发、测试和维护的功能单元。
-- **IDE**：集成开发环境。提供代码编辑、调试、构建等功能的软件开发工具。
-- **npx**：Node Package eXecute。npm 包执行器，用于直接执行 npm 包而无需全局安装。
-- **workflow**：工作流。一系列有序的任务或步骤，用于完成特定的业务流程或开发流程。
