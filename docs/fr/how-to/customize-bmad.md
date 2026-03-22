@@ -84,7 +84,7 @@ Ajouter un contexte persistant que l'agent gardera toujours en mémoire :
 ```yaml
 memories:
   - 'Travaille au Krusty Krab'
-  - 'Célébrité préférée : David Hasslehoff'
+  - 'Célébrité préférée : David Hasselhoff'
   - 'Appris dans l’Epic 1 que ce n’est pas cool de faire semblant que les tests ont passé'
 ```
 

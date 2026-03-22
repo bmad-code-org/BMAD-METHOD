@@ -5,6 +5,7 @@ import sitemap from '@astrojs/sitemap';
 import rehypeMarkdownLinks from './src/rehype-markdown-links.js';
 import rehypeBasePaths from './src/rehype-base-paths.js';
 import { getSiteUrl } from './src/lib/site-url.mjs';
+import { locales } from './src/lib/locales.mjs';
 
 const siteUrl = getSiteUrl();
 const urlParts = new URL(siteUrl);
@@ -45,22 +46,9 @@ export default defineConfig({
       title: 'BMAD Method',
       tagline: 'AI-driven agile development with specialized agents and workflows that scale from bug fixes to enterprise platforms.',
 
-      // i18n: English as root (no URL prefix), Chinese at /zh-cn/, French at /fr/
+      // i18n: locale config from shared module (website/src/lib/locales.mjs)
       defaultLocale: 'root',
-      locales: {
-        root: {
-          label: 'English',
-          lang: 'en',
-        },
-        'zh-cn': {
-          label: '简体中文',
-          lang: 'zh-CN',
-        },
-        fr: {
-          label: 'Français',
-          lang: 'fr-FR',
-        },
-      },
+      locales,
 
       logo: {
         light: './public/img/bmad-light.png',
