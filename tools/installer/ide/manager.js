@@ -1,5 +1,5 @@
 const { BMAD_FOLDER_NAME } = require('./shared/path-utils');
-const prompts = require('../../../lib/prompts');
+const prompts = require('../prompts');
 
 /**
  * IDE Manager - handles IDE-specific setup

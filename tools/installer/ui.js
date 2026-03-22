@@ -2,8 +2,8 @@ const path = require('node:path');
 const os = require('node:os');
 const fs = require('fs-extra');
 const { CLIUtils } = require('./cli-utils');
-const { CustomHandler } = require('../installers/lib/custom-handler');
-const { ExternalModuleManager } = require('../installers/lib/modules/external-manager');
+const { CustomHandler } = require('./custom-handler');
+const { ExternalModuleManager } = require('./modules/external-manager');
 const prompts = require('./prompts');
 
 // Separator class for visual grouping in select/multiselect prompts
@@ -32,7 +32,7 @@ class UI {
     await CLIUtils.displayLogo();
 
     // Display version-specific start message from install-messages.yaml
-    const { MessageLoader } = require('../installers/lib/message-loader');
+    const { MessageLoader } = require('./message-loader');
     const messageLoader = new MessageLoader();
     await messageLoader.displayStartMessage();
 
@@ -51,7 +51,7 @@ class UI {
       confirmedDirectory = await this.getConfirmedDirectory();
     }
 
-    const { Installer } = require('../installers/lib/core/installer');
+    const { Installer } = require('./core/installer');
     const installer = new Installer();
     const { bmadDir } = await installer.findBmadDir(confirmedDirectory);
 
@@ -279,7 +279,7 @@ class UI {
             customModuleResult = await this.handleCustomModulesInModifyFlow(confirmedDirectory, selectedModules);
           } else {
             // Preserve existing custom modules if user doesn't want to modify them
-            const { Installer } = require('../installers/lib/core/installer');
+            const { Installer } = require('./core/installer');
             const installer = new Installer();
             const { bmadDir } = await installer.findBmadDir(confirmedDirectory);
 
@@ -452,15 +452,15 @@ class UI {
    * @returns {Object} Tool configuration
    */
   async promptToolSelection(projectDir, options = {}) {
-    const { ExistingInstall } = require('../installers/lib/core/existing-install');
-    const { Installer } = require('../installers/lib/core/installer');
+    const { ExistingInstall } = require('./core/existing-install');
+    const { Installer } = require('./core/installer');
     const installer = new Installer();
     const { bmadDir } = await installer.findBmadDir(projectDir || process.cwd());
     const existingInstall = await ExistingInstall.detect(bmadDir);
     const configuredIdes = existingInstall.ides;
 
     // Get IDE manager to fetch available IDEs dynamically
-    const { IdeManager } = require('../installers/lib/ide/manager');
+    const { IdeManager } = require('./ide/manager');
     const ideManager = new IdeManager();
     await ideManager.ensureInitialized(); // IMPORTANT: Must initialize before getting IDEs
 
@@ -690,8 +690,8 @@ class UI {
    * @returns {Object} Object with existingInstall, installedModuleIds, and bmadDir
    */
   async getExistingInstallation(directory) {
-    const { ExistingInstall } = require('../installers/lib/core/existing-install');
-    const { Installer } = require('../installers/lib/core/installer');
+    const { ExistingInstall } = require('./core/existing-install');
+    const { Installer } = require('./core/installer');
     const installer = new Installer();
     const { bmadDir } = await installer.findBmadDir(directory);
     const existingInstall = await ExistingInstall.detect(bmadDir);
@@ -709,7 +709,7 @@ class UI {
    * @returns {Object} Collected module configurations keyed by module name
    */
   async collectModuleConfigs(directory, modules, options = {}) {
-    const { OfficialModules } = require('../installers/lib/modules/official-modules');
+    const { OfficialModules } = require('./modules/official-modules');
     const configCollector = new OfficialModules();
 
     // Seed core config from CLI options if provided
@@ -809,7 +809,7 @@ class UI {
     }
 
     // Add official modules
-    const { OfficialModules } = require('../installers/lib/modules/official-modules');
+    const { OfficialModules } = require('./modules/official-modules');
     const officialModules = new OfficialModules();
     const { modules: availableModules, customModules: customModulesFromCache } = await officialModules.listAvailable();
 
@@ -866,7 +866,7 @@ class UI {
    * @returns {Array} Selected module codes (excluding core)
    */
   async selectAllModules(installedModuleIds = new Set()) {
-    const { OfficialModules } = require('../installers/lib/modules/official-modules');
+    const { OfficialModules } = require('./modules/official-modules');
     const officialModulesSource = new OfficialModules();
     const { modules: localModules } = await officialModulesSource.listAvailable();
 
@@ -963,7 +963,7 @@ class UI {
    * @returns {Array} Default module codes
    */
   async getDefaultModules(installedModuleIds = new Set()) {
-    const { OfficialModules } = require('../installers/lib/modules/official-modules');
+    const { OfficialModules } = require('./modules/official-modules');
     const officialModules = new OfficialModules();
     const { modules: localModules } = await officialModules.listAvailable();
 
@@ -1023,7 +1023,7 @@ class UI {
         const files = await fs.readdir(directory);
         if (files.length > 0) {
           // Check for any bmad installation (any folder with _config/manifest.yaml)
-          const { Installer } = require('../installers/lib/core/installer');
+          const { Installer } = require('./core/installer');
           const installer = new Installer();
           const bmadResult = await installer.findBmadDir(directory);
           const hasBmadInstall =
@@ -1265,8 +1265,8 @@ class UI {
    * @returns {Array} List of configured IDEs
    */
   async getConfiguredIdes(directory) {
-    const { ExistingInstall } = require('../installers/lib/core/existing-install');
-    const { Installer } = require('../installers/lib/core/installer');
+    const { ExistingInstall } = require('./core/existing-install');
+    const { Installer } = require('./core/installer');
     const installer = new Installer();
     const { bmadDir } = await installer.findBmadDir(directory);
     const existingInstall = await ExistingInstall.detect(bmadDir);
@@ -1415,7 +1415,7 @@ class UI {
     const { existingInstall } = await this.getExistingInstallation(directory);
 
     // Check if there are any custom modules in cache
-    const { Installer } = require('../installers/lib/core/installer');
+    const { Installer } = require('./core/installer');
     const installer = new Installer();
     const { bmadDir } = await installer.findBmadDir(directory);
 

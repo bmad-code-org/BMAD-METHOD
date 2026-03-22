@@ -7,7 +7,7 @@
 const fs = require('fs-extra');
 const path = require('node:path');
 const crypto = require('node:crypto');
-const prompts = require('../../../lib/prompts');
+const prompts = require('../prompts');
 
 class CustomModuleCache {
   constructor(bmadDir) {

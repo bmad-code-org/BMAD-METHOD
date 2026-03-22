@@ -172,7 +172,7 @@ parts: 1
 - Deferred: CI/CD integration, telemetry for module authors, air-gapped enterprise install, zip bundle integrity verification (checksums/signing), deeper non-technical platform integrations
 
 ## Current Installer (migration context)
-- Entry: `tools/cli/bmad-cli.js` (Commander.js) → `tools/cli/installers/lib/core/installer.js`
+- Entry: `tools/installer/bmad-cli.js` (Commander.js) → `tools/installer/core/installer.js`
 - Platforms: `platform-codes.yaml` (~20 platforms with target dirs, legacy dirs, template types, special flags)
 - Manifests: CSV files (skill/workflow/agent-manifest.csv) are current source of truth, not JSON
 - External modules: `external-official-modules.yaml` (CIS, GDS, TEA, WDS) from npm with semver

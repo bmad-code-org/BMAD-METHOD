@@ -5,7 +5,7 @@ const path = require('node:path');
 const fs = require('node:fs');
 const { execSync } = require('node:child_process');
 const semver = require('semver');
-const prompts = require('./lib/prompts');
+const prompts = require('./prompts');
 
 // The installer flow uses many sequential @clack/prompts, each adding keypress
 // listeners to stdin. Raise the limit to avoid spurious EventEmitter warnings.

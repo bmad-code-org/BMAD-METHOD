@@ -1,7 +1,7 @@
 const fs = require('fs-extra');
 const path = require('node:path');
 const yaml = require('yaml');
-const prompts = require('../../lib/prompts');
+const prompts = require('./prompts');
 
 /**
  * Load and display installer messages from messages.yaml
@@ -18,7 +18,7 @@ class MessageLoader {
       return this.messages;
     }
 
-    const messagesPath = path.join(__dirname, '..', 'install-messages.yaml');
+    const messagesPath = path.join(__dirname, 'install-messages.yaml');
 
     try {
       const content = fs.readFileSync(messagesPath, 'utf8');

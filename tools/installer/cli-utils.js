@@ -8,7 +8,7 @@ const CLIUtils = {
    */
   getVersion() {
     try {
-      const packageJson = require(path.join(__dirname, '..', '..', '..', 'package.json'));
+      const packageJson = require(path.join(__dirname, '..', '..', 'package.json'));
       return packageJson.version || 'Unknown';
     } catch {
       return 'Unknown';

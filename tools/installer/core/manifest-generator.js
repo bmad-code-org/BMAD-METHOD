@@ -3,8 +3,8 @@ const fs = require('fs-extra');
 const yaml = require('yaml');
 const crypto = require('node:crypto');
 const csv = require('csv-parse/sync');
-const { getSourcePath, getModulePath } = require('../../../lib/project-root');
-const prompts = require('../../../lib/prompts');
+const { getSourcePath, getModulePath } = require('../project-root');
+const prompts = require('../prompts');
 const {
   loadSkillManifest: loadSkillManifestShared,
   getCanonicalId: getCanonicalIdShared,
@@ -13,7 +13,7 @@ const {
 } = require('../ide/shared/skill-manifest');
 
 // Load package.json for version info
-const packageJson = require('../../../../../package.json');
+const packageJson = require('../../../package.json');
 
 /**
  * Generates manifest files for installed skills and agents

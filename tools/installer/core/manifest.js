@@ -1,8 +1,8 @@
 const path = require('node:path');
 const fs = require('fs-extra');
 const crypto = require('node:crypto');
-const { getProjectRoot } = require('../../../lib/project-root');
-const prompts = require('../../../lib/prompts');
+const { getProjectRoot } = require('../project-root');
+const prompts = require('../prompts');
 
 class Manifest {
   /**

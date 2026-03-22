@@ -1,7 +1,7 @@
 const path = require('node:path');
 const fs = require('fs-extra');
-const prompts = require('../lib/prompts');
-const { Installer } = require('../installers/lib/core/installer');
+const prompts = require('../prompts');
+const { Installer } = require('../core/installer');
 
 const installer = new Installer();
 

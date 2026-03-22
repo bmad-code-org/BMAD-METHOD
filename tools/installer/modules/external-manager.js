@@ -3,7 +3,7 @@ const os = require('node:os');
 const path = require('node:path');
 const { execSync } = require('node:child_process');
 const yaml = require('yaml');
-const prompts = require('../../../lib/prompts');
+const prompts = require('../prompts');
 
 /**
  * Manages external official modules defined in external-official-modules.yaml
@@ -13,7 +13,7 @@ const prompts = require('../../../lib/prompts');
  */
 class ExternalModuleManager {
   constructor() {
-    this.externalModulesConfigPath = path.join(__dirname, '../../../external-official-modules.yaml');
+    this.externalModulesConfigPath = path.join(__dirname, '../external-official-modules.yaml');
     this.cachedModules = null;
   }
 

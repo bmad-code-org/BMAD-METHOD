@@ -1,7 +1,7 @@
 const path = require('node:path');
-const prompts = require('../lib/prompts');
-const { Installer } = require('../installers/lib/core/installer');
-const { UI } = require('../lib/ui');
+const prompts = require('../prompts');
+const { Installer } = require('../core/installer');
+const { UI } = require('../ui');
 
 const installer = new Installer();
 const ui = new UI();

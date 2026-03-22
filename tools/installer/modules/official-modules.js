@@ -1,9 +1,9 @@
 const path = require('node:path');
 const fs = require('fs-extra');
 const yaml = require('yaml');
-const prompts = require('../../../lib/prompts');
-const { getProjectRoot, getSourcePath, getModulePath } = require('../../../lib/project-root');
-const { CLIUtils } = require('../../../lib/cli-utils');
+const prompts = require('../prompts');
+const { getProjectRoot, getSourcePath, getModulePath } = require('../project-root');
+const { CLIUtils } = require('../cli-utils');
 const { ExternalModuleManager } = require('./external-manager');
 
 class OfficialModules {

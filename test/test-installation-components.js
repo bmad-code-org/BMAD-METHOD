@@ -14,9 +14,9 @@
 const path = require('node:path');
 const os = require('node:os');
 const fs = require('fs-extra');
-const { ManifestGenerator } = require('../tools/cli/installers/lib/core/manifest-generator');
-const { IdeManager } = require('../tools/cli/installers/lib/ide/manager');
-const { clearCache, loadPlatformCodes } = require('../tools/cli/installers/lib/ide/platform-codes');
+const { ManifestGenerator } = require('../tools/installer/core/manifest-generator');
+const { IdeManager } = require('../tools/installer/ide/manager');
+const { clearCache, loadPlatformCodes } = require('../tools/installer/ide/platform-codes');
 
 // ANSI colors
 const colors = {

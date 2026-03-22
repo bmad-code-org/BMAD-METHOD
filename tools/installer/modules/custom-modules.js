@@ -3,7 +3,7 @@ const fs = require('fs-extra');
 const yaml = require('yaml');
 const { CustomHandler } = require('../custom-handler');
 const { Manifest } = require('../core/manifest');
-const prompts = require('../../../lib/prompts');
+const prompts = require('../prompts');
 
 class CustomModules {
   constructor() {

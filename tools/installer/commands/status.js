@@ -1,8 +1,8 @@
 const path = require('node:path');
-const prompts = require('../lib/prompts');
-const { Installer } = require('../installers/lib/core/installer');
-const { Manifest } = require('../installers/lib/core/manifest');
-const { UI } = require('../lib/ui');
+const prompts = require('../prompts');
+const { Installer } = require('../core/installer');
+const { Manifest } = require('../core/manifest');
+const { UI } = require('../ui');
 
 const installer = new Installer();
 const manifest = new Manifest();

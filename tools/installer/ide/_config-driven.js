@@ -2,7 +2,7 @@ const os = require('node:os');
 const path = require('node:path');
 const fs = require('fs-extra');
 const yaml = require('yaml');
-const prompts = require('../../../lib/prompts');
+const prompts = require('../prompts');
 const csv = require('csv-parse/sync');
 const { BMAD_FOLDER_NAME } = require('./shared/path-utils');
 

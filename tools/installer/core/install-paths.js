@@ -1,6 +1,6 @@
 const path = require('node:path');
 const fs = require('fs-extra');
-const { getProjectRoot } = require('../../../lib/project-root');
+const { getProjectRoot } = require('../project-root');
 const { BMAD_FOLDER_NAME } = require('../ide/shared/path-utils');
 
 class InstallPaths {
