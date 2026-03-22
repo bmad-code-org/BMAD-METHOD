@@ -7,7 +7,6 @@ const { CustomModules } = require('../modules/custom-modules');
 const { IdeManager } = require('../ide/manager');
 const { FileOps } = require('../../../lib/file-ops');
 const { Config } = require('../../../lib/config');
-const { ConfigCollector } = require('./config-collector');
 const { getProjectRoot, getSourcePath, getModulePath } = require('../../../lib/project-root');
 const { ManifestGenerator } = require('./manifest-generator');
 const { IdeConfigManager } = require('./ide-config-manager');
@@ -27,7 +26,6 @@ class Installer {
     this.ideManager = new IdeManager();
     this.fileOps = new FileOps();
     this.config = new Config();
-    this.configCollector = new ConfigCollector();
     this.ideConfigManager = new IdeConfigManager();
     this.installedFiles = new Set(); // Track all installed files
     this.bmadFolderName = BMAD_FOLDER_NAME;
@@ -49,7 +47,7 @@ class Installer {
     const paths = await InstallPaths.create(config);
 
     // Collect configurations for official modules
-    const moduleConfigs = await this._collectConfigs(config, paths);
+    await this.officialModules.collectConfigs(config, paths);
 
     await this.customModules.discoverPaths(config, paths);
 
@@ -77,7 +75,7 @@ class Installer {
       await this._cacheCustomModules(paths, addResult);
 
       const { officialModules, allModules } = await this._buildModuleLists(config, customConfig, paths);
-      await this._installAndConfigure(config, customConfig, paths, moduleConfigs, officialModules, allModules, addResult);
+      await this._installAndConfigure(config, customConfig, paths, officialModules, allModules, addResult);
 
       await this._setupIdes(config, ideConfigurations, allModules, paths, addResult);
 
@@ -291,9 +289,10 @@ class Installer {
   /**
    * Install modules, create directories, generate configs and manifests.
    */
-  async _installAndConfigure(config, customConfig, paths, moduleConfigs, officialModules, allModules, addResult) {
+  async _installAndConfigure(config, customConfig, paths, officialModules, allModules, addResult) {
     const isQuickUpdate = config.isQuickUpdate();
     const finalCustomContent = customConfig.customContent;
+    const moduleConfigs = this.officialModules.moduleConfigs;
 
     const dirResults = { createdDirs: [], movedDirs: [], createdWdsFolders: [] };
 
@@ -305,12 +304,12 @@ class Installer {
         task: async (message) => {
           const installedModuleNames = new Set();
 
-          await this._installOfficialModules(config, paths, moduleConfigs, officialModules, addResult, isQuickUpdate, {
+          await this._installOfficialModules(config, paths, officialModules, addResult, isQuickUpdate, {
             message,
             installedModuleNames,
           });
 
-          await this._installCustomModules(customConfig, paths, moduleConfigs, finalCustomContent, addResult, isQuickUpdate, {
+          await this._installCustomModules(customConfig, paths, finalCustomContent, addResult, isQuickUpdate, {
             message,
             installedModuleNames,
           });
@@ -336,7 +335,7 @@ class Installer {
             const result = await this.officialModules.createModuleDirectories(moduleName, paths.bmadDir, {
               installedIDEs: config.ides || [],
               moduleConfig: moduleConfigs[moduleName] || {},
-              existingModuleConfig: this.configCollector.existingConfig?.[moduleName] || {},
+              existingModuleConfig: this.officialModules.existingConfig?.[moduleName] || {},
               coreConfig: moduleConfigs.core || {},
               logger: moduleLogger,
               silent: true,
@@ -542,6 +541,7 @@ class Installer {
       force: originalConfig.force || false,
       actionType: originalConfig.actionType,
       coreConfig: originalConfig.coreConfig || {},
+      moduleConfigs: originalConfig.moduleConfigs || null,
       hasCoreConfig() {
         return this.coreConfig && Object.keys(this.coreConfig).length > 0;
       },
@@ -549,33 +549,6 @@ class Installer {
         return originalConfig._quickUpdate || false;
       },
     };
-  }
-
-  /**
-   * Collect configurations for official modules (core + selected).
-   * Custom module configs are handled separately in CustomModules.discoverPaths.
-   */
-  async _collectConfigs(config, paths) {
-    // Seed core config if pre-collected from interactive UI
-    if (config.hasCoreConfig()) {
-      this.configCollector.collectedConfig.core = config.coreConfig;
-      this.configCollector.allAnswers = {};
-      for (const [key, value] of Object.entries(config.coreConfig)) {
-        this.configCollector.allAnswers[`core_${key}`] = value;
-      }
-    }
-
-    // Quick update already collected everything
-    if (config.isQuickUpdate()) {
-      return this.configCollector.collectedConfig;
-    }
-
-    // Modules to collect — skip core if its config was pre-collected
-    const toCollect = config.hasCoreConfig() ? config.modules.filter((m) => m !== 'core') : [...config.modules];
-
-    return await this.configCollector.collectAllConfigurations(toCollect, paths.projectRoot, {
-      skipPrompts: config.skipPrompts,
-    });
   }
 
   /**
@@ -649,7 +622,7 @@ class Installer {
 
         config.coreConfig = existingCoreConfig;
         customConfig.coreConfig = existingCoreConfig;
-        this.configCollector.collectedConfig.core = existingCoreConfig;
+        this.officialModules.moduleConfigs.core = existingCoreConfig;
       } catch (error) {
         await prompts.log.warn(`Warning: Could not read existing core config: ${error.message}`);
       }
@@ -705,13 +678,12 @@ class Installer {
    * Install official (non-custom) modules.
    * @param {Object} config - Installation configuration
    * @param {Object} paths - InstallPaths instance
-   * @param {Object} moduleConfigs - Collected module configurations
    * @param {string[]} officialModules - Official module IDs to install
    * @param {Function} addResult - Callback to record installation results
    * @param {boolean} isQuickUpdate - Whether this is a quick update
    * @param {Object} ctx - Shared context: { message, installedModuleNames }
    */
-  async _installOfficialModules(config, paths, moduleConfigs, officialModules, addResult, isQuickUpdate, ctx) {
+  async _installOfficialModules(config, paths, officialModules, addResult, isQuickUpdate, ctx) {
     const { message, installedModuleNames } = ctx;
 
     for (const moduleName of officialModules) {
@@ -720,7 +692,7 @@ class Installer {
 
       message(`${isQuickUpdate ? 'Updating' : 'Installing'} ${moduleName}...`);
 
-      const moduleConfig = this.configCollector.collectedConfig[moduleName] || {};
+      const moduleConfig = this.officialModules.moduleConfigs[moduleName] || {};
       await this.officialModules.install(
         moduleName,
         paths.bmadDir,
@@ -743,13 +715,12 @@ class Installer {
    * Install custom modules from all custom module sources.
    * @param {Object} config - Installation configuration
    * @param {Object} paths - InstallPaths instance
-   * @param {Object} moduleConfigs - Collected module configurations
    * @param {Object|undefined} finalCustomContent - Custom content from config
    * @param {Function} addResult - Callback to record installation results
    * @param {boolean} isQuickUpdate - Whether this is a quick update
    * @param {Object} ctx - Shared context: { message, installedModuleNames }
    */
-  async _installCustomModules(customConfig, paths, moduleConfigs, finalCustomContent, addResult, isQuickUpdate, ctx) {
+  async _installCustomModules(customConfig, paths, finalCustomContent, addResult, isQuickUpdate, ctx) {
     const { message, installedModuleNames } = ctx;
 
     // Collect all custom module IDs with their info from all sources
@@ -805,7 +776,7 @@ class Installer {
         this.customModules.paths.set(moduleName, customInfo.path);
       }
 
-      const collectedModuleConfig = moduleConfigs[moduleName] || {};
+      const collectedModuleConfig = this.officialModules.moduleConfigs[moduleName] || {};
       await this.officialModules.install(
         moduleName,
         paths.bmadDir,
@@ -1641,19 +1612,19 @@ class Installer {
 
       // Load existing configs and collect new fields (if any)
       await prompts.log.info('Checking for new configuration options...');
-      await this.configCollector.loadExistingConfig(projectDir);
+      await this.officialModules.loadExistingConfig(projectDir);
 
       let promptedForNewFields = false;
 
       // Check core config for new fields
-      const corePrompted = await this.configCollector.collectModuleConfigQuick('core', projectDir, true);
+      const corePrompted = await this.officialModules.collectModuleConfigQuick('core', projectDir, true);
       if (corePrompted) {
         promptedForNewFields = true;
       }
 
       // Check each module we're updating for new fields (NOT skipped modules)
       for (const moduleName of modulesToUpdate) {
-        const modulePrompted = await this.configCollector.collectModuleConfigQuick(moduleName, projectDir, true);
+        const modulePrompted = await this.officialModules.collectModuleConfigQuick(moduleName, projectDir, true);
         if (modulePrompted) {
           promptedForNewFields = true;
         }
@@ -1664,7 +1635,7 @@ class Installer {
       }
 
       // Add metadata
-      this.configCollector.collectedConfig._meta = {
+      this.officialModules.collectedConfig._meta = {
         version: require(path.join(getProjectRoot(), 'package.json')).version,
         installDate: new Date().toISOString(),
         lastModified: new Date().toISOString(),
@@ -1675,7 +1646,7 @@ class Installer {
         directory: projectDir,
         modules: modulesToUpdate, // Only update modules we have source for (includes core)
         ides: configuredIdes,
-        coreConfig: this.configCollector.collectedConfig.core,
+        coreConfig: this.officialModules.collectedConfig.core,
         actionType: 'install', // Use regular install flow
         _quickUpdate: true, // Flag to skip certain prompts
         _preserveModules: skippedModules, // Preserve these in manifest even though we didn't update them

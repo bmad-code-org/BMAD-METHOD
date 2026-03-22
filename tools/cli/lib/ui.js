@@ -431,7 +431,7 @@ class UI {
         // Get tool selection
         const toolSelection = await this.promptToolSelection(confirmedDirectory, options);
 
-        const coreConfig = await this.collectCoreConfig(confirmedDirectory, options);
+        const moduleConfigs = await this.collectModuleConfigs(confirmedDirectory, selectedModules, options);
 
         return {
           actionType: 'update',
@@ -439,7 +439,8 @@ class UI {
           modules: selectedModules,
           ides: toolSelection.ides,
           skipIde: toolSelection.skipIde,
-          coreConfig: coreConfig,
+          coreConfig: moduleConfigs.core || {},
+          moduleConfigs: moduleConfigs,
           customContent: customModuleResult.customContentConfig,
           skipPrompts: options.yes || false,
         };
@@ -549,7 +550,7 @@ class UI {
       selectedModules.unshift('core');
     }
     let toolSelection = await this.promptToolSelection(confirmedDirectory, options);
-    const coreConfig = await this.collectCoreConfig(confirmedDirectory, options);
+    const moduleConfigs = await this.collectModuleConfigs(confirmedDirectory, selectedModules, options);
 
     return {
       actionType: 'install',
@@ -557,7 +558,8 @@ class UI {
       modules: selectedModules,
       ides: toolSelection.ides,
       skipIde: toolSelection.skipIde,
-      coreConfig: coreConfig,
+      coreConfig: moduleConfigs.core || {},
+      moduleConfigs: moduleConfigs,
       customContent: customContentConfig,
       skipPrompts: options.yes || false,
     };
@@ -827,16 +829,18 @@ class UI {
   }
 
   /**
-   * Collect core configuration
+   * Collect all module configurations (core + selected modules).
+   * All interactive prompting happens here in the UI layer.
    * @param {string} directory - Installation directory
+   * @param {string[]} modules - Modules to configure (including 'core')
    * @param {Object} options - Command-line options
-   * @returns {Object} Core configuration
+   * @returns {Object} Collected module configurations keyed by module name
    */
-  async collectCoreConfig(directory, options = {}) {
-    const { ConfigCollector } = require('../installers/lib/core/config-collector');
-    const configCollector = new ConfigCollector();
+  async collectModuleConfigs(directory, modules, options = {}) {
+    const { OfficialModules } = require('../installers/lib/modules/official-modules');
+    const configCollector = new OfficialModules();
 
-    // If options are provided, set them directly
+    // Seed core config from CLI options if provided
     if (options.userName || options.communicationLanguage || options.documentOutputLanguage || options.outputFolder) {
       const coreConfig = {};
       if (options.userName) {
@@ -858,8 +862,6 @@ class UI {
 
       // Load existing config to merge with provided options
       await configCollector.loadExistingConfig(directory);
-
-      // Merge provided options with existing config (or defaults)
       const existingConfig = configCollector.collectedConfig.core || {};
       configCollector.collectedConfig.core = { ...existingConfig, ...coreConfig };
 
@@ -875,7 +877,6 @@ class UI {
       await configCollector.loadExistingConfig(directory);
       const existingConfig = configCollector.collectedConfig.core || {};
 
-      // If no existing config, use defaults
       if (Object.keys(existingConfig).length === 0) {
         let safeUsername;
         try {
@@ -892,16 +893,14 @@ class UI {
         };
         await prompts.log.info('Using default configuration (--yes flag)');
       }
-    } else {
-      // Load existing configs first if they exist
-      await configCollector.loadExistingConfig(directory);
-      // Now collect with existing values as defaults (false = don't skip loading, true = skip completion message)
-      await configCollector.collectModuleConfig('core', directory, false, true);
     }
 
-    const coreConfig = configCollector.collectedConfig.core;
-    // Ensure we always have a core config object, even if empty
-    return coreConfig || {};
+    // Collect all module configs — core is skipped if already seeded above
+    await configCollector.collectAllConfigurations(modules, directory, {
+      skipPrompts: options.yes || false,
+    });
+
+    return configCollector.collectedConfig;
   }
 
   /**
@@ -1386,37 +1385,6 @@ class UI {
 
     // Resolve to the absolute path relative to the current working directory
     return path.resolve(expanded);
-  }
-
-  /**
-   * Load existing configurations to use as defaults
-   * @param {string} directory - Installation directory
-   * @returns {Object} Existing configurations
-   */
-  async loadExistingConfigurations(directory) {
-    const configs = {
-      hasCustomContent: false,
-      coreConfig: {},
-      ideConfig: { ides: [], skipIde: false },
-    };
-
-    try {
-      // Load core config
-      configs.coreConfig = await this.collectCoreConfig(directory);
-
-      // Load IDE configuration
-      const configuredIdes = await this.getConfiguredIdes(directory);
-      if (configuredIdes.length > 0) {
-        configs.ideConfig.ides = configuredIdes;
-        configs.ideConfig.skipIde = false;
-      }
-
-      return configs;
-    } catch {
-      // If loading fails, return empty configs
-      await prompts.log.warn('Could not load existing configurations');
-      return configs;
-    }
   }
 
   /**
