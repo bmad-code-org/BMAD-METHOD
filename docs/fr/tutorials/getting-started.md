@@ -233,7 +233,7 @@ your-project/
 ## Questions fréquentes
 
 **Ai-je toujours besoin d'une architecture ?**
-Uniquement pour les voies méthode BMad et Enterprise. Quick Dev passe directement de la spécification technique (tech-spec) à l'implémentation.
+Uniquement pour les voies méthode BMad et Enterprise. Quick Dev passe directement de la spécification technique (spec) à l'implémentation.
 
 **Puis-je modifier mon plan plus tard ?**
 Oui. Utilisez `bmad-correct-course` pour gérer les changements de périmètre.

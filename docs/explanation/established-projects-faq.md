@@ -34,7 +34,7 @@ Yes! Quick Flow works great for established projects. It will:
 - Auto-detect your existing stack
 - Analyze existing code patterns
 - Detect conventions and ask for confirmation
-- Generate context-rich tech-spec that respects existing code
+- Generate context-rich spec that respects existing code
 
 Perfect for bug fixes and small features in existing codebases.
 
@@ -43,7 +43,7 @@ Perfect for bug fixes and small features in existing codebases.
 Quick Flow detects your conventions and asks: "Should I follow these existing conventions?" You decide:
 
 - **Yes** → Maintain consistency with current codebase
-- **No** → Establish new standards (document why in tech-spec)
+- **No** → Establish new standards (document why in spec)
 
 BMM respects your choice — it won't force modernization, but it will offer it.
 
