@@ -1,5 +1,5 @@
 ---
-wipFile: '{implementation_artifacts}/tech-spec-wip.md'
+wipFile: '{implementation_artifacts}/spec-wip.md'
 deferred_work_file: '{implementation_artifacts}/deferred-work.md'
 ---
 
@@ -13,7 +13,7 @@ deferred_work_file: '{implementation_artifacts}/deferred-work.md'
 ## INSTRUCTIONS
 
 1. Investigate codebase. _Isolate deep exploration in sub-agents/tasks where available. To prevent context snowballing, instruct subagents to give you distilled summaries only._
-2. Read `./tech-spec-template.md` fully. Fill it out based on the intent and investigation, and write the result to `{wipFile}`.
+2. Read `./spec-template.md` fully. Fill it out based on the intent and investigation, and write the result to `{wipFile}`.
 3. Self-review against READY FOR DEVELOPMENT standard.
 4. If intent gaps exist, do not fantasize, do not leave open questions, HALT and ask the human.
 5. Token count check (see SCOPE STANDARD). If spec exceeds 1600 tokens:
