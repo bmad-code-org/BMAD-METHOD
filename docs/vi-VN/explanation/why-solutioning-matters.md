@@ -55,8 +55,8 @@ Bằng cách tài liệu hóa rõ ràng các quyết định kỹ thuật, tất
 |-------|----------------------|
 | Quick Flow | Không - bỏ qua hoàn toàn |
 | BMad Method đơn giản | Tùy chọn |
-| BMad Method phuc tap | Co |
-| Enterprise | Co |
+| BMad Method phức tạp | Có |
+| Enterprise | Có |
 
 :::tip[Quy tắc ngón tay cái]
 Nếu bạn có nhiều epic có thể được các agent khác nhau triển khai, bạn cần solutioning.

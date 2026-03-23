@@ -60,8 +60,8 @@ Di chuyển chúng vào `_bmad-output/planning-artifacts/` với tên mô tả r
 Nếu bạn đã có các story được tạo hoặc đã triển khai:
 
 1. Hoàn thành cài đặt v6
-2. Dat `epics.md` hoac `epics/epic*.md` vao `_bmad-output/planning-artifacts/`
-3. Chay workflow `bmad-sprint-planning` cua Scrum Master
+2. Đặt `epics.md` hoặc `epics/epic*.md` vào `_bmad-output/planning-artifacts/`
+3. Chạy workflow `bmad-sprint-planning` của Scrum Master
 4. Nói rõ với SM những epic/story nào đã hoàn thành
 
 ## Bạn nhận được gì
@@ -96,5 +96,5 @@ du-an-cua-ban/
 | --- | --- | --- |
 | **Core** | `_bmad-core` thực chất là BMad Method | `_bmad/core/` là framework dùng chung |
 | **Method** | `_bmad-method` | `_bmad/bmm/` |
-| **Config** | Sua truc tiep cac tep | `config.yaml` theo tung module |
-| **Documents** | Can thiet lap truoc cho ban chia nho hoac nguyen khoi | Linh hoat hoan toan, tu dong quet |
+| **Config** | Sửa trực tiếp các tệp | `config.yaml` theo từng module |
+| **Documents** | Cần thiết lập trước cho bản chia nhỏ hoặc nguyên khối | Linh hoạt hoàn toàn, tự động quét |
