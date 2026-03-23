@@ -14,6 +14,8 @@
 const path = require('node:path');
 const os = require('node:os');
 const fs = require('fs-extra');
+const yaml = require('yaml');
+const { ConfigCollector } = require('../tools/cli/installers/lib/core/config-collector');
 const { ManifestGenerator } = require('../tools/cli/installers/lib/core/manifest-generator');
 const { IdeManager } = require('../tools/cli/installers/lib/ide/manager');
 const { clearCache, loadPlatformCodes } = require('../tools/cli/installers/lib/ide/platform-codes');
@@ -1849,6 +1851,75 @@ async function runTests() {
   } finally {
     if (tempProjectDir32) await fs.remove(tempProjectDir32).catch(() => {});
     if (installedBmadDir32) await fs.remove(path.dirname(installedBmadDir32)).catch(() => {});
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test Suite 33: ConfigCollector Prompt Normalization
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 33: ConfigCollector Prompt Normalization${colors.reset}\n`);
+
+  try {
+    const teaModulePath33 = path.join(projectRoot, '..', 'bmad-method-test-architecture-enterprise', 'src', 'module.yaml');
+    const teaModuleConfig33 = yaml.parse(await fs.readFile(teaModulePath33, 'utf8'));
+
+    const collector33 = new ConfigCollector();
+    collector33.currentProjectDir = path.join(os.tmpdir(), 'bmad-config-normalization');
+    collector33.allAnswers = {};
+    collector33.collectedConfig = {
+      tea: {
+        test_artifacts: '_bmad-output/test-artifacts',
+      },
+    };
+    collector33.existingConfig = {
+      tea: {
+        test_artifacts: '_bmad-output/test-artifacts',
+        test_design_output: '_bmad-output/test-artifacts/test-design',
+        test_review_output: '_bmad-output/test-artifacts/test-reviews',
+        trace_output: '_bmad-output/test-artifacts/traceability',
+      },
+    };
+
+    const testDesignQuestion33 = await collector33.buildQuestion(
+      'tea',
+      'test_design_output',
+      teaModuleConfig33.test_design_output,
+      teaModuleConfig33,
+    );
+    const testReviewQuestion33 = await collector33.buildQuestion(
+      'tea',
+      'test_review_output',
+      teaModuleConfig33.test_review_output,
+      teaModuleConfig33,
+    );
+    const traceQuestion33 = await collector33.buildQuestion('tea', 'trace_output', teaModuleConfig33.trace_output, teaModuleConfig33);
+
+    assert(testDesignQuestion33.default === 'test-design', 'ConfigCollector normalizes existing test_design_output prompt default');
+    assert(testReviewQuestion33.default === 'test-reviews', 'ConfigCollector normalizes existing test_review_output prompt default');
+    assert(traceQuestion33.default === 'traceability', 'ConfigCollector normalizes existing trace_output prompt default');
+
+    collector33.allAnswers = {
+      tea_test_artifacts: '_bmad-output/test-artifacts',
+    };
+
+    assert(
+      collector33.processResultTemplate(teaModuleConfig33.test_design_output.result, testDesignQuestion33.default) ===
+        '_bmad-output/test-artifacts/test-design',
+      'ConfigCollector re-applies test_design_output template without duplicating prefix',
+    );
+    assert(
+      collector33.processResultTemplate(teaModuleConfig33.test_review_output.result, testReviewQuestion33.default) ===
+        '_bmad-output/test-artifacts/test-reviews',
+      'ConfigCollector re-applies test_review_output template without duplicating prefix',
+    );
+    assert(
+      collector33.processResultTemplate(teaModuleConfig33.trace_output.result, traceQuestion33.default) ===
+        '_bmad-output/test-artifacts/traceability',
+      'ConfigCollector re-applies trace_output template without duplicating prefix',
+    );
+  } catch (error) {
+    assert(false, 'ConfigCollector prompt normalization test succeeds', error.message);
   }
 
   console.log('');
