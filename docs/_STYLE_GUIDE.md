@@ -56,7 +56,7 @@ Critical warnings only — data loss, security issues
 | Phase | Name     | What Happens                                 |
 | ----- | -------- | -------------------------------------------- |
 | 1     | Analysis | Brainstorm, research *(optional)*            |
-| 2     | Planning | Requirements — PRD or tech-spec *(required)* |
+| 2     | Planning | Requirements — PRD or spec *(required)* |
 ```
 
 **Skills:**
