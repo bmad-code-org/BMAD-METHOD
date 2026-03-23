@@ -14,7 +14,6 @@
 const path = require('node:path');
 const os = require('node:os');
 const fs = require('fs-extra');
-const yaml = require('yaml');
 const { ConfigCollector } = require('../tools/cli/installers/lib/core/config-collector');
 const { ManifestGenerator } = require('../tools/cli/installers/lib/core/manifest-generator');
 const { IdeManager } = require('../tools/cli/installers/lib/ide/manager');
@@ -1861,8 +1860,26 @@ async function runTests() {
   console.log(`${colors.yellow}Test Suite 33: ConfigCollector Prompt Normalization${colors.reset}\n`);
 
   try {
-    const teaModulePath33 = path.join(projectRoot, '..', 'bmad-method-test-architecture-enterprise', 'src', 'module.yaml');
-    const teaModuleConfig33 = yaml.parse(await fs.readFile(teaModulePath33, 'utf8'));
+    const teaModuleConfig33 = {
+      test_artifacts: {
+        default: '_bmad-output/test-artifacts',
+      },
+      test_design_output: {
+        prompt: 'Where should test design documents be stored?',
+        default: 'test-design',
+        result: '{test_artifacts}/{value}',
+      },
+      test_review_output: {
+        prompt: 'Where should test review reports be stored?',
+        default: 'test-reviews',
+        result: '{test_artifacts}/{value}',
+      },
+      trace_output: {
+        prompt: 'Where should traceability reports be stored?',
+        default: 'traceability',
+        result: '{test_artifacts}/{value}',
+      },
+    };
 
     const collector33 = new ConfigCollector();
     collector33.currentProjectDir = path.join(os.tmpdir(), 'bmad-config-normalization');
