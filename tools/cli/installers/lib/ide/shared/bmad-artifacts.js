@@ -5,6 +5,33 @@ const { loadSkillManifest, getCanonicalId } = require('./skill-manifest');
 /**
  * Helpers for gathering BMAD agents/tasks from the installed tree.
  * Shared by installers that need Claude-style exports.
+ *
+ * TODO: Dead code cleanup — compiled XML agents are retired.
+ *
+ * All agents now use the SKILL.md directory format with bmad-skill-manifest.yaml
+ * (type: agent). The legacy pipeline below only discovers compiled .md files
+ * containing <agent> XML tags, which no longer exist. The following are dead:
+ *
+ *   - getAgentsFromBmad()      — scans {module}/agents/ for .md files with <agent> tags
+ *   - getAgentsFromDir()       — recursive helper for the above
+ *   - AgentCommandGenerator    — (agent-command-generator.js) generates launcher .md files
+ *                                 that tell the LLM to load a compiled agent .md file
+ *   - agent-command-template.md — (templates/) the launcher template with hardcoded
+ *                                 {module}/agents/{{path}} reference
+ *
+ * Agent metadata for agent-manifest.csv is now handled entirely by
+ * ManifestGenerator.getAgentsFromDirRecursive() in manifest-generator.js,
+ * which walks the full module tree and finds type:agent directories.
+ *
+ * IDE installation of agents is handled by the native skill pipeline —
+ * each agent's SKILL.md directory is installed directly to the IDE's
+ * skills path, so no launcher intermediary is needed.
+ *
+ * Cleanup: remove getAgentsFromBmad, getAgentsFromDir, their exports,
+ * AgentCommandGenerator, agent-command-template.md, and all call sites
+ * in IDE installers that invoke collectAgentArtifacts / writeAgentLaunchers /
+ * writeColonArtifacts / writeDashArtifacts.
+ * getTasksFromBmad and getTasksFromDir may still be live — verify before removing.
  */
 async function getAgentsFromBmad(bmadDir, selectedModules = []) {
   const agents = [];
