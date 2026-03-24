@@ -1648,6 +1648,93 @@ async function runTests() {
     // skill-manifest.csv should include the native agent entrypoint
     const skillManifestCsv29 = await fs.readFile(path.join(tempFixture29, '_config', 'skill-manifest.csv'), 'utf8');
     assert(skillManifestCsv29.includes('bmad-tea'), 'skill-manifest.csv includes native type:agent SKILL.md entrypoint');
+
+    // --- Agents at non-agents/ paths (regression test for BMM/CIS layouts) ---
+    // Create a second fixture with agents at paths like bmm/1-analysis/bmad-agent-analyst/
+    const tempFixture29b = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-agent-paths-'));
+    await fs.ensureDir(path.join(tempFixture29b, '_config'));
+
+    // Agent at bmm-style path: bmm/1-analysis/bmad-agent-analyst/
+    const bmmAgentDir = path.join(tempFixture29b, 'bmm', '1-analysis', 'bmad-agent-analyst');
+    await fs.ensureDir(bmmAgentDir);
+    await fs.writeFile(
+      path.join(bmmAgentDir, 'bmad-skill-manifest.yaml'),
+      [
+        'type: agent',
+        'name: bmad-agent-analyst',
+        'displayName: Mary',
+        'title: Business Analyst',
+        'role: Strategic Business Analyst',
+        'module: bmm',
+      ].join('\n') + '\n',
+    );
+    await fs.writeFile(
+      path.join(bmmAgentDir, 'SKILL.md'),
+      '---\nname: bmad-agent-analyst\ndescription: Business Analyst agent\n---\n\nAnalyst agent.\n',
+    );
+
+    // Agent at cis-style path: cis/skills/bmad-cis-agent-brainstorming-coach/
+    const cisAgentDir = path.join(tempFixture29b, 'cis', 'skills', 'bmad-cis-agent-brainstorming-coach');
+    await fs.ensureDir(cisAgentDir);
+    await fs.writeFile(
+      path.join(cisAgentDir, 'bmad-skill-manifest.yaml'),
+      [
+        'type: agent',
+        'name: bmad-cis-agent-brainstorming-coach',
+        'displayName: Carson',
+        'title: Brainstorming Specialist',
+        'role: Master Facilitator',
+        'module: cis',
+      ].join('\n') + '\n',
+    );
+    await fs.writeFile(
+      path.join(cisAgentDir, 'SKILL.md'),
+      '---\nname: bmad-cis-agent-brainstorming-coach\ndescription: Brainstorming coach\n---\n\nCoach.\n',
+    );
+
+    // Agent at standard agents/ path (GDS-style): gds/agents/gds-agent-game-dev/
+    const gdsAgentDir = path.join(tempFixture29b, 'gds', 'agents', 'gds-agent-game-dev');
+    await fs.ensureDir(gdsAgentDir);
+    await fs.writeFile(
+      path.join(gdsAgentDir, 'bmad-skill-manifest.yaml'),
+      [
+        'type: agent',
+        'name: gds-agent-game-dev',
+        'displayName: Link',
+        'title: Game Developer',
+        'role: Senior Game Dev',
+        'module: gds',
+      ].join('\n') + '\n',
+    );
+    await fs.writeFile(
+      path.join(gdsAgentDir, 'SKILL.md'),
+      '---\nname: gds-agent-game-dev\ndescription: Game developer agent\n---\n\nGame dev.\n',
+    );
+
+    const generator29b = new ManifestGenerator();
+    await generator29b.generateManifests(tempFixture29b, ['bmm', 'cis', 'gds'], [], { ides: [] });
+
+    // All three agents should appear in agents[] regardless of directory layout
+    const bmmAgent = generator29b.agents.find((a) => a.name === 'bmad-agent-analyst');
+    assert(bmmAgent !== undefined, 'Agent at bmm/1-analysis/ path appears in agents[]');
+    assert(bmmAgent && bmmAgent.module === 'bmm', 'BMM agent module field comes from manifest file');
+    assert(bmmAgent && bmmAgent.path.includes('bmm/1-analysis/bmad-agent-analyst'), 'BMM agent path reflects actual directory layout');
+
+    const cisAgent = generator29b.agents.find((a) => a.name === 'bmad-cis-agent-brainstorming-coach');
+    assert(cisAgent !== undefined, 'Agent at cis/skills/ path appears in agents[]');
+    assert(cisAgent && cisAgent.module === 'cis', 'CIS agent module field comes from manifest file');
+
+    const gdsAgent = generator29b.agents.find((a) => a.name === 'gds-agent-game-dev');
+    assert(gdsAgent !== undefined, 'Agent at gds/agents/ path appears in agents[]');
+    assert(gdsAgent && gdsAgent.module === 'gds', 'GDS agent module field comes from manifest file');
+
+    // agent-manifest.csv should contain all three
+    const agentCsv29b = await fs.readFile(path.join(tempFixture29b, '_config', 'agent-manifest.csv'), 'utf8');
+    assert(agentCsv29b.includes('bmad-agent-analyst'), 'agent-manifest.csv includes BMM-layout agent');
+    assert(agentCsv29b.includes('bmad-cis-agent-brainstorming-coach'), 'agent-manifest.csv includes CIS-layout agent');
+    assert(agentCsv29b.includes('gds-agent-game-dev'), 'agent-manifest.csv includes GDS-layout agent');
+
+    await fs.remove(tempFixture29b).catch(() => {});
   } catch (error) {
     assert(false, 'Unified skill scanner test succeeds', error.message);
   } finally {
