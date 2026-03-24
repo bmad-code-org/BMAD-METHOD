@@ -11,8 +11,6 @@ context: [] # optional: max 3 project-wide standards/docs. NO source code files.
      Cohesive cross-layer stories (DB+BE+UI) stay in ONE file.
      IMPORTANT: Remove all HTML comments when filling this template. -->
 
-# {title}
-
 <frozen-after-approval reason="human-owned intent — do not modify unless human renegotiates">
 
 ## Intent

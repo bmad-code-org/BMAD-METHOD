@@ -68,7 +68,7 @@ Sautez les phases 1-3 pour les travaux de faible envergure et bien compris.
 
 | Workflow         | Objectif                                                                            | Produit               |
 |------------------|-------------------------------------------------------------------------------------|-----------------------|
-| `bmad-quick-dev` | Flux rapide unifié — clarifie l'intention, planifie, implémente, révise et présente | `tech-spec.md` + code |
+| `bmad-quick-dev` | Flux rapide unifié — clarifie l'intention, planifie, implémente, révise et présente | `spec-*.md` + code |
 
 ## Gestion du Contexte
 

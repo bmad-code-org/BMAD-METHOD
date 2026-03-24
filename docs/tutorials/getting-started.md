@@ -69,7 +69,7 @@ BMad helps you build software through guided workflows with specialized AI agent
 | Phase | Name           | What Happens                                        |
 | ----- | -------------- | --------------------------------------------------- |
 | 1     | Analysis       | Brainstorming, research, product brief *(optional)* |
-| 2     | Planning       | Create requirements (PRD or tech-spec)              |
+| 2     | Planning       | Create requirements (PRD or spec)              |
 | 3     | Solutioning    | Design architecture *(BMad Method/Enterprise only)* |
 | 4     | Implementation | Build epic by epic, story by story                  |
 
@@ -237,7 +237,7 @@ your-project/
 ## Common Questions
 
 **Do I always need architecture?**
-Only for BMad Method and Enterprise tracks. Quick Flow skips from tech-spec to implementation.
+Only for BMad Method and Enterprise tracks. Quick Flow skips from spec to implementation.
 
 **Can I change my plan later?**
 Yes. The SM agent has a `bmad-correct-course` workflow (`bmad-correct-course`) for handling scope changes.
