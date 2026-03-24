@@ -68,7 +68,7 @@ Skip phases 1-3 for small, well-understood work.
 
 | Workflow           | Purpose                                                                     | Produces               |
 | ------------------ | --------------------------------------------------------------------------- | ---------------------- |
-| `bmad-quick-dev`   | Unified quick flow — clarify intent, plan, implement, review, and present   | `tech-spec.md` + code  |
+| `bmad-quick-dev`   | Unified quick flow — clarify intent, plan, implement, review, and present   | `spec-*.md` + code  |
 
 ## Context Management
 
