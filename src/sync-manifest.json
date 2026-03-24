@@ -1,0 +1,210 @@
+{
+  "$schema": "./sync-manifest.schema.json",
+  "version": "1.0.0",
+  "description": "Controls which agent instructions are synced to Design Space",
+  "updated": "2026-03-24",
+
+  "channels": {
+    "stable": "Production-ready instructions. Synced to all organizations.",
+    "beta": "Experimental features. Opt-in only.",
+    "internal": "Whiteport internal. Not distributed."
+  },
+
+  "instructions": [
+    {
+      "agent": "saga",
+      "type": "persona",
+      "file": "src/agents/saga-analyst.agent.yaml",
+      "channel": "stable"
+    },
+    {
+      "agent": "freya",
+      "type": "persona",
+      "file": "src/agents/freya-ux.agent.yaml",
+      "channel": "stable"
+    },
+    {
+      "agent": "saga",
+      "type": "activation",
+      "file": "src/skills/saga.activation.md",
+      "channel": "stable"
+    },
+    {
+      "agent": "freya",
+      "type": "activation",
+      "file": "src/skills/freya.activation.md",
+      "channel": "stable"
+    },
+    {
+      "agent": "saga",
+      "type": "skill",
+      "file": "src/skills/saga/SKILL.md",
+      "channel": "stable"
+    },
+    {
+      "agent": "freya",
+      "type": "skill",
+      "file": "src/skills/freya/SKILL.md",
+      "channel": "stable"
+    },
+    {
+      "agent": "*",
+      "type": "skill",
+      "file": "src/skills/design-space/SKILL.md",
+      "channel": "stable"
+    },
+
+    {
+      "agent": "saga",
+      "type": "reference",
+      "file": "src/skills/saga/references/discovery-conversation.md",
+      "channel": "stable"
+    },
+    {
+      "agent": "saga",
+      "type": "reference",
+      "file": "src/skills/saga/references/trigger-mapping.md",
+      "channel": "stable"
+    },
+    {
+      "agent": "saga",
+      "type": "reference",
+      "file": "src/skills/saga/references/dream-up-approach.md",
+      "channel": "stable"
+    },
+    {
+      "agent": "saga",
+      "type": "reference",
+      "file": "src/skills/saga/references/strategic-documentation.md",
+      "channel": "stable"
+    },
+    {
+      "agent": "saga",
+      "type": "reference",
+      "file": "src/skills/saga/references/conversational-followups.md",
+      "channel": "stable"
+    },
+    {
+      "agent": "saga",
+      "type": "reference",
+      "file": "src/skills/saga/references/seo-strategy-guide.md",
+      "channel": "stable"
+    },
+    {
+      "agent": "saga",
+      "type": "reference",
+      "file": "src/skills/saga/references/content-structure-principles.md",
+      "channel": "stable"
+    },
+    {
+      "agent": "saga",
+      "type": "reference",
+      "file": "src/skills/saga/references/inspiration-analysis.md",
+      "channel": "stable"
+    },
+    {
+      "agent": "saga",
+      "type": "reference",
+      "file": "src/skills/saga/references/working-with-existing-materials.md",
+      "channel": "stable"
+    },
+
+    {
+      "agent": "freya",
+      "type": "reference",
+      "file": "src/skills/freya/references/strategic-design.md",
+      "channel": "stable"
+    },
+    {
+      "agent": "freya",
+      "type": "reference",
+      "file": "src/skills/freya/references/specification-quality.md",
+      "channel": "stable"
+    },
+    {
+      "agent": "freya",
+      "type": "reference",
+      "file": "src/skills/freya/references/agentic-development.md",
+      "channel": "stable"
+    },
+    {
+      "agent": "freya",
+      "type": "reference",
+      "file": "src/skills/freya/references/content-creation.md",
+      "channel": "stable"
+    },
+    {
+      "agent": "freya",
+      "type": "reference",
+      "file": "src/skills/freya/references/design-system.md",
+      "channel": "stable"
+    },
+    {
+      "agent": "freya",
+      "type": "reference",
+      "file": "src/skills/freya/references/meta-content-guide.md",
+      "channel": "stable"
+    },
+
+    {
+      "agent": "saga",
+      "type": "workflow",
+      "file": "src/workflows/0-alignment-signoff/workflow.md",
+      "channel": "stable"
+    },
+    {
+      "agent": "*",
+      "type": "workflow",
+      "file": "src/workflows/0-project-setup/workflow.md",
+      "channel": "stable"
+    },
+    {
+      "agent": "saga",
+      "type": "workflow",
+      "file": "src/workflows/1-project-brief/workflow.md",
+      "channel": "stable"
+    },
+    {
+      "agent": "saga",
+      "type": "workflow",
+      "file": "src/workflows/2-trigger-mapping/workflow.md",
+      "channel": "stable"
+    },
+    {
+      "agent": "freya",
+      "type": "workflow",
+      "file": "src/workflows/3-scenarios/workflow.md",
+      "channel": "stable"
+    },
+    {
+      "agent": "freya",
+      "type": "workflow",
+      "file": "src/workflows/4-ux-design/workflow.md",
+      "channel": "stable"
+    },
+    {
+      "agent": "mimir",
+      "type": "workflow",
+      "file": "src/workflows/5-agentic-development/workflow.md",
+      "channel": "stable"
+    },
+    {
+      "agent": "freya",
+      "type": "workflow",
+      "file": "src/workflows/6-asset-generation/workflow.md",
+      "channel": "stable"
+    },
+    {
+      "agent": "freya",
+      "type": "workflow",
+      "file": "src/workflows/7-design-system/workflow.md",
+      "channel": "stable"
+    },
+    {
+      "agent": "idunn",
+      "type": "workflow",
+      "file": "src/workflows/8-product-evolution/workflow.md",
+      "channel": "stable"
+    }
+  ]
+}

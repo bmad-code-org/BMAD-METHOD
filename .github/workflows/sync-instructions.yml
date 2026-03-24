@@ -1,0 +1,28 @@
+name: Sync Agent Instructions to Design Space
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/agents/**'
+      - 'src/skills/**'
+      - 'src/workflows/*/workflow.md'
+      - 'src/sync-manifest.json'
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Sync instructions to Design Space
+        env:
+          DESIGN_SPACE_URL: ${{ secrets.DESIGN_SPACE_URL }}
+          DESIGN_SPACE_ANON_KEY: ${{ secrets.DESIGN_SPACE_ANON_KEY }}
+          WDS_ROOT: ${{ github.workspace }}
+        run: |
+          node tools/sync-from-manifest.js
