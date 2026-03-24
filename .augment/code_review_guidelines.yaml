@@ -39,6 +39,7 @@ file_paths_to_ignore:
   - ".agent/**"
   - ".agentvibes/**"
   - ".kiro/**"
+  - ".junie/**"
   - ".roo/**"
   - ".github/chatmodes/**"
   # --- Shared baseline: build temp ---

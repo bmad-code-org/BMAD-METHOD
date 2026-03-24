@@ -18,6 +18,12 @@ platforms:
     category: cli
     description: "Anthropic's official CLI for Claude"
 
+  junie:
+    name: "Junie"
+    preferred: false
+    category: cli
+    description: "AI coding agent by JetBrains"
+
   cursor:
     name: "Cursor"
     preferred: true

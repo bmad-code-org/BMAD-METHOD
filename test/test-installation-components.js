@@ -2029,6 +2029,67 @@ async function runTests() {
   console.log('');
 
   // ============================================================
+  // Test Suite 34: Junie Native Skills Install
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 34: Junie Native Skills${colors.reset}\n`);
+
+  let tempProjectDir34;
+  let installedBmadDir34;
+
+  try {
+    clearCache();
+    const platformCodes34 = await loadPlatformCodes();
+    const junieInstaller = platformCodes34.platforms.junie?.installer;
+
+    assert(junieInstaller?.target_dir === '.junie/skills', 'Junie target_dir uses native skills path');
+    assert(junieInstaller?.skill_format === true, 'Junie installer enables native skill output');
+    assert(
+      Array.isArray(junieInstaller?.legacy_targets) && junieInstaller.legacy_targets.includes('.junie/commands'),
+      'Junie installer cleans legacy command output',
+    );
+
+    tempProjectDir34 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-junie-test-'));
+    installedBmadDir34 = await createTestBmadFixture();
+    const legacyDir34 = path.join(tempProjectDir34, '.junie', 'commands', 'bmad-legacy-dir');
+    await fs.ensureDir(legacyDir34);
+    await fs.writeFile(path.join(tempProjectDir34, '.junie', 'commands', 'bmad-legacy.md'), 'legacy\n');
+    await fs.writeFile(path.join(legacyDir34, 'SKILL.md'), 'legacy\n');
+
+    const ideManager34 = new IdeManager();
+    await ideManager34.ensureInitialized();
+    const result34 = await ideManager34.setup('junie', tempProjectDir34, installedBmadDir34, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+
+    assert(result34.success === true, 'Junie setup succeeds against temp project');
+
+    const skillFile34 = path.join(tempProjectDir34, '.junie', 'skills', 'bmad-master', 'SKILL.md');
+    assert(await fs.pathExists(skillFile34), 'Junie install writes SKILL.md directory output');
+
+    const skillContent34 = await fs.readFile(skillFile34, 'utf8');
+    const nameMatch34 = skillContent34.match(/^name:\s*(.+)$/m);
+    assert(nameMatch34 && nameMatch34[1].trim() === 'bmad-master', 'Junie skill name frontmatter matches directory name exactly');
+
+    assert(!(await fs.pathExists(path.join(tempProjectDir34, '.junie', 'commands'))), 'Junie setup removes legacy commands dir');
+
+    const result34b = await ideManager34.setup('junie', tempProjectDir34, installedBmadDir34, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+
+    assert(result34b.success === true, 'Junie reinstall/upgrade succeeds over existing skills');
+    assert(await fs.pathExists(skillFile34), 'Junie reinstall preserves SKILL.md output');
+  } catch (error) {
+    assert(false, 'Junie native skills test succeeds', error.message);
+  } finally {
+    if (tempProjectDir34) await fs.remove(tempProjectDir34).catch(() => {});
+    if (installedBmadDir34) await fs.remove(path.dirname(installedBmadDir34)).catch(() => {});
+  }
+
+  console.log('');
+
+  // ============================================================
   // Summary
   // ============================================================
   console.log(`${colors.cyan}========================================`);
