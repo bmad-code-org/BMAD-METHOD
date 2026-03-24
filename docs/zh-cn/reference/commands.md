@@ -1,166 +1,122 @@
 ---
-title: "命令"
-description: BMad 斜杠命令参考——它们是什么、如何工作以及在哪里找到它们。
+title: "技能（Skills）"
+description: BMad 技能参考：它们是什么、如何生成以及如何调用。
 sidebar:
   order: 3
 ---
 
-斜杠命令是预构建的提示词，用于在 IDE 中加载智能体、运行工作流或执行任务。BMad 安装程序在安装时根据已安装的模块生成这些命令。如果您后续添加、删除或更改模块，请重新运行安装程序以保持命令同步（参见[故障排除](#troubleshooting)）。
+每次运行 `npx bmad-method install`，BMad 会基于你选择的模块生成一组 **skills**。你可以直接输入 skill 名称调用 workflow、任务、工具或智能体角色。
 
-## 命令与智能体菜单触发器
+## Skills 与菜单触发器的区别
 
-BMad 提供两种开始工作的方式，它们服务于不同的目的。
-
-| 机制 | 调用方式 | 发生什么 |
+| 机制 | 调用方式 | 适用场景 |
 | --- | --- | --- |
-| **斜杠命令** | 在 IDE 中输入 `bmad-...` | 直接加载智能体、运行工作流或执行任务 |
-| **智能体菜单触发器** | 先加载智能体，然后输入简短代码（例如 `DS`） | 智能体解释代码并启动匹配的工作流，同时保持角色设定 |
+| **Skill** | 直接输入 skill 名（如 `bmad-help`） | 你已明确要运行哪个功能 |
+| **智能体菜单触发器** | 先加载智能体，再输入短触发码（如 `DS`） | 你在智能体会话内连续切换任务 |
 
-智能体菜单触发器需要活动的智能体会话。当您知道要使用哪个工作流时，使用斜杠命令。当您已经与智能体一起工作并希望在不离开对话的情况下切换任务时，使用触发器。
+菜单触发器依赖“已激活的智能体会话”；skill 可独立运行。
 
-## 命令如何生成
+## Skills 如何生成
 
-当您运行 `npx bmad-method install` 时，安装程序会读取每个选定模块的清单，并为每个智能体、工作流、任务和工具编写一个命令文件。每个文件都是一个简短的 Markdown 提示词，指示 AI 加载相应的源文件并遵循其指令。
+安装程序会读取已选模块，为每个 agent / workflow / task / tool 生成一个 skill 目录，目录中包含 `SKILL.md` 入口文件。
 
-安装程序为每种命令类型使用模板：
-
-| 命令类型 | 生成的文件的作用 |
+| Skill 类型 | 生成行为 |
 | --- | --- |
-| **智能体启动器** | 加载智能体角色文件，激活其菜单，并保持角色设定 |
-| **工作流命令** | 加载工作流引擎（`workflow.xml`）并传递工作流配置 |
-| **任务命令** | 加载独立任务文件并遵循其指令 |
-| **工具命令** | 加载独立工具文件并遵循其指令 |
+| Agent launcher | 加载角色设定并激活菜单 |
+| Workflow skill | 加载 workflow 配置并执行步骤 |
+| Task skill | 执行独立任务 |
+| Tool skill | 执行独立工具 |
 
-:::note[重新运行安装程序]
-如果您添加或删除模块，请再次运行安装程序。它会重新生成所有命令文件以匹配您当前的模块选择。
+:::note[模块变更后要重装]
+当你新增、删除或切换模块后，请重新运行安装程序，避免 skill 列表与模块状态不一致。
 :::
 
-## 命令文件的位置
+## Skill 文件位置
 
-安装程序将命令文件写入项目内 IDE 特定的目录中。确切路径取决于您在安装期间选择的 IDE。
-
-| IDE / CLI | 命令目录 |
+| IDE / CLI | Skills 目录 |
 | --- | --- |
-| Claude Code | `.claude/commands/` |
-| Cursor | `.cursor/commands/` |
-| Windsurf | `.windsurf/workflows/` |
-| 其他 IDE | 请参阅安装程序输出中的目标路径 |
+| Claude Code | `.claude/skills/` |
+| Cursor | `.cursor/skills/` |
+| Windsurf | `.windsurf/skills/` |
+| 其他 IDE | 以安装器输出路径为准 |
 
-所有 IDE 都在其命令目录中接收一组扁平的命令文件。例如，Claude Code 安装看起来像：
+示例（Claude Code）：
 
 ```text
-.claude/commands/
-├── bmad-agent-bmm-dev.md
-├── bmad-agent-bmm-pm.md
-├── bmad-bmm-create-prd.md
-├── bmad-editorial-review-prose.md
-├── bmad-help.md
+.claude/skills/
+├── bmad-help/
+│   └── SKILL.md
+├── bmad-create-prd/
+│   └── SKILL.md
+├── bmad-dev/
+│   └── SKILL.md
 └── ...
 ```
 
-文件名决定了 IDE 中的技能名称。例如，文件 `bmad-agent-bmm-dev.md` 注册技能 `bmad-agent-bmm-dev`。
+skill 目录名就是调用名，例如 `bmad-dev/` 对应 skill `bmad-dev`。
 
-## 如何发现您的命令
+## 如何发现可用 skills
 
-在 IDE 中输入 `/bmad` 并使用自动完成功能浏览可用命令。
+- 在 IDE 中直接输入 `bmad-` 前缀查看补全候选
+- 运行 `bmad-help` 获取基于当前项目状态的下一步建议
+- 打开 skills 目录查看完整清单（这是最权威来源）
 
-运行 `bmad-help` 获取关于下一步的上下文感知指导。
-
-:::tip[快速发现]
-项目中生成的命令文件夹是权威列表。在文件资源管理器中打开它们以查看每个命令及其描述。
+:::tip[快速定位]
+不确定该跑哪个 workflow 时，先执行 `bmad-help`，通常比人工翻文档更快。
 :::
 
-## 命令类别
+## Skill 分类与示例
 
-### 智能体命令
+### 智能体技能（Agent Skills）
 
-智能体命令加载具有定义角色、沟通风格和工作流菜单的专业化 AI 角色。加载后，智能体保持角色设定并响应菜单触发器。
+加载一个角色化智能体，并保持其 persona 与菜单上下文。
 
-| 示例命令 | 智能体 | 角色 |
+| 示例 skill | 角色 | 用途 |
 | --- | --- | --- |
-| `bmad-agent-bmm-dev` | Amelia（开发者） | 严格按照规范实现故事 |
-| `bmad-agent-bmm-pm` | John（产品经理） | 创建和验证 PRD |
-| `bmad-agent-bmm-architect` | Winston（架构师） | 设计系统架构 |
-| `bmad-agent-bmm-sm` | Bob（Scrum Master） | 管理冲刺和故事 |
+| `bmad-dev` | Developer（Amelia） | 按规范实现 story |
+| `bmad-pm` | Product Manager（John） | 创建与校验 PRD |
+| `bmad-architect` | Architect（Winston） | 架构设计与约束定义 |
+| `bmad-sm` | Scrum Master（Bob） | 冲刺与 story 流程管理 |
 
-参见[智能体](./agents.md)获取默认智能体及其触发器的完整列表。
+完整列表见 [智能体参考](./agents.md)。
 
-### 工作流命令
+### Workflow Skills
 
-工作流命令运行结构化的多步骤过程，而无需先加载智能体角色。它们加载工作流引擎并传递特定的工作流配置。
+无需先加载 agent，直接运行结构化流程。
 
-| 示例命令 | 目的 |
+| 示例 skill | 用途 |
 | --- | --- |
-| `bmad-bmm-create-prd` | 创建产品需求文档 |
-| `bmad-bmm-create-architecture` | 设计系统架构 |
-| `bmad-bmm-dev-story` | 实现故事 |
-| `bmad-bmm-code-review` | 运行代码审查 |
-| `bmad-bmm-quick-dev` | 统一快速流程 — 澄清意图、规划、实现、审查、呈现 |
+| `bmad-create-prd` | 创建 PRD |
+| `bmad-create-architecture` | 创建架构方案 |
+| `bmad-create-epics-and-stories` | 拆分 epics/stories |
+| `bmad-dev-story` | 实现指定 story |
+| `bmad-code-review` | 代码评审 |
+| `bmad-quick-dev` | 快速流程（澄清→规划→实现→审查→呈现） |
 
-参见[工作流地图](./workflow-map.md)获取按阶段组织的完整工作流参考。
+按阶段查看见 [工作流地图](./workflow-map.md)。
 
-### 任务和工具命令
+### Task / Tool Skills
 
-任务和工具是独立的操作，不需要智能体或工作流上下文。
+独立任务，不依赖特定智能体上下文。
 
-#### BMad-Help：您的智能向导
+**`bmad-help`** 是最常用入口：它会读取项目状态并给出“下一步建议 + 对应 skill”。
 
-**`bmad-help`** 是您发现下一步操作的主要界面。它不仅仅是一个查找工具——它是一个智能助手，可以：
+更多核心任务和工具见 [核心工具参考](./core-tools.md)。
 
-- **检查您的项目**以查看已经完成的工作
-- **理解自然语言查询**——用简单的英语提问
-- **根据已安装的模块而变化**——根据您拥有的内容显示选项
-- **在工作流后自动调用**——每个工作流都以清晰的下一步结束
-- **推荐第一个必需任务**——无需猜测从哪里开始
+## 命名规则
 
-**示例：**
+所有技能统一以 `bmad-` 开头，后接语义化名称（如 `bmad-dev`、`bmad-create-prd`、`bmad-help`）。
 
-```
-bmad-help
-bmad-help 我有一个 SaaS 想法并且知道所有功能。我应该从哪里开始？
-bmad-help 我在 UX 设计方面有哪些选择？
-bmad-help 我在 PRD 工作流上卡住了
-```
+## 故障排查
 
-#### 其他任务和工具
+**安装后看不到 skills：** 某些 IDE 需要手动启用 skills，或重启 IDE 才会刷新。
 
-| 示例命令 | 目的 |
-| --- | --- |
-| `bmad-shard-doc` | 将大型 Markdown 文件拆分为较小的部分 |
-| `bmad-index-docs` | 索引项目文档 |
-| `bmad-editorial-review-prose` | 审查文档散文质量 |
+**缺少预期 skill：** 可能模块未安装或安装时未勾选。重新运行安装程序并确认模块选择。
 
-## 命名约定
+**已移除模块的 skills 仍存在：** 安装器不会自动清理历史目录。手动删除旧 skill 目录后再重装可获得干净结果。
 
-命令名称遵循可预测的模式。
+## 相关参考
 
-| 模式 | 含义 | 示例 |
-| --- | --- | --- |
-| `bmad-agent-<module>-<name>` | 智能体启动器 | `bmad-agent-bmm-dev` |
-| `bmad-<module>-<workflow>` | 工作流命令 | `bmad-bmm-create-prd` |
-| `bmad-<name>` | 核心任务或工具 | `bmad-help` |
-
-模块代码：`bmm`（敏捷套件）、`bmb`（构建器）、`tea`（测试架构师）、`cis`（创意智能）、`gds`（游戏开发工作室）。参见[模块](./modules.md)获取描述。
-
-## 故障排除
-
-**安装后命令未出现。** 重启您的 IDE 或重新加载窗口。某些 IDE 会缓存命令列表，需要刷新才能获取新文件。
-
-**预期的命令缺失。** 安装程序仅为您选择的模块生成命令。再次运行 `npx bmad-method install` 并验证您的模块选择。检查命令文件是否存在于预期目录中。
-
-**已删除模块的命令仍然出现。** 安装程序不会自动删除旧的命令文件。从 IDE 的命令目录中删除过时的文件，或删除整个命令目录并重新运行安装程序以获取一组干净的命令。
-
----
-## 术语说明
-
-- **slash command**：斜杠命令。以 `/` 开头的命令，用于在 IDE 中快速执行特定操作。
-- **agent**：智能体。在人工智能与编程文档中，指具备自主决策或执行能力的单元。
-- **workflow**：工作流。一系列结构化的步骤，用于完成特定任务或流程。
-- **IDE**：集成开发环境。用于软件开发的综合应用程序，提供代码编辑、调试、构建等功能。
-- **persona**：角色设定。为智能体定义的特定角色、性格和行为方式。
-- **trigger**：触发器。用于启动特定操作或流程的机制。
-- **manifest**：清单。描述模块或组件的元数据文件。
-- **installer**：安装程序。用于安装和配置软件的工具。
-- **PRD**：产品需求文档。描述产品功能、需求和规范的文档。
-- **SaaS**：软件即服务。通过互联网提供软件服务的模式。
-- **UX**：用户体验。用户在使用产品或服务过程中的整体感受和交互体验。
+- [智能体参考](./agents.md)
+- [核心工具参考](./core-tools.md)
+- [模块参考](./modules.md)
