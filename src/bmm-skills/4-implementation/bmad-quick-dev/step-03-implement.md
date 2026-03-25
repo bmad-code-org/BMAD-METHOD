@@ -14,7 +14,7 @@
 
 Verify `{spec_file}` resolves to a non-empty path and the file exists on disk. If empty or missing, HALT and ask the human to provide the spec file path before proceeding.
 
-If the spec introduces new type variants, error codes, or DB values and the Code Map has no `consumer —` annotations, HALT — consumer tracing was missed in planning.
+If the spec introduces new type variants, error codes, or DB values and the Code Map has no `consumer —` annotations, perform consumer tracing now before proceeding.
 
 ## INSTRUCTIONS
 
