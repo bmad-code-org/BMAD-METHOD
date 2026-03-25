@@ -42,7 +42,7 @@ class Installer {
       const officialModules = await OfficialModules.build(config, paths);
       const existingInstall = await ExistingInstall.detect(paths.bmadDir);
 
-      await this.customModules.discoverPaths(config, paths);
+      await this.customModules.discoverPaths(customConfig, paths);
 
       if (existingInstall.installed) {
         await this._removeDeselectedModules(existingInstall, config, paths);

@@ -1624,29 +1624,121 @@ class OfficialModules {
         return match;
       }
 
-      // Look for the config value in allAnswers (already answered questions)
-      let configValue = this.allAnswers[configKey] || this.allAnswers[`core_${configKey}`];
-
-      // Check in already collected config
-      if (!configValue) {
-        for (const mod of Object.keys(this.collectedConfig)) {
-          if (mod !== '_meta' && this.collectedConfig[mod] && this.collectedConfig[mod][configKey]) {
-            configValue = this.collectedConfig[mod][configKey];
-            break;
-          }
-        }
-      }
-
-      // If still not found and we're in the same module, use the default from the config schema
-      if (!configValue && currentModule && moduleConfig && moduleConfig[configKey]) {
-        const referencedItem = moduleConfig[configKey];
-        if (referencedItem && referencedItem.default !== undefined) {
-          configValue = referencedItem.default;
-        }
-      }
+      const configValue = this.resolveConfigValue(configKey, currentModule, moduleConfig);
 
       return configValue || match;
     });
+  }
+
+  /**
+   * Clean a stored path-like value for prompt display/input reuse.
+   * @param {*} value - Stored value
+   * @returns {*} Cleaned value
+   */
+  cleanPromptValue(value) {
+    if (typeof value === 'string' && value.startsWith('{project-root}/')) {
+      return value.replace('{project-root}/', '');
+    }
+
+    return value;
+  }
+
+  /**
+   * Resolve a config key from answers, collected config, existing config, or schema defaults.
+   * @param {string} configKey - Config key to resolve
+   * @param {string} currentModule - Current module name
+   * @param {Object} moduleConfig - Current module config schema
+   * @returns {*} Resolved value
+   */
+  resolveConfigValue(configKey, currentModule = null, moduleConfig = null) {
+    // Look for the config value in allAnswers (already answered questions)
+    let configValue = this.allAnswers?.[configKey] || this.allAnswers?.[`core_${configKey}`];
+
+    if (!configValue && this.allAnswers) {
+      for (const [answerKey, answerValue] of Object.entries(this.allAnswers)) {
+        if (answerKey.endsWith(`_${configKey}`)) {
+          configValue = answerValue;
+          break;
+        }
+      }
+    }
+
+    // Prefer the current module's persisted value when re-prompting an existing install
+    if (!configValue && currentModule && this._existingConfig?.[currentModule]?.[configKey] !== undefined) {
+      configValue = this._existingConfig[currentModule][configKey];
+    }
+
+    // Check in already collected config
+    if (!configValue) {
+      for (const mod of Object.keys(this.collectedConfig)) {
+        if (mod !== '_meta' && this.collectedConfig[mod] && this.collectedConfig[mod][configKey]) {
+          configValue = this.collectedConfig[mod][configKey];
+          break;
+        }
+      }
+    }
+
+    // Fall back to other existing module config values
+    if (!configValue && this._existingConfig) {
+      for (const mod of Object.keys(this._existingConfig)) {
+        if (mod !== '_meta' && this._existingConfig[mod] && this._existingConfig[mod][configKey]) {
+          configValue = this._existingConfig[mod][configKey];
+          break;
+        }
+      }
+    }
+
+    // If still not found and we're in the same module, use the default from the config schema
+    if (!configValue && currentModule && moduleConfig && moduleConfig[configKey]) {
+      const referencedItem = moduleConfig[configKey];
+      if (referencedItem && referencedItem.default !== undefined) {
+        configValue = referencedItem.default;
+      }
+    }
+
+    return this.cleanPromptValue(configValue);
+  }
+
+  /**
+   * Convert an existing stored value back into the prompt-facing value for templated fields.
+   * For example, "{test_artifacts}/{value}" + "_bmad-output/test-artifacts/test-design"
+   * becomes "test-design" so the template is not applied twice on modify.
+   * @param {*} existingValue - Stored config value
+   * @param {string} moduleName - Module name
+   * @param {Object} item - Config item definition
+   * @param {Object} moduleConfig - Current module config schema
+   * @returns {*} Prompt-facing default value
+   */
+  normalizeExistingValueForPrompt(existingValue, moduleName, item, moduleConfig = null) {
+    const cleanedValue = this.cleanPromptValue(existingValue);
+
+    if (typeof cleanedValue !== 'string' || typeof item?.result !== 'string' || !item.result.includes('{value}')) {
+      return cleanedValue;
+    }
+
+    const [prefixTemplate = '', suffixTemplate = ''] = item.result.split('{value}');
+    const prefix = this.cleanPromptValue(this.replacePlaceholders(prefixTemplate, moduleName, moduleConfig));
+    const suffix = this.cleanPromptValue(this.replacePlaceholders(suffixTemplate, moduleName, moduleConfig));
+
+    if ((prefix && !cleanedValue.startsWith(prefix)) || (suffix && !cleanedValue.endsWith(suffix))) {
+      return cleanedValue;
+    }
+
+    const startIndex = prefix.length;
+    const endIndex = suffix ? cleanedValue.length - suffix.length : cleanedValue.length;
+    if (endIndex < startIndex) {
+      return cleanedValue;
+    }
+
+    let promptValue = cleanedValue.slice(startIndex, endIndex);
+    if (promptValue.startsWith('/')) {
+      promptValue = promptValue.slice(1);
+    }
+    if (promptValue.endsWith('/')) {
+      promptValue = promptValue.slice(0, -1);
+    }
+
+    return promptValue || cleanedValue;
   }
 
   /**
@@ -1663,12 +1755,7 @@ class OfficialModules {
     let existingValue = null;
     if (this._existingConfig && this._existingConfig[moduleName]) {
       existingValue = this._existingConfig[moduleName][key];
-
-      // Clean up existing value - remove {project-root}/ prefix if present
-      // This prevents duplication when the result template adds it back
-      if (typeof existingValue === 'string' && existingValue.startsWith('{project-root}/')) {
-        existingValue = existingValue.replace('{project-root}/', '');
-      }
+      existingValue = this.normalizeExistingValueForPrompt(existingValue, moduleName, item, moduleConfig);
     }
 
     // Special handling for user_name: default to system user
