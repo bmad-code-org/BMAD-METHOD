@@ -32,37 +32,11 @@ If a finding is caused by this change but too significant for a trivial patch, H
 
 ### Generate Spec Trace
 
-Write `{spec_file}` with the following content:
+Write `{spec_file}` using `./spec-template.md`. Fill only these sections — delete all others:
 
-1. **Frontmatter** — same schema as the full spec template, plus `route: 'one-shot'`:
-   ```yaml
-   ---
-   title: '{title derived from intent}'
-   type: '{feature | bugfix | refactor | chore}'
-   created: '{date}'
-   status: 'done'
-   route: 'one-shot'
-   ---
-   ```
-
-2. **Title and Intent** — the `# {title}` heading followed by an `## Intent` section with **Problem** and **Approach** lines (2–3 sentences total). This is the same summary you already generated for the terminal — reuse it.
-
-3. **Suggested Review Order** — append as a `## Suggested Review Order` section. Build using the same convention as step-05:
-   - Order stops by concern, not by file. Lead with the entry point.
-   - Every code reference is a clickable spec-file-relative link. Compute each link target as a relative path from `{spec_file}`'s directory to the changed file. Format: `[short-name:line](../../path/to/file.ts#L42)` with a `#L` line anchor. The relative path must be dynamically derived — never hardcode the depth.
-   - Each stop gets one ultra-concise line of framing (≤15 words).
-   - When there is only one concern, omit the bold label — just list the stops directly.
-
-   Format each stop as framing first, link on the next indented line:
-
-   ```markdown
-   ## Suggested Review Order
-
-   - {one-line framing}
-     [`file.ts:42`](../../src/path/to/file.ts#L42)
-   ```
-
-   > The `../../` prefix above is illustrative — compute the actual relative path from `{spec_file}`'s directory to each target file.
+1. **Frontmatter** — fill `title`, `type`, `created`, `status: 'done'`. Add `route: 'one-shot'`.
+2. **Title and Intent** — `# {title}` heading and `## Intent` with **Problem** and **Approach** lines. Reuse the summary you already generated for the terminal.
+3. **Suggested Review Order** — append after Intent. Build using the same convention as `./step-05-present.md` § "Generate Suggested Review Order" (spec-file-relative links, concern-based ordering, ultra-concise framing).
 
 ### Commit
 
