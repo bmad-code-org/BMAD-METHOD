@@ -15,6 +15,7 @@ const path = require('node:path');
 const os = require('node:os');
 const fs = require('fs-extra');
 const { ConfigCollector } = require('../tools/cli/installers/lib/core/config-collector');
+const { applyDefaultCoreConfig, clearCoreConfigDefaultsCache, getDefaultCoreConfig } = require('../tools/cli/lib/core-config-defaults');
 const { ManifestGenerator } = require('../tools/cli/installers/lib/core/manifest-generator');
 const { IdeManager } = require('../tools/cli/installers/lib/ide/manager');
 const { clearCache, loadPlatformCodes } = require('../tools/cli/installers/lib/ide/platform-codes');
@@ -2024,6 +2025,38 @@ async function runTests() {
     );
   } catch (error) {
     assert(false, 'ConfigCollector prompt normalization test succeeds', error.message);
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test Suite 34: Core Config Default Backfill
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 34: Core Config Default Backfill${colors.reset}\n`);
+
+  try {
+    clearCoreConfigDefaultsCache();
+    const defaults = await getDefaultCoreConfig();
+    const normalized = applyDefaultCoreConfig(
+      {
+        user_name: '{user_name}',
+        communication_language: 'Spanish',
+        document_output_language: '',
+        output_folder: '{output_folder}',
+      },
+      defaults,
+    );
+
+    assert(normalized.appliedDefaults === true, 'Core config backfill reports when defaults were applied');
+    assert(normalized.coreConfig.user_name === defaults.user_name, 'Core config backfill replaces unresolved user_name placeholder');
+    assert(normalized.coreConfig.communication_language === 'Spanish', 'Core config backfill preserves existing valid values');
+    assert(
+      normalized.coreConfig.document_output_language === defaults.document_output_language,
+      'Core config backfill replaces blank document output language',
+    );
+    assert(normalized.coreConfig.output_folder === defaults.output_folder, 'Core config backfill replaces unresolved output_folder');
+  } catch (error) {
+    assert(false, 'Core config default backfill test succeeds', error.message);
   }
 
   console.log('');
