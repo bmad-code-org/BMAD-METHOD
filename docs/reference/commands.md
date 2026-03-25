@@ -97,7 +97,7 @@ Workflow skills run a structured, multi-step process without loading an agent pe
 | `bmad-create-epics-and-stories` | Create epics and stories |
 | `bmad-dev-story` | Implement a story |
 | `bmad-code-review` | Run a code review |
-| `bmad-quick-spec` | Define an ad-hoc change (Quick Flow) |
+| `bmad-quick-dev` | Unified quick flow — clarify intent, plan, implement, review, present |
 
 See [Workflow Map](./workflow-map.md) for the complete workflow reference organized by phase.
 
@@ -105,32 +105,21 @@ See [Workflow Map](./workflow-map.md) for the complete workflow reference organi
 
 Tasks and tools are standalone operations that do not require an agent or workflow context.
 
-#### BMad-Help: Your Intelligent Guide
+**BMad-Help: Your Intelligent Guide**
 
-**`bmad-help`** is your primary interface for discovering what to do next. It's not just a lookup tool — it's an intelligent assistant that:
+`bmad-help` is your primary interface for discovering what to do next. It inspects your project, understands natural language queries, and recommends the next required or optional step based on your installed modules.
 
-- **Inspects your project** to see what's already been done
-- **Understands natural language queries** — ask questions in plain English
-- **Varies by installed modules** — shows options based on what you have
-- **Auto-invokes after workflows** — every workflow ends with clear next steps
-- **Recommends the first required task** — no guessing where to start
-
-**Examples:**
-
+:::note[Example]
 ```
 bmad-help
 bmad-help I have a SaaS idea and know all the features. Where do I start?
 bmad-help What are my options for UX design?
-bmad-help I'm stuck on the PRD workflow
 ```
+:::
 
-#### Other Tasks and Tools
+**Other Core Tasks and Tools**
 
-| Example skill | Purpose |
-| --- | --- |
-| `bmad-shard-doc` | Split a large markdown file into smaller sections |
-| `bmad-index-docs` | Index project documentation |
-| `bmad-editorial-review-prose` | Review document prose quality |
+The core module includes 11 built-in tools — reviews, compression, brainstorming, document management, and more. See [Core Tools](./core-tools.md) for the complete reference.
 
 ## Naming Convention
 

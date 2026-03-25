@@ -85,7 +85,7 @@ Add persistent context the agent will always remember:
 ```yaml
 memories:
   - 'Works at Krusty Krab'
-  - 'Favorite Celebrity: David Hasslehoff'
+  - 'Favorite Celebrity: David Hasselhoff'
   - 'Learned in Epic 1 that it is not cool to just pretend that tests have passed'
 ```
 
@@ -128,7 +128,7 @@ prompts:
 
 ### 3. Apply Your Changes
 
-After editing, recompile the agent to apply changes:
+After editing, reinstall to apply changes:
 
 ```bash
 npx bmad-method install
@@ -138,17 +138,16 @@ The installer detects the existing installation and offers these options:
 
 | Option                       | What It Does                                                        |
 | ---------------------------- | ------------------------------------------------------------------- |
-| **Quick Update**             | Updates all modules to the latest version and recompiles all agents |
-| **Recompile Agents**         | Applies customizations only, without updating module files          |
+| **Quick Update**             | Updates all modules to the latest version and applies customizations |
 | **Modify BMad Installation** | Full installation flow for adding or removing modules               |
 
-For customization-only changes, **Recompile Agents** is the fastest option.
+For customization-only changes, **Quick Update** is the fastest option.
 
 ## Troubleshooting
 
 **Changes not appearing?**
 
-- Run `npx bmad-method install` and select **Recompile Agents** to apply changes
+- Run `npx bmad-method install` and select **Quick Update** to apply changes
 - Check that your YAML syntax is valid (indentation matters)
 - Verify you edited the correct `.customize.yaml` file for the agent
 
@@ -161,7 +160,7 @@ For customization-only changes, **Recompile Agents** is the fastest option.
 **Need to reset an agent?**
 
 - Clear or delete the agent's `.customize.yaml` file
-- Run `npx bmad-method install` and select **Recompile Agents** to restore defaults
+- Run `npx bmad-method install` and select **Quick Update** to restore defaults
 
 ## Workflow Customization
 

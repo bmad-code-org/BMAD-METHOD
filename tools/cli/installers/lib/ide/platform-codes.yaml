@@ -176,6 +176,16 @@ platforms:
       template_type: kiro
       skill_format: true
 
+  ona:
+    name: "Ona"
+    preferred: false
+    category: ide
+    description: "Ona AI development environment"
+    installer:
+      target_dir: .ona/skills
+      template_type: default
+      skill_format: true
+
   opencode:
     name: "OpenCode"
     preferred: false
@@ -199,6 +209,16 @@ platforms:
     description: "Provider-agnostic terminal-native AI coding agent"
     installer:
       target_dir: .pi/skills
+      template_type: default
+      skill_format: true
+
+  qoder:
+    name: "Qoder"
+    preferred: false
+    category: ide
+    description: "Qoder AI coding assistant"
+    installer:
+      target_dir: .qoder/skills
       template_type: default
       skill_format: true
 

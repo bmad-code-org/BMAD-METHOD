@@ -267,9 +267,11 @@ class Manifest {
    * @param {Object} options - Optional version info
    */
   async addModule(bmadDir, moduleName, options = {}) {
-    const manifest = await this._readRaw(bmadDir);
+    let manifest = await this._readRaw(bmadDir);
     if (!manifest) {
-      throw new Error('No manifest found');
+      // Bootstrap a minimal manifest if it doesn't exist yet
+      // (e.g., skill-only modules with no agents to compile)
+      manifest = { modules: [] };
     }
 
     if (!manifest.modules) {
@@ -762,10 +764,10 @@ class Manifest {
     const configs = {};
 
     for (const moduleName of modules) {
-      // Handle core module differently - it's in src/core not src/modules/core
+      // Handle core module differently - it's in src/core-skills not src/modules/core
       const configPath =
         moduleName === 'core'
-          ? path.join(process.cwd(), 'src', 'core', 'config.yaml')
+          ? path.join(process.cwd(), 'src', 'core-skills', 'config.yaml')
           : path.join(process.cwd(), 'src', 'modules', moduleName, 'config.yaml');
 
       try {

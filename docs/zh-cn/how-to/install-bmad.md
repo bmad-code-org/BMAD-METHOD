@@ -5,9 +5,9 @@ sidebar:
   order: 1
 ---
 
-使用 `npx bmad-method install` 命令在项目中设置 BMad，并选择你需要的模块和 AI 工具。
+使用 `npx bmad-method install` 在项目中安装 BMad，并按需选择模块和 AI 工具。
 
-如果你想使用非交互式安装程序并在命令行中提供所有安装选项，请参阅[本指南](./non-interactive-installation.md)。
+如果你需要在命令行里一次性传入全部安装参数（例如 CI/CD 场景），请阅读[非交互式安装指南](./non-interactive-installation.md)。
 
 ## 何时使用
 
@@ -29,7 +29,16 @@ sidebar:
 npx bmad-method install
 ```
 
-:::tip[最新版本]
+:::tip[想要最新预发布版本？]
+使用 `next` 发布标签：
+```bash
+npx bmad-method@next install
+```
+
+这会更早拿到新改动，但相比默认安装通道，出现变动的概率也更高。
+:::
+
+:::tip[前沿版本]
 要从主分支安装最新版本（可能不稳定）：
 ```bash
 npx github:bmad-code-org/BMAD-METHOD install
@@ -51,7 +60,11 @@ npx github:bmad-code-org/BMAD-METHOD install
 - Cursor
 - 其他
 
-每个工具都有自己的命令集成方式。安装程序会创建微小的提示文件来激活工作流和智能体——它只是将它们放在工具期望找到的位置。
+每种工具都有自己的 skills 集成方式。安装程序会生成用于激活工作流和智能体的轻量提示文件，并放到该工具约定的位置。
+
+:::note[启用 Skills]
+某些平台需要你在设置中手动启用 skills 才会显示。如果你已经安装 BMad 但看不到 skills，请检查平台设置，或直接询问你的 AI 助手如何启用 skills。
+:::
 
 ### 4. 选择模块
 
@@ -63,16 +76,25 @@ npx github:bmad-code-org/BMAD-METHOD install
 
 ## 你将获得
 
+以下目录结构仅作示例。工具相关目录会随你选择的平台变化（例如可能是
+`.claude/skills`、`.cursor/skills` 或 `.kiro/skills`），并不一定会同时出现。
+
 ```text
 your-project/
 ├── _bmad/
 │   ├── bmm/            # 你选择的模块
-│   │   └── config.yaml # 模块设置（如果你需要更改它们）
-│   ├── core/           # 必需的核心模块
+│   │   └── config.yaml # 模块设置（后续如需可修改）
+│   ├── core/           # 必需核心模块
 │   └── ...
-├── _bmad-output/       # 生成的工件
-├── .claude/            # Claude Code 命令（如果使用 Claude Code）
-└── .kiro/              # Kiro 引导文件（如果使用 Kiro）
+├── _bmad-output/       # 生成产物
+├── .claude/            # Claude Code skills（如使用 Claude Code）
+│   └── skills/
+│       ├── bmad-help/
+│       ├── bmad-persona/
+│       └── ...
+└── .cursor/            # Cursor skills（如使用 Cursor）
+    └── skills/
+        └── ...
 ```
 
 ## 验证安装
@@ -96,10 +118,3 @@ bmad-help 对于 SaaS 项目我有哪些选项？
 
 **安装程序工作正常但后续出现问题**——你的 AI 需要 BMad 上下文才能提供帮助。请参阅[如何获取关于 BMad 的答案](./get-answers-about-bmad.md)了解如何将你的 AI 指向正确的来源。
 
----
-## 术语说明
-
-- **agent**：智能体。在人工智能与编程文档中，指具备自主决策或执行能力的单元。
-- **workflow**：工作流。指一系列有序的任务或步骤，用于完成特定目标。
-- **module**：模块。指软件系统中可独立开发、测试和维护的功能单元。
-- **artifact**：工件。指在软件开发过程中生成的任何输出，如文档、代码、配置文件等。

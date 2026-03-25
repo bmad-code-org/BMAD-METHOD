@@ -18,7 +18,7 @@ module.exports = {
       'Comma-separated list of tool/IDE IDs to configure (e.g., "claude-code,cursor"). Use "none" to skip tool configuration.',
     ],
     ['--custom-content <paths>', 'Comma-separated list of paths to custom modules/agents/workflows'],
-    ['--action <type>', 'Action type for existing installations: install, update, quick-update, or compile-agents'],
+    ['--action <type>', 'Action type for existing installations: install, update, or quick-update'],
     ['--user-name <name>', 'Name for agents to use (default: system username)'],
     ['--communication-language <lang>', 'Language for agent communication (default: English)'],
     ['--document-output-language <lang>', 'Language for document output (default: English)'],
@@ -46,13 +46,6 @@ module.exports = {
         const result = await installer.quickUpdate(config);
         await prompts.log.success('Quick update complete!');
         await prompts.log.info(`Updated ${result.moduleCount} modules with preserved settings (${result.modules.join(', ')})`);
-        process.exit(0);
-      }
-
-      // Handle compile agents separately
-      if (config.actionType === 'compile-agents') {
-        const result = await installer.compileAgents(config);
-        await prompts.log.info(`Recompiled ${result.agentCount} agents with customizations applied`);
         process.exit(0);
       }
 

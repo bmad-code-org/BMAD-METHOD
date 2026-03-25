@@ -1,15 +1,15 @@
 name: Quality & Validation
 
-# Runs comprehensive quality checks on all PRs:
+# Runs comprehensive quality checks on all PRs and pushes to main:
 # - Prettier (formatting)
 # - ESLint (linting)
 # - markdownlint (markdown quality)
-# - Schema validation (YAML structure)
-# - Agent schema tests (fixture-based validation)
 # - Installation component tests (compilation)
-# - Bundle validation (web bundle integrity)
+# Keep this workflow aligned with `npm run quality` in `package.json`.
 
 "on":
+  push:
+    branches: [main]
   pull_request:
     branches: ["**"]
   workflow_dispatch:
@@ -103,14 +103,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Validate YAML schemas
-        run: npm run validate:schemas
-
-      - name: Run agent schema validation tests
-        run: npm run test:schemas
-
       - name: Test agent compilation components
         run: npm run test:install
 
       - name: Validate file references
         run: npm run validate:refs
+
+      - name: Validate skills
+        run: npm run validate:skills

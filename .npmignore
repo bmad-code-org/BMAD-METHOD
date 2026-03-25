@@ -24,7 +24,6 @@ tools/build-docs.mjs
 tools/fix-doc-links.js
 tools/validate-doc-links.js
 tools/validate-file-refs.js
-tools/validate-agent-schema.js
 
 # Images (branding/marketing only)
 banner-bmad-method.png
