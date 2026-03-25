@@ -68,7 +68,7 @@ Bỏ qua phase 1-3 đối với những việc nhỏ, rõ và đã hiểu đầy
 
 | Workflow | Mục đích | Tạo ra |
 | ------------------ | --------------------------------------------------------------------------- | ---------------------- |
-| `bmad-quick-dev` | Luồng nhanh hợp nhất — làm rõ yêu cầu, lập kế hoạch, triển khai, review và trình bày | `tech-spec.md` + code |
+| `bmad-quick-dev` | Luồng nhanh hợp nhất — làm rõ yêu cầu, lập kế hoạch, triển khai, review và trình bày | `spec-*.md` + mã nguồn |
 
 ## Quản Lý Context
 

@@ -69,7 +69,7 @@ BMad giúp bạn xây dựng phần mềm thông qua các workflow có hướng 
 | Phase | Tên | Điều xảy ra |
 | ----- | -------------- | --------------------------------------------------- |
 | 1 | Analysis | Brainstorming, nghiên cứu, product brief *(tùy chọn)* |
-| 2 | Planning | Tạo tài liệu yêu cầu (PRD hoặc tech-spec) |
+| 2 | Planning | Tạo tài liệu yêu cầu (PRD hoặc spec) |
 | 3 | Solutioning | Thiết kế kiến trúc *(chỉ dành cho BMad Method/Enterprise)* |
 | 4 | Implementation | Xây dựng theo từng epic, từng story |
 
@@ -79,7 +79,7 @@ Dựa trên độ phức tạp của dự án, BMad cung cấp ba nhánh lập k
 
 | Nhánh | Phù hợp nhất với | Tài liệu được tạo |
 | --------------- | ------------------------------------------------------ | -------------------------------------- |
-| **Quick Flow** | Sửa lỗi, tính năng đơn giản, phạm vi rõ ràng (1-15 story) | Chỉ tech-spec |
+| **Quick Flow** | Sửa lỗi, tính năng đơn giản, phạm vi rõ ràng (1-15 story) | Chỉ spec |
 | **BMad Method** | Sản phẩm, nền tảng, tính năng phức tạp (10-50+ story) | PRD + Architecture + UX |
 | **Enterprise** | Yêu cầu tuân thủ, hệ thống đa tenant (30+ story) | PRD + Architecture + Security + DevOps |
 
@@ -237,7 +237,7 @@ your-project/
 ## Câu Hỏi Thường Gặp
 
 **Lúc nào cũng cần kiến trúc à?**
-Chỉ với nhánh BMad Method và Enterprise. Quick Flow bỏ qua bước kiến trúc, đi từ tech-spec sang implementation.
+Chỉ với nhánh BMad Method và Enterprise. Quick Flow bỏ qua bước kiến trúc và chuyển thẳng từ spec sang implementation.
 
 **Tôi có thể đổi kế hoạch về sau không?**
 Có. SM agent có workflow `bmad-correct-course` (`bmad-correct-course`) để xử lý thay đổi phạm vi.

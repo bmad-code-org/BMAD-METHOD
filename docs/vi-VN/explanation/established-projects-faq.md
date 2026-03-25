@@ -35,7 +35,7 @@ Có. Quick Flow hoạt động rất tốt với dự án đã tồn tại. Nó 
 - Tự động nhận diện stack hiện có
 - Phân tích pattern code hiện có
 - Phát hiện quy ước và hỏi bạn để xác nhận
-- Tạo tech-spec đầy đủ context, tôn trọng code hiện có
+- Tạo spec giàu ngữ cảnh, tôn trọng code hiện có
 
 Rất hợp với sửa lỗi và tính năng nhỏ trong codebase sẵn có.
 
@@ -44,7 +44,7 @@ Rất hợp với sửa lỗi và tính năng nhỏ trong codebase sẵn có.
 Quick Flow sẽ nhận diện quy ước hiện có và hỏi: "Tôi có nên tuân theo những quy ước hiện tại này không?" Bạn là người quyết định:
 
 - **Có** → Giữ tính nhất quán với codebase hiện tại
-- **Không** → Đặt ra chuẩn mới (ghi rõ lý do trong tech-spec)
+- **Không** → Đặt ra chuẩn mới, đồng thời ghi rõ lý do trong spec
 
 BMM tôn trọng lựa chọn của bạn - nó không ép buộc hiện đại hóa, nhưng sẽ đưa ra lựa chọn đó.
 
