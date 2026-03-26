@@ -14,6 +14,7 @@
 const path = require('node:path');
 const os = require('node:os');
 const fs = require('fs-extra');
+const { ConfigCollector } = require('../tools/cli/installers/lib/core/config-collector');
 const { ManifestGenerator } = require('../tools/cli/installers/lib/core/manifest-generator');
 const { IdeManager } = require('../tools/cli/installers/lib/ide/manager');
 const { clearCache, loadPlatformCodes } = require('../tools/cli/installers/lib/ide/platform-codes');
@@ -1647,6 +1648,93 @@ async function runTests() {
     // skill-manifest.csv should include the native agent entrypoint
     const skillManifestCsv29 = await fs.readFile(path.join(tempFixture29, '_config', 'skill-manifest.csv'), 'utf8');
     assert(skillManifestCsv29.includes('bmad-tea'), 'skill-manifest.csv includes native type:agent SKILL.md entrypoint');
+
+    // --- Agents at non-agents/ paths (regression test for BMM/CIS layouts) ---
+    // Create a second fixture with agents at paths like bmm/1-analysis/bmad-agent-analyst/
+    const tempFixture29b = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-agent-paths-'));
+    await fs.ensureDir(path.join(tempFixture29b, '_config'));
+
+    // Agent at bmm-style path: bmm/1-analysis/bmad-agent-analyst/
+    const bmmAgentDir = path.join(tempFixture29b, 'bmm', '1-analysis', 'bmad-agent-analyst');
+    await fs.ensureDir(bmmAgentDir);
+    await fs.writeFile(
+      path.join(bmmAgentDir, 'bmad-skill-manifest.yaml'),
+      [
+        'type: agent',
+        'name: bmad-agent-analyst',
+        'displayName: Mary',
+        'title: Business Analyst',
+        'role: Strategic Business Analyst',
+        'module: bmm',
+      ].join('\n') + '\n',
+    );
+    await fs.writeFile(
+      path.join(bmmAgentDir, 'SKILL.md'),
+      '---\nname: bmad-agent-analyst\ndescription: Business Analyst agent\n---\n\nAnalyst agent.\n',
+    );
+
+    // Agent at cis-style path: cis/skills/bmad-cis-agent-brainstorming-coach/
+    const cisAgentDir = path.join(tempFixture29b, 'cis', 'skills', 'bmad-cis-agent-brainstorming-coach');
+    await fs.ensureDir(cisAgentDir);
+    await fs.writeFile(
+      path.join(cisAgentDir, 'bmad-skill-manifest.yaml'),
+      [
+        'type: agent',
+        'name: bmad-cis-agent-brainstorming-coach',
+        'displayName: Carson',
+        'title: Brainstorming Specialist',
+        'role: Master Facilitator',
+        'module: cis',
+      ].join('\n') + '\n',
+    );
+    await fs.writeFile(
+      path.join(cisAgentDir, 'SKILL.md'),
+      '---\nname: bmad-cis-agent-brainstorming-coach\ndescription: Brainstorming coach\n---\n\nCoach.\n',
+    );
+
+    // Agent at standard agents/ path (GDS-style): gds/agents/gds-agent-game-dev/
+    const gdsAgentDir = path.join(tempFixture29b, 'gds', 'agents', 'gds-agent-game-dev');
+    await fs.ensureDir(gdsAgentDir);
+    await fs.writeFile(
+      path.join(gdsAgentDir, 'bmad-skill-manifest.yaml'),
+      [
+        'type: agent',
+        'name: gds-agent-game-dev',
+        'displayName: Link',
+        'title: Game Developer',
+        'role: Senior Game Dev',
+        'module: gds',
+      ].join('\n') + '\n',
+    );
+    await fs.writeFile(
+      path.join(gdsAgentDir, 'SKILL.md'),
+      '---\nname: gds-agent-game-dev\ndescription: Game developer agent\n---\n\nGame dev.\n',
+    );
+
+    const generator29b = new ManifestGenerator();
+    await generator29b.generateManifests(tempFixture29b, ['bmm', 'cis', 'gds'], [], { ides: [] });
+
+    // All three agents should appear in agents[] regardless of directory layout
+    const bmmAgent = generator29b.agents.find((a) => a.name === 'bmad-agent-analyst');
+    assert(bmmAgent !== undefined, 'Agent at bmm/1-analysis/ path appears in agents[]');
+    assert(bmmAgent && bmmAgent.module === 'bmm', 'BMM agent module field comes from manifest file');
+    assert(bmmAgent && bmmAgent.path.includes('bmm/1-analysis/bmad-agent-analyst'), 'BMM agent path reflects actual directory layout');
+
+    const cisAgent = generator29b.agents.find((a) => a.name === 'bmad-cis-agent-brainstorming-coach');
+    assert(cisAgent !== undefined, 'Agent at cis/skills/ path appears in agents[]');
+    assert(cisAgent && cisAgent.module === 'cis', 'CIS agent module field comes from manifest file');
+
+    const gdsAgent = generator29b.agents.find((a) => a.name === 'gds-agent-game-dev');
+    assert(gdsAgent !== undefined, 'Agent at gds/agents/ path appears in agents[]');
+    assert(gdsAgent && gdsAgent.module === 'gds', 'GDS agent module field comes from manifest file');
+
+    // agent-manifest.csv should contain all three
+    const agentCsv29b = await fs.readFile(path.join(tempFixture29b, '_config', 'agent-manifest.csv'), 'utf8');
+    assert(agentCsv29b.includes('bmad-agent-analyst'), 'agent-manifest.csv includes BMM-layout agent');
+    assert(agentCsv29b.includes('bmad-cis-agent-brainstorming-coach'), 'agent-manifest.csv includes CIS-layout agent');
+    assert(agentCsv29b.includes('gds-agent-game-dev'), 'agent-manifest.csv includes GDS-layout agent');
+
+    await fs.remove(tempFixture29b).catch(() => {});
   } catch (error) {
     assert(false, 'Unified skill scanner test succeeds', error.message);
   } finally {
@@ -1849,6 +1937,93 @@ async function runTests() {
   } finally {
     if (tempProjectDir32) await fs.remove(tempProjectDir32).catch(() => {});
     if (installedBmadDir32) await fs.remove(path.dirname(installedBmadDir32)).catch(() => {});
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test Suite 33: ConfigCollector Prompt Normalization
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 33: ConfigCollector Prompt Normalization${colors.reset}\n`);
+
+  try {
+    const teaModuleConfig33 = {
+      test_artifacts: {
+        default: '_bmad-output/test-artifacts',
+      },
+      test_design_output: {
+        prompt: 'Where should test design documents be stored?',
+        default: 'test-design',
+        result: '{test_artifacts}/{value}',
+      },
+      test_review_output: {
+        prompt: 'Where should test review reports be stored?',
+        default: 'test-reviews',
+        result: '{test_artifacts}/{value}',
+      },
+      trace_output: {
+        prompt: 'Where should traceability reports be stored?',
+        default: 'traceability',
+        result: '{test_artifacts}/{value}',
+      },
+    };
+
+    const collector33 = new ConfigCollector();
+    collector33.currentProjectDir = path.join(os.tmpdir(), 'bmad-config-normalization');
+    collector33.allAnswers = {};
+    collector33.collectedConfig = {
+      tea: {
+        test_artifacts: '_bmad-output/test-artifacts',
+      },
+    };
+    collector33.existingConfig = {
+      tea: {
+        test_artifacts: '_bmad-output/test-artifacts',
+        test_design_output: '_bmad-output/test-artifacts/test-design',
+        test_review_output: '_bmad-output/test-artifacts/test-reviews',
+        trace_output: '_bmad-output/test-artifacts/traceability',
+      },
+    };
+
+    const testDesignQuestion33 = await collector33.buildQuestion(
+      'tea',
+      'test_design_output',
+      teaModuleConfig33.test_design_output,
+      teaModuleConfig33,
+    );
+    const testReviewQuestion33 = await collector33.buildQuestion(
+      'tea',
+      'test_review_output',
+      teaModuleConfig33.test_review_output,
+      teaModuleConfig33,
+    );
+    const traceQuestion33 = await collector33.buildQuestion('tea', 'trace_output', teaModuleConfig33.trace_output, teaModuleConfig33);
+
+    assert(testDesignQuestion33.default === 'test-design', 'ConfigCollector normalizes existing test_design_output prompt default');
+    assert(testReviewQuestion33.default === 'test-reviews', 'ConfigCollector normalizes existing test_review_output prompt default');
+    assert(traceQuestion33.default === 'traceability', 'ConfigCollector normalizes existing trace_output prompt default');
+
+    collector33.allAnswers = {
+      tea_test_artifacts: '_bmad-output/test-artifacts',
+    };
+
+    assert(
+      collector33.processResultTemplate(teaModuleConfig33.test_design_output.result, testDesignQuestion33.default) ===
+        '_bmad-output/test-artifacts/test-design',
+      'ConfigCollector re-applies test_design_output template without duplicating prefix',
+    );
+    assert(
+      collector33.processResultTemplate(teaModuleConfig33.test_review_output.result, testReviewQuestion33.default) ===
+        '_bmad-output/test-artifacts/test-reviews',
+      'ConfigCollector re-applies test_review_output template without duplicating prefix',
+    );
+    assert(
+      collector33.processResultTemplate(teaModuleConfig33.trace_output.result, traceQuestion33.default) ===
+        '_bmad-output/test-artifacts/traceability',
+      'ConfigCollector re-applies trace_output template without duplicating prefix',
+    );
+  } catch (error) {
+    assert(false, 'ConfigCollector prompt normalization test succeeds', error.message);
   }
 
   console.log('');

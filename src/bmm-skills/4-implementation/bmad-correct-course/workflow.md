@@ -36,7 +36,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 | Epics | `{planning_artifacts}/*epic*.md` (whole) or `{planning_artifacts}/*epic*/*.md` (sharded) | FULL_LOAD |
 | Architecture | `{planning_artifacts}/*architecture*.md` (whole) or `{planning_artifacts}/*architecture*/*.md` (sharded) | FULL_LOAD |
 | UX Design | `{planning_artifacts}/*ux*.md` (whole) or `{planning_artifacts}/*ux*/*.md` (sharded) | FULL_LOAD |
-| Tech Spec | `{planning_artifacts}/*tech-spec*.md` (whole) | FULL_LOAD |
+| Spec | `{planning_artifacts}/*spec-*.md` (whole) | FULL_LOAD |
 | Document Project | `{project_knowledge}/index.md` (sharded) | INDEX_GUIDED |
 
 ### Context
@@ -51,9 +51,9 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
 **Strategy**: Course correction needs broad project context to assess change impact accurately. Load all available planning artifacts.
 
-**Discovery Process for FULL_LOAD documents (PRD, Epics, Architecture, UX Design, Tech Spec):**
+**Discovery Process for FULL_LOAD documents (PRD, Epics, Architecture, UX Design, Spec):**
 
-1. **Search for whole document first** - Look for files matching the whole-document pattern (e.g., `*prd*.md`, `*epic*.md`, `*architecture*.md`, `*ux*.md`, `*tech-spec*.md`)
+1. **Search for whole document first** - Look for files matching the whole-document pattern (e.g., `*prd*.md`, `*epic*.md`, `*architecture*.md`, `*ux*.md`, `*spec-*.md`)
 2. **Check for sharded version** - If whole document not found, look for a directory with `index.md` (e.g., `prd/index.md`, `epics/index.md`)
 3. **If sharded version found**:
    - Read `index.md` to understand the document structure
@@ -70,7 +70,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
 **Fuzzy matching**: Be flexible with document names — users may use variations like `prd.md`, `bmm-prd.md`, `product-requirements.md`, etc.
 
-**Missing documents**: Not all documents may exist. PRD and Epics are essential; Architecture, UX Design, Tech Spec, and Document Project are loaded if available. HALT if PRD or Epics cannot be found.
+**Missing documents**: Not all documents may exist. PRD and Epics are essential; Architecture, UX Design, Spec, and Document Project are loaded if available. HALT if PRD or Epics cannot be found.
 
 <workflow>
 

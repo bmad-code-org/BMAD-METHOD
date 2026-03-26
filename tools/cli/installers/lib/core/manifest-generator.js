@@ -268,153 +268,103 @@ class ManifestGenerator {
   }
 
   /**
-   * Collect all agents from core and selected modules
-   * Scans the INSTALLED bmad directory, not the source
+   * Collect all agents from selected modules by walking their directory trees.
    */
   async collectAgents(selectedModules) {
     this.agents = [];
+    const debug = process.env.BMAD_DEBUG_MANIFEST === 'true';
 
-    // Use updatedModules which already includes deduplicated 'core' + selectedModules
+    // Walk each module's full directory tree looking for type:agent manifests
     for (const moduleName of this.updatedModules) {
-      const agentsPath = path.join(this.bmadDir, moduleName, 'agents');
+      const modulePath = path.join(this.bmadDir, moduleName);
+      if (!(await fs.pathExists(modulePath))) continue;
 
-      if (await fs.pathExists(agentsPath)) {
-        const moduleAgents = await this.getAgentsFromDir(agentsPath, moduleName);
-        this.agents.push(...moduleAgents);
-      }
+      const moduleAgents = await this.getAgentsFromDirRecursive(modulePath, moduleName, '', debug);
+      this.agents.push(...moduleAgents);
     }
 
     // Get standalone agents from bmad/agents/ directory
     const standaloneAgentsDir = path.join(this.bmadDir, 'agents');
     if (await fs.pathExists(standaloneAgentsDir)) {
-      const agentDirs = await fs.readdir(standaloneAgentsDir, { withFileTypes: true });
+      const standaloneAgents = await this.getAgentsFromDirRecursive(standaloneAgentsDir, 'standalone', '', debug);
+      this.agents.push(...standaloneAgents);
+    }
 
-      for (const agentDir of agentDirs) {
-        if (!agentDir.isDirectory()) continue;
-
-        const agentDirPath = path.join(standaloneAgentsDir, agentDir.name);
-        const standaloneAgents = await this.getAgentsFromDir(agentDirPath, 'standalone');
-        this.agents.push(...standaloneAgents);
-      }
+    if (debug) {
+      console.log(`[DEBUG] collectAgents: total agents found: ${this.agents.length}`);
     }
   }
 
   /**
-   * Get agents from a directory recursively
-   * Only includes .md files with agent content
+   * Recursively walk a directory tree collecting agents.
+   * Discovers agents via directory with bmad-skill-manifest.yaml containing type: agent
+   *
+   * @param {string} dirPath - Current directory being scanned
+   * @param {string} moduleName - Module this directory belongs to
+   * @param {string} relativePath - Path relative to the module root (for install path construction)
+   * @param {boolean} debug - Emit debug messages
    */
-  async getAgentsFromDir(dirPath, moduleName, relativePath = '') {
-    // Skip directories claimed by collectSkills
-    if (this.skillClaimedDirs && this.skillClaimedDirs.has(dirPath)) return [];
+  async getAgentsFromDirRecursive(dirPath, moduleName, relativePath = '', debug = false) {
     const agents = [];
-    const entries = await fs.readdir(dirPath, { withFileTypes: true });
-    // Load skill manifest for this directory (if present)
-    const skillManifest = await this.loadSkillManifest(dirPath);
+    let entries;
+    try {
+      entries = await fs.readdir(dirPath, { withFileTypes: true });
+    } catch {
+      return agents;
+    }
 
     for (const entry of entries) {
+      if (!entry.isDirectory()) continue;
+      if (entry.name.startsWith('.') || entry.name.startsWith('_')) continue;
+
       const fullPath = path.join(dirPath, entry.name);
 
-      if (entry.isDirectory()) {
-        // Check for new-format agent: bmad-skill-manifest.yaml with type: agent
-        // Note: type:agent dirs may also be claimed by collectSkills for IDE installation,
-        // but we still need to process them here for agent-manifest.csv
-        const dirManifest = await this.loadSkillManifest(fullPath);
-        if (dirManifest && dirManifest.__single && dirManifest.__single.type === 'agent') {
-          const m = dirManifest.__single;
-          const dirRelativePath = relativePath ? `${relativePath}/${entry.name}` : entry.name;
-          const installPath =
-            moduleName === 'core'
-              ? `${this.bmadFolderName}/core/agents/${dirRelativePath}`
-              : `${this.bmadFolderName}/${moduleName}/agents/${dirRelativePath}`;
-
-          agents.push({
-            name: m.name || entry.name,
-            displayName: m.displayName || m.name || entry.name,
-            title: m.title || '',
-            icon: m.icon || '',
-            capabilities: m.capabilities ? this.cleanForCSV(m.capabilities) : '',
-            role: m.role ? this.cleanForCSV(m.role) : '',
-            identity: m.identity ? this.cleanForCSV(m.identity) : '',
-            communicationStyle: m.communicationStyle ? this.cleanForCSV(m.communicationStyle) : '',
-            principles: m.principles ? this.cleanForCSV(m.principles) : '',
-            module: m.module || moduleName,
-            path: installPath,
-            canonicalId: m.canonicalId || '',
-          });
-
-          this.files.push({
-            type: 'agent',
-            name: m.name || entry.name,
-            module: moduleName,
-            path: installPath,
-          });
-          continue;
-        }
-
-        // Skip directories claimed by collectSkills (non-agent type skills)
-        if (this.skillClaimedDirs && this.skillClaimedDirs.has(fullPath)) continue;
-
-        // Recurse into subdirectories
-        const newRelativePath = relativePath ? `${relativePath}/${entry.name}` : entry.name;
-        const subDirAgents = await this.getAgentsFromDir(fullPath, moduleName, newRelativePath);
-        agents.push(...subDirAgents);
-      } else if (entry.name.endsWith('.md') && entry.name.toLowerCase() !== 'readme.md') {
-        const content = await fs.readFile(fullPath, 'utf8');
-
-        // Skip files that don't contain <agent> tag (e.g., README files)
-        if (!content.includes('<agent')) {
-          continue;
-        }
-
-        // Skip web-only agents
-        if (content.includes('localskip="true"')) {
-          continue;
-        }
-
-        // Extract agent metadata from the XML structure
-        const nameMatch = content.match(/name="([^"]+)"/);
-        const titleMatch = content.match(/title="([^"]+)"/);
-        const iconMatch = content.match(/icon="([^"]+)"/);
-        const capabilitiesMatch = content.match(/capabilities="([^"]+)"/);
-
-        // Extract persona fields
-        const roleMatch = content.match(/<role>([^<]+)<\/role>/);
-        const identityMatch = content.match(/<identity>([\s\S]*?)<\/identity>/);
-        const styleMatch = content.match(/<communication_style>([\s\S]*?)<\/communication_style>/);
-        const principlesMatch = content.match(/<principles>([\s\S]*?)<\/principles>/);
-
-        // Build relative path for installation
-        const fileRelativePath = relativePath ? `${relativePath}/${entry.name}` : entry.name;
-        const installPath =
-          moduleName === 'core'
-            ? `${this.bmadFolderName}/core/agents/${fileRelativePath}`
-            : `${this.bmadFolderName}/${moduleName}/agents/${fileRelativePath}`;
-
-        const agentName = entry.name.replace('.md', '');
+      // Check for type:agent manifest BEFORE checking skillClaimedDirs —
+      // agent dirs may be claimed by collectSkills for IDE installation,
+      // but we still need them in agent-manifest.csv.
+      const dirManifest = await this.loadSkillManifest(fullPath);
+      if (dirManifest && dirManifest.__single && dirManifest.__single.type === 'agent') {
+        const m = dirManifest.__single;
+        const dirRelativePath = relativePath ? `${relativePath}/${entry.name}` : entry.name;
+        const agentModule = m.module || moduleName;
+        const installPath = `${this.bmadFolderName}/${agentModule}/${dirRelativePath}`;
 
         agents.push({
-          name: agentName,
-          displayName: nameMatch ? nameMatch[1] : agentName,
-          title: titleMatch ? titleMatch[1] : '',
-          icon: iconMatch ? iconMatch[1] : '',
-          capabilities: capabilitiesMatch ? this.cleanForCSV(capabilitiesMatch[1]) : '',
-          role: roleMatch ? this.cleanForCSV(roleMatch[1]) : '',
-          identity: identityMatch ? this.cleanForCSV(identityMatch[1]) : '',
-          communicationStyle: styleMatch ? this.cleanForCSV(styleMatch[1]) : '',
-          principles: principlesMatch ? this.cleanForCSV(principlesMatch[1]) : '',
-          module: moduleName,
+          name: m.name || entry.name,
+          displayName: m.displayName || m.name || entry.name,
+          title: m.title || '',
+          icon: m.icon || '',
+          capabilities: m.capabilities ? this.cleanForCSV(m.capabilities) : '',
+          role: m.role ? this.cleanForCSV(m.role) : '',
+          identity: m.identity ? this.cleanForCSV(m.identity) : '',
+          communicationStyle: m.communicationStyle ? this.cleanForCSV(m.communicationStyle) : '',
+          principles: m.principles ? this.cleanForCSV(m.principles) : '',
+          module: agentModule,
           path: installPath,
-          canonicalId: this.getCanonicalId(skillManifest, entry.name),
+          canonicalId: m.canonicalId || '',
         });
 
-        // Add to files list
         this.files.push({
           type: 'agent',
-          name: agentName,
-          module: moduleName,
+          name: m.name || entry.name,
+          module: agentModule,
           path: installPath,
         });
+
+        if (debug) {
+          console.log(`[DEBUG] collectAgents: found type:agent "${m.name || entry.name}" at ${fullPath}`);
+        }
+        continue;
       }
+
+      // Skip directories claimed by collectSkills (non-agent type skills) —
+      // avoids recursing into skill trees that can't contain agents.
+      if (this.skillClaimedDirs && this.skillClaimedDirs.has(fullPath)) continue;
+
+      // Recurse into subdirectories
+      const newRelativePath = relativePath ? `${relativePath}/${entry.name}` : entry.name;
+      const subDirAgents = await this.getAgentsFromDirRecursive(fullPath, moduleName, newRelativePath, debug);
+      agents.push(...subDirAgents);
     }
 
     return agents;
