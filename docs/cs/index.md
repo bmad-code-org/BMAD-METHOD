@@ -8,7 +8,7 @@ Metoda BMad (**B**uild **M**ore **A**rchitect **D**reams) je framework pro vývo
 Pokud jste zvyklí pracovat s AI asistenty pro kódování jako Claude, Cursor nebo GitHub Copilot, jste připraveni začít.
 
 :::note[🚀 V6 je tady a teprve začínáme!]
-Architektura Skills, BMad Builder v1, automatizace Dev Loop a mnoho dalšího ve vývoji. **[Podívejte se na Plán rozvoje →](/roadmap/)**
+Architektura Skills, BMad Builder v1, automatizace Dev Loop a mnoho dalšího ve vývoji. **[Podívejte se na Plán rozvoje →](./roadmap)**
 :::
 
 ## Jste tu nově? Začněte tutoriálem
@@ -29,7 +29,7 @@ Tato dokumentace je organizována do čtyř sekcí podle toho, co chcete dělat:
 | Sekce               | Účel                                                                                                               |
 | -------------------- | ------------------------------------------------------------------------------------------------------------------ |
 | **Tutoriály**        | Orientované na učení. Průvodci krok za krokem, kteří vás provedou tvorbou něčeho. Začněte zde, pokud jste noví.    |
-| **Praktické návody** | Orientované na úkoly. Praktičtí průvodci pro řešení konkrétních problémů. „Jak přizpůsobím agenta?" najdete zde.  |
+| **Praktické návody** | Orientované na úkoly. Praktičtí průvodci pro řešení konkrétních problémů. „Jak přizpůsobím agenta?“ najdete zde.  |
 | **Vysvětlení**       | Orientované na pochopení. Hluboké ponory do konceptů a architektury. Čtěte, když chcete vědět *proč*.             |
 | **Reference**        | Orientované na informace. Technické specifikace agentů, pracovních postupů a konfigurace.                          |
 

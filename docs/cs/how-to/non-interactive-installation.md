@@ -148,7 +148,7 @@ Neplatné hodnoty buď:
 
 ## Řešení problémů
 
-### Instalace selže s „Invalid directory"
+### Instalace selže s „Invalid directory“
 
 - Cesta k adresáři musí existovat (nebo musí existovat jeho nadřazený adresář)
 - Potřebujete oprávnění k zápisu

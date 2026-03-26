@@ -33,7 +33,7 @@ Vytvářejte software rychleji pomocí pracovních postupů řízených AI se sp
 - **Prozkoumá váš projekt** a zjistí, co už bylo uděláno
 - **Ukáže vaše možnosti** na základě nainstalovaných modulů
 - **Doporučí, co dál** — včetně prvního povinného úkolu
-- **Odpoví na otázky** jako „Mám nápad na SaaS, kde začít?"
+- **Odpoví na otázky** jako „Mám nápad na SaaS, kde začít?“
 
 ### Jak používat BMad-Help
 
@@ -110,7 +110,7 @@ Otevřete vaše AI IDE ve složce projektu a spusťte:
 bmad-help
 ```
 
-BMad-Help detekuje, co jste dokončili, a doporučí přesně, co dělat dál. Můžete mu také klást otázky jako „Jaké mám možnosti?" nebo „Mám nápad na SaaS, kde začít?"
+BMad-Help detekuje, co jste dokončili, a doporučí přesně, co dělat dál. Můžete mu také klást otázky jako „Jaké mám možnosti?“ nebo „Mám nápad na SaaS, kde začít?“
 :::
 
 :::note[Jak načítat agenty a spouštět workflow]
@@ -252,10 +252,10 @@ Ne striktně. Jakmile se naučíte postup, můžete spouštět workflow přímo 
 
 :::tip[První zastávka: BMad-Help]
 **Vyvolejte `bmad-help` kdykoli** — je to nejrychlejší způsob, jak se odpoutat. Zeptejte se na cokoli:
-- „Co mám dělat po instalaci?"
-- „Zasekl jsem se na workflow X"
-- „Jaké mám možnosti pro Y?"
-- „Ukaž mi, co bylo dosud uděláno"
+- „Co mám dělat po instalaci?“
+- „Zasekl jsem se na workflow X“
+- „Jaké mám možnosti pro Y?“
+- „Ukaž mi, co bylo dosud uděláno“
 
 BMad-Help prozkoumá váš projekt, detekuje, co jste dokončili, a řekne vám přesně, co dělat dál.
 :::

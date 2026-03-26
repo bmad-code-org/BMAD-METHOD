@@ -24,35 +24,35 @@ Konverzace pokračuje tak dlouho, jak chcete. Ptejte se na doplňující otázky
 
 ### Kritika špatné architektury
 
-**Vy:** „Dobře, týme, náš poslední sprint byl katastrofa. Autentizační služba spadla třikrát. Kdo to pokazil?"
+**Vy:** „Dobře, týme, náš poslední sprint byl katastrofa. Autentizační služba spadla třikrát. Kdo to pokazil?“
 
-**Architect:** „Design byl v pořádku — distribuovaná autentizace se správnými záložními řešeními. Pokud se implementace odchýlila od specifikace..."
+**Architect:** „Design byl v pořádku — distribuovaná autentizace se správnými záložními řešeními. Pokud se implementace odchýlila od specifikace...“
 
-**Dev:** „Následoval jsem architektonický dokument přesně. Specifikace nepočítala s race conditions při souběžné invalidaci relací."
+**Dev:** „Následoval jsem architektonický dokument přesně. Specifikace nepočítala s race conditions při souběžné invalidaci relací.“
 
-**PM:** „Oba jste přehlédli větší problém — nevalidovali jsme požadavky na správu relací v PRD. Tohle je na mně, že jsem to nezachytil."
+**PM:** „Oba jste přehlédli větší problém — nevalidovali jsme požadavky na správu relací v PRD. Tohle je na mně, že jsem to nezachytil.“
 
-**TEA:** „A já to měl zachytit v integračních testech. Testovací scénáře nepokrývaly souběžnou invalidaci."
+**TEA:** „A já to měl zachytit v integračních testech. Testovací scénáře nepokrývaly souběžnou invalidaci.“
 
 ### Kreativní brainstorming
 
-**Vy:** „Jak udělat onboarding magický místo nudného?"
+**Vy:** „Jak udělat onboarding magický místo nudného?“
 
-**UX Designer:** „Začněte s progresivním odhalováním — odhalujte funkce, jak je uživatelé potřebují, ne všechny najednou v tutoriálu."
+**UX Designer:** „Začněte s progresivním odhalováním — odhalujte funkce, jak je uživatelé potřebují, ne všechny najednou v tutoriálu.“
 
-**Storyteller:** „Co kdyby onboarding byl příběh? Každý krok odhaluje cestu postavy — uživatel JE hrdina."
+**Storyteller:** „Co kdyby onboarding byl příběh? Každý krok odhaluje cestu postavy — uživatel JE hrdina.“
 
-**Game Designer:** „Navazuji na to — co kdyby první ‚quest' vlastně řešil skutečný problém uživatele? Učí se tím, že dělají něco hodnotného."
+**Game Designer:** „Navazuji na to — co kdyby první ‚quest' vlastně řešil skutečný problém uživatele? Učí se tím, že dělají něco hodnotného.“
 
 ### Technické rozhodnutí
 
-**Vy:** „Monolit nebo mikroslužby pro MVP?"
+**Vy:** „Monolit nebo mikroslužby pro MVP?“
 
-**Architect:** „Začněte monolitem. Mikroslužby přidávají složitost, kterou při 1000 uživatelích nepotřebujete."
+**Architect:** „Začněte monolitem. Mikroslužby přidávají složitost, kterou při 1000 uživatelích nepotřebujete.“
 
-**PM:** „Souhlasím. Čas na trh je důležitější než teoretická škálovatelnost."
+**PM:** „Souhlasím. Čas na trh je důležitější než teoretická škálovatelnost.“
 
-**Dev:** „Monolit s jasnými hranicemi modulů. Služby můžeme extrahovat později, pokud bude potřeba."
+**Dev:** „Monolit s jasnými hranicemi modulů. Služby můžeme extrahovat později, pokud bude potřeba.“
 
 :::tip[Lepší rozhodnutí]
 Lepší rozhodnutí prostřednictvím různorodých perspektiv. Vítejte v party mode.

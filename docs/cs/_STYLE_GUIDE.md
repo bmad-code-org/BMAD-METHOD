@@ -11,7 +11,7 @@ Tento projekt se řídí [Google Developer Documentation Style Guide](https://de
 | -------------------------------------- | ---------------------------------------- |
 | Žádné horizontální čáry (`---`)        | Narušují plynulost čtení                 |
 | Žádné nadpisy `####`                   | Místo toho použijte tučný text nebo admonitions |
-| Žádné sekce „Souvisejí" nebo „Další:" | Navigaci zajišťuje postranní panel       |
+| Žádné sekce „Souvisejí“ nebo „Další:“ | Navigaci zajišťuje postranní panel       |
 | Žádné hluboce vnořené seznamy          | Místo toho rozdělejte do sekcí           |
 | Žádné bloky kódu pro nekód             | Pro příklady dialogů použijte admonitions |
 | Žádné tučné odstavce pro upozornění    | Místo toho použijte admonitions          |
@@ -70,7 +70,7 @@ Pouze kritická varování — ztráta dat, bezpečnostní problémy
 
 ## Bloky struktury složek
 
-Zobrazujte v sekcích „Co jste dosáhli":
+Zobrazujte v sekcích „Co jste dosáhli“:
 
 ````md
 ```
@@ -108,11 +108,11 @@ váš-projekt/
 ### Kontrolní seznam tutoriálu
 
 - [ ] Háček popisuje výsledek v 1–2 větách
-- [ ] Sekce „Co se naučíte" je přítomna
+- [ ] Sekce „Co se naučíte“ je přítomna
 - [ ] Předpoklady v admonition
 - [ ] Rychlá cesta TL;DR admonition nahoře
 - [ ] Tabulky pro fáze, skills, agenty
-- [ ] Sekce „Co jste dosáhli" je přítomna
+- [ ] Sekce „Co jste dosáhli“ je přítomna
 - [ ] Tabulka rychlého přehledu je přítomna
 - [ ] Sekce častých otázek je přítomna
 - [ ] Sekce získání pomoci je přítomna
@@ -121,7 +121,7 @@ váš-projekt/
 ## Struktura praktického návodu
 
 ```text
-1. Název + Háček (jedna věta: „Použijte workflow `X` k...")
+1. Název + Háček (jedna věta: „Použijte workflow `X` k...“)
 2. Kdy to použít (odrážkový seznam scénářů)
 3. Kdy to přeskočit (volitelné)
 4. Předpoklady (note admonition)
@@ -134,11 +134,11 @@ váš-projekt/
 
 ### Kontrolní seznam praktického návodu
 
-- [ ] Háček začíná „Použijte workflow `X` k..."
-- [ ] „Kdy to použít" má 3–5 odrážek
+- [ ] Háček začíná „Použijte workflow `X` k...“
+- [ ] „Kdy to použít“ má 3–5 odrážek
 - [ ] Předpoklady jsou uvedeny
 - [ ] Kroky jsou číslované `###` podsekce s akčními slovesy
-- [ ] „Co získáte" popisuje výstupní artefakty
+- [ ] „Co získáte“ popisuje výstupní artefakty
 
 ## Struktura vysvětlení
 
@@ -188,7 +188,7 @@ váš-projekt/
 
 ```text
 1. Název + Háček (co to dělá)
-2. Rychlá fakta (volitelné – „Ideální pro:", „Čas:")
+2. Rychlá fakta (volitelné – „Ideální pro:“, „Čas:“)
 3. Kdy použít / Kdy nepoužít
 4. Jak to funguje (mermaid diagram volitelné)
 5. Klíčové výhody
@@ -295,7 +295,7 @@ váš-projekt/
 
 ## Struktura slovníčku
 
-Starlight generuje navigaci „Na této stránce" z nadpisů na pravé straně:
+Starlight generuje navigaci „Na této stránce“ z nadpisů na pravé straně:
 
 - Kategorie jako `##` nadpisy — zobrazují se v pravé navigaci
 - Termíny v tabulkách — kompaktní řádky, ne jednotlivé nadpisy
@@ -316,7 +316,7 @@ Starlight generuje navigaci „Na této stránce" z nadpisů na pravé straně:
 
 | Správně                        | Špatně                                       |
 | ------------------------------ | -------------------------------------------- |
-| Začněte tím, co to JE nebo DĚLÁ | Nezačínejte „Toto je..." nebo „[Termín] je..." |
+| Začněte tím, co to JE nebo DĚLÁ | Nezačínejte „Toto je...“ nebo „[Termín] je...“ |
 | Držte se 1–2 vět              | Nepište víceodstavcová vysvětlení            |
 | Tučný název termínu v buňce   | Nepoužívejte prostý text pro termíny         |
 
@@ -337,7 +337,7 @@ Přidejte kurzívní kontext na začátek definice pro termíny s omezeným rozs
 - [ ] Definice 1–2 věty
 - [ ] Kontextové značky kurzívou
 - [ ] Názvy termínů tučně v buňkách
-- [ ] Žádné definice „[Termín] je..."
+- [ ] Žádné definice „[Termín] je...“
 
 ## Sekce FAQ
 

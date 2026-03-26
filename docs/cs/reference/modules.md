@@ -58,7 +58,7 @@ Strukturované workflow pro vývoj her adaptované pro Unity, Unreal, Godot a vl
 
 ## Test Architect (TEA)
 
-Podníková testovací strategie, vedení automatizace a rozhodování o release gate prostřednictvím expertního agenta a devíti strukturovaných workflow. TEA jde daleko za vestavěného QA agenta s prioritizací založenou na riziku a trasovatelností požadavků.
+Podniková testovací strategie, vedení automatizace a rozhodování o release gate prostřednictvím expertního agenta a devíti strukturovaných workflow. TEA jde daleko za vestavěného QA agenta s prioritizací založenou na riziku a trasovatelností požadavků.
 
 - **Kód:** `tea`
 - **npm:** [`bmad-method-test-architecture-enterprise`](https://www.npmjs.com/package/bmad-method-test-architecture-enterprise)

@@ -40,7 +40,7 @@ Ideální pro opravy chyb a malé funkce v existujících kódových bázích.
 
 ### Co když můj existující kód nedodržuje osvědčené postupy?
 
-Quick Flow detekuje vaše konvence a zeptá se: „Mám dodržovat tyto existující konvence?" Rozhodujete vy:
+Quick Flow detekuje vaše konvence a zeptá se: „Mám dodržovat tyto existující konvence?“ Rozhodujete vy:
 
 - **Ano** → Zachovat konzistenci se současnou kódovou bází
 - **Ne** → Zavést nové standardy (zdokumentujte proč ve specifikaci)

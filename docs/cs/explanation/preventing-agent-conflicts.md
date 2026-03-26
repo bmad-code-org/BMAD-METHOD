@@ -17,7 +17,7 @@ Bez architektury:
 - Výsledek: Nekonzistentní vzory API, zmatení konzumenti
 
 S architekturou:
-- ADR specifikuje: „Použít GraphQL pro veškerou komunikaci klient-server"
+- ADR specifikuje: „Použít GraphQL pro veškerou komunikaci klient-server“
 - Všichni agenti dodržují stejný vzor
 
 ### Konflikty návrhu databáze
@@ -99,7 +99,7 @@ Běžná rozhodnutí, která zabraňují konfliktům:
 ## Anti-vzory, kterým se vyhnout
 
 :::caution[Běžné chyby]
-- **Implicitní rozhodnutí** — „Styl API vyřešíme průběžně" vede k nekonzistenci
+- **Implicitní rozhodnutí** — „Styl API vyřešíme průběžně“ vede k nekonzistenci
 - **Nadměrná dokumentace** — Dokumentování každého drobného rozhodnutí způsobuje paralýzu analýzou
 - **Zastaralá architektura** — Dokumenty napsané jednou a nikdy neaktualizované způsobují, že agenti následují zastaralé vzory
 :::

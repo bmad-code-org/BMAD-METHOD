@@ -74,7 +74,7 @@ váš-projekt/
 │   ├── _config/         # Vaše přizpůsobení
 │   │   └── agents/      # Soubory přizpůsobení agentů
 │   ├── core/            # Univerzální základní framework
-│   ├─��� bmm/             # Modul BMad Method
+│   ├── bmm/             # Modul BMad Method
 │   ├── bmb/             # BMad Builder
 │   └── cis/             # Creative Intelligence Suite
 └── _bmad-output/        # Výstupní složka (v4 to byla složka dokumentů)

@@ -5,7 +5,7 @@ sidebar:
   order: 7
 ---
 
-Soubor `project-context.md` je implementační průvodce vašeho projektu pro AI agenty. Podobně jako „ústava" v jiných vývojových systémech zachycuje pravidla, vzory a preference, které zajišťují konzistentní generování kódu napříč všemi workflow.
+Soubor `project-context.md` je implementační průvodce vašeho projektu pro AI agenty. Podobně jako „ústava“ v jiných vývojových systémech zachycuje pravidla, vzory a preference, které zajišťují konzistentní generování kódu napříč všemi workflow.
 
 ## Co dělá
 

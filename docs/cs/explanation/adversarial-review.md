@@ -1,6 +1,6 @@
 ---
 title: "Adversariální revize"
-description: Technika vynuceného uvažování, která zabraňuje líným „vypadá dobře" revizím
+description: Technika vynuceného uvažování, která zabraňuje líným „vypadá dobře“ revizím
 sidebar:
   order: 5
 ---
@@ -9,7 +9,7 @@ Vynuťte hlubší analýzu tím, že budete vyžadovat nalezení problémů.
 
 ## Co je adversariální revize?
 
-Technika revize, kde recenzent *musí* najít problémy. Žádné „vypadá dobře" není povoleno. Recenzent zaujme cynický postoj — předpokládá, že problémy existují, a hledá je.
+Technika revize, kde recenzent *musí* najít problémy. Žádné „vypadá dobře“ není povoleno. Recenzent zaujme cynický postoj — předpokládá, že problémy existují, a hledá je.
 
 Nejde o negativismus. Jde o vynucení skutečné analýzy místo povrchního pohledu, který automaticky schválí cokoli, co bylo předloženo.
 
@@ -17,10 +17,10 @@ Nejde o negativismus. Jde o vynucení skutečné analýzy místo povrchního poh
 
 ## Proč to funguje
 
-Běžné revize trpí konfirmačním zkreslením. Proletíte práci, nic nevyskočí, schválíte to. Mandát „najít problémy" tento vzor rozbíjí:
+Běžné revize trpí konfirmačním zkreslením. Proletíte práci, nic nevyskočí, schválíte to. Mandát „najít problémy“ tento vzor rozbíjí:
 
 - **Vynucuje důkladnost** — Nemůžete schválit, dokud jste nehledali dostatečně pečlivě
-- **Zachytí chybějící věci** — „Co zde není?" se stává přirozenou otázkou
+- **Zachytí chybějící věci** — „Co zde není?“ se stává přirozenou otázkou
 - **Zlepšuje kvalitu signálu** — Nálezy jsou konkrétní a akční, ne vágní obavy
 - **Informační asymetrie** — Provádějte revize s čerstvým kontextem (bez přístupu k původnímu uvažování), abyste hodnotili artefakt, ne záměr
 
@@ -38,7 +38,7 @@ Protože AI je *instruována* najít problémy, najde problémy — i když neex
 
 Místo:
 
-> „Implementace autentizace vypadá rozumně. Schváleno."
+> „Implementace autentizace vypadá rozumně. Schváleno.“
 
 Adversariální revize produkuje:
 

@@ -56,9 +56,9 @@ Použijte tuto sekci, když:
 
 | Zdroj                | Nejlepší pro                              | Příklady                     |
 | -------------------- | ----------------------------------------- | ---------------------------- |
-| **Složka `_bmad`**   | Jak BMad funguje — agenti, workflow, prompty | „Co dělá PM agent?"        |
-| **Celý GitHub repo** | Historie, instalátor, architektura        | „Co se změnilo ve v6?"      |
-| **`llms-full.txt`**  | Rychlý přehled z dokumentace              | „Vysvětli čtyři fáze BMad"  |
+| **Složka `_bmad`**   | Jak BMad funguje — agenti, workflow, prompty | „Co dělá PM agent?“        |
+| **Celý GitHub repo** | Historie, instalátor, architektura        | „Co se změnilo ve v6?“      |
+| **`llms-full.txt`**  | Rychlý přehled z dokumentace              | „Vysvětli čtyři fáze BMad“  |
 
 Složka `_bmad` se vytvoří při instalaci BMad. Pokud ji ještě nemáte, naklonujte si repo.
 
@@ -80,7 +80,7 @@ https://bmad-code-org.github.io/BMAD-METHOD/llms-full.txt
 ### 3. Položte svou otázku
 
 :::note[Příklad]
-**O:** „Řekni mi nejrychlejší způsob, jak něco vytvořit s BMad"
+**O:** „Řekni mi nejrychlejší způsob, jak něco vytvořit s BMad“
 
 **A:** Použijte Quick Flow: Spusťte `bmad-quick-dev` — vyjasní váš záměr, naplánuje, implementuje, zreviduje a prezentuje výsledky v jednom workflow, přeskočí celé fáze plánování.
 :::
@@ -92,7 +92,7 @@ Přímé odpovědi o BMad — jak agenti fungují, co dělají workflow, proč j
 ## Tipy
 
 - **Ověřte překvapivé odpovědi** — LLM se občas mýlí. Zkontrolujte zdrojový soubor nebo se zeptejte na Discordu.
-- **Buďte konkrétní** — „Co dělá krok 3 PRD workflow?" je lepší než „Jak funguje PRD?"
+- **Buďte konkrétní** — „Co dělá krok 3 PRD workflow?“ je lepší než „Jak funguje PRD?“
 
 ## Stále jste uvízli?
 

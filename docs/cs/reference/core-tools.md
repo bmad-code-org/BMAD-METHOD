@@ -117,11 +117,11 @@ Kouzlo se děje v nápadech 50–100. Workflow povzbuzuje generování 100+ náp
 **Vstup:**
 
 - `source_documents` (povinné) — Cesty k souborům, složkám nebo glob vzory
-- `downstream_consumer` (volitelné) — Co to konzumuje (např. „tvorba PRD")
+- `downstream_consumer` (volitelné) — Co to konzumuje (např. „tvorba PRD“)
 - `token_budget` (volitelné) — Přibližná cílová velikost
 - `--validate` (příznak) — Spuštění round-trip rekonstrukčního testu
 
-**Výstup:** Destilátové markdown soubory s reportem kompresního poměru (např. „3.2:1")
+**Výstup:** Destilátové markdown soubory s reportem kompresního poměru (např. „3.2:1“)
 
 ## bmad-advanced-elicitation
 
@@ -139,7 +139,7 @@ Kouzlo se děje v nápadech 50–100. Workflow povzbuzuje generování 100+ náp
 2. Vybere 5 nejlépe odpovídajících metod podle typu a složitosti obsahu
 3. Prezentuje interaktivní nabídku — vyberte metodu, zamíchejte nebo zobrazte vše
 4. Aplikuje vybranou metodu k vylepšení obsahu
-5. Znovu prezentuje možnosti pro iterativní zlepšení, dokud nevyberete „Pokračovat"
+5. Znovu prezentuje možnosti pro iterativní zlepšení, dokud nevyberete „Pokračovat“
 
 **Vstup:** Sekce obsahu k vylepšení
 
@@ -242,10 +242,10 @@ Spusťte obě `bmad-review-adversarial-general` a `bmad-review-edge-case-hunter`
 **Vstup:**
 
 - `content` (povinné) — Dokument k revizi
-- `purpose` (volitelné) — Zamýšlený účel (např. „quickstart tutoriál")
+- `purpose` (volitelné) — Zamýšlený účel (např. „quickstart tutoriál“)
 - `target_audience` (volitelné) — Kdo to čte
 - `reader_type` (volitelné) — `humans` nebo `llm`
-- `length_target` (volitelné) — Cílová redukce (např. „o 30 % kratší")
+- `length_target` (volitelné) — Cílová redukce (např. „o 30 % kratší“)
 
 **Výstup:** Shrnutí dokumentu, prioritizovaný seznam doporučení a odhadovaná redukce
 
