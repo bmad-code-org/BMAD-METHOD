@@ -34,7 +34,7 @@ function assert(condition, testName, errorMessage = '') {
 
 // ---------------------------------------------------------------------------
 // These regexes are extracted from ModuleManager.vendorWorkflowDependencies()
-// in tools/cli/installers/lib/modules/manager.js
+// in tools/installer/modules/manager.js
 // ---------------------------------------------------------------------------
 
 // Source regex (line ~1081) — uses non-capturing group for _bmad

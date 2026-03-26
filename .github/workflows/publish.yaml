@@ -5,7 +5,7 @@ on:
     branches: [main]
     paths:
       - "src/**"
-      - "tools/cli/**"
+      - "tools/installer/**"
       - "package.json"
   workflow_dispatch:
     inputs:
