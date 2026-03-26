@@ -5,7 +5,7 @@ sidebar:
   order: 7
 ---
 
-Pou��ijte soubory `.customize.yaml` k přizpůsobení chování agentů, person a nabídek při zachování vašich změn napříč aktualizacemi.
+Použijte soubory `.customize.yaml` k přizpůsobení chování agentů, person a nabídek při zachování vašich změn napříč aktualizacemi.
 
 ## Kdy to použít
 
@@ -37,18 +37,18 @@ _bmad/_config/agents/
 └── ... (jeden soubor na instalovaného agenta)
 ```
 
-### 2. Upravte soubor přizp��sobení
+### 2. Upravte soubor přizpůsobení
 
 Otevřete soubor `.customize.yaml` pro agenta, kterého chcete upravit. Každá sekce je volitelná — přizpůsobte pouze to, co potřebujete.
 
-| Sekce              | Chování   | Účel                                            |
-| ------------------ | --------- | ----------------------------------------------- |
-| `agent.metadata`   | Nahrazuje | Přepsat zobrazované jméno agenta                |
-| `persona`          | Nahrazuje | Nastavit roli, identitu, styl a principy        |
-| `memories`         | Přidává   | Přidat trvalý kontext, který si agent vždy pamatuje |
+| Sekce              | Chování   | Účel                                                     |
+| ------------------ | --------- | -------------------------------------------------------- |
+| `agent.metadata`   | Nahrazuje | Přepsat zobrazované jméno agenta                         |
+| `persona`          | Nahrazuje | Nastavit roli, identitu, styl a principy                 |
+| `memories`         | Přidává   | Přidat trvalý kontext, který si agent vždy pamatuje      |
 | `menu`             | Přidává   | Přidat vlastní položky nabídky pro workflow nebo prompty |
-| `critical_actions` | Přidává   | Definovat instrukce při spuštění agenta         |
-| `prompts`          | Přidává   | Vytvořit znovupoužitelné prompty pro akce nabídky |
+| `critical_actions` | Přidává   | Definovat instrukce při spuštění agenta                  |
+| `prompts`          | Přidává   | Vytvořit znovupoužitelné prompty pro akce nabídky        |
 
 Sekce označené **Nahrazuje** zcela přepíší výchozí hodnoty agenta. Sekce označené **Přidává** doplní existující konfiguraci.
 
@@ -136,10 +136,10 @@ npx bmad-method install
 
 Instalátor detekuje existující instalaci a nabídne tyto možnosti:
 
-| Možnost                        | Co udělá                                                            |
-| ------------------------------ | ------------------------------------------------------------------- |
-| **Quick Update**               | Aktualizuje všechny moduly na nejnovější verzi a aplikuje přizpůsobení |
-| **Modify BMad Installation**   | Plný instalační postup pro přidání nebo odebrání modulů             |
+| Možnost                      | Co udělá                                                               |
+| ---------------------------- | ---------------------------------------------------------------------- |
+| **Quick Update**             | Aktualizuje všechny moduly na nejnovější verzi a aplikuje přizpůsobení |
+| **Modify BMad Installation** | Plný instalační postup pro přidání nebo odebrání modulů                |
 
 Pro změny pouze přizpůsobení je **Quick Update** nejrychlejší možnost.
 
@@ -160,7 +160,7 @@ Pro změny pouze přizpůsobení je **Quick Update** nejrychlejší možnost.
 **Potřebujete resetovat agenta?**
 
 - Vymažte nebo smažte soubor `.customize.yaml` agenta
-- Spus��te `npx bmad-method install` a vyberte **Quick Update** pro obnovení výchozích hodnot
+- Spusťte `npx bmad-method install` a vyberte **Quick Update** pro obnovení výchozích hodnot
 
 ## Přizpůsobení workflow
 

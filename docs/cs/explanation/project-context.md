@@ -32,12 +32,12 @@ Každý implementační workflow automaticky načítá `project-context.md`, pok
 
 Soubor `project-context.md` je užitečný v jakékoli fázi projektu:
 
-| Scénář | Kdy vytvořit | Účel |
-|--------|-------------|------|
-| **Nový projekt, před architekturou** | Ručně, před `bmad-create-architecture` | Dokumentujte vaše technické preference, aby je architekt respektoval |
-| **Nový projekt, po architektuře** | Přes `bmad-generate-project-context` nebo ručně | Zachyťte architektonická rozhodnutí pro implementační agenty |
-| **Existující projekt** | Přes `bmad-generate-project-context` | Objevte existující vzory, aby agenti dodržovali zavedené konvence |
-| **Quick Flow projekt** | Před nebo během `bmad-quick-dev` | Zajistěte, aby rychlá implementace respektovala vaše vzory |
+| Scénář                               | Kdy vytvořit                                    | Účel                                                                 |
+| ------------------------------------ | ----------------------------------------------- | -------------------------------------------------------------------- |
+| **Nový projekt, před architekturou** | Ručně, před `bmad-create-architecture`          | Dokumentujte vaše technické preference, aby je architekt respektoval |
+| **Nový projekt, po architektuře**    | Přes `bmad-generate-project-context` nebo ručně | Zachyťte architektonická rozhodnutí pro implementační agenty         |
+| **Existující projekt**               | Přes `bmad-generate-project-context`            | Objevte existující vzory, aby agenti dodržovali zavedené konvence    |
+| **Quick Flow projekt**               | Před nebo během `bmad-quick-dev`                | Zajistěte, aby rychlá implementace respektovala vaše vzory           |
 
 :::tip[Doporučeno]
 Pro nové projekty ho vytvořte ručně před architekturou, pokud máte silné technické preference. Jinak ho vygenerujte po architektuře pro zachycení těchto rozhodnutí.
@@ -125,16 +125,16 @@ bmad-generate-project-context
 
 Workflow analyzuje vaši kódovou bázi, identifikuje konvence a vygeneruje kontextový soubor, který můžete zkontrolovat a upřesnit.
 
-## Proč to záleží
+## Proč na tom záleží
 
 Bez `project-context.md` agenti dělají předpoklady, které nemusí odpovídat vašemu projektu:
 
-| Bez kontextu | S kontextem |
-|-------------|------------|
-| Používá generické vzory | Dodržuje vaše zavedené konvence |
-| Nekonzistentní styl napříč stories | Konzistentní implementace |
-| Může přehlédnout omezení specifická pro projekt | Respektuje všechny technické požadavky |
-| Každý agent rozhoduje nezávisle | Všichni agenti se řídí stejnými pravidly |
+| Bez kontextu                                    | S kontextem                              |
+| ----------------------------------------------- | ---------------------------------------- |
+| Používá generické vzory                         | Dodržuje vaše zavedené konvence          |
+| Nekonzistentní styl napříč stories              | Konzistentní implementace                |
+| Může přehlédnout omezení specifická pro projekt | Respektuje všechny technické požadavky   |
+| Každý agent rozhoduje nezávisle                 | Všichni agenti se řídí stejnými pravidly |
 
 To je zvláště důležité pro:
 - **Quick Flow** — přeskakuje PRD a architekturu, takže kontextový soubor vyplní mezeru

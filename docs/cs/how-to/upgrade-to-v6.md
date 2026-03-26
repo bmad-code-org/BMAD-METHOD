@@ -31,7 +31,7 @@ Když je detekována v4, můžete:
 - Nechat instalátor zálohovat a odstranit `.bmad-method`
 - Ukončit a zpracovat vyčištění ručně
 
-Pokud jste pojmenovali složku bmad method jinak, musíte ji odstranit ru��ně.
+Pokud jste pojmenovali složku bmad method jinak, musíte ji odstranit ručně.
 
 ### 3. Vyčištění IDE skills
 
@@ -51,7 +51,7 @@ Přesuňte je do `_bmad-output/planning-artifacts/` s popisnými názvy:
 
 - Zahrňte `PRD` v názvu souboru pro PRD dokumenty
 - Zahrňte `brief`, `architecture` nebo `ux-design` odpovídajícím způsobem
-- Rozdělené dokumenty mohou být v pojmenovaných podslo��kách
+- Rozdělené dokumenty mohou být v pojmenovaných podsložkách
 
 **Pokud jste uprostřed plánování:** Zvažte restart s v6 workflow. Použijte existující dokumenty jako vstupy — nové workflow s progresivním objevováním, webovým vyhledáváním a plan mode IDE produkují lepší výsledky.
 
@@ -82,19 +82,19 @@ váš-projekt/
 
 ## Migrace modulů
 
-| Modul v4                        | Stav v6                                   |
-| ------------------------------- | ----------------------------------------- |
-| `.bmad-2d-phaser-game-dev`      | Integrován do modulu BMGD                 |
-| `.bmad-2d-unity-game-dev`       | Integrován do modulu BMGD                 |
-| `.bmad-godot-game-dev`          | Integrován do modulu BMGD                 |
-| `.bmad-infrastructure-devops`   | Zastaralý — nový DevOps agent brzy        |
-| `.bmad-creative-writing`        | Neadaptován — nový v6 modul brzy          |
+| Modul v4                      | Stav v6                            |
+| ----------------------------- | ---------------------------------- |
+| `.bmad-2d-phaser-game-dev`    | Integrován do modulu BMGD          |
+| `.bmad-2d-unity-game-dev`     | Integrován do modulu BMGD          |
+| `.bmad-godot-game-dev`        | Integrován do modulu BMGD          |
+| `.bmad-infrastructure-devops` | Zastaralý — nový DevOps agent brzy |
+| `.bmad-creative-writing`      | Neadaptován — nový v6 modul brzy   |
 
 ## Klíčové změny
 
-| Koncept       | v4                                    | v6                                   |
-| ------------- | ------------------------------------- | ------------------------------------ |
-| **Core**      | `_bmad-core` byl vlastně BMad Method  | `_bmad/core/` je univerzální framework |
-| **Method**    | `_bmad-method`                        | `_bmad/bmm/`                         |
-| **Konfigurace** | Přímá editace souborů              | `config.yaml` pro každý modul        |
-| **Dokumenty** | Vyžadované nastavení shardů           | Plně flexibilní, auto-skenování      |
+| Koncept         | v4                                   | v6                                     |
+| --------------- | ------------------------------------ | -------------------------------------- |
+| **Core**        | `_bmad-core` byl vlastně BMad Method | `_bmad/core/` je univerzální framework |
+| **Method**      | `_bmad-method`                       | `_bmad/bmm/`                           |
+| **Konfigurace** | Přímá editace souborů                | `config.yaml` pro každý modul          |
+| **Dokumenty**   | Vyžadované nastavení shardů          | Plně flexibilní, auto-skenování        |
