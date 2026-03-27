@@ -4,7 +4,7 @@
 modules:
   bmad-builder:
     url: https://github.com/bmad-code-org/bmad-builder
-    module-definition: skills/module.yaml
+    module-definition: src/module.yaml
     code: bmb
     name: "BMad Builder"
     description: "Agent and Builder"
