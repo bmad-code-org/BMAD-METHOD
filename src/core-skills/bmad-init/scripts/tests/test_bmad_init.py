@@ -110,6 +110,37 @@ class TestResolveProjectRootPlaceholder(unittest.TestCase):
     def test_non_string(self):
         self.assertEqual(resolve_project_root_placeholder(42, Path('/test')), 42)
 
+    def test_absolute_path_stored_with_prefix(self):
+        """Absolute output_folder entered by user is stored as '{project-root}//abs/path'
+        by the '{project-root}/{value}' template. It must resolve to '/abs/path', not
+        '/project//abs/path'."""
+        result = resolve_project_root_placeholder(
+            '{project-root}//Users/me/outside', Path('/Users/me/myproject')
+        )
+        self.assertEqual(result, '/Users/me/outside')
+
+    def test_relative_path_with_traversal_is_normalized(self):
+        """A relative path like '../../sibling' produces '{project-root}/../../sibling'
+        after the template. It must resolve to the normalized absolute path, not the
+        un-normalized string '/project/../../sibling'."""
+        result = resolve_project_root_placeholder(
+            '{project-root}/../../sibling', Path('/Users/me/myproject')
+        )
+        self.assertEqual(result, '/Users/sibling')
+
+    def test_relative_path_one_level_up(self):
+        result = resolve_project_root_placeholder(
+            '{project-root}/../outside-outputs', Path('/project/root')
+        )
+        self.assertEqual(result, '/project/outside-outputs')
+
+    def test_standard_relative_path_unchanged(self):
+        """Normal in-project relative paths continue to work correctly."""
+        result = resolve_project_root_placeholder(
+            '{project-root}/_bmad-output', Path('/project/root')
+        )
+        self.assertEqual(result, '/project/root/_bmad-output')
+
 
 class TestExpandTemplate(unittest.TestCase):
 
@@ -146,6 +177,39 @@ class TestApplyResultTemplate(unittest.TestCase):
         var_def = {'result': '{value}'}
         result = apply_result_template(var_def, 'English', {})
         self.assertEqual(result, 'English')
+
+    def test_absolute_value_skips_project_root_template(self):
+        """When the user enters an absolute path, the '{project-root}/{value}' template
+        must not be applied — doing so would produce '/project//absolute/path'."""
+        var_def = {'result': '{project-root}/{value}'}
+        result = apply_result_template(
+            var_def, '/Users/me/shared-outputs', {'project-root': '/Users/me/myproject'}
+        )
+        self.assertEqual(result, '/Users/me/shared-outputs')
+
+    def test_relative_traversal_value_is_normalized(self):
+        """A relative path like '../../outside' combined with the project-root template
+        must produce a clean normalized absolute path, not '/project/../../outside'."""
+        var_def = {'result': '{project-root}/{value}'}
+        result = apply_result_template(
+            var_def, '../../outside-dir', {'project-root': '/Users/me/myproject'}
+        )
+        self.assertEqual(result, '/Users/outside-dir')
+
+    def test_relative_one_level_up_is_normalized(self):
+        var_def = {'result': '{project-root}/{value}'}
+        result = apply_result_template(
+            var_def, '../sibling-outputs', {'project-root': '/project/root'}
+        )
+        self.assertEqual(result, '/project/sibling-outputs')
+
+    def test_normal_relative_value_unchanged(self):
+        """Standard in-project relative paths still produce the expected joined path."""
+        var_def = {'result': '{project-root}/{value}'}
+        result = apply_result_template(
+            var_def, '_bmad-output', {'project-root': '/project/root'}
+        )
+        self.assertEqual(result, '/project/root/_bmad-output')
 
 
 class TestLoadModuleYaml(unittest.TestCase):
