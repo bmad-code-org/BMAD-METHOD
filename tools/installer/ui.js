@@ -72,7 +72,7 @@ class UI {
       const { existingInstall, bmadDir } = await this.getExistingInstallation(confirmedDirectory);
       const packageJsonPath = path.join(__dirname, '../../package.json');
       const currentVersion = require(packageJsonPath).version;
-      const installedVersion = existingInstall.version || 'unknown';
+      const installedVersion = existingInstall.installed ? existingInstall.version || 'unknown' : 'unknown';
 
       // Build menu choices dynamically
       const choices = [];

@@ -484,8 +484,9 @@ class OfficialModules {
     try {
       const yamlContent = await fs.readFile(moduleYamlPath, 'utf8');
       moduleYaml = yaml.parse(yamlContent);
-    } catch {
-      return emptyResult; // Invalid YAML, skip
+    } catch (error) {
+      await prompts.log.warn(`Invalid module.yaml for ${moduleName}: ${error.message}`);
+      return emptyResult;
     }
 
     if (!moduleYaml || !moduleYaml.directories) {

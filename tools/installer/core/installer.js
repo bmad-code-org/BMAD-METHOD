@@ -1360,7 +1360,7 @@ class Installer {
       removed.modules = await this.uninstallModules(projectDir);
     }
 
-    return { success: true, removed, version: existingInstall.version };
+    return { success: true, removed, version: existingInstall.installed ? existingInstall.version : null };
   }
 
   /**
