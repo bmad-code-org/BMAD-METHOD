@@ -37,7 +37,19 @@ Yêu cầu [Node.js](https://nodejs.org) v20+ và `npx` (đi kèm với npm).
 | `--user-name <name>` | Tên để agent sử dụng | Tên người dùng hệ thống |
 | `--communication-language <lang>` | Ngôn ngữ giao tiếp của agent | Tiếng Anh |
 | `--document-output-language <lang>` | Ngôn ngữ đầu ra tài liệu | Tiếng Anh |
-| `--output-folder <path>` | Đường dẫn thư mục output | _bmad-output |
+| `--output-folder <path>` | Đường dẫn thư mục output (xem quy tắc resolve bên dưới) | `_bmad-output` |
+
+#### Quy tắc resolve đường dẫn output folder
+
+Giá trị truyền vào `--output-folder` (hoặc nhập ở chế độ tương tác) sẽ được resolve theo các quy tắc sau:
+
+| Loại đầu vào | Ví dụ | Được resolve thành |
+|------|-------------|---------|
+| Đường dẫn tương đối (mặc định) | `_bmad-output` | `<project-root>/_bmad-output` |
+| Đường dẫn tương đối có traversal | `../../shared-outputs` | Đường dẫn tuyệt đối đã được chuẩn hóa, ví dụ `/Users/me/shared-outputs` |
+| Đường dẫn tuyệt đối | `/Users/me/shared-outputs` | Giữ nguyên như đã nhập, **không** thêm project root vào trước |
+
+Đường dẫn sau khi resolve là đường dẫn mà agent và workflow sẽ dùng lúc runtime để ghi file đầu ra. Việc dùng đường dẫn tuyệt đối hoặc đường dẫn tương đối có traversal cho phép bạn chuyển toàn bộ artifact sinh ra sang một thư mục nằm ngoài cây dự án, hữu ích với thư mục dùng chung hoặc cấu trúc monorepo.
 
 ### Tùy chọn khác
 
@@ -141,6 +153,7 @@ Giá trị không hợp lệ sẽ dẫn đến một trong các trường hợp 
 
 :::tip[Thực hành tốt]
 - Dùng đường dẫn tuyệt đối cho `--directory` để tránh nhầm lẫn
+- Dùng đường dẫn tuyệt đối cho `--output-folder` khi bạn muốn ghi artifact ra ngoài cây dự án, ví dụ vào một thư mục output dùng chung trong monorepo
 - Thử nghiệm cờ ở máy local trước khi đưa vào pipeline CI/CD
 - Kết hợp với `-y` nếu bạn muốn cài đặt hoàn toàn không cần can thiệp
 - Dùng `--debug` nếu gặp vấn đề trong quá trình cài đặt
