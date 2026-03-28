@@ -102,6 +102,13 @@ platforms:
         - .iflow/commands
       target_dir: .iflow/skills
 
+  junie:
+    name: "Junie"
+    preferred: false
+    installer:
+      target_dir: .agents/skills
+      ancestor_conflict_check: false
+
   kilo:
     name: "KiloCoder"
     preferred: false
