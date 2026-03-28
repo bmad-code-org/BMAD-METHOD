@@ -21,7 +21,7 @@ The PRFAQ forces customer-first clarity: write the press release announcing the 
 
 ## On Activation
 
-Load available config from `{project-root}/_bmad/config.yaml` and `{project-root}/_bmad/config.user.yaml` (root level and `bmm` section). If config is missing, let the user know `bmad-builder-setup` can configure the module at any time. Use sensible defaults for anything not configured.
+Load available config from `{project-root}/_bmad/_config/bmm/config.yaml` and `{project-root}/_bmad/_config/bmm/config.user.yaml` (root level and `bmm` section). If config is missing, let the user know `bmad-builder-setup` can configure the module at any time. Use sensible defaults for anything not configured.
 
 Resolve: `{user_name}`, `{communication_language}`, `{document_output_language}`, `{planning_artifacts}`, `{project_name}`.
 
