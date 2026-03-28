@@ -784,6 +784,17 @@ class Installer {
     // Extract core config values to share with other modules
     const coreConfig = moduleConfigs.core || {};
 
+    // Create resolved copy with namespaced output_folder for non-core modules.
+    // Do NOT mutate coreConfig — it's a reference to moduleConfigs.core and is used
+    // to write core's own config.yaml (which must store ticket_id separately).
+    const resolvedCoreConfig = { ...coreConfig };
+    if (resolvedCoreConfig.ticket_id && resolvedCoreConfig.output_folder) {
+      if (resolvedCoreConfig.ticket_id === '.' || resolvedCoreConfig.ticket_id === '..') {
+        throw new Error(`Invalid ticket_id "${resolvedCoreConfig.ticket_id}": dot-segments are not allowed`);
+      }
+      resolvedCoreConfig.output_folder = `${resolvedCoreConfig.output_folder.replace(/[\\/]+$/, '')}/${resolvedCoreConfig.ticket_id}`;
+    }
+
     // Get all installed module directories
     const entries = await fs.readdir(bmadDir, { withFileTypes: true });
     const installedModules = entries
@@ -816,9 +827,10 @@ class Installer {
         if (moduleName !== 'core' && coreConfig && Object.keys(coreConfig).length > 0) {
           // Add core values directly to the module config
           // These will be available for reference in the module
+          // Use resolvedCoreConfig so non-core modules get the namespaced output_folder
           finalConfig = {
             ...config,
-            ...coreConfig, // Spread core config values directly into the module config
+            ...resolvedCoreConfig,
           };
 
           // Create a comment section to identify core values
@@ -842,7 +854,9 @@ class Installer {
           const moduleConfigLines = [];
           const coreConfigLines = [];
 
-          // Separate module-specific and core config lines
+          // Separate module-specific and core config lines.
+          // Note: uses coreConfig (not resolvedCoreConfig) for key detection — both have
+          // identical keys, only output_folder's value differs. This coupling is intentional.
           for (const line of lines) {
             const key = line.split(':')[0].trim();
             if (Object.prototype.hasOwnProperty.call(coreConfig, key)) {

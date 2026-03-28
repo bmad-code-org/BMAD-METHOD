@@ -6,6 +6,16 @@ const { CustomHandler } = require('./custom-handler');
 const { ExternalModuleManager } = require('./modules/external-manager');
 const prompts = require('./prompts');
 
+// Ticket ID validation pattern: alphanumeric, hyphens, dots, underscores only
+const TICKET_ID_PATTERN = /^[a-zA-Z0-9._-]*$/;
+
+function validateTicketId(ticketId) {
+  if (ticketId && !TICKET_ID_PATTERN.test(ticketId)) {
+    return `Invalid ticket ID "${ticketId}": use only letters, numbers, hyphens, dots, or underscores (e.g., PROJ-123)`;
+  }
+  return null;
+}
+
 // Separator class for visual grouping in select/multiselect prompts
 // Note: @clack/prompts doesn't support separators natively, they are filtered out
 class Separator {
@@ -713,7 +723,7 @@ class UI {
     const configCollector = new OfficialModules();
 
     // Seed core config from CLI options if provided
-    if (options.userName || options.communicationLanguage || options.documentOutputLanguage || options.outputFolder) {
+    if (options.userName || options.communicationLanguage || options.documentOutputLanguage || options.outputFolder || options.ticketId) {
       const coreConfig = {};
       if (options.userName) {
         coreConfig.user_name = options.userName;
@@ -731,6 +741,15 @@ class UI {
         coreConfig.output_folder = options.outputFolder;
         await prompts.log.info(`Using output folder from command-line: ${options.outputFolder}`);
       }
+      if (options.ticketId) {
+        const error = validateTicketId(options.ticketId);
+        if (error) {
+          await prompts.log.error(error);
+          process.exit(1);
+        }
+        coreConfig.ticket_id = options.ticketId;
+        await prompts.log.info(`Using ticket ID from command-line: ${options.ticketId}`);
+      }
 
       // Load existing config to merge with provided options
       await configCollector.loadExistingConfig(directory);
@@ -743,6 +762,8 @@ class UI {
         (!options.userName || !options.communicationLanguage || !options.documentOutputLanguage || !options.outputFolder)
       ) {
         await configCollector.collectModuleConfig('core', directory, false, true);
+        // Re-apply CLI-provided values after interactive prompts (which may overwrite them with defaults)
+        Object.assign(configCollector.collectedConfig.core, coreConfig);
       }
     } else if (options.yes) {
       // Use all defaults when --yes flag is set
@@ -762,6 +783,7 @@ class UI {
           communication_language: 'English',
           document_output_language: 'English',
           output_folder: '_bmad-output',
+          ticket_id: '',
         };
         await prompts.log.info('Using default configuration (--yes flag)');
       }

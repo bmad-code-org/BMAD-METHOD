@@ -38,6 +38,21 @@ Nécessite [Node.js](https://nodejs.org) v20+ et `npx` (inclus avec npm).
 | `--communication-language <langue>` | Langue de communication des agents | Anglais |
 | `--document-output-language <langue>` | Langue de sortie des documents | Anglais |
 | `--output-folder <chemin>` | Chemin du dossier de sortie | _bmad-output |
+| `--ticket-id <id>` | Espace de noms de sortie par ticket ou fonctionnalité (voir ci-dessous) | _(vide — pas d’espace de noms)_ |
+
+#### Espace de noms par ticket
+
+Lorsque `--ticket-id` est fourni, l’installateur insère l’ID comme sous-répertoire sous `output_folder`, isolant tous les artefacts par ticket ou fonctionnalité :
+
+```
+# Sans --ticket-id (par défaut) :
+_bmad-output/planning-artifacts/prd.md
+
+# Avec --ticket-id RZP-593 :
+_bmad-output/RZP-593/planning-artifacts/prd.md
+```
+
+L’ID ne peut contenir que des lettres, chiffres, tirets, points ou underscores (regex : `^[a-zA-Z0-9._-]*$`). L’omettre conserve la structure de sortie actuelle.
 
 ### Autres options
 

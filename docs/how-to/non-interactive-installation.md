@@ -38,6 +38,7 @@ Requires [Node.js](https://nodejs.org) v20+ and `npx` (included with npm).
 | `--communication-language <lang>` | Agent communication language | English |
 | `--document-output-language <lang>` | Document output language | English |
 | `--output-folder <path>` | Output folder path (see resolution rules below) | `_bmad-output` |
+| `--ticket-id <id>` | Namespace output by ticket or feature ID (see below) | _(empty — no namespace)_ |
 
 #### Output Folder Path Resolution
 
@@ -50,6 +51,22 @@ The value passed to `--output-folder` (or entered interactively) is resolved acc
 | Absolute path | `/Users/me/shared-outputs` | Used as-is — project root is **not** prepended |
 
 The resolved path is what agents and workflows use at runtime when writing output files. Using an absolute path or a traversal-based relative path lets you direct all generated artifacts to a directory outside your project tree — useful for shared or monorepo setups.
+
+#### Ticket ID Namespacing
+
+When `--ticket-id` is provided, the installer inserts the ID as a subdirectory under `output_folder`, isolating all artifacts per ticket or feature:
+
+```
+# Without --ticket-id (default):
+_bmad-output/planning-artifacts/prd.md
+
+# With --ticket-id RZP-593:
+_bmad-output/RZP-593/planning-artifacts/prd.md
+```
+
+The ID must contain only letters, numbers, hyphens, dots, or underscores (regex: `^[a-zA-Z0-9._-]*$`). Omitting it preserves the current flat output structure.
+
+Core's `config.yaml` stores `ticket_id` as a separate field and keeps `output_folder` unchanged; non-core module configs (e.g., bmm) receive the composed path so workflows resolve namespaced paths automatically.
 
 ### Other Options
 

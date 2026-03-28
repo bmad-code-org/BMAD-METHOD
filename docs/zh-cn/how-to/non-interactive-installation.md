@@ -38,6 +38,21 @@ sidebar:
 | `--communication-language <lang>` | 智能体通信语言 | 英语 |
 | `--document-output-language <lang>` | 文档输出语言 | 英语 |
 | `--output-folder <path>` | 输出文件夹路径 | _bmad-output |
+| `--ticket-id <id>` | 按工单或功能 ID 命名空间输出（见下文） | _（空 — 无命名空间）_ |
+
+#### 工单 ID 命名空间
+
+提供 `--ticket-id` 时，安装程序会在 `output_folder` 下插入该 ID 作为子目录，按工单或功能隔离所有产物：
+
+```
+# 不带 --ticket-id（默认）：
+_bmad-output/planning-artifacts/prd.md
+
+# 带 --ticket-id RZP-593：
+_bmad-output/RZP-593/planning-artifacts/prd.md
+```
+
+ID 只能包含字母、数字、连字符、点或下划线（正则：`^[a-zA-Z0-9._-]*$`）。省略时保持当前的平面输出结构。
 
 ### 其他选项
 

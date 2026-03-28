@@ -23,6 +23,7 @@ module.exports = {
     ['--communication-language <lang>', 'Language for agent communication (default: English)'],
     ['--document-output-language <lang>', 'Language for document output (default: English)'],
     ['--output-folder <path>', 'Output folder path relative to project root (default: _bmad-output)'],
+    ['--ticket-id <id>', 'Namespace output by ticket/feature ID (e.g., RZP-593)'],
     ['-y, --yes', 'Accept all defaults and skip prompts where possible'],
   ],
   action: async (options) => {

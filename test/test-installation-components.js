@@ -1817,6 +1817,124 @@ async function runTests() {
   console.log('');
 
   // ============================================================
+  // Test Suite 33: ticket_id namespaced output_folder
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 33: ticket_id Namespaced Output${colors.reset}\n`);
+
+  let tempBmadDir33;
+  try {
+    const { Installer } = require('../tools/installer/core/installer');
+    const testInstaller = new Installer();
+
+    // Create a temp directory structure to simulate bmadDir with core + bmm modules
+    tempBmadDir33 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-ticket-'));
+    const coreDir33 = path.join(tempBmadDir33, 'core');
+    const bmmDir33 = path.join(tempBmadDir33, 'bmm');
+    await fs.ensureDir(coreDir33);
+    await fs.ensureDir(bmmDir33);
+
+    // Test: ticket_id namespaces output_folder in non-core modules
+    const moduleConfigsWithTicket = {
+      core: {
+        user_name: 'Test',
+        communication_language: 'English',
+        document_output_language: 'English',
+        output_folder: '{project-root}/_bmad-output',
+        ticket_id: 'RZP-593',
+      },
+      bmm: {
+        project_name: 'TestProject',
+        planning_artifacts: '{project-root}/_bmad-output/planning-artifacts',
+      },
+    };
+
+    await testInstaller.generateModuleConfigs(tempBmadDir33, moduleConfigsWithTicket);
+
+    const yaml = require('yaml');
+
+    // Verify core config stores ticket_id separately (output_folder NOT namespaced)
+    const coreConfigContent = await fs.readFile(path.join(coreDir33, 'config.yaml'), 'utf8');
+    const coreConfigParsed = yaml.parse(coreConfigContent);
+    assert(
+      coreConfigParsed.output_folder === '{project-root}/_bmad-output',
+      'Core config output_folder is NOT namespaced',
+      `Expected "{project-root}/_bmad-output", got "${coreConfigParsed.output_folder}"`,
+    );
+    assert(
+      coreConfigParsed.ticket_id === 'RZP-593',
+      'Core config stores ticket_id as separate field',
+      `Expected "RZP-593", got "${coreConfigParsed.ticket_id}"`,
+    );
+
+    // Verify bmm config gets namespaced output_folder
+    const bmmConfigContent = await fs.readFile(path.join(bmmDir33, 'config.yaml'), 'utf8');
+    const bmmConfigParsed = yaml.parse(bmmConfigContent);
+    assert(
+      bmmConfigParsed.output_folder === '{project-root}/_bmad-output/RZP-593',
+      'BMM config output_folder IS namespaced',
+      `Expected "{project-root}/_bmad-output/RZP-593", got "${bmmConfigParsed.output_folder}"`,
+    );
+
+    // Verify ticket_id is inherited by bmm config via core config spread
+    assert(
+      bmmConfigParsed.ticket_id === 'RZP-593',
+      'BMM config inherits ticket_id from core spread',
+      `Expected "RZP-593", got "${bmmConfigParsed.ticket_id}"`,
+    );
+
+    // Test: empty ticket_id preserves original output_folder
+    const moduleConfigsNoTicket = {
+      core: {
+        user_name: 'Test',
+        communication_language: 'English',
+        document_output_language: 'English',
+        output_folder: '{project-root}/_bmad-output',
+        ticket_id: '',
+      },
+      bmm: {
+        project_name: 'TestProject',
+      },
+    };
+
+    await testInstaller.generateModuleConfigs(tempBmadDir33, moduleConfigsNoTicket);
+
+    const bmmConfigNoTicket = yaml.parse(await fs.readFile(path.join(bmmDir33, 'config.yaml'), 'utf8'));
+    assert(
+      bmmConfigNoTicket.output_folder === '{project-root}/_bmad-output',
+      'Empty ticket_id preserves original output_folder',
+      `Expected "{project-root}/_bmad-output", got "${bmmConfigNoTicket.output_folder}"`,
+    );
+
+    // Test: undefined ticket_id (missing from config) preserves original output_folder
+    const moduleConfigsUndefinedTicket = {
+      core: {
+        user_name: 'Test',
+        communication_language: 'English',
+        document_output_language: 'English',
+        output_folder: '{project-root}/_bmad-output',
+      },
+      bmm: {
+        project_name: 'TestProject',
+      },
+    };
+
+    await testInstaller.generateModuleConfigs(tempBmadDir33, moduleConfigsUndefinedTicket);
+
+    const bmmConfigUndefined = yaml.parse(await fs.readFile(path.join(bmmDir33, 'config.yaml'), 'utf8'));
+    assert(
+      bmmConfigUndefined.output_folder === '{project-root}/_bmad-output',
+      'Undefined ticket_id (missing key) preserves original output_folder',
+      `Expected "{project-root}/_bmad-output", got "${bmmConfigUndefined.output_folder}"`,
+    );
+  } catch (error) {
+    assert(false, `ticket_id test suite error: ${error.message}`);
+  } finally {
+    if (tempBmadDir33) await fs.remove(tempBmadDir33).catch(() => {});
+  }
+
+  console.log('');
+
+  // ============================================================
   // Summary
   // ============================================================
   console.log(`${colors.cyan}========================================`);

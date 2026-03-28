@@ -23,3 +23,9 @@ output_folder:
   prompt: "Where should output files be saved?"
   default: "_bmad-output"
   result: "{project-root}/{value}"
+
+ticket_id:
+  prompt: "Ticket or feature ID (e.g., PROJ-123) — isolates artifacts per ticket (Enter to skip):"
+  default: ""
+  regex: "^[a-zA-Z0-9._-]*$"
+  result: "{value}"
