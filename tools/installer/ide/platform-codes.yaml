@@ -107,7 +107,7 @@ platforms:
     preferred: false
     installer:
       target_dir: .agents/skills
-      ancestor_conflict_check: true
+      ancestor_conflict_check: false
 
   kilo:
     name: "KiloCoder"
