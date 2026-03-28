@@ -33,7 +33,6 @@ platforms:
       legacy_targets:
         - .claude/commands
       target_dir: .claude/skills
-      ancestor_conflict_check: true
 
   cline:
     name: "Cline"
@@ -51,7 +50,6 @@ platforms:
         - .codex/prompts
         - ~/.codex/prompts
       target_dir: .agents/skills
-      ancestor_conflict_check: true
 
   codebuddy:
     name: "CodeBuddy"
@@ -107,7 +105,6 @@ platforms:
     preferred: false
     installer:
       target_dir: .agents/skills
-      ancestor_conflict_check: false
 
   kilo:
     name: "KiloCoder"
@@ -142,7 +139,6 @@ platforms:
         - .opencode/agent
         - .opencode/command
       target_dir: .opencode/skills
-      ancestor_conflict_check: true
 
   pi:
     name: "Pi"
