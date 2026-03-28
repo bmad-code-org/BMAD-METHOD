@@ -337,8 +337,6 @@ async function runTests() {
 
     assert(opencodeInstaller?.target_dir === '.opencode/skills', 'OpenCode target_dir uses native skills path');
 
-    assert(opencodeInstaller?.ancestor_conflict_check === true, 'OpenCode installer enables ancestor conflict checks');
-
     assert(
       Array.isArray(opencodeInstaller?.legacy_targets) &&
         ['.opencode/agents', '.opencode/commands', '.opencode/agent', '.opencode/command'].every((legacyTarget) =>
@@ -401,8 +399,6 @@ async function runTests() {
 
     assert(claudeInstaller?.target_dir === '.claude/skills', 'Claude Code target_dir uses native skills path');
 
-    assert(claudeInstaller?.ancestor_conflict_check === true, 'Claude Code installer enables ancestor conflict checks');
-
     assert(
       Array.isArray(claudeInstaller?.legacy_targets) && claudeInstaller.legacy_targets.includes('.claude/commands'),
       'Claude Code installer cleans legacy command output',
@@ -441,44 +437,7 @@ async function runTests() {
 
   console.log('');
 
-  // ============================================================
-  // Test 10: Claude Code Ancestor Conflict
-  // ============================================================
-  console.log(`${colors.yellow}Test Suite 10: Claude Code Ancestor Conflict${colors.reset}\n`);
-
-  try {
-    const tempRoot10 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-claude-code-ancestor-test-'));
-    const parentProjectDir10 = path.join(tempRoot10, 'parent');
-    const childProjectDir10 = path.join(parentProjectDir10, 'child');
-    const installedBmadDir10 = await createTestBmadFixture();
-
-    await fs.ensureDir(path.join(parentProjectDir10, '.git'));
-    await fs.ensureDir(path.join(parentProjectDir10, '.claude', 'skills', 'bmad-existing'));
-    await fs.ensureDir(childProjectDir10);
-    await fs.writeFile(path.join(parentProjectDir10, '.claude', 'skills', 'bmad-existing', 'SKILL.md'), 'legacy\n');
-
-    const ideManager10 = new IdeManager();
-    await ideManager10.ensureInitialized();
-    const result10 = await ideManager10.setup('claude-code', childProjectDir10, installedBmadDir10, {
-      silent: true,
-      selectedModules: ['bmm'],
-    });
-    const expectedConflictDir10 = await fs.realpath(path.join(parentProjectDir10, '.claude', 'skills'));
-
-    assert(result10.success === false, 'Claude Code setup refuses install when ancestor skills already exist');
-    assert(result10.handlerResult?.reason === 'ancestor-conflict', 'Claude Code ancestor rejection reports ancestor-conflict reason');
-    assert(
-      result10.handlerResult?.conflictDir === expectedConflictDir10,
-      'Claude Code ancestor rejection points at ancestor .claude/skills dir',
-    );
-
-    await fs.remove(tempRoot10);
-    await fs.remove(path.dirname(installedBmadDir10));
-  } catch (error) {
-    assert(false, 'Claude Code ancestor conflict protection test succeeds', error.message);
-  }
-
-  console.log('');
+  // Test 10: Removed — ancestor conflict check no longer applies (no IDE inherits skills from parent dirs)
 
   // ============================================================
   // Test 11: Codex Native Skills Install
@@ -491,8 +450,6 @@ async function runTests() {
     const codexInstaller = platformCodes11.platforms.codex?.installer;
 
     assert(codexInstaller?.target_dir === '.agents/skills', 'Codex target_dir uses native skills path');
-
-    assert(codexInstaller?.ancestor_conflict_check === true, 'Codex installer enables ancestor conflict checks');
 
     assert(
       Array.isArray(codexInstaller?.legacy_targets) && codexInstaller.legacy_targets.includes('.codex/prompts'),
@@ -532,41 +489,7 @@ async function runTests() {
 
   console.log('');
 
-  // ============================================================
-  // Test 12: Codex Ancestor Conflict
-  // ============================================================
-  console.log(`${colors.yellow}Test Suite 12: Codex Ancestor Conflict${colors.reset}\n`);
-
-  try {
-    const tempRoot12 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-codex-ancestor-test-'));
-    const parentProjectDir12 = path.join(tempRoot12, 'parent');
-    const childProjectDir12 = path.join(parentProjectDir12, 'child');
-    const installedBmadDir12 = await createTestBmadFixture();
-
-    await fs.ensureDir(path.join(parentProjectDir12, '.git'));
-    await fs.ensureDir(path.join(parentProjectDir12, '.agents', 'skills', 'bmad-existing'));
-    await fs.ensureDir(childProjectDir12);
-    await fs.writeFile(path.join(parentProjectDir12, '.agents', 'skills', 'bmad-existing', 'SKILL.md'), 'legacy\n');
-
-    const ideManager12 = new IdeManager();
-    await ideManager12.ensureInitialized();
-    const result12 = await ideManager12.setup('codex', childProjectDir12, installedBmadDir12, {
-      silent: true,
-      selectedModules: ['bmm'],
-    });
-    const expectedConflictDir12 = await fs.realpath(path.join(parentProjectDir12, '.agents', 'skills'));
-
-    assert(result12.success === false, 'Codex setup refuses install when ancestor skills already exist');
-    assert(result12.handlerResult?.reason === 'ancestor-conflict', 'Codex ancestor rejection reports ancestor-conflict reason');
-    assert(result12.handlerResult?.conflictDir === expectedConflictDir12, 'Codex ancestor rejection points at ancestor .agents/skills dir');
-
-    await fs.remove(tempRoot12);
-    await fs.remove(path.dirname(installedBmadDir12));
-  } catch (error) {
-    assert(false, 'Codex ancestor conflict protection test succeeds', error.message);
-  }
-
-  console.log('');
+  // Test 12: Removed — ancestor conflict check no longer applies (no IDE inherits skills from parent dirs)
 
   // ============================================================
   // Test 13: Cursor Native Skills Install
@@ -683,44 +606,7 @@ async function runTests() {
 
   console.log('');
 
-  // ============================================================
-  // Test 15: OpenCode Ancestor Conflict
-  // ============================================================
-  console.log(`${colors.yellow}Test Suite 15: OpenCode Ancestor Conflict${colors.reset}\n`);
-
-  try {
-    const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-opencode-ancestor-test-'));
-    const parentProjectDir = path.join(tempRoot, 'parent');
-    const childProjectDir = path.join(parentProjectDir, 'child');
-    const installedBmadDir = await createTestBmadFixture();
-
-    await fs.ensureDir(path.join(parentProjectDir, '.git'));
-    await fs.ensureDir(path.join(parentProjectDir, '.opencode', 'skills', 'bmad-existing'));
-    await fs.ensureDir(childProjectDir);
-    await fs.writeFile(path.join(parentProjectDir, '.opencode', 'skills', 'bmad-existing', 'SKILL.md'), 'legacy\n');
-
-    const ideManager = new IdeManager();
-    await ideManager.ensureInitialized();
-    const result = await ideManager.setup('opencode', childProjectDir, installedBmadDir, {
-      silent: true,
-      selectedModules: ['bmm'],
-    });
-    const expectedConflictDir = await fs.realpath(path.join(parentProjectDir, '.opencode', 'skills'));
-
-    assert(result.success === false, 'OpenCode setup refuses install when ancestor skills already exist');
-    assert(result.handlerResult?.reason === 'ancestor-conflict', 'OpenCode ancestor rejection reports ancestor-conflict reason');
-    assert(
-      result.handlerResult?.conflictDir === expectedConflictDir,
-      'OpenCode ancestor rejection points at ancestor .opencode/skills dir',
-    );
-
-    await fs.remove(tempRoot);
-    await fs.remove(path.dirname(installedBmadDir));
-  } catch (error) {
-    assert(false, 'OpenCode ancestor conflict protection test succeeds', error.message);
-  }
-
-  console.log('');
+  // Test 15: Removed — ancestor conflict check no longer applies (no IDE inherits skills from parent dirs)
 
   // Test 16: Removed — old YAML→XML QA agent compilation no longer applies (agents now use SKILL.md format)
 
