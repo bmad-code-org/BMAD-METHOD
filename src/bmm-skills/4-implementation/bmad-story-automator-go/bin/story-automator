@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ARTIFACT_ROOT="$SCRIPT_DIR/../artifacts/story-automator/bin"
+
+detect_platform() {
+  local os arch
+  os="$(uname -s)"
+  arch="$(uname -m)"
+
+  case "$os" in
+    Darwin) os="darwin" ;;
+    Linux) os="linux" ;;
+    *) echo "Unsupported OS: $os" >&2; exit 1 ;;
+  esac
+
+  case "$arch" in
+    x86_64) arch="amd64" ;;
+    arm64|aarch64) arch="arm64" ;;
+    *) echo "Unsupported architecture: $arch" >&2; exit 1 ;;
+  esac
+
+  printf '%s-%s' "$os" "$arch"
+}
+
+PLATFORM="$(detect_platform)"
+TARGET="$ARTIFACT_ROOT/$PLATFORM/story-automator"
+
+if [ ! -x "$TARGET" ]; then
+  echo "Missing story-automator binary for $PLATFORM: $TARGET" >&2
+  exit 1
+fi
+
+exec "$TARGET" "$@"
