@@ -61,7 +61,7 @@ IDs d'outils disponibles pour l’option `--tools` :
 
 **Recommandés :** `claude-code`, `cursor`
 
-Exécutez `npx bmad-method install` de manière interactive une fois pour voir la liste complète actuelle des outils pris en charge, ou consultez la [configuration des codes de la plateforme](https://github.com/bmad-code-org/BMAD-METHOD/blob/main/tools/cli/installers/lib/ide/platform-codes.yaml).
+Exécutez `npx bmad-method install` de manière interactive une fois pour voir la liste complète actuelle des outils pris en charge, ou consultez la [configuration des codes de la plateforme](https://github.com/bmad-code-org/BMAD-METHOD/blob/main/tools/installer/ide/platform-codes.yaml).
 
 ## Modes d'installation
 

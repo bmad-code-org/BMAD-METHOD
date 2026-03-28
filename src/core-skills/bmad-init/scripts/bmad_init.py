@@ -166,9 +166,27 @@ def resolve_project_root_placeholder(value, project_root):
     """Replace {project-root} placeholder with actual path."""
     if not value or not isinstance(value, str):
         return value
-    if '{project-root}' in value:
-        return value.replace('{project-root}', str(project_root))
-    return value
+    if '{project-root}' not in value:
+        return value
+
+    # Strip the {project-root} token to inspect what remains, so we can
+    # correctly handle absolute paths stored as "{project-root}//absolute/path"
+    # (produced by the "{project-root}/{value}" template applied to an absolute value).
+    suffix = value.replace('{project-root}', '', 1)
+
+    # Strip the one path separator that follows the token (if any)
+    if suffix.startswith('/') or suffix.startswith('\\'):
+        remainder = suffix[1:]
+    else:
+        remainder = suffix
+
+    if os.path.isabs(remainder):
+        # The original value was an absolute path stored with a {project-root}/ prefix.
+        # Return the absolute path directly — no joining needed.
+        return remainder
+
+    # Relative path: join with project root and normalize to resolve any .. segments.
+    return os.path.normpath(os.path.join(str(project_root), remainder))
 
 
 def parse_var_specs(vars_string):
@@ -222,9 +240,22 @@ def apply_result_template(var_def, raw_value, context):
     if not result_template:
         return raw_value
 
+    # If the user supplied an absolute path and the template would prefix it with
+    # "{project-root}/", skip the template entirely to avoid producing a broken path
+    # like "/my/project//absolute/path".
+    if isinstance(raw_value, str) and os.path.isabs(raw_value):
+        return raw_value
+
     ctx = dict(context)
     ctx['value'] = raw_value
-    return expand_template(result_template, ctx)
+    result = expand_template(result_template, ctx)
+
+    # Normalize the resulting path to resolve any ".." segments (e.g. when the user
+    # entered a relative path such as "../../outside-dir").
+    if isinstance(result, str) and '{' not in result and os.path.isabs(result):
+        result = os.path.normpath(result)
+
+    return result
 
 
 # =============================================================================

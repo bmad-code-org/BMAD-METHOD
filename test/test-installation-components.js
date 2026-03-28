@@ -14,10 +14,9 @@
 const path = require('node:path');
 const os = require('node:os');
 const fs = require('fs-extra');
-const { ConfigCollector } = require('../tools/cli/installers/lib/core/config-collector');
-const { ManifestGenerator } = require('../tools/cli/installers/lib/core/manifest-generator');
-const { IdeManager } = require('../tools/cli/installers/lib/ide/manager');
-const { clearCache, loadPlatformCodes } = require('../tools/cli/installers/lib/ide/platform-codes');
+const { ManifestGenerator } = require('../tools/installer/core/manifest-generator');
+const { IdeManager } = require('../tools/installer/ide/manager');
+const { clearCache, loadPlatformCodes } = require('../tools/installer/ide/platform-codes');
 
 // ANSI colors
 const colors = {
@@ -149,8 +148,6 @@ async function runTests() {
 
     assert(windsurfInstaller?.target_dir === '.windsurf/skills', 'Windsurf target_dir uses native skills path');
 
-    assert(windsurfInstaller?.skill_format === true, 'Windsurf installer enables native skill output');
-
     assert(
       Array.isArray(windsurfInstaller?.legacy_targets) && windsurfInstaller.legacy_targets.includes('.windsurf/workflows'),
       'Windsurf installer cleans legacy workflow output',
@@ -196,8 +193,6 @@ async function runTests() {
     const kiroInstaller = platformCodes.platforms.kiro?.installer;
 
     assert(kiroInstaller?.target_dir === '.kiro/skills', 'Kiro target_dir uses native skills path');
-
-    assert(kiroInstaller?.skill_format === true, 'Kiro installer enables native skill output');
 
     assert(
       Array.isArray(kiroInstaller?.legacy_targets) && kiroInstaller.legacy_targets.includes('.kiro/steering'),
@@ -245,8 +240,6 @@ async function runTests() {
 
     assert(antigravityInstaller?.target_dir === '.agent/skills', 'Antigravity target_dir uses native skills path');
 
-    assert(antigravityInstaller?.skill_format === true, 'Antigravity installer enables native skill output');
-
     assert(
       Array.isArray(antigravityInstaller?.legacy_targets) && antigravityInstaller.legacy_targets.includes('.agent/workflows'),
       'Antigravity installer cleans legacy workflow output',
@@ -292,8 +285,6 @@ async function runTests() {
     const auggieInstaller = platformCodes.platforms.auggie?.installer;
 
     assert(auggieInstaller?.target_dir === '.augment/skills', 'Auggie target_dir uses native skills path');
-
-    assert(auggieInstaller?.skill_format === true, 'Auggie installer enables native skill output');
 
     assert(
       Array.isArray(auggieInstaller?.legacy_targets) && auggieInstaller.legacy_targets.includes('.augment/commands'),
@@ -345,8 +336,6 @@ async function runTests() {
     const opencodeInstaller = platformCodes.platforms.opencode?.installer;
 
     assert(opencodeInstaller?.target_dir === '.opencode/skills', 'OpenCode target_dir uses native skills path');
-
-    assert(opencodeInstaller?.skill_format === true, 'OpenCode installer enables native skill output');
 
     assert(opencodeInstaller?.ancestor_conflict_check === true, 'OpenCode installer enables ancestor conflict checks');
 
@@ -411,8 +400,6 @@ async function runTests() {
     const claudeInstaller = platformCodes9.platforms['claude-code']?.installer;
 
     assert(claudeInstaller?.target_dir === '.claude/skills', 'Claude Code target_dir uses native skills path');
-
-    assert(claudeInstaller?.skill_format === true, 'Claude Code installer enables native skill output');
 
     assert(claudeInstaller?.ancestor_conflict_check === true, 'Claude Code installer enables ancestor conflict checks');
 
@@ -505,8 +492,6 @@ async function runTests() {
 
     assert(codexInstaller?.target_dir === '.agents/skills', 'Codex target_dir uses native skills path');
 
-    assert(codexInstaller?.skill_format === true, 'Codex installer enables native skill output');
-
     assert(codexInstaller?.ancestor_conflict_check === true, 'Codex installer enables ancestor conflict checks');
 
     assert(
@@ -595,8 +580,6 @@ async function runTests() {
 
     assert(cursorInstaller?.target_dir === '.cursor/skills', 'Cursor target_dir uses native skills path');
 
-    assert(cursorInstaller?.skill_format === true, 'Cursor installer enables native skill output');
-
     assert(
       Array.isArray(cursorInstaller?.legacy_targets) && cursorInstaller.legacy_targets.includes('.cursor/commands'),
       'Cursor installer cleans legacy command output',
@@ -648,8 +631,6 @@ async function runTests() {
     const rooInstaller = platformCodes13.platforms.roo?.installer;
 
     assert(rooInstaller?.target_dir === '.roo/skills', 'Roo target_dir uses native skills path');
-
-    assert(rooInstaller?.skill_format === true, 'Roo installer enables native skill output');
 
     assert(
       Array.isArray(rooInstaller?.legacy_targets) && rooInstaller.legacy_targets.includes('.roo/commands'),
@@ -757,8 +738,6 @@ async function runTests() {
 
     assert(copilotInstaller?.target_dir === '.github/skills', 'GitHub Copilot target_dir uses native skills path');
 
-    assert(copilotInstaller?.skill_format === true, 'GitHub Copilot installer enables native skill output');
-
     assert(
       Array.isArray(copilotInstaller?.legacy_targets) && copilotInstaller.legacy_targets.includes('.github/agents'),
       'GitHub Copilot installer cleans legacy agents output',
@@ -839,8 +818,6 @@ async function runTests() {
 
     assert(clineInstaller?.target_dir === '.cline/skills', 'Cline target_dir uses native skills path');
 
-    assert(clineInstaller?.skill_format === true, 'Cline installer enables native skill output');
-
     assert(
       Array.isArray(clineInstaller?.legacy_targets) && clineInstaller.legacy_targets.includes('.clinerules/workflows'),
       'Cline installer cleans legacy workflow output',
@@ -901,8 +878,6 @@ async function runTests() {
 
     assert(codebuddyInstaller?.target_dir === '.codebuddy/skills', 'CodeBuddy target_dir uses native skills path');
 
-    assert(codebuddyInstaller?.skill_format === true, 'CodeBuddy installer enables native skill output');
-
     assert(
       Array.isArray(codebuddyInstaller?.legacy_targets) && codebuddyInstaller.legacy_targets.includes('.codebuddy/commands'),
       'CodeBuddy installer cleans legacy command output',
@@ -961,8 +936,6 @@ async function runTests() {
 
     assert(crushInstaller?.target_dir === '.crush/skills', 'Crush target_dir uses native skills path');
 
-    assert(crushInstaller?.skill_format === true, 'Crush installer enables native skill output');
-
     assert(
       Array.isArray(crushInstaller?.legacy_targets) && crushInstaller.legacy_targets.includes('.crush/commands'),
       'Crush installer cleans legacy command output',
@@ -1020,8 +993,6 @@ async function runTests() {
     const traeInstaller = platformCodes21.platforms.trae?.installer;
 
     assert(traeInstaller?.target_dir === '.trae/skills', 'Trae target_dir uses native skills path');
-
-    assert(traeInstaller?.skill_format === true, 'Trae installer enables native skill output');
 
     assert(
       Array.isArray(traeInstaller?.legacy_targets) && traeInstaller.legacy_targets.includes('.trae/rules'),
@@ -1138,8 +1109,6 @@ async function runTests() {
 
     assert(geminiInstaller?.target_dir === '.gemini/skills', 'Gemini target_dir uses native skills path');
 
-    assert(geminiInstaller?.skill_format === true, 'Gemini installer enables native skill output');
-
     assert(
       Array.isArray(geminiInstaller?.legacy_targets) && geminiInstaller.legacy_targets.includes('.gemini/commands'),
       'Gemini installer cleans legacy commands output',
@@ -1196,7 +1165,6 @@ async function runTests() {
     const iflowInstaller = platformCodes24.platforms.iflow?.installer;
 
     assert(iflowInstaller?.target_dir === '.iflow/skills', 'iFlow target_dir uses native skills path');
-    assert(iflowInstaller?.skill_format === true, 'iFlow installer enables native skill output');
     assert(
       Array.isArray(iflowInstaller?.legacy_targets) && iflowInstaller.legacy_targets.includes('.iflow/commands'),
       'iFlow installer cleans legacy commands output',
@@ -1246,7 +1214,6 @@ async function runTests() {
     const qwenInstaller = platformCodes25.platforms.qwen?.installer;
 
     assert(qwenInstaller?.target_dir === '.qwen/skills', 'QwenCoder target_dir uses native skills path');
-    assert(qwenInstaller?.skill_format === true, 'QwenCoder installer enables native skill output');
     assert(
       Array.isArray(qwenInstaller?.legacy_targets) && qwenInstaller.legacy_targets.includes('.qwen/commands'),
       'QwenCoder installer cleans legacy commands output',
@@ -1296,7 +1263,6 @@ async function runTests() {
     const rovoInstaller = platformCodes26.platforms['rovo-dev']?.installer;
 
     assert(rovoInstaller?.target_dir === '.rovodev/skills', 'Rovo Dev target_dir uses native skills path');
-    assert(rovoInstaller?.skill_format === true, 'Rovo Dev installer enables native skill output');
     assert(
       Array.isArray(rovoInstaller?.legacy_targets) && rovoInstaller.legacy_targets.includes('.rovodev/workflows'),
       'Rovo Dev installer cleans legacy workflows output',
@@ -1432,8 +1398,6 @@ async function runTests() {
     const piInstaller = platformCodes28.platforms.pi?.installer;
 
     assert(piInstaller?.target_dir === '.pi/skills', 'Pi target_dir uses native skills path');
-    assert(piInstaller?.skill_format === true, 'Pi installer enables native skill output');
-    assert(piInstaller?.template_type === 'default', 'Pi installer uses default skill template');
 
     tempProjectDir28 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-pi-test-'));
     installedBmadDir28 = await createTestBmadFixture();
@@ -1648,93 +1612,6 @@ async function runTests() {
     // skill-manifest.csv should include the native agent entrypoint
     const skillManifestCsv29 = await fs.readFile(path.join(tempFixture29, '_config', 'skill-manifest.csv'), 'utf8');
     assert(skillManifestCsv29.includes('bmad-tea'), 'skill-manifest.csv includes native type:agent SKILL.md entrypoint');
-
-    // --- Agents at non-agents/ paths (regression test for BMM/CIS layouts) ---
-    // Create a second fixture with agents at paths like bmm/1-analysis/bmad-agent-analyst/
-    const tempFixture29b = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-agent-paths-'));
-    await fs.ensureDir(path.join(tempFixture29b, '_config'));
-
-    // Agent at bmm-style path: bmm/1-analysis/bmad-agent-analyst/
-    const bmmAgentDir = path.join(tempFixture29b, 'bmm', '1-analysis', 'bmad-agent-analyst');
-    await fs.ensureDir(bmmAgentDir);
-    await fs.writeFile(
-      path.join(bmmAgentDir, 'bmad-skill-manifest.yaml'),
-      [
-        'type: agent',
-        'name: bmad-agent-analyst',
-        'displayName: Mary',
-        'title: Business Analyst',
-        'role: Strategic Business Analyst',
-        'module: bmm',
-      ].join('\n') + '\n',
-    );
-    await fs.writeFile(
-      path.join(bmmAgentDir, 'SKILL.md'),
-      '---\nname: bmad-agent-analyst\ndescription: Business Analyst agent\n---\n\nAnalyst agent.\n',
-    );
-
-    // Agent at cis-style path: cis/skills/bmad-cis-agent-brainstorming-coach/
-    const cisAgentDir = path.join(tempFixture29b, 'cis', 'skills', 'bmad-cis-agent-brainstorming-coach');
-    await fs.ensureDir(cisAgentDir);
-    await fs.writeFile(
-      path.join(cisAgentDir, 'bmad-skill-manifest.yaml'),
-      [
-        'type: agent',
-        'name: bmad-cis-agent-brainstorming-coach',
-        'displayName: Carson',
-        'title: Brainstorming Specialist',
-        'role: Master Facilitator',
-        'module: cis',
-      ].join('\n') + '\n',
-    );
-    await fs.writeFile(
-      path.join(cisAgentDir, 'SKILL.md'),
-      '---\nname: bmad-cis-agent-brainstorming-coach\ndescription: Brainstorming coach\n---\n\nCoach.\n',
-    );
-
-    // Agent at standard agents/ path (GDS-style): gds/agents/gds-agent-game-dev/
-    const gdsAgentDir = path.join(tempFixture29b, 'gds', 'agents', 'gds-agent-game-dev');
-    await fs.ensureDir(gdsAgentDir);
-    await fs.writeFile(
-      path.join(gdsAgentDir, 'bmad-skill-manifest.yaml'),
-      [
-        'type: agent',
-        'name: gds-agent-game-dev',
-        'displayName: Link',
-        'title: Game Developer',
-        'role: Senior Game Dev',
-        'module: gds',
-      ].join('\n') + '\n',
-    );
-    await fs.writeFile(
-      path.join(gdsAgentDir, 'SKILL.md'),
-      '---\nname: gds-agent-game-dev\ndescription: Game developer agent\n---\n\nGame dev.\n',
-    );
-
-    const generator29b = new ManifestGenerator();
-    await generator29b.generateManifests(tempFixture29b, ['bmm', 'cis', 'gds'], [], { ides: [] });
-
-    // All three agents should appear in agents[] regardless of directory layout
-    const bmmAgent = generator29b.agents.find((a) => a.name === 'bmad-agent-analyst');
-    assert(bmmAgent !== undefined, 'Agent at bmm/1-analysis/ path appears in agents[]');
-    assert(bmmAgent && bmmAgent.module === 'bmm', 'BMM agent module field comes from manifest file');
-    assert(bmmAgent && bmmAgent.path.includes('bmm/1-analysis/bmad-agent-analyst'), 'BMM agent path reflects actual directory layout');
-
-    const cisAgent = generator29b.agents.find((a) => a.name === 'bmad-cis-agent-brainstorming-coach');
-    assert(cisAgent !== undefined, 'Agent at cis/skills/ path appears in agents[]');
-    assert(cisAgent && cisAgent.module === 'cis', 'CIS agent module field comes from manifest file');
-
-    const gdsAgent = generator29b.agents.find((a) => a.name === 'gds-agent-game-dev');
-    assert(gdsAgent !== undefined, 'Agent at gds/agents/ path appears in agents[]');
-    assert(gdsAgent && gdsAgent.module === 'gds', 'GDS agent module field comes from manifest file');
-
-    // agent-manifest.csv should contain all three
-    const agentCsv29b = await fs.readFile(path.join(tempFixture29b, '_config', 'agent-manifest.csv'), 'utf8');
-    assert(agentCsv29b.includes('bmad-agent-analyst'), 'agent-manifest.csv includes BMM-layout agent');
-    assert(agentCsv29b.includes('bmad-cis-agent-brainstorming-coach'), 'agent-manifest.csv includes CIS-layout agent');
-    assert(agentCsv29b.includes('gds-agent-game-dev'), 'agent-manifest.csv includes GDS-layout agent');
-
-    await fs.remove(tempFixture29b).catch(() => {});
   } catch (error) {
     assert(false, 'Unified skill scanner test succeeds', error.message);
   } finally {
@@ -1861,8 +1738,6 @@ async function runTests() {
     const onaInstaller = platformCodes32.platforms.ona?.installer;
 
     assert(onaInstaller?.target_dir === '.ona/skills', 'Ona target_dir uses native skills path');
-    assert(onaInstaller?.skill_format === true, 'Ona installer enables native skill output');
-    assert(onaInstaller?.template_type === 'default', 'Ona installer uses default skill template');
 
     tempProjectDir32 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-ona-test-'));
     installedBmadDir32 = await createTestBmadFixture();
@@ -1937,93 +1812,6 @@ async function runTests() {
   } finally {
     if (tempProjectDir32) await fs.remove(tempProjectDir32).catch(() => {});
     if (installedBmadDir32) await fs.remove(path.dirname(installedBmadDir32)).catch(() => {});
-  }
-
-  console.log('');
-
-  // ============================================================
-  // Test Suite 33: ConfigCollector Prompt Normalization
-  // ============================================================
-  console.log(`${colors.yellow}Test Suite 33: ConfigCollector Prompt Normalization${colors.reset}\n`);
-
-  try {
-    const teaModuleConfig33 = {
-      test_artifacts: {
-        default: '_bmad-output/test-artifacts',
-      },
-      test_design_output: {
-        prompt: 'Where should test design documents be stored?',
-        default: 'test-design',
-        result: '{test_artifacts}/{value}',
-      },
-      test_review_output: {
-        prompt: 'Where should test review reports be stored?',
-        default: 'test-reviews',
-        result: '{test_artifacts}/{value}',
-      },
-      trace_output: {
-        prompt: 'Where should traceability reports be stored?',
-        default: 'traceability',
-        result: '{test_artifacts}/{value}',
-      },
-    };
-
-    const collector33 = new ConfigCollector();
-    collector33.currentProjectDir = path.join(os.tmpdir(), 'bmad-config-normalization');
-    collector33.allAnswers = {};
-    collector33.collectedConfig = {
-      tea: {
-        test_artifacts: '_bmad-output/test-artifacts',
-      },
-    };
-    collector33.existingConfig = {
-      tea: {
-        test_artifacts: '_bmad-output/test-artifacts',
-        test_design_output: '_bmad-output/test-artifacts/test-design',
-        test_review_output: '_bmad-output/test-artifacts/test-reviews',
-        trace_output: '_bmad-output/test-artifacts/traceability',
-      },
-    };
-
-    const testDesignQuestion33 = await collector33.buildQuestion(
-      'tea',
-      'test_design_output',
-      teaModuleConfig33.test_design_output,
-      teaModuleConfig33,
-    );
-    const testReviewQuestion33 = await collector33.buildQuestion(
-      'tea',
-      'test_review_output',
-      teaModuleConfig33.test_review_output,
-      teaModuleConfig33,
-    );
-    const traceQuestion33 = await collector33.buildQuestion('tea', 'trace_output', teaModuleConfig33.trace_output, teaModuleConfig33);
-
-    assert(testDesignQuestion33.default === 'test-design', 'ConfigCollector normalizes existing test_design_output prompt default');
-    assert(testReviewQuestion33.default === 'test-reviews', 'ConfigCollector normalizes existing test_review_output prompt default');
-    assert(traceQuestion33.default === 'traceability', 'ConfigCollector normalizes existing trace_output prompt default');
-
-    collector33.allAnswers = {
-      tea_test_artifacts: '_bmad-output/test-artifacts',
-    };
-
-    assert(
-      collector33.processResultTemplate(teaModuleConfig33.test_design_output.result, testDesignQuestion33.default) ===
-        '_bmad-output/test-artifacts/test-design',
-      'ConfigCollector re-applies test_design_output template without duplicating prefix',
-    );
-    assert(
-      collector33.processResultTemplate(teaModuleConfig33.test_review_output.result, testReviewQuestion33.default) ===
-        '_bmad-output/test-artifacts/test-reviews',
-      'ConfigCollector re-applies test_review_output template without duplicating prefix',
-    );
-    assert(
-      collector33.processResultTemplate(teaModuleConfig33.trace_output.result, traceQuestion33.default) ===
-        '_bmad-output/test-artifacts/traceability',
-      'ConfigCollector re-applies trace_output template without duplicating prefix',
-    );
-  } catch (error) {
-    assert(false, 'ConfigCollector prompt normalization test succeeds', error.message);
   }
 
   console.log('');

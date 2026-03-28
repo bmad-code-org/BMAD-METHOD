@@ -5,7 +5,7 @@ on:
     branches: [main]
     paths:
       - "src/**"
-      - "tools/cli/**"
+      - "tools/installer/**"
       - "package.json"
   workflow_dispatch:
     inputs:
@@ -120,7 +120,18 @@ jobs:
         if: github.event_name == 'workflow_dispatch' && inputs.channel == 'latest'
         run: |
           TAG="v$(node -p 'require("./package.json").version')"
-          gh release create "$TAG" --generate-notes
+          VERSION="${TAG#v}"
+          # Extract the current version's section from CHANGELOG.md
+          BODY=$(awk -v ver="$VERSION" '
+            /^## v/ { if (found) exit; if (index($0, "## v" ver)) found=1; next }
+            found { print }
+          ' CHANGELOG.md)
+          if [ -z "$BODY" ]; then
+            echo "::warning::No CHANGELOG.md entry for $TAG — falling back to auto-generated notes"
+            gh release create "$TAG" --generate-notes
+          else
+            gh release create "$TAG" --notes "$BODY"
+          fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
