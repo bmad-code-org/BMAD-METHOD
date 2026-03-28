@@ -50,11 +50,12 @@ Decide how to build it and break work into stories.
 
 ## Phase 4: Implementation
 
-Build it, one story at a time. Coming soon, full phase 4 automation!
+Build it one story at a time, or automate the full loop once sprint planning and the project foundation are stable.
 
 | Workflow                   | Purpose                                                                  | Produces                         |
 | -------------------------- | ------------------------------------------------------------------------ | -------------------------------- |
 | `bmad-sprint-planning` | Initialize tracking (once per project to sequence the dev cycle)         | `sprint-status.yaml`          |
+| `bmad-story-automator-go` | Automate the story loop across create, dev, tests, review, and retro     | Story automator state + commits |
 | `bmad-create-story`    | Prepare next story for implementation                                    | `story-[slug].md`             |
 | `bmad-dev-story`       | Implement the story                                                      | Working code + tests          |
 | `bmad-code-review`     | Validate implementation quality                                          | Approved or changes requested |

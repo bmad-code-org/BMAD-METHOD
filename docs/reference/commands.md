@@ -95,6 +95,7 @@ Workflow skills run a structured, multi-step process without loading an agent pe
 | `bmad-create-prd` | Create a Product Requirements Document |
 | `bmad-create-architecture` | Design system architecture |
 | `bmad-create-epics-and-stories` | Create epics and stories |
+| `bmad-story-automator-go` | Automate the multi-story Phase 4 loop |
 | `bmad-dev-story` | Implement a story |
 | `bmad-code-review` | Run a code review |
 | `bmad-quick-dev` | Unified quick flow — clarify intent, plan, implement, review, present |

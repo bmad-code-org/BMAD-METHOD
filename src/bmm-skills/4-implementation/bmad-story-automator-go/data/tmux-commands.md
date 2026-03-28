@@ -25,7 +25,7 @@
 project_slug=$(basename "$PWD" | tr '[:upper:]' '[:lower:]' | tr -cd '[:alnum:]' | cut -c1-8)
 ```
 
-**Example:** Project at `/home/user/my-awesome-project` → `project_slug="myawesom"`
+**Example:** Project at `./my-awesome-project` → `project_slug="myawesom"`
 
 **Why timestamps with seconds (v2.1):**
 - Prevents collisions when multiple sessions spawn in same minute

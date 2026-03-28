@@ -20,7 +20,7 @@ This page lists the default BMM (Agile suite) agents that install with BMad Meth
 | Analyst (Mary)              | `bmad-analyst`       | `BP`, `RS`, `CB`, `DP`             | Brainstorm Project, Research, Create Brief, Document Project                                        |
 | Product Manager (John)      | `bmad-pm`            | `CP`, `VP`, `EP`, `CE`, `IR`, `CC` | Create/Validate/Edit PRD, Create Epics and Stories, Implementation Readiness, Correct Course        |
 | Architect (Winston)         | `bmad-architect`     | `CA`, `IR`                         | Create Architecture, Implementation Readiness                                                       |
-| Scrum Master (Bob)          | `bmad-sm`            | `SP`, `CS`, `ER`, `CC`             | Sprint Planning, Create Story, Epic Retrospective, Correct Course                                   |
+| Scrum Master (Bob)          | `bmad-sm`            | `SP`, `SA`, `CS`, `ER`, `CC`       | Sprint Planning, Story Automator, Create Story, Epic Retrospective, Correct Course                  |
 | Developer (Amelia)          | `bmad-dev`           | `DS`, `CR`                         | Dev Story, Code Review                                                                              |
 | QA Engineer (Quinn)         | `bmad-qa`            | `QA`                               | Automate (generate tests for existing features)                                                     |
 | Quick Flow Solo Dev (Barry) | `bmad-master`        | `QD`, `CR`                          | Quick Dev, Code Review                                                                              |

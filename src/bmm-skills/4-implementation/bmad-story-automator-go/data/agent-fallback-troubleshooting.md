@@ -1,6 +1,6 @@
 # Agent Fallback Troubleshooting
 
-### Issue: Session spawns Claude instead of Codex
+## Issue: Session spawns Claude instead of Codex
 
 **Symptoms:**
 - Output shows Claude-specific messages (e.g., "You've used 84% of your weekly limit")
@@ -28,7 +28,7 @@ session=$("$scripts" tmux-wrapper spawn dev "$epic" "$story_id" \
   --command "$("$scripts" tmux-wrapper build-cmd dev "$story_id" --agent codex)")
 ```
 
-### Issue: Monitor reports "stuck" but Codex is active
+## Issue: Monitor reports "stuck" but Codex is active
 
 **Symptoms:**
 - `story-automator monitor-session` returns `stuck` state after 4 polls
@@ -50,7 +50,7 @@ tmux show-environment -t "session-name" AI_AGENT
 "$scripts" tmux-status-check "session-name" --project-root "$PWD"
 ```
 
-### Issue: log command error when using --agent flag
+## Issue: log command error when using --agent flag
 
 **Symptoms:**
 ```
@@ -61,7 +61,7 @@ log: Unknown subcommand 'Codex agent detected - applying 1.5x timeout (90min)'
 
 **Fixed in v1.4.0:** The `log()` function is now defined before argument parsing in `story-automator monitor-session`.
 
-### Issue: Manual polling required as workaround
+## Issue: Manual polling required as workaround
 
 **If monitoring still fails**, use this manual polling approach:
 ```bash
