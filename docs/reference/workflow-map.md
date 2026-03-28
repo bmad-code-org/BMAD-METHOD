@@ -21,13 +21,14 @@ Final important note: Every workflow below can be run directly with your tool of
 
 ## Phase 1: Analysis (Optional)
 
-Explore the problem space and validate ideas before committing to planning.
+Explore the problem space and validate ideas before committing to planning. [**Learn what each tool does and when to use it**](../explanation/analysis-phase.md).
 
 | Workflow                        | Purpose                                                                    | Produces                  |
 | ------------------------------- | -------------------------------------------------------------------------- | ------------------------- |
 | `bmad-brainstorming`            | Brainstorm Project Ideas with guided facilitation of a brainstorming coach | `brainstorming-report.md` |
 | `bmad-domain-research`, `bmad-market-research`, `bmad-technical-research` | Validate market, technical, or domain assumptions | Research findings |
-| `bmad-create-product-brief`     | Capture strategic vision                                                   | `product-brief.md`        |
+| `bmad-product-brief`            | Capture strategic vision — best when your concept is clear                 | `product-brief.md`        |
+| `bmad-prfaq`                    | Working Backwards — stress-test and forge your product concept             | `prfaq-{project}.md`      |
 
 ## Phase 2: Planning
 
