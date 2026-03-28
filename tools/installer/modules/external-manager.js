@@ -313,10 +313,41 @@ class ExternalModuleManager {
 
     // The module-definition specifies the path to module.yaml relative to repo root
     // We need to return the directory containing module.yaml
-    const moduleDefinitionPath = moduleInfo.moduleDefinition; // e.g., 'src/module.yaml'
-    const moduleDir = path.dirname(path.join(cloneDir, moduleDefinitionPath));
+    const moduleDefinitionPath = moduleInfo.moduleDefinition; // e.g., 'skills/module.yaml'
+    const configuredPath = path.join(cloneDir, moduleDefinitionPath);
 
-    return moduleDir;
+    if (await fs.pathExists(configuredPath)) {
+      return path.dirname(configuredPath);
+    }
+
+    // Fallback: search skills/ and src/ (root level and one level deep for subfolders)
+    for (const dir of ['skills', 'src']) {
+      const rootCandidate = path.join(cloneDir, dir, 'module.yaml');
+      if (await fs.pathExists(rootCandidate)) {
+        return path.dirname(rootCandidate);
+      }
+      const dirPath = path.join(cloneDir, dir);
+      if (await fs.pathExists(dirPath)) {
+        const entries = await fs.readdir(dirPath, { withFileTypes: true });
+        for (const entry of entries) {
+          if (entry.isDirectory()) {
+            const subCandidate = path.join(dirPath, entry.name, 'module.yaml');
+            if (await fs.pathExists(subCandidate)) {
+              return path.dirname(subCandidate);
+            }
+          }
+        }
+      }
+    }
+
+    // Check repo root as last fallback
+    const rootCandidate = path.join(cloneDir, 'module.yaml');
+    if (await fs.pathExists(rootCandidate)) {
+      return path.dirname(rootCandidate);
+    }
+
+    // Nothing found: return configured path (preserves old behavior for error messaging)
+    return path.dirname(configuredPath);
   }
 }
 
