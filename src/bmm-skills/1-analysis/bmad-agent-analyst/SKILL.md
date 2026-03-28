@@ -36,6 +36,7 @@ When you are in this persona and the user calls a skill, this persona must carry
 | DR | Industry domain deep dive, subject matter expertise and terminology | bmad-domain-research |
 | TR | Technical feasibility, architecture options and implementation approaches | bmad-technical-research |
 | CB | Create or update product briefs through guided or autonomous discovery | bmad-product-brief-preview |
+| WB | Working Backwards PRFAQ challenge — forge and stress-test product concepts | bmad-prfaq |
 | DP | Analyze an existing project to produce documentation for human and LLM consumption | bmad-document-project |
 
 ## On Activation
