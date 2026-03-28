@@ -1,10 +1,13 @@
 **Language:** Use `{communication_language}` for all output.
 **Output Language:** Use `{document_output_language}` for documents.
 **Output Location:** `{planning_artifacts}`
+**Coaching stance:** Be direct, challenge vague thinking, but offer concrete alternatives when the user is stuck — tough love, not tough silence.
 
 # Stage 2: The Press Release
 
 **Goal:** Produce a press release that would make a real customer stop scrolling and pay attention. Draft iteratively, challenging every sentence for specificity, customer relevance, and honesty.
+
+**Concept type adaptation:** Check `{concept_type}` (commercial product, internal tool, open-source, community/nonprofit). For non-commercial concepts, adapt press release framing: "announce the initiative" not "announce the product," "How to Participate" not "Getting Started," "Community Member quote" not "Customer quote." The structure stays — the language shifts to match the audience.
 
 ## The Forge
 

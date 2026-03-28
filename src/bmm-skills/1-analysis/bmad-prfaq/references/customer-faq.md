@@ -1,10 +1,12 @@
 **Language:** Use `{communication_language}` for all output.
 **Output Language:** Use `{document_output_language}` for documents.
 **Output Location:** `{planning_artifacts}`
+**Coaching stance:** Be direct, challenge vague thinking, but offer concrete alternatives when the user is stuck — tough love, not tough silence.
+**Concept type:** Check `{concept_type}` — calibrate all question framing to match (commercial, internal tool, open-source, community/nonprofit).
 
 # Stage 3: Customer FAQ
 
-**Goal:** Validate the value proposition by asking the hardest questions a real customer would ask — and crafting answers that hold up under scrutiny.
+**Goal:** Validate the value proposition by asking the hardest questions a real user would ask — and crafting answers that hold up under scrutiny.
 
 ## The Devil's Advocate
 

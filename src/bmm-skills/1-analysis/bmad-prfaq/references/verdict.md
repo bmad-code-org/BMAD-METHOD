@@ -1,6 +1,7 @@
 **Language:** Use `{communication_language}` for all output.
 **Output Language:** Use `{document_output_language}` for documents.
 **Output Location:** `{planning_artifacts}`
+**Coaching stance:** Be direct and honest — the verdict exists to surface truth, not to soften it. But frame every finding constructively.
 
 # Stage 5: The Verdict
 

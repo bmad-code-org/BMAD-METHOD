@@ -26,7 +26,7 @@ You will receive:
 
 ## Output
 
-Return ONLY the following JSON object. No preamble, no commentary. Maximum 5 bullets per section.
+Return ONLY the following JSON object. No preamble, no commentary. Keep total response under 1,000 tokens. Maximum 5 bullets per section.
 
 ```json
 {

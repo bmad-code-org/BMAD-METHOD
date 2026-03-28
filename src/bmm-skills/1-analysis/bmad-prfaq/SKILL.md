@@ -25,10 +25,10 @@ Load available config from `{project-root}/_bmad/config.yaml` and `{project-root
 
 Resolve: `{user_name}`, `{communication_language}`, `{document_output_language}`, `{planning_artifacts}`, `{project_name}`.
 
-**Resume detection:** Check if `{planning_artifacts}/prfaq-{project_name}.md` already exists. If it does, read its frontmatter `stage` field and offer to resume from the next stage. If the user confirms, route directly to that stage's reference file.
+**Resume detection:** Check if `{planning_artifacts}/prfaq-{project_name}.md` already exists. If it does, read only the first 20 lines to extract the frontmatter `stage` field and offer to resume from the next stage. Do not read the full document. If the user confirms, route directly to that stage's reference file.
 
 **Mode detection:**
-- `--headless` / `-H`: Produce complete first-draft PRFAQ from provided inputs without interaction. Validate that inputs include at minimum: customer, problem, stakes, and solution concept. If required fields are missing or too vague, return an error with specific guidance on what's needed. Fan out artifact analyzer and web researcher subagents in parallel (see Contextual Gathering below), then create the output document at `{planning_artifacts}/prfaq-{project_name}.md` using `./assets/prfaq-template.md` and route to `./references/press-release.md`.
+- `--headless` / `-H`: Produce complete first-draft PRFAQ from provided inputs without interaction. Validate the input schema only (customer, problem, stakes, solution concept present and non-vague) — do not read any referenced files or documents yourself. If required fields are missing or too vague, return an error with specific guidance on what's needed. Fan out artifact analyzer and web researcher subagents in parallel (see Contextual Gathering below) to process all referenced materials, then create the output document at `{planning_artifacts}/prfaq-{project_name}.md` using `./assets/prfaq-template.md` and route to `./references/press-release.md`.
 - Default: Full interactive coaching — the gauntlet.
 
 **Headless input schema:**
@@ -69,7 +69,7 @@ When the user gets stuck, offer concrete suggestions based on what they've share
 
 **Contextual Gathering:** Once you understand the concept, gather external context before drafting begins.
 
-1. **Ask about inputs:** "Do you have any existing documents, research, brainstorming, or materials I should review?" If the user provides paths or mentions prior artifacts, note them for subagent scanning.
+1. **Ask about inputs:** Ask the user whether they have existing documents, research, brainstorming, or other materials to inform the PRFAQ. Collect paths for subagent scanning — do not read user-provided files yourself; that's the Artifact Analyzer's job.
 2. **Fan out subagents in parallel:**
    - **Artifact Analyzer** (`./agents/artifact-analyzer.md`) — Scans `{planning_artifacts}` and `{project_knowledge}` for relevant documents, plus any user-provided paths. Receives the product intent summary so it knows what's relevant.
    - **Web Researcher** (`./agents/web-researcher.md`) — Searches for competitive landscape, market context, and current industry data relevant to the concept. Receives the product intent summary.
@@ -77,6 +77,8 @@ When the user gets stuck, offer concrete suggestions based on what they've share
 4. **Merge findings** with what the user shared. Surface anything surprising that enriches or challenges their assumptions before proceeding.
 
 **Create the output document** at `{planning_artifacts}/prfaq-{project_name}.md` using `./assets/prfaq-template.md`. Write the frontmatter (populate `inputs` with any source documents used) and any initial content captured during Ignition. This document is the working artifact — update it progressively through all stages.
+
+**Coaching Notes Capture:** Before moving on, append a `<!-- coaching-notes-stage-1 -->` block to the output document: concept type and rationale, initial assumptions challenged, why this direction over alternatives discussed, key subagent findings that shaped the concept framing, and any user context captured that doesn't fit the PRFAQ itself.
 
 **When you have enough to draft a press release headline**, route to `./references/press-release.md`.
 
