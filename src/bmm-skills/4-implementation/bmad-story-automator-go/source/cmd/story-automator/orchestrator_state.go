@@ -169,16 +169,27 @@ func orchestratorStateUpdate(args []string) int {
 			}
 			key := parts[0]
 			val := parts[1]
+			replaced := false
 			for idx, line := range lines {
 				if strings.HasPrefix(line, key+":") {
 					lines[idx] = fmt.Sprintf("%s: %s", key, val)
+					replaced = true
 				}
 			}
-			updatedKeys = append(updatedKeys, key)
+			if replaced {
+				updatedKeys = append(updatedKeys, key)
+			}
 		}
 	}
 
-	_ = os.WriteFile(file, []byte(strings.Join(lines, "\n")), 0o644)
+	if len(updatedKeys) == 0 {
+		writeJSON(map[string]any{"ok": false, "error": "keys_not_found", "updated": updatedKeys})
+		return 1
+	}
+	if err := os.WriteFile(file, []byte(strings.Join(lines, "\n")), 0o644); err != nil {
+		writeJSON(map[string]any{"ok": false, "error": "write_failed", "updated": []string{}})
+		return 1
+	}
 	writeJSON(map[string]any{"ok": true, "updated": updatedKeys})
 	return 0
 }
@@ -199,14 +210,19 @@ func readStoryRangeFromState(stateFile string) []string {
 		for _, line := range lines {
 			if strings.HasPrefix(strings.TrimSpace(line), "storyRange:") {
 				inRange = true
+				raw := strings.TrimSpace(strings.TrimPrefix(strings.TrimSpace(line), "storyRange:"))
+				if parsed := parseStringListLiteral(raw); parsed != nil {
+					storyRange = parsed
+					inRange = false
+					continue
+				}
 				if strings.HasSuffix(strings.TrimSpace(line), "[]") {
 					storyRange = []string{}
 				}
 				continue
 			}
 			if inRange && strings.HasPrefix(strings.TrimSpace(line), "-") {
-				val := strings.TrimSpace(strings.TrimPrefix(strings.TrimSpace(line), "-"))
-				val = strings.Trim(val, "\"")
+				val := unquoteScalar(strings.TrimSpace(strings.TrimPrefix(strings.TrimSpace(line), "-")))
 				if val != "" {
 					storyRange = append(storyRange, val)
 				}

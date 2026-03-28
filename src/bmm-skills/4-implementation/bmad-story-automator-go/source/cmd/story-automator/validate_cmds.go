@@ -106,12 +106,22 @@ func cmdValidateStoryCreation(args []string) int {
 			switch args[i] {
 			case "--before":
 				if i+1 < len(args) {
-					before, _ = strconv.Atoi(args[i+1])
+					n, err := strconv.Atoi(args[i+1])
+					if err != nil {
+						fmt.Fprintf(os.Stderr, "Invalid --before value: %s\n", args[i+1])
+						return 1
+					}
+					before = n
 					i++
 				}
 			case "--after":
 				if i+1 < len(args) {
-					after, _ = strconv.Atoi(args[i+1])
+					n, err := strconv.Atoi(args[i+1])
+					if err != nil {
+						fmt.Fprintf(os.Stderr, "Invalid --after value: %s\n", args[i+1])
+						return 1
+					}
+					after = n
 					i++
 				}
 			case "--artifacts-dir":
@@ -133,7 +143,14 @@ func cmdValidateStoryCreation(args []string) int {
 			fmt.Fprintln(os.Stderr, "Usage: validate-story-creation list <story_id>")
 			return 1
 		}
-		listStoryFiles(args[0])
+		storyID := args[0]
+		for i := 1; i < len(args); i++ {
+			if args[i] == "--artifacts-dir" && i+1 < len(args) {
+				artifactsDir = args[i+1]
+				i++
+			}
+		}
+		listStoryFiles(storyID)
 		return 0
 
 	case "prefix":

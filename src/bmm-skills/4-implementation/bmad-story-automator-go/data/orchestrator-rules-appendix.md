@@ -76,7 +76,7 @@ Before escalating, check if story is blocking:
   - Decision tree for poll results
   - Polling loop with state tracking
 
-- **Output Parsing:** See `data/monitoring-pattern.md` (Sub-Agent Invocation section)
+- **Output Parsing:** See `data/monitoring-pattern-parsing.md` (Sub-Agent Invocation section)
   - NEVER parse output yourself
   - ALWAYS use sub-agents (Task tool, haiku)
   - Verification checkpoint before proceeding

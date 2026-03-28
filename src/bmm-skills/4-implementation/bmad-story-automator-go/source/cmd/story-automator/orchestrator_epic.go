@@ -146,10 +146,9 @@ func orchestratorCheckEpicComplete(args []string) int {
 		}
 	}
 
-	epicsDir := filepath.Join(getProjectRoot(), "_bmad-output", "implementation-artifacts")
-	matches, _ := filepath.Glob(filepath.Join(epicsDir, fmt.Sprintf("epic-%s-*.md", epicNumber)))
-	if len(matches) > 0 {
-		content, _ := readFile(matches[0])
+	epicFile := findEpicFile(getProjectRoot(), epicNumber)
+	if epicFile != "" {
+		content, _ := readFile(epicFile)
 		re := regexp.MustCompile(regexp.QuoteMeta(epicNumber) + `\.[0-9]+`)
 		ids := re.FindAllString(content, -1)
 		ids = uniqueSortedStories(ids)

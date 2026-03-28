@@ -36,8 +36,10 @@ resolve_agent_for_task() {
     primary_agent=$(echo "$result" | jq -r '.primary')
     fallback_agent=$(echo "$result" | jq -r '.fallback')
 
-    # Handle "false"/null meaning disabled
-    [ "$fallback_agent" = "false" ] && fallback_agent=""
+    # Normalize disabled fallback states
+    if [ -z "$fallback_agent" ] || [ "$fallback_agent" = "false" ] || [ "$fallback_agent" = "null" ] || [ "$fallback_agent" = "$primary_agent" ]; then
+        fallback_agent=""
+    fi
 }
 
 # Usage:

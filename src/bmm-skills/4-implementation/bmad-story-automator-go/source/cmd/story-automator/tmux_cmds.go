@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -40,17 +41,23 @@ type tmuxStatus struct {
 
 func cmdTmuxWrapper(args []string) int {
 	if len(args) == 0 {
-		return tmuxWrapperUsage()
+		return tmuxWrapperUsage(os.Stderr, 1)
+	}
+	if isHelpFlag(args[0]) {
+		return tmuxWrapperUsage(os.Stdout, 0)
 	}
 	action := args[0]
 	args = args[1:]
 
 	switch action {
 	case "spawn":
+		if len(args) > 0 && isHelpFlag(args[0]) {
+			return tmuxWrapperUsage(os.Stdout, 0)
+		}
 		return tmuxWrapperSpawn(args)
 	case "name":
 		if len(args) < 3 {
-			return tmuxWrapperUsage()
+			return tmuxWrapperUsage(os.Stderr, 1)
 		}
 		step := args[0]
 		epic := args[1]
@@ -71,7 +78,7 @@ func cmdTmuxWrapper(args []string) int {
 		return 0
 	case "kill":
 		if len(args) < 1 {
-			return tmuxWrapperUsage()
+			return tmuxWrapperUsage(os.Stderr, 1)
 		}
 		tmuxKillSession(args[0])
 		return 0
@@ -88,7 +95,7 @@ func cmdTmuxWrapper(args []string) int {
 		return 0
 	case "exists":
 		if len(args) < 1 {
-			return tmuxWrapperUsage()
+			return tmuxWrapperUsage(os.Stderr, 1)
 		}
 		if tmuxHasSession(args[0]) {
 			fmt.Println("true")
@@ -97,6 +104,9 @@ func cmdTmuxWrapper(args []string) int {
 		fmt.Println("false")
 		return 1
 	case "build-cmd":
+		if len(args) > 0 && isHelpFlag(args[0]) {
+			return tmuxWrapperUsage(os.Stdout, 0)
+		}
 		return tmuxWrapperBuildCmd(args)
 	case "project-slug":
 		fmt.Println(getProjectSlug())
@@ -106,7 +116,7 @@ func cmdTmuxWrapper(args []string) int {
 		return 0
 	case "story-suffix":
 		if len(args) < 1 {
-			return tmuxWrapperUsage()
+			return tmuxWrapperUsage(os.Stderr, 1)
 		}
 		fmt.Println(strings.ReplaceAll(args[0], ".", "-"))
 		return 0
@@ -120,33 +130,33 @@ func cmdTmuxWrapper(args []string) int {
 		fmt.Println(getSkillPrefix(getAgentType()))
 		return 0
 	default:
-		return tmuxWrapperUsage()
+		return tmuxWrapperUsage(os.Stderr, 1)
 	}
 }
 
-func tmuxWrapperUsage() int {
-	fmt.Fprintln(os.Stderr, "Usage: tmux-wrapper <action> [args...]")
-	fmt.Fprintln(os.Stderr, "")
-	fmt.Fprintln(os.Stderr, "Actions:")
-	fmt.Fprintln(os.Stderr, "  spawn <step> <epic> <story_id> [--command \"...\"] [--cycle N] [--agent TYPE]")
-	fmt.Fprintln(os.Stderr, "  name <step> <epic> <story_id> [--cycle N]")
-	fmt.Fprintln(os.Stderr, "  list [--project-only]")
-	fmt.Fprintln(os.Stderr, "  kill <session_name>")
-	fmt.Fprintln(os.Stderr, "  kill-all [--project-only]")
-	fmt.Fprintln(os.Stderr, "  exists <session_name>")
-	fmt.Fprintln(os.Stderr, "  build-cmd <step> <story_id> [--agent TYPE] [extra_instruction]")
-	fmt.Fprintln(os.Stderr, "  project-slug")
-	fmt.Fprintln(os.Stderr, "  project-hash")
-	fmt.Fprintln(os.Stderr, "  story-suffix <story_id>")
-	fmt.Fprintln(os.Stderr, "  agent-type")
-	fmt.Fprintln(os.Stderr, "  agent-cli")
-	fmt.Fprintln(os.Stderr, "  skill-prefix")
-	return 1
+func tmuxWrapperUsage(w io.Writer, code int) int {
+	fmt.Fprintln(w, "Usage: tmux-wrapper <action> [args...]")
+	fmt.Fprintln(w, "")
+	fmt.Fprintln(w, "Actions:")
+	fmt.Fprintln(w, "  spawn <step> <epic> <story_id> [--command \"...\"] [--cycle N] [--agent TYPE]")
+	fmt.Fprintln(w, "  name <step> <epic> <story_id> [--cycle N]")
+	fmt.Fprintln(w, "  list [--project-only]")
+	fmt.Fprintln(w, "  kill <session_name>")
+	fmt.Fprintln(w, "  kill-all [--project-only]")
+	fmt.Fprintln(w, "  exists <session_name>")
+	fmt.Fprintln(w, "  build-cmd <step> <story_id> [--agent TYPE] [extra_instruction]")
+	fmt.Fprintln(w, "  project-slug")
+	fmt.Fprintln(w, "  project-hash")
+	fmt.Fprintln(w, "  story-suffix <story_id>")
+	fmt.Fprintln(w, "  agent-type")
+	fmt.Fprintln(w, "  agent-cli")
+	fmt.Fprintln(w, "  skill-prefix")
+	return code
 }
 
 func tmuxWrapperSpawn(args []string) int {
 	if len(args) < 3 {
-		return tmuxWrapperUsage()
+		return tmuxWrapperUsage(os.Stderr, 1)
 	}
 	step := args[0]
 	epic := args[1]
@@ -216,7 +226,7 @@ func tmuxWrapperSpawn(args []string) int {
 
 func tmuxWrapperBuildCmd(args []string) int {
 	if len(args) < 2 {
-		return tmuxWrapperUsage()
+		return tmuxWrapperUsage(os.Stderr, 1)
 	}
 	step := args[0]
 	storyID := args[1]
@@ -927,6 +937,11 @@ func cmdMonitorSession(args []string) int {
 	if len(args) == 0 {
 		fmt.Fprintln(os.Stderr, "Usage: monitor-session <session_name> [options]")
 		return 1
+	}
+	if isHelpFlag(args[0]) {
+		fmt.Println("Usage: monitor-session <session_name> [options]")
+		fmt.Println("Options: --max-polls N --initial-wait N --project-root PATH --timeout MIN --verbose --json --agent TYPE --workflow TYPE --story-key KEY")
+		return 0
 	}
 
 	sessionName := ""

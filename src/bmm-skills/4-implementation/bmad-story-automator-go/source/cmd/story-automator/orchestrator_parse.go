@@ -1,12 +1,17 @@
 package main
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
 	"os"
 	"os/exec"
 	"regexp"
 	"strings"
+	"time"
 )
+
+const parseOutputTimeout = 2 * time.Minute
 
 func orchestratorParseOutput(args []string) int {
 	if len(args) < 2 {
@@ -36,7 +41,10 @@ func orchestratorParseOutput(args []string) int {
 
 	prompt := buildParsePrompt(stepType, content)
 
-	cmd := exec.Command("claude", "-p", "--model", "haiku", prompt)
+	ctx, cancel := context.WithTimeout(context.Background(), parseOutputTimeout)
+	defer cancel()
+
+	cmd := exec.CommandContext(ctx, "claude", "-p", "--model", "haiku", prompt)
 	env := []string{}
 	for _, e := range os.Environ() {
 		if !strings.HasPrefix(e, "CLAUDECODE=") {
@@ -46,6 +54,10 @@ func orchestratorParseOutput(args []string) int {
 	cmd.Env = append(env, "STORY_AUTOMATOR_CHILD=true")
 	out, err := cmd.CombinedOutput()
 	if err != nil {
+		if ctx.Err() == context.DeadlineExceeded {
+			fmt.Println("{\"status\":\"error\",\"reason\":\"sub-agent call timed out\"}")
+			return 1
+		}
 		fmt.Println("{\"status\":\"error\",\"reason\":\"sub-agent call failed\"}")
 		return 1
 	}
@@ -89,8 +101,11 @@ func extractJSONLine(result string) string {
 	lines := trimLines(result)
 	jsonRe := regexp.MustCompile(`\{.*\}`)
 	for _, line := range lines {
-		if jsonRe.MatchString(line) {
-			return jsonRe.FindString(line)
+		for _, match := range jsonRe.FindAllString(line, -1) {
+			match = strings.TrimSpace(match)
+			if json.Valid([]byte(match)) {
+				return match
+			}
 		}
 	}
 	return ""

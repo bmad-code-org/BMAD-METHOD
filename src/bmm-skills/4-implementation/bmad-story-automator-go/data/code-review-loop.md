@@ -101,13 +101,13 @@ is_done=$(echo "$status" | jq -r '.done')
 **IF final_state == "incomplete":** (v2.2 - Codex-specific)
 - Session idle but sprint-status NOT updated
 - Cleanup: `"$scripts" tmux-wrapper kill "$session_name"`
-- Count this as a failed attempt and **retry** until `reviewCycle == maxCycles`
-- **After maxCycles exhausted:** Escalate with CRITICAL priority (Trigger #8)
-- Present options:
+- Increment `reviewCycle`
+- If `reviewCycle <= maxCycles`: count this as a failed attempt and **CONTINUE** with a retry
+- If `reviewCycle > maxCycles`: Escalate with CRITICAL priority (Trigger #8), then present options:
   1. **[1] Manual Fix** - Update sprint-status.yaml yourself
   2. **[2] Run with Claude** - Re-run code-review with Claude agent
   3. **[3] Skip Story** - Mark story as skipped and continue
-- **HALT** — wait for user choice
+- **HALT** — wait for user choice only after maxCycles is exhausted
 
 **IF final_state == "crashed" or "stuck":**
 - Log "Review session failed: $final_state"

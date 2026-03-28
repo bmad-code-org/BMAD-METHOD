@@ -36,7 +36,7 @@ session=$("$scripts" tmux-wrapper spawn {type} {epic} {story_id} \
 result=$("$scripts" monitor-session "$session" --json --agent "$agent")
 
 # Parse output
-parsed=$("$scripts" orchestrator-helper parse-output "$(echo $result | jq -r '.output_file')" {type})
+parsed=$("$scripts" orchestrator-helper parse-output "$(printf '%s' "$result" | jq -r '.output_file')" {type})
 
 # Cleanup
 "$scripts" tmux-wrapper kill "$session"

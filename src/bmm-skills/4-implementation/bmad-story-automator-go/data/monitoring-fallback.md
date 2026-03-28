@@ -22,15 +22,15 @@ When `story-automator monitor-session` fails or background monitoring task dies:
 
 ```bash
 # STEP 1: Check if tmux session still exists
-sessions=$(tmux list-sessions 2>/dev/null | grep "sa-.*{story_pattern}" || true)
+sessions=$(tmux list-sessions -F '#{session_name}' 2>/dev/null | grep "sa-.*{story_pattern}" || true)
 
 # STEP 2: If session exists, check its status directly
 if [ -n "$sessions" ]; then
-    for session in $sessions; do
+    while IFS= read -r session; do
         status=$("$scripts" tmux-status-check "$session")
         session_state=$(echo "$status" | cut -d',' -f6)
         # Act based on direct status
-    done
+    done <<< "$sessions"
 fi
 
 # STEP 3: ALWAYS verify source of truth regardless of session status

@@ -145,10 +145,9 @@ func normalizeStoryKey(projectRoot, input string) (struct{ ID, Prefix, Key strin
 		statusFile := sprintStatusFile(projectRoot)
 		if fileExists(statusFile) {
 			content, _ := readFile(statusFile)
-			re := regexp.MustCompile(`(?m)^\s*` + regexp.QuoteMeta(result.Prefix) + `-`) // full key
-			lines := re.FindAllString(content, -1)
-			if len(lines) > 0 {
-				result.Key = strings.TrimSpace(strings.SplitN(lines[0], ":", 2)[0])
+			re := regexp.MustCompile(`(?m)^\s*(` + regexp.QuoteMeta(result.Prefix) + `-[^:\s]+)\s*:`)
+			if match := re.FindStringSubmatch(content); len(match) == 2 {
+				result.Key = strings.TrimSpace(match[1])
 			}
 		}
 	}

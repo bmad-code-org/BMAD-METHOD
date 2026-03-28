@@ -91,8 +91,11 @@ state_file="{outputFile}"
 echo "- **[$(date -u +%Y-%m-%dT%H:%M:%SZ)]** Starting story {story_id}" >> "$state_file"
 
 # Initialize Story Progress row
-sed -i '' "/<!-- Progress rows/i\\
-| {story_id} | - | - | - | - | - | in-progress |" "$state_file"
+tmp_state=$(mktemp)
+awk -v row="| {story_id} | - | - | - | - | - | in-progress |" '
+  /^<!-- Progress rows -->$/ { print row }
+  { print }
+' "$state_file" > "$tmp_state" && mv "$tmp_state" "$state_file"
 ```
 
 Display: "**Story {N}/{total}: {title}**"
@@ -136,7 +139,8 @@ validation=$("$scripts" validate-story-creation check {story_id} --before $befor
 - If `validation.valid == true`:
   ```bash
   # Update Story Progress: mark create-story done
-  sed -i '' "s/^| ${story_id} |.*$/| ${story_id} | done | - | - | - | - | in-progress |/" "$state_file"
+  tmp_state=$(mktemp)
+  sed "s/^| ${story_id} |.*$/| ${story_id} | done | - | - | - | - | in-progress |/" "$state_file" > "$tmp_state" && mv "$tmp_state" "$state_file"
   ```
   → proceed to B
 - If `validation.valid == false` AND attempts < 5 → retry with next agent (see `{retryStrategy}`)
@@ -161,7 +165,7 @@ result=$("$scripts" monitor-session "$session" --json --agent "$current_agent")
 - Return normalized schema only: `next_action`, `confidence`, `error_class`, `reasons`
 
 ```bash
-parsed=$("$scripts" orchestrator-helper parse-output "$(echo $result | jq -r '.output_file')" dev)
+parsed=$("$scripts" orchestrator-helper parse-output "$(printf '%s' "$result" | jq -r '.output_file')" dev)
 next_action=$(echo "$parsed" | jq -r '.next_action')
 confidence=$(echo "$parsed" | jq -r '.confidence // 0.0')
 error_class=$(echo "$parsed" | jq -r '.error_class // "none"')
@@ -171,7 +175,8 @@ reasons=$(echo "$parsed" | jq -c '.reasons // []')
 - If `next_action == "proceed"`:
   ```bash
   # Update Story Progress: mark dev-story done
-  sed -i '' "s/^| ${story_id} |.*$/| ${story_id} | done | done | - | - | - | in-progress |/" "$state_file"
+  tmp_state=$(mktemp)
+  sed "s/^| ${story_id} |.*$/| ${story_id} | done | done | - | - | - | in-progress |/" "$state_file" > "$tmp_state" && mv "$tmp_state" "$state_file"
   ```
   → proceed to C (next step)
 - If `next_action == "retry"` OR `result.final_state == "crashed"`:

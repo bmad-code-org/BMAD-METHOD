@@ -27,6 +27,9 @@ tests_pass=$([[ "$test_result" != *"FAIL"* ]] && echo "true" || echo "false")
 
 Story: {story_name}
 Story ID: {story_id}
+```
+
+---
 
 ## 2. Cannot Parse Session Output
 
@@ -64,7 +67,7 @@ Story: {story_name}
 Step: {step_name}
 Error: {error_message}
 
-Unable to spawn T-Mux session after retry.
+Unable to spawn tmux session after retry.
 
 Options:
 [1] Retry again

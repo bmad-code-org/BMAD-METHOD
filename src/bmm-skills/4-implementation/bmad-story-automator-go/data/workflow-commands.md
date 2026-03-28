@@ -116,9 +116,9 @@ tmux send-keys -t "SESSION" 'claude --dangerously-skip-permissions "bmad-create-
 codex exec "Execute the BMAD create-story workflow for story STORY_ID.
 
 Workflow location: _bmad/bmm/4-implementation/bmad-create-story/
-- Read workflow.yaml for the process
+- Follow workflow.md for the process
 - Use template.md as the output template
-- Follow instructions.xml for detailed steps
+- Reference checklist.md for validation steps
 
 Create story file at: _bmad-output/implementation-artifacts/STORY_PREFIX-*.md
 

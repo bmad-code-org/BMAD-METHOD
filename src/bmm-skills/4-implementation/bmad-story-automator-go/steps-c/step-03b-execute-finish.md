@@ -25,7 +25,8 @@ ok=$(echo "$commit" | jq -r '.ok')
 - If `ok == true`:
   ```bash
   # Update Story Progress: mark git-commit done
-  sed -i '' "s/^| ${story_id} |.*$/| ${story_id} | done | done | done | done | done | in-progress |/" "{outputFile}"
+  tmp_state=$(mktemp)
+  sed "s/^| ${story_id} |.*$/| ${story_id} | done | done | done | done | done | in-progress |/" "{outputFile}" > "$tmp_state" && mv "$tmp_state" "{outputFile}"
   ```
   → proceed to F
 - If `ok == false` → log warning and escalate
@@ -57,7 +58,8 @@ Display: "**✅ Story {N} complete.**"
 echo "- **[$(date -u +%Y-%m-%dT%H:%M:%SZ)]** Story {story_id}: ✅ complete (commit + sprint-status verified)" >> "{outputFile}"
 
 # Update Story Progress: mark story done
-sed -i '' "s/^| ${story_id} |.*$/| ${story_id} | done | done | done | done | done | done |/" "{outputFile}"
+tmp_state=$(mktemp)
+sed "s/^| ${story_id} |.*$/| ${story_id} | done | done | done | done | done | done |/" "{outputFile}" > "$tmp_state" && mv "$tmp_state" "{outputFile}"
 ```
 Display: `[story {N}/{total}] finalize -> done`
 
@@ -129,7 +131,9 @@ cmd=$("{scriptsDir}" tmux-wrapper build-cmd retro {epic_number} --agent "claude"
 session=$("{scriptsDir}" tmux-wrapper spawn retro "" {epic_number} --agent "claude" --command "$cmd")
 
 # Monitor with safe failure (never escalate on retro failure)
-result=$("{scriptsDir}" monitor-session "$session" --json --agent "claude")
+retro_timeout=60
+[ "$story_count" -gt 10 ] && retro_timeout=90
+result=$("{scriptsDir}" monitor-session "$session" --json --agent "claude" --timeout "$retro_timeout")
 "{scriptsDir}" tmux-wrapper kill "$session"
 
 retro_status=$(echo "$result" | jq -r '.final_state')

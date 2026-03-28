@@ -1,10 +1,11 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
-	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -69,20 +70,53 @@ func orchestratorMarker(args []string) int {
 			}
 		}
 
-		_ = ensureDir(filepath.Dir(markerFile))
-
 		if heartbeat == "" {
 			heartbeat = nowUTC().Format("2006-01-02T15:04:05Z")
 		}
 
-		payload := fmt.Sprintf("{\n  \"epic\": %q,\n  \"currentStory\": %q,\n  \"storiesRemaining\": %s,\n  \"stateFile\": %q,\n  \"createdAt\": %q,\n  \"heartbeat\": %q,\n  \"pid\": %s,\n  \"projectSlug\": %q\n}\n",
-			epic, story, remaining, stateFile, nowUTC().Format("2006-01-02T15:04:05Z"), heartbeat, pid, projectSlug)
-		_ = os.WriteFile(markerFile, []byte(payload), 0o644)
+		if err := ensureDir(filepath.Dir(markerFile)); err != nil {
+			fmt.Fprintf(os.Stderr, "Failed to create marker directory %s: %v\n", filepath.Dir(markerFile), err)
+			return 1
+		}
+
+		remainingNum, err := strconv.Atoi(remaining)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Invalid --remaining value %q\n", remaining)
+			return 1
+		}
+		pidNum, err := strconv.Atoi(pid)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Invalid --pid value %q\n", pid)
+			return 1
+		}
+
+		payloadObj := map[string]any{
+			"epic":             epic,
+			"currentStory":     story,
+			"storiesRemaining": remainingNum,
+			"stateFile":        stateFile,
+			"createdAt":        nowUTC().Format("2006-01-02T15:04:05Z"),
+			"heartbeat":        heartbeat,
+			"pid":              pidNum,
+			"projectSlug":      projectSlug,
+		}
+		payload, err := json.MarshalIndent(payloadObj, "", "  ")
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Failed to serialize marker %s: %v\n", markerFile, err)
+			return 1
+		}
+		if err := writeFileAtomic(markerFile, append(payload, '\n')); err != nil {
+			fmt.Fprintf(os.Stderr, "Failed to write marker %s: %v\n", markerFile, err)
+			return 1
+		}
 		fmt.Printf("Marker created: %s\n", markerFile)
 		return 0
 
 	case "remove":
-		_ = os.Remove(markerFile)
+		if err := os.Remove(markerFile); err != nil && !os.IsNotExist(err) {
+			fmt.Fprintf(os.Stderr, "Failed to remove marker %s: %v\n", markerFile, err)
+			return 1
+		}
 		fmt.Println("Marker removed")
 		return 0
 
@@ -110,8 +144,21 @@ func orchestratorMarker(args []string) int {
 			return 1
 		}
 		newHeartbeat := nowUTC().Format("2006-01-02T15:04:05Z")
-		updated := regexp.MustCompile(`"heartbeat":.*$`).ReplaceAllString(content, fmt.Sprintf("\"heartbeat\": \"%s\"", newHeartbeat))
-		_ = os.WriteFile(markerFile, []byte(updated), 0o644)
+		var marker map[string]any
+		if err := json.Unmarshal([]byte(content), &marker); err != nil {
+			fmt.Fprintf(os.Stderr, "Marker file is not valid JSON: %v\n", err)
+			return 1
+		}
+		marker["heartbeat"] = newHeartbeat
+		updated, err := json.MarshalIndent(marker, "", "  ")
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Failed to serialize marker %s: %v\n", markerFile, err)
+			return 1
+		}
+		if err := writeFileAtomic(markerFile, append(updated, '\n')); err != nil {
+			fmt.Fprintf(os.Stderr, "Failed to write marker %s: %v\n", markerFile, err)
+			return 1
+		}
 		fmt.Printf("Heartbeat updated: %s\n", newHeartbeat)
 		return 0
 

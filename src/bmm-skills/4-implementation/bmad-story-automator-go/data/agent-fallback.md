@@ -64,12 +64,13 @@ session=$("$scripts" tmux-wrapper spawn dev {epic} {story_id} \
 
 ## Codex Monitoring Notes
 
-- **No todo checkboxes:** Codex doesn't use ☒/☐ - `todos_done` and `todos_total` will be 0
+- **No native todo checkboxes:** Codex doesn't emit ☒/☐, so active sessions report `0/0`
 - **Longer waits:** Status check script returns 90s wait estimate for Codex (vs 60s for Claude)
 - **Different activity detection:** Uses output freshness + heartbeat (no marker reliance)
 - **Output staleness window:** `CODEX_OUTPUT_STALE_SECONDS` (default: 300)
 - **1.5x timeout multiplier:** `story-automator monitor-session` applies 1.5x multiplier when `--agent codex`
-- **Fake todo progress (v2.2):** When Codex is idle after activity, reports `1/1` to indicate "work done, needs verification"
+- **Output-fresh idle normalization:** If heartbeat is idle but output is still fresh, Codex reports `0/1` while work is still considered in progress
+- **Completion normalization (v2.2):** When Codex finishes or prompt returns after activity, it reports `1/1` to indicate "work done, needs verification"
 - **Idle vs Completed (v2.2):** Codex sessions report "idle" instead of "completed" when CLI stops but no terminal markers
 
 ## ⚠️ Codex Code-Review Limitations (v1.5.0)

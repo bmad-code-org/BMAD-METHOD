@@ -41,8 +41,8 @@ attempt_5_progress = {agent: primary, tasks: 5/9}  # confirmed plateau
 | 3 | FAILURE, plateau at same task (any agent) | Continue to attempt 4 (confirm with other agent) |
 | 4 | FAILURE, plateau confirmed across agents | **DEFER** story (complexity/context limit hit) |
 | 4 | FAILURE, variable progress | One more retry with extended timeout |
-| 5 | FAILURE, plateau confirmed | **DEFER** story |
 | 5 | FAILURE, zero progress all attempts | **ESCALATE** (likely API/connection issue) |
+| 5 | FAILURE, plateau confirmed (and progress > 0) | **DEFER** story |
 | 5 | FAILURE, variable but incomplete | **ESCALATE** (all retries exhausted) |
 
 ---

@@ -94,16 +94,8 @@
     </action>
 
     <check if="total_issues_found lt 3">
-      <critical>NOT LOOKING HARD ENOUGH - Find more problems!</critical>
-      <action>Re-examine code for:
-        - Edge cases and null handling
-        - Architecture violations
-        - Documentation gaps
-        - Integration issues
-        - Dependency problems
-        - Git commit message quality (if applicable)
-      </action>
-      <action>Find at least 3 more specific, actionable issues</action>
+      <action>Re-examine the review surface for missed issues, but report only verified findings.</action>
+      <action>If no additional issues are found, continue with the smaller confirmed set.</action>
     </check>
   </step>
 

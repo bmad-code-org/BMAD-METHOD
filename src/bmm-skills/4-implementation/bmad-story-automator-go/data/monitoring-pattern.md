@@ -84,7 +84,7 @@ story-automator monitor-session <session_name> [options]
 #   --json            Output as JSON instead of CSV
 
 # Output (JSON):
-# {"final_state":"completed|crashed|stuck|timeout","output_file":"/tmp/...","exit_reason":"..."}
+# {"final_state":"completed|crashed|stuck|timeout|incomplete|not_found","output_file":"/tmp/...","exit_reason":"..."}
 ```
 
 ### story-automator orchestrator-helper

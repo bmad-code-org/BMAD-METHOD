@@ -91,12 +91,23 @@ tmp_sessions=$(mktemp)
 ("{validateState}" validate-state --state "{state_path}" > "$tmp_validation") &
 validation_pid=$!
 
-project_slug=$(echo "$("{deriveProjectSlug}" derive-project-slug --project-root "{project-root}")" | jq -r '.slug')
+project_slug_json=$("{deriveProjectSlug}" derive-project-slug --project-root "{project-root}") || {
+  rm -f "$tmp_validation" "$tmp_sessions"
+  echo "derive-project-slug failed"
+  exit 1
+}
+project_slug=$(printf '%s' "$project_slug_json" | jq -r '.slug')
 ("{listSessions}" list-sessions --slug "$project_slug" > "$tmp_sessions") &
 sessions_pid=$!
 
-wait "$validation_pid"
-wait "$sessions_pid"
+wait "$validation_pid"; validation_status=$?
+wait "$sessions_pid"; sessions_status=$?
+
+if [ "$validation_status" -ne 0 ] || [ "$sessions_status" -ne 0 ]; then
+  rm -f "$tmp_validation" "$tmp_sessions"
+  echo "state validation or session inventory failed"
+  exit 1
+fi
 
 validation=$(cat "$tmp_validation")
 sessions=$(cat "$tmp_sessions")

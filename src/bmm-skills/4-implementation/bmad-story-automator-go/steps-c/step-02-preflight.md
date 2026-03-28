@@ -124,11 +124,13 @@ Refer to `{complexityScoring}` for scoring criteria and thresholds.
 # Deterministic threshold
 if [ "$selected_count" -ge 4 ]; then
   # Parallel mode (max 4 workers)
+  tmp_story_complexity=$(mktemp)
   printf "%s\n" $selected_ids | xargs -I{} -P 4 sh -c '
     "{parseStory}" parse-story --epic "{epic_path}" --story "{}" --rules "{complexityRules}" \
       | jq -c "{storyId:.storyId,title:.title,complexity:.complexity}"
-  ' > /tmp/story-complexity.ndjson
-  stories_json=$(jq -s '.' /tmp/story-complexity.ndjson)
+  ' > "$tmp_story_complexity"
+  stories_json=$(jq -s '.' "$tmp_story_complexity")
+  rm -f "$tmp_story_complexity"
 else
   # Sequential mode
   stories_json='[]'

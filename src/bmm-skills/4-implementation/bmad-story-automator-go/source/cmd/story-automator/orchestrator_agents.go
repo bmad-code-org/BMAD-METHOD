@@ -200,12 +200,12 @@ func orchestratorAgentsResolve(args []string) int {
 		}
 	}
 
-	if stateFile == "" || storyID == "" || task == "" {
+	if storyID == "" || task == "" || (stateFile == "" && agentsPath == "") {
 		writeJSON(map[string]any{"ok": false, "error": "missing_args"})
 		return 1
 	}
 
-	if agentsPath == "" {
+	if agentsPath == "" && stateFile != "" {
 		agentsPath = findFrontmatterValue(stateFile, "agentsFile")
 	}
 	if agentsPath == "" || !fileExists(agentsPath) {

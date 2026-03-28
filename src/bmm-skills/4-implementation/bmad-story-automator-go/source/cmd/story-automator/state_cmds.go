@@ -388,13 +388,19 @@ func cmdSprintCompare(args []string) int {
 		}
 		if strings.HasPrefix(line, "storyRange:") {
 			key = "storyRange"
+			raw := strings.TrimSpace(strings.TrimPrefix(line, "storyRange:"))
+			if parsed := parseStringListLiteral(raw); parsed != nil {
+				storyRange = parsed
+				key = ""
+				continue
+			}
 			if strings.HasSuffix(strings.TrimSpace(line), "[]") {
 				storyRange = []string{}
 			}
 			continue
 		}
 		if key == "storyRange" && strings.HasPrefix(strings.TrimSpace(line), "-") {
-			storyRange = append(storyRange, strings.TrimSpace(strings.TrimPrefix(strings.TrimSpace(line), "-")))
+			storyRange = append(storyRange, unquoteScalar(strings.TrimSpace(strings.TrimPrefix(strings.TrimSpace(line), "-"))))
 			continue
 		}
 		if regexp.MustCompile(`^\S+:`).MatchString(line) && !strings.HasPrefix(line, "storyRange:") {
@@ -539,11 +545,12 @@ func cmdValidateState(args []string) int {
 		if keyRe.MatchString(line) {
 			parts := strings.SplitN(line, ":", 2)
 			key := strings.TrimSpace(parts[0])
-			val := strings.TrimSpace(parts[1])
-			if val == "" {
+			rawVal := strings.TrimSpace(parts[1])
+			if rawVal == "" {
 				fields[key] = []string{}
 				currentKey = key
 			} else {
+				val := unquoteScalar(rawVal)
 				fields[key] = val
 				currentKey = ""
 			}
@@ -551,7 +558,7 @@ func cmdValidateState(args []string) int {
 		}
 		if currentKey != "" && strings.HasPrefix(strings.TrimSpace(line), "-") {
 			items, _ := fields[currentKey].([]string)
-			items = append(items, strings.TrimSpace(strings.TrimPrefix(strings.TrimSpace(line), "-")))
+			items = append(items, unquoteScalar(strings.TrimSpace(strings.TrimPrefix(strings.TrimSpace(line), "-"))))
 			fields[currentKey] = items
 		}
 	}

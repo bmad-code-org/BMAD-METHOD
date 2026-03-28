@@ -41,14 +41,16 @@ result=$("$scripts" monitor-session "$session" --json --agent "$current_agent")
 - SUCCESS:
   ```bash
   # Update Story Progress: mark automate done
-  sed -i '' "s/^| ${story_id} |.*$/| ${story_id} | done | done | done | - | - | in-progress |/" "{outputFile}"
+  tmp_state=$(mktemp)
+  sed "s/^| ${story_id} |.*$/| ${story_id} | done | done | done | - | - | in-progress |/" "{outputFile}" > "$tmp_state" && mv "$tmp_state" "{outputFile}"
   ```
   Display: `[story {N}/{total}] automate -> done`
   → proceed to D
 - FAILURE → retry up to 3 attempts (non-blocking, so fewer retries), then log warning:
   ```bash
   # Update Story Progress: mark automate skipped
-  sed -i '' "s/^| ${story_id} |.*$/| ${story_id} | done | done | skip | - | - | in-progress |/" "{outputFile}"
+  tmp_state=$(mktemp)
+  sed "s/^| ${story_id} |.*$/| ${story_id} | done | done | skip | - | - | in-progress |/" "{outputFile}" > "$tmp_state" && mv "$tmp_state" "{outputFile}"
   ```
   Display: `[story {N}/{total}] automate -> skip (non-blocking)`
   → proceed to D
@@ -88,7 +90,8 @@ Key points:
 - **States:** `completed` (verified):
   ```bash
   # Update Story Progress: mark code-review done
-  sed -i '' "s/^| ${story_id} |.*$/| ${story_id} | done | done | done | done | - | in-progress |/" "{outputFile}"
+  tmp_state=$(mktemp)
+  sed "s/^| ${story_id} |.*$/| ${story_id} | done | done | done | done | - | in-progress |/" "{outputFile}" > "$tmp_state" && mv "$tmp_state" "{outputFile}"
   ```
   Display: `[story {N}/{total}] review -> done`
   → E | `incomplete` → count as failed attempt, retry until maxCycles, then CRITICAL escalate (Trigger #8)

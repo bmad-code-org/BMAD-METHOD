@@ -2,12 +2,16 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"os"
 )
 
 func cmdOrchestratorHelper(args []string) int {
 	if len(args) == 0 {
-		return orchestratorUsage()
+		return orchestratorUsage(os.Stderr, 1)
+	}
+	if isHelpFlag(args[0]) {
+		return orchestratorUsage(os.Stdout, 0)
 	}
 	action := args[0]
 	args = args[1:]
@@ -50,36 +54,36 @@ func cmdOrchestratorHelper(args []string) int {
 	case "agents-resolve":
 		return orchestratorAgentsResolve(args)
 	default:
-		return orchestratorUsage()
+		return orchestratorUsage(os.Stderr, 1)
 	}
 }
 
-func orchestratorUsage() int {
-	fmt.Fprintln(os.Stderr, "Usage: orchestrator-helper <action> [args]")
-	fmt.Fprintln(os.Stderr, "")
-	fmt.Fprintln(os.Stderr, "Actions:")
-	fmt.Fprintln(os.Stderr, "  sprint-status get <story_key>")
-	fmt.Fprintln(os.Stderr, "  sprint-status exists")
-	fmt.Fprintln(os.Stderr, "  sprint-status check-epic <epic>")
-	fmt.Fprintln(os.Stderr, "  parse-output <file> <step>")
-	fmt.Fprintln(os.Stderr, "  marker create --epic E --story S --remaining N --state-file F")
-	fmt.Fprintln(os.Stderr, "  marker remove")
-	fmt.Fprintln(os.Stderr, "  marker check")
-	fmt.Fprintln(os.Stderr, "  marker heartbeat")
-	fmt.Fprintln(os.Stderr, "  state-list <folder>")
-	fmt.Fprintln(os.Stderr, "  state-latest <folder> [status]")
-	fmt.Fprintln(os.Stderr, "  state-latest-incomplete <folder>")
-	fmt.Fprintln(os.Stderr, "  state-summary <file>")
-	fmt.Fprintln(os.Stderr, "  state-update <file> --set k=v")
-	fmt.Fprintln(os.Stderr, "  escalate <trigger> <context>")
-	fmt.Fprintln(os.Stderr, "  commit-ready <story_id>")
-	fmt.Fprintln(os.Stderr, "  normalize-key <input> [--to id|key|prefix|json]")
-	fmt.Fprintln(os.Stderr, "  story-file-status <story>")
-	fmt.Fprintln(os.Stderr, "  verify-code-review <story>")
-	fmt.Fprintln(os.Stderr, "  check-epic-complete <epic> <story> [--state-file path]")
-	fmt.Fprintln(os.Stderr, "  get-epic-stories <epic> [--state-file path]")
-	fmt.Fprintln(os.Stderr, "  check-blocking <story_id>")
-	fmt.Fprintln(os.Stderr, "  agents-build --state-file path --complexity-file path --output path --config-json '{}'")
-	fmt.Fprintln(os.Stderr, "  agents-resolve --state-file path --story ID --task create|dev|auto|review [--agents-file path]")
-	return 1
+func orchestratorUsage(w io.Writer, code int) int {
+	fmt.Fprintln(w, "Usage: orchestrator-helper <action> [args]")
+	fmt.Fprintln(w, "")
+	fmt.Fprintln(w, "Actions:")
+	fmt.Fprintln(w, "  sprint-status get <story_key>")
+	fmt.Fprintln(w, "  sprint-status exists")
+	fmt.Fprintln(w, "  sprint-status check-epic <epic>")
+	fmt.Fprintln(w, "  parse-output <file> <step>")
+	fmt.Fprintln(w, "  marker create --epic E --story S --remaining N --state-file F")
+	fmt.Fprintln(w, "  marker remove")
+	fmt.Fprintln(w, "  marker check")
+	fmt.Fprintln(w, "  marker heartbeat")
+	fmt.Fprintln(w, "  state-list <folder>")
+	fmt.Fprintln(w, "  state-latest <folder> [status]")
+	fmt.Fprintln(w, "  state-latest-incomplete <folder>")
+	fmt.Fprintln(w, "  state-summary <file>")
+	fmt.Fprintln(w, "  state-update <file> --set k=v")
+	fmt.Fprintln(w, "  escalate <trigger> <context>")
+	fmt.Fprintln(w, "  commit-ready <story_id>")
+	fmt.Fprintln(w, "  normalize-key <input> [--to id|key|prefix|json]")
+	fmt.Fprintln(w, "  story-file-status <story>")
+	fmt.Fprintln(w, "  verify-code-review <story>")
+	fmt.Fprintln(w, "  check-epic-complete <epic> <story> [--state-file path]")
+	fmt.Fprintln(w, "  get-epic-stories <epic> [--state-file path]")
+	fmt.Fprintln(w, "  check-blocking <story_id>")
+	fmt.Fprintln(w, "  agents-build --state-file path --complexity-file path --output path --config-json '{}'")
+	fmt.Fprintln(w, "  agents-resolve --state-file path --story ID --task create|dev|auto|review [--agents-file path]")
+	return code
 }

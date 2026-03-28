@@ -152,9 +152,9 @@ func sprintStatusEpic(statusFile, epic string) ([]string, int) {
 			if !seen[key] {
 				stories = append(stories, key)
 				seen[key] = true
-			}
-			if len(status) > 0 && status[0] == "done" {
-				doneCount++
+				if len(status) > 0 && status[0] == "done" {
+					doneCount++
+				}
 			}
 		}
 	}

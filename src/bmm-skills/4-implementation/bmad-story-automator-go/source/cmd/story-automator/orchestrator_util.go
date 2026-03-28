@@ -28,8 +28,12 @@ func findFrontmatterValueCase(path, key string) string {
 	front := extractFrontmatter(content)
 	lines := trimLines(front)
 	for _, line := range lines {
-		if strings.HasPrefix(line, key+":") {
-			return strings.Trim(strings.TrimSpace(strings.TrimPrefix(line, key+":")), "\"")
+		idx := strings.Index(line, ":")
+		if idx < 0 {
+			continue
+		}
+		if strings.EqualFold(strings.TrimSpace(line[:idx]), key) {
+			return unquoteScalar(strings.TrimSpace(line[idx+1:]))
 		}
 	}
 	return ""

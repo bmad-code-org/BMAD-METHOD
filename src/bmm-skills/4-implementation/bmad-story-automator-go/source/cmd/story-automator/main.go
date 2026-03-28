@@ -2,13 +2,18 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"os"
 )
 
 func main() {
 	if len(os.Args) < 2 {
-		usage()
+		printUsage(os.Stderr)
 		os.Exit(1)
+	}
+	if isHelpFlag(os.Args[1]) {
+		printUsage(os.Stdout)
+		return
 	}
 
 	cmd := os.Args[1]
@@ -62,37 +67,37 @@ func main() {
 		code = cmdAgentConfig(args)
 	default:
 		fmt.Fprintf(os.Stderr, "Unknown command: %s\n", cmd)
-		usage()
+		printUsage(os.Stderr)
 		code = 1
 	}
 
 	os.Exit(code)
 }
 
-func usage() {
-	fmt.Fprintln(os.Stderr, "story-automator <command> [args]")
-	fmt.Fprintln(os.Stderr, "")
-	fmt.Fprintln(os.Stderr, "Commands:")
-	fmt.Fprintln(os.Stderr, "  derive-project-slug")
-	fmt.Fprintln(os.Stderr, "  ensure-marker-gitignore")
-	fmt.Fprintln(os.Stderr, "  ensure-stop-hook")
-	fmt.Fprintln(os.Stderr, "  stop-hook")
-	fmt.Fprintln(os.Stderr, "  build-state-doc")
-	fmt.Fprintln(os.Stderr, "  commit-story")
-	fmt.Fprintln(os.Stderr, "  parse-epic")
-	fmt.Fprintln(os.Stderr, "  parse-story")
-	fmt.Fprintln(os.Stderr, "  parse-story-range")
-	fmt.Fprintln(os.Stderr, "  epic-complete")
-	fmt.Fprintln(os.Stderr, "  sprint-compare")
-	fmt.Fprintln(os.Stderr, "  state-metrics")
-	fmt.Fprintln(os.Stderr, "  validate-state")
-	fmt.Fprintln(os.Stderr, "  validate-story-creation")
-	fmt.Fprintln(os.Stderr, "  list-sessions")
-	fmt.Fprintln(os.Stderr, "  tmux-wrapper")
-	fmt.Fprintln(os.Stderr, "  heartbeat-check")
-	fmt.Fprintln(os.Stderr, "  codex-status-check")
-	fmt.Fprintln(os.Stderr, "  tmux-status-check")
-	fmt.Fprintln(os.Stderr, "  monitor-session")
-	fmt.Fprintln(os.Stderr, "  orchestrator-helper")
-	fmt.Fprintln(os.Stderr, "  agent-config")
+func printUsage(w io.Writer) {
+	fmt.Fprintln(w, "story-automator <command> [args]")
+	fmt.Fprintln(w, "")
+	fmt.Fprintln(w, "Commands:")
+	fmt.Fprintln(w, "  derive-project-slug")
+	fmt.Fprintln(w, "  ensure-marker-gitignore")
+	fmt.Fprintln(w, "  ensure-stop-hook")
+	fmt.Fprintln(w, "  stop-hook")
+	fmt.Fprintln(w, "  build-state-doc")
+	fmt.Fprintln(w, "  commit-story")
+	fmt.Fprintln(w, "  parse-epic")
+	fmt.Fprintln(w, "  parse-story")
+	fmt.Fprintln(w, "  parse-story-range")
+	fmt.Fprintln(w, "  epic-complete")
+	fmt.Fprintln(w, "  sprint-compare")
+	fmt.Fprintln(w, "  state-metrics")
+	fmt.Fprintln(w, "  validate-state")
+	fmt.Fprintln(w, "  validate-story-creation")
+	fmt.Fprintln(w, "  list-sessions")
+	fmt.Fprintln(w, "  tmux-wrapper")
+	fmt.Fprintln(w, "  heartbeat-check")
+	fmt.Fprintln(w, "  codex-status-check")
+	fmt.Fprintln(w, "  tmux-status-check")
+	fmt.Fprintln(w, "  monitor-session")
+	fmt.Fprintln(w, "  orchestrator-helper")
+	fmt.Fprintln(w, "  agent-config")
 }

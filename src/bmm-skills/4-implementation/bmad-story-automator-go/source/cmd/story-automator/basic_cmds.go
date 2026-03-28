@@ -79,9 +79,15 @@ func cmdEnsureMarkerGitignore(args []string) int {
 		return 1
 	}
 
-	if strings.Contains(content, entry) {
-		writeJSON(map[string]any{"ok": true, "changed": false, "path": gitignorePath})
-		return 0
+	for _, line := range strings.Split(strings.ReplaceAll(content, "\r\n", "\n"), "\n") {
+		trimmed := strings.TrimSpace(line)
+		if trimmed == "" || strings.HasPrefix(trimmed, "#") {
+			continue
+		}
+		if trimmed == entry {
+			writeJSON(map[string]any{"ok": true, "changed": false, "path": gitignorePath})
+			return 0
+		}
 	}
 
 	f, err := os.OpenFile(gitignorePath, os.O_APPEND|os.O_WRONLY, 0o644)
@@ -90,7 +96,11 @@ func cmdEnsureMarkerGitignore(args []string) int {
 		return 1
 	}
 	defer f.Close()
-	if _, err := f.WriteString(entry + "\n"); err != nil {
+	prefix := ""
+	if content != "" && !strings.HasSuffix(content, "\n") {
+		prefix = "\n"
+	}
+	if _, err := f.WriteString(prefix + entry + "\n"); err != nil {
 		writeJSON(map[string]any{"ok": false, "error": "append_failed"})
 		return 1
 	}
@@ -202,7 +212,7 @@ func cmdEnsureStopHook(args []string) int {
 	}
 
 	exists := false
-	needsPathUpdate := false
+	needsUpdate := false
 	for _, entry := range stopHooks {
 		entryMap, ok := entry.(map[string]any)
 		if !ok {
@@ -217,16 +227,26 @@ func cmdEnsureStopHook(args []string) int {
 			if cmd, ok := m["command"].(string); ok {
 				if cmd == commandPath {
 					exists = true
-					break
-				}
-				// Flexible match: any command referencing story-automator stop-hook
-				// regardless of path format (relative, absolute, project-relative).
-				if strings.Contains(cmd, "story-automator") && strings.Contains(cmd, "stop-hook") {
+				} else if strings.Contains(cmd, "story-automator") && strings.Contains(cmd, "stop-hook") {
 					exists = true
-					if cmd != commandPath {
-						// Migrate stale path to resolved absolute path in-place.
-						m["command"] = commandPath
-						needsPathUpdate = true
+					m["command"] = commandPath
+					needsUpdate = true
+				}
+				if exists {
+					switch current := m["timeout"].(type) {
+					case float64:
+						if int(current) != timeout {
+							m["timeout"] = timeout
+							needsUpdate = true
+						}
+					case int:
+						if current != timeout {
+							m["timeout"] = timeout
+							needsUpdate = true
+						}
+					default:
+						m["timeout"] = timeout
+						needsUpdate = true
 					}
 					break
 				}
@@ -237,21 +257,18 @@ func cmdEnsureStopHook(args []string) int {
 		}
 	}
 
-	if exists && !needsPathUpdate {
+	if exists && !needsUpdate {
 		writeJSON(map[string]any{"ok": true, "changed": false, "reason": "already_configured", "path": settingsPath})
 		return 0
 	}
 
-	if exists && needsPathUpdate {
-		// Path normalized to absolute — write updated settings.
-		// Return changed:false because the hook functionally existed;
-		// no session restart is needed.
+	if exists && needsUpdate {
 		b, _ := json.MarshalIndent(root, "", "  ")
 		if err := writeFileAtomic(settingsPath, b); err != nil {
 			writeJSON(map[string]any{"ok": false, "error": "write_failed", "path": settingsPath})
 			return 1
 		}
-		writeJSON(map[string]any{"ok": true, "changed": false, "reason": "path_normalized", "path": settingsPath})
+		writeJSON(map[string]any{"ok": true, "changed": false, "reason": "hook_normalized", "path": settingsPath})
 		return 0
 	}
 

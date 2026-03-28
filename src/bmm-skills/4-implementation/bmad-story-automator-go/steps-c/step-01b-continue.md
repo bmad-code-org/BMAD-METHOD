@@ -88,7 +88,7 @@ compare=$(cat "$tmp_compare")
 sessions=$(cat "$tmp_sessions")
 rm -f "$tmp_compare" "$tmp_sessions"
 
-incomplete=$(echo "$compare" | jq -r '.incomplete | join(\", \")')
+incomplete=$(echo "$compare" | jq -r '.incomplete | join(", ")')
 session_count=$(echo "$sessions" | jq -r '.count')
 ```
 

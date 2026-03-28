@@ -27,7 +27,7 @@ Use carried-forward context:
 - `untracked_live`
 - Prior structure/session issues
 
-Load the selected state document again (resolved as `{outputFile}` for this run) to verify progress details.
+Load the selected state document again (resolved as `{state_path}` for this run) to verify progress details.
 
 ### 2. Validate Story Progress Thoroughly
 
@@ -64,8 +64,8 @@ If `story_count >= 4`, run per-story consistency checks in parallel and return c
 ```bash
 story_ids=$(echo "$validation" | jq -r '.storyRange[]?')
 tmp_progress=$(mktemp)
-printf "%s\n" $story_ids | xargs -I{} -P 4 sh -c \
-  'rg -n "^[[:space:]]*\\|[[:space:]]*{}[[:space:]]*\\|" "$0" | head -n 1 | sed "s/^/{}|/"' "$state_path" \
+printf "%s\n" "$story_ids" | xargs -I{} -P 4 sh -c \
+  'id="$1"; file="$2"; rg -n -F "| ${id} |" "$file" | head -n 1 | sed "s/^/${id}|/"' _ "{}" "$state_path" \
   > "$tmp_progress"
 progress_rows=$(wc -l < "$tmp_progress" | tr -d ' ')
 rm -f "$tmp_progress"
