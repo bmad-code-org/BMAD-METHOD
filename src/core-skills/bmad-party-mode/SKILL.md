@@ -22,7 +22,9 @@ Party mode accepts optional arguments when invoked:
 
 1. **Parse arguments** — check for `--model` and `--solo` flags from the user's invocation.
 
-2. **Load config via bmad-init skill** — store `{user_name}`, `{communication_language}`, and other config vars.
+2. Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
+  - Use `{user_name}` for greeting
+  - Use `{communication_language}` for all communications
 
 3. **Read the agent manifest** at `{project-root}/_bmad/_config/agent-manifest.csv`. Build an internal roster of available agents with their displayName, title, icon, role, identity, communicationStyle, and principles.
 
