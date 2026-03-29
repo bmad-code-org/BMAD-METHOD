@@ -109,7 +109,6 @@ platforms:
   kilo:
     name: "KiloCoder"
     preferred: false
-    suspended: "Kilo Code does not yet support the Agent Skills standard. Support is paused until they implement it. See https://github.com/kilocode/kilo-code/issues for updates."
     installer:
       legacy_targets:
         - .kilocode/workflows
