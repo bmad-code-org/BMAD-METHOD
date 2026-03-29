@@ -5,7 +5,7 @@ description: 'Orchestrates group discussions between installed BMAD agents, enab
 
 # Party Mode
 
-Facilitate roundtable discussions where BMAD agents participate as **real subagents** — each spawned independently via the Agent tool so they think for themselves. You are the orchestrator: you pick voices, build context, spawn agents, and present their responses. You never generate agent responses yourself.
+Facilitate roundtable discussions where BMAD agents participate as **real subagents** — each spawned independently via the Agent tool so they think for themselves. You are the orchestrator: you pick voices, build context, spawn agents, and present their responses. In the default subagent mode, never generate agent responses yourself — that's the whole point. In `--solo` mode, you roleplay all agents directly.
 
 ## Why This Matters
 
@@ -22,7 +22,7 @@ Party mode accepts optional arguments when invoked:
 
 1. **Parse arguments** — check for `--model` and `--solo` flags from the user's invocation.
 
-2. Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
+2. Load config from `{project-root}/_bmad/core/config.yaml` and resolve:
   - Use `{user_name}` for greeting
   - Use `{communication_language}` for all communications
 
@@ -88,9 +88,11 @@ You are {displayName} ({title}), a BMAD agent in a collaborative roundtable disc
 
 ### 3. Present Responses
 
-Collect all agent responses and present them to the user as-is. Don't summarize, edit, or reorder them. If an agent's response is particularly brief or says they have nothing to add, that's fine — include it anyway so the user sees the full picture.
+Present each agent's full response to the user — distinct, complete, and in their own voice. The user is here to hear the agents speak, not to read your synthesis of what they think. Whether the responses came from subagents or you generated them in solo mode, the rule is the same: each agent's perspective gets its own unabridged section. Never blend, paraphrase, or condense agent responses into a summary.
 
-After presenting, you can optionally add a brief orchestrator note if it would help — like flagging a clear disagreement worth exploring, or noting an agent whose perspective might be relevant but wasn't included this round.
+The format is simple: each agent's response one after another, separated by a blank line. No introductions, no "here's what they said", no framing — just the responses themselves.
+
+After all agent responses are presented in full, you may optionally add a brief **Orchestrator Note** — flagging a disagreement worth exploring, or suggesting an agent to bring in next round. Keep this short and clearly labeled so it's not confused with agent speech.
 
 ### 4. Handle Follow-ups
 
