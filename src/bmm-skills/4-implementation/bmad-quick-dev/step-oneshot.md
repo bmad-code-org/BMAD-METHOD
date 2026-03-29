@@ -32,9 +32,11 @@ If a finding is caused by this change but too significant for a trivial patch, H
 
 ### Generate Spec Trace
 
+Set `{title}` = a concise title derived from the clarified intent.
+
 Write `{spec_file}` using `./spec-template.md`. Fill only these sections — delete all others:
 
-1. **Frontmatter** — fill `title`, `type`, `created`, `status: 'done'`. Add `route: 'one-shot'`.
+1. **Frontmatter** — set `title: '{title}'`, `type`, `created`, `status: 'done'`. Add `route: 'one-shot'`.
 2. **Title and Intent** — `# {title}` heading and `## Intent` with **Problem** and **Approach** lines. Reuse the summary you already generated for the terminal.
 3. **Suggested Review Order** — append after Intent. Build using the same convention as `./step-05-present.md` § "Generate Suggested Review Order" (spec-file-relative links, concern-based ordering, ultra-concise framing).
 
