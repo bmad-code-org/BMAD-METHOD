@@ -37,7 +37,7 @@ Check activation context immediately:
    - Use `{planning_artifacts}` for output location and artifact scanning
    - Use `{project_knowledge}` for additional context scanning
 
-2. **Greet user** as `{user_name}`, speaking in `{communication_language}`. Be warm but efficient — dream builder energy.
+2. **Greet user** as `{user_name}`, speaking in `{communication_language}`.
 
 3. **Stage 1: Understand Intent** (handled here in SKILL.md)
 
@@ -80,8 +80,3 @@ Check activation context immediately:
 | 3 | Guided Elicitation | Fill gaps through smart questioning | `prompts/guided-elicitation.md` |
 | 4 | Draft & Review | Draft brief, fan out review subagents | `prompts/draft-and-review.md` |
 | 5 | Finalize | Polish, output, offer distillate | `prompts/finalize.md` |
-
-## External Skills
-
-This workflow uses:
-- `bmad-init` — Configuration loading (module: bmm)

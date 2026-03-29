@@ -37,7 +37,19 @@ Requires [Node.js](https://nodejs.org) v20+ and `npx` (included with npm).
 | `--user-name <name>` | Name for agents to use | System username |
 | `--communication-language <lang>` | Agent communication language | English |
 | `--document-output-language <lang>` | Document output language | English |
-| `--output-folder <path>` | Output folder path | _bmad-output |
+| `--output-folder <path>` | Output folder path (see resolution rules below) | `_bmad-output` |
+
+#### Output Folder Path Resolution
+
+The value passed to `--output-folder` (or entered interactively) is resolved according to these rules:
+
+| Input type | Example | Resolved as |
+|------------|---------|-------------|
+| Relative path (default) | `_bmad-output` | `<project-root>/_bmad-output` |
+| Relative path with traversal | `../../shared-outputs` | Normalized absolute path — e.g. `/Users/me/shared-outputs` |
+| Absolute path | `/Users/me/shared-outputs` | Used as-is — project root is **not** prepended |
+
+The resolved path is what agents and workflows use at runtime when writing output files. Using an absolute path or a traversal-based relative path lets you direct all generated artifacts to a directory outside your project tree — useful for shared or monorepo setups.
 
 ### Other Options
 
@@ -61,7 +73,7 @@ Available tool IDs for the `--tools` flag:
 
 **Preferred:** `claude-code`, `cursor`
 
-Run `npx bmad-method install` interactively once to see the full current list of supported tools, or check the [platform codes configuration](https://github.com/bmad-code-org/BMAD-METHOD/blob/main/tools/cli/installers/lib/ide/platform-codes.yaml).
+Run `npx bmad-method install` interactively once to see the full current list of supported tools, or check the [platform codes configuration](https://github.com/bmad-code-org/BMAD-METHOD/blob/main/tools/installer/ide/platform-codes.yaml).
 
 ## Installation Modes
 
@@ -141,6 +153,7 @@ Invalid values will either:
 
 :::tip[Best Practices]
 - Use absolute paths for `--directory` to avoid ambiguity
+- Use an absolute path for `--output-folder` when you want artifacts written outside the project tree (e.g. a shared monorepo outputs directory)
 - Test flags locally before using in CI/CD pipelines
 - Combine with `-y` for truly unattended installations
 - Use `--debug` if you encounter issues during installation

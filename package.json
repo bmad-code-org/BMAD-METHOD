@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "bmad-method",
-  "version": "6.2.1",
+  "version": "6.2.2",
   "description": "Breakthrough Method of Agile AI-driven Development",
   "keywords": [
     "agile",
@@ -18,14 +18,14 @@
   },
   "license": "MIT",
   "author": "Brian (BMad) Madison",
-  "main": "tools/cli/bmad-cli.js",
+  "main": "tools/installer/bmad-cli.js",
   "bin": {
-    "bmad": "tools/bmad-npx-wrapper.js",
-    "bmad-method": "tools/bmad-npx-wrapper.js"
+    "bmad": "tools/installer/bmad-cli.js",
+    "bmad-method": "tools/installer/bmad-cli.js"
   },
   "scripts": {
-    "bmad:install": "node tools/cli/bmad-cli.js install",
-    "bmad:uninstall": "node tools/cli/bmad-cli.js uninstall",
+    "bmad:install": "node tools/installer/bmad-cli.js install",
+    "bmad:uninstall": "node tools/installer/bmad-cli.js uninstall",
     "docs:build": "node tools/build-docs.mjs",
     "docs:dev": "astro dev --root website",
     "docs:fix-links": "node tools/fix-doc-links.js",
@@ -34,13 +34,13 @@
     "format:check": "prettier --check \"**/*.{js,cjs,mjs,json,yaml}\"",
     "format:fix": "prettier --write \"**/*.{js,cjs,mjs,json,yaml}\"",
     "format:fix:staged": "prettier --write",
-    "install:bmad": "node tools/cli/bmad-cli.js install",
+    "install:bmad": "node tools/installer/bmad-cli.js install",
     "lint": "eslint . --ext .js,.cjs,.mjs,.yaml --max-warnings=0",
     "lint:fix": "eslint . --ext .js,.cjs,.mjs,.yaml --fix",
     "lint:md": "markdownlint-cli2 \"**/*.md\"",
     "prepare": "command -v husky >/dev/null 2>&1 && husky || exit 0",
     "quality": "npm run format:check && npm run lint && npm run lint:md && npm run docs:build && npm run test:install && npm run validate:refs && npm run validate:skills",
-    "rebundle": "node tools/cli/bundlers/bundle-web.js rebundle",
+    "rebundle": "node tools/installer/bundlers/bundle-web.js rebundle",
     "test": "npm run test:refs && npm run test:install && npm run lint && npm run lint:md && npm run format:check",
     "test:install": "node test/test-installation-components.js",
     "test:refs": "node test/test-file-refs-csv.js",
@@ -97,6 +97,7 @@
     "prettier": "^3.7.4",
     "prettier-plugin-packagejson": "^2.5.19",
     "sharp": "^0.33.5",
+    "unist-util-visit": "^5.1.0",
     "yaml-eslint-parser": "^1.2.3",
     "yaml-lint": "^1.7.0"
   },
