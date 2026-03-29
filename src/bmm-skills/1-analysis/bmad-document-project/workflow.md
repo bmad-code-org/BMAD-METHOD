@@ -9,16 +9,14 @@
 
 ## INITIALIZATION
 
-### Configuration Loading
+1. Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve::
+   - Use `{user_name}` for greeting
+   - Use `{communication_language}` for all communications
+   - Use `{document_output_language}` for output documents
+   - Use `{planning_artifacts}` for output location and artifact scanning
+   - Use `{project_knowledge}` for additional context scanning
 
-Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
-
-- `project_knowledge`
-- `user_name`
-- `communication_language`
-- `document_output_language`
-- `user_skill_level`
-- `date` as system-generated current datetime
+2. **Greet user** as `{user_name}`, speaking in `{communication_language}`.
 
 ---
 

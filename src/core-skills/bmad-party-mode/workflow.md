@@ -1,6 +1,3 @@
----
----
-
 # Party Mode Workflow
 
 **Goal:** Orchestrates group discussions between all installed BMAD agents, enabling natural multi-agent conversations
@@ -21,16 +18,12 @@ This uses **micro-file architecture** with **sequential conversation orchestrati
 
 ---
 
-## INITIALIZATION
+## ACTIVATION
 
-### Configuration Loading
-
-Load config from `{project-root}/_bmad/core/config.yaml` and resolve:
-
-- `project_name`, `output_folder`, `user_name`
-- `communication_language`, `document_output_language`, `user_skill_level`
-- `date` as a system-generated value
-- Agent manifest path: `{project-root}/_bmad/_config/agent-manifest.csv`
+1. Load config from `{project-root}/_bmad/core/config.yaml` and resolve:
+   - Use `{user_name}` for greeting
+   - Use `{communication_language}` for all communications
+   - Use `{document_output_language}` for output documents
 
 ### Paths
 

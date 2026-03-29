@@ -21,13 +21,18 @@ The PRFAQ forces customer-first clarity: write the press release announcing the 
 
 ## On Activation
 
-Load available config from `{project-root}/_bmad/_config/bmm/config.yaml` and `{project-root}/_bmad/_config/bmm/config.user.yaml` (root level and `bmm` section). If config is missing, let the user know `bmad-builder-setup` can configure the module at any time. Use sensible defaults for anything not configured.
+1. Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve::
+   - Use `{user_name}` for greeting
+   - Use `{communication_language}` for all communications
+   - Use `{document_output_language}` for output documents
+   - Use `{planning_artifacts}` for output location and artifact scanning
+   - Use `{project_knowledge}` for additional context scanning
 
-Resolve: `{user_name}`, `{communication_language}`, `{document_output_language}`, `{planning_artifacts}`, `{project_name}`.
+2. **Greet user** as `{user_name}`, speaking in `{communication_language}`. Be warm but efficient — dream builder energy.
 
-**Resume detection:** Check if `{planning_artifacts}/prfaq-{project_name}.md` already exists. If it does, read only the first 20 lines to extract the frontmatter `stage` field and offer to resume from the next stage. Do not read the full document. If the user confirms, route directly to that stage's reference file.
+3. **Resume detection:** Check if `{planning_artifacts}/prfaq-{project_name}.md` already exists. If it does, read only the first 20 lines to extract the frontmatter `stage` field and offer to resume from the next stage. Do not read the full document. If the user confirms, route directly to that stage's reference file.
 
-**Mode detection:**
+4. **Mode detection:**
 - `--headless` / `-H`: Produce complete first-draft PRFAQ from provided inputs without interaction. Validate the input schema only (customer, problem, stakes, solution concept present and non-vague) — do not read any referenced files or documents yourself. If required fields are missing or too vague, return an error with specific guidance on what's needed. Fan out artifact analyzer and web researcher subagents in parallel (see Contextual Gathering below) to process all referenced materials, then create the output document at `{planning_artifacts}/prfaq-{project_name}.md` using `./assets/prfaq-template.md` and route to `./references/press-release.md`.
 - Default: Full interactive coaching — the gauntlet.
 
@@ -35,11 +40,9 @@ Resolve: `{user_name}`, `{communication_language}`, `{document_output_language}`
 - **Required:** customer (specific persona), problem (concrete), stakes (why it matters), solution (concept)
 - **Optional:** competitive context, technical constraints, team/org context, target market, existing research
 
-**Set the tone immediately.** This isn't the warm, treasure-hunt analyst greeting. Frame the challenge:
+**Set the tone immediately.** This isn't a warm, exploratory greeting. Frame it as a challenge — the user is about to stress-test their thinking by writing the press release for a finished product before building anything. Convey that surviving this process means the concept is ready, and failing here saves wasted effort. Be direct and energizing.
 
-*"This is the PRFAQ challenge — Working Backwards. I'm going to push hard on your thinking. We'll write the press release for your finished product before a single line of code exists. If your concept can survive this process, it's ready. If it can't — better to find out now. Let's go."*
-
-Follow with a brief grounding: *"A PRFAQ is Amazon's Working Backwards tool — you write the press release announcing your finished product, then answer the hardest questions customers and stakeholders would ask. It forces clarity before you commit resources."*
+Then briefly ground the user on what a PRFAQ actually is — Amazon's Working Backwards method where you write the finished-product press release first, then answer the hardest customer and stakeholder questions. The point is forcing clarity before committing resources.
 
 Then proceed to Stage 1 below.
 
@@ -50,7 +53,7 @@ Then proceed to Stage 1 below.
 **Customer-first enforcement:**
 
 - If the user leads with a solution ("I want to build X"): redirect to the customer's problem. Don't let them skip the pain.
-- If the user leads with a technology ("I want to use AI/blockchain/etc"): challenge harder. *"Technology is a 'how', not a 'why'. What human problem are you solving? Remove the buzzword — does anyone still care?"*
+- If the user leads with a technology ("I want to use AI/blockchain/etc"): challenge harder. Technology is a "how", not a "why" — push them to articulate the human problem. Strip away the buzzword and ask whether anyone still cares.
 - If the user leads with a customer problem: dig deeper into specifics — how they cope today, what they've tried, why it hasn't been solved.
 
 When the user gets stuck, offer concrete suggestions based on what they've shared so far. Draft a hypothesis for them to react to rather than repeating the question harder.

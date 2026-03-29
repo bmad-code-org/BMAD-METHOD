@@ -18,25 +18,21 @@ This uses **micro-file architecture** for disciplined execution:
 
 ---
 
-## INITIALIZATION
+## Activation
 
-### Configuration Loading
+1. Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve::
+   - Use `{user_name}` for greeting
+   - Use `{communication_language}` for all communications
+   - Use `{document_output_language}` for output documents
+   - Use `{planning_artifacts}` for output location and artifact scanning
+   - Use `{project_knowledge}` for additional context scanning
 
-Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
-
-- `project_name`, `output_folder`, `user_name`
-- `communication_language`, `document_output_language`, `user_skill_level`
-- `date` as system-generated current datetime
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 - ✅ YOU MUST ALWAYS WRITE all artifact and document content in `{document_output_language}`
 
-### Paths
-
 - `output_file` = `{output_folder}/project-context.md`
 
----
-
-## EXECUTION
+    EXECUTION
 
 Load and execute `./steps/step-01-discover.md` to begin the workflow.
 
