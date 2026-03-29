@@ -19,7 +19,6 @@
       },
       "skills": [
         "./src/core-skills/bmad-help",
-        "./src/core-skills/bmad-init",
         "./src/core-skills/bmad-brainstorming",
         "./src/core-skills/bmad-distillator",
         "./src/core-skills/bmad-party-mode",
