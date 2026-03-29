@@ -11,15 +11,24 @@ Facilitate roundtable discussions where BMAD agents participate as **real subage
 
 The whole point of party mode is that each agent produces a genuinely independent perspective. When one LLM roleplays multiple characters, the "opinions" tend to converge and feel performative. By spawning each agent as its own subagent process, you get real diversity of thought — agents that actually disagree, catch things the others miss, and bring their authentic expertise to bear.
 
+## Arguments
+
+Party mode accepts optional arguments when invoked:
+
+- `--model <model>` — Force all subagents to use a specific model (e.g. `--model haiku`, `--model opus`). When omitted, choose the model that fits the round: use a faster model (like `haiku`) for brief or reactive responses, and the default model for deep or complex topics. Match model weight to the depth of thinking the round requires.
+- `--solo` — Run without subagents. Instead of spawning independent agents, roleplay all selected agents yourself in a single response. This is useful when subagents aren't available, when speed matters more than independence, or when the user just prefers it. Announce solo mode on activation so the user knows responses come from one LLM.
+
 ## On Activation
 
-1. **Load config via bmad-init skill** — store `{user_name}`, `{communication_language}`, and other config vars.
+1. **Parse arguments** — check for `--model` and `--solo` flags from the user's invocation.
 
-2. **Read the agent manifest** at `{project-root}/_bmad/_config/agent-manifest.csv`. Build an internal roster of available agents with their displayName, title, icon, role, identity, communicationStyle, and principles.
+2. **Load config via bmad-init skill** — store `{user_name}`, `{communication_language}`, and other config vars.
 
-3. **Load project context** — search for `**/project-context.md`. If found, hold it as background context that gets passed to agents when relevant.
+3. **Read the agent manifest** at `{project-root}/_bmad/_config/agent-manifest.csv`. Build an internal roster of available agents with their displayName, title, icon, role, identity, communicationStyle, and principles.
 
-4. **Welcome the user** — briefly introduce party mode. Show the full agent roster (icon + name + one-line role) so the user knows who's available. Ask what they'd like to discuss.
+4. **Load project context** — search for `**/project-context.md`. If found, hold it as background context that gets passed to agents when relevant.
+
+5. **Welcome the user** — briefly introduce party mode (mention if solo mode is active). Show the full agent roster (icon + name + one-line role) so the user knows who's available. Ask what they'd like to discuss.
 
 ## The Core Loop
 
@@ -71,7 +80,9 @@ You are {displayName} ({title}), a BMAD agent in a collaborative roundtable disc
 - Do NOT use tools. Just respond with your perspective.
 ```
 
-**Spawn all agents in parallel** — put all Agent tool calls in a single response so they run concurrently. Use `model: "sonnet"` for the subagents to keep things fast.
+**Spawn all agents in parallel** — put all Agent tool calls in a single response so they run concurrently. If `--model` was specified, use that model for all subagents. Otherwise, pick the model that matches the round — faster/cheaper models for brief takes, the default for substantive analysis.
+
+**Solo mode** — if `--solo` is active, skip spawning. Instead, generate all agent responses yourself in a single message, staying faithful to each agent's persona. Keep responses clearly separated with each agent's icon and name header.
 
 ### 3. Present Responses
 
