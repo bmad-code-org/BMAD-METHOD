@@ -127,6 +127,12 @@ platforms:
     category: ide
     description: "AI-powered IDE with cascade flows"
 
+  junie:
+    name: "Junie"
+    preferred: false
+    category: cli
+    description: "AI coding agent by JetBrains"
+
   ona:
     name: "Ona"
     preferred: false

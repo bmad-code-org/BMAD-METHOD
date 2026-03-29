@@ -81,18 +81,18 @@ When the same fact appears in both a brief and discovery notes:
 
 **Brief says:**
 ```
-bmad-init must always be included as a base skill in every bundle
+bmad-help must always be included as a base skill in every bundle
 ```
 
 **Discovery notes say:**
 ```
-bmad-init must always be included as a base skill in every bundle/install
-(solves bootstrapping problem)
+bmad-help must always be included as a base skill in every bundle/install
+(solves discoverability problem)
 ```
 
 **Distillate keeps the more contextual version:**
 ```
-- bmad-init: always included as base skill in every bundle (solves bootstrapping)
+- bmad-help: always included as base skill in every bundle (solves discoverability)
 ```
 
 ### Decision/Rationale Compression
@@ -128,7 +128,7 @@ parts: 1
 
 ## Core Concept
 - BMAD Next-Gen Installer: replaces monolithic Node.js CLI with skill-based plugin architecture for distributing BMAD methodology across 40+ AI platforms
-- Three layers: self-describing plugins (bmad-manifest.json), cross-platform install via Vercel skills CLI (MIT), runtime registration via bmad-init skill
+- Three layers: self-describing plugins (bmad-manifest.json), cross-platform install via Vercel skills CLI (MIT), runtime registration via bmad-setup skill
 - Transforms BMAD from dev-only methodology into open platform for any domain (creative, therapeutic, educational, personal)
 
 ## Problem
@@ -141,7 +141,7 @@ parts: 1
 - Plugins: skill bundles with Anthropic plugin standard as base format + bmad-manifest.json extending for BMAD-specific metadata (installer options, capabilities, help integration, phase ordering, dependencies)
 - Existing manifest example: `{"module-code":"bmm","replaces-skill":"bmad-create-product-brief","capabilities":[{"name":"create-brief","menu-code":"CB","supports-headless":true,"phase-name":"1-analysis","after":["brainstorming"],"before":["create-prd"],"is-required":true}]}`
 - Vercel skills CLI handles platform translation; integration pattern (wrap/fork/call) is PRD decision
-- bmad-init: global skill scanning installed bmad-manifest.json files, registering capabilities, configuring project settings; always included as base skill in every bundle (solves bootstrapping)
+- bmad-setup: global skill scanning installed bmad-manifest.json files, registering capabilities, configuring project settings; always included as base skill in every bundle (solves bootstrapping)
 - bmad-update: plugin update path without full reinstall; technical approach (diff/replace/preserve customizations) is PRD decision
 - Distribution tiers: (1) NPX installer wrapping skills CLI for technical users, (2) zip bundle + platform-specific README for non-technical users, (3) future marketplace
 - Non-technical path has honest friction: "copy to right folder" requires knowing where; per-platform README instructions; improves over time as low-code space matures
@@ -161,18 +161,18 @@ parts: 1
 - Zero (or near-zero) custom platform directory code; delegated to skills CLI ecosystem
 - Installation verified on top platforms by volume; skills CLI handles long tail
 - Non-technical install path validated with non-developer users
-- bmad-init discovers/registers all plugins from manifests; clear errors for malformed manifests
+- bmad-setup discovers/registers all plugins from manifests; clear errors for malformed manifests
 - At least one external module author successfully publishes plugin using manifest system
 - bmad-update works without full reinstall
 - Existing CLI users have documented migration path
 
 ## Scope
-- In: manifest spec, bmad-init, bmad-update, Vercel CLI integration, NPX installer, zip bundles, migration path
+- In: manifest spec, bmad-setup, bmad-update, Vercel CLI integration, NPX installer, zip bundles, migration path
 - Out: BMAD Builder, marketplace web platform, skill conversion (prerequisite, separate), one-click install for all platforms, monetization, quality certification process (gated-submission principle is architectural requirement; process defined separately)
 - Deferred: CI/CD integration, telemetry for module authors, air-gapped enterprise install, zip bundle integrity verification (checksums/signing), deeper non-technical platform integrations
 
 ## Current Installer (migration context)
-- Entry: `tools/cli/bmad-cli.js` (Commander.js) → `tools/cli/installers/lib/core/installer.js`
+- Entry: `tools/installer/bmad-cli.js` (Commander.js) → `tools/installer/core/installer.js`
 - Platforms: `platform-codes.yaml` (~20 platforms with target dirs, legacy dirs, template types, special flags)
 - Manifests: CSV files (skill/workflow/agent-manifest.csv) are current source of truth, not JSON
 - External modules: `external-official-modules.yaml` (CIS, GDS, TEA, WDS) from npm with semver
@@ -214,7 +214,7 @@ parts: 1
 
 ## Opportunities
 - Module authors as acquisition channel: each published plugin distributes BMAD to creator's audience
-- CI/CD integration: bmad-init as pipeline one-liner increases stickiness
+- CI/CD integration: bmad-setup as pipeline one-liner increases stickiness
 - Educational institutions: structured methodology + non-technical install → university AI curriculum
 - Skill composability: mixing BMAD modules with third-party skills for custom methodology stacks
 
