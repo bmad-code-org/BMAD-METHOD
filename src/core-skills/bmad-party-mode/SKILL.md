@@ -22,7 +22,7 @@ Party mode accepts optional arguments when invoked:
 
 1. **Parse arguments** — check for `--model` and `--solo` flags from the user's invocation.
 
-2. Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
+2. Load config from `{project-root}/_bmad/core/config.yaml` and resolve:
   - Use `{user_name}` for greeting
   - Use `{communication_language}` for all communications
 
