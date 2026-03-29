@@ -1,7 +1,7 @@
 ---
 # File references (ONLY variables used in this step)
 prdFile: '{prd_file_path}'
-prdPurpose: '{project-root}/_bmad/bmm-skills/2-plan-workflows/create-prd/data/prd-purpose.md'
+prdPurpose: '{project-root}/_bmad/bmm-skills/2-plan-workflows/bmad-create-prd/data/prd-purpose.md'
 ---
 
 # Step E-3: Edit & Update
