@@ -291,3 +291,14 @@ Run both `bmad-review-adversarial-general` and `bmad-review-edge-case-hunter` to
 **Input:** Target folder path
 
 **Output:** `index.md` with organized file listings, relative links, and brief descriptions
+
+
+
+## 3rd Party Tools Integration: Pencil
+
+If you are using **Pencil** within BMAD workflows for creating mockups or UI designs, it is critical that the LLM is fully aware of its existence early in the process rather than treating it merely as a nice-to-have MCP (Model Context Protocol).
+
+**Important Guidelines for Pencil:**
+- **Introduce Early:** The sooner you bring Pencil into your planning process, the better. You must specify Pencil in your tooling **before** generating the `_bmad-output/planning-artifacts/architecture.md` document.
+- **Enforce Context:** Explicitly enforce the inclusion of your `.pen` (Pencil) files in the `_bmad-output/project-context.md` file. 
+- **Why this matters:** If you bring Pencil in after the PRD, UX, and Architecture docs are already drafted without establishing these guardrails, the AI will not integrate it smoothly and will cause avoidable course corrections during sprints.
