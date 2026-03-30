@@ -21,13 +21,14 @@ Lưu ý quan trọng cuối cùng: mọi workflow dưới đây đều có thể
 
 ## Phase 1: Analysis (Tùy chọn)
 
-Khám phá không gian vấn đề và xác nhận ý tưởng trước khi cam kết đi vào lập kế hoạch.
+Khám phá không gian vấn đề và xác nhận ý tưởng trước khi cam kết đi vào lập kế hoạch. [**Tìm hiểu từng công cụ làm gì và nên dùng khi nào**](../explanation/analysis-phase.md).
 
 | Workflow | Mục đích | Tạo ra |
 | ------------------------------- | -------------------------------------------------------------------------- | ------------------------- |
 | `bmad-brainstorming` | Brainstorm ý tưởng dự án với sự điều phối của brainstorming coach | `brainstorming-report.md` |
 | `bmad-domain-research`, `bmad-market-research`, `bmad-technical-research` | Xác thực giả định về thị trường, kỹ thuật hoặc miền nghiệp vụ | Kết quả nghiên cứu |
-| `bmad-create-product-brief` | Ghi lại tầm nhìn chiến lược | `product-brief.md` |
+| `bmad-product-brief` | Ghi lại tầm nhìn chiến lược — phù hợp nhất khi concept của bạn đã rõ | `product-brief.md` |
+| `bmad-prfaq` | Working Backwards — stress-test và rèn sắc concept sản phẩm của bạn | `prfaq-{project}.md` |
 
 ## Phase 2: Planning
 

@@ -68,7 +68,7 @@ BMad giúp bạn xây dựng phần mềm thông qua các workflow có hướng 
 
 | Phase | Tên | Điều xảy ra |
 | ----- | -------------- | --------------------------------------------------- |
-| 1 | Analysis | Brainstorming, nghiên cứu, product brief *(tùy chọn)* |
+| 1 | Analysis | Brainstorming, nghiên cứu, product brief hoặc PRFAQ *(tùy chọn)* |
 | 2 | Planning | Tạo tài liệu yêu cầu (PRD hoặc spec) |
 | 3 | Solutioning | Thiết kế kiến trúc *(chỉ dành cho BMad Method/Enterprise)* |
 | 4 | Implementation | Xây dựng theo từng epic, từng story |
@@ -133,10 +133,11 @@ Bạn có thể tạo thủ công tại `_bmad-output/project-context.md` hoặc
 
 ### Phase 1: Analysis (Tùy chọn)
 
-Tất cả workflow trong phase này đều là tùy chọn:
+Tất cả workflow trong phase này đều là tùy chọn. [**Chưa chắc nên dùng cái nào?**](../explanation/analysis-phase.md)
 - **brainstorming** (`bmad-brainstorming`) — Gợi ý ý tưởng có hướng dẫn
 - **research** (`bmad-market-research` / `bmad-domain-research` / `bmad-technical-research`) — Nghiên cứu thị trường, miền nghiệp vụ và kỹ thuật
-- **create-product-brief** (`bmad-create-product-brief`) — Tài liệu nền tảng được khuyến nghị
+- **product-brief** (`bmad-product-brief`) — Tài liệu nền tảng được khuyến nghị khi concept của bạn đã rõ
+- **prfaq** (`bmad-prfaq`) — Bài kiểm tra Working Backwards để stress-test và rèn sắc concept sản phẩm của bạn
 
 ### Phase 2: Planning (Bắt buộc)
 

@@ -17,7 +17,7 @@ Trang này liệt kê các agent mặc định của BMM (bộ Agile suite) đư
 
 | Agent | Skill ID | Trigger | Workflow chính |
 | --------------------------- | -------------------- | ---------------------------------- | --------------------------------------------------------------------------------------------------- |
-| Analyst (Mary) | `bmad-analyst` | `BP`, `RS`, `CB`, `DP` | Brainstorm Project, Research, Create Brief, Document Project |
+| Analyst (Mary) | `bmad-analyst` | `BP`, `RS`, `CB`, `WB`, `DP` | Brainstorm Project, Research, Create Brief, PRFAQ Challenge, Document Project |
 | Product Manager (John) | `bmad-pm` | `CP`, `VP`, `EP`, `CE`, `IR`, `CC` | Create/Validate/Edit PRD, Create Epics and Stories, Implementation Readiness, Correct Course |
 | Architect (Winston) | `bmad-architect` | `CA`, `IR` | Create Architecture, Implementation Readiness |
 | Scrum Master (Bob) | `bmad-sm` | `SP`, `CS`, `ER`, `CC` | Sprint Planning, Create Story, Epic Retrospective, Correct Course |
