@@ -1144,8 +1144,35 @@ class Installer {
     const configuredIdes = existingInstall.ides;
     const projectRoot = path.dirname(bmadDir);
 
-    // Get custom module sources: first from --custom-content (re-cache from source), then from cache
+    // Get custom module sources: first from manifest, then from --custom-content, then from cache
     const customModuleSources = new Map();
+    if (existingInstall.customModules) {
+      for (const customModule of existingInstall.customModules) {
+        if (!customModule?.id) continue;
+
+        let sourcePath = customModule.sourcePath;
+        if (sourcePath && sourcePath.startsWith('_config')) {
+          sourcePath = path.join(bmadDir, sourcePath);
+        } else if (!sourcePath && customModule.relativePath) {
+          sourcePath = path.resolve(projectRoot, customModule.relativePath);
+        } else if (sourcePath && !path.isAbsolute(sourcePath)) {
+          sourcePath = path.resolve(sourcePath);
+        }
+
+        if (!sourcePath || !(await fs.pathExists(sourcePath))) {
+          continue;
+        }
+
+        customModuleSources.set(customModule.id, {
+          id: customModule.id,
+          name: customModule.name || customModule.id,
+          sourcePath,
+          relativePath: customModule.relativePath,
+          cached: false,
+        });
+      }
+    }
+
     if (config.customContent?.sources?.length > 0) {
       for (const source of config.customContent.sources) {
         if (source.id && source.path && (await fs.pathExists(source.path))) {

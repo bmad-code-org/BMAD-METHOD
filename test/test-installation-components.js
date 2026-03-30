@@ -126,6 +126,53 @@ async function createSkillCollisionFixture() {
   return { root: fixtureRoot, bmadDir: fixtureDir };
 }
 
+async function createCustomModuleManifestFixture() {
+  const fixtureRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-custom-manifest-'));
+  const bmadDir = path.join(fixtureRoot, '_bmad');
+  const configDir = path.join(bmadDir, '_config');
+  await fs.ensureDir(configDir);
+
+  const minimalAgent = '<agent name="Test" title="T"><persona>p</persona></agent>';
+  await fs.ensureDir(path.join(bmadDir, 'core', 'agents'));
+  await fs.writeFile(path.join(bmadDir, 'core', 'agents', 'test.md'), minimalAgent);
+  await fs.ensureDir(path.join(bmadDir, 'test-module', 'agents'));
+  await fs.writeFile(path.join(bmadDir, 'test-module', 'agents', 'test.md'), minimalAgent);
+
+  await fs.writeFile(
+    path.join(configDir, 'manifest.yaml'),
+    [
+      'installation:',
+      '  version: 6.2.2',
+      '  installDate: 2026-03-30T00:00:00.000Z',
+      '  lastUpdated: 2026-03-30T00:00:00.000Z',
+      'modules:',
+      '  - name: core',
+      '    version: 6.2.2',
+      '    installDate: 2026-03-30T00:00:00.000Z',
+      '    lastUpdated: 2026-03-30T00:00:00.000Z',
+      '    source: built-in',
+      '    npmPackage: null',
+      '    repoUrl: null',
+      '  - name: test-module',
+      '    version: null',
+      '    installDate: 2026-03-30T00:00:00.000Z',
+      '    lastUpdated: 2026-03-30T00:00:00.000Z',
+      '    source: custom',
+      '    npmPackage: null',
+      '    repoUrl: null',
+      'customModules:',
+      '  - id: test-module',
+      '    name: "Test Module"',
+      '    sourcePath: "/tmp/test-module-source"',
+      'ides:',
+      '  - codex',
+      '',
+    ].join('\n'),
+  );
+
+  return { root: fixtureRoot, bmadDir, manifestPath: path.join(configDir, 'manifest.yaml') };
+}
+
 /**
  * Test Suite
  */
@@ -1709,6 +1756,35 @@ async function runTests() {
   } finally {
     if (tempProjectDir32) await fs.remove(tempProjectDir32).catch(() => {});
     if (installedBmadDir32) await fs.remove(path.dirname(installedBmadDir32)).catch(() => {});
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Suite 33: Main manifest preserves customModules
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 33: Preserve customModules in main manifest${colors.reset}\n`);
+
+  let customManifestFixture = null;
+  try {
+    customManifestFixture = await createCustomModuleManifestFixture();
+    const generator33 = new ManifestGenerator();
+    await generator33.generateManifests(customManifestFixture.bmadDir, ['core', 'test-module'], [], { ides: ['codex'] });
+
+    const yaml = require('yaml');
+    const updatedManifest = yaml.parse(await fs.readFile(customManifestFixture.manifestPath, 'utf8'));
+    const customModule = updatedManifest.customModules?.find((entry) => entry.id === 'test-module');
+
+    assert(Array.isArray(updatedManifest.customModules), 'Main manifest keeps customModules array');
+    assert(customModule !== undefined, 'Main manifest preserves existing custom module entry');
+    assert(
+      customModule && customModule.sourcePath === '/tmp/test-module-source',
+      'Main manifest preserves custom module sourcePath',
+    );
+  } catch (error) {
+    assert(false, 'Main manifest preserves customModules test succeeds', error.message);
+  } finally {
+    if (customManifestFixture?.root) await fs.remove(customManifestFixture.root).catch(() => { });
   }
 
   console.log('');
