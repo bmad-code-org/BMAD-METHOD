@@ -192,6 +192,111 @@ class CustomModules {
 
     return this.paths;
   }
+
+  /**
+   * Assemble quick-update source candidates before install() hands them to discoverPaths().
+   * This exists because discoverPaths() consumes already-prepared quick-update sources,
+   * while quickUpdate() still has to build that source map from manifest, explicit inputs,
+   * and cache conventions.
+   * Precedence: manifest-backed paths, explicit sources override them, then cached modules.
+   * @param {Object} config - Quick update configuration
+   * @param {Object} existingInstall - Existing installation snapshot
+   * @param {string} bmadDir - BMAD directory
+   * @param {Object} externalModuleManager - External module manager
+   * @returns {Promise<Map<string, Object>>} Map of custom module ID to source info
+   */
+  async assembleQuickUpdateSources(config, existingInstall, bmadDir, externalModuleManager) {
+    const projectRoot = path.dirname(bmadDir);
+    const customModuleSources = new Map();
+
+    if (existingInstall.customModules) {
+      for (const customModule of existingInstall.customModules) {
+        // Skip if no ID - can't reliably track or re-cache without it
+        if (!customModule?.id) continue;
+
+        let sourcePath = customModule.sourcePath;
+        if (sourcePath && sourcePath.startsWith('_config')) {
+          // Paths are relative to BMAD dir, but we want absolute paths for install
+          sourcePath = path.join(bmadDir, sourcePath);
+        } else if (!sourcePath && customModule.relativePath) {
+          // Fall back to relativePath
+          sourcePath = path.resolve(projectRoot, customModule.relativePath);
+        } else if (sourcePath && !path.isAbsolute(sourcePath)) {
+          // If we have a sourcePath but it's not absolute, resolve it relative to project root
+          sourcePath = path.resolve(projectRoot, sourcePath);
+        }
+
+        // If we still don't have a valid source path, skip this module
+        if (!sourcePath || !(await fs.pathExists(sourcePath))) {
+          continue;
+        }
+
+        customModuleSources.set(customModule.id, {
+          id: customModule.id,
+          name: customModule.name || customModule.id,
+          sourcePath,
+          relativePath: customModule.relativePath,
+          cached: false,
+        });
+      }
+    }
+
+    if (config.customContent?.sources?.length > 0) {
+      for (const source of config.customContent.sources) {
+        if (source.id && source.path) {
+          customModuleSources.set(source.id, {
+            id: source.id,
+            name: source.name || source.id,
+            sourcePath: source.path,
+            cached: false, // From CLI, will be re-cached
+          });
+        }
+      }
+    }
+
+    const cacheDir = path.join(bmadDir, '_config', 'custom');
+    if (!(await fs.pathExists(cacheDir))) {
+      return customModuleSources;
+    }
+
+    const cachedModules = await fs.readdir(cacheDir, { withFileTypes: true });
+    for (const cachedModule of cachedModules) {
+      const moduleId = cachedModule.name;
+      const cachedPath = path.join(cacheDir, moduleId);
+
+      // Skip if path doesn't exist (broken symlink, deleted dir) - avoids lstat ENOENT
+      if (!(await fs.pathExists(cachedPath))) {
+        continue;
+      }
+      if (!cachedModule.isDirectory()) {
+        continue;
+      }
+
+      // Skip if we already have this module from manifest
+      if (customModuleSources.has(moduleId)) {
+        continue;
+      }
+
+      // Check if this is an external official module - skip cache for those
+      const isExternal = await externalModuleManager.hasModule(moduleId);
+      if (isExternal) {
+        continue;
+      }
+
+      // Check if this is actually a custom module (has module.yaml)
+      const moduleYamlPath = path.join(cachedPath, 'module.yaml');
+      if (await fs.pathExists(moduleYamlPath)) {
+        customModuleSources.set(moduleId, {
+          id: moduleId,
+          name: moduleId,
+          sourcePath: cachedPath,
+          cached: true,
+        });
+      }
+    }
+
+    return customModuleSources;
+  }
 }
 
 module.exports = { CustomModules };

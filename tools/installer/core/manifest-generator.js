@@ -377,6 +377,7 @@ class ManifestGenerator {
    */
   async writeMainManifest(cfgDir) {
     const manifestPath = path.join(cfgDir, 'manifest.yaml');
+    const installedModuleSet = new Set(this.modules);
 
     // Read existing manifest to preserve install date
     let existingInstallDate = null;
@@ -405,7 +406,9 @@ class ManifestGenerator {
         }
 
         if (existingManifest.customModules && Array.isArray(existingManifest.customModules)) {
-          existingCustomModules = existingManifest.customModules;
+          // We filter here so manifest regeneration preserves source metadata only for custom modules that
+          // are still installed. Without that, customModules can retain stale entries for modules that were removed.
+          existingCustomModules = existingManifest.customModules.filter((customModule) => installedModuleSet.has(customModule?.id));
         }
       } catch {
         // If we can't read existing manifest, continue with defaults

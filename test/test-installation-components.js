@@ -14,7 +14,9 @@
 const path = require('node:path');
 const os = require('node:os');
 const fs = require('fs-extra');
+const { Installer } = require('../tools/installer/core/installer');
 const { ManifestGenerator } = require('../tools/installer/core/manifest-generator');
+const { OfficialModules } = require('../tools/installer/modules/official-modules');
 const { IdeManager } = require('../tools/installer/ide/manager');
 const { clearCache, loadPlatformCodes } = require('../tools/installer/ide/platform-codes');
 
@@ -130,13 +132,16 @@ async function createCustomModuleManifestFixture() {
   const fixtureRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-custom-manifest-'));
   const bmadDir = path.join(fixtureRoot, '_bmad');
   const configDir = path.join(bmadDir, '_config');
+  const moduleSourceDir = path.join(fixtureRoot, 'test-module-source');
   await fs.ensureDir(configDir);
+  await fs.ensureDir(moduleSourceDir);
 
   const minimalAgent = '<agent name="Test" title="T"><persona>p</persona></agent>';
   await fs.ensureDir(path.join(bmadDir, 'core', 'agents'));
   await fs.writeFile(path.join(bmadDir, 'core', 'agents', 'test.md'), minimalAgent);
   await fs.ensureDir(path.join(bmadDir, 'test-module', 'agents'));
   await fs.writeFile(path.join(bmadDir, 'test-module', 'agents', 'test.md'), minimalAgent);
+  await fs.writeFile(path.join(moduleSourceDir, 'module.yaml'), ['code: test-module', 'name: Test Module', ''].join('\n'));
 
   await fs.writeFile(
     path.join(configDir, 'manifest.yaml'),
@@ -163,14 +168,14 @@ async function createCustomModuleManifestFixture() {
       'customModules:',
       '  - id: test-module',
       '    name: "Test Module"',
-      '    sourcePath: "/tmp/test-module-source"',
+      `    sourcePath: ${JSON.stringify(moduleSourceDir)}`,
       'ides:',
       '  - codex',
       '',
     ].join('\n'),
   );
 
-  return { root: fixtureRoot, bmadDir, manifestPath: path.join(configDir, 'manifest.yaml') };
+  return { root: fixtureRoot, bmadDir, manifestPath: path.join(configDir, 'manifest.yaml'), moduleSourceDir };
 }
 
 /**
@@ -386,9 +391,9 @@ async function runTests() {
 
     assert(
       Array.isArray(opencodeInstaller?.legacy_targets) &&
-      ['.opencode/agents', '.opencode/commands', '.opencode/agent', '.opencode/command'].every((legacyTarget) =>
-        opencodeInstaller.legacy_targets.includes(legacyTarget),
-      ),
+        ['.opencode/agents', '.opencode/commands', '.opencode/agent', '.opencode/command'].every((legacyTarget) =>
+          opencodeInstaller.legacy_targets.includes(legacyTarget),
+        ),
       'OpenCode installer cleans split legacy agent and command output',
     );
 
@@ -1411,8 +1416,8 @@ async function runTests() {
   } catch (error) {
     assert(false, 'Pi native skills test succeeds', error.message);
   } finally {
-    if (tempProjectDir28) await fs.remove(tempProjectDir28).catch(() => { });
-    if (installedBmadDir28) await fs.remove(path.dirname(installedBmadDir28)).catch(() => { });
+    if (tempProjectDir28) await fs.remove(tempProjectDir28).catch(() => {});
+    if (installedBmadDir28) await fs.remove(path.dirname(installedBmadDir28)).catch(() => {});
   }
 
   console.log('');
@@ -1559,7 +1564,7 @@ async function runTests() {
   } catch (error) {
     assert(false, 'Unified skill scanner test succeeds', error.message);
   } finally {
-    if (tempFixture29) await fs.remove(tempFixture29).catch(() => { });
+    if (tempFixture29) await fs.remove(tempFixture29).catch(() => {});
   }
 
   console.log('');
@@ -1626,7 +1631,7 @@ async function runTests() {
   } catch (error) {
     assert(false, 'parseSkillMd validation test succeeds', error.message);
   } finally {
-    if (tempFixture30) await fs.remove(tempFixture30).catch(() => { });
+    if (tempFixture30) await fs.remove(tempFixture30).catch(() => {});
   }
 
   console.log('');
@@ -1663,8 +1668,8 @@ async function runTests() {
   } catch (error) {
     assert(false, 'Skill-format unique count test succeeds', error.message);
   } finally {
-    if (collisionProjectDir) await fs.remove(collisionProjectDir).catch(() => { });
-    if (collisionFixtureRoot) await fs.remove(collisionFixtureRoot).catch(() => { });
+    if (collisionProjectDir) await fs.remove(collisionProjectDir).catch(() => {});
+    if (collisionFixtureRoot) await fs.remove(collisionFixtureRoot).catch(() => {});
   }
 
   console.log('');
@@ -1754,37 +1759,109 @@ async function runTests() {
   } catch (error) {
     assert(false, 'Ona native skills test succeeds', error.message);
   } finally {
-    if (tempProjectDir32) await fs.remove(tempProjectDir32).catch(() => { });
-    if (installedBmadDir32) await fs.remove(path.dirname(installedBmadDir32)).catch(() => { });
+    if (tempProjectDir32) await fs.remove(tempProjectDir32).catch(() => {});
+    if (installedBmadDir32) await fs.remove(path.dirname(installedBmadDir32)).catch(() => {});
   }
 
   console.log('');
 
   // ============================================================
-  // Suite 33: Main manifest preserves customModules
+  // Suite 33: Main manifest preserves active customModules only
   // ============================================================
-  console.log(`${colors.yellow}Test Suite 33: Preserve customModules in main manifest${colors.reset}\n`);
+  console.log(`${colors.yellow}Test Suite 33: Preserve active customModules in main manifest${colors.reset}\n`);
 
   let customManifestFixture = null;
   try {
     customManifestFixture = await createCustomModuleManifestFixture();
+    const yaml = require('yaml');
+    const originalManifest = yaml.parse(await fs.readFile(customManifestFixture.manifestPath, 'utf8'));
+    originalManifest.customModules.push({
+      id: 'removed-module',
+      name: 'Removed Module',
+      sourcePath: path.join(customManifestFixture.root, 'removed-module-source'),
+    });
+    await fs.writeFile(customManifestFixture.manifestPath, yaml.stringify(originalManifest), 'utf8');
+
     const generator33 = new ManifestGenerator();
     await generator33.generateManifests(customManifestFixture.bmadDir, ['core', 'test-module'], [], { ides: ['codex'] });
 
-    const yaml = require('yaml');
     const updatedManifest = yaml.parse(await fs.readFile(customManifestFixture.manifestPath, 'utf8'));
     const customModule = updatedManifest.customModules?.find((entry) => entry.id === 'test-module');
 
     assert(Array.isArray(updatedManifest.customModules), 'Main manifest keeps customModules array');
     assert(customModule !== undefined, 'Main manifest preserves existing custom module entry');
     assert(
-      customModule && customModule.sourcePath === '/tmp/test-module-source',
+      customModule && customModule.sourcePath === customManifestFixture.moduleSourceDir,
       'Main manifest preserves custom module sourcePath',
+    );
+    assert(
+      !updatedManifest.customModules?.some((entry) => entry.id === 'removed-module'),
+      'Main manifest drops stale custom module entries',
     );
   } catch (error) {
     assert(false, 'Main manifest preserves customModules test succeeds', error.message);
   } finally {
-    if (customManifestFixture?.root) await fs.remove(customManifestFixture.root).catch(() => { });
+    if (customManifestFixture?.root) await fs.remove(customManifestFixture.root).catch(() => {});
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Suite 34: Quick update uses manifest-backed custom sources
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 34: Quick update uses manifest-backed custom module sources${colors.reset}\n`);
+
+  let quickUpdateFixture = null;
+  const originalListAvailable34 = OfficialModules.prototype.listAvailable;
+  const originalLoadExistingConfig34 = OfficialModules.prototype.loadExistingConfig;
+  const originalCollectModuleConfigQuick34 = OfficialModules.prototype.collectModuleConfigQuick;
+  try {
+    quickUpdateFixture = await createCustomModuleManifestFixture();
+    const installer34 = new Installer();
+    installer34.externalModuleManager.hasModule = async () => false;
+    installer34.externalModuleManager.listAvailable = async () => [];
+
+    let capturedInstallConfig34 = null;
+    installer34.install = async (config) => {
+      capturedInstallConfig34 = config;
+      return { success: true };
+    };
+
+    OfficialModules.prototype.listAvailable = async function () {
+      return { modules: [], customModules: [] };
+    };
+    OfficialModules.prototype.loadExistingConfig = async function () {
+      this.collectedConfig = this.collectedConfig || {};
+    };
+    OfficialModules.prototype.collectModuleConfigQuick = async function (moduleName) {
+      this.collectedConfig = this.collectedConfig || {};
+      if (!this.collectedConfig[moduleName]) {
+        this.collectedConfig[moduleName] = {};
+      }
+      return false;
+    };
+
+    await installer34.quickUpdate({
+      directory: quickUpdateFixture.root,
+      skipPrompts: true,
+    });
+
+    const customModule34 = capturedInstallConfig34?._customModuleSources?.get('test-module');
+
+    assert(capturedInstallConfig34 !== null, 'Quick update forwards config to install');
+    assert(customModule34 !== undefined, 'Quick update keeps manifest-backed custom module updateable');
+    assert(customModule34 && customModule34.cached === false, 'Quick update uses manifest-backed source before cache');
+    assert(
+      customModule34 && customModule34.sourcePath === quickUpdateFixture.moduleSourceDir,
+      'Quick update uses preserved manifest sourcePath for custom modules',
+    );
+  } catch (error) {
+    assert(false, 'Quick update manifest-backed custom source test succeeds', error.message);
+  } finally {
+    OfficialModules.prototype.listAvailable = originalListAvailable34;
+    OfficialModules.prototype.loadExistingConfig = originalLoadExistingConfig34;
+    OfficialModules.prototype.collectModuleConfigQuick = originalCollectModuleConfigQuick34;
+    if (quickUpdateFixture?.root) await fs.remove(quickUpdateFixture.root).catch(() => {});
   }
 
   console.log('');
