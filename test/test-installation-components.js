@@ -386,9 +386,9 @@ async function runTests() {
 
     assert(
       Array.isArray(opencodeInstaller?.legacy_targets) &&
-        ['.opencode/agents', '.opencode/commands', '.opencode/agent', '.opencode/command'].every((legacyTarget) =>
-          opencodeInstaller.legacy_targets.includes(legacyTarget),
-        ),
+      ['.opencode/agents', '.opencode/commands', '.opencode/agent', '.opencode/command'].every((legacyTarget) =>
+        opencodeInstaller.legacy_targets.includes(legacyTarget),
+      ),
       'OpenCode installer cleans split legacy agent and command output',
     );
 
@@ -1411,8 +1411,8 @@ async function runTests() {
   } catch (error) {
     assert(false, 'Pi native skills test succeeds', error.message);
   } finally {
-    if (tempProjectDir28) await fs.remove(tempProjectDir28).catch(() => {});
-    if (installedBmadDir28) await fs.remove(path.dirname(installedBmadDir28)).catch(() => {});
+    if (tempProjectDir28) await fs.remove(tempProjectDir28).catch(() => { });
+    if (installedBmadDir28) await fs.remove(path.dirname(installedBmadDir28)).catch(() => { });
   }
 
   console.log('');
@@ -1559,7 +1559,7 @@ async function runTests() {
   } catch (error) {
     assert(false, 'Unified skill scanner test succeeds', error.message);
   } finally {
-    if (tempFixture29) await fs.remove(tempFixture29).catch(() => {});
+    if (tempFixture29) await fs.remove(tempFixture29).catch(() => { });
   }
 
   console.log('');
@@ -1626,7 +1626,7 @@ async function runTests() {
   } catch (error) {
     assert(false, 'parseSkillMd validation test succeeds', error.message);
   } finally {
-    if (tempFixture30) await fs.remove(tempFixture30).catch(() => {});
+    if (tempFixture30) await fs.remove(tempFixture30).catch(() => { });
   }
 
   console.log('');
@@ -1663,8 +1663,8 @@ async function runTests() {
   } catch (error) {
     assert(false, 'Skill-format unique count test succeeds', error.message);
   } finally {
-    if (collisionProjectDir) await fs.remove(collisionProjectDir).catch(() => {});
-    if (collisionFixtureRoot) await fs.remove(collisionFixtureRoot).catch(() => {});
+    if (collisionProjectDir) await fs.remove(collisionProjectDir).catch(() => { });
+    if (collisionFixtureRoot) await fs.remove(collisionFixtureRoot).catch(() => { });
   }
 
   console.log('');
@@ -1754,8 +1754,8 @@ async function runTests() {
   } catch (error) {
     assert(false, 'Ona native skills test succeeds', error.message);
   } finally {
-    if (tempProjectDir32) await fs.remove(tempProjectDir32).catch(() => {});
-    if (installedBmadDir32) await fs.remove(path.dirname(installedBmadDir32)).catch(() => {});
+    if (tempProjectDir32) await fs.remove(tempProjectDir32).catch(() => { });
+    if (installedBmadDir32) await fs.remove(path.dirname(installedBmadDir32)).catch(() => { });
   }
 
   console.log('');
