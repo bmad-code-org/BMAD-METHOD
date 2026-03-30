@@ -38,6 +38,7 @@ Nécessite [Node.js](https://nodejs.org) v20+ et `npx` (inclus avec npm).
 | `--communication-language <langue>` | Langue de communication des agents | Anglais |
 | `--document-output-language <langue>` | Langue de sortie des documents | Anglais |
 | `--output-folder <chemin>` | Chemin du dossier de sortie (voir les règles de résolution ci-dessous) | `_bmad-output` |
+| `--scope <nom>` | Nom de portée pour isoler les artefacts de planification/implémentation (voir ci-dessous) | _(vide - pas de portée)_ |
 
 #### Résolution du chemin du dossier de sortie
 
@@ -46,10 +47,24 @@ La valeur passée à `--output-folder` (ou saisie de manière interactive) est r
 | Type d'entrée                 | Exemple                    | Résolu comme                                                 |
 |-------------------------------|----------------------------|--------------------------------------------------------------|
 | Chemin relatif (par défaut)   | `_bmad-output`             | `<racine-du-projet>/_bmad-output`                            |
-| Chemin relatif avec traversée | `../../shared-outputs`     | Chemin absolu normalisé — ex. `/Users/me/shared-outputs`     |
-| Chemin absolu                 | `/Users/me/shared-outputs` | Utilisé tel quel — la racine du projet n'est **pas** ajoutée |
+| Chemin relatif avec traversée | `../../shared-outputs`     | Chemin absolu normalisé - ex. `/Users/me/shared-outputs`     |
+| Chemin absolu                 | `/Users/me/shared-outputs` | Utilisé tel quel - la racine du projet n'est **pas** ajoutée |
 
-Le chemin résolu est ce que les agents et les workflows vont utiliser lors de l'écriture des fichiers de sortie. L'utilisation d'un chemin absolu ou d'un chemin relatif avec traversée vous permet de diriger tous les artefacts générés vers un répertoire en dehors de l'arborescence de votre projet — utile pour les configurations partagées ou les monorepos.
+Le chemin résolu est ce que les agents et les workflows vont utiliser lors de l'écriture des fichiers de sortie. L'utilisation d'un chemin absolu ou d'un chemin relatif avec traversée vous permet de diriger tous les artefacts générés vers un répertoire en dehors de l'arborescence de votre projet - utile pour les configurations partagées ou les monorepos.
+
+#### Portée
+
+Lorsque `--scope` est fourni, `planning_artifacts` et `implementation_artifacts` sont placés dans un sous-répertoire. Le dossier de sortie racine reste partagé pour le contexte projet et le brainstorming.
+
+```
+# Sans --scope :
+_bmad-output/planning-artifacts/prd.md
+
+# Avec --scope admin-portal :
+_bmad-output/admin-portal/planning-artifacts/prd.md
+```
+
+Le nom ne peut contenir que des lettres, chiffres, tirets, points ou underscores (`.` et `..` ne sont pas autorisés). L'omettre conserve la structure actuelle.
 
 ### Autres options
 
@@ -60,16 +75,16 @@ Le chemin résolu est ce que les agents et les workflows vont utiliser lors de l
 
 ## IDs de modules
 
-IDs de modules disponibles pour l’option `--modules` :
+IDs de modules disponibles pour l'option `--modules` :
 
-- `bmm` — méthode BMad Master
-- `bmb` — BMad Builder
+- `bmm` - méthode BMad Master
+- `bmb` - BMad Builder
 
 Consultez le [registre BMad](https://github.com/bmad-code-org) pour les modules externes disponibles.
 
 ## IDs d'outils/IDE
 
-IDs d'outils disponibles pour l’option `--tools` :
+IDs d'outils disponibles pour l'option `--tools` :
 
 **Recommandés :** `claude-code`, `cursor`
 
@@ -140,15 +155,15 @@ npx bmad-method install \
 
 BMad valide toutes les options fournis :
 
-- **Directory** — Doit être un chemin valide avec des permissions d'écriture
-- **Modules** — Avertit des IDs de modules invalides (mais n'échoue pas)
-- **Tools** — Avertit des IDs d'outils invalides (mais n'échoue pas)
-- **Custom Content** — Chaque chemin doit contenir un fichier `module.yaml` valide
-- **Action** — Doit être l'une des suivantes : `install`, `update`, `quick-update`
+- **Directory** - Doit être un chemin valide avec des permissions d'écriture
+- **Modules** - Avertit des IDs de modules invalides (mais n'échoue pas)
+- **Tools** - Avertit des IDs d'outils invalides (mais n'échoue pas)
+- **Custom Content** - Chaque chemin doit contenir un fichier `module.yaml` valide
+- **Action** - Doit être l'une des suivantes : `install`, `update`, `quick-update`
 
 Les valeurs invalides entraîneront soit :
-1. L’affichage d’un message d'erreur suivi d’un exit (pour les options critiques comme le répertoire)
-2. Un avertissement puis la continuation de l’installation (pour les éléments optionnels comme le contenu personnalisé)
+1. L'affichage d'un message d'erreur suivi d'un exit (pour les options critiques comme le répertoire)
+2. Un avertissement puis la continuation de l'installation (pour les éléments optionnels comme le contenu personnalisé)
 3. Un retour aux invites interactives (pour les valeurs requises manquantes)
 
 :::tip[Bonnes pratiques]

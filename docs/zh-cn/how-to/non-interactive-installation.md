@@ -38,6 +38,21 @@ sidebar:
 | `--communication-language <lang>` | 智能体通信语言 | 英语 |
 | `--document-output-language <lang>` | 文档输出语言 | 英语 |
 | `--output-folder <path>` | 输出文件夹路径 | _bmad-output |
+| `--scope <name>` | 范围名称，用于隔离规划/实施产物（见下文） | _（空 — 无范围）_ |
+
+#### 范围
+
+提供 `--scope` 时，`planning_artifacts` 和 `implementation_artifacts` 会放在范围子目录下。输出文件夹根目录保持共享。
+
+```
+# 不带 --scope：
+_bmad-output/planning-artifacts/prd.md
+
+# 带 --scope admin-portal：
+_bmad-output/admin-portal/planning-artifacts/prd.md
+```
+
+名称只能包含字母、数字、连字符、点或下划线（不允许 `.` 和 `..`）。省略时保持当前的平面结构。
 
 ### 其他选项
 

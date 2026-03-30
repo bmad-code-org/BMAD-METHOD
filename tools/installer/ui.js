@@ -713,7 +713,7 @@ class UI {
     const configCollector = new OfficialModules();
 
     // Seed core config from CLI options if provided
-    if (options.userName || options.communicationLanguage || options.documentOutputLanguage || options.outputFolder) {
+    if (options.userName || options.communicationLanguage || options.documentOutputLanguage || options.outputFolder || options.scope) {
       const coreConfig = {};
       if (options.userName) {
         coreConfig.user_name = options.userName;
@@ -731,10 +731,36 @@ class UI {
         coreConfig.output_folder = options.outputFolder;
         await prompts.log.info(`Using output folder from command-line: ${options.outputFolder}`);
       }
+      if (options.scope) {
+        if (!/^[a-zA-Z0-9._-]+$/.test(options.scope) || options.scope === '.' || options.scope === '..') {
+          await prompts.log.error(
+            `Invalid scope "${options.scope}": use only letters, numbers, hyphens, dots, or underscores (not "." or "..")`,
+          );
+          process.exit(1);
+        }
+        coreConfig.scope = options.scope;
+        await prompts.log.info(`Using scope from command-line: ${options.scope}`);
+      }
 
       // Load existing config to merge with provided options
       await configCollector.loadExistingConfig(directory);
       const existingConfig = configCollector.collectedConfig.core || {};
+      // When --yes, fill in defaults for core values not provided via CLI
+      if (options.yes) {
+        if (!existingConfig.user_name) {
+          let safeUsername;
+          try {
+            safeUsername = os.userInfo().username;
+          } catch {
+            safeUsername = process.env.USER || process.env.USERNAME || 'User';
+          }
+          existingConfig.user_name = safeUsername.charAt(0).toUpperCase() + safeUsername.slice(1);
+        }
+        existingConfig.communication_language = existingConfig.communication_language || 'English';
+        existingConfig.document_output_language = existingConfig.document_output_language || 'English';
+        existingConfig.output_folder = existingConfig.output_folder || '_bmad-output';
+        existingConfig.scope = existingConfig.scope || '';
+      }
       configCollector.collectedConfig.core = { ...existingConfig, ...coreConfig };
 
       // If not all options are provided, collect the missing ones interactively (unless --yes flag)
@@ -743,6 +769,7 @@ class UI {
         (!options.userName || !options.communicationLanguage || !options.documentOutputLanguage || !options.outputFolder)
       ) {
         await configCollector.collectModuleConfig('core', directory, false, true);
+        Object.assign(configCollector.collectedConfig.core, coreConfig);
       }
     } else if (options.yes) {
       // Use all defaults when --yes flag is set
@@ -762,6 +789,7 @@ class UI {
           communication_language: 'English',
           document_output_language: 'English',
           output_folder: '_bmad-output',
+          scope: '',
         };
         await prompts.log.info('Using default configuration (--yes flag)');
       }

@@ -1714,6 +1714,128 @@ async function runTests() {
   console.log('');
 
   // ============================================================
+  // Test Suite 33: scope isolates planning/implementation artifacts
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 33: Scoped Output Isolation${colors.reset}\n`);
+
+  let tempBmadDir33;
+  try {
+    const { Installer } = require('../tools/installer/core/installer');
+    const testInstaller = new Installer();
+    const yaml = require('yaml');
+
+    tempBmadDir33 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-scope-'));
+    const coreDir33 = path.join(tempBmadDir33, 'core');
+    const bmmDir33 = path.join(tempBmadDir33, 'bmm');
+    await fs.ensureDir(coreDir33);
+    await fs.ensureDir(bmmDir33);
+
+    // --- Scoped install ---
+    await testInstaller.generateModuleConfigs(tempBmadDir33, {
+      core: {
+        user_name: 'Test',
+        output_folder: '{project-root}/_bmad-output',
+        scope: 'admin-portal',
+      },
+      bmm: {
+        project_name: 'TestProject',
+        planning_artifacts: '{project-root}/_bmad-output/planning-artifacts',
+        implementation_artifacts: '{project-root}/_bmad-output/implementation-artifacts',
+      },
+    });
+
+    const core33 = yaml.parse(await fs.readFile(path.join(coreDir33, 'config.yaml'), 'utf8'));
+    const bmm33 = yaml.parse(await fs.readFile(path.join(bmmDir33, 'config.yaml'), 'utf8'));
+
+    assert(core33.output_folder === '{project-root}/_bmad-output', 'Core output_folder is NOT scoped');
+    assert(core33.scope === 'admin-portal', 'Core stores scope separately');
+    assert(bmm33.planning_artifacts === '{project-root}/_bmad-output/admin-portal/planning-artifacts', 'BMM planning_artifacts is scoped');
+    assert(
+      bmm33.implementation_artifacts === '{project-root}/_bmad-output/admin-portal/implementation-artifacts',
+      'BMM implementation_artifacts is scoped',
+    );
+    assert(bmm33.output_folder === '{project-root}/_bmad-output', 'BMM output_folder stays as shared root');
+    assert(bmm33.scope === 'admin-portal', 'BMM inherits scope from core spread');
+
+    // --- Empty scope (backward compat) ---
+    await testInstaller.generateModuleConfigs(tempBmadDir33, {
+      core: { user_name: 'Test', output_folder: '{project-root}/_bmad-output', scope: '' },
+      bmm: {
+        project_name: 'TestProject',
+        planning_artifacts: '{project-root}/_bmad-output/planning-artifacts',
+        implementation_artifacts: '{project-root}/_bmad-output/implementation-artifacts',
+      },
+    });
+
+    const bmmEmpty = yaml.parse(await fs.readFile(path.join(bmmDir33, 'config.yaml'), 'utf8'));
+    assert(
+      bmmEmpty.planning_artifacts === '{project-root}/_bmad-output/planning-artifacts',
+      'Empty scope preserves original planning_artifacts',
+    );
+
+    // --- Missing scope key (backward compat) ---
+    await testInstaller.generateModuleConfigs(tempBmadDir33, {
+      core: { user_name: 'Test', output_folder: '{project-root}/_bmad-output' },
+      bmm: {
+        project_name: 'TestProject',
+        planning_artifacts: '{project-root}/_bmad-output/planning-artifacts',
+      },
+    });
+
+    const bmmMissing = yaml.parse(await fs.readFile(path.join(bmmDir33, 'config.yaml'), 'utf8'));
+    assert(
+      bmmMissing.planning_artifacts === '{project-root}/_bmad-output/planning-artifacts',
+      'Missing scope key preserves original planning_artifacts',
+    );
+
+    // --- Scoped with raw output_folder (no {project-root} prefix, matches --yes path) ---
+    await testInstaller.generateModuleConfigs(tempBmadDir33, {
+      core: { user_name: 'Test', output_folder: '_bmad-output', scope: 'phase-2' },
+      bmm: {
+        project_name: 'TestProject',
+        planning_artifacts: '{project-root}/_bmad-output/planning-artifacts',
+        implementation_artifacts: '{project-root}/_bmad-output/implementation-artifacts',
+      },
+    });
+
+    const bmmRaw = yaml.parse(await fs.readFile(path.join(bmmDir33, 'config.yaml'), 'utf8'));
+    assert(
+      bmmRaw.planning_artifacts === '{project-root}/_bmad-output/phase-2/planning-artifacts',
+      'Raw output_folder (--yes path) still scopes correctly',
+    );
+
+    // --- Dot-segment scope rejected ---
+    let dotSegmentThrew = false;
+    try {
+      await testInstaller.generateModuleConfigs(tempBmadDir33, {
+        core: { user_name: 'Test', output_folder: '{project-root}/_bmad-output', scope: '..' },
+        bmm: { project_name: 'TestProject', planning_artifacts: '{project-root}/_bmad-output/planning-artifacts' },
+      });
+    } catch (error) {
+      dotSegmentThrew = error.message.includes('dot-segments');
+    }
+    assert(dotSegmentThrew, 'Dot-segment scope ".." is rejected');
+
+    // --- Custom path not under output_folder (scope bypassed) ---
+    await testInstaller.generateModuleConfigs(tempBmadDir33, {
+      core: { user_name: 'Test', output_folder: '{project-root}/_bmad-output', scope: 'test' },
+      bmm: {
+        project_name: 'TestProject',
+        planning_artifacts: '{project-root}/custom-folder/planning',
+      },
+    });
+
+    const bmmCustom = yaml.parse(await fs.readFile(path.join(bmmDir33, 'config.yaml'), 'utf8'));
+    assert(bmmCustom.planning_artifacts === '{project-root}/custom-folder/planning', 'Custom path not under output_folder bypasses scope');
+  } catch (error) {
+    assert(false, `Scoped output test error: ${error.message}`);
+  } finally {
+    if (tempBmadDir33) await fs.remove(tempBmadDir33).catch(() => {});
+  }
+
+  console.log('');
+
+  // ============================================================
   // Summary
   // ============================================================
   console.log(`${colors.cyan}========================================`);

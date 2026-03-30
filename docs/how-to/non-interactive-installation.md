@@ -38,6 +38,7 @@ Requires [Node.js](https://nodejs.org) v20+ and `npx` (included with npm).
 | `--communication-language <lang>` | Agent communication language | English |
 | `--document-output-language <lang>` | Document output language | English |
 | `--output-folder <path>` | Output folder path (see resolution rules below) | `_bmad-output` |
+| `--scope <name>` | Scope name to isolate planning/implementation artifacts (see below) | _(empty — no scope)_ |
 
 #### Output Folder Path Resolution
 
@@ -50,6 +51,20 @@ The value passed to `--output-folder` (or entered interactively) is resolved acc
 | Absolute path | `/Users/me/shared-outputs` | Used as-is — project root is **not** prepended |
 
 The resolved path is what agents and workflows use at runtime when writing output files. Using an absolute path or a traversal-based relative path lets you direct all generated artifacts to a directory outside your project tree — useful for shared or monorepo setups.
+
+#### Scope
+
+When `--scope` is provided, `planning_artifacts` and `implementation_artifacts` are placed under a scoped subdirectory. The output folder root stays shared for project-context and brainstorming.
+
+```
+# Without --scope:
+_bmad-output/planning-artifacts/prd.md
+
+# With --scope admin-portal:
+_bmad-output/admin-portal/planning-artifacts/prd.md
+```
+
+The name must contain only letters, numbers, hyphens, dots, or underscores (`.` and `..` are not allowed). Omitting it preserves the current flat structure.
 
 ### Other Options
 

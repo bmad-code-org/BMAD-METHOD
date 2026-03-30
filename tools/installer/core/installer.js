@@ -823,6 +823,20 @@ class Installer {
 
           // Create a comment section to identify core values
           coreSection = '\n# Core Configuration Values\n';
+
+          // When scope is set, insert it after output_folder in artifact paths
+          if (finalConfig.scope && finalConfig.output_folder) {
+            if (finalConfig.scope === '.' || finalConfig.scope === '..') {
+              throw new Error(`Invalid scope "${finalConfig.scope}": dot-segments are not allowed`);
+            }
+            const folder = finalConfig.output_folder.replace(/[\\/]+$/, '');
+            for (const key of ['planning_artifacts', 'implementation_artifacts']) {
+              // Match only at a directory boundary (followed by / or end of string)
+              if (finalConfig[key]?.includes(`${folder}/`)) {
+                finalConfig[key] = finalConfig[key].replace(`${folder}/`, `${folder}/${finalConfig.scope}/`);
+              }
+            }
+          }
         }
 
         // Clean the config to remove any non-serializable values (like functions)
