@@ -205,17 +205,14 @@ Support assumption: full Agent Skills support. BMAD currently uses a custom inst
 - [x] Implement/extend automated tests — 11 assertions in test suite 17 including marker cleanup
 - [x] Commit
 
-## KiloCoder — SUSPENDED
-
-**Status: Kilo Code does not support the Agent Skills standard.** The original migration assumed skills support because Kilo forked from Roo Code, but manual IDE verification confirmed Kilo has not merged that feature. BMAD support is paused until Kilo implements skills.
+## KiloCoder
 
 **Install:** VS Code extension `kilocode.kilo-code` — search "Kilo Code" in Extensions or `code --install-extension kilocode.kilo-code`
 
-- [x] ~~Confirm KiloCoder native skills path~~ — **FALSE**: assumed from Roo Code fork, not verified. Manual testing showed no skills support in the IDE
-- [x] Config and installer code retained in platform-codes.yaml with `suspended` flag — hidden from IDE picker, setup blocked with explanation
-- [x] Installer fails early (before writing `_bmad/`) if Kilo is the only selected IDE, protecting existing installations
-- [x] Legacy cleanup still runs for `.kilocode/workflows` and `.kilocodemodes` when users switch to a different IDE
-- [x] Automated tests — 7 assertions in suite 22 (suspended config, hidden from picker, setup blocked, no files written, legacy cleanup)
+- [x] Confirm KiloCoder native skills path — `.kilocode/skills`
+- [x] Legacy cleanup for `.kilocode/workflows` and `.kilocodemodes`
+- [x] Automated tests — suite 22 (config, IDE picker, install, skill output, legacy cleanup, reinstall)
+- [x] Commit
 
 ## Gemini CLI
 

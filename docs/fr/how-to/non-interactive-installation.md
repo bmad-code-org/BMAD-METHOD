@@ -37,7 +37,19 @@ Nécessite [Node.js](https://nodejs.org) v20+ et `npx` (inclus avec npm).
 | `--user-name <nom>` | Nom à utiliser par les agents | Nom d'utilisateur système |
 | `--communication-language <langue>` | Langue de communication des agents | Anglais |
 | `--document-output-language <langue>` | Langue de sortie des documents | Anglais |
-| `--output-folder <chemin>` | Chemin du dossier de sortie | _bmad-output |
+| `--output-folder <chemin>` | Chemin du dossier de sortie (voir les règles de résolution ci-dessous) | `_bmad-output` |
+
+#### Résolution du chemin du dossier de sortie
+
+La valeur passée à `--output-folder` (ou saisie de manière interactive) est résolue selon ces règles :
+
+| Type d'entrée                 | Exemple                    | Résolu comme                                                 |
+|-------------------------------|----------------------------|--------------------------------------------------------------|
+| Chemin relatif (par défaut)   | `_bmad-output`             | `<racine-du-projet>/_bmad-output`                            |
+| Chemin relatif avec traversée | `../../shared-outputs`     | Chemin absolu normalisé — ex. `/Users/me/shared-outputs`     |
+| Chemin absolu                 | `/Users/me/shared-outputs` | Utilisé tel quel — la racine du projet n'est **pas** ajoutée |
+
+Le chemin résolu est ce que les agents et les workflows vont utiliser lors de l'écriture des fichiers de sortie. L'utilisation d'un chemin absolu ou d'un chemin relatif avec traversée vous permet de diriger tous les artefacts générés vers un répertoire en dehors de l'arborescence de votre projet — utile pour les configurations partagées ou les monorepos.
 
 ### Autres options
 
@@ -61,7 +73,7 @@ IDs d'outils disponibles pour l’option `--tools` :
 
 **Recommandés :** `claude-code`, `cursor`
 
-Exécutez `npx bmad-method install` de manière interactive une fois pour voir la liste complète actuelle des outils pris en charge, ou consultez la [configuration des codes de la plateforme](https://github.com/bmad-code-org/BMAD-METHOD/blob/main/tools/cli/installers/lib/ide/platform-codes.yaml).
+Exécutez `npx bmad-method install` de manière interactive une fois pour voir la liste complète actuelle des outils pris en charge, ou consultez la [configuration des codes de la plateforme](https://github.com/bmad-code-org/BMAD-METHOD/blob/main/tools/installer/ide/platform-codes.yaml).
 
 ## Modes d'installation
 
@@ -141,6 +153,7 @@ Les valeurs invalides entraîneront soit :
 
 :::tip[Bonnes pratiques]
 - Utilisez des chemins absolus pour `--directory` pour éviter toute ambiguïté
+- Utilisez un chemin absolu pour `--output-folder` lorsque vous souhaitez que les artefacts soient écrits en dehors de l'arborescence du projet (ex. un répertoire de sorties partagé dans un monorepo)
 - Testez les options localement avant de les utiliser dans des pipelines CI/CD
 - Combinez avec `-y` pour des installations vraiment sans surveillance
 - Utilisez `--debug` si vous rencontrez des problèmes lors de l'installation

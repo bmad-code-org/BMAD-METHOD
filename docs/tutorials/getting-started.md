@@ -68,7 +68,7 @@ BMad helps you build software through guided workflows with specialized AI agent
 
 | Phase | Name           | What Happens                                        |
 | ----- | -------------- | --------------------------------------------------- |
-| 1     | Analysis       | Brainstorming, research, product brief *(optional)* |
+| 1     | Analysis       | Brainstorming, research, product brief or PRFAQ *(optional)* |
 | 2     | Planning       | Create requirements (PRD or spec)              |
 | 3     | Solutioning    | Design architecture *(BMad Method/Enterprise only)* |
 | 4     | Implementation | Build epic by epic, story by story                  |
@@ -133,10 +133,11 @@ Create it manually at `_bmad-output/project-context.md` or generate it after arc
 
 ### Phase 1: Analysis (Optional)
 
-All workflows in this phase are optional:
+All workflows in this phase are optional. [**Not sure which to use?**](../explanation/analysis-phase.md)
 - **brainstorming** (`bmad-brainstorming`) — Guided ideation
 - **research** (`bmad-market-research` / `bmad-domain-research` / `bmad-technical-research`) — Market, domain, and technical research
-- **create-product-brief** (`bmad-create-product-brief`) — Recommended foundation document
+- **product-brief** (`bmad-product-brief`) — Recommended foundation document when your concept is clear
+- **prfaq** (`bmad-prfaq`) — Working Backwards challenge to stress-test and forge your product concept
 
 ### Phase 2: Planning (Required)
 
