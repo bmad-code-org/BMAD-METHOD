@@ -1144,59 +1144,12 @@ class Installer {
     const configuredIdes = existingInstall.ides;
     const projectRoot = path.dirname(bmadDir);
 
-    // Get custom module sources: first from --custom-content (re-cache from source), then from cache
-    const customModuleSources = new Map();
-    if (config.customContent?.sources?.length > 0) {
-      for (const source of config.customContent.sources) {
-        if (source.id && source.path && (await fs.pathExists(source.path))) {
-          customModuleSources.set(source.id, {
-            id: source.id,
-            name: source.name || source.id,
-            sourcePath: source.path,
-            cached: false, // From CLI, will be re-cached
-          });
-        }
-      }
-    }
-    const cacheDir = path.join(bmadDir, '_config', 'custom');
-    if (await fs.pathExists(cacheDir)) {
-      const cachedModules = await fs.readdir(cacheDir, { withFileTypes: true });
-
-      for (const cachedModule of cachedModules) {
-        const moduleId = cachedModule.name;
-        const cachedPath = path.join(cacheDir, moduleId);
-
-        // Skip if path doesn't exist (broken symlink, deleted dir) - avoids lstat ENOENT
-        if (!(await fs.pathExists(cachedPath))) {
-          continue;
-        }
-        if (!cachedModule.isDirectory()) {
-          continue;
-        }
-
-        // Skip if we already have this module from manifest
-        if (customModuleSources.has(moduleId)) {
-          continue;
-        }
-
-        // Check if this is an external official module - skip cache for those
-        const isExternal = await this.externalModuleManager.hasModule(moduleId);
-        if (isExternal) {
-          continue;
-        }
-
-        // Check if this is actually a custom module (has module.yaml)
-        const moduleYamlPath = path.join(cachedPath, 'module.yaml');
-        if (await fs.pathExists(moduleYamlPath)) {
-          customModuleSources.set(moduleId, {
-            id: moduleId,
-            name: moduleId,
-            sourcePath: cachedPath,
-            cached: true,
-          });
-        }
-      }
-    }
+    const customModuleSources = await this.customModules.assembleQuickUpdateSources(
+      config,
+      existingInstall,
+      bmadDir,
+      this.externalModuleManager,
+    );
 
     // Get available modules (what we have source for)
     const availableModulesData = await new OfficialModules().listAvailable();
