@@ -96,38 +96,7 @@ Omit any metric you cannot compute rather than guessing.
 
 ## FALLBACK TRAIL GENERATION
 
-**Skip this section if review mode is `full-trail`.**
-
-When no Suggested Review Order exists, generate one from the diff and codebase context. A generated trail is lower quality than an author-produced one, but far better than none.
-
-1. Get the full diff against the appropriate baseline (same rules as Surface Area Stats).
-2. Read changed files in full — not just diff hunks. Surrounding code reveals intent that hunks alone miss. If total file content exceeds ~50k tokens, read only the files with the largest diff hunks in full and use hunks for the rest.
-3. If a spec exists, use its Intent section to anchor concern identification.
-4. Identify 2–5 concerns: cohesive design intents that each explain *why* behind a cluster of changes. Prefer functional groupings and architectural boundaries over file-level splits. A single-concern change is fine — don't invent groupings.
-5. For each concern, select 1–4 `path:line` stops — locations where the concern is most visible. Prefer entry points, decision points, and boundary crossings over mechanical changes.
-6. Lead with the entry point — the highest-leverage stop a reviewer should see first. Inside each concern, order stops so each builds on the previous. End with peripherals (tests, config, types).
-7. Format each stop using `path:line` per the global step rules:
-
-```
-**{Concern name}**
-
-- {one-line framing, ≤15 words}
-  `src/path/to/file.ts:42`
-```
-
-When there is only one concern, omit the bold label — just list the stops directly.
-
-Present after the orientation output:
-
-```
-I built a review trail for this {change_type} (no author-produced trail was found):
-
-{generated trail}
-```
-
-Set review mode to `full-trail`. The generated trail is the Suggested Review Order for subsequent steps.
-
-If git is unavailable or the diff cannot be retrieved, skip this section and proceed with the original review mode. Note: "Could not generate trail — git unavailable."
+If review mode is not `full-trail`, read fully and follow `./generate-trail.md` to build one from the diff. Then return here and continue to NEXT.
 
 ## NEXT
 
