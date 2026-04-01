@@ -63,10 +63,12 @@ Set `review_mode` — pick the first match:
 
 ### Surface Area Stats
 
-Compute from `git diff --stat` against the appropriate baseline:
+Best-effort stats from `git diff --stat`. Try these baselines in order:
 
-- **With spec**: Use `baseline_commit` from frontmatter. If missing, diff `HEAD~1..HEAD` and tell the user stats reflect only the latest commit.
-- **Bare commit**: Diff against parent (`commit~1..commit`). For merge commits, use `--first-parent`.
+1. `baseline_commit` from the spec's frontmatter.
+2. Branch merge-base against `main` (or the default branch).
+3. `HEAD~1..HEAD` (latest commit only — tell the user).
+4. If git is unavailable or all of the above fail, skip stats and note: "Could not compute stats."
 
 Display as:
 
@@ -74,13 +76,13 @@ Display as:
 N files changed · M modules touched · ~L lines of logic · B boundary crossings · P new public interfaces
 ```
 
-- **Files changed**: from `git diff --stat`
-- **Modules touched**: distinct top-level directories with changes
+- **Files changed**: from `git diff --stat`.
+- **Modules touched**: distinct top-level directories with changes.
 - **Lines of logic**: added/modified lines excluding blanks, imports, formatting. `~` because approximate.
 - **Boundary crossings**: changes spanning more than one top-level module. `0` if single module.
 - **New public interfaces**: new exports, endpoints, public methods. `0` if none.
 
-If git is unavailable or a command fails, show what you can and note what's missing.
+Omit any metric you cannot compute rather than guessing.
 
 ### Present
 
