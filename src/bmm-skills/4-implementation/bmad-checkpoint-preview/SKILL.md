@@ -20,6 +20,7 @@ You are assisting the user in reviewing a change.
 Load and read full config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
 - `implementation_artifacts`
+- `planning_artifacts`
 - `communication_language`
 
 ## FIRST STEP

@@ -4,21 +4,44 @@ Display: `[Orientation] → Walkthrough → Detail Pass → Testing`
 
 ## Follow Global Step Rules in SKILL.md
 
-- The conversation context before this skill was triggered IS your starting point — not a blank slate.
-- The user may have already mentioned a spec file, a commit, a branch, a PR, or described the change. Use what they gave you.
-- For PR references, resolve to a commit or branch using whatever tools are available (e.g., `gh pr view` for GitHub). If resolution fails, ask for a SHA or branch.
-
 ## FIND THE CHANGE
 
-1. **What did the user already tell you?** Look at the conversation for a spec path, commit ref, branch, PR, or description of the change.
-2. **Fill in the other half.** If they gave a spec, look for `baseline_commit` in its frontmatter. If they gave a commit, check `{implementation_artifacts}` for a spec whose `baseline_commit` matches. If they gave both, use both.
-3. **If they gave nothing**, check current branch and HEAD. Confirm: "I see HEAD is `<short-sha>` on `<branch>` — is this the change you want to review?"
-4. **If you still can't identify a change**, ask:
+The conversation context before this skill was triggered IS your starting point — not a blank slate. Check in this order — stop as soon as the change is identified:
+
+1. **Explicit argument**
+   Did the user pass a PR, commit SHA, branch, or spec file this message?
+   - PR reference → resolve to branch/commit via `gh pr view`. If resolution fails, ask for a SHA or branch.
+   - Spec file, commit, or branch → use directly.
+
+2. **Recent conversation**
+   Do the last few messages reveal what change the user wants reviewed? Look for spec paths, commit refs, branches, PRs, or descriptions of a change. Use the same routing as above.
+
+3. **Sprint tracking**
+   Check for a sprint status file (`*sprint-status*`) in `{implementation_artifacts}` or `{planning_artifacts}`. If found, scan for stories with status `review`:
+   - Exactly one → suggest it and confirm with the user.
+   - Multiple → present as numbered options.
+   - None → fall through.
+
+4. **Current git state**
+   Check current branch and HEAD. Confirm: "I see HEAD is `<short-sha>` on `<branch>` — is this the change you want to review?"
+
+5. **Ask**
+   If none of the above identified a change, ask:
    - What changed and why?
    - Which commit, branch, or PR should I look at?
    - Do you have a spec, bug report, or anything else that explains what this change is supposed to do?
 
    If after 3 exchanges you still can't identify a change, HALT.
+
+Never ask extra questions beyond what the cascade prescribes. If a step above already identified the change, skip the remaining steps.
+
+## ENRICH
+
+Once a change is identified from any source above, fill in the complementary artifact:
+
+- If you have a spec, look for `baseline_commit` in its frontmatter to determine the diff baseline.
+- If you have a commit or branch, check `{implementation_artifacts}` for a spec whose `baseline_commit` is an ancestor of that commit/branch (i.e., the spec describes work done on top of that baseline).
+- If you found both a spec and a commit/branch, use both.
 
 ## DETERMINE WHAT YOU HAVE
 
