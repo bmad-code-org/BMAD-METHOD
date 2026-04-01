@@ -1121,7 +1121,33 @@ class Installer {
       lines.push(`    Invoke the ${color.cyan('bmad-help')} skill in your IDE Agent to get started`);
     }
 
+    // AgentVibes TTS suggestion
+    lines.push(
+      '',
+      `  ${color.cyan('🎙  Want your BMAD agents to speak?')}`,
+      `    Install AgentVibes TTS: ${color.dim('npx agentvibes install')}`,
+      `    Gives each agent a unique voice in party mode and beyond.`,
+    );
+
     await prompts.note(lines.join('\n'), 'BMAD is ready to use!');
+
+    // Optional AgentVibes install prompt
+    if (!this._silentConfig) {
+      try {
+        const { default: prompts2 } = await import('@clack/prompts');
+        const installAgentVibes = await prompts2.confirm({
+          message: '🎙  Install AgentVibes now for agent TTS voices?',
+          initialValue: false,
+        });
+        if (installAgentVibes) {
+          const { execSync } = await import('node:child_process');
+          prompts2.log.step('Running npx agentvibes install...');
+          execSync('npx agentvibes install', { stdio: 'inherit' });
+        }
+      } catch {
+        // Prompt cancelled or AgentVibes install failed — non-fatal
+      }
+    }
   }
 
   /**
