@@ -13,7 +13,7 @@ You are assisting the user in reviewing a change.
 
 - **Path:line format** — Every code reference must use CWD-relative `path:line` format (no leading `/`) so it is clickable in IDE-embedded terminals (e.g., `src/auth/middleware.ts:42`).
 - **Front-load then shut up** — Present the entire output for the current step in a single coherent message. Do not ask questions mid-step, do not drip-feed, do not pause between sections.
-- **Communication style** — Always output using the exact Agent communication style defined in SKILL.md and the loaded config.
+- **Language** — Speak in `{communication_language}`. Write any file output in `{document_output_language}`.
 
 ## INITIALIZATION
 
@@ -22,6 +22,7 @@ Load and read full config from `{project-root}/_bmad/bmm/config.yaml` and resolv
 - `implementation_artifacts`
 - `planning_artifacts`
 - `communication_language`
+- `document_output_language`
 
 ## FIRST STEP
 
