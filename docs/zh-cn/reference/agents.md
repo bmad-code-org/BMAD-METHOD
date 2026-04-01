@@ -15,9 +15,8 @@ sidebar:
 | Product Manager (John) | `bmad-pm` | `CP`、`VP`、`EP`、`CE`、`IR`、`CC` | Create/Validate/Edit PRD、Create Epics and Stories、Implementation Readiness、Correct Course |
 | Architect (Winston) | `bmad-architect` | `CA`、`IR` | Create Architecture、Implementation Readiness |
 | Scrum Master (Bob) | `bmad-sm` | `SP`、`CS`、`ER`、`CC` | Sprint Planning、Create Story、Epic Retrospective、Correct Course |
-| Developer (Amelia) | `bmad-dev` | `DS`、`CR` | Dev Story、Code Review |
+| Developer (Amelia) | `bmad-dev` | `DS`、`QD`、`CR` | Dev Story、Quick Dev、Code Review |
 | QA Engineer (Quinn) | `bmad-qa` | `QA` | Automate（为既有功能生成测试） |
-| Quick Flow Solo Dev (Barry) | `bmad-master` | `QD`、`CR` | Quick Dev、Code Review |
 | UX Designer (Sally) | `bmad-ux-designer` | `CU` | Create UX Design |
 | Technical Writer (Paige) | `bmad-tech-writer` | `DP`、`WD`、`US`、`MG`、`VD`、`EC` | Document Project、Write Document、Update Standards、Mermaid Generate、Validate Doc、Explain Concept |
 
