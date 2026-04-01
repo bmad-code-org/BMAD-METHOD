@@ -51,7 +51,7 @@ Set `review_mode` — pick the first match:
 
 1. **`full-trail`** — ENRICH found a spec with a `## Suggested Review Order` section. Intent source: spec's Intent section.
 2. **`spec-only`** — ENRICH found a spec but it has no Suggested Review Order. Intent source: spec's Intent section.
-3. **`bare-commit`** — no spec found. Intent source: commit message. If the commit message is terse (under 10 words), scan the diff for the primary change pattern and draft a one-sentence intent. Confirm with the user before proceeding.
+3. **`bare-commit`** — no spec found. Intent source: commit message. If the commit message is terse (under 10 words), scan the diff for the primary change pattern and draft a one-sentence intent. Flag it as `[inferred]` in the output so the user can correct it.
 
 ## PRODUCE ORIENTATION
 
@@ -63,12 +63,14 @@ Set `review_mode` — pick the first match:
 
 ### Surface Area Stats
 
-Best-effort stats from `git diff --stat`. Try these baselines in order:
+Best-effort stats derived from the diff. Try these baselines in order:
 
 1. `baseline_commit` from the spec's frontmatter.
 2. Branch merge-base against `main` (or the default branch).
 3. `HEAD~1..HEAD` (latest commit only — tell the user).
 4. If git is unavailable or all of the above fail, skip stats and note: "Could not compute stats."
+
+Use `git diff --stat` and `git diff --numstat` for file-level counts, and scan the full diff content for the richer metrics.
 
 Display as:
 
@@ -76,11 +78,11 @@ Display as:
 N files changed · M modules touched · ~L lines of logic · B boundary crossings · P new public interfaces
 ```
 
-- **Files changed**: from `git diff --stat`.
-- **Modules touched**: distinct top-level directories with changes.
-- **Lines of logic**: added/modified lines excluding blanks, imports, formatting. `~` because approximate.
+- **Files changed**: count from `git diff --stat`.
+- **Modules touched**: distinct top-level directories with changes (from `--stat` file paths).
+- **Lines of logic**: added/modified lines excluding blanks, imports, formatting. Scan diff content; `~` because approximate.
 - **Boundary crossings**: changes spanning more than one top-level module. `0` if single module.
-- **New public interfaces**: new exports, endpoints, public methods. `0` if none.
+- **New public interfaces**: new exports, endpoints, public methods found in the diff. `0` if none.
 
 Omit any metric you cannot compute rather than guessing.
 
@@ -96,7 +98,7 @@ Omit any metric you cannot compute rather than guessing.
 
 ## FALLBACK TRAIL GENERATION
 
-If review mode is not `full-trail`, read fully and follow `./generate-trail.md` to build one from the diff. Then return here and continue to NEXT.
+If review mode is not `full-trail`, read fully and follow `./generate-trail.md` to build one from the diff. Then return here and continue to NEXT. If trail generation fails (e.g., git unavailable), the original review mode is preserved — step-02 handles this with its non-trail path.
 
 ## NEXT
 
