@@ -2,10 +2,8 @@
 
 Display: `Orientation → Walkthrough → Detail Pass → [Testing]`
 
-## RULES
+## Follow Global Step Rules in SKILL.md
 
-- Every code reference uses clickable `path:line` format per the standing rule.
-- **Front-load then shut up.** Present all suggestions in a single message. Do not drip-feed.
 - This is **experiential**, not analytical. The detail pass asked "did you think about X?" — this says "you could see X with your own eyes."
 - Do not prescribe. The human decides whether observing the behavior is worth their time. Frame suggestions as options, not obligations.
 - Do not duplicate CI, test suites, or automated checks. Assume those exist and work. This is about manual observation — the kind of confidence-building no automated test provides.
@@ -72,8 +70,6 @@ You've seen the change and how to verify it. From here:
 - **"I've seen enough"** — we wrap up this {change_type}
 - or just ask anything
 ```
-
-**Do NOT speak again until the human responds.**
 
 ## WRAP-UP
 

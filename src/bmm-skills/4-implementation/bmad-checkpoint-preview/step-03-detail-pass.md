@@ -2,10 +2,8 @@
 
 Display: `Orientation → Walkthrough → [Detail Pass] → Testing`
 
-## RULES
+## Follow Global Step Rules in SKILL.md
 
-- Every code reference uses clickable `path:line` format per the standing rule.
-- **Front-load then shut up.** Present all findings in a single message. Do not drip-feed.
 - The detail pass surfaces what the human should **think about**, not what the code got wrong. Machine hardening already handled correctness. This activates risk awareness.
 - The LLM detects risk category by pattern. The human judges significance. Do not assign severity scores or numeric rankings — ordering by blast radius (below) is sequencing for readability, not a severity judgment.
 - If no high-risk spots exist, say so explicitly. Do not invent findings.
@@ -81,8 +79,6 @@ You've seen the design and the risk landscape. From here:
 - **"testing"** — I'll suggest how to observe the behavior
 - **"I've seen enough"** — tell me what to do about this {change_type} and we wrap up
 ```
-
-**Do NOT speak again until the human responds.**
 
 ## TARGETED RE-REVIEW
 

@@ -2,11 +2,9 @@
 
 Display: `Orientation → [Walkthrough] → Detail Pass → Testing`
 
-## RULES
+## Follow Global Step Rules in SKILL.md
 
 - Organize by **concern**, not by file. A concern is a cohesive design intent — e.g., "input validation," "state management," "API contract." One file may appear under multiple concerns; one concern may span multiple files.
-- Every code reference uses clickable `path:line` format per the standing rule.
-- **Front-load then shut up.** Present the entire walkthrough in a single message. Do not ask questions mid-walkthrough. Do not pause between concerns. After presenting, go quiet — the human reads, clicks, navigates at their own pace.
 - The walkthrough activates **design judgment**, not correctness checking. Frame each concern as "here's what this change does and why" — the human evaluates whether it's the right approach for the system.
 
 ## BUILD THE WALKTHROUGH
@@ -80,8 +78,6 @@ When you are done with the walkthrough:
 - **"testing"** — I'll suggest how to observe the behavior
 - **"I've seen enough"** — tell me what to do about this {change_type} and we wrap up
 ```
-
-**Do NOT speak again until the human responds.**
 
 ## NEXT
 
