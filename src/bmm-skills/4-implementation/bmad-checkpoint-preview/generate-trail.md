@@ -33,6 +33,6 @@ I built a review trail for this {change_type} (no author-produced trail was foun
 {generated trail}
 ```
 
-Set review mode to `full-trail`. The generated trail is the Suggested Review Order for subsequent steps.
+The generated trail serves as the Suggested Review Order for subsequent steps. Set `review_mode` to `full-trail` — a trail now exists, so all downstream steps should treat it as one.
 
 If git is unavailable or the diff cannot be retrieved, return to step-01 with: "Could not generate trail — git unavailable."
