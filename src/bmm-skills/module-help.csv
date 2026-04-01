@@ -27,5 +27,6 @@ BMad Method,bmad-create-story,Create Story,CS,"Story cycle start: Prepare first 
 BMad Method,bmad-create-story,Validate Story,VS,Validates story readiness and completeness before development work begins.,validate,,4-implementation,bmad-create-story:create,bmad-dev-story,false,implementation_artifacts,story validation report
 BMad Method,bmad-dev-story,Dev Story,DS,Story cycle: Execute story implementation tasks and tests then CR then back to DS if fixes needed.,,4-implementation,bmad-create-story:validate,,true,,
 BMad Method,bmad-code-review,Code Review,CR,Story cycle: If issues back to DS if approved then next CS or ER if epic complete.,,4-implementation,bmad-dev-story,,false,,
+BMad Method,bmad-checkpoint-preview,Checkpoint,CK,Guided walkthrough of a change from purpose and context into details. Use for human review of commits branches or PRs.,,4-implementation,,,false,,
 BMad Method,bmad-qa-generate-e2e-tests,QA Automation Test,QA,Generate automated API and E2E tests for implemented code. NOT for code review or story validation — use CR for that.,,4-implementation,bmad-dev-story,,false,implementation_artifacts,test suite
 BMad Method,bmad-retrospective,Retrospective,ER,Optional at epic end: Review completed work lessons learned and next epic or if major issues consider CC.,,4-implementation,bmad-code-review,,false,implementation_artifacts,retrospective
