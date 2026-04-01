@@ -45,15 +45,7 @@ Once a change is identified from any source above, fill in the complementary art
 
 ## DETERMINE WHAT YOU HAVE
 
-Set `change_type` based on how the user referred to the change:
-
-| User referenced | `change_type` |
-|---|---|
-| A pull request | `PR` |
-| A commit | `commit` |
-| A branch | `branch` |
-| A description (e.g. "the auth refactor") | use their words (e.g. `auth refactor`) |
-| Nothing specific / ambiguous | `change` |
+Set `change_type` to match how the user referred to the change — `PR`, `commit`, `branch`, or their own words (e.g. `auth refactor`). Default to `change` if ambiguous.
 
 Set `review_mode` — pick the first match:
 
