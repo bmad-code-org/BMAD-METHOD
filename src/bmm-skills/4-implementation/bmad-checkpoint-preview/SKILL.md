@@ -1,6 +1,6 @@
 ---
 name: bmad-checkpoint-preview
-description: 'Guided walkthrough of a change, from purpose and context into details. Use when the user says "walk me through this change", "human review", or "review walkthrough".'
+description: 'LLM-assisted human-in-the-loop review. Make sense of a change, focus attention where it matters, test. Use when the user says "checkpoint", "human review", or "walk me through this change".'
 ---
 
 # Checkpoint Review Workflow
