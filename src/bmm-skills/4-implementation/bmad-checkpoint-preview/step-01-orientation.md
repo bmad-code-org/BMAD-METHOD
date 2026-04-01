@@ -55,11 +55,11 @@ Set `change_type` based on how the user referred to the change:
 | A description (e.g. "the auth refactor") | use their words (e.g. `auth refactor`) |
 | Nothing specific / ambiguous | `change` |
 
-Set `review_mode` based on what ENRICH found:
+Set `review_mode` — pick the first match:
 
-- **`full-trail`** — spec exists and has a `## Suggested Review Order` section. Intent source: spec's Intent section.
-- **`spec-only`** — spec exists but has no Suggested Review Order. Intent source: spec's Intent section.
-- **`bare-commit`** — no spec found. Intent source: commit message. If the commit message is terse (under 10 words), scan the diff for the primary change pattern and draft a one-sentence intent. Confirm with the user before proceeding.
+1. **`full-trail`** — ENRICH found a spec with a `## Suggested Review Order` section. Intent source: spec's Intent section.
+2. **`spec-only`** — ENRICH found a spec but it has no Suggested Review Order. Intent source: spec's Intent section.
+3. **`bare-commit`** — no spec found. Intent source: commit message. If the commit message is terse (under 10 words), scan the diff for the primary change pattern and draft a one-sentence intent. Confirm with the user before proceeding.
 
 ## PRODUCE ORIENTATION
 
