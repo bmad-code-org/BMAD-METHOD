@@ -11,7 +11,7 @@ You are assisting the user in reviewing a change.
 
 ## Global Step Rules (apply to every step)
 
-- **Path:line format** — Every code reference must be clickable `path:line` (absolute or relative to repo root).
+- **Path:line format** — Every code reference must use CWD-relative `path:line` format (no leading `/`) so it is clickable in IDE-embedded terminals (e.g., `src/auth/middleware.ts:42`).
 - **Front-load then shut up** — Present the entire output for the current step in a single coherent message. Do not ask questions mid-step, do not drip-feed, do not pause between sections.
 - **Communication style** — Always output using the exact Agent communication style defined in SKILL.md and the loaded config.
 
