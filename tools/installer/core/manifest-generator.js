@@ -9,7 +9,6 @@ const {
   loadSkillManifest: loadSkillManifestShared,
   getCanonicalId: getCanonicalIdShared,
   getArtifactType: getArtifactTypeShared,
-  getInstallToBmad: getInstallToBmadShared,
 } = require('../ide/shared/skill-manifest');
 
 // Load package.json for version info
@@ -40,11 +39,6 @@ class ManifestGenerator {
   /** Delegate to shared skill-manifest module */
   getArtifactType(manifest, filename) {
     return getArtifactTypeShared(manifest, filename);
-  }
-
-  /** Delegate to shared skill-manifest module */
-  getInstallToBmad(manifest, filename) {
-    return getInstallToBmadShared(manifest, filename);
   }
 
   /**
@@ -127,7 +121,7 @@ class ManifestGenerator {
    * Recursively walk a module directory tree, collecting native SKILL.md entrypoints.
    * A directory is discovered as a skill when it contains a SKILL.md file with
    * valid name/description frontmatter (name must match directory name).
-   * Manifest YAML is loaded only when present — for install_to_bmad and agent metadata.
+   * Manifest YAML is loaded only when present — for agent metadata.
    * Populates this.skills[] and this.skillClaimedDirs (Set of absolute paths).
    */
   async collectSkills() {
@@ -156,7 +150,7 @@ class ManifestGenerator {
         const skillMeta = await this.parseSkillMd(skillMdPath, dir, dirName, debug);
 
         if (skillMeta) {
-          // Load manifest when present (for install_to_bmad and agent metadata)
+          // Load manifest when present (for agent metadata)
           const manifest = await this.loadSkillManifest(dir);
           const artifactType = this.getArtifactType(manifest, skillFile);
 
@@ -182,7 +176,6 @@ class ManifestGenerator {
             module: moduleName,
             path: installPath,
             canonicalId,
-            install_to_bmad: this.getInstallToBmad(manifest, skillFile),
           });
 
           // Add to files list
@@ -472,7 +465,7 @@ class ManifestGenerator {
     const csvPath = path.join(cfgDir, 'skill-manifest.csv');
     const escapeCsv = (value) => `"${String(value ?? '').replaceAll('"', '""')}"`;
 
-    let csvContent = 'canonicalId,name,description,module,path,install_to_bmad\n';
+    let csvContent = 'canonicalId,name,description,module,path\n';
 
     for (const skill of this.skills) {
       const row = [
@@ -481,7 +474,6 @@ class ManifestGenerator {
         escapeCsv(skill.description),
         escapeCsv(skill.module),
         escapeCsv(skill.path),
-        escapeCsv(skill.install_to_bmad),
       ].join(',');
       csvContent += row + '\n';
     }
