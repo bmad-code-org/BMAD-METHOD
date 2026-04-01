@@ -1,6 +1,7 @@
 module,skill,display-name,menu-code,description,action,args,phase,after,before,required,output-location,outputs
 Core,bmad-brainstorming,Brainstorming,BSP,Use early in ideation or when stuck generating ideas.,,anytime,,,false,{output_folder}/brainstorming,brainstorming session
 Core,bmad-party-mode,Party Mode,PM,Orchestrate multi-agent discussions when you need multiple perspectives or want agents to collaborate.,,anytime,,,false,,
+Core,bmad-install-agentvibes,Install AgentVibes,AV,Install AgentVibes TTS so party mode agents speak with unique voices. Run once after BMAD setup.,,anytime,,,false,,
 Core,bmad-help,BMad Help,BH,,,anytime,,,false,,
 Core,bmad-index-docs,Index Docs,ID,Use when LLM needs to understand available docs without loading everything.,,anytime,,,false,,
 Core,bmad-shard-doc,Shard Document,SD,Use when doc becomes too large (>500 lines) to manage effectively.,[path],anytime,,,false,,
