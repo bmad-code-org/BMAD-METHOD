@@ -56,17 +56,20 @@ function getArtifactType(manifest, filename) {
 
 /**
  * Get the install_to_bmad flag for a specific file from a loaded skill manifest.
+ * Skills are self-contained in their IDE skill directories (.claude/skills/, etc.),
+ * so the default is false — skill content is removed from _bmad/ after IDE install.
+ * Set install_to_bmad: true in bmad-skill-manifest.yaml to opt a skill back in.
  * @param {Object|null} manifest - Loaded manifest (from loadSkillManifest)
  * @param {string} filename - Source filename to look up
- * @returns {boolean} install_to_bmad value (defaults to true)
+ * @returns {boolean} install_to_bmad value (defaults to false)
  */
 function getInstallToBmad(manifest, filename) {
-  if (!manifest) return true;
+  if (!manifest) return false;
   // Single-entry manifest applies to all files in the directory
-  if (manifest.__single) return manifest.__single.install_to_bmad !== false;
+  if (manifest.__single) return manifest.__single.install_to_bmad === true;
   // Multi-entry: look up by filename directly
-  if (manifest[filename]) return manifest[filename].install_to_bmad !== false;
-  return true;
+  if (manifest[filename]) return manifest[filename].install_to_bmad === true;
+  return false;
 }
 
 module.exports = { loadSkillManifest, getCanonicalId, getArtifactType, getInstallToBmad };

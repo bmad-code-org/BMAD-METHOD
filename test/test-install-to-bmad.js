@@ -4,8 +4,9 @@
  * Unit tests against the functions that implement the install_to_bmad flag.
  * These nail down the 4 core design decisions:
  *
- * 1. true/omitted → skill stays in _bmad/ (default behavior)
- * 2. false → skill removed from _bmad/ after IDE install
+ * 1. omitted → skill removed from _bmad/ (default behavior)
+ * 2. true → skill stays in _bmad/ (explicit opt-in)
+ * 2b. false → skill removed from _bmad/ after IDE install
  * 3. No platform → no cleanup runs (cleanup lives in installVerbatimSkills)
  * 4. Mixed flags → each skill evaluated independently
  *
@@ -49,20 +50,22 @@ async function runTests() {
   console.log(`========================================${colors.reset}\n`);
 
   // ============================================================
-  // 1. true/omitted → getInstallToBmad returns true (keep in _bmad/)
+  // 1. omitted → getInstallToBmad returns false (remove from _bmad/)
+  //    Skills are self-contained in IDE directories, so the default
+  //    is to clean up from _bmad/ after IDE install.
   // ============================================================
-  console.log(`${colors.yellow}Design decision 1: true or omitted → skill stays in _bmad/${colors.reset}\n`);
+  console.log(`${colors.yellow}Design decision 1: omitted → skill removed from _bmad/ (default)${colors.reset}\n`);
 
-  // Null manifest (no bmad-skill-manifest.yaml) → true
-  assert(getInstallToBmad(null, 'workflow.md') === true, 'null manifest defaults to true');
+  // Null manifest (no bmad-skill-manifest.yaml) → false
+  assert(getInstallToBmad(null, 'workflow.md') === false, 'null manifest defaults to false');
 
-  // Single-entry, flag omitted → true
+  // Single-entry, flag omitted → false
   assert(
-    getInstallToBmad({ __single: { type: 'skill' } }, 'workflow.md') === true,
-    'single-entry manifest with flag omitted defaults to true',
+    getInstallToBmad({ __single: { type: 'skill' } }, 'workflow.md') === false,
+    'single-entry manifest with flag omitted defaults to false',
   );
 
-  // Single-entry, explicit true → true
+  // Single-entry, explicit true → true (opt-in to keep in _bmad/)
   assert(
     getInstallToBmad({ __single: { type: 'skill', install_to_bmad: true } }, 'workflow.md') === true,
     'single-entry manifest with explicit true returns true',
@@ -124,7 +127,7 @@ async function runTests() {
     };
     assert(getInstallToBmad(manifest, 'workflow.md') === false, 'multi-entry: workflow.md with false returns false');
     assert(getInstallToBmad(manifest, 'other.md') === true, 'multi-entry: other.md with true returns true');
-    assert(getInstallToBmad(manifest, 'unknown.md') === true, 'multi-entry: unknown file defaults to true');
+    assert(getInstallToBmad(manifest, 'unknown.md') === false, 'multi-entry: unknown file defaults to false');
   }
 
   console.log('');
