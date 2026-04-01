@@ -50,12 +50,6 @@ export default defineConfig({
       defaultLocale: 'root',
       locales,
 
-      logo: {
-        light: './public/img/bmad-light.png',
-        dark: './public/img/bmad-dark.png',
-        alt: 'BMAD Method',
-        replacesTitle: true,
-      },
       favicon: '/favicon.ico',
 
       // Social links

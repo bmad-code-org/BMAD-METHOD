@@ -1,13 +1,14 @@
 /**
  * BMAD Method Documentation - Custom Styles for Starlight
- * Electric Blue theme optimized for dark mode
+ * Dark theme matching bmadcode.com Ghost blog
  *
- * CSS Variable Mapping:
- * Docusaurus → Starlight
- * --ifm-color-primary → --sl-color-accent
- * --ifm-background-color → --sl-color-bg
- * --ifm-font-color-base → --sl-color-text
+ * Design tokens from Ghost theme:
+ * Background: #0a0a0a | Surface: #1a1a1a | Border: #262626
+ * Accent: #3b82f6 | Gold: #d4a853 | Text: #fafafa/#a1a1a1/#666666
  */
+
+/* Google Fonts - match Ghost blog typography */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
 /* ============================================
    COLOR PALETTE - Light Mode
@@ -19,10 +20,10 @@
   /* Full-width content - override Starlight's default 45rem/67.5rem */
   --sl-content-width: 65rem;
 
-  /* Primary accent colors - purple to match Docusaurus */
-  --sl-color-accent-low: #e0e0ff;
-  --sl-color-accent: #5E5ED0;
-  --sl-color-accent-high: #3333CC;
+  /* Primary accent colors - blue to match Ghost blog */
+  --sl-color-accent-low: #dbeafe;
+  --sl-color-accent: #2563eb;
+  --sl-color-accent-high: #1d4ed8;
 
   /* Text colors */
   --sl-color-white: #1e293b;
@@ -35,13 +36,14 @@
   --sl-color-black: #f8fafc;
 
   /* Font settings */
-  --sl-font: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
+  --sl-font: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
     Arial, sans-serif;
+  --sl-font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
   --sl-text-base: 1rem;
   --sl-line-height: 1.7;
 
   /* Code highlighting */
-  --sl-color-bg-inline-code: rgba(94, 94, 208, 0.1);
+  --sl-color-bg-inline-code: rgba(59, 130, 246, 0.08);
 }
 
 /* ============================================
@@ -51,35 +53,49 @@
   /* Full-width content - override Starlight's default */
   --sl-content-width: 65rem;
 
-  /* Primary accent colors - purple to match Docusaurus */
-  --sl-color-accent-low: #2a2a5a;
-  --sl-color-accent: #8C8CFF;
-  --sl-color-accent-high: #B9B9FF;
+  /* Primary accent colors - blue to match Ghost blog */
+  --sl-color-accent-low: rgba(59, 130, 246, 0.12);
+  --sl-color-accent: #3b82f6;
+  --sl-color-accent-high: #60a5fa;
 
-  /* Background colors */
-  --sl-color-bg: #1b1b1d;
-  --sl-color-bg-nav: #1b1b1d;
-  --sl-color-bg-sidebar: #1b1b1d;
-  --sl-color-hairline-light: rgba(140, 140, 255, 0.1);
-  --sl-color-hairline: rgba(140, 140, 255, 0.15);
+  /* Background colors - match Ghost blog */
+  --sl-color-bg: #0a0a0a;
+  --sl-color-bg-nav: #0a0a0a;
+  --sl-color-bg-sidebar: #0a0a0a;
+  --sl-color-hairline-light: rgba(255, 255, 255, 0.06);
+  --sl-color-hairline: #262626;
 
-  /* Text colors */
-  --sl-color-white: #f8fafc;
+  /* Text colors - match Ghost blog */
+  --sl-color-white: #fafafa;
   --sl-color-gray-1: #e2e8f0;
-  --sl-color-gray-2: #cbd5e1;
+  --sl-color-gray-2: #a1a1a1;
   --sl-color-gray-3: #94a3b8;
-  --sl-color-gray-4: #64748b;
+  --sl-color-gray-4: #666666;
   --sl-color-gray-5: #475569;
-  --sl-color-gray-6: #334155;
-  --sl-color-black: #1b1b1d;
+  --sl-color-gray-6: #262626;
+  --sl-color-black: #0a0a0a;
 
   /* Code highlighting */
-  --sl-color-bg-inline-code: rgba(140, 140, 255, 0.15);
+  --sl-color-bg-inline-code: rgba(59, 130, 246, 0.15);
 }
 
 /* ============================================
    TYPOGRAPHY
    ============================================ */
+
+/* Space Grotesk for all headings - match Ghost blog */
+.sl-markdown-content h1,
+.sl-markdown-content h2,
+.sl-markdown-content h3,
+.sl-markdown-content h4,
+.sl-markdown-content h5,
+.sl-markdown-content h6,
+.site-title,
+starlight-toc h2 {
+  font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+  letter-spacing: -0.02em;
+}
+
 .sl-markdown-content h1 {
   margin-bottom: 1.5rem;
 }
@@ -138,14 +154,14 @@
 
 /* Active state - thin left accent bar */
 .sidebar-content a[aria-current='page'] {
-  background-color: rgba(94, 94, 208, 0.08);
+  background-color: rgba(59, 130, 246, 0.08);
   color: var(--sl-color-accent);
   border-left-color: var(--sl-color-accent);
   font-weight: 600;
 }
 
 :root[data-theme='dark'] .sidebar-content a[aria-current='page'] {
-  background-color: rgba(140, 140, 255, 0.1);
+  background-color: rgba(59, 130, 246, 0.1);
   color: var(--sl-color-accent-high);
   border-left-color: var(--sl-color-accent);
 }
@@ -232,7 +248,8 @@ header.header .header.sl-flex {
 }
 
 :root[data-theme='dark'] header.header {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  box-shadow: none;
+  border-bottom: 1px solid #262626;
 }
 
 .site-title {
@@ -281,20 +298,20 @@ header.header .header.sl-flex {
 .card:hover {
   transform: translateY(-3px);
   border-color: var(--sl-color-accent);
-  box-shadow: 0 8px 24px rgba(94, 94, 208, 0.15);
+  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.15);
 }
 
 :root[data-theme='dark'] .card {
-  background: linear-gradient(145deg, rgba(30, 41, 59, 0.6), rgba(15, 23, 42, 0.8));
-  border-color: rgba(140, 140, 255, 0.2);
+  background: #1a1a1a;
+  border-color: #262626;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 :root[data-theme='dark'] .card:hover {
-  border-color: rgba(140, 140, 255, 0.5);
+  border-color: #3b82f6;
   box-shadow:
-    0 8px 32px rgba(140, 140, 255, 0.2),
-    0 0 0 1px rgba(140, 140, 255, 0.1);
+    0 8px 32px rgba(59, 130, 246, 0.15),
+    0 0 0 1px rgba(59, 130, 246, 0.1);
 }
 
 /* Starlight card grid */
@@ -313,11 +330,11 @@ header.header .header.sl-flex {
 }
 
 :root[data-theme='dark'] .sl-link-card {
-  border-color: rgba(140, 140, 255, 0.2);
+  border-color: #262626;
 }
 
 :root[data-theme='dark'] .sl-link-card:hover {
-  border-color: rgba(140, 140, 255, 0.5);
+  border-color: #3b82f6;
 }
 
 /* ============================================
@@ -372,21 +389,21 @@ table {
 }
 
 :root[data-theme='dark'] table {
-  border-color: rgba(140, 140, 255, 0.1);
+  border-color: #262626;
 }
 
 :root[data-theme='dark'] table th {
-  background-color: rgba(140, 140, 255, 0.05);
+  background-color: rgba(59, 130, 246, 0.05);
 }
 
 :root[data-theme='dark'] table tr:nth-child(2n) {
-  background-color: rgba(140, 140, 255, 0.02);
+  background-color: rgba(255, 255, 255, 0.02);
 }
 
 /* Blockquotes */
 blockquote {
   border-left-color: var(--sl-color-accent);
-  background-color: rgba(94, 94, 208, 0.05);
+  background-color: rgba(59, 130, 246, 0.05);
   border-radius: 0 8px 8px 0;
   padding: 1rem 1.25rem;
 }
@@ -423,19 +440,19 @@ blockquote {
 
 /* Note aside */
 .starlight-aside--note {
-  background-color: rgba(94, 94, 208, 0.08);
+  background-color: rgba(59, 130, 246, 0.08);
 }
 
 .starlight-aside--note .starlight-aside__title {
-  color: #5C5CCC;
+  color: #2563eb;
 }
 
 :root[data-theme='dark'] .starlight-aside--note {
-  background-color: rgba(140, 140, 255, 0.12);
+  background-color: rgba(59, 130, 246, 0.12);
 }
 
 :root[data-theme='dark'] .starlight-aside--note .starlight-aside__title {
-  color: #8C8CFF;
+  color: #3b82f6;
 }
 
 /* Caution aside */
@@ -512,7 +529,7 @@ blockquote {
    ROADMAP STYLES
    ============================================ */
 .roadmap-container {
-  --color-planned: #6366f1;
+  --color-planned: #3b82f6;
   --color-in-progress: #10b981;
   --color-exploring: #f59e0b;
   --color-bg-card: rgba(255, 255, 255, 0.03);
@@ -663,8 +680,8 @@ blockquote {
 }
 
 .roadmap-badge.planned {
-  background: rgba(99, 102, 241, 0.15);
-  color: #6366f1;
+  background: rgba(59, 130, 246, 0.15);
+  color: #3b82f6;
 }
 
 .roadmap-badge.exploring {
@@ -735,7 +752,7 @@ blockquote {
 .roadmap-future-card {
   padding: 1.5rem;
   border-radius: 12px;
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(245, 158, 11, 0.05));
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(212, 168, 83, 0.05));
   border: 1px solid var(--color-border);
   transition: transform 0.2s ease;
   display: flex;
