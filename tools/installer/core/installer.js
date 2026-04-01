@@ -1134,15 +1134,40 @@ class Installer {
     // Optional AgentVibes install prompt
     if (!this._silentConfig) {
       try {
-        const { default: prompts2 } = await import('@clack/prompts');
-        const installAgentVibes = await prompts2.confirm({
-          message: '🎙  Install AgentVibes now for agent TTS voices?',
-          initialValue: false,
+        const agentVibesChoice = await prompts.select({
+          message: '🎙  Give your BMAD agents a voice? (AgentVibes TTS)',
+          choices: [
+            {
+              name: 'Yes — install AgentVibes now',
+              value: 'install',
+              hint: 'runs npx agentvibes install',
+            },
+            {
+              name: 'No — I\'ll do it later',
+              value: 'skip',
+              hint: 'npx agentvibes install',
+            },
+            {
+              name: 'Tell me more',
+              value: 'info',
+              hint: 'github.com/paulpreibisch/AgentVibes',
+            },
+          ],
+          default: 'skip',
         });
-        if (installAgentVibes) {
-          const { execSync } = await import('node:child_process');
-          prompts2.log.step('Running npx agentvibes install...');
+
+        if (agentVibesChoice === 'install') {
+          const { execSync } = require('node:child_process');
+          await prompts.log.step('Running npx agentvibes install...');
           execSync('npx agentvibes install', { stdio: 'inherit' });
+        } else if (agentVibesChoice === 'info') {
+          await prompts.log.info(
+            'AgentVibes gives each BMAD agent a unique TTS voice, personality, and audio effects.\n' +
+            '  Works on Windows (SAPI + Piper), macOS, Linux, and WSL.\n' +
+            '  Party mode agents speak with their own voice — no more silent roundtables.\n\n' +
+            '  GitHub:  https://github.com/paulpreibisch/AgentVibes\n' +
+            '  Install: npx agentvibes install'
+          );
         }
       } catch {
         // Prompt cancelled or AgentVibes install failed — non-fatal
