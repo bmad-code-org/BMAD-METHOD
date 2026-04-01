@@ -15,8 +15,7 @@ sidebar:
 | Product Manager (John) | `bmad-pm` | `CP`、`VP`、`EP`、`CE`、`IR`、`CC` | Create/Validate/Edit PRD、Create Epics and Stories、Implementation Readiness、Correct Course |
 | Architect (Winston) | `bmad-architect` | `CA`、`IR` | Create Architecture、Implementation Readiness |
 | Scrum Master (Bob) | `bmad-sm` | `SP`、`CS`、`ER`、`CC` | Sprint Planning、Create Story、Epic Retrospective、Correct Course |
-| Developer (Amelia) | `bmad-dev` | `DS`、`QD`、`CR` | Dev Story、Quick Dev、Code Review |
-| QA Engineer (Quinn) | `bmad-qa` | `QA` | Automate（为既有功能生成测试） |
+| Developer (Amelia) | `bmad-dev` | `DS`、`QD`、`QA`、`CR` | Dev Story、Quick Dev、QA Test Generation、Code Review |
 | UX Designer (Sally) | `bmad-ux-designer` | `CU` | Create UX Design |
 | Technical Writer (Paige) | `bmad-tech-writer` | `DP`、`WD`、`US`、`MG`、`VD`、`EC` | Document Project、Write Document、Update Standards、Mermaid Generate、Validate Doc、Explain Concept |
 
@@ -24,7 +23,7 @@ sidebar:
 
 - `Skill ID` 是直接调用该智能体的名称（例如 `bmad-dev`）
 - 触发器是进入智能体会话后可使用的菜单短码
-- QA（Quinn）是 BMM 内置轻量测试角色；完整 TEA 能力位于独立模块
+- QA 测试生成由 `bmad-qa-generate-e2e-tests` workflow skill 处理，通过 Developer 智能体调用；完整 TEA 能力位于独立模块
 
 ## 触发器类型
 

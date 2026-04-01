@@ -102,7 +102,7 @@ The user drives what happens next. Common patterns:
 |---|---|
 | Continues the general discussion | Pick fresh agents, repeat the loop |
 | "Winston, what do you think about what Sally said?" | Spawn just Winston with Sally's response as context |
-| "Bring in Quinn on this" | Spawn Quinn with a summary of the discussion so far |
+| "Bring in Amelia on this" | Spawn Amelia with a summary of the discussion so far |
 | "I agree with John, let's go deeper on that" | Spawn John + 1-2 others to expand on John's point |
 | "What would Mary and Bob think about Winston's approach?" | Spawn Mary and Bob with Winston's response as context |
 | Asks a question directed at everyone | Back to step 1 with all agents |
