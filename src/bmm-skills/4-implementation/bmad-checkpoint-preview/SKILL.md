@@ -1,7 +1,6 @@
 ---
 name: bmad-checkpoint-preview
 description: 'Guided walkthrough of a change, from purpose and context into details. Use when the user says "walk me through this change", "human review", or "review walkthrough".'
-main_config: '{project-root}/_bmad/bmm/config.yaml'
 ---
 
 # Checkpoint Review Workflow
@@ -18,7 +17,7 @@ You are assisting the user in reviewing a change.
 
 ## INITIALIZATION
 
-Load and read full config from `{main_config}` and resolve:
+Load and read full config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
 - `implementation_artifacts`
 - `communication_language`
