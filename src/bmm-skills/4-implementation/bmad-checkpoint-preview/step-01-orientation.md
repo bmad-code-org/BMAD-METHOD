@@ -2,7 +2,7 @@
 
 Display: `[Orientation] → Walkthrough → Detail Pass → Testing`
 
-## RULES
+## Follow Global Step Rules in SKILL.md
 
 - The conversation context before this skill was triggered IS your starting point — not a blank slate.
 - The user may have already mentioned a spec file, a commit, a branch, a PR, or described the change. Use what they gave you.
