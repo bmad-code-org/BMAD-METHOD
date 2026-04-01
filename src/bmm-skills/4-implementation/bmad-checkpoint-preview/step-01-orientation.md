@@ -55,13 +55,11 @@ Set `change_type` based on how the user referred to the change:
 | A description (e.g. "the auth refactor") | use their words (e.g. `auth refactor`) |
 | Nothing specific / ambiguous | `change` |
 
-| What you have | Review Mode | Intent Source |
-|---|---|---|
-| Spec with `## Suggested Review Order` | `full-trail` | Spec's Intent section |
-| Spec without trail | `spec-only` | Spec's Intent section |
-| Commit ref, no spec | `bare-commit` | Commit message |
+Set `review_mode` based on what ENRICH found:
 
-**Terse commit messages** (under 10 words): Scan the diff for the primary change pattern and draft a one-sentence intent. Confirm with the user before proceeding.
+- **`full-trail`** — spec exists and has a `## Suggested Review Order` section. Intent source: spec's Intent section.
+- **`spec-only`** — spec exists but has no Suggested Review Order. Intent source: spec's Intent section.
+- **`bare-commit`** — no spec found. Intent source: commit message. If the commit message is terse (under 10 words), scan the diff for the primary change pattern and draft a one-sentence intent. Confirm with the user before proceeding.
 
 ## PRODUCE ORIENTATION
 
