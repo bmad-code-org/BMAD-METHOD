@@ -73,12 +73,17 @@ Take your time — click through the stops, read the diff, trace the logic. Whil
 - "party mode on whether this schema migration is safe"
 - or just ask anything
 
-When you are done with the walkthrough:
-- **"detail pass"** — I'll surface the highest-risk spots and run code review
-- **"testing"** — I'll suggest how to observe the behavior
-- **"I've seen enough"** — tell me what to do about this {change_type} and we wrap up
+When you're ready, say **next** and I'll surface the highest-risk spots.
 ```
+
+## EARLY EXIT
+
+If at any point the human signals they want to make a decision about this {change_type} (e.g., "let's ship it", "this needs a rethink", "I'm done reviewing", or anything suggesting they're ready to decide), confirm their intent:
+
+- If they want to **approve and ship** → read fully and follow `./step-05-wrapup.md`
+- If they want to **reject and rework** → read fully and follow `./step-05-wrapup.md`
+- If you misread them → acknowledge and continue the current step.
 
 ## NEXT
 
-When the human signals readiness for the next phase, read fully and follow `./step-03-detail-pass.md`
+Default: read fully and follow `./step-03-detail-pass.md`

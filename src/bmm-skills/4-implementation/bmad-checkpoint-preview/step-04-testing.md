@@ -66,26 +66,9 @@ End the message with:
 ```
 ---
 
-You've seen the change and how to verify it. From here:
-- **"I've seen enough"** — we wrap up this {change_type}
-- or just ask anything
+You've seen the change and how to verify it. When you're ready to make a call, just say so.
 ```
 
-## WRAP-UP
+## NEXT
 
-When the human says "I've seen enough" or signals they're done:
-
-```
----
-
-Review complete. What's the call on this {change_type}?
-- **Approve** — ship it
-- **Request changes** — I'll help draft feedback
-- **Discuss** — something's still on your mind
-```
-
-Act on their decision:
-
-- **Approve**: Acknowledge briefly. If reviewing a PR, offer to approve via `gh pr review --approve` — but confirm with the human before executing, since this is a visible action on a shared resource.
-- **Request changes**: Ask what needs changing. Help draft specific, actionable feedback tied to `path:line` locations.
-- **Discuss**: Open conversation — answer questions, explore concerns, dig into any aspect.
+When the human signals they're ready to make a decision about this {change_type}, read fully and follow `./step-05-wrapup.md`

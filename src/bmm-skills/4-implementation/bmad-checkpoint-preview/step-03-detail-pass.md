@@ -76,9 +76,16 @@ End the message with:
 
 You've seen the design and the risk landscape. From here:
 - **"dig into [area]"** — I'll deep-dive that specific area with correctness focus
-- **"testing"** — I'll suggest how to observe the behavior
-- **"I've seen enough"** — tell me what to do about this {change_type} and we wrap up
+- **"next"** — I'll suggest how to observe the behavior
 ```
+
+## EARLY EXIT
+
+If at any point the human signals they want to make a decision about this {change_type} (e.g., "let's ship it", "this needs a rethink", "I'm done reviewing", or anything suggesting they're ready to decide), confirm their intent:
+
+- If they want to **approve and ship** → read fully and follow `./step-05-wrapup.md`
+- If they want to **reject and rework** → read fully and follow `./step-05-wrapup.md`
+- If you misread them → acknowledge and continue the current step.
 
 ## TARGETED RE-REVIEW
 
@@ -96,4 +103,4 @@ The human can trigger multiple targeted re-reviews. Each time, present new findi
 
 ## NEXT
 
-When the human signals readiness for testing, read fully and follow `./step-04-testing.md`
+Read fully and follow `./step-04-testing.md`
