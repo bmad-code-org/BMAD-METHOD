@@ -58,7 +58,7 @@ Set `review_mode` — pick the first match:
 ### Intent Summary
 
 - If intent comes from a spec's Intent section, display it verbatim regardless of length — it's already written to be concise.
-- For other sources (commit messages, bug reports, user description): if ≤200 tokens, display verbatim. If longer, distill to ≤200 tokens and link to the full source.
+- For other sources (commit messages, bug reports, user description): if ≤200 tokens, display verbatim. If longer, distill to ≤200 tokens. Link to the full source when one exists (e.g. a file path or URL).
 - Format: `> **Intent:** {summary}`
 
 ### Surface Area Stats
