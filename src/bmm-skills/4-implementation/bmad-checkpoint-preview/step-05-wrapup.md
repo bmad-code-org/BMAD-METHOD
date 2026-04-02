@@ -15,6 +15,8 @@ Review complete. What's the call on this {change_type}?
 - **Discuss** — something's still on your mind
 ```
 
+HALT — do not proceed until the user makes their choice.
+
 ## ACT ON DECISION
 
 - **Approve**: Acknowledge briefly. If the human wants to patch something before shipping, help apply the fix interactively. If reviewing a PR, offer to approve via `gh pr review --approve` — but confirm with the human before executing, since this is a visible action on a shared resource.
