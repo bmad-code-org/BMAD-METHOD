@@ -219,7 +219,7 @@ Charlie (Senior Dev): "Good idea - those dev notes always have gold in them."
 
 **Review Feedback Patterns:**
 
-- Look for "## Review", "## Code Review", "## Dev Review", "## SM Review", "## Scrum Master Review" sections
+- Look for "## Review", "## Code Review", "## Dev Review" sections
 - Identify recurring feedback themes across stories
 - Note which types of issues came up repeatedly
 - Track quality concerns or architectural misalignments
@@ -577,7 +577,7 @@ Alice (Product Owner): "I'll start. The user authentication flow we delivered ex
 
 Charlie (Senior Dev): "I'll add to that - the caching strategy we implemented in Story {{breakthrough_story_num}} was a game-changer. We cut API calls by 60% and it set the pattern for the rest of the epic."
 
-Dana (QA Engineer): "From my side, testing went smoother than usual. The dev team's documentation was way better this epic - actually usable test plans!"
+Dana (QA Engineer): "From my side, testing went smoother than usual. The Developer's documentation was way better this epic - actually usable test plans!"
 
 Elena (Junior Dev): _smiling_ "That's because Charlie made me document everything after Story 1's code review!"
 

@@ -217,7 +217,7 @@
 <check-item id="5.5">
 <prompt>Establish agent handoff plan</prompt>
 <action>Identify which roles/agents will execute the changes:</action>
-  - Development team (for implementation)
+  - Developer agent (for implementation)
   - Product Owner / Developer (for backlog changes)
   - Product Manager / Architect (for strategic changes)
 <action>Define responsibilities for each role</action>

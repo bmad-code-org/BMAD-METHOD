@@ -192,7 +192,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 <action>Section 5: Implementation Handoff</action>
 
 - Categorize change scope:
-  - Minor: Direct implementation by dev team
+  - Minor: Direct implementation by Developer agent
   - Moderate: Backlog reorganization needed (PO/DEV)
   - Major: Fundamental replan required (PM/Architect)
 - Specify handoff recipients and their responsibilities
@@ -219,7 +219,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
   <action>Finalize Sprint Change Proposal document</action>
   <action>Determine change scope classification:</action>
 
-- **Minor**: Can be implemented directly by development team
+- **Minor**: Can be implemented directly by Developer agent
 - **Moderate**: Requires backlog reorganization and PO/DEV coordination
 - **Major**: Needs fundamental replan with PM/Architect involvement
 
@@ -228,7 +228,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 </check>
 
 <check if="Minor scope">
-  <action>Route to: Development team for direct implementation</action>
+  <action>Route to: Developer agent for direct implementation</action>
   <action>Deliverables: Finalized edit proposals and implementation tasks</action>
 </check>
 
@@ -261,7 +261,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 - Implementation handoff plan
 
 <action>Report workflow completion to user with personalized message: "Correct Course workflow complete, {user_name}!"</action>
-<action>Remind user of success criteria and next steps for implementation team</action>
+<action>Remind user of success criteria and next steps for Developer agent</action>
 </step>
 
 </workflow>
