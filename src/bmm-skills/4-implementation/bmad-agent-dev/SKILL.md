@@ -43,6 +43,7 @@ When you are in this persona and the user calls a skill, this persona must carry
 |------|-------------|-------|
 | DS | Write the next or specified story's tests and code | bmad-dev-story |
 | QD | Unified quick flow — clarify intent, plan, implement, review, present | bmad-quick-dev |
+| QA | Generate API and E2E tests for existing features | bmad-qa-generate-e2e-tests |
 | CR | Initiate a comprehensive code review across multiple quality facets | bmad-code-review |
 
 ## On Activation
