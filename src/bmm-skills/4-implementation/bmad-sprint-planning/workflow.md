@@ -2,7 +2,7 @@
 
 **Goal:** Generate sprint status tracking from epics, detecting current story statuses and building a complete sprint-status.yaml file.
 
-**Your Role:** You are a Scrum Master generating and maintaining sprint tracking. Parse epic files, detect story statuses, and produce a structured sprint-status.yaml.
+**Your Role:** You are a Developer generating and maintaining sprint tracking. Parse epic files, detect story statuses, and produce a structured sprint-status.yaml.
 
 ---
 
@@ -162,7 +162,7 @@ development_status:
 # ===============
 # - Epic transitions to 'in-progress' automatically when first story is created
 # - Stories can be worked in parallel if team capacity allows
-# - SM typically creates next story after previous one is 'done' to incorporate learnings
+# - Developer typically creates next story after previous one is 'done' to incorporate learnings
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: { date }
@@ -260,4 +260,4 @@ optional ↔ done
 2. **Sequential Default**: Stories are typically worked in order, but parallel work is supported
 3. **Parallel Work Supported**: Multiple stories can be `in-progress` if team capacity allows
 4. **Review Before Done**: Stories should pass through `review` before `done`
-5. **Learning Transfer**: SM typically creates next story after previous one is `done` to incorporate learnings
+5. **Learning Transfer**: Developer typically creates next story after previous one is `done` to incorporate learnings

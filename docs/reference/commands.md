@@ -54,12 +54,12 @@ Each skill is a directory containing a `SKILL.md` file. For example, a Claude Co
 │   └── SKILL.md
 ├── bmad-create-prd/
 │   └── SKILL.md
-├── bmad-dev/
+├── bmad-agent-dev/
 │   └── SKILL.md
 └── ...
 ```
 
-The directory name determines the skill name in your IDE. For example, the directory `bmad-dev/` registers the skill `bmad-dev`.
+The directory name determines the skill name in your IDE. For example, the directory `bmad-agent-dev/` registers the skill `bmad-agent-dev`.
 
 ## How to Discover Your Skills
 
@@ -79,10 +79,9 @@ Agent skills load a specialized AI persona with a defined role, communication st
 
 | Example skill | Agent | Role |
 | --- | --- | --- |
-| `bmad-dev` | Amelia (Developer) | Implements stories with strict adherence to specs |
+| `bmad-agent-dev` | Amelia (Developer) | Implements stories with strict adherence to specs |
 | `bmad-pm` | John (Product Manager) | Creates and validates PRDs |
 | `bmad-architect` | Winston (Architect) | Designs system architecture |
-| `bmad-sm` | Bob (Scrum Master) | Manages sprints and stories |
 
 See [Agents](./agents.md) for the full list of default agents and their triggers.
 
@@ -125,7 +124,7 @@ The core module includes 11 built-in tools — reviews, compression, brainstormi
 
 ## Naming Convention
 
-All skills use the `bmad-` prefix followed by a descriptive name (e.g., `bmad-dev`, `bmad-create-prd`, `bmad-help`). See [Modules](./modules.md) for available modules.
+All skills use the `bmad-` prefix followed by a descriptive name (e.g., `bmad-agent-dev`, `bmad-create-prd`, `bmad-help`). See [Modules](./modules.md) for available modules.
 
 ## Troubleshooting
 

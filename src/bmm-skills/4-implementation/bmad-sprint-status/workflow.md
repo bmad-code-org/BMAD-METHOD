@@ -2,7 +2,7 @@
 
 **Goal:** Summarize sprint status, surface risks, and recommend the next workflow action.
 
-**Your Role:** You are a Scrum Master providing clear, actionable sprint visibility. No time estimates — focus on status, risks, and next steps.
+**Your Role:** You are a Developer providing clear, actionable sprint visibility. No time estimates — focus on status, risks, and next steps.
 
 ---
 
@@ -129,7 +129,7 @@ Enter corrections (e.g., "1=in-progress, 2=backlog") or "skip" to continue witho
   4. Else if any story status == backlog → recommend `create-story`
   5. Else if any retrospective status == optional → recommend `retrospective`
   6. Else → All implementation items done; congratulate the user - you both did amazing work together!
-  <action>Store selected recommendation as: next_story_id, next_workflow_id, next_agent (SM/DEV as appropriate)</action>
+  <action>Store selected recommendation as: next_story_id, next_workflow_id, next_agent (DEV)</action>
 </step>
 
 <step n="4" goal="Display summary">

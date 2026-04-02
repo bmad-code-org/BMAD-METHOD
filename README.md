@@ -16,7 +16,7 @@ Traditional AI tools do the thinking for you, producing average results. BMad ag
 - **AI Intelligent Help** — Invoke the `bmad-help` skill anytime for guidance on what's next
 - **Scale-Domain-Adaptive** — Automatically adjusts planning depth based on project complexity
 - **Structured Workflows** — Grounded in agile best practices across analysis, planning, architecture, and implementation
-- **Specialized Agents** — 12+ domain experts (PM, Architect, Developer, UX, Scrum Master, and more)
+- **Specialized Agents** — 12+ domain experts (PM, Architect, Developer, UX, and more)
 - **Party Mode** — Bring multiple agent personas into one session to collaborate and discuss
 - **Complete Lifecycle** — From brainstorming to deployment
 

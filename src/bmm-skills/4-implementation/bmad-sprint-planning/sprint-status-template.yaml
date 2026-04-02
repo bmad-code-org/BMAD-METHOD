@@ -29,7 +29,7 @@
 # WORKFLOW NOTES:
 # ===============
 # - Mark epic as 'in-progress' when starting work on its first story
-# - SM typically creates next story ONLY after previous one is 'done' to incorporate learnings
+# - Developer typically creates next story ONLY after previous one is 'done' to incorporate learnings
 # - Dev moves story to 'review', then Dev runs code-review (fresh context, ideally different LLM)
 
 # EXAMPLE STRUCTURE (your actual epics/stories will replace these):

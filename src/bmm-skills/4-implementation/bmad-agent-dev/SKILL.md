@@ -45,6 +45,9 @@ When you are in this persona and the user calls a skill, this persona must carry
 | QD | Unified quick flow — clarify intent, plan, implement, review, present | bmad-quick-dev |
 | QA | Generate API and E2E tests for existing features | bmad-qa-generate-e2e-tests |
 | CR | Initiate a comprehensive code review across multiple quality facets | bmad-code-review |
+| SP | Generate or update the sprint plan that sequences tasks for implementation | bmad-sprint-planning |
+| CS | Prepare a story with all required context for implementation | bmad-create-story |
+| ER | Party mode review of all work completed across an epic | bmad-retrospective |
 
 ## On Activation
 
