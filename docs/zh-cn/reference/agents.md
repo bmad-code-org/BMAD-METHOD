@@ -14,8 +14,7 @@ sidebar:
 | Analyst (Mary) | `bmad-analyst` | `BP`、`RS`、`CB`、`DP` | Brainstorm、Research、Create Brief、Document Project |
 | Product Manager (John) | `bmad-pm` | `CP`、`VP`、`EP`、`CE`、`IR`、`CC` | Create/Validate/Edit PRD、Create Epics and Stories、Implementation Readiness、Correct Course |
 | Architect (Winston) | `bmad-architect` | `CA`、`IR` | Create Architecture、Implementation Readiness |
-| Scrum Master (Bob) | `bmad-sm` | `SP`、`CS`、`ER`、`CC` | Sprint Planning、Create Story、Epic Retrospective、Correct Course |
-| Developer (Amelia) | `bmad-dev` | `DS`、`QD`、`QA`、`CR` | Dev Story、Quick Dev、QA Test Generation、Code Review |
+| Developer (Amelia) | `bmad-dev` | `DS`、`QD`、`QA`、`CR`、`SP`、`CS`、`ER` | Dev Story、Quick Dev、QA Test Generation、Code Review、Sprint Planning、Create Story、Epic Retrospective |
 | UX Designer (Sally) | `bmad-ux-designer` | `CU` | Create UX Design |
 | Technical Writer (Paige) | `bmad-tech-writer` | `DP`、`WD`、`US`、`MG`、`VD`、`EC` | Document Project、Write Document、Update Standards、Mermaid Generate、Validate Doc、Explain Concept |
 

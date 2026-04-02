@@ -76,7 +76,6 @@ skill 目录名就是调用名，例如 `bmad-dev/` 对应 skill `bmad-dev`。
 | `bmad-dev` | Developer（Amelia） | 按规范实现 story |
 | `bmad-pm` | Product Manager（John） | 创建与校验 PRD |
 | `bmad-architect` | Architect（Winston） | 架构设计与约束定义 |
-| `bmad-sm` | Scrum Master（Bob） | 冲刺与 story 流程管理 |
 
 完整列表见 [智能体参考](./agents.md)。
 

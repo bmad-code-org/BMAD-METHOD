@@ -82,7 +82,6 @@ Agent skills load a specialized AI persona with a defined role, communication st
 | `bmad-dev` | Amelia (Developer) | Implements stories with strict adherence to specs |
 | `bmad-pm` | John (Product Manager) | Creates and validates PRDs |
 | `bmad-architect` | Winston (Architect) | Designs system architecture |
-| `bmad-sm` | Bob (Scrum Master) | Manages sprints and stories |
 
 See [Agents](./agents.md) for the full list of default agents and their triggers.
 
