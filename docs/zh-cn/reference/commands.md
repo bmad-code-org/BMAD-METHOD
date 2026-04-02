@@ -48,12 +48,12 @@ sidebar:
 │   └── SKILL.md
 ├── bmad-create-prd/
 │   └── SKILL.md
-├── bmad-dev/
+├── bmad-agent-dev/
 │   └── SKILL.md
 └── ...
 ```
 
-skill 目录名就是调用名，例如 `bmad-dev/` 对应 skill `bmad-dev`。
+skill 目录名就是调用名，例如 `bmad-agent-dev/` 对应 skill `bmad-agent-dev`。
 
 ## 如何发现可用 skills
 
@@ -73,7 +73,7 @@ skill 目录名就是调用名，例如 `bmad-dev/` 对应 skill `bmad-dev`。
 
 | 示例 skill | 角色 | 用途 |
 | --- | --- | --- |
-| `bmad-dev` | Developer（Amelia） | 按规范实现 story |
+| `bmad-agent-dev` | Developer（Amelia） | 按规范实现 story |
 | `bmad-pm` | Product Manager（John） | 创建与校验 PRD |
 | `bmad-architect` | Architect（Winston） | 架构设计与约束定义 |
 
@@ -104,7 +104,7 @@ skill 目录名就是调用名，例如 `bmad-dev/` 对应 skill `bmad-dev`。
 
 ## 命名规则
 
-所有技能统一以 `bmad-` 开头，后接语义化名称（如 `bmad-dev`、`bmad-create-prd`、`bmad-help`）。
+所有技能统一以 `bmad-` 开头，后接语义化名称（如 `bmad-agent-dev`、`bmad-create-prd`、`bmad-help`）。
 
 ## 故障排查
 
