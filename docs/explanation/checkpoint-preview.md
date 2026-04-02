@@ -7,6 +7,8 @@ sidebar:
 
 `bmad-checkpoint-preview` is an interactive, LLM-assisted human-in-the-loop review workflow. It walks you through a code change — from purpose and context into details — so you can make an informed decision about whether to ship, rework, or dig deeper.
 
+![Checkpoint Preview workflow diagram](/diagrams/checkpoint-preview-diagram.png)
+
 ## The Typical Flow
 
 You run `bmad-quick-dev`. It clarifies your intent, builds a spec, implements the change, and when it's done it appends a review trail to the spec file and opens it in your editor. You look at the spec and see the change touched 20 files across several modules.
