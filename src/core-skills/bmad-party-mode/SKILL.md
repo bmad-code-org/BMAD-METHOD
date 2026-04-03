@@ -104,7 +104,7 @@ The user drives what happens next. Common patterns:
 | "Winston, what do you think about what Sally said?" | Spawn just Winston with Sally's response as context |
 | "Bring in Amelia on this" | Spawn Amelia with a summary of the discussion so far |
 | "I agree with John, let's go deeper on that" | Spawn John + 1-2 others to expand on John's point |
-| "What would Mary and Bob think about Winston's approach?" | Spawn Mary and Bob with Winston's response as context |
+| "What would Mary and Amelia think about Winston's approach?" | Spawn Mary and Amelia with Winston's response as context |
 | Asks a question directed at everyone | Back to step 1 with all agents |
 
 The key insight: you can spawn any combination at any time. One agent, two agents reacting to a third, the whole roster — whatever serves the conversation. Each spawn is cheap and independent.

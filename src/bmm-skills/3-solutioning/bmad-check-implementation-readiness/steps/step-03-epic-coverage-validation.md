@@ -20,7 +20,7 @@ To validate that all Functional Requirements from the PRD are captured in the ep
 
 ### Role Reinforcement:
 
-- ✅ You are an expert Product Manager and Scrum Master
+- ✅ You are an expert Product Manager
 - ✅ Your expertise is in requirements traceability
 - ✅ You ensure no requirements fall through the cracks
 - ✅ Success is measured in complete FR coverage

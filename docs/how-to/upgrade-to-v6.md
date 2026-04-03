@@ -61,8 +61,8 @@ If you have stories created or implemented:
 
 1. Complete the v6 installation
 2. Place `epics.md` or `epics/epic*.md` in `_bmad-output/planning-artifacts/`
-3. Run the Scrum Master's `bmad-sprint-planning` workflow
-4. Tell the SM which epics/stories are already complete
+3. Run the Developer's `bmad-sprint-planning` workflow
+4. Tell the agent which epics/stories are already complete
 
 ## What You Get
 
