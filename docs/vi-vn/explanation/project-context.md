@@ -113,7 +113,7 @@ Chạy workflow `bmad-generate-project-context` sau khi bạn hoàn tất kiến
 bmad-generate-project-context
 ```
 
-Nó sẽ quét tài liệu kiến trúc và tệp dự án để tạo tệp `project-context.md` trong `output_folder` đã được cấu hình cho workflow. Trong nhiều dự án, đó sẽ là `_bmad-output/`, nhưng vị trí thực tế phụ thuộc vào cấu hình hiện tại của bạn.
+Nó sẽ quét tài liệu kiến trúc và tệp dự án để tạo tệp context ghi lại các quyết định đã được đưa ra.
 
 ### Tạo cho dự án hiện có
 
@@ -153,5 +153,5 @@ Tệp `project-context.md` là tài liệu sống. Hãy cập nhật khi:
 Bạn có thể sửa thủ công bất kỳ lúc nào, hoặc chạy lại `bmad-generate-project-context` để cập nhật sau các thay đổi lớn.
 
 :::note[Vị trí tệp]
-Nếu bạn tạo thủ công, vị trí khuyến nghị là `_bmad-output/project-context.md`. Nếu bạn dùng `bmad-generate-project-context`, tệp sẽ được tạo tại `project-context.md` bên trong `output_folder` đã cấu hình. Các workflow triển khai cố ý tìm theo mẫu `**/project-context.md`, vì vậy tệp vẫn sẽ được nạp miễn là nó tồn tại ở một vị trí phù hợp trong dự án.
+Vị trí mặc định là `_bmad-output/project-context.md`. Các workflow tìm tệp ở đó, đồng thời cũng kiểm tra `**/project-context.md` ở bất kỳ đâu trong dự án.
 :::

@@ -8,7 +8,7 @@ BMad Method (**B**uild **M**ore **A**rchitect **D**reams) là một framework ph
 Nếu bạn đã quen làm việc với các trợ lý AI cho lập trình như Claude, Cursor, hoặc GitHub Copilot, bạn có thể bắt đầu ngay.
 
 :::note[🚀 V6 đã ra mắt và chúng tôi mới chỉ bắt đầu!]
-Kiến trúc Skills, BMad Builder v1, Dev Loop Automation, và nhiều thứ khác nữa đang được phát triển. **[Xem Roadmap →](./roadmap.mdx)**
+Kiến trúc Skills, BMad Builder v1, Dev Loop Automation, và nhiều thứ khác nữa đang được phát triển. **[Xem Roadmap →](/vi-vn/roadmap/)**
 :::
 
 ## Mới bắt đầu? Hãy xem một Tutorial trước
