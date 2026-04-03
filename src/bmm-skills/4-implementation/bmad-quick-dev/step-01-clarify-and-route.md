@@ -42,6 +42,13 @@ Never ask extra questions if you already understand what the user intends.
 1. Load context.
    - List files in `{planning_artifacts}` and `{implementation_artifacts}`.
    - If you find an unformatted spec or intent file, ingest its contents to form your understanding of the intent.
+   - Planning artifacts are the output of BMAD phases 1-3. Typical files include:
+     - **PRD** (`*prd*`) — product requirements and success criteria
+     - **Architecture** (`*architecture*`) — technical design decisions and constraints
+     - **UX/Design** (`*ux*`) — user experience and interaction design
+     - **Epics** (`*epic*`) — feature breakdown into implementable stories
+     - **Product Brief** (`*brief*`) — project vision and scope
+   - Scan the listing for files matching these patterns. If any look relevant to the current intent, load them selectively — you don't need all of them, but you need the right constraints and requirements rather than guessing from code alone.
 2. Clarify intent. Do not fantasize, do not leave open questions. If you must ask questions, ask them as a numbered list. When the human replies, verify that every single numbered question was answered. If any were ignored, HALT and re-ask only the missing questions before proceeding. Keep looping until intent is clear enough to implement.
 3. Version control sanity check. Is the working tree clean? Does the current branch make sense for this intent — considering its name and recent history? If the tree is dirty or the branch is an obvious mismatch, HALT and ask the human before proceeding. If version control is unavailable, skip this check.
 4. Multi-goal check (see SCOPE STANDARD). If the intent fails the single-goal criteria:
