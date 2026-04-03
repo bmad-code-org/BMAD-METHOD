@@ -51,3 +51,43 @@ modules:
     defaultSelected: false
     type: community
     npmPackage: bmad-method-wds-expansion
+    
+  scsa-module:
+    url: https://github.com/SCSA-dev/scsa-bmad-agents.git
+    module-definition: scsa/module.yaml
+    code: scsa
+    name: "SCSA Module"
+    description: "Agents and Workflow from SCSA"
+    defaultSelected: true
+    type: community
+    npmPackage: scsa-bmad-agents
+
+  ddat-module:
+    url: https://github.com/SCSA-dev/scsa-bmad-agents.git
+    module-definition: ddat/module.yaml
+    code: ddat
+    name: "DDAT Module"
+    description: "Agents and Workflow from DDAT"
+    defaultSelected: true
+    type: community
+    npmPackage: scsa-bmad-agents
+
+  lean-prioritisation-module:
+    url: https://github.com/SCSA-dev/scsa-bmad-agents.git
+    module-definition: lean-prioritisation-module/module.yaml
+    code: lp
+    name: "Lean Prioritisation Module"
+    description: "Agents and Workflow for Lean Prioritisation"
+    defaultSelected: true
+    type: community
+    npmPackage: scsa-bmad-agents
+
+  tqm-module:
+    url: https://github.com/SCSA-dev/scsa-bmad-agents.git
+    module-definition: tqm/module.yaml
+    code: tqm
+    name: "Tender Quote Module"
+    description: "Agents and Workflow for Tender Quote Module"
+    defaultSelected: true
+    type: community
+    npmPackage: scsa-bmad-agents
