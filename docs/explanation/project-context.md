@@ -25,7 +25,7 @@ Every implementation workflow automatically loads `project-context.md` if it exi
 - `bmad-create-story` — informs story creation with project patterns
 - `bmad-dev-story` — guides implementation decisions
 - `bmad-code-review` — validates against project standards
-- `bmad-quick-dev` — applies patterns when implementing tech-specs
+- `bmad-quick-dev` — applies patterns when implementing specs
 - `bmad-sprint-planning`, `bmad-retrospective`, `bmad-correct-course` — provides project-wide context
 
 ## When to Create It

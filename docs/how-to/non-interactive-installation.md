@@ -28,7 +28,7 @@ Requires [Node.js](https://nodejs.org) v20+ and `npx` (included with npm).
 | `--modules <modules>` | Comma-separated module IDs | `--modules bmm,bmb` |
 | `--tools <tools>` | Comma-separated tool/IDE IDs (use `none` to skip) | `--tools claude-code,cursor` or `--tools none` |
 | `--custom-content <paths>` | Comma-separated paths to custom modules | `--custom-content ~/my-module,~/another-module` |
-| `--action <type>` | Action for existing installations: `install` (default), `update`, `quick-update`, or `compile-agents` | `--action quick-update` |
+| `--action <type>` | Action for existing installations: `install` (default), `update`, or `quick-update` | `--action quick-update` |
 
 ### Core Configuration
 
@@ -37,7 +37,19 @@ Requires [Node.js](https://nodejs.org) v20+ and `npx` (included with npm).
 | `--user-name <name>` | Name for agents to use | System username |
 | `--communication-language <lang>` | Agent communication language | English |
 | `--document-output-language <lang>` | Document output language | English |
-| `--output-folder <path>` | Output folder path | _bmad-output |
+| `--output-folder <path>` | Output folder path (see resolution rules below) | `_bmad-output` |
+
+#### Output Folder Path Resolution
+
+The value passed to `--output-folder` (or entered interactively) is resolved according to these rules:
+
+| Input type | Example | Resolved as |
+|------------|---------|-------------|
+| Relative path (default) | `_bmad-output` | `<project-root>/_bmad-output` |
+| Relative path with traversal | `../../shared-outputs` | Normalized absolute path — e.g. `/Users/me/shared-outputs` |
+| Absolute path | `/Users/me/shared-outputs` | Used as-is — project root is **not** prepended |
+
+The resolved path is what agents and workflows use at runtime when writing output files. Using an absolute path or a traversal-based relative path lets you direct all generated artifacts to a directory outside your project tree — useful for shared or monorepo setups.
 
 ### Other Options
 
@@ -61,7 +73,7 @@ Available tool IDs for the `--tools` flag:
 
 **Preferred:** `claude-code`, `cursor`
 
-Run `npx bmad-method install` interactively once to see the full current list of supported tools, or check the [platform codes configuration](https://github.com/bmad-code-org/BMAD-METHOD/blob/main/tools/cli/installers/lib/ide/platform-codes.yaml).
+Run `npx bmad-method install` interactively once to see the full current list of supported tools, or check the [platform codes configuration](https://github.com/bmad-code-org/BMAD-METHOD/blob/main/tools/installer/ide/platform-codes.yaml).
 
 ## Installation Modes
 
@@ -121,7 +133,7 @@ npx bmad-method install \
 ## What You Get
 
 - A fully configured `_bmad/` directory in your project
-- Compiled agents and workflows for your selected modules and tools
+- Agents and workflows configured for your selected modules and tools
 - A `_bmad-output/` folder for generated artifacts
 
 ## Validation and Error Handling
@@ -132,7 +144,7 @@ BMad validates all provided flags:
 - **Modules** — Warns about invalid module IDs (but won't fail)
 - **Tools** — Warns about invalid tool IDs (but won't fail)
 - **Custom Content** — Each path must contain a valid `module.yaml` file
-- **Action** — Must be one of: `install`, `update`, `quick-update`, `compile-agents`
+- **Action** — Must be one of: `install`, `update`, `quick-update`
 
 Invalid values will either:
 1. Show an error and exit (for critical options like directory)
@@ -141,6 +153,7 @@ Invalid values will either:
 
 :::tip[Best Practices]
 - Use absolute paths for `--directory` to avoid ambiguity
+- Use an absolute path for `--output-folder` when you want artifacts written outside the project tree (e.g. a shared monorepo outputs directory)
 - Test flags locally before using in CI/CD pipelines
 - Combine with `-y` for truly unattended installations
 - Use `--debug` if you encounter issues during installation

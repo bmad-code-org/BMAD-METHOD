@@ -1,0 +1,192 @@
+# BMAD Platform Codes Configuration
+#
+# Each platform entry has:
+#   name: Display name shown to users
+#   preferred: Whether shown as a recommended option on install
+#   suspended: (optional) Message explaining why install is blocked
+#   installer:
+#     target_dir: Directory where skill directories are installed
+#     legacy_targets: (optional) Old target dirs to clean up on reinstall
+#     ancestor_conflict_check: (optional) Refuse install when ancestor dir has BMAD files
+
+platforms:
+  antigravity:
+    name: "Google Antigravity"
+    preferred: false
+    installer:
+      legacy_targets:
+        - .agent/workflows
+      target_dir: .agent/skills
+
+  auggie:
+    name: "Auggie"
+    preferred: false
+    installer:
+      legacy_targets:
+        - .augment/commands
+      target_dir: .augment/skills
+
+  claude-code:
+    name: "Claude Code"
+    preferred: true
+    installer:
+      legacy_targets:
+        - .claude/commands
+      target_dir: .claude/skills
+
+  cline:
+    name: "Cline"
+    preferred: false
+    installer:
+      legacy_targets:
+        - .clinerules/workflows
+      target_dir: .cline/skills
+
+  codex:
+    name: "Codex"
+    preferred: false
+    installer:
+      legacy_targets:
+        - .codex/prompts
+        - ~/.codex/prompts
+      target_dir: .agents/skills
+
+  codebuddy:
+    name: "CodeBuddy"
+    preferred: false
+    installer:
+      legacy_targets:
+        - .codebuddy/commands
+      target_dir: .codebuddy/skills
+
+  crush:
+    name: "Crush"
+    preferred: false
+    installer:
+      legacy_targets:
+        - .crush/commands
+      target_dir: .crush/skills
+
+  cursor:
+    name: "Cursor"
+    preferred: true
+    installer:
+      legacy_targets:
+        - .cursor/commands
+      target_dir: .cursor/skills
+
+  gemini:
+    name: "Gemini CLI"
+    preferred: false
+    installer:
+      legacy_targets:
+        - .gemini/commands
+      target_dir: .gemini/skills
+
+  github-copilot:
+    name: "GitHub Copilot"
+    preferred: false
+    installer:
+      legacy_targets:
+        - .github/agents
+        - .github/prompts
+      target_dir: .github/skills
+
+  iflow:
+    name: "iFlow"
+    preferred: false
+    installer:
+      legacy_targets:
+        - .iflow/commands
+      target_dir: .iflow/skills
+
+  junie:
+    name: "Junie"
+    preferred: false
+    installer:
+      target_dir: .agents/skills
+
+  kilo:
+    name: "KiloCoder"
+    preferred: false
+    installer:
+      legacy_targets:
+        - .kilocode/workflows
+      target_dir: .kilocode/skills
+
+  kiro:
+    name: "Kiro"
+    preferred: false
+    installer:
+      legacy_targets:
+        - .kiro/steering
+      target_dir: .kiro/skills
+
+  ona:
+    name: "Ona"
+    preferred: false
+    installer:
+      target_dir: .ona/skills
+
+  opencode:
+    name: "OpenCode"
+    preferred: false
+    installer:
+      legacy_targets:
+        - .opencode/agents
+        - .opencode/commands
+        - .opencode/agent
+        - .opencode/command
+      target_dir: .opencode/skills
+
+  pi:
+    name: "Pi"
+    preferred: false
+    installer:
+      target_dir: .pi/skills
+
+  qoder:
+    name: "Qoder"
+    preferred: false
+    installer:
+      target_dir: .qoder/skills
+
+  qwen:
+    name: "QwenCoder"
+    preferred: false
+    installer:
+      legacy_targets:
+        - .qwen/commands
+      target_dir: .qwen/skills
+
+  roo:
+    name: "Roo Code"
+    preferred: false
+    installer:
+      legacy_targets:
+        - .roo/commands
+      target_dir: .roo/skills
+
+  rovo-dev:
+    name: "Rovo Dev"
+    preferred: false
+    installer:
+      legacy_targets:
+        - .rovodev/workflows
+      target_dir: .rovodev/skills
+
+  trae:
+    name: "Trae"
+    preferred: false
+    installer:
+      legacy_targets:
+        - .trae/rules
+      target_dir: .trae/skills
+
+  windsurf:
+    name: "Windsurf"
+    preferred: false
+    installer:
+      legacy_targets:
+        - .windsurf/workflows
+      target_dir: .windsurf/skills

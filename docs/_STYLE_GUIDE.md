@@ -56,7 +56,7 @@ Critical warnings only — data loss, security issues
 | Phase | Name     | What Happens                                 |
 | ----- | -------- | -------------------------------------------- |
 | 1     | Analysis | Brainstorm, research *(optional)*            |
-| 2     | Planning | Requirements — PRD or tech-spec *(required)* |
+| 2     | Planning | Requirements — PRD or spec *(required)* |
 ```
 
 **Skills:**
@@ -148,7 +148,7 @@ your-project/
 | ----------------- | ----------------------------- |
 | **Index/Landing** | `core-concepts/index.md`      |
 | **Concept**       | `what-are-agents.md`          |
-| **Feature**       | `quick-flow.md`               |
+| **Feature**       | `quick-dev.md`                |
 | **Philosophy**    | `why-solutioning-matters.md`  |
 | **FAQ**           | `established-projects-faq.md` |
 
@@ -353,7 +353,7 @@ Only for BMad Method and Enterprise tracks. Quick Flow skips to implementation.
 
 ### Can I change my plan later?
 
-Yes. The SM agent has a `bmad-correct-course` workflow for handling scope changes.
+Yes. The `bmad-correct-course` workflow handles scope changes mid-implementation.
 
 **Have a question not answered here?** [Open an issue](...) or ask in [Discord](...).
 ```

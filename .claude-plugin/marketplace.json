@@ -1,0 +1,74 @@
+{
+  "name": "bmad-method",
+  "owner": {
+    "name": "Brian (BMad) Madison"
+  },
+  "description": "Breakthrough Method of Agile AI-driven Development — a full-lifecycle framework with agents and workflows for analysis, planning, architecture, and implementation.",
+  "license": "MIT",
+  "homepage": "https://github.com/bmad-code-org/BMAD-METHOD",
+  "repository": "https://github.com/bmad-code-org/BMAD-METHOD",
+  "keywords": ["bmad", "agile", "ai", "orchestrator", "development", "methodology", "agents"],
+  "plugins": [
+    {
+      "name": "bmad-pro-skills",
+      "source": "./",
+      "description": "Next level skills for power users — advanced prompting techniques, agent management, and more.",
+      "version": "6.3.0",
+      "author": {
+        "name": "Brian (BMad) Madison"
+      },
+      "skills": [
+        "./src/core-skills/bmad-help",
+        "./src/core-skills/bmad-brainstorming",
+        "./src/core-skills/bmad-distillator",
+        "./src/core-skills/bmad-party-mode",
+        "./src/core-skills/bmad-shard-doc",
+        "./src/core-skills/bmad-advanced-elicitation",
+        "./src/core-skills/bmad-editorial-review-prose",
+        "./src/core-skills/bmad-editorial-review-structure",
+        "./src/core-skills/bmad-index-docs",
+        "./src/core-skills/bmad-review-adversarial-general",
+        "./src/core-skills/bmad-review-edge-case-hunter"
+      ]
+    },
+    {
+      "name": "bmad-method-lifecycle",
+      "source": "./",
+      "description": "Full-lifecycle AI development framework — agents and workflows for product analysis, planning, architecture, and implementation.",
+      "version": "6.3.0",
+      "author": {
+        "name": "Brian (BMad) Madison"
+      },
+      "skills": [
+        "./src/bmm-skills/1-analysis/bmad-product-brief",
+        "./src/bmm-skills/1-analysis/bmad-agent-analyst",
+        "./src/bmm-skills/1-analysis/bmad-agent-tech-writer",
+        "./src/bmm-skills/1-analysis/bmad-document-project",
+        "./src/bmm-skills/1-analysis/research/bmad-domain-research",
+        "./src/bmm-skills/1-analysis/research/bmad-market-research",
+        "./src/bmm-skills/1-analysis/research/bmad-technical-research",
+        "./src/bmm-skills/2-plan-workflows/bmad-agent-pm",
+        "./src/bmm-skills/2-plan-workflows/bmad-agent-ux-designer",
+        "./src/bmm-skills/2-plan-workflows/bmad-create-prd",
+        "./src/bmm-skills/2-plan-workflows/bmad-edit-prd",
+        "./src/bmm-skills/2-plan-workflows/bmad-validate-prd",
+        "./src/bmm-skills/2-plan-workflows/bmad-create-ux-design",
+        "./src/bmm-skills/3-solutioning/bmad-agent-architect",
+        "./src/bmm-skills/3-solutioning/bmad-create-architecture",
+        "./src/bmm-skills/3-solutioning/bmad-check-implementation-readiness",
+        "./src/bmm-skills/3-solutioning/bmad-create-epics-and-stories",
+        "./src/bmm-skills/3-solutioning/bmad-generate-project-context",
+        "./src/bmm-skills/4-implementation/bmad-agent-dev",
+        "./src/bmm-skills/4-implementation/bmad-dev-story",
+        "./src/bmm-skills/4-implementation/bmad-quick-dev",
+        "./src/bmm-skills/4-implementation/bmad-sprint-planning",
+        "./src/bmm-skills/4-implementation/bmad-sprint-status",
+        "./src/bmm-skills/4-implementation/bmad-code-review",
+        "./src/bmm-skills/4-implementation/bmad-create-story",
+        "./src/bmm-skills/4-implementation/bmad-correct-course",
+        "./src/bmm-skills/4-implementation/bmad-retrospective",
+        "./src/bmm-skills/4-implementation/bmad-qa-generate-e2e-tests"
+      ]
+    }
+  ]
+}

@@ -2,14 +2,27 @@
 
 An LLM-readable validation prompt for skills following the Agent Skills open standard.
 
+## First Pass — Deterministic Checks
+
+Before running inference-based validation, run the deterministic validator:
+
+```bash
+node tools/validate-skills.js --json path/to/skill-dir
+```
+
+This checks 14 rules deterministically: SKILL-01, SKILL-02, SKILL-03, SKILL-04, SKILL-05, SKILL-06, SKILL-07, WF-01, WF-02, PATH-02, STEP-01, STEP-06, STEP-07, SEQ-02.
+
+Review its JSON output. For any rule that produced **zero findings** in the first pass, **skip it** during inference-based validation below — it has already been verified. If a rule produced any findings, the inference validator should still review that rule (some rules like SKILL-04 and SKILL-06 have sub-checks that benefit from judgment). Focus your inference effort on the remaining rules that require judgment (PATH-01, PATH-03, PATH-04, PATH-05, WF-03, STEP-02, STEP-03, STEP-04, STEP-05, SEQ-01, REF-01, REF-02, REF-03).
+
 ## How to Use
 
 1. You are given a **skill directory path** to validate.
-2. Read every file in the skill directory recursively.
-3. Apply every rule in the catalog below to every applicable file.
-4. Produce a findings report using the report template at the end.
+2. Run the deterministic first pass (see above) and note which rules passed.
+3. Read every file in the skill directory recursively.
+4. Apply every rule in the catalog below to every applicable file, **skipping rules that passed the deterministic first pass**.
+5. Produce a findings report using the report template at the end, including any deterministic findings from the first pass.
 
-If no findings are generated, the skill passes validation.
+If no findings are generated (from either pass), the skill passes validation.
 
 ---
 
@@ -55,9 +68,9 @@ If no findings are generated, the skill passes validation.
 
 - **Severity:** HIGH
 - **Applies to:** `SKILL.md`
-- **Rule:** The `name` value must use only lowercase letters, numbers, and hyphens. Max 64 characters. Must not contain "anthropic" or "claude".
-- **Detection:** Regex test: `^[a-z0-9][a-z0-9-]{0,62}[a-z0-9]$`. String search for forbidden substrings.
-- **Fix:** Rename to comply with the format.
+- **Rule:** The `name` value must start with `bmad-`, use only lowercase letters, numbers, and single hyphens between segments.
+- **Detection:** Regex test: `^bmad-[a-z0-9]+(-[a-z0-9]+)*$`.
+- **Fix:** Rename to comply with the format (e.g., `bmad-my-skill`).
 
 ### SKILL-05 — `name` Must Match Directory Name
 
@@ -75,23 +88,33 @@ If no findings are generated, the skill passes validation.
 - **Detection:** Check length. Look for trigger phrases like "Use when" or "Use if" — their absence suggests the description only says _what_ but not _when_.
 - **Fix:** Append a "Use when..." clause to the description.
 
+### SKILL-07 — SKILL.md Must Have Body Content
+
+- **Severity:** HIGH
+- **Applies to:** `SKILL.md`
+- **Rule:** SKILL.md must have non-empty markdown body content after the frontmatter. The body provides L2 instructions — a SKILL.md with only frontmatter is incomplete.
+- **Detection:** Extract content after the closing `---` frontmatter delimiter and check it is non-empty after trimming whitespace.
+- **Fix:** Add markdown body with skill instructions after the closing `---`.
+
 ---
 
-### WF-01 — workflow.md Must NOT Have `name` in Frontmatter
+### WF-01 — Only SKILL.md May Have `name` in Frontmatter
 
 - **Severity:** HIGH
-- **Applies to:** `workflow.md` (if it exists)
-- **Rule:** The `name` field belongs only in `SKILL.md`. If `workflow.md` has YAML frontmatter, it must not contain `name:`.
-- **Detection:** Parse frontmatter and check for `name:` key.
-- **Fix:** Remove the `name:` line from workflow.md frontmatter.
+- **Applies to:** all `.md` files except `SKILL.md`
+- **Rule:** The `name` field belongs only in `SKILL.md`. No other markdown file in the skill directory may have `name:` in its frontmatter.
+- **Detection:** Parse frontmatter of every non-SKILL.md markdown file and check for `name:` key.
+- **Fix:** Remove the `name:` line from the file's frontmatter.
+- **Exception:** `bmad-agent-tech-writer` — has sub-skill files with intentional `name` fields (to be revisited).
 
-### WF-02 — workflow.md Must NOT Have `description` in Frontmatter
+### WF-02 — Only SKILL.md May Have `description` in Frontmatter
 
 - **Severity:** HIGH
-- **Applies to:** `workflow.md` (if it exists)
-- **Rule:** The `description` field belongs only in `SKILL.md`. If `workflow.md` has YAML frontmatter, it must not contain `description:`.
-- **Detection:** Parse frontmatter and check for `description:` key.
-- **Fix:** Remove the `description:` line from workflow.md frontmatter.
+- **Applies to:** all `.md` files except `SKILL.md`
+- **Rule:** The `description` field belongs only in `SKILL.md`. No other markdown file in the skill directory may have `description:` in its frontmatter.
+- **Detection:** Parse frontmatter of every non-SKILL.md markdown file and check for `description:` key.
+- **Fix:** Remove the `description:` line from the file's frontmatter.
+- **Exception:** `bmad-agent-tech-writer` — has sub-skill files with intentional `description` fields (to be revisited).
 
 ### WF-03 — workflow.md Frontmatter Variables Must Be Config or Runtime Only
 
@@ -103,6 +126,7 @@ If no findings are generated, the skill passes validation.
   - A legitimate external path expression (must not violate PATH-05 — no paths into another skill's directory)
 
   It must NOT be a path to a file within the skill directory (see PATH-04), nor a path into another skill's directory (see PATH-05).
+
 - **Detection:** For each frontmatter variable, check if its value resolves to a file inside the skill (e.g., starts with `./`, `{installed_path}`, or is a bare relative path to a sibling file). If so, it is an intra-skill path variable. Also check if the value is a path into another skill's directory — if so, it violates PATH-05 and is not a legitimate external path.
 - **Fix:** Remove the variable. Use a hardcoded relative path inline where the file is referenced.
 
@@ -294,11 +318,11 @@ When reporting findings, use this format:
 ## Summary
 
 | Severity | Count |
-|----------|-------|
-| CRITICAL | N |
-| HIGH     | N |
-| MEDIUM   | N |
-| LOW      | N |
+| -------- | ----- |
+| CRITICAL | N     |
+| HIGH     | N     |
+| MEDIUM   | N     |
+| LOW      | N     |
 
 ## Findings
 
@@ -320,3 +344,43 @@ When reporting findings, use this format:
 ```
 
 If zero findings: report "All {N} rules passed. No findings." and list all passed rule IDs.
+
+---
+
+## Skill Spec Cheatsheet
+
+Quick-reference for the Agent Skills open standard.
+For the full standard, see: [Agent Skills specification](https://agentskills.io/specification)
+
+### Structure
+
+- Every skill is a directory with `SKILL.md` as the required entrypoint
+- YAML frontmatter between `---` markers provides metadata; markdown body provides instructions
+- Supporting files (scripts, templates, references) live alongside SKILL.md
+
+### Path resolution
+
+- Relative file references resolve from the directory of the file that contains the reference, not from the skill root
+- Example: from `branch-a/deep/next.md`, `./deeper/final.md` resolves to `branch-a/deep/deeper/final.md`
+- Example: from `branch-a/deep/next.md`, `./branch-b/alt/leaf.md` incorrectly resolves to `branch-a/deep/branch-b/alt/leaf.md`
+
+### Frontmatter fields (standard)
+
+- `name`: lowercase letters, numbers, hyphens only; max 64 chars; no "anthropic" or "claude"
+- `description`: required, max 1024 chars; should state what the skill does AND when to use it
+
+### Progressive disclosure — three loading levels
+
+- **L1 Metadata** (~100 tokens): `name` + `description` loaded at startup into system prompt
+- **L2 Instructions** (<5k tokens): SKILL.md body loaded only when skill is triggered
+- **L3 Resources** (unlimited): additional files + scripts loaded/executed on demand; script output enters context, script code does not
+
+### Key design principle
+
+- Skills are filesystem-based directories, not API payloads — Claude reads them via bash/file tools
+- Keep SKILL.md focused; offload detailed reference to separate files
+
+### Practical tips
+
+- Keep SKILL.md under 500 lines
+- `description` drives auto-discovery — use keywords users would naturally say

@@ -14,6 +14,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { getSiteUrl } from '../website/src/lib/site-url.mjs';
+import { translatedLocales } from '../website/src/lib/locales.mjs';
 
 // =============================================================================
 // Configuration
@@ -160,8 +161,7 @@ function generateLlmsTxt(outputDir) {
     '',
     '## Core Concepts',
     '',
-    `- **[Quick Flow](${siteUrl}/explanation/quick-flow/)** - Fast development workflow`,
-    `- **[Quick Dev New Preview](${siteUrl}/explanation/quick-dev-new-preview/)** - Unified quick workflow with planning, implementation, and review in one run`,
+    `- **[Quick Flow](${siteUrl}/explanation/quick-flow/)** - Unified quick workflow — clarify intent, plan, implement, review, present`,
     `- **[Party Mode](${siteUrl}/explanation/party-mode/)** - Multi-agent collaboration`,
     `- **[Workflow Map](${siteUrl}/reference/workflow-map/)** - Visual overview of phases and workflows`,
     '',
@@ -288,6 +288,9 @@ function shouldExcludeFromLlm(filePath) {
   // (e.g., _STYLE_GUIDE.md, _archive/file.md, dir/_STYLE_GUIDE.md)
   const pathParts = filePath.split(path.sep);
   if (pathParts.some((part) => part.startsWith('_'))) return true;
+
+  // Exclude non-root locale directories (translations duplicate English content)
+  if (translatedLocales.some((locale) => filePath.startsWith(`${locale}/`) || filePath.startsWith(`${locale}${path.sep}`))) return true;
 
   // Check configured patterns
   return LLM_EXCLUDE_PATTERNS.some((pattern) => filePath.includes(pattern));

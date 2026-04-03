@@ -1,5 +1,41 @@
 # Changelog
 
+## v6.2.2 - 2026-03-25
+
+### ♻️ Refactoring
+
+* Modernize module-help CSV to 13-column format with `after`/`before` dependency graph replacing sequence numbers (#2120)
+* Rewrite bmad-help from procedural 8-step execution to outcome-based skill design (~50% shorter) (#2120)
+
+### 🐛 Bug Fixes
+
+* Update bmad-builder module-definition path from `src/module.yaml` to `skills/module.yaml` for bmad-builder v1.2.0 compatibility (#2126)
+* Fix eslint config to ignore gitignored lock files (#2120)
+
+### 📚 Documentation
+
+* Close Epic 4.5 explanation gaps in Chinese (zh-CN): normalize command naming to current `bmad-*` convention and add cross-links across 9 explanation pages (#2102)
+
+## v6.2.1 - 2026-03-24
+
+### 🎁 Highlights
+
+* Full rewrite of code-review skill with sharded step-file architecture, three parallel review layers (Blind Hunter, Edge Case Hunter, Acceptance Auditor), and interactive post-review triage (#2007, #2013, #2055)
+* Quick Dev workflow overhaul: smart intent cascade, self-check gate, VS Code integration, clickable spec links, and spec rename (#2105, #2104, #2039, #2085, #2109)
+* Add review trail generation with clickable `path:line` stops in spec file (#2033)
+* Add clickable spec links using spec-file-relative markdown format (#2085, #2049)
+* Preserve tracking identifiers in spec slug derivation (#2108)
+* Deterministic skill validator with 19 rules across 6 categories, integrated into CI (#1981, #1982, #2004, #2002, #2051)
+* Complete French (fr-FR) documentation translation (#2073)
+* Add Ona platform support (#1968)
+* Rename tech-spec → spec across templates and all documentation (#2109)
+
+### 📚 Documentation
+
+* Complete French (fr-FR) translation of all documentation with workflow diagrams (#2073)
+* Refine Chinese (zh-CN) documentation: epic stories, how-to guides, getting-started, entry copy, help, anchor links (#2092–#2099, #2072)
+* Add Chinese translation for core-tools reference (#2002)
+
 ## v6.2.0 - 2026-03-15
 
 ### 🎁 Highlights

@@ -1,6 +1,7 @@
 ---
 import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
 import { getEntry } from 'astro:content';
+import { translatedLocales } from '../lib/locales.mjs';
 
 const entry = await getEntry('docs', '404');
 const { Content } = await entry.render();
@@ -9,3 +10,18 @@ const { Content } = await entry.render();
 <StarlightPage frontmatter={{ title: entry.data.title, template: entry.data.template }}>
   <Content />
 </StarlightPage>
+
+<!-- GitHub Pages serves this single 404.html for all paths.
+     Redirect to the locale-specific 404 page when the URL has a locale prefix. -->
+<script is:inline define:vars={{ translatedLocales }}>
+  (function () {
+    var path = window.location.pathname;
+    for (var i = 0; i < translatedLocales.length; i++) {
+      var prefix = '/' + translatedLocales[i] + '/';
+      if (path.startsWith(prefix) && path !== prefix + '404/') {
+        window.location.replace(prefix + '404/');
+        return;
+      }
+    }
+  })();
+</script>

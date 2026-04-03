@@ -1,60 +1,64 @@
 ---
 title: "既有项目常见问题"
-description: 关于在既有项目上使用 BMad 方法的常见问题
+description: 关于在既有项目上使用 BMad Method 的常见问题
 sidebar:
   order: 8
 ---
-关于使用 BMad 方法（BMM）在既有项目上工作的常见问题的快速解答。
+关于在 established projects（既有项目）中使用 BMad Method 的高频问题，快速说明如下。
 
 ## 问题
 
-- [我必须先运行 document-project 吗？](#do-i-have-to-run-document-project-first)
-- [如果我忘记运行 document-project 怎么办？](#what-if-i-forget-to-run-document-project)
-- [我可以在既有项目上使用快速流程吗？](#can-i-use-quick-flow-for-established-projects)
-- [如果我的现有代码不遵循最佳实践怎么办？](#what-if-my-existing-code-doesnt-follow-best-practices)
+- [我必须先运行文档梳理工作流吗？](#我必须先运行文档梳理工作流吗)
+- [如果我忘了运行文档梳理怎么办？](#如果我忘了运行文档梳理怎么办)
+- [既有项目可以直接用 Quick Flow 吗？](#既有项目可以直接用-quick-flow-吗)
+- [如果现有代码不符合最佳实践怎么办？](#如果现有代码不符合最佳实践怎么办)
+- [什么时候该从 Quick Flow 切到完整方法？](#什么时候该从-quick-flow-切到完整方法)
 
-### 我必须先运行 document-project 吗？
+### 我必须先运行文档梳理工作流吗？
 
-强烈推荐，特别是如果：
+不绝对必须，但通常强烈建议先运行 `bmad-document-project`，尤其当：
+- 项目文档缺失或明显过时
+- 新成员或智能体难以快速理解现有系统
+- 你希望后续 `workflow` 基于真实现状而不是猜测执行
 
-- 没有现有文档
-- 文档已过时
-- AI 智能体需要关于现有代码的上下文
+如果你已有完整且最新的文档（包含 `docs/index.md`），并且能通过其他方式提供足够上下文，也可以跳过。
 
-如果你拥有全面且最新的文档，包括 `docs/index.md`，或者将使用其他工具或技术来帮助智能体发现现有系统，则可以跳过此步骤。
+### 如果我忘了运行文档梳理怎么办？
 
-### 如果我忘记运行 document-project 怎么办？
+可以随时补跑，不影响你继续推进当前任务。很多团队会在迭代中期或里程碑后再运行一次，用来把”代码现状”回写到文档里。
 
-不用担心——你可以随时执行。你甚至可以在项目期间或项目之后执行，以帮助保持文档最新。
+### 既有项目可以直接用 Quick Flow 吗？
 
-### 我可以在既有项目上使用快速流程吗？
+可以。Quick Flow（例如 `bmad-quick-dev`）在既有项目里通常很高效，尤其适合：
+- 小功能增量
+- 缺陷修复
+- 风险可控的局部改动
 
-可以！快速流程在既有项目上效果很好。它将：
+它会尝试识别现有技术栈、代码模式和约定，并据此生成更贴近现状的实现方案。
 
-- 自动检测你的现有技术栈
-- 分析现有代码模式
-- 检测约定并请求确认
-- 生成尊重现有代码的上下文丰富的技术规范
+### 如果现有代码不符合最佳实践怎么办？
 
-非常适合现有代码库中的错误修复和小功能。
+工作流会优先问你：“是否沿用当前约定？”你可以主动选择：
+- **沿用**：优先保持一致性，降低短期改动风险
+- **升级**：建立新标准，并在 tech-spec 或架构中写明迁移理由与范围
 
-### 如果我的现有代码不遵循最佳实践怎么办？
+BMad Method 不会强制“立即现代化”，而是把决策权交给你。
 
-快速流程会检测你的约定并询问："我应该遵循这些现有约定吗？"你决定：
+### 什么时候该从 Quick Flow 切到完整方法？
 
-- **是** → 与当前代码库保持一致
-- **否** → 建立新标准（在技术规范中记录原因）
+当任务出现以下信号时，建议从 Quick Flow 升级到完整 BMad Method：
+- 改动跨多个 `epic` 或多个子系统
+- 需要明确 `architecture` 决策，否则容易冲突
+- 涉及较大协作面、较高回归风险或复杂验收要求
 
-BMM 尊重你的选择——它不会强制现代化，但会提供现代化选项。
+如果你不确定，先让 `bmad-help` 判断当前阶段更稳妥的 workflow。
 
-**有未在此处回答的问题吗？** 请[提出问题](https://github.com/bmad-code-org/BMAD-METHOD/issues)或在 [Discord](https://discord.gg/gk8jAdXWmj) 中提问，以便我们添加它！
+**还有问题？** 欢迎在 [GitHub Issues](https://github.com/bmad-code-org/BMAD-METHOD/issues) 或 [Discord](https://discord.gg/gk8jAdXWmj) 提问。
 
----
-## 术语说明
+如果你想了解这套接入方式的操作步骤，可继续阅读 [How-to：既有项目](../how-to/established-projects.md) 与 [How-to：项目上下文](../how-to/project-context.md)。想理解快速流程在方法论中的定位，可参见 [快速开发](./quick-dev.md)。
 
-- **agent**：智能体。在人工智能与编程文档中，指具备自主决策或执行能力的单元。
-- **Quick Flow**：快速流程。BMad 方法中的一种工作流程，用于快速处理既有项目。
-- **tech-spec**：技术规范。描述技术实现细节和标准的文档。
-- **stack**：技术栈。项目所使用的技术组合，包括框架、库、工具等。
-- **conventions**：约定。代码库中遵循的编码风格、命名规则等规范。
-- **modernization**：现代化。将旧代码或系统更新为更现代的技术和最佳实践的过程。
+## 继续阅读
+
+- [既有项目（How-to）](../how-to/established-projects.md)
+- [项目上下文（Explanation）](./project-context.md)
+- [管理项目上下文（How-to）](../how-to/project-context.md)

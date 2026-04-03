@@ -5,6 +5,7 @@ import sitemap from '@astrojs/sitemap';
 import rehypeMarkdownLinks from './src/rehype-markdown-links.js';
 import rehypeBasePaths from './src/rehype-base-paths.js';
 import { getSiteUrl } from './src/lib/site-url.mjs';
+import { locales } from './src/lib/locales.mjs';
 
 const siteUrl = getSiteUrl();
 const urlParts = new URL(siteUrl);
@@ -45,25 +46,10 @@ export default defineConfig({
       title: 'BMAD Method',
       tagline: 'AI-driven agile development with specialized agents and workflows that scale from bug fixes to enterprise platforms.',
 
-      // i18n: English as root (no URL prefix), Chinese at /zh-cn/
+      // i18n: locale config from shared module (website/src/lib/locales.mjs)
       defaultLocale: 'root',
-      locales: {
-        root: {
-          label: 'English',
-          lang: 'en',
-        },
-        'zh-cn': {
-          label: '简体中文',
-          lang: 'zh-CN',
-        },
-      },
+      locales,
 
-      logo: {
-        light: './public/img/bmad-light.png',
-        dark: './public/img/bmad-dark.png',
-        alt: 'BMAD Method',
-        replacesTitle: true,
-      },
       favicon: '/favicon.ico',
 
       // Social links
@@ -106,29 +92,29 @@ export default defineConfig({
 
       // Sidebar configuration (Diataxis structure)
       sidebar: [
-        { label: 'Welcome', translations: { 'zh-CN': '欢迎' }, slug: 'index' },
-        { label: 'Roadmap', translations: { 'zh-CN': '路线图' }, slug: 'roadmap' },
+        { label: 'Welcome', translations: { 'vi-VN': 'Chào mừng', 'zh-CN': '欢迎', 'fr-FR': 'Bienvenue' }, slug: 'index' },
+        { label: 'Roadmap', translations: { 'vi-VN': 'Lộ trình', 'zh-CN': '路线图', 'fr-FR': 'Feuille de route' }, slug: 'roadmap' },
         {
           label: 'Tutorials',
-          translations: { 'zh-CN': '教程' },
+          translations: { 'vi-VN': 'Hướng dẫn nhập môn', 'zh-CN': '教程', 'fr-FR': 'Tutoriels' },
           collapsed: false,
           autogenerate: { directory: 'tutorials' },
         },
         {
           label: 'How-To Guides',
-          translations: { 'zh-CN': '操作指南' },
+          translations: { 'vi-VN': 'Hướng dẫn tác vụ', 'zh-CN': '操作指南', 'fr-FR': 'Guides pratiques' },
           collapsed: true,
           autogenerate: { directory: 'how-to' },
         },
         {
           label: 'Explanation',
-          translations: { 'zh-CN': '概念说明' },
+          translations: { 'vi-VN': 'Giải thích', 'zh-CN': '概念说明', 'fr-FR': 'Explications' },
           collapsed: true,
           autogenerate: { directory: 'explanation' },
         },
         {
           label: 'Reference',
-          translations: { 'zh-CN': '参考' },
+          translations: { 'vi-VN': 'Tham chiếu', 'zh-CN': '参考', 'fr-FR': 'Référence' },
           collapsed: true,
           autogenerate: { directory: 'reference' },
         },
