@@ -3,7 +3,7 @@ title: '{title}'
 type: 'feature' # feature | bugfix | refactor | chore
 created: '{date}'
 status: 'draft' # draft | ready-for-dev | in-progress | in-review | done
-context: [] # optional: project-wide standards/docs the implementation agent should load. Keep short — only what isn't already distilled into the spec body.
+context: [] # optional: `{project-root}/`-prefixed paths to project-wide standards/docs the implementation agent should load. Keep short — only what isn't already distilled into the spec body.
 ---
 
 <!-- Target: 900–1300 tokens. Above 1600 = high risk of context rot.
