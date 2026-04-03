@@ -69,6 +69,16 @@ Search for required documents using these patterns (sharded means a large docume
 1. `{planning_artifacts}/*ux*.md` (whole document)
 2. `{planning_artifacts}/*ux*/index.md` (sharded version)
 
+**Infrastructure Document Search (Optional):**
+
+1. `{planning_artifacts}/*infrastructure*.md` (whole document)
+2. `{planning_artifacts}/*infrastructure*/index.md` (sharded version)
+
+**Pipeline Document Search (Optional):**
+
+1. `{planning_artifacts}/*pipeline*.md` (whole document)
+2. `{planning_artifacts}/*pipeline*/index.md` (sharded version)
+
 Before proceeding, Ask the user if there are any other documents to include for analysis, and if anything found should be excluded. Wait for user confirmation. Once confirmed, create the {planning_artifacts}/epics.md from the ../templates/epics-template.md and in the front matter list the files in the array of `inputDocuments: []`.
 
 ### 3. Extract Functional Requirements (FRs)
@@ -122,6 +132,36 @@ Review the Architecture document for technical requirements that impact epic and
 - Security implementation requirements
 
 **IMPORTANT**: If a starter template is mentioned in Architecture, note it prominently. This will impact Epic 1 Story 1.
+
+### 5b. Extract Infrastructure and Pipeline Requirements (if documents exist)
+
+If infrastructure.md or pipeline.md were discovered, extract operational requirements that need implementation stories:
+
+**From Infrastructure Document, look for:**
+
+- IaC setup requirements (Terraform modules, CDK stacks, etc.)
+- Environment provisioning automation
+- Container orchestration setup (Dockerfiles, Helm charts, K8s manifests)
+- Secrets management implementation
+- Policy-as-code rules
+
+**From Pipeline Document, look for:**
+
+- CI/CD pipeline setup requirements (workflow files, pipeline configs)
+- Security scanning tool integration
+- Deployment automation scripts
+- Promotion gate configurations
+- Monitoring and alerting setup for pipeline health
+
+**Format as part of Additional Requirements, prefixed for clarity:**
+
+```
+- [INFRA] IaC module setup for [environment topology]
+- [INFRA] Container orchestration configuration
+- [PIPELINE] CI/CD pipeline with [stages] for [platform]
+- [PIPELINE] Deployment automation using [strategy]
+...
+```
 
 **Format Additional Requirements as:**
 

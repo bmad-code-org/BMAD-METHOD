@@ -48,9 +48,10 @@ To discover, inventory, and organize all project documents, identifying duplicat
 I will:
 
 1. Search for all required documents (PRD, Architecture, Epics, UX)
-2. Group sharded documents together
-3. Identify any duplicates (whole + sharded versions)
-4. Present findings for your confirmation"
+2. Search for optional DevOps documents (Infrastructure, Pipeline)
+3. Group sharded documents together
+4. Identify any duplicates (whole + sharded versions)
+5. Present findings for your confirmation"
 
 ### 2. Document Search Patterns
 
@@ -75,6 +76,16 @@ Search for each document type using these patterns:
 
 - Whole: `{planning_artifacts}/*ux*.md`
 - Sharded: `{planning_artifacts}/*ux*/index.md` and related files
+
+#### E. Infrastructure Documents (Optional)
+
+- Whole: `{planning_artifacts}/*infrastructure*.md`
+- Sharded: `{planning_artifacts}/*infrastructure*/index.md` and related files
+
+#### F. Pipeline Documents (Optional)
+
+- Whole: `{planning_artifacts}/*pipeline*.md`
+- Sharded: `{planning_artifacts}/*pipeline*/index.md` and related files
 
 ### 3. Organize Findings
 

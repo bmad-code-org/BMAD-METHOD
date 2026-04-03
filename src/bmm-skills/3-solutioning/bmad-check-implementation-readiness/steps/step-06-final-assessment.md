@@ -60,6 +60,37 @@ Check the {outputFile} for sections added by previous steps:
 - UX Alignment issues
 - Epic Quality violations
 
+### 2b. Infrastructure and Deployment Readiness (if documents exist)
+
+If infrastructure.md or pipeline.md were discovered in Step 1, validate operational readiness:
+
+**Infrastructure Readiness:**
+
+- IaC strategy defined (tool, state management, module design)
+- Environment topology documented (dev, staging, production)
+- Secrets management approach decided
+- Container strategy defined (if applicable)
+- Alignment with Architecture Category 5 decisions
+
+**Pipeline Readiness:**
+
+- CI/CD platform selected and pipeline stages designed
+- Deployment strategy decided (blue-green, canary, rolling, etc.)
+- Rollback procedures documented
+- Security scanning integrated into pipeline stages
+- Promotion gates defined between environments
+
+**If infrastructure/pipeline documents are MISSING but Architecture Category 5 includes infrastructure decisions:**
+
+```
+⚠️ ADVISORY: Architecture includes infrastructure decisions but no dedicated
+infrastructure or pipeline documents exist. Consider running the DevOps
+workflows (bmad-create-infrastructure, bmad-create-pipeline) before
+implementation to ensure deployment readiness.
+```
+
+Add infrastructure/deployment findings to the assessment report.
+
 ### 3. Add Final Assessment Section
 
 Append to {outputFile}:
