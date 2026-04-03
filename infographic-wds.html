@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    width: 1080px;
+    height: 1350px;
+    font-family: 'Inter', sans-serif;
+    background: #ffffff;
+    color: #2e2e2e;
+    overflow: hidden;
+  }
+
+  .header {
+    background: linear-gradient(135deg, #0a2a4a 0%, #124e86 100%);
+    padding: 48px 60px 40px;
+    color: white;
+  }
+
+  .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+  }
+
+  .logo {
+    font-size: 22px;
+    font-weight: 300;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    opacity: 0.9;
+  }
+
+  .badge {
+    font-size: 13px;
+    font-weight: 500;
+    background: rgba(255,255,255,0.15);
+    padding: 6px 16px;
+    border-radius: 20px;
+    letter-spacing: 0.05em;
+  }
+
+  .header h1 {
+    font-size: 38px;
+    font-weight: 700;
+    line-height: 1.15;
+    margin-bottom: 12px;
+  }
+
+  .header p {
+    font-size: 18px;
+    font-weight: 300;
+    opacity: 0.85;
+    line-height: 1.5;
+    max-width: 700px;
+  }
+
+  .phases {
+    padding: 36px 60px 20px;
+  }
+
+  .phase {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 6px;
+    position: relative;
+  }
+
+  .phase-number {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 700;
+    color: white;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 2;
+  }
+
+  .phase-connector {
+    position: absolute;
+    left: 81px;
+    top: 44px;
+    width: 2px;
+    height: 42px;
+    background: #e0e0e0;
+    z-index: 1;
+  }
+
+  .phase:last-child .phase-connector { display: none; }
+
+  .phase-content {
+    flex: 1;
+    padding-top: 2px;
+  }
+
+  .phase-title {
+    font-size: 17px;
+    font-weight: 600;
+    margin-bottom: 2px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .phase-agent {
+    font-size: 12px;
+    font-weight: 500;
+    padding: 2px 10px;
+    border-radius: 10px;
+    color: white;
+  }
+
+  .phase-desc {
+    font-size: 14px;
+    font-weight: 300;
+    color: #666;
+    line-height: 1.4;
+  }
+
+  /* Phase colors */
+  .phase-setup .phase-number { background: #888; }
+  .phase-brief .phase-number { background: #4a7fb5; }
+  .phase-brief .phase-agent { background: #4a7fb5; }
+  .phase-trigger .phase-number { background: #2d6da3; }
+  .phase-trigger .phase-agent { background: #2d6da3; }
+  .phase-scenario .phase-number { background: #c77dba; }
+  .phase-scenario .phase-agent { background: #c77dba; }
+  .phase-ux .phase-number { background: #a855a0; }
+  .phase-ux .phase-agent { background: #a855a0; }
+  .phase-dev .phase-number { background: #e8863a; }
+  .phase-dev .phase-agent { background: #e8863a; }
+  .phase-asset .phase-number { background: #d4a843; }
+  .phase-asset .phase-agent { background: #d4a843; }
+  .phase-ds .phase-number { background: #5cb85c; }
+  .phase-ds .phase-agent { background: #5cb85c; }
+  .phase-evo .phase-number { background: #78ac2e; }
+  .phase-evo .phase-agent { background: #78ac2e; }
+
+  .divider {
+    margin: 28px 60px;
+    border: none;
+    border-top: 1px solid #e8e8e8;
+  }
+
+  .bottom-section {
+    padding: 0 60px;
+    display: flex;
+    gap: 40px;
+  }
+
+  .bottom-left {
+    flex: 1;
+  }
+
+  .bottom-left h3 {
+    font-size: 17px;
+    font-weight: 600;
+    margin-bottom: 14px;
+    color: #124e86;
+  }
+
+  .agent-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+
+  .agent-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: white;
+    flex-shrink: 0;
+  }
+
+  .agent-info {
+    flex: 1;
+  }
+
+  .agent-name {
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .agent-role {
+    font-size: 12px;
+    color: #888;
+    font-weight: 300;
+  }
+
+  .bottom-right {
+    flex: 1;
+  }
+
+  .bottom-right h3 {
+    font-size: 17px;
+    font-weight: 600;
+    margin-bottom: 14px;
+    color: #124e86;
+  }
+
+  .feature-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .feature-check {
+    color: #78ac2e;
+    font-size: 16px;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .feature-text {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.4;
+  }
+
+  .footer {
+    margin-top: auto;
+    padding: 28px 60px;
+    background: #f8f8f8;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
+
+  .footer-left {
+    font-size: 14px;
+    font-weight: 300;
+    color: #888;
+  }
+
+  .footer-url {
+    font-size: 16px;
+    font-weight: 600;
+    color: #124e86;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div class="logo">Whiteport Design Studio</div>
+    <div class="badge">Open Source Framework</div>
+  </div>
+  <h1>From Strategy to Product<br>in 8 AI-Powered Phases</h1>
+  <p>A complete design-to-development methodology where AI agents handle strategy, UX, development, and design systems — guided by human decisions.</p>
+</div>
+
+<div class="phases">
+  <div class="phase phase-setup">
+    <div class="phase-number">0</div>
+    <div class="phase-content">
+      <div class="phase-title">Project Setup</div>
+      <div class="phase-desc">Determine project type, complexity, and tech stack</div>
+    </div>
+    <div class="phase-connector"></div>
+  </div>
+
+  <div class="phase phase-brief">
+    <div class="phase-number">1</div>
+    <div class="phase-content">
+      <div class="phase-title">Project Brief <span class="phase-agent">Saga</span></div>
+      <div class="phase-desc">Establish project context — the foundation for all design work</div>
+    </div>
+    <div class="phase-connector"></div>
+  </div>
+
+  <div class="phase phase-trigger">
+    <div class="phase-number">2</div>
+    <div class="phase-content">
+      <div class="phase-title">Trigger Mapping <span class="phase-agent">Saga</span></div>
+      <div class="phase-desc">Map business goals to user psychology — driving forces, barriers, triggers</div>
+    </div>
+    <div class="phase-connector"></div>
+  </div>
+
+  <div class="phase phase-scenario">
+    <div class="phase-number">3</div>
+    <div class="phase-content">
+      <div class="phase-title">UX Scenarios <span class="phase-agent">Freya</span></div>
+      <div class="phase-desc">Create scenario outlines from the Trigger Map — every screen grounded in user needs</div>
+    </div>
+    <div class="phase-connector"></div>
+  </div>
+
+  <div class="phase phase-ux">
+    <div class="phase-number">4</div>
+    <div class="phase-content">
+      <div class="phase-title">UX Design <span class="phase-agent">Freya</span></div>
+      <div class="phase-desc">Transform scenarios into detailed page specifications — layout, components, interactions</div>
+    </div>
+    <div class="phase-connector"></div>
+  </div>
+
+  <div class="phase phase-dev">
+    <div class="phase-number">5</div>
+    <div class="phase-content">
+      <div class="phase-title">Agentic Development</div>
+      <div class="phase-desc">AI-assisted build, test, and ship — from specification to working product</div>
+    </div>
+    <div class="phase-connector"></div>
+  </div>
+
+  <div class="phase phase-asset">
+    <div class="phase-number">6</div>
+    <div class="phase-content">
+      <div class="phase-title">Asset Generation</div>
+      <div class="phase-desc">AI-powered creative production — images, icons, videos, content, Figma integration</div>
+    </div>
+    <div class="phase-connector"></div>
+  </div>
+
+  <div class="phase phase-ds">
+    <div class="phase-number">7</div>
+    <div class="phase-content">
+      <div class="phase-title">Design System</div>
+      <div class="phase-desc">Create, import, and maintain tokens, components, and patterns</div>
+    </div>
+    <div class="phase-connector"></div>
+  </div>
+
+  <div class="phase phase-evo">
+    <div class="phase-number">8</div>
+    <div class="phase-content">
+      <div class="phase-title">Product Evolution</div>
+      <div class="phase-desc">Brownfield improvements — the full pipeline in miniature for existing products</div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<div class="bottom-section">
+  <div class="bottom-left">
+    <h3>AI Agents</h3>
+    <div class="agent-row">
+      <div class="agent-icon" style="background: #2d6da3;">📚</div>
+      <div class="agent-info">
+        <div class="agent-name">Saga</div>
+        <div class="agent-role">Strategic Analyst — Phases 1–2</div>
+      </div>
+    </div>
+    <div class="agent-row">
+      <div class="agent-icon" style="background: #a855a0;">✨</div>
+      <div class="agent-info">
+        <div class="agent-name">Freya</div>
+        <div class="agent-role">UX Designer — Phases 3–4</div>
+      </div>
+    </div>
+    <div class="agent-row">
+      <div class="agent-icon" style="background: #e8863a;">🔮</div>
+      <div class="agent-info">
+        <div class="agent-name">Mimir</div>
+        <div class="agent-role">Development — Phase 5</div>
+      </div>
+    </div>
+    <div class="agent-row">
+      <div class="agent-icon" style="background: #5cb85c;">🍎</div>
+      <div class="agent-info">
+        <div class="agent-name">Idunn</div>
+        <div class="agent-role">Validation & Quality</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-right">
+    <h3>Why WDS?</h3>
+    <div class="feature-item">
+      <div class="feature-check">✓</div>
+      <div class="feature-text"><strong>Strategy-first</strong> — Trigger Map grounds every decision in real user psychology</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-check">✓</div>
+      <div class="feature-text"><strong>Human-guided AI</strong> — Agents propose, humans decide. Full control, 10x speed</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-check">✓</div>
+      <div class="feature-text"><strong>Shared brain</strong> — Design Space keeps all knowledge searchable and connected</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-check">✓</div>
+      <div class="feature-text"><strong>Full pipeline</strong> — Strategy to design system, not just one piece</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-check">✓</div>
+      <div class="feature-text"><strong>Open source</strong> — MIT licensed, vendor independent, any AI model</div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <div class="footer-left">Whiteport Design Studio — Open Source AI Design Framework</div>
+  <div class="footer-url">whiteport.com/wds</div>
+</div>
+
+</body>
+</html>

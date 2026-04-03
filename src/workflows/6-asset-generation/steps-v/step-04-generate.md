@@ -63,7 +63,7 @@ Include: duration, subject, movement, mood, style keywords, color palette, dimen
 
 ### 3. Select Service
 
-For AI video: [G] Generate via MCP, [E] Export prompts. For CSS/SVG: [C] Generate code, [S] Spec document.
+For AI video: [G] Generate via Nano Banana (`mcp__nanobanana__generate_image` — supports 4K, style references via `input_image_path_1/2/3`, model tiers flash/nb2/pro, negative prompts), [E] Export prompts. For CSS/SVG: [C] Generate code, [S] Spec document.
 
 ### 4. Generate and Preview
 

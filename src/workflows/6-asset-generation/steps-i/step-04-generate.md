@@ -68,7 +68,7 @@ For each group: generate first icon, get approval, use as reference for rest of 
 
 ### 3. Select Service
 
-Present options: [G] Generate via MCP (best for custom icons), [E] Export prompts (for external generation), [L] Library match (search open-source icon libraries).
+Present options: [G] Generate via Nano Banana (`mcp__nanobanana__generate_image` — supports 4K, style references via `input_image_path_1/2/3`, model tiers flash/nb2/pro, negative prompts), [E] Export prompts (for external generation), [L] Library match (search open-source icon libraries).
 
 ### 4. Optimize SVG Output
 

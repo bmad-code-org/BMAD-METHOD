@@ -64,7 +64,7 @@ Grid style: generate all states of one variant in a single prompt. Individual st
 
 ### 4. Select Service
 
-[G] Generate via MCP or [E] Export prompts.
+[G] Generate via Nano Banana (`mcp__nanobanana__generate_image` — supports 4K, style references via `input_image_path_1/2/3`, model tiers flash/nb2/pro, negative prompts) or [E] Export prompts.
 
 ### 5. Track Progress
 

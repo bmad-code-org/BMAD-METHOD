@@ -1,6 +1,6 @@
 {
   "$schema": "./sync-manifest.schema.json",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Controls which agent instructions are synced to Design Space",
   "updated": "2026-03-24",
 
@@ -15,196 +15,228 @@
       "agent": "saga",
       "type": "persona",
       "file": "src/agents/saga-analyst.agent.yaml",
-      "channel": "stable"
+      "channel": "stable",
+      "changelog": "Saga persona definition — strategic analyst, discovery partner"
     },
     {
       "agent": "freya",
       "type": "persona",
       "file": "src/agents/freya-ux.agent.yaml",
-      "channel": "stable"
+      "channel": "stable",
+      "changelog": "Freya persona definition — UX designer, experience shaper"
     },
     {
       "agent": "saga",
       "type": "activation",
       "file": "src/skills/saga.activation.md",
-      "channel": "stable"
+      "channel": "stable",
+      "changelog": "Full activation sequence with multi-project branching and status reporting"
     },
     {
       "agent": "freya",
       "type": "activation",
       "file": "src/skills/freya.activation.md",
-      "channel": "stable"
+      "channel": "stable",
+      "changelog": "Full activation sequence with phase routing and prerequisites check"
     },
     {
       "agent": "saga",
       "type": "skill",
       "file": "src/skills/saga/SKILL.md",
-      "channel": "stable"
+      "channel": "stable",
+      "changelog": "Saga capabilities: Product Brief (9 steps), Trigger Mapping, Alignment Signoff"
     },
     {
       "agent": "freya",
       "type": "skill",
       "file": "src/skills/freya/SKILL.md",
-      "channel": "stable"
+      "channel": "stable",
+      "changelog": "Freya capabilities: UX Scenarios, Design Loop (9 steps), Asset Generation, Design System"
     },
     {
       "agent": "*",
       "type": "skill",
       "file": "src/skills/design-space/SKILL.md",
-      "channel": "stable"
+      "channel": "stable",
+      "changelog": "Design Space integration: search, capture, messaging, work orders, agent presence"
     },
 
     {
       "agent": "saga",
       "type": "reference",
       "file": "src/skills/saga/references/discovery-conversation.md",
-      "channel": "stable"
+      "channel": "stable",
+      "changelog": "Conversational techniques for Phase 1 discovery — one question at a time"
     },
     {
       "agent": "saga",
       "type": "reference",
       "file": "src/skills/saga/references/trigger-mapping.md",
-      "channel": "stable"
+      "channel": "stable",
+      "changelog": "Phase 2 methodology: user psychology, driving forces, barrier mapping, archetypes"
     },
     {
       "agent": "saga",
       "type": "reference",
       "file": "src/skills/saga/references/dream-up-approach.md",
-      "channel": "stable"
+      "channel": "stable",
+      "changelog": "Dialog/Suggest/Dream mode selection framework for artifact generation"
     },
     {
       "agent": "saga",
       "type": "reference",
       "file": "src/skills/saga/references/strategic-documentation.md",
-      "channel": "stable"
+      "channel": "stable",
+      "changelog": "How to structure briefs, maintain quality, and format strategic artifacts"
     },
     {
       "agent": "saga",
       "type": "reference",
       "file": "src/skills/saga/references/conversational-followups.md",
-      "channel": "stable"
+      "channel": "stable",
+      "changelog": "Follow-up techniques, deep-dive patterns, and probing strategies"
     },
     {
       "agent": "saga",
       "type": "reference",
       "file": "src/skills/saga/references/seo-strategy-guide.md",
-      "channel": "stable"
+      "channel": "stable",
+      "changelog": "SEO keyword strategy and search intent mapping for product positioning"
     },
     {
       "agent": "saga",
       "type": "reference",
       "file": "src/skills/saga/references/content-structure-principles.md",
-      "channel": "stable"
+      "channel": "stable",
+      "changelog": "Information architecture principles for content organization"
     },
     {
       "agent": "saga",
       "type": "reference",
       "file": "src/skills/saga/references/inspiration-analysis.md",
-      "channel": "stable"
+      "channel": "stable",
+      "changelog": "Competitive analysis and visual direction methodology"
     },
     {
       "agent": "saga",
       "type": "reference",
       "file": "src/skills/saga/references/working-with-existing-materials.md",
-      "channel": "stable"
+      "channel": "stable",
+      "changelog": "How to analyze client-provided PRDs, briefs, and existing documentation"
     },
 
     {
       "agent": "freya",
       "type": "reference",
       "file": "src/skills/freya/references/strategic-design.md",
-      "channel": "stable"
+      "channel": "stable",
+      "changelog": "Design decision framework tied to business goals and trigger map"
     },
     {
       "agent": "freya",
       "type": "reference",
       "file": "src/skills/freya/references/specification-quality.md",
-      "channel": "stable"
+      "channel": "stable",
+      "changelog": "How to write complete, unambiguous page specifications"
     },
     {
       "agent": "freya",
       "type": "reference",
       "file": "src/skills/freya/references/agentic-development.md",
-      "channel": "stable"
+      "channel": "stable",
+      "changelog": "Handoff to development agents — spec format, expectations, feedback loops"
     },
     {
       "agent": "freya",
       "type": "reference",
       "file": "src/skills/freya/references/content-creation.md",
-      "channel": "stable"
+      "channel": "stable",
+      "changelog": "Content strategy within design work — copy, tone, structure"
     },
     {
       "agent": "freya",
       "type": "reference",
       "file": "src/skills/freya/references/design-system.md",
-      "channel": "stable"
+      "channel": "stable",
+      "changelog": "Design token extraction and component library building"
     },
     {
       "agent": "freya",
       "type": "reference",
       "file": "src/skills/freya/references/meta-content-guide.md",
-      "channel": "stable"
+      "channel": "stable",
+      "changelog": "Metadata, SEO tags, and information architecture for pages"
     },
 
     {
       "agent": "saga",
       "type": "workflow",
       "file": "src/workflows/0-alignment-signoff/workflow.md",
-      "channel": "stable"
+      "channel": "stable",
+      "changelog": "Phase 0: Stakeholder alignment before strategic work begins"
     },
     {
       "agent": "*",
       "type": "workflow",
       "file": "src/workflows/0-project-setup/workflow.md",
-      "channel": "stable"
+      "channel": "stable",
+      "changelog": "Phase 0: Project initialization and configuration"
     },
     {
       "agent": "saga",
       "type": "workflow",
       "file": "src/workflows/1-project-brief/workflow.md",
-      "channel": "stable"
+      "channel": "stable",
+      "changelog": "Phase 1: Strategic discovery — product brief with 9-step conversation"
     },
     {
       "agent": "saga",
       "type": "workflow",
       "file": "src/workflows/2-trigger-mapping/workflow.md",
-      "channel": "stable"
+      "channel": "stable",
+      "changelog": "Phase 2: User psychology mapping — personas, triggers, barriers, driving forces"
     },
     {
       "agent": "freya",
       "type": "workflow",
       "file": "src/workflows/3-scenarios/workflow.md",
-      "channel": "stable"
+      "channel": "stable",
+      "changelog": "Phase 3: UX scenarios from trigger map using Dialog/Suggest/Dream modes"
     },
     {
       "agent": "freya",
       "type": "workflow",
       "file": "src/workflows/4-ux-design/workflow.md",
-      "channel": "stable"
+      "channel": "stable",
+      "changelog": "Phase 4: Design Loop — 9 steps from discussion to token extraction"
     },
     {
       "agent": "mimir",
       "type": "workflow",
       "file": "src/workflows/5-agentic-development/workflow.md",
-      "channel": "stable"
+      "channel": "stable",
+      "changelog": "Phase 5: Development handoff and agentic implementation"
     },
     {
       "agent": "freya",
       "type": "workflow",
       "file": "src/workflows/6-asset-generation/workflow.md",
-      "channel": "stable"
+      "channel": "stable",
+      "changelog": "Phase 6: Visual and text asset creation"
     },
     {
       "agent": "freya",
       "type": "workflow",
       "file": "src/workflows/7-design-system/workflow.md",
-      "channel": "stable"
+      "channel": "stable",
+      "changelog": "Phase 7: Component library and design tokens (optional)"
     },
     {
       "agent": "idunn",
       "type": "workflow",
       "file": "src/workflows/8-product-evolution/workflow.md",
-      "channel": "stable"
+      "channel": "stable",
+      "changelog": "Phase 8: Post-launch iteration, monitoring, and continuous improvement"
     }
   ]
 }

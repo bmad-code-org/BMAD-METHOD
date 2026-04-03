@@ -60,7 +60,7 @@ Per batch: start with hero/anchor, present for approval, chain approved result f
 
 ### 3. Select Service
 
-[G] Generate via MCP, [E] Export prompts (save to `{output_folder}/E-Assets/images/prompts/`), [U] Upload existing (user provides, skip generation).
+[G] Generate via Nano Banana (`mcp__nanobanana__generate_image` — supports 4K, style references via `input_image_path_1/2/3`, model tiers flash/nb2/pro, negative prompts), [E] Export prompts (save to `{output_folder}/E-Assets/images/prompts/`), [U] Upload existing (user provides, skip generation).
 
 ### 4. Handle Variations
 
