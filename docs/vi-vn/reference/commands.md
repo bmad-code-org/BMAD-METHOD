@@ -54,12 +54,12 @@ Mỗi skill là một thư mục chứa file `SKILL.md`. Ví dụ với Claude C
 │   └── SKILL.md
 ├── bmad-create-prd/
 │   └── SKILL.md
-├── bmad-dev/
+├── bmad-agent-dev/
 │   └── SKILL.md
 └── ...
 ```
 
-Tên thư mục quyết định tên skill trong IDE. Ví dụ thư mục `bmad-dev/` sẽ đăng ký skill `bmad-dev`.
+Tên thư mục quyết định tên skill trong IDE. Ví dụ thư mục `bmad-agent-dev/` sẽ đăng ký skill `bmad-agent-dev`.
 
 ## Cách Tìm Danh Sách Skill Của Bạn
 
@@ -79,10 +79,9 @@ Agent skills nạp một persona AI chuyên biệt với vai trò, phong cách g
 
 | Ví dụ skill | Agent | Vai trò |
 | --- | --- | --- |
-| `bmad-dev` | Amelia (Developer) | Triển khai story với mức tuân thủ đặc tả nghiêm ngặt |
+| `bmad-agent-dev` | Amelia (Developer) | Triển khai story với mức tuân thủ đặc tả nghiêm ngặt |
 | `bmad-pm` | John (Product Manager) | Tạo và kiểm tra PRD |
 | `bmad-architect` | Winston (Architect) | Thiết kế kiến trúc hệ thống |
-| `bmad-sm` | Bob (Scrum Master) | Quản lý sprint và story |
 
 Xem [Agents](./agents.md) để biết danh sách đầy đủ các agent mặc định và trigger của chúng.
 
@@ -125,7 +124,7 @@ Module lõi có 11 công cụ tích hợp sẵn — review, nén tài liệu, br
 
 ## Quy Ước Đặt Tên
 
-Mọi skill đều dùng tiền tố `bmad-` theo sau là tên mô tả, ví dụ `bmad-dev`, `bmad-create-prd`, `bmad-help`. Xem [Modules](./modules.md) để biết các module hiện có.
+Mọi skill đều dùng tiền tố `bmad-` theo sau là tên mô tả, ví dụ `bmad-agent-dev`, `bmad-create-prd`, `bmad-help`. Xem [Modules](./modules.md) để biết các module hiện có.
 
 ## Khắc Phục Sự Cố
 

@@ -73,7 +73,7 @@ Những ID công cụ có thể dùng với cờ `--tools`:
 
 **Khuyến dùng:** `claude-code`, `cursor`
 
-Chạy `npx bmad-method install` một lần ở chế độ tương tác để xem danh sách đầy đủ hiện tại của các công cụ được hỗ trợ, hoặc xem [cấu hình platform codes](https://github.com/bmad-code-org/BMAD-METHOD/blob/main/tools/cli/installers/lib/ide/platform-codes.yaml).
+Chạy `npx bmad-method install` một lần ở chế độ tương tác để xem danh sách đầy đủ hiện tại của các công cụ được hỗ trợ, hoặc xem [cấu hình platform codes](https://github.com/bmad-code-org/BMAD-METHOD/blob/main/tools/installer/ide/platform-codes.yaml).
 
 ## Các chế độ cài đặt
 

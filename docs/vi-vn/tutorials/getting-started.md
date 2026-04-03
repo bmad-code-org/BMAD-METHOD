@@ -181,7 +181,7 @@ Sau khi lập kế hoạch xong, chuyển sang implementation. **Mỗi workflow 
 
 ### Khởi Tạo Sprint Planning
 
-Gọi **SM agent** (`bmad-agent-sm`) và chạy `bmad-sprint-planning` (`bmad-sprint-planning`). Workflow này sẽ tạo `sprint-status.yaml` để theo dõi toàn bộ epic và story.
+Gọi **Developer agent** (`bmad-agent-dev`) và chạy `bmad-sprint-planning` (`bmad-sprint-planning`). Workflow này sẽ tạo `sprint-status.yaml` để theo dõi toàn bộ epic và story.
 
 ### Chu Trình Xây Dựng
 
@@ -189,11 +189,11 @@ Với mỗi story, lặp lại chu trình này trong chat mới:
 
 | Bước | Agent | Workflow | Lệnh | Mục đích |
 | ---- | ----- | -------------- | -------------------------- | ---------------------------------- |
-| 1 | SM | `bmad-create-story` | `bmad-create-story` | Tạo file story từ epic |
+| 1 | DEV | `bmad-create-story` | `bmad-create-story` | Tạo file story từ epic |
 | 2 | DEV | `bmad-dev-story` | `bmad-dev-story` | Triển khai story |
 | 3 | DEV | `bmad-code-review` | `bmad-code-review` | Kiểm tra chất lượng *(khuyến nghị)* |
 
-Sau khi hoàn tất tất cả story trong một epic, hãy gọi **SM agent** (`bmad-agent-sm`) và chạy `bmad-retrospective` (`bmad-retrospective`).
+Sau khi hoàn tất tất cả story trong một epic, hãy gọi **Developer agent** (`bmad-agent-dev`) và chạy `bmad-retrospective` (`bmad-retrospective`).
 
 ## Bạn Đã Hoàn Thành Những Gì
 
@@ -230,8 +230,8 @@ your-project/
 | `bmad-generate-project-context` | `bmad-generate-project-context` | Analyst | Tạo file project context |
 | `bmad-create-epics-and-stories` | `bmad-create-epics-and-stories` | PM | Phân rã PRD thành epics |
 | `bmad-check-implementation-readiness` | `bmad-check-implementation-readiness` | Architect | Kiểm tra độ nhất quán của kế hoạch |
-| `bmad-sprint-planning` | `bmad-sprint-planning` | SM | Khởi tạo theo dõi sprint |
-| `bmad-create-story` | `bmad-create-story` | SM | Tạo file story |
+| `bmad-sprint-planning` | `bmad-sprint-planning` | DEV | Khởi tạo theo dõi sprint |
+| `bmad-create-story` | `bmad-create-story` | DEV | Tạo file story |
 | `bmad-dev-story` | `bmad-dev-story` | DEV | Triển khai một story |
 | `bmad-code-review` | `bmad-code-review` | DEV | Review phần code đã triển khai |
 
@@ -241,7 +241,7 @@ your-project/
 Chỉ với nhánh BMad Method và Enterprise. Quick Flow bỏ qua bước kiến trúc và chuyển thẳng từ spec sang implementation.
 
 **Tôi có thể đổi kế hoạch về sau không?**
-Có. SM agent có workflow `bmad-correct-course` (`bmad-correct-course`) để xử lý thay đổi phạm vi.
+Có. Workflow `bmad-correct-course` (`bmad-correct-course`) xử lý thay đổi phạm vi giữa chừng.
 
 **Nếu tôi muốn brainstorming trước thì sao?**
 Gọi Analyst agent (`bmad-agent-analyst`) và chạy `bmad-brainstorming` (`bmad-brainstorming`) trước khi bắt đầu PRD.
