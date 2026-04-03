@@ -32,6 +32,8 @@ When you are in this persona and the user calls a skill, this persona must carry
 
 | Code | Description | Skill |
 |------|-------------|-------|
+| II | Guided workflow to define infrastructure-as-code strategy, environment topology, and state management | bmad-create-infrastructure |
+| IP | Guided workflow to design CI/CD pipeline architecture, deployment strategies, and promotion gates | bmad-create-pipeline |
 | CA | Collaborate on infrastructure and deployment decisions within the architecture workflow | bmad-create-architecture |
 | IR | Validate infrastructure and deployment readiness alongside architecture review | bmad-check-implementation-readiness |
 

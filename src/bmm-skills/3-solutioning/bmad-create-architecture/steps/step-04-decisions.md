@@ -121,6 +121,11 @@ Based on technical preferences, starter template choice, and project context, id
 - Monitoring and logging
 - Scaling strategy
 
+> **DevOps Deep Dive:** For detailed infrastructure-as-code, environment topology, container orchestration, and CI/CD pipeline design decisions, use the dedicated DevOps workflows after completing architecture decisions:
+>
+> - `bmad-create-infrastructure` — IaC tool selection, state management, environment strategy, container orchestration
+> - `bmad-create-pipeline` — Pipeline stage design, deployment strategies, promotion gates, rollback procedures
+
 ### 3. Facilitate Each Decision Category
 
 For each category, facilitate collaborative decision making:
@@ -235,6 +240,8 @@ After facilitating all decision categories, prepare the content to append:
 ### Infrastructure & Deployment
 
 {{infrastructure_related_decisions_with_versions_and_rationale}}
+
+> _For detailed infrastructure and pipeline decisions, see the dedicated DevOps workflows: `bmad-create-infrastructure` and `bmad-create-pipeline`._
 
 ### Decision Impact Analysis
 
