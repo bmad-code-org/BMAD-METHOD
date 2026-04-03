@@ -51,7 +51,7 @@ C-UX-Scenarios/
 **Agent trigger:** `UX` (Freya)
 **Page template:** `_bmad/wds/workflows/4-ux-design/templates/page-specification.template.md`
 **Scenario template:** `_bmad/wds/workflows/4-ux-design/templates/scenario-overview.template.md`
-**Quality guide:** `_bmad/wds/data/agent-guides/freya/specification-quality.md`
+**Quality guide:** `src/skills/freya/references/specification-quality.md`
 **Object types:** `_bmad/wds/workflows/4-ux-design/object-types/`
 
 ### Specification Audit (Freya)

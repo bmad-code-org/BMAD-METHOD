@@ -674,7 +674,7 @@ Add to Freya's menu:
 - **Accessibility Audit:** `./templates/instructions/accessibility-audit.workflow.md`
 
 ### Guides
-- **Specification Quality Guide:** `../../data/agent-guides/freya/specification-quality.md`
+- **Specification Quality Guide:** `../../skills/freya/references/specification-quality.md`
 - **Accessibility Guidelines:** WCAG 2.1 Level AA
 
 ---

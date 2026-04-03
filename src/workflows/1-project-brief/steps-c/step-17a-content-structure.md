@@ -33,7 +33,7 @@ Capture the client's vision for what the product should contain - pages, section
 - Focus: Pages, sections, content priorities, navigation principles - NOT detailed specifications
 - FORBIDDEN: Do not create detailed page specifications - capture principles and vision
 - Approach: Open conversation, surface priorities, capture navigation principles, document constraints and clarity level
-- **Load agent guide:** `src/data/agent-guides/saga/content-structure-principles.md` for full strategic context
+- **Load agent guide:** `src/skills/saga/references/content-structure-principles.md` for full strategic context
 
 ## EXECUTION PROTOCOLS:
 - Primary goal: Content structure principles captured at the client's level of detail

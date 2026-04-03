@@ -95,7 +95,7 @@ Create session log at {output_folder}/_progress/agent-experiences/{date}-trigger
 Execute Layer 1: Learn WDS Form (Static - loaded once)
 - Read docs/method/phase-2-trigger-mapping-guide.md
 - Read docs/quick-start/02-trigger-mapping.md
-- Read src/data/agent-guides/saga/trigger-mapping.md
+- Read src/skills/saga/references/trigger-mapping.md
 - Read docs/models/impact-effect-mapping.md
 - Read docs/method/dream-up-rubric-phase-2.md
 - Internalize: Structure, quality criteria, common mistakes, best practices

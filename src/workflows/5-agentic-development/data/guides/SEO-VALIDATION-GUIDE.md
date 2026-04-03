@@ -31,7 +31,7 @@ Before running validation, gather:
 
 1. **Page specification** — SEO & Search section (keywords, URL, headings, meta)
 2. **Project brief** — SEO Strategy section (page-keyword map, structured data plan)
-3. **SEO Strategy Guide** — `../../data/agent-guides/saga/seo-strategy-guide.md`
+3. **SEO Strategy Guide** — `../../skills/saga/references/seo-strategy-guide.md`
 
 ---
 
@@ -541,10 +541,10 @@ These are all preventable by validating during development.
 ## Related Resources
 
 - **Inline Testing Guide:** `INLINE-TESTING-GUIDE.md` — General Puppeteer verification
-- **SEO Strategy Guide:** `../../data/agent-guides/saga/seo-strategy-guide.md` — SEO reference
+- **SEO Strategy Guide:** `../../skills/saga/references/seo-strategy-guide.md` — SEO reference
 - **SEO Content Instructions:** `../../4-ux-design/templates/instructions/seo-content.instructions.md` — Spec-level SEO
-- **Specification Quality:** `../../data/agent-guides/freya/specification-quality.md` — Quality checklist
-- **Meta Content Guide:** `../../data/agent-guides/freya/meta-content-guide.md` — Meta tag details
+- **Specification Quality:** `../../skills/freya/references/specification-quality.md` — Quality checklist
+- **Meta Content Guide:** `../../skills/freya/references/meta-content-guide.md` — Meta tag details
 
 ---
 

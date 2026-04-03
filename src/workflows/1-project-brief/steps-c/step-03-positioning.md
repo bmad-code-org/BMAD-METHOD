@@ -37,7 +37,7 @@ Help the user explore and articulate their positioning through natural conversat
 ## EXECUTION PROTOCOLS:
 - 🎯 Produce a clear positioning statement with all components
 - 💾 Update `dialog/07-positioning.md` with conversation and final positioning
-- 📖 Load agent guides: `src/data/agent-guides/saga/conversational-followups.md` and `src/data/agent-guides/saga/discovery-conversation.md`
+- 📖 Load agent guides: `src/skills/saga/references/conversational-followups.md` and `src/skills/saga/references/discovery-conversation.md`
 - 🚫 Avoid asking for a positioning statement directly
 
 ## CONTEXT BOUNDARIES:

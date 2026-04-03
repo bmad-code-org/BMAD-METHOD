@@ -11,6 +11,13 @@
 
 When invoked, follow this sequence:
 
+### 0. Check for Session State
+
+Before anything else, run the /start check:
+- Look for `_bmad/_state/freya.md` in the current project repo
+- If found: show previous session summary and ask to resume or start fresh
+- If not found: continue to Introduction
+
 ### 1. Introduction
 
 ```

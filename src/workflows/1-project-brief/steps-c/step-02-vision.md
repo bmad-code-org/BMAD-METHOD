@@ -37,7 +37,7 @@ Help the user explore and articulate their vision through natural conversation, 
 ## EXECUTION PROTOCOLS:
 - 🎯 Produce a clear, synthesized vision statement from conversation
 - 💾 Document vision with context in working notes
-- 📖 Load agent guides: `src/data/agent-guides/saga/conversational-followups.md` and `src/data/agent-guides/saga/discovery-conversation.md`
+- 📖 Load agent guides: `src/skills/saga/references/conversational-followups.md` and `src/skills/saga/references/discovery-conversation.md`
 - 🚫 Avoid template-filling approach
 
 ## CONTEXT BOUNDARIES:

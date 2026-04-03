@@ -72,7 +72,7 @@ D-Design-System/
 **Agent trigger:** `DS` (Freya)
 **Router:** `_bmad/wds/workflows/7-design-system/design-system-router.md`
 **Templates:** `_bmad/wds/workflows/7-design-system/templates/`
-**Guide:** `_bmad/wds/data/agent-guides/freya/design-system.md`
+**Guide:** `src/skills/freya/references/design-system.md`
 
 **Before creating any component:**
 1. Check if it already exists in the chosen component library

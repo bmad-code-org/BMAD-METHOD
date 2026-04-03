@@ -33,7 +33,7 @@ Analyze reference sites with the client to document concrete visual/UX preferenc
 - Focus: Collect references, analyze together, synthesize design principles
 - FORBIDDEN: Do not assume preferences - always ask WHY the client likes something
 - Approach: Collect URLs, analyze each together, extract principles, synthesize patterns
-- **Load agent guide:** `src/data/agent-guides/saga/inspiration-analysis.md` for full strategic context
+- **Load agent guide:** `src/skills/saga/references/inspiration-analysis.md` for full strategic context
 
 ## EXECUTION PROTOCOLS:
 - Primary goal: Reference sites analyzed with concrete preferences documented

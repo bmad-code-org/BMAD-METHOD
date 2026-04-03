@@ -50,7 +50,10 @@
     "release:watch": "gh run watch",
     "test": "npm run test:schemas && npm run validate:schemas && npm run lint && npm run lint:md && npm run format:check",
     "test:schemas": "node test/test-agent-schema.js",
-    "validate:schemas": "node test/validate-agent-schema.js"
+    "validate:schemas": "node test/validate-agent-schema.js",
+    "wds:page-spec": "node tools/generators/wds-page-spec.js",
+    "wds:setup": "node tools/generators/wds-setup.js",
+    "wds:validate": "node tools/generators/wds-validate.js"
   },
   "lint-staged": {
     "*.{js,cjs,mjs}": [

@@ -338,7 +338,7 @@
 ## Integration with Workflows
 
 **Step files should:**
-1. Reference this guide: `Load: src/data/agent-guides/saga/conversational-followups.md`
+1. Reference this guide: `Load: src/skills/saga/references/conversational-followups.md`
 2. Specify which signals to listen for in that step's context
 3. Include step-specific follow-up examples
 4. Mandate reflection checkpoint before moving forward

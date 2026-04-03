@@ -64,7 +64,7 @@ If the user provides or has provided existing materials (PRD, brief, research, w
 
 **MANDATORY when `existing_materials.has_materials` is true or when the user provides documents during this step.**
 
-Load and follow `src/data/agent-guides/saga/working-with-existing-materials.md` — specifically the **Material Analysis Phase** (Steps A through D).
+Load and follow `src/skills/saga/references/working-with-existing-materials.md` — specifically the **Material Analysis Phase** (Steps A through D).
 
 This means:
 1. **Read** every provided document completely

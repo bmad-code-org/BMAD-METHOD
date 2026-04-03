@@ -17,7 +17,7 @@ Listen for signals and ask follow-ups until you capture all positioning componen
 
 ## Conversational Follow-Up Patterns
 
-Reference: `src/data/agent-guides/saga/conversational-followups.md`
+Reference: `src/skills/saga/references/conversational-followups.md`
 
 ### If They Mention TARGET CUSTOMERS
 

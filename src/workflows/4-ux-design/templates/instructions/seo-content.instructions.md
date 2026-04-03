@@ -155,8 +155,8 @@ Add this section to the page specification:
 ## Related
 
 - [Meta Content Instructions](meta-content.instructions.md) — Detailed meta content specification
-- [SEO Strategy Guide](../../../data/agent-guides/saga/seo-strategy-guide.md) — Comprehensive SEO reference
-- [Specification Quality](../../../data/agent-guides/freya/specification-quality.md) — Quality checklist
+- [SEO Strategy Guide](../../../skills/saga/references/seo-strategy-guide.md) — Comprehensive SEO reference
+- [Specification Quality](../../../skills/freya/references/specification-quality.md) — Quality checklist
 
 ---
 

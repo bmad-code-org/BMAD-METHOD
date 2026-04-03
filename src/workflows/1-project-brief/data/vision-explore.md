@@ -8,7 +8,7 @@ Listen for signals and ask follow-up questions until you capture the essence of 
 
 ### 1. Use Conversational Follow-Up Patterns
 
-Reference: `src/data/agent-guides/saga/conversational-followups.md`
+Reference: `src/skills/saga/references/conversational-followups.md`
 
 Listen for signals and respond:
 

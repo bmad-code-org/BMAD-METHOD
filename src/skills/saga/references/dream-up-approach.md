@@ -92,7 +92,7 @@ Choose: [W] Workshop | [S] Suggest | [D] Dream
 ```
 docs/method/phase-2-trigger-mapping-guide.md
 docs/quick-start/02-trigger-mapping.md
-src/data/agent-guides/saga/trigger-mapping.md
+src/skills/saga/references/trigger-mapping.md
 docs/models/impact-effect-mapping.md
 docs/method/dream-up-rubric-phase-2.md
 ```
@@ -155,14 +155,113 @@ docs/method/dream-up-rubric-phase-2.md
 
 ### For Phase 3 (Scenarios)
 
-**Load these WDS learning materials:**
-```
-src/workflows/3-scenarios/data/quality-checklist.md
-src/workflows/3-scenarios/data/scenario-outline-template.md
-src/workflows/3-scenarios/data/validation-standards.md
+**Learn and internalize the following WDS scenario standards:**
+
+#### Scenario Outline Template
+
+Use this structure when creating scenario outlines from the 8-question dialog:
+
+```markdown
+# [NN]: [Persona Name]'s [Purpose]
+
+**Project:** [project_name]
+**Created:** [date]
+**Method:** Whiteport Design Studio (WDS)
+
+---
+
+## Transaction (Q1)
+
+**What this scenario covers:**
+[The key transaction — stated as user purpose, not feature name]
+
+---
+
+## Business Goal (Q2)
+
+**Goal:** [Which specific business goal this serves]
+**Objective:** [Objective reference from Trigger Map]
+
+---
+
+## User & Situation (Q3)
+
+**Persona:** [Name] ([Priority level: Primary/Secondary/Tertiary])
+**Situation:** [Real-life context — who they are, where they are, what's happening]
+
+---
+
+## Driving Forces (Q4)
+
+**Hope:** [What they're hoping to find or achieve — one sentence]
+
+**Worry:** [What they're afraid of or want to avoid — one sentence]
+
+> CONSTRAINT: One sentence per component. Phrases, not paragraphs.
+
+---
+
+## Device & Starting Point (Q5 + Q6)
+
+**Device:** [Mobile / Desktop / Tablet]
+**Entry:** [How they actually arrive] — max 2 sentences
+
+---
+
+## Best Outcome (Q7)
+
+**User Success:**
+[Tangible, measurable outcome the user achieves]
+
+**Business Success:**
+[Specific, measurable result the business gets]
+
+---
+
+## Shortest Path (Q8)
+
+[Linear sunshine path — NO branches, NO "if" statements. Minimum viable steps.]
+
+1. **[Page Name]** — [What user sees/does/achieves at this step]
+2. **[Page Name]** — [What user sees/does/achieves at this step]
+3. **[Page Name]** — [What user sees/does/achieves at this step] ✓
+
+---
+
+## Trigger Map Connections
+
+**Persona:** [Name] ([Priority level])
+
+**Driving Forces Addressed:**
+- ✅ **Want:** [Specific positive driver from Trigger Map]
+- ❌ **Fear:** [Specific negative driver from Trigger Map]
+
+**Business Goal:** [Specific goal + objective from Trigger Map]
+
+---
+
+## Scenario Steps
+
+Steps are outlined one at a time after scenario creation. The first step is processed automatically.
+
+| Step | Folder | Purpose | Exit Action |
+|------|--------|---------|-------------|
+| [NN].1 | `[NN].1-[page-slug]/` | [Step purpose] | [Interaction that leads to next step] |
+| [NN].2 | `[NN].2-[page-slug]/` | [Step purpose] | [Interaction that leads to next step] |
+| [NN].3 | `[NN].3-[page-slug]/` | [Step purpose] | [Final — scenario success] ✓ |
+
+**First step** ([NN].1) includes full entry context (Q3 + Q4 + Q5 + Q6).
+**On-step interactions** (that don't leave the step) are documented as storyboard items within each page spec.
 ```
 
-**Learn and internalize:**
+**Quality reminders when filling the template:**
+- **Transaction** — Is this a real user journey? Browsing content page-by-page counts. Any meaningful path with intent.
+- **Driving Forces** — Can you FEEL the user's state? "Interested" is not enough. "Panicked because family vacation is at risk" is.
+- **Best Outcome** — "Get more customers" fails. "Reduce info calls by 40% by giving tourists the info they need online" passes.
+- **Shortest Path** — Count the steps. Can you remove any? Each step must justify its existence.
+- **Trigger Map** — Don't invent a user. Use the actual persona with their actual driving forces.
+
+---
 
 #### Structure Requirements
 - Scenario has 7 required components (Name, Core Feature, Entry Point, Mental State, Success Goals, Shortest Path, Trigger Map Connections)
@@ -171,7 +270,7 @@ src/workflows/3-scenarios/data/validation-standards.md
 - Paths must be linear (zero branches, minimum viable steps)
 - Success goals must be mutual (user + business, both measurable)
 
-#### Quality Criteria (from quality-checklist.md)
+#### Quality Criteria
 1. **Persona Alignment** — Serves specific Trigger Map persona
 2. **Mental State Richness** — Visceral, not generic
 3. **Mutual Success Clarity** — Both specific and measurable
@@ -699,14 +798,163 @@ For each of 7 criteria: ✅ (met), ⚠️ (partial), ❌ (gap)
 
 ### Self-Review for Phase 3 (Scenarios)
 
-**Use `quality-checklist.md` directly as the rubric.** The checklist has 4 dimensions:
+**Apply the following quality rubric against each generated scenario. The rubric has 4 dimensions:**
 
-1. **Completeness** (7 sections) — target 7/7
-2. **Quality Criteria** (7 checks) — target 5/7 minimum
-3. **Common Mistakes** (7 checks) — target 7/7 (zero tolerance)
-4. **Best Practices** (4 checks) — target 2/4 minimum
+#### Dimension 1: Completeness (7 sections)
 
-**Run quality-checklist.md against each generated scenario. Score using the checklist's own format.**
+For each scenario, verify all 7 components exist:
+
+- [ ] **Core Feature** — Clear statement of what scenario covers, aligned to business goal
+- [ ] **Entry Point** — Specific starting location with device, context, and discovery method
+- [ ] **Mental State** — All three present: Trigger (what happened), Hope (what they want), Worry (what they fear)
+- [ ] **Success Goals** — Both present: User success (tangible) + Business success (measurable)
+- [ ] **Shortest Path** — Linear steps listed with name + purpose, no branches
+- [ ] **Scenario Name** — Persona name in title, ID assigned (01, 02...)
+- [ ] **Trigger Map Connections** — Persona named, driving forces listed, business goal referenced
+
+**Minimum:** 6/7 present (Trigger Map Connections can be implicit if obvious from other sections)
+
+#### Dimension 2: Quality Criteria (7 checks)
+
+**2.1 Persona Alignment**
+- Scenario serves a specific persona from Trigger Map (not generic "user")
+- Mental state matches persona's psychological profile
+- Entry point reflects persona's behavior patterns
+
+**2.2 Mental State Richness**
+- All three components (Trigger/Hope/Worry) are specific and visceral
+- You can FEEL the user's emotional state
+- Mental state informs design decisions
+
+*Bad:* "User is interested in the product"
+*Good:* "Panicked — motorhome broke down, family vacation at risk, unfamiliar area"
+
+**2.3 Mutual Success Clarity**
+- Both successes are specific and measurable
+- Business success is not just "revenue" or "engagement"
+- User success is tangible (not "satisfied" or "happy")
+
+*Bad:* Business: "Get more customers" / User: "Successfully use the site"
+*Good:* Business: "High-intent tourist call captured, info call avoided" / User: "Confirmed capability, got location, feels confident calling"
+
+**2.4 Sunshine Path Focus**
+- Path is completely linear (no "if" statements)
+- Error states and edge cases deferred
+- This is the absolute happiest path
+
+**2.5 Minimum Viable Steps**
+- Each step moves meaningfully toward success
+- No unnecessary pages or detours
+- Can you remove any step without breaking the flow?
+
+**2.6 Entry Point Realism**
+- Describes HOW user actually discovered this
+- Includes device context
+- Reflects real-world behavior
+
+*Bad:* "User opens app"
+*Good:* "Tourist googles 'car repair Öland' on mobile at gas station, clicks top result"
+
+**2.7 Business Goal Connection**
+- Traces to specific business goal from Trigger Map
+- Business value is explicit, not assumed
+- User success drives business success (not competes)
+
+**Minimum:** 5/7 fully met
+
+#### Dimension 3: Common Mistakes (7 checks)
+
+All 7 must be avoided — any single mistake requires correction.
+
+**3.1 Edge Cases in Sunshine Path**
+Check: Are there any "if" statements, error states, or branches?
+Fix: Remove all conditional logic. Document edge cases separately.
+
+**3.2 Feature-First Naming**
+Check: Does the scenario name describe a feature or a user goal?
+Fix: Rename to persona + purpose format. Bad: "Homepage and Services" / Good: "Hasse's Emergency Search"
+
+**3.3 Missing Mental State**
+Check: Is mental state present with all three components?
+Fix: Add Trigger/Hope/Worry with specific, visceral descriptions.
+
+**3.4 Vague Page Descriptions**
+Check: Do pages have just names, or names + purpose?
+Fix: Add what user accomplishes at each step. Bad: "1. Homepage 2. Services" / Good: "1. Homepage — confirms mechanic fixes motorhomes 2. Contact — gets phone + directions"
+
+**3.5 Generic Persona**
+Check: Does scenario use a Trigger Map persona with name?
+Fix: Replace "user" with specific persona name and driving forces.
+
+**3.6 Missing Business Value**
+Check: Is business success explicitly defined and measurable?
+Fix: Add specific business outcome connected to Trigger Map goal.
+
+**3.7 Bloated Descriptions**
+Check: Does any single component (Entry Point, Mental State, Success Goals) exceed 2 sentences?
+Fix: Trim to bullet-point essentials. Entry points: device + context + discovery. Mental state: one phrase per component. Success: one measurable statement each.
+
+**Minimum:** 7/7 avoided (zero tolerance for mistakes)
+
+#### Dimension 4: Best Practices (4 checks)
+
+**4.1 Persona in Scenario Name** — Scenario title includes persona name (e.g., "Hasse's Emergency Search")
+**4.2 Highest-Value Persona First** — Scenario 01 serves the Primary persona.
+**4.3 One Job Per Scenario** — Each scenario accomplishes ONE clear job-to-be-done. No scope creep.
+**4.4 Driving Forces Explicitly Linked** — Scenario states which specific wants/fears from Trigger Map it addresses:
+- ✅ Want: [specific force]
+- ❌ Fear: [specific force]
+
+**Minimum:** 2/4 followed
+
+#### Scoring Summary Template
+
+```
+## Quality Review: [Scenario ID]
+
+**Completeness:** [X]/7
+**Quality:** [X]/7
+**Mistakes Avoided:** [X]/7
+**Best Practices:** [X]/4
+
+**Status:** [Excellent / Good / Needs Work]
+**Gaps:** [list or "None"]
+```
+
+| Level | Complete | Quality | Mistakes | Practices |
+|-------|----------|---------|----------|-----------|
+| Minimum | 6/7 | 5/7 | 7/7 | 2/4 |
+| Excellent | 7/7 | 7/7 | 7/7 | 4/4 |
+
+#### Validation Standards
+
+**What makes a valid scenario — minimum requirements (must pass):**
+1. All 7 components present (name, feature, entry, mental state, success, path, TM connections)
+2. Path is truly linear (zero branches)
+3. Mental state is specific and visceral
+4. Both success goals are measurable
+5. Trigger Map connections are explicit
+
+**WDS Navigation Conventions:**
+- Use user-facing page names (not technical: "Tjänster", not "services-page")
+- Consistent naming across scenarios (same page = same name)
+- Entry page must be reachable from the described discovery method
+- Each step transitions naturally to the next
+- Final step has clear success marker (✓)
+- No dead ends, no impossible jumps
+- Pages appearing in 2+ scenarios must serve consistent purposes
+
+**SEO Integration:**
+- Every page should map to at least one keyword from the Phase 1 keyword map
+- Page names should be compatible with planned URL slugs
+- No keyword cannibalization (two pages competing for same keyword)
+
+**Validation Severity Levels:**
+| Level | Meaning | Action |
+|-------|---------|--------|
+| ❌ Critical | Blocks Phase 4 progress | Must fix before handover |
+| ⚠️ Warning | Quality concern | Should fix, can proceed |
+| ✅ Pass | Meets standards | No action needed |
 
 **Refinement triggers for scenarios:**
 - Any Dimension 3 failure (Common Mistakes) → immediate fix (zero tolerance)
