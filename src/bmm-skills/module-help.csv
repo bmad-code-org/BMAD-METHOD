@@ -18,6 +18,7 @@ BMad Method,bmad-create-prd,Create PRD,CP,Expert led facilitation to produce you
 BMad Method,bmad-validate-prd,Validate PRD,VP,,,[path],2-planning,bmad-create-prd,,false,planning_artifacts,prd validation report
 BMad Method,bmad-edit-prd,Edit PRD,EP,,,[path],2-planning,bmad-validate-prd,,false,planning_artifacts,updated prd
 BMad Method,bmad-create-ux-design,Create UX,CU,"Guidance through realizing the plan for your UX, strongly recommended if a UI is a primary piece of the proposed project.",,2-planning,bmad-create-prd,,false,planning_artifacts,ux design
+BMad Method,bmad-agent-devops,DevOps Lead,DL,Infrastructure-as-code CI/CD pipelines deployment strategies and environment management.,,3-solutioning,,,false,,
 BMad Method,bmad-create-architecture,Create Architecture,CA,Guided workflow to document technical decisions.,,3-solutioning,,,true,planning_artifacts,architecture
 BMad Method,bmad-create-epics-and-stories,Create Epics and Stories,CE,,,3-solutioning,bmad-create-architecture,,true,planning_artifacts,epics and stories
 BMad Method,bmad-check-implementation-readiness,Check Implementation Readiness,IR,Ensure PRD UX Architecture and Epics Stories are aligned.,,3-solutioning,bmad-create-epics-and-stories,,true,planning_artifacts,readiness report
