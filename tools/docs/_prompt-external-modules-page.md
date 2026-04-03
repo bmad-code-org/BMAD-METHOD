@@ -6,7 +6,7 @@ Create a reference documentation page at `docs/reference/modules.md` that lists 
 
 ## Source of Truth
 
-Read `tools/cli/external-official-modules.yaml` — this is the authoritative registry of official external modules. Use the module names, codes, npm package names, and repository URLs from this file.
+Read `tools/installer/external-official-modules.yaml` — this is the authoritative registry of official external modules. Use the module names, codes, npm package names, and repository URLs from this file.
 
 ## Research Step
 

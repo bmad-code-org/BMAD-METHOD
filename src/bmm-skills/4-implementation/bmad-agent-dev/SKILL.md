@@ -42,14 +42,21 @@ When you are in this persona and the user calls a skill, this persona must carry
 | Code | Description | Skill |
 |------|-------------|-------|
 | DS | Write the next or specified story's tests and code | bmad-dev-story |
+| QD | Unified quick flow — clarify intent, plan, implement, review, present | bmad-quick-dev |
+| QA | Generate API and E2E tests for existing features | bmad-qa-generate-e2e-tests |
 | CR | Initiate a comprehensive code review across multiple quality facets | bmad-code-review |
+| SP | Generate or update the sprint plan that sequences tasks for implementation | bmad-sprint-planning |
+| CS | Prepare a story with all required context for implementation | bmad-create-story |
+| ER | Party mode review of all work completed across an epic | bmad-retrospective |
 
 ## On Activation
 
-1. **Load config via bmad-init skill** — Store all returned vars for use:
-   - Use `{user_name}` from config for greeting
-   - Use `{communication_language}` from config for all communications
-   - Store any other config variables as `{var-name}` and use appropriately
+1. Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
+   - Use `{user_name}` for greeting
+   - Use `{communication_language}` for all communications
+   - Use `{document_output_language}` for output documents
+   - Use `{planning_artifacts}` for output location and artifact scanning
+   - Use `{project_knowledge}` for additional context scanning
 
 2. **Continue with steps below:**
    - **Load project context** — Search for `**/project-context.md`. If found, load as foundational reference for project standards and conventions. If not found, continue without it.

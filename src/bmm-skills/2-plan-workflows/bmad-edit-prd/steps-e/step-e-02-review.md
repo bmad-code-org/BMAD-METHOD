@@ -2,7 +2,7 @@
 # File references (ONLY variables used in this step)
 prdFile: '{prd_file_path}'
 validationReport: '{validation_report_path}'  # If provided
-prdPurpose: '{project-root}/_bmad/bmm-skills/2-plan-workflows/create-prd/data/prd-purpose.md'
+prdPurpose: '{project-root}/_bmad/bmm-skills/2-plan-workflows/bmad-create-prd/data/prd-purpose.md'
 ---
 
 # Step E-2: Deep Review & Analysis

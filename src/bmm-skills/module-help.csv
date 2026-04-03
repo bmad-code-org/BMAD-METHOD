@@ -12,7 +12,8 @@ BMad Method,bmad-brainstorming,Brainstorm Project,BP,Expert guided facilitation 
 BMad Method,bmad-market-research,Market Research,MR,"Market analysis competitive landscape customer needs and trends.",,1-analysis,,,false,"planning_artifacts|project-knowledge",research documents
 BMad Method,bmad-domain-research,Domain Research,DR,Industry domain deep dive subject matter expertise and terminology.,,1-analysis,,,false,"planning_artifacts|project_knowledge",research documents
 BMad Method,bmad-technical-research,Technical Research,TR,Technical feasibility architecture options and implementation approaches.,,1-analysis,,,false,"planning_artifacts|project_knowledge",research documents
-BMad Method,bmad-product-brief,Create Brief,CB,A guided experience to nail down your product idea.,,1-analysis,,,false,planning_artifacts,product brief
+BMad Method,bmad-product-brief,Create Brief,CB,An expert guided experience to nail down your product idea in a brief. a gentler approach than PRFAQ when you are already sure of your concept and nothing will sway you.,,-A,1-analysis,,,false,planning_artifacts,product brief
+BMad Method,bmad-prfaq,PRFAQ Challenge,WB,Working Backwards guided experience to forge and stress-test your product concept to ensure you have a great product that users will love and need through the PRFAQ gauntlet to determine feasibility and alignment with user needs. alternative to product brief.,,-H,1-analysis,,,false,planning_artifacts,prfaq document
 BMad Method,bmad-create-prd,Create PRD,CP,Expert led facilitation to produce your Product Requirements Document.,,2-planning,,,true,planning_artifacts,prd
 BMad Method,bmad-validate-prd,Validate PRD,VP,,,[path],2-planning,bmad-create-prd,,false,planning_artifacts,prd validation report
 BMad Method,bmad-edit-prd,Edit PRD,EP,,,[path],2-planning,bmad-validate-prd,,false,planning_artifacts,updated prd
@@ -26,5 +27,6 @@ BMad Method,bmad-create-story,Create Story,CS,"Story cycle start: Prepare first 
 BMad Method,bmad-create-story,Validate Story,VS,Validates story readiness and completeness before development work begins.,validate,,4-implementation,bmad-create-story:create,bmad-dev-story,false,implementation_artifacts,story validation report
 BMad Method,bmad-dev-story,Dev Story,DS,Story cycle: Execute story implementation tasks and tests then CR then back to DS if fixes needed.,,4-implementation,bmad-create-story:validate,,true,,
 BMad Method,bmad-code-review,Code Review,CR,Story cycle: If issues back to DS if approved then next CS or ER if epic complete.,,4-implementation,bmad-dev-story,,false,,
+BMad Method,bmad-checkpoint-preview,Checkpoint,CK,Guided walkthrough of a change from purpose and context into details. Use for human review of commits branches or PRs.,,4-implementation,,,false,,
 BMad Method,bmad-qa-generate-e2e-tests,QA Automation Test,QA,Generate automated API and E2E tests for implemented code. NOT for code review or story validation — use CR for that.,,4-implementation,bmad-dev-story,,false,implementation_artifacts,test suite
 BMad Method,bmad-retrospective,Retrospective,ER,Optional at epic end: Review completed work lessons learned and next epic or if major issues consider CC.,,4-implementation,bmad-code-review,,false,implementation_artifacts,retrospective

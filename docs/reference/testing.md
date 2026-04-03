@@ -1,15 +1,15 @@
 ---
 title: Testing Options
-description: Comparing the built-in QA agent (Quinn) with the Test Architect (TEA) module for test automation.
+description: Comparing the built-in QA workflow with the Test Architect (TEA) module for test automation.
 sidebar:
   order: 5
 ---
 
-BMad provides two testing paths: a built-in QA agent for fast test generation and an installable Test Architect module for enterprise-grade test strategy.
+BMad provides two testing paths: a built-in QA workflow for fast test generation and an installable Test Architect module for enterprise-grade test strategy.
 
 ## Which Should You Use?
 
-| Factor | Quinn (Built-in QA) | TEA Module |
+| Factor | Built-in QA | TEA Module |
 | --- | --- | --- |
 | **Best for** | Small-medium projects, quick coverage | Large projects, regulated or complex domains |
 | **Setup** | Nothing to install -- included in BMM | Install separately via `npx bmad-method install` |
@@ -18,19 +18,19 @@ BMad provides two testing paths: a built-in QA agent for fast test generation an
 | **Strategy** | Happy path + critical edge cases | Risk-based prioritization (P0-P3) |
 | **Workflow count** | 1 (Automate) | 9 (design, ATDD, automate, review, trace, and others) |
 
-:::tip[Start with Quinn]
-Most projects should start with Quinn. If you later need test strategy, quality gates, or requirements traceability, install TEA alongside it.
+:::tip[Start with built-in QA]
+Most projects should start with the built-in QA workflow. If you later need test strategy, quality gates, or requirements traceability, install TEA alongside it.
 :::
 
-## Built-in QA Agent (Quinn)
+## Built-in QA Workflow
 
-Quinn is the built-in QA agent in the BMM (Agile suite) module. It generates working tests quickly using your project's existing test framework -- no configuration or additional installation required.
+The built-in QA workflow (`bmad-qa-generate-e2e-tests`) is part of the BMM (Agile suite) module, available through the Developer agent. It generates working tests quickly using your project's existing test framework -- no configuration or additional installation required.
 
-**Trigger:** `QA` or `bmad-qa-generate-e2e-tests`
+**Trigger:** `QA` (via the Developer agent) or `bmad-qa-generate-e2e-tests`
 
-### What Quinn Does
+### What It Does
 
-Quinn runs a single workflow (Automate) that walks through five steps:
+The QA workflow (Automate) walks through five steps:
 
 1. **Detect test framework** -- scans `package.json` and existing test files for your framework (Jest, Vitest, Playwright, Cypress, or any standard runner). If none exists, analyzes the project stack and suggests one.
 2. **Identify features** -- asks what to test or auto-discovers features in the codebase.
@@ -38,7 +38,7 @@ Quinn runs a single workflow (Automate) that walks through five steps:
 4. **Generate E2E tests** -- covers user workflows with semantic locators and visible-outcome assertions.
 5. **Run and verify** -- executes the generated tests and fixes failures immediately.
 
-Quinn produces a test summary saved to your project's implementation artifacts folder.
+The workflow produces a test summary saved to your project's implementation artifacts folder.
 
 ### Test Patterns
 
@@ -51,10 +51,10 @@ Generated tests follow a "simple and maintainable" philosophy:
 - **Clear descriptions** that read as feature documentation
 
 :::note[Scope]
-Quinn generates tests only. For code review and story validation, use the Code Review workflow (`CR`) instead.
+The QA workflow generates tests only. For code review and story validation, use the Code Review workflow (`CR`) instead.
 :::
 
-### When to Use Quinn
+### When to Use Built-in QA
 
 - Quick test coverage for a new or existing feature
 - Beginner-friendly test automation without advanced setup
@@ -91,16 +91,16 @@ TEA also supports P0-P3 risk-based prioritization and optional integrations with
 - Teams that need risk-based test prioritization across many features
 - Enterprise environments with formal quality gates before release
 - Complex domains where test strategy must be planned before tests are written
-- Projects that have outgrown Quinn's single-workflow approach
+- Projects that have outgrown the built-in QA's single-workflow approach
 
 ## How Testing Fits into Workflows
 
-Quinn's Automate workflow appears in Phase 4 (Implementation) of the BMad Method workflow map. It is designed to run **after a full epic is complete** — once all stories in an epic have been implemented and code-reviewed. A typical sequence:
+The QA Automate workflow appears in Phase 4 (Implementation) of the BMad Method workflow map. It is designed to run **after a full epic is complete** — once all stories in an epic have been implemented and code-reviewed. A typical sequence:
 
 1. For each story in the epic: implement with Dev (`DS`), then validate with Code Review (`CR`)
-2. After the epic is complete: generate tests with Quinn (`QA`) or TEA's Automate workflow
+2. After the epic is complete: generate tests with `QA` (via the Developer agent) or TEA's Automate workflow
 3. Run retrospective (`bmad-retrospective`) to capture lessons learned
 
-Quinn works directly from source code without loading planning documents (PRD, architecture). TEA workflows can integrate with upstream planning artifacts for traceability.
+The built-in QA workflow works directly from source code without loading planning documents (PRD, architecture). TEA workflows can integrate with upstream planning artifacts for traceability.
 
 For more on where testing fits in the overall process, see the [Workflow Map](./workflow-map.md).

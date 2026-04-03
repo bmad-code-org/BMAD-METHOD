@@ -1,7 +1,7 @@
 ---
 wipFile: '{implementation_artifacts}/spec-wip.md'
 deferred_work_file: '{implementation_artifacts}/deferred-work.md'
-spec_file: '' # set at runtime for plan-code-review before leaving this step
+spec_file: '' # set at runtime for both routes before leaving this step
 ---
 
 # Step 1: Clarify and Route
@@ -52,11 +52,13 @@ Never ask extra questions if you already understand what the user intends.
    - On **K**: Proceed as-is.
 5. Route — choose exactly one:
 
+   Derive a valid kebab-case slug from the clarified intent. If the intent references a tracking identifier (story number, issue number, ticket ID), lead the slug with it (e.g. `3-2-digest-delivery`, `gh-47-fix-auth`). If `{implementation_artifacts}/spec-{slug}.md` already exists, append `-2`, `-3`, etc. Set `spec_file` = `{implementation_artifacts}/spec-{slug}.md`.
+
    **a) One-shot** — zero blast radius: no plausible path by which this change causes unintended consequences elsewhere. Clear intent, no architectural decisions.
+
    **EARLY EXIT** → `./step-oneshot.md`
 
    **b) Plan-code-review** — everything else. When uncertain whether blast radius is truly zero, choose this path.
-   1. Derive a valid kebab-case slug from the clarified intent. If the intent references a tracking identifier (story number, issue number, ticket ID), lead the slug with it (e.g. `3-2-digest-delivery`, `gh-47-fix-auth`). If `{implementation_artifacts}/spec-{slug}.md` already exists, append `-2`, `-3`, etc. Set `spec_file` = `{implementation_artifacts}/spec-{slug}.md`.
 
 
 ## NEXT
