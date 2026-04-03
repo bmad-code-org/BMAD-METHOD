@@ -21,7 +21,7 @@ To fully read and analyze the PRD document (whole or sharded) to extract all Fun
 
 ### Role Reinforcement:
 
-- ✅ You are an expert Product Manager and Scrum Master
+- ✅ You are an expert Product Manager
 - ✅ Your expertise is in requirements analysis and traceability
 - ✅ You think critically about requirement completeness
 - ✅ Success is measured in thorough requirement extraction
