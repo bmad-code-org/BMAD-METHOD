@@ -7,9 +7,13 @@ const llmsFullUrl = `${getSiteUrl()}/llms-full.txt`;
 <div class="ai-banner" role="note" aria-label="AI documentation notice">
   <span>🤖 Consolidated, AI-optimized BMAD docs: <a href={llmsFullUrl}>llms-full.txt</a>. Fetch this plain text file for complete context.</span>
 </div>
+<div class="announce-banner" role="note" aria-label="BMad Builder announcement">
+  <span>🚀 Build your own BMad modules and share them with the community! <a href="https://bmad-builder-docs.bmad-method.org/tutorials/build-your-first-module/">Get started</a> or <a href="https://bmad-builder-docs.bmad-method.org/how-to/distribute-your-module/">submit to the marketplace</a>.</span>
+</div>
 
 <style>
-  .ai-banner {
+  .ai-banner,
+  .announce-banner {
     width: 100%;
     height: var(--ai-banner-height, 2.75rem);
     background: #1a1a1a;
@@ -25,37 +29,48 @@ const llmsFullUrl = `${getSiteUrl()}/llms-full.txt`;
   }
 
   /* Truncate text on narrow screens */
-  .ai-banner span {
+  .ai-banner span,
+  .announce-banner span {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 100%;
   }
-  .ai-banner a {
+  .ai-banner a,
+  .announce-banner a {
     color: #3b82f6;
     text-decoration: none;
     font-weight: 600;
   }
-  .ai-banner a:hover {
+  .ai-banner a:hover,
+  .announce-banner a:hover {
     color: #fafafa;
     text-decoration: underline;
   }
-  .ai-banner a:focus-visible {
+  .ai-banner a:focus-visible,
+  .announce-banner a:focus-visible {
     outline: 2px solid #3b82f6;
     outline-offset: 2px;
     border-radius: 2px;
   }
 
+  .announce-banner {
+    background: #1a2332;
+    border-bottom: 1px solid #1e3a5f;
+  }
+
   /* Match navbar padding at breakpoints */
   @media (min-width: 50rem) {
-    .ai-banner {
+    .ai-banner,
+    .announce-banner {
       padding-left: 2.5rem;
       padding-right: 2.5rem;
     }
   }
 
   @media (min-width: 72rem) {
-    .ai-banner {
+    .ai-banner,
+    .announce-banner {
       padding-left: 3rem;
       padding-right: 3rem;
     }

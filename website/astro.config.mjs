@@ -46,10 +46,6 @@ export default defineConfig({
       title: 'BMAD Method',
       tagline: 'AI-driven agile development with specialized agents and workflows that scale from bug fixes to enterprise platforms.',
 
-      banner: {
-        content: 'Build your own BMad modules and share them with the community! <a href="https://bmad-builder-docs.bmad-method.org/tutorials/build-your-first-module/">Get started</a> or <a href="https://bmad-builder-docs.bmad-method.org/how-to/distribute-your-module/">submit to the marketplace</a>.',
-      },
-
       // i18n: locale config from shared module (website/src/lib/locales.mjs)
       defaultLocale: 'root',
       locales,
