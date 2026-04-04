@@ -16,6 +16,16 @@ spec_file: '' # set by step-01 before entering this step
 
 Implement the clarified intent directly.
 
+### Tests
+
+**This is mandatory, not optional.** After implementation, write tests for every new or modified behavior. Follow the project's testing conventions discovered from `{project_context}`, CLAUDE.md, or the existing test suite.
+
+1. **Discover conventions.** Identify the project's test framework, file-naming patterns, and test directory structure from existing tests. If no existing tests exist, use the project's language-idiomatic defaults.
+2. **Write tests.** Cover happy-path behavior, edge cases, and regressions.
+3. **Run tests.** All new and existing tests must pass. Fix failures before proceeding.
+
+If the project has no test infrastructure at all (no test framework, no test directory, no test scripts), skip — but this is the only acceptable reason to skip tests.
+
 ### Review
 
 Invoke the `bmad-review-adversarial-general` skill in a subagent with the changed files. The subagent gets NO conversation context — to avoid anchoring bias. If no sub-agents are available, write the changed files to a review prompt file in `{implementation_artifacts}` and HALT. Ask the human to run the review in a separate session and paste back the findings.
