@@ -21,12 +21,14 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 ### Paths
 
 - `sprint_status_file` = `{implementation_artifacts}/sprint-status.yaml`
+- `deferred_work_file` = `{implementation_artifacts}/deferred-work.md`
 
 ### Input Files
 
 | Input | Path | Load Strategy |
 |-------|------|---------------|
 | Sprint status | `{sprint_status_file}` | FULL_LOAD |
+| Deferred work | `{deferred_work_file}` | FULL_LOAD (optional) |
 
 ### Context
 
@@ -118,6 +120,18 @@ Enter corrections (e.g., "1=in-progress, 2=backlog") or "skip" to continue witho
 - IF `last_updated` timestamp is more than 7 days old (or `last_updated` is missing, fall back to `generated`): warn "sprint-status.yaml may be stale"
 - IF any story key doesn't match an epic pattern (e.g., story "5-1-..." but no "epic-5"): warn "orphaned story detected"
 - IF any epic has status in-progress but has no associated stories: warn "in-progress epic has no stories"
+
+<action>Analyze deferred work backlog (if {deferred_work_file} exists):</action>
+
+  <check if="{deferred_work_file} exists AND has content">
+    <action>Parse all deferred items from {deferred_work_file}</action>
+    <action>Count total deferred items</action>
+    <action>Group items by originating review/story</action>
+    <action>Classify items by severity if identifiable (security, bug, tech-debt, style)</action>
+    <action>Store counts: {{deferred_total}}, {{deferred_high}} (security/bug), {{deferred_medium}} (tech-debt), {{deferred_low}} (style/minor)</action>
+    <action>IF {{deferred_total}} > 20: add risk "Deferred work backlog is large ({{deferred_total}} items) — consider triaging with SM agent"</action>
+    <action>IF {{deferred_high}} > 0: add risk "{{deferred_high}} high-priority deferred items (security/bugs) need attention"</action>
+  </check>
   </step>
 
 <step n="3" goal="Select next action recommendation">
@@ -143,6 +157,10 @@ Enter corrections (e.g., "1=in-progress, 2=backlog") or "skip" to continue witho
 **Stories:** backlog {{count_backlog}}, ready-for-dev {{count_ready}}, in-progress {{count_in_progress}}, review {{count_review}}, done {{count_done}}
 
 **Epics:** backlog {{epic_backlog}}, in-progress {{epic_in_progress}}, done {{epic_done}}
+
+{{#if deferred_total}}
+**Deferred Work:** {{deferred_total}} items ({{deferred_high}} high, {{deferred_medium}} medium, {{deferred_low}} low)
+{{/if}}
 
 **Next Recommendation:** /bmad:bmm:workflows:{{next_workflow_id}} ({{next_story_id}})
 
@@ -208,6 +226,10 @@ If the command targets a story, set `story_key={{next_story_id}}` when prompted.
   <template-output>epic_in_progress = {{epic_in_progress}}</template-output>
   <template-output>epic_done = {{epic_done}}</template-output>
   <template-output>risks = {{risks}}</template-output>
+  <template-output>deferred_total = {{deferred_total}}</template-output>
+  <template-output>deferred_high = {{deferred_high}}</template-output>
+  <template-output>deferred_medium = {{deferred_medium}}</template-output>
+  <template-output>deferred_low = {{deferred_low}}</template-output>
   <action>Return to caller</action>
 </step>
 

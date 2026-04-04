@@ -34,6 +34,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 - `ux_file` = `{planning_artifacts}/*ux*.md`
 - `story_title` = "" (will be elicited if not derivable)
 - `project_context` = `**/project-context.md` (load if exists)
+- `deferred_work_file` = `{implementation_artifacts}/deferred-work.md`
 - `default_output_file` = `{implementation_artifacts}/{{story_key}}.md`
 
 ### Input Files
@@ -232,6 +233,43 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
   all learnings that could impact current story implementation</action>
   </check>
 
+  <!-- Deferred work items analysis -->
+  <check if="{deferred_work_file} exists AND has content">
+    <action>Load {deferred_work_file} completely</action>
+    <action>Parse all deferred items, extracting for each:
+      - File paths mentioned (e.g., [src/foo.ts:42])
+      - Category (bug, security, tech-debt, style, etc.)
+      - Originating review (e.g., "Deferred from: code review of story-2.3")
+      - Description text
+    </action>
+
+    <action>From epics content and architecture analysis, build a list of files this story will likely touch:
+      - Files explicitly mentioned in story requirements
+      - Files in modules/directories related to the story's feature area
+      - Files that share dependencies with story components
+    </action>
+
+    <action>Match deferred items against the story's file list:
+      - EXACT match: deferred item references a file the story will modify
+      - DIRECTORY match: deferred item is in the same directory/module
+      - COMPONENT match: deferred item affects a component the story depends on
+    </action>
+
+    <check if="overlapping deferred items found">
+      <action>Store {{matched_deferred_items}} for inclusion in the story file</action>
+      <action>Classify matches by priority:
+        - HIGH: security fixes, bugs in files this story will modify
+        - MEDIUM: tech-debt in the same module, performance issues in touched code
+        - LOW: style issues, minor refactors in adjacent files
+      </action>
+      <output>📋 Found {{matched_count}} deferred work items relevant to this story from previous code reviews</output>
+    </check>
+
+    <check if="no overlapping deferred items found">
+      <action>Set {{matched_deferred_items}} = empty</action>
+    </check>
+  </check>
+
   <!-- Git intelligence for previous work patterns -->
   <check
     if="previous story exists AND git repository detected">
@@ -322,6 +360,24 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
   <check
     if="git analysis completed">
     <template-output file="{default_output_file}">git_intelligence_summary</template-output>
+  </check>
+
+  <!-- Deferred work items from previous code reviews -->
+  <check if="{{matched_deferred_items}} is not empty">
+    <action>In the Dev Notes section, add a subsection:</action>
+    <template-output file="{default_output_file}">
+### Deferred Items to Address
+
+The following items were deferred from previous code reviews and overlap with files/modules this story will touch. Address these during implementation where practical.
+
+{{#each matched_deferred_items}}
+- **[{{priority}}]** {{description}} `[{{file_ref}}]` — _from {{origin_review}}_
+{{/each}}
+    </template-output>
+
+    <action>In the Tasks/Subtasks section, add corresponding subtasks for HIGH-priority deferred items:
+      - [ ] [Deferred] {{item_title}} [{{file_ref}}] (from previous review)
+    </action>
   </check>
 
   <!-- Latest technical specifics -->
