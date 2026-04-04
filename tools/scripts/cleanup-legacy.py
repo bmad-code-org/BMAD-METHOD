@@ -20,9 +20,12 @@ Exit codes: 0=success (including nothing to remove), 1=validation error, 2=runti
 
 import argparse
 import json
+import logging
 import shutil
 import sys
 from pathlib import Path
+
+logger = logging.getLogger(__name__)
 
 
 def parse_args():
@@ -68,6 +71,13 @@ def find_skill_dirs(base_path: str) -> list:
     SKILL.md files nested deeper (e.g. in tasks/, assets/, or within a
     skill's own subdirectories) are not installable skills and are skipped.
 
+    NOTE: These discovery rules are intentionally stricter than the installer's
+    recursive collectSkills() behavior. The installer is permissive — it walks
+    the entire tree to find all SKILL.md files for installation. Cleanup must
+    be conservative: we only match the two canonical installable layouts so we
+    never accidentally validate a SKILL.md buried in tasks/, assets/, or other
+    non-installable subdirectories as proof that a skill is present.
+
     Returns:
         List of skill directory names (e.g. ['bmad-agent-builder', 'bmad-builder-setup'])
     """
@@ -75,15 +85,17 @@ def find_skill_dirs(base_path: str) -> list:
     root = Path(base_path)
     if not root.exists():
         return skills
-    for skill_md in root.rglob("SKILL.md"):
-        rel = skill_md.parent.relative_to(root)
-        parts = rel.parts
-        # Direct child: {name}/SKILL.md
-        if len(parts) == 1:
-            skills.append(parts[0])
-        # Skills subfolder: skills/{name}/SKILL.md
-        elif len(parts) == 2 and parts[0] == "skills":
-            skills.append(parts[1])
+
+    # Direct child: {name}/SKILL.md
+    for skill_md in root.glob("*/SKILL.md"):
+        skills.append(skill_md.parent.name)
+
+    # Skills subfolder: skills/{name}/SKILL.md
+    skills_root = root / "skills"
+    if skills_root.exists():
+        for skill_md in skills_root.glob("*/SKILL.md"):
+            skills.append(skill_md.parent.name)
+
     return sorted(set(skills))
 
 
@@ -185,6 +197,17 @@ def cleanup_directories(
             not_found.append(dirname)
             continue
 
+        # Validate directory name to prevent path traversal
+        if ".." in dirname or "/" in dirname or "\\" in dirname:
+            error_result = {
+                "status": "error",
+                "error": f"Invalid directory name (path traversal rejected): {dirname}",
+                "directories_removed": removed,
+                "directories_failed": dirname,
+            }
+            print(json.dumps(error_result, indent=2))
+            sys.exit(2)
+
         # Preserve config.yaml if present (bmad-init needs per-module configs)
         config_path = target / "config.yaml"
         config_backup = None
@@ -194,7 +217,7 @@ def cleanup_directories(
                 print(f"Preserving config.yaml in {dirname}/", file=sys.stderr)
 
         file_count = count_files(target)
-        if config_backup:
+        if config_backup is not None:
             file_count -= 1  # Don't count the preserved file
         if verbose:
             print(
@@ -204,7 +227,18 @@ def cleanup_directories(
 
         try:
             shutil.rmtree(target)
+
+            # Restore preserved config.yaml
+            if config_backup is not None:
+                target.mkdir(parents=True, exist_ok=True)
+                config_path.write_bytes(config_backup)
+                if verbose:
+                    print(
+                        f"Restored config.yaml in {dirname}/",
+                        file=sys.stderr,
+                    )
         except OSError as e:
+            logger.error("Failed during cleanup of %s: %s", target, e)
             error_result = {
                 "status": "error",
                 "error": f"Failed to remove {target}: {e}",
@@ -213,13 +247,6 @@ def cleanup_directories(
             }
             print(json.dumps(error_result, indent=2))
             sys.exit(2)
-
-        # Restore preserved config.yaml
-        if config_backup:
-            target.mkdir(parents=True, exist_ok=True)
-            config_path.write_bytes(config_backup)
-            if verbose:
-                print(f"Restored config.yaml in {dirname}/", file=sys.stderr)
 
         removed.append(dirname)
         total_files += file_count
