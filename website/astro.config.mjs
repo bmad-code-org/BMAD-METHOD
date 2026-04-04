@@ -119,6 +119,20 @@ export default defineConfig({
           autogenerate: { directory: 'reference' },
         },
         // TEA docs moved to standalone module site; keep BMM sidebar focused.
+        {
+          label: 'BMad Ecosystem',
+          collapsed: false,
+          items: [
+            { label: 'BMad Builder', link: 'https://bmad-builder-docs.bmad-method.org/', attrs: { target: '_blank' } },
+            { label: 'Creative Intelligence Suite', link: 'https://cis-docs.bmad-method.org/', attrs: { target: '_blank' } },
+            { label: 'Game Dev Studio', link: 'https://game-dev-studio-docs.bmad-method.org/', attrs: { target: '_blank' } },
+            {
+              label: 'Test Architect (TEA)',
+              link: 'https://bmad-code-org.github.io/bmad-method-test-architecture-enterprise/',
+              attrs: { target: '_blank' },
+            },
+          ],
+        },
       ],
 
       // Credits in footer
