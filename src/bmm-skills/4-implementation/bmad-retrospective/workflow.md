@@ -256,12 +256,12 @@ Charlie (Senior Dev): "Good idea - those dev notes always have gold in them."
   <action>Parse all deferred items and compute:</action>
 
   - Total items deferred across all reviews
-  - Items originating from this epic's stories (match by "Deferred from: code review of story-{{epic_number}}.*")
-  - Items originating from previous epics (carried forward)
+  - Items originating from this epic's stories (match by level-2 headings: `## Deferred from: code review of story-{{epic_number}}.* (YYYY-MM-DD)`)
+  - Items originating from previous epics (carried forward — headings referencing other epic numbers)
   - Items that were addressed during this epic (cross-reference with story file lists and git history)
   - Items still outstanding
 
-  <action>Classify outstanding items by severity:</action>
+  <action>Classify outstanding items by severity. If the producer included an explicit category use it; otherwise derive heuristically from description keywords (security/auth/injection → security; bug/crash/error/null → bug; performance/slow/cache → performance; style/lint/naming → style; default → tech-debt):</action>
 
   - Security issues: count and list
   - Bugs: count and list

@@ -124,13 +124,20 @@ Enter corrections (e.g., "1=in-progress, 2=backlog") or "skip" to continue witho
 <action>Analyze deferred work backlog (if {deferred_work_file} exists):</action>
 
   <check if="{deferred_work_file} exists AND has content">
-    <action>Parse all deferred items from {deferred_work_file}</action>
-    <action>Count total deferred items</action>
-    <action>Group items by originating review/story</action>
-    <action>Classify items by severity if identifiable (security, bug, tech-debt, style)</action>
-    <action>Store counts: {{deferred_total}}, {{deferred_high}} (security/bug), {{deferred_medium}} (tech-debt), {{deferred_low}} (style/minor)</action>
+    <action>Parse all deferred items from {deferred_work_file}. The file uses level-2 headings produced by bmad-code-review:
+      `## Deferred from: code review of story-X.Y (YYYY-MM-DD)`
+      Each heading is followed by bullet items (one per deferred finding).
+    </action>
+    <action>Count total deferred items (bullet items, not headings)</action>
+    <action>Group items by originating review/story (derived from the heading above each group)</action>
+    <action>Classify items by severity: if the item includes an explicit category use it; otherwise derive heuristically from description keywords (security/auth/injection → security; bug/crash/error/null → bug; performance/slow/cache → performance; style/lint/naming → style; default → tech-debt)</action>
+    <action>Store counts: {{deferred_total}}, {{deferred_high}} (security/bug), {{deferred_medium}} (tech-debt/performance), {{deferred_low}} (style/minor)</action>
     <action>IF {{deferred_total}} > 20: add risk "Deferred work backlog is large ({{deferred_total}} items) — consider triaging with SM agent"</action>
     <action>IF {{deferred_high}} > 0: add risk "{{deferred_high}} high-priority deferred items (security/bugs) need attention"</action>
+  </check>
+
+  <check if="{deferred_work_file} does NOT exist OR is empty">
+    <action>Set {{deferred_total}} = 0, {{deferred_high}} = 0, {{deferred_medium}} = 0, {{deferred_low}} = 0</action>
   </check>
   </step>
 
@@ -213,7 +220,7 @@ If the command targets a story, set `story_key={{next_story_id}}` when prompted.
 <!-- ========================= -->
 
 <step n="20" goal="Data mode output">
-  <action>Load and parse {sprint_status_file} same as Step 2</action>
+  <action>Load and parse {sprint_status_file} same as Step 2 (including deferred work analysis — set deferred counts to 0 when file is missing/empty)</action>
   <action>Compute recommendation same as Step 3</action>
   <template-output>next_workflow_id = {{next_workflow_id}}</template-output>
   <template-output>next_story_id = {{next_story_id}}</template-output>
