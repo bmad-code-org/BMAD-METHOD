@@ -24,9 +24,15 @@ deferred_work_file: '{implementation_artifacts}/deferred-work.md'
 
 ### CHECKPOINT 1
 
-Present summary. If token count exceeded 1600 and user chose [K], include the token count and explain why it may be a problem. HALT and ask human: `[A] Approve` | `[E] Edit`
+Present summary. Display the spec file path as a CWD-relative path (no leading `/`) so it is clickable in the terminal. If token count exceeded 1600 and user chose [K], include the token count and explain why it may be a problem.
 
-- **A**: Set status `ready-for-dev` in `{spec_file}`. Everything inside `<frozen-after-approval>` is now locked — only the human can change it. Display the finalized spec path to the user as a CWD-relative path (no leading `/`) so it is clickable in the terminal. → Step 3.
+After presenting the summary and options, add this note:
+
+> The spec is a regular file in your project. Before approving, you can open it in another session and use any tool you like — party mode, advanced elicitation, code review, or direct editing. Take your time; approve when you're satisfied.
+
+HALT and ask human: `[A] Approve` | `[E] Edit`
+
+- **A**: Re-read `{spec_file}` from disk. Compare the content to what you wrote. If the file has changed since you wrote it, acknowledge the external edits — show a brief summary of what changed — and proceed with the updated version. If the file is missing, HALT and tell the user. Set status `ready-for-dev` in `{spec_file}`. Everything inside `<frozen-after-approval>` is now locked — only the human can change it. → Step 3.
 - **E**: Apply changes, then return to CHECKPOINT 1.
 
 
