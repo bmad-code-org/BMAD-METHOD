@@ -1,5 +1,4 @@
 ---
-wipFile: '{implementation_artifacts}/spec-wip.md'
 deferred_work_file: '{implementation_artifacts}/deferred-work.md'
 ---
 
@@ -13,7 +12,7 @@ deferred_work_file: '{implementation_artifacts}/deferred-work.md'
 ## INSTRUCTIONS
 
 1. Investigate codebase. _Isolate deep exploration in sub-agents/tasks where available. To prevent context snowballing, instruct subagents to give you distilled summaries only._
-2. Read `./spec-template.md` fully. Fill it out based on the intent and investigation, and write the result to `{wipFile}`.
+2. Read `./spec-template.md` fully. Fill it out based on the intent and investigation, and write the result to `{spec_file}`.
 3. Self-review against READY FOR DEVELOPMENT standard.
 4. If intent gaps exist, do not fantasize, do not leave open questions, HALT and ask the human.
 5. Token count check (see SCOPE STANDARD). If spec exceeds 1600 tokens:
@@ -26,7 +25,7 @@ deferred_work_file: '{implementation_artifacts}/deferred-work.md'
 
 Present summary. If token count exceeded 1600 and user chose [K], include the token count and explain why it may be a problem. HALT and ask human: `[A] Approve` | `[E] Edit`
 
-- **A**: Rename `{wipFile}` to `{spec_file}`, set status `ready-for-dev`. Everything inside `<frozen-after-approval>` is now locked — only the human can change it. Display the finalized spec path to the user as a CWD-relative path (no leading `/`) so it is clickable in the terminal. → Step 3.
+- **A**: Set status `ready-for-dev` in `{spec_file}`. Everything inside `<frozen-after-approval>` is now locked — only the human can change it. Display the finalized spec path to the user as a CWD-relative path (no leading `/`) so it is clickable in the terminal. → Step 3.
 - **E**: Apply changes, then return to CHECKPOINT 1.
 
 

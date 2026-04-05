@@ -1,5 +1,4 @@
 ---
-wipFile: '{implementation_artifacts}/spec-wip.md'
 deferred_work_file: '{implementation_artifacts}/deferred-work.md'
 spec_file: '' # set at runtime for both routes before leaving this step
 ---
@@ -21,7 +20,7 @@ Before listing artifacts or prompting the user, check whether you already know t
 
 1. Explicit argument
    Did the user pass a specific file path, spec name, or clear instruction this message?
-   - If it points to a file that matches the spec template (has `status` frontmatter with a recognized value: ready-for-dev, in-progress, or in-review) → set `spec_file` and **EARLY EXIT** to the appropriate step (step-03 for ready/in-progress, step-04 for review).
+   - If it points to a file that matches the spec template (has `status` frontmatter with a recognized value: draft, ready-for-dev, in-progress, or in-review) → set `spec_file` and **EARLY EXIT** to the appropriate step (step-02 for draft, step-03 for ready/in-progress, step-04 for review).
    - Anything else (intent files, external docs, plans, descriptions) → ingest it as starting intent and proceed to INSTRUCTIONS. Do not attempt to infer a workflow state from it.
 
 2. Recent conversation
@@ -29,8 +28,8 @@ Before listing artifacts or prompting the user, check whether you already know t
    Use the same routing as above.
 
 3. Otherwise — scan artifacts and ask
-   - `{wipFile}` exists? → Offer resume or archive.
-   - Active specs (`ready-for-dev`, `in-progress`, `in-review`) in `{implementation_artifacts}`? → List them and HALT. Ask user which to resume (or `[N]` for new).
+   - Active specs (`draft`, `ready-for-dev`, `in-progress`, `in-review`) in `{implementation_artifacts}`? → List them and HALT. Ask user which to resume (or `[N]` for new).
+     - If `draft` selected: Set `spec_file`. **EARLY EXIT** → `./step-02-plan.md` (resume planning from the draft)
      - If `ready-for-dev` or `in-progress` selected: Set `spec_file`. **EARLY EXIT** → `./step-03-implement.md`
      - If `in-review` selected: Set `spec_file`. **EARLY EXIT** → `./step-04-review.md`
    - Unformatted spec or intent file lacking `status` frontmatter? → Suggest treating its contents as the starting intent. Do NOT attempt to infer a state and resume it.
