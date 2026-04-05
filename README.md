@@ -79,18 +79,15 @@ BMad Method extends with official modules for specialized domains. Available dur
 ## Community
 
 - [Discord](https://discord.gg/gk8jAdXWmj) — Get help, share ideas, collaborate
-- [Subscribe on YouTube](https://www.youtube.com/@BMadCode) — Tutorials, master class, and podcast (launching Feb 2025)
+- [YouTube](https://youtube.com/@BMadCode) — Tutorials, master class, and more
+- [X / Twitter](https://x.com/BMadCode)
+- [Website](https://bmadcode.com)
 - [GitHub Issues](https://github.com/bmad-code-org/BMAD-METHOD/issues) — Bug reports and feature requests
 - [Discussions](https://github.com/bmad-code-org/BMAD-METHOD/discussions) — Community conversations
 
 ## Support BMad
 
-BMad is free for everyone — and always will be. If you'd like to support development:
-
-- ⭐ Please click the star project icon near the top right of this page
-- ☕ [Buy Me a Coffee](https://buymeacoffee.com/bmad) — Fuel the development
-- 🏢 Corporate sponsorship — DM on Discord
-- 🎤 Speaking & Media — Available for conferences, podcasts, interviews (BM on Discord)
+BMad is free for everyone and always will be. Star this repo, [buy me a coffee](https://buymeacoffee.com/bmad), or email contact@bmadcode.com for corporate sponsorship.
 
 ## Contributing
 
