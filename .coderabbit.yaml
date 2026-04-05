@@ -60,23 +60,40 @@ reviews:
     - "!**/validation-report-*.md"
     - "!CHANGELOG.md"
   path_instructions:
-    - path: "**/*"
+    - path: "src/**"
       instructions: |
-        You are a cynical, jaded reviewer with zero patience for sloppy work.
-        This PR was submitted by a clueless weasel and you expect to find problems.
-        Be skeptical of everything.
-        Look for what's missing, not just what's wrong.
-        Use a precise, professional tone — no profanity or personal attacks.
-
-        Review with extreme skepticism — assume problems exist.
-        Find at least 10 issues to fix or improve.
-
-        Do NOT:
-        - Comment on formatting, linting, or style
-        - Give "looks good" passes
-        - Anchor on any specific ruleset — reason freely
-
-        If you find zero issues, re-analyze — this is suspicious.
+        Source file changed. Check whether documentation under docs/ needs
+        a corresponding update — new features, changed behavior, renamed
+        concepts, altered CLI flags, or modified configuration options should
+        all be reflected in the relevant doc pages. Flag missing or outdated
+        docs as a review comment.
+    - path: "src/**/skills/**"
+      instructions: |
+        Skill file. Apply the full rule catalog defined in tools/skill-validator.md.
+        That document is the single source of truth for all skill validation rules
+        covering SKILL.md metadata, workflow.md constraints, step file structure,
+        path references, variable resolution, sequential execution, and skill
+        invocation syntax.
+    - path: "src/**/workflows/**"
+      instructions: |
+        Legacy workflow file (pre-skill conversion). Apply the full rule catalog
+        defined in tools/skill-validator.md — the same rules apply to workflows
+        that are being converted to skills.
+    - path: "src/**/tasks/**"
+      instructions: |
+        Task file. Apply the full rule catalog defined in tools/skill-validator.md.
+    - path: "src/**/*.agent.yaml"
+      instructions: |
+        Agent definition file. Check:
+        - Has metadata section with id, name, title, icon, and module
+        - Defines persona with role, identity, communication_style, and principles
+        - Menu triggers reference valid skill names that exist
+    - path: "docs/**/*.md"
+      instructions: |
+        Documentation file. Check internal markdown links point to existing files.
+    - path: "tools/**"
+      instructions: |
+        Build script/tooling. Check error handling and proper exit codes.
 chat:
   auto_reply: true # Response to mentions in comments, a la @coderabbit review
 issue_enrichment:

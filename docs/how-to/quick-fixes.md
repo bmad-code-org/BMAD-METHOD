@@ -5,119 +5,91 @@ sidebar:
   order: 5
 ---
 
-Use the **DEV agent** directly for bug fixes, refactorings, or small targeted changes that don't require the full BMad Method or Quick Flow.
+Use **Quick Dev** for bug fixes, refactorings, or small targeted changes that don't require the full BMad Method.
 
 ## When to Use This
 
 - Bug fixes with a clear, known cause
 - Small refactorings (rename, extract, restructure) contained within a few files
 - Minor feature tweaks or configuration changes
-- Exploratory work to understand an unfamiliar codebase
+- Dependency updates
 
 :::note[Prerequisites]
 - BMad Method installed (`npx bmad-method install`)
 - An AI-powered IDE (Claude Code, Cursor, or similar)
 :::
 
-## Choose Your Approach
-
-| Situation | Agent | Why |
-| --- | --- | --- |
-| Fix a specific bug or make a small, scoped change | **DEV agent** | Jumps straight into implementation without planning overhead |
-| Change touches several files or you want a written plan first | **Quick Flow Solo Dev** | Creates a quick-spec before implementation so the agent stays aligned to your standards |
-
-If you are unsure, start with the DEV agent. You can always escalate to Quick Flow if the change grows.
-
 ## Steps
 
-### 1. Invoke the DEV Agent
+### 1. Start a Fresh Chat
 
-Start a **fresh chat** in your AI IDE and invoke the DEV agent skill:
+Open a **fresh chat session** in your AI IDE. Reusing a session from a previous workflow can cause context conflicts.
 
-```text
-bmad-dev
-```
+### 2. Give It Your Intent
 
-This loads the agent's persona and capabilities into the session. If you decide you need Quick Flow instead, invoke the **Quick Flow Solo Dev** agent skill in a fresh chat:
+Quick Dev accepts free-form intent — before, with, or after the invocation. Examples:
 
 ```text
-bmad-quick-flow-solo-dev
+run quick-dev — Fix the login validation bug that allows empty passwords.
 ```
 
-Once the Solo Dev agent is loaded, describe your change and ask it to create a **quick-spec**. The agent drafts a lightweight spec capturing what you want to change and how. After you approve the quick-spec, tell the agent to start the **Quick Flow dev cycle** -- it will implement the change, run tests, and perform a self-review, all guided by the spec you just approved.
+```text
+run quick-dev — fix https://github.com/org/repo/issues/42
+```
 
-:::tip[Fresh Chats]
-Always start a new chat session when loading an agent. Reusing a session from a previous workflow can cause context conflicts.
-:::
+```text
+run quick-dev — implement the intent in _bmad-output/implementation-artifacts/my-intent.md
+```
 
-### 2. Describe the Change
+```text
+I think the problem is in the auth middleware, it's not checking token expiry.
+Let me look at it... yeah, src/auth/middleware.ts line 47 skips
+the exp check entirely. run quick-dev
+```
 
-Tell the agent what you need in plain language. Be specific about the problem and, if you know it, where the relevant code lives.
+```text
+run quick-dev
+> What would you like to do?
+Refactor UserService to use async/await instead of callbacks.
+```
 
-:::note[Example Prompts]
-**Bug fix** -- "Fix the login validation bug that allows empty passwords. The validation logic is in `src/auth/validate.ts`."
+Plain text, file paths, GitHub issue URLs, bug tracker links — anything the LLM can resolve to a concrete intent.
 
-**Refactoring** -- "Refactor the UserService to use async/await instead of callbacks."
+### 3. Answer Questions and Approve
 
-**Configuration change** -- "Update the CI pipeline to cache node_modules between runs."
+Quick Dev may ask clarifying questions or present a short spec for your approval before implementing. Answer its questions and approve when you're satisfied with the plan.
 
-**Dependency update** -- "Upgrade the express dependency to the latest v5 release and fix any breaking changes."
-:::
+### 4. Review and Push
 
-You don't need to provide every detail. The agent will read the relevant source files and ask clarifying questions when needed.
+Quick Dev implements the change, reviews its own work, patches issues, and commits locally. When it's done, it opens the affected files in your editor.
 
-### 3. Let the Agent Work
+- Skim the diff to confirm the change matches your intent
+- If something looks off, tell the agent what to fix — it can iterate in the same session
 
-The agent will:
-
-- Read and analyze the relevant source files
-- Propose a solution and explain its reasoning
-- Implement the change across the affected files
-- Run your project's test suite if one exists
-
-If your project has tests, the agent runs them automatically after making changes and iterates until tests pass. For projects without a test suite, verify the change manually (run the app, hit the endpoint, check the output).
-
-### 4. Review and Verify
-
-Before committing, review what changed:
-
-- Read through the diff to confirm the change matches your intent
-- Run the application or tests yourself to double-check
-- If something looks wrong, tell the agent what to fix -- it can iterate in the same session
-
-Once satisfied, commit the changes with a clear message describing the fix.
+Once satisfied, push the commit. Quick Dev will offer to push and create a PR for you.
 
 :::caution[If Something Breaks]
-If a committed change causes unexpected issues, use `git revert HEAD` to undo the last commit cleanly. Then start a fresh chat with the DEV agent to try a different approach.
+If a pushed change causes unexpected issues, use `git revert HEAD` to undo the last commit cleanly. Then start a fresh chat and run Quick Dev again to try a different approach.
 :::
-
-## Learning Your Codebase
-
-The DEV agent is also useful for exploring unfamiliar code. Load it in a fresh chat and ask questions:
-
-:::note[Example Prompts]
-"Explain how the authentication system works in this codebase."
-
-"Show me where error handling happens in the API layer."
-
-"What does the `ProcessOrder` function do and what calls it?"
-:::
-
-Use the agent to learn about your project, understand how components connect, and explore unfamiliar areas before making changes.
 
 ## What You Get
 
 - Modified source files with the fix or refactoring applied
 - Passing tests (if your project has a test suite)
-- A clean commit describing the change
+- A ready-to-push commit with a conventional commit message
 
-No planning artifacts are produced -- that's the point of this approach.
+## Deferred Work
+
+Quick Dev keeps each run focused on a single goal. If your request contains multiple independent goals, or if the review surfaces pre-existing issues unrelated to your change, Quick Dev defers them to a file (`deferred-work.md` in your implementation artifacts directory) rather than trying to tackle everything at once.
+
+Check this file after a run — it's your backlog of things to come back to. Each deferred item can be fed into a fresh Quick Dev run later.
 
 ## When to Upgrade to Formal Planning
 
-Consider using [Quick Flow](../explanation/quick-flow.md) or the full BMad Method when:
+Consider using the full BMad Method when:
 
 - The change affects multiple systems or requires coordinated updates across many files
-- You are unsure about the scope and need a spec to think it through
-- The fix keeps growing in complexity as you work on it
+- You are unsure about the scope and need requirements discovery first
 - You need documentation or architectural decisions recorded for the team
+
+See [Quick Dev](../explanation/quick-dev.md) for more on how Quick Dev fits into the BMad Method.

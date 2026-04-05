@@ -1,94 +1,94 @@
 ---
 title: "官方模块"
-description: 用于构建自定义智能体、创意智能、游戏开发和测试的附加模块
+description: BMad 可选模块参考：能力边界、适用场景与外部资源
 sidebar:
   order: 4
 ---
 
-BMad 通过您在安装期间选择的官方模块进行扩展。这些附加模块为内置核心和 BMM（敏捷套件）之外的特定领域提供专门的智能体、工作流和任务。
+BMad 通过可选模块扩展能力。你可以在安装时按需选择模块，为当前项目增加特定领域的 `agent`、`workflow` 与 `skill`。
 
 :::tip[安装模块]
-运行 `npx bmad-method install` 并选择您需要的模块。安装程序会自动处理下载、配置和 IDE 集成。
+运行 `npx bmad-method install`，在交互步骤中勾选所需模块。安装器会自动生成对应 skills 并写入当前 IDE 的 skills 目录。
 :::
 
-## BMad Builder
+## 先看总览
 
-在引导式协助下创建自定义智能体、工作流和特定领域的模块。BMad Builder 是用于扩展框架本身的元模块。
+| 模块 | 代码 | 最适合 | 核心能力 |
+| --- | --- | --- | --- |
+| BMad Builder | `bmb` | 扩展 BMad 本身 | 构建自定义 agent / workflow / module |
+| Creative Intelligence Suite | `cis` | 前期创意与问题探索 | 头脑风暴、设计思维、创新策略 |
+| Game Dev Studio | `gds` | 游戏方向研发 | 游戏设计文档、原型推进、叙事支持 |
+| Test Architect（TEA） | `tea` | 企业级测试治理 | 测试策略、可追溯性、质量门控 |
 
-- **代码：** `bmb`
-- **npm：** [`bmad-builder`](https://www.npmjs.com/package/bmad-builder)
-- **GitHub：** [bmad-code-org/bmad-builder](https://github.com/bmad-code-org/bmad-builder)
+## BMad Builder（`bmb`）
 
-**提供：**
+用于“构建 BMad”的元模块，重点是把你的方法沉淀成可复用能力。
 
-- 智能体构建器 —— 创建具有自定义专业知识和工具访问权限的专用 AI 智能体
-- 工作流构建器 —— 设计包含步骤和决策点的结构化流程
-- 模块构建器 —— 将智能体和工作流打包为可共享、可发布的模块
-- 交互式设置，支持 YAML 配置和 npm 发布
+**你会得到：**
+- Agent Builder：创建具备特定专业能力的 agent
+- Workflow Builder：设计有步骤与决策点的 workflow
+- Module Builder：将 agent/workflow 打包为可发布模块
+- 交互式配置与发布支持（YAML + npm）
 
-## 创意智能套件
+**外部资源（英文）：**
+- npm: [`bmad-builder`](https://www.npmjs.com/package/bmad-builder)
+- GitHub: [bmad-code-org/bmad-builder](https://github.com/bmad-code-org/bmad-builder)
 
-用于早期开发阶段的结构化创意、构思和创新的 AI 驱动工具。该套件提供多个智能体，利用经过验证的框架促进头脑风暴、设计思维和问题解决。
+## Creative Intelligence Suite（`cis`）
 
-- **代码：** `cis`
-- **npm：** [`bmad-creative-intelligence-suite`](https://www.npmjs.com/package/bmad-creative-intelligence-suite)
-- **GitHub：** [bmad-code-org/bmad-module-creative-intelligence-suite](https://github.com/bmad-code-org/bmad-module-creative-intelligence-suite)
+用于前期探索与创意发散，帮助团队在进入规划前澄清问题与方向。
 
-**提供：**
+**你会得到：**
+- 多个创意向 agent（如创新策略、设计思维、头脑风暴）
+- 问题重构与系统化思考支持
+- 常见构思框架（含 SCAMPER、逆向头脑风暴等）
 
-- 创新策略师、设计思维教练和头脑风暴教练智能体
-- 问题解决者和创意问题解决者，用于系统性和横向思维
-- 故事讲述者和演示大师，用于叙事和推介
-- 构思框架，包括 SCAMPER、逆向头脑风暴和问题重构
+**外部资源（英文）：**
+- npm: [`bmad-creative-intelligence-suite`](https://www.npmjs.com/package/bmad-creative-intelligence-suite)
+- GitHub: [bmad-code-org/bmad-module-creative-intelligence-suite](https://github.com/bmad-code-org/bmad-module-creative-intelligence-suite)
 
-## 游戏开发工作室
+## Game Dev Studio（`gds`）
 
-适用于 Unity、Unreal、Godot 和自定义引擎的结构化游戏开发工作流。通过 Quick Flow 支持快速原型制作，并通过史诗驱动的冲刺支持全面规模的生产。
+面向游戏开发场景，覆盖从概念到实现的结构化 workflow。
 
-- **代码：** `gds`
-- **npm：** [`bmad-game-dev-studio`](https://www.npmjs.com/package/bmad-game-dev-studio)
-- **GitHub：** [bmad-code-org/bmad-module-game-dev-studio](https://github.com/bmad-code-org/bmad-module-game-dev-studio)
+**你会得到：**
+- 游戏设计文档（GDD）生成流程
+- 面向快速迭代的 Quick Dev 模式
+- 叙事设计支持（角色、对话、世界观）
+- 多引擎适配建议（Unity/Unreal/Godot 等）
 
-**提供：**
+**外部资源（英文）：**
+- npm: [`bmad-game-dev-studio`](https://www.npmjs.com/package/bmad-game-dev-studio)
+- GitHub: [bmad-code-org/bmad-module-game-dev-studio](https://github.com/bmad-code-org/bmad-module-game-dev-studio)
 
-- 游戏设计文档（GDD）生成工作流
-- 用于快速原型制作的 Quick Dev 模式
-- 针对角色、对话和世界构建的叙事设计支持
-- 覆盖 21+ 种游戏类型，并提供特定引擎的架构指导
+## Test Architect（TEA，`tea`）
 
-## 测试架构师（TEA）
+面向高要求测试场景的独立模块。与内置 QA 相比，TEA 更强调策略、追溯与发布门控。
 
-通过专家智能体和九个结构化工作流提供企业级测试策略、自动化指导和发布门控决策。TEA 远超内置 QA 智能体，提供基于风险的优先级排序和需求可追溯性。
+**你会得到：**
+- Murat 测试架构师 agent
+- 覆盖测试设计、ATDD、自动化、审查、追溯的 workflow
+- NFR 评估、CI 集成与测试框架脚手架
+- P0-P3 风险优先级策略与可选工具集成
 
-- **代码：** `tea`
-- **npm：** [`bmad-method-test-architecture-enterprise`](https://www.npmjs.com/package/bmad-method-test-architecture-enterprise)
-- **GitHub：** [bmad-code-org/bmad-method-test-architecture-enterprise](https://github.com/bmad-code-org/bmad-method-test-architecture-enterprise)
+**外部资源（英文）：**
+- 文档: [TEA Module Docs](https://bmad-code-org.github.io/bmad-method-test-architecture-enterprise/)
+- npm: [`bmad-method-test-architecture-enterprise`](https://www.npmjs.com/package/bmad-method-test-architecture-enterprise)
+- GitHub: [bmad-code-org/bmad-method-test-architecture-enterprise](https://github.com/bmad-code-org/bmad-method-test-architecture-enterprise)
 
-**提供：**
+## 如何选择模块
 
-- Murat 智能体（主测试架构师和质量顾问）
-- 用于测试设计、ATDD、自动化、测试审查和可追溯性的工作流
-- NFR 评估、CI 设置和框架脚手架
-- P0-P3 优先级排序，可选 Playwright Utils 和 MCP 集成
+- 你要“扩展框架能力”而不是只用框架：优先 `bmb`
+- 你还在探索方向、需要结构化创意过程：优先 `cis`
+- 你是游戏项目：优先 `gds`
+- 你需要测试治理、质量门控或审计追溯：优先 `tea`
 
-## 社区模块
+:::note[模块可以组合安装]
+模块之间不是互斥关系。你可以按项目阶段增量安装，并在后续重新运行安装器同步 skills。
+:::
 
-社区模块和模块市场即将推出。请查看 [BMad GitHub 组织](https://github.com/bmad-code-org) 获取最新更新。
+## 相关参考
 
----
-## 术语说明
-
-- **agent**：智能体。在人工智能与编程文档中，指具备自主决策或执行能力的单元。
-- **workflow**：工作流。指一系列有序的任务或步骤，用于完成特定的业务流程或开发流程。
-- **module**：模块。指可独立开发、测试和部署的软件单元，用于扩展系统功能。
-- **meta-module**：元模块。指用于创建或扩展其他模块的模块，是模块的模块。
-- **ATDD**：验收测试驱动开发（Acceptance Test-Driven Development）。一种敏捷开发实践，在编写代码之前先编写验收测试。
-- **NFR**：非功能性需求（Non-Functional Requirement）。指系统在性能、安全性、可维护性等方面的质量属性要求。
-- **CI**：持续集成（Continuous Integration）。一种软件开发实践，频繁地将代码集成到主干分支，并进行自动化测试。
-- **MCP**：模型上下文协议（Model Context Protocol）。一种用于在 AI 模型与外部工具或服务之间进行通信的协议。
-- **SCAMPER**：一种创意思维技巧，包含替代、组合、调整、修改、其他用途、消除和重组七个维度。
-- **GDD**：游戏设计文档（Game Design Document）。用于描述游戏设计理念、玩法、机制等内容的详细文档。
-- **P0-P3**：优先级分级。P0 为最高优先级（关键），P3 为最低优先级（可选）。
-- **sprint**：冲刺。敏捷开发中的固定时间周期，通常为 1-4 周，用于完成预定的工作。
-- **epic**：史诗。敏捷开发中的大型工作项，可分解为多个用户故事或任务。
-- **Quick Flow**：快速流程。一种用于快速原型开发的工作流模式。
+- [测试选项](./testing.md)
+- [技能（Skills）参考](./commands.md)
+- [工作流地图](./workflow-map.md)

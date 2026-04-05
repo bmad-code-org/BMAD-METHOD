@@ -1,6 +1,7 @@
 # Augment Code Review Guidelines for BMAD-METHOD
 # https://docs.augmentcode.com/codereview/overview
-# Focus: Workflow validation and quality
+# Focus: Skill validation and quality
+# Canonical rules: tools/skill-validator.md (single source of truth)
 
 file_paths_to_ignore:
   # --- Shared baseline: tool configs ---
@@ -48,123 +49,17 @@ file_paths_to_ignore:
 
 areas:
   # ============================================
-  # WORKFLOW STRUCTURE RULES
+  # SKILL FILES
   # ============================================
-  workflow_structure:
-    description: "Workflow folder organization and required components"
+  skill_files:
+    description: "All skill content — SKILL.md, workflow.md, step files, data files, and templates within skill directories"
     globs:
+      - "src/**/skills/**"
       - "src/**/workflows/**"
+      - "src/**/tasks/**"
     rules:
-      - id: "workflow_entry_point_required"
-        description: "Every workflow folder must have workflow.md as entry point"
-        severity: "high"
-
-      - id: "sharded_workflow_steps_folder"
-        description: "Sharded workflows (using workflow.md) must have steps/ folder with numbered files (step-01-*.md, step-02-*.md)"
-        severity: "high"
-
-      - id: "workflow_step_limit"
-        description: "Workflows should have 5-10 steps maximum to prevent context loss in LLM execution"
-        severity: "medium"
-
-  # ============================================
-  # WORKFLOW ENTRY FILE RULES
-  # ============================================
-  workflow_definitions:
-    description: "Workflow entry files (workflow.md)"
-    globs:
-      - "src/**/workflows/**/workflow.md"
-    rules:
-      - id: "workflow_name_required"
-        description: "Workflow entry files must define 'name' field in frontmatter or root element"
-        severity: "high"
-
-      - id: "workflow_description_required"
-        description: "Workflow entry files must include 'description' explaining the workflow's purpose"
-        severity: "high"
-
-      - id: "workflow_installed_path"
-        description: "Workflows should define installed_path for relative file references within the workflow"
-        severity: "medium"
-
-      - id: "valid_step_references"
-        description: "Step file references in workflow entry must point to existing files"
-        severity: "high"
-
-  # ============================================
-  # SHARDED WORKFLOW STEP RULES
-  # ============================================
-  workflow_steps:
-    description: "Individual step files in sharded workflows"
-    globs:
-      - "src/**/workflows/**/steps/step-*.md"
-    rules:
-      - id: "step_goal_required"
-        description: "Each step must clearly state its goal (## STEP GOAL, ## YOUR TASK, or step n='X' goal='...')"
-        severity: "high"
-
-      - id: "step_mandatory_rules"
-        description: "Step files should include MANDATORY EXECUTION RULES section with universal agent behavior rules"
-        severity: "medium"
-
-      - id: "step_context_boundaries"
-        description: "Step files should define CONTEXT BOUNDARIES explaining available context and limits"
-        severity: "medium"
-
-      - id: "step_success_metrics"
-        description: "Step files should include SUCCESS METRICS section with ✅ checkmarks for validation criteria"
-        severity: "medium"
-
-      - id: "step_failure_modes"
-        description: "Step files should include FAILURE MODES section with ❌ marks for anti-patterns to avoid"
-        severity: "medium"
-
-      - id: "step_next_step_reference"
-        description: "Step files should reference the next step file path for sequential execution"
-        severity: "medium"
-
-      - id: "step_no_forward_loading"
-        description: "Steps must NOT load future step files until current step completes - just-in-time loading only"
-        severity: "high"
-
-      - id: "valid_file_references"
-        description: "File path references using {variable}/filename.md must point to existing files"
-        severity: "high"
-
-      - id: "step_naming"
-        description: "Step files must be named step-NN-description.md (e.g., step-01-init.md, step-02-context.md)"
-        severity: "medium"
-
-      - id: "halt_before_menu"
-        description: "Steps presenting user menus ([C] Continue, [a] Advanced, etc.) must HALT and wait for response"
-        severity: "high"
-
-  # ============================================
-  # WORKFLOW CONTENT QUALITY
-  # ============================================
-  workflow_content:
-    description: "Content quality and consistency rules for all workflow files"
-    globs:
-      - "src/**/workflows/**/*.md"
-    rules:
-      - id: "communication_language_variable"
-        description: "Workflows should use {communication_language} variable for agent output language consistency"
-        severity: "low"
-
-      - id: "path_placeholders_required"
-        description: "Use path placeholders (e.g. {project-root}, {installed_path}, {output_folder}) instead of hardcoded paths"
-        severity: "medium"
-
-      - id: "no_time_estimates"
-        description: "Workflows should NOT include time estimates - AI development speed varies significantly"
-        severity: "low"
-
-      - id: "facilitator_not_generator"
-        description: "Workflow agents should act as facilitators (guide user input) not content generators (create without input)"
-        severity: "medium"
-
-      - id: "no_skip_optimization"
-        description: "Workflows must execute steps sequentially - no skipping or 'optimizing' step order"
+      - id: "skill_validation"
+        description: "Apply the full rule catalog defined in tools/skill-validator.md. That file is the single source of truth for all skill validation rules covering SKILL.md metadata, workflow.md constraints, step file structure, path references, variable resolution, sequential execution, and skill invocation syntax."
         severity: "high"
 
   # ============================================
@@ -183,26 +78,9 @@ areas:
         description: "Agent files must define persona with role, identity, communication_style, and principles"
         severity: "high"
 
-      - id: "agent_menu_valid_workflows"
-        description: "Menu triggers must reference valid workflow paths that exist"
+      - id: "agent_menu_valid_skills"
+        description: "Menu triggers must reference valid skill names that exist"
         severity: "high"
-
-  # ============================================
-  # TEMPLATES
-  # ============================================
-  templates:
-    description: "Template files for workflow outputs"
-    globs:
-      - "src/**/template*.md"
-      - "src/**/templates/**/*.md"
-    rules:
-      - id: "placeholder_syntax"
-        description: "Use {variable_name} or {{variable_name}} syntax consistently for placeholders"
-        severity: "medium"
-
-      - id: "template_sections_marked"
-        description: "Template sections that need generation should be clearly marked (e.g., <!-- GENERATE: section_name -->)"
-        severity: "low"
 
   # ============================================
   # DOCUMENTATION

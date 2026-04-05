@@ -95,7 +95,7 @@
         .agent-icon.winston { background: linear-gradient(135deg, #a78bfa, #8b5cf6); }
         .agent-icon.bob { background: linear-gradient(135deg, #34d399, #10b981); color: #000; }
         .agent-icon.amelia { background: linear-gradient(135deg, #fb7185, #ef4444); }
-        .agent-icon.barry { background: linear-gradient(135deg, #94a3b8, #64748b); }
+
         .agent-name { font-size: 0.65rem; }
         .output { color: var(--success); font-family: monospace; font-size: 0.6rem; }
         .badge { font-size: 0.55rem; padding: 1px 4px; border-radius: 3px; }
@@ -169,11 +169,22 @@
                 </div>
                 <div class="workflow">
                     <div class="workflow-header">
-                        <span class="workflow-name">create-product-brief</span>
+                        <span class="workflow-name">product-brief</span>
+                        <span class="badge opt">or ↓</span>
                     </div>
                     <div class="workflow-meta">
                         <div class="agent"><div class="agent-icon mary">M</div><span class="agent-name">Mary</span></div>
                         <span class="output">product-brief.md →</span>
+                    </div>
+                </div>
+                <div class="workflow">
+                    <div class="workflow-header">
+                        <span class="workflow-name">prfaq</span>
+                        <span class="badge opt">or ↑</span>
+                    </div>
+                    <div class="workflow-meta">
+                        <div class="agent"><div class="agent-icon mary">M</div><span class="agent-name">Mary</span></div>
+                        <span class="output">prfaq.md →</span>
                     </div>
                 </div>
             </div>
@@ -326,15 +337,9 @@
         </div>
         <div class="quickflow-body">
             <div class="quickflow-item">
-                <div class="agent"><div class="agent-icon barry">B</div><span class="agent-name">Barry</span></div>
-                <code>quick-spec</code>
-                <div style="font-size: 0.65rem; color: var(--text-muted); margin-top: 4px;">→ tech-spec.md</div>
-            </div>
-            <span style="color: var(--arrow); font-size: 1.2rem;">→</span>
-            <div class="quickflow-item">
-                <div class="agent"><div class="agent-icon barry">B</div><span class="agent-name">Barry</span></div>
+                <div class="agent"><div class="agent-icon amelia">A</div><span class="agent-name">Amelia</span></div>
                 <code>quick-dev</code>
-                <div style="font-size: 0.65rem; color: var(--text-muted); margin-top: 4px;">→ working code</div>
+                <div style="font-size: 0.65rem; color: var(--text-muted); margin-top: 4px;">intent → tech-spec → working code</div>
             </div>
         </div>
     </div>
@@ -346,7 +351,7 @@
             <span><code>create-story</code> <span>loads epics, PRD, architecture, UX</span></span>
             <span><code>dev-story</code> <span>loads story file</span></span>
             <span><code>code-review</code> <span>loads architecture, story</span></span>
-            <span><code>quick-dev</code> <span>loads tech-spec</span></span>
+            <span><code>quick-dev</code> <span>clarify, plan, implement, review</span></span>
         </div>
     </div>
 
