@@ -18,13 +18,16 @@ Implement the clarified intent directly.
 
 ### Tests
 
-**This is mandatory, not optional.** After implementation, write tests for every new or modified behavior. Follow the project's testing conventions discovered from `{project_context}`, CLAUDE.md, or the existing test suite.
+**This is mandatory, not optional.** After implementation, write tests for every new or modified behavior. Follow the project's testing conventions discovered from `{project_context}`, CLAUDE.md, the existing test suite, and any configured test tooling.
 
-1. **Discover conventions.** Identify the project's test framework, file-naming patterns, and test directory structure from existing tests. If no existing tests exist, use the project's language-idiomatic defaults.
+1. **Discover conventions.** Identify the project's test framework, file-naming patterns, and test directory structure in this order:
+   - First, inspect existing tests.
+   - If existing tests are missing or insufficient, inspect the repo's configured test tooling: test scripts, dependencies/devDependencies, and test config files (for example `package.json`, `pytest.ini`, `pyproject.toml`, `jest.config.*`, `vitest.config.*`, `mocha` config, `rspec` config, `go test` conventions, etc.).
+   - Only if neither existing tests nor configured tooling establish conventions should you fall back to the project's language-idiomatic defaults.
 2. **Write tests.** Cover happy-path behavior, edge cases, and regressions.
 3. **Run tests.** All new and existing tests must pass. Fix failures before proceeding.
 
-If the project has no test infrastructure at all (no test framework, no test directory, no test scripts), skip — but this is the only acceptable reason to skip tests.
+If the project has no test infrastructure at all (no existing tests, no test framework, no relevant test config, no test directory, and no test scripts), skip — but this is the only acceptable reason to skip tests. Record this skip reason explicitly in the final summary output.
 
 ### Review
 
