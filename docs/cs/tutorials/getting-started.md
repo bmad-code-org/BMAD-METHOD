@@ -68,7 +68,7 @@ BMad vám pomáhá vytvářet software prostřednictvím řízených pracovních
 
 | Fáze | Název          | Co se děje                                              |
 | ---- | -------------- | ------------------------------------------------------- |
-| 1    | Analýza        | Brainstorming, průzkum, product brief *(volitelné)*     |
+| 1    | Analýza        | Brainstorming, průzkum, product brief nebo PRFAQ *(volitelné)* |
 | 2    | Plánování      | Vytvoření požadavků (PRD nebo specifikace)              |
 | 3    | Solutioning    | Návrh architektury *(pouze BMad Method/Enterprise)*     |
 | 4    | Implementace   | Budování epic po epicu, story po story                  |
@@ -136,7 +136,8 @@ Vytvořte ho ručně na `_bmad-output/project-context.md` nebo ho vygenerujte po
 Všechny workflow v této fázi jsou volitelné:
 - **brainstorming** (`bmad-brainstorming`) — Řízená ideace
 - **průzkum** (`bmad-market-research` / `bmad-domain-research` / `bmad-technical-research`) — Tržní, doménový a technický průzkum
-- **vytvoření product brief** (`bmad-create-product-brief`) — Doporučený základní dokument
+- **product-brief** (`bmad-product-brief`) — Doporučený základní dokument, když je váš koncept jasný
+- **prfaq** (`bmad-prfaq`) — Working Backwards výzva pro zátěžový test a zformování vašeho produktového konceptu
 
 ### Fáze 2: Plánování (povinná)
 
@@ -180,7 +181,7 @@ Jakmile je plánování dokončeno, přejděte k implementaci. **Každý workflo
 
 ### Inicializace plánování sprintu
 
-Vyvolejte **SM agenta** (`bmad-agent-sm`) a spusťte `bmad-sprint-planning` (`bmad-sprint-planning`). Tím se vytvoří `sprint-status.yaml` pro sledování všech epiců a stories.
+Vyvolejte **Developer agenta** (`bmad-agent-dev`) a spusťte `bmad-sprint-planning` (`bmad-sprint-planning`). Tím se vytvoří `sprint-status.yaml` pro sledování všech epiců a stories.
 
 ### Cyklus vývoje
 
@@ -188,11 +189,11 @@ Pro každou story opakujte tento cyklus s novými chaty:
 
 | Krok | Agent | Workflow             | Příkaz                     | Účel                               |
 | ---- | ----- | -------------------- | -------------------------- | ---------------------------------- |
-| 1    | SM    | `bmad-create-story`  | `bmad-create-story`        | Vytvoření story souboru z epicu    |
+| 1    | DEV   | `bmad-create-story`  | `bmad-create-story`        | Vytvoření story souboru z epicu    |
 | 2    | DEV   | `bmad-dev-story`     | `bmad-dev-story`           | Implementace story                 |
 | 3    | DEV   | `bmad-code-review`   | `bmad-code-review`         | Validace kvality *(doporučeno)*    |
 
-Po dokončení všech stories v epicu vyvolejte **SM agenta** (`bmad-agent-sm`) a spusťte `bmad-retrospective` (`bmad-retrospective`).
+Po dokončení všech stories v epicu vyvolejte **Developer agenta** (`bmad-agent-dev`) a spusťte `bmad-retrospective` (`bmad-retrospective`).
 
 ## Co jste dosáhli
 
@@ -229,8 +230,8 @@ váš-projekt/
 | `bmad-generate-project-context`       | `bmad-generate-project-context`           | Analyst   | Vytvoření souboru kontextu projektu             |
 | `bmad-create-epics-and-stories`       | `bmad-create-epics-and-stories`           | PM        | Rozklad PRD na epicy                            |
 | `bmad-check-implementation-readiness` | `bmad-check-implementation-readiness`     | Architect | Validace soudržnosti plánování                  |
-| `bmad-sprint-planning`                | `bmad-sprint-planning`                    | SM        | Inicializace sledování sprintu                  |
-| `bmad-create-story`                   | `bmad-create-story`                       | SM        | Vytvoření souboru story                         |
+| `bmad-sprint-planning`                | `bmad-sprint-planning`                    | DEV       | Inicializace sledování sprintu                  |
+| `bmad-create-story`                   | `bmad-create-story`                       | DEV       | Vytvoření souboru story                         |
 | `bmad-dev-story`                      | `bmad-dev-story`                          | DEV       | Implementace story                              |
 | `bmad-code-review`                    | `bmad-code-review`                        | DEV       | Revize implementovaného kódu                    |
 
@@ -240,7 +241,7 @@ váš-projekt/
 Pouze pro BMad Method a Enterprise cesty. Quick Flow přeskakuje ze specifikace rovnou k implementaci.
 
 **Mohu později změnit svůj plán?**
-Ano. SM agent má workflow `bmad-correct-course` (`bmad-correct-course`) pro řešení změn rozsahu.
+Ano. Workflow `bmad-correct-course` (`bmad-correct-course`) řeší změny rozsahu během implementace.
 
 **Co když chci nejdřív brainstormovat?**
 Vyvolejte Analyst agenta (`bmad-agent-analyst`) a spusťte `bmad-brainstorming` (`bmad-brainstorming`) před zahájením PRD.

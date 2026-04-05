@@ -13,19 +13,16 @@ Tato stránka uvádí výchozí BMM (Agile suite) agenty, kteří se instalují 
 
 - Každý agent je dostupný jako skill, generovaný instalátorem. Skill ID (např. `bmad-dev`) se používá k vyvolání agenta.
 - Spouštěče jsou krátké kódy nabídky (např. `CP`) a fuzzy shody zobrazené v nabídce každého agenta.
-- QA (Quinn) je lehký agent pro automatizaci testů v BMM. Plný Test Architect (TEA) žije ve vlastním modulu.
+- Generování QA testů zajišťuje workflow skill `bmad-qa-generate-e2e-tests`, dostupný přes Developer agenta. Plný Test Architect (TEA) žije ve vlastním modulu.
 
-| Agent                       | Skill ID             | Spouštěče                          | Primární workflow                                                                                   |
-| --------------------------- | -------------------- | ---------------------------------- | --------------------------------------------------------------------------------------------------- |
-| Analyst (Mary)              | `bmad-analyst`       | `BP`, `RS`, `CB`, `DP`            | Brainstorm projektu, výzkum, tvorba briefu, dokumentace projektu                                    |
-| Product Manager (John)      | `bmad-pm`            | `CP`, `VP`, `EP`, `CE`, `IR`, `CC` | Tvorba/validace/editace PRD, tvorba epiců a stories, připravenost implementace, korekce kurzu       |
-| Architect (Winston)         | `bmad-architect`     | `CA`, `IR`                         | Tvorba architektury, připravenost implementace                                                      |
-| Scrum Master (Bob)          | `bmad-sm`            | `SP`, `CS`, `ER`, `CC`            | Plánování sprintu, tvorba story, retrospektiva epicu, korekce kurzu                                 |
-| Developer (Amelia)          | `bmad-dev`           | `DS`, `CR`                         | Dev story, revize kódu                                                                              |
-| QA Engineer (Quinn)         | `bmad-qa`            | `QA`                               | Automate (generování testů pro existující funkce)                                                   |
-| Quick Flow Solo Dev (Barry) | `bmad-master`        | `QD`, `CR`                         | Quick Dev, revize kódu                                                                              |
-| UX Designer (Sally)         | `bmad-ux-designer`   | `CU`                               | Tvorba UX designu                                                                                   |
-| Technical Writer (Paige)    | `bmad-tech-writer`   | `DP`, `WD`, `US`, `MG`, `VD`, `EC` | Dokumentace projektu, psaní dokumentu, aktualizace standardů, generování Mermaid, validace dok., vysvětlení konceptu |
+| Agent                       | Skill ID             | Spouštěče                                    | Primární workflow                                                                                   |
+| --------------------------- | -------------------- | -------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| Analyst (Mary)              | `bmad-analyst`       | `BP`, `RS`, `CB`, `WB`, `DP`                 | Brainstorm projektu, výzkum, tvorba briefu, PRFAQ výzva, dokumentace projektu                       |
+| Product Manager (John)      | `bmad-pm`            | `CP`, `VP`, `EP`, `CE`, `IR`, `CC`           | Tvorba/validace/editace PRD, tvorba epiců a stories, připravenost implementace, korekce kurzu       |
+| Architect (Winston)         | `bmad-architect`     | `CA`, `IR`                                    | Tvorba architektury, připravenost implementace                                                      |
+| Developer (Amelia)          | `bmad-agent-dev`     | `DS`, `QD`, `QA`, `CR`, `SP`, `CS`, `ER`     | Dev story, Quick Dev, generování QA testů, revize kódu, plánování sprintu, tvorba story, retrospektiva epicu |
+| UX Designer (Sally)         | `bmad-ux-designer`   | `CU`                                          | Tvorba UX designu                                                                                   |
+| Technical Writer (Paige)    | `bmad-tech-writer`   | `DP`, `WD`, `US`, `MG`, `VD`, `EC`           | Dokumentace projektu, psaní dokumentu, aktualizace standardů, generování Mermaid, validace dok., vysvětlení konceptu |
 
 ## Typy spouštěčů
 
