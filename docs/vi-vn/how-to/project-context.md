@@ -1,5 +1,5 @@
 ---
-title: "Quản lý Project Context"
+title: "Quản lý bối cảnh dự án"
 description: Tạo và duy trì project-context.md để định hướng cho các agent AI
 sidebar:
   order: 8

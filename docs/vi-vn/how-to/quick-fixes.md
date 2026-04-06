@@ -1,5 +1,5 @@
 ---
-title: "Quick Fixes"
+title: "Sửa nhanh"
 description: Cách thực hiện các sửa nhanh và thay đổi ad-hoc
 sidebar:
   order: 5

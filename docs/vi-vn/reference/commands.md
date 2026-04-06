@@ -1,5 +1,5 @@
 ---
-title: Skills
+title: Các skill
 description: Tài liệu tham chiếu cho skill của BMad — skill là gì, hoạt động ra sao và tìm ở đâu.
 sidebar:
   order: 3

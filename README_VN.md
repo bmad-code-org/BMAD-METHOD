@@ -3,6 +3,8 @@
 [![Version](https://img.shields.io/npm/v/bmad-method?color=blue&label=version)](https://www.npmjs.com/package/bmad-method)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen)](https://nodejs.org)
+[![Python Version](https://img.shields.io/badge/python-%3E%3D3.10-blue?logo=python&logoColor=white)](https://www.python.org)
+[![uv](https://img.shields.io/badge/uv-package%20manager-blueviolet?logo=uv)](https://docs.astral.sh/uv/)
 [![Discord](https://img.shields.io/badge/Discord-Join%20Community-7289da?logo=discord&logoColor=white)](https://discord.gg/gk8jAdXWmj)
 
 [English](README.md) | [简体中文](README_CN.md) | Tiếng Việt
@@ -36,7 +38,7 @@ Các công cụ AI truyền thống thường làm thay phần suy nghĩ của b
 
 ## Bắt đầu nhanh
 
-**Điều kiện tiên quyết**: [Node.js](https://nodejs.org) v20+
+**Điều kiện tiên quyết**: [Node.js](https://nodejs.org) v20+ · [Python](https://www.python.org) 3.10+ · [uv](https://docs.astral.sh/uv/)
 
 ```bash
 npx bmad-method install
@@ -80,18 +82,15 @@ BMad Method có thể được mở rộng bằng các mô-đun chính thức ch
 ## Cộng đồng
 
 - [Discord](https://discord.gg/gk8jAdXWmj) - Nhận trợ giúp, chia sẻ ý tưởng, cộng tác
-- [Đăng ký trên YouTube](https://www.youtube.com/@BMadCode) - video hướng dẫn, lớp chuyên sâu và podcast (ra mắt tháng 2 năm 2025)
+- [YouTube](https://youtube.com/@BMadCode) - Video hướng dẫn, master class và nhiều nội dung khác
+- [X / Twitter](https://x.com/BMadCode)
+- [Website](https://bmadcode.com)
 - [GitHub Issues](https://github.com/bmad-code-org/BMAD-METHOD/issues) - Báo lỗi và yêu cầu tính năng
 - [Discussions](https://github.com/bmad-code-org/BMAD-METHOD/discussions) - Trao đổi cộng đồng
 
 ## Hỗ trợ BMad
 
-BMad miễn phí cho tất cả mọi người - và sẽ luôn như vậy. Nếu bạn muốn hỗ trợ quá trình phát triển:
-
-- ⭐ Hãy nhấn sao cho dự án ở góc trên bên phải của trang này
-- ☕ [Buy Me a Coffee](https://buymeacoffee.com/bmad) - Tiếp thêm năng lượng cho quá trình phát triển
-- 🏢 Tài trợ doanh nghiệp - Nhắn riêng trên Discord
-- 🎤 Diễn thuyết và truyền thông - Sẵn sàng cho hội nghị, podcast, phỏng vấn (BM trên Discord)
+BMad miễn phí cho tất cả mọi người và sẽ luôn như vậy. Hãy nhấn sao cho repo này, [mời tôi một ly cà phê](https://buymeacoffee.com/bmad), hoặc gửi email tới <contact@bmadcode.com> nếu bạn muốn tài trợ doanh nghiệp.
 
 ## Đóng góp
 

@@ -1,31 +1,31 @@
 ---
-title: Core Tools
-description: Tài liệu tham chiếu cho mọi task và workflow tích hợp sẵn có trong mọi bản cài BMad mà không cần module bổ sung.
+title: Công cụ cốt lõi
+description: Tài liệu tham chiếu cho mọi tác vụ và quy trình tích hợp sẵn có trong mọi bản cài BMad mà không cần module bổ sung.
 sidebar:
   order: 2
 ---
 
-Mọi bản cài BMad đều bao gồm một tập core skills có thể dùng cùng với bất cứ việc gì bạn đang làm — các task và workflow độc lập hoạt động xuyên suốt mọi dự án, mọi module và mọi phase. Chúng luôn có sẵn bất kể bạn cài những module tùy chọn nào.
+Mọi bản cài BMad đều bao gồm một tập skill cốt lõi có thể dùng cùng với bất cứ việc gì bạn đang làm, các tác vụ và quy trình độc lập hoạt động xuyên suốt mọi dự án, mọi module và mọi giai đoạn. Chúng luôn có sẵn bất kể bạn cài những module tùy chọn nào.
 
 :::tip[Lối đi nhanh]
-Chạy bất kỳ core tool nào bằng cách gõ tên skill của nó, ví dụ `bmad-help`, trong IDE của bạn. Không cần mở phiên agent trước.
+Chạy bất kỳ công cụ cốt lõi nào bằng cách gõ tên skill của nó, ví dụ `bmad-help`, trong IDE của bạn. Không cần mở phiên agent trước.
 :::
 
 ## Tổng Quan
 
 | Công cụ | Loại | Mục đích |
 | --- | --- | --- |
-| [`bmad-help`](#bmad-help) | Task | Nhận hướng dẫn có ngữ cảnh về việc nên làm gì tiếp theo |
-| [`bmad-brainstorming`](#bmad-brainstorming) | Workflow | Tổ chức các phiên brainstorming có tương tác |
-| [`bmad-party-mode`](#bmad-party-mode) | Workflow | Điều phối thảo luận nhóm nhiều agent |
-| [`bmad-distillator`](#bmad-distillator) | Task | Nén tài liệu tối ưu cho LLM mà không mất thông tin |
-| [`bmad-advanced-elicitation`](#bmad-advanced-elicitation) | Task | Đẩy đầu ra của LLM qua các vòng tinh luyện lặp |
-| [`bmad-review-adversarial-general`](#bmad-review-adversarial-general) | Task | Review hoài nghi để tìm chỗ thiếu và chỗ sai |
-| [`bmad-review-edge-case-hunter`](#bmad-review-edge-case-hunter) | Task | Phân tích toàn bộ nhánh rẽ để tìm edge case chưa được xử lý |
-| [`bmad-editorial-review-prose`](#bmad-editorial-review-prose) | Task | Biên tập câu chữ nhằm tăng độ rõ ràng khi giao tiếp |
-| [`bmad-editorial-review-structure`](#bmad-editorial-review-structure) | Task | Biên tập cấu trúc — cắt, gộp và tổ chức lại |
-| [`bmad-shard-doc`](#bmad-shard-doc) | Task | Tách file markdown lớn thành các phần có tổ chức |
-| [`bmad-index-docs`](#bmad-index-docs) | Task | Tạo hoặc cập nhật mục lục cho toàn bộ tài liệu trong một thư mục |
+| [`bmad-help`](#bmad-help) | Tác vụ | Nhận hướng dẫn có ngữ cảnh về việc nên làm gì tiếp theo |
+| [`bmad-brainstorming`](#bmad-brainstorming) | Quy trình | Tổ chức các phiên brainstorming có tương tác |
+| [`bmad-party-mode`](#bmad-party-mode) | Quy trình | Điều phối thảo luận nhóm nhiều agent |
+| [`bmad-distillator`](#bmad-distillator) | Tác vụ | Nén tài liệu tối ưu cho LLM mà không mất thông tin |
+| [`bmad-advanced-elicitation`](#bmad-advanced-elicitation) | Tác vụ | Đẩy đầu ra của LLM qua các vòng tinh luyện lặp |
+| [`bmad-review-adversarial-general`](#bmad-review-adversarial-general) | Tác vụ | Rà soát hoài nghi để tìm chỗ thiếu và chỗ sai |
+| [`bmad-review-edge-case-hunter`](#bmad-review-edge-case-hunter) | Tác vụ | Phân tích toàn bộ nhánh rẽ để tìm trường hợp biên chưa được xử lý |
+| [`bmad-editorial-review-prose`](#bmad-editorial-review-prose) | Tác vụ | Biên tập câu chữ nhằm tăng độ rõ ràng khi giao tiếp |
+| [`bmad-editorial-review-structure`](#bmad-editorial-review-structure) | Tác vụ | Biên tập cấu trúc — cắt, gộp và tổ chức lại |
+| [`bmad-shard-doc`](#bmad-shard-doc) | Tác vụ | Tách file markdown lớn thành các phần có tổ chức |
+| [`bmad-index-docs`](#bmad-index-docs) | Tác vụ | Tạo hoặc cập nhật mục lục cho toàn bộ tài liệu trong một thư mục |
 
 ## bmad-help
 
@@ -33,7 +33,7 @@ Chạy bất kỳ core tool nào bằng cách gõ tên skill của nó, ví dụ
 
 **Dùng khi:**
 
-- Bạn vừa hoàn tất một workflow và muốn biết tiếp theo là gì
+- Bạn vừa hoàn tất một quy trình và muốn biết tiếp theo là gì
 - Bạn mới làm quen với BMad và cần định hướng
 - Bạn đang mắc kẹt và muốn lời khuyên có ngữ cảnh
 - Bạn vừa cài module mới và muốn xem có gì khả dụng
@@ -51,7 +51,7 @@ Chạy bất kỳ core tool nào bằng cách gõ tên skill của nó, ví dụ
 
 ## bmad-brainstorming
 
-**Tạo ra nhiều ý tưởng đa dạng bằng các kỹ thuật sáng tạo có tương tác.** Đây là một phiên brainstorming có điều phối, nạp các phương pháp phát ý tưởng đã được kiểm chứng từ thư viện kỹ thuật và dẫn bạn đến 100+ ý tưởng trước khi bắt đầu sắp xếp.
+**Tạo ra nhiều ý tưởng đa dạng bằng các kỹ thuật sáng tạo có tương tác.** Đây là một phiên động não có điều phối, nạp các phương pháp phát ý tưởng đã được kiểm chứng từ thư viện kỹ thuật và dẫn bạn đến 100+ ý tưởng trước khi bắt đầu sắp xếp.
 
 **Dùng khi:**
 

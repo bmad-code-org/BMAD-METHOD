@@ -1,5 +1,5 @@
 ---
-title: Agents
+title: Các agent
 description: Các agent mặc định của BMM cùng skill ID, trigger menu và workflow chính
 sidebar:
   order: 2
