@@ -12,7 +12,7 @@ deferred_work_file: '{implementation_artifacts}/deferred-work.md'
 
 ## INSTRUCTIONS
 
-1. Investigate codebase. _Isolate deep exploration in sub-agents/tasks where available. To prevent context snowballing, instruct subagents to give you distilled summaries only._
+1. Investigate codebase. _Isolate deep exploration in sub-agents/tasks where available. To prevent context snowballing, instruct subagents to give you distilled summaries only._ If the approach introduces new type variants, error codes, or DB values: grep all consumers of the parent type/column and annotate each in the Code Map as `consumer — update required` or `consumer — excluded (reason)`. If no consumers exist, note `consumer — none found`.
 2. Read `./spec-template.md` fully. Fill it out based on the intent and investigation, and write the result to `{wipFile}`.
 3. Self-review against READY FOR DEVELOPMENT standard.
 4. If intent gaps exist, do not fantasize, do not leave open questions, HALT and ask the human.
