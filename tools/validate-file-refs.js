@@ -156,8 +156,15 @@ function mapInstalledToSource(refPath) {
   // Skip install-only paths (generated at install time, not in source)
   if (isInstallOnly(cleaned)) return null;
 
-  // core/, bmm/, and utility/ are directly under src/
-  if (cleaned.startsWith('core/') || cleaned.startsWith('bmm/') || cleaned.startsWith('utility/')) {
+  // Map installed module names to their source directory names
+  // _bmad/core/ → src/core-skills/, _bmad/bmm/ → src/bmm-skills/
+  if (cleaned.startsWith('core/')) {
+    return path.join(SRC_DIR, 'core-skills', cleaned.slice('core/'.length));
+  }
+  if (cleaned.startsWith('bmm/')) {
+    return path.join(SRC_DIR, 'bmm-skills', cleaned.slice('bmm/'.length));
+  }
+  if (cleaned.startsWith('utility/')) {
     return path.join(SRC_DIR, cleaned);
   }
 

@@ -59,8 +59,8 @@ async function createTestBmadFixture() {
   await fs.writeFile(
     path.join(fixtureDir, '_config', 'skill-manifest.csv'),
     [
-      'canonicalId,name,description,module,path,install_to_bmad',
-      '"bmad-master","bmad-master","Minimal test agent fixture","core","_bmad/core/bmad-master/SKILL.md","true"',
+      'canonicalId,name,description,module,path',
+      '"bmad-master","bmad-master","Minimal test agent fixture","core","_bmad/core/bmad-master/SKILL.md"',
       '',
     ].join('\n'),
   );
@@ -103,8 +103,8 @@ async function createSkillCollisionFixture() {
   await fs.writeFile(
     path.join(configDir, 'skill-manifest.csv'),
     [
-      'canonicalId,name,description,module,path,install_to_bmad',
-      '"bmad-help","bmad-help","Native help skill","core","_bmad/core/tasks/bmad-help/SKILL.md","true"',
+      'canonicalId,name,description,module,path',
+      '"bmad-help","bmad-help","Native help skill","core","_bmad/core/tasks/bmad-help/SKILL.md"',
       '',
     ].join('\n'),
   );
@@ -1306,7 +1306,7 @@ async function runTests() {
     const existingCsv27 = await fs.readFile(path.join(configDir27, 'skill-manifest.csv'), 'utf8');
     await fs.writeFile(
       path.join(configDir27, 'skill-manifest.csv'),
-      existingCsv27.trimEnd() + '\n"bmad-architect","bmad-architect","Architect","bmm","_bmad/bmm/agents/bmad-architect/SKILL.md","true"\n',
+      existingCsv27.trimEnd() + '\n"bmad-architect","bmad-architect","Architect","bmm","_bmad/bmm/agents/bmad-architect/SKILL.md"\n',
     );
 
     // Run Claude Code setup (which triggers cleanup then install)
