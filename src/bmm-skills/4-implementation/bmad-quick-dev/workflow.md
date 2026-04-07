@@ -70,10 +70,6 @@ Load and read full config from `{main_config}` and resolve:
 
 YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `{communication_language}`.
 
-### 2. Paths
-
-- `wipFile` = `{implementation_artifacts}/spec-wip.md`
-
-### 3. First Step Execution
+### 2. First Step Execution
 
 Read fully and follow: `./step-01-clarify-and-route.md` to begin the workflow.
