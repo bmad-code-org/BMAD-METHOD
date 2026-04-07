@@ -54,7 +54,8 @@ context: [] # optional: `{project-root}/`-prefixed paths to project-wide standar
 
 <!-- Tasks: backtick-quoted file path -- action -- rationale. Prefer one task per file; group tightly-coupled changes when splitting would be artificial. -->
 <!-- If an I/O Matrix is present, include a task to unit-test its edge cases. -->
-<!-- AC covers system-level behaviors not captured by the I/O Matrix. Do not duplicate I/O scenarios here. -->
+<!-- AC covers system-level behaviors not captured by the I/O Matrix. Do not duplicate I/O scenarios here.
+     If requirements were assigned from a parent artifact, every assigned requirement must have an AC here. -->
 
 **Execution:**
 - [ ] `FILE` -- ACTION -- RATIONALE
