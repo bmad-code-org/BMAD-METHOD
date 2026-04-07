@@ -837,14 +837,11 @@ class Manifest {
    * @returns {Object} Version info object with version, source, npmPackage, repoUrl
    */
   async getModuleVersionInfo(moduleName, bmadDir, moduleSourcePath = null) {
-    const os = require('node:os');
     const yaml = require('yaml');
 
-    // All module versions come from .claude-plugin/marketplace.json
-    const version = await this._readMarketplaceVersion(moduleName, moduleSourcePath);
-
-    // Determine source type
+    // Resolve source type first, then read version with the correct path context
     if (['core', 'bmm'].includes(moduleName)) {
+      const version = await this._readMarketplaceVersion(moduleName, moduleSourcePath);
       return {
         version,
         source: 'built-in',
@@ -859,6 +856,8 @@ class Manifest {
     const moduleInfo = await extMgr.getModuleByCode(moduleName);
 
     if (moduleInfo) {
+      // External module: use moduleSourcePath if provided, otherwise fall back to cache
+      const version = await this._readMarketplaceVersion(moduleName, moduleSourcePath);
       return {
         version,
         source: 'external',
@@ -867,7 +866,10 @@ class Manifest {
       };
     }
 
-    // Custom module - check cache directory
+    // Custom module: resolve path from source or cache before reading version
+    const customSourcePath = moduleSourcePath || path.join(bmadDir, '_config', 'custom', moduleName);
+    const version = await this._readMarketplaceVersion(moduleName, customSourcePath);
+
     const cacheDir = path.join(bmadDir, '_config', 'custom', moduleName);
     const moduleYamlPath = path.join(cacheDir, 'module.yaml');
 
