@@ -132,6 +132,10 @@ class Installer {
 
       await this._setupIdes(config, allModules, paths, addResult, previousSkillIds);
 
+      // Skills are now in IDE directories — remove redundant copies from _bmad/.
+      // Also cleans up skill dirs left by older installer versions.
+      await this._cleanupSkillDirs(paths.bmadDir);
+
       const restoreResult = await this._restoreUserFiles(paths, updateState);
 
       // Render consolidated summary
@@ -409,6 +413,33 @@ class Installer {
         addResult(ide, 'ok', setupResult.detail || '');
       } else {
         addResult(ide, 'error', setupResult.error || 'failed');
+      }
+    }
+  }
+
+  /**
+   * Remove skill directories from _bmad/ after IDE installation.
+   * Skills are self-contained in IDE directories, so _bmad/ only needs
+   * module-level files (config.yaml, _config/, etc.).
+   * Also cleans up skill dirs left by older installer versions.
+   * @param {string} bmadDir - BMAD installation directory
+   */
+  async _cleanupSkillDirs(bmadDir) {
+    const csv = require('csv-parse/sync');
+    const csvPath = path.join(bmadDir, '_config', 'skill-manifest.csv');
+    if (!(await fs.pathExists(csvPath))) return;
+
+    const csvContent = await fs.readFile(csvPath, 'utf8');
+    const records = csv.parse(csvContent, { columns: true, skip_empty_lines: true });
+    const bmadFolderName = path.basename(bmadDir);
+    const bmadPrefix = bmadFolderName + '/';
+
+    for (const record of records) {
+      if (!record.path) continue;
+      const relativePath = record.path.startsWith(bmadPrefix) ? record.path.slice(bmadPrefix.length) : record.path;
+      const sourceDir = path.dirname(path.join(bmadDir, relativePath));
+      if (await fs.pathExists(sourceDir)) {
+        await fs.remove(sourceDir);
       }
     }
   }
