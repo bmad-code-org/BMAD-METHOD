@@ -1,6 +1,5 @@
 ---
 deferred_work_file: '{implementation_artifacts}/deferred-work.md'
-spec_file: '' # set by step-01 before entering this step
 ---
 
 # Step One-Shot: Implement, Review, Present
