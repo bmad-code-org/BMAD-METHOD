@@ -1306,7 +1306,7 @@ async function runTests() {
     const existingCsv27 = await fs.readFile(path.join(configDir27, 'skill-manifest.csv'), 'utf8');
     await fs.writeFile(
       path.join(configDir27, 'skill-manifest.csv'),
-      existingCsv27.trimEnd() + '\n"bmad-architect","bmad-architect","Architect","bmm","_bmad/bmm/agents/bmad-architect/SKILL.md","true"\n',
+      existingCsv27.trimEnd() + '\n"bmad-architect","bmad-architect","Architect","bmm","_bmad/bmm/agents/bmad-architect/SKILL.md"\n',
     );
 
     // Run Claude Code setup (which triggers cleanup then install)
