@@ -837,14 +837,13 @@ class Manifest {
    * @returns {Object} Version info object with version, source, npmPackage, repoUrl
    */
   async getModuleVersionInfo(moduleName, bmadDir, moduleSourcePath = null) {
-    const os = require('node:os');
     const yaml = require('yaml');
 
-    // Built-in modules use BMad version (only core and bmm are in BMAD-METHOD repo)
+    // Resolve source type first, then read version with the correct path context
     if (['core', 'bmm'].includes(moduleName)) {
-      const bmadVersion = require(path.join(getProjectRoot(), 'package.json')).version;
+      const version = await this._readMarketplaceVersion(moduleName, moduleSourcePath);
       return {
-        version: bmadVersion,
+        version,
         source: 'built-in',
         npmPackage: null,
         repoUrl: null,
@@ -857,42 +856,20 @@ class Manifest {
     const moduleInfo = await extMgr.getModuleByCode(moduleName);
 
     if (moduleInfo) {
-      // External module - try to get version from npm registry first, then fall back to cache
-      let version = null;
-
-      if (moduleInfo.npmPackage) {
-        // Fetch version from npm registry
-        try {
-          version = await this.fetchNpmVersion(moduleInfo.npmPackage);
-        } catch {
-          // npm fetch failed, try cache as fallback
-        }
-      }
-
-      // If npm didn't work, try reading from cached repo's package.json
-      if (!version) {
-        const cacheDir = path.join(os.homedir(), '.bmad', 'cache', 'external-modules', moduleName);
-        const packageJsonPath = path.join(cacheDir, 'package.json');
-
-        if (await fs.pathExists(packageJsonPath)) {
-          try {
-            const pkg = require(packageJsonPath);
-            version = pkg.version;
-          } catch (error) {
-            await prompts.log.warn(`Failed to read package.json for ${moduleName}: ${error.message}`);
-          }
-        }
-      }
-
+      // External module: use moduleSourcePath if provided, otherwise fall back to cache
+      const version = await this._readMarketplaceVersion(moduleName, moduleSourcePath);
       return {
-        version: version,
+        version,
         source: 'external',
         npmPackage: moduleInfo.npmPackage || null,
         repoUrl: moduleInfo.url || null,
       };
     }
 
-    // Custom module - check cache directory
+    // Custom module: resolve path from source or cache before reading version
+    const customSourcePath = moduleSourcePath || path.join(bmadDir, '_config', 'custom', moduleName);
+    const version = await this._readMarketplaceVersion(moduleName, customSourcePath);
+
     const cacheDir = path.join(bmadDir, '_config', 'custom', moduleName);
     const moduleYamlPath = path.join(cacheDir, 'module.yaml');
 
@@ -901,7 +878,7 @@ class Manifest {
         const yamlContent = await fs.readFile(moduleYamlPath, 'utf8');
         const moduleConfig = yaml.parse(yamlContent);
         return {
-          version: moduleConfig.version || null,
+          version: version || moduleConfig.version || null,
           source: 'custom',
           npmPackage: moduleConfig.npmPackage || null,
           repoUrl: moduleConfig.repoUrl || null,
@@ -913,11 +890,60 @@ class Manifest {
 
     // Unknown module
     return {
-      version: null,
+      version,
       source: 'unknown',
       npmPackage: null,
       repoUrl: null,
     };
+  }
+
+  /**
+   * Read version from .claude-plugin/marketplace.json for a module
+   * @param {string} moduleName - Module code
+   * @returns {string|null} Version or null
+   */
+  async _readMarketplaceVersion(moduleName, moduleSourcePath = null) {
+    const os = require('node:os');
+    let marketplacePath;
+
+    if (['core', 'bmm'].includes(moduleName)) {
+      marketplacePath = path.join(getProjectRoot(), '.claude-plugin', 'marketplace.json');
+    } else if (moduleSourcePath) {
+      // Walk up from source path to find marketplace.json
+      let dir = moduleSourcePath;
+      for (let i = 0; i < 5; i++) {
+        const candidate = path.join(dir, '.claude-plugin', 'marketplace.json');
+        if (await fs.pathExists(candidate)) {
+          marketplacePath = candidate;
+          break;
+        }
+        const parent = path.dirname(dir);
+        if (parent === dir) break;
+        dir = parent;
+      }
+    }
+
+    // Fallback to external module cache
+    if (!marketplacePath) {
+      const cacheDir = path.join(os.homedir(), '.bmad', 'cache', 'external-modules', moduleName);
+      marketplacePath = path.join(cacheDir, '.claude-plugin', 'marketplace.json');
+    }
+
+    try {
+      if (await fs.pathExists(marketplacePath)) {
+        const data = JSON.parse(await fs.readFile(marketplacePath, 'utf8'));
+        const plugins = data?.plugins;
+        if (!Array.isArray(plugins) || plugins.length === 0) return null;
+        let best = null;
+        for (const p of plugins) {
+          if (p.version && (!best || p.version > best)) best = p.version;
+        }
+        return best;
+      }
+    } catch {
+      // ignore
+    }
+    return null;
   }
 
   /**

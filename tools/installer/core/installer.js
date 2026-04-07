@@ -27,6 +27,44 @@ class Installer {
   }
 
   /**
+   * Read the module version from .claude-plugin/marketplace.json
+   * Walks up from sourcePath looking for .claude-plugin/marketplace.json
+   * @param {string} sourcePath - Module source directory
+   * @returns {string} Version string or empty string
+   */
+  async _getMarketplaceVersion(sourcePath) {
+    let dir = sourcePath;
+    for (let i = 0; i < 5; i++) {
+      const marketplacePath = path.join(dir, '.claude-plugin', 'marketplace.json');
+      if (await fs.pathExists(marketplacePath)) {
+        try {
+          const data = JSON.parse(await fs.readFile(marketplacePath, 'utf8'));
+          return this._extractMarketplaceVersion(data);
+        } catch {
+          return '';
+        }
+      }
+      const parent = path.dirname(dir);
+      if (parent === dir) break;
+      dir = parent;
+    }
+    return '';
+  }
+
+  /**
+   * Extract the highest version from marketplace.json plugins array
+   */
+  _extractMarketplaceVersion(data) {
+    const plugins = data?.plugins;
+    if (!Array.isArray(plugins) || plugins.length === 0) return '';
+    let best = '';
+    for (const p of plugins) {
+      if (p.version && (!best || p.version > best)) best = p.version;
+    }
+    return best;
+  }
+
+  /**
    * Main installation method
    * @param {Object} config - Installation configuration
    * @param {string} config.directory - Target directory
@@ -52,9 +90,36 @@ class Installer {
 
       await this._validateIdeSelection(config);
 
+      // Capture pre-install module versions for from→to display
+      const preInstallVersions = new Map();
+      if (existingInstall.installed) {
+        const existingModules = await this.manifest.getAllModuleVersions(paths.bmadDir);
+        for (const mod of existingModules) {
+          if (mod.name && mod.version) {
+            preInstallVersions.set(mod.name, mod.version);
+          }
+        }
+      }
+
       // Results collector for consolidated summary
       const results = [];
-      const addResult = (step, status, detail = '') => results.push({ step, status, detail });
+      const addResult = (step, status, detail = '', meta = {}) => results.push({ step, status, detail, ...meta });
+
+      // Capture previously installed skill IDs before they get overwritten
+      const previousSkillIds = new Set();
+      const prevCsvPath = path.join(paths.bmadDir, '_config', 'skill-manifest.csv');
+      if (await fs.pathExists(prevCsvPath)) {
+        try {
+          const csvParse = require('csv-parse/sync');
+          const content = await fs.readFile(prevCsvPath, 'utf8');
+          const records = csvParse.parse(content, { columns: true, skip_empty_lines: true });
+          for (const r of records) {
+            if (r.canonicalId) previousSkillIds.add(r.canonicalId);
+          }
+        } catch (error) {
+          await prompts.log.warn(`Failed to parse skill-manifest.csv: ${error.message}`);
+        }
+      }
 
       await this._cacheCustomModules(paths, addResult);
 
@@ -65,7 +130,7 @@ class Installer {
 
       await this._installAndConfigure(config, originalConfig, paths, officialModuleIds, allModules, addResult, officialModules);
 
-      await this._setupIdes(config, allModules, paths, addResult);
+      await this._setupIdes(config, allModules, paths, addResult, previousSkillIds);
 
       const restoreResult = await this._restoreUserFiles(paths, updateState);
 
@@ -76,6 +141,7 @@ class Installer {
         ides: config.ides,
         customFiles: restoreResult.customFiles.length > 0 ? restoreResult.customFiles : undefined,
         modifiedFiles: restoreResult.modifiedFiles.length > 0 ? restoreResult.modifiedFiles : undefined,
+        preInstallVersions,
       });
 
       return {
@@ -321,7 +387,7 @@ class Installer {
   /**
    * Set up IDE integrations for each selected IDE.
    */
-  async _setupIdes(config, allModules, paths, addResult) {
+  async _setupIdes(config, allModules, paths, addResult, previousSkillIds = new Set()) {
     if (config.skipIde || !config.ides || config.ides.length === 0) return;
 
     await this.ideManager.ensureInitialized();
@@ -336,6 +402,7 @@ class Installer {
       const setupResult = await this.ideManager.setup(ide, paths.projectRoot, paths.bmadDir, {
         selectedModules: allModules || [],
         verbose: config.verbose,
+        previousSkillIds,
       });
 
       if (setupResult.success) {
@@ -556,7 +623,7 @@ class Installer {
       message(`${isQuickUpdate ? 'Updating' : 'Installing'} ${moduleName}...`);
 
       const moduleConfig = officialModules.moduleConfigs[moduleName] || {};
-      await officialModules.install(
+      const installResult = await officialModules.install(
         moduleName,
         paths.bmadDir,
         (filePath) => {
@@ -570,7 +637,12 @@ class Installer {
         },
       );
 
-      addResult(`Module: ${moduleName}`, 'ok', isQuickUpdate ? 'updated' : 'installed');
+      // Get display name from source module.yaml; version from marketplace.json
+      const sourcePath = await officialModules.findModuleSource(moduleName, { silent: true });
+      const moduleInfo = sourcePath ? await officialModules.getModuleInfo(sourcePath, moduleName, '') : null;
+      const displayName = moduleInfo?.name || moduleName;
+      const version = sourcePath ? await this._getMarketplaceVersion(sourcePath) : '';
+      addResult(displayName, 'ok', '', { moduleCode: moduleName, newVersion: version });
     }
   }
 
@@ -598,7 +670,11 @@ class Installer {
         [moduleName]: { ...config.coreConfig, ...result.moduleConfig, ...collectedModuleConfig },
       });
 
-      addResult(`Module: ${moduleName}`, 'ok', isQuickUpdate ? 'updated' : 'installed');
+      // Get display name from source module.yaml; version from marketplace.json
+      const moduleInfo = await officialModules.getModuleInfo(sourcePath, moduleName, '');
+      const displayName = moduleInfo?.name || moduleName;
+      const version = await this._getMarketplaceVersion(sourcePath);
+      addResult(displayName, 'ok', '', { moduleCode: moduleName, newVersion: version });
     }
   }
 
@@ -1062,23 +1138,10 @@ class Installer {
     const selectedIdes = new Set((context.ides || []).map((ide) => String(ide).toLowerCase()));
 
     // Build step lines with status indicators
+    const preVersions = context.preInstallVersions || new Map();
     const lines = [];
     for (const r of results) {
-      let stepLabel = null;
-
-      if (r.status !== 'ok') {
-        stepLabel = r.step;
-      } else if (r.step === 'Core') {
-        stepLabel = 'BMAD';
-      } else if (r.step.startsWith('Module: ')) {
-        stepLabel = r.step;
-      } else if (selectedIdes.has(String(r.step).toLowerCase())) {
-        stepLabel = r.step;
-      }
-
-      if (!stepLabel) {
-        continue;
-      }
+      const stepLabel = r.step;
 
       let icon;
       if (r.status === 'ok') {
@@ -1088,18 +1151,32 @@ class Installer {
       } else {
         icon = color.red('\u2717');
       }
-      const detail = r.detail ? color.dim(` (${r.detail})`) : '';
+
+      // Build version detail for module results
+      let detail = '';
+      if (r.moduleCode && r.newVersion) {
+        const oldVersion = preVersions.get(r.moduleCode);
+        if (oldVersion && oldVersion === r.newVersion) {
+          detail = ` (v${r.newVersion}, no change)`;
+        } else if (oldVersion) {
+          detail = ` (v${oldVersion} → v${r.newVersion})`;
+        } else {
+          detail = ` (v${r.newVersion}, installed)`;
+        }
+      } else if (r.detail) {
+        detail = ` (${r.detail})`;
+      }
       lines.push(`  ${icon}  ${stepLabel}${detail}`);
     }
 
     if ((context.ides || []).length === 0) {
-      lines.push(`  ${color.green('\u2713')}  No IDE selected ${color.dim('(installed in _bmad only)')}`);
+      lines.push(`  ${color.green('\u2713')}  No IDE selected (installed in _bmad only)`);
     }
 
     // Context and warnings
     lines.push('');
     if (context.bmadDir) {
-      lines.push(`  Installed to: ${color.dim(context.bmadDir)}`);
+      lines.push(`  Installed to: ${context.bmadDir}`);
     }
     if (context.customFiles && context.customFiles.length > 0) {
       lines.push(`  ${color.cyan(`Custom files preserved: ${context.customFiles.length}`)}`);
@@ -1111,17 +1188,18 @@ class Installer {
     // Next steps
     lines.push(
       '',
-      '  Next steps:',
-      `    Read our new Docs Site: ${color.dim('https://docs.bmad-method.org/')}`,
-      `    Join our Discord: ${color.dim('https://discord.gg/gk8jAdXWmj')}`,
-      `    Star us on GitHub: ${color.dim('https://github.com/bmad-code-org/BMAD-METHOD/')}`,
-      `    Subscribe on YouTube: ${color.dim('https://www.youtube.com/@BMadCode')}`,
+      '  Get started:',
+      `    1. Launch your AI agent from your project folder`,
+      `    2. Not sure what to do? Invoke the ${color.cyan('bmad-help')} skill and ask it what to do!`,
+      '',
+      `    Blog, Docs and Guides: ${color.blue('https://bmadcode.com/')}`,
+      `    Community: ${color.blue('https://discord.gg/gk8jAdXWmj')}`,
     );
-    if (context.ides && context.ides.length > 0) {
-      lines.push(`    Invoke the ${color.cyan('bmad-help')} skill in your IDE Agent to get started`);
-    }
 
-    await prompts.note(lines.join('\n'), 'BMAD is ready to use!');
+    await prompts.box(lines.join('\n'), 'BMAD is ready to use!', {
+      rounded: true,
+      formatBorder: color.green,
+    });
   }
 
   /**
@@ -1231,6 +1309,7 @@ class Installer {
     }
 
     for (const moduleName of modulesToUpdate) {
+      if (moduleName === 'core') continue; // Already collected above
       const modulePrompted = await quickModules.collectModuleConfigQuick(moduleName, projectDir, true);
       if (modulePrompted) {
         promptedForNewFields = true;
