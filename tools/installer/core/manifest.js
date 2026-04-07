@@ -841,7 +841,7 @@ class Manifest {
     const yaml = require('yaml');
 
     // All module versions come from .claude-plugin/marketplace.json
-    const version = await this._readMarketplaceVersion(moduleName);
+    const version = await this._readMarketplaceVersion(moduleName, moduleSourcePath);
 
     // Determine source type
     if (['core', 'bmm'].includes(moduleName)) {
@@ -900,13 +900,29 @@ class Manifest {
    * @param {string} moduleName - Module code
    * @returns {string|null} Version or null
    */
-  async _readMarketplaceVersion(moduleName) {
+  async _readMarketplaceVersion(moduleName, moduleSourcePath = null) {
     const os = require('node:os');
     let marketplacePath;
 
     if (['core', 'bmm'].includes(moduleName)) {
       marketplacePath = path.join(getProjectRoot(), '.claude-plugin', 'marketplace.json');
-    } else {
+    } else if (moduleSourcePath) {
+      // Walk up from source path to find marketplace.json
+      let dir = moduleSourcePath;
+      for (let i = 0; i < 5; i++) {
+        const candidate = path.join(dir, '.claude-plugin', 'marketplace.json');
+        if (await fs.pathExists(candidate)) {
+          marketplacePath = candidate;
+          break;
+        }
+        const parent = path.dirname(dir);
+        if (parent === dir) break;
+        dir = parent;
+      }
+    }
+
+    // Fallback to external module cache
+    if (!marketplacePath) {
       const cacheDir = path.join(os.homedir(), '.bmad', 'cache', 'external-modules', moduleName);
       marketplacePath = path.join(cacheDir, '.claude-plugin', 'marketplace.json');
     }
@@ -914,7 +930,13 @@ class Manifest {
     try {
       if (await fs.pathExists(marketplacePath)) {
         const data = JSON.parse(await fs.readFile(marketplacePath, 'utf8'));
-        return data.plugins?.[0]?.version || null;
+        const plugins = data?.plugins;
+        if (!Array.isArray(plugins) || plugins.length === 0) return null;
+        let best = null;
+        for (const p of plugins) {
+          if (p.version && (!best || p.version > best)) best = p.version;
+        }
+        return best;
       }
     } catch {
       // ignore

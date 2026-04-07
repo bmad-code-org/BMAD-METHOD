@@ -39,7 +39,7 @@ class Installer {
       if (await fs.pathExists(marketplacePath)) {
         try {
           const data = JSON.parse(await fs.readFile(marketplacePath, 'utf8'));
-          return data.plugins?.[0]?.version || '';
+          return this._extractMarketplaceVersion(data);
         } catch {
           return '';
         }
@@ -49,6 +49,19 @@ class Installer {
       dir = parent;
     }
     return '';
+  }
+
+  /**
+   * Extract the highest version from marketplace.json plugins array
+   */
+  _extractMarketplaceVersion(data) {
+    const plugins = data?.plugins;
+    if (!Array.isArray(plugins) || plugins.length === 0) return '';
+    let best = '';
+    for (const p of plugins) {
+      if (p.version && (!best || p.version > best)) best = p.version;
+    }
+    return best;
   }
 
   /**
@@ -95,17 +108,17 @@ class Installer {
       // Capture previously installed skill IDs before they get overwritten
       const previousSkillIds = new Set();
       const prevCsvPath = path.join(paths.bmadDir, '_config', 'skill-manifest.csv');
-      try {
-        if (await fs.pathExists(prevCsvPath)) {
+      if (await fs.pathExists(prevCsvPath)) {
+        try {
           const csvParse = require('csv-parse/sync');
           const content = await fs.readFile(prevCsvPath, 'utf8');
           const records = csvParse.parse(content, { columns: true, skip_empty_lines: true });
           for (const r of records) {
             if (r.canonicalId) previousSkillIds.add(r.canonicalId);
           }
+        } catch (error) {
+          await prompts.log.warn(`Failed to parse skill-manifest.csv: ${error.message}`);
         }
-      } catch {
-        // No previous manifest - fresh install
       }
 
       await this._cacheCustomModules(paths, addResult);

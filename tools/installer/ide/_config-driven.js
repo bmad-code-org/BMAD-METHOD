@@ -428,8 +428,11 @@ class ConfigDrivenIdeSetup {
     for (const entry of entries) {
       if (!entry || typeof entry !== 'string') continue;
 
+      // Always preserve bmad-os-* utility skills regardless of cleanup mode
+      if (entry.startsWith('bmad-os-')) continue;
+
       // Surgical removal from set, or legacy prefix matching when set is null
-      const shouldRemove = removalSet ? removalSet.has(entry) : entry.startsWith('bmad') && !entry.startsWith('bmad-os-');
+      const shouldRemove = removalSet ? removalSet.has(entry) : entry.startsWith('bmad');
 
       if (shouldRemove) {
         try {

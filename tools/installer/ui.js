@@ -23,12 +23,29 @@ async function getMarketplaceVersion(moduleCode) {
   try {
     if (await fs.pathExists(marketplacePath)) {
       const data = JSON.parse(await fs.readFile(marketplacePath, 'utf8'));
-      return data.plugins?.[0]?.version || '';
+      return _extractMarketplaceVersion(data);
     }
   } catch {
     // ignore
   }
   return '';
+}
+
+/**
+ * Extract the highest version from marketplace.json plugins array.
+ * Handles multiple plugins per file safely.
+ * @param {Object} data - Parsed marketplace.json
+ * @returns {string} Version string or empty string
+ */
+function _extractMarketplaceVersion(data) {
+  const plugins = data?.plugins;
+  if (!Array.isArray(plugins) || plugins.length === 0) return '';
+  // Use the highest version across all plugins in the file
+  let best = '';
+  for (const p of plugins) {
+    if (p.version && (!best || p.version > best)) best = p.version;
+  }
+  return best;
 }
 
 // Separator class for visual grouping in select/multiselect prompts
