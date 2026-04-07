@@ -1,0 +1,17 @@
+# BMad Method - Skill Removal List
+# Entries listed here will be removed from IDE skill directories during install/update.
+# One entry per line. Lines starting with # are comments.
+# Each entry is a skill directory name (canonicalId) that was removed or renamed.
+
+# Removed agents (v6.2.0 - v6.2.2)
+bmad-agent-sm
+bmad-agent-qa
+bmad-agent-quick-flow-solo-dev
+
+# Removed skills (v6.2.0 - v6.2.2)
+bmad-create-product-brief
+bmad-product-brief-preview
+bmad-quick-spec
+bmad-quick-flow
+bmad-quick-dev-new-preview
+bmad-init

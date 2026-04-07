@@ -840,11 +840,13 @@ class Manifest {
     const os = require('node:os');
     const yaml = require('yaml');
 
-    // Built-in modules use BMad version (only core and bmm are in BMAD-METHOD repo)
+    // All module versions come from .claude-plugin/marketplace.json
+    const version = await this._readMarketplaceVersion(moduleName);
+
+    // Determine source type
     if (['core', 'bmm'].includes(moduleName)) {
-      const bmadVersion = require(path.join(getProjectRoot(), 'package.json')).version;
       return {
-        version: bmadVersion,
+        version,
         source: 'built-in',
         npmPackage: null,
         repoUrl: null,
@@ -857,35 +859,8 @@ class Manifest {
     const moduleInfo = await extMgr.getModuleByCode(moduleName);
 
     if (moduleInfo) {
-      // External module - try to get version from npm registry first, then fall back to cache
-      let version = null;
-
-      if (moduleInfo.npmPackage) {
-        // Fetch version from npm registry
-        try {
-          version = await this.fetchNpmVersion(moduleInfo.npmPackage);
-        } catch {
-          // npm fetch failed, try cache as fallback
-        }
-      }
-
-      // If npm didn't work, try reading from cached repo's package.json
-      if (!version) {
-        const cacheDir = path.join(os.homedir(), '.bmad', 'cache', 'external-modules', moduleName);
-        const packageJsonPath = path.join(cacheDir, 'package.json');
-
-        if (await fs.pathExists(packageJsonPath)) {
-          try {
-            const pkg = require(packageJsonPath);
-            version = pkg.version;
-          } catch (error) {
-            await prompts.log.warn(`Failed to read package.json for ${moduleName}: ${error.message}`);
-          }
-        }
-      }
-
       return {
-        version: version,
+        version,
         source: 'external',
         npmPackage: moduleInfo.npmPackage || null,
         repoUrl: moduleInfo.url || null,
@@ -901,7 +876,7 @@ class Manifest {
         const yamlContent = await fs.readFile(moduleYamlPath, 'utf8');
         const moduleConfig = yaml.parse(yamlContent);
         return {
-          version: moduleConfig.version || null,
+          version: version || moduleConfig.version || null,
           source: 'custom',
           npmPackage: moduleConfig.npmPackage || null,
           repoUrl: moduleConfig.repoUrl || null,
@@ -913,11 +888,38 @@ class Manifest {
 
     // Unknown module
     return {
-      version: null,
+      version,
       source: 'unknown',
       npmPackage: null,
       repoUrl: null,
     };
+  }
+
+  /**
+   * Read version from .claude-plugin/marketplace.json for a module
+   * @param {string} moduleName - Module code
+   * @returns {string|null} Version or null
+   */
+  async _readMarketplaceVersion(moduleName) {
+    const os = require('node:os');
+    let marketplacePath;
+
+    if (['core', 'bmm'].includes(moduleName)) {
+      marketplacePath = path.join(getProjectRoot(), '.claude-plugin', 'marketplace.json');
+    } else {
+      const cacheDir = path.join(os.homedir(), '.bmad', 'cache', 'external-modules', moduleName);
+      marketplacePath = path.join(cacheDir, '.claude-plugin', 'marketplace.json');
+    }
+
+    try {
+      if (await fs.pathExists(marketplacePath)) {
+        const data = JSON.parse(await fs.readFile(marketplacePath, 'utf8'));
+        return data.plugins?.[0]?.version || null;
+      }
+    } catch {
+      // ignore
+    }
+    return null;
   }
 
   /**

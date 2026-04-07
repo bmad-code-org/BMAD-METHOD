@@ -4,7 +4,32 @@ const fs = require('fs-extra');
 const { CLIUtils } = require('./cli-utils');
 const { CustomHandler } = require('./custom-handler');
 const { ExternalModuleManager } = require('./modules/external-manager');
+const { getProjectRoot } = require('./project-root');
 const prompts = require('./prompts');
+
+/**
+ * Read module version from .claude-plugin/marketplace.json
+ * @param {string} moduleCode - Module code (e.g., 'core', 'bmm', 'cis')
+ * @returns {string} Version string or empty string
+ */
+async function getMarketplaceVersion(moduleCode) {
+  let marketplacePath;
+  if (moduleCode === 'core' || moduleCode === 'bmm') {
+    marketplacePath = path.join(getProjectRoot(), '.claude-plugin', 'marketplace.json');
+  } else {
+    const cacheDir = path.join(os.homedir(), '.bmad', 'cache', 'external-modules', moduleCode);
+    marketplacePath = path.join(cacheDir, '.claude-plugin', 'marketplace.json');
+  }
+  try {
+    if (await fs.pathExists(marketplacePath)) {
+      const data = JSON.parse(await fs.readFile(marketplacePath, 'utf8'));
+      return data.plugins?.[0]?.version || '';
+    }
+  } catch {
+    // ignore
+  }
+  return '';
+}
 
 // Separator class for visual grouping in select/multiselect prompts
 // Note: @clack/prompts doesn't support separators natively, they are filtered out
@@ -70,17 +95,14 @@ class UI {
     if (hasExistingInstall) {
       // Get version information
       const { existingInstall, bmadDir } = await this.getExistingInstallation(confirmedDirectory);
-      const packageJsonPath = path.join(__dirname, '../../package.json');
-      const currentVersion = require(packageJsonPath).version;
-      const installedVersion = existingInstall.installed ? existingInstall.version || 'unknown' : 'unknown';
 
       // Build menu choices dynamically
       const choices = [];
 
       // Always show Quick Update first (allows refreshing installation even on same version)
-      if (installedVersion !== 'unknown') {
+      if (existingInstall.installed) {
         choices.push({
-          name: `Quick Update (v${installedVersion} → v${currentVersion})`,
+          name: 'Quick Update',
           value: 'quick-update',
         });
       }
@@ -880,14 +902,18 @@ class UI {
     const lockedValues = ['core'];
 
     // Core module is always installed — show it locked at the top
-    allOptions.push({ label: 'BMad Core Module', value: 'core', hint: 'Core configuration and shared resources' });
+    const coreVersion = await getMarketplaceVersion('core');
+    const coreLabel = coreVersion ? `BMad Core Module (v${coreVersion})` : 'BMad Core Module';
+    allOptions.push({ label: coreLabel, value: 'core', hint: 'Core configuration and shared resources' });
     initialValues.push('core');
 
     // Helper to build module entry with proper sorting and selection
-    const buildModuleEntry = (mod, value, group) => {
+    const buildModuleEntry = async (mod, value, group) => {
       const isInstalled = installedModuleIds.has(value);
+      const version = await getMarketplaceVersion(value);
+      const label = version ? `${mod.name} (v${version})` : mod.name;
       return {
-        label: mod.name,
+        label,
         value,
         hint: mod.description || group,
         // Pre-select only if already installed (not on fresh install)
@@ -899,7 +925,7 @@ class UI {
     const localEntries = [];
     for (const mod of localModules) {
       if (!mod.isCustom && mod.id !== 'core') {
-        const entry = buildModuleEntry(mod, mod.id, 'Local');
+        const entry = await buildModuleEntry(mod, mod.id, 'Local');
         localEntries.push(entry);
         if (entry.selected) {
           initialValues.push(mod.id);
@@ -912,7 +938,7 @@ class UI {
     const officialModules = [];
     for (const mod of externalModules) {
       if (mod.type === 'bmad-org') {
-        const entry = buildModuleEntry(mod, mod.code, 'Official');
+        const entry = await buildModuleEntry(mod, mod.code, 'Official');
         officialModules.push(entry);
         if (entry.selected) {
           initialValues.push(mod.code);
@@ -925,7 +951,7 @@ class UI {
     const communityModules = [];
     for (const mod of externalModules) {
       if (mod.type === 'community') {
-        const entry = buildModuleEntry(mod, mod.code, 'Community');
+        const entry = await buildModuleEntry(mod, mod.code, 'Community');
         communityModules.push(entry);
         if (entry.selected) {
           initialValues.push(mod.code);

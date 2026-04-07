@@ -1301,6 +1301,14 @@ async function runTests() {
       '---\nname: bmad-architect\ndescription: Architect\n---\nOld skill content\n',
     );
 
+    // Add bmad-architect to the existing skill-manifest.csv so cleanup knows it was previously installed
+    const configDir27 = path.join(installedBmadDir27, '_config');
+    const existingCsv27 = await fs.readFile(path.join(configDir27, 'skill-manifest.csv'), 'utf8');
+    await fs.writeFile(
+      path.join(configDir27, 'skill-manifest.csv'),
+      existingCsv27.trimEnd() + '\n"bmad-architect","bmad-architect","Architect","bmm","_bmad/bmm/agents/bmad-architect/SKILL.md","true"\n',
+    );
+
     // Run Claude Code setup (which triggers cleanup then install)
     const ideManager27 = new IdeManager();
     await ideManager27.ensureInitialized();
