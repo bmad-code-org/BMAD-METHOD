@@ -569,77 +569,36 @@ class UI {
    * @returns {Array} Selected module codes (excluding core)
    */
   async selectAllModules(installedModuleIds = new Set()) {
-    const { OfficialModules } = require('./modules/official-modules');
-    const officialModulesSource = new OfficialModules();
-    const { modules: localModules } = await officialModulesSource.listAvailable();
-
-    // Get external modules
+    // Registry is the single source of truth for the module list
     const externalManager = new ExternalModuleManager();
-    const externalModules = await externalManager.listAvailable();
+    const registryModules = await externalManager.listAvailable();
 
     // Build flat options list with group hints for autocompleteMultiselect
     const allOptions = [];
     const initialValues = [];
     const lockedValues = ['core'];
 
-    // Core module is always installed — show it locked at the top
-    const coreVersion = await getMarketplaceVersion('core');
-    const coreLabel = coreVersion ? `BMad Core Module (v${coreVersion})` : 'BMad Core Module';
-    allOptions.push({ label: coreLabel, value: 'core', hint: 'Core configuration and shared resources' });
-    initialValues.push('core');
-
     // Helper to build module entry with proper sorting and selection
-    const buildModuleEntry = async (mod, value, group) => {
-      const isInstalled = installedModuleIds.has(value);
-      const version = await getMarketplaceVersion(value);
+    const buildModuleEntry = async (mod) => {
+      const isInstalled = installedModuleIds.has(mod.code);
+      const version = await getMarketplaceVersion(mod.code);
       const label = version ? `${mod.name} (v${version})` : mod.name;
       return {
         label,
-        value,
-        hint: mod.description || group,
-        // Pre-select only if already installed (not on fresh install)
+        value: mod.code,
+        hint: mod.description,
         selected: isInstalled,
       };
     };
 
-    // Local modules (BMM, BMB, etc.)
-    const localEntries = [];
-    for (const mod of localModules) {
-      if (mod.id !== 'core') {
-        const entry = await buildModuleEntry(mod, mod.id, 'Local');
-        localEntries.push(entry);
-        if (entry.selected) {
-          initialValues.push(mod.id);
-        }
+    // Registry order is display order; core is always locked
+    for (const mod of registryModules) {
+      const entry = await buildModuleEntry(mod);
+      allOptions.push({ label: entry.label, value: entry.value, hint: entry.hint });
+      if (entry.selected) {
+        initialValues.push(mod.code);
       }
     }
-    allOptions.push(...localEntries.map(({ label, value, hint }) => ({ label, value, hint })));
-
-    // Group 2: BMad Official Modules (type: bmad-org)
-    const officialModules = [];
-    for (const mod of externalModules) {
-      if (mod.type === 'bmad-org') {
-        const entry = await buildModuleEntry(mod, mod.code, 'Official');
-        officialModules.push(entry);
-        if (entry.selected) {
-          initialValues.push(mod.code);
-        }
-      }
-    }
-    allOptions.push(...officialModules.map(({ label, value, hint }) => ({ label, value, hint })));
-
-    // Group 3: Community Modules (type: community)
-    const communityModules = [];
-    for (const mod of externalModules) {
-      if (mod.type === 'community') {
-        const entry = await buildModuleEntry(mod, mod.code, 'Community');
-        communityModules.push(entry);
-        if (entry.selected) {
-          initialValues.push(mod.code);
-        }
-      }
-    }
-    allOptions.push(...communityModules.map(({ label, value, hint }) => ({ label, value, hint })));
 
     const selected = await prompts.autocompleteMultiselect({
       message: 'Select modules to install:',
@@ -670,16 +629,14 @@ class UI {
    * @returns {Array} Default module codes
    */
   async getDefaultModules(installedModuleIds = new Set()) {
-    const { OfficialModules } = require('./modules/official-modules');
-    const officialModules = new OfficialModules();
-    const { modules: localModules } = await officialModules.listAvailable();
+    const externalManager = new ExternalModuleManager();
+    const registryModules = await externalManager.listAvailable();
 
     const defaultModules = [];
 
-    // Add default-selected local modules (typically BMM)
-    for (const mod of localModules) {
-      if (mod.defaultSelected === true || installedModuleIds.has(mod.id)) {
-        defaultModules.push(mod.id);
+    for (const mod of registryModules) {
+      if (mod.defaultSelected || installedModuleIds.has(mod.code)) {
+        defaultModules.push(mod.code);
       }
     }
 
