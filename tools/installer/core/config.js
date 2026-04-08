@@ -3,7 +3,7 @@
  * User input comes from either UI answers or headless CLI flags.
  */
 class Config {
-  constructor({ directory, modules, ides, skipPrompts, verbose, actionType, coreConfig, moduleConfigs, quickUpdate, customModulesMeta }) {
+  constructor({ directory, modules, ides, skipPrompts, verbose, actionType, coreConfig, moduleConfigs, quickUpdate }) {
     this.directory = directory;
     this.modules = Object.freeze([...modules]);
     this.ides = Object.freeze([...ides]);
@@ -13,7 +13,6 @@ class Config {
     this.coreConfig = coreConfig;
     this.moduleConfigs = moduleConfigs;
     this._quickUpdate = quickUpdate;
-    this.customModulesMeta = Object.freeze(customModulesMeta || []);
     Object.freeze(this);
   }
 
@@ -38,7 +37,6 @@ class Config {
       coreConfig: userInput.coreConfig || {},
       moduleConfigs: userInput.moduleConfigs || null,
       quickUpdate: userInput._quickUpdate || false,
-      customModulesMeta: userInput.customModulesMeta || [],
     });
   }
 

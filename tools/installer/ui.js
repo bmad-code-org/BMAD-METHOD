@@ -786,10 +786,9 @@ class UI {
     }
 
     if (selectedCodes.size > 0) {
-      const communityMgrForDisplay = new (require('./modules/community-manager').CommunityModuleManager)();
       const moduleLines = [];
       for (const code of selectedCodes) {
-        const mod = await communityMgrForDisplay.getModuleByCode(code);
+        const mod = await communityMgr.getModuleByCode(code);
         moduleLines.push(`  \u2022 ${mod?.displayName || code}`);
       }
       await prompts.log.message('Selected community modules:\n' + moduleLines.join('\n'));
