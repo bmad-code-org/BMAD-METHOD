@@ -54,12 +54,12 @@ Chaque skill est un répertoire contenant un fichier `SKILL.md`. Par exemple, un
 │   └── SKILL.md
 ├── bmad-create-prd/
 │   └── SKILL.md
-├── bmad-analyst/
+├── bmad-agent-dev/
 │   └── SKILL.md
 └── ...
 ```
 
-Le nom du répertoire détermine le nom du skill dans votre IDE. Par exemple, le répertoire `bmad-analyst/` enregistre le skill `bmad-analyst`.
+Le nom du répertoire détermine le nom du skill dans votre IDE. Par exemple, le répertoire `bmad-agent-dev/` enregistre le skill `bmad-agent-dev`.
 
 ## Comment découvrir vos skills
 
@@ -77,13 +77,11 @@ Les répertoires de skills générés dans votre projet sont la liste de référ
 
 Les skills d'agent chargent un persona[^2] IA spécialisé avec un rôle défini, un style de communication et un menu de workflows. Une fois chargé, l'agent reste en caractère et répond aux déclencheurs du menu.
 
-| Exemple de skill | Agent | Rôle |
-| --- | --- | --- |
-| `bmad-dev` | Amelia (Développeur) | Implémente les stories avec une adhérence stricte aux specs |
-| `bmad-analyst` | Mary (Analyste) | Brainstorming de projets, recherche, création de briefs |
-| `bmad-architect` | Winston (Architecte) | Conçoit l'architecture système |
-| `bmad-ux-designer` | Sally (Designer UX) | Crée les designs UX |
-| `bmad-tech-writer` | Paige (Rédacteur Technique) | Documente les projets, rédige des guides, génère des diagrammes |
+| Exemple de skill | Agent                  | Rôle                                                        |
+|------------------|------------------------|-------------------------------------------------------------|
+| `bmad-agent-dev` | Amelia (Développeur)   | Implémente les stories avec une adhérence stricte aux specs |
+| `bmad-pm`        | John (Product Manager) | Crée et valide les PRDs[^1]                                 |
+| `bmad-architect` | Winston (Architecte)   | Conçoit l'architecture système                              |
 
 Consultez [Agents](./agents.md) pour la liste complète des agents par défaut et leurs déclencheurs.
 
@@ -126,7 +124,7 @@ Le module principal inclut 11 outils intégrés — revues, compression, brainst
 
 ## Convention de nommage
 
-Tous les skills utilisent le préfixe `bmad-` suivi d'un nom descriptif (ex. `bmad-analyst`, `bmad-create-prd`, `bmad-help`). Consultez [Modules](./modules.md) pour les modules disponibles.
+Tous les skills utilisent le préfixe `bmad-` suivi d'un nom descriptif (ex. `bmad-agent-dev`, `bmad-create-prd`, `bmad-help`). Consultez [Modules](./modules.md) pour les modules disponibles.
 
 ## Dépannage
 
