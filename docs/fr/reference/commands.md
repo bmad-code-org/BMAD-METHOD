@@ -75,7 +75,7 @@ Les répertoires de skills générés dans votre projet sont la liste de référ
 
 ### Skills d'agent
 
-Les skills d'agent chargent une persona[^2] IA spécialisée avec un rôle défini, un style de communication et un menu de workflows. Une fois chargé, l'agent reste en caractère et répond aux déclencheurs du menu.
+Les skills d'agent chargent un persona[^2] IA spécialisé avec un rôle défini, un style de communication et un menu de workflows. Une fois chargé, l'agent reste en caractère et répond aux déclencheurs du menu.
 
 | Exemple de skill | Agent | Rôle |
 | --- | --- | --- |
@@ -88,7 +88,7 @@ Consultez [Agents](./agents.md) pour la liste complète des agents par défaut e
 
 ### Skills de workflow
 
-Les skills de workflow exécutent un processus structuré en plusieurs étapes sans charger d'abord une persona d'agent. Ils chargent une configuration de workflow et suivent ses étapes.
+Les skills de workflow exécutent un processus structuré en plusieurs étapes sans charger d'abord un persona d'agent. Ils chargent une configuration de workflow et suivent ses étapes.
 
 | Exemple de skill | Objectif |
 | --- | --- |
@@ -136,4 +136,4 @@ Tous les skills utilisent le préfixe `bmad-` suivi d'un nom descriptif (ex. `bm
 ## Glossaire
 
 [^1]: PRD (Product Requirements Document) : document de référence qui décrit les objectifs du produit, les besoins utilisateurs, les fonctionnalités attendues, les contraintes et les critères de succès, afin d’aligner les équipes sur ce qui doit être construit et pourquoi.
-[^2]: Persona : dans le contexte de BMad, une persona désigne un agent IA avec un rôle défini, un style de communication et une expertise spécifiques (ex. Mary l'analyste, Winston l'architecte). Chaque persona garde son "caractère" pendant les interactions.
+[^2]: Persona : dans le contexte de BMad, un persona désigne un agent IA avec un rôle défini, un style de communication et une expertise spécifiques (ex. Mary l'analyste, Winston l'architecte). Chaque persona garde son "caractère" pendant les interactions.
