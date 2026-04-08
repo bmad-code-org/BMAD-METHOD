@@ -5,7 +5,7 @@ sidebar:
   order: 1
 ---
 
-La phase d'Analyse (Phase 1) vous aide à penser clairement à votre produit avant de vous engager à le construire. Chaque outil de cette phase est optionnel, mais sauter l'analyse entièrement signifie que votre PRD sera construit sur des suppositions plutôt que sur des connaissances appronfondies.
+La phase d'Analyse (Phase 1) vous aide à penser clairement à votre produit avant de vous engager à le construire. Chaque outil de cette phase est optionnel, mais sauter l'analyse entièrement signifie que votre PRD sera construit sur des suppositions plutôt que sur des connaissances approfondies.
 
 ## Pourquoi Analyser avant de Planifier ?
 
