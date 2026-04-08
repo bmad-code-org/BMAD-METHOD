@@ -2,7 +2,7 @@
 title: Modules Officiels
 description: Modules additionnels pour créer des agents personnalisés, de l'intelligence créative, du développement de jeux et des tests
 sidebar:
-  order: 4
+  order: 5
 ---
 
 BMad s'étend via des modules officiels que vous sélectionnez lors de l'installation. Ces modules additionnels fournissent des agents, des workflows et des tâches spécialisés pour des domaines spécifiques, au-delà du noyau intégré et de BMM (suite Agile).

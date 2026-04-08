@@ -2,7 +2,7 @@
 title: "Pourquoi le Solutioning est Important"
 description: Comprendre pourquoi la phase de solutioning est critique pour les projets multi-epics
 sidebar:
-  order: 3
+  order: 5
 ---
 
 La Phase 3 (Solutioning) traduit le **quoi** construire (issu de la Planification) en **comment** le construire (conception technique). Cette phase évite les conflits entre agents dans les projets multi-epics en documentant les décisions architecturales avant le début de l'implémentation.

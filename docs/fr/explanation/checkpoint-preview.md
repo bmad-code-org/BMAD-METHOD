@@ -2,7 +2,7 @@
 title: "Checkpoint Preview"
 description: Revue assistée par LLM, avec intervention humaine, qui vous guide à travers une modification, de son objectif jusqu’aux détails
 sidebar:
-  order: 3
+  order: 4
 ---
 
 `bmad-checkpoint-preview` est un workflow de revue interactif, assisté par LLM, avec intervention humaine. Il vous guide à travers une modification de code — de l'intention et du contexte jusqu'aux détails — afin que vous puissiez prendre une décision éclairée sur la mise en production, la refonte ou l'approfondissement.

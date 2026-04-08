@@ -2,7 +2,7 @@
 title: "Élicitation Avancée"
 description: Pousser le LLM à repenser son travail en utilisant des méthodes de raisonnement structurées
 sidebar:
-  order: 6
+  order: 8
 ---
 
 Faites repenser au LLM ce qu'il vient de générer. Vous choisissez une méthode de raisonnement, il l'applique à sa propre sortie, et vous décidez de conserver ou non les améliorations.
