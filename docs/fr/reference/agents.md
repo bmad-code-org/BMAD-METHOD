@@ -1,6 +1,6 @@
 ---
 title: Agents
-description: Agents BMM par défaut avec leurs identifiants de skill, déclencheurs de menu et workflows principaux (Analyst, Developer, Architect, UX Designer, Technical Writer)
+description: Agents BMM par défaut avec leurs identifiants de skill, déclencheurs de menu et workflows principaux
 sidebar:
   order: 2
 ---
