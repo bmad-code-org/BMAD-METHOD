@@ -1,5 +1,6 @@
-# This file allows these modules under bmad-code-org to also be installed with the bmad method installer, while
-# allowing us to keep the source of these projects in separate repos.
+# Fallback module registry — used only when the BMad Marketplace repo
+# (bmad-code-org/bmad-plugins-marketplace) is unreachable.
+# The remote registry/official.yaml is the source of truth.
 
 modules:
   bmad-builder:
@@ -41,13 +42,3 @@ modules:
     defaultSelected: false
     type: bmad-org
     npmPackage: bmad-method-test-architecture-enterprise
-
-  whiteport-design-studio:
-    url: https://github.com/bmad-code-org/bmad-method-wds-expansion
-    module-definition: src/module.yaml
-    code: wds
-    name: "Whiteport Design Studio (For UX Professionals)"
-    description: "Whiteport Design Studio (For UX Professionals)"
-    defaultSelected: false
-    type: community
-    npmPackage: bmad-method-wds-expansion

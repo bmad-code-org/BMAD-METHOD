@@ -1,67 +1,128 @@
 const fs = require('fs-extra');
 const os = require('node:os');
 const path = require('node:path');
+const https = require('node:https');
 const { execSync } = require('node:child_process');
 const yaml = require('yaml');
 const prompts = require('../prompts');
 
+const REGISTRY_RAW_URL = 'https://raw.githubusercontent.com/bmad-code-org/bmad-plugins-marketplace/main/registry/official.yaml';
+const FALLBACK_CONFIG_PATH = path.join(__dirname, 'registry-fallback.yaml');
+
 /**
- * Manages external official modules defined in external-official-modules.yaml
- * These are modules hosted in external repositories that can be installed
+ * Manages official modules from the remote BMad marketplace registry.
+ * Fetches registry/official.yaml from GitHub; falls back to the bundled
+ * external-official-modules.yaml when the network is unavailable.
  *
  * @class ExternalModuleManager
  */
 class ExternalModuleManager {
-  constructor() {
-    this.externalModulesConfigPath = path.join(__dirname, '../external-official-modules.yaml');
-    this.cachedModules = null;
+  constructor() {}
+
+  /**
+   * Fetch a URL and return the response body as a string.
+   * @param {string} url - URL to fetch
+   * @param {number} timeout - Timeout in ms (default 10s)
+   * @returns {Promise<string>} Response body
+   */
+  _fetch(url, timeout = 10_000) {
+    return new Promise((resolve, reject) => {
+      const req = https
+        .get(url, { timeout }, (res) => {
+          // Follow one redirect (GitHub sometimes 301s)
+          if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+            return this._fetch(res.headers.location, timeout).then(resolve, reject);
+          }
+          if (res.statusCode !== 200) {
+            return reject(new Error(`HTTP ${res.statusCode}`));
+          }
+          let data = '';
+          res.on('data', (chunk) => (data += chunk));
+          res.on('end', () => resolve(data));
+        })
+        .on('error', reject)
+        .on('timeout', () => {
+          req.destroy();
+          reject(new Error('Request timed out'));
+        });
+    });
   }
 
   /**
-   * Load and parse the external-official-modules.yaml file
-   * @returns {Object} Parsed YAML content with modules object
+   * Load the official modules registry from GitHub, falling back to the
+   * bundled YAML file if the fetch fails.
+   * @returns {Object} Parsed YAML content with modules array
    */
   async loadExternalModulesConfig() {
     if (this.cachedModules) {
       return this.cachedModules;
     }
 
+    // Try remote registry first
     try {
-      const content = await fs.readFile(this.externalModulesConfigPath, 'utf8');
+      const content = await this._fetch(REGISTRY_RAW_URL);
+      const config = yaml.parse(content);
+      if (config?.modules?.length) {
+        this.cachedModules = config;
+        return config;
+      }
+    } catch {
+      // Fall through to local fallback
+    }
+
+    // Fallback to bundled file
+    try {
+      const content = await fs.readFile(FALLBACK_CONFIG_PATH, 'utf8');
       const config = yaml.parse(content);
       this.cachedModules = config;
+      await prompts.log.warn('Could not reach BMad registry; using bundled module list.');
       return config;
     } catch (error) {
-      await prompts.log.warn(`Failed to load external modules config: ${error.message}`);
-      return { modules: {} };
+      await prompts.log.warn(`Failed to load modules config: ${error.message}`);
+      return { modules: [] };
     }
   }
 
   /**
-   * Get list of available external modules
+   * Normalize a module entry from either the remote registry format
+   * (snake_case, array) or the legacy bundled format (kebab-case, object map).
+   * @param {Object} mod - Raw module config from YAML
+   * @param {string} [key] - Key name (only for legacy map format)
+   * @returns {Object} Normalized module info
+   */
+  _normalizeModule(mod, key) {
+    return {
+      key: key || mod.name,
+      url: mod.repository || mod.url,
+      moduleDefinition: mod.module_definition || mod['module-definition'],
+      code: mod.code,
+      name: mod.display_name || mod.name,
+      description: mod.description || '',
+      defaultSelected: mod.default_selected === true || mod.defaultSelected === true,
+      type: mod.type || 'bmad-org',
+      npmPackage: mod.npm_package || mod.npmPackage || null,
+      builtIn: mod.built_in === true,
+      isExternal: mod.built_in !== true,
+    };
+  }
+
+  /**
+   * Get list of available modules from the registry
    * @returns {Array<Object>} Array of module info objects
    */
   async listAvailable() {
     const config = await this.loadExternalModulesConfig();
-    const modules = [];
 
-    for (const [key, moduleConfig] of Object.entries(config.modules || {})) {
-      modules.push({
-        key,
-        url: moduleConfig.url,
-        moduleDefinition: moduleConfig['module-definition'],
-        code: moduleConfig.code,
-        name: moduleConfig.name,
-        header: moduleConfig.header,
-        subheader: moduleConfig.subheader,
-        description: moduleConfig.description || '',
-        defaultSelected: moduleConfig.defaultSelected === true,
-        type: moduleConfig.type || 'community', // bmad-org or community
-        npmPackage: moduleConfig.npmPackage || null, // Include npm package name
-        isExternal: true,
-      });
+    // Remote format: modules is an array
+    if (Array.isArray(config.modules)) {
+      return config.modules.map((mod) => this._normalizeModule(mod));
     }
 
+    // Legacy bundled format: modules is an object map
+    const modules = [];
+    for (const [key, mod] of Object.entries(config.modules || {})) {
+      modules.push(this._normalizeModule(mod, key));
+    }
     return modules;
   }
 
@@ -81,27 +142,8 @@ class ExternalModuleManager {
    * @returns {Object|null} Module info or null if not found
    */
   async getModuleByKey(key) {
-    const config = await this.loadExternalModulesConfig();
-    const moduleConfig = config.modules?.[key];
-
-    if (!moduleConfig) {
-      return null;
-    }
-
-    return {
-      key,
-      url: moduleConfig.url,
-      moduleDefinition: moduleConfig['module-definition'],
-      code: moduleConfig.code,
-      name: moduleConfig.name,
-      header: moduleConfig.header,
-      subheader: moduleConfig.subheader,
-      description: moduleConfig.description || '',
-      defaultSelected: moduleConfig.defaultSelected === true,
-      type: moduleConfig.type || 'community', // bmad-org or community
-      npmPackage: moduleConfig.npmPackage || null, // Include npm package name
-      isExternal: true,
-    };
+    const modules = await this.listAvailable();
+    return modules.find((m) => m.key === key) || null;
   }
 
   /**
@@ -154,7 +196,7 @@ class ExternalModuleManager {
     const moduleInfo = await this.getModuleByCode(moduleCode);
 
     if (!moduleInfo) {
-      throw new Error(`External module '${moduleCode}' not found in external-official-modules.yaml`);
+      throw new Error(`External module '${moduleCode}' not found in the BMad registry`);
     }
 
     const cacheDir = this.getExternalCacheDir();
@@ -304,7 +346,7 @@ class ExternalModuleManager {
   async findExternalModuleSource(moduleCode, options = {}) {
     const moduleInfo = await this.getModuleByCode(moduleCode);
 
-    if (!moduleInfo) {
+    if (!moduleInfo || moduleInfo.builtIn) {
       return null;
     }
 
@@ -349,6 +391,7 @@ class ExternalModuleManager {
     // Nothing found: return configured path (preserves old behavior for error messaging)
     return path.dirname(configuredPath);
   }
+  cachedModules = null;
 }
 
 module.exports = { ExternalModuleManager };

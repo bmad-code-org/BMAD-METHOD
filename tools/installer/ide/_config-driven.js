@@ -225,13 +225,20 @@ class ConfigDrivenIdeSetup {
     // Migrate legacy target directories (e.g. .opencode/agent → .opencode/agents)
     // Legacy dirs are abandoned entirely, so use prefix matching (null removalSet)
     if (this.installerConfig?.legacy_targets) {
-      if (!options.silent) await prompts.log.message('  Migrating legacy directories...');
-      for (const legacyDir of this.installerConfig.legacy_targets) {
-        if (this.isGlobalPath(legacyDir)) {
-          await this.warnGlobalLegacy(legacyDir, options);
-        } else {
-          await this.cleanupTarget(projectDir, legacyDir, options, null);
-          await this.removeEmptyParents(projectDir, legacyDir);
+      const legacyDirsExist = await Promise.all(
+        this.installerConfig.legacy_targets.map((d) =>
+          this.isGlobalPath(d) ? fs.pathExists(d.replace(/^~/, os.homedir())) : fs.pathExists(path.join(projectDir, d)),
+        ),
+      );
+      if (legacyDirsExist.some(Boolean)) {
+        if (!options.silent) await prompts.log.message('  Migrating legacy directories...');
+        for (const legacyDir of this.installerConfig.legacy_targets) {
+          if (this.isGlobalPath(legacyDir)) {
+            await this.warnGlobalLegacy(legacyDir, options);
+          } else {
+            await this.cleanupTarget(projectDir, legacyDir, options, null);
+            await this.removeEmptyParents(projectDir, legacyDir);
+          }
         }
       }
     }
