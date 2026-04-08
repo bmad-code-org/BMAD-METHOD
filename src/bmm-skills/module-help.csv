@@ -1,4 +1,5 @@
 module,skill,display-name,menu-code,description,action,args,phase,after,before,required,output-location,outputs
+BMad Method,_meta,,,,,,,,,false,https://docs.bmad-method.org/llms.txt,
 BMad Method,bmad-document-project,Document Project,DP,Analyze an existing project to produce useful documentation.,,anytime,,,false,project-knowledge,*
 BMad Method,bmad-generate-project-context,Generate Project Context,GPC,Scan existing codebase to generate a lean LLM-optimized project-context.md. Essential for brownfield projects.,,anytime,,,false,output_folder,project context
 BMad Method,bmad-quick-dev,Quick Dev,QQ,Unified intent-in code-out workflow: clarify plan implement review and present.,,anytime,,,false,implementation_artifacts,spec and project implementation

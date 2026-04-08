@@ -969,6 +969,14 @@ class Installer {
                 outputs,
               ] = columns;
 
+              // Pass through _meta rows as-is (module metadata, not a skill)
+              if (phase === '_meta') {
+                const finalModule = (!module || module.trim() === '') && moduleName !== 'core' ? moduleName : module || '';
+                const metaRow = [finalModule, '_meta', '', '', '', '', '', 'false', '', '', '', '', '', '', outputLocation || '', ''];
+                allRows.push(metaRow.map((c) => this.escapeCSVField(c)).join(','));
+                continue;
+              }
+
               // If module column is empty, set it to this module's name (except for core which stays empty for universal tools)
               const finalModule = (!module || module.trim() === '') && moduleName !== 'core' ? moduleName : module || '';
 

@@ -7,7 +7,7 @@ description: 'Analyzes current state and user query to answer BMad questions or 
 
 ## Purpose
 
-Help the user understand where they are in their BMad workflow and what to do next. Answer BMad questions when asked.
+Help the user understand where they are in their BMad workflow and what to do next, and also answer broader questions when asked that could be augmented with remote sources such as module documentation sources.
 
 ## Desired Outcomes
 
@@ -18,6 +18,7 @@ When this skill completes, the user should:
 3. **Know how to invoke it** — skill name, menu code, action context, and any args that shortcut the conversation
 4. **Get offered a quick start** — when a single skill is the clear next step, offer to run it for the user right now rather than just listing it
 5. **Feel oriented, not overwhelmed** — surface only what's relevant to their current position; don't dump the entire catalog
+6. **Get answers to general questions** — when the question doesn't map to a specific skill, use the module's registered documentation to give a grounded answer
 
 ## Data Sources
 
@@ -25,6 +26,7 @@ When this skill completes, the user should:
 - **Config**: `config.yaml` and `user-config.yaml` files in `{project-root}/_bmad/` and its subfolders — resolve `output-location` variables, provide `communication_language` and `project_knowledge`
 - **Artifacts**: Files matching `outputs` patterns at resolved `output-location` paths reveal which steps are possibly completed; their content may also provide grounding context for recommendations
 - **Project knowledge**: If `project_knowledge` resolves to an existing path, read it for grounding context. Never fabricate project-specific details.
+- **Module docs**: Rows with `_meta` in the `skill` column carry a URL or path in `output-location` pointing to the module's documentation (e.g., llms.txt). Fetch and use these to answer general questions about that module.
 
 ## CSV Interpretation
 
@@ -70,4 +72,4 @@ For each recommended item, present:
 - Present all output in `{communication_language}`
 - Recommend running each skill in a **fresh context window**
 - Match the user's tone — conversational when they're casual, structured when they want specifics
-- If the active module is ambiguous, ask rather than guess
+- If the active module is ambiguous, retrieve all meta rows remote sources to find relevant info also to help answer their question
