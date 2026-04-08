@@ -1886,6 +1886,93 @@ async function runTests() {
     assert(cats[0].name === 'Design & Creative', 'getCategoryList sorts alphabetically');
   }
 
+  // --- CommunityModuleManager SHA pinning normalization ---
+  {
+    const { CommunityModuleManager } = require('../tools/installer/modules/community-manager');
+    const mgr = new CommunityModuleManager();
+
+    // Module with SHA set
+    const withSha = mgr._normalizeCommunityModule({
+      name: 'pinned-mod',
+      code: 'pm',
+      approved_sha: 'abc123def456',
+      approved_tag: 'v1.0.0',
+    });
+    assert(withSha.approvedSha === 'abc123def456', 'SHA is preserved when set');
+    assert(withSha.approvedTag === 'v1.0.0', 'Tag is preserved as metadata');
+
+    // Module with null SHA (trusted contributor)
+    const noSha = mgr._normalizeCommunityModule({
+      name: 'trusted-mod',
+      code: 'tm',
+      approved_sha: null,
+    });
+    assert(noSha.approvedSha === null, 'Null SHA means no pinning (trusted contributor)');
+  }
+
+  // --- CommunityModuleManager.listByCategory (with injected cache) ---
+  {
+    const { CommunityModuleManager } = require('../tools/installer/modules/community-manager');
+    const mgr = new CommunityModuleManager();
+
+    mgr._cachedIndex = {
+      modules: [
+        { name: 'a', code: 'a', category: 'design-and-creative' },
+        { name: 'b', code: 'b', category: 'software-development' },
+        { name: 'c', code: 'c', category: 'design-and-creative' },
+        { name: 'd', code: 'd', category: 'game-development' },
+      ],
+    };
+
+    const design = await mgr.listByCategory('design-and-creative');
+    assert(design.length === 2, 'listByCategory filters to matching category');
+    assert(
+      design.every((m) => m.category === 'design-and-creative'),
+      'listByCategory returns only matching modules',
+    );
+
+    const empty = await mgr.listByCategory('nonexistent');
+    assert(empty.length === 0, 'listByCategory returns empty for unknown category');
+  }
+
+  // --- CommunityModuleManager.getModuleByCode (with injected cache) ---
+  {
+    const { CommunityModuleManager } = require('../tools/installer/modules/community-manager');
+    const mgr = new CommunityModuleManager();
+
+    mgr._cachedIndex = {
+      modules: [
+        { name: 'test-mod', code: 'tm', display_name: 'Test Module' },
+        { name: 'other-mod', code: 'om', display_name: 'Other Module' },
+      ],
+    };
+
+    const found = await mgr.getModuleByCode('tm');
+    assert(found !== null && found.code === 'tm', 'getModuleByCode finds existing module');
+
+    const notFound = await mgr.getModuleByCode('xyz');
+    assert(notFound === null, 'getModuleByCode returns null for unknown code');
+  }
+
+  // --- CustomModuleManager URL edge cases ---
+  {
+    const { CustomModuleManager } = require('../tools/installer/modules/custom-module-manager');
+    const mgr = new CustomModuleManager();
+
+    // HTTP (not HTTPS) should work
+    const http = mgr.validateGitHubUrl('http://github.com/owner/repo');
+    assert(http.isValid === true, 'validateGitHubUrl accepts HTTP URL');
+
+    // Trailing slash should be rejected (strict matching)
+    const trailing = mgr.validateGitHubUrl('https://github.com/owner/repo/');
+    assert(trailing.isValid === false, 'validateGitHubUrl rejects trailing slash');
+
+    // SSH without .git should work
+    const sshNoDotGit = mgr.validateGitHubUrl('git@github.com:owner/repo');
+    assert(sshNoDotGit.isValid === true, 'validateGitHubUrl accepts SSH without .git');
+    assert(sshNoDotGit.repo === 'repo', 'validateGitHubUrl extracts repo from SSH without .git');
+  }
+
   console.log('');
 
   // ============================================================
