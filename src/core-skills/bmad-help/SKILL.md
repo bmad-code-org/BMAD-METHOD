@@ -7,7 +7,7 @@ description: 'Analyzes current state and user query to answer BMad questions or 
 
 ## Purpose
 
-Help the user understand where they are in their BMad workflow and what to do next. Answer BMad questions when asked.
+Help the user understand where they are in their BMad workflow and what to do next, and also answer broader questions when asked that could be augmented with remote sources such as module documentation sources.
 
 ## Desired Outcomes
 
@@ -18,6 +18,7 @@ When this skill completes, the user should:
 3. **Know how to invoke it** — skill name, menu code, action context, and any args that shortcut the conversation
 4. **Get offered a quick start** — when a single skill is the clear next step, offer to run it for the user right now rather than just listing it
 5. **Feel oriented, not overwhelmed** — surface only what's relevant to their current position; don't dump the entire catalog
+6. **Get answers to general questions** — when the question doesn't map to a specific skill, use the module's registered documentation to give a grounded answer
 
 ## Data Sources
 
@@ -25,6 +26,7 @@ When this skill completes, the user should:
 - **Config**: `config.yaml` and `user-config.yaml` files in `{project-root}/_bmad/` and its subfolders — resolve `output-location` variables, provide `communication_language` and `project_knowledge`
 - **Artifacts**: Files matching `outputs` patterns at resolved `output-location` paths reveal which steps are possibly completed; their content may also provide grounding context for recommendations
 - **Project knowledge**: If `project_knowledge` resolves to an existing path, read it for grounding context. Never fabricate project-specific details.
+- **Module docs**: Rows with `_meta` in the `skill` column carry a URL or path in `output-location` pointing to the module's documentation (e.g., llms.txt). Fetch and use these to answer general questions about that module.
 
 ## CSV Interpretation
 
@@ -65,24 +67,9 @@ For each recommended item, present:
 
 **Ordering**: Show optional items first, then the next required item. Make it clear which is which.
 
-## General Questions via llms.txt
-
-When a user's question does not match any specific skill in the catalog, check for `_meta` rows. These rows have `_meta` in the `skill` column (or `phase` column in the merged CSV) and carry a module's documentation URL in `output-location`.
-
-**Detection**: Scan the catalog for rows where the second column equals `_meta`. Extract the URL from the `output-location` column.
-
-**When to use**: If the user asks a general question about BMad or a specific module (e.g., "what phases does BMad have?", "how does the workflow map work?", "what is party mode?") and no single skill is the clear answer, fetch the module's llms.txt URL and use it to ground your response.
-
-**Behavior**:
-1. Identify which module(s) the question relates to. If ambiguous, prefer the active module or ask.
-2. Fetch the llms.txt URL for that module using WebFetch or equivalent.
-3. Use the fetched content to answer the user's question accurately. If the llms.txt is an index with links to deeper content, follow the most relevant link(s) to find the answer.
-4. Cite the source naturally (e.g., "According to the BMad Method docs...").
-5. If no `_meta` row exists for the relevant module, fall back to your existing knowledge of that module.
-
 ## Constraints
 
 - Present all output in `{communication_language}`
 - Recommend running each skill in a **fresh context window**
 - Match the user's tone — conversational when they're casual, structured when they want specifics
-- If the active module is ambiguous, ask rather than guess
+- If the active module is ambiguous, retrieve all meta rows remote sources to find relevant info also to help answer their question
