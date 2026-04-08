@@ -1147,7 +1147,13 @@ class OfficialModules {
       // Collect all answers (static + prompted)
       let allAnswers = { ...staticAnswers };
 
-      if (questions.length > 0) {
+      if (questions.length > 0 && silentMode) {
+        // In silent mode (quick update), use defaults for new fields instead of prompting
+        for (const q of questions) {
+          allAnswers[q.name] = typeof q.default === 'function' ? q.default({}) : q.default;
+        }
+        await prompts.log.message(`  \u2713 ${moduleName.toUpperCase()} module configured with defaults`);
+      } else if (questions.length > 0) {
         // Only show header if we actually have questions
         await CLIUtils.displayModuleConfigHeader(moduleName, moduleConfig.header, moduleConfig.subheader);
         await prompts.log.message('');
