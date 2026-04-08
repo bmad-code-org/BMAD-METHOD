@@ -13,7 +13,7 @@ const CATEGORIES_URL = `${MARKETPLACE_BASE}/categories.yaml`;
  * Manages community modules from the BMad marketplace registry.
  * Fetches community-index.yaml and categories.yaml from GitHub.
  * Returns empty results when the registry is unreachable.
- * Community modules are pinned to approved tags (not HEAD).
+ * Community modules are pinned to approved SHA when set; uses HEAD otherwise.
  */
 class CommunityModuleManager {
   constructor() {

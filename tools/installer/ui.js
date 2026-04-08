@@ -571,14 +571,34 @@ class UI {
     // Phase 1: Official modules
     const officialSelected = await this._selectOfficialModules(installedModuleIds);
 
+    // Determine which installed modules are NOT official (community or custom).
+    // These must be preserved even if the user declines to browse community/custom.
+    const officialCodes = new Set(officialSelected);
+    const externalManager = new ExternalModuleManager();
+    const registryModules = await externalManager.listAvailable();
+    const officialRegistryCodes = new Set(registryModules.map((m) => m.code));
+    const installedNonOfficial = [...installedModuleIds].filter((id) => !officialRegistryCodes.has(id));
+
     // Phase 2: Community modules (category drill-down)
-    const communitySelected = await this._browseCommunityModules(installedModuleIds);
+    // Returns { codes, didBrowse } so we know if the user entered the flow
+    const communityResult = await this._browseCommunityModules(installedModuleIds);
 
     // Phase 3: Custom URL modules
     const customSelected = await this._addCustomUrlModules(installedModuleIds);
 
     // Merge all selections
-    return [...officialSelected, ...communitySelected, ...customSelected];
+    const allSelected = new Set([...officialSelected, ...communityResult.codes, ...customSelected]);
+
+    // Auto-include installed non-official modules that the user didn't get
+    // a chance to manage (they declined to browse). If they did browse,
+    // trust their selections - they could have deselected intentionally.
+    if (!communityResult.didBrowse) {
+      for (const code of installedNonOfficial) {
+        allSelected.add(code);
+      }
+    }
+
+    return [...allSelected];
   }
 
   /**
@@ -641,14 +661,14 @@ class UI {
    * Browse and select community modules using category drill-down.
    * Featured/promoted modules appear at the top.
    * @param {Set} installedModuleIds - Currently installed module IDs
-   * @returns {Array} Selected community module codes
+   * @returns {Object} { codes: string[], didBrowse: boolean }
    */
   async _browseCommunityModules(installedModuleIds = new Set()) {
     const browseCommunity = await prompts.confirm({
       message: 'Would you like to browse community modules?',
       default: false,
     });
-    if (!browseCommunity) return [];
+    if (!browseCommunity) return { codes: [], didBrowse: false };
 
     const { CommunityModuleManager } = require('./modules/community-manager');
     const communityMgr = new CommunityModuleManager();
@@ -667,12 +687,12 @@ class UI {
     } catch (error) {
       s.error('Failed to load community catalog');
       await prompts.log.warn(`  ${error.message}`);
-      return [];
+      return { codes: [], didBrowse: false };
     }
 
     if (allCommunity.length === 0) {
       await prompts.log.info('No community modules are currently available.');
-      return [];
+      return { codes: [], didBrowse: false };
     }
 
     const selectedCodes = new Set();
@@ -794,13 +814,13 @@ class UI {
       await prompts.log.message('Selected community modules:\n' + moduleLines.join('\n'));
     }
 
-    return [...selectedCodes];
+    return { codes: [...selectedCodes], didBrowse: true };
   }
 
   /**
    * Prompt user to install modules from custom GitHub URLs.
    * @param {Set} installedModuleIds - Currently installed module IDs
-   * @returns {Array} Selected custom module objects with metadata
+   * @returns {Array} Selected custom module code strings
    */
   async _addCustomUrlModules(installedModuleIds = new Set()) {
     const addCustom = await prompts.confirm({
