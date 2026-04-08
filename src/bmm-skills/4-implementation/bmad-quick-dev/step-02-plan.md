@@ -26,9 +26,13 @@ deferred_work_file: '{implementation_artifacts}/deferred-work.md'
 
 Present summary. Display the spec file path as a CWD-relative path (no leading `/`) so it is clickable in the terminal. If token count exceeded 1600 and user chose [K], include the token count and explain why it may be a problem.
 
-After presenting the summary, add this note:
+After presenting the summary, display this note:
 
-> The spec is a regular file in your project. Before approving, you can open it in another session and use any tool you like — party mode, advanced elicitation, code review, or direct editing. Take your time; approve when you're satisfied.
+---
+
+Before approving, you can open the spec file in an editor or ask me questions and tell me what to change. You can also use `bmad-advanced-elicitation`, `bmad-party-mode`, or `bmad-code-review` skills, ideally in another session to avoid context bloat.
+
+---
 
 HALT and ask human: `[A] Approve` | `[E] Edit`
 
