@@ -20,14 +20,12 @@ class InstallPaths {
 
     const configDir = path.join(bmadDir, '_config');
     const agentsDir = path.join(configDir, 'agents');
-    const customCacheDir = path.join(configDir, 'custom');
     const coreDir = path.join(bmadDir, 'core');
 
     for (const [dir, label] of [
       [bmadDir, 'bmad directory'],
       [configDir, 'config directory'],
       [agentsDir, 'agents config directory'],
-      [customCacheDir, 'custom modules cache'],
       [coreDir, 'core module directory'],
     ]) {
       await ensureWritableDir(dir, label);
@@ -40,7 +38,6 @@ class InstallPaths {
       bmadDir,
       configDir,
       agentsDir,
-      customCacheDir,
       coreDir,
       isUpdate,
     });

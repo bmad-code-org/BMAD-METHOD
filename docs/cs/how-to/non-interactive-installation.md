@@ -27,7 +27,6 @@ Vyžaduje [Node.js](https://nodejs.org) v20+ a `npx` (součástí npm).
 | `--directory <cesta>` | Instalační adresář | `--directory ~/projects/myapp` |
 | `--modules <moduly>` | Čárkou oddělená ID modulů | `--modules bmm,bmb` |
 | `--tools <nástroje>` | Čárkou oddělená ID nástrojů/IDE (použijte `none` pro přeskočení) | `--tools claude-code,cursor` nebo `--tools none` |
-| `--custom-content <cesty>` | Čárkou oddělené cesty k vlastním modulům | `--custom-content ~/my-module,~/another-module` |
 | `--action <typ>` | Akce pro existující instalace: `install` (výchozí), `update` nebo `quick-update` | `--action quick-update` |
 
 ### Základní konfigurace
@@ -108,16 +107,6 @@ npx bmad-method install \
   --action quick-update
 ```
 
-### Instalace s vlastním obsahem
-
-```bash
-npx bmad-method install \
-  --directory ~/projects/myapp \
-  --modules bmm \
-  --custom-content ~/my-custom-module,~/another-module \
-  --tools claude-code
-```
-
 ## Co získáte
 
 - Plně nakonfigurovaný adresář `_bmad/` ve vašem projektu
@@ -158,13 +147,6 @@ Neplatné hodnoty buď:
 
 - Ověřte, že ID modulu je správné
 - Externí moduly musí být dostupné v registru
-
-### Neplatná cesta k vlastnímu obsahu
-
-Ujistěte se, že každá cesta k vlastnímu obsahu:
-- Ukazuje na adresář
-- Obsahuje soubor `module.yaml` v kořeni
-- Má pole `code` v `module.yaml`
 
 :::note[Stále jste uvízli?]
 Spusťte s `--debug` pro detailní výstup, zkuste interaktivní režim pro izolaci problému, nebo nahlaste na <https://github.com/bmad-code-org/BMAD-METHOD/issues>.

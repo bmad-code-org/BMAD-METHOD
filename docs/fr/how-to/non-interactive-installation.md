@@ -27,7 +27,6 @@ Nécessite [Node.js](https://nodejs.org) v20+ et `npx` (inclus avec npm).
 | `--directory <chemin>` | Répertoire d'installation | `--directory ~/projects/myapp` |
 | `--modules <modules>` | IDs de modules séparés par des virgules | `--modules bmm,bmb` |
 | `--tools <outils>` | IDs d'outils/IDE séparés par des virgules (utilisez `none` pour ignorer) | `--tools claude-code,cursor` ou `--tools none` |
-| `--custom-content <chemins>` | Chemins vers des modules personnalisés séparés par des virgules | `--custom-content ~/my-module,~/another-module` |
 | `--action <type>` | Action pour les installations existantes : `install` (par défaut), `update`, ou `quick-update` | `--action quick-update` |
 
 ### Configuration principale
@@ -120,16 +119,6 @@ npx bmad-method install \
   --action quick-update
 ```
 
-### Installation avec du contenu personnalisé
-
-```bash
-npx bmad-method install \
-  --directory ~/projects/myapp \
-  --modules bmm \
-  --custom-content ~/my-custom-module,~/another-module \
-  --tools claude-code
-```
-
 ## Ce que vous obtenez
 
 - Un répertoire `_bmad/` entièrement configuré dans votre projet
@@ -143,12 +132,11 @@ BMad valide toutes les options fournis :
 - **Directory** — Doit être un chemin valide avec des permissions d'écriture
 - **Modules** — Avertit des IDs de modules invalides (mais n'échoue pas)
 - **Tools** — Avertit des IDs d'outils invalides (mais n'échoue pas)
-- **Custom Content** — Chaque chemin doit contenir un fichier `module.yaml` valide
 - **Action** — Doit être l'une des suivantes : `install`, `update`, `quick-update`
 
 Les valeurs invalides entraîneront soit :
 1. L’affichage d’un message d'erreur suivi d’un exit (pour les options critiques comme le répertoire)
-2. Un avertissement puis la continuation de l’installation (pour les éléments optionnels comme le contenu personnalisé)
+2. Un avertissement puis la continuation de l’installation (pour les éléments optionnels)
 3. Un retour aux invites interactives (pour les valeurs requises manquantes)
 
 :::tip[Bonnes pratiques]
@@ -171,13 +159,6 @@ Les valeurs invalides entraîneront soit :
 
 - Vérifiez que l'ID du module est correct
 - Les modules externes doivent être disponibles dans le registre
-
-### Chemin de contenu personnalisé invalide
-
-Assurez-vous que chaque chemin de contenu personnalisé :
-- Pointe vers un répertoire
-- Contient un fichier `module.yaml` à la racine
-- Possède un champ `code` dans `module.yaml`
 
 :::note[Toujours bloqué ?]
 Exécutez avec `--debug` pour une sortie détaillée, essayez le mode interactif pour isoler le problème, ou signalez-le à <https://github.com/bmad-code-org/BMAD-METHOD/issues>.

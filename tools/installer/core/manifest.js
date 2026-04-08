@@ -97,7 +97,6 @@ class Manifest {
           lastUpdated: manifestData.installation?.lastUpdated,
           modules: moduleNames, // Simple array of module names for backward compatibility
           modulesDetailed: hasDetailedModules ? modules : null, // New detailed format
-          customModules: manifestData.customModules || [], // Keep for backward compatibility
           ides: manifestData.ides || [],
         };
       } catch (error) {
@@ -254,7 +253,6 @@ class Manifest {
       lastUpdated: manifest.installation?.lastUpdated,
       modules: moduleNames,
       modulesDetailed: hasDetailedModules ? modules : null,
-      customModules: manifest.customModules || [],
       ides: manifest.ides || [],
     };
   }
@@ -784,52 +782,6 @@ class Manifest {
     return configs;
   }
   /**
-   * Add a custom module to the manifest with its source path
-   * @param {string} bmadDir - Path to bmad directory
-   * @param {Object} customModule - Custom module info
-   */
-  async addCustomModule(bmadDir, customModule) {
-    const manifest = await this.read(bmadDir);
-    if (!manifest) {
-      throw new Error('No manifest found');
-    }
-
-    if (!manifest.customModules) {
-      manifest.customModules = [];
-    }
-
-    // Check if custom module already exists
-    const existingIndex = manifest.customModules.findIndex((m) => m.id === customModule.id);
-    if (existingIndex === -1) {
-      // Add new entry
-      manifest.customModules.push(customModule);
-    } else {
-      // Update existing entry
-      manifest.customModules[existingIndex] = customModule;
-    }
-
-    await this.update(bmadDir, { customModules: manifest.customModules });
-  }
-
-  /**
-   * Remove a custom module from the manifest
-   * @param {string} bmadDir - Path to bmad directory
-   * @param {string} moduleId - Module ID to remove
-   */
-  async removeCustomModule(bmadDir, moduleId) {
-    const manifest = await this.read(bmadDir);
-    if (!manifest || !manifest.customModules) {
-      return;
-    }
-
-    const index = manifest.customModules.findIndex((m) => m.id === moduleId);
-    if (index !== -1) {
-      manifest.customModules.splice(index, 1);
-      await this.update(bmadDir, { customModules: manifest.customModules });
-    }
-  }
-
-  /**
    * Get module version info from source
    * @param {string} moduleName - Module name/code
    * @param {string} bmadDir - Path to bmad directory
@@ -866,29 +818,8 @@ class Manifest {
       };
     }
 
-    // Custom module: resolve path from source or cache before reading version
-    const customSourcePath = moduleSourcePath || path.join(bmadDir, '_config', 'custom', moduleName);
-    const version = await this._readMarketplaceVersion(moduleName, customSourcePath);
-
-    const cacheDir = path.join(bmadDir, '_config', 'custom', moduleName);
-    const moduleYamlPath = path.join(cacheDir, 'module.yaml');
-
-    if (await fs.pathExists(moduleYamlPath)) {
-      try {
-        const yamlContent = await fs.readFile(moduleYamlPath, 'utf8');
-        const moduleConfig = yaml.parse(yamlContent);
-        return {
-          version: version || moduleConfig.version || null,
-          source: 'custom',
-          npmPackage: moduleConfig.npmPackage || null,
-          repoUrl: moduleConfig.repoUrl || null,
-        };
-      } catch (error) {
-        await prompts.log.warn(`Failed to read module.yaml for ${moduleName}: ${error.message}`);
-      }
-    }
-
     // Unknown module
+    const version = await this._readMarketplaceVersion(moduleName, moduleSourcePath);
     return {
       version,
       source: 'unknown',

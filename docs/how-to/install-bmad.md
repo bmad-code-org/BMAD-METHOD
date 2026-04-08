@@ -72,7 +72,7 @@ The installer shows available modules. Select whichever ones you need — most u
 
 ### 5. Follow the Prompts
 
-The installer guides you through the rest — custom content, settings, etc.
+The installer guides you through the rest — settings, tool integrations, etc.
 
 ## What You Get
 

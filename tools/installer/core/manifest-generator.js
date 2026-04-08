@@ -375,8 +375,6 @@ class ManifestGenerator {
     // Read existing manifest to preserve install date
     let existingInstallDate = null;
     const existingModulesMap = new Map();
-    let existingCustomModules = [];
-
     if (await fs.pathExists(manifestPath)) {
       try {
         const existingContent = await fs.readFile(manifestPath, 'utf8');
@@ -396,12 +394,6 @@ class ManifestGenerator {
               existingModulesMap.set(m, { installDate: existingInstallDate });
             }
           }
-        }
-
-        if (existingManifest.customModules && Array.isArray(existingManifest.customModules)) {
-          // We filter here so manifest regeneration preserves source metadata only for custom modules that
-          // are still installed. Without that, customModules can retain stale entries for modules that were removed.
-          existingCustomModules = existingManifest.customModules.filter((customModule) => installedModuleSet.has(customModule?.id));
         }
       } catch {
         // If we can't read existing manifest, continue with defaults
@@ -438,7 +430,6 @@ class ManifestGenerator {
         lastUpdated: new Date().toISOString(),
       },
       modules: updatedModules,
-      customModules: existingCustomModules,
       ides: this.selectedIdes,
     };
 

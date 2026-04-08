@@ -27,7 +27,6 @@ sidebar:
 | `--directory <path>` | 安装目录 | `--directory ~/projects/myapp` |
 | `--modules <modules>` | 逗号分隔的模块 ID | `--modules bmm,bmb` |
 | `--tools <tools>` | 逗号分隔的工具/IDE ID（使用 `none` 跳过） | `--tools claude-code,cursor` 或 `--tools none` |
-| `--custom-content <paths>` | 逗号分隔的自定义模块路径 | `--custom-content ~/my-module,~/another-module` |
 | `--action <type>` | 对现有安装的操作：`install`（默认）、`update` 或 `quick-update` | `--action quick-update` |
 
 ### 核心配置
@@ -108,16 +107,6 @@ npx bmad-method install \
   --action quick-update
 ```
 
-### 使用自定义内容安装
-
-```bash
-npx bmad-method install \
-  --directory ~/projects/myapp \
-  --modules bmm \
-  --custom-content ~/my-custom-module,~/another-module \
-  --tools claude-code
-```
-
 ## 安装结果
 
 - 项目中完全配置的 `_bmad/` 目录
@@ -131,12 +120,11 @@ BMad 会验证你提供的所有参数：
 - **目录** — 必须是具有写入权限的有效路径
 - **模块** — 对无效的模块 ID 发出警告（但不会失败）
 - **工具** — 对无效的工具 ID 发出警告（但不会失败）
-- **自定义内容** — 每个路径必须包含有效的 `module.yaml` 文件
 - **操作** — 必须是以下之一：`install`、`update`、`quick-update`
 
 无效值将：
 1. 显示错误并退出（对于目录等关键选项）
-2. 显示警告并跳过（对于自定义内容等可选项目）
+2. 显示警告并跳过（对于可选项目）
 3. 回退到交互式提示（对于缺失的必需值）
 
 :::tip[最佳实践]
@@ -158,13 +146,6 @@ BMad 会验证你提供的所有参数：
 
 - 验证模块 ID 是否正确
 - 外部模块必须在注册表中可用
-
-### 自定义内容路径无效
-
-确保每个自定义内容路径：
-- 指向一个目录
-- 在根目录中包含 `module.yaml` 文件
-- 在 `module.yaml` 中有 `code` 字段
 
 :::note[仍然卡住了？]
 使用 `--debug` 获取详细输出，尝试交互模式定位问题，或在 <https://github.com/bmad-code-org/BMAD-METHOD/issues> 提交反馈。

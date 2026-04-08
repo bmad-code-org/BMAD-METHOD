@@ -27,7 +27,6 @@ Requires [Node.js](https://nodejs.org) v20+ and `npx` (included with npm).
 | `--directory <path>` | Installation directory | `--directory ~/projects/myapp` |
 | `--modules <modules>` | Comma-separated module IDs | `--modules bmm,bmb` |
 | `--tools <tools>` | Comma-separated tool/IDE IDs (use `none` to skip) | `--tools claude-code,cursor` or `--tools none` |
-| `--custom-content <paths>` | Comma-separated paths to custom modules | `--custom-content ~/my-module,~/another-module` |
 | `--action <type>` | Action for existing installations: `install` (default), `update`, or `quick-update` | `--action quick-update` |
 
 ### Core Configuration
@@ -120,16 +119,6 @@ npx bmad-method install \
   --action quick-update
 ```
 
-### Installation with Custom Content
-
-```bash
-npx bmad-method install \
-  --directory ~/projects/myapp \
-  --modules bmm \
-  --custom-content ~/my-custom-module,~/another-module \
-  --tools claude-code
-```
-
 ## What You Get
 
 - A fully configured `_bmad/` directory in your project
@@ -143,12 +132,11 @@ BMad validates all provided flags:
 - **Directory** — Must be a valid path with write permissions
 - **Modules** — Warns about invalid module IDs (but won't fail)
 - **Tools** — Warns about invalid tool IDs (but won't fail)
-- **Custom Content** — Each path must contain a valid `module.yaml` file
 - **Action** — Must be one of: `install`, `update`, `quick-update`
 
 Invalid values will either:
 1. Show an error and exit (for critical options like directory)
-2. Show a warning and skip (for optional items like custom content)
+2. Show a warning and skip (for optional items)
 3. Fall back to interactive prompts (for missing required values)
 
 :::tip[Best Practices]
@@ -171,13 +159,6 @@ Invalid values will either:
 
 - Verify the module ID is correct
 - External modules must be available in the registry
-
-### Custom content path invalid
-
-Ensure each custom content path:
-- Points to a directory
-- Contains a `module.yaml` file in the root
-- Has a `code` field in the `module.yaml`
 
 :::note[Still stuck?]
 Run with `--debug` for detailed output, try interactive mode to isolate the issue, or report at <https://github.com/bmad-code-org/BMAD-METHOD/issues>.
