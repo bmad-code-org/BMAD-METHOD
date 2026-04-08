@@ -160,6 +160,6 @@ Invalid values will either:
 - Verify the module ID is correct
 - External modules must be available in the registry
 
-::: note[Still stuck?]
+:::note[Still stuck?]
 Run with `--debug` for detailed output, try interactive mode to isolate the issue, or report at <https://github.com/bmad-code-org/BMAD-METHOD/issues>.
 :::

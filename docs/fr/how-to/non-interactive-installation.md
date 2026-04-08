@@ -160,6 +160,6 @@ Les valeurs invalides entraîneront soit :
 - Vérifiez que l'ID du module est correct
 - Les modules externes doivent être disponibles dans le registre
 
-::: note[Toujours bloqué ?]
+:::note[Toujours bloqué ?]
 Exécutez avec `--debug` pour une sortie détaillée, essayez le mode interactif pour isoler le problème, ou signalez-le à <https://github.com/bmad-code-org/BMAD-METHOD/issues>.
 :::

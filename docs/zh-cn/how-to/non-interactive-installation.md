@@ -147,7 +147,7 @@ BMad 会验证你提供的所有参数：
 - 验证模块 ID 是否正确
 - 外部模块必须在注册表中可用
 
-::: note[仍然卡住了？]
+:::note[仍然卡住了？]
 使用 `--debug` 获取详细输出，尝试交互模式定位问题，或在 <https://github.com/bmad-code-org/BMAD-METHOD/issues> 提交反馈。
 :::
 

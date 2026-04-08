@@ -98,7 +98,7 @@ class OfficialModules {
   /**
    * List all available built-in modules (core and bmm).
    * All other modules come from external-official-modules.yaml
-   * @returns {Object} Object with modules array and customModules array
+   * @returns {Object} Object with modules array
    */
   async listAvailable() {
     const modules = [];

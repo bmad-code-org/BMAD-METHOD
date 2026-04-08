@@ -148,6 +148,6 @@ Neplatné hodnoty buď:
 - Ověřte, že ID modulu je správné
 - Externí moduly musí být dostupné v registru
 
-::: note[Stále jste uvízli?]
+:::note[Stále jste uvízli?]
 Spusťte s `--debug` pro detailní výstup, zkuste interaktivní režim pro izolaci problému, nebo nahlaste na <https://github.com/bmad-code-org/BMAD-METHOD/issues>.
 :::
