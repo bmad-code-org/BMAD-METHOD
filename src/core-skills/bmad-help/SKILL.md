@@ -65,6 +65,21 @@ For each recommended item, present:
 
 **Ordering**: Show optional items first, then the next required item. Make it clear which is which.
 
+## General Questions via llms.txt
+
+When a user's question does not match any specific skill in the catalog, check for `_meta` rows. These rows have `_meta` in the `skill` column (or `phase` column in the merged CSV) and carry a module's documentation URL in `output-location`.
+
+**Detection**: Scan the catalog for rows where the second column equals `_meta`. Extract the URL from the `output-location` column.
+
+**When to use**: If the user asks a general question about BMad or a specific module (e.g., "what phases does BMad have?", "how does the workflow map work?", "what is party mode?") and no single skill is the clear answer, fetch the module's llms.txt URL and use it to ground your response.
+
+**Behavior**:
+1. Identify which module(s) the question relates to. If ambiguous, prefer the active module or ask.
+2. Fetch the llms.txt URL for that module using WebFetch or equivalent.
+3. Use the fetched content to answer the user's question accurately. If the llms.txt is an index with links to deeper content, follow the most relevant link(s) to find the answer.
+4. Cite the source naturally (e.g., "According to the BMad Method docs...").
+5. If no `_meta` row exists for the relevant module, fall back to your existing knowledge of that module.
+
 ## Constraints
 
 - Present all output in `{communication_language}`
