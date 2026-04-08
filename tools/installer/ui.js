@@ -2,7 +2,6 @@ const path = require('node:path');
 const os = require('node:os');
 const fs = require('fs-extra');
 const { CLIUtils } = require('./cli-utils');
-const { CustomHandler } = require('./custom-handler');
 const { ExternalModuleManager } = require('./modules/external-manager');
 const { getProjectRoot } = require('./project-root');
 const prompts = require('./prompts');
@@ -48,19 +47,6 @@ function _extractMarketplaceVersion(data) {
   return best;
 }
 
-// Separator class for visual grouping in select/multiselect prompts
-// Note: @clack/prompts doesn't support separators natively, they are filtered out
-class Separator {
-  constructor(text = '────────') {
-    this.line = text;
-    this.name = text;
-  }
-  type = 'separator';
-}
-
-// Separator for choice lists (compatible interface)
-const choiceUtils = { Separator };
-
 /**
  * UI utilities for the installer
  */
@@ -99,11 +85,6 @@ class UI {
 
     // Check if there's an existing BMAD installation
     const hasExistingInstall = await fs.pathExists(bmadDir);
-
-    let customContentConfig = { hasCustomContent: false };
-    if (!hasExistingInstall) {
-      customContentConfig._shouldAsk = true;
-    }
 
     // Track action type (only set if there's an existing installation)
     let actionType;
@@ -153,48 +134,9 @@ class UI {
 
       // Handle quick update separately
       if (actionType === 'quick-update') {
-        // Pass --custom-content through so installer can re-cache if cache is missing
-        let customContentForQuickUpdate = { hasCustomContent: false };
-        if (options.customContent) {
-          const paths = options.customContent
-            .split(',')
-            .map((p) => p.trim())
-            .filter(Boolean);
-          if (paths.length > 0) {
-            const customPaths = [];
-            const selectedModuleIds = [];
-            const sources = [];
-            for (const customPath of paths) {
-              const expandedPath = this.expandUserPath(customPath);
-              const validation = this.validateCustomContentPathSync(expandedPath);
-              if (validation) continue;
-              let moduleMeta;
-              try {
-                const moduleYamlPath = path.join(expandedPath, 'module.yaml');
-                moduleMeta = require('yaml').parse(await fs.readFile(moduleYamlPath, 'utf-8'));
-              } catch {
-                continue;
-              }
-              if (!moduleMeta?.code) continue;
-              customPaths.push(expandedPath);
-              selectedModuleIds.push(moduleMeta.code);
-              sources.push({ path: expandedPath, id: moduleMeta.code, name: moduleMeta.name || moduleMeta.code });
-            }
-            if (customPaths.length > 0) {
-              customContentForQuickUpdate = {
-                hasCustomContent: true,
-                selected: true,
-                sources,
-                selectedFiles: customPaths.map((p) => path.join(p, 'module.yaml')),
-                selectedModuleIds,
-              };
-            }
-          }
-        }
         return {
           actionType: 'quick-update',
           directory: confirmedDirectory,
-          customContent: customContentForQuickUpdate,
           skipPrompts: options.yes || false,
         };
       }
@@ -225,120 +167,6 @@ class UI {
           selectedModules = await this.selectAllModules(installedModuleIds);
         }
 
-        // After module selection, ask about custom modules
-        let customModuleResult = { selectedCustomModules: [], customContentConfig: { hasCustomContent: false } };
-
-        if (options.customContent) {
-          // Use custom content from command-line
-          const paths = options.customContent
-            .split(',')
-            .map((p) => p.trim())
-            .filter(Boolean);
-          await prompts.log.info(`Using custom content from command-line: ${paths.join(', ')}`);
-
-          // Build custom content config similar to promptCustomContentSource
-          const customPaths = [];
-          const selectedModuleIds = [];
-          const sources = [];
-
-          for (const customPath of paths) {
-            const expandedPath = this.expandUserPath(customPath);
-            const validation = this.validateCustomContentPathSync(expandedPath);
-            if (validation) {
-              await prompts.log.warn(`Skipping invalid custom content path: ${customPath} - ${validation}`);
-              continue;
-            }
-
-            // Read module metadata
-            let moduleMeta;
-            try {
-              const moduleYamlPath = path.join(expandedPath, 'module.yaml');
-              const moduleYaml = await fs.readFile(moduleYamlPath, 'utf-8');
-              const yaml = require('yaml');
-              moduleMeta = yaml.parse(moduleYaml);
-            } catch (error) {
-              await prompts.log.warn(`Skipping custom content path: ${customPath} - failed to read module.yaml: ${error.message}`);
-              continue;
-            }
-
-            if (!moduleMeta) {
-              await prompts.log.warn(`Skipping custom content path: ${customPath} - module.yaml is empty`);
-              continue;
-            }
-
-            if (!moduleMeta.code) {
-              await prompts.log.warn(`Skipping custom content path: ${customPath} - module.yaml missing 'code' field`);
-              continue;
-            }
-
-            customPaths.push(expandedPath);
-            selectedModuleIds.push(moduleMeta.code);
-            sources.push({
-              path: expandedPath,
-              id: moduleMeta.code,
-              name: moduleMeta.name || moduleMeta.code,
-            });
-          }
-
-          if (customPaths.length > 0) {
-            customModuleResult = {
-              selectedCustomModules: selectedModuleIds,
-              customContentConfig: {
-                hasCustomContent: true,
-                selected: true,
-                sources,
-                selectedFiles: customPaths.map((p) => path.join(p, 'module.yaml')),
-                selectedModuleIds: selectedModuleIds,
-              },
-            };
-          }
-        } else if (options.yes) {
-          // Non-interactive mode: preserve existing custom modules (matches default: false)
-          const cacheDir = path.join(bmadDir, '_config', 'custom');
-          if (await fs.pathExists(cacheDir)) {
-            const entries = await fs.readdir(cacheDir, { withFileTypes: true });
-            for (const entry of entries) {
-              if (entry.isDirectory()) {
-                customModuleResult.selectedCustomModules.push(entry.name);
-              }
-            }
-            await prompts.log.info(
-              `Non-interactive mode (--yes): preserving ${customModuleResult.selectedCustomModules.length} existing custom module(s)`,
-            );
-          } else {
-            await prompts.log.info('Non-interactive mode (--yes): no existing custom modules found');
-          }
-        } else {
-          const changeCustomModules = await prompts.confirm({
-            message: 'Modify custom modules, agents, or workflows?',
-            default: false,
-          });
-
-          if (changeCustomModules) {
-            customModuleResult = await this.handleCustomModulesInModifyFlow(confirmedDirectory, selectedModules);
-          } else {
-            // Preserve existing custom modules if user doesn't want to modify them
-            const { Installer } = require('./core/installer');
-            const installer = new Installer();
-            const { bmadDir } = await installer.findBmadDir(confirmedDirectory);
-
-            const cacheDir = path.join(bmadDir, '_config', 'custom');
-            if (await fs.pathExists(cacheDir)) {
-              const entries = await fs.readdir(cacheDir, { withFileTypes: true });
-              for (const entry of entries) {
-                if (entry.isDirectory()) {
-                  customModuleResult.selectedCustomModules.push(entry.name);
-                }
-              }
-            }
-          }
-        }
-
-        // Merge any selected custom modules
-        if (customModuleResult.selectedCustomModules.length > 0) {
-          selectedModules.push(...customModuleResult.selectedCustomModules);
-        }
-
         // Ensure core is in the modules list
         if (!selectedModules.includes('core')) {
           selectedModules.unshift('core');
@@ -357,7 +185,6 @@ class UI {
           skipIde: toolSelection.skipIde,
           coreConfig: moduleConfigs.core || {},
           moduleConfigs: moduleConfigs,
-          customContent: customModuleResult.customContentConfig,
           skipPrompts: options.yes || false,
         };
       }
@@ -383,84 +210,6 @@ class UI {
       selectedModules = await this.selectAllModules(installedModuleIds);
     }
 
-    // Ask about custom content (local modules/agents/workflows)
-    if (options.customContent) {
-      // Use custom content from command-line
-      const paths = options.customContent
-        .split(',')
-        .map((p) => p.trim())
-        .filter(Boolean);
-      await prompts.log.info(`Using custom content from command-line: ${paths.join(', ')}`);
-
-      // Build custom content config similar to promptCustomContentSource
-      const customPaths = [];
-      const selectedModuleIds = [];
-      const sources = [];
-
-      for (const customPath of paths) {
-        const expandedPath = this.expandUserPath(customPath);
-        const validation = this.validateCustomContentPathSync(expandedPath);
-        if (validation) {
-          await prompts.log.warn(`Skipping invalid custom content path: ${customPath} - ${validation}`);
-          continue;
-        }
-
-        // Read module metadata
-        let moduleMeta;
-        try {
-          const moduleYamlPath = path.join(expandedPath, 'module.yaml');
-          const moduleYaml = await fs.readFile(moduleYamlPath, 'utf-8');
-          const yaml = require('yaml');
-          moduleMeta = yaml.parse(moduleYaml);
-        } catch (error) {
-          await prompts.log.warn(`Skipping custom content path: ${customPath} - failed to read module.yaml: ${error.message}`);
-          continue;
-        }
-
-        if (!moduleMeta) {
-          await prompts.log.warn(`Skipping custom content path: ${customPath} - module.yaml is empty`);
-          continue;
-        }
-
-        if (!moduleMeta.code) {
-          await prompts.log.warn(`Skipping custom content path: ${customPath} - module.yaml missing 'code' field`);
-          continue;
-        }
-
-        customPaths.push(expandedPath);
-        selectedModuleIds.push(moduleMeta.code);
-        sources.push({
-          path: expandedPath,
-          id: moduleMeta.code,
-          name: moduleMeta.name || moduleMeta.code,
-        });
-      }
-
-      if (customPaths.length > 0) {
-        customContentConfig = {
-          hasCustomContent: true,
-          selected: true,
-          sources,
-          selectedFiles: customPaths.map((p) => path.join(p, 'module.yaml')),
-          selectedModuleIds: selectedModuleIds,
-        };
-      }
-    } else if (!options.yes) {
-      const wantsCustomContent = await prompts.confirm({
-        message: 'Add custom modules, agents, or workflows from your computer?',
-        default: false,
-      });
-
-      if (wantsCustomContent) {
-        customContentConfig = await this.promptCustomContentSource();
-      }
-    }
-
-    // Add custom content modules if any were selected
-    if (customContentConfig && customContentConfig.selectedModuleIds) {
-      selectedModules.push(...customContentConfig.selectedModuleIds);
-    }
-
     // Ensure core is in the modules list
     if (!selectedModules.includes('core')) {
       selectedModules.unshift('core');
@@ -476,7 +225,6 @@ class UI {
       skipIde: toolSelection.skipIde,
       coreConfig: moduleConfigs.core || {},
       moduleConfigs: moduleConfigs,
-      customContent: customContentConfig,
       skipPrompts: options.yes || false,
     };
   }
@@ -815,90 +563,6 @@ class UI {
   }
 
   /**
-   * Get module choices for selection
-   * @param {Set} installedModuleIds - Currently installed module IDs
-   * @param {Object} customContentConfig - Custom content configuration
-   * @returns {Array} Module choices for prompt
-   */
-  async getModuleChoices(installedModuleIds, customContentConfig = null) {
-    const color = await prompts.getColor();
-    const moduleChoices = [];
-    const isNewInstallation = installedModuleIds.size === 0;
-
-    const customContentItems = [];
-
-    // Add custom content items
-    if (customContentConfig && customContentConfig.hasCustomContent && customContentConfig.customPath) {
-      // Existing installation - show from directory
-      const customHandler = new CustomHandler();
-      const customFiles = await customHandler.findCustomContent(customContentConfig.customPath);
-
-      for (const customFile of customFiles) {
-        const customInfo = await customHandler.getCustomInfo(customFile);
-        if (customInfo) {
-          customContentItems.push({
-            name: `${color.cyan('\u2713')} ${customInfo.name} ${color.dim(`(${customInfo.relativePath})`)}`,
-            value: `__CUSTOM_CONTENT__${customFile}`, // Unique value for each custom content
-            checked: true, // Default to selected since user chose to provide custom content
-            path: customInfo.path, // Track path to avoid duplicates
-            hint: customInfo.description || undefined,
-          });
-        }
-      }
-    }
-
-    // Add official modules
-    const { OfficialModules } = require('./modules/official-modules');
-    const officialModules = new OfficialModules();
-    const { modules: availableModules, customModules: customModulesFromCache } = await officialModules.listAvailable();
-
-    // First, add all items to appropriate sections
-    const allCustomModules = [];
-
-    // Add custom content items from directory
-    allCustomModules.push(...customContentItems);
-
-    // Add custom modules from cache
-    for (const mod of customModulesFromCache) {
-      // Skip if this module is already in customContentItems (by path)
-      const isDuplicate = allCustomModules.some((item) => item.path && mod.path && path.resolve(item.path) === path.resolve(mod.path));
-
-      if (!isDuplicate) {
-        allCustomModules.push({
-          name: `${color.cyan('\u2713')} ${mod.name} ${color.dim('(cached)')}`,
-          value: mod.id,
-          checked: isNewInstallation ? mod.defaultSelected || false : installedModuleIds.has(mod.id),
-          hint: mod.description || undefined,
-        });
-      }
-    }
-
-    // Add separators and modules in correct order
-    if (allCustomModules.length > 0) {
-      // Add separator for custom content, all custom modules, and official content separator
-      moduleChoices.push(
-        new choiceUtils.Separator('── Custom Content ──'),
-        ...allCustomModules,
-        new choiceUtils.Separator('── Official Content ──'),
-      );
-    }
-
-    // Add official modules (only non-custom ones)
-    for (const mod of availableModules) {
-      if (!mod.isCustom) {
-        moduleChoices.push({
-          name: mod.name,
-          value: mod.id,
-          checked: isNewInstallation ? mod.defaultSelected || false : installedModuleIds.has(mod.id),
-          hint: mod.description || undefined,
-        });
-      }
-    }
-
-    return moduleChoices;
-  }
-
-  /**
    * Select all modules (official + community) using grouped multiselect.
    * Core is shown as locked but filtered from the result since it's always installed separately.
    * @param {Set} installedModuleIds - Currently installed module IDs
@@ -941,7 +605,7 @@ class UI {
     // Local modules (BMM, BMB, etc.)
     const localEntries = [];
     for (const mod of localModules) {
-      if (!mod.isCustom && mod.id !== 'core') {
+      if (mod.id !== 'core') {
         const entry = await buildModuleEntry(mod, mod.id, 'Local');
         localEntries.push(entry);
         if (entry.selected) {
@@ -1314,282 +978,6 @@ class UI {
     const { bmadDir } = await installer.findBmadDir(directory);
     const existingInstall = await ExistingInstall.detect(bmadDir);
     return existingInstall.ides;
-  }
-
-  /**
-   * Validate custom content path synchronously
-   * @param {string} input - User input path
-   * @returns {string|undefined} Error message or undefined if valid
-   */
-  validateCustomContentPathSync(input) {
-    // Allow empty input to cancel
-    if (!input || input.trim() === '') {
-      return; // Allow empty to exit
-    }
-
-    try {
-      // Expand the path
-      const expandedPath = this.expandUserPath(input.trim());
-
-      // Check if path exists
-      if (!fs.pathExistsSync(expandedPath)) {
-        return 'Path does not exist';
-      }
-
-      // Check if it's a directory
-      const stat = fs.statSync(expandedPath);
-      if (!stat.isDirectory()) {
-        return 'Path must be a directory';
-      }
-
-      // Check for module.yaml in the root
-      const moduleYamlPath = path.join(expandedPath, 'module.yaml');
-      if (!fs.pathExistsSync(moduleYamlPath)) {
-        return 'Directory must contain a module.yaml file in the root';
-      }
-
-      // Try to parse the module.yaml to get the module ID
-      try {
-        const yaml = require('yaml');
-        const content = fs.readFileSync(moduleYamlPath, 'utf8');
-        const moduleData = yaml.parse(content);
-        if (!moduleData.code) {
-          return 'module.yaml must contain a "code" field for the module ID';
-        }
-      } catch (error) {
-        return 'Invalid module.yaml file: ' + error.message;
-      }
-
-      return; // Valid
-    } catch (error) {
-      return 'Error validating path: ' + error.message;
-    }
-  }
-
-  /**
-   * Prompt user for custom content source location
-   * @returns {Object} Custom content configuration
-   */
-  async promptCustomContentSource() {
-    const customContentConfig = { hasCustomContent: true, sources: [] };
-
-    // Keep asking for more sources until user is done
-    while (true) {
-      // First ask if user wants to add another module or continue
-      if (customContentConfig.sources.length > 0) {
-        const action = await prompts.select({
-          message: 'Would you like to:',
-          choices: [
-            { name: 'Add another custom module', value: 'add' },
-            { name: 'Continue with installation', value: 'continue' },
-          ],
-          default: 'continue',
-        });
-
-        if (action === 'continue') {
-          break;
-        }
-      }
-
-      let sourcePath;
-      let isValid = false;
-
-      while (!isValid) {
-        // Use sync validation because @clack/prompts doesn't support async validate
-        const inputPath = await prompts.text({
-          message: 'Path to custom module folder (press Enter to skip):',
-          validate: (input) => this.validateCustomContentPathSync(input),
-        });
-
-        // If user pressed Enter without typing anything, exit the loop
-        if (!inputPath || inputPath.trim() === '') {
-          // If we have no modules yet, return false for no custom content
-          if (customContentConfig.sources.length === 0) {
-            return { hasCustomContent: false };
-          }
-          return customContentConfig;
-        }
-
-        sourcePath = this.expandUserPath(inputPath);
-        isValid = true;
-      }
-
-      // Read module.yaml to get module info
-      const yaml = require('yaml');
-      const moduleYamlPath = path.join(sourcePath, 'module.yaml');
-      const moduleContent = await fs.readFile(moduleYamlPath, 'utf8');
-      const moduleData = yaml.parse(moduleContent);
-
-      // Add to sources
-      customContentConfig.sources.push({
-        path: sourcePath,
-        id: moduleData.code,
-        name: moduleData.name || moduleData.code,
-      });
-
-      await prompts.log.success(`Confirmed local custom module: ${moduleData.name || moduleData.code}`);
-    }
-
-    // Ask if user wants to add these to the installation
-    const shouldInstall = await prompts.confirm({
-      message: `Install these ${customContentConfig.sources.length} custom modules?`,
-      default: true,
-    });
-
-    if (shouldInstall) {
-      customContentConfig.selected = true;
-      // Store paths to module.yaml files, not directories
-      customContentConfig.selectedFiles = customContentConfig.sources.map((s) => path.join(s.path, 'module.yaml'));
-      // Also include module IDs for installation
-      customContentConfig.selectedModuleIds = customContentConfig.sources.map((s) => s.id);
-    }
-
-    return customContentConfig;
-  }
-
-  /**
-   * Handle custom modules in the modify flow
-   * @param {string} directory - Installation directory
-   * @param {Array} selectedModules - Currently selected modules
-   * @returns {Object} Result with selected custom modules and custom content config
-   */
-  async handleCustomModulesInModifyFlow(directory, selectedModules) {
-    // Get existing installation to find custom modules
-    const { existingInstall } = await this.getExistingInstallation(directory);
-
-    // Check if there are any custom modules in cache
-    const { Installer } = require('./core/installer');
-    const installer = new Installer();
-    const { bmadDir } = await installer.findBmadDir(directory);
-
-    const cacheDir = path.join(bmadDir, '_config', 'custom');
-    const cachedCustomModules = [];
-
-    if (await fs.pathExists(cacheDir)) {
-      const entries = await fs.readdir(cacheDir, { withFileTypes: true });
-      for (const entry of entries) {
-        if (entry.isDirectory()) {
-          const moduleYamlPath = path.join(cacheDir, entry.name, 'module.yaml');
-          if (await fs.pathExists(moduleYamlPath)) {
-            const yaml = require('yaml');
-            const content = await fs.readFile(moduleYamlPath, 'utf8');
-            const moduleData = yaml.parse(content);
-
-            cachedCustomModules.push({
-              id: entry.name,
-              name: moduleData.name || entry.name,
-              description: moduleData.description || 'Custom module from cache',
-              checked: selectedModules.includes(entry.name),
-              fromCache: true,
-            });
-          }
-        }
-      }
-    }
-
-    const result = {
-      selectedCustomModules: [],
-      customContentConfig: { hasCustomContent: false },
-    };
-
-    // Ask user about custom modules
-    await prompts.log.info('Custom Modules');
-    if (cachedCustomModules.length > 0) {
-      await prompts.log.message('Found custom modules in your installation:');
-    } else {
-      await prompts.log.message('No custom modules currently installed.');
-    }
-
-    // Build choices dynamically based on whether we have existing modules
-    const choices = [];
-    if (cachedCustomModules.length > 0) {
-      choices.push(
-        { name: 'Keep all existing custom modules', value: 'keep' },
-        { name: 'Select which custom modules to keep', value: 'select' },
-        { name: 'Add new custom modules', value: 'add' },
-        { name: 'Remove all custom modules', value: 'remove' },
-      );
-    } else {
-      choices.push({ name: 'Add new custom modules', value: 'add' }, { name: 'Cancel (no custom modules)', value: 'cancel' });
-    }
-
-    const customAction = await prompts.select({
-      message: cachedCustomModules.length > 0 ? 'Manage custom modules?' : 'Add custom modules?',
-      choices: choices,
-      default: cachedCustomModules.length > 0 ? 'keep' : 'add',
-    });
-
-    switch (customAction) {
-      case 'keep': {
-        // Keep all existing custom modules
-        result.selectedCustomModules = cachedCustomModules.map((m) => m.id);
-        await prompts.log.message(`Keeping ${result.selectedCustomModules.length} custom module(s)`);
-        break;
-      }
-
-      case 'select': {
-        // Let user choose which to keep
-        const selectChoices = cachedCustomModules.map((m) => ({
-          name: `${m.name} (${m.id})`,
-          value: m.id,
-          checked: m.checked,
-        }));
-
-        // Add "None / I changed my mind" option at the end
-        const choicesWithSkip = [
-          ...selectChoices,
-          {
-            name: '⚠ None / I changed my mind - keep no custom modules',
-            value: '__NONE__',
-            checked: false,
-          },
-        ];
-
-        const keepModules = await prompts.multiselect({
-          message: 'Select custom modules to keep (use arrow keys, space to toggle):',
-          choices: choicesWithSkip,
-          required: true,
-        });
-
-        // If user selected both "__NONE__" and other modules, honor the "None" choice
-        if (keepModules && keepModules.includes('__NONE__') && keepModules.length > 1) {
-          await prompts.log.warn('"None / I changed my mind" was selected, so no custom modules will be kept.');
-          result.selectedCustomModules = [];
-        } else {
-          // Filter out the special '__NONE__' value
-          result.selectedCustomModules = keepModules ? keepModules.filter((m) => m !== '__NONE__') : [];
-        }
-        break;
-      }
-
-      case 'add': {
-        // By default, keep existing modules when adding new ones
-        // User chose "Add new" not "Replace", so we assume they want to keep existing
-        result.selectedCustomModules = cachedCustomModules.map((m) => m.id);
-
-        // Then prompt for new ones (reuse existing method)
-        const newCustomContent = await this.promptCustomContentSource();
-        if (newCustomContent.hasCustomContent && newCustomContent.selected) {
-          result.selectedCustomModules.push(...newCustomContent.selectedModuleIds);
-          result.customContentConfig = newCustomContent;
-        }
-        break;
-      }
-
-      case 'remove': {
-        // Remove all custom modules
-        await prompts.log.warn('All custom modules will be removed from the installation');
-        break;
-      }
-
-      case 'cancel': {
-        // User cancelled - no custom modules
-        await prompts.log.message('No custom modules will be added');
-        break;
-      }
-    }
-
-    return result;
   }
 
   /**

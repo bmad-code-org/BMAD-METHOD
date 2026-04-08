@@ -102,7 +102,6 @@ class OfficialModules {
    */
   async listAvailable() {
     const modules = [];
-    const customModules = [];
 
     // Add built-in core module (directly under src/core-skills)
     const corePath = getSourcePath('core-skills');
@@ -122,7 +121,7 @@ class OfficialModules {
       }
     }
 
-    return { modules, customModules };
+    return { modules };
   }
 
   /**
@@ -133,25 +132,12 @@ class OfficialModules {
    * @returns {Object|null} Module info or null if not a valid module
    */
   async getModuleInfo(modulePath, defaultName, sourceDescription) {
-    // Check for module structure (module.yaml OR custom.yaml)
     const moduleConfigPath = path.join(modulePath, 'module.yaml');
-    const rootCustomConfigPath = path.join(modulePath, 'custom.yaml');
-    let configPath = null;
 
-    if (await fs.pathExists(moduleConfigPath)) {
-      configPath = moduleConfigPath;
-    } else if (await fs.pathExists(rootCustomConfigPath)) {
-      configPath = rootCustomConfigPath;
-    }
-
-    // Skip if this doesn't look like a module
-    if (!configPath) {
+    if (!(await fs.pathExists(moduleConfigPath))) {
       return null;
     }
 
-    // Mark as custom if it's using custom.yaml OR if it's outside src/bmm or src/core
-    const isCustomSource =
-      sourceDescription !== 'src/bmm-skills' && sourceDescription !== 'src/core-skills' && sourceDescription !== 'src/modules';
     const moduleInfo = {
       id: defaultName,
       path: modulePath,
@@ -162,12 +148,11 @@ class OfficialModules {
       description: 'BMAD Module',
       version: '5.0.0',
       source: sourceDescription,
-      isCustom: configPath === rootCustomConfigPath || isCustomSource,
     };
 
     // Read module config for metadata
     try {
-      const configContent = await fs.readFile(configPath, 'utf8');
+      const configContent = await fs.readFile(moduleConfigPath, 'utf8');
       const config = yaml.parse(configContent);
 
       // Use the code property as the id if available
@@ -824,20 +809,15 @@ class OfficialModules {
     const results = [];
 
     for (const moduleName of modules) {
-      // Resolve module.yaml path - custom paths first, then standard location, then OfficialModules search
+      // Resolve module.yaml path - standard location first, then OfficialModules search
       let moduleConfigPath = null;
-      const customPath = this.customModulePaths?.get(moduleName);
-      if (customPath) {
-        moduleConfigPath = path.join(customPath, 'module.yaml');
+      const standardPath = path.join(getModulePath(moduleName), 'module.yaml');
+      if (await fs.pathExists(standardPath)) {
+        moduleConfigPath = standardPath;
       } else {
-        const standardPath = path.join(getModulePath(moduleName), 'module.yaml');
-        if (await fs.pathExists(standardPath)) {
-          moduleConfigPath = standardPath;
-        } else {
-          const moduleSourcePath = await this.findModuleSource(moduleName, { silent: true });
-          if (moduleSourcePath) {
-            moduleConfigPath = path.join(moduleSourcePath, 'module.yaml');
-          }
+        const moduleSourcePath = await this.findModuleSource(moduleName, { silent: true });
+        if (moduleSourcePath) {
+          moduleConfigPath = path.join(moduleSourcePath, 'module.yaml');
         }
       }
 
@@ -882,12 +862,9 @@ class OfficialModules {
    * @param {Array} modules - List of modules to configure (including 'core')
    * @param {string} projectDir - Target project directory
    * @param {Object} options - Additional options
-   * @param {Map} options.customModulePaths - Map of module ID to source path for custom modules
    * @param {boolean} options.skipPrompts - Skip prompts and use defaults (for --yes flag)
    */
   async collectAllConfigurations(modules, projectDir, options = {}) {
-    // Store custom module paths for use in collectModuleConfig
-    this.customModulePaths = options.customModulePaths || new Map();
     this.skipPrompts = options.skipPrompts || false;
     this.modulesToCustomize = undefined;
     await this.loadExistingConfig(projectDir);
@@ -1042,25 +1019,7 @@ class OfficialModules {
       }
     }
 
-    let configPath = null;
-    let isCustomModule = false;
-
-    if (await fs.pathExists(moduleConfigPath)) {
-      configPath = moduleConfigPath;
-    } else {
-      // Check if this is a custom module with custom.yaml
-      const moduleSourcePath = await this.findModuleSource(moduleName, { silent: true });
-
-      if (moduleSourcePath) {
-        const rootCustomConfigPath = path.join(moduleSourcePath, 'custom.yaml');
-
-        if (await fs.pathExists(rootCustomConfigPath)) {
-          isCustomModule = true;
-          // For custom modules, we don't have an install-config schema, so just use existing values
-          // The custom.yaml values will be loaded and merged during installation
-        }
-      }
-
+    if (!(await fs.pathExists(moduleConfigPath))) {
       // No config schema for this module - use existing values
       if (this._existingConfig && this._existingConfig[moduleName]) {
         if (!this.collectedConfig[moduleName]) {
@@ -1071,7 +1030,7 @@ class OfficialModules {
       return false;
     }
 
-    const configContent = await fs.readFile(configPath, 'utf8');
+    const configContent = await fs.readFile(moduleConfigPath, 'utf8');
     const moduleConfig = yaml.parse(configContent);
 
     if (!moduleConfig) {
@@ -1332,16 +1291,7 @@ class OfficialModules {
       this.allAnswers = {};
     }
     // Load module's config
-    // First, check if we have a custom module path for this module
-    let moduleConfigPath = null;
-
-    if (this.customModulePaths && this.customModulePaths.has(moduleName)) {
-      const customPath = this.customModulePaths.get(moduleName);
-      moduleConfigPath = path.join(customPath, 'module.yaml');
-    } else {
-      // Try the standard src/modules location
-      moduleConfigPath = path.join(getModulePath(moduleName), 'module.yaml');
-    }
+    let moduleConfigPath = path.join(getModulePath(moduleName), 'module.yaml');
 
     // If not found in src/modules or custom paths, search the project
     if (!(await fs.pathExists(moduleConfigPath))) {

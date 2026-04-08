@@ -27,7 +27,6 @@ Yêu cầu [Node.js](https://nodejs.org) v20+ và `npx` (đi kèm với npm).
 | `--directory <path>` | Thư mục cài đặt | `--directory ~/projects/myapp` |
 | `--modules <modules>` | Danh sách ID module, cách nhau bởi dấu phẩy | `--modules bmm,bmb` |
 | `--tools <tools>` | Danh sách ID công cụ/IDE, cách nhau bởi dấu phẩy (dùng `none` để bỏ qua) | `--tools claude-code,cursor` hoặc `--tools none` |
-| `--custom-content <paths>` | Danh sách đường dẫn đến module tùy chỉnh, cách nhau bởi dấu phẩy | `--custom-content ~/my-module,~/another-module` |
 | `--action <type>` | Hành động cho bản cài đặt hiện có: `install` (mặc định), `update`, hoặc `quick-update` | `--action quick-update` |
 
 ### Cấu hình cốt lõi
@@ -120,16 +119,6 @@ npx bmad-method install \
   --action quick-update
 ```
 
-### Cài đặt với nội dung tùy chỉnh
-
-```bash
-npx bmad-method install \
-  --directory ~/projects/myapp \
-  --modules bmm \
-  --custom-content ~/my-custom-module,~/another-module \
-  --tools claude-code
-```
-
 ## Bạn nhận được gì
 
 - Thư mục `_bmad/` đã được cấu hình đầy đủ trong dự án của bạn
@@ -143,12 +132,11 @@ BMad sẽ kiểm tra tất cả các cờ được cung cấp:
 - **Directory** - Phải là đường dẫn hợp lệ và có quyền ghi
 - **Modules** - Cảnh báo nếu ID module không hợp lệ (nhưng không thất bại)
 - **Tools** - Cảnh báo nếu ID công cụ không hợp lệ (nhưng không thất bại)
-- **Custom Content** - Mỗi đường dẫn phải chứa tệp `module.yaml` hợp lệ
 - **Action** - Phải là một trong: `install`, `update`, `quick-update`
 
 Giá trị không hợp lệ sẽ dẫn đến một trong các trường hợp sau:
 1. Hiện lỗi và thoát (với các tùy chọn quan trọng như directory)
-2. Hiện cảnh báo và bỏ qua (với mục tùy chọn như custom content)
+2. Hiện cảnh báo và bỏ qua (với mục tùy chọn)
 3. Quay lại hỏi interactive (với giá trị bắt buộc bị thiếu)
 
 :::tip[Thực hành tốt]
@@ -171,13 +159,6 @@ Giá trị không hợp lệ sẽ dẫn đến một trong các trường hợp 
 
 - Xác minh ID module có đúng không
 - Module bên ngoài phải có sẵn trong registry
-
-### Đường dẫn custom content không hợp lệ
-
-Đảm bảo mỗi đường dẫn custom content:
-- Trỏ tới một thư mục
-- Chứa tệp `module.yaml` ở cấp gốc
-- Có trường `code` trong tệp `module.yaml`
 
 :::note[Vẫn bị mắc?]
 Chạy với `--debug` để xem output chi tiết, thử chế độ interactive để cô lập vấn đề, hoặc báo cáo tại <https://github.com/bmad-code-org/BMAD-METHOD/issues>.

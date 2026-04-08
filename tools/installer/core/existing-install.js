@@ -10,14 +10,13 @@ const { Manifest } = require('./manifest');
 class ExistingInstall {
   #version;
 
-  constructor({ installed, version, hasCore, modules, ides, customModules }) {
+  constructor({ installed, version, hasCore, modules, ides }) {
     this.installed = installed;
     this.#version = version;
     this.hasCore = hasCore;
     this.modules = Object.freeze(modules.map((m) => Object.freeze({ ...m })));
     this.moduleIds = Object.freeze(this.modules.map((m) => m.id));
     this.ides = Object.freeze([...ides]);
-    this.customModules = Object.freeze([...customModules]);
     Object.freeze(this);
   }
 
@@ -35,7 +34,6 @@ class ExistingInstall {
       hasCore: false,
       modules: [],
       ides: [],
-      customModules: [],
     });
   }
 
@@ -53,15 +51,11 @@ class ExistingInstall {
     let hasCore = false;
     const modules = [];
     let ides = [];
-    let customModules = [];
 
     const manifest = new Manifest();
     const manifestData = await manifest.read(bmadDir);
     if (manifestData) {
       version = manifestData.version;
-      if (manifestData.customModules) {
-        customModules = manifestData.customModules;
-      }
       if (manifestData.ides) {
         ides = manifestData.ides.filter((ide) => ide && typeof ide === 'string');
       }
@@ -120,7 +114,7 @@ class ExistingInstall {
       return ExistingInstall.empty();
     }
 
-    return new ExistingInstall({ installed, version, hasCore, modules, ides, customModules });
+    return new ExistingInstall({ installed, version, hasCore, modules, ides });
   }
 }
 

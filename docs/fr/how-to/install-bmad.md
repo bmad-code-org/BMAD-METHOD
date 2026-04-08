@@ -72,7 +72,7 @@ L'installateur affiche les modules disponibles. Sélectionnez ceux dont vous ave
 
 ### 5. Suivre les instructions
 
-L'installateur vous guide pour le reste — contenu personnalisé, paramètres, etc.
+L'installateur vous guide pour le reste — paramètres, intégrations d'outils, etc.
 
 ## Ce que vous obtenez
 

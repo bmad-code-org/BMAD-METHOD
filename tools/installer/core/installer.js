@@ -2,7 +2,6 @@ const path = require('node:path');
 const fs = require('fs-extra');
 const { Manifest } = require('./manifest');
 const { OfficialModules } = require('../modules/official-modules');
-const { CustomModules } = require('../modules/custom-modules');
 const { IdeManager } = require('../ide/manager');
 const { FileOps } = require('../file-ops');
 const { Config } = require('./config');
@@ -19,7 +18,6 @@ class Installer {
   constructor() {
     this.externalModuleManager = new ExternalModuleManager();
     this.manifest = new Manifest();
-    this.customModules = new CustomModules();
     this.ideManager = new IdeManager();
     this.fileOps = new FileOps();
     this.installedFiles = new Set(); // Track all installed files
@@ -80,8 +78,6 @@ class Installer {
       const officialModules = await OfficialModules.build(config, paths);
       const existingInstall = await ExistingInstall.detect(paths.bmadDir);
 
-      await this.customModules.discoverPaths(originalConfig, paths);
-
       if (existingInstall.installed) {
         await this._removeDeselectedModules(existingInstall, config, paths);
         updateState = await this._prepareUpdateState(paths, config, existingInstall, officialModules);
@@ -121,14 +117,9 @@ class Installer {
         }
       }
 
-      await this._cacheCustomModules(paths, addResult);
+      const allModules = config.modules || [];
 
-      // Compute module lists: official = selected minus custom, all = both
-      const customModuleIds = new Set(this.customModules.paths.keys());
-      const officialModuleIds = (config.modules || []).filter((m) => !customModuleIds.has(m));
-      const allModules = [...officialModuleIds, ...[...customModuleIds].filter((id) => !officialModuleIds.includes(id))];
-
-      await this._installAndConfigure(config, originalConfig, paths, officialModuleIds, allModules, addResult, officialModules);
+      await this._installAndConfigure(config, originalConfig, paths, allModules, allModules, addResult, officialModules);
 
       await this._setupIdes(config, allModules, paths, addResult, previousSkillIds);
 
@@ -243,26 +234,6 @@ class Installer {
   }
 
   /**
-   * Cache custom modules into the local cache directory.
-   * Updates this.customModules.paths in place with cached locations.
-   */
-  async _cacheCustomModules(paths, addResult) {
-    if (!this.customModules.paths || this.customModules.paths.size === 0) return;
-
-    const { CustomModuleCache } = require('./custom-module-cache');
-    const customCache = new CustomModuleCache(paths.bmadDir);
-
-    for (const [moduleId, sourcePath] of this.customModules.paths) {
-      const cachedInfo = await customCache.cacheModule(moduleId, sourcePath, {
-        sourcePath: sourcePath,
-      });
-      this.customModules.paths.set(moduleId, cachedInfo.cachePath);
-    }
-
-    addResult('Custom modules cached', 'ok');
-  }
-
-  /**
    * Install modules, create directories, generate configs and manifests.
    */
   async _installAndConfigure(config, originalConfig, paths, officialModuleIds, allModules, addResult, officialModules) {
@@ -280,11 +251,6 @@ class Installer {
           const installedModuleNames = new Set();
 
           await this._installOfficialModules(config, paths, officialModuleIds, addResult, isQuickUpdate, officialModules, {
-            message,
-            installedModuleNames,
-          });
-
-          await this._installCustomModules(config, paths, addResult, officialModules, {
             message,
             installedModuleNames,
           });
@@ -515,48 +481,7 @@ class Installer {
   }
 
   /**
-   * Scan the custom module cache directory and register any cached custom modules
-   * that aren't already known from the manifest or external module list.
-   * @param {Object} paths - InstallPaths instance
-   */
-  async _scanCachedCustomModules(paths) {
-    const cacheDir = paths.customCacheDir;
-    if (!(await fs.pathExists(cacheDir))) {
-      return;
-    }
-
-    const cachedModules = await fs.readdir(cacheDir, { withFileTypes: true });
-
-    for (const cachedModule of cachedModules) {
-      const moduleId = cachedModule.name;
-      const cachedPath = path.join(cacheDir, moduleId);
-
-      // Skip if path doesn't exist (broken symlink, deleted dir) - avoids lstat ENOENT
-      if (!(await fs.pathExists(cachedPath)) || !cachedModule.isDirectory()) {
-        continue;
-      }
-
-      // Skip if we already have this module from manifest
-      if (this.customModules.paths.has(moduleId)) {
-        continue;
-      }
-
-      // Check if this is an external official module - skip cache for those
-      const isExternal = await this.externalModuleManager.hasModule(moduleId);
-      if (isExternal) {
-        continue;
-      }
-
-      // Check if this is actually a custom module (has module.yaml)
-      const moduleYamlPath = path.join(cachedPath, 'module.yaml');
-      if (await fs.pathExists(moduleYamlPath)) {
-        this.customModules.paths.set(moduleId, cachedPath);
-      }
-    }
-  }
-
-  /**
-   * Common update preparation: detect files, preserve core config, scan cache, back up.
+   * Common update preparation: detect files, preserve core config, back up.
    * @param {Object} paths - InstallPaths instance
    * @param {Object} config - Clean config (may have coreConfig updated)
    * @param {Object} existingInstall - Detection result
@@ -583,8 +508,6 @@ class Installer {
         await prompts.log.warn(`Warning: Could not read existing core config: ${error.message}`);
       }
     }
-
-    await this._scanCachedCustomModules(paths);
 
     const backupDirs = await this._backupUserFiles(paths, customFiles, modifiedFiles);
 
@@ -673,38 +596,6 @@ class Installer {
       const moduleInfo = sourcePath ? await officialModules.getModuleInfo(sourcePath, moduleName, '') : null;
       const displayName = moduleInfo?.name || moduleName;
       const version = sourcePath ? await this._getMarketplaceVersion(sourcePath) : '';
-      addResult(displayName, 'ok', '', { moduleCode: moduleName, newVersion: version });
-    }
-  }
-
-  /**
-   * Install custom modules using CustomModules.install().
-   * Source paths come from this.customModules.paths (populated by discoverPaths).
-   */
-  async _installCustomModules(config, paths, addResult, officialModules, ctx) {
-    const { message, installedModuleNames } = ctx;
-    const isQuickUpdate = config.isQuickUpdate();
-
-    for (const [moduleName, sourcePath] of this.customModules.paths) {
-      if (installedModuleNames.has(moduleName)) continue;
-      installedModuleNames.add(moduleName);
-
-      message(`${isQuickUpdate ? 'Updating' : 'Installing'} ${moduleName}...`);
-
-      const collectedModuleConfig = officialModules.moduleConfigs[moduleName] || {};
-      const result = await this.customModules.install(moduleName, paths.bmadDir, (filePath) => this.installedFiles.add(filePath), {
-        moduleConfig: collectedModuleConfig,
-      });
-
-      // Generate runtime config.yaml with merged values
-      await this.generateModuleConfigs(paths.bmadDir, {
-        [moduleName]: { ...config.coreConfig, ...result.moduleConfig, ...collectedModuleConfig },
-      });
-
-      // Get display name from source module.yaml; version from marketplace.json
-      const moduleInfo = await officialModules.getModuleInfo(sourcePath, moduleName, '');
-      const displayName = moduleInfo?.name || moduleName;
-      const version = await this._getMarketplaceVersion(sourcePath);
       addResult(displayName, 'ok', '', { moduleCode: moduleName, newVersion: version });
     }
   }
@@ -1253,16 +1144,9 @@ class Installer {
     const configuredIdes = existingInstall.ides;
     const projectRoot = path.dirname(bmadDir);
 
-    const customModuleSources = await this.customModules.assembleQuickUpdateSources(
-      config,
-      existingInstall,
-      bmadDir,
-      this.externalModuleManager,
-    );
-
     // Get available modules (what we have source for)
     const availableModulesData = await new OfficialModules().listAvailable();
-    const availableModules = [...availableModulesData.modules, ...availableModulesData.customModules];
+    const availableModules = [...availableModulesData.modules];
 
     // Add external official modules to available modules
     const externalModules = await this.externalModuleManager.listAvailable();
@@ -1277,51 +1161,11 @@ class Installer {
       }
     }
 
-    // Add custom modules from manifest if their sources exist
-    for (const [moduleId, customModule] of customModuleSources) {
-      const sourcePath = customModule.sourcePath;
-      if (sourcePath && (await fs.pathExists(sourcePath)) && !availableModules.some((m) => m.id === moduleId)) {
-        availableModules.push({
-          id: moduleId,
-          name: customModule.name || moduleId,
-          path: sourcePath,
-          isCustom: true,
-          fromManifest: true,
-        });
-      }
-    }
-
-    // Handle missing custom module sources
-    const customModuleResult = await this.handleMissingCustomSources(
-      customModuleSources,
-      bmadDir,
-      projectRoot,
-      'update',
-      installedModules,
-      config.skipPrompts || false,
-    );
-
-    const { validCustomModules, keptModulesWithoutSources } = customModuleResult;
-
-    const customModulesFromManifest = validCustomModules.map((m) => ({
-      ...m,
-      isCustom: true,
-      hasUpdate: true,
-    }));
-
-    const allAvailableModules = [...availableModules, ...customModulesFromManifest];
-    const availableModuleIds = new Set(allAvailableModules.map((m) => m.id));
+    const availableModuleIds = new Set(availableModules.map((m) => m.id));
 
     // Only update modules that are BOTH installed AND available (we have source for)
     const modulesToUpdate = installedModules.filter((id) => availableModuleIds.has(id));
     const skippedModules = installedModules.filter((id) => !availableModuleIds.has(id));
-
-    // Add custom modules that were kept without sources to the skipped modules
-    for (const keptModule of keptModulesWithoutSources) {
-      if (!skippedModules.includes(keptModule)) {
-        skippedModules.push(keptModule);
-      }
-    }
 
     if (skippedModules.length > 0) {
       await prompts.log.warn(`Skipping ${skippedModules.length} module(s) - no source available: ${skippedModules.join(', ')}`);
@@ -1367,9 +1211,7 @@ class Installer {
       actionType: 'install',
       _quickUpdate: true,
       _preserveModules: skippedModules,
-      _customModuleSources: customModuleSources,
       _existingModules: installedModules,
-      customContent: config.customContent,
     };
 
     await this.install(installConfig);
@@ -1502,239 +1344,6 @@ class Installer {
   async getOutputFolder(projectDir) {
     const { bmadDir } = await this.findBmadDir(projectDir);
     return this._readOutputFolder(bmadDir);
-  }
-
-  /**
-   * Handle missing custom module sources interactively
-   * @param {Map} customModuleSources - Map of custom module ID to info
-   * @param {string} bmadDir - BMAD directory
-   * @param {string} projectRoot - Project root directory
-   * @param {string} operation - Current operation ('update', 'compile', etc.)
-   * @param {Array} installedModules - Array of installed module IDs (will be modified)
-   * @param {boolean} [skipPrompts=false] - Skip interactive prompts and keep all modules with missing sources
-   * @returns {Object} Object with validCustomModules array and keptModulesWithoutSources array
-   */
-  async handleMissingCustomSources(customModuleSources, bmadDir, projectRoot, operation, installedModules, skipPrompts = false) {
-    const validCustomModules = [];
-    const keptModulesWithoutSources = []; // Track modules kept without sources
-    const customModulesWithMissingSources = [];
-
-    // Check which sources exist
-    for (const [moduleId, customInfo] of customModuleSources) {
-      if (await fs.pathExists(customInfo.sourcePath)) {
-        validCustomModules.push({
-          id: moduleId,
-          name: customInfo.name,
-          path: customInfo.sourcePath,
-          info: customInfo,
-        });
-      } else {
-        // For cached modules that are missing, we just skip them without prompting
-        if (customInfo.cached) {
-          // Skip cached modules without prompting
-          keptModulesWithoutSources.push({
-            id: moduleId,
-            name: customInfo.name,
-            cached: true,
-          });
-        } else {
-          customModulesWithMissingSources.push({
-            id: moduleId,
-            name: customInfo.name,
-            sourcePath: customInfo.sourcePath,
-            relativePath: customInfo.relativePath,
-            info: customInfo,
-          });
-        }
-      }
-    }
-
-    // If no missing sources, return immediately
-    if (customModulesWithMissingSources.length === 0) {
-      return {
-        validCustomModules,
-        keptModulesWithoutSources: [],
-      };
-    }
-
-    // Non-interactive mode: keep all modules with missing sources
-    if (skipPrompts) {
-      for (const missing of customModulesWithMissingSources) {
-        keptModulesWithoutSources.push(missing.id);
-      }
-      return { validCustomModules, keptModulesWithoutSources };
-    }
-
-    await prompts.log.warn(`Found ${customModulesWithMissingSources.length} custom module(s) with missing sources:`);
-
-    let keptCount = 0;
-    let updatedCount = 0;
-    let removedCount = 0;
-
-    for (const missing of customModulesWithMissingSources) {
-      await prompts.log.message(
-        `${missing.name} (${missing.id})\n  Original source: ${missing.relativePath}\n  Full path: ${missing.sourcePath}`,
-      );
-
-      const choices = [
-        {
-          name: 'Keep installed (will not be processed)',
-          value: 'keep',
-          hint: 'Keep',
-        },
-        {
-          name: 'Specify new source location',
-          value: 'update',
-          hint: 'Update',
-        },
-      ];
-
-      // Only add remove option if not just compiling agents
-      if (operation !== 'compile-agents') {
-        choices.push({
-          name: '⚠️  REMOVE module completely (destructive!)',
-          value: 'remove',
-          hint: 'Remove',
-        });
-      }
-
-      const action = await prompts.select({
-        message: `How would you like to handle "${missing.name}"?`,
-        choices,
-      });
-
-      switch (action) {
-        case 'update': {
-          // Use sync validation because @clack/prompts doesn't support async validate
-          const newSourcePath = await prompts.text({
-            message: 'Enter the new path to the custom module:',
-            default: missing.sourcePath,
-            validate: (input) => {
-              if (!input || input.trim() === '') {
-                return 'Please enter a path';
-              }
-              const expandedPath = path.resolve(input.trim());
-              if (!fs.pathExistsSync(expandedPath)) {
-                return 'Path does not exist';
-              }
-              // Check if it looks like a valid module
-              const moduleYamlPath = path.join(expandedPath, 'module.yaml');
-              const agentsPath = path.join(expandedPath, 'agents');
-              const workflowsPath = path.join(expandedPath, 'workflows');
-
-              if (!fs.pathExistsSync(moduleYamlPath) && !fs.pathExistsSync(agentsPath) && !fs.pathExistsSync(workflowsPath)) {
-                return 'Path does not appear to contain a valid custom module';
-              }
-              return; // clack expects undefined for valid input
-            },
-          });
-
-          // Defensive: handleCancel should have exited, but guard against symbol propagation
-          if (typeof newSourcePath !== 'string') {
-            keptCount++;
-            keptModulesWithoutSources.push(missing.id);
-            continue;
-          }
-
-          // Update the source in manifest
-          const resolvedPath = path.resolve(newSourcePath.trim());
-          missing.info.sourcePath = resolvedPath;
-          // Remove relativePath - we only store absolute sourcePath now
-          delete missing.info.relativePath;
-          await this.manifest.addCustomModule(bmadDir, missing.info);
-
-          validCustomModules.push({
-            id: missing.id,
-            name: missing.name,
-            path: resolvedPath,
-            info: missing.info,
-          });
-
-          updatedCount++;
-          await prompts.log.success('Updated source location');
-
-          break;
-        }
-        case 'remove': {
-          // Extra confirmation for destructive remove
-          await prompts.log.error(
-            `WARNING: This will PERMANENTLY DELETE "${missing.name}" and all its files!\n  Module location: ${path.join(bmadDir, missing.id)}`,
-          );
-
-          const confirmDelete = await prompts.confirm({
-            message: 'Are you absolutely sure you want to delete this module?',
-            default: false,
-          });
-
-          if (confirmDelete) {
-            const typedConfirm = await prompts.text({
-              message: 'Type "DELETE" to confirm permanent deletion:',
-              validate: (input) => {
-                if (input !== 'DELETE') {
-                  return 'You must type "DELETE" exactly to proceed';
-                }
-                return; // clack expects undefined for valid input
-              },
-            });
-
-            if (typedConfirm === 'DELETE') {
-              // Remove the module from filesystem and manifest
-              const modulePath = path.join(bmadDir, missing.id);
-              if (await fs.pathExists(modulePath)) {
-                const fsExtra = require('fs-extra');
-                await fsExtra.remove(modulePath);
-                await prompts.log.warn(`Deleted module directory: ${path.relative(projectRoot, modulePath)}`);
-              }
-
-              await this.manifest.removeModule(bmadDir, missing.id);
-              await this.manifest.removeCustomModule(bmadDir, missing.id);
-              await prompts.log.warn('Removed from manifest');
-
-              // Also remove from installedModules list
-              if (installedModules && installedModules.includes(missing.id)) {
-                const index = installedModules.indexOf(missing.id);
-                if (index !== -1) {
-                  installedModules.splice(index, 1);
-                }
-              }
-
-              removedCount++;
-              await prompts.log.error(`"${missing.name}" has been permanently removed`);
-            } else {
-              await prompts.log.message('Removal cancelled - module will be kept');
-              keptCount++;
-            }
-          } else {
-            await prompts.log.message('Removal cancelled - module will be kept');
-            keptCount++;
-          }
-
-          break;
-        }
-        case 'keep': {
-          keptCount++;
-          keptModulesWithoutSources.push(missing.id);
-          await prompts.log.message('Module will be kept as-is');
-
-          break;
-        }
-        // No default
-      }
-    }
-
-    // Show summary
-    if (keptCount > 0 || updatedCount > 0 || removedCount > 0) {
-      let summary = 'Summary for custom modules with missing sources:';
-      if (keptCount > 0) summary += `\n  • ${keptCount} module(s) kept as-is`;
-      if (updatedCount > 0) summary += `\n  • ${updatedCount} module(s) updated with new sources`;
-      if (removedCount > 0) summary += `\n  • ${removedCount} module(s) permanently deleted`;
-      await prompts.log.message(summary);
-    }
-
-    return {
-      validCustomModules,
-      keptModulesWithoutSources,
-    };
   }
 
   /**
