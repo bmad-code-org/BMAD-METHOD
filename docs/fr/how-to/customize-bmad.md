@@ -58,7 +58,7 @@ Modifier la façon dont l'agent se présente :
 ```yaml
 agent:
   metadata:
-    name: 'Bob l’éponge' # Par défaut : "Mary"
+    name: 'Bob l’éponge' # Par défaut : "Amelia"
 ```
 
 **Persona**

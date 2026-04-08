@@ -79,6 +79,7 @@ Les skills d'agent chargent un persona[^2] IA spécialisé avec un rôle défini
 
 | Exemple de skill | Agent | Rôle |
 | --- | --- | --- |
+| `bmad-dev` | Amelia (Développeur) | Implémente les stories avec une adhérence stricte aux specs |
 | `bmad-analyst` | Mary (Analyste) | Brainstorming de projets, recherche, création de briefs |
 | `bmad-architect` | Winston (Architecte) | Conçoit l'architecture système |
 | `bmad-ux-designer` | Sally (Designer UX) | Crée les designs UX |
