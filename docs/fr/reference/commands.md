@@ -92,6 +92,8 @@ Les skills de workflow exécutent un processus structuré en plusieurs étapes s
 
 | Exemple de skill | Objectif |
 | --- | --- |
+| `bmad-product-brief` | Créer un product brief[^3] — découverte guidée lorsque votre concept est clair |
+| `bmad-prfaq` | Défi [PRFAQ Working Backwards](../explanation/analysis-phase.md#prfaq-working-backwards) pour éprouver votre concept produit |
 | `bmad-create-prd` | Créer un PRD[^1] |
 | `bmad-create-architecture` | Concevoir l'architecture système |
 | `bmad-create-epics-and-stories` | Créer des epics et des stories |
@@ -137,3 +139,4 @@ Tous les skills utilisent le préfixe `bmad-` suivi d'un nom descriptif (ex. `bm
 
 [^1]: PRD (Product Requirements Document) : document de référence qui décrit les objectifs du produit, les besoins utilisateurs, les fonctionnalités attendues, les contraintes et les critères de succès, afin d’aligner les équipes sur ce qui doit être construit et pourquoi.
 [^2]: Persona : dans le contexte de BMad, un persona désigne un agent IA avec un rôle défini, un style de communication et une expertise spécifiques (ex. Mary l'analyste, Winston l'architecte). Chaque persona garde son "caractère" pendant les interactions.
+[^3]: Brief : document synthétique qui formalise le contexte, les objectifs, le périmètre et les contraintes d'un projet ou d'une demande, afin d'aligner rapidement les parties prenantes avant le travail détaillé.

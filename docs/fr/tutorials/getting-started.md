@@ -68,7 +68,7 @@ BMad vous aide à construire des logiciels grâce à des workflows guidés avec 
 
 | Phase | Nom            | Ce qui se passe                                                |
 |-------|----------------|----------------------------------------------------------------|
-| 1     | Analyse        | Brainstorming, recherche, product brief *(optionnel)*          |
+| 1     | Analyse        | Brainstorming, recherche, product brief ou PRFAQ *(optionnel)*          |
 | 2     | Planification  | Créer les exigences (PRD[^1] ou spécification technique)       |
 | 3     | Solutioning    | Concevoir l'architecture *(BMad Method/Enterprise uniquement)* |
 | 4     | Implémentation | Construire epic[^2] par epic, story[^3] par story              |
@@ -133,10 +133,11 @@ Créez-le manuellement dans `_bmad-output/project-context.md` ou générez-le ap
 
 ### Phase 1 : Analyse (Optionnel)
 
-Tous les workflows de cette phase sont optionnels :
+Tous les workflows de cette phase sont optionnels. [**Pas sûr de quel outil utiliser ?**](../explanation/analysis-phase.md)
 - **brainstorming** (`bmad-brainstorming`) — Idéation guidée
 - **research** (`bmad-market-research` / `bmad-domain-research` / `bmad-technical-research`) — Recherche marché, domaine et technique
-- **create-product-brief** (`bmad-create-product-brief`) — Document de base recommandé
+- **product-brief** (`bmad-product-brief`) — Document de base recommandé lorsque votre concept est clair
+- **prfaq** (`bmad-prfaq`) — Défi Working Backwards pour éprouver et forger votre concept produit
 
 ### Phase 2 : Planification (Requis)
 
