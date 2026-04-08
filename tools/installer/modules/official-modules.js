@@ -202,6 +202,22 @@ class OfficialModules {
       return externalSource;
     }
 
+    // Check community modules
+    const { CommunityModuleManager } = require('./community-manager');
+    const communityMgr = new CommunityModuleManager();
+    const communitySource = await communityMgr.findModuleSource(moduleCode, options);
+    if (communitySource) {
+      return communitySource;
+    }
+
+    // Check custom modules (from user-provided URLs, already cloned to cache)
+    const { CustomModuleManager } = require('./custom-module-manager');
+    const customMgr = new CustomModuleManager();
+    const customSource = await customMgr.findModuleSourceByCode(moduleCode, options);
+    if (customSource) {
+      return customSource;
+    }
+
     return null;
   }
 

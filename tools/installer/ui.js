@@ -563,22 +563,38 @@ class UI {
   }
 
   /**
-   * Select all modules (official + community) using grouped multiselect.
-   * Core is shown as locked but filtered from the result since it's always installed separately.
+   * Select all modules across three tiers: official, community, and custom URL.
    * @param {Set} installedModuleIds - Currently installed module IDs
    * @returns {Array} Selected module codes (excluding core)
    */
   async selectAllModules(installedModuleIds = new Set()) {
-    // Registry is the single source of truth for the module list
+    // Phase 1: Official modules
+    const officialSelected = await this._selectOfficialModules(installedModuleIds);
+
+    // Phase 2: Community modules (category drill-down)
+    const communitySelected = await this._browseCommunityModules(installedModuleIds);
+
+    // Phase 3: Custom URL modules
+    const customSelected = await this._addCustomUrlModules(installedModuleIds);
+
+    // Merge all selections
+    return [...officialSelected, ...communitySelected, ...customSelected];
+  }
+
+  /**
+   * Select official modules using autocompleteMultiselect.
+   * Extracted from the original selectAllModules - unchanged behavior.
+   * @param {Set} installedModuleIds - Currently installed module IDs
+   * @returns {Array} Selected official module codes
+   */
+  async _selectOfficialModules(installedModuleIds = new Set()) {
     const externalManager = new ExternalModuleManager();
     const registryModules = await externalManager.listAvailable();
 
-    // Build flat options list with group hints for autocompleteMultiselect
     const allOptions = [];
     const initialValues = [];
     const lockedValues = ['core'];
 
-    // Helper to build module entry with proper sorting and selection
     const buildModuleEntry = async (mod) => {
       const isInstalled = installedModuleIds.has(mod.code);
       const version = await getMarketplaceVersion(mod.code);
@@ -591,7 +607,6 @@ class UI {
       };
     };
 
-    // Registry order is display order; core is always locked
     for (const mod of registryModules) {
       const entry = await buildModuleEntry(mod);
       allOptions.push({ label: entry.label, value: entry.value, hint: entry.hint });
@@ -601,7 +616,7 @@ class UI {
     }
 
     const selected = await prompts.autocompleteMultiselect({
-      message: 'Select modules to install:',
+      message: 'Select official modules to install:',
       options: allOptions,
       initialValues: initialValues.length > 0 ? initialValues : undefined,
       lockedValues,
@@ -611,16 +626,260 @@ class UI {
 
     const result = selected ? [...selected] : [];
 
-    // Display selected modules as bulleted list
     if (result.length > 0) {
       const moduleLines = result.map((moduleId) => {
         const opt = allOptions.find((o) => o.value === moduleId);
         return `  \u2022 ${opt?.label || moduleId}`;
       });
-      await prompts.log.message('Selected modules:\n' + moduleLines.join('\n'));
+      await prompts.log.message('Selected official modules:\n' + moduleLines.join('\n'));
     }
 
     return result;
+  }
+
+  /**
+   * Browse and select community modules using category drill-down.
+   * Featured/promoted modules appear at the top.
+   * @param {Set} installedModuleIds - Currently installed module IDs
+   * @returns {Array} Selected community module codes
+   */
+  async _browseCommunityModules(installedModuleIds = new Set()) {
+    const browseCommunity = await prompts.confirm({
+      message: 'Would you like to browse community modules?',
+      default: false,
+    });
+    if (!browseCommunity) return [];
+
+    const { CommunityModuleManager } = require('./modules/community-manager');
+    const communityMgr = new CommunityModuleManager();
+
+    const s = await prompts.spinner();
+    s.start('Loading community module catalog...');
+
+    let categories, featured, allCommunity;
+    try {
+      [categories, featured, allCommunity] = await Promise.all([
+        communityMgr.getCategoryList(),
+        communityMgr.listFeatured(),
+        communityMgr.listAll(),
+      ]);
+      s.stop(`Community catalog loaded (${allCommunity.length} modules)`);
+    } catch (error) {
+      s.error('Failed to load community catalog');
+      await prompts.log.warn(`  ${error.message}`);
+      return [];
+    }
+
+    if (allCommunity.length === 0) {
+      await prompts.log.info('No community modules are currently available.');
+      return [];
+    }
+
+    const selectedCodes = new Set();
+    let browsing = true;
+
+    while (browsing) {
+      const categoryChoices = [];
+
+      // Featured section at top
+      if (featured.length > 0) {
+        categoryChoices.push({
+          value: '__featured__',
+          label: `\u2605 Featured (${featured.length} module${featured.length === 1 ? '' : 's'})`,
+        });
+      }
+
+      // Categories with module counts
+      for (const cat of categories) {
+        categoryChoices.push({
+          value: cat.slug,
+          label: `${cat.name} (${cat.moduleCount} module${cat.moduleCount === 1 ? '' : 's'})`,
+        });
+      }
+
+      // Special actions at bottom
+      categoryChoices.push(
+        { value: '__all__', label: '\u25CE View all community modules' },
+        { value: '__search__', label: '\u25CE Search by keyword' },
+        { value: '__done__', label: '\u2713 Done browsing' },
+      );
+
+      const selectedCount = selectedCodes.size;
+      const categoryChoice = await prompts.select({
+        message: `Browse community modules${selectedCount > 0 ? ` (${selectedCount} selected)` : ''}:`,
+        choices: categoryChoices,
+      });
+
+      if (categoryChoice === '__done__') {
+        browsing = false;
+        continue;
+      }
+
+      let modulesToShow;
+      switch (categoryChoice) {
+        case '__featured__': {
+          modulesToShow = featured;
+
+          break;
+        }
+        case '__all__': {
+          modulesToShow = allCommunity;
+
+          break;
+        }
+        case '__search__': {
+          const query = await prompts.text({
+            message: 'Search community modules:',
+            placeholder: 'e.g., design, testing, game',
+          });
+          if (!query || query.trim() === '') continue;
+          modulesToShow = await communityMgr.searchByKeyword(query.trim());
+          if (modulesToShow.length === 0) {
+            await prompts.log.warn('No matching modules found.');
+            continue;
+          }
+
+          break;
+        }
+        default: {
+          modulesToShow = await communityMgr.listByCategory(categoryChoice);
+        }
+      }
+
+      // Build options for autocompleteMultiselect
+      const trustBadge = (tier) => {
+        if (tier === 'bmad-certified') return '\u2713';
+        if (tier === 'community-reviewed') return '\u25CB';
+        return '\u26A0';
+      };
+
+      const options = modulesToShow.map((mod) => {
+        const versionStr = mod.version ? ` (v${mod.version})` : '';
+        const badge = trustBadge(mod.trustTier);
+        return {
+          label: `${mod.displayName}${versionStr} [${badge}]`,
+          value: mod.code,
+          hint: mod.description,
+        };
+      });
+
+      // Pre-check modules that are already selected or installed
+      const initialValues = modulesToShow.filter((m) => selectedCodes.has(m.code) || installedModuleIds.has(m.code)).map((m) => m.code);
+
+      const selected = await prompts.autocompleteMultiselect({
+        message: 'Select community modules:',
+        options,
+        initialValues: initialValues.length > 0 ? initialValues : undefined,
+        required: false,
+        maxItems: Math.min(options.length, 10),
+      });
+
+      // Update accumulated selections: sync with what user selected in this view
+      const shownCodes = new Set(modulesToShow.map((m) => m.code));
+      for (const code of shownCodes) {
+        if (selected && selected.includes(code)) {
+          selectedCodes.add(code);
+        } else {
+          selectedCodes.delete(code);
+        }
+      }
+    }
+
+    if (selectedCodes.size > 0) {
+      const communityMgrForDisplay = new (require('./modules/community-manager').CommunityModuleManager)();
+      const moduleLines = [];
+      for (const code of selectedCodes) {
+        const mod = await communityMgrForDisplay.getModuleByCode(code);
+        moduleLines.push(`  \u2022 ${mod?.displayName || code}`);
+      }
+      await prompts.log.message('Selected community modules:\n' + moduleLines.join('\n'));
+    }
+
+    return [...selectedCodes];
+  }
+
+  /**
+   * Prompt user to install modules from custom GitHub URLs.
+   * @param {Set} installedModuleIds - Currently installed module IDs
+   * @returns {Array} Selected custom module objects with metadata
+   */
+  async _addCustomUrlModules(installedModuleIds = new Set()) {
+    const addCustom = await prompts.confirm({
+      message: 'Would you like to install from a custom GitHub URL?',
+      default: false,
+    });
+    if (!addCustom) return [];
+
+    const { CustomModuleManager } = require('./modules/custom-module-manager');
+    const customMgr = new CustomModuleManager();
+    const selectedModules = [];
+
+    let addMore = true;
+    while (addMore) {
+      const url = await prompts.text({
+        message: 'GitHub repository URL:',
+        placeholder: 'https://github.com/owner/repo',
+        validate: (input) => {
+          if (!input || input.trim() === '') return 'URL is required';
+          const result = customMgr.validateGitHubUrl(input.trim());
+          return result.isValid ? undefined : result.error;
+        },
+      });
+
+      const s = await prompts.spinner();
+      s.start('Fetching module info...');
+
+      try {
+        const plugins = await customMgr.discoverModules(url.trim());
+        s.stop('Module info loaded');
+
+        await prompts.log.warn(
+          'UNVERIFIED MODULE: This module has not been reviewed by the BMad team.\n' + '  Only install modules from sources you trust.',
+        );
+
+        for (const plugin of plugins) {
+          const versionStr = plugin.version ? ` v${plugin.version}` : '';
+          await prompts.log.info(`  ${plugin.name}${versionStr}\n  ${plugin.description}\n  Author: ${plugin.author}`);
+        }
+
+        const confirmInstall = await prompts.confirm({
+          message: `Install ${plugins.length} plugin${plugins.length === 1 ? '' : 's'} from ${url.trim()}?`,
+          default: false,
+        });
+
+        if (confirmInstall) {
+          // Pre-clone the repo so it's cached for the install pipeline
+          s.start('Cloning repository...');
+          try {
+            await customMgr.cloneRepo(url.trim());
+            s.stop('Repository cloned');
+          } catch (cloneError) {
+            s.error('Failed to clone repository');
+            await prompts.log.error(`  ${cloneError.message}`);
+            addMore = await prompts.confirm({ message: 'Try another URL?', default: false });
+            continue;
+          }
+
+          for (const plugin of plugins) {
+            selectedModules.push(plugin.code);
+          }
+        }
+      } catch (error) {
+        s.error('Failed to load module info');
+        await prompts.log.error(`  ${error.message}`);
+      }
+
+      addMore = await prompts.confirm({
+        message: 'Add another custom module?',
+        default: false,
+      });
+    }
+
+    if (selectedModules.length > 0) {
+      await prompts.log.message('Selected custom modules:\n' + selectedModules.map((c) => `  \u2022 ${c}`).join('\n'));
+    }
+
+    return selectedModules;
   }
 
   /**
@@ -946,6 +1205,7 @@ class UI {
     // Group modules by source
     const builtIn = modules.filter((m) => m.source === 'built-in');
     const external = modules.filter((m) => m.source === 'external');
+    const community = modules.filter((m) => m.source === 'community');
     const custom = modules.filter((m) => m.source === 'custom');
     const unknown = modules.filter((m) => m.source === 'unknown');
 
@@ -966,6 +1226,7 @@ class UI {
 
     formatGroup(builtIn, 'Built-in Modules');
     formatGroup(external, 'External Modules (Official)');
+    formatGroup(community, 'Community Modules');
     formatGroup(custom, 'Custom Modules');
     formatGroup(unknown, 'Other Modules');
 
