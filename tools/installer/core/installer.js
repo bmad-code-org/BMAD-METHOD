@@ -1161,6 +1161,38 @@ class Installer {
       }
     }
 
+    // Add installed community modules to available modules
+    const { CommunityModuleManager } = require('../modules/community-manager');
+    const communityMgr = new CommunityModuleManager();
+    const communityModules = await communityMgr.listAll();
+    for (const communityModule of communityModules) {
+      if (installedModules.includes(communityModule.code) && !availableModules.some((m) => m.id === communityModule.code)) {
+        availableModules.push({
+          id: communityModule.code,
+          name: communityModule.displayName,
+          isExternal: true,
+          fromCommunity: true,
+        });
+      }
+    }
+
+    // Add installed custom modules to available modules
+    const { CustomModuleManager } = require('../modules/custom-module-manager');
+    const customMgr = new CustomModuleManager();
+    for (const moduleId of installedModules) {
+      if (!availableModules.some((m) => m.id === moduleId)) {
+        const customSource = await customMgr.findModuleSourceByCode(moduleId);
+        if (customSource) {
+          availableModules.push({
+            id: moduleId,
+            name: moduleId,
+            isExternal: true,
+            fromCustom: true,
+          });
+        }
+      }
+    }
+
     const availableModuleIds = new Set(availableModules.map((m) => m.id));
 
     // Only update modules that are BOTH installed AND available (we have source for)

@@ -1,10 +1,10 @@
 const fs = require('fs-extra');
 const os = require('node:os');
 const path = require('node:path');
-const https = require('node:https');
 const { execSync } = require('node:child_process');
 const yaml = require('yaml');
 const prompts = require('../prompts');
+const { RegistryClient } = require('./registry-client');
 
 const REGISTRY_RAW_URL = 'https://raw.githubusercontent.com/bmad-code-org/bmad-plugins-marketplace/main/registry/official.yaml';
 const FALLBACK_CONFIG_PATH = path.join(__dirname, 'registry-fallback.yaml');
@@ -17,35 +17,8 @@ const FALLBACK_CONFIG_PATH = path.join(__dirname, 'registry-fallback.yaml');
  * @class ExternalModuleManager
  */
 class ExternalModuleManager {
-  constructor() {}
-
-  /**
-   * Fetch a URL and return the response body as a string.
-   * @param {string} url - URL to fetch
-   * @param {number} timeout - Timeout in ms (default 10s)
-   * @returns {Promise<string>} Response body
-   */
-  _fetch(url, timeout = 10_000) {
-    return new Promise((resolve, reject) => {
-      const req = https
-        .get(url, { timeout }, (res) => {
-          // Follow one redirect (GitHub sometimes 301s)
-          if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
-            return this._fetch(res.headers.location, timeout).then(resolve, reject);
-          }
-          if (res.statusCode !== 200) {
-            return reject(new Error(`HTTP ${res.statusCode}`));
-          }
-          let data = '';
-          res.on('data', (chunk) => (data += chunk));
-          res.on('end', () => resolve(data));
-        })
-        .on('error', reject)
-        .on('timeout', () => {
-          req.destroy();
-          reject(new Error('Request timed out'));
-        });
-    });
+  constructor() {
+    this._client = new RegistryClient();
   }
 
   /**
@@ -60,7 +33,7 @@ class ExternalModuleManager {
 
     // Try remote registry first
     try {
-      const content = await this._fetch(REGISTRY_RAW_URL);
+      const content = await this._client.fetch(REGISTRY_RAW_URL);
       const config = yaml.parse(content);
       if (config?.modules?.length) {
         this.cachedModules = config;

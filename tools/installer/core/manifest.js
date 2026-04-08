@@ -818,6 +818,34 @@ class Manifest {
       };
     }
 
+    // Check if this is a community module
+    const { CommunityModuleManager } = require('../modules/community-manager');
+    const communityMgr = new CommunityModuleManager();
+    const communityInfo = await communityMgr.getModuleByCode(moduleName);
+    if (communityInfo) {
+      const communityVersion = await this._readMarketplaceVersion(moduleName, moduleSourcePath);
+      return {
+        version: communityVersion || communityInfo.version,
+        source: 'community',
+        npmPackage: communityInfo.npmPackage || null,
+        repoUrl: communityInfo.url || null,
+      };
+    }
+
+    // Check if this is a custom module (from user-provided URL)
+    const { CustomModuleManager } = require('../modules/custom-module-manager');
+    const customMgr = new CustomModuleManager();
+    const customSource = await customMgr.findModuleSourceByCode(moduleName);
+    if (customSource) {
+      const customVersion = await this._readMarketplaceVersion(moduleName, moduleSourcePath);
+      return {
+        version: customVersion,
+        source: 'custom',
+        npmPackage: null,
+        repoUrl: null,
+      };
+    }
+
     // Unknown module
     const version = await this._readMarketplaceVersion(moduleName, moduleSourcePath);
     return {
