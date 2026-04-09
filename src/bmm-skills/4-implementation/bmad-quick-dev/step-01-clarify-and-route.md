@@ -43,11 +43,11 @@ Never ask extra questions if you already understand what the user intends.
    - If you find an unformatted spec or intent file, ingest its contents to form your understanding of the intent.
    - **Determine context strategy.** Using the intent and the artifact listing, infer whether the current work is a story from an epic. Do not rely on filename patterns or regex — reason about the intent, the listing, and any epics file content together.
 
-     **A) Epic story path** — if the intent is an epic story:
+     **A) Epic story path** — if the intent is clearly an epic story:
 
-     1. Identify the epic number and (if present) the story number.
+     1. Identify the epic number and (if present) the story number. If you can't identify an epic number, use path B.
 
-     2. **Check for a valid cached epic context.** Look for `{implementation_artifacts}/epic-<N>-context.md` (where `<N>` is the epic number). A file is **valid** when it exists, is non-empty, and starts with `# Epic <N> Context:` (with the correct epic number).
+     2. **Check for a valid cached epic context.** Look for `{implementation_artifacts}/epic-<N>-context.md` (where `<N>` is the epic number). A file is **valid** when it exists, is non-empty, starts with `# Epic <N> Context:` (with the correct epic number), and no file in `{planning_artifacts}` is newer.
         - **If valid:** load it as the primary planning context. Do not load raw planning docs (PRD, architecture, UX, etc.). Skip to step 5.
         - **If missing, empty, or invalid:** continue to step 3.
 
@@ -55,7 +55,7 @@ Never ask extra questions if you already understand what the user intends.
         - **Preferred — sub-agent:** spawn a sub-agent with `./compile-epic-context.md` as its prompt. Pass it the epic number, the epics file path, the `{planning_artifacts}` directory, and the output path `{implementation_artifacts}/epic-<N>-context.md`.
         - **Fallback — inline** (for runtimes without sub-agent support, e.g. Copilot, Codex, local Ollama, older Claude): if your runtime cannot spawn sub-agents, or the spawn fails/times out, read `./compile-epic-context.md` yourself and follow its instructions to produce the same output file.
 
-     4. **Verify or fall back to path B.** After compilation, verify the output file exists, is non-empty, and starts with `# Epic <N> Context:`. If valid, load it. If verification fails, fall back to path B's raw planning artifacts loading procedure below (scan `{planning_artifacts}` for PRD, architecture, UX, and epics files and load selectively) — apply this fallback even though the intent is an epic story; do not re-evaluate path B's gating clause.
+     4. **Verify.** After compilation, verify the output file exists, is non-empty, and starts with `# Epic <N> Context:`. If valid, load it. If verification fails, HALT and report the failure.
 
      5. **Previous story continuity.** Regardless of which context source succeeded above, scan `{implementation_artifacts}` for specs from the same epic with `status: done` and a lower story number. Load the most recent one (highest story number below current). Extract its **Code Map**, **Design Notes**, **Spec Change Log**, and **task list** as continuity context for step-02 planning. If no `done` spec is found but an `in-review` spec exists for the same epic with a lower story number, note it to the user and ask whether to load it.
 

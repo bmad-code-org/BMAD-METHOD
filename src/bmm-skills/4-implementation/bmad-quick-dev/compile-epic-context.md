@@ -12,7 +12,7 @@ Given an epic number, the epics file, the planning artifacts directory, and a de
 
 ## Exact Output Format
 
-Use these headings verbatim:
+Use these headings:
 
 ```markdown
 # Epic {N} Context: {Epic Title}
