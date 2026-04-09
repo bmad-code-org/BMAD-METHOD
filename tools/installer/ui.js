@@ -881,7 +881,7 @@ class UI {
       const allResolved = [];
       for (const plugin of plugins) {
         try {
-          const resolved = await customMgr.resolvePlugin(repoPath, plugin.rawPlugin);
+          const resolved = await customMgr.resolvePlugin(repoPath, plugin.rawPlugin, url.trim());
           if (resolved.length > 0) {
             allResolved.push(...resolved);
           } else {

@@ -336,10 +336,10 @@ class OfficialModules {
     const manifestObj = new Manifest();
 
     await manifestObj.addModule(bmadDir, resolved.code, {
-      version: resolved.version || '',
-      source: `custom:${resolved.pluginName}`,
-      npmPackage: '',
-      repoUrl: '',
+      version: resolved.version || null,
+      source: 'custom',
+      npmPackage: null,
+      repoUrl: resolved.repoUrl || null,
     });
 
     return { success: true, module: resolved.code, path: targetPath, versionInfo: { version: resolved.version || '' } };

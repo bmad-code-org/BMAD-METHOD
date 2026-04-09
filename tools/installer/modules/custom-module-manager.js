@@ -188,15 +188,17 @@ class CustomModuleManager {
    * Results are cached in _resolutionCache keyed by module code.
    * @param {string} repoPath - Absolute path to the cloned repository
    * @param {Object} plugin - Raw plugin object from marketplace.json
+   * @param {string} [repoUrl] - Original GitHub URL for manifest tracking
    * @returns {Promise<Array<Object>>} Array of ResolvedModule objects
    */
-  async resolvePlugin(repoPath, plugin) {
+  async resolvePlugin(repoPath, plugin, repoUrl) {
     const { PluginResolver } = require('./plugin-resolver');
     const resolver = new PluginResolver();
     const resolved = await resolver.resolve(repoPath, plugin);
 
-    // Cache each resolved module by its code for lookup during install
+    // Stamp repo URL onto each resolved module for manifest tracking
     for (const mod of resolved) {
+      if (repoUrl) mod.repoUrl = repoUrl;
       CustomModuleManager._resolutionCache.set(mod.code, mod);
     }
 
