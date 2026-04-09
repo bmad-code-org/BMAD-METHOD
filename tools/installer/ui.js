@@ -158,6 +158,9 @@ class UI {
             .map((m) => m.trim())
             .filter(Boolean);
           await prompts.log.info(`Using modules from command-line: ${selectedModules.join(', ')}`);
+        } else if (options.customSource) {
+          // Custom source without --modules: start with empty list (core added below)
+          selectedModules = [];
         } else if (options.yes) {
           selectedModules = await this.getDefaultModules(installedModuleIds);
           await prompts.log.info(
@@ -210,6 +213,9 @@ class UI {
         .map((m) => m.trim())
         .filter(Boolean);
       await prompts.log.info(`Using modules from command-line: ${selectedModules.join(', ')}`);
+    } else if (options.customSource) {
+      // Custom source without --modules: start with empty list (core added below)
+      selectedModules = [];
     } else if (options.yes) {
       // Use default modules when --yes flag is set
       selectedModules = await this.getDefaultModules(installedModuleIds);

@@ -1,8 +1,8 @@
 ---
-title: "Established Projects"
+title: 'Established Projects'
 description: How to use BMad Method on existing codebases
 sidebar:
-  order: 6
+  order: 7
 ---
 
 Use BMad Method effectively when working on existing projects and legacy codebases.
@@ -10,10 +10,11 @@ Use BMad Method effectively when working on existing projects and legacy codebas
 This guide covers the essential workflow for onboarding to existing projects with BMad Method.
 
 :::note[Prerequisites]
+
 - BMad Method installed (`npx bmad-method install`)
 - An existing codebase you want to work on
 - Access to an AI-powered IDE (Claude Code or Cursor)
-:::
+  :::
 
 ## Step 1: Clean Up Completed Planning Artifacts
 
@@ -36,6 +37,7 @@ bmad-generate-project-context
 ```
 
 This scans your codebase to identify:
+
 - Technology stack and versions
 - Code organization patterns
 - Naming conventions
@@ -79,10 +81,10 @@ BMad-Help also **automatically runs at the end of every workflow**, providing cl
 
 You have two primary options depending on the scope of changes:
 
-| Scope                          | Recommended Approach                                                                                                          |
-| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
+| Scope                          | Recommended Approach                                                                                                                          |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Small updates or additions** | Run `bmad-quick-dev` to clarify intent, plan, implement, and review in a single workflow. The full four-phase BMad Method is likely overkill. |
-| **Major changes or additions** | Start with the BMad Method, applying as much or as little rigor as needed.                                                    |
+| **Major changes or additions** | Start with the BMad Method, applying as much or as little rigor as needed.                                                                    |
 
 ### During PRD Creation
 

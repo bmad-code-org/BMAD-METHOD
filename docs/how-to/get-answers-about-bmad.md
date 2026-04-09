@@ -1,8 +1,8 @@
 ---
-title: "How to Get Answers About BMad"
+title: 'How to Get Answers About BMad'
 description: Use an LLM to quickly answer your own BMad questions
 sidebar:
-  order: 4
+  order: 5
 ---
 
 Use BMad's built-in help, source docs, or the community to get answers — from quickest to most thorough.
@@ -46,35 +46,35 @@ If your AI can't read local files (ChatGPT, Claude.ai, etc.), fetch [llms-full.t
 
 If neither BMad-Help nor the source answered your question, you now have a much better question to ask.
 
-| Channel                   | Use For                                     |
-| ------------------------- | ------------------------------------------- |
-| `help-requests` forum     | Questions                                   |
-| `#suggestions-feedback`   | Ideas and feature requests                  |
+| Channel                 | Use For                    |
+| ----------------------- | -------------------------- |
+| `help-requests` forum   | Questions                  |
+| `#suggestions-feedback` | Ideas and feature requests |
 
 **Discord:** [discord.gg/gk8jAdXWmj](https://discord.gg/gk8jAdXWmj)
 
 **GitHub Issues:** [github.com/bmad-code-org/BMAD-METHOD/issues](https://github.com/bmad-code-org/BMAD-METHOD/issues)
-*You!*
-        *Stuck*
-             *in the queue—*
-                      *waiting*
-                              *for who?*
+_You!_
+_Stuck_
+_in the queue—_
+_waiting_
+_for who?_
 
-*The source*
-        *is there,*
-                *plain to see!*
+_The source_
+_is there,_
+_plain to see!_
 
-*Point*
-     *your machine.*
-              *Set it free.*
+_Point_
+_your machine._
+_Set it free._
 
-*It reads.*
-        *It speaks.*
-                *Ask away—*
+_It reads._
+_It speaks._
+_Ask away—_
 
-*Why wait*
-        *for tomorrow*
-                *when you have*
-                        *today?*
+_Why wait_
+_for tomorrow_
+_when you have_
+_today?_
 
-*—Claude*
+_—Claude_
