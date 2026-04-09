@@ -818,13 +818,13 @@ class UI {
   }
 
   /**
-   * Prompt user to install modules from custom GitHub URLs.
+   * Prompt user to install modules from custom sources (Git URLs or local paths).
    * @param {Set} installedModuleIds - Currently installed module IDs
    * @returns {Array} Selected custom module code strings
    */
   async _addCustomUrlModules(installedModuleIds = new Set()) {
     const addCustom = await prompts.confirm({
-      message: 'Would you like to install from a custom GitHub URL?',
+      message: 'Would you like to install from a custom source (Git URL or local path)?',
       default: false,
     });
     if (!addCustom) return [];
@@ -835,76 +835,117 @@ class UI {
 
     let addMore = true;
     while (addMore) {
-      const url = await prompts.text({
-        message: 'GitHub repository URL:',
-        placeholder: 'https://github.com/owner/repo',
+      const sourceInput = await prompts.text({
+        message: 'Git URL or local path:',
+        placeholder: 'https://github.com/owner/repo or /path/to/module',
         validate: (input) => {
-          if (!input || input.trim() === '') return 'URL is required';
-          const result = customMgr.validateGitHubUrl(input.trim());
+          if (!input || input.trim() === '') return 'Source is required';
+          const result = customMgr.parseSource(input.trim());
           return result.isValid ? undefined : result.error;
         },
       });
 
       const s = await prompts.spinner();
-      s.start('Fetching module info...');
+      s.start('Resolving source...');
 
-      let plugins;
+      let sourceResult;
       try {
-        plugins = await customMgr.discoverModules(url.trim());
-        s.stop('Module info loaded');
+        sourceResult = await customMgr.resolveSource(sourceInput.trim(), { skipInstall: true, silent: true });
+        s.stop(sourceResult.parsed.type === 'local' ? 'Local source resolved' : 'Repository cloned');
       } catch (error) {
-        s.error('Failed to load module info');
+        s.error('Failed to resolve source');
         await prompts.log.error(`  ${error.message}`);
-        addMore = await prompts.confirm({ message: 'Try another URL?', default: false });
+        addMore = await prompts.confirm({ message: 'Try another source?', default: false });
         continue;
       }
 
-      await prompts.log.warn(
-        'UNVERIFIED MODULE: This module has not been reviewed by the BMad team.\n' + '  Only install modules from sources you trust.',
-      );
-
-      // Clone the repo so we can resolve plugin structures (skip npm install until user confirms)
-      s.start('Cloning repository...');
-      let repoPath;
-      try {
-        repoPath = await customMgr.cloneRepo(url.trim(), { skipInstall: true });
-        s.stop('Repository cloned');
-      } catch (cloneError) {
-        s.error('Failed to clone repository');
-        await prompts.log.error(`  ${cloneError.message}`);
-        addMore = await prompts.confirm({ message: 'Try another URL?', default: false });
-        continue;
+      if (sourceResult.parsed.type === 'local') {
+        await prompts.log.info('LOCAL MODULE: Pointing directly at local source (changes take effect on reinstall).');
+      } else {
+        await prompts.log.warn(
+          'UNVERIFIED MODULE: This module has not been reviewed by the BMad team.\n' + '  Only install modules from sources you trust.',
+        );
       }
 
-      // Resolve each plugin to determine installable modules
+      // Resolve plugins based on discovery mode vs direct mode
       s.start('Analyzing plugin structure...');
       const allResolved = [];
-      for (const plugin of plugins) {
+      const localPath = sourceResult.parsed.type === 'local' ? sourceResult.rootDir : null;
+
+      if (sourceResult.mode === 'discovery') {
+        // Discovery mode: marketplace.json found, list available plugins
+        let plugins;
         try {
-          const resolved = await customMgr.resolvePlugin(repoPath, plugin.rawPlugin, url.trim());
-          if (resolved.length > 0) {
-            allResolved.push(...resolved);
-          } else {
-            // No skills array or empty - use plugin metadata as-is (legacy)
-            allResolved.push({
-              code: plugin.code,
-              name: plugin.displayName || plugin.name,
-              version: plugin.version,
-              description: plugin.description,
-              strategy: 0,
-              pluginName: plugin.name,
-              skillPaths: [],
-            });
+          plugins = await customMgr.discoverModules(sourceResult.marketplace, sourceResult.sourceUrl);
+        } catch (discoverError) {
+          s.error('Failed to discover modules');
+          await prompts.log.error(`  ${discoverError.message}`);
+          addMore = await prompts.confirm({ message: 'Try another source?', default: false });
+          continue;
+        }
+
+        const effectiveRepoPath = sourceResult.repoPath || sourceResult.rootDir;
+        for (const plugin of plugins) {
+          try {
+            const resolved = await customMgr.resolvePlugin(effectiveRepoPath, plugin.rawPlugin, sourceResult.sourceUrl, localPath);
+            if (resolved.length > 0) {
+              allResolved.push(...resolved);
+            } else {
+              // No skills array or empty - use plugin metadata as-is (legacy)
+              allResolved.push({
+                code: plugin.code,
+                name: plugin.displayName || plugin.name,
+                version: plugin.version,
+                description: plugin.description,
+                strategy: 0,
+                pluginName: plugin.name,
+                skillPaths: [],
+              });
+            }
+          } catch (resolveError) {
+            await prompts.log.warn(`  Could not resolve ${plugin.name}: ${resolveError.message}`);
           }
-        } catch (resolveError) {
-          await prompts.log.warn(`  Could not resolve ${plugin.name}: ${resolveError.message}`);
+        }
+      } else {
+        // Direct mode: no marketplace.json, scan directory for skills and resolve
+        const directPlugin = {
+          name: sourceResult.parsed.displayName || path.basename(sourceResult.rootDir),
+          source: '.',
+          skills: [],
+        };
+
+        // Scan for SKILL.md directories to populate skills array
+        try {
+          const entries = await fs.readdir(sourceResult.rootDir, { withFileTypes: true });
+          for (const entry of entries) {
+            if (entry.isDirectory()) {
+              const skillMd = path.join(sourceResult.rootDir, entry.name, 'SKILL.md');
+              if (await fs.pathExists(skillMd)) {
+                directPlugin.skills.push(entry.name);
+              }
+            }
+          }
+        } catch (scanError) {
+          s.error('Failed to scan directory');
+          await prompts.log.error(`  ${scanError.message}`);
+          addMore = await prompts.confirm({ message: 'Try another source?', default: false });
+          continue;
+        }
+
+        if (directPlugin.skills.length > 0) {
+          try {
+            const resolved = await customMgr.resolvePlugin(sourceResult.rootDir, directPlugin, sourceResult.sourceUrl, localPath);
+            allResolved.push(...resolved);
+          } catch (resolveError) {
+            await prompts.log.warn(`  Could not resolve: ${resolveError.message}`);
+          }
         }
       }
       s.stop(`Found ${allResolved.length} installable module${allResolved.length === 1 ? '' : 's'}`);
 
       if (allResolved.length === 0) {
-        await prompts.log.warn('No installable modules found in this repository.');
-        addMore = await prompts.confirm({ message: 'Try another URL?', default: false });
+        await prompts.log.warn('No installable modules found in this source.');
+        addMore = await prompts.confirm({ message: 'Try another source?', default: false });
         continue;
       }
 
@@ -945,7 +986,7 @@ class UI {
       }
 
       addMore = await prompts.confirm({
-        message: 'Add another custom module URL?',
+        message: 'Add another custom source?',
         default: false,
       });
     }

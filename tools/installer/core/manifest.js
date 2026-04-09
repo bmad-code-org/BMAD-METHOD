@@ -181,10 +181,10 @@ class Manifest {
 
     // Handle adding a new module with version info
     if (updates.addModule) {
-      const { name, version, source, npmPackage, repoUrl } = updates.addModule;
+      const { name, version, source, npmPackage, repoUrl, localPath } = updates.addModule;
       const existing = manifest.modules.find((m) => m.name === name);
       if (!existing) {
-        manifest.modules.push({
+        const entry = {
           name,
           version: version || null,
           installDate: new Date().toISOString(),
@@ -192,7 +192,9 @@ class Manifest {
           source: source || 'external',
           npmPackage: npmPackage || null,
           repoUrl: repoUrl || null,
-        });
+        };
+        if (localPath) entry.localPath = localPath;
+        manifest.modules.push(entry);
       }
     }
 
@@ -280,7 +282,7 @@ class Manifest {
 
     if (existingIndex === -1) {
       // Module doesn't exist, add it
-      manifest.modules.push({
+      const entry = {
         name: moduleName,
         version: options.version || null,
         installDate: new Date().toISOString(),
@@ -288,7 +290,9 @@ class Manifest {
         source: options.source || 'unknown',
         npmPackage: options.npmPackage || null,
         repoUrl: options.repoUrl || null,
-      });
+      };
+      if (options.localPath) entry.localPath = options.localPath;
+      manifest.modules.push(entry);
     } else {
       // Module exists, update its version info
       const existing = manifest.modules[existingIndex];
@@ -298,6 +302,7 @@ class Manifest {
         source: options.source || existing.source,
         npmPackage: options.npmPackage === undefined ? existing.npmPackage : options.npmPackage,
         repoUrl: options.repoUrl === undefined ? existing.repoUrl : options.repoUrl,
+        localPath: options.localPath === undefined ? existing.localPath : options.localPath,
         lastUpdated: new Date().toISOString(),
       };
     }
@@ -832,11 +837,11 @@ class Manifest {
       };
     }
 
-    // Check if this is a custom module (from user-provided URL)
+    // Check if this is a custom module (from user-provided URL or local path)
     const { CustomModuleManager } = require('../modules/custom-module-manager');
     const customMgr = new CustomModuleManager();
     const resolved = customMgr.getResolution(moduleName);
-    const customSource = await customMgr.findModuleSourceByCode(moduleName);
+    const customSource = await customMgr.findModuleSourceByCode(moduleName, { bmadDir });
     if (customSource || resolved) {
       const customVersion = resolved?.version || (await this._readMarketplaceVersion(moduleName, moduleSourcePath));
       return {
@@ -844,6 +849,7 @@ class Manifest {
         source: 'custom',
         npmPackage: null,
         repoUrl: resolved?.repoUrl || null,
+        localPath: resolved?.localPath || null,
       };
     }
 

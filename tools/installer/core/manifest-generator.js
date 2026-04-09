@@ -412,7 +412,7 @@ class ManifestGenerator {
       // Get existing install date if available
       const existing = existingModulesMap.get(moduleName);
 
-      updatedModules.push({
+      const moduleEntry = {
         name: moduleName,
         version: versionInfo.version,
         installDate: existing?.installDate || new Date().toISOString(),
@@ -420,7 +420,9 @@ class ManifestGenerator {
         source: versionInfo.source,
         npmPackage: versionInfo.npmPackage,
         repoUrl: versionInfo.repoUrl,
-      });
+      };
+      if (versionInfo.localPath) moduleEntry.localPath = versionInfo.localPath;
+      updatedModules.push(moduleEntry);
     }
 
     const manifest = {
