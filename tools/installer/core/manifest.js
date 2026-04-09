@@ -835,14 +835,15 @@ class Manifest {
     // Check if this is a custom module (from user-provided URL)
     const { CustomModuleManager } = require('../modules/custom-module-manager');
     const customMgr = new CustomModuleManager();
+    const resolved = customMgr.getResolution(moduleName);
     const customSource = await customMgr.findModuleSourceByCode(moduleName);
-    if (customSource) {
-      const customVersion = await this._readMarketplaceVersion(moduleName, moduleSourcePath);
+    if (customSource || resolved) {
+      const customVersion = resolved?.version || (await this._readMarketplaceVersion(moduleName, moduleSourcePath));
       return {
         version: customVersion,
         source: 'custom',
         npmPackage: null,
-        repoUrl: null,
+        repoUrl: resolved?.repoUrl || null,
       };
     }
 
