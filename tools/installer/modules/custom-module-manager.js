@@ -26,12 +26,30 @@ class CustomModuleManager {
    */
   parseSource(input) {
     if (!input || typeof input !== 'string') {
-      return { type: null, cloneUrl: null, subdir: null, localPath: null, cacheKey: null, displayName: null, isValid: false, error: 'Source is required' };
+      return {
+        type: null,
+        cloneUrl: null,
+        subdir: null,
+        localPath: null,
+        cacheKey: null,
+        displayName: null,
+        isValid: false,
+        error: 'Source is required',
+      };
     }
 
     const trimmed = input.trim();
     if (!trimmed) {
-      return { type: null, cloneUrl: null, subdir: null, localPath: null, cacheKey: null, displayName: null, isValid: false, error: 'Source is required' };
+      return {
+        type: null,
+        cloneUrl: null,
+        subdir: null,
+        localPath: null,
+        cacheKey: null,
+        displayName: null,
+        isValid: false,
+        error: 'Source is required',
+      };
     }
 
     // Local path detection: starts with /, ./, ../, or ~
@@ -65,9 +83,9 @@ class CustomModuleManager {
       if (remainder) {
         // Extract subdir from deep path patterns used by various Git hosts
         const deepPathPatterns = [
-          /^\/(?:-\/)?tree\/[^/]+\/(.+)$/,  // GitHub /tree/branch/path, GitLab /-/tree/branch/path
-          /^\/(?:-\/)?blob\/[^/]+\/(.+)$/,  // /blob/branch/path (treat same as tree)
-          /^\/src\/[^/]+\/(.+)$/,           // Gitea/Forgejo /src/branch/path
+          /^\/(?:-\/)?tree\/[^/]+\/(.+)$/, // GitHub /tree/branch/path, GitLab /-/tree/branch/path
+          /^\/(?:-\/)?blob\/[^/]+\/(.+)$/, // /blob/branch/path (treat same as tree)
+          /^\/src\/[^/]+\/(.+)$/, // Gitea/Forgejo /src/branch/path
         ];
 
         for (const pattern of deepPathPatterns) {
@@ -91,7 +109,16 @@ class CustomModuleManager {
       };
     }
 
-    return { type: null, cloneUrl: null, subdir: null, localPath: null, cacheKey: null, displayName: null, isValid: false, error: 'Not a valid Git URL or local path' };
+    return {
+      type: null,
+      cloneUrl: null,
+      subdir: null,
+      localPath: null,
+      cacheKey: null,
+      displayName: null,
+      isValid: false,
+      error: 'Not a valid Git URL or local path',
+    };
   }
 
   /**
@@ -104,7 +131,16 @@ class CustomModuleManager {
     const resolved = path.resolve(expanded);
 
     if (!fs.pathExistsSync(resolved)) {
-      return { type: 'local', cloneUrl: null, subdir: null, localPath: resolved, cacheKey: null, displayName: path.basename(resolved), isValid: false, error: `Path does not exist: ${resolved}` };
+      return {
+        type: 'local',
+        cloneUrl: null,
+        subdir: null,
+        localPath: resolved,
+        cacheKey: null,
+        displayName: path.basename(resolved),
+        isValid: false,
+        error: `Path does not exist: ${resolved}`,
+      };
     }
 
     return {
@@ -126,16 +162,24 @@ class CustomModuleManager {
    * @returns {Object} { owner, repo, isValid, error }
    */
   validateGitHubUrl(url) {
-    const parsed = this.parseSource(url);
-    if (!parsed.isValid) {
-      return { owner: null, repo: null, isValid: false, error: parsed.error };
+    if (!url || typeof url !== 'string') {
+      return { owner: null, repo: null, isValid: false, error: 'URL is required' };
     }
-    if (parsed.type === 'local') {
-      return { owner: null, repo: null, isValid: false, error: 'Not a valid GitHub URL (expected https://github.com/owner/repo)' };
+    const trimmed = url.trim();
+
+    // HTTPS format: https://github.com/owner/repo[.git] (strict, no trailing path)
+    const httpsMatch = trimmed.match(/^https?:\/\/github\.com\/([^/]+)\/([^/.]+?)(?:\.git)?$/);
+    if (httpsMatch) {
+      return { owner: httpsMatch[1], repo: httpsMatch[2], isValid: true, error: null };
     }
-    // Extract owner/repo from cacheKey (host/owner/repo)
-    const parts = parsed.cacheKey.split('/');
-    return { owner: parts[1] || null, repo: parts[2] || null, isValid: true, error: null };
+
+    // SSH format: git@github.com:owner/repo[.git]
+    const sshMatch = trimmed.match(/^git@github\.com:([^/]+)\/([^/.]+?)(?:\.git)?$/);
+    if (sshMatch) {
+      return { owner: sshMatch[1], repo: sshMatch[2], isValid: true, error: null };
+    }
+
+    return { owner: null, repo: null, isValid: false, error: 'Not a valid GitHub URL (expected https://github.com/owner/repo)' };
   }
 
   // ─── Marketplace JSON ─────────────────────────────────────────────────────
