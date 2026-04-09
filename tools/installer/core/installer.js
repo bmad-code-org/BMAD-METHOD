@@ -569,6 +569,7 @@ class Installer {
    */
   async _installOfficialModules(config, paths, officialModuleIds, addResult, isQuickUpdate, officialModules, ctx) {
     const { message, installedModuleNames } = ctx;
+    const { CustomModuleManager } = require('../modules/custom-module-manager');
 
     for (const moduleName of officialModuleIds) {
       if (installedModuleNames.has(moduleName)) continue;
@@ -598,7 +599,6 @@ class Installer {
 
       // Prefer version from resolution cache (accurate for custom/local modules),
       // fall back to marketplace.json walk-up for official modules
-      const { CustomModuleManager } = require('../modules/custom-module-manager');
       const cachedResolution = CustomModuleManager._resolutionCache.get(moduleName);
       const version = cachedResolution?.version || (sourcePath ? await this._getMarketplaceVersion(sourcePath) : '');
       addResult(displayName, 'ok', '', { moduleCode: moduleName, newVersion: version });

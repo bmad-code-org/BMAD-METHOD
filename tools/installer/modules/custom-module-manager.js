@@ -148,7 +148,11 @@ class CustomModuleManager {
   async readMarketplaceJsonFromDisk(dirPath) {
     const marketplacePath = path.join(dirPath, '.claude-plugin', 'marketplace.json');
     if (!(await fs.pathExists(marketplacePath))) return null;
-    return JSON.parse(await fs.readFile(marketplacePath, 'utf8'));
+    try {
+      return JSON.parse(await fs.readFile(marketplacePath, 'utf8'));
+    } catch {
+      return null;
+    }
   }
 
   // ─── Discovery ────────────────────────────────────────────────────────────
