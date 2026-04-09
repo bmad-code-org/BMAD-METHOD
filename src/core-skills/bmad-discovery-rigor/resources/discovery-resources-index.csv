@@ -1,0 +1,7 @@
+fragment,tier,domain,description
+classification-guide.csv,core,all,"Activity types, tiers, and classification indicators"
+system-reality-categories.csv,core,all,"13 categories for blind-spot sweep with probing questions"
+structured-reasoning.md,domain,structured+,"Formal reasoning scaffold: axioms, state model, constraints, risks, verification"
+software-engineering.md,domain,software,"Software-specific probes, patterns, verification approaches"
+llm-systems.md,domain,llm-agent,"LLM/agent-specific probes, contracts, probabilistic reasoning"
+formal-readiness.md,domain,full-formal,"Formal readiness probe questions for Full-Formal tier classifications"

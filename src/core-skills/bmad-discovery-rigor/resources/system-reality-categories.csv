@@ -1,0 +1,14 @@
+category,what_to_probe,example_blind_spot,applies_when
+operational-resilience,"Failure modes, redundancy, rollback, circuit breakers, graceful degradation","What happens when the external API is down for 2 hours?",always
+observability,"Logging, metrics, tracing, alerting, debugging in production","How will you diagnose a slow request in production?",software
+economic-constraints,"Cost vs correctness trade-offs, infrastructure cost, development time, ROI","Is the formally correct solution 10x more expensive to build?",always
+evolution-and-change,"Requirements drift, dependency changes, migration, versioning, backward compatibility","What happens when the upstream API changes its schema?",always
+team-and-organization,"Ownership boundaries, Conway's Law effects, communication paths, bus factor","Who owns this after you ship it? Can they maintain it?",always
+emergent-behavior,"Cascading failures, feedback loops, unintended interactions at scale","What happens when 10000 users trigger this concurrently?",software
+adversarial-environment,"Threat modeling, abuse patterns, security layers, injection attacks, malicious input","What if someone deliberately sends malformed input?",software
+cognitive-maintainability,"Readability, mental models, onboarding complexity, documentation clarity","Will a new engineer understand this in 6 months?",always
+partial-observability,"Incomplete logs, sampled metrics, unpredictable user behavior, inference under uncertainty","Can you distinguish a bug from expected behavior with available telemetry?",software
+cross-boundary-contracts,"Identity rules, ownership boundaries, operator surface, evidence contract, compatibility rules, migration posture across systems or repos","Is the contract between producer and consumer explicit or tribal knowledge?",convergence
+formal-correctness,"Provability boundaries, safety invariants, regulatory proof requirements, which components need mathematical guarantees vs. best-effort","Is the payment state machine formally verified, or does it just pass tests?",software
+uncertainty-probabilistic,"Non-deterministic components, acceptable failure rates, probabilistic guarantees, ML model confidence thresholds, stochastic user behavior","What happens when the recommendation engine returns low-confidence results?",always
+control-feedback-loops,"Self-correcting mechanisms, automatic scaling, circuit breakers, drift detection, stabilization after perturbation","If the auto-scaling overshoots by 3x, how does the system stabilize?",software

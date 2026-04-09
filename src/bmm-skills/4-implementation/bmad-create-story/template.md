@@ -2,7 +2,9 @@
 
 Status: ready-for-dev
 
-<!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
+<!-- Note: Validation is optional. Review the story for quality before running dev-story. -->
+
+<frozen-after-approval reason="human-owned intent — do not modify unless human renegotiates">
 
 ## Story
 
@@ -13,6 +15,16 @@ so that {{benefit}}.
 ## Acceptance Criteria
 
 1. [Add acceptance criteria from epics/PRD]
+
+## Exit Criteria
+
+- [Verifiable assertion that proves this story is done — e.g., "API returns 200 for authenticated user"]
+
+## Rollback Boundary
+
+- [Safe rollback point if this story fails after merge — e.g., "revert commit; no schema migrations"]
+
+</frozen-after-approval>
 
 ## Tasks / Subtasks
 
@@ -42,8 +54,12 @@ so that {{benefit}}.
 
 {{agent_model_name_version}}
 
-### Debug Log References
+### Implementation Plan
 
-### Completion Notes List
+### Debug Log
+
+### Completion Notes
 
 ### File List
+
+### Change Log

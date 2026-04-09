@@ -46,6 +46,19 @@ If `decision_needed` findings exist, present each one with its detail and the op
 
 If the user chooses to defer, ask: Quick one-line reason for deferring this item? (helps future reviews): — then append that reason to both the story file bullet and the `{deferred_work_file}` entry.
 
+**Deferred-item triage guidance** — a finding should be deferred (not patched) when:
+
+- It is pre-existing (not introduced by this change)
+- It requires a design decision that is out of scope for this story
+- Fixing it would expand scope beyond the story's acceptance criteria
+- It needs input from a different owner or team
+
+A finding should NOT be deferred when:
+
+- It was introduced by this change (patch or reject instead)
+- It directly blocks an acceptance criterion
+- It is a security vulnerability in the changed code
+
 **HALT** — I am waiting for your numbered choice. Reply with only the number (or "0" for batch). Do not proceed until you select an option.
 
 ### 5. Handle `patch` findings

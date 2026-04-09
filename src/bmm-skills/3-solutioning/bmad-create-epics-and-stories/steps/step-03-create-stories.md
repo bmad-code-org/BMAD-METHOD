@@ -144,6 +144,8 @@ For each story in the epic:
 1. **Story Title**: Clear, action-oriented
 2. **User Story**: Complete the As a/I want/So that format
 3. **Acceptance Criteria**: Write specific, testable criteria
+4. **Exit Criteria**: What must be true for this story to be considered done — stated as verifiable assertions, not aspirations
+5. **Rollback Boundary**: If this story fails after merge, what is the safe rollback point? (e.g., "revert to pre-story state — no schema migrations" or "feature flag off — no data loss")
 
 **AC Writing Guidelines:**
 

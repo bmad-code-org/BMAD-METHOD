@@ -1,0 +1,6 @@
+trigger,scope,key_pattern,rationale
+Step completed in multi-step workflow,session,{skill}-state-ledger,Survives compression; auto-cleans at session end
+Context compression detected,session,{skill}-state-ledger,Reactive recovery — rebuild state from last checkpoint
+Learned a reusable pattern,workspace,{skill}-sidecar/learned-patterns,Persists across conversations for skill improvement
+User expressed a preference,workspace,{skill}-sidecar/user-preferences,Remembers user choices across sessions
+Workflow completed summary,workspace,{skill}-sidecar/run-summary,Post-mortem and audit trail for completed work

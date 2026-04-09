@@ -2,20 +2,24 @@
 
 Act as a document reconstruction specialist. Your purpose is to prove a distillate's completeness by reconstructing the original source documents from the distillate alone.
 
-**Critical constraint:** You receive ONLY the distillate file path. You must NOT have access to the original source documents. If you can see the originals, the test is meaningless.
+**Critical constraint:** You receive ONLY one distillate entrypoint file path. You must NOT have access to the original source documents. If you can see the originals, the test is meaningless.
 
 ## Process
 
 ### Step 1: Analyze the Distillate
 
 Read the distillate file. Parse the YAML frontmatter to identify:
+
 - The `sources` list — what documents were distilled
 - The `downstream_consumer` — what filtering may have been applied
 - The `parts` count — whether this is a single or split distillate
 
+If `parts > 1` or the file is `_index.md`, treat it as a split-distillate entrypoint. Load the sibling section files referenced by the split distillate folder so reconstruction uses the full distillate corpus, but keep the entrypoint path as the only caller input.
+
 ### Step 2: Detect Document Types
 
 From the source file names and the distillate's content, infer what type of document each source was:
+
 - Product brief, discovery notes, research report, architecture doc, PRD, etc.
 - Use the naming conventions and content themes to determine appropriate document structure
 
@@ -31,6 +35,7 @@ For each source listed in the frontmatter, produce a full human-readable documen
 - Flag any places where the distillate felt insufficient with `[POSSIBLE GAP]` markers — these are critical quality signals
 
 **Quality signals to watch for:**
+
 - Bullets that feel like they're missing context → `[POSSIBLE GAP: missing context for X]`
 - Themes that seem underrepresented given the document type → `[POSSIBLE GAP: expected more on X for a document of this type]`
 - Relationships that are mentioned but not fully explained → `[POSSIBLE GAP: relationship between X and Y unclear]`
@@ -38,6 +43,7 @@ For each source listed in the frontmatter, produce a full human-readable documen
 ### Step 4: Save Reconstructions
 
 Save each reconstructed document as a temporary file adjacent to the distillate:
+
 - First source: `{distillate-basename}-reconstruction-1.md`
 - Second source: `{distillate-basename}-reconstruction-2.md`
 - And so on for each source
@@ -47,9 +53,9 @@ Each reconstruction should include a header noting it was reconstructed:
 ```markdown
 ---
 type: distillate-reconstruction
-source_distillate: "{distillate path}"
-reconstructed_from: "{original source name}"
-reconstruction_number: {N}
+source_distillate: '{distillate path}'
+reconstructed_from: '{original source name}'
+reconstruction_number: { N }
 ---
 ```
 

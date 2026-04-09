@@ -11,6 +11,7 @@ Arbitrary splits (every N tokens) break coherence. A downstream workflow loading
 ### 1. Identify Natural Boundaries
 
 After the initial extraction and deduplication (Steps 1-2 of the compression process), look for natural semantic boundaries:
+
 - Distinct problem domains or functional areas
 - Different stakeholder perspectives (users, technical, business)
 - Temporal boundaries (current state vs future vision)
@@ -24,6 +25,7 @@ Choose boundaries that produce sections a downstream workflow might load indepen
 For each extracted item, assign it to the most relevant section. Items that span multiple sections go in the root distillate.
 
 Cross-cutting items (items relevant to multiple sections):
+
 - Constraints that affect all areas → root distillate
 - Decisions with broad impact → root distillate
 - Section-specific decisions → section distillate
@@ -31,6 +33,7 @@ Cross-cutting items (items relevant to multiple sections):
 ### 3. Produce Root Distillate
 
 The root distillate contains:
+
 - **Orientation** (3-5 bullets): what was distilled, from what sources, for what consumer, how many sections
 - **Cross-references**: list of section distillates with 1-line descriptions
 - **Cross-cutting items**: facts, decisions, and constraints that span multiple sections
@@ -41,6 +44,7 @@ The root distillate contains:
 Each section distillate must be self-sufficient — a reader loading only one section should understand it without the others.
 
 Each section includes:
+
 - **Context header** (1 line): "This section covers [topic]. Part N of M from [source document names]."
 - **Section content**: thematically-grouped bullets following the same compression rules as a single distillate
 - **Cross-references** (if needed): pointers to other sections for related content
@@ -58,6 +62,7 @@ Create a folder `{base-name}-distillate/` containing:
 ```
 
 Example:
+
 ```
 product-brief-distillate/
 ├── _index.md
@@ -69,10 +74,12 @@ product-brief-distillate/
 ## Size Targets
 
 When a token_budget is specified:
+
 - Root distillate: ~20% of budget (orientation + cross-cutting items)
 - Remaining budget split proportionally across sections based on content density
 - If a section exceeds its proportional share, compress more aggressively or sub-split
 
 When no token_budget but splitting is needed:
+
 - Aim for sections of 3,000-5,000 tokens each
 - Root distillate as small as possible while remaining useful standalone
