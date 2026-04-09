@@ -16,7 +16,7 @@ When this skill completes, the user should:
 1. **Know where they are** — which module and phase they're in, what's already been completed
 2. **Know what to do next** — the next recommended and/or required step, with clear reasoning
 3. **Know how to invoke it** — skill name, menu code, action context, and any args that shortcut the conversation
-4. **Get offered a quick start** — when a single skill is the clear next step, offer to run it for the user right now rather than just listing it
+4. **Get offered a quick start** — when a single required next step or State Ledger handoff is clear, offer the exact invocation text for a fresh context window rather than a vague suggestion
 5. **Feel oriented, not overwhelmed** — surface only what's relevant to their current position; don't dump the entire catalog
 6. **Get answers to general questions** — when the question doesn't map to a specific skill, use the module's registered documentation to give a grounded answer
 
@@ -37,19 +37,23 @@ module,skill,display-name,menu-code,description,action,args,phase,after,before,r
 ```
 
 **Phases** determine the high-level flow:
+
 - `anytime` — available regardless of workflow state
 - Numbered phases (`1-analysis`, `2-planning`, etc.) flow in order; naming varies by module
 
 **Dependencies** determine ordering within and across phases:
+
 - `after` — skills that should ideally complete before this one
 - `before` — skills that should run after this one
 - Format: `skill-name` for single-action skills, `skill-name:action` for multi-action skills
 
 **Required gates**:
+
 - `required=true` items must complete before the user can meaningfully proceed to later phases
 - A phase with no required items is entirely optional — recommend it but be clear about what's actually required next
 
 **Completion detection**:
+
 - Search resolved output paths for `outputs` patterns
 - Fuzzy-match found files to catalog rows
 - User may also state completion explicitly, or it may be evident from the current conversation
@@ -59,6 +63,7 @@ module,skill,display-name,menu-code,description,action,args,phase,after,before,r
 ## Response Format
 
 For each recommended item, present:
+
 - `[menu-code]` **Display name** — e.g., "[CP] Create PRD"
 - Skill name in backticks — e.g., `bmad-create-prd`
 - For multi-action skills: action invocation context — e.g., "tech-writer lets create a mermaid diagram!"
@@ -67,9 +72,44 @@ For each recommended item, present:
 
 **Ordering**: Show optional items first, then the next required item. Make it clear which is which.
 
+**Quick start tie-breaker**: Only quick-start the required next step, or the explicit downstream handoff from the State Ledger `Skill:` line when present. Optional items stay optional and should not displace the required handoff.
+
 ## Constraints
 
 - Present all output in `{communication_language}`
 - Recommend running each skill in a **fresh context window**
 - Match the user's tone — conversational when they're casual, structured when they want specifics
-- If the active module is ambiguous, retrieve all meta rows remote sources to find relevant info also to help answer their question
+- If the active module is ambiguous, retrieve all relevant `_meta` rows and remote module documentation to ground the answer; if ambiguity remains after grounding, ask rather than guess
+
+## Discovery-Rigor Awareness
+
+When analyzing the user's situation, check for indicators that `bmad-discovery-rigor` should be recommended as a preamble.
+
+**Recommend discovery-rigor when:**
+
+- The task is complex, ambiguous, or high-stakes
+- The user says they are not sure where to start or that the problem is complicated
+- Multiple valid approaches exist and the right one is not obvious
+- The user is about to start a build-class workflow like `bmad-create-prd` or `bmad-create-architecture` without prior discovery
+- No Discovery Context artifact exists at the expected output location
+
+**Skip discovery-rigor when:**
+
+- The task is a quick fix, simple edit, or well-understood change
+- A Discovery Context already exists and is current
+- The user has already classified the problem and provided clear requirements
+- The user is mid-workflow and needs help continuing rather than restarting
+
+**Discovery Context detection**: Check `{output_folder}/discovery-context.md` first, then topic-slugged `discovery-context-*.md` artifacts when the current task appears to be part of a multi-run discovery flow. If multiple complete artifacts are plausible matches, ask rather than guess. If a matching artifact exists and contains `status: 'complete'`, treat discovery as already done and recommend the next downstream skill based on its classification and recommendation sections.
+
+## State Ledger Awareness
+
+If the conversation contains a State Ledger with canonical fields such as Problem, Class, Position, Counter, Findings, Open, Evidence, or Skill (or close equivalents such as Activity / Discovery Counter):
+
+- Read it to understand what has already been completed
+- Use the Position field to determine the current workflow position
+- Use the Open items to surface unresolved issues alongside recommendations
+- Treat the `Skill:` line as the preferred downstream handoff when present unless stronger workspace evidence shows it is stale
+- If the ledger references a Discovery Context, load it for grounding
+
+When a State Ledger is present, ground recommendations in it explicitly, for example: "Based on your current progress ([Position from ledger]), here's what comes next ..."

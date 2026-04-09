@@ -210,6 +210,9 @@ function extractYamlRefs(filePath, content) {
     if (typeof value !== 'string') return;
     if (!isResolvable(value)) return;
 
+    // Skip distillate provenance — sources[] entries are historical external references
+    if (/^sources\b/.test(keyPath)) return;
+
     const line = range ? offsetToLine(content, range[0]) : undefined;
 
     // Check for {project-root}/_bmad/ refs
@@ -443,6 +446,13 @@ if (require.main === module) {
     for (const ref of refs) {
       totalRefs++;
       const resolved = resolveRef(ref);
+
+      // Skip references that resolve outside the project — these are external
+      // provenance refs (e.g., distillate sources) not internal structure refs.
+      if (resolved && !resolved.startsWith(PROJECT_ROOT)) {
+        ok.push({ ref, tag: 'OK-EXTERNAL' });
+        continue;
+      }
 
       if (resolved && !fs.existsSync(resolved)) {
         // Extensionless paths may be directory references or partial templates.

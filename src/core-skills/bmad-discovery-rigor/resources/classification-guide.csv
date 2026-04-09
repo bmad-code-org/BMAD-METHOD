@@ -1,0 +1,6 @@
+activity,tier,description,indicators,convergence_signal
+Solve,Quick,"Clear single-domain problem with known or easily discoverable answer","Direct question; single technology or domain; no stated unknowns; user confident in scope",false
+Solve,Structured,"Problem with some unknowns that needs formal reasoning","Cross-domain elements; multiple valid approaches; 1-2 unknowns; user unsure about scope or constraints",false
+Solve,Full-Formal,"High-stakes or cross-domain problem with many unknowns","Regulatory or security-critical; novel domain; 3+ unknowns; significant consequences of getting it wrong",false
+Build,,"Design a reusable framework, template, tool, system, or contract surface","Creating something new; template or tool design; API or platform design; system architecture; workflow or operator contract standardization; cross-repo convergence",when_indicators_match
+Execute,,"Run a cycle within an existing framework or process","Sprint execution; deployment; migration; code review; running an established workflow; implementing an approved cross-system migration or convergence slice",when_indicators_match

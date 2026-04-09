@@ -191,6 +191,10 @@ class ManifestGenerator {
           if (debug) {
             console.log(`[DEBUG] collectSkills: claimed skill "${skillMeta.name}" as ${canonicalId} at ${dir}`);
           }
+
+          // Skill directories own their internal resources. Do not recurse into
+          // nested subdirectories looking for more SKILL.md entrypoints.
+          return;
         }
 
         // Recurse into subdirectories — but not inside a discovered skill
@@ -485,31 +489,12 @@ class ManifestGenerator {
     const csvPath = path.join(cfgDir, 'agent-manifest.csv');
     const escapeCsv = (value) => `"${String(value ?? '').replaceAll('"', '""')}"`;
 
-    // Read existing manifest to preserve entries
-    const existingEntries = new Map();
-    if (await fs.pathExists(csvPath)) {
-      const content = await fs.readFile(csvPath, 'utf8');
-      const records = csv.parse(content, {
-        columns: true,
-        skip_empty_lines: true,
-      });
-      for (const record of records) {
-        existingEntries.set(`${record.module}:${record.name}`, record);
-      }
-    }
-
     // Create CSV header with persona fields and canonicalId
     let csvContent = 'name,displayName,title,icon,capabilities,role,identity,communicationStyle,principles,module,path,canonicalId\n';
 
-    // Combine existing and new agents, preferring new data for duplicates
+    // The current install scan is authoritative. Reusing rows from a previous
+    // manifest leaves deleted agents behind after update/recompile.
     const allAgents = new Map();
-
-    // Add existing entries
-    for (const [key, value] of existingEntries) {
-      allAgents.set(key, value);
-    }
-
-    // Add/update new agents
     for (const agent of this.agents) {
       const key = `${agent.module}:${agent.name}`;
       allAgents.set(key, {
@@ -529,7 +514,9 @@ class ManifestGenerator {
     }
 
     // Write all agents
-    for (const [, record] of allAgents) {
+    for (const record of [...allAgents.values()].sort((left, right) =>
+      `${left.module}:${left.name}`.localeCompare(`${right.module}:${right.name}`),
+    )) {
       const row = [
         escapeCsv(record.name),
         escapeCsv(record.displayName),

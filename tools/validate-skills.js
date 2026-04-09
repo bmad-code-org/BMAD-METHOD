@@ -202,7 +202,12 @@ function discoverSkillDirs(rootDirs) {
       const skillMd = path.join(fullPath, 'SKILL.md');
 
       if (fs.existsSync(skillMd)) {
-        skillDirs.push(fullPath);
+        // Skip agent directories — they follow different naming conventions
+        const manifestPath = path.join(fullPath, 'bmad-skill-manifest.yaml');
+        const isAgent = fs.existsSync(manifestPath) && fs.readFileSync(manifestPath, 'utf8').match(/^type:\s*agent\b/m);
+        if (!isAgent) {
+          skillDirs.push(fullPath);
+        }
       }
 
       // Keep walking into subdirectories to find nested skills

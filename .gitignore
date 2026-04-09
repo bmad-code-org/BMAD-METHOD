@@ -26,6 +26,9 @@ design-artifacts/
 __pycache__/
 .pytest_cache/
 
+# Local history
+.history/
+
 # System files
 .DS_Store
 Thumbs.db

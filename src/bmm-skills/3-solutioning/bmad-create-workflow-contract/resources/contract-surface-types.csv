@@ -1,0 +1,7 @@
+surface_type,what_to_define,table_columns,when_applicable,definition_order
+identity,"How entities are named across boundaries — IDs, aliases, canonical names, paths, manifests","Entity | Canonical Name | Aliases | Resolution Rule | Collision Rule",always,1
+ownership,"Who produces, who consumes, and who owns each concern — including dispute resolution","Concern | Producer | Consumer(s) | Owner | Handoff Point",always,2
+operator,"Commands, config paths, state transitions, proof mode, and rollback procedures","Action | Command | Config Path | Inputs | Outputs | Idempotent?",always,3
+evidence,"What proves correctness, where evidence lands, and how review consumes it","Checkpoint | Evidence Artifact | Location | Format | Reviewer",always,4
+compatibility,"Backward compatibility rules, versioning, drift detection, and breaking change process","N/A — use prose fields: Versioning scheme, Backward compat rule, Drift detection, Breaking change process",when_multiple_versions,5
+migration,"Transitional period, aliases, removal signals, cleanup procedures","N/A — use prose fields: Transitional period, Transitional aliases, Removal signal, Cleanup",when_migrating,6
