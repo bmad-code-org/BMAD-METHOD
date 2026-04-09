@@ -1,6 +1,7 @@
 ---
 deferred_work_file: '{implementation_artifacts}/deferred-work.md'
 spec_file: '' # set at runtime for both routes before leaving this step
+story_key: '' # set at runtime to the current story's full sprint-status key (e.g. 3-2-digest-delivery) when the intent is an epic story and sprint-status resolution succeeds
 ---
 
 # Step 1: Clarify and Route
@@ -45,7 +46,7 @@ Never ask extra questions if you already understand what the user intends.
 
      **A) Epic story path** — if the intent is clearly an epic story:
 
-     1. Identify the epic number and (if present) the story number. If you can't identify an epic number, use path B.
+     1. Identify the epic number `{epic_num}` and (if present) the story number `{story_num}`. If you can't identify an epic number, use path B.
 
      2. **Check for a valid cached epic context.** Look for `{implementation_artifacts}/epic-<N>-context.md` (where `<N>` is the epic number). A file is **valid** when it exists, is non-empty, starts with `# Epic <N> Context:` (with the correct epic number), and no file in `{planning_artifacts}` is newer.
         - **If valid:** load it as the primary planning context. Do not load raw planning docs (PRD, architecture, UX, etc.). Skip to step 5.
@@ -58,6 +59,8 @@ Never ask extra questions if you already understand what the user intends.
      4. **Verify.** After compilation, verify the output file exists, is non-empty, and starts with `# Epic <N> Context:`. If valid, load it. If verification fails, HALT and report the failure.
 
      5. **Previous story continuity.** Regardless of which context source succeeded above, scan `{implementation_artifacts}` for specs from the same epic with `status: done` and a lower story number. Load the most recent one (highest story number below current). Extract its **Code Map**, **Design Notes**, **Spec Change Log**, and **task list** as continuity context for step-02 planning. If no `done` spec is found but an `in-review` spec exists for the same epic with a lower story number, note it to the user and ask whether to load it.
+
+     6. **Resolve `{story_key}` for sprint-status sync.** This runs for every epic story, independent of whether continuity context was found above. If `{sprint_status}` exists, load it, then walk every key in `development_status`, split each key on `-`, and collect matches where the first two segments parse as integers equal to `{epic_num}` and `{story_num}` (exact numeric equality — never string-prefix match, so `1-1` does not collide with `1-10`). Exactly one match → set `{story_key}` to that full key (e.g., `3-2-digest-delivery`). Zero matches or file missing → leave `{story_key}` unset (silent). Multiple matches → warn the user once (`"sprint-status lookup for {epic_num}-{story_num} is ambiguous; skipping sprint sync"`) and leave `{story_key}` unset.
 
      **B) Freeform path** — if the intent is not an epic story:
      - Planning artifacts are the output of BMAD phases 1-3. Typical files include:
