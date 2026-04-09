@@ -10,6 +10,9 @@ const { RegistryClient } = require('./registry-client');
  * Validates URLs, fetches .claude-plugin/marketplace.json, clones repos.
  */
 class CustomModuleManager {
+  /** @type {Map<string, Object>} Shared across all instances: module code -> ResolvedModule */
+  static _resolutionCache = new Map();
+
   constructor() {
     this._client = new RegistryClient();
   }
@@ -177,6 +180,37 @@ class CustomModuleManager {
     return repoCacheDir;
   }
 
+  // ─── Plugin Resolution ────────────────────────────────────────────────────
+
+  /**
+   * Resolve a plugin to determine installation strategy and module registration files.
+   * Results are cached in _resolutionCache keyed by module code.
+   * @param {string} repoPath - Absolute path to the cloned repository
+   * @param {Object} plugin - Raw plugin object from marketplace.json
+   * @returns {Promise<Array<Object>>} Array of ResolvedModule objects
+   */
+  async resolvePlugin(repoPath, plugin) {
+    const { PluginResolver } = require('./plugin-resolver');
+    const resolver = new PluginResolver();
+    const resolved = await resolver.resolve(repoPath, plugin);
+
+    // Cache each resolved module by its code for lookup during install
+    for (const mod of resolved) {
+      CustomModuleManager._resolutionCache.set(mod.code, mod);
+    }
+
+    return resolved;
+  }
+
+  /**
+   * Get a cached resolution result by module code.
+   * @param {string} moduleCode - Module code to look up
+   * @returns {Object|null} ResolvedModule or null if not cached
+   */
+  getResolution(moduleCode) {
+    return CustomModuleManager._resolutionCache.get(moduleCode) || null;
+  }
+
   // ─── Source Finding ───────────────────────────────────────────────────────
 
   /**
@@ -236,6 +270,19 @@ class CustomModuleManager {
    * @returns {string|null} Path to the module source or null
    */
   async findModuleSourceByCode(moduleCode, options = {}) {
+    // Check resolution cache first (populated by resolvePlugin)
+    const resolved = CustomModuleManager._resolutionCache.get(moduleCode);
+    if (resolved) {
+      // For strategies 1-2: the common parent or setup skill's parent has the module files
+      if (resolved.moduleYamlPath) {
+        return path.dirname(resolved.moduleYamlPath);
+      }
+      // For strategy 5 (synthesized): return the first skill's parent as a reference path
+      if (resolved.skillPaths && resolved.skillPaths.length > 0) {
+        return path.dirname(resolved.skillPaths[0]);
+      }
+    }
+
     const cacheDir = this.getCacheDir();
     if (!(await fs.pathExists(cacheDir))) return null;
 
@@ -297,6 +344,8 @@ class CustomModuleManager {
       author: plugin.author || data.owner || '',
       url: repoUrl,
       source: plugin.source || null,
+      skills: plugin.skills || [],
+      rawPlugin: plugin,
       type: 'custom',
       trustTier: 'unverified',
       builtIn: false,

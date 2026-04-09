@@ -848,48 +848,104 @@ class UI {
       const s = await prompts.spinner();
       s.start('Fetching module info...');
 
+      let plugins;
       try {
-        const plugins = await customMgr.discoverModules(url.trim());
+        plugins = await customMgr.discoverModules(url.trim());
         s.stop('Module info loaded');
-
-        await prompts.log.warn(
-          'UNVERIFIED MODULE: This module has not been reviewed by the BMad team.\n' + '  Only install modules from sources you trust.',
-        );
-
-        for (const plugin of plugins) {
-          const versionStr = plugin.version ? ` v${plugin.version}` : '';
-          await prompts.log.info(`  ${plugin.name}${versionStr}\n  ${plugin.description}\n  Author: ${plugin.author}`);
-        }
-
-        const confirmInstall = await prompts.confirm({
-          message: `Install ${plugins.length} plugin${plugins.length === 1 ? '' : 's'} from ${url.trim()}?`,
-          default: false,
-        });
-
-        if (confirmInstall) {
-          // Pre-clone the repo so it's cached for the install pipeline
-          s.start('Cloning repository...');
-          try {
-            await customMgr.cloneRepo(url.trim());
-            s.stop('Repository cloned');
-          } catch (cloneError) {
-            s.error('Failed to clone repository');
-            await prompts.log.error(`  ${cloneError.message}`);
-            addMore = await prompts.confirm({ message: 'Try another URL?', default: false });
-            continue;
-          }
-
-          for (const plugin of plugins) {
-            selectedModules.push(plugin.code);
-          }
-        }
       } catch (error) {
         s.error('Failed to load module info');
         await prompts.log.error(`  ${error.message}`);
+        addMore = await prompts.confirm({ message: 'Try another URL?', default: false });
+        continue;
+      }
+
+      await prompts.log.warn(
+        'UNVERIFIED MODULE: This module has not been reviewed by the BMad team.\n' + '  Only install modules from sources you trust.',
+      );
+
+      // Clone the repo so we can resolve plugin structures
+      s.start('Cloning repository...');
+      let repoPath;
+      try {
+        repoPath = await customMgr.cloneRepo(url.trim());
+        s.stop('Repository cloned');
+      } catch (cloneError) {
+        s.error('Failed to clone repository');
+        await prompts.log.error(`  ${cloneError.message}`);
+        addMore = await prompts.confirm({ message: 'Try another URL?', default: false });
+        continue;
+      }
+
+      // Resolve each plugin to determine installable modules
+      s.start('Analyzing plugin structure...');
+      const allResolved = [];
+      for (const plugin of plugins) {
+        try {
+          const resolved = await customMgr.resolvePlugin(repoPath, plugin.rawPlugin);
+          if (resolved.length > 0) {
+            allResolved.push(...resolved);
+          } else {
+            // No skills array or empty - use plugin metadata as-is (legacy)
+            allResolved.push({
+              code: plugin.code,
+              name: plugin.displayName || plugin.name,
+              version: plugin.version,
+              description: plugin.description,
+              strategy: 0,
+              pluginName: plugin.name,
+              skillPaths: [],
+            });
+          }
+        } catch (resolveError) {
+          await prompts.log.warn(`  Could not resolve ${plugin.name}: ${resolveError.message}`);
+        }
+      }
+      s.stop(`Found ${allResolved.length} installable module${allResolved.length === 1 ? '' : 's'}`);
+
+      if (allResolved.length === 0) {
+        await prompts.log.warn('No installable modules found in this repository.');
+        addMore = await prompts.confirm({ message: 'Try another URL?', default: false });
+        continue;
+      }
+
+      // Build multiselect choices
+      // Already-installed modules are pre-checked (update). New modules are unchecked (opt-in).
+      // Unchecking an installed module means "skip update" - removal is handled elsewhere.
+      const choices = allResolved.map((mod) => {
+        const versionStr = mod.version ? ` v${mod.version}` : '';
+        const skillCount = mod.skillPaths ? mod.skillPaths.length : 0;
+        const skillStr = skillCount > 0 ? ` (${skillCount} skill${skillCount === 1 ? '' : 's'})` : '';
+        const alreadyInstalled = installedModuleIds.has(mod.code);
+        const hint = alreadyInstalled ? 'update' : undefined;
+
+        return {
+          name: `${mod.name}${versionStr}${skillStr}`,
+          value: mod.code,
+          hint,
+          checked: alreadyInstalled,
+        };
+      });
+
+      // Show descriptions before the multiselect
+      for (const mod of allResolved) {
+        const versionStr = mod.version ? ` v${mod.version}` : '';
+        await prompts.log.info(`  ${mod.name}${versionStr}\n  ${mod.description}`);
+      }
+
+      const selected = await prompts.multiselect({
+        message: 'Select modules to install:',
+        choices,
+        required: false,
+      });
+
+      if (selected && selected.length > 0) {
+        for (const code of selected) {
+          selectedModules.push(code);
+        }
       }
 
       addMore = await prompts.confirm({
-        message: 'Add another custom module?',
+        message: 'Add another custom module URL?',
         default: false,
       });
     }

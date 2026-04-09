@@ -135,6 +135,22 @@ class OfficialModules {
     const moduleConfigPath = path.join(modulePath, 'module.yaml');
 
     if (!(await fs.pathExists(moduleConfigPath))) {
+      // Check resolution cache for strategy 5 modules (no module.yaml on disk)
+      const { CustomModuleManager } = require('./custom-module-manager');
+      const customMgr = new CustomModuleManager();
+      const resolved = customMgr.getResolution(defaultName);
+      if (resolved && resolved.synthesizedModuleYaml) {
+        return {
+          id: resolved.code,
+          path: modulePath,
+          name: resolved.name,
+          description: resolved.description,
+          version: resolved.version || '1.0.0',
+          source: sourceDescription,
+          dependencies: [],
+          defaultSelected: false,
+        };
+      }
       return null;
     }
 
@@ -232,6 +248,14 @@ class OfficialModules {
    * @param {Object} options.logger - Logger instance for output
    */
   async install(moduleName, bmadDir, fileTrackingCallback = null, options = {}) {
+    // Check if this module has a plugin resolution (custom marketplace install)
+    const { CustomModuleManager } = require('./custom-module-manager');
+    const customMgr = new CustomModuleManager();
+    const resolved = customMgr.getResolution(moduleName);
+    if (resolved) {
+      return this.installFromResolution(resolved, bmadDir, fileTrackingCallback, options);
+    }
+
     const sourcePath = await this.findModuleSource(moduleName, { silent: options.silent });
     const targetPath = path.join(bmadDir, moduleName);
 
@@ -263,6 +287,57 @@ class OfficialModules {
     });
 
     return { success: true, module: moduleName, path: targetPath, versionInfo };
+  }
+
+  /**
+   * Install a module from a PluginResolver resolution result.
+   * Copies specific skill directories and places module-help.csv at the target root.
+   * @param {Object} resolved - ResolvedModule from PluginResolver
+   * @param {string} bmadDir - Target bmad directory
+   * @param {Function} fileTrackingCallback - Optional callback to track installed files
+   * @param {Object} options - Installation options
+   */
+  async installFromResolution(resolved, bmadDir, fileTrackingCallback = null, options = {}) {
+    const targetPath = path.join(bmadDir, resolved.code);
+
+    if (await fs.pathExists(targetPath)) {
+      await fs.remove(targetPath);
+    }
+
+    await fs.ensureDir(targetPath);
+
+    // Copy each skill directory, flattened by leaf name
+    for (const skillPath of resolved.skillPaths) {
+      const skillDirName = path.basename(skillPath);
+      const skillTarget = path.join(targetPath, skillDirName);
+      await this.copyModuleWithFiltering(skillPath, skillTarget, fileTrackingCallback, options.moduleConfig);
+    }
+
+    // Place module-help.csv at the module root
+    if (resolved.moduleHelpCsvPath) {
+      // Strategies 1-4: copy the existing file
+      const helpTarget = path.join(targetPath, 'module-help.csv');
+      await fs.copy(resolved.moduleHelpCsvPath, helpTarget, { overwrite: true });
+      if (fileTrackingCallback) fileTrackingCallback(helpTarget);
+    } else if (resolved.synthesizedHelpCsv) {
+      // Strategy 5: write synthesized content
+      const helpTarget = path.join(targetPath, 'module-help.csv');
+      await fs.writeFile(helpTarget, resolved.synthesizedHelpCsv, 'utf8');
+      if (fileTrackingCallback) fileTrackingCallback(helpTarget);
+    }
+
+    // Update manifest
+    const { Manifest } = require('../core/manifest');
+    const manifestObj = new Manifest();
+
+    await manifestObj.addModule(bmadDir, resolved.code, {
+      version: resolved.version || '',
+      source: `custom:${resolved.pluginName}`,
+      npmPackage: '',
+      repoUrl: '',
+    });
+
+    return { success: true, module: resolved.code, path: targetPath, versionInfo: { version: resolved.version || '' } };
   }
 
   /**
