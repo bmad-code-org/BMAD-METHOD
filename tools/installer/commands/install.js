@@ -22,6 +22,7 @@ module.exports = {
     ['--communication-language <lang>', 'Language for agent communication (default: English)'],
     ['--document-output-language <lang>', 'Language for document output (default: English)'],
     ['--output-folder <path>', 'Output folder path relative to project root (default: _bmad-output)'],
+    ['--custom-source <sources>', 'Comma-separated Git URLs or local paths to install custom modules from'],
     ['-y, --yes', 'Accept all defaults and skip prompts where possible'],
   ],
   action: async (options) => {

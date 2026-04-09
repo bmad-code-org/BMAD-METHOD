@@ -167,6 +167,14 @@ class UI {
           selectedModules = await this.selectAllModules(installedModuleIds);
         }
 
+        // Resolve custom sources from --custom-source flag
+        if (options.customSource) {
+          const customCodes = await this._resolveCustomSourcesCli(options.customSource);
+          for (const code of customCodes) {
+            if (!selectedModules.includes(code)) selectedModules.push(code);
+          }
+        }
+
         // Ensure core is in the modules list
         if (!selectedModules.includes('core')) {
           selectedModules.unshift('core');
@@ -208,6 +216,14 @@ class UI {
       await prompts.log.info(`Using default modules (--yes flag): ${selectedModules.join(', ')}`);
     } else {
       selectedModules = await this.selectAllModules(installedModuleIds);
+    }
+
+    // Resolve custom sources from --custom-source flag
+    if (options.customSource) {
+      const customCodes = await this._resolveCustomSourcesCli(options.customSource);
+      for (const code of customCodes) {
+        if (!selectedModules.includes(code)) selectedModules.push(code);
+      }
     }
 
     // Ensure core is in the modules list
@@ -996,6 +1012,102 @@ class UI {
     }
 
     return selectedModules;
+  }
+
+  /**
+   * Resolve custom sources from --custom-source CLI flag (non-interactive).
+   * Auto-selects all discovered modules from each source.
+   * @param {string} sourcesArg - Comma-separated Git URLs or local paths
+   * @returns {Array} Module codes from all resolved sources
+   */
+  async _resolveCustomSourcesCli(sourcesArg) {
+    const { CustomModuleManager } = require('./modules/custom-module-manager');
+    const customMgr = new CustomModuleManager();
+    const allCodes = [];
+
+    const sources = sourcesArg
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean);
+
+    for (const source of sources) {
+      const s = await prompts.spinner();
+      s.start(`Resolving ${source}...`);
+
+      let sourceResult;
+      try {
+        sourceResult = await customMgr.resolveSource(source, { skipInstall: true, silent: true });
+        s.stop(sourceResult.parsed.type === 'local' ? 'Local source resolved' : 'Repository cloned');
+      } catch (error) {
+        s.error(`Failed to resolve ${source}`);
+        await prompts.log.error(`  ${error.message}`);
+        continue;
+      }
+
+      const s2 = await prompts.spinner();
+      s2.start('Analyzing plugin structure...');
+      const allResolved = [];
+      const localPath = sourceResult.parsed.type === 'local' ? sourceResult.rootDir : null;
+
+      if (sourceResult.mode === 'discovery') {
+        try {
+          const plugins = await customMgr.discoverModules(sourceResult.marketplace, sourceResult.sourceUrl);
+          const effectiveRepoPath = sourceResult.repoPath || sourceResult.rootDir;
+          for (const plugin of plugins) {
+            try {
+              const resolved = await customMgr.resolvePlugin(effectiveRepoPath, plugin.rawPlugin, sourceResult.sourceUrl, localPath);
+              if (resolved.length > 0) {
+                allResolved.push(...resolved);
+              }
+            } catch {
+              // Skip unresolvable plugins
+            }
+          }
+        } catch (discoverError) {
+          s2.error('Failed to discover modules');
+          await prompts.log.error(`  ${discoverError.message}`);
+          continue;
+        }
+      } else {
+        // Direct mode: scan for SKILL.md directories
+        const directPlugin = {
+          name: sourceResult.parsed.displayName || path.basename(sourceResult.rootDir),
+          source: '.',
+          skills: [],
+        };
+        try {
+          const entries = await fs.readdir(sourceResult.rootDir, { withFileTypes: true });
+          for (const entry of entries) {
+            if (entry.isDirectory()) {
+              const skillMd = path.join(sourceResult.rootDir, entry.name, 'SKILL.md');
+              if (await fs.pathExists(skillMd)) {
+                directPlugin.skills.push(entry.name);
+              }
+            }
+          }
+        } catch {
+          // Skip unreadable directories
+        }
+
+        if (directPlugin.skills.length > 0) {
+          try {
+            const resolved = await customMgr.resolvePlugin(sourceResult.rootDir, directPlugin, sourceResult.sourceUrl, localPath);
+            allResolved.push(...resolved);
+          } catch {
+            // Skip unresolvable
+          }
+        }
+      }
+      s2.stop(`Found ${allResolved.length} module${allResolved.length === 1 ? '' : 's'}`);
+
+      for (const mod of allResolved) {
+        allCodes.push(mod.code);
+        const versionStr = mod.version ? ` v${mod.version}` : '';
+        await prompts.log.info(`  Custom module: ${mod.name}${versionStr}`);
+      }
+    }
+
+    return allCodes;
   }
 
   /**
