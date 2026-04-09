@@ -326,6 +326,11 @@ class OfficialModules {
       if (fileTrackingCallback) fileTrackingCallback(helpTarget);
     }
 
+    // Create directories declared in module.yaml (strategies 1-4 may have these)
+    if (!options.skipModuleInstaller) {
+      await this.createModuleDirectories(resolved.code, bmadDir, options);
+    }
+
     // Update manifest
     const { Manifest } = require('../core/manifest');
     const manifestObj = new Manifest();

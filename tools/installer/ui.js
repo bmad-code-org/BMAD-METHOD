@@ -863,11 +863,11 @@ class UI {
         'UNVERIFIED MODULE: This module has not been reviewed by the BMad team.\n' + '  Only install modules from sources you trust.',
       );
 
-      // Clone the repo so we can resolve plugin structures
+      // Clone the repo so we can resolve plugin structures (skip npm install until user confirms)
       s.start('Cloning repository...');
       let repoPath;
       try {
-        repoPath = await customMgr.cloneRepo(url.trim());
+        repoPath = await customMgr.cloneRepo(url.trim(), { skipInstall: true });
         s.stop('Repository cloned');
       } catch (cloneError) {
         s.error('Failed to clone repository');

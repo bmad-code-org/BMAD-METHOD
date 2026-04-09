@@ -33,11 +33,16 @@ class PluginResolver {
       return [];
     }
 
-    // Resolve skill paths to absolute and filter out non-existent
+    // Resolve skill paths to absolute, constrain to repo root, filter non-existent
+    const repoRoot = path.resolve(repoPath);
     const skillPaths = [];
     for (const rel of skillRelPaths) {
       const normalized = rel.replace(/^\.\//, '');
-      const abs = path.join(repoPath, normalized);
+      const abs = path.resolve(repoPath, normalized);
+      // Guard against path traversal (.. segments, absolute paths in marketplace.json)
+      if (!abs.startsWith(repoRoot + path.sep) && abs !== repoRoot) {
+        continue;
+      }
       if (await fs.pathExists(abs)) {
         skillPaths.push(abs);
       }
@@ -384,7 +389,7 @@ class PluginResolver {
   _escapeCSVField(value) {
     if (!value) return '';
     if (value.includes(',') || value.includes('"') || value.includes('\n')) {
-      return `"${value.replace(/"/g, '""')}"`;
+      return `"${value.replaceAll('"', '""')}"`;
     }
     return value;
   }

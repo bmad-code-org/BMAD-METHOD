@@ -104,6 +104,7 @@ class CustomModuleManager {
    * @param {string} repoUrl - GitHub repository URL
    * @param {Object} [options] - Clone options
    * @param {boolean} [options.silent] - Suppress spinner output
+   * @param {boolean} [options.skipInstall] - Skip npm install (for browsing before user confirms)
    * @returns {string} Path to the cloned repository
    */
   async cloneRepo(repoUrl, options = {}) {
@@ -159,9 +160,9 @@ class CustomModuleManager {
       }
     }
 
-    // Install dependencies if package.json exists
+    // Install dependencies if package.json exists (skip during browsing/analysis)
     const packageJsonPath = path.join(repoCacheDir, 'package.json');
-    if (await fs.pathExists(packageJsonPath)) {
+    if (!options.skipInstall && (await fs.pathExists(packageJsonPath))) {
       const installSpinner = await createSpinner();
       installSpinner.start(`Installing dependencies for ${owner}/${repo}...`);
       try {
