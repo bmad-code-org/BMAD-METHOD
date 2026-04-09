@@ -569,6 +569,7 @@ class Installer {
    */
   async _installOfficialModules(config, paths, officialModuleIds, addResult, isQuickUpdate, officialModules, ctx) {
     const { message, installedModuleNames } = ctx;
+    const { CustomModuleManager } = require('../modules/custom-module-manager');
 
     for (const moduleName of officialModuleIds) {
       if (installedModuleNames.has(moduleName)) continue;
@@ -591,11 +592,15 @@ class Installer {
         },
       );
 
-      // Get display name from source module.yaml; version from marketplace.json
+      // Get display name from source module.yaml; version from resolution cache or marketplace.json
       const sourcePath = await officialModules.findModuleSource(moduleName, { silent: true });
       const moduleInfo = sourcePath ? await officialModules.getModuleInfo(sourcePath, moduleName, '') : null;
       const displayName = moduleInfo?.name || moduleName;
-      const version = sourcePath ? await this._getMarketplaceVersion(sourcePath) : '';
+
+      // Prefer version from resolution cache (accurate for custom/local modules),
+      // fall back to marketplace.json walk-up for official modules
+      const cachedResolution = CustomModuleManager._resolutionCache.get(moduleName);
+      const version = cachedResolution?.version || (sourcePath ? await this._getMarketplaceVersion(sourcePath) : '');
       addResult(displayName, 'ok', '', { moduleCode: moduleName, newVersion: version });
     }
   }
@@ -1189,7 +1194,7 @@ class Installer {
     const customMgr = new CustomModuleManager();
     for (const moduleId of installedModules) {
       if (!availableModules.some((m) => m.id === moduleId)) {
-        const customSource = await customMgr.findModuleSourceByCode(moduleId);
+        const customSource = await customMgr.findModuleSourceByCode(moduleId, { bmadDir });
         if (customSource) {
           availableModules.push({
             id: moduleId,

@@ -158,6 +158,9 @@ class UI {
             .map((m) => m.trim())
             .filter(Boolean);
           await prompts.log.info(`Using modules from command-line: ${selectedModules.join(', ')}`);
+        } else if (options.customSource) {
+          // Custom source without --modules: start with empty list (core added below)
+          selectedModules = [];
         } else if (options.yes) {
           selectedModules = await this.getDefaultModules(installedModuleIds);
           await prompts.log.info(
@@ -165,6 +168,14 @@ class UI {
           );
         } else {
           selectedModules = await this.selectAllModules(installedModuleIds);
+        }
+
+        // Resolve custom sources from --custom-source flag
+        if (options.customSource) {
+          const customCodes = await this._resolveCustomSourcesCli(options.customSource);
+          for (const code of customCodes) {
+            if (!selectedModules.includes(code)) selectedModules.push(code);
+          }
         }
 
         // Ensure core is in the modules list
@@ -202,12 +213,23 @@ class UI {
         .map((m) => m.trim())
         .filter(Boolean);
       await prompts.log.info(`Using modules from command-line: ${selectedModules.join(', ')}`);
+    } else if (options.customSource) {
+      // Custom source without --modules: start with empty list (core added below)
+      selectedModules = [];
     } else if (options.yes) {
       // Use default modules when --yes flag is set
       selectedModules = await this.getDefaultModules(installedModuleIds);
       await prompts.log.info(`Using default modules (--yes flag): ${selectedModules.join(', ')}`);
     } else {
       selectedModules = await this.selectAllModules(installedModuleIds);
+    }
+
+    // Resolve custom sources from --custom-source flag
+    if (options.customSource) {
+      const customCodes = await this._resolveCustomSourcesCli(options.customSource);
+      for (const code of customCodes) {
+        if (!selectedModules.includes(code)) selectedModules.push(code);
+      }
     }
 
     // Ensure core is in the modules list
@@ -818,13 +840,13 @@ class UI {
   }
 
   /**
-   * Prompt user to install modules from custom GitHub URLs.
+   * Prompt user to install modules from custom sources (Git URLs or local paths).
    * @param {Set} installedModuleIds - Currently installed module IDs
    * @returns {Array} Selected custom module code strings
    */
   async _addCustomUrlModules(installedModuleIds = new Set()) {
     const addCustom = await prompts.confirm({
-      message: 'Would you like to install from a custom GitHub URL?',
+      message: 'Would you like to install from a custom source (Git URL or local path)?',
       default: false,
     });
     if (!addCustom) return [];
@@ -835,61 +857,158 @@ class UI {
 
     let addMore = true;
     while (addMore) {
-      const url = await prompts.text({
-        message: 'GitHub repository URL:',
-        placeholder: 'https://github.com/owner/repo',
+      const sourceInput = await prompts.text({
+        message: 'Git URL or local path:',
+        placeholder: 'https://github.com/owner/repo or /path/to/module',
         validate: (input) => {
-          if (!input || input.trim() === '') return 'URL is required';
-          const result = customMgr.validateGitHubUrl(input.trim());
+          if (!input || input.trim() === '') return 'Source is required';
+          const result = customMgr.parseSource(input.trim());
           return result.isValid ? undefined : result.error;
         },
       });
 
       const s = await prompts.spinner();
-      s.start('Fetching module info...');
+      s.start('Resolving source...');
 
+      let sourceResult;
       try {
-        const plugins = await customMgr.discoverModules(url.trim());
-        s.stop('Module info loaded');
+        sourceResult = await customMgr.resolveSource(sourceInput.trim(), { skipInstall: true, silent: true });
+        s.stop(sourceResult.parsed.type === 'local' ? 'Local source resolved' : 'Repository cloned');
+      } catch (error) {
+        s.error('Failed to resolve source');
+        await prompts.log.error(`  ${error.message}`);
+        addMore = await prompts.confirm({ message: 'Try another source?', default: false });
+        continue;
+      }
 
+      if (sourceResult.parsed.type === 'local') {
+        await prompts.log.info('LOCAL MODULE: Pointing directly at local source (changes take effect on reinstall).');
+      } else {
         await prompts.log.warn(
           'UNVERIFIED MODULE: This module has not been reviewed by the BMad team.\n' + '  Only install modules from sources you trust.',
         );
+      }
 
+      // Resolve plugins based on discovery mode vs direct mode
+      s.start('Analyzing plugin structure...');
+      const allResolved = [];
+      const localPath = sourceResult.parsed.type === 'local' ? sourceResult.rootDir : null;
+
+      if (sourceResult.mode === 'discovery') {
+        // Discovery mode: marketplace.json found, list available plugins
+        let plugins;
+        try {
+          plugins = await customMgr.discoverModules(sourceResult.marketplace, sourceResult.sourceUrl);
+        } catch (discoverError) {
+          s.error('Failed to discover modules');
+          await prompts.log.error(`  ${discoverError.message}`);
+          addMore = await prompts.confirm({ message: 'Try another source?', default: false });
+          continue;
+        }
+
+        const effectiveRepoPath = sourceResult.repoPath || sourceResult.rootDir;
         for (const plugin of plugins) {
-          const versionStr = plugin.version ? ` v${plugin.version}` : '';
-          await prompts.log.info(`  ${plugin.name}${versionStr}\n  ${plugin.description}\n  Author: ${plugin.author}`);
-        }
-
-        const confirmInstall = await prompts.confirm({
-          message: `Install ${plugins.length} plugin${plugins.length === 1 ? '' : 's'} from ${url.trim()}?`,
-          default: false,
-        });
-
-        if (confirmInstall) {
-          // Pre-clone the repo so it's cached for the install pipeline
-          s.start('Cloning repository...');
           try {
-            await customMgr.cloneRepo(url.trim());
-            s.stop('Repository cloned');
-          } catch (cloneError) {
-            s.error('Failed to clone repository');
-            await prompts.log.error(`  ${cloneError.message}`);
-            addMore = await prompts.confirm({ message: 'Try another URL?', default: false });
-            continue;
-          }
-
-          for (const plugin of plugins) {
-            selectedModules.push(plugin.code);
+            const resolved = await customMgr.resolvePlugin(effectiveRepoPath, plugin.rawPlugin, sourceResult.sourceUrl, localPath);
+            if (resolved.length > 0) {
+              allResolved.push(...resolved);
+            } else {
+              // No skills array or empty - use plugin metadata as-is (legacy)
+              allResolved.push({
+                code: plugin.code,
+                name: plugin.displayName || plugin.name,
+                version: plugin.version,
+                description: plugin.description,
+                strategy: 0,
+                pluginName: plugin.name,
+                skillPaths: [],
+              });
+            }
+          } catch (resolveError) {
+            await prompts.log.warn(`  Could not resolve ${plugin.name}: ${resolveError.message}`);
           }
         }
-      } catch (error) {
-        s.error('Failed to load module info');
-        await prompts.log.error(`  ${error.message}`);
+      } else {
+        // Direct mode: no marketplace.json, scan directory for skills and resolve
+        const directPlugin = {
+          name: sourceResult.parsed.displayName || path.basename(sourceResult.rootDir),
+          source: '.',
+          skills: [],
+        };
+
+        // Scan for SKILL.md directories to populate skills array
+        try {
+          const entries = await fs.readdir(sourceResult.rootDir, { withFileTypes: true });
+          for (const entry of entries) {
+            if (entry.isDirectory()) {
+              const skillMd = path.join(sourceResult.rootDir, entry.name, 'SKILL.md');
+              if (await fs.pathExists(skillMd)) {
+                directPlugin.skills.push(entry.name);
+              }
+            }
+          }
+        } catch (scanError) {
+          s.error('Failed to scan directory');
+          await prompts.log.error(`  ${scanError.message}`);
+          addMore = await prompts.confirm({ message: 'Try another source?', default: false });
+          continue;
+        }
+
+        if (directPlugin.skills.length > 0) {
+          try {
+            const resolved = await customMgr.resolvePlugin(sourceResult.rootDir, directPlugin, sourceResult.sourceUrl, localPath);
+            allResolved.push(...resolved);
+          } catch (resolveError) {
+            await prompts.log.warn(`  Could not resolve: ${resolveError.message}`);
+          }
+        }
+      }
+      s.stop(`Found ${allResolved.length} installable module${allResolved.length === 1 ? '' : 's'}`);
+
+      if (allResolved.length === 0) {
+        await prompts.log.warn('No installable modules found in this source.');
+        addMore = await prompts.confirm({ message: 'Try another source?', default: false });
+        continue;
+      }
+
+      // Build multiselect choices
+      // Already-installed modules are pre-checked (update). New modules are unchecked (opt-in).
+      // Unchecking an installed module means "skip update" - removal is handled elsewhere.
+      const choices = allResolved.map((mod) => {
+        const versionStr = mod.version ? ` v${mod.version}` : '';
+        const skillCount = mod.skillPaths ? mod.skillPaths.length : 0;
+        const skillStr = skillCount > 0 ? ` (${skillCount} skill${skillCount === 1 ? '' : 's'})` : '';
+        const alreadyInstalled = installedModuleIds.has(mod.code);
+        const hint = alreadyInstalled ? 'update' : undefined;
+
+        return {
+          name: `${mod.name}${versionStr}${skillStr}`,
+          value: mod.code,
+          hint,
+          checked: alreadyInstalled,
+        };
+      });
+
+      // Show descriptions before the multiselect
+      for (const mod of allResolved) {
+        const versionStr = mod.version ? ` v${mod.version}` : '';
+        await prompts.log.info(`  ${mod.name}${versionStr}\n  ${mod.description}`);
+      }
+
+      const selected = await prompts.multiselect({
+        message: 'Select modules to install:',
+        choices,
+        required: false,
+      });
+
+      if (selected && selected.length > 0) {
+        for (const code of selected) {
+          selectedModules.push(code);
+        }
       }
 
       addMore = await prompts.confirm({
-        message: 'Add another custom module?',
+        message: 'Add another custom source?',
         default: false,
       });
     }
@@ -899,6 +1018,102 @@ class UI {
     }
 
     return selectedModules;
+  }
+
+  /**
+   * Resolve custom sources from --custom-source CLI flag (non-interactive).
+   * Auto-selects all discovered modules from each source.
+   * @param {string} sourcesArg - Comma-separated Git URLs or local paths
+   * @returns {Array} Module codes from all resolved sources
+   */
+  async _resolveCustomSourcesCli(sourcesArg) {
+    const { CustomModuleManager } = require('./modules/custom-module-manager');
+    const customMgr = new CustomModuleManager();
+    const allCodes = [];
+
+    const sources = sourcesArg
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean);
+
+    for (const source of sources) {
+      const s = await prompts.spinner();
+      s.start(`Resolving ${source}...`);
+
+      let sourceResult;
+      try {
+        sourceResult = await customMgr.resolveSource(source, { skipInstall: true, silent: true });
+        s.stop(sourceResult.parsed.type === 'local' ? 'Local source resolved' : 'Repository cloned');
+      } catch (error) {
+        s.error(`Failed to resolve ${source}`);
+        await prompts.log.error(`  ${error.message}`);
+        continue;
+      }
+
+      const s2 = await prompts.spinner();
+      s2.start('Analyzing plugin structure...');
+      const allResolved = [];
+      const localPath = sourceResult.parsed.type === 'local' ? sourceResult.rootDir : null;
+
+      if (sourceResult.mode === 'discovery') {
+        try {
+          const plugins = await customMgr.discoverModules(sourceResult.marketplace, sourceResult.sourceUrl);
+          const effectiveRepoPath = sourceResult.repoPath || sourceResult.rootDir;
+          for (const plugin of plugins) {
+            try {
+              const resolved = await customMgr.resolvePlugin(effectiveRepoPath, plugin.rawPlugin, sourceResult.sourceUrl, localPath);
+              if (resolved.length > 0) {
+                allResolved.push(...resolved);
+              }
+            } catch {
+              // Skip unresolvable plugins
+            }
+          }
+        } catch (discoverError) {
+          s2.error('Failed to discover modules');
+          await prompts.log.error(`  ${discoverError.message}`);
+          continue;
+        }
+      } else {
+        // Direct mode: scan for SKILL.md directories
+        const directPlugin = {
+          name: sourceResult.parsed.displayName || path.basename(sourceResult.rootDir),
+          source: '.',
+          skills: [],
+        };
+        try {
+          const entries = await fs.readdir(sourceResult.rootDir, { withFileTypes: true });
+          for (const entry of entries) {
+            if (entry.isDirectory()) {
+              const skillMd = path.join(sourceResult.rootDir, entry.name, 'SKILL.md');
+              if (await fs.pathExists(skillMd)) {
+                directPlugin.skills.push(entry.name);
+              }
+            }
+          }
+        } catch {
+          // Skip unreadable directories
+        }
+
+        if (directPlugin.skills.length > 0) {
+          try {
+            const resolved = await customMgr.resolvePlugin(sourceResult.rootDir, directPlugin, sourceResult.sourceUrl, localPath);
+            allResolved.push(...resolved);
+          } catch {
+            // Skip unresolvable
+          }
+        }
+      }
+      s2.stop(`Found ${allResolved.length} module${allResolved.length === 1 ? '' : 's'}`);
+
+      for (const mod of allResolved) {
+        allCodes.push(mod.code);
+        const versionStr = mod.version ? ` v${mod.version}` : '';
+        await prompts.log.info(`  Custom module: ${mod.name}${versionStr}`);
+      }
+    }
+
+    return allCodes;
   }
 
   /**

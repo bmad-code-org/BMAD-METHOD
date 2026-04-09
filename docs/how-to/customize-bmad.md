@@ -1,8 +1,8 @@
 ---
-title: "How to Customize BMad"
+title: 'How to Customize BMad'
 description: Customize agents, workflows, and modules while preserving update compatibility
 sidebar:
-  order: 7
+  order: 8
 ---
 
 Use the `.customize.yaml` files to tailor agent behavior, personas, and menus while preserving your changes across updates.
@@ -15,9 +15,10 @@ Use the `.customize.yaml` files to tailor agent behavior, personas, and menus wh
 - You want agents to perform specific actions every time they start up
 
 :::note[Prerequisites]
+
 - BMad installed in your project (see [How to Install BMad](./install-bmad.md))
 - A text editor for YAML files
-:::
+  :::
 
 :::caution[Keep Your Customizations Safe]
 Always use the `.customize.yaml` files described here rather than editing agent files directly. The installer overwrites agent files during updates, but preserves your `.customize.yaml` changes.
@@ -136,10 +137,10 @@ npx bmad-method install
 
 The installer detects the existing installation and offers these options:
 
-| Option                       | What It Does                                                        |
-| ---------------------------- | ------------------------------------------------------------------- |
+| Option                       | What It Does                                                         |
+| ---------------------------- | -------------------------------------------------------------------- |
 | **Quick Update**             | Updates all modules to the latest version and applies customizations |
-| **Modify BMad Installation** | Full installation flow for adding or removing modules               |
+| **Modify BMad Installation** | Full installation flow for adding or removing modules                |
 
 For customization-only changes, **Quick Update** is the fastest option.
 
