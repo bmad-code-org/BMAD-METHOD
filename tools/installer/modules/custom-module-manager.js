@@ -291,6 +291,8 @@ class CustomModuleManager {
 
     // Search through all custom repo caches
     try {
+      const { PluginResolver } = require('./plugin-resolver');
+      const resolver = new PluginResolver();
       const owners = await fs.readdir(cacheDir, { withFileTypes: true });
       for (const ownerEntry of owners) {
         if (!ownerEntry.isDirectory()) continue;
@@ -306,12 +308,35 @@ class CustomModuleManager {
             try {
               const data = JSON.parse(await fs.readFile(marketplacePath, 'utf8'));
               for (const plugin of data.plugins || []) {
+                // Direct name match (legacy behavior)
                 if (plugin.name === moduleCode) {
-                  // Found the module - find its source
                   const sourcePath = plugin.source ? path.join(repoPath, plugin.source) : repoPath;
                   const moduleYaml = path.join(sourcePath, 'module.yaml');
                   if (await fs.pathExists(moduleYaml)) {
                     return sourcePath;
+                  }
+                }
+
+                // Resolve plugin to check if any module.yaml code matches
+                if (plugin.skills && plugin.skills.length > 0) {
+                  try {
+                    const resolved = await resolver.resolve(repoPath, plugin);
+                    for (const mod of resolved) {
+                      if (mod.code === moduleCode) {
+                        // Derive repo URL from cache path for manifest tracking
+                        const repoUrl = `https://github.com/${ownerEntry.name}/${repoEntry.name}`;
+                        mod.repoUrl = repoUrl;
+                        CustomModuleManager._resolutionCache.set(mod.code, mod);
+                        if (mod.moduleYamlPath) {
+                          return path.dirname(mod.moduleYamlPath);
+                        }
+                        if (mod.skillPaths && mod.skillPaths.length > 0) {
+                          return path.dirname(mod.skillPaths[0]);
+                        }
+                      }
+                    }
+                  } catch {
+                    // Skip unresolvable plugins
                   }
                 }
               }
