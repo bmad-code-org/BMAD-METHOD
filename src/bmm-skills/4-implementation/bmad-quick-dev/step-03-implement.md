@@ -24,20 +24,7 @@ Capture `baseline_commit` (current HEAD, or `NO_VCS` if version control is unava
 
 Change `{spec_file}` status to `in-progress` in the frontmatter before starting implementation.
 
-#### Sync sprint status
-
-Skip this subsection if `{story_key}` is unset (the intent is not an epic story, or `step-01` could not resolve a sprint-status entry) or if `{sprint_status}` does not exist on disk.
-
-Otherwise:
-
-1. Load the FULL `{sprint_status}` file.
-2. Find the `development_status` entry matching `{story_key}`. If not found, warn the user once (`"{story_key} not found in sprint-status; skipping sprint sync"`) and skip the remaining sub-steps.
-3. Derive the parent epic key as `epic-{N}` where `{N}` is the leading numeric segment of `{story_key}` (e.g., `3-2-digest-delivery` → `epic-3`).
-4. **Idempotency check.** If `development_status[{story_key}]` is already `in-progress` AND the parent epic entry is already `in-progress` or `done` (or missing), skip the remaining sub-steps — no write needed. This prevents step-04 loopbacks from clobbering human edits and from bumping `last_updated` without cause.
-5. Set `development_status[{story_key}]` to `in-progress`.
-6. If the parent epic entry exists and its current value is `backlog`, set it to `in-progress`. Leave it alone otherwise.
-7. Refresh `last_updated` to the current date.
-8. Save the file, preserving ALL comments and structure including STATUS DEFINITIONS and WORKFLOW NOTES.
+Follow `./sync-sprint-status.md` with `{target_status}` = `in-progress`.
 
 If `{spec_file}` has a non-empty `context:` list in its frontmatter, load those files before implementation begins. When handing to a sub-agent, include them in the sub-agent prompt so it has access to the referenced context.
 

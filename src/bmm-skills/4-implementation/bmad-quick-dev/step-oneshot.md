@@ -13,18 +13,7 @@ deferred_work_file: '{implementation_artifacts}/deferred-work.md'
 
 ### Implement
 
-#### Sync sprint status (start)
-
-Skip if `{story_key}` is unset or `{sprint_status}` does not exist on disk. Otherwise:
-
-1. Load the FULL `{sprint_status}` file.
-2. Find the `development_status` entry matching `{story_key}`. If not found, warn once and skip.
-3. Derive the parent epic key as `epic-{N}` from the leading numeric segment of `{story_key}`.
-4. **Idempotency check.** If `development_status[{story_key}]` is already `in-progress` AND the parent epic is already `in-progress` or `done` (or missing), skip — no write needed.
-5. Set `development_status[{story_key}]` to `in-progress`.
-6. If the parent epic entry exists and is `backlog`, set it to `in-progress`. Leave it alone otherwise.
-7. Refresh `last_updated` to the current date.
-8. Save the file, preserving ALL comments and structure including STATUS DEFINITIONS and WORKFLOW NOTES.
+Follow `./sync-sprint-status.md` with `{target_status}` = `in-progress`.
 
 Implement the clarified intent directly.
 
@@ -52,16 +41,7 @@ Write `{spec_file}` using `./spec-template.md`. Fill only these sections — del
 2. **Title and Intent** — `# {title}` heading and `## Intent` with **Problem** and **Approach** lines. Reuse the summary you already generated for the terminal.
 3. **Suggested Review Order** — append after Intent. Build using the same convention as `./step-05-present.md` § "Generate Suggested Review Order" (spec-file-relative links, concern-based ordering, ultra-concise framing).
 
-### Sync sprint status (end)
-
-Skip if `{story_key}` is unset or `{sprint_status}` does not exist on disk. Otherwise:
-
-1. Load the FULL `{sprint_status}` file.
-2. Find the `development_status` entry matching `{story_key}`. If not found, warn once and skip.
-3. **Idempotency check.** If `development_status[{story_key}]` is already `review` (or `done`), skip — do not regress.
-4. Set `development_status[{story_key}]` to `review`. Do not touch the parent epic entry.
-5. Refresh `last_updated` to the current date.
-6. Save the file, preserving ALL comments and structure including STATUS DEFINITIONS and WORKFLOW NOTES.
+Follow `./sync-sprint-status.md` with `{target_status}` = `review`.
 
 ### Commit
 

@@ -52,18 +52,7 @@ When there is only one concern, omit the bold label — just list the stops dire
 
 Change `{spec_file}` status to `done` in the frontmatter.
 
-### Sync sprint status
-
-Skip this section if `{story_key}` is unset or `{sprint_status}` does not exist on disk.
-
-Otherwise:
-
-1. Load the FULL `{sprint_status}` file.
-2. Find the `development_status` entry matching `{story_key}`. If not found, warn the user once (`"{story_key} not found in sprint-status; skipping sprint sync"`) and skip the remaining sub-steps.
-3. **Idempotency check.** If `development_status[{story_key}]` is already `review` (or `done`), skip the remaining sub-steps — no write needed. Do not regress a `done` story back to `review`.
-4. Set `development_status[{story_key}]` to `review`. Do not touch the parent epic entry — code-review owns the `review → done` transition and will decide whether the epic itself is done.
-5. Refresh `last_updated` to the current date.
-6. Save the file, preserving ALL comments and structure including STATUS DEFINITIONS and WORKFLOW NOTES.
+Follow `./sync-sprint-status.md` with `{target_status}` = `review`.
 
 ### Commit and Open
 
