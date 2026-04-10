@@ -9,7 +9,7 @@ Fáze analýzy (fáze 1) vám pomůže jasně promyslet váš produkt, než se z
 
 ## Proč analýza před plánováním?
 
-PRD odpovídá na otázku „co bychom měli vybudovat a proč?". Když do něj vložíte vágní úvahy, dostanete vágní PRD — a každý následující dokument tu vágnost zdědí. Architektura postavená na slabém PRD udělá špatné technické sázky. Stories odvozené ze slabé architektury minou hraniční případy. Náklady se vrší.
+PRD odpovídá na otázku „co bychom měli vybudovat a proč?“. Když do něj vložíte vágní úvahy, dostanete vágní PRD — a každý následující dokument tu vágnost zdědí. Architektura postavená na slabém PRD udělá špatné technické sázky. Stories odvozené ze slabé architektury minou hraniční případy. Náklady se vrší.
 
 Analytické nástroje existují proto, aby váš PRD byl ostrý. Útočí na problém z různých úhlů — kreativní průzkum, realita trhu, jasnost ohledně zákazníka, proveditelnost — takže když si sednete s PM agentem, víte, co stavíte a pro koho.
 
@@ -53,11 +53,11 @@ Viz [Brainstorming](./brainstorming.md) pro podrobnější pohled na průběh se
 
 | Situace | Doporučený nástroj |
 | --------- | ------------------ |
-| „Mám vágní nápad, nevím kde začít" | Brainstorming |
-| „Potřebuji pochopit trh, než se rozhodnu" | Výzkum |
-| „Vím, co chci vybudovat, jen to potřebuji zdokumentovat" | Product Brief |
-| „Chci se ujistit, že tento nápad skutečně stojí za budování" | PRFAQ |
-| „Chci prozkoumat, pak ověřit, pak zdokumentovat" | Brainstorming → Výzkum → PRFAQ nebo Brief |
+| „Mám vágní nápad, nevím kde začít“ | Brainstorming |
+| „Potřebuji pochopit trh, než se rozhodnu“ | Výzkum |
+| „Vím, co chci vybudovat, jen to potřebuji zdokumentovat“ | Product Brief |
+| „Chci se ujistit, že tento nápad skutečně stojí za budování“ | PRFAQ |
+| „Chci prozkoumat, pak ověřit, pak zdokumentovat“ | Brainstorming → Výzkum → PRFAQ nebo Brief |
 
 Product Brief a PRFAQ oba vytvářejí vstup pro PRD — vyberte si podle toho, jak velkou výzvu chcete. Brief je kolaborativní discovery. PRFAQ je náročný zátěžový test. Oba vás dovedou ke stejnému cíli; PRFAQ testuje, zda si váš koncept zaslouží tam dojít.
 
