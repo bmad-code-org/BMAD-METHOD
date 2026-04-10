@@ -21,7 +21,7 @@ Before listing artifacts or prompting the user, check whether you already know t
 
 1. Explicit argument
    Did the user pass a specific file path, spec name, or clear instruction this message?
-   - If it points to a file that matches the spec template (has `status` frontmatter with a recognized value: draft, ready-for-dev, in-progress, in-review, or done) → set `spec_file` and **EARLY EXIT** to the appropriate step (step-02 for draft, step-03 for ready/in-progress, step-04 for review). For `done`, ingest as context and proceed to INSTRUCTIONS — do not resume.
+   - If it points to a file that matches the spec template (has `status` frontmatter with a recognized value: draft, ready-for-dev, in-progress, in-review, or done) → set `spec_file`. Before exiting, run **Story-key resolution** (below). Then **EARLY EXIT** to the appropriate step (step-02 for draft, step-03 for ready/in-progress, step-04 for review). For `done`, ingest as context and proceed to INSTRUCTIONS — do not resume.
    - Anything else (intent files, external docs, plans, descriptions) → ingest it as starting intent and proceed to INSTRUCTIONS. Do not attempt to infer a workflow state from it.
 
 2. Recent conversation
@@ -30,12 +30,18 @@ Before listing artifacts or prompting the user, check whether you already know t
 
 3. Otherwise — scan artifacts and ask
    - Active specs (`draft`, `ready-for-dev`, `in-progress`, `in-review`) in `{implementation_artifacts}`? → List them and HALT. Ask user which to resume (or `[N]` for new).
-     - If `draft` selected: Set `spec_file`. **EARLY EXIT** → `./step-02-plan.md` (resume planning from the draft)
-     - If `ready-for-dev` or `in-progress` selected: Set `spec_file`. **EARLY EXIT** → `./step-03-implement.md`
-     - If `in-review` selected: Set `spec_file`. **EARLY EXIT** → `./step-04-review.md`
+     - If `draft` selected: Set `spec_file`. Run **Story-key resolution** (below). **EARLY EXIT** → `./step-02-plan.md` (resume planning from the draft)
+     - If `ready-for-dev` or `in-progress` selected: Set `spec_file`. Run **Story-key resolution** (below). **EARLY EXIT** → `./step-03-implement.md`
+     - If `in-review` selected: Set `spec_file`. Run **Story-key resolution** (below). **EARLY EXIT** → `./step-04-review.md`
    - Unformatted spec or intent file lacking `status` frontmatter? → Suggest treating its contents as the starting intent. Do NOT attempt to infer a state and resume it.
 
 Never ask extra questions if you already understand what the user intends.
+
+### Story-key resolution
+
+This runs on ALL paths (early-exit and INSTRUCTIONS) whenever `spec_file` is set. Determine whether the spec is an epic story — use the spec's filename, frontmatter, and any loaded epics file to identify `{epic_num}` and `{story_num}`. If the spec is not an epic story, skip silently and leave `{story_key}` unset.
+
+If the spec is an epic story and `{sprint_status}` exists: load it, walk every key in `development_status`, split each key on `-`, and collect matches where the first two segments parse as integers equal to `{epic_num}` and `{story_num}` (exact numeric equality — never string-prefix match, so `1-1` does not collide with `1-10`). Exactly one match → set `{story_key}` to that full key (e.g., `3-2-digest-delivery`). Zero matches or file missing → leave `{story_key}` unset (silent). Multiple matches → warn the user once (`"sprint-status lookup for {epic_num}-{story_num} is ambiguous; skipping sprint sync"`) and leave `{story_key}` unset.
 
 ## INSTRUCTIONS
 
@@ -60,7 +66,7 @@ Never ask extra questions if you already understand what the user intends.
 
      5. **Previous story continuity.** Regardless of which context source succeeded above, scan `{implementation_artifacts}` for specs from the same epic with `status: done` and a lower story number. Load the most recent one (highest story number below current). Extract its **Code Map**, **Design Notes**, **Spec Change Log**, and **task list** as continuity context for step-02 planning. If no `done` spec is found but an `in-review` spec exists for the same epic with a lower story number, note it to the user and ask whether to load it.
 
-     6. **Resolve `{story_key}` for sprint-status sync.** This runs for every epic story, independent of whether continuity context was found above. If `{sprint_status}` exists, load it, then walk every key in `development_status`, split each key on `-`, and collect matches where the first two segments parse as integers equal to `{epic_num}` and `{story_num}` (exact numeric equality — never string-prefix match, so `1-1` does not collide with `1-10`). Exactly one match → set `{story_key}` to that full key (e.g., `3-2-digest-delivery`). Zero matches or file missing → leave `{story_key}` unset (silent). Multiple matches → warn the user once (`"sprint-status lookup for {epic_num}-{story_num} is ambiguous; skipping sprint sync"`) and leave `{story_key}` unset.
+     6. **Resolve `{story_key}`.** If not already set by an earlier early-exit path, run **Story-key resolution** (above) now.
 
      **B) Freeform path** — if the intent is not an epic story:
      - Planning artifacts are the output of BMAD phases 1-3. Typical files include:
