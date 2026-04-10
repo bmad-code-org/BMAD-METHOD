@@ -2,7 +2,7 @@
 title: "Revue Contradictoire"
 description: Technique de raisonnement forcée qui empêche les revues paresseuses du style "ça à l'air bon"
 sidebar:
-  order: 5
+  order: 7
 ---
 
 Forcez une analyse plus approfondie en exigeant que des problèmes soient trouvés.
