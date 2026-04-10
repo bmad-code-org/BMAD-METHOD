@@ -24,6 +24,8 @@ Capture `baseline_commit` (current HEAD, or `NO_VCS` if version control is unava
 
 Change `{spec_file}` status to `in-progress` in the frontmatter before starting implementation.
 
+Follow `./sync-sprint-status.md` with `{target_status}` = `in-progress`.
+
 If `{spec_file}` has a non-empty `context:` list in its frontmatter, load those files before implementation begins. When handing to a sub-agent, include them in the sub-agent prompt so it has access to the referenced context.
 
 Hand `{spec_file}` to a sub-agent/task and let it implement. If no sub-agents are available, implement directly.
