@@ -1,5 +1,5 @@
 ---
-title: "Project Context"
+title: "Bối cảnh dự án"
 description: Cách project-context.md định hướng các agent AI theo quy tắc và ưu tiên của dự án
 sidebar:
   order: 7
