@@ -9,6 +9,7 @@ specLoopIteration: 1
 
 - YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `{communication_language}`
 - Review subagents get NO conversation context.
+- All review subagents must run at the same model capability as the current session.
 
 ## INSTRUCTIONS
 
