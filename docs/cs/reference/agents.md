@@ -17,7 +17,7 @@ Tato stránka uvádí výchozí BMM (Agile suite) agenty, kteří se instalují 
 
 | Agent                       | Skill ID             | Spouštěče                                    | Primární workflow                                                                                   |
 | --------------------------- | -------------------- | -------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| Analyst (Mary)              | `bmad-analyst`       | `BP`, `RS`, `CB`, `WB`, `DP`                 | Brainstorm projektu, výzkum, tvorba briefu, PRFAQ výzva, dokumentace projektu                       |
+| Analyst (Mary)              | `bmad-analyst`       | `BP`, `MR`, `DR`, `TR`, `CB`, `WB`, `DP`     | Brainstorm, průzkum trhu, doménový výzkum, technický výzkum, tvorba briefu, PRFAQ výzva, dokumentace projektu |
 | Product Manager (John)      | `bmad-pm`            | `CP`, `VP`, `EP`, `CE`, `IR`, `CC`           | Tvorba/validace/editace PRD, tvorba epiců a stories, připravenost implementace, korekce kurzu       |
 | Architect (Winston)         | `bmad-architect`     | `CA`, `IR`                                    | Tvorba architektury, připravenost implementace                                                      |
 | Developer (Amelia)          | `bmad-agent-dev`     | `DS`, `QD`, `QA`, `CR`, `SP`, `CS`, `ER`     | Dev story, Quick Dev, generování QA testů, revize kódu, plánování sprintu, tvorba story, retrospektiva epicu |
