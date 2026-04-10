@@ -17,7 +17,7 @@ Existují analytické nástroje, které vám PRD zostří. Napadají problém z 
 
 ### Brainstorming
 
-**Co to je.** Zprostředkované tvůrčí sezení s využitím osvědčených technik idealizace. UI funguje jako kouč, který z vás tahá nápady prostřednictvím strukturovaných cvičení — negeneruje nápady za vás.
+**Co to je.** Zprostředkované tvůrčí sezení s využitím osvědčených technik generování nápadů. AI funguje jako kouč, který z vás tahá nápady prostřednictvím strukturovaných cvičení — negeneruje nápady za vás.
 
 **Proč je to tady.** Neotřelé nápady potřebují prostor pro rozvoj, než se zakotví v požadavcích. Brainstorming tento prostor vytváří. Je cenný zejména tehdy, když máte problémovou oblast, ale nemáte jasné řešení, nebo když chcete prozkoumat více směrů, než se k něčemu zavážete.
 
@@ -35,7 +35,7 @@ Viz [Brainstorming](./brainstorming.md), kde se dozvíte, jak relace fungují.
 
 ### Product Brief
 
-**Co to je.** Řízené zjišťovací sezení, jehož výsledkem je 1–2stránkové shrnutí vašeho konceptu produktu. UI funguje jako spolupracující obchodní analytik, který vám pomůže formulovat vizi, cílovou skupinu, nabídku hodnoty a rozsah.
+**Co to je.** Řízené zjišťovací sezení, jehož výsledkem je 1–2stránkové shrnutí vašeho konceptu produktu. AI funguje jako spolupracující obchodní analytik, který vám pomůže formulovat vizi, cílovou skupinu, nabídku hodnoty a rozsah.
 
 **Proč tu je.** Produktový brief je jemnější cestou k plánování. Zachycuje vaši strategickou vizi ve strukturovaném formátu, který se přímo promítá do tvorby PRD. Nejlépe funguje, když jste již o svém konceptu přesvědčeni — znáte zákazníka, problém a zhruba víte, co chcete vytvořit. Brief tyto úvahy uspořádá a vyostří.
 
