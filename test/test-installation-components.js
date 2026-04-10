@@ -1728,36 +1728,6 @@ async function runTests() {
   // ============================================================
   console.log(`${colors.yellow}Test Suite 33: Community & Custom Module Managers${colors.reset}\n`);
 
-  // --- CustomModuleManager.validateGitHubUrl ---
-  {
-    const { CustomModuleManager } = require('../tools/installer/modules/custom-module-manager');
-    const mgr = new CustomModuleManager();
-
-    const https1 = mgr.validateGitHubUrl('https://github.com/owner/repo');
-    assert(https1.isValid === true, 'validateGitHubUrl accepts HTTPS URL');
-    assert(https1.owner === 'owner' && https1.repo === 'repo', 'validateGitHubUrl extracts owner/repo from HTTPS');
-
-    const https2 = mgr.validateGitHubUrl('https://github.com/owner/repo.git');
-    assert(https2.isValid === true, 'validateGitHubUrl accepts HTTPS URL with .git');
-    assert(https2.repo === 'repo', 'validateGitHubUrl strips .git suffix');
-
-    const ssh1 = mgr.validateGitHubUrl('git@github.com:owner/repo.git');
-    assert(ssh1.isValid === true, 'validateGitHubUrl accepts SSH URL');
-    assert(ssh1.owner === 'owner' && ssh1.repo === 'repo', 'validateGitHubUrl extracts owner/repo from SSH');
-
-    const bad1 = mgr.validateGitHubUrl('https://gitlab.com/owner/repo');
-    assert(bad1.isValid === false, 'validateGitHubUrl rejects non-GitHub URL');
-
-    const bad2 = mgr.validateGitHubUrl('');
-    assert(bad2.isValid === false, 'validateGitHubUrl rejects empty string');
-
-    const bad3 = mgr.validateGitHubUrl(null);
-    assert(bad3.isValid === false, 'validateGitHubUrl rejects null');
-
-    const bad4 = mgr.validateGitHubUrl('https://github.com/owner');
-    assert(bad4.isValid === false, 'validateGitHubUrl rejects URL without repo');
-  }
-
   // --- CustomModuleManager._normalizeCustomModule ---
   {
     const { CustomModuleManager } = require('../tools/installer/modules/custom-module-manager');
@@ -1952,25 +1922,6 @@ async function runTests() {
 
     const notFound = await mgr.getModuleByCode('xyz');
     assert(notFound === null, 'getModuleByCode returns null for unknown code');
-  }
-
-  // --- CustomModuleManager URL edge cases ---
-  {
-    const { CustomModuleManager } = require('../tools/installer/modules/custom-module-manager');
-    const mgr = new CustomModuleManager();
-
-    // HTTP (not HTTPS) should work
-    const http = mgr.validateGitHubUrl('http://github.com/owner/repo');
-    assert(http.isValid === true, 'validateGitHubUrl accepts HTTP URL');
-
-    // Trailing slash should be rejected (strict matching)
-    const trailing = mgr.validateGitHubUrl('https://github.com/owner/repo/');
-    assert(trailing.isValid === false, 'validateGitHubUrl rejects trailing slash');
-
-    // SSH without .git should work
-    const sshNoDotGit = mgr.validateGitHubUrl('git@github.com:owner/repo');
-    assert(sshNoDotGit.isValid === true, 'validateGitHubUrl accepts SSH without .git');
-    assert(sshNoDotGit.repo === 'repo', 'validateGitHubUrl extracts repo from SSH without .git');
   }
 
   console.log('');

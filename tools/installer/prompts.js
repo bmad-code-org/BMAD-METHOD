@@ -499,26 +499,6 @@ async function password(options) {
 }
 
 /**
- * Group multiple prompts together
- * @param {Object} prompts - Object of prompt functions
- * @param {Object} [options] - Group options
- * @returns {Promise<Object>} Object with all answers
- */
-async function group(prompts, options = {}) {
-  const clack = await getClack();
-
-  const result = await clack.group(prompts, {
-    onCancel: () => {
-      clack.cancel('Operation cancelled');
-      process.exit(0);
-    },
-    ...options,
-  });
-
-  return result;
-}
-
-/**
  * Run tasks with spinner feedback
  * @param {Array} tasks - Array of task objects [{title, task, enabled?}]
  * @returns {Promise<void>}
@@ -579,42 +559,6 @@ async function box(content, title, options) {
 }
 
 /**
- * Create a progress bar for visualizing task completion
- * @param {Object} [options] - Progress options (max, style, etc.)
- * @returns {Promise<Object>} Progress controller with start, advance, stop methods
- */
-async function progress(options) {
-  const clack = await getClack();
-  return clack.progress(options);
-}
-
-/**
- * Create a task log for displaying scrolling subprocess output
- * @param {Object} options - TaskLog options (title, limit, retainLog)
- * @returns {Promise<Object>} TaskLog controller with message, success, error methods
- */
-async function taskLog(options) {
-  const clack = await getClack();
-  return clack.taskLog(options);
-}
-
-/**
- * File system path prompt with autocomplete
- * @param {Object} options - Path options
- * @param {string} options.message - The prompt message
- * @param {string} [options.initialValue] - Initial path value
- * @param {boolean} [options.directory=false] - Only allow directories
- * @param {Function} [options.validate] - Validation function
- * @returns {Promise<string>} Selected path
- */
-async function pathPrompt(options) {
-  const clack = await getClack();
-  const result = await clack.path(options);
-  await handleCancel(result);
-  return result;
-}
-
-/**
  * Autocomplete single-select prompt with type-ahead filtering
  * @param {Object} options - Autocomplete options
  * @param {string} options.message - The prompt message
@@ -630,50 +574,6 @@ async function autocomplete(options) {
   await handleCancel(result);
   return result;
 }
-
-/**
- * Key-based instant selection prompt
- * @param {Object} options - SelectKey options
- * @param {string} options.message - The prompt message
- * @param {Array} options.options - Array of choices [{value, label, hint?}]
- * @returns {Promise<any>} Selected value
- */
-async function selectKey(options) {
-  const clack = await getClack();
-  const result = await clack.selectKey(options);
-  await handleCancel(result);
-  return result;
-}
-
-/**
- * Stream messages with dynamic content (for LLMs, generators, etc.)
- */
-const stream = {
-  async info(generator) {
-    const clack = await getClack();
-    return clack.stream.info(generator);
-  },
-  async success(generator) {
-    const clack = await getClack();
-    return clack.stream.success(generator);
-  },
-  async step(generator) {
-    const clack = await getClack();
-    return clack.stream.step(generator);
-  },
-  async warn(generator) {
-    const clack = await getClack();
-    return clack.stream.warn(generator);
-  },
-  async error(generator) {
-    const clack = await getClack();
-    return clack.stream.error(generator);
-  },
-  async message(generator, options) {
-    const clack = await getClack();
-    return clack.stream.message(generator, options);
-  },
-};
 
 /**
  * Get the color utility (picocolors instance from @clack/prompts)
@@ -790,20 +690,14 @@ module.exports = {
   note,
   box,
   spinner,
-  progress,
-  taskLog,
   select,
   multiselect,
   autocompleteMultiselect,
   autocomplete,
-  selectKey,
   confirm,
   text,
-  path: pathPrompt,
   password,
-  group,
   tasks,
   log,
-  stream,
   prompt,
 };

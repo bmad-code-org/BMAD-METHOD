@@ -15,8 +15,6 @@
  * - standalone/agents/fred.md → bmad-agent-standalone-fred.md
  */
 
-// Type segments - agents are included in naming, others are filtered out
-const TYPE_SEGMENTS = ['workflows', 'tasks', 'tools'];
 const AGENT_SEGMENT = 'agents';
 
 // BMAD installation folder name - centralized constant for all installers
@@ -194,125 +192,6 @@ function parseDashName(filename) {
   };
 }
 
-// ============================================================================
-// LEGACY FUNCTIONS (underscore format) - kept for backward compatibility
-// ============================================================================
-
-/**
- * Convert hierarchical path to flat underscore-separated name (LEGACY)
- * @deprecated Use toDashName instead
- */
-function toUnderscoreName(module, type, name) {
-  const isAgent = type === AGENT_SEGMENT;
-  if (module === 'core') {
-    return isAgent ? `bmad_agent_${name}.md` : `bmad_${name}.md`;
-  }
-  if (module === 'standalone') {
-    return isAgent ? `bmad_agent_standalone_${name}.md` : `bmad_standalone_${name}.md`;
-  }
-  return isAgent ? `bmad_${module}_agent_${name}.md` : `bmad_${module}_${name}.md`;
-}
-
-/**
- * Convert relative path to flat underscore-separated name (LEGACY)
- * @deprecated Use toDashPath instead
- */
-function toUnderscorePath(relativePath) {
-  // Strip common file extensions (same as toDashPath for consistency)
-  const withoutExt = relativePath.replace(/\.(md|yaml|yml|json|xml|toml)$/i, '');
-  const parts = withoutExt.split(/[/\\]/);
-
-  const module = parts[0];
-  const type = parts[1];
-  const name = parts.slice(2).join('_');
-
-  return toUnderscoreName(module, type, name);
-}
-
-/**
- * Create custom agent underscore name (LEGACY)
- * @deprecated Use customAgentDashName instead
- */
-function customAgentUnderscoreName(agentName) {
-  return `bmad_custom_${agentName}.md`;
-}
-
-/**
- * Check if a filename uses underscore format (LEGACY)
- * @deprecated Use isDashFormat instead
- */
-function isUnderscoreFormat(filename) {
-  return filename.startsWith('bmad_') && filename.includes('_');
-}
-
-/**
- * Extract parts from an underscore-formatted filename (LEGACY)
- * @deprecated Use parseDashName instead
- */
-function parseUnderscoreName(filename) {
-  const withoutExt = filename.replace('.md', '');
-  const parts = withoutExt.split('_');
-
-  if (parts.length < 2 || parts[0] !== 'bmad') {
-    return null;
-  }
-
-  const agentIndex = parts.indexOf('agent');
-
-  if (agentIndex !== -1) {
-    if (agentIndex === 1) {
-      // bmad_agent_... - check for standalone
-      if (parts.length >= 4 && parts[2] === 'standalone') {
-        return {
-          prefix: parts[0],
-          module: 'standalone',
-          type: 'agents',
-          name: parts.slice(3).join('_'),
-        };
-      }
-      return {
-        prefix: parts[0],
-        module: 'core',
-        type: 'agents',
-        name: parts.slice(agentIndex + 1).join('_'),
-      };
-    } else {
-      return {
-        prefix: parts[0],
-        module: parts[1],
-        type: 'agents',
-        name: parts.slice(agentIndex + 1).join('_'),
-      };
-    }
-  }
-
-  if (parts.length === 2) {
-    return {
-      prefix: parts[0],
-      module: 'core',
-      type: 'workflows',
-      name: parts[1],
-    };
-  }
-
-  // Check for standalone non-agent: bmad_standalone_name
-  if (parts[1] === 'standalone') {
-    return {
-      prefix: parts[0],
-      module: 'standalone',
-      type: 'workflows',
-      name: parts.slice(2).join('_'),
-    };
-  }
-
-  return {
-    prefix: parts[0],
-    module: parts[1],
-    type: 'workflows',
-    name: parts.slice(2).join('_'),
-  };
-}
-
 /**
  * Resolve the skill name for an artifact.
  * Prefers canonicalId from a bmad-skill-manifest.yaml sidecar when available,
@@ -328,37 +207,13 @@ function resolveSkillName(artifact) {
   return toDashPath(artifact.relativePath);
 }
 
-// Backward compatibility aliases (colon format was same as underscore)
-const toColonName = toUnderscoreName;
-const toColonPath = toUnderscorePath;
-const customAgentColonName = customAgentUnderscoreName;
-const isColonFormat = isUnderscoreFormat;
-const parseColonName = parseUnderscoreName;
-
 module.exports = {
-  // New standard (dash-based)
   toDashName,
   toDashPath,
   resolveSkillName,
   customAgentDashName,
   isDashFormat,
   parseDashName,
-
-  // Legacy (underscore-based) - kept for backward compatibility
-  toUnderscoreName,
-  toUnderscorePath,
-  customAgentUnderscoreName,
-  isUnderscoreFormat,
-  parseUnderscoreName,
-
-  // Backward compatibility aliases
-  toColonName,
-  toColonPath,
-  customAgentColonName,
-  isColonFormat,
-  parseColonName,
-
-  TYPE_SEGMENTS,
   AGENT_SEGMENT,
   BMAD_FOLDER_NAME,
 };

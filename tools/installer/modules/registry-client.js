@@ -50,17 +50,6 @@ class RegistryClient {
     const content = await this.fetch(url, timeout);
     return yaml.parse(content);
   }
-
-  /**
-   * Fetch a URL and parse the response as JSON.
-   * @param {string} url - URL to fetch
-   * @param {number} [timeout] - Timeout in ms
-   * @returns {Promise<Object>} Parsed JSON content
-   */
-  async fetchJson(url, timeout) {
-    const content = await this.fetch(url, timeout);
-    return JSON.parse(content);
-  }
 }
 
 module.exports = { RegistryClient };
