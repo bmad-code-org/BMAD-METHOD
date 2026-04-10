@@ -5,66 +5,66 @@ sidebar:
   order: 1
 ---
 
-Fáze analýzy (fáze 1) vám pomůže jasně promyslet váš produkt, než se zavážete k jeho budování. Každý nástroj v této fázi je volitelný, ale pokud analýzu úplně vynecháte, váš PRD bude postavený na domněnkách místo na poznatcích.
+Fáze analýzy (fáze 1) vám pomůže jasně si promyslet váš produkt, než se pustíte do jeho tvorby. Každý nástroj v této fázi je volitelný, ale úplné vynechání analýzy znamená, že váš PRD je postaven na předpokladech namísto vhledu.
 
 ## Proč analýza před plánováním?
 
-PRD odpovídá na otázku „co bychom měli vybudovat a proč?“. Když do něj vložíte vágní úvahy, dostanete vágní PRD — a každý následující dokument tu vágnost zdědí. Architektura postavená na slabém PRD udělá špatné technické sázky. Stories odvozené ze slabé architektury minou hraniční případy. Náklady se vrší.
+PRD odpovídá na otázku „Co bychom měli postavit a proč?“. Pokud jej nakrmíte vágním myšlením, získáte vágní PRD — a každý navazující dokument tuto vágnost zdědí. Architektura postavená na slabém PRD sází na špatnou techniku. Příběhy odvozené ze slabé architektury opomíjejí okrajové případy. Náklady se zvyšují.
 
-Analytické nástroje existují proto, aby váš PRD byl ostrý. Útočí na problém z různých úhlů — kreativní průzkum, realita trhu, jasnost ohledně zákazníka, proveditelnost — takže když si sednete s PM agentem, víte, co stavíte a pro koho.
+Existují analytické nástroje, které vám PRD zostří. Napadají problém z různých úhlů — kreativní průzkum, realita trhu, jasnost zákazníka, proveditelnost — takže v době, kdy sedíte s agentem PM, víte, co a pro koho stavíte.
 
 ## Nástroje
 
 ### Brainstorming
 
-**Co to je.** Facilitované kreativní sezení využívající osvědčené techniky ideace. AI působí jako kouč, který z vás tahá nápady prostřednictvím strukturovaných cvičení — negeneruje nápady za vás.
+**Co to je.** Zprostředkované tvůrčí sezení s využitím osvědčených technik idealizace. UI funguje jako kouč, který z vás tahá nápady prostřednictvím strukturovaných cvičení — negeneruje nápady za vás.
 
-**Proč je tu.** Surové nápady potřebují prostor k rozvoji, než se uzamknou do požadavků. Brainstorming ten prostor vytváří. Je obzvlášť cenný, když máte problémovou doménu, ale žádné jasné řešení, nebo když chcete prozkoumat více směrů, než se zavážete.
+**Proč je to tady.** Neotřelé nápady potřebují prostor pro rozvoj, než se zakotví v požadavcích. Brainstorming tento prostor vytváří. Je cenný zejména tehdy, když máte problémovou oblast, ale nemáte jasné řešení, nebo když chcete prozkoumat více směrů, než se k něčemu zavážete.
 
-**Kdy ho použít.** Máte mlhavou představu o tom, co chcete vybudovat, ale ještě jste ji nevykrystalizovali do konkrétního konceptu. Nebo máte koncept, ale chcete ho otestovat proti alternativám.
+**Kdy jej použít.** Máte nejasnou představu o tom, co chcete vytvořit, ale nemáte vykrystalizovaný koncept. Nebo máte koncept, ale chcete ho otestovat pod tlakem oproti alternativám.
 
-Viz [Brainstorming](./brainstorming.md) pro podrobnější pohled na průběh sezení.
+Viz [Brainstorming](./brainstorming.md), kde se dozvíte, jak relace fungují.
 
-### Výzkum (tržní, doménový, technický)
+### Výzkum (trhu, domény, technický)
 
-**Co to je.** Tři cílené výzkumné workflow zkoumající různé dimenze vašeho nápadu. Tržní výzkum prozkoumá konkurenci, trendy a nálady uživatelů. Doménový výzkum buduje odborné znalosti a terminologii. Technický výzkum hodnotí proveditelnost, architektonické možnosti a přístupy k implementaci.
+**Co to je.** Tři cílené pracovní postupy výzkumu, které zkoumají různé rozměry vašeho nápadu. Výzkum trhu zkoumá konkurenci, trendy a nálady uživatelů. Doménový výzkum vytváří odborné znalosti v daném oboru a terminologii. Technický výzkum hodnotí proveditelnost, možnosti architektury a přístupy k implementaci.
 
-**Proč je tu.** Budovat na domněnkách je nejrychlejší cesta k vytvoření něčeho, co nikdo nepotřebuje. Výzkum uzemní váš koncept v realitě — jací konkurenti už existují, s čím uživatelé skutečně bojují, co je technicky proveditelné a jaká specifická odvětvová omezení vás čekají.
+**Proč je to tady.** Stavět na předpokladech je nejrychlejší způsob, jak vytvořit něco, co nikdo nepotřebuje. Výzkum zakládá váš koncept na realitě — co již existuje u konkurence, s čím uživatelé skutečně bojují, co je technicky proveditelné a jakým omezením specifickým pro dané odvětví budete čelit.
 
-**Kdy ho použít.** Vstupujete do neznámé domény, tušíte, že existují konkurenti, ale ještě jste je nezmapovali, nebo váš koncept závisí na technických schopnostech, které jste dosud neověřili. Spusťte jeden, dva nebo všechny tři — každý stojí samostatně.
+**Kdy ho použít.** Vstupujete do neznámé oblasti, tušíte, že konkurence existuje, ale nemáte ji zmapovanou, nebo váš koncept závisí na technických možnostech, které nemáte ověřené. Proveďte jeden, dva nebo všechny tři — každý z nich je samostatný.
 
 ### Product Brief
 
-**Co to je.** Řízená discovery session, která vytvoří 1–2stránkový executive summary vašeho produktového konceptu. AI působí jako kolaborativní Business Analyst a pomáhá vám formulovat vizi, cílovou skupinu, hodnotovou nabídku a rozsah.
+**Co to je.** Řízené zjišťovací sezení, jehož výsledkem je 1–2stránkové shrnutí vašeho konceptu produktu. UI funguje jako spolupracující obchodní analytik, který vám pomůže formulovat vizi, cílovou skupinu, nabídku hodnoty a rozsah.
 
-**Proč je tu.** Product brief je mírnější cesta do plánování. Zachytí vaši strategickou vizi ve strukturovaném formátu, který přímo vstupuje do tvorby PRD. Funguje nejlépe, když už jste si svým konceptem poměrně jistí — víte, kdo je zákazník, jaký je problém a přibližně co chcete vybudovat. Brief toto myšlení organizuje a zaostří.
+**Proč tu je.** Produktový brief je jemnější cestou k plánování. Zachycuje vaši strategickou vizi ve strukturovaném formátu, který se přímo promítá do tvorby PRD. Nejlépe funguje, když jste již o svém konceptu přesvědčeni — znáte zákazníka, problém a zhruba víte, co chcete vytvořit. Brief tyto úvahy uspořádá a vyostří.
 
-**Kdy ho použít.** Váš koncept je poměrně jasný a chcete ho efektivně zdokumentovat před vytvořením PRD. Jste si jistí směrem a nepotřebujete, aby vaše předpoklady byly agresivně zpochybňovány.
+**Kdy jej použít.** Váš koncept je relativně jasný a chcete jej efektivně zdokumentovat ještě před vytvořením PRD. Jste si jisti svým směřováním a nepotřebujete své předpoklady agresivně zpochybňovat.
 
 ### PRFAQ (Working Backwards)
 
-**Co to je.** Metodologie Working Backwards od Amazonu adaptovaná jako interaktivní výzva. Napíšete tiskovou zprávu oznamující váš hotový produkt dříve, než existuje jediný řádek kódu, a pak odpovíte na nejtěžší otázky, které by zákazníci a stakeholdeři položili. AI působí jako neúnavný, ale konstruktivní produktový kouč.
+**Co to je.** Metodika Working Backwards společnosti Amazon upravená jako interaktivní výzva. Napíšete tiskovou zprávu oznamující váš hotový produkt dříve, než existuje jediný řádek kódu, a pak odpovíte na nejtěžší otázky, které by vám zákazníci a zainteresované strany položili. Umělá inteligence funguje jako neúprosný, ale konstruktivní produktový kouč.
 
-**Proč je tu.** PRFAQ je náročnější cesta do plánování. Vynucuje si jasnost zaměřenou na zákazníka tím, že vás nutí obhájit každé tvrzení. Pokud nedokážete napsat přesvědčivou tiskovou zprávu, produkt není připravený. Pokud odpovědi na FAQ odhalí mezery, jsou to mezery, které byste jinak objevili mnohem později — a mnohem dráž — během implementace. Tato výzva odhalí slabé myšlení brzy, když je oprava nejlevnější.
+**Proč je to tady.** PRFAQ je přísná cesta k plánování. Vynucuje si jasnost v zájmu zákazníka tím, že vás nutí obhájit každé tvrzení. Pokud nedokážete napsat přesvědčivou tiskovou zprávu, produkt není připraven. Pokud odpovědi na časté dotazy zákazníků odhalí nedostatky, jsou to nedostatky, které byste objevili mnohem později — a nákladněji — při implementaci. Hozená rukavice odhalí slabé myšlení v rané fázi, kdy je nejlevnější ho opravit.
 
-**Kdy ho použít.** Chcete svůj koncept podrobit zátěžovému testu, než vynaložíte zdroje. Nejste si jistí, zda to uživatele skutečně bude zajímat. Chcete ověřit, že dokážete formulovat jasnou, obhajitelnou hodnotovou nabídku. Nebo prostě chcete disciplínu Working Backwards k zaostření svého myšlení.
+**Kdy ji použít.** Před vyčleněním zdrojů chcete, aby váš koncept prošel zátěžovým testem. Nejste si jisti, zda to uživatele bude skutečně zajímat. Chcete si ověřit, že dokážete formulovat jasnou a obhajitelnou nabídku hodnoty. Nebo si prostě chcete disciplínou Working Backwards zpřesnit své myšlení.
 
 ## Který nástroj bych měl použít?
 
 | Situace | Doporučený nástroj |
-| --------- | ------------------ |
-| „Mám vágní nápad, nevím kde začít“ | Brainstorming |
-| „Potřebuji pochopit trh, než se rozhodnu“ | Výzkum |
-| „Vím, co chci vybudovat, jen to potřebuji zdokumentovat“ | Product Brief |
-| „Chci se ujistit, že tento nápad skutečně stojí za budování“ | PRFAQ |
-| „Chci prozkoumat, pak ověřit, pak zdokumentovat“ | Brainstorming → Výzkum → PRFAQ nebo Brief |
+| --------- | ---------------- |
+| „Mám nejasný nápad, ale nevím, kde začít“ | Brainstorming |
+| „Než se rozhodnu, potřebuji pochopit trh“ | Výzkum |
+| „Vím, co chci vytvořit, jen to potřebuji zdokumentovat“ | Product Brief |
+| „Chci se ujistit, že tento nápad skutečně stojí za vybudování“ | PRFAQ |
+| „Chci prozkoumat, pak ověřit a pak zdokumentovat“ | Brainstorming → Výzkum → PRFAQ nebo Brief |
 
-Product Brief a PRFAQ oba vytvářejí vstup pro PRD — vyberte si podle toho, jak velkou výzvu chcete. Brief je kolaborativní discovery. PRFAQ je náročný zátěžový test. Oba vás dovedou ke stejnému cíli; PRFAQ testuje, zda si váš koncept zaslouží tam dojít.
+Product Brief i PRFAQ jsou vstupem pro PRD — vyberte si jeden z nich podle toho, jak moc chcete být nároční. Brief je společným objevováním. PRFAQ je hozená rukavice. Obojí vás dovede ke stejnému cíli; PRFAQ testuje, zda si váš koncept zaslouží se tam dostat.
 
-:::tip[Nejste si jistí?]
-Spusťte `bmad-help` a popište svou situaci. Doporučí vám správný výchozí bod na základě toho, co jste už udělali a čeho chcete dosáhnout.
+:::tip[Nejste si jisti?]
+Spusťte `bmad-help` a popište svou situaci. Doporučí vám správný výchozí bod na základě toho, co jste již udělali a čeho se snažíte dosáhnout.
 :::
 
-## Co následuje po analýze?
+## Co se stane po analýze?
 
-Výstupy analýzy přímo vstupují do fáze 2 (plánování). Workflow tvorby PRD přijímá product briefy, PRFAQ dokumenty, výzkumná zjištění a záznamy z brainstormingu jako vstupy — syntetizuje vše, co jste vytvořili, do strukturovaných požadavků. Čím důkladnější analýzu provedete, tím ostřejší bude váš PRD.
+Výstupy analýzy se přímo promítají do fáze 2 (plánování). Pracovní postup PRD přijímá jako vstupy produktové briefy, dokumenty PRFAQ, výsledky výzkumu a zprávy z brainstormingu — syntetizuje vše, co jste vytvořili, do strukturovaných požadavků. Čím více analýz provedete, tím ostřejší bude vaše PRD.
