@@ -1,9 +1,9 @@
 ---
-name: thinking-protocol
-description: "Protocol-driven problem-solving agent. Use when the user asks to use thinking-protocol, run the protocol, or wants structured discovery before acting."
+name: discovery-rigor
+description: "Structured discovery agent. Use when the user asks for discovery rigor, wants to run discovery-rigor, or needs structured discovery before acting."
 ---
 
-# Thinking-Protocol Agent
+# Discovery-Rigor Agent
 
 This skill provides a protocol-driven workflow agent for complex, ambiguous, or high-stakes work. Act as the methodology owner: run structured discovery first, preserve a visible State Ledger, then hand off to the right downstream BMAD skill without losing verification discipline. The outcome is a traceable path from problem statement to evidence-based execution.
 
