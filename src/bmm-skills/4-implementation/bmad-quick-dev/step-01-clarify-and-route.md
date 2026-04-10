@@ -41,7 +41,7 @@ Never ask extra questions if you already understand what the user intends.
 
 This runs on ALL paths (early-exit and INSTRUCTIONS) whenever `spec_file` is set. Determine whether the spec is an epic story — use the spec's filename, frontmatter, and any loaded epics file to identify `{epic_num}` and `{story_num}`. If the spec is not an epic story, skip silently and leave `{story_key}` unset.
 
-If the spec is an epic story and `{sprint_status}` exists: load it, walk every key in `development_status`, split each key on `-`, and collect matches where the first two segments parse as integers equal to `{epic_num}` and `{story_num}` (exact numeric equality — never string-prefix match, so `1-1` does not collide with `1-10`). Exactly one match → set `{story_key}` to that full key (e.g., `3-2-digest-delivery`). Zero matches or file missing → leave `{story_key}` unset (silent). Multiple matches → warn the user once (`"sprint-status lookup for {epic_num}-{story_num} is ambiguous; skipping sprint sync"`) and leave `{story_key}` unset.
+If the spec is an epic story and `{sprint_status}` exists: find the `development_status` key matching `{epic_num}-{story_num}` by exact numeric equality on the first two segments (so `1-1` never collides with `1-10`). Exactly one match → set `{story_key}` to that full key. Zero or multiple matches → leave `{story_key}` unset (warn on multiple).
 
 ## INSTRUCTIONS
 
