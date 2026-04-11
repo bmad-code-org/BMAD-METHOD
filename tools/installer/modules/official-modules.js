@@ -12,6 +12,9 @@ class OfficialModules {
     // Config collection state (merged from ConfigCollector)
     this.collectedConfig = {};
     this._existingConfig = null;
+    // Tracked during interactive config collection so {directory_name}
+    // placeholder defaults can be resolved in buildQuestion().
+    this.currentProjectDir = null;
   }
 
   /**
@@ -1040,6 +1043,7 @@ class OfficialModules {
    * @returns {boolean} True if new fields were prompted, false if all fields existed
    */
   async collectModuleConfigQuick(moduleName, projectDir, silentMode = true) {
+    this.currentProjectDir = projectDir;
     // Load existing config if not already loaded
     if (!this._existingConfig) {
       await this.loadExistingConfig(projectDir);
@@ -1330,6 +1334,7 @@ class OfficialModules {
    * @param {boolean} skipCompletion - Skip showing completion message (for early core collection)
    */
   async collectModuleConfig(moduleName, projectDir, skipLoadExisting = false, skipCompletion = false) {
+    this.currentProjectDir = projectDir;
     // Load existing config if needed and not already loaded
     if (!skipLoadExisting && !this._existingConfig) {
       await this.loadExistingConfig(projectDir);
