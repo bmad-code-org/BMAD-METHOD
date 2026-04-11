@@ -5,9 +5,9 @@ const { execSync } = require('node:child_process');
 const prompts = require('../prompts');
 const { RegistryClient } = require('./registry-client');
 
-const MARKETPLACE_BASE = 'https://raw.githubusercontent.com/bmad-code-org/bmad-plugins-marketplace/main';
-const COMMUNITY_INDEX_URL = `${MARKETPLACE_BASE}/registry/community-index.yaml`;
-const CATEGORIES_URL = `${MARKETPLACE_BASE}/categories.yaml`;
+const MARKETPLACE_OWNER = 'bmad-code-org';
+const MARKETPLACE_REPO = 'bmad-plugins-marketplace';
+const MARKETPLACE_REF = 'main';
 
 /**
  * Manages community modules from the BMad marketplace registry.
@@ -33,7 +33,12 @@ class CommunityModuleManager {
     if (this._cachedIndex) return this._cachedIndex;
 
     try {
-      const config = await this._client.fetchYaml(COMMUNITY_INDEX_URL);
+      const config = await this._client.fetchGitHubYaml(
+        MARKETPLACE_OWNER,
+        MARKETPLACE_REPO,
+        'registry/community-index.yaml',
+        MARKETPLACE_REF,
+      );
       if (config?.modules?.length) {
         this._cachedIndex = config;
         return config;
@@ -54,7 +59,7 @@ class CommunityModuleManager {
     if (this._cachedCategories) return this._cachedCategories;
 
     try {
-      const config = await this._client.fetchYaml(CATEGORIES_URL);
+      const config = await this._client.fetchGitHubYaml(MARKETPLACE_OWNER, MARKETPLACE_REPO, 'categories.yaml', MARKETPLACE_REF);
       if (config?.categories) {
         this._cachedCategories = config;
         return config;

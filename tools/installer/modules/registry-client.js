@@ -50,6 +50,117 @@ class RegistryClient {
     const content = await this.fetch(url, timeout);
     return yaml.parse(content);
   }
+
+  /**
+   * Fetch a URL and parse the response as JSON.
+   * @param {string} url - URL to fetch
+   * @param {number} [timeout] - Timeout in ms
+   * @returns {Promise<Object>} Parsed JSON content
+   */
+  async fetchJson(url, timeout) {
+    const content = await this.fetch(url, timeout);
+    return JSON.parse(content);
+  }
+
+  /**
+   * Fetch a file from a GitHub repo using the Contents API first,
+   * falling back to raw.githubusercontent.com if the API fails.
+   *
+   * The API endpoint (`api.github.com`) is tried first because corporate
+   * proxies commonly block `raw.githubusercontent.com` while allowing
+   * `api.github.com` under the "Software Development" category.
+   *
+   * @param {string} owner - Repository owner (e.g., 'bmad-code-org')
+   * @param {string} repo  - Repository name (e.g., 'bmad-plugins-marketplace')
+   * @param {string} filePath - Path within the repo (e.g., 'registry/official.yaml')
+   * @param {string} ref   - Git ref (branch, tag, or SHA; e.g., 'main')
+   * @param {number} [timeout] - Timeout in ms (overrides default)
+   * @returns {Promise<string>} Raw file content
+   */
+  async fetchGitHubFile(owner, repo, filePath, ref, timeout) {
+    const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}?ref=${ref}`;
+    const rawUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${ref}/${filePath}`;
+
+    // Try GitHub Contents API first (with raw content accept header)
+    try {
+      return await this._fetchWithHeaders(apiUrl, { Accept: 'application/vnd.github.raw+json' }, timeout);
+    } catch {
+      // API failed — fall back to raw CDN
+    }
+
+    return this.fetch(rawUrl, timeout);
+  }
+
+  /**
+   * Fetch a file from GitHub and parse as YAML.
+   * @param {string} owner - Repository owner
+   * @param {string} repo  - Repository name
+   * @param {string} filePath - Path within the repo
+   * @param {string} ref   - Git ref
+   * @param {number} [timeout] - Timeout in ms
+   * @returns {Promise<Object>} Parsed YAML content
+   */
+  async fetchGitHubYaml(owner, repo, filePath, ref, timeout) {
+    const content = await this.fetchGitHubFile(owner, repo, filePath, ref, timeout);
+    return yaml.parse(content);
+  }
+
+  /**
+   * Fetch a file from GitHub and parse as JSON.
+   * @param {string} owner - Repository owner
+   * @param {string} repo  - Repository name
+   * @param {string} filePath - Path within the repo
+   * @param {string} ref   - Git ref
+   * @param {number} [timeout] - Timeout in ms
+   * @returns {Promise<Object>} Parsed JSON content
+   */
+  async fetchGitHubJson(owner, repo, filePath, ref, timeout) {
+    const content = await this.fetchGitHubFile(owner, repo, filePath, ref, timeout);
+    return JSON.parse(content);
+  }
+
+  /**
+   * Fetch a URL with custom headers. Used for GitHub API requests.
+   * Follows one redirect.
+   * @param {string} url - URL to fetch
+   * @param {Object} headers - Request headers
+   * @param {number} [timeout] - Timeout in ms
+   * @returns {Promise<string>} Response body
+   * @private
+   */
+  _fetchWithHeaders(url, headers, timeout) {
+    const timeoutMs = timeout || this.timeout;
+    const parsed = new URL(url);
+    const options = {
+      hostname: parsed.hostname,
+      path: parsed.pathname + parsed.search,
+      timeout: timeoutMs,
+      headers: {
+        'User-Agent': 'bmad-installer',
+        ...headers,
+      },
+    };
+
+    return new Promise((resolve, reject) => {
+      const req = https
+        .get(options, (res) => {
+          if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+            return this._fetchWithHeaders(res.headers.location, headers, timeoutMs).then(resolve, reject);
+          }
+          if (res.statusCode !== 200) {
+            return reject(new Error(`HTTP ${res.statusCode}`));
+          }
+          let data = '';
+          res.on('data', (chunk) => (data += chunk));
+          res.on('end', () => resolve(data));
+        })
+        .on('error', reject)
+        .on('timeout', () => {
+          req.destroy();
+          reject(new Error('Request timed out'));
+        });
+    });
+  }
 }
 
 module.exports = { RegistryClient };
