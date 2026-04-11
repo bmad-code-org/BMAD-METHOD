@@ -110,46 +110,6 @@ class ExternalModuleManager {
   }
 
   /**
-   * Get module info by key
-   * @param {string} key - The module key (e.g., 'bmad-creative-intelligence-suite')
-   * @returns {Object|null} Module info or null if not found
-   */
-  async getModuleByKey(key) {
-    const modules = await this.listAvailable();
-    return modules.find((m) => m.key === key) || null;
-  }
-
-  /**
-   * Check if a module code exists in external modules
-   * @param {string} code - The module code to check
-   * @returns {boolean} True if the module exists
-   */
-  async hasModule(code) {
-    const module = await this.getModuleByCode(code);
-    return module !== null;
-  }
-
-  /**
-   * Get the URL for a module by code
-   * @param {string} code - The module code
-   * @returns {string|null} The URL or null if not found
-   */
-  async getModuleUrl(code) {
-    const module = await this.getModuleByCode(code);
-    return module ? module.url : null;
-  }
-
-  /**
-   * Get the module definition path for a module by code
-   * @param {string} code - The module code
-   * @returns {string|null} The module definition path or null if not found
-   */
-  async getModuleDefinition(code) {
-    const module = await this.getModuleByCode(code);
-    return module ? module.moduleDefinition : null;
-  }
-
-  /**
    * Get the cache directory for external modules
    * @returns {string} Path to the external modules cache directory
    */

@@ -12,6 +12,8 @@ class OfficialModules {
     // Config collection state (merged from ConfigCollector)
     this.collectedConfig = {};
     this._existingConfig = null;
+    // Tracked during interactive config collection so {directory_name}
+    // placeholder defaults can be resolved in buildQuestion().
     this.currentProjectDir = null;
   }
 
@@ -501,32 +503,6 @@ class OfficialModules {
   }
 
   /**
-   * Find all .md agent files recursively in a directory
-   * @param {string} dir - Directory to search
-   * @returns {Array} List of .md agent file paths
-   */
-  async findAgentMdFiles(dir) {
-    const agentFiles = [];
-
-    async function searchDirectory(searchDir) {
-      const entries = await fs.readdir(searchDir, { withFileTypes: true });
-
-      for (const entry of entries) {
-        const fullPath = path.join(searchDir, entry.name);
-
-        if (entry.isFile() && entry.name.endsWith('.md')) {
-          agentFiles.push(fullPath);
-        } else if (entry.isDirectory()) {
-          await searchDirectory(fullPath);
-        }
-      }
-    }
-
-    await searchDirectory(dir);
-    return agentFiles;
-  }
-
-  /**
    * Create directories declared in module.yaml's `directories` key
    * This replaces the security-risky module installer pattern with declarative config
    * During updates, if a directory path changed, moves the old directory to the new path
@@ -697,29 +673,6 @@ class OfficialModules {
     }
 
     return { createdDirs, movedDirs, createdWdsFolders };
-  }
-
-  /**
-   * Private: Process module configuration
-   * @param {string} modulePath - Path to installed module
-   * @param {string} moduleName - Module name
-   */
-  async processModuleConfig(modulePath, moduleName) {
-    const configPath = path.join(modulePath, 'config.yaml');
-
-    if (await fs.pathExists(configPath)) {
-      try {
-        let configContent = await fs.readFile(configPath, 'utf8');
-
-        // Replace path placeholders
-        configContent = configContent.replaceAll('{project-root}', `bmad/${moduleName}`);
-        configContent = configContent.replaceAll('{module}', moduleName);
-
-        await fs.writeFile(configPath, configContent, 'utf8');
-      } catch (error) {
-        await prompts.log.warn(`Failed to process module config: ${error.message}`);
-      }
-    }
   }
 
   /**
@@ -1091,7 +1044,6 @@ class OfficialModules {
    */
   async collectModuleConfigQuick(moduleName, projectDir, silentMode = true) {
     this.currentProjectDir = projectDir;
-
     // Load existing config if not already loaded
     if (!this._existingConfig) {
       await this.loadExistingConfig(projectDir);
