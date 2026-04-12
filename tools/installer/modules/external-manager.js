@@ -6,6 +6,9 @@ const yaml = require('yaml');
 const prompts = require('../prompts');
 const { RegistryClient } = require('./registry-client');
 
+const MARKETPLACE_OWNER = 'bmad-code-org';
+const MARKETPLACE_REPO = 'bmad-plugins-marketplace';
+const MARKETPLACE_REF = 'main';
 const FALLBACK_CONFIG_PATH = path.join(__dirname, 'registry-fallback.yaml');
 
 /**
@@ -32,7 +35,7 @@ class ExternalModuleManager {
 
     // Try remote registry first
     try {
-      const config = await this._client.fetchGitHubYaml('bmad-code-org', 'bmad-plugins-marketplace', 'registry/official.yaml', 'main');
+      const config = await this._client.fetchGitHubYaml(MARKETPLACE_OWNER, MARKETPLACE_REPO, 'registry/official.yaml', MARKETPLACE_REF);
       if (config?.modules?.length) {
         this.cachedModules = config;
         return config;

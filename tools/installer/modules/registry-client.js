@@ -12,18 +12,22 @@ class RegistryClient {
 
   /**
    * Fetch a URL and return the response body as a string.
-   * Follows one redirect (GitHub sometimes 301s).
+   * Follows up to 3 redirects (GitHub sometimes 301s).
    * @param {string} url - URL to fetch
    * @param {number} [timeout] - Timeout in ms (overrides default)
+   * @param {number} [maxRedirects=3] - Maximum redirects to follow
    * @returns {Promise<string>} Response body
    */
-  fetch(url, timeout) {
+  fetch(url, timeout, maxRedirects = 3) {
     const timeoutMs = timeout || this.timeout;
     return new Promise((resolve, reject) => {
       const req = https
         .get(url, { timeout: timeoutMs }, (res) => {
           if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
-            return this.fetch(res.headers.location, timeoutMs).then(resolve, reject);
+            if (maxRedirects <= 0) {
+              return reject(new Error('Too many redirects'));
+            }
+            return this.fetch(res.headers.location, timeoutMs, maxRedirects - 1).then(resolve, reject);
           }
           if (res.statusCode !== 200) {
             return reject(new Error(`HTTP ${res.statusCode}`));
@@ -84,11 +88,14 @@ class RegistryClient {
     // Try GitHub Contents API first (with raw content accept header)
     try {
       return await this._fetchWithHeaders(apiUrl, { Accept: 'application/vnd.github.raw+json' }, timeout);
-    } catch {
+    } catch (apiError) {
       // API failed — fall back to raw CDN
+      try {
+        return await this.fetch(rawUrl, timeout);
+      } catch (cdnError) {
+        throw new AggregateError([apiError, cdnError], `Both GitHub API and raw CDN failed for ${filePath}`);
+      }
     }
-
-    return this.fetch(rawUrl, timeout);
   }
 
   /**
@@ -121,14 +128,15 @@ class RegistryClient {
 
   /**
    * Fetch a URL with custom headers. Used for GitHub API requests.
-   * Follows one redirect.
+   * Follows up to 3 redirects.
    * @param {string} url - URL to fetch
    * @param {Object} headers - Request headers
    * @param {number} [timeout] - Timeout in ms
+   * @param {number} [maxRedirects=3] - Maximum redirects to follow
    * @returns {Promise<string>} Response body
    * @private
    */
-  _fetchWithHeaders(url, headers, timeout) {
+  _fetchWithHeaders(url, headers, timeout, maxRedirects = 3) {
     const timeoutMs = timeout || this.timeout;
     const parsed = new URL(url);
     const options = {
@@ -145,7 +153,10 @@ class RegistryClient {
       const req = https
         .get(options, (res) => {
           if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
-            return this._fetchWithHeaders(res.headers.location, headers, timeoutMs).then(resolve, reject);
+            if (maxRedirects <= 0) {
+              return reject(new Error('Too many redirects'));
+            }
+            return this._fetchWithHeaders(res.headers.location, headers, timeoutMs, maxRedirects - 1).then(resolve, reject);
           }
           if (res.statusCode !== 200) {
             return reject(new Error(`HTTP ${res.statusCode}`));
