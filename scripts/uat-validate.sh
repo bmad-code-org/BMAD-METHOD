@@ -20,6 +20,9 @@
 
 set -e
 
+# Allow nested Claude Code sessions (when launched from within Claude Code)
+unset CLAUDECODE 2>/dev/null || true
+
 # =============================================================================
 # Section 1: Configuration
 # =============================================================================
@@ -859,7 +862,7 @@ HUMAN_ACTION_NEEDED: {yes/no}"
 
     # Execute in isolated context
     local result
-    result=$(env -u CLAUDECODE claude --dangerously-skip-permissions -p "$fix_prompt" 2>&1) || true
+    result=$(claude --dangerously-skip-permissions -p "$fix_prompt" 2>&1) || true
 
     echo "$result" >> "$LOG_FILE"
 

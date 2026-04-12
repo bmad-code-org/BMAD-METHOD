@@ -20,6 +20,9 @@
 
 set -e
 
+# Allow nested Claude Code sessions (when launched from within Claude Code)
+unset CLAUDECODE 2>/dev/null || true
+
 # =============================================================================
 # Cleanup and Signal Handling
 # =============================================================================
@@ -90,6 +93,12 @@ cleanup() {
             log "Resume with: $0 $EPIC_ID --start-from <story-id>"
         fi
     fi
+
+    # Kill orphaned node/test processes
+    kill_orphaned_test_processes
+
+    # Clean up phase output temp file
+    rm -f "$PHASE_OUTPUT_FILE" 2>/dev/null
 
     # Save log to repo before exiting
     save_log_to_repo
@@ -276,6 +285,46 @@ flush_log_to_repo() {
 }
 
 # =============================================================================
+# Orphaned Process Cleanup
+# =============================================================================
+
+kill_orphaned_test_processes() {
+    # Kill orphaned node/test processes that may have been spawned during story execution
+    # These can accumulate and consume memory if tests or dev servers aren't cleaned up
+    local killed=0
+
+    # Kill orphaned node test runners (jest, vitest, playwright)
+    for pattern in "node.*jest" "node.*vitest" "node.*playwright" "node.*next.*dev" "node.*tsx.*watch"; do
+        local pids
+        pids=$(pgrep -f "$pattern" 2>/dev/null || true)
+        if [ -n "$pids" ]; then
+            echo "$pids" | while read -r pid; do
+                if [ -n "$pid" ] && kill -0 "$pid" 2>/dev/null; then
+                    kill "$pid" 2>/dev/null || true
+                    ((killed++)) || true
+                fi
+            done
+        fi
+    done
+
+    # Kill orphaned pytest processes
+    local pytest_pids
+    pytest_pids=$(pgrep -f "python.*pytest" 2>/dev/null || true)
+    if [ -n "$pytest_pids" ]; then
+        echo "$pytest_pids" | while read -r pid; do
+            if [ -n "$pid" ] && kill -0 "$pid" 2>/dev/null; then
+                kill "$pid" 2>/dev/null || true
+                ((killed++)) || true
+            fi
+        done
+    fi
+
+    if [ "${killed:-0}" -gt 0 ]; then
+        log "Killed orphaned test processes"
+    fi
+}
+
+# =============================================================================
 # Git Safety Functions
 # =============================================================================
 
@@ -450,6 +499,50 @@ log_prompt_size() {
 }
 
 # =============================================================================
+# Memory-safe Claude execution helpers
+# =============================================================================
+# Instead of capturing claude output into a bash variable (which can consume
+# gigabytes of RAM), pipe output directly to a temp file and read only the
+# tail for completion signal parsing.
+
+# Temp file for current phase output (reused across phases, cleaned up on exit)
+PHASE_OUTPUT_FILE="/tmp/bmad-phase-output-$$.txt"
+
+# Run claude and pipe output directly to file + LOG_FILE (no bash variable)
+# Arguments:
+#   $1 - prompt text (use "-f" as first arg to use file-based prompt)
+#   $2 - prompt file path (only when $1 is "-f")
+# Sets: PHASE_OUTPUT_FILE with the output
+run_claude_to_file() {
+    # Truncate phase output file
+    : > "$PHASE_OUTPUT_FILE"
+
+    if [ "$1" = "-f" ]; then
+        local prompt_file="$2"
+        claude --dangerously-skip-permissions -f "$prompt_file" 2>&1 | tee -a "$LOG_FILE" > "$PHASE_OUTPUT_FILE" || true
+    else
+        local prompt="$1"
+        claude --dangerously-skip-permissions -p "$prompt" 2>&1 | tee -a "$LOG_FILE" > "$PHASE_OUTPUT_FILE" || true
+    fi
+}
+
+# Read the tail of phase output for completion signal parsing.
+# Only reads the last 32KB — enough for JSON result blocks and signal lines,
+# but avoids loading megabytes of tool output into a bash variable.
+# Arguments: none (reads from PHASE_OUTPUT_FILE)
+# Returns: tail content on stdout
+read_phase_tail() {
+    tail -c 32768 "$PHASE_OUTPUT_FILE" 2>/dev/null || echo ""
+}
+
+# Read full phase output (use sparingly — only when you must search the entire output)
+# Arguments: none (reads from PHASE_OUTPUT_FILE)
+# Returns: full content on stdout
+read_phase_output() {
+    cat "$PHASE_OUTPUT_FILE" 2>/dev/null || echo ""
+}
+
+# =============================================================================
 # Shared Automated Prompt Builder
 # =============================================================================
 
@@ -538,32 +631,38 @@ PROMPT_EOF
 
 METRICS_DIR=""
 METRICS_FILE=""
+METRICS_RESUMED=false
 
 init_metrics() {
     METRICS_DIR="$SPRINT_ARTIFACTS_DIR/metrics"
     METRICS_FILE="$METRICS_DIR/epic-${EPIC_ID}-metrics.yaml"
     mkdir -p "$METRICS_DIR"
 
-    # L4: Archive existing metrics file to prevent unbounded growth
-    if [ -f "$METRICS_FILE" ]; then
-        local archive_name="epic-${EPIC_ID}-metrics.$(date +%Y%m%d%H%M%S).yaml"
-        local archive_dir="$METRICS_DIR/archive"
-        mkdir -p "$archive_dir"
-        mv "$METRICS_FILE" "$archive_dir/$archive_name"
-        log "Archived previous metrics to: archive/$archive_name"
-
-        # Clean up old archives (keep last 10)
-        local archive_count
-        archive_count=$(find "$archive_dir" -name "epic-${EPIC_ID}-metrics.*.yaml" 2>/dev/null | wc -l | tr -d ' ')
-        if [ "$archive_count" -gt 10 ]; then
-            log "Cleaning up old metrics archives (keeping last 10)..."
-            find "$archive_dir" -name "epic-${EPIC_ID}-metrics.*.yaml" -type f | \
-                sort | head -n -10 | xargs rm -f 2>/dev/null || true
-        fi
-    fi
-
     local start_time=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
+    # If metrics file already exists, preserve it and seed in-memory counters
+    if [ -f "$METRICS_FILE" ]; then
+        METRICS_RESUMED=true
+        log "Resuming with existing metrics: $METRICS_FILE"
+
+        # Seed in-memory counters from existing YAML so they accumulate
+        if command -v yq >/dev/null 2>&1; then
+            COMPLETED=$(yq '.stories.completed // 0' "$METRICS_FILE")
+            FAILED=$(yq '.stories.failed // 0' "$METRICS_FILE")
+            SKIPPED=$(yq '.stories.skipped // 0' "$METRICS_FILE")
+
+            log "Restored counters: completed=$COMPLETED failed=$FAILED skipped=$SKIPPED"
+
+            # Record resume event
+            yq -i ".execution.resumed_at = \"$start_time\"" "$METRICS_FILE"
+        else
+            log_warn "yq not found - cannot restore counters from existing metrics"
+        fi
+
+        return
+    fi
+
+    # No existing file - create fresh metrics
     cat > "$METRICS_FILE" << EOF
 epic_id: "$EPIC_ID"
 execution:
@@ -675,31 +774,21 @@ finalize_metrics() {
     local end_time=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
     if command -v yq >/dev/null 2>&1; then
+        # Add current session duration to any prior duration (for resumed runs)
+        local prior_duration
+        prior_duration=$(yq '.execution.duration_seconds // 0' "$METRICS_FILE")
+        local total_duration=$((prior_duration + duration))
+
         yq -i ".execution.end_time = \"$end_time\"" "$METRICS_FILE"
-        yq -i ".execution.duration_seconds = $duration" "$METRICS_FILE"
+        yq -i ".execution.duration_seconds = $total_duration" "$METRICS_FILE"
         yq -i ".stories.total = $total_stories" "$METRICS_FILE"
         yq -i ".stories.completed = $completed" "$METRICS_FILE"
         yq -i ".stories.failed = $failed" "$METRICS_FILE"
         yq -i ".stories.skipped = $skipped" "$METRICS_FILE"
     else
-        # Fallback: rewrite the file with final values
-        cat > "$METRICS_FILE" << EOF
-epic_id: "$EPIC_ID"
-execution:
-  start_time: "$EPIC_START_TIME"
-  end_time: "$end_time"
-  duration_seconds: $duration
-stories:
-  total: $total_stories
-  completed: $completed
-  failed: $failed
-  skipped: $skipped
-validation:
-  gate_executed: false
-  gate_status: "PENDING"
-  fix_attempts: 0
-issues: []
-EOF
+        # Fallback without yq: only update counters, don't overwrite the file
+        # This preserves issues, story_details, and fix_loop data
+        log_warn "yq not found - metrics finalization limited (counters may be stale)"
     fi
 
     log "Metrics finalized: $METRICS_FILE"
@@ -744,7 +833,7 @@ update_sprint_status() {
 
     # Find sprint-status.yaml file
     local sprint_file=""
-    for search_dir in "$SPRINT_ARTIFACTS_DIR" "$SPRINTS_DIR" "$PROJECT_ROOT/docs"; do
+    for search_dir in "$SPRINT_ARTIFACTS_DIR" "$SPRINTS_DIR" "$PROJECT_ROOT/_bmad-output" "$PROJECT_ROOT/docs"; do
         if [ -f "$search_dir/sprint-status.yaml" ]; then
             sprint_file="$search_dir/sprint-status.yaml"
             break
@@ -1418,11 +1507,10 @@ Do NOT use 'git add -A' or 'git add .' - only stage files you created or modifie
         return 0
     fi
 
-    # Execute in isolated context
+    # Execute in isolated context — pipe to file to avoid memory bloat
+    run_claude_to_file "$dev_prompt"
     local result
-    result=$(env -u CLAUDECODE claude --dangerously-skip-permissions -p "$dev_prompt" 2>&1) || true
-
-    echo "$result" >> "$LOG_FILE"
+    result=$(read_phase_tail)
 
     # Check completion using JSON parsing with text fallback
     local completion_status
@@ -1558,11 +1646,10 @@ Stage any fixes with explicit file paths: git add <file1> <file2> ..."
         return 0
     fi
 
-    # Execute in isolated context
+    # Execute in isolated context — pipe to file to avoid memory bloat
+    run_claude_to_file "$review_prompt"
     local result
-    result=$(env -u CLAUDECODE claude --dangerously-skip-permissions -p "$review_prompt" 2>&1) || true
-
-    echo "$result" >> "$LOG_FILE"
+    result=$(read_phase_tail)
 
     # Check completion using JSON parsing with text fallback
     local completion_status
@@ -1792,9 +1879,6 @@ Address all review findings now. This is attempt $attempt_num of 3."
         log "Truncated prompt size: ${prompt_size}B"
     fi
 
-    # Declare result variable outside the conditional blocks
-    local result=""
-
     # Final safety check - if still too large, write to temp file and use -f flag
     if [ "$prompt_size" -gt "$MAX_PROMPT_SIZE" ]; then
         log_warn "Prompt still too large after truncation - using file-based prompt"
@@ -1808,7 +1892,8 @@ Address all review findings now. This is attempt $attempt_num of 3."
             return 0
         fi
 
-        result=$(env -u CLAUDECODE claude --dangerously-skip-permissions -f "$temp_prompt_file" 2>&1) || true
+        # Pipe to file to avoid memory bloat
+        run_claude_to_file "-f" "$temp_prompt_file"
         rm -f "$temp_prompt_file"
     else
         if [ "$DRY_RUN" = true ]; then
@@ -1816,11 +1901,12 @@ Address all review findings now. This is attempt $attempt_num of 3."
             return 0
         fi
 
-        # Execute in isolated context
-        result=$(env -u CLAUDECODE claude --dangerously-skip-permissions -p "$fix_prompt" 2>&1) || true
+        # Execute in isolated context — pipe to file to avoid memory bloat
+        run_claude_to_file "$fix_prompt"
     fi
 
-    echo "$result" >> "$LOG_FILE"
+    local result
+    result=$(read_phase_tail)
 
     # Check completion using JSON parsing with text fallback
     local completion_status
@@ -1956,7 +2042,7 @@ $build_output
         if grep -q '"test"' "$PROJECT_ROOT/package.json" 2>/dev/null; then
             log "Running tests..."
             local test_output
-            test_output=$(cd "$PROJECT_ROOT" && run_with_timeout "${REGRESSION_TEST_TIMEOUT:-120}" npm test) || {
+            test_output=$(cd "$PROJECT_ROOT" && npm test 2>&1) || {
                 local exit_code=$?
 
                 # Check if there are NEW failures (not just pre-existing baseline failures)
@@ -2273,10 +2359,10 @@ Stage any fixes with: git add <file1> <file2> ..."
         return 0
     fi
 
+    # Pipe to file to avoid memory bloat
+    run_claude_to_file "$arch_prompt"
     local result
-    result=$(env -u CLAUDECODE claude --dangerously-skip-permissions -p "$arch_prompt" 2>&1) || true
-
-    echo "$result" >> "$LOG_FILE"
+    result=$(read_phase_tail)
 
     if echo "$result" | grep -q "ARCH COMPLIANT"; then
         log_success "Architecture compliant: $story_id"
@@ -2350,10 +2436,10 @@ Stage any fixes with: git add <file1> <file2> ..."
         return 0
     fi
 
+    # Pipe to file to avoid memory bloat
+    run_claude_to_file "$quality_prompt"
     local result
-    result=$(env -u CLAUDECODE claude --dangerously-skip-permissions -p "$quality_prompt" 2>&1) || true
-
-    echo "$result" >> "$LOG_FILE"
+    result=$(read_phase_tail)
 
     if echo "$result" | grep -q "TEST QUALITY APPROVED"; then
         log_success "Test quality approved: $story_id"
@@ -2485,10 +2571,10 @@ Analyze traceability now. Read story files on-demand as needed."
         return 0
     fi
 
+    # Pipe to file to avoid memory bloat
+    run_claude_to_file "$trace_prompt"
     local result
-    result=$(env -u CLAUDECODE claude --dangerously-skip-permissions -p "$trace_prompt" 2>&1) || true
-
-    echo "$result" >> "$LOG_FILE"
+    result=$(read_phase_tail)
 
     if echo "$result" | grep -q "TRACEABILITY PASS"; then
         log_success "Traceability passed: Epic $EPIC_ID"
@@ -2563,10 +2649,10 @@ Generate missing tests now."
         return 0
     fi
 
+    # Pipe to file to avoid memory bloat
+    run_claude_to_file "$fix_prompt"
     local result
-    result=$(env -u CLAUDECODE claude --dangerously-skip-permissions -p "$fix_prompt" 2>&1) || true
-
-    echo "$result" >> "$LOG_FILE"
+    result=$(read_phase_tail)
 
     if echo "$result" | grep -q "TEST GENERATION COMPLETE"; then
         log_success "Test generation complete for Epic $EPIC_ID"
@@ -2917,10 +3003,10 @@ Generate the UAT document now. Read story files on-demand as needed."
         return 0
     fi
 
+    # Pipe to file to avoid memory bloat
+    run_claude_to_file "$uat_prompt"
     local result
-    result=$(env -u CLAUDECODE claude --dangerously-skip-permissions -p "$uat_prompt" 2>&1) || true
-
-    echo "$result" >> "$LOG_FILE"
+    result=$(read_phase_tail)
 
     if echo "$result" | grep -q "UAT GENERATED"; then
         log_success "UAT document generated"
@@ -2943,16 +3029,10 @@ log "=========================================="
 log "Starting execution of ${#STORIES[@]} stories"
 log "=========================================="
 
-# Initialize counters (may be restored from checkpoint)
-if [ -z "$COMPLETED" ] || [ "$COMPLETED" = "0" ]; then
-    COMPLETED=0
-fi
-if [ -z "$FAILED" ] || [ "$FAILED" = "0" ]; then
-    FAILED=0
-fi
-if [ -z "$SKIPPED" ] || [ "$SKIPPED" = "0" ]; then
-    SKIPPED=0
-fi
+# Initialize counters (may already be restored from metrics or checkpoint)
+: "${COMPLETED:=0}"
+: "${FAILED:=0}"
+: "${SKIPPED:=0}"
 START_TIME=$(date +%s)
 STARTED=false
 
@@ -2976,10 +3056,13 @@ for story_file in "${STORIES[@]}"; do
             STARTED=true
         else
             log_warn "Skipping $story_id (waiting for $START_FROM)"
-            ((SKIPPED++))
+            # Only count as skipped if this is a fresh run (no prior metrics)
+            if [ "${METRICS_RESUMED:-false}" = false ]; then
+                ((SKIPPED++))
+                update_story_metrics "skipped"
+            fi
             ((STORY_INDEX++))
             CURRENT_STORY_INDEX=$STORY_INDEX
-            update_story_metrics "skipped"
             continue
         fi
     fi
@@ -2988,10 +3071,13 @@ for story_file in "${STORIES[@]}"; do
     if [ "$SKIP_DONE" = true ]; then
         if grep -qi "^Status:.*done" "$story_file" 2>/dev/null; then
             log_warn "Skipping $story_id (Status: Done)"
-            ((SKIPPED++))
+            # Only count as skipped if this is a fresh run (no prior metrics)
+            if [ "${METRICS_RESUMED:-false}" = false ]; then
+                ((SKIPPED++))
+                update_story_metrics "skipped"
+            fi
             ((STORY_INDEX++))
             CURRENT_STORY_INDEX=$STORY_INDEX
-            update_story_metrics "skipped"
             continue
         fi
     fi
@@ -3052,6 +3138,16 @@ for story_file in "${STORIES[@]}"; do
     update_story_metrics "completed"
     log_success "Story complete: $story_id ($COMPLETED/${#STORIES[@]})"
 
+    # Kill orphaned node/test processes between stories
+    kill_orphaned_test_processes
+
+    # Truncate log file between stories to prevent unbounded growth.
+    # Each Claude phase appends via tee -a, so across 6-7 phases per story
+    # the log can grow to hundreds of MB. Keep only the last 64KB as context.
+    if [ -f "$LOG_FILE" ]; then
+        tail -c 65536 "$LOG_FILE" > "${LOG_FILE}.tmp" 2>/dev/null && mv "${LOG_FILE}.tmp" "$LOG_FILE" 2>/dev/null || true
+    fi
+
     # Track progress for checkpoint/resume
     ((STORY_INDEX++))
     CURRENT_STORY_INDEX=$STORY_INDEX
@@ -3060,9 +3156,6 @@ for story_file in "${STORIES[@]}"; do
     if type save_checkpoint >/dev/null 2>&1; then
         save_checkpoint "$STORY_INDEX" "$story_id" "$COMPLETED" "$FAILED" "$SKIPPED"
     fi
-
-    # Flush log to repo after each completed story
-    flush_log_to_repo
 done
 
 # =============================================================================

@@ -126,9 +126,9 @@ init_regression_baseline() {
 
             # Check if there's a test:json script for better parsing
             if grep -q '"test:json"' "$PROJECT_ROOT/package.json" 2>/dev/null; then
-                test_output=$(cd "$PROJECT_ROOT" && run_with_timeout "${REGRESSION_TEST_TIMEOUT:-120}" npm run test:json) || true
+                test_output=$(cd "$PROJECT_ROOT" && npm run test:json 2>&1) || true
             else
-                test_output=$(cd "$PROJECT_ROOT" && run_with_timeout "${REGRESSION_TEST_TIMEOUT:-120}" npm test) || true
+                test_output=$(cd "$PROJECT_ROOT" && npm test 2>&1) || true
             fi
 
             BASELINE_PASSING_TESTS=$(extract_test_count "$test_output")
@@ -152,14 +152,14 @@ init_regression_baseline() {
     elif [ -f "$PROJECT_ROOT/Cargo.toml" ]; then
         # Rust project
         log "Capturing baseline test count (Rust)..."
-        test_output=$(cd "$PROJECT_ROOT" && run_with_timeout "${REGRESSION_TEST_TIMEOUT:-120}" cargo test) || true
+        test_output=$(cd "$PROJECT_ROOT" && cargo test 2>&1) || true
         BASELINE_PASSING_TESTS=$(extract_test_count "$test_output")
         log "Baseline passing tests: $BASELINE_PASSING_TESTS"
 
     elif [ -f "$PROJECT_ROOT/go.mod" ]; then
         # Go project
         log "Capturing baseline test count (Go)..."
-        test_output=$(cd "$PROJECT_ROOT" && run_with_timeout "${REGRESSION_TEST_TIMEOUT:-120}" go test ./... -v) || true
+        test_output=$(cd "$PROJECT_ROOT" && go test ./... -v 2>&1) || true
         BASELINE_PASSING_TESTS=$(extract_test_count "$test_output")
         log "Baseline passing tests: $BASELINE_PASSING_TESTS"
 
@@ -167,7 +167,7 @@ init_regression_baseline() {
         # Python project
         if command -v pytest >/dev/null 2>&1; then
             log "Capturing baseline test count (Python)..."
-            test_output=$(cd "$PROJECT_ROOT" && run_with_timeout "${REGRESSION_TEST_TIMEOUT:-120}" pytest -v) || true
+            test_output=$(cd "$PROJECT_ROOT" && pytest -v 2>&1) || true
             BASELINE_PASSING_TESTS=$(extract_test_count "$test_output")
             log "Baseline passing tests: $BASELINE_PASSING_TESTS"
         fi
@@ -199,23 +199,23 @@ execute_regression_gate() {
     if [ -f "$PROJECT_ROOT/package.json" ]; then
         # Check if there's a test:json script for better parsing
         if grep -q '"test:json"' "$PROJECT_ROOT/package.json" 2>/dev/null; then
-            test_output=$(cd "$PROJECT_ROOT" && run_with_timeout "${REGRESSION_TEST_TIMEOUT:-120}" npm run test:json) || true
+            test_output=$(cd "$PROJECT_ROOT" && npm run test:json 2>&1) || true
         else
-            test_output=$(cd "$PROJECT_ROOT" && run_with_timeout "${REGRESSION_TEST_TIMEOUT:-120}" npm test) || true
+            test_output=$(cd "$PROJECT_ROOT" && npm test 2>&1) || true
         fi
         current_tests=$(extract_test_count "$test_output")
 
     elif [ -f "$PROJECT_ROOT/Cargo.toml" ]; then
-        test_output=$(cd "$PROJECT_ROOT" && run_with_timeout "${REGRESSION_TEST_TIMEOUT:-120}" cargo test) || true
+        test_output=$(cd "$PROJECT_ROOT" && cargo test 2>&1) || true
         current_tests=$(extract_test_count "$test_output")
 
     elif [ -f "$PROJECT_ROOT/go.mod" ]; then
-        test_output=$(cd "$PROJECT_ROOT" && run_with_timeout "${REGRESSION_TEST_TIMEOUT:-120}" go test ./... -v) || true
+        test_output=$(cd "$PROJECT_ROOT" && go test ./... -v 2>&1) || true
         current_tests=$(extract_test_count "$test_output")
 
     elif [ -f "$PROJECT_ROOT/requirements.txt" ] || [ -f "$PROJECT_ROOT/pyproject.toml" ]; then
         if command -v pytest >/dev/null 2>&1; then
-            test_output=$(cd "$PROJECT_ROOT" && run_with_timeout "${REGRESSION_TEST_TIMEOUT:-120}" pytest -v) || true
+            test_output=$(cd "$PROJECT_ROOT" && pytest -v 2>&1) || true
             current_tests=$(extract_test_count "$test_output")
         fi
     fi

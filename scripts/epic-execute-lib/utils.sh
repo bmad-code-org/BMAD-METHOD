@@ -137,7 +137,7 @@ execute_claude_with_retry() {
 
     # Wrapper function for retry
     _claude_invoke() {
-        timeout "$timeout" env -u CLAUDECODE claude --dangerously-skip-permissions -p "$1" 2>&1
+        timeout "$timeout" claude --dangerously-skip-permissions -p "$1" 2>&1
         local code=$?
         if [ $code -eq 124 ]; then
             echo "TIMEOUT: Claude invocation timed out after ${timeout}s"
@@ -626,7 +626,7 @@ execute_claude_verbose() {
 
         # Execute with output tee'd to both terminal and log file
         local result
-        result=$(timeout "$timeout" env -u CLAUDECODE claude --dangerously-skip-permissions -p "$prompt" 2>&1 | tee -a "$LOG_FILE")
+        result=$(timeout "$timeout" claude --dangerously-skip-permissions -p "$prompt" 2>&1 | tee -a "$LOG_FILE")
         local exit_code=$?
 
         if [ $exit_code -eq 124 ]; then
@@ -640,7 +640,7 @@ execute_claude_verbose() {
     else
         # Non-verbose mode: capture output silently
         local result
-        result=$(timeout "$timeout" env -u CLAUDECODE claude --dangerously-skip-permissions -p "$prompt" 2>&1)
+        result=$(timeout "$timeout" claude --dangerously-skip-permissions -p "$prompt" 2>&1)
         local exit_code=$?
 
         # Log to file only

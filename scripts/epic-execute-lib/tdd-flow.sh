@@ -168,10 +168,10 @@ After outputting the spec block:
         return 0
     fi
 
+    # Pipe to file to avoid memory bloat
+    run_claude_to_file "$spec_prompt"
     local result
-    result=$(env -u CLAUDECODE claude --dangerously-skip-permissions -p "$spec_prompt" 2>&1) || true
-
-    echo "$result" >> "$LOG_FILE"
+    result=$(read_phase_tail)
 
     # Extract test spec block
     LAST_TEST_SPEC=$(echo "$result" | sed -n '/TEST SPEC START/,/TEST SPEC END/p')
@@ -314,10 +314,10 @@ After implementing the tests:
         return 0
     fi
 
+    # Pipe to file to avoid memory bloat
+    run_claude_to_file "$impl_prompt"
     local result
-    result=$(env -u CLAUDECODE claude --dangerously-skip-permissions -p "$impl_prompt" 2>&1) || true
-
-    echo "$result" >> "$LOG_FILE"
+    result=$(read_phase_tail)
 
     # Check completion
     local completion_status

@@ -142,10 +142,10 @@ DESIGN COMPLETE: $story_id"
         return 0
     fi
 
+    # Pipe to file to avoid memory bloat
+    run_claude_to_file "$design_prompt"
     local result
-    result=$(env -u CLAUDECODE claude --dangerously-skip-permissions -p "$design_prompt" 2>&1) || true
-
-    echo "$result" >> "$LOG_FILE"
+    result=$(read_phase_tail)
 
     # Extract design block
     LAST_DESIGN=$(echo "$result" | sed -n '/DESIGN START/,/DESIGN END/p')

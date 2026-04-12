@@ -32,6 +32,9 @@
 
 set -e
 
+# Allow nested Claude Code sessions (when launched from within Claude Code)
+unset CLAUDECODE 2>/dev/null || true
+
 # =============================================================================
 # Configuration
 # =============================================================================
@@ -47,6 +50,8 @@ UAT_DIR="$PROJECT_ROOT/docs/uat"
 HANDOFF_DIR="$PROJECT_ROOT/docs/handoffs"
 
 LOG_FILE="/tmp/bmad-epic-chain-$$.log"
+LOGS_DIR="$SPRINT_ARTIFACTS_DIR/logs"
+FINAL_LOG_FILE=""
 CHAIN_PLAN_FILE="$SPRINT_ARTIFACTS_DIR/chain-plan.yaml"
 
 # Colors for output
@@ -109,6 +114,76 @@ log_section() {
     echo -e "${BOLD}  $1${NC}"
     echo -e "${BOLD}───────────────────────────────────────────────────────────${NC}"
 }
+
+# =============================================================================
+# Orphaned Process Cleanup
+# =============================================================================
+
+kill_orphaned_test_processes() {
+    # Kill orphaned node/test processes that may have been spawned during epic execution
+    local killed=0
+
+    for pattern in "node.*jest" "node.*vitest" "node.*playwright" "node.*next.*dev" "node.*tsx.*watch"; do
+        local pids
+        pids=$(pgrep -f "$pattern" 2>/dev/null || true)
+        if [ -n "$pids" ]; then
+            echo "$pids" | while read -r pid; do
+                if [ -n "$pid" ] && kill -0 "$pid" 2>/dev/null; then
+                    kill "$pid" 2>/dev/null || true
+                    ((killed++)) || true
+                fi
+            done
+        fi
+    done
+
+    local pytest_pids
+    pytest_pids=$(pgrep -f "python.*pytest" 2>/dev/null || true)
+    if [ -n "$pytest_pids" ]; then
+        echo "$pytest_pids" | while read -r pid; do
+            if [ -n "$pid" ] && kill -0 "$pid" 2>/dev/null; then
+                kill "$pid" 2>/dev/null || true
+                ((killed++)) || true
+            fi
+        done
+    fi
+
+    if [ "${killed:-0}" -gt 0 ]; then
+        log "Killed orphaned test processes"
+    fi
+}
+
+# =============================================================================
+# Log Persistence
+# =============================================================================
+
+save_log_to_repo() {
+    if [ ! -f "$LOG_FILE" ] || [ ! -s "$LOG_FILE" ]; then
+        return 0
+    fi
+
+    mkdir -p "$LOGS_DIR" 2>/dev/null || true
+
+    local timestamp
+    timestamp=$(date '+%Y%m%d-%H%M%S')
+    FINAL_LOG_FILE="$LOGS_DIR/epic-chain-${timestamp}.log"
+
+    if cp "$LOG_FILE" "$FINAL_LOG_FILE" 2>/dev/null; then
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Log saved to: $FINAL_LOG_FILE" >> "$FINAL_LOG_FILE"
+    fi
+}
+
+cleanup_chain() {
+    local exit_code=$?
+    trap - EXIT INT TERM
+    kill_orphaned_test_processes
+    save_log_to_repo
+    if [ -n "$FINAL_LOG_FILE" ] && [ -f "$FINAL_LOG_FILE" ]; then
+        echo "    - Log saved:     $FINAL_LOG_FILE"
+    fi
+    exit $exit_code
+}
+
+trap cleanup_chain EXIT INT TERM
 
 # Helper function to create basic report if Claude fails
 create_basic_report() {
@@ -578,6 +653,9 @@ for current_idx in "${!EXECUTION_ORDER[@]}"; do
 
             ((COMPLETED_EPICS++))
 
+            # Kill orphaned node/test processes between epics
+            kill_orphaned_test_processes
+
             # Generate handoff for next epic
             if [ "$NO_HANDOFF" = false ]; then
                 next_idx=$((current_idx + 1))
@@ -803,7 +881,7 @@ REPORT_GENERATED: $CHAIN_REPORT_FILE"
         log "Invoking report generator..."
 
         # Execute report generation
-        report_result=$(env -u CLAUDECODE claude --dangerously-skip-permissions -p "$report_prompt" 2>&1) || true
+        report_result=$(claude --dangerously-skip-permissions -p "$report_prompt" 2>&1) || true
 
         echo "$report_result" >> "$LOG_FILE"
 
@@ -847,7 +925,7 @@ echo "    - Metrics:       $METRICS_DIR/"
 if [ -f "$CHAIN_REPORT_FILE" ]; then
 echo "    - Report:        $CHAIN_REPORT_FILE"
 fi
-echo "    - Log:           $LOG_FILE"
+echo "    - Log:           (saved on exit to $LOGS_DIR/)"
 echo ""
 
 if [ $FAILED_EPICS -gt 0 ]; then
