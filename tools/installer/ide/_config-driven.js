@@ -1,6 +1,6 @@
 const os = require('node:os');
 const path = require('node:path');
-const fs = require('fs-extra');
+const fs = require('../fs-native');
 const yaml = require('yaml');
 const prompts = require('../prompts');
 const csv = require('csv-parse/sync');

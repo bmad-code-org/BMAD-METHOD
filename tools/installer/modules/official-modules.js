@@ -1,5 +1,5 @@
 const path = require('node:path');
-const fs = require('fs-extra');
+const fs = require('../fs-native');
 const yaml = require('yaml');
 const prompts = require('../prompts');
 const { getProjectRoot, getSourcePath, getModulePath } = require('../project-root');
