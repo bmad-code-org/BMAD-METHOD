@@ -24,11 +24,21 @@ async function remove(p) {
 
 async function copy(src, dest, options = {}) {
   const filterFn = options.filter;
+  const overwrite = options.overwrite !== false;
   const srcStat = await fsp.stat(src);
 
   if (srcStat.isFile()) {
     if (filterFn && !(await filterFn(src, dest))) return;
     await fsp.mkdir(path.dirname(dest), { recursive: true });
+    if (!overwrite) {
+      try {
+        await fsp.access(dest);
+        if (options.errorOnExist) throw new Error(`${dest} already exists`);
+        return;
+      } catch (error) {
+        if (error.message.includes('already exists')) throw error;
+      }
+    }
     await fsp.copyFile(src, dest);
     return;
   }
@@ -39,6 +49,19 @@ async function copy(src, dest, options = {}) {
     const entries = await fsp.readdir(src, { withFileTypes: true });
     for (const entry of entries) {
       await copy(path.join(src, entry.name), path.join(dest, entry.name), options);
+    }
+  }
+}
+
+async function move(src, dest) {
+  try {
+    await fsp.rename(src, dest);
+  } catch (error) {
+    if (error.code === 'EXDEV') {
+      await copy(src, dest);
+      await fsp.rm(src, { recursive: true, force: true });
+    } else {
+      throw error;
     }
   }
 }
@@ -72,6 +95,7 @@ module.exports = {
   ensureDir,
   remove,
   copy,
+  move,
   readJsonSync,
   writeJson,
 
