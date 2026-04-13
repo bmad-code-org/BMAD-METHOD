@@ -1,5 +1,5 @@
 const path = require('node:path');
-const fs = require('fs-extra');
+const fs = require('../fs-native');
 const { Manifest } = require('./manifest');
 const { OfficialModules } = require('../modules/official-modules');
 const { IdeManager } = require('../ide/manager');

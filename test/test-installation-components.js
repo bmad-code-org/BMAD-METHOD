@@ -13,7 +13,7 @@
 
 const path = require('node:path');
 const os = require('node:os');
-const fs = require('fs-extra');
+const fs = require('../tools/installer/fs-native');
 const { Installer } = require('../tools/installer/core/installer');
 const { ManifestGenerator } = require('../tools/installer/core/manifest-generator');
 const { OfficialModules } = require('../tools/installer/modules/official-modules');

@@ -1,4 +1,4 @@
-const fs = require('fs-extra');
+const fs = require('../fs-native');
 const os = require('node:os');
 const path = require('node:path');
 const { execSync } = require('node:child_process');

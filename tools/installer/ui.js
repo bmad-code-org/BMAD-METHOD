@@ -1,6 +1,6 @@
 const path = require('node:path');
 const os = require('node:os');
-const fs = require('fs-extra');
+const fs = require('./fs-native');
 const { CLIUtils } = require('./cli-utils');
 const { ExternalModuleManager } = require('./modules/external-manager');
 const { getProjectRoot } = require('./project-root');
