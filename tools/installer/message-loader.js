@@ -1,4 +1,4 @@
-const fs = require('fs-extra');
+const fs = require('./fs-native');
 const path = require('node:path');
 const yaml = require('yaml');
 const prompts = require('./prompts');

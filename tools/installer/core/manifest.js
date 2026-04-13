@@ -1,5 +1,5 @@
 const path = require('node:path');
-const fs = require('fs-extra');
+const fs = require('../fs-native');
 const crypto = require('node:crypto');
 const { getProjectRoot } = require('../project-root');
 const prompts = require('../prompts');

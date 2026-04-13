@@ -1,6 +1,6 @@
 const path = require('node:path');
 const os = require('node:os');
-const fs = require('fs-extra');
+const fs = require('./fs-native');
 const { CLIUtils } = require('./cli-utils');
 const { ExternalModuleManager } = require('./modules/external-manager');
 const { getProjectRoot } = require('./project-root');
@@ -598,7 +598,7 @@ class UI {
     const officialCodes = new Set(officialSelected);
     const externalManager = new ExternalModuleManager();
     const registryModules = await externalManager.listAvailable();
-    const officialRegistryCodes = new Set(registryModules.map((m) => m.code));
+    const officialRegistryCodes = new Set(['core', 'bmm', ...registryModules.map((m) => m.code)]);
     const installedNonOfficial = [...installedModuleIds].filter((id) => !officialRegistryCodes.has(id));
 
     // Phase 2: Community modules (category drill-down)
@@ -630,6 +630,11 @@ class UI {
    * @returns {Array} Selected official module codes
    */
   async _selectOfficialModules(installedModuleIds = new Set()) {
+    // Built-in modules (core, bmm) come from local source, not the registry
+    const { OfficialModules } = require('./modules/official-modules');
+    const builtInModules = (await new OfficialModules().listAvailable()).modules || [];
+
+    // External modules come from the registry (with fallback)
     const externalManager = new ExternalModuleManager();
     const registryModules = await externalManager.listAvailable();
 
@@ -637,20 +642,34 @@ class UI {
     const initialValues = [];
     const lockedValues = ['core'];
 
-    const buildModuleEntry = async (mod) => {
-      const isInstalled = installedModuleIds.has(mod.code);
-      const version = await getMarketplaceVersion(mod.code);
-      const label = version ? `${mod.name} (v${version})` : mod.name;
+    const buildModuleEntry = async (code, name, description, isDefault) => {
+      const isInstalled = installedModuleIds.has(code);
+      const version = await getMarketplaceVersion(code);
+      const label = version ? `${name} (v${version})` : name;
       return {
         label,
-        value: mod.code,
-        hint: mod.description,
-        selected: isInstalled,
+        value: code,
+        hint: description,
+        selected: isInstalled || isDefault,
       };
     };
 
+    // Add built-in modules first (always available regardless of network)
+    const builtInCodes = new Set();
+    for (const mod of builtInModules) {
+      const code = mod.id;
+      builtInCodes.add(code);
+      const entry = await buildModuleEntry(code, mod.name, mod.description, mod.defaultSelected);
+      allOptions.push({ label: entry.label, value: entry.value, hint: entry.hint });
+      if (entry.selected) {
+        initialValues.push(code);
+      }
+    }
+
+    // Add external registry modules (skip built-in duplicates)
     for (const mod of registryModules) {
-      const entry = await buildModuleEntry(mod);
+      if (mod.builtIn || builtInCodes.has(mod.code)) continue;
+      const entry = await buildModuleEntry(mod.code, mod.name, mod.description, mod.defaultSelected);
       allOptions.push({ label: entry.label, value: entry.value, hint: entry.hint });
       if (entry.selected) {
         initialValues.push(mod.code);
@@ -1122,12 +1141,26 @@ class UI {
    * @returns {Array} Default module codes
    */
   async getDefaultModules(installedModuleIds = new Set()) {
+    // Built-in modules with default_selected come from local source
+    const { OfficialModules } = require('./modules/official-modules');
+    const builtInModules = (await new OfficialModules().listAvailable()).modules || [];
+
+    const defaultModules = [];
+    const seen = new Set();
+
+    for (const mod of builtInModules) {
+      if (mod.defaultSelected || installedModuleIds.has(mod.id)) {
+        defaultModules.push(mod.id);
+        seen.add(mod.id);
+      }
+    }
+
+    // Add external registry defaults
     const externalManager = new ExternalModuleManager();
     const registryModules = await externalManager.listAvailable();
 
-    const defaultModules = [];
-
     for (const mod of registryModules) {
+      if (mod.builtIn || seen.has(mod.code)) continue;
       if (mod.defaultSelected || installedModuleIds.has(mod.code)) {
         defaultModules.push(mod.code);
       }

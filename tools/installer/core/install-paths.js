@@ -1,5 +1,5 @@
 const path = require('node:path');
-const fs = require('fs-extra');
+const fs = require('../fs-native');
 const { getProjectRoot } = require('../project-root');
 const { BMAD_FOLDER_NAME } = require('../ide/shared/path-utils');
 
