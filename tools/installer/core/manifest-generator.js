@@ -193,11 +193,13 @@ class ManifestGenerator {
           }
         }
 
-        // Recurse into subdirectories
-        for (const entry of entries) {
-          if (!entry.isDirectory()) continue;
-          if (entry.name.startsWith('.') || entry.name.startsWith('_')) continue;
-          await walk(path.join(dir, entry.name));
+        // Recurse into subdirectories — but not inside a discovered skill
+        if (!skillMeta) {
+          for (const entry of entries) {
+            if (!entry.isDirectory()) continue;
+            if (entry.name.startsWith('.') || entry.name.startsWith('_')) continue;
+            await walk(path.join(dir, entry.name));
+          }
         }
       };
 
