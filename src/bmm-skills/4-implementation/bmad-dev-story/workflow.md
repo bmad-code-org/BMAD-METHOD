@@ -161,6 +161,11 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
     <action>Load comprehensive context from story file's Dev Notes section</action>
     <action>Extract developer guidance from Dev Notes: architecture requirements, previous learnings, technical specifications</action>
+    <action>Initialize {{atdd_artifacts}} = empty</action>
+    <action>Check Dev Notes for optional "ATDD Artifacts" subsection and any TEA checklist/test references under References</action>
+    <action>If ATDD artifacts are referenced, capture checklist path, generated API/E2E/component test paths, and activation guidance as {{atdd_artifacts}}</action>
+    <action if="ATDD checklist path exists and file is accessible">Load the referenced ATDD checklist and extract generated test inventory, story metadata, and implementation guidance relevant to the current tasks</action>
+    <action if="ATDD artifacts are referenced but linked files are missing">Record the missing ATDD artifact paths in Dev Agent Record → Completion Notes and continue with standard test-first implementation</action>
     <action>Use enhanced story context to inform implementation decisions and approaches</action>
 
     <action>Identify first incomplete task (unchecked [ ]) in Tasks/Subtasks</action>
@@ -179,6 +184,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
     <action>Parse sections: Story, Acceptance Criteria, Tasks/Subtasks, Dev Notes, Dev Agent Record, File List, Change Log, Status</action>
     <action>Load comprehensive context from story file's Dev Notes section</action>
     <action>Extract developer guidance from Dev Notes: architecture requirements, previous learnings, technical specifications</action>
+    <action>Use any loaded TEA ATDD checklist or artifact references to understand pre-generated acceptance coverage before implementation begins</action>
     <action>Use enhanced story context to inform implementation decisions and approaches</action>
     <output>✅ **Context Loaded**
       Story and project context available for implementation
@@ -267,8 +273,16 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
     <action>Plan implementation following red-green-refactor cycle</action>
 
     <!-- RED PHASE -->
-    <action>Write FAILING tests first for the task/subtask functionality</action>
-    <action>Confirm tests fail before implementation - this validates test correctness</action>
+    <check if="{{atdd_artifacts}} contains relevant tests for the current task or acceptance criteria">
+      <action>Identify the pre-generated ATDD scaffold test files covering the current task/subtask</action>
+      <action>Activate only the relevant scaffold tests by removing `test.skip()` for the current task; preserve unrelated scaffolds as skipped</action>
+      <action>Run the activated tests and confirm they fail before implementation - this validates the pre-generated acceptance coverage</action>
+      <action>Author additional failing tests only if ATDD coverage is missing for the current task/subtask</action>
+    </check>
+    <check if="{{atdd_artifacts}} is empty OR no relevant ATDD tests exist for the current task or acceptance criteria">
+      <action>Write FAILING tests first for the task/subtask functionality</action>
+      <action>Confirm tests fail before implementation - this validates test correctness</action>
+    </check>
 
     <!-- GREEN PHASE -->
     <action>Implement MINIMAL code to make tests pass</action>
@@ -295,6 +309,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
     <action>Create unit tests for business logic and core functionality introduced/changed by the task</action>
     <action>Add integration tests for component interactions specified in story requirements</action>
     <action>Include end-to-end tests for critical user flows when story requirements demand them</action>
+    <action>If TEA ATDD artifacts exist, preserve and extend those tests instead of duplicating the same acceptance coverage in new files</action>
     <action>Cover edge cases and error handling scenarios identified in story Dev Notes</action>
   </step>
 
@@ -335,7 +350,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
     <!-- ONLY MARK COMPLETE IF ALL VALIDATION PASS -->
     <check if="ALL validation gates pass AND tests ACTUALLY exist and pass">
       <action>ONLY THEN mark the task (and subtasks) checkbox with [x]</action>
-      <action>Update File List section with ALL new, modified, or deleted files (paths relative to repo root)</action>
+      <action>Update File List section with ALL new, modified, or deleted files (paths relative to repo root), including any activated or extended ATDD test files</action>
       <action>Add completion notes to Dev Agent Record summarizing what was ACTUALLY implemented and tested</action>
     </check>
 
@@ -437,7 +452,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
       - Verify all acceptance criteria are met
       - Ensure deployment readiness if applicable
       - Run `code-review` workflow for peer review
-      - Optional: If Test Architect module installed, run `/bmad:tea:automate` to expand guardrail tests
+      - Optional: If Test Architect module installed and `atdd` was not used earlier, use `/bmad:tea:atdd` before future `dev-story` runs; use `/bmad:tea:automate` after implementation to expand guardrail tests
     </action>
 
     <output>💡 **Tip:** For best results, run `code-review` using a **different** LLM than the one that implemented this story.</output>

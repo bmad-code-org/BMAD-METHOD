@@ -11,9 +11,11 @@ optional-inputs:
   - 'Test results output'
   - 'CI logs'
   - 'Linting reports'
+  - 'TEA ATDD checklist and generated test artifact references from story Dev Notes'
 validation-rules:
   - 'Only permitted story sections modified: Tasks/Subtasks checkboxes, Dev Agent Record, File List, Change Log, Status'
   - 'All implementation requirements from story Dev Notes must be satisfied'
+  - 'When TEA ATDD artifacts are present, activate or extend them instead of duplicating the same acceptance coverage'
   - 'Definition of Done checklist must pass completely'
   - 'Enhanced story context must contain sufficient technical guidance'
 ---
@@ -43,6 +45,7 @@ validation-rules:
 - [ ] **Integration Tests:** Integration tests added/updated for component interactions when story requirements demand them
 - [ ] **End-to-End Tests:** End-to-end tests created for critical user flows when story requirements specify them
 - [ ] **Test Coverage:** Tests cover acceptance criteria and edge cases from story Dev Notes
+- [ ] **ATDD Artifact Consumption:** If story Dev Notes reference TEA ATDD outputs, relevant scaffold tests were activated or extended for the implemented tasks
 - [ ] **Regression Prevention:** ALL existing tests pass (no regressions introduced)
 - [ ] **Code Quality:** Linting and static checks pass when configured in project
 - [ ] **Test Framework Compliance:** Tests use project's testing frameworks and patterns from Dev Notes

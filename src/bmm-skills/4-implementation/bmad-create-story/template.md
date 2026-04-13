@@ -2,7 +2,7 @@
 
 Status: ready-for-dev
 
-<!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
+<!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. If TEA is installed, ATDD can run after validation and before dev-story. -->
 
 ## Story
 
@@ -31,6 +31,13 @@ so that {{benefit}}.
 
 - Alignment with unified project structure (paths, modules, naming)
 - Detected conflicts or variances (with rationale)
+
+### ATDD Artifacts (Optional)
+
+- Populate with `/bmad:tea:atdd` outputs when available
+- Checklist path
+- Generated API/E2E/component test paths
+- Activation guidance for scaffolded tests (for example, remove `test.skip()` per task)
 
 ### References
 
