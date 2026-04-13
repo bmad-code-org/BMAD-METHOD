@@ -456,8 +456,8 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
       - Review the implemented story and test the changes
       - Verify all acceptance criteria are met
       - Ensure deployment readiness if applicable
-      - Run `code-review` workflow for peer review
-      - Optional: If Test Architect module installed and `atdd` was not used earlier, use `/bmad:tea:atdd` before future `dev-story` runs; use `/bmad:tea:automate` after implementation to expand guardrail tests
+      - Run `/bmad:bmm:workflows:code-review` for peer review
+      - Optional: If Test Architect module installed and `atdd` was not used earlier, use `/bmad:tea:atdd` before future `/bmad:bmm:workflows:dev-story` runs; use `/bmad:tea:automate` after implementation to expand guardrail tests
     </action>
 
     <output>💡 **Tip:** For best results, run `code-review` using a **different** LLM than the one that implemented this story.</output>
