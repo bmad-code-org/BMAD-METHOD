@@ -1,4 +1,4 @@
-# Step 8: Scoping Exercise - MVP & Future Features
+# Step 8: Scoping Exercise - Scope Definition (Phased or Single-Release)
 
 **Progress: Step 8 of 11** - Next: Functional Requirements
 
@@ -12,6 +12,8 @@
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - 💬 FOCUS on strategic scope decisions that keep projects viable
 - 🎯 EMPHASIZE lean MVP thinking while preserving long-term vision
+- ⚠️ NEVER de-scope, defer, or phase out requirements that the user explicitly included in their input documents without asking first
+- ⚠️ NEVER invent phasing (MVP/Growth/Vision) unless the user requests phased delivery — if input documents define all components as core requirements, they are ALL in scope
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 - ✅ YOU MUST ALWAYS WRITE all artifact and document content in `{document_output_language}`
 
@@ -34,7 +36,7 @@
 
 ## YOUR TASK:
 
-Conduct comprehensive scoping exercise to define MVP boundaries and prioritize features across development phases.
+Conduct comprehensive scoping exercise to define release boundaries and prioritize features based on the user's chosen delivery mode (phased or single-release).
 
 ## SCOPING SEQUENCE:
 
@@ -75,30 +77,41 @@ Use structured decision-making for scope:
   - Advanced functionality that builds on MVP
 - Ask what features could be added in versions 2, 3, etc.
 
+**⚠️ SCOPE CHANGE CONFIRMATION GATE:**
+- If you believe any user-specified requirement should be deferred or de-scoped, you MUST present this to the user and get explicit confirmation BEFORE removing it from scope
+- Frame it as a recommendation, not a decision: "I'd recommend deferring X because [reason]. Do you agree, or should it stay in scope?"
+- NEVER silently move user requirements to a later phase or exclude them from MVP
+- Before creating any consequential phase-based artifacts (e.g., phase tags, labels, or follow-on prompts), present artifact creation as a recommendation and proceed only after explicit user approval
+
 ### 4. Progressive Feature Roadmap
 
-Create phased development approach:
-- Guide mapping of features across development phases
-- Structure as Phase 1 (MVP), Phase 2 (Growth), Phase 3 (Vision)
-- Ensure clear progression and dependencies
+**CRITICAL: Phasing is NOT automatic. Check the user's input first.**
 
-- Core user value delivery
-- Essential user journeys
-- Basic functionality that works reliably
+Before proposing any phased approach, review the user's input documents:
 
-**Phase 2: Growth**
+- **If the input documents define all components as core requirements with no mention of phases:** Present all requirements as a single release scope. Do NOT invent phases or move requirements to fabricated future phases.
+- **If the input documents explicitly request phased delivery:** Guide mapping of features across the phases the user defined.
+- **If scope is unclear:** ASK the user whether they want phased delivery or a single release before proceeding.
 
-- Additional user types
-- Enhanced features
-- Scale improvements
+**When the user requests phased delivery**, guide mapping of features across the phases the user defines:
 
-**Phase 3: Expansion**
+- Use user-provided phase labels and count; if none are provided, propose a default (e.g., MVP/Growth/Vision) and ask for confirmation
+- Ensure clear progression and dependencies between phases
 
-- Advanced capabilities
-- Platform features
-- New markets or use cases
+**Each phase should address:**
 
-**Where does your current vision fit in this development sequence?**"
+- Core user value delivery and essential journeys for that phase
+- Clear boundaries on what ships in each phase
+- Dependencies on prior phases
+
+**When the user chooses a single release**, define the complete scope:
+
+- All user-specified requirements are in scope
+- Focus must-have vs nice-to-have analysis on what ships in this release
+- Do NOT create phases — use must-have/nice-to-have priority within the single release
+
+**If phased delivery:** "Where does your current vision fit in this development sequence?"
+**If single release:** "How does your current vision map to this upcoming release?"
 
 ### 5. Risk-Based Scoping
 
@@ -128,6 +141,8 @@ Identify and mitigate scoping risks:
 Prepare comprehensive scoping section:
 
 #### Content Structure:
+
+**If user chose phased delivery:**
 
 ```markdown
 ## Project Scoping & Phased Development
@@ -160,11 +175,39 @@ Prepare comprehensive scoping section:
 **Resource Risks:** {{contingency_approach}}
 ```
 
+**If user chose single release (no phasing):**
+
+```markdown
+## Project Scoping
+
+### Strategy & Philosophy
+
+**Approach:** {{chosen_approach}}
+**Resource Requirements:** {{team_size_and_skills}}
+
+### Complete Feature Set
+
+**Core User Journeys Supported:**
+{{all_journeys}}
+
+**Must-Have Capabilities:**
+{{list_of_must_have_features}}
+
+**Nice-to-Have Capabilities:**
+{{list_of_nice_to_have_features}}
+
+### Risk Mitigation Strategy
+
+**Technical Risks:** {{mitigation_approach}}
+**Market Risks:** {{validation_approach}}
+**Resource Risks:** {{contingency_approach}}
+```
+
 ### 7. Present MENU OPTIONS
 
 Present the scoping decisions for review, then display menu:
 - Show strategic scoping plan (using structure from step 6)
-- Highlight MVP boundaries and phased roadmap
+- Highlight release boundaries and prioritization (phased roadmap only if phased delivery was selected)
 - Ask if they'd like to refine further, get other perspectives, or proceed
 - Present menu options naturally as part of conversation
 
@@ -173,7 +216,7 @@ Display: "**Select:** [A] Advanced Elicitation [P] Party Mode [C] Continue to Fu
 #### Menu Handling Logic:
 - IF A: Invoke the `bmad-advanced-elicitation` skill with the current scoping analysis, process the enhanced insights that come back, ask user if they accept the improvements, if yes update content then redisplay menu, if no keep original content then redisplay menu
 - IF P: Invoke the `bmad-party-mode` skill with the scoping context, process the collaborative insights on MVP and roadmap decisions, ask user if they accept the changes, if yes update content then redisplay menu, if no keep original content then redisplay menu
-- IF C: Append the final content to {outputFile}, update frontmatter by adding this step name to the end of the stepsCompleted array, then read fully and follow: ./step-09-functional.md
+- IF C: Append the final content to {outputFile}, update frontmatter by adding this step name to the end of the stepsCompleted array (also add `releaseMode: phased` or `releaseMode: single-release` to frontmatter based on user's choice), then read fully and follow: ./step-09-functional.md
 - IF Any other: help user respond, then redisplay menu
 
 #### EXECUTION RULES:
@@ -189,8 +232,9 @@ When user selects 'C', append the content directly to the document using the str
 
 ✅ Complete PRD document analyzed for scope implications
 ✅ Strategic MVP approach defined and justified
-✅ Clear MVP feature boundaries established
-✅ Phased development roadmap created
+✅ Clear feature boundaries established (phased or single-release, per user preference)
+✅ All user-specified requirements accounted for — none silently removed or deferred
+✅ Any scope reduction recommendations presented to user with rationale and explicit confirmation obtained
 ✅ Key risks identified and mitigation strategies defined
 ✅ User explicitly agrees to scope decisions
 ✅ A/P/C menu presented and handled correctly
@@ -202,8 +246,11 @@ When user selects 'C', append the content directly to the document using the str
 ❌ Making scope decisions without strategic rationale
 ❌ Not getting explicit user agreement on MVP boundaries
 ❌ Missing critical risk analysis
-❌ Not creating clear phased development approach
 ❌ Not presenting A/P/C menu after content generation
+❌ **CRITICAL**: Silently de-scoping or deferring requirements that the user explicitly included in their input documents
+❌ **CRITICAL**: Inventing phasing (MVP/Growth/Vision) when the user did not request phased delivery
+❌ **CRITICAL**: Making consequential scoping decisions (what is in/out of scope) without explicit user confirmation
+❌ **CRITICAL**: Creating phase-based artifacts (tags, labels, follow-on prompts) without explicit user approval
 
 ❌ **CRITICAL**: Reading only partial step file - leads to incomplete understanding and poor decisions
 ❌ **CRITICAL**: Proceeding with 'C' without fully reading and understanding the next step file
