@@ -165,6 +165,9 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
     <action>Check Dev Notes for optional "ATDD Artifacts" subsection and any TEA checklist/test references under References</action>
     <action>If ATDD artifacts are referenced, capture checklist path, generated API/E2E/component test paths, and activation guidance as {{atdd_artifacts}}</action>
     <action if="ATDD checklist path exists and file is accessible">Load the referenced ATDD checklist and extract generated test inventory, story metadata, and implementation guidance relevant to the current tasks</action>
+    <action if="{{atdd_artifacts}} is empty">Search `{project-root}` recursively for `atdd-checklist-{{story_key}}.md` as a fallback discovery path for older stories that were not linked from Dev Notes</action>
+    <action if="fallback checklist is found">Load that checklist, populate {{atdd_artifacts}}, and note in Dev Agent Record → Completion Notes that fallback discovery was used</action>
+    <action if="{{atdd_artifacts}} is empty after checklist lookup">Search existing test files for story-relevant acceptance scaffolds that still use `test.skip()` or `test.fixme()` and map them to current acceptance criteria when possible</action>
     <action if="ATDD artifacts are referenced but linked files are missing">Record the missing ATDD artifact paths in Dev Agent Record → Completion Notes and continue with standard test-first implementation</action>
     <action>Use enhanced story context to inform implementation decisions and approaches</action>
 
@@ -275,7 +278,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
     <!-- RED PHASE -->
     <check if="{{atdd_artifacts}} contains relevant tests for the current task or acceptance criteria">
       <action>Identify the pre-generated ATDD scaffold test files covering the current task/subtask</action>
-      <action>Activate only the relevant scaffold tests by removing `test.skip()` for the current task; preserve unrelated scaffolds as skipped</action>
+      <action>Activate only the relevant scaffold tests by removing `test.skip()` or `test.fixme()` for the current task; preserve unrelated scaffolds as skipped/fixme</action>
       <action>Run the activated tests and confirm they fail before implementation - this validates the pre-generated acceptance coverage</action>
       <action>Author additional failing tests only if ATDD coverage is missing for the current task/subtask</action>
     </check>
@@ -350,6 +353,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
     <!-- ONLY MARK COMPLETE IF ALL VALIDATION PASS -->
     <check if="ALL validation gates pass AND tests ACTUALLY exist and pass">
       <action>ONLY THEN mark the task (and subtasks) checkbox with [x]</action>
+      <action>If ATDD scaffolds were used for this task, verify no task-complete tests remain blocked behind `test.skip()` or `test.fixme()` markers for the completed functionality</action>
       <action>Update File List section with ALL new, modified, or deleted files (paths relative to repo root), including any activated or extended ATDD test files</action>
       <action>Add completion notes to Dev Agent Record summarizing what was ACTUALLY implemented and tested</action>
     </check>
@@ -389,6 +393,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
       - Integration tests for component interactions added when required
       - End-to-end tests for critical flows added when story demands them
       - All tests pass (no regressions, new tests successful)
+      - No task-complete acceptance tests remain blocked behind `test.skip()` or `test.fixme()` markers
       - Code quality checks pass (linting, static analysis if configured)
       - File List includes every new/modified/deleted file (relative paths)
       - Dev Agent Record contains implementation notes

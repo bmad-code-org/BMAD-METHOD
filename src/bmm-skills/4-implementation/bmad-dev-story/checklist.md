@@ -46,6 +46,7 @@ validation-rules:
 - [ ] **End-to-End Tests:** End-to-end tests created for critical user flows when story requirements specify them
 - [ ] **Test Coverage:** Tests cover acceptance criteria and edge cases from story Dev Notes
 - [ ] **ATDD Artifact Consumption:** If story Dev Notes reference TEA ATDD outputs, relevant scaffold tests were activated or extended for the implemented tasks
+- [ ] **No Stale Scaffold Markers:** No task-complete acceptance tests remain blocked behind `test.skip()` or `test.fixme()` for functionality finished by this story
 - [ ] **Regression Prevention:** ALL existing tests pass (no regressions introduced)
 - [ ] **Code Quality:** Linting and static checks pass when configured in project
 - [ ] **Test Framework Compliance:** Tests use project's testing frameworks and patterns from Dev Notes
