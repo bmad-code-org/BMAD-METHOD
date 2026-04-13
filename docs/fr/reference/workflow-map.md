@@ -21,13 +21,14 @@ Note finale importante : Chaque workflow ci-dessous peut être exécuté directe
 
 ## Phase 1 : Analyse (Optionnelle)
 
-Explorez l’espace problème et validez les idées avant de vous engager dans la planification.
+Explorez l’espace problème et validez les idées avant de vous engager dans la planification. [**Découvrez ce que fait chaque outil et quand l’utiliser**](../explanation/analysis-phase.md).
 
 | Workflow                                                                  | Objectif                                                                                 | Produit                   |
 |---------------------------------------------------------------------------|------------------------------------------------------------------------------------------|---------------------------|
-| `bmad-brainstorming`                                                      | Brainstormez des idées de projet avec l'accompagnement guidé d'un coach de brainstorming | `brainstorming-report.md` |
+| `bmad-brainstorming`                                                      | Brainstormez des idées de projet avec l’accompagnement guidé d’un coach de brainstorming | `brainstorming-report.md` |
 | `bmad-domain-research`, `bmad-market-research`, `bmad-technical-research` | Validez les hypothèses de marché, techniques ou de domaine                               | Rapport de recherches     |
-| `bmad-create-product-brief`                                               | Capturez la vision stratégique                                                           | `product-brief.md`        |
+| `bmad-product-brief`                                                      | Capturez la vision stratégique — idéal lorsque votre concept est clair                   | `product-brief.md`        |
+| `bmad-prfaq`                                                              | Working Backwards — éprouvez et forgez votre concept produit                             | `prfaq-{project}.md`       |
 
 ## Phase 2 : Planification
 

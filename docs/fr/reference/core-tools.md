@@ -2,7 +2,7 @@
 title: Outils Principaux
 description: Référence pour toutes les tâches et tous les workflows intégrés disponibles dans chaque installation BMad sans modules supplémentaires.
 sidebar:
-  order: 2
+  order: 3
 ---
 
 Chaque installation BMad comprend un ensemble de compétences principales qui peuvent être utilisées conjointement avec tout ce que vous faites — des tâches et des workflows autonomes qui fonctionnent dans tous les projets, tous les modules et toutes les phases. Ceux-ci sont toujours disponibles, quels que soient les modules optionnels que vous installez.

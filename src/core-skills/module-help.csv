@@ -1,4 +1,5 @@
 module,skill,display-name,menu-code,description,action,args,phase,after,before,required,output-location,outputs
+Core,_meta,,,,,,,,,false,https://docs.bmad-method.org/llms.txt,
 Core,bmad-brainstorming,Brainstorming,BSP,Use early in ideation or when stuck generating ideas.,,anytime,,,false,{output_folder}/brainstorming,brainstorming session
 Core,bmad-party-mode,Party Mode,PM,Orchestrate multi-agent discussions when you need multiple perspectives or want agents to collaborate.,,anytime,,,false,,
 Core,bmad-help,BMad Help,BH,,,anytime,,,false,,

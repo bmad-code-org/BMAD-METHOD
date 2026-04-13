@@ -1,16 +1,17 @@
 ---
-title: "Manage Project Context"
+title: 'Manage Project Context'
 description: Create and maintain project-context.md to guide AI agents
 sidebar:
-  order: 8
+  order: 9
 ---
 
 Use the `project-context.md` file to ensure AI agents follow your project's technical preferences and implementation rules throughout all workflows. To make sure this is always available, you can also add the line `Important project context and conventions are located in [path to project context]/project-context.md` to your tools context or always rules file (such as `AGENTS.md`)
 
 :::note[Prerequisites]
+
 - BMad Method installed
 - Understanding of your project's technology stack and conventions
-:::
+  :::
 
 ## When to Use This
 
@@ -60,14 +61,17 @@ sections_completed: ['technology_stack', 'critical_rules']
 ## Critical Implementation Rules
 
 **TypeScript:**
+
 - Strict mode enabled, no `any` types
 - Use `interface` for public APIs, `type` for unions
 
 **Code Organization:**
+
 - Components in `/src/components/` with co-located tests
 - API calls use `apiClient` singleton — never fetch directly
 
 **Testing:**
+
 - Unit tests focus on business logic
 - Integration tests use MSW for API mocking
 ```
@@ -115,11 +119,12 @@ A `project-context.md` file that:
 ## Tips
 
 :::tip[Best Practices]
+
 - **Focus on the unobvious** — Document patterns agents might miss (e.g., "Use JSDoc on every public class"), not universal practices like "use meaningful variable names."
 - **Keep it lean** — This file is loaded by every implementation workflow. Long files waste context. Exclude content that only applies to narrow scope or specific stories.
 - **Update as needed** — Edit manually when patterns change, or re-generate after significant architecture changes.
 - Works for Quick Flow and full BMad Method projects alike.
-:::
+  :::
 
 ## Next Steps
 

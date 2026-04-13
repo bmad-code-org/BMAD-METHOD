@@ -1,7 +1,6 @@
 ---
 # File references (ONLY variables used in this step)
 prdFile: '{prd_file_path}'
-validationWorkflow: '{project-root}/_bmad/bmm-skills/2-plan-workflows/create-prd/steps-v/step-v-01-discovery.md'
 ---
 
 # Step E-4: Complete & Validate
@@ -117,8 +116,7 @@ Display:
   - Display: "This will run all 13 validation checks on the updated PRD."
   - Display: "Preparing to validate: {prd_file_path}"
   - Display: "**Proceeding to validation...**"
-  - Read fully and follow: {validationWorkflow} (steps-v/step-v-01-discovery.md)
-  - Note: This hands off to the validation workflow which will run its complete 13-step process
+  - Invoke the `bmad-validate-prd` skill to run the complete validation workflow
 
 - **IF E (Edit More):**
   - Display: "**Additional Edits**"

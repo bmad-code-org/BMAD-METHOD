@@ -1,0 +1,32 @@
+# BMAD Installer Messages
+# These messages are displayed during installation
+# Edit this file to change what users see during the install process
+
+# Display at the START of installation (after logo, before prompts)
+startMessage: |
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Agile AI-Driven Development. Powered by BMad Core and a growing module ecosystem.
+  Install official and community modules during setup to customize your experience.
+
+  🌟 100% free. 100% open source. Always.
+     No paywalls. No gated content. Knowledge shared, not sold.
+
+  🌐 CONNECT:
+    Website:   https://bmadcode.com/
+    Discord:   https://discord.gg/gk8jAdXWmj
+    YouTube:   https://www.youtube.com/@BMadCode
+    X:         https://x.com/BMadCode
+    Facebook:  https://facebook.com/@BMadCode
+
+  ⭐ SUPPORT THE PROJECT:
+    Star us:   https://github.com/bmad-code-org/BMAD-METHOD/
+    Donate:    https://buymeacoffee.com/bmad
+    Corporate sponsorship and speaking inquiries: contact@bmadcode.com
+
+  Docs, blog, and latest updates: https://bmadcode.com/
+
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# No end message - install summary and next steps are rendered by the installer
+endMessage: ""

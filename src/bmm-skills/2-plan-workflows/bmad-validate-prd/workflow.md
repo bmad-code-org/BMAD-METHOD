@@ -42,20 +42,19 @@ This uses **step-file architecture** for disciplined execution:
 - ⏸️ **ALWAYS** halt at menus and wait for user input
 - 📋 **NEVER** create mental todo lists from future steps
 
-## INITIALIZATION SEQUENCE
+## Activation
 
-### 1. Configuration Loading
-
-Load and read full config from {main_config} and resolve:
-
-- `project_name`, `output_folder`, `planning_artifacts`, `user_name`
-- `communication_language`, `document_output_language`, `user_skill_level`
-- `date` as system-generated current datetime
+1. Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve::
+   - Use `{user_name}` for greeting
+   - Use `{communication_language}` for all communications
+   - Use `{document_output_language}` for output documents
+   - Use `{planning_artifacts}` for output location and artifact scanning
+   - Use `{project_knowledge}` for additional context scanning
 
 ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the configured `{communication_language}`.
 ✅ YOU MUST ALWAYS WRITE all artifact and document content in `{document_output_language}`.
 
-### 2. Route to Validate Workflow
+2. Route to Validate Workflow
 
 "**Validate Mode: Validating an existing PRD against BMAD standards.**"
 

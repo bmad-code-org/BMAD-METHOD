@@ -2,7 +2,7 @@
 title: "FAQ Projets Existants"
 description: Questions courantes sur l'utilisation de la méthode BMad sur des projets existants
 sidebar:
-  order: 8
+  order: 11
 ---
 Réponses rapides aux questions courantes sur l'utilisation de la méthode BMad (BMM) sur des projets existants.
 

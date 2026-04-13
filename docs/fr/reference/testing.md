@@ -2,7 +2,7 @@
 title: Options de Testing
 description: Comparaison du workflow QA intégré avec le module Test Architect (TEA) pour l'automatisation des tests.
 sidebar:
-  order: 5
+  order: 6
 ---
 
 BMad propose deux approches de test : un workflow QA[^1] intégré pour une génération rapide de tests et un module Test Architect installable pour une stratégie de test de qualité entreprise.
@@ -24,9 +24,9 @@ La plupart des projets devraient commencer avec le workflow QA intégré. Si vou
 
 ## Workflow QA Intégré
 
-Le workflow QA intégré est inclus dans le module BMM (suite Agile). Il génère rapidement des tests fonctionnels en utilisant le framework de test existant de votre projet — aucune configuration ni installation supplémentaire requise.
+Le workflow QA intégré (`bmad-qa-generate-e2e-tests`) fait partie du module BMM (suite Agile), disponible via l'agent Developer. Il génère rapidement des tests fonctionnels en utilisant le framework de test existant de votre projet — aucune configuration ni installation supplémentaire requise.
 
-**Déclencheur :** `QA` ou `bmad-qa-generate-e2e-tests`
+**Déclencheur :** `QA` (via l'agent Developer) ou `bmad-qa-generate-e2e-tests`
 
 ### Ce que le Workflow QA Fait
 
@@ -98,7 +98,7 @@ TEA supporte également la priorisation basée sur les risques P0-P3 et des int�
 Le workflow Automate du QA intégré apparaît dans la Phase 4 (Implémentation) de la carte de workflow méthode BMad. Il est conçu pour s'exécuter **après qu'un epic complet soit terminé** — une fois que toutes les stories d'un epic ont été implémentées et revues. Une séquence typique :
 
 1. Pour chaque story de l'epic : implémenter avec Dev Story (`DS`), puis valider avec Code Review (`CR`)
-2. Après la fin de l'epic : générer les tests avec le workflow QA (`QA`) ou le workflow Automate de TEA
+2. Après la fin de l'epic : générer les tests avec `QA` (via l'agent Developer) ou le workflow Automate de TEA
 3. Lancer la rétrospective (`bmad-retrospective`) pour capturer les leçons apprises
 
 Le workflow QA travaille directement à partir du code source sans charger les documents de planification (PRD, architecture). Les workflows TEA peuvent s'intégrer avec les artefacts de planification en amont pour la traçabilité.

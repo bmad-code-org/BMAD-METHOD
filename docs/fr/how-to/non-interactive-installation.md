@@ -27,7 +27,6 @@ Nécessite [Node.js](https://nodejs.org) v20+ et `npx` (inclus avec npm).
 | `--directory <chemin>` | Répertoire d'installation | `--directory ~/projects/myapp` |
 | `--modules <modules>` | IDs de modules séparés par des virgules | `--modules bmm,bmb` |
 | `--tools <outils>` | IDs d'outils/IDE séparés par des virgules (utilisez `none` pour ignorer) | `--tools claude-code,cursor` ou `--tools none` |
-| `--custom-content <chemins>` | Chemins vers des modules personnalisés séparés par des virgules | `--custom-content ~/my-module,~/another-module` |
 | `--action <type>` | Action pour les installations existantes : `install` (par défaut), `update`, ou `quick-update` | `--action quick-update` |
 
 ### Configuration principale
@@ -37,7 +36,19 @@ Nécessite [Node.js](https://nodejs.org) v20+ et `npx` (inclus avec npm).
 | `--user-name <nom>` | Nom à utiliser par les agents | Nom d'utilisateur système |
 | `--communication-language <langue>` | Langue de communication des agents | Anglais |
 | `--document-output-language <langue>` | Langue de sortie des documents | Anglais |
-| `--output-folder <chemin>` | Chemin du dossier de sortie | _bmad-output |
+| `--output-folder <chemin>` | Chemin du dossier de sortie (voir les règles de résolution ci-dessous) | `_bmad-output` |
+
+#### Résolution du chemin du dossier de sortie
+
+La valeur passée à `--output-folder` (ou saisie de manière interactive) est résolue selon ces règles :
+
+| Type d'entrée                 | Exemple                    | Résolu comme                                                 |
+|-------------------------------|----------------------------|--------------------------------------------------------------|
+| Chemin relatif (par défaut)   | `_bmad-output`             | `<racine-du-projet>/_bmad-output`                            |
+| Chemin relatif avec traversée | `../../shared-outputs`     | Chemin absolu normalisé — ex. `/Users/me/shared-outputs`     |
+| Chemin absolu                 | `/Users/me/shared-outputs` | Utilisé tel quel — la racine du projet n'est **pas** ajoutée |
+
+Le chemin résolu est ce que les agents et les workflows vont utiliser lors de l'écriture des fichiers de sortie. L'utilisation d'un chemin absolu ou d'un chemin relatif avec traversée vous permet de diriger tous les artefacts générés vers un répertoire en dehors de l'arborescence de votre projet — utile pour les configurations partagées ou les monorepos.
 
 ### Autres options
 
@@ -61,7 +72,7 @@ IDs d'outils disponibles pour l’option `--tools` :
 
 **Recommandés :** `claude-code`, `cursor`
 
-Exécutez `npx bmad-method install` de manière interactive une fois pour voir la liste complète actuelle des outils pris en charge, ou consultez la [configuration des codes de la plateforme](https://github.com/bmad-code-org/BMAD-METHOD/blob/main/tools/cli/installers/lib/ide/platform-codes.yaml).
+Exécutez `npx bmad-method install` de manière interactive une fois pour voir la liste complète actuelle des outils pris en charge, ou consultez la [configuration des codes de la plateforme](https://github.com/bmad-code-org/BMAD-METHOD/blob/main/tools/installer/ide/platform-codes.yaml).
 
 ## Modes d'installation
 
@@ -108,16 +119,6 @@ npx bmad-method install \
   --action quick-update
 ```
 
-### Installation avec du contenu personnalisé
-
-```bash
-npx bmad-method install \
-  --directory ~/projects/myapp \
-  --modules bmm \
-  --custom-content ~/my-custom-module,~/another-module \
-  --tools claude-code
-```
-
 ## Ce que vous obtenez
 
 - Un répertoire `_bmad/` entièrement configuré dans votre projet
@@ -131,16 +132,16 @@ BMad valide toutes les options fournis :
 - **Directory** — Doit être un chemin valide avec des permissions d'écriture
 - **Modules** — Avertit des IDs de modules invalides (mais n'échoue pas)
 - **Tools** — Avertit des IDs d'outils invalides (mais n'échoue pas)
-- **Custom Content** — Chaque chemin doit contenir un fichier `module.yaml` valide
 - **Action** — Doit être l'une des suivantes : `install`, `update`, `quick-update`
 
 Les valeurs invalides entraîneront soit :
 1. L’affichage d’un message d'erreur suivi d’un exit (pour les options critiques comme le répertoire)
-2. Un avertissement puis la continuation de l’installation (pour les éléments optionnels comme le contenu personnalisé)
+2. Un avertissement puis la continuation de l’installation (pour les éléments optionnels)
 3. Un retour aux invites interactives (pour les valeurs requises manquantes)
 
 :::tip[Bonnes pratiques]
 - Utilisez des chemins absolus pour `--directory` pour éviter toute ambiguïté
+- Utilisez un chemin absolu pour `--output-folder` lorsque vous souhaitez que les artefacts soient écrits en dehors de l'arborescence du projet (ex. un répertoire de sorties partagé dans un monorepo)
 - Testez les options localement avant de les utiliser dans des pipelines CI/CD
 - Combinez avec `-y` pour des installations vraiment sans surveillance
 - Utilisez `--debug` si vous rencontrez des problèmes lors de l'installation
@@ -158,13 +159,6 @@ Les valeurs invalides entraîneront soit :
 
 - Vérifiez que l'ID du module est correct
 - Les modules externes doivent être disponibles dans le registre
-
-### Chemin de contenu personnalisé invalide
-
-Assurez-vous que chaque chemin de contenu personnalisé :
-- Pointe vers un répertoire
-- Contient un fichier `module.yaml` à la racine
-- Possède un champ `code` dans `module.yaml`
 
 :::note[Toujours bloqué ?]
 Exécutez avec `--debug` pour une sortie détaillée, essayez le mode interactif pour isoler le problème, ou signalez-le à <https://github.com/bmad-code-org/BMAD-METHOD/issues>.

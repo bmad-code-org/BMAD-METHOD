@@ -2,7 +2,7 @@
 title: Skills
 description: Référence des skills BMad — ce qu'ils sont, comment ils fonctionnent et où les trouver.
 sidebar:
-  order: 3
+  order: 4
 ---
 
 Les skills sont des prompts pré-construits qui chargent des agents, exécutent des workflows ou lancent des tâches dans votre IDE. L'installateur BMad les génère à partir de vos modules installés au moment de l'installation. Si vous ajoutez, supprimez ou modifiez des modules ultérieurement, relancez l'installateur pour garder les skills synchronisés (voir [Dépannage](#dépannage)).
@@ -54,12 +54,12 @@ Chaque skill est un répertoire contenant un fichier `SKILL.md`. Par exemple, un
 │   └── SKILL.md
 ├── bmad-create-prd/
 │   └── SKILL.md
-├── bmad-analyst/
+├── bmad-agent-dev/
 │   └── SKILL.md
 └── ...
 ```
 
-Le nom du répertoire détermine le nom du skill dans votre IDE. Par exemple, le répertoire `bmad-analyst/` enregistre le skill `bmad-analyst`.
+Le nom du répertoire détermine le nom du skill dans votre IDE. Par exemple, le répertoire `bmad-agent-dev/` enregistre le skill `bmad-agent-dev`.
 
 ## Comment découvrir vos skills
 
@@ -75,23 +75,24 @@ Les répertoires de skills générés dans votre projet sont la liste de référ
 
 ### Skills d'agent
 
-Les skills d'agent chargent une persona[^2] IA spécialisée avec un rôle défini, un style de communication et un menu de workflows. Une fois chargé, l'agent reste en caractère et répond aux déclencheurs du menu.
+Les skills d'agent chargent un persona[^2] IA spécialisé avec un rôle défini, un style de communication et un menu de workflows. Une fois chargé, l'agent reste en caractère et répond aux déclencheurs du menu.
 
-| Exemple de skill | Agent | Rôle |
-| --- | --- | --- |
-| `bmad-analyst` | Mary (Analyste) | Brainstorming de projets, recherche, création de briefs |
-| `bmad-architect` | Winston (Architecte) | Conçoit l'architecture système |
-| `bmad-ux-designer` | Sally (Designer UX) | Crée les designs UX |
-| `bmad-tech-writer` | Paige (Rédacteur Technique) | Documente les projets, rédige des guides, génère des diagrammes |
+| Exemple de skill | Agent                  | Rôle                                                        |
+|------------------|------------------------|-------------------------------------------------------------|
+| `bmad-agent-dev` | Amelia (Développeur)   | Implémente les stories avec une adhérence stricte aux specs |
+| `bmad-pm`        | John (Product Manager) | Crée et valide les PRDs[^1]                                 |
+| `bmad-architect` | Winston (Architecte)   | Conçoit l'architecture système                              |
 
 Consultez [Agents](./agents.md) pour la liste complète des agents par défaut et leurs déclencheurs.
 
 ### Skills de workflow
 
-Les skills de workflow exécutent un processus structuré en plusieurs étapes sans charger d'abord une persona d'agent. Ils chargent une configuration de workflow et suivent ses étapes.
+Les skills de workflow exécutent un processus structuré en plusieurs étapes sans charger d'abord un persona d'agent. Ils chargent une configuration de workflow et suivent ses étapes.
 
 | Exemple de skill | Objectif |
 | --- | --- |
+| `bmad-product-brief` | Créer un product brief[^3] — découverte guidée lorsque votre concept est clair |
+| `bmad-prfaq` | Défi [PRFAQ Working Backwards](../explanation/analysis-phase.md#prfaq-working-backwards) pour éprouver votre concept produit |
 | `bmad-create-prd` | Créer un PRD[^1] |
 | `bmad-create-architecture` | Concevoir l'architecture système |
 | `bmad-create-epics-and-stories` | Créer des epics et des stories |
@@ -123,7 +124,7 @@ Le module principal inclut 11 outils intégrés — revues, compression, brainst
 
 ## Convention de nommage
 
-Tous les skills utilisent le préfixe `bmad-` suivi d'un nom descriptif (ex. `bmad-analyst`, `bmad-create-prd`, `bmad-help`). Consultez [Modules](./modules.md) pour les modules disponibles.
+Tous les skills utilisent le préfixe `bmad-` suivi d'un nom descriptif (ex. `bmad-agent-dev`, `bmad-create-prd`, `bmad-help`). Consultez [Modules](./modules.md) pour les modules disponibles.
 
 ## Dépannage
 
@@ -136,4 +137,5 @@ Tous les skills utilisent le préfixe `bmad-` suivi d'un nom descriptif (ex. `bm
 ## Glossaire
 
 [^1]: PRD (Product Requirements Document) : document de référence qui décrit les objectifs du produit, les besoins utilisateurs, les fonctionnalités attendues, les contraintes et les critères de succès, afin d’aligner les équipes sur ce qui doit être construit et pourquoi.
-[^2]: Persona : dans le contexte de BMad, une persona désigne un agent IA avec un rôle défini, un style de communication et une expertise spécifiques (ex. Mary l'analyste, Winston l'architecte). Chaque persona garde son "caractère" pendant les interactions.
+[^2]: Persona : dans le contexte de BMad, un persona désigne un agent IA avec un rôle défini, un style de communication et une expertise spécifiques (ex. Mary l'analyste, Winston l'architecte). Chaque persona garde son "caractère" pendant les interactions.
+[^3]: Brief : document synthétique qui formalise le contexte, les objectifs, le périmètre et les contraintes d'un projet ou d'une demande, afin d'aligner rapidement les parties prenantes avant le travail détaillé.
