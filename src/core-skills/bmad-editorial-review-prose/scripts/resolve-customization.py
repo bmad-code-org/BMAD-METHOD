@@ -91,7 +91,7 @@ def deep_merge(base: dict[str, Any], override: dict[str, Any]) -> dict[str, Any]
         if isinstance(over_val, dict) and isinstance(base_val, dict):
             merged[key] = deep_merge(base_val, over_val)
         elif _is_menu_array(over_val) and _is_menu_array(base_val):
-            merged[key] = merge_menu(base_val, over_val)
+            merged[key] = merge_menu(base_val, over_val)  # type: ignore[arg-type]
         else:
             merged[key] = over_val
 
