@@ -6,9 +6,22 @@
 
 **Goal:** Save the polished brief, offer the LLM distillate, and point the user forward.
 
+## Resolve Stage Customization
+
+Resolve `config.outputFile`, `config.distillateFile`, `config.alwaysGenerateDistillate`,
+and `inject.after` from customization:
+Run: `python ./scripts/resolve-customization.py bmad-product-brief --key config.outputFile --key config.distillateFile --key config.alwaysGenerateDistillate --key inject.after`
+
+If script unavailable, read these fields from the customization files
+(most specific first: user > team > skill defaults).
+
+## Step 0: Apply Post-Workflow Injection
+
+If resolved `inject.after` is not empty, read and incorporate its content now. This is the team/user's final checklist or validation gate before the brief is considered complete.
+
 ## Step 1: Polish and Save
 
-Update the product brief document at `{planning_artifacts}/product-brief-{project_name}.md`:
+Update the product brief document at the resolved `config.outputFile` path:
 - Update frontmatter `status` to `"complete"`
 - Update `updated` timestamp
 - Ensure formatting is clean and consistent
@@ -18,10 +31,12 @@ Update the product brief document at `{planning_artifacts}/product-brief-{projec
 
 Throughout the discovery process, you likely captured detail that doesn't belong in a 1-2 page executive summary but is valuable for downstream work — requirements hints, platform preferences, rejected ideas, technical constraints, detailed user scenarios, competitive deep-dives, etc.
 
-**Ask the user:**
-"Your product brief is complete. During our conversation, I captured additional detail that goes beyond the executive summary — things like [mention 2-3 specific examples of overflow you captured]. Would you like me to create a detail pack for PRD creation? It distills all that extra context into a concise, structured format optimized for the next phase."
+**If `config.alwaysGenerateDistillate` is true**, skip the offer prompt and create the distillate automatically.
 
-**If yes, create the distillate** at `{planning_artifacts}/product-brief-{project_name}-distillate.md`:
+**Otherwise, ask the user:**
+"Your product brief is complete. During our conversation, I captured additional detail that goes beyond the executive summary -- things like [mention 2-3 specific examples of overflow you captured]. Would you like me to create a detail pack for PRD creation? It distills all that extra context into a concise, structured format optimized for the next phase."
+
+**If yes (or always-generate is true), create the distillate** at the resolved `config.distillateFile` path:
 
 ```yaml
 ---

@@ -6,9 +6,18 @@
 
 **Goal:** Produce the executive product brief and run it through multiple review lenses to catch blind spots before the user sees the final version.
 
+## Resolve Stage Customization
+
+Resolve `config.outputFile`, `config.sections`, `config.customSections`, and `review`
+from customization:
+Run: `python ./scripts/resolve-customization.py bmad-product-brief --key config.outputFile --key config.sections --key config.customSections --key review`
+
+If script unavailable, read these fields from the customization files
+(most specific first: user > team > skill defaults).
+
 ## Step 1: Draft the Executive Brief
 
-Use `../resources/brief-template.md` as a guide — adapt structure to fit the product's story.
+Use `../resources/brief-template.md` as a guide -- adapt structure to fit the product's story.
 
 **Writing principles:**
 - **Executive audience** — persuasive, clear, concise. 1-2 pages.
@@ -17,7 +26,9 @@ Use `../resources/brief-template.md` as a guide — adapt structure to fit the p
 - **Confident voice** — this is a pitch, not a hedge
 - Write in `{document_output_language}`
 
-**Create the output document at:** `{planning_artifacts}/product-brief-{project_name}.md`
+**Create the output document at** the resolved `config.outputFile` path (default: `{planning_artifacts}/product-brief-{project_name}.md`).
+
+Use resolved `config.sections` to control which sections appear and their emphasis. If any `config.customSections` were resolved, append them after the standard sections.
 
 Include YAML frontmatter:
 ```yaml
@@ -32,15 +43,15 @@ inputs: [list of input files used]
 
 ## Step 2: Fan Out Review Subagents
 
-Before showing the draft to the user, run it through multiple review lenses in parallel.
+Before showing the draft to the user, run it through multiple review lenses in parallel. Use the resolved `review` config to determine which lenses to run.
 
-**Launch in parallel:**
+**Launch in parallel** (skip any where the resolved config disables them):
 
-1. **Skeptic Reviewer** (`../agents/skeptic-reviewer.md`) — "What's missing? What assumptions are untested? What could go wrong? Where is the brief vague or hand-wavy?"
+1. **Skeptic Reviewer** (`../agents/skeptic-reviewer.md`) -- if `review.skepticReview` is true: "What's missing? What assumptions are untested? What could go wrong? Where is the brief vague or hand-wavy?"
 
-2. **Opportunity Reviewer** (`../agents/opportunity-reviewer.md`) — "What adjacent value propositions are being missed? What market angles or partnerships could strengthen this? What's underemphasized?"
+2. **Opportunity Reviewer** (`../agents/opportunity-reviewer.md`) -- if `review.opportunityReview` is true: "What adjacent value propositions are being missed? What market angles or partnerships could strengthen this? What's underemphasized?"
 
-3. **Contextual Reviewer** — You (the main agent) pick the most useful third lens based on THIS specific product. Choose the lens that addresses the SINGLE BIGGEST RISK that the skeptic and opportunity reviewers won't naturally catch. Examples:
+3. **Contextual Reviewer** -- if `review.contextualReview` is true: If `review.contextualReviewLens` is not empty, use that specific lens. Otherwise, you (the main agent) pick the most useful third lens based on THIS specific product. Choose the lens that addresses the SINGLE BIGGEST RISK that the skeptic and opportunity reviewers won't naturally catch. Examples:
    - For healthtech: "Regulatory and compliance risk reviewer"
    - For devtools: "Developer experience and adoption friction critic"
    - For marketplace: "Network effects and chicken-and-egg problem analyst"

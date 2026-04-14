@@ -454,6 +454,11 @@ class OfficialModules {
         continue;
       }
 
+      // Skip scripts directory - contains build/customization scripts not needed at install time
+      if (file.startsWith('scripts/') || file === 'scripts') {
+        continue;
+      }
+
       // Skip sidecar directories - these contain agent-specific assets not needed at install time
       const isInSidecarDirectory = path
         .dirname(file)
