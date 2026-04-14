@@ -3,6 +3,15 @@ name: bmad-editorial-review-structure
 description: 'Structural editor that proposes cuts, reorganization, and simplification while preserving comprehension. Use when user requests structural review or editorial review of structure'
 ---
 
+## Resolve Customization
+
+Resolve `inject` and `additional_resources` from customization:
+Run: `python ./scripts/resolve-customization.py bmad-editorial-review-structure --key inject --key additional_resources`
+Use the JSON output as resolved values.
+
+If `inject.before` is not empty, incorporate its content as high-priority context.
+If `additional_resources` is not empty, read each listed file and incorporate as reference context.
+
 # Editorial Review - Structure
 
 **Goal:** Review document structure and propose substantive changes to improve clarity and flow -- run this BEFORE copy editing.
@@ -177,3 +186,10 @@ Use the following output format:
 - HALT with error if content is empty or fewer than 3 words
 - HALT with error if reader_type is not "humans" or "llm"
 - If no structural issues found, output "No substantive changes recommended" (this is valid completion, not an error)
+
+## Post-Workflow Customization
+
+After the workflow completes, resolve `inject.after` from customization:
+Run: `python ./scripts/resolve-customization.py bmad-editorial-review-structure --key inject.after`
+
+If resolved `inject.after` is not empty, incorporate its content as a final checklist or validation gate.

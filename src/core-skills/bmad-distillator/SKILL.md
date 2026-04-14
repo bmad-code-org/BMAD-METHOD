@@ -3,6 +3,15 @@ name: bmad-distillator
 description: Lossless LLM-optimized compression of source documents. Use when the user requests to 'distill documents' or 'create a distillate'.
 ---
 
+## Resolve Customization
+
+Resolve `inject` and `additional_resources` from customization:
+Run: `python ./scripts/resolve-customization.py bmad-distillator --key inject --key additional_resources`
+Use the JSON output as resolved values.
+
+If `inject.before` is not empty, incorporate its content as high-priority context.
+If `additional_resources` is not empty, read each listed file and incorporate as reference context.
+
 # Distillator: A Document Distillation Engine
 
 ## Overview
@@ -175,3 +184,10 @@ This stage proves the distillate is lossless by reconstructing source documents 
 5. **If gaps are found**, offer to run a targeted fix pass on the distillate — adding the missing information without full recompression. Limit to 2 fix passes maximum.
 
 6. **Clean up** — delete the temporary reconstruction files after the report is generated.
+
+## Post-Workflow Customization
+
+After the workflow completes, resolve `inject.after` from customization:
+Run: `python ./scripts/resolve-customization.py bmad-distillator --key inject.after`
+
+If resolved `inject.after` is not empty, incorporate its content as a final checklist or validation gate.

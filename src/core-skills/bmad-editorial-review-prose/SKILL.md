@@ -3,6 +3,15 @@ name: bmad-editorial-review-prose
 description: 'Clinical copy-editor that reviews text for communication issues. Use when user says review for prose or improve the prose'
 ---
 
+## Resolve Customization
+
+Resolve `inject` and `additional_resources` from customization:
+Run: `python ./scripts/resolve-customization.py bmad-editorial-review-prose --key inject --key additional_resources`
+Use the JSON output as resolved values.
+
+If `inject.before` is not empty, incorporate its content as high-priority context.
+If `additional_resources` is not empty, read each listed file and incorporate as reference context.
+
 # Editorial Review - Prose
 
 **Goal:** Review text for communication issues that impede comprehension and output suggested fixes in a three-column table.
@@ -16,7 +25,6 @@ description: 'Clinical copy-editor that reviews text for communication issues. U
 - **style_guide** (optional) — Project-specific style guide. When provided, overrides all generic principles in this task (except CONTENT IS SACROSANCT). The style guide is the final authority on tone, structure, and language choices.
 - **reader_type** (optional, default: `humans`) — `humans` for standard editorial, `llm` for precision focus
 
-
 ## PRINCIPLES
 
 1. **Minimal intervention:** Apply the smallest fix that achieves clarity
@@ -28,7 +36,6 @@ description: 'Clinical copy-editor that reviews text for communication issues. U
 7. **Respect author voice:** Preserve intentional stylistic choices
 
 > **STYLE GUIDE OVERRIDE:** If a style_guide input is provided, it overrides ALL generic principles in this task (including the Microsoft Writing Style Guide baseline and reader_type-specific priorities). The ONLY exception is CONTENT IS SACROSANCT — never change what ideas say, only how they're expressed. When style guide conflicts with this task, style guide wins.
-
 
 ## STEPS
 
@@ -78,9 +85,15 @@ description: 'Clinical copy-editor that reviews text for communication issues. U
 | The system will processes data and it handles errors. | The system processes data and handles errors. | Fixed subject-verb agreement ("will processes" to "processes"); removed redundant "it" |
 | Users can chose from options (lines 12, 45, 78) | Users can choose from options | Fixed spelling: "chose" to "choose" (appears in 3 locations) |
 
-
 ## HALT CONDITIONS
 
 - HALT with error if content is empty or fewer than 3 words
 - HALT with error if reader_type is not `humans` or `llm`
 - If no issues found after thorough review, output "No editorial issues identified" (this is valid completion, not an error)
+
+## Post-Workflow Customization
+
+After the workflow completes, resolve `inject.after` from customization:
+Run: `python ./scripts/resolve-customization.py bmad-editorial-review-prose --key inject.after`
+
+If resolved `inject.after` is not empty, incorporate its content as a final checklist or validation gate.

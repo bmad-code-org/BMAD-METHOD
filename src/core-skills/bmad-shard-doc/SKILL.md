@@ -3,6 +3,15 @@ name: bmad-shard-doc
 description: 'Splits large markdown documents into smaller, organized files based on level 2 (default) sections. Use if the user says perform shard document'
 ---
 
+## Resolve Customization
+
+Resolve `inject` and `additional_resources` from customization:
+Run: `python ./scripts/resolve-customization.py bmad-shard-doc --key inject --key additional_resources`
+Use the JSON output as resolved values.
+
+If `inject.before` is not empty, incorporate its content as high-priority context.
+If `additional_resources` is not empty, read each listed file and incorporate as reference context.
+
 # Shard Document
 
 **Goal:** Split large markdown documents into smaller, organized files based on level 2 sections using `npx @kayvan/markdown-tree-parser`.
@@ -103,3 +112,10 @@ Present user with options for the original document:
 ## HALT CONDITIONS
 
 - HALT if npx command fails or produces no output files
+
+## Post-Workflow Customization
+
+After the workflow completes, resolve `inject.after` from customization:
+Run: `python ./scripts/resolve-customization.py bmad-shard-doc --key inject.after`
+
+If resolved `inject.after` is not empty, incorporate its content as a final checklist or validation gate.

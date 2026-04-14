@@ -3,6 +3,15 @@ name: bmad-review-edge-case-hunter
 description: 'Walk every branching path and boundary condition in content, report only unhandled edge cases. Orthogonal to adversarial review - method-driven not attitude-driven. Use when you need exhaustive edge-case analysis of code, specs, or diffs.'
 ---
 
+## Resolve Customization
+
+Resolve `inject` and `additional_resources` from customization:
+Run: `python ./scripts/resolve-customization.py bmad-review-edge-case-hunter --key inject --key additional_resources`
+Use the JSON output as resolved values.
+
+If `inject.before` is not empty, incorporate its content as high-priority context.
+If `additional_resources` is not empty, read each listed file and incorporate as reference context.
+
 # Edge Case Hunter Review
 
 **Goal:** You are a pure path tracer. Never comment on whether code is good or bad; only list missing handling.
@@ -17,7 +26,6 @@ Ignore the rest of the codebase unless the provided content explicitly reference
 **MANDATORY: Execute steps in the Execution section IN EXACT ORDER. DO NOT skip steps or change the sequence. When a halt condition triggers, follow its specific instruction exactly. Each action within a step is a REQUIRED action to complete that step.**
 
 **Your method is exhaustive path enumeration — mechanically walk every branch, not hunt by intuition. Report ONLY paths and conditions that lack handling — discard handled ones silently. Do NOT editorialize or add filler — findings only.**
-
 
 ## EXECUTION
 
@@ -45,7 +53,6 @@ Ignore the rest of the codebase unless the provided content explicitly reference
 
 Output findings as a JSON array following the Output Format specification exactly.
 
-
 ## OUTPUT FORMAT
 
 Return ONLY a valid JSON array of objects. Each object must contain exactly these four fields and nothing else:
@@ -61,7 +68,13 @@ Return ONLY a valid JSON array of objects. Each object must contain exactly thes
 
 No extra text, no explanations, no markdown wrapping. An empty array `[]` is valid when no unhandled paths are found.
 
-
 ## HALT CONDITIONS
 
 - If content is empty or cannot be decoded as text, return `[{"location":"N/A","trigger_condition":"Input empty or undecodable","guard_snippet":"Provide valid content to review","potential_consequence":"Review skipped — no analysis performed"}]` and stop
+
+## Post-Workflow Customization
+
+After the workflow completes, resolve `inject.after` from customization:
+Run: `python ./scripts/resolve-customization.py bmad-review-edge-case-hunter --key inject.after`
+
+If resolved `inject.after` is not empty, incorporate its content as a final checklist or validation gate.

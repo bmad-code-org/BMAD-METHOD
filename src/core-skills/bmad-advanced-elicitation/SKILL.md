@@ -3,6 +3,15 @@ name: bmad-advanced-elicitation
 description: 'Push the LLM to reconsider, refine, and improve its recent output. Use when user asks for deeper critique or mentions a known deeper critique method, e.g. socratic, first principles, pre-mortem, red team.'
 ---
 
+## Resolve Customization
+
+Resolve `inject` and `additional_resources` from customization:
+Run: `python ./scripts/resolve-customization.py bmad-advanced-elicitation --key inject --key additional_resources`
+Use the JSON output as resolved values.
+
+If `inject.before` is not empty, incorporate its content as high-priority context.
+If `additional_resources` is not empty, read each listed file and incorporate as reference context.
+
 # Advanced Elicitation
 
 **Goal:** Push the LLM to reconsider, refine, and improve its recent output.
@@ -134,3 +143,10 @@ x. Proceed / No Further Actions
   1. Apply to the current enhanced version of the content
   2. Show the improvements made
   3. Return to the prompt for additional elicitations or completion
+
+## Post-Workflow Customization
+
+After the workflow completes, resolve `inject.after` from customization:
+Run: `python ./scripts/resolve-customization.py bmad-advanced-elicitation --key inject.after`
+
+If resolved `inject.after` is not empty, incorporate its content as a final checklist or validation gate.

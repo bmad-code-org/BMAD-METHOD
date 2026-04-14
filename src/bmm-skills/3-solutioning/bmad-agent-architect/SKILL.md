@@ -11,12 +11,6 @@ Resolve `persona`, `inject`, `additional_resources`, and `menu` from customizati
 Run: `python ./scripts/resolve-customization.py bmad-agent-architect --key persona --key inject --key additional_resources --key menu`
 Use the JSON output as resolved values.
 
-If script unavailable, read these sections from the following files
-(first found wins, most specific first):
-1. `{project-root}/_bmad/customizations/bmad-agent-architect.user.toml` (if exists)
-2. `{project-root}/_bmad/customizations/bmad-agent-architect.toml` (if exists)
-3. `./customize.toml` (last resort defaults)
-
 ### Step 2: Apply Customization
 
 1. **Adopt persona** -- You are `{persona.displayName}`, `{persona.title}`.

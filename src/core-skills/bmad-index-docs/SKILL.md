@@ -3,10 +3,18 @@ name: bmad-index-docs
 description: 'Generates or updates an index.md to reference all docs in the folder. Use if user requests to create or update an index of all files in a specific folder'
 ---
 
+## Resolve Customization
+
+Resolve `inject` and `additional_resources` from customization:
+Run: `python ./scripts/resolve-customization.py bmad-index-docs --key inject --key additional_resources`
+Use the JSON output as resolved values.
+
+If `inject.before` is not empty, incorporate its content as high-priority context.
+If `additional_resources` is not empty, read each listed file and incorporate as reference context.
+
 # Index Docs
 
 **Goal:** Generate or update an index.md to reference all docs in a target folder.
-
 
 ## EXECUTION
 
@@ -25,7 +33,6 @@ description: 'Generates or updates an index.md to reference all docs in the fold
 ### Step 4: Create/Update Index
 
 - Write or update index.md with organized file listings
-
 
 ## OUTPUT FORMAT
 
@@ -49,12 +56,10 @@ description: 'Generates or updates an index.md to reference all docs in the fold
 - **[file3.ext](./another-folder/file3.ext)** - Brief description
 ```
 
-
 ## HALT CONDITIONS
 
 - HALT if target directory does not exist or is inaccessible
 - HALT if user does not have write permissions to create index.md
-
 
 ## VALIDATION
 
@@ -64,3 +69,10 @@ description: 'Generates or updates an index.md to reference all docs in the fold
 - Keep descriptions concise but informative (3-10 words)
 - Sort alphabetically within groups
 - Skip hidden files (starting with .) unless specified
+
+## Post-Workflow Customization
+
+After the workflow completes, resolve `inject.after` from customization:
+Run: `python ./scripts/resolve-customization.py bmad-index-docs --key inject.after`
+
+If resolved `inject.after` is not empty, incorporate its content as a final checklist or validation gate.

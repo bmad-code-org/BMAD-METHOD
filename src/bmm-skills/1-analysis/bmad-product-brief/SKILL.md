@@ -21,12 +21,6 @@ Resolve `inject`, `additional_resources`, and `config.defaultMode` from customiz
 Run: `python ./scripts/resolve-customization.py bmad-product-brief --key inject --key additional_resources --key config.defaultMode`
 Use the JSON output as resolved values.
 
-If script unavailable, read these fields from the following files
-(first found wins, most specific first):
-1. `{project-root}/_bmad/customizations/bmad-product-brief.user.toml` (if exists)
-2. `{project-root}/_bmad/customizations/bmad-product-brief.toml` (if exists)
-3. `./customize.toml` (last resort defaults)
-
 ### Step 2: Apply Activation Customization
 
 1. **Inject before** -- If `inject.before` is not empty, read and incorporate
