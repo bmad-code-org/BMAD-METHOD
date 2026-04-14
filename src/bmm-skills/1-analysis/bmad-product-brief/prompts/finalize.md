@@ -10,7 +10,7 @@
 
 Resolve `config.outputFile`, `config.distillateFile`, `config.alwaysGenerateDistillate`,
 and `inject.after` from customization:
-Run: `python ./scripts/resolve-customization.py bmad-product-brief --key config.outputFile --key config.distillateFile --key config.alwaysGenerateDistillate --key inject.after`
+Run: `python3 scripts/resolve-customization.py bmad-product-brief --key config.outputFile --key config.distillateFile --key config.alwaysGenerateDistillate --key inject.after`
 
 If script unavailable, read these fields from the customization files
 (most specific first: user > team > skill defaults).

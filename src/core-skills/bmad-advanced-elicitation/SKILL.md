@@ -3,10 +3,14 @@ name: bmad-advanced-elicitation
 description: 'Push the LLM to reconsider, refine, and improve its recent output. Use when user asks for deeper critique or mentions a known deeper critique method, e.g. socratic, first principles, pre-mortem, red team.'
 ---
 
+## Available Scripts
+
+- **`scripts/resolve-customization.py`** -- Resolves customization from three-layer TOML merge (user > team > defaults). Outputs JSON.
+
 ## Resolve Customization
 
 Resolve `inject` and `additional_resources` from customization:
-Run: `python ./scripts/resolve-customization.py bmad-advanced-elicitation --key inject --key additional_resources`
+Run: `python3 scripts/resolve-customization.py bmad-advanced-elicitation --key inject --key additional_resources`
 Use the JSON output as resolved values.
 
 If `inject.before` is not empty, incorporate its content as high-priority context.
@@ -147,6 +151,6 @@ x. Proceed / No Further Actions
 ## Post-Workflow Customization
 
 After the workflow completes, resolve `inject.after` from customization:
-Run: `python ./scripts/resolve-customization.py bmad-advanced-elicitation --key inject.after`
+Run: `python3 scripts/resolve-customization.py bmad-advanced-elicitation --key inject.after`
 
 If resolved `inject.after` is not empty, incorporate its content as a final checklist or validation gate.

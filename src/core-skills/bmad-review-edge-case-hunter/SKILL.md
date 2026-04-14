@@ -3,10 +3,14 @@ name: bmad-review-edge-case-hunter
 description: 'Walk every branching path and boundary condition in content, report only unhandled edge cases. Orthogonal to adversarial review - method-driven not attitude-driven. Use when you need exhaustive edge-case analysis of code, specs, or diffs.'
 ---
 
+## Available Scripts
+
+- **`scripts/resolve-customization.py`** -- Resolves customization from three-layer TOML merge (user > team > defaults). Outputs JSON.
+
 ## Resolve Customization
 
 Resolve `inject` and `additional_resources` from customization:
-Run: `python ./scripts/resolve-customization.py bmad-review-edge-case-hunter --key inject --key additional_resources`
+Run: `python3 scripts/resolve-customization.py bmad-review-edge-case-hunter --key inject --key additional_resources`
 Use the JSON output as resolved values.
 
 If `inject.before` is not empty, incorporate its content as high-priority context.
@@ -75,6 +79,6 @@ No extra text, no explanations, no markdown wrapping. An empty array `[]` is val
 ## Post-Workflow Customization
 
 After the workflow completes, resolve `inject.after` from customization:
-Run: `python ./scripts/resolve-customization.py bmad-review-edge-case-hunter --key inject.after`
+Run: `python3 scripts/resolve-customization.py bmad-review-edge-case-hunter --key inject.after`
 
 If resolved `inject.after` is not empty, incorporate its content as a final checklist or validation gate.

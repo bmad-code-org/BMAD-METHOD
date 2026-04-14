@@ -5,10 +5,14 @@ description: Strategic business analyst and requirements expert. Use when the us
 
 ## On Activation
 
+### Available Scripts
+
+- **`scripts/resolve-customization.py`** -- Resolves customization from three-layer TOML merge (user > team > defaults). Outputs JSON.
+
 ### Step 1: Resolve Activation Customization
 
 Resolve `persona`, `inject`, `additional_resources`, and `menu` from customization:
-Run: `python ./scripts/resolve-customization.py bmad-agent-analyst --key persona --key inject --key additional_resources --key menu`
+Run: `python3 scripts/resolve-customization.py bmad-agent-analyst --key persona --key inject --key additional_resources --key menu`
 Use the JSON output as resolved values.
 
 ### Step 2: Apply Customization

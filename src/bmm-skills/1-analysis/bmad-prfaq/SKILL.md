@@ -3,10 +3,14 @@ name: bmad-prfaq
 description: Working Backwards PRFAQ challenge to forge product concepts. Use when the user requests to 'create a PRFAQ', 'work backwards', or 'run the PRFAQ challenge'.
 ---
 
+## Available Scripts
+
+- **`scripts/resolve-customization.py`** -- Resolves customization from three-layer TOML merge (user > team > defaults). Outputs JSON.
+
 ## Resolve Customization
 
 Resolve `inject` and `additional_resources` from customization:
-Run: `python ./scripts/resolve-customization.py bmad-prfaq --key inject --key additional_resources`
+Run: `python3 scripts/resolve-customization.py bmad-prfaq --key inject --key additional_resources`
 Use the JSON output as resolved values.
 
 If `inject.before` is not empty, incorporate its content as high-priority context.
@@ -107,6 +111,6 @@ When the user gets stuck, offer concrete suggestions based on what they've share
 ## Post-Workflow Customization
 
 After the workflow completes, resolve `inject.after` from customization:
-Run: `python ./scripts/resolve-customization.py bmad-prfaq --key inject.after`
+Run: `python3 scripts/resolve-customization.py bmad-prfaq --key inject.after`
 
 If resolved `inject.after` is not empty, incorporate its content as a final checklist or validation gate.

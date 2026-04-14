@@ -10,7 +10,7 @@
 
 Resolve `config.outputFile`, `config.sections`, `config.customSections`, and `review`
 from customization:
-Run: `python ./scripts/resolve-customization.py bmad-product-brief --key config.outputFile --key config.sections --key config.customSections --key review`
+Run: `python3 scripts/resolve-customization.py bmad-product-brief --key config.outputFile --key config.sections --key config.customSections --key review`
 
 If script unavailable, read these fields from the customization files
 (most specific first: user > team > skill defaults).

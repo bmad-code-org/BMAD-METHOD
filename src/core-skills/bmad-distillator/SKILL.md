@@ -3,10 +3,14 @@ name: bmad-distillator
 description: Lossless LLM-optimized compression of source documents. Use when the user requests to 'distill documents' or 'create a distillate'.
 ---
 
+## Available Scripts
+
+- **`scripts/resolve-customization.py`** -- Resolves customization from three-layer TOML merge (user > team > defaults). Outputs JSON.
+
 ## Resolve Customization
 
 Resolve `inject` and `additional_resources` from customization:
-Run: `python ./scripts/resolve-customization.py bmad-distillator --key inject --key additional_resources`
+Run: `python3 scripts/resolve-customization.py bmad-distillator --key inject --key additional_resources`
 Use the JSON output as resolved values.
 
 If `inject.before` is not empty, incorporate its content as high-priority context.
@@ -188,6 +192,6 @@ This stage proves the distillate is lossless by reconstructing source documents 
 ## Post-Workflow Customization
 
 After the workflow completes, resolve `inject.after` from customization:
-Run: `python ./scripts/resolve-customization.py bmad-distillator --key inject.after`
+Run: `python3 scripts/resolve-customization.py bmad-distillator --key inject.after`
 
 If resolved `inject.after` is not empty, incorporate its content as a final checklist or validation gate.

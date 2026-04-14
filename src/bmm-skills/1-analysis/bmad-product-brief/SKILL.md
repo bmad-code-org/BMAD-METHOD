@@ -15,10 +15,14 @@ The user is the domain expert. You bring structured thinking, facilitation, mark
 
 ## On Activation
 
+### Available Scripts
+
+- **`scripts/resolve-customization.py`** -- Resolves customization from three-layer TOML merge (user > team > defaults). Outputs JSON.
+
 ### Step 1: Resolve Activation Customization
 
 Resolve `inject`, `additional_resources`, and `config.defaultMode` from customization:
-Run: `python ./scripts/resolve-customization.py bmad-product-brief --key inject --key additional_resources --key config.defaultMode`
+Run: `python3 scripts/resolve-customization.py bmad-product-brief --key inject --key additional_resources --key config.defaultMode`
 Use the JSON output as resolved values.
 
 ### Step 2: Apply Activation Customization
