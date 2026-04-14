@@ -172,12 +172,10 @@ class ConfigDrivenIdeSetup {
       const skipSuffixes = ['~', '.swp', '.swo', '.bak'];
       const filter = (src) => {
         const name = path.basename(src);
-        const rel = path.relative(sourceDir, src);
         if (src === sourceDir) return true;
         if (skipPatterns.has(name)) return false;
         if (name.startsWith('.') && name !== '.gitkeep') return false;
         if (skipSuffixes.some((s) => name.endsWith(s))) return false;
-        if (rel === 'scripts' || rel.startsWith('scripts/')) return false;
         return true;
       };
       await fs.copy(sourceDir, skillDir, { filter });
