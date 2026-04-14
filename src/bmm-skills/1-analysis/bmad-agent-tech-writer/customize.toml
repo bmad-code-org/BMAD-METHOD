@@ -76,8 +76,6 @@ to be detailed."""
 # ──────────────────────────────────────────────────────────────────
 # Injected prompts - content added to the agent's context on activation.
 # 'before' loads before the agent's core instructions.
-# 'after' loads after the agent's core instructions.
 # ──────────────────────────────────────────────────────────────────
 [inject]
 before = ""
-after = ""

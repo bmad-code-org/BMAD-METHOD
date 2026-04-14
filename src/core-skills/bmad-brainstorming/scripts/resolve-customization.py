@@ -21,7 +21,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import sys
 import tomllib
 from pathlib import Path
@@ -57,19 +56,21 @@ def load_toml(path: Path) -> dict[str, Any]:
 # ---------------------------------------------------------------------------
 
 def _is_menu_array(value: Any) -> bool:
-    """True when *value* looks like a ``[[menu]]`` array of tables with ``code`` keys."""
+    """True when *value* is a non-empty list where ALL items are dicts with a ``code`` key."""
     return (
         isinstance(value, list)
         and len(value) > 0
-        and isinstance(value[0], dict)
-        and "code" in value[0]
+        and all(isinstance(item, dict) and "code" in item for item in value)
     )
 
 
 def merge_menu(base: list[dict], override: list[dict]) -> list[dict]:
     """Merge-by-code: matching codes replace; new codes append."""
-    result_by_code: dict[str, dict] = {item["code"]: dict(item) for item in base}
+    result_by_code: dict[str, dict] = {item["code"]: dict(item) for item in base if "code" in item}
     for item in override:
+        if "code" not in item:
+            print(f"warning: menu item missing 'code' key, skipping: {item}", file=sys.stderr)
+            continue
         result_by_code[item["code"]] = dict(item)
     return list(result_by_code.values())
 
