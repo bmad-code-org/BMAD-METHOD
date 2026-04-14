@@ -47,7 +47,7 @@ def load_toml(path: Path) -> dict[str, Any]:
     try:
         with open(path, "rb") as f:
             return tomllib.load(f)
-    except Exception as exc:
+    except (tomllib.TOMLDecodeError, OSError) as exc:
         print(f"warning: failed to parse {path}: {exc}", file=sys.stderr)
         return {}
 

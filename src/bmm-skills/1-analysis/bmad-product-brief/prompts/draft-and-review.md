@@ -62,7 +62,7 @@ Before showing the draft to the user, run it through multiple review lenses in p
 ### Graceful Degradation
 
 If subagents are unavailable:
-- Perform all three review passes yourself, sequentially
+- Perform all enabled review passes yourself, sequentially
 - Apply each lens deliberately — don't blend them into one generic review
 - The quality of review matters more than the parallelism
 
@@ -94,4 +94,4 @@ Present reviewer findings with brief rationale, then offer: "Want me to dig into
 
 ## Stage Complete
 
-This stage is complete when: (a) the draft has been reviewed by all three lenses and improvements integrated, AND either (autonomous) save and route directly, or (guided/yolo) the user is satisfied. Route to `finalize.md`.
+This stage is complete when: (a) the draft has been reviewed by all enabled lenses and improvements integrated, AND either (autonomous) save and route directly, or (guided/yolo) the user is satisfied. Route to `finalize.md`.
