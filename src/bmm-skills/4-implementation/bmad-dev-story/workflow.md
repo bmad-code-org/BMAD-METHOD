@@ -157,6 +157,24 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
     <anchor id="task_check" />
 
+    <!-- TEA ATDD pre-check gate (fixes #2271) -->
+    <check if="TEA module is installed (bmad-testarch-atdd skill exists in project _bmad directory or skills folder)">
+      <action>Search {test_artifacts} for an ATDD checklist matching pattern: `atdd-checklist-{{story_key}}*.md` or `*{{story_key}}*atdd*.md`</action>
+      <check if="no ATDD checklist found for {{story_key}}">
+        <output>⚠️ **TEA module detected — no ATDD checklist found for story {{story_key}}**
+
+Running `dev-story` without `testarch-atdd` means:
+- No red-phase acceptance tests will be scaffolded before implementation
+- Coverage gaps won't be detected until after the story is complete
+
+Recommended: run **[AT] bmad-testarch-atdd** first to generate acceptance test scaffolds.</output>
+        <ask>Continue without ATDD checklist? [y] to proceed anyway, [n] to halt and run ATDD first:</ask>
+        <check if="user says 'n' or does not confirm">
+          <action>HALT — Run /bmad-testarch-atdd for story {{story_key}} before continuing</action>
+        </check>
+      </check>
+    </check>
+
     <action>Parse sections: Story, Acceptance Criteria, Tasks/Subtasks, Dev Notes, Dev Agent Record, File List, Change Log, Status</action>
 
     <action>Load comprehensive context from story file's Dev Notes section</action>
@@ -437,7 +455,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
       - Verify all acceptance criteria are met
       - Ensure deployment readiness if applicable
       - Run `code-review` workflow for peer review
-      - Optional: If Test Architect module installed, run `/bmad:tea:automate` to expand guardrail tests
+      - If Test Architect module installed, run `[TA] bmad-testarch-automate` to expand guardrail tests
     </action>
 
     <output>💡 **Tip:** For best results, run `code-review` using a **different** LLM than the one that implemented this story.</output>
