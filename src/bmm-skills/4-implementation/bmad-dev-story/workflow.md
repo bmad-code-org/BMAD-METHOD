@@ -157,6 +157,31 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
     <anchor id="task_check" />
 
+    <!-- BDD/SDD/E2E pre-check gate -->
+    <check if="TEA module is installed (bmad-testarch-atdd skill exists in project _bmad directory or skills folder)">
+      <action>Search {test_artifacts} for an ATDD checklist matching pattern: `atdd-checklist-{{story_key}}*.md` or `*{{story_key}}*atdd*.md`</action>
+      <check if="no ATDD checklist found for {{story_key}}">
+        <output>⚠️ **No ATDD checklist found for {{story_key}}**
+
+Missing before implementation:
+- [ ] BDD: Gherkin scenarios covering Acceptance Criteria
+- [ ] E2E: Failing test scaffold for user-facing flows (if applicable)
+- [ ] SDD: API contract/spec for stories touching route files (if applicable)
+
+Recommended: run **bmad-testarch-atdd** first to scaffold acceptance tests.</output>
+        <ask>Continue without ATDD checklist? [y] proceed anyway · [n] halt and run testarch-atdd first:</ask>
+        <check if="user says 'n' or does not confirm">
+          <action>HALT — run /bmad-testarch-atdd for {{story_key}} before continuing</action>
+        </check>
+      </check>
+      <check if="ATDD checklist found">
+        <action>Scan checklist for Gherkin scenarios (lines starting with Given/When/Then or Feature:/Scenario:)</action>
+        <check if="no Gherkin scenarios detected">
+          <output>⚠️ **ATDD checklist exists but contains no Gherkin scenarios** — BDD coverage is missing for {{story_key}}</output>
+        </check>
+      </check>
+    </check>
+
     <action>Parse sections: Story, Acceptance Criteria, Tasks/Subtasks, Dev Notes, Dev Agent Record, File List, Change Log, Status</action>
 
     <action>Load comprehensive context from story file's Dev Notes section</action>
@@ -267,7 +292,8 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
     <action>Plan implementation following red-green-refactor cycle</action>
 
     <!-- RED PHASE -->
-    <action>Write FAILING tests first for the task/subtask functionality</action>
+    <action>Identify test type for this task: unit test (business logic / API) or E2E test (user-facing screen / navigation flow)</action>
+    <action>Write FAILING test of the appropriate type first — unit test for logic, E2E test for UI flows</action>
     <action>Confirm tests fail before implementation - this validates test correctness</action>
 
     <!-- GREEN PHASE -->
@@ -294,7 +320,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
   <step n="6" goal="Author comprehensive tests">
     <action>Create unit tests for business logic and core functionality introduced/changed by the task</action>
     <action>Add integration tests for component interactions specified in story requirements</action>
-    <action>Include end-to-end tests for critical user flows when story requirements demand them</action>
+    <action>Include end-to-end tests for all user-facing flows; unit tests are mandatory for all business logic and API routes</action>
     <action>Cover edge cases and error handling scenarios identified in story Dev Notes</action>
   </step>
 
@@ -372,7 +398,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
       - Implementation satisfies every Acceptance Criterion
       - Unit tests for core functionality added/updated
       - Integration tests for component interactions added when required
-      - End-to-end tests for critical flows added when story demands them
+      - End-to-end tests added for all user-facing flows (unit tests for logic/API routes)
       - All tests pass (no regressions, new tests successful)
       - Code quality checks pass (linting, static analysis if configured)
       - File List includes every new/modified/deleted file (relative paths)
