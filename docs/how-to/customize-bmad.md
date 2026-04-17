@@ -5,168 +5,211 @@ sidebar:
   order: 8
 ---
 
-Use the `.customize.yaml` files to tailor agent behavior, personas, and menus while preserving your changes across updates.
+Tailor agent personas, inject domain context, add capabilities, and configure workflow behavior -- all without modifying installed files. Your customizations survive every update.
 
 ## When to Use This
 
 - You want to change an agent's name, personality, or communication style
-- You need agents to remember project-specific context
-- You want to add custom menu items that trigger your own workflows or prompts
-- You want agents to perform specific actions every time they start up
+- You need to inject domain-specific context (compliance rules, company guidelines)
+- You want to add custom menu items that trigger your own skills or inline instructions
+- You want to configure workflow behavior (output paths, review settings, default modes)
+- Your team needs shared customizations committed to git, with personal preferences layered on top
 
 :::note[Prerequisites]
 
 - BMad installed in your project (see [How to Install BMad](./install-bmad.md))
-- A text editor for YAML files
-  :::
-
-:::caution[Keep Your Customizations Safe]
-Always use the `.customize.yaml` files described here rather than editing agent files directly. The installer overwrites agent files during updates, but preserves your `.customize.yaml` changes.
+- A text editor for TOML files
 :::
+
+## How It Works
+
+Every skill that supports customization ships a `customize.toml` file with its defaults. This file defines the skill's complete customization surface -- look at it to see what's customizable. You never edit this file. Instead, you create sparse override files containing only the fields you want to change.
+
+### Three-Layer Override Model
+
+```text
+Priority 1 (wins): _bmad/customizations/{name}.user.toml   (personal, gitignored)
+Priority 2:        _bmad/customizations/{name}.toml          (team/org, committed)
+Priority 3 (last): skill's own customize.toml                (defaults)
+```
+
+The `_bmad/customizations/` folder starts empty. Files only appear when someone actively customizes.
+
+### Override Rules
+
+- **Tables and scalars:** sparse override. Only include the fields you want to change; everything else inherits from the layer below.
+- **Arrays replace atomically.** When you override an array field (like `additional_resources`), include the complete array you want.
+- **Menu items use merge-by-code.** Menu entries with a matching `code` replace that item; new codes add items. Items not mentioned keep their defaults.
 
 ## Steps
 
-### 1. Locate Customization Files
+### 1. Find the Skill's Customization Surface
 
-After installation, find one `.customize.yaml` file per agent in:
+Look at the `customize.toml` in the skill's source directory. For example, the PM agent's defaults:
 
 ```text
-_bmad/_config/agents/
-├── core-bmad-master.customize.yaml
-├── bmm-dev.customize.yaml
-├── bmm-pm.customize.yaml
-└── ... (one file per installed agent)
+src/bmm-skills/2-plan-workflows/bmad-agent-pm/customize.toml
 ```
 
-### 2. Edit the Customization File
+This file documents every customizable field with comments and examples.
 
-Open the `.customize.yaml` file for the agent you want to modify. Every section is optional -- customize only what you need.
+### 2. Create Your Override File
 
-| Section            | Behavior | Purpose                                         |
-| ------------------ | -------- | ----------------------------------------------- |
-| `agent.metadata`   | Replaces | Override the agent's display name               |
-| `persona`          | Replaces | Set role, identity, style, and principles       |
-| `memories`         | Appends  | Add persistent context the agent always recalls |
-| `menu`             | Appends  | Add custom menu items for workflows or prompts  |
-| `critical_actions` | Appends  | Define startup instructions for the agent       |
-| `prompts`          | Appends  | Create reusable prompts for menu actions        |
+Create the `_bmad/customizations/` directory in your project root if it doesn't exist. Then create a file named after the skill:
 
-Sections marked **Replaces** overwrite the agent's defaults entirely. Sections marked **Appends** add to the existing configuration.
-
-**Agent Name**
-
-Change how the agent introduces itself:
-
-```yaml
-agent:
-  metadata:
-    name: 'Spongebob' # Default: "Amelia"
+```text
+_bmad/customizations/
+  bmad-agent-pm.toml        # team overrides (committed to git)
+  bmad-agent-pm.user.toml   # personal preferences (gitignored)
 ```
 
-**Persona**
+Only include the fields you want to change. Unmentioned fields inherit from the layer below.
 
-Replace the agent's personality, role, and communication style:
+### 3. Customize What You Need
 
-```yaml
-persona:
-  role: 'Senior Full-Stack Engineer'
-  identity: 'Lives in a pineapple (under the sea)'
-  communication_style: 'Spongebob annoying'
-  principles:
-    - 'Never Nester, Spongebob Devs hate nesting more than 2 levels deep'
-    - 'Favor composition over inheritance'
+#### Agent Persona
+
+Change any combination of name, title, icon, identity, communication style, and principles:
+
+```toml
+# _bmad/customizations/bmad-agent-pm.toml
+
+[persona]
+displayName = "Priya"
+title = "Senior Product Lead"
+icon = "🏥"
+
+identity = """\
+15-year product leader in healthcare technology and digital health \
+platforms. Deep expertise in EHR integrations and navigating \
+FDA/HIPAA regulatory landscapes."""
 ```
 
-The `persona` section replaces the entire default persona, so include all four fields if you set it.
+Fields you omit (like `communicationStyle` and `principles` above) keep their defaults.
 
-**Memories**
+#### Injected Context
 
-Add persistent context the agent will always remember:
+Add domain-specific context that loads before or after the agent's core instructions:
 
-```yaml
-memories:
-  - 'Works at Krusty Krab'
-  - 'Favorite Celebrity: David Hasselhoff'
-  - 'Learned in Epic 1 that it is not cool to just pretend that tests have passed'
+```toml
+[inject]
+before = """\
+CRITICAL CONTEXT: All product work must comply with:
+- HIPAA Privacy and Security Rules
+- FDA 21 CFR Part 11
+- SOC 2 Type II"""
+
+after = """\
+Always remind the user that CRB review is required before \
+development begins on clinical features."""
 ```
 
-**Menu Items**
+#### Additional Resources
 
-Add custom entries to the agent's display menu. Each item needs a `trigger`, a target (`workflow` path or `action` reference), and a `description`:
+Load extra files into the agent's context:
 
-```yaml
-menu:
-  - trigger: my-workflow
-    workflow: 'my-custom/workflows/my-workflow.yaml'
-    description: My custom workflow
-  - trigger: deploy
-    action: '#deploy-prompt'
-    description: Deploy to production
+```toml
+additional_resources = [
+    "_bmad/resources/company-product-playbook.md",
+    "_bmad/resources/regulatory-checklist.md",
+]
 ```
 
-**Critical Actions**
+Since `additional_resources` is an array, include the complete list you want -- it replaces, not appends.
 
-Define instructions that run when the agent starts up:
+#### Menu Customization
 
-```yaml
-critical_actions:
-  - 'Check the CI Pipelines with the XYZ Skill and alert user on wake if anything is urgently needing attention'
+Add new capabilities or replace existing ones using the `code` as the merge key:
+
+```toml
+# Replaces existing CE item with a custom skill
+[[menu]]
+code = "CE"
+description = "Create Epics using our delivery framework"
+action = "skill"
+skill = "custom-create-epics"
+
+# Adds a new item (code RC doesn't exist in defaults)
+[[menu]]
+code = "RC"
+description = "Run compliance pre-check"
+action = "inline"
+instruction = """\
+Scan all documents in {planning_artifacts} for compliance gaps..."""
 ```
 
-**Custom Prompts**
+Items not listed keep their SKILL.md defaults.
 
-Create reusable prompts that menu items can reference with `action="#id"`:
+#### Workflow Configuration
 
-```yaml
-prompts:
-  - id: deploy-prompt
-    content: |
-      Deploy the current branch to production:
-      1. Run all tests
-      2. Build the project
-      3. Execute deployment script
+Workflows expose config fields specific to their behavior:
+
+```toml
+# _bmad/customizations/bmad-product-brief.toml
+
+[config]
+alwaysGenerateDistillate = true
+
+[config.sections]
+users           = { enabled = true, weight = "high" }
+successCriteria = { enabled = true, weight = "high" }
+
+[[config.customSections]]
+name = "Regulatory Impact"
+description = "Classify this product under regulatory framework..."
+weight = "high"
+
+[review]
+contextualReviewLens = "Regulatory and clinical safety risk reviewer"
 ```
 
-### 3. Apply Your Changes
+### 4. Personal vs Team
 
-After editing, reinstall to apply changes:
+**Team file** (`bmad-agent-pm.toml`): Committed to git. Shared across the org. Use for compliance rules, company persona, custom capabilities.
+
+**Personal file** (`bmad-agent-pm.user.toml`): Gitignored automatically. Use for nickname preferences, tone adjustments, personal workflows.
+
+```toml
+# _bmad/customizations/bmad-agent-pm.user.toml
+
+[persona]
+displayName = "Doc P"
+
+[inject]
+after = """\
+When presenting options, always include a rough complexity estimate \
+(low/medium/high) so I can gauge engineering effort at a glance."""
+```
+
+## How Resolution Works
+
+Customization values are resolved just-in-time when needed -- not all loaded at activation. Each skill includes a `resolve-customization.py` script that handles the three-layer merge:
 
 ```bash
-npx bmad-method install
+# Resolve a single field
+python ./scripts/resolve-customization.py bmad-agent-pm --key persona.displayName
+
+# Resolve an entire section
+python ./scripts/resolve-customization.py bmad-agent-pm --key persona
+
+# Full dump
+python ./scripts/resolve-customization.py bmad-agent-pm
 ```
 
-The installer detects the existing installation and offers these options:
-
-| Option                       | What It Does                                                         |
-| ---------------------------- | -------------------------------------------------------------------- |
-| **Quick Update**             | Updates all modules to the latest version and applies customizations |
-| **Modify BMad Installation** | Full installation flow for adding or removing modules                |
-
-For customization-only changes, **Quick Update** is the fastest option.
+Output is JSON. When the script is unavailable (web platforms, etc.), the LLM reads the TOML files directly using the same priority order.
 
 ## Troubleshooting
 
-**Changes not appearing?**
+**Customization not appearing?**
 
-- Run `npx bmad-method install` and select **Quick Update** to apply changes
-- Check that your YAML syntax is valid (indentation matters)
-- Verify you edited the correct `.customize.yaml` file for the agent
+- Verify your file is in `_bmad/customizations/` with the correct skill name
+- Check TOML syntax (comments start with `#`, strings use `"`, multi-line strings use `"""`)
+- Ensure `additional_resources` is at the top of your file, before any `[table]` header -- TOML scoping puts all keys after a `[table]` inside that table
 
-**Agent not loading?**
+**Need to see what's customizable?**
 
-- Check for YAML syntax errors using an online YAML validator
-- Ensure you did not leave fields empty after uncommenting them
-- Try reverting to the original template and rebuilding
+- Read the skill's `customize.toml` -- it documents every field with comments and examples
 
-**Need to reset an agent?**
+**Need to reset?**
 
-- Clear or delete the agent's `.customize.yaml` file
-- Run `npx bmad-method install` and select **Quick Update** to restore defaults
-
-## Workflow Customization
-
-Customization of existing BMad Method workflows and skills is coming soon.
-
-## Module Customization
-
-Guidance on building expansion modules and customizing existing modules is coming soon.
+- Delete your override file from `_bmad/customizations/` -- the skill falls back to its built-in defaults
