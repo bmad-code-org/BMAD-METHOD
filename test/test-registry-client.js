@@ -163,19 +163,6 @@ async function testFetchGitHubYamlParsesCorrectly() {
   assert(result.modules[0].name === 'test', 'fetchGitHubYaml preserves YAML values');
 }
 
-async function testFetchGitHubJsonParsesCorrectly() {
-  const jsonContent = '{"name": "test", "version": "1.0.0"}';
-  const { client } = createStubbedClient({
-    apiResult: jsonContent,
-    rawResult: jsonContent,
-  });
-
-  const result = await client.fetchGitHubJson('owner', 'repo', 'file.json', 'main');
-
-  assert(result.name === 'test', 'fetchGitHubJson parses JSON correctly');
-  assert(result.version === '1.0.0', 'fetchGitHubJson preserves JSON values');
-}
-
 // ─── Runner ────────────────────────────────────────────────────────────────
 
 async function runTests() {
@@ -189,7 +176,6 @@ async function runTests() {
   await testUrlConstruction();
   await testRawUrlConstruction();
   await testFetchGitHubYamlParsesCorrectly();
-  await testFetchGitHubJsonParsesCorrectly();
 
   console.log(`\n${colors.cyan}========================================`);
   console.log('Test Results:');

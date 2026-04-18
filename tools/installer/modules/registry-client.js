@@ -56,17 +56,6 @@ class RegistryClient {
   }
 
   /**
-   * Fetch a URL and parse the response as JSON.
-   * @param {string} url - URL to fetch
-   * @param {number} [timeout] - Timeout in ms
-   * @returns {Promise<Object>} Parsed JSON content
-   */
-  async fetchJson(url, timeout) {
-    const content = await this.fetch(url, timeout);
-    return JSON.parse(content);
-  }
-
-  /**
    * Fetch a file from a GitHub repo using the Contents API first,
    * falling back to raw.githubusercontent.com if the API fails.
    *
@@ -110,20 +99,6 @@ class RegistryClient {
   async fetchGitHubYaml(owner, repo, filePath, ref, timeout) {
     const content = await this.fetchGitHubFile(owner, repo, filePath, ref, timeout);
     return yaml.parse(content);
-  }
-
-  /**
-   * Fetch a file from GitHub and parse as JSON.
-   * @param {string} owner - Repository owner
-   * @param {string} repo  - Repository name
-   * @param {string} filePath - Path within the repo
-   * @param {string} ref   - Git ref
-   * @param {number} [timeout] - Timeout in ms
-   * @returns {Promise<Object>} Parsed JSON content
-   */
-  async fetchGitHubJson(owner, repo, filePath, ref, timeout) {
-    const content = await this.fetchGitHubFile(owner, repo, filePath, ref, timeout);
-    return JSON.parse(content);
   }
 
   /**
