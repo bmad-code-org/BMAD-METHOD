@@ -1,6 +1,6 @@
 ---
 title: 'How to Customize BMad'
-description: Customize agents, workflows, and modules while preserving update compatibility
+description: Customize agents and workflows while preserving update compatibility
 sidebar:
   order: 8
 ---
@@ -10,48 +10,57 @@ Tailor agent personas, inject domain context, add capabilities, and configure wo
 ## When to Use This
 
 - You want to change an agent's name, personality, or communication style
-- You need to inject domain-specific context (compliance rules, company guidelines)
-- You want to add custom menu items that trigger your own skills or inline instructions
-- You want to configure workflow behavior (output paths, review settings, default modes)
+- You need to give an agent persistent facts to recall (e.g. "our org is AWS-only")
+- You want to add procedural startup steps the agent must run every session
+- You want to add custom menu items that trigger your own skills or prompts
 - Your team needs shared customizations committed to git, with personal preferences layered on top
 
 :::note[Prerequisites]
 
 - BMad installed in your project (see [How to Install BMad](./install-bmad.md))
-- A text editor for TOML files
+- A text editor for YAML files
 :::
 
 ## How It Works
 
-Every skill that supports customization ships a `customize.toml` file with its defaults. This file defines the skill's complete customization surface -- look at it to see what's customizable. You never edit this file. Instead, you create sparse override files containing only the fields you want to change.
+Every agent skill ships a `customize.yaml` file with its defaults. This file defines the skill's complete customization surface -- read it to see what's customizable. You never edit this file. Instead, you create sparse override files containing only the fields you want to change.
 
 ### Three-Layer Override Model
 
 ```text
-Priority 1 (wins): _bmad/customizations/{name}.user.toml   (personal, gitignored)
-Priority 2:        _bmad/customizations/{name}.toml          (team/org, committed)
-Priority 3 (last): skill's own customize.toml                (defaults)
+Priority 1 (wins): _bmad/customizations/{skill-name}.user.yaml  (personal, gitignored)
+Priority 2:        _bmad/customizations/{skill-name}.yaml        (team/org, committed)
+Priority 3 (last): skill's own customize.yaml                    (defaults)
 ```
 
 The `_bmad/customizations/` folder starts empty. Files only appear when someone actively customizes.
 
-### Override Rules
+### Merge Rules (per field)
 
-- **Tables and scalars:** sparse override. Only include the fields you want to change; everything else inherits from the layer below.
-- **Arrays replace atomically.** When you override an array field (like `additional_resources`), include the complete array you want.
-- **Menu items use merge-by-code.** Menu entries with a matching `code` replace that item; new codes add items. Items not mentioned keep their defaults.
+| Field | Rule |
+|---|---|
+| `agent.metadata` | shallow merge -- scalar fields override |
+| `agent.persona` | full replace -- if present in override, it replaces wholesale |
+| `agent.critical_actions` | append -- override items are added after defaults |
+| `agent.memories` | append |
+| `agent.menu` | merge by `code` -- matching codes replace, new codes append |
+| other tables | deep merge |
+| other arrays | atomic replace |
+| scalars | override wins |
 
 ## Steps
 
 ### 1. Find the Skill's Customization Surface
 
-Look at the `customize.toml` in the skill's source directory. For example, the PM agent's defaults:
+Look at the skill's `customize.yaml` in its installed directory. For example, the PM agent:
 
 ```text
-src/bmm-skills/2-plan-workflows/bmad-agent-pm/customize.toml
+.claude/skills/bmad-agent-pm/customize.yaml
 ```
 
-This file documents every customizable field with comments and examples.
+(Path varies by IDE -- Cursor uses `.cursor/skills/`, Cline uses `.cline/skills/`, and so on.)
+
+This file is the canonical schema. Every field you see is customizable.
 
 ### 2. Create Your Override File
 
@@ -59,8 +68,8 @@ Create the `_bmad/customizations/` directory in your project root if it doesn't 
 
 ```text
 _bmad/customizations/
-  bmad-agent-pm.toml        # team overrides (committed to git)
-  bmad-agent-pm.user.toml   # personal preferences (gitignored)
+  bmad-agent-pm.yaml        # team overrides (committed to git)
+  bmad-agent-pm.user.yaml   # personal preferences (gitignored)
 ```
 
 Only include the fields you want to change. Unmentioned fields inherit from the layer below.
@@ -69,146 +78,157 @@ Only include the fields you want to change. Unmentioned fields inherit from the 
 
 #### Agent Persona
 
-Change any combination of name, title, icon, identity, communication style, and principles:
+Change any combination of name, title, icon, role, identity, communication style, and principles. Anything under `agent.metadata` merges field-by-field; anything under `agent.persona` replaces the persona wholesale if you include it.
 
-```toml
-# _bmad/customizations/bmad-agent-pm.toml
+Team override (shallow merge on metadata):
 
-[persona]
-displayName = "Priya"
-title = "Senior Product Lead"
-icon = "🏥"
+```yaml
+# _bmad/customizations/bmad-agent-pm.yaml
 
-identity = """\
-15-year product leader in healthcare technology and digital health \
-platforms. Deep expertise in EHR integrations and navigating \
-FDA/HIPAA regulatory landscapes."""
+agent:
+  metadata:
+    name: Priya
+    title: Senior Product Lead
+    icon: "🏥"
 ```
 
-Fields you omit (like `communicationStyle` and `principles` above) keep their defaults.
+Team override (full persona replacement):
 
-#### Injected Context
-
-Add domain-specific context that loads before or after the agent's core instructions:
-
-```toml
-[inject]
-before = """\
-CRITICAL CONTEXT: All product work must comply with:
-- HIPAA Privacy and Security Rules
-- FDA 21 CFR Part 11
-- SOC 2 Type II"""
-
-after = """\
-Always remind the user that CRB review is required before \
-development begins on clinical features."""
+```yaml
+agent:
+  persona:
+    role: "Senior Product Lead specializing in healthcare technology"
+    identity: |
+      15-year product leader in healthcare technology and digital health
+      platforms. Deep expertise in EHR integrations and navigating
+      FDA/HIPAA regulatory landscapes.
+    communication_style: |
+      Precise, regulatory-aware, asks compliance-shaped questions early.
+    principles: |
+      - Ship nothing that can't pass an FDA audit.
+      - User value first, compliance always.
 ```
 
-#### Additional Resources
+Because `agent.persona` is replace-wholesale, include every persona field you want the agent to have -- anything omitted will be blank.
 
-Load extra files into the agent's context:
+#### Memories
 
-```toml
-additional_resources = [
-    "_bmad/resources/company-product-playbook.md",
-    "_bmad/resources/regulatory-checklist.md",
-]
+Persistent facts the agent always recalls during the session:
+
+```yaml
+agent:
+  memories:
+    - "Our org is AWS-only -- do not propose GCP or Azure."
+    - "All PRDs require legal sign-off before engineering kickoff."
+    - "Target users are clinicians, not patients -- frame examples accordingly."
 ```
 
-Since `additional_resources` is an array, include the complete list you want -- it replaces, not appends.
+Memories append: your items are added after defaults.
+
+#### Critical Actions
+
+Procedural startup steps the agent must execute before presenting its menu:
+
+```yaml
+agent:
+  critical_actions:
+    - "Scan {project-root}/docs/compliance/ and load any HIPAA-related documents as context."
+    - "Read {project-root}/_bmad/customizations/company-glossary.md if it exists."
+```
+
+Critical actions append too. They run top-to-bottom on every activation.
 
 #### Menu Customization
 
-Add new capabilities or replace existing ones using the `code` as the merge key:
+Add new capabilities or replace existing ones using `code` as the merge key. Each menu item has exactly one of `skill` (invokes a registered skill) or `prompt` (executes the text directly).
 
-```toml
-# Replaces existing CE item with a custom skill
-[[menu]]
-code = "CE"
-description = "Create Epics using our delivery framework"
-action = "skill"
-skill = "custom-create-epics"
+```yaml
+agent:
+  menu:
+    # Replace the existing CE item with a custom skill
+    - code: CE
+      description: "Create Epics using our delivery framework"
+      skill: custom-create-epics
 
-# Adds a new item (code RC doesn't exist in defaults)
-[[menu]]
-code = "RC"
-description = "Run compliance pre-check"
-action = "inline"
-instruction = """\
-Scan all documents in {planning_artifacts} for compliance gaps..."""
+    # Add a new item (code RC doesn't exist in defaults)
+    - code: RC
+      description: "Run compliance pre-check"
+      prompt: |
+        Read {project-root}/_bmad/customizations/compliance-checklist.md
+        and scan all documents in {planning_artifacts} against it.
+        Report any gaps and cite the relevant regulatory section.
 ```
 
-Items not listed keep their SKILL.md defaults.
+Items not listed in your override keep their defaults.
 
-#### Workflow Configuration
+#### Referencing Files
 
-Workflows expose config fields specific to their behavior:
-
-```toml
-# _bmad/customizations/bmad-product-brief.toml
-
-[config]
-alwaysGenerateDistillate = true
-
-[config.sections]
-users           = { enabled = true, weight = "high" }
-successCriteria = { enabled = true, weight = "high" }
-
-[[config.customSections]]
-name = "Regulatory Impact"
-description = "Classify this product under regulatory framework..."
-weight = "high"
-
-[review]
-contextualReviewLens = "Regulatory and clinical safety risk reviewer"
-```
+When a field's text needs to point at a file (in `memories`, `critical_actions`, or a menu item's `prompt`), use a full path rooted at `{project-root}`. Even if the file sits next to your override in `_bmad/customizations/`, spell out the full path: `{project-root}/_bmad/customizations/info.md`. The agent resolves `{project-root}` at runtime.
 
 ### 4. Personal vs Team
 
-**Team file** (`bmad-agent-pm.toml`): Committed to git. Shared across the org. Use for compliance rules, company persona, custom capabilities.
+**Team file** (`bmad-agent-pm.yaml`): Committed to git. Shared across the org. Use for compliance rules, company persona, custom capabilities.
 
-**Personal file** (`bmad-agent-pm.user.toml`): Gitignored automatically. Use for nickname preferences, tone adjustments, personal workflows.
+**Personal file** (`bmad-agent-pm.user.yaml`): Gitignored automatically. Use for nickname preferences, tone adjustments, personal workflows.
 
-```toml
-# _bmad/customizations/bmad-agent-pm.user.toml
+```yaml
+# _bmad/customizations/bmad-agent-pm.user.yaml
 
-[persona]
-displayName = "Doc P"
-
-[inject]
-after = """\
-When presenting options, always include a rough complexity estimate \
-(low/medium/high) so I can gauge engineering effort at a glance."""
+agent:
+  metadata:
+    name: "Doc P"
+  memories:
+    - "Always include a rough complexity estimate (low/medium/high) when presenting options."
 ```
 
 ## How Resolution Works
 
-Customization values are resolved just-in-time when needed -- not all loaded at activation. Each skill includes a `resolve-customization.py` script that handles the three-layer merge:
+On activation, the agent's SKILL.md runs a shared Node script that does the three-layer merge and returns the resolved `agent` block as JSON:
 
 ```bash
-# Resolve a single field
-python ./scripts/resolve-customization.py bmad-agent-pm --key persona.displayName
-
-# Resolve an entire section
-python ./scripts/resolve-customization.py bmad-agent-pm --key persona
-
-# Full dump
-python ./scripts/resolve-customization.py bmad-agent-pm
+node {project-root}/_bmad/scripts/resolve-customization.js \
+  --skill {skill-root} \
+  --key agent
 ```
 
-Output is JSON. When the script is unavailable (web platforms, etc.), the LLM reads the TOML files directly using the same priority order.
+`--skill` points at the skill's installed directory (where `customize.yaml` lives). The skill name is derived from the directory's basename, and the script looks up `_bmad/customizations/{skill-name}.yaml` and `{skill-name}.user.yaml` automatically.
+
+Useful invocations:
+
+```bash
+# Resolve the full agent block
+node {project-root}/_bmad/scripts/resolve-customization.js \
+  --skill /abs/path/to/bmad-agent-pm \
+  --key agent
+
+# Resolve a single field
+node {project-root}/_bmad/scripts/resolve-customization.js \
+  --skill /abs/path/to/bmad-agent-pm \
+  --key agent.metadata.name
+
+# Full dump (everything under agent plus any other top-level keys)
+node {project-root}/_bmad/scripts/resolve-customization.js \
+  --skill /abs/path/to/bmad-agent-pm
+```
+
+Output is always JSON. If the script is unavailable on a given platform, the SKILL.md tells the agent to read the three YAML files directly and apply the same merge rules.
+
+## Workflow Customization
+
+Some workflows expose their own customization surface (output paths, review settings, section toggles, etc.) via the same `customize.yaml` + override mechanism. The merge rules above apply to any top-level key, not just `agent` -- so a workflow might use `workflow`, `config`, or other keys to organize its fields. Check the workflow's `customize.yaml` for its specific shape.
 
 ## Troubleshooting
 
 **Customization not appearing?**
 
 - Verify your file is in `_bmad/customizations/` with the correct skill name
-- Check TOML syntax (comments start with `#`, strings use `"`, multi-line strings use `"""`)
-- Ensure `additional_resources` is at the top of your file, before any `[table]` header -- TOML scoping puts all keys after a `[table]` inside that table
+- Check YAML indentation (spaces only, no tabs) and make sure block scalars (`|`) are correctly indented
+- For agents, customization lives under `agent:` -- keys written below it belong to that key until another top-level key begins
+- Remember `agent.persona` is replace-wholesale: include every persona field you want, not just the ones you're changing
 
 **Need to see what's customizable?**
 
-- Read the skill's `customize.toml` -- it documents every field with comments and examples
+- Read the skill's `customize.yaml` -- every field there is customizable
 
 **Need to reset?**
 
