@@ -568,27 +568,35 @@ class Installer {
   }
 
   /**
-   * Copy src/scripts/* → _bmad/scripts/ and seed _bmad/custom/.gitignore.
-   * Agents resolve customizations via these shared scripts; the .gitignore
-   * ensures *.user.yaml overrides stay out of version control by default.
+   * Recursively copy src/scripts/* → _bmad/scripts/ (includes the vendor/
+   * directory with bundled third-party modules like `yaml` that the
+   * resolver scripts require via relative path). Also seeds
+   * _bmad/custom/.gitignore on fresh installs so *.user.yaml overrides
+   * stay out of version control by default.
    */
   async _installSharedScripts(paths) {
     const srcScriptsDir = path.join(paths.srcDir, 'src', 'scripts');
     if (await fs.pathExists(srcScriptsDir)) {
-      const entries = await fs.readdir(srcScriptsDir, { withFileTypes: true });
-      for (const entry of entries) {
-        if (!entry.isFile()) continue;
-        const srcFile = path.join(srcScriptsDir, entry.name);
-        const destFile = path.join(paths.scriptsDir, entry.name);
-        await fs.copy(srcFile, destFile, { overwrite: true });
-        this.installedFiles.add(destFile);
-      }
+      await fs.copy(srcScriptsDir, paths.scriptsDir, { overwrite: true });
+      await this._trackFilesRecursive(paths.scriptsDir);
     }
 
     const customGitignore = path.join(paths.customDir, '.gitignore');
     if (!(await fs.pathExists(customGitignore))) {
       await fs.writeFile(customGitignore, '*.user.yaml\n', 'utf8');
       this.installedFiles.add(customGitignore);
+    }
+  }
+
+  async _trackFilesRecursive(dir) {
+    const entries = await fs.readdir(dir, { withFileTypes: true });
+    for (const entry of entries) {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        await this._trackFilesRecursive(full);
+      } else if (entry.isFile()) {
+        this.installedFiles.add(full);
+      }
     }
   }
 

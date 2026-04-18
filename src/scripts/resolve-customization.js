@@ -30,7 +30,7 @@
 
 const fs = require('node:fs');
 const path = require('node:path');
-const yaml = require('yaml');
+const yaml = require('./vendor/yaml');
 
 function findProjectRoot(start) {
   let current = path.resolve(start);

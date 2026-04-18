@@ -10,3 +10,6 @@ _bmad*/
 
 # IDE integration folders (user-specific, not in repo)
 .junie/
+
+# Vendored third-party scripts bundled into _bmad/scripts/ at install
+src/scripts/vendor/**
