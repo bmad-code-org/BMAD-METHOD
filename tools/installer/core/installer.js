@@ -568,11 +568,10 @@ class Installer {
   }
 
   /**
-   * Recursively copy src/scripts/* → _bmad/scripts/ (includes the vendor/
-   * directory with bundled third-party modules like `yaml` that the
-   * resolver scripts require via relative path). Also seeds
-   * _bmad/custom/.gitignore on fresh installs so *.user.yaml overrides
-   * stay out of version control by default.
+   * Recursively copy src/scripts/* → _bmad/scripts/ so shared Python
+   * scripts (e.g. resolve_customization.py) are available at install time.
+   * Also seeds _bmad/custom/.gitignore on fresh installs so *.user.yaml
+   * overrides stay out of version control by default.
    */
   async _installSharedScripts(paths) {
     const srcScriptsDir = path.join(paths.srcDir, 'src', 'scripts');

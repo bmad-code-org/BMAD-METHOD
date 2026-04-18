@@ -183,10 +183,10 @@ agent:
 
 ## How Resolution Works
 
-On activation, the agent's SKILL.md runs a shared Node script that does the three-layer merge and returns the resolved `agent` block as JSON:
+On activation, the agent's SKILL.md runs a shared Python script that does the three-layer merge and returns the resolved `agent` block as JSON. The script requires Python 3.8+ and PyYAML (`pip install PyYAML`).
 
 ```bash
-node {project-root}/_bmad/scripts/resolve-customization.js \
+python3 {project-root}/_bmad/scripts/resolve_customization.py \
   --skill {skill-root} \
   --key agent
 ```
@@ -197,17 +197,17 @@ Useful invocations:
 
 ```bash
 # Resolve the full agent block
-node {project-root}/_bmad/scripts/resolve-customization.js \
+python3 {project-root}/_bmad/scripts/resolve_customization.py \
   --skill /abs/path/to/bmad-agent-pm \
   --key agent
 
 # Resolve a single field
-node {project-root}/_bmad/scripts/resolve-customization.js \
+python3 {project-root}/_bmad/scripts/resolve_customization.py \
   --skill /abs/path/to/bmad-agent-pm \
   --key agent.metadata.name
 
 # Full dump (everything under agent plus any other top-level keys)
-node {project-root}/_bmad/scripts/resolve-customization.js \
+python3 {project-root}/_bmad/scripts/resolve_customization.py \
   --skill /abs/path/to/bmad-agent-pm
 ```
 

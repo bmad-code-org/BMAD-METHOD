@@ -31,8 +31,6 @@ export default [
       'sample-project/**',
       'tools/template-test-generator/test-scenarios/**',
       'src/modules/*/sub-modules/**',
-      // Vendored third-party scripts bundled into _bmad/scripts/ at install
-      'src/scripts/vendor/**',
       '.bundler-temp/**',
       // Lock files — generated, gitignored, not project code
       'pnpm-lock.yaml',
