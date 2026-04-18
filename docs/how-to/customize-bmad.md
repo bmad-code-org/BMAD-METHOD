@@ -28,12 +28,12 @@ Every agent skill ships a `customize.yaml` file with its defaults. This file def
 ### Three-Layer Override Model
 
 ```text
-Priority 1 (wins): _bmad/customizations/{skill-name}.user.yaml  (personal, gitignored)
-Priority 2:        _bmad/customizations/{skill-name}.yaml        (team/org, committed)
+Priority 1 (wins): _bmad/custom/{skill-name}.user.yaml  (personal, gitignored)
+Priority 2:        _bmad/custom/{skill-name}.yaml        (team/org, committed)
 Priority 3 (last): skill's own customize.yaml                    (defaults)
 ```
 
-The `_bmad/customizations/` folder starts empty. Files only appear when someone actively customizes.
+The `_bmad/custom/` folder starts empty. Files only appear when someone actively customizes.
 
 ### Merge Rules (per field)
 
@@ -64,10 +64,10 @@ This file is the canonical schema. Every field you see is customizable.
 
 ### 2. Create Your Override File
 
-Create the `_bmad/customizations/` directory in your project root if it doesn't exist. Then create a file named after the skill:
+Create the `_bmad/custom/` directory in your project root if it doesn't exist. Then create a file named after the skill:
 
 ```text
-_bmad/customizations/
+_bmad/custom/
   bmad-agent-pm.yaml        # team overrides (committed to git)
   bmad-agent-pm.user.yaml   # personal preferences (gitignored)
 ```
@@ -83,7 +83,7 @@ Change any combination of name, title, icon, role, identity, communication style
 Team override (shallow merge on metadata):
 
 ```yaml
-# _bmad/customizations/bmad-agent-pm.yaml
+# _bmad/custom/bmad-agent-pm.yaml
 
 agent:
   metadata:
@@ -133,7 +133,7 @@ Procedural startup steps the agent must execute before presenting its menu:
 agent:
   critical_actions:
     - "Scan {project-root}/docs/compliance/ and load any HIPAA-related documents as context."
-    - "Read {project-root}/_bmad/customizations/company-glossary.md if it exists."
+    - "Read {project-root}/_bmad/custom/company-glossary.md if it exists."
 ```
 
 Critical actions append too. They run top-to-bottom on every activation.
@@ -154,7 +154,7 @@ agent:
     - code: RC
       description: "Run compliance pre-check"
       prompt: |
-        Read {project-root}/_bmad/customizations/compliance-checklist.md
+        Read {project-root}/_bmad/custom/compliance-checklist.md
         and scan all documents in {planning_artifacts} against it.
         Report any gaps and cite the relevant regulatory section.
 ```
@@ -163,7 +163,7 @@ Items not listed in your override keep their defaults.
 
 #### Referencing Files
 
-When a field's text needs to point at a file (in `memories`, `critical_actions`, or a menu item's `prompt`), use a full path rooted at `{project-root}`. Even if the file sits next to your override in `_bmad/customizations/`, spell out the full path: `{project-root}/_bmad/customizations/info.md`. The agent resolves `{project-root}` at runtime.
+When a field's text needs to point at a file (in `memories`, `critical_actions`, or a menu item's `prompt`), use a full path rooted at `{project-root}`. Even if the file sits next to your override in `_bmad/custom/`, spell out the full path: `{project-root}/_bmad/custom/info.md`. The agent resolves `{project-root}` at runtime.
 
 ### 4. Personal vs Team
 
@@ -172,7 +172,7 @@ When a field's text needs to point at a file (in `memories`, `critical_actions`,
 **Personal file** (`bmad-agent-pm.user.yaml`): Gitignored automatically. Use for nickname preferences, tone adjustments, personal workflows.
 
 ```yaml
-# _bmad/customizations/bmad-agent-pm.user.yaml
+# _bmad/custom/bmad-agent-pm.user.yaml
 
 agent:
   metadata:
@@ -191,7 +191,7 @@ node {project-root}/_bmad/scripts/resolve-customization.js \
   --key agent
 ```
 
-`--skill` points at the skill's installed directory (where `customize.yaml` lives). The skill name is derived from the directory's basename, and the script looks up `_bmad/customizations/{skill-name}.yaml` and `{skill-name}.user.yaml` automatically.
+`--skill` points at the skill's installed directory (where `customize.yaml` lives). The skill name is derived from the directory's basename, and the script looks up `_bmad/custom/{skill-name}.yaml` and `{skill-name}.user.yaml` automatically.
 
 Useful invocations:
 
@@ -221,7 +221,7 @@ Some workflows expose their own customization surface (output paths, review sett
 
 **Customization not appearing?**
 
-- Verify your file is in `_bmad/customizations/` with the correct skill name
+- Verify your file is in `_bmad/custom/` with the correct skill name
 - Check YAML indentation (spaces only, no tabs) and make sure block scalars (`|`) are correctly indented
 - For agents, customization lives under `agent:` -- keys written below it belong to that key until another top-level key begins
 - Remember `agent.persona` is replace-wholesale: include every persona field you want, not just the ones you're changing
@@ -232,4 +232,4 @@ Some workflows expose their own customization surface (output paths, review sett
 
 **Need to reset?**
 
-- Delete your override file from `_bmad/customizations/` -- the skill falls back to its built-in defaults
+- Delete your override file from `_bmad/custom/` -- the skill falls back to its built-in defaults

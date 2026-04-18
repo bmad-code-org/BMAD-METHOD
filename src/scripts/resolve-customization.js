@@ -1,10 +1,9 @@
-#!/usr/bin/env node
 /**
  * Resolve customization for a BMad skill using three-layer YAML merge.
  *
  * Reads customization from three layers (highest priority first):
- *   1. {project-root}/_bmad/customizations/{name}.user.yaml  (personal, gitignored)
- *   2. {project-root}/_bmad/customizations/{name}.yaml        (team/org, committed)
+ *   1. {project-root}/_bmad/custom/{name}.user.yaml  (personal, gitignored)
+ *   2. {project-root}/_bmad/custom/{name}.yaml        (team/org, committed)
  *   3. {skill-root}/customize.yaml                            (skill defaults)
  *
  * Skill name is derived from the basename of the skill directory.
@@ -36,10 +35,7 @@ const yaml = require('yaml');
 function findProjectRoot(start) {
   let current = path.resolve(start);
   while (true) {
-    if (
-      fs.existsSync(path.join(current, '_bmad')) ||
-      fs.existsSync(path.join(current, '.git'))
-    ) {
+    if (fs.existsSync(path.join(current, '_bmad')) || fs.existsSync(path.join(current, '.git'))) {
       return current;
     }
     const parent = path.dirname(current);
@@ -53,19 +49,15 @@ function loadYaml(filePath) {
     const raw = fs.readFileSync(filePath, 'utf8');
     const parsed = yaml.parse(raw);
     return parsed && typeof parsed === 'object' ? parsed : {};
-  } catch (err) {
-    if (err.code === 'ENOENT') return {};
-    process.stderr.write(`warning: failed to parse ${filePath}: ${err.message}\n`);
+  } catch (error) {
+    if (error.code === 'ENOENT') return {};
+    process.stderr.write(`warning: failed to parse ${filePath}: ${error.message}\n`);
     return {};
   }
 }
 
 function isPlainObject(value) {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
-}
-
-function isMenuArray(value) {
-  return Array.isArray(value) && value.length > 0 && value.every((item) => isPlainObject(item));
 }
 
 function mergeByKey(base, override, keyName) {
@@ -157,12 +149,8 @@ function mergeAgentBlock(base, override) {
         // Merge by `code` when both sides use it; otherwise append.
         const baseArr = Array.isArray(baseVal) ? baseVal : [];
         const overArr = Array.isArray(overVal) ? overVal : [];
-        const anyHasCode = [...baseArr, ...overArr].some(
-          (item) => isPlainObject(item) && item.code !== undefined,
-        );
-        mergedAgent[key] = anyHasCode
-          ? mergeByKey(baseArr, overArr, 'code')
-          : appendArrays(baseArr, overArr);
+        const anyHasCode = [...baseArr, ...overArr].some((item) => isPlainObject(item) && item.code !== undefined);
+        mergedAgent[key] = anyHasCode ? mergeByKey(baseArr, overArr, 'code') : appendArrays(baseArr, overArr);
         break;
       }
       default: {
@@ -185,7 +173,7 @@ function extractKey(data, dottedKey) {
     if (isPlainObject(current) && part in current) {
       current = current[part];
     } else {
-      return undefined;
+      return;
     }
   }
   return current;
@@ -195,15 +183,26 @@ function parseArgs(argv) {
   const args = { skill: null, keys: [] };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
-    if (a === '--skill' || a === '-s') {
-      args.skill = argv[++i];
-    } else if (a === '--key' || a === '-k') {
-      args.keys.push(argv[++i]);
-    } else if (a === '--help' || a === '-h') {
-      printHelp();
-      process.exit(0);
-    } else {
-      process.stderr.write(`warning: unknown argument: ${a}\n`);
+    switch (a) {
+      case '--skill':
+      case '-s': {
+        args.skill = argv[++i];
+        break;
+      }
+      case '--key':
+      case '-k': {
+        args.keys.push(argv[++i]);
+        break;
+      }
+      case '--help':
+      case '-h': {
+        printHelp();
+        process.exit(0);
+        break;
+      }
+      default: {
+        process.stderr.write(`warning: unknown argument: ${a}\n`);
+      }
     }
   }
   return args;
@@ -241,15 +240,14 @@ function main() {
     process.stderr.write(`warning: no defaults found at ${defaultsPath}\n`);
   }
 
-  const projectRoot =
-    findProjectRoot(process.cwd()) || findProjectRoot(skillDir);
+  const projectRoot = findProjectRoot(process.cwd()) || findProjectRoot(skillDir);
 
   let team = {};
   let user = {};
   if (projectRoot) {
-    const customizationsDir = path.join(projectRoot, '_bmad', 'customizations');
-    team = loadYaml(path.join(customizationsDir, `${skillName}.yaml`));
-    user = loadYaml(path.join(customizationsDir, `${skillName}.user.yaml`));
+    const customDir = path.join(projectRoot, '_bmad', 'custom');
+    team = loadYaml(path.join(customDir, `${skillName}.yaml`));
+    user = loadYaml(path.join(customDir, `${skillName}.user.yaml`));
   }
 
   let merged = mergeAgentBlock(defaults, team);

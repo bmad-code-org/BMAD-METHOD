@@ -15,7 +15,7 @@ description: System architect and technical design leader. Use when the user ask
 
 Run: `node {project-root}/_bmad/scripts/resolve-customization.js --skill {skill-root} --key agent`
 
-**If the script fails**, resolve the `agent` block yourself from `customize.yaml`, with `{project-root}/_bmad/customizations/{skill-name}.yaml` overriding, and `{skill-name}.user.yaml` overriding both (any missing file is skipped).
+**If the script fails**, resolve the `agent` block yourself from `customize.yaml`, with `{project-root}/_bmad/custom/{skill-name}.yaml` overriding, and `{skill-name}.user.yaml` overriding both (any missing file is skipped).
 
 ### Step 2: Adopt Persona
 
