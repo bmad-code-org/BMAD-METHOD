@@ -244,6 +244,15 @@ class Installer {
 
     const installTasks = [];
 
+    installTasks.push({
+      title: 'Installing shared scripts',
+      task: async () => {
+        await this._installSharedScripts(paths);
+        addResult('Shared scripts', 'ok');
+        return 'Shared scripts installed';
+      },
+    });
+
     if (allModules.length > 0) {
       installTasks.push({
         title: isQuickUpdate ? `Updating ${allModules.length} module(s)` : `Installing ${allModules.length} module(s)`,
@@ -559,6 +568,31 @@ class Installer {
   }
 
   /**
+   * Copy src/scripts/* → _bmad/scripts/ and seed _bmad/custom/.gitignore.
+   * Agents resolve customizations via these shared scripts; the .gitignore
+   * ensures *.user.yaml overrides stay out of version control by default.
+   */
+  async _installSharedScripts(paths) {
+    const srcScriptsDir = path.join(paths.srcDir, 'src', 'scripts');
+    if (await fs.pathExists(srcScriptsDir)) {
+      const entries = await fs.readdir(srcScriptsDir, { withFileTypes: true });
+      for (const entry of entries) {
+        if (!entry.isFile()) continue;
+        const srcFile = path.join(srcScriptsDir, entry.name);
+        const destFile = path.join(paths.scriptsDir, entry.name);
+        await fs.copy(srcFile, destFile, { overwrite: true });
+        this.installedFiles.add(destFile);
+      }
+    }
+
+    const customGitignore = path.join(paths.customDir, '.gitignore');
+    if (!(await fs.pathExists(customGitignore))) {
+      await fs.writeFile(customGitignore, '*.user.yaml\n', 'utf8');
+      this.installedFiles.add(customGitignore);
+    }
+  }
+
+  /**
    * Install official (non-custom) modules.
    * @param {Object} config - Installation configuration
    * @param {Object} paths - InstallPaths instance
@@ -789,9 +823,8 @@ class Installer {
 
     // Get all installed module directories
     const entries = await fs.readdir(bmadDir, { withFileTypes: true });
-    const installedModules = entries
-      .filter((entry) => entry.isDirectory() && entry.name !== '_config' && entry.name !== 'docs')
-      .map((entry) => entry.name);
+    const nonModuleDirs = new Set(['_config', '_memory', 'docs', 'scripts', 'custom']);
+    const installedModules = entries.filter((entry) => entry.isDirectory() && !nonModuleDirs.has(entry.name)).map((entry) => entry.name);
 
     // Generate config.yaml for each installed module
     for (const moduleName of installedModules) {
@@ -917,9 +950,8 @@ class Installer {
 
     // Get all installed module directories
     const entries = await fs.readdir(bmadDir, { withFileTypes: true });
-    const installedModules = entries
-      .filter((entry) => entry.isDirectory() && entry.name !== '_config' && entry.name !== 'docs' && entry.name !== '_memory')
-      .map((entry) => entry.name);
+    const nonModuleDirs = new Set(['_config', '_memory', 'docs', 'scripts', 'custom']);
+    const installedModules = entries.filter((entry) => entry.isDirectory() && !nonModuleDirs.has(entry.name)).map((entry) => entry.name);
 
     // Add core module to scan (it's installed at root level as _config, but we check src/core-skills)
     const coreModulePath = getSourcePath('core-skills');
