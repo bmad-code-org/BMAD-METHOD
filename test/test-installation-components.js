@@ -1927,6 +1927,112 @@ async function runTests() {
   console.log('');
 
   // ============================================================
+  // Test Suite 34: RegistryClient GitHub API Cascade
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 34: RegistryClient GitHub API Cascade${colors.reset}\n`);
+
+  {
+    const { RegistryClient } = require('../tools/installer/modules/registry-client');
+
+    // Build a RegistryClient with stubbed fetch paths so we can assert on cascade behavior
+    // without making real network calls.
+    function createStubbedClient({ apiResult, rawResult }) {
+      const client = new RegistryClient();
+      const calls = [];
+
+      // Stub _fetchWithHeaders (GitHub API path)
+      client._fetchWithHeaders = async (url) => {
+        calls.push(`api:${url}`);
+        if (apiResult instanceof Error) throw apiResult;
+        return apiResult;
+      };
+
+      // Stub fetch (raw CDN path) — only intercept raw.githubusercontent.com calls
+      const originalFetch = client.fetch.bind(client);
+      client.fetch = async (url, timeout) => {
+        if (url.includes('raw.githubusercontent.com')) {
+          calls.push(`raw:${url}`);
+          if (rawResult instanceof Error) throw rawResult;
+          return rawResult;
+        }
+        return originalFetch(url, timeout);
+      };
+
+      return { client, calls };
+    }
+
+    // --- API success skips raw CDN ---
+    {
+      const { client, calls } = createStubbedClient({ apiResult: 'api-content', rawResult: 'raw-content' });
+      const result = await client.fetchGitHubFile('owner', 'repo', 'path/file.txt', 'main');
+
+      assert(result === 'api-content', 'RegistryClient API success returns API content');
+      assert(calls.length === 1, 'RegistryClient API success makes exactly one call');
+      assert(calls[0].startsWith('api:'), 'RegistryClient API success calls API endpoint');
+    }
+
+    // --- API failure falls back to raw CDN ---
+    {
+      const { client, calls } = createStubbedClient({ apiResult: new Error('HTTP 403'), rawResult: 'raw-content' });
+      const result = await client.fetchGitHubFile('owner', 'repo', 'path/file.txt', 'main');
+
+      assert(result === 'raw-content', 'RegistryClient API failure returns raw CDN content');
+      assert(calls.length === 2, 'RegistryClient API failure makes two calls');
+      assert(calls[0].startsWith('api:'), 'RegistryClient first call is to API');
+      assert(calls[1].startsWith('raw:'), 'RegistryClient second call is to raw CDN');
+    }
+
+    // --- Both endpoints failing throws ---
+    {
+      const { client } = createStubbedClient({ apiResult: new Error('HTTP 403'), rawResult: new Error('HTTP 404') });
+      let threw = false;
+      try {
+        await client.fetchGitHubFile('owner', 'repo', 'path/file.txt', 'main');
+      } catch {
+        threw = true;
+      }
+      assert(threw, 'RegistryClient both endpoints failing throws an error');
+    }
+
+    // --- API URL construction ---
+    {
+      const { client, calls } = createStubbedClient({ apiResult: 'content', rawResult: 'content' });
+      await client.fetchGitHubFile('bmad-code-org', 'bmad-plugins-marketplace', 'registry/official.yaml', 'main');
+
+      const apiCall = calls[0];
+      assert(
+        apiCall.includes('api.github.com/repos/bmad-code-org/bmad-plugins-marketplace/contents/registry/official.yaml'),
+        'RegistryClient API URL contains correct path',
+      );
+      assert(apiCall.includes('ref=main'), 'RegistryClient API URL contains ref parameter');
+    }
+
+    // --- Raw CDN URL construction ---
+    {
+      const { client, calls } = createStubbedClient({ apiResult: new Error('fail'), rawResult: 'content' });
+      await client.fetchGitHubFile('bmad-code-org', 'bmad-plugins-marketplace', 'registry/official.yaml', 'main');
+
+      const rawCall = calls[1];
+      assert(
+        rawCall.includes('raw.githubusercontent.com/bmad-code-org/bmad-plugins-marketplace/main/registry/official.yaml'),
+        'RegistryClient raw CDN URL contains correct path',
+      );
+    }
+
+    // --- fetchGitHubYaml parses YAML ---
+    {
+      const yamlContent = 'modules:\n  - name: test\n    description: A test module\n';
+      const { client } = createStubbedClient({ apiResult: yamlContent, rawResult: yamlContent });
+      const result = await client.fetchGitHubYaml('owner', 'repo', 'file.yaml', 'main');
+
+      assert(Array.isArray(result.modules), 'fetchGitHubYaml parses YAML correctly');
+      assert(result.modules[0].name === 'test', 'fetchGitHubYaml preserves YAML values');
+    }
+  }
+
+  console.log('');
+
+  // ============================================================
   // Summary
   // ============================================================
   console.log(`${colors.cyan}========================================`);
