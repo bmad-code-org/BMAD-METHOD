@@ -1,5 +1,5 @@
 const path = require('node:path');
-const fs = require('fs-extra');
+const fs = require('../fs-native');
 const { getProjectRoot } = require('../project-root');
 const { BMAD_FOLDER_NAME } = require('../ide/shared/path-utils');
 
@@ -19,16 +19,16 @@ class InstallPaths {
     const isUpdate = await fs.pathExists(bmadDir);
 
     const configDir = path.join(bmadDir, '_config');
-    const agentsDir = path.join(configDir, 'agents');
-    const customCacheDir = path.join(configDir, 'custom');
     const coreDir = path.join(bmadDir, 'core');
+    const scriptsDir = path.join(bmadDir, 'scripts');
+    const customDir = path.join(bmadDir, 'custom');
 
     for (const [dir, label] of [
       [bmadDir, 'bmad directory'],
       [configDir, 'config directory'],
-      [agentsDir, 'agents config directory'],
-      [customCacheDir, 'custom modules cache'],
       [coreDir, 'core module directory'],
+      [scriptsDir, 'shared scripts directory'],
+      [customDir, 'customizations directory'],
     ]) {
       await ensureWritableDir(dir, label);
     }
@@ -39,9 +39,9 @@ class InstallPaths {
       projectRoot,
       bmadDir,
       configDir,
-      agentsDir,
-      customCacheDir,
       coreDir,
+      scriptsDir,
+      customDir,
       isUpdate,
     });
   }

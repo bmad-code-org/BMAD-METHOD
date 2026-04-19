@@ -1,67 +1,102 @@
-const fs = require('fs-extra');
+const fs = require('../fs-native');
 const os = require('node:os');
 const path = require('node:path');
 const { execSync } = require('node:child_process');
 const yaml = require('yaml');
 const prompts = require('../prompts');
+const { RegistryClient } = require('./registry-client');
+
+const MARKETPLACE_OWNER = 'bmad-code-org';
+const MARKETPLACE_REPO = 'bmad-plugins-marketplace';
+const MARKETPLACE_REF = 'main';
+const FALLBACK_CONFIG_PATH = path.join(__dirname, 'registry-fallback.yaml');
 
 /**
- * Manages external official modules defined in external-official-modules.yaml
- * These are modules hosted in external repositories that can be installed
+ * Manages official modules from the remote BMad marketplace registry.
+ * Fetches registry/official.yaml from GitHub; falls back to the bundled
+ * external-official-modules.yaml when the network is unavailable.
  *
  * @class ExternalModuleManager
  */
 class ExternalModuleManager {
   constructor() {
-    this.externalModulesConfigPath = path.join(__dirname, '../external-official-modules.yaml');
-    this.cachedModules = null;
+    this._client = new RegistryClient();
   }
 
   /**
-   * Load and parse the external-official-modules.yaml file
-   * @returns {Object} Parsed YAML content with modules object
+   * Load the official modules registry from GitHub, falling back to the
+   * bundled YAML file if the fetch fails.
+   * @returns {Object} Parsed YAML content with modules array
    */
   async loadExternalModulesConfig() {
     if (this.cachedModules) {
       return this.cachedModules;
     }
 
+    // Try remote registry first
     try {
-      const content = await fs.readFile(this.externalModulesConfigPath, 'utf8');
+      const config = await this._client.fetchGitHubYaml(MARKETPLACE_OWNER, MARKETPLACE_REPO, 'registry/official.yaml', MARKETPLACE_REF);
+      if (config?.modules?.length) {
+        this.cachedModules = config;
+        return config;
+      }
+    } catch {
+      // Fall through to local fallback
+    }
+
+    // Fallback to bundled file
+    try {
+      const content = await fs.readFile(FALLBACK_CONFIG_PATH, 'utf8');
       const config = yaml.parse(content);
       this.cachedModules = config;
+      await prompts.log.warn('Could not reach BMad registry; using bundled module list.');
       return config;
     } catch (error) {
-      await prompts.log.warn(`Failed to load external modules config: ${error.message}`);
-      return { modules: {} };
+      await prompts.log.warn(`Failed to load modules config: ${error.message}`);
+      return { modules: [] };
     }
   }
 
   /**
-   * Get list of available external modules
+   * Normalize a module entry from either the remote registry format
+   * (snake_case, array) or the legacy bundled format (kebab-case, object map).
+   * @param {Object} mod - Raw module config from YAML
+   * @param {string} [key] - Key name (only for legacy map format)
+   * @returns {Object} Normalized module info
+   */
+  _normalizeModule(mod, key) {
+    return {
+      key: key || mod.name,
+      url: mod.repository || mod.url,
+      moduleDefinition: mod.module_definition || mod['module-definition'],
+      code: mod.code,
+      name: mod.display_name || mod.name,
+      description: mod.description || '',
+      defaultSelected: mod.default_selected === true || mod.defaultSelected === true,
+      type: mod.type || 'bmad-org',
+      npmPackage: mod.npm_package || mod.npmPackage || null,
+      builtIn: mod.built_in === true,
+      isExternal: mod.built_in !== true,
+    };
+  }
+
+  /**
+   * Get list of available modules from the registry
    * @returns {Array<Object>} Array of module info objects
    */
   async listAvailable() {
     const config = await this.loadExternalModulesConfig();
-    const modules = [];
 
-    for (const [key, moduleConfig] of Object.entries(config.modules || {})) {
-      modules.push({
-        key,
-        url: moduleConfig.url,
-        moduleDefinition: moduleConfig['module-definition'],
-        code: moduleConfig.code,
-        name: moduleConfig.name,
-        header: moduleConfig.header,
-        subheader: moduleConfig.subheader,
-        description: moduleConfig.description || '',
-        defaultSelected: moduleConfig.defaultSelected === true,
-        type: moduleConfig.type || 'community', // bmad-org or community
-        npmPackage: moduleConfig.npmPackage || null, // Include npm package name
-        isExternal: true,
-      });
+    // Remote format: modules is an array
+    if (Array.isArray(config.modules)) {
+      return config.modules.map((mod) => this._normalizeModule(mod));
     }
 
+    // Legacy bundled format: modules is an object map
+    const modules = [];
+    for (const [key, mod] of Object.entries(config.modules || {})) {
+      modules.push(this._normalizeModule(mod, key));
+    }
     return modules;
   }
 
@@ -73,65 +108,6 @@ class ExternalModuleManager {
   async getModuleByCode(code) {
     const modules = await this.listAvailable();
     return modules.find((m) => m.code === code) || null;
-  }
-
-  /**
-   * Get module info by key
-   * @param {string} key - The module key (e.g., 'bmad-creative-intelligence-suite')
-   * @returns {Object|null} Module info or null if not found
-   */
-  async getModuleByKey(key) {
-    const config = await this.loadExternalModulesConfig();
-    const moduleConfig = config.modules?.[key];
-
-    if (!moduleConfig) {
-      return null;
-    }
-
-    return {
-      key,
-      url: moduleConfig.url,
-      moduleDefinition: moduleConfig['module-definition'],
-      code: moduleConfig.code,
-      name: moduleConfig.name,
-      header: moduleConfig.header,
-      subheader: moduleConfig.subheader,
-      description: moduleConfig.description || '',
-      defaultSelected: moduleConfig.defaultSelected === true,
-      type: moduleConfig.type || 'community', // bmad-org or community
-      npmPackage: moduleConfig.npmPackage || null, // Include npm package name
-      isExternal: true,
-    };
-  }
-
-  /**
-   * Check if a module code exists in external modules
-   * @param {string} code - The module code to check
-   * @returns {boolean} True if the module exists
-   */
-  async hasModule(code) {
-    const module = await this.getModuleByCode(code);
-    return module !== null;
-  }
-
-  /**
-   * Get the URL for a module by code
-   * @param {string} code - The module code
-   * @returns {string|null} The URL or null if not found
-   */
-  async getModuleUrl(code) {
-    const module = await this.getModuleByCode(code);
-    return module ? module.url : null;
-  }
-
-  /**
-   * Get the module definition path for a module by code
-   * @param {string} code - The module code
-   * @returns {string|null} The module definition path or null if not found
-   */
-  async getModuleDefinition(code) {
-    const module = await this.getModuleByCode(code);
-    return module ? module.moduleDefinition : null;
   }
 
   /**
@@ -154,7 +130,7 @@ class ExternalModuleManager {
     const moduleInfo = await this.getModuleByCode(moduleCode);
 
     if (!moduleInfo) {
-      throw new Error(`External module '${moduleCode}' not found in external-official-modules.yaml`);
+      throw new Error(`External module '${moduleCode}' not found in the BMad registry`);
     }
 
     const cacheDir = this.getExternalCacheDir();
@@ -304,7 +280,7 @@ class ExternalModuleManager {
   async findExternalModuleSource(moduleCode, options = {}) {
     const moduleInfo = await this.getModuleByCode(moduleCode);
 
-    if (!moduleInfo) {
+    if (!moduleInfo || moduleInfo.builtIn) {
       return null;
     }
 
@@ -349,6 +325,7 @@ class ExternalModuleManager {
     // Nothing found: return configured path (preserves old behavior for error messaging)
     return path.dirname(configuredPath);
   }
+  cachedModules = null;
 }
 
 module.exports = { ExternalModuleManager };

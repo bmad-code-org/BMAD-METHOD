@@ -353,7 +353,7 @@ Uniquement pour les parcours méthode BMad et Enterprise. Quick Dev passe direct
 
 ### Puis-je modifier mon plan plus tard ?
 
-Oui. Utilisez `bmad-correct-course` pour gérer les changements de portée.
+Oui. Utilisez `bmad-correct-course` pour gérer les changements de portée en cours d’implémentation.
 
 **Une question sans réponse ici ?** [Ouvrez une issue](...) ou posez votre question sur [Discord](...).
 ```

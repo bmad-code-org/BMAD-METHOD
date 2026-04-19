@@ -1,5 +1,5 @@
 const path = require('node:path');
-const fs = require('fs-extra');
+const fs = require('../fs-native');
 const prompts = require('../prompts');
 const { Installer } = require('../core/installer');
 

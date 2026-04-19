@@ -2,7 +2,7 @@
 title: Options de Testing
 description: Comparaison du workflow QA intégré avec le module Test Architect (TEA) pour l'automatisation des tests.
 sidebar:
-  order: 5
+  order: 6
 ---
 
 BMad propose deux approches de test : un workflow QA[^1] intégré pour une génération rapide de tests et un module Test Architect installable pour une stratégie de test de qualité entreprise.

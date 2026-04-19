@@ -11,7 +11,7 @@ sidebar:
 
 | 智能体 | Skill ID | 触发器 | 主要 workflow |
 | --- | --- | --- | --- |
-| Analyst (Mary) | `bmad-analyst` | `BP`、`RS`、`CB`、`DP` | Brainstorm、Research、Create Brief、Document Project |
+| Analyst (Mary) | `bmad-analyst` | `BP`、`MR`、`DR`、`TR`、`CB`、`WB`、`DP` | Brainstorm、Market Research、Domain Research、Technical Research、Create Brief、PRFAQ Challenge、Document Project |
 | Product Manager (John) | `bmad-pm` | `CP`、`VP`、`EP`、`CE`、`IR`、`CC` | Create/Validate/Edit PRD、Create Epics and Stories、Implementation Readiness、Correct Course |
 | Architect (Winston) | `bmad-architect` | `CA`、`IR` | Create Architecture、Implementation Readiness |
 | Developer (Amelia) | `bmad-agent-dev` | `DS`、`QD`、`QA`、`CR`、`SP`、`CS`、`ER` | Dev Story、Quick Dev、QA Test Generation、Code Review、Sprint Planning、Create Story、Epic Retrospective |

@@ -65,15 +65,12 @@ Load and read full config from `{main_config}` and resolve:
 - `project_name`, `planning_artifacts`, `implementation_artifacts`, `user_name`
 - `communication_language`, `document_output_language`, `user_skill_level`
 - `date` as system-generated current datetime
+- `sprint_status` = `{implementation_artifacts}/sprint-status.yaml`
 - `project_context` = `**/project-context.md` (load if exists)
 - CLAUDE.md / memory files (load if exist)
 
 YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `{communication_language}`.
 
-### 2. Paths
-
-- `wipFile` = `{implementation_artifacts}/spec-wip.md`
-
-### 3. First Step Execution
+### 2. First Step Execution
 
 Read fully and follow: `./step-01-clarify-and-route.md` to begin the workflow.

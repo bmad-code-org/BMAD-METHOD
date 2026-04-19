@@ -2,7 +2,7 @@
 title: "Contexte du Projet"
 description: Comment project-context.md guide les agents IA avec les règles et préférences de votre projet
 sidebar:
-  order: 7
+  order: 10
 ---
 
 Le fichier `project-context.md` est le guide d'implémentation de votre projet pour les agents IA. Similaire à une « constitution » dans d'autres systèmes de développement, il capture les règles, les patterns et les préférences qui garantissent une génération de code cohérente à travers tous les workflows.

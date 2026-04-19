@@ -1,5 +1,5 @@
 const path = require('node:path');
-const fs = require('fs-extra');
+const fs = require('../fs-native');
 const yaml = require('yaml');
 const crypto = require('node:crypto');
 const csv = require('csv-parse/sync');
@@ -9,7 +9,6 @@ const {
   loadSkillManifest: loadSkillManifestShared,
   getCanonicalId: getCanonicalIdShared,
   getArtifactType: getArtifactTypeShared,
-  getInstallToBmad: getInstallToBmadShared,
 } = require('../ide/shared/skill-manifest');
 
 // Load package.json for version info
@@ -40,11 +39,6 @@ class ManifestGenerator {
   /** Delegate to shared skill-manifest module */
   getArtifactType(manifest, filename) {
     return getArtifactTypeShared(manifest, filename);
-  }
-
-  /** Delegate to shared skill-manifest module */
-  getInstallToBmad(manifest, filename) {
-    return getInstallToBmadShared(manifest, filename);
   }
 
   /**
@@ -127,7 +121,7 @@ class ManifestGenerator {
    * Recursively walk a module directory tree, collecting native SKILL.md entrypoints.
    * A directory is discovered as a skill when it contains a SKILL.md file with
    * valid name/description frontmatter (name must match directory name).
-   * Manifest YAML is loaded only when present — for install_to_bmad and agent metadata.
+   * Manifest YAML is loaded only when present — for agent metadata.
    * Populates this.skills[] and this.skillClaimedDirs (Set of absolute paths).
    */
   async collectSkills() {
@@ -156,7 +150,7 @@ class ManifestGenerator {
         const skillMeta = await this.parseSkillMd(skillMdPath, dir, dirName, debug);
 
         if (skillMeta) {
-          // Load manifest when present (for install_to_bmad and agent metadata)
+          // Load manifest when present (for agent metadata)
           const manifest = await this.loadSkillManifest(dir);
           const artifactType = this.getArtifactType(manifest, skillFile);
 
@@ -182,7 +176,6 @@ class ManifestGenerator {
             module: moduleName,
             path: installPath,
             canonicalId,
-            install_to_bmad: this.getInstallToBmad(manifest, skillFile),
           });
 
           // Add to files list
@@ -200,11 +193,13 @@ class ManifestGenerator {
           }
         }
 
-        // Recurse into subdirectories
-        for (const entry of entries) {
-          if (!entry.isDirectory()) continue;
-          if (entry.name.startsWith('.') || entry.name.startsWith('_')) continue;
-          await walk(path.join(dir, entry.name));
+        // Recurse into subdirectories — but not inside a discovered skill
+        if (!skillMeta) {
+          for (const entry of entries) {
+            if (!entry.isDirectory()) continue;
+            if (entry.name.startsWith('.') || entry.name.startsWith('_')) continue;
+            await walk(path.join(dir, entry.name));
+          }
         }
       };
 
@@ -334,7 +329,6 @@ class ManifestGenerator {
           displayName: m.displayName || m.name || entry.name,
           title: m.title || '',
           icon: m.icon || '',
-          capabilities: m.capabilities ? this.cleanForCSV(m.capabilities) : '',
           role: m.role ? this.cleanForCSV(m.role) : '',
           identity: m.identity ? this.cleanForCSV(m.identity) : '',
           communicationStyle: m.communicationStyle ? this.cleanForCSV(m.communicationStyle) : '',
@@ -382,8 +376,6 @@ class ManifestGenerator {
     // Read existing manifest to preserve install date
     let existingInstallDate = null;
     const existingModulesMap = new Map();
-    let existingCustomModules = [];
-
     if (await fs.pathExists(manifestPath)) {
       try {
         const existingContent = await fs.readFile(manifestPath, 'utf8');
@@ -404,12 +396,6 @@ class ManifestGenerator {
             }
           }
         }
-
-        if (existingManifest.customModules && Array.isArray(existingManifest.customModules)) {
-          // We filter here so manifest regeneration preserves source metadata only for custom modules that
-          // are still installed. Without that, customModules can retain stale entries for modules that were removed.
-          existingCustomModules = existingManifest.customModules.filter((customModule) => installedModuleSet.has(customModule?.id));
-        }
       } catch {
         // If we can't read existing manifest, continue with defaults
       }
@@ -427,7 +413,7 @@ class ManifestGenerator {
       // Get existing install date if available
       const existing = existingModulesMap.get(moduleName);
 
-      updatedModules.push({
+      const moduleEntry = {
         name: moduleName,
         version: versionInfo.version,
         installDate: existing?.installDate || new Date().toISOString(),
@@ -435,7 +421,9 @@ class ManifestGenerator {
         source: versionInfo.source,
         npmPackage: versionInfo.npmPackage,
         repoUrl: versionInfo.repoUrl,
-      });
+      };
+      if (versionInfo.localPath) moduleEntry.localPath = versionInfo.localPath;
+      updatedModules.push(moduleEntry);
     }
 
     const manifest = {
@@ -445,7 +433,6 @@ class ManifestGenerator {
         lastUpdated: new Date().toISOString(),
       },
       modules: updatedModules,
-      customModules: existingCustomModules,
       ides: this.selectedIdes,
     };
 
@@ -472,7 +459,7 @@ class ManifestGenerator {
     const csvPath = path.join(cfgDir, 'skill-manifest.csv');
     const escapeCsv = (value) => `"${String(value ?? '').replaceAll('"', '""')}"`;
 
-    let csvContent = 'canonicalId,name,description,module,path,install_to_bmad\n';
+    let csvContent = 'canonicalId,name,description,module,path\n';
 
     for (const skill of this.skills) {
       const row = [
@@ -481,7 +468,6 @@ class ManifestGenerator {
         escapeCsv(skill.description),
         escapeCsv(skill.module),
         escapeCsv(skill.path),
-        escapeCsv(skill.install_to_bmad),
       ].join(',');
       csvContent += row + '\n';
     }
@@ -512,7 +498,7 @@ class ManifestGenerator {
     }
 
     // Create CSV header with persona fields and canonicalId
-    let csvContent = 'name,displayName,title,icon,capabilities,role,identity,communicationStyle,principles,module,path,canonicalId\n';
+    let csvContent = 'name,displayName,title,icon,role,identity,communicationStyle,principles,module,path,canonicalId\n';
 
     // Combine existing and new agents, preferring new data for duplicates
     const allAgents = new Map();
@@ -530,7 +516,6 @@ class ManifestGenerator {
         displayName: agent.displayName,
         title: agent.title,
         icon: agent.icon,
-        capabilities: agent.capabilities,
         role: agent.role,
         identity: agent.identity,
         communicationStyle: agent.communicationStyle,
@@ -548,7 +533,6 @@ class ManifestGenerator {
         escapeCsv(record.displayName),
         escapeCsv(record.title),
         escapeCsv(record.icon),
-        escapeCsv(record.capabilities),
         escapeCsv(record.role),
         escapeCsv(record.identity),
         escapeCsv(record.communicationStyle),

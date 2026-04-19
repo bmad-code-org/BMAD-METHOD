@@ -1,0 +1,44 @@
+# Fallback module registry — used only when the BMad Marketplace repo
+# (bmad-code-org/bmad-plugins-marketplace) is unreachable.
+# The remote registry/official.yaml is the source of truth.
+
+modules:
+  bmad-builder:
+    url: https://github.com/bmad-code-org/bmad-builder
+    module-definition: skills/module.yaml
+    code: bmb
+    name: "BMad Builder"
+    description: "Agent and Builder"
+    defaultSelected: false
+    type: bmad-org
+    npmPackage: bmad-builder
+
+  bmad-creative-intelligence-suite:
+    url: https://github.com/bmad-code-org/bmad-module-creative-intelligence-suite
+    module-definition: src/module.yaml
+    code: cis
+    name: "BMad Creative Intelligence Suite"
+    description: "Creative tools for writing, brainstorming, and more"
+    defaultSelected: false
+    type: bmad-org
+    npmPackage: bmad-creative-intelligence-suite
+
+  bmad-game-dev-studio:
+    url: https://github.com/bmad-code-org/bmad-module-game-dev-studio.git
+    module-definition: src/module.yaml
+    code: gds
+    name: "BMad Game Dev Studio"
+    description: "Game development agents and workflows"
+    defaultSelected: false
+    type: bmad-org
+    npmPackage: bmad-game-dev-studio
+
+  bmad-method-test-architecture-enterprise:
+    url: https://github.com/bmad-code-org/bmad-method-test-architecture-enterprise
+    module-definition: src/module.yaml
+    code: tea
+    name: "Test Architect"
+    description: "Master Test Architect for quality strategy, test automation, and release gates"
+    defaultSelected: false
+    type: bmad-org
+    npmPackage: bmad-method-test-architecture-enterprise

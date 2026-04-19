@@ -17,12 +17,12 @@ module.exports = {
       '--tools <tools>',
       'Comma-separated list of tool/IDE IDs to configure (e.g., "claude-code,cursor"). Use "none" to skip tool configuration.',
     ],
-    ['--custom-content <paths>', 'Comma-separated list of paths to custom modules/agents/workflows'],
     ['--action <type>', 'Action type for existing installations: install, update, or quick-update'],
     ['--user-name <name>', 'Name for agents to use (default: system username)'],
     ['--communication-language <lang>', 'Language for agent communication (default: English)'],
     ['--document-output-language <lang>', 'Language for document output (default: English)'],
     ['--output-folder <path>', 'Output folder path relative to project root (default: _bmad-output)'],
+    ['--custom-source <sources>', 'Comma-separated Git URLs or local paths to install custom modules from'],
     ['-y, --yes', 'Accept all defaults and skip prompts where possible'],
   ],
   action: async (options) => {

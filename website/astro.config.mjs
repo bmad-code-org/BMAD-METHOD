@@ -92,33 +92,55 @@ export default defineConfig({
 
       // Sidebar configuration (Diataxis structure)
       sidebar: [
-        { label: 'Welcome', translations: { 'zh-CN': '欢迎', 'fr-FR': 'Bienvenue' }, slug: 'index' },
-        { label: 'Roadmap', translations: { 'zh-CN': '路线图', 'fr-FR': 'Feuille de route' }, slug: 'roadmap' },
+        {
+          label: 'Welcome',
+          translations: { 'vi-VN': 'Chào mừng', 'zh-CN': '欢迎', 'fr-FR': 'Bienvenue', 'cs-CZ': 'Vítejte' },
+          slug: 'index',
+        },
+        {
+          label: 'Roadmap',
+          translations: { 'vi-VN': 'Lộ trình', 'zh-CN': '路线图', 'fr-FR': 'Feuille de route', 'cs-CZ': 'Plán rozvoje' },
+          slug: 'roadmap',
+        },
         {
           label: 'Tutorials',
-          translations: { 'zh-CN': '教程', 'fr-FR': 'Tutoriels' },
+          translations: { 'vi-VN': 'Hướng dẫn nhập môn', 'zh-CN': '教程', 'fr-FR': 'Tutoriels', 'cs-CZ': 'Tutoriály' },
           collapsed: false,
           autogenerate: { directory: 'tutorials' },
         },
         {
           label: 'How-To Guides',
-          translations: { 'zh-CN': '操作指南', 'fr-FR': 'Guides pratiques' },
+          translations: { 'vi-VN': 'Hướng dẫn tác vụ', 'zh-CN': '操作指南', 'fr-FR': 'Guides pratiques', 'cs-CZ': 'Praktické návody' },
           collapsed: true,
           autogenerate: { directory: 'how-to' },
         },
         {
           label: 'Explanation',
-          translations: { 'zh-CN': '概念说明', 'fr-FR': 'Explications' },
+          translations: { 'vi-VN': 'Giải thích', 'zh-CN': '概念说明', 'fr-FR': 'Explications', 'cs-CZ': 'Vysvětlení' },
           collapsed: true,
           autogenerate: { directory: 'explanation' },
         },
         {
           label: 'Reference',
-          translations: { 'zh-CN': '参考', 'fr-FR': 'Référence' },
+          translations: { 'vi-VN': 'Tham chiếu', 'zh-CN': '参考', 'fr-FR': 'Référence', 'cs-CZ': 'Reference' },
           collapsed: true,
           autogenerate: { directory: 'reference' },
         },
         // TEA docs moved to standalone module site; keep BMM sidebar focused.
+        {
+          label: 'BMad Ecosystem',
+          collapsed: false,
+          items: [
+            { label: 'BMad Builder', link: 'https://bmad-builder-docs.bmad-method.org/', attrs: { target: '_blank' } },
+            { label: 'Creative Intelligence Suite', link: 'https://cis-docs.bmad-method.org/', attrs: { target: '_blank' } },
+            { label: 'Game Dev Studio', link: 'https://game-dev-studio-docs.bmad-method.org/', attrs: { target: '_blank' } },
+            {
+              label: 'Test Architect (TEA)',
+              link: 'https://bmad-code-org.github.io/bmad-method-test-architecture-enterprise/',
+              attrs: { target: '_blank' },
+            },
+          ],
+        },
       ],
 
       // Credits in footer

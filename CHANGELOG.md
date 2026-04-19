@@ -1,5 +1,56 @@
 # Changelog
 
+## v6.3.0 - 2026-04-09
+
+### 💥 Breaking Changes
+
+* Remove custom content installation feature; use marketplace-based plugin installation instead (#2227)
+* Remove bmad-init skill; all agents and skills now load config directly from `{project-root}/_bmad/bmm/config.yaml` (#2159)
+* Remove spec-wip.md singleton; quick-dev now writes directly to `spec-{slug}.md` with status field, enabling parallel sessions (#2214)
+* Consolidate three agent personas into Developer agent (Amelia): remove Barry quick-flow-solo-dev (#2177), Quinn QA agent (#2179), and Bob Scrum Master agent (#2186)
+
+### 🎁 Features
+
+* Universal source support for custom module installs with 5-strategy PluginResolver cascade supporting any Git host (GitHub, GitLab, Bitbucket, self-hosted) and local file paths (#2233)
+* Community module browser with three-tier selection: official, community (category drill-down from marketplace index), and custom URL with unverified source warning (#2229)
+* Switch module source of truth from bundled config to remote marketplace registry with network-failure fallback (#2228)
+* Add bmad-prfaq skill implementing Amazon's Working Backwards methodology as alternative Phase 1 analysis path with 5-stage coached workflow and subagent architecture (#2157)
+* Add bmad-checkpoint-preview skill for guided, concern-ordered human review of commits, branches, or PRs (#2145)
+* Epic context compilation for quick-dev step-01: sub-agent compiles planning docs into cached `epic-{N}-context.md` for story implementation (#2218)
+* Previous story continuity in quick-dev: load completed spec from same epic as implementation context (#2201)
+* Planning artifact awareness in quick-dev: selectively load PRD, architecture, UX, and epics docs for context-informed specs (#2185)
+* One-shot route now generates lightweight spec trace file for consistent artifact tracking (#2121)
+* Improve checkpoint-preview UX with clickable spec paths, external edit detection, and missing-file halt (#2217)
+* Add Junie (JetBrains AI) platform support (#2142)
+* Restore KiloCoder support with native-skills installation (#2151)
+* Add bmad-help support for llms.txt general questions (#2230)
+
+### ♻️ Refactoring
+
+* Consolidate party-mode into single SKILL.md with real subagent spawning via Agent tool, replacing multi-file workflow architecture (#2160)
+
+### 🐛 Bug Fixes
+
+* Fix version display bug where marketplace.json walk-up reported wrong version (#2233)
+* Fix checkpoint-preview step-05 advancing without user confirmation by adding explicit HALT (#2184)
+* Address adversarial triage findings: clarify review_mode transitions, label walkthrough branches, fix terse commit handling (#2180)
+* Preserve local custom module sources during quick update (#2172)
+* Support skills/ folder as fallback module source location for bmb compatibility (#2149)
+
+### 🔧 Maintenance
+
+* Overhaul installer branding with responsive BMAD METHOD logo, blue color scheme, unified version sourcing from marketplace.json, and surgical manifest-based skill cleanup (#2223)
+* Stop copying skill prompts to _bmad by default (#2182)
+* Add Python 3.10+ and uv as documented prerequisites (#2221)
+
+### 📚 Documentation
+
+* Complete Czech (cs-CZ) documentation translation (#2134)
+* Complete Vietnamese (vi-VN) documentation translation (#2110, #2192)
+* Rewrite get-answers-about-bmad as 1-2-3 escalation flow, remove deprecated references (#2213)
+* Add checkpoint-preview explainer page and workflow diagram (#2183)
+* Update docs theme to match bmadcode.com with responsive logo and blue color scheme (#2176)
+
 ## v6.2.2 - 2026-03-25
 
 ### ♻️ Refactoring

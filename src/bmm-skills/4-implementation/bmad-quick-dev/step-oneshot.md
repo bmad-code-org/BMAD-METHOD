@@ -1,6 +1,5 @@
 ---
 deferred_work_file: '{implementation_artifacts}/deferred-work.md'
-spec_file: '' # set by step-01 before entering this step
 ---
 
 # Step One-Shot: Implement, Review, Present
@@ -14,11 +13,13 @@ spec_file: '' # set by step-01 before entering this step
 
 ### Implement
 
+Follow `./sync-sprint-status.md` with `{target_status}` = `in-progress`.
+
 Implement the clarified intent directly.
 
 ### Review
 
-Invoke the `bmad-review-adversarial-general` skill in a subagent with the changed files. The subagent gets NO conversation context — to avoid anchoring bias. If no sub-agents are available, write the changed files to a review prompt file in `{implementation_artifacts}` and HALT. Ask the human to run the review in a separate session and paste back the findings.
+Invoke the `bmad-review-adversarial-general` skill in a subagent with the changed files. The subagent gets NO conversation context — to avoid anchoring bias. Launch at the same model capability as the current session. If no sub-agents are available, write the changed files to a review prompt file in `{implementation_artifacts}` and HALT. Ask the human to run the review in a separate session and paste back the findings.
 
 ### Classify
 
@@ -39,6 +40,8 @@ Write `{spec_file}` using `./spec-template.md`. Fill only these sections — del
 1. **Frontmatter** — set `title: '{title}'`, `type`, `created`, `status: 'done'`. Add `route: 'one-shot'`.
 2. **Title and Intent** — `# {title}` heading and `## Intent` with **Problem** and **Approach** lines. Reuse the summary you already generated for the terminal.
 3. **Suggested Review Order** — append after Intent. Build using the same convention as `./step-05-present.md` § "Generate Suggested Review Order" (spec-file-relative links, concern-based ordering, ultra-concise framing).
+
+Follow `./sync-sprint-status.md` with `{target_status}` = `review`.
 
 ### Commit
 

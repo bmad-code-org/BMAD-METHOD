@@ -13,7 +13,7 @@
 
 const path = require('node:path');
 const os = require('node:os');
-const fs = require('fs-extra');
+const fs = require('../tools/installer/fs-native');
 const { Installer } = require('../tools/installer/core/installer');
 const { ManifestGenerator } = require('../tools/installer/core/manifest-generator');
 const { OfficialModules } = require('../tools/installer/modules/official-modules');
@@ -59,8 +59,8 @@ async function createTestBmadFixture() {
   await fs.writeFile(
     path.join(fixtureDir, '_config', 'skill-manifest.csv'),
     [
-      'canonicalId,name,description,module,path,install_to_bmad',
-      '"bmad-master","bmad-master","Minimal test agent fixture","core","_bmad/core/bmad-master/SKILL.md","true"',
+      'canonicalId,name,description,module,path',
+      '"bmad-master","bmad-master","Minimal test agent fixture","core","_bmad/core/bmad-master/SKILL.md"',
       '',
     ].join('\n'),
   );
@@ -103,8 +103,8 @@ async function createSkillCollisionFixture() {
   await fs.writeFile(
     path.join(configDir, 'skill-manifest.csv'),
     [
-      'canonicalId,name,description,module,path,install_to_bmad',
-      '"bmad-help","bmad-help","Native help skill","core","_bmad/core/tasks/bmad-help/SKILL.md","true"',
+      'canonicalId,name,description,module,path',
+      '"bmad-help","bmad-help","Native help skill","core","_bmad/core/tasks/bmad-help/SKILL.md"',
       '',
     ].join('\n'),
   );
@@ -126,56 +126,6 @@ async function createSkillCollisionFixture() {
   );
 
   return { root: fixtureRoot, bmadDir: fixtureDir };
-}
-
-async function createCustomModuleManifestFixture() {
-  const fixtureRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-custom-manifest-'));
-  const bmadDir = path.join(fixtureRoot, '_bmad');
-  const configDir = path.join(bmadDir, '_config');
-  const moduleSourceDir = path.join(fixtureRoot, 'test-module-source');
-  await fs.ensureDir(configDir);
-  await fs.ensureDir(moduleSourceDir);
-
-  const minimalAgent = '<agent name="Test" title="T"><persona>p</persona></agent>';
-  await fs.ensureDir(path.join(bmadDir, 'core', 'agents'));
-  await fs.writeFile(path.join(bmadDir, 'core', 'agents', 'test.md'), minimalAgent);
-  await fs.ensureDir(path.join(bmadDir, 'test-module', 'agents'));
-  await fs.writeFile(path.join(bmadDir, 'test-module', 'agents', 'test.md'), minimalAgent);
-  await fs.writeFile(path.join(moduleSourceDir, 'module.yaml'), ['code: test-module', 'name: Test Module', ''].join('\n'));
-
-  await fs.writeFile(
-    path.join(configDir, 'manifest.yaml'),
-    [
-      'installation:',
-      '  version: 6.2.2',
-      '  installDate: 2026-03-30T00:00:00.000Z',
-      '  lastUpdated: 2026-03-30T00:00:00.000Z',
-      'modules:',
-      '  - name: core',
-      '    version: 6.2.2',
-      '    installDate: 2026-03-30T00:00:00.000Z',
-      '    lastUpdated: 2026-03-30T00:00:00.000Z',
-      '    source: built-in',
-      '    npmPackage: null',
-      '    repoUrl: null',
-      '  - name: test-module',
-      '    version: null',
-      '    installDate: 2026-03-30T00:00:00.000Z',
-      '    lastUpdated: 2026-03-30T00:00:00.000Z',
-      '    source: custom',
-      '    npmPackage: null',
-      '    repoUrl: null',
-      'customModules:',
-      '  - id: test-module',
-      '    name: "Test Module"',
-      `    sourcePath: ${JSON.stringify(moduleSourceDir)}`,
-      'ides:',
-      '  - codex',
-      '',
-    ].join('\n'),
-  );
-
-  return { root: fixtureRoot, bmadDir, manifestPath: path.join(configDir, 'manifest.yaml'), moduleSourceDir };
 }
 
 /**
@@ -1301,6 +1251,14 @@ async function runTests() {
       '---\nname: bmad-architect\ndescription: Architect\n---\nOld skill content\n',
     );
 
+    // Add bmad-architect to the existing skill-manifest.csv so cleanup knows it was previously installed
+    const configDir27 = path.join(installedBmadDir27, '_config');
+    const existingCsv27 = await fs.readFile(path.join(configDir27, 'skill-manifest.csv'), 'utf8');
+    await fs.writeFile(
+      path.join(configDir27, 'skill-manifest.csv'),
+      existingCsv27.trimEnd() + '\n"bmad-architect","bmad-architect","Architect","bmm","_bmad/bmm/agents/bmad-architect/SKILL.md"\n',
+    );
+
     // Run Claude Code setup (which triggers cleanup then install)
     const ideManager27 = new IdeManager();
     await ideManager27.ensureInitialized();
@@ -1766,102 +1724,310 @@ async function runTests() {
   console.log('');
 
   // ============================================================
-  // Suite 33: Main manifest preserves active customModules only
+  // Test Suite 33: Community & Custom Module Managers
   // ============================================================
-  console.log(`${colors.yellow}Test Suite 33: Preserve active customModules in main manifest${colors.reset}\n`);
+  console.log(`${colors.yellow}Test Suite 33: Community & Custom Module Managers${colors.reset}\n`);
 
-  let customManifestFixture = null;
-  try {
-    customManifestFixture = await createCustomModuleManifestFixture();
-    const yaml = require('yaml');
-    const originalManifest = yaml.parse(await fs.readFile(customManifestFixture.manifestPath, 'utf8'));
-    originalManifest.customModules.push({
-      id: 'removed-module',
-      name: 'Removed Module',
-      sourcePath: path.join(customManifestFixture.root, 'removed-module-source'),
+  // --- CustomModuleManager._normalizeCustomModule ---
+  {
+    const { CustomModuleManager } = require('../tools/installer/modules/custom-module-manager');
+    const mgr = new CustomModuleManager();
+
+    const plugin = { name: 'test-plugin', description: 'A test', version: '1.0.0', author: 'tester', source: './src' };
+    const data = { owner: 'Fallback Owner' };
+    const result = mgr._normalizeCustomModule(plugin, 'https://github.com/o/r', data);
+
+    assert(result.code === 'test-plugin', 'normalizeCustomModule sets code from plugin name');
+    assert(result.type === 'custom', 'normalizeCustomModule sets type to custom');
+    assert(result.trustTier === 'unverified', 'normalizeCustomModule sets trustTier to unverified');
+    assert(result.version === '1.0.0', 'normalizeCustomModule preserves version');
+    assert(result.author === 'tester', 'normalizeCustomModule uses plugin author over data.owner');
+
+    const pluginNoAuthor = { name: 'x', description: '', version: null };
+    const result2 = mgr._normalizeCustomModule(pluginNoAuthor, 'https://github.com/o/r', data);
+    assert(result2.author === 'Fallback Owner', 'normalizeCustomModule falls back to data.owner');
+  }
+
+  // --- CommunityModuleManager._normalizeCommunityModule ---
+  {
+    const { CommunityModuleManager } = require('../tools/installer/modules/community-manager');
+    const mgr = new CommunityModuleManager();
+
+    const mod = {
+      name: 'test-mod',
+      display_name: 'Test Module',
+      code: 'tm',
+      description: 'desc',
+      repository: 'https://github.com/o/r',
+      module_definition: 'src/module.yaml',
+      category: 'software-development',
+      subcategory: 'dev-tools',
+      trust_tier: 'bmad-certified',
+      version: '2.0.0',
+      approved_sha: 'abc123',
+      promoted: true,
+      promoted_rank: 1,
+      keywords: ['test', 'module'],
+    };
+    const result = mgr._normalizeCommunityModule(mod);
+
+    assert(result.code === 'tm', 'normalizeCommunityModule sets code');
+    assert(result.displayName === 'Test Module', 'normalizeCommunityModule sets displayName from display_name');
+    assert(result.type === 'community', 'normalizeCommunityModule sets type to community');
+    assert(result.category === 'software-development', 'normalizeCommunityModule preserves category');
+    assert(result.trustTier === 'bmad-certified', 'normalizeCommunityModule maps trust_tier');
+    assert(result.approvedSha === 'abc123', 'normalizeCommunityModule maps approved_sha');
+    assert(result.promoted === true, 'normalizeCommunityModule maps promoted');
+    assert(result.promotedRank === 1, 'normalizeCommunityModule maps promoted_rank');
+    assert(result.builtIn === false, 'normalizeCommunityModule sets builtIn false');
+  }
+
+  // --- CommunityModuleManager.searchByKeyword (with injected cache) ---
+  {
+    const { CommunityModuleManager } = require('../tools/installer/modules/community-manager');
+    const mgr = new CommunityModuleManager();
+
+    // Inject cached index to avoid network call
+    mgr._cachedIndex = {
+      modules: [
+        { name: 'mod-a', display_name: 'Alpha', code: 'a', description: 'testing tools', category: 'dev', keywords: ['test'] },
+        { name: 'mod-b', display_name: 'Beta', code: 'b', description: 'design suite', category: 'design', keywords: ['ux'] },
+        { name: 'mod-c', display_name: 'Gamma', code: 'c', description: 'game engine', category: 'game', keywords: ['unity'] },
+      ],
+    };
+
+    const r1 = await mgr.searchByKeyword('test');
+    assert(r1.length === 1 && r1[0].code === 'a', 'searchByKeyword matches keyword');
+
+    const r2 = await mgr.searchByKeyword('design');
+    assert(r2.length === 1 && r2[0].code === 'b', 'searchByKeyword matches description');
+
+    const r3 = await mgr.searchByKeyword('alpha');
+    assert(r3.length === 1 && r3[0].code === 'a', 'searchByKeyword matches display name');
+
+    const r4 = await mgr.searchByKeyword('xyz');
+    assert(r4.length === 0, 'searchByKeyword returns empty for no match');
+
+    const r5 = await mgr.searchByKeyword('UNITY');
+    assert(r5.length === 1 && r5[0].code === 'c', 'searchByKeyword is case-insensitive');
+  }
+
+  // --- CommunityModuleManager.listFeatured (with injected cache) ---
+  {
+    const { CommunityModuleManager } = require('../tools/installer/modules/community-manager');
+    const mgr = new CommunityModuleManager();
+
+    mgr._cachedIndex = {
+      modules: [
+        { name: 'a', code: 'a', promoted: true, promoted_rank: 3 },
+        { name: 'b', code: 'b', promoted: false },
+        { name: 'c', code: 'c', promoted: true, promoted_rank: 1 },
+      ],
+    };
+
+    const featured = await mgr.listFeatured();
+    assert(featured.length === 2, 'listFeatured returns only promoted modules');
+    assert(featured[0].code === 'c' && featured[1].code === 'a', 'listFeatured sorts by promoted_rank ascending');
+  }
+
+  // --- CommunityModuleManager.getCategoryList (with injected cache) ---
+  {
+    const { CommunityModuleManager } = require('../tools/installer/modules/community-manager');
+    const mgr = new CommunityModuleManager();
+
+    mgr._cachedIndex = {
+      modules: [
+        { name: 'a', code: 'a', category: 'software-development' },
+        { name: 'b', code: 'b', category: 'design-and-creative' },
+        { name: 'c', code: 'c', category: 'software-development' },
+      ],
+    };
+    mgr._cachedCategories = {
+      categories: {
+        'software-development': { name: 'Software Development' },
+        'design-and-creative': { name: 'Design & Creative' },
+      },
+    };
+
+    const cats = await mgr.getCategoryList();
+    assert(cats.length === 2, 'getCategoryList returns categories with modules');
+    const swDev = cats.find((c) => c.slug === 'software-development');
+    assert(swDev && swDev.moduleCount === 2, 'getCategoryList counts modules per category');
+    assert(cats[0].name === 'Design & Creative', 'getCategoryList sorts alphabetically');
+  }
+
+  // --- CommunityModuleManager SHA pinning normalization ---
+  {
+    const { CommunityModuleManager } = require('../tools/installer/modules/community-manager');
+    const mgr = new CommunityModuleManager();
+
+    // Module with SHA set
+    const withSha = mgr._normalizeCommunityModule({
+      name: 'pinned-mod',
+      code: 'pm',
+      approved_sha: 'abc123def456',
+      approved_tag: 'v1.0.0',
     });
-    await fs.writeFile(customManifestFixture.manifestPath, yaml.stringify(originalManifest), 'utf8');
+    assert(withSha.approvedSha === 'abc123def456', 'SHA is preserved when set');
+    assert(withSha.approvedTag === 'v1.0.0', 'Tag is preserved as metadata');
 
-    const generator33 = new ManifestGenerator();
-    await generator33.generateManifests(customManifestFixture.bmadDir, ['core', 'test-module'], [], { ides: ['codex'] });
+    // Module with null SHA (trusted contributor)
+    const noSha = mgr._normalizeCommunityModule({
+      name: 'trusted-mod',
+      code: 'tm',
+      approved_sha: null,
+    });
+    assert(noSha.approvedSha === null, 'Null SHA means no pinning (trusted contributor)');
+  }
 
-    const updatedManifest = yaml.parse(await fs.readFile(customManifestFixture.manifestPath, 'utf8'));
-    const customModule = updatedManifest.customModules?.find((entry) => entry.id === 'test-module');
+  // --- CommunityModuleManager.listByCategory (with injected cache) ---
+  {
+    const { CommunityModuleManager } = require('../tools/installer/modules/community-manager');
+    const mgr = new CommunityModuleManager();
 
-    assert(Array.isArray(updatedManifest.customModules), 'Main manifest keeps customModules array');
-    assert(customModule !== undefined, 'Main manifest preserves existing custom module entry');
+    mgr._cachedIndex = {
+      modules: [
+        { name: 'a', code: 'a', category: 'design-and-creative' },
+        { name: 'b', code: 'b', category: 'software-development' },
+        { name: 'c', code: 'c', category: 'design-and-creative' },
+        { name: 'd', code: 'd', category: 'game-development' },
+      ],
+    };
+
+    const design = await mgr.listByCategory('design-and-creative');
+    assert(design.length === 2, 'listByCategory filters to matching category');
     assert(
-      customModule && customModule.sourcePath === customManifestFixture.moduleSourceDir,
-      'Main manifest preserves custom module sourcePath',
+      design.every((m) => m.category === 'design-and-creative'),
+      'listByCategory returns only matching modules',
     );
-    assert(
-      !updatedManifest.customModules?.some((entry) => entry.id === 'removed-module'),
-      'Main manifest drops stale custom module entries',
-    );
-  } catch (error) {
-    assert(false, 'Main manifest preserves customModules test succeeds', error.message);
-  } finally {
-    if (customManifestFixture?.root) await fs.remove(customManifestFixture.root).catch(() => {});
+
+    const empty = await mgr.listByCategory('nonexistent');
+    assert(empty.length === 0, 'listByCategory returns empty for unknown category');
+  }
+
+  // --- CommunityModuleManager.getModuleByCode (with injected cache) ---
+  {
+    const { CommunityModuleManager } = require('../tools/installer/modules/community-manager');
+    const mgr = new CommunityModuleManager();
+
+    mgr._cachedIndex = {
+      modules: [
+        { name: 'test-mod', code: 'tm', display_name: 'Test Module' },
+        { name: 'other-mod', code: 'om', display_name: 'Other Module' },
+      ],
+    };
+
+    const found = await mgr.getModuleByCode('tm');
+    assert(found !== null && found.code === 'tm', 'getModuleByCode finds existing module');
+
+    const notFound = await mgr.getModuleByCode('xyz');
+    assert(notFound === null, 'getModuleByCode returns null for unknown code');
   }
 
   console.log('');
 
   // ============================================================
-  // Suite 34: Quick update uses manifest-backed custom sources
+  // Test Suite 34: RegistryClient GitHub API Cascade
   // ============================================================
-  console.log(`${colors.yellow}Test Suite 34: Quick update uses manifest-backed custom module sources${colors.reset}\n`);
+  console.log(`${colors.yellow}Test Suite 34: RegistryClient GitHub API Cascade${colors.reset}\n`);
 
-  let quickUpdateFixture = null;
-  const originalListAvailable34 = OfficialModules.prototype.listAvailable;
-  const originalLoadExistingConfig34 = OfficialModules.prototype.loadExistingConfig;
-  const originalCollectModuleConfigQuick34 = OfficialModules.prototype.collectModuleConfigQuick;
-  try {
-    quickUpdateFixture = await createCustomModuleManifestFixture();
-    const installer34 = new Installer();
-    installer34.externalModuleManager.hasModule = async () => false;
-    installer34.externalModuleManager.listAvailable = async () => [];
+  {
+    const { RegistryClient } = require('../tools/installer/modules/registry-client');
 
-    let capturedInstallConfig34 = null;
-    installer34.install = async (config) => {
-      capturedInstallConfig34 = config;
-      return { success: true };
-    };
+    // Build a RegistryClient with stubbed fetch paths so we can assert on cascade behavior
+    // without making real network calls.
+    function createStubbedClient({ apiResult, rawResult }) {
+      const client = new RegistryClient();
+      const calls = [];
 
-    OfficialModules.prototype.listAvailable = async function () {
-      return { modules: [], customModules: [] };
-    };
-    OfficialModules.prototype.loadExistingConfig = async function () {
-      this.collectedConfig = this.collectedConfig || {};
-    };
-    OfficialModules.prototype.collectModuleConfigQuick = async function (moduleName) {
-      this.collectedConfig = this.collectedConfig || {};
-      if (!this.collectedConfig[moduleName]) {
-        this.collectedConfig[moduleName] = {};
+      // Stub _fetchWithHeaders (GitHub API path)
+      client._fetchWithHeaders = async (url) => {
+        calls.push(`api:${url}`);
+        if (apiResult instanceof Error) throw apiResult;
+        return apiResult;
+      };
+
+      // Stub fetch (raw CDN path) — only intercept raw.githubusercontent.com calls
+      const originalFetch = client.fetch.bind(client);
+      client.fetch = async (url, timeout) => {
+        if (url.includes('raw.githubusercontent.com')) {
+          calls.push(`raw:${url}`);
+          if (rawResult instanceof Error) throw rawResult;
+          return rawResult;
+        }
+        return originalFetch(url, timeout);
+      };
+
+      return { client, calls };
+    }
+
+    // --- API success skips raw CDN ---
+    {
+      const { client, calls } = createStubbedClient({ apiResult: 'api-content', rawResult: 'raw-content' });
+      const result = await client.fetchGitHubFile('owner', 'repo', 'path/file.txt', 'main');
+
+      assert(result === 'api-content', 'RegistryClient API success returns API content');
+      assert(calls.length === 1, 'RegistryClient API success makes exactly one call');
+      assert(calls[0].startsWith('api:'), 'RegistryClient API success calls API endpoint');
+    }
+
+    // --- API failure falls back to raw CDN ---
+    {
+      const { client, calls } = createStubbedClient({ apiResult: new Error('HTTP 403'), rawResult: 'raw-content' });
+      const result = await client.fetchGitHubFile('owner', 'repo', 'path/file.txt', 'main');
+
+      assert(result === 'raw-content', 'RegistryClient API failure returns raw CDN content');
+      assert(calls.length === 2, 'RegistryClient API failure makes two calls');
+      assert(calls[0].startsWith('api:'), 'RegistryClient first call is to API');
+      assert(calls[1].startsWith('raw:'), 'RegistryClient second call is to raw CDN');
+    }
+
+    // --- Both endpoints failing throws ---
+    {
+      const { client } = createStubbedClient({ apiResult: new Error('HTTP 403'), rawResult: new Error('HTTP 404') });
+      let threw = false;
+      try {
+        await client.fetchGitHubFile('owner', 'repo', 'path/file.txt', 'main');
+      } catch {
+        threw = true;
       }
-      return false;
-    };
+      assert(threw, 'RegistryClient both endpoints failing throws an error');
+    }
 
-    await installer34.quickUpdate({
-      directory: quickUpdateFixture.root,
-      skipPrompts: true,
-    });
+    // --- API URL construction ---
+    {
+      const { client, calls } = createStubbedClient({ apiResult: 'content', rawResult: 'content' });
+      await client.fetchGitHubFile('bmad-code-org', 'bmad-plugins-marketplace', 'registry/official.yaml', 'main');
 
-    const customModule34 = capturedInstallConfig34?._customModuleSources?.get('test-module');
+      const apiCall = calls[0];
+      assert(
+        apiCall.includes('api.github.com/repos/bmad-code-org/bmad-plugins-marketplace/contents/registry/official.yaml'),
+        'RegistryClient API URL contains correct path',
+      );
+      assert(apiCall.includes('ref=main'), 'RegistryClient API URL contains ref parameter');
+    }
 
-    assert(capturedInstallConfig34 !== null, 'Quick update forwards config to install');
-    assert(customModule34 !== undefined, 'Quick update keeps manifest-backed custom module updateable');
-    assert(customModule34 && customModule34.cached === false, 'Quick update uses manifest-backed source before cache');
-    assert(
-      customModule34 && customModule34.sourcePath === quickUpdateFixture.moduleSourceDir,
-      'Quick update uses preserved manifest sourcePath for custom modules',
-    );
-  } catch (error) {
-    assert(false, 'Quick update manifest-backed custom source test succeeds', error.message);
-  } finally {
-    OfficialModules.prototype.listAvailable = originalListAvailable34;
-    OfficialModules.prototype.loadExistingConfig = originalLoadExistingConfig34;
-    OfficialModules.prototype.collectModuleConfigQuick = originalCollectModuleConfigQuick34;
-    if (quickUpdateFixture?.root) await fs.remove(quickUpdateFixture.root).catch(() => {});
+    // --- Raw CDN URL construction ---
+    {
+      const { client, calls } = createStubbedClient({ apiResult: new Error('fail'), rawResult: 'content' });
+      await client.fetchGitHubFile('bmad-code-org', 'bmad-plugins-marketplace', 'registry/official.yaml', 'main');
+
+      const rawCall = calls[1];
+      assert(
+        rawCall.includes('raw.githubusercontent.com/bmad-code-org/bmad-plugins-marketplace/main/registry/official.yaml'),
+        'RegistryClient raw CDN URL contains correct path',
+      );
+    }
+
+    // --- fetchGitHubYaml parses YAML ---
+    {
+      const yamlContent = 'modules:\n  - name: test\n    description: A test module\n';
+      const { client } = createStubbedClient({ apiResult: yamlContent, rawResult: yamlContent });
+      const result = await client.fetchGitHubYaml('owner', 'repo', 'file.yaml', 'main');
+
+      assert(Array.isArray(result.modules), 'fetchGitHubYaml parses YAML correctly');
+      assert(result.modules[0].name === 'test', 'fetchGitHubYaml preserves YAML values');
+    }
   }
 
   console.log('');

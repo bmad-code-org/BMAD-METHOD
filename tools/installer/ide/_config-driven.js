@@ -1,6 +1,6 @@
 const os = require('node:os');
 const path = require('node:path');
-const fs = require('fs-extra');
+const fs = require('../fs-native');
 const yaml = require('yaml');
 const prompts = require('../prompts');
 const csv = require('csv-parse/sync');
@@ -86,7 +86,7 @@ class ConfigDrivenIdeSetup {
     if (!options.silent) await prompts.log.info(`Setting up ${this.name}...`);
 
     // Clean up any old BMAD installation first
-    await this.cleanup(projectDir, options);
+    await this.cleanup(projectDir, options, bmadDir);
 
     if (!this.installerConfig) {
       return { success: false, reason: 'no-config' };
@@ -183,18 +183,6 @@ class ConfigDrivenIdeSetup {
       count++;
     }
 
-    // Post-install cleanup: remove _bmad/ directories for skills with install_to_bmad === "false"
-    for (const record of records) {
-      if (record.install_to_bmad === 'false') {
-        const relativePath = record.path.startsWith(bmadPrefix) ? record.path.slice(bmadPrefix.length) : record.path;
-        const sourceFile = path.join(bmadDir, relativePath);
-        const sourceDir = path.dirname(sourceFile);
-        if (await fs.pathExists(sourceDir)) {
-          await fs.remove(sourceDir);
-        }
-      }
-    }
-
     return count;
   }
 
@@ -215,16 +203,42 @@ class ConfigDrivenIdeSetup {
    * Cleanup IDE configuration
    * @param {string} projectDir - Project directory
    */
-  async cleanup(projectDir, options = {}) {
+  async cleanup(projectDir, options = {}, bmadDir = null) {
+    const resolvedBmadDir = bmadDir || (await this._findBmadDir(projectDir));
+
+    // Build removal set: previously installed skills + removals.txt entries
+    let removalSet;
+    if (options.previousSkillIds && options.previousSkillIds.size > 0) {
+      // Install/update flow: use pre-captured skill IDs (before manifest was overwritten)
+      removalSet = new Set(options.previousSkillIds);
+      if (resolvedBmadDir) {
+        const removals = await this.loadRemovalLists(resolvedBmadDir);
+        for (const entry of removals) removalSet.add(entry);
+      }
+    } else if (resolvedBmadDir) {
+      // Uninstall flow: read from current skill-manifest.csv + removals.txt
+      removalSet = await this._buildUninstallSet(resolvedBmadDir);
+    } else {
+      removalSet = new Set();
+    }
+
     // Migrate legacy target directories (e.g. .opencode/agent → .opencode/agents)
+    // Legacy dirs are abandoned entirely, so use prefix matching (null removalSet)
     if (this.installerConfig?.legacy_targets) {
-      if (!options.silent) await prompts.log.message('  Migrating legacy directories...');
-      for (const legacyDir of this.installerConfig.legacy_targets) {
-        if (this.isGlobalPath(legacyDir)) {
-          await this.warnGlobalLegacy(legacyDir, options);
-        } else {
-          await this.cleanupTarget(projectDir, legacyDir, options);
-          await this.removeEmptyParents(projectDir, legacyDir);
+      const legacyDirsExist = await Promise.all(
+        this.installerConfig.legacy_targets.map((d) =>
+          this.isGlobalPath(d) ? fs.pathExists(d.replace(/^~/, os.homedir())) : fs.pathExists(path.join(projectDir, d)),
+        ),
+      );
+      if (legacyDirsExist.some(Boolean)) {
+        if (!options.silent) await prompts.log.message('  Migrating legacy directories...');
+        for (const legacyDir of this.installerConfig.legacy_targets) {
+          if (this.isGlobalPath(legacyDir)) {
+            await this.warnGlobalLegacy(legacyDir, options);
+          } else {
+            await this.cleanupTarget(projectDir, legacyDir, options, null);
+            await this.removeEmptyParents(projectDir, legacyDir);
+          }
         }
       }
     }
@@ -244,9 +258,9 @@ class ConfigDrivenIdeSetup {
       await this.cleanupRovoDevPrompts(projectDir, options);
     }
 
-    // Clean target directory
+    // Clean current target directory
     if (this.installerConfig?.target_dir) {
-      await this.cleanupTarget(projectDir, this.installerConfig.target_dir, options);
+      await this.cleanupTarget(projectDir, this.installerConfig.target_dir, options, removalSet);
     }
   }
 
@@ -286,23 +300,117 @@ class ConfigDrivenIdeSetup {
   }
 
   /**
-   * Cleanup a specific target directory
+   * Find the _bmad directory in a project
+   * @param {string} projectDir - Project directory
+   * @returns {string|null} Path to bmad dir or null
+   */
+  async _findBmadDir(projectDir) {
+    const bmadDir = path.join(projectDir, BMAD_FOLDER_NAME);
+    return (await fs.pathExists(bmadDir)) ? bmadDir : null;
+  }
+
+  /**
+   * Build the full set of entries to remove for uninstall.
+   * Reads skill-manifest.csv to know exactly what was installed, plus removal lists.
+   * @param {string} bmadDir - BMAD installation directory
+   * @returns {Set<string>} Set of entries to remove
+   */
+  async _buildUninstallSet(bmadDir) {
+    const removals = await this.loadRemovalLists(bmadDir);
+
+    // Also add all currently installed skills from skill-manifest.csv
+    const csvPath = path.join(bmadDir, '_config', 'skill-manifest.csv');
+    try {
+      if (await fs.pathExists(csvPath)) {
+        const content = await fs.readFile(csvPath, 'utf8');
+        const records = csv.parse(content, { columns: true, skip_empty_lines: true });
+        for (const record of records) {
+          if (record.canonicalId) {
+            removals.add(record.canonicalId);
+          }
+        }
+      }
+    } catch {
+      // If we can't read the manifest, we still have the removal lists
+    }
+
+    return removals;
+  }
+
+  /**
+   * Load removal lists from all module sources in the bmad directory.
+   * Each module can have an optional removals.txt listing entries to remove.
+   * @param {string} bmadDir - BMAD installation directory
+   * @returns {Set<string>} Set of entries to remove
+   */
+  async loadRemovalLists(bmadDir) {
+    const removals = new Set();
+    const { getProjectRoot } = require('../project-root');
+
+    // Read project-level removals.txt (covers core and bmm)
+    const projectRemovalsPath = path.join(getProjectRoot(), 'removals.txt');
+    await this._readRemovalFile(projectRemovalsPath, removals);
+
+    // Read per-module removals.txt from installed module directories
+    try {
+      const entries = await fs.readdir(bmadDir);
+      for (const entry of entries) {
+        if (entry.startsWith('_')) continue;
+        const removalPath = path.join(bmadDir, entry, 'removals.txt');
+        await this._readRemovalFile(removalPath, removals);
+      }
+    } catch {
+      // bmadDir may not exist yet on fresh install
+    }
+
+    return removals;
+  }
+
+  /**
+   * Read a removals.txt file and add entries to the set
+   * @param {string} filePath - Path to removals.txt
+   * @param {Set<string>} removals - Set to add entries to
+   */
+  async _readRemovalFile(filePath, removals) {
+    try {
+      if (await fs.pathExists(filePath)) {
+        const content = await fs.readFile(filePath, 'utf8');
+        for (const line of content.split('\n')) {
+          const trimmed = line.trim();
+          if (trimmed && !trimmed.startsWith('#')) {
+            removals.add(trimmed);
+          }
+        }
+      }
+    } catch {
+      // Optional file — ignore errors
+    }
+  }
+
+  /**
+   * Cleanup a specific target directory.
+   * When removalSet is provided, only removes entries in that set.
+   * When removalSet is null (legacy dirs), removes all bmad-prefixed entries.
    * @param {string} projectDir - Project directory
    * @param {string} targetDir - Target directory to clean
+   * @param {Object} options - Cleanup options
+   * @param {Set<string>|null} removalSet - Entries to remove, or null for legacy prefix matching
    */
-  async cleanupTarget(projectDir, targetDir, options = {}) {
+  async cleanupTarget(projectDir, targetDir, options = {}, removalSet = new Set()) {
     const targetPath = path.join(projectDir, targetDir);
 
     if (!(await fs.pathExists(targetPath))) {
       return;
     }
 
-    // Remove all bmad* files
+    if (removalSet && removalSet.size === 0) {
+      return;
+    }
+
     let entries;
     try {
       entries = await fs.readdir(targetPath);
     } catch {
-      // Directory exists but can't be read - skip cleanup
       return;
     }
 
@@ -313,23 +421,26 @@ class ConfigDrivenIdeSetup {
     let removedCount = 0;
 
     for (const entry of entries) {
-      if (!entry || typeof entry !== 'string') {
-        continue;
-      }
-      if (entry.startsWith('bmad') && !entry.startsWith('bmad-os-')) {
-        const entryPath = path.join(targetPath, entry);
+      if (!entry || typeof entry !== 'string') continue;
+
+      // Always preserve bmad-os-* utility skills regardless of cleanup mode
+      if (entry.startsWith('bmad-os-')) continue;
+
+      // Surgical removal from set, or legacy prefix matching when set is null
+      const shouldRemove = removalSet ? removalSet.has(entry) : entry.startsWith('bmad');
+
+      if (shouldRemove) {
         try {
-          await fs.remove(entryPath);
+          await fs.remove(path.join(targetPath, entry));
           removedCount++;
         } catch {
-          // Skip entries that can't be removed (broken symlinks, permission errors)
+          // Skip entries that can't be removed
         }
       }
     }
 
-    if (removedCount > 0 && !options.silent) {
-      await prompts.log.message(`  Cleaned ${removedCount} BMAD files from ${targetDir}`);
-    }
+    // Only log cleanup when it's not a routine reinstall (legacy dir cleanup or actual removals)
+    // Suppress for current target_dir since it's always cleaned before a fresh write
 
     // Remove empty directory after cleanup
     if (removedCount > 0) {
@@ -339,7 +450,7 @@ class ConfigDrivenIdeSetup {
           await fs.remove(targetPath);
         }
       } catch {
-        // Directory may already be gone or in use — skip
+        // Directory may already be gone or in use
       }
     }
   }

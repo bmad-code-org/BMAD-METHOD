@@ -1,5 +1,5 @@
 ---
-title: "How to Install BMad"
+title: 'How to Install BMad'
 description: Step-by-step guide to installing BMad in your project
 sidebar:
   order: 1
@@ -16,10 +16,11 @@ If you want to use a non interactive installer and provide all install options o
 - Update the existing BMad Installation
 
 :::note[Prerequisites]
+
 - **Node.js** 20+ (required for the installer)
 - **Git** (recommended)
 - **AI tool** (Claude Code, Cursor, or similar)
-:::
+  :::
 
 ## Steps
 
@@ -31,6 +32,7 @@ npx bmad-method install
 
 :::tip[Want the newest prerelease build?]
 Use the `next` dist-tag:
+
 ```bash
 npx bmad-method@next install
 ```
@@ -40,9 +42,11 @@ This gets you newer changes earlier, with a higher chance of churn than the defa
 
 :::tip[Bleeding edge]
 To install the latest from the main branch (may be unstable):
+
 ```bash
 npx github:bmad-code-org/BMAD-METHOD install
 ```
+
 :::
 
 ### 2. Choose Installation Location
@@ -72,7 +76,7 @@ The installer shows available modules. Select whichever ones you need — most u
 
 ### 5. Follow the Prompts
 
-The installer guides you through the rest — custom content, settings, etc.
+The installer guides you through the rest — settings, tool integrations, etc.
 
 ## What You Get
 
@@ -99,11 +103,13 @@ your-project/
 Run `bmad-help` to verify everything works and see what to do next.
 
 **BMad-Help is your intelligent guide** that will:
+
 - Confirm your installation is working
 - Show what's available based on your installed modules
 - Recommend your first step
 
 You can also ask it questions:
+
 ```
 bmad-help I just installed, what should I do first?
 bmad-help What are my options for a SaaS project?

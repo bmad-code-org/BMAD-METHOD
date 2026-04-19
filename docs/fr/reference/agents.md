@@ -1,27 +1,28 @@
 ---
 title: Agents
-description: Agents BMM par défaut avec leurs identifiants de skill, déclencheurs de menu et workflows principaux (Analyst, Developer, Architect, UX Designer, Technical Writer)
+description: Agents BMM par défaut avec leurs identifiants de skill, déclencheurs de menu et workflows principaux
 sidebar:
   order: 2
 ---
 
 ## Agents par défaut
 
-Cette page liste les cinq agents BMM (suite Agile) par défaut installés avec la méthode BMad, ainsi que leurs identifiants de skill, déclencheurs de menu et workflows principaux. Chaque agent est invoqué en tant que skill.
+Cette page liste les agents BMM (suite Agile) par défaut installés avec la méthode BMad, ainsi que leurs identifiants de skill, déclencheurs de menu et workflows principaux. Chaque agent est invoqué en tant que skill.
 
 ## Notes
 
-- Chaque agent est disponible en tant que skill, généré par l’installateur. L’identifiant de skill (par exemple, `bmad-analyst`) est utilisé pour invoquer l’agent.
+- Chaque agent est disponible en tant que skill, généré par l’installateur. L’identifiant de skill (par exemple, `bmad-dev`) est utilisé pour invoquer l’agent.
 - Les déclencheurs sont les codes courts de menu (par exemple, `BP`) et les correspondances approximatives affichés dans chaque menu d’agent.
-- La génération de tests QA est gérée par le skill de workflow `bmad-qa-generate-e2e-tests`. L’architecte de tests complet (TEA) se trouve dans son propre module.
+- La génération de tests QA est gérée par le skill de workflow `bmad-qa-generate-e2e-tests`, disponible par l’agent Développeur. L’architecte de tests complet (TEA) se trouve dans son propre module.
 
-| Agent                  | Identifiant de skill | Déclencheurs                       | Workflows principaux                                                                                                                                           |
-|------------------------|----------------------|------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Analyste (Mary)        | `bmad-analyst`       | `BP`, `MR`, `DR`, `TR`, `CB`, `DP` | Brainstorming du projet, Recherche marché/domaine/technique, Création du brief[^1], Documentation du projet                                                    |
-| Architecte (Winston)   | `bmad-architect`     | `CA`, `IR`                         | Créer l’architecture, Préparation à l’implémentation                                                                                                           |
-| Développeur (Amelia)   | `bmad-dev`           | `DS`, `QD`, `CR`                   | Dev Story, Quick Dev, Code Review                                                                                                                              |
-| Designer UX (Sally)    | `bmad-ux-designer`   | `CU`                               | Création du design UX[^2]                                                                                                                                      |
-| Rédacteur Technique (Paige) | `bmad-tech-writer` | `DP`, `WD`, `US`, `MG`, `VD`, `EC` | Documentation du projet, Rédaction de documents, Mise à jour des standards, Génération de diagrammes Mermaid, Validation de documents, Explication de concepts |
+| Agent                       | Identifiant de skill | Déclencheurs                             | Workflows principaux                                                                                                                                           |
+|-----------------------------|----------------------|------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Analyste (Mary)             | `bmad-analyst`       | `BP`, `MR`, `DR`, `TR`, `CB`, `WB`, `DP` | Brainstorming du projet, Recherche marché/domaine/technique, Création du brief[^1], Défi PRFAQ, Documentation du projet                                        |
+| Product Manager (John)      | `bmad-pm`            | `CP`, `VP`, `EP`, `CE`, `IR`, `CC`       | Créer/Valider/Éditer un PRD, Créer des Epics et Stories, vérifier l’état de préparation à l’Implémentation, Corriger le Cours                                 |
+| Architecte (Winston)        | `bmad-architect`     | `CA`, `IR`                               | Créer l’architecture, Préparation à l’implémentation                                                                                                           |
+| Développeur (Amelia)        | `bmad-agent-dev`     | `DS`, `QD`, `QA`, `CR`, `SP`, `CS`, `ER` | Dev Story, Quick Dev, Génération de Tests QA, Code Review, Sprint Planning, Créer Story, Rétrospective d’Epic                                                  |
+| Designer UX (Sally)         | `bmad-ux-designer`   | `CU`                                     | Création du design UX[^2]                                                                                                                                      |
+| Rédacteur Technique (Paige) | `bmad-tech-writer`   | `DP`, `WD`, `US`, `MG`, `VD`, `EC`       | Documentation du projet, Rédaction de documents, Mise à jour des standards, Génération de diagrammes Mermaid, Validation de documents, Explication de concepts |
 
 ## Types de déclencheurs
 
@@ -31,7 +32,7 @@ Les déclencheurs de menu d'agent utilisent deux types d'invocation différents.
 
 La plupart des déclencheurs chargent un fichier de workflow structuré. Tapez le code du déclencheur et l'agent démarre le workflow, vous demandant de saisir les informations à chaque étape.
 
-Exemples : `BP` (Brainstorm Project), `CA` (Create Architecture), `CU` (Create UX Design)
+Exemples : `CP` (Create PRD), `DS` (Dev Story), `CA` (Create Architecture), `QD` (Quick Dev)
 
 ### Déclencheurs conversationnels (arguments requis)
 

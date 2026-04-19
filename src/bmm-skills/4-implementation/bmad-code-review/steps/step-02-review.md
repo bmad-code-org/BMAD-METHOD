@@ -10,6 +10,7 @@ failed_layers: '' # set at runtime: comma-separated list of layers that failed o
 - The Blind Hunter subagent receives NO project context — diff only.
 - The Edge Case Hunter subagent receives diff and project read access.
 - The Acceptance Auditor subagent receives diff, spec, and context docs.
+- All review subagents must run at the same model capability as the current session.
 
 ## INSTRUCTIONS
 

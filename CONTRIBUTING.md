@@ -6,6 +6,12 @@ Thank you for considering contributing! We believe in **Human Amplification, Not
 
 ---
 
+> **Before you write code: talk to us on [Discord](https://discord.gg/gk8jAdXWmj).**
+>
+> If your change adds features, restructures code, or touches more than a couple of files, **confirm with a maintainer that it fits**. A large PR out of the blue has a high chance of being closed — regardless of effort invested. A five-minute conversation can save you hours.
+
+---
+
 ## Our Philosophy
 
 BMad strengthens human-AI collaboration through specialized agents and guided workflows. Every contribution should answer: **"Does this make humans and AI better together?"**
@@ -57,15 +63,10 @@ After searching, use the [feature request template](https://github.com/bmad-code
 
 ## Before Starting Work
 
-⚠️ **Required before submitting PRs:**
-
-| Work Type     | Requirement                                    |
-| ------------- | ---------------------------------------------- |
-| Bug fix       | An open issue (create one if it doesn't exist) |
-| Feature       | An open feature request issue                  |
-| Large changes | Discussion via issue first                     |
-
-**Why?** This prevents wasted effort on work that may not align with project direction.
+| Work Type               | Requirement                                              |
+| ----------------------- | -------------------------------------------------------- |
+| Typo / small bug fix    | Just open the PR                                         |
+| Feature or large change | Confirm with a maintainer on Discord **before** you start |
 
 ---
 
@@ -82,6 +83,12 @@ Submit PRs to the `main` branch. We use trunk-based development. Every push to `
 - **One feature/fix per PR**
 
 If your change exceeds 800 lines, break it into smaller PRs that can be reviewed independently.
+
+### AI-Generated Code
+
+Given the nature of this project, we expect most contributions involve AI assistance — that's fine. What we require is **heavy human curation**. You must understand every line you're submitting, have made deliberate choices about what to include, and be able to explain your reasoning.
+
+We will reject PRs that read like raw LLM output: bulk refactors nobody asked for, unsolicited "improvements" across many files, or changes where the submitter clearly hasn't read the existing code. Using AI to write code is normal here; using AI as a substitute for thinking is not.
 
 ### New to Pull Requests?
 
