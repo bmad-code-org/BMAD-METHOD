@@ -310,7 +310,8 @@ class Installer {
         addResult('Configurations', 'ok', 'generated');
 
         this.installedFiles.add(paths.manifestFile());
-        this.installedFiles.add(paths.agentManifest());
+        this.installedFiles.add(paths.centralConfig());
+        this.installedFiles.add(paths.centralUserConfig());
 
         message('Generating manifests...');
         const manifestGen = new ManifestGenerator();
@@ -331,10 +332,11 @@ class Installer {
         await manifestGen.generateManifests(paths.bmadDir, allModulesForManifest, [...this.installedFiles], {
           ides: config.ides || [],
           preservedModules: modulesForCsvPreserve,
+          moduleConfigs,
         });
 
         message('Generating help catalog...');
-        await this.mergeModuleHelpCatalogs(paths.bmadDir);
+        await this.mergeModuleHelpCatalogs(paths.bmadDir, manifestGen.agents);
         addResult('Help catalog', 'ok');
 
         return 'Configurations generated';
@@ -922,46 +924,30 @@ class Installer {
   }
 
   /**
-   * Merge all module-help.csv files into a single bmad-help.csv
-   * Scans all installed modules for module-help.csv and merges them
-   * Enriches agent info from agent-manifest.csv
-   * Output is written to _bmad/_config/bmad-help.csv
+   * Merge all module-help.csv files into a single bmad-help.csv.
+   * Scans all installed modules for module-help.csv and merges them.
+   * Enriches agent info from the in-memory agent list produced by ManifestGenerator.
+   * Output is written to _bmad/_config/bmad-help.csv.
    * @param {string} bmadDir - BMAD installation directory
+   * @param {Array<Object>} agentEntries - Agents collected from module.yaml (code, name, title, icon, module, ...)
    */
-  async mergeModuleHelpCatalogs(bmadDir) {
+  async mergeModuleHelpCatalogs(bmadDir, agentEntries = []) {
     const allRows = [];
     const headerRow =
       'module,phase,name,code,sequence,workflow-file,command,required,agent-name,agent-command,agent-display-name,agent-title,options,description,output-location,outputs';
 
-    // Load agent manifest for agent info lookup
-    const agentManifestPath = path.join(bmadDir, '_config', 'agent-manifest.csv');
-    const agentInfo = new Map(); // agent-name -> {command, displayName, title+icon}
-
-    if (await fs.pathExists(agentManifestPath)) {
-      const manifestContent = await fs.readFile(agentManifestPath, 'utf8');
-      const lines = manifestContent.split('\n').filter((line) => line.trim());
-
-      for (const line of lines) {
-        if (line.startsWith('name,')) continue; // Skip header
-
-        const cols = line.split(',');
-        if (cols.length >= 4) {
-          const agentName = cols[0].replaceAll('"', '').trim();
-          const displayName = cols[1].replaceAll('"', '').trim();
-          const title = cols[2].replaceAll('"', '').trim();
-          const icon = cols[3].replaceAll('"', '').trim();
-          const module = cols[10] ? cols[10].replaceAll('"', '').trim() : '';
-
-          // Build agent command: bmad:module:agent:name
-          const agentCommand = module ? `bmad:${module}:agent:${agentName}` : `bmad:agent:${agentName}`;
-
-          agentInfo.set(agentName, {
-            command: agentCommand,
-            displayName: displayName || agentName,
-            title: icon && title ? `${icon} ${title}` : title || agentName,
-          });
-        }
-      }
+    // Build agent lookup from the in-memory list (agent code → command + display fields).
+    const agentInfo = new Map();
+    for (const agent of agentEntries) {
+      if (!agent || !agent.code) continue;
+      const agentCommand = agent.module ? `bmad:${agent.module}:agent:${agent.code}` : `bmad:agent:${agent.code}`;
+      const displayName = agent.name || agent.code;
+      const titleCombined = agent.icon && agent.title ? `${agent.icon} ${agent.title}` : agent.title || agent.code;
+      agentInfo.set(agent.code, {
+        command: agentCommand,
+        displayName,
+        title: titleCombined,
+      });
     }
 
     // Get all installed module directories

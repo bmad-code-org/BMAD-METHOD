@@ -92,15 +92,6 @@ async function createSkillCollisionFixture() {
   await fs.ensureDir(configDir);
 
   await fs.writeFile(
-    path.join(configDir, 'agent-manifest.csv'),
-    [
-      'name,displayName,title,icon,capabilities,role,identity,communicationStyle,principles,module,path,canonicalId',
-      '"bmad-master","BMAD Master","","","","","","","","core","_bmad/core/agents/bmad-master.md","bmad-master"',
-      '',
-    ].join('\n'),
-  );
-
-  await fs.writeFile(
     path.join(configDir, 'skill-manifest.csv'),
     [
       'canonicalId,name,description,module,path',
@@ -1458,16 +1449,16 @@ async function runTests() {
     const taskSkillEntry29 = generator29.skills.find((s) => s.canonicalId === 'task-skill');
     assert(taskSkillEntry29 !== undefined, 'Skill in tasks/ dir appears in skills[]');
 
-    // Native agent entrypoint should be installed as a verbatim skill and also
-    // remain visible to the agent manifest pipeline.
+    // Native agent entrypoint should be installed as a verbatim skill.
+    // (Agent roster is now sourced from module.yaml's `agents:` block, not
+    // from per-skill bmad-skill-manifest.yaml sidecars, so this test no longer
+    // verifies agents[] membership — see collectAgentsFromModuleYaml tests.)
     const nativeAgentEntry29 = generator29.skills.find((s) => s.canonicalId === 'bmad-tea');
     assert(nativeAgentEntry29 !== undefined, 'Native type:agent SKILL.md dir appears in skills[]');
     assert(
       nativeAgentEntry29 && nativeAgentEntry29.path.includes('agents/bmad-tea/SKILL.md'),
       'Native type:agent SKILL.md path points to the agent directory entrypoint',
     );
-    const nativeAgentManifest29 = generator29.agents.find((a) => a.name === 'bmad-tea');
-    assert(nativeAgentManifest29 !== undefined, 'Native type:agent SKILL.md dir appears in agents[] for agent metadata');
 
     // Regular type:workflow should NOT appear in skills[]
     const regularInSkills29 = generator29.skills.find((s) => s.canonicalId === 'regular-wf');

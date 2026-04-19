@@ -35,7 +35,13 @@ When invoked from another prompt or process:
 
 ### Step 1: Method Registry Loading
 
-**Action:** Load and read `./methods.csv` and '{project-root}/_bmad/_config/agent-manifest.csv'
+**Action:** Load `./methods.csv` for elicitation methods. If party-mode may participate, resolve the agent roster via:
+
+```bash
+python3 {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key agents
+```
+
+The resolver merges `_bmad/config.toml` (installer base) with `_bmad/custom/config.toml` (team) and `_bmad/custom/config.user.toml` (personal). Each entry under `agents` has `code`, `name`, `title`, `icon`, `description`, `module`, and `team`.
 
 #### CSV Structure
 
