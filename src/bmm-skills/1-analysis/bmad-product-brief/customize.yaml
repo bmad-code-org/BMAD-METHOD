@@ -1,0 +1,6 @@
+# DO NOT EDIT -- overwritten on every update.
+
+# Standard customizations for all workflow skills
+activation_steps_prepend: []
+activation_steps_append: []
+skill_end: ""
