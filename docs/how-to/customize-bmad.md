@@ -215,7 +215,7 @@ python3 {project-root}/_bmad/scripts/resolve_customization.py \
   --key agent
 ```
 
-**Requirements**: Python 3.11+ (earlier versions don't include `tomllib`). No `pip install`, no `uv`, no virtualenv. macOS 13+, Ubuntu 22.04+, Debian 12+, and Fedora 37+ all ship 3.11 or newer.
+**Requirements**: Python 3.11+ (earlier versions don't include `tomllib`). No `pip install`, no `uv`, no virtualenv. Check with `python3 --version` — some common platforms (macOS without Homebrew, Ubuntu 22.04) default `python3` to 3.10 or earlier even when 3.11+ is available to install separately.
 
 `--skill` points at the skill's installed directory (where `customize.toml` lives). The skill name is derived from the directory's basename, and the script looks up `_bmad/custom/{skill-name}.toml` and `{skill-name}.user.toml` automatically.
 
