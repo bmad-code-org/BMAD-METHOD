@@ -19,7 +19,6 @@ class InstallPaths {
     const isUpdate = await fs.pathExists(bmadDir);
 
     const configDir = path.join(bmadDir, '_config');
-    const agentsDir = path.join(configDir, 'agents');
     const coreDir = path.join(bmadDir, 'core');
     const scriptsDir = path.join(bmadDir, 'scripts');
     const customDir = path.join(bmadDir, 'custom');
@@ -27,7 +26,6 @@ class InstallPaths {
     for (const [dir, label] of [
       [bmadDir, 'bmad directory'],
       [configDir, 'config directory'],
-      [agentsDir, 'agents config directory'],
       [coreDir, 'core module directory'],
       [scriptsDir, 'shared scripts directory'],
       [customDir, 'customizations directory'],
@@ -41,7 +39,6 @@ class InstallPaths {
       projectRoot,
       bmadDir,
       configDir,
-      agentsDir,
       coreDir,
       scriptsDir,
       customDir,
