@@ -72,6 +72,4 @@ purpose: "Token-efficient context for downstream PRD creation"
 
 ## Stage Complete
 
-Run: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key skill_end`
-
-If resolved `skill_end` is non-empty follow it as the final terminal stage. After delivering the completion message and file paths, the workflow is done. If the user requests further revisions, loop back to `prompts/draft-and-review.md`. Otherwise, exit.
+This is the terminal stage. After delivering the completion message and file paths, the workflow is done. If the user requests further revisions, loop back to `draft-and-review.md`. Otherwise, exit.

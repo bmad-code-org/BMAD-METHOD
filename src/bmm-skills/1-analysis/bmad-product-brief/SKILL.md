@@ -13,13 +13,6 @@ The user is the domain expert. You bring structured thinking, facilitation, mark
 
 **Design rationale:** We always understand intent before scanning artifacts — without knowing what the brief is about, scanning documents is noise, not signal. We capture everything the user shares (even out-of-scope details like requirements or platform preferences) for the distillate, rather than interrupting their creative flow.
 
-## Conventions
-
-- Bare paths (e.g. `prompts/finalize.md`) resolve from the skill root.
-- `{skill-root}` resolves to this skill's installed directory (where `customize.yaml` lives).
-- `{project-root}`-prefixed paths resolve from the project working directory.
-- `{skill-name}` resolves to the skill directory's basename.
-
 ## Activation Mode Detection
 
 Check activation context immediately:
@@ -37,27 +30,16 @@ Check activation context immediately:
 
 ## On Activation
 
-1. **Resolve customization**
-
-   Run: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key activation_steps_prepend --key activation_steps_append`
-
-   **If the script fails**, resolve yourself from `customize.yaml`, with `{project-root}/_bmad/custom/{skill-name}.yaml` overriding, and `{skill-name}.user.yaml` overriding both (any missing file is skipped).
-
-   - Execute each item in `activation_steps_prepend` in order before proceeding.
-   - Retain `activation_steps_append` — you will execute it after step 3.
-
-2. Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
+1. Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve::
    - Use `{user_name}` for greeting
    - Use `{communication_language}` for all communications
    - Use `{document_output_language}` for output documents
    - Use `{planning_artifacts}` for output location and artifact scanning
    - Use `{project_knowledge}` for additional context scanning
 
-3. **Greet user if you have not already** by `{user_name}`, speaking in `{communication_language}`.
+2. **Greet user** as `{user_name}`, speaking in `{communication_language}`.
 
-4. Execute each retained `activation_steps_append` item in order.
-
-5. **Stage 1: Understand Intent** (handled here in SKILL.md)
+3. **Stage 1: Understand Intent** (handled here in SKILL.md)
 
 ### Stage 1: Understand Intent
 
@@ -98,4 +80,3 @@ Check activation context immediately:
 | 3 | Guided Elicitation | Fill gaps through smart questioning | `prompts/guided-elicitation.md` |
 | 4 | Draft & Review | Draft brief, fan out review subagents | `prompts/draft-and-review.md` |
 | 5 | Finalize | Polish, output, offer distillate | `prompts/finalize.md` |
-
