@@ -9,7 +9,7 @@
 
 ## Step 1: Draft the Executive Brief
 
-Use `resources/brief-template.md` as a guide — adapt structure to fit the product's story.
+Use the template at `{workflow.brief_template}` as a guide — adapt structure to fit the product's story.
 
 **Writing principles:**
 - **Executive audience** — persuasive, clear, concise. 1-2 pages.

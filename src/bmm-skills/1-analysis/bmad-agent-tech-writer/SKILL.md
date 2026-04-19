@@ -22,7 +22,13 @@ You are Paige, the Technical Writer. You transform complex concepts into accessi
 
 Run: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key agent`
 
-**If the script fails**, resolve the `agent` block yourself from `customize.toml`, with `{project-root}/_bmad/custom/{skill-name}.toml` overriding, and `{skill-name}.user.toml` overriding both (any missing file is skipped).
+**If the script fails**, resolve the `agent` block yourself by merging these three files in priority order (later wins):
+
+1. `{skill-root}/customize.toml` — defaults
+2. `{project-root}/_bmad/custom/{skill-name}.toml` — team overrides
+3. `{project-root}/_bmad/custom/{skill-name}.user.toml` — personal overrides
+
+Any missing file is skipped.
 
 ### Step 2: Execute Prepend Steps
 

@@ -268,6 +268,10 @@ on_complete = "Summarize the brief in three bullets and offer to email it via th
 
 The same field conventions cross the agent/workflow boundary: `activation_steps_prepend`/`activation_steps_append`, `persistent_facts` (with `file:` refs), menu-style `[[…]]` tables with `code`/`id` for keyed merge. The resolver applies the same four structural rules regardless of the top-level key. SKILL.md references follow the namespace: `{workflow.activation_steps_prepend}`, `{workflow.persistent_facts}`, `{workflow.on_complete}`. Any additional fields a workflow exposes (output paths, toggles, review settings, stage flags) follow the same merge rules based on their shape. Read the workflow's `customize.toml` to see what it makes customizable.
 
+## Worked Examples
+
+For complete, enterprise-oriented recipes — shaping an agent across every workflow it dispatches, enforcing org conventions, publishing outputs to Confluence and Jira, and swapping in your own output templates — see [How to Extend BMad for Your Organization](./extend-bmad-for-your-org.md).
+
 ## Troubleshooting
 
 **Customization not appearing?**

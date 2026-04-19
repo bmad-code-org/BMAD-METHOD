@@ -41,7 +41,13 @@ Check activation context immediately:
 
 Run: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow`
 
-**If the script fails**, resolve the `workflow` block yourself from `customize.toml`, with `{project-root}/_bmad/custom/{skill-name}.toml` overriding, and `{skill-name}.user.toml` overriding both (any missing file is skipped).
+**If the script fails**, resolve the `workflow` block yourself by merging these three files in priority order (later wins):
+
+1. `{skill-root}/customize.toml` — defaults
+2. `{project-root}/_bmad/custom/{skill-name}.toml` — team overrides
+3. `{project-root}/_bmad/custom/{skill-name}.user.toml` — personal overrides
+
+Any missing file is skipped.
 
 ### Step 2: Execute Prepend Steps
 
@@ -68,11 +74,9 @@ Greet `{user_name}` if you have not already, speaking in `{communication_languag
 
 Execute each entry in `{workflow.activation_steps_append}` in order.
 
-### Step 7: Stage 1 — Understand Intent
+Activation is complete. Begin the workflow at Stage 1 below.
 
-Proceed to Stage 1 below.
-
-### Stage 1: Understand Intent
+## Stage 1: Understand Intent
 
 **Goal:** Know WHY the user is here and WHAT the brief is about before doing anything else.
 

@@ -34,8 +34,14 @@ persistent_facts = [
   "file:{project-root}/**/project-context.md",
 ]
 
+# Path to the brief structure template used in Stage 4 drafting.
+# Bare paths resolve from the skill root; use `{project-root}/...` to
+# point at an org-owned template elsewhere in the repo. Override wins.
+
+brief_template = "resources/brief-template.md"
+
 # Scalar: executed when the workflow reaches its terminal stage, after
 # the main output has been delivered. Override wins. Leave empty for
-# no post-completion behavior.
+# no custom post-completion behavior.
 
 on_complete = ""
