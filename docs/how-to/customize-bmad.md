@@ -44,14 +44,14 @@ The resolver applies four structural rules. Field names are never special-cased 
 |---|---|
 | Scalar (string, int, bool, float) | Override wins |
 | Table | Deep merge (recursively apply these rules) |
-| Array of tables where every item has a `code` or `id` field | Merge by that key — matching keys **replace in place**, new keys **append** |
-| Any other array (scalars, mixed, tables without `code`/`id`) | **Append** — base items first, then team items, then user items |
+| Array of tables where every item shares the **same** identifier field (every item has `code`, or every item has `id`) | Merge by that key — matching keys **replace in place**, new keys **append** |
+| Any other array (scalars; tables with no identifier; arrays that mix `code` and `id` across items) | **Append** — base items first, then team items, then user items |
 
 **No removal mechanism.** Overrides cannot delete base items. If you need to suppress a default menu item, override it by `code` with a no-op description or prompt. If you need to restructure an array more deeply, fork the skill.
 
 #### The `code` / `id` convention
 
-BMad uses `code` (short identifier like `"BP"` or `"R1"`) and `id` (longer stable identifier) as merge keys on arrays of tables. If you author a custom array-of-tables that should be replaceable-by-key rather than append-only, give every item a `code` or `id` field.
+BMad uses `code` (short identifier like `"BP"` or `"R1"`) and `id` (longer stable identifier) as merge keys on arrays of tables. If you author a custom array-of-tables that should be replaceable-by-key rather than append-only, pick **one** convention (either `code` on every item, or `id` on every item) and stick with it across the whole array. Mixing `code` on some items and `id` on others falls back to append — the resolver won't guess which key to merge on.
 
 ### Some agent fields are read-only
 

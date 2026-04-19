@@ -21,9 +21,11 @@ no virtualenv — plain `python3` is sufficient.
 Merge rules (purely structural — no field-name special-casing):
   - Scalars (string, int, bool, float): override wins
   - Tables: deep merge (recursively apply these rules)
-  - Arrays of tables where every item carries a `code` or `id` field:
+  - Arrays of tables where every item shares the *same* identifier
+    field (every item has `code`, or every item has `id`):
     merge by that key (matching keys replace, new keys append)
-  - All other arrays (scalars, mixed, or tables without code/id):
+  - All other arrays — including arrays where only some items have
+    `code` or `id`, or where items mix the two keys:
     append (base items followed by override items)
 
 No removal mechanism — overrides cannot delete base items. To suppress
@@ -92,7 +94,14 @@ def load_toml(file_path: Path, required: bool = False) -> dict:
 
 
 def _detect_keyed_merge_field(items):
-    """Return 'code' or 'id' if every table item carries that field, else None."""
+    """Return 'code' or 'id' if every table item carries that *same* field.
+
+    All items must share the same identifier (all `code`, or all `id`).
+    Mixed arrays — where some items use `code` and others use `id` —
+    return None and fall through to append semantics. This is intentional:
+    mixing identifier keys within one array is a schema smell, and
+    append-fallback is safer than guessing which key should merge.
+    """
     if not items or not all(isinstance(item, dict) for item in items):
         return None
     for candidate in _KEYED_MERGE_FIELDS:
