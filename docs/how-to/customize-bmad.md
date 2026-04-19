@@ -78,7 +78,11 @@ Only include the fields you want to change. Unmentioned fields inherit from the 
 
 #### Agent Persona
 
-Change any combination of name, title, icon, role, identity, communication style, and principles. Anything under `agent.metadata` merges field-by-field; anything under `agent.persona` replaces the persona wholesale if you include it.
+Change any combination of title, icon, role, identity, communication style, and principles. Anything under `agent.metadata` merges field-by-field; anything under `agent.persona` replaces the persona wholesale if you include it.
+
+:::note[Agent names are fixed]
+The built-in BMad agents (Mary, John, Winston, Sally, Amelia, Paige) have hardcoded names. This is a deliberate design choice so every skill can be reliably invoked by role *or* default name — "hey Mary" always activates the analyst, no matter how the team has customized her behavior. If you genuinely need a differently-named agent, copy the skill folder, rename it, and ship it as a custom skill (a few-minute task).
+:::
 
 Team override (shallow merge on metadata):
 
@@ -87,7 +91,6 @@ Team override (shallow merge on metadata):
 
 agent:
   metadata:
-    name: Priya
     title: Senior Product Lead
     icon: "🏥"
 ```
@@ -169,14 +172,12 @@ When a field's text needs to point at a file (in `memories`, `critical_actions`,
 
 **Team file** (`bmad-agent-pm.yaml`): Committed to git. Shared across the org. Use for compliance rules, company persona, custom capabilities.
 
-**Personal file** (`bmad-agent-pm.user.yaml`): Gitignored automatically. Use for nickname preferences, tone adjustments, personal workflows.
+**Personal file** (`bmad-agent-pm.user.yaml`): Gitignored automatically. Use for tone adjustments, personal workflow preferences, and private memories.
 
 ```yaml
 # _bmad/custom/bmad-agent-pm.user.yaml
 
 agent:
-  metadata:
-    name: "Doc P"
   memories:
     - "Always include a rough complexity estimate (low/medium/high) when presenting options."
 ```
@@ -208,7 +209,7 @@ uv run {project-root}/_bmad/scripts/resolve_customization.py \
 # Resolve a single field
 uv run {project-root}/_bmad/scripts/resolve_customization.py \
   --skill /abs/path/to/bmad-agent-pm \
-  --key agent.metadata.name
+  --key agent.metadata.title
 
 # Full dump (everything under agent plus any other top-level keys)
 uv run {project-root}/_bmad/scripts/resolve_customization.py \
