@@ -216,7 +216,11 @@ def main():
 
     defaults = load_yaml(defaults_path, required=True)
 
-    project_root = find_project_root(Path.cwd()) or find_project_root(skill_dir)
+    # Prefer the project that contains this skill. Only fall back to cwd if
+    # the skill isn't inside a recognizable project tree (unusual but possible
+    # for standalone skills invoked directly). Using cwd first is unsafe when
+    # an ancestor of cwd happens to have a stray _bmad/ from another project.
+    project_root = find_project_root(skill_dir) or find_project_root(Path.cwd())
 
     team = {}
     user = {}

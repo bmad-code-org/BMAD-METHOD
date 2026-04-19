@@ -1,20 +1,6 @@
-# Customization surface for bmad-product-brief.
 # DO NOT EDIT -- overwritten on every update.
-#
-# To customize, create one of the following and include only the fields
-# you want to change (unmentioned fields inherit from this file):
-#   {project-root}/_bmad/custom/bmad-product-brief.yaml        (team, committed)
-#   {project-root}/_bmad/custom/bmad-product-brief.user.yaml   (personal, gitignored)
 
-# Additional resource files loaded into workflow context on activation.
-# Paths may use {project-root}. Agent notes the list on activation
-# but does not preload the files; subsequent prompts reference them as needed.
-# Arrays replace atomically -- include the full list you want.
-additional_resources: []
-
-# Injected prompts woven into the workflow's context.
-#   before: loaded before the workflow begins
-#   after:  loaded after the workflow completes (pre-finalize)
-inject:
-  before: ""
-  after: ""
+# Standard customizations for all workflow skills
+activation_steps_prepend: []
+activation_steps_append: []
+skill_end: ""

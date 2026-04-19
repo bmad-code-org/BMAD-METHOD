@@ -820,7 +820,7 @@ class OfficialModules {
     let foundAny = false;
     const entries = await fs.readdir(bmadDir, { withFileTypes: true });
 
-    const nonModuleDirs = new Set(['_config', '_memory', 'docs', 'scripts', 'custom']);
+    const nonModuleDirs = new Set(['_config', '_memory', 'memory', 'docs', 'scripts', 'custom']);
     for (const entry of entries) {
       if (entry.isDirectory()) {
         if (nonModuleDirs.has(entry.name)) {

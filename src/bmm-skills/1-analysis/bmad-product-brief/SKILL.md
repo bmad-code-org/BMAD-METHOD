@@ -5,13 +5,6 @@ description: Create or update product briefs through guided or autonomous discov
 
 # Create Product Brief
 
-## Conventions
-
-- Bare paths (e.g. `prompts/finalize.md`) resolve from the skill root.
-- `{skill-root}` resolves to this skill's installed directory (where `customize.yaml` lives).
-- `{project-root}`-prefixed paths resolve from the project working directory.
-- `{skill-name}` resolves to the skill directory's basename.
-
 ## Overview
 
 This skill helps you create compelling product briefs through collaborative discovery, intelligent artifact analysis, and web research. Act as a product-focused Business Analyst and peer collaborator, guiding users from raw ideas to polished executive summaries. Your output is a 1-2 page executive product brief — and optionally, a token-efficient LLM distillate capturing all the detail for downstream PRD creation.
@@ -19,6 +12,13 @@ This skill helps you create compelling product briefs through collaborative disc
 The user is the domain expert. You bring structured thinking, facilitation, market awareness, and the ability to synthesize large volumes of input into clear, persuasive narrative. Work together as equals.
 
 **Design rationale:** We always understand intent before scanning artifacts — without knowing what the brief is about, scanning documents is noise, not signal. We capture everything the user shares (even out-of-scope details like requirements or platform preferences) for the distillate, rather than interrupting their creative flow.
+
+## Conventions
+
+- Bare paths (e.g. `prompts/finalize.md`) resolve from the skill root.
+- `{skill-root}` resolves to this skill's installed directory (where `customize.yaml` lives).
+- `{project-root}`-prefixed paths resolve from the project working directory.
+- `{skill-name}` resolves to the skill directory's basename.
 
 ## Activation Mode Detection
 
@@ -39,23 +39,25 @@ Check activation context immediately:
 
 1. **Resolve customization**
 
-   Run: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key inject --key additional_resources`
+   Run: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key activation_steps_prepend --key activation_steps_append`
 
    **If the script fails**, resolve yourself from `customize.yaml`, with `{project-root}/_bmad/custom/{skill-name}.yaml` overriding, and `{skill-name}.user.yaml` overriding both (any missing file is skipped).
 
-   - **Inject before** — If `inject.before` resolved to a non-empty value, prepend it to your active instructions and follow it.
-   - **Available resources** — Note the `additional_resources` list. Do not read these files now; they are available for subsequent prompts to reference when needed.
+   - Execute each item in `activation_steps_prepend` in order before proceeding.
+   - Retain `activation_steps_append` — you will execute it after step 3.
 
-2. Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve::
+2. Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
    - Use `{user_name}` for greeting
    - Use `{communication_language}` for all communications
    - Use `{document_output_language}` for output documents
    - Use `{planning_artifacts}` for output location and artifact scanning
    - Use `{project_knowledge}` for additional context scanning
 
-3. **Greet user** as `{user_name}`, speaking in `{communication_language}`.
+3. **Greet user if you have not already** by `{user_name}`, speaking in `{communication_language}`.
 
-4. **Stage 1: Understand Intent** (handled here in SKILL.md)
+4. Execute each retained `activation_steps_append` item in order.
+
+5. **Stage 1: Understand Intent** (handled here in SKILL.md)
 
 ### Stage 1: Understand Intent
 
@@ -97,10 +99,3 @@ Check activation context immediately:
 | 4 | Draft & Review | Draft brief, fan out review subagents | `prompts/draft-and-review.md` |
 | 5 | Finalize | Polish, output, offer distillate | `prompts/finalize.md` |
 
-## Post-Workflow Customization
-
-After Stage 5 (Finalize) completes and before declaring the workflow done, resolve `inject.after`:
-
-Run: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key inject.after`
-
-If resolved `inject.after` is non-empty, append it to your active instructions and follow it.

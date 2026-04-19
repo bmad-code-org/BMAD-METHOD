@@ -1,3 +1,5 @@
+# DO NOT EDIT -- overwritten on every update.
+
 agent:
   metadata:
     name: Mary
@@ -42,7 +44,7 @@ agent:
       skill: bmad-technical-research
     - code: CB
       description: "Create or update product briefs through guided or autonomous discovery"
-      skill: bmad-product-brief-preview
+      skill: bmad-product-brief
     - code: WB
       description: "Working Backwards PRFAQ challenge — forge and stress-test product concepts"
       skill: bmad-prfaq
