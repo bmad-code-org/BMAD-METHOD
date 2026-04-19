@@ -568,17 +568,23 @@ class Installer {
   }
 
   /**
-   * Recursively copy src/scripts/* → _bmad/scripts/ so shared Python
-   * scripts (e.g. resolve_customization.py) are available at install time.
-   * Also seeds _bmad/custom/.gitignore on fresh installs so *.user.yaml
-   * overrides stay out of version control by default.
+   * Sync src/scripts/* → _bmad/scripts/ so shared Python scripts
+   * (e.g. resolve_customization.py) are available at install time.
+   * Wipes the destination first so files removed or renamed in source
+   * (e.g. resolve-customization.js → resolve_customization.py) don't
+   * linger and get recorded as installed. Also seeds _bmad/custom/.gitignore
+   * on fresh installs so *.user.yaml overrides stay out of version control.
    */
   async _installSharedScripts(paths) {
     const srcScriptsDir = path.join(paths.srcDir, 'src', 'scripts');
-    if (await fs.pathExists(srcScriptsDir)) {
-      await fs.copy(srcScriptsDir, paths.scriptsDir, { overwrite: true });
-      await this._trackFilesRecursive(paths.scriptsDir);
+    if (!(await fs.pathExists(srcScriptsDir))) {
+      throw new Error(`Shared scripts source directory not found: ${srcScriptsDir}`);
     }
+
+    await fs.remove(paths.scriptsDir);
+    await fs.ensureDir(paths.scriptsDir);
+    await fs.copy(srcScriptsDir, paths.scriptsDir, { overwrite: true });
+    await this._trackFilesRecursive(paths.scriptsDir);
 
     const customGitignore = path.join(paths.customDir, '.gitignore');
     if (!(await fs.pathExists(customGitignore))) {

@@ -64,15 +64,26 @@ def find_project_root(start: Path):
         current = parent
 
 
-def load_yaml(file_path: Path) -> dict:
+def load_yaml(file_path: Path, required: bool = False) -> dict:
     if not file_path.exists():
+        if required:
+            sys.stderr.write(f"error: required customization file not found: {file_path}\n")
+            sys.exit(1)
         return {}
     try:
         with file_path.open("r", encoding="utf-8") as f:
             parsed = yaml.safe_load(f)
-        return parsed if isinstance(parsed, dict) else {}
+        if not isinstance(parsed, dict):
+            if required:
+                sys.stderr.write(f"error: {file_path} did not parse to a mapping\n")
+                sys.exit(1)
+            return {}
+        return parsed
     except Exception as error:
-        sys.stderr.write(f"warning: failed to parse {file_path}: {error}\n")
+        level = "error" if required else "warning"
+        sys.stderr.write(f"{level}: failed to parse {file_path}: {error}\n")
+        if required:
+            sys.exit(1)
         return {}
 
 
@@ -129,8 +140,10 @@ def deep_merge(base, override):
 def merge_agent_block(base: dict, override: dict) -> dict:
     """Apply v6.1-compatible per-field merge semantics to the `agent` block,
     then deep-merge everything else normally."""
-    base_agent = (base or {}).get("agent") or {}
-    over_agent = (override or {}).get("agent") or {}
+    base_obj = base if isinstance(base, dict) else {}
+    override_obj = override if isinstance(override, dict) else {}
+    base_agent = base_obj.get("agent") or {}
+    over_agent = override_obj.get("agent") or {}
 
     merged_agent = dict(base_agent)
 
@@ -163,7 +176,12 @@ def merge_agent_block(base: dict, override: dict) -> dict:
             else:
                 merged_agent[key] = over_val
 
-    return {**(base or {}), **(override or {}), "agent": merged_agent}
+    # Deep-merge all non-agent top-level keys so tables like `workflow:` or
+    # `config:` follow the documented `other tables: deep merge` rule. Then
+    # overlay the specially-merged agent block.
+    merged = deep_merge(base_obj, override_obj)
+    merged["agent"] = merged_agent
+    return merged
 
 
 def extract_key(data, dotted_key: str):
@@ -196,9 +214,7 @@ def main():
     skill_name = skill_dir.name
     defaults_path = skill_dir / "customize.yaml"
 
-    defaults = load_yaml(defaults_path)
-    if not defaults:
-        sys.stderr.write(f"warning: no defaults found at {defaults_path}\n")
+    defaults = load_yaml(defaults_path, required=True)
 
     project_root = find_project_root(Path.cwd()) or find_project_root(skill_dir)
 

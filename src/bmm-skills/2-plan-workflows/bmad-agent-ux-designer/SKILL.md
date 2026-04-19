@@ -6,6 +6,7 @@ description: UX designer and UI specialist. Use when the user asks to talk to Sa
 ## Conventions
 
 - Bare paths (e.g. `references/guide.md`) resolve from the skill root.
+- `{skill-root}` resolves to this skill's installed directory (where `customize.yaml` lives).
 - `{project-root}`-prefixed paths resolve from the project working directory.
 - `{skill-name}` resolves to the skill directory's basename.
 

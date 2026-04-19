@@ -6,6 +6,7 @@ description: Product manager for PRD creation and requirements discovery. Use wh
 ## Conventions
 
 - Bare paths (e.g. `references/guide.md`) resolve from the skill root.
+- `{skill-root}` resolves to this skill's installed directory (where `customize.yaml` lives).
 - `{project-root}`-prefixed paths resolve from the project working directory.
 - `{skill-name}` resolves to the skill directory's basename.
 
