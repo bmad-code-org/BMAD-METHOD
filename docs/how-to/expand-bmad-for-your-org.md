@@ -1,5 +1,5 @@
 ---
-title: 'How to Extend BMad for Your Organization'
+title: 'How to Expand BMad for Your Organization'
 description: Four customization patterns that reshape BMad without forking — org conventions, agent-wide rules, external publishing, and template swaps
 sidebar:
   order: 9

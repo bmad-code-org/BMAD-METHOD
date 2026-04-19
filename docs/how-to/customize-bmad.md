@@ -270,7 +270,7 @@ The same field conventions cross the agent/workflow boundary: `activation_steps_
 
 ## Worked Examples
 
-For complete, enterprise-oriented recipes — shaping an agent across every workflow it dispatches, enforcing org conventions, publishing outputs to Confluence and Jira, and swapping in your own output templates — see [How to Extend BMad for Your Organization](./extend-bmad-for-your-org.md).
+For complete, enterprise-oriented recipes — shaping an agent across every workflow it dispatches, enforcing org conventions, publishing outputs to Confluence and Jira, and swapping in your own output templates — see [How to Expand BMad for Your Organization](./expand-bmad-for-your-org.md).
 
 ## Troubleshooting
 

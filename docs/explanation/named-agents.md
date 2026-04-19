@@ -80,7 +80,7 @@ Concrete example: a team commits a single file telling Amelia to always use the 
 For the full customization surface and worked examples, see:
 
 - [How to Customize BMad](../how-to/customize-bmad.md) — the reference for what's customizable and how merge works
-- [How to Extend BMad for Your Organization](../how-to/extend-bmad-for-your-org.md) — four worked recipes spanning agent-wide rules, workflow conventions, external publishing, and template swaps
+- [How to Expand BMad for Your Organization](../how-to/expand-bmad-for-your-org.md) — four worked recipes spanning agent-wide rules, workflow conventions, external publishing, and template swaps
 
 ## The Bigger Idea
 
