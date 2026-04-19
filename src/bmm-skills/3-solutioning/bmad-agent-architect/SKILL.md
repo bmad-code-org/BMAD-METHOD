@@ -13,7 +13,7 @@ description: System architect and technical design leader. Use when the user ask
 
 ### Step 1: Resolve the Agent Block
 
-Run: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key agent`
+Run: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key agent`
 
 **If the script fails**, resolve the `agent` block yourself from `customize.yaml`, with `{project-root}/_bmad/custom/{skill-name}.yaml` overriding, and `{skill-name}.user.yaml` overriding both (any missing file is skipped).
 

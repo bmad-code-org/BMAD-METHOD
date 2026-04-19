@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# /// script
+# requires-python = ">=3.10"
+# dependencies = ["pyyaml>=6.0"]
+# ///
 """
 Resolve customization for a BMad skill using three-layer YAML merge.
 
@@ -11,10 +15,12 @@ Skill name is derived from the basename of the skill directory.
 
 Outputs merged JSON to stdout. Errors go to stderr.
 
-Usage:
-  python3 resolve_customization.py --skill /abs/path/to/skill-dir
-  python3 resolve_customization.py --skill ... --key agent
-  python3 resolve_customization.py --skill ... --key agent --key agent.menu
+Dependencies declared inline via PEP 723. Invoke with `uv run` to
+auto-install PyYAML into an isolated, cached environment:
+
+  uv run resolve_customization.py --skill /abs/path/to/skill-dir
+  uv run resolve_customization.py --skill ... --key agent
+  uv run resolve_customization.py --skill ... --key agent --key agent.menu
 
 Merge rules (matches BMad v6.1 semantics where applicable):
   - metadata: shallow merge  (scalar fields override)
@@ -25,8 +31,6 @@ Merge rules (matches BMad v6.1 semantics where applicable):
   - other tables:     deep merge
   - other arrays:     atomic replace
   - scalars:          override wins
-
-Requires PyYAML. Install with: pip install PyYAML
 """
 
 import argparse
@@ -39,7 +43,9 @@ try:
 except ImportError:
     sys.stderr.write(
         "error: PyYAML is required to run this script.\n"
-        "Install it with: pip install PyYAML\n"
+        "Invoke via `uv run resolve_customization.py ...` so dependencies\n"
+        "declared in the PEP 723 header are auto-installed, or run\n"
+        "`pip install PyYAML` if invoking with plain `python3`.\n"
     )
     sys.exit(3)
 

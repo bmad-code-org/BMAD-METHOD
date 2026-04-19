@@ -183,13 +183,17 @@ agent:
 
 ## How Resolution Works
 
-On activation, the agent's SKILL.md runs a shared Python script that does the three-layer merge and returns the resolved `agent` block as JSON. The script requires Python 3.8+ and PyYAML (`pip install PyYAML`).
+On activation, the agent's SKILL.md runs a shared Python script that does the three-layer merge and returns the resolved `agent` block as JSON. The script uses [PEP 723 inline script metadata](https://peps.python.org/pep-0723/) to declare its dependency on PyYAML, and is designed to be invoked via [`uv`](https://docs.astral.sh/uv/):
 
 ```bash
-python3 {project-root}/_bmad/scripts/resolve_customization.py \
+uv run {project-root}/_bmad/scripts/resolve_customization.py \
   --skill {skill-root} \
   --key agent
 ```
+
+`uv run` reads the inline metadata, creates a cached isolated environment with PyYAML installed, and runs the script. First run takes a few seconds while the env is built; subsequent runs reuse the cache and are instant.
+
+**Requirements**: Python 3.10+ and `uv` (install via `brew install uv`, `pip install uv`, or [the official installer](https://docs.astral.sh/uv/getting-started/installation/)). If `uv` isn't available, the script can be run with plain `python3` provided PyYAML is already installed (`pip install PyYAML`).
 
 `--skill` points at the skill's installed directory (where `customize.yaml` lives). The skill name is derived from the directory's basename, and the script looks up `_bmad/custom/{skill-name}.yaml` and `{skill-name}.user.yaml` automatically.
 
@@ -197,17 +201,17 @@ Useful invocations:
 
 ```bash
 # Resolve the full agent block
-python3 {project-root}/_bmad/scripts/resolve_customization.py \
+uv run {project-root}/_bmad/scripts/resolve_customization.py \
   --skill /abs/path/to/bmad-agent-pm \
   --key agent
 
 # Resolve a single field
-python3 {project-root}/_bmad/scripts/resolve_customization.py \
+uv run {project-root}/_bmad/scripts/resolve_customization.py \
   --skill /abs/path/to/bmad-agent-pm \
   --key agent.metadata.name
 
 # Full dump (everything under agent plus any other top-level keys)
-python3 {project-root}/_bmad/scripts/resolve_customization.py \
+uv run {project-root}/_bmad/scripts/resolve_customization.py \
   --skill /abs/path/to/bmad-agent-pm
 ```
 
