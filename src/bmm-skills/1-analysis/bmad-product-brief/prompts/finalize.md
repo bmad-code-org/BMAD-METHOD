@@ -1,6 +1,7 @@
 **Language:** Use `{communication_language}` for all output.
 **Output Language:** Use `{document_output_language}` for documents.
 **Output Location:** `{planning_artifacts}`
+**Paths:** Bare paths (e.g. `prompts/foo.md`) resolve from the skill root.
 
 # Stage 5: Finalize
 
@@ -72,4 +73,6 @@ purpose: "Token-efficient context for downstream PRD creation"
 
 ## Stage Complete
 
-This is the terminal stage. After delivering the completion message and file paths, the workflow is done. If the user requests further revisions, loop back to `draft-and-review.md`. Otherwise, exit.
+Run: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow.on_complete`
+
+If the resolved `workflow.on_complete` is non-empty, follow it as the final terminal instruction before exiting. After delivering the completion message and file paths, the workflow is done. If the user requests further revisions, loop back to `prompts/draft-and-review.md`. Otherwise, exit.
