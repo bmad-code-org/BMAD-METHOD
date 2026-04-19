@@ -134,6 +134,33 @@ brief_template = "{project-root}/docs/enterprise/brief-template.md"
 - Use the same structural conventions as the shipped template (section headings, frontmatter) — the agent adapts to what's there
 - For multi-org repos, use `.user.toml` to let individual teams point at their own templates without touching the committed team file
 
+## Reinforce Global Rules in Your IDE's Session File
+
+BMad customizations load when a skill is activated. But many IDE tools also load a global instruction file at the **start of every session**, before any skill runs — `CLAUDE.md`, `AGENTS.md`, `.cursor/rules/`, `.github/copilot-instructions.md`, etc. For rules that should hold even outside BMad skills, restate the critical ones there too.
+
+**When to double up:**
+- A rule is important enough that a plain chat conversation (no skill active) should still follow it
+- You want belt-and-suspenders enforcement because training-data defaults might otherwise pull the model off-course
+- The rule is concise enough to repeat without bloating the session file
+
+**Example — one line in the repo's `CLAUDE.md` reinforcing the dev-agent rule from Recipe 1:**
+
+```markdown
+<!-- Any file-read of library docs goes through the context7 MCP tool
+(`mcp__context7__resolve_library_id` then `mcp__context7__get_library_docs`)
+before relying on training-data knowledge. -->
+```
+
+One sentence. Loads every session. Pairs with the `bmad-agent-dev.toml` customization so the rule applies both inside Amelia's workflows and during ad-hoc chats with the assistant. No duplication of effort — each layer owns its scope:
+
+| Layer | Scope | Use for |
+|---|---|---|
+| IDE session file (`CLAUDE.md` / `AGENTS.md`) | Every session, before any skill activates | Short, universal rules that should survive outside BMad |
+| BMad agent customization | Every workflow the agent dispatches | Agent-persona-specific behavior |
+| BMad workflow customization | One workflow run | Workflow-specific output shape, publishing hooks, templates |
+
+Keep the IDE file **succinct**. A dozen well-chosen lines are more effective than a sprawling list — models read it every turn, and noise crowds out signal.
+
 ## Combining Recipes
 
 All four recipes compose. A realistic enterprise override for `bmad-product-brief` might set `persistent_facts` (Recipe 2), `on_complete` (Recipe 3), and `brief_template` (Recipe 4) in a single file. The agent-level rule (Recipe 1) lives in a separate file under the agent's name and applies in parallel.
