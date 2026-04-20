@@ -423,11 +423,26 @@ class ManifestGenerator {
       }
     }
 
-    const partition = (moduleName, cfg) => {
+    // Core keys are always known (core module.yaml is built-in). These are
+    // the only keys allowed in [core]; they must be stripped from every
+    // non-core module bucket because legacy _bmad/{mod}/config.yaml files
+    // spread core values into each module. Core belongs in [core] only —
+    // workflows that need user_name/language/etc. read [core] directly.
+    const coreKeys = new Set(Object.keys(scopeByModuleKey.core || {}));
+
+    // Partition a module's answered config into team vs user buckets.
+    // For non-core modules: strip core keys always; when we know the module's
+    // own schema, also drop keys it doesn't declare. Unknown-schema modules
+    // (external / marketplace) fall through with their remaining answers as
+    // team so they don't vanish from the config.
+    const partition = (moduleName, cfg, onlyDeclaredKeys = false) => {
       const team = {};
       const user = {};
       const scopes = scopeByModuleKey[moduleName] || {};
+      const isCore = moduleName === 'core';
       for (const [key, value] of Object.entries(cfg || {})) {
+        if (!isCore && coreKeys.has(key)) continue;
+        if (onlyDeclaredKeys && !(key in scopes)) continue;
         if (scopes[key] === 'user') {
           user[key] = value;
         } else {
@@ -439,22 +454,33 @@ class ManifestGenerator {
 
     const teamHeader = [
       '# ─────────────────────────────────────────────────────────────────',
-      '# DO NOT EDIT — regenerated on every install.',
+      '# Installer-managed. Regenerated on every install.',
       '#',
-      '# To override any value, add it to one of:',
-      '#   _bmad/custom/config.toml        (team, committed to version control)',
-      '#   _bmad/custom/config.user.toml   (personal, gitignored)',
+      '# [core] and [modules.<code>] values: you CAN edit these directly.',
+      '# The installer reads current values as defaults on next install,',
+      '# so your edits persist.',
+      '#',
+      '# [agents.<code>] values: regenerated from each module.yaml on every',
+      '# install. DO NOT edit here — your changes will be wiped. To override',
+      '# an agent descriptor or add custom agents, use:',
+      '#   _bmad/custom/config.toml       (team, committed)',
+      '#   _bmad/custom/config.user.toml  (personal, gitignored)',
+      '# Those files are never touched by the installer.',
       '# ─────────────────────────────────────────────────────────────────',
       '',
     ];
 
     const userHeader = [
       '# ─────────────────────────────────────────────────────────────────',
-      '# DO NOT EDIT — regenerated on every install.',
-      '# This file holds install answers scoped to YOU personally.',
+      '# Installer-managed. Regenerated on every install.',
+      '# Holds install answers scoped to YOU personally.',
       '#',
-      '# To override any value, add it to:',
-      '#   _bmad/custom/config.user.toml   (personal, gitignored)',
+      '# You CAN edit values here directly. The installer reads current',
+      '# values as defaults on next install, so your edits persist.',
+      '#',
+      '# For custom agents or sections the installer does not know about,',
+      '# use _bmad/custom/config.user.toml — it is never touched by the',
+      '# installer.',
       '# ─────────────────────────────────────────────────────────────────',
       '',
     ];
@@ -485,7 +511,12 @@ class ManifestGenerator {
       if (moduleName === 'core') continue;
       const cfg = moduleConfigs[moduleName];
       if (!cfg || Object.keys(cfg).length === 0) continue;
-      const { team: modTeam, user: modUser } = partition(moduleName, cfg);
+      // Only filter out spread-from-core pollution when we actually know
+      // this module's prompt schema. For external/marketplace modules whose
+      // module.yaml isn't in the src tree, fall through as all-team so we
+      // don't drop their real answers.
+      const haveSchema = Object.keys(scopeByModuleKey[moduleName] || {}).length > 0;
+      const { team: modTeam, user: modUser } = partition(moduleName, cfg, haveSchema);
       if (Object.keys(modTeam).length > 0) {
         teamLines.push(`[modules.${moduleName}]`);
         for (const [key, value] of Object.entries(modTeam)) {
