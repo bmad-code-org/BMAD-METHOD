@@ -1,0 +1,14 @@
+# DO NOT EDIT -- overwritten on every update.
+#
+# Workflow customization surface for bmad-create-epics-and-stories.
+
+[workflow]
+
+activation_steps_prepend = []
+activation_steps_append = []
+
+persistent_facts = [
+  "file:{project-root}/**/project-context.md",
+]
+
+on_complete = ""
