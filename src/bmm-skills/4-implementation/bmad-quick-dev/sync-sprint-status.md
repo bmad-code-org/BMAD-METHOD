@@ -6,11 +6,11 @@ Shared sub-step for updating `sprint-status.yaml` during quick-dev. Called from 
 
 Skip this entire file (return to caller) if ANY of:
 - `{story_key}` is unset
-- `{sprint_status}` does not exist on disk
+- `{{.sprint_status}}` does not exist on disk
 
 ## Instructions
 
-1. Load the FULL `{sprint_status}` file.
+1. Load the FULL `{{.sprint_status}}` file.
 2. Find the `development_status` entry matching `{story_key}`. If not found, warn the user once (`"{story_key} not found in sprint-status; skipping sprint sync"`) and return to caller.
 3. **Idempotency check.** If `development_status[{story_key}]` is already at `{target_status}` or a later state (`review` is later than `in-progress`; `done` is later than both), return to caller — no write needed. Never regress a story's status.
 4. Set `development_status[{story_key}]` to `{target_status}`.
