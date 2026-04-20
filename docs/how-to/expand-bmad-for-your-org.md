@@ -1,11 +1,11 @@
 ---
 title: 'How to Expand BMad for Your Organization'
-description: Four customization patterns that reshape BMad without forking — org conventions, agent-wide rules, external publishing, and template swaps
+description: Five customization patterns that reshape BMad without forking — agent-wide rules, workflow conventions, external publishing, template swaps, and agent roster changes
 sidebar:
   order: 9
 ---
 
-BMad's customization surface lets an organization reshape behavior without editing installed files or forking skills. This guide walks through four recipes that cover most enterprise needs.
+BMad's customization surface lets an organization reshape behavior without editing installed files or forking skills. This guide walks through five recipes that cover most enterprise needs.
 
 :::note[Prerequisites]
 
@@ -225,7 +225,7 @@ Keep the IDE file **succinct**. A dozen well-chosen lines are more effective tha
 
 ## Combining Recipes
 
-All four recipes compose. A realistic enterprise override for `bmad-product-brief` might set `persistent_facts` (Recipe 2), `on_complete` (Recipe 3), and `brief_template` (Recipe 4) in one file. The agent-level rule (Recipe 1) lives in a separate file under the agent's name and applies in parallel.
+All five recipes compose. A realistic enterprise override for `bmad-product-brief` might set `persistent_facts` (Recipe 2), `on_complete` (Recipe 3), and `brief_template` (Recipe 4) in one file. The agent-level rule (Recipe 1) lives in a separate file under the agent's name, central config (Recipe 5) pins the shared roster and team settings, and all four apply in parallel.
 
 ```toml
 # _bmad/custom/bmad-product-brief.toml (workflow-level)

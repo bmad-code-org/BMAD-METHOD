@@ -82,7 +82,7 @@ There's also a second customization surface for *cross-cutting* concerns: the ce
 For the full customization surface and worked examples, see:
 
 - [How to Customize BMad](../how-to/customize-bmad.md) — the reference for what's customizable and how merge works
-- [How to Expand BMad for Your Organization](../how-to/expand-bmad-for-your-org.md) — four worked recipes spanning agent-wide rules, workflow conventions, external publishing, and template swaps
+- [How to Expand BMad for Your Organization](../how-to/expand-bmad-for-your-org.md) — five worked recipes spanning agent-wide rules, workflow conventions, external publishing, template swaps, and agent roster customization
 
 ## The Bigger Idea
 
