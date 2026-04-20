@@ -1,12 +1,8 @@
----
-deferred_work_file: '{implementation_artifacts}/deferred-work.md'
----
-
 # Step 2: Plan
 
 ## RULES
 
-- YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `{communication_language}`
+- YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `{{.communication_language}}`
 - No intermediate approvals.
 
 ## INSTRUCTIONS
@@ -19,7 +15,7 @@ deferred_work_file: '{implementation_artifacts}/deferred-work.md'
 6. Token count check (see SCOPE STANDARD). If spec exceeds 1600 tokens:
    - Show user the token count.
    - HALT and ask human: `[S] Split — carve off secondary goals` | `[K] Keep full spec — accept the risks`
-   - On **S**: Propose the split — name each secondary goal. For each deferred goal, append one new entry to `{deferred_work_file}` using this format. Do not modify existing entries or look for duplicates. Rewrite the current spec to cover only the main goal — do not surgically carve sections out; regenerate the spec for the narrowed scope. Continue to checkpoint.
+   - On **S**: Propose the split — name each secondary goal. For each deferred goal, append one new entry to `{{.deferred_work_file}}` using this format. Do not modify existing entries or look for duplicates. Rewrite the current spec to cover only the main goal — do not surgically carve sections out; regenerate the spec for the narrowed scope. Continue to checkpoint.
      ```markdown
      - source_spec: `{spec_file}`
        summary: <one sentence naming the deferred goal>
