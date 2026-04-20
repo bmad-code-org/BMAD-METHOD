@@ -34,6 +34,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 - `ux_file` = `{planning_artifacts}/*ux*.md`
 - `story_title` = "" (will be elicited if not derivable)
 - `project_context` = `**/project-context.md` (load if exists)
+- `deferred_work_file` = `{implementation_artifacts}/deferred-work.md`
 - `default_output_file` = `{implementation_artifacts}/{{story_key}}.md`
 
 ### Input Files
@@ -44,6 +45,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 | architecture | Architecture (fallback - epics file should have relevant sections) | whole: `{planning_artifacts}/*architecture*.md`, sharded: `{planning_artifacts}/*architecture*/*.md` | SELECTIVE_LOAD |
 | ux | UX design (fallback - epics file should have relevant sections) | whole: `{planning_artifacts}/*ux*.md`, sharded: `{planning_artifacts}/*ux*/*.md` | SELECTIVE_LOAD |
 | epics | Enhanced epics+stories file with BDD and source hints | whole: `{planning_artifacts}/*epic*.md`, sharded: `{planning_artifacts}/*epic*/*.md` | SELECTIVE_LOAD |
+| deferred_work | Deferred items from code reviews (optional) | `{deferred_work_file}` | FULL_LOAD (optional) |
 
 ---
 
@@ -232,6 +234,54 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
   all learnings that could impact current story implementation</action>
   </check>
 
+  <!-- Deferred work items analysis -->
+  <check if="{deferred_work_file} exists AND has content">
+    <action>Load {deferred_work_file} completely</action>
+    <action>Parse all deferred items. The file uses level-2 headings produced by bmad-code-review:
+      `## Deferred from: code review of story-X.Y (YYYY-MM-DD)`
+      Each heading is followed by bullet items (one per deferred finding).
+
+      For each bullet item extract:
+      - File paths mentioned (e.g., [src/foo.ts:42])
+      - Originating review: the heading text above the bullet (e.g., "code review of story-2.3 (2026-03-18)")
+      - Description text: the bullet content
+      - Category: if the producer included an explicit category, use it; otherwise derive heuristically from keywords in the description:
+        - "security" / "auth" / "injection" / "XSS" / "CSRF" → security
+        - "bug" / "crash" / "error" / "null" / "undefined" / "NaN" → bug
+        - "performance" / "slow" / "N+1" / "cache" → performance
+        - "style" / "lint" / "formatting" / "naming" → style
+        - otherwise → tech-debt
+      - Set `inferred_category = true` when the category was derived heuristically
+    </action>
+
+    <action>From epics content and architecture analysis, build a list of files this story will likely touch:
+      - Files explicitly mentioned in story requirements
+      - Files in modules/directories related to the story's feature area
+      - Files that share dependencies with story components
+    </action>
+
+    <action>Match deferred items against the story's file list:
+      - EXACT match: deferred item references a file the story will modify
+      - DIRECTORY match: deferred item is in the same directory/module
+      - COMPONENT match: deferred item affects a component the story depends on
+    </action>
+
+    <check if="overlapping deferred items found">
+      <action>Store {{matched_deferred_items}} for inclusion in the story file</action>
+      <action>Set {{matched_count}} = number of items in {{matched_deferred_items}}</action>
+      <action>Classify matches by priority:
+        - HIGH: security fixes, bugs in files this story will modify
+        - MEDIUM: tech-debt in the same module, performance issues in touched code
+        - LOW: style issues, minor refactors in adjacent files
+      </action>
+      <output>📋 Found {{matched_count}} deferred work items relevant to this story from previous code reviews</output>
+    </check>
+
+    <check if="no overlapping deferred items found">
+      <action>Set {{matched_deferred_items}} = empty</action>
+    </check>
+  </check>
+
   <!-- Git intelligence for previous work patterns -->
   <check
     if="previous story exists AND git repository detected">
@@ -322,6 +372,24 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
   <check
     if="git analysis completed">
     <template-output file="{default_output_file}">git_intelligence_summary</template-output>
+  </check>
+
+  <!-- Deferred work items from previous code reviews -->
+  <check if="{{matched_deferred_items}} is not empty">
+    <action>In the Dev Notes section, add a subsection:</action>
+    <template-output file="{default_output_file}">
+### Deferred Items to Address
+
+The following items were deferred from previous code reviews and overlap with files/modules this story will touch. Address these during implementation where practical.
+
+{{#each matched_deferred_items}}
+- **[{{priority}}]** {{description}} `[{{file_ref}}]` — _from {{origin_review}}_
+{{/each}}
+    </template-output>
+
+    <action>In the Tasks/Subtasks section, add corresponding subtasks for HIGH-priority deferred items:
+      - [ ] [Deferred] {{description}} [{{file_ref}}] (from previous review)
+    </action>
   </check>
 
   <!-- Latest technical specifics -->

@@ -38,6 +38,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 ### Paths
 
 - `sprint_status_file` = `{implementation_artifacts}/sprint-status.yaml`
+- `deferred_work_file` = `{implementation_artifacts}/deferred-work.md`
 
 ### Input Files
 
@@ -48,6 +49,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 | architecture | System architecture for context | whole: `{planning_artifacts}/*architecture*.md`, sharded: `{planning_artifacts}/*architecture*/*.md` | FULL_LOAD |
 | prd | Product requirements for context | whole: `{planning_artifacts}/*prd*.md`, sharded: `{planning_artifacts}/*prd*/*.md` | FULL_LOAD |
 | document_project | Brownfield project documentation (optional) | sharded: `{planning_artifacts}/*.md` | INDEX_GUIDED |
+| deferred_work | Deferred items from code reviews | `{deferred_work_file}` | FULL_LOAD (optional) |
 
 ### Required Inputs
 
@@ -246,6 +248,41 @@ Charlie (Senior Dev): "Good idea - those dev notes always have gold in them."
 - Note testing challenges or surprises
 - Track bug patterns or regression issues
 - Document test coverage gaps
+
+**Deferred Work Backlog Analysis:**
+
+<check if="{deferred_work_file} exists AND has content">
+  <action>Load {deferred_work_file} completely</action>
+  <action>Parse all deferred items and compute:</action>
+
+  - Total items deferred across all reviews
+  - Items originating from this epic's stories (match by level-2 headings: `## Deferred from: code review of story-{{epic_number}}.* (YYYY-MM-DD)`)
+  - Items originating from previous epics (carried forward — headings referencing other epic numbers)
+  - Items that were addressed during this epic (cross-reference with story file lists and git history)
+  - Items still outstanding
+
+  <action>Classify outstanding items by severity. If the producer included an explicit category use it; otherwise derive heuristically from description keywords (security/auth/injection → security; bug/crash/error/null → bug; performance/slow/cache → performance; style/lint/naming → style; default → tech-debt):</action>
+
+  - Security issues: count and list
+  - Bugs: count and list
+  - Tech-debt: count and list
+  - Style/minor: count and list
+
+  <action>Store deferred work stats:</action>
+
+  - {{deferred_created_this_epic}}: items deferred during this epic's reviews
+  - {{deferred_resolved_this_epic}}: items addressed during this epic
+  - {{deferred_carried_forward}}: items still outstanding
+  - {{deferred_high_priority}}: security + bug items still outstanding
+
+  <action>IF {{deferred_carried_forward}} > 0: flag for discussion in retrospective as a quality concern</action>
+  <action>IF {{deferred_high_priority}} > 0: flag as critical — high-priority items are aging without resolution</action>
+</check>
+
+<check if="{deferred_work_file} does NOT exist or is empty">
+  <action>Set {{deferred_created_this_epic}} = 0, {{deferred_resolved_this_epic}} = 0, {{deferred_carried_forward}} = 0</action>
+  <action>Note: no deferred work file found — either no code reviews ran or all findings were resolved inline</action>
+</check>
 
 <action>Synthesize patterns across all stories:</action>
 
@@ -506,6 +543,13 @@ Quality and Technical:
 - Technical debt items: {{debt_count}}
 - Test coverage: {{coverage_info}}
 - Production incidents: {{incident_count}}
+
+Deferred Work (from code reviews):
+
+- Created this epic: {{deferred_created_this_epic}}
+- Resolved this epic: {{deferred_resolved_this_epic}}
+- Carried forward: {{deferred_carried_forward}}{{#if deferred_high_priority}}
+- ⚠️ High-priority outstanding: {{deferred_high_priority}} (security/bugs){{/if}}
 
 Business Outcomes:
 
@@ -1352,6 +1396,7 @@ Amelia (Developer): "See you all when prep work is done. Meeting adjourned!"
 - Action items with owners and timelines
 - Preparation tasks for next epic
 - Critical path items
+- Deferred work summary (items created, resolved, carried forward, high-priority outstanding)
 - Significant discoveries and epic update recommendations (if any)
 - Readiness assessment
 - Commitments and next steps
