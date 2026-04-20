@@ -1,11 +1,12 @@
 **Language:** Use `{communication_language}` for all output.
 **Output Language:** Use `{document_output_language}` for documents.
+**Paths:** Bare paths (e.g. `prompts/foo.md`) resolve from the skill root.
 
 # Stage 3: Guided Elicitation
 
 **Goal:** Fill the gaps in what you know. By now you have the user's brain dump, artifact analysis, and web research. This stage is about smart, targeted questioning — not rote section-by-section interrogation.
 
-**Skip this stage entirely in Yolo and Autonomous modes** — go directly to `draft-and-review.md`.
+**Skip this stage entirely in Yolo and Autonomous modes** — go directly to `prompts/draft-and-review.md`.
 
 ## Approach
 
@@ -67,4 +68,4 @@ If the user is providing complete, confident answers and you have solid coverage
 
 ## Stage Complete
 
-This stage is complete when sufficient substance exists to draft a compelling brief and the user confirms readiness. Route to `draft-and-review.md`.
+This stage is complete when sufficient substance exists to draft a compelling brief and the user confirms readiness. Route to `prompts/draft-and-review.md`.
